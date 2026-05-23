@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 小满咖啡馆 · 小红书开业营销物料组</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/studio/src/components/MarketingStudio.jsx：一次产出"一整套"营销物料的批量心智——
+      主视觉 + 文案 + slogan + 配图 + 渠道适配，全部共享同一主题，而不是只出一张孤立海报。
+    取舍（见研究结论）：海报页（canvas-poster）解决"出一张图的几个候选"；
+    营销组页（本页）解决"出一套协调物料"——所以 canvas 不是候选 grid，而是【物料组网格】：
+    若干件不同形态的物料卡共享同一暖色主题（统一感由 token 串联：木色标题 / 米纸底 / 同一插画语言）。
+    控件区两行 = 风格（统一刷主题）+ 渠道（一套适配多平台），actions = 重出一套 / 导出全部 / 分享。
+
+    页内 <style>：仅 marketing 专属 BEM（.canvas-stage--marketing / .canvas-marketing__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn / tool-call-inline）
+    来自共享 components.css。保持单文件可直接打开（ADR-007）。
+    视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。选中环 / 主题点一律木色。
+  -->
+  <style>
+    /* ===== 营销物料组 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--marketing {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* —— 物料组的"一套"主题条：把所有卡片串成一组 —— */
+    .canvas-marketing__themebar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      box-shadow: 0 1px 2px rgba(60,45,30,0.04);
+      flex: none;
+    }
+    .canvas-marketing__theme-title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h3);
+      color: var(--color-text-primary);
+      font-weight: 500;
+      letter-spacing: .5px;
+    }
+    .canvas-marketing__theme-sub {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+    .canvas-marketing__theme-spacer { flex: 1; }
+    /* 共享调色板小圆点：告诉用户"这一套是同一组颜色" */
+    .canvas-marketing__swatches { display: flex; gap: 5px; }
+    .canvas-marketing__swatch {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 1px solid rgba(60,45,30,0.10);
+      box-shadow: 0 1px 2px rgba(60,45,30,0.06);
+    }
+    .canvas-marketing__set-count {
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      padding: 3px 10px;
+      border-radius: 999px;
+      letter-spacing: .4px;
+    }
+
+    /* —— 物料组网格 —— */
+    .canvas-marketing__grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: minmax(110px, auto);
+      gap: var(--space-3);
+      flex: none;
+    }
+    .canvas-marketing__card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .18s var(--ease-soft), box-shadow .18s var(--ease-soft), border-color .18s var(--ease-soft);
+      box-shadow: 0 1px 2px rgba(60,45,30,0.04);
+    }
+    .canvas-marketing__card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px -10px rgba(60,45,30,0.18);
+    }
+    .canvas-marketing__card:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .canvas-marketing__card.is-current {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(139,111,71,0.14), 0 8px 20px -10px rgba(60,45,30,0.20);
+      transform: translateY(-2px);
+    }
+
+    /* 网格跨度：① 主视觉大、其余小，组出"一套里有主有次"的层次 */
+    .canvas-marketing__card--hero    { grid-column: span 3; grid-row: span 2; }
+    .canvas-marketing__card--copy    { grid-column: span 3; }
+    .canvas-marketing__card--slogan  { grid-column: span 3; }
+    .canvas-marketing__card--grid9   { grid-column: span 3; grid-row: span 2; }
+    .canvas-marketing__card--palette { grid-column: span 3; }
+
+    /* 卡头：物料类型标签 */
+    .canvas-marketing__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      align-self: flex-start;
+      margin: var(--space-3) var(--space-3) 0;
+      padding: 2px 9px;
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      letter-spacing: .4px;
+      color: var(--color-text-secondary);
+      background: #FCFAF6;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+    }
+    .canvas-marketing__tag-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--color-accent);
+    }
+    .canvas-marketing__card.is-current .canvas-marketing__tag {
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      border-color: transparent;
+    }
+
+    /* —— ① 主视觉 hero —— */
+    .canvas-marketing__hero-art {
+      flex: 1; min-height: 0;
+      margin: var(--space-3) var(--space-3) var(--space-3);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow:
+        0 0 0 4px #F3EAD9,
+        0 0 0 5px #E2D3BB,
+        0 8px 18px -10px rgba(60,45,30,0.20);
+    }
+    .canvas-marketing__hero-art svg { display: block; width: 100%; height: 100%; }
+
+    /* —— ② 文案卡（可读真文案） —— */
+    .canvas-marketing__copy {
+      padding: var(--space-2) var(--space-3) var(--space-3);
+      overflow: hidden;
+    }
+    .canvas-marketing__copy-title {
+      font-family: var(--font-serif);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      font-weight: 600;
+      line-height: var(--leading-tight);
+      margin-bottom: 6px;
+    }
+    .canvas-marketing__copy-body {
+      font-family: var(--font-sans);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      line-height: var(--leading-body);
+    }
+    .canvas-marketing__copy-tags {
+      margin-top: var(--space-2);
+      font-family: var(--font-sans);
+      font-size: var(--text-small);
+      color: var(--color-accent);
+      letter-spacing: .2px;
+    }
+
+    /* —— ③ slogan 卡 —— */
+    .canvas-marketing__slogan {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      padding: var(--space-3) var(--space-4) var(--space-4);
+      background:
+        radial-gradient(120% 80% at 80% 10%, rgba(247,226,189,0.55) 0%, rgba(247,226,189,0) 60%),
+        var(--color-surface);
+    }
+    .canvas-marketing__slogan-main {
+      font-family: var(--font-serif);
+      font-size: var(--text-h2);
+      color: var(--color-text-primary);
+      font-weight: 500;
+      letter-spacing: 1px;
+      line-height: var(--leading-tight);
+    }
+    .canvas-marketing__slogan-sub {
+      font-family: var(--font-hand);
+      font-size: var(--text-body);
+      color: var(--color-accent);
+    }
+    .canvas-marketing__slogan-alt {
+      margin-top: 4px;
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+    }
+
+    /* —— ④ 朋友圈九宫格 —— */
+    .canvas-marketing__nine {
+      flex: 1; min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 3px;
+      margin: var(--space-3);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--color-border);
+    }
+    .canvas-marketing__nine-cell { overflow: hidden; }
+    .canvas-marketing__nine-cell svg { display: block; width: 100%; height: 100%; }
+
+    /* —— ⑤ 配色 + 话题标签卡 —— */
+    .canvas-marketing__palette {
+      padding: var(--space-2) var(--space-3) var(--space-3);
+    }
+    .canvas-marketing__palette-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: var(--space-3);
+    }
+    .canvas-marketing__palette-chip {
+      flex: 1;
+      height: 34px;
+      border-radius: var(--radius-xs);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(60,45,30,0.06);
+    }
+    .canvas-marketing__palette-hex {
+      position: absolute;
+      left: 0; right: 0; bottom: 3px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: rgba(43,37,32,0.55);
+      letter-spacing: .3px;
+    }
+    .canvas-marketing__hashtags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .canvas-marketing__hashtag {
+      font-family: var(--font-sans);
+      font-size: var(--text-small);
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    /* 选中卡左下角"主"角标 */
+    .canvas-marketing__current-flag {
+      position: absolute;
+      left: 10px; bottom: 10px;
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      color: #FFFCF6;
+      background: rgba(139,111,71,0.92);
+      padding: 2px 9px;
+      border-radius: 999px;
+      letter-spacing: .4px;
+    }
+
+    @media (max-width: 1180px) {
+      .canvas-marketing__grid { grid-template-columns: repeat(2, 1fr); }
+      .canvas-marketing__card--hero,
+      .canvas-marketing__card--copy,
+      .canvas-marketing__card--slogan,
+      .canvas-marketing__card--grid9,
+      .canvas-marketing__card--palette { grid-column: span 2; grid-row: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-marketing.html">小满咖啡馆 · 开业物料</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                给我的小满咖啡馆出一套小红书开业营销物料，下周六开业。
+              </article>
+
+              <article class="message message--ai">
+                <p>好。一套五件，全用同一个暖色调，发出去像一家店的——</p>
+                <ol>
+                  <li>主视觉海报（开业那张，能直接当封面）</li>
+                  <li>标题 + 正文文案（小红书笔记照着发）</li>
+                  <li>一句 slogan（贴杯套、写黑板都行）</li>
+                  <li>朋友圈九宫格（开业当天发）</li>
+                  <li>配色 + 话题标签（之后follow发都对得上）</li>
+                </ol>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的营销 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">营销 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 一套 5 件</span>
+                </div>
+
+                <p>右边这一套都是"清新米"主题，颜色是统一的。主视觉那张我放大了，其它几件配着它走。要换风格我整套一起刷。</p>
+              </article>
+
+              <article class="message message--user">
+                文案再口语一点，别太广告腔。"小满"是节气，想留着这个意思。
+              </article>
+
+              <article class="message message--ai">
+                <p>改了。正文换成像跟朋友说话那样，slogan 顺着"小满"——刚刚好、不贪多的意思。整套的标题、九宫格配字我都跟着同步过了，不会一件一个调。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">换"暖木"主题</button>
+                  <button class="chat-suggest" type="button">多出一版 slogan</button>
+                  <button class="chat-suggest" type="button">适配公众号头图</button>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试&quot;换个主题&quot; / &quot;再出一版 slogan&quot;）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (marketing set mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>小满咖啡馆 · 开业物料</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>整套同步中…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--marketing">
+
+            <!-- 主题条：把"一套"串起来 -->
+            <div class="canvas-marketing__themebar" aria-label="这一套的主题">
+              <span class="canvas-marketing__theme-title">清新米 · 小满</span>
+              <span class="canvas-marketing__theme-sub">开业 · 一套同主题</span>
+              <span class="canvas-marketing__theme-spacer"></span>
+              <div class="canvas-marketing__swatches" aria-label="这一套共用的配色">
+                <span class="canvas-marketing__swatch" style="background:#FAF7F2" title="米底"></span>
+                <span class="canvas-marketing__swatch" style="background:#EBE0CF" title="浅米"></span>
+                <span class="canvas-marketing__swatch" style="background:#C8A26B" title="麦"></span>
+                <span class="canvas-marketing__swatch" style="background:#8B6F47" title="木"></span>
+                <span class="canvas-marketing__swatch" style="background:#7A8B6B" title="叶绿"></span>
+              </div>
+              <span class="canvas-marketing__set-count">共 5 件 · 同一套</span>
+            </div>
+
+            <!-- 物料组网格 -->
+            <section class="canvas-marketing__grid" aria-label="营销物料组 · 5 件同主题">
+
+              <!-- ① 主视觉海报（大 · 当前） -->
+              <article class="canvas-marketing__card canvas-marketing__card--hero is-current" tabindex="0" aria-label="主视觉海报 · 当前" aria-current="true">
+                <span class="canvas-marketing__tag"><span class="canvas-marketing__tag-dot"></span>① 主视觉海报</span>
+                <div class="canvas-marketing__hero-art">
+                  <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="mhbg" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#FBF3E4"/>
+                        <stop offset="1" stop-color="#F0E3C9"/>
+                      </linearGradient>
+                      <linearGradient id="mhlight" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#FFF6E0" stop-opacity="0.85"/>
+                        <stop offset="1" stop-color="#FFF6E0" stop-opacity="0"/>
+                      </linearGradient>
+                      <radialGradient id="mhcoffee" cx="0.5" cy="0.5" r="0.5">
+                        <stop offset="0" stop-color="#7A5230"/>
+                        <stop offset="1" stop-color="#3D2818"/>
+                      </radialGradient>
+                    </defs>
+                    <rect width="300" height="380" fill="url(#mhbg)"/>
+                    <!-- 斜射晨光 -->
+                    <polygon points="20,0 130,0 80,210 0,210" fill="url(#mhlight)"/>
+                    <!-- 麦穗（小满意象） -->
+                    <g stroke="#C8A26B" stroke-width="1.4" fill="none" opacity="0.7">
+                      <path d="M40 300 q4 -40 0 -78"/>
+                      <path d="M40 250 q-8 -4 -14 -12 M40 250 q8 -4 14 -12"/>
+                      <path d="M40 268 q-8 -4 -14 -12 M40 268 q8 -4 14 -12"/>
+                      <path d="M40 286 q-8 -4 -14 -12 M40 286 q8 -4 14 -12"/>
+                    </g>
+                    <g stroke="#C8A26B" stroke-width="1.2" fill="none" opacity="0.55">
+                      <path d="M58 308 q4 -32 0 -62"/>
+                      <path d="M58 266 q-6 -3 -11 -10 M58 266 q6 -3 11 -10"/>
+                      <path d="M58 282 q-6 -3 -11 -10 M58 282 q6 -3 11 -10"/>
+                    </g>
+                    <!-- 木桌 -->
+                    <path d="M0 268 Q150 262 300 268 L300 380 L0 380 Z" fill="#A07A52"/>
+                    <path d="M0 300 Q150 296 300 302" stroke="#76583A" stroke-width="0.6" fill="none" opacity="0.4"/>
+                    <path d="M0 336 Q150 331 300 334" stroke="#76583A" stroke-width="0.5" fill="none" opacity="0.32"/>
+                    <!-- 杯垫 -->
+                    <ellipse cx="172" cy="248" rx="64" ry="11" fill="#76583A" opacity="0.22"/>
+                    <!-- 咖啡杯 -->
+                    <ellipse cx="172" cy="214" rx="46" ry="10" fill="#FFFEFA" stroke="#8B6F47" stroke-width="1.2"/>
+                    <path d="M126 214 L132 252 Q172 260 212 252 L218 214" fill="#FFFEFA" stroke="#8B6F47" stroke-width="1.2"/>
+                    <path d="M214 220 q20 5 15 24 q-5 15 -19 12" fill="none" stroke="#8B6F47" stroke-width="1.3"/>
+                    <ellipse cx="172" cy="214" rx="40" ry="8" fill="url(#mhcoffee)"/>
+                    <!-- 拉花叶 -->
+                    <path d="M146 214 q26 -8 52 0 q-10 4 -26 3 q-16 1 -26 -3 Z" fill="#FFFEFA" opacity="0.92"/>
+                    <!-- 热气 -->
+                    <g stroke="#FFFEFA" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.55">
+                      <path d="M150 188 q7 -14 0 -26 q-7 -14 0 -24"/>
+                      <path d="M172 178 q7 -12 0 -26 q-7 -14 0 -24"/>
+                      <path d="M194 188 q7 -14 0 -26 q-7 -12 0 -24"/>
+                    </g>
+                    <!-- 标题 -->
+                    <text x="150" y="50" font-family="serif" font-size="30" fill="#2B2520" text-anchor="middle" font-weight="600" letter-spacing="4">小满咖啡馆</text>
+                    <text x="150" y="78" font-family="cursive" font-size="15" fill="#76583A" text-anchor="middle" font-style="italic">— 开业 · 周六见 —</text>
+                    <!-- 角章 -->
+                    <g transform="translate(258 56)">
+                      <rect x="-15" y="-15" width="30" height="30" rx="4" fill="none" stroke="#B36B5A" stroke-width="1.4"/>
+                      <text x="0" y="6" font-family="serif" font-size="15" fill="#B36B5A" text-anchor="middle" font-weight="600">满</text>
+                    </g>
+                    <!-- logo -->
+                    <text x="150" y="368" font-family="cursive" font-size="10" fill="#3D2818" text-anchor="middle" opacity="0.55">made with Kokoro</text>
+                  </svg>
+                </div>
+                <span class="canvas-marketing__current-flag">这套的主视觉</span>
+              </article>
+
+              <!-- ② 标题/正文文案卡 -->
+              <article class="canvas-marketing__card canvas-marketing__card--copy" tabindex="0" aria-label="标题与正文文案">
+                <span class="canvas-marketing__tag"><span class="canvas-marketing__tag-dot"></span>② 小红书文案</span>
+                <div class="canvas-marketing__copy">
+                  <p class="canvas-marketing__copy-title">小满那天，巷子口开了家咖啡馆☕️</p>
+                  <p class="canvas-marketing__copy-body">
+                    起名"小满"是因为——刚刚好就够了，不用太满。<br/>
+                    豆子是上周才烘的，奶用的是冷藏鲜奶，第一周到店每人送一块手作司康。<br/>
+                    周六上午十点开门，先来的有位子，慢慢喝。
+                  </p>
+                  <p class="canvas-marketing__copy-tags">📍城西·梧桐巷7号　🕙周六 10:00</p>
+                </div>
+              </article>
+
+              <!-- ③ slogan 卡 -->
+              <article class="canvas-marketing__card canvas-marketing__card--slogan" tabindex="0" aria-label="slogan 文案">
+                <span class="canvas-marketing__tag"><span class="canvas-marketing__tag-dot"></span>③ Slogan</span>
+                <div class="canvas-marketing__slogan">
+                  <div class="canvas-marketing__slogan-main">刚刚好，就很好。</div>
+                  <div class="canvas-marketing__slogan-sub">小满 · 不必太满</div>
+                  <div class="canvas-marketing__slogan-alt">备选：「一杯小满，刚好的早晨」 · 「慢一点，满一点」</div>
+                </div>
+              </article>
+
+              <!-- ④ 朋友圈九宫格 -->
+              <article class="canvas-marketing__card canvas-marketing__card--grid9" tabindex="0" aria-label="朋友圈九宫格">
+                <span class="canvas-marketing__tag"><span class="canvas-marketing__tag-dot"></span>④ 朋友圈九宫格</span>
+                <div class="canvas-marketing__nine" aria-label="九张同主题配图">
+                  <!-- 1 招牌 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#F3EAD6"/><rect x="10" y="18" width="40" height="20" rx="3" fill="#A07A52"/><text x="30" y="32" font-family="serif" font-size="9" fill="#FFF6E0" text-anchor="middle" font-weight="600">小满</text></svg></div>
+                  <!-- 2 拉花 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#E5C896"/><circle cx="30" cy="30" r="17" fill="#FFFEFA" stroke="#8B6F47" stroke-width="1"/><circle cx="30" cy="30" r="13" fill="#5A3D20"/><path d="M22 30 q8 -4 16 0 q-4 2 -8 1.5 q-4 .5 -8 -1.5Z" fill="#FFFEFA"/></svg></div>
+                  <!-- 3 麦穗 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#FBF3E4"/><g stroke="#C8A26B" stroke-width="1.2" fill="none"><path d="M30 50 q4 -22 0 -42"/><path d="M30 24 q-6 -3 -11 -9 M30 24 q6 -3 11 -9"/><path d="M30 36 q-6 -3 -11 -9 M30 36 q6 -3 11 -9"/></g></svg></div>
+                  <!-- 4 司康 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#EFE0C5"/><path d="M16 38 L30 20 L44 38 Z" fill="#D9B98A" stroke="#A07A52" stroke-width="1"/><rect x="14" y="38" width="32" height="6" rx="1" fill="#A07A52"/></svg></div>
+                  <!-- 5 杯子 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#F0E3C9"/><ellipse cx="28" cy="24" rx="14" ry="4" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><path d="M14 24 L18 42 Q28 46 38 42 L42 24" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><path d="M40 28 q7 2 5 9 q-2 5 -7 4" fill="none" stroke="#8B6F47" stroke-width="0.9"/></svg></div>
+                  <!-- 6 叶 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#E4E9D9"/><path d="M30 46 q-14 -10 -10 -26 q14 4 14 26Z" fill="#7A8B6B"/><path d="M30 46 q14 -10 10 -26 q-14 4 -10 26Z" fill="#9DAE7E"/></svg></div>
+                  <!-- 7 地址 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#FBF6EC"/><path d="M30 16 a8 8 0 0 1 8 8 q0 8 -8 18 q-8 -10 -8 -18 a8 8 0 0 1 8 -8Z" fill="none" stroke="#8B6F47" stroke-width="1.4"/><circle cx="30" cy="24" r="3" fill="#8B6F47"/></svg></div>
+                  <!-- 8 字"开业" -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#8B6F47"/><text x="30" y="27" font-family="serif" font-size="13" fill="#FBF3E4" text-anchor="middle" font-weight="600">开业</text><text x="30" y="42" font-family="serif" font-size="13" fill="#FBF3E4" text-anchor="middle" font-weight="600">大吉</text></svg></div>
+                  <!-- 9 章 -->
+                  <div class="canvas-marketing__nine-cell"><svg viewBox="0 0 60 60" preserveAspectRatio="xMidYMid slice"><rect width="60" height="60" fill="#F3EAD6"/><rect x="18" y="18" width="24" height="24" rx="3" fill="none" stroke="#B36B5A" stroke-width="1.4"/><text x="30" y="36" font-family="serif" font-size="14" fill="#B36B5A" text-anchor="middle" font-weight="600">满</text></svg></div>
+                </div>
+              </article>
+
+              <!-- ⑤ 配色 + 话题标签卡 -->
+              <article class="canvas-marketing__card canvas-marketing__card--palette" tabindex="0" aria-label="配色与话题标签">
+                <span class="canvas-marketing__tag"><span class="canvas-marketing__tag-dot"></span>⑤ 配色 + 话题</span>
+                <div class="canvas-marketing__palette">
+                  <div class="canvas-marketing__palette-row" aria-label="这一套的配色">
+                    <span class="canvas-marketing__palette-chip" style="background:#FAF7F2"><span class="canvas-marketing__palette-hex">FAF7F2</span></span>
+                    <span class="canvas-marketing__palette-chip" style="background:#EBE0CF"><span class="canvas-marketing__palette-hex">EBE0CF</span></span>
+                    <span class="canvas-marketing__palette-chip" style="background:#C8A26B"><span class="canvas-marketing__palette-hex" style="color:rgba(255,253,246,.85)">C8A26B</span></span>
+                    <span class="canvas-marketing__palette-chip" style="background:#8B6F47"><span class="canvas-marketing__palette-hex" style="color:rgba(255,253,246,.85)">8B6F47</span></span>
+                    <span class="canvas-marketing__palette-chip" style="background:#7A8B6B"><span class="canvas-marketing__palette-hex" style="color:rgba(255,253,246,.85)">7A8B6B</span></span>
+                  </div>
+                  <div class="canvas-marketing__hashtags" aria-label="小红书话题标签">
+                    <span class="canvas-marketing__hashtag">#小满咖啡馆</span>
+                    <span class="canvas-marketing__hashtag">#新店开业</span>
+                    <span class="canvas-marketing__hashtag">#城西探店</span>
+                    <span class="canvas-marketing__hashtag">#手冲咖啡</span>
+                    <span class="canvas-marketing__hashtag">#周末去哪儿</span>
+                  </div>
+                </div>
+              </article>
+
+            </section>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="营销物料组控件">
+
+              <!-- 行1 风格 —— 整套统一刷主题 -->
+              <div class="canvas-controls__row" role="group" aria-label="整套风格">
+                <span class="canvas-controls__label">风格</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">清新米</button>
+                <button class="chip chip--control" type="button">暖木</button>
+                <button class="chip chip--control" type="button">元气橙</button>
+              </div>
+
+              <!-- 行2 渠道 —— 一套适配多平台 -->
+              <div class="canvas-controls__row" role="group" aria-label="发布渠道">
+                <span class="canvas-controls__label">渠道</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">小红书</button>
+                <button class="chip chip--control" type="button">朋友圈</button>
+                <button class="chip chip--control" type="button">公众号</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这一套花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 8a5.5 5.5 0 0 1 10-3.2M13.5 8a5.5 5.5 0 0 1-10 3.2"/><path d="M12.5 2v3h-3M3.5 14v-3h3"/></svg>
+                  重出一套
+                </button>
+                <button class="btn btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3.5h10v9H3z"/><path d="M6 7h4M6 9.5h4"/></svg>
+                  导出全部
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

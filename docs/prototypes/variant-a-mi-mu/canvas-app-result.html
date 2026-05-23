@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 朋友聚餐 AA 分账（小应用）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/studio/src/components/AppsStudio.jsx：prompt → 生成一个可交互的"小应用"，
+      左侧对话描述需求，右侧实时预览一个能直接玩的轻量工具（preview frame + 功能清单）。
+    取舍（见研究结论）：AppsStudio 把结果放进一个"应用预览框"里，并在旁列出 AI 自动拆出的
+    能力（capabilities）。Kokoro 降维为：右 canvas = 一张"应用预览"卡（轻手机框） +
+    一份"AI 拆出的功能"清单。底部 canvas-controls 控风格 / 功能开关，与 video/poster 同骨架。
+    视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。按钮 / 选中 / 结果一律木色。
+
+    页内 <style>：仅 app 专属 BEM（.canvas-stage--app / .canvas-app__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 components.css。
+    保持单文件可直接打开（ADR-007）。后续可由主 agent 统一并入 components.css。
+  -->
+  <style>
+    /* ===== 小应用 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--app {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* —— 居中工作区：预览卡 + 功能清单 —— */
+    .canvas-app__work {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: var(--space-5);
+      flex-wrap: wrap;
+      padding: var(--space-3) 0 var(--space-4);
+    }
+
+    /* —— 应用预览卡（轻手机框） —— */
+    .canvas-app__preview {
+      flex: none;
+      width: 318px;
+      border-radius: 22px;
+      background: var(--color-surface);
+      /* 木框 + 纸感投影 */
+      box-shadow:
+        0 0 0 6px #F3EAD9,
+        0 0 0 7px #E2D3BB,
+        0 18px 40px -16px rgba(60, 45, 30, 0.26);
+      overflow: hidden;
+    }
+    /* 预览卡顶栏（像 app 标题条） */
+    .canvas-app__bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 16px;
+      background: var(--color-accent);
+      color: #FBF6EC;
+    }
+    .canvas-app__bar-icon {
+      width: 22px; height: 22px;
+      border-radius: 7px;
+      background: rgba(255, 251, 243, 0.18);
+      display: grid; place-items: center;
+      flex: none;
+    }
+    .canvas-app__bar-title {
+      font-weight: 600;
+      font-size: var(--text-small);
+      letter-spacing: 0.3px;
+    }
+    .canvas-app__bar-sub {
+      margin-left: auto;
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      color: rgba(251, 246, 236, 0.78);
+    }
+
+    /* 预览卡内容 */
+    .canvas-app__screen {
+      padding: var(--space-4) var(--space-4) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      background:
+        radial-gradient(circle at 18% 0%, #FFFDF9 0%, #FFFFFF 60%);
+    }
+    .canvas-app__field { display: flex; flex-direction: column; gap: 5px; }
+    .canvas-app__label {
+      font-size: var(--text-micro);
+      color: var(--color-text-tertiary);
+      letter-spacing: 0.3px;
+    }
+    .canvas-app__input {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: 10px;
+      background: #FCFAF6;
+      padding: 9px 12px;
+    }
+    .canvas-app__input-affix {
+      color: var(--color-accent);
+      font-weight: 600;
+      font-size: var(--text-small);
+    }
+    .canvas-app__input-val {
+      flex: 1;
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+    .canvas-app__stepper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .canvas-app__step-btn {
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: #FCFAF6;
+      color: var(--color-accent);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid; place-items: center;
+    }
+    .canvas-app__step-btn:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+
+    /* "谁多付一份"小标签行 */
+    .canvas-app__who {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .canvas-app__chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: #FCFAF6;
+      font-size: var(--text-micro);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+    }
+    .canvas-app__chip.is-on {
+      border-color: var(--color-accent);
+      background: var(--color-accent-soft);
+      color: var(--color-accent-hover);
+      font-weight: 600;
+    }
+    .canvas-app__chip.is-on::before {
+      content: "✓ ";
+      color: var(--color-accent);
+    }
+
+    /* 结果块 */
+    .canvas-app__result {
+      margin-top: 2px;
+      border-radius: 12px;
+      border: 1px dashed var(--color-border-strong);
+      background: linear-gradient(180deg, #FBF5EA 0%, #F7EFE0 100%);
+      padding: var(--space-3) var(--space-4);
+      text-align: center;
+    }
+    .canvas-app__result-cap {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+    .canvas-app__result-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: 0.5px;
+      margin: 2px 0;
+    }
+    .canvas-app__result-num small { font-size: 16px; font-weight: 600; }
+    .canvas-app__result-note {
+      font-size: var(--text-micro);
+      color: var(--color-text-tertiary);
+    }
+    .canvas-app__cta {
+      width: 100%;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    /* —— 旁侧：AI 拆出的功能清单 —— */
+    .canvas-app__caps {
+      flex: 1;
+      min-width: 248px;
+      max-width: 320px;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .canvas-app__caps-head {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .canvas-app__caps-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .canvas-app__caps-sub {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+    }
+    .canvas-app__caps-list {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .canvas-app__cap {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      background: var(--color-surface);
+      box-shadow: 0 1px 2px rgba(60, 45, 30, 0.04);
+    }
+    .canvas-app__cap-check {
+      flex: none;
+      width: 18px; height: 18px;
+      margin-top: 1px;
+      border-radius: 6px;
+      background: var(--color-accent-soft);
+      display: grid; place-items: center;
+    }
+    .canvas-app__cap-check svg { width: 11px; height: 11px; color: var(--color-accent-hover); }
+    .canvas-app__cap-body { display: flex; flex-direction: column; gap: 1px; }
+    .canvas-app__cap-name { font-size: var(--text-small); font-weight: 600; color: var(--color-text-primary); }
+    .canvas-app__cap-desc { font-size: var(--text-micro); color: var(--color-text-tertiary); line-height: 1.45; }
+    .canvas-app__cap--pending { opacity: 0.78; }
+    .canvas-app__cap--pending .canvas-app__cap-check {
+      background: transparent;
+      border: 1.5px dashed var(--color-border-strong);
+    }
+    .canvas-app__cap--pending .canvas-app__cap-check svg { display: none; }
+
+    @media (max-width: 1180px) {
+      .canvas-app__caps { max-width: 318px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-app.html">朋友聚餐 AA 分账 · 小应用</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">给妈妈解释 AI</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                帮我做个朋友聚餐 AA 分账的小工具，有人多吃了想多付点。
+              </article>
+
+              <article class="message message--ai">
+                <p>好，做了一个能直接用的小应用——</p>
+                <ol>
+                  <li>填总金额、几个人</li>
+                  <li>谁要多付一份就点一下名字</li>
+                  <li>下面自动算出每人 ¥ 多少</li>
+                </ol>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的小应用 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">小应用 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 即说即做 · 单页工具</span>
+                </div>
+
+                <p>右边能直接玩。要不要顺手加个"含小费"的开关？</p>
+              </article>
+
+              <article class="message message--user">
+                加上吧，再让它能取整，凑个整数好转账。
+              </article>
+
+              <article class="message message--ai">
+                <p>都加好了。"含小费"和"取整"放在右下角，打开就重算一遍。账单也能一键导出。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">换个圆润风格</button>
+                  <button class="chat-suggest" type="button">加备注栏</button>
+                  <button class="chat-suggest" type="button">生成二维码收款</button>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试&ldquo;加小费&rdquo; / &ldquo;换风格&rdquo;）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (app preview mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>朋友聚餐 AA 分账 · 小应用</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>已为你生成 · 实时预览</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--app">
+
+            <!-- 居中工作区 -->
+            <div class="canvas-app__work">
+
+              <!-- ① 应用预览卡（轻手机框） -->
+              <section class="canvas-app__preview" aria-label="小工具预览 · AA 分账">
+                <div class="canvas-app__bar">
+                  <span class="canvas-app__bar-icon" aria-hidden="true">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#FBF6EC" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8h11M8 2.5v11"/></svg>
+                  </span>
+                  <span class="canvas-app__bar-title">聚餐 AA 计算器</span>
+                  <span class="canvas-app__bar-sub">5 月 · 火锅局</span>
+                </div>
+
+                <div class="canvas-app__screen">
+                  <!-- 总金额 -->
+                  <div class="canvas-app__field">
+                    <span class="canvas-app__label">这顿一共</span>
+                    <div class="canvas-app__input">
+                      <span class="canvas-app__input-affix">¥</span>
+                      <span class="canvas-app__input-val">684.00</span>
+                    </div>
+                  </div>
+
+                  <!-- 人数 -->
+                  <div class="canvas-app__field">
+                    <span class="canvas-app__label">分给几个人</span>
+                    <div class="canvas-app__input">
+                      <span class="canvas-app__input-val">6 人</span>
+                      <div class="canvas-app__stepper" aria-label="调整人数">
+                        <button class="canvas-app__step-btn" type="button" aria-label="减少一人">−</button>
+                        <button class="canvas-app__step-btn" type="button" aria-label="增加一人">+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 谁多付一份 -->
+                  <div class="canvas-app__field">
+                    <span class="canvas-app__label">谁多吃了 · 多付一份</span>
+                    <div class="canvas-app__who" role="group" aria-label="多付的人">
+                      <button class="canvas-app__chip is-on" type="button">阿杰</button>
+                      <button class="canvas-app__chip is-on" type="button">小敏</button>
+                      <button class="canvas-app__chip" type="button">阿芸</button>
+                      <button class="canvas-app__chip" type="button">老周</button>
+                      <button class="canvas-app__chip" type="button">小心</button>
+                      <button class="canvas-app__chip" type="button">阿May</button>
+                    </div>
+                  </div>
+
+                  <!-- 结果 -->
+                  <div class="canvas-app__result" aria-live="polite">
+                    <div class="canvas-app__result-cap">普通一份 · 每人</div>
+                    <div class="canvas-app__result-num">¥<small>&nbsp;</small>86<small>.00</small></div>
+                    <div class="canvas-app__result-note">阿杰、小敏各付一份半 · ¥129 ｜ 已含 10% 小费 · 已取整</div>
+                  </div>
+
+                  <button class="btn btn--primary btn--sm canvas-app__cta" type="button">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>
+                    复制账单 · 发群里
+                  </button>
+                </div>
+              </section>
+
+              <!-- ② AI 拆出的功能清单 -->
+              <aside class="canvas-app__caps" aria-label="AI 拆出的功能">
+                <div class="canvas-app__caps-head">
+                  <span class="canvas-app__caps-title">AI 拆出的功能</span>
+                  <span class="canvas-app__caps-sub">从你那句话来的</span>
+                </div>
+                <ul class="canvas-app__caps-list">
+
+                  <li class="canvas-app__cap">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">输入校验</span>
+                      <span class="canvas-app__cap-desc">金额非负、人数 ≥ 1，填错会轻轻提示</span>
+                    </span>
+                  </li>
+
+                  <li class="canvas-app__cap">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">平摊计算</span>
+                      <span class="canvas-app__cap-desc">总额 ÷ 人数，余数自动落到付钱的那位</span>
+                    </span>
+                  </li>
+
+                  <li class="canvas-app__cap">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">AA 不均 · 多付一份</span>
+                      <span class="canvas-app__cap-desc">点名字加权，谁多吃谁多担一份</span>
+                    </span>
+                  </li>
+
+                  <li class="canvas-app__cap">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">含小费 · 取整</span>
+                      <span class="canvas-app__cap-desc">可加 10% 小费，结果凑整数好转账</span>
+                    </span>
+                  </li>
+
+                  <li class="canvas-app__cap">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">导出账单</span>
+                      <span class="canvas-app__cap-desc">一句话明细，复制就能发微信群</span>
+                    </span>
+                  </li>
+
+                  <li class="canvas-app__cap canvas-app__cap--pending">
+                    <span class="canvas-app__cap-check" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg></span>
+                    <span class="canvas-app__cap-body">
+                      <span class="canvas-app__cap-name">收款二维码 <span style="color: var(--color-accent); font-family: var(--font-hand); font-weight: 600;">· 可加</span></span>
+                      <span class="canvas-app__cap-desc">说一声就给每人生成转账码</span>
+                    </span>
+                  </li>
+
+                </ul>
+              </aside>
+
+            </div>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="小应用控件">
+
+              <!-- 风格 -->
+              <div class="canvas-controls__row" role="group" aria-label="界面风格">
+                <span class="canvas-controls__label">风格</span>
+                <button class="chip chip--control" type="button">卡片米</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">木质</button>
+                <button class="chip chip--control" type="button">圆润</button>
+              </div>
+
+              <!-- 功能开关 -->
+              <div class="canvas-controls__row" role="group" aria-label="功能开关">
+                <span class="canvas-controls__label">功能</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">含小费 10%</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">金额取整</button>
+                <button class="chip chip--control" type="button">显示明细</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这个小工具花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 1 1.5 3.5M3 8V5m0 3h3"/></svg>
+                  重做
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4L2.5 8 6 12M10 4l3.5 4-3.5 4"/></svg>
+                  嵌入代码
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

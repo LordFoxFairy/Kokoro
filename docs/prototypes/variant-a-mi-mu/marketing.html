@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · こころ — 慢一点，和它一起把想法做出来</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <style>
+    /* =================================================================
+       marketing.html — 页内专属样式 (BEM .mk-*，不污染共享命名空间)
+       公开营销首页：顶栏 + Hero + 能力卡 + 作品条 + 协作/Hub + 价格预览 + 页脚
+       ================================================================= */
+    .mk { position: relative; z-index: 2; }
+
+    /* ---- 通用容器 / 区块节奏 ---- */
+    .mk__wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+    }
+    .mk__section { padding: var(--space-8) 0; }
+    .mk__section-head {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-7);
+    }
+    .mk__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-micro);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+    }
+    .mk__section-title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h1);
+      font-weight: 600;
+      margin: 0;
+      color: var(--color-text-primary);
+    }
+    .mk__section-sub {
+      color: var(--color-text-secondary);
+      max-width: 560px;
+      margin: 0;
+    }
+
+    /* ---- 顶栏 ---- */
+    .mk-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(250, 247, 242, 0.82);
+      backdrop-filter: saturate(120%) blur(2px);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .mk-nav__inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      height: 64px;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mk-nav__brand { padding: 0; }
+    .mk-nav__links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+    .mk-nav__link {
+      color: var(--color-text-secondary);
+      font-size: var(--text-small);
+      transition: color var(--duration-fast) var(--ease-default);
+    }
+    .mk-nav__link:hover { color: var(--color-text-primary); }
+    .mk-nav__actions { display: flex; align-items: center; gap: var(--space-3); }
+    @media (max-width: 640px) {
+      .mk-nav__links { display: none; }
+    }
+
+    /* ---- Hero ---- */
+    .mk-hero {
+      position: relative;
+      padding: var(--space-8) 0 var(--space-8);
+      overflow: hidden;
+    }
+    .mk-hero__inner {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .mk-hero__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      letter-spacing: 0.08em;
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      border: 1px solid var(--color-border-strong);
+      border-radius: 999px;
+      padding: 4px 14px;
+      margin-bottom: var(--space-5);
+    }
+    .mk-hero__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-display);
+      line-height: var(--leading-tight);
+      font-weight: 600;
+      margin: 0 0 var(--space-4);
+      color: var(--color-text-primary);
+    }
+    .mk-hero__title .accent { color: var(--color-accent); }
+    .mk-hero__sub {
+      font-size: var(--text-display-sub);
+      line-height: var(--leading-body);
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--space-6);
+    }
+    .mk-hero__cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .mk-hero__note {
+      margin-top: var(--space-4);
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+    }
+    /* 暖色装饰：纸上散落的色块 */
+    .mk-hero__decor {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .mk-hero__blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(8px);
+      opacity: 0.5;
+    }
+    .mk-hero__blob--1 { width: 220px; height: 220px; left: -60px; top: 40px; background: radial-gradient(circle, #F3EAD6, transparent 70%); }
+    .mk-hero__blob--2 { width: 280px; height: 280px; right: -80px; top: 0; background: radial-gradient(circle, #E7CBA0, transparent 70%); }
+    .mk-hero__blob--3 { width: 160px; height: 160px; right: 12%; bottom: -40px; background: radial-gradient(circle, #EBE0CF, transparent 70%); }
+
+    @media (max-width: 640px) {
+      .mk-hero__title { font-size: 32px; }
+      .mk-hero__sub { font-size: var(--text-h3); }
+    }
+
+    /* ---- 能力卡 grid ---- */
+    .mk-caps__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+    .mk-cap {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .mk-cap:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-md);
+    }
+    .mk-cap__emoji {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      background: var(--color-accent-soft);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-2);
+    }
+    .mk-cap__name {
+      font-family: var(--font-serif);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin: 0;
+      color: var(--color-text-primary);
+    }
+    .mk-cap__desc {
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      margin: 0;
+      line-height: var(--leading-body);
+    }
+    @media (max-width: 880px) { .mk-caps__grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .mk-caps__grid { grid-template-columns: 1fr; } }
+
+    /* ---- 作品展示条 ---- */
+    .mk-works__strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+    .mk-work {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      overflow: hidden;
+      background: var(--color-surface);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .mk-work:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .mk-work svg { display: block; width: 100%; height: auto; }
+    .mk-work__cap {
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      border-top: 1px solid var(--color-border);
+    }
+    @media (max-width: 880px) { .mk-works__strip { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .mk-works__strip { grid-template-columns: 1fr; } }
+
+    /* ---- 协作 / Hub 双列亮点 ---- */
+    .mk-feature__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+    }
+    .mk-feature {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .mk-feature__icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      border-radius: var(--radius-md);
+      background: var(--color-success-soft);
+    }
+    .mk-feature--hub .mk-feature__icon { background: var(--color-warning-soft); }
+    .mk-feature__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h2);
+      font-weight: 600;
+      margin: 0;
+    }
+    .mk-feature__desc {
+      color: var(--color-text-secondary);
+      margin: 0;
+      line-height: var(--leading-body);
+    }
+    @media (max-width: 720px) { .mk-feature__grid { grid-template-columns: 1fr; } }
+
+    /* ---- 价格预览 ---- */
+    .mk-price__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+    .mk-price {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      text-align: center;
+    }
+    .mk-price--feature {
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-md);
+    }
+    .mk-price__tier {
+      font-family: var(--font-serif);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .mk-price__amt {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--color-accent);
+    }
+    .mk-price__amt small {
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-sans);
+      font-weight: 400;
+    }
+    .mk-price__line {
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+    .mk-price__cta { margin-top: var(--space-7); text-align: center; }
+    @media (max-width: 720px) { .mk-price__grid { grid-template-columns: 1fr; } }
+
+    /* ---- 页脚 ---- */
+    .mk-footer {
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg-subtle);
+      padding: var(--space-7) 0;
+      margin-top: var(--space-8);
+    }
+    .mk-footer__inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 var(--space-6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+    .mk-footer__links { display: flex; gap: var(--space-5); }
+    .mk-footer__link { color: var(--color-text-secondary); font-size: var(--text-small); }
+    .mk-footer__link:hover { color: var(--color-text-primary); }
+    .mk-footer__copy { color: var(--color-text-tertiary); font-size: var(--text-small); }
+  </style>
+</head>
+<body>
+  <div class="mk">
+
+    <!-- ====== 顶栏 ====== -->
+    <header class="mk-nav">
+      <div class="mk-nav__inner">
+        <a class="brand mk-nav__brand" href="marketing.html">
+          <div class="brand__mark">心</div>
+          <div class="brand__name">Kokoro <em>こころ</em></div>
+        </a>
+        <nav class="mk-nav__links">
+          <a class="mk-nav__link" href="#capabilities">能做什么</a>
+          <a class="mk-nav__link" href="pricing.html">价格</a>
+          <a class="mk-nav__link" href="login.html">登录</a>
+        </nav>
+        <div class="mk-nav__actions">
+          <a class="btn btn--primary" href="login.html">免费开始</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====== Hero ====== -->
+    <section class="mk-hero">
+      <div class="mk-hero__decor">
+        <span class="mk-hero__blob mk-hero__blob--1"></span>
+        <span class="mk-hero__blob mk-hero__blob--2"></span>
+        <span class="mk-hero__blob mk-hero__blob--3"></span>
+      </div>
+      <div class="mk-hero__inner">
+        <span class="mk-hero__eyebrow">温暖的 AI 创作伙伴</span>
+        <h1 class="mk-hero__title">慢一点，<br />和它一起<span class="accent">把想法做出来</span></h1>
+        <p class="mk-hero__sub">从一句话开始，Kokoro 陪你把图片、视频、音频、文档与网站，一点点落到纸上。不催促，只陪伴。</p>
+        <div class="mk-hero__cta">
+          <a class="btn btn--primary btn--lg" href="login.html">免费开始</a>
+          <a class="btn btn--lg" href="#capabilities">看看能做什么</a>
+        </div>
+        <p class="mk-hero__note">无需信用卡 · 注册即赠免费额度</p>
+      </div>
+    </section>
+
+    <!-- ====== 能做什么 ====== -->
+    <section class="mk__section" id="capabilities">
+      <div class="mk__wrap">
+        <div class="mk__section-head">
+          <span class="mk__eyebrow">Capabilities</span>
+          <h2 class="mk__section-title">它能陪你做什么</h2>
+          <p class="mk__section-sub">七种创作能力，在同一张纸上随手切换，想法不必中断。</p>
+        </div>
+        <div class="mk-caps__grid">
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🖼️</div>
+            <h3 class="mk-cap__name">图片</h3>
+            <p class="mk-cap__desc">一句话生成插画、海报与配图，风格随心调。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🎬</div>
+            <h3 class="mk-cap__name">视频</h3>
+            <p class="mk-cap__desc">把脚本变成分镜与短片，节奏自己掌握。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🧑‍🎤</div>
+            <h3 class="mk-cap__name">数字人</h3>
+            <p class="mk-cap__desc">让虚拟形象开口说话，口型自然贴合。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🎧</div>
+            <h3 class="mk-cap__name">音频</h3>
+            <p class="mk-cap__desc">配音、旁白与背景乐，一段文字就能听见。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🎨</div>
+            <h3 class="mk-cap__name">设计</h3>
+            <p class="mk-cap__desc">名片、Logo 与版式排布，纸感细节都顾到。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">📄</div>
+            <h3 class="mk-cap__name">文档</h3>
+            <p class="mk-cap__desc">长文、报告与演示稿，结构清晰可直接用。</p>
+          </article>
+          <article class="mk-cap">
+            <div class="mk-cap__emoji">🌐</div>
+            <h3 class="mk-cap__name">站点</h3>
+            <p class="mk-cap__desc">落地页与小站，从描述到上线一气呵成。</p>
+          </article>
+          <article class="mk-cap" style="background:var(--color-bg-subtle);border-style:dashed;align-items:flex-start;justify-content:center;">
+            <h3 class="mk-cap__name">还有更多</h3>
+            <p class="mk-cap__desc">能力随 Skill / MCP 持续生长。</p>
+            <a class="mk-nav__link" href="pricing.html" style="margin-top:auto;color:var(--color-accent);">查看全部 →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 作品展示条 ====== -->
+    <section class="mk__section" style="background:var(--color-bg-subtle);">
+      <div class="mk__wrap">
+        <div class="mk__section-head">
+          <span class="mk__eyebrow">Showcase</span>
+          <h2 class="mk__section-title">用 Kokoro 做出来的</h2>
+          <p class="mk__section-sub">真实创作的几个片段，纸感与暖色贯穿始终。</p>
+        </div>
+        <div class="mk-works__strip">
+          <a class="mk-work" href="login.html">
+            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="200" fill="#F3EAD6"/>
+              <circle cx="110" cy="90" r="46" fill="#E7CBA0"/>
+              <rect x="170" y="64" width="110" height="14" rx="7" fill="#C8A26B"/>
+              <rect x="170" y="92" width="80" height="10" rx="5" fill="#EBE0CF"/>
+              <rect x="40" y="150" width="240" height="10" rx="5" fill="#EBE0CF"/>
+            </svg>
+            <div class="mk-work__cap">海报 · 暖色插画</div>
+          </a>
+          <a class="mk-work" href="login.html">
+            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="200" fill="#EBE0CF"/>
+              <rect x="40" y="40" width="240" height="120" rx="8" fill="#FAF7F2"/>
+              <polygon points="150,80 150,120 185,100" fill="#8B6F47"/>
+              <rect x="40" y="170" width="120" height="8" rx="4" fill="#C8A26B"/>
+            </svg>
+            <div class="mk-work__cap">视频 · 分镜短片</div>
+          </a>
+          <a class="mk-work" href="login.html">
+            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="200" fill="#F3EAD6"/>
+              <rect x="40" y="48" width="240" height="12" rx="6" fill="#8B6F47"/>
+              <rect x="40" y="74" width="200" height="8" rx="4" fill="#C8A26B"/>
+              <rect x="40" y="92" width="220" height="8" rx="4" fill="#EBE0CF"/>
+              <rect x="40" y="110" width="160" height="8" rx="4" fill="#EBE0CF"/>
+              <rect x="40" y="140" width="90" height="20" rx="6" fill="#7A8B6B"/>
+            </svg>
+            <div class="mk-work__cap">文档 · 结构化报告</div>
+          </a>
+          <a class="mk-work" href="login.html">
+            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <rect width="320" height="200" fill="#E7CBA0"/>
+              <rect x="36" y="36" width="248" height="40" rx="8" fill="#FAF7F2"/>
+              <circle cx="60" cy="56" r="10" fill="#8B6F47"/>
+              <rect x="84" y="50" width="80" height="12" rx="6" fill="#C8A26B"/>
+              <rect x="36" y="92" width="120" height="72" rx="8" fill="#FAF7F2"/>
+              <rect x="164" y="92" width="120" height="72" rx="8" fill="#FAF7F2"/>
+            </svg>
+            <div class="mk-work__cap">站点 · 落地页</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 协作 + Skill/MCP Hub ====== -->
+    <section class="mk__section">
+      <div class="mk__wrap">
+        <div class="mk-feature__grid">
+          <article class="mk-feature">
+            <div class="mk-feature__icon">🤝</div>
+            <h3 class="mk-feature__title">团队一起创作</h3>
+            <p class="mk-feature__desc">同一张纸上协作，评论、版本与产物共享，想法在团队里自然流动。</p>
+          </article>
+          <article class="mk-feature mk-feature--hub">
+            <div class="mk-feature__icon">🧩</div>
+            <h3 class="mk-feature__title">Skill / MCP Hub</h3>
+            <p class="mk-feature__desc">接入技能与外部工具，Kokoro 的能力随你的工作流持续生长。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 价格预览 ====== -->
+    <section class="mk__section" id="pricing" style="background:var(--color-bg-subtle);">
+      <div class="mk__wrap">
+        <div class="mk__section-head" style="align-items:center;text-align:center;">
+          <span class="mk__eyebrow">Pricing</span>
+          <h2 class="mk__section-title">简单的价格</h2>
+          <p class="mk__section-sub" style="margin:0 auto;">先免费用起来，需要时再升级。</p>
+        </div>
+        <div class="mk-price__grid">
+          <div class="mk-price">
+            <div class="mk-price__tier">免费</div>
+            <div class="mk-price__amt">¥0 <small>/ 月</small></div>
+            <div class="mk-price__line">日常创作的起点</div>
+            <div class="mk-price__line">基础额度 · 全部能力试用</div>
+          </div>
+          <div class="mk-price mk-price--feature">
+            <div class="mk-price__tier">Plus</div>
+            <div class="mk-price__amt">¥39 <small>/ 月</small></div>
+            <div class="mk-price__line">高额度 · 优先生成</div>
+            <div class="mk-price__line">更长产物 · 高清导出</div>
+          </div>
+          <div class="mk-price">
+            <div class="mk-price__tier">团队</div>
+            <div class="mk-price__amt">¥99 <small>/ 人 / 月</small></div>
+            <div class="mk-price__line">协作空间 · 共享产物</div>
+            <div class="mk-price__line">权限管理 · 集中计费</div>
+          </div>
+        </div>
+        <div class="mk-price__cta">
+          <a class="btn btn--lg" href="pricing.html">查看完整定价 →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== 页脚 ====== -->
+    <footer class="mk-footer">
+      <div class="mk-footer__inner">
+        <a class="brand" href="marketing.html" style="padding:0;">
+          <div class="brand__mark">心</div>
+          <div class="brand__name">Kokoro <em>こころ</em></div>
+        </a>
+        <nav class="mk-footer__links">
+          <a class="mk-footer__link" href="#capabilities">能做什么</a>
+          <a class="mk-footer__link" href="pricing.html">价格</a>
+          <a class="mk-footer__link" href="login.html">登录</a>
+        </nav>
+        <span class="mk-footer__copy">© 2026 Kokoro · こころ</span>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

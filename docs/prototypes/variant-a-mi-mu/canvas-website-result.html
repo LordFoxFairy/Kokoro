@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 小满咖啡馆官网（多页站点）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/Open-AI-Design-Agent → DesignAgentStudio.jsx 的 CreativeCanvas
+      "输入 → 一组 section → 反复改" 模式。
+    - packages/Vibe-Workflow → WorkflowStudio.jsx 的"多步生成 + 缩略 + 步骤选中"，
+      在这里升维成「多页站点」：每一页 = 工作流的一个节点，节点间有链接关系。
+    取舍（见研究结论）：与一页落地页 canvas-landing.html（单页竖向滚动）刻意区分 ——
+    这里是「有页面导航的多页网站」：canvas 顶部一条站点页签（首页/菜单/关于/联系），
+    当前停在某页并渲染该页；下方一张「站点地图」表达 4 页的链接拓扑（首页 → 菜单/关于/联系）。
+    底部控件首行换成「页面」切页（取代落地页的「段落」），呼应多页心智。
+    视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。
+
+    页内 <style>：仅 website 专属 BEM（.canvas-stage--website / .canvas-website__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 components.css。
+    保持单文件可直接打开（ADR-007）。后续可由主 agent 统一并入 components.css。
+  -->
+  <style>
+    /* ===== 多页网站 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--website {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* —— 浏览器外壳：地址栏 + 站点页签 —— */
+    .canvas-website__browser {
+      flex: none;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      overflow: hidden;
+      box-shadow: 0 14px 34px -20px rgba(60,45,30,0.30), 0 1px 0 #FFFDF9 inset;
+    }
+    .canvas-website__chrome {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: 9px var(--space-4);
+      background: #F6EFE3;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .canvas-website__dots { display: flex; gap: 6px; flex: none; }
+    .canvas-website__dots span {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #DBCBAF; box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset;
+    }
+    .canvas-website__url {
+      flex: 1;
+      display: flex; align-items: center; gap: 6px;
+      padding: 4px 11px;
+      background: #FFFDF9;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .canvas-website__url svg { color: var(--color-success); flex: none; }
+    .canvas-website__url-path { color: var(--color-accent); }
+
+    /* —— 站点页签导航（核心区别点：多页） —— */
+    .canvas-website__tabs {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 0 var(--space-4);
+      background: #FCFAF6;
+      border-bottom: 1px solid var(--color-border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .canvas-website__tabs::-webkit-scrollbar { display: none; }
+    .canvas-website__tab {
+      position: relative;
+      flex: none;
+      padding: 11px 14px 10px;
+      border: none;
+      background: transparent;
+      font-family: var(--font-sans);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: color .16s ease;
+    }
+    .canvas-website__tab:hover { color: var(--color-text-primary); }
+    .canvas-website__tab:focus-visible { outline: 2px solid var(--color-accent); outline-offset: -3px; border-radius: 4px; }
+    .canvas-website__tab.is-current { color: var(--color-accent); font-weight: 600; }
+    .canvas-website__tab.is-current::after {
+      content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px;
+      height: 2px; border-radius: 2px 2px 0 0; background: var(--color-accent);
+    }
+    .canvas-website__tab--add { color: var(--color-text-tertiary); font-family: var(--font-hand); }
+    .canvas-website__tab--add:hover { color: var(--color-accent); }
+
+    /* —— 当前页渲染区（首页） —— */
+    .canvas-website__page {
+      max-height: 460px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      background:
+        linear-gradient(#FFFDF9, #FFFDF9) padding-box,
+        radial-gradient(120% 60% at 50% 0%, #FBF4E8 0%, #FFFFFF 60%) border-box;
+    }
+
+    /* 站内顶部导航条（被生成网站自己的 nav，区别于 canvas 页签） */
+    .canvas-website__nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      background: rgba(255,253,249,0.85);
+    }
+    .canvas-website__nav-brand {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-serif);
+      font-size: 16px; color: var(--color-text-primary); letter-spacing: .5px;
+    }
+    .canvas-website__nav-brand b {
+      display: grid; place-items: center;
+      width: 24px; height: 24px; border-radius: 7px;
+      background: var(--color-accent); color: #FFF8EC; font-size: 13px; font-weight: 600;
+    }
+    .canvas-website__nav-links { display: flex; gap: 18px; }
+    .canvas-website__nav-links span {
+      font-size: 13px; color: var(--color-text-secondary);
+    }
+    .canvas-website__nav-links span.is-current { color: var(--color-accent); font-weight: 600; }
+
+    /* hero */
+    .canvas-website__hero {
+      position: relative;
+      padding: var(--space-7) var(--space-6) var(--space-6);
+      text-align: center;
+      overflow: hidden;
+    }
+    .canvas-website__hero-eyebrow {
+      display: inline-block;
+      font-family: var(--font-hand);
+      font-size: 13px; color: var(--color-accent);
+      letter-spacing: 1px; margin-bottom: 10px;
+    }
+    .canvas-website__hero-h1 {
+      font-family: var(--font-serif);
+      font-size: 32px; line-height: 1.25; color: var(--color-text-primary);
+      margin: 0 0 12px;
+    }
+    .canvas-website__hero-sub {
+      max-width: 360px; margin: 0 auto 18px;
+      font-size: 14px; line-height: 1.7; color: var(--color-text-secondary);
+    }
+    .canvas-website__hero-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px; border-radius: 999px;
+      background: var(--color-accent); color: #FFF8EC;
+      font-size: 14px; text-decoration: none;
+      box-shadow: 0 8px 18px -8px rgba(139,111,71,0.6);
+    }
+    /* hero 暖色光晕 + 飘起的咖啡杯 svg */
+    .canvas-website__hero-art {
+      margin: 22px auto 0; width: 188px; height: 92px; display: block;
+    }
+
+    /* 区块（精致而非线框：暖色卡 + 圆角 + 软影） */
+    .canvas-website__section { padding: var(--space-5) var(--space-6); }
+    .canvas-website__section + .canvas-website__section { border-top: 1px solid var(--color-border); }
+    .canvas-website__section-eyebrow {
+      font-family: var(--font-hand); font-size: 12px; color: var(--color-text-tertiary);
+      letter-spacing: .5px; margin-bottom: 4px;
+    }
+    .canvas-website__section-title {
+      font-family: var(--font-serif); font-size: 18px; color: var(--color-text-primary);
+      margin: 0 0 var(--space-4);
+    }
+    .canvas-website__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); }
+    .canvas-website__card {
+      padding: 14px; border-radius: 10px;
+      background: linear-gradient(165deg, #FFFEFB, #FAF3E7);
+      border: 1px solid var(--color-border);
+      box-shadow: 0 4px 12px -8px rgba(60,45,30,0.18);
+    }
+    .canvas-website__card-thumb {
+      height: 56px; border-radius: 7px; margin-bottom: 9px; overflow: hidden;
+      background: #F1E6D2;
+    }
+    .canvas-website__card-thumb svg { display: block; width: 100%; height: 100%; }
+    .canvas-website__card-name { font-size: 13px; color: var(--color-text-primary); font-weight: 600; }
+    .canvas-website__card-price { font-family: var(--font-hand); font-size: 13px; color: var(--color-accent); }
+    .canvas-website__card-desc { font-size: 11.5px; color: var(--color-text-tertiary); margin-top: 3px; line-height: 1.5; }
+
+    /* 一条横向 strip（图文左右） */
+    .canvas-website__strip { display: flex; gap: var(--space-4); align-items: center; }
+    .canvas-website__strip-art {
+      flex: none; width: 96px; height: 80px; border-radius: 10px; overflow: hidden;
+      background: #F1E6D2;
+    }
+    .canvas-website__strip-art svg { display: block; width: 100%; height: 100%; }
+    .canvas-website__strip-text p {
+      margin: 0; font-size: 13px; line-height: 1.7; color: var(--color-text-secondary);
+    }
+
+    /* 站点 footer */
+    .canvas-website__site-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px var(--space-6);
+      border-top: 1px solid var(--color-border);
+      background: #F6EFE3;
+      font-size: 12px; color: var(--color-text-tertiary);
+    }
+    .canvas-website__site-footer .font-hand { font-family: var(--font-hand); }
+
+    /* —— 站点地图（4 页缩略 + 链接关系） —— */
+    .canvas-website__map {
+      flex: none;
+      border: 1px dashed var(--color-border-strong);
+      border-radius: var(--radius-md);
+      background: #FCFAF6;
+      padding: var(--space-4) var(--space-5) var(--space-5);
+      margin-bottom: var(--space-5);
+    }
+    .canvas-website__map-head {
+      display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-4);
+    }
+    .canvas-website__map-head h3 {
+      margin: 0; font-family: var(--font-hand); font-size: 14px;
+      color: var(--color-text-secondary); letter-spacing: .5px;
+    }
+    .canvas-website__map-head span {
+      font-size: 11px; color: var(--color-text-tertiary);
+    }
+    /* 拓扑：首页在上，三页在下，svg 连线在背后 */
+    .canvas-website__tree { position: relative; }
+    .canvas-website__tree-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .canvas-website__tree-row { position: relative; display: flex; justify-content: center; z-index: 1; }
+    .canvas-website__tree-row--children {
+      gap: var(--space-4); margin-top: var(--space-6);
+    }
+    .canvas-website__node {
+      width: 116px; border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      overflow: hidden; cursor: pointer;
+      box-shadow: 0 2px 6px -3px rgba(60,45,30,0.16);
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+    .canvas-website__node:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -10px rgba(60,45,30,0.26); }
+    .canvas-website__node:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .canvas-website__node.is-current { border-color: var(--color-accent); box-shadow: 0 0 0 1px var(--color-accent); }
+    .canvas-website__node-thumb { height: 56px; background: #F3EAD6; }
+    .canvas-website__node-thumb svg { display: block; width: 100%; height: 100%; }
+    .canvas-website__node-label {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 9px;
+      font-size: 12px; color: var(--color-text-primary);
+      border-top: 1px solid var(--color-border); background: #FCFAF6;
+    }
+    .canvas-website__node-label .canvas-website__node-home {
+      font-family: var(--font-hand); font-size: 10px; color: var(--color-accent);
+    }
+    .canvas-website__node-label .canvas-website__node-cur {
+      font-family: var(--font-hand); font-size: 10px; color: var(--color-accent);
+    }
+
+    @media (max-width: 720px) {
+      .canvas-website__cards { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-website.html">小满咖啡馆官网</a>
+        <a class="sidebar-recent__item" href="canvas-landing.html">小满咖啡笔记落地页</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                给小满咖啡馆做个网站，要 首页 / 菜单 / 关于 / 联系 几页。
+              </article>
+
+              <article class="message message--ai">
+                <p>好。我先搭了 4 页，挂在一个站点里——</p>
+                <ul>
+                  <li>首页：招牌 + 一句话 + 进店看看 <span style="color: var(--color-accent); font-family: var(--font-hand); font-size: 12px;">← 现在停在这</span></li>
+                  <li>菜单：手冲 / 拿铁 / 季节限定，带价</li>
+                  <li>关于：你们怎么开始的那段</li>
+                  <li>联系：地址 + 营业时间 + 一张小地图</li>
+                </ul>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的建站 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">建站 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 4 页</span>
+                </div>
+
+                <p>右边顶上能点页签切页，下面那张是站点地图——首页通向另外三页。先看首页对不对味？</p>
+              </article>
+
+              <article class="message message--user">
+                首页挺好。菜单页能不能也走这个暖色，别太冷清。
+              </article>
+
+              <article class="message message--ai">
+                <p>没问题，四页共用一套米木色，菜单页我加了菜品小卡，留了价。要不要再帮你——</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">加一页「招牌故事」</button>
+                  <button class="chat-suggest" type="button">联系页放真实地图</button>
+                  <button class="chat-suggest" type="button">配个 logo</button>
+                </div>
+                <p class="aside">改任何一页，导航和站点地图都会跟着自动更新。</p>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试“加一页” / “换个风格”）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (website / multi-page mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>小满咖啡馆官网 · 4 页</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>菜单页生成中…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--website">
+
+            <!-- ① 浏览器外壳 + 站点页签 + 当前页（首页） -->
+            <div class="canvas-website__browser" aria-label="网站预览">
+
+              <!-- 地址栏 -->
+              <div class="canvas-website__chrome">
+                <div class="canvas-website__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                <div class="canvas-website__url">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+                  <span>xiaoman.coffee<span class="canvas-website__url-path">/home</span></span>
+                </div>
+              </div>
+
+              <!-- 站点页签导航（核心：多页） -->
+              <nav class="canvas-website__tabs" aria-label="站点页面">
+                <button class="canvas-website__tab is-current" type="button" aria-current="page">首页</button>
+                <button class="canvas-website__tab" type="button">菜单</button>
+                <button class="canvas-website__tab" type="button">关于</button>
+                <button class="canvas-website__tab" type="button">联系</button>
+                <button class="canvas-website__tab canvas-website__tab--add" type="button" aria-label="加一页">＋ 加一页</button>
+              </nav>
+
+              <!-- 当前页：首页 -->
+              <div class="canvas-website__page" aria-label="首页内容">
+
+                <!-- 站内导航条（被生成网站自己的） -->
+                <div class="canvas-website__nav">
+                  <div class="canvas-website__nav-brand"><b>满</b>小满咖啡馆</div>
+                  <div class="canvas-website__nav-links">
+                    <span class="is-current">首页</span>
+                    <span>菜单</span>
+                    <span>关于</span>
+                    <span>联系</span>
+                  </div>
+                </div>
+
+                <!-- hero -->
+                <section class="canvas-website__hero" aria-label="首页 Hero">
+                  <span class="canvas-website__hero-eyebrow">巷子里第三家 · 每天现烘</span>
+                  <h1 class="canvas-website__hero-h1">慢一点，<br/>这杯刚刚好</h1>
+                  <p class="canvas-website__hero-sub">一家开在小巷里的咖啡馆。没有打卡墙，只有一杯认真做的咖啡，和一张能坐很久的桌子。</p>
+                  <a class="canvas-website__hero-cta" href="#" tabindex="0">
+                    看看菜单
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  </a>
+                  <svg class="canvas-website__hero-art" viewBox="0 0 188 92" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <ellipse cx="94" cy="84" rx="58" ry="6" fill="#76583A" opacity="0.14"/>
+                    <!-- 热气 -->
+                    <path d="M82 30 q5 -10 0 -20" stroke="#C8A26B" stroke-width="1.6" fill="none" opacity="0.5"/>
+                    <path d="M96 26 q5 -11 0 -22" stroke="#C8A26B" stroke-width="1.6" fill="none" opacity="0.65"/>
+                    <path d="M110 30 q5 -10 0 -20" stroke="#C8A26B" stroke-width="1.6" fill="none" opacity="0.45"/>
+                    <!-- 杯子 -->
+                    <ellipse cx="96" cy="46" rx="30" ry="7" fill="#FFFEFA" stroke="#8B6F47" stroke-width="1"/>
+                    <path d="M66 46 L72 76 Q96 84 120 76 L126 46" fill="#FFFEFA" stroke="#8B6F47" stroke-width="1"/>
+                    <path d="M124 54 q18 3 12 22 q-5 13 -16 10" fill="none" stroke="#8B6F47" stroke-width="1.2"/>
+                    <ellipse cx="96" cy="46" rx="26" ry="5.5" fill="#4A2E1A"/>
+                    <path d="M74 46 q22 -5 44 0 q-9 3 -22 2 q-13 1 -22 -2 Z" fill="#FFFEFA" opacity="0.85"/>
+                  </svg>
+                </section>
+
+                <!-- 区块 1：今日推荐 -->
+                <section class="canvas-website__section" aria-label="今日推荐">
+                  <div class="canvas-website__section-eyebrow">今天店里有</div>
+                  <h2 class="canvas-website__section-title">三杯，想推荐给你</h2>
+                  <div class="canvas-website__cards">
+                    <article class="canvas-website__card">
+                      <div class="canvas-website__card-thumb">
+                        <svg viewBox="0 0 120 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="56" fill="#F3EAD6"/><ellipse cx="60" cy="40" rx="20" ry="5" fill="#76583A" opacity="0.18"/><path d="M44 24 L48 42 Q60 47 72 42 L76 24Z" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><ellipse cx="60" cy="24" rx="16" ry="3.5" fill="#4A2E1A"/></svg>
+                      </div>
+                      <div class="canvas-website__card-name">手冲 · 耶加雪菲</div>
+                      <div class="canvas-website__card-price">¥ 32</div>
+                      <div class="canvas-website__card-desc">花香、柑橘，喝起来很亮。</div>
+                    </article>
+                    <article class="canvas-website__card">
+                      <div class="canvas-website__card-thumb">
+                        <svg viewBox="0 0 120 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="56" fill="#EFE3CE"/><circle cx="60" cy="30" r="18" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><circle cx="60" cy="30" r="11" fill="#C99B63"/><path d="M54 28 q6 -5 12 0 q-3 5 -12 0Z" fill="#FFFEFA" opacity="0.8"/></svg>
+                      </div>
+                      <div class="canvas-website__card-name">燕麦拿铁</div>
+                      <div class="canvas-website__card-price">¥ 28</div>
+                      <div class="canvas-website__card-desc">奶泡绵，回甜，很多人复购。</div>
+                    </article>
+                    <article class="canvas-website__card">
+                      <div class="canvas-website__card-thumb">
+                        <svg viewBox="0 0 120 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="120" height="56" fill="#F1E7D2"/><rect x="44" y="20" width="32" height="26" rx="4" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><path d="M50 30 h20 M50 36 h14" stroke="#C8A26B" stroke-width="1.4" stroke-linecap="round"/><circle cx="84" cy="22" r="6" fill="#B36B5A" opacity="0.7"/></svg>
+                      </div>
+                      <div class="canvas-website__card-name">桂花冷萃（限定）</div>
+                      <div class="canvas-website__card-price">¥ 35</div>
+                      <div class="canvas-website__card-desc">秋天才有，桂花在尾韵里。</div>
+                    </article>
+                  </div>
+                </section>
+
+                <!-- 区块 2：店里的样子 -->
+                <section class="canvas-website__section" aria-label="店里的样子">
+                  <div class="canvas-website__section-eyebrow">为什么来这儿</div>
+                  <h2 class="canvas-website__section-title">一张坐得住的桌子</h2>
+                  <div class="canvas-website__strip">
+                    <div class="canvas-website__strip-art">
+                      <svg viewBox="0 0 96 80" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="96" height="80" fill="#F3EAD6"/><rect x="14" y="44" width="68" height="6" rx="3" fill="#8B6F47"/><rect x="20" y="50" width="5" height="20" fill="#76583A"/><rect x="71" y="50" width="5" height="20" fill="#76583A"/><circle cx="40" cy="38" r="6" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><circle cx="58" cy="40" r="5" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.8"/><rect x="0" y="0" width="96" height="14" fill="#EFE3CE"/></svg>
+                    </div>
+                    <div class="canvas-website__strip-text">
+                      <p>靠窗的位置最好——午后阳光斜进来，落在木桌上。Wi-Fi 有，插座也有，待一下午没人会赶你走。</p>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 站点 footer -->
+                <div class="canvas-website__site-footer">
+                  <span>小满咖啡馆 · 城南旧街 12 号</span>
+                  <span class="font-hand">慢慢来，咖啡会等你</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ② 站点地图（4 页缩略 + 链接关系） -->
+            <div class="canvas-website__map" aria-label="站点地图">
+              <div class="canvas-website__map-head">
+                <h3>站点地图</h3>
+                <span>共 4 页 · 首页通向另外三页</span>
+              </div>
+
+              <div class="canvas-website__tree">
+                <!-- 连线（首页 → 三页） -->
+                <svg class="canvas-website__tree-lines" viewBox="0 0 600 132" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M300 74 V90 H136 V100" fill="none" stroke="#D4C9B5" stroke-width="1.5"/>
+                  <path d="M300 74 V100" fill="none" stroke="#D4C9B5" stroke-width="1.5"/>
+                  <path d="M300 74 V90 H464 V100" fill="none" stroke="#D4C9B5" stroke-width="1.5"/>
+                </svg>
+
+                <!-- 首页节点 -->
+                <div class="canvas-website__tree-row">
+                  <article class="canvas-website__node is-current" tabindex="0" aria-label="首页 · 当前" aria-current="true">
+                    <div class="canvas-website__node-thumb">
+                      <svg viewBox="0 0 116 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="116" height="56" fill="#FFFDF9"/><rect x="0" y="0" width="116" height="11" fill="#F6EFE3"/><rect x="34" y="22" width="48" height="6" rx="3" fill="#8B6F47"/><rect x="40" y="33" width="36" height="4" rx="2" fill="#D4C9B5"/><rect x="46" y="42" width="24" height="7" rx="3.5" fill="#C8A26B"/></svg>
+                    </div>
+                    <div class="canvas-website__node-label"><span>首页</span><span class="canvas-website__node-home">主页</span></div>
+                  </article>
+                </div>
+
+                <!-- 三页子节点 -->
+                <div class="canvas-website__tree-row canvas-website__tree-row--children">
+                  <article class="canvas-website__node" tabindex="0" aria-label="菜单页">
+                    <div class="canvas-website__node-thumb">
+                      <svg viewBox="0 0 116 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="116" height="56" fill="#FFFDF9"/><rect x="0" y="0" width="116" height="11" fill="#F6EFE3"/><rect x="12" y="20" width="28" height="20" rx="3" fill="#F1E6D2"/><rect x="48" y="20" width="28" height="20" rx="3" fill="#F1E6D2"/><rect x="84" y="20" width="20" height="20" rx="3" fill="#F1E6D2"/><rect x="12" y="44" width="22" height="3" rx="1.5" fill="#C8A26B"/></svg>
+                    </div>
+                    <div class="canvas-website__node-label"><span>菜单</span></div>
+                  </article>
+                  <article class="canvas-website__node" tabindex="0" aria-label="关于页">
+                    <div class="canvas-website__node-thumb">
+                      <svg viewBox="0 0 116 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="116" height="56" fill="#FFFDF9"/><rect x="0" y="0" width="116" height="11" fill="#F6EFE3"/><circle cx="34" cy="32" r="11" fill="#F1E6D2"/><rect x="54" y="22" width="48" height="4" rx="2" fill="#D4C9B5"/><rect x="54" y="30" width="48" height="4" rx="2" fill="#E8E0D2"/><rect x="54" y="38" width="32" height="4" rx="2" fill="#E8E0D2"/></svg>
+                    </div>
+                    <div class="canvas-website__node-label"><span>关于</span></div>
+                  </article>
+                  <article class="canvas-website__node" tabindex="0" aria-label="联系页">
+                    <div class="canvas-website__node-thumb">
+                      <svg viewBox="0 0 116 56" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="116" height="56" fill="#FFFDF9"/><rect x="0" y="0" width="116" height="11" fill="#F6EFE3"/><rect x="12" y="18" width="92" height="26" rx="4" fill="#EFE6D6"/><path d="M58 24 a5 5 0 0 1 5 5 c0 4 -5 9 -5 9 s-5 -5 -5 -9 a5 5 0 0 1 5 -5Z" fill="#B36B5A"/><circle cx="58" cy="29" r="1.8" fill="#FFFDF9"/></svg>
+                    </div>
+                    <div class="canvas-website__node-label"><span>联系</span></div>
+                  </article>
+                </div>
+              </div>
+            </div>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="网站控件">
+
+              <!-- 页面（多页切页，取代落地页的"段落"） -->
+              <div class="canvas-controls__row" role="group" aria-label="页面">
+                <span class="canvas-controls__label">页面</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">首页</button>
+                <button class="chip chip--control" type="button">菜单</button>
+                <button class="chip chip--control" type="button">关于</button>
+                <button class="chip chip--control" type="button">联系</button>
+                <button class="chip chip--control chip--add" type="button">+ 加一页</button>
+              </div>
+
+              <!-- 风格 -->
+              <div class="canvas-controls__row" role="group" aria-label="风格">
+                <span class="canvas-controls__label">风格</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">温暖</button>
+                <button class="chip chip--control" type="button">简洁</button>
+                <button class="chip chip--control" type="button">复古</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这个站花了 2 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                  加一页
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h8l2 2v8H3z"/><path d="M5 3v4h6V3"/></svg>
+                  导出
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M5 5l3-3 3 3"/><path d="M3 9v3a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V9"/></svg>
+                  发布 · 分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

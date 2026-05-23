@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 周末想做的（想法地图）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/Vibe-Workflow（在主仓体现为 app/workflow/[id] + studio/WorkflowUI.jsx）
+      基于 reactflow 的 node-based builder：节点 + 弯曲边 + 可移动 + 布局切换。
+    - 这里把它从"workflow builder"降维成"放射式 mindmap"——保留 node + edge
+      的产品形态，但去掉 builder 的复杂度（无 schema、无运行、无 cost），
+      给一个温柔的"一图一念"。
+    - 布局切换 chip 来自 MarketingStudio 的比例 chip 组的同构模式。
+    视觉：Kokoro 米 + 木 + 纸感，绝不 dark + cyan + glassmorphism。
+  -->
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-mindmap.html">周末想做的</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">给妈妈解释 AI</a>
+        <a class="sidebar-recent__item" href="canvas-landing.html">小满咖啡笔记落地页</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                帮我把周末想做的事整理一下，有点乱。
+              </article>
+
+              <article class="message message--ai">
+                <p>好。你提到这几件，我先放成一个想法地图——</p>
+                <p>看哪些是"想到"、哪些是"想做"、哪些其实在拖延？放一起看就清楚一些。</p>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的想法地图 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">想法地图 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 放射式</span>
+                </div>
+              </article>
+
+              <article class="message message--user">
+                "见见朋友"那一支再展开一下，我想想到底想见谁。
+              </article>
+
+              <article class="message message--ai">
+                <p>加了两个孙节点："阿芸"和"老周"。</p>
+                <div class="chat-suggest-row" role="group" aria-label="继续">
+                  <button class="chat-suggest is-current" type="button">再分一下</button>
+                  <button class="chat-suggest" type="button">先收一下</button>
+                  <button class="chat-suggest" type="button">换树状看看</button>
+                </div>
+                <p class="aside">想见谁这件事，要不要顺手记一句"想见的原因"？我可以挂在节点旁。</p>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试"加一个节点" / "拖延的那一支"）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (mindmap mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>周末想做的</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>正在保存…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--mindmap">
+
+            <!-- Mindmap board (SVG) -->
+            <div class="canvas-mindmap__board" aria-label="想法地图">
+              <svg class="canvas-mindmap__svg" viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="mindmap-title">
+                <title id="mindmap-title">周末想做的 · 放射地图</title>
+
+                <!-- 弯曲连线（先画线，后画节点） -->
+                <g aria-hidden="true">
+                  <!-- center → A 见朋友 (left top) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 360 250, 290 200, 220 170"/>
+                  <!-- center → B 做饭 (left mid) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 340 280, 260 290, 180 290"/>
+                  <!-- center → C 走走 (left bottom) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 360 310, 280 360, 200 400"/>
+                  <!-- center → D 看书 (right top) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 560 250, 640 200, 720 170"/>
+                  <!-- center → E 拖延的 (right mid) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 580 280, 660 300, 750 305"/>
+                  <!-- center → F 休一下 (right bottom) -->
+                  <path class="canvas-mindmap__edge" d="M450 270 C 560 320, 640 380, 720 410"/>
+
+                  <!-- A 见朋友 → 孙：阿芸 -->
+                  <path class="canvas-mindmap__edge canvas-mindmap__edge--sub" d="M220 170 C 160 140, 120 110, 80 90"/>
+                  <!-- A 见朋友 → 孙：老周 -->
+                  <path class="canvas-mindmap__edge canvas-mindmap__edge--sub" d="M220 170 C 150 180, 110 200, 70 220"/>
+                </g>
+
+                <!-- 节点们（pill = rect + text） -->
+                <!-- A · 见朋友 -->
+                <g transform="translate(220 170)" aria-label="见朋友">
+                  <rect class="canvas-mindmap__node-bg" x="-58" y="-18" width="116" height="36" rx="18"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="5" text-anchor="middle">见朋友</text>
+                </g>
+                <!-- A's 孙：阿芸 -->
+                <g transform="translate(80 90)" aria-label="阿芸">
+                  <rect class="canvas-mindmap__node-bg" x="-38" y="-15" width="76" height="30" rx="15"/>
+                  <text class="canvas-mindmap__node-text--sub" x="0" y="5" text-anchor="middle">阿芸</text>
+                </g>
+                <!-- A's 孙：老周 -->
+                <g transform="translate(70 220)" aria-label="老周">
+                  <rect class="canvas-mindmap__node-bg" x="-38" y="-15" width="76" height="30" rx="15"/>
+                  <text class="canvas-mindmap__node-text--sub" x="0" y="5" text-anchor="middle">老周</text>
+                </g>
+
+                <!-- B · 做饭 -->
+                <g transform="translate(180 290)" aria-label="做饭">
+                  <rect class="canvas-mindmap__node-bg" x="-58" y="-18" width="116" height="36" rx="18"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="5" text-anchor="middle">做一顿饭</text>
+                </g>
+
+                <!-- C · 走走 -->
+                <g transform="translate(200 400)" aria-label="走走">
+                  <rect class="canvas-mindmap__node-bg" x="-58" y="-18" width="116" height="36" rx="18"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="5" text-anchor="middle">出门走走</text>
+                </g>
+
+                <!-- 中心节点 · 周末想做的 -->
+                <g transform="translate(450 270)" aria-label="周末想做的">
+                  <rect class="canvas-mindmap__node-bg--center" x="-78" y="-26" width="156" height="52" rx="26"/>
+                  <text class="canvas-mindmap__node-text--center" x="0" y="6" text-anchor="middle">周末想做的</text>
+                </g>
+
+                <!-- D · 看书 -->
+                <g transform="translate(720 170)" aria-label="看书">
+                  <rect class="canvas-mindmap__node-bg" x="-58" y="-18" width="116" height="36" rx="18"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="5" text-anchor="middle">看半本书</text>
+                </g>
+
+                <!-- E · 拖延的 (hover demo) -->
+                <g transform="translate(750 305)" aria-label="拖延的（hover 演示）" class="is-hover">
+                  <rect class="canvas-mindmap__node-bg canvas-mindmap__node-bg--hover" x="-66" y="-20" width="132" height="40" rx="20"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="6" text-anchor="middle">一直在拖的</text>
+                  <!-- hover 提示小气泡 -->
+                  <g transform="translate(0 30)">
+                    <rect x="-44" y="0" width="88" height="20" rx="10" fill="#FBF6EC" stroke="#D4C9B5" stroke-width="0.8"/>
+                    <text x="0" y="14" text-anchor="middle" font-family="var(--font-hand)" font-size="11" fill="#8B6F47">点开看一下？</text>
+                  </g>
+                </g>
+
+                <!-- F · 休一下 -->
+                <g transform="translate(720 410)" aria-label="休一下">
+                  <rect class="canvas-mindmap__node-bg" x="-58" y="-18" width="116" height="36" rx="18"/>
+                  <text class="canvas-mindmap__node-text" x="0" y="5" text-anchor="middle">什么都不做</text>
+                </g>
+              </svg>
+
+              <span class="canvas-mindmap__hint">拖动节点 · 双击编辑 · "一直在拖的"那一支正在被你看着</span>
+            </div>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="想法地图控件">
+
+              <!-- 布局 -->
+              <div class="canvas-controls__row" role="group" aria-label="布局">
+                <span class="canvas-controls__label">布局</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">径向</button>
+                <button class="chip chip--control" type="button">树状</button>
+                <button class="chip chip--control" type="button">鱼骨</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这张地图花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                  加节点
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4-3 4 3M4 10l4 3 4-3"/></svg>
+                  展开全部
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l4 3 4-3"/></svg>
+                  收起全部
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

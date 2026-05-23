@@ -1,0 +1,108 @@
+/* 功能工作室页 —— 单列生成器（参照 muapi/pollo Studio：身份大标题 + 中部留白/模板 + 底部生成栏），暖色化。
+   左侧仍是 Kokoro 的 sidebar（studio nav）；右 main 为单列，不再左右分栏。绝不 cyan/dark/glass。 */
+.fn-studio {
+  display: flex; flex-direction: column; height: 100%; width: 100%;
+  max-width: 1000px; margin: 0 auto; box-sizing: border-box;
+  padding: var(--space-6) var(--space-7) var(--space-5); min-height: 0;
+}
+
+/* —— 身份 hero（图标 + 两行大标题 + 副文案），居中靠上 —— */
+.fn-studio__hero { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 0; }
+.fn-studio__icon {
+  width: 84px; height: 84px; border-radius: 22px; margin-bottom: var(--space-4);
+  display: grid; place-items: center; font-size: 40px;
+  background: radial-gradient(120px 90px at 50% 28%, #FFFFFF, var(--color-accent-soft));
+  box-shadow: inset 0 1px 0 #fff, 0 8px 24px -10px rgba(60,45,30,0.20);
+}
+.fn-studio__title { margin: 0; line-height: 1.04; }
+.fn-studio__title-top { display: block; font-family: var(--font-serif); font-size: 24px; font-weight: 400; color: var(--color-text-tertiary); letter-spacing: 3px; }
+.fn-studio__title-main { display: block; font-family: var(--font-serif); font-size: 46px; font-weight: 600; color: var(--color-text-primary); letter-spacing: 1px; }
+.fn-studio__sub { margin: var(--space-3) 0 0; font-size: 15px; color: var(--color-text-secondary); }
+
+/* —— 中部「从模板开始」starters（hero 与 bar 之间） —— */
+.fn-studio__starters { flex: none; margin-bottom: var(--space-4); }
+.fn-studio__starters-label { font-size: 12px; color: var(--color-text-tertiary); text-align: center; margin-bottom: 10px; letter-spacing: .3px; }
+.fn-studio__starters-row { display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; }
+.fn-starter { width: 150px; text-decoration: none; background: var(--color-surface); border: 1px solid var(--color-border); border-top-color: #ECE3D2; border-radius: var(--radius-paper); overflow: hidden; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+.fn-starter:hover { transform: translateY(-2px); border-color: var(--color-accent); box-shadow: 0 8px 20px -10px rgba(60,45,30,0.2); }
+.fn-starter svg { display: block; width: 100%; height: 60px; }
+.fn-starter__name { display: block; padding: 7px 9px 9px; font-size: 12px; color: var(--color-text-primary); }
+
+/* —— 底部生成栏（两行：上=上传+输入；下=参数 chips + 生成） —— */
+.fn-bar {
+  flex: none; background: var(--color-surface);
+  border: 1px solid var(--color-border); border-top-color: #ECE3D2; border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(60,45,30,0.05), 0 16px 40px -18px rgba(60,45,30,0.18);
+  padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);
+}
+.fn-bar__top { display: flex; align-items: center; gap: var(--space-2); }
+.fn-bar__uploads { display: flex; gap: 8px; flex: none; }
+.fn-upload { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--color-border-strong); background: #FCFAF6; color: var(--color-text-secondary); cursor: pointer; display: grid; place-items: center; flex: none; transition: border-color .14s ease, color .14s ease; }
+.fn-upload:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.fn-bar__input { flex: 1; border: none; background: none; font: inherit; font-size: 16px; color: var(--color-text-primary); padding: 6px 4px; }
+.fn-bar__input::placeholder { color: var(--color-text-tertiary); }
+.fn-bar__bottom { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.fn-bar__params { display: flex; flex-wrap: wrap; gap: 6px; }
+.fn-bar__generate { flex: none; }
+
+/* ===== muapi 式组件生成器增强：模式 tab（文生/图生）+ 模型下拉 + 数量段控 ===== */
+/* 模式 tab —— radio 在 .fn-studio 顶部，~ 切换激活态 + i2i 时显示上传 */
+.fn-mode-radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.fn-modes { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: var(--space-3); flex: none; max-width: 760px; }
+.fn-mode-tab {
+  font-size: 13px; color: var(--color-text-secondary);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: 999px; padding: 5px 14px; cursor: pointer; user-select: none;
+  transition: background .14s ease, color .14s ease, border-color .14s ease;
+}
+.fn-mode-tab:hover { border-color: var(--color-accent); color: var(--color-text-primary); }
+/* 通用激活态：radio 紧邻其 label，:checked + 选中——支持任意模式数 */
+.fn-mode-radio:checked + .fn-mode-tab {
+  background: var(--color-accent-soft); border-color: var(--color-accent-soft);
+  color: var(--color-text-primary); font-weight: 500;
+}
+/* 有上传按钮的组件页默认显示（无上传需求的页不放该 div 即可） */
+.fn-studio .fn-bar__uploads { display: flex; }
+
+/* 模型下拉（details，向上弹出，带搜索 + 列表 + 选中勾） */
+.fn-model { position: relative; }
+.fn-model > summary { list-style: none; }
+.fn-model > summary::-webkit-details-marker { display: none; }
+.fn-model__menu {
+  position: absolute; bottom: calc(100% + 8px); left: 0; min-width: 232px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-paper); box-shadow: 0 16px 40px -14px rgba(60,45,30,.30);
+  padding: 8px; z-index: 40;
+}
+.fn-model__search {
+  display: flex; align-items: center; gap: 7px; margin: 2px 2px 8px;
+  padding: 7px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  color: var(--color-text-tertiary); font-size: 12px; background: var(--color-bg-subtle);
+}
+.fn-model__label { font-size: 11px; color: var(--color-text-tertiary); padding: 2px 8px 6px; }
+.fn-model__item {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  padding: 8px 10px; border: none; border-radius: var(--radius-sm); background: none;
+  font: inherit; font-size: 13px; color: var(--color-text-secondary); text-align: left; cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.fn-model__item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.fn-model__item.is-current { background: var(--color-accent-soft); color: var(--color-text-primary); }
+.fn-model__item .fn-model__tag { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-tertiary); }
+.fn-model__check { width: 13px; height: 13px; color: var(--color-accent); }
+
+/* 数量段控 1/2/3/4 */
+.fn-count { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--color-border); border-radius: 999px; padding: 2px 2px 2px 4px; }
+.fn-count__label { font-size: 12px; color: var(--color-text-tertiary); padding: 0 6px 0 4px; }
+.fn-count__n {
+  width: 24px; height: 24px; border-radius: 50%; border: none; background: none;
+  font: inherit; font-size: 12px; color: var(--color-text-secondary); cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.fn-count__n:hover { background: var(--color-surface-hover); }
+.fn-count__n.is-active { background: var(--color-accent); color: #fff; }
+
+@media (max-width: 900px) {
+  .fn-studio__title-main { font-size: 36px; }
+  .fn-starter { width: 132px; }
+}

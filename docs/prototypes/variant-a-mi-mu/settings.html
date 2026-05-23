@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 设置 · 个性化</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="user-row is-current" tabindex="0">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main settings-page">
+
+      <!-- Topbar：返回 + 标题 + 完成 -->
+      <header class="settings-topbar">
+        <div class="settings-topbar__left">
+          <a class="settings-back" href="index.html" aria-label="返回">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3L5 8l5 5"/></svg>
+          </a>
+          <h1 class="settings-topbar__title">设置</h1>
+        </div>
+        <div class="topbar__right">
+          <span class="save-state" aria-live="polite">
+            <span class="save-state__dot"></span>
+            <span>已保存 · 刚刚</span>
+          </span>
+          <a class="btn btn--primary btn--sm" href="index.html">完成</a>
+        </div>
+      </header>
+
+      <div class="settings-body">
+
+        <!-- Sidebar tabs -->
+        <nav class="settings-sidebar" aria-label="设置分区">
+          <button class="settings-tab" type="button">
+            <span>账号</span>
+          </button>
+          <button class="settings-tab is-current" type="button" aria-current="page">
+            <span>个性化</span>
+            <span class="badge badge--soft" aria-hidden="true">2</span>
+          </button>
+          <button class="settings-tab" type="button">
+            <span>显示</span>
+          </button>
+          <button class="settings-tab" type="button">
+            <span>数据</span>
+          </button>
+          <button class="settings-tab" type="button">
+            <span>隐私</span>
+          </button>
+          <button class="settings-tab" type="button">
+            <span>关于</span>
+          </button>
+        </nav>
+
+        <!-- Main: 个性化 -->
+        <section class="settings-main">
+
+          <!-- Section: 账户 · 订阅 -->
+          <section class="settings-section" style="margin-bottom:var(--space-7);">
+            <header class="settings-section__head">
+              <h2 class="settings-section__title">账户 · 订阅</h2>
+              <p class="settings-section__note">你的计划与额度，随时可调。</p>
+            </header>
+            <div>
+              <div class="settings-row">
+                <div class="settings-row__copy">
+                  <h4 class="settings-row__title">当前计划 · 免费</h4>
+                  <p class="settings-row__desc">本月剩余 1,200 积分。升级解锁更多积分、团队积分池与高级模型。</p>
+                </div>
+                <a class="btn btn--primary" href="pricing.html">升级</a>
+              </div>
+              <div class="settings-row">
+                <div class="settings-row__copy">
+                  <h4 class="settings-row__title">账号</h4>
+                  <p class="settings-row__desc">wuxiaoxin@kokoro.app</p>
+                </div>
+                <a class="btn" href="marketing.html">退出登录</a>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section head -->
+          <header class="settings-section__head" style="margin-bottom:calc(var(--space-2) * -1);">
+            <h2 class="settings-section__title">个性化</h2>
+            <p class="settings-section__note">我会记住你写给我的话，<br/>也会慢慢记下从聊天里学到的事。</p>
+          </header>
+
+          <!-- A. 我的指令 — 视觉重头：白卡片 + 大输入 -->
+          <div class="settings-instructions">
+            <div class="settings-instructions__head">
+              <h3 class="settings-instructions__label">我的指令</h3>
+              <span class="settings-instructions__hint">写给 Kokoro 看的</span>
+            </div>
+            <textarea
+              class="settings-instructions__field"
+              placeholder="比如：我是个设计师，主要做 B 端 SaaS，回答时不用解释什么是 B 端。&#10;比如：我说话偏短，回答也短一点。&#10;比如：我在做"早起社群"项目，相关都默认这个上下文。"
+              rows="5"
+              aria-label="我的指令"
+            >我喜欢简洁，不要过多解释。回答里如果有比喻，挑一个最准的就够了。
+
+我在做一个叫 Kokoro 的产品。相关的事都默认这个上下文。
+
+我用 macOS + Notion，工具相关的回答可以直接给到我熟悉的栈。</textarea>
+            <p class="settings-instructions__footnote">
+              这里写给我的话，我会一直记着。改完会自动保存。
+            </p>
+          </div>
+
+          <!-- B. Kokoro 记住的 — 视觉重量更轻：浅色背景 + 列表，与"我的指令"明显分开 -->
+          <div class="settings-memory">
+            <div class="settings-memory__head">
+              <h3 class="settings-memory__label">Kokoro 记住的</h3>
+              <button class="settings-memory__clear" type="button">全部清空</button>
+            </div>
+            <p class="settings-memory__hint">
+              这些是我在跟你聊的时候慢慢记下的。<br/>
+              你可以删掉任何一条，删掉的事我不会再提。
+            </p>
+
+            <ul class="settings-memory__list">
+              <li class="settings-memory__item">
+                <div class="settings-memory__item-text">
+                  你正在做一个叫"Kokoro"的产品，一款以"心"为人格的 AI 创作伙伴。
+                  <span class="settings-memory__item-time">3 天前 · 从对话中记下</span>
+                </div>
+                <button class="settings-memory__forget" type="button">这条不再记</button>
+              </li>
+              <li class="settings-memory__item">
+                <div class="settings-memory__item-text">
+                  你说过想给三年没联系的朋友阿芸写一封信。
+                  <span class="settings-memory__item-time">上周 · 从对话中记下</span>
+                </div>
+                <button class="settings-memory__forget" type="button">这条不再记</button>
+              </li>
+              <li class="settings-memory__item">
+                <div class="settings-memory__item-text">
+                  你喜欢用 Notion 管理日常，对 Notion 的快捷键熟悉。
+                  <span class="settings-memory__item-time">2 周前 · 从对话中记下</span>
+                </div>
+                <button class="settings-memory__forget" type="button">这条不再记</button>
+              </li>
+              <li class="settings-memory__item">
+                <div class="settings-memory__item-text">
+                  你周末喜欢逛展，五月去过北京的几个独立空间。
+                  <span class="settings-memory__item-time">3 周前 · 从对话中记下</span>
+                </div>
+                <button class="settings-memory__forget" type="button">这条不再记</button>
+              </li>
+              <li class="settings-memory__item">
+                <div class="settings-memory__item-text">
+                  做海报偏好"小红书风" — 暖色、有手写感、留白多。
+                  <span class="settings-memory__item-time">上个月 · 从对话中记下</span>
+                </div>
+                <button class="settings-memory__forget" type="button">这条不再记</button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- 数据段（次要 demo，更短） -->
+          <section class="settings-section" style="margin-top:var(--space-7);">
+            <header class="settings-section__head">
+              <h2 class="settings-section__title">数据</h2>
+              <p class="settings-section__note">你的东西，永远是你的。</p>
+            </header>
+
+            <div>
+              <div class="settings-row">
+                <div class="settings-row__copy">
+                  <h4 class="settings-row__title">导出我的数据</h4>
+                  <p class="settings-row__desc">打包下载所有对话和 Canvas 产物（JSON + 资源），需要几分钟。</p>
+                </div>
+                <button class="btn" type="button">导出</button>
+              </div>
+
+              <div class="settings-row">
+                <div class="settings-row__copy">
+                  <h4 class="settings-row__title">清除所有对话</h4>
+                  <p class="settings-row__desc">这一步做完就回不去了。会让你输入"清除"两个字再次确认。</p>
+                </div>
+                <button class="btn btn--danger" type="button">清除…</button>
+              </div>
+
+              <div class="settings-row">
+                <div class="settings-row__copy">
+                  <h4 class="settings-row__title">注销账号</h4>
+                  <p class="settings-row__desc">注销后 7 天内可以反悔。7 天后所有数据消失。</p>
+                </div>
+                <button class="btn btn--danger" type="button">注销…</button>
+              </div>
+            </div>
+          </section>
+
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

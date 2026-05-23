@@ -1,0 +1,30 @@
+/* 左侧栏「应用功能」—— 可折叠(details/summary) + 一列竖排 + 限高顺滑滚动，暖色。 */
+.studio-nav { margin: 6px 0 4px; }
+.studio-nav > summary.studio-nav__label {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--color-text-tertiary);
+  padding: 6px var(--space-3); letter-spacing: .4px; border-radius: var(--radius-sm);
+}
+.studio-nav > summary.studio-nav__label::-webkit-details-marker { display: none; }
+.studio-nav > summary.studio-nav__label::marker { content: ""; }
+.studio-nav > summary.studio-nav__label:hover { color: var(--color-text-secondary); background: var(--color-surface-hover); }
+.studio-nav__caret { width: 10px; height: 10px; transition: transform .18s ease; opacity: .55; flex: none; }
+.studio-nav[open] .studio-nav__caret { transform: rotate(180deg); }
+.studio-nav__grid {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 4px 6px 2px; max-height: 300px; overflow-y: auto; scrollbar-width: thin;
+}
+.studio-nav__grid::-webkit-scrollbar { width: 6px; }
+.studio-nav__grid::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 3px; }
+.studio-nav__grid::-webkit-scrollbar-track { background: transparent; }
+.studio-nav__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--color-text-secondary);
+  text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: background .14s ease, color .14s ease;
+}
+.studio-nav__item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.studio-nav__item.is-current { background: var(--color-accent-soft); color: var(--color-text-primary); font-weight: 500; }
+.studio-nav__emoji { font-size: 15px; line-height: 1; flex: none; width: 18px; text-align: center; }

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro 交互模式 · A · 米+木</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+</head>
+<body>
+  <div class="pattern-page">
+
+    <header class="pattern-page__topbar">
+      <div>
+        <h1 class="pattern-page__title">交互模式 · <em>9 个 pattern</em></h1>
+        <div class="pattern-page__sub">每个 pattern 一个最小场景，copy 都从心人格出</div>
+      </div>
+      <a class="btn btn--ghost" href="index.html">← 回主页</a>
+    </header>
+
+    <main class="pattern-page__main">
+
+      <!-- 1. Empty -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">1. Empty · 空状态</h2>
+          <span class="pattern-card__intent">不是错位，是一个新场景的开始</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="empty">
+            <div class="empty__mark">心</div>
+            <h3 class="empty__title">还没开始聊。</h3>
+            <p class="empty__body">先把想说的告诉我，<br/>哪怕只是半句也行。</p>
+          </div>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Copy 原则</strong>：不写"没有数据" / "Nothing here"。写一句心说的话——温度 + 邀请 + 不施压。
+        </p>
+      </article>
+
+      <!-- 2. Loading -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">2. Loading · 加载</h2>
+          <span class="pattern-card__intent">三态：在想 → 草拟 → 输出</span>
+        </header>
+        <div class="pattern-card__demo">
+          <article class="message message--user">写一封信，给三年没联系的朋友。</article>
+          <article class="message message--ai">
+            <div class="thinking"><span class="thinking__dot"></span><span>在想你说的"三年"——是有事，还是淡了？</span></div>
+          </article>
+          <article class="message message--ai" style="opacity:0.65;">
+            <div class="thinking"><span class="thinking__bar"></span><span>在草拟……</span></div>
+          </article>
+          <article class="message message--ai" style="opacity:0.65;">
+            <span style="font-size:15px;">明白了，那就不要解释"为什么淡的"<span class="thinking__cursor"></span></span>
+          </article>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>三态切换</strong>：呼吸点（在想，没动笔）→ 细线（动笔中，等流出）→ 光标（正在 stream）。1.8s 呼吸节奏不变。
+        </p>
+      </article>
+
+      <!-- 3. Error -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">3. Error · 出错</h2>
+          <span class="pattern-card__intent">不甩锅，给一个再试的入口</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="toast toast--error">
+            <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/></svg>
+            <span>网络一下没接上。要不你点这里再试一次？</span>
+          </div>
+          <article class="message message--ai">
+            <p>我刚那句没发出去。你看一眼，要不要我重发？</p>
+            <div class="plan-block__actions">
+              <button class="btn btn--primary" type="button">重发</button>
+              <button class="btn btn--ghost" type="button">先放着</button>
+            </div>
+          </article>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Copy 原则</strong>：不写"系统错误" / "请稍后再试"。说"我刚那句没发出去"——把错误说成 AI 自己的事，不让用户当背锅的。
+        </p>
+      </article>
+
+      <!-- 4. Success -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">4. Success · 完成</h2>
+          <span class="pattern-card__intent">说"做好了"，不放烟花</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="toast toast--success">
+            <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5L6.5 12 13 5"/></svg>
+            <span>做好了。给你放右边了。</span>
+          </div>
+          <article class="message message--ai">
+            <p>做好了。看看？</p>
+            <a class="card card--doc" href="canvas.html" style="max-width:420px;">
+              <div class="card__head">
+                <div class="card__icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2.5h6l2.5 2.5v8.5H4z"/><path d="M10 2.5v3h2.5"/></svg></div>
+                <div style="flex:1;">
+                  <h3 class="card__title">写给阿芸的一封信</h3>
+                  <div class="card__sub">想了三年，今天才写下来</div>
+                </div>
+              </div>
+            </a>
+          </article>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Copy 原则</strong>：不写"🎉 已完成"、"恭喜你"。心不庆祝，心点头。
+        </p>
+      </article>
+
+      <!-- 5. Confirmation -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">5. Confirmation · 确认</h2>
+          <span class="pattern-card__intent">破坏性操作之前，停一下</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="modal-overlay" style="background:transparent;width:100%;padding:0;">
+            <div class="modal">
+              <h3 class="modal__title">你要把这版替换掉。</h3>
+              <div class="modal__body">我做完就回不去了——原稿不会留。要确认吗？</div>
+              <div class="modal__actions">
+                <button class="btn btn--ghost" type="button">先不要</button>
+                <button class="btn btn--primary" type="button">确认替换</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Copy 原则</strong>：让用户看清"代价"——"我做完就回不去了"比"此操作不可逆"温度高得多。
+        </p>
+      </article>
+
+      <!-- 6. First-time -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">6. First-time · 首次</h2>
+          <span class="pattern-card__intent">不教程，给一句招呼 + 一个低门槛</span>
+        </header>
+        <div class="pattern-card__demo">
+          <h2 class="serif" style="font-size:32px;margin:0;line-height:1.2;">今天想做<span style="color:var(--color-accent);font-style:italic;">什么</span>？</h2>
+          <div class="hand muted" style="font-size:14px;">不急，先把想法说给我</div>
+          <div class="chip-row" style="margin-top:0;">
+            <a class="chip chip--template"><span class="emoji">🎨</span><span>小红书风海报</span></a>
+            <a class="chip chip--template"><span class="emoji">📝</span><span>学习课件</span></a>
+            <a class="chip chip--template"><span class="emoji">💌</span><span>写一封信</span></a>
+          </div>
+          <span class="muted" style="font-size:12px;">不知道做什么？点一个试试看。</span>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>First-time 原则</strong>：不弹"欢迎使用 Kokoro 完成 5 步教学"。直接看到主任务 + 几个起步钩子。
+        </p>
+      </article>
+
+      <!-- 7. Limit -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">7. Limit · 触及上限</h2>
+          <span class="pattern-card__intent">不威胁，告知 + 给选择</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="toast toast--warning">
+            <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5l6 10.5H2z"/><path d="M8 6.5v3M8 11v.01"/></svg>
+            <span>免费积分快用完了。要先看看会员吗？</span>
+          </div>
+          <article class="message message--ai">
+            <p>你这个月的额度用完了。</p>
+            <p>下个月 1 号会回满 20 次。如果不想等——</p>
+            <div class="plan-block__actions">
+              <button class="btn btn--primary" type="button">看看 Plus</button>
+              <button class="btn" type="button">先等等</button>
+              <button class="btn btn--ghost" type="button">为什么是 20 次？</button>
+            </div>
+          </article>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Copy 原则</strong>：不写"您已达额度上限请升级"。给等的选项，给问的选项。心不卖货，心说情况。
+        </p>
+      </article>
+
+      <!-- 8. Undo -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">8. Undo · 撤销</h2>
+          <span class="pattern-card__intent">删除前不弹窗，删除后给 4 秒</span>
+        </header>
+        <div class="pattern-card__demo">
+          <div class="toast" style="border-left-color:var(--color-text-secondary);background:var(--color-text-primary);color:#FBF6EC;border-color:var(--color-text-primary);">
+            <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+            <span style="flex:1;">"写给阿芸的一封信" 已删除</span>
+            <button class="btn btn--ghost" style="color:var(--color-accent-soft);background:transparent;padding:4px 10px;">撤回</button>
+          </div>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Undo 原则</strong>：宁可"事后撤回"，不要"事前阻拦"。删的当下 toast 给 4 秒，不打扰但还能挽回。
+        </p>
+      </article>
+
+      <!-- 9. Share -->
+      <article class="pattern-card">
+        <header class="pattern-card__head">
+          <h2 class="pattern-card__title">9. Share · 分享</h2>
+          <span class="pattern-card__intent">公开 / 半公开 / 私密 三档</span>
+        </header>
+        <div class="pattern-card__demo">
+          <article class="message message--ai">
+            <p>做好了。要分享给阿芸吗？</p>
+            <div class="plan-block__actions">
+              <button class="btn btn--primary" type="button">复制公开链接</button>
+              <button class="btn" type="button">只给她看</button>
+              <button class="btn btn--ghost" type="button">先不分享</button>
+            </div>
+            <p class="aside">分享后，对方点开能直接看到这封信。底部会有"用 Kokoro 做的"小水印。</p>
+          </article>
+        </div>
+        <p class="pattern-card__copy">
+          <strong>Share 原则</strong>：默认私密。"公开"要明确说能被谁看到。每张分享页底部有 "made with Kokoro" 弱水印，不打扰内容，但留出钩子。
+        </p>
+      </article>
+
+    </main>
+  </div>
+</body>
+</html>

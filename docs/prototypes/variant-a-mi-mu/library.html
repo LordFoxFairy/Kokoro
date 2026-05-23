@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 库 · 你做过的</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+        <a class="sidebar-recent__item" href="#">一个安静的落地页</a>
+        <a class="sidebar-recent__item" href="#">五月做菜的灵感</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main templates-page">
+      <div class="topbar">
+        <span class="topbar__title">库 · 你做过的</span>
+        <div class="topbar__right">
+          <a class="btn btn--ghost btn--sm" href="index.html">回到主页</a>
+        </div>
+      </div>
+
+      <!-- Hero -->
+      <section class="library-hero">
+        <div class="library-hero__eyebrow">库</div>
+        <h1 class="library-hero__title">你做过的，<span class="accent">都在这里</span>。</h1>
+        <p class="library-hero__sub">回头看看，找一件接着改。</p>
+      </section>
+
+      <!-- Toolbar：4 tab -->
+      <div class="library-toolbar">
+        <div class="templates-tabs" role="tablist" aria-label="库分类">
+          <button class="templates-tab is-current" role="tab" aria-selected="true">历史</button>
+          <button class="templates-tab" role="tab">收藏</button>
+          <button class="templates-tab" role="tab">我的模板</button>
+          <button class="templates-tab" role="tab">草稿</button>
+        </div>
+        <div class="templates-sort">
+          <span>共 24 条 ·</span>
+          <span class="hand" style="color:var(--color-text-secondary);">最近活动</span>
+        </div>
+      </div>
+
+      <!-- "历史" tab (default) -->
+      <section class="library-section">
+
+        <!-- 今天 -->
+        <div class="library-group">
+          <div class="library-group__label">今天</div>
+          <div class="library-list">
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">写给老朋友的一封信</div>
+                <div class="library-item__summary">给阿芸的，三年没联系了——咖啡馆窗帘那段。</div>
+              </div>
+              <div class="library-item__time">今天 14:22</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg>
+                </button>
+                <button class="library-item__action" aria-label="删除">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4M6.5 6.5v4M9.5 6.5v4"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">周末展览的小红书海报</div>
+                <div class="library-item__summary">"慢的人"那张，米色背景配楷体 · 改了第三版。</div>
+              </div>
+              <div class="library-item__time">今天 11:08</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">给妈妈解释一下 AI 是什么</div>
+                <div class="library-item__summary">用"会写字的小猫"的比喻，她说听懂了。</div>
+              </div>
+              <div class="library-item__time">今天 09:34</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 昨天 -->
+        <div class="library-group">
+          <div class="library-group__label">昨天</div>
+          <div class="library-list">
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">把读书笔记整理成课件</div>
+                <div class="library-item__summary">《专注力陷阱》第三章 · 给周五的小组分享用。</div>
+              </div>
+              <div class="library-item__time">昨天 22:11</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">把今年想做的事列一列</div>
+                <div class="library-item__summary">列了七件，其中三件是"再说"——今年想做更老实点。</div>
+              </div>
+              <div class="library-item__time">昨天 16:50</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">一个安静的落地页</div>
+                <div class="library-item__summary">为新展览写的，"不挤"是关键词。</div>
+              </div>
+              <div class="library-item__time">昨天 14:02</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 过去 7 天 -->
+        <div class="library-group">
+          <div class="library-group__label">过去 7 天</div>
+          <div class="library-list">
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">五月做菜的灵感</div>
+                <div class="library-item__summary">三菜一汤 · 一周不重样 · 我妈说挺像样子。</div>
+              </div>
+              <div class="library-item__time">3 天前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">给小满的生日卡</div>
+                <div class="library-item__summary">一句话——"愿你今年比去年自由一点点。"</div>
+              </div>
+              <div class="library-item__time">4 天前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">想法可视化 · 四问图</div>
+                <div class="library-item__summary">起源 / 阻力 / 下一步 / 谁帮——画完那天睡得好。</div>
+              </div>
+              <div class="library-item__time">5 天前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">本周做了什么 · 周报</div>
+                <div class="library-item__summary">两件做完了，五件还在做。诚实地写。</div>
+              </div>
+              <div class="library-item__time">6 天前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 更早 -->
+        <div class="library-group">
+          <div class="library-group__label">更早</div>
+          <div class="library-list">
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">辞职信草稿</div>
+                <div class="library-item__summary">写完没发出去——那天找老板聊完，反而留下来了。</div>
+              </div>
+              <div class="library-item__time">两周前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">给爸爸说说我现在做的事</div>
+                <div class="library-item__summary">他没回，但我知道他看了——后来朋友圈点了赞。</div>
+              </div>
+              <div class="library-item__time">三周前</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+            <div class="library-item" tabindex="0">
+              <div class="library-item__main">
+                <div class="library-item__title">想搬到京都的清单</div>
+                <div class="library-item__summary">列了三十条，最后选了一条："先去住两周再说"。</div>
+              </div>
+              <div class="library-item__time">四月</div>
+              <div class="library-item__actions">
+                <button class="library-item__action" aria-label="收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button>
+                <button class="library-item__action" aria-label="删除"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M5 4V2.5h6V4M5 4l.6 9h4.8L11 4"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 其他 tab 静态预览 — 让人一眼看到切过去是什么样 -->
+      <section class="library-empty-preview">
+        <div class="library-empty-preview__label">— 其他 tab 切过去会是这样 —</div>
+
+        <!-- 收藏 (有 3-4 条带 ★) -->
+        <div style="margin-bottom: var(--space-6);">
+          <div class="library-group__label" style="padding-left:0;margin-bottom:var(--space-2);">收藏 · 你点了星的</div>
+          <div class="library-list" style="background:rgba(255,255,255,0.45);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-2);">
+            <div class="library-item">
+              <div class="library-item__main">
+                <div class="library-item__title"><span class="star">★</span>写给老朋友的一封信</div>
+                <div class="library-item__summary">给阿芸的——读了很多遍，每次都觉得还行。</div>
+              </div>
+              <div class="library-item__time">今天</div>
+              <div class="library-item__actions"><button class="library-item__action" aria-label="取消收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button></div>
+            </div>
+            <div class="library-item">
+              <div class="library-item__main">
+                <div class="library-item__title"><span class="star">★</span>想法可视化 · 四问图</div>
+                <div class="library-item__summary">起源 / 阻力 / 下一步 / 谁帮 — 一年用了五次。</div>
+              </div>
+              <div class="library-item__time">5 天前</div>
+              <div class="library-item__actions"><button class="library-item__action" aria-label="取消收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button></div>
+            </div>
+            <div class="library-item">
+              <div class="library-item__main">
+                <div class="library-item__title"><span class="star">★</span>给妈妈解释一下 AI 是什么</div>
+                <div class="library-item__summary">"会写字的小猫"——她转给了她的姐妹团。</div>
+              </div>
+              <div class="library-item__time">今天</div>
+              <div class="library-item__actions"><button class="library-item__action" aria-label="取消收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button></div>
+            </div>
+            <div class="library-item">
+              <div class="library-item__main">
+                <div class="library-item__title"><span class="star">★</span>把今年想做的事列一列</div>
+                <div class="library-item__summary">三件"再说"——今年想做更老实点。</div>
+              </div>
+              <div class="library-item__time">昨天</div>
+              <div class="library-item__actions"><button class="library-item__action" aria-label="取消收藏"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.8 3.7 4.1.6-3 2.9.7 4.1L8 11.4 4.4 13.3l.7-4.1-3-2.9 4.1-.6z"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 我的模板 (4 小卡) -->
+        <div style="margin-bottom: var(--space-6);">
+          <div class="library-group__label" style="padding-left:0;margin-bottom:var(--space-2);">我的模板 · 你做过、想再用的</div>
+          <div class="library-mytemplate-grid">
+            <article class="library-mytemplate-card">
+              <div class="library-mytemplate-card__thumb">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="150" fill="#F3EEE5"/>
+                  <rect x="42" y="22" width="116" height="106" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="42" y="22" width="116" height="22" fill="#EBE0CF"/>
+                  <text x="100" y="38" font-family="Songti SC,serif" font-size="11" fill="#76583A" text-anchor="middle" font-style="italic">周末展览</text>
+                  <text x="100" y="78" font-family="Kaiti SC,serif" font-size="22" fill="#2B2520" text-anchor="middle">慢的人</text>
+                </svg>
+              </div>
+              <div class="library-mytemplate-card__body">
+                <h4 class="library-mytemplate-card__title">小红书海报 · 我的版本</h4>
+                <span class="library-mytemplate-card__meta">复用 7 次 · 改了 3 版</span>
+              </div>
+              <div class="library-mytemplate-card__actions">
+                <span class="a">编辑</span><span class="sep">·</span>
+                <span class="a">复制</span><span class="sep">·</span>
+                <span class="a">删除</span>
+              </div>
+            </article>
+
+            <article class="library-mytemplate-card">
+              <div class="library-mytemplate-card__thumb">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="150" fill="#FAF7F2"/>
+                  <rect x="36" y="20" width="128" height="110" fill="#FFFDF9" stroke="#ECE3D2" rx="3"/>
+                  <line x1="56" y1="32" x2="56" y2="118" stroke="#EBE0CF" stroke-width="0.5"/>
+                  <text x="64" y="46" font-family="Songti SC,serif" font-size="11" fill="#2B2520">阿——：</text>
+                  <line x1="64" y1="60" x2="148" y2="60" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="64" y1="70" x2="148" y2="70" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="64" y1="80" x2="132" y2="80" stroke="#D4C9B5" stroke-width="0.6"/>
+                </svg>
+              </div>
+              <div class="library-mytemplate-card__body">
+                <h4 class="library-mytemplate-card__title">信件 · 我的开场白</h4>
+                <span class="library-mytemplate-card__meta">复用 4 次</span>
+              </div>
+              <div class="library-mytemplate-card__actions">
+                <span class="a">编辑</span><span class="sep">·</span>
+                <span class="a">复制</span><span class="sep">·</span>
+                <span class="a">删除</span>
+              </div>
+            </article>
+
+            <article class="library-mytemplate-card">
+              <div class="library-mytemplate-card__thumb">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="150" fill="#F3EEE5"/>
+                  <circle cx="100" cy="75" r="22" fill="#EBE0CF" stroke="#8B6F47" stroke-width="0.8"/>
+                  <text x="100" y="79" font-family="Songti SC,serif" font-size="10" fill="#76583A" text-anchor="middle">想法</text>
+                  <line x1="78" y1="65" x2="46" y2="42" stroke="#D4C9B5"/>
+                  <circle cx="42" cy="38" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+                  <line x1="122" y1="65" x2="158" y2="42" stroke="#D4C9B5"/>
+                  <circle cx="162" cy="38" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+                </svg>
+              </div>
+              <div class="library-mytemplate-card__body">
+                <h4 class="library-mytemplate-card__title">四问图 · 想法整理</h4>
+                <span class="library-mytemplate-card__meta">复用 5 次</span>
+              </div>
+              <div class="library-mytemplate-card__actions">
+                <span class="a">编辑</span><span class="sep">·</span>
+                <span class="a">复制</span><span class="sep">·</span>
+                <span class="a">删除</span>
+              </div>
+            </article>
+
+            <article class="library-mytemplate-card">
+              <div class="library-mytemplate-card__thumb">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="150" fill="#FAF7F2"/>
+                  <rect x="30" y="18" width="140" height="116" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <text x="42" y="36" font-family="Songti SC,serif" font-size="11" fill="#2B2520">本周做了什么</text>
+                  <line x1="42" y1="56" x2="158" y2="56" stroke="#EBE0CF"/>
+                  <line x1="76" y1="80" x2="148" y2="80" stroke="#D4C9B5" stroke-width="0.4"/>
+                  <line x1="76" y1="92" x2="158" y2="92" stroke="#D4C9B5" stroke-width="0.4"/>
+                </svg>
+              </div>
+              <div class="library-mytemplate-card__body">
+                <h4 class="library-mytemplate-card__title">周报 · 我的版本</h4>
+                <span class="library-mytemplate-card__meta">复用 2 次</span>
+              </div>
+              <div class="library-mytemplate-card__actions">
+                <span class="a">编辑</span><span class="sep">·</span>
+                <span class="a">复制</span><span class="sep">·</span>
+                <span class="a">删除</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- 草稿 (2-3 张未完成) -->
+        <div style="margin-bottom: var(--space-6);">
+          <div class="library-group__label" style="padding-left:0;margin-bottom:var(--space-2);">草稿 · 你还没写完的</div>
+          <div class="library-draft-grid">
+            <div class="library-draft">
+              <div class="library-draft__badge">正在写…</div>
+              <div class="library-draft__title">给小满的生日卡 · 第二版</div>
+              <div class="library-draft__excerpt">"愿你今年比去年自由一点点。不是大自由，就那种——周五下午突然不想吃食堂，就出门走了的那种自由。"</div>
+              <div class="library-draft__time">最后改动 · 今天 13:08</div>
+            </div>
+            <div class="library-draft">
+              <div class="library-draft__badge">正在写…</div>
+              <div class="library-draft__title">辞职信 · 第二次尝试</div>
+              <div class="library-draft__excerpt">"这次想得清楚了一些。不是不喜欢这里，是想去一个我现在还说不清的地方。"</div>
+              <div class="library-draft__time">最后改动 · 昨天 23:41</div>
+            </div>
+            <div class="library-draft">
+              <div class="library-draft__badge">正在写…</div>
+              <div class="library-draft__title">六月想做的三件事</div>
+              <div class="library-draft__excerpt">"一、把那本书读完。二、给阿芸寄那本书。三、——还没想。"</div>
+              <div class="library-draft__time">最后改动 · 3 天前</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 空状态 demo（4 条 copy） -->
+        <div style="margin-top: var(--space-7);">
+          <div class="library-group__label" style="padding-left:0;margin-bottom:var(--space-3);">— 各 tab 真空了的话，是这样 —</div>
+          <div class="library-empty-grid">
+            <div class="empty">
+              <div class="empty__mark">心</div>
+              <h4 class="empty__title">还没有对话</h4>
+              <p class="empty__body">你不试一次，<br/>我就不知道帮你。</p>
+              <div style="display:flex;gap:var(--space-2);margin-top:var(--space-3);">
+                <a class="btn btn--primary btn--sm" href="index.html">说一句试试</a>
+              </div>
+            </div>
+            <div class="empty">
+              <div class="empty__mark">★</div>
+              <h4 class="empty__title">没收藏的</h4>
+              <p class="empty__body">喜欢的就点个星。<br/>以后回来一眼就找到。</p>
+            </div>
+            <div class="empty">
+              <div class="empty__mark">⌑</div>
+              <h4 class="empty__title">还没做过模板</h4>
+              <p class="empty__body">任何你觉得好的产物，<br/>都可以转成模板给以后的自己。</p>
+            </div>
+            <div class="empty">
+              <div class="empty__mark">…</div>
+              <h4 class="empty__title">目前没在做的事</h4>
+              <p class="empty__body">挺好的。<br/>有想做的，再回来。</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

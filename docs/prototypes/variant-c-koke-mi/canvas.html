@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kokoro · Canvas — 一封写给老朋友的信</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app app--canvas">
+
+  <!-- Sidebar (narrowed in canvas mode) -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark"></div>
+      <div class="sidebar__brand-name">Kokoro</div>
+    </div>
+
+    <a href="index.html" class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      新对话
+    </a>
+    <div class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.3-4.3"/></svg>
+      搜索
+    </div>
+    <div class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><path d="M4 7h16M6 7v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+      模板库
+    </div>
+
+    <div class="sidebar__divider"></div>
+    <div class="sidebar__group-title">最近</div>
+    <nav class="sidebar__history">
+      <a href="#" class="sidebar__history-item sidebar__history-item--current">一封写给老朋友的信</a>
+      <a href="#" class="sidebar__history-item">毕业典礼小红书海报</a>
+      <a href="#" class="sidebar__history-item">复盘第三季度产品节奏</a>
+      <a href="#" class="sidebar__history-item">给妈妈做一份养生周历</a>
+      <a href="#" class="sidebar__history-item">读书会讲稿 · 《银河系搭车客指南》</a>
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="sidebar__avatar">心</div>
+      <div class="sidebar__user-name">
+        吴小心
+        <small>免费 · 22 句</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Split main: Chat + Canvas -->
+  <main class="main">
+    <div class="split">
+
+      <!-- Left half: Chat -->
+      <section class="split__chat">
+        <div class="main__topbar">
+          <div class="main__topbar-left">在 Canvas 上做事</div>
+        </div>
+
+        <div class="chat__stream">
+          <div class="chat__inner">
+
+            <div class="bubble-user">
+              再温柔一点，开头别那么直接。
+            </div>
+
+            <div class="response">
+              <p>好。我把开头那句重写了，你看右边。</p>
+              <p style="color: var(--color-text-secondary); font-size: var(--text-small);">
+                如果觉得还是太硬，告诉我"再软一些"，我换一个起手式。
+              </p>
+            </div>
+
+            <div class="bubble-user">
+              结尾那句我自己改了一下，你那个太"懂事"了。
+            </div>
+
+            <div class="response">
+              <p>你在动画布，我等你弄完再说。</p>
+            </div>
+
+            <div class="streaming">
+              <span class="streaming__dot"></span>
+              正在等你这边的改动……
+            </div>
+
+          </div>
+        </div>
+
+        <div class="input-dock">
+          <form class="input-pill" onsubmit="event.preventDefault();">
+            <button type="button" class="input-pill__attach" aria-label="附件">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <input class="input-pill__input" placeholder="继续聊……" />
+            <button type="button" class="input-pill__chip">
+              细想
+              <svg class="icon" width="10" height="10" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button type="submit" class="input-pill__send input-pill__send--idle" aria-label="发送">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right half: Canvas -->
+      <section class="split__canvas">
+        <!-- Top toolbar -->
+        <div class="canvas-toolbar">
+          <button class="canvas-toolbar__name">
+            一封写给老朋友的信
+            <svg class="icon" width="11" height="11" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <button class="canvas-toolbar__icon-btn" aria-label="撤销">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-2"/></svg>
+          </button>
+          <button class="canvas-toolbar__icon-btn" aria-label="重做">
+            <svg class="icon" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h2"/></svg>
+          </button>
+          <div class="canvas-toolbar__spacer"></div>
+          <span style="font-size: 12px; color: var(--color-text-tertiary); margin-right: 8px;">自动存好了</span>
+          <button class="canvas-toolbar__share">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+            分享
+          </button>
+          <button class="canvas-toolbar__icon-btn" aria-label="关闭">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Pulse band (still generating subtle changes) -->
+        <div class="canvas-pulse-band"></div>
+
+        <!-- Document -->
+        <div class="canvas-doc">
+          <article class="canvas-doc__paper">
+            <div class="canvas-doc__eyebrow">— 一封信 —</div>
+            <h1 class="canvas-doc__h1">致 小雨</h1>
+
+            <p class="canvas-doc__p">
+              你还记得吗，大三那年的中秋节，我们俩在宿舍门口分一块蛋黄月饼，你说蛋黄太干，要配半瓶矿泉水才能咽下去。
+            </p>
+
+            <p class="canvas-doc__p">
+              三年没联系了。这三年里，我搬过两次家，换过三份工作，养死了一盆薄荷，又重新养活了第二盆。每次想起你，都是一些很小的事——某个下雨天的傍晚，路过一家川菜馆门口，老板娘在收摊；某条地铁广播里突然念到"成都"两个字；甚至有一次在便利店看到那种带蛋黄的青团，我下意识就笑了一下。
+            </p>
+
+            <p class="canvas-doc__p">
+              我不太知道怎么开口才不显得突兀。所以这封信也没打算说什么大事。
+            </p>
+
+            <p class="canvas-doc__p">
+              就是想让你知道，我这边一切都好，也想知道你那边的天气。
+            </p>
+
+            <div class="canvas-doc__sig">— 小心，写于一个晴天</div>
+
+            <div class="canvas-doc__meta">
+              <span>312 字 · 自动存好了</span>
+              <span>v3 · Kokoro 草稿</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Right rail -->
+        <div class="canvas-rail">
+          <button class="canvas-rail__btn canvas-rail__btn--active" aria-label="大纲">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+          </button>
+          <button class="canvas-rail__btn" aria-label="评论">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <button class="canvas-rail__btn" aria-label="样式">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 22a10 10 0 1 1 10-10c0 5-9 8-7 4s-2-5-3-5"/></svg>
+          </button>
+          <button class="canvas-rail__btn" aria-label="资料">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

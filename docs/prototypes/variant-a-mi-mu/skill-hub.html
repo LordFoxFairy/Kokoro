@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Skill Hub · 给它加点本事</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <link rel="stylesheet" href="css/hub.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item is-current" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+            <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">把读书笔记整理成课件</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <div class="topbar">
+        <span class="topbar__title">Skill Hub</span>
+        <div class="topbar__right">
+          <a class="btn btn--ghost btn--sm" href="index.html">回到主页</a>
+        </div>
+      </div>
+
+      <div class="hub">
+        <section class="hub__hero">
+          <div class="hub__eyebrow">Skill Hub</div>
+          <h1 class="hub__title">给它加点<span class="accent">本事</span></h1>
+          <p class="hub__sub">技能是 Kokoro 在创作时会自动用上的小本领——启用后，它在对话和组件里都更懂行。</p>
+        </section>
+
+        <div class="hub__bar">
+          <div class="hub__search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>搜索技能……</div>
+          <div class="hub__stat">已启用 <b>3</b> / 共 10 个技能</div>
+        </div>
+
+        <!-- 创作技能 -->
+        <section class="hub__group">
+          <div class="hub__group-head"><h2 class="hub__group-title">创作技能</h2><span class="hub__group-rule"></span><span class="hub__group-count">6 个</span></div>
+          <div class="hub__grid">
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">✍️</div><div class="hub__card-head"><h3 class="hub__name">文案润色</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">把粗稿改得通顺、有温度，保留你的语气，不写成"AI 腔"。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">写作</span><span class="hub__tag">文档</span></div><button class="hub__btn hub__btn--on" type="button">已启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🎨</div><div class="hub__card-head"><h3 class="hub__name">配色顾问</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">给一组协调的暖色搭配，附上用在哪、为什么，可一键套到设计里。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">设计</span><span class="hub__tag">图片</span></div><button class="hub__btn hub__btn--on" type="button">已启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">📐</div><div class="hub__card-head"><h3 class="hub__name">排版美学</h3><div class="hub__by">素白工作室</div></div></div>
+              <p class="hub__desc">自动对齐、留白、定字阶，让海报和文档看起来"有人排过"。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">设计</span><span class="hub__tag">站点</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🎬</div><div class="hub__card-head"><h3 class="hub__name">分镜脚本</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">把一个想法拆成一镜一镜，配景别与时长，直接喂给视频组件。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">视频</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🖌</div><div class="hub__card-head"><h3 class="hub__name">图像精修</h3><div class="hub__by">墨工社</div></div></div>
+              <p class="hub__desc">局部重绘、去瑕疵、补光影，挑出一张里最该改的地方。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">图片</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🗣</div><div class="hub__card-head"><h3 class="hub__name">品牌语调</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">记住你的说话风格，之后写文案、回评论都是同一个"人"。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">写作</span><span class="hub__tag">营销</span></div><button class="hub__btn hub__btn--on" type="button">已启用</button></div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 思考技能 -->
+        <section class="hub__group">
+          <div class="hub__group-head"><h2 class="hub__group-title">思考技能</h2><span class="hub__group-rule"></span><span class="hub__group-count">4 个</span></div>
+          <div class="hub__grid">
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">💡</div><div class="hub__card-head"><h3 class="hub__name">头脑风暴</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">给十个互不一样的方向，逼自己跳出第一个想到的答案。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">思考</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🧭</div><div class="hub__card-head"><h3 class="hub__name">思维整理</h3><div class="hub__by">Kokoro 官方</div></div></div>
+              <p class="hub__desc">把一堆杂乱想法理成有层次的结构，可直接出一张思维导图。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">思考</span><span class="hub__tag">文档</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🔍</div><div class="hub__card-head"><h3 class="hub__name">资料调研</h3><div class="hub__by">知谷</div></div></div>
+              <p class="hub__desc">找资料、列要点、附上出处，给你一份能交差的小综述。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">研究</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+            <div class="hub__card">
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">📊</div><div class="hub__card-head"><h3 class="hub__name">数据洞察</h3><div class="hub__by">数感实验室</div></div></div>
+              <p class="hub__desc">从一份表格里读出趋势和异常，说人话，并能直接出看板。</p>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">数据</span><span class="hub__tag">站点</span></div><button class="hub__btn" type="button">启用</button></div>
+            </div>
+
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+/* ============================================================
+   "+" 附件下拉（attach menu）· CSS-only，基于 <details>/<summary>
+   复用既有 .mode-menu / details.tool-call-details 的纸感 token。
+   单独成文件，避免再撑大 components.css。各页 input-pill 引用。
+   ============================================================ */
+.attach { position: relative; display: inline-flex; flex: none; }
+summary.input-pill__attach { list-style: none; cursor: pointer; }
+summary.input-pill__attach::-webkit-details-marker { display: none; }
+summary.input-pill__attach::marker { display: none; }
+summary.input-pill__attach svg { transition: transform .18s ease; }
+.attach[open] > summary.input-pill__attach svg { transform: rotate(45deg); }
+
+.attach__menu {
+  position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 40;
+  min-width: 232px; padding: var(--space-2);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px -10px rgba(60,45,30,0.18), 0 2px 6px rgba(60,45,30,0.06);
+  animation: attach-pop .14s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes attach-pop { from { opacity:0; transform: translateY(4px);} to { opacity:1; transform:none;} }
+.attach__group-label { font-size: 11px; color: var(--color-text-tertiary); padding: 4px 8px 2px; letter-spacing:.3px; }
+.attach__item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px; border: none; background: none; border-radius: var(--radius-sm);
+  font: inherit; font-size: var(--text-small); color: var(--color-text-primary);
+  text-align: left; cursor: pointer;
+}
+.attach__item:hover, .attach__item:focus-visible { background: var(--color-surface-hover); outline: none; }
+.attach__item svg { color: var(--color-accent); flex: none; }
+.attach__divider { height: 1px; background: var(--color-border); margin: 6px 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .attach__menu { animation: none; }
+  summary.input-pill__attach svg { transition: none; }
+}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · こころ — 订阅与定价</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <style>
+    /* =================================================================
+       pricing.html — 页内专属样式 (BEM .pr-*)
+       顶栏(返回) · 3 档计划卡(Plus 主推高亮) · 功能对比表 · CTA
+       ================================================================= */
+    .pr { position: relative; z-index: 2; }
+    .pr__wrap { max-width: 1000px; margin: 0 auto; padding: 0 var(--space-6); }
+
+    /* ---- 顶栏 ---- */
+    .pr-nav {
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg-subtle);
+    }
+    .pr-nav__inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      height: 64px;
+      padding: 0 var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pr-nav__back {
+      color: var(--color-text-secondary);
+      font-size: var(--text-small);
+    }
+    .pr-nav__back:hover { color: var(--color-text-primary); }
+
+    /* ---- Hero ---- */
+    .pr-hero {
+      text-align: center;
+      padding: var(--space-8) var(--space-6) var(--space-7);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .pr-hero__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-micro);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+    }
+    .pr-hero__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-display);
+      line-height: var(--leading-tight);
+      font-weight: 600;
+      margin: var(--space-3) 0 var(--space-3);
+    }
+    .pr-hero__sub {
+      font-size: var(--text-display-sub);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+    @media (max-width: 640px) { .pr-hero__title { font-size: 32px; } }
+
+    /* ---- 计划卡 ---- */
+    .pr-plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+      align-items: start;
+      padding-bottom: var(--space-8);
+    }
+    .pr-plan {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .pr-plan--feature {
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      background:
+        linear-gradient(180deg, #FBF6EC 0%, var(--color-surface) 30%);
+    }
+    .pr-plan__badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-accent);
+      color: #fff;
+      font-size: var(--text-micro);
+      letter-spacing: 0.06em;
+      padding: 4px 14px;
+      border-radius: 999px;
+      box-shadow: var(--shadow-sm);
+    }
+    .pr-plan__tier {
+      font-family: var(--font-serif);
+      font-size: var(--text-h2);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .pr-plan__price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .pr-plan__amt {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 600;
+      color: var(--color-accent);
+      line-height: 1;
+    }
+    .pr-plan__unit {
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+    }
+    .pr-plan__tag {
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+    .pr-plan__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .pr-plan__item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      font-size: var(--text-small);
+      color: var(--color-text-primary);
+      line-height: var(--leading-body);
+    }
+    .pr-plan__check {
+      color: var(--color-success);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .pr-plan__cta { width: 100%; justify-content: center; margin-top: auto; }
+    .pr-plan__cta--current {
+      pointer-events: none;
+      background: var(--color-bg-subtle);
+      color: var(--color-text-tertiary);
+      border-color: var(--color-border);
+    }
+    @media (max-width: 840px) { .pr-plans { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+
+    /* ---- 功能对比 ---- */
+    .pr-compare { padding: var(--space-8) 0; border-top: 1px solid var(--color-border); }
+    .pr-compare__head {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .pr-compare__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h1);
+      font-weight: 600;
+      margin: 0;
+    }
+    .pr-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      overflow: hidden;
+      font-size: var(--text-small);
+    }
+    .pr-table th, .pr-table td {
+      padding: var(--space-3) var(--space-4);
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .pr-table thead th {
+      background: var(--color-bg-subtle);
+      font-family: var(--font-serif);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .pr-table th:first-child, .pr-table td:first-child {
+      text-align: left;
+      color: var(--color-text-secondary);
+    }
+    .pr-table th.pr-table__feat { color: var(--color-accent); }
+    .pr-table tbody tr:last-child td { border-bottom: 0; }
+    .pr-table__yes { color: var(--color-success); font-weight: 700; }
+    .pr-table__no { color: var(--color-text-tertiary); }
+
+    /* ---- 底部 CTA ---- */
+    .pr-cta {
+      text-align: center;
+      padding: var(--space-8) var(--space-6);
+      background: var(--color-bg-subtle);
+      border-top: 1px solid var(--color-border);
+    }
+    .pr-cta__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h1);
+      font-weight: 600;
+      margin: 0 0 var(--space-3);
+    }
+    .pr-cta__sub { color: var(--color-text-secondary); margin: 0 0 var(--space-5); }
+  </style>
+</head>
+<body>
+  <div class="pr">
+
+    <!-- ====== 顶栏 ====== -->
+    <header class="pr-nav">
+      <div class="pr-nav__inner">
+        <a class="brand" href="marketing.html" style="padding:0;">
+          <div class="brand__mark">心</div>
+          <div class="brand__name">Kokoro <em>こころ</em></div>
+        </a>
+        <a class="pr-nav__back" href="marketing.html">← 返回</a>
+      </div>
+    </header>
+
+    <!-- ====== Hero ====== -->
+    <section class="pr-hero">
+      <div class="pr-hero__eyebrow">Pricing</div>
+      <h1 class="pr-hero__title">选一个合适的节奏</h1>
+      <p class="pr-hero__sub">先免费用起来，需要更多额度与协作时再升级。</p>
+    </section>
+
+    <!-- ====== 计划卡 ====== -->
+    <section class="pr__wrap">
+      <div class="pr-plans">
+
+        <!-- 免费（当前） -->
+        <article class="pr-plan">
+          <div class="pr-plan__tier">免费</div>
+          <div class="pr-plan__price">
+            <span class="pr-plan__amt">¥0</span>
+            <span class="pr-plan__unit">/ 月</span>
+          </div>
+          <p class="pr-plan__tag">日常创作的起点</p>
+          <ul class="pr-plan__list">
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 全部 7 种创作能力试用</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 每日基础生成额度</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 标准清晰度导出</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 个人作品库</li>
+          </ul>
+          <a class="btn pr-plan__cta pr-plan__cta--current">当前方案</a>
+        </article>
+
+        <!-- Plus（主推高亮） -->
+        <article class="pr-plan pr-plan--feature">
+          <span class="pr-plan__badge">最受欢迎</span>
+          <div class="pr-plan__tier">Plus</div>
+          <div class="pr-plan__price">
+            <span class="pr-plan__amt">¥39</span>
+            <span class="pr-plan__unit">/ 月</span>
+          </div>
+          <p class="pr-plan__tag">认真创作者的主力选择</p>
+          <ul class="pr-plan__list">
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 高额度 · 优先生成队列</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 更长视频 / 文档 / 音频</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 高清 / 无水印导出</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> Skill / MCP Hub 全量接入</li>
+          </ul>
+          <a class="btn btn--primary pr-plan__cta" href="login.html">升级到 Plus</a>
+        </article>
+
+        <!-- 团队 -->
+        <article class="pr-plan">
+          <div class="pr-plan__tier">团队</div>
+          <div class="pr-plan__price">
+            <span class="pr-plan__amt">¥99</span>
+            <span class="pr-plan__unit">/ 人 / 月</span>
+          </div>
+          <p class="pr-plan__tag">和伙伴在同一张纸上</p>
+          <ul class="pr-plan__list">
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 包含 Plus 全部能力</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 协作空间 · 共享产物</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 成员权限管理</li>
+            <li class="pr-plan__item"><span class="pr-plan__check">✓</span> 集中计费与发票</li>
+          </ul>
+          <a class="btn pr-plan__cta" href="login.html">升级到团队</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ====== 功能对比 ====== -->
+    <section class="pr-compare">
+      <div class="pr__wrap">
+        <div class="pr-compare__head">
+          <h2 class="pr-compare__title">功能对比</h2>
+        </div>
+        <table class="pr-table">
+          <thead>
+            <tr>
+              <th>功能</th>
+              <th>免费</th>
+              <th class="pr-table__feat">Plus</th>
+              <th>团队</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>每日生成额度</td>
+              <td>基础</td>
+              <td>高</td>
+              <td>高 · 共享池</td>
+            </tr>
+            <tr>
+              <td>优先生成队列</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__yes">✓</td>
+              <td class="pr-table__yes">✓</td>
+            </tr>
+            <tr>
+              <td>高清 / 无水印导出</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__yes">✓</td>
+              <td class="pr-table__yes">✓</td>
+            </tr>
+            <tr>
+              <td>Skill / MCP Hub</td>
+              <td>部分</td>
+              <td class="pr-table__yes">全量</td>
+              <td class="pr-table__yes">全量</td>
+            </tr>
+            <tr>
+              <td>团队协作空间</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__yes">✓</td>
+            </tr>
+            <tr>
+              <td>权限管理 / 集中计费</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__no">—</td>
+              <td class="pr-table__yes">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== 底部 CTA ====== -->
+    <section class="pr-cta">
+      <h2 class="pr-cta__title">先免费用起来</h2>
+      <p class="pr-cta__sub">注册即赠免费额度，需要时随时升级。</p>
+      <a class="btn btn--primary btn--lg" href="login.html">免费开始</a>
+    </section>
+
+  </div>
+</body>
+</html>

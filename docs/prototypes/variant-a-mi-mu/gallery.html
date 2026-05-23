@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 全部产物 · 想做点什么？</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <style>
+    /* ===== Gallery page (页内样式 · BEM .gallery__*) ===== */
+    .gallery {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: var(--space-7) var(--space-6) var(--space-8);
+    }
+
+    .gallery__hero {
+      margin-bottom: var(--space-7);
+    }
+    .gallery__eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-3);
+    }
+    .gallery__title {
+      font-family: var(--font-serif);
+      font-size: 38px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--color-text-primary);
+      margin: 0 0 var(--space-3);
+    }
+    .gallery__title .accent {
+      color: var(--color-accent);
+      font-style: italic;
+    }
+    .gallery__sub {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    .gallery__group {
+      margin-bottom: var(--space-7);
+    }
+    .gallery__group-head {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    .gallery__group-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+    .gallery__group-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+    .gallery__group-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-tertiary);
+    }
+
+    .gallery__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+    }
+
+    /* ===== Card ===== */
+    .gallery__card {
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper); /* 6px 6px 4px 4px */
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .gallery__card:hover {
+      transform: translateY(-3px);
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-md);
+    }
+    .gallery__card:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-focus);
+      border-color: var(--color-accent);
+    }
+
+    .gallery__thumb {
+      background: var(--color-bg-subtle);
+      border-bottom: 1px solid var(--color-border);
+      line-height: 0;
+    }
+    .gallery__thumb svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .gallery__body {
+      padding: var(--space-4) var(--space-4) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .gallery__card-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .gallery__emoji {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .gallery__name {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin: 0;
+    }
+    .gallery__desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--color-text-secondary);
+      margin: 0;
+    }
+
+    @media (max-width: 880px) {
+      .gallery__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .gallery__grid { grid-template-columns: 1fr; }
+      .gallery__title { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar (照抄 index.html) ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+        <a class="sidebar-recent__item" href="#">一个安静的落地页</a>
+        <a class="sidebar-recent__item" href="#">五月做菜的灵感</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <div class="topbar">
+        <span class="topbar__title">全部产物</span>
+        <div class="topbar__right">
+          <a class="btn btn--ghost btn--sm" href="index.html">回到主页</a>
+        </div>
+      </div>
+
+      <div class="gallery">
+
+        <!-- Hero -->
+        <section class="gallery__hero">
+          <div class="gallery__eyebrow">全部产物</div>
+          <h1 class="gallery__title">想做点<span class="accent">什么</span>？</h1>
+          <p class="gallery__sub">挑一种，或者直接把想法说给我。</p>
+        </section>
+
+        <!-- 视觉创作 -->
+        <section class="gallery__group">
+          <div class="gallery__group-head">
+            <h2 class="gallery__group-title">视觉创作</h2>
+            <span class="gallery__group-rule"></span>
+            <span class="gallery__group-count">6 种</span>
+          </div>
+          <div class="gallery__grid">
+
+            <!-- 🎨 小红书海报 -->
+            <a class="gallery__card" href="canvas-poster.html" aria-label="小红书海报">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="58" y="16" width="84" height="98" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="58" y="16" width="84" height="20" fill="#EBE0CF"/>
+                  <text x="100" y="30" font-family="Songti SC,serif" font-size="9" fill="#76583A" text-anchor="middle" font-style="italic">周末展览</text>
+                  <text x="100" y="64" font-family="Kaiti SC,serif" font-size="18" fill="#2B2520" text-anchor="middle">慢的人</text>
+                  <line x1="72" y1="78" x2="128" y2="78" stroke="#D4C9B5" stroke-width="0.5"/>
+                  <text x="100" y="98" font-family="JetBrains Mono,monospace" font-size="6" fill="#B8AC9C" text-anchor="middle">@xiao_xin</text>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🎨</span>
+                  <h3 class="gallery__name">小红书海报</h3>
+                </div>
+                <p class="gallery__desc">竖版好看的封面，标题、配色、留白都帮你排好。</p>
+              </div>
+            </a>
+
+            <!-- 🖼️ AI 绘画 -->
+            <a class="gallery__card" href="canvas-image.html" aria-label="AI 绘画">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <rect x="40" y="20" width="120" height="90" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <circle cx="72" cy="48" r="9" fill="#F4E6CC"/>
+                  <path d="M48 100 L82 64 L104 86 L128 56 L152 100 Z" fill="#EBE0CF"/>
+                  <path d="M48 100 L82 72 L102 90 L128 68 L152 100 Z" fill="#D4C9B5"/>
+                  <line x1="40" y1="100" x2="160" y2="100" stroke="#E8E0D2"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🖼️</span>
+                  <h3 class="gallery__name">AI 绘画</h3>
+                </div>
+                <p class="gallery__desc">一句话画一张图，反复改，直到它像你想的样子。</p>
+              </div>
+            </a>
+
+            <!-- 📣 营销物料组 -->
+            <a class="gallery__card" href="canvas-marketing.html" aria-label="营销物料组">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="34" y="26" width="52" height="78" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="74" y="34" width="52" height="78" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="114" y="26" width="52" height="78" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="74" y="34" width="52" height="16" fill="#EBE0CF"/>
+                  <line x1="84" y1="62" x2="116" y2="62" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="84" y1="72" x2="110" y2="72" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <rect x="86" y="90" width="28" height="9" fill="#8B6F47" rx="4.5"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">📣</span>
+                  <h3 class="gallery__name">营销物料组</h3>
+                </div>
+                <p class="gallery__desc">一套配齐：主图、详情、朋友圈，风格统一。</p>
+              </div>
+            </a>
+
+            <!-- ✨ 品牌视觉 -->
+            <a class="gallery__card" href="canvas-design.html" aria-label="品牌视觉">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <circle cx="62" cy="50" r="20" fill="#EBE0CF" stroke="#8B6F47" stroke-width="0.8"/>
+                  <text x="62" y="56" font-family="Songti SC,serif" font-size="16" fill="#76583A" text-anchor="middle">心</text>
+                  <rect x="98" y="40" width="14" height="14" fill="#8B6F47"/>
+                  <rect x="118" y="40" width="14" height="14" fill="#C8A26B"/>
+                  <rect x="138" y="40" width="14" height="14" fill="#EBE0CF"/>
+                  <text x="62" y="92" font-family="Songti SC,serif" font-size="11" fill="#2B2520" text-anchor="middle">Kokoro</text>
+                  <line x1="98" y1="74" x2="166" y2="74" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="98" y1="84" x2="148" y2="84" stroke="#D4C9B5" stroke-width="0.6"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">✨</span>
+                  <h3 class="gallery__name">品牌视觉</h3>
+                </div>
+                <p class="gallery__desc">取个名、定个色、配个标，一套小品牌的样子。</p>
+              </div>
+            </a>
+
+            <!-- 🎬 短片·分镜 -->
+            <a class="gallery__card" href="canvas-video.html" aria-label="短片·分镜">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="32" y="30" width="46" height="34" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="86" y="30" width="46" height="34" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="140" y="30" width="28" height="34" fill="#EBE0CF" stroke="#D4C9B5" rx="2"/>
+                  <path d="M148 41 L160 47 L148 53 Z" fill="#8B6F47"/>
+                  <text x="55" y="80" font-family="JetBrains Mono,monospace" font-size="7" fill="#B8AC9C" text-anchor="middle">01</text>
+                  <text x="109" y="80" font-family="JetBrains Mono,monospace" font-size="7" fill="#B8AC9C" text-anchor="middle">02</text>
+                  <text x="154" y="80" font-family="JetBrains Mono,monospace" font-size="7" fill="#B8AC9C" text-anchor="middle">03</text>
+                  <line x1="32" y1="94" x2="168" y2="94" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <rect x="32" y="98" width="40" height="6" fill="#EBE0CF" rx="3"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🎬</span>
+                  <h3 class="gallery__name">短片·分镜</h3>
+                </div>
+                <p class="gallery__desc">把一个想法拆成几个镜头，先看分镜再生成。</p>
+              </div>
+            </a>
+
+            <!-- 🗣️ 会说话的照片 -->
+            <a class="gallery__card" href="canvas-lipsync.html" aria-label="会说话的照片">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <rect x="62" y="22" width="76" height="76" fill="#FFFDF9" stroke="#E8E0D2" rx="4"/>
+                  <circle cx="100" cy="52" r="14" fill="#EBE0CF"/>
+                  <path d="M82 92 Q100 72 118 92 Z" fill="#EBE0CF"/>
+                  <path d="M92 60 Q100 66 108 60" fill="none" stroke="#8B6F47" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M148 44 Q158 52 148 60" fill="none" stroke="#C8A26B" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M156 38 Q172 52 156 66" fill="none" stroke="#D4C9B5" stroke-width="1.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🗣️</span>
+                  <h3 class="gallery__name">会说话的照片</h3>
+                </div>
+                <p class="gallery__desc">给一张照片配上声音，让它开口说你的话。</p>
+              </div>
+            </a>
+
+          </div>
+        </section>
+
+        <!-- 文档表达 -->
+        <section class="gallery__group">
+          <div class="gallery__group-head">
+            <h2 class="gallery__group-title">文档表达</h2>
+            <span class="gallery__group-rule"></span>
+            <span class="gallery__group-count">4 种</span>
+          </div>
+          <div class="gallery__grid">
+
+            <!-- 💌 写一封信 -->
+            <a class="gallery__card" href="canvas.html" aria-label="写一封信">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="44" y="18" width="112" height="94" fill="#FFFDF9" stroke="#ECE3D2" rx="3"/>
+                  <line x1="64" y1="28" x2="64" y2="102" stroke="#EBE0CF" stroke-width="0.5"/>
+                  <text x="72" y="40" font-family="Songti SC,serif" font-size="10" fill="#2B2520">阿芸：</text>
+                  <line x1="72" y1="52" x2="144" y2="52" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="72" y1="62" x2="144" y2="62" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="72" y1="72" x2="128" y2="72" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="72" y1="82" x2="144" y2="82" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <text x="144" y="102" font-family="Kaiti SC,cursive" font-size="10" fill="#76583A" text-anchor="end" font-style="italic">— 小心</text>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">💌</span>
+                  <h3 class="gallery__name">写一封信</h3>
+                </div>
+                <p class="gallery__desc">把心里话好好说出来，措辞、语气慢慢琢磨。</p>
+              </div>
+            </a>
+
+            <!-- 📝 学习课件 -->
+            <a class="gallery__card" href="canvas-courseware.html" aria-label="学习课件">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <rect x="30" y="18" width="140" height="96" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <text x="44" y="40" font-family="Songti SC,serif" font-size="12" fill="#2B2520">第 3 章</text>
+                  <text x="44" y="54" font-family="Songti SC,serif" font-size="9" fill="#7A6F62">— 关于专注</text>
+                  <line x1="44" y1="62" x2="156" y2="62" stroke="#EBE0CF"/>
+                  <rect x="44" y="74" width="6" height="6" fill="#8B6F47"/>
+                  <line x1="56" y1="78" x2="124" y2="78" stroke="#D4C9B5" stroke-width="0.8"/>
+                  <rect x="44" y="88" width="6" height="6" fill="#8B6F47"/>
+                  <line x1="56" y1="92" x2="104" y2="92" stroke="#D4C9B5" stroke-width="0.8"/>
+                  <rect x="44" y="102" width="6" height="6" fill="#EBE0CF"/>
+                  <line x1="56" y1="106" x2="114" y2="106" stroke="#D4C9B5" stroke-width="0.8"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">📝</span>
+                  <h3 class="gallery__name">学习课件</h3>
+                </div>
+                <p class="gallery__desc">把笔记理成有章节、能讲的课件，条理清楚。</p>
+              </div>
+            </a>
+
+            <!-- 📑 演示稿 Deck -->
+            <a class="gallery__card" href="canvas-deck.html" aria-label="演示稿 Deck">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="44" y="22" width="112" height="68" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <text x="100" y="52" font-family="Songti SC,serif" font-size="14" fill="#2B2520" text-anchor="middle">慢，是一种</text>
+                  <text x="100" y="70" font-family="Songti SC,serif" font-size="14" fill="#8B6F47" text-anchor="middle" font-style="italic">选择</text>
+                  <rect x="60" y="100" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="90" y="100" width="20" height="14" fill="#EBE0CF" stroke="#D4C9B5" rx="2"/>
+                  <rect x="120" y="100" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">📑</span>
+                  <h3 class="gallery__name">演示稿 Deck</h3>
+                </div>
+                <p class="gallery__desc">一页页讲清楚，封面、要点、收尾都帮你搭好。</p>
+              </div>
+            </a>
+
+            <!-- 💡 想法可视化 -->
+            <a class="gallery__card" href="canvas-mindmap.html" aria-label="想法可视化">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <circle cx="100" cy="65" r="20" fill="#EBE0CF" stroke="#8B6F47" stroke-width="0.8"/>
+                  <text x="100" y="69" font-family="Songti SC,serif" font-size="10" fill="#76583A" text-anchor="middle">想法</text>
+                  <line x1="80" y1="56" x2="50" y2="36" stroke="#D4C9B5"/>
+                  <circle cx="46" cy="32" r="9" fill="#FFFDF9" stroke="#D4C9B5"/>
+                  <line x1="120" y1="56" x2="150" y2="36" stroke="#D4C9B5"/>
+                  <circle cx="154" cy="32" r="9" fill="#FFFDF9" stroke="#D4C9B5"/>
+                  <line x1="80" y1="74" x2="50" y2="96" stroke="#D4C9B5"/>
+                  <circle cx="46" cy="100" r="9" fill="#FFFDF9" stroke="#D4C9B5"/>
+                  <line x1="120" y1="74" x2="150" y2="96" stroke="#D4C9B5"/>
+                  <circle cx="154" cy="100" r="9" fill="#FFFDF9" stroke="#D4C9B5"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">💡</span>
+                  <h3 class="gallery__name">想法可视化</h3>
+                </div>
+                <p class="gallery__desc">把脑子里乱的东西摊开成图，看清它们的关系。</p>
+              </div>
+            </a>
+
+          </div>
+        </section>
+
+        <!-- 站点与工具 -->
+        <section class="gallery__group">
+          <div class="gallery__group-head">
+            <h2 class="gallery__group-title">站点与工具</h2>
+            <span class="gallery__group-rule"></span>
+            <span class="gallery__group-count">4 种</span>
+          </div>
+          <div class="gallery__grid">
+
+            <!-- 📊 一页落地页 -->
+            <a class="gallery__card" href="canvas-landing.html" aria-label="一页落地页">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <line x1="24" y1="22" x2="176" y2="22" stroke="#E8E0D2" stroke-width="0.5"/>
+                  <rect x="24" y="16" width="22" height="6" fill="#8B6F47" rx="1"/>
+                  <rect x="148" y="16" width="28" height="6" fill="#EBE0CF" rx="3"/>
+                  <text x="100" y="54" font-family="Songti SC,serif" font-size="14" fill="#2B2520" text-anchor="middle">一个安静的</text>
+                  <text x="100" y="72" font-family="Songti SC,serif" font-size="14" fill="#8B6F47" text-anchor="middle" font-style="italic">主张</text>
+                  <rect x="76" y="82" width="48" height="13" fill="#8B6F47" rx="6.5"/>
+                  <rect x="34" y="106" width="36" height="16" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="82" y="106" width="36" height="16" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="130" y="106" width="36" height="16" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">📊</span>
+                  <h3 class="gallery__name">一页落地页</h3>
+                </div>
+                <p class="gallery__desc">一屏说清一件事，标题、按钮、转化都排好。</p>
+              </div>
+            </a>
+
+            <!-- 🌐 多页网站 -->
+            <a class="gallery__card" href="canvas-website.html" aria-label="多页网站">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="30" y="22" width="140" height="14" fill="#EBE0CF" rx="2"/>
+                  <circle cx="40" cy="29" r="2.5" fill="#8B6F47"/>
+                  <rect x="100" y="26" width="18" height="5" fill="#FFFDF9" rx="2"/>
+                  <rect x="122" y="26" width="18" height="5" fill="#FFFDF9" rx="2"/>
+                  <rect x="144" y="26" width="18" height="5" fill="#FFFDF9" rx="2"/>
+                  <rect x="30" y="44" width="66" height="68" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="104" y="44" width="66" height="32" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <rect x="104" y="80" width="66" height="32" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <line x1="42" y1="60" x2="84" y2="60" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="42" y1="72" x2="76" y2="72" stroke="#D4C9B5" stroke-width="0.6"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🌐</span>
+                  <h3 class="gallery__name">多页网站</h3>
+                </div>
+                <p class="gallery__desc">有导航、有几页、能点来点去的一个小站。</p>
+              </div>
+            </a>
+
+            <!-- 🧮 小应用 -->
+            <a class="gallery__card" href="canvas-app.html" aria-label="小应用">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#FAF7F2"/>
+                  <rect x="62" y="18" width="76" height="96" fill="#FFFDF9" stroke="#E8E0D2" rx="6"/>
+                  <rect x="62" y="18" width="76" height="20" fill="#EBE0CF"/>
+                  <text x="100" y="32" font-family="Songti SC,serif" font-size="9" fill="#76583A" text-anchor="middle">记一笔</text>
+                  <rect x="72" y="48" width="56" height="14" fill="#F7F2EA" stroke="#E8E0D2" rx="2"/>
+                  <rect x="72" y="48" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="92" y="48" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="112" y="48" width="16" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="72" y="68" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="92" y="68" width="20" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="112" y="68" width="16" height="14" fill="#FFFDF9" stroke="#E8E0D2" rx="2"/>
+                  <rect x="72" y="90" width="56" height="14" fill="#8B6F47" rx="3"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">🧮</span>
+                  <h3 class="gallery__name">小应用</h3>
+                </div>
+                <p class="gallery__desc">一个能用的小工具，输入、计算、出结果。</p>
+              </div>
+            </a>
+
+            <!-- 📈 数据看板 -->
+            <a class="gallery__card" href="canvas-chart.html" aria-label="数据看板">
+              <div class="gallery__thumb">
+                <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="130" fill="#F3EEE5"/>
+                  <rect x="30" y="20" width="140" height="92" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                  <line x1="46" y1="96" x2="156" y2="96" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <line x1="46" y1="36" x2="46" y2="96" stroke="#D4C9B5" stroke-width="0.6"/>
+                  <rect x="56" y="70" width="14" height="26" fill="#EBE0CF"/>
+                  <rect x="78" y="58" width="14" height="38" fill="#C8A26B"/>
+                  <rect x="100" y="48" width="14" height="48" fill="#8B6F47"/>
+                  <rect x="122" y="64" width="14" height="32" fill="#EBE0CF"/>
+                  <polyline points="63,66 85,54 107,44 129,60" fill="none" stroke="#76583A" stroke-width="1.4"/>
+                  <circle cx="63" cy="66" r="2" fill="#76583A"/>
+                  <circle cx="107" cy="44" r="2" fill="#76583A"/>
+                </svg>
+              </div>
+              <div class="gallery__body">
+                <div class="gallery__card-head">
+                  <span class="gallery__emoji">📈</span>
+                  <h3 class="gallery__name">数据看板</h3>
+                </div>
+                <p class="gallery__desc">把一堆数字变成能一眼看懂的图表和卡片。</p>
+              </div>
+            </a>
+
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>
