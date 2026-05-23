@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 管理员 · 模型管理</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+
+  <!-- ===== 页面专属样式 · BEM 前缀 adm- =====
+       管理员独立外壳：不复用普通用户的创作侧边栏。
+       全部基于 tokens.css 变量，禁用 cyan/dark/glass/霓虹。
+       toggle 开启态用木色 / 暖绿(#7A8B6B)。
+  -->
+  <style>
+    .adm {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- 顶栏 ---- */
+    .adm-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(180deg, #F8F2E6 0%, rgba(248, 242, 230, 0.4) 100%);
+    }
+    .adm-topbar__left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .adm-topbar__mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--color-accent);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1;
+      box-shadow: 0 1px 2px rgba(60, 45, 30, 0.12);
+    }
+    .adm-topbar__name {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--color-text-tertiary);
+    }
+    .adm-topbar__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .adm-topbar__sep {
+      width: 1px;
+      height: 18px;
+      background: var(--color-border-strong);
+    }
+    .adm-badge-admin {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: var(--text-micro);
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      background: var(--color-warning-soft);
+      color: #8a6a35;
+      border: 1px solid #E7CBA0;
+    }
+
+    /* ---- 主区容器 ---- */
+    .adm-body {
+      flex: 1;
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: var(--space-7) var(--space-6) var(--space-8);
+    }
+
+    .adm-lede {
+      font-size: var(--text-body);
+      line-height: var(--leading-prose);
+      color: var(--color-text-secondary);
+      max-width: 70ch;
+      margin: 0 0 var(--space-6);
+    }
+    .adm-lede strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    /* ---- 概览条 ---- */
+    .adm-overview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-7);
+    }
+    .adm-stat {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper);
+      padding: var(--space-4) var(--space-5);
+      box-shadow: var(--shadow-xs);
+    }
+    .adm-stat__num {
+      font-family: var(--font-serif);
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--color-text-primary);
+    }
+    .adm-stat__num em {
+      font-style: normal;
+      font-size: 15px;
+      color: var(--color-text-tertiary);
+      margin-left: 4px;
+      font-family: var(--font-sans);
+    }
+    .adm-stat__label {
+      margin-top: var(--space-2);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+    .adm-stat--accent {
+      background: linear-gradient(180deg, #FBF4E6 0%, var(--color-surface) 100%);
+      border-color: #E7CBA0;
+    }
+
+    /* ---- 分组 ---- */
+    .adm-group { margin-bottom: var(--space-7); }
+    .adm-group__head {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+    .adm-group__icon { font-size: 18px; line-height: 1; }
+    .adm-group__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .adm-group__hint {
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+    }
+    .adm-group__bind {
+      margin-left: auto;
+      font-size: var(--text-micro);
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* ---- 模型表格 ---- */
+    .adm-tablewrap { border:1px solid var(--color-border); border-radius:var(--radius-paper); overflow:hidden; box-shadow:var(--shadow-xs); }
+    .adm-table { width:100%; border-collapse:collapse; background:var(--color-surface); }
+    .adm-table th { text-align:left; font-size:var(--text-micro); font-weight:600; color:var(--color-text-tertiary); letter-spacing:.4px; padding:9px 14px; background:#F3EAD6; border-bottom:1px solid var(--color-border); white-space:nowrap; }
+    .adm-table td { padding:9px 14px; border-bottom:1px solid var(--color-border); font-size:var(--text-small); color:var(--color-text-secondary); vertical-align:middle; }
+    .adm-table tbody tr:last-child td { border-bottom:none; }
+    .adm-table tbody tr:nth-child(even) { background:#FBF6EC; }
+    .adm-table tbody tr:hover { background:var(--color-accent-soft); }
+    .adm-table tr.is-off { opacity:.55; }
+    .adm-mname { display:flex; align-items:center; gap:6px; font-weight:500; color:var(--color-text-primary); white-space:nowrap; }
+    .adm-vendor { color:var(--color-text-tertiary); font-size:var(--text-micro); white-space:nowrap; }
+    .adm-keycell { min-width:170px; }
+
+    /* ---- Key 状态 / 输入 ---- */
+    .adm-row__key {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: 0;
+    }
+    .adm-key-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: var(--text-small);
+      color: #5d6b50;
+      white-space: nowrap;
+    }
+    .adm-key-ok svg { width: 14px; height: 14px; }
+    .adm-keyfield {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+    }
+    .adm-keyfield__input {
+      flex: 1;
+      min-width: 90px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border-strong);
+      background: var(--color-bg-subtle);
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      color: var(--color-text-primary);
+      transition: box-shadow var(--duration-fast) var(--ease-default),
+                  border-color var(--duration-fast) var(--ease-default);
+    }
+    .adm-keyfield__input::placeholder { color: var(--color-text-tertiary); font-family: var(--font-mono); }
+    .adm-keyfield__input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-focus);
+    }
+
+    /* ---- 每次积分 ---- */
+    .adm-credit {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 4px 3px 9px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg-subtle);
+      border: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+    .adm-credit__input {
+      width: 42px;
+      padding: 2px 4px;
+      text-align: right;
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-xs);
+      background: var(--color-surface);
+      font-family: var(--font-mono);
+      font-size: var(--text-small);
+      font-weight: 600;
+      color: var(--color-accent-hover);
+    }
+    .adm-credit__input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-focus);
+    }
+    .adm-credit__unit {
+      font-size: var(--text-micro);
+      color: var(--color-text-secondary);
+    }
+
+    /* ---- 右侧控制簇 ---- */
+    .adm-row__ctl {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      justify-content: flex-end;
+    }
+
+    /* ---- Toggle（纯展示）---- */
+    .adm-toggle {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+      user-select: none;
+    }
+    .adm-toggle__track {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--color-border-strong);
+      transition: background var(--duration-base) var(--ease-default);
+      flex-shrink: 0;
+    }
+    .adm-toggle__track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(60, 45, 30, 0.25);
+      transition: transform var(--duration-base) var(--ease-soft);
+    }
+    .adm-toggle__label {
+      font-size: var(--text-micro);
+      color: var(--color-text-tertiary);
+      width: 30px;
+    }
+    /* 开启态：木色 */
+    .adm-toggle.is-on .adm-toggle__track { background: var(--color-accent); }
+    .adm-toggle.is-on .adm-toggle__track::after { transform: translateX(16px); }
+    .adm-toggle.is-on .adm-toggle__label { color: var(--color-accent); font-weight: 600; }
+    /* 默认模型开启态：暖绿，强调"不可关" */
+    .adm-toggle.is-locked .adm-toggle__track { background: var(--color-success); }
+    .adm-toggle.is-locked .adm-toggle__track::after { transform: translateX(16px); }
+    .adm-toggle.is-locked .adm-toggle__label { color: #5d6b50; font-weight: 600; }
+
+    /* ---- 底部绑定说明 ---- */
+    .adm-foot {
+      margin-top: var(--space-6);
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-accent-soft);
+      border: 1px solid #E7CBA0;
+      border-radius: var(--radius-paper);
+      font-size: var(--text-small);
+      line-height: var(--leading-prose);
+      color: #6b5536;
+    }
+    .adm-foot strong { color: var(--color-accent-hover); }
+
+    @media (max-width: 860px) {
+      .adm-row { grid-template-columns: 1fr; gap: var(--space-3); }
+      .adm-row__ctl { justify-content: flex-start; flex-wrap: wrap; }
+      .adm-overview { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="adm">
+
+    <header class="adm-topbar">
+      <div class="adm-topbar__left">
+        <div class="adm-topbar__mark">心</div>
+        <span class="adm-topbar__name">Kokoro</span>
+        <span class="adm-topbar__sep" aria-hidden="true"></span>
+        <h1 class="adm-topbar__title">模型管理</h1>
+        <span class="adm-badge-admin"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.5l5 2v4c0 3-2.2 5.2-5 6.5C5.2 12.7 3 10.5 3 7.5v-4z"/></svg>管理员</span>
+      </div>
+      <a class="btn btn--ghost btn--sm" href="settings.html">← 返回设置</a>
+    </header>
+
+    <main class="adm-body">
+      <p class="adm-lede">在这里启用模型、填 API Key、设定每次消耗的积分。<strong>启用的模型会出现在用户创作时的模型选择中</strong>；Key 与计费仅管理员可见。</p>
+
+      <div class="adm-overview">
+        <div class="adm-stat"><div class="adm-stat__num">29<em>/ 42</em></div><div class="adm-stat__label">已启用模型 · 即用户可选项</div></div>
+        <div class="adm-stat adm-stat--accent"><div class="adm-stat__num">48,260<em>积分</em></div><div class="adm-stat__label">本月总消耗（5 月至今）</div></div>
+        <div class="adm-stat"><div class="adm-stat__num">28<em>把 Key</em></div><div class="adm-stat__label">已配置供应商凭证</div></div>
+      </div>
+
+      <section class="adm-group">
+        <div class="adm-group__head">
+          <span class="adm-group__icon" aria-hidden="true">🖼</span>
+          <h2 class="adm-group__title">图片模型</h2>
+          <span class="adm-group__hint">文生图 / 图生图 / 改图</span>
+          <span class="adm-group__bind">→ 创作·图片 模型下拉</span>
+        </div>
+      <div class="adm-tablewrap">
+      <table class="adm-table">
+        <thead><tr><th>模型</th><th>供应商</th><th>API Key</th><th>每次积分</th><th>状态</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><div class="adm-mname">Nano Banana <span class="adm-tag-default">默认</span></div></td>
+          <td class="adm-vendor">Muapi</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="8" aria-label="Nano Banana 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on is-locked"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Flux Dev <span class="adm-tag-local">本地</span></div></td>
+          <td class="adm-vendor">Black Forest Labs</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>本地无需 Key</span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="4" aria-label="Flux Dev 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Flux Dev Lora <span class="adm-tag-local">本地</span></div></td>
+          <td class="adm-vendor">Black Forest Labs</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>本地无需 Key</span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="6" aria-label="Flux Dev Lora 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Flux Kontext</div></td>
+          <td class="adm-vendor">Black Forest Labs</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="7" aria-label="Flux Kontext 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">即梦 3.0</div></td>
+          <td class="adm-vendor">字节跳动</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="即梦 3.0 API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="10" aria-label="即梦 3.0 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">通义万相</div></td>
+          <td class="adm-vendor">阿里云</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="9" aria-label="通义万相 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">SDXL <span class="adm-tag-local">本地</span></div></td>
+          <td class="adm-vendor">Stability AI</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>本地无需 Key</span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="3" aria-label="SDXL 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Midjourney v6</div></td>
+          <td class="adm-vendor">Midjourney</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="14" aria-label="Midjourney v6 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Ideogram 2</div></td>
+          <td class="adm-vendor">Ideogram</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Ideogram 2 API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="11" aria-label="Ideogram 2 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Recraft V3</div></td>
+          <td class="adm-vendor">Recraft</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="10" aria-label="Recraft V3 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">GPT Image</div></td>
+          <td class="adm-vendor">OpenAI</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="16" aria-label="GPT Image 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      </section>
+
+      <section class="adm-group">
+        <div class="adm-group__head">
+          <span class="adm-group__icon" aria-hidden="true">🎬</span>
+          <h2 class="adm-group__title">视频模型</h2>
+          <span class="adm-group__hint">文生视频 / 图生视频</span>
+          <span class="adm-group__bind">→ 创作·视频 模型下拉</span>
+        </div>
+      <div class="adm-tablewrap">
+      <table class="adm-table">
+        <thead><tr><th>模型</th><th>供应商</th><th>API Key</th><th>每次积分</th><th>状态</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><div class="adm-mname">Seedance <span class="adm-tag-default">默认</span></div></td>
+          <td class="adm-vendor">字节跳动</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="40" aria-label="Seedance 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on is-locked"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Seedance 2.0</div></td>
+          <td class="adm-vendor">字节跳动</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="60" aria-label="Seedance 2.0 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Kling 2.0</div></td>
+          <td class="adm-vendor">快手</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="52" aria-label="Kling 2.0 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Kling 1.6</div></td>
+          <td class="adm-vendor">快手</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="44" aria-label="Kling 1.6 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Vidu</div></td>
+          <td class="adm-vendor">生数科技</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Vidu API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="45" aria-label="Vidu 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">通义万相</div></td>
+          <td class="adm-vendor">阿里云</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="48" aria-label="通义万相 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">海螺 02</div></td>
+          <td class="adm-vendor">MiniMax</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="50" aria-label="海螺 02 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Runway Gen-3</div></td>
+          <td class="adm-vendor">Runway</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Runway Gen-3 API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="70" aria-label="Runway Gen-3 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Pika 2.0</div></td>
+          <td class="adm-vendor">Pika</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="55" aria-label="Pika 2.0 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Luma Dream</div></td>
+          <td class="adm-vendor">Luma</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Luma Dream API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="58" aria-label="Luma Dream 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      </section>
+
+      <section class="adm-group">
+        <div class="adm-group__head">
+          <span class="adm-group__icon" aria-hidden="true">🗣</span>
+          <h2 class="adm-group__title">数字人模型</h2>
+          <span class="adm-group__hint">对口型 / 照片说话</span>
+          <span class="adm-group__bind">→ 创作·数字人 模型下拉</span>
+        </div>
+      <div class="adm-tablewrap">
+      <table class="adm-table">
+        <thead><tr><th>模型</th><th>供应商</th><th>API Key</th><th>每次积分</th><th>状态</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><div class="adm-mname">灵动 <span class="adm-tag-default">默认</span></div></td>
+          <td class="adm-vendor">Kokoro 自研</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="30" aria-label="灵动 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on is-locked"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Heygen</div></td>
+          <td class="adm-vendor">HeyGen</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="55" aria-label="Heygen 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">通义 EMO</div></td>
+          <td class="adm-vendor">阿里云</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="通义 EMO API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="35" aria-label="通义 EMO 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">SadTalker <span class="adm-tag-local">本地</span></div></td>
+          <td class="adm-vendor">开源 · 自托管</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>本地无需 Key</span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="12" aria-label="SadTalker 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">D-ID</div></td>
+          <td class="adm-vendor">D-ID</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="50" aria-label="D-ID 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Hedra</div></td>
+          <td class="adm-vendor">Hedra</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Hedra API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="48" aria-label="Hedra 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      </section>
+
+      <section class="adm-group">
+        <div class="adm-group__head">
+          <span class="adm-group__icon" aria-hidden="true">🎵</span>
+          <h2 class="adm-group__title">音频 / 嗓音模型</h2>
+          <span class="adm-group__hint">配音 / 旁白 / 音乐 / 克隆</span>
+          <span class="adm-group__bind">→ 创作·音频 嗓音下拉</span>
+        </div>
+      <div class="adm-tablewrap">
+      <table class="adm-table">
+        <thead><tr><th>模型</th><th>供应商</th><th>API Key</th><th>每次积分</th><th>状态</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><div class="adm-mname">温柔女声 <span class="adm-tag-default">默认</span></div></td>
+          <td class="adm-vendor">Kokoro 自研</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="3" aria-label="温柔女声 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on is-locked"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">沉稳男声</div></td>
+          <td class="adm-vendor">Kokoro 自研</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="3" aria-label="沉稳男声 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">邻家少年</div></td>
+          <td class="adm-vendor">Kokoro 自研</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="3" aria-label="邻家少年 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">磁性电台</div></td>
+          <td class="adm-vendor">Kokoro 自研</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="3" aria-label="磁性电台 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">CosyVoice <span class="adm-tag-local">克隆</span></div></td>
+          <td class="adm-vendor">阿里云</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="8" aria-label="CosyVoice 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">ElevenLabs</div></td>
+          <td class="adm-vendor">ElevenLabs</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="ElevenLabs API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="10" aria-label="ElevenLabs 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Suno V4 <span class="adm-tag-local">音乐</span></div></td>
+          <td class="adm-vendor">Suno</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="20" aria-label="Suno V4 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">MiniMax Audio</div></td>
+          <td class="adm-vendor">MiniMax</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="9" aria-label="MiniMax Audio 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      </section>
+
+      <section class="adm-group">
+        <div class="adm-group__head">
+          <span class="adm-group__icon" aria-hidden="true">📝</span>
+          <h2 class="adm-group__title">语言模型（文档 / 文案）</h2>
+          <span class="adm-group__hint">对话 / 写作 / 文档生成</span>
+          <span class="adm-group__bind">→ 对话与文档 模型下拉</span>
+        </div>
+      <div class="adm-tablewrap">
+      <table class="adm-table">
+        <thead><tr><th>模型</th><th>供应商</th><th>API Key</th><th>每次积分</th><th>状态</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><div class="adm-mname">Kokoro 默认 <span class="adm-tag-default">默认</span></div></td>
+          <td class="adm-vendor">Kokoro 托管</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="1" aria-label="Kokoro 默认 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on is-locked"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">GPT-4o</div></td>
+          <td class="adm-vendor">OpenAI</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="5" aria-label="GPT-4o 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Claude</div></td>
+          <td class="adm-vendor">Anthropic</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Claude API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="6" aria-label="Claude 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">通义千问</div></td>
+          <td class="adm-vendor">阿里云</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="2" aria-label="通义千问 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">DeepSeek</div></td>
+          <td class="adm-vendor">DeepSeek</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="2" aria-label="DeepSeek 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        <tr class="is-off">
+          <td><div class="adm-mname">Gemini</div></td>
+          <td class="adm-vendor">Google</td>
+          <td class="adm-keycell"><span class="adm-keyfield"><input class="adm-keyfield__input" type="password" placeholder="sk-..." aria-label="Gemini API Key" /><button class="btn btn--primary btn--sm" type="button">配置</button></span></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="4" aria-label="Gemini 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle "><span class="adm-toggle__track"></span><span class="adm-toggle__label">已停用</span></label></td>
+        </tr>
+        <tr>
+          <td><div class="adm-mname">Kimi</div></td>
+          <td class="adm-vendor">月之暗面</td>
+          <td class="adm-keycell"><span class="adm-key-ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 5"/></svg>已配置</span> <button class="btn btn--ghost btn--sm" type="button">换一把</button></td>
+          <td><span class="adm-credit"><input class="adm-credit__input" type="number" value="2" aria-label="Kimi 每次积分" /><span class="adm-credit__unit">积分/次</span></span></td>
+          <td><label class="adm-toggle is-on"><span class="adm-toggle__track"></span><span class="adm-toggle__label">已启用</span></label></td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+      </section>
+
+      <p class="adm-foot"><strong>启用即上架。</strong>开关一旦打开，对应模型立刻出现在用户创作页（图片 / 视频 / 数字人 / 音频 / 文档）的模型下拉里；关闭则用户那边即时消失。<strong>默认</strong>模型不可关闭，是用户进入创作时的预选项。API Key 与每次积分仅管理员可见——普通用户只看到模型名与「N 积分/次」，并按此扣减自己的积分。</p>
+    </main>
+  </div>
+</body>
+</html>

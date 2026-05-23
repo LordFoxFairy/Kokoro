@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 团队 · 一起做</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <link rel="stylesheet" href="css/hub.css" />
+  <style>
+    /* 团队 = 群聊：成员 + Kokoro 在群里对话，产物卡片就地发进消息流。暖色，绝不 dark/cyan。 */
+    .team-wrap { display:flex; flex-direction:column; height:100%; min-height:0; }
+    .team-head { flex:none; display:flex; align-items:center; gap:var(--space-3); padding:var(--space-3) var(--space-5); border-bottom:1px solid var(--color-border); }
+    .team-head__name { font-family:var(--font-serif); font-size:16px; font-weight:600; color:var(--color-text-primary); }
+    .team-head__sub { font-size:12px; color:var(--color-text-tertiary); margin-top:1px; }
+    .team-head__avatars { display:flex; margin-left:auto; }
+    .team-head__avatars .av { width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-size:12px; color:#fff; border:2px solid var(--color-bg); margin-left:-8px; }
+    .team-invite { margin-left:var(--space-3); font:inherit; font-size:12.5px; padding:6px 13px; border-radius:999px; border:1px solid var(--color-accent); background:none; color:var(--color-accent); cursor:pointer; }
+    .team-invite:hover { background:var(--color-accent); color:#fff; }
+
+    .team-thread { flex:1; overflow-y:auto; padding:var(--space-5) var(--space-6); display:flex; flex-direction:column; gap:var(--space-4); }
+    .team-day { align-self:center; font-size:11px; color:var(--color-text-tertiary); background:var(--color-bg-subtle); border:1px solid var(--color-border); border-radius:999px; padding:3px 12px; }
+
+    .gmsg { display:flex; gap:10px; max-width:84%; }
+    .gmsg__avatar { width:32px; height:32px; border-radius:50%; flex:none; display:grid; place-items:center; font-size:13px; color:#fff; }
+    .gmsg__body { display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .gmsg__meta { display:flex; align-items:baseline; gap:8px; }
+    .gmsg__name { font-size:12.5px; font-weight:600; color:var(--color-text-secondary); }
+    .gmsg__time { font-size:11px; color:var(--color-text-tertiary); }
+    .gmsg__bubble { background:var(--color-surface); border:1px solid var(--color-border); border-radius:4px 14px 14px 14px; padding:9px 13px; font-size:14px; line-height:1.6; color:var(--color-text-primary); }
+    .gmsg--me { margin-left:auto; flex-direction:row-reverse; }
+    .gmsg--me .gmsg__meta { flex-direction:row-reverse; }
+    .gmsg--me .gmsg__bubble { background:var(--color-accent-soft); border-color:transparent; border-radius:14px 4px 14px 14px; }
+    .gmsg--ai .gmsg__bubble { background:var(--color-bg-subtle); }
+    .av--me{ background:#8B6F47; } .av--yun{ background:#B36B5A; } .av--zhang{ background:#7A8B6B; }
+    .av--ai{ background:radial-gradient(60px 50px at 50% 30%,#FFFFFF,var(--color-accent-soft)); color:#8B6F47; border:1px solid var(--color-accent-soft); }
+
+    /* 群里发出的产物卡片 */
+    .gcard { display:flex; gap:12px; margin-top:8px; padding:10px; background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-paper); text-decoration:none; color:inherit; max-width:340px; transition:border-color .14s ease, transform .14s ease; }
+    .gcard:hover { border-color:var(--color-accent); transform:translateY(-1px); }
+    .gcard__thumb { width:64px; height:64px; border-radius:8px; flex:none; background:var(--color-bg-subtle); overflow:hidden; line-height:0; }
+    .gcard__thumb svg { width:100%; height:100%; }
+    .gcard__name { font-family:var(--font-serif); font-size:14px; font-weight:600; color:var(--color-text-primary); }
+    .gcard__meta { font-size:12px; color:var(--color-text-tertiary); margin-top:3px; }
+    .gcard__open { margin-top:7px; font-size:12px; color:var(--color-accent); }
+
+    .team-composer { flex:none; border-top:1px solid var(--color-border); padding:var(--space-3) var(--space-5) var(--space-4); }
+    .team-composer .input-pill { max-width:760px; margin:0 auto; }
+    .team-composer__hint { max-width:760px; margin:6px auto 0; font-size:11px; color:var(--color-text-tertiary); text-align:center; }
+
+    /* 房间栏：两类群——讨论(纯人) / 智能体小队(我+多agent)，CSS radio 切换 */
+    .team-layout { display:flex; height:100%; min-height:0; }
+    .team-room-radio { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+    .rooms { flex:none; width:206px; border-right:1px solid var(--color-border); display:flex; flex-direction:column; padding:var(--space-3) var(--space-2); overflow-y:auto; }
+    .rooms__head { display:flex; align-items:center; justify-content:space-between; padding:6px var(--space-2) 6px; font-family:var(--font-serif); font-weight:600; font-size:14px; color:var(--color-text-primary); }
+    .rooms__new { width:24px; height:24px; border-radius:50%; border:1px solid var(--color-border); background:none; color:var(--color-text-secondary); cursor:pointer; font-size:15px; line-height:1; }
+    .rooms__new:hover { border-color:var(--color-accent); color:var(--color-accent); }
+    .rooms__group-label { font-size:11px; color:var(--color-text-tertiary); padding:12px var(--space-2) 4px; }
+    .room { display:flex; align-items:center; gap:9px; padding:8px var(--space-2); border-radius:var(--radius-sm); cursor:pointer; }
+    .room:hover { background:var(--color-surface-hover); }
+    .room__ic { width:28px; height:28px; border-radius:8px; flex:none; display:grid; place-items:center; font-size:14px; background:var(--color-accent-soft); }
+    .room__name { font-size:13px; color:var(--color-text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+    .room__cnt { font-size:11px; color:var(--color-text-tertiary); flex:none; }
+    #room1:checked ~ .rooms .room--1, #room2:checked ~ .rooms .room--2 { background:var(--color-accent-soft); }
+    #room1:checked ~ .rooms .room--1 .room__name, #room2:checked ~ .rooms .room--2 .room__name { color:var(--color-text-primary); font-weight:500; }
+    .team-chat-area { flex:1; min-width:0; position:relative; }
+    .team-room { display:none; flex-direction:column; height:100%; min-height:0; }
+    #room1:checked ~ .team-chat-area .team-room--1, #room2:checked ~ .team-chat-area .team-room--2 { display:flex; }
+    .av--coord{ background:#8B6F47; } .av--writer{ background:#7A8B6B; } .av--designer{ background:#B36B5A; } .av--research{ background:#C8A26B; }
+    .gmsg__role { font-family:var(--font-mono); font-size:10px; color:var(--color-text-tertiary); border:1px solid var(--color-border); border-radius:999px; padding:0 6px; margin-left:2px; }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item is-current" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+            <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">把读书笔记整理成课件</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+            <main class="main">
+      <div class="team-layout">
+        <input class="team-room-radio" type="radio" name="team-room" id="room1" checked />
+        <input class="team-room-radio" type="radio" name="team-room" id="room2" />
+
+        <aside class="rooms" aria-label="团队房间">
+          <div class="rooms__head">团队<button class="rooms__new" type="button" aria-label="新建团队">+</button></div>
+          <div class="rooms__group-label">讨论 · 纯成员</div>
+          <label class="room room--1" for="room1"><span class="room__ic">☕</span><span class="room__name">小满工作室</span><span class="room__cnt">4</span></label>
+          <label class="room" for="room1"><span class="room__ic">🧶</span><span class="room__name">周末搭子</span><span class="room__cnt">3</span></label>
+          <div class="rooms__group-label">智能体小队 · 我 + AI</div>
+          <label class="room room--2" for="room2"><span class="room__ic">🚀</span><span class="room__name">开业策划小队</span><span class="room__cnt">5</span></label>
+          <label class="room" for="room2"><span class="room__ic">📈</span><span class="room__name">内容流水线</span><span class="room__cnt">4</span></label>
+        </aside>
+
+        <div class="team-chat-area">
+
+          <div class="team-room team-room--1">
+        <div class="team-head">
+          <div>
+            <div class="team-head__name">小满工作室</div>
+            <div class="team-head__sub">讨论群 · 4 位成员 · 共享积分池 1,200</div>
+          </div>
+          <div class="team-head__avatars" aria-hidden="true"><span class="av av--me">小</span><span class="av av--yun">芸</span><span class="av av--zhang">张</span><span class="av av--ai">心</span></div>
+          <button class="team-invite" type="button">+ 邀请</button>
+        </div>
+            <div class="team-thread" role="log" aria-live="polite" aria-label="小满工作室">
+              <div class="team-day">今天</div>
+          <div class="gmsg">
+            <div class="gmsg__avatar av--yun" aria-hidden="true">芸</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">阿芸</span><span class="gmsg__time">14:30</span></div>
+              <div class="gmsg__bubble">周六开业，咱们把物料在群里定了吧 🎉</div>
+            </div>
+          </div>
+
+          <div class="gmsg">
+            <div class="gmsg__avatar av--zhang" aria-hidden="true">张</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">老张</span><span class="gmsg__time">14:31</span></div>
+              <div class="gmsg__bubble">海报、朋友圈文案，还有门口易拉宝。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--me">
+            <div class="gmsg__avatar av--me" aria-hidden="true">小</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">我</span><span class="gmsg__time">14:32</span></div>
+              <div class="gmsg__bubble">@Kokoro 先来张小红书风开业海报，米色纸感、竖版。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--ai" aria-hidden="true">心</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">Kokoro</span><span class="gmsg__time">14:32</span></div>
+              <div class="gmsg__bubble">好，给三版思路，挑一版我再接着出朋友圈文案。
+                <a class="gcard" href="canvas-poster-result.html" aria-label="打开海报"><div class="gcard__thumb"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#F3EAD6"/><rect x="16" y="8" width="32" height="44" fill="#fff" stroke="#C8A26B"/><rect x="16" y="8" width="32" height="9" fill="#EBE0CF"/><rect x="22" y="22" width="20" height="14" fill="#E7CBA0"/><text x="32" y="47" font-family="Songti SC,serif" font-size="6" fill="#3A2E22" text-anchor="middle">小满咖啡</text></svg></div><div><div class="gcard__name">开业海报 · 3 版</div><div class="gcard__meta">海报 · 刚刚生成</div><div class="gcard__open">群里打开 →</div></div></a></div>
+            </div>
+          </div>
+
+          <div class="gmsg">
+            <div class="gmsg__avatar av--yun" aria-hidden="true">芸</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">阿芸</span><span class="gmsg__time">14:34</span></div>
+              <div class="gmsg__bubble">中间那版！标题再大一点点。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--ai" aria-hidden="true">心</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">Kokoro</span><span class="gmsg__time">14:35</span></div>
+              <div class="gmsg__bubble">改好了，标题放大一档。顺手把朋友圈文案也写了 👇
+                <a class="gcard" href="canvas.html" aria-label="打开文案"><div class="gcard__thumb"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#fff"/><rect x="12" y="10" width="40" height="44" fill="#F3EAD6" stroke="#C8A26B"/><line x1="20" y1="22" x2="44" y2="22" stroke="#C8A26B"/><line x1="20" y1="30" x2="44" y2="30" stroke="#C8A26B"/><line x1="20" y1="38" x2="36" y2="38" stroke="#C8A26B"/></svg></div><div><div class="gcard__name">朋友圈文案 · 3 条</div><div class="gcard__meta">文档 · 共享给全员</div><div class="gcard__open">群里打开 →</div></div></a></div>
+            </div>
+          </div>
+
+          <div class="gmsg">
+            <div class="gmsg__avatar av--zhang" aria-hidden="true">张</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">老张</span><span class="gmsg__time">14:36</span></div>
+              <div class="gmsg__bubble">漂亮，额度还够吧？</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--ai" aria-hidden="true">心</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">Kokoro</span><span class="gmsg__time">14:36</span></div>
+              <div class="gmsg__bubble">够，团队池还剩 1,200 积分。这两份都放进了「库 · 收藏」，全员都能接着改。</div>
+            </div>
+          </div>
+            </div>
+        <div class="team-composer">
+          <form class="input-pill" onsubmit="return false;">
+            <details class="attach"><summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg></summary><div class="attach__menu" role="menu"><div class="attach__group-label">发进群里</div><button class="attach__item" type="button" role="menuitem">上传图片</button><button class="attach__item" type="button" role="menuitem">从「库 · 收藏」选</button></div></details>
+            <input class="input-pill__field" type="text" placeholder="在群里说点什么，或 @Kokoro 让它做……" aria-label="群聊输入" />
+            <button class="send-btn" type="submit" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+          </form>
+          <div class="team-composer__hint">@Kokoro 让它当场创作 · 产物自动进群、共享给全员</div>
+        </div>
+          </div>
+
+          <div class="team-room team-room--2">
+        <div class="team-head">
+          <div>
+            <div class="team-head__name">开业策划小队</div>
+            <div class="team-head__sub">智能体小队 · 我 + 4 个智能体（统筹 / 调研 / 文案 / 设计）</div>
+          </div>
+          <div class="team-head__avatars" aria-hidden="true"><span class="av av--me">小</span><span class="av av--coord">令</span><span class="av av--research">查</span><span class="av av--writer">笔</span><span class="av av--designer">画</span></div>
+          <button class="team-invite" type="button">+ 邀请</button>
+        </div>
+            <div class="team-thread" role="log" aria-live="polite" aria-label="开业策划小队">
+              <div class="team-day">今天</div>
+          <div class="gmsg gmsg--me">
+            <div class="gmsg__avatar av--me" aria-hidden="true">小</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">我</span><span class="gmsg__time">10:02</span></div>
+              <div class="gmsg__bubble">下周六开业，帮我把整套物料弄出来，你们分工。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--coord" aria-hidden="true">令</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">统筹</span><span class="gmsg__role">智能体</span><span class="gmsg__time">10:02</span></div>
+              <div class="gmsg__bubble">收到。拆成 调研 → 文案 → 设计 三步。@调研员 先扒同类店。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--research" aria-hidden="true">查</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">调研员</span><span class="gmsg__role">智能体</span><span class="gmsg__time">10:03</span></div>
+              <div class="gmsg__bubble">看了 5 家，主打「手冲 + 安静」，人均 35–45，周末午后客流最高。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--writer" aria-hidden="true">笔</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">文案君</span><span class="gmsg__role">智能体</span><span class="gmsg__time">10:04</span></div>
+              <div class="gmsg__bubble">据此三条 slogan，主推「慢一点，刚刚好」。</div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--designer" aria-hidden="true">画</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">设计师</span><span class="gmsg__role">智能体</span><span class="gmsg__time">10:06</span></div>
+              <div class="gmsg__bubble">按这条出了主视觉：海报 + logo + 配色，先看主视觉。
+                <a class="gcard" href="canvas-design-result.html" aria-label="打开品牌视觉"><div class="gcard__thumb"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" fill="#fff"/><circle cx="22" cy="22" r="11" fill="#EBE0CF" stroke="#8B6F47"/><text x="22" y="26" font-family="Songti SC,serif" font-size="10" fill="#8B6F47" text-anchor="middle">满</text><rect x="38" y="16" width="8" height="8" fill="#8B6F47"/><rect x="48" y="16" width="8" height="8" fill="#C8A26B"/><text x="32" y="50" font-family="Songti SC,serif" font-size="7" fill="#3A2E22" text-anchor="middle">小满咖啡</text></svg></div><div><div class="gcard__name">主视觉 · 海报 + Logo</div><div class="gcard__meta">设计 · 由设计师 agent 产出</div><div class="gcard__open">群里打开 →</div></div></a></div>
+            </div>
+          </div>
+
+          <div class="gmsg gmsg--ai">
+            <div class="gmsg__avatar av--coord" aria-hidden="true">令</div>
+            <div class="gmsg__body">
+              <div class="gmsg__meta"><span class="gmsg__name">统筹</span><span class="gmsg__role">智能体</span><span class="gmsg__time">10:06</span></div>
+              <div class="gmsg__bubble">齐活。@我 看一眼，要改我再派下去。</div>
+            </div>
+          </div>
+            </div>
+        <div class="team-composer">
+          <form class="input-pill" onsubmit="return false;">
+            <details class="attach"><summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg></summary><div class="attach__menu" role="menu"><div class="attach__group-label">发进群里</div><button class="attach__item" type="button" role="menuitem">上传图片</button><button class="attach__item" type="button" role="menuitem">从「库 · 收藏」选</button></div></details>
+            <input class="input-pill__field" type="text" placeholder="给小队派活，或 @某个智能体 单独问……" aria-label="群聊输入" />
+            <button class="send-btn" type="submit" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+          </form>
+          <div class="team-composer__hint">一句话交给小队 · 统筹会自动拆解、派给各智能体协作完成</div>
+        </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

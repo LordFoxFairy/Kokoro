@@ -1,0 +1,216 @@
+/* =================================================================
+   2. RESET  +  3. LAYOUT
+   Minimal box-model baseline + .app / .sidebar / .main / .topbar / .split
+   ================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* paper-grain overlay — 让"米"是"纸"而非色块 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.18  0 0 0 0 0.12  0 0 0 0 0.08  0 0 0 0.42 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 240px 240px;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+.app, .share-page, .gallery, .pattern-page, .settings-page, .templates-page {
+  position: relative;
+  z-index: 2;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+input, textarea { font: inherit; color: inherit; }
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-text-primary);
+}
+
+/* 全局 focus 环：木色软光晕，2px outline + 2px offset */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+/* 移除浏览器默认蓝色 focus（保留 :focus-visible） */
+:focus:not(:focus-visible) { outline: none; }
+
+
+/* ---- App shell ---------------------------------------------------- */
+.app {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background:
+    radial-gradient(1200px 600px at 60% -10%, #FBF6EC 0%, rgba(250, 247, 242, 0) 60%),
+    var(--color-bg);
+}
+
+/* ---- .app--viewport-fit · 严格贴视口的 shell 变体 -----------------
+   Canvas 类页面（带 sticky 底部控件栏）需要：app/split/chat-view/
+   canvas-pane 各自严格贴 viewport 高度，让 canvas-stage 自己滚动，
+   底部控件在 900 视口内永远可见。
+   注意：不要污染基础 .app shell（首页/对话页不需要 viewport-fit）。
+------------------------------------------------------------------ */
+html.app-viewport-fit,
+html.app-viewport-fit body {
+  height: 100vh;
+  overflow: hidden;
+}
+.app--viewport-fit {
+  height: 100vh;
+  min-height: 0;
+}
+.app--viewport-fit .split {
+  height: 100%;
+  overflow: hidden;
+}
+.app--viewport-fit .canvas-pane {
+  height: 100%;
+  min-height: 0;
+}
+.app--viewport-fit .chat-view {
+  height: 100%;
+  min-height: 0;
+}
+
+/* ---- Sidebar ------------------------------------------------------ */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--color-bg-subtle);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) var(--space-3);
+  transition: width var(--duration-slow) var(--ease-default);
+}
+.sidebar.is-narrow { width: var(--sidebar-w-narrow); }
+
+.sidebar-spacer { flex: 1; }
+
+/* ---- Main column -------------------------------------------------- */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+/* ---- Topbar ------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  /* 顶沿暖一档边色（不易察觉的暖边） */
+  border-bottom: 1px solid rgba(212, 201, 181, 0.45);
+  background: linear-gradient(180deg, #F8F2E6 0%, rgba(248, 242, 230, 0) 100%);
+  color: var(--color-text-tertiary);
+  font-size: var(--text-micro);
+  letter-spacing: 0.4px;
+}
+
+.topbar__title {
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar__link {
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-default);
+}
+.topbar__link:hover { color: var(--color-text-primary); }
+
+/* ---- Stage (home center) ----------------------------------------- */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-7);
+  padding-top: 12vh;
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---- Split (Canvas: chat | doc) ----------------------------------
+   ADR-008 / Canvas 调整：用 grid 实现 chat 40% / canvas 60% 的
+   理想比例，并各自保留最小宽度（chat ≥360 / canvas ≥420）。
+------------------------------------------------------------------ */
+.split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(360px, 40fr) minmax(420px, 60fr);
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+.split .chat-view {
+  /* 不用硬分割线 —— 通过极淡 1px hairline 自然分 */
+  border-right: 1px solid rgba(212, 201, 181, 0.45);
+  background: var(--color-bg);
+  min-width: 0;
+}
+.split .chat-thread { padding: 0 var(--space-5); }
+.split .composer-dock {
+  padding-left: var(--space-5);
+  padding-right: var(--space-5);
+}
+
+/* 左 margin 暖 hairline — 主区与 sidebar 接缝处更显纸感 */
+.main::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    rgba(212, 201, 181, 0) 0%,
+    rgba(212, 201, 181, 0.5) 12%,
+    rgba(212, 201, 181, 0.5) 88%,
+    rgba(212, 201, 181, 0) 100%);
+  pointer-events: none;
+  z-index: 1;
+}

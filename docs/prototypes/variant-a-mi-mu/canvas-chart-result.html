@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 小满咖啡馆 · 本季销售看板</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - 把"一段数据"当作 prompt → 单段产物（一块看板），保留"换数据 / 换图表类型 / 换配色"的可重生成入口。
+    取舍：用"数字卡 + 多图块网格"的看板骨架，而不是 BI 工具的拖拽画布 ——
+    BI 画布是分析师工具，与 Kokoro"对话即成稿"的心智冲突；
+    看板天生适配"AI 一次把数据讲清楚"的叙事（数字卡先给结论，图块给依据）。
+    图表全部纯 SVG 手画（柱 / 折线面积 / 环形），不引任何图表库。
+    视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。数据色阶一律木色系。
+
+    页内 <style>：仅 chart 专属 BEM（.canvas-stage--chart / .canvas-chart__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 components.css。
+    保持单文件可直接打开（ADR-007）。后续可由主 agent 统一并入 components.css。
+  -->
+  <style>
+    /* ===== 图表看板 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--chart {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      scrollbar-width: thin;
+    }
+
+    /* —— 看板纸张：所有图块铺在一张暖纸上 —— */
+    .canvas-chart__board {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .canvas-chart__board-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .canvas-chart__title {
+      font-size: var(--text-h3, 18px);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      letter-spacing: .2px;
+    }
+    .canvas-chart__period {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+
+    /* —— 数字卡行 —— */
+    .canvas-chart__stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .canvas-chart__stat {
+      position: relative;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      padding: 14px 16px 16px;
+      box-shadow: 0 1px 2px rgba(60,45,30,0.04);
+      overflow: hidden;
+    }
+    /* 卡左侧木色脊 */
+    .canvas-chart__stat::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: var(--stat-spine, var(--color-accent));
+      opacity: .85;
+    }
+    .canvas-chart__stat-label {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      letter-spacing: .3px;
+    }
+    .canvas-chart__stat-value {
+      margin-top: 6px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1.1;
+      letter-spacing: -.4px;
+    }
+    .canvas-chart__stat-value small {
+      font-size: 14px; font-weight: 600; color: var(--color-text-secondary); margin-left: 2px;
+    }
+    .canvas-chart__stat-foot {
+      display: flex; align-items: center; gap: 5px;
+      margin-top: 8px;
+      font-family: var(--font-hand);
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+    }
+    /* 同比小角标 —— 全部木/土色，不用红绿霓虹 */
+    .canvas-chart__delta {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 1px 7px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      background: #F3EDE0; color: var(--color-accent);
+    }
+    .canvas-chart__delta--down { background: #F0E6DD; color: #B36B5A; }
+    .canvas-chart__delta svg { display: block; }
+
+    /* —— 图块网格：上一张大柱 + 下面折线/环形并排 —— */
+    .canvas-chart__grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      grid-auto-rows: min-content;
+      gap: var(--space-3);
+    }
+    .canvas-chart__card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      padding: 14px 16px 12px;
+      box-shadow: 0 1px 2px rgba(60,45,30,0.04);
+      display: flex; flex-direction: column; gap: 10px;
+      min-width: 0;
+    }
+    .canvas-chart__card--wide { grid-column: 1 / -1; }
+    .canvas-chart__card-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2);
+    }
+    .canvas-chart__card-title {
+      font-size: var(--text-base, 15px);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+    .canvas-chart__card-note {
+      font-family: var(--font-hand);
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+    }
+    .canvas-chart__svg { display: block; width: 100%; height: auto; }
+
+    /* 图例 */
+    .canvas-chart__legend {
+      display: flex; flex-wrap: wrap; gap: 10px 16px;
+      font-family: var(--font-hand);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .canvas-chart__legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .canvas-chart__swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+    /* 环形图中心读数 */
+    .canvas-chart__donut-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto; }
+    .canvas-chart__donut-center {
+      position: absolute; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none;
+    }
+    .canvas-chart__donut-num { font-size: 22px; font-weight: 700; color: var(--color-text-primary); line-height: 1; }
+    .canvas-chart__donut-sub { margin-top: 3px; font-family: var(--font-hand); font-size: 11px; color: var(--color-text-tertiary); }
+
+    /* 折线/面积的极轻"刷新中"呼吸 —— 纸感而非赛博 */
+    .canvas-chart__sheen { animation: kokoroChartFade 3.6s ease-in-out infinite; }
+    @keyframes kokoroChartFade { 0%,100%{opacity:1} 50%{opacity:.78} }
+
+    /* 窄屏退化为单列 */
+    @media (max-width: 980px) {
+      .canvas-chart__stats { grid-template-columns: 1fr; }
+      .canvas-chart__grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-chart.html">小满咖啡馆 · 销售看板</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">给妈妈解释 AI</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                把小满咖啡馆这季度的销售数据做成看板，我下周要给店长汇报。表格我贴上面了。
+              </article>
+
+              <article class="message message--ai">
+                <p>读完了，1—3 月、12 个品类。先把三个最该看的数字拎到最上面：</p>
+                <ul>
+                  <li>本季营收 <b>¥38.6 万</b>，比上季涨了一截</li>
+                  <li>客单价 <b>¥31.5</b>，稳中有升</li>
+                  <li>复购率 <b>42%</b>，是这季最亮的一项</li>
+                </ul>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的数据 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">数据 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 表格成看板 · 4 图块</span>
+                </div>
+
+                <p>右边铺成看板了：上面三张数字卡，下面按月柱状 + 营收趋势 + 品类占比。要不要把"拿铁"单独标出来？它一个就占了三成。</p>
+              </article>
+
+              <article class="message message--user">
+                先这样。把柱状图按月份排好就行，趋势那张我想看出"3 月翘起来"。
+              </article>
+
+              <article class="message message--ai">
+                <p>排好了，月份从左到右 1→3 月。趋势那张用了面积折线，3 月那一笔明显往上挑，店长一眼就能看到。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">加一张周对比</button>
+                  <button class="chat-suggest" type="button">标出拿铁占比</button>
+                  <button class="chat-suggest" type="button">导出 PDF 汇报</button>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试“换成折线” / “换大地色”）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (chart / dashboard mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>小满咖啡馆 · 本季销售看板</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>趋势图刷新中…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--chart">
+
+            <div class="canvas-chart__board">
+
+              <div class="canvas-chart__board-head">
+                <span class="canvas-chart__title">本季销售概览</span>
+                <span class="canvas-chart__period">2026 Q1 · 1—3 月 · 共 92 天营业</span>
+              </div>
+
+              <!-- ① 数字卡行 -->
+              <div class="canvas-chart__stats">
+
+                <article class="canvas-chart__stat" style="--stat-spine:#8B6F47;">
+                  <div class="canvas-chart__stat-label">本季营收</div>
+                  <div class="canvas-chart__stat-value">¥38.6<small>万</small></div>
+                  <div class="canvas-chart__stat-foot">
+                    <span class="canvas-chart__delta">
+                      <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8V2M2.5 4.5L5 2l2.5 2.5"/></svg>
+                      18.4%
+                    </span>
+                    较上季
+                  </div>
+                </article>
+
+                <article class="canvas-chart__stat" style="--stat-spine:#C8A26B;">
+                  <div class="canvas-chart__stat-label">客单价</div>
+                  <div class="canvas-chart__stat-value">¥31.5</div>
+                  <div class="canvas-chart__stat-foot">
+                    <span class="canvas-chart__delta">
+                      <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8V2M2.5 4.5L5 2l2.5 2.5"/></svg>
+                      4.2%
+                    </span>
+                    较上季
+                  </div>
+                </article>
+
+                <article class="canvas-chart__stat" style="--stat-spine:#7A8B6B;">
+                  <div class="canvas-chart__stat-label">复购率</div>
+                  <div class="canvas-chart__stat-value">42<small>%</small></div>
+                  <div class="canvas-chart__stat-foot">
+                    <span class="canvas-chart__delta">
+                      <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8V2M2.5 4.5L5 2l2.5 2.5"/></svg>
+                      6.0pt
+                    </span>
+                    本季最亮
+                  </div>
+                </article>
+
+              </div>
+
+              <!-- ② 图块网格 -->
+              <div class="canvas-chart__grid">
+
+                <!-- 柱状图（按月）· wide -->
+                <article class="canvas-chart__card canvas-chart__card--wide">
+                  <div class="canvas-chart__card-head">
+                    <span class="canvas-chart__card-title">月度营收（万元）</span>
+                    <span class="canvas-chart__card-note">1 → 3 月 · 单位 万元</span>
+                  </div>
+                  <svg class="canvas-chart__svg" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid meet" role="img" aria-label="月度营收柱状图：1月11.2万、2月12.1万、3月15.3万">
+                    <!-- 网格基线 -->
+                    <g stroke="#EBE0CF" stroke-width="1">
+                      <line x1="56" y1="30"  x2="616" y2="30"/>
+                      <line x1="56" y1="78"  x2="616" y2="78"/>
+                      <line x1="56" y1="126" x2="616" y2="126"/>
+                      <line x1="56" y1="174" x2="616" y2="174"/>
+                    </g>
+                    <!-- y 轴刻度 -->
+                    <g font-family="var(--font-hand)" font-size="11" fill="#B8AC9C" text-anchor="end">
+                      <text x="48" y="34">16</text>
+                      <text x="48" y="82">11</text>
+                      <text x="48" y="130">5</text>
+                      <text x="48" y="178">0</text>
+                    </g>
+                    <!-- 柱：x 间距，每月含"本季 / 上季"两根 -->
+                    <!-- 1月 -->
+                    <rect x="120" y="100" width="34" height="74" rx="3" fill="#EBE0CF"/>
+                    <rect x="158" y="78"  width="34" height="96" rx="3" fill="#8B6F47"/>
+                    <!-- 2月 -->
+                    <rect x="288" y="90"  width="34" height="84" rx="3" fill="#EBE0CF"/>
+                    <rect x="326" y="69"  width="34" height="105" rx="3" fill="#8B6F47"/>
+                    <!-- 3月（最高，木色更深） -->
+                    <rect x="456" y="78"  width="34" height="96" rx="3" fill="#EBE0CF"/>
+                    <rect x="494" y="42"  width="34" height="132" rx="3" fill="#76583A"/>
+                    <!-- 柱顶数值 -->
+                    <g font-family="var(--font-hand)" font-size="12" fill="#7A6F62" text-anchor="middle">
+                      <text x="175" y="70">11.2</text>
+                      <text x="343" y="61">12.1</text>
+                      <text x="511" y="34" fill="#76583A" font-weight="600">15.3</text>
+                    </g>
+                    <!-- x 轴月份 -->
+                    <g font-family="var(--font-hand)" font-size="12" fill="#7A6F62" text-anchor="middle">
+                      <text x="156" y="194">1 月</text>
+                      <text x="324" y="194">2 月</text>
+                      <text x="492" y="194">3 月</text>
+                    </g>
+                  </svg>
+                  <div class="canvas-chart__legend">
+                    <span><span class="canvas-chart__swatch" style="background:#8B6F47;"></span>本季</span>
+                    <span><span class="canvas-chart__swatch" style="background:#EBE0CF;"></span>上季同月</span>
+                  </div>
+                </article>
+
+                <!-- 折线 / 面积图（趋势） -->
+                <article class="canvas-chart__card">
+                  <div class="canvas-chart__card-head">
+                    <span class="canvas-chart__card-title">周营收趋势</span>
+                    <span class="canvas-chart__card-note">13 周 · 3 月翘起</span>
+                  </div>
+                  <svg class="canvas-chart__svg canvas-chart__sheen" viewBox="0 0 340 200" preserveAspectRatio="xMidYMid meet" role="img" aria-label="周营收趋势面积折线图，第 3 月明显上扬">
+                    <defs>
+                      <linearGradient id="chartArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%"  stop-color="#C8A26B" stop-opacity="0.42"/>
+                        <stop offset="100%" stop-color="#C8A26B" stop-opacity="0.04"/>
+                      </linearGradient>
+                    </defs>
+                    <!-- 横向参考线 -->
+                    <g stroke="#EBE0CF" stroke-width="1">
+                      <line x1="20" y1="40"  x2="324" y2="40"/>
+                      <line x1="20" y1="92"  x2="324" y2="92"/>
+                      <line x1="20" y1="144" x2="324" y2="144"/>
+                    </g>
+                    <!-- 面积 -->
+                    <path d="M20 132 L46 124 L72 128 L98 116 L124 120 L150 108 L176 110 L202 96 L228 100 L254 82 L280 64 L306 44 L324 36 L324 160 L20 160 Z"
+                          fill="url(#chartArea)"/>
+                    <!-- 折线 -->
+                    <path d="M20 132 L46 124 L72 128 L98 116 L124 120 L150 108 L176 110 L202 96 L228 100 L254 82 L280 64 L306 44 L324 36"
+                          fill="none" stroke="#8B6F47" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 末端高亮点（3月翘起） -->
+                    <circle cx="306" cy="44" r="3.4" fill="#8B6F47"/>
+                    <circle cx="324" cy="36" r="4.2" fill="#76583A" stroke="#FFF" stroke-width="1.6"/>
+                    <!-- x 轴月份 -->
+                    <g font-family="var(--font-hand)" font-size="11" fill="#B8AC9C" text-anchor="middle">
+                      <text x="58" y="178">1 月</text>
+                      <text x="172" y="178">2 月</text>
+                      <text x="290" y="178">3 月</text>
+                    </g>
+                  </svg>
+                </article>
+
+                <!-- 环形图（品类占比） -->
+                <article class="canvas-chart__card">
+                  <div class="canvas-chart__card-head">
+                    <span class="canvas-chart__card-title">品类占比</span>
+                    <span class="canvas-chart__card-note">拿铁独占三成</span>
+                  </div>
+                  <div class="canvas-chart__donut-wrap">
+                    <svg class="canvas-chart__svg" viewBox="0 0 180 180" width="160" height="160" role="img" aria-label="品类占比环形图：拿铁30%、美式22%、手冲18%、甜点16%、其他14%">
+                      <!-- 环形：r=64, 周长≈402.1；用 stroke-dasharray 拼段，逆时针起点在顶部 -->
+                      <g transform="rotate(-90 90 90)" fill="none" stroke-width="26" stroke-linecap="butt">
+                        <!-- 拿铁 30% -->
+                        <circle cx="90" cy="90" r="64" stroke="#76583A"
+                                stroke-dasharray="120.6 281.5" stroke-dashoffset="0"/>
+                        <!-- 美式 22% -->
+                        <circle cx="90" cy="90" r="64" stroke="#8B6F47"
+                                stroke-dasharray="88.5 313.6" stroke-dashoffset="-120.6"/>
+                        <!-- 手冲 18% -->
+                        <circle cx="90" cy="90" r="64" stroke="#C8A26B"
+                                stroke-dasharray="72.4 329.7" stroke-dashoffset="-209.1"/>
+                        <!-- 甜点 16% -->
+                        <circle cx="90" cy="90" r="64" stroke="#7A8B6B"
+                                stroke-dasharray="64.3 337.8" stroke-dashoffset="-281.5"/>
+                        <!-- 其他 14% -->
+                        <circle cx="90" cy="90" r="64" stroke="#EBE0CF"
+                                stroke-dasharray="56.3 345.8" stroke-dashoffset="-345.8"/>
+                      </g>
+                    </svg>
+                    <div class="canvas-chart__donut-center">
+                      <div>
+                        <div class="canvas-chart__donut-num">12</div>
+                        <div class="canvas-chart__donut-sub">个品类</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="canvas-chart__legend">
+                    <span><span class="canvas-chart__swatch" style="background:#76583A;"></span>拿铁 30%</span>
+                    <span><span class="canvas-chart__swatch" style="background:#8B6F47;"></span>美式 22%</span>
+                    <span><span class="canvas-chart__swatch" style="background:#C8A26B;"></span>手冲 18%</span>
+                    <span><span class="canvas-chart__swatch" style="background:#7A8B6B;"></span>甜点 16%</span>
+                    <span><span class="canvas-chart__swatch" style="background:#EBE0CF;"></span>其他 14%</span>
+                  </div>
+                </article>
+
+              </div>
+            </div>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="看板控件">
+
+              <!-- 图表类型 -->
+              <div class="canvas-controls__row" role="group" aria-label="图表类型">
+                <span class="canvas-controls__label">图表</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">柱状</button>
+                <button class="chip chip--control" type="button">折线</button>
+                <button class="chip chip--control" type="button">环形</button>
+              </div>
+
+              <!-- 配色 -->
+              <div class="canvas-controls__row" role="group" aria-label="配色">
+                <span class="canvas-controls__label">配色</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">木色系</button>
+                <button class="chip chip--control" type="button">大地色</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这块看板花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 1 1.5 3.5M3 8V5m0 3h3"/></svg>
+                  换数据
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v8M5 8l3 3 3-3M3.5 13.5h9"/></svg>
+                  导出
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

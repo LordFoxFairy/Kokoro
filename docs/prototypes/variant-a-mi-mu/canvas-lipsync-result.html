@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 让奶奶的老照片说句生日快乐（会说话的照片）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/studio/src/components/LipSyncStudio.jsx：
+      选/传一张肖像（image 模式）+ 给一段音频（上传 / 录音 / 文字转语音）
+      + 选对口型模型 → 生成"会说话的视频"。带 history 缩略 + 当前结果大图。
+    取舍（见研究结论）：消费级温柔化 ——
+      原作的"上传按钮 + 模型下拉 + Sync Lip"是工具心智；
+      Kokoro 改成"一张肖像 + 一句要说的话"对话心智：
+      肖像放进暖木框（复用 video 的 player 木框 + 木色 play 键思路），
+      嘴部给一个柔和的对口型指示（不做赛博描边）；
+      音频源做成"波形 + 录音/上传/文字转语音三选一 chip + 被读文本"一行。
+    视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。
+      play 键 / 波形 / 选中环 / 嘴部指示一律木色。
+
+    页内 <style>：仅 lipsync 专属 BEM（.canvas-stage--lipsync / .canvas-lipsync__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 components.css。
+    保持单文件可直接打开（ADR-007）。后续可由主 agent 统一并入 components.css。
+  -->
+  <style>
+    /* ===== 会说话的照片 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--lipsync {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* —— 当前预览大区：暖木框包住的肖像 —— */
+    .canvas-lipsync__stagewrap {
+      flex: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .canvas-lipsync__portrait {
+      position: relative;
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 4 / 5;            /* 肖像竖幅 */
+      border-radius: 12px;
+      overflow: hidden;
+      /* 暖木框 —— 比 video 略宽，像相框 */
+      box-shadow:
+        0 0 0 7px #F3EAD9,
+        0 0 0 8px #E2D3BB,
+        0 0 0 11px #C8A26B,
+        0 18px 42px -16px rgba(60,45,30,0.30);
+      background: #F3EAD6;
+    }
+    .canvas-lipsync__frame { display: block; width: 100%; height: 100%; }
+    /* 极轻的"显影中"呼吸 —— 纸感而非赛博 */
+    .canvas-lipsync__frame-shimmer {
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, rgba(255,251,243,0) 40%, rgba(255,251,243,0.16) 50%, rgba(255,251,243,0) 60%);
+      background-size: 280% 100%;
+      animation: kokoroSheen 4.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes kokoroSheen { 0%{background-position:140% 0} 100%{background-position:-40% 0} }
+    .canvas-lipsync__badge {
+      position: absolute; top: 10px; left: 10px;
+      padding: 3px 9px; border-radius: 999px;
+      background: rgba(122,88,58,0.55);
+      color: #FBF6EC; font-family: var(--font-hand); font-size: 12px; letter-spacing: .4px;
+    }
+    /* 嘴部对口型指示 —— 木色柔光圈，随说话轻轻起伏 */
+    .canvas-lipsync__mouth {
+      position: absolute;
+      left: 50%; top: 64%;
+      width: 46px; height: 26px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1.5px solid rgba(139,111,71,0.85);
+      box-shadow: 0 0 0 4px rgba(235,224,207,0.5), 0 0 12px rgba(139,111,71,0.35);
+      pointer-events: none;
+    }
+    .canvas-lipsync__mouth::after {
+      content: "";
+      position: absolute; inset: -7px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(200,162,107,0.55);
+      animation: kokoroLip 1.4s ease-in-out infinite;
+    }
+    @keyframes kokoroLip {
+      0%, 100% { transform: scale(0.82); opacity: .8; }
+      50%      { transform: scale(1.12); opacity: .25; }
+    }
+    /* 播放键 —— 木色，带一圈呼吸光环（沿用 video 思路） */
+    .canvas-lipsync__play {
+      position: absolute; inset: 0; margin: auto;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(139,111,71,0.92);
+      border: none; cursor: pointer;
+      display: grid; place-items: center;
+      box-shadow: 0 6px 18px -4px rgba(60,45,30,0.5);
+    }
+    .canvas-lipsync__play::after {
+      content: ""; position: absolute; inset: -10px; border-radius: 50%;
+      border: 2px solid rgba(235,224,207,0.6);
+      animation: kokoroPulse 2.6s ease-out infinite;
+    }
+    @keyframes kokoroPulse { 0%{transform:scale(.85);opacity:.7} 70%{opacity:0} 100%{transform:scale(1.25);opacity:0} }
+    .canvas-lipsync__play-tri { width:0;height:0; border-left:17px solid #FFFCF6; border-top:10px solid transparent; border-bottom:10px solid transparent; margin-left:5px; }
+    /* 进度条 */
+    .canvas-lipsync__progress {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+      background: rgba(122,88,58,0.18);
+    }
+    .canvas-lipsync__progress-fill {
+      height: 100%; width: 30%;
+      background: var(--color-accent);
+      box-shadow: 0 0 6px rgba(235,224,207,0.7);
+    }
+    .canvas-lipsync__caption {
+      width: 100%; max-width: 360px;
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .canvas-lipsync__caption b { color: var(--color-text-primary); font-weight: 600; }
+
+    /* —— 肖像候选小缩略 —— */
+    .canvas-lipsync__faces {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      align-self: center;
+    }
+    .canvas-lipsync__face {
+      position: relative;
+      flex: none;
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .canvas-lipsync__face:hover { transform: translateY(-2px); }
+    .canvas-lipsync__face:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .canvas-lipsync__face.is-current {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(139,111,71,0.18);
+    }
+    .canvas-lipsync__face svg { display: block; width: 100%; height: 100%; }
+    .canvas-lipsync__face--add {
+      display: grid; place-items: center;
+      border-style: dashed;
+      color: var(--color-text-secondary);
+      font-family: var(--font-hand);
+      font-size: 18px; line-height: 1;
+      background: #FCFAF6;
+    }
+    .canvas-lipsync__face--add:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+    /* —— 音频源区：波形 + 来源切换 + 被读文本 —— */
+    .canvas-lipsync__audio {
+      flex: none;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      box-shadow: 0 1px 3px rgba(60,45,30,0.05);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .canvas-lipsync__audio-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .canvas-lipsync__audio-label {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-tertiary);
+      letter-spacing: .4px;
+      margin-right: auto;
+    }
+    /* 来源 chip 组（录音 / 上传 / 文字转语音）*/
+    .canvas-lipsync__source {
+      display: inline-flex;
+      gap: 4px;
+      background: var(--color-bg-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 3px;
+    }
+    .canvas-lipsync__source-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      border: none; cursor: pointer;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: transparent;
+      font-family: var(--font-ui, inherit);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      transition: background .16s ease, color .16s ease;
+    }
+    .canvas-lipsync__source-chip svg { width: 13px; height: 13px; }
+    .canvas-lipsync__source-chip:hover { color: var(--color-accent); }
+    .canvas-lipsync__source-chip.is-current {
+      background: var(--color-accent);
+      color: #FFFDF8;
+      box-shadow: 0 1px 3px rgba(60,45,30,0.18);
+    }
+
+    /* 波形 —— 木色竖条 */
+    .canvas-lipsync__wave {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 44px;
+      padding: 0 2px;
+    }
+    .canvas-lipsync__wave-bar {
+      flex: 1;
+      border-radius: 999px;
+      background: var(--color-accent-soft);
+    }
+    /* 已播放部分用实木色 */
+    .canvas-lipsync__wave-bar.is-played { background: var(--color-accent); }
+    /* 当前播放头 */
+    .canvas-lipsync__wave-bar.is-head { background: #76583A; }
+
+    /* 被读文本（朗读这一句）*/
+    .canvas-lipsync__line {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: var(--space-3);
+      background: var(--color-bg-subtle);
+      border-radius: var(--radius-sm);
+      border: 1px dashed rgba(212,201,181,0.65);
+    }
+    .canvas-lipsync__line-quote {
+      flex: none;
+      font-family: var(--font-hand);
+      font-size: 18px;
+      line-height: 1;
+      color: var(--color-accent);
+    }
+    .canvas-lipsync__line-text {
+      font-family: var(--font-hand);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      line-height: 1.55;
+    }
+    .canvas-lipsync__line-meta {
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      color: var(--color-text-tertiary);
+      margin-left: auto;
+      white-space: nowrap;
+      align-self: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-lipsync.html">让奶奶的老照片说生日快乐</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                这是奶奶八十岁的老照片。能不能让她对着镜头，轻轻说一句"生日快乐"？
+              </article>
+
+              <article class="message message--ai">
+                <p>可以。我会让照片里的奶奶自然地开口——眼睛和脸保持原样，只动嘴和一点点表情，不会变成另一个人。先确认两件事：</p>
+                <ol>
+                  <li>她要说的那句话</li>
+                  <li>用什么声音说 <span style="color: var(--color-accent); font-family: var(--font-hand); font-size: 12px;">← 现在选</span></li>
+                </ol>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的对口型 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">对口型 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 照片 + 一段话 → 会动的视频</span>
+                </div>
+
+                <p>我先按"温柔女声"读了一遍，右边能放。你听听语气，太快或太慢都能再调。</p>
+              </article>
+
+              <article class="message message--user">
+                语气挺好。能不能用我录的那段我自己的声音，听起来更像家里人。
+              </article>
+
+              <article class="message message--ai">
+                <p>换好了。用你录的那段当声线，节奏放到"慢"，让"生日快乐"四个字一个字一个字地、稳稳地说出来。嘴形我对到了你录音的停顿上。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">再温柔一点</button>
+                  <button class="chat-suggest" type="button">加一句"我想你们了"</button>
+                  <button class="chat-suggest" type="button">配点轻音乐</button>
+                </div>
+                <div class="thinking">
+                  <span class="thinking__dot"></span>
+                  <span>正在对口型</span>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试&ldquo;换个声音&rdquo; / &ldquo;说慢一点&rdquo;）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (lipsync / talking-photo mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>让奶奶的老照片说生日快乐</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>对口型中…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--lipsync">
+
+            <!-- 当前预览大区：暖木框里的肖像 -->
+            <div class="canvas-lipsync__stagewrap">
+              <div class="canvas-lipsync__portrait" aria-label="奶奶的肖像 · 会说话的照片预览">
+                <svg class="canvas-lipsync__frame" viewBox="0 0 320 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="lpbg" cx="0.5" cy="0.35" r="0.85">
+                      <stop offset="0" stop-color="#F8E9CE"/>
+                      <stop offset="0.7" stop-color="#EBD9B8"/>
+                      <stop offset="1" stop-color="#D8BE92"/>
+                    </radialGradient>
+                    <linearGradient id="lphair" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#EFE7DC"/>
+                      <stop offset="1" stop-color="#CFC3B2"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- 背景：暖光 -->
+                  <rect width="320" height="400" fill="url(#lpbg)"/>
+                  <!-- 柔窗光 -->
+                  <polygon points="0,0 130,0 70,210 0,210" fill="#FFF6E0" opacity="0.35"/>
+
+                  <!-- 肩部毛衣 -->
+                  <path d="M60 400 Q60 296 160 286 Q260 296 260 400 Z" fill="#C8A26B"/>
+                  <path d="M104 400 Q108 320 160 314 Q212 320 216 400" fill="none" stroke="#A8845A" stroke-width="2" opacity="0.5"/>
+                  <!-- 领口 -->
+                  <path d="M128 300 Q160 322 192 300" fill="none" stroke="#A8845A" stroke-width="3"/>
+
+                  <!-- 脖子 -->
+                  <rect x="138" y="250" width="44" height="46" rx="14" fill="#E7C8A0"/>
+
+                  <!-- 头发（银白） -->
+                  <path d="M96 168 Q96 96 160 92 Q224 96 224 168 Q228 150 222 132 Q214 102 160 100 Q106 102 98 132 Q92 150 96 168 Z" fill="url(#lphair)"/>
+                  <path d="M100 150 Q116 124 160 122" fill="none" stroke="#FFFFFF" stroke-width="1.4" opacity="0.5"/>
+                  <path d="M160 122 Q204 124 220 150" fill="none" stroke="#FFFFFF" stroke-width="1.4" opacity="0.5"/>
+
+                  <!-- 脸 -->
+                  <ellipse cx="160" cy="178" rx="64" ry="74" fill="#EFCFA6"/>
+                  <!-- 脸颊红润 -->
+                  <ellipse cx="124" cy="196" rx="14" ry="10" fill="#E8A88C" opacity="0.35"/>
+                  <ellipse cx="196" cy="196" rx="14" ry="10" fill="#E8A88C" opacity="0.35"/>
+
+                  <!-- 笑纹眉眼 -->
+                  <path d="M120 156 Q134 148 148 154" fill="none" stroke="#A8845A" stroke-width="2.4" stroke-linecap="round"/>
+                  <path d="M172 154 Q186 148 200 156" fill="none" stroke="#A8845A" stroke-width="2.4" stroke-linecap="round"/>
+                  <!-- 眯眼（慈祥的笑眼） -->
+                  <path d="M120 174 Q134 166 148 174" fill="none" stroke="#5A4632" stroke-width="2.6" stroke-linecap="round"/>
+                  <path d="M172 174 Q186 166 200 174" fill="none" stroke="#5A4632" stroke-width="2.6" stroke-linecap="round"/>
+                  <!-- 眼角笑纹 -->
+                  <path d="M112 178 l-8 4" stroke="#C8A26B" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M208 178 l8 4" stroke="#C8A26B" stroke-width="1.4" stroke-linecap="round"/>
+
+                  <!-- 鼻 -->
+                  <path d="M160 182 Q156 200 160 206 Q164 204 168 204" fill="none" stroke="#C89A6E" stroke-width="2" stroke-linecap="round"/>
+
+                  <!-- 嘴（微微张开，正在说话） -->
+                  <path d="M138 226 Q160 240 182 226 Q160 234 138 226 Z" fill="#B5705C"/>
+                  <path d="M138 226 Q160 220 182 226" fill="none" stroke="#9A5A48" stroke-width="2" stroke-linecap="round"/>
+
+                  <!-- 老花镜 -->
+                  <g fill="none" stroke="#8B6F47" stroke-width="2.2" opacity="0.85">
+                    <ellipse cx="134" cy="174" rx="22" ry="17"/>
+                    <ellipse cx="186" cy="174" rx="22" ry="17"/>
+                    <path d="M156 172 q4 -3 8 0"/>
+                    <path d="M112 172 l-12 -4"/>
+                    <path d="M208 172 l12 -4"/>
+                  </g>
+                </svg>
+
+                <div class="canvas-lipsync__frame-shimmer" aria-hidden="true"></div>
+                <span class="canvas-lipsync__badge">会说话的照片 · 4s · 4:5</span>
+                <!-- 嘴部对口型柔光指示 -->
+                <span class="canvas-lipsync__mouth" aria-hidden="true"></span>
+                <button class="canvas-lipsync__play" type="button" aria-label="播放这段会说话的照片">
+                  <span class="canvas-lipsync__play-tri" aria-hidden="true"></span>
+                </button>
+                <div class="canvas-lipsync__progress" aria-hidden="true"><div class="canvas-lipsync__progress-fill"></div></div>
+              </div>
+
+              <p class="canvas-lipsync__caption">
+                <b>奶奶看着镜头，</b>嘴角先微微一动，然后慢慢说出"生日快乐"——眼神和脸都是原来的样子。
+              </p>
+
+              <!-- 肖像候选小缩略 -->
+              <div class="canvas-lipsync__faces" aria-label="肖像候选">
+                <button class="canvas-lipsync__face is-current" type="button" aria-label="奶奶 · 八十岁照（当前）" aria-current="true">
+                  <svg viewBox="0 0 48 48" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="48" fill="#EBD9B8"/>
+                    <path d="M9 48 Q9 36 24 34 Q39 36 39 48 Z" fill="#C8A26B"/>
+                    <circle cx="24" cy="22" r="13" fill="#EFCFA6"/>
+                    <path d="M13 16 Q13 6 24 6 Q35 6 35 16 Q36 11 24 11 Q12 11 13 16Z" fill="#EFE7DC"/>
+                    <path d="M19 21 q3 -2 6 0M27 21 q3 -2 6 0" stroke="#5A4632" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                    <path d="M20 28 q4 3 8 0" stroke="#9A5A48" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <button class="canvas-lipsync__face" type="button" aria-label="奶奶 · 院子里那张">
+                  <svg viewBox="0 0 48 48" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="48" height="48" fill="#DCE3CF"/>
+                    <path d="M9 48 Q9 36 24 34 Q39 36 39 48 Z" fill="#7A8B6B"/>
+                    <circle cx="24" cy="22" r="13" fill="#EFCFA6"/>
+                    <path d="M13 16 Q13 6 24 6 Q35 6 35 16 Q36 11 24 11 Q12 11 13 16Z" fill="#E4DBCC"/>
+                    <path d="M19 21 q3 -2 6 0M27 21 q3 -2 6 0" stroke="#5A4632" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                    <path d="M21 28 q3 2 6 0" stroke="#9A5A48" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <button class="canvas-lipsync__face canvas-lipsync__face--add" type="button" aria-label="换一张照片">+</button>
+              </div>
+            </div>
+
+            <!-- 音频源区：波形 + 来源切换 + 被读文本 -->
+            <section class="canvas-lipsync__audio" aria-label="声音与台词">
+              <div class="canvas-lipsync__audio-head">
+                <span class="canvas-lipsync__audio-label">这段声音</span>
+                <div class="canvas-lipsync__source" role="group" aria-label="声音来源">
+                  <button class="canvas-lipsync__source-chip is-current" type="button" aria-current="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>
+                    录音
+                  </button>
+                  <button class="canvas-lipsync__source-chip" type="button">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 11V3M5 6l3-3 3 3"/><path d="M3 11v2h10v-2"/></svg>
+                    上传
+                  </button>
+                  <button class="canvas-lipsync__source-chip" type="button">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h8M8 4v9M6 13h4"/></svg>
+                    文字转语音
+                  </button>
+                </div>
+              </div>
+
+              <!-- 波形 —— 木色竖条，左侧 is-played -->
+              <div class="canvas-lipsync__wave" role="img" aria-label="录音波形 · 已播放约三成">
+                <span class="canvas-lipsync__wave-bar is-played" style="height:30%"></span>
+                <span class="canvas-lipsync__wave-bar is-played" style="height:52%"></span>
+                <span class="canvas-lipsync__wave-bar is-played" style="height:74%"></span>
+                <span class="canvas-lipsync__wave-bar is-played" style="height:46%"></span>
+                <span class="canvas-lipsync__wave-bar is-played" style="height:88%"></span>
+                <span class="canvas-lipsync__wave-bar is-played" style="height:62%"></span>
+                <span class="canvas-lipsync__wave-bar is-head" style="height:96%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:54%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:78%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:40%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:66%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:90%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:48%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:72%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:34%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:58%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:82%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:44%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:68%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:38%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:56%"></span>
+                <span class="canvas-lipsync__wave-bar" style="height:26%"></span>
+              </div>
+
+              <!-- 被读文本 -->
+              <div class="canvas-lipsync__line">
+                <span class="canvas-lipsync__line-quote" aria-hidden="true">&ldquo;</span>
+                <span class="canvas-lipsync__line-text">生日快乐，奶奶。我们都很想你，要长命百岁呀。</span>
+                <span class="canvas-lipsync__line-meta">你录的 · 0:04</span>
+              </div>
+            </section>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="会说话的照片控件">
+
+              <!-- 音色 -->
+              <div class="canvas-controls__row" role="group" aria-label="音色">
+                <span class="canvas-controls__label">音色</span>
+                <button class="chip chip--control" type="button">温柔女声</button>
+                <button class="chip chip--control" type="button">沉稳男声</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">原声 · 你录的</button>
+              </div>
+
+              <!-- 情绪 / 语速 -->
+              <div class="canvas-controls__row" role="group" aria-label="情绪与语速">
+                <span class="canvas-controls__label">语气</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">平静</button>
+                <button class="chip chip--control" type="button">喜悦</button>
+                <span class="canvas-controls__label" style="margin-left: var(--space-3);">语速</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">慢</button>
+                <button class="chip chip--control" type="button">常</button>
+                <button class="chip chip--control" type="button">快</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这条花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 1 1.5 3.5M3 8V5m0 3h3"/></svg>
+                  重新生成
+                </button>
+                <button class="btn btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3.5h10v9H3z"/><path d="M7 6.5l3 2-3 2z"/></svg>
+                  导出 MP4
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kokoro · 今天想做什么？</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark"></div>
+      <div class="sidebar__brand-name">Kokoro</div>
+      <div class="sidebar__brand-tag">こころ</div>
+    </div>
+
+    <div class="sidebar__item sidebar__item--active">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      新对话
+    </div>
+    <div class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.3-4.3"/></svg>
+      搜索
+    </div>
+    <div class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><path d="M4 7h16M6 7v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+      模板库
+    </div>
+    <div class="sidebar__item">
+      <svg class="icon sidebar__item-icon" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v5h5"/></svg>
+      库 · 收藏
+    </div>
+
+    <div class="sidebar__divider"></div>
+    <div class="sidebar__group-title">最近</div>
+    <nav class="sidebar__history">
+      <a href="chat.html" class="sidebar__history-item">一封写给老朋友的信</a>
+      <a href="chat.html" class="sidebar__history-item">毕业典礼小红书海报</a>
+      <a href="chat.html" class="sidebar__history-item">复盘第三季度产品节奏</a>
+      <a href="chat.html" class="sidebar__history-item">给妈妈做一份养生周历</a>
+      <a href="chat.html" class="sidebar__history-item">读书会讲稿 · 《银河系搭车客指南》</a>
+      <a href="chat.html" class="sidebar__history-item">想搬去松山湖前要想清楚的几件事</a>
+      <a href="chat.html" class="sidebar__history-item">把上次那篇博客改得没那么硬</a>
+      <a href="chat.html" class="sidebar__history-item">家里那只猫今年的体检节奏</a>
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="sidebar__avatar">心</div>
+      <div class="sidebar__user-name">
+        吴小心
+        <small>免费 · 今日还能聊 24 句</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="main__topbar">
+      <div class="main__topbar-left">把想法做出来。</div>
+      <div></div>
+    </div>
+
+    <section class="home">
+
+      <!-- Decorative botanical accents (CSS-only) -->
+      <svg class="leaf-deco leaf-deco--tl" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke="#6B7F5C" stroke-width="1.2" stroke-linecap="round" opacity="0.5">
+          <path d="M30 170 C 60 130, 120 60, 170 30" />
+          <path d="M55 145 C 70 130, 90 120, 110 115" />
+          <path d="M75 125 C 85 115, 100 105, 115 100" />
+          <path d="M95 105 C 105 95, 120 90, 135 85" />
+          <path d="M115 85 C 130 75, 145 65, 160 55" />
+        </g>
+      </svg>
+      <svg class="leaf-deco leaf-deco--br" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke="#A8B097" stroke-width="1" opacity="0.6">
+          <ellipse cx="100" cy="100" rx="35" ry="80" transform="rotate(35 100 100)"/>
+          <ellipse cx="100" cy="100" rx="35" ry="80" transform="rotate(-35 100 100)"/>
+          <line x1="100" y1="30" x2="100" y2="170" />
+        </g>
+      </svg>
+
+      <h1 class="home__greeting">今天想做什么？</h1>
+      <div class="home__sub">— 把想说的告诉我，我陪你慢慢做。</div>
+
+      <!-- Input pill -->
+      <form class="input-pill" onsubmit="event.preventDefault(); window.location='chat.html';">
+        <button type="button" class="input-pill__attach" aria-label="附件">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <input class="input-pill__input" placeholder="把想法说给我……" />
+        <button type="button" class="input-pill__chip">
+          细想
+          <svg class="icon" width="10" height="10" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <button type="submit" class="input-pill__send" aria-label="发送">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </form>
+
+      <!-- Chip row -->
+      <div class="chip-row">
+        <button class="chip">
+          <svg class="icon chip__icon" viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M16 4v4h4"/></svg>
+          写一封信
+        </button>
+        <button class="chip">
+          <svg class="icon chip__icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 16-5-5L5 21"/></svg>
+          做一张海报
+        </button>
+        <button class="chip">
+          <svg class="icon chip__icon" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+          一页落地页
+        </button>
+        <button class="chip">
+          <svg class="icon chip__icon" viewBox="0 0 24 24"><path d="M12 2v6M2 12h6M12 22v-6M22 12h-6"/><circle cx="12" cy="12" r="4"/></svg>
+          想法图
+        </button>
+        <button class="chip chip__more">
+          更多……
+        </button>
+      </div>
+
+      <div class="home__footnote">不知道做什么？挑一个 chip 试试，或者说一句。</div>
+
+    </section>
+  </main>
+
+</div>
+</body>
+</html>

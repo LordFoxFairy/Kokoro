@@ -1,0 +1,17 @@
+/* =================================================================
+   Kokoro · Variant A — 米 + 木
+   styles.css — MANIFEST (kept for backward compatibility only)
+   -----------------------------------------------------------------
+   The actual styles live as 5 split files in ./css/.
+   New HTML files should link the 5 files directly (see index.html).
+   This manifest @imports them all in the correct order so older
+   pages that still reference styles.css keep working unchanged.
+   -----------------------------------------------------------------
+   Order matters: tokens → base → components → patterns → utilities
+   ================================================================= */
+
+@import url("./css/tokens.css");
+@import url("./css/base.css");
+@import url("./css/components.css");
+@import url("./css/patterns.css");
+@import url("./css/utilities.css");

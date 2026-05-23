@@ -1,0 +1,40 @@
+/* 创作侧边栏 —— 参照 pollo.ai 单列分组：分组标签 + 组件(悬停右侧弹出子能力) + 普通入口。
+   暖色米木纸感，绝不 dark / cyan / glass。组件 = 通用引擎，子能力 = 模式(文生/图生…)。 */
+
+.nav__group-label {
+  font-size: 11px; letter-spacing: .06em; color: var(--color-text-tertiary);
+  padding: 12px var(--space-3) 4px;
+}
+
+.cnav { position: relative; }
+.cnav__item {
+  display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
+  padding: 8px var(--space-3); border-radius: var(--radius-sm);
+  color: var(--color-text-secondary); text-decoration: none; font: inherit; font-size: 14px;
+  cursor: pointer; transition: background .14s ease, color .14s ease;
+}
+.cnav:hover > .cnav__item,
+.cnav__item.is-current { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.cnav__item.is-current { background: var(--color-accent-soft); font-weight: 500; }
+.cnav__emoji { font-size: 16px; width: 20px; text-align: center; flex: none; line-height: 1; }
+.cnav__label { flex: 1; }
+.cnav__caret { width: 11px; height: 11px; opacity: .4; flex: none; transition: transform .15s ease, opacity .15s ease; }
+.cnav:hover .cnav__caret { opacity: .8; transform: translateX(2px); }
+
+.cnav__flyout {
+  position: absolute; left: 100%; top: -6px; min-width: 188px; margin-left: 8px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-paper); box-shadow: 0 14px 36px -12px rgba(60,45,30,.30);
+  padding: 6px; z-index: 50;
+  opacity: 0; visibility: hidden; transform: translateX(-6px);
+  transition: opacity .16s ease, transform .16s ease, visibility .16s;
+}
+.cnav__flyout::before { content: ""; position: absolute; left: -12px; top: 0; width: 14px; height: 100%; }
+.cnav:hover .cnav__flyout, .cnav__flyout:hover { opacity: 1; visibility: visible; transform: translateX(0); }
+.cnav__flyout-title { font-size: 11px; color: var(--color-text-tertiary); padding: 4px 10px 6px; }
+.cnav__sub {
+  display: block; padding: 7px 10px; border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--color-text-secondary); text-decoration: none; white-space: nowrap;
+  transition: background .12s ease, color .12s ease;
+}
+.cnav__sub:hover, .cnav__sub.is-current { background: var(--color-accent-soft); color: var(--color-text-primary); }

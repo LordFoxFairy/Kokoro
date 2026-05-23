@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 今天想做什么？</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <style>
+    /* ===== 首页案例展示（仅首页 · 借鉴 hix.ai：输入下方 选功能 → 正下方出对应案例）
+       纯 CSS radio-tab：14 个 radio 在前，~ 选中态点亮 tab + 显示对应面板。
+       这里只是"看看能做什么"的展示，点卡片进入对应产物（result）页。
+       进 chat / 应用功能仍是现在的正常流程，与此无关。 */
+    .showcase { width: 100%; max-width: 880px; margin: var(--space-8) auto 0; text-align: left; }
+    .showcase__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .showcase__title { font-family: var(--font-serif); font-size: 15px; font-weight: 600; color: var(--color-text-secondary); margin: 0; letter-spacing: .02em; }
+    .showcase__more { font-size: 12px; color: var(--color-accent); text-decoration: none; white-space: nowrap; }
+    .showcase__more:hover { text-decoration: underline; }
+
+    .showcase__radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+    .showcase__tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-4); }
+    .showcase__tab {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12.5px; color: var(--color-text-secondary);
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: 999px; padding: 5px 11px; cursor: pointer; user-select: none;
+      transition: background .14s ease, color .14s ease, border-color .14s ease;
+    }
+    .showcase__tab:hover { border-color: var(--color-accent); color: var(--color-text-primary); }
+    .showcase__tab .e { font-size: 14px; line-height: 1; }
+
+    .showcase__stage { position: relative; }
+    .showcase__panel {
+      display: none; align-items: stretch; gap: 0;
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius-paper); box-shadow: var(--shadow-sm);
+      text-decoration: none; color: inherit; overflow: hidden;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .showcase__panel:hover { transform: translateY(-2px); border-color: var(--color-accent); box-shadow: var(--shadow-md); }
+    .showcase__panel:focus-visible { outline: none; border-color: var(--color-accent); box-shadow: var(--shadow-focus); }
+    .showcase__prompt { flex: 1; min-width: 0; padding: var(--space-5) var(--space-6); display: flex; flex-direction: column; justify-content: center; gap: var(--space-3); }
+    .showcase__ask-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--color-text-tertiary); }
+    /* prompt 呈现为「聊天框」：圆角输入框样式 + 木色发送键，传达"这就是发给它的话" */
+    .showcase__chatline { display: flex; align-items: center; gap: var(--space-3); background: var(--color-bg); border: 1px solid var(--color-border-strong); border-radius: 14px; padding: 11px 11px 11px 15px; box-shadow: inset 0 1px 2px rgba(60,45,30,0.04); transition: border-color .16s ease, box-shadow .16s ease; }
+    .showcase__chatline-text { flex: 1; min-width: 0; font-family: var(--font-serif); font-size: 16px; line-height: 1.5; color: var(--color-text-primary); }
+    .showcase__chatline-send { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--color-accent); color: #fff; display: grid; place-items: center; }
+    .showcase__chatline-send svg { width: 14px; height: 14px; }
+    .showcase__panel:hover .showcase__chatline { border-color: var(--color-accent); box-shadow: 0 4px 12px -6px rgba(60,45,30,0.25); }
+    .showcase__cta { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--color-accent); align-self: flex-start; }
+    .showcase__cta svg { width: 13px; height: 13px; }
+    .showcase__preview { flex: none; width: 300px; background: var(--color-bg-subtle); border-left: 1px solid var(--color-border); line-height: 0; display: flex; }
+    .showcase__preview svg { width: 100%; height: auto; display: block; }
+
+    /* —— radio 在前，~ 选中态点亮 tab —— */
+    #sc-image:checked ~ .showcase__tabs .showcase__tab--image,
+    #sc-video:checked ~ .showcase__tabs .showcase__tab--video,
+    #sc-lipsync:checked ~ .showcase__tabs .showcase__tab--lipsync,
+    #sc-audio:checked ~ .showcase__tabs .showcase__tab--audio,
+    #sc-design:checked ~ .showcase__tabs .showcase__tab--design,
+    #sc-courseware:checked ~ .showcase__tabs .showcase__tab--courseware,
+    #sc-landing:checked ~ .showcase__tabs .showcase__tab--landing {
+      background: var(--color-accent-soft); border-color: var(--color-accent-soft);
+      color: var(--color-text-primary); font-weight: 500;
+    }
+    /* —— ~ 选中态显示对应面板 —— */
+    #sc-image:checked ~ .showcase__stage .showcase__panel--image,
+    #sc-video:checked ~ .showcase__stage .showcase__panel--video,
+    #sc-lipsync:checked ~ .showcase__stage .showcase__panel--lipsync,
+    #sc-audio:checked ~ .showcase__stage .showcase__panel--audio,
+    #sc-design:checked ~ .showcase__stage .showcase__panel--design,
+    #sc-courseware:checked ~ .showcase__stage .showcase__panel--courseware,
+    #sc-landing:checked ~ .showcase__stage .showcase__panel--landing {
+      display: flex;
+    }
+
+    @media (max-width: 760px) {
+      .showcase__panel { flex-direction: column; }
+      .showcase__preview { width: 100%; border-left: none; border-top: 1px solid var(--color-border); }
+      .showcase__prompt { padding: var(--space-4) var(--space-5); }
+    }
+
+    /* ===== 创作侧边栏（参照 pollo 单列分组：组件 + 悬停弹出子能力），暖色，绝不 dark/cyan ===== */
+    .nav__group-label { font-size: 11px; letter-spacing: .06em; color: var(--color-text-tertiary); padding: 12px var(--space-3) 4px; }
+    .cnav { position: relative; }
+    .cnav__item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px var(--space-3); border-radius: var(--radius-sm); color: var(--color-text-secondary); text-decoration: none; font-size: 14px; font: inherit; cursor: pointer; box-sizing: border-box; transition: background .14s ease, color .14s ease; }
+    .cnav:hover > .cnav__item { background: var(--color-surface-hover); color: var(--color-text-primary); }
+    .cnav__emoji { font-size: 16px; width: 20px; text-align: center; flex: none; line-height: 1; }
+    .cnav__label { flex: 1; }
+    .cnav__caret { width: 11px; height: 11px; opacity: .4; flex: none; transition: transform .15s ease, opacity .15s ease; }
+    .cnav:hover .cnav__caret { opacity: .8; transform: translateX(2px); }
+    .cnav__flyout { position: absolute; left: 100%; top: -6px; min-width: 188px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-paper); box-shadow: 0 14px 36px -12px rgba(60,45,30,.30); padding: 6px; margin-left: 8px; opacity: 0; visibility: hidden; transform: translateX(-6px); transition: opacity .16s ease, transform .16s ease, visibility .16s; z-index: 50; }
+    .cnav__flyout::before { content: ""; position: absolute; left: -12px; top: 0; width: 14px; height: 100%; }
+    .cnav:hover .cnav__flyout, .cnav__flyout:hover { opacity: 1; visibility: visible; transform: translateX(0); }
+    .cnav__flyout-title { font-size: 11px; color: var(--color-text-tertiary); padding: 4px 10px 6px; }
+    .cnav__sub { display: block; padding: 7px 10px; border-radius: var(--radius-sm); font-size: 13px; color: var(--color-text-secondary); text-decoration: none; white-space: nowrap; transition: background .12s ease, color .12s ease; }
+    .cnav__sub:hover { background: var(--color-accent-soft); color: var(--color-text-primary); }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+        <a class="sidebar-recent__item" href="#">一个安静的落地页</a>
+        <a class="sidebar-recent__item" href="#">五月做菜的灵感</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main">
+      <div class="topbar">
+        <span></span>
+        <div class="topbar__right">
+          <button class="mode-switcher" type="button" aria-label="切换思考模式" aria-haspopup="true">
+            <span>细想 · 慢一点想清楚</span>
+            <svg class="mode-switcher__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <section class="stage">
+        <h1 class="greeting">今天想做<span class="greeting__accent">什么</span>？</h1>
+        <div class="greeting-sub">不急，先把想法说给我</div>
+
+        <!-- Composer -->
+        <form class="input-pill" onsubmit="return false;">
+          <details class="attach">
+            <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+            </summary>
+            <div class="attach__menu" role="menu">
+              <div class="attach__group-label">从这里加点什么</div>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+              <div class="attach__divider"></div>
+              <div class="attach__group-label">从已有的里挑</div>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+              <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+            </div>
+          </details>
+
+          <input class="input-pill__field" type="text" placeholder="把想说的告诉我。" aria-label="对话输入" />
+
+          <button class="chip chip--mode" type="button" aria-label="切换模式">
+            <span>细想</span>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+
+          <button class="send-btn" type="submit" aria-label="发送">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+            </svg>
+          </button>
+        </form>
+
+        <!-- Templates -->
+        <div class="chip-row" role="list" aria-label="模板">
+          <a class="chip chip--template" href="canvas-poster.html" role="listitem">
+            <span class="emoji">🎨</span><span>小红书风海报</span>
+          </a>
+          <a class="chip chip--template" href="canvas-landing.html" role="listitem">
+            <span class="emoji">📊</span><span>一页落地页</span>
+          </a>
+          <a class="chip chip--template" href="canvas-courseware.html" role="listitem">
+            <span class="emoji">📝</span><span>学习课件</span>
+          </a>
+          <a class="chip chip--template" href="chat.html" role="listitem">
+            <span class="emoji">💌</span><span>写一封信</span>
+          </a>
+          <a class="chip chip--template" href="canvas-mindmap.html" role="listitem">
+            <span class="emoji">💡</span><span>想法可视化</span>
+          </a>
+          <a class="chip chip--template chip-template--more" href="gallery.html" role="listitem">
+            <span>更多…</span>
+          </a>
+        </div>
+
+        <div class="home-hint">
+          不知道做什么？点一个试试看。
+          <span class="kbd-hint" style="margin-left:8px;">按 <span class="kbd">Enter</span> 发送 · <span class="kbd">⌘K</span> 搜索</span>
+        </div>
+
+        <!-- ===== 首页案例展示：选一个功能，正下方看它能做出什么（点开进对应产物页） ===== -->
+        <section class="showcase" aria-label="案例展示">
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-image" checked />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-video" />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-lipsync" />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-audio" />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-design" />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-courseware" />
+          <input class="showcase__radio" type="radio" name="showcase" id="sc-landing" />
+
+          <div class="showcase__head">
+            <h2 class="showcase__title">看看能做出什么</h2>
+            <a class="showcase__more" href="templates.html">去案例库 →</a>
+          </div>
+
+          <div class="showcase__tabs" role="tablist">
+            <label class="showcase__tab showcase__tab--image" for="sc-image"><span class="e">🖼</span>图片</label>
+            <label class="showcase__tab showcase__tab--video" for="sc-video"><span class="e">🎬</span>视频</label>
+            <label class="showcase__tab showcase__tab--lipsync" for="sc-lipsync"><span class="e">🗣</span>数字人</label>
+            <label class="showcase__tab showcase__tab--audio" for="sc-audio"><span class="e">🎵</span>音频</label>
+            <label class="showcase__tab showcase__tab--design" for="sc-design"><span class="e">✨</span>设计</label>
+            <label class="showcase__tab showcase__tab--courseware" for="sc-courseware"><span class="e">📝</span>文档</label>
+            <label class="showcase__tab showcase__tab--landing" for="sc-landing"><span class="e">🌐</span>站点</label>
+          </div>
+
+          <div class="showcase__stage">
+            <a class="showcase__panel showcase__panel--image" href="canvas-image-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">画一只趴着打盹的水彩橘猫，暖色调，留白多一点。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#FFFFFF"/><rect x="36" y="16" width="128" height="98" fill="#F3EAD6" stroke="#C8A26B" rx="3"/><ellipse cx="100" cy="74" rx="34" ry="26" fill="#E7CBA0"/><circle cx="86" cy="68" r="3" fill="#3A2E22"/><circle cx="114" cy="68" r="3" fill="#3A2E22"/><path d="M76 44 L86 58 L66 58 Z" fill="#C8A26B"/><path d="M124 44 L134 58 L114 58 Z" fill="#C8A26B"/><path d="M88 80 Q100 88 112 80" fill="none" stroke="#B36B5A" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--video" href="canvas-video-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">把这几张做菜照片做成一条 15 秒美食短片，温暖治愈。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#F3EAD6"/><rect x="30" y="28" width="48" height="36" fill="#FFFFFF" stroke="#C8A26B" rx="2"/><rect x="86" y="28" width="48" height="36" fill="#FFFFFF" stroke="#C8A26B" rx="2"/><rect x="142" y="28" width="28" height="36" fill="#E7CBA0" stroke="#C8A26B" rx="2"/><circle cx="54" cy="46" r="8" fill="#7A8B6B"/><circle cx="110" cy="46" r="8" fill="#B36B5A"/><path d="M150 38 L162 46 L150 54 Z" fill="#8B6F47"/><rect x="30" y="96" width="140" height="6" fill="#EBE0CF" rx="3"/><rect x="30" y="96" width="52" height="6" fill="#8B6F47" rx="3"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--lipsync" href="canvas-lipsync-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">让这张老照片里的奶奶念出这段话，自然一点。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#FFFFFF"/><rect x="60" y="18" width="80" height="80" fill="#F3EAD6" stroke="#8B6F47" rx="4"/><circle cx="100" cy="50" r="15" fill="#E7CBA0"/><path d="M80 92 Q100 70 120 92 Z" fill="#C8A26B"/><ellipse cx="100" cy="62" rx="6" ry="3" fill="#B36B5A"/><path d="M150 40 Q160 52 150 64" fill="none" stroke="#C8A26B" stroke-width="1.6" stroke-linecap="round"/><path d="M158 32 Q174 52 158 72" fill="none" stroke="#E7CBA0" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--audio" href="canvas-audio-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">把这段开业文案配成温柔女声的旁白。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#F3EAD6"/><circle cx="48" cy="65" r="18" fill="#8B6F47"/><path d="M44 57 L44 73 L57 65 Z" fill="#fff"/><rect x="78" y="58" width="4" height="14" rx="2" fill="#C8A26B"/><rect x="88" y="50" width="4" height="30" rx="2" fill="#8B6F47"/><rect x="98" y="44" width="4" height="42" rx="2" fill="#B36B5A"/><rect x="108" y="54" width="4" height="22" rx="2" fill="#7A8B6B"/><rect x="118" y="48" width="4" height="34" rx="2" fill="#C8A26B"/><rect x="128" y="58" width="4" height="14" rx="2" fill="#8B6F47"/><rect x="138" y="52" width="4" height="26" rx="2" fill="#E7CBA0"/><rect x="148" y="60" width="4" height="10" rx="2" fill="#C8A26B"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--design" href="canvas-design-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">给小满咖啡设计一套品牌视觉：logo、配色、字体。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#FFFFFF"/><circle cx="62" cy="48" r="20" fill="#EBE0CF" stroke="#8B6F47" stroke-width="0.8"/><text x="62" y="54" font-family="Songti SC,serif" font-size="15" fill="#8B6F47" text-anchor="middle">满</text><rect x="98" y="38" width="16" height="16" fill="#8B6F47"/><rect x="120" y="38" width="16" height="16" fill="#C8A26B"/><rect x="142" y="38" width="16" height="16" fill="#B36B5A"/><text x="62" y="92" font-family="Songti SC,serif" font-size="11" fill="#3A2E22" text-anchor="middle">小满咖啡</text><line x1="98" y1="74" x2="166" y2="74" stroke="#C8A26B" stroke-width="0.6"/><line x1="98" y1="84" x2="148" y2="84" stroke="#C8A26B" stroke-width="0.6"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--courseware" href="canvas-courseware-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">做一份给妈妈看的课件，用比喻讲清楚 AI 是什么。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#F3EAD6"/><rect x="30" y="16" width="140" height="98" fill="#FFFFFF" stroke="#C8A26B" rx="3"/><text x="44" y="38" font-family="Songti SC,serif" font-size="12" fill="#3A2E22">AI 是什么</text><text x="44" y="52" font-family="Songti SC,serif" font-size="9" fill="#8B6F47">— 用比喻，慢慢讲</text><line x1="44" y1="60" x2="156" y2="60" stroke="#EBE0CF"/><rect x="44" y="72" width="6" height="6" fill="#8B6F47"/><line x1="56" y1="76" x2="124" y2="76" stroke="#C8A26B" stroke-width="0.8"/><rect x="44" y="86" width="6" height="6" fill="#8B6F47"/><line x1="56" y1="90" x2="104" y2="90" stroke="#C8A26B" stroke-width="0.8"/></svg></div>
+            </a>
+
+            <a class="showcase__panel showcase__panel--landing" href="canvas-landing-result.html">
+              <div class="showcase__prompt">
+                <span class="showcase__ask-label">把这句发给 Kokoro</span>
+                <div class="showcase__chatline">
+                  <span class="showcase__chatline-text">做一个小满咖啡的单页落地页，主打『慢一点』。</span>
+                  <span class="showcase__chatline-send" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></span>
+                </div>
+                <span class="showcase__cta">看它做出什么<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l5 5-5 5"/></svg></span>
+              </div>
+              <div class="showcase__preview" aria-hidden="true"><svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="130" fill="#FFFFFF"/><line x1="24" y1="22" x2="176" y2="22" stroke="#C8A26B" stroke-width="0.5"/><rect x="24" y="16" width="22" height="6" fill="#8B6F47" rx="1"/><rect x="148" y="16" width="28" height="6" fill="#E7CBA0" rx="3"/><text x="100" y="54" font-family="Songti SC,serif" font-size="13" fill="#3A2E22" text-anchor="middle">小满咖啡</text><text x="100" y="72" font-family="Songti SC,serif" font-size="12" fill="#B36B5A" text-anchor="middle" font-style="italic">慢一点</text><rect x="76" y="82" width="48" height="13" fill="#8B6F47" rx="6.5"/><rect x="34" y="106" width="36" height="16" fill="#F3EAD6" stroke="#C8A26B" rx="2"/><rect x="82" y="106" width="36" height="16" fill="#F3EAD6" stroke="#C8A26B" rx="2"/><rect x="130" y="106" width="36" height="16" fill="#F3EAD6" stroke="#C8A26B" rx="2"/></svg></div>
+            </a>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

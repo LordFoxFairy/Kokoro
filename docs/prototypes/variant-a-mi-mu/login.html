@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · こころ — 登录 / 注册</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <style>
+    /* =================================================================
+       login.html — 页内专属样式 (BEM .lg-*)
+       居中纸感卡片 · 登录/注册 CSS tab 切换 · 第三方占位
+       ================================================================= */
+    .lg {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-7) var(--space-5);
+      background:
+        radial-gradient(640px 360px at 50% -8%, #FBF6EC 0%, rgba(250,247,242,0) 60%),
+        var(--color-bg);
+    }
+
+    .lg-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: var(--space-7);
+    }
+
+    .lg-card__brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+    }
+    .lg-card__brand .brand { padding: 0; }
+
+    .lg-card__heading {
+      text-align: center;
+      margin: 0 0 var(--space-6);
+    }
+    .lg-card__title {
+      font-family: var(--font-serif);
+      font-size: var(--text-h1);
+      font-weight: 600;
+      margin: 0 0 var(--space-2);
+      color: var(--color-text-primary);
+    }
+    .lg-card__sub {
+      color: var(--color-text-secondary);
+      font-size: var(--text-small);
+      margin: 0;
+    }
+
+    /* ---- Tab 切换（纯 CSS · radio 驱动） ---- */
+    .lg-tabs__radio { position: absolute; opacity: 0; pointer-events: none; }
+    .lg-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      background: var(--color-bg-subtle);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 4px;
+      margin-bottom: var(--space-6);
+    }
+    .lg-tabs__label {
+      text-align: center;
+      padding: 8px 0;
+      border-radius: 999px;
+      font-size: var(--text-small);
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: background var(--duration-fast) var(--ease-default),
+                  color var(--duration-fast) var(--ease-default);
+    }
+    #lg-tab-login:checked ~ .lg-tabs .lg-tabs__label[for="lg-tab-login"],
+    #lg-tab-signup:checked ~ .lg-tabs .lg-tabs__label[for="lg-tab-signup"] {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+      box-shadow: var(--shadow-xs);
+    }
+
+    /* 字段 */
+    .lg-field { margin-bottom: var(--space-4); }
+    .lg-field__label {
+      display: block;
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+    .lg-input {
+      width: 100%;
+      padding: 11px 16px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      transition: border-color var(--duration-fast) var(--ease-default),
+                  box-shadow var(--duration-fast) var(--ease-default);
+    }
+    .lg-input::placeholder { color: var(--color-text-tertiary); }
+    .lg-input:hover { border-color: var(--color-border-strong); }
+    .lg-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-focus);
+    }
+
+    /* 注册专属字段：默认隐藏，注册 tab 选中时显示 */
+    .lg-field--signup { display: none; }
+    #lg-tab-signup:checked ~ .lg-form .lg-field--signup { display: block; }
+
+    /* 文案随 tab 切换 */
+    .lg-only-login { display: inline; }
+    .lg-only-signup { display: none; }
+    #lg-tab-signup:checked ~ .lg-form .lg-only-login,
+    #lg-tab-signup:checked ~ .lg-card__heading .lg-only-login { display: none; }
+    #lg-tab-signup:checked ~ .lg-form .lg-only-signup,
+    #lg-tab-signup:checked ~ .lg-card__heading .lg-only-signup { display: inline; }
+
+    .lg-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-5);
+      font-size: var(--text-small);
+    }
+    .lg-row__link { color: var(--color-accent); }
+    .lg-row__link:hover { color: var(--color-accent-hover); }
+
+    .lg-submit { width: 100%; justify-content: center; }
+
+    /* 分隔线 */
+    .lg-divider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin: var(--space-5) 0;
+      color: var(--color-text-tertiary);
+      font-size: var(--text-small);
+    }
+    .lg-divider::before, .lg-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    /* 第三方 */
+    .lg-oauth { display: grid; gap: var(--space-3); }
+    .lg-oauth__btn { width: 100%; justify-content: center; gap: var(--space-2); }
+    .lg-oauth__icon { font-size: 16px; }
+
+    .lg-back {
+      text-align: center;
+      margin-top: var(--space-5);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+    }
+    .lg-back a { color: var(--color-accent); }
+  </style>
+</head>
+<body>
+  <main class="lg">
+    <section class="lg-card">
+
+      <div class="lg-card__brand">
+        <a class="brand" href="marketing.html">
+          <div class="brand__mark">心</div>
+          <div class="brand__name">Kokoro <em>こころ</em></div>
+        </a>
+      </div>
+
+      <!-- tab radios（置于 card 顶层，供兄弟选择器驱动文案/字段切换） -->
+      <input class="lg-tabs__radio" type="radio" name="lg-tab" id="lg-tab-login" checked />
+      <input class="lg-tabs__radio" type="radio" name="lg-tab" id="lg-tab-signup" />
+
+      <div class="lg-tabs">
+        <label class="lg-tabs__label" for="lg-tab-login">登录</label>
+        <label class="lg-tabs__label" for="lg-tab-signup">注册</label>
+      </div>
+
+      <div class="lg-card__heading">
+        <h1 class="lg-card__title">
+          <span class="lg-only-login">欢迎回来</span><span class="lg-only-signup">开始创作</span>
+        </h1>
+        <p class="lg-card__sub">
+          <span class="lg-only-login">慢一点，继续把想法做出来。</span><span class="lg-only-signup">注册即赠免费额度，无需信用卡。</span>
+        </p>
+      </div>
+
+      <form class="lg-form" onsubmit="window.location.href='index.html';return false;">
+        <div class="lg-field lg-field--signup">
+          <label class="lg-field__label" for="lg-name">昵称</label>
+          <input class="lg-input" type="text" id="lg-name" placeholder="想被怎么称呼" autocomplete="nickname" />
+        </div>
+
+        <div class="lg-field">
+          <label class="lg-field__label" for="lg-email">邮箱</label>
+          <input class="lg-input" type="email" id="lg-email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+
+        <div class="lg-field">
+          <label class="lg-field__label" for="lg-pwd">密码</label>
+          <input class="lg-input" type="password" id="lg-pwd" placeholder="至少 8 位" autocomplete="current-password" />
+        </div>
+
+        <div class="lg-row">
+          <span class="muted lg-only-signup">注册即代表同意服务条款</span>
+          <a class="lg-row__link lg-only-login" href="#">忘记密码？</a>
+        </div>
+
+        <button class="btn btn--primary btn--lg lg-submit" type="submit">进入</button>
+      </form>
+
+      <div class="lg-divider">或使用</div>
+
+      <div class="lg-oauth">
+        <button class="btn lg-oauth__btn" type="button" aria-disabled="true">
+          <span class="lg-oauth__icon">💬</span> 微信登录
+        </button>
+        <button class="btn lg-oauth__btn" type="button" aria-disabled="true">
+          <span class="lg-oauth__icon">🇬</span> Google 登录
+        </button>
+      </div>
+
+      <p class="lg-back">
+        <a href="marketing.html">← 返回首页</a>
+      </p>
+
+    </section>
+  </main>
+</body>
+</html>

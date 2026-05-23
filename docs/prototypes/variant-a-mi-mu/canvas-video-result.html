@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 周末做菜的灵感 · 短片（分镜）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 Open-Generative-AI 的产品模式（不借代码 / 不借视觉）：
+    - packages/studio/src/components/VideoStudio.jsx：单段视频结果 + "Extend 续写" →
+      这里降维成"分镜 storyboard 产物 + 续一镜"。
+    - ImageStudio.jsx 的 "history thumbnails → 点击查看大图" → 改成"分镜缩略条 → 当前镜大图"。
+    取舍：用 storyboard 分镜（每镜 = 一页）而非 timeline —— timeline 是剪辑师工具，
+    与 Kokoro"对话即创作"心智冲突。骨架照抄 canvas-courseware-result.html（同类"结果态"）。
+
+    页内 <style>：仅 video 专属 BEM（.canvas-stage--video / .canvas-video__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 css。
+    视觉：Kokoro 米 + 木 + 纸感。播放器外木框、播放键 / 进度 / 选中环一律暖木色。
+    暖色夜景画面允许偏深，但框和 UI 全暖木，绝不 dark / cyan / glassmorphism / 霓虹。
+  -->
+  <style>
+    /* ============================================================
+       Canvas Video Result · 分镜 storyboard 产物（页内专属样式）
+       仅 .canvas-stage--video / .canvas-video__* —— 不动任何 css 文件。
+       复用 .canvas-courseware__rail/__thumb 的横滚条骨架，叠加视频专属。
+       ============================================================ */
+
+    /* stage：竖向排布（缩略条 → 大图 → caption → 控件），同 courseware */
+    .canvas-stage.canvas-stage--video {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ---- 分镜横滚条 ---- */
+    .canvas-video__rail {
+      display: flex;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: 4px 2px 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .canvas-video__shot {
+      flex: 0 0 116px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+    }
+    .canvas-video__shot-frame {
+      position: relative;
+      height: 66px;
+      border-radius: var(--radius-xs);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      overflow: hidden;
+      transition:
+        transform var(--duration-base, 200ms) var(--ease-soft, ease),
+        border-color var(--duration-base, 200ms) var(--ease-soft, ease),
+        box-shadow var(--duration-base, 200ms) var(--ease-soft, ease);
+    }
+    .canvas-video__shot-frame svg { width: 100%; height: 100%; display: block; }
+    .canvas-video__shot:hover .canvas-video__shot-frame {
+      transform: translateY(-1px);
+      border-color: var(--color-border-strong, #D4C9B5);
+      box-shadow: 0 3px 10px rgba(60, 45, 30, 0.06);
+    }
+    .canvas-video__shot-num {
+      position: absolute;
+      top: 4px;
+      left: 5px;
+      font-family: var(--font-hand);
+      font-size: 10px;
+      color: var(--color-text-tertiary);
+      background: rgba(255, 254, 250, 0.85);
+      padding: 0 4px;
+      border-radius: 3px;
+      letter-spacing: 0.4px;
+    }
+    .canvas-video__shot-dur {
+      position: absolute;
+      bottom: 4px;
+      right: 5px;
+      font-family: var(--font-hand);
+      font-size: 10px;
+      color: #FBF4E6;
+      background: rgba(61, 40, 24, 0.62);
+      padding: 0 5px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+    }
+    .canvas-video__shot-cap {
+      font-family: var(--font-hand);
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      line-height: 1.35;
+      padding: 0 2px;
+    }
+    .canvas-video__shot.is-current .canvas-video__shot-frame {
+      border-color: var(--color-accent);
+      box-shadow:
+        0 0 0 3px rgba(139, 111, 71, 0.16),
+        0 4px 14px rgba(60, 45, 30, 0.08);
+      transform: translateY(-2px);
+    }
+    .canvas-video__shot.is-current .canvas-video__shot-num {
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+    }
+    .canvas-video__shot.is-current .canvas-video__shot-cap {
+      color: var(--color-text-primary);
+    }
+    /* 续一镜（虚线陪衬 thumb） */
+    .canvas-video__shot--add .canvas-video__shot-frame {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-style: dashed;
+      background: linear-gradient(180deg, #FFFDF9, #FBF6EC);
+      color: var(--color-text-tertiary);
+      font-family: var(--font-hand);
+      font-size: 12px;
+    }
+    .canvas-video__shot--add:hover .canvas-video__shot-frame {
+      border-style: solid;
+      color: var(--color-accent);
+      border-color: var(--color-accent-soft);
+    }
+
+    /* ---- 当前镜大图 = 木框包住的 16:9 播放器 ---- */
+    .canvas-video__player {
+      align-self: center;
+      width: 100%;
+      max-width: 640px;
+      /* 暖木框：外深木 + 内浅木高光，模拟实木相框 */
+      padding: 14px;
+      border-radius: 14px;
+      background:
+        linear-gradient(145deg, #A98455 0%, #8B6F47 42%, #6E5436 100%);
+      box-shadow:
+        0 1px 0 rgba(255, 246, 226, 0.35) inset,
+        0 -2px 6px rgba(61, 40, 24, 0.30) inset,
+        0 18px 40px -14px rgba(61, 40, 24, 0.45);
+    }
+    .canvas-video__screen {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #1A130C;
+      box-shadow:
+        0 0 0 1px rgba(61, 40, 24, 0.6),
+        0 2px 10px rgba(0, 0, 0, 0.35) inset;
+    }
+    .canvas-video__screen svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    /* 画面流光：极淡暖光横扫，提示"这是动起来的画面" */
+    .canvas-video__screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        100deg,
+        rgba(255, 224, 168, 0) 38%,
+        rgba(255, 224, 168, 0.10) 50%,
+        rgba(255, 224, 168, 0) 62%
+      );
+      transform: translateX(-30%);
+      animation: kv-shine 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes kv-shine {
+      0%, 18% { transform: translateX(-40%); opacity: 0; }
+      45%     { opacity: 1; }
+      72%,100%{ transform: translateX(40%); opacity: 0; }
+    }
+
+    /* 左上角镜次角标 */
+    .canvas-video__badge {
+      position: absolute;
+      top: 11px;
+      left: 11px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-hand);
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      color: #FBF4E6;
+      background: rgba(61, 40, 24, 0.55);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 246, 226, 0.22);
+    }
+    .canvas-video__badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #E6B873;
+      box-shadow: 0 0 6px rgba(230, 184, 115, 0.9);
+    }
+
+    /* 中央播放键 · 木色 + 呼吸光环 */
+    .canvas-video__play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 38% 32%, #C8A26B, #8B6F47 78%);
+      color: #FFF8EC;
+      box-shadow:
+        0 2px 10px rgba(61, 40, 24, 0.45),
+        0 0 0 0 rgba(200, 162, 107, 0.55);
+      animation: kv-pulse 2400ms ease-in-out infinite;
+      transition: transform 160ms ease;
+    }
+    .canvas-video__play:hover { transform: translate(-50%, -50%) scale(1.06); }
+    .canvas-video__play svg { width: 24px; height: 24px; margin-left: 3px; }
+    @keyframes kv-pulse {
+      0%   { box-shadow: 0 2px 10px rgba(61,40,24,0.45), 0 0 0 0 rgba(200,162,107,0.55); }
+      70%  { box-shadow: 0 2px 10px rgba(61,40,24,0.45), 0 0 0 16px rgba(200,162,107,0); }
+      100% { box-shadow: 0 2px 10px rgba(61,40,24,0.45), 0 0 0 0 rgba(200,162,107,0); }
+    }
+
+    /* 底部进度条（木色已播 + 暖播放头） */
+    .canvas-video__progress {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .canvas-video__time {
+      font-family: var(--font-hand);
+      font-size: 11px;
+      color: #FBF4E6;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .canvas-video__track {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 246, 226, 0.22);
+      position: relative;
+      overflow: visible;
+    }
+    .canvas-video__fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 36%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #C8A26B, #E6B873);
+    }
+    .canvas-video__head {
+      position: absolute;
+      top: 50%;
+      left: 36%;
+      transform: translate(-50%, -50%);
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #FFF8EC;
+      border: 2px solid #8B6F47;
+      box-shadow: 0 1px 4px rgba(61, 40, 24, 0.5);
+    }
+
+    /* 当前镜 caption */
+    .canvas-video__caption {
+      align-self: center;
+      max-width: 640px;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-serif);
+      font-size: 15px;
+      color: var(--color-text-secondary);
+      margin-top: -2px;
+    }
+    .canvas-video__caption b {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+    .canvas-video__caption .canvas-video__cap-hand {
+      display: block;
+      font-family: var(--font-hand);
+      font-size: 13px;
+      color: var(--color-text-tertiary);
+      margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-poster.html">周末做菜的灵感</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">给妈妈解释 AI</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                帮我把"周末做菜"做成一条 15 秒的美食小短片，暖暖的、夜里的感觉。
+              </article>
+
+              <article class="message message--ai">
+                <p>做好了。我切成 4 个镜头，一条线讲完"从备料到上桌"——</p>
+                <ol>
+                  <li>食材摊开（3s）</li>
+                  <li>热油下葱花 <span style="color: var(--color-accent); font-family: var(--font-hand); font-size: 12px;">← 现在</span>（5s）</li>
+                  <li>翻炒（4s）</li>
+                  <li>装盘（3s）</li>
+                </ol>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的短片 Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">短片 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 4 镜分镜</span>
+                </div>
+
+                <p>右边在放第 2 镜——热油下葱花的特写慢镜，最出香气的一段。哪一镜想改，跟我说。</p>
+              </article>
+
+              <article class="message message--user">
+                第 2 镜再慢一点，葱花下锅那下要"滋啦"的感觉。
+              </article>
+
+              <article class="message message--ai">
+                <p>把第 2 镜从 4s 拉到 5s，下锅那一下放成了慢镜。重生成了这一镜。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">配一段轻音乐</button>
+                  <button class="chat-suggest" type="button">续一镜 · 收尾</button>
+                  <button class="chat-suggest" type="button">导出 MP4</button>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试"续一镜" / "换成竖屏"）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (video / storyboard mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>周末做菜的灵感 · 短片</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>正在保存…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--video">
+
+            <!-- ① 分镜横滚条 · 4 镜 + 续一镜 -->
+            <div class="canvas-video__rail" aria-label="所有分镜缩略">
+
+              <!-- 镜 1 · 食材摊开 -->
+              <button class="canvas-video__shot" type="button" aria-label="第 1 镜 · 食材摊开">
+                <span class="canvas-video__shot-frame">
+                  <span class="canvas-video__shot-num">01</span>
+                  <span class="canvas-video__shot-dur">3s</span>
+                  <svg viewBox="0 0 116 66" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="116" height="66" fill="#2A1E12"/>
+                    <rect y="40" width="116" height="26" fill="#3C2A18"/>
+                    <ellipse cx="34" cy="44" rx="14" ry="5" fill="#6E5436"/>
+                    <circle cx="30" cy="42" r="4" fill="#C45B3C"/>
+                    <circle cx="40" cy="44" r="3.5" fill="#D98A3D"/>
+                    <rect x="58" y="36" width="20" height="10" rx="2" fill="#7A8B5A"/>
+                    <ellipse cx="92" cy="44" rx="12" ry="4" fill="#8B6F47"/>
+                    <circle cx="88" cy="42" r="2.5" fill="#E6B873"/>
+                    <circle cx="96" cy="43" r="2.5" fill="#E6B873"/>
+                  </svg>
+                </span>
+                <span class="canvas-video__shot-cap">镜 1 · 食材摊开</span>
+              </button>
+
+              <!-- 镜 2 · 热油下葱花 · 当前 -->
+              <button class="canvas-video__shot is-current" type="button" aria-current="true" aria-label="第 2 镜 · 热油下葱花 · 当前">
+                <span class="canvas-video__shot-frame">
+                  <span class="canvas-video__shot-num">02</span>
+                  <span class="canvas-video__shot-dur">5s</span>
+                  <svg viewBox="0 0 116 66" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="116" height="66" fill="#1F140B"/>
+                    <radialGradient id="kvt2" cx="50%" cy="62%" r="60%">
+                      <stop offset="0%" stop-color="#D98A3D" stop-opacity="0.55"/>
+                      <stop offset="100%" stop-color="#1F140B" stop-opacity="0"/>
+                    </radialGradient>
+                    <rect width="116" height="66" fill="url(#kvt2)"/>
+                    <ellipse cx="58" cy="50" rx="34" ry="10" fill="#3A2614"/>
+                    <ellipse cx="58" cy="47" rx="26" ry="6" fill="#C97B2E"/>
+                    <ellipse cx="58" cy="46" rx="14" ry="3" fill="#F2B45A"/>
+                    <circle cx="50" cy="44" r="2" fill="#7A8B5A"/>
+                    <circle cx="63" cy="45" r="1.8" fill="#7A8B5A"/>
+                    <circle cx="57" cy="42" r="1.6" fill="#9CB06B"/>
+                    <path d="M52 38 q3 -8 6 0" stroke="#F2D9A8" stroke-width="1" fill="none" opacity="0.7"/>
+                    <path d="M62 36 q3 -9 5 0" stroke="#F2D9A8" stroke-width="1" fill="none" opacity="0.5"/>
+                  </svg>
+                </span>
+                <span class="canvas-video__shot-cap">镜 2 · 热油下葱花</span>
+              </button>
+
+              <!-- 镜 3 · 翻炒 -->
+              <button class="canvas-video__shot" type="button" aria-label="第 3 镜 · 翻炒">
+                <span class="canvas-video__shot-frame">
+                  <span class="canvas-video__shot-num">03</span>
+                  <span class="canvas-video__shot-dur">4s</span>
+                  <svg viewBox="0 0 116 66" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="116" height="66" fill="#231710"/>
+                    <ellipse cx="58" cy="48" rx="36" ry="11" fill="#3A2614"/>
+                    <path d="M30 46 q28 -22 56 0" fill="none" stroke="#C97B2E" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="50" cy="34" r="3" fill="#D98A3D"/>
+                    <circle cx="64" cy="30" r="2.5" fill="#E6B873"/>
+                    <circle cx="74" cy="36" r="2.2" fill="#C45B3C"/>
+                    <path d="M88 44 l16 -2" stroke="#8B6F47" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <span class="canvas-video__shot-cap">镜 3 · 翻炒</span>
+              </button>
+
+              <!-- 镜 4 · 装盘 -->
+              <button class="canvas-video__shot" type="button" aria-label="第 4 镜 · 装盘">
+                <span class="canvas-video__shot-frame">
+                  <span class="canvas-video__shot-num">04</span>
+                  <span class="canvas-video__shot-dur">3s</span>
+                  <svg viewBox="0 0 116 66" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="116" height="66" fill="#2A1E12"/>
+                    <ellipse cx="58" cy="46" rx="40" ry="13" fill="#EEE3CE"/>
+                    <ellipse cx="58" cy="45" rx="30" ry="9" fill="#F7EFDD"/>
+                    <ellipse cx="54" cy="44" rx="14" ry="5" fill="#C97B2E"/>
+                    <circle cx="50" cy="43" r="2" fill="#7A8B5A"/>
+                    <circle cx="62" cy="45" r="1.8" fill="#9CB06B"/>
+                    <circle cx="66" cy="42" r="1.6" fill="#C45B3C"/>
+                  </svg>
+                </span>
+                <span class="canvas-video__shot-cap">镜 4 · 装盘</span>
+              </button>
+
+              <!-- 续一镜 -->
+              <button class="canvas-video__shot canvas-video__shot--add" type="button" aria-label="续一镜">
+                <span class="canvas-video__shot-frame">+ 续一镜</span>
+                <span class="canvas-video__shot-cap">接着往下拍</span>
+              </button>
+
+            </div>
+
+            <!-- ② 当前镜大图 = 木框包住的 16:9 播放器 -->
+            <div class="canvas-video__player" aria-label="第 2 镜 · 播放器">
+              <div class="canvas-video__screen">
+
+                <!-- 暖色夜景：热油下葱花特写（深画面，UI 全暖木） -->
+                <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="kvHeat" cx="50%" cy="64%" r="62%">
+                      <stop offset="0%" stop-color="#E89B45" stop-opacity="0.62"/>
+                      <stop offset="55%" stop-color="#7A3F1A" stop-opacity="0.30"/>
+                      <stop offset="100%" stop-color="#150D07" stop-opacity="0"/>
+                    </radialGradient>
+                    <radialGradient id="kvOil" cx="50%" cy="50%" r="55%">
+                      <stop offset="0%" stop-color="#F2B45A"/>
+                      <stop offset="60%" stop-color="#C97B2E"/>
+                      <stop offset="100%" stop-color="#6E3F18"/>
+                    </radialGradient>
+                  </defs>
+
+                  <!-- 夜色厨房底 -->
+                  <rect width="640" height="360" fill="#160E07"/>
+                  <rect width="640" height="360" fill="url(#kvHeat)"/>
+
+                  <!-- 锅（深口铸铁，暖边光） -->
+                  <ellipse cx="320" cy="250" rx="220" ry="64" fill="#2A1A0E"/>
+                  <ellipse cx="320" cy="246" rx="220" ry="60" fill="none" stroke="#C8884A" stroke-width="2" opacity="0.5"/>
+                  <ellipse cx="320" cy="238" rx="170" ry="44" fill="url(#kvOil)"/>
+                  <ellipse cx="320" cy="234" rx="120" ry="28" fill="#F2C879" opacity="0.85"/>
+
+                  <!-- 油面高光 -->
+                  <ellipse cx="270" cy="230" rx="34" ry="7" fill="#FFE7B0" opacity="0.7"/>
+                  <ellipse cx="380" cy="240" rx="22" ry="5" fill="#FFE7B0" opacity="0.45"/>
+
+                  <!-- 葱花 -->
+                  <circle cx="288" cy="232" r="7" fill="#7A8B5A"/>
+                  <circle cx="320" cy="240" r="6" fill="#9CB06B"/>
+                  <circle cx="352" cy="230" r="6.5" fill="#6E7E4C"/>
+                  <circle cx="306" cy="246" r="5" fill="#9CB06B"/>
+                  <circle cx="340" cy="248" r="4.5" fill="#7A8B5A"/>
+                  <circle cx="300" cy="222" r="4" fill="#B3C77E"/>
+
+                  <!-- 滋啦油点（暖色飞溅） -->
+                  <circle cx="250" cy="206" r="3" fill="#F2C879" opacity="0.9"/>
+                  <circle cx="402" cy="200" r="2.4" fill="#F2C879" opacity="0.8"/>
+                  <circle cx="360" cy="188" r="2" fill="#FFE7B0" opacity="0.7"/>
+                  <circle cx="284" cy="186" r="1.8" fill="#FFE7B0" opacity="0.6"/>
+
+                  <!-- 热气 -->
+                  <path d="M270 210 q14 -42 28 -8 q-12 -34 -2 -64" stroke="#F3DDB0" stroke-width="3" fill="none" opacity="0.30" stroke-linecap="round"/>
+                  <path d="M360 206 q16 -40 30 -6 q-10 -36 0 -60" stroke="#F3DDB0" stroke-width="3" fill="none" opacity="0.24" stroke-linecap="round"/>
+                </svg>
+
+                <!-- 左上镜次角标 -->
+                <span class="canvas-video__badge">镜 2 · 5s · 16:9</span>
+
+                <!-- 中央木色播放键（呼吸光环） -->
+                <button class="canvas-video__play" type="button" aria-label="播放本镜">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg>
+                </button>
+
+                <!-- 底部进度条 -->
+                <div class="canvas-video__progress" aria-label="播放进度">
+                  <span class="canvas-video__time">00:01</span>
+                  <span class="canvas-video__track">
+                    <span class="canvas-video__fill"></span>
+                    <span class="canvas-video__head"></span>
+                  </span>
+                  <span class="canvas-video__time">00:05</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ③ 当前镜 caption -->
+            <p class="canvas-video__caption">
+              <b>第 2 镜：热油下葱花，特写慢镜。</b>
+              <span class="canvas-video__cap-hand">最出香气的一段——油刚冒烟，葱花一下锅，滋啦一声。</span>
+            </p>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="短片控件">
+
+              <!-- 比例 -->
+              <div class="canvas-controls__row" role="group" aria-label="比例">
+                <span class="canvas-controls__label">比例</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">16:9 横</button>
+                <button class="chip chip--control" type="button">9:16 竖</button>
+                <button class="chip chip--control" type="button">1:1 方</button>
+              </div>
+
+              <!-- 本镜时长 -->
+              <div class="canvas-controls__row" role="group" aria-label="本镜时长">
+                <span class="canvas-controls__label">本镜</span>
+                <button class="chip chip--control" type="button">3s</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">5s</button>
+                <button class="chip chip--control" type="button">10s</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这条短片花了 2 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 1 1.6 3.7M3 8V5M3 8h3"/></svg>
+                  重生成这镜
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                  续一镜
+                </button>
+                <button class="btn btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="8" height="8" rx="1.2"/><path d="M10.5 6.5l3-1.5v6l-3-1.5z"/></svg>
+                  导出 MP4
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

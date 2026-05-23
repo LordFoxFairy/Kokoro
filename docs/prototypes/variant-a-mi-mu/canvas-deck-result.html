@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="app-viewport-fit">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · Canvas · 小满咖啡馆小程序（融资 Deck）</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <!--
+    研究产出 · 借鉴 DeckVibe（planning/deckvibe-product-spec.md）的产品模式（不借代码 / 不借视觉）：
+    - pitch-deck 技能的标准路演叙事：封面 → 问题 → 方案 → 市场 → 商业模式 → 融资诉求。
+    - storyboard 幻灯片导航 + 主题切换 + 演讲者视图（备注）三件套。
+    复用课件的"缩略条 + 当前页大图 + 底部 canvas-controls"骨架（每页 = 一张 16:9 banner）。
+
+    与 canvas-courseware（课件 = 教学，bullet 逐条解释）刻意拉开：
+    deck = 商业提案 —— 大标题 + 一句断言 + 一个关键数字/木色图表 + 留白，气质更"路演"，
+    每页带一条手写体演讲者备注；控件第二行从"模板"换成"主题"（沉静米 / 木色 / 暖橙）。
+
+    页内 <style>：仅 deck 专属 BEM（.canvas-stage--deck / .canvas-deck__*）。
+    复用 shell（sidebar / chat / canvas-toolbar / canvas-controls / chip / btn）来自共享 components.css。
+    保持单文件可直接打开（ADR-007）。视觉：Kokoro 米 + 木 + 纸感，严禁 dark / cyan / glassmorphism。
+  -->
+  <style>
+    /* ===== 演示稿 canvas 专属（page-local，BEM；复用 tokens） ===== */
+    .canvas-stage.canvas-stage--deck {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--space-5) var(--space-6) 0;
+      gap: var(--space-4);
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* —— 幻灯片缩略横滚条（每页一张 16:9 暖色 banner） —— */
+    .canvas-deck__rail {
+      display: flex;
+      gap: var(--space-3);
+      overflow-x: auto;
+      padding-bottom: var(--space-2);
+      flex: none;
+      scrollbar-width: thin;
+    }
+    .canvas-deck__thumb {
+      position: relative;
+      flex: none;
+      width: 150px;
+      border: 1px solid var(--color-border);
+      border-top-color: #ECE3D2;
+      border-radius: var(--radius-paper);
+      background: var(--color-surface);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+      box-shadow: 0 1px 2px rgba(60,45,30,0.04);
+    }
+    .canvas-deck__thumb:hover { transform: translateY(-2px); box-shadow: 0 6px 16px -8px rgba(60,45,30,0.18); }
+    .canvas-deck__thumb:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .canvas-deck__thumb.is-current {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 1px var(--color-accent), 0 6px 16px -8px rgba(60,45,30,0.20);
+    }
+    .canvas-deck__thumb svg { display: block; width: 100%; height: 84px; }   /* 150 × 84 ≈ 16:9 */
+    .canvas-deck__thumb-meta {
+      display: flex; align-items: baseline; gap: var(--space-2);
+      padding: 5px 9px 6px;
+      border-top: 1px solid var(--color-border);
+      background: #FCFAF6;
+    }
+    .canvas-deck__thumb-num {
+      font-family: var(--font-hand);
+      font-size: 11px; font-weight: 600; letter-spacing: .5px;
+      color: var(--color-accent);
+    }
+    .canvas-deck__thumb-name {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .canvas-deck__thumb--add {
+      display: grid; place-items: center;
+      width: 100px;
+      border-style: dashed;
+      color: var(--color-text-secondary);
+      font-family: var(--font-hand);
+      font-size: 12px;
+      background: #FCFAF6;
+    }
+    .canvas-deck__thumb--add:hover { color: var(--color-accent); border-color: var(--color-accent); }
+
+    /* —— 当前页大图（16:9 提案 banner） —— */
+    .canvas-deck__stagewrap {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--space-3);
+    }
+    .canvas-deck__slide {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      background:
+        radial-gradient(120% 120% at 88% 8%, #FFFFFF 0%, #FBF6EC 55%, #F5ECDD 100%);
+      /* 暖色纸框 —— 区别于 video 的深木相框 */
+      box-shadow:
+        0 0 0 1px var(--color-border),
+        0 0 0 7px #F6EEDF,
+        0 18px 44px -18px rgba(60,45,30,0.24);
+      display: flex;
+      flex-direction: column;
+      padding: clamp(20px, 4.4%, 36px);
+    }
+    /* 左上角的页型徽标 */
+    .canvas-deck__badge {
+      align-self: flex-start;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: var(--color-accent-soft);
+      color: var(--color-accent-hover);
+      font-family: var(--font-hand);
+      font-size: 13px; letter-spacing: .4px;
+    }
+    .canvas-deck__badge::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--color-accent);
+    }
+    .canvas-deck__lead {
+      flex: 1;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+    .canvas-deck__title {
+      font-family: var(--font-serif, Georgia, "Songti SC", serif);
+      font-size: clamp(26px, 5.2vw, 40px);
+      line-height: 1.12;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+    .canvas-deck__sub {
+      font-size: var(--text-body);
+      line-height: 1.55;
+      color: var(--color-text-secondary);
+      max-width: 30em;
+      margin: 0;
+    }
+    .canvas-deck__sub b { color: var(--color-accent-hover); font-weight: 600; }
+
+    /* 关键数字（路演里最重要的一个数） */
+    .canvas-deck__stat {
+      display: flex; align-items: baseline; gap: var(--space-3);
+      margin-top: var(--space-2);
+    }
+    .canvas-deck__stat-num {
+      font-family: var(--font-serif, Georgia, serif);
+      font-size: clamp(34px, 7vw, 56px);
+      line-height: 1;
+      font-weight: 700;
+      color: var(--color-accent);
+      letter-spacing: -1px;
+    }
+    .canvas-deck__stat-cap {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      color: var(--color-text-secondary);
+      line-height: 1.4;
+      max-width: 12em;
+    }
+
+    /* 极简木色柱图（市场页用） —— 绝不花哨 */
+    .canvas-deck__chart { margin-top: var(--space-2); }
+    .canvas-deck__chart svg { display: block; width: 100%; max-width: 340px; height: auto; }
+
+    /* —— 演讲者备注条（手写体，小字号） —— */
+    .canvas-deck__notes {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      padding: 9px var(--space-4);
+      border-radius: var(--radius-paper);
+      background: #FCFAF6;
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-accent-soft);
+    }
+    .canvas-deck__notes-tag {
+      flex: none;
+      font-family: var(--font-hand);
+      font-size: var(--text-micro);
+      color: var(--color-accent);
+      letter-spacing: .5px;
+      padding-top: 1px;
+    }
+    .canvas-deck__notes-text {
+      font-family: var(--font-hand);
+      font-size: var(--text-small);
+      line-height: 1.45;
+      color: var(--color-text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app app--viewport-fit">
+
+    <!-- ===== Sidebar (narrow) ===== -->
+    <aside class="sidebar is-narrow" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro</div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+        </a>
+        <div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item is-current" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item is-current" href="canvas-deck.html">小满咖啡馆 · 融资 Deck</a>
+        <a class="sidebar-recent__item" href="canvas-video.html">周末做菜的灵感 · 短片</a>
+        <a class="sidebar-recent__item" href="canvas-courseware.html">给妈妈解释 AI</a>
+        <a class="sidebar-recent__item" href="canvas.html">写给阿芸的一封信</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main: split chat | canvas ===== -->
+    <main class="main">
+      <div class="split">
+
+        <!-- ===== Left: chat ===== -->
+        <div class="chat-view">
+          <div class="chat-scroll">
+            <div class="chat-thread" role="log" aria-live="polite">
+
+              <article class="message message--user">
+                帮我做个咖啡馆小程序的融资 deck，给投资人看，6 页就好。
+              </article>
+
+              <article class="message message--ai">
+                <p>好。我按路演的顺序排了 6 页，一页只讲一件事——</p>
+                <ol>
+                  <li>封面：一句话说清你是谁</li>
+                  <li>问题：小店为什么留不住客</li>
+                  <li>方案：小程序怎么解决</li>
+                  <li>市场：盘子有多大 <span style="color: var(--color-accent); font-family: var(--font-hand); font-size: 12px;">← 现在</span></li>
+                  <li>商业模式：钱从哪来</li>
+                  <li>融资诉求：要多少、做什么</li>
+                </ol>
+
+                <div class="tool-call-inline" role="status" aria-label="正在用的 Deck Agent">
+                  <span class="tool-call-inline__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="tool-call-inline__name">Deck Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 6 页</span>
+                </div>
+
+                <p>第 4 页"市场"先给你看，我放了一个核心数字和一张小图。要不要换个角度讲？</p>
+              </article>
+
+              <article class="message message--user">
+                市场那页别堆数据，留一个最有冲击的数就行。
+              </article>
+
+              <article class="message message--ai">
+                <p>对，路演最忌堆数。我只留了 <b>3.2 万亿</b> 这个总盘，旁边一句"咖啡仍在高速增长"，其余的放进了备注里口头补。</p>
+                <div class="chat-suggest-row" role="group" aria-label="可继续">
+                  <button class="chat-suggest is-current" type="button">帮我写演讲者备注</button>
+                  <button class="chat-suggest" type="button">下一页：商业模式</button>
+                  <button class="chat-suggest" type="button">换个主题配色</button>
+                </div>
+              </article>
+
+            </div>
+          </div>
+
+          <div class="composer-dock">
+            <div class="input-pill">
+              <details class="attach">
+                <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </summary>
+                <div class="attach__menu" role="menu">
+                  <div class="attach__group-label">从这里加点什么</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                  <div class="attach__divider"></div>
+                  <div class="attach__group-label">从已有的里挑</div>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                  <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                </div>
+              </details>
+              <input class="input-pill__field" type="text" placeholder="继续聊……（试试&quot;下一页&quot; / &quot;演讲者备注&quot;）" aria-label="对话输入" />
+              <button class="chip chip--mode" type="button" aria-label="切换模式">
+                <span>细想</span>
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+              <button class="send-btn" type="submit" aria-label="发送">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 12V4M4 7.5L8 3.5l4 4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right: canvas (deck / pitch mode) ===== -->
+        <div class="canvas-pane">
+
+          <div class="canvas-toolbar">
+            <div class="canvas-toolbar__left">
+              <button class="canvas-collapse" type="button" aria-label="暂时收起 Canvas">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                <span>收起</span>
+              </button>
+              <button class="project-name" type="button" aria-label="重命名">
+                <span>小满咖啡馆 · 融资 Deck</span>
+                <span class="project-name__pulse" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="canvas-toolbar__right">
+              <span class="save-state is-saving" aria-live="polite" title="自动保存">
+                <span class="save-state__dot"></span>
+                <span>正在保存…</span>
+              </span>
+              <button class="icon-btn" type="button" aria-label="关闭 Canvas">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-stage canvas-stage--deck">
+
+            <!-- 幻灯片缩略横滚条（6 页） -->
+            <div class="canvas-deck__rail" aria-label="所有幻灯片">
+
+              <!-- 1 · 封面 -->
+              <article class="canvas-deck__thumb" tabindex="0" aria-label="第 1 页 · 封面">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <circle cx="30" cy="28" r="9" fill="none" stroke="#8B6F47" stroke-width="1.4"/>
+                  <path d="M27 28 q3 4 6 0" stroke="#8B6F47" stroke-width="1.2" fill="none"/>
+                  <rect x="46" y="24" width="56" height="5" rx="2" fill="#3D2818"/>
+                  <rect x="46" y="34" width="40" height="3" rx="1.5" fill="#B8AC9C"/>
+                  <rect x="20" y="62" width="34" height="3" rx="1.5" fill="#8B6F47" opacity="0.5"/>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">01</span><span class="canvas-deck__thumb-name">封面</span></div>
+              </article>
+
+              <!-- 2 · 问题 -->
+              <article class="canvas-deck__thumb" tabindex="0" aria-label="第 2 页 · 问题">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <rect x="18" y="18" width="46" height="5" rx="2" fill="#8B6F47" opacity="0.55"/>
+                  <path d="M104 22 a14 14 0 1 0 0.1 0" fill="none" stroke="#B36B5A" stroke-width="2"/>
+                  <rect x="118" y="20" width="3" height="14" rx="1.5" fill="#B36B5A"/>
+                  <rect x="118" y="38" width="3" height="3" rx="1.5" fill="#B36B5A"/>
+                  <rect x="18" y="54" width="64" height="3" rx="1.5" fill="#B8AC9C"/>
+                  <rect x="18" y="62" width="50" height="3" rx="1.5" fill="#B8AC9C"/>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">02</span><span class="canvas-deck__thumb-name">问题</span></div>
+              </article>
+
+              <!-- 3 · 方案 -->
+              <article class="canvas-deck__thumb" tabindex="0" aria-label="第 3 页 · 方案">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <rect x="18" y="16" width="40" height="5" rx="2" fill="#8B6F47" opacity="0.55"/>
+                  <rect x="20" y="34" width="32" height="34" rx="3" fill="#EBE0CF"/>
+                  <rect x="60" y="34" width="32" height="34" rx="3" fill="#F7E2BD"/>
+                  <rect x="100" y="34" width="32" height="34" rx="3" fill="#EBE0CF"/>
+                  <circle cx="36" cy="48" r="4" fill="#8B6F47"/>
+                  <circle cx="76" cy="48" r="4" fill="#8B6F47"/>
+                  <circle cx="116" cy="48" r="4" fill="#8B6F47"/>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">03</span><span class="canvas-deck__thumb-name">方案</span></div>
+              </article>
+
+              <!-- 4 · 市场 · is-current -->
+              <article class="canvas-deck__thumb is-current" tabindex="0" aria-label="第 4 页 · 市场 · 当前" aria-current="true">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <rect x="18" y="14" width="40" height="5" rx="2" fill="#8B6F47"/>
+                  <rect x="20" y="58" width="14" height="12" fill="#EBE0CF"/>
+                  <rect x="44" y="48" width="14" height="22" fill="#C8A26B"/>
+                  <rect x="68" y="36" width="14" height="34" fill="#8B6F47"/>
+                  <rect x="92" y="28" width="14" height="42" fill="#76583A"/>
+                  <line x1="16" y1="70" x2="134" y2="70" stroke="#B8AC9C" stroke-width="1"/>
+                  <text x="116" y="34" font-family="serif" font-size="11" fill="#8B6F47" font-weight="700">¥</text>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">04</span><span class="canvas-deck__thumb-name">市场</span></div>
+              </article>
+
+              <!-- 5 · 商业模式 -->
+              <article class="canvas-deck__thumb" tabindex="0" aria-label="第 5 页 · 商业模式">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <rect x="18" y="16" width="48" height="5" rx="2" fill="#8B6F47" opacity="0.55"/>
+                  <circle cx="58" cy="50" r="22" fill="#EBE0CF"/>
+                  <path d="M58 50 L58 28 A22 22 0 0 1 78 56 Z" fill="#8B6F47"/>
+                  <path d="M58 50 L78 56 A22 22 0 0 1 48 70 Z" fill="#C8A26B"/>
+                  <rect x="92" y="40" width="40" height="3" rx="1.5" fill="#B8AC9C"/>
+                  <rect x="92" y="48" width="34" height="3" rx="1.5" fill="#B8AC9C"/>
+                  <rect x="92" y="56" width="28" height="3" rx="1.5" fill="#B8AC9C"/>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">05</span><span class="canvas-deck__thumb-name">商业模式</span></div>
+              </article>
+
+              <!-- 6 · 融资诉求 -->
+              <article class="canvas-deck__thumb" tabindex="0" aria-label="第 6 页 · 融资诉求">
+                <svg viewBox="0 0 150 84" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="150" height="84" fill="#FBF6EC"/>
+                  <rect x="18" y="16" width="44" height="5" rx="2" fill="#8B6F47" opacity="0.55"/>
+                  <text x="20" y="58" font-family="serif" font-size="26" fill="#8B6F47" font-weight="700">¥300万</text>
+                  <rect x="20" y="66" width="80" height="3" rx="1.5" fill="#B8AC9C"/>
+                </svg>
+                <div class="canvas-deck__thumb-meta"><span class="canvas-deck__thumb-num">06</span><span class="canvas-deck__thumb-name">融资诉求</span></div>
+              </article>
+
+              <!-- 加一页 -->
+              <article class="canvas-deck__thumb canvas-deck__thumb--add" tabindex="0" aria-label="加一页">
+                <span>+ 加一页</span>
+              </article>
+
+            </div>
+
+            <!-- 当前页大图（第 4 页 · 市场） -->
+            <div class="canvas-deck__stagewrap">
+              <article class="canvas-deck__slide" aria-label="第 4 页 · 市场有多大">
+                <span class="canvas-deck__badge">第 4 页 · 市场</span>
+
+                <div class="canvas-deck__lead">
+                  <h1 class="canvas-deck__title">中国咖啡的盘子，<br/>还在变大。</h1>
+                  <p class="canvas-deck__sub">现制咖啡门店三年翻倍，下沉市场刚刚开始。小店缺的不是客流，是<b>留住客的工具</b>。</p>
+
+                  <div class="canvas-deck__stat">
+                    <span class="canvas-deck__stat-num">¥3.2万亿</span>
+                    <span class="canvas-deck__stat-cap">2030 年中国咖啡市场预期总规模</span>
+                  </div>
+
+                  <div class="canvas-deck__chart" aria-label="市场规模逐年增长柱状图">
+                    <svg viewBox="0 0 340 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <line x1="6" y1="84" x2="334" y2="84" stroke="#D4C9B5" stroke-width="1"/>
+                      <!-- 4 根木色渐深柱：'24 / '26 / '28 / '30 -->
+                      <rect x="24"  y="58" width="42" height="26" rx="2" fill="#EBE0CF"/>
+                      <rect x="100" y="44" width="42" height="40" rx="2" fill="#C8A26B"/>
+                      <rect x="176" y="28" width="42" height="56" rx="2" fill="#8B6F47"/>
+                      <rect x="252" y="14" width="42" height="70" rx="2" fill="#76583A"/>
+                      <text x="45"  y="94" font-family="serif" font-size="10" fill="#7A6F62" text-anchor="middle">'24</text>
+                      <text x="121" y="94" font-family="serif" font-size="10" fill="#7A6F62" text-anchor="middle">'26</text>
+                      <text x="197" y="94" font-family="serif" font-size="10" fill="#7A6F62" text-anchor="middle">'28</text>
+                      <text x="273" y="94" font-family="serif" font-size="10" fill="#3D2818" text-anchor="middle" font-weight="700">'30</text>
+                    </svg>
+                  </div>
+                </div>
+              </article>
+
+              <!-- 演讲者备注条 -->
+              <div class="canvas-deck__notes" aria-label="演讲者备注">
+                <span class="canvas-deck__notes-tag">备注</span>
+                <span class="canvas-deck__notes-text">这里只念一个数：3.2 万亿。别背增长率，留给提问。一句话带过下沉市场，把节奏交给下一页"我们怎么赚钱"。</span>
+              </div>
+            </div>
+
+            <!-- 底部 sticky 控件 -->
+            <section class="canvas-controls" aria-label="演示稿控件">
+
+              <!-- 翻页 -->
+              <div class="canvas-controls__row" role="group" aria-label="翻页">
+                <span class="canvas-controls__label">翻页</span>
+                <button class="chip chip--control" type="button">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3L4 6l3.5 3"/></svg>
+                  上一页
+                </button>
+                <span style="font-family: var(--font-hand); font-size: var(--text-small); color: var(--color-text-secondary);">3 of 6</span>
+                <button class="chip chip--control" type="button">
+                  下一页
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3L8 6l-3.5 3"/></svg>
+                </button>
+              </div>
+
+              <!-- 主题 -->
+              <div class="canvas-controls__row" role="group" aria-label="主题配色">
+                <span class="canvas-controls__label">主题</span>
+                <button class="chip chip--control" type="button">沉静米</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">木色</button>
+                <button class="chip chip--control" type="button">暖橙</button>
+              </div>
+
+              <!-- 操作 + 额度 -->
+              <div class="canvas-controls__actions">
+                <span class="canvas-controls__quota">这份 deck 花了 1 次 · 还剩 1,188 积分</span>
+                <button class="btn btn--ghost btn--sm" type="button" title="演讲者视图 · 大图 + 备注 + 计时">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3.5h12v7H2z"/><path d="M5 13h6M8 10.5V13"/></svg>
+                  演讲者视图
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13V3h7l3 3v7z"/><path d="M5 6h5M5 9h5M5 11h3"/></svg>
+                  导出 PPT
+                </button>
+                <button class="btn btn--ghost btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13V3h7l3 3v7z"/><path d="M5.5 8.5l2 2 3-4"/></svg>
+                  导出 PDF
+                </button>
+                <button class="btn btn--primary btn--sm" type="button">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M8 4l4 4-4 4"/></svg>
+                  分享
+                </button>
+              </div>
+
+            </section>
+
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</body>
+</html>

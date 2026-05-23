@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro · 周末展览的小红书海报 · 模板</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/studio-nav.css" />
+  <link rel="stylesheet" href="css/sidebar-creative.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" aria-label="侧边导航">
+      <div class="brand">
+        <div class="brand__mark">心</div>
+        <div class="brand__name">Kokoro <em>こころ</em></div>
+      </div>
+
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-item nav-item--primary" href="index.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          <span>新对话</span>
+        </a>
+        <a class="nav-item" href="search.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+          <span>搜索</span>
+          <span class="kbd-hint" style="margin-left:auto;"><span class="kbd">⌘K</span></span>
+        </a>
+<div class="nav__group-label">创作</div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-image.html">
+            <span class="cnav__emoji">🖼</span><span class="cnav__label">图片</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">图片 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-image.html">文生图</a>
+            <a class="cnav__sub" href="canvas-image.html">图生图</a>
+            <a class="cnav__sub" href="canvas-image.html">局部改图</a>
+            <a class="cnav__sub" href="canvas-image.html">扩图</a>
+            <a class="cnav__sub" href="canvas-image.html">高清放大</a>
+            <a class="cnav__sub" href="canvas-image.html">抠图去背</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-video.html">
+            <span class="cnav__emoji">🎬</span><span class="cnav__label">视频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">视频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-video.html">文生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">图生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">参考生视频</a>
+            <a class="cnav__sub" href="canvas-video.html">视频续写</a>
+            <a class="cnav__sub" href="canvas-video.html">运镜</a>
+            <a class="cnav__sub" href="canvas-video.html">动效</a>
+            <a class="cnav__sub" href="canvas-video.html">剪辑</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-lipsync.html">
+            <span class="cnav__emoji">🗣</span><span class="cnav__label">数字人</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">数字人 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-lipsync.html">对口型</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">照片说话</a>
+            <a class="cnav__sub" href="canvas-lipsync.html">数字分身</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-audio.html">
+            <span class="cnav__emoji">🎵</span><span class="cnav__label">音频</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">音频 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-audio.html">配音旁白</a>
+            <a class="cnav__sub" href="canvas-audio.html">背景音乐</a>
+            <a class="cnav__sub" href="canvas-audio.html">音效</a>
+            <a class="cnav__sub" href="canvas-audio.html">声音克隆</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-design.html">
+            <span class="cnav__emoji">✨</span><span class="cnav__label">设计</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">设计 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-design.html">品牌套件</a>
+            <a class="cnav__sub" href="canvas-design.html">海报</a>
+            <a class="cnav__sub" href="canvas-design.html">Logo</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-courseware.html">
+            <span class="cnav__emoji">📝</span><span class="cnav__label">文档</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">文档 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-courseware.html">课件</a>
+            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
+            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+          </div>
+        </div>
+
+        <div class="cnav">
+          <a class="cnav__item" href="canvas-landing.html">
+            <span class="cnav__emoji">🌐</span><span class="cnav__label">站点</span>
+            <svg class="cnav__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 3l3 3-3 3"/></svg>
+          </a>
+          <div class="cnav__flyout">
+            <div class="cnav__flyout-title">站点 · 想怎么做</div>
+            <a class="cnav__sub" href="canvas-landing.html">落地页</a>
+            <a class="cnav__sub" href="canvas-landing.html">网站</a>
+            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
+            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+          </div>
+        </div>
+
+        <div class="nav__group-label">进阶</div>
+
+        <a class="nav-item" href="agents.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="10" height="7.5" rx="2"/><path d="M8 2v2.5M5.8 8h.01M10.2 8h.01"/></svg>
+          <span>智能体</span>
+        </a>
+        <a class="nav-item" href="workflows.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="12" cy="8" r="1.6"/><path d="M5.5 4.6l5 2.8M5.5 11.4l5-2.8"/></svg>
+          <span>工作流</span>
+        </a>
+
+        <div class="nav__group-label">发现</div>
+
+        <a class="nav-item" href="templates.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6.5h11M6 3v3.5"/></svg>
+          <span>案例</span>
+        </a>
+        <a class="nav-item" href="skill-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2l5 3v6l-5 3-5-3V5z"/><path d="M8 8.5l5-3M8 8.5l-5-3M8 8.5V14"/></svg>
+          <span>Skill Hub</span>
+        </a>
+        <a class="nav-item" href="mcp-hub.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2.5v3M10 2.5v3M4.5 5.5h7v2a3.5 3.5 0 0 1-7 0z"/><path d="M8 11v2.5"/></svg>
+          <span>MCP Hub</span>
+        </a>
+
+        <div class="nav-divider" role="separator"></div>
+
+        <a class="nav-item" href="teams.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
+          <span>团队</span>
+        </a>
+        <a class="nav-item" href="library.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+          <span>库 · 收藏</span>
+        </a>
+      </nav>
+
+      <div class="nav-divider" role="separator"></div>
+
+      <div class="nav__label">最近</div>
+      <div class="sidebar-recent">
+        <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
+        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <a class="user-row" href="settings.html" tabindex="0" style="text-decoration:none;color:inherit;">
+        <div class="user-row__avatar">小</div>
+        <div>
+          <div class="user-row__name">吴小心</div>
+          <div class="user-row__sub">免费 · 1,200 积分</div>
+        </div>
+      </a>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="main templates-page">
+      <div class="topbar">
+        <span class="topbar__title">模板详情</span>
+        <div class="topbar__right">
+          <a class="btn btn--ghost btn--sm" href="templates.html">回到模板库</a>
+        </div>
+      </div>
+
+      <!-- ===== Detail body ===== -->
+      <div class="tpl-detail">
+
+        <!-- Breadcrumb -->
+        <div class="tpl-detail__crumb">
+          <a href="templates.html">← 模板库</a>
+          <span class="sep">/</span>
+          <a href="templates.html">海报</a>
+          <span class="sep">/</span>
+          <span class="here">周末展览的小红书海报</span>
+        </div>
+
+        <!-- Main row : preview + info -->
+        <div class="tpl-detail__main">
+
+          <!-- Preview (左) -->
+          <div class="tpl-detail__preview">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+              <rect width="400" height="300" fill="#F3EEE5"/>
+              <!-- 海报本体 -->
+              <rect x="84" y="44" width="232" height="212" fill="#FFFDF9" stroke="#E8E0D2" rx="4"/>
+              <!-- 顶部色带 -->
+              <rect x="84" y="44" width="232" height="44" fill="#EBE0CF"/>
+              <text x="200" y="76" font-family="Songti SC,serif" font-size="18" fill="#76583A" text-anchor="middle" font-style="italic">周末展览</text>
+              <!-- 主标 -->
+              <text x="200" y="148" font-family="Kaiti SC,serif" font-size="48" fill="#2B2520" text-anchor="middle">慢的人</text>
+              <!-- 副标 -->
+              <text x="200" y="178" font-family="Kaiti SC,serif" font-size="14" fill="#7A6F62" text-anchor="middle">五月 · 北京</text>
+              <!-- 分隔 -->
+              <line x1="124" y1="200" x2="276" y2="200" stroke="#D4C9B5" stroke-width="0.8"/>
+              <!-- 一句话 -->
+              <text x="200" y="222" font-family="Songti SC,serif" font-size="11" fill="#7A6F62" text-anchor="middle">展给愿意慢一会儿的人</text>
+              <text x="200" y="240" font-family="JetBrains Mono,monospace" font-size="9" fill="#B8AC9C" text-anchor="middle">@xiao_xin · 5/24 · 798</text>
+            </svg>
+          </div>
+
+          <!-- Info (右) -->
+          <div class="tpl-detail__info">
+            <h1 class="tpl-detail__title">周末展览的<span style="font-style:italic;color:var(--color-accent);">小红书海报</span></h1>
+            <div class="tpl-detail__by">
+              <span>by <strong style="color:var(--color-text-primary);">@林小满</strong></span>
+              <span style="color:var(--color-border-strong);">·</span>
+              <span class="uses">已被 24 个人用过</span>
+            </div>
+
+            <blockquote class="tpl-detail__quote">
+              "展览看的人不一定能去的人，<br/>但海报要让没去的人也想知道。"
+            </blockquote>
+
+            <div class="tpl-detail__buttons">
+              <a class="btn btn--primary" href="canvas.html">用这个模板</a>
+              <button class="btn btn--ghost" type="button">预览</button>
+            </div>
+
+            <div class="tpl-detail__divider"></div>
+
+            <!-- "告诉我你想用它做什么" -->
+            <div class="tpl-detail__usewith">
+              <label class="tpl-detail__usewith-label">告诉我你想用它做什么 ——</label>
+              <textarea class="tpl-detail__textarea" placeholder="比如：我想做一张周末读书会的海报，主题是「一起读慢的书」。"></textarea>
+              <div>
+                <button class="btn btn--primary" type="button">按这个起一份</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Related templates row -->
+      <section class="tpl-detail__related">
+        <div class="tpl-detail__related-label">— 类似的模板 ——</div>
+        <div class="tpl-detail__related-row">
+
+          <a class="tpl-detail__related-card" href="canvas.html">
+            <div class="thumb">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="150" fill="#FAF7F2"/>
+                <rect x="36" y="20" width="128" height="110" fill="#FFFDF9" stroke="#ECE3D2" rx="3"/>
+                <line x1="56" y1="32" x2="56" y2="118" stroke="#EBE0CF" stroke-width="0.5"/>
+                <text x="64" y="46" font-family="Songti SC,serif" font-size="11" fill="#2B2520">阿芸：</text>
+                <line x1="64" y1="60" x2="148" y2="60" stroke="#D4C9B5" stroke-width="0.6"/>
+                <line x1="64" y1="70" x2="148" y2="70" stroke="#D4C9B5" stroke-width="0.6"/>
+                <line x1="64" y1="80" x2="132" y2="80" stroke="#D4C9B5" stroke-width="0.6"/>
+                <text x="148" y="120" font-family="Kaiti SC,cursive" font-size="11" fill="#76583A" text-anchor="end" font-style="italic">— 小心</text>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="t">写给老朋友的一封信</div>
+              <div class="m">@吴小心 · 复用 12</div>
+            </div>
+          </a>
+
+          <a class="tpl-detail__related-card" href="canvas.html">
+            <div class="thumb">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="150" fill="#F3EEE5"/>
+                <rect x="24" y="20" width="152" height="110" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                <text x="40" y="42" font-family="Songti SC,serif" font-size="13" fill="#2B2520">第 3 章</text>
+                <text x="40" y="58" font-family="Songti SC,serif" font-size="10" fill="#7A6F62">— 关于专注</text>
+                <line x1="40" y1="66" x2="160" y2="66" stroke="#EBE0CF"/>
+                <rect x="40" y="78" width="6" height="6" fill="#8B6F47"/>
+                <line x1="52" y1="82" x2="120" y2="82" stroke="#D4C9B5" stroke-width="0.8"/>
+                <rect x="40" y="92" width="6" height="6" fill="#8B6F47"/>
+                <line x1="52" y1="96" x2="100" y2="96" stroke="#D4C9B5" stroke-width="0.8"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="t">把读书笔记整理成课件</div>
+              <div class="m">@张老师 · 复用 31</div>
+            </div>
+          </a>
+
+          <a class="tpl-detail__related-card" href="canvas.html">
+            <div class="thumb">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="150" fill="#FAF7F2"/>
+                <line x1="20" y1="20" x2="180" y2="20" stroke="#E8E0D2" stroke-width="0.5"/>
+                <rect x="20" y="14" width="22" height="6" fill="#8B6F47" rx="1"/>
+                <rect x="150" y="14" width="30" height="6" fill="#EBE0CF" rx="3"/>
+                <text x="100" y="55" font-family="Songti SC,serif" font-size="16" fill="#2B2520" text-anchor="middle">一个安静的</text>
+                <text x="100" y="74" font-family="Songti SC,serif" font-size="16" fill="#8B6F47" text-anchor="middle" font-style="italic">主张</text>
+                <rect x="74" y="86" width="52" height="14" fill="#8B6F47" rx="7"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="t">一页安静的落地页</div>
+              <div class="m">@林秋 · 复用 18</div>
+            </div>
+          </a>
+
+          <a class="tpl-detail__related-card" href="canvas.html">
+            <div class="thumb">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="150" fill="#F3EEE5"/>
+                <circle cx="100" cy="75" r="22" fill="#EBE0CF" stroke="#8B6F47" stroke-width="0.8"/>
+                <text x="100" y="79" font-family="Songti SC,serif" font-size="10" fill="#76583A" text-anchor="middle">想法</text>
+                <line x1="78" y1="65" x2="46" y2="42" stroke="#D4C9B5"/>
+                <circle cx="42" cy="38" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+                <line x1="122" y1="65" x2="158" y2="42" stroke="#D4C9B5"/>
+                <circle cx="162" cy="38" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+                <line x1="78" y1="85" x2="46" y2="108" stroke="#D4C9B5"/>
+                <circle cx="42" cy="112" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+                <line x1="122" y1="85" x2="158" y2="108" stroke="#D4C9B5"/>
+                <circle cx="162" cy="112" r="10" fill="#FFFDF9" stroke="#D4C9B5"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="t">想法可视化 · 四问图</div>
+              <div class="m">@编辑推荐 · 复用 9</div>
+            </div>
+          </a>
+
+          <a class="tpl-detail__related-card" href="canvas.html">
+            <div class="thumb">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <rect width="200" height="150" fill="#FAF7F2"/>
+                <rect x="30" y="18" width="140" height="116" fill="#FFFDF9" stroke="#E8E0D2" rx="3"/>
+                <text x="42" y="36" font-family="Songti SC,serif" font-size="11" fill="#2B2520">本周做了什么</text>
+                <text x="42" y="48" font-family="Kaiti SC,cursive" font-size="9" fill="#7A6F62">— 五月第三周</text>
+                <line x1="42" y1="56" x2="158" y2="56" stroke="#EBE0CF"/>
+                <line x1="76" y1="80" x2="148" y2="80" stroke="#D4C9B5" stroke-width="0.4"/>
+                <line x1="76" y1="92" x2="158" y2="92" stroke="#D4C9B5" stroke-width="0.4"/>
+                <line x1="76" y1="104" x2="138" y2="104" stroke="#D4C9B5" stroke-width="0.4"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="t">本周做了什么 · 周报</div>
+              <div class="m">@编辑推荐 · 复用 7</div>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

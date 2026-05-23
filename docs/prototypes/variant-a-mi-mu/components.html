@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kokoro 组件 · A · 米+木</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/patterns.css" />
+  <link rel="stylesheet" href="css/utilities.css" />
+  <link rel="stylesheet" href="css/attach-menu.css" />
+</head>
+<body>
+  <div class="gallery">
+
+    <!-- ===== Topbar ===== -->
+    <header class="gallery__topbar">
+      <div>
+        <h1 class="gallery__title">Kokoro 组件 · <em>A · 米+木</em></h1>
+        <div class="gallery__sub">v0.2 · 12 个 MVP 组件，rest / hover / current / disabled / focus 多态</div>
+      </div>
+      <a class="btn btn--ghost" href="index.html">← 回主页</a>
+    </header>
+
+    <!-- ===== Main grid ===== -->
+    <main class="gallery__main">
+
+      <!-- ─────────────────── TOKENS ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">色板 · Tokens</h2>
+          <div class="gallery__section-note">所有色值走 CSS 变量</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">surface</span>
+            <h3 class="specimen__title">米 / 纸面</h3>
+            <div class="specimen__stage specimen__stage--column" style="gap:32px;">
+              <div class="swatch" style="background:var(--color-bg);"><span class="swatch__legend">--color-bg · #FAF7F2</span></div>
+              <div class="swatch" style="background:var(--color-bg-subtle);"><span class="swatch__legend">--color-bg-subtle · #F3EEE5</span></div>
+              <div class="swatch" style="background:var(--color-surface);"><span class="swatch__legend">--color-surface · #FFFFFF</span></div>
+            </div>
+            <pre class="specimen__code">background: var(--color-bg);</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">accent</span>
+            <h3 class="specimen__title">木 / 暖墨</h3>
+            <div class="specimen__stage specimen__stage--column" style="gap:32px;">
+              <div class="swatch" style="background:var(--color-accent);"><span class="swatch__legend">--color-accent · #8B6F47</span></div>
+              <div class="swatch" style="background:var(--color-accent-soft);"><span class="swatch__legend">--color-accent-soft · #EBE0CF</span></div>
+              <div class="swatch" style="background:var(--color-text-primary);"><span class="swatch__legend">--color-text-primary · #2B2520</span></div>
+            </div>
+            <pre class="specimen__code">color: var(--color-accent);</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">semantic</span>
+            <h3 class="specimen__title">语义色（克制）</h3>
+            <div class="specimen__stage specimen__stage--column" style="gap:32px;">
+              <div class="swatch" style="background:var(--color-success);"><span class="swatch__legend">--color-success · #7A8B6B</span></div>
+              <div class="swatch" style="background:var(--color-warning);"><span class="swatch__legend">--color-warning · #C8A26B</span></div>
+              <div class="swatch" style="background:var(--color-danger);"><span class="swatch__legend">--color-danger · #B36B5A</span></div>
+            </div>
+            <div class="specimen__caption">不饱和、不出戏。warning/danger 都偏暖。</div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── TYPOGRAPHY ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">文字 · Typography</h2>
+          <div class="gallery__section-note">中文衬线承载情绪，sans 承载界面</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">display</span>
+            <h3 class="specimen__title">大标题 · 衬线 · 44px</h3>
+            <div class="specimen__stage">
+              <span class="serif" style="font-size:36px;line-height:1.15;">今天想做<em style="font-style:italic;color:var(--color-accent);">什么</em>？</span>
+            </div>
+            <pre class="specimen__code">.serif · font-size: var(--text-display)</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">prose</span>
+            <h3 class="specimen__title">正文 · sans · 15/1.75</h3>
+            <div class="specimen__stage">
+              <p style="margin:0;line-height:1.75;">明白了。那就不必把"为什么淡的"说清楚——那个会显得在解释。开头我想这样起，把"想到你"放最前面。</p>
+            </div>
+            <pre class="specimen__code">font-size: var(--text-body);
+line-height: var(--leading-prose);</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">hand</span>
+            <h3 class="specimen__title">手写 · 楷体（情绪锚点）</h3>
+            <div class="specimen__stage">
+              <span class="hand" style="font-size:18px;">— 想了三年，今天才写下来</span>
+            </div>
+            <pre class="specimen__code">.hand · font-family: var(--font-hand)</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── BUTTONS ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">按钮 · Buttons</h2>
+          <div class="gallery__section-note">3 层级 + icon-only + pill</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.btn--primary</span>
+            <h3 class="specimen__title">主操作 · 木色填充</h3>
+            <div class="specimen__stage">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">rest</span>
+                <button class="btn btn--primary" type="button">按你想的</button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">hover</span>
+                <button class="btn btn--primary" type="button" style="background:var(--color-accent-hover);">按你想的</button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">disabled</span>
+                <button class="btn btn--primary" type="button" disabled>按你想的</button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="btn btn--primary"&gt;主操作&lt;/button&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.btn</span>
+            <h3 class="specimen__title">次操作 · 描边</h3>
+            <div class="specimen__stage">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">rest</span>
+                <button class="btn" type="button">先这样就行</button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">hover</span>
+                <button class="btn" type="button" style="background:var(--color-surface-hover);border-color:var(--color-border-strong);">先这样就行</button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="btn"&gt;次操作&lt;/button&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.btn--ghost</span>
+            <h3 class="specimen__title">三级 · 无形按钮</h3>
+            <div class="specimen__stage">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">rest</span>
+                <button class="btn btn--ghost" type="button">重新想</button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">hover</span>
+                <button class="btn btn--ghost" type="button" style="background:var(--color-surface-hover);color:var(--color-text-primary);">重新想</button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="btn btn--ghost"&gt;三级&lt;/button&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.icon-btn</span>
+            <h3 class="specimen__title">图标按钮 · 32×32</h3>
+            <div class="specimen__stage">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">rest</span>
+                <button class="icon-btn" type="button" aria-label="撤销"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7a3 3 0 010 6H8"/><path d="M5.5 3.5L3 6l2.5 2.5"/></svg></button>
+                <button class="icon-btn" type="button" aria-label="重做"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 6H6a3 3 0 000 6h2"/><path d="M10.5 3.5L13 6l-2.5 2.5"/></svg></button>
+                <button class="icon-btn" type="button" aria-label="更多"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3.5" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="12.5" cy="8" r="1.2"/></svg></button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">current</span>
+                <button class="icon-btn is-current" type="button" aria-label="样式"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.6"/></svg></button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="icon-btn" aria-label="撤销"&gt;…&lt;/button&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.send-btn</span>
+            <h3 class="specimen__title">发送 · 圆形</h3>
+            <div class="specimen__stage">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">idle</span>
+                <button class="send-btn" type="button" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">ready</span>
+                <button class="send-btn is-ready" type="button" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">disabled</span>
+                <button class="send-btn" type="button" aria-label="发送" disabled><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="send-btn is-ready"&gt;…&lt;/button&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── INPUTS ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">输入 · Input</h2>
+          <div class="gallery__section-note">focus 时木色软光环</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.input-pill</span>
+            <h3 class="specimen__title">主 composer · 完整态</h3>
+            <div class="specimen__stage specimen__stage--column">
+              <span class="specimen__state-label">rest</span>
+              <div class="input-pill">
+                <details class="attach">
+                  <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                  </summary>
+                  <div class="attach__menu" role="menu">
+                    <div class="attach__group-label">从这里加点什么</div>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                    <div class="attach__divider"></div>
+                    <div class="attach__group-label">从已有的里挑</div>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                  </div>
+                </details>
+                <input class="input-pill__field" type="text" placeholder="把想说的告诉我。" />
+                <button class="chip chip--mode" type="button"><span>细想</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="send-btn" type="button" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+              </div>
+              <span class="specimen__state-label" style="margin-top:8px;">focus（按 Tab 进入看真实焦点）</span>
+              <div class="input-pill is-focus">
+                <details class="attach">
+                  <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                  </summary>
+                  <div class="attach__menu" role="menu">
+                    <div class="attach__group-label">从这里加点什么</div>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg>上传图片</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg>上传文件</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5h3l1-1.5h4L11 5h3v8H2z"/><circle cx="8" cy="9" r="2.5"/></svg>拍照</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M4 8a4 4 0 0 0 8 0M8 12v2"/></svg>语音输入</button>
+                    <div class="attach__divider"></div>
+                    <div class="attach__group-label">从已有的里挑</div>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>从「库 · 收藏」选</button>
+                    <button class="attach__item" type="button" role="menuitem"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8 3.5 9.5a2 2 0 0 0 3 3L8 11M11 8l1.5-1.5a2 2 0 0 0-3-3L8 5"/></svg>粘贴链接</button>
+                  </div>
+                </details>
+                <input class="input-pill__field" type="text" value="我想写一封信给老朋友" />
+                <button class="chip chip--mode" type="button"><span>细想</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button class="send-btn is-ready" type="button" aria-label="发送"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg></button>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="input-pill"&gt;
+  &lt;button class="input-pill__attach"&gt;…&lt;/button&gt;
+  &lt;input class="input-pill__field" /&gt;
+  &lt;button class="chip chip--mode"&gt;…&lt;/button&gt;
+  &lt;button class="send-btn is-ready"&gt;…&lt;/button&gt;
+&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── CHIPS ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Chip · 标签 / 模式 / 工具</h2>
+          <div class="gallery__section-note">变体：mode / canvas / tool / tag / count / template</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.chip--mode</span>
+            <h3 class="specimen__title">模式 chip</h3>
+            <div class="specimen__stage">
+              <button class="chip chip--mode" type="button"><span>细想</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="chip chip--mode" type="button"><span>放手</span><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <pre class="specimen__code">&lt;button class="chip chip--mode"&gt;细想&lt;/button&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.chip--template</span>
+            <h3 class="specimen__title">模板 chip</h3>
+            <div class="specimen__stage">
+              <a class="chip chip--template" href="#"><span class="emoji">🎨</span><span>小红书风海报</span></a>
+              <a class="chip chip--template" href="#"><span class="emoji">📝</span><span>学习课件</span></a>
+              <a class="chip chip--template" href="#"><span class="emoji">💌</span><span>写一封信</span></a>
+            </div>
+            <pre class="specimen__code">&lt;a class="chip chip--template"&gt;
+  &lt;span class="emoji"&gt;🎨&lt;/span&gt;…
+&lt;/a&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.chip--tool</span>
+            <h3 class="specimen__title">工具调用 chip · 可展开</h3>
+            <div class="specimen__stage specimen__stage--column">
+              <details class="tool-call-details">
+                <summary>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3.5h6l2 2v7H4z"/><path d="M6 6.5h4M6 9h4"/></svg>
+                  <span>读了你之前写过的日记 · 3 段</span>
+                  <svg class="tool-call__caret" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+                </summary>
+                <div class="tool-call__preview">· 2024-11「下午又路过那家咖啡馆。」<br/>· 2025-03「翻箱子，找到了她借我的书。」</div>
+              </details>
+            </div>
+            <pre class="specimen__code">&lt;details class="tool-call-details"&gt;
+  &lt;summary&gt;读了 3 段日记&lt;/summary&gt;
+  &lt;div class="tool-call__preview"&gt;…&lt;/div&gt;
+&lt;/details&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.chip--tag / .chip--count</span>
+            <h3 class="specimen__title">标签 + 计数</h3>
+            <div class="specimen__stage">
+              <span class="chip chip--tag">letter</span>
+              <span class="chip chip--tag" style="border:1px solid var(--color-border);">draft</span>
+              <span class="chip chip--count">3</span>
+              <span class="chip chip--count">12</span>
+            </div>
+            <pre class="specimen__code">&lt;span class="chip chip--tag"&gt;letter&lt;/span&gt;
+&lt;span class="chip chip--count"&gt;3&lt;/span&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── SIDEBAR ITEM ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Sidebar item · 4 态</h2>
+          <div class="gallery__section-note">current 态独有：左侧木色 2px ribbon</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.nav-item</span>
+            <h3 class="specimen__title">导航项</h3>
+            <div class="specimen__stage specimen__stage--column" style="background:var(--color-bg-subtle);">
+              <span class="specimen__state-label">rest</span>
+              <div class="nav-item">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>
+                <span>搜索</span>
+              </div>
+              <span class="specimen__state-label">hover（静态）</span>
+              <div class="nav-item is-hover">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 5.5L8 2l5.5 3.5v5L8 14l-5.5-3.5z"/></svg>
+                <span>案例库</span>
+              </div>
+              <span class="specimen__state-label">current</span>
+              <div class="nav-item is-current">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7l3 3v7H3z"/><path d="M5.5 7h5M5.5 9.5h5"/></svg>
+                <span>库 · 收藏</span>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;a class="nav-item is-current"&gt;…&lt;/a&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.sidebar-recent__item</span>
+            <h3 class="specimen__title">最近对话项</h3>
+            <div class="specimen__stage specimen__stage--column" style="background:var(--color-bg-subtle);">
+              <span class="specimen__state-label">rest</span>
+              <a class="sidebar-recent__item">写给老朋友的一封信</a>
+              <span class="specimen__state-label">current</span>
+              <a class="sidebar-recent__item is-current">周末展览的小红书海报</a>
+            </div>
+            <pre class="specimen__code">&lt;a class="sidebar-recent__item is-current"&gt;…&lt;/a&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── CARD ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Card · 卡片</h2>
+          <div class="gallery__section-note">.card--doc · 生成的文档 / .card--template · 模板</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.card--doc</span>
+            <h3 class="specimen__title">文档生成卡（hover 抬起 1px）</h3>
+            <div class="specimen__stage">
+              <a class="card card--doc" href="#" style="max-width:480px;">
+                <div class="card__head">
+                  <div class="card__icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2.5h6l2.5 2.5v8.5H4z"/><path d="M10 2.5v3h2.5"/><path d="M6 8h4M6 10.5h3"/></svg></div>
+                  <div style="flex:1;min-width:0;">
+                    <h3 class="card__title">写给阿芸的一封信</h3>
+                    <div class="card__sub">想了三年，今天才写下来</div>
+                    <div class="card__meta">Letter · 312 字 · 刚刚做好</div>
+                  </div>
+                </div>
+                <div class="card__actions">
+                  <button class="btn btn--primary" type="button">打开</button>
+                  <button class="btn" type="button">分享</button>
+                  <button class="btn btn--ghost" type="button">再调一下</button>
+                </div>
+              </a>
+            </div>
+            <pre class="specimen__code">&lt;a class="card card--doc"&gt;
+  &lt;div class="card__head"&gt;…&lt;/div&gt;
+  &lt;div class="card__actions"&gt;…&lt;/div&gt;
+&lt;/a&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── THINKING (3 STATES) ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Loading · 三态思考</h2>
+          <div class="gallery__section-note">在想 → 草拟 → 输出 · 1.8s 呼吸节奏</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.thinking__dot</span>
+            <h3 class="specimen__title">呼吸点 · 在想</h3>
+            <div class="specimen__stage">
+              <div class="thinking">
+                <span class="thinking__dot"></span>
+                <span>正在想，要不要顺手帮你拟个发送时间</span>
+              </div>
+            </div>
+            <div class="specimen__caption">用法：AI 还在思考、没动笔时</div>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.thinking__bar</span>
+            <h3 class="specimen__title">细线 · 草拟中</h3>
+            <div class="specimen__stage">
+              <div class="thinking">
+                <span class="thinking__bar"></span>
+                <span>在草拟……</span>
+              </div>
+            </div>
+            <div class="specimen__caption">用法：AI 已经开始动笔但还没流出来</div>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.thinking__cursor</span>
+            <h3 class="specimen__title">光标 · 输出中</h3>
+            <div class="specimen__stage">
+              <div class="thinking" style="font-style:normal;color:var(--color-text-primary);">
+                <span>开头我想这样起<span class="thinking__cursor"></span></span>
+              </div>
+            </div>
+            <div class="specimen__caption">用法：内容正在 stream 出来</div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── MODE SWITCHER ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Mode switcher · 思考模式</h2>
+          <div class="gallery__section-note">研究态 / 默认态 / 放手态 · 心化命名</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.mode-switcher.is-open</span>
+            <h3 class="specimen__title">展开态（静态示意）</h3>
+            <div class="specimen__stage" style="min-height:240px;align-items:flex-start;position:relative;">
+              <div style="position:relative;">
+                <button class="mode-switcher is-open" type="button">
+                  <span>细想 · 慢一点想清楚</span>
+                  <svg class="mode-switcher__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+                </button>
+                <div class="mode-menu" style="position:relative;top:6px;right:auto;">
+                  <button class="mode-menu__item" type="button">
+                    <div class="mode-menu__title">放手 · 你不用看，我做完叫你</div>
+                    <div class="mode-menu__desc">直接动手，必要时再问。适合简单 + 你心里有谱。</div>
+                  </button>
+                  <button class="mode-menu__item is-current" type="button">
+                    <div class="mode-menu__title">细想 · 慢一点想清楚</div>
+                    <div class="mode-menu__desc">先问几句，再开始。适合方向还在浮动。</div>
+                  </button>
+                  <button class="mode-menu__item" type="button">
+                    <div class="mode-menu__title">研究 · 翻资料，再来</div>
+                    <div class="mode-menu__desc">先查、再想、再写。慢，但稳。适合不熟的领域。</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;button class="mode-switcher is-open"&gt;…&lt;/button&gt;
+&lt;div class="mode-menu"&gt;
+  &lt;button class="mode-menu__item is-current"&gt;…&lt;/button&gt;
+&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── TOAST ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Toast · 提示</h2>
+          <div class="gallery__section-note">心人格 copy · 暖色克制语气</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.toast--success</span>
+            <h3 class="specimen__title">完成</h3>
+            <div class="specimen__stage">
+              <div class="toast toast--success">
+                <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5L6.5 12 13 5"/></svg>
+                <span>做好了。给你放右边了。</span>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="toast toast--success"&gt;…&lt;/div&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.toast--info</span>
+            <h3 class="specimen__title">信息</h3>
+            <div class="specimen__stage">
+              <div class="toast toast--info">
+                <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 11V7.5M8 5.5v.01"/></svg>
+                <span>这一版我保留了原稿。要回去看吗？</span>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="toast toast--info"&gt;…&lt;/div&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.toast--warning</span>
+            <h3 class="specimen__title">提醒</h3>
+            <div class="specimen__stage">
+              <div class="toast toast--warning">
+                <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5l6 10.5H2z"/><path d="M8 6.5v3M8 11v.01"/></svg>
+                <span>免费积分快用完了。要先看看会员吗？</span>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="toast toast--warning"&gt;…&lt;/div&gt;</pre>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.toast--error</span>
+            <h3 class="specimen__title">出错</h3>
+            <div class="specimen__stage">
+              <div class="toast toast--error">
+                <svg class="toast__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/></svg>
+                <span>网络一下没接上。要不你点这里再试一次？</span>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="toast toast--error"&gt;…&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── MODAL ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Modal · 确认弹窗</h2>
+          <div class="gallery__section-note">"我做完就回不去了" · 用真实人格说</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.modal</span>
+            <h3 class="specimen__title">确认（破坏性操作）</h3>
+            <div class="specimen__stage" style="background:var(--color-bg-subtle);">
+              <div class="modal-overlay" style="background:transparent;width:100%;">
+                <div class="modal">
+                  <h3 class="modal__title">你要把这版替换掉。</h3>
+                  <div class="modal__body">我做完就回不去了——原稿不会留。要确认吗？</div>
+                  <div class="modal__actions">
+                    <button class="btn btn--ghost" type="button">先不要</button>
+                    <button class="btn btn--primary" type="button">确认替换</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="modal"&gt;
+  &lt;h3 class="modal__title"&gt;…&lt;/h3&gt;
+  &lt;div class="modal__body"&gt;…&lt;/div&gt;
+  &lt;div class="modal__actions"&gt;…&lt;/div&gt;
+&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── EMPTY ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Empty · 空状态</h2>
+          <div class="gallery__section-note">不是错位，是一个新场景的开始</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.empty</span>
+            <h3 class="specimen__title">无对话</h3>
+            <div class="specimen__stage" style="background:var(--color-bg-subtle);">
+              <div class="empty">
+                <div class="empty__mark">心</div>
+                <h4 class="empty__title">还没开始聊。</h4>
+                <p class="empty__body">先把想说的告诉我，<br/>哪怕只是半句也行。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.empty</span>
+            <h3 class="specimen__title">无收藏</h3>
+            <div class="specimen__stage" style="background:var(--color-bg-subtle);">
+              <div class="empty">
+                <div class="empty__mark">★</div>
+                <h4 class="empty__title">这里还空着。</h4>
+                <p class="empty__body">遇到喜欢的，按一下收藏。<br/>下次想找，就在这里。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="specimen">
+            <span class="specimen__label">.empty</span>
+            <h3 class="specimen__title">无模板（自定义）</h3>
+            <div class="specimen__stage" style="background:var(--color-bg-subtle);">
+              <div class="empty">
+                <div class="empty__mark">+</div>
+                <h4 class="empty__title">还没存自己的模板。</h4>
+                <p class="empty__body">下次做完一个你喜欢的，<br/>点"存下来"，就在这里了。</p>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── TOOLTIP ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Tooltip · 暖色 mini bubble</h2>
+          <div class="gallery__section-note">深棕底 · 米色字 · 4px 圆角</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen">
+            <span class="specimen__label">.tooltip</span>
+            <h3 class="specimen__title">悬浮示意（静态）</h3>
+            <div class="specimen__stage" style="min-height:100px;align-items:center;justify-content:center;">
+              <span class="tooltip-wrap">
+                <button class="icon-btn" type="button" aria-label="撤销"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7a3 3 0 010 6H8"/><path d="M5.5 3.5L3 6l2.5 2.5"/></svg></button>
+                <span class="tooltip is-open">撤销 · ⌘Z</span>
+              </span>
+            </div>
+            <pre class="specimen__code">&lt;span class="tooltip-wrap"&gt;
+  &lt;button class="icon-btn"&gt;…&lt;/button&gt;
+  &lt;span class="tooltip"&gt;撤销 · ⌘Z&lt;/span&gt;
+&lt;/span&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ─────────────────── PLAN BLOCK ─────────────────── -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">Plan block · 计划提议</h2>
+          <div class="gallery__section-note">大动作前先停一下，确认</div>
+        </header>
+        <div class="gallery__grid">
+
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.plan-block</span>
+            <h3 class="specimen__title">三段提议 + 三层按钮</h3>
+            <div class="specimen__stage" style="padding:24px;">
+              <div class="plan-block" style="width:100%;">
+                <div class="plan-block__title">走到这一步，我想跟你确认一下再继续。</div>
+                <ol>
+                  <li>把"想到你"放最前面，不要寒暄</li>
+                  <li>中段说一件具体的事，让她记起那段时间</li>
+                  <li>结尾给一个轻的邀请，不施压</li>
+                </ol>
+                <div class="plan-block__actions">
+                  <button class="btn btn--primary" type="button">按你想的</button>
+                  <button class="btn" type="button">先这样就行</button>
+                  <button class="btn btn--ghost" type="button">重新想</button>
+                </div>
+              </div>
+            </div>
+            <pre class="specimen__code">&lt;div class="plan-block"&gt;
+  &lt;div class="plan-block__title"&gt;…&lt;/div&gt;
+  &lt;ol&gt;…&lt;/ol&gt;
+  &lt;div class="plan-block__actions"&gt;…&lt;/div&gt;
+&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+
+      <!-- ============= Generation 模式组件 · v0.5（参考 Open-Generative-AI）============= -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">生成模式 · Generation</h2>
+          <div class="gallery__section-note">v0.5 第五轮新增 · 借 Open-Generative-AI 的产品模式，米+木重做</div>
+        </header>
+        <div class="gallery__grid">
+
+          <!-- .gen-history · 生成历史滑出 panel -->
+          <article class="specimen">
+            <span class="specimen__label">.gen-history</span>
+            <h3 class="specimen__title">生成历史 · 右侧滑出 panel</h3>
+            <div class="specimen__stage" style="padding: 16px; background: var(--color-bg); justify-content: flex-end;">
+              <aside class="gen-history" aria-label="生成历史">
+                <header class="gen-history__head">
+                  <h4 class="gen-history__title">过往的</h4>
+                  <span class="gen-history__count">共 8 个</span>
+                  <button class="gen-history__close" type="button" aria-label="关闭">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+                  </button>
+                </header>
+                <div class="gen-history__list">
+
+                  <div class="gen-history-item is-current" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#F8E4BC"/>
+                        <ellipse cx="24" cy="32" rx="14" ry="3" fill="#76583A" opacity="0.2"/>
+                        <ellipse cx="24" cy="26" rx="11" ry="2.5" fill="#FFFEFA" stroke="#8B6F47" stroke-width="0.4"/>
+                        <ellipse cx="24" cy="26" rx="9" ry="2" fill="#5A3D20"/>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">在家的味道 · 暖食</span>
+                      <span class="gen-history-item__meta">3:4 · 刚刚</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="gen-history-item" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#FBF6EC"/>
+                        <line x1="0" y1="18" x2="48" y2="17" stroke="#EBE0CF" stroke-width="0.6"/>
+                        <line x1="0" y1="30" x2="48" y2="30" stroke="#EBE0CF" stroke-width="0.6"/>
+                        <line x1="0" y1="42" x2="48" y2="42" stroke="#EBE0CF" stroke-width="0.6"/>
+                        <text x="6" y="14" font-family="cursive" font-size="6" fill="#2B2520">五月</text>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">五月 · 周末手记</span>
+                      <span class="gen-history-item__meta">3:4 · 2 分钟前</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="gen-history-item" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#E4C9A0"/>
+                        <rect x="4" y="6" width="40" height="44" fill="#FFFCF1" stroke="#8B6F47" stroke-width="0.4"/>
+                        <rect x="7" y="9" width="34" height="38" fill="#D9B98A"/>
+                        <circle cx="18" cy="28" r="2.5" fill="#B36B5A"/>
+                        <circle cx="26" cy="29" r="2" fill="#7A8B6B"/>
+                        <circle cx="32" cy="27" r="2" fill="#C8A26B"/>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">砧板上的色彩 · 胶片</span>
+                      <span class="gen-history-item__meta">3:4 · 1 小时前</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="gen-history-item" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#FBF3E4"/>
+                        <rect x="8" y="6" width="32" height="22" fill="#FFFEF5" stroke="#D4C9B5" stroke-width="0.4"/>
+                        <line x1="24" y1="6" x2="24" y2="28" stroke="#D4C9B5" stroke-width="0.3"/>
+                        <rect x="0" y="40" width="48" height="20" fill="#E8DDC4"/>
+                        <rect x="18" y="36" width="6" height="8" rx="1" fill="#FFFDF6" stroke="#B8AC9C" stroke-width="0.3"/>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">柔光厨房 · 早晨</span>
+                      <span class="gen-history-item__meta">4:5 · 昨天</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="gen-history-item" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#EBE0CF"/>
+                        <circle cx="24" cy="20" r="10" fill="#8B6F47" opacity="0.5"/>
+                        <rect x="6" y="36" width="36" height="3" rx="1" fill="#7A6F62"/>
+                        <rect x="6" y="42" width="28" height="3" rx="1" fill="#7A6F62" opacity="0.7"/>
+                        <rect x="6" y="48" width="32" height="3" rx="1" fill="#7A6F62" opacity="0.5"/>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">活动海报 · 茶会</span>
+                      <span class="gen-history-item__meta">9:16 · 上周</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                  <div class="gen-history-item" role="button" tabindex="0">
+                    <div class="gen-history-item__thumb">
+                      <svg viewBox="0 0 48 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="48" height="60" fill="#F4E6CC"/>
+                        <path d="M0 36 Q24 32 48 36 L48 60 L0 60 Z" fill="#C8A26B" opacity="0.5"/>
+                        <ellipse cx="24" cy="22" rx="14" ry="9" fill="#B36B5A" opacity="0.6"/>
+                      </svg>
+                    </div>
+                    <div class="gen-history-item__main">
+                      <span class="gen-history-item__title">夕阳一角 · 暖食</span>
+                      <span class="gen-history-item__meta">1:1 · 上周</span>
+                    </div>
+                    <button class="gen-history-item__pin" type="button" aria-label="置顶">
+                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5l1.8 4.2 4.6.4-3.5 3 1.1 4.5L8 11.4l-4 2.2 1.1-4.5-3.5-3 4.6-.4z"/></svg>
+                    </button>
+                  </div>
+
+                </div>
+              </aside>
+            </div>
+            <p class="specimen__caption">滑出形态 · 320px 宽 · 缩略图 + 标题 + 时间 · 点击重载 / hover 出"置顶"。重做了 Open-Generative-AI 的 history sidebar：去掉 dark + glass，用米+木 + 左缘暖描边代替"刚滑出"的运动感。</p>
+            <pre class="specimen__code">&lt;aside class=&quot;gen-history&quot;&gt;
+  &lt;header class=&quot;gen-history__head&quot;&gt;
+    &lt;h4 class=&quot;gen-history__title&quot;&gt;过往的&lt;/h4&gt;
+    &lt;span class=&quot;gen-history__count&quot;&gt;共 8 个&lt;/span&gt;
+    &lt;button class=&quot;gen-history__close&quot; aria-label=&quot;关闭&quot;&gt;&times;&lt;/button&gt;
+  &lt;/header&gt;
+  &lt;div class=&quot;gen-history__list&quot;&gt;
+    &lt;div class=&quot;gen-history-item is-current&quot;&gt;
+      &lt;div class=&quot;gen-history-item__thumb&quot;&gt;&lt;svg&gt;…&lt;/svg&gt;&lt;/div&gt;
+      &lt;div class=&quot;gen-history-item__main&quot;&gt;
+        &lt;span class=&quot;gen-history-item__title&quot;&gt;在家的味道&lt;/span&gt;
+        &lt;span class=&quot;gen-history-item__meta&quot;&gt;3:4 · 刚刚&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;button class=&quot;gen-history-item__pin&quot;&gt;★&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;!-- … --&gt;
+  &lt;/div&gt;
+&lt;/aside&gt;</pre>
+          </article>
+
+          <!-- .model-picker · 模型 chip + dropdown -->
+          <article class="specimen">
+            <span class="specimen__label">.model-picker / .model-menu</span>
+            <h3 class="specimen__title">模型选择 chip · 默认态 + 展开态</h3>
+
+            <!-- 默认态 -->
+            <div class="specimen__stage specimen__stage--column" style="gap:16px;padding:16px;">
+
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">默认</span>
+                <button class="model-picker" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="model-picker__dot" aria-hidden="true"></span>
+                  <span>在用 ·</span>
+                  <span class="model-picker__name">Nano Banana Pro</span>
+                  <svg class="model-picker__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+                </button>
+              </div>
+
+              <div class="specimen__state-row" style="align-items:flex-start;">
+                <span class="specimen__state-label">展开</span>
+                <div style="position:relative;display:flex;flex-direction:column;gap:8px;align-items:flex-start;">
+                  <button class="model-picker is-open" type="button" aria-haspopup="listbox" aria-expanded="true">
+                    <span class="model-picker__dot" aria-hidden="true"></span>
+                    <span>在用 ·</span>
+                    <span class="model-picker__name">Nano Banana Pro</span>
+                    <svg class="model-picker__caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5l3 3 3-3"/></svg>
+                  </button>
+                  <div class="model-menu" role="listbox" aria-label="选择海报模型">
+                    <div class="model-menu__item is-current" role="option" aria-selected="true">
+                      <span class="model-menu__title">Nano Banana Pro</span>
+                      <span class="model-menu__desc">擅长温柔色调和暖食场景 · 默认</span>
+                    </div>
+                    <div class="model-menu__item" role="option">
+                      <span class="model-menu__title">Flux · Schnell</span>
+                      <span class="model-menu__desc">擅长真实质感，出图快</span>
+                    </div>
+                    <div class="model-menu__item" role="option">
+                      <span class="model-menu__title">Aizen · Illustration</span>
+                      <span class="model-menu__desc">擅长插画和手记风</span>
+                    </div>
+                    <div class="model-menu__item" role="option">
+                      <span class="model-menu__title">Recraft · Vector</span>
+                      <span class="model-menu__desc">擅长几何 / 简笔海报</span>
+                    </div>
+                    <div class="model-menu__item" role="option">
+                      <span class="model-menu__title">Stable Diffusion 3.5</span>
+                      <span class="model-menu__desc">通用底盘，胶片和写实都可</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <p class="specimen__caption">复用 mode-switcher 的 dropdown 范式。当前选中用木色 ✓；每项配一句"擅长什么"的人话描述，区别于 Open-Generative-AI 那种"原始 model id 列表"。</p>
+            <pre class="specimen__code">&lt;button class=&quot;model-picker&quot;&gt;
+  &lt;span class=&quot;model-picker__dot&quot;&gt;&lt;/span&gt;
+  &lt;span&gt;在用 ·&lt;/span&gt;
+  &lt;span class=&quot;model-picker__name&quot;&gt;Nano Banana Pro&lt;/span&gt;
+  &lt;svg class=&quot;model-picker__caret&quot;&gt;…&lt;/svg&gt;
+&lt;/button&gt;
+
+&lt;div class=&quot;model-menu&quot; role=&quot;listbox&quot;&gt;
+  &lt;div class=&quot;model-menu__item is-current&quot;&gt;
+    &lt;span class=&quot;model-menu__title&quot;&gt;Nano Banana Pro&lt;/span&gt;
+    &lt;span class=&quot;model-menu__desc&quot;&gt;擅长温柔色调和暖食场景&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;!-- … --&gt;
+&lt;/div&gt;</pre>
+          </article>
+
+        </div>
+      </section>
+
+
+      <!-- ============= 补缺组件 · v0.3 ============= -->
+      <section class="gallery__section">
+        <header class="gallery__section-head">
+          <h2 class="gallery__section-title">基础原子 · 补缺</h2>
+          <div class="gallery__section-note">v0.3 第三轮补：头像 / 角标 / inline link / kbd / 危险按钮 / loading 按钮 / disabled 输入</div>
+        </header>
+        <div class="gallery__grid">
+
+          <!-- Avatar 四档尺寸 -->
+          <article class="specimen">
+            <span class="specimen__label">.avatar · .avatar--sm/md/lg/xl</span>
+            <h3 class="specimen__title">头像 · 四档尺寸</h3>
+            <div class="specimen__stage">
+              <span class="avatar avatar--sm">小</span>
+              <span class="avatar avatar--md">心</span>
+              <span class="avatar avatar--lg">秋</span>
+              <span class="avatar avatar--xl">林</span>
+            </div>
+            <p class="specimen__caption">默认暖底 + 木色字。需要图片时用 &lt;img&gt; 占位即可。</p>
+          </article>
+
+          <!-- Badge 几种 -->
+          <article class="specimen">
+            <span class="specimen__label">.badge · .badge--dot / --soft / --danger</span>
+            <h3 class="specimen__title">小角标</h3>
+            <div class="specimen__stage" style="gap:var(--space-4);">
+              <span class="badge">3</span>
+              <span class="badge badge--soft">12</span>
+              <span class="badge badge--dot" aria-label="未读"></span>
+              <span class="badge badge--danger">!</span>
+              <span class="badge badge--success">✓</span>
+              <div style="position:relative;display:inline-flex;">
+                <span class="avatar avatar--md">小</span>
+                <span class="badge badge--dot" style="position:absolute;top:-2px;right:-2px;border:2px solid var(--color-bg);"></span>
+              </div>
+            </div>
+            <p class="specimen__caption">用在 nav-item / avatar / chip 上，永远是补充信息，不要替代文字。</p>
+          </article>
+
+          <!-- Inline link -->
+          <article class="specimen">
+            <span class="specimen__label">.inline-link · 行内链接</span>
+            <h3 class="specimen__title">行内链接</h3>
+            <div class="specimen__stage specimen__stage--column">
+              <p style="font-size:var(--text-body);line-height:1.7;margin:0;">
+                想接着做的话，<a class="inline-link" href="#">看看 Pro</a>。
+                上次给你做的<a class="inline-link" href="#">那份生日卡</a>也是同一套版式。
+              </p>
+            </div>
+            <p class="specimen__caption">下划线是暖色软线 + hover 加深，不用蓝色链接。</p>
+          </article>
+
+          <!-- Kbd -->
+          <article class="specimen">
+            <span class="specimen__label">.kbd · 键盘标记</span>
+            <h3 class="specimen__title">键盘标记</h3>
+            <div class="specimen__stage" style="gap:var(--space-2);">
+              <span class="kbd">⌘K</span>
+              <span class="kbd">⏎</span>
+              <span class="kbd">Esc</span>
+              <span class="kbd">⌘</span>+<span class="kbd">S</span>
+            </div>
+            <p class="specimen__caption">底边加粗 1px 做按键凸感。配 .kbd-hint 写说明文字。</p>
+          </article>
+
+          <!-- Danger button -->
+          <article class="specimen">
+            <span class="specimen__label">.btn--danger</span>
+            <h3 class="specimen__title">危险按钮 · 暖红</h3>
+            <div class="specimen__stage" style="gap:var(--space-3);">
+              <button class="btn btn--danger" type="button">清除…</button>
+              <button class="btn btn--danger btn--sm" type="button">注销</button>
+              <button class="btn btn--danger" type="button" disabled>已删除</button>
+            </div>
+            <p class="specimen__caption">用暖偏红（不是冷红），配合二次确认 modal（见 circuit-breakers）。</p>
+          </article>
+
+          <!-- Loading buttons -->
+          <article class="specimen">
+            <span class="specimen__label">.btn.is-loading</span>
+            <h3 class="specimen__title">Loading 按钮 · 暖色细圈</h3>
+            <div class="specimen__stage" style="gap:var(--space-3);">
+              <button class="btn btn--primary is-loading" type="button">按你想的</button>
+              <button class="btn is-loading" type="button">先这样就行</button>
+            </div>
+            <p class="specimen__caption">字隐 + 暖色细圈呼吸。按钮宽度不变，不抖。</p>
+          </article>
+
+          <!-- Disabled input -->
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.input-pill.is-disabled</span>
+            <h3 class="specimen__title">输入禁用态 · 额度用完时</h3>
+            <div class="specimen__stage" style="padding:24px;">
+              <div class="input-pill is-disabled" aria-disabled="true" style="max-width:100%;">
+                <button class="input-pill__attach" type="button" aria-label="添加附件" disabled>
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+                </button>
+                <input class="input-pill__field" type="text" placeholder="今天先到这里。" aria-label="对话输入" disabled />
+                <button class="send-btn is-disabled" type="submit" aria-label="发送" disabled>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V4M4 7.5L8 3.5l4 4"/></svg>
+                </button>
+              </div>
+            </div>
+            <p class="specimen__caption">底色变暗一档，整体降明度。配 .limit-notice 一起用，告诉用户"不是坏了，是该停了"。</p>
+          </article>
+
+          <!-- Save state indicator -->
+          <article class="specimen">
+            <span class="specimen__label">.save-state</span>
+            <h3 class="specimen__title">自动保存指示</h3>
+            <div class="specimen__stage specimen__stage--column">
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">空闲</span>
+                <span class="save-state">
+                  <span class="save-state__dot"></span>
+                  <span>已保存 · 刚刚</span>
+                </span>
+              </div>
+              <div class="specimen__state-row">
+                <span class="specimen__state-label">保存中</span>
+                <span class="save-state is-saving">
+                  <span class="save-state__dot"></span>
+                  <span>正在保存…</span>
+                </span>
+              </div>
+            </div>
+            <p class="specimen__caption">canvas 顶栏右侧，绿点 = 安静 / 木色呼吸点 = 在写。</p>
+          </article>
+
+          <!-- Error message -->
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.message--error</span>
+            <h3 class="specimen__title">错误态消息 · 心人格</h3>
+            <div class="specimen__stage" style="padding:24px;">
+              <article class="message message--error" role="alert" style="align-self:stretch;max-width:100%;">
+                <div class="message--error__title">这一步我没成</div>
+                <div class="message--error__body">
+                  Canvas 那边没接上。你和我说过的、我们刚聊出来的两个想法，<strong>我都先存下来了</strong>——不会因为这个错误丢掉。
+                </div>
+                <div class="message--error__actions">
+                  <button class="btn btn--primary btn--sm" type="button">再试一次</button>
+                  <button class="btn btn--ghost btn--sm" type="button">先存下来</button>
+                </div>
+              </article>
+            </div>
+            <p class="specimen__caption">暖偏红软底 + 左 2px 强红线；区别于正常 ai 文本但不刺眼。Copy 必须以"我"开头承担责任。</p>
+          </article>
+
+          <!-- Limit notice -->
+          <article class="specimen" style="grid-column:span 2;">
+            <span class="specimen__label">.limit-notice</span>
+            <h3 class="specimen__title">额度到达 inline 提示</h3>
+            <div class="specimen__stage" style="padding:24px;">
+              <div class="limit-notice" role="status" style="max-width:100%;">
+                <svg class="limit-notice__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 10.5v.1"/></svg>
+                <div class="limit-notice__body">
+                  <strong>今天的额度差不多了。</strong>
+                  要不要先暂停一下？想接着做的话，<a class="inline-link" href="#">看看 Pro</a>。
+                </div>
+                <div class="limit-notice__action">
+                  <button class="btn btn--ghost btn--sm" type="button">关掉</button>
+                </div>
+              </div>
+            </div>
+            <p class="specimen__caption">放在 composer-dock 内、input 之上。暖警告色，不油腻，"看看 Pro"是 inline-link 不是 cta。</p>
+          </article>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

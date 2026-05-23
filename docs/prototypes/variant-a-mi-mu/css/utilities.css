@@ -1,0 +1,52 @@
+/* =================================================================
+   7. UTILITIES + scrollbar + reduced-motion
+   ================================================================= */
+.muted   { color: var(--color-text-secondary); }
+.hand    { font-family: var(--font-hand); font-weight: 400; }
+.serif   { font-family: var(--font-serif); }
+.mono    { font-family: var(--font-mono); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+
+/* Scrollbar — 默认隐藏，滚动时柔显 */
+.chat-scroll::-webkit-scrollbar,
+.canvas-stage::-webkit-scrollbar,
+.gallery__main::-webkit-scrollbar,
+.pattern-page__main::-webkit-scrollbar,
+.settings-body::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-scroll::-webkit-scrollbar-track,
+.canvas-stage::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scroll::-webkit-scrollbar-thumb,
+.canvas-stage::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background var(--duration-base) var(--ease-default);
+}
+.chat-scroll:hover::-webkit-scrollbar-thumb,
+.canvas-stage:hover::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+.chat-scroll::-webkit-scrollbar-thumb:hover,
+.canvas-stage::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 100ms !important;
+  }
+}
