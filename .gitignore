@@ -12,3 +12,10 @@ yarn-error.log*
 # OS / IDE / 测试产物
 .DS_Store
 .playwright-mcp/
+
+.idea
+docs
+
+.claude
+
+CLAUDE.md
