@@ -107,6 +107,9 @@ html.app-viewport-fit body {
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--color-bg-subtle);
   border-right: 1px solid var(--color-border);
   display: flex;

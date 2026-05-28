@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kokoro · Canvas · 配音旁白</title>
+  <title>Kokoro · Canvas · 背景音乐</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="css/tokens.css" />
   <link rel="stylesheet" href="css/base.css" />
@@ -259,6 +259,50 @@
       text-align: right;
     }
     .canvas-audio__alt.is-current .canvas-audio__alt-name { color: var(--color-accent); }
+    .canvas-audio__board {
+      align-self: center;
+      width: 100%;
+      max-width: 560px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(180px, .72fr);
+      gap: 12px;
+    }
+    .canvas-audio__inspector {
+      border-radius: 18px;
+      border: 1px solid rgba(200,162,107,.16);
+      background: rgba(255,255,255,.72);
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .canvas-audio__inspector-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--color-text-tertiary);
+    }
+    .canvas-audio__inspector strong {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--color-text-primary);
+    }
+    .canvas-audio__inspector p,
+    .canvas-audio__inspector li {
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--color-text-secondary);
+    }
+    .canvas-audio__inspector ul {
+      margin: 0;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    @media (max-width: 920px) {
+      .canvas-audio__board { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -365,9 +409,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -379,9 +423,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -413,6 +457,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -431,7 +479,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 时长 / 人声与导出计费</div>
         </div>
       </a>
     </aside>
@@ -446,32 +494,32 @@
             <div class="chat-thread" role="log" aria-live="polite">
 
               <article class="message message--user">
-                把这段文案配成温柔女声旁白：「秋天的第一杯咖啡，要趁热，也要趁有人陪。」
+                做一段 30 秒的背景音乐：深夜咖啡店、轻爵士、暖黄灯光感，前半段纯器乐，后半段加入一点女声哼唱。
               </article>
 
               <article class="message message--ai">
-                <p>配好了。用「温柔女声」念了这一句，语速放缓、句末微微上扬，听起来像在你耳边轻声说——</p>
+                <p>先做了一版。整体是刷子鼓 + 立式贝斯 + 电钢琴，前半段比较克制，22 秒后才慢慢带进女声哼唱。</p>
 
-                <div class="tool-call-inline" role="status" aria-label="正在用的配音 Agent">
+                <div class="tool-call-inline" role="status" aria-label="正在用的音乐 Agent">
                   <span class="tool-call-inline__dot" aria-hidden="true"></span>
                   <span>在用 ·</span>
-                  <span class="tool-call-inline__name">配音 Agent</span>
-                  <span style="color: var(--color-text-tertiary);">· 0:32</span>
+                  <span class="tool-call-inline__name">音乐 Agent</span>
+                  <span style="color: var(--color-text-tertiary);">· 0:30</span>
                 </div>
 
-                <p>右边可以直接试听。我顺手用另外两种嗓音也念了一版，想换个味道就点下面那两行。</p>
+                <p>右边这版是最稳的主版本。我另外保留了更纯器乐、和更明显人声感的两条，方便直接切。</p>
               </article>
 
               <article class="message message--user">
-                温柔女声挺好，就是开头能不能再轻一点。
+                挺对，但想更像下雨的夜里，前面再空一点。
               </article>
 
               <article class="message message--ai">
-                <p>把开头「秋天的第一杯咖啡」压低了一档气声，尾音收得更软。重新生成了这一版。</p>
+                <p>我把鼓点再往后放，开头先留了 4 秒雨夜氛围和钢琴呼吸，人声也压得更远一点。右边已经换成这一版。</p>
                 <div class="chat-suggest-row" role="group" aria-label="可继续">
-                  <button class="chat-suggest is-current" type="button">配一段轻背景乐</button>
-                  <button class="chat-suggest" type="button">换成男声试试</button>
-                  <button class="chat-suggest" type="button">导出 MP3</button>
+                  <button class="chat-suggest is-current" type="button">再做一版更纯器乐</button>
+                  <button class="chat-suggest" type="button">给这段配封面</button>
+                  <button class="chat-suggest" type="button">下载 MP3</button>
                 </div>
               </article>
 
@@ -517,7 +565,7 @@
                 <span>收起</span>
               </button>
               <button class="project-name" type="button" aria-label="重命名">
-                <span>配音旁白 · 秋天的第一杯咖啡</span>
+                <span>背景音乐 · 深夜咖啡店</span>
                 <span class="project-name__pulse" aria-hidden="true"></span>
               </button>
             </div>
@@ -535,155 +583,137 @@
 
           <div class="canvas-stage canvas-stage--audio">
 
-            <!-- ① 主播放卡 · 当前版本（温柔女声） -->
-            <div class="canvas-audio__card" aria-label="配音旁白 · 当前版本">
+            <!-- ① 主播放卡 · 当前版本（背景音乐） -->
+            <div class="canvas-audio__board" aria-label="背景音乐 · 当前版本">
+              <div class="canvas-audio__card">
 
-              <div class="canvas-audio__head">
-                <div class="canvas-audio__voice" aria-hidden="true">🎵</div>
-                <div class="canvas-audio__head-text">
-                  <div class="canvas-audio__name">温柔女声</div>
-                  <div class="canvas-audio__meta">语速 适中 · 句末上扬 · 单声道</div>
+                <div class="canvas-audio__head">
+                  <div class="canvas-audio__voice" aria-hidden="true">🎵</div>
+                  <div class="canvas-audio__head-text">
+                    <div class="canvas-audio__name">雨夜咖啡店</div>
+                    <div class="canvas-audio__meta">轻爵士 · 92 BPM · 前半纯器乐 / 后半女声哼唱</div>
+                  </div>
+                  <span class="canvas-audio__badge">主曲目</span>
                 </div>
-                <span class="canvas-audio__badge">当前</span>
-              </div>
 
-              <div class="canvas-audio__player">
-                <button class="canvas-audio__play" type="button" aria-label="播放配音">
-                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg>
-                </button>
+                <div class="canvas-audio__player">
+                  <button class="canvas-audio__play" type="button" aria-label="播放背景音乐">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg>
+                  </button>
 
-                <div class="canvas-audio__wave">
-                  <!-- 暖木波形：已播木实色 + 未播浅木；播放头一根木竖线 -->
-                  <svg class="canvas-audio__wave-svg" viewBox="0 0 320 46" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <g fill="#8B6F47">
-                      <rect x="2"   y="20" width="3" height="6"  rx="1.5"/>
-                      <rect x="9"   y="15" width="3" height="16" rx="1.5"/>
-                      <rect x="16"  y="10" width="3" height="26" rx="1.5"/>
-                      <rect x="23"  y="6"  width="3" height="34" rx="1.5"/>
-                      <rect x="30"  y="13" width="3" height="20" rx="1.5"/>
-                      <rect x="37"  y="18" width="3" height="10" rx="1.5"/>
-                      <rect x="44"  y="9"  width="3" height="28" rx="1.5"/>
-                      <rect x="51"  y="4"  width="3" height="38" rx="1.5"/>
-                      <rect x="58"  y="12" width="3" height="22" rx="1.5"/>
-                      <rect x="65"  y="17" width="3" height="12" rx="1.5"/>
-                      <rect x="72"  y="8"  width="3" height="30" rx="1.5"/>
-                      <rect x="79"  y="14" width="3" height="18" rx="1.5"/>
-                      <rect x="86"  y="19" width="3" height="8"  rx="1.5"/>
-                      <rect x="93"  y="11" width="3" height="24" rx="1.5"/>
-                      <rect x="100" y="6"  width="3" height="34" rx="1.5"/>
-                      <rect x="107" y="15" width="3" height="16" rx="1.5"/>
-                      <rect x="114" y="18" width="3" height="10" rx="1.5"/>
-                    </g>
-                    <!-- 播放头 -->
-                    <rect x="118" y="2" width="2.4" height="42" rx="1.2" fill="#6E5436"/>
-                    <g fill="#E7CBA0">
-                      <rect x="123" y="13" width="3" height="20" rx="1.5"/>
-                      <rect x="130" y="8"  width="3" height="30" rx="1.5"/>
-                      <rect x="137" y="16" width="3" height="14" rx="1.5"/>
-                      <rect x="144" y="20" width="3" height="6"  rx="1.5"/>
-                      <rect x="151" y="11" width="3" height="24" rx="1.5"/>
-                      <rect x="158" y="5"  width="3" height="36" rx="1.5"/>
-                      <rect x="165" y="14" width="3" height="18" rx="1.5"/>
-                      <rect x="172" y="18" width="3" height="10" rx="1.5"/>
-                      <rect x="179" y="9"  width="3" height="28" rx="1.5"/>
-                      <rect x="186" y="13" width="3" height="20" rx="1.5"/>
-                      <rect x="193" y="7"  width="3" height="32" rx="1.5"/>
-                      <rect x="200" y="16" width="3" height="14" rx="1.5"/>
-                      <rect x="207" y="19" width="3" height="8"  rx="1.5"/>
-                      <rect x="214" y="10" width="3" height="26" rx="1.5"/>
-                      <rect x="221" y="15" width="3" height="16" rx="1.5"/>
-                      <rect x="228" y="6"  width="3" height="34" rx="1.5"/>
-                      <rect x="235" y="14" width="3" height="18" rx="1.5"/>
-                      <rect x="242" y="18" width="3" height="10" rx="1.5"/>
-                      <rect x="249" y="11" width="3" height="24" rx="1.5"/>
-                      <rect x="256" y="8"  width="3" height="30" rx="1.5"/>
-                      <rect x="263" y="16" width="3" height="14" rx="1.5"/>
-                      <rect x="270" y="20" width="3" height="6"  rx="1.5"/>
-                      <rect x="277" y="12" width="3" height="22" rx="1.5"/>
-                      <rect x="284" y="17" width="3" height="12" rx="1.5"/>
-                      <rect x="291" y="9"  width="3" height="28" rx="1.5"/>
-                      <rect x="298" y="15" width="3" height="16" rx="1.5"/>
-                      <rect x="305" y="19" width="3" height="8"  rx="1.5"/>
-                      <rect x="312" y="21" width="3" height="4"  rx="1.5"/>
-                    </g>
-                  </svg>
-                  <div class="canvas-audio__times">
-                    <span><b>0:12</b></span>
-                    <span>0:32</span>
+                  <div class="canvas-audio__wave">
+                    <svg class="canvas-audio__wave-svg" viewBox="0 0 320 46" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <g fill="#8B6F47">
+                        <rect x="2"   y="20" width="3" height="6"  rx="1.5"/>
+                        <rect x="9"   y="15" width="3" height="16" rx="1.5"/>
+                        <rect x="16"  y="10" width="3" height="26" rx="1.5"/>
+                        <rect x="23"  y="6"  width="3" height="34" rx="1.5"/>
+                        <rect x="30"  y="13" width="3" height="20" rx="1.5"/>
+                        <rect x="37"  y="18" width="3" height="10" rx="1.5"/>
+                        <rect x="44"  y="9"  width="3" height="28" rx="1.5"/>
+                        <rect x="51"  y="4"  width="3" height="38" rx="1.5"/>
+                        <rect x="58"  y="12" width="3" height="22" rx="1.5"/>
+                        <rect x="65"  y="17" width="3" height="12" rx="1.5"/>
+                        <rect x="72"  y="8"  width="3" height="30" rx="1.5"/>
+                        <rect x="79"  y="14" width="3" height="18" rx="1.5"/>
+                        <rect x="86"  y="19" width="3" height="8"  rx="1.5"/>
+                        <rect x="93"  y="11" width="3" height="24" rx="1.5"/>
+                        <rect x="100" y="6"  width="3" height="34" rx="1.5"/>
+                        <rect x="107" y="15" width="3" height="16" rx="1.5"/>
+                        <rect x="114" y="18" width="3" height="10" rx="1.5"/>
+                      </g>
+                      <rect x="118" y="2" width="2.4" height="42" rx="1.2" fill="#6E5436"/>
+                      <g fill="#E7CBA0">
+                        <rect x="123" y="13" width="3" height="20" rx="1.5"/><rect x="130" y="8"  width="3" height="30" rx="1.5"/><rect x="137" y="16" width="3" height="14" rx="1.5"/><rect x="144" y="20" width="3" height="6"  rx="1.5"/><rect x="151" y="11" width="3" height="24" rx="1.5"/><rect x="158" y="5"  width="3" height="36" rx="1.5"/><rect x="165" y="14" width="3" height="18" rx="1.5"/><rect x="172" y="18" width="3" height="10" rx="1.5"/><rect x="179" y="9"  width="3" height="28" rx="1.5"/><rect x="186" y="13" width="3" height="20" rx="1.5"/><rect x="193" y="7"  width="3" height="32" rx="1.5"/><rect x="200" y="16" width="3" height="14" rx="1.5"/><rect x="207" y="19" width="3" height="8"  rx="1.5"/><rect x="214" y="10" width="3" height="26" rx="1.5"/><rect x="221" y="15" width="3" height="16" rx="1.5"/><rect x="228" y="6"  width="3" height="34" rx="1.5"/><rect x="235" y="14" width="3" height="18" rx="1.5"/><rect x="242" y="18" width="3" height="10" rx="1.5"/><rect x="249" y="11" width="3" height="24" rx="1.5"/><rect x="256" y="8"  width="3" height="30" rx="1.5"/><rect x="263" y="16" width="3" height="14" rx="1.5"/><rect x="270" y="20" width="3" height="6"  rx="1.5"/><rect x="277" y="12" width="3" height="22" rx="1.5"/><rect x="284" y="17" width="3" height="12" rx="1.5"/><rect x="291" y="9"  width="3" height="28" rx="1.5"/><rect x="298" y="15" width="3" height="16" rx="1.5"/><rect x="305" y="19" width="3" height="8"  rx="1.5"/><rect x="312" y="21" width="3" height="4"  rx="1.5"/>
+                      </g>
+                    </svg>
+                    <div class="canvas-audio__times">
+                      <span><b>0:12</b></span>
+                      <span>0:30</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <p class="canvas-audio__script">
-                <span class="canvas-audio__script-label">正在朗读 · 文案片段</span>
-                秋天的第一杯咖啡，<mark>要趁热，也要趁有人陪。</mark>
-              </p>
+                <p class="canvas-audio__script">
+                  <span class="canvas-audio__script-label">这一版的结构</span>
+                  前 4 秒只留<mark>雨夜环境声与电钢琴</mark>，中段加入刷子鼓和立式贝斯，最后 8 秒才慢慢带进女声哼唱，让它更像深夜咖啡店而不是广告片配乐。
+                </p>
+              </div>
+              <aside class="canvas-audio__inspector" aria-label="曲目信息">
+                <span class="canvas-audio__inspector-label">Track Inspector</span>
+                <strong>当前曲目可继续演化</strong>
+                <p>更像 Suno 的曲目页，而不是单个音频文件：主曲目 + 变体 + 下一步动作在同一个工作台里。</p>
+                <ul>
+                  <li>当前模型：Kokoro Audio Universal</li>
+                  <li>输出：30 秒 · 3 个结构变体</li>
+                  <li>下一步：做纯器乐版 / 给它配封面 / 继续延长到 60 秒</li>
+                </ul>
+              </aside>
             </div>
 
-            <!-- ② 备选嗓音行（不同嗓音的同一句） -->
-            <div class="canvas-audio__alts" aria-label="备选嗓音">
-              <div class="canvas-audio__alts-title">换个嗓音试试 · 同一句</div>
+            <!-- ② 备选版本行（不同结构的同一段配乐） -->
+            <div class="canvas-audio__alts" aria-label="备选版本">
+              <div class="canvas-audio__alts-title">换个结构试试 · 同一段配乐</div>
 
-              <button class="canvas-audio__alt is-current" type="button" aria-current="true" aria-label="温柔女声 · 当前">
+              <button class="canvas-audio__alt is-current" type="button" aria-current="true" aria-label="雨夜咖啡店 · 当前">
                 <span class="canvas-audio__alt-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg></span>
                 <svg class="canvas-audio__alt-mini" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <g fill="#8B6F47">
-                    <rect x="2" y="7" width="2.5" height="6" rx="1.2"/><rect x="9" y="4" width="2.5" height="12" rx="1.2"/><rect x="16" y="2" width="2.5" height="16" rx="1.2"/><rect x="23" y="6" width="2.5" height="8" rx="1.2"/><rect x="30" y="3" width="2.5" height="14" rx="1.2"/><rect x="37" y="8" width="2.5" height="5" rx="1.2"/><rect x="44" y="4" width="2.5" height="12" rx="1.2"/><rect x="51" y="2" width="2.5" height="16" rx="1.2"/><rect x="58" y="7" width="2.5" height="6" rx="1.2"/><rect x="65" y="5" width="2.5" height="10" rx="1.2"/><rect x="72" y="3" width="2.5" height="14" rx="1.2"/><rect x="79" y="8" width="2.5" height="5" rx="1.2"/><rect x="86" y="4" width="2.5" height="12" rx="1.2"/><rect x="93" y="6" width="2.5" height="8" rx="1.2"/><rect x="100" y="2" width="2.5" height="16" rx="1.2"/><rect x="107" y="7" width="2.5" height="6" rx="1.2"/><rect x="114" y="5" width="2.5" height="10" rx="1.2"/><rect x="121" y="3" width="2.5" height="14" rx="1.2"/><rect x="128" y="8" width="2.5" height="5" rx="1.2"/><rect x="135" y="4" width="2.5" height="12" rx="1.2"/><rect x="142" y="6" width="2.5" height="8" rx="1.2"/><rect x="149" y="3" width="2.5" height="14" rx="1.2"/><rect x="156" y="7" width="2.5" height="6" rx="1.2"/><rect x="163" y="5" width="2.5" height="10" rx="1.2"/><rect x="170" y="2" width="2.5" height="16" rx="1.2"/><rect x="177" y="8" width="2.5" height="5" rx="1.2"/><rect x="184" y="6" width="2.5" height="8" rx="1.2"/><rect x="191" y="9" width="2.5" height="4" rx="1.2"/>
+                    <rect x="2" y="8" width="2.5" height="5" rx="1.2"/><rect x="9" y="6" width="2.5" height="8" rx="1.2"/><rect x="16" y="3" width="2.5" height="14" rx="1.2"/><rect x="23" y="7" width="2.5" height="6" rx="1.2"/><rect x="30" y="4" width="2.5" height="12" rx="1.2"/><rect x="37" y="2" width="2.5" height="16" rx="1.2"/><rect x="44" y="8" width="2.5" height="5" rx="1.2"/><rect x="51" y="5" width="2.5" height="10" rx="1.2"/><rect x="58" y="3" width="2.5" height="14" rx="1.2"/><rect x="65" y="7" width="2.5" height="6" rx="1.2"/><rect x="72" y="4" width="2.5" height="12" rx="1.2"/><rect x="79" y="9" width="2.5" height="4" rx="1.2"/><rect x="86" y="6" width="2.5" height="8" rx="1.2"/><rect x="93" y="3" width="2.5" height="14" rx="1.2"/><rect x="100" y="7" width="2.5" height="6" rx="1.2"/><rect x="107" y="2" width="2.5" height="16" rx="1.2"/><rect x="114" y="8" width="2.5" height="5" rx="1.2"/><rect x="121" y="5" width="2.5" height="10" rx="1.2"/><rect x="128" y="3" width="2.5" height="14" rx="1.2"/><rect x="135" y="7" width="2.5" height="6" rx="1.2"/><rect x="142" y="4" width="2.5" height="12" rx="1.2"/><rect x="149" y="8" width="2.5" height="5" rx="1.2"/><rect x="156" y="6" width="2.5" height="8" rx="1.2"/><rect x="163" y="3" width="2.5" height="14" rx="1.2"/><rect x="170" y="7" width="2.5" height="6" rx="1.2"/><rect x="177" y="5" width="2.5" height="10" rx="1.2"/><rect x="184" y="8" width="2.5" height="5" rx="1.2"/><rect x="191" y="6" width="2.5" height="8" rx="1.2"/>
                   </g>
                 </svg>
-                <span class="canvas-audio__alt-name">温柔女声</span>
-                <span class="canvas-audio__alt-dur">0:32</span>
-              </button>
-
-              <button class="canvas-audio__alt" type="button" aria-label="磁性电台">
-                <span class="canvas-audio__alt-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg></span>
-                <svg class="canvas-audio__alt-mini" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <g fill="#C8A26B">
-                    <rect x="2" y="5" width="2.5" height="10" rx="1.2"/><rect x="9" y="2" width="2.5" height="16" rx="1.2"/><rect x="16" y="7" width="2.5" height="6" rx="1.2"/><rect x="23" y="3" width="2.5" height="14" rx="1.2"/><rect x="30" y="8" width="2.5" height="5" rx="1.2"/><rect x="37" y="4" width="2.5" height="12" rx="1.2"/><rect x="44" y="6" width="2.5" height="8" rx="1.2"/><rect x="51" y="2" width="2.5" height="16" rx="1.2"/><rect x="58" y="5" width="2.5" height="10" rx="1.2"/><rect x="65" y="8" width="2.5" height="5" rx="1.2"/><rect x="72" y="3" width="2.5" height="14" rx="1.2"/><rect x="79" y="6" width="2.5" height="8" rx="1.2"/><rect x="86" y="2" width="2.5" height="16" rx="1.2"/><rect x="93" y="7" width="2.5" height="6" rx="1.2"/><rect x="100" y="4" width="2.5" height="12" rx="1.2"/><rect x="107" y="8" width="2.5" height="5" rx="1.2"/><rect x="114" y="5" width="2.5" height="10" rx="1.2"/><rect x="121" y="2" width="2.5" height="16" rx="1.2"/><rect x="128" y="6" width="2.5" height="8" rx="1.2"/><rect x="135" y="3" width="2.5" height="14" rx="1.2"/><rect x="142" y="8" width="2.5" height="5" rx="1.2"/><rect x="149" y="5" width="2.5" height="10" rx="1.2"/><rect x="156" y="2" width="2.5" height="16" rx="1.2"/><rect x="163" y="7" width="2.5" height="6" rx="1.2"/><rect x="170" y="4" width="2.5" height="12" rx="1.2"/><rect x="177" y="6" width="2.5" height="8" rx="1.2"/><rect x="184" y="3" width="2.5" height="14" rx="1.2"/><rect x="191" y="8" width="2.5" height="5" rx="1.2"/>
-                  </g>
-                </svg>
-                <span class="canvas-audio__alt-name">磁性电台</span>
+                <span class="canvas-audio__alt-name">雨夜咖啡店</span>
                 <span class="canvas-audio__alt-dur">0:30</span>
               </button>
 
-              <button class="canvas-audio__alt" type="button" aria-label="邻家少年">
+              <button class="canvas-audio__alt" type="button" aria-label="更纯器乐">
                 <span class="canvas-audio__alt-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg></span>
                 <svg class="canvas-audio__alt-mini" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <g fill="#C8A26B">
-                    <rect x="2" y="8" width="2.5" height="5" rx="1.2"/><rect x="9" y="5" width="2.5" height="10" rx="1.2"/><rect x="16" y="3" width="2.5" height="14" rx="1.2"/><rect x="23" y="7" width="2.5" height="6" rx="1.2"/><rect x="30" y="4" width="2.5" height="12" rx="1.2"/><rect x="37" y="2" width="2.5" height="16" rx="1.2"/><rect x="44" y="8" width="2.5" height="5" rx="1.2"/><rect x="51" y="5" width="2.5" height="10" rx="1.2"/><rect x="58" y="3" width="2.5" height="14" rx="1.2"/><rect x="65" y="7" width="2.5" height="6" rx="1.2"/><rect x="72" y="4" width="2.5" height="12" rx="1.2"/><rect x="79" y="8" width="2.5" height="5" rx="1.2"/><rect x="86" y="6" width="2.5" height="8" rx="1.2"/><rect x="93" y="3" width="2.5" height="14" rx="1.2"/><rect x="100" y="7" width="2.5" height="6" rx="1.2"/><rect x="107" y="2" width="2.5" height="16" rx="1.2"/><rect x="114" y="8" width="2.5" height="5" rx="1.2"/><rect x="121" y="5" width="2.5" height="10" rx="1.2"/><rect x="128" y="3" width="2.5" height="14" rx="1.2"/><rect x="135" y="7" width="2.5" height="6" rx="1.2"/><rect x="142" y="4" width="2.5" height="12" rx="1.2"/><rect x="149" y="8" width="2.5" height="5" rx="1.2"/><rect x="156" y="6" width="2.5" height="8" rx="1.2"/><rect x="163" y="3" width="2.5" height="14" rx="1.2"/><rect x="170" y="7" width="2.5" height="6" rx="1.2"/><rect x="177" y="5" width="2.5" height="10" rx="1.2"/><rect x="184" y="8" width="2.5" height="5" rx="1.2"/><rect x="191" y="6" width="2.5" height="8" rx="1.2"/>
+                    <rect x="2" y="9" width="2.5" height="4" rx="1.2"/><rect x="9" y="7" width="2.5" height="6" rx="1.2"/><rect x="16" y="5" width="2.5" height="10" rx="1.2"/><rect x="23" y="8" width="2.5" height="5" rx="1.2"/><rect x="30" y="6" width="2.5" height="8" rx="1.2"/><rect x="37" y="4" width="2.5" height="12" rx="1.2"/><rect x="44" y="8" width="2.5" height="5" rx="1.2"/><rect x="51" y="6" width="2.5" height="8" rx="1.2"/><rect x="58" y="5" width="2.5" height="10" rx="1.2"/><rect x="65" y="8" width="2.5" height="5" rx="1.2"/><rect x="72" y="6" width="2.5" height="8" rx="1.2"/><rect x="79" y="9" width="2.5" height="4" rx="1.2"/><rect x="86" y="7" width="2.5" height="6" rx="1.2"/><rect x="93" y="5" width="2.5" height="10" rx="1.2"/><rect x="100" y="8" width="2.5" height="5" rx="1.2"/><rect x="107" y="4" width="2.5" height="12" rx="1.2"/><rect x="114" y="8" width="2.5" height="5" rx="1.2"/><rect x="121" y="6" width="2.5" height="8" rx="1.2"/><rect x="128" y="5" width="2.5" height="10" rx="1.2"/><rect x="135" y="8" width="2.5" height="5" rx="1.2"/><rect x="142" y="6" width="2.5" height="8" rx="1.2"/><rect x="149" y="9" width="2.5" height="4" rx="1.2"/><rect x="156" y="7" width="2.5" height="6" rx="1.2"/><rect x="163" y="5" width="2.5" height="10" rx="1.2"/><rect x="170" y="8" width="2.5" height="5" rx="1.2"/><rect x="177" y="6" width="2.5" height="8" rx="1.2"/><rect x="184" y="8" width="2.5" height="5" rx="1.2"/><rect x="191" y="7" width="2.5" height="6" rx="1.2"/>
                   </g>
                 </svg>
-                <span class="canvas-audio__alt-name">邻家少年</span>
-                <span class="canvas-audio__alt-dur">0:33</span>
+                <span class="canvas-audio__alt-name">更纯器乐</span>
+                <span class="canvas-audio__alt-dur">0:30</span>
+              </button>
+
+              <button class="canvas-audio__alt" type="button" aria-label="更明显人声">
+                <span class="canvas-audio__alt-play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5l13 7-13 7z"/></svg></span>
+                <svg class="canvas-audio__alt-mini" viewBox="0 0 200 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <g fill="#C8A26B">
+                    <rect x="2" y="6" width="2.5" height="8" rx="1.2"/><rect x="9" y="4" width="2.5" height="12" rx="1.2"/><rect x="16" y="2" width="2.5" height="16" rx="1.2"/><rect x="23" y="7" width="2.5" height="6" rx="1.2"/><rect x="30" y="3" width="2.5" height="14" rx="1.2"/><rect x="37" y="5" width="2.5" height="10" rx="1.2"/><rect x="44" y="3" width="2.5" height="14" rx="1.2"/><rect x="51" y="2" width="2.5" height="16" rx="1.2"/><rect x="58" y="6" width="2.5" height="8" rx="1.2"/><rect x="65" y="4" width="2.5" height="12" rx="1.2"/><rect x="72" y="2" width="2.5" height="16" rx="1.2"/><rect x="79" y="7" width="2.5" height="6" rx="1.2"/><rect x="86" y="3" width="2.5" height="14" rx="1.2"/><rect x="93" y="5" width="2.5" height="10" rx="1.2"/><rect x="100" y="2" width="2.5" height="16" rx="1.2"/><rect x="107" y="6" width="2.5" height="8" rx="1.2"/><rect x="114" y="4" width="2.5" height="12" rx="1.2"/><rect x="121" y="2" width="2.5" height="16" rx="1.2"/><rect x="128" y="7" width="2.5" height="6" rx="1.2"/><rect x="135" y="3" width="2.5" height="14" rx="1.2"/><rect x="142" y="5" width="2.5" height="10" rx="1.2"/><rect x="149" y="2" width="2.5" height="16" rx="1.2"/><rect x="156" y="6" width="2.5" height="8" rx="1.2"/><rect x="163" y="4" width="2.5" height="12" rx="1.2"/><rect x="170" y="2" width="2.5" height="16" rx="1.2"/><rect x="177" y="6" width="2.5" height="8" rx="1.2"/><rect x="184" y="5" width="2.5" height="10" rx="1.2"/><rect x="191" y="7" width="2.5" height="6" rx="1.2"/>
+                  </g>
+                </svg>
+                <span class="canvas-audio__alt-name">更明显人声</span>
+                <span class="canvas-audio__alt-dur">0:30</span>
               </button>
             </div>
 
             <!-- 底部 sticky 控件 -->
-            <section class="canvas-controls" aria-label="配音控件">
+            <section class="canvas-controls" aria-label="背景音乐控件">
 
-              <!-- 语速 -->
-              <div class="canvas-controls__row" role="group" aria-label="语速">
-                <span class="canvas-controls__label">语速</span>
-                <button class="chip chip--control" type="button">慢</button>
-                <button class="chip chip--control is-current" type="button" aria-current="true">适中</button>
-                <button class="chip chip--control" type="button">快</button>
+              <div class="canvas-controls__row" role="group" aria-label="风格">
+                <span class="canvas-controls__label">风格</span>
+                <button class="chip chip--control is-current" type="button" aria-current="true">轻爵士</button>
+                <button class="chip chip--control" type="button">Lo-fi</button>
+                <button class="chip chip--control" type="button">电影感</button>
               </div>
 
-              <!-- 情绪 -->
-              <div class="canvas-controls__row" role="group" aria-label="情绪">
-                <span class="canvas-controls__label">情绪</span>
-                <button class="chip chip--control is-current" type="button" aria-current="true">温柔</button>
-                <button class="chip chip--control" type="button">平静</button>
-                <button class="chip chip--control" type="button">明亮</button>
+              <div class="canvas-controls__row" role="group" aria-label="人声">
+                <span class="canvas-controls__label">人声</span>
+                <button class="chip chip--control" type="button">纯器乐</button>
+                <button class="chip chip--control is-current" type="button" aria-current="true">轻哼唱</button>
+                <button class="chip chip--control" type="button">更明显</button>
               </div>
 
-              <!-- 操作 + 额度 -->
               <div class="canvas-controls__actions">
-                <span class="canvas-controls__quota">这段配音花了 1 次 · 还剩 1,188 积分</span>
+                <span class="canvas-controls__quota">本次按模型 / 时长 / 人声层次 / 导出格式实际计费</span>
                 <button class="btn btn--ghost btn--sm" type="button">
                   <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a5 5 0 1 1 1.6 3.7M3 8V5M3 8h3"/></svg>
-                  重新生成
+                  再做一版
                 </button>
+                <button class="btn btn--ghost btn--sm" type="button">延长到 60 秒</button>
+                <button class="btn btn--ghost btn--sm" type="button">给它配封面</button>
                 <button class="btn btn--ghost btn--sm" type="button">
                   <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v8M5 8l3 3 3-3M3.5 13h9"/></svg>
                   下载 MP3

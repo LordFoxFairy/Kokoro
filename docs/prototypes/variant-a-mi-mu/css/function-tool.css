@@ -1,5 +1,6 @@
 /* 功能工作室页 —— 单列生成器（参照 muapi/pollo Studio：身份大标题 + 中部留白/模板 + 底部生成栏），暖色化。
-   左侧仍是 Kokoro 的 sidebar（studio nav）；右 main 为单列，不再左右分栏。绝不 cyan/dark/glass。 */
+   左侧仍是 Kokoro 的 sidebar（studio nav）；右 main 为单列，不再左右分栏。绝不 cyan/dark/glass。
+   统一规则：fn-modes = 任务意图；fn-model = 通用模型选择；风格/模板/配色/区块等都走独立参数 chip。 */
 .fn-studio {
   display: flex; flex-direction: column; height: 100%; width: 100%;
   max-width: 1000px; margin: 0 auto; box-sizing: border-box;
@@ -81,15 +82,32 @@
 }
 .fn-model__label { font-size: 11px; color: var(--color-text-tertiary); padding: 2px 8px 6px; }
 .fn-model__item {
-  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; width: 100%;
   padding: 8px 10px; border: none; border-radius: var(--radius-sm); background: none;
   font: inherit; font-size: 13px; color: var(--color-text-secondary); text-align: left; cursor: pointer;
   transition: background .12s ease, color .12s ease;
 }
 .fn-model__item:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
 .fn-model__item.is-current { background: var(--color-accent-soft); color: var(--color-text-primary); }
-.fn-model__item .fn-model__tag { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-tertiary); }
-.fn-model__check { width: 13px; height: 13px; color: var(--color-accent); }
+.fn-model__item:not(.is-current) .fn-model__check { display: none; }
+.fn-model__meta { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.fn-model__name { font-size: 13px; color: inherit; }
+.fn-model__caps { display: flex; flex-wrap: wrap; gap: 5px; }
+.fn-model__tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+.fn-model__tag.is-type {
+  color: var(--color-text-primary);
+  background: var(--color-accent-soft);
+  border-color: rgba(200,162,107,.16);
+}
+.fn-model__check { width: 13px; height: 13px; color: var(--color-accent); flex: none; margin-top: 3px; }
 
 /* 数量段控 1/2/3/4 */
 .fn-count { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--color-border); border-radius: 999px; padding: 2px 2px 2px 4px; }

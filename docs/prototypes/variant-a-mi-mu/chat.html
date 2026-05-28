@@ -13,6 +13,132 @@
   <link rel="stylesheet" href="css/attach-menu.css" />
   <link rel="stylesheet" href="css/studio-nav.css" />
   <link rel="stylesheet" href="css/sidebar-creative.css" />
+  <style>
+    .chat-stage-note {
+      max-width: 720px;
+      margin: 0 auto var(--space-5);
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(200, 162, 107, 0.22);
+      background: linear-gradient(180deg, rgba(255,252,246,0.96) 0%, rgba(245,236,220,0.9) 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.78);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .chat-stage-note__label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+    }
+    .chat-stage-note__title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      line-height: 1.35;
+      color: var(--color-text-primary);
+    }
+    .chat-stage-note__sub {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--color-text-secondary);
+    }
+    .message .card--doc {
+      margin-top: var(--space-4);
+      border-color: rgba(200, 162, 107, 0.28);
+      background: linear-gradient(180deg, #FFFDF9 0%, #FBF4E7 100%);
+      box-shadow: 0 12px 28px -22px rgba(60,45,30,0.38), inset 0 1px 0 rgba(255,255,255,0.78);
+    }
+    .message .card--doc .card__head {
+      align-items: flex-start;
+    }
+    .message .card--doc .card__meta {
+      color: var(--color-text-tertiary);
+    }
+    .thinking {
+      margin-top: var(--space-4);
+      border: 1px dashed rgba(200, 162, 107, 0.3);
+      background: rgba(255, 250, 242, 0.72);
+      color: var(--color-text-tertiary);
+    }
+    .schedule-card {
+      margin-top: var(--space-4);
+      padding: var(--space-4);
+      border-radius: 22px;
+      border: 1px solid rgba(200, 162, 107, 0.24);
+      background: linear-gradient(180deg, #FFFCF6 0%, #F5ECDD 100%);
+      box-shadow: 0 14px 30px -22px rgba(60,45,30,0.34), inset 0 1px 0 rgba(255,255,255,0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .schedule-card__eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-text-tertiary);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .schedule-card__title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 22px;
+      color: var(--color-text-primary);
+      line-height: 1.2;
+    }
+    .schedule-card__body {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+    .schedule-card__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .schedule-card__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .schedule-card__meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(200, 162, 107, 0.2);
+      background: rgba(255,252,246,0.82);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .schedule-card__actions .btn { text-decoration: none; }
+    .chat-next-steps {
+      margin: var(--space-4) 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chat-next-steps .chip {
+      text-decoration: none;
+    }
+    .composer-dock {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .composer-dock__label {
+      width: 100%;
+      max-width: 720px;
+      padding: 0 6px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--color-text-tertiary);
+    }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -119,9 +245,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -133,9 +259,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -167,6 +293,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -182,10 +312,10 @@
       <div class="nav__label">最近</div>
       <div class="sidebar-recent">
         <a class="sidebar-recent__item is-current" href="chat.html">写给老朋友的一封信</a>
-        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
-        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
-        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
-        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+        <a class="sidebar-recent__item" href="canvas-poster-result.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="canvas-courseware-result.html">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="canvas-courseware-result.html">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="canvas-mindmap-result.html">把今年想做的事列一列</a>
       </div>
 
       <div class="sidebar-spacer"></div>
@@ -194,7 +324,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 输入输出 / 能力调用计费</div>
         </div>
       </a>
     </aside>
@@ -212,6 +342,11 @@
       </div>
 
       <div class="chat-view">
+        <div class="chat-stage-note" aria-label="当前协作阶段">
+          <span class="chat-stage-note__label">当前阶段</span>
+          <strong class="chat-stage-note__title">先把话说清楚，再慢慢替你整理出来</strong>
+          <span class="chat-stage-note__sub">现在在「把感觉说出来」这一步。接下来会先出草稿；如果你不想现在处理，也可以直接改成明早继续或只提醒你。</span>
+        </div>
         <div class="chat-scroll">
           <div class="chat-thread" role="log" aria-live="polite" aria-label="对话">
 
@@ -259,7 +394,7 @@
               <p>开头我想这样起——把"想到你"放在最前面，不带任何"好久不见"的客套。我先把初稿打在 Canvas 上，你边看边告诉我哪里不对。</p>
 
               <!-- 文档生成卡片 -->
-              <a class="card card--doc" href="canvas.html" aria-label="打开文档：写给阿芸的一封信">
+              <a class="card card--doc" href="canvas-result.html" aria-label="打开文档：写给阿芸的一封信">
                 <div class="card__head">
                   <div class="card__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -294,12 +429,34 @@
 
 这两天降温，我去家附近那家咖啡馆...</code></pre>
 
-              <p>需要的话我可以做成 PDF。参考 <a href="#">上次给你做的那份生日卡</a>，也是同一套版式。</p>
+              <p>需要的话我可以做成 PDF。参考 <a href="canvas-result.html">上次给你做的那份生日卡</a>，也是同一套版式。</p>
 
               <!-- 思考态：在想 → 草拟 → 输出 -->
               <div class="thinking">
                 <span class="thinking__dot"></span>
                 <span>在想，要不要顺手帮你拟个发送时间</span>
+              </div>
+            </article>
+
+            <article class="message message--ai">
+              <div class="schedule-card" aria-label="调度确认卡">
+                <div class="schedule-card__eyebrow">已经替你安排好了</div>
+                <h3 class="schedule-card__title">明早 09:00 再继续这封信</h3>
+                <p class="schedule-card__body">这次是「自动继续」模式：我会先把这封信整理成更适合发送的版本，做完后回到这里告诉你。如果你只想被提醒、不想让我先写，也可以现在改。</p>
+                <div class="schedule-card__meta" aria-label="当前安排方式">
+                  <span class="schedule-card__meta-chip">模式：自动继续</span>
+                  <span class="schedule-card__meta-chip">交付：先给你一版可直接发的草稿</span>
+                  <span class="schedule-card__meta-chip">特殊能力：定时任务主控台可随时接管</span>
+                </div>
+                <div class="schedule-card__actions">
+                  <a class="btn btn--primary btn--sm" href="tasks.html">去我的任务看这件事</a>
+                  <button class="btn btn--ghost btn--sm" type="button">改一下时间</button>
+                  <button class="btn btn--ghost btn--sm" type="button">改成只提醒我</button>
+                </div>
+              </div>
+              <div class="chat-next-steps" aria-label="下一步">
+                <a class="chip chip--template" href="canvas-result.html">看格式化结果</a>
+                <a class="chip chip--template" href="templates.html">看看相似案例</a>
               </div>
             </article>
 
@@ -310,6 +467,7 @@
 
         <!-- ===== Composer dock ===== -->
         <div class="composer-dock">
+          <div class="composer-dock__label">继续说一句，或者让我明早替你继续。</div>
           <div class="input-pill" style="max-width:720px;">
             <details class="attach">
               <summary class="input-pill__attach" aria-label="添加附件" aria-haspopup="true">
@@ -328,7 +486,7 @@
               </div>
             </details>
             <input class="input-pill__field" type="text" placeholder="继续聊……" aria-label="对话输入" />
-            <a class="canvas-toggle" href="canvas.html" aria-label="切到 Canvas">
+            <a class="canvas-toggle" href="canvas-result.html" aria-label="切到 Canvas">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M2.5 6h11"/>
               </svg>

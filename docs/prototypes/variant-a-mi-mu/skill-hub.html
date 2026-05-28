@@ -117,9 +117,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -131,9 +131,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -165,6 +165,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -190,7 +194,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 输入输出 / 能力调用计费</div>
         </div>
       </a>
     </aside>
@@ -207,14 +211,19 @@
       <div class="hub">
         <section class="hub__hero">
           <div class="hub__eyebrow">Skill Hub</div>
-          <h1 class="hub__title">给它加点<span class="accent">本事</span></h1>
-          <p class="hub__sub">技能是 Kokoro 在创作时会自动用上的小本领——启用后，它在对话和组件里都更懂行。</p>
+          <h1 class="hub__title">给执行链加上<span class="accent">技能</span></h1>
+          <p class="hub__sub">Skill 不是“已启用清单”，而是任务脊柱的能力插件：启用后会进入任务、智能体与工作流，直接影响每次执行质量与交付速度。</p>
+          <div class="hub__hero-actions">
+            <a class="btn btn--primary btn--sm" href="tasks.html">先去任务主控台看哪些任务正在调用</a>
+            <a class="btn btn--ghost btn--sm" href="agents.html">再把技能分配给智能体长期执行</a>
+          </div>
         </section>
 
         <div class="hub__bar">
           <div class="hub__search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>搜索技能……</div>
           <div class="hub__stat">已启用 <b>3</b> / 共 10 个技能</div>
         </div>
+        <div class="hub__section-note">按“任务优先”来理解：技能被任务链调用，遇到分叉点停住，拍板后继续推进；重点不是启用数量，而是执行结果。</div>
 
         <!-- 创作技能 -->
         <section class="hub__group">

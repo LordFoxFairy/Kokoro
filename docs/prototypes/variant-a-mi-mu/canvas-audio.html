@@ -14,10 +14,204 @@
   <link rel="stylesheet" href="css/sidebar-creative.css" />
   <link rel="stylesheet" href="css/function-tool.css" />
   <!--
-    图片组件页（功能组件 = 通用引擎）。参照 muapi Image Studio：身份大标题 +
-    底部生成栏（模式 tab 文生/图生 + 模型下拉 Nano Banana/Flux… + 比例 + 数量 + 生成）。
-    场景（海报/水彩猫…）不在此页，去「案例」看。视觉 Kokoro 暖色米木纸感，严禁 dark/cyan/glass。
+    音频工作室页：参考 Suno 的音乐生成面板组织方式，但保留 Kokoro 暖纸感。
+    重点不是 dark 视觉，而是把音乐生成做成清楚的编曲面板：描述区 / 曲目设定 / 模型 / 变体预览 / 成本说明。
   -->
+  <style>
+    .audio-board {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(300px, .82fr);
+      gap: 14px;
+      align-items: stretch;
+      padding: 6px 0 0;
+    }
+    .audio-panel,
+    .audio-side {
+      border-radius: 26px;
+      border: 1px solid rgba(200, 162, 107, 0.18);
+      background: linear-gradient(180deg, rgba(255,252,246,0.96) 0%, rgba(247,239,228,0.88) 100%);
+      box-shadow: 0 22px 48px -34px rgba(60,45,30,0.28), inset 0 1px 0 rgba(255,255,255,0.82);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+    .audio-panel__head,
+    .audio-side__head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .audio-panel__eyebrow,
+    .audio-side__eyebrow {
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+    }
+    .audio-panel__title,
+    .audio-side__title {
+      margin: 4px 0 0;
+      font-family: var(--font-serif);
+      font-size: 26px;
+      color: var(--color-text-primary);
+      line-height: 1.15;
+    }
+    .audio-panel__sub,
+    .audio-side__sub {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+    .audio-panel__prompt {
+      border-radius: 22px;
+      border: 1px solid rgba(200,162,107,.16);
+      background: rgba(255,255,255,.72);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .audio-panel__textarea {
+      min-height: 124px;
+      border: none;
+      background: none;
+      resize: none;
+      font: inherit;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--color-text-primary);
+      outline: none;
+      padding: 0;
+    }
+    .audio-panel__textarea::placeholder { color: var(--color-text-tertiary); }
+    .audio-panel__quick {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .audio-panel__quick .chip { background: rgba(255,255,255,.8); }
+    .audio-panel__meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .audio-meta-card {
+      border-radius: 18px;
+      border: 1px solid rgba(200,162,107,.16);
+      background: rgba(255,255,255,.68);
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .audio-meta-card__label {
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+    }
+    .audio-meta-card strong {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--color-text-primary);
+    }
+    .audio-meta-card span { font-size: 12px; color: var(--color-text-secondary); }
+    .audio-track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .audio-track-card {
+      border-radius: 20px;
+      border: 1px solid rgba(200,162,107,.16);
+      background: rgba(255,255,255,.72);
+      padding: 13px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .audio-track-card.is-current {
+      border-color: rgba(181,122,91,.3);
+      box-shadow: 0 0 0 3px rgba(181,122,91,.08);
+    }
+    .audio-track-card__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .audio-track-card__name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--color-text-primary);
+    }
+    .audio-track-card__badge {
+      font-size: 11px;
+      color: var(--color-accent);
+      background: var(--color-accent-soft);
+      border-radius: 999px;
+      padding: 3px 9px;
+    }
+    .audio-track-card__desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--color-text-secondary);
+    }
+    .audio-wave-mini {
+      height: 38px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(245,236,223,.9) 0%, rgba(255,255,255,.86) 100%);
+      border: 1px solid rgba(200,162,107,.14);
+      position: relative;
+      overflow: hidden;
+    }
+    .audio-wave-mini::before {
+      content: "";
+      position: absolute;
+      inset: 8px 10px;
+      background:
+        linear-gradient(90deg, rgba(139,111,71,.18) 0 6%, transparent 6% 9%, rgba(139,111,71,.12) 9% 16%, transparent 16% 19%, rgba(139,111,71,.18) 19% 28%, transparent 28% 31%, rgba(139,111,71,.12) 31% 42%, transparent 42% 45%, rgba(139,111,71,.18) 45% 55%, transparent 55% 58%, rgba(139,111,71,.12) 58% 70%, transparent 70% 73%, rgba(139,111,71,.18) 73% 84%, transparent 84% 87%, rgba(139,111,71,.12) 87% 100%);
+      border-radius: 8px;
+      opacity: .9;
+    }
+    .audio-side__cost {
+      border-radius: 20px;
+      border: 1px solid rgba(200,162,107,.16);
+      background: rgba(255,255,255,.74);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .audio-side__cost strong {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      color: var(--color-text-primary);
+    }
+    .audio-side__cost p,
+    .audio-side__cost li {
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--color-text-secondary);
+    }
+    .audio-side__cost ul {
+      margin: 0;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    @media (max-width: 980px) {
+      .audio-board { grid-template-columns: 1fr; }
+      .audio-panel__meta-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
   <div class="app app--viewport-fit">
@@ -122,9 +316,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -136,9 +330,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -170,6 +364,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -196,7 +394,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 时长 / 人声与输出计费</div>
         </div>
       </a>
     </aside>
@@ -205,40 +403,125 @@
         <main class="main">
       <div class="fn-studio">
         <div class="fn-modes" role="tablist">
-          <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-0" checked /><label class="fn-mode-tab" for="fnm-0">配音旁白</label>
-          <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-1" /><label class="fn-mode-tab" for="fnm-1">背景音乐</label>
+          <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-0" /><label class="fn-mode-tab" for="fnm-0">配音旁白</label>
+          <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-1" checked /><label class="fn-mode-tab" for="fnm-1">背景音乐</label>
           <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-2" /><label class="fn-mode-tab" for="fnm-2">音效</label>
           <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-3" /><label class="fn-mode-tab" for="fnm-3">声音克隆</label>
         </div>
-        <div class="fn-studio__hero">
-          <div class="fn-studio__icon" aria-hidden="true">🎵</div>
-          <h1 class="fn-studio__title"><span class="fn-studio__title-top">开始创作</span><span class="fn-studio__title-main">音频工作室</span></h1>
-          <p class="fn-studio__sub">把文字读成有感情的声音，或描述一段旋律，让它响起来。</p>
+        <div class="fn-studio__hero" style="flex:none;gap:10px;margin:24px 0 14px;">
+          <div class="fn-studio__icon" aria-hidden="true" style="width:64px;height:64px;border-radius:18px;font-size:28px;margin-bottom:0;">🎵</div>
+          <h1 class="fn-studio__title"><span class="fn-studio__title-top" style="font-size:18px;letter-spacing:2px;">开始创作</span><span class="fn-studio__title-main" style="font-size:34px;">音乐与声音工作室</span></h1>
+          <p class="fn-studio__sub" style="max-width:560px;">先写音乐意图，再决定模型、方式、风格、时长与人声层次。这里应该更像正在做歌，而不是在看说明页。</p>
         </div>
-        <div class="fn-bar">
-          <div class="fn-bar__top">
-            <input class="fn-bar__input" type="text" placeholder="把要朗读的文字粘进来，或描述你想要的音乐……" aria-label="音频描述" />
-          </div>
-          <div class="fn-bar__bottom">
-            <div class="fn-bar__params">
-              <details class="fn-model">
-                <summary class="chip chip--control">嗓音 · 温柔女声 ▾</summary>
-                <div class="fn-model__menu" role="menu">
-                  <div class="fn-model__search"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>搜索嗓音 / 模型……</div>
-                  <div class="fn-model__label">嗓音</div>
-                  <button class="fn-model__item is-current" type="button" role="menuitem">温柔女声<svg class="fn-model__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></button>
-                  <button class="fn-model__item" type="button" role="menuitem">沉稳男声</button>
-                  <button class="fn-model__item" type="button" role="menuitem">邻家少年</button>
-                  <button class="fn-model__item" type="button" role="menuitem">磁性电台</button>
-                  <button class="fn-model__item" type="button" role="menuitem">CosyVoice<span class="fn-model__tag">克隆</span></button>
-                  <button class="fn-model__item" type="button" role="menuitem">ElevenLabs</button>
-                </div>
-              </details>
-              <button class="chip chip--control" type="button">语速 · 适中 ▾</button>
-              <button class="chip chip--control" type="button">时长 · 30s ▾</button>
+        <div class="audio-board">
+          <section class="audio-panel" aria-label="音乐生成面板">
+            <div class="audio-panel__head">
+              <div>
+                <div class="audio-panel__eyebrow">Create Track</div>
+                <h2 class="audio-panel__title">先把这首歌说出来</h2>
+                <p class="audio-panel__sub">像在 Suno 里写一首曲子那样组织输入：一句主意 + 风格 + 画面感，再决定要不要让它带人声。</p>
+              </div>
+              <span class="chip chip--control">Suno-like board</span>
             </div>
-            <a class="btn btn--primary fn-bar__generate" href="#">生成 · 12 积分</a>
-          </div>
+            <div class="audio-panel__prompt">
+              <textarea class="audio-panel__textarea" aria-label="音频描述" placeholder="描述你想要的音乐：比如『深夜咖啡店，轻爵士，女声哼唱，暖黄灯光感；前 4 秒只留雨声和电钢琴，后段再慢慢带出哼唱。』"></textarea>
+              <div class="audio-panel__quick" style="align-items:center;justify-content:space-between;gap:10px;">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="chip chip--template" type="button">☔ 雨夜咖啡店</button>
+                  <button class="chip chip--template" type="button">🎞 电影感独白配乐</button>
+                  <button class="chip chip--template" type="button">🌙 纯器乐 Lo-fi</button>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <span class="chip chip--control" style="background:var(--color-accent-soft);">基础模式</span>
+                  <span class="chip chip--control">进阶控制</span>
+                  <span class="chip chip--control">高级设置</span>
+                </div>
+              </div>
+            </div>
+            <div class="audio-panel__meta-grid">
+              <article class="audio-meta-card">
+                <span class="audio-meta-card__label">这轮会先给你</span>
+                <strong>3 个结构变体</strong>
+                <span>主版本、纯器乐版、更明显人声版，方便直接切。</span>
+              </article>
+              <article class="audio-meta-card">
+                <span class="audio-meta-card__label">基础模式</span>
+                <strong>一句话先出曲</strong>
+                <span>描述、风格、时长、人声四项即可开始。</span>
+              </article>
+            </div>
+            <div class="fn-bar">
+              <div class="fn-bar__top">
+                <div class="fn-bar__uploads"><button class="fn-upload" type="button" title="上传参考" aria-label="上传参考"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="7" r="1.2"/><path d="M3 12l3.5-3 2.5 2 2-1.5 2 2"/></svg></button></div>
+                <input class="fn-bar__input" type="text" placeholder="继续补充：比如『前奏更空一点』『副歌把人声抬高』……" aria-label="继续补充描述" />
+              </div>
+              <div class="fn-bar__bottom">
+                <div class="fn-bar__params">
+                  <details class="fn-model">
+                    <summary class="chip chip--control">模型 · Kokoro Audio Universal ▾</summary>
+                    <div class="fn-model__menu" role="menu">
+                      <div class="fn-model__search"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>搜索模型……</div>
+                      <div class="fn-model__label">可选模型</div>
+                      <button class="fn-model__item is-current" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Kokoro Audio Universal</span><span class="fn-model__caps"><span class="fn-model__tag is-type">音频</span><span class="fn-model__tag is-type">音乐</span><span class="fn-model__tag">稳定生成</span></span></span><svg class="fn-model__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></button>
+                      <button class="fn-model__item" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Lyria Studio</span><span class="fn-model__caps"><span class="fn-model__tag is-type">音频</span><span class="fn-model__tag is-type">音乐</span><span class="fn-model__tag">氛围更强</span></span></span></button>
+                      <button class="fn-model__item" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Suno Compose</span><span class="fn-model__caps"><span class="fn-model__tag is-type">音频</span><span class="fn-model__tag is-type">人声</span><span class="fn-model__tag">旋律更明显</span></span></span></button>
+                    </div>
+                  </details>
+                  <button class="chip chip--control" type="button">方式 · 文本生成配乐 ▾</button>
+                  <button class="chip chip--control" type="button">风格 · 轻爵士 ▾</button>
+                  <button class="chip chip--control" type="button">节奏 · 92 BPM ▾</button>
+                  <button class="chip chip--control" type="button">人声 · 女声哼唱 ▾</button>
+                  <button class="chip chip--control" type="button">时长 · 30s ▾</button>
+                </div>
+                <a class="btn btn--primary fn-bar__generate" href="canvas-audio-result.html">生成音乐 · 按模型 / 时长 / 人声 / 输出计费</a>
+              </div>
+            </div>
+          </section>
+          <aside class="audio-side" aria-label="曲目预览与计费说明">
+            <div class="audio-side__head">
+              <div>
+                <div class="audio-side__eyebrow">Track Preview</div>
+                <h3 class="audio-side__title">这一轮会先做出什么</h3>
+                <p class="audio-side__sub">让用户像在 Suno 一样，先看到“曲目”与“变体”，不是只看到一个音频文件。</p>
+              </div>
+            </div>
+            <div class="audio-track-list">
+              <article class="audio-track-card is-current">
+                <div class="audio-track-card__top">
+                  <strong class="audio-track-card__name">雨夜咖啡店</strong>
+                  <span class="audio-track-card__badge">主版本</span>
+                </div>
+                <p class="audio-track-card__desc">前 4 秒只留雨声与电钢琴，22 秒后才慢慢带进女声哼唱。</p>
+                <div class="audio-wave-mini" aria-hidden="true"></div>
+              </article>
+              <article class="audio-track-card">
+                <div class="audio-track-card__top">
+                  <strong class="audio-track-card__name">更纯器乐</strong>
+                  <span class="audio-track-card__badge">变体 A</span>
+                </div>
+                <p class="audio-track-card__desc">完全拿掉哼唱，把重心留给刷子鼓与立式贝斯。</p>
+                <div class="audio-wave-mini" aria-hidden="true"></div>
+              </article>
+              <article class="audio-track-card">
+                <div class="audio-track-card__top">
+                  <strong class="audio-track-card__name">更明显人声</strong>
+                  <span class="audio-track-card__badge">变体 B</span>
+                </div>
+                <p class="audio-track-card__desc">副段更早带出女声，让旋律记忆点更靠前。</p>
+                <div class="audio-wave-mini" aria-hidden="true"></div>
+              </article>
+            </div>
+            <div class="audio-side__cost">
+              <strong>本次预计按实际消耗计费</strong>
+              <p>不再写死积分。真实心智应该由模型、时长、人声层次、输出质量与额外挂载能力共同决定。</p>
+              <ul>
+                <li>模型：决定基础消耗与风格上限</li>
+                <li>输入：文本长度、参考素材、上传音频</li>
+                <li>输出：时长、版本数、人声复杂度</li>
+                <li>能力调用：封面生成、继续配视频、导出多格式</li>
+              </ul>
+            </div>
+          </aside>
         </div>
       </div>
     </main>

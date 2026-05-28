@@ -117,9 +117,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -131,9 +131,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -165,6 +165,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -190,7 +194,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 输入输出 / 能力调用计费</div>
         </div>
       </a>
     </aside>
@@ -207,27 +211,53 @@
             <div class="hub">
         <section class="hub__hero">
           <div class="hub__eyebrow">智能体 · Agents</div>
-          <h1 class="hub__title">把常做的事，交给<span class="accent">它</span></h1>
-          <p class="hub__sub">智能体是你调教好的小助手——给它一类任务和偏好，之后一句话它就照着做完。</p>
+          <h1 class="hub__title">把常做的事交给<span class="accent">执行智能体</span></h1>
+          <p class="hub__sub">智能体是任务脊柱上的执行层：你交代目标和边界，它持续推进；遇到高风险分叉点自动停住，把决定权还给你。</p>
+          <div class="hub__hero-actions">
+            <a class="btn btn--primary btn--sm" href="tasks.html">先去任务主控台发起或接管任务</a>
+            <a class="btn btn--ghost btn--sm" href="workflows.html">再把稳定做法升级为工作流</a>
+          </div>
+        </section>
+
+        <section class="hub__status-strip" aria-label="智能体状态总览">
+          <article class="hub__status-card">
+            <span class="hub__status-label">正在替你做</span>
+            <strong class="hub__status-value">3</strong>
+            <span class="hub__status-sub">周报、海报草案、答疑整理都在推进中。</span>
+          </article>
+          <article class="hub__status-card">
+            <span class="hub__status-label">等你拍板</span>
+            <strong class="hub__status-value">1</strong>
+            <span class="hub__status-sub">有 1 件已经准备到分叉点，等你决定。</span>
+          </article>
+          <article class="hub__status-card">
+            <span class="hub__status-label">已设为长期</span>
+            <strong class="hub__status-value">2</strong>
+            <span class="hub__status-sub">每周 / 每天会按节奏自动回来做。</span>
+          </article>
         </section>
 
         <section class="hub__group">
-          <div class="hub__group-head"><h2 class="hub__group-title">先看几个例子</h2><span class="hub__group-rule"></span><span class="hub__group-count">敬请期待</span></div>
+          <div class="hub__group-head"><h2 class="hub__group-title">先决定它怎么替你做</h2><span class="hub__group-rule"></span><span class="hub__group-count">执行模式</span></div>
+          <p class="hub__section-note">先把任务挂到主控台，再选执行模式：继续做、定时回来做、分叉点停住，全部落在同一条状态链里可追踪、可接管、可恢复。</p>
           <div class="hub__grid">
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🗞</div><div class="hub__card-head"><h3 class="hub__name">周报助手</h3><div class="hub__by">你的智能体</div></div></div>
-              <p class="hub__desc">每周把你这周的产出汇成一份温和好读的周报。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">文档</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">↗</div><div class="hub__card-head"><h3 class="hub__name">现在交给它继续</h3><div class="hub__by">适合一次性委托</div></div></div>
+              <p class="hub__desc">像周报助手、海报草案这种事，直接交代一次，它会先推进到最合理的一步。</p>
+              <div class="hub__card-note">会先做；遇到方向分叉时停在“等你决定”。</div>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">一次执行</span><span class="hub__tag">可回看</span></div><a class="hub__btn" href="tasks.html">去任务里看</a></div>
             </div>
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">📕</div><div class="hub__card-head"><h3 class="hub__name">小红书运营</h3><div class="hub__by">你的智能体</div></div></div>
-              <p class="hub__desc">按你的调性把素材排成笔记、配好标题与话题。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">营销</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">⏰</div><div class="hub__card-head"><h3 class="hub__name">设成定时运行</h3><div class="hub__by">适合持续发生的事</div></div></div>
+              <p class="hub__desc">让它明早、今晚、每周固定回来做，不再靠你自己记。</p>
+              <div class="hub__card-note">支持只提醒、到点自动做、周期托管三种方式。</div>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">自动化</span><span class="hub__tag">周期托管</span></div><a class="hub__btn" href="tasks.html">去设自动化</a></div>
             </div>
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">💬</div><div class="hub__card-head"><h3 class="hub__name">答疑助手</h3><div class="hub__by">你的智能体</div></div></div>
-              <p class="hub__desc">用你的资料回常见问题，语气像你本人。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">客服</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">⏸</div><div class="hub__card-head"><h3 class="hub__name">在分叉点等你</h3><div class="hub__by">适合高风险选择</div></div></div>
+              <p class="hub__desc">像风格、版本、标题方向这种关键取舍，不会替你自作主张。</p>
+              <div class="hub__card-note">失败点、草稿和上次做到哪里，都会原样留下来。</div>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">人工拍板</span><span class="hub__tag">保留上下文</span></div><a class="hub__btn" href="tasks.html">看待决定项</a></div>
             </div>
           </div>
         </section>

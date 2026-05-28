@@ -48,6 +48,47 @@
       color: var(--color-text-secondary);
       margin: 0;
     }
+    .cases__intro-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      margin-top: var(--space-4);
+      padding: 14px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(200, 162, 107, 0.22);
+      background: linear-gradient(180deg, rgba(255, 252, 246, 0.96) 0%, rgba(246, 238, 226, 0.92) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+    }
+    .cases__intro-note strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+    .cases__flow-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: var(--space-5);
+    }
+    .cases__flow-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(200, 162, 107, 0.22);
+      background: rgba(255, 252, 246, 0.9);
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+    .cases__flow-link:hover {
+      color: var(--color-text-primary);
+      border-color: rgba(200, 162, 107, 0.42);
+      transform: translateY(-1px);
+    }
 
     .cases__group {
       margin-bottom: var(--space-7);
@@ -80,6 +121,9 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-5);
+    }
+    .cases__group--featured .cases__grid {
+      gap: 18px;
     }
 
     /* ===== Card ===== */
@@ -143,6 +187,41 @@
       font-weight: 600;
       color: var(--color-text-primary);
       margin: 0;
+    }
+    .cases__desc {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--color-text-secondary);
+    }
+    .cases__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: var(--space-2);
+    }
+    .cases__actions--flow .btn:last-child {
+      margin-left: auto;
+    }
+    .cases__actions .btn {
+      text-decoration: none;
+    }
+    .cases__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .cases__meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(200, 162, 107, 0.2);
+      background: rgba(255,252,246,0.84);
+      font-size: 11px;
+      color: var(--color-text-secondary);
     }
 
     @media (max-width: 880px) {
@@ -259,9 +338,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -273,9 +352,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -307,6 +386,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -322,10 +405,10 @@
       <div class="nav__label">最近</div>
       <div class="sidebar-recent">
         <a class="sidebar-recent__item" href="chat.html">写给老朋友的一封信</a>
-        <a class="sidebar-recent__item" href="canvas.html">周末展览的小红书海报</a>
-        <a class="sidebar-recent__item" href="#">把读书笔记整理成课件</a>
-        <a class="sidebar-recent__item" href="#">给妈妈解释一下 AI 是什么</a>
-        <a class="sidebar-recent__item" href="#">把今年想做的事列一列</a>
+        <a class="sidebar-recent__item" href="canvas-poster-result.html">周末展览的小红书海报</a>
+        <a class="sidebar-recent__item" href="canvas-courseware-result.html">把读书笔记整理成课件</a>
+        <a class="sidebar-recent__item" href="canvas-courseware-result.html">给妈妈解释一下 AI 是什么</a>
+        <a class="sidebar-recent__item" href="canvas-mindmap-result.html">把今年想做的事列一列</a>
       </div>
 
       <div class="sidebar-spacer"></div>
@@ -334,7 +417,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 输入输出 / 能力调用计费</div>
         </div>
       </a>
     </aside>
@@ -354,15 +437,24 @@
         <section class="cases__hero">
           <div class="cases__eyebrow">案例库</div>
           <h1 class="cases__title">案例<span class="accent">库</span></h1>
-          <p class="cases__sub">每个功能配一个真实案例，点开看看它能做出什么。</p>
+          <p class="cases__sub">每个案例都是一种做法。你可以先看成熟路径，再决定现在开始，还是交给 Kokoro 按节奏替你继续。</p>
+          <div class="cases__intro-note" aria-label="案例库说明">
+            <strong>这不是模板堆。</strong>
+            <span>更像是一组已经被整理好的方法：先看结果长什么样，再决定要不要现在试、明天继续，或放进「我的任务」里按周复用。</span>
+          </div>
         </section>
 
         <!-- 视觉创作 -->
-        <section class="cases__group">
+        <section class="cases__group cases__group--featured">
           <div class="cases__group-head">
             <h2 class="cases__group-title">视觉创作</h2>
             <span class="cases__group-rule"></span>
             <span class="cases__group-count">6 个</span>
+          </div>
+          <div class="cases__flow-links" aria-label="先从哪开始">
+            <a class="cases__flow-link" href="index.html">先回首页想一想</a>
+            <a class="cases__flow-link" href="tasks.html">去我的任务看已安排的事</a>
+            <a class="cases__flow-link" href="chat.html">直接去对话说想法</a>
           </div>
           <div class="cases__grid">
 
@@ -383,6 +475,17 @@
               <div class="cases__body">
                 <span class="cases__tag">🎨 海报</span>
                 <h3 class="cases__name">探店打卡海报</h3>
+                <p class="cases__desc">先给出一版能直接发的小红书封面，再决定要不要继续扩成一整套店铺物料。</p>
+                <div class="cases__meta" aria-label="案例提示">
+                  <span class="cases__meta-chip">适合：先出一张封面</span>
+                  <span class="cases__meta-chip">交付：可直接发</span>
+                  <span class="cases__meta-chip">托管：可明天继续</span>
+                </div>
+                <div class="cases__actions cases__actions--flow">
+                  <a class="btn btn--primary btn--sm" href="canvas-poster-result.html">先看成品</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">明天来一版</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">放进我的任务</a>
+                </div>
               </div>
             </a>
 
@@ -403,6 +506,17 @@
               <div class="cases__body">
                 <span class="cases__tag">🖼 绘画</span>
                 <h3 class="cases__name">水彩橘猫</h3>
+                <p class="cases__desc">适合先定一张暖光基准图，后面再沿着同一条气质慢慢迭代。</p>
+                <div class="cases__meta" aria-label="案例提示">
+                  <span class="cases__meta-chip">适合：先定画风</span>
+                  <span class="cases__meta-chip">交付：1 批候选图</span>
+                  <span class="cases__meta-chip">托管：可按周复跑</span>
+                </div>
+                <div class="cases__actions cases__actions--flow">
+                  <a class="btn btn--primary btn--sm" href="canvas-image-result.html">先看成品</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">明天来一版</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">每周按这个做</a>
+                </div>
               </div>
             </a>
 
@@ -427,6 +541,17 @@
               <div class="cases__body">
                 <span class="cases__tag">🎬 短片</span>
                 <h3 class="cases__name">周末做菜美食短片</h3>
+                <p class="cases__desc">先把分镜和暖厨房光线整理顺，再慢慢扩成一条更完整的周末栏目。</p>
+                <div class="cases__meta" aria-label="案例提示">
+                  <span class="cases__meta-chip">适合：先看分镜节奏</span>
+                  <span class="cases__meta-chip">交付：短片草稿</span>
+                  <span class="cases__meta-chip">托管：可每周继续</span>
+                </div>
+                <div class="cases__actions cases__actions--flow">
+                  <a class="btn btn--primary btn--sm" href="canvas-video-result.html">先看节奏</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">设为到点自动做</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">设为每周托管</a>
+                </div>
               </div>
             </a>
 
@@ -446,6 +571,12 @@
               <div class="cases__body">
                 <span class="cases__tag">🗣 对口型</span>
                 <h3 class="cases__name">老照片说话</h3>
+                <p class="cases__desc">适合先做一条短短的开口样片，确认情绪和声音，再继续补完整版本。</p>
+                <div class="cases__actions cases__actions--flow">
+                  <a class="btn btn--primary btn--sm" href="canvas-lipsync-result.html">先看样片</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">明天来一版</a>
+                  <a class="btn btn--ghost btn--sm" href="tasks.html">放进我的任务</a>
+                </div>
               </div>
             </a>
 

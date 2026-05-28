@@ -117,9 +117,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -131,9 +131,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -165,6 +165,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -190,7 +194,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型 / 输入输出 / 能力调用计费</div>
         </div>
       </a>
     </aside>
@@ -207,27 +211,53 @@
             <div class="hub">
         <section class="hub__hero">
           <div class="hub__eyebrow">工作流 · Workflows</div>
-          <h1 class="hub__title">把多步，串成<span class="accent">一条线</span></h1>
-          <p class="hub__sub">工作流把"做图 → 配音 → 合成视频 → 发布"这样的多步操作串起来，跑一次就全做完。</p>
+          <h1 class="hub__title">把多步任务串成<span class="accent">可接管执行脊柱</span></h1>
+          <p class="hub__sub">工作流是任务脊柱的自动化层：从触发、调用、回传到异常处理都在同一状态线上，不是黑箱，随时可暂停、接管与续跑。</p>
+          <div class="hub__hero-actions">
+            <a class="btn btn--primary btn--sm" href="tasks.html">先去任务主控台看运行与异常</a>
+            <a class="btn btn--ghost btn--sm" href="agents.html">需要人工判断时交给智能体接管</a>
+          </div>
+        </section>
+
+        <section class="hub__status-strip" aria-label="工作流状态总览">
+          <article class="hub__status-card">
+            <span class="hub__status-label">正在运行</span>
+            <strong class="hub__status-value">2</strong>
+            <span class="hub__status-sub">一个在批量出图，一个在整理日报并准备发送。</span>
+          </article>
+          <article class="hub__status-card">
+            <span class="hub__status-label">定时触发</span>
+            <strong class="hub__status-value">3</strong>
+            <span class="hub__status-sub">明早、今晚、每周一都有流程会自动回来做。</span>
+          </article>
+          <article class="hub__status-card">
+            <span class="hub__status-label">等你接管</span>
+            <strong class="hub__status-value">1</strong>
+            <span class="hub__status-sub">有 1 条工作流已经推进到需要你拍板的节点。</span>
+          </article>
         </section>
 
         <section class="hub__group">
-          <div class="hub__group-head"><h2 class="hub__group-title">先看几个例子</h2><span class="hub__group-rule"></span><span class="hub__group-count">敬请期待</span></div>
+          <div class="hub__group-head"><h2 class="hub__group-title">先看几条成熟执行链</h2><span class="hub__group-rule"></span><span class="hub__group-count">自动化流程</span></div>
+          <p class="hub__section-note">把“到点回来做”“失败回滚”“分叉等拍板”都挂在任务主控台同一条脊柱上，让自动化可观测、可介入、可恢复。</p>
           <div class="hub__grid">
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🎬</div><div class="hub__card-head"><h3 class="hub__name">一条龙短片</h3><div class="hub__by">流程模板</div></div></div>
-              <p class="hub__desc">文案 → 分镜 → 图生视频 → 配音 → 合成，出一条成片。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">视频</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🎬</div><div class="hub__card-head"><h3 class="hub__name">一条龙短片</h3><div class="hub__by">自动化流程</div></div></div>
+              <p class="hub__desc">文案 → 分镜 → 图生视频 → 配音 → 合成，出一条成片；如果片头风格要你选，就停在待决定。</p>
+              <ul class="hub__steps"><li class="hub__step"><span class="hub__step-index">1</span><span><strong>先自动推进</strong> 分镜、素材与第一版成片。</span></li><li class="hub__step"><span class="hub__step-index">2</span><span><strong>分叉时停住</strong> 风格和镜头走向留给你拍板。</span></li></ul>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">视频</span><span class="hub__tag">自动做</span></div><a class="hub__btn" href="tasks.html">看运行状态</a></div>
             </div>
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🖼</div><div class="hub__card-head"><h3 class="hub__name">海报批量</h3><div class="hub__by">流程模板</div></div></div>
-              <p class="hub__desc">一份文案套到多个尺寸，批量出小红书 / 公众号 / 朋友圈。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">图片</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">🖼</div><div class="hub__card-head"><h3 class="hub__name">海报批量</h3><div class="hub__by">自动化流程</div></div></div>
+              <p class="hub__desc">一份文案套多个尺寸，先批量出小红书 / 公众号 / 朋友圈；需要你挑最终风格时再停住。</p>
+              <div class="hub__card-note">适合和“到点自动做”连起来：今晚 20:00 先出三版，明早回来挑一版继续。</div>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">图片</span><span class="hub__tag">批量</span></div><a class="hub__btn" href="tasks.html">设今晚运行</a></div>
             </div>
             <div class="hub__card">
-              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">📊</div><div class="hub__card-head"><h3 class="hub__name">日报自动化</h3><div class="hub__by">流程模板</div></div></div>
-              <p class="hub__desc">每天定时取数据 → 生成看板 → 发到群里。</p>
-              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">数据</span></div><button class="hub__btn" type="button">即将开放</button></div>
+              <div class="hub__card-top"><div class="hub__icon" aria-hidden="true">📊</div><div class="hub__card-head"><h3 class="hub__name">日报自动化</h3><div class="hub__by">自动化流程</div></div></div>
+              <p class="hub__desc">每天定时取数据 → 生成看板 → 发到群里；失败时保留日志，成功时留下一份可追溯结果。</p>
+              <div class="hub__card-note">这是最像 Manus 的一类能力：按时间回来做，并且把结果带回任务中心。</div>
+              <div class="hub__card-foot"><div class="hub__tags"><span class="hub__tag">数据</span><span class="hub__tag">周期托管</span></div><a class="hub__btn" href="tasks.html">看自动化主控台</a></div>
             </div>
           </div>
         </section>

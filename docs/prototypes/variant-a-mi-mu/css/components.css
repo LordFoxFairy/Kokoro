@@ -147,7 +147,9 @@
   flex-direction: column;
   gap: 2px;
   max-height: 280px;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
 }
 
 .sidebar-recent__item {
@@ -186,13 +188,19 @@
 
 /* ---- .user-row · sidebar account row ----------------------------- */
 .user-row {
+  position: sticky;
+  bottom: 0;
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  margin-top: var(--space-3);
   padding: var(--space-3);
   border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, rgba(247,239,228,0.82) 0%, rgba(247,239,228,0.96) 52%, rgba(247,239,228,1) 100%);
+  backdrop-filter: blur(10px);
   transition: background var(--duration-base) var(--ease-default);
   cursor: pointer;
+  z-index: 1;
 }
 .user-row:hover { background: var(--color-surface-hover); }
 
@@ -1146,14 +1154,15 @@ details.tool-call-details[open] > summary .tool-call__caret { transform: rotate(
 
 /* ---- .composer-dock · floating bottom composer ------------------- */
 .composer-dock {
-  position: absolute;
+  position: sticky;
   left: 0;
   right: 0;
   bottom: 0;
+  margin-top: auto;
   padding: var(--space-5) var(--space-7) var(--space-6);
   background: linear-gradient(
     to top,
-    var(--color-bg) 60%,
+    rgba(250, 247, 242, 0.96) 60%,
     rgba(250, 247, 242, 0) 100%
   );
   display: flex;
@@ -1161,6 +1170,7 @@ details.tool-call-details[open] > summary .tool-call__caret { transform: rotate(
   align-items: center;
   gap: var(--space-3);
   pointer-events: none;
+  z-index: 3;
 }
 .composer-dock > * { pointer-events: auto; }
 

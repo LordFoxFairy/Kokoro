@@ -127,9 +127,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">文档 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-courseware.html">课件</a>
-            <a class="cnav__sub" href="canvas-courseware.html">演示 Deck</a>
+            <a class="cnav__sub" href="canvas-deck.html">演示 Deck</a>
             <a class="cnav__sub" href="canvas-courseware.html">写一封信</a>
-            <a class="cnav__sub" href="canvas-courseware.html">思维导图</a>
+            <a class="cnav__sub" href="canvas-mindmap.html">思维导图</a>
           </div>
         </div>
 
@@ -141,9 +141,9 @@
           <div class="cnav__flyout">
             <div class="cnav__flyout-title">站点 · 想怎么做</div>
             <a class="cnav__sub" href="canvas-landing.html">落地页</a>
-            <a class="cnav__sub" href="canvas-landing.html">网站</a>
-            <a class="cnav__sub" href="canvas-landing.html">小应用</a>
-            <a class="cnav__sub" href="canvas-landing.html">数据看板</a>
+            <a class="cnav__sub" href="canvas-website.html">网站</a>
+            <a class="cnav__sub" href="canvas-app.html">小应用</a>
+            <a class="cnav__sub" href="canvas-chart.html">数据看板</a>
           </div>
         </div>
 
@@ -175,6 +175,10 @@
 
         <div class="nav-divider" role="separator"></div>
 
+        <a class="nav-item" href="tasks.html">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 4.5h9M3.5 8h9M3.5 11.5h6"/><circle cx="12.25" cy="11.5" r="1.25"/></svg>
+          <span>我的任务</span>
+        </a>
         <a class="nav-item" href="teams.html">
           <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.2"/><circle cx="11.3" cy="6.6" r="1.7"/><path d="M2.5 13c0-2.1 1.6-3.4 3.5-3.4S9.5 10.9 9.5 13M10.2 9.7c1.8 0 3.3 1 3.3 3.3"/></svg>
           <span>团队</span>
@@ -201,7 +205,7 @@
         <div class="user-row__avatar">小</div>
         <div>
           <div class="user-row__name">吴小心</div>
-          <div class="user-row__sub">免费 · 1,200 积分</div>
+          <div class="user-row__sub">免费版 · 按模型、输入输出与挂载能力计费</div>
         </div>
       </a>
     </aside>
@@ -215,31 +219,80 @@
           <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-2" /><label class="fn-mode-tab" for="fnm-2">小应用</label>
           <input class="fn-mode-radio" type="radio" name="fn-mode" id="fnm-3" /><label class="fn-mode-tab" for="fnm-3">数据看板</label>
         </div>
-        <div class="fn-studio__hero">
-          <div class="fn-studio__icon" aria-hidden="true">🌐</div>
-          <h1 class="fn-studio__title"><span class="fn-studio__title-top">开始创作</span><span class="fn-studio__title-main">站点工作室</span></h1>
-          <p class="fn-studio__sub">一句话描述，生成能用的页面、网站或小工具。</p>
+        <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;min-height:0;padding-top:6px;">
+          <div style="width:100%;max-width:880px;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 2px;">
+              <div>
+                <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-text-tertiary);">Site Studio</div>
+                <div style="margin-top:6px;font-family:var(--font-serif);font-size:22px;line-height:1.2;color:var(--color-text-primary);">一句话先起页，需要时再展开进阶和高级设置。</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span class="chip chip--control" style="background:var(--color-accent-soft);">基础模式</span>
+                <span class="chip chip--control">进阶控制</span>
+                <span class="chip chip--control">高级设置</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="chip chip--template" type="button">✨ 独立摄影师个人网站</button>
+              <button class="chip chip--template" type="button">🚀 科技感 SaaS 落地页</button>
+              <button class="chip chip--template" type="button">☕ 小满咖啡品牌页</button>
+            </div>
+            <div style="border:1px solid rgba(216,195,167,.46);border-radius:22px;background:linear-gradient(180deg,#FFFDF9 0%, #F8F1E7 100%);padding:18px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(220px,.85fr);gap:12px;align-items:stretch;">
+              <div style="border-radius:18px;border:1px dashed rgba(200,162,107,.28);background:rgba(255,255,255,.46);display:flex;align-items:center;justify-content:center;min-height:250px;padding:24px;">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;max-width:420px;">
+                  <div style="width:74px;height:74px;border-radius:22px;background:radial-gradient(120px 96px at 50% 26%, #FFFFFF, rgba(231,203,160,.88));box-shadow:0 16px 34px -24px rgba(78,56,38,.24), inset 0 1px 0 rgba(255,255,255,.9);display:grid;place-items:center;color:#7A6557;font-size:34px;">✦</div>
+                  <div>
+                    <div style="font-family:var(--font-serif);font-size:24px;color:var(--color-text-primary);line-height:1.16;">先生成一版页面骨架。</div>
+                    <p style="margin:10px 0 0;font-size:13px;line-height:1.75;color:var(--color-text-secondary);">当你需要更细时，再继续拉出区块、品牌语气、MCP 挂载和发布配置。</p>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <article style="padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid rgba(200,162,107,.14);display:flex;flex-direction:column;gap:4px;">
+                  <span style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-tertiary);">基础模式</span>
+                  <strong style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);">一句话成页</strong>
+                  <span style="font-size:12px;line-height:1.6;color:var(--color-text-secondary);">先得到能演示的一版。</span>
+                </article>
+                <article style="padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid rgba(200,162,107,.14);display:flex;flex-direction:column;gap:4px;">
+                  <span style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-tertiary);">进阶控制</span>
+                  <strong style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);">区块与品牌感</strong>
+                  <span style="font-size:12px;line-height:1.6;color:var(--color-text-secondary);">开始像真实站点一样细调。</span>
+                </article>
+                <article style="padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid rgba(200,162,107,.14);display:flex;flex-direction:column;gap:4px;">
+                  <span style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-tertiary);">高级设置</span>
+                  <strong style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);">数据与发布</strong>
+                  <span style="font-size:12px;line-height:1.6;color:var(--color-text-secondary);">把 MCP、表单和部署目标接上。</span>
+                </article>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="fn-bar">
-          <div class="fn-bar__top">
-            <input class="fn-bar__input" type="text" placeholder="描述你想要的站点或工具……" aria-label="描述" />
+        <div class="fn-bar" style="position:sticky;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,.84) 0%,rgba(251,247,240,.95) 100%);backdrop-filter:blur(16px);box-shadow:0 28px 60px -30px rgba(58,41,28,.34);">
+          <div class="fn-bar__top" style="flex-direction:column;align-items:stretch;gap:10px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="chip chip--template">@ Notion 作品集</span>
+              <span class="chip chip--template">@ Figma 设计稿</span>
+              <span class="chip chip--template">@ Supabase 注册表单</span>
+            </div>
+            <input class="fn-bar__input" type="text" placeholder="描述你想要的站点或工具，输入 @ 挂载组件……" aria-label="描述" />
           </div>
           <div class="fn-bar__bottom">
             <div class="fn-bar__params">
               <details class="fn-model">
-                <summary class="chip chip--control">风格 · 素白 ▾</summary>
+                <summary class="chip chip--control">模型 · Kokoro Canvas Universal ▾</summary>
                 <div class="fn-model__menu" role="menu">
                   <div class="fn-model__search"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M13 13l-2.8-2.8"/></svg>搜索模型……</div>
                   <div class="fn-model__label">可选模型</div>
-                  <button class="fn-model__item is-current" type="button" role="menuitem">素白<svg class="fn-model__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></button>
-                  <button class="fn-model__item" type="button" role="menuitem">杂志感</button>
-                  <button class="fn-model__item" type="button" role="menuitem">科技简约</button>
+                  <button class="fn-model__item is-current" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Kokoro Canvas Universal</span><span class="fn-model__caps"><span class="fn-model__tag is-type">站点</span><span class="fn-model__tag is-type">设计</span><span class="fn-model__tag">高保真生成</span></span></span><svg class="fn-model__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></button>
+                  <button class="fn-model__item" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Claude Layout Studio</span><span class="fn-model__caps"><span class="fn-model__tag is-type">站点</span><span class="fn-model__tag is-type">文档</span><span class="fn-model__tag">结构优先</span></span></span></button>
+                  <button class="fn-model__item" type="button" role="menuitem"><span class="fn-model__meta"><span class="fn-model__name">Gemini Visual Compose</span><span class="fn-model__caps"><span class="fn-model__tag is-type">站点</span><span class="fn-model__tag is-type">图片</span><span class="fn-model__tag">探索更快</span></span></span></button>
                 </div>
               </details>
+              <button class="chip chip--control" type="button">风格 · 素白 ▾</button>
               <button class="chip chip--control" type="button">区块 ▾</button>
               <button class="chip chip--control" type="button">配色 ▾</button>
             </div>
-            <a class="btn btn--primary fn-bar__generate" href="canvas-landing-result.html">生成 · 12 积分</a>
+            <a class="btn btn--primary fn-bar__generate" href="canvas-landing-result.html">生成 · 按模型 / 输入输出 / 挂载能力计费</a>
           </div>
         </div>
       </div>
