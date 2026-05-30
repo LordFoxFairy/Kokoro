@@ -46,9 +46,10 @@
 - [x] B (web): custom kokoro/chat/v1 catalog (Thread/Message/ThinkingBlock/ToolCard via @a2ui createComponentImplementation) + op SSE consumer + useA2uiSurface. reviewed, green.
 - [x] C (web): Sidebar IA + input-pill Composer + ChatPage; deleted legacy session-stream shell. reviewed, 14 tests + build green.
 - [x] D (protocol): session-stream.md v2.0.0 (A2UI op stream wire format).
-- [x] E (e2e): redis+scripted 3-proc + Playwright — op stream renders 思考/工具/正文 in variant-a-mi-mu style, 0 console errors, screenshot captured.
-- [ ] **DEFECT (open):** `<A2uiSurface>` continuously remounts while idle (@a2ui@0.10.0 + React 19) → thinking expand doesn't persist + CPU churn. First check prod build vs dev StrictMode/HMR, then stabilize surface / patch @a2ui. See claude-progress.md.
+- [x] E (e2e): redis+scripted 3-proc + Playwright — op stream renders 思考/工具/正文 in variant-a-mi-mu style, 0 console errors, screenshots captured.
+- [x] **DEFECT fixed (commit 7de7450):** A2uiSurface idle-remount loop was a session SSE bug (subscribe resumed from normalizer cursor, not backend stream cursor → redis XREAD threw → SSE closed → browser reconnect+re-replay loop). Fixed: resume from native StreamItem.cursor + dedicated redis conn per subscribe. Regression test added (verified fails under old cursor). Re-verified in prod browser: stable, thinking expand persists, 0 reconnects.
 - [ ] branches `feat/chat-shell-a2ui` (session+web) NOT pushed; no PRs yet. parent docs on `docs/chat-shell-a2ui`.
+- [ ] (minor, next) scripted brain iterator is single-use per worker; rebuild per run in make_chat_model so offline e2e can fire multiple runs without worker restart.
 
 ## next round (not started)
 - [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局) — deferred from this round.
