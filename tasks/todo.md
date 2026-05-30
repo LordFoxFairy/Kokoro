@@ -51,9 +51,20 @@
 - [ ] branches `feat/chat-shell-a2ui` (session+web) NOT pushed; no PRs yet. parent docs on `docs/chat-shell-a2ui`.
 - [ ] (minor, next) scripted brain iterator is single-use per worker; rebuild per run in make_chat_model so offline e2e can fire multiple runs without worker restart.
 
+## agent DeepAgents + planning (2026-05-31) — DONE — plan: docs/superpowers/plans/2026-05-31-agent-deepagents-planning.md
+- [x] A (agent): DeepAgents engine (==0.6.6, todo-only via HarnessProfile) + run_agent astream_events generic mapper + offline scripted fake. 27 pass/2 skip green. (design: agent generic, NO plan event)
+- [x] B (protocol): agent-events v0.3.0 — tool.invoked optional args.
+- [x] C (session harness): normalize recognizes write_todos→internal plan.updated + suppresses tool card; projector→Plan component (in-place). 79 pass/2 skip. session-stream.md +Plan.
+- [x] D (web): Plan catalog component (CC/Gemini ○/◐/✓, pure render). 16 pass, build green. (+ 📋 计划 title fix post-e2e)
+- [x] E (offline e2e): Plan card + tool + text rendered, 0 console errors, Plan stable (no remount). Screenshot in kokoro-web/.playwright-mcp/.
+- [ ] branches `feat/agent-deepagents-planning` (agent+session+web) NOT pushed; no PRs. parent docs `docs/agent-deepagents-planning`.
+- [ ] (cleanup) kokoro-agent tools.py run_tool is now dead (DeepAgents executes tools); remove it + its test next pass.
+
 ## next round (not started)
-- [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局) — deferred from this round.
+- [ ] agent: sub-agents (DeepAgents subagents/task) end-to-end (mirror Claude Code Task) — next agent slice.
+- [ ] agent: real creation tools (image/doc/site generators) behind DeepAgents; scripted fake → rebuild per run.
+- [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局).
 - [ ] session/SSE 断连中点续传 + replay 硬化 (kill Redis mid-run).
-- [ ] Real LLM tool/thinking (needs API key); DeepAgents as Brain engine behind same loop.
-- [ ] thinking.summary real summarization (currently summary == full thinking text).
+- [ ] Real LLM tool/thinking/planning (needs API key).
+- [ ] permissions (safety-and-permission-envelope) wired through agent.
 - [ ] web → main trunk question (web work lives on feat/bootstrap-shell lineage, not main).

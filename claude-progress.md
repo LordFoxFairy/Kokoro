@@ -1,7 +1,22 @@
 # Claude Progress
 
-- Date: 2026-05-30
-- Active stream: **chat shell × A2UI — DONE (incl. an E2E-found SSE reconnect bug, now fixed + regression-tested)**. Redo kokoro-web chat shell per variant-a-mi-mu + adopt Google A2UI: session emits A2UI v0_9 op stream, web renders via official `@a2ui/react`+`@a2ui/web_core` (v0.10.0, already installed) + custom `kokoro/chat/v1` catalog. Branches pushed + PR'd: kokoro-session#2 (→main), kokoro-web#2 (→feat/bootstrap-shell, web's default), parent Kokoro#4 (→main). All stack on the still-unmerged tools-and-thinking round, so each PR's diff includes that round too. agent unchanged this round; its prior feat/tools-and-thinking now PR'd (kokoro-agent#4 → main). All 4 PRs open: agent#4, session#2, web#2, parent Kokoro#4.
+- Date: 2026-05-31
+- Active stream: **agent DeepAgents engine + planning(todo) — DONE end-to-end**. Swapped kokoro-agent's hand-rolled loop for **DeepAgents** (`==0.6.6`, langgraph) behind the Brain interface; `run_agent` is now an `astream_events`→raw-event mapper, fully GENERIC (write_todos flows as an ordinary tool with `args`; agent has no "plan" concept). **Planning lit up end-to-end** via the harness pattern (mirrors Claude Code): **session normalizer recognizes `tool_name==write_todos`** → internal `plan.updated` → A2UI `Plan` component; **web is a pure renderer** (just added a Plan catalog component). Branches `feat/agent-deepagents-planning` on agent+session+web (NOT pushed); parent docs `docs/agent-deepagents-planning`.
+
+## agent DeepAgents + planning (2026-05-31) — DONE
+- **Design correction (important):** first draft special-cased `plan.updated` in the AGENT; user pushed back ("isn't todo a frontend concern? backend shouldn't special-case"). Researched Claude Code (TodoWrite/Task are tools; the *harness* recognizes+renders them). Settled on B-refined: **agent generic** (tool.invoked carries `args`), **session(harness) recognizes write_todos→Plan** (one place), **web pure renders**. See spec/plan.
+- A (agent): `make_agent()` builds `create_deep_agent` (HarnessProfile excludes FS/execute/sub-agent → todo-only); `run_agent` maps astream_events generically; **offline fake** (`_scripted.py`, bind_tools-override) drives it no-key. 27 pass/2 skip, ruff/pyright green. **DeepAgents facts locked in A1 spike** (0.6.6 not 0.6.7; HarnessProfile key = resolved ls_provider; astream_events shapes).
+- B (protocol): agent-events v0.3.0 — tool.invoked optional `args`.
+- C (session harness): normalize recognizes write_todos→internal plan.updated{plan_id:"{run}:plan",todos} + suppresses its tool card; projector plan.updated→`Plan{todosPath:{path:"/plans/{id}"}}` (in-place). 79 pass/2 skip. session-stream.md catalog +Plan.
+- D (web): `Plan` catalog component (CC/Gemini todo checklist ○/◐/✓, pure render, binds the todos array via `todosPath`). 16 pass, build green.
+- E (offline e2e, redis+scripted+Playwright): Plan card (2 todos ✓) + 🔧echo_search✓ + AI text rendered; **0 console errors; Plan stable, no remount** (last round's SSE cursor fix holds). Screenshot `kokoro-web/.playwright-mcp/agent-planning-e2e.png`. Title `📋 计划` was missing (review miss) — fixed post-e2e.
+- Spec `docs/superpowers/specs/2026-05-31-agent-deepagents-planning-design.md`; Plan `.../plans/2026-05-31-agent-deepagents-planning.md`.
+- Cleanup candidate: `kokoro-agent/tools.py:run_tool` is now dead (DeepAgents executes tools; echo_search/clock still used via TOOL_OBJECTS). Deferred.
+- Deferred (next slices): sub-agents (DeepAgents subagents/task), real creation tools (7 generators), FS/sandbox, permissions, Plan interactivity; scripted fake is single-use per worker (rebuild per run — future).
+
+---
+
+## (prev) chat shell × A2UI — DONE (incl. an E2E-found SSE reconnect bug, now fixed + regression-tested)**. Redo kokoro-web chat shell per variant-a-mi-mu + adopt Google A2UI: session emits A2UI v0_9 op stream, web renders via official `@a2ui/react`+`@a2ui/web_core` (v0.10.0, already installed) + custom `kokoro/chat/v1` catalog. Branches pushed + PR'd: kokoro-session#2 (→main), kokoro-web#2 (→feat/bootstrap-shell, web's default), parent Kokoro#4 (→main). All stack on the still-unmerged tools-and-thinking round, so each PR's diff includes that round too. agent unchanged this round; its prior feat/tools-and-thinking now PR'd (kokoro-agent#4 → main). All 4 PRs open: agent#4, session#2, web#2, parent Kokoro#4.
 
 ## chat shell × A2UI (2026-05-30) — impl done, 1 known defect
 - **Done + reviewed + green (subagent-driven, spec+quality each):**
