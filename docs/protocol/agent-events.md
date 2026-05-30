@@ -1,6 +1,6 @@
 ---
 status: 🟡 draft
-version: 0.1.0
+version: 0.2.0
 producer: kokoro-agent
 consumers:
   - kokoro-session
@@ -71,12 +71,16 @@ backward-compatibility: Additive fields and additive event types are allowed in 
 | `kind` | payload required | 含义 | session 映射到 AGUI |
 |---|---|---|---|
 | `run.started` | — | 一次执行开始 | `run.created`（+ `session.created` 若会话首次出现） |
+| `thinking.delta` | `text` | 思考过程增量（仅 `execution_style="thinking"`） | 累加，run 结束/思考结束时归一成一条 `thinking.summary`（`summary`=可展示文本，不是原始 chain-of-thought） |
 | `text.delta` | `message_ref`, `text` | assistant 文本增量 | `message.delta`（`message_id`=映射后的稳定 id, `delta`=text） |
 | `text.completed` | `message_ref`, `text` | 文本消息完结 | `message.completed`（`content`=text） |
-| `tool.invoked` | `tool_call_ref`, `tool_name` | 工具调用开始（本轮可不产） | `tool.started` |
-| `tool.returned` | `tool_call_ref`, `tool_name`, `status` | 工具调用结束（本轮可不产） | `tool.completed` |
+| `tool.invoked` | `tool_call_ref`, `tool_name` | 工具调用开始 | `tool.started` |
+| `tool.returned` | `tool_call_ref`, `tool_name`, `status` | 工具调用结束 | `tool.completed` |
 | `run.completed` | `status` | 执行成功收尾 | `run.completed` |
 | `run.failed` | `error_kind`, `message` | 执行失败 | `run.failed` |
+
+> `thinking.delta` 是 v0.2.0 新增（additive，向后兼容）。`tool.*`/`thinking.*` 的产出受 `execution_style` 与是否配置工具控制：`fast` 不产 thinking；无工具不产 tool.*。
+> **顺序约束**：同一 run 内，`tool.invoked` 必先于对应 `tool.returned`（按 `tool_call_ref` 配对）；`thinking.delta` 出现在 `text.delta` 之前。session 按 `seq` 排序后再归一化。
 
 - `message_ref` / `tool_call_ref` 是 agent 侧的局部引用；session 负责映射成对外稳定的 `message_id` / `tool_call_id`。
 
