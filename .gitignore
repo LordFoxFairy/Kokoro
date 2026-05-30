@@ -14,12 +14,18 @@ yarn-error.log*
 .playwright-mcp/
 
 .idea
-docs
+#docs
 
-.claude
+#.claude
 
-CLAUDE.md
+#CLAUDE.md
 
-tasks
+#tasks
+
+tmp/
+
+kokoro-web/
+kokoro-session/
+kokoro-agent/
 
 kokoro-web/
