@@ -1,17 +1,45 @@
 ---
 status: 🟢 accepted
-version: 1.0.0
+version: 2.0.0
 producer: kokoro-session
 consumers:
   - kokoro-web
 upstream-producer:
   - kokoro-agent
-backward-compatibility: Additive fields and additive event types are allowed in minor updates; renaming or removing fields requires a new major version.
+wire-format: A2UI v0_9 operation stream（自 v2.0.0 起；catalog `kokoro/chat/v1`）
+backward-compatibility: v2.0.0 是 major 变更——线上格式由自研 AGUI envelope 改为 A2UI op 流。下方 AGUI 事件族降级为 session 内部表示（`SessionEvent`），不再是浏览器看到的线上格式。
 ---
 
 # Session Stream
 
-> 定义 `kokoro-session -> kokoro-web` 的标准事件流。浏览器看到的不是 agent 原始内部状态，而是整理后的会话事件。
+> 定义 `kokoro-session -> kokoro-web` 的事件流。浏览器看到的不是 agent 原始内部状态，而是整理后的会话事件。
+
+## v2.0.0 — A2UI op 流（当前线上格式）
+
+自 v2.0.0 起，`kokoro-session -> kokoro-web` 的**线上格式**是 **Google A2UI v0_9 的 operation 流**（agent 驱动 UI：服务端吐 UI 描述，客户端用白名单 catalog 组件渲染）。详见 spec `docs/superpowers/specs/2026-05-30-chat-shell-a2ui-design.md`。
+
+- **op 子集**：`createSurface{surfaceId, catalogId}`、`updateComponents{surfaceId, components:[{id, component, ...}]}`、`updateDataModel{surfaceId, path?, value}`。每个 op 形如 `{"version":"v0.9", <opKey>:{...}}`。
+- **catalog `kokoro/chat/v1`** 组件白名单：
+  - `Thread{children:[id...]}` — 对话滚动容器，按 children 顺序竖排。
+  - `Message{author:"user"|"ai", text:{path}}` — 用户右气泡 / AI 左无气泡叙述流（ADR-008）。文本走 dataModel 绑定。
+  - `ThinkingBlock{summary:{path}}` — 可折叠思考块。
+  - `ToolCard{toolName, status:"running"|"ok"|"error"}` — 工具卡，running→done。
+- **SSE 封装**：沿用 `/sessions/{id}/stream`；每条 SSE 行 `event: a2ui.op`，`data:` 为单条 op JSON，`id:` = `{cursor}:{opSeq}`（来源 SessionEvent 游标 + 该事件产出的 op 序号）。
+- **流式文本**：用 `updateDataModel` 覆盖累计值（renderer 显示最新值），不做字符级 patch。
+- **谁渲染**：`kokoro-web` 用 `@a2ui/react` + `@a2ui/web_core` + 自定义 `kokoro/chat/v1` catalog（组件用自家 BEM/设计 token 实现）；`MessageProcessor.processMessages()` 增量喂 op，`<A2uiSurface>` 内置 signals 自动增量重渲染。
+
+### 内部表示与归一化职责（不变）
+
+session 内部仍由 `Normalizer` 把 agent 原始事件（见 `agent-events.md`）归一化成下方的 **AGUI `SessionEvent`**（内部表示，落 replay）；再由 `A2uiProjector` 把有序 `SessionEvent` 流**投影**成 A2UI op 流发到 SSE。即：
+
+```
+agent 原始事件 ─▶ Normalizer ─▶ SessionEvent（内部, 见下方事件族）─▶ A2uiProjector ─▶ A2UI op 流 ─▶ SSE ─▶ web
+```
+
+- replay 仍存 `SessionEvent`；重连时每个连接 new 一个 projector，按序重放 snapshot+tail → 确定性重建 op 流（**重连从头重放；断连中点续传留后轮**）。
+- 幂等仍按 `(run_id, seq)` 在 Normalizer 收敛。
+
+> 下面「Event envelope / Event families」描述的是 **v2.0.0 的内部 `SessionEvent` 表示**（v1.0.0 时它曾是线上格式，现 superseded-by A2UI op 流）。`A2uiProjector` 的事件→op 映射见 spec 第 7 节。
 
 ## Event envelope
 
@@ -130,5 +158,6 @@ backward-compatibility: Additive fields and additive event types are allowed in 
 
 ## Notes
 
-- `kokoro-agent` 的内部事件必须先被 `kokoro-session` 归一化，再转成以上流事件
+- `kokoro-agent` 的内部事件必须先被 `kokoro-session` 归一化成上述 `SessionEvent`（内部表示），再由 `A2uiProjector` 投影成 A2UI op 流发到 web（见本文件 v2.0.0 节）
 - 富结果必须落到 `artifact.available` 或 message 内的结构化槽位，不能把所有东西都塞进 `message.delta`
+- 当前 `kokoro/chat/v1` catalog 尚未覆盖 `artifact.available` / `permission.required` 的对外渲染（canvas 产物面板、权限交互留后轮）；这些 `SessionEvent` 仍会 replay，但本轮投影器不产对应 op
