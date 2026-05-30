@@ -24,6 +24,8 @@ backward-compatibility: v2.0.0 是 major 变更——线上格式由自研 AGUI 
   - `Message{author:"user"|"ai", text:{path}}` — 用户右气泡 / AI 左无气泡叙述流（ADR-008）。文本走 dataModel 绑定。
   - `ThinkingBlock{summary:{path}}` — 可折叠思考块。
   - `ToolCard{toolName, status:"running"|"ok"|"error"}` — 工具卡，running→done。
+  - `Plan{todosPath:{path}}` — CC/Gemini 式 todo 清单（`pending ○` / `in_progress ◐` / `completed ✓`）；原地更新（dataModel 整列替换）。todos = `[{content, status}]`。
+- **harness 约定（write_todos→Plan）**：session 归一化器识别 agent 的 `tool.invoked{tool_name:"write_todos"}`（agent 通用、不认识 plan）→ 取 `args.todos` 产**内部** `plan.updated{plan_id:"{run_id}:plan", todos}` 会话事件、并**吞掉**该工具的工具卡（不发 `tool.started/completed`）；projector 把 `plan.updated` 投影成上面的 `Plan` 组件。对标 Claude Code：TodoWrite/Task 是工具，由 harness 识别并特殊渲染。
 - **SSE 封装**：沿用 `/sessions/{id}/stream`；每条 SSE 行 `event: a2ui.op`，`data:` 为单条 op JSON，`id:` = `{cursor}:{opSeq}`（来源 SessionEvent 游标 + 该事件产出的 op 序号）。
 - **流式文本**：用 `updateDataModel` 覆盖累计值（renderer 显示最新值），不做字符级 patch。
 - **谁渲染**：`kokoro-web` 用 `@a2ui/react` + `@a2ui/web_core` + 自定义 `kokoro/chat/v1` catalog（组件用自家 BEM/设计 token 实现）；`MessageProcessor.processMessages()` 增量喂 op，`<A2uiSurface>` 内置 signals 自动增量重渲染。
