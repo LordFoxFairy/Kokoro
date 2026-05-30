@@ -24,15 +24,16 @@
 
 - **范式契合**：A2UI = agent/服务端吐 UI 描述（JSON/JSONL operation 流），客户端用**白名单 catalog 组件**本地渲染。原生流式（逐行 op，配 SSE 完美）。与本项目"agent 纯生产、web 纯渲染"理念一致。
 - **样式自控**：A2UI "is not a robust styling system"，**样式 100% 由客户端控制**，服务端只给 `variant` 这类语义提示 → 我们能把组件实现成自己的设计 token，不被 Google 视觉绑定。LLM-agnostic、transport-agnostic，**不强制 Gemini / A2A**。
-- **已知硬伤（决定了实现策略）**：A2UI v0.8/v0.9 公开预览，明确 "Expect changes"（会 breaking）；**官方无 React renderer，只有 Lit**；Python SDK 细节未核实。→ 故**不依赖官方 SDK**，自研最小 React renderer（协议简单、可控）。
+- **官方 React 渲染器存在且已装好**（修订前调研误判为"无 React renderer"）：`@a2ui/react@0.10.0` + `@a2ui/web_core@0.10.0` 已是 kokoro-web 依赖，且 `src/interfaces/session-stream/artifact-preview.tsx` 已用 `MessageProcessor` + `A2uiSurface` + `basicCatalog` 跑通一个静态 v0_9 surface。这套包**专为"自定义 catalog + 自定义 React 组件 + 自套样式"设计**（见 §6）。→ 故**采用官方包 + 自定义 catalog**，不自研渲染器。
+- **仍存的风险**：A2UI v0.8/v0.9 预览，"Expect changes"（会 breaking）；包停在 v0.10.0/v0_9 schema。→ 只取 v0_9 极小 op 子集，改动集中在 session 投影器 + web catalog 两处。
 
 ## 3. 关键选型（已决 + 否决理由）
 
 | 选型 | 决定 | 否决的替代 |
 |---|---|---|
 | 谁产出 A2UI | **session 产出 A2UI operation 流** | ❌ agent 直接产 A2UI（让不稳定协议侵入 Python 纯生产层）；❌ web 把自研信封翻成 A2UI（浪费 A2UI 服务端驱动 UI 的核心价值） |
-| 渲染器 | **web 自研最小 React renderer** | ❌ 官方 Lit renderer（非 React，融不进 Next.js）；❌ CopilotKit `A2UIMessageRenderer`（引入重运行时，与轻量纯渲染相悖） |
-| catalog 来源 | **自定义 catalog**（少量语义组件，映射到 variant-a-mi-mu 实现） | ❌ 直接用官方 basic catalog（组件语义/样式不贴合我们的对话叙述流） |
+| 渲染器 | **用官方 `@a2ui/react`+`@a2ui/web_core`（v0.10.0，已装）+ 自定义 catalog**：`MessageProcessor.processMessages()` 增量喂 op，`<A2uiSurface>` 内置 signals 自动增量重渲染 | ❌ 自研最小 renderer（官方包已在且支持自定义组件，自研是重复造轮子）；❌ 官方 Lit renderer（非 React）；❌ CopilotKit（引入重运行时） |
+| catalog 来源 | **自定义 catalog `kokoro/chat/v1`**：`new Catalog(id, [Thread, Message, ThinkingBlock, ToolCard])`，每组件 `createComponentImplementation` 写自己的 BEM/Tailwind markup（脱离 a2ui 默认样式） | ❌ 直接用官方 basic catalog（组件语义/样式不贴合对话叙述流） |
 
 ## 4. 架构（本轮）
 
@@ -96,7 +97,9 @@ kokoro-agent（纯生产，不改）
 - 顶栏 + 模式切换器（细想/普通，视觉占位）。
 - `Composer`（input-pill）：附件按钮、模式 chip、发送；发送 = 触发 `start_run`（接现有后端）。空状态问候（"今天想做**什么**？"）。
 
-**扩展点**：新增组件 = catalog 加一项 + web 加一个 renderer 映射，隔离改动（DeepAgents/canvas 后轮按此扩）。
+**组件实现**：每个组件用 `@a2ui/react` 的 `createComponentImplementation(api, RenderComponent)`（schema 绑定，props 由 Zod 强类型推导、自动解析 `{path}` 数据绑定）实现；容器组件用 `buildChild(id)` 渲染子节点。`MessageProcessor` 注册 `[kokoroChatCatalog]`（必要时叠加 `basicCatalog`）。catalog 用 `new Catalog("kokoro/chat/v1", [...])`，`createSurface.catalogId` 必须等于此 id。
+
+**扩展点**：新增组件 = catalog 加一项 ComponentImplementation，隔离改动（DeepAgents/canvas 后轮按此扩）。
 
 ## 7. 数据流（端到端）
 
@@ -126,7 +129,7 @@ web Composer 发送 ─POST─▶ session start_run ─run.request─▶ agent B
 ## 9. 测试（离线、无 key、确定性）
 
 - **session**：A2UI 适配器单测——给定一串归一化事件（thinking→tool→message），断言产出的 op 序列正确（surface 建立、组件挂载顺序、dataModel 累计、children 顺序、tool 状态翻转、幂等重放不重复）。Schema 崩塌（缺字段原始事件）仍被拒。Zod strict 校验 op 出站格式。
-- **web**：renderer 纯函数 reducer 单测（逐 op 构建 {components, dataModel}，断言交错顺序 / 未知组件占位 / 缺数据不崩 / 幂等）；组件渲染测试（Message 右/左对齐、ThinkingBlock 折叠默认、ToolCard running→done）。
+- **web**：① op 序列 → surface 集成测试——把一串 A2uiMessage 喂给 `MessageProcessor.processMessages()`，断言 `model.getSurface(id)` 的组件树/数据模型符合预期（交错顺序、children 顺序、dataModel 累计、tool 状态翻转、重复喂幂等）；② 自定义 catalog 组件渲染测试（`@testing-library/react` 渲染 `<A2uiSurface>`：Message 右/左对齐、ThinkingBlock 默认折叠、ToolCard running→done、未知 component 容错）。
 - **集成**：离线浏览器 e2e（`KOKORO_STREAM_BACKEND=redis KOKORO_MODEL=scripted` 起三进程），浏览器看到 思考块 + 工具卡 + 正文以原型样式渲染，展开/折叠交互可用，截图（折叠 + 展开）。0 console error。无真实 LLM 调用。
 - **DoD**：三仓 LSP/linter 全绿、测试 100% pass（含 schema 崩塌/幂等/未知组件/工具错误/顺序边界）、浏览器截图存档。
 
@@ -145,6 +148,6 @@ web Composer 发送 ─POST─▶ session start_run ─run.request─▶ agent B
 
 ## 12. 风险与缓解
 
-- **A2UI 不稳定（会 breaking）**：只取 v0.9 的极小 op 子集，自研 renderer 不依赖官方包；协议升级时改动集中在 session 适配器 + web renderer 两处。
+- **A2UI 不稳定（会 breaking）**：只取 v0_9 的极小 op 子集；锁 `@a2ui/*@0.10.0`，协议升级时改动集中在 session 投影器 + web catalog 两处。
 - **catalog 与原型组件耦合**：catalog 只定义"语义 + props"，视觉实现全在 web，换皮不动协议。
 - **过度工程**：本轮严格限定 4 个 surface 组件 + 外壳，canvas/交互回传一律不做。
