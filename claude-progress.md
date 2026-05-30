@@ -1,7 +1,7 @@
 # Claude Progress
 
 - Date: 2026-05-30
-- Active stream: **chat shell × A2UI — DONE (incl. an E2E-found SSE reconnect bug, now fixed + regression-tested)**. Redo kokoro-web chat shell per variant-a-mi-mu + adopt Google A2UI: session emits A2UI v0_9 op stream, web renders via official `@a2ui/react`+`@a2ui/web_core` (v0.10.0, already installed) + custom `kokoro/chat/v1` catalog. Branches pushed + PR'd: kokoro-session#2 (→main), kokoro-web#2 (→feat/bootstrap-shell, web's default), parent Kokoro#4 (→main). All stack on the still-unmerged tools-and-thinking round, so each PR's diff includes that round too. agent unchanged this round (its feat/tools-and-thinking still unmerged, no PR yet).
+- Active stream: **chat shell × A2UI — DONE (incl. an E2E-found SSE reconnect bug, now fixed + regression-tested)**. Redo kokoro-web chat shell per variant-a-mi-mu + adopt Google A2UI: session emits A2UI v0_9 op stream, web renders via official `@a2ui/react`+`@a2ui/web_core` (v0.10.0, already installed) + custom `kokoro/chat/v1` catalog. Branches pushed + PR'd: kokoro-session#2 (→main), kokoro-web#2 (→feat/bootstrap-shell, web's default), parent Kokoro#4 (→main). All stack on the still-unmerged tools-and-thinking round, so each PR's diff includes that round too. agent unchanged this round; its prior feat/tools-and-thinking now PR'd (kokoro-agent#4 → main). All 4 PRs open: agent#4, session#2, web#2, parent Kokoro#4.
 
 ## chat shell × A2UI (2026-05-30) — impl done, 1 known defect
 - **Done + reviewed + green (subagent-driven, spec+quality each):**
