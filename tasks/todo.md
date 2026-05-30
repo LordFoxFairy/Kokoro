@@ -26,7 +26,14 @@
 - [x] web: consume live session SSE into reducer. tsc/lint/test/build green (11 pass).
 - [x] Real cross-language e2e over redis: Python worker -> Redis -> TS session normalize -> AGUI SSE -> browser render. curl + Playwright screenshot verified.
 
+## agent real-llm brain (done 2026-05-30) — plan: docs/superpowers/plans/2026-05-30-agent-real-llm-brain.md
+- [x] `make_chat_model()` provider-pluggable factory (`KOKORO_MODEL`, default anthropic:claude-sonnet-4-6).
+- [x] `run_agent` async streaming generator: text.delta (streamed) + text.completed + run.failed; asyncio.timeout; robust str/list content extraction.
+- [x] worker awaits the async brain with injected model; idempotency preserved.
+- [x] Offline verification only (GenericFakeChatModel) — no real LLM, no API key, no network. ruff/pyright(strict)/pytest green (22 pass, 2 redis skip).
+- branch `feat/real-llm-brain` (kokoro-agent PR #2, stacked on #1).
+
 ## next round (not started)
-- [ ] Boundary: kill Redis mid-run, confirm web recoverable + replay restore (planned Task 13 step 4, not yet run).
-- [ ] Replace the deterministic stub with a real DeepAgents/LangChain model call.
-- [ ] Push child-repo branches + open PRs (awaiting user go-ahead).
+- [ ] Tools: `tool.invoked/returned` via astream_events on_tool_start/end (+ optionally DeepAgents loop).
+- [ ] `thinking.summary`: execution_style=thinking → Anthropic thinking budget.
+- [ ] Boundary: kill Redis mid-run, confirm web recoverable + replay restore.
