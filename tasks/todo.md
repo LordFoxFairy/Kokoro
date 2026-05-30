@@ -41,8 +41,18 @@
 - [x] Offline browser e2e (redis + KOKORO_MODEL=scripted): full family thinking.summary→tool.started→tool.completed→message rendered; collapsible 💭思考 + 🔧echo_search✓ cards; screenshots in kokoro-web/.playwright-mcp/ (gitignored). No real LLM/key.
 - branches `feat/tools-and-thinking` on all 3 child repos (PUSHED). NOTE: web branched off `feat/bootstrap-shell`.
 
+## chat shell × A2UI (2026-05-30) — impl done, 1 defect — plan: docs/superpowers/plans/2026-05-30-chat-shell-a2ui.md
+- [x] A (session): A2UI op domain + A2uiProjector + SSE a2ui.op wiring. reviewed, 70 pass/2 skip.
+- [x] B (web): custom kokoro/chat/v1 catalog (Thread/Message/ThinkingBlock/ToolCard via @a2ui createComponentImplementation) + op SSE consumer + useA2uiSurface. reviewed, green.
+- [x] C (web): Sidebar IA + input-pill Composer + ChatPage; deleted legacy session-stream shell. reviewed, 14 tests + build green.
+- [x] D (protocol): session-stream.md v2.0.0 (A2UI op stream wire format).
+- [x] E (e2e): redis+scripted 3-proc + Playwright — op stream renders 思考/工具/正文 in variant-a-mi-mu style, 0 console errors, screenshot captured.
+- [ ] **DEFECT (open):** `<A2uiSurface>` continuously remounts while idle (@a2ui@0.10.0 + React 19) → thinking expand doesn't persist + CPU churn. First check prod build vs dev StrictMode/HMR, then stabilize surface / patch @a2ui. See claude-progress.md.
+- [ ] branches `feat/chat-shell-a2ui` (session+web) NOT pushed; no PRs yet. parent docs on `docs/chat-shell-a2ui`.
+
 ## next round (not started)
+- [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局) — deferred from this round.
+- [ ] session/SSE 断连中点续传 + replay 硬化 (kill Redis mid-run).
 - [ ] Real LLM tool/thinking (needs API key); DeepAgents as Brain engine behind same loop.
 - [ ] thinking.summary real summarization (currently summary == full thinking text).
-- [ ] Boundary: kill Redis mid-run, confirm web recoverable + replay restore.
-- [ ] web → main trunk question (web work lives on feat/bootstrap-shell, not main).
+- [ ] web → main trunk question (web work lives on feat/bootstrap-shell lineage, not main).
