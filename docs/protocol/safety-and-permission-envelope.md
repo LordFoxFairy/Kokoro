@@ -23,6 +23,7 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 ```json
 {
   "decision": "allow",
+  "request_id": "perm_01J...",
   "scope": "session",
   "message": "这一步已经允许继续了。"
 }
@@ -49,6 +50,7 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 ```json
 {
   "decision": "deny",
+  "request_id": "perm_01J...",
   "message": "这一步我不能直接做。",
   "reason": "policy"
 }
