@@ -51,9 +51,35 @@
 - [ ] branches `feat/chat-shell-a2ui` (session+web) NOT pushed; no PRs yet. parent docs on `docs/chat-shell-a2ui`.
 - [ ] (minor, next) scripted brain iterator is single-use per worker; rebuild per run in make_chat_model so offline e2e can fire multiple runs without worker restart.
 
+## agent DeepAgents + planning (2026-05-31) — DONE — plan: docs/superpowers/plans/2026-05-31-agent-deepagents-planning.md
+- [x] A (agent): DeepAgents engine (==0.6.6, todo-only via HarnessProfile) + run_agent astream_events generic mapper + offline scripted fake. 27 pass/2 skip green. (design: agent generic, NO plan event)
+- [x] B (protocol): agent-events v0.3.0 — tool.invoked optional args.
+- [x] C (session harness): normalize recognizes write_todos→internal plan.updated + suppresses tool card; projector→Plan component (in-place). 79 pass/2 skip. session-stream.md +Plan.
+- [x] D (web): Plan catalog component (CC/Gemini ○/◐/✓, pure render). 16 pass, build green. (+ 📋 计划 title fix post-e2e)
+- [x] E (offline e2e): Plan card + tool + text rendered, 0 console errors, Plan stable (no remount). Screenshot in kokoro-web/.playwright-mcp/.
+- [ ] branches `feat/agent-deepagents-planning` (agent+session+web) NOT pushed; no PRs. parent docs `docs/agent-deepagents-planning`.
+- [ ] (cleanup) kokoro-agent tools.py run_tool is now dead (DeepAgents executes tools); remove it + its test next pass.
+
+## permission interruption closed loop (2026-05-31) — DONE — plan: docs/superpowers/plans/2026-05-31-permission-interruption-closed-loop.md
+- [x] protocol: unified canonical `decision` shape across `session-stream.md` and `safety-and-permission-envelope.md`
+- [x] session: synthetic permission fixture + decision endpoint + `permission.required` replay/projector
+- [x] session hardening: malformed JSON now returns `400`; concurrent duplicate submits for the same `sessionId + request_id` are serialized to avoid double-writing resolved events
+- [x] web: `PermissionCard` timeline component + decision submit helper + main-shell `?fixture=permission` passthrough
+- [x] offline browser e2e: main chat path renders ask card, `Allow once` resolves in place, 0 console errors, screenshot `permission-card-e2e-resolved.png`
+- [ ] next: real agent/tool permission source (replace synthetic fixture)
+
+## handoff after permission slice (pending 2026-05-31)
+- [ ] Re-run browser e2e once when Playwright action tools are healthy (`?fixture=permission` → send message → `Allow once` → resolved in place).
+- [ ] Commit and push parent repo docs branch `docs/agent-deepagents-planning` with `claude-progress.md` and `tasks/todo.md` only. (Do not leave parent as handoff-only.)
+- [ ] Check `kokoro-agent` status on `feat/agent-deepagents-planning`; if there are pending branch changes, push them, otherwise explicitly record that agent repo is clean for this slice.
+- [ ] Commit and push `kokoro-session` branch `feat/agent-deepagents-planning` with permission decision hardening + HTTP tests.
+- [ ] Commit and push `kokoro-web` branch `feat/agent-deepagents-planning` with `PermissionCard`, decision helper, catalog wiring, and fixture passthrough.
+
 ## next round (not started)
-- [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局) — deferred from this round.
+- [ ] agent: sub-agents (DeepAgents subagents/task) end-to-end (mirror Claude Code Task) — next agent slice.
+- [ ] agent: real creation tools (image/doc/site generators) behind DeepAgents; scripted fake → rebuild per run.
+- [ ] canvas / 产物面板 (artifact.available rendering, 三栏布局).
 - [ ] session/SSE 断连中点续传 + replay 硬化 (kill Redis mid-run).
-- [ ] Real LLM tool/thinking (needs API key); DeepAgents as Brain engine behind same loop.
-- [ ] thinking.summary real summarization (currently summary == full thinking text).
+- [ ] Real LLM tool/thinking/planning (needs API key).
+- [ ] permissions (safety-and-permission-envelope) wired through agent.
 - [ ] web → main trunk question (web work lives on feat/bootstrap-shell lineage, not main).

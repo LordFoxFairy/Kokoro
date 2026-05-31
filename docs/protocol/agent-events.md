@@ -1,6 +1,6 @@
 ---
 status: 🟡 draft
-version: 0.2.0
+version: 0.3.0
 producer: kokoro-agent
 consumers:
   - kokoro-session
@@ -74,11 +74,12 @@ backward-compatibility: Additive fields and additive event types are allowed in 
 | `thinking.delta` | `text` | 思考过程增量（仅 `execution_style="thinking"`） | 累加，run 结束/思考结束时归一成一条 `thinking.summary`（`summary`=可展示文本，不是原始 chain-of-thought） |
 | `text.delta` | `message_ref`, `text` | assistant 文本增量 | `message.delta`（`message_id`=映射后的稳定 id, `delta`=text） |
 | `text.completed` | `message_ref`, `text` | 文本消息完结 | `message.completed`（`content`=text） |
-| `tool.invoked` | `tool_call_ref`, `tool_name` | 工具调用开始 | `tool.started` |
+| `tool.invoked` | `tool_call_ref`, `tool_name`, `args`(可选) | 工具调用开始;`args`=工具入参原样（如 DeepAgents 的 `event.data.input`），供 session harness 识别/取数据 | `tool.started`（`write_todos` 例外：session 识别成 `plan.updated`/Plan，见 session-stream.md） |
 | `tool.returned` | `tool_call_ref`, `tool_name`, `status` | 工具调用结束 | `tool.completed` |
 | `run.completed` | `status` | 执行成功收尾 | `run.completed` |
 | `run.failed` | `error_kind`, `message` | 执行失败 | `run.failed` |
 
+> `tool.invoked.args` 是 v0.3.0 新增（additive，向后兼容）：工具入参原样。**agent 完全通用、不认识 "plan"/"todo"**——planning 的 todo 列表通过 `write_todos` 这个普通工具的 `args` 流出，由 session 识别成 Plan（对标 Claude Code：TodoWrite/Task 本质都是工具，harness 识别并特殊渲染，模型层不特殊化）。
 > `thinking.delta` 是 v0.2.0 新增（additive，向后兼容）。`tool.*`/`thinking.*` 的产出受 `execution_style` 与是否配置工具控制：`fast` 不产 thinking；无工具不产 tool.*。
 > **顺序约束**：同一 run 内，`tool.invoked` 必先于对应 `tool.returned`（按 `tool_call_ref` 配对）；`thinking.delta` 出现在 `text.delta` 之前。session 按 `seq` 排序后再归一化。
 
