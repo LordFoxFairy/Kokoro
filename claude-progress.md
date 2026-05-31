@@ -1,6 +1,21 @@
 # Claude Progress
 
 - Date: 2026-05-31
+- Active stream: **permission interruption closed loop — DONE (synthetic-first)**. `kokoro-session` 现在拥有 replayable permission lifecycle：`fixture=permission` 直接 append synthetic `permission.required` ask，`POST /sessions/{session_id}/permissions/{request_id}/decision` 负责把同一 `request_id` 原地收敛为 resolved；并已补强两类边界：malformed JSON 返回 `400`，同一个 `sessionId + request_id` 的并发重复提交通过队列串行化，避免双写 resolved 事件。`kokoro-web` 新增 timeline `PermissionCard`、decision helper 与主聊天壳 `?fixture=permission` 透传；agent 仍保持不动。
+- Verification passed:
+  - `kokoro-session`: `bun test tests/http.test.ts` → 9 pass / 0 fail
+  - `kokoro-session`: `bun x tsc --noEmit && bun x eslint . && bun test` → 89 pass / 2 skip / 0 fail
+  - `kokoro-web`: `bun run test src/application/__tests__/a2ui-session.test.ts src/interfaces/a2ui/__tests__/permission-card.test.tsx src/interfaces/chat/__tests__/chat-page.test.tsx` → 8 pass / 0 fail
+  - `kokoro-web`: `bun x tsc --noEmit && bun run lint && bun run test && bun run build` → all green
+  - Browser e2e: `http://127.0.0.1:3000/?fixture=permission` → send message → ask card appears → click `Allow once` → same card resolves to `这一步已经允许继续了。`; console errors = 0; screenshot `permission-card-e2e-resolved.png`
+- Session-end handoff (2026-05-31 late night):
+  - Fresh reruns before stop: `kokoro-session` focused/full verification re-run green; `kokoro-web` focused/full verification re-run green.
+  - Local read-only web quality review: PASS. Remote retry failed twice with infrastructure `504`, so do not treat that as a code verdict.
+  - Correction after handoff review: I previously omitted the fourth repo check. Next agent must use a 4-repo checklist (`parent` / `kokoro-agent` / `kokoro-session` / `kokoro-web`) and explicitly verify `kokoro-agent` status even if this permission slice likely did not modify it.
+  - Not completed yet: parent repo docs commit+push / `kokoro-agent` status check and possible push / `kokoro-session` / `kokoro-web` permission-slice commits and pushes are still pending.
+  - Next agent: if diff boundary is still the same, re-run browser e2e once when Playwright action tools are healthy, then split into repo-scoped commits and push the existing branches.
+
+- Date: 2026-05-31
 - Active stream: **agent DeepAgents engine + planning(todo) — DONE end-to-end**. Swapped kokoro-agent's hand-rolled loop for **DeepAgents** (`==0.6.6`, langgraph) behind the Brain interface; `run_agent` is now an `astream_events`→raw-event mapper, fully GENERIC (write_todos flows as an ordinary tool with `args`; agent has no "plan" concept). **Planning lit up end-to-end** via the harness pattern (mirrors Claude Code): **session normalizer recognizes `tool_name==write_todos`** → internal `plan.updated` → A2UI `Plan` component; **web is a pure renderer** (just added a Plan catalog component). Branches `feat/agent-deepagents-planning` on agent+session+web (NOT pushed); parent docs `docs/agent-deepagents-planning`.
 
 ## agent DeepAgents + planning (2026-05-31) — DONE

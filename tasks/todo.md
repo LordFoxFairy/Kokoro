@@ -60,6 +60,21 @@
 - [ ] branches `feat/agent-deepagents-planning` (agent+session+web) NOT pushed; no PRs. parent docs `docs/agent-deepagents-planning`.
 - [ ] (cleanup) kokoro-agent tools.py run_tool is now dead (DeepAgents executes tools); remove it + its test next pass.
 
+## permission interruption closed loop (2026-05-31) — DONE — plan: docs/superpowers/plans/2026-05-31-permission-interruption-closed-loop.md
+- [x] protocol: unified canonical `decision` shape across `session-stream.md` and `safety-and-permission-envelope.md`
+- [x] session: synthetic permission fixture + decision endpoint + `permission.required` replay/projector
+- [x] session hardening: malformed JSON now returns `400`; concurrent duplicate submits for the same `sessionId + request_id` are serialized to avoid double-writing resolved events
+- [x] web: `PermissionCard` timeline component + decision submit helper + main-shell `?fixture=permission` passthrough
+- [x] offline browser e2e: main chat path renders ask card, `Allow once` resolves in place, 0 console errors, screenshot `permission-card-e2e-resolved.png`
+- [ ] next: real agent/tool permission source (replace synthetic fixture)
+
+## handoff after permission slice (pending 2026-05-31)
+- [ ] Re-run browser e2e once when Playwright action tools are healthy (`?fixture=permission` → send message → `Allow once` → resolved in place).
+- [ ] Commit and push parent repo docs branch `docs/agent-deepagents-planning` with `claude-progress.md` and `tasks/todo.md` only. (Do not leave parent as handoff-only.)
+- [ ] Check `kokoro-agent` status on `feat/agent-deepagents-planning`; if there are pending branch changes, push them, otherwise explicitly record that agent repo is clean for this slice.
+- [ ] Commit and push `kokoro-session` branch `feat/agent-deepagents-planning` with permission decision hardening + HTTP tests.
+- [ ] Commit and push `kokoro-web` branch `feat/agent-deepagents-planning` with `PermissionCard`, decision helper, catalog wiring, and fixture passthrough.
+
 ## next round (not started)
 - [ ] agent: sub-agents (DeepAgents subagents/task) end-to-end (mirror Claude Code Task) — next agent slice.
 - [ ] agent: real creation tools (image/doc/site generators) behind DeepAgents; scripted fake → rebuild per run.
