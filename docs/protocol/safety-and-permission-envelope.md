@@ -89,6 +89,12 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 - 这是用户可理解的错误，不暴露底层栈信息
 - 前端可据此展示 retry CTA，但不能伪装成普通权限拒绝
 
+## Decision endpoint
+
+- 当收到 `decision: "ask"` 时，前端必须调用：`POST /sessions/{session_id}/permissions/{request_id}/decision`
+- 请求体示例：`{ "decision": "once" }`、`{ "decision": "session" }`、`{ "decision": "deny" }`
+- `request_id` 必须来自对应的 `permission.required` 事件，禁止复用历史 request
+
 ## Normalization rule
 
 - `kokoro-agent` 不直接决定面向用户的 UI 文案
