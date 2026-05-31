@@ -92,7 +92,11 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 ## Decision endpoint
 
 - 当收到 `decision: "ask"` 时，前端必须调用：`POST /sessions/{session_id}/permissions/{request_id}/decision`
-- 请求体示例：`{ "decision": "once" }`、`{ "decision": "session" }`、`{ "decision": "deny" }`
+- 合法请求体必须是且仅是：
+  - `{ "decision": "allow", "scope": "once" }`
+  - `{ "decision": "allow", "scope": "session" }`
+  - `{ "decision": "deny" }`
+- 明确禁止把 allow 写成 `{ "decision": "once" }` 或 `{ "decision": "session" }`；`once` / `session` 只能作为 `scope` 值出现
 - `request_id` 必须来自对应的 `permission.required` 事件，禁止复用历史 request
 
 ## Normalization rule
