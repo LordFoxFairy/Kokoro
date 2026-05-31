@@ -45,6 +45,10 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 
 含义：run 暂停，等待用户明确决策。
 
+补充语义：
+- 这里的 `scope` 只是推荐/预选授权范围提示，不代表权限已经授予
+- `options: ["once", "session", "deny"]` 是 UI 选项 id，不等于 decision endpoint 的请求体
+
 ### `deny`
 
 ```json
@@ -88,6 +92,8 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
 规则：
 - 这是用户可理解的错误，不暴露底层栈信息
 - 前端可据此展示 retry CTA，但不能伪装成普通权限拒绝
+- 普通运行失败仍走 `run.failed`；这里只有在需要把错误归一成用户可理解的 decision envelope 时才使用
+- 它不是本轮 `PermissionCard` 主路径的默认通道
 
 ## Decision endpoint
 
@@ -96,6 +102,10 @@ backward-compatibility: Envelope shapes are stable in v1; new optional fields ma
   - `{ "decision": "allow", "scope": "once" }`
   - `{ "decision": "allow", "scope": "session" }`
   - `{ "decision": "deny" }`
+- `options: ["once", "session", "deny"]` 是 UI 选项 id，与请求体的确定映射为：
+  - `once` -> `{ "decision": "allow", "scope": "once" }`
+  - `session` -> `{ "decision": "allow", "scope": "session" }`
+  - `deny` -> `{ "decision": "deny" }`
 - 明确禁止把 allow 写成 `{ "decision": "once" }` 或 `{ "decision": "session" }`；`once` / `session` 只能作为 `scope` 值出现
 - `request_id` 必须来自对应的 `permission.required` 事件，禁止复用历史 request
 
