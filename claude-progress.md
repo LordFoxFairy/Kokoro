@@ -1,8 +1,16 @@
 # Claude Progress
 
-- Date: 2026-05-29
-- Active stream: kokoro-web bootstrap
-- Completed:
+- Date: 2026-06-03
+- Active stream: kokoro-web first-screen shell redesign (staged)
+- Completed (2026-06-03):
+  - Added `run.created` to the protocol union as a parse-and-ignore family (maps to null) with red→green tests
+  - Replaced the two-card protocol demo with the approved minimal first-screen shell (rail + hero + static composer); reworked `globals.css`
+  - Kept the SSE reducer wired but surfaced via `data-*` (message rendering deferred to the chat-view slice); `ArtifactPreview` left in place but unmounted (reserved)
+  - Gitignored local agent/MCP scratch dirs (`.playwright-mcp/`, `.superpowers/`)
+  - Re-ran all four gates green: lint, typecheck, test (15), build
+- Next slice — chat view:
+  - Render reducer `messages`/`runStatus`, re-mount `ArtifactPreview`, then wire the composer to a real session
+- Earlier completed (2026-05-29):
   - Wrote kokoro-web design spec
   - Wrote kokoro-web implementation plan
   - Created independent `kokoro-web` repository with Bun + Next.js App Router scaffold
@@ -10,7 +18,11 @@
   - Added replay-safe reducer plus red→green tests
   - Added a minimal AGUI/A2UI-oriented session shell with a client-only artifact preview boundary
   - Verified `bun run test`, `bun run lint`, `bun run typecheck`, and `bun run build` in `kokoro-web`
+  - Added a durable three-primary-runtime architecture overview under `docs/product/04-architecture/`
+  - Recorded main-agent/background-agent coordination guidance in `tasks/lessons.md`
+  - Persisted orchestration reuse guidance in project memory and verified the kokoro-web overlay wording did not need a fix
+  - Clarified protocol docs so `session-stream.md` now distinguishes the current minimal closed loop from browser-reserved parse-and-ignore families, and downgraded future-only replay/mode examples accordingly
 - Blocked:
   - Local git commits are still pending because the Claude Code auto-mode classifier denied commit commands while the repo contains a `CLAUDE.md` instructions file.
 - Next verification / unblock step:
-  - After commit authorization, run the child-repo atomic commits and the parent-repo docs/progress commit.
+  - After commit authorization, review the parent-repo protocol doc diff together with the previously pending docs/progress changes, then run the parent-repo docs/progress commit.
