@@ -8,8 +8,20 @@
   - Kept the SSE reducer wired but surfaced via `data-*` (message rendering deferred to the chat-view slice); `ArtifactPreview` left in place but unmounted (reserved)
   - Gitignored local agent/MCP scratch dirs (`.playwright-mcp/`, `.superpowers/`)
   - Re-ran all four gates green: lint, typecheck, test (15), build
-- Next slice — chat view:
-  - Render reducer `messages`/`runStatus`, re-mount `ArtifactPreview`, then wire the composer to a real session
+- Conversation view (2026-06-03, built + verified, commit pending visual sign-off):
+  - Design: `docs/superpowers/specs/2026-06-03-conversation-view-design.md`
+  - One reducer for the whole thread: `appendUserMessage` (local user bubbles) + `consumeLiveSession` gains `initialState`/`onSettled` so each run folds onto the persistent thread
+  - Graceful standalone demo: `startSessionReply` tries real kokoro-session, falls back to a local simulated stream (`simulateAssistantReply`) through the same reducer; labelled "本地预览"
+  - `SessionShell` now a real chat: empty hero state → send → user bubble + streamed assistant reply, multi-turn, streaming/failed states; injectable `startReply` for tests
+  - UI feedback pass: compact/conventional sizing; comfortable left/right bubbles (assistant left+心 avatar, user right); composer hover no longer shifts layout
+  - Gates green (lint/typecheck/test 29/build) + Playwright visual pass; artifact lane stays deferred/reserved
+  - Committed: kokoro-web first-screen (2d0cf08, bf0dde3) and conversation view (7aada7e)
+- Production-usable polish (2026-06-03, via workflow + subagents, committed in 7aada7e):
+  - Multi-agent workflow: audit → plan → [implement → per-round QA gate] ×6 → 4-lens adversarial review, with a hard zero-cruft rule and a quality gate after each workstream
+  - Added: stop/cancel generation, SSR-safe conversation persistence (localStorage), 新对话 reset+refocus, retry-on-failure, double-send guard, composer auto-grow, scroll stickiness + jump-to-latest, dead-code removal, a11y (lang=zh-CN, aria-live/atomic, focus-visible no-reflow) + WCAG contrast
+  - Verified in main: lint/typecheck/test (79)/build green; Playwright pass (send → reply → reload persists → 新对话 resets); review verdict production-ready, 0 blockers
+  - Deferred: markdown rendering, multi-conversation history list, artifact-lane promotion
+  - Dev server left running at http://localhost:3100 for review
 - Earlier completed (2026-05-29):
   - Wrote kokoro-web design spec
   - Wrote kokoro-web implementation plan
