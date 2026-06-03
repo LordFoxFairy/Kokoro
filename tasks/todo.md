@@ -22,4 +22,31 @@
 - [x] Rework `globals.css` for the first-screen layout.
 - [x] Keep the SSE reducer wired but surfaced via `data-*` while message rendering is deferred to the chat-view slice.
 - [x] Gitignore local agent/MCP scratch dirs (`.playwright-mcp/`, `.superpowers/`).
-- [ ] NEXT slice — chat view: render reducer messages/run status and re-mount `ArtifactPreview` (currently reserved, unmounted), then wire the composer to a real session.
+- [x] Land the first-screen slice (commits `2d0cf08`, `bf0dde3`).
+
+## Conversation view slice (in progress)
+
+Design: `docs/superpowers/specs/2026-06-03-conversation-view-design.md`. Goal: complete multi-turn streaming conversation, demonstrable standalone via graceful local-simulation fallback. Artifact lane deferred (reserved) per the more recent refinement + protocol downgrade.
+
+- [x] application: `appendUserMessage(state, {id, content})` pure helper + tests (multi-turn accumulation, immutability, ordering, survives run fold).
+- [x] application: `consumeLiveSession` gains optional `initialState` + `onSettled`; all existing preview tests still green.
+- [x] application: `buildSimulatedReplyEvents` (pure, deterministic, terminates) + `simulateAssistantReply` driver + `startSessionReply` orchestrator (live→fallback) + tests.
+- [x] interfaces: `SessionShell` rewritten into empty/active conversation — controlled textarea composer (Enter sends, disabled while streaming), thread rendering, calm streaming indicator, inline failed state; injectable `startReply`.
+- [x] styles: extended `globals.css` with thread/bubble/active-layout classes.
+- [x] tests: shell test covers empty first screen, user msg render, assistant reply, streaming-disabled input, multi-turn history, inline failed error (29 tests pass).
+- [x] verify: lint + typecheck + test + build green; Playwright visual pass over a real multi-turn conversation.
+- [x] UI feedback pass (2026-06-03): scaled the whole UI to compact/conventional sizes; switched to comfortable left/right bubble layout (assistant left+avatar, user right); removed composer hover layout-shift. Re-verified all gates + visually.
+- [x] Committed the conversation-view base (kokoro-web `7aada7e`).
+
+## Production-usable polish (2026-06-03, via workflow + subagents)
+
+Ran a multi-agent workflow (audit → plan → [implement → per-round QA gate] ×6 → 4-lens review) with a hard zero-cruft rule and a quality gate after every workstream.
+
+- [x] Foundation cleanup: removed dead exports (createPreviewSessionState/startDemoSession/openDemoSessionStream/previewEvents); reducer dedups session-created + pins role-per-messageId; explicit parse-and-ignore listeners.
+- [x] Stop/cancel generation + calm streaming indicator (reduced-motion aware).
+- [x] SSR-safe single-conversation persistence (localStorage), 新对话 reset+refocus, retry-on-failure, double-send guard.
+- [x] Composer auto-grow + focus return + input length cap.
+- [x] Scroll stickiness + jump-to-latest; inline failed state.
+- [x] A11y/visual polish: lang=zh-CN, aria-live/atomic, focus-visible (no reflow), WCAG contrast bumps, message/pulse animations.
+- [x] Verified in main: lint+typecheck+test(79)+build green; Playwright pass (empty → send → reply → reload-persists → 新对话 resets). Review: production-ready, 0 blockers. Committed kokoro-web `7aada7e`.
+- [ ] (deferred) markdown rendering for assistant text; multi-conversation history list; artifact lane promotion.
