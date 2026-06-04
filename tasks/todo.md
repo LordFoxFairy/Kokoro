@@ -57,8 +57,8 @@ Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot 
 
 ### A. Chat polish (kokoro-web)
 - [x] Stop/cancel button design: it already exists (send→wood ■ "停止生成" during streaming, cancel semantics). Made the local preview stream slower (stepMs 28→60) so the stop is visible/usable. Decision: stop/cancel, NOT pause/resume (not meaningful for one-shot LLM replies).
-- [ ] Starter chips on the empty screen (prototype `.chip--template` row: 海报/落地页/课件/写信/想法可视化/更多) → click prefills the composer. High comfort value; faithful to prototype.
-- [ ] Wire the Fast/Thinking mode to the run's `execution_style` (currently display-only).
+- [x] Starter chips on the empty screen (海报/落地页/课件/写信/想法可视化), matching the prototype `.chip--template` row. Click prefills the composer with a continuable starter prompt (caret at end), does NOT send; chips confined to the empty hero. kokoro-web `ce291bf`, lint/typecheck/test(82)/build green + Playwright-verified. (Dropped the prototype's `更多…` chip — it linked to a non-existent gallery; add when templates/gallery exists.)
+- [ ] Wire the Fast/Thinking mode to the run's `execution_style` (currently display-only). DESIGN (user, 2026-06-04): Fast/Thinking are the **`chat` business_type**'s bound model options — each a `{label, value=litellm model_name}` pair (the composer mode dropdown IS the chat model selector). Belongs with the deferred model-management platform; see provider/gateway memory.
 - [ ] Attach menu (上传图片/文件/拍照) → real native file picker, then backend upload when available (currently placeholder).
 - [ ] Markdown rendering for assistant messages (real LLM output is markdown) — needs a sanitized renderer.
 - [ ] Multi-conversation history list in the rail (currently single persisted conversation).
