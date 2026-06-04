@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-04
+- Active stream: three-repo live loop CLOSED end-to-end (web ↔ session ↔ agent over Redis)
+- Completed (2026-06-04):
+  - kokoro-session `feat/three-repo-loop` (8c9428f): fixed the real Redis-only SSE bug — `streamSession` resumed from the domain `envelope.cursor` ("run_x:NNNN") handed to `subscribe()` as a Redis stream id, which XREAD rejects (and "" on first connect), so `/stream` silently delivered nothing over Redis (MemoryStreamPort masked it via lexicographic compare). Now subscribes the replay stream from its head (single transport-cursor namespace, replay+tail in one); `RedisStreamPort` coerces falsy cursor→"0-0"; +regression test (live tail after non-empty snapshot). Landed the Zod-migration WIP (`SessionEventName` derived from schema, `session.created` carries `title`, `StartRunInput` single-sourced) + the `sessionEventNames` lint fix. lint/typecheck/test(44) green.
+  - kokoro-agent `feat/three-repo-loop` (673ee61): `KOKORO_LOCAL_FAKE_MODEL=1` → `LocalFakeChatModel` (wraps LangChain `GenericFakeChatModel`) for credential-free e2e; fixed missing `Mapping` import + tightened the payload TypeGuard for pyright --strict. pytest(26)/ruff/pyright(0) green.
+  - Ran all three together for the FIRST time over the existing shared Redis (isolated **db 15**): web(:3100) → session(:3001) → Redis → agent worker → Redis → session relay → SSE → web. Verified at the protocol layer via curl (full session.created→deltas→message.completed→run.completed) AND in the browser via Playwright: real agent reply rendered ("Local fallback active…"), transport label **"实时 · http://localhost:3001"** (live path, not the preview fallback).
+  - Both backend repos were on `main`; branched to `feat/three-repo-loop` before committing, per policy. Neither pushed.
+- Still running for the user (started this session): shared Redis container (db 15), kokoro-session on :3001 (`KOKORO_STREAM_BACKEND=redis KOKORO_REDIS_URL=…/15 KOKORO_WEB_ORIGIN=http://localhost:3100`), kokoro-web dev on :3100. To stop session: `lsof -ti:3001 | xargs kill`. Worker is a backgrounded `uv run kokoro-agent-worker`. NOTE: port :3000 is an UNRELATED project (hixcode) — do not touch.
+- Open next steps: optional real LLM via `ANTHROPIC_API_KEY`; chat-polish (starter chips, mode→execution_style, attach picker, markdown, multi-conversation history); reconcile avatars-vs-prototype design decision; remove stray sibling `~/WebstormProjects/kokoro-web` duplicate.
+
 - Date: 2026-06-03
 - Active stream: kokoro-web first-screen shell redesign (staged)
 - Completed (2026-06-03):

@@ -63,11 +63,11 @@ Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot 
 - [ ] Markdown rendering for assistant messages (real LLM output is markdown) — needs a sanitized renderer.
 - [ ] Multi-conversation history list in the rail (currently single persisted conversation).
 
-### B. Close the three-repo live loop (the real "production" gap)
-- [ ] kokoro-session: fix 1-line lint (`sessionEventNames`) + commit the uncommitted Zod migration.
-- [ ] kokoro-agent: add `from collections.abc import Mapping` (2 failing tests) + commit the local-fake-model.
-- [ ] Run all three together (memory or Redis stream) with `KOKORO_LOCAL_FAKE_MODEL=1` (no API key) and verify a real end-to-end message web→session→agent→web streams in the browser (the loop has never been run together).
-- [ ] Optional: real LLM via `ANTHROPIC_API_KEY`.
+### B. Close the three-repo live loop (the real "production" gap) — DONE 2026-06-04
+- [x] kokoro-session: fixed lint (`sessionEventNames` → `SessionEventName` derived from the Zod schema) + landed the Zod migration. Branch `feat/three-repo-loop` (8c9428f).
+- [x] kokoro-agent: added `from collections.abc import Mapping` + tightened the payload TypeGuard for pyright --strict; committed the local-fake-model. Branch `feat/three-repo-loop` (673ee61).
+- [x] Ran all three together over Redis (existing shared container, isolated db 15) with `KOKORO_LOCAL_FAKE_MODEL=1`. **Found + fixed a real Redis-only SSE cursor bug** (session resumed XREAD from the domain `envelope.cursor` as if it were a Redis stream id → silent empty `/stream`; MemoryStreamPort masked it). Verified end-to-end via curl (session.created→deltas→message.completed→run.completed) AND in the browser via Playwright: real agent reply rendered ("Local fallback active…"), transport label "实时 · http://localhost:3001" (live path, not the preview fallback). See lessons 2026-06-04.
+- [ ] Optional: real LLM via `ANTHROPIC_API_KEY` (set on the worker; everything else unchanged).
 
 ### C. Design-direction decision (needs user call)
 - [ ] How much of the richer prototype to adopt vs the approved 06-02 minimal shell: serif hero accent, rail nav sections (创作/进阶/发现), warm send button. (06-02 chose minimal; prototype is richer — surface as a decision, don't silently pick.)
