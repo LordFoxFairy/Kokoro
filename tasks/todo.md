@@ -50,3 +50,27 @@ Ran a multi-agent workflow (audit → plan → [implement → per-round QA gate]
 - [x] A11y/visual polish: lang=zh-CN, aria-live/atomic, focus-visible (no reflow), WCAG contrast bumps, message/pulse animations.
 - [x] Verified in main: lint+typecheck+test(79)+build green; Playwright pass (empty → send → reply → reload-persists → 新对话 resets). Review: production-ready, 0 blockers. Committed kokoro-web `7aada7e`.
 - [ ] (deferred) markdown rendering for assistant text; multi-conversation history list; artifact lane promotion.
+
+## Follow-up roadmap (recorded 2026-06-04)
+
+Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot before any UI work). Pin one anchor, confirm with user, then proceed. Don't over-reach: change only what's asked.
+
+### A. Chat polish (kokoro-web)
+- [x] Stop/cancel button design: it already exists (send→wood ■ "停止生成" during streaming, cancel semantics). Made the local preview stream slower (stepMs 28→60) so the stop is visible/usable. Decision: stop/cancel, NOT pause/resume (not meaningful for one-shot LLM replies).
+- [ ] Starter chips on the empty screen (prototype `.chip--template` row: 海报/落地页/课件/写信/想法可视化/更多) → click prefills the composer. High comfort value; faithful to prototype.
+- [ ] Wire the Fast/Thinking mode to the run's `execution_style` (currently display-only).
+- [ ] Attach menu (上传图片/文件/拍照) → real native file picker, then backend upload when available (currently placeholder).
+- [ ] Markdown rendering for assistant messages (real LLM output is markdown) — needs a sanitized renderer.
+- [ ] Multi-conversation history list in the rail (currently single persisted conversation).
+
+### B. Close the three-repo live loop (the real "production" gap)
+- [ ] kokoro-session: fix 1-line lint (`sessionEventNames`) + commit the uncommitted Zod migration.
+- [ ] kokoro-agent: add `from collections.abc import Mapping` (2 failing tests) + commit the local-fake-model.
+- [ ] Run all three together (memory or Redis stream) with `KOKORO_LOCAL_FAKE_MODEL=1` (no API key) and verify a real end-to-end message web→session→agent→web streams in the browser (the loop has never been run together).
+- [ ] Optional: real LLM via `ANTHROPIC_API_KEY`.
+
+### C. Design-direction decision (needs user call)
+- [ ] How much of the richer prototype to adopt vs the approved 06-02 minimal shell: serif hero accent, rail nav sections (创作/进阶/发现), warm send button. (06-02 chose minimal; prototype is richer — surface as a decision, don't silently pick.)
+
+### D. Housekeeping
+- [ ] Investigate/remove the stray sibling `~/WebstormProjects/kokoro-web` (duplicate of `Kokoro/kokoro-web`).
