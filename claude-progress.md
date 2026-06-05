@@ -1,5 +1,20 @@
 # Claude Progress
 
+- Date: 2026-06-05
+- Active stream: kokoro-web chat-shell UI overhaul (composer + agent-activity rendering). Backend (kokoro-session / kokoro-agent) UNTOUCHED this session — all changes are in kokoro-web on branch `feat/bootstrap-shell` (committed `fa419f4`, pushed).
+- Completed (2026-06-05, kokoro-web):
+  - Composer → Gemini-style two-row layout (text row + controls row); native scrollbar hidden; IME `isComposing` guard on Enter (user types Chinese); press micro-animations; starter chips now warm-wood line icons (emoji removed); expand-to-edit modal (⤢, React portal — ⌘/Ctrl+Enter sends, Enter=newline, Esc closes); disabled send shows a neutral chip.
+  - Agent activity moved INTO the chat flow (ChatGPT/Claude/Perplexity-informed): an assistant turn = one 🤖 avatar → answer bubble on top → collapsible「思考过程」below it (thinking + tool calls + subagents as ONE unit); expanded while streaming (live「思考中」pulse), auto-collapsed to a one-line summary once the answer lands. Long thinking is capped + scrolls. Split into small components: assistant-turn, process-block, tool-call-row, subagent-row, run-state.
+  - Todo plan = collapsible bar pinned ABOVE the composer (separate from the in-chat process); CC-style line-icon checklist (todo-bar).
+  - Fast/Thinking mode = per-conversation (`ConversationEntry.mode`, persisted with `.default("fast")` for back-compat); LOCKS after the first message ("选中了就不能切换"); new conversation unlocks; zap/spark icons + lock display.
+  - Rail is drag-resizable (`useRailResize` + `.kk-rail__resizer`; shell grid col = `var(--kk-rail-width)`); min widths enforced (rail 200–420px, main ≥360px); hidden when collapsed / on mobile.
+  - Fixed chat left/right drift on todo-bar toggle via `scrollbar-gutter: stable both-edges` on `.kk-thread`. Added `prefers-reduced-motion` guards.
+  - `globals.css` (1882 lines) modularized → a 10-line import file + `src/app/styles/{base,shell,rail,stage,thread,markdown,activity,composer,responsive}.css`. Verified BYTE-IDENTICAL inlining (diff/cmp) and styles intact in-browser; cascade unchanged.
+  - Gates: lint / typecheck / vitest (121) all green. Dev server left running on :3100. Design decisions recorded in agent memory `kokoro-web-chat-shell-design`.
+- Open next (optional; user PAUSED here): expand-modal focus trap; finer split of `activity.css`/`composer.css` (~500 lines each); persist rail width to localStorage; reconcile "正在输入" vs "思考中…". NOTE: user said do NOT split the big test file `session-shell.test.tsx` (~1300 lines).
+- STILL THE BIG GOAL ([[kokoro-agent-activity-goal]]): tools/subagents/thinking render only when the agent PRODUCES them; the UI + contract are wired and unit-tested but not yet triggered LIVE end-to-end (needs a registered domain tool / real subagent spawn / reasoning model in kokoro-agent). That's the next backend stream for a follow-up agent.
+- CONSTRAINTS for follow-up agents: `kokoro-agent/.env` is gitignored and MUST NOT be committed (holds the gateway API key). A demo activity conversation is seeded in the browser's localStorage key `kokoro:conversations` for screenshots — deletable via the rail's hover-×, not in code. kokoro-session & kokoro-agent are clean on `feat/three-repo-loop` (in sync with origin), untouched this session.
+
 - Date: 2026-06-04
 - Active stream: three-repo live loop CLOSED end-to-end (web ↔ session ↔ agent over Redis)
 - Completed (2026-06-04):
