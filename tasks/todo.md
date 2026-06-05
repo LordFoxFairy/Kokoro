@@ -74,3 +74,17 @@ Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot 
 
 ### D. Housekeeping
 - [ ] Investigate/remove the stray sibling `~/WebstormProjects/kokoro-web` (duplicate of `Kokoro/kokoro-web`).
+
+## E. Agent activity rendering (ACTIVE GOAL, set 2026-06-05)
+
+Goal: display real agent activity end-to-end — thinking, tool calls, subagents, CC-style live todo — plus 中断恢复 and a left-rail sessions list. User-chosen: **backend-first with real DeepAgents**, **todo aligned to Claude Code**. Memory: [[kokoro-agent-activity-goal]]. Crux: the pipeline currently DROPS thinking/tools/subagents (agent strips them; protocol doesn't model them) — cross-repo vertical: agent emits → AgentEvent contract → session protocol (Pydantic+Zod, synced) → relay → web reducer+UI.
+
+Key finding: `deepagents 0.6.6` `create_deep_agent(model, tools, system_prompt=, subagents=)` → LangGraph, with built-in `write_todos` (CC todo), `task` (subagents), file ops, `execute`. Reuse it; stream via `astream_events` → map to our events. Tool loops need a tool-calling model: support real (`ANTHROPIC_API_KEY`) AND a scripted tool-calling fake (key-free, deterministic, test-friendly).
+
+- [ ] E1 (agent contract): extend `AgentEvent` kinds — add `thinking.delta`, `todo.updated`, `subagent.started`, `subagent.finished` (`tool.invoked/returned` already exist); document payload shapes; boundary tests (Schema崩塌/空值/序列). Keep agent events loose; strict normalization stays at the session boundary.
+- [ ] E2 (agent runtime): `run_agent` builds `create_deep_agent` and streams `astream_events`, mapping chat-model thinking/text → thinking.delta/text.delta, tool start/end → tool.invoked/returned, `write_todos` → todo.updated, `task` → subagent.started/finished, terminal → run.completed/failed. Add a scripted tool-calling fake model for local/tests.
+- [ ] E3 (session protocol): mirror the new families in `events.ts` (Zod) + `normalize.ts`; relay into replay/SSE. Keep TS/Python in lockstep ([[project-protocol-drift-guard]]).
+- [ ] E4 (web): reducer accumulates the new event types; UI renders thinking (collapsible), tools (cards), subagents (nested), todo (live checklist). Transport-agnostic; "use client" stays minimal.
+- [ ] E5 (中断恢复): re-attach to an in-flight run via the replay stream is already enabled by the SSE-from-head fix; add resume-generation (continue after stop) if the agent/session can support it.
+- [ ] E6 (sessions list): multi-conversation persistence + left-rail list + switch/new/delete.
+- [ ] stream_port.py polish (transport foundation, folds in): `_BLOCK_MS` → constructor param; document `_CURSOR_WIDTH`/`_REDIS_FIELD` as cross-language contract constants (NOT .env — would silently break the loop). Filename mirrors `stream-port.ts` (rename both or neither).
