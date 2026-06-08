@@ -1,5 +1,23 @@
 # Claude Progress
 
+- Date: 2026-06-06
+- Current authoritative repo snapshot (aligned to the user-approved baseline):
+  - `Kokoro` (root): `feat/kokoro-web-bootstrap` @ `0fe0dbd` — handoff/docs branch.
+  - `kokoro-web`: `feat/bootstrap-shell` @ `fa419f4` — chat-shell overhaul + `globals.css` modularization baseline.
+  - `kokoro-session`: `feat/three-repo-loop` @ `712a34b` — Redis subscription fix / interrupt-recovery baseline.
+  - `kokoro-agent`: `feat/three-repo-loop` @ `63c6031` — DeepAgents activity-event loop baseline.
+- Alignment note: some older notes and todo entries were written while temporarily looking at newer `feat/agent-deepagents-planning` branches. For the current baseline above, the following are ALREADY present and should not be treated as open work: assistant markdown rendering, rail multi-conversation history, DeepAgents activity families (`thinking.delta` / `todo.updated` / `tool.*` / `subagent.*`), interrupt-recovery, and sessions list.
+- True remaining work on this baseline:
+  - turn the attach menu into a real native file-picker / upload flow;
+  - polish `stream_port.py` / shared transport contract constants;
+  - optional live-provider credentials, design-direction choice, and duplicate-repo housekeeping.
+- 2026-06-06 execution-style contract pass completed across the locked baseline branches:
+  - `kokoro-web`: selected `ConversationEntry.mode` (`fast | thinking`) is now threaded into the live run request path; `session-stream-preview.ts` no longer hard-codes `execution_style=default`, and live start contract failures (400/422) surface as explicit failed runs instead of silently degrading to preview.
+  - `kokoro-session`: `runRequestSchema.execution_style` is now restricted to `fast | thinking`; empty/invalid values fail loud at the HTTP boundary with 400 instead of drifting through as optional free-form strings.
+  - `kokoro-agent`: model selection is now resolved per run via `make_chat_model(execution_style)` instead of one worker-global model instance; `thinking` uses a distinct runtime configuration (verified on the current `openai:glm-5` path via `reasoning_effort="high"`, while `fast` leaves it unset).
+  - Verification: `kokoro-web` full gates green (`bun run lint && bun run typecheck && bun run test`, 127 tests); `kokoro-session` full gates green (`bun run lint && bun run typecheck && bun test`, 57 pass / 2 skip); `kokoro-agent` full gates green (`uv run pytest`, 44 pass / 2 skip, plus `ruff` + `pyright`). Real provider smoke check confirmed both modes against the configured gateway: `fast_reply = FAST_OK`, `thinking_reply = THINKING_OK`, and the resolved runtime configs differ at the agent layer.
+- Older entries below remain useful historical detail, but this 2026-06-06 block is the source of truth for branch/commit state and open-work triage.
+
 - Date: 2026-06-05
 - Active stream: kokoro-web chat-shell UI overhaul (composer + agent-activity rendering). Backend (kokoro-session / kokoro-agent) UNTOUCHED this session — all changes are in kokoro-web on branch `feat/bootstrap-shell` (committed `fa419f4`, pushed).
 - Completed (2026-06-05, kokoro-web):
