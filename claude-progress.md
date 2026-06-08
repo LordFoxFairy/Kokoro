@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-08
+- The whole live-chat + subagent arc is now committed AND pushed across all four repos:
+  - `kokoro-agent` `feat/three-repo-loop` @ `57eb94e` — per-run execution_style, layered subagent system (built-in/config-custom/runtime-custom), nested subagent text, stream_port constants.
+  - `kokoro-session` `feat/three-repo-loop` @ `18b643e` — strict execution_style, message-scoped activity (message_id), subagent source/type + subagent.text envelopes, stream-port options.
+  - `kokoro-web` `feat/bootstrap-shell` @ `c26e848` — execution_style threading, multi-segment turns, nested subagent stream, AND Demo Task 4 (mode-aware process density).
+  - `Kokoro` (root) `feat/kokoro-web-bootstrap` @ `d452de2` — handoff docs/specs/plans + project-rules rewrite.
+- Demo Task 4 (视觉层级统一) DONE: conversation mode (fast|thinking) threaded SessionShell → ConversationThread → AssistantTurn → ProcessBlock as a `data-mode` hook; CSS differentiates process-body density (thinking gap 0.6rem vs fast 0.32rem) without layout shift. Answer bubble stays the strongest surface; process block stays a lighter secondary disclosure. Browser-verified (Playwright): thinking rowGap 9.6px vs fast 5.12px; transport row reads mode-specific calm metadata.
+- Side-effect hygiene: agent `uv.lock` aliyun-mirror churn reverted (not committed); root-level numbered Playwright PNGs gitignored.
+- Open work on this baseline: attach menu → native file-picker/upload; (deferred) subagent management entry (#113); (deferred) nested subagent internal-stream richer expansion (#115/#116).
+
 - Date: 2026-06-06
 - Current authoritative repo snapshot (aligned to the user-approved baseline):
   - `Kokoro` (root): `feat/kokoro-web-bootstrap` @ `0fe0dbd` — handoff/docs branch.
