@@ -330,6 +330,47 @@ def parse_render_union(text: str) -> dict[str, set[str]]:
 
 
 # --------------------------------------------------------------------------- #
+# Transport constants (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS) — a shared Py/TS
+# contract declared once in events.yaml, hand-mirrored in BOTH stream ports.
+# verify.py reads each side's literal and asserts it equals the yaml value.
+# --------------------------------------------------------------------------- #
+
+TRANSPORT_FILES = {
+    "kokoro-session/.../stream-port.ts": (
+        ROOT / "kokoro-session/src/infrastructure/stream-port.ts",
+        {
+            "CURSOR_WIDTH": (r"\bCURSOR_WIDTH\s*=\s*(\d+)", int),
+            "REDIS_FIELD": (r'\bREDIS_FIELD\s*=\s*"([^"]+)"', str),
+            "BLOCK_MS": (r"\bDEFAULT_BLOCK_MS\s*=\s*(\d+)", int),
+        },
+    ),
+    "kokoro-agent/.../stream_port.py": (
+        ROOT / "kokoro-agent/src/kokoro_agent/infrastructure/stream_port.py",
+        {
+            "CURSOR_WIDTH": (r"\b_CURSOR_WIDTH\s*=\s*(\d+)", int),
+            "REDIS_FIELD": (r'\b_REDIS_FIELD\s*=\s*"([^"]+)"', str),
+            "BLOCK_MS": (r"\b_BLOCK_MS\s*=\s*(\d+)", int),
+        },
+    ),
+}
+
+
+def check_transport(spec: dict, rep: Report) -> None:
+    expected = spec["transport"]
+    for label, (path, patterns) in TRANSPORT_FILES.items():
+        text = path.read_text()
+        for key, (pattern, cast) in patterns.items():
+            m = re.search(pattern, text)
+            if m is None:
+                rep.fail(label, f"[transport] {key} literal not found")
+                continue
+            got = cast(m.group(1))
+            want = expected[key]
+            if got != want:
+                rep.fail(label, f"[transport] {key}={got!r} != yaml {want!r}")
+
+
+# --------------------------------------------------------------------------- #
 # Main
 # --------------------------------------------------------------------------- #
 
@@ -400,6 +441,9 @@ def main() -> int:
         parse_render_union(WEB_RENDER_TS.read_text()),
     )
 
+    # 6. transport constants in BOTH stream ports (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS)
+    check_transport(spec, rep)
+
     if rep.problems:
         print("DRIFT DETECTED — events.yaml and repo contract files disagree:\n")
         for p in rep.problems:
@@ -418,6 +462,7 @@ def main() -> int:
         f"(session-event.ts; web wire-in tolerates {len(exp_agui_web)} w/ optionals)"
     )
     print(f"  render    : {len(exp_render)} kinds  (session-stream-event.ts)")
+    print(f"  transport : {len(spec['transport'])} consts (stream-port.ts + stream_port.py)")
     print(f"  base kinds: {n_kinds}")
     return 0
 
