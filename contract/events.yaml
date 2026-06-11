@@ -49,6 +49,13 @@ transport:
 # strict-parses to null (client would never settle). agent currently emits only "completed".
 run_completed_status: [completed, cancelled, timeout]
 
+# Shared envelope fields (non-payload), per view. `event` is the agui discriminant
+# (present at web schema top-level; absent from session envelopeFields — it lives in
+# each arm's literal). render uses camelCase + a `kind` discriminant.
+envelope:
+  agui_out: [event_id, seq, session_id, conversation_id, run_id, cursor, timestamp]
+  render: [eventId, seq, sessionId, conversationId, runId]
+
 # ---------------------------------------------------------------------------
 # 13 kinds, keyed by their agent-out kind string. Each entry declares the
 # payload field-name set per view, plus the kind/event-name each view uses.
