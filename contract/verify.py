@@ -371,6 +371,56 @@ def check_transport(spec: dict, rep: Report) -> None:
 
 
 # --------------------------------------------------------------------------- #
+# Envelope fields (shared, non-payload) — declared once in events.yaml, mirrored in
+# session envelopeFields (no `event`) and web eventEnvelopeSchema (with `event`).
+# --------------------------------------------------------------------------- #
+
+
+def _braced_object_keys(text: str, header_re: str) -> set[str]:
+    """Top-level keys of the brace-balanced object opened by the first header match."""
+    m = re.search(header_re, text)
+    if m is None:
+        return set()
+    start = text.index("{", m.start())
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return _top_level_keys(text[start + 1 : i])
+    return set()
+
+
+def check_envelope(spec: dict, rep: Report) -> None:
+    env = spec.get("envelope")
+    if not env:
+        return
+    agui = set(env["agui_out"])
+    # session envelopeFields: plain object, no `event` (it lives in each arm's literal).
+    sess = _braced_object_keys(
+        SESSION_EVENT_TS.read_text(), r"const\s+envelopeFields\s*=\s*\{"
+    )
+    if sess != agui:
+        rep.fail(
+            "kokoro-session/.../session-event.ts",
+            f"[envelope] envelopeFields {sorted(sess)} != yaml agui_out {sorted(agui)}",
+        )
+    # web eventEnvelopeSchema: z.object including the `event` discriminant.
+    web = _braced_object_keys(
+        WEB_SCHEMA_TS.read_text(),
+        r"const\s+eventEnvelopeSchema\s*=\s*z\s*\.?\s*object\(",
+    )
+    want_web = agui | {"event"}
+    if web != want_web:
+        rep.fail(
+            "kokoro-web/.../session-event-schema.ts",
+            f"[envelope] eventEnvelopeSchema {sorted(web)} != yaml agui_out+event {sorted(want_web)}",
+        )
+
+
+# --------------------------------------------------------------------------- #
 # Main
 # --------------------------------------------------------------------------- #
 
@@ -444,6 +494,9 @@ def main() -> int:
     # 6. transport constants in BOTH stream ports (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS)
     check_transport(spec, rep)
 
+    # 7. shared envelope fields in session + web (CONTRACT for seq/event_id/cursor/...)
+    check_envelope(spec, rep)
+
     if rep.problems:
         print("DRIFT DETECTED — events.yaml and repo contract files disagree:\n")
         for p in rep.problems:
@@ -463,6 +516,7 @@ def main() -> int:
     )
     print(f"  render    : {len(exp_render)} kinds  (session-stream-event.ts)")
     print(f"  transport : {len(spec['transport'])} consts (stream-port.ts + stream_port.py)")
+    print(f"  envelope  : {len(spec['envelope']['agui_out'])} agui fields (session + web)")
     print(f"  base kinds: {n_kinds}")
     return 0
 
