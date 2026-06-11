@@ -53,7 +53,7 @@ run_completed_status: [completed, cancelled, timeout]
 # (present at web schema top-level; absent from session envelopeFields — it lives in
 # each arm's literal). render uses camelCase + a `kind` discriminant.
 envelope:
-  agui_out: [event_id, seq, session_id, conversation_id, run_id, cursor, timestamp]
+  agui_out: [event_id, seq, session_id, conversation_id, run_id, timestamp]
   render: [eventId, seq, sessionId, conversationId, runId]
 
 # ---------------------------------------------------------------------------
