@@ -34,7 +34,7 @@
 ### 目标态
 | 标识符 | 定义 | 职责 | 不变量 |
 |---|---|---|---|
-| **seq** | 一等整数,agent 产生、session 透传、web 直读 | **唯一的领域排序源** | per-run 严格单调(同 run 递增;跨 run 在同一 SSE 流内可重置——reducer 只 per-run 比较) |
+| **seq** | 一等整数,agent 产生、session 透传、web 直读 | **唯一的领域排序源** | per-run **非递减**:进入排序的领域事件(message/tool/thinking/subagent/run.*)严格递增;`run.started` 合成的 `session.created`+`run.created` 共享其 seq(不参与排序);跨 run 在同一 SSE 流内可重置——reducer 只 per-run 比较 |
 | **stream_id** (= transport cursor) | redis stream id `ms-seq` / memory 20-pad counter | SSE `id:` + Last-Event-ID 续点 + redis xread lastId | per-stream 全局单调(replay 流内,跨 run 不重置——可作续点) |
 | **segment_id** | agent 侧分配,统一标识一段输出 | 替代 `message_ref↔message_id↔messageId` 三段映射 | 一段输出全程同一 id,session 不重映射 |
 | **event_id** | session 生成,全局唯一 | web `seenEventIds` 幂等去重键 | 全局唯一 |
