@@ -35,7 +35,7 @@ RENDER_ENVELOPE_FIELDS = frozenset(
 )
 # Envelope fields shared by every agui wire arm (top-level, not in `payload`).
 AGUI_ENVELOPE_FIELDS = frozenset(
-    {"event", "event_id", "session_id", "conversation_id", "run_id", "cursor", "timestamp"}
+    {"event", "event_id", "session_id", "conversation_id", "run_id", "timestamp"}
 )
 
 
