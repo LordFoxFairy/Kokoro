@@ -1,0 +1,222 @@
+# Kokoro event-contract single source of truth (blueprint step9, phase 1).
+#
+# WHAT THIS IS
+#   The 13-kind execution-event contract is hand-mirrored across 6 files in 3
+#   repos (agent / session / web). This file declares that contract ONCE, as the
+#   precise mirror of the current code, and `verify.py` is the drift gate that
+#   asserts every repo file still matches it (per view, by kind-set + per-kind
+#   payload-field-name-set). It REPLACES scripts/check-contract-kinds.sh, whose
+#   premise was false (it demanded byte-identical kind sets across repos, but the
+#   3 repos are deliberately DIFFERENT subsets).
+#
+# CI: run `python3 contract/verify.py` — non-zero exit = a repo drifted from this
+#     file. Add it to CI in place of the deleted check-contract-kinds.sh.
+#
+# THREE VIEWS (deliberately different kind subsets + naming + payload fields):
+#   agent-out : raw events kokoro-agent emits (events.py / agent-event.ts inbound)
+#               snake_case wire; uses payload key `message_ref`.
+#   agui-out  : AGUI envelopes kokoro-session emits (session-event.ts /
+#               session-event-schema.ts inbound at web). snake_case wire; the
+#               session normalizer renames `message_ref` -> `message_id`,
+#               text.* -> message.*, run.started -> session.created+run.created,
+#               and thinking's `text` -> `delta`.
+#   render    : the TS domain web actually consumes (session-stream-event.ts).
+#               camelCase (message_id -> messageId, tool_id -> toolId, ...),
+#               dash-case kind (thinking.delta -> thinking-delta). run.created is
+#               parsed by web but NOT projected (mapper returns null) -> absent.
+#
+# Field name lists below are the WIRE/DOMAIN names exactly as they appear in each
+# file. verify.py compares NAME SETS only (phase 1 locks the kind-string set and
+# the payload-field-name set; per-field type/required is documented for humans but
+# not yet gated — that is phase 2). Optional fields web tolerates on the inbound
+# wire (forward-compat) are listed under `agui_out_web_extra` so verify.py knows
+# they are allowed-but-not-required at the web inbound boundary only.
+#
+# PHASE 2 TODO (not in this commit):
+#   - deterministic generator: events.yaml -> regenerate all 6 mirror files.
+#   - generate-and-diff: byte-for-byte reproduce current files from yaml.
+#   - reverse-source check + CI `git diff --exit-code` after regeneration.
+#   - extend verify.py to also gate per-field type + required/optional + naming
+#     style (camelCase vs snake_case) once a name-mapping table is generated.
+
+transport:
+  CURSOR_WIDTH: 20      # session-side cursor zero-pad width (stream-port.ts / stream_port.py)
+  REDIS_FIELD: data     # redis stream field key carrying the JSON event
+  BLOCK_MS: 1000        # redis XREAD block timeout (ms)
+
+# run.completed payload `status` is a free string on the wire, but the only value
+# currently emitted/accepted-as-literal by web is "completed".
+run_completed_status: completed
+
+# ---------------------------------------------------------------------------
+# 13 kinds, keyed by their agent-out kind string. Each entry declares the
+# payload field-name set per view, plus the kind/event-name each view uses.
+# `null` payload list (run.started has none in render) => view absent for that kind.
+# ---------------------------------------------------------------------------
+kinds:
+
+  run.started:
+    agent_out:
+      kind: run.started
+      payload: []                       # {} empty
+    agui_out:
+      # NOTE: agent run.started fans out to TWO agui events the first time:
+      # session.created (once) + run.created. Both are agui-out events keyed here.
+      emits: [session.created, run.created]
+    render:
+      absent: true                      # run.created parsed but not projected (null)
+
+  thinking.delta:
+    agent_out:
+      kind: thinking.delta
+      payload: [message_ref, text]
+    agui_out:
+      event: thinking.delta
+      payload: [message_id, delta]      # message_ref->message_id, text->delta
+    render:
+      kind: thinking-delta
+      payload: [messageId, delta]
+
+  text.delta:
+    agent_out:
+      kind: text.delta
+      payload: [message_ref, text]
+    agui_out:
+      event: message.delta              # renamed text.delta -> message.delta
+      payload: [message_id, delta, role]
+      agui_out_web_extra: [format, segment]   # web inbound tolerates these optional
+    render:
+      kind: message-delta
+      payload: [messageId, role, delta]
+
+  text.completed:
+    agent_out:
+      kind: text.completed
+      payload: [message_ref, text]
+    agui_out:
+      event: message.completed          # renamed text.completed -> message.completed
+      payload: [message_id, role, content]
+      agui_out_web_extra: [citations, token_usage]
+    render:
+      kind: message-completed
+      payload: [messageId, role, content]
+
+  tool.invoked:
+    agent_out:
+      kind: tool.invoked
+      payload: [message_ref, tool_id, name, args]
+    agui_out:
+      event: tool.invoked
+      payload: [message_id, tool_id, name, args]
+    render:
+      kind: tool-invoked
+      payload: [messageId, toolId, name, args]
+
+  tool.returned:
+    agent_out:
+      kind: tool.returned
+      payload: [message_ref, tool_id, name, result]
+    agui_out:
+      event: tool.returned
+      payload: [message_id, tool_id, name, result]
+    render:
+      kind: tool-returned
+      payload: [messageId, toolId, name, result]
+
+  todo.updated:
+    agent_out:
+      kind: todo.updated
+      payload: [todos]                  # todos: [{content, status}]
+    agui_out:
+      event: todo.updated
+      payload: [todos]
+    render:
+      kind: todo-updated
+      payload: [todos]
+
+  subagent.started:
+    agent_out:
+      kind: subagent.started
+      payload: [message_ref, subagent_id, name, description, subagent_type, source]
+    agui_out:
+      event: subagent.started
+      payload: [message_id, subagent_id, name, description, subagent_type, source]
+    render:
+      kind: subagent-started
+      payload: [messageId, subagentId, name, description, subagentType, source]
+
+  subagent.finished:
+    agent_out:
+      kind: subagent.finished
+      payload: [message_ref, subagent_id, name, subagent_type, source]
+    agui_out:
+      event: subagent.finished
+      payload: [message_id, subagent_id, name, subagent_type, source]
+    render:
+      kind: subagent-finished
+      payload: [messageId, subagentId, name, subagentType, source]
+
+  subagent.text.delta:
+    agent_out:
+      kind: subagent.text.delta
+      payload: [message_ref, subagent_id, text]
+    agui_out:
+      event: subagent.text.delta
+      payload: [message_id, subagent_id, text]
+    render:
+      kind: subagent-text-delta
+      payload: [messageId, subagentId, text]
+
+  subagent.text.completed:
+    agent_out:
+      kind: subagent.text.completed
+      payload: [message_ref, subagent_id, text]
+    agui_out:
+      event: subagent.text.completed
+      payload: [message_id, subagent_id, text]
+    render:
+      kind: subagent-text-completed
+      payload: [messageId, subagentId, text]
+
+  run.completed:
+    agent_out:
+      kind: run.completed
+      payload: [status]
+    agui_out:
+      event: run.completed
+      payload: [run_id, status]         # session injects run_id
+      agui_out_web_extra: [final_message_id]   # web inbound tolerates this optional
+    render:
+      kind: run-completed
+      payload: [finalMessageId]         # web only projects final_message_id (optional)
+
+  run.failed:
+    agent_out:
+      kind: run.failed
+      payload: [error_kind, message]
+    agui_out:
+      event: run.failed
+      payload: [run_id, error_kind, message]
+      agui_out_web_extra: [retryable, request_id]   # web inbound tolerates these optionals
+    render:
+      kind: run-failed
+      payload: [errorKind, message, retryable, requestId]
+
+# ---------------------------------------------------------------------------
+# agui-out has TWO kinds with no agent-out source (session synthesizes them from
+# run.started): session.created and run.created. Declared here so verify.py knows
+# the full agui-out event set and the full render set.
+# ---------------------------------------------------------------------------
+agui_only:
+  session.created:
+    agui_out:
+      payload: [session_id, conversation_id, owner_id, title]
+      agui_out_web_extra: [workspace_id, created_by, initial_mode]
+    render:
+      kind: session-created
+      payload: [title, ownerId]         # web projects only title + owner_id
+  run.created:
+    agui_out:
+      payload: [run_id]
+    render:
+      absent: true                      # parsed at web wire, not projected
