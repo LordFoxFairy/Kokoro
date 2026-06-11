@@ -44,9 +44,10 @@ transport:
   REDIS_FIELD: data     # redis stream field key carrying the JSON event
   BLOCK_MS: 1000        # redis XREAD block timeout (ms)
 
-# run.completed payload `status` is a free string on the wire, but the only value
-# currently emitted/accepted-as-literal by web is "completed".
-run_completed_status: completed
+# run.completed payload `status` terminal enum. Producers (agent/session) emit/validate
+# one of these; web (consumer) accepts any non-empty string so a NEW terminal state never
+# strict-parses to null (client would never settle). agent currently emits only "completed".
+run_completed_status: [completed, cancelled, timeout]
 
 # ---------------------------------------------------------------------------
 # 13 kinds, keyed by their agent-out kind string. Each entry declares the
