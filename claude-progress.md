@@ -1,5 +1,13 @@
 # Claude Progress
 
+- Date: 2026-06-13 (goal 六项:测试体系 + 真实效果 + 扩展性设计 — 全部完成)
+- **《测试用例总目录》**(`docs/superpowers/specs/2026-06-13-test-case-catalog.md`):8 代理盘点 workflow → 62 流程 × 单元/集成/e2e 矩阵(291 边界/失败复选项)+ 10 个分级缺口,**全部清账**(执行记录在 §7):4 项行为修复(脏请求杀调度循环/脏事件吞终态/坏模型崩 worker/event_id 随机致重放不幂等→确定性派生 `evt_{run_id}_{seq}_{event}`)+ 6 组钉死测试。测试基数 80/66/175 → **88/74/189**,session ZodError 500→400。
+- **两个 e2e 逼出的真实 bug 已修**:① web reattach effect 在 live run 中二次订阅并覆盖句柄(泄漏 + 重连中闪现;onLive 预占 reattachedRef,web `60490c8`);② **translator 丢弃带 tool_calls 的中间叙述 → 真实 LLM 答案实质丢失**(用户只见 57 字收尾句;修复后叙述独立成段,真实 LLM 复验 1501 字完整回答,agent `463e8a9`)。
+- **真实效果实证**(隔离栈 web :3100 + session :3002 + redis db10):fake 轮(live 链路 + todo + 模式锁)、真实 LLM 轮(真实计划 4/4 + markdown 表格全文)、**流式中刷新 → reattach 续传补完**。截图 kokoro-web/e2e-{1..4}-*.png(已 gitignore)。门禁 12/12 全绿(后台代理复验)+ SSE gate 多轮 PASS。
+- **《能力扩展架构设计》**(`docs/superpowers/specs/2026-06-12-capability-extension-design.md`):工具接入(X1,链路已通零契约改动)/ workspace(W1-W3,artifact.created SOP + redis 取回通道)/ teams(T1 并行 run 传输层已就绪)/ HITL(留缝不实现);新 kind SOP 7 步固化。
+- **留跑的栈**:用户原有 web :3000 + session :3001 + db14 worker(被我误杀后已恢复,升级到新 agent 代码);我的 e2e 栈 web :3100(PID 95207)+ session :3002(94924)+ 真实 LLM worker(96961)+ redis db10,可直接试玩。停我的栈:`kill 95207 94924 96961`(PID 也记录于 /tmp/e2e-*.log 旁)。
+- 教训新增 tasks/lessons.md:严禁按进程名模式 kill(误杀了用户 db14 worker,已恢复并报告)。
+
 - Date: 2026-06-11 (stream-perfection arc — top-architect blueprint execution)
 - Driven by a 4-agent top-architect deep-audit Workflow (`wf_615794d0-e13`) → perfection blueprint in `docs/superpowers/specs/2026-06-11-stream-perfection-blueprint.md` (16-step execution order, behavior vs cleanliness strictly separated, 3 repos serial, stream files structural-only + gate after each).
 - **P0 SSE loopback gate built** (`scripts/sse-loopback-gate.sh`): the critic's #1 blind spot — the audits all assumed a "real SSE e2e gate" that did NOT exist (web only had vitest). Now a re-runnable scripted assertion of the real agent→session→Redis→session SSE kind-sequence. Prereqs: Redis db14 + session :3001 + worker (LOCAL_FAKE_MODEL).
