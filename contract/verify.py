@@ -26,7 +26,7 @@ YAML_PATH = Path(__file__).resolve().parent / "events.yaml"
 AGENT_EVENTS_PY = ROOT / "kokoro-agent/src/kokoro_agent/domain/agent_event.py"
 SESSION_AGENT_EVENT_TS = ROOT / "kokoro-session/src/domain/agent-event.ts"
 SESSION_EVENT_TS = ROOT / "kokoro-session/src/domain/session-event.ts"
-WEB_SCHEMA_TS = ROOT / "kokoro-web/src/infrastructure/session-event-schema.ts"
+WEB_SCHEMA_TS = ROOT / "kokoro-web/src/infrastructure/transport-event-schema.ts"
 WEB_RENDER_TS = ROOT / "kokoro-web/src/domain/session-stream-event.ts"
 
 # Envelope fields shared by every render arm — not part of the payload contract.
