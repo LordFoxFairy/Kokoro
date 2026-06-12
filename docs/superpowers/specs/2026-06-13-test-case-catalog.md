@@ -2,7 +2,7 @@
 
 > 定位:三仓(kokoro-agent / kokoro-session / kokoro-web)**全部交互流程与业务流程**的测试用例总账。每条流程列:主路径、边界用例、失败路径用例、现有覆盖(精确到测试文件)、缺口。它是「测试完成度」的验收基线:任何新流程/新事件 kind 落地时,在此登记用例并指向真实测试。
 > 来源:2026-06-13 八代理盘点 workflow(62 流程、36 测试资产文件,逐断言核对)+ 综合矩阵。覆盖判定:✅ covered = 主路径与关键边界皆有断言;🟡 partial = 仅主路径;🔴 gap = 无断言。
-> 现状:**37 covered / 21 partial / 4 gap**;缺口分级与补齐计划见 §7。
+> 现状:盘点时 37 covered / 21 partial / 4 gap;**§7 全部 10 个缺口已于 2026-06-13 清账**(4 项行为修复 + 6 组钉死测试,见 §7 执行记录)。
 
 ---
 
@@ -10,7 +10,7 @@
 
 单元层最厚实且边界质量高：agent 约 80 例（13-kind 契约往返、流式/非流式/子代理路由、分段语义、schema 崩溃矩阵）、session 约 66 例（normalize 全 kind 映射、(run_id,seq) 幂等、resumeCursor 守卫）、web 的 schema/reducer/组件测试边界矩阵充分（it.each 非法形状×13、eventId 去重、seq 交错保序）。集成层以 kokoro-web 的 session-shell.test.tsx（56 例整壳集成）和三仓的 http/start-run/transport/worker 测试为骨干，happy path 与状态机边界覆盖良好，但「失败路径集成」系统性缺位——调度循环吃脏请求即整体死亡、relay 遇脏事件终态丢失、POST 失败降级触发层、模型解析崩溃无 run.failed、重启/多副本幂等，这五处跨进程静默失败全部无断言。e2e 层仅两件手工门禁资产：scripts/sse-loopback-gate.sh（真实 agent→Redis→session→SSE 链路 4 断言，含 seq 单调与 5 kind 在场）和 contract/verify.py（三仓契约字段集静态锁定 7 检查），无 Playwright 套件、无 CI 接入（.github/ 不存在，根 package.json 无聚合入口），两个门禁全靠手工记得跑——金字塔形状健康（宽单元/中集成/窄 e2e），但顶端两块门禁悬空未自动化，且中层的失败注入测试是整体最大空洞。
 
-**三层基数**:agent 80 pytest(8 文件)· session 66 bun test(8 文件)· web 175 vitest(14 文件)· 跨仓门禁 2(contract/verify.py 七检查 + scripts/sse-loopback-gate.sh 四断言)。
+**三层基数(补缺后)**:agent **88** pytest(8 文件)· session **74** bun test(9 文件)· web **189** vitest(15 文件)· 跨仓门禁 2(contract/verify.py 七检查 + scripts/sse-loopback-gate.sh 四断言)。盘点时为 80/66/175。
 
 ---
 
@@ -1580,7 +1580,22 @@
 
 ## 7. 缺口分级与补齐计划
 
-排序按真实风险:跨进程静默失败/数据丢失/幂等失守 > 续订边界 > HTTP 契约 > 纯渲染。**rank 1–4 为本轮必修**(修行为 + TDD 钉死),5–10 按 ROI 落地。
+排序按真实风险:跨进程静默失败/数据丢失/幂等失守 > 续订边界 > HTTP 契约 > 纯渲染。
+
+**✅ 执行记录(2026-06-13,全部清账)**:
+| rank | 处置 | commit |
+|---|---|---|
+| 1 | dispatchRelays 抽至 application + safeParse skip(脏请求不杀循环),TDD + 真实 redis 注入实证 | session `69db1c0`+`ca20e21` |
+| 2 | relayRun 单条脏事件 skip-and-continue(终态必落 replay),TDD | session `47987d3` |
+| 3 | worker 模型解析入 run.failed 边界(worker 存活)+ 5 形态坏 spec parametrize,真实栈 SSE 实证 | agent `9d84e66` |
+| 4 | event_id 确定性派生 `evt_{run_id}_{seq}_{event}`(重放/多副本幂等),删 newEventId 注入缝 | session `0408b86` |
+| 5 | 90s 兜底退出流式 / 停止后不重连 / preview 轮零在途标记,3 用例 | web `60490c8` |
+| 6 | reply.ts 降级决策层 3 用例(变异检验证非空洞) | web `60490c8` |
+| 7+8 | HTTP 边界 + CORS 契约 5 用例;ZodError 穿透 500 → 400 修复 | session `c9d69d3` |
+| 9 | 切换会话防串流 + 切回续传用例;**逼出并修复真实 bug:reattach effect 在 live run 中二次订阅并覆盖句柄(泄漏)** | web `60490c8` |
+| 10 | use-rail-resize 钳制矩阵 + 监听清理,7 用例 | web `60490c8` |
+
+**追加(真实 LLM e2e 逼出的核心缺陷)**:translator 丢弃带 tool_calls 的中间叙述 → 用户只见 57 字收尾句、答案实质丢失。修复为叙述独立成段浮出(多段交错 UI 即为此而建),TDD 2 用例 + 真实 LLM 复验 1501 字完整回答。agent `463e8a9`。
 
 | rank | 流程 | 缺什么 | 风险 | 补齐动作 |
 |---|---|---|---|---|

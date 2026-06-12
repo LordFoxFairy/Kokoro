@@ -105,3 +105,10 @@ Key finding: `deepagents 0.6.6` `create_deep_agent(model, tools, system_prompt=,
 - [x] Turn lifecycle affordances (web `9c82c69`): submitted-no-token scaffold (no blank frame); forming bubble (`正在思考` in the bubble slot when process precedes text, never an empty bubble); collapse-on-settle (`open = manualOpen ?? live`, no remount, manual override wins); reconnect anchor (`isReconnecting` → 「重连中…」warm-wood capsule). Single live anchor preserved. 178 vitest + tsc + eslint green; Playwright in-page recorder captured forming→text+caret→collapsed-settle deterministically.
 - [ ] REAL-backend e2e (next phase): start kokoro-session (:3001, Redis db15) + kokoro-agent worker (gateway `.env`, `disable_streaming=True`) and Playwright a REAL DeepAgents run — tools/subagents/thinking only render when the agent PRODUCES them; preview can't exercise real subagent nesting. (Only web :3000 currently up.)
 - [ ] DDD architecture refactor (deferred): panel cross-validated a session→web→agent ordering — god-file splits, kebab-case, application-owned ports, dead-file deletion across all three repos.
+
+## G. 测试体系 + 真实效果 + 扩展性(DONE 2026-06-13)
+
+- [x] 《测试用例总目录》:62 流程 × 三层矩阵 + 10 缺口全部清账(4 行为修复 + 6 组测试;基数 80/66/175 → 88/74/189)。
+- [x] 真实 LLM e2e 实证:完整回答(修 translator 中间叙述丢弃)、刷新中断恢复、todo 4/4、4 张截图。
+- [x] 《能力扩展架构设计》:工具/workspace/teams/HITL 分期 + 新 kind SOP。
+- [ ] (后续可选)X1 自定义工具首落地;T1a 双 run 并发幂等 e2e;web lint 警告保持零。

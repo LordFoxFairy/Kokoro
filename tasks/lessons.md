@@ -11,3 +11,8 @@
 - 2026-06-06: 做前端演示打磨、交互细节与模式差异化时，如果条件允许，优先用 Playwright 做浏览器级实时调试与可视验证，而不只依赖单测或静态代码判断。防御规则：涉及“看起来舒服不舒服”“模式差异是否可感知”“交互是否顺手”这类问题时，把 Playwright 当作主验证手段之一，并在交接里写清实际看到的行为。
 - 2026-06-10: DDD 架构审查绝不能只看"无循环依赖/依赖方向对"就判 clean——必须检查是否真有 `domain/application/infrastructure/interfaces` **分层目录**且文件各归其位。kokoro-agent 把 `events`/`run_agent`/`event_translator`/`content_extractors`/`subagents`/`worker` 6 个文件平铺在包根、只有 `infrastructure/` 一层，而 session/web 都是规范四层；我却接受了 workflow 审计的"agent layering generally clean"（它只验了依赖方向没看目录），还以为 agent 的 DDD 整理做完了，被用户当面指出"agent 架构最垃圾、没有严格 DDD"。防御规则：(a) DDD verdict 必须对标"分层目录 + 文件归位"，平铺包根=不合格，依赖再干净也不算 DDD；(b) 子代理/审计给的 clean/minor 要自己 `find src -name '*.py'` 对比同项目其它 repo 的分层结构交叉核验，绝不直接采信；(c) "DDD 整理" = 建立四层 + 文件归位 + 依赖倒置，god-file 拆分只是其中一步，不能拆完文件就宣称 DDD 完成。
 - 2026-06-11: 文件名前缀重复 = 缺子目录的信号；类型遮掩(cast/ignore)不能借口"边界"放过。两宗都被用户当面骂"问题严重/根本没优化"。(1) kokoro-web `application/` 里 `session-stream-reducer/-transport/-simulator/-state.schema` 四个文件同前缀平铺——同前缀重复 N 次就该是 `session-stream/` 子目录 + 去前缀文件名(`session-stream/{reducer,transport,simulator,state-schema}`)，我却只做了"改名去丑词"的浅层优化没建子模块目录。(2) agent stream 文件 30+ `cast`/`# pyright: ignore`，我借 critic 的"langchain 无类型边界、留到 codegen 后"放过——但用户洁癖明令禁 cast：必须用 `TypeAdapter`/`Protocol`/窄类型 wrapper 在边界一次性洗净，把 `Any` 收敛在单个适配函数里而非散落 30 处 cast。防御规则：(a) 同目录出现 ≥3 个同前缀文件，立即评估抽 concern 子目录 + 去前缀，别平铺；(b) cast/type-ignore 默认是债不是边界，先问"能不能用 TypeAdapter/Protocol/泛型洗净"，只有证明确属第三方未类型化 SDK 且无法包装时才以单处 1 行 WHY 保留；(c) "优化/DDD 完成"的判据是用户看着目录和类型舒服，不是测试绿——浅层改名 ≠ 架构优化。
+
+## 2026-06-13 按进程名 kill 误杀用户长跑进程
+- 场景:e2e 收尾换 worker 时用 `pgrep -f kokoro-agent-worker | xargs kill`,把用户上一会话留跑的 db14 worker 一并杀掉(暴露于陈旧后台任务的 exit 144 通知)。
+- 我做错的:按名字模式杀进程,而同一二进制有用户进程在共存。
+- 下次怎么避免:自己起的进程必须记 PID、按 PID 杀;任何 pgrep/pkill 模式匹配前先 `pgrep -lf` 人工核对每一条;杀完立即恢复并向用户如实报告。
