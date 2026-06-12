@@ -14,14 +14,15 @@
 #
 # THREE VIEWS (deliberately different kind subsets + naming + payload fields):
 #   agent-out : raw events kokoro-agent emits (events.py / agent-event.ts inbound)
-#               snake_case wire; uses payload key `message_ref`.
+#               snake_case wire; uses payload key `segment_id` (globally-unique,
+#               agent-assigned: `${run_id}:seg_NNNN`).
 #   agui-out  : AGUI envelopes kokoro-session emits (session-event.ts /
 #               session-event-schema.ts inbound at web). snake_case wire; the
-#               session normalizer renames `message_ref` -> `message_id`,
+#               session normalizer transmits `segment_id` verbatim (no remap),
 #               text.* -> message.*, run.started -> session.created+run.created,
 #               and thinking's `text` -> `delta`.
 #   render    : the TS domain web actually consumes (session-stream-event.ts).
-#               camelCase (message_id -> messageId, tool_id -> toolId, ...),
+#               camelCase (segment_id -> segmentId, tool_id -> toolId, ...),
 #               dash-case kind (thinking.delta -> thinking-delta). run.created is
 #               parsed by web but NOT projected (mapper returns null) -> absent.
 #
@@ -77,59 +78,59 @@ kinds:
   thinking.delta:
     agent_out:
       kind: thinking.delta
-      payload: [message_ref, text]
+      payload: [segment_id, text]
     agui_out:
       event: thinking.delta
-      payload: [message_id, delta]      # message_ref->message_id, text->delta
+      payload: [segment_id, delta]      # segment_id passthrough, text->delta
     render:
       kind: thinking-delta
-      payload: [messageId, delta]
+      payload: [segmentId, delta]
 
   text.delta:
     agent_out:
       kind: text.delta
-      payload: [message_ref, text]
+      payload: [segment_id, text]
     agui_out:
       event: message.delta              # renamed text.delta -> message.delta
-      payload: [message_id, delta, role]
+      payload: [segment_id, delta, role]
       agui_out_web_extra: [format, segment]   # web inbound tolerates these optional
     render:
       kind: message-delta
-      payload: [messageId, role, delta]
+      payload: [segmentId, role, delta]
 
   text.completed:
     agent_out:
       kind: text.completed
-      payload: [message_ref, text]
+      payload: [segment_id, text]
     agui_out:
       event: message.completed          # renamed text.completed -> message.completed
-      payload: [message_id, role, content]
+      payload: [segment_id, role, content]
       agui_out_web_extra: [citations, token_usage]
     render:
       kind: message-completed
-      payload: [messageId, role, content]
+      payload: [segmentId, role, content]
 
   tool.invoked:
     agent_out:
       kind: tool.invoked
-      payload: [message_ref, tool_id, name, args]
+      payload: [segment_id, tool_id, name, args]
     agui_out:
       event: tool.invoked
-      payload: [message_id, tool_id, name, args]
+      payload: [segment_id, tool_id, name, args]
     render:
       kind: tool-invoked
-      payload: [messageId, toolId, name, args]
+      payload: [segmentId, toolId, name, args]
 
   tool.returned:
     agent_out:
       kind: tool.returned
-      payload: [message_ref, tool_id, name, result]
+      payload: [segment_id, tool_id, name, result]
     agui_out:
       event: tool.returned
-      payload: [message_id, tool_id, name, result]
+      payload: [segment_id, tool_id, name, result]
     render:
       kind: tool-returned
-      payload: [messageId, toolId, name, result]
+      payload: [segmentId, toolId, name, result]
 
   todo.updated:
     agent_out:
@@ -145,46 +146,46 @@ kinds:
   subagent.started:
     agent_out:
       kind: subagent.started
-      payload: [message_ref, subagent_id, name, description, subagent_type, source]
+      payload: [segment_id, subagent_id, name, description, subagent_type, source]
     agui_out:
       event: subagent.started
-      payload: [message_id, subagent_id, name, description, subagent_type, source]
+      payload: [segment_id, subagent_id, name, description, subagent_type, source]
     render:
       kind: subagent-started
-      payload: [messageId, subagentId, name, description, subagentType, source]
+      payload: [segmentId, subagentId, name, description, subagentType, source]
 
   subagent.finished:
     agent_out:
       kind: subagent.finished
-      payload: [message_ref, subagent_id, name, subagent_type, source]
+      payload: [segment_id, subagent_id, name, subagent_type, source]
     agui_out:
       event: subagent.finished
-      payload: [message_id, subagent_id, name, subagent_type, source]
+      payload: [segment_id, subagent_id, name, subagent_type, source]
     render:
       kind: subagent-finished
-      payload: [messageId, subagentId, name, subagentType, source]
+      payload: [segmentId, subagentId, name, subagentType, source]
 
   subagent.text.delta:
     agent_out:
       kind: subagent.text.delta
-      payload: [message_ref, subagent_id, text]
+      payload: [segment_id, subagent_id, text]
     agui_out:
       event: subagent.text.delta
-      payload: [message_id, subagent_id, text]
+      payload: [segment_id, subagent_id, text]
     render:
       kind: subagent-text-delta
-      payload: [messageId, subagentId, text]
+      payload: [segmentId, subagentId, text]
 
   subagent.text.completed:
     agent_out:
       kind: subagent.text.completed
-      payload: [message_ref, subagent_id, text]
+      payload: [segment_id, subagent_id, text]
     agui_out:
       event: subagent.text.completed
-      payload: [message_id, subagent_id, text]
+      payload: [segment_id, subagent_id, text]
     render:
       kind: subagent-text-completed
-      payload: [messageId, subagentId, text]
+      payload: [segmentId, subagentId, text]
 
   run.completed:
     agent_out:
