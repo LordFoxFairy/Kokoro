@@ -124,13 +124,13 @@ kinds:
   tool.returned:
     agent_out:
       kind: tool.returned
-      payload: [segment_id, tool_id, name, result]
+      payload: [segment_id, tool_id, name, result, is_error]
     agui_out:
       event: tool.returned
-      payload: [segment_id, tool_id, name, result]
+      payload: [segment_id, tool_id, name, result, is_error]
     render:
       kind: tool-returned
-      payload: [segmentId, toolId, name, result]
+      payload: [segmentId, toolId, name, result, isError]
 
   todo.updated:
     agent_out:
