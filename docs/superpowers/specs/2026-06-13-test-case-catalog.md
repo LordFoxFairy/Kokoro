@@ -10,7 +10,7 @@
 
 单元层最厚实且边界质量高：agent 约 80 例（13-kind 契约往返、流式/非流式/子代理路由、分段语义、schema 崩溃矩阵）、session 约 66 例（normalize 全 kind 映射、(run_id,seq) 幂等、resumeCursor 守卫）、web 的 schema/reducer/组件测试边界矩阵充分（it.each 非法形状×13、eventId 去重、seq 交错保序）。集成层以 kokoro-web 的 session-shell.test.tsx（56 例整壳集成）和三仓的 http/start-run/transport/worker 测试为骨干，happy path 与状态机边界覆盖良好，但「失败路径集成」系统性缺位——调度循环吃脏请求即整体死亡、relay 遇脏事件终态丢失、POST 失败降级触发层、模型解析崩溃无 run.failed、重启/多副本幂等，这五处跨进程静默失败全部无断言。e2e 层仅两件手工门禁资产：scripts/sse-loopback-gate.sh（真实 agent→Redis→session→SSE 链路 4 断言，含 seq 单调与 5 kind 在场）和 contract/verify.py（三仓契约字段集静态锁定 7 检查），无 Playwright 套件、无 CI 接入（.github/ 不存在，根 package.json 无聚合入口），两个门禁全靠手工记得跑——金字塔形状健康（宽单元/中集成/窄 e2e），但顶端两块门禁悬空未自动化，且中层的失败注入测试是整体最大空洞。
 
-**三层基数(补缺后)**:agent **88** pytest(8 文件)· session **74** bun test(9 文件)· web **189** vitest(15 文件)· 跨仓门禁 2(contract/verify.py 七检查 + scripts/sse-loopback-gate.sh 四断言)。盘点时为 80/66/175。
+**三层基数**:agent **140** pytest · session **78** bun test · web **236** vitest · 跨仓门禁 2(contract/verify.py 七检查 + scripts/sse-loopback-gate.sh 四断言)。沿革:盘点 80/66/175 → §7 补缺 88/74/189 → tool-error 轮 133/76/221 → **item 3 补强(2026-06-14)140/78/236**(见 §7.2)。CI 接入已补:四仓各 `.github/workflows`(全绿);e2e 真实效果由 Playwright MCP 插件驱动真实浏览器验证(见 §7.2),非 committed 套件。
 
 ---
 
@@ -1609,6 +1609,40 @@
 | 8 | `cors-preflight` | integration 级断言：allowlist 命中回显 allow-origin+vary、非 allowlist 不回头但业务照常、OPTIONS→204 | KOKORO_WEB_ORIGIN 配错（如带尾斜杠）时浏览器全量拦截而服务端无感知，前后端联调静默失败 | kokoro-session/tests/http.test.ts 增：①带 origin: http://localhost:3000 的 GET 断言 access-control-allow-origin 回显且 vary: origin②OPTIONS 任意路径断言 204 空体③origin: http://evil.example 断言无 allow-origin 头但响应体正常 |
 | 9 | `web-switch-conversation` | integration 级断言：流式中切换会话时旧流句柄被 close 且旧流事件不折进新会话；切回带 pendingInput 会话可再续传 | 防串流失守=旧 run 的 SSE 事件写入错误会话（跨会话数据串写），新建对话已有此断言但切换路径没有 | kokoro-web/tests/interfaces/session-stream/session-shell.test.tsx [sessions] 增：流式中（startReply 桩句柄未 settle）点击另一会话，断言①句柄 close 恰 1 次②目标会话 log 不含旧流内容③切回原会话时 reattach 被触发（reattachedRef 重置语义） |
 | 10 | `web-rail-collapse-resize` | 全层级零测试：折叠切换、clampRail 钳制边界、拖拽监听清理 | 纯渲染交互，最坏情况是布局瑕疵（负宽/反转区间），风险最低但目前完全裸奔 | 新建 kokoro-web/tests/interfaces/session-stream/use-rail-resize.test.tsx：clampRail 参数化矩阵（200 下限/420 上限/容器极窄 max<min 时回 RAIL_MIN 绝不返负）+ session-shell 折叠态 data-rail-collapsed 下分隔条不渲染 |
+
+---
+
+## 7.2 item 3 补强执行记录(2026-06-14)
+
+§7 的 10 个最高危缺口已于 2026-06-13 清账。本轮(item 3「完美测试用例」)按**价值驱动、拒绝覆盖率表演**补强剩余真实工作面:补可测的逻辑缺口、修正陈旧标记、用真实浏览器 e2e 覆盖 jsdom 测不了的部分。
+
+**Phase A — 逻辑 partial 补测(+9)**
+| 流程 | 补什么 | 文件 |
+|---|---|---|
+| `subagent-runtime-flow` (#55) | StructuredTool 协程本体此前零断言:新名注册+文本提取 / 同名复用既有 spec(不用调用参数,断言 runner 用已注册 prompt)/ 空输出回 '' / 无 AIMessage 回 '' / sync func 抛 RuntimeError | agent `test_runtime_subagent_protocol.py` +5 |
+| `thinking-delta-flow` (#51) | 防空泡不变量:空 reasoning_content 不发 thinking.delta;有 reasoning 无正文不发空 text.stream | agent `test_run_agent.py` +2 |
+| `http-routing-error-envelope` (#45) | 错误方法落 404 契约(POST /stream、DELETE /runs);非 Zod 内部错(publish 抛)落 500+message 信封 | session `http.test.ts` +2 |
+
+**Phase B — 交互 partial 补测(+15)**
+| 流程 | 补什么 | 文件 |
+|---|---|---|
+| `web-presentation-status` (#28) | modePresentation 纯展示映射此前零直接测试:六态(failed/idle/connecting/preview/live)× Fast/Thinking × 流式与否的文案矩阵全覆盖 | web `mode-presentation.test.ts` +15 |
+
+**陈旧标记修正(不为旧标记 padding)**
+- `replay-stream-write` (#40):start-run.test.ts 已 `replayStore.read()` 直接断言精确写入(102/127/162/188 行),partial 标记陈旧 → 实为 covered。
+- `model-resolution-flow` (#58):默认/自定义/thinking effort/fake/非法 + 畸形 ×5 已充分 → 实为 covered。
+- `worker-main-loop` (#46):run_once 批量排空已覆盖(#47 ✅);main_loop 是 `while True` 无限 glue,不写 flaky 测试。
+
+**Phase C — Playwright MCP 真实浏览器 e2e**(覆盖 jsdom 测不了的真实渲染/交互;用 MCP 插件驱动,非 committed 套件)
+隔离栈 web :3100 → session :3002 → redis db10 → fake worker,逐项实证:
+- 发送 → **live 流式**(transport「实时会话已连接」)→ 落定;过程块「处理过程·2 个工具」+ 工具行 `now` + 计划 1/2;首条后模式锁「Fast(本轮已锁定)」;会话入侧栏 + 自动标题。
+- **autoresize**:textarea 31.5px→80px(真实换行布局,jsdom 不可测)。
+- **刷新持久化 + SSR 水合首帧**:reload 后无 hero、thread 从 localStorage 复原。
+- **rail 折叠**:data-rail-collapsed=true + 分隔条不渲染(#13)。
+- **交叉验证**:真实 UI 的 transport label(idle+!msg→「等你发出首条消息」/ live→「实时会话已连接」/ idle+msg→「已准备继续」)与 Phase B 的 modePresentation 单测矩阵逐条吻合。
+- 纪律:测后清 demo localStorage;全程未碰用户 :3000/:3001/db0/db14。
+
+**基数**:agent 133→**140** · session 76→**78** · web 221→**236**;三仓 typecheck/lint/test + agent pyright/ruff 全绿。
 
 ---
 
