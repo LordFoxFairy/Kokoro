@@ -21,8 +21,9 @@ kinds=$(printf '%s' "$raw" | sed -n 's/^event: *//p' | sort -u)
 echo "--- SSE event kinds for $run_id ---"; printf '%s\n' "$kinds" | sed 's/^/  /'
 
 missing=0
-# fake-model run normalized to AGUI: session.created(once) + run.created + todo + message + run.completed
-for k in session.created run.created todo.updated message.completed run.completed; do
+# fake-model run normalized to AGUI: session.created(once) + run.created + todo
+# + built-in now tool (invoked/returned) + message + run.completed
+for k in session.created run.created todo.updated tool.invoked tool.returned message.completed run.completed; do
   printf '%s\n' "$kinds" | grep -qx "$k" || { echo "FAIL: missing $k"; missing=1; }
 done
 [ "$missing" = 0 ] || exit 1
