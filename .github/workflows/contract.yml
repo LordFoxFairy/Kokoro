@@ -35,3 +35,6 @@ jobs:
       - run: pip install pyyaml
       - name: contract verify
         run: python3 contract/verify.py
+      # codegen 门禁：events.yaml 改了但忘了重生成镜像 → --check 非零。
+      - name: contract generate --check
+        run: python3 contract/generate.py --check

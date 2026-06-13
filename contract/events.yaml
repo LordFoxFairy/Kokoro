@@ -54,6 +54,7 @@ run_completed_status: [completed, cancelled, timeout]
 # (present at web schema top-level; absent from session envelopeFields — it lives in
 # each arm's literal). render uses camelCase + a `kind` discriminant.
 envelope:
+  agent_out: [run_id, seq]
   agui_out: [event_id, seq, session_id, conversation_id, run_id, timestamp]
   render: [eventId, seq, sessionId, conversationId, runId]
 
@@ -242,6 +243,7 @@ enums:
   message_role: [assistant, user]
   subagent_source: [built-in, config-custom, runtime-custom]
   todo_status: [pending, in_progress, completed]
+  run_completed_status: [completed, cancelled, timeout]
 
 # field-name -> type. DEFAULT (any field not listed) = string_nonempty
 # (zod `z.string().min(1)` / py str / ts string). Only exceptions listed.
@@ -260,6 +262,15 @@ field_types:
   todos: todo_list         # array of {content: string, status: todo_status}
   citations: array_unknown # z.array(z.unknown())
   token_usage: unknown     # z.unknown()
+  role: enum:message_role  # canonical; agui producer overrides to string (view_field_types)
+  status: enum:run_completed_status  # canonical; web consumer relaxes (view_field_types)
+
+# Per-view field-type overrides — deliberate producer/consumer divergence.
+view_field_types:
+  agui_out:
+    role: string_nonempty  # session producer keeps role a plain non-empty string
+  web:
+    status: string_nonempty  # web relaxes status enum -> any non-empty terminal (see notes)
 
 # Fields optional in the render union (camelCase). web wire-in optionals are
 # already declared per-kind via `agui_out_web_extra`.
