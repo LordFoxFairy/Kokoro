@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-06-14 (真实 tool-error 端到端 + stream 交错调查 + 质量评估)
+- **交错 stream 调查**(用户探针 text→tool→text、第三段生成中):实证 + 单测确认布局正确——分段归属(文本块 complete 后工具开新段,工具挂在它产出的那段答案下);三相位(工具到+text 未到→forming / text 流式→streaming+caret / 落定)全钉死。web `8da29bb`。
+- **真实 tool-error 端到端接通**(跨四仓):agent on_tool_error→tool.returned(is_error)按名分派(子代理失败发 subagent.finished 不卡 running、不冒伪红行;todo 静默;空异常回落类型名)+ 集成顺序护栏;contract events.yaml tool.returned 加 is_error;session 两端 strict required + 透传;web optional+default 宽容消费 + reducer is_error→status error+errorText + tool-call-row 红色面板 + D2 失败摘要复活(子集语义「N 个工具(K 失败)」)。commits agent `1348305`+`9150364` / session `72533fc`+`3243b6b` / contract `16f5f0a` / web `d3cac11`+`93b0982`。两轮对抗复核(15→7 确认全修)。真机:注入失败工具显红+错误面板+摘要聚合;is_error 信封端到端流过 replay;SSE gate + contract 6 镜像 PASS;agent 133/session 76/web 221 绿。**部署约束(记录)**:改 agent 契约必须重启 session(旧 strict 拒收新字段→skip-and-continue 丢事件)。
+- **质量评估** `docs/superpowers/specs/2026-06-14-quality-assessment.md`:八维度评分(总评≈8.0;契约 9/架构 8.5/stream 8.5/UI 8/整洁 8.5/测试 7.5/文档 8/可观测性 5)+ 顶级差距(几乎全在 CI/e2e 自动化/可观测性=打磨非功能)+ HITL 等能力的架构缝(control stream 已文档化留缝)+ 打磨路径(P0 CI 自动化 + Playwright 套件,内核已顶级不需大动)。**用户边界:不拓展功能,打磨现有到顶级利于维护**。
+
+
 - Date: 2026-06-13 (X1 自定义工具接入 + X1-b 对抗复核加固 — 完成)
 - **X1 内置工具**(agent `89eb47d`/`2be8316`):`infrastructure/builtin_tools.py` 注册表 + `now`/`fetch_url` + 撞名守卫(import 期 fail-loud)+ 事件流 8k 截断;`_build_agent` 接入;fake 脚本插 now → SSE gate 升级为必含 tool.invoked/tool.returned;httpx 直接依赖(`UV_NO_CONFIG=1 uv lock` 修复 churn)。真实 LLM 问时间触发 now → 工具行渲染(e2e-5)。
 - **X1-b 对抗复核**(19-agent workflow `wf_49db9fbc-452`,4 lens × 裁决):15 原始 → 10 确认,agent `0a27f27` 修 8 + 否决 2(有理由)。**SSRF major**:复现了 302 重定向把 169.254 metadata 拉回上下文 → follow_redirects=False + 手动逐跳 DNS 解析后 IP 复校验(防 rebinding)。**关键**:block list 精确(loopback/link-local/unspecified/multicast/RFC1918),**不用宽泛 is_private/is_reserved**——后者拦 198.18.0.0/15,而 TUN 代理把公网域名映射到该段,误拦会废掉代理环境所有抓取(本机正是 TUN:example.com→198.18.2.194)。结果:127/169.254/192.168 真拒,example.com 真抓 559 字符。墙钟 timeout + 字节限流 + identity 编码。126 pytest/pyright 0/ruff 净。真实 LLM `fetch_url(example.com)` → 工具行展示 args+HTML → 模型答出页面大意(e2e-6)。否决 #4(守卫全工具集会拒掉合法的 agent-名运行时工具)+ #10(now 已证通用管线,低 ROI)。
