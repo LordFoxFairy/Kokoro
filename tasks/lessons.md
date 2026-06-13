@@ -21,3 +21,8 @@
 - 场景:`uv add httpx` 后按惯例 `git checkout uv.lock`,把合法 lock 变更也撤了,pyproject/lock 漂移(`uv sync --locked` 失败),且首次提交漏掉 lock。
 - 我做错的:把"撤销 aliyun churn"惯性应用到真正的依赖变更上;提交前没跑 `uv sync --locked` 验一致性。
 - 下次怎么避免:依赖变更后用 `UV_NO_CONFIG=1 uv lock` 重锁——绕开本地 aliyun 镜像配置,产出官方源最小 diff,可直接提交;任何 pyproject 依赖改动的提交前必跑 `UV_NO_CONFIG=1 uv sync --locked`(本地镜像配置下裸跑 --locked 会因 index 不匹配误报)。日常 `uv run` 后的 checkout 惯例仅适用于无依赖变更场景。
+
+## monorepo 收敛提案被否（2026-06-14）
+- 场景：item 4 架构打磨，我把"4 独立仓 → monorepo 收敛"作为大胆优化建议提出。
+- 我做错的：把跨仓 contract CI 的摩擦当成"该合并"的论据。用户明确否决——"本来就是四个独立子仓库，为什么放一个大仓"。4 仓拆分是**有意的架构**（独立可部署：agent Python worker / session TS server / web Next.js，各自 runtime、各自 remote、各自 CI）。
+- 下次怎么避免：**不再提 monorepo 收敛**。跨仓契约的"双向维护"摩擦用 **codegen 单源生成**解决（generator 在 root，生成进 4 仓镜像），而非合并仓库。架构打磨一律在 4 仓结构内做。

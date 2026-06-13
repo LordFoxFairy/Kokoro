@@ -229,3 +229,44 @@ agui_only:
       payload: [run_id]
     render:
       absent: true                      # parsed at web wire, not projected
+
+# ===========================================================================
+# CODEGEN ENRICHMENT (read by contract/generate.py; verify.py ignores these
+# top-level keys). yaml stays the single source — generate.py emits the 5
+# schema mirrors from kinds + field_types below. See
+# docs/superpowers/specs/2026-06-14-contract-codegen-design.md.
+# ===========================================================================
+
+# Named enums referenced by field_types as `enum:<name>`.
+enums:
+  message_role: [assistant, user]
+  subagent_source: [built-in, config-custom, runtime-custom]
+  todo_status: [pending, in_progress, completed]
+
+# field-name -> type. DEFAULT (any field not listed) = string_nonempty
+# (zod `z.string().min(1)` / py str / ts string). Only exceptions listed.
+# Types are globally consistent by field semantics across all views.
+field_types:
+  delta: string            # zod z.string() (empty allowed) / ts string
+  content: string
+  text: string
+  result: string
+  description: string
+  role: enum:message_role
+  source: enum:subagent_source
+  is_error: boolean
+  retryable: boolean
+  args: record             # z.record(z.unknown()) / Record<string, unknown>
+  todos: todo_list         # array of {content: string, status: todo_status}
+  citations: array_unknown # z.array(z.unknown())
+  token_usage: unknown     # z.unknown()
+
+# Fields optional in the render union (camelCase). web wire-in optionals are
+# already declared per-kind via `agui_out_web_extra`.
+render_optional: [finalMessageId, retryable, requestId]
+
+# Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
+notes:
+  envelope.seq: "seq：session 透传 agent 的一等发射序号，是真实发射顺序的唯一排序源。"
+  tool.returned.is_error: "严格 required：生产端始终发送；缺失即 fail-loud，绝不用默认 false 掩盖真失败。无兼容兜底。"
+  run.completed.status: "web 放宽到任意非空终态：新终态绝不 strict-parse 成 null 卡死客户端。"
