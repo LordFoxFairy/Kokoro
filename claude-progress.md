@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-06-14 (收尾当前:去兼容写法 + CI 自动化 / 路线图)
+- **铁律:禁止兼容写法**(用户强调)。立即应用:web is_error 从 `.optional().default(false)` 改严格 required(去掉"容忍旧事件缺字段"的兼容兜底——缺失即 fail-loud,绝不默认 false 掩盖真失败)。web `ed9ddb5`。
+- **CI 自动化**(P0,把已有门禁固化):4 仓各加 `.github/workflows`——agent(ruff+pyright+pytest)/ session(tsc+lint+bun test)/ web(tsc+lint+vitest+build)/ root(跨仓 contract verify,checkout 三 sibling 仓)。跑的是本地一直全绿的同一批命令。commits agent `a43f1d8` / session `3b2ce10` / web `e41e24a` / root `0712f64`。**注**:CI 未推送(需用户 push 才激活);跨仓 checkout 若私有仓需配 PAT(已注明);首次 run 验证环境(无法本地跑 Actions)。
+- **大胆优化建议(铁律 7)**:四仓独立(非 submodule)+ 分支各异 + 跨仓 contract CI 需 checkout sibling = 真实摩擦。**monorepo 收敛**是明确优化方向(原子跨层提交、单分支、contract CI 平凡),列为技术架构打磨项(下一轮 item 4)。
+- **路线图(用户定)**:本轮收尾当前→下一轮 item 2(产品需求手册:多文档目录 + 新增规范)/ item 3(完美测试用例,含 Playwright e2e 套件)/ item 4(技术架构打磨,含 monorepo 讨论)→ 之后接 **Langfuse**(observability,先 langfuse 后 langsmith)。Playwright 套件归入 item 3。
+
+
 - Date: 2026-06-14 (真实 tool-error 端到端 + stream 交错调查 + 质量评估)
 - **交错 stream 调查**(用户探针 text→tool→text、第三段生成中):实证 + 单测确认布局正确——分段归属(文本块 complete 后工具开新段,工具挂在它产出的那段答案下);三相位(工具到+text 未到→forming / text 流式→streaming+caret / 落定)全钉死。web `8da29bb`。
 - **真实 tool-error 端到端接通**(跨四仓):agent on_tool_error→tool.returned(is_error)按名分派(子代理失败发 subagent.finished 不卡 running、不冒伪红行;todo 静默;空异常回落类型名)+ 集成顺序护栏;contract events.yaml tool.returned 加 is_error;session 两端 strict required + 透传;web optional+default 宽容消费 + reducer is_error→status error+errorText + tool-call-row 红色面板 + D2 失败摘要复活(子集语义「N 个工具(K 失败)」)。commits agent `1348305`+`9150364` / session `72533fc`+`3243b6b` / contract `16f5f0a` / web `d3cac11`+`93b0982`。两轮对抗复核(15→7 确认全修)。真机:注入失败工具显红+错误面板+摘要聚合;is_error 信封端到端流过 replay;SSE gate + contract 6 镜像 PASS;agent 133/session 76/web 221 绿。**部署约束(记录)**:改 agent 契约必须重启 session(旧 strict 拒收新字段→skip-and-continue 丢事件)。
