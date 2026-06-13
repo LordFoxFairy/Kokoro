@@ -113,6 +113,19 @@ A1/A2/A3 全部实现 + 真机验证 + 对抗复核加固:
   - #4:B2 测试加正面断言"无空 streaming 盒"。
   - 200 vitest + tsc + lint + build 绿。
 
+## 5d. Scope C / D / B余 落地 + 合并对抗复核(2026-06-13,✅)
+
+- **C 持久化** web `b8e8f01`:过程块展开意图按 segmentId 落 localStorage(独立 UI store,不污染域),刷新保留。真机证实展开→刷新→仍展开。
+- **D 密度** web `bb4d2dd`:D1 chevron 可展开提示(可达,保留);D2 失败摘要(移除,见下)。
+- **B余** web `58ec26d`:#7.6 长思考 CSS scroll-shadow fade(双态验证:溢出显/滚到底隐);#7.2 分析为正常流程不可达,回归测试钉死正确行为。
+- **合并对抗复核** `wf_f5cc903e-f0a`(5 lens,16→8 确认),web `49c44db` 修:
+  - #1+#2+#3 disclosure store 加固:parse 逐值 boolean 校验(不可信边界)+ 对齐姊妹 use-persistent-store 的 raw 比对回读 + storage 事件跨标签页同步(+4 store 测试)。
+  - **#4(major):D2「K 个失败」是死代码**——reducer 实证 tool.status 只设 running/done,永不 error(工具错误以文本返回、status 仍 done)。判断:**移除 D2**(不留投机性死代码),不在 UI pass 里偷偷跨四仓 wire is_error。真实 tool-error 端到端接通(agent ToolMessage.status → contract is_error → 渲染红色失败)列为**独立 capability 任务**(待用户决策)。
+  - #7 强化「survives fresh mount」测试:清 module 缓存证明恢复来自 localStorage 而非单例存活。#8 chevron 落在 summary 内的位置断言。
+  - 215 vitest + tsc + lint + build 绿;store 重写后 C 持久化真机回归通过。
+
+---
+
 ## 6. backlog(分期)
 
 - **B 余项(延后,收益递减)**:中间段占位骨架(#7.2,该态可达性存疑)、长思考 fade-edge(纯 CSS 做干净 fiddly、价值最低)。
