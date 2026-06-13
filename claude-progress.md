@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-06-13 (X1 自定义工具接入 + X1-b 对抗复核加固 — 完成)
+- **X1 内置工具**(agent `89eb47d`/`2be8316`):`infrastructure/builtin_tools.py` 注册表 + `now`/`fetch_url` + 撞名守卫(import 期 fail-loud)+ 事件流 8k 截断;`_build_agent` 接入;fake 脚本插 now → SSE gate 升级为必含 tool.invoked/tool.returned;httpx 直接依赖(`UV_NO_CONFIG=1 uv lock` 修复 churn)。真实 LLM 问时间触发 now → 工具行渲染(e2e-5)。
+- **X1-b 对抗复核**(19-agent workflow `wf_49db9fbc-452`,4 lens × 裁决):15 原始 → 10 确认,agent `0a27f27` 修 8 + 否决 2(有理由)。**SSRF major**:复现了 302 重定向把 169.254 metadata 拉回上下文 → follow_redirects=False + 手动逐跳 DNS 解析后 IP 复校验(防 rebinding)。**关键**:block list 精确(loopback/link-local/unspecified/multicast/RFC1918),**不用宽泛 is_private/is_reserved**——后者拦 198.18.0.0/15,而 TUN 代理把公网域名映射到该段,误拦会废掉代理环境所有抓取(本机正是 TUN:example.com→198.18.2.194)。结果:127/169.254/192.168 真拒,example.com 真抓 559 字符。墙钟 timeout + 字节限流 + identity 编码。126 pytest/pyright 0/ruff 净。真实 LLM `fetch_url(example.com)` → 工具行展示 args+HTML → 模型答出页面大意(e2e-6)。否决 #4(守卫全工具集会拒掉合法的 agent-名运行时工具)+ #10(now 已证通用管线,低 ROI)。
+- **X2 stream-event 交互 + UI 设计**:已写设计 spec `docs/superpowers/specs/2026-06-13-stream-continuity-design.md`(Scope A 连续性优先,用户选定);现状地形图调研完成。**待实现**:A1 共享气泡骨架(forming→streaming→settled 同盒交叉淡变)/ A2 过程块 grid 高度呼吸 / A3 摘要交叉淡变。纯组件+CSS,不碰 reducer/store。下一步先 brainstorming 确认细节再落,每步 Playwright 真机复验。
+- 教训 tasks/lessons.md 新增:按进程名 kill 误杀用户 db14 worker(已恢复);uv.lock 合法依赖变更别惯性 checkout(用 UV_NO_CONFIG relock + uv sync --locked 验)。
+
 - Date: 2026-06-13 (goal 六项:测试体系 + 真实效果 + 扩展性设计 — 全部完成)
 - **《测试用例总目录》**(`docs/superpowers/specs/2026-06-13-test-case-catalog.md`):8 代理盘点 workflow → 62 流程 × 单元/集成/e2e 矩阵(291 边界/失败复选项)+ 10 个分级缺口,**全部清账**(执行记录在 §7):4 项行为修复(脏请求杀调度循环/脏事件吞终态/坏模型崩 worker/event_id 随机致重放不幂等→确定性派生 `evt_{run_id}_{seq}_{event}`)+ 6 组钉死测试。测试基数 80/66/175 → **88/74/189**,session ZodError 500→400。
 - **两个 e2e 逼出的真实 bug 已修**:① web reattach effect 在 live run 中二次订阅并覆盖句柄(泄漏 + 重连中闪现;onLive 预占 reattachedRef,web `60490c8`);② **translator 丢弃带 tool_calls 的中间叙述 → 真实 LLM 答案实质丢失**(用户只见 57 字收尾句;修复后叙述独立成段,真实 LLM 复验 1501 字完整回答,agent `463e8a9`)。
