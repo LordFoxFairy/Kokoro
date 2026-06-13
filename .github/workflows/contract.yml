@@ -1,0 +1,36 @@
+name: Contract
+
+# 跨仓契约门禁:contract/events.yaml 是单源,verify.py 校验 6 镜像(agent/session/web)一致。
+# 四仓独立(非 submodule),故 CI 把三仓 checkout 进相对路径再跑 verify。
+# 注:这种"跨独立仓校验"的别扭正是 monorepo 收敛的论据(见 quality-assessment 架构打磨项)。
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: LordFoxFairy/kokoro-agent
+          ref: feat/three-repo-loop
+          path: kokoro-agent
+          # 若 sibling 仓为私有,需配置一个有读权限的 PAT secret 并在此传 token:。
+      - uses: actions/checkout@v4
+        with:
+          repository: LordFoxFairy/kokoro-session
+          ref: feat/three-repo-loop
+          path: kokoro-session
+      - uses: actions/checkout@v4
+        with:
+          repository: LordFoxFairy/kokoro-web
+          ref: feat/bootstrap-shell
+          path: kokoro-web
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: contract verify
+        run: python3 contract/verify.py
