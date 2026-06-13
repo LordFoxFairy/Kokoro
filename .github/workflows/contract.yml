@@ -32,5 +32,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      - run: pip install pyyaml
       - name: contract verify
         run: python3 contract/verify.py
