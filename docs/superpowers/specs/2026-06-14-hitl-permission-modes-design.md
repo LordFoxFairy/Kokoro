@@ -14,6 +14,16 @@
 
 > 默认 `auto`:不传即现有行为,零破坏。
 
+## 需拦截确认的工具 = 显式可配置集（用户强调的常见模型）
+
+更常见的用法不是靠 mode 一刀切，而是**默认 auto 全自动，但把个别敏感工具设为「需拦截确认」**。
+因此 `permission.py` 用显式集 `REQUIRES_APPROVAL`（默认 `{fetch_url}`）承载「哪些工具要拦」——
+要拦更多工具往里加名字即可。`blocked_tools(mode)`:auto 不拦 / default 拦 `REQUIRES_APPROVAL` /
+plan 在此基础上再拦执行类(`agent` 子代理)只读规划。
+
+> 注:本轮「拦截」是**确定性拦下并回拦截结果**(模型据此调整);真·交互式「暂停→人确认→恢复」
+> 见下方 follow-up（需反向通道）。
+
 ## 钩子(本轮实现范围)
 
 `infrastructure/permission.py`:`PermissionMode` 枚举 + `tool_allowed(mode, tool_name) -> bool` 策略 +
