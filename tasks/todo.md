@@ -112,3 +112,25 @@ Key finding: `deepagents 0.6.6` `create_deep_agent(model, tools, system_prompt=,
 - [x] 真实 LLM e2e 实证:完整回答(修 translator 中间叙述丢弃)、刷新中断恢复、todo 4/4、4 张截图。
 - [x] 《能力扩展架构设计》:工具/workspace/teams/HITL 分期 + 新 kind SOP。
 - [ ] (后续可选)X1 自定义工具首落地;T1a 双 run 并发幂等 e2e;web lint 警告保持零。
+
+## H. HITL/chatbot 缺陷打磨 (设计 2026-06-14,用户全选 + 分层指令)
+
+设计原则(用户定):**各层各管自己的**——agent=执行+自己的 LLM 上下文记忆(可压缩);
+session=传输/relay/replay(不碰会话记忆);web=UI+完整展示历史+发 input/决定/取消。
+
+### 控制协议统一(支撑 #2/#3/#8)
+control 消息(非 codegen,手定): `{kind:"control", decision:"approve"|"reject"|"cancel", tool_id?}`
+- approve/reject 带 tool_id → gate 按自己的 tool_id 匹配(废弃 DecisionCursor 顺序游标);
+  reject 不带 tool_id = 广播(放弃 run 时 reject 全部待批)。
+- cancel = 取消整个 run(worker 取消该 run 的 task)。
+- web: 审批按钮带 toolId;stop/放弃 发 reject(广播) + cancel;session control 端点透传 decision+tool_id;agent gate/worker 消费。
+
+### 增量(逐个 TDD + 门禁绿 + 真机验证)
+- [x] #1 worker 并发化(agent only,无契约) DONE(agent 05514b2,8+160 pytest):`_serve` 每 run 一个 asyncio task + 有上限 Semaphore;processed 去重在 spawn 前同步;task 异常不崩 loop。修「awaiting 冻结全局」。
+- [ ] #8 取消(agent+session+web):control 加 cancel;worker 每 run 起 cancel-watcher 读 control 流→`task.cancel()`→发 run.completed(status=cancelled);web stop 发 cancel。
+- [ ] #2/#3 决定精确对应(agent+session+web):control decision 带 tool_id;gate 按 tool_id 匹配(去 DecisionCursor);reject 无 tool_id=广播全部待批。
+- [ ] #7 记忆(agent only,各管各的):create_deep_agent(checkpointer=持久 saver);run_agent 传 config thread_id=conversation_id;agent 跨 run 记上文(后续加压缩 middleware)。web/session 不变。
+- [ ] #4 超时文案:区分「审批超时」vs「用户拒绝」(rejected 仍 true,reason 不同)。
+- [ ] #5 control POST 错误处理(web):fetch 失败不静默。
+- [ ] #6 plan 模式语义:厘清/文档化交互审批 vs 只读。
+- [ ] #9 worker processed set 有界(LRU/按完成清理)。
