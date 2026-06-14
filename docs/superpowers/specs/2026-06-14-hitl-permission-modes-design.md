@@ -41,13 +41,15 @@ codegen 范围)。session `http.ts` 读 `?permission_mode=` query → `start-run
 
 ## 落地范围 vs follow-up
 
-**本轮(简单确定性门)**:
+**已落地**:
 - Kokoro 注入工具(fetch_url / runtime-agent)按模式 deny;契约 + session 透传 + agent 测试。
-- web UI 选择器**延后**(默认 auto,query param 可用,UI 不影响后端正确性)。
+- web composer Auto/Default/Plan 选择器(会话级,默认 Auto)。
+- **✅ deepagents 内部文件系统工具门控**:`fs_permissions(mode)` 经 `create_deep_agent(permissions=)`,
+  plan 只读(`deny write` → 拦 write_file/edit_file,放行 ls/read_file/glob/grep);auto/default 不限。
+  真机实证:plan 真模型写文件被拒(`permission denied for write`)、auto 写成功并读回。
+  (`execute` 需 sandbox backend,Kokoro 未配 → 本就不可用,无需门控。)
 
-**follow-up(更完整 HITL,均有现成机制)**:
-- deepagents **内部工具**(execute / write_file / task)门控:用 deepagents `permissions`
-  (FilesystemPermission,管文件)+ plan 只读文件系统。
+**follow-up(更完整 HITL,需反向通道)**:
 - **交互式 ask**(真·human-in-loop:暂停→web 确认→恢复):deepagents `interrupt_on=` + `checkpointer`
   + per-run control stream(`kokoro:run:<id>:control`)+ session `POST /runs/:id/control` + web 审批 UI。
   这是反向通道,工作量大,独立实现。
