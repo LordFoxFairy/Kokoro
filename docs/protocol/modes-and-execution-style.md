@@ -40,13 +40,14 @@ v1 只定义两档：
 ## `thinking`
 
 - 允许更丰富的进度摘要
-- 允许出现 `thinking.summary` 一类事件
+- 未来可以出现 `thinking.summary` 一类事件，但在它被写入 `session-stream.md` 之前，只能视为预留示例，不是当前浏览器流保证
 - 适合复杂任务、需要 plan / refine 的场景
 - 暴露的是**可给用户看的摘要**，不是原始 chain-of-thought
 
 ## Rules
 
-- execution style 由 `run.mode.selected` 事件显式记录
+- 当前浏览器侧最小事件闭环仍以 `session-stream.md` 为准；mode 文档先定义产品语义，不单独扩张 stream 合同
+- 若未来需要把 execution style 作为可 replay 的显式信号恢复到浏览器，应先把类似 `run.mode.selected` 的事件写入 `session-stream.md` 并同步运行时 schema/tests
 - `fast` 与 `thinking` 共享同一聊天壳，不分裂成两个页面
 - execution style 不等于权限模式：`thinking` 不自动意味着更高权限
 - phase 1 允许只有轻量 UI 呈现，不要求完整 reasoning 可视化系统

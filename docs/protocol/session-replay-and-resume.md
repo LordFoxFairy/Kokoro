@@ -49,7 +49,7 @@ A client that reconnects with the latest acknowledged cursor must be able to:
 - 客户端必须按 `event_id` 去重
 - `message.completed` 覆盖对应 `message_id` 的最终内容
 - `run.completed` / `run.failed` 重复到达时只收敛状态，不重复渲染 toast / banner
-- `artifact.available` 对同一 `artifact_id` 重放时只更新已有卡片
+- 若未来把 `artifact.available` 升格进当前 session stream contract，则同一 `artifact_id` 的重放只应更新已有卡片，而不是重复插入
 
 ## Error envelopes
 

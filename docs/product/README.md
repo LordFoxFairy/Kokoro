@@ -15,7 +15,7 @@
 | [01-strategy](./01-strategy/) | 目标用户、价值主张、差异化、增长引擎、商业模式 | 🟡 部分填充 |
 | [02-personality](./02-personality/) | 人格定调、Voice & Tone、视觉语言、品牌资产 | 🟢 主体已定（[ADR-001](../decisions/ADR-001-product-personality.md)） |
 | [03-product-form](./03-product-form/) | 产品形态、核心流程、功能地图、Canvas 主打类型 | 🟡 形态已定，细节待填 |
-| [04-architecture](./04-architecture/) | IA、导航、模式、记忆与上下文、权限层级 | 🟡 框架已定 |
+| [04-architecture](./04-architecture/) | IA、导航、模式、记忆与上下文、权限层级、三主仓运行时链路 | 🟡 框架已定 |
 | [05-design-system](./05-design-system/) | tokens、组件、动效、交互模式 | 🔴 待填（待人格视觉细化） |
 | [06-screens](./06-screens/) | 首屏、对话、Canvas、分享、模板、库、设置 | 🔴 待填（待 IA 锁定） |
 | [07-growth](./07-growth/) | 引擎拆解、分享一等公民、模板市场、病毒循环、指标 | 🟢 框架已定 |
