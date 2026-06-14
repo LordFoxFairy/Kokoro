@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-14 (reject 超时档彻底修 — 后端确定性信号 tool.returned.rejected,replay 安全)
+- **上一条目「遗留警示:reject 超时档显绿勾」已彻底修**(用户:做就做好,选「完整契约字段保留石板灰」)。根因:reject(用户点 / 90s 超时回退)都以 tool.returned is_error=false 回流,web 单靠客户端乐观,**replay/重连会把已批准成功的工具也误判**(approve 与 reject 都是 awaiting→returned,状态无法区分)。解法 = **后端把「拒绝」写进事件流**:
+  - 契约(root `d95229c`):tool.returned 加可选 `rejected` 布尔(agent_out/agui_out/render);generate.py 加 `payload_optional` 机制(新可选字段在常路省略,不强制 fail-loud)。codegen 重生成 5 镜像,verify PASS。
+  - agent(`2f0e4bd`):`control.rejection_result(name)` 单一来源(门返回它 / translator 据此识别);`stream_translator.on_tool_end`:result==rejection_result(name) → `rejected=true`(门拒绝走 on_tool_end 返回文案、不抛异常,故 run 仍正常收尾)。
+  - session(`488f0f4`):normalize 透传 rejected(缺省省略)。
+  - web(`67a6150`):mapper 带上 rejected;reducer `rejected=true → "rejected"`(仍保留乐观点击的即时反馈);无 flag 的普通返回仍 done。
+- **真机端到端实证(隔离栈 session :3003 + 真 LLM worker db11 + web :3101,Default 模式)**:点拒绝 → **redis 事件流里 tool.returned 真带 `"rejected": true`**(后端写的,非乐观)→ UI 石板灰「未执行」→ **整页刷新后仍是 rejected 不回绿**(截图 hitl-3,gitignore)。超时档与点击档走**同一个门返回路径**(await_decision→reject→rejection_result),故同一机制覆盖;另有 reducer 单测专钉「超时路径」(tool.returned rejected=true 无乐观 → rejected)+ 「普通返回无 flag → done」。
+- 验证:agent 159 pytest/pyright 0/ruff 净 · session 86 bun test/tsc 0 · web 249 vitest/tsc 0/lint 0 · contract verify PASS。按 task-id 拆我的栈 + flush db11;db0=419/db14=26 用户库未碰;agent uv.lock 无 churn;Playwright 后清了 demo localStorage。
+- **乐观 vs 后端**:两者并存——乐观给点击即时反馈,后端 flag 让超时 + replay/重连确定性正确(单测同时覆盖两条)。
+
 - Date: 2026-06-14 (真机截 reject 时挖出并修掉两个真 HITL bug — awaiting 在浏览器里根本不渲染)
 - **起因**:用户要「一张 reject 的截图」。起隔离真实栈(session :3003 + 真 LLM worker db11 + web :3101 走 git worktree/主仓 next dev,NEXT_PUBLIC_KOKORO_SESSION_BASE_URL 指 :3003,KOKORO_WEB_ORIGIN=:3101),Default 模式 → fetch_url 门控。截图时发现 **awaiting 审批按钮在真实浏览器里从不出现**(工具一直「运行中」),挖出两个真 bug:
   - **bug① live awaiting 永不渲染**(critical):web 的 live EventSource 按事件名逐个 `addEventListener`(SSE 是具名事件),而那张名单 `transportEventNames` 是 transport.ts 里**手维护**的、**漏了 `tool.awaiting_approval`** → 实时流里该事件被静默丢弃,审批按钮对真实用户从来没出现过。**之前的 e2e 是用 curl POST 驱动 approve 的,从没点过 UI 按钮,所以没暴露**。修:把名单**从契约 codegen 生成**(`contract/generate.py` 的 `emit_web_schema` 导出 `transportEventNames`,SSOT,再漏 kind 不可能),transport.ts 改为 import。root `c8ad713`。
