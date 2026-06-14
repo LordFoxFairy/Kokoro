@@ -237,11 +237,12 @@ def emit_web_schema(spec: dict) -> str:
         L.append(f'  event: z.literal("{event}"),')
         L.append("  payload: z")
         L.append("    .object({")
+        payload_optional = set(spec.get("payload_optional") or [])
         for fname, optional in payload:
             note = notes.get(f"{event}.{fname}")
             if note:
                 L.append(f"      // {note}")
-            opt = ".optional()" if optional else ""
+            opt = ".optional()" if optional or fname in payload_optional else ""
             L.append(f"      {fname}: {_zod_type(spec, fname, 'web')}{opt},")
         L.append("    })")
         L.append("    .strict(),")
@@ -287,7 +288,11 @@ _ENVELOPE_ZOD_SESSION = {
 def _zod_obj_inline(spec: dict, field_names: list[str], view: str) -> str:
     if not field_names:
         return "z.object({}).strict()"
-    parts = ", ".join(f"{f}: {_zod_type(spec, f, view)}" for f in field_names)
+    optional = set(spec.get("payload_optional") or [])
+    parts = ", ".join(
+        f"{f}: {_zod_type(spec, f, view)}{'.optional()' if f in optional else ''}"
+        for f in field_names
+    )
     return f"z.object({{ {parts} }}).strict()"
 
 

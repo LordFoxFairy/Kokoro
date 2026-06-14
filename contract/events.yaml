@@ -136,13 +136,13 @@ kinds:
   tool.returned:
     agent_out:
       kind: tool.returned
-      payload: [segment_id, tool_id, name, result, is_error]
+      payload: [segment_id, tool_id, name, result, is_error, rejected]
     agui_out:
       event: tool.returned
-      payload: [segment_id, tool_id, name, result, is_error]
+      payload: [segment_id, tool_id, name, result, is_error, rejected]
     render:
       kind: tool-returned
-      payload: [segmentId, toolId, name, result, isError]
+      payload: [segmentId, toolId, name, result, isError, rejected]
 
   todo.updated:
     agent_out:
@@ -268,6 +268,7 @@ field_types:
   role: enum:message_role
   source: enum:subagent_source
   is_error: boolean
+  rejected: boolean
   retryable: boolean
   args: record             # z.record(z.unknown()) / Record<string, unknown>
   todos: todo_list         # array of {content: string, status: todo_status}
@@ -285,10 +286,16 @@ view_field_types:
 
 # Fields optional in the render union (camelCase). web wire-in optionals are
 # already declared per-kind via `agui_out_web_extra`.
-render_optional: [finalMessageId, retryable, requestId]
+render_optional: [finalMessageId, retryable, requestId, rejected]
+
+# Fields optional in the strict producer/consumer payload schemas (snake_case):
+# agent_out (agent-event.ts), agui_out (session-event.ts), web transport schema.
+# Absence is a valid, meaningful default — producers omit them on the common path.
+payload_optional: [rejected]
 
 # Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
 notes:
   envelope.seq: "seq：session 透传 agent 的一等发射序号，是真实发射顺序的唯一排序源。"
   tool.returned.is_error: "严格 required：生产端始终发送；缺失即 fail-loud，绝不用默认 false 掩盖真失败。无兼容兜底。"
+  tool.returned.rejected: "可选：仅 HITL 拒绝(用户点拒绝或审批超时回退)时为 true；缺省=未拒绝。replay 安全地区别于绿勾 done。"
   run.completed.status: "web 放宽到任意非空终态：新终态绝不 strict-parse 成 null 卡死客户端。"
