@@ -1,5 +1,14 @@
 # Claude Progress
 
+- Date: 2026-06-14 (清账 — HITL/stream 三处低危遗留全部清掉,不留尾)
+- **上一条目「复核遗留(低危)」三项已全部清掉**(用户:做完不要遗留),四仓仍走 main:
+  - **#56 reject 显著区分**(web `5f5ca35`):reject 经门控工具以 is_error=false 回流(拒绝文案)→ 原路径翻绿勾 done,与成功无法区分。修:reducer 加 `rejected` 工具态 + `markToolRejected(state,runId)`;tool-returned 保留 rejected(不降级 done);`resolveStaleTools` 本就不动它。use-conversation.sendToolDecision 在 reject 时**本地乐观**置该 run 待批工具 rejected(与后端 control 信号并行)。视觉:`BanCircleIcon` 禁止圈 + 石板灰「未执行」面板 + 工具名删除线,CSS 区别于绿勾 done/红点 error。测试:3 reducer 单元 + 1 session-shell **集成测试**(awaiting 工具走真组件树点「拒绝」,transport mock)。
+  - **#57 control 流终态清理**(session `b369c27`):`StreamPort.delete(stream)`(memory 删 map / redis DEL);relayRun 终态删 `kokoro:run:<id>:control`,审批/拒绝指令不再无限留 redis。+终态删流测试。
+  - **#58 终态豁免 seq 去重**(session `b369c27` 同):normalize 中 run.completed/run.failed 豁免 (run_id,seq) 去重——复用 seq 的终态不再被吞(否则 relay 永不收束+web 永久「进行中」),web eventId 去重兜底重复终态。+终态豁免测试。
+- **#4 并行待批 tool_id 精确匹配**:复核确认**当前顺序执行 agent 下游标顺序消费已足**,非缺陷,不改(留记录)。
+- 验证:session 84 bun test/tsc 0/lint 0 · web 247 vitest/tsc 0/lint 0 · agent 未改(#55 审批超时预算 `ASTREAM_TIMEOUT_S+APPROVAL_TIMEOUT_S` 上轮已提交)。reject 路径此前真机双向验过(上条目),本轮 UI 改动以集成测试覆盖接线(awaiting→点拒绝→rejected 视觉+发后端),未重起真实 LLM 栈(低危清账,单元+集成已足)。
+- **tasks #55–#58 全 completed**。
+
 - Date: 2026-06-14 (分支收口 main + HITL/stream 对抗复核打磨)
 - **四仓统一走 main**:agent/session main 快进到 feat;web 从 feat 建 main;root main merge feat(保留 4 个早期 docs PR + 78 工作 commit,冲突取 feat)。**后续都在 main 提交**,feature 分支弃用(未删)。
 - **HITL/stream 对抗复核 + 打磨**(2 只读子代理审查 → 修高/中危):
