@@ -258,6 +258,14 @@ def emit_web_schema(spec: dict) -> str:
     L.append("export function parseTransportEvent(input: unknown): SessionTransportEvent {")
     L.append("  return sessionEventSchema.parse(input)")
     L.append("}")
+    L.append("")
+    # Single source for the live EventSource's named listeners: a hand-kept parallel
+    # list silently drops any event kind it forgets (the live stream uses named SSE
+    # events), so derive it from the contract here.
+    L.append("export const transportEventNames = [")
+    for event, _ in events:
+        L.append(f'  "{event}",')
+    L.append("] as const")
     return "\n".join(L) + "\n"
 
 
