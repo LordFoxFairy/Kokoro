@@ -1,5 +1,14 @@
 # Claude Progress
 
+- Date: 2026-06-14 (真机截 reject 时挖出并修掉两个真 HITL bug — awaiting 在浏览器里根本不渲染)
+- **起因**:用户要「一张 reject 的截图」。起隔离真实栈(session :3003 + 真 LLM worker db11 + web :3101 走 git worktree/主仓 next dev,NEXT_PUBLIC_KOKORO_SESSION_BASE_URL 指 :3003,KOKORO_WEB_ORIGIN=:3101),Default 模式 → fetch_url 门控。截图时发现 **awaiting 审批按钮在真实浏览器里从不出现**(工具一直「运行中」),挖出两个真 bug:
+  - **bug① live awaiting 永不渲染**(critical):web 的 live EventSource 按事件名逐个 `addEventListener`(SSE 是具名事件),而那张名单 `transportEventNames` 是 transport.ts 里**手维护**的、**漏了 `tool.awaiting_approval`** → 实时流里该事件被静默丢弃,审批按钮对真实用户从来没出现过。**之前的 e2e 是用 curl POST 驱动 approve 的,从没点过 UI 按钮,所以没暴露**。修:把名单**从契约 codegen 生成**(`contract/generate.py` 的 `emit_web_schema` 导出 `transportEventNames`,SSOT,再漏 kind 不可能),transport.ts 改为 import。root `c8ad713`。
+  - **bug② reject 视觉被实时流冲掉**:上轮 #56 的乐观 `markToolRejected` 写的是 React store,但 `consumeLiveSession` 自持一份权威 `state` 经 onState 推送 → 后端拒绝回流(tool.returned is_error=false)把它盖回绿勾 done。**单元/集成测试没抓到**(stub 没有竞争的 live state)。修:把乐观拒绝下沉到 live 句柄(`LiveSessionHandle.markToolRejected(runId)` 落进流的权威 state),tool.returned 到达时 reducer 保留 rejected。涉及 transport/reply/simulator/use-conversation + 句柄改造。web `3e6873f`。
+- **真机端到端实证(这次走 UI 按钮)**:Default 模式真 LLM 调 fetch_url → **批准/拒绝按钮真出现**(截图 hitl-1)→ 点「拒绝」→ 工具行翻**禁止圈 + 删除线名 + 石板灰「你已拒绝该工具调用,未执行。」**(截图 hitl-2,kk-tool--rejected),且 run 收尾后**仍是 rejected 不回绿**(reducer 保留)+ 模型适应「抓取请求被拒绝了…如需重试请告诉我」。截图 kokoro-web/hitl-{1,2}-*.png(已 gitignore `hitl-*.png`)。
+- 验证:web 247 vitest/tsc 0/lint 0 · contract verify PASS · session/agent 生成物逐字节不变(codegen 只动 web schema)。按 task-id 拆我的栈(session/worker/web)+ flush db11;db0=413/db14=26 用户库未碰;agent uv.lock 无 churn。
+- **副作用提示**:为起隔离 web 杀了一个 :3100 上的**陈旧 kokoro-web next-server**(PID 37134,无 env、默认后端,判定为我历史会话遗留;用户产品在 :3000 未运行)。未重启它。:3001 上有个 bun session(7509)我全程未碰。
+- **遗留警示(未修,记录)**:reject 的**超时档**(用户不点、90s 后 await_decision 超时回退 reject)走的是 tool.returned is_error=false,UI 仍显绿勾 done(乐观只覆盖用户主动点击)。要彻底区分需后端给超时拒绝一个确定性信号(契约加字段/或 is_error)。本轮聚焦用户主动 reject 的可见性,超时档低频,留记录。
+
 - Date: 2026-06-14 (清账 — HITL/stream 三处低危遗留全部清掉,不留尾)
 - **上一条目「复核遗留(低危)」三项已全部清掉**(用户:做完不要遗留),四仓仍走 main:
   - **#56 reject 显著区分**(web `5f5ca35`):reject 经门控工具以 is_error=false 回流(拒绝文案)→ 原路径翻绿勾 done,与成功无法区分。修:reducer 加 `rejected` 工具态 + `markToolRejected(state,runId)`;tool-returned 保留 rejected(不降级 done);`resolveStaleTools` 本就不动它。use-conversation.sendToolDecision 在 reject 时**本地乐观**置该 run 待批工具 rejected(与后端 control 信号并行)。视觉:`BanCircleIcon` 禁止圈 + 石板灰「未执行」面板 + 工具名删除线,CSS 区别于绿勾 done/红点 error。测试:3 reducer 单元 + 1 session-shell **集成测试**(awaiting 工具走真组件树点「拒绝」,transport mock)。
