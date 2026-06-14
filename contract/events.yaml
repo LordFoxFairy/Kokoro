@@ -122,6 +122,17 @@ kinds:
       kind: tool-invoked
       payload: [segmentId, toolId, name, args]
 
+  tool.awaiting_approval:
+    agent_out:
+      kind: tool.awaiting_approval
+      payload: [segment_id, tool_id, name, args]
+    agui_out:
+      event: tool.awaiting_approval
+      payload: [segment_id, tool_id, name, args]
+    render:
+      kind: tool-awaiting-approval
+      payload: [segmentId, toolId, name, args]
+
   tool.returned:
     agent_out:
       kind: tool.returned
