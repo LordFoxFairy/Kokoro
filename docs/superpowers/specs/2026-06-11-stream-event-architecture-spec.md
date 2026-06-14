@@ -40,7 +40,7 @@
 | **event_id** | session 确定性派生 `evt_{run_id}_{seq}_{event}` | web `seenEventIds` 幂等去重键 | 全局唯一;重启/多副本重放同 run 产同 id(重放幂等) |
 
 ### 关键简化:删除域 cursor
-seq 升格一等后,web 不再需要从 `run_x:NNNN` 反解顺序,SSE id 已改用 transport cursor —— **域 cursor 在 envelope 里几乎无职责**。目标态删除 `envelope.cursor`,seq 成为唯一领域排序源。三个 "cursor" 直接消掉一个,命名歧义根除。(分期 P2,需 R2 过渡期结束。)
+seq 升格一等后,web 不再需要从 `run_x:NNNN` 反解顺序,SSE id 已改用 transport cursor —— **域 cursor 在 envelope 里几乎无职责**。目标态删除 `envelope.cursor`,seq 成为唯一领域排序源。三个 "cursor" 直接消掉一个,命名歧义根除。(**✅ 已落地**,见下方进度表 P2:envelope.cursor + web parseCursorSeq + normalize cursorSeq 已删,seq 一等;2026-06-14 复核确认无残留。)
 
 ---
 
