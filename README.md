@@ -65,6 +65,12 @@ bun run dev
 
 CI：四仓各有 `.github/workflows`（agent/session/web 各自门禁 + root 跨仓契约）。
 
+## 可观测性
+
+agent 执行可经 [Langfuse](https://langfuse.com) 追踪(LLM/工具/子代理),**opt-in**:配
+`LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY`(+ 自托管设 `LANGFUSE_HOST`)即开,未配置即关、零影响。
+详见 [kokoro-agent README](kokoro-agent/README.md#可观测性langfuseopt-in)。
+
 ## 文档地图
 
 | 目录 | 内容 |
