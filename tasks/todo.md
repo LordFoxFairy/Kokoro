@@ -127,8 +127,9 @@ control 消息(非 codegen,手定): `{kind:"control", decision:"approve"|"reject
 
 ### 增量(逐个 TDD + 门禁绿 + 真机验证)
 - [x] #1 worker 并发化(agent only,无契约) DONE(agent 05514b2,8+160 pytest):`_serve` 每 run 一个 asyncio task + 有上限 Semaphore;processed 去重在 spawn 前同步;task 异常不崩 loop。修「awaiting 冻结全局」。
-- [ ] #8 取消(agent+session+web):control 加 cancel;worker 每 run 起 cancel-watcher 读 control 流→`task.cancel()`→发 run.completed(status=cancelled);web stop 发 cancel。
-- [ ] #2/#3 决定精确对应(agent+session+web):control decision 带 tool_id;gate 按 tool_id 匹配(去 DecisionCursor);reject 无 tool_id=广播全部待批。
+- [x] #8 取消 DONE(agent 9b1002d/session 5d6054d/web d1de82a+c9465be):control 加 cancel;worker 每 run cancel-watcher→task.cancel()→run.completed(cancelled);web stop/放弃发 cancel + 本地 markRunCancelled 收口。真机验证(awaiting→stop→redis cancelled,无 ghost)。
+- [x] #3 放弃解阻塞全部 DONE:由 #8 cancel 覆盖(取消整个 run→所有待批门随 task 一起死)。
+- [~] #2 并行 tool_id 精确匹配 DEFERRED:探针证实门控工具协程拿不到自己的 tool run_id(run_manager 不注入/config.run_id 为 None),不 hack langchain 内部就无法精确匹配;顺序执行(常态)无此问题,留记录。
 - [ ] #7 记忆(agent only,各管各的):create_deep_agent(checkpointer=持久 saver);run_agent 传 config thread_id=conversation_id;agent 跨 run 记上文(后续加压缩 middleware)。web/session 不变。
 - [ ] #4 超时文案:区分「审批超时」vs「用户拒绝」(rejected 仍 true,reason 不同)。
 - [ ] #5 control POST 错误处理(web):fetch 失败不静默。
