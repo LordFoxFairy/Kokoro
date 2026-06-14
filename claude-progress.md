@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-14 (HITL 交互式确认 — 真·human-in-the-loop 全链落地)
+- **交互式 HITL 完成(跨四仓 + 真机双向实证)**:被门控工具调用时**暂停→前端批准/拒绝→恢复**。架构 = **in-tool 阻塞**(工具协程内 await control 流决定,单条 astream,无需 checkpointer/resume 编排)。
+  - 契约:events.yaml 加 `tool.awaiting_approval`(14 kinds),codegen 重生成 5 镜像。root `f87c406`。
+  - agent `13c99f5`:`control.py::await_decision`(读 kokoro:run:<id>:control 首决定,超时回退 reject)+ `permission.gate_tools_interactive`(approve 跑真工具/reject 回拒绝)+ drive_agent_events 据 blocked 集在 tool.invoked 后补 awaiting + run_agent/worker 透传 control_port(同一 StreamPort)。无 control 降级确定性 deny。157 pytest。
+  - session `00696dc`:`POST /sessions/:id/runs/:rid/control?decision=` → 写 control 流;normalize 透传 awaiting。82 bun test。
+  - web `7064f15`:mapper→reducer 翻工具 status `awaiting`;tool-call-row 批准/拒绝按钮 → use-conversation `sendToolDecision` POST control;透传链 session-shell→thread→assistant-turn(按 runId 绑定)→segment-process→tool-call-row。240 vitest。
+  - **真实 LLM e2e 实证**(隔离栈 session :3003 + 真 worker + db11):plan 真模型调 fetch_url → tool.invoked + tool.awaiting_approval(**run 暂停**,无 returned)→ `POST approve` → tool.returned 真实 HTML `<title>Example Domain</title>` + 模型答出标题;**reject 对照** → tool.returned「用户拒绝」+ 模型适应「如需请重新允许」。暂停→approve 真跑 / reject 真拒,双向端到端。按 PID 拆栈 + flush db11,用户 db0/db14 未碰。
+- **HITL 现已完整**:权限模式(auto/default/plan)+ 注入工具门控(REQUIRES_APPROVAL)+ deepagents 内部 fs 门控(fs_permissions)+ web 选择器 + **交互式确认(暂停/批准/拒绝/恢复)**。follow-up 仅剩 deepagents 内部工具的交互式审批(本轮交互覆盖注入工具;内部工具是确定性只读门控)。
+
+
 - Date: 2026-06-14 (HITL 权限模式 + 真实 LLM 实证 — 续)
 - **HITL 权限门(Claude-Code 式,完成)**:确定性工具门钩子。模式 auto(默认,全放行,行为不变)/ default(拦敏感工具)/ plan(只读规划)。**「需拦截确认的工具」做成显式可配置集 `REQUIRES_APPROVAL`**(默认 `{fetch_url}`,往里加名字即可拦更多)——用户强调的常见模型(默认 auto + 个别工具配置拦截)。RunRequest 加 permission_mode(agent pydantic + session zod 手镜像,非 codegen);web `?permission_mode=` → http → start-run → run.request → agent `gate_tools` 包装注入工具(被拦回「被 <mode> 拦截」结果,复用 tool.returned 零新契约)。**web composer 加 Auto/Default/Plan 选择器**(会话级,默认 Auto,随时可切不锁;复用 ComposerMenu)。commits agent `df06114`+`b34b163` / session `5e3d51d` / web `4c327ba` / root spec `4b19a4b`+`37f1381`。agent 150 pytest/pyright 0/ruff · web 237 vitest/tsc/lint · session 80。
 - **真实 LLM 端到端实证(关键)**:隔离真实栈(session :3003 + 真实 worker + db11,OpenAI 兼容网关)实测——① plan 模式:真模型调 `fetch_url(example.com)` → **门拦下**(tool.returned「被 plan 拦截」)→ 模型优雅适应(「权限模式下被拦截…需提升信任档位」);② auto 模式对照:同请求 `fetch_url` **真执行**返回真实 HTML `<title>Example Domain</title>`。**证明 codegen'd schema 全链路 + HITL 门在真模型下确实工作且按模式条件**(此前只 fake-model 验过)。测后按 PID 拆栈 + flush db11,用户 db0/db14 未碰。
