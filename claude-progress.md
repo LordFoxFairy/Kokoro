@@ -1,5 +1,17 @@
 # Claude Progress
 
+- Date: 2026-06-14 (分支收口 main + HITL/stream 对抗复核打磨)
+- **四仓统一走 main**:agent/session main 快进到 feat;web 从 feat 建 main;root main merge feat(保留 4 个早期 docs PR + 78 工作 commit,冲突取 feat)。**后续都在 main 提交**,feature 分支弃用(未删)。
+- **HITL/stream 对抗复核 + 打磨**(2 只读子代理审查 → 修高/中危):
+  - [高] **control 跨工具越权**:决定原 per-run 从流首读,同 run 第2个门控工具误读第1个的遗留 approve → 自动放行。修:`DecisionCursor` per-run 共享游标顺序消费(agent `a792c6f`,+游标推进测试)。
+  - [高] **放弃 run 不解阻塞**:stop/新建/删除若有待批,POST reject 立即解阻塞 worker(不挂 90s);`findAwaitingRunId` 派生(web `595ef23`)。
+  - [中] **awaiting UX**:RunState 独立琥珀待批态(区别 running 转圈)+ 有 awaiting 强制展开过程块(否则审批按钮被折叠藏住)+ 点击后禁按钮防双发。
+  - [中] **终态收口**:run 终态把残留 awaiting/running 工具翻 error(消除幽灵行);awaiting 无配对兜底补建步。
+  - [中] **审批超时预算**:interactive 时 astream 总超时 +审批窗(120+90s),晚批准+执行不撞总超时。
+  - 验证:agent 158 pytest/pyright 0/ruff · web 243 vitest/tsc/lint · 真机回归 approve 仍端到端真跑。
+- **复核遗留(低危,未修,记录)**:reject 结果以 is_error=false 回流 → UI 绿勾+「用户拒绝」文案略矛盾(可后续给 rejected 专属样式);control 流无 TTL(每 run 留一条);normalizer seq 去重理论上可吞重复 seq 的终态(依赖 agent 单调发号,无现网 bug);多个**并行**待批工具的 tool_id 精确匹配(当前 agent 顺序执行,游标顺序消费已够)。
+
+
 - Date: 2026-06-14 (HITL 交互式确认 — 真·human-in-the-loop 全链落地)
 - **交互式 HITL 完成(跨四仓 + 真机双向实证)**:被门控工具调用时**暂停→前端批准/拒绝→恢复**。架构 = **in-tool 阻塞**(工具协程内 await control 流决定,单条 astream,无需 checkpointer/resume 编排)。
   - 契约:events.yaml 加 `tool.awaiting_approval`(14 kinds),codegen 重生成 5 镜像。root `f87c406`。
