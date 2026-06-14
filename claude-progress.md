@@ -1,5 +1,20 @@
 # Claude Progress
 
+- Date: 2026-06-14 (路线图 item 2/3/4 + Langfuse 全部落地 — 会话交接)
+- **整轮完成并全推**:用户路线图「先处理 234,再 Langfuse」**全部落地**,四仓 push 后 `0 commits ahead`,CI 全绿(agent/session/web/contract)。当前测试基数 **agent 145 / session 78 / web 236**;三仓 typecheck+lint+test + agent pyright 0/ruff 净 + contract verify + generate --check 全绿。
+- **item 2 产品需求手册**(root `cedc1b5`):新建 `docs/requirements/` 四层手册(00-product 愿景/01-capabilities 能力/02-flows 流程+验收/03-contracts 契约薄桥)+ README 新增规范 + _TEMPLATE。**用户要「新的」**——围绕真实三仓 stream 系统重写,既有 `docs/product/`(原型时代 canvas 矩阵)仅作参考;`00-product/scope-and-boundary.md` 三态分界(已建/已设计/已规划)是防漂移根。流程层每条映射测试总目录 slug(36 slug 全命中)。设计 spec `2026-06-14-requirements-handbook-design.md`。
+- **item 3 完美测试用例**(agent `6540763`/session `82bf7b0`/web `12f3567`/root `059f754`):价值驱动补 +24 测试——agent runtime-subagent 协程 +5 / thinking 防空泡 +2、session http error 信封(方法→404/非 Zod→500)+2、web modePresentation 文案矩阵 +15。修正陈旧标记(replay-stream-write/model-resolution/worker-main-loop 实为已覆盖,不 padding)。**Playwright 用 MCP 插件驱动真实浏览器 e2e**(用户指示:`@playwright/test` 已回退):隔离栈 :3100→:3002→db10→fake worker 实证 8 项(发送→live 流式→落定 / 工具行 / 计划 / 模式锁 / 自动标题 / autoresize 31.5→80px / 刷新持久化+水合首帧 / rail 折叠),交叉验证 presentation 矩阵。测试总目录 §7.2 记录。
+- **item 4 架构打磨**:
+  - **4-1 契约 codegen(旗舰,全完成)**:`contract/generate.py` 从 events.yaml **全生成 5 镜像**(agent pydantic / session zod×2 / web zod+render union),`--check` CI 漂移门禁(root contract.yml),漂移检测实证。events.yaml 富化(enums/field_types 默认 string_nonempty 只列例外/`view_field_types` 处理 per-view 类型分叉:agui role→string、web status→放宽/render_optional/notes WHY)。commits web `e5af3cd` / agent `750a1f9` / session `0881311` / root `3feca4b`+`1ce0624`。设计 spec `2026-06-14-contract-codegen-design.md`。**改契约改 events.yaml 再 `python3 contract/generate.py`(镜像带 DO NOT EDIT 头)**。
+  - **4-2 seq 升一等+删域 cursor**:复核为**上一轮 step 8 已完成**(全仓零域 cursor、seq 全链一等、SSE gate 断言),仅校正陈旧 spec(root `849f9c3`)无代码改动。
+  - **4-3 拆长文件**:评估判定**不该拆**——三仓最大 use-conversation 471/reducer 468/composer 355 全 <500 且单一职责,无一达拆分阈值;强拆=制造回归。无改动。
+  - **4-4 新贡献者 README**(agent `4a4fc49`/session `69e010d`/web `f546ebe`/root `aed2cb2`):4 个真实 onboarding(root 架构入口 + 三仓定位/4 层/运行/门禁/不变量)替换 stub。
+- **Langfuse 可观测性**(agent `04102e1` / root `a93852c`,spec `2026-06-14-langfuse-observability-design.md`):opt-in 链路追踪接 agent。`infrastructure/observability.py` 从 env 建 LangChain CallbackHandler(缺 key→None→tracing 关、行为零变化);`run_agent.trace_config` 注入 callbacks+元数据(langfuse_session_id=会话 id、tag=执行风格、kokoro_run_id/conversation_id)。langfuse 4.7.1。**未验:真实 trace 冒烟需用户 LANGFUSE_PUBLIC_KEY/SECRET_KEY**(配后起 worker 跑一轮即见看板)。
+- **额外**:用户指出的**收起态 rail 图标偏心 bug 已修**(web `6bbad67`)——隐藏标签 max-width:0 仍占 flex gap 把图标顶离中心,收起态 gap:0 修复,MCP 实测三图标 18/23→27/28 居中。
+- **教训重演**:Langfuse 加依赖时又**误跑 `git checkout uv.lock`**(自己记过的),已即时 `UV_NO_CONFIG=1 uv lock`+`sync --locked` 锁回。lessons.md 已有此条 + 新增 monorepo 收敛被否(4 仓独立是有意架构,**不再提 monorepo**)。
+- **下一步候选**:Langfuse 真实 trace 冒烟(待用户 key)/ langsmith(路线图「先 langfuse」后)/ 可观测性深化(run-inspector 读 replay 流——质量评估 5.0 弱项)/ 工具级错误恢复(质量评估 B 类半打磨)。**用户边界:不拓展功能,打磨现有到顶级**。
+
+
 - Date: 2026-06-14 (收尾当前:去兼容写法 + CI 自动化 / 路线图)
 - **铁律:禁止兼容写法**(用户强调)。立即应用:web is_error 从 `.optional().default(false)` 改严格 required(去掉"容忍旧事件缺字段"的兼容兜底——缺失即 fail-loud,绝不默认 false 掩盖真失败)。web `ed9ddb5`。
 - **CI 自动化**(P0,把已有门禁固化):4 仓各加 `.github/workflows`——agent(ruff+pyright+pytest)/ session(tsc+lint+bun test)/ web(tsc+lint+vitest+build)/ root(跨仓 contract verify,checkout 三 sibling 仓)。跑的是本地一直全绿的同一批命令。commits agent `a43f1d8` / session `3b2ce10` / web `e41e24a` / root `0712f64`。**注**:CI 未推送(需用户 push 才激活);跨仓 checkout 若私有仓需配 PAT(已注明);首次 run 验证环境(无法本地跑 Actions)。
