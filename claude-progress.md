@@ -1,5 +1,13 @@
 # Claude Progress
 
+- Date: 2026-06-14 (HITL 权限模式 + 真实 LLM 实证 — 续)
+- **HITL 权限门(Claude-Code 式,完成)**:确定性工具门钩子。模式 auto(默认,全放行,行为不变)/ default(拦敏感工具)/ plan(只读规划)。**「需拦截确认的工具」做成显式可配置集 `REQUIRES_APPROVAL`**(默认 `{fetch_url}`,往里加名字即可拦更多)——用户强调的常见模型(默认 auto + 个别工具配置拦截)。RunRequest 加 permission_mode(agent pydantic + session zod 手镜像,非 codegen);web `?permission_mode=` → http → start-run → run.request → agent `gate_tools` 包装注入工具(被拦回「被 <mode> 拦截」结果,复用 tool.returned 零新契约)。**web composer 加 Auto/Default/Plan 选择器**(会话级,默认 Auto,随时可切不锁;复用 ComposerMenu)。commits agent `df06114`+`b34b163` / session `5e3d51d` / web `4c327ba` / root spec `4b19a4b`+`37f1381`。agent 150 pytest/pyright 0/ruff · web 237 vitest/tsc/lint · session 80。
+- **真实 LLM 端到端实证(关键)**:隔离真实栈(session :3003 + 真实 worker + db11,OpenAI 兼容网关)实测——① plan 模式:真模型调 `fetch_url(example.com)` → **门拦下**(tool.returned「被 plan 拦截」)→ 模型优雅适应(「权限模式下被拦截…需提升信任档位」);② auto 模式对照:同请求 `fetch_url` **真执行**返回真实 HTML `<title>Example Domain</title>`。**证明 codegen'd schema 全链路 + HITL 门在真模型下确实工作且按模式条件**(此前只 fake-model 验过)。测后按 PID 拆栈 + flush db11,用户 db0/db14 未碰。
+- **Langfuse**(上一条目已记):opt-in,真实 trace 冒烟仍待用户 key。
+- **HITL follow-up(未做)**:真·交互式确认(工具调用时暂停→web 弹窗确认→批准/拒绝→恢复)需运行中反向通道(deepagents `interrupt_on`+checkpointer + `kokoro:run:<id>:control` + `POST /runs/:id/control` + 审批 UI),spec 已留设计,体量大宜新会话专注做。deepagents 内部工具(execute/write_file/task)门控用其 `permissions`/`interrupt_on`,亦 follow-up。
+- 教训重演警示:Langfuse 加依赖时又误 `git checkout uv.lock`(已即时 relock);本轮真实栈起 worker 后的 `uv run` 后 checkout uv.lock 是对的(纯 run 无依赖变更)。**判据:有依赖变更别 checkout,纯 run 才 checkout。**
+
+
 - Date: 2026-06-14 (路线图 item 2/3/4 + Langfuse 全部落地 — 会话交接)
 - **整轮完成并全推**:用户路线图「先处理 234,再 Langfuse」**全部落地**,四仓 push 后 `0 commits ahead`,CI 全绿(agent/session/web/contract)。当前测试基数 **agent 145 / session 78 / web 236**;三仓 typecheck+lint+test + agent pyright 0/ruff 净 + contract verify + generate --check 全绿。
 - **item 2 产品需求手册**(root `cedc1b5`):新建 `docs/requirements/` 四层手册(00-product 愿景/01-capabilities 能力/02-flows 流程+验收/03-contracts 契约薄桥)+ README 新增规范 + _TEMPLATE。**用户要「新的」**——围绕真实三仓 stream 系统重写,既有 `docs/product/`(原型时代 canvas 矩阵)仅作参考;`00-product/scope-and-boundary.md` 三态分界(已建/已设计/已规划)是防漂移根。流程层每条映射测试总目录 slug(36 slug 全命中)。设计 spec `2026-06-14-requirements-handbook-design.md`。
