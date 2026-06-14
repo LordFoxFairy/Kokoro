@@ -10,8 +10,11 @@ yarn-error.log*
 
 .vscode/*
 # OS / IDE / 测试产物
+__pycache__/
 .DS_Store
 .playwright-mcp/
+# Playwright 调试截图（根层带编号的临时验证产物）
+[0-9]*-*.png
 
 .idea
 #docs

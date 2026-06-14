@@ -1,0 +1,294 @@
+# Kokoro event-contract single source of truth (blueprint step9, phase 1).
+#
+# WHAT THIS IS
+#   The 13-kind execution-event contract is hand-mirrored across 6 files in 3
+#   repos (agent / session / web). This file declares that contract ONCE, as the
+#   precise mirror of the current code, and `verify.py` is the drift gate that
+#   asserts every repo file still matches it (per view, by kind-set + per-kind
+#   payload-field-name-set). It REPLACES scripts/check-contract-kinds.sh, whose
+#   premise was false (it demanded byte-identical kind sets across repos, but the
+#   3 repos are deliberately DIFFERENT subsets).
+#
+# CI: run `python3 contract/verify.py` — non-zero exit = a repo drifted from this
+#     file. Add it to CI in place of the deleted check-contract-kinds.sh.
+#
+# THREE VIEWS (deliberately different kind subsets + naming + payload fields):
+#   agent-out : raw events kokoro-agent emits (events.py / agent-event.ts inbound)
+#               snake_case wire; uses payload key `segment_id` (globally-unique,
+#               agent-assigned: `${run_id}:seg_NNNN`).
+#   agui-out  : AGUI envelopes kokoro-session emits (session-event.ts /
+#               session-event-schema.ts inbound at web). snake_case wire; the
+#               session normalizer transmits `segment_id` verbatim (no remap),
+#               text.* -> message.*, run.started -> session.created+run.created,
+#               and thinking's `text` -> `delta`.
+#   render    : the TS domain web actually consumes (session-stream-event.ts).
+#               camelCase (segment_id -> segmentId, tool_id -> toolId, ...),
+#               dash-case kind (thinking.delta -> thinking-delta). run.created is
+#               parsed by web but NOT projected (mapper returns null) -> absent.
+#
+# Field name lists below are the WIRE/DOMAIN names exactly as they appear in each
+# file. verify.py compares NAME SETS only (phase 1 locks the kind-string set and
+# the payload-field-name set; per-field type/required is documented for humans but
+# not yet gated — that is phase 2). Optional fields web tolerates on the inbound
+# wire (forward-compat) are listed under `agui_out_web_extra` so verify.py knows
+# they are allowed-but-not-required at the web inbound boundary only.
+#
+# PHASE 2 TODO (not in this commit):
+#   - deterministic generator: events.yaml -> regenerate all 6 mirror files.
+#   - generate-and-diff: byte-for-byte reproduce current files from yaml.
+#   - reverse-source check + CI `git diff --exit-code` after regeneration.
+#   - extend verify.py to also gate per-field type + required/optional + naming
+#     style (camelCase vs snake_case) once a name-mapping table is generated.
+
+transport:
+  CURSOR_WIDTH: 20      # session-side cursor zero-pad width (stream-port.ts / stream_port.py)
+  REDIS_FIELD: data     # redis stream field key carrying the JSON event
+  BLOCK_MS: 1000        # redis XREAD block timeout (ms)
+
+# run.completed payload `status` terminal enum. Producers (agent/session) emit/validate
+# one of these; web (consumer) accepts any non-empty string so a NEW terminal state never
+# strict-parses to null (client would never settle). agent currently emits only "completed".
+run_completed_status: [completed, cancelled, timeout]
+
+# Shared envelope fields (non-payload), per view. `event` is the agui discriminant
+# (present at web schema top-level; absent from session envelopeFields — it lives in
+# each arm's literal). render uses camelCase + a `kind` discriminant.
+envelope:
+  agent_out: [run_id, seq]
+  agui_out: [event_id, seq, session_id, conversation_id, run_id, timestamp]
+  render: [eventId, seq, sessionId, conversationId, runId]
+
+# ---------------------------------------------------------------------------
+# 13 kinds, keyed by their agent-out kind string. Each entry declares the
+# payload field-name set per view, plus the kind/event-name each view uses.
+# `null` payload list (run.started has none in render) => view absent for that kind.
+# ---------------------------------------------------------------------------
+kinds:
+
+  run.started:
+    agent_out:
+      kind: run.started
+      payload: []                       # {} empty
+    agui_out:
+      # NOTE: agent run.started fans out to TWO agui events the first time:
+      # session.created (once) + run.created. Both are agui-out events keyed here.
+      emits: [session.created, run.created]
+    render:
+      absent: true                      # run.created parsed but not projected (null)
+
+  thinking.delta:
+    agent_out:
+      kind: thinking.delta
+      payload: [segment_id, text]
+    agui_out:
+      event: thinking.delta
+      payload: [segment_id, delta]      # segment_id passthrough, text->delta
+    render:
+      kind: thinking-delta
+      payload: [segmentId, delta]
+
+  text.delta:
+    agent_out:
+      kind: text.delta
+      payload: [segment_id, text]
+    agui_out:
+      event: message.delta              # renamed text.delta -> message.delta
+      payload: [segment_id, delta, role]
+      agui_out_web_extra: [format, segment]   # web inbound tolerates these optional
+    render:
+      kind: message-delta
+      payload: [segmentId, role, delta]
+
+  text.completed:
+    agent_out:
+      kind: text.completed
+      payload: [segment_id, text]
+    agui_out:
+      event: message.completed          # renamed text.completed -> message.completed
+      payload: [segment_id, role, content]
+      agui_out_web_extra: [citations, token_usage]
+    render:
+      kind: message-completed
+      payload: [segmentId, role, content]
+
+  tool.invoked:
+    agent_out:
+      kind: tool.invoked
+      payload: [segment_id, tool_id, name, args]
+    agui_out:
+      event: tool.invoked
+      payload: [segment_id, tool_id, name, args]
+    render:
+      kind: tool-invoked
+      payload: [segmentId, toolId, name, args]
+
+  tool.awaiting_approval:
+    agent_out:
+      kind: tool.awaiting_approval
+      payload: [segment_id, tool_id, name, args]
+    agui_out:
+      event: tool.awaiting_approval
+      payload: [segment_id, tool_id, name, args]
+    render:
+      kind: tool-awaiting-approval
+      payload: [segmentId, toolId, name, args]
+
+  tool.returned:
+    agent_out:
+      kind: tool.returned
+      payload: [segment_id, tool_id, name, result, is_error]
+    agui_out:
+      event: tool.returned
+      payload: [segment_id, tool_id, name, result, is_error]
+    render:
+      kind: tool-returned
+      payload: [segmentId, toolId, name, result, isError]
+
+  todo.updated:
+    agent_out:
+      kind: todo.updated
+      payload: [todos]                  # todos: [{content, status}]
+    agui_out:
+      event: todo.updated
+      payload: [todos]
+    render:
+      kind: todo-updated
+      payload: [todos]
+
+  subagent.started:
+    agent_out:
+      kind: subagent.started
+      payload: [segment_id, subagent_id, name, description, subagent_type, source]
+    agui_out:
+      event: subagent.started
+      payload: [segment_id, subagent_id, name, description, subagent_type, source]
+    render:
+      kind: subagent-started
+      payload: [segmentId, subagentId, name, description, subagentType, source]
+
+  subagent.finished:
+    agent_out:
+      kind: subagent.finished
+      payload: [segment_id, subagent_id, name, subagent_type, source]
+    agui_out:
+      event: subagent.finished
+      payload: [segment_id, subagent_id, name, subagent_type, source]
+    render:
+      kind: subagent-finished
+      payload: [segmentId, subagentId, name, subagentType, source]
+
+  subagent.text.delta:
+    agent_out:
+      kind: subagent.text.delta
+      payload: [segment_id, subagent_id, text]
+    agui_out:
+      event: subagent.text.delta
+      payload: [segment_id, subagent_id, text]
+    render:
+      kind: subagent-text-delta
+      payload: [segmentId, subagentId, text]
+
+  subagent.text.completed:
+    agent_out:
+      kind: subagent.text.completed
+      payload: [segment_id, subagent_id, text]
+    agui_out:
+      event: subagent.text.completed
+      payload: [segment_id, subagent_id, text]
+    render:
+      kind: subagent-text-completed
+      payload: [segmentId, subagentId, text]
+
+  run.completed:
+    agent_out:
+      kind: run.completed
+      payload: [status]
+    agui_out:
+      event: run.completed
+      payload: [run_id, status]         # session injects run_id
+      agui_out_web_extra: [final_message_id]   # web inbound tolerates this optional
+    render:
+      kind: run-completed
+      payload: [finalMessageId]         # web only projects final_message_id (optional)
+
+  run.failed:
+    agent_out:
+      kind: run.failed
+      payload: [error_kind, message]
+    agui_out:
+      event: run.failed
+      payload: [run_id, error_kind, message]
+      agui_out_web_extra: [retryable, request_id]   # web inbound tolerates these optionals
+    render:
+      kind: run-failed
+      payload: [errorKind, message, retryable, requestId]
+
+# ---------------------------------------------------------------------------
+# agui-out has TWO kinds with no agent-out source (session synthesizes them from
+# run.started): session.created and run.created. Declared here so verify.py knows
+# the full agui-out event set and the full render set.
+# ---------------------------------------------------------------------------
+agui_only:
+  session.created:
+    agui_out:
+      payload: [session_id, conversation_id, owner_id, title]
+      agui_out_web_extra: [workspace_id, created_by, initial_mode]
+    render:
+      kind: session-created
+      payload: [title, ownerId]         # web projects only title + owner_id
+  run.created:
+    agui_out:
+      payload: [run_id]
+    render:
+      absent: true                      # parsed at web wire, not projected
+
+# ===========================================================================
+# CODEGEN ENRICHMENT (read by contract/generate.py; verify.py ignores these
+# top-level keys). yaml stays the single source — generate.py emits the 5
+# schema mirrors from kinds + field_types below. See
+# docs/superpowers/specs/2026-06-14-contract-codegen-design.md.
+# ===========================================================================
+
+# Named enums referenced by field_types as `enum:<name>`.
+enums:
+  message_role: [assistant, user]
+  subagent_source: [built-in, config-custom, runtime-custom]
+  todo_status: [pending, in_progress, completed]
+  run_completed_status: [completed, cancelled, timeout]
+
+# field-name -> type. DEFAULT (any field not listed) = string_nonempty
+# (zod `z.string().min(1)` / py str / ts string). Only exceptions listed.
+# Types are globally consistent by field semantics across all views.
+field_types:
+  delta: string            # zod z.string() (empty allowed) / ts string
+  content: string
+  text: string
+  result: string
+  description: string
+  role: enum:message_role
+  source: enum:subagent_source
+  is_error: boolean
+  retryable: boolean
+  args: record             # z.record(z.unknown()) / Record<string, unknown>
+  todos: todo_list         # array of {content: string, status: todo_status}
+  citations: array_unknown # z.array(z.unknown())
+  token_usage: unknown     # z.unknown()
+  role: enum:message_role  # canonical; agui producer overrides to string (view_field_types)
+  status: enum:run_completed_status  # canonical; web consumer relaxes (view_field_types)
+
+# Per-view field-type overrides — deliberate producer/consumer divergence.
+view_field_types:
+  agui_out:
+    role: string_nonempty  # session producer keeps role a plain non-empty string
+  web:
+    status: string_nonempty  # web relaxes status enum -> any non-empty terminal (see notes)
+
+# Fields optional in the render union (camelCase). web wire-in optionals are
+# already declared per-kind via `agui_out_web_extra`.
+render_optional: [finalMessageId, retryable, requestId]
+
+# Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
+notes:
+  envelope.seq: "seq：session 透传 agent 的一等发射序号，是真实发射顺序的唯一排序源。"
+  tool.returned.is_error: "严格 required：生产端始终发送；缺失即 fail-loud，绝不用默认 false 掩盖真失败。无兼容兜底。"
+  run.completed.status: "web 放宽到任意非空终态：新终态绝不 strict-parse 成 null 卡死客户端。"
