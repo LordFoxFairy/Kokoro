@@ -59,7 +59,7 @@ Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot 
 - [x] Stop/cancel button design: it already exists (send→wood ■ "停止生成" during streaming, cancel semantics). Made the local preview stream slower (stepMs 28→60) so the stop is visible/usable. Decision: stop/cancel, NOT pause/resume (not meaningful for one-shot LLM replies).
 - [x] Starter chips on the empty screen (海报/落地页/课件/写信/想法可视化), matching the prototype `.chip--template` row. Click prefills the composer with a continuable starter prompt (caret at end), does NOT send; chips confined to the empty hero. kokoro-web `ce291bf`, lint/typecheck/test(82)/build green + Playwright-verified. (Dropped the prototype's `更多…` chip — it linked to a non-existent gallery; add when templates/gallery exists.)
 - [x] Wire the Fast/Thinking mode to the run's `execution_style` end-to-end. Completed on the locked baseline branches: `kokoro-web` now threads the selected `fast | thinking` mode into the live run request and surfaces contract failures as explicit failed runs; `kokoro-session` restricts `execution_style` to `fast | thinking` and rejects invalid values with HTTP 400; `kokoro-agent` resolves model/runtime config per run instead of using a worker-global model instance, and the current `openai:glm-5` path verifies a distinct `thinking` runtime (`reasoning_effort="high"`) versus `fast`.
-- [ ] Attach menu (上传图片/文件/拍照) → real native file picker, then backend upload when available. Current baseline status: menu entries exist in `composer.tsx`, but there is no real file input / camera / upload flow wired yet.
+- [~] Attach menu (上传图片/文件/拍照):**悬空入口已闭环为 disabled+「即将支持」**(/goal G1,消点击无反馈的误导);**真实文件选择/拍照/后端上传流仍未做**(需后端上传能力)。语音 mic(G2)、rail 搜索 ⌘K(G3)同样改 disabled。
 
 ### B. Close the three-repo live loop (the real "production" gap) — DONE 2026-06-04
 - [x] kokoro-session: fixed lint (`sessionEventNames` → `SessionEventName` derived from the Zod schema) + landed the Zod migration. Branch `feat/three-repo-loop` (8c9428f).
@@ -104,7 +104,7 @@ Key finding: `deepagents 0.6.6` `create_deep_agent(model, tools, system_prompt=,
 - [x] Ordered-parts model (web `61715b6`): reducer rewritten around `SessionStep` union (`thinking|tool|subagent|text`, each with `seq`+`messageId`) in `stepsByRun` keyed by runId; `seq` from envelope cursor → render order == emission order. `buildThreadItems` groups consecutive assistant msgs by runId. Layout: ONE avatar/turn + vertical spine of segments, each = bubble ABOVE its process (user overrode research's process-above-text). Spec: `docs/superpowers/plans/2026-06-09-ordered-parts-stream-rewrite.md`. Design panel = 3 cross-validating agents.
 - [x] Turn lifecycle affordances (web `9c82c69`): submitted-no-token scaffold (no blank frame); forming bubble (`正在思考` in the bubble slot when process precedes text, never an empty bubble); collapse-on-settle (`open = manualOpen ?? live`, no remount, manual override wins); reconnect anchor (`isReconnecting` → 「重连中…」warm-wood capsule). Single live anchor preserved. 178 vitest + tsc + eslint green; Playwright in-page recorder captured forming→text+caret→collapsed-settle deterministically.
 - [x] REAL-backend e2e (DONE 2026-06-20,见 §I 末):curl 驱动 agent(LocalFake)→Redis db15→session(:3001)→SSE 全链路;`/batch` 大重构后合并 main 上事件按序全到:session.created→run.created→todo.updated→tool.invoked→tool.returned→message.delta→message.completed→run.completed。证明重构未破 live loop。(Playwright 真模型联跑仍可选后补。)
-- [x] DDD architecture refactor DONE(2026-06-19/20 /batch + 收尾 survey,见 §I):god-file split(use-conversation→窄协作者)+ 三仓类型纯净/边界硬化/零遮掩。**收尾 survey 结论**:① 死文件三仓为零;② application-owned ports 已正确(session `StreamProtocol` 在 application 层,infra 实现它);③ kebab-case——web 100% 达标、agent=Python snake_case(正确不动)、session 仅剩 3 个点分测试名已统一(PR#8 `eda64f0`)。该轴已无遗留。
+- [x] DDD architecture refactor DONE(2026-06-19/20 /batch + 收尾 survey + **/goal 深度重构**,见 §I/§J):god-file split + 三仓类型纯净/边界硬化/零遮掩;**/goal 深度架构重构(8 worker)**——agent worker.py 222→31、driver/control/adapter/subagent 拆分 + H3 cancel bug 修复;session 删死抽象/端口收窄/SSE 抽离;web reducer 616 行拆分/useTransportSession 收敛/悬空能力闭环。全合入 main + 组合态 + 跨栈 e2e 验证。见 §J。
 
 ## G. 测试体系 + 真实效果 + 扩展性(DONE 2026-06-13)
 
@@ -152,3 +152,14 @@ ultracode `/batch`:只读审计 workflow(36 Explore agent 逐文件对标三仓 
 - [~] #3 todo-bar 稳定 id:**判定不做**——跨三仓 `contract/events.yaml` 重生成 vs 一个可能不显现的 React key reconciliation 边角,风险>收益。单列独立后续(真做时按 contract codegen 单源走)。
 - [x] **Phase 0 跨栈 e2e 复验(2026-06-20)**:agent(LocalFake)+session+Redis db15,curl 驱动一个真实 DeepAgents run,SSE 八类事件按序全到(todo/tool/text/completed),证明合并后 live loop 未破。顺带验证 SE-2 端口冲突响亮退出。e2e 脚本 `/tmp/kokoro-e2e.sh`。
 - 反向修正 §H 过时项:**#9 已完成**(ProcessedRunIds 有界)、**#7 核心已接线**(thread_id=conversation_id + InMemorySaver,标 [~] 待持久 saver)、#5 已处理 control POST 失败。
+
+## J. /goal 三仓深度架构重构(DONE 2026-06-20,自主无交互,8 worker)
+
+3 只读架构审计 agent 通读三仓全源 → ~30 findings → 8 文件互不重叠重构 worker(并行 worktree)→ 逐仓组合态 + 跨栈 e2e 验证 → 全合入 main。详见 claude-progress.md。
+
+- [x] **agent**(4 PR,#15-#18 → `2381450`):H1 drive_agent_events 拆 TextAccumulator+SubagentRouter;**H3 cancel 退化 bug 修复**(ControlChannelClosed,不伪造 reject,TDD);H2 control.py 三层拆分;M1 **worker.py 222→31**(RequestAdmission+RunSupervisor);M2 终态工厂下沉;M3 SubagentCatalog 值对象;M5 adapter 拆 header/tool_input/message;L1 prompt 外置。mypy57/pyright0/251 pytest/零遮掩。
+- [x] **session**(1 PR,#10 → `0f1af00`):删 ReplayStore 死抽象、StreamProtocol 端口收窄、HTTP query Zod 化+统一路由、抽 sse-endpoint、MemoryStream lastIndex 消 O(n²)。109 test。
+- [x] **web**(3 PR → `dc947d3`):reducer 616 行拆 types/mutations/projection+switch 穷尽(公开 API 不变);抽 useTransportSession 收敛在途句柄+消 eslint-disable;composer 拆;G1-G3 悬空能力 disabled;F11 Zod 双参。255 test。
+- [x] 跨栈 e2e 复验:深度重构后 live loop 八类事件按序全跑通。
+- [~] control schema codegen:三仓**当前实证一致**;full codegen 不成比例(3 字段手定 schema + event-shaped 生成器),deferred。
+- [ ] (低优先后续)agent L4 registry 所有权收敛(动 worker,本轮跳);web G4 run-failed 错误数据用好(retryable/message);web F10 pendingInput 改名;agent M6/session F3 control codegen(同上)。

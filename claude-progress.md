@@ -1,5 +1,14 @@
 # Claude Progress
 
+- Date: 2026-06-20 (/goal 三仓深度架构重构 — **✅ 8 重构 PR 全合入 main + 组合态 + 跨栈 e2e 全验证**)
+- **目标**(用户 /goal,自主无交互):三仓能力闭环 + 极高质量(DDD/职责单一/无 God 文件)+ 架构梳理 + 禁遗留兼容/敢重构 + 多方案择优。
+- **方法**:3 个只读架构审计 agent(一仓一个,通读全源)→ ~30 findings + topRefactors → 8 个文件互不重叠重构 worker(并行 worktree)→ 逐仓组合态验证 → 合入 main → 跨栈 e2e。
+- **kokoro-agent(4 PR,#15-#18 → `2381450`)**:H1 `drive_agent_events` 143 行 God 函数拆 TextAccumulator+SubagentRouter;**H3 正确性 bug 修复**(control 流终止抛 `ControlChannelClosed` 不再伪造 reject 回灌模型,TDD);H2 control.py 三层拆分(ControlMessage→domain、rejection_result→application、IO 留 infra);M1 **worker.py 222→31 行**(抽 RequestAdmission+RunSupervisor);M2 终态事件下沉 application 工厂(消手搓 seq);M3 不可变 SubagentCatalog 值对象(消每事件重建+三处校验重复);M5 adapter 203 行按读取目标拆 header/tool_input/message;L1 SYSTEM_PROMPT 外置。组合态 mypy 57+pyright 0+**251 pytest**+ruff+零遮掩。
+- **kokoro-session(1 PR,#10 → `0f1af00`)**:R1 删 ReplayStore.read+mirror 死抽象(多进程语义破裂、零调用);R2 StreamProtocol 端口删 readAll/close(零调用);R3 HTTP query 入参 Zod 化+统一路由风格;R4 抽 sse-endpoint.ts;R5 MemoryStream lastIndex 续读消 O(n²)。typecheck+lint+**109 test**。
+- **kokoro-web(3 PR → `dc947d3`)**:F1 reducer 616 行拆 types/state-mutations/thread-projection(applySessionEvent 14 if→switch+穷尽守卫,公开 API 不变零 importer 改动);F7+F8 抽 useTransportSession 收敛在途句柄+消 4 处重复复位+5 裸 ref 透传+eslint-disable;F2 composer 拆 expand-dialog/mode-options;G1-G3 悬空能力(附件/语音/搜索)改 disabled 消误导;F11 Zod 双参。typecheck+lint+**255 test**。
+- **验证**:逐仓门 + 三仓组合态(本地合分支跑门)+ **跨栈 e2e 复验**(agent→Redis→session→SSE 八类事件按序全跑通,深度重构后 live loop 未破)。
+- **多方案择优的 deferred(有理由,非回避)**:control schema codegen——三仓 schema **当前实证一致**(approve/reject/cancel+args?),full codegen 把 3 字段、§H 故意手定的 schema 塞进 event-shaped 生成器+动三仓生成物,收益<风险、不成比例,记为后续(真要做按 contract codegen 单源);web 显示 timeout/cancelled(契约 ripple,见前);#2 tool_id 精确匹配(langchain 限制)。
+
 - Date: 2026-06-20 (HITL 收尾:超时设计修复 + 审批可编辑工具参数 — **✅ 4 PR 全合入 main + 跨栈 e2e 复验**)
 - **承上(/batch 收尾后续)**。先做 1-2-3(e2e/§H/DDD):跨栈 e2e 复验大重构后 live loop 八类事件按序全跑通(脚本 `/tmp/kokoro-e2e.sh`,LocalFake 免密);DDD 剩余 survey 发现已基本达标(死文件零、ports 已在 application 层、kebab-case web 已合规、session 3 个点分测试名改 kebab=PR#8);§H 多项过时已反向修正(#7/#9/#5 已完成)。
 - **用户两条 HITL 指令**:① 审批超时设计错误→移除;② HITL 暂停时 tool 参数可编辑。
