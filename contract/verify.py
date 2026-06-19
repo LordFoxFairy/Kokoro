@@ -344,10 +344,15 @@ TRANSPORT_FILES = {
             "BLOCK_MS": (r"\bDEFAULT_BLOCK_MS\s*=\s*(\d+)", int),
         },
     ),
-    "kokoro-agent/.../stream_port.py": (
-        ROOT / "kokoro-agent/src/kokoro_agent/infrastructure/stream_port.py",
+    "kokoro-agent/.../transport/memory_stream.py": (
+        ROOT / "kokoro-agent/src/kokoro_agent/infrastructure/transport/memory_stream.py",
         {
             "CURSOR_WIDTH": (r"\b_CURSOR_WIDTH\s*=\s*(\d+)", int),
+        },
+    ),
+    "kokoro-agent/.../transport/redis_stream.py": (
+        ROOT / "kokoro-agent/src/kokoro_agent/infrastructure/transport/redis_stream.py",
+        {
             "REDIS_FIELD": (r'\b_REDIS_FIELD\s*=\s*"([^"]+)"', str),
             "BLOCK_MS": (r"\b_BLOCK_MS\s*=\s*(\d+)", int),
         },
@@ -515,7 +520,7 @@ def main() -> int:
         f"(session-event.ts; web wire-in tolerates {len(exp_agui_web)} w/ optionals)"
     )
     print(f"  render    : {len(exp_render)} kinds  (session-stream-event.ts)")
-    print(f"  transport : {len(spec['transport'])} consts (stream-port.ts + stream_port.py)")
+    print(f"  transport : {len(spec['transport'])} consts (stream-port.ts + memory_stream.py/redis_stream.py)")
     print(f"  envelope  : {len(spec['envelope']['agui_out'])} agui fields (session + web)")
     print(f"  base kinds: {n_kinds}")
     return 0
