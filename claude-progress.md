@@ -1,5 +1,58 @@
 # Claude Progress
 
+- Date: 2026-06-19 (kokoro-agent 强类型 + DDD 物理分层重排完成 — 本地 main,未推送)
+- **范围铁律**:**只动 kokoro-agent 子仓**。`contract/`(events.yaml/generate.py)、kokoro-web、kokoro-session **一律不碰**;`domain/agent_event.py` 是根契约**生成文件**(见下),不手改。用户角色=出思路/打分/找不合理,我=实现。详见 memory `kokoro-contract-codegen` / `kokoro-agent-dual-typecheck`。
+- **承接 06-18**:P0-1 安全网 + P1(删假 banner / driver payload builder / adapter 合并 / ProcessedRunIds)已合并 main(见上一条)。本日继续:
+- **契约 codegen 真相(修我自己的错)**:`agent_event.py` 顶部 "generated from contract/events.yaml" banner **是真的**——`contract/`(events.yaml+generate.py+verify.py)在 **monorepo 根**,generate.py 生成 5 个跨服务镜像(web×2 Zod/TS、session×2 Zod、**agent_event.py**)。我 P1-1 在子目录 find 不到就误删 banner → `64d475e` **已干净撤销**(文件回基线)。**教训:别在子目录判断 monorepo 级路径**。
+- **零 cast(全仓)**:把 deepagents/langchain 未类型化构造器经**包的 `Any` 视图**(`import deepagents; _deep: Any = deepagents; _build = _deep.create_deep_agent`)取用——`Any.attr` 是 Any 非 Unknown,结果流进 typed Protocol,**无 cast、无 per-call ignore**(`Any` 是规则允许的真实边界逃逸)。`tool_coroutine/tool_func` 过度抽象已内联删。
+- **命名修正(用户逐个纠)**:`lc_adapter→agent_adapter`(禁 LC 前缀)、`port.py→stream_protocol.py`、`*_port→*_stream`(避 redis.py shadow)、`domain/subagent.py→registered_subagent.py`(对齐类名、区别 deepagents SubAgent)。
+- **/goal 验证**:四条标准(灭 Any/object、match-case、物理分层无 LC 前缀、双流防腐 Pydantic 输出)经审计**已达成**;补 translator/chat_model/permission 的 value-dispatch 升 match-case。
+- **/batch → 拒绝并行、单流顺序执行**(单元不独立=共享 import 冲突 + 决策密集 + 契约/pyright 敏感)。6 步 DDD 重排(各自四绿+一提交):
+  - `ca02f94` ① `events.py` 纯领域(StreamIntent+8变体+TodoItem+ToolScalar/TodoStatus)→ `domain/stream_intent.py`;`SubagentSource` 统一 `registered_subagent`(消重复)。EventHeader/ToolInput/MessageParts(adapter 中间类型)留 events.py。
+  - `b4bebe8` ② `builtin_tools.py` → `tools/`(clock.py / fetch.py SSRF / __init__ 注册表)。now/fetch_url 保持纯函数(直接单测),StructuredTool.from_function 在注册表组装(故 **不用 @tool**:@tool 会把函数变 tool、破坏直接调用 + 耦合 langchain 调用机制)。
+  - `c9b1736`+`1813f64` ③ `chat_model+local_fake → model/`;env 配置改 strict 冻结 **Pydantic `ChatModelSettings`**(from_env 一次性读 env,builders 收 typed settings+per-request style;**不用 init_chat_model**,用户要 Pydantic 参数)。行为保持(test_model 15 绿)。
+  - `b10e0cb` ④ `permission.py`(混 4 职责)→ `permission/`(policy / rules / static_gate / interactive_gate / __init__);`approval_policy.yaml` → 包内 **`config/`**(统一配置,policy.py 按包根解析路径)。
+  - `5d8f415` `subagent_registry.py`(混 4 职责)→ `subagent/`(catalog / registry / specs / __init__);跨模块 `normalize_*` 转公开。
+- **判断力收口**:`worker.py`(interfaces 入口编排器)、单一职责平铺文件(agent_adapter/control/json_types/observability)**不再拆**——「尽可能拆解」目标是消除混合,非最大化文件数。`runtime_subagent_tool.py` 放哪 borderline,留现状待用户定。
+- 验证:全仓 **mypy 0 · pyright 0(strict)· ruff 干净 · 202 passed** 全程不降;零 cast、零 hasattr/getattr/assert_never;核心逻辑零 Any/object(残余仅真实边界,有 WHY)。**本地 main,未推送**;P0-2(`.env` 真实 zhipu key)仍待用户轮换。
+
+
+- **任务**:用户「参考 stream_events 思想拆解其他的」+ 一份 /goal 全盘重构标准(dataclass/match-case、去 Any/hasattr、events/adapter/contracts 分层、去 LangChain 前缀);用户中断了 `/batch /loop` 全自动,改为**先审计产出 checklist → 逐项确认 → 再改**。全选「全盘 + 逐项确认」。
+- **只读审计**(`agent-internal-standards-audit` workflow,4 子代理通读 26 src 文件):合并出 P0/P1/P2/P3 分级 checklist。基线已绿 **193 passed**。
+- **分支 `refactor/agent-standards-cleanup`(kokoro-agent 独立 git,未合并 main)**,从绿线起 6 提交,每提交跑 ruff+mypy(本文件)+相关测试+全量 193:
+  - `28bd8de` **P0-1** 固化安全网:把用户那笔未提交的 stream_events 重构(message_extractors/stream_translator 删除→stream_events 包)+ 3 个未跟踪测试(test_agent_event_driver/approval_policy/event_types)提交,锁 193 绿线。**未提交 `.env`(已 gitignore)/`.claude/`**。
+  - `54a5d69` **P1-1** 删 `agent_event.py` 假 "generated from contract/generate.py" banner(该文件实不存在)。
+  - `d5a54eb` **P1-2** `agent_event_driver.py` 抽 8 个具名 payload builder,消 ~30 处手搓 dict 键 + 4 处 `payload` 重声明;`nxt→next_seq`。
+  - `b8ecd73` **P1-3** `adapter.py` 合并 read_output/read_error 标量分支(`_is_tool_scalar` guard)+ 抽 `_message_intents` 消 chat_model_stream/end 镜像 + 修该文件 3 处 mypy(subagent 变量分名、intents 重定义);`ev→event`。
+  - `2ddc398` **P1-4** `worker.py` `ProcessedRunIds` 类(__contains__/__len__/add)+ `_publish_run_failed` helper(消 3 处重复 run.failed);test_worker 同步切类 API。
+- **基于 /goal 标准拦下审计 3 个不当建议(非盲从,commit message 留痕)**:① 不删 pyyaml(`approval_policy.py` 在用);② driver 不复用 contracts(intent 级/测试专用/无 segment_id/rejected 恒在 → 形状不符+依赖倒置);③ contracts 不做泛型工厂收敛(违背「禁类型体操」、是不同字段 schema 声明、测试专用)。
+- **P2 进度(同分支续提交,RED-first)**:
+  - `6262c91` **P2-1** control 通道 strict `ControlMessage`(kind+decision,extra=forbid)收口,畸形消息显式 drop;RED-first(注入额外字段的 approve 不被采信)。校正 test_control fixture 到真实线格式 `{kind:"control",decision}`。
+  - `0e4ce43` **(RED)** `parse_xread_response` RESP2/RESP3 特征网(无 redis 也跑),拆包前钉死行为。
+  - `7352056` **P2-2** 拆 `stream_port.py`(281 行)→ `json_types.py`(共享 JSON 边界)+ `transport/` 包(port/memory_port/redis_port/__init__,名仿 web transport.ts;`*_port` 后缀避免 redis.py 与第三方 `redis` 包同名 shadowing,见 `471c5de`)。`_clone_event→clone_event`(跨模块转公开)。
+  - `506f8b8` **P2-3** 拆 `stream_events/adapter.py` → boundary `adapter.py`(read_*/message_parts)+ flow `translator.py`(translate/_subagent_*,**零 isinstance**)。最后一处 AIMessage isinstance 收进 `read_ai_message`。message_parts 的 pyright ignore 收敛进 `_reasoning_override` 助手+WHY(langchain additional_kwargs 裸 dict,真实未类型化边界,无法真消,只能收敛)。**2 路切分(非审计 3 路 lc_types)**。
+  - `a2d41a2` **P2-4a** pyproject 加 `[tool.mypy]` + redis/langfuse 缺 stub override(清 3 个 import-not-found)。
+  - `49206ec` **修 P2-2 pyright 回归**:P2-2 的 match-case 重写(json_types `_coerce_json_value` + redis xread 解析)在 pyright **strict** 下回归(`case dict()`/`case [a,b]` 对 object 捕获为 Unknown);原 stream_port 用 TypeGuard 正是为过 pyright strict。**还原 TypeGuard 形式**(保留拆分,特征网守行为)。**教训:拆/改类型敏感代码必须同时跑 pyright,P2-2 漏跑了**。
+  - `135bd40`→`577306d` **P2-4** 新建 deepagents/langchain 防腐层并**收尾打磨**(用户两轮纠正):① 文件名 `lc_adapter`→**`agent_adapter.py`**(`lc`=LangChain 前缀违反「禁 LC 前缀」铁律);② **全仓零 cast**——把未类型化 SDK 构造器经**包的 `Any` 视图**(`_deepagents.create_deep_agent`)取用,结果自然流进 typed `EventStreamingAgent`/`AsyncRunner` Protocol,无 cast、无 per-call ignore(`Any` 是规则允许的真实边界逃逸,cast/ignore 不是);③ `subagents: Sequence[object]`→`Sequence[SubAgent]`。`EventStreamingAgent`/`AgentInvokeInput`/`AsyncRunner` Protocol + `tool_coroutine`/`tool_func`/`FilesystemPermission` 归此边界;`_make_runner` 留作测试 patch 接缝。**全仓仅剩 4 处第三方边界 ignore(均带 WHY,非 cast):** agent_adapter 的 FilesystemPermission(deepagents 运行时有、typed 表面无)、builtin_tools×2(from_function)、adapter 的 additional_kwargs。
+- **P3 重估 + 收尾**:逐项核实审计 P3 前提,发现审计 **P3-4 实锤错误**——声称「builtin_tools SSRF 零单测」,实则 `tests/test_builtin_tools.py` **36 测试**早已覆盖(`0a27f27` 对抗性加固提交建的)。据此重估:P3-1(env 散读)非 bug 仅整洁度、P3-3(策略 YAML 化)偏投机增攻击面,均 CLAUDE.md「拒绝投机」边缘;**只 P3-2 是真问题**。用户拍板**只做 P3-2**。
+  - `8891af0` **P3-2** `_RUNTIME_SUBAGENT_REGISTRY` 进程单例跨 run/会话泄漏(runtime 子智能体累积、不隔离)。改 `_run_request` 每 run 新建注册表、删全局(`_CHECKPOINTER` 单例**保留**——按 conversation 正确隔离记忆)。RED-first:`test_run_once_isolates_runtime_registry_across_runs`(run_1 注册名不可在 run_2 可见)。
+  - `842f847` **transport 命名**(用户两轮纠正):`port.py`→`stream_protocol.py`(说清是 StreamPort 契约)、`*_port.py`→`memory_stream.py`/`redis_stream.py`(去 `_port`、避 `redis.py` shadow 第三方包)。类名不动,纯 rename。
+- **状态**:**P0-1 + P1(4) + P2(4) + P3-2 完成,已 FF 合并回 main 并删分支**(main HEAD `5a2d393`,本地领先 origin/main **16 提交,未推送**——用户选本地合并)。审计剩余 P3-1/P3-3/P3-4 不做(P3-4 已存在;P3-1/P3-3 投机)。**待用户**:① 方便时 `git push` main;② P0-2 轮换 `.env` zhipu key。
+- 验证:kokoro-agent 全量 `uv run pytest -q` **202 passed**;**全仓 mypy 0 + pyright 0 + ruff 干净**(比基线 mypy7/pyright2 更净)。未碰 kokoro-web/session/contract。
+- **遗留可选**:测试文件名 `test_stream_port_{redis,memory}.py` 仍是旧 `stream_port` 名(描述性,未跟模块改名,纯 cosmetic);若要彻底一致可改 `test_transport_*`。
+
+- Date: 2026-06-15 (control 协议束完成:真取消后端 + 放弃解阻塞全部; #2 诚实延期)
+- **用户指示**:先把 control 协议这一束做完、早点结束。结果:把最严重的 HITL×pipeline 缺陷清干净,并用真机隔离栈验了 stop/cancel。
+- **#8 真取消后端 DONE**:
+  - agent `9b1002d`:worker 每个 run 挂 cancel-watcher 读 `kokoro:run:<id>:control`;收到 `{kind:"control",decision:"cancel"}` → `task.cancel()` 取消整个 run(连带解阻塞内部所有待批门)→补发 `run.completed(status="cancelled")`。`await_decision` 显式忽略 cancel(由 watcher 处理)。
+  - session `5d6054d`:control 端点/类型接受 `cancel`。
+  - web `d1de82a` + `c9465be`:stop/new-chat/delete 发 cancel(不再 per-tool reject)；并本地 `markRunCancelled` 收口,避免停止会立刻关 SSE 导致后端 cancelled 终态来不及回流、残留 awaiting 工具/死批准按钮。UI 现为 `kk-tool--error` + 文案「运行已取消」。
+- **#3 放弃解阻塞全部 DONE**:由 #8 自然覆盖——取消整个 run 比逐个 reject 更干净,所有待批门随 task 一起死。
+- **真机端到端(cancel)**(隔离栈 session :3003 + 真 LLM worker db11 + web :3101,Default 模式):fetch_url 进入 awaiting → 点停止 → redis 里该 run **只有** `tool.invoked + tool.awaiting_approval + run.completed(status=cancelled)`(无 tool.returned,工具未执行)；UI 恢复可发送、工具行本地收口为 error「运行已取消」,**无** awaiting ghost / 无 dead 批准按钮。截图 `hitl-4-cancelled.png`(gitignore)。测后清 localStorage,按 task-id 拆栈,flush db11;db0/db14 用户库未碰。
+- **#2 并行 tool_id 精确匹配 DEFERRED(诚实记录)**:做前探针证实门控工具协程拿不到自己的 tool run-id(`run_manager` 不注入,`RunnableConfig.run_id`=None,而 astream 的 on_tool_start 确有 UUID)。不 hack langchain/deepagents 内部就无法把 approve/reject 精确绑到某一并行 gated 工具。当前顺序执行(常态)无此问题,保留现状并在 `tasks/todo.md` 记为延期,避免引入脆弱魔改。
+- **状态**:控制协议束收口完毕——#1 worker 并发(agent `05514b2`) + #8 cancel + #3 covered 都已 push main；下一块按用户先前全选,应转入 **#7 agent 自己管理会话记忆**(web 完整历史 / session 纯传输 / agent 可压缩 memory)。
+- 验证:agent 161 pytest/pyright 0/ruff · session 87 bun test/tsc 0/lint 0 · web 250 vitest/tsc 0/lint 0 · contract verify PASS。四仓 clean。
+
 - Date: 2026-06-14 (reject 超时档彻底修 — 后端确定性信号 tool.returned.rejected,replay 安全)
 - **上一条目「遗留警示:reject 超时档显绿勾」已彻底修**(用户:做就做好,选「完整契约字段保留石板灰」)。根因:reject(用户点 / 90s 超时回退)都以 tool.returned is_error=false 回流,web 单靠客户端乐观,**replay/重连会把已批准成功的工具也误判**(approve 与 reject 都是 awaiting→returned,状态无法区分)。解法 = **后端把「拒绝」写进事件流**:
   - 契约(root `d95229c`):tool.returned 加可选 `rejected` 布尔(agent_out/agui_out/render);generate.py 加 `payload_optional` 机制(新可选字段在常路省略,不强制 fail-loud)。codegen 重生成 5 镜像,verify PASS。
