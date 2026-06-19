@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-19 (kokoro-agent 全仓审计 + 注释专业化 + 硬质量改 — **已推送 origin/main** `78a3a1a..9b9e951`)
+- **承接上一条**。本会话续做全仓「每模块位置 + 代码质量」审计与打磨。**串行亲自**(并行 worktree 在紧耦合类型脊柱上不成立:共享文件冲突 + 各自 commit/PR 无法独立合并)。每步 ruff/mypy0/pyright strict 0/202 passed,redis 实跑。
+- **用户两条关键反馈(已记 memory `kokoro-style-comments-and-no-compromise`):** ① 注释「非专业」——口语/江湖气/说教(如 constants.py docstring 写「勿往此堆」立规矩);② 「为怕动代码而故意兼容,不应该妥协」。据此:注释去口语保 WHY、该硬改的硬改。
+- **`tool_names.py` 归属(用户三次质疑,逐次纠正自己):** 先答「移进 tools/」→ **实证推翻**(`import tools.<子模块>` 会触发 `tools/__init__` 连带加载 langchain+httpx;`import tool_names` 零重依赖)→ 结论「零依赖中立叶子,留原地」;用户最终要 `constants.py` 约定 → `git mv` 成 `infrastructure/constants.py`(`5689923`),保留零依赖性质 + 限定 docstring。
+- **审计方式**:3 个只读 Explore/general 子代理通读 45 文件(分层/质量、注释专业度/妥协代码),我逐条**过滤 sonnet 噪音**——驳回约 20 条 textbook/判断错误并留痕:`@tool`(BaseTool vs StructuredTool 脊柱,实测更差)、interactive_gate「infra→application 违反分层」(搞反了,Clean 架构依赖指向内核,验证了 StreamProtocol 上移)、anthropic 双分支合并(实测 `ChatAnthropic` 拒绝 `api_key=None`)、删 static_gate sync(是返回拦截文案的真实现非桩)、去 fetch 字节封顶(会废解压炸弹防护)、settings 加 provider↔key 交叉校验(破坏 env-key 回退)、各处加缓存(非热路径)、注释改英文(项目要中文)、constants 杂物抽屉(私有常量就近放原则不变)。
+- **真改落地(`c293805` + `9b9e951`):**
+  - `c293805` control.py 补 module docstring(全仓唯一缺)+ await_decision reject 兜底 WHY;policy.py 删冗余 `_StringList` 双重校验。
+  - `9b9e951` **硬质量**:`settings.provider` `str`→`Literal["openai","anthropic"]`(`_split_model_spec` 显式 return 收窄无 cast、配置期 fail-fast、删死 `case _`,测试恢复原样);`agent_factory` 内联 2 个单次薄包装;`run_agent` 删单用中间变量;`adapter` 3 段重复 match/case → `_str_or_empty` 助手(15→5 行);`redis_stream.subscribe` 删重复二次 `clone_event`;`chat_model` anthropic 分支补 WHY(实测必要)。**注释专业化**:~15 处去口语("废掉/饿死/不死/撞名/绝不让/裸 dict/拍平/就该/杜绝")为干练书面语,保留中文 + WHY。净 -30 行。
+- **状态**:3 提交**已 push origin/main**(`78a3a1a..9b9e951`),`main...origin/main` 同步,工作区仅 `.claude/`。严守 kokoro-agent only。**待用户**:P0-2 轮换 `.env` zhipu key。
+
 - Date: 2026-06-19 (kokoro-agent DDD 严格分层 + 工具/事件打磨 — **已推送 origin/main** `c1d8241..78a3a1a`)
 - **承接上一条**。本会话 `/goal`→`/batch` 顶级打磨,议题:① 工具没用 langchain idiom(`@tool`/BaseTool);② 自定义 event「留位置」;③ DDD 每层严格职责分区(用户反复强调「严格分明/方便维护/舒坦」);④ 常量归属。**串行逐模块**(未开并行 worktree)。
 - **判断力收口(非盲从,均实证/留痕):**
