@@ -68,7 +68,7 @@ Design source of truth = `docs/prototypes/variant-a-mi-mu/` (serve + screenshot 
 - [ ] Optional: verify and use real provider credentials for the live worker path. Current baseline status: `kokoro-agent` already includes `langchain-openai`, `python-dotenv`, `load_dotenv()`, and env-based `KOKORO_MODEL` / `OPENAI_BASE_URL` / `OPENAI_API_KEY` model bootstrapping; what remains is operational verification / choosing the provider credentials for the live worker path.
 
 ### C. Design-direction decision (needs user call)
-- [ ] How much of the richer prototype to adopt vs the approved 06-02 minimal shell: serif hero accent, rail nav sections (创作/进阶/发现), warm send button. (06-02 chose minimal; prototype is richer — surface as a decision, don't silently pick.)
+- [x] 设计方向 DONE(用户定 2026-06-20:**暖化视觉、保持对话为核**,不做 richer 创作套件)。web #13 `44cc545`:补 `--font-serif` 系统宋体栈;hero「今天想做什么?」+ 品牌 Kokoro/こころ 上衬线;发送键 `#9fd1ff`(cyan,违铁律)→ 木色。调色本就米木纸感。Playwright 验证。**richer 创作套件(7 生成器/Hub/teams)= 大产品赌注,显式不做**,要走产品化路线再单议。可选后续:首屏顶部柔和渐变右上略冷,可暖化。
 
 ### D. Housekeeping
 - [ ] Investigate/remove the stray sibling `~/WebstormProjects/kokoro-web` (duplicate of `Kokoro/kokoro-web`).
