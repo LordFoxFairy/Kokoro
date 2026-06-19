@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-06-19 (kokoro-agent worker.py + agent_builder.py 打磨 — **已推送 origin/main** `9b9e951..6c51ba6`)
+- 用户「继续打磨 worker.py 和 agent_builder.py」。串行亲自,ruff/mypy0/pyright strict 0/202 passed,redis 实跑。提交 `6c51ba6`。
+- **worker.py**:抽 `_admit_request`(parse → 非法发 run.failed → 去重 → 登记)消除 `_handle_request`(顺序路径)与 `serve`(并发+cancel 路径)的重复准入逻辑,去重单一出处;ProcessedRunIds docstring 压 1 行。
+- **agent_builder.py**:`AsyncRunner.ainvoke` 参数 `input`→`payload`(避免遮蔽内置);`-> object` 补 WHY(runner 结果是进程内不透明对象,调用方按需收窄);Any-view 注释专业化。
+- **刻意未改并标注(非 timid)**:`_run_with_cancel` 取消时补发的 `run.completed{status:cancelled}` 用 `seq=0`(破坏单调性),但 `agent_event.py` 契约规定 session 端归一化排序、agent seq 仅建议值,故大概率无害;正确赋 last_seq+1 需 worker 跟踪 driver 计数器(跨 driver/worker)且触 session 契约(越界),已留给用户确认 session 排序方式后再做。
+- **状态**:`9b9e951..6c51ba6` 已 push origin/main,同步,工作区仅 `.claude/`。**待用户**:① 确认 session 是否按 seq 排序(定夺 cancelled seq 改动);② P0-2 轮换 `.env` zhipu key。
+
 - Date: 2026-06-19 (kokoro-agent 全仓审计 + 注释专业化 + 硬质量改 — **已推送 origin/main** `78a3a1a..9b9e951`)
 - **承接上一条**。本会话续做全仓「每模块位置 + 代码质量」审计与打磨。**串行亲自**(并行 worktree 在紧耦合类型脊柱上不成立:共享文件冲突 + 各自 commit/PR 无法独立合并)。每步 ruff/mypy0/pyright strict 0/202 passed,redis 实跑。
 - **用户两条关键反馈(已记 memory `kokoro-style-comments-and-no-compromise`):** ① 注释「非专业」——口语/江湖气/说教(如 constants.py docstring 写「勿往此堆」立规矩);② 「为怕动代码而故意兼容,不应该妥协」。据此:注释去口语保 WHY、该硬改的硬改。
