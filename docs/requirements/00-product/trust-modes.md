@@ -16,11 +16,11 @@ refs:
 
 **不做 Chat / Canvas / Agent 顶部三态 tab**。任务类型隐式自动触发。Mode 借鉴 Claude Code permission mode 哲学,表达信任档位:
 
-- **Plan**:只规划、不执行,用户审阅后放行。
-- **Default**:正常执行,关键动作可能确认。
-- **Auto**:充分自主,少打断。
+- **Plan**:**交互审批**——执行,但敏感工具(外部网络 fetch、子代理 task 等)调用时**暂停等用户批准**(approve/reject/cancel),逐个放行。**不是只读、不是「只规划不执行」**(语义 2026-06-20 定）。
+- **Default**:正常执行,敏感集(requires_approval)同样走暂停审批,Plan 在其上再加严(plan_only_blocked_tools)。
+- **Auto**:充分自主,不拦。
 
-> ⚠️ 三档是**对外叙事 / 已设计**;真实系统当前落地的是 **Fast / Thinking 执行风格**两档(见下)。信任档位的完整 Plan/Default/Auto 行为(尤其确认/暂停)依赖 [HITL 扩展位](../01-capabilities/extension-points.md),**未实现**。
+> ⚠️ 执行风格 Fast/Thinking 是另一维(见下)。**信任档位的 HITL 工具审批已落地**:control 协议(approve/reject/cancel)+ 交互门控 `gate_tools_interactive` + web 审批 UI。**FS 写暂不可审批化**(deepagents 文件系统中间件仅 allow/deny、无 ask),故 Plan 下 FS 写放行;若需 FS 写也审批属后续(须把写工具纳入可门控集）。
 
 ## 已建:执行风格两档(Fast / Thinking)
 
@@ -37,7 +37,7 @@ refs:
 
 ## 边界
 
-- Plan/Default/Auto 的**确认/暂停/恢复**语义 = HITL,属 🔲 已规划,见 [extension-points](../01-capabilities/extension-points.md)。本篇不描述其为已建。
+- Plan/Default 的**工具暂停/批准/取消** = HITL,**已建**(control 协议 + 交互门控 + web 审批 UI,2026-06-20);中断恢复见会话流(replay/resume）。Auto 不拦。
 
 ## 引用
 

@@ -103,8 +103,8 @@ Key finding: `deepagents 0.6.6` `create_deep_agent(model, tools, system_prompt=,
 - [x] Real token streaming (agent `bc316d7`): LangChain `on_chat_model_stream` (`_TEXT_STREAM_INTENT`, `streamed_text`/`sub_streamed_text`) → char-by-char answers; verified live (77 glm-5 deltas, 42 message.delta). Fixed segment-attachment: tool now attaches to the FOLLOWING segment (`active_message_ref is None OR segment_completed`), killing the "tool→text→tool collapses into one bubble" defect.
 - [x] Ordered-parts model (web `61715b6`): reducer rewritten around `SessionStep` union (`thinking|tool|subagent|text`, each with `seq`+`messageId`) in `stepsByRun` keyed by runId; `seq` from envelope cursor → render order == emission order. `buildThreadItems` groups consecutive assistant msgs by runId. Layout: ONE avatar/turn + vertical spine of segments, each = bubble ABOVE its process (user overrode research's process-above-text). Spec: `docs/superpowers/plans/2026-06-09-ordered-parts-stream-rewrite.md`. Design panel = 3 cross-validating agents.
 - [x] Turn lifecycle affordances (web `9c82c69`): submitted-no-token scaffold (no blank frame); forming bubble (`正在思考` in the bubble slot when process precedes text, never an empty bubble); collapse-on-settle (`open = manualOpen ?? live`, no remount, manual override wins); reconnect anchor (`isReconnecting` → 「重连中…」warm-wood capsule). Single live anchor preserved. 178 vitest + tsc + eslint green; Playwright in-page recorder captured forming→text+caret→collapsed-settle deterministically.
-- [ ] REAL-backend e2e (next phase): start kokoro-session (:3001, Redis db15) + kokoro-agent worker (gateway `.env`, `disable_streaming=True`) and Playwright a REAL DeepAgents run — tools/subagents/thinking only render when the agent PRODUCES them; preview can't exercise real subagent nesting. (Only web :3000 currently up.)
-- [ ] DDD architecture refactor (deferred): panel cross-validated a session→web→agent ordering — god-file splits, kebab-case, application-owned ports, dead-file deletion across all three repos.
+- [x] REAL-backend e2e (DONE 2026-06-20,见 §I 末):curl 驱动 agent(LocalFake)→Redis db15→session(:3001)→SSE 全链路;`/batch` 大重构后合并 main 上事件按序全到:session.created→run.created→todo.updated→tool.invoked→tool.returned→message.delta→message.completed→run.completed。证明重构未破 live loop。(Playwright 真模型联跑仍可选后补。)
+- [x] DDD architecture refactor DONE(2026-06-19/20 /batch + 收尾 survey,见 §I):god-file split(use-conversation→窄协作者)+ 三仓类型纯净/边界硬化/零遮掩。**收尾 survey 结论**:① 死文件三仓为零;② application-owned ports 已正确(session `StreamProtocol` 在 application 层,infra 实现它);③ kebab-case——web 100% 达标、agent=Python snake_case(正确不动)、session 仅剩 3 个点分测试名已统一(PR#8 `eda64f0`)。该轴已无遗留。
 
 ## G. 测试体系 + 真实效果 + 扩展性(DONE 2026-06-13)
 
@@ -130,8 +130,25 @@ control 消息(非 codegen,手定): `{kind:"control", decision:"approve"|"reject
 - [x] #8 取消 DONE(agent 9b1002d/session 5d6054d/web d1de82a+c9465be):control 加 cancel;worker 每 run cancel-watcher→task.cancel()→run.completed(cancelled);web stop/放弃发 cancel + 本地 markRunCancelled 收口。真机验证(awaiting→stop→redis cancelled,无 ghost)。
 - [x] #3 放弃解阻塞全部 DONE:由 #8 cancel 覆盖(取消整个 run→所有待批门随 task 一起死)。
 - [~] #2 并行 tool_id 精确匹配 DEFERRED:探针证实门控工具协程拿不到自己的 tool run_id(run_manager 不注入/config.run_id 为 None),不 hack langchain 内部就无法精确匹配;顺序执行(常态)无此问题,留记录。
-- [ ] #7 记忆(agent only,各管各的):create_deep_agent(checkpointer=持久 saver);run_agent 传 config thread_id=conversation_id;agent 跨 run 记上文(后续加压缩 middleware)。web/session 不变。
-- [ ] #4 超时文案:区分「审批超时」vs「用户拒绝」(rejected 仍 true,reason 不同)。
-- [ ] #5 control POST 错误处理(web):fetch 失败不静默。
-- [ ] #6 plan 模式语义:厘清/文档化交互审批 vs 只读。
-- [ ] #9 worker processed set 有界(LRU/按完成清理)。
+- [~] #7 记忆(agent only,各管各的):**核心已接线**——run_agent 传 `{"configurable":{"thread_id": conversation_id}}` + checkpointer 串到 create_deep_agent,worker 用 `InMemorySaver`,跨 run 记忆在 worker 进程生命周期内生效。**剩余**:换持久 saver(跨重启)+ 压缩 middleware。web/session 不变。
+- [x] #4 超时设计修复 DONE(agent #12 `dc..`):用户指出审批不该有超时。移除 `drive_agent_events` 的 `asyncio.timeout(120)`——它包住整个 astream(含 HITL 审批等待),用户审批超 120s 会被误杀成 run.failed;HITL 须无限等用户,放弃由 cancel 收口(fetch 工具级 HTTP 截止保留)。`TimeoutError` → 显式 `run.completed{status:"timeout"}`,不混同 reject/失败(契约+session schema 已支持透传)。**剩余(契约后续)**:web `run-completed` 是 generated、当前丢 status,UI 区分 timeout/cancelled 需动 `contract/events.yaml` 重生成,真超时已极罕见,单列。
+- [x] #5 control POST 错误处理(web)DONE:`use-hitl-control` POST 失败保持 awaiting、不伪造「已取消」;tool-call-row 审批按钮 catch 失败 → 显「决定发送失败，请重试」+ 复位可重试。非静默。
+- [x] #6 plan 模式语义 DONE(agent #14 `bf304d9`,2026-06-20,用户定):**plan = 交互审批,不是只读、不是「只规划不执行」**。移除 `fs_permissions`(它对 plan 硬 deny FS 写=只读,与语义矛盾);plan 仍经 `blocked_tools(plan)` + `gate_tools_interactive` 暂停审批敏感工具(比 default 多拦子代理)。**FS 写暂不可审批化**(deepagents 中间件仅 allow/deny、写工具不在可门控集),故 plan 下 FS 写放行——若需 FS 写审批属后续。文档同步 `docs/requirements/00-product/trust-modes.md`。
+- [x] #9 worker processed set 有界 DONE:`ProcessedRunIds`(`MAX_PROCESSED_RUN_IDS=4096`,按插入序超限逐出最旧)限制长驻 worker 内存增长。
+- [~] #10 HITL 编辑工具参数:**协议地基 DONE,web 默认 UI 撤回**(2026-06-20)。
+  - **保留**:control 协议(手定非 codegen)加可选 `args`——approve 整体替换工具参数。agent #13 `ControlMessage.args` + `await_decision` 返回完整消息 + gate approve 用编辑参数执行;session #9 `controlEventSchema.args` + `?args=<json>` 端点透传(非法→400)。三仓单元 TDD,dormant 待 UI 调用。
+  - **撤回(web #11 → revert #12)**:统一 JSON textarea 对所有工具 one-size-fits-all、编辑裸 JSON 易错。用户定:默认简单只读审批,**后续按不同 tool 定制对应 UI**。届时只需在该 tool 的 UI 调 `sendToolDecision(runId,"approve",customArgs)`,底层已通。
+  - **后续**:per-tool 定制审批 UI(按工具类型给合适控件)。
+
+## I. 三仓 /batch 全面打磨(DONE 2026-06-19→20,audit workflow + 16 worktree workers)
+
+ultracode `/batch`:只读审计 workflow(36 Explore agent 逐文件对标三仓 CLAUDE.md)→ 16 个主题化、文件互不重叠工作单元 → 各自后台 worktree worker(实现→code-review→门→TDD→PR)。全部合入各仓 main 并在真实 origin/main 验证。Memory: [[kokoro-batch-worktree-orchestration]]。
+
+- [x] kokoro-agent(6 PR,`6c51ba6..d3950d2`):类型遮掩清零(type:ignore/pyright:ignore/cast/Any 兜底全消)、StreamItem→Pydantic strict、工具输入 strict+forbid、bind_tools LSP 合规、settings `T|None` 语义、注释 WHY-only、权限测试参数化。**mypy+pyright 双绿 + 240 pytest + src 零遮掩**。
+- [x] kokoro-session(4 PR,`3b975aa..962983b`):Redis 损坏条目崩溃守卫(+SSE 跳脏事件)、入口硬化(端口 Zod 校验/监听错误/进程级 handler)、control 决策走 Zod 非法→400、测试 typed accessor。**typecheck+lint+106 test**。
+- [x] kokoro-web(6 PR,经 hitl-wip-base PR#10 `4eb8627..95b3670`):mapper 穷尽性、localStorage Zod、composer type guard、startSessionReply 异步纪律硬化、**use-conversation God-object 拆分(公开 API 不变)**、thread 渲染簇类型纯净。**tsc+eslint+255 test**。
+- [x] 顶级 follow-up:#1 真零遮掩(mypy `python_executable` 指向 venv → 删 agent_builder `type:ignore` + yaml override);#2 cancel 功能完整(interactive_gate 抛 `CancelledError` 让 run 级取消独占终止,TDD)。
+- [x] 功能层验证(超单测/类型门):web `next build` 生产构建成功;session 启动绑端口+连 Redis+脏端口运行时回退 3001;agent import+worker 测试。
+- [~] #3 todo-bar 稳定 id:**判定不做**——跨三仓 `contract/events.yaml` 重生成 vs 一个可能不显现的 React key reconciliation 边角,风险>收益。单列独立后续(真做时按 contract codegen 单源走)。
+- [x] **Phase 0 跨栈 e2e 复验(2026-06-20)**:agent(LocalFake)+session+Redis db15,curl 驱动一个真实 DeepAgents run,SSE 八类事件按序全到(todo/tool/text/completed),证明合并后 live loop 未破。顺带验证 SE-2 端口冲突响亮退出。e2e 脚本 `/tmp/kokoro-e2e.sh`。
+- 反向修正 §H 过时项:**#9 已完成**(ProcessedRunIds 有界)、**#7 核心已接线**(thread_id=conversation_id + InMemorySaver,标 [~] 待持久 saver)、#5 已处理 control POST 失败。

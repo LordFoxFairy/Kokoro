@@ -1,5 +1,27 @@
 # Claude Progress
 
+- Date: 2026-06-20 (HITL 收尾:超时设计修复 + 审批可编辑工具参数 — **✅ 4 PR 全合入 main + 跨栈 e2e 复验**)
+- **承上(/batch 收尾后续)**。先做 1-2-3(e2e/§H/DDD):跨栈 e2e 复验大重构后 live loop 八类事件按序全跑通(脚本 `/tmp/kokoro-e2e.sh`,LocalFake 免密);DDD 剩余 survey 发现已基本达标(死文件零、ports 已在 application 层、kebab-case web 已合规、session 3 个点分测试名改 kebab=PR#8);§H 多项过时已反向修正(#7/#9/#5 已完成)。
+- **用户两条 HITL 指令**:① 审批超时设计错误→移除;② HITL 暂停时 tool 参数可编辑。
+- **#4 超时修复(agent #12 `cd8598a` 前)**:`drive_agent_events` 的 `asyncio.timeout(120)` 包住整个 astream(含审批等待),用户审批超 120s 被误杀成 run.failed。移除该 wall-clock(HITL 须无限等用户,放弃靠 cancel;fetch 工具级截止保留);`TimeoutError`→显式 `run.completed{status:"timeout"}` 不混同 reject。TDD,全量 241。web UI 区分 timeout 因 generated domain 丢 status、属契约后续(真超时已极罕见)。
+- **#10 审批可编辑工具参数(agent #13 / session #9 / web #11)**:control 协议(手定非 codegen)加可选 `args`——approve 整体替换工具参数。agent `ControlMessage.args`+`await_decision` 返回完整消息+gate approve 用编辑参数执行(向后兼容);session `controlEventSchema.args`+`?args=<json>` 端点透传(非法→400);web 待批参数 `<pre>`→可编辑 `<textarea>`,approve 解析草稿沿 onToolDecision→sendToolDecision→sendRunControl 回传(非法 JSON 本地拦+提示)。三仓各自 TDD(241/108/257),跨栈 e2e 复验 loop 未破。
+- **web 可编辑 UI 撤回(web #12 → main `2b03a28`)**:用户定——统一 JSON textarea 对所有工具不合适,默认简单只读审批,**后续按 tool 定制 UI**。撤回 web#11(回只读),**保留 agent#13+session#9 协议地基**(control args 通道 dormant 待 per-tool UI 调用)。
+- **状态**:本会话 5 PR 合入 main(agent `cd8598a`/session `daec14a`/web `2b03a28`),三仓本地 main FF 同步,0 open PR,无孤儿进程。**判断暂缓**(顺应用户「keep simple」):① web 显示 timeout/cancelled(需 contract `run.completed` render 加 status 重生成——cancelled 现有本地 path、timeout 罕见,契约 ripple 暂不值);② #6 plan 模式语义(含 read-only vs 交互审批的产品决策,不擅自定)。两者记为 follow-up。
+
+- Date: 2026-06-19 (三仓 /batch 全面打磨 agent/web/session — **✅ 16 PR 全部合入 main + 真实 main 验证全绿**)
+- **承上**。用户 `/batch`「全面打磨 kokoro-agent web sessions,严守 DDD+语言特性+顶级优雅」+ ultracode。只读审计 workflow(36 个 Explore agent,逐文件对标三仓 CLAUDE.md)产出 27+8+7 条真实发现 → critic 去重 → **16 个主题化、文件互不重叠工作单元**,每单元独立 worktree 后台 worker(实现→code-review→测试/双类型门→TDD 硬化→PR)。
+- **关键操作坑(已记 memory `kokoro-batch-worktree-orchestration`)**:① 跨仓隔离须协调端自建 worktree(`Agent isolation` 只对 CWD 所在仓);② 后台 agent CWD=kokoro-web 会加载其 scope CLAUDE.md 致空跑,prompt 须中和;③ web 未提交 HITL WIP 先提交 checkpoint(`f864e8f`)+ 推 `hitl-wip-base` 作 PR base(不直推 main)。
+- **16 PR(全部门绿 + code-review)**:agent `#6-#11`(base main)、session `#4-#7`(base main)、web `#4-#9`(base `hitl-wip-base`,已 squash 合入,组合 tsc/eslint/255 vitest 绿)。
+- **顶级 follow-up**:#1 真零遮掩(mypy 配 `python_executable=.venv/bin/python` 让其对 venv 解析 → 删 agent_builder `type:ignore`,顺带 yaml override;并入 #11);#2 cancel 功能完整(interactive_gate 遇 cancel 抛 `CancelledError` 让 run 级取消独占终止,TDD;并入 #9)。**#3 单列后续**:todo-bar 稳定 id 需动 `contract/events.yaml` 三仓重生成 + reducer(收益小于风险,暂缓)。
+- **组合态本地实证(纯本地分支,未推 main)**:agent 6 PR 零冲突 → mypy+pyright 双绿 + 240 pytest + src 零遮掩;session 4 PR → SE-1/SE-3 `http.ts` 冲突=1 行 import 取并集(已验证),typecheck/lint 绿 + 106 test。
+- **✅ 已合入 main(用户明确授权后执行)+ 真实 origin/main 验证全绿**:
+  - **agent**:6 PR squash 合入(`6c51ba6..d3950d2`)→ origin/main 实证 mypy+pyright 双绿 + **240 pytest** + src **零遮掩**。
+  - **session**:4 PR 合入(`3b975aa..962983b`)→ SE-1/SE-3 `http.ts` 冲突由我本地 merge-main 解并集 + push 后合 → origin/main 实证 typecheck+lint + **106 test**。
+  - **web**:`hitl-wip-base`(HITL 快照 `f864e8f` + WB-1..6)经 PR#10 `--merge` 合入(`4eb8627..95b3670`)→ origin/main 实证 tsc+eslint + **255 test**;`hitl-wip-base` 分支已删。**注意:main 现含用户"进行中"的 HITL 快照**(测试全绿、有集成覆盖),用户可在 main 上继续 HITL。
+  - **功能层验证(超单测/类型门)**:web `next build` 生产构建成功(SSR/静态页 4/4);session 启动冒烟绑 `:3199`+连 Redis(PONG)、脏端口 `not_a_number` 运行时回退 `:3001`(SE-2 Zod `.catch` 真生效);agent import 冒烟 + worker 测试覆盖。
+  - **跨栈 e2e 复验(2026-06-20)**:agent(LocalFake)→Redis db15→session(:3001)→SSE,curl 驱动真实 DeepAgents run,八类事件按序全到(session.created→run.created→todo.updated→tool.invoked→tool.returned→message.delta→message.completed→run.completed)——大重构后 live loop 未破。脚本 `/tmp/kokoro-e2e.sh`。顺带反向修正 §H 过时项:#9 有界已完成、#7 记忆已接线(thread_id=conversation_id+InMemorySaver)、#5 control POST 失败已处理。
+  - **遗留**:#3(todo-bar 稳定 id,需 `contract/events.yaml` 三仓重生成 + reducer)**判定不做**——跨三仓契约波及大、收益仅一个可能不显现的 React key reconciliation 边角,风险>收益,单列独立后续;P0-2 轮换 `.env` zhipu key(沿用);用户本地各仓 `git pull` 同步 main。
+
 - Date: 2026-06-19 (kokoro-agent worker.py + agent_builder.py 打磨 — **已推送 origin/main** `9b9e951..6c51ba6`)
 - 用户「继续打磨 worker.py 和 agent_builder.py」。串行亲自,ruff/mypy0/pyright strict 0/202 passed,redis 实跑。提交 `6c51ba6`。
 - **worker.py**:抽 `_admit_request`(parse → 非法发 run.failed → 去重 → 登记)消除 `_handle_request`(顺序路径)与 `serve`(并发+cancel 路径)的重复准入逻辑,去重单一出处;ProcessedRunIds docstring 压 1 行。
