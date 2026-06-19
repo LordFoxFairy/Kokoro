@@ -1,5 +1,34 @@
 # Claude Progress
 
+- Date: 2026-06-19 (kokoro-agent DDD 严格分层 + 工具/事件打磨 — **已推送 origin/main** `c1d8241..78a3a1a`)
+- **承接上一条**。本会话 `/goal`→`/batch` 顶级打磨,议题:① 工具没用 langchain idiom(`@tool`/BaseTool);② 自定义 event「留位置」;③ DDD 每层严格职责分区(用户反复强调「严格分明/方便维护/舒坦」);④ 常量归属。**串行逐模块**(未开并行 worktree)。
+- **判断力收口(非盲从,均实证/留痕):**
+  - **`@tool` 驳回**:实测 `@tool` 静态返回 `BaseTool`(运行时才是 StructuredTool),且装饰器本身 pyright `partially unknown`。整条工具链钉死 `StructuredTool`(权限门 `static_gate`/`interactive_gate` **重包**工具、读 `.func/.coroutine/.args_schema`)。改 `@tool` 要降级脊柱或逐个 `cast`——用 2 条解释清楚的 ignore 换一堆 cast,**是退步**。保留 `from_function`。
+  - **`event_payloads` 返回 dict 非偷懒**:`AgentEvent.payload` 在生成契约里就是 `dict[str,JsonValue]`。实测 TypedDict **类型不兼容**(mypy+pyright 都拒),Pydantic 是**热路径(每 token delta)仪式**。类型安全由「强类型 domain 输入 + `tests/stream_contracts.py` 镜像断言」兜住。
+  - **全仓 DDD 审计**(Explore 子代理通读 45 文件)裁决:domain 用 pydantic = **铁律要求**(`agent_event.py` 生成契约 / `RunRequest` 外部输入校验边界),**非违例**;Composition Root(`agent_factory`/`run_agent`)直依 langchain 具体类 = 组装层职责,藏成抽象是投机仪式,**驳回**;全局 `constants.py` = junk-drawer **反模式**(`_REDIS_FIELD` 这类私有细节就近私有放,只有跨子系统共享身份才抽小模块如 `tool_names.py`)。
+- **提交(每个 ruff/mypy0/pyright strict 0/202 passed 全绿,redis 实跑 PONG):**
+  - `907480d`+`2e0be2a` *(上轮 /goal)* `_Contract` 基类 DRY(17→1)、抽 `event_payloads.py`(SRP)。
+  - `810d692` `stream_events` 拆 SRP:leaf `tool_names.py`(共享工具名身份单一真理源,`RESERVED_TOOL_NAMES` 改为派生、杀 `write_todos`/`task`/`agent` 重复字面量)+ `events.py`→`parsed_event.py`(只留 LangChain ACL DTO)+ `TOOL_RESULT_MAX_CHARS` 下沉 translator;测试镜像 `contracts.py`→`tests/stream_contracts.py`(出生产 API);`runtime_subagent` 去假 sync 桩→纯异步。
+  - `1b56587` 抽 `RunEmitter`(消 driver ~15 处事件构造样板 + 「新增 event」5 步配方 docstring);driver/event_payloads **直依 `domain.stream_intent`**(不再经 infra 洗白)。
+  - `78a3a1a` **`StreamProtocol`/`StreamItem` 上移 `application/event_stream.py`**(真·无框架抽象,infra 反向依赖它实现→依赖倒置方向正了;`EventStreamingAgent`/`AsyncRunner` 留 infra=langchain 形状的适配契约);`port`/`control_port`→**`bus`/`control_bus`**(避 `stream:str` 名参 + `control_stream()` 函数撞名,用户否决 "port" 黑话)；interactive_gate 也去假 sync 桩。
+- **分层结果**:domain 纯语义 / application 编排+无框架抽象(含 `event_stream`/`run_emitter`/`event_payloads`)/ infrastructure 仅适配器与细节 / interfaces 进程入口。
+- **状态**:5 提交**已 push origin/main**(`c1d8241..78a3a1a`),`main...origin/main` 同步,工作区仅 `.claude/` untracked。**严守 kokoro-agent only**(未碰 contract//web/session;`agent_event.py` 生成契约未动)。**待用户**:P0-2 轮换 `.env` zhipu key(仍未做)。
+
+- Date: 2026-06-19 (kokoro-agent 全面打磨 + 命名重排 — **已推送 origin/main** `6bc7c51..c1d8241`)
+- **承接上一条**(强类型+DDD分层 16提交本地未推)。本会话续做:先把 `runtime_subagent_tool.py` 移入 `tools/runtime_subagent.py`(`6bc7c51`,与 clock/fetch 同级),再用 `/batch` 触发但**改串行逐模块**(用户选「串行·我逐模块」——单元共享类型骨架不独立、pyright/contract 敏感),把全仓 12 模块逐个打磨,**每模块独立 commit + ruff/mypy/pyright strict/全量 pytest 全绿**。redis 本机在跑(PONG),**redis 集成测试真实执行非 skip**。
+- **类型反模式消除(object/Any→class):**
+  - `9ce93fc` `json_types.py` 手写 object TypeGuard 阶梯(`_is_object_dict/_coerce_json_value`)→ Pydantic `TypeAdapter`(规则§6),统一到 `pydantic.JsonValue`(消除与 driver/agent_event 的重复定义)。47→19 行。ValidationError 是 ValueError 子类,raises 契约不变。
+  - `39926bb` `local_fake.py` 3 处 `Any` 全清:LangChain override 的 `bind_tools/_generate` 用 `object` 逆变加宽(LSP 安全),删 `_ToolLike` 别名。
+  - `3121d9b` `redis_stream.py` 移除规则§4 违规的 `if TYPE_CHECKING`+函数内 deferred import(redis 是**硬依赖**,无 try/except 豁免理由),`from redis.asyncio import Redis, from_url` 提顶层。
+- **三组改名(用户逐个纠,均机械 rename + 全绿):**
+  - `48f2be7` `RedisStreamPort/MemoryStreamPort`→`RedisStream/MemoryStream`(实现不带 port/protocol 后缀)。
+  - `9727678` `StreamPort`→`StreamProtocol`(它确是 Protocol,与文件名 stream_protocol.py 对齐)、`make_stream_port`→`make_stream`。
+  - `1b9641b` `agent_adapter.py`→`agent_builder.py`(里面全是 `make_deep_agent/make_subagent_runner` 构造函数,「构造」非「运行」;run_agent.py 才跑循环)。用户反对「adapter/第三方SDK」黑话,采纳 builder。
+- **全仓中文注释**:WHY-only、≤1 行、技术术语(deepagents/langchain/RESP3/RFC1918 等)保留英文;补齐所有模块 + 5 个包根 `__init__` docstring。
+- **刻意保留的合法边界(均补中文 WHY):** redis RESP2/3 线格式、LangChain StreamEvent、deepagents runner 结果 三处 `object`+TypeGuard 解析(非 JSON、Pydantic 不适用、折叠会触发 pyright Unknown);`agent_builder` 的 Any-package-view + 唯一 1 处 `type: ignore`(FilesystemPermission 存根缺口);`AsyncRunner.ainvoke->object`(诚实,不强行收紧)。`domain/agent_event.py` **整文件未动**(根仓 contract/events.yaml 生成,禁改)。
+- **验证**:全仓 **ruff 干净 · mypy 0 · pyright 0(strict)· 202 passed**(redis 集成真跑)。**严守 kokoro-agent only**,未碰 contract//web/session。
+- **状态**:本会话 16 提交**已 push origin/main**(`6bc7c51..c1d8241`),工作区仅 `.claude/` untracked。**待用户**:P0-2 轮换 `.env` 真实 zhipu key(仍未做)。
+
 - Date: 2026-06-19 (kokoro-agent 强类型 + DDD 物理分层重排完成 — 本地 main,未推送)
 - **范围铁律**:**只动 kokoro-agent 子仓**。`contract/`(events.yaml/generate.py)、kokoro-web、kokoro-session **一律不碰**;`domain/agent_event.py` 是根契约**生成文件**(见下),不手改。用户角色=出思路/打分/找不合理,我=实现。详见 memory `kokoro-contract-codegen` / `kokoro-agent-dual-typecheck`。
 - **承接 06-18**:P0-1 安全网 + P1(删假 banner / driver payload builder / adapter 合并 / ProcessedRunIds)已合并 main(见上一条)。本日继续:
