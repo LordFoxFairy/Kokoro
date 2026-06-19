@@ -3,7 +3,7 @@
 - **日期**：2026-05-28
 - **状态**：accepted
 - **决策者**：用户拍板，Claude 起草
-- **关联**：[ADR-007](./ADR-007-prototype-and-production-stack.md)、[ADR-008](./ADR-008-chat-alignment.md)、[../PROJECT-STATE.md](../PROJECT-STATE.md)、[../product/04-architecture/repository-boundaries.md](../product/04-architecture/repository-boundaries.md)
+- **关联**：[ADR-007](./ADR-007-prototype-and-production-stack.md)、[ADR-008](./ADR-008-chat-alignment.md)、[../prototypes/PROTOTYPE-STATE.md](../prototypes/PROTOTYPE-STATE.md)、[../product/04-architecture/repository-boundaries.md](../product/04-architecture/repository-boundaries.md)
 
 ---
 
