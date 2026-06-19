@@ -336,8 +336,8 @@ def parse_render_union(text: str) -> dict[str, set[str]]:
 # --------------------------------------------------------------------------- #
 
 TRANSPORT_FILES = {
-    "kokoro-session/.../stream-port.ts": (
-        ROOT / "kokoro-session/src/infrastructure/stream-port.ts",
+    "kokoro-session/.../stream.ts": (
+        ROOT / "kokoro-session/src/infrastructure/stream.ts",
         {
             "CURSOR_WIDTH": (r"\bCURSOR_WIDTH\s*=\s*(\d+)", int),
             "REDIS_FIELD": (r'\bREDIS_FIELD\s*=\s*"([^"]+)"', str),
@@ -520,7 +520,7 @@ def main() -> int:
         f"(session-event.ts; web wire-in tolerates {len(exp_agui_web)} w/ optionals)"
     )
     print(f"  render    : {len(exp_render)} kinds  (session-stream-event.ts)")
-    print(f"  transport : {len(spec['transport'])} consts (stream-port.ts + memory_stream.py/redis_stream.py)")
+    print(f"  transport : {len(spec['transport'])} consts (stream.ts + memory_stream.py/redis_stream.py)")
     print(f"  envelope  : {len(spec['envelope']['agui_out'])} agui fields (session + web)")
     print(f"  base kinds: {n_kinds}")
     return 0
