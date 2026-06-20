@@ -161,5 +161,6 @@ ultracode `/batch`:只读审计 workflow(36 Explore agent 逐文件对标三仓 
 - [x] **session**(1 PR,#10 → `0f1af00`):删 ReplayStore 死抽象、StreamProtocol 端口收窄、HTTP query Zod 化+统一路由、抽 sse-endpoint、MemoryStream lastIndex 消 O(n²)。109 test。
 - [x] **web**(3 PR → `dc947d3`):reducer 616 行拆 types/mutations/projection+switch 穷尽(公开 API 不变);抽 useTransportSession 收敛在途句柄+消 eslint-disable;composer 拆;G1-G3 悬空能力 disabled;F11 Zod 双参。255 test。
 - [x] 跨栈 e2e 复验:深度重构后 live loop 八类事件按序全跑通。
+- [x] H3 worker 级集成测试(PR#19 `d9a166f`):serve 真实路径 + gated fetch_url + control 断连桩 → 断言 `run.completed{cancelled}` + 无伪造 reject。覆盖缺口闭环,252 pytest。
 - [~] control schema codegen:三仓**当前实证一致**;full codegen 不成比例(3 字段手定 schema + event-shaped 生成器),deferred。
 - [ ] (低优先后续)agent L4 registry 所有权收敛(动 worker,本轮跳);web G4 run-failed 错误数据用好(retryable/message);web F10 pendingInput 改名;agent M6/session F3 control codegen(同上)。
