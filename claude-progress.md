@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-06-20 (用户驱动 DDD 审查闭环 — **✅ 4 PR 全合入 main + 三仓 main 同步**)
+- **承上(/goal 深度重构后续)**。用户从 `agent_builder.py` 观察「多个相似 class+函数混在一起、本质 dataclass」切入,引出系统性 DDD 审查:依赖方向(domain←application←infra←interfaces)+ 文件内职责混杂 + 框架类型钻进签名 + God object。
+- **PR#20 agent 端口上移 application(`36e3700`)**:`agent_builder`(infra)此前既定义 application 消费的强类型 port(`EventStreamingAgent`/`AgentInvokeInput`)又混 builder 构造,致 application/agent_factory+run_agent 反向 import infra 取 port(违 DIP)。新建 `application/agent_ports.py` 承载 port;infra 只留框架接线+builder+内部契约 `AsyncRunner`(仅 infra runtime_subagent 消费,正确留 infra)。
+- **PR#21 JsonObject 下沉 domain(`8c151bd`)**:同类——`infrastructure/json_types` 混基础类型 `JsonObject`(dict[str,JsonValue])+洗净逻辑,application/request_admission 反向 import 取类型。类型下沉 `domain/json_payload.py`(最内层单一来源),infra 只留 validate/clone。
+- **PR#19 H3 worker 级集成测试(`d9a166f`)**:补 H3(control 断连不伪造 reject)唯一覆盖缺口——serve 真实路径+gated fetch_url+control 流 subscribe 立即耗尽 → 断言 `run.completed{cancelled}`+无伪造 reject。
+- **深层语义审查(4 个并行只读 agent,一仓/层一个)**:agent application=PASS(framework 类型均 ACL 边界豁免);agent domain+infra=PASS(domain 纯净;translator 190/redis_stream 164 行核实为单一职责必要体量,非 God object);session=1 low → **PR#11 修**;web=1 med → **用户定保持**。
+- **PR#11 session start-run 拆分(`2cb8590`)**:`start-run.ts`(112行)混 4 链路 → 拆 stream-names/send-run-control/relay-run/start-run,importer 直指新文件无 barrel。typecheck/lint/109 test。
+- **判断保持(非债,经核实)**:web `transport.ts` I/O 实现在 application 层(med)——它同时导出端口契约类型(被 reply.ts 当端口)+I/O 实现,整体迁 infra 反造 application→infra 反向依赖,干净拆需 DI 管线;**用户选保持**(与 agent 仓 application 务实编排具体 infra 的先例一致,反过度设计),审查在案。大量 application→infra 编排调用(make_chat_model 等)同理判定务实折中,不报。
+- **验证**:每 PR 过各自类型门+全量测试(agent mypy 59/pyright 0/252 pytest;session typecheck/lint/109;零遮掩)。三仓 main 同步:agent `8c151bd`、session `2cb8590`、web `dc947d3`。**结论:三仓 DDD 分层健康**——domain 纯净、依赖内向、无 God object,剩余为已评估可接受的务实折中。
+
 - Date: 2026-06-20 (/goal 三仓深度架构重构 — **✅ 8 重构 PR 全合入 main + 组合态 + 跨栈 e2e 全验证**)
 - **目标**(用户 /goal,自主无交互):三仓能力闭环 + 极高质量(DDD/职责单一/无 God 文件)+ 架构梳理 + 禁遗留兼容/敢重构 + 多方案择优。
 - **方法**:3 个只读架构审计 agent(一仓一个,通读全源)→ ~30 findings + topRefactors → 8 个文件互不重叠重构 worker(并行 worktree)→ 逐仓组合态验证 → 合入 main → 跨栈 e2e。
