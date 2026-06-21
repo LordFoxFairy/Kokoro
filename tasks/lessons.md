@@ -26,3 +26,8 @@
 - 场景：item 4 架构打磨，我把"4 独立仓 → monorepo 收敛"作为大胆优化建议提出。
 - 我做错的：把跨仓 contract CI 的摩擦当成"该合并"的论据。用户明确否决——"本来就是四个独立子仓库，为什么放一个大仓"。4 仓拆分是**有意的架构**（独立可部署：agent Python worker / session TS server / web Next.js，各自 runtime、各自 remote、各自 CI）。
 - 下次怎么避免：**不再提 monorepo 收敛**。跨仓契约的"双向维护"摩擦用 **codegen 单源生成**解决（generator 在 root，生成进 4 仓镜像），而非合并仓库。架构打磨一律在 4 仓结构内做。
+
+## 2026-06-15 大文件/循环依赖/边界类型收口不够细
+- 场景：用户指出 agent `run_agent.py` 问题很大，并质疑为何审批工具会自动超时、为何还靠 `_str_field` 从松散 payload 里抠字段；同时指出我在 Python/TS 都容易把文件写大，导致循环 import 压力和职责混杂。
+- 我做错的：把多个 concern（审批语义、事件翻译、segment 归并、配置拼装、memory 接线）堆进同一文件里；为了先跑通链路接受了 `Mapping[str, object]` 边界，再用 `_str_field` 这类 helper 在下游兜底；文件粒度过粗让依赖边界模糊，后续一加功能就推高循环依赖风险。
+- 下次怎么避免：1) 新行为先找最小宿主文件，单文件同时承担 >2 个 concern 时优先拆；2) 边界类型问题尽量在上游一次性收紧（TypedDict/Protocol/适配器），不要让下游靠 `_str_field`/`cast` 连续兜底；3) 任何需要把“取消/审批/记忆/流式翻译”同时改进同一文件时，先停下来按 concern 拆 helper/子模块，再继续加功能；4) Python/TS 都把“避免循环依赖”当设计目标，不等 import 爆了再补救。
