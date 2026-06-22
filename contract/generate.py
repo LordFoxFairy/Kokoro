@@ -27,7 +27,7 @@ WEB_RENDER_TS = ROOT / "kokoro-web/src/domain/session-stream-event.ts"
 WEB_SCHEMA_TS = ROOT / "kokoro-web/src/infrastructure/transport-event-schema.ts"
 SESSION_AGENT_EVENT_TS = ROOT / "kokoro-session/src/domain/agent-event.ts"
 SESSION_EVENT_TS = ROOT / "kokoro-session/src/domain/session-event.ts"
-AGENT_EVENT_PY = ROOT / "kokoro-agent/src/kokoro_agent/domain/agent_event.py"
+AGENT_EVENT_PY = ROOT / "kokoro-agent/src/kokoro_agent/application/events/agent_event.py"
 
 GENERATED_HEADER_TS = (
     "// DO NOT EDIT — generated from contract/events.yaml by contract/generate.py.\n"
@@ -380,7 +380,7 @@ def _py_type(spec: dict, snake_field: str) -> str:
     if t == "boolean":
         return "bool"
     if t == "record":
-        return "dict[str, object]"
+        return "dict[str, JsonValue]"
     if t == "unknown":
         return "object"
     if t == "array_unknown":
@@ -410,7 +410,7 @@ def emit_agent_event_py(spec: dict) -> str:
         "",
         "from typing import Literal, TypeGuard, get_args",
         "",
-        "from pydantic import BaseModel, ConfigDict",
+        "from pydantic import BaseModel, ConfigDict, JsonValue",
         "",
         "AgentKind = Literal[",
     ]
@@ -444,7 +444,7 @@ def emit_agent_event_py(spec: dict) -> str:
     L.append("    kind: AgentKind")
     L.append("    run_id: str")
     L.append("    seq: int")
-    L.append("    payload: dict[str, object]")
+    L.append("    payload: dict[str, JsonValue]")
     return "\n".join(L) + "\n"
 
 
