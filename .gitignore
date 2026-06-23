@@ -19,8 +19,3 @@ tmp/
 .playwright-mcp/
 # 根层带编号的临时验证截图
 [0-9]*-*.png
-
-# 子仓库各自为独立 git 仓库,根仓不跟踪
-kokoro-agent/
-kokoro-session/
-kokoro-web/

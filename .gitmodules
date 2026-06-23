@@ -1,0 +1,9 @@
+[submodule "kokoro-agent"]
+	path = kokoro-agent
+	url = https://github.com/LordFoxFairy/kokoro-agent.git
+[submodule "kokoro-session"]
+	path = kokoro-session
+	url = https://github.com/LordFoxFairy/kokoro-session.git
+[submodule "kokoro-web"]
+	path = kokoro-web
+	url = https://github.com/LordFoxFairy/kokoro-web.git
