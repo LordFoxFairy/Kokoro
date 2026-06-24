@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Drift gate for the 13-kind event contract (blueprint step9, phase 1).
+"""Drift gate for the event contract (blueprint step9, phase 1).
 
-Replaces scripts/check-contract-kinds.sh (whose premise — byte-identical kind
-sets across the 3 repos — was false). This gate is deterministic and model-free:
-it derives, from contract/events.yaml, the EXPECTED kind-set and per-kind
-payload-field-name-set for each of the 6 contract files (per view), then parses
-each file structurally and asserts equality. Any missing / extra / drifted kind
-or field => non-zero exit + a precise report (file, kind, field).
+Deterministic, model-free: derives from contract/events.yaml the EXPECTED kind-set
+and per-kind payload-field-name-set for each yaml-sourced mirror (agui-out / render /
+transport / envelope), then parses each file structurally and asserts equality. Any
+missing / extra / drifted kind or field => non-zero exit + a precise report.
 
-CI: run `python3 contract/verify.py`. Exit 0 = all 6 mirrors match events.yaml.
+The agent boundary is intentionally NOT gated: agent's envelope.py is the canonical
+wire source-of-truth and kokoro-session/agent-event.ts is reverse-generated from it
+(not from events.yaml), so an agent_out yaml view would be a false drift source.
+
+CI: run `python3 contract/verify.py`. Exit 0 = all yaml-sourced mirrors match.
 """
 
 from __future__ import annotations
@@ -23,8 +25,6 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 YAML_PATH = Path(__file__).resolve().parent / "events.yaml"
 
-AGENT_EVENTS_PY = ROOT / "kokoro-agent/src/kokoro_agent/application/events/agent_event.py"
-SESSION_AGENT_EVENT_TS = ROOT / "kokoro-session/src/domain/agent-event.ts"
 SESSION_EVENT_TS = ROOT / "kokoro-session/src/domain/session-event.ts"
 WEB_SCHEMA_TS = ROOT / "kokoro-web/src/infrastructure/transport-event-schema.ts"
 WEB_RENDER_TS = ROOT / "kokoro-web/src/domain/session-stream-event.ts"
@@ -86,16 +86,6 @@ def load_spec() -> dict:
     return yaml.safe_load(YAML_PATH.read_text())
 
 
-def expected_agent_out(spec: dict) -> dict[str, set[str]]:
-    out: dict[str, set[str]] = {}
-    for entry in spec["kinds"].values():
-        ao = entry.get("agent_out")
-        if not ao or "kind" not in ao:
-            continue
-        out[ao["kind"]] = set(ao.get("payload") or [])
-    return out
-
-
 def _agui_event_payload(entry: dict) -> dict[str, set[str]]:
     """Return {event_name: payload_field_set} contributed by one yaml entry's agui view."""
     ag = entry.get("agui_out")
@@ -149,43 +139,6 @@ def expected_render(spec: dict) -> dict[str, set[str]]:
 # --------------------------------------------------------------------------- #
 # Parse the 6 actual contract files
 # --------------------------------------------------------------------------- #
-
-
-def parse_events_py(text: str) -> tuple[set[str], dict[str, set[str]]]:
-    """AgentKind Literal -> kind set; docstring table -> per-kind payload fields."""
-    literal = re.search(r"AgentKind\s*=\s*Literal\[(.*?)\]", text, re.DOTALL)
-    kinds: set[str] = set()
-    if literal:
-        kinds = set(re.findall(r'"([^"]+)"', literal.group(1)))
-
-    # Docstring table: lines like `#   kind.name   {"field": ...}` or `{}`.
-    payloads: dict[str, set[str]] = {}
-    for kind in kinds:
-        # Match the documented shape for this exact kind on its own table line.
-        m = re.search(
-            r"#\s+" + re.escape(kind) + r"\s+(\{.*?\})\s*(?:#.*)?$",
-            text,
-            re.MULTILINE,
-        )
-        shape = m.group(1) if m else "{}"
-        payloads[kind] = _fields_from_doc_shape(shape)
-    return kinds, payloads
-
-
-def _fields_from_doc_shape(shape: str) -> set[str]:
-    """Top-level keys of a documented dict shape `{"a": ..., "b": ...}`.
-
-    Only the first nesting level counts (nested {} / [] are payload values, not
-    payload field names). todo.updated documents {"todos": [...]} -> {todos}.
-    """
-    depth = 0
-    out: set[str] = set()
-    for m in re.finditer(r'"([^"]+)"\s*:', shape):
-        prefix = shape[: m.start()]
-        depth = prefix.count("{") - prefix.count("}") + prefix.count("[") - prefix.count("]")
-        if depth == 1:
-            out.add(m.group(1))
-    return out
 
 
 def parse_zod_discriminated(text: str, discriminant: str) -> dict[str, set[str]]:
@@ -434,36 +387,17 @@ def main() -> int:
     spec = load_spec()
     rep = Report()
 
-    exp_agent = expected_agent_out(spec)
     exp_agui = expected_agui_out(spec, with_web_extra=False)
     exp_agui_web = expected_agui_out(spec, with_web_extra=True)
     exp_render = expected_render(spec)
 
-    # 1. kokoro-agent events.py (agent-out, Python)
-    py_text = AGENT_EVENTS_PY.read_text()
-    py_kinds, py_payloads = parse_events_py(py_text)
-    rep.compare(
-        "kokoro-agent/.../events.py",
-        "agent-out",
-        exp_agent,
-        py_payloads,
-    )
-    if py_kinds != set(exp_agent):
-        rep.fail(
-            "kokoro-agent/.../events.py",
-            f"[agent-out] AgentKind Literal != yaml: "
-            f"missing={sorted(set(exp_agent)-py_kinds)} extra={sorted(py_kinds-set(exp_agent))}",
-        )
+    # NOTE: the agent boundary (kokoro-agent events.py + kokoro-session agent-event.ts)
+    # is no longer gated here. agent's envelope.py is the canonical wire source-of-truth;
+    # agent-event.ts is REVERSE-generated from it (not from events.yaml), so checking it
+    # against the yaml agent_out view would be a false drift. Only the agui-out / render /
+    # transport / envelope mirrors below remain yaml-sourced.
 
-    # 2. kokoro-session agent-event.ts (agent-out re-validation, Zod)
-    rep.compare(
-        "kokoro-session/.../agent-event.ts",
-        "agent-out",
-        exp_agent,
-        parse_zod_discriminated(SESSION_AGENT_EVENT_TS.read_text(), "kind"),
-    )
-
-    # 3. kokoro-session session-event.ts (agui-out, Zod)
+    # 1. kokoro-session session-event.ts (agui-out, Zod)
     rep.compare(
         "kokoro-session/.../session-event.ts",
         "agui-out",
@@ -471,7 +405,7 @@ def main() -> int:
         parse_zod_discriminated(SESSION_EVENT_TS.read_text(), "event"),
     )
 
-    # 4. kokoro-web session-event-schema.ts (agui-out wire-in, Zod, + web extras)
+    # 2. kokoro-web session-event-schema.ts (agui-out wire-in, Zod, + web extras)
     web_schema_text = WEB_SCHEMA_TS.read_text()
     rep.compare(
         "kokoro-web/.../session-event-schema.ts",
@@ -488,7 +422,7 @@ def main() -> int:
             f"extra={sorted(enum_kinds-set(exp_agui_web))}",
         )
 
-    # 5. kokoro-web session-stream-event.ts (render, TS union, camelCase)
+    # 3. kokoro-web session-stream-event.ts (render, TS union, camelCase)
     rep.compare(
         "kokoro-web/.../session-stream-event.ts",
         "render",
@@ -496,10 +430,10 @@ def main() -> int:
         parse_render_union(WEB_RENDER_TS.read_text()),
     )
 
-    # 6. transport constants in BOTH stream ports (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS)
+    # 4. transport constants in BOTH stream ports (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS)
     check_transport(spec, rep)
 
-    # 7. shared envelope fields in session + web (CONTRACT for seq/event_id/cursor/...)
+    # 5. shared envelope fields in session + web (CONTRACT for seq/event_id/cursor/...)
     check_envelope(spec, rep)
 
     if rep.problems:
@@ -510,11 +444,8 @@ def main() -> int:
         return 1
 
     n_kinds = len(spec["kinds"])
-    print("PASS — all 6 contract mirrors match contract/events.yaml")
-    print(
-        f"  agent-out : {len(exp_agent)} kinds  "
-        f"(events.py + agent-event.ts)"
-    )
+    print("PASS — all agui/render/transport mirrors match contract/events.yaml")
+    print("  agent-out : not gated (agent envelope.py is canonical; agent-event.ts reverse-generated)")
     print(
         f"  agui-out  : {len(exp_agui)} events "
         f"(session-event.ts; web wire-in tolerates {len(exp_agui_web)} w/ optionals)"
