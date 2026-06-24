@@ -32,7 +32,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - run: pip install pyyaml
+      # agent_wire 反向生成 agent-event.ts 时机读 agent envelope.py 的 Pydantic TypedDict，需 pydantic。
+      - run: pip install pyyaml pydantic
       - name: contract verify
         run: python3 contract/verify.py
       # codegen 门禁：events.yaml 改了但忘了重生成镜像 → --check 非零。
