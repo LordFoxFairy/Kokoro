@@ -88,6 +88,14 @@ reject 流程：`RunResume(RejectDecision)` → supervisor `_decision_dict` → 
 
 **spike 产出**：确定机制 A 是否成立；不成立则定 B 的最小关联通道。这是本设计**最大风险点**，writing-plans 前先做。
 
+### SPIKE 结论（2026-06-25，读 langchain HITL 源定论）
+
+源：`langchain/agents/middleware/human_in_the_loop.py`。
+
+- **reject 观测 → 机制 B（supervisor 关联），机制 A 不成立。** reject 生成 `ToolMessage(content="User rejected…"/自定义 message, name, tool_call_id, status="error")`——与真实工具错误的 `status="error"` **无机器可读区分**（仅 content 前缀不同，嗅探被禁）。故权威来源是 **supervisor**：它处理 RejectDecision 时已知 `(run_id, tool_id, type=reject)`。projection 对 rejected 工具**覆盖**为 `is_error=false, rejected=true, result=理由`（不可沿用 `tc.error is not None` → 否则 rejected 工具误判 is_error=true）。最小通道：supervisor `_on_resume` 把本段 reject 的 tool_id 集传入 `invoke_once`→projection（进程内即可保证**发布的** tool_end 事件正确；web 的 replay 安全由该权威事件被持久化保证）。跨 pod/重放的 reject 关联持久化判为 deferred edge（与 §11 一致）。
+- **resume 匹配 → 按顺序/数量**（`after_model` 对 decisions 数与 interrupted tool 数不等抛 ValueError），**非按 tool_id**。故 `RunResume.decisions` 有序；supervisor 按 `tool_id`→pending 顺序重排，并在构造 langchain `Command(resume={"decisions":[…]})` 时**剥掉 wire 专用的 tool_id 键**（langchain Decision 不含 tool_id）。
+- **Task 2 锁定走机制 B 变体**（非 A）；**Task 5 锁定按序匹配 + tool_id 重排/剥离**。
+
 ## 6. 四仓改动面（line-precise）
 
 ### kokoro-agent
