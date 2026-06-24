@@ -14,6 +14,10 @@ __pycache__/
 .idea
 .vscode/*
 
+# 本地 AI / 工具暂存目录
+.claude/
+.jbeval/
+
 # 调试 / 临时产物
 tmp/
 .playwright-mcp/
