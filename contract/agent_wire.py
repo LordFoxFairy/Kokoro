@@ -32,6 +32,7 @@ EVENT_DATA: dict[str, Any] = {
     "text_chunk": E.ChunkData,
     "reasoning_chunk": E.ChunkData,
     "tool_call_start": E.ToolStartData,
+    "tool_call_awaiting": E.ToolStartData,
     "tool_call_end": E.ToolEndData,
     "agent_done": E.DoneData,
     "agent_error": E.ErrorData,
@@ -43,7 +44,6 @@ AGENT_STATUS_VARIANTS = [
     E.SubagentStartedStatus,
     E.SubagentFinishedStatus,
     E.CustomStatus,
-    E.AwaitingStatus,
 ]
 
 
@@ -58,6 +58,9 @@ def _zod_scalar(schema: dict[str, Any], defs: dict[str, Any]) -> str:
     s = _resolve(schema, defs)
     if "const" in s:
         return f'z.literal("{s["const"]}")'
+    if "enum" in s:
+        vals = ", ".join(f'"{v}"' for v in s["enum"])
+        return f"z.enum([{vals}])"
     t = s.get("type")
     if t == "string":
         return "z.string()"
