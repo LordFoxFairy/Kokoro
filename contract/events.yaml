@@ -218,10 +218,10 @@ kinds:
     agui_out:
       event: run.failed
       payload: [run_id, error_kind, message]
-      agui_out_web_extra: [retryable, request_id]   # web inbound tolerates these optionals
+      agui_out_web_extra: [request_id]   # web inbound tolerates this optional
     render:
       kind: run-failed
-      payload: [errorKind, message, retryable, requestId]
+      payload: [errorKind, message, requestId]
 
 # ---------------------------------------------------------------------------
 # agui-out has TWO kinds with no agent-out source (session synthesizes them from
@@ -269,7 +269,6 @@ field_types:
   source: enum:subagent_source
   is_error: boolean
   rejected: boolean
-  retryable: boolean
   args: record             # z.record(z.unknown()) / Record<string, unknown>
   todos: todo_list         # array of {content: string, status: todo_status}
   citations: array_unknown # z.array(z.unknown())
@@ -286,7 +285,7 @@ view_field_types:
 
 # Fields optional in the render union (camelCase). web wire-in optionals are
 # already declared per-kind via `agui_out_web_extra`.
-render_optional: [finalMessageId, retryable, requestId, rejected]
+render_optional: [finalMessageId, requestId, rejected]
 
 # Fields optional in the strict producer/consumer payload schemas (snake_case):
 # agent_out (agent-event.ts), agui_out (session-event.ts), web transport schema.
