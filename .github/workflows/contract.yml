@@ -16,18 +16,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: LordFoxFairy/kokoro-agent
-          ref: feat/three-repo-loop
+          ref: main
           path: kokoro-agent
           # 若 sibling 仓为私有,需配置一个有读权限的 PAT secret 并在此传 token:。
       - uses: actions/checkout@v4
         with:
           repository: LordFoxFairy/kokoro-session
-          ref: feat/three-repo-loop
+          ref: main
           path: kokoro-session
       - uses: actions/checkout@v4
         with:
           repository: LordFoxFairy/kokoro-web
-          ref: feat/bootstrap-shell
+          ref: main
           path: kokoro-web
       - uses: actions/setup-python@v5
         with:
