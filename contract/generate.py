@@ -448,12 +448,15 @@ def emit_agent_event_py(spec: dict) -> str:
     return "\n".join(L) + "\n"
 
 
+# option A：agent 的 envelope.py 是 wire 单源真理。agent-event.ts 由 agent_wire 反向生成，
+# agent 侧不再生成 agent_event.py（agent 即源）。AG-UI/render 视图仍由 events.yaml 生成。
+from agent_wire import emit_agent_event_ts  # noqa: E402
+
 EMITTERS = {
     WEB_RENDER_TS: emit_web_render,
     WEB_SCHEMA_TS: emit_web_schema,
-    SESSION_AGENT_EVENT_TS: emit_session_agent_event,
+    SESSION_AGENT_EVENT_TS: lambda _spec: emit_agent_event_ts(),
     SESSION_EVENT_TS: emit_session_event,
-    AGENT_EVENT_PY: emit_agent_event_py,
 }
 
 
