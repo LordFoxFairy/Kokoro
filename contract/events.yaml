@@ -136,13 +136,13 @@ kinds:
   tool.returned:
     agent_out:
       kind: tool.returned
-      payload: [segment_id, tool_id, name, result, is_error, rejected, reject_reason]
+      payload: [segment_id, tool_id, name, result, is_error, rejected, reject_reason, responded]
     agui_out:
       event: tool.returned
-      payload: [segment_id, tool_id, name, result, is_error, rejected, reject_reason]
+      payload: [segment_id, tool_id, name, result, is_error, rejected, reject_reason, responded]
     render:
       kind: tool-returned
-      payload: [segmentId, toolId, name, result, isError, rejected, rejectReason]
+      payload: [segmentId, toolId, name, result, isError, rejected, rejectReason, responded]
 
   todo.updated:
     agent_out:
@@ -270,6 +270,7 @@ field_types:
   is_error: boolean
   rejected: boolean
   reject_reason: string    # HITL 拒绝理由文本；空理由也是合法值，故 string 非 nonempty
+  responded: boolean       # HITL respond：结果由人工答复而非工具执行（done + provenance 标记）
   failed: boolean
   error: string            # 子代理失败原因文本
   args: record             # z.record(z.unknown()) / Record<string, unknown>
@@ -288,12 +289,12 @@ view_field_types:
 
 # Fields optional in the render union (camelCase). web wire-in optionals are
 # already declared per-kind via `agui_out_web_extra`.
-render_optional: [finalMessageId, requestId, rejected, rejectReason, failed, error]
+render_optional: [finalMessageId, requestId, rejected, rejectReason, responded, failed, error]
 
 # Fields optional in the strict producer/consumer payload schemas (snake_case):
 # agent_out (agent-event.ts), agui_out (session-event.ts), web transport schema.
 # Absence is a valid, meaningful default — producers omit them on the common path.
-payload_optional: [rejected, reject_reason, failed, error]
+payload_optional: [rejected, reject_reason, responded, failed, error]
 
 # Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
 notes:
