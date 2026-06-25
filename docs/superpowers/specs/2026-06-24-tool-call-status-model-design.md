@@ -152,3 +152,20 @@ reject 流程：`RunResume(RejectDecision)` → supervisor `_decision_dict` → 
 2. **跨仓节奏**：contract-first（events.yaml → 重生成 → 各仓），coupled PR 一起合（参 stacked-squash playbook）。
 3. **依赖已删**：`.venv`/`node_modules` 当前为打包删除态，落地实现前需 `uv sync` + `pnpm/bun install` 才能跑门禁验证。
 4. **多 pod / replay 下的 reject 关联**（若 §5 走 B）：rejected tool_id 集合需随 run_state 持久化，否则跨 pod/重放丢失——与既有 RunStateStore 对齐。
+
+## 12. 契约架构勘察结论（2026-06-25，修正计划假设 / Option A）
+
+执行前对 contract 系统做了彻底勘察，**修正了原计划"给 tool.invoked 加 subagent_id"的错误假设**。真实架构（`contract/generate.py:451-460` + `agent_wire` + `normalize.ts`）：
+
+- **agent-out 事件的单源是 `kokoro-agent/interfaces/envelope.py`**（Pydantic），session 的 `agent-event.ts` 由 `agent_wire.emit_agent_event_ts()` **反向 introspect envelope.py 生成**（非 events.yaml）。故 agent-out 用运行时名 `tool_call_start`/`event`，events.yaml 的 `agent_out` 列 + `emit_agent_event_py` 是**遗留死码**（不在 EMITTERS，故 agent_event.py 不存在、是"4 mirrors"）。
+- **events.yaml 只驱动 AG-UI(`agui_out`) + web(`render`) 视图** → `session-event.ts` + 两个 web 镜像。
+- **`normalize.ts` 是手写桥**：agent-out → AG-UI，**按 `subagent_id` 是否存在拆通道**（`mapTextChunk`：有 subagent_id → `subagent.text.delta`，否则 `message.delta`）。子代理活动走**独立 AG-UI 事件族**（`subagent.text.*`），不是顶层事件挂 id。
+
+**修正后的正确改动面**：
+1. **envelope.py（agent-out 源）**：`ToolStartData`+`subagent_id`；`ToolEndData`+`subagent_id`+`reject_reason`；`SubagentFinishedStatus`+`failed`+`error`。→ agent_wire 自动传到 session agent-event.ts。
+2. **events.yaml（AG-UI/render）**：`tool.returned`+`reject_reason`；**新增 `subagent.tool.invoked/awaiting_approval/returned` 事件族**（镜像 `tool.*`+subagent_id，与 `subagent.text.*` 对称）；`subagent.finished`+`failed`/`error`。
+3. **normalize.ts**：tool 三 case 按 `subagent_id` 拆 → `subagent.tool.*`（镜像 mapTextChunk）；`tool.returned` 透传 `reject_reason`；subagent_finished 透传 failed/error。
+4. **agent 投影/supervisor**：rejected 权威化(机制 B)、subagent_id 贯穿、多决策、subagent failed（不变）。
+5. **web**：regen 两镜像；reducer 消费权威 rejected + reject_reason；渲染 `subagent.tool.*`（路由进子代理段）+ subagent failed。
+
+这是比原计划更大但与既有架构**一致**的改动（subagent.tool.* 族是真实新增，对称 subagent.text.*）。原计划 Task 表据此调整：Task 1 改为 envelope.py + events.yaml(含 subagent.tool.* 族)；Task 3/4 的子代理归属经 normalize 拆通道实现。
