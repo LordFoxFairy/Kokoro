@@ -33,9 +33,12 @@ jobs:
         with:
           python-version: "3.x"
       # agent_wire 反向生成 agent-event.ts 时机读 agent envelope.py 的 Pydantic TypedDict，需 pydantic。
-      - run: pip install pyyaml pydantic
+      - run: pip install pyyaml pydantic pytest
       - name: contract verify
         run: python3 contract/verify.py
       # codegen 门禁：events.yaml 改了但忘了重生成镜像 → --check 非零。
       - name: contract generate --check
         run: python3 contract/generate.py --check
+      # 守卫自检：证明 verify 的 drift 检测真的拦得住（掏空 mirror → 报漂移），非恒绿空操作。
+      - name: contract guard self-test
+        run: python3 -m pytest contract/test_contract.py -q
