@@ -7,3 +7,6 @@
 [submodule "kokoro-web"]
 	path = kokoro-web
 	url = https://github.com/LordFoxFairy/kokoro-web.git
+[submodule "kokoro-platform"]
+	path = kokoro-platform
+	url = https://github.com/LordFoxFairy/kokoro-platform.git
