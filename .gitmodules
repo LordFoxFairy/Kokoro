@@ -10,3 +10,7 @@
 	path = kokoro-web
 	url = https://github.com/LordFoxFairy/kokoro-web.git
 	branch = main
+[submodule "kokoro-platform"]
+	path = kokoro-platform
+	url = https://github.com/LordFoxFairy/kokoro-platform.git
+	branch = main
