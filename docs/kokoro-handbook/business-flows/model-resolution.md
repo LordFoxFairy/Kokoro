@@ -2,92 +2,98 @@
 
 ## 目标
 
-为一次能力调用解析出实际可用的 ModelBinding：按站点策略 allowlist + 优先级 + fallbackGroup 选模型，并检查 provider 健康。纯查询、无副作用。模型价格不在此决定（由 credit PricingRule 负责）。
+为一次能力调用解析出实际可用的 ModelBinding：按 featureKey(+labelKey, transportKind)过滤 active binding，排除 provider 不可用者，按 priority 升序返回有序候选。纯查询、无副作用。模型价格不在此决定(由 credit PricingRule 负责)。
+
+## 实现状态
+
+```text
+已实现   GET /model-bindings/resolve；按 featureKey + active 过滤，
+         排除 provider status≠active 或 healthStatus=down，priority asc 排序返回候选。
+规划     SiteModelPolicy / 站点 allowlist / 站点可见性、quotaClass、
+         provider fallbackGroup 降级、健康检查与 logs。当前无任何 siteId 维度。
+```
 
 ## 参与模块
 
 ```text
-kokoro-model                   ProviderAccount / ModelBinding（平台复用）+ SiteModelPolicy（站点可见性）。
-kokoro-site                    提供 SiteContext（siteId/appKey/surface）。
-kokoro-agent / session         发起 resolve，拿到 modelBindingId 后执行。
+kokoro-model                   ProviderAccount / ModelBinding / ModelLabel(平台层)。
+kokoro-agent / session         发起 resolve，拿到候选 binding 后执行。
 ```
 
 ## 前置条件
 
 ```text
-SiteContext 已解析（siteId, appKey, surface 确定）。
-SiteModelPolicy 已为该站配置 allow 的模型。
-ProviderAccount / ModelBinding 已在平台层配置。
+ProviderAccount / ModelBinding 已在平台层配置且 status=active。
+PricingRule 由 credit 侧另行配置(与 resolve 解耦)。
 ```
 
 ## 主流程
 
 ```text
 1. Resolve
-   POST /models/resolve 入: siteId, appKey, surface, capabilityKey, modelLabel(可选)。
+   GET /model-bindings/resolve 入: featureKey, labelKey?, transportKind?。
 
-2. 匹配 SiteModelPolicy
-   按 siteId + appKey + surface + capabilityKey + modelLabel 找 allow 项；
-   未指定 modelLabel 用 defaultForCapability。
-   站点只能用 allowlist 内模型，不能绕过。
+2. 过滤候选(单次查询)
+   ModelBinding.status = active
+   AND ModelBinding.featureKey = featureKey
+   AND (transportKind 给定时) ModelBinding.transportKind = transportKind
+   AND providerAccount.status = active
+   AND providerAccount.healthStatus != down  (允许 unknown / healthy / degraded)。
 
-3. 优先级 + fallback
-   按 priority 取首选 ModelBinding；首选不可用时在同 fallbackGroup 内降级。
+3. labelKey 后置过滤(可选)
+   给定 labelKey 时，仅保留 labelKeys 包含该 labelKey 的 binding。
 
-4. 健康检查
-   检查所选 ModelBinding 的 ProviderAccount healthStatus；
-   不健康则在 fallbackGroup 内继续降级，但不得跳出站点 allowlist。
-
-5. 返回
-   modelBindingId（+ transportKind / gatewayModelName 供执行）。
+4. 排序返回
+   orderBy priority asc, createdAt asc，返回全部命中的 ModelBinding 候选数组
+   (含 transportKind / gatewayModelName 供执行)。不在本层做 fallback 链选取。
 ```
 
 ## 异常流程
 
 ```text
-未授权            请求的模型不在 SiteModelPolicy allowlist -> 403。
-全部不可用         allowlist 内模型与 fallbackGroup 全不健康 -> 503。
-fallback 越界禁止   provider 健康影响降级顺序，但绝不调用站点未授权模型。
-缺 siteId         拒绝解析（不从 host 猜站点，P9）。
+无可用候选        过滤后为空 -> 返回空数组，由上游决定降级/报错。
+缺 featureKey     resolve 必须带 featureKey(必填)。
+provider down     该 provider 的 binding 直接排除(degraded 仍参与)。
+站点越权拦截      当前无 SiteModelPolicy / allowlist(规划)，本层不做站点鉴权。
 ```
 
 ## 数据变化
 
 ```text
-无写入。纯读 SiteModelPolicy / ModelBinding / ProviderAccount。
+无写入。纯读 ModelBinding / ProviderAccount。
 ```
 
 ## 幂等和一致性
 
 ```text
-requestId        追踪关联。
 无副作用          可重试，不产生状态。
-最终一致          ProviderAccount.healthStatus 可能短暂滞后，影响 fallback 选择但不破坏 allowlist。
-边界             价格不在此解析（credit PricingRule 负责）；fallback 必须带 siteId。
+最终一致          providerAccount.healthStatus 可能短暂滞后，影响候选集但不破坏正确性。
+边界             价格不在此解析(credit PricingRule 负责)；
+                 站点可见性(SiteModelPolicy)未实现，候选不按 site 隔离(规划)。
 ```
 
 ## 用户可见结果
 
 ```text
-正常      请求落到该站授权的模型，用户无感。
-未授权     该能力不可用（403），引导升级或换能力。
-全不可用   暂时不可用（503），可重试或稍后再来。
+正常      返回该 featureKey 下按优先级排序的可用模型候选。
+无候选     该能力暂不可用，由上游引导换能力或稍后再来。
 ```
 
 ## 验收标准
 
 ```text
-SiteModelPolicy 未授权的模型无法 resolve（403）。
-fallback 不会跳出站点 allowlist。
-provider 不健康时按 fallbackGroup 正确降级。
-music 站看不到只给 video 站开的模型。
+status≠active 的 binding 不出现在候选中。
+provider status≠active 或 healthStatus=down 的 binding 被排除。
+transportKind / labelKey 给定时按之过滤。
+候选按 priority asc(再 createdAt asc)有序。
 解析无副作用，可重复调用。
+(规划)SiteModelPolicy 落地后未授权模型不可 resolve。
 ```
 
 ## 相关
 
 ```text
 编排     ../decisions/ADR-004-agent-orchestration.md
-模块     ../modules/kokoro-agent.md
-扣费     ./credit-reserve-commit-refund.md（resolve 后 quote/hold）
+模块     ../modules/kokoro-model.md
+扣费     ./credit-reserve-commit-refund.md(resolve 后 quote/hold)
 ```
