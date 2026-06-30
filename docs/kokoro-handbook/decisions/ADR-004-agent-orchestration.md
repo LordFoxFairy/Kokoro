@@ -19,8 +19,13 @@ Agent 编排发生在 agent 内部，不是前端跳转。V1 先支持通用 Ski
 MCP tools、内置工具和轻量 subagent；专业 Agent 后续接入同一机制。
 
 Session 发给 Agent 的不是零散字段，而是 `AgentRunInput`：
-site/user/workspace/session/run 身份、上下文、model runtime、permission mode、
-backend policy、启用的 skills、MCP servers/tools、内置工具集合和 trace context。
+site/user/workspace/session/run 身份、上下文、model runtime、execution、
+approvalPolicy、backendPolicy、capabilities 和 trace context。
+
+Agent 编排按多期演进：
+
+P0 三仓 runtime 闭环；P1 capability orchestration；P2 Music entry；
+P3 专业 Agent；P4 Skill/MCP Hub 产品化。
 ```
 
 ## 不变量
@@ -50,6 +55,7 @@ handoff 做成前端路由         无法在一次 run 内编排多 agent 和共
 事件契约：agent 原始事件 -> session browser-facing session event。
 详见 [agent 架构](../technical/03-agent-architecture.md)、
 [session 架构](../technical/04-session-architecture.md)、
-[agent-handoff 链路](../business-flows/agent-handoff.md)。
+[agent-handoff 链路](../business-flows/agent-handoff.md)、
+[Agent 业务编排多期技术方案](../technical/13-agent-business-orchestration-roadmap.md)。
 
 约束：langchain + deepagents 是长期基座，不做 provider-neutral 重抽象，只在其上构建。

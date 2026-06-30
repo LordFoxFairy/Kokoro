@@ -2,7 +2,8 @@
 
 ## 目标
 
-用户在通用对话里发一条消息，系统稳定地完成一次 agent run：选模型/技能/工具、执行、流式产出、落库、可刷新恢复，并按实际用量扣费。
+用户在通用对话里发一条消息，系统稳定地完成一次 agent run：选模型/技能/工具、执行、
+流式产出、落库、可刷新恢复，并按实际用量扣费。
 
 ## 参与模块
 
@@ -27,16 +28,17 @@ SiteContext 已解析（siteId/userId/workspaceId）。
 ```text
 1. web POST 用户消息到 session；session 建/取 Conversation，落 user Message，创建唯一 active run。
 2. session 组装 AgentRunInput（site/user/workspace/session/run 身份、context、
-   model runtime、permission mode、backend policy、skills、MCP servers/tools、
-   内置工具、trace context），
+   model runtime、execution、approvalPolicy、backendPolicy、capabilities、
+   trace context），
    写 run.request 到 Redis（kokoro:runs:requests）。
-3. agent 取请求，credit.quote -> credit.hold（idempotencyKey）。
-4. agent model.resolve（按 SiteModelPolicy），调用 LiteLLM 或 direct provider。
-5. agent 产出原始执行事件（message/tool/todo/subagent/thinking/run.*）到 kokoro:run:{run_id}:events。
-6. session strict parse + normalize + 去重，写 Mongo（messages/runs/session_events），
+3. session 或上游服务在 run admission 阶段完成 credit quote/hold。
+4. agent 取请求，只按 manifest 执行模型、skills、MCP/tools 和受治理 capability。
+5. agent 通过 model runtime 调用 LiteLLM 或 direct provider。
+6. agent 产出原始 AgentEvent 到 kokoro:run:{run_id}:events。
+7. session strict parse + normalize + 去重，写 Mongo（messages/runs/session_events），
    经 kokoro:session:{id}:live 经 SSE 推给 web。
-7. run 结束按实际用量 credit.capture，写 ledger + usage；run.completed 终态。
-8. web reducer 折叠为 assistant 消息和活动流。
+8. run 结束后由 credit 服务按实际用量 capture/release，写 ledger + usage。
+9. web reducer 折叠为 assistant 消息和活动流。
 ```
 
 ## 异常流程

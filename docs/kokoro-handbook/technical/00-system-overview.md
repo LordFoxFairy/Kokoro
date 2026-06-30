@@ -58,9 +58,10 @@ Web 的 reducer 和 local cache 只负责体验。刷新后以
 
 - 通用聊天主链路。
 - 通用 Skills 底座：官方 skill、用户 skill、workspace skill 的读取、触发和执行。
-- 通用 MCP client：HTTP MCP server 连接、tool/prompt/resource 列表、工具调用、权限约束。
+- 通用 MCP adapter：HTTP MCP server 授权、tool/prompt/resource 发现、
+  过滤后的工具接入。
 - AgentRunInput：session 发给 agent 的一次执行输入，包含 model、skills、
-  tools、MCP、backend、permission、context。
+  tools、MCP、backendPolicy、execution、approvalPolicy、context、locks。
 - 同 session 单 active run。
 - Mongo session messages / runs / session_events。
 - Redis run queue / raw events / live fanout / locks。
@@ -77,3 +78,15 @@ Web 的 reducer 和 local cache 只负责体验。刷新后以
 - 不让 model 决定最终价格。
 - 不让 web/gateway 绕过 SiteContext。
 - 不把 LangChain 原生事件或 provider 原始响应直接暴露给浏览器。
+
+## 多期演进
+
+```text
+P0  三仓通用聊天 runtime 闭环。
+P1  capability orchestration：让 agent 编排受治理的业务能力。
+P2  Music entry：General Chat 和 Music Studio 复用同一能力编排思想。
+P3  专业 Agent：music/video/image/code specialist agent 接入。
+P4  Skill/MCP Hub 产品化。
+```
+
+详见 [Agent 业务编排多期技术方案](13-agent-business-orchestration-roadmap.md)。

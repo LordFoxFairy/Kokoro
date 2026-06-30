@@ -6,6 +6,9 @@
 子代理），并保持上下文、归属和扣费一致。handoff 是 agent 编排能力，
 不是前端跳转。
 
+多期 agent 业务编排模型见
+[Agent 业务编排多期技术方案](../technical/13-agent-business-orchestration-roadmap.md)。
+
 ## 参与模块
 
 ```text
@@ -20,13 +23,14 @@ kokoro-model    子调用涉及 AI 时解析模型。
 ```text
 主 run 已启动，AgentRunInput 已就绪。
 被调用的 skill/MCP server/tool 已在 manifest 启用且权限允许。
+业务 capability 已在 AgentRunInput.capabilities 中声明。
 ```
 
 ## 主流程
 
 ```text
 1. 主 agent 推理判定任务需要某能力（搜索/工具/子代理/专业 agent）。
-2. 发起调用，继承上下文：siteId/userId/workspaceId/sessionId/runId、
+2. 发起 capability invocation，继承上下文：siteId/userId/workspaceId/sessionId/runId、
    jobId、credit context、artifact/project context。
 3. 若子调用涉及 AI：重复 credit.quote -> hold -> model.resolve -> provider -> capture；
    子调用 usage 通过 jobId 归并到主任务。
@@ -35,6 +39,9 @@ kokoro-model    子调用涉及 AI 时解析模型。
 5. 子调用返回结果，主 agent 继续推理或调用下一能力。
 6. 全部完成，主 run 终态 run.completed。
 ```
+
+专业能力不直接让 agent 写业务库。agent 只能调用 capability adapter；
+job、artifact、credit、model 仍由 owning service 持有。
 
 ## 异常流程
 
@@ -76,4 +83,8 @@ idempotencyKey   每个子调用独立，防重复 quote/hold/capture。
 一次 run 内可编排多能力且共享 credit/artifact 上下文。
 ```
 
-相关：[general-chat](general-chat.md)、[credit-reserve-commit-refund](credit-reserve-commit-refund.md)、[../decisions/ADR-004-agent-orchestration.md](../decisions/ADR-004-agent-orchestration.md)、[../modules/kokoro-agent.md](../modules/kokoro-agent.md)。
+相关：[general-chat](general-chat.md)、
+[general-chat-to-music-entry](general-chat-to-music-entry.md)、
+[credit-reserve-commit-refund](credit-reserve-commit-refund.md)、
+[../decisions/ADR-004-agent-orchestration.md](../decisions/ADR-004-agent-orchestration.md)、
+[../modules/kokoro-agent.md](../modules/kokoro-agent.md)。

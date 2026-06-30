@@ -39,8 +39,14 @@ P0 阻断 2：
   当前 web 刷新恢复仍直接 reattach /stream。
 
 P0 阻断 3：
-  MCP、skills、backend/sandbox policy 尚未完整落地到 agent runtime，
+  MCP、skills、storageBackend / executionSandbox 尚未完整落地到 agent runtime，
   只能写为目标能力，不能写为已实现能力。
+
+设计原则：
+  Kokoro 不自研第二套 agent framework。Session/platform 解析授权、lock、
+  policy 和 manifest；agent 把 manifest 编译到 DeepAgents/LangChain
+  原生 primitives：tools、subagents、skills、interrupt_on、permissions、
+  backend、memory。
 ```
 
 ## 强制边界
@@ -123,18 +129,18 @@ run_state backend:
 tools:
   now / fetch_url。
 subagents:
-  built-in researcher / env custom / runtime registry。
+  built-in researcher / env custom / current prototype registry。
 ```
 
 未完成：
 
 ```text
 AgentRunInput manifest 消费。
-MCP client 产品化。
+MCP adapter 产品化。
 skills manifest 产品化。
-backendPolicy -> DeepAgents backend。
+backendPolicy.storageBackend / executionSandbox。
 E2B/custom backend。
-runtime subagent proposal/approval gate。
+runtime subagent manifest-first gate。
 ```
 
 ### kokoro-web
@@ -273,7 +279,12 @@ HITL/cancel 入口：
 
 ```text
 run.cancel
-run.resume(decisions: approve | reject | edit | respond)
+run.resume:
+  approvalBatchId
+  decisions:
+    ordinal
+    decision: approve | reject | edit | respond
+    payload?
 ```
 
 当前 web 只实现 approve/reject/cancel UI；edit/respond 是 wire 能力，UI 未完成。
@@ -305,10 +316,13 @@ agent_run_input:
   executionStyle
   execution.toolMode
   approvalPolicy
-  backendPolicy
+  backendPolicy.storageBackend
+  backendPolicy.executionSandbox
   capabilities.skills
   capabilities.mcpServers
   capabilities.tools
+  capabilities.subagents
+  capabilities.locks
   traceContext
 ```
 
@@ -409,11 +423,11 @@ DeepAgents tool/subagent projection
 目标但未完成：
 
 ```text
-backendPolicy -> DeepAgents backend。
-state/local_shell/e2b/custom 统一配置。
-MCP client。
-skills manifest。
-runtime subagent gated proposal。
+backendPolicy.storageBackend / executionSandbox。
+DeepAgents backend/storage 与执行 sandbox 分离配置。
+MCP adapter。
+skills manifest + lock。
+runtime subagent manifest-first gate。
 ```
 
 约束：
@@ -465,9 +479,9 @@ MCP/tool 大返回进入摘要 + 引用。
    control endpoint 校验 run/session/site/user 归属。
 
 4. Agent runtime policy：
-   backendPolicy 建模。
-   runtime subagent proposal gate。
-   MCP/skills manifest 最小实现。
+   backendPolicy 拆成 storageBackend / executionSandbox。
+   runtime subagent manifest-first gate。
+   MCP adapter 与 skills manifest/lock 最小实现。
 ```
 
 ## 官方参考约束

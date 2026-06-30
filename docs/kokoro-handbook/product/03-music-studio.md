@@ -42,7 +42,7 @@ General Chat 入口：
 ```text
 用户说「帮我做一首轻快广告歌」
   -> 通用 Agent 生成简化参数
-  -> 创建 music job
+  -> 调用 general.music.generate capability 创建 music job
   -> 返回 artifact card
   -> 可进入 Music Studio 精修
 ```
@@ -104,6 +104,7 @@ LiteLLM 不强行负责音乐 provider。音乐 provider 通常走 direct adapte
 不要让 General Chat 和 Music Studio 使用同一个 UI。
 不要让音乐模型价格写死在 model 模块。
 不要跳过 credit hold 直接调用 provider。
+不要让 agent 直接写 music job / artifact / credit ledger。
 ```
 
 ## P0 验收
@@ -115,3 +116,6 @@ LiteLLM 不强行负责音乐 provider。音乐 provider 通常走 direct adapte
 能按 featureKey 扣费。
 能展示 job 进度和失败退款。
 ```
+
+General Chat 到 Music 的 agent 编排入口见
+[../business-flows/general-chat-to-music-entry.md](../business-flows/general-chat-to-music-entry.md)。

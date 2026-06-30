@@ -103,7 +103,8 @@ AgentRunInput
     rules[]
 
   backendPolicy
-    backend: state | local_shell | e2b | custom
+    storageBackend: state | store | custom
+    executionSandbox: none | local_shell | e2b | custom
     resourceLimits?
     networkPolicy?
     artifactStorage?
@@ -113,6 +114,7 @@ AgentRunInput
     mcpServers[]
     tools[]
     subagents[]
+    locks
 
   traceContext
     requestId
@@ -171,6 +173,35 @@ skill:{skillId}
 subagent:{subagentName}
 runtime_subagent:create
 sandbox:local_shell
+```
+
+编译到执行层时不能自研第二套权限系统，必须映射到 DeepAgents/LangChain
+已有 primitive：
+
+```text
+custom / LangChain tool
+  -> interrupt_on
+  普通业务工具、高风险工具和 capability tool。
+
+MCP tool
+  -> LangChain MCP adapter + interrupt_on
+  Kokoro 只授权和过滤，不实现 MCP runtime。
+
+capability tool
+  -> wrapped tool + interrupt_on
+  只调 owning service，不直接写业务库。
+
+filesystem tool
+  -> DeepAgents filesystem permission
+  allow / deny / interrupt。
+
+sandbox execute
+  -> sandbox adapter wrapped tool
+  命令/代码执行必须走 HITL 或 policy hook。
+
+subagent task
+  -> DeepAgents task / subagents
+  只允许 manifest 中的 profile。
 ```
 
 规则来源按优先级 merge：
@@ -293,13 +324,14 @@ resume 只能用于 awaiting。
 ## Runtime Subagent Gate
 
 当前 runtime subagent tool 允许模型传 `name / description / system_prompt / task`
-并立即执行。P0 要改成默认 gated：
+并立即执行。P0 要改成 manifest-first：
 
 ```text
-1. 模型调用 runtime_subagent.create。
-2. HITL 展示 name / description / system_prompt / task / requested tools。
-3. 用户或 policy approve 后，agent materialize 到 run-scoped registry。
-4. reject 时返回 tool resolution，不创建子代理。
+1. session/platform 解析本轮允许的 SubAgentProfile。
+2. agent compiler 构造 DeepAgents subagents/task tool。
+3. 若模型请求未在 manifest 中的 subagent，直接 deny 或触发 HITL。
+4. 需要动态子代理时，只能走 experimental capability，并复用 DeepAgents
+   dynamic subagent 能力，不做 Kokoro 自研 registry。
 ```
 
 实现上优先复用 LangChain/DeepAgents 的 HITL interrupt，而不是自研第二套审批流。
@@ -318,6 +350,7 @@ SkillRef
   name
   description
   bodyRef
+  lockRef
   allowedTools[]
   allowedMcpServers[]
   risk
@@ -334,10 +367,33 @@ ToolRef
   outputSchema?
   risk
   approvalRuleRef?
+
+SkillLockEntry
+  skillId
+  source
+  sourceType
+  sourceUrl
+  ref?
+  skillPath
+  folderHash
+  version
+  resolvedAt
+
+CapabilityLockEntry
+  capabilityKey
+  source
+  version
+  policyHash
+  schemaHash
+  resolvedAt
 ```
 
 agent 只看 manifest 内的能力。manifest 没列出的 skill、MCP server、tool，
 本轮不可见。
+
+Skill lock 的 hash 必须覆盖整个 skill 目录。Capability lock 至少覆盖
+schema 和 policy。旧 lock schema 不能静默混用；无法解析时 fail loud，
+由 session/platform 重新生成 manifest。
 
 MCP tool 结果：
 
@@ -351,21 +407,19 @@ MCP tool 结果：
 ## BackendPolicy
 
 ```text
-state
-  默认安全 backend，适合普通推理和受控工具。
+storageBackend
+  state        默认安全 backend，适合普通推理和受控工具。
+  store        持久化文件视图、skills、memory。
+  custom       企业自研 DeepAgents backend。
 
-local_shell
-  只允许 development/test/单租户受控环境。
-  production 发现 local_shell 必须 fail loud。
-
-e2b
-  远程隔离执行，缺依赖或密钥 fail loud。
-
-custom
-  企业自定义 backend，必须声明 capability 和 isolation level。
+executionSandbox
+  none         无命令/代码执行能力。
+  local_shell  只允许 development/test/单租户受控环境。
+  e2b          远程隔离执行，缺依赖或密钥 fail loud。
+  custom       企业自定义执行环境，必须声明 isolation level。
 ```
 
-S3/object storage 不是 sandbox，只能作为 artifact storage。
+S3/object storage 不是 sandbox，只能作为 artifact storage 或 backend 存储组成。
 
 ## Web Hydrate
 
@@ -421,9 +475,9 @@ Web 不能：
 
 ```text
 1. 删除 permissionMode，改 execution.toolMode + approvalPolicy。
-2. Runtime subagent creation 接入 HITL gate。
-3. backendPolicy 接入 DeepAgents backend。
-4. skills/MCP/tool manifest 形成 run-scoped registry。
+2. 运行时子代理改成 manifest-first gate。
+3. backendPolicy 拆成 storageBackend + executionSandbox。
+4. skills/MCP/tool manifest 编译到 DeepAgents/LangChain 原生 primitives。
 ```
 
 ## 验收门槛

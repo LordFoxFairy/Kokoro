@@ -92,14 +92,19 @@ session 与 agent 的 run.request 契约已合流。
 
 ```text
 1. Agent 通过 HumanInTheLoopMiddleware 产生 interrupt/action_requests。
-2. Agent 输出 tool_call_awaiting。
+2. Agent 输出 tool_call_awaiting，保留 action_requests 原始顺序。
 3. Session normalize 为 tool.awaiting_approval。
-4. Web 渲染 approve/reject/cancel 控件。
-5. 用户决策后，Web POST /sessions/:sessionId/runs/:runId/control。
-6. Session 校验 run 属于该 session/site/user。
-7. Session 转发 run.resume 或 run.cancel 到 Redis 请求流。
-8. Agent 从 checkpoint 恢复同一 LangGraph thread。
-9. Agent 输出 tool resolution 或 cancelled/failed terminal event。
+4. tool.awaiting_approval 带 approvalBatchId、ordinal、actionName、args
+   preview、allowedDecisions。
+5. Web 渲染 approve/reject/cancel 控件。
+6. 用户决策后，Web POST /sessions/:sessionId/runs/:runId/control。
+   resume body 只表达结构化 decisions，不伪装成普通用户消息。
+7. 同一批多个 decision 必须按 ordinal 升序提交。
+8. Session 校验 run 属于该 session/site/user。
+9. Session 转发 run.resume 或 run.cancel 到 Redis 请求流。
+10. Agent 从 checkpoint 恢复同一 LangGraph thread。
+11. Agent 按 action_requests 原始顺序恢复 decisions。
+12. Agent 输出 tool resolution 或 cancelled/failed terminal event。
 ```
 
 当前 web UI 只实现 approve/reject/cancel；edit/respond 是 wire 能力，UI 仍未完成。

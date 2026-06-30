@@ -19,11 +19,35 @@ MCP tools、内置工具、子代理、HITL 和 sandbox，产出 raw execution e
 仍未完整落地：
 
 - `AgentRunInput` manifest 与 Python 入站 `RunRequest` 合流。
-- MCP client / skills manifest 的产品化加载。
-- backend/sandbox policy 到 DeepAgents backend 的统一配置。
+- MCP adapter / skills manifest 的产品化加载。
+- backendPolicy 拆成 storageBackend / executionSandbox 并编译到执行层。
 - runtime subagent creation 的审批拦截。
 
-因此本文的 Skills、MCP、sandbox 章节是 V1 目标设计，不代表当前代码已经闭环。
+因此本文的 Skills、MCP、backend/sandbox 章节是 V1 目标设计，不代表当前代码已经闭环。
+
+## 替换边界
+
+稳定契约：
+
+```text
+AgentRunInput
+SkillLockEntry / CapabilityLockEntry
+ApprovalPolicy / BackendPolicy
+AgentEvent
+```
+
+可替换实现：
+
+```text
+DeepAgents adapter。
+LangChain model/runtime adapter。
+LangChain MCP adapter。
+skill storage/backend。
+execution sandbox adapter。
+capability adapter。
+```
+
+替换实现时不能改变 session/web 看到的 manifest、lock 和 event projection。
 
 ## V1 目标能力范围
 
@@ -32,10 +56,11 @@ V1 agent 必须支持：
 - 通用聊天 agent loop。
 - LangChain/LangGraph 模型调用、tool calling、streaming、checkpoint。
 - Skills：官方、用户、workspace/project 级 skill 的加载和执行。
-- MCP client：HTTP MCP server 连接，tool/prompt/resource 发现，按需加载 tool schema。
+- MCP adapter：HTTP MCP server 授权、tool/prompt/resource 发现，
+  按需加载 tool schema。
 - 内置工具：时间、网络读取、未来文件/代码工具。
 - HITL：工具调用前的 approve/reject/cancel。
-- Backend/sandbox：开发可 local_shell，生产使用 state 或显式远程 backend。
+- Backend/sandbox：生产默认安全 storageBackend，副作用执行显式选择 sandbox。
 - Raw event 输出：message/tool/todo/subagent/thinking/run terminal。
 
 V1 不要求：
@@ -56,10 +81,10 @@ application
 infrastructure
   LangChain/LangGraph adapter
   model runtime
-  skill loader
-  MCP client
-  tool registry
-  sandbox runtime
+  run capability compiler
+  LangChain MCP adapters
+  DeepAgents backend/storage
+  execution sandbox adapters
   checkpoint / run state / memory
   Redis transport
 
@@ -108,8 +133,9 @@ AgentRunInput
 说明：
 
 - `siteId` 必填，agent 所有工具访问都要带它。
-- `enabledSkills` 是本次可用 skill 清单，不是 agent 自己跨站查询。
-- `enabledMcpServers` 是本次可用 MCP server/tool 清单，不是全局 MCP 列表。
+- `capabilities.skills` 是本次可用 skill 清单，不是 agent 自己跨站查询。
+- `capabilities.mcpServers/tools` 是本次可用 MCP server/tool 清单，
+  不是全局 MCP 列表。
 - `context` 是 session 已整理好的上下文包或独立 artifact/content 引用。
 - agent 不直接读 session Mongo，也不自己补查全局 skill/MCP 列表。
 
@@ -135,7 +161,28 @@ SkillPackage
 ```
 
 Agent 执行时只拿到已授权、已启用、已解析的 skill。Skill 本体存储和
-管理不是 agent 直接拥有；agent 负责加载、校验、注入上下文并执行。
+管理不是 agent 直接拥有；agent 负责把已选 skill 编译给 DeepAgents
+`skills=` / backend 文件视图，不自己实现第二套 skill 执行框架。
+
+### Skill Lock
+
+Skill 进入一次 run 前必须冻结为 lock entry：
+
+```text
+SkillLockEntry
+  skillId
+  source
+  sourceType
+  sourceUrl
+  ref?
+  skillPath
+  folderHash
+  version
+  resolvedAt
+```
+
+`folderHash` 覆盖整个 skill 目录，不只覆盖 `SKILL.md`。AgentRunInput 只接收
+锁定后的 skill ref；未锁定、未授权、未启用的 skill 不能出现在模型上下文。
 
 ### 触发
 
@@ -155,9 +202,11 @@ V1 不做：
 - Skill 内引用 MCP/tool 必须在 manifest 的授权范围内。
 - Skill 正文进入模型上下文前要限制大小，附属资料按需加载。
 
-## MCP Client
+## MCP Adapter
 
-MCP 是 V1 的通用外部工具接入，不是垂直业务功能。
+MCP 是 V1 的通用外部工具接入，不是垂直业务功能。Kokoro 不自研第二套
+MCP protocol runtime；session/platform 负责授权和过滤，agent 通过
+LangChain MCP adapters 取得已允许的工具并传给 DeepAgents。
 
 ### V1 支持
 
@@ -182,27 +231,35 @@ mcp__{serverSlug}__{toolName}
 Agent 内部可以保留 MCP 原始 tool name，但 raw event 和日志要带
 server slug，便于权限和审计。
 
-## Tool Registry
+## Run Capability Compiler
 
-Agent 每次运行构建一个 run-scoped tool registry：
+Agent 每次运行把 `AgentRunInput.capabilities` 编译成 DeepAgents/LangChain
+原生入参，而不是自建一套工具调度框架：
 
 ```text
-Built-in tools
+tools[]
+  Built-in tools
   当前 now / fetch_url；目标可统一命名为 web_fetch / future file/code tools
 
-Skill tools
+  Skill tools
   skill 暴露的流程型工具或 prompt wrapper
 
-MCP tools
+  MCP tools
   mcp__server__tool
 
-Runtime subagent tools
+subagents[]
   task / delegate / specialist agent
+
+skills[]
+  已锁定 skill 路径或文件视图
+
+interrupt_on / permissions / backend / memory
+  由 approvalPolicy、tool policy、backendPolicy 编译得到
 ```
 
 规则：
 
-- registry 按 run 创建，不跨 run 泄漏。
+- compiler 按 run 工作，不跨 run 泄漏。
 - 同名工具必须拒绝或显式 namespace。
 - 高风险工具默认走 HITL。
 - Code/file/browser 类工具必须绑定 sandbox policy。
@@ -227,21 +284,31 @@ Kokoro 自己只做三件事：
 
 不要重写一个新的 agent framework。
 
-## Sandbox
+## Backend 和 Sandbox
 
-Sandbox 属于 agent。Kokoro 配置最终要构造成 DeepAgents backend instance，
-交给 `create_deep_agent(..., backend=backend_instance)`。
+Backend/storage 与执行 sandbox 要分开。DeepAgents backend 主要负责 agent
+文件视图、state/store/memory/skills 等运行时存储；命令、代码、浏览器等
+副作用执行属于 tool 或 sandbox capability。
 
 策略：
 
 ```text
-state        安全默认，适合普通推理和受控工具编排。
-local_shell  本地开发和受控测试，不能作为生产隔离。
-e2b          远程隔离执行，V1 优先支持。
-custom       企业/私有云自研 backend 或 sandbox。
+storageBackend
+  state        安全默认，适合普通推理和受控工具编排。
+  store        持久化文件视图、skills、memory 时使用。
+  custom       企业/私有云自研 backend。
+
+executionSandbox
+  none         无命令/代码执行能力。
+  local_shell  本地开发和受控测试，不能作为生产隔离。
+  e2b          远程隔离执行。
+  custom       企业/私有云自研 sandbox。
 ```
 
-所有 sandbox 实现都应满足：
+Kokoro 的职责是把 policy 映射到 DeepAgents backend、filesystem permissions、
+middleware、wrapped tools 和 sandbox adapter，不定义一套平行 agent framework。
+
+执行 sandbox 至少要满足：
 
 - 创建 workspace。
 - 写入输入文件。
@@ -253,16 +320,22 @@ custom       企业/私有云自研 backend 或 sandbox。
 本地 shell 不能被当成生产安全边界。S3/object storage 不是执行 sandbox，
 只能作为 artifact/object storage 或 custom backend 的存储组成。
 
-## Checkpoint 和 Memory
+## Checkpoint、Memory 和 RunState
 
-Agent 的 checkpoint/memory 是执行侧状态：
+三者不能混用：
 
-- LangGraph checkpoint 用于 run resume、HITL、故障恢复。
-- memory 用于 agent 长期上下文和压缩记忆。
-- 存储建议 Mongo：`kokoro_agent.checkpoints`、`kokoro_agent.memories`。
-- tool call 恢复状态属于 LangGraph checkpoint，不单独建第二事实源。
+```text
+LangGraph checkpointer
+  pause/resume、HITL、故障恢复。
 
-Session 不读取这些 collection。Session 只看 messages/runs/session_events。
+DeepAgents memory / skill files
+  通过 backend/store namespace 管理，不等同 session messages。
+
+Kokoro RunStateStore
+  run claim、request 原文、terminal 认领、幂等保护。
+```
+
+Session 不读取这些存储。Session 只看 messages/runs/session_events。
 
 ## Raw Events
 

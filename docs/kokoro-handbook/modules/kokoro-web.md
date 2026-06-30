@@ -146,7 +146,9 @@ GET /sessions/:sessionId/stream
 
 POST /sessions/:sessionId/runs/:runId/control
   run.cancel
-  run.resume(approve/reject decisions)
+  run.resume(approve/reject/edit/respond decisions)
+    approvalBatchId
+    decisions[ordinal, decision, payload?]
 ```
 
 `permissionMode` 只应作为当前 UI 预设存在。目标态 Web 传用户意图，
@@ -214,8 +216,9 @@ HITL：
 ```text
 1. tool.awaiting_approval 渲染批准/拒绝按钮。
 2. 同帧多个待批工具在本地暂存到齐后发一次 run.resume。
-3. control POST 失败时保持 awaiting，用户可重试。
-4. 本地 reject 只做乐观展示；权威结果仍等 session event 回流。
+3. run.resume decisions 必须按 ordinal 升序提交。
+4. control POST 失败时保持 awaiting，用户可重试。
+5. 本地 reject 只做乐观展示；权威结果仍等 session event 回流。
 ```
 
 Preview fallback：
@@ -249,6 +252,7 @@ message.completed 覆盖 delta。
 tool awaiting/returned/rejected/responded。
 subagent started/text/finished。
 HITL control body。
+approvalBatchId / ordinal 多工具审批。
 localStorage 脏数据丢弃。
 snapshot hydrate。
 EventSource 重连不使用业务 cursor。
@@ -288,6 +292,8 @@ Skill/MCP 管理入口。
 服务端 session list。
 更完整 agent activity 状态。
 SSE 错误可恢复提示。
+Capability/job/artifact card 渲染。
+general.music.generate 入口和进入 Studio action。
 ```
 
 ### P2
@@ -296,4 +302,5 @@ SSE 错误可恢复提示。
 多设备同步体验。
 专业 agent / studio 入口。
 更完整 MCP resources/prompts UI。
+Music Studio 与 General Chat artifact handoff。
 ```

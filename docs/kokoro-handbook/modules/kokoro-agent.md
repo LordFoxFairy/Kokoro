@@ -22,7 +22,7 @@ Redis 请求流消费：kokoro:runs:requests。
 DeepAgents create_deep_agent 构造入口。
 LangChain HumanInTheLoopMiddleware interrupt_on 配置。
 内置工具 now / fetch_url。
-运行时子代理 registry 与 task 工具。
+运行时子代理 prototype 与 task 工具。
 AgentEvent 严格 wire envelope：event / request_id / timestamp / data。
 原始事件输出到 kokoro:run:{runId}:events。
 checkpoint 后端：memory / sqlite / mongo。
@@ -34,9 +34,9 @@ Langfuse opt-in 观测。
 
 ```text
 AgentRunInput manifest 与 agent 入站 RunRequest 完全合流。
-MCP client / skills manifest / tool namespace 的产品化加载。
-DeepAgents backend/sandbox 的 state/local_shell/e2b/custom 统一配置。
-runtime subagent creation 的审批拦截。
+MCP/skills manifest 到 DeepAgents adapters/skills 的产品化加载。
+Backend/storage 与 execution sandbox 分离配置。
+runtime subagent creation 收敛到 manifest-first gate。
 生产级 sessionId 分布式串行锁。
 ```
 
@@ -113,16 +113,17 @@ CheckpointSaver
 AgentRunInput
   session 下发的完整 manifest：site/workspace/project/session/run/user、
   recentMessages、modelRuntime、execution、approvalPolicy、backendPolicy、
-  skills/MCP/tools。
+  capabilities、locks。
 
-ToolPolicy
-  哪些工具允许、哪些需要 HITL、哪些只能走 sandbox。
+RunCapabilityCompiler
+  把 capabilities 编译成 DeepAgents tools/subagents/skills、interrupt_on、
+  permissions、backend、memory。
 
 BackendPolicy
-  DeepAgents backend 类型与资源限制。
+  storageBackend 与 executionSandbox 的组合策略。
 
 Skill/Mcp Manifest
-  本次 run 可用能力的最小清单，不把全局目录塞进 prompt。
+  本次 run 可用能力和 lock 的最小清单，不把全局目录塞进 prompt。
 ```
 
 ## 数据模型
@@ -130,12 +131,16 @@ Skill/Mcp Manifest
 Agent 自己只拥有执行恢复所需状态。
 
 ```text
-checkpoint
+LangGraph checkpoint
   memory：测试或单进程临时。
   sqlite：本地开发/单 worker 可用，便于独立测试。
   mongo：多 pod / production 建议。
 
-run_state
+DeepAgents memory / skill files
+  通过 backend/store namespace 暴露给 DeepAgents。
+  不是 session messages，不直接给 Web 展示。
+
+Kokoro RunStateStore
   memory：测试或单进程临时。
   sqlite：本地开发/单 worker 可用。
   mongo：多 pod / production 建议，_id=run_id 做原子认领。
@@ -223,7 +228,7 @@ Agent 只能消费这些策略，不跨站查询或自行放大权限。
 1. session 投递 run.request。
 2. agent worker parse inbound。
 3. RunSupervisor 用 run_state try_register 抢占 run。
-4. agent_builder 基于请求构造 DeepAgents runtime。
+4. RunCapabilityCompiler 基于 manifest 构造 DeepAgents runtime。
 5. LangGraph checkpoint 记录运行态。
 6. 模型、工具、子代理、HITL 产生投影。
 7. AgentEvent 写入 kokoro:run:{runId}:events。
@@ -234,10 +239,12 @@ HITL：
 
 ```text
 1. HumanInTheLoopMiddleware 产生 interrupt/action_requests。
-2. agent 输出 tool_call_awaiting。
-3. web 通过 session control 提交 run.resume。
-4. agent 从 checkpoint 恢复同一 thread。
-5. reject/respond 的工具结果由 agent 合成 tool resolution event。
+2. agent 输出 tool_call_awaiting，带 approvalBatchId、ordinal、actionName、
+   args preview、allowedDecisions。
+3. web 通过 session control 提交结构化 run.resume。
+4. agent 按原始 action_requests 顺序恢复 decisions。
+5. agent 从 checkpoint 恢复同一 thread。
+6. reject/respond 的工具结果由 agent 合成 tool resolution event。
 ```
 
 ## 部署
@@ -271,22 +278,24 @@ local_fake_model 关闭。
 SQLite 可以保留在 agent 子仓用于本地开发和独立测试，但不能作为多 pod
 production 方案。
 
-## Sandbox / Backend 设计
+## Backend / Sandbox 设计
 
 当前代码尚未把 backend/sandbox 建成完整能力。V1 设计原则：
 
 ```text
-优先使用 DeepAgents 官方 backend，不自研一套 sandbox framework。
-state 是安全默认。
+优先使用 DeepAgents 官方 backend，不自研一套 agent framework。
+storageBackend 负责 state/store/memory/skills/file view。
+executionSandbox 负责 shell/code/browser 等副作用执行。
 local_shell 只允许 development/test/受控单租户。
 e2b/custom 是显式配置能力，缺依赖或密钥必须 fail loud。
-S3 不是 sandbox，只能作为 artifact/object storage。
+S3 不是 sandbox，只能作为 artifact/object storage 或 backend 存储组成。
 ```
 
 运行时配置最终应收敛成一个 `backendPolicy`：
 
 ```text
-backend: state | local_shell | e2b | custom
+storageBackend: state | store | custom
+executionSandbox: none | local_shell | e2b | custom
 options: provider-specific settings
 networkPolicy
 resourceLimits
@@ -333,9 +342,10 @@ __init__.py 放业务逻辑。
 把 conversation_id/input 从旧扁平 wire 迁移到 manifest。
 删除 permissionMode，改用 execution.toolMode + approvalPolicy。
 移除 memory_store.py 作为 runtime 选项，只保留测试 fixture 或明确标注 test-only。
-RuntimeSubagentRegistry 改成 propose/approve 后 materialize。
-backendPolicy 建模并接入 DeepAgents backend。
-MCP/skills manifest 最小加载链路。
+运行时子代理改成 manifest-first gate，不再默认现场创建。
+backendPolicy 拆成 storageBackend + executionSandbox。
+MCP manifest 通过 LangChain adapters 加载过滤后的 tools。
+skills manifest + lock 编译到 DeepAgents skills/backend 文件视图。
 ```
 
 ### P1
@@ -343,8 +353,11 @@ MCP/skills manifest 最小加载链路。
 ```text
 E2B/custom backend smoke test。
 MCP tool schema 按需加载。
-tool policy 与 HITL 策略统一。
+tool policy 与 HITL 策略统一到 interrupt_on / permissions / wrapped tools。
 run/session 分布式 lease 细化。
+CapabilityRef / CapabilityInvocation / CapabilityResult。
+RunCapabilityCompiler 支持 capability tool wrapper。
+general.music.generate adapter smoke。
 ```
 
 ### P2
@@ -353,4 +366,6 @@ run/session 分布式 lease 细化。
 专业 agent profile。
 agent handoff 可视化事件。
 memory retention/admin policy。
+Music specialist agent profile。
+Studio capability orchestration。
 ```

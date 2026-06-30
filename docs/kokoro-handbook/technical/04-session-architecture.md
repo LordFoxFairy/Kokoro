@@ -121,8 +121,8 @@ Manifest 来源：
 - 用户选择的 model/mode
 - 已启用 skills
 - 已授权 MCP servers/tools
-- backend/sandbox policy
-- permission mode
+- storageBackend / executionSandbox policy
+- execution/tool mode 和 approval policy
 - trace context
 
 Session 不应把所有历史全文无限塞给 agent；大上下文用摘要、窗口和 refs。

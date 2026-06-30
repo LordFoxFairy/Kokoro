@@ -202,6 +202,11 @@ POST /sessions/:sessionId/runs/:runId/control
   body:
     run.cancel
     run.resume(decisions)
+      approvalBatchId
+      decisions:
+        ordinal
+        decision: approve | reject | edit | respond
+        payload?
 ```
 
 `permissionMode` 是当前代码入参。目标态不继续扩展这个字段，而是由
@@ -241,6 +246,12 @@ message.delta
 message.completed
 tool.invoked
 tool.awaiting_approval
+  payload:
+    approvalBatchId
+    ordinal
+    actionName
+    argsPreview
+    allowedDecisions[]
 tool.returned
 todo.updated
 subagent.started
@@ -351,6 +362,7 @@ agent malformed event skip-and-continue。
 DB-first append 后 publish live。
 terminal event 清 activeRunId。
 control endpoint run ownership 校验。
+HITL approvalBatchId / ordinal / decisions 顺序校验。
 session -> agent run.request 与 agent Python 入站模型一致。
 ```
 
@@ -389,6 +401,9 @@ outbox + retry 实现。
 SSE replay limit/page。
 session event 诊断 API。
 Mongo 事务异常恢复测试。
+AgentRunInput.capabilities manifest 构建。
+jobRef/artifactRef session event payload 投影。
+general.music.generate session smoke。
 ```
 
 ### P2
@@ -397,4 +412,6 @@ Mongo 事务异常恢复测试。
 多 run 队列策略。
 跨设备协同体验。
 更完整 admin diagnostics。
+Music job card snapshot projection。
+Studio run/session lifecycle 对齐。
 ```

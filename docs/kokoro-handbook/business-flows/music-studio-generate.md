@@ -2,12 +2,14 @@
 
 ## 目标
 
-跑一次长耗时音乐生成 job：排队 -> 预估冻结积分 -> 解析模型 -> 调 provider（Suno）-> 异步轮询/webhook -> 成功落产物并按实际用量结算；失败则释放冻结。全程 site scoped、幂等、不超扣。
+跑一次长耗时音乐生成 job：排队 -> 预估冻结积分 -> 解析模型 ->
+调 provider（Suno）-> 异步轮询/webhook -> 成功落产物并按实际用量结算；
+失败则释放冻结。全程 site scoped、幂等、不超扣。
 
 ## 参与模块
 
 ```text
-kokoro-session / agent         发起 job，编排 quote/hold/resolve/capture/release。
+kokoro-session / agent         通过 capability 发起 job，不拥有 job/credit 事实。
 kokoro-credit                  quote / hold / capture / release，写 ledger 和 usage。
 kokoro-model                   resolve 站点授权的生成模型。
 provider (Suno)                实际生成，异步回调。
@@ -26,9 +28,13 @@ SiteModelPolicy 授权了生成模型。
 ## 主流程
 
 ```text
+0. 入口
+   General Chat 通过 general.music.generate capability 进入；
+   Music Studio 通过 studio.music.generate capability 进入。
+
 1. 建 Job
-   Job(siteId, appKey, surface, capabilityKey=music.studio.generate, workspaceId, userId,
-       status=queued, idempotencyKey, requestId)。
+   Job(siteId, appKey, surface, capabilityKey=music.studio.generate,
+       workspaceId, userId, status=queued, idempotencyKey, requestId)。
 
 2. Quote
    POST /credit/quote 入: siteId, workspaceId, capabilityKey, modelLabel/plan, quantity
@@ -64,7 +70,8 @@ SiteModelPolicy 授权了生成模型。
 余额不足          step 3 hold 失败 -> 402，提示充值。
 模型不可用         step 4 resolve 503 -> release hold，job failed。
 provider 失败/超时   生成失败或回调超时 -> Job status=failed，
-                  POST /credit/release(siteId, holdId, idempotencyKey)，UsageRecord status=failed。
+                  POST /credit/release(siteId, holdId, idempotencyKey)，
+                  UsageRecord status=failed。
 用户取消          Job status=canceled -> release hold。
 hold 超时         hold 到 expiresAt 自动过期释放。
 重复提交          同 idempotencyKey 重放，hold/capture 幂等返回，不重复扣。
@@ -116,6 +123,8 @@ artifact 保留 siteId，可追溯到 sourceJobId。
 ## 相关
 
 ```text
+General Chat 入口  ./general-chat-to-music-entry.md
+Agent 编排路线  ../technical/13-agent-business-orchestration-roadmap.md
 扣费闭底  ./credit-reserve-commit-refund.md
 模型解析  ./model-resolution.md
 产物生命周期  ./artifact-job-result.md
