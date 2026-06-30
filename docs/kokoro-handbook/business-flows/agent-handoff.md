@@ -2,7 +2,9 @@
 
 ## 目标
 
-让通用 Agent 在一次 run 内编排专业能力（skill、MCP tool、内置工具、子代理），并保持上下文、归属和扣费一致。handoff 是 agent 编排能力，不是前端跳转。
+让通用 Agent 在一次 run 内编排专业能力（skill、MCP tool、内置工具、
+子代理），并保持上下文、归属和扣费一致。handoff 是 agent 编排能力，
+不是前端跳转。
 
 ## 参与模块
 
@@ -16,7 +18,7 @@ kokoro-model    子调用涉及 AI 时解析模型。
 ## 前置条件
 
 ```text
-主 run 已启动，AgentExecutionManifest 已就绪。
+主 run 已启动，AgentRunInput 已就绪。
 被调用的 skill/MCP server/tool 已在 manifest 启用且权限允许。
 ```
 
@@ -24,7 +26,8 @@ kokoro-model    子调用涉及 AI 时解析模型。
 
 ```text
 1. 主 agent 推理判定任务需要某能力（搜索/工具/子代理/专业 agent）。
-2. 发起调用，继承上下文：siteId/userId/workspaceId/sessionId/runId、jobId、credit context、artifact/project context。
+2. 发起调用，继承上下文：siteId/userId/workspaceId/sessionId/runId、
+   jobId、credit context、artifact/project context。
 3. 若子调用涉及 AI：重复 credit.quote -> hold -> model.resolve -> provider -> capture；
    子调用 usage 通过 jobId 归并到主任务。
 4. 产出事件：subagent.* 通道承载子代理输出；tool 事件携带 subagent_id 以保留归属，

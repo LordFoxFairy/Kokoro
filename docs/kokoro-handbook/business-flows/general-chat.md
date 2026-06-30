@@ -26,8 +26,9 @@ SiteContext 已解析（siteId/userId/workspaceId）。
 
 ```text
 1. web POST 用户消息到 session；session 建/取 Conversation，落 user Message，创建唯一 active run。
-2. session 组装 AgentExecutionManifest（siteId/userId/workspaceId/sessionId/runId、context refs、
-   model runtime、permission mode、sandbox policy、skills、MCP servers/tools、内置工具、trace context），
+2. session 组装 AgentRunInput（site/user/workspace/session/run 身份、context、
+   model runtime、permission mode、backend policy、skills、MCP servers/tools、
+   内置工具、trace context），
    写 run.request 到 Redis（kokoro:runs:requests）。
 3. agent 取请求，credit.quote -> credit.hold（idempotencyKey）。
 4. agent model.resolve（按 SiteModelPolicy），调用 LiteLLM 或 direct provider。
@@ -44,7 +45,7 @@ SiteContext 已解析（siteId/userId/workspaceId）。
 余额不足        hold 失败 -> 402，提示充值。
 模型未授权      resolve 空 -> 403。
 provider 失败    credit.release 释放冻结，run.failed。
-超时            hold 过期自动释放，run.timeout。
+超时            hold 过期自动释放，run.completed(status=timeout)。
 断线/刷新       web 重新 GET /sessions/:id snapshot，再 attach active run 续收。
 ```
 

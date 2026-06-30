@@ -1,8 +1,13 @@
 # Agent 架构
 
+三仓 V1 运行时总方案见：
+[Agent / Session / Web V1 运行时技术方案](11-agent-session-web-v1-runtime.md)。
+
 ## 定位
 
-`kokoro-agent` 是三仓里的执行 runtime。它接收 `kokoro-session` 发来的 `AgentExecutionManifest`，使用 LangChain/LangGraph 执行模型、skills、MCP tools、内置工具、子代理、HITL 和 sandbox，产出 raw execution events。
+`kokoro-agent` 是三仓里的执行 runtime。它接收 `kokoro-session`
+发来的 `AgentRunInput`，使用 LangChain/LangGraph 执行模型、skills、
+MCP tools、内置工具、子代理、HITL 和 sandbox，产出 raw execution events。
 
 它不是浏览器服务，不拥有聊天消息历史，不直接扣积分。
 
@@ -16,7 +21,7 @@ V1 agent 必须支持：
 - MCP client：HTTP MCP server 连接，tool/prompt/resource 发现，按需加载 tool schema。
 - 内置工具：时间、网络读取、未来文件/代码工具。
 - HITL：工具调用前的 approve/reject/cancel。
-- Sandbox：local 默认，E2B/custom 可配置。
+- Backend/sandbox：开发可 local_shell，生产使用 state 或显式远程 backend。
 - Raw event 输出：message/tool/todo/subagent/thinking/run terminal。
 
 V1 不要求：
@@ -29,7 +34,7 @@ V1 不要求：
 
 ```text
 domain
-  RunRequest / AgentExecutionManifest / AgentEvent / SkillRef / McpToolRef / SandboxPolicy
+  RunRequest / AgentRunInput / AgentEvent / SkillRef / McpToolRef / BackendPolicy
 
 application
   admission / run supervisor / invoke / event projection / HITL control
@@ -50,14 +55,15 @@ interfaces
   raw event envelope
 ```
 
-目录可以按现有仓库逐步整理，但命名不要使用 `ports/` 目录。应用层需要抽象时用 `application/protocols` 或 `application/interfaces`。
+目录可以按现有仓库逐步整理，但命名不要使用 `ports/` 目录。
+应用层需要抽象时用 `application/protocols` 或 `application/interfaces`。
 
-## AgentExecutionManifest
+## AgentRunInput
 
 Session 发给 agent 的执行输入必须收敛为 manifest，而不是散字段拼装。
 
 ```text
-AgentExecutionManifest
+AgentRunInput
   siteId
   workspaceId
   projectId
@@ -65,10 +71,16 @@ AgentExecutionManifest
   runId
   userId
   inputMessageId
-  contextRefs
+  assistantMessageId
+  context
+    recentMessages
+    summary
+    artifactRefs
+    toolResultRefs
+    userProvidedFiles
   modelRuntime
   permissionMode
-  sandboxPolicy
+  backendPolicy
   enabledSkills
   enabledMcpServers
   enabledTools
@@ -80,7 +92,8 @@ AgentExecutionManifest
 - `siteId` 必填，agent 所有工具访问都要带它。
 - `enabledSkills` 是本次可用 skill 清单，不是 agent 自己跨站查询。
 - `enabledMcpServers` 是本次可用 MCP server/tool 清单，不是全局 MCP 列表。
-- `contextRefs` 引用 session messages/artifacts，但 agent 不直接读 session 数据库；需要内容时通过明确接口或 manifest 附带摘要。
+- `context` 是 session 已整理好的上下文包或独立 artifact/content 引用。
+- agent 不直接读 session Mongo，也不自己补查全局 skill/MCP 列表。
 
 ## Skills
 
@@ -103,7 +116,8 @@ SkillPackage
   version
 ```
 
-Agent 执行时只拿到已授权、已启用、已解析的 skill。Skill 本体存储和管理不是 agent 直接拥有；agent 负责加载、校验、注入上下文并执行。
+Agent 执行时只拿到已授权、已启用、已解析的 skill。Skill 本体存储和
+管理不是 agent 直接拥有；agent 负责加载、校验、注入上下文并执行。
 
 ### 触发
 
@@ -147,7 +161,8 @@ MCP 是 V1 的通用外部工具接入，不是垂直业务功能。
 mcp__{serverSlug}__{toolName}
 ```
 
-Agent 内部可以保留 MCP 原始 tool name，但 raw event 和日志要带 server slug，便于权限和审计。
+Agent 内部可以保留 MCP 原始 tool name，但 raw event 和日志要带
+server slug，便于权限和审计。
 
 ## Tool Registry
 
@@ -155,7 +170,7 @@ Agent 每次运行构建一个 run-scoped tool registry：
 
 ```text
 Built-in tools
-  now / fetch_url / future file/code tools
+  now / web_fetch / future file/code tools
 
 Skill tools
   skill 暴露的流程型工具或 prompt wrapper
@@ -196,14 +211,16 @@ Kokoro 自己只做三件事：
 
 ## Sandbox
 
-Sandbox 属于 agent。
+Sandbox 属于 agent。Kokoro 配置最终要构造成 DeepAgents backend instance，
+交给 `create_deep_agent(..., backend=backend_instance)`。
 
 策略：
 
 ```text
-local   默认本地开发，低风险工具。
-e2b     远程隔离执行，适合代码、文件和不可信执行。
-custom  企业/私有云自研 sandbox。
+state        安全默认，适合普通推理和受控工具编排。
+local_shell  本地开发和受控测试，不能作为生产隔离。
+e2b          远程隔离执行，V1 优先支持。
+custom       企业/私有云自研 backend 或 sandbox。
 ```
 
 所有 sandbox 实现都应满足：
@@ -215,7 +232,8 @@ custom  企业/私有云自研 sandbox。
 - 控制网络、文件系统、超时、资源。
 - 清理 workspace。
 
-本地 sandbox 不能被当成生产安全边界。
+本地 shell 不能被当成生产安全边界。S3/object storage 不是执行 sandbox，
+只能作为 artifact/object storage 或 custom backend 的存储组成。
 
 ## Checkpoint 和 Memory
 
@@ -223,7 +241,8 @@ Agent 的 checkpoint/memory 是执行侧状态：
 
 - LangGraph checkpoint 用于 run resume、HITL、故障恢复。
 - memory 用于 agent 长期上下文和压缩记忆。
-- 存储建议 Mongo：`kokoro_agent.checkpoints`、`kokoro_agent.memories`、`kokoro_agent.tool_state`。
+- 存储建议 Mongo：`kokoro_agent.checkpoints`、`kokoro_agent.memories`。
+- tool call 恢复状态属于 LangGraph checkpoint，不单独建第二事实源。
 
 Session 不读取这些 collection。Session 只看 messages/runs/session_events。
 
@@ -234,16 +253,17 @@ Agent 输出 raw execution events 给 session：
 ```text
 run.started
 message.delta / message.completed
-thinking.delta / thinking.completed
+thinking.delta
 todo.updated
 tool.invoked / tool.awaiting_approval / tool.returned
-subagent.started / subagent.finished / subagent.text.delta / subagent.text.completed
-run.completed / run.failed / run.cancelled / run.timeout
+subagent.started / subagent.finished
+run.completed / run.failed
 ```
 
 规则：
 
 - `eventId` 可作为 raw 幂等参考，但排序不依赖它。
+- `run.completed.status` 表示 completed / cancelled / timeout。
 - LangChain `BaseMessage.id` 是消息身份，不是顺序。
 - tool call id 是工具身份，不是顺序。
 - segmentId 用于同一段输出的 delta 归并。
