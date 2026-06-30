@@ -2,6 +2,8 @@
 
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 运行时技术方案](11-agent-session-web-v1-runtime.md)。
+`kokoro-agent` 代码级重构执行顺序见：
+[Kokoro Agent Runtime 重构实施方案](14-agent-runtime-refactor-plan.md)。
 
 ## 定位
 
