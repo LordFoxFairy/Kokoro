@@ -10,23 +10,24 @@
 三层，仅经 **redis stream + SSE** 协议耦合，各自独立部署：
 
 ```
-kokoro-agent ──redis run-events──▶ kokoro-session ──redis replay + SSE──▶ kokoro-web
- (Python worker)                    (TS SSE/replay 桥)                    (Next.js UI)
- 产 13-kind 原始执行事件             归一化成 AGUI 信封 + 去重 + 续订          严格解析 → reducer → 渲染
- per-run 单调 seq + segment_id       透传 seq + 确定性 event_id              seq 为唯一排序源
+kokoro-agent ──redis run-events──▶ kokoro-session ──Mongo replay + SSE──▶ kokoro-web
+ (Python worker)                    (TS session/replay 桥)                 (Next.js UI)
+ 产原始执行事件                       DB-first 归一化 + opaque event_id       严格解析 → eventId 去重 → append 渲染
+ LangChain/DeepAgents 执行侧          Redis 只做队列与 live fanout            Last-Event-ID 使用 event_id
 ```
 
 - **[kokoro-agent](kokoro-agent/)** — DeepAgents/LangChain worker，产出原始执行事件（text/tool/todo/subagent/thinking/run.*），写 redis。
-- **[kokoro-session](kokoro-session/)** — 消费 → 归一化 AGUI 信封 → per-session replay 流 → SSE fan-out + `Last-Event-ID` 续订。不执行 agent，不渲染。
+- **[kokoro-session](kokoro-session/)** — 消费 → 归一化 AGUI 信封 → Mongo session_events 持久化 → SSE replay/live fan-out + `Last-Event-ID` 续订。不执行 agent，不渲染。
 - **[kokoro-web](kokoro-web/)** — Next.js 聊天壳，消费 SSE，折叠成有序 thread 并渲染。
 
 三仓统一四层 DDD：`domain`（纯实体/契约）/ `application`（编排，依赖抽象）/ `infrastructure`（redis/sse/model 实现）/ `interfaces`（worker/http/React）。上层只依赖抽象，依赖倒置。
 
 ## 跨仓契约（单源生成）
 
-13-kind 事件契约的**单一真理来源**是 [`contract/events.yaml`](contract/events.yaml)。
+浏览器侧 AGUI/render 事件契约的**单一真理来源**是 [`contract/events.yaml`](contract/events.yaml)；
+agent 原始 wire 事件的单一真理来源是 [`kokoro-agent/src/kokoro_agent/interfaces/envelope.py`](kokoro-agent/src/kokoro_agent/interfaces/envelope.py)。
 
-- `python3 contract/generate.py` —— 从 yaml 生成 6 个镜像（agent pydantic / session zod×2 / web zod + render union）。**镜像文件带 `DO NOT EDIT` 头，改契约改 yaml 再重生成。**
+- `python3 contract/generate.py` —— 从 `events.yaml` 生成 session/web AGUI 镜像，并从 agent `envelope.py` 生成 session 入站 Zod 镜像。**镜像文件带 `DO NOT EDIT` 头；改契约后必须重生成。**
 - `python3 contract/generate.py --check` —— CI 门禁：yaml 改了忘重生成即非零退出。
 - `python3 contract/verify.py` —— 名集漂移门禁（与 --check 互补）。
 

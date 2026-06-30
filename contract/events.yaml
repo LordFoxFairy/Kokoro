@@ -54,9 +54,9 @@ run_completed_status: [completed, cancelled, timeout]
 # (present at web schema top-level; absent from session envelopeFields — it lives in
 # each arm's literal). render uses camelCase + a `kind` discriminant.
 envelope:
-  agent_out: [run_id, seq]
-  agui_out: [event_id, seq, session_id, conversation_id, run_id, timestamp]
-  render: [eventId, seq, sessionId, conversationId, runId]
+  agent_out: [request_id, timestamp]
+  agui_out: [event_id, session_id, conversation_id, run_id, timestamp]
+  render: [eventId, sessionId, conversationId, runId]
 
 # ---------------------------------------------------------------------------
 # 13 kinds, keyed by their agent-out kind string. Each entry declares the
@@ -277,7 +277,6 @@ field_types:
   todos: todo_list         # array of {content: string, status: todo_status}
   citations: array_unknown # z.array(z.unknown())
   token_usage: unknown     # z.unknown()
-  role: enum:message_role  # canonical; agui producer overrides to string (view_field_types)
   status: enum:run_completed_status  # canonical; web consumer relaxes (view_field_types)
 
 # Per-view field-type overrides — deliberate producer/consumer divergence.
@@ -298,7 +297,7 @@ payload_optional: [rejected, reject_reason, responded, failed, error]
 
 # Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
 notes:
-  envelope.seq: "seq：session 透传 agent 的一等发射序号，是真实发射顺序的唯一排序源。"
+  envelope.event_id: "event_id：opaque 幂等/续传锚点；不承载排序语义。"
   tool.returned.is_error: "严格 required：生产端始终发送；缺失即 fail-loud，绝不用默认 false 掩盖真失败。无兼容兜底。"
   tool.returned.rejected: "可选：仅 HITL 拒绝(用户点拒绝或审批超时回退)时为 true；缺省=未拒绝。replay 安全地区别于绿勾 done。"
   run.completed.status: "web 放宽到任意非空终态：新终态绝不 strict-parse 成 null 卡死客户端。"

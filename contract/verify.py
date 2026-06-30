@@ -31,7 +31,7 @@ WEB_RENDER_TS = ROOT / "kokoro-web/src/domain/session-stream-event.ts"
 
 # Envelope fields shared by every render arm — not part of the payload contract.
 RENDER_ENVELOPE_FIELDS = frozenset(
-    {"kind", "eventId", "seq", "sessionId", "conversationId", "runId"}
+    {"kind", "eventId", "sessionId", "conversationId", "runId"}
 )
 # Envelope fields shared by every agui wire arm (top-level, not in `payload`).
 AGUI_ENVELOPE_FIELDS = frozenset(
@@ -433,7 +433,7 @@ def main() -> int:
     # 4. transport constants in BOTH stream ports (CURSOR_WIDTH / REDIS_FIELD / BLOCK_MS)
     check_transport(spec, rep)
 
-    # 5. shared envelope fields in session + web (CONTRACT for seq/event_id/cursor/...)
+    # 5. shared envelope fields in session + web (CONTRACT for event_id/cursor/...)
     check_envelope(spec, rep)
 
     if rep.problems:
