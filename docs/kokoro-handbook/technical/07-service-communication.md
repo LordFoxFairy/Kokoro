@@ -41,19 +41,25 @@ credit hold / credit commit·release / job create / provider callback process
 ## Agent 事件链路
 
 ```text
-kokoro-agent   产出原始 execution events（run_id、segment_id 等执行侧标识）。
-kokoro-session strict parse、normalize、去重、持久化、发布 SSE。
-kokoro-web     strict parse、reducer、渲染 thread 和活动流。
+kokoro-agent   产出原始 AgentEvent（event / request_id / timestamp / data）。
+kokoro-session strict parse、normalize、去重、DB-first 持久化、发布 SSE。
+kokoro-web     strict parse、eventId 去重、append-order reducer、渲染 thread 和活动流。
 ```
 
 ```text
 eventId 是去重锚点，不承担排序。
-run.completed/failed/cancelled/timeout 是终态。
+AgentEvent request_id 当前等同 runId，不是排序字段。
+agent 原始终态是 agent_done / agent_error。
+session/browser-facing 终态是 run.completed / run.failed。
+cancelled/timeout 是 run.completed.status，不是独立 event kind。
 浏览器不直接消费 agent 原始事件。
 排序真源是 session 写入 Mongo 的追加顺序和 SSE 单连接发送顺序。
+P0：session agent_run_input manifest 与 agent Python RunRequest 必须合流。
 ```
 
-详见 [agent 架构](03-agent-architecture.md)、[session 架构](04-session-architecture.md)。
+详见 [agent 架构](03-agent-architecture.md)、
+[session 架构](04-session-architecture.md) 和
+[三仓 V1 运行时技术方案](11-agent-session-web-v1-runtime.md)。
 
 ## Platform API
 

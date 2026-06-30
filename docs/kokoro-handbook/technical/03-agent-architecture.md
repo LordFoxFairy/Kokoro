@@ -11,7 +11,21 @@ MCP tools、内置工具、子代理、HITL 和 sandbox，产出 raw execution e
 
 它不是浏览器服务，不拥有聊天消息历史，不直接扣积分。
 
-## V1 能力范围
+## 当前实现状态
+
+当前代码已经有 DeepAgents/LangChain worker、HITL interrupt、checkpoint/run_state、
+内置 `now` / `fetch_url` 工具和 agent raw wire event。
+
+仍未完整落地：
+
+- `AgentRunInput` manifest 与 Python 入站 `RunRequest` 合流。
+- MCP client / skills manifest 的产品化加载。
+- backend/sandbox policy 到 DeepAgents backend 的统一配置。
+- runtime subagent creation 的审批拦截。
+
+因此本文的 Skills、MCP、sandbox 章节是 V1 目标设计，不代表当前代码已经闭环。
+
+## V1 目标能力范围
 
 V1 agent 必须支持：
 
@@ -170,7 +184,7 @@ Agent 每次运行构建一个 run-scoped tool registry：
 
 ```text
 Built-in tools
-  now / web_fetch / future file/code tools
+  当前 now / fetch_url；目标可统一命名为 web_fetch / future file/code tools
 
 Skill tools
   skill 暴露的流程型工具或 prompt wrapper
@@ -248,26 +262,36 @@ Session 不读取这些 collection。Session 只看 messages/runs/session_events
 
 ## Raw Events
 
-Agent 输出 raw execution events 给 session：
+Agent 输出的是 Python wire `AgentEvent`，单源在
+`kokoro-agent/src/kokoro_agent/interfaces/envelope.py`。它不是
+`contract/events.yaml` 里的 session AGUI/render 事件。
 
 ```text
-run.started
-message.delta / message.completed
-thinking.delta
-todo.updated
-tool.invoked / tool.awaiting_approval / tool.returned
-subagent.started / subagent.finished
-run.completed / run.failed
+event:
+  agent_status
+  text_chunk
+  reasoning_chunk
+  tool_call_start
+  tool_call_awaiting
+  tool_call_end
+  agent_done
+  agent_error
+
+envelope:
+  request_id
+  timestamp
+  data
 ```
 
 规则：
 
-- `eventId` 可作为 raw 幂等参考，但排序不依赖它。
-- `run.completed.status` 表示 completed / cancelled / timeout。
+- `request_id` 当前等同 runId，但不是排序字段。
+- `agent_done.data.status` 表示 completed / cancelled / timeout。
+- `agent_error` 表示失败终态。
 - LangChain `BaseMessage.id` 是消息身份，不是顺序。
 - tool call id 是工具身份，不是顺序。
 - segmentId 用于同一段输出的 delta 归并。
-- Session 负责转成 browser-facing event。
+- Session 负责把 AgentEvent 转成 browser-facing SessionEvent。
 
 ## 性能
 

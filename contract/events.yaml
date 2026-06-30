@@ -1,21 +1,23 @@
-# Kokoro event-contract single source of truth (blueprint step9, phase 1).
+# Kokoro browser-facing event contract single source of truth.
 #
 # WHAT THIS IS
-#   The 13-kind execution-event contract is hand-mirrored across 6 files in 3
-#   repos (agent / session / web). This file declares that contract ONCE, as the
-#   precise mirror of the current code, and `verify.py` is the drift gate that
-#   asserts every repo file still matches it (per view, by kind-set + per-kind
-#   payload-field-name-set). It REPLACES scripts/check-contract-kinds.sh, whose
-#   premise was false (it demanded byte-identical kind sets across repos, but the
-#   3 repos are deliberately DIFFERENT subsets).
+#   This file is the source for kokoro-session AGUI events and kokoro-web render
+#   events. It is NOT the Python agent wire source. Agent wire events are defined
+#   by kokoro-agent/src/kokoro_agent/interfaces/envelope.py and reverse-generated
+#   into kokoro-session/src/domain/agent-event.ts.
+#
+#   `verify.py` gates yaml-sourced session/web mirrors by kind-set and payload
+#   field-name-set. The agent boundary is intentionally not checked against this
+#   yaml, because that would reintroduce a false source of truth.
 #
 # CI: run `python3 contract/verify.py` — non-zero exit = a repo drifted from this
 #     file. Add it to CI in place of the deleted check-contract-kinds.sh.
 #
 # THREE VIEWS (deliberately different kind subsets + naming + payload fields):
-#   agent-out : raw events kokoro-agent emits (events.py / agent-event.ts inbound)
-#               snake_case wire; uses payload key `segment_id` (globally-unique,
-#               agent-assigned: `${run_id}:seg_NNNN`).
+#   legacy mapping rows:
+#               the `kinds` keys and `agent_out` blocks remain as grouping rows
+#               for the current AGUI/render generator. Do not treat them as the
+#               current Python AgentEvent wire contract.
 #   agui-out  : AGUI envelopes kokoro-session emits (session-event.ts /
 #               session-event-schema.ts inbound at web). snake_case wire; the
 #               session normalizer transmits `segment_id` verbatim (no remap),
@@ -33,8 +35,8 @@
 # wire (forward-compat) are listed under `agui_out_web_extra` so verify.py knows
 # they are allowed-but-not-required at the web inbound boundary only.
 #
-# PHASE 2 TODO (not in this commit):
-#   - deterministic generator: events.yaml -> regenerate all 6 mirror files.
+# PHASE 2 TODO:
+#   - deterministic generator: events.yaml -> regenerate yaml-sourced mirror files.
 #   - generate-and-diff: byte-for-byte reproduce current files from yaml.
 #   - reverse-source check + CI `git diff --exit-code` after regeneration.
 #   - extend verify.py to also gate per-field type + required/optional + naming
@@ -59,8 +61,8 @@ envelope:
   render: [eventId, sessionId, conversationId, runId]
 
 # ---------------------------------------------------------------------------
-# 13 kinds, keyed by their agent-out kind string. Each entry declares the
-# payload field-name set per view, plus the kind/event-name each view uses.
+# Browser-facing event mapping rows. Each entry declares the payload field-name
+# set per AGUI/render view, plus the kind/event-name each view uses.
 # `null` payload list (run.started has none in render) => view absent for that kind.
 # ---------------------------------------------------------------------------
 kinds:

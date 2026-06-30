@@ -8,12 +8,14 @@
 ## 定位
 
 `kokoro-web` 是三仓里的界面层。它负责 SiteContext 注入、聊天 UI、
-session snapshot 加载、SSE 消费、事件严格解析、本地 reducer、
-Skills/MCP 管理入口和 artifact 展示。
+SSE 消费、事件严格解析、本地 reducer、HITL 控件和本地 UI 缓存。
+
+目标态还负责 session snapshot 加载、Skills/MCP 管理入口和 artifact 展示。
+当前代码尚未完成 snapshot-first hydrate，也尚未完成 Skills/MCP 管理入口。
 
 它不拥有 session 真源，不执行 agent，不直接写 Mongo/Redis。
 
-## V1 能力范围
+## V1 目标能力范围
 
 V1 web 必须支持：
 
@@ -25,6 +27,10 @@ V1 web 必须支持：
 - Skill 手动触发入口和基础管理入口。
 - MCP 连接/授权/工具可见性的基础管理入口。
 - 刷新恢复：snapshot + attach active run。
+
+当前已实现聊天 UI、POST message、`/stream` EventSource、strict parse、
+eventId 去重、append-order reducer、HITL approve/reject/cancel 和 simulator fallback。
+未完成项以 [kokoro-web 模块文档](../modules/kokoro-web.md) 为准。
 
 V1 不要求：
 
