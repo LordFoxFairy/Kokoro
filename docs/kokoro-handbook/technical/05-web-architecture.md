@@ -1,8 +1,15 @@
 # Web 架构
 
+三仓 V1 运行时总方案见：
+[Agent / Session / Web V1 运行时技术方案](11-agent-session-web-v1-runtime.md)。
+三仓通用聊天链路见：
+[Agent / Session / Web 通用聊天运行链路](../business-flows/agent-session-web-general-chat-runtime.md)。
+
 ## 定位
 
-`kokoro-web` 是三仓里的界面层。它负责 SiteContext 注入、聊天 UI、session snapshot 加载、SSE 消费、事件严格解析、本地 reducer、Skills/MCP 管理入口和 artifact 展示。
+`kokoro-web` 是三仓里的界面层。它负责 SiteContext 注入、聊天 UI、
+session snapshot 加载、SSE 消费、事件严格解析、本地 reducer、
+Skills/MCP 管理入口和 artifact 展示。
 
 它不拥有 session 真源，不执行 agent，不直接写 Mongo/Redis。
 

@@ -6,30 +6,36 @@ Proposed for V1 implementation
 
 ## 背景
 
-Agent 需要执行工具、代码、文件操作、MCP、子代理和未来的创作任务。不同部署环境对隔离要求不同：
+Agent 需要执行工具、代码、文件操作、MCP、子代理和未来的创作任务。
+不同部署环境对隔离要求不同：
 
 - 本地开发需要低成本、可调试。
 - 生产环境需要隔离文件系统、网络和进程。
 - 某些任务需要云 sandbox，例如 E2B。
 - 企业部署可能要求自有 sandbox provider。
 
-如果把 sandbox 写死在 agent 工具里，后续会很难替换；如果一开始做过度抽象，也会拖慢 V1。
+如果把 sandbox 写死在 agent 工具里，后续会很难替换；
+如果一开始做过度抽象，也会拖慢 V1。
 
 ## 决策
 
-V1 将 sandbox 作为 `kokoro-agent` 的基础设施能力，提供三种策略：
+V1 将 DeepAgents backend 作为 `kokoro-agent` 的基础设施能力，
+提供四类策略：
 
 | 策略 | 用途 | 默认 |
-|---|---|---|
-| `local` | 本地开发、受控测试、低风险工具 | 默认 |
-| `e2b` | 需要远程隔离执行代码或文件任务 | 可配置 |
-| `custom` | 私有云、自研 sandbox、企业隔离环境 | 可配置 |
+| --- | --- | --- |
+| `state` | 普通推理、受控工具编排、安全默认 | 生产默认 |
+| `local_shell` | 本地开发、受控测试 | 开发默认 |
+| `e2b` | 远程隔离执行代码或文件任务 | 可配置 |
+| `custom` | 私有云、自研 backend/sandbox、企业隔离环境 | 可配置 |
 
-Agent application 层只依赖 `SandboxRuntime` 这类明确接口，不使用 `ports/` 目录命名。具体实现放在 agent infrastructure 下，例如 `infrastructure/sandbox/local.py`、`e2b.py`、`custom.py`。
+Agent application 层只依赖明确接口，不使用 `ports/` 目录命名。
+具体实现放在 agent infrastructure 下，例如
+`infrastructure/backend/state.py`、`local_shell.py`、`e2b.py`、`custom.py`。
 
 ## 能力边界
 
-Sandbox runtime 必须支持：
+Backend/sandbox runtime 必须支持：
 
 - 创建 workspace
 - 写入输入文件或上下文
@@ -39,7 +45,7 @@ Sandbox runtime 必须支持：
 - 清理 workspace
 - 返回结构化执行结果
 
-V1 不要求 sandbox 承担：
+V1 不要求 backend/sandbox 承担：
 
 - 积分扣减
 - 用户权限最终决策
@@ -48,10 +54,11 @@ V1 不要求 sandbox 承担：
 
 ## 和 LangChain/LangGraph 的关系
 
-LangChain/LangGraph 负责 agent 编排、tool calling、middleware、checkpoint 和 HITL。Sandbox 是工具执行的基础设施之一：
+LangChain/LangGraph 负责 agent 编排、tool calling、middleware、
+checkpoint 和 HITL。Backend 是工具执行的基础设施之一：
 
 - tool 调用前由 permission/HITL middleware 决定是否需要用户确认。
-- tool 执行时通过 sandbox runtime 隔离。
+- tool 执行时通过 backend/sandbox runtime 隔离。
 - tool 结果回到 LangChain/LangGraph，再由 agent event adapter 发 raw event。
 - checkpoint/memory 存 agent 自己的执行上下文，不进入 session messages。
 
@@ -59,19 +66,22 @@ LangChain/LangGraph 负责 agent 编排、tool calling、middleware、checkpoint
 
 正向影响：
 
-- 本地默认可用，生产可切 E2B 或 custom。
+- 本地开发可用 local_shell，生产默认不把本地 shell 当安全边界。
+- 生产可切 E2B 或 custom backend；其它官方 backend 后续按需扩展。
 - Agent 工具不会和某个 sandbox SDK 深度耦合。
 - 未来可为 code、data、browser、MCP 分别配置 sandbox policy。
 
 代价：
 
-- 每个 sandbox provider 都需要集成测试和安全审计。
-- E2B/custom 需要额外密钥、网络和成本治理。
+- 每个远程 backend 都需要集成测试和安全审计。
+- sandbox/custom 需要额外密钥、网络和成本治理。
 - 本地 sandbox 不能被误认为生产安全边界。
 
 ## 强制规则
 
-- `local` 只能作为开发默认和明确低风险策略。
-- 生产高风险工具必须配置 sandbox policy。
-- sandbox 结果不能直接写 session messages，必须回到 agent -> session 链路。
+- `local_shell` 只能作为开发默认和明确受控测试策略。
+- 生产高风险工具必须配置 backend/sandbox policy。
+- 缺 provider 依赖时必须 fail loud。
+- backend/sandbox 结果不能直接写 session messages。
+- 结果必须回到 agent -> session 链路。
 - agent 不因 sandbox 成功而直接扣积分。

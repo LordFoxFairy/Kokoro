@@ -8,6 +8,7 @@
 site-resolution               host -> SiteContext，所有请求的第一步。
 user-register-login           注册登录，落 User/ExternalIdentity/personal workspace。
 general-chat                  通用对话扣费链路（quote/hold/model/provider/capture）。
+agent-session-web-general-chat-runtime  三仓内部通用聊天运行链路。
 agent-handoff                 General Agent 编排专业 Agent / 工具，subagent usage 归并。
 session-lifecycle             conversation 创建/活跃/存档/删除与 siteId 绑定。
 credit-reserve-commit-refund  扣费闭环底座，被所有计费链路复用。
