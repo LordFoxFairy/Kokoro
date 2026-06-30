@@ -204,6 +204,10 @@ POST /sessions/:sessionId/runs/:runId/control
     run.resume(decisions)
 ```
 
+`permissionMode` 是当前代码入参。目标态不继续扩展这个字段，而是由
+session 把 Web 预设编译成 `execution.toolMode` 与 `approvalPolicy` 后放入
+`AgentRunInput`。
+
 ### Session -> Agent
 
 目标设计是 manifest-first：
@@ -370,8 +374,10 @@ Web 自定义 after/lastResumeId 协议绕过 SSE 标准机制。
 
 ```text
 把 agent Python RunRequest 改成消费 agent_run_input manifest。
+把 permissionMode 拆成 execution.toolMode + approvalPolicy。
 GET /sessions snapshot DTO 正式化，避免直接泄漏内部 events 全量结构。
 appendEvent 同步更新 assistant message completed content。
+startRun publish 失败时标记 enqueue_failed 并清 activeRunId。
 control endpoint 校验 run 属于 session/site/user。
 明确 /stream 是否保留，若改为 /events 必须一次性跨 web/session 改净。
 ```

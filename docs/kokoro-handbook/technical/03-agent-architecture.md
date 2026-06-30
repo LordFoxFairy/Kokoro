@@ -93,11 +93,15 @@ AgentRunInput
     toolResultRefs
     userProvidedFiles
   modelRuntime
-  permissionMode
+  execution
+    style
+    toolMode
+  approvalPolicy
   backendPolicy
-  enabledSkills
-  enabledMcpServers
-  enabledTools
+  capabilities
+    skills
+    mcpServers
+    tools
   traceContext
 ```
 

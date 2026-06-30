@@ -4,6 +4,9 @@
 通用聊天运行时。平台、账务、支付、模型市场、官方后台、Music/Studio
 等模块不在本文展开。
 
+下一轮 P0 实施的字段、状态机、权限拆分和验收门槛见
+[Agent / Session / Web P0 实施设计](12-agent-session-web-p0-implementation-design.md)。
+
 ## 结论先行
 
 V1 标准设计是：
@@ -213,6 +216,9 @@ selectedMcpServerIds?
 selectedToolNames?
 ```
 
+`permissionMode` 是当前代码入参，不是目标长期模型。P0 需要拆成
+`execution.toolMode` 与 `approvalPolicy`，详见 P0 实施设计。
+
 规则：
 
 ```text
@@ -297,11 +303,12 @@ agent_run_input:
   context.userProvidedFiles
   modelRuntime
   executionStyle
-  permissionMode
+  execution.toolMode
+  approvalPolicy
   backendPolicy
-  enabledSkills
-  enabledMcpServers
-  enabledTools
+  capabilities.skills
+  capabilities.mcpServers
+  capabilities.tools
   traceContext
 ```
 

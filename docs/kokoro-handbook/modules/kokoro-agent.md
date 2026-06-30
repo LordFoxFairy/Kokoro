@@ -112,7 +112,8 @@ CheckpointSaver
 ```text
 AgentRunInput
   session 下发的完整 manifest：site/workspace/project/session/run/user、
-  recentMessages、modelRuntime、permissionMode、backendPolicy、skills/MCP/tools。
+  recentMessages、modelRuntime、execution、approvalPolicy、backendPolicy、
+  skills/MCP/tools。
 
 ToolPolicy
   哪些工具允许、哪些需要 HITL、哪些只能走 sandbox。
@@ -330,6 +331,7 @@ __init__.py 放业务逻辑。
 ```text
 让 Python RunRequest 接受 session 的 agent_run_input manifest。
 把 conversation_id/input 从旧扁平 wire 迁移到 manifest。
+删除 permissionMode，改用 execution.toolMode + approvalPolicy。
 移除 memory_store.py 作为 runtime 选项，只保留测试 fixture 或明确标注 test-only。
 RuntimeSubagentRegistry 改成 propose/approve 后 materialize。
 backendPolicy 建模并接入 DeepAgents backend。

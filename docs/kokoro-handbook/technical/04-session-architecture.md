@@ -45,7 +45,7 @@ ChatMessage
 
 AgentRun
   siteId / sessionId / runId / inputMessageId / assistantMessageId
-  status / modelRef / permissionMode / backendPolicy
+  status / modelRef / execution / approvalPolicy / backendPolicy
 
 SessionEvent
   siteId / sessionId / runId / eventId / sseId / event / payload / createdAt

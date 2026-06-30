@@ -3,6 +3,9 @@
 本文只描述 `kokoro-web`、`kokoro-session`、`kokoro-agent` 三仓内部运行链路。
 账务、支付、模型目录、站点解析和后台运营只作为外部前置条件，不在本文展开。
 
+P0 字段模型、权限拆分、snapshot DTO、HITL control 和 runtime subagent gate
+见 [Agent / Session / Web P0 实施设计](../technical/12-agent-session-web-p0-implementation-design.md)。
+
 ## 目标
 
 用户在 Web 发送一条消息后，系统创建一个可恢复、可审计、可取消的

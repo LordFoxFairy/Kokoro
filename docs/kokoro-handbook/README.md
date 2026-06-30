@@ -99,6 +99,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [09-security-permissions](technical/09-security-permissions.md)
 - [10-observability](technical/10-observability.md)
 - [11-agent-session-web-v1-runtime](technical/11-agent-session-web-v1-runtime.md)
+- [12-agent-session-web-p0-implementation-design](technical/12-agent-session-web-p0-implementation-design.md)
 
 ### 模块 modules/
 

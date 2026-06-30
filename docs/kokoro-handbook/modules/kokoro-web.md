@@ -149,6 +149,10 @@ POST /sessions/:sessionId/runs/:runId/control
   run.resume(approve/reject decisions)
 ```
 
+`permissionMode` 只应作为当前 UI 预设存在。目标态 Web 传用户意图，
+session 编译成 `execution.toolMode` 与 `approvalPolicy`，agent 不直接消费
+`permissionMode`。
+
 当前 `GET /sessions/:sessionId` snapshot API 已在 session 存在，但 web 尚未把它作为
 正式 hydrate 主入口。P0 必须补齐。
 
@@ -271,6 +275,7 @@ localStorage 当聊天事实源。
 ```text
 实现 snapshot-first hydrate：GET /sessions/:id -> SessionStreamState。
 把 direct reattach 改成 snapshot 后 attach active run。
+把 permissionMode UI 预设对齐到 execution.toolMode + approvalPolicy。
 统一 /stream 路径命名，若改为 /events 必须 session/web 一次性改净。
 补 edit/respond HITL UI 或从公开 UI 能力中明确隐藏。
 补 session run request 契约修复后的端到端 smoke。
