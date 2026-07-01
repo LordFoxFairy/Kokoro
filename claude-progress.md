@@ -1,5 +1,22 @@
 # Claude Progress
 
+- Date: 2026-07-01 (agent/session/web V1 runtime branch)
+- **范围**:只处理 `kokoro-agent`、`kokoro-session`、`kokoro-web`
+  和主仓 handbook 中独属于三仓运行时的部分。
+- **kokoro-agent**:分支 `agent/agent-v1-runtime`,提交 `9ded1c9`。
+  移除 production memory store 与 runtime 自建 subagent 默认入口;
+  新增 `ask_user_question`;HITL control 支持 `respond`。
+- **kokoro-session**:分支 `agent/session-v1-runtime`,提交 `3ddb916`。
+  移除 Bun/pnpm toolchain,改为 npm + vitest + tsx。
+- **kokoro-web**:分支 `agent/web-v1-runtime`,提交 `f3e8ef7`
+  + `123f39b`。新增 `ask_user_question` 渲染卡与 respond 链路;
+  移除 Bun lock 与 `next/font/google` 网络字体依赖。
+- **handbook**:新增 `15-skill-mcp-hub-runtime-boundary.md`。
+  收紧 V1 MCP transport、不可变 `RunDisplaySnapshot`、
+  受限 `SecretGrant`、policy/lock/audit 规则;平台表结构降级为外部文档。
+- **验证**:agent 过 ruff/pyright/mypy/pytest;session 过 typecheck/lint/test;
+  web 过 typecheck/lint/test/build;handbook markdownlint 0 errors。
+
 - Date: 2026-06-20 (用户驱动 DDD 审查闭环 — **✅ 4 PR 全合入 main + 三仓 main 同步**)
 - **承上(/goal 深度重构后续)**。用户从 `agent_builder.py` 观察「多个相似 class+函数混在一起、本质 dataclass」切入,引出系统性 DDD 审查:依赖方向(domain←application←infra←interfaces)+ 文件内职责混杂 + 框架类型钻进签名 + God object。
 - **PR#20 agent 端口上移 application(`36e3700`)**:`agent_builder`(infra)此前既定义 application 消费的强类型 port(`EventStreamingAgent`/`AgentInvokeInput`)又混 builder 构造,致 application/agent_factory+run_agent 反向 import infra 取 port(违 DIP)。新建 `application/agent_ports.py` 承载 port;infra 只留框架接线+builder+内部契约 `AsyncRunner`(仅 infra runtime_subagent 消费,正确留 infra)。

@@ -1,5 +1,18 @@
 # Todo
 
+## Current: agent/session/web V1 runtime branch (2026-07-01)
+
+- [x] kokoro-agent: simplify runtime tools, remove production memory store,
+  add `ask_user_question` and `respond` HITL path.
+- [x] kokoro-session: remove Bun/pnpm usage and migrate runtime/tests to
+  npm + vitest + tsx.
+- [x] kokoro-web: render `ask_user_question`, send `respond`, remove Bun lock
+  and network font dependency.
+- [x] handbook: document Skill/MCP Hub runtime boundary for agent/session/web
+  only, with immutable run snapshots and fail-closed MCP transport rules.
+- [x] verification: run agent/session/web type, lint, test/build gates and
+  markdownlint for the new handbook entry.
+
 - [x] Create `kokoro-web/` as an independent Git repository.
 - [x] Scaffold Bun + Next.js + Tailwind + shadcn/ui baseline.
 - [x] Add DDD folders and dependency boundaries.
