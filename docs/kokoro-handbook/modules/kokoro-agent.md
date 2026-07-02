@@ -13,7 +13,7 @@ HIL 和工具执行前后拦截专项方案见：
 `kokoro-agent` 是 Agent 执行服务。
 
 它接收 `kokoro-session` 投递的 `RunRequest`，基于 DeepAgents、
-LangChain 和 LangGraph 构造 agent graph，执行模型、工具、Skills、MCP、
+LangChain 和 LangGraph 构造可运行 agent，执行模型、工具、Skills、MCP、
 Subagents、HITL 和 sandbox/backend，输出 raw agent events 给
 `kokoro-session`。
 
@@ -36,8 +36,8 @@ Skill Hub / MCP Hub 的安装、审核和启用状态。
 3. 解析 RunRequest。
 4. 校验本次 run 的 capabilities 和 permissions。
 5. 准备 model、tools、skills、MCP、subagents、sandbox、memory。
-6. 基于 DeepAgents 创建 agent graph。
-7. 执行 graph，或根据 run.resume 恢复 graph。
+6. 基于 DeepAgents 构建可运行 agent。
+7. 执行 agent，或根据 run.resume 恢复 agent。
 8. DeepAgents/LangChain/LangGraph 负责原生 stream、interrupt、checkpoint。
 9. Agent 只发布 Kokoro 关心的 RawAgentEvent。
 10. 遇到敏感工具时，输出 awaiting approval 并等待 session resume。
@@ -54,7 +54,7 @@ Skill Hub / MCP Hub 的安装、审核和启用状态。
 DeepAgents/LangChain/LangGraph 负责：
 
 ```text
-agent graph。
+可运行 agent。
 模型调用。
 tool calling。
 subagents / task。
@@ -199,7 +199,7 @@ Web UI 状态。
     agent checkpoint / memory / long-running state。
 
   DeepAgents / LangChain / LangGraph
-    agent graph、interrupt、stream、checkpoint/store 接口。
+    agent 执行、interrupt、stream、checkpoint/store 接口。
 
   Model provider
     OpenAI / Anthropic / local fake / other provider。
@@ -233,8 +233,7 @@ kokoro_agent/
     json_payload.py
 
   execution/
-    create_agent.py
-    agent_graph.py
+    build_agent.py
     protocols.py
     run_agent.py
     resume_agent.py
@@ -424,27 +423,19 @@ run/json_payload.py
 但目录不叫 `deepagents`，因为 DeepAgents 是底座，不是架构语言。
 
 ```text
-execution/create_agent.py
+execution/build_agent.py
   存在理由：
-    把 RunRequest、RunContext、Capabilities 和配置转换为 create_deep_agent 参数。
+    把 RunRequest、RunContext、Capabilities 和配置转换为可运行 agent。
+    内部调用 DeepAgents 原生 create_deep_agent，并校验返回对象满足本仓执行协议。
 
   放置理由：
-    这里是创建可执行 graph 的唯一入口。
+    维护者要找的是“如何构建 agent”，不是 graph、adapter 或框架名。
 
   禁止：
     不消费 Redis。
     不发布事件。
     不查询 Hub。
     不做价格或账务判断。
-
-execution/agent_graph.py
-  存在理由：
-    封装 create_deep_agent 调用，并校验返回对象满足本仓执行协议。
-
-  放置理由：
-    DeepAgents 是执行底座，这里是创建 graph 的底层调用点。
-
-  禁止：
     不变成 kokoro_agent/deepagents 目录。
     不隐藏或重写 DeepAgents 行为。
     不做 session 持久化。
@@ -463,7 +454,7 @@ execution/protocols.py
 
 execution/run_agent.py
   存在理由：
-    启动一次 agent graph 执行，并处理 completed / failed / cancelled。
+    启动一次 agent 执行，并处理 completed / failed / cancelled。
 
   放置理由：
     这是一次新 run 的主流程。
@@ -525,7 +516,7 @@ execution/prompts/
     存放默认系统提示词和执行底座提示模板。
 
   放置理由：
-    prompts 属于创建 agent graph 的输入。
+    prompts 属于构建 agent 的输入。
 
   禁止：
     不放用户动态数据。
@@ -536,7 +527,7 @@ execution/prompts/__init__.py
     读取随包分发的系统提示词资源。
 
   放置理由：
-    提示词资源属于 execution graph 创建输入。
+    提示词资源属于构建 agent 的输入。
 
   禁止：
     不读用户配置。
@@ -618,7 +609,7 @@ subagents/__init__.py
     导出稳定的 subagent catalog/definition API。
 
   放置理由：
-    只作为包入口，便于 execution/create_agent.py 使用。
+    只作为包入口，便于 execution/build_agent.py 使用。
 
   禁止：
     不注册全局 mutable 状态。

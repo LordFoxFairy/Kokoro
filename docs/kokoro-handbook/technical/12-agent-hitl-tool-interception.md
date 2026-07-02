@@ -158,9 +158,9 @@ HumanInTheLoopMiddleware:
 
 ## Agent 内部设计
 
-### create_deep_agent 装配
+### build_agent 装配
 
-`execution/create_agent.py` 是唯一 graph 创建入口。目标形态：
+`execution/build_agent.py` 是唯一 agent 构建入口。目标形态：
 
 ```text
 create_deep_agent(
@@ -739,7 +739,7 @@ Agent 侧无 pending interrupt 时丢弃 stale resume。
 ### P0
 
 ```text
-1. Agent make_deep_agent 支持 middleware 参数。
+1. Agent build_deep_agent 支持 middleware 参数。
 2. 新增 tools/middleware.py，落 ToolPolicyMiddleware。
 3. tool_call_awaiting raw event 补 description、allowed_decisions、kind、risk、editable。
 4. 收紧 interrupt_on：respond 只给 ask_user。

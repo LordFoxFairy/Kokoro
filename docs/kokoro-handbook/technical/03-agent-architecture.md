@@ -66,7 +66,7 @@ agent 不拥有 Skill/MCP Hub。
 DeepAgents/LangChain/LangGraph 负责：
 
 ```text
-agent graph。
+可运行 agent。
 tool calling。
 skills。
 MCP tools。
@@ -103,8 +103,7 @@ kokoro_agent/
     json_payload.py
 
   execution/
-    create_agent.py
-    agent_graph.py
+    build_agent.py
     protocols.py
     run_agent.py
     resume_agent.py
