@@ -161,27 +161,15 @@ kokoro_agent/
 每个目录和 `.py` 的存在理由、放置理由和禁止项，以
 [kokoro-agent 技术方案](../modules/kokoro-agent.md) 为准。
 
-## 禁止项
+## 命名红线
 
-```text
-kokoro_agent/deepagents/
-kokoro_agent/runtime/
-kokoro_agent/adapters/
-domain/
-application/
-infrastructure/
-interfaces/
-ports/
-execution/read_events.py
-execution/map_events.py
-run/invoke.py
-projection/transformer.py
-RuntimeSubagentRegistry
-_LangChainActionRequest
-RunJob
-AgentRunOptions
-KokoroRunContext
-```
+禁止新增三类形态：
+
+1. 以框架品牌或泛词命名目录，例如 `deepagents`、`runtime`、`adapters`。
+2. 把 Agent worker 套进重 DDD 四层模板，例如 `domain/application/infrastructure/interfaces/ports`。
+3. 自造 LangChain/DeepAgents 已经有的事件系统或框架动作名，例如 `read_events`、`map_events`、`run.invoke`。
+
+禁止保留含糊类型名：`RuntimeSubagentRegistry`、`_LangChainActionRequest`、`RunJob`、`AgentRunOptions`、`KokoroRunContext`。
 
 ## 命名规则
 
@@ -227,9 +215,9 @@ Provider-neutral 第二套 agent framework。
 ```text
 从目录能读出 Agent 完整执行链路。
 每个目录和 .py 都有存在理由、放置理由、禁止项。
-没有 deepagents/runtime/adapters 顶层或子目录。
+没有以框架品牌或泛词命名的顶层/子目录。
 没有 DDD 四层模板目录。
-没有 read_events.py / map_events.py。
+没有自造 read/map event wrapper。
 HITL 使用 interrupt_on + Command(resume=...)。
 skills/MCP/sandbox 都来自本次 run 的显式授权 capabilities。
 ```

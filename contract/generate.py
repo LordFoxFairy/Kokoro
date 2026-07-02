@@ -73,6 +73,8 @@ def _ts_of(spec: dict, t: str) -> str:
         return "SessionResumeDecision[]"
     if t == "enum:message_role":
         return "SessionMessageRole"
+    if t == "enum:run_completed_status":
+        return "SessionRunCompletedStatus"
     if t.startswith("enum:"):
         return " | ".join(f'"{v}"' for v in enums[t[5:]])
     raise ValueError(f"unmapped field type {t!r}")
@@ -114,6 +116,8 @@ def emit_web_render(spec: dict) -> str:
     lines.append(f"export type SessionTodoStatus = {_ts_union(enums['todo_status'])}")
     lines.append("")
     lines.append(f"export type SessionResumeDecision = {_ts_union(enums['resume_decision'])}")
+    lines.append("")
+    lines.append(f"export type SessionRunCompletedStatus = {_ts_union(enums['run_completed_status'])}")
     lines.append("")
     lines.append("export type SessionTodo = {")
     lines.append("  content: string")

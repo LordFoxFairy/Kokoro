@@ -19,7 +19,7 @@
 
 ```text
 kokoro-web      Next.js，公网入口。
-kokoro-session  Bun/TS，内部或公网 API，提供 SSE。
+kokoro-session  Node/TS，内部或公网 API，提供 SSE。
 kokoro-agent    Python worker，内部服务或 worker deployment。
 kokoro-site     Fastify/TS，内部服务。
 kokoro-user     Fastify/TS，内部服务。

@@ -28,11 +28,11 @@ refs:
 - **缝**:并行 run 传输层已就绪(session fan-out 支持多订阅者)。
 - **缺**:团队/角色模型、并行 run 编排、协作 UI。
 
-## 🔲 HITL(工具执行前 暂停 / 确认 / 恢复)
+## ✅ HITL(工具执行前 暂停 / 确认 / 恢复)
 
-- **缝**:control stream 已在 stream 架构文档**留缝**(双向通道,web→session→agent 的控制信令)。
-- **缺**:控制事件契约、agent 侧暂停点、web 侧确认 UI、恢复语义。
-- **关联**:这是 [trust-modes](../00-product/trust-modes.md) 的 Plan/Default/Auto 完整语义所**依赖**的底座;当前 Mode 只落地 Fast/Thinking 执行风格,确认/暂停未实现。
+- **已建**:control 请求流、agent 侧 LangChain interrupt、web 侧审批/拒绝/人工回复 UI、恢复语义。
+- **当前档位**:V1 只暴露 Default/Auto；Default 对敏感工具暂停审批，Auto 不拦。
+- **缺**:edit 工具参数的通用 UI 不开放；后续必须按具体 tool 做定制表单，不能回到裸 JSON 文本框。
 
 ## 推进规则
 

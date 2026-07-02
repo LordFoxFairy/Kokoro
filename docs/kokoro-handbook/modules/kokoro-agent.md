@@ -961,53 +961,13 @@ observability.py
 
 ### 禁止目录和文件名
 
-```text
-kokoro_agent/deepagents/
-kokoro_agent/runtime/
-kokoro_agent/adapters/
-domain/
-application/
-infrastructure/
-interfaces/
-ports/
-execution/read_events.py
-execution/map_events.py
-run/invoke.py
-projection/transformer.py
-RuntimeSubagentRegistry
-_LangChainActionRequest
-RunJob
-AgentRunOptions
-KokoroRunContext
-```
+命名红线按读者视角定义，不按框架内部术语定义：
 
-禁止理由：
-
-```text
-deepagents
-  依赖底座名，不是 Kokoro 目录语言。
-
-runtime
-  太泛，整个 Agent 服务都可以叫 runtime。
-
-adapters
-  太泛，不能告诉读者这里负责什么。
-
-domain/application/infrastructure/interfaces
-  对 Agent worker 过重，容易把执行链路拆散。
-
-ports
-  抽象味太重，当前不需要。
-
-read_events / map_events
-  暗示重写 LangChain/DeepAgents event system。
-
-invoke
-  框架动作名，不是业务动作名。
-
-projection / transformer
-  学术化且含糊，实际只是 RawAgentEvent 输出边界。
-```
+1. 不用框架品牌名或泛词做目录名。DeepAgents 是底座，可以 import，不成为 Kokoro 的架构语言；`runtime`、`adapters` 也太泛。
+2. 不套重 DDD 四层模板。Agent worker 是执行链路，目录必须按 `run/execution/tools/skills/mcp/sandbox/storage/streams/worker` 这条链路展开。
+3. 不自造 LangChain/DeepAgents 已经有的事件系统，不新增 read/map event wrapper。
+4. 不用框架动作名或学术词做文件名。`invoke`、`projection`、`transformer` 不能告诉维护者业务职责。
+5. 不保留含糊类型名：`RuntimeSubagentRegistry`、`_LangChainActionRequest`、`RunJob`、`AgentRunOptions`、`KokoroRunContext`。
 
 ### `__init__.py` 规则
 
