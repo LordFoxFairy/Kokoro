@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / "kokoro-agent" / "src"))
 
 from pydantic import TypeAdapter  # noqa: E402
 
-from kokoro_agent.interfaces import envelope as E  # noqa: E402
+from kokoro_agent.run import events as E  # noqa: E402
 
 SESSION_AGENT_EVENT_TS = ROOT / "kokoro-session" / "src" / "domain" / "agent-event.ts"
 
@@ -32,7 +32,7 @@ EVENT_DATA: dict[str, Any] = {
     "text_chunk": E.ChunkData,
     "reasoning_chunk": E.ChunkData,
     "tool_call_start": E.ToolStartData,
-    "tool_call_awaiting": E.ToolStartData,
+    "tool_call_awaiting": E.ToolAwaitingData,
     "tool_call_end": E.ToolEndData,
     "agent_done": E.DoneData,
     "agent_error": E.ErrorData,

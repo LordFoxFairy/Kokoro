@@ -54,7 +54,7 @@ run_completed_status: [completed, cancelled, timeout]
 # (present at web schema top-level; absent from session envelopeFields — it lives in
 # each arm's literal). render uses camelCase + a `kind` discriminant.
 envelope:
-  agent_out: [run_id, seq]
+  agent_out: [request_id, timestamp]
   agui_out: [event_id, seq, session_id, conversation_id, run_id, timestamp]
   render: [eventId, seq, sessionId, conversationId, runId]
 
@@ -125,13 +125,13 @@ kinds:
   tool.awaiting_approval:
     agent_out:
       kind: tool.awaiting_approval
-      payload: [segment_id, tool_id, name, args]
+      payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, editable]
     agui_out:
       event: tool.awaiting_approval
-      payload: [segment_id, tool_id, name, args]
+      payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, editable]
     render:
       kind: tool-awaiting-approval
-      payload: [segmentId, toolId, name, args]
+      payload: [segmentId, toolId, name, args, description, allowedDecisions, awaitingKind, editable]
 
   tool.returned:
     agent_out:
@@ -255,6 +255,8 @@ enums:
   subagent_source: [built-in, config-custom, runtime-custom]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled, timeout]
+  resume_decision: [approve, edit, reject, respond]
+  awaiting_kind: [tool_approval, ask_user]
 
 # field-name -> type. DEFAULT (any field not listed) = string_nonempty
 # (zod `z.string().min(1)` / py str / ts string). Only exceptions listed.
@@ -267,6 +269,10 @@ field_types:
   description: string
   role: enum:message_role
   source: enum:subagent_source
+  allowed_decisions: decision_list
+  awaiting_kind: enum:awaiting_kind
+  kind: enum:awaiting_kind
+  editable: boolean
   is_error: boolean
   rejected: boolean
   reject_reason: string    # HITL 拒绝理由文本；空理由也是合法值，故 string 非 nonempty
@@ -277,7 +283,6 @@ field_types:
   todos: todo_list         # array of {content: string, status: todo_status}
   citations: array_unknown # z.array(z.unknown())
   token_usage: unknown     # z.unknown()
-  role: enum:message_role  # canonical; agui producer overrides to string (view_field_types)
   status: enum:run_completed_status  # canonical; web consumer relaxes (view_field_types)
 
 # Per-view field-type overrides — deliberate producer/consumer divergence.
@@ -298,7 +303,7 @@ payload_optional: [rejected, reject_reason, responded, failed, error]
 
 # Key WHY notes the generator emits verbatim into the mirrors (preserve rationale).
 notes:
-  envelope.seq: "seq：session 透传 agent 的一等发射序号，是真实发射顺序的唯一排序源。"
+  envelope.seq: "seq：session 从 transport cursor 派生的渲染顺序号；不是 agent 业务字段，也不是 replay cursor。"
   tool.returned.is_error: "严格 required：生产端始终发送；缺失即 fail-loud，绝不用默认 false 掩盖真失败。无兼容兜底。"
   tool.returned.rejected: "可选：仅 HITL 拒绝(用户点拒绝或审批超时回退)时为 true；缺省=未拒绝。replay 安全地区别于绿勾 done。"
   run.completed.status: "web 放宽到任意非空终态：新终态绝不 strict-parse 成 null 卡死客户端。"

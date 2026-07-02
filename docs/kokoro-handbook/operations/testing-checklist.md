@@ -31,19 +31,19 @@ Session:
 
 ```bash
 cd kokoro-session
-bun test
-bun run typecheck
-bun run lint
+npm test
+npm run typecheck
+npm run lint
 ```
 
 Web:
 
 ```bash
 cd kokoro-web
-bun test
-bun run typecheck
-bun run lint
-bun run build
+npm test
+npm run typecheck
+npm run lint
+npm run build
 ```
 
 平台服务（kokoro-platform）:

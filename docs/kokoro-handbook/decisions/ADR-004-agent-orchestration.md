@@ -16,11 +16,11 @@ kokoro-session  浏览器面对的 session/SSE/replay 层，strict parse + norma
 kokoro-agent    执行层，跑 LangChain/DeepAgents/LangGraph，调用模型/工具/subagent，产出原始执行事件。
 
 Agent 编排发生在 agent 内部，不是前端跳转。V1 先支持通用 Skills、
-MCP tools、内置工具和轻量 subagent；专业 Agent 后续接入同一机制。
+MCP tools、内置工具和 DeepAgents subagents；专业 Agent 接入同一机制。
 
-Session 发给 Agent 的不是零散字段，而是 `AgentRunInput`：
-site/user/workspace/session/run 身份、上下文、model runtime、permission mode、
-backend policy、启用的 skills、MCP servers/tools、内置工具集合和 trace context。
+Session 发给 Agent 的不是零散字段，也不是自造 `RunJob`，而是 `RunRequest`：
+runId、threadId、input、RuntimeConfig、RuntimeContext 和 trace context。
+`threadId` 对齐 LangGraph `configurable.thread_id`；产品侧仍叫 `sessionId`。
 ```
 
 ## 不变量
@@ -35,6 +35,8 @@ eventId 是幂等去重锚点，不承担排序。
 LangChain BaseMessage.id / tool call id 是身份标识，不承担跨服务排序。
 浏览器排序依赖 session 写入和 SSE 发送顺序，不反解 cursor/seq。
 run.completed(status=completed/cancelled/timeout) 和 run.failed 是终态。
+HITL 使用 interrupt_on / action_requests / Command(resume=...)。
+respond 只用于 ask_user 这类人工代答工具。
 ```
 
 ## 替代方案（已否决）

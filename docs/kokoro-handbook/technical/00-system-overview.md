@@ -6,7 +6,7 @@ V1 目标不是一次性做完整中台，而是先把通用 agent platform 的�
 
 1. 用户在 web 发消息。
 2. session 接收并保存用户消息，创建唯一 active run。
-3. agent 按 `AgentRunInput` 选择 model、skills、MCP tools、内置工具、
+3. agent 按 `RunRequest` 选择 model、skills、MCP tools、内置工具、
    backend/sandbox 和 permission policy，执行 LangChain/LangGraph 工作流，
    产生原始执行事件。
 4. session 将原始执行事件转成产品会话事件，写入 Mongo，并通过 SSE 推给 web。
@@ -59,7 +59,7 @@ Web 的 reducer 和 local cache 只负责体验。刷新后以
 - 通用聊天主链路。
 - 通用 Skills 底座：官方 skill、用户 skill、workspace skill 的读取、触发和执行。
 - 通用 MCP client：HTTP MCP server 连接、tool/prompt/resource 列表、工具调用、权限约束。
-- AgentRunInput：session 发给 agent 的一次执行输入，包含 model、skills、
+- RunRequest：session 发给 agent 的一次执行输入，包含 model、skills、
   tools、MCP、backend、permission、context。
 - 同 session 单 active run。
 - Mongo session messages / runs / session_events。

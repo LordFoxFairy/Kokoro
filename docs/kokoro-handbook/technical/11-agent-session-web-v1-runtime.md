@@ -1,59 +1,226 @@
-# Agent / Session / Web V1 运行时技术方案
+# Agent / Session / Web V1 标准运行时方案
 
 本文只约束 `kokoro-agent`、`kokoro-session`、`kokoro-web`
-三个子仓的第一版运行时。平台、账务、支付、模型市场、
-后台运营等模块不在本文维护。
+三个子仓的 V1 通用聊天运行时。平台、账务、支付、模型目录、
+官方后台和公开 Hub 只作为上游能力来源，不在本文展开实现。
+
+HIL、工具执行前后拦截、`ask_user` 和 Web 暂停点的专项方案见：
+[Agent HIL 与工具拦截标准方案](12-agent-hitl-tool-interception.md)。
+
+## 设计立场
+
+V1 不再围绕自造的 Agent runtime 抽象设计，而是以主流框架为基座：
+
+```text
+LangChain / LangGraph:
+  agent.invoke / agent.stream
+  config.configurable.thread_id
+  Runtime context
+  checkpointer / store
+  middleware
+  interrupt / Command(resume=...)
+
+DeepAgents:
+  create_deep_agent
+  tools
+  skills
+  backend
+  permissions
+  subagents / task tool
+  interrupt_on
+
+Browser:
+  POST 创建消息
+  GET snapshot
+  EventSource SSE
+  Last-Event-ID 自动续连
+```
+
+Kokoro 只在跨服务边界上补必要能力：会话事实源、事件持久化、
+SSE replay、权限解析、能力挂载和审计。禁止为了实现方便再造一套
+平行 Agent 协议。
 
 ## 目标
 
-V1 要先把通用聊天闭环做到稳定、可恢复、可扩展：
-
 ```text
-kokoro-web 负责用户交互和渲染。
-kokoro-session 负责聊天窗口事实源、消息、run、事件、SSE 和 replay。
-kokoro-agent 负责基于 DeepAgents/LangChain/LangGraph
-执行模型、工具、Skills、MCP、HITL 和 sandbox。
+用户发送一条消息后，只创建一个 active run。
+刷新、断线、换标签页后，Web 通过 snapshot + EventSource 恢复。
+聊天消息长期事实源在 kokoro-session 的 Mongo。
+Redis 只做队列、live fanout、control 和 lease，不做长期事实源。
+Agent 执行使用 DeepAgents/LangChain/LangGraph 原生能力。
+Web 不消费 agent raw events，不维护业务 cursor；只使用 session 派生的 seq 做同一 run 内 UI 交错。
 ```
 
-核心验收：
-
-```text
-用户发送一条消息后，系统只创建一个 active run。
-刷新、断线、换标签页后可以通过 snapshot + SSE 继续恢复。
-聊天消息长期事实源在 Mongo。
-不在 Redis，不在 Web localStorage，不在 agent checkpoint。
-Redis 只做 run queue、raw event stream、live fanout、control 和 lease。
-Web 不消费 agent raw events，不维护业务 cursor，不依赖 seq 排序。
-Agent 不直接写 session messages，不直接扣积分，不直接服务浏览器。
-```
-
-## 总体边界
+## 三仓边界
 
 ```text
 kokoro-web
-  owns: UI、composer、snapshot load、EventSource、render reducer、
-         HITL UI、Skill/MCP 管理入口。
-  does not own: 权威消息、agent 执行、Mongo/Redis、MCP/tool 实际调用。
+  owns:
+    用户交互、composer、snapshot 加载、EventSource、
+    render reducer、HITL UI、Skill/MCP 管理入口。
+  does not own:
+    权威消息、agent 执行、Mongo/Redis、MCP/tool 实际调用。
 
 kokoro-session
-  owns: ChatSession、ChatMessage、AgentRun、SessionEvent、
-         active run admission、AgentRunInput build、SSE/replay。
-  does not own: LangChain 执行、tool 执行、agent checkpoint、Web reducer。
+  owns:
+    ChatSession、ChatMessage、AgentRun、SessionEvent、
+    active run admission、RunRequest 构建、SSE replay/live。
+  does not own:
+    LangChain 执行、tool 执行、agent checkpoint、Web reducer。
 
 kokoro-agent
-  owns: AgentRunInput 解释、DeepAgents runtime、tool registry、
-         Skills/MCP、HITL、sandbox、raw events。
-  does not own: session messages、browser-facing event contract、Web UI、账务。
+  owns:
+    RunRequest 执行、DeepAgents harness、model/tools/skills/MCP、
+    subagents、HITL、sandbox/backend、checkpoint、raw events。
+  does not own:
+    session messages、browser-facing event contract、Web UI、账务。
 ```
 
-三仓之间只能通过明确接口通信：
+通信只能走明确接口：
 
 ```text
-web -> session: HTTP + SSE
-session -> agent: Redis run request / control / raw events
-agent -> session: Redis raw execution events
-session -> web: browser-facing SSE events
+web -> session:
+  HTTP + SSE
+
+session -> agent:
+  Redis run request / control
+
+agent -> session:
+  Redis raw execution events
+
+session -> web:
+  browser-facing SSE events
 ```
+
+## 命名标准
+
+### 保留
+
+```text
+sessionId
+  产品侧聊天窗口 ID。Web、Session API 使用。
+
+threadId
+  Agent/LangGraph 边界 ID，对应 config.configurable.thread_id。
+  V1 取值等于 sessionId，但命名只在 agent 边界使用。
+
+runId
+  一次 agent 执行 ID。
+
+RunRequest
+  Session 投递给 Agent 的一次执行请求。
+
+RuntimeConfig
+  本次 run 的模型、工具、skills、MCP、backend、权限、HITL 策略。
+
+RuntimeContext
+  LangChain Runtime context 的业务上下文输入。
+
+eventId
+  业务幂等去重 ID，不排序。
+
+SSE id
+  传输层 replay anchor，只给 EventSource/Last-Event-ID 使用。
+```
+
+### 删除
+
+```text
+RunJob
+  太抽象，不贴近 LangGraph/DeepAgents/CLI 工具命名。
+
+AgentRunInput
+  语义过宽，容易变成所有字段的大杂烩。V1 改为 RunRequest。
+
+conversationId
+  与 sessionId/threadId 重叠。V1 删除。
+
+permissionMode
+  auto/default/plan 过粗，且 auto 容易成为危险默认。
+  V1 改为 RuntimeConfig.permissions + interrupt_on。
+
+seq
+  不作为 agent 业务字段，也不作为 replay cursor；仅是 session 派生的 render order。
+
+cursor / lastResumeId / after
+  不作为产品 API。SSE id 是内部传输锚点。
+
+respond
+  不作为通用 control 动作。仅在 LangChain HITL 中作为 ask_user
+  这类人工代答工具的原生 decision type。
+```
+
+## RunRequest
+
+RunRequest 是跨 `session -> agent` 的唯一执行输入。
+
+```text
+RunRequest
+  kind: "run.request"
+  runId
+  threadId
+  input
+  runtime
+  context
+  trace
+```
+
+### input
+
+```text
+input
+  messageId
+  content?
+  contentRef?
+  attachments?
+```
+
+规则：
+
+```text
+短文本可直接带 content。
+大输入、附件、长上下文通过 contentRef / attachment refs 引用。
+contentRef 由 session 持久化和授权，agent 只能按本次 run grant 读取。
+```
+
+### runtime
+
+```text
+RuntimeConfig
+  model
+  tools
+  skills
+  mcp
+  subagents
+  backend
+  permissions
+  interrupt_on
+  checkpointer
+  store
+```
+
+RuntimeConfig 是已解析配置，不是 Hub/catalog 源数据。
+Agent 不拿 git/http/local_path 这类安装来源自己解析，也不跨站查询全局 Hub。
+
+### context
+
+```text
+RuntimeContext
+  siteId
+  userId
+  workspaceId?
+  projectId?
+  sessionId
+  recentMessages
+  summary?
+  memoryScope?
+  artifactRefs?
+  toolResultRefs?
+  featureFlags?
+```
+
+Context 对齐 LangChain Runtime context，用于工具和 middleware 的依赖注入。
+不要起 `KokoroRunContext` 这类项目名前缀。
 
 ## V1 主链路
 
@@ -64,76 +231,77 @@ sequenceDiagram
   participant M as Mongo kokoro_session
   participant R as Redis
   participant A as kokoro-agent
-  participant L as DeepAgents/LangChain
+  participant L as DeepAgents/LangGraph
 
   W->>S: POST /sessions/{sessionId}/messages
-  S->>M: 条件写入 user message、assistant placeholder、run、activeRunId
-  S->>R: XADD kokoro:runs:requests AgentRunInput
-  S-->>W: 202 runId + inputMessageId
+  S->>M: 写 user message / assistant placeholder / run / activeRunId
+  S->>R: XADD kokoro:runs:requests RunRequest
+  S-->>W: 202 runId + message ids
   W->>S: GET /sessions/{sessionId}
   S-->>W: SessionSnapshot
-  W->>S: GET /sessions/{sessionId}/events (EventSource)
+  W->>S: GET /sessions/{sessionId}/events
   A->>R: claim runId + session lease
-  A->>L: create_deep_agent / invoke / stream
+  A->>L: create_deep_agent(...).stream
   A->>R: XADD kokoro:run:{runId}:events raw event
   S->>R: relay raw events
-  S->>M: DB-first 写 event + messages/runs projection
-  S->>M: terminal event 同 commit 更新 run 并清 activeRunId
+  S->>M: DB-first 写 session_event + messages/runs projection
   S->>R: publish kokoro:session:{sessionId}:live
   S-->>W: SSE browser-facing event
 ```
 
-注意：`session` 必须 DB-first。先发 live 后落 Mongo 会造成浏览器
-已收到、刷新后 replay 丢失。terminal event 必须和 run terminal
-status、`activeRunId=null` 在同一个 Mongo commit 内完成，然后才
-publish live。
+终态事件必须在同一个 Mongo commit 中更新：
 
-## HTTP / SSE 接口
+```text
+runs.status
+messages.final content/status
+sessions.activeRunId = null
+session_events terminal event
+```
+
+commit 成功后才能 publish live。禁止先 live 再落库。
+
+## HTTP / SSE 契约
 
 ### `POST /sessions/:sessionId/messages`
 
-创建用户消息并启动一次 run。
+发送用户消息并启动一次 run。
 
 请求体：
 
 ```text
 idempotencyKey
-content
-attachments
-executionStyle
-permissionMode
-selectedSkillIds
-selectedMcpServerIds
-selectedToolNames
+content?
+contentRef?
+attachments?
+selectedModel?
+selectedSkillIds?
+selectedMcpServerIds?
+selectedToolNames?
 ```
 
-处理规则：
+规则：
 
 ```text
-idempotencyKey 命中旧请求时返回同一个 runId，不重复创建消息。
-非同一 idempotencyKey 的请求，如果同 session 已有 active run，返回 session_run_active。
-写 Mongo 成功后才投递 run.request。
+idempotencyKey 命中旧请求时返回同一 runId。
+非同一 idempotencyKey 且 session 已有 active run，返回 session_run_active。
+Mongo 写入成功后才投递 RunRequest。
 投递失败时 run 标记 enqueue_failed，并清 activeRunId。
 ```
 
 ### `GET /sessions/:sessionId`
 
-返回权威 snapshot：
+返回权威读取模型：
 
 ```text
 session metadata
 messages page
 activeRun
-recent activity projection
+recent activity
 eventWatermark
 ```
 
-刷新、切换会话、SSE 失败恢复都先走 snapshot。Web 不能把 localStorage
-当权威事实源。
-
-`eventWatermark` 是 snapshot 已包含的 session event 水位。Web 不把它
-保存成业务 cursor；session 服务端用它避免把 snapshot 已折叠进
-messages/activity 的事件重复 replay 给同一次 attach。
+`eventWatermark` 是服务端告诉自己“这个 snapshot 已折叠到哪里”的内部水位。
+Web 不保存它作为业务 cursor，不用于排序。
 
 ### `GET /sessions/:sessionId/events`
 
@@ -142,520 +310,366 @@ messages/activity 的事件重复 replay 给同一次 attach。
 规则：
 
 ```text
-SSE id: 是传输层内部 replay anchor，不进入 Web domain state。
-data.eventId: 是业务幂等去重锚，不排序。
-Web 不拼 ?after=<lastResumeId>。
-缺失 Last-Event-ID 时允许 snapshot + active run replay + eventId 去重。
-Last-Event-ID 过期或未知时返回可恢复 replay，不静默空流。
+SSE id:
+  传输层 replay anchor，不进入 Web domain state。
+
+data.eventId:
+  业务幂等去重锚，不排序。
+
+Last-Event-ID:
+  浏览器标准自动重连机制。Session 可用它做 replay anchor。
+
+缺失/过期 Last-Event-ID:
+  Session 退回 snapshot 水位或安全 replay；Web 用 eventId 去重。
 ```
 
-为什么不做“单 POST 接口一直流到底”：浏览器原生 `EventSource`
-的标准重连能力在 GET SSE 上，`Last-Event-ID` 是标准机制。
-如果用 fetch POST stream，就需要自己发明 `after` 参数和恢复协议。
-产品层可以封装成 `sendMessageAndStream()`，HTTP 层保留
-message POST + EventSource。
-
-Mongo replay 到 Redis live tail 的 handoff：
-
-```text
-1. SSE 连接建立后，先读取当前 Redis live stream tail id。
-2. 从 Mongo replay Last-Event-ID 或 snapshot eventWatermark 之后的事件。
-3. 再从第 1 步的 Redis tail id 之后开始 tail live。
-4. 第 2、3 步重叠的事件由 eventId 去重。
-5. 如果 live publish 失败，outbox retry；刷新时 Mongo snapshot/replay 仍是权威。
-```
+不设计 `?after=<lastResumeId>`。产品代码可以封装为
+`sendMessageAndStream()`，但 HTTP 层保留 POST message + GET SSE。
 
 ### `POST /sessions/:sessionId/runs/:runId/control`
 
-HITL 和取消入口：
+控制 active run：
 
 ```text
-approve / reject / edit / respond / cancel
+cancel
+resume(decisions)
 ```
 
-Session 必须校验：
+`resume.decisions` 对齐 LangGraph `Command(resume=...)`：
 
 ```text
-run 属于该 session。
-用户拥有该 session 权限。
-run 仍处于可控制状态。
-decision 指向明确 toolCallId 或 runId。
-同一 HITL frame 内的多 tool 决策必须保持 action_requests 顺序。
+approve
+reject
+edit
+respond 仅限 ask_user 这类人工代答工具
 ```
 
-## 存储设计
+Session 必须校验 run 属于 session、用户有权限、run 仍可控制。
+Agent 恢复时按 LangGraph interrupt 的 `action_requests` 顺序提交 decisions。
 
-### Mongo: `kokoro_session`
+## SSE Replay 与 Live Handoff
 
-Session 持久真源只用 Mongo。`kokoro-session` 不再提供 SQLite runtime 策略。
+不轮询 Mongo 追 token。
 
 ```text
-sessions
-  siteId
-  sessionId
-  ownerUserId
-  workspaceId
-  projectId
-  title
-  status
-  activeRunId
-  createdAt
-  updatedAt
-  version
+实时：
+  agent -> Redis raw events
+  session relay -> Mongo commit
+  session relay -> Redis live fanout
+  SSE -> web
 
-messages
-  siteId
-  sessionId
-  messageId
-  runId
-  role
-  content
-  parts
-  attachments
-  status
-  createdAt
-  updatedAt
-
-runs
-  siteId
-  sessionId
-  runId
-  inputMessageId
-  assistantMessageId
-  status
-  executionStyle
-  permissionMode
-  modelRuntime
-  backendPolicy
-  agentRunInput
-  error
-  startedAt
-  completedAt
-
-session_events
-  siteId
-  sessionId
-  runId
-  eventId
-  sseId
-  event
-  payload
-  createdAt
-
-outbox
-  outboxId
-  sessionId
-  runId
-  eventId
-  payload
-  status
-  retryCount
-  createdAt
+恢复：
+  web -> GET snapshot
+  web -> EventSource events
+  session 捕获 Redis live tail id
+  session 从 Mongo replay 水位之后的事件
+  session 从 captured tail id 之后 tail live
+  Web 按 eventId 去重
 ```
 
-`messages` 是聊天展示的主数据；`session_events` 是 replay/live/debug/audit
-数据。不要每次展示聊天都从 event log 全量重放。
+Redis live stream 可以有界裁剪；历史由 Mongo 补。
 
-### Redis
+## 事件模型
 
-```text
-kokoro:runs:requests
-  run.request queue，建议 consumer group + ack。
-
-kokoro:run:{runId}:events
-  agent raw events，run 级原始事件流。
-
-kokoro:session:{sessionId}:live
-  session SSE live fanout，有界窗口。
-
-kokoro:run:{runId}:control
-  HITL/cancel control。
-
-kokoro:agent:run:{runId}:lease
-  防重复执行。
-
-kokoro:agent:session:{sessionId}:lease
-  防同 session 并行执行，作为 session activeRunId 的防御层。
-```
-
-Redis 不是长期历史。live bus 被裁剪后，刷新恢复必须靠 Mongo snapshot/replay。
-
-## 排序、幂等和事件 ID
-
-V1 不引入 `eventPosition`，Web 不依赖 `seq`。
+Browser-facing events：
 
 ```text
-BaseMessage.id
-  LangChain 消息身份，不是跨 pod 顺序。
-
-toolCallId
-  工具调用身份，不是全局顺序。
-
-eventId
-  幂等去重锚，不排序。
-  必须稳定生成；不能 retry/reclaim 时随机变化。
-
-sseId
-  Session 传输层 replay anchor，可来自 Mongo 内部追加锚点，Web domain 不读取。
-
-Mongo append order
-  Session replay 的内部顺序依据。
-
-SSE single connection order
-  Web render reducer 的事件到达顺序。
-```
-
-同 session V1 只有一个 active run，所以不需要跨 run 合并排序。
-未来如果开放同 session 多 active run，必须重新设计排序模型，
-不能偷偷复用 V1 简化规则。
-
-Run terminal event 种类保持收敛：
-
-```text
+session.created
+run.created
+message.delta
+message.completed
+thinking.delta
+tool.invoked
+tool.awaiting_approval
+tool.returned
+todo.updated
+subagent.started
+subagent.finished
+subagent.text.delta
+subagent.text.completed
 run.completed
-  status 可以是 completed / cancelled / timeout。
-
 run.failed
-  表示执行失败，payload 带 errorKind 和 message。
-```
-
-V1 不新增 `run.cancelled` 或 `run.timeout` 事件 kind。
-
-## AgentRunInput
-
-Session 发给 Agent 的不是散字段，而是一份完整 manifest：
-
-```text
-AgentRunInput
-  siteId
-  workspaceId
-  projectId
-  sessionId
-  runId
-  userId
-  inputMessageId
-  assistantMessageId
-  context
-    recentMessages
-    summary
-    artifactRefs
-    toolResultRefs
-    userProvidedFiles
-  modelRuntime
-    provider
-    model
-    temperature
-    maxTokens
-    responseFormat
-  executionStyle
-  permissionMode
-  backendPolicy
-  enabledSkills
-  enabledMcpServers
-  enabledTools
-  traceContext
-```
-
-AgentRunInput 是 agent 的唯一产品上下文入口。Agent 不跨库读取
-session Mongo，不自己查询全局 skill/MCP 列表。
-
-`context` 必须是 session 已解析好的上下文包，或可由 agent 通过独立
-artifact/content 服务读取的引用。V1 不允许 agent 为了补上下文直接读
-`kokoro_session` collections。
-
-## Agent 架构
-
-Agent 要站在 DeepAgents/LangChain/LangGraph 能力上，不重写一套 agent framework。
-
-```text
-domain
-  AgentRunInput
-  AgentRuntimeConfig
-  ToolPolicy
-  SandboxPolicy
-  RawExecutionEvent
-
-application
-  run_supervisor
-  manifest_validation
-  approval_flow
-  event_projection
-  run_lease
-
-infrastructure
-  deepagents_runtime
-  langchain_event_adapter
-  tool_registry
-  skill_loader
-  mcp_client
-  backend_config
-  redis_run_queue
-  mongo_checkpoint_store
-
-interfaces
-  worker_main
-  run_request_consumer
-```
-
-不要用 `ports/` 目录名。需要抽象时使用 `application/interfaces` 或 `application/protocols`。
-
-### DeepAgents Backend / Sandbox
-
-V1 不自研一套 sandbox framework。配置最终要构造成 DeepAgents
-`create_deep_agent(..., backend=backend_instance)` 可直接使用的 backend。
-
-```text
-backend.kind
-  state
-  local_shell
-  e2b
-  agentcore
-  langsmith
-  daytona
-  modal
-  runloop
-  custom
-
-backend.options
-  provider-specific settings
-  artifact storage refs
-  network policy
-  timeout/resource policy
-```
-
-允许在配置里保留 `sandbox.provider` 作为用户友好的别名，但代码内
-最终只产生一个 DeepAgents backend instance。
-
-```text
-sandbox.provider=e2b      -> backend.kind=e2b
-sandbox.provider=custom   -> backend.kind=custom
 ```
 
 约束：
 
 ```text
-state 是安全默认，可用于生产的普通推理/工具编排。
-local_shell 只允许 development/test/受控环境，不能作为多租户生产隔离。
-远程 backend 需要显式配置依赖和密钥，缺依赖必须 fail loud。
-S3 不是执行 sandbox，只能作为 artifact/object storage 或 custom backend 的存储组成。
+run.completed 必须带 status: completed | cancelled | timeout。
+run.failed 表示异常失败。
+tool.awaiting_approval 必须带 action description 和 allowed decisions。
+eventId 稳定、唯一、只用于去重。
+Web 按 eventId 去重；同一 run 内 thinking/tool/subagent/text 用 session 派生 seq 稳定交错。
 ```
 
-V1 最小实现只需要 `state`、`local_shell`、`e2b`、`custom` 四类。
-其它官方 backend 可以作为后续扩展，不在 V1 文档中承诺已实现。
+高频 delta 可以 20-50ms 或按字符数合批。合批后的每一条仍是完整 JSON event，
+只是 `delta` 更长，不是每个字符都落一条 DB。
 
-### Tools
+## Agent Harness
 
-内置工具要少而清楚：
+Agent 使用 DeepAgents 原生 harness：
 
 ```text
-now
-  使用 manifest/user timezone，不能使用服务器本地时间当用户语义时间。
-
-web_fetch
-  默认带 allowlist/denylist/超时/大小限制/重定向限制，高风险可走 HITL。
-
-filesystem / code execution
-  只能通过 DeepAgents backend/sandbox，不能直接访问宿主文件系统。
-
-task/subagent
-  使用 manifest 声明的 subagent profile，不允许模型默认任意写 system_prompt 创建运行时子代理。
+create_deep_agent(
+  model=...,
+  tools=...,
+  system_prompt=...,
+  skills=...,
+  backend=...,
+  permissions=...,
+  subagents=...,
+  middleware=...,
+  interrupt_on=...,
+  context_schema=...,
+  checkpointer=...,
+  store=...,
+)
 ```
 
-Runtime subagent creation 可以作为高级能力保留，但默认必须拦截为 `propose_subagent`，经策略或用户确认后才创建。
-DeepAgents 默认的 `general-purpose` subagent 和 dynamic subagent 能力必须
-显式替换或关闭；Code Interpreter 一类中间件不能隐式开启 dynamic
-subagents 绕过 manifest。
-
-### Permission / HITL
-
-Permission 不应该散落在工具函数内部，应该优先使用 DeepAgents/LangChain
-官方 HITL/permission 机制：
+Kokoro Agent 只做：
 
 ```text
-HumanInTheLoopMiddleware / interrupt_on
-  对需要审批的 tool 生成 action_requests。
-
-checkpointer + thread_id
-  保证 HITL 后可 resume 同一个 LangGraph thread。
-
-resume command
-  按 action_requests 顺序提交 approve / reject / edit / respond。
-
-tool wrapper
-  只补 Kokoro policy、审计、截断和 raw event 投影。
+RunRequest parser
+RuntimeConfig resolver
+DeepAgents harness factory
+RuntimeContext builder
+Raw event adapter
+Redis worker
 ```
 
-高风险工具：
+不做第二套 Agent framework。
+
+## Subagents
+
+Subagents 是 V1 能力，保留，但必须标准化。
 
 ```text
-web_fetch 外部网络
-filesystem write/edit
-shell/code execution
-MCP write/delete/send
-runtime subagent creation
+默认：
+  使用 DeepAgents 默认 general-purpose subagent 或显式配置替换。
+
+配置型：
+  通过 RuntimeConfig.subagents 传给 create_deep_agent(subagents=...)。
+
+临时型：
+  可提供 delegate/task 类工具，但必须受权限策略控制。
 ```
 
-默认策略：开发可宽松，生产保守；manifest 可以收窄权限，不能扩大 site/workspace 授权。
-DeepAgents `FilesystemPermission` 只覆盖官方文件工具，不覆盖 custom/MCP/
-sandbox execute；这些工具仍必须进入 Kokoro tool policy。
-
-## Web 架构
-
-Web 的核心不是“保存流”，而是“从权威 snapshot + live events 渲染 UI”。
+临时子代理规则：
 
 ```text
-domain
-  SessionSnapshot
-  RenderEvent
-  ThreadItem
-  AgentActivityItem
-
-application
-  SessionTransport
-  SessionReducer
-  SnapshotHydrator
-  MessageComposerController
-  HitlController
-
-infrastructure
-  HttpSessionClient
-  EventSourceClient
-  TransportSchema
-  LocalUiCache
-
-interfaces
-  ThreadView
-  Composer
-  AgentActivityPanel
-  HitlControls
-  SkillMcpManagementEntry
+模型可以提出 name/description/system_prompt/task。
+是否允许创建由 permissions.subagent_create 决定，默认 ask 或 deny。
+子代理默认不继承全部工具。
+子代理默认不能再创建子代理。
+子代理的 tools/skills/MCP/backend/permissions 只能是 RuntimeConfig 授权子集。
+所有创建、审批、执行都要进入 audit。
 ```
 
-规则：
+当前“模型静默写 system_prompt 创建同权限子代理”的形态不可作为生产默认。
+
+## HITL 和 ask_user
+
+HITL 使用 LangChain/DeepAgents 原生：
 
 ```text
-Web reducer 按 eventId 去重。
-Web 不读取 sseId/cursor/seq 排序。
-message.completed 以最终内容覆盖 delta 累积。
-SSE 单条 malformed event skip-and-continue。
-刷新先 GET snapshot，再 attach active run SSE。
-localStorage 只存草稿、折叠态、activeSessionId，不能存权威 run status。
+interrupt_on
+action_requests
+review_configs
+allowed_decisions
+Command(resume={"decisions": [...]})
 ```
 
-## 配置文件规范
-
-三仓统一使用 YAML 配置和系统 env 覆盖：
+`respond` 的边界：
 
 ```text
-.env.example.yaml       提交到仓库，展示完整 schema 和安全默认。
-.env.yaml               本地私有，不提交。
-.env.development.yaml   开发 profile。
-.env.test.yaml          测试 profile。
-.env.prerelease.yaml    预发 profile。
-.env.production.yaml    生产 profile。
+side-effect tool:
+  approve / reject / edit
+
+ask_user tool:
+  respond
 ```
 
-加载优先级：
+不要把 `respond` 当成拒绝危险工具的通用动作。拒绝就是 `reject`。
+
+V1 需要内置 `ask_user` 工具，用于模型向用户提问。Web 渲染为明确的
+用户输入 UI，而不是工具审批按钮。
+
+## Skills
+
+Skill 是 V1 通用能力，按 Agent Skills 规范组织：
 
 ```text
-code defaults
-  -> .env.yaml
-  -> .env.${KOKORO_ENV}.yaml
-  -> KOKORO_CONFIG_FILE 指向的 YAML
-  -> 系统 env / K8s Secret / ExternalSecret
+skill-name/
+  SKILL.md
+  scripts/
+  references/
+  assets/
 ```
 
-禁止把 `.env.dev`、`.env.prod` 作为官方命名，避免别名过多。
-Docker/K8s 通过 `KOKORO_ENV` 和 `KOKORO_CONFIG_FILE` 指定 profile；
-镜像不内置真实密钥。
-
-生产约束：
+运行时规则：
 
 ```text
-kokoro-session 必须使用 Mongo，不支持 SQLite。
-kokoro-session Redis 必须使用真实 Redis，不使用 memory。
-kokoro-agent production 不允许 local_shell 作为默认执行 backend。
-kokoro-web public env 只能放浏览器可见配置。
+Web/Session/上游管理安装、启用、禁用、审核、lock/hash。
+Session 在 RuntimeConfig.skills 中传已授权 skill mount。
+Agent 只拿路径/backend mount，不拿 git/http/local_path source union。
+Agent 使用 DeepAgents skills 参数加载。
+Skill 不能扩大工具权限，只能在授权范围内使用工具或请求确认。
 ```
 
-## 性能策略
+历史 replay 里只保存运行时可见的 skill 名称、版本、风险等级等展示快照，
+不保存会随时间漂移的 installState/enabledState。
 
-### Token delta micro-batch
+## MCP
 
-Micro-batch 不是把事件变成“不完整”。它的意思是：agent/model
-可能每个 token 或字符都吐一次，但 session 不必每个字符都写一条
-Mongo/SSE。
+MCP 是 V1 外部工具接入能力。
 
 ```text
-错误理解：
-  每个字符一条 message.delta，全部单独落库。
+推荐主路径:
+  HTTP / streamable HTTP MCP server
 
-V1 目标：
-  20-50ms 或 N 个字符合并成一条完整 message.delta event。
-  每条 event 都是完整 JSON，有 eventId、messageId、segmentId、delta。
-  message.completed 写最终完整内容。
+受限路径:
+  stdio 仅本地开发、桌面宿主或明确 sandbox 场景。
+
+兼容路径:
+  SSE 只作为旧 server 兼容，不作为默认推荐。
 ```
 
-这样减少 Mongo 写入和 SSE 帧数量，同时不破坏 replay 和幂等。
-
-### 大输出
+运行时规则：
 
 ```text
-MCP/tool 大返回截断到 UI 可读摘要。
-完整输出写 artifact/object storage 或 Mongo content collection。
-SSE 只传引用、摘要和状态。
-二进制不进 SSE。
+Hub/管理侧负责 server 配置、OAuth/token、审核、启用状态。
+Session 只把本次 run 可用 server/tool 解析成 RuntimeConfig.mcp。
+Agent 只能连接 RuntimeConfig 授权的 MCP server/tool。
+MCP tool 名称进入 Agent 时必须 namespace，例如 mcp__server__tool。
+大结果写 artifact/content ref，消息流只给摘要和引用。
 ```
 
-### Snapshot
+Secret grant 必须绑定：
 
 ```text
-messages 分页。
-activity 只返回 active/recent run。
-长 session 用 summary 和 context refs 给 agent，不无限塞全文。
+siteId
+workspaceId/projectId
+userId
+runId
+capability/tool
+TTL
 ```
 
-## P0 实施顺序
+Agent 不能任意解析未授权 secretRef。
+
+## Backend / Sandbox
+
+V1 使用 DeepAgents backend：
 
 ```text
-1. kokoro-session
-   建 ChatSession/ChatMessage/AgentRun/SessionEvent 模型。
-   Mongo repository 替代当前 event-only MessageStore。
-   实现 POST /messages、GET snapshot、GET events。
-   加 active run admission 和 run ownership 校验。
-   relay 改为 DB-first，再 publish live/outbox。
+state
+  生产安全默认，适合普通推理、受控文件状态和技能资料读取。
 
-2. kokoro-web
-   Transport 改为 message POST + snapshot + EventSource。
-   Reducer 去掉 seq/cursor 排序语义。
-   本地 cache 改成可丢弃 UI cache。
-   HITL control 对齐新 session API。
+local_shell
+  仅本地开发和明确测试，不能作为生产隔离边界。
 
-3. kokoro-agent
-   收敛 AgentRunInput。
-   清理命名和目录，移除 __init__.py 业务逻辑。
-   基于 DeepAgents backend/HITL/permission 组织 tool 和 sandbox。
-   Runtime subagent creation 默认变成 gated proposal。
-   删除 memory_store.py 这类额外 runtime store。
-   SQLite 仅可作为 agent 独立测试 fixture。
+e2b
+  可配置远程隔离执行。
+
+custom
+  企业私有 sandbox/provider。
 ```
 
-## 禁止项
+缺 provider、缺密钥、策略不允许时必须 fail closed。
+
+## 存储
+
+### Mongo: `kokoro_session`
 
 ```text
-禁止新增 kokoro-contracts。
-禁止使用 ports 目录命名。
-禁止 session 使用 SQLite runtime。
-禁止 Web 直连 agent。
-禁止 agent 写 session Mongo。
-禁止 Redis 作为长期聊天历史。
-禁止 eventId/seq/BaseMessage.id/toolCallId 承担全局排序。
-禁止为兼容旧本地缓存保留大段污染代码。
+sessions
+messages
+runs
+session_events
+run_inputs 或 run_requests
+runtime_configs
+outbox
 ```
 
-## 官方参考
+Session 的聊天展示主数据是 `messages`，不是每次从 events 重放。
+`session_events` 用于 replay/live/audit/debug。
+
+### Mongo: `kokoro_agent`
 
 ```text
-DeepAgents overview/backends/HITL/tools/subagents/permissions/middleware。
-LangChain BaseMessage.id 只作为消息身份字段，不作为 Kokoro 跨服务排序依据。
+checkpoints
+memories
+```
+
+Agent checkpoint/memory 不被 Session 读取，也不作为 Web 展示真源。
+
+### Redis
+
+```text
+kokoro:runs:requests
+kokoro:run:{runId}:events
+kokoro:run:{runId}:control
+kokoro:session:{sessionId}:live
+lease keys
+```
+
+### MySQL
+
+三仓运行时不把聊天消息写 MySQL。MySQL 用于三仓外的平台管理、账务、
+权限配置等结构化业务数据。Session 可消费上游已解析的 SiteContext/policy。
+
+## 一致性规则
+
+```text
+同 session 单 active run:
+  Mongo 条件写 + Redis session lease。
+
+Run claim:
+  runId lease，防多 worker 重复执行。
+
+Session event:
+  eventId 唯一索引，DB-first。
+
+Terminal:
+  run terminal + activeRunId clear + session_event terminal 同 commit。
+
+Web:
+  eventId 去重，session 派生 seq 做同一 run 内 UI 交错。
+```
+
+V1 不开放同 session 多 active run。以后若要开放，必须重新设计排序和并发语义。
+
+## 必删项
+
+实现时必须删除，而不是兼容：
+
+```text
+conversation_id / conversationId
+agent-provided seq 业务排序字段
+cursor 业务字段
+lastResumeId / ?after=
+POST /sessions/:id/runs 作为启动入口
+GET /sessions/:id/stream
+permission_mode auto/default/plan
+RunJob
+AgentRunInput 主命名
+runtime-custom 无策略子代理注册器
+Web localStorage 权威 run 状态
+Session SQLite runtime
+```
+
+## 验收标准
+
+```text
+Web 不读取 cursor/order 字段；seq 只作同一 run 内 UI 交错。
+EventSource 使用 /sessions/:sessionId/events。
+发送消息只走 POST /sessions/:sessionId/messages。
+刷新先 GET /sessions/:sessionId snapshot。
+run.completed status 在 Web 可见。
+tool.awaiting_approval 带 description 和 allowed decisions。
+ask_user 有独立 UI，不滥用 respond。
+Agent 使用 create_deep_agent 原生 subagents/skills/backend/interrupt_on。
+Session relay 先写 Mongo，再 publish live。
+Redis 清空 live 后，snapshot/replay 仍可恢复历史。
+Production session 不存在 SQLite runtime。
+Production agent 不默认 local_shell。
 ```

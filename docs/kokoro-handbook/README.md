@@ -85,6 +85,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [09-security-permissions](technical/09-security-permissions.md)
 - [10-observability](technical/10-observability.md)
 - [11-agent-session-web-v1-runtime](technical/11-agent-session-web-v1-runtime.md)
+- [12-agent-hitl-tool-interception](technical/12-agent-hitl-tool-interception.md)
 
 ### 模块 modules/
 
@@ -132,6 +133,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [ADR-005 MySQL 与 Mongo](decisions/ADR-005-mysql-and-mongo.md)
 - [ADR-006 agent sandbox runtime](decisions/ADR-006-agent-sandbox-runtime.md)
 - [ADR-007 kokoro-platform 子模块](decisions/ADR-007-kokoro-platform-submodule.md)
+- [ADR-008 Agent / Session / Web 标准运行时边界](decisions/ADR-008-agent-session-web-standard-runtime.md)
 
 ## 旧文档处理
 

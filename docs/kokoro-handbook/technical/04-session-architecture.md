@@ -1,37 +1,31 @@
 # Session 架构
 
 三仓 V1 运行时总方案见：
-[Agent / Session / Web V1 运行时技术方案](11-agent-session-web-v1-runtime.md)。
+[Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。
 三仓通用聊天链路见：
 [Agent / Session / Web 通用聊天运行链路](../business-flows/agent-session-web-general-chat-runtime.md)。
 
 ## 定位
 
-`kokoro-session` 是三仓里的会话域服务。它拥有聊天窗口、消息、run、
-浏览器事件、SSE 和 replay 语义。
+`kokoro-session` 是三仓里的会话事实源。它拥有聊天窗口、消息、run、
+浏览器事件、snapshot、SSE 和 replay 语义。
 
 它不执行 agent，不渲染 UI，不读取 agent checkpoint。
 
 ## V1 能力范围
 
-V1 session 必须支持：
+```text
+sessions / messages / runs / session_events。
+同 session 单 active run。
+构建 RunRequest 并投递给 agent。
+接收 agent raw events 并归一化为 browser-facing session events。
+Mongo 长期持久化。
+Redis run queue、raw event stream、live fanout、locks。
+SSE live + replay。
+HITL control 透传。
+```
 
-- sessions / messages / runs / session_events。
-- 同 session 单 active run。
-- 创建 `AgentRunInput` 并投递给 agent。
-- 接收 agent raw events 并归一化为 browser-facing session events。
-- Mongo 长期持久化。
-- 不使用 SQLite runtime。
-- Redis run queue、raw event stream、live fanout、locks。
-- SSE live + replay。
-- HITL control 透传。
-
-V1 不要求：
-
-- 复杂多 run 并发队列。
-- 在 session 内执行 LLM/tool。
-- Web 本地状态持久化。
-- 读取 agent checkpoint/memory。
+V1 不支持 session SQLite runtime，不开放同 session 多 active run。
 
 ## 核心对象
 
@@ -40,181 +34,172 @@ ChatSession
   siteId / sessionId / ownerUserId / title / activeRunId / status
 
 ChatMessage
-  siteId / sessionId / messageId / runId / role
-  content / parts / attachments / status
+  siteId / sessionId / messageId / runId / role / content / parts / status
 
 AgentRun
-  siteId / sessionId / runId / inputMessageId / assistantMessageId
-  status / modelRef / permissionMode / backendPolicy
+  siteId / sessionId / runId / threadId
+  inputMessageId / assistantMessageId / status
 
 SessionEvent
   siteId / sessionId / runId / eventId / sseId / event / payload / createdAt
+
+RunRequest
+  runId / threadId / input / runtime / context / trace
 ```
 
-Session 的聊天展示主数据是 `messages`，不是从 events 每次现折。
-`session_events` 用于 live/replay/audit/debug。
+Session 的聊天展示主数据是 `messages`，不是每次从 events 重放。
+`session_events` 用于 replay/live/audit/debug。
 
 ## API
 
-### `POST /sessions/:sessionId/messages`
+```text
+POST /sessions/:sessionId/messages
+GET  /sessions/:sessionId
+GET  /sessions/:sessionId/events
+POST /sessions/:sessionId/runs/:runId/control
+```
 
-发送用户消息并启动 run。
+删除：
 
-流程：
+```text
+POST /sessions/:sessionId/runs
+GET  /sessions/:sessionId/stream
+```
 
-1. 先按 `(userId, sessionId, idempotencyKey)` 查重试命中。
-2. 校验 SiteContext 和权限。
-3. 校验同 session 无 active run。
-4. 写 user message。
-5. 创建 run，设置 `activeRunId`。
-6. 构建 `AgentRunInput`。
-7. XADD run request。
-8. 返回 `runId`、`inputMessageId`、session 状态。
+## Snapshot
 
-### `GET /sessions/:sessionId`
+`GET /sessions/:sessionId` 返回：
 
-返回 session snapshot：
+```text
+session metadata
+messages page
+activeRun
+recent activity
+eventWatermark
+```
 
-- session metadata
-- messages
-- activeRun
-- 最近 activity projection
-- eventWatermark
+`eventWatermark` 是服务端内部 replay 水位，不是 Web 业务 cursor。
 
-刷新、切换会话、SSE 失败恢复都先走 snapshot。
-`eventWatermark` 是 snapshot 已包含的内部事件水位，只给服务端 attach
-去重使用，Web 不把它保存成业务 cursor。
+## RunRequest 构建
 
-### `GET /sessions/:sessionId/events`
+Session 从以下来源构建 RuntimeConfig 和 RuntimeContext：
 
-SSE active run events。
+```text
+SiteContext
+消息窗口和 summary
+用户输入 content/contentRef/attachments
+model policy
+skills enablement
+MCP server/tool grants
+built-in tools
+subagents
+backend/sandbox policy
+permissions and interrupt_on
+trace context
+```
 
-规则：
-
-- JSON payload 不暴露 `cursor`、`resumeId`、`eventPosition`。
-- SSE `id:` 可以作为内部传输续点。
-- EventSource 瞬断可自动使用 `Last-Event-ID`。
-- 页面刷新不要求 web 带 `?after=`；刷新走 snapshot + attach。
-
-### `POST /sessions/:sessionId/runs/:runId/control`
-
-HITL 控制：
-
-- approve
-- reject
-- cancel
-- respond/edit 以后按工具类型逐步开放
-
-Session 只校验权限和 run 归属，然后写 Redis control stream。真正恢复执行由 agent 处理。
-
-## Manifest 构建
-
-Session 是产品上下文到 agent manifest 的边界。
-
-Manifest 来源：
-
-- SiteContext
-- 当前 session messages 摘要或 context refs
-- 用户选择的 model/mode
-- 已启用 skills
-- 已授权 MCP servers/tools
-- backend/sandbox policy
-- permission mode
-- trace context
-
-Session 不应把所有历史全文无限塞给 agent；大上下文用摘要、窗口和 refs。
+`threadId = sessionId`，但只在 Agent/LangGraph 边界使用 `threadId` 命名。
 
 ## 存储
 
 Mongo:
 
-- `kokoro_session.sessions`
-- `kokoro_session.messages`
-- `kokoro_session.runs`
-- `kokoro_session.session_events`
-- `kokoro_session.outbox`，可选，用于后续可靠投递
+```text
+sessions
+messages
+runs
+session_events
+run_requests
+runtime_configs
+outbox
+```
 
 Redis:
 
-- run request queue
-- raw run events
-- live bus
-- control stream
-- run request queue lease
-- agent session lease
-
-SQLite:
-
-- V1 runtime 不支持。
-- 测试使用 memory fake；Mongo 行为用集成测试覆盖。
+```text
+run request queue
+raw run events
+live bus
+control stream
+lease keys
+```
 
 MySQL:
 
-- session runtime 不写聊天消息到 MySQL。
-- 只在需要读取 SiteContext、权限、entitlement、model policy 等结构化
-  业务上下文时通过上游服务使用。
+```text
+Session 不把聊天消息写 MySQL。
+结构化业务上下文由上游服务解析后传入。
+```
 
 ## 排序和幂等
 
-V1 简化规则：
+```text
+同一 session 同时只有一个 active run。
+Session relay 串行消费 raw events。
+Mongo append order 是 replay 内部排序真源。
+SSE 单连接发送顺序是 Web 渲染顺序。
+eventId 只做幂等去重，不排序。
+SSE id 只做 Last-Event-ID replay anchor。
+```
 
-- 同一 session 同时只有一个 active run。
-- Session relay 串行消费该 run 的 raw events。
-- Session 写 Mongo 的追加顺序是 replay 内部排序真源。
-- SSE 单连接发送顺序就是 Web 渲染顺序。
-- `eventId` 只做幂等去重，不排序。
-- 不新增 `eventPosition` 字段。
+禁止新增或暴露：
 
-Mongo ObjectId 通常可作为内部追加锚点，但不要把它暴露成产品 API。
-`sseId` 是传输 replay anchor，`eventId` 是幂等去重锚。
-
-如果未来开放同 session 多 active run 或并行 agent handoff，需要重新
-设计排序模型，不能偷偷复用 V1 规则。
+```text
+seq
+cursor
+eventPosition
+lastResumeId
+```
 
 ## SSE 和 Replay
 
 实时路径：
 
-1. agent 写 Redis raw event。
-2. session relay 阻塞读取。
-3. session 写 Mongo session_event，并更新 messages/runs 投影。
-4. terminal event 同 commit 更新 run terminal，清 activeRunId。
-5. session 写 Redis live bus。
-6. SSE 推给 web。
+```text
+agent raw event
+  -> strict parse
+  -> normalize
+  -> Mongo commit session_event + projections
+  -> Redis live publish
+  -> SSE
+```
 
 恢复路径：
 
-1. web `GET /sessions/:sessionId` 读取 snapshot。
-2. 若有 active run，web 打开 SSE。
-3. session 先捕获 Redis live stream tail id。
-4. session 从 Mongo replay snapshot 水位或 Last-Event-ID 之后的事件。
-5. session 再从 captured tail id 之后 tail live bus。
-6. web 按 `eventId` 去重。
+```text
+snapshot
+capture Redis live tail
+Mongo replay
+tail live
+eventId 去重
+```
 
-系统不靠轮询 Mongo 追 token。
+不允许通过轮询 Mongo 追 token。
 
-## 与 Skills/MCP 的关系
+## HITL Control
 
-Session 不执行 skill/MCP，但负责把“本次 run 可用什么”写入 manifest：
+Session 校验 run 归属、用户权限、run 状态和 decision 合法性，然后写 control stream。
+真正恢复由 Agent 调用 `Command(resume=...)`。
 
-- 哪些 skills 已启用。
-- 哪些 MCP server 已授权。
-- 哪些 MCP tools 可用。
-- 这些能力在当前 site/workspace/project 是否可见。
-
-Session 不保存 MCP 凭据明文；只传安全引用或短期 token。
+`respond` 只允许 `ask_user`。
 
 ## 性能
 
-- messages 投影按 delta 节流更新，completed 时写完整内容。
-- session_events 可以记录 micro-batch 后的 delta，不按每字符写。
-- live bus bounded，历史由 Mongo 补。
-- snapshot 分页加载 messages，避免大 session 一次性读全量。
+```text
+message.delta 可 micro-batch。
+messages draft 更新可节流。
+completed 写最终内容。
+live bus bounded。
+snapshot messages 分页。
+```
 
 ## 风险
 
-- 把 events 当唯一聊天历史，导致展示和查询都要重放。
-- Web 自己维护业务 resume cursor。
-- Session 读取 agent checkpoint。
-- Redis 变成长期消息库。
-- 同 session 多 active run 未设计排序就开放。
+```text
+把 events 当唯一聊天历史。
+Web 自己维护业务 cursor。
+Session 读取 agent checkpoint。
+Redis 变成长期消息库。
+同 session 多 active run 未设计排序就开放。
+DB commit 前 publish live。
+```

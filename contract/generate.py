@@ -69,6 +69,8 @@ def _ts_of(spec: dict, t: str) -> str:
         return "unknown[]"
     if t == "todo_list":
         return "SessionTodo[]"
+    if t == "decision_list":
+        return "SessionResumeDecision[]"
     if t == "enum:message_role":
         return "SessionMessageRole"
     if t.startswith("enum:"):
@@ -110,6 +112,8 @@ def emit_web_render(spec: dict) -> str:
     lines.append(f"export type SessionMessageRole = {_ts_union(enums['message_role'])}")
     lines.append("")
     lines.append(f"export type SessionTodoStatus = {_ts_union(enums['todo_status'])}")
+    lines.append("")
+    lines.append(f"export type SessionResumeDecision = {_ts_union(enums['resume_decision'])}")
     lines.append("")
     lines.append("export type SessionTodo = {")
     lines.append("  content: string")
@@ -169,6 +173,8 @@ def _zod_of(spec: dict, t: str) -> str:
             "z.array(z.object({ content: z.string(), status: "
             f"z.enum([{status}]) }}).strict())"
         )
+    if t == "decision_list":
+        return f"z.array(z.enum([{_ts_union_zod(enums['resume_decision'])}]))"
     if t.startswith("enum:"):
         return f"z.enum([{_ts_union_zod(enums[t[5:]])}])"
     raise ValueError(f"unmapped field type {t!r}")
@@ -388,6 +394,8 @@ def _py_type(spec: dict, snake_field: str) -> str:
     if t == "todo_list":
         status = "|".join(f'"{v}"' for v in enums["todo_status"])
         return '[{"content": str, "status": ' + status + "}]"
+    if t == "decision_list":
+        return "list[" + "|".join(f'"{v}"' for v in enums["resume_decision"]) + "]"
     if t.startswith("enum:"):
         return "|".join(f'"{v}"' for v in enums[t[5:]])
     raise ValueError(f"unmapped field type {t!r}")
