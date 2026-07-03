@@ -54,6 +54,7 @@ objects:
   - name: RuntimeConfig
     fields:
       - {name: model, type: object:ModelConfig}
+      - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}
       - {name: skills, type: array:object:SkillMount}
       - {name: mcp, type: array:object:McpServer}

@@ -82,6 +82,7 @@ endpoints:
       - {name: idempotency_key, type: string_nonempty}
       - {name: content, type: string_nonempty}
       - {name: selected_model, type: string_nonempty, optional: true}
+      - {name: entry, type: string_nonempty, optional: true}
     receipt_const: startMessageReceiptSchema
     receipt:
       - {name: run_id, type: string_nonempty}
