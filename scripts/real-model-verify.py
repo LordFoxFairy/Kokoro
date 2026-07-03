@@ -3,6 +3,7 @@
 
 场景 A：明令经 task 工具委派 researcher 子代理 → 断言 subagent.started/finished（+文本流）。
 场景 B：普通提问 → 断言 thinking.delta ≥ 1 且 message.completed 非空。
+场景 C：web_search 真调用（searxng 可达才跑，否则 SKIP）→ 断言 tool.invoked/returned。
 前置：redis:6379 + mongo:27017 + kokoro-agent/.env 真实凭据（OPENAI_BASE_URL/OPENAI_API_KEY）。
 """
 
@@ -156,8 +157,20 @@ def main() -> int:
         "KOKORO_NAMESPACE": "team-rmv",
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
     }
+    searxng_url = os.environ.get("RMV_SEARXNG_URL", "http://127.0.0.1:8888")
+    try:
+        with urllib.request.urlopen(f"{searxng_url}/search?q=ping&format=json", timeout=5) as r:
+            searxng_ok = r.status == 200
+    except Exception:
+        searxng_ok = False
+    search_env = (
+        {"KOKORO_WEB_SEARCH_PROVIDER": "searxng", "KOKORO_WEB_SEARCH_URL": searxng_url}
+        if searxng_ok
+        else {}
+    )
     agent_env = {
         **{k: v for k, v in os.environ.items() if k != "KOKORO_DISABLE_STREAMING"},
+        **search_env,
         "OPENAI_BASE_URL": creds["OPENAI_BASE_URL"],
         "OPENAI_API_KEY": creds["OPENAI_API_KEY"],
         # thinking 通道验证需要流式 + reasoning 抽取包装（ChatDeepSeek）。
@@ -223,13 +236,33 @@ def main() -> int:
         check("A: subagent 文本流出现", subtext >= 1, f"kinds={kinds_a}")
         check("A: run.completed 收尾", kinds_a[-1:] == ["run.completed"], f"kinds={kinds_a}")
 
+        # 场景 C：web_search 真调用（searxng 自托管，无 key）。
+        if not searxng_ok:
+            print("  [SKIP] C: searxng 不可达，web_search 场景跳过")
+        else:
+            sid_c = f"ses_rmv_{uuid.uuid4().hex[:8]}"
+            sse_c = SseReader(f"/sessions/{sid_c}/events")
+            st, receipt = http("POST", f"/sessions/{sid_c}/messages", {
+                "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+                "content": "用 web_search 搜索 langchain deepagents，用一句话告诉我它是什么。",
+            })
+            check("C: POST messages → 202", st == 202, f"{st} {receipt}")
+            events_c = collect_run(sse_c)
+            kinds_c = [k for k, _ in events_c]
+            invoked = [p for k, p in events_c if k == "tool.invoked" and p.get("name") == "web_search"]
+            returned = [p for k, p in events_c if k == "tool.returned" and p.get("name") == "web_search"]
+            check("C: web_search 被调用", bool(invoked), f"kinds={kinds_c}")
+            check("C: web_search 结果回流且非错误",
+                  bool(returned) and returned[-1].get("is_error") is False, str(returned[-1:] or kinds_c))
+            check("C: run.completed 收尾", kinds_c[-1:] == ["run.completed"], f"kinds={kinds_c}")
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nREAL-MODEL VERIFY FAIL — {len(FAILURES)} 项：")
             for f in FAILURES:
                 print(f"  - {f}")
             return 1
-        print("\nREAL-MODEL VERIFY PASS — thinking 通道 + subagent 事件真栈全绿")
+        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search 真栈全绿")
         return 0
     finally:
         session_proc.terminate()

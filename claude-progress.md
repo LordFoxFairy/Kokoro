@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-03 (web_search 真调用点亮 — searxng 自托管，零 key)
+- 本地 docker 起 searxng（kokoro-searxng, :8888, --restart unless-stopped，settings 开 json format）；用户 .env 已配 KOKORO_WEB_SEARCH_PROVIDER=searxng + _URL——web_search 即开即用。
+- scripts/real-model-verify.py 增场景 C（searxng 可达才跑，否则 SKIP）：**16/16 PASS**——glm-5 真模型经 provider 注册表调 web_search（tool.invoked/returned 非错误）+ 原 thinking/subagent 场景回归。
+- 至此三 provider 中开放标准路径（searxng）全链实证；tavily/zhipu 适配器留解析级测试，等 key/资源包。registry 疑问澄清：web/memory 工具实例带装配政策不入常量表，registry 只登记名字（ASSEMBLY_TOOL_NAMES）。
+
 - Date: 2026-07-03 (web 底层工具 + 三次分层纠正定型)
 - **web_fetch/web_search**（agent 9bbfeda→56ab411）：fetch 恒挂载（httpx+bs4，SSRF 防御：DNS 解析后拒非公网/重定向逐跳复检/15s/1MB/24k；KOKORO_WEB_FETCH_ALLOW_PRIVATE=1 供 fake-IP 代理本机——用户机器实证 example.com 解析进 198.18.0.0/15）；search 配置即挂载（无 provider 不挂空壳），工具层零 vendor（inspect 执法测试），适配器注册表 tools/web_search_providers.py（tavily/searxng/zhipu 平权；用户 coding key 无 zhipu 资源包 429/1113 故默认不挂）。
 - **用户三连纠正定型**（tasks/lessons.md"底层工具三问"）：①租户政策不进工具体（memory 改 make_memory_tools(scope) 装配注入）②vendor 不进工具层（web_search 通用化）③配套件归 tools/ 不占一级目录。内建子代理原则同定：只收带真实工具的真能力，researcher 空壳已删，真栈委派走 namespace 预设（12/12 PASS）。
