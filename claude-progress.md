@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-03 (agent 先行①②完成 — MCP live + PEL 死信收养)
+- **MCP live 集成测试**（agent 01bee20）：进程内 FastMCP(streamable-http, stateless) fixture 服务器 × langchain-mcp-adapters 真 HTTP 往返——白名单过滤/mcp__ 重命名/真调用（返回标准 content blocks）/不可达 fail-closed，全部实证且离线进 CI。pyright 收口沿 build_agent.py 先例（文件级最窄豁免，BaseTool.ainvoke 泛型未参数化属第三方边界）。
+- **PEL 死信收养**（agent 3c00387）：redis subscribe 空转间隙 XAUTOCLAIM 收养 idle 超阈值（默认 60s，可配）的未 ack 条目——崩溃消费者的 PEL 不再永久悬挂；下游幂等去重吸收重放。集成测试：A 读未 ack"崩溃"→ B 按 50ms 阈值收养。
+- 门禁：agent 233 pytest + pyright 0 + ruff；跨栈 e2e 回归 PASS；CI 绿。
+- agent 先行余项：前置改参 normalizer（等首个真实工具用例）、e2b 实例池（等部署）、Langfuse HITL trace 连续性（等凭证）。
 - Date: 2026-07-03 (push + CI 首跑全绿 + 真模型冒烟 — **✅ 地基钉死**)
 - 四仓 main 全部 push（agent 39cce02 / session a9ec14e / web d452370 / 父 8cf102e）；GitHub CI 四仓 success（父仓跨仓契约门禁对真远端 main 首跑即绿）。途中修复：web CI 旧 bun 工作流换 npm 四门禁；mac 生成的 package-lock 缺 linux rolldown binding（npm/cli#4828）→ 清库重生成。
 - 真模型冒烟（智谱 glm-5 经 openai 兼容端）：全链 PASS，token_usage {6091/58} agent→session→SSE 贯通（LocalFake 盲区①验掉）。冒烟揭示并已修：v2.1 后模型档位归 session model_policy，agent 的 KOKORO_MODEL env 已死 → README/.env.example/LocalFake 文案同步（39cce02）。thinking 通道（需 reasoning 模型）与 subagent 事件真栈仍未验。
