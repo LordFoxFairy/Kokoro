@@ -1,5 +1,15 @@
 # Claude Progress
 
+- Date: 2026-07-03 (清零轮完成 — **✅ C 记忆 store + 全部已知妥协/盲区清零**)
+- **C 长期记忆**（agent 2e03e72/55eab21/47b35c9）：make_memory_store 三后端与 checkpoint 对齐（memory=InMemoryStore / sqlite=AsyncSqliteStore(<path>.store 独立文件防撞) / mongo=官方 langgraph-store-mongodb，集合 kokoro_agent_memory）；save_memory/search_memory 恒挂载核心工具，store 前缀 (RunContext.namespace, "memories")——真图测试：跨 run 可读 + 双租户隔离 + 错误上 wire + schema 边界矩阵。
+- **截断显性化**（四仓 "Make wire truncation explicit"）：契约 tool.returned 增 per-kind 可选 "truncated?"（缺席=完整，true=4000 护栏截断）；clip_result 返回 (text, bool)；awaiting 帧仅展示裁剪无 truncated 位。14 镜像重生成，golden/agent/session/web 门禁全绿。
+- **豁免清剿**（agent 04f1400）：3 文件 5 规则 → 2 文件 2 规则。结构性消灭：build_agent 去泛型（唯一 schema=RunContext，YAGNI，StateLike/reportPrivateImportUsage 整个消失+双分支合一）；test_context_injection 改 StructuredTool 直构（@tool 重载含 Unknown）；mcp_live 用 TypeAdapter 洗净 content blocks。幸存 2 处（deepagents 未解 ResponseT / BaseTool.ainvoke 裸 dict）锁进 tests/test_boundary_pragmas.py allowlist——新增豁免必改测试=显式评审；type:ignore 行内标记全仓为零同测执法。
+- **真栈盲区压实**（agent 9585431 + 父 29fce91）：实证 GLM 原始 wire 有 reasoning_content(1541 chars) 而 ChatOpenAI 明文拒收（上游 API scope）→ KOKORO_OPENAI_REASONING=1 切 ChatDeepSeek（官方抽取，对 GLM 实证出 reasoning 块）。scripts/real-model-verify.py（glm-5 真栈）：**12/12 PASS**——thinking.delta 全链 + subagent.started/finished/text（researcher, built-in）+ token_usage。途中抓到 provider 内容过滤 400（错误码 1301）被正确 fail-loud 成 run.failed 带原文——管线行为正确，换话题即过。
+- **设计决策入册**（handbook 11 号新注记）：review void-on-terminal 法则 / wire 截断法则 / namespace profile JSON=V1 配置真源+升级路径 / 豁免 allowlist 政策 / 记忆 store 归属。
+- 门禁：agent 257 pytest + pyright 0 + ruff + 边界 allowlist；session 141 + tsc；web tsc + lint；contract golden 20 + check 14 镜像；跨栈 e2e PASS ×3 轮；真模型 12/12。
+- **剩余=全部等外部条件（非缺陷）**：e2b 池（等部署）、Langfuse（等凭证）、canvas/artifact_ref 生产者（P1 产品面）、前置改参 normalizer（等首个真实工具用例）、music/platform（用户令后置）。
+- 计划文档：docs/superpowers/plans/2026-07-03-zero-debt-closeout.md（7 task 全勾）。
+
 - Date: 2026-07-03 (agent 自身完善 A+B 完成 — RuntimeContext 注入 + subagent_create 执法)
 - **A RuntimeContext 注入图运行时**（agent f5312bb）：create_deep_agent(context_schema=RunContext) + 每 run context 值经 astream_events(context=) 全链透传（invoke/resume 双路径）；工具/middleware 经 get_runtime/ToolRuntime.context 读 namespace/session/run 身份（真图行为测试固化）。泛型坑记录：deepagents ContextT bound=StateLike（langgraph.typing 未 re-export，最窄文件级豁免沿 build_agent 先例）；Optional 掺未 bound 泛型解不动→拆分支绑定。
 - **B subagent_create 执法**（agent 9a3cef1）：deny=仅声明集（catalog+wire 预设）可被 task 委派，general-purpose 临时创建 fail-closed 且错误携声明集；ask=task 进 interrupt_on 走现有审批卡（pending 识别集同步含 task）；allow=放行。行为矩阵测试全覆盖。

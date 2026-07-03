@@ -24,7 +24,7 @@
 - 声明集 = catalog.definitions() + wire subagents 名单；策略源 = runtime.permissions.subagent_create。
 - 验收：三档行为矩阵 + deny 下声明内子代理仍可用 + e2e 不回归。
 
-## C. 长期记忆 store 接线（模块文档 Owns memory；kokoro_agent_memory{namespace,...}）
+## C. 长期记忆 store 接线（模块文档 Owns memory；kokoro_agent_memory{namespace,...}）✅
 
 - `create_deep_agent(store=...)`：InMemoryStore（测试）/持久后端按 checkpoint backend 对齐
  （sqlite/mongo 的 langgraph store 可用性**先实证**，不可用则 V1 只接 InMemory + 注记）。

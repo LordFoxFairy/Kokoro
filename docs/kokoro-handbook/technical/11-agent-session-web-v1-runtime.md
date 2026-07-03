@@ -714,3 +714,44 @@ model_policy / permissions 覆盖；本实例租户由 KOKORO_NAMESPACE 决定�
 设计文档：docs/superpowers/specs/2026-07-03-namespace-profile-and-entry-design.md、
 2026-07-03-result-review-pause-design.md。
 ```
+
+## 实现注记（2026-07-03 追加：清零轮——记忆 store / 截断显性化 / 真栈盲区压实）
+
+```text
+长期记忆（模块文档 Owns memory 落地）
+  create_deep_agent(store=)：后端与 checkpoint 对齐（memory=InMemoryStore /
+  sqlite=AsyncSqliteStore(<path>.store) / mongo=官方 langgraph-store-mongodb，
+  集合 kokoro_agent_memory）。工具 save_memory / search_memory 恒挂载（核心工具，
+  与 ask_user_question 同级），store 命名空间前缀 = RunContext.namespace
+  （(namespace, "memories")）——跨租户结构性不可见，跨 run 同 namespace 持久可读。
+
+wire 截断法则
+  tool.returned.truncated（契约可选 bool）：缺席 = 结果完整；true = wire 展示层
+  截断（4000 字符护栏）。完整结果始终在后端（模型侧 ToolMessage 不受影响）；
+  canvas 预览（P1）经 artifact_ref 读后端产物。awaiting 帧的 result 只作展示裁剪，
+  无 truncated 位。
+
+result_review 终局法则（设计决策，非缺陷）
+  run 到达终态时仍未裁决的结果审核 = void-by-design：工具已执行、结果未回流模型，
+  无事后补审通道；web 呈现"运行已结束，该结果未完成审核（工具已执行）"。
+
+thinking 通道（真实模型已验证）
+  GLM/DeepSeek 等 openai 兼容端点的 reasoning_content 被上游 ChatOpenAI 明文拒收
+  （API scope 限定官方 OpenAI 规范）；agent 侧 KOKORO_OPENAI_REASONING=1 切
+  ChatDeepSeek 包装（官方 reasoning 抽取，须配 OPENAI_BASE_URL）。
+  真栈验证：scripts/real-model-verify.py（glm-5：thinking.delta + subagent.started/
+  finished/text 全链 12/12 PASS）。
+
+namespace profile 配置源（V1 法则）
+  JSON 文件 + KOKORO_NAMESPACE 环境变量 = V1 唯一配置真源（单租户实例模型）；
+  多租户上线时的升级路径 = 配置服务/DB 替换 loader（resolve 接口不变）。
+
+第三方边界豁免政策
+  pyright 文件级 pragma 全量清单锁死于 tests/test_boundary_pragmas.py 的 ALLOWED
+  allowlist（现仅 2 处：deepagents 未解 ResponseT 泛型、langchain-core BaseTool.ainvoke
+  裸 dict）；新增豁免必须改该测试 = 显式评审动作。type: ignore / pyright: ignore
+  行内标记全仓为零（同测试执法）。
+
+设计文档：docs/superpowers/specs/2026-07-03-agent-self-completion-design.md、
+docs/superpowers/plans/2026-07-03-zero-debt-closeout.md。
+```
