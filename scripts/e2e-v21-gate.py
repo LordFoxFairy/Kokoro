@@ -165,7 +165,7 @@ def main() -> int:
 
         # 2. ask_user 暂停
         awaiting1 = sse.wait(lambda i: i[1] == "tool.awaiting_approval")
-        check("SSE: ask_user awaiting", awaiting1 is not None and awaiting1[2]["payload"]["kind"] == "ask_user",
+        check("SSE: ask_user awaiting", awaiting1 is not None and awaiting1[2]["payload"]["kind"] == "ask_user_question",
               json.dumps(awaiting1[2]["payload"] if awaiting1 else {}, ensure_ascii=False)[:200])
         st3, body3 = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "again"})
         check("活跃 run 期间新消息 → 409", st3 == 409 and body3.get("error") == "session_run_active", f"{st3} {body3}")
