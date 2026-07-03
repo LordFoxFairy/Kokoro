@@ -125,6 +125,8 @@ def main() -> int:
         "KOKORO_MESSAGE_STORE_BACKEND": "mongo",
         "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
+        # write_file 同时配 审批+审核：批参数 → 执行 → 审结果（串联双暂停，实证缓存防双跑）。
+        "KOKORO_REVIEW_TOOLS": "write_file",
     }
     agent_env = {
         **os.environ,
@@ -198,8 +200,22 @@ def main() -> int:
                       {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
                        "decisions": [{"type": "approve", "tool_id": tool_id2}]})
         check("approve 提交", st7 == 202, str(st7))
+
+        # 3b. 结果审核：批准后工具执行，结果先经人审再回流（respond 替换）。
+        review = sse.wait(lambda i: i[1] == "tool.awaiting_approval" and i[2]["payload"]["kind"] == "result_review")
+        check("SSE: 结果审核暂停（带已执行结果）", review is not None
+              and isinstance(review[2]["payload"].get("result"), str)
+              and review[2]["payload"]["allowed_decisions"] == ["approve", "respond", "reject"],
+              json.dumps(review[2]["payload"] if review else {}, ensure_ascii=False)[:200])
+        st7b, _ = http("POST", f"/sessions/{SID}/runs/{run_id}/control",
+                       {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                        "decisions": [{"type": "respond", "tool_id": tool_id2, "response": "人工替换后的结果"}]})
+        check("审核 respond 替换提交", st7b == 202, str(st7b))
         ret2 = sse.wait(lambda i: i[1] == "tool.returned" and i[2]["payload"]["tool_id"] == tool_id2)
-        check("SSE: write_file 执行返回", ret2 is not None and ret2[2]["payload"].get("is_error") is False)
+        check("SSE: 裁决后 returned=替换文本（responded 标记）", ret2 is not None
+              and ret2[2]["payload"].get("result") == "人工替换后的结果"
+              and ret2[2]["payload"].get("responded") is True,
+              json.dumps(ret2[2]["payload"] if ret2 else {}, ensure_ascii=False)[:160])
 
         # 4. 文本流与终态
         check("SSE: message.delta", sse.wait(lambda i: i[1] == "message.delta") is not None)
