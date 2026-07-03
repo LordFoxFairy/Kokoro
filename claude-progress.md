@@ -1,5 +1,13 @@
 # Claude Progress
 
+- Date: 2026-07-03 (web 底层工具 + 三次分层纠正定型)
+- **web_fetch/web_search**（agent 9bbfeda→56ab411）：fetch 恒挂载（httpx+bs4，SSRF 防御：DNS 解析后拒非公网/重定向逐跳复检/15s/1MB/24k；KOKORO_WEB_FETCH_ALLOW_PRIVATE=1 供 fake-IP 代理本机——用户机器实证 example.com 解析进 198.18.0.0/15）；search 配置即挂载（无 provider 不挂空壳），工具层零 vendor（inspect 执法测试），适配器注册表 tools/web_search_providers.py（tavily/searxng/zhipu 平权；用户 coding key 无 zhipu 资源包 429/1113 故默认不挂）。
+- **用户三连纠正定型**（tasks/lessons.md"底层工具三问"）：①租户政策不进工具体（memory 改 make_memory_tools(scope) 装配注入）②vendor 不进工具层（web_search 通用化）③配套件归 tools/ 不占一级目录。内建子代理原则同定：只收带真实工具的真能力，researcher 空壳已删，真栈委派走 namespace 预设（12/12 PASS）。
+- streams/protocol.py 语义打磨（d555d81）：五方法契约语义写进接口（consumer-group 分摊/ack-收养/至少一次/cursor 不透明）。
+- 门禁：agent 285 pytest + pyright 0 + ruff；跨栈 e2e PASS；真抓取 PASS；CI 全绿。
+- 用户 .env 已配好：KOKORO_OPENAI_REASONING=1 + 流式恢复 + ALLOW_PRIVATE=1（本机 thinking/web_fetch 即开即用）。
+- **下一单**：真栈浏览器全家桶走查（glm-5：thinking 渲染/记忆跨 run/web_fetch 卡片 + 截图）。
+
 - Date: 2026-07-03 (清零轮完成 — **✅ C 记忆 store + 全部已知妥协/盲区清零**)
 - **C 长期记忆**（agent 2e03e72/55eab21/47b35c9）：make_memory_store 三后端与 checkpoint 对齐（memory=InMemoryStore / sqlite=AsyncSqliteStore(<path>.store 独立文件防撞) / mongo=官方 langgraph-store-mongodb，集合 kokoro_agent_memory）；save_memory/search_memory 恒挂载核心工具，store 前缀 (RunContext.namespace, "memories")——真图测试：跨 run 可读 + 双租户隔离 + 错误上 wire + schema 边界矩阵。
 - **截断显性化**（四仓 "Make wire truncation explicit"）：契约 tool.returned 增 per-kind 可选 "truncated?"（缺席=完整，true=4000 护栏截断）；clip_result 返回 (text, bool)；awaiting 帧仅展示裁剪无 truncated 位。14 镜像重生成，golden/agent/session/web 门禁全绿。
