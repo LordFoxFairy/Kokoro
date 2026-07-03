@@ -698,3 +698,19 @@ wire 序列化
   契约 optional 字段的缺席语义 = 字段不出现；null 永不上 wire
   （Pydantic 端 exclude_none，zod 端 .optional()）。
 ```
+
+## 实现注记（2026-07-03 追加：namespace profile 与具名入口）
+
+```text
+RuntimeConfig 的解析来源已落地为 session 的 namespace profile（KOKORO_NAMESPACES_FILE，
+JSON strict schema，启动 fail-fast）：namespace 拥有 skills / mcp / 具名 agent 预设 /
+model_policy / permissions 覆盖；本实例租户由 KOKORO_NAMESPACE 决定，RuntimeContext.namespace
+即该租户键（session 级隔离由 thread_id 承担）。
+
+具名入口：POST messages 可带 entry=<预设名>——该预设的 system_prompt/model 作主 agent
+（RuntimeConfig.system_prompt 上 wire，agent 缺省回内置人格），其余预设仍挂为可委派 subagents。
+未知 entry / 越权 selected_model → 400，不落库。
+
+设计文档：docs/superpowers/specs/2026-07-03-namespace-profile-and-entry-design.md、
+2026-07-03-result-review-pause-design.md。
+```

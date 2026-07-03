@@ -1,5 +1,8 @@
 # Claude Progress
 
+- Date: 2026-07-03 (收尾清账完成 — 系统进入稳定待命态)
+- 用户定调：编排=通用组装+拓展位，已达终态不再加建。收尾三件全清：① resume 续段不再重复宣告 run.started（agent 6ff2012，emitter.at_start）；② result_review 终态收口文案修正"工具已执行"（web f859345）；③ 真栈浏览器走查 review 卡全流程 PASS（问答卡答复→审批卡批准→审核卡展示真实结果→替换文本提交→write_file 显"已人工答复"→终文，console 零错误，截图在 scratchpad）。handbook 11 号补 namespace profile/entry 实现注记。
+- **当前态**：四仓 main 全绿全推送，CI 绿；已知缺陷清零；agent 先行余项全部在等外部条件（真实工具用例/部署/凭证）。等待用户输入：web/产品规划（canvas、studio surface）或 platform 接入（music job 链）。
 - Date: 2026-07-03 (agent 先行①②完成 — MCP live + PEL 死信收养)
 - **MCP live 集成测试**（agent 01bee20）：进程内 FastMCP(streamable-http, stateless) fixture 服务器 × langchain-mcp-adapters 真 HTTP 往返——白名单过滤/mcp__ 重命名/真调用（返回标准 content blocks）/不可达 fail-closed，全部实证且离线进 CI。pyright 收口沿 build_agent.py 先例（文件级最窄豁免，BaseTool.ainvoke 泛型未参数化属第三方边界）。
 - **PEL 死信收养**（agent 3c00387）：redis subscribe 空转间隙 XAUTOCLAIM 收养 idle 超阈值（默认 60s，可配）的未 ack 条目——崩溃消费者的 PEL 不再永久悬挂；下游幂等去重吸收重放。集成测试：A 读未 ack"崩溃"→ B 按 50ms 阈值收养。
