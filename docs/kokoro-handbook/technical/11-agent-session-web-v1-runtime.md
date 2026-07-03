@@ -673,3 +673,28 @@ Redis 清空 live 后，snapshot/replay 仍可恢复历史。
 Production session 不存在 SQLite runtime。
 Production agent 不默认 local_shell。
 ```
+
+## 实现注记（2026-07-03，v2.1 落地）
+
+```text
+契约单源
+  本文的 RunRequest / 事件 / 流名 / HTTP 形状由 contract/spec/*.yaml 统一立法，
+  generate.py 生成三仓 contract/ 镜像并以 check.py 字节 diff 门禁。
+  改协议只走 spec -> regenerate，禁止手改镜像。
+
+tool.awaiting_approval.pending_tool_ids
+  同帧完整待批 tool_id 列表（本文约束的扩展字段）：web 的"凑齐才提交"
+  以契约字段为完备判据，不再内嵌 agent 对齐算法。
+
+RuntimeConfig.checkpointer / store
+  为进程级基础设施选择，不上 wire；agent 按自身部署配置装配。
+
+终态同 commit
+  单机 Mongo（无副本集事务）以固定顺序写（assistant 收口 -> pauses 收口 ->
+  runs.status -> activeRunId 清零 -> terminal event）+ recover 幂等重放收敛实现；
+  生产 replica set 后可升级为多文档事务。
+
+wire 序列化
+  契约 optional 字段的缺席语义 = 字段不出现；null 永不上 wire
+  （Pydantic 端 exclude_none，zod 端 .optional()）。
+```

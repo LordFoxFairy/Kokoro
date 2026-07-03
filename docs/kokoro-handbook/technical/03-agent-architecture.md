@@ -3,6 +3,8 @@
 Agent 模块详案见：[kokoro-agent 技术方案](../modules/kokoro-agent.md)。
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。
+如果你只想快速定位 agent 相关文档，先看
+[Agent 文档地图](13-agent-docs-map.md)。
 
 ## 结论
 

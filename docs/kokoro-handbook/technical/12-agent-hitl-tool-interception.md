@@ -788,3 +788,14 @@ Web:
   不直连 agent/MCP/tool。
   刷新后 pending pause 仍可继续处理。
 ```
+
+## 实现注记（2026-07-03，v2.1 落地）
+
+```text
+tool_call_awaiting 即契约 kind tool.awaiting_approval，payload 增 pending_tool_ids
+（同帧完整待批集合，web staging 的完备判据）。
+respond <-> ask_user 双向校验已在 agent（resume 对齐 fail-loud）与
+session（pending pause allowed_decisions 校验）两端落地，e2e 覆盖反例。
+本文其余语义（middleware 分层 / interrupt_on / pending pause / decision_id 幂等）
+均已按文实现，跨栈门禁：scripts/e2e-v21-gate.py。
+```

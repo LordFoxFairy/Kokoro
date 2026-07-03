@@ -1,8 +1,7 @@
 name: Contract
 
-# 跨仓契约门禁:contract/events.yaml 是单源,verify.py 校验 6 镜像(agent/session/web)一致。
-# 四仓独立(非 submodule),故 CI 把三仓 checkout 进相对路径再跑 verify。
-# 注:这种"跨独立仓校验"的别扭正是 monorepo 收敛的论据(见 quality-assessment 架构打磨项)。
+# 跨仓契约门禁:contract/spec/ 是单源,check.py 重生成 14 镜像并字节比对(agent/session/web)。
+# 四仓独立(非 submodule),故 CI 把三仓 checkout 进相对路径再跑门禁。
 
 on:
   push:
@@ -32,13 +31,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      # agent_wire 反向生成 agent-event.ts 时机读 agent envelope.py 的 Pydantic TypedDict，需 pydantic。
-      - run: pip install pyyaml pydantic pytest
-      - name: contract verify
-        run: python3 contract/verify.py
-      # codegen 门禁：events.yaml 改了但忘了重生成镜像 → --check 非零。
-      - name: contract generate --check
-        run: python3 contract/generate.py --check
-      # 守卫自检：证明 verify 的 drift 检测真的拦得住（掏空 mirror → 报漂移），非恒绿空操作。
-      - name: contract guard self-test
-        run: python3 -m pytest contract/test_contract.py -q
+      - run: pip install pyyaml pytest
+      # 字节级漂移门禁：spec 改了但镜像忘重生成 → 非零退出。
+      - name: contract check (byte diff)
+        run: python3 contract/check.py
+      # 生成器 golden 自检：确定性输出 + 镜像新鲜度 + 词汇不变量。
+      - name: generator golden tests
+        run: python3 -m pytest contract/tests -q

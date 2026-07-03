@@ -7,6 +7,8 @@ HIL 和工具执行前后拦截专项方案见：
 
 本文件是 `kokoro-agent` 专项方案。它只定义 Agent 仓自己的边界、目录、
 模型和运行链路，不替代 `kokoro-session` / `kokoro-web` 文档。
+如果你想先找阅读顺序，见
+[Agent 文档地图](../technical/13-agent-docs-map.md)。
 
 ## 定位
 
@@ -1729,4 +1731,16 @@ P2：
 异步 subagent 调度。
 多模型路由。
 长任务 artifact 结果回写。
+```
+
+## 实现注记（2026-07-03，v2.1 落地）
+
+```text
+wire 类型改为生成物：RawAgentEvent / 入站联合 / 流名常量位于
+kokoro_agent/contract/（由仓根 contract/spec 生成，DO NOT EDIT），
+本文 run/events.py、run/request.py 的手写镜像职责由生成物取代；
+run/ 仅保留非 wire 领域模型。raw 事件面为 14 kind（message.* 词汇，
+含 subagent.text.*），browser 面 15 kind 由 session 合成补齐。
+未创建零消费者的占位文件（lifecycle/definitions/policy 等），
+其职责落在 supervisor / approvals / catalog / sandbox.backend / run_state。
 ```

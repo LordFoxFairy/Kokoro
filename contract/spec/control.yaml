@@ -1,0 +1,116 @@
+# Kokoro control-plane — the ONE truth for inbound run messages.
+#
+# session -> agent. run.request rides the requests stream; run.resume/run.cancel ride
+# the per-run control stream (see streams.yaml). run_id is minted by session; thread_id
+# is the LangGraph configurable.thread_id (V1 value == session_id, named only at the
+# agent boundary). RuntimeConfig/RuntimeContext are already-resolved config, not Hub
+# source data. conversation_id / execution_style / permission_mode are deleted.
+
+enums:
+  mcp_transport: [http, streamable_http]
+  subagent_create: [deny, ask, allow]
+  filesystem_perm: [read_only, workspace_write]
+  backend: [state, local_shell, e2b, custom]
+  resume_decision: [approve, edit, reject, respond]
+
+# Reusable nested object shapes (dependency order: leaves first).
+objects:
+  - name: RunInput
+    fields:
+      - {name: message_id, type: string_nonempty}
+      - {name: content, type: string, optional: true}
+      - {name: content_ref, type: string_nonempty, optional: true}
+      - {name: attachments, type: array:record, optional: true}
+  - name: ModelConfig
+    fields:
+      - {name: provider, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: effort, type: string_nonempty, optional: true}
+  - name: SkillMount
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: path, type: string_nonempty}
+      - {name: lock, type: string_nonempty}
+  - name: McpServer
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: transport, type: enum:mcp_transport}
+      - {name: url, type: string_nonempty}
+      - {name: allowed_tools, type: array:string_nonempty}
+      - {name: timeout_s, type: int, optional: true}
+  - name: SubagentDef
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: description, type: string}
+      - {name: system_prompt, type: string_nonempty}
+      - {name: tools, type: array:string_nonempty}
+      - {name: model, type: object:ModelConfig, optional: true}
+  - name: Permissions
+    fields:
+      - {name: approval_tools, type: array:string_nonempty}
+      - {name: subagent_create, type: enum:subagent_create}
+      - {name: filesystem, type: enum:filesystem_perm}
+  - name: RuntimeConfig
+    fields:
+      - {name: model, type: object:ModelConfig}
+      - {name: tools, type: array:string_nonempty}
+      - {name: skills, type: array:object:SkillMount}
+      - {name: mcp, type: array:object:McpServer}
+      - {name: subagents, type: array:object:SubagentDef}
+      - {name: backend, type: enum:backend}
+      - {name: permissions, type: object:Permissions}
+  - name: RuntimeContext
+    fields:
+      - {name: namespace, type: string_nonempty}
+      - {name: session_id, type: string_nonempty}
+      - {name: site_id, type: string_nonempty, optional: true}
+      - {name: user_id, type: string_nonempty, optional: true}
+      - {name: workspace_id, type: string_nonempty, optional: true}
+      - {name: project_id, type: string_nonempty, optional: true}
+      - {name: recent_messages, type: array:record, optional: true}
+      - {name: summary, type: string, optional: true}
+      - {name: memory_scope, type: string_nonempty, optional: true}
+      - {name: feature_flags, type: record, optional: true}
+
+# Inbound messages, discriminated on `kind`.
+messages:
+  - kind: run.request
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: thread_id, type: string_nonempty}
+      - {name: input, type: object:RunInput}
+      - {name: runtime, type: object:RuntimeConfig}
+      - {name: context, type: object:RuntimeContext}
+      - {name: trace, type: record, optional: true}
+  - kind: run.resume
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: thread_id, type: string_nonempty}
+      - {name: decisions, type: decision_message_list}
+  - kind: run.cancel
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: thread_id, type: string_nonempty}
+
+# ResumeDecision arms, discriminated on `type`.
+resume_decisions:
+  - type: approve
+    fields:
+      - {name: tool_id, type: string_nonempty}
+      - {name: args, type: record, optional: true}
+  - type: edit
+    fields:
+      - {name: tool_id, type: string_nonempty}
+      - {name: args, type: record}
+  - type: reject
+    fields:
+      - {name: tool_id, type: string_nonempty}
+      - {name: reason, type: string, optional: true}
+  - type: respond
+    fields:
+      - {name: tool_id, type: string_nonempty}
+      - {name: response, type: string_nonempty}
+
+notes:
+  run.request.thread_id: "LangGraph configurable.thread_id；V1 取值=session_id，命名只在 agent 边界。"
+  run.request.trace: "观测专用（langfuse_trace_id 等），不参与业务；record 直透。"

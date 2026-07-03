@@ -1,0 +1,115 @@
+# Kokoro session HTTP face — the ONE truth for the endpoints.
+#
+# snake_case everywhere: the HTTP face shares the one wire vocabulary (no camelCase
+# rename layer). POST messages starts a run and returns a 202 receipt; GET /sessions/:id
+# is the authoritative snapshot for hydration; SSE resumes from Last-Event-ID = seq.
+
+last_event_id_header: last-event-id
+# 400 = ZodError / decision error. 409 session_run_active = a non-matching
+# idempotency_key hit a session that already has an active run. 500 = opaque internal.
+error_conflict_code: session_run_active
+
+enums:
+  message_role: [user, assistant]
+  message_status: [pending, streaming, completed, failed]
+  pause_status: [pending, resolved, cancelled, expired]
+  awaiting_kind: [tool_approval, ask_user]
+  resume_decision: [approve, edit, reject, respond]
+
+# Snapshot read-model shapes (dependency order: leaves first). Exported for session/web.
+objects:
+  - name: Risk
+    fields:
+      - {name: level, type: string_nonempty}
+      - {name: source, type: string_nonempty}
+      - {name: reason, type: string_nonempty}
+  - name: SessionMeta
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: title, type: string_nonempty}
+      - {name: owner_id, type: string_nonempty}
+      - {name: created_at, type: string_nonempty}
+      - {name: updated_at, type: string_nonempty}
+  - name: MessageRecord
+    fields:
+      - {name: message_id, type: string_nonempty}
+      - {name: role, type: enum:message_role}
+      - {name: content, type: string}
+      - {name: status, type: enum:message_status}
+      - {name: created_at, type: string_nonempty}
+      - {name: run_id, type: string_nonempty, optional: true}
+  - name: ActiveRun
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: status, type: string_nonempty}
+  - name: PendingPause
+    fields:
+      - {name: pause_id, type: string_nonempty}
+      - {name: run_id, type: string_nonempty}
+      - {name: tool_id, type: string_nonempty}
+      - {name: segment_id, type: string_nonempty}
+      - {name: tool_name, type: string_nonempty}
+      - {name: kind, type: enum:awaiting_kind}
+      - {name: args, type: record}
+      - {name: description, type: string}
+      - {name: allowed_decisions, type: array:enum:resume_decision}
+      - {name: risk, type: object:Risk, optional: true}
+      - {name: editable, type: boolean}
+      - {name: input_schema, type: record, optional: true}
+      - {name: status, type: enum:pause_status}
+      - {name: decision, type: record, optional: true}
+      - {name: created_at, type: string_nonempty}
+      - {name: resolved_at, type: string_nonempty, optional: true}
+  - name: SessionSnapshot
+    fields:
+      - {name: session, type: object:SessionMeta}
+      - {name: messages, type: array:object:MessageRecord}
+      - {name: active_run, type: object:ActiveRun, optional: true}
+      - {name: pending_pauses, type: array:object:PendingPause}
+      # server-internal high-water the snapshot folded to; web never sorts by it.
+      - {name: event_watermark, type: int}
+
+endpoints:
+  start_message:
+    method: POST
+    path_fn: messagesPath
+    path_template: "/sessions/{session_id}/messages"
+    params: [session_id]
+    status: 202
+    body_const: startMessageBodySchema
+    body:
+      - {name: idempotency_key, type: string_nonempty}
+      - {name: content, type: string_nonempty}
+      - {name: selected_model, type: string_nonempty, optional: true}
+    receipt_const: startMessageReceiptSchema
+    receipt:
+      - {name: run_id, type: string_nonempty}
+      - {name: user_message_id, type: string_nonempty}
+      - {name: assistant_message_id, type: string_nonempty}
+  snapshot:
+    method: GET
+    path_fn: snapshotPath
+    path_template: "/sessions/{session_id}"
+    params: [session_id]
+    response_const: sessionSnapshotSchema
+    response_object: SessionSnapshot
+  stream:
+    method: GET
+    path_fn: eventsPath
+    path_template: "/sessions/{session_id}/events"
+    params: [session_id]
+    note: "SSE; Last-Event-ID header carries the last seq the client saw (illegal => snapshot replay)."
+  run_control:
+    method: POST
+    path_fn: controlPath
+    path_template: "/sessions/{session_id}/runs/{run_id}/control"
+    params: [session_id, run_id]
+    status: 202
+    body_const: runControlBodySchema   # discriminated on kind; decision_id = idempotency guard
+    receipt_const: runControlReceiptSchema
+    receipt:
+      - {name: ok, type: literal_true}
+
+error_const: errorResponseSchema
+error:
+  - {name: error, type: string_nonempty}

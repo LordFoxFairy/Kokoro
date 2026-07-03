@@ -1,5 +1,14 @@
 # Claude Progress
 
+- Date: 2026-07-03 (/goal 三仓彻底重写 v2 + handbook 对齐 v2.1 — **✅ 全链完成，四仓 rewrite/v2 分支待合入**)
+- **v2 重写**：contract/ 重建为 spec 四部立法（events/control/streams/http）+ 确定性生成器 + check.py 字节门禁（verify.py 正则解析器/agent_wire 双 master/docs/protocol 手写规范全部退役）；三仓按蓝图推倒重建（agent 执行链路布局+TTL 租约+claim-before-emit、session contract/relay/store/transport/http 五模块+DB-first、web contract/core/engine/ui+显式状态机）。
+- **用户中途纠偏（关键）**：① 必须以 docs/kokoro-handbook（ADR-004/11/12/03/modules）为法——v2 撞了禁止项（conversationId/permissionMode）、错杀了 handbook P0 脚手架；② 业务编排=通用 Agent 层级调度专业能力（job 工具/subagent/skill/MCP），Studio=专业 agent 作主 agent，swarm 降 P2；③ 禁 workflow/team 模式（三线并行撞 session limit 全灭），改主控直施 + 单 subagent 串行。教训均入 memory。
+- **v2.1 对齐**：RunRequest→{run_id,thread_id,input,runtime(RuntimeConfig),context(RuntimeContext 含 namespace),trace}；事件词汇 message.*，raw 14/browser 15（session 合成 session.created/run.created 带真实元数据）；独立 control 流；session 恢复 pending_pauses 校验（自有投影非第二真理源）+ 五集合 + snapshot 端点 + 准入/幂等；agent 回归 handbook 布局 + ToolPolicyMiddleware（真实行为）+ skills mount(lock 校验 fail-closed) + MCP(langchain-mcp-adapters, live smoke 单列) + namespace 隔离（checkpoint thread_id 前缀）+ respond↔ask_user 双向 fail-loud；web snapshot-first 水合 + 双 HITL 卡（approval-card/ask-user-card）+ decision_id 幂等。
+- **跨栈 e2e（scripts/e2e-v21-gate.py，真 redis+mongo）23/23 绿**，途中抓获并修复 3 个真跨栈缺陷：wire 上 optional None 被序列化成 null 被 zod .optional() 拒收（agent emit exclude_none + 回归测试）；session 默认审批集缺 write_file；LocalFake hitl 脚本无接线开关（KOKORO_LOCAL_FAKE_SCRIPT=hitl）。
+- **门禁终值**：contract golden 20 + 14 mirrors 字节稳定；agent 208 pytest(redis/mongo 实跑)+pyright 0+ruff @ 83f40d0；session 127+tsc+eslint @ 2d54a73；web 166+tsc+eslint+build @ 8ec9932；父仓 @ 5fae9c6（含 handbook 三处实现注记反哺）。
+- **待用户**：① 四仓 rewrite/v2 合入 main 的方式（merge/squash/PR）与旧数据清库确认（新 schema 与旧 Mongo 事件史不互通，已按"清库重来"实施）；② 后续单列：swarm P2、music 垂类 job 工具（编排参考实现）、MCP live smoke、真浏览器联调走查。
+- 注意：docker 容器 kokoro-e2e-redis/mongo 已停；handbook 里用户未提交的 3 处文档地图链接已随 docs 提交一并入库。
+
 - Date: 2026-06-20 (用户驱动 DDD 审查闭环 — **✅ 4 PR 全合入 main + 三仓 main 同步**)
 - **承上(/goal 深度重构后续)**。用户从 `agent_builder.py` 观察「多个相似 class+函数混在一起、本质 dataclass」切入,引出系统性 DDD 审查:依赖方向(domain←application←infra←interfaces)+ 文件内职责混杂 + 框架类型钻进签名 + God object。
 - **PR#20 agent 端口上移 application(`36e3700`)**:`agent_builder`(infra)此前既定义 application 消费的强类型 port(`EventStreamingAgent`/`AgentInvokeInput`)又混 builder 构造,致 application/agent_factory+run_agent 反向 import infra 取 port(违 DIP)。新建 `application/agent_ports.py` 承载 port;infra 只留框架接线+builder+内部契约 `AsyncRunner`(仅 infra runtime_subagent 消费,正确留 infra)。

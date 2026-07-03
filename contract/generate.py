@@ -1,496 +1,825 @@
 #!/usr/bin/env python3
-"""Deterministic code generator for the 13-kind event contract.
-
-contract/events.yaml is the single source. This emits the schema mirror files
-(no-compat clean regeneration; behavior-equivalence verified by each repo's test
-suite + contract/verify.py + the SSE loopback gate). Run `--check` in CI to fail
-on drift between generated output and the committed files.
-
-  python3 contract/generate.py          # write the mirror files
-  python3 contract/generate.py --check   # diff generated vs disk, non-zero on drift
-
-Design: docs/superpowers/specs/2026-06-14-contract-codegen-design.md
-"""
+"""Deterministic codegen: contract/spec/*.yaml -> the three repos' contract/ mirrors."""
 
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
-YAML_PATH = Path(__file__).resolve().parent / "events.yaml"
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+SPEC = HERE / "spec"
 
-WEB_RENDER_TS = ROOT / "kokoro-web/src/domain/session-stream-event.ts"
-WEB_SCHEMA_TS = ROOT / "kokoro-web/src/infrastructure/transport-event-schema.ts"
-SESSION_AGENT_EVENT_TS = ROOT / "kokoro-session/src/domain/agent-event.ts"
-SESSION_EVENT_TS = ROOT / "kokoro-session/src/domain/session-event.ts"
-AGENT_EVENT_PY = ROOT / "kokoro-agent/src/kokoro_agent/application/events/agent_event.py"
+AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
+SESSION = ROOT / "kokoro-session/src/contract"
+WEB = ROOT / "kokoro-web/src/contract"
 
-GENERATED_HEADER_TS = (
-    "// DO NOT EDIT — generated from contract/events.yaml by contract/generate.py.\n"
-    "// Run `python3 contract/generate.py` after changing the contract.\n"
-)
-GENERATED_HEADER_PY = (
-    "# DO NOT EDIT — generated from contract/events.yaml by contract/generate.py.\n"
-    "# Run `python3 contract/generate.py` after changing the contract.\n"
-)
+EVENTS_SRC = "contract/spec/events.yaml"
+CONTROL_SRC = "contract/spec/control.yaml"
+STREAMS_SRC = "contract/spec/streams.yaml"
+HTTP_SRC = "contract/spec/http.yaml"
 
 
-def load_spec() -> dict:
-    return yaml.safe_load(YAML_PATH.read_text())
+def load(name: str) -> dict:
+    return yaml.safe_load((SPEC / name).read_text())
 
 
-def _camel_to_snake(name: str) -> str:
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+def py_header(src: str) -> str:
+    return (
+        f"# GENERATED — DO NOT EDIT. Source: {src}\n"
+        "# Regenerate: python3 contract/generate.py\n"
+    )
 
 
-def _field_type(spec: dict, snake_field: str, view: str) -> str:
-    """Abstract type for a field in a view: view override > field_types > default."""
-    override = spec.get("view_field_types", {}).get(view, {})
-    if snake_field in override:
-        return override[snake_field]
-    return spec.get("field_types", {}).get(snake_field, "string_nonempty")
+def ts_header(src: str) -> str:
+    return (
+        f"// GENERATED — DO NOT EDIT. Source: {src}\n"
+        "// Regenerate: python3 contract/generate.py\n"
+    )
 
 
-def _ts_of(spec: dict, t: str) -> str:
-    enums = spec["enums"]
-    if t in ("string_nonempty", "string"):
-        return "string"
-    if t == "boolean":
-        return "boolean"
-    if t == "record":
-        return "Record<string, unknown>"
-    if t == "unknown":
-        return "unknown"
-    if t == "array_unknown":
-        return "unknown[]"
-    if t == "todo_list":
-        return "SessionTodo[]"
-    if t == "decision_list":
-        return "SessionResumeDecision[]"
-    if t == "enum:message_role":
-        return "SessionMessageRole"
-    if t == "enum:run_completed_status":
-        return "SessionRunCompletedStatus"
-    if t.startswith("enum:"):
-        return " | ".join(f'"{v}"' for v in enums[t[5:]])
-    raise ValueError(f"unmapped field type {t!r}")
+def pascal(name: str) -> str:
+    return "".join(p.capitalize() for p in _split(name))
 
 
-def _ts_type(spec: dict, camel_field: str, view: str = "render") -> str:
-    return _ts_of(spec, _field_type(spec, _camel_to_snake(camel_field), view))
+def camel(name: str) -> str:
+    parts = _split(name)
+    head = parts[0][:1].lower() + parts[0][1:]
+    return head + "".join(p.capitalize() for p in parts[1:])
 
 
-def _ts_union(values: list[str]) -> str:
-    return " | ".join(f'"{v}"' for v in values)
+def _split(name: str) -> list[str]:
+    out: list[str] = []
+    for part in name.replace(".", "_").split("_"):
+        out.append(part)
+    return out
 
 
-def _render_arms(spec: dict) -> list[tuple[str, list[str]]]:
-    """(dash-kind, camelCase payload) for every projected render arm, yaml order."""
-    arms: list[tuple[str, list[str]]] = []
-    for entry in spec["kinds"].values():
-        r = entry.get("render")
-        if not r or r.get("absent"):
-            continue
-        arms.append((r["kind"], list(r.get("payload") or [])))
-    for node in spec["agui_only"].values():
-        r = node["render"]
-        if r.get("absent"):
-            continue
-        arms.append((r["kind"], list(r.get("payload") or [])))
-    return arms
-
-
-def emit_web_render(spec: dict) -> str:
-    enums = spec["enums"]
-    optional = set(spec.get("render_optional") or [])
-    notes = spec.get("notes", {})
-    env = spec["envelope"]["render"]  # [eventId, seq, sessionId, conversationId, runId]
-
-    lines: list[str] = [GENERATED_HEADER_TS.rstrip("\n"), ""]
-    lines.append(f"export type SessionMessageRole = {_ts_union(enums['message_role'])}")
-    lines.append("")
-    lines.append(f"export type SessionTodoStatus = {_ts_union(enums['todo_status'])}")
-    lines.append("")
-    lines.append(f"export type SessionResumeDecision = {_ts_union(enums['resume_decision'])}")
-    lines.append("")
-    lines.append(f"export type SessionRunCompletedStatus = {_ts_union(enums['run_completed_status'])}")
-    lines.append("")
-    lines.append("export type SessionTodo = {")
-    lines.append("  content: string")
-    lines.append("  status: SessionTodoStatus")
-    lines.append("}")
-    lines.append("")
-    if "envelope.seq" in notes:
-        lines.append(f"// {notes['envelope.seq']}")
-    lines.append("export type SessionStreamEvent =")
-
-    arms = _render_arms(spec)
-    for i, (kind, payload) in enumerate(arms):
-        lines.append("  | {")
-        lines.append(f'      kind: "{kind}"')
-        # envelope fields: eventId, seq (number), the rest strings
-        for field_name in env:
-            ts = "number" if field_name == "seq" else "string"
-            lines.append(f"      {field_name}: {ts}")
-        for camel in payload:
-            opt = "?" if camel in optional else ""
-            lines.append(f"      {camel}{opt}: {_ts_type(spec, camel)}")
-        lines.append("    }")
-    return "\n".join(lines) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# web transport-event-schema.ts (agui-out wire-in, Zod + web-extra optionals)
-# --------------------------------------------------------------------------- #
-
-_ENVELOPE_ZOD = {
-    "event_id": "z.string().min(1)",
-    "seq": "z.number().int().nonnegative()",
-    "session_id": "z.string().min(1)",
-    "conversation_id": "z.string().min(1)",
-    "run_id": "z.string().min(1)",
-    "timestamp": "z.string().datetime()",
-}
-
-
-def _zod_of(spec: dict, t: str) -> str:
-    enums = spec["enums"]
-    if t == "string_nonempty":
-        return "z.string().min(1)"
-    if t == "string":
-        return "z.string()"
-    if t == "boolean":
-        return "z.boolean()"
-    if t == "record":
-        return "z.record(z.unknown())"
-    if t == "unknown":
-        return "z.unknown()"
-    if t == "array_unknown":
-        return "z.array(z.unknown())"
-    if t == "todo_list":
-        status = _ts_union_zod(enums["todo_status"])
-        return (
-            "z.array(z.object({ content: z.string(), status: "
-            f"z.enum([{status}]) }}).strict())"
-        )
-    if t == "decision_list":
-        return f"z.array(z.enum([{_ts_union_zod(enums['resume_decision'])}]))"
-    if t.startswith("enum:"):
-        return f"z.enum([{_ts_union_zod(enums[t[5:]])}])"
-    raise ValueError(f"unmapped field type {t!r}")
-
-
-def _zod_type(spec: dict, snake_field: str, view: str) -> str:
-    return _zod_of(spec, _field_type(spec, snake_field, view))
-
-
-def _ts_union_zod(values: list[str]) -> str:
+def enum_lit(values: list[str]) -> str:
     return ", ".join(f'"{v}"' for v in values)
 
 
-def _event_const(event: str) -> str:
-    parts = re.split(r"[.\-]", event)
-    return parts[0] + "".join(p.capitalize() for p in parts[1:]) + "Schema"
+# --------------------------------------------------------------------------- #
+# abstract type system: scalar | enum:<n> | array:<inner> | object:<Name>
+# --------------------------------------------------------------------------- #
+
+_ZOD_SCALAR = {
+    "string_nonempty": "z.string().min(1)",
+    "string": "z.string()",
+    "boolean": "z.boolean()",
+    "int": "z.number().int()",
+    "record": "z.record(z.unknown())",
+    "unknown": "z.unknown()",
+    "literal_true": "z.literal(true)",
+}
+_PY_SCALAR = {
+    "string_nonempty": "NonEmptyStr",
+    "string": "str",
+    "boolean": "bool",
+    "int": "int",
+    "record": "dict[str, JsonValue]",
+    "unknown": "JsonValue",
+}
 
 
-def _agui_events(spec: dict, *, web_extra: bool) -> list[tuple[str, list[tuple[str, bool]]]]:
-    """(event, [(field, optional)]) for the agui-out view, agui_only first then kinds.
-
-    web_extra=True appends web-tolerated optional fields (web wire-in only).
-    """
-    out: list[tuple[str, list[tuple[str, bool]]]] = []
-
-    def fields(node: dict) -> list[tuple[str, bool]]:
-        base = [(f, False) for f in (node.get("payload") or [])]
-        extra = (
-            [(f, True) for f in (node.get("agui_out_web_extra") or [])]
-            if web_extra
-            else []
-        )
-        return base + extra
-
-    for event, node in spec["agui_only"].items():
-        out.append((event, fields(node["agui_out"])))
-    for entry in spec["kinds"].values():
-        ag = entry.get("agui_out")
-        if ag and "event" in ag:
-            out.append((ag["event"], fields(ag)))
-    return out
+def zod_type(t: str, enums: dict) -> str:
+    if t in _ZOD_SCALAR:
+        return _ZOD_SCALAR[t]
+    if t.startswith("enum:"):
+        return f"z.enum([{enum_lit(enums[t[5:]])}])"
+    if t.startswith("array:"):
+        return f"z.array({zod_type(t[6:], enums)})"
+    if t.startswith("object:"):
+        return f"{camel(t[7:])}Schema"
+    raise ValueError(f"unmapped zod type {t!r}")
 
 
-def emit_web_schema(spec: dict) -> str:
+def enum_alias(name: str) -> str:
+    # allowed_decisions reuses resume_decision but reads clearer as AllowedDecision.
+    return "AllowedDecision" if name == "resume_decision" else pascal(name)
+
+
+def py_type(t: str, aliases: dict[str, str]) -> str:
+    if t in _PY_SCALAR:
+        return _PY_SCALAR[t]
+    if t.startswith("enum:"):
+        return aliases[t[5:]]
+    if t.startswith("array:"):
+        return f"list[{py_type(t[6:], aliases)}]"
+    if t.startswith("object:"):
+        return t[7:]
+    raise ValueError(f"unmapped python type {t!r}")
+
+
+def enum_names_in(types: list[str]) -> list[str]:
+    seen: list[str] = []
+    for t in types:
+        inner = t
+        while inner.startswith("array:"):
+            inner = inner[6:]
+        if inner.startswith("enum:"):
+            name = inner[5:]
+            if name not in seen:
+                seen.append(name)
+    return seen
+
+
+# --------------------------------------------------------------------------- #
+# field emission
+# --------------------------------------------------------------------------- #
+
+
+def py_field(f: dict, aliases: dict[str, str]) -> str:
+    base = py_type(f["type"], aliases)
+    if f.get("optional") or f.get("nullable"):
+        base = f"{base} | None"
+    suffix = " = None" if f.get("optional") else ""
+    return f"    {f['name']}: {base}{suffix}"
+
+
+def ts_field(f: dict, enums: dict) -> str:
+    z = zod_type(f["type"], enums)
+    if f.get("nullable"):
+        z += ".nullable()"
+    if f.get("optional"):
+        z += ".optional()"
+    return f"{f['name']}: {z}"
+
+
+# --------------------------------------------------------------------------- #
+# object emission
+# --------------------------------------------------------------------------- #
+
+
+def py_object(obj: dict, aliases: dict[str, str]) -> list[str]:
+    L = [f"class {obj['name']}(StrictModel):"]
+    fields = obj.get("fields") or []
+    if not fields:
+        L.append("    pass")
+        return L
+    L += [py_field(f, aliases) for f in fields]
+    return L
+
+
+def ts_object(obj: dict, enums: dict, *, export: bool) -> list[str]:
+    const = f"{camel(obj['name'])}Schema"
+    kw = "export const" if export else "const"
+    fields = obj.get("fields") or []
+    if not fields:
+        L = [f"{kw} {const} = z.object({{}}).strict()"]
+    else:
+        L = [f"{kw} {const} = z", "  .object({"]
+        L += [f"    {ts_field(f, enums)}," for f in fields]
+        L += ["  })", "  .strict()"]
+    if export:
+        L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
+    return L
+
+
+# --------------------------------------------------------------------------- #
+# events: payload field resolution
+# --------------------------------------------------------------------------- #
+
+
+def event_field_type(spec: dict, field: str) -> str:
+    return spec["field_types"].get(field, "string_nonempty")
+
+
+def event_payload_fields(spec: dict, payload: list[str]) -> list[dict]:
+    optional = set(spec.get("payload_optional") or [])
+    nullable = set(spec.get("payload_nullable") or [])
+    return [
+        {
+            "name": name,
+            "type": event_field_type(spec, name),
+            "optional": name in optional,
+            "nullable": name in nullable,
+        }
+        for name in payload
+    ]
+
+
+def events_enum_aliases(spec: dict) -> dict[str, str]:
+    types = [f["type"] for obj in spec["objects"] for f in obj["fields"]]
+    for entry in spec["raw_kinds"]:
+        types += [event_field_type(spec, f) for f in (entry.get("payload") or [])]
+    return {name: enum_alias(name) for name in enum_names_in(types)}
+
+
+# --------------------------------------------------------------------------- #
+# agent/contract/events.py
+# --------------------------------------------------------------------------- #
+
+_PY_PREAMBLE = [
+    "from typing import Annotated, Literal, Union",
+    "",
+    "from pydantic import BaseModel, ConfigDict, Field, JsonValue, StringConstraints, TypeAdapter",
+    "",
+    "NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]",
+]
+
+
+def emit_events_py(spec: dict) -> str:
+    enums = spec["enums"]
     notes = spec.get("notes", {})
-    events = _agui_events(spec, web_extra=True)
-    L: list[str] = [GENERATED_HEADER_TS.rstrip("\n"), "", 'import { z } from "zod"', ""]
+    aliases = events_enum_aliases(spec)
 
-    # envelope schema
-    L.append("const eventEnvelopeSchema = z")
-    L.append("  .object({")
-    L.append("    event: z.enum([")
-    for event, _ in events:
-        L.append(f'      "{event}",')
-    L.append("    ]),")
-    for f in spec["envelope"]["agui_out"]:
-        if f == "seq" and "envelope.seq" in notes:
-            L.append(f"    // {notes['envelope.seq']}")
-        L.append(f"    {f}: {_ENVELOPE_ZOD[f]},")
-    L.append("  })")
-    L.append("  .strict()")
+    L = [py_header(EVENTS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
+    L += _PY_PREAMBLE
+    L.append("NonNegInt = Annotated[int, Field(ge=0)]")
     L.append("")
+    for name, alias in aliases.items():
+        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
+    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
 
-    for event, payload in events:
-        L.append(f"const {_event_const(event)} = eventEnvelopeSchema.extend({{")
-        L.append(f'  event: z.literal("{event}"),')
-        L.append("  payload: z")
-        L.append("    .object({")
-        payload_optional = set(spec.get("payload_optional") or [])
-        for fname, optional in payload:
-            note = notes.get(f"{event}.{fname}")
+    for obj in spec["objects"]:
+        L += ["", ""] + py_object(obj, aliases)
+
+    for entry in spec["raw_kinds"]:
+        kind = entry["kind"]
+        fields = event_payload_fields(spec, entry.get("payload") or [])
+        L += ["", "", f"class {pascal(kind)}Payload(StrictModel):"]
+        if not fields:
+            L.append("    pass")
+            continue
+        for f in fields:
+            note = notes.get(f"{kind}.{f['name']}")
             if note:
-                L.append(f"      // {note}")
-            opt = ".optional()" if optional or fname in payload_optional else ""
-            L.append(f"      {fname}: {_zod_type(spec, fname, 'web')}{opt},")
-        L.append("    })")
-        L.append("    .strict(),")
-        L.append("})")
+                L.append(f"    # {note}")
+            L.append(py_field(f, aliases))
+
+    for entry in spec["raw_kinds"]:
+        name = pascal(entry["kind"])
+        L += [
+            "",
+            "",
+            f"class {name}(StrictModel):",
+            f'    kind: Literal["{entry["kind"]}"]',
+            "    run_id: NonEmptyStr",
+            "    index: NonNegInt",
+            "    timestamp: int",
+            f"    payload: {name}Payload",
+        ]
+
+    names = [pascal(e["kind"]) for e in spec["raw_kinds"]]
+    L += ["", "", "AgentEvent = Annotated[", "    Union["]
+    L += [f"        {n}," for n in names]
+    L += ["    ],", '    Field(discriminator="kind"),', "]", ""]
+    L.append("agent_event_adapter: TypeAdapter[AgentEvent] = TypeAdapter(AgentEvent)")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# agent/contract/control.py
+# --------------------------------------------------------------------------- #
+
+
+def control_enum_aliases(spec: dict) -> dict[str, str]:
+    types = [f["type"] for obj in spec["objects"] for f in obj["fields"]]
+    for msg in spec["messages"]:
+        types += [f["type"] for f in msg["fields"] if f["type"] != "decision_message_list"]
+    return {name: enum_alias(name) for name in enum_names_in(types)}
+
+
+def emit_control_py(spec: dict) -> str:
+    enums = spec["enums"]
+    aliases = control_enum_aliases(spec)
+
+    L = [py_header(CONTROL_SRC).rstrip("\n"), "from __future__ import annotations", ""]
+    L += _PY_PREAMBLE
+    L.append("")
+    for name, alias in aliases.items():
+        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
+    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
+
+    for obj in spec["objects"]:
+        L += ["", ""] + py_object(obj, aliases)
+
+    arm_names = []
+    for arm in spec["resume_decisions"]:
+        cls = f"{arm['type'].capitalize()}Decision"
+        arm_names.append(cls)
+        L += ["", "", f"class {cls}(StrictModel):", f'    type: Literal["{arm["type"]}"]']
+        L += [py_field(f, aliases) for f in arm["fields"]]
+
+    L += ["", "", "ResumeDecision = Annotated[", "    Union[" + ", ".join(arm_names) + "],", '    Field(discriminator="type"),', "]"]
+
+    msg_names = []
+    for msg in spec["messages"]:
+        cls = pascal(msg["kind"])
+        msg_names.append(cls)
+        L += ["", "", f"class {cls}(StrictModel):", f'    kind: Literal["{msg["kind"]}"]']
+        for f in msg["fields"]:
+            if f["type"] == "decision_message_list":
+                L.append(f"    {f['name']}: Annotated[list[ResumeDecision], Field(min_length=1)]")
+            else:
+                L.append(py_field(f, aliases))
+
+    L += ["", "", "InboundMessage = Annotated[", "    Union[" + ", ".join(msg_names) + "],", '    Field(discriminator="kind"),', "]", ""]
+    L.append("inbound_adapter: TypeAdapter[InboundMessage] = TypeAdapter(InboundMessage)")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# agent/contract/streams.py
+# --------------------------------------------------------------------------- #
+
+
+def emit_streams_py(spec: dict) -> str:
+    s = spec["streams"]
+    L = [py_header(STREAMS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
+    L += [
+        f'{s["requests"]["const"]} = "{s["requests"]["name"]}"',
+        f'CONSUMER_GROUP = "{spec["consumer_group"]}"',
+        f'REQUESTS_MAXLEN = {s["requests"]["maxlen"]}',
+        f'RUN_EVENTS_MAXLEN = {s["run_events"]["maxlen"]}',
+        f'RUN_CONTROL_MAXLEN = {s["run_control"]["maxlen"]}',
+        f'LIVE_MAXLEN = {s["live"]["maxlen"]}',
+        f'BLOCK_MS = {spec["block_ms"]}',
+        "",
+        "",
+        "def run_events_stream(run_id: str) -> str:",
+        f'    return f"{s["run_events"]["template"]}"',
+        "",
+        "",
+        "def run_control_stream(run_id: str) -> str:",
+        f'    return f"{s["run_control"]["template"]}"',
+        "",
+        "",
+        "def live_stream(session_id: str) -> str:",
+        f'    return f"{s["live"]["template"]}"',
+        "",
+        "",
+        "def event_id(run_id: str, index: int) -> str:",
+        '    return f"{run_id}:{index}"',
+        "",
+        "",
+        "def lease_key(run_id: str) -> str:",
+        f'    return f"{spec["lease_key_template"]}"',
+    ]
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# TS events: shared payload consts + discriminated envelope union
+# --------------------------------------------------------------------------- #
+
+
+def _ts_payload_const(spec: dict, kind: str, fields: list[dict]) -> tuple[str, list[str]]:
+    enums = spec["enums"]
+    notes = spec.get("notes", {})
+    const = f"{camel(kind)}Payload"
+    if not fields:
+        return const, [f"const {const} = z.object({{}}).strict()"]
+    L = [f"const {const} = z", "  .object({"]
+    for f in fields:
+        note = notes.get(f"{kind}.{f['name']}")
+        if note:
+            L.append(f"    // {note}")
+        L.append(f"    {ts_field(f, enums)},")
+    L += ["  })", "  .strict()"]
+    return const, L
+
+
+def _ts_events_file(spec: dict, *, kinds: list[str], payloads: dict[str, list[dict]], export_const: str, envelope: list[str]) -> list[str]:
+    enums = spec["enums"]
+    L: list[str] = []
+    for obj in spec["objects"]:
+        L += ts_object(obj, enums, export=False)
+        L.append("")
+    consts: dict[str, str] = {}
+    for kind in kinds:
+        const, defn = _ts_payload_const(spec, kind, payloads[kind])
+        consts[kind] = const
+        L += defn
+        L.append("")
+    L.append("const envelope = z")
+    L.append("  .object({")
+    L += [f"    {line}" for line in envelope]
+    L += ["  })", "  .strict()", ""]
+    L.append(f'export const {export_const} = z.discriminatedUnion("kind", [')
+    for kind in kinds:
+        L.append(f'  envelope.extend({{ kind: z.literal("{kind}"), payload: {consts[kind]} }}),')
+    L.append("])")
+    return L
+
+
+def emit_wire_events_ts(spec: dict) -> str:
+    kinds = [e["kind"] for e in spec["raw_kinds"]]
+    payloads = {e["kind"]: event_payload_fields(spec, e.get("payload") or []) for e in spec["raw_kinds"]}
+    envelope = [
+        "run_id: z.string().min(1),",
+        "index: z.number().int().nonnegative(),",
+        "timestamp: z.number().int(),",
+    ]
+    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+    L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="wireEventSchema", envelope=envelope)
+    L += [
+        "",
+        "export type WireEvent = z.infer<typeof wireEventSchema>",
+        'export type WireEventKind = WireEvent["kind"]',
+        "",
+        "export function parseWireEvent(input: unknown): WireEvent {",
+        "  return wireEventSchema.parse(input)",
+        "}",
+    ]
+    return "\n".join(L) + "\n"
+
+
+def _browser_payloads(spec: dict) -> dict[str, list[dict]]:
+    by_kind = {e["kind"]: e.get("payload") or [] for e in spec["raw_kinds"]}
+    by_kind.update({e["kind"]: e.get("payload") or [] for e in spec["synthetic_kinds"]})
+    return {k: event_payload_fields(spec, by_kind[k]) for k in spec["browser_order"]}
+
+
+def emit_session_events_ts(spec: dict) -> str:
+    kinds = list(spec["browser_order"])
+    payloads = _browser_payloads(spec)
+    envelope = [
+        "event_id: z.string().min(1),",
+        "seq: z.number().int().nonnegative(),",
+        "session_id: z.string().min(1),",
+        "run_id: z.string().min(1),",
+        "timestamp: z.string().min(1),",
+    ]
+    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+    L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="sessionEventSchema", envelope=envelope)
+    L += [
+        "",
+        "export type SessionEvent = z.infer<typeof sessionEventSchema>",
+        'export type SessionEventKind = SessionEvent["kind"]',
+        "",
+        "export function parseSessionEvent(input: unknown): SessionEvent {",
+        "  return sessionEventSchema.parse(input)",
+        "}",
+    ]
+    return "\n".join(L) + "\n"
+
+
+def emit_event_names_ts(spec: dict) -> str:
+    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", "export const SESSION_EVENT_NAMES = ["]
+    for kind in spec["browser_order"]:
+        L.append(f'  "{kind}",')
+    L += ["] as const", "", "export type SessionEventName = (typeof SESSION_EVENT_NAMES)[number]"]
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# session + web /contract/control.ts  (byte-identical)
+# --------------------------------------------------------------------------- #
+
+
+def emit_control_ts(spec: dict) -> str:
+    enums = spec["enums"]
+    L = [ts_header(CONTROL_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+
+    for obj in spec["objects"]:
+        L += ts_object(obj, enums, export=True)
         L.append("")
 
-    L.append("const sessionEventSchema = z.union([")
-    for event, _ in events:
-        L.append(f"  {_event_const(event)},")
-    L.append("])")
-    L.append("")
-    L.append("export type SessionTransportEvent = z.infer<typeof sessionEventSchema>")
-    L.append("")
-    L.append("export function parseTransportEvent(input: unknown): SessionTransportEvent {")
-    L.append("  return sessionEventSchema.parse(input)")
-    L.append("}")
-    L.append("")
-    # Single source for the live EventSource's named listeners: a hand-kept parallel
-    # list silently drops any event kind it forgets (the live stream uses named SSE
-    # events), so derive it from the contract here.
-    L.append("export const transportEventNames = [")
-    for event, _ in events:
-        L.append(f'  "{event}",')
-    L.append("] as const")
+    arm_consts = []
+    for arm in spec["resume_decisions"]:
+        const = f"{arm['type']}DecisionSchema"
+        arm_consts.append(const)
+        parts = [f'type: z.literal("{arm["type"]}")']
+        parts += [ts_field(f, enums) for f in arm["fields"]]
+        L.append(f"const {const} = z.object({{ {', '.join(parts)} }}).strict()")
+    L.append('export const resumeDecisionSchema = z.discriminatedUnion("type", [')
+    L += [f"  {c}," for c in arm_consts]
+    L += [
+        "])",
+        "export type ResumeDecision = z.infer<typeof resumeDecisionSchema>",
+        'export type ResumeDecisionType = ResumeDecision["type"]',
+        "",
+    ]
+
+    for msg in spec["messages"]:
+        const = f"{camel(msg['kind'])}Schema"
+        L.append(f"export const {const} = z")
+        L.append("  .object({")
+        L.append(f'    kind: z.literal("{msg["kind"]}"),')
+        for f in msg["fields"]:
+            if f["type"] == "decision_message_list":
+                L.append(f"    {f['name']}: z.array(resumeDecisionSchema).min(1),")
+            else:
+                L.append(f"    {ts_field(f, enums)},")
+        L += ["  })", "  .strict()"]
+        L.append(f"export type {pascal(msg['kind'])} = z.infer<typeof {const}>")
+        L.append("")
+
+    L.append('export const inboundMessageSchema = z.discriminatedUnion("kind", [')
+    L += [f"  {camel(m['kind'])}Schema," for m in spec["messages"]]
+    L += ["])", "export type InboundMessage = z.infer<typeof inboundMessageSchema>"]
     return "\n".join(L) + "\n"
 
 
 # --------------------------------------------------------------------------- #
-# session agent-event.ts (agent-out re-validation, Zod by "kind") +
-# session session-event.ts (agui-out, Zod by "event")
+# session/contract/streams.ts
 # --------------------------------------------------------------------------- #
 
-_ENVELOPE_ZOD_SESSION = {
-    "event_id": "z.string().min(1)",
-    "seq": "z.number().int().nonnegative()",
-    "session_id": "z.string().min(1)",
-    "conversation_id": "z.string().min(1)",
-    "run_id": "z.string().min(1)",
-    "timestamp": "z.string().min(1)",  # session keeps timestamp a plain non-empty string
-}
 
-
-def _zod_obj_inline(spec: dict, field_names: list[str], view: str) -> str:
-    if not field_names:
-        return "z.object({}).strict()"
-    optional = set(spec.get("payload_optional") or [])
-    parts = ", ".join(
-        f"{f}: {_zod_type(spec, f, view)}{'.optional()' if f in optional else ''}"
-        for f in field_names
-    )
-    return f"z.object({{ {parts} }}).strict()"
-
-
-def _agent_events(spec: dict) -> list[tuple[str, list[str]]]:
-    out: list[tuple[str, list[str]]] = []
-    for entry in spec["kinds"].values():
-        ao = entry.get("agent_out")
-        if ao and "kind" in ao:
-            out.append((ao["kind"], list(ao.get("payload") or [])))
+def _ts_template(tmpl: str, params: list[str]) -> str:
+    out = tmpl
+    for p in params:
+        out = out.replace("{" + p + "}", "${" + camel(p) + "}")
     return out
 
 
-def emit_session_agent_event(spec: dict) -> str:
-    L: list[str] = [GENERATED_HEADER_TS.rstrip("\n"), "", 'import { z } from "zod"', ""]
-    L.append(
-        "const envelope = { run_id: z.string().min(1), "
-        "seq: z.number().int().nonnegative() }"
-    )
-    L.append("")
-    L.append('export const agentEventSchema = z.discriminatedUnion("kind", [')
-    for kind, payload in _agent_events(spec):
-        p = _zod_obj_inline(spec, payload, "agent_out")
-        L.append(
-            f'  z.object({{ kind: z.literal("{kind}"), ...envelope, '
-            f"payload: {p} }}).strict(),"
-        )
-    L.append("])")
-    L.append("")
-    L.append("export type AgentEvent = z.infer<typeof agentEventSchema>")
-    return "\n".join(L) + "\n"
-
-
-def emit_session_event(spec: dict) -> str:
-    notes = spec.get("notes", {})
-    env = spec["envelope"]["agui_out"]
-    L: list[str] = [GENERATED_HEADER_TS.rstrip("\n"), "", 'import { z } from "zod"', ""]
-    L.append('export type SessionEventName = z.infer<typeof sessionEventSchema>["event"]')
-    L.append("")
-    L.append("export type SessionEvent = {")
-    L.append("  event: SessionEventName")
-    for f in env:
-        if f == "seq" and "envelope.seq" in notes:
-            L.append(f"  // {notes['envelope.seq']}")
-        L.append(f"  {f}: {'number' if f == 'seq' else 'string'}")
-    L.append("  payload: Record<string, unknown>")
-    L.append("}")
-    L.append("")
-    L.append("const envelopeFields = {")
-    for f in env:
-        L.append(f"  {f}: {_ENVELOPE_ZOD_SESSION[f]},")
-    L.append("}")
-    L.append("")
-    L.append('const sessionEventSchema = z.discriminatedUnion("event", [')
-    for event, payload in _agui_events(spec, web_extra=False):
-        names = [f for f, _opt in payload]
-        p = _zod_obj_inline(spec, names, "agui_out")
-        L.append(
-            f'  z.object({{ event: z.literal("{event}"), ...envelopeFields, '
-            f"payload: {p} }}).strict(),"
-        )
-    L.append("])")
-    L.append("")
-    L.append("type SessionEventUnion = z.infer<typeof sessionEventSchema>")
-    L.append("export type AguiPayload<E extends SessionEventName> = Extract<")
-    L.append("  SessionEventUnion,")
-    L.append("  { event: E }")
-    L.append('>["payload"]')
-    L.append("")
-    L.append("export function parseSessionEvent(input: unknown): SessionEvent {")
-    L.append("  return sessionEventSchema.parse(input)")
-    L.append("}")
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# agent agent_event.py (agent-out, Python: AgentKind Literal + payload doc table)
-# --------------------------------------------------------------------------- #
-
-
-def _py_type(spec: dict, snake_field: str) -> str:
-    t = _field_type(spec, snake_field, "agent_out")
-    enums = spec["enums"]
-    if t in ("string_nonempty", "string"):
-        return "str"
-    if t == "boolean":
-        return "bool"
-    if t == "record":
-        return "dict[str, JsonValue]"
-    if t == "unknown":
-        return "object"
-    if t == "array_unknown":
-        return "list[object]"
-    if t == "todo_list":
-        status = "|".join(f'"{v}"' for v in enums["todo_status"])
-        return '[{"content": str, "status": ' + status + "}]"
-    if t == "decision_list":
-        return "list[" + "|".join(f'"{v}"' for v in enums["resume_decision"]) + "]"
-    if t.startswith("enum:"):
-        return "|".join(f'"{v}"' for v in enums[t[5:]])
-    raise ValueError(f"unmapped field type {t!r}")
-
-
-def _py_doc_shape(spec: dict, payload: list[str]) -> str:
-    if not payload:
-        return "{}"
-    parts = ", ".join(f'"{f}": {_py_type(spec, f)}' for f in payload)
-    return "{" + parts + "}"
-
-
-def emit_agent_event_py(spec: dict) -> str:
-    events = _agent_events(spec)
-    kinds = [k for k, _ in events]
-    width = max(len(k) for k in kinds)
-    L: list[str] = [
-        GENERATED_HEADER_PY.rstrip("\n"),
-        "from __future__ import annotations",
+def emit_streams_ts(spec: dict) -> str:
+    s = spec["streams"]
+    L = [ts_header(STREAMS_SRC).rstrip("\n"), ""]
+    L += [
+        f'export const {s["requests"]["const"]} = "{s["requests"]["name"]}"',
+        f'export const CONSUMER_GROUP = "{spec["consumer_group"]}"',
+        f'export const REQUESTS_MAXLEN = {s["requests"]["maxlen"]}',
+        f'export const RUN_EVENTS_MAXLEN = {s["run_events"]["maxlen"]}',
+        f'export const RUN_CONTROL_MAXLEN = {s["run_control"]["maxlen"]}',
+        f'export const LIVE_MAXLEN = {s["live"]["maxlen"]}',
+        f'export const BLOCK_MS = {spec["block_ms"]}',
         "",
-        "from typing import Literal, TypeGuard, get_args",
+        "export function runEventsStream(runId: string): string {",
+        f'  return `{_ts_template(s["run_events"]["template"], ["run_id"])}`',
+        "}",
         "",
-        "from pydantic import BaseModel, ConfigDict, JsonValue",
+        "export function runControlStream(runId: string): string {",
+        f'  return `{_ts_template(s["run_control"]["template"], ["run_id"])}`',
+        "}",
         "",
-        "AgentKind = Literal[",
+        "export function liveStream(sessionId: string): string {",
+        f'  return `{_ts_template(s["live"]["template"], ["session_id"])}`',
+        "}",
+        "",
+        "export function eventId(runId: string, index: number): string {",
+        "  return `${runId}:${index}`",
+        "}",
+        "",
+        "export function leaseKey(runId: string): string {",
+        f'  return `{_ts_template(spec["lease_key_template"], ["run_id"])}`',
+        "}",
     ]
-    for k in kinds:
-        L.append(f'    "{k}",')
-    L.append("]")
-    L.append("")
-    L.append("_AGENT_KINDS: frozenset[str] = frozenset(get_args(AgentKind))")
-    L.append("")
-    L.append("")
-    L.append("def is_agent_kind(kind: str) -> TypeGuard[AgentKind]:")
-    L.append("    return kind in _AGENT_KINDS")
-    L.append("")
-    L.append("# Per-kind ``payload`` shapes (the payload stays a loose dict here; strict")
-    L.append("# per-kind validation is kokoro-session's job at the Zod boundary). Documented")
-    L.append("# so the DeepAgents emitter and the session normalizer share one contract:")
-    for k, payload in events:
-        L.append(f"#   {k.ljust(width)}  {_py_doc_shape(spec, payload)}")
-    L.append("")
-    L.append("")
-    L.append("class AgentEvent(BaseModel):")
-    L.append('    """A raw execution-side event authored by kokoro-agent.')
-    L.append("")
-    L.append("    The agent only fills execution semantics: ``kind``, ``run_id`` and a")
-    L.append("    monotonic ``seq``. It never assigns ``event_id`` / ``timestamp`` / ``owner_id``")
-    L.append("    — those belong to kokoro-session's normalization layer.")
-    L.append('    """')
-    L.append("")
-    L.append('    model_config = ConfigDict(strict=True, extra="forbid")')
-    L.append("")
-    L.append("    kind: AgentKind")
-    L.append("    run_id: str")
-    L.append("    seq: int")
-    L.append("    payload: dict[str, JsonValue]")
     return "\n".join(L) + "\n"
 
 
-# option A：agent 的 envelope.py 是 wire 单源真理。agent-event.ts 由 agent_wire 反向生成，
-# agent 侧不再生成 agent_event.py（agent 即源）。AG-UI/render 视图仍由 events.yaml 生成。
-from agent_wire import emit_agent_event_ts  # noqa: E402
+# --------------------------------------------------------------------------- #
+# session + web /contract/http.ts  (byte-identical)
+# --------------------------------------------------------------------------- #
 
-EMITTERS = {
-    WEB_RENDER_TS: emit_web_render,
-    WEB_SCHEMA_TS: emit_web_schema,
-    SESSION_AGENT_EVENT_TS: lambda _spec: emit_agent_event_ts(),
-    SESSION_EVENT_TS: emit_session_event,
-}
+
+def emit_http_ts(spec: dict) -> str:
+    enums = spec["enums"]
+    ep = spec["endpoints"]
+    L = [ts_header(HTTP_SRC).rstrip("\n"), "", 'import { z } from "zod"']
+    L.append('import { resumeDecisionSchema } from "./control"')
+    L.append("")
+
+    for obj in spec["objects"]:
+        L += ts_object(obj, enums, export=True)
+        L.append("")
+
+    snap = ep["snapshot"]
+    L.append(
+        f"export function parseSessionSnapshot(input: unknown): {snap['response_object']} {{"
+    )
+    L.append(f"  return {snap['response_const']}.parse(input)")
+    L.append("}")
+    L.append("")
+
+    start = ep["start_message"]
+    L.append(f"export const {start['body_const']} = z")
+    L.append("  .object({")
+    L += [f"    {ts_field(f, enums)}," for f in start["body"]]
+    L += ["  })", "  .strict()"]
+    L.append(f"export type StartMessageBody = z.infer<typeof {start['body_const']}>")
+    L.append("")
+    L.append(f"export const {start['receipt_const']} = z")
+    L.append("  .object({")
+    L += [f"    {ts_field(f, enums)}," for f in start["receipt"]]
+    L += ["  })", "  .strict()"]
+    L.append(f"export type StartMessageReceipt = z.infer<typeof {start['receipt_const']}>")
+    L.append("")
+
+    ctrl = ep["run_control"]
+    L.append(f'export const {ctrl["body_const"]} = z.discriminatedUnion("kind", [')
+    L.append(
+        '  z.object({ kind: z.literal("run.cancel"), decision_id: z.string().min(1) }).strict(),'
+    )
+    L.append(
+        '  z.object({ kind: z.literal("run.resume"), decision_id: z.string().min(1), '
+        "decisions: z.array(resumeDecisionSchema).min(1) }).strict(),"
+    )
+    L.append("])")
+    L.append(f"export type RunControlBody = z.infer<typeof {ctrl['body_const']}>")
+    L.append("")
+    receipt = ", ".join(ts_field(f, enums) for f in ctrl["receipt"])
+    L.append(f"export const {ctrl['receipt_const']} = z.object({{ {receipt} }}).strict()")
+    L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
+    L.append("")
+
+    err = ", ".join(ts_field(f, enums) for f in spec["error"])
+    L.append(f"export const {spec['error_const']} = z.object({{ {err} }}).strict()")
+    L.append(f"export type ErrorResponse = z.infer<typeof {spec['error_const']}>")
+    L.append(f'export const SESSION_RUN_ACTIVE = "{spec["error_conflict_code"]}"')
+    L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
+    L.append("")
+
+    for key in ("start_message", "snapshot", "stream", "run_control"):
+        e = ep[key]
+        sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
+        body = _ts_template(e["path_template"], e["params"])
+        L.append(f"export function {e['path_fn']}({sig}): string {{")
+        L.append(f"  return `{body}`")
+        L.append("}")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# agent/contract/__init__.py
+# --------------------------------------------------------------------------- #
+
+
+def emit_init_py(events: dict, control: dict, streams: dict) -> str:
+    events_names = [
+        "AgentEvent",
+        "agent_event_adapter",
+        *events_enum_aliases(events).values(),
+        *(o["name"] for o in events["objects"]),
+        *(pascal(e["kind"]) for e in events["raw_kinds"]),
+        *(f"{pascal(e['kind'])}Payload" for e in events["raw_kinds"]),
+    ]
+    control_names = [
+        "InboundMessage",
+        "inbound_adapter",
+        "ResumeDecision",
+        *control_enum_aliases(control).values(),
+        *(o["name"] for o in control["objects"]),
+        *(f"{a['type'].capitalize()}Decision" for a in control["resume_decisions"]),
+        *(pascal(m["kind"]) for m in control["messages"]),
+    ]
+    s = streams["streams"]
+    streams_names = [
+        s["requests"]["const"],
+        "CONSUMER_GROUP",
+        "REQUESTS_MAXLEN",
+        "RUN_EVENTS_MAXLEN",
+        "RUN_CONTROL_MAXLEN",
+        "LIVE_MAXLEN",
+        "BLOCK_MS",
+        "run_events_stream",
+        "run_control_stream",
+        "live_stream",
+        "event_id",
+        "lease_key",
+    ]
+
+    def block(module: str, names: list[str]) -> list[str]:
+        out = [f"from kokoro_agent.contract.{module} import ("]
+        out += [f"    {n}," for n in names]
+        out.append(")")
+        return out
+
+    L = [py_header("contract/spec/*.yaml").rstrip("\n"), "from __future__ import annotations", ""]
+    L += block("events", events_names)
+    L += block("control", control_names)
+    L += block("streams", streams_names)
+    L.append("")
+    L.append("__all__ = [")
+    L += [f'    "{n}",' for n in (*events_names, *control_names, *streams_names)]
+    L.append("]")
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# contract/README.md
+# --------------------------------------------------------------------------- #
+
+
+def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
+    optional = set(events.get("payload_optional") or [])
+    payload_by_kind = {e["kind"]: e.get("payload") or [] for e in events["raw_kinds"]}
+    payload_by_kind.update({e["kind"]: e.get("payload") or [] for e in events["synthetic_kinds"]})
+
+    L = [
+        "<!-- GENERATED — DO NOT EDIT. Source: contract/spec/*.yaml -->",
+        "<!-- Regenerate: python3 contract/generate.py -->",
+        "",
+        "# Kokoro wire contract",
+        "",
+        "One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.",
+        "`spec/` is the only truth; `generate.py` renders every mirror and this doc;",
+        "`check.py` gates drift. Never hand-edit a generated file.",
+        "",
+        "## Envelopes",
+        "",
+        "- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic.",
+        "- session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`",
+        "  — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is",
+        "  replaced by the synthetic session.created + run.created; the other 13 raw kinds pass through.",
+        "",
+        "## Raw events (agent -> session, 14)",
+        "",
+        "| kind | payload |",
+        "| --- | --- |",
+    ]
+    for entry in events["raw_kinds"]:
+        fields = entry.get("payload") or []
+        rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"
+        L.append(f"| `{entry['kind']}` | {rendered} |")
+
+    L += ["", "## Browser events (session -> web, 15)", "", "| kind | payload |", "| --- | --- |"]
+    for kind in events["browser_order"]:
+        fields = payload_by_kind[kind]
+        rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"
+        L.append(f"| `{kind}` | {rendered} |")
+
+    L += ["", "## Control plane (session -> agent)", "", "| message | fields |", "| --- | --- |"]
+    for msg in control["messages"]:
+        names = ", ".join(f["name"] for f in msg["fields"])
+        L.append(f"| `{msg['kind']}` | {names} |")
+    L += ["", "ResumeDecision (discriminated on `type`):", ""]
+    for arm in control["resume_decisions"]:
+        fields = ", ".join(f"{f['name']}?" if f.get("optional") else f["name"] for f in arm["fields"])
+        L.append(f"- `{arm['type']}`: {fields}")
+
+    L += ["", "## Streams", "", "| stream | owner | reader | maxlen |", "| --- | --- | --- | --- |"]
+    for node in streams["streams"].values():
+        name = node.get("name") or node.get("template")
+        L.append(f"| `{name}` | {node['owner']} | {node['reader']} | {node['maxlen']} |")
+    L += [
+        "",
+        f"Consumer group `{streams['consumer_group']}`; BLOCK {streams['block_ms']}ms; "
+        f"`event_id = {streams['event_id_format']}`; lease `{streams['lease_key_template']}`.",
+        "",
+        "## HTTP (session)",
+        "",
+        "| method | path |",
+        "| --- | --- |",
+    ]
+    for e in http["endpoints"].values():
+        L.append(f"| {e['method']} | `{e['path_template']}` |")
+    L += [
+        "",
+        "POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching",
+        f"idempotency_key against an active run returns 409 `{http['error_conflict_code']}`.",
+        "GET /sessions/:id returns the snapshot; SSE resumes from `Last-Event-ID` = last `seq`.",
+    ]
+    return "\n".join(L) + "\n"
+
+
+# --------------------------------------------------------------------------- #
+# driver
+# --------------------------------------------------------------------------- #
+
+
+def build() -> dict[Path, str]:
+    events = load("events.yaml")
+    control = load("control.yaml")
+    streams = load("streams.yaml")
+    http = load("http.yaml")
+
+    session_events = emit_session_events_ts(events)
+    control_ts = emit_control_ts(control)
+    http_ts = emit_http_ts(http)
+
+    return {
+        HERE / "README.md": emit_readme(events, control, streams, http),
+        AGENT / "__init__.py": emit_init_py(events, control, streams),
+        AGENT / "events.py": emit_events_py(events),
+        AGENT / "control.py": emit_control_py(control),
+        AGENT / "streams.py": emit_streams_py(streams),
+        SESSION / "wire-events.ts": emit_wire_events_ts(events),
+        SESSION / "session-events.ts": session_events,
+        SESSION / "control.ts": control_ts,
+        SESSION / "streams.ts": emit_streams_ts(streams),
+        SESSION / "http.ts": http_ts,
+        WEB / "session-events.ts": session_events,
+        WEB / "control.ts": control_ts,
+        WEB / "http.ts": http_ts,
+        WEB / "event-names.ts": emit_event_names_ts(events),
+    }
 
 
 def main(argv: list[str]) -> int:
-    spec = load_spec()
+    outputs = build()
     check = "--check" in argv
     drift = False
-    for path, emit in EMITTERS.items():
-        generated = emit(spec)
+    for path, content in outputs.items():
+        rel = path.relative_to(ROOT)
         if check:
             current = path.read_text() if path.exists() else ""
-            if current != generated:
-                print(f"DRIFT: {path.relative_to(ROOT)} differs from events.yaml")
+            if current != content:
+                print(f"DRIFT: {rel}")
                 drift = True
         else:
-            path.write_text(generated)
-            print(f"wrote {path.relative_to(ROOT)}")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content)
+            print(f"wrote {rel}")
     if check and drift:
-        print("\nRun `python3 contract/generate.py` and commit the result.")
+        print("\nRun `python3 contract/generate.py` and commit the regenerated mirrors.")
         return 1
     if check:
-        print(f"OK — {len(EMITTERS)} mirror(s) match events.yaml")
+        print(f"OK — {len(outputs)} mirror(s) match contract/spec/")
     return 0
 
 
