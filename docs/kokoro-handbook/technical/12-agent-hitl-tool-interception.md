@@ -798,4 +798,7 @@ respond <-> ask_user 双向校验已在 agent（resume 对齐 fail-loud）与
 session（pending pause allowed_decisions 校验）两端落地，e2e 覆盖反例。
 本文其余语义（middleware 分层 / interrupt_on / pending pause / decision_id 幂等）
 均已按文实现，跨栈门禁：scripts/e2e-v21-gate.py。
+工具改名（2026-07-03）：ask_user → ask_user_question（对齐 Claude Code 的
+AskUserQuestion）；awaiting kind 的 wire 值仍为 "ask_user"（暂停类别名，非工具名）。
+新增第三类暂停：kind=result_review（工具后结果审核，approve/respond/reject）。
 ```
