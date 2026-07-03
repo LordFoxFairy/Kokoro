@@ -6,7 +6,7 @@
 - streams/protocol.py 语义打磨（d555d81）：五方法契约语义写进接口（consumer-group 分摊/ack-收养/至少一次/cursor 不透明）。
 - 门禁：agent 285 pytest + pyright 0 + ruff；跨栈 e2e PASS；真抓取 PASS；CI 全绿。
 - 用户 .env 已配好：KOKORO_OPENAI_REASONING=1 + 流式恢复 + ALLOW_PRIVATE=1（本机 thinking/web_fetch 即开即用）。
-- **下一单**：真栈浏览器全家桶走查（glm-5：thinking 渲染/记忆跨 run/web_fetch 卡片 + 截图）。
+- **真栈浏览器全家桶走查 ✅**（glm-5 + 本地四件套）：①thinking 真渲染（"处理过程"折叠条含真实推理文本）②save_memory 工具行 + 终答 ③**新会话** search_memory 命中上会话存的深色模式偏好（跨会话长期记忆 UI 级实证）④web_fetch 抓 example.com 并正确摘要；console 零错误。截图 walkthrough-{1,2,3}-*.png（playwright 输出目录）。途中实证：浏览器必须走 http://localhost:3000（session CORS 默认源），127.0.0.1 会被拦——属预期行为非 bug。
 
 - Date: 2026-07-03 (清零轮完成 — **✅ C 记忆 store + 全部已知妥协/盲区清零**)
 - **C 长期记忆**（agent 2e03e72/55eab21/47b35c9）：make_memory_store 三后端与 checkpoint 对齐（memory=InMemoryStore / sqlite=AsyncSqliteStore(<path>.store 独立文件防撞) / mongo=官方 langgraph-store-mongodb，集合 kokoro_agent_memory）；save_memory/search_memory 恒挂载核心工具，store 前缀 (RunContext.namespace, "memories")——真图测试：跨 run 可读 + 双租户隔离 + 错误上 wire + schema 边界矩阵。
