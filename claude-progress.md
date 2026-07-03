@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-03 (工具结果审核暂停 result_review — **✅ 四层全链完成**)
+- 用户定义两类通用拦截：工具前人确认（=已有 HIL 审批，edit 即"确认并改参"）+ **工具后结果审核（新做）**；明确不做"重定向到其他工具"。
+- 实现（spec: 2026-07-03-result-review-pause-design.md）：契约 awaiting_kind+result?/Permissions.review_tools/PendingPause.result?（生成器新增 "字段?" 局部可选标记；http.yaml 的 enums 副本要与 events/control 同步——这次踩到）；agent ToolResultReviewMiddleware（langgraph 原生 interrupt + RunStateStore tool_results keep-first 缓存防 resume 双跑）+ 投影 raw returned 抑制 + supervisor 裁决直发（approve/respond 带 responded、reject 带 rejected）+ 混帧 fail-loud；session respond 放宽至 result_review + pause 透传 result + KOKORO_REVIEW_TOOLS 部署配置 + **pause_id 加 kind 维度**（审批→审核双暂停碰撞，e2e 抓获）；web review-card 第三卡（采纳/替换/拒绝，171 tests）。
+- 门禁：agent 217+pyright 0+ruff @ 50948e2；session 128 @ f27fcd8；web 171+build @ 07851a6；契约 @ 2dcb82d；跨栈 e2e 25 项 PASS（含串联双暂停实证缓存防双跑）。
+- 待办残留：names.py 解散提议（并入 registry + mcp_tool_name 归 mcp/）等用户点头；review 卡真栈浏览器走查未做（wire+组件测试已覆盖）；middleware 前置改参与 artifact_ref 后置加工仍是 P1。
+
 - Date: 2026-07-03 深夜 (合入 main + 真栈浏览器走查 — **✅ 全部完成**)
 - **四仓 squash 合入 main**：parent 2bc8d50 / agent 6b992c0 / session 75a9025→d3c84fd / web ab119ac→f836a99；main 上全门禁 + 跨栈 e2e (23/23) 复验绿。rewrite/v2 分支保留未删。
 - **真栈浏览器走查**（agent LocalFake hitl + session:3101 redis db13+mongo + web:3002 Playwright）主路径全通：发消息→ask_user 问答卡（选项+自由输入+取消）→respond→write_file 审批卡（仅 批准/拒绝，respond/edit 正确隐藏）→批准→最终文本→composer 恢复；暂停中刷新 snapshot 水合后卡片直接可操作。
