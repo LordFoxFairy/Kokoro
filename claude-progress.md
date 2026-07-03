@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-03 (agent 自身完善 A+B 完成 — RuntimeContext 注入 + subagent_create 执法)
+- **A RuntimeContext 注入图运行时**（agent f5312bb）：create_deep_agent(context_schema=RunContext) + 每 run context 值经 astream_events(context=) 全链透传（invoke/resume 双路径）；工具/middleware 经 get_runtime/ToolRuntime.context 读 namespace/session/run 身份（真图行为测试固化）。泛型坑记录：deepagents ContextT bound=StateLike（langgraph.typing 未 re-export，最窄文件级豁免沿 build_agent 先例）；Optional 掺未 bound 泛型解不动→拆分支绑定。
+- **B subagent_create 执法**（agent 9a3cef1）：deny=仅声明集（catalog+wire 预设）可被 task 委派，general-purpose 临时创建 fail-closed 且错误携声明集；ask=task 进 interrupt_on 走现有审批卡（pending 识别集同步含 task）；allow=放行。行为矩阵测试全覆盖。
+- 门禁：agent 227 pytest + pyright 0 + ruff；跨栈 e2e 回归 PASS；已推送 CI。
+- **余项 C**：memory store 接线（create_deep_agent(store=)，先实证 langgraph sqlite/mongo store 可用性，namespace 前缀隔离）——spec 2026-07-03-agent-self-completion-design.md 已载。
 - Date: 2026-07-03 (收尾清账完成 — 系统进入稳定待命态)
 - 用户定调：编排=通用组装+拓展位，已达终态不再加建。收尾三件全清：① resume 续段不再重复宣告 run.started（agent 6ff2012，emitter.at_start）；② result_review 终态收口文案修正"工具已执行"（web f859345）；③ 真栈浏览器走查 review 卡全流程 PASS（问答卡答复→审批卡批准→审核卡展示真实结果→替换文本提交→write_file 显"已人工答复"→终文，console 零错误，截图在 scratchpad）。handbook 11 号补 namespace profile/entry 实现注记。
 - **当前态**：四仓 main 全绿全推送，CI 绿；已知缺陷清零；agent 先行余项全部在等外部条件（真实工具用例/部署/凭证）。等待用户输入：web/产品规划（canvas、studio surface）或 platform 接入（music job 链）。
