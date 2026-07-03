@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-03 (统一入口表 — general 一等入口，用户裁定)
+- session resolve 重构（a698b43）：listEntries 单表 = 内建 general（人格缺省→agent 内置）∪ profile.agents（可覆盖 general）；缺省 entry ≡ entry=general；general 恒不作委派下属；下属无人格=结构破裂 fail-loud（替换 ?? "" 遮掩）。wire 零改动。
+- 验证：session 146 tests（+5 入口表矩阵）+ tsc；跨栈 e2e PASS。studio 选择器（P1）枚举 listEntries 即可。
+
 - Date: 2026-07-03 (Langfuse trace 点亮 — "等凭证"挂账清零)
 - 自托管 Langfuse v3（compose 项目 kokoro-langfuse，web :3310，headless init 预置 pk/sk-lf-kokoro-local；redis/postgres/clickhouse/minio 全不占宿主端口）。用户 .env 已配三元组，trace 即开即用（UI dev@kokoro.local）。
 - **scripts/trace-verify.py 7/7 PASS**：LocalFake HITL 双暂停全流程 → Langfuse API 断言 3 段 trace 同 kokoro_run_id + 同 sessionId 归组——HITL trace 连续性达成（连续性=可归组的多段，非单条长链）。

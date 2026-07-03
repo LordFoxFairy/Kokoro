@@ -818,3 +818,14 @@ HITL trace 连续性法则（scripts/trace-verify.py 实证 7/7）：暂停/恢�
 各自成 trace，靠 metadata.kokoro_run_id 归组同一 run、langfuse_session_id 归组
 同一会话——续段不是断链，是可归组的多段。
 ```
+
+## 实现注记（2026-07-03 追加：统一入口表）
+
+```text
+入口管理单表化（用户裁定）：general 是一等保留入口，与具名预设同住一张表
+（session listEntries：内建 general + profile.agents，profile 可覆盖 general 人格）。
+POST messages 缺省 entry ≡ entry=general；未知 entry 仍 400 fail-closed。
+general 是协调者身份，恒不进委派下属名单。wire 契约零改动
+（general 未覆盖时 system_prompt 缺席 → agent 内置人格，原语义）。
+studio 入口选择器（P1 产品面）直接枚举 listEntries。
+```
