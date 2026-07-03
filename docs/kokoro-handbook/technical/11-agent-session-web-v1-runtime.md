@@ -772,3 +772,23 @@ docs/superpowers/plans/2026-07-03-zero-debt-closeout.md。
   内建目录为空；原 researcher 空壳（能力与命名不符）已删。
   真栈委派验证改走产品正道：scripts/real-model-verify.py 以 namespace 预设委派，12/12 PASS。
 ```
+
+## 实现注记（2026-07-03 追加：web 底层工具补齐）
+
+```text
+底层工具面对齐 Claude Code：文件/执行/todo/task=deepagents 内置，ask_user_question、
+save_memory/search_memory、web_fetch 恒挂载；web_search 配置即挂载。
+
+web_fetch：httpx + bs4 正文提取；SSRF 防御（仅 http/https，DNS 解析后拒非公网地址，
+重定向逐跳复检 ≤5，15s/1MB/24k 上限；TOCTOU 残余 V1 注记接受）。
+KOKORO_WEB_FETCH_ALLOW_PRIVATE=1 供本地开发（fake-IP 代理环境域名会解析进
+198.18.0.0/15，守卫按生产语义正确拒绝——本地放行属机器级政策）。
+
+web_search：SearchFn 注入（provider 可插拔），V1 实现 zhipu
+（/api/paas/v4/web_search，响应 TypeAdapter 洗净，错误体 fail-loud 透传）。
+KOKORO_WEB_SEARCH_PROVIDER=zhipu + KOKORO_WEB_SEARCH_API_KEY 配齐才挂载——
+无配置不挂空壳（与内建子代理同一诚实原则）。实证：coding 套餐 key 无 web_search
+资源包（429/1113），故默认不挂。
+
+设计文档：docs/superpowers/specs/2026-07-03-web-base-tools-design.md。
+```
