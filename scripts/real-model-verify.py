@@ -133,6 +133,13 @@ def main() -> int:
         "namespaces": {
             "team-rmv": {
                 "model_policy": {"default": {"provider": "openai", "name": "glm-5"}},
+                # 委派验证走产品正道：researcher 是 namespace 预设（内建目录按原则为空）。
+                "agents": {
+                    "researcher": {
+                        "description": "研究并回答技术问题，返回简洁结论。",
+                        "system_prompt": "你是研究型子智能体：直接回答问题，简洁中文。",
+                    }
+                },
             }
         }
     }))
@@ -209,9 +216,9 @@ def main() -> int:
         check("A: subagent.started 出现", bool(started), f"kinds={kinds_a}")
         check("A: subagent.finished 出现且未失败",
               bool(finished) and not finished[-1].get("failed"), str(finished[-1:] or kinds_a))
-        check("A: subagent 归属 built-in researcher",
+        check("A: subagent 归属 namespace 预设 researcher",
               bool(started) and started[0].get("name") == "researcher"
-              and started[0].get("source") == "built-in", str(started[:1]))
+              and started[0].get("source") == "runtime-custom", str(started[:1]))
         subtext = sum(1 for k in kinds_a if k.startswith("subagent.text"))
         check("A: subagent 文本流出现", subtext >= 1, f"kinds={kinds_a}")
         check("A: run.completed 收尾", kinds_a[-1:] == ["run.completed"], f"kinds={kinds_a}")

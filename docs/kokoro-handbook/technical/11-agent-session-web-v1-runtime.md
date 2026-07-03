@@ -756,3 +756,19 @@ namespace profile 配置源（V1 法则）
 设计文档：docs/superpowers/specs/2026-07-03-agent-self-completion-design.md、
 docs/superpowers/plans/2026-07-03-zero-debt-closeout.md。
 ```
+
+## 实现注记（2026-07-03 追加：记忆工具分层修正 + 内建子代理原则）
+
+```text
+记忆工具分层（用户裁定后修正）
+  save_memory / search_memory 是通用存取原语，工具体内零租户概念；
+  隔离政策在 worker 装配点经 make_memory_tools(scope) 注入（scope=租户 namespace），
+  store 走 langgraph 正统图挂载（create_deep_agent(store=) + get_store()）。
+  同构 langmem 的 namespace-at-construction 模式。
+
+内建子代理原则
+  内建目录只收"带真实工具挂载的真能力"；人格类预设一律归 namespace profile
+  （wire 下发，source=runtime-custom）。现阶段无 web_search 等专属工具可挂 →
+  内建目录为空；原 researcher 空壳（能力与命名不符）已删。
+  真栈委派验证改走产品正道：scripts/real-model-verify.py 以 namespace 预设委派，12/12 PASS。
+```
