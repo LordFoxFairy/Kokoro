@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-03 (push + CI 首跑全绿 + 真模型冒烟 — **✅ 地基钉死**)
+- 四仓 main 全部 push（agent 39cce02 / session a9ec14e / web d452370 / 父 8cf102e）；GitHub CI 四仓 success（父仓跨仓契约门禁对真远端 main 首跑即绿）。途中修复：web CI 旧 bun 工作流换 npm 四门禁；mac 生成的 package-lock 缺 linux rolldown binding（npm/cli#4828）→ 清库重生成。
+- 真模型冒烟（智谱 glm-5 经 openai 兼容端）：全链 PASS，token_usage {6091/58} agent→session→SSE 贯通（LocalFake 盲区①验掉）。冒烟揭示并已修：v2.1 后模型档位归 session model_policy，agent 的 KOKORO_MODEL env 已死 → README/.env.example/LocalFake 文案同步（39cce02）。thinking 通道（需 reasoning 模型）与 subagent 事件真栈仍未验。
+- **agent 先行路线（用户定：agent 独立推进，web 等产品规划）**：① MCP live 集成测试（本地 FastMCP streamable-http fixture 服务器 + LocalFake 脚本调 mcp__ 工具，离线可跑）；② PEL 悬挂清理（XAUTOCLAIM）；③ 前置改参 normalizer 挂点（等首个真实用例如定时工具）；④ e2b 实例池（等部署需要）。
+- 操作教训：shell cwd 会被 harness 重置——rm -rf 类命令必须绝对路径+同命令内 pwd 验证（本次 rm 落在 Python 仓无害，纯侥幸）。
+
 - Date: 2026-07-03 (namespace profile + 具名 agent 入口 — **✅ 编排最小闭环落地**)
 - 三层所有权定案：namespace 拥有 skills/mcp/agent 预设/模型策略/permissions；session 拥有 sandbox 工作区(thread checkpoint 天然隔离+延续)/消息史/暂停点；run 拿 RuntimeConfig 快照。
 - 实现（spec: 2026-07-03-namespace-profile-and-entry-design.md）：契约 +RuntimeConfig.system_prompt?/+body.entry?（2ab6b10）；agent 一行消费 entry 人格（273c47e）+ control 流终态 NOGROUP 竞态修复（346bb32）；session src/namespace/{profile,resolve}.ts（strict schema + JSON loader fail-fast + 解析矩阵），start-message 硬编码默认档物理迁入 resolver，context.namespace 改租户级（KOKORO_NAMESPACE），解析先于任何落库（a9ec14e）。
