@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-03 (namespace profile + 具名 agent 入口 — **✅ 编排最小闭环落地**)
+- 三层所有权定案：namespace 拥有 skills/mcp/agent 预设/模型策略/permissions；session 拥有 sandbox 工作区(thread checkpoint 天然隔离+延续)/消息史/暂停点；run 拿 RuntimeConfig 快照。
+- 实现（spec: 2026-07-03-namespace-profile-and-entry-design.md）：契约 +RuntimeConfig.system_prompt?/+body.entry?（2ab6b10）；agent 一行消费 entry 人格（273c47e）+ control 流终态 NOGROUP 竞态修复（346bb32）；session src/namespace/{profile,resolve}.ts（strict schema + JSON loader fail-fast + 解析矩阵），start-message 硬编码默认档物理迁入 resolver，context.namespace 改租户级（KOKORO_NAMESPACE），解析先于任何落库（a9ec14e）。
+- 语义：entry=X → X 人格作主 agent、其余预设仍可委派；缺省 → 通用 agent + 全预设为下属。ask_user_question 改名与 result_review 均已全链。
+- 验证：agent 230 pytest+pyright 0+ruff；session 141（含 12 项 namespace 矩阵+双租户隔离断言）；跨栈 e2e 30 项 PASS（entry wire 断言直读 redis 请求流 + cancel 收束补覆盖）。
+- 待办：真栈浏览器过一遍 review 卡与 entry（可选）；push+CI 首跑仍是最大空洞；e2b 实例池/DB 配置源/web entry UI 后续。
+
 - Date: 2026-07-03 (工具结果审核暂停 result_review — **✅ 四层全链完成**)
 - 用户定义两类通用拦截：工具前人确认（=已有 HIL 审批，edit 即"确认并改参"）+ **工具后结果审核（新做）**；明确不做"重定向到其他工具"。
 - 实现（spec: 2026-07-03-result-review-pause-design.md）：契约 awaiting_kind+result?/Permissions.review_tools/PendingPause.result?（生成器新增 "字段?" 局部可选标记；http.yaml 的 enums 副本要与 events/control 同步——这次踩到）；agent ToolResultReviewMiddleware（langgraph 原生 interrupt + RunStateStore tool_results keep-first 缓存防 resume 双跑）+ 投影 raw returned 抑制 + supervisor 裁决直发（approve/respond 带 responded、reject 带 rejected）+ 混帧 fail-loud；session respond 放宽至 result_review + pause 透传 result + KOKORO_REVIEW_TOOLS 部署配置 + **pause_id 加 kind 维度**（审批→审核双暂停碰撞，e2e 抓获）；web review-card 第三卡（采纳/替换/拒绝，171 tests）。

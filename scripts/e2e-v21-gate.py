@@ -111,6 +111,16 @@ def main() -> int:
     scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-e2e-{uuid.uuid4().hex[:6]}"
     scratch.mkdir(parents=True)
     subprocess.run(["redis-cli", "-u", REDIS_URL, "flushdb"], check=True, capture_output=True)
+    (scratch / "namespaces.json").write_text(json.dumps({
+        "namespaces": {
+            "team-e2e": {
+                "agents": {
+                    "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格"},
+                    "coder": {"description": "代码专家", "system_prompt": "你是工程师人格"},
+                }
+            }
+        }
+    }))
     subprocess.run(
         ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
          f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
@@ -127,6 +137,8 @@ def main() -> int:
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
         # write_file 同时配 审批+审核：批参数 → 执行 → 审结果（串联双暂停，实证缓存防双跑）。
         "KOKORO_REVIEW_TOOLS": "write_file",
+        "KOKORO_NAMESPACE": "team-e2e",
+        "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
     }
     agent_env = {
         **os.environ,
@@ -244,6 +256,38 @@ def main() -> int:
         check("终态后新 run 受理", st9 == 202 and receipt3.get("run_id") != run_id, f"{st9}")
         done2 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == receipt3.get("run_id"), timeout=40)
         check("第二轮 run 终态", done2 is not None)
+
+        # 7. 具名入口：entry=poet 作主 agent，wire 上人格与下属断言。
+        sid2 = f"ses_entry_{uuid.uuid4().hex[:8]}"
+        st10, receipt4 = http("POST", f"/sessions/{sid2}/messages",
+                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "写首诗", "entry": "poet"})
+        check("entry=poet 受理", st10 == 202, f"{st10} {receipt4}")
+        st11, body11 = http("POST", f"/sessions/{sid2}/messages",
+                            {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x", "entry": "ghost"})
+        check("entry 未知 → 400", st11 == 400 and body11.get("error") == "unknown_entry", f"{st11} {body11}")
+        raw = subprocess.run(["redis-cli", "-u", REDIS_URL, "XRANGE", "kokoro:runs:requests", "-", "+"],
+                             capture_output=True, text=True, check=True).stdout
+        wire_ok = False
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line.startswith("{"):
+                continue
+            req = json.loads(line)
+            if req.get("run_id") == receipt4.get("run_id"):
+                rt = req["runtime"]
+                wire_ok = (rt.get("system_prompt") == "你是诗人人格"
+                           and [s["name"] for s in rt["subagents"]] == ["coder"]
+                           and req["context"]["namespace"] == "team-e2e")
+        check("wire: entry 人格上 run.request + 其余预设为下属 + 租户 namespace", wire_ok)
+        sse3 = SseReader(f"/sessions/{sid2}/events")
+        pause3 = sse3.wait(lambda i: i[1] == "tool.awaiting_approval")
+        check("entry run 启动并到达首个暂停", pause3 is not None)
+        st12, _ = http("POST", f"/sessions/{sid2}/runs/{receipt4['run_id']}/control",
+                       {"kind": "run.cancel", "decision_id": f"dec_{uuid.uuid4().hex[:8]}"})
+        cancelled = sse3.wait(lambda i: i[1] == "run.completed")
+        check("cancel 收束 → run.completed(status=cancelled)", st12 == 202 and cancelled is not None
+              and cancelled[2]["payload"]["status"] == "cancelled",
+              f"{st12} {cancelled[2]['payload'] if cancelled else {}}")
 
         kinds = {k for _, k in sse.seen}
         expected = {"session.created", "run.created", "tool.awaiting_approval", "tool.returned",
