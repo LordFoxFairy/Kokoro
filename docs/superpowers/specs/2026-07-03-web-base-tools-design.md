@@ -17,7 +17,7 @@
 
 - 工具层 tools/web_search.py：SearchProvider 协议 + 格式化，**零 vendor 代码**（测试执法：
   vendor 词汇出现即红）。
-- 适配器与工具同域管理 tools/web_search_providers.py（用户裁定：不占一级目录）：tavily（vendor-key，langchain 生态常用）/
+- 适配器与工具同文件（用户裁定：一工具一文件）——web_search.py 上半部通用原语、下半部注册表：tavily（vendor-key，langchain 生态常用）/
   searxng（自托管开放标准，无 key）/ zhipu（用户现有生态）——注册表选择，谁都不特权。
   响应统一 parse_hits（url/link、content/snippet 别名归一）TypeAdapter 洗净；非 200 fail-loud。
 - 装配：`KOKORO_WEB_SEARCH_PROVIDER` + `KOKORO_WEB_SEARCH_API_KEY`（searxng 用
