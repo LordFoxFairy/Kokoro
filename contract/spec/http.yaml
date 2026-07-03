@@ -56,6 +56,7 @@ objects:
       - {name: risk, type: object:Risk, optional: true}
       - {name: editable, type: boolean}
       - {name: input_schema, type: record, optional: true}
+      - {name: result, type: string, optional: true}
       - {name: status, type: enum:pause_status}
       - {name: decision, type: record, optional: true}
       - {name: created_at, type: string_nonempty}

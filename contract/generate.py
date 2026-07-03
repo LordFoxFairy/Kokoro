@@ -190,15 +190,20 @@ def event_field_type(spec: dict, field: str) -> str:
 def event_payload_fields(spec: dict, payload: list[str]) -> list[dict]:
     optional = set(spec.get("payload_optional") or [])
     nullable = set(spec.get("payload_nullable") or [])
-    return [
-        {
-            "name": name,
-            "type": event_field_type(spec, name),
-            "optional": name in optional,
-            "nullable": name in nullable,
-        }
-        for name in payload
-    ]
+    fields: list[dict] = []
+    for entry in payload:
+        # 尾缀 `?` = 仅该 kind 局部可选（payload_optional 是全局按字段名生效，二者互补）。
+        local_optional = entry.endswith("?")
+        name = entry[:-1] if local_optional else entry
+        fields.append(
+            {
+                "name": name,
+                "type": event_field_type(spec, name),
+                "optional": local_optional or name in optional,
+                "nullable": name in nullable,
+            }
+        )
+    return fields
 
 
 def events_enum_aliases(spec: dict) -> dict[str, str]:

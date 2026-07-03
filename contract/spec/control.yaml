@@ -48,6 +48,7 @@ objects:
   - name: Permissions
     fields:
       - {name: approval_tools, type: array:string_nonempty}
+      - {name: review_tools, type: array:string_nonempty}
       - {name: subagent_create, type: enum:subagent_create}
       - {name: filesystem, type: enum:filesystem_perm}
   - name: RuntimeConfig

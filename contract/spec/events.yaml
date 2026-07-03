@@ -15,7 +15,7 @@
 enums:
   subagent_source: [built-in, config-custom, runtime-custom]
   resume_decision: [approve, edit, reject, respond]
-  awaiting_kind: [tool_approval, ask_user]
+  awaiting_kind: [tool_approval, ask_user, result_review]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled, timeout]
 
@@ -74,6 +74,7 @@ notes:
   tool.returned.is_error: "严格必填 fail-loud：生产端始终发送；缺失即报错，绝不用默认 false 掩盖真失败。"
   tool.returned.artifact_ref: "大结果落 artifact，SSE 只带引用；P1 生产者。"
   tool.awaiting_approval.pending_tool_ids: "同帧完整待批 tool_id 列表；HITL『凑齐才提交』契约依据，web 读契约而非内嵌算法。"
+  tool.awaiting_approval.result: "仅 kind=result_review 时存在：待人工审核的已执行结果（payload 列表尾缀 ? = 该 kind 局部可选）。"
   tool.awaiting_approval.risk: "面向 web 的风险摘要，非权限判断真源。"
   run.completed.token_usage: "agent 认真算的用量全链路贯通；无用量时为 null。"
 
@@ -84,7 +85,7 @@ raw_kinds:
   - {kind: message.delta, payload: [segment_id, delta]}
   - {kind: message.completed, payload: [segment_id, content]}
   - {kind: tool.invoked, payload: [segment_id, tool_id, name, args]}
-  - {kind: tool.awaiting_approval, payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, risk, editable, input_schema, pending_tool_ids]}
+  - {kind: tool.awaiting_approval, payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, risk, editable, input_schema, pending_tool_ids, "result?"]}
   - {kind: tool.returned, payload: [segment_id, tool_id, name, result, is_error, rejected, reject_reason, responded, artifact_ref, summary]}
   - {kind: todo.updated, payload: [todos]}
   - {kind: subagent.started, payload: [segment_id, subagent_id, name, description, subagent_type, source]}
