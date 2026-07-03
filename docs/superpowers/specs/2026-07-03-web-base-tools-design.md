@@ -13,13 +13,17 @@
   tool.returned.truncated 既有护栏承担。
 - `KOKORO_WEB_FETCH_ALLOW_PRIVATE=1` 放行内网（本地开发用），默认拒。
 
-## web_search（配置即挂载，无配置不挂空壳）
+## web_search（配置即挂载，无配置不挂空壳；用户裁定后通用化）
 
-- SearchProvider 协议：`search(query, count) -> list[SearchHit{title,url,snippet}]`。
-- V1 实现：zhipu（open.bigmodel.cn /api/paas/v4/web_search，Bearer key）。响应经 Pydantic
-  TypeAdapter 洗净；API error body fail-loud 透传。
-- 装配：`KOKORO_WEB_SEARCH_PROVIDER=zhipu` + `KOKORO_WEB_SEARCH_API_KEY` 配齐才挂载
-  （实证：用户现有 coding key 无 web_search 资源包，429/1113——故默认不挂）。
+- 工具层 tools/web_search.py：SearchProvider 协议 + 格式化，**零 vendor 代码**（测试执法：
+  vendor 词汇出现即红）。
+- 适配器与工具同域管理 tools/web_search_providers.py（用户裁定：不占一级目录）：tavily（vendor-key，langchain 生态常用）/
+  searxng（自托管开放标准，无 key）/ zhipu（用户现有生态）——注册表选择，谁都不特权。
+  响应统一 parse_hits（url/link、content/snippet 别名归一）TypeAdapter 洗净；非 200 fail-loud。
+- 装配：`KOKORO_WEB_SEARCH_PROVIDER` + `KOKORO_WEB_SEARCH_API_KEY`（searxng 用
+  `KOKORO_WEB_SEARCH_URL`）配齐才挂载（实证：用户 coding key 无 zhipu web_search 资源包，
+  429/1113——故默认不挂）。
+- 文件形态（用户裁定）：两个工具文件 web_fetch.py / web_search.py，各一职责。
 
 ## 验收
 

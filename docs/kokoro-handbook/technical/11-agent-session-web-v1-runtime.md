@@ -784,11 +784,13 @@ web_fetch：httpx + bs4 正文提取；SSRF 防御（仅 http/https，DNS 解析
 KOKORO_WEB_FETCH_ALLOW_PRIVATE=1 供本地开发（fake-IP 代理环境域名会解析进
 198.18.0.0/15，守卫按生产语义正确拒绝——本地放行属机器级政策）。
 
-web_search：SearchFn 注入（provider 可插拔），V1 实现 zhipu
-（/api/paas/v4/web_search，响应 TypeAdapter 洗净，错误体 fail-loud 透传）。
-KOKORO_WEB_SEARCH_PROVIDER=zhipu + KOKORO_WEB_SEARCH_API_KEY 配齐才挂载——
-无配置不挂空壳（与内建子代理同一诚实原则）。实证：coding 套餐 key 无 web_search
-资源包（429/1113），故默认不挂。
+web_search（用户裁定通用化）：工具层 tools/web_search.py 只含 SearchProvider
+协议 + 格式化，零 vendor 代码（测试执法 vendor 词汇即红）；适配器在
+tools/web_search_providers.py 注册表（tavily / searxng 自托管开放标准 / zhipu，
+谁都不特权），响应 parse_hits 别名归一 + TypeAdapter 洗净，非 200 fail-loud。
+KOKORO_WEB_SEARCH_PROVIDER(+API_KEY / searxng 用 _URL) 配齐才挂载——无配置
+不挂空壳（与内建子代理同一诚实原则）。实证：用户 coding key 无 zhipu 资源包
+（429/1113），故默认不挂。
 
 设计文档：docs/superpowers/specs/2026-07-03-web-base-tools-design.md。
 ```
