@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-03 (Langfuse trace 点亮 — "等凭证"挂账清零)
+- 自托管 Langfuse v3（compose 项目 kokoro-langfuse，web :3310，headless init 预置 pk/sk-lf-kokoro-local；redis/postgres/clickhouse/minio 全不占宿主端口）。用户 .env 已配三元组，trace 即开即用（UI dev@kokoro.local）。
+- **scripts/trace-verify.py 7/7 PASS**：LocalFake HITL 双暂停全流程 → Langfuse API 断言 3 段 trace 同 kokoro_run_id + 同 sessionId 归组——HITL trace 连续性达成（连续性=可归组的多段，非单条长链）。
+- 途中修正：session RunStatus 词汇是 active|terminal（我误猜 completed）；snapshot 以 active_run 缺席判终态。
+- **业务编排状态答复**：V1 完备（通用主 agent + namespace 预设入口 + 委派三档 + 五面挂载全活）；swarm P2 后置。
+- 剩余挂账仅：e2b 部署、canvas 产品面、tavily/zhipu key、music/platform、前置改参 normalizer（等首个真实用例）。
+
 - Date: 2026-07-03 (skills 子系统实证 + 修活 — 最后一个未验证挂载面清零)
 - **实证抓到真缺陷**：deepagents 原生 skills 渐进披露依赖模型 read_file 宿主路径，state 虚拟 backend 下读不到 SKILL.md（探针：源路径进 prompt 但清单 "No skills available yet"）——skills 子系统在默认部署形态下整个是死的。
 - **V1 修法（全文注入）**：mounts.py 改 render_skills_prompt（lock sha256 fail-closed + ≤32k 上限 + 去重保序 + 全文渲染 ## Skills 段），worker 拼进 system_prompt；build_agent 移除死参数 skills=/memory=。升级路径（沙箱供给→回归渐进披露）已入 handbook 注记。

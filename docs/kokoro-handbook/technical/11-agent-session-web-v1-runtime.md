@@ -807,3 +807,14 @@ backend 无关、确定性。create_deep_agent 的 skills=/memory= 参数已从�
 真栈验证：real-model-verify 场景 D——namespace profile 挂 skill，glm-5 遵循其输出
 约定（19/19 PASS）。
 ```
+
+## 实现注记（2026-07-03 追加：Langfuse trace 点亮）
+
+```text
+自托管 Langfuse v3（官方 compose，web:3310，LANGFUSE_INIT_* headless 预置项目/密钥；
+内部组件不占宿主端口）。agent 侧 trace_config 原样生效：LANGFUSE_{PUBLIC_KEY,
+SECRET_KEY,HOST} 三者齐备才开，缺任一静默关闭。
+HITL trace 连续性法则（scripts/trace-verify.py 实证 7/7）：暂停/恢复的每个执行段
+各自成 trace，靠 metadata.kokoro_run_id 归组同一 run、langfuse_session_id 归组
+同一会话——续段不是断链，是可归组的多段。
+```
