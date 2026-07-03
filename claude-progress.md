@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-03 深夜 (合入 main + 真栈浏览器走查 — **✅ 全部完成**)
+- **四仓 squash 合入 main**：parent 2bc8d50 / agent 6b992c0 / session 75a9025→d3c84fd / web ab119ac→f836a99；main 上全门禁 + 跨栈 e2e (23/23) 复验绿。rewrite/v2 分支保留未删。
+- **真栈浏览器走查**（agent LocalFake hitl + session:3101 redis db13+mongo + web:3002 Playwright）主路径全通：发消息→ask_user 问答卡（选项+自由输入+取消）→respond→write_file 审批卡（仅 批准/拒绝，respond/edit 正确隐藏）→批准→最终文本→composer 恢复；暂停中刷新 snapshot 水合后卡片直接可操作。
+- **走查抓获并修复 2 个真 bug**：① Mongo messages 按 created_at+随机 id 排序，同毫秒 user/assistant 对顺序随机 → 店内单调 ordinal（session d3c84fd，行为套件回归双后端）；② agent resume 后 tool.invoked/returned 的 segment 兜底漂移致 web 工具行重复 → reducer 工具步按 tool_id 归并（web f836a99，segment 漂移免疫回归测试）。修复后真栈复走全部正确。
+- **注意**：用户本机 3000/3001 有其自启的旧代码 dev 服务未动；e2e/走查容器与进程均已清理；截图存 scratchpad。
+- **待用户**：agent 侧 segment 漂移的根治（invoked/returned 应继承 awaiting 的 AIMessage segment——web 已免疫，agent 修复属锦上添花）记为后续小项。
+
 - Date: 2026-07-03 (/goal 三仓彻底重写 v2 + handbook 对齐 v2.1 — **✅ 全链完成，四仓 rewrite/v2 分支待合入**)
 - **v2 重写**：contract/ 重建为 spec 四部立法（events/control/streams/http）+ 确定性生成器 + check.py 字节门禁（verify.py 正则解析器/agent_wire 双 master/docs/protocol 手写规范全部退役）；三仓按蓝图推倒重建（agent 执行链路布局+TTL 租约+claim-before-emit、session contract/relay/store/transport/http 五模块+DB-first、web contract/core/engine/ui+显式状态机）。
 - **用户中途纠偏（关键）**：① 必须以 docs/kokoro-handbook（ADR-004/11/12/03/modules）为法——v2 撞了禁止项（conversationId/permissionMode）、错杀了 handbook P0 脚手架；② 业务编排=通用 Agent 层级调度专业能力（job 工具/subagent/skill/MCP），Studio=专业 agent 作主 agent，swarm 降 P2；③ 禁 workflow/team 模式（三线并行撞 session limit 全灭），改主控直施 + 单 subagent 串行。教训均入 memory。
