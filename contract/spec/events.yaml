@@ -9,13 +9,13 @@
 #                  replaced by the synthetic session.created + run.created; the other 13
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
-# tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user) — a
+# tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
 # nested field, distinct from the envelope `kind`; both stay readable side by side.
 
 enums:
   subagent_source: [built-in, config-custom, runtime-custom]
   resume_decision: [approve, edit, reject, respond]
-  awaiting_kind: [tool_approval, ask_user, result_review]
+  awaiting_kind: [tool_approval, ask_user_question, result_review]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled, timeout]
 

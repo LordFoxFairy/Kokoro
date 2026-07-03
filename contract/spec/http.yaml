@@ -13,7 +13,7 @@ enums:
   message_role: [user, assistant]
   message_status: [pending, streaming, completed, failed]
   pause_status: [pending, resolved, cancelled, expired]
-  awaiting_kind: [tool_approval, ask_user, result_review]
+  awaiting_kind: [tool_approval, ask_user_question, result_review]
   resume_decision: [approve, edit, reject, respond]
 
 # Snapshot read-model shapes (dependency order: leaves first). Exported for session/web.

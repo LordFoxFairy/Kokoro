@@ -172,7 +172,7 @@ def main() -> int:
 
         st4, snap = http("GET", f"/sessions/{SID}")
         pending = [p for p in snap.get("pending_pauses", []) if p["status"] == "pending"]
-        check("snapshot 暂停点可恢复", st4 == 200 and len(pending) == 1 and pending[0]["kind"] == "ask_user", f"{st4} pauses={len(pending)}")
+        check("snapshot 暂停点可恢复", st4 == 200 and len(pending) == 1 and pending[0]["kind"] == "ask_user_question", f"{st4} pauses={len(pending)}")
 
         tool_id1 = awaiting1[2]["payload"]["tool_id"] if awaiting1 else "?"
         d1 = f"dec_{uuid.uuid4().hex[:8]}"
