@@ -588,17 +588,10 @@ tools/ask_user.py
     不替代普通聊天消息。
     不直接调用 web。
 
-tools/names.py
-  存在理由：
-    集中声明 DeepAgents/Kokoro 共享的保留工具名。
-
-  放置理由：
-    工具名属于 tools 能力边界，不属于 run request。
-
-  禁止：
-    不注册工具实例。
-    不决定权限。
-    不放 provider 名。
+（原 tools/names.py 已解散：ask_user 名随工具本体（ask_user.py），
+保留名集合与冲突断言归工具集合治理（registry.py），
+mcp__{server}__{tool} 命名规则归其唯一消费者（mcp/tools.py）。
+文件名要表达业务动作，"names" 表达不了任何动作。）
 ```
 
 ### `subagents/`
