@@ -722,8 +722,9 @@ model_policy / permissions 覆盖；本实例租户由 KOKORO_NAMESPACE 决定�
   create_deep_agent(store=)：后端与 checkpoint 对齐（memory=InMemoryStore /
   sqlite=AsyncSqliteStore(<path>.store) / mongo=官方 langgraph-store-mongodb，
   集合 kokoro_agent_memory）。工具 save_memory / search_memory 恒挂载（核心工具，
-  与 ask_user_question 同级），store 命名空间前缀 = RunContext.namespace
-  （(namespace, "memories")）——跨租户结构性不可见，跨 run 同 namespace 持久可读。
+  与 ask_user_question 同级）。工具是通用存取原语（体内无租户概念）：隔离政策
+  在 worker 装配点经 make_memory_tools(scope) 注入，scope=租户 namespace，
+  store 前缀 (namespace, "memories")——跨租户结构性不可见，跨 run 同 namespace 持久可读。
 
 wire 截断法则
   tool.returned.truncated（契约可选 bool）：缺席 = 结果完整；true = wire 展示层
