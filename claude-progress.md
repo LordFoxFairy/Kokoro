@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-03 (skills 子系统实证 + 修活 — 最后一个未验证挂载面清零)
+- **实证抓到真缺陷**：deepagents 原生 skills 渐进披露依赖模型 read_file 宿主路径，state 虚拟 backend 下读不到 SKILL.md（探针：源路径进 prompt 但清单 "No skills available yet"）——skills 子系统在默认部署形态下整个是死的。
+- **V1 修法（全文注入）**：mounts.py 改 render_skills_prompt（lock sha256 fail-closed + ≤32k 上限 + 去重保序 + 全文渲染 ## Skills 段），worker 拼进 system_prompt；build_agent 移除死参数 skills=/memory=。升级路径（沙箱供给→回归渐进披露）已入 handbook 注记。
+- 验证：单测 7 项矩阵 + 真图 system prompt 行为断言；**real-model-verify 场景 D：glm-5 遵循 namespace 挂载 skill 的标记约定，19/19 PASS**；跨栈 e2e PASS；agent 287 pytest + pyright 0。
+- 五大挂载面（tools/mcp/subagents/memory/skills）至此全部四层验证（单测→e2e→真模型→真 UI 或 SSE）。
+
 - Date: 2026-07-03 (web_search 真调用点亮 — searxng 自托管，零 key)
 - 本地 docker 起 searxng（kokoro-searxng, :8888, --restart unless-stopped，settings 开 json format）；用户 .env 已配 KOKORO_WEB_SEARCH_PROVIDER=searxng + _URL——web_search 即开即用。
 - scripts/real-model-verify.py 增场景 C（searxng 可达才跑，否则 SKIP）：**16/16 PASS**——glm-5 真模型经 provider 注册表调 web_search（tool.invoked/returned 非错误）+ 原 thinking/subagent 场景回归。

@@ -794,3 +794,16 @@ KOKORO_WEB_SEARCH_PROVIDER(+API_KEY / searxng 用 _URL) 配齐才挂载——无
 
 设计文档：docs/superpowers/specs/2026-07-03-web-base-tools-design.md。
 ```
+
+## 实现注记（2026-07-03 追加：skills 全文注入）
+
+```text
+实证缺陷：deepagents 原生 skills（渐进披露=模型 read_file 宿主路径）在 state/e2b
+等虚拟 backend 下读不到 SKILL.md——skills 子系统事实性失效。
+V1 法则：skills 走全文注入——mounts.py 在 lock（sha256）fail-closed 校验后读取
+SKILL.md 全文（单 skill ≤32k，超限 fail-loud），渲染为 system prompt 的 ## Skills 段；
+backend 无关、确定性。create_deep_agent 的 skills=/memory= 参数已从装配移除（死面）。
+升级路径：沙箱供给（skill 文件真进沙箱文件系统）落地后回归 deepagents 渐进披露。
+真栈验证：real-model-verify 场景 D——namespace profile 挂 skill，glm-5 遵循其输出
+约定（19/19 PASS）。
+```

@@ -4,6 +4,7 @@
 场景 A：明令经 task 工具委派 researcher 子代理 → 断言 subagent.started/finished（+文本流）。
 场景 B：普通提问 → 断言 thinking.delta ≥ 1 且 message.completed 非空。
 场景 C：web_search 真调用（searxng 可达才跑，否则 SKIP）→ 断言 tool.invoked/returned。
+场景 D：namespace 挂载 skill（sha256 lock）→ 断言模型遵循 skill 输出标记。
 前置：redis:6379 + mongo:27017 + kokoro-agent/.env 真实凭据（OPENAI_BASE_URL/OPENAI_API_KEY）。
 """
 
@@ -17,6 +18,7 @@ import sys
 import threading
 import time
 import urllib.error
+import hashlib
 import urllib.request
 import uuid
 from pathlib import Path
@@ -130,10 +132,22 @@ def main() -> int:
          f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
         check=False, capture_output=True,
     )
+    skill_dir = scratch / "skills" / "kokoro-style"
+    skill_dir.mkdir(parents=True)
+    skill_md = (
+        "---\nname: kokoro-style\ndescription: 自我介绍风格约定\n---\n\n"
+        "# Kokoro 自我介绍风格\n\n当用户要求你自我介绍时：\n"
+        "1. 用一句话介绍自己。\n2. 最后单独一行输出字面量：via-skill:kokoro-style-v1\n"
+    )
+    (skill_dir / "SKILL.md").write_text(skill_md)
+    skill_lock = hashlib.sha256((skill_dir / "SKILL.md").read_bytes()).hexdigest()
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-rmv": {
                 "model_policy": {"default": {"provider": "openai", "name": "glm-5"}},
+                "skills": [
+                    {"name": "kokoro-style", "path": str(skill_dir), "lock": skill_lock}
+                ],
                 # 委派验证走产品正道：researcher 是 namespace 预设（内建目录按原则为空）。
                 "agents": {
                     "researcher": {
@@ -256,13 +270,28 @@ def main() -> int:
                   bool(returned) and returned[-1].get("is_error") is False, str(returned[-1:] or kinds_c))
             check("C: run.completed 收尾", kinds_c[-1:] == ["run.completed"], f"kinds={kinds_c}")
 
+        # 场景 D：skill 挂载生效（全文注入 system prompt → 模型遵循标记约定）。
+        sid_d = f"ses_rmv_{uuid.uuid4().hex[:8]}"
+        sse_d = SseReader(f"/sessions/{sid_d}/events")
+        st, receipt = http("POST", f"/sessions/{sid_d}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+            "content": "请自我介绍一下。",
+        })
+        check("D: POST messages → 202", st == 202, f"{st} {receipt}")
+        events_d = collect_run(sse_d)
+        kinds_d = [k for k, _ in events_d]
+        finals = [p.get("content", "") for k, p in events_d if k == "message.completed"]
+        check("D: 模型遵循 skill 标记", any("via-skill:kokoro-style-v1" in str(c) for c in finals),
+              (finals[-1][:200] if finals else f"kinds={kinds_d}"))
+        check("D: run.completed 收尾", kinds_d[-1:] == ["run.completed"], f"kinds={kinds_d}")
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nREAL-MODEL VERIFY FAIL — {len(FAILURES)} 项：")
             for f in FAILURES:
                 print(f"  - {f}")
             return 1
-        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search 真栈全绿")
+        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills 真栈全绿")
         return 0
     finally:
         session_proc.terminate()
