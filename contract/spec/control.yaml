@@ -37,6 +37,8 @@ objects:
       - {name: url, type: string_nonempty}
       - {name: allowed_tools, type: array:string_nonempty}
       - {name: timeout_s, type: int, optional: true}
+      # 个人/私有 MCP 的凭据直传（V1 内网）；升级路径=secret 引用+worker 侧解析。
+      - {name: headers, type: string_map, optional: true}
   - name: SubagentDef
     fields:
       - {name: name, type: string_nonempty}

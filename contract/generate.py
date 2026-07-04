@@ -71,6 +71,7 @@ _ZOD_SCALAR = {
     "boolean": "z.boolean()",
     "int": "z.number().int()",
     "record": "z.record(z.unknown())",
+    "string_map": "z.record(z.string())",
     "unknown": "z.unknown()",
     "literal_true": "z.literal(true)",
 }
@@ -80,6 +81,7 @@ _PY_SCALAR = {
     "boolean": "bool",
     "int": "int",
     "record": "dict[str, JsonValue]",
+    "string_map": "dict[str, str]",
     "unknown": "JsonValue",
 }
 
