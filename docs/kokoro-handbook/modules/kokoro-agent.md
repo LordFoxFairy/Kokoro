@@ -434,6 +434,19 @@ orchestration/assemble.py
     不查询 Hub。
     不扩大 RuntimeConfig 授权范围。
 
+orchestration/general.py
+  存在理由：
+    通用 agent 配方（现阶段唯一代码型成品）：工具解析 → 守卫 → 子代理 →
+    上下文 → 图。新增代码型成品（如 music）= prompts/<type>.md +
+    本目录 <type>.py + 契约加配方分派键，纯增量。
+
+  放置理由：
+    类型配方是编排域的本体；assemble.py 只留共享装配件。
+
+  禁止：
+    不消费 Redis。
+    不发布事件。
+
 orchestration/context.py
   存在理由：
     模型可见面的组合：compose_system_prompt（人格 + skills 全文）。
@@ -541,40 +554,45 @@ execution/publish_agent_events.py
     不做 Mongo 持久化。
 ```
 
-### `agents/`
+### `prompts/`
 
-`agents/` 是成品域：封装好的对外 agent 定义，每个成品一个子包，
-人格资源随包分发。
+`prompts/` 是 prompt 资产域：内置 agent 类型的人格文本集中管理。
+类型的两个家：资产在 prompts/<type>.md、配方在 orchestration/<type>.py；
+prompt 文本出现在 .py 里即红灯。入口元数据（名字/描述/能力束）归 session
+入口表（入口是数据不是代码），本仓不重复维护。
 
 ```text
-agents/general/__init__.py
+prompts/__init__.py
   存在理由：
-    通用 agent 成品人格 GENERAL_PERSONA：Kokoro 缺省主 agent 的人格文本，
-    session 入口表的内建 general 引用此身份。入口的名字/描述/能力束等
-    元数据活在 session 入口表（入口是数据不是代码），本仓不重复维护。
-
-  禁止：
-    不放能力装配逻辑。
-    不 import DeepAgents。
+    load_prompt(name) 包资源加载器 + GENERAL_PERSONA 常量。
 
   放置理由：
-    成品包结构约定：每个对外 agent 一个子包。
+    资产加载是本域唯一逻辑。
 
   禁止：
-    不读用户配置。
     不拼接动态上下文。
+    不读用户配置。
 
-agents/general/persona.md
+prompts/general.md
   存在理由：
-    通用 agent 的人格正文，随包分发。
+    通用 agent 的人格正文，session 入口表的内建 general 引用此身份。
 
   放置理由：
-    人格资源与成品定义同居本包。
+    人格资产随包分发、与同类集中。
 
   禁止：
     不放 secret。
     不放 site/user/workspace 私有内容。
-    不放用户动态数据。
+
+prompts/web-researcher.md
+  存在理由：
+    内置 web-researcher 子代理的人格正文（subagents/catalog.py 加载）。
+
+  放置理由：
+    同上：prompt 文本不进 .py。
+
+  禁止：
+    同上。
 ```
 
 ### `tools/`
