@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (自主时段末段：流式工具输出四仓收口 + token 熔断开工)
+- **tool.output.delta 全链落地**（契约 15/16 kind；agent a7a59f6 / session 02e1531 / web a5e681a / 父 5464d17）：投影层 output_deltas 不再 drain 弃置——发射进 wire（预算=TOOL_RESULT_MAX_CHARS 累计截停防刷屏），session 透传自动，web 穷尽分支 no-op（渲染留 canvas 期）。行为测试：增量序列在 invoked/returned 之间 + 预算截停；四仓门禁+e2e 绿。
+- **在飞：token 预算熔断**——已实证 ModelResponse.result=list[BaseMessage]（usage_metadata 累计点）+ awrap_model_call 熔断口。关键设计已定：**预算必须跨 HITL 段**（resume 重建 middleware 清零计数）→ 累计落 RunStateStore（add_tokens 方法，同 tool_results 模式，sqlite/mongo/fake 三实现）；政策=agent env 默认（KOKORO_RUN_TOKEN_BUDGET）+ 未来 profile 覆盖位。下一步：storage 方法 TDD → TokenBudgetMiddleware → 装配 → 行为测试（超限→run.failed(TokenBudgetExceeded)）。
+- 对抗复审子代理仍在跑（supervisor/storage/events/web_fetch 高危区），结果待验证并入。
+- 用户裁定记录：token 熔断=agent 执法+namespace 政策；聚焦 agent 子仓。
+
 - Date: 2026-07-04 (自主时段后半：入口级 skills + MCP wire 可读性 + 定时任务设计稿)
 - **入口级技能包**（session 43e4e80）：AgentSpec.skills——选中入口时在 namespace 常挂之上追加（同路径去重保序）；动态 skills P1a 落地，P1b（消息级选择子）待产品面。session 151 tests。
 - **MCP 结果 wire 可读性**（agent 186b333）：content blocks（list[{type,...}]）经 TypeAdapter 洗净后文本拼接上 wire（非文本块记 omitted 注记），不再是 Python repr。
