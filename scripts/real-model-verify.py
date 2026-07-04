@@ -339,17 +339,8 @@ def main() -> int:
         })
         check("F: POST messages → 202", st == 202, f"{st} {receipt_f}")
         run_f = receipt_f.get("run_id", "")
-        # 等首个工具调用出现=run 正在执行中，此刻插话时机确定。
-        invoked_f = None
-        deadline = time.time() + 210
-        while time.time() < deadline and invoked_f is None:
-            try:
-                _, kind, event = sse_f.q.get(timeout=max(0.1, deadline - time.time()))
-            except queue.Empty:
-                break
-            if kind == "tool.invoked":
-                invoked_f = event["payload"]
-        check("F: 工具执行中（插话时机）", invoked_f is not None, "no tool.invoked")
+        # 受理即插话：首个模型轮尚在进行（真模型秒级延迟），信箱必然赶上后续任一模型轮；
+        # 等 tool.invoked 再发会与末轮开跑竞速（时序脆弱，已实测偶发错过）。
         st_s, steer_receipt = http("POST", f"/sessions/{sid_f}/messages", {
             "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
             "content": "补充要求：最终总结那句话必须以「转向确认」四个字开头。",

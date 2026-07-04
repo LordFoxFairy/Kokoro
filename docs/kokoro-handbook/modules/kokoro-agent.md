@@ -237,6 +237,7 @@ kokoro_agent/
 
   orchestration/
     assemble.py
+    general.py
     context.py
 
   execution/
@@ -247,10 +248,10 @@ kokoro_agent/
     events.py
     publish_agent_events.py
 
-  agents/
-    general/
-      __init__.py
-      persona.md
+  prompts/
+    __init__.py
+    general.md
+    web-researcher.md
 
   tools/
     registry.py
@@ -435,8 +436,9 @@ orchestration/assemble.py
 
 orchestration/context.py
   存在理由：
-    模型可见面的唯一拼装点：compose_system_prompt（人格 + 按挂载工具的
-    行为指引 + skills 全文）与 render_tool_guidance。
+    模型可见面的组合：compose_system_prompt（人格 + skills 全文）。
+    工具用法不进 system prompt——活在各工具 description，
+    由 LangChain 经工具 schema 交给模型。
 
   放置理由：
     system prompt 组合属于每请求编排，不属于成品定义或执行。

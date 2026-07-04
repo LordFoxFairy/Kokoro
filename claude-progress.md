@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (用户三连批→整体形状定案：prompts 资产域 + 类型化配方)
+- **定案形状**：类型的两个家——资产在 prompts/<type>.md（general/web-researcher 已归位，prompt 文本出现在 .py 即红灯）、配方在 orchestration/<type>.py（general.py 现在；music 届时纯增量+契约加分派键）；agents/ 镜像目录撤销（第三个家=死结构）。
+- **工具用法彻底出 system prompt**：指引全文并进各工具 description（LangChain 经工具 schema 交模型），_SECTIONS/render_tool_guidance/guidance.py 全删；context.py=纯两段组合（人格+skills）。SteeringMiddleware 归 tools/middleware.py（运行时中间件之家）。
+- real-model 场景 F 时序脆弱修复（受理即插话，不与末轮竞速）。
+- 验证：agent 335 + pyright 0 + ruff；e2e PASS；real-model 26 项 PASS（含 F 复绿）。lessons 记"三连改被批不带思考"。
+
 - Date: 2026-07-04 (用户批 context.py 囤工具文案→指引随本体)
 - **工具指引文案归位**：ToolGuidance{requires,text} 随各工具模块（tools/*.GUIDANCE），context.py 只留拼装序——加/删工具不再触碰拼装点；防漂移钉子（各 GUIDANCE 必含自身工具名）。lessons 记"配套件二犯"。
 - 验证：agent 335 + pyright 0 + ruff + e2e PASS（行为保持，纯归置）。
