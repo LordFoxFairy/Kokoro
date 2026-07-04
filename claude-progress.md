@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-04 (R2 steering 全链落地 + 投影泄漏真缺陷修复 + HITL 卡文案法则)
+- **steering（运行中插话）四层全通**：契约 run.steer 帧（幂等键=message_id）→ ledger 信箱（keep-first、未认领 run 安全丢弃防毒化 try_claim）→ SteeringMiddleware.abefore_model 模型轮前排空注入（稳定 id、只挂主链）→ session 活跃 run 的 POST 从 409 改"落库+转 steer"（确定性 msg_steer_{idem} 双端幂等）→ web 输入恒可用（草稿非空=发送插话/空=停止）。
+- **走查抓出真缺陷**：注入的 HumanMessage 经 before_model 节点混进 v3 消息投影→冒充 assistant 正文上 wire。修法：正文通道只认 node=="model" 投影项，其余抽干防回压（test_steering 真图钉死）。
+- **HITL 卡设计缺陷（用户批评）**：英文 interrupt 模板+裸 JSON 当文案→法则"wire 只带数据，展示文案归 web(zh)"：问答卡渲染 args.question、ask_user 行隐藏 JSON、审批卡固定中文文案。language 轴（用户语言偏好随账户）待 auth/用户设置，现阶段文案全中文即正解。
+- 验证：agent 334 + session 152 + web 173 + 双 tsc/lint；e2e（含 steer 幂等断言）+ chaos；real-model 26 项双跑 PASS（场景 F：真模型运行中插话，产出以"转向确认"开头）；Playwright 全流程走查 3 截图（插话发送/卡片修复/正文无泄漏）。
+- 待办小尾巴：steer 投递失败仅 console.error（无 UI toast，P1）；context-layer-notes 已记前缀缓存追记（动态 skills 尾部化方向）。
+
 - Date: 2026-07-04 (R1 子代理执行面收口——用户拍板"先完成")
 - **子代理工具事件通道**：契约新增 subagent.tool.invoked/returned（raw 18 / browser 19 kind）；投影路由改造（子代理内工具含其自有 todo 走新通道，不再覆盖主 todo 面板；嵌套 task 不双发；截断语义同 tool.returned）；session 透传 + web 穷尽接收。
 - **general-purpose 守卫旁路收口**：orchestration 传同名 spec 覆盖内生 GP（tools/model 继承主 agent），守卫链齐挂；可达性政策不变。真图差分测试钉死（唯一守卫挂 GP、终态账本熔断出自 GP 子图内）。

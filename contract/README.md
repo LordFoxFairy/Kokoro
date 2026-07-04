@@ -68,6 +68,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `run.request` | run_id, thread_id, input, runtime, context, trace |
 | `run.resume` | run_id, thread_id, decisions |
 | `run.cancel` | run_id, thread_id |
+| `run.steer` | run_id, thread_id, message_id, content |
 
 ResumeDecision (discriminated on `type`):
 

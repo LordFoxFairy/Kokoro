@@ -17,3 +17,18 @@
 
 ## 时机
 挂 steering 单元之前（steering 需要干净注入点，顺序天然）。
+
+## 追记（2026-07-04，用户提示：动态 skills/MCP 与前缀缓存）
+
+同一 session 内 skills 开关 / MCP 变更是常态。当前 skills 走 system prompt 全文注入、
+工具面随 MCP 变化——两者都改写 prompt 头部/工具块 → **provider 前缀缓存整段失效**，
+长会话下每次切换都为全量历史重新付费。
+
+方向（不改变 V1 正解，进化路径）：
+1. **易变内容尾部化**：动态到达的 skill 内容按时间序注入消息流尾部（CC 渐进披露同构：
+   skill 经工具调用加载，内容以 tool result 落在历史尾），历史前缀不动 → 缓存保住。
+   steering 信箱已是同一形状（HumanMessage 尾部追加），skills 动态开启可复用该管道。
+2. **稳定段前置**：system prompt 排布恒定段（persona/工具指引）在前、易变段在后，
+   配合 provider 分段缓存断点（Anthropic cache_control）减少半程失效。
+3. **工具面变更（MCP 增删）无解层**：工具定义属 prompt 前缀，变更必失效——
+   政策上鼓励 entry 级工具集稳定，MCP 中途挂载为显式用户动作（成本可解释）。

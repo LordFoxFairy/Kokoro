@@ -329,13 +329,48 @@ def main() -> int:
                   str(returned[-1:] or kinds_e)[:200])
             check("E: run.completed 收尾", kinds_e[-1:] == ["run.completed"], f"kinds={kinds_e}")
 
+        # 场景 F：运行中插话（steering）——首个模型轮消费工具期间 POST 第二条消息，
+        # 产出必须反映插话要求（下一模型轮注入实证）。
+        sid_f = f"ses_rmv_{uuid.uuid4().hex[:8]}"
+        sse_f = SseReader(f"/sessions/{sid_f}/events")
+        st, receipt_f = http("POST", f"/sessions/{sid_f}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+            "content": "请用 web_search 搜索\"二分查找\"，然后用一句话总结它是什么。",
+        })
+        check("F: POST messages → 202", st == 202, f"{st} {receipt_f}")
+        run_f = receipt_f.get("run_id", "")
+        # 等首个工具调用出现=run 正在执行中，此刻插话时机确定。
+        invoked_f = None
+        deadline = time.time() + 210
+        while time.time() < deadline and invoked_f is None:
+            try:
+                _, kind, event = sse_f.q.get(timeout=max(0.1, deadline - time.time()))
+            except queue.Empty:
+                break
+            if kind == "tool.invoked":
+                invoked_f = event["payload"]
+        check("F: 工具执行中（插话时机）", invoked_f is not None, "no tool.invoked")
+        st_s, steer_receipt = http("POST", f"/sessions/{sid_f}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+            "content": "补充要求：最终总结那句话必须以「转向确认」四个字开头。",
+        })
+        check("F: 运行中插话 → 202 归属同 run",
+              st_s == 202 and steer_receipt.get("run_id") == run_f, f"{st_s} {steer_receipt}")
+        events_f = collect_run(sse_f)
+        kinds_f = [k for k, _ in events_f]
+        finals_f = [p.get("content", "") for k, p in events_f if k == "message.completed"]
+        check("F: 产出反映插话（下一模型轮注入生效）",
+              any("转向确认" in str(c) for c in finals_f),
+              (str(finals_f[-1])[:200] if finals_f else f"kinds={kinds_f}"))
+        check("F: run.completed 收尾", kinds_f[-1:] == ["run.completed"], f"kinds={kinds_f}")
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nREAL-MODEL VERIFY FAIL — {len(FAILURES)} 项：")
             for f in FAILURES:
                 print(f"  - {f}")
             return 1
-        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills / execute(local_shell) 真栈全绿")
+        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills / execute / steering 真栈全绿")
         return 0
     finally:
         session_proc.terminate()

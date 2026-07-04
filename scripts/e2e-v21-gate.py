@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """v2.1 跨栈 e2e 门禁：真 redis+mongo，agent(LocalFake HITL 脚本)→session→SSE 全链断言。
 
-覆盖：POST messages 幂等/409 准入、session.created/run.created 合成、ask_user respond、
+覆盖：POST messages 幂等/活跃 run 转 steer、session.created/run.created 合成、ask_user respond、
 write_file 审批 approve、decision_id 幂等、snapshot 暂停点恢复、Last-Event-ID 续传、
 终态收口后可开新 run。前置：redis:6379 + mongo:27017 + 两仓依赖已装。
 """
@@ -179,8 +179,14 @@ def main() -> int:
         awaiting1 = sse.wait(lambda i: i[1] == "tool.awaiting_approval")
         check("SSE: ask_user awaiting", awaiting1 is not None and awaiting1[2]["payload"]["kind"] == "ask_user_question",
               json.dumps(awaiting1[2]["payload"] if awaiting1 else {}, ensure_ascii=False)[:200])
-        st3, body3 = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "again"})
-        check("活跃 run 期间新消息 → 409", st3 == 409 and body3.get("error") == "session_run_active", f"{st3} {body3}")
+        ks = f"idem_{uuid.uuid4().hex[:8]}"
+        st3, body3 = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": ks, "content": "顺便注意编码"})
+        check("活跃 run 期间新消息 → 202 转 steer（归属活跃 run）",
+              st3 == 202 and body3.get("run_id") == run_id
+              and body3.get("assistant_message_id") == receipt.get("assistant_message_id"),
+              f"{st3} {body3}")
+        st3b, body3b = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": ks, "content": "顺便注意编码"})
+        check("steer 幂等：同 key 重发同 receipt", st3b == 202 and body3b == body3, f"{st3b} {body3b}")
 
         st4, snap = http("GET", f"/sessions/{SID}")
         pending = [p for p in snap.get("pending_pauses", []) if p["status"] == "pending"]

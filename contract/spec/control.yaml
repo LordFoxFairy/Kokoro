@@ -87,6 +87,12 @@ messages:
     fields:
       - {name: run_id, type: string_nonempty}
       - {name: thread_id, type: string_nonempty}
+  - kind: run.steer
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: thread_id, type: string_nonempty}
+      - {name: message_id, type: string_nonempty}
+      - {name: content, type: string_nonempty}
 
 # ResumeDecision arms, discriminated on `type`.
 resume_decisions:
@@ -110,3 +116,4 @@ resume_decisions:
 notes:
   run.request.thread_id: "LangGraph configurable.thread_id；V1 取值=session_id，命名只在 agent 边界。"
   run.request.trace: "观测专用（langfuse_trace_id 等），不参与业务；record 直透。"
+  run.steer.message_id: "运行中插话（模型轮粒度注入）；幂等键=message_id（keep-first），不打断进行中的工具。"
