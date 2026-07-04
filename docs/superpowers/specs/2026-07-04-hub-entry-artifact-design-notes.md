@@ -48,7 +48,38 @@ a) 不处理（模型通常能顺，V1 默认）；b) 切换时注入一条边�
 （工具包装或 after-tool middleware）把落盘产物翻译成 artifact_ref 上 wire。
 与 canvas/上传面同批做，避免只有生产者没有消费者。
 
-## 优先级建议
+## 一·v2 修订：用户资产库（用户指正：初版是管理员视角，漏了 C 端自助维度）
 
-hub（需要 platform 管理面）与产物（需要 canvas 消费面）都是**跨面单元**，agent 侧改动小、
-等产品面拍板同批做；入口切换 V1 语义已成立（零改动），标记消息按需一行加。
+**统一概念——"用户资产库"**：用户在 web 上拥有并随身携带的三类资产同构管理：
+skills（技能包）、MCP 配置（含个人凭据）、agent 预设（自定义子代理/入口人格）。
+作用域从三级修为**四级**：
+
+    platform 公共库 → namespace 团队库 → user 个人库 → entry/session 选择
+
+**遮蔽与治理**：同名冲突=更近者胜（entry > user > namespace > platform），但
+namespace 政策可**禁用/限制 user 资产**（企业治理：技能=提示注入面，团队空间可要求
+只用审核过的）。信任分级：platform=官方审核 / namespace=管理员审 / user=自担，
+user 级资产默认只作用于本人会话。
+
+**UGC 生命周期**：上传（web 表单/文件包）→ 校验（SKILL.md schema/大小/敏感内容 lint）
+→ 存储+lock(sha256) 版本化 → 挂个人库 → 可分享提升（user→namespace 采纳、
+namespace→platform 投稿审核）→ **下载/导出**（打包 zip，格式与 CC 目录约定兼容
+——数据可携带，也是与 CC 生态互通的入口）。
+
+**被用户维度暴露的两个契约缺口（实锤）**：
+1. `McpServer` 无凭据字段——个人 MCP（自带 token）上不了 wire。补法：加 `headers?`
+   （V1 直传，内网）；升级路径=改传 secret 引用、worker 从密钥托管取（用户私钥
+   绝不进 namespace 可见面）。
+2. `user_id` 此前因无产无消从契约移除（当时正确）；用户资产库是它回归的真需求
+   触发点（连带记忆按人分层）——**auth 先行，字段随用而归**。
+
+**放置结论不变且更清晰**：hub 全部归 platform/session 侧（含用户库的 CRUD/上传下载面）；
+agent 仍是纯消费者——四级作用域在 session resolve 合并成最终 RuntimeConfig，
+agent 契约除上述两个字段外零改动。
+
+## 优先级建议（v2）
+
+1. hub 数据模型+用户库上传/下载（platform/session 面，等产品排期）；
+2. McpServer.headers 契约补齐（小，可先行——个人 MCP 的最小可用）；
+3. auth/user_id 回归（hub 与记忆按人分层的共同前置）；
+4. 产物（等 canvas 消费面）；入口切换零改动已成立。
