@@ -39,9 +39,16 @@
 - HTTP 端点直连同一 ArtifactStore 后端（读侧实现与 agent 对称：目录/GridFS），
   流式回体 + content-type + content-length；未知 id → 404。
 
-### 4. web：按 MIME 渲染
-- tool 行有 `artifact` 时渲染产物卡：`audio/*`→播放器、`video/*`→播放器、
-  `image/*`→图、其余→下载链接（文件名+大小）；URL=session 产物端点。
+### 4. web：按 MIME 渲染（全格式预览矩阵）
+- tool 行有 `artifact` 时渲染产物卡，按 MIME 主类分派（用户裁定：预览支持各种格式）：
+  `audio/*`→播放器；`video/*`→播放器；`image/*`（含 svg）→图；
+  `text/markdown`→富文本（复用 thread 的 markdown 渲染器）；
+  `application/json`→格式化高亮；`text/csv`→表格（首 200 行）；
+  `text/html`→sandboxed iframe（srcdoc + sandbox 属性，禁脚本外联）；
+  `application/pdf`→iframe 内嵌预览；其余 `text/*`→等宽文本（首 64KB，截断标注）；
+  未知类型→下载卡（文件名+大小+MIME）。
+- 文本类预览由 web fetch 端点字节自行解码（UTF-8，失败降级下载卡）；
+  预览一律懒加载（点开产物卡才拉字节），大文件不拖累会话流。
 
 ## 三、首个真实生产者（验证锚）
 `generate_audio_sample` 暂不做——**用 execute/write 路径造不出真媒体**；验证锚改为：
