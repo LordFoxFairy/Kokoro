@@ -71,3 +71,18 @@ music 真工具（suno 等 API）属成品批次，接在本面之上零改动�
 - 产物入库 hub/跨会话检索——hub 批次；
 - 大小治理：V1 单产物上限 64MB（env 可调），超限工具侧 fail-loud；
 - 清理：随 R-retention 分层 TTL，本面只按 run 归属键预留。
+
+## 六、打磨补遗（执行前最后一轮自审）
+
+1. **路径穿越防御**：artifact_id 进 URL 且含名字段——目录后端 get 时 resolve 后必须
+   断言仍在根目录内（`..`/绝对路径注入即 404）；GridFS 天然免疫。
+2. **产物幂等**：id 弃随机 uuid，改 `{run_id}/{tool_call_id}-{name}`（确定性）——
+   HITL resume 重放/崩溃重拾重跑工具时 put 幂等覆盖，不产孤儿副本；
+   与 keep-first 工具结果缓存双保险。
+3. **后端选择归一**：`KOKORO_ARTIFACT_BACKEND=dir|mongo`（缺省 dir，随 checkpoint
+   二元律；mongo 档复用既有 KOKORO_MONGO_URL/DB），dir 根 `KOKORO_ARTIFACTS_DIR`
+   （缺省 ./kokoro_artifacts）。
+4. **摘要与截断**：content（给模型摘要）照常走 result 通道与 4000 字截断护栏，
+   与 artifact 字段互不影响；产物卡渲染不依赖 result 文本。
+5. **端点安全面**：session 产物端点沿用既有 CORS 锁定（仅本机 web），无鉴权前
+   不对公网暴露（与 messages 端点同边界，不新增风险面）。
