@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-04 (R-artifact 设计定稿——决策完备待"继续")
+- docs/superpowers/specs/2026-07-04-artifact-face-design.md：核心难点定案（agent/session 跨进程，backend FS 对 session 不可达 → **双面分工：backend FS 服务模型、共享 ArtifactStore 服务人**）；四层设计（agent 端口+content_and_artifact 类型化元数据通道拒路径嗅探 / 契约 artifact 对象替换 string 占位+产物 HTTP 端点 / session 直连同后端出字节 / web 按 MIME 渲染播放器）；验证锚=正弦波本地工具真产物场景 G；64MB 上限 fail-loud；版本/hub 检索/清理明确出界。
+- 用户裁定已入 memory："继续"=全程自主收口，执行期零决策残留。
+
 - Date: 2026-07-04 (系统总方案 v2——三仓全栈，music/video 北极星)
 - **docs/superpowers/specs/2026-07-04-system-master-plan-v2.md**：三仓四面总览、全栈十词法典、成品体系（本体论+对偶性+三元+新类型手册）、能力矩阵、13 条法则汇编、路线图重排——**R-artifact 升首位**（media 成品产出非文本，产物面=music/video 硬前置：content_and_artifact→artifact_ref→session 产物端点→web MIME 预览）→R-hub（含 profile.subagents 纯工人表）→music 落地→retention→外部件。v1 agent 方案标记取代。
 - 下一单默认：R-artifact（等拍板）。
