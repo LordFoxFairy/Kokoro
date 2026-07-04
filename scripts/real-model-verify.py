@@ -20,6 +20,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import hashlib
 import urllib.request
 import uuid
@@ -173,6 +174,9 @@ def main() -> int:
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
         "KOKORO_NAMESPACE": "team-rmv",
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
+        # 产物库两服务必须同后端同根（部署清单同款约束）。
+        "KOKORO_ARTIFACT_BACKEND": "dir",
+        "KOKORO_ARTIFACTS_DIR": str(scratch / "artifacts"),
     }
     searxng_url = os.environ.get("RMV_SEARXNG_URL", "http://127.0.0.1:8888")
     try:
@@ -199,6 +203,8 @@ def main() -> int:
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_ARTIFACT_BACKEND": "dir",
+        "KOKORO_ARTIFACTS_DIR": str(scratch / "artifacts"),
     }
     (scratch / "workspace").mkdir()
     session_proc = subprocess.Popen(
@@ -355,13 +361,44 @@ def main() -> int:
               (str(finals_f[-1])[:200] if finals_f else f"kinds={kinds_f}"))
         check("F: run.completed 收尾", kinds_f[-1:] == ["run.completed"], f"kinds={kinds_f}")
 
+        # 场景 G：产物面全链——真模型 export_artifact → wire artifact 引用 → 端点回读字节。
+        sid_g = f"ses_rmv_{uuid.uuid4().hex[:8]}"
+        sse_g = SseReader(f"/sessions/{sid_g}/events")
+        st, receipt_g = http("POST", f"/sessions/{sid_g}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+            "content": "请用 export_artifact 工具把这句话导出为 note.md（mime 用 text/markdown，"
+                       "encoding 用 text）：Kokoro 产物面已上线。导出后告诉我文件名。",
+        })
+        check("G: POST messages → 202", st == 202, f"{st} {receipt_g}")
+        events_g = collect_run(sse_g)
+        kinds_g = [k for k, _ in events_g]
+        arts = [p.get("artifact") for k, p in events_g
+                if k == "tool.returned" and isinstance(p.get("artifact"), dict)]
+        check("G: tool.returned 携带 artifact 引用", bool(arts), f"kinds={kinds_g}")
+        if arts:
+            art = arts[-1]
+            check("G: 引用元数据完备", art.get("mime") == "text/markdown" and art.get("bytes", 0) > 0, str(art))
+            quoted = "/".join(urllib.parse.quote(seg, safe="") for seg in str(art["artifact_id"]).split("/"))
+            try:
+                req = urllib.request.Request(f"{BASE}/sessions/{sid_g}/artifacts/{quoted}")
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    body = resp.read()
+                    check("G: 产物端点回读（MIME+immutable+字节）",
+                          resp.status == 200 and resp.headers["content-type"] == "text/markdown"
+                          and "immutable" in resp.headers.get("cache-control", "")
+                          and "产物面已上线" in body.decode("utf-8"),
+                          f"{resp.status} {resp.headers.get('content-type')} {body[:60]!r}")
+            except urllib.error.HTTPError as e:
+                check("G: 产物端点回读（MIME+immutable+字节）", False, f"HTTP {e.code}")
+        check("G: run.completed 收尾", kinds_g[-1:] == ["run.completed"], f"kinds={kinds_g}")
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nREAL-MODEL VERIFY FAIL — {len(FAILURES)} 项：")
             for f in FAILURES:
                 print(f"  - {f}")
             return 1
-        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills / execute / steering 真栈全绿")
+        print("\nREAL-MODEL VERIFY PASS — thinking/subagent/web_search/skills/execute/steering/artifact 真栈全绿")
         return 0
     finally:
         session_proc.terminate()

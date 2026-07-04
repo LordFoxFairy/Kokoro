@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (R-artifact 产物面全链落地——执行中，剩 UI 走查)
+- **四层全通**：契约 Artifact 对象+artifact 端点（generate.py 补 artifact path_fn）→ agent ArtifactStore（dir/GridFS 矩阵、确定性 id 幂等覆盖、双侧穿越防御）+ export_artifact 工具（content_and_artifact、InjectedToolCallId、64MB fail-loud）+ 投影升 wire（artifact_of 洗净、注入 ToolRuntime 剔出 wire args）→ session 产物端点（immutable 缓存、404）→ web ArtifactCard 全格式矩阵（媒体默认展开/文本懒加载）。
+- **实证陷阱两枚**：①显式 args_schema+extra=forbid 拒收注入 ToolRuntime→换 InjectedToolCallId 正道；②agent/session cwd 不同使默认 ./kokoro_artifacts 各指一处→验证脚本显式同根（部署清单两服务同后端同根是硬约束）。
+- 验证：agent 338 + pyright 0 + ruff；session 154 + web 174 + tsc/lint；e2e 回归 PASS；**real-model 33 项七场景 PASS**（G：真模型 export note.md → wire 引用 → 端点回读字节含原文）。
+- **待办（下一窗口即做）**：Playwright UI 走查产物卡截图（视觉改动铁律）；handbook 注记；四仓 CI 确认。
+
 - Date: 2026-07-04 (R-artifact 设计定稿——决策完备待"继续")
 - docs/superpowers/specs/2026-07-04-artifact-face-design.md：核心难点定案（agent/session 跨进程，backend FS 对 session 不可达 → **双面分工：backend FS 服务模型、共享 ArtifactStore 服务人**）；四层设计（agent 端口+content_and_artifact 类型化元数据通道拒路径嗅探 / 契约 artifact 对象替换 string 占位+产物 HTTP 端点 / session 直连同后端出字节 / web 按 MIME 渲染播放器）；验证锚=正弦波本地工具真产物场景 G；64MB 上限 fail-loud；版本/hub 检索/清理明确出界。
 - 用户裁定已入 memory："继续"=全程自主收口，执行期零决策残留。
