@@ -75,3 +75,8 @@
 ## 2026-07-04 对偶性检验句入册（成品/子代理二元论）
 - 场景：用户要求深度思考内部 subagent 与顶层成品的区别与设计；推导出对偶性定律并实锤修复 wire_subagents 解析断裂。
 - 收获（非错误，防漂移）：任何成品设计必须过问"降格为子代理时还能工作吗"；成品三元各归其家（资产 prompts/、bundle 归 session/hub 数据、配方 orchestration/<type>.py）；通用域出现类型词汇即红灯。
+
+## 2026-07-05 契约镜像漏批（web CI 红）
+- 场景：web 挑拣提交组件文件时把 generate 产出的 src/contract 镜像留在工作区，本地 tsc 绿（工作区有新镜像）、CI 红（checkout 旧镜像），并连带父仓 byte-diff 门禁红。
+- 我做错的：绕开 git add -A（因他人现场）改挑拣提交后，没有把"镜像与消费代码同批"当硬规则。
+- 下次怎么避免：contract generate 之后，各仓 src/contract 的改动永远属于当前批次；挑拣提交前跑 `git status src/contract` 自查；本地绿≠CI 绿，挑拣模式下以"CI 视角文件集"过一遍。
