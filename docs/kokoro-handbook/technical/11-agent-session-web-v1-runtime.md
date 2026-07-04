@@ -829,3 +829,37 @@ general 是协调者身份，恒不进委派下属名单。wire 契约零改动
 （general 未覆盖时 system_prompt 缺席 → agent 内置人格，原语义）。
 studio 入口选择器（P1 产品面）直接枚举 listEntries。
 ```
+
+## 实现注记（2026-07-04 追加：自主时段两轮）
+
+```text
+韧性三件（全混沌实证）
+  暂停 run control 监听收养：认领 worker 崩溃后由任意存活 worker 心跳收养
+  （RunStateStore.list_paused + consumer group 去重）——resume 永不石沉大海。
+  session 崩溃恢复：重启后 snapshot 从持久层收敛，暂停现场完好续走（chaos 11/11）。
+  SIGTERM 优雅停机：停止消费 + KOKORO_DRAIN_TIMEOUT_S 限时等活跃 run；超时如实上报，
+  恢复权归 TTL 租约。
+
+熔断双闸
+  步数：KOKORO_RECURSION_LIMIT（默认 100）→ GraphRecursionError → run.failed。
+  token：KOKORO_RUN_TOKEN_BUDGET（默认 0=关；数值属政策，未来 profile 覆盖位）——
+  RunStateStore.add_tokens 跨 HITL 段累计（resume 重建不清零），超限 TokenBudgetExceeded。
+
+流式增量双 kind（契约 16 raw / 17 browser）
+  tool.output.delta：长执行工具增量上 wire（累计上限同 result 护栏，超限静默停发）。
+  subagent.thinking.delta：子代理推理不再弃置。web 侧 V1 均为 no-op 分支（渲染留 canvas 期）。
+
+内建子代理法则（补充）
+  实现但默认关（用户裁定）：KOKORO_BUILTIN_SUBAGENTS 按名启用（未知名 fail-loud）；
+  装配点解析工具实例，声明工具缺任一则整个不挂且不入 deny 声明集。首个真内建：
+  web-researcher（search+fetch，只读）。
+
+system prompt 组合法则
+  三段：人格（入口预设或内置 system.md）+ 行为指引（guidance.py，段落仅在其全部所需
+  工具真挂载时出现——不教模型调用不存在的工具）+ skills 全文。真模型实证：无工具名
+  提示下自发 save_memory。
+
+wire 子代理定义
+  SubagentDef.tools 按名解析为已挂载实例（未知名 fail-loud）、model 经工厂实例化；
+  缺省继承主 agent。RunInput 契约减法至 message_id+content。
+```
