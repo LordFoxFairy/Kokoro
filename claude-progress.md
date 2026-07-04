@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-05 (R-retention agent 侧落地——通用地基继续)
+- **终态 run 清扫**：ledger.purge_terminal(max_age_ms)——终态且超龄的 run 连同附属（tool_results/token/usage/steers）整体清除，terminal_at 随认领落列（sqlite 加列/mongo $set/Fake，矩阵 32）；心跳里执行（KOKORO_RETENTION_RUN_TTL_S，0=默认关）。
+- **事件流终态存活期**：StreamPort.expire（redis EXPIRE/memory 记录）；终态 teardown 设 TTL（KOKORO_RETENTION_EVENTS_TTL_S，0=关；mongo session_events 是回放真源，流非权威）。
+- checkpoint 90 天层按提案"先实证"仍留册（langgraph saver 表结构专项）；memory store 默认永久不动。
+- 验证：agent 343 + pyright 0 + ruff；e2e + chaos PASS；三条 retention 行为测试（终态设 TTL/心跳清扫/默认全关零副作用）。
+- 待办不变：产物卡浏览器截图（dev 锁仍被 i18n 会话持有）；steer 失败 toast（P1）。
+
 - Date: 2026-07-04 (R-artifact 产物面全链落地——执行中，剩 UI 走查)
 - **四层全通**：契约 Artifact 对象+artifact 端点（generate.py 补 artifact path_fn）→ agent ArtifactStore（dir/GridFS 矩阵、确定性 id 幂等覆盖、双侧穿越防御）+ export_artifact 工具（content_and_artifact、InjectedToolCallId、64MB fail-loud）+ 投影升 wire（artifact_of 洗净、注入 ToolRuntime 剔出 wire args）→ session 产物端点（immutable 缓存、404）→ web ArtifactCard 全格式矩阵（媒体默认展开/文本懒加载）。
 - **实证陷阱两枚**：①显式 args_schema+extra=forbid 拒收注入 ToolRuntime→换 InjectedToolCallId 正道；②agent/session cwd 不同使默认 ./kokoro_artifacts 各指一处→验证脚本显式同根（部署清单两服务同后端同根是硬约束）。
