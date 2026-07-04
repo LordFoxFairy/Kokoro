@@ -4,9 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (16)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (17) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 15
+#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   browser (19) — session emits, web parses. run.started is consumed by session and
+#                  replaced by the synthetic session.created + run.created; the other 17
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
@@ -80,6 +80,8 @@ notes:
   tool.awaiting_approval.result: "仅 kind=result_review 时存在：待人工审核的已执行结果（payload 列表尾缀 ? = 该 kind 局部可选）。"
   tool.awaiting_approval.risk: "面向 web 的风险摘要，非权限判断真源。"
   run.completed.token_usage: "agent 认真算的用量全链路贯通；无用量时为 null。"
+  subagent.tool.invoked.args: "子代理内工具过程可见性通道；HITL 审批仍走主通道嵌套帧，无输出增量通道（终值走 returned）。"
+  subagent.tool.returned.truncated: "同 tool.returned.truncated：缺席=结果完整。"
 
 # raw wire kinds (agent-out / session-in), wire order.
 raw_kinds:
@@ -97,6 +99,8 @@ raw_kinds:
   - {kind: subagent.thinking.delta, payload: [segment_id, subagent_id, delta]}
   - {kind: subagent.text.delta, payload: [segment_id, subagent_id, text]}
   - {kind: subagent.text.completed, payload: [segment_id, subagent_id, text]}
+  - {kind: subagent.tool.invoked, payload: [segment_id, subagent_id, tool_id, name, args]}
+  - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?"]}
   - {kind: run.completed, payload: [status, token_usage]}
   - {kind: run.failed, payload: [error_kind, message]}
 
@@ -122,5 +126,7 @@ browser_order:
   - subagent.thinking.delta
   - subagent.text.delta
   - subagent.text.completed
+  - subagent.tool.invoked
+  - subagent.tool.returned
   - run.completed
   - run.failed

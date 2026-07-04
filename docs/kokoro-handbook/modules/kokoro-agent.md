@@ -1815,3 +1815,18 @@ KOKORO_LEDGER_DB（原 KOKORO_RUN_STATE_* 拼写作废）。
 分层叙事一句话：contract 进 → worker 调度 → orchestration 拼装 →
 execution 执行 → agents 出人格；state 是图状态，ledger 是账本。
 ```
+
+## 实现注记（2026-07-04，子代理执行面收口）
+
+```text
+契约新增 subagent.tool.invoked / subagent.tool.returned（raw 18 kind /
+browser 19 kind）：子代理内工具过程上 wire（含其自有 todo，不再覆盖主
+todo 面板），无输出增量通道，结果截断语义同 tool.returned。HITL 审批
+仍走主通道嵌套帧。真模型实证：子代理内 web_search 的成对事件与
+subagent_id 归属（real-model-verify 场景 A）。
+deepagents 内生 general-purpose 守卫旁路收口：orchestration 传同名 spec
+显式覆盖（tools/model 缺省继承主 agent），middleware 挂满守卫下发链
+（TerminalGuard/TokenBudget/review）；可达性政策不变（不进 declared 集，
+仍仅 subagent_create=allow 档可达）。此前 handbook 注记的
+"general-purpose 仅 allow 档可达且不带闸" residual 至此消除。
+```

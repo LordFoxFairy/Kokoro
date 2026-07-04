@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (R1 子代理执行面收口——用户拍板"先完成")
+- **子代理工具事件通道**：契约新增 subagent.tool.invoked/returned（raw 18 / browser 19 kind）；投影路由改造（子代理内工具含其自有 todo 走新通道，不再覆盖主 todo 面板；嵌套 task 不双发；截断语义同 tool.returned）；session 透传 + web 穷尽接收。
+- **general-purpose 守卫旁路收口**：orchestration 传同名 spec 覆盖内生 GP（tools/model 继承主 agent），守卫链齐挂；可达性政策不变。真图差分测试钉死（唯一守卫挂 GP、终态账本熔断出自 GP 子图内）。
+- 用户即时批评已落实：注释禁排期黑话（V1/P1 词汇重写为约束陈述，lessons 入册）。
+- 验证：agent 326 tests + pyright 0 + ruff；session 151 + web 171 + tsc；e2e 30 项 + chaos 双场景；**real-model 25 项 PASS**（场景 A 新增两断言：子代理内 web_search 成对事件 + subagent_id 归属，真模型实证）。
+
 - Date: 2026-07-04 (命名归一 + 总体方案成文)
 - **词汇法典归一**：三个"state"撞名收口——`run/state.py`→顶级 `state.py`（KokoroAgentState+RunScope，删空壳 run/ 包）；`storage/run_state.py`→`storage/ledger.py`（RunStateStore→RunLedger、Sqlite/MongoLedger、make_ledger、LedgerSettings）；env KOKORO_LEDGER_BACKEND/DB。用户裁定：**初期不留兼容层**（迁移闸写了又删，直接删旧换新）——入法则。
 - **总方案成文**：docs/superpowers/specs/2026-07-04-agent-master-plan.md（PRD+技术方案+词汇法典+八条设计法则汇编+R1~R5 拓展路线：R1 子代理执行面收口→R2 steering+context middleware→R3 hub 分发→R4 retention→R5 外部件）。

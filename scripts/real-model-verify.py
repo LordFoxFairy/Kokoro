@@ -237,8 +237,9 @@ def main() -> int:
         sse_a = SseReader(f"/sessions/{sid_a}/events")
         st, receipt = http("POST", f"/sessions/{sid_a}/messages", {
             "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
-            "content": "请务必使用 task 工具把这个问题委派给 researcher 子代理来回答（不要自己直接回答）："
-                       "二分查找的时间复杂度是多少？子代理返回后你用一句话总结。",
+            "content": "请务必使用 task 工具把任务委派给 researcher 子代理（不要自己直接回答）："
+                       "让它用 web_search 工具搜索\"二分查找 时间复杂度\"并给出一句话结论。"
+                       "子代理返回后你用一句话总结。",
         })
         check("A: POST messages → 202", st == 202, f"{st} {receipt}")
         events_a = collect_run(sse_a)
@@ -253,6 +254,14 @@ def main() -> int:
               and started[0].get("source") == "runtime-custom", str(started[:1]))
         subtext = sum(1 for k in kinds_a if k.startswith("subagent.text"))
         check("A: subagent 文本流出现", subtext >= 1, f"kinds={kinds_a}")
+        inner_invoked = [p for k, p in events_a if k == "subagent.tool.invoked"]
+        inner_returned = [p for k, p in events_a if k == "subagent.tool.returned"]
+        check("A: 子代理内工具事件上 wire（invoked+returned 成对）",
+              bool(inner_invoked) and bool(inner_returned), f"kinds={kinds_a}")
+        check("A: 子代理内工具事件带 subagent_id 归属",
+              bool(inner_invoked) and bool(inner_invoked[0].get("subagent_id"))
+              and inner_invoked[0].get("subagent_id") == (started[0].get("subagent_id") if started else None),
+              str(inner_invoked[:1]))
         check("A: run.completed 收尾", kinds_a[-1:] == ["run.completed"], f"kinds={kinds_a}")
 
         # 场景 C：web_search 真调用（searxng 自托管，无 key）。

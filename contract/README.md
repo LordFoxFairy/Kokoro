@@ -32,6 +32,8 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
+| `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
+| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
 | `run.failed` | error_kind, message |
 
@@ -54,6 +56,8 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
+| `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
+| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
 | `run.failed` | error_kind, message |
 
