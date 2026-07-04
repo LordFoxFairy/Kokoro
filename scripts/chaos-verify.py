@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+"""崩溃收养混沌验证：认领 worker 在 HITL 暂停期间被 SIGKILL，另一 worker 心跳收养其
+control 流并接续 resume 到终态。前置：redis:6379 + mongo:27017。
+
+关键点：run 状态走共享 sqlite（两 worker 同文件），checkpoint 同理；
+KOKORO_LEASE_HEARTBEAT_S=2 让收养在秒级发生。
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import signal
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.request
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SESSION_PORT = int(os.environ.get("CHV_SESSION_PORT", "3904"))
+BASE = f"http://127.0.0.1:{SESSION_PORT}"
+REDIS_URL = os.environ.get("CHV_REDIS_URL", "redis://127.0.0.1:6379/10")
+MONGO_URL = os.environ.get("CHV_MONGO_URL", "mongodb://127.0.0.1:27017")
+MONGO_DB = "kokoro_chaos_verify"
+
+FAILURES: list[str] = []
+
+
+def check(name: str, ok: bool, detail: str = "") -> None:
+    print(f"  [{'PASS' if ok else 'FAIL'}] {name}" + (f" — {detail}" if detail and not ok else ""))
+    if not ok:
+        FAILURES.append(f"{name}: {detail}")
+
+
+def http(method: str, path: str, body: dict | None = None):
+    req = urllib.request.Request(
+        BASE + path,
+        method=method,
+        data=None if body is None else json.dumps(body).encode(),
+        headers={"content-type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.status, json.loads(resp.read() or b"{}")
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read() or b"{}")
+
+
+def wait_port(port: int, timeout: float = 30.0) -> bool:
+    import socket
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        with socket.socket() as s:
+            s.settimeout(0.5)
+            if s.connect_ex(("127.0.0.1", port)) == 0:
+                return True
+        time.sleep(0.3)
+    return False
+
+
+def wait_pause(sid: str, seen: set[str], timeout: float = 60.0) -> dict | None:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        _, snap = http("GET", f"/sessions/{sid}")
+        for pause in snap.get("pending_pauses", []):
+            if pause["status"] == "pending" and pause["pause_id"] not in seen:
+                seen.add(pause["pause_id"])
+                return pause
+        time.sleep(0.5)
+    return None
+
+
+def wait_run_done(sid: str, timeout: float = 90.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        _, snap = http("GET", f"/sessions/{sid}")
+        if "active_run" not in snap:
+            return True
+        time.sleep(0.5)
+    return False
+
+
+def spawn_worker(scratch: Path, tag: str) -> subprocess.Popen:
+    env = {
+        **os.environ,
+        "KOKORO_LOCAL_FAKE_MODEL": "1",
+        "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
+        "KOKORO_STREAM_BACKEND": "redis",
+        "KOKORO_REDIS_URL": REDIS_URL,
+        "KOKORO_RUN_STATE_BACKEND": "sqlite",
+        "KOKORO_RUN_STATE_DB": str(scratch / "run-state.db"),
+        "KOKORO_CHECKPOINT_BACKEND": "sqlite",
+        "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
+        # 秒级心跳：收养窗口从默认 30s 压到 2s，混沌验证不用干等。
+        "KOKORO_LEASE_HEARTBEAT_S": "2",
+    }
+    return subprocess.Popen(
+        ["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=env,
+        stdout=(scratch / f"agent-{tag}.log").open("w"), stderr=subprocess.STDOUT,
+    )
+
+
+def main() -> int:
+    scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-chv-{uuid.uuid4().hex[:6]}"
+    scratch.mkdir(parents=True)
+    subprocess.run(["redis-cli", "-u", REDIS_URL, "flushdb"], check=True, capture_output=True)
+    subprocess.run(
+        ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
+         f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
+        check=False, capture_output=True,
+    )
+    (scratch / "namespaces.json").write_text(json.dumps({"namespaces": {"team-chv": {}}}))
+    session_env = {
+        **os.environ,
+        "KOKORO_SESSION_PORT": str(SESSION_PORT),
+        "KOKORO_STREAM_BACKEND": "redis",
+        "KOKORO_REDIS_URL": REDIS_URL,
+        "KOKORO_MESSAGE_STORE_BACKEND": "mongo",
+        "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
+        "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
+        "KOKORO_NAMESPACE": "team-chv",
+        "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
+    }
+    session_proc = subprocess.Popen(
+        ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+        stdout=(scratch / "session.log").open("w"), stderr=subprocess.STDOUT,
+    )
+    worker_a = spawn_worker(scratch, "a")
+    worker_b: subprocess.Popen | None = None
+    try:
+        check("session 端口就绪", wait_port(SESSION_PORT))
+        time.sleep(1.5)
+        sid = f"ses_chv_{uuid.uuid4().hex[:8]}"
+        st, receipt = http("POST", f"/sessions/{sid}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "帮我写个文件"})
+        check("POST messages → 202", st == 202, f"{st} {receipt}")
+        run_id = receipt.get("run_id", "")
+
+        seen: set[str] = set()
+        pause1 = wait_pause(sid, seen)
+        check("ask_user 暂停出现（worker A 认领）", pause1 is not None, str(pause1))
+        if pause1 is None:
+            return 1
+
+        # 混沌注入：SIGKILL 认领 worker——不给任何清理机会。
+        worker_a.kill()
+        worker_a.wait(timeout=10)
+        check("worker A 已被 SIGKILL", worker_a.returncode is not None)
+
+        worker_b = spawn_worker(scratch, "b")
+        time.sleep(4)  # ≥1 个心跳周期：B 扫描暂停 run 并收养 control 监听
+
+        # 用户此刻才作答：resume 必须被 B 接住。
+        http("POST", f"/sessions/{sid}/runs/{run_id}/control", {
+            "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+            "decisions": [{"type": "respond", "tool_id": pause1["tool_id"], "response": "chaos.txt"}]})
+        pause2 = wait_pause(sid, seen)
+        check("B 接住 resume 并推进到审批暂停", pause2 is not None and pause2["kind"] == "tool_approval",
+              str(pause2))
+        if pause2 is None:
+            return 1
+        http("POST", f"/sessions/{sid}/runs/{run_id}/control", {
+            "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+            "decisions": [{"type": "approve", "tool_id": pause2["tool_id"]}]})
+        check("run 在 B 上走到终态", wait_run_done(sid))
+
+        print(f"  logs: {scratch}")
+        if FAILURES:
+            print(f"\nCHAOS VERIFY FAIL — {len(FAILURES)} 项")
+            return 1
+        print("\nCHAOS VERIFY PASS — 认领 worker 崩溃后 HITL 由存活 worker 收养续走")
+        return 0
+    finally:
+        session_proc.terminate()
+        for proc in (worker_a, worker_b):
+            if proc is not None and proc.poll() is None:
+                proc.send_signal(signal.SIGTERM)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
