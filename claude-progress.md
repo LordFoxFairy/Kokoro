@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (自主时段后半：入口级 skills + MCP wire 可读性 + 定时任务设计稿)
+- **入口级技能包**（session 43e4e80）：AgentSpec.skills——选中入口时在 namespace 常挂之上追加（同路径去重保序）；动态 skills P1a 落地，P1b（消息级选择子）待产品面。session 151 tests。
+- **MCP 结果 wire 可读性**（agent 186b333）：content blocks（list[{type,...}]）经 TypeAdapter 洗净后文本拼接上 wire（非文本块记 omitted 注记），不再是 Python repr。
+- **定时任务设计稿**：docs/superpowers/specs/2026-07-04-scheduled-runs-design.md（提案待批）——触发器归 session（幂等键=schedule_id+fire_time）、创建归 agent 工具（前置改参首用例=既有 HITL edit）、409 跳过不排队。
+- 门禁：agent 294 + session 151 + e2e PASS；全推送。
+
 - Date: 2026-07-04 (自主时段：三真缺陷修复 + 深度体检报告)
 - **①暂停 run 永久卡死（严重）**：认领 worker 崩溃后 control 流无人监听，resume 石沉大海。修：RunStateStore.list_paused（sqlite/mongo/fake 三实现+行为矩阵）+ 心跳收养 control 监听（consumer group 去重）。证：scripts/chaos-verify.py 6/6（SIGKILL A→B 收养→续走到终态）。agent dcf3fdc。
 - **②wire 子代理 tools/model 静默丢弃**：wire_subagents 现按名解析实例（未知名 fail-loud）+ model 工厂实例化，缺省继承。agent 41d3773。
