@@ -92,8 +92,8 @@ def spawn_worker(scratch: Path, tag: str) -> subprocess.Popen:
         "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
         "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
-        "KOKORO_RUN_STATE_BACKEND": "sqlite",
-        "KOKORO_RUN_STATE_DB": str(scratch / "run-state.db"),
+        "KOKORO_LEDGER_BACKEND": "sqlite",
+        "KOKORO_LEDGER_DB": str(scratch / "ledger.db"),
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         # 秒级心跳：收养窗口从默认 30s 压到 2s，混沌验证不用干等。

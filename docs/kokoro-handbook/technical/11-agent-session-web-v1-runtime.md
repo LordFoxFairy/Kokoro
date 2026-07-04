@@ -835,7 +835,7 @@ studio 入口选择器（P1 产品面）直接枚举 listEntries。
 ```text
 韧性三件（全混沌实证）
   暂停 run control 监听收养：认领 worker 崩溃后由任意存活 worker 心跳收养
-  （RunStateStore.list_paused + consumer group 去重）——resume 永不石沉大海。
+  （RunLedger.list_paused + consumer group 去重）——resume 永不石沉大海。
   session 崩溃恢复：重启后 snapshot 从持久层收敛，暂停现场完好续走（chaos 11/11）。
   SIGTERM 优雅停机：停止消费 + KOKORO_DRAIN_TIMEOUT_S 限时等活跃 run；超时如实上报，
   恢复权归 TTL 租约。
@@ -843,7 +843,7 @@ studio 入口选择器（P1 产品面）直接枚举 listEntries。
 熔断双闸
   步数：KOKORO_RECURSION_LIMIT（默认 100）→ GraphRecursionError → run.failed。
   token：KOKORO_RUN_TOKEN_BUDGET（默认 0=关；数值属政策，未来 profile 覆盖位）——
-  RunStateStore.add_tokens 跨 HITL 段累计（resume 重建不清零），超限 TokenBudgetExceeded。
+  RunLedger.add_tokens 跨 HITL 段累计（resume 重建不清零），超限 TokenBudgetExceeded。
 
 流式增量双 kind（契约 16 raw / 17 browser）
   tool.output.delta：长执行工具增量上 wire（累计上限同 result 护栏，超限静默停发）。

@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (命名归一 + 总体方案成文)
+- **词汇法典归一**：三个"state"撞名收口——`run/state.py`→顶级 `state.py`（KokoroAgentState+RunScope，删空壳 run/ 包）；`storage/run_state.py`→`storage/ledger.py`（RunStateStore→RunLedger、Sqlite/MongoLedger、make_ledger、LedgerSettings）；env KOKORO_LEDGER_BACKEND/DB。用户裁定：**初期不留兼容层**（迁移闸写了又删，直接删旧换新）——入法则。
+- **总方案成文**：docs/superpowers/specs/2026-07-04-agent-master-plan.md（PRD+技术方案+词汇法典+八条设计法则汇编+R1~R5 拓展路线：R1 子代理执行面收口→R2 steering+context middleware→R3 hub 分发→R4 retention→R5 外部件）。
+- handbook modules/kokoro-agent.md 旧目录树（run/request.py 一代）同步真实现（子代理执行，待复核）。
+- 验证：agent 321 tests + pyright 0 + ruff；e2e 30 项 + chaos 双场景 PASS（重命名后全量复跑）。
+
 - Date: 2026-07-04 (存量裁剪——用户拍板：该移除的移除)
 - **timeout 死枚举移除**：run_completed_status 收窄为 [completed, cancelled]（零生产者实证后直接删，不建墙钟超时生产者）；contract generate+check 全镜像同步，agent 参数化测试同步收窄。
 - **定时任务提案作废**：后续走 MCP 机制（外挂 server 提供调度工具），不在 agent 内写死；scheduled-runs-design.md 已删。连带"前置改参 normalizer 挂点"失去首用例，继续搁置。

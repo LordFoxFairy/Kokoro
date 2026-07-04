@@ -218,45 +218,53 @@ collections。
 
 ## 目录架构
 
-目标目录按执行链路组织：
+当前目录按执行链路组织。分层叙事一句话：contract 进 → worker 调度 →
+orchestration 拼装 → execution 执行 → agents 出人格；state 是图状态，
+ledger 是账本。
 
 ```text
 kokoro_agent/
+  contract/
+    __init__.py
+    events.py
+    control.py
+    streams.py
+
   worker/
     main.py
+    supervisor.py
     messages.py
 
-  run/
-    request.py
+  orchestration/
+    assemble.py
     context.py
-    capabilities.py
-    lifecycle.py
-    events.py
-    json_payload.py
 
   execution/
     build_agent.py
     protocols.py
     run_agent.py
-    resume_agent.py
     approvals.py
     events.py
     publish_agent_events.py
-    prompts/
+
+  agents/
+    entry.py
+    general/
       __init__.py
-      system.md
+      persona.md
 
   tools/
     registry.py
     permissions.py
-    ask_user_question_question.py
-    names.py
+    ask_user_question.py
+    memory.py
+    web_fetch.py
+    web_search.py
+    middleware.py
 
   subagents/
     __init__.py
     catalog.py
-    definitions.py
-    types.py
 
   skills/
     mounts.py
@@ -267,22 +275,19 @@ kokoro_agent/
 
   sandbox/
     backend.py
-    policy.py
 
   storage/
     __init__.py
     checkpoints.py
-    memory.py
-    leases.py
-    run_state.py
-    mongo_lease_store.py
-    sqlite_lease_store.py
+    memory_store.py
+    ledger.py
+    sqlite.py
+    mongo.py
 
   streams/
     __init__.py
     factory.py
     protocol.py
-    json_types.py
     redis.py
     memory.py
 
@@ -290,10 +295,10 @@ kokoro_agent/
     __init__.py
     factory.py
     local_fake.py
-    settings.py
 
   config.py
   observability.py
+  state.py
 ```
 
 ## 目录与文件职责说明
@@ -308,15 +313,69 @@ kokoro_agent/
 
 回答不上来，不创建文件。
 
+### `contract/`
+
+`contract/` 是 wire 契约的单源镜像，由仓根 `contract/spec/*.yaml` 经
+`contract/generate.py` 生成（DO NOT EDIT，禁手改）。
+
+```text
+contract/__init__.py
+  存在理由：
+    导出生成的 wire 类型稳定入口。
+
+  放置理由：
+    生成物需要一个包级导入面。
+
+  禁止：
+    不手改。
+    不写业务逻辑。
+
+contract/events.py
+  存在理由：
+    定义 Agent 输出给 Session 的 RawAgentEvent 信封和 payload 类型（生成物）。
+
+  放置理由：
+    RawAgentEvent 是 run 的对外事实，不属于 DeepAgents 原生事件。
+
+  禁止：
+    不手改。
+    不生成 browser cursor。
+    不持久化 session event。
+
+contract/control.py
+  存在理由：
+    定义入站控制帧联合，如 run.request、run.resume、run.cancel（生成物）。
+    RunRequest 是整个执行链路的输入。
+
+  放置理由:
+    入站契约与出站事件同属 wire 单源镜像。
+
+  禁止：
+    不手改。
+    不读取环境变量。
+    不 import DeepAgents。
+
+contract/streams.py
+  存在理由：
+    定义 stream 名常量（生成物）。
+
+  放置理由：
+    流名是跨服务 wire 约定的一部分。
+
+  禁止：
+    不手改。
+    不放业务字段。
+```
+
 ### `worker/`
 
-`worker/` 是进程入口层，只负责接消息和调度执行链路。
+`worker/` 是调度域：进程入口装配 + 长驻调度，不写执行逻辑。
 
 ```text
 worker/main.py
   存在理由：
-    启动 worker 进程，加载配置，创建 Redis/Mongo/model 等依赖，
-    订阅 run/control 消息，然后调用 execution。
+    进程入口（约 100 行纯装配）：env 一次解析为 AppConfig，创建共享件，
+    把编排配方注入 Supervisor.serve。
 
   放置理由：
     这是进程入口，不是 Agent 执行逻辑。
@@ -327,12 +386,25 @@ worker/main.py
     不注册工具。
     不写业务状态机。
 
-worker/messages.py
+worker/supervisor.py
   存在理由：
-    解析和校验 Redis wire messages，如 run.request、run.resume、run.cancel。
+    长驻调度：请求流消费循环、per-run control 流独立化、per-message 隔离、
+    租约心跳与过期重拾、HITL resume 恢复、SIGTERM drain 优雅停机。
 
   放置理由：
-    这些是 worker 入站消息格式，不是 run 领域模型本身。
+    调度是 worker 域职责，与进程装配（main.py）分开。
+
+  禁止：
+    不拼装 agent 能力（那是 orchestration）。
+    不构造 wire 事件。
+    不做权限判断。
+
+worker/messages.py
+  存在理由：
+    入站帧薄解析：contract 校验 + 坏帧安全丢弃（skip-and-continue）。
+
+  放置理由：
+    这些是 worker 入站消息解析，不是 wire 契约本身。
 
   禁止：
     不创建 agent。
@@ -341,82 +413,39 @@ worker/messages.py
     不发布 raw events。
 ```
 
-### `run/`
+### `orchestration/`
 
-`run/` 描述一次 Agent 执行本身，不依赖 DeepAgents。
+`orchestration/` 是编排域：RunRequest + RuntimeConfig → 可运行 InvokableAgent。
+本次 run 被授权的能力（model、tools、skills、MCP、subagents、sandbox）
+经 wire RuntimeConfig 传入，在这里落地为一次装配。
 
 ```text
-run/request.py
+orchestration/assemble.py
   存在理由：
-    定义 RunRequest，描述 session 发来的单次执行请求。
+    每请求主配方：工具解析 → 守卫构造 → 子代理装配 → 上下文组合 → 图构建。
+    系统最重要的组装点。
 
   放置理由：
-    RunRequest 是整个执行链路的输入，必须独立于 worker 和 DeepAgents。
+    编排是调度（worker）和执行（execution）之间的拼装层。
 
   禁止：
-    不读取环境变量。
-    不创建模型。
-    不 import DeepAgents。
+    不消费 Redis。
+    不发布事件。
+    不查询 Hub。
+    不扩大 RuntimeConfig 授权范围。
 
-run/context.py
+orchestration/context.py
   存在理由：
-    定义 RunContext，描述 site/user/workspace/project/session/namespace 等上下文。
+    模型可见面的唯一拼装点：compose_system_prompt（人格 + 按挂载工具的
+    行为指引 + skills 全文）与 render_tool_guidance。
 
   放置理由：
-    context 是本次 run 的背景信息，不是权限实现，也不是数据库查询。
+    system prompt 组合属于每请求编排，不属于成品定义或执行。
 
   禁止：
-    不查数据库。
-    不做 Hub 查询。
-    不决定用户能用什么。
-
-run/capabilities.py
-  存在理由：
-    定义本次 run 被授权的能力：model、tools、skills、MCP、subagents、sandbox、memory。
-
-  放置理由：
-    capabilities 是 Agent 执行的核心输入边界。
-
-  禁止：
-    不安装 skill。
-    不连接 MCP。
-    不创建工具实例。
-    不扩大授权范围。
-
-run/lifecycle.py
-  存在理由：
-    定义 run 状态、终态和可恢复规则。
-
-  放置理由：
-    lifecycle 是 run 自己的状态语言。
-
-  禁止：
-    不写 Redis。
-    不抢 worker lease。
-    不发布 event。
-
-run/events.py
-  存在理由：
-    定义 Agent 输出给 Session 的 RawAgentEvent 信封和 payload 类型。
-
-  放置理由：
-    RawAgentEvent 是 run 的对外事实，不属于 DeepAgents 原生事件。
-
-  禁止：
-    不生成 browser cursor。
-    不持久化 session event。
-    不依赖 Redis/Mongo。
-
-run/json_payload.py
-  存在理由：
-    定义 JSON-safe payload 类型别名。
-
-  放置理由：
-    多个边界都需要 JSON payload 类型，放在 run 下避免散落。
-
-  禁止：
-    不做序列化副作用。
-    不放业务状态。
+    不放 secret。
+    不放 site/user/workspace 私有内容。
+    不读用户配置。
 ```
 
 ### `execution/`
@@ -427,8 +456,8 @@ run/json_payload.py
 ```text
 execution/build_agent.py
   存在理由：
-    把 RunRequest、RunContext、Capabilities 和配置转换为可运行 agent。
-    内部调用 DeepAgents 原生 create_deep_agent，并校验返回对象满足本仓执行协议。
+    DeepAgents 装配：静态 import 并调用原生 create_deep_agent，
+    出口收窄为 InvokableAgent 端口。
 
   放置理由：
     维护者要找的是“如何构建 agent”，不是 graph、adapter 或框架名。
@@ -444,7 +473,8 @@ execution/build_agent.py
 
 execution/protocols.py
   存在理由：
-    描述本仓对 DeepAgents/LangGraph stream 对象的最小协议。
+    LangGraph/DeepAgents 的窄 runtime_checkable 端口
+    （InvokableAgent、AgentRunStream 等），框架私有泛型止步于此。
 
   放置理由：
     这是 execution 使用的窄接口，不是全仓 ports 层。
@@ -456,30 +486,23 @@ execution/protocols.py
 
 execution/run_agent.py
   存在理由：
-    启动一次 agent 执行，并处理 completed / failed / cancelled。
+    invoke_once 单段执行编排：run.started → 投影泵 → interrupt 暂停 /
+    claim-before-emit 终态收口（completed / failed / cancelled）。
+    新 run 和 HITL resume 后的续段共用这一段主流程。
 
   放置理由：
-    这是一次新 run 的主流程。
+    这是一次 run 段的主流程。
 
   禁止：
     不注册全局 mutable tool registry。
     不实现工具本身。
     不把 LangChain event system 重写一遍。
 
-execution/resume_agent.py
-  存在理由：
-    把 session 发来的 resume 决策转换为 DeepAgents/LangGraph Command(resume=...)。
-
-  放置理由：
-    resume 是执行链路的一种入口，和新 run 分开更清楚。
-
-  禁止：
-    不自己实现审批状态机。
-    不伪造工具执行结果。
-
 execution/approvals.py
   存在理由：
-    处理 ApprovalRequest / ApprovalDecision 与 interrupt_on / Command(resume=...) 的边界转换。
+    HITL 权威唯一实现：pending 集合、awaiting 事件、resume 决策
+    fail-loud 对齐为 Command(resume=...)（含子代理嵌套帧回退）、
+    快照直发终态。
 
   放置理由：
     审批是 execution 的暂停和恢复边界。
@@ -488,10 +511,12 @@ execution/approvals.py
     不把 reject 当正常 tool result。
     不让 respond 用于危险工具。
     不跳过 edit 后的参数校验。
+    不伪造工具执行结果。
 
 execution/events.py
   存在理由：
-    构造 Kokoro RawAgentEvent。
+    wire 事件构造唯一地点（RunEmitter）：per-run 单调 index 单点递增，
+    contract strict 模型构造即校验。
 
   放置理由：
     这是 DeepAgents 原生 stream 和 Kokoro raw event 之间的输出语言。
@@ -503,7 +528,8 @@ execution/events.py
 
 execution/publish_agent_events.py
   存在理由：
-    从 DeepAgents typed stream 中取出 Kokoro 关心的事件并发布到 stream。
+    v3 四投影并发消费 + queue 合流单点发布：把 DeepAgents typed stream
+    投影为 wire 事件，哨兵必达 drain 收束，防回压死锁。
 
   放置理由：
     这里是执行过程的输出发布边界，不是独立 event framework。
@@ -512,39 +538,49 @@ execution/publish_agent_events.py
     不命名为 read_events.py 或 map_events.py。
     不维护跨服务顺序字段。
     不做 Mongo 持久化。
+```
 
-execution/prompts/
+### `agents/`
+
+`agents/` 是成品域：封装好的对外 agent 定义，每个成品一个子包，
+人格资源随包分发。
+
+```text
+agents/entry.py
   存在理由：
-    存放默认系统提示词和执行底座提示模板。
+    定义 AgentEntry dataclass（name/description/persona）：可作主 agent
+    的封装定义，人格为身份核心，能力束由编排层按 wire 装配。
 
   放置理由：
-    prompts 属于构建 agent 的输入。
+    入口形状是成品域的共享类型。
 
   禁止：
-    不放用户动态数据。
-    不放 site/workspace 私有配置。
+    不放能力装配逻辑。
+    不 import DeepAgents。
 
-execution/prompts/__init__.py
+agents/general/__init__.py
   存在理由：
-    读取随包分发的系统提示词资源。
+    通用 agent 成品 GENERAL_ENTRY：Kokoro 缺省主 agent，
+    session 入口表的内建 general 引用此身份。
 
   放置理由：
-    提示词资源属于构建 agent 的输入。
+    成品包结构约定：每个对外 agent 一个子包。
 
   禁止：
     不读用户配置。
     不拼接动态上下文。
 
-execution/prompts/system.md
+agents/general/persona.md
   存在理由：
-    默认系统提示词正文。
+    通用 agent 的人格正文，随包分发。
 
   放置理由：
-    文本资源与 prompt loader 同目录维护。
+    人格资源与成品定义同居本包。
 
   禁止：
     不放 secret。
     不放 site/user/workspace 私有内容。
+    不放用户动态数据。
 ```
 
 ### `tools/`
@@ -554,7 +590,8 @@ execution/prompts/system.md
 ```text
 tools/registry.py
   存在理由：
-    根据 capabilities 组装本次 run 的工具集合，交给 DeepAgents。
+    工具集合治理：保留名/冲突断言 + runtime.tools 解析为本次 run
+    可挂载工具集合，未知名 fail-loud。
 
   放置理由：
     工具集合是执行能力的一部分，但不是 run 请求类型。
@@ -566,7 +603,8 @@ tools/registry.py
 
 tools/permissions.py
   存在理由：
-    将 allow / ask / deny 策略转换为工具可用性和 interrupt_on 配置。
+    HITL interrupt_on 构造：审批工具集合每请求经 RuntimeConfig.permissions
+    注入，转换为工具可用性和 interrupt_on 配置。
 
   放置理由：
     这是工具调用前的治理，不是 UI 审批页面。
@@ -576,9 +614,9 @@ tools/permissions.py
     不写 session 状态。
     不让 sandbox 覆盖 deny。
 
-tools/ask_user_question_question.py
+tools/ask_user_question.py
   存在理由：
-    模型向用户请求补充信息的标准工具。
+    模型向用户请求补充信息的标准工具，HITL respond 流程的语义暂停点。
 
   放置理由：
     这是 Kokoro 明确拥有的默认工具。
@@ -588,7 +626,56 @@ tools/ask_user_question_question.py
     不替代普通聊天消息。
     不直接调用 web。
 
-（原 tools/names.py 已解散：ask_user_question 名随工具本体（ask_user_question_question.py），
+tools/memory.py
+  存在理由：
+    长期记忆工具：通用存取原语；归属 scope 在装配时注入，
+    工具体不含租户概念。
+
+  放置理由：
+    这是 Kokoro 自有的默认工具原语。
+
+  禁止：
+    不跨 namespace 泄漏。
+    不在工具体内解析租户。
+
+tools/web_fetch.py
+  存在理由：
+    web_fetch 底层工具：公网页面抓取 + 正文提取，SSRF 防御与
+    流式大小封顶（零 vendor 依赖）。
+
+  放置理由：
+    自建 fetch 工具属于 Kokoro 自有工具原语，文件名表达业务动作。
+
+  禁止：
+    不放行内网地址（本地开发经配置显式放行除外）。
+    不把大结果直接塞进 event。
+
+tools/web_search.py
+  存在理由：
+    web_search 底层工具：上半部为通用检索原语（SearchProvider 协议注入），
+    下半部为 provider 适配器注册表（tavily/searxng/zhipu）。
+
+  放置理由：
+    检索是 Kokoro 自有工具原语，provider 经配置即挂载。
+
+  禁止：
+    不在工具体内读环境变量。
+    不把 provider 名写进业务类型名以外的公共接口。
+
+tools/middleware.py
+  存在理由：
+    工具策略中间件集合：ToolPolicyMiddleware（未授权 fail-closed 拒绝、
+    授权放行并审计）、TerminalGuardMiddleware、TokenBudgetMiddleware、
+    ToolResultReviewMiddleware。
+
+  放置理由：
+    这些是工具调用前后的治理横切件，随工具域维护。
+
+  禁止：
+    不实现工具本身。
+    不发布 wire 事件。
+
+（原 tools/names.py 已解散：ask_user_question 名随工具本体（ask_user_question.py），
 保留名集合与冲突断言归工具集合治理（registry.py），
 mcp__{server}__{tool} 命名规则归其唯一消费者（mcp/tools.py）。
 文件名要表达业务动作，"names" 表达不了任何动作。）
@@ -601,10 +688,10 @@ mcp__{server}__{tool} 命名规则归其唯一消费者（mcp/tools.py）。
 ```text
 subagents/__init__.py
   存在理由：
-    导出稳定的 subagent catalog/definition API。
+    导出稳定的子代理类型与 catalog API。
 
   放置理由：
-    只作为包入口，便于 execution/build_agent.py 使用。
+    只作为包入口，便于编排层使用。
 
   禁止：
     不注册全局 mutable 状态。
@@ -612,7 +699,9 @@ subagents/__init__.py
 
 subagents/catalog.py
   存在理由：
-    管理内建和配置声明的子代理 catalog。
+    子代理目录：内建（如 web-researcher，经 KOKORO_BUILTIN_SUBAGENTS
+    点名启用，默认全关）+ 配置自定义（JSON 经注入），source 标签解析单点，
+    并产出 DeepAgents subagents 定义。
 
   放置理由：
     catalog 是本次 run 可用子代理定义的来源。
@@ -620,29 +709,9 @@ subagents/catalog.py
   禁止：
     不让模型静默写入。
     不查询 Hub。
-
-subagents/definitions.py
-  存在理由：
-    把 capabilities 中的 subagent 配置转换为 DeepAgents subagents 参数。
-
-  放置理由：
-    子代理是 Agent 能力，不是 worker 消息，也不是全局 Hub。
-
-  禁止：
     不让模型静默创建同权限子代理。
     不默认继承主 Agent 全部 tools/skills/MCP/sandbox。
     不维护 RuntimeSubagentRegistry。
-
-subagents/types.py
-  存在理由：
-    定义 RegisteredSubagent 和 SubagentSource。
-
-  放置理由：
-    这是子代理 catalog 和事件归属共用的稳定类型。
-
-  禁止：
-    不引用 DeepAgents 具体实现。
-    不放运行时 registry。
 ```
 
 ### `skills/`
@@ -699,7 +768,10 @@ mcp/tools.py
 ```text
 sandbox/backend.py
   存在理由：
-    创建 state / local_shell / e2b / custom backend。
+    filesystem 权限 + 执行 backend 选择：state 虚拟盘 / local_shell 真盘；
+    filesystem/backend 每请求经 wire 决定，local_shell 参数
+    （SandboxSettings：root/timeout/输出上限）进程级注入。
+    e2b/custom 在 V1 未落地，遇到即 fail-loud，不静默降级为 state。
 
   放置理由：
     backend 是工具和代码执行环境。
@@ -707,17 +779,8 @@ sandbox/backend.py
   禁止：
     不把 local_shell 作为生产默认。
     不吞掉 provider 初始化失败。
-
-sandbox/policy.py
-  存在理由：
-    定义 sandbox mode、scope、workspace access、network、timeout、resource limits。
-
-  放置理由：
-    sandbox policy 是执行环境约束，不是工具权限本身。
-
-  禁止：
     不让 sandbox 覆盖工具 deny。
-    不在 policy 里做账务或 Hub 判断。
+    不在这里做账务或 Hub 判断。
 ```
 
 ### `storage/`
@@ -727,7 +790,7 @@ sandbox/policy.py
 ```text
 storage/__init__.py
   存在理由：
-    导出 storage 稳定入口，如 make_run_state_store。
+    导出 storage 稳定入口，如 make_ledger。
 
   放置理由：
     只服务包导入，不承载业务逻辑。
@@ -738,7 +801,8 @@ storage/__init__.py
 
 storage/checkpoints.py
   存在理由：
-    持久化 LangGraph checkpoint，用于 resume、HITL 和故障恢复。
+    LangGraph checkpointer 工厂：sqlite（落盘）/ mongo（跨 pod）/
+    memory（易失），用于 resume、HITL 和故障恢复。
 
   放置理由：
     checkpoint 是 Agent 执行侧状态。
@@ -747,9 +811,10 @@ storage/checkpoints.py
     不写 session messages。
     不当作聊天历史事实源。
 
-storage/memory.py
+storage/memory_store.py
   存在理由：
-    管理 Agent memory/store。
+    长期记忆 store 工厂（LangGraph BaseStore）：后端与 checkpoint 对齐
+    （memory/sqlite/mongo），全官方实现。
 
   放置理由：
     memory 是 Agent 长期上下文，不是 session messages。
@@ -758,31 +823,25 @@ storage/memory.py
     不跨 namespace 泄漏。
     不替代 session 的消息存储。
 
-storage/leases.py
+storage/ledger.py
   存在理由：
-    管理 run worker lease，防重复执行。
-
-  放置理由：
-    lease 是 worker 多实例执行保护。
-
-  禁止：
-    不做 session 业务锁。
-    不决定 session 是否可创建新消息。
-
-storage/run_state.py
-  存在理由：
-    定义 RunStateStore 协议，约束 run 去重、resume、终态认领。
+    RunLedger 协议（控制面账本）与后端工厂 make_ledger / LedgerSettings：
+    多 pod 去重、TTL 租约防重复执行、HITL 暂停哨兵、终态原子认领、
+    add_tokens/add_usage 累计、tool_result keep-first。
 
   放置理由：
     这是 storage 内部稳定契约，不是 ports 目录。
+    lease 是 worker 多实例执行保护，归账本统一承载。
 
   禁止：
-    不写具体数据库逻辑。
-    不读取配置。
+    不写具体数据库逻辑（工厂选择除外）。
+    不做 session 业务锁。
+    不决定 session 是否可创建新消息。
 
-storage/mongo_lease_store.py
+storage/mongo.py
   存在理由：
-    Mongo 实现的 run state / lease store。
+    MongoLedger：跨 pod 共享的 run 状态存储，
+    $setOnInsert/条件更新给原子认领。
 
   放置理由：
     Mongo 是多 Pod 下的共享执行状态后端。
@@ -791,15 +850,15 @@ storage/mongo_lease_store.py
     不存 session messages。
     不存浏览器事件。
 
-storage/sqlite_lease_store.py
+storage/sqlite.py
   存在理由：
-    SQLite 实现的本地测试和单进程 run state store。
+    SqliteLedger：跨进程/重启的 run 状态存储，
+    WAL+busy_timeout 保真实争用下的原子性。
 
   放置理由：
-    SQLite 只服务 agent 本地测试和开发。
+    SQLite 服务本地开发、测试和单机部署。
 
   禁止：
-    不作为生产默认策略。
     不跨 Pod 使用。
 ```
 
@@ -832,7 +891,8 @@ streams/factory.py
 
 streams/protocol.py
   存在理由：
-    定义 StreamProtocol 和 StreamItem。
+    定义与后端无关的事件流契约（StreamPort）：publish 带保留上限、
+    consumer-group 订阅、cursor 不透明。
 
   放置理由：
     execution/worker 只依赖这个窄协议。
@@ -840,21 +900,12 @@ streams/protocol.py
   禁止：
     不绑定 Redis。
     不生成 browser cursor。
-
-streams/json_types.py
-  存在理由：
-    校验 stream payload 是否 JSON-safe。
-
-  放置理由：
-    stream 是 JSON wire 边界。
-
-  禁止：
     不放业务字段。
-    不做 schema 版本治理。
 
 streams/redis.py
   存在理由：
-    读写 Redis run/control/event stream。
+    Redis Streams 传输：XADD maxlen 裁剪 + XREADGROUP/XACK
+    consumer-group 消费，断线指数退避。
 
   放置理由：
     Redis 是跨服务传输层。
@@ -866,13 +917,14 @@ streams/redis.py
 
 streams/memory.py
   存在理由：
-    测试用内存 stream。
+    内存事件流：单进程默认后端，publish 即裁剪，
+    group 订阅与 ack 给 redis 等价语义。
 
   放置理由：
-    单测和本地 fake 需要快速替代 Redis。
+    单测和单进程部署需要快速替代 Redis。
 
   禁止：
-    不作为生产配置。
+    不跨进程使用。
     不成为第二事实源。
 ```
 
@@ -894,10 +946,12 @@ model/__init__.py
 
 model/factory.py
   存在理由：
-    根据 Capabilities 创建 chat model。
+    聊天模型工厂与 ChatModelSettings：provider/name/effort 每请求经
+    wire ModelConfig 决定（openai/anthropic/local_fake），
+    凭证进程级注入。
 
   放置理由：
-    模型 provider 是执行依赖。
+    模型 provider 是执行依赖，配置类型属于 model 能力边界。
 
   禁止：
     不决定最终价格。
@@ -906,7 +960,8 @@ model/factory.py
 
 model/local_fake.py
   存在理由：
-    测试和本地开发 fake model。
+    LocalFakeChatModel：离线确定性脚本化假模型，
+    无需凭证即可驱动真实 DeepAgents 循环。
 
   放置理由：
     fake model 是 model provider 的测试实现。
@@ -914,17 +969,6 @@ model/local_fake.py
   禁止：
     不进入生产默认。
     不掩盖真实 provider 错误。
-
-model/settings.py
-  存在理由：
-    定义模型 provider 配置和默认模型。
-
-  放置理由：
-    配置类型属于 model 能力边界。
-
-  禁止：
-    不扣积分。
-    不决定最终价格。
 ```
 
 ### 根文件
@@ -932,7 +976,8 @@ model/settings.py
 ```text
 config.py
   存在理由：
-    解析环境变量和 yaml 配置。
+    AppConfig：全部环境变量的唯一解析点，仅 worker/main.py 调用一次
+    并显式注入（含 KOKORO_LEDGER_BACKEND / KOKORO_LEDGER_DB 等）。
 
   放置理由：
     配置是全局启动输入。
@@ -944,7 +989,7 @@ config.py
 
 observability.py
   存在理由：
-    trace、log、metrics、error metadata。
+    Langfuse trace 配置构造：凭据齐备与否由注入的 settings 决定。
 
   放置理由：
     观测横切整个 worker。
@@ -952,6 +997,22 @@ observability.py
   禁止：
     不影响业务决策。
     不吞异常。
+
+state.py
+  存在理由：
+    “state”一词只指图状态轴：KokoroAgentState（DeepAgentState 扩展键
+    scope）+ RunScope（一次 run 的领域身份四元组
+    namespace/session_id/run_id/thread_id）。scope 随初始 input 进图、
+    落 checkpoint、resume 不重供仍保持。
+
+  放置理由：
+    图状态是横切执行链路的领域身份载体，不属于任何单一子域。
+
+  禁止：
+    图节点不得改写 scope。
+    不查数据库。
+    不做 Hub 查询。
+    不决定用户能用什么。
 ```
 
 ### 禁止目录和文件名
@@ -959,7 +1020,7 @@ observability.py
 命名红线按读者视角定义，不按框架内部术语定义：
 
 1. 不用框架品牌名或泛词做目录名。DeepAgents 是底座，可以 import，不成为 Kokoro 的架构语言；`runtime`、`adapters` 也太泛。
-2. 不套重 DDD 四层模板。Agent worker 是执行链路，目录必须按 `run/execution/tools/skills/mcp/sandbox/storage/streams/worker` 这条链路展开。
+2. 不套重 DDD 四层模板。Agent worker 是执行链路，目录必须按 `contract/worker/orchestration/execution/agents/tools/subagents/skills/mcp/sandbox/storage/streams/model` 这条链路展开。
 3. 不自造 LangChain/DeepAgents 已经有的事件系统，不新增 read/map event wrapper。
 4. 不用框架动作名或学术词做文件名。`invoke`、`projection`、`transformer` 不能告诉维护者业务职责。
 5. 不保留含糊类型名：`RuntimeSubagentRegistry`、`_LangChainActionRequest`、`RunJob`、`AgentRunOptions`、`KokoroRunContext`。
@@ -1589,13 +1650,14 @@ sandbox provider 状态。
   Python + uv
 
 关键环境变量：
+  KOKORO_STREAM_BACKEND=memory|redis
   KOKORO_REDIS_URL
-  KOKORO_AGENT_MONGO_URL
-  KOKORO_AGENT_CHECKPOINTER
-  KOKORO_AGENT_DEFAULT_BACKEND=state|local_shell|e2b|custom
+  KOKORO_MONGO_URL / KOKORO_MONGO_DB
+  KOKORO_CHECKPOINT_BACKEND / KOKORO_CHECKPOINT_DB
+  KOKORO_LEDGER_BACKEND / KOKORO_LEDGER_DB
+  KOKORO_BUILTIN_SUBAGENTS / KOKORO_CUSTOM_SUBAGENTS
   OPENAI_API_KEY
   ANTHROPIC_API_KEY
-  E2B_API_KEY
 
 多 Pod：
   runId lease。
@@ -1731,9 +1793,25 @@ P2：
 ```text
 wire 类型改为生成物：RawAgentEvent / 入站联合 / 流名常量位于
 kokoro_agent/contract/（由仓根 contract/spec 生成，DO NOT EDIT），
-本文 run/events.py、run/request.py 的手写镜像职责由生成物取代；
-run/ 仅保留非 wire 领域模型。raw 事件面为 14 kind（message.* 词汇，
-含 subagent.text.*），browser 面 15 kind 由 session 合成补齐。
-未创建零消费者的占位文件（lifecycle/definitions/policy 等），
-其职责落在 supervisor / approvals / catalog / sandbox.backend / run_state。
+本文早期版本 run 包内 events/request 的手写镜像职责由生成物取代；
+run 包当时仅保留非 wire 领域模型（该包后已删除，见下一条注记）。
+raw 事件面为 14 kind（message.* 词汇，含 subagent.text.*），
+browser 面 15 kind 由 session 合成补齐。
+未创建零消费者的占位文件（lifecycle/definitions/policy 等），其职责落在
+worker/supervisor.py / execution/approvals.py / subagents/catalog.py /
+sandbox/backend.py / storage/ledger.py。
+```
+
+## 实现注记（2026-07-04，命名定案）
+
+```text
+旧 run/ 包已删除。“state”一词从此只指图状态轴：根文件 state.py 承载
+KokoroAgentState（DeepAgentState 扩展键 scope）与 RunScope（身份四元组
+namespace/session_id/run_id/thread_id）。
+控制面账本改名 ledger：storage/ledger.py = RunLedger 协议 + make_ledger +
+LedgerSettings，后端实现为 SqliteLedger（storage/sqlite.py）与
+MongoLedger（storage/mongo.py）；env 变量为 KOKORO_LEDGER_BACKEND /
+KOKORO_LEDGER_DB（原 KOKORO_RUN_STATE_* 拼写作废）。
+分层叙事一句话：contract 进 → worker 调度 → orchestration 拼装 →
+execution 执行 → agents 出人格；state 是图状态，ledger 是账本。
 ```

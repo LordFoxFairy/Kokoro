@@ -146,8 +146,8 @@ def main() -> int:
         "KOKORO_REDIS_URL": REDIS_URL,
         "KOKORO_LOCAL_FAKE_MODEL": "1",
         "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
-        "KOKORO_RUN_STATE_BACKEND": "sqlite",
-        "KOKORO_RUN_STATE_DB": str(scratch / "run-state.db"),
+        "KOKORO_LEDGER_BACKEND": "sqlite",
+        "KOKORO_LEDGER_DB": str(scratch / "ledger.db"),
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
     }
