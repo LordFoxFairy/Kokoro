@@ -95,6 +95,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | POST | `/sessions/{session_id}/messages` |
 | GET | `/sessions/{session_id}` |
 | GET | `/sessions/{session_id}/events` |
+| GET | `/sessions/{session_id}/artifacts/{artifact_id}` |
 | POST | `/sessions/{session_id}/runs/{run_id}/control` |
 
 POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching

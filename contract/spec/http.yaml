@@ -101,6 +101,12 @@ endpoints:
     path_template: "/sessions/{session_id}/events"
     params: [session_id]
     note: "SSE; Last-Event-ID header carries the last seq the client saw (illegal => snapshot replay)."
+  artifact:
+    method: GET
+    path_fn: artifactPath
+    path_template: "/sessions/{session_id}/artifacts/{artifact_id}"
+    params: [session_id, artifact_id]
+    note: "二进制响应：content-type=产物 mime，content-length=字节数，Cache-Control: immutable（产物不可变）；未知 id => 404。artifact_id 含 '/'，客户端须 encodeURIComponent 逐段编码。"
   run_control:
     method: POST
     path_fn: controlPath

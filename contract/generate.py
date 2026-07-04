@@ -631,7 +631,7 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
     L.append("")
 
-    for key in ("start_message", "snapshot", "stream", "run_control"):
+    for key in ("start_message", "snapshot", "stream", "artifact", "run_control"):
         e = ep[key]
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
         body = _ts_template(e["path_template"], e["params"])
