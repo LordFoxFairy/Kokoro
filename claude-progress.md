@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 ("我信任你"自主批次：checkpoint TTL + steer 可见性 + 双 session chaos)
+- **checkpoint retention 三层补齐**：先实证 saver（官方 adelete_thread 存在、表无时间戳）→ 定案不穿透内部表：ledger 自养 thread 活跃账本（认领/resume 即 touch，三后端矩阵 34）+ 心跳清扫超龄 thread 经官方口删（KOKORO_RETENTION_THREAD_TTL_S，0=关；删=该会话新语义，session 消息史仍在）。
+- **steer 失败可见性（P1 尾巴清）**：engine 瞬态 notice 通道（不打断相位、下次提交自清）→ composer transport 行显示；web 179 tests。
+- **双 session 实例 chaos 场景三**：B 实例跨读 snapshot（活跃 run+暂停点）/ 跨发插话 202 / 跨发 resume → mongo 收敛终态——多 pod 承诺实证。
+- 验证：agent 346 + pyright 0 + ruff；e2e + chaos 三场景 PASS。剩余尾巴：产物卡浏览器截图（dev 锁仍被 i18n 会话持有）。
+
 - Date: 2026-07-05 (R-retention agent 侧落地——通用地基继续)
 - **终态 run 清扫**：ledger.purge_terminal(max_age_ms)——终态且超龄的 run 连同附属（tool_results/token/usage/steers）整体清除，terminal_at 随认领落列（sqlite 加列/mongo $set/Fake，矩阵 32）；心跳里执行（KOKORO_RETENTION_RUN_TTL_S，0=默认关）。
 - **事件流终态存活期**：StreamPort.expire（redis EXPIRE/memory 记录）；终态 teardown 设 TTL（KOKORO_RETENTION_EVENTS_TTL_S，0=关；mongo session_events 是回放真源，流非权威）。

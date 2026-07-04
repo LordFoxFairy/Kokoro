@@ -36,9 +36,9 @@ def check(name: str, ok: bool, detail: str = "") -> None:
         FAILURES.append(f"{name}: {detail}")
 
 
-def http(method: str, path: str, body: dict | None = None):
+def http(method: str, path: str, body: dict | None = None, base: str | None = None):
     req = urllib.request.Request(
-        BASE + path,
+        (base or BASE) + path,
         method=method,
         data=None if body is None else json.dumps(body).encode(),
         headers={"content-type": "application/json"},
@@ -210,7 +210,54 @@ def main() -> int:
         if FAILURES:
             print(f"\nCHAOS VERIFY FAIL — {len(FAILURES)} 项")
             return 1
-        print("\nCHAOS VERIFY PASS — worker 崩溃收养 + session 崩溃恢复 双场景全绿")
+        # 场景三：双 session 实例（多 pod 形态）——B 实例跨读/跨控同一 run，mongo 为一致性真源。
+        port_b = SESSION_PORT + 7
+        base_b = f"http://127.0.0.1:{port_b}"
+        env_b = {**session_env, "KOKORO_SESSION_PORT": str(port_b)}
+        session_b = subprocess.Popen(
+            ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=env_b,
+            stdout=(scratch / "session-b.log").open("w"), stderr=subprocess.STDOUT,
+        )
+        try:
+            check("S3: session B 端口就绪", wait_port(port_b))
+            sid3 = f"ses_chv_{uuid.uuid4().hex[:8]}"
+            st, receipt3 = http("POST", f"/sessions/{sid3}/messages", {
+                "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "帮我写个文件"})
+            check("S3: A 受理 → 202", st == 202, f"{st} {receipt3}")
+            run3 = receipt3.get("run_id", "")
+            seen3: set[str] = set()
+            pause3 = wait_pause(sid3, seen3)
+            check("S3: 暂停出现（A 侧）", pause3 is not None, str(pause3))
+            # 跨实例读：B 的 snapshot 从 mongo 看到同一活跃 run 与暂停点。
+            st, snap_b = http("GET", f"/sessions/{sid3}", base=base_b)
+            pending_b = [x for x in snap_b.get("pending_pauses", []) if x["status"] == "pending"]
+            check("S3: B 跨读 snapshot（活跃 run + 暂停点）",
+                  st == 200 and (snap_b.get("active_run") or {}).get("run_id") == run3
+                  and len(pending_b) == 1, f"{st} pauses={len(pending_b)}")
+            # 跨实例插话：经 B 对活跃 run POST → 202 转 steer。
+            st, steer_b = http("POST", f"/sessions/{sid3}/messages", {
+                "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "顺便注意编码"},
+                base=base_b)
+            check("S3: B 跨发插话 → 202 归属同 run", st == 202 and steer_b.get("run_id") == run3,
+                  f"{st} {steer_b}")
+            # 跨实例控制：经 B 提交 resume，worker 经 redis control 流接单。
+            assert pause3 is not None
+            st, _ = http("POST", f"/sessions/{sid3}/runs/{run3}/control", {
+                "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                "decisions": [{"type": "respond", "tool_id": pause3["tool_id"],
+                               "response": "文件名 chaos-b.txt"}]}, base=base_b)
+            check("S3: B 跨发 resume → 202", st == 202, str(st))
+            pause3b = wait_pause(sid3, seen3)
+            if pause3b is not None:
+                http("POST", f"/sessions/{sid3}/runs/{run3}/control", {
+                    "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                    "decisions": [{"type": "approve", "tool_id": pause3b["tool_id"]}]},
+                    base=base_b)
+            check("S3: run 收敛终态（A 侧落库）", wait_run_done(sid3))
+        finally:
+            session_b.kill()
+
+        print("\nCHAOS VERIFY PASS — worker 崩溃收养 + session 崩溃恢复 + 双 session 实例 三场景全绿")
         return 0
     finally:
         session_proc.terminate()
