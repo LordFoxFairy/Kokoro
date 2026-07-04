@@ -74,6 +74,23 @@ namespace profile（租户级常挂）。要"用户级/消息级动态"缺的是
 4. **sandbox 后端不可选**：session resolve 写死 state。修：`profile.backend`（state|local_shell）。
    证：real-model-verify 全程 local_shell + 场景 E（execute 审批 → 真 shell 输出回流，23/23）。
 
+## 5a. agent 本体"还没做"的能力账本（2026-07-04 下午复盘补充）
+
+逐项与 CC/生产级 agent runtime 对照后的诚实清单（已实证核对，非猜测）：
+
+| 能力 | 现状 | 判定 |
+|---|---|---|
+| 流式工具输出（execute 长命令增量） | 投影层有 output_deltas，**契约无 tool.output.delta kind**，长命令期间 wire 静默 | P1 —— 需契约新 kind + web 渲染，跨仓单元 |
+| 运行中追加消息（steering） | 活跃 run 撞 409（V1 故意）；CC 支持 mid-run 注入 | P1 产品决策 —— langgraph 侧可用 interrupt+resume 注入实现 |
+| 多模态输入（图片附件） | 契约已减法移除（无产无消）；模型面 glm-5V/claude 可接 | 真需求出现时：契约+session 上传面+HumanMessage content blocks，一次做完 |
+| 结构化输出（response_format） | create_deep_agent 原生支持，未暴露到 wire | P2 —— music/platform job 链的前置件 |
+| worker 优雅停机（SIGTERM drain） | 现靠 TTL 租约重拾兜底（已混沌验证），rollout 会有 ≤TTL 延迟尖峰 | P2 —— 停止消费+限时等活跃 run |
+| MCP 工具表缓存 | 每 run 全量 HTTP 拉取 | P2 —— TTL 缓存（注意工具漂移语义） |
+| 子代理 thinking 事件 | 子代理 reasoning 被丢（只透传 text） | P3 小improvement |
+| 模型瞬态重试 | **非缺口**：openai/anthropic SDK 默认 2 次重试已生效 | 已核对 |
+| 长会话上下文摘要 | **非缺口**：deepagents 主/子代理路径均默认挂 summarization middleware | 已核对 |
+| attachments/content_ref 静默丢弃 | **已处置**：契约减法（无产无消） | 3c83d16 |
+
 ## 5. 下一段需求清单（按优先级，等你拍板顺序）
 
 1. **契约减法**：移除 §2 六个死字段（机械，半小时级）。
