@@ -29,6 +29,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `todo.updated` | todos |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
+| `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
 | `run.completed` | status, token_usage? |
@@ -50,6 +51,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `todo.updated` | todos |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
+| `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
 | `run.completed` | status, token_usage? |

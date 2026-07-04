@@ -4,9 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (15)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (16) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 14
+#   raw (16)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   browser (17) — session emits, web parses. run.started is consumed by session and
+#                  replaced by the synthetic session.created + run.created; the other 15
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
@@ -94,6 +94,7 @@ raw_kinds:
   - {kind: todo.updated, payload: [todos]}
   - {kind: subagent.started, payload: [segment_id, subagent_id, name, description, subagent_type, source]}
   - {kind: subagent.finished, payload: [segment_id, subagent_id, name, subagent_type, source, failed, error]}
+  - {kind: subagent.thinking.delta, payload: [segment_id, subagent_id, delta]}
   - {kind: subagent.text.delta, payload: [segment_id, subagent_id, text]}
   - {kind: subagent.text.completed, payload: [segment_id, subagent_id, text]}
   - {kind: run.completed, payload: [status, token_usage]}
@@ -118,6 +119,7 @@ browser_order:
   - todo.updated
   - subagent.started
   - subagent.finished
+  - subagent.thinking.delta
   - subagent.text.delta
   - subagent.text.completed
   - run.completed
