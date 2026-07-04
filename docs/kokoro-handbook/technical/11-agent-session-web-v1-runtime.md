@@ -863,3 +863,17 @@ wire 子代理定义
   SubagentDef.tools 按名解析为已挂载实例（未知名 fail-loud）、model 经工厂实例化；
   缺省继承主 agent。RunInput 契约减法至 message_id+content。
 ```
+
+## 实现注记（2026-07-04 追加：cancel 语义与收养竞态收口）
+
+```text
+对抗复审（子代理）三实锤全修（agent 9c8de9b）：
+① 多 worker 收养使 control 流常态多消费者，resume/cancel 可分投两 worker——三层闸收口：
+   resume 长窗后终态复检、执行入口终态闸（store 故障降级放行，权威在 claim_terminal）、
+   TerminalGuardMiddleware 每模型轮前熔断。
+   cancel 语义定案：**轮边界尽力而为**（当前模型轮/在飞工具允许自然收尾，副作用止于下一轮），
+   终态事件单胜者保证不变；残余=终态后至当轮末的少量 delta，接受并注记。
+② 收养监听自退出（他处删流 NOGROUP）必须出表：done-callback pop；
+   新增公开观测面 supervisor.control_listeners。
+③ web_fetch 流式读取边读边封顶（原实现整包吞 body 后才截断=OOM 面）。
+```

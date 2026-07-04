@@ -1,5 +1,13 @@
 # Claude Progress
 
+- Date: 2026-07-04 (对抗复审三实锤全修 — agent 9c8de9b)
+- 复审子代理（对抗性，限时收口）交付 3 条已确认真 bug，全部自行复核后修复+回归钉死：
+- **①【高】跨 worker resume/cancel 竞态**（收养机制引入）：三层闸（resume 复检/执行入口闸/TerminalGuardMiddleware 轮粒度熔断）；cancel 语义定案=轮边界尽力而为+终态单胜者；竞态回归测试（renew 即终态→绝不 spawn）。
+- **②【中】_control 泄漏**：done-callback pop + 公开观测面 control_listeners。
+- **③【中】web_fetch OOM 面**：流式读取边读边封顶（5MB 响应实测只读 1MB 断流）。
+- 门禁：agent 312 + e2e + chaos 双场景全绿；handbook cancel 语义入册。
+- steering 设计稿（信箱+before_model 注入）已备提案待批。
+
 - Date: 2026-07-04 (自主时段二：五单连发全绿)
 - **token 预算熔断**（861bb08）：RunStateStore.add_tokens（sqlite UPSERT RETURNING/mongo $inc/fake，矩阵 24）+ TokenBudgetMiddleware（awrap_model_call 累计 usage_metadata，超限 TokenBudgetExceeded→run.failed）；跨 HITL 段不清零（store 背书，rebuild 测试钉死）；KOKORO_RUN_TOKEN_BUDGET 默认 0=关（预算数值属政策，用户裁定 agent 执法+namespace 政策位）。
 - **web-researcher 内建**（0361710）：用户裁定"实现但默认关"——KOKORO_BUILTIN_SUBAGENTS 点名启用；catalog_subagents 装配点解析工具实例，声明工具缺任一整个不挂（不设空壳）；deny 声明集只含真挂载者。
