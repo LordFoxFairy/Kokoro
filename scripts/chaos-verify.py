@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""崩溃收养混沌验证：认领 worker 在 HITL 暂停期间被 SIGKILL，另一 worker 心跳收养其
-control 流并接续 resume 到终态。前置：redis:6379 + mongo:27017。
+"""崩溃混沌验证。场景一：认领 worker 在 HITL 暂停期间被 SIGKILL，另一 worker 心跳收养其
+control 流并接续 resume 到终态。场景二：session 进程在暂停期间被 SIGKILL，重启后从持久层
+收敛恢复（snapshot 暂停现场完好，resume/审批续走到终态）。前置：redis:6379 + mongo:27017。
 
 关键点：run 状态走共享 sqlite（两 worker 同文件），checkpoint 同理；
 KOKORO_LEASE_HEARTBEAT_S=2 让收养在秒级发生。
@@ -114,7 +115,7 @@ def main() -> int:
         check=False, capture_output=True,
     )
     (scratch / "namespaces.json").write_text(json.dumps({"namespaces": {"team-chv": {}}}))
-    session_env = {
+    session_env: dict[str, str] = {
         **os.environ,
         "KOKORO_SESSION_PORT": str(SESSION_PORT),
         "KOKORO_STREAM_BACKEND": "redis",
@@ -125,10 +126,13 @@ def main() -> int:
         "KOKORO_NAMESPACE": "team-chv",
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
     }
-    session_proc = subprocess.Popen(
-        ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
-        stdout=(scratch / "session.log").open("w"), stderr=subprocess.STDOUT,
-    )
+    def spawn_session(tag: str) -> subprocess.Popen:
+        return subprocess.Popen(
+            ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+            stdout=(scratch / f"session-{tag}.log").open("w"), stderr=subprocess.STDOUT,
+        )
+
+    session_proc = spawn_session("1")
     worker_a = spawn_worker(scratch, "a")
     worker_b: subprocess.Popen | None = None
     try:
@@ -168,11 +172,45 @@ def main() -> int:
             "decisions": [{"type": "approve", "tool_id": pause2["tool_id"]}]})
         check("run 在 B 上走到终态", wait_run_done(sid))
 
+        # 场景二：session 进程崩溃后从持久层收敛恢复。
+        sid2 = f"ses_chv_{uuid.uuid4().hex[:8]}"
+        st, receipt2 = http("POST", f"/sessions/{sid2}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "帮我写个文件"})
+        check("S2: POST messages → 202", st == 202, f"{st} {receipt2}")
+        run2 = receipt2.get("run_id", "")
+        seen2: set[str] = set()
+        pause_s1 = wait_pause(sid2, seen2)
+        check("S2: ask_user 暂停出现", pause_s1 is not None, str(pause_s1))
+        if pause_s1 is None:
+            return 1
+        session_proc.kill()
+        session_proc.wait(timeout=10)
+        check("S2: session 已被 SIGKILL", session_proc.returncode is not None)
+        session_proc = spawn_session("2")
+        check("S2: session 重启就绪", wait_port(SESSION_PORT))
+        time.sleep(1.0)
+        _, snap = http("GET", f"/sessions/{sid2}")
+        recovered = [p for p in snap.get("pending_pauses", []) if p["status"] == "pending"]
+        check("S2: 重启后 snapshot 暂停现场完好", len(recovered) == 1
+              and recovered[0]["pause_id"] == pause_s1["pause_id"], str(recovered))
+        http("POST", f"/sessions/{sid2}/runs/{run2}/control", {
+            "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+            "decisions": [{"type": "respond", "tool_id": pause_s1["tool_id"], "response": "s2.txt"}]})
+        pause_s2 = wait_pause(sid2, seen2)
+        check("S2: resume 续走到审批暂停", pause_s2 is not None and pause_s2["kind"] == "tool_approval",
+              str(pause_s2))
+        if pause_s2 is None:
+            return 1
+        http("POST", f"/sessions/{sid2}/runs/{run2}/control", {
+            "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+            "decisions": [{"type": "approve", "tool_id": pause_s2["tool_id"]}]})
+        check("S2: run 走到终态", wait_run_done(sid2))
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nCHAOS VERIFY FAIL — {len(FAILURES)} 项")
             return 1
-        print("\nCHAOS VERIFY PASS — 认领 worker 崩溃后 HITL 由存活 worker 收养续走")
+        print("\nCHAOS VERIFY PASS — worker 崩溃收养 + session 崩溃恢复 双场景全绿")
         return 0
     finally:
         session_proc.terminate()
