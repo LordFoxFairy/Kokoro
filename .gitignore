@@ -26,3 +26,9 @@ tmp/
 .playwright-mcp/
 # 根层带编号的临时验证截图
 [0-9]*-*.png
+
+# 会话走查产物与他人现场文档，不入库
+.playwright-cli/
+output/
+*.png
+docs/superpowers/plans/2026-07-04-i18n-admin-workbench.md
