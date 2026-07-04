@@ -17,7 +17,7 @@ enums:
   resume_decision: [approve, edit, reject, respond]
   awaiting_kind: [tool_approval, ask_user_question, result_review]
   todo_status: [pending, in_progress, completed]
-  run_completed_status: [completed, cancelled, timeout]
+  run_completed_status: [completed, cancelled]
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
