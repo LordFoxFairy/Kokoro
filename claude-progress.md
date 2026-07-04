@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-04 (用户批 context.py 囤工具文案→指引随本体)
+- **工具指引文案归位**：ToolGuidance{requires,text} 随各工具模块（tools/*.GUIDANCE），context.py 只留拼装序——加/删工具不再触碰拼装点；防漂移钉子（各 GUIDANCE 必含自身工具名）。lessons 记"配套件二犯"。
+- 验证：agent 335 + pyright 0 + ruff + e2e PASS（行为保持，纯归置）。
+
 - Date: 2026-07-04 (用户质疑"入口好奇怪"→entry 域减肥 + 工具自述上 wire)
 - **entry 域名不副实收口**：AgentEntry.name/description 零消费者（入口表在 session，入口=数据）→删 entry.py，agents/ 只留 GENERAL_PERSONA 人格资产；docstring/handbook 同步诚实化。
 - **审批卡数据源接通（用户点拨"tool 不是有 desc 吗"）**：AssembledAgent{graph, tool_descriptions} 装配产物携 describe_tool → awaiting 载荷 description=工具自述（查不到发空串），deepagents 英文模板永不上 wire；web 审批卡自述优先、中文兜底。
