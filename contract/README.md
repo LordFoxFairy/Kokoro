@@ -25,7 +25,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `tool.invoked` | segment_id, tool_id, name, args |
 | `tool.output.delta` | segment_id, tool_id, name, delta |
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
-| `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact_ref?, summary? |
+| `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact?, summary? |
 | `todo.updated` | todos |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
@@ -33,7 +33,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
-| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
+| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated?, artifact? |
 | `run.completed` | status, token_usage? |
 | `run.failed` | error_kind, message |
 
@@ -49,7 +49,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `tool.invoked` | segment_id, tool_id, name, args |
 | `tool.output.delta` | segment_id, tool_id, name, delta |
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
-| `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact_ref?, summary? |
+| `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact?, summary? |
 | `todo.updated` | todos |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
@@ -57,7 +57,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
-| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
+| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated?, artifact? |
 | `run.completed` | status, token_usage? |
 | `run.failed` | error_kind, message |
 
