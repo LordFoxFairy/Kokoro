@@ -61,18 +61,11 @@ objects:
       - {name: subagents, type: array:object:SubagentDef}
       - {name: backend, type: enum:backend}
       - {name: permissions, type: object:Permissions}
+  # 会话连续性由 thread checkpoint 承担；组织/用户维度等真实 auth 落地再进契约（拒绝投机字段）。
   - name: RuntimeContext
     fields:
       - {name: namespace, type: string_nonempty}
       - {name: session_id, type: string_nonempty}
-      - {name: site_id, type: string_nonempty, optional: true}
-      - {name: user_id, type: string_nonempty, optional: true}
-      - {name: workspace_id, type: string_nonempty, optional: true}
-      - {name: project_id, type: string_nonempty, optional: true}
-      - {name: recent_messages, type: array:record, optional: true}
-      - {name: summary, type: string, optional: true}
-      - {name: memory_scope, type: string_nonempty, optional: true}
-      - {name: feature_flags, type: record, optional: true}
 
 # Inbound messages, discriminated on `kind`.
 messages:
