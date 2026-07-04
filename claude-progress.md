@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (用户质疑"入口好奇怪"→entry 域减肥 + 工具自述上 wire)
+- **entry 域名不副实收口**：AgentEntry.name/description 零消费者（入口表在 session，入口=数据）→删 entry.py，agents/ 只留 GENERAL_PERSONA 人格资产；docstring/handbook 同步诚实化。
+- **审批卡数据源接通（用户点拨"tool 不是有 desc 吗"）**：AssembledAgent{graph, tool_descriptions} 装配产物携 describe_tool → awaiting 载荷 description=工具自述（查不到发空串），deepagents 英文模板永不上 wire；web 审批卡自述优先、中文兜底。
+- **web 仓发现他人进行中的改动（未动）**：package.json(+antd)、layout.tsx(+antd css)、未跟踪 tests/app/admin-i18n-workbench.test.tsx（引用缺失模块→web tsc 现红）——i18n 工作现场，等归属会话收口。
+- 验证：agent 335 + pyright 0 + ruff；web 173（排除他人红文件）+ session 152；e2e + chaos PASS。
+
 - Date: 2026-07-04 (R2 steering 全链落地 + 投影泄漏真缺陷修复 + HITL 卡文案法则)
 - **steering（运行中插话）四层全通**：契约 run.steer 帧（幂等键=message_id）→ ledger 信箱（keep-first、未认领 run 安全丢弃防毒化 try_claim）→ SteeringMiddleware.abefore_model 模型轮前排空注入（稳定 id、只挂主链）→ session 活跃 run 的 POST 从 409 改"落库+转 steer"（确定性 msg_steer_{idem} 双端幂等）→ web 输入恒可用（草稿非空=发送插话/空=停止）。
 - **走查抓出真缺陷**：注入的 HumanMessage 经 before_model 节点混进 v3 消息投影→冒充 assistant 正文上 wire。修法：正文通道只认 node=="model" 投影项，其余抽干防回压（test_steering 真图钉死）。

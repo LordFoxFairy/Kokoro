@@ -248,7 +248,6 @@ kokoro_agent/
     publish_agent_events.py
 
   agents/
-    entry.py
     general/
       __init__.py
       persona.md
@@ -546,22 +545,15 @@ execution/publish_agent_events.py
 人格资源随包分发。
 
 ```text
-agents/entry.py
+agents/general/__init__.py
   存在理由：
-    定义 AgentEntry dataclass（name/description/persona）：可作主 agent
-    的封装定义，人格为身份核心，能力束由编排层按 wire 装配。
-
-  放置理由：
-    入口形状是成品域的共享类型。
+    通用 agent 成品人格 GENERAL_PERSONA：Kokoro 缺省主 agent 的人格文本，
+    session 入口表的内建 general 引用此身份。入口的名字/描述/能力束等
+    元数据活在 session 入口表（入口是数据不是代码），本仓不重复维护。
 
   禁止：
     不放能力装配逻辑。
     不 import DeepAgents。
-
-agents/general/__init__.py
-  存在理由：
-    通用 agent 成品 GENERAL_ENTRY：Kokoro 缺省主 agent，
-    session 入口表的内建 general 引用此身份。
 
   放置理由：
     成品包结构约定：每个对外 agent 一个子包。
