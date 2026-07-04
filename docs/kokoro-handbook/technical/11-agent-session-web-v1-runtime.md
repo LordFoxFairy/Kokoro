@@ -881,3 +881,18 @@ wire 子代理定义
 wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：deepagents 内生 general-purpose
 仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```
+
+## 实现注记（2026-07-04 追加：心脏重构——orchestration/agents/State 轴）
+
+```text
+四层分域定案（用户四点裁定合刀，agent 7d3fbef）：
+  agents/=成品层（general 成品：人格资源+身份）；orchestration/=编排层
+  （assemble 每请求主配方，只收领域设置不收 AppConfig——config 单点消费法则；
+  context.py=模型可见面唯一拼装点）；worker/=纯调度域；execution/=纯运行域。
+身份乘 State 轴：RunScope + KokoroAgentState（DeepAgentState 扩展键 scope，纯 dict）——
+  随初始 input 进图、落 checkpoint、resume 不重供仍保持（真图测试钉死）；
+  法则：图节点不得改写 scope；子代理不继承 scope（所需身份装配注入）。
+  原 context_schema 轴（生产零消费者）整体删除；"context"一词让给上下文工程层。
+context 层升级路径：运行时注入（steering/记忆预取）到来时经 ModelRequest.override
+  middleware 化，须先实证与 deepagents 自身 prompt 改写（Skills/Memory middleware）的层叠序。
+```

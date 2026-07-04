@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-04 (心脏重构完成 — orchestration/agents/context/State 四合一，agent 7d3fbef)
+- **State 轴迁移**：RunScope+KokoroAgentState（DeepAgentState 扩展）替代 context_schema 轴（实证生产零消费者后整体删除）；scope 随 input 进图/落 checkpoint/续段不重供（test_run_scope_state 真图钉死）；"context"一词让位上下文工程层。
+- **四层分域**：agents/（general 成品）+ orchestration/（assemble 主配方+context 拼装点，只收领域设置——架构法测试抓住 AppConfig 越权后按域拆参）+ worker/ 瘦身 104 行 + execution/ 不变。
+- 验证：agent 314 tests + verify-all --real 四套件全 PASS（e2e/chaos/trace/真模型 23 场景）。
+- 设计稿：2026-07-04-heart-restructure-design.md（含 state-vs-context 裁决记录与 middleware 化升级路径）。
+- 待办（用户新题，讨论中）：skills/MCP hub 整体设计（参照 Manus/CC）、入口切换的上下文语义（同 session 换 entry 时 prompt 更换 vs 追加）、agent 产物放置与 langchain 构造结合。
+
 - Date: 2026-07-04 (守卫下发 + 三提案齐备 — 自主窗口收官)
 - **守卫下发**（e916ed5）：TerminalGuard/TokenBudget 逐个下发进 catalog+wire 子代理的独立 middleware 链（不下发=task 委派旁路预算，真旁路回归钉死）；residual：deepagents 内生 general-purpose 仅 allow 档可达且不带闸（handbook 注记）。
 - **三份提案待批**：steering（信箱+before_model 注入）、scheduled-runs（session 触发+幂等键）、storage retention（分层 TTL 全默认关）。
