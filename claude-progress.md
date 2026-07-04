@@ -1,5 +1,14 @@
 # Claude Progress
 
+- Date: 2026-07-04 (自主时段：三真缺陷修复 + 深度体检报告)
+- **①暂停 run 永久卡死（严重）**：认领 worker 崩溃后 control 流无人监听，resume 石沉大海。修：RunStateStore.list_paused（sqlite/mongo/fake 三实现+行为矩阵）+ 心跳收养 control 监听（consumer group 去重）。证：scripts/chaos-verify.py 6/6（SIGKILL A→B 收养→续走到终态）。agent dcf3fdc。
+- **②wire 子代理 tools/model 静默丢弃**：wire_subagents 现按名解析实例（未知名 fail-loud）+ model 工厂实例化，缺省继承。agent 41d3773。
+- **③失控无熔断**：KOKORO_RECURSION_LIMIT（默认 100）→ GraphRecursionError → run.failed。agent 5a4e886。
+- **④sandbox 后端可选**：profile.backend（state|local_shell）；real-model-verify 全程 local_shell + 场景 E execute 审批→真 shell 回流，23/23。session bf14a8d。
+- **⑤契约减法**：RuntimeContext 八个投机字段（user_id/site_id/workspace_id/project_id/recent_messages/summary/memory_scope/feature_flags）全链无产无消→移除，四仓镜像重生成全绿。
+- **深度体检报告**：docs/superpowers/specs/2026-07-04-agent-deep-review.md——可插拔矩阵（仅 sandbox 闭集等 e2b、observability 单实现不抽象）、context 审计、动态 skills 分层答案（agent 已动态，缺产品面选择子，安全底线=只开放选择不开放定义）、memory 工具 vs CC 文件型辨析、下一段需求清单。
+- 门禁：agent 293 + session 148 + contract 20 + e2e ×3 + real-model 23/23 + chaos 6/6，全推送。
+
 - Date: 2026-07-03 (统一入口表 — general 一等入口，用户裁定)
 - session resolve 重构（a698b43）：listEntries 单表 = 内建 general（人格缺省→agent 内置）∪ profile.agents（可覆盖 general）；缺省 entry ≡ entry=general；general 恒不作委派下属；下属无人格=结构破裂 fail-loud（替换 ?? "" 遮掩）。wire 零改动。
 - 验证：session 146 tests（+5 入口表矩阵）+ tsc；跨栈 e2e PASS。studio 选择器（P1）枚举 listEntries 即可。
