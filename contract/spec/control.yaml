@@ -15,12 +15,11 @@ enums:
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
+  # 附件/大输入引用等真实需求落地时再进契约（拒绝投机字段；content 即唯一输入）。
   - name: RunInput
     fields:
       - {name: message_id, type: string_nonempty}
-      - {name: content, type: string, optional: true}
-      - {name: content_ref, type: string_nonempty, optional: true}
-      - {name: attachments, type: array:record, optional: true}
+      - {name: content, type: string_nonempty}
   - name: ModelConfig
     fields:
       - {name: provider, type: string_nonempty}
