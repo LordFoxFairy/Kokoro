@@ -83,3 +83,22 @@ agent 契约除上述两个字段外零改动。
 2. McpServer.headers 契约补齐（小，可先行——个人 MCP 的最小可用）；
 3. auth/user_id 回归（hub 与记忆按人分层的共同前置）；
 4. 产物（等 canvas 消费面）；入口切换零改动已成立。
+
+## 一·v3 修正（用户指正：user 不是独立轴——单轴归一）
+
+v2 的"user 层级 + user_id 回归"**违背既定法律**（namespace 模型：teams/个人=namespace 实例）。修正：
+
+    platform 公共库 → namespace 库 → entry/session 选择   （单轴）
+
+- 用户资产库 = 用户**个人 namespace** 的库；上传/下载/管理落在自己的空间。
+- 跨空间携带 = **namespace 间资产授权（grant/import）**：个人→团队采纳、团队→平台投稿
+  是同一个动词，经目标空间治理审批。
+- 记忆按人分层自然消解：个人记忆=个人 namespace 的 store 前缀（现机制原样覆盖）；
+  团队会话引用个人记忆=同一跨空间授权问题。
+- **user_id 永不进 agent 契约**（此前删除是永久正确）；auth/成员关系全归 platform/session
+  成员模型。信任分级改述：platform 官方审 / 目标 namespace 管理员审 / 个人 namespace 自担。
+- agent 含义：零改动——单轴 namespace 已是完美消费者形态；用户自定义 subagent/入口预设
+  = 个人 namespace 的 agents 表项，grant 机制同上。
+
+**防漂移法则（lessons 收录）**：空间/身份一律收敛 namespace 单轴，任何"再加一条身份轴"
+的设计冲动即红灯。

@@ -41,3 +41,8 @@
 - 场景：设计 `kokoro-i18n` 时先实现了 locale/key/catalog/translator，但用户指出技术方案详细设计必须说明并覆盖“翻译会用到的位置”，本质是文本 key 在展示边界被替换成文案。
 - 我做错的：只证明 key 能被翻译，没有把 `labelKey` 这类实际 translation slot 建模，也没有给 admin/module manifest 的嵌套位置提供明确替换 API。
 - 下次怎么避免：i18n 设计必须同时回答三件事：① key 的格式与词典；② key 出现在哪些结构位置（labelKey/titleKey/descriptionKey 等）；③ 在哪个边界把 key 解析成展示字段并保留可审计原 key。测试必须覆盖真实位置，而不是只测孤立 `translate(key)`。
+
+## 2026-07-04 身份轴漂移（hub v2 发明 user 层级）
+- 场景：设计 skills/MCP hub 用户维度时提出"platform→namespace→user→entry"四级 + user_id 回归契约。
+- 我做错的：违背自己档案里的既定法律（namespace 模型：teams/个人=namespace 实例）——给系统开了第二条身份轴。
+- 下次怎么避免：任何涉及"谁的空间/谁的资产/谁的记忆"的设计，先复述单轴法则（个人=personal namespace）；出现"user 级/组织级/项目级"字样时一律先问能否表示为 namespace 实例+跨空间 grant。
