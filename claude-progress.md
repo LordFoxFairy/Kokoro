@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-04 (深度思考单：成品/子代理二元论 + 能力束流动定稿)
+- **本体论法典**：docs/superpowers/specs/2026-07-04-product-vs-subagent-ontology.md——四维对立表、**对偶性定律**（成品被选中=主位/未选中=降格子代理，声明束两用、代码配方只在主位）、成品三元（资产 prompts/ + bundle 在 session 入口表 + 配方 orchestration/<type>.py）、music 两条落地路（数据型近零改动/代码型纯增量+届时契约分派键）、细节边界清单（守卫两态/记忆两态/纯工人 profile.subagents 缺口留 hub 批次）。
+- **对偶性断裂实锤修复**（agent 406e614）：wire_subagents 主 index 优先→KOKORO_TOOLS 注册表兜底→未知 fail-loud；修复前 general 主位挂带专属工具的降格成品必炸。
+- 验证：agent 335 + pyright 0 + ruff + e2e PASS。
+
 - Date: 2026-07-04 (用户三连批→整体形状定案：prompts 资产域 + 类型化配方)
 - **定案形状**：类型的两个家——资产在 prompts/<type>.md（general/web-researcher 已归位，prompt 文本出现在 .py 即红灯）、配方在 orchestration/<type>.py（general.py 现在；music 届时纯增量+契约加分派键）；agents/ 镜像目录撤销（第三个家=死结构）。
 - **工具用法彻底出 system prompt**：指引全文并进各工具 description（LangChain 经工具 schema 交模型），_SECTIONS/render_tool_guidance/guidance.py 全删；context.py=纯两段组合（人格+skills）。SteeringMiddleware 归 tools/middleware.py（运行时中间件之家）。
