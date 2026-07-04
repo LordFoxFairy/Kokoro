@@ -30,7 +30,7 @@
 
 ### 12-agent-hitl-tool-interception
 
-定义工具拦截、HITL、ask_user、暂停点和 resume，回答“哪些动作需要暂停、如何恢复”。
+定义工具拦截、HITL、ask_user_question、暂停点和 resume，回答“哪些动作需要暂停、如何恢复”。
 
 ### modules/kokoro-agent
 

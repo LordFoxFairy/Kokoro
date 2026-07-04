@@ -9,7 +9,7 @@
 
 `kokoro-web` 是三仓里的界面层。它负责 SiteContext 注入、聊天 UI、
 session snapshot 加载、EventSource、事件严格解析、本地 reducer、
-HITL/ask_user UI、Skills/MCP 管理入口。
+HITL/ask_user_question UI、Skills/MCP 管理入口。
 
 它不拥有 session 真源，不执行 agent，不直接写 Mongo/Redis。
 
@@ -21,7 +21,7 @@ session list / snapshot / messages 展示。
 发送用户消息。
 active run EventSource 消费。
 agent activity 展示：thinking、tool、todo、subagent、HITL。
-ask_user 问答 UI。
+ask_user_question 问答 UI。
 Skill 基础管理入口。
 MCP 连接/授权/工具可见性入口。
 刷新恢复：snapshot + attach active run。
@@ -104,7 +104,7 @@ terminal run event 关闭 streaming 状态。
 单条 malformed event skip-and-continue。
 ```
 
-## HITL 和 ask_user
+## HITL 和 ask_user_question
 
 HITL 工具审批展示：
 
@@ -122,7 +122,7 @@ risk/source
 approve / reject / edit / cancel
 ```
 
-`ask_user` 是独立问答 UI，用户回答后使用 LangGraph HITL `respond` 恢复。
+`ask_user_question` 是独立问答 UI，用户回答后使用 LangGraph HITL `respond` 恢复。
 不要把 `respond` 做成所有工具的通用拒绝/答复按钮。
 
 ## Skills UI

@@ -117,7 +117,7 @@ kokoro_agent/
   tools/
     registry.py
     permissions.py
-    ask_user.py
+    ask_user_question_question.py
     names.py
 
   subagents/
@@ -194,7 +194,7 @@ LangGraph thread_id / checkpointer / interrupt。
 RunContext 注入。
 Skills mount 加载。
 MCP HTTP / streamable HTTP client。
-ask_user。
+ask_user_question。
 task/delegate subagent。
 todo。
 HITL approve/reject/edit/respond。

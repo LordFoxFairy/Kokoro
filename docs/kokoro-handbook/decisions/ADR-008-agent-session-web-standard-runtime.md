@@ -96,7 +96,7 @@ Agent 不写 session Mongo。
 Session 不读 agent checkpoint。
 Skills/MCP Hub 安装、审核、启用不归 agent 拥有。
 Subagents 走 DeepAgents subagents/task；临时 delegate 必须受权限策略约束。
-respond 只用于 ask_user。
+respond 只用于 ask_user_question。
 ```
 
 ## 替代方案（已否决）
@@ -129,7 +129,7 @@ Agent 拥有 Skill/MCP Hub
 命名贴近 LangChain/DeepAgents 标准。
 Web/Session/Agent 边界清楚。
 Replay 与 refresh 语义可靠。
-HITL 与 ask_user 不混淆。
+HITL 与 ask_user_question 不混淆。
 Skills/MCP 可管理、可审计、可替换。
 ```
 

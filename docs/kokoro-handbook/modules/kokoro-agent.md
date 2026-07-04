@@ -249,7 +249,7 @@ kokoro_agent/
   tools/
     registry.py
     permissions.py
-    ask_user.py
+    ask_user_question_question.py
     names.py
 
   subagents/
@@ -576,7 +576,7 @@ tools/permissions.py
     不写 session 状态。
     不让 sandbox 覆盖 deny。
 
-tools/ask_user.py
+tools/ask_user_question_question.py
   存在理由：
     模型向用户请求补充信息的标准工具。
 
@@ -588,7 +588,7 @@ tools/ask_user.py
     不替代普通聊天消息。
     不直接调用 web。
 
-（原 tools/names.py 已解散：ask_user 名随工具本体（ask_user.py），
+（原 tools/names.py 已解散：ask_user_question 名随工具本体（ask_user_question_question.py），
 保留名集合与冲突断言归工具集合治理（registry.py），
 mcp__{server}__{tool} 命名规则归其唯一消费者（mcp/tools.py）。
 文件名要表达业务动作，"names" 表达不了任何动作。）
@@ -1144,7 +1144,7 @@ respond
 规则：
 
 ```text
-respond 只用于 ask_user。
+respond 只用于 ask_user_question。
 危险工具不同意必须 reject。
 edit 表示用户修改工具参数后继续。
 approve 表示按原参数执行。
@@ -1196,7 +1196,7 @@ Session control -> Command(resume=...)。
 V1 默认工具应少而标准。
 
 ```text
-ask_user
+ask_user_question
   模型向用户提问。
   对应 HITL respond 的唯一默认场景。
 
@@ -1323,7 +1323,7 @@ ApprovalDecision
 规则：
 
 ```text
-respond 只给 ask_user。
+respond 只给 ask_user_question。
 reject 不应该伪装成工具正常结果。
 edit 后必须重新校验参数和权限。
 审批状态必须可恢复，worker 重启不丢。
@@ -1557,11 +1557,11 @@ sandbox provider 状态。
 7. Agent Command(resume=...) 后继续。
 ```
 
-### ask_user
+### ask_user_question
 
 ```text
 1. 模型需要用户补充信息。
-2. 调用 ask_user。
+2. 调用 ask_user_question。
 3. Agent 输出 tool.awaiting_approval，allowedDecisions 只允许 respond。
 4. Web 呈现为对话式提问。
 5. 用户回答后 resume。
@@ -1645,7 +1645,7 @@ Subagent config mapping。
 ```text
 Redis run.request -> raw events。
 HITL approve/reject/edit/respond。
-ask_user -> respond。
+ask_user_question -> respond。
 checkpoint resume。
 state backend smoke。
 local_shell dev smoke。
@@ -1701,7 +1701,7 @@ P0：
 冻结目录架构。
 把现有不清晰目录和文件命名收敛为执行链路架构。
 删除 clock/now、自写 fetch、runtime subagent registry。
-落地 ask_user。
+落地 ask_user_question。
 RunRequest / Capabilities / RunContext 定稿。
 HITL 走 interrupt_on + Command(resume=...)。
 Subagents 改为 DeepAgents 标准配置映射。

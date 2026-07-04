@@ -294,7 +294,7 @@ decision 对应当前 interrupt frame。
 
 然后写 Redis control stream。Agent 负责恢复 `Command(resume=...)`。
 
-`respond` 仅允许 `ask_user` 场景；其它危险工具拒绝必须是 `reject`。
+`respond` 仅允许 `ask_user_question` 场景；其它危险工具拒绝必须是 `reject`。
 
 ## 运行时管理
 

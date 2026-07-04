@@ -181,7 +181,7 @@ eventId 去重
 Session 校验 run 归属、用户权限、run 状态和 decision 合法性，然后写 control stream。
 真正恢复由 Agent 调用 `Command(resume=...)`。
 
-`respond` 只允许 `ask_user`。
+`respond` 只允许 `ask_user_question`。
 
 ## 性能
 

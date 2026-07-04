@@ -2,7 +2,7 @@
 
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](../technical/11-agent-session-web-v1-runtime.md)。
-HIL、`ask_user` 和暂停点 UI 方案见：
+HIL、`ask_user_question` 和暂停点 UI 方案见：
 [Agent HIL 与工具拦截标准方案](../technical/12-agent-hitl-tool-interception.md)。
 三仓通用聊天链路见：
 [Agent / Session / Web 通用聊天运行链路](../business-flows/agent-session-web-general-chat-runtime.md)。
@@ -27,7 +27,7 @@ Transport schema strict parse。
 Render reducer。
 Agent activity UI。
 HITL approve/reject/edit/cancel UI。
-ask_user 提问 UI。
+ask_user_question 提问 UI。
 Skill 管理入口。
 MCP 连接/授权/工具列表入口。
 Local UI cache。
@@ -190,15 +190,15 @@ edit（工具参数可安全编辑时）
 cancel run
 ```
 
-`respond` 不作为普通危险工具按钮。`respond` 只在 `ask_user` 工具里表现为
+`respond` 不作为普通危险工具按钮。`respond` 只在 `ask_user_question` 工具里表现为
 用户回答问题。
 
-## ask_user UI
+## ask_user_question UI
 
 V1 需要单独的用户提问组件：
 
 ```text
-模型调用 ask_user。
+模型调用 ask_user_question。
 Agent 产生 awaiting event。
 Web 显示问题、可选项、输入框。
 用户提交后走 control resume/respond。
@@ -268,7 +268,7 @@ V1 不使用 Bun 作为标准运行约束。
   transport schema、event mapper、reducer、local storage parser。
 
 组件：
-  thread、activity、composer、HITL controls、ask_user、Skill/MCP views。
+  thread、activity、composer、HITL controls、ask_user_question、Skill/MCP views。
 
 集成：
   send message -> snapshot -> EventSource -> terminal。
@@ -303,7 +303,7 @@ P0  Transport 改为 POST message + GET snapshot + EventSource /events。
     Reducer 删除 seq/cursor 排序。
     run.completed.status 展示。
     HITL 展示 description + allowed_decisions。
-    ask_user UI。
+    ask_user_question UI。
     Skill/MCP 基础管理入口。
 
 P1  Skill 创建/编辑表单。

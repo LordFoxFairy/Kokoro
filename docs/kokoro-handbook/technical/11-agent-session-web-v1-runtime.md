@@ -4,7 +4,7 @@
 三个子仓的 V1 通用聊天运行时。平台、账务、支付、模型目录、
 官方后台和公开 Hub 只作为上游能力来源，不在本文展开实现。
 
-HIL、工具执行前后拦截、`ask_user` 和 Web 暂停点的专项方案见：
+HIL、工具执行前后拦截、`ask_user_question` 和 Web 暂停点的专项方案见：
 [Agent HIL 与工具拦截标准方案](12-agent-hitl-tool-interception.md)。
 
 ## 设计立场
@@ -146,7 +146,7 @@ cursor / lastResumeId / after
   不作为产品 API。SSE id 是内部传输锚点。
 
 respond
-  不作为通用 control 动作。仅在 LangChain HITL 中作为 ask_user
+  不作为通用 control 动作。仅在 LangChain HITL 中作为 ask_user_question
   这类人工代答工具的原生 decision type。
 ```
 
@@ -341,7 +341,7 @@ resume(decisions)
 approve
 reject
 edit
-respond 仅限 ask_user 这类人工代答工具
+respond 仅限 ask_user_question 这类人工代答工具
 ```
 
 Session 必须校验 run 属于 session、用户有权限、run 仍可控制。
@@ -466,7 +466,7 @@ Subagents 是 V1 能力，保留，但必须标准化。
 
 当前“模型静默写 system_prompt 创建同权限子代理”的形态不可作为生产默认。
 
-## HITL 和 ask_user
+## HITL 和 ask_user_question
 
 HITL 使用 LangChain/DeepAgents 原生：
 
@@ -484,13 +484,13 @@ Command(resume={"decisions": [...]})
 side-effect tool:
   approve / reject / edit
 
-ask_user tool:
+ask_user_question tool:
   respond
 ```
 
 不要把 `respond` 当成拒绝危险工具的通用动作。拒绝就是 `reject`。
 
-V1 需要内置 `ask_user` 工具，用于模型向用户提问。Web 渲染为明确的
+V1 需要内置 `ask_user_question` 工具，用于模型向用户提问。Web 渲染为明确的
 用户输入 UI，而不是工具审批按钮。
 
 ## Skills
@@ -666,7 +666,7 @@ EventSource 使用 /sessions/:sessionId/events。
 刷新先 GET /sessions/:sessionId snapshot。
 run.completed status 在 Web 可见。
 tool.awaiting_approval 带 description 和 allowed decisions。
-ask_user 有独立 UI，不滥用 respond。
+ask_user_question 有独立 UI，不滥用 respond。
 Agent 使用 create_deep_agent 原生 subagents/skills/backend/interrupt_on。
 Session relay 先写 Mongo，再 publish live。
 Redis 清空 live 后，snapshot/replay 仍可恢复历史。

@@ -1,7 +1,7 @@
 # Agent HIL 与工具拦截标准方案
 
 本文约束 `kokoro-agent`、`kokoro-session`、`kokoro-web` 在 V1 中的
-Human-in-the-loop、工具执行前后拦截、`ask_user`、候选结果确认和 Web 暂停点。
+Human-in-the-loop、工具执行前后拦截、`ask_user_question`、候选结果确认和 Web 暂停点。
 
 三仓总运行时方案见：
 [Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。
@@ -116,7 +116,7 @@ Web 不直连 agent，不直连 MCP tool，不直接执行 skill。
 Web 只做：
 
 ```text
-展示 tool.awaiting_approval / ask_user。
+展示 tool.awaiting_approval / ask_user_question。
 展示 allowed decisions。
 收集用户输入。
 POST control 到 session。
@@ -152,8 +152,8 @@ HumanInTheLoopMiddleware:
 定时工具参数标准化 -> middleware 前置改参。
 工具结果写 artifact -> middleware 后置处理。
 危险工具审批 -> interrupt_on。
-模型主动问用户 -> ask_user 工具 + interrupt_on。
-候选列表让用户选 -> 工具返回候选 + agent 调 ask_user。
+模型主动问用户 -> ask_user_question 工具 + interrupt_on。
+候选列表让用户选 -> 工具返回候选 + agent 调 ask_user_question。
 ```
 
 ## Agent 内部设计
@@ -258,7 +258,7 @@ V1 不再使用粗粒度 `auto/default` 作为长期契约。目标是由 Sessio
   edit
   reject
 
-ask_user:
+ask_user_question:
   respond
 
 只读但需确认的查询工具:
@@ -297,7 +297,7 @@ reject:
 
 respond:
   用户代替工具给出结果。
-  只允许 ask_user 或明确的人机问答工具。
+  只允许 ask_user_question 或明确的人机问答工具。
   不用于危险工具。
 ```
 
@@ -311,12 +311,12 @@ respond:
 
 这会污染审计和后续推理。
 
-### ask_user 工具
+### ask_user_question 工具
 
-`ask_user` 是 Kokoro 默认工具，名称小写：
+`ask_user_question` 是 Kokoro 默认工具，名称小写：
 
 ```text
-ask_user
+ask_user_question
 ```
 
 用途：
@@ -327,12 +327,12 @@ ask_user
 让用户确认非危险但业务上需要确认的选项。
 ```
 
-`ask_user` 不直接调用 Web。它只触发原生 HIL 暂停：
+`ask_user_question` 不直接调用 Web。它只触发原生 HIL 暂停：
 
 ```text
-agent 调 ask_user
+agent 调 ask_user_question
   -> HumanInTheLoopMiddleware interrupt
-  -> Agent raw event: tool_call_awaiting(kind="ask_user")
+  -> Agent raw event: tool_call_awaiting(kind="ask_user_question")
   -> Session 持久化 pending pause
   -> Web 展示问题/选项
   -> 用户提交
@@ -340,7 +340,7 @@ agent 调 ask_user
   -> Agent Command(resume={"decisions":[{"type":"respond","message":"..."}]})
 ```
 
-`ask_user` 的 allowed decisions：
+`ask_user_question` 的 allowed decisions：
 
 ```text
 respond
@@ -397,7 +397,7 @@ allowed_decisions:
   本工具允许的用户动作。Web 只能展示这里声明的按钮。
 
 kind:
-  tool_approval | ask_user。
+  tool_approval | ask_user_question。
 
 risk:
   面向 Web 的风险摘要，不是权限判断真源。
@@ -443,7 +443,7 @@ rejected:
   用户拒绝执行时为 true。
 
 responded:
-  人工代答 ask_user 时为 true。
+  人工代答 ask_user_question 时为 true。
 ```
 
 工具结果必须回到 agent 上下文。Web 看到的是 Session 归一化后的投影，
@@ -509,7 +509,7 @@ run 仍 active 或 awaiting。
 tool_id 属于当前 pending pause。
 decision 在 allowedDecisions 内。
 edit 的 edited_action 合法。
-respond 只允许 kind=ask_user。
+respond 只允许 kind=ask_user_question。
 幂等 key 或 decisionId 防双击。
 ```
 
@@ -561,9 +561,9 @@ respond:
 不要给所有工具一个通用 JSON textarea。它容易误导用户、破坏 schema，
 也会让工具 UI 难维护。V1 只给确定工具做定制编辑器。
 
-### ask_user UI
+### ask_user_question UI
 
-对应 `kind="ask_user"`。
+对应 `kind="ask_user_question"`。
 
 展示：
 
@@ -582,7 +582,7 @@ decision.type = "respond"
 message = 用户输入或选择结果
 ```
 
-Web 不把 ask_user 当普通审批按钮组。
+Web 不把 ask_user_question 当普通审批按钮组。
 
 ## 典型链路
 
@@ -636,10 +636,10 @@ GitHub skill 导入不应让 Web 自己根据工具结果暂停。
 agent 调 search_skill_candidates。
 工具返回候选摘要 + artifact_ref。
 ToolPolicyMiddleware 记录 artifact。
-agent 看到候选结果后，调用 ask_user:
+agent 看到候选结果后，调用 ask_user_question:
   "选择要导入的 skill"
   choices=[candidateId...]
-Web 展示 ask_user 选择卡片。
+Web 展示 ask_user_question 选择卡片。
 用户选择。
 Session resume respond。
 agent 调 import_skill(candidateId)。
@@ -691,7 +691,7 @@ pending pause 不存在。
 tool_id 不属于当前 interrupt frame。
 decision 数量与 pending tools 不一致。
 decision 不在 allowed decisions 内。
-respond 用在非 ask_user。
+respond 用在非 ask_user_question。
 ```
 
 ### 多工具同帧暂停
@@ -742,10 +742,10 @@ Agent 侧无 pending interrupt 时丢弃 stale resume。
 1. Agent build_deep_agent 支持 middleware 参数。
 2. 新增 tools/middleware.py，落 ToolPolicyMiddleware。
 3. tool_call_awaiting raw event 补 description、allowed_decisions、kind、risk、editable。
-4. 收紧 interrupt_on：respond 只给 ask_user。
-5. 实现 ask_user 工具，allowed_decisions 只允许 respond。
+4. 收紧 interrupt_on：respond 只给 ask_user_question。
+5. 实现 ask_user_question 工具，allowed_decisions 只允许 respond。
 6. Session pending pause 持久化和 snapshot 输出。
-7. Web 分离 tool approval UI 与 ask_user UI。
+7. Web 分离 tool approval UI 与 ask_user_question UI。
 8. 多工具同帧 resume 保持 tool_id 对齐测试。
 ```
 
@@ -754,7 +754,7 @@ Agent 侧无 pending interrupt 时丢弃 stale resume。
 ```text
 1. 定时工具参数规范化和定制 edit UI。
 2. 工具结果 artifact_ref / summary。
-3. GitHub skill 候选列表 -> ask_user -> import_skill 链路。
+3. GitHub skill 候选列表 -> ask_user_question -> import_skill 链路。
 4. MCP 高风险工具审批策略。
 5. pending pause 审计查询。
 ```
@@ -774,7 +774,7 @@ Agent:
   DeepAgents 原生 interrupt/resume 仍是唯一暂停机制。
   middleware 可执行前改参、执行后加工结果。
   respond 不会出现在普通危险工具上。
-  ask_user 可暂停并用 respond 恢复。
+  ask_user_question 可暂停并用 respond 恢复。
 
 Session:
   pending pause DB-first 持久化。
@@ -783,7 +783,7 @@ Session:
   不读 agent checkpoint。
 
 Web:
-  工具审批和 ask_user 是两个 UI。
+  工具审批和 ask_user_question 是两个 UI。
   只展示 allowed decisions。
   不直连 agent/MCP/tool。
   刷新后 pending pause 仍可继续处理。
@@ -794,11 +794,11 @@ Web:
 ```text
 tool_call_awaiting 即契约 kind tool.awaiting_approval，payload 增 pending_tool_ids
 （同帧完整待批集合，web staging 的完备判据）。
-respond <-> ask_user 双向校验已在 agent（resume 对齐 fail-loud）与
+respond <-> ask_user_question 双向校验已在 agent（resume 对齐 fail-loud）与
 session（pending pause allowed_decisions 校验）两端落地，e2e 覆盖反例。
 本文其余语义（middleware 分层 / interrupt_on / pending pause / decision_id 幂等）
 均已按文实现，跨栈门禁：scripts/e2e-v21-gate.py。
-工具改名（2026-07-03）：ask_user → ask_user_question（对齐 Claude Code 的
+工具改名（2026-07-03）：ask_user_question → ask_user_question（对齐 Claude Code 的
 AskUserQuestion）；awaiting kind 的 wire 值同步改为 "ask_user_question"（禁止遗留旧词汇）。
 新增第三类暂停：kind=result_review（工具后结果审核，approve/respond/reject）。
 ```

@@ -36,7 +36,7 @@ LangChain BaseMessage.id / tool call id 是身份标识，不承担跨服务排�
 浏览器排序依赖 session 写入和 SSE 发送顺序，不反解 cursor/seq。
 run.completed(status=completed/cancelled/timeout) 和 run.failed 是终态。
 HITL 使用 interrupt_on / action_requests / Command(resume=...)。
-respond 只用于 ask_user 这类人工代答工具。
+respond 只用于 ask_user_question 这类人工代答工具。
 ```
 
 ## 替代方案（已否决）

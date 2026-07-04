@@ -14,7 +14,7 @@ agent run，并把最终回复沉淀为 session messages。
 ```text
 kokoro-web
   输入消息、加载 snapshot、消费 EventSource、渲染 thread/activity、
-  提交 HITL control 和 ask_user 回答。
+  提交 HITL control 和 ask_user_question 回答。
 
 kokoro-session
   拥有 session/messages/runs/events，构建 RunRequest，
@@ -102,16 +102,16 @@ Command(resume={"decisions": [...]})
 
 1. Agent 用同一个 `threadId` 恢复 LangGraph 执行。
 
-`respond` 只用于 `ask_user`。普通危险工具拒绝必须是 `reject`。
+`respond` 只用于 `ask_user_question`。普通危险工具拒绝必须是 `reject`。
 
-## ask_user 流程
+## ask_user_question 流程
 
-1. 模型调用 `ask_user`。
+1. 模型调用 `ask_user_question`。
 2. Agent 触发 HITL-style interrupt。
 3. Web 渲染为问题卡片，而不是审批卡片。
 4. 用户填写答案或选择选项。
 5. Web 通过 control 提交 `respond`。
-6. Agent 把用户回答作为 ask_user 工具结果继续执行。
+6. Agent 把用户回答作为 ask_user_question 工具结果继续执行。
 
 ## Subagent 流程
 
@@ -285,7 +285,7 @@ Replay anchor
 流式回复稳定显示。
 Thinking/tool/todo/subagent 活动在 activity UI 展示。
 需要审批时出现明确 approve/reject/edit/cancel 控件。
-ask_user 时出现问题输入卡片。
+ask_user_question 时出现问题输入卡片。
 刷新后不丢消息，不重复显示同一个 event。
 失败时 assistant turn 进入失败态，可重试。
 ```
