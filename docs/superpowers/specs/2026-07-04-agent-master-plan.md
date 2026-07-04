@@ -1,5 +1,7 @@
 # kokoro-agent 总体方案 v1（PRD + 技术方案 + 拓展规划）
 
+> 已被同日 system-master-plan-v2 取代（v2 覆盖三仓全栈并吸收成品二元论/命名法典/steering 等后续裁定）；本文留作 agent 仓 PRD 细节存档。
+
 2026-07-04 定稿。本文是 agent 子仓库的单一总纲：产品定义、当前架构、词汇法典、能力现状、拓展路线。
 与 handbook 冲突时以 handbook 裁决记录为准；本文吸收了截至今日的全部用户裁定。
 

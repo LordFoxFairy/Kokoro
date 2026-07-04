@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-04 (系统总方案 v2——三仓全栈，music/video 北极星)
+- **docs/superpowers/specs/2026-07-04-system-master-plan-v2.md**：三仓四面总览、全栈十词法典、成品体系（本体论+对偶性+三元+新类型手册）、能力矩阵、13 条法则汇编、路线图重排——**R-artifact 升首位**（media 成品产出非文本，产物面=music/video 硬前置：content_and_artifact→artifact_ref→session 产物端点→web MIME 预览）→R-hub（含 profile.subagents 纯工人表）→music 落地→retention→外部件。v1 agent 方案标记取代。
+- 下一单默认：R-artifact（等拍板）。
+
 - Date: 2026-07-04 (深度思考单：成品/子代理二元论 + 能力束流动定稿)
 - **本体论法典**：docs/superpowers/specs/2026-07-04-product-vs-subagent-ontology.md——四维对立表、**对偶性定律**（成品被选中=主位/未选中=降格子代理，声明束两用、代码配方只在主位）、成品三元（资产 prompts/ + bundle 在 session 入口表 + 配方 orchestration/<type>.py）、music 两条落地路（数据型近零改动/代码型纯增量+届时契约分派键）、细节边界清单（守卫两态/记忆两态/纯工人 profile.subagents 缺口留 hub 批次）。
 - **对偶性断裂实锤修复**（agent 406e614）：wire_subagents 主 index 优先→KOKORO_TOOLS 注册表兜底→未知 fail-loud；修复前 general 主位挂带专属工具的降格成品必炸。
