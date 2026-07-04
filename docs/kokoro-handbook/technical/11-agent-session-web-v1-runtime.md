@@ -876,4 +876,8 @@ wire 子代理定义
 ② 收养监听自退出（他处删流 NOGROUP）必须出表：done-callback pop；
    新增公开观测面 supervisor.control_listeners。
 ③ web_fetch 流式读取边读边封顶（原实现整包吞 body 后才截断=OOM 面）。
+
+守卫下发法则（补）：子代理 middleware 链独立于主 agent——终态闸/预算闸对 catalog 与
+wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：deepagents 内生 general-purpose
+仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```

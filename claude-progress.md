@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-04 (守卫下发 + 三提案齐备 — 自主窗口收官)
+- **守卫下发**（e916ed5）：TerminalGuard/TokenBudget 逐个下发进 catalog+wire 子代理的独立 middleware 链（不下发=task 委派旁路预算，真旁路回归钉死）；residual：deepagents 内生 general-purpose 仅 allow 档可达且不带闸（handbook 注记）。
+- **三份提案待批**：steering（信箱+before_model 注入）、scheduled-runs（session 触发+幂等键）、storage retention（分层 TTL 全默认关）。
+- 窗口终态认证：verify-all 三套件 PASS + 真实流式抓取冒烟 PASS；agent 313 tests；四仓 CI 绿。
+
 - Date: 2026-07-04 (对抗复审三实锤全修 — agent 9c8de9b)
 - 复审子代理（对抗性，限时收口）交付 3 条已确认真 bug，全部自行复核后修复+回归钉死：
 - **①【高】跨 worker resume/cancel 竞态**（收养机制引入）：三层闸（resume 复检/执行入口闸/TerminalGuardMiddleware 轮粒度熔断）；cancel 语义定案=轮边界尽力而为+终态单胜者；竞态回归测试（renew 即终态→绝不 spawn）。
