@@ -4,9 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (14)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (15) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 13
+#   raw (15)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   browser (16) — session emits, web parses. run.started is consumed by session and
+#                  replaced by the synthetic session.created + run.created; the other 14
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
@@ -75,6 +75,7 @@ notes:
   tool.returned.is_error: "严格必填 fail-loud：生产端始终发送；缺失即报错，绝不用默认 false 掩盖真失败。"
   tool.returned.artifact_ref: "大结果落 artifact，SSE 只带引用；P1 生产者。"
   tool.returned.truncated: "wire 展示层截断标记：缺席=结果完整，true=已截断（完整结果在后端，canvas 预览 P1 经 artifact_ref 取）。"
+  tool.output.delta.delta: "长执行工具的增量输出（如 execute）；每工具累计上限同 result 护栏，超限静默停发（终值仍走 tool.returned）。"
   tool.awaiting_approval.pending_tool_ids: "同帧完整待批 tool_id 列表；HITL『凑齐才提交』契约依据，web 读契约而非内嵌算法。"
   tool.awaiting_approval.result: "仅 kind=result_review 时存在：待人工审核的已执行结果（payload 列表尾缀 ? = 该 kind 局部可选）。"
   tool.awaiting_approval.risk: "面向 web 的风险摘要，非权限判断真源。"
@@ -87,6 +88,7 @@ raw_kinds:
   - {kind: message.delta, payload: [segment_id, delta]}
   - {kind: message.completed, payload: [segment_id, content]}
   - {kind: tool.invoked, payload: [segment_id, tool_id, name, args]}
+  - {kind: tool.output.delta, payload: [segment_id, tool_id, name, delta]}
   - {kind: tool.awaiting_approval, payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, risk, editable, input_schema, pending_tool_ids, "result?"]}
   - {kind: tool.returned, payload: [segment_id, tool_id, name, result, is_error, "truncated?", rejected, reject_reason, responded, artifact_ref, summary]}
   - {kind: todo.updated, payload: [todos]}
@@ -110,6 +112,7 @@ browser_order:
   - message.completed
   - thinking.delta
   - tool.invoked
+  - tool.output.delta
   - tool.awaiting_approval
   - tool.returned
   - todo.updated

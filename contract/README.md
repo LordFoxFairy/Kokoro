@@ -23,6 +23,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `message.delta` | segment_id, delta |
 | `message.completed` | segment_id, content |
 | `tool.invoked` | segment_id, tool_id, name, args |
+| `tool.output.delta` | segment_id, tool_id, name, delta |
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
 | `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact_ref?, summary? |
 | `todo.updated` | todos |
@@ -43,6 +44,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `message.completed` | segment_id, content |
 | `thinking.delta` | segment_id, delta |
 | `tool.invoked` | segment_id, tool_id, name, args |
+| `tool.output.delta` | segment_id, tool_id, name, delta |
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
 | `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, artifact_ref?, summary? |
 | `todo.updated` | todos |

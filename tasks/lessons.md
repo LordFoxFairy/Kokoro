@@ -36,3 +36,8 @@
 - 场景：实现 memory/web 底层工具时，先后把租户 scope 读取、zhipu vendor 代码、一级目录 search/ 混进了工具层。
 - 我做错的：把"政策/vendor/归置"当成实现细节随手就近放，没有先过"这属于哪一层"的关。
 - 下次怎么避免：底层工具 = 通用原语，铁律三问——①体内有没有租户/环境政策？（应装配注入）②体内有没有 vendor 词汇？（应适配器外置，注册表选择）③文件归置是否与所属域同处？（工具的配套件放 tools/ 下，不占一级目录）。写完先自查再交。
+
+## 2026-07-04 i18n 设计不能只停在 translator
+- 场景：设计 `kokoro-i18n` 时先实现了 locale/key/catalog/translator，但用户指出技术方案详细设计必须说明并覆盖“翻译会用到的位置”，本质是文本 key 在展示边界被替换成文案。
+- 我做错的：只证明 key 能被翻译，没有把 `labelKey` 这类实际 translation slot 建模，也没有给 admin/module manifest 的嵌套位置提供明确替换 API。
+- 下次怎么避免：i18n 设计必须同时回答三件事：① key 的格式与词典；② key 出现在哪些结构位置（labelKey/titleKey/descriptionKey 等）；③ 在哪个边界把 key 解析成展示字段并保留可审计原 key。测试必须覆盖真实位置，而不是只测孤立 `translate(key)`。
