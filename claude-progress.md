@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-04 (自主时段二：五单连发全绿)
+- **token 预算熔断**（861bb08）：RunStateStore.add_tokens（sqlite UPSERT RETURNING/mongo $inc/fake，矩阵 24）+ TokenBudgetMiddleware（awrap_model_call 累计 usage_metadata，超限 TokenBudgetExceeded→run.failed）；跨 HITL 段不清零（store 背书，rebuild 测试钉死）；KOKORO_RUN_TOKEN_BUDGET 默认 0=关（预算数值属政策，用户裁定 agent 执法+namespace 政策位）。
+- **web-researcher 内建**（0361710）：用户裁定"实现但默认关"——KOKORO_BUILTIN_SUBAGENTS 点名启用；catalog_subagents 装配点解析工具实例，声明工具缺任一整个不挂（不设空壳）；deny 声明集只含真挂载者。
+- **subagent.thinking.delta**（四仓 2a964a3/881a0bb/7bb0504/0389ca5）：子代理 reasoning 不再弃置；契约 16/17 kind。
+- **system prompt 行为工程**（b9185d7）：一行空壳 → 人格+条件工具指引（只提真挂载工具）+skills 三段组合；**真模型实证：不提工具名，模型自发 save_memory（key=ui-dark-mode-preference，内容自主泛化）**。
+- 门禁：agent 309 + e2e ×5 轮 + 真模型微场景；全推送。对抗复审子代理已催收（15 分钟限时）。
+
 - Date: 2026-07-04 (自主时段末段：流式工具输出四仓收口 + token 熔断开工)
 - **tool.output.delta 全链落地**（契约 15/16 kind；agent a7a59f6 / session 02e1531 / web a5e681a / 父 5464d17）：投影层 output_deltas 不再 drain 弃置——发射进 wire（预算=TOOL_RESULT_MAX_CHARS 累计截停防刷屏），session 透传自动，web 穷尽分支 no-op（渲染留 canvas 期）。行为测试：增量序列在 invoked/returned 之间 + 预算截停；四仓门禁+e2e 绿。
 - **在飞：token 预算熔断**——已实证 ModelResponse.result=list[BaseMessage]（usage_metadata 累计点）+ awrap_model_call 熔断口。关键设计已定：**预算必须跨 HITL 段**（resume 重建 middleware 清零计数）→ 累计落 RunStateStore（add_tokens 方法，同 tool_results 模式，sqlite/mongo/fake 三实现）；政策=agent env 默认（KOKORO_RUN_TOKEN_BUDGET）+ 未来 profile 覆盖位。下一步：storage 方法 TDD → TokenBudgetMiddleware → 装配 → 行为测试（超限→run.failed(TokenBudgetExceeded)）。

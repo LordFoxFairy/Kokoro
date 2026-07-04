@@ -80,13 +80,13 @@ namespace profile（租户级常挂）。要"用户级/消息级动态"缺的是
 
 | 能力 | 现状 | 判定 |
 |---|---|---|
-| 流式工具输出（execute 长命令增量） | 投影层有 output_deltas，**契约无 tool.output.delta kind**，长命令期间 wire 静默 | P1 —— 需契约新 kind + web 渲染，跨仓单元 |
+| 流式工具输出 | **✅ 已做**（tool.output.delta，预算截停防刷屏；web 渲染留 canvas 期） | agent a7a59f6 |
 | 运行中追加消息（steering） | 活跃 run 撞 409（V1 故意）；CC 支持 mid-run 注入 | P1 产品决策 —— langgraph 侧可用 interrupt+resume 注入实现 |
 | 多模态输入（图片附件） | 契约已减法移除（无产无消）；模型面 glm-5V/claude 可接 | 真需求出现时：契约+session 上传面+HumanMessage content blocks，一次做完 |
 | 结构化输出（response_format） | create_deep_agent 原生支持，未暴露到 wire | P2 —— music/platform job 链的前置件 |
 | worker 优雅停机（SIGTERM drain） | 现靠 TTL 租约重拾兜底（已混沌验证），rollout 会有 ≤TTL 延迟尖峰 | P2 —— 停止消费+限时等活跃 run |
 | MCP 工具表缓存 | 每 run 全量 HTTP 拉取 | P2 —— TTL 缓存（注意工具漂移语义） |
-| 子代理 thinking 事件 | 子代理 reasoning 被丢（只透传 text） | P3 小improvement |
+| 子代理 thinking 事件 | **✅ 已做**（subagent.thinking.delta 全链） | agent 2a964a3 |
 | 模型瞬态重试 | **非缺口**：openai/anthropic SDK 默认 2 次重试已生效 | 已核对 |
 | 长会话上下文摘要 | **非缺口**：deepagents 主/子代理路径均默认挂 summarization middleware | 已核对 |
 | attachments/content_ref 静默丢弃 | **已处置**：契约减法（无产无消） | 3c83d16 |
@@ -105,3 +105,10 @@ namespace profile（租户级常挂）。要"用户级/消息级动态"缺的是
 
 agent 293 pytest + pyright 0 + ruff；storage 行为矩阵 23（sqlite+mongo）；跨栈 e2e ×3 轮 PASS；
 real-model-verify 23/23（新增 execute/local_shell）；chaos-verify 6/6（新增）；全部已推送。
+
+## 状态追记（2026-07-04 自主时段二）
+
+- ✅ token 预算熔断（store 背书跨 HITL 段；KOKORO_RUN_TOKEN_BUDGET，默认关闭=政策不擅代）——agent 861bb08
+- ✅ web-researcher 真内建（用户裁定：实现但默认关；KOKORO_BUILTIN_SUBAGENTS 点名启用 + 工具缺任一整个不挂）——agent 0361710
+- ✅ system prompt 行为工程（人格+按挂载工具的条件指引+skills 三段组合；真模型实证：未提工具名即自发 save_memory 且 key 规范）——agent b9185d7
+- 剩余 P1/P2：steering 机制预研、response_format、存储保留策略、MCP 缓存、e2b（外部）。
