@@ -5,6 +5,8 @@
 场景 B：普通提问 → 断言 thinking.delta ≥ 1 且 message.completed 非空。
 场景 C：web_search 真调用（searxng 可达才跑，否则 SKIP）→ 断言 tool.invoked/returned。
 场景 D：namespace 挂载 skill（sha256 lock）→ 断言模型遵循 skill 输出标记。
+场景 E：backend=local_shell 下 execute 审批 → 真 shell 输出回流。
+全程 profile.backend=local_shell（沙箱=真文件系统，root 圈定 scratch/workspace）。
 前置：redis:6379 + mongo:27017 + kokoro-agent/.env 真实凭据（OPENAI_BASE_URL/OPENAI_API_KEY）。
 """
 
@@ -145,6 +147,7 @@ def main() -> int:
         "namespaces": {
             "team-rmv": {
                 "model_policy": {"default": {"provider": "openai", "name": "glm-5"}},
+                "backend": "local_shell",
                 "skills": [
                     {"name": "kokoro-style", "path": str(skill_dir), "lock": skill_lock}
                 ],
@@ -195,7 +198,9 @@ def main() -> int:
         "KOKORO_RUN_STATE_DB": str(scratch / "run-state.db"),
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
+        "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
     }
+    (scratch / "workspace").mkdir()
     session_proc = subprocess.Popen(
         ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
         stdout=(scratch / "session.log").open("w"), stderr=subprocess.STDOUT,
@@ -285,13 +290,43 @@ def main() -> int:
               (finals[-1][:200] if finals else f"kinds={kinds_d}"))
         check("D: run.completed 收尾", kinds_d[-1:] == ["run.completed"], f"kinds={kinds_d}")
 
+        # 场景 E：execute 审批 → 真 shell 输出回流（local_shell backend）。
+        sid_e = f"ses_rmv_{uuid.uuid4().hex[:8]}"
+        sse_e = SseReader(f"/sessions/{sid_e}/events")
+        st, receipt = http("POST", f"/sessions/{sid_e}/messages", {
+            "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
+            "content": "请用 execute 工具运行这条命令并把输出原样告诉我：echo kokoro-exec-ok",
+        })
+        check("E: POST messages → 202", st == 202, f"{st} {receipt}")
+        run_e = receipt.get("run_id", "")
+        awaiting = None
+        deadline = time.time() + 210
+        while time.time() < deadline and awaiting is None:
+            try:
+                _, kind, event = sse_e.q.get(timeout=max(0.1, deadline - time.time()))
+            except queue.Empty:
+                break
+            if kind == "tool.awaiting_approval" and event.get("payload", {}).get("name") == "execute":
+                awaiting = event["payload"]
+        check("E: execute 审批暂停出现", awaiting is not None, "no awaiting")
+        if awaiting is not None:
+            http("POST", f"/sessions/{sid_e}/runs/{run_e}/control", {
+                "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                "decisions": [{"type": "approve", "tool_id": awaiting["tool_id"]}]})
+            events_e = collect_run(sse_e)
+            kinds_e = [k for k, _ in events_e]
+            returned = [p for k, p in events_e if k == "tool.returned" and p.get("name") == "execute"]
+            check("E: 真 shell 输出回流", bool(returned) and "kokoro-exec-ok" in str(returned[-1].get("result")),
+                  str(returned[-1:] or kinds_e)[:200])
+            check("E: run.completed 收尾", kinds_e[-1:] == ["run.completed"], f"kinds={kinds_e}")
+
         print(f"  logs: {scratch}")
         if FAILURES:
             print(f"\nREAL-MODEL VERIFY FAIL — {len(FAILURES)} 项：")
             for f in FAILURES:
                 print(f"  - {f}")
             return 1
-        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills 真栈全绿")
+        print("\nREAL-MODEL VERIFY PASS — thinking / subagent / web_search / skills / execute(local_shell) 真栈全绿")
         return 0
     finally:
         session_proc.terminate()
