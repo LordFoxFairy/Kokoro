@@ -896,3 +896,19 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
 context 层升级路径：运行时注入（steering/记忆预取）到来时经 ModelRequest.override
   middleware 化，须先实证与 deepagents 自身 prompt 改写（Skills/Memory middleware）的层叠序。
 ```
+
+## 实现注记（2026-07-04 追加：深挖四缺陷全修）
+
+```text
+①多段 run 用量少报：run.completed.token_usage 改读 store 跨段累计（add_usage 双列；
+  暂停段当场入账）——不再只报末段。
+②崩溃重拾复制用户消息：初始 HumanMessage 带稳定 id=message_id，TTL 重拾重放经
+  add_messages 按 id 去重（幂等重放实证）。
+③子代理内审批帧：deepagents 会把 interrupt_on 下发子图（无执行旁路，实证），但帧构造
+  曾按主图 tool_call 对齐而 fail-loud——approval_frame 回退嵌套帧（interrupt.id 派生
+  合成稳定 tool_id，segment 归属 task 调用）；嵌套 approve/edit 直发占位 returned
+  （子代理工具无投影通道）。
+④审核政策委派旁路：ToolResultReviewMiddleware 逐个下发子代理链（主链保持 policy 在
+  review 外层的顺序）；review 载荷自带子图真实 tool_id，帧天然成立。
+命名对齐：AgentProduct→AgentEntry / GENERAL_ENTRY（入口层词汇与 session 一致）。
+```

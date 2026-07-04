@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-04 (深挖回答"还有什么缺陷"——四实锤全修 + hub v3 单轴归一)
+- **namespace 单轴归一（用户两次纠正）**：个人=personal namespace 实例，无 user 层级/user_id；跨空间=grant；lessons 立"身份轴唯一性"防漂移规则。McpServer.headers 契约补齐（个人 MCP 凭据最小可用，四仓 CI 绿）。
+- **结构批评修复**：agents/ 每成品一子包（general/persona.md）+ orchestration 真门面；AgentProduct→AgentEntry/GENERAL_ENTRY（入口词汇对齐 session）。
+- **四实锤缺陷（本轮深挖，全修全钉）**：①多段用量少报→store 跨段累计真源（c54e77d）②崩溃重拾复制消息→稳定 message_id 幂等重放（同前）③子代理内审批 fail-loud→嵌套帧回退（合成稳定 id+task 段归属+占位 returned，f5b15e6）④审核政策委派旁路→review middleware 下发子代理链（7dd280d）。
+- 验证：agent 322 tests + pyright 0；e2e/chaos 多轮 PASS。设计存量（未做，等拍板/外部件）：墙钟超时生产者（timeout 死枚举）、子代理工具事件通道（可见性 P2）、steering/scheduled/retention 三提案、hub 数据模型、e2b、response_format、artifact 生产者、context middleware 化。
+
 - Date: 2026-07-04 (心脏重构完成 — orchestration/agents/context/State 四合一，agent 7d3fbef)
 - **State 轴迁移**：RunScope+KokoroAgentState（DeepAgentState 扩展）替代 context_schema 轴（实证生产零消费者后整体删除）；scope 随 input 进图/落 checkpoint/续段不重供（test_run_scope_state 真图钉死）；"context"一词让位上下文工程层。
 - **四层分域**：agents/（general 成品）+ orchestration/（assemble 主配方+context 拼装点，只收领域设置——架构法测试抓住 AppConfig 越权后按域拆参）+ worker/ 瘦身 104 行 + execution/ 不变。
