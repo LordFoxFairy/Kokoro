@@ -99,7 +99,18 @@ KOKORO_STREAM_BACKEND                 实时流后端选择。
 KOKORO_REDIS_URL                      run queue / event stream / live fanout / lock。
 KOKORO_MESSAGE_STORE_BACKEND          session 消息存储后端。
 KOKORO_MESSAGE_STORE_MONGO_URL        session 消息 Mongo 连接。
-KOKORO_AGENT_RUN_STATE_BACKEND        agent run 状态后端。
+KOKORO_LEDGER_BACKEND                 agent run 状态后端（sqlite 单机 / mongo 跨 pod）。
+KOKORO_CHECKPOINT_BACKEND             agent checkpoint 后端（sqlite 单机 / mongo 跨 pod）。
+```
+
+Workspace 与沙箱（ADR-009；全部可选，缺省=单节点 local 零配置）：
+
+```text
+KOKORO_WORKSPACE_ROOT                 local 档工作区根（默认 ./kokoro_workspace）。
+KOKORO_WORKSPACE_CONFIG               存储形态 yaml（type: local|s3），session/agent 双侧共读。
+KOKORO_WORKSPACE_S3_ACCESS_KEY/_SECRET_KEY   s3 档凭据（不进 yaml）。
+KOKORO_DOCKER_IMAGE / KOKORO_DOCKER_TTL      docker 执行隔离档：镜像（选 docker 必填）/容器存活期。
+KOKORO_E2B_API_KEY / _TEMPLATE / _TIMEOUT    e2b 云沙箱档（选 e2b 时 api_key 必填）。
 ```
 
 端口固定：site:4201 / user:4211 / model:4221 / credit:4231 / payment:4241。其余端口以各子仓 `.env.example` 为准，缺失待补，不编造。

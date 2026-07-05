@@ -26,6 +26,7 @@ V1 将 DeepAgents backend 作为 `kokoro-agent` 的基础设施能力，
 | --- | --- | --- |
 | `state` | 普通推理、受控工具编排、安全默认 | 生产默认 |
 | `local_shell` | 本地开发、受控测试 | 开发默认 |
+| `docker` | 容器化执行隔离：execute 进容器、文件面留宿主（2026-07 增补，见 ADR-009） | 可配置 |
 | `e2b` | 远程隔离执行代码或文件任务 | 可配置 |
 | `custom` | 私有云、自研 backend/sandbox、企业隔离环境 | 可配置 |
 

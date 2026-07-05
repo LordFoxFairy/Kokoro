@@ -131,7 +131,12 @@ agent 写文件与 session 直读共用约定 `{WORKSPACE_ROOT}/{namespace:sessi
   RWX 共享卷（NFS/EFS/PVC accessModes: ReadWriteMany），agent 与 session 的 Deployment
   挂同一 PVC。纯部署配置，零代码改动。仅限受控自托管环境（ADR-006 红线）。
 
-云生产（e2b，随 Phase 1 落地）：
+docker 执行隔离（叠加档，已真栈验证）：
+  namespace profile `backend: docker` + KOKORO_DOCKER_IMAGE。任意 shell 在容器内跑
+  （挂该 run 的 workspace 到 /workspace），文件工具留宿主——文件面与所在档完全一致。
+  容器 sleep TTL + --rm 自清；container_id 入 ledger，HITL resume 复用活容器。
+
+云生产（e2b，结构就位、真栈验证待 key）：
   e2b sandbox 即 workspace；run 收敛后归档到对象存储，session 读侧自动切换。见 ADR-009。
 ```
 

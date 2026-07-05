@@ -4,6 +4,10 @@
 
 本文定义 Kokoro 的分层测试策略、各仓门禁命令，以及必须覆盖的反例矩阵和 e2e gate。目标：合并前可证明主链路不坏、计费不超扣、站点不串站。
 
+运行时三仓（agent/session/web）的**完整用例总表与一键命令**见仓根 `docs/test-cases.md`
+（L1 三仓套件 / L2 gate 26 用例 × local·s3·docker 三底座 / L3 chaos+trace /
+L4 real-model 七场景 / L5 浏览器走查 8 用例），本文不重复维护。
+
 ## 测试分层
 
 ```text

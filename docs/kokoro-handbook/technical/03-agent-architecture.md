@@ -198,7 +198,8 @@ ask_user_question。
 task/delegate subagent。
 todo。
 HITL approve/reject/edit/respond。
-state/local_shell/e2b/custom backend。
+state/local_shell/docker/e2b/custom backend（docker/e2b 带 run 级生命周期：
+sandbox/container id 入 ledger keep-first，HITL resume 重连而非新建；见 ADR-009）。
 raw agent events。
 ```
 

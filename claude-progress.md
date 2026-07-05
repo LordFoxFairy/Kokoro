@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-05 (全量四层复验全绿 + handbook 同步至当前实现)
+- L1：agent 379+静态三件套 0 / session 173+tsc / web 181+tsc。L2：gate local/s3/docker 三底座 PASS。L3：chaos（mongo 生产形态）+ trace（langfuse 在线复验）PASS。L4：real-model A–G PASS。L5 上轮 8 用例全过（本轮 web 无行为改动未重跑）。
+- handbook 同步：ADR-006 策略表 +docker 行；03 篇 backend 五值+生命周期；08 篇 env 清单补 workspace/沙箱组；ops docker-k8s 补 docker 执行隔离档；testing-checklist 指向 docs/test-cases.md 单源。
+
 - Date: 2026-07-05 (docker 沙箱档落地并真栈全链验证——e2b 无账号的自主可测替代)
 - 契约 backend 枚举 +docker（spec 单源重新生成三仓）；session profile enum 补全五值。
 - DockerShellBackend 混合体：文件工具留宿主 workspace 虚拟根（三条文件面链零改动），仅 execute 进容器（--mount 挂 workspace，-v 会被 ns:sid 冒号撕裂）；容器 sleep TTL + --rm 自清。
