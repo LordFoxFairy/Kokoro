@@ -366,15 +366,14 @@ def main() -> int:
         sse_g = SseReader(f"/sessions/{sid_g}/events")
         st, receipt_g = http("POST", f"/sessions/{sid_g}/messages", {
             "idempotency_key": f"idem_{uuid.uuid4().hex[:8]}",
-            "content": "请用 export_artifact 工具把这句话导出为 note.md（mime 用 text/markdown，"
-                       "encoding 用 text）：Kokoro 产物面已上线。导出后告诉我文件名。",
+            "content": "请用 write_file 工具把这句话写入 /note.md 文件：Kokoro 产物面已上线。写完告诉我文件名。",
         })
         check("G: POST messages → 202", st == 202, f"{st} {receipt_g}")
         events_g = collect_run(sse_g)
         kinds_g = [k for k, _ in events_g]
         arts = [p.get("artifact") for k, p in events_g
-                if k == "tool.returned" and isinstance(p.get("artifact"), dict)]
-        check("G: tool.returned 携带 artifact 引用", bool(arts), f"kinds={kinds_g}")
+                if k == "artifact.created" and isinstance(p.get("artifact"), dict)]
+        check("G: artifact.created 独立事件（write_file 自动镜像）", bool(arts), f"kinds={kinds_g}")
         if arts:
             art = arts[-1]
             check("G: 引用元数据完备", art.get("mime") == "text/markdown" and art.get("bytes", 0) > 0, str(art))

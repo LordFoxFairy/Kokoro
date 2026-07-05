@@ -4,9 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (19) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 17
+#   raw (19)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   browser (20) — session emits, web parses. run.started is consumed by session and
+#                  replaced by the synthetic session.created + run.created; the other 18
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
@@ -70,7 +70,7 @@ field_types:
   token_usage: object:TokenUsage
 
 # Fields whose KEY may be absent on the common path.
-payload_optional: [risk, input_schema, rejected, reject_reason, responded, artifact, summary, failed, error, token_usage]
+payload_optional: [risk, input_schema, rejected, reject_reason, responded, summary, failed, error, token_usage]
 # Fields whose VALUE may be null.
 payload_nullable: [token_usage]
 
@@ -79,7 +79,7 @@ terminal_kinds: [run.completed, run.failed]
 notes:
   message.delta.delta: "流上文本恒为 assistant，无 role 字段；角色由 segment 归属决定。"
   tool.returned.is_error: "严格必填 fail-loud：生产端始终发送；缺失即报错，绝不用默认 false 掩盖真失败。"
-  tool.returned.artifact: "产物引用（id/name/mime/bytes）：字节活在共享产物库，session 端点按 id 出体。"
+  artifact.created.artifact: "产物诞生是独立事实（write_file 自动镜像产出）：字节活在共享产物库，session 端点按 id 出体；web 按 tool_id 挂回工具步。"
   tool.returned.truncated: "wire 展示层截断标记：缺席=结果完整，true=已截断（完整结果在后端，预览经 artifact 端点取）。"
   tool.output.delta.delta: "长执行工具的增量输出（如 execute）；每工具累计上限同 result 护栏，超限静默停发（终值仍走 tool.returned）。"
   tool.awaiting_approval.pending_tool_ids: "同帧完整待批 tool_id 列表；HITL『凑齐才提交』契约依据，web 读契约而非内嵌算法。"
@@ -98,15 +98,16 @@ raw_kinds:
   - {kind: tool.invoked, payload: [segment_id, tool_id, name, args]}
   - {kind: tool.output.delta, payload: [segment_id, tool_id, name, delta]}
   - {kind: tool.awaiting_approval, payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, risk, editable, input_schema, pending_tool_ids, "result?"]}
-  - {kind: tool.returned, payload: [segment_id, tool_id, name, result, is_error, "truncated?", rejected, reject_reason, responded, "artifact?", summary]}
+  - {kind: tool.returned, payload: [segment_id, tool_id, name, result, is_error, "truncated?", rejected, reject_reason, responded, summary]}
   - {kind: todo.updated, payload: [todos]}
   - {kind: subagent.started, payload: [segment_id, subagent_id, name, description, subagent_type, source]}
   - {kind: subagent.finished, payload: [segment_id, subagent_id, name, subagent_type, source, failed, error]}
   - {kind: subagent.thinking.delta, payload: [segment_id, subagent_id, delta]}
   - {kind: subagent.text.delta, payload: [segment_id, subagent_id, text]}
   - {kind: subagent.text.completed, payload: [segment_id, subagent_id, text]}
+  - {kind: artifact.created, payload: [segment_id, tool_id, artifact]}
   - {kind: subagent.tool.invoked, payload: [segment_id, subagent_id, tool_id, name, args]}
-  - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?", "artifact?"]}
+  - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?"]}
   - {kind: run.completed, payload: [status, token_usage]}
   - {kind: run.failed, payload: [error_kind, message]}
 
@@ -132,6 +133,7 @@ browser_order:
   - subagent.thinking.delta
   - subagent.text.delta
   - subagent.text.completed
+  - artifact.created
   - subagent.tool.invoked
   - subagent.tool.returned
   - run.completed
