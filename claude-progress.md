@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (AgentFactory 定案：一类型一 py，政策即类属性；swarm 路径入册)
+- agents/=三件：base.py（AgentFactory ABC+形状）、general.py（工厂：core_tools/pause_tools 类属性+create 管线）、__init__（FACTORIES 注册+assemble/approval_names 分派）。
+- 杂烩归位：子代理装配件→subagents/assemble.py；build_web_tools 内联回 worker/main；persona 回 prompts/；parts/package/类型子包退役。
+- langgraph-swarm 评估入册（P2）：工厂产物即 LangGraph agent，届时 agents/swarm.py 组合 handoff 图，工厂形状不变。
+- agent 406 全绿+静态 0；gate local+docker 双档回归 PASS。
+
 - Date: 2026-07-05 (agents/ 业务包层定案：plugin 式类型包 + wire agent_type 分派)
 - 用户主张落地：每 agent 类型=自包含业务包（agents/<type>/：recipe.py+persona.md+未来专属 tools/skills，类似 CC plugins）；契约 RuntimeConfig 加 agent_type（enum [general]），web→session 解析→agent AGENT_TYPES 注册表分派（assemble 唯一入口）。
 - 工具面=类型政策：AgentTypePackage.pause_tools 单点（general={ask_user}）；approval_names/build_interrupt_on/resolve_tools 全参数化吃包政策——无 chat 面的 studio 类型不挂人机问答工具。

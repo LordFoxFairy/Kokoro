@@ -882,23 +882,25 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
 仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```
 
-## 实现注记（2026-07-05 追加：agents/ 业务包层定案——plugin 式类型包）
+## 实现注记（2026-07-05 追加：agents/ 工厂层定案——Factory Method，一类型一 py）
 
 ```text
-用户裁定：业务编排层独立成层，每 agent 类型是自包含包（类似 CC plugins）——
-自带配方/人格/未来的专属 tools+skills；类型决定基础工具面（无 chat 面的
-studio 类型不挂 ask_user 这类人机问答工具）。
-
-落地：
+用户三轮裁定合刀（业务编排独立层 → CC-plugin 心智 → factory 模式一类型一 py）：
   契约 RuntimeConfig 加 agent_type（enum，V1=[general]）：web 传 entry →
-    session 解析填 type 上 wire → agent 按 type 分派配方。
-  agents/（assembly 并入）：parts.py 共享装配件 + <type>/ 业务包
-    （general/recipe.py 配方 + persona.md 人格随包）；AGENT_TYPES 注册表 +
-    assemble() 唯一装配入口；枚举覆盖守卫测试。
-  类型政策单点：AgentTypePackage.pause_tools（general={ask_user}）；
-    approval_names/build_interrupt_on/resolve_tools 全部吃包政策参数，
-    ask_user 不再硬编于共享件。
-  新增 studio 类型 = agents/<type>/ 新包 + 注册一行 + 契约枚举一值，机制零改动。
+    session 解析填 type 上 wire → agent FACTORIES 注册表分派。
+  agents/ 三件：base.py（AgentFactory ABC + AssembleDeps/AssembledAgent 形状）、
+    general.py（GeneralAgentFactory：create=装配管线，core_tools/pause_tools
+    政策即类属性——看一个文件懂一个类型）、__init__.py（注册+分派+approval_names）。
+  杂烩归位：子代理装配件（wire/catalog/general_purpose）归 subagents/assemble.py；
+    web 工具构建内联回 worker/main（config 单点消费处）；人格回 prompts/
+    （prompt 不进 .py 裁定）；parts.py/package.py/类型子包全部退役。
+  新增 studio 类型 = 新 <type>.py 工厂 + 注册一行 + 契约枚举一值。
+
+swarm 升级路径（P2，langgraph-swarm 已评估）：
+  各工厂产物即 LangGraph agent，langgraph-swarm 的 create_swarm/create_handoff_tool
+  可在 FACTORIES 之上把 general ⇄ studio 类型接成 handoff 图（active agent 随
+  checkpointer 持久，与现有 thread checkpoint 同轴）；工厂形状不变，届时新增
+  agents/swarm.py 组合装配入口即可。层级委派（task/subagent）仍是 V1 主形态。
 ```
 
 ## 实现注记（2026-07-05 追加：orchestration→assembly 正名，agents/ 空壳清除）
