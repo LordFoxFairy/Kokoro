@@ -183,3 +183,9 @@ localStorage 保存权威 run 状态。
 run.completed.status 被 mapper 丢弃。
 所有能力都堆进一个侧栏，导致主体验失焦。
 ```
+
+## i18n
+
+能力边界与静态/动态双源判断见 [14-web-i18n-capability](14-web-i18n-capability.md)。
+现状：42 个源文件硬编码中文（无静态层）、无 locale 概念；实现细节由 web 侧
+落地时自行设计，本手册只锁能力与边界。

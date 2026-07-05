@@ -1015,3 +1015,16 @@ toolbox.tools_for(namespace) 恒挂底座一口出 → MCP。未来配置态内�
 swarm 位置注记（delegates.py docstring 入册）：V1 桥语义 swarm_members ⊆ subagents，
 成员挂层级下属即可达；P2 langgraph-swarm 在工厂加 swarm.py 一步建 handoff 图。
 ```
+
+## 实现注记（2026-07-05 追加：web i18n 判断入册 + 误形态撤除）
+
+```text
+web i18n 高层判断定案（technical/14）：静态（构建期语言包，主体）+ 动态（运行时
+覆盖集，运营/租户薄层）双源，统一解析层协同；platform i18n core 不扩、admin 不做
+多语言、preview/workbench 双侧都不做。web 曾出现的 admin/i18n workbench +
+api/i18n/preview 已撤（编辑面属 platform 后台方向，web 只消费）。
+生产级缺陷入册（待排期，不随 web 启动自动生效）：
+  ① web 42 文件硬编码中文——静态层缺失的量化底数；
+  ② 契约错误自由文本（run.failed.error 等）——应 code 为准、文案为辅，web 按
+     code 本地化；动契约，须单独裁决。
+```

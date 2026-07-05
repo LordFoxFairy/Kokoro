@@ -689,3 +689,7 @@
   - 多 pod 资产分发红线在 s3 档消解（ADR-011 入册；examples 增 assets.example.{local,s3}.yaml）
 - Verified: agent pytest 422 全绿 + ruff/pyright/mypy 0 + verify-all 六档 PASS（local/s3/docker/docker+s3/chaos/trace，minio 实测含 s3 资产源三组）+ 双仓 CI success
 - Pending（用户侧）: e2b key 后真栈复核；swarm 运行时 P2；platform 后台资产管理为升级路径
+
+## 2026-07-05 web i18n 判断入册 + 全量复验
+- Done: technical/14-web-i18n-capability（静态+动态双源高层判断，5 项输出齐；不落实现细节）；web 误形态 workbench/preview 7 文件撤除（web 528957e 后续提交）；05/11/README 挂接；生产级缺陷入册（web 42 文件硬编码中文、契约错误自由文本应 code 化——动契约待单独裁决）
+- Verified: verify-all 六档 PASS + agent 422 / session 178 / web 173（i18n 测试撤除后计数）全绿 + web tsc 干净
