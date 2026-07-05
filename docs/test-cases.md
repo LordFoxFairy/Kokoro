@@ -123,6 +123,6 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 
 ## 已知边界（显式不在本表）
 
-- e2b/custom sandbox backend：V1 未落地，`make_backend` fail-loud（NotImplementedError）。
+- e2b backend：编排结构就位（fake SDK 单测钉死生命周期语义），真栈行为待 key 复核；无 key 选 e2b 即 fail-loud。custom backend：未落地，fail-loud。
 - state 盘档（backend=state）：诚实降级无文件面，snapshot.files=[]。
 - trace-verify 依赖自托管 langfuse，默认 SKIP 不算失败。
