@@ -68,7 +68,7 @@ python3 scripts/verify-all.py --real
 
 ---
 
-## L3 崩溃混沌（`scripts/chaos-verify.py`）+ trace（`scripts/trace-verify.py`）
+## L3 崩溃混沌（`scripts/chaos-verify.py`，ledger/checkpoint=mongo 生产跨 pod 形态）+ trace（`scripts/trace-verify.py`）
 
 | ID | 用例 | 预期 |
 |---|---|---|

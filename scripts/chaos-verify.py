@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """崩溃混沌验证。场景一：认领 worker 在 HITL 暂停期间被 SIGKILL，另一 worker 心跳收养其
 control 流并接续 resume 到终态。场景二：session 进程在暂停期间被 SIGKILL，重启后从持久层
-收敛恢复（snapshot 暂停现场完好，resume/审批续走到终态）。前置：redis:6379 + mongo:27017。
+收敛恢复（snapshot 暂停现场完好，resume/审批续走到终态）。场景三：双 session 实例跨读跨控。
+前置：redis:6379 + mongo:27017。
 
-关键点：run 状态走共享 sqlite（两 worker 同文件），checkpoint 同理；
+关键点：ledger/checkpoint 走 mongo（生产跨 pod 形态——双 worker 无共享文件系统假设）；
+sqlite 单机档语义由 tests/test_storage.py 的同语义矩阵覆盖。
 KOKORO_LEASE_HEARTBEAT_S=2 让收养在秒级发生。
 """
 
@@ -94,10 +96,10 @@ def spawn_worker(scratch: Path, tag: str) -> subprocess.Popen:
         "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
         "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
-        "KOKORO_LEDGER_BACKEND": "sqlite",
-        "KOKORO_LEDGER_DB": str(scratch / "ledger.db"),
-        "KOKORO_CHECKPOINT_BACKEND": "sqlite",
-        "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
+        "KOKORO_LEDGER_BACKEND": "mongo",
+        "KOKORO_CHECKPOINT_BACKEND": "mongo",
+        "KOKORO_MONGO_URL": MONGO_URL,
+        "KOKORO_MONGO_DB": MONGO_DB,
         # 秒级心跳：收养窗口从默认 30s 压到 2s，混沌验证不用干等。
         "KOKORO_LEASE_HEARTBEAT_S": "2",
     }

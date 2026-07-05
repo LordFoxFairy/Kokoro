@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-05 (chaos 升级 mongo 档：生产跨 pod 收养路径首次 e2e 实证)
+- 用户纠正确认：ledger/checkpoint 本就有 mongo 跨 pod 后端（sqlite 是单机可选档）、workspace 共享属部署配置（本地 docker 卷/多 pod 共享卷或对象存储）——此前盘点误列欠账。
+- chaos-verify 从 sqlite 共享文件切到 mongo ledger+checkpoint（无共享文件系统假设），三场景 20 项全绿。
+
 - Date: 2026-07-05 (成品验证轮：测试用例总表 + 全量执行 + 三个真 bug 修复)
 - **docs/test-cases.md**：四层验证体系总表（L1 三仓套件 / L2 gate 26 用例 / L3 chaos+trace / L4 real-model 7 场景 / L5 浏览器走查 8 用例），一键命令齐备。
 - **修复①合成事件顺序**：message.user 曾抢在 session.created 前落 seq（违契约 browser_order）→ emitSynthetics 产生点前移至 startMessage 受理点，relayRun 幂等兜底。
