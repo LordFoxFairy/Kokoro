@@ -90,11 +90,14 @@ agent 写侧不新增配置：backend 选择本就由 namespace profile 每请�
    工具，短超时防延迟黑洞）+ session `createS3WorkspaceReader` + 双侧共读 `type` 判别
    workspace yaml。验证：agent 17 例（minio 实测）+ session 18 例 + gate 全量跑
    `E2E_WORKSPACE_BACKEND=s3`（同一套断言透明换底）。**至此"多 pod 无共享卷"也只需配置。**
-3. **Phase 1b（等 e2b key，真栈验证驱动）**：e2b backend——继承 deepagents `BaseSandbox`
-   （仅 `execute()` 抽象）。关键生命周期设计：sandbox_id 须入 ledger run 级字段，HITL
-   resume 重建 backend 时 `connect(sandbox_id)` 重连而非新建（否则暂停期文件丢失）；TTL
-   到期由归档兜底。这些语义无 key 无法验证，不写无法验证的生命周期代码——`make_backend`
-   维持 fail-loud。
+3. **Phase 1b（结构已就位 2026-07-05，真栈验证待 key）**：e2b backend 编排全部落地——
+   `E2BSandboxBackend`（BaseSandbox 4 抽象映射，非零退出码是结果不是异常）+
+   `make_backend_for_run` run 级生命周期（sandbox_id 入 ledger keep-first；HITL resume
+   `Sandbox.connect(sandbox_id)` 重连既往箱、paused 自动 resume、箱亡新建兜底）+
+   `KOKORO_E2B_API_KEY/TEMPLATE/TIMEOUT` 配置（无 key 选 e2b 即 fail-loud）。
+   编排语义由 fake SDK 单测钉死（resume 绝不新建、绑定 keep-first、竞态账面不覆盖）；
+   SDK 真实行为（配额/网络/TTL 边界）待 key 到位真栈复核后转 Accepted-verified。
+   e2b 档 session 读侧（活跃期经箱、收敛归档 S3）随真栈验证同批接线。
 4. **Phase 2**：files 端点鉴权（随 auth 主线）。
 
 ## 影响

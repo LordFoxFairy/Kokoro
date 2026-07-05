@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (ADR-009 Phase 1b：e2b backend 编排结构就位，key 到手即真栈验证)
+- E2BSandboxBackend（BaseSandbox 4 抽象映射：commands.run/files API，非零退出码是结果）；SandboxClient Protocol 依赖倒置（fake 注入零穿透）。
+- make_backend_for_run：run 级生命周期——sandbox_id 入 ledger（协议+sqlite/mongo 双实现+同语义矩阵项）；HITL resume 用 Sandbox.connect(id) 类形态重连（paused 自动 resume）、绝不新建；箱亡新建兜底、绑定 keep-first。
+- 无 key 选 e2b fail-loud（KOKORO_E2B_API_KEY/TEMPLATE/TIMEOUT）。
+- 验证：agent 371 全绿（+8 e2b 编排 +1 矩阵项）/ pyright+mypy+ruff 0 / gate local+s3 双档回归 PASS。SDK 真实行为待 key 真栈复核（ADR 注记）。
+
 - Date: 2026-07-05 (ADR-009 Phase 1a：S3 workspace 档全链落地——多 pod 无共享卷也只需配置)
 - 双侧共读 type 判别 workspace yaml（KOKORO_WORKSPACE_CONFIG；缺省=local 零配置）；凭据 env 注入不进 yaml。
 - agent：ArchivingLocalShellBackend（write/edit 增量上传、execute/upload 后全量兜底捕获 shell 直写；归档失败 log 可见不打断工具、短超时防延迟黑洞）；boto3+lite stubs。
