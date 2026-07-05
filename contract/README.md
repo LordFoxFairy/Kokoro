@@ -32,7 +32,6 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
-| `artifact.created` | segment_id, tool_id, artifact |
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
@@ -57,7 +56,6 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.thinking.delta` | segment_id, subagent_id, delta |
 | `subagent.text.delta` | segment_id, subagent_id, text |
 | `subagent.text.completed` | segment_id, subagent_id, text |
-| `artifact.created` | segment_id, tool_id, artifact |
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
@@ -97,7 +95,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | POST | `/sessions/{session_id}/messages` |
 | GET | `/sessions/{session_id}` |
 | GET | `/sessions/{session_id}/events` |
-| GET | `/sessions/{session_id}/artifacts/{artifact_id}` |
+| GET | `/sessions/{session_id}/files/{path}` |
 | POST | `/sessions/{session_id}/runs/{run_id}/control` |
 
 POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching

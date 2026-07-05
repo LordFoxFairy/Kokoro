@@ -4,9 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (19)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (20) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 18
+#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   browser (19) — session emits, web parses. run.started is consumed by session and
+#                  replaced by the synthetic session.created + run.created; the other 17
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
@@ -29,12 +29,6 @@ objects:
     fields:
       - {name: input_tokens, type: int}
       - {name: output_tokens, type: int}
-  - name: Artifact
-    fields:
-      - {name: artifact_id, type: string_nonempty}
-      - {name: name, type: string_nonempty}
-      - {name: mime, type: string_nonempty}
-      - {name: bytes, type: int}
   - name: Risk
     fields:
       - {name: level, type: string_nonempty}
@@ -63,7 +57,6 @@ field_types:
   pending_tool_ids: array:string_nonempty
   risk: object:Risk
   input_schema: record
-  artifact: object:Artifact
   summary: record
   todos: array:object:Todo
   status: enum:run_completed_status
@@ -79,8 +72,7 @@ terminal_kinds: [run.completed, run.failed]
 notes:
   message.delta.delta: "流上文本恒为 assistant，无 role 字段；角色由 segment 归属决定。"
   tool.returned.is_error: "严格必填 fail-loud：生产端始终发送；缺失即报错，绝不用默认 false 掩盖真失败。"
-  artifact.created.artifact: "产物诞生是独立事实（write_file 自动镜像产出）：字节活在共享产物库，session 端点按 id 出体；web 按 tool_id 挂回工具步。"
-  tool.returned.truncated: "wire 展示层截断标记：缺席=结果完整，true=已截断（完整结果在后端，预览经 artifact 端点取）。"
+  tool.returned.truncated: "wire 展示层截断标记：缺席=结果完整，true=已截断（完整结果在工作区文件，预览经 files 端点取）。"
   tool.output.delta.delta: "长执行工具的增量输出（如 execute）；每工具累计上限同 result 护栏，超限静默停发（终值仍走 tool.returned）。"
   tool.awaiting_approval.pending_tool_ids: "同帧完整待批 tool_id 列表；HITL『凑齐才提交』契约依据，web 读契约而非内嵌算法。"
   tool.awaiting_approval.result: "仅 kind=result_review 时存在：待人工审核的已执行结果（payload 列表尾缀 ? = 该 kind 局部可选）。"
@@ -105,7 +97,6 @@ raw_kinds:
   - {kind: subagent.thinking.delta, payload: [segment_id, subagent_id, delta]}
   - {kind: subagent.text.delta, payload: [segment_id, subagent_id, text]}
   - {kind: subagent.text.completed, payload: [segment_id, subagent_id, text]}
-  - {kind: artifact.created, payload: [segment_id, tool_id, artifact]}
   - {kind: subagent.tool.invoked, payload: [segment_id, subagent_id, tool_id, name, args]}
   - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?"]}
   - {kind: run.completed, payload: [status, token_usage]}
@@ -133,7 +124,6 @@ browser_order:
   - subagent.thinking.delta
   - subagent.text.delta
   - subagent.text.completed
-  - artifact.created
   - subagent.tool.invoked
   - subagent.tool.returned
   - run.completed

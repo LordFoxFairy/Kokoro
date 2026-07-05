@@ -61,12 +61,19 @@ objects:
       - {name: decision, type: record, optional: true}
       - {name: created_at, type: string_nonempty}
       - {name: resolved_at, type: string_nonempty, optional: true}
+  - name: WorkspaceFile
+    fields:
+      - {name: path, type: string_nonempty}
+      - {name: mime, type: string_nonempty}
+      - {name: bytes, type: int}
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
       - {name: messages, type: array:object:MessageRecord}
       - {name: active_run, type: object:ActiveRun, optional: true}
       - {name: pending_pauses, type: array:object:PendingPause}
+      # 会话工作区文件清单（真实目录 walk；工作区=真文件系统 backend，state 盘档为空列表）。
+      - {name: files, type: array:object:WorkspaceFile}
       # server-internal high-water the snapshot folded to; web never sorts by it.
       - {name: event_watermark, type: int}
 
@@ -101,12 +108,12 @@ endpoints:
     path_template: "/sessions/{session_id}/events"
     params: [session_id]
     note: "SSE; Last-Event-ID header carries the last seq the client saw (illegal => snapshot replay)."
-  artifact:
+  file:
     method: GET
-    path_fn: artifactPath
-    path_template: "/sessions/{session_id}/artifacts/{artifact_id}"
-    params: [session_id, artifact_id]
-    note: "二进制响应：content-type=产物 mime，content-length=字节数，Cache-Control: immutable（产物不可变）；未知 id => 404。artifact_id 含 '/'，客户端须 encodeURIComponent 逐段编码。"
+    path_fn: filePath
+    path_template: "/sessions/{session_id}/files/{path}"
+    params: [session_id, path]
+    note: "工作区文件字节：content-type 按扩展名，路径含 '/' 须逐段编码；穿越/不存在 => 404。文件可变（agent 迭代），不设 immutable 缓存。"
   run_control:
     method: POST
     path_fn: controlPath

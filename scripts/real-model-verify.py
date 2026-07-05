@@ -174,9 +174,8 @@ def main() -> int:
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
         "KOKORO_NAMESPACE": "team-rmv",
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
-        # 产物库两服务必须同后端同根（部署清单同款约束）。
-        "KOKORO_ARTIFACT_BACKEND": "dir",
-        "KOKORO_ARTIFACTS_DIR": str(scratch / "artifacts"),
+        # 工作区同根约定：session 直读 agent 的 local_shell 目录。
+        "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
     }
     searxng_url = os.environ.get("RMV_SEARXNG_URL", "http://127.0.0.1:8888")
     try:
@@ -203,8 +202,6 @@ def main() -> int:
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
-        "KOKORO_ARTIFACT_BACKEND": "dir",
-        "KOKORO_ARTIFACTS_DIR": str(scratch / "artifacts"),
     }
     (scratch / "workspace").mkdir()
     session_proc = subprocess.Popen(
@@ -361,7 +358,7 @@ def main() -> int:
               (str(finals_f[-1])[:200] if finals_f else f"kinds={kinds_f}"))
         check("F: run.completed 收尾", kinds_f[-1:] == ["run.completed"], f"kinds={kinds_f}")
 
-        # 场景 G：产物面全链——真模型 export_artifact → wire artifact 引用 → 端点回读字节。
+        # 场景 G：工作区文件面——真模型 write_file 落盘 → snapshot 清单 → files 端点直读。
         sid_g = f"ses_rmv_{uuid.uuid4().hex[:8]}"
         sse_g = SseReader(f"/sessions/{sid_g}/events")
         st, receipt_g = http("POST", f"/sessions/{sid_g}/messages", {
@@ -369,27 +366,40 @@ def main() -> int:
             "content": "请用 write_file 工具把这句话写入 /note.md 文件：Kokoro 产物面已上线。写完告诉我文件名。",
         })
         check("G: POST messages → 202", st == 202, f"{st} {receipt_g}")
+        run_g = receipt_g.get("run_id", "")
+        # write_file 属默认审批集：等 awaiting → approve → 再收流。
+        awaiting_g = None
+        deadline = time.time() + 210
+        while time.time() < deadline and awaiting_g is None:
+            try:
+                _, kind, event = sse_g.q.get(timeout=max(0.1, deadline - time.time()))
+            except queue.Empty:
+                break
+            if kind == "tool.awaiting_approval" and event.get("payload", {}).get("name") == "write_file":
+                awaiting_g = event["payload"]
+        check("G: write_file 审批暂停出现", awaiting_g is not None, "no awaiting")
+        if awaiting_g is not None:
+            st_c, body_c = http("POST", f"/sessions/{sid_g}/runs/{run_g}/control", {
+                "kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                "decisions": [{"type": "approve", "tool_id": awaiting_g["tool_id"]}]})
+            check("G: approve → 202", st_c == 202, f"{st_c} {body_c}")
         events_g = collect_run(sse_g)
         kinds_g = [k for k, _ in events_g]
-        arts = [p.get("artifact") for k, p in events_g
-                if k == "artifact.created" and isinstance(p.get("artifact"), dict)]
-        check("G: artifact.created 独立事件（write_file 自动镜像）", bool(arts), f"kinds={kinds_g}")
-        if arts:
-            art = arts[-1]
-            check("G: 引用元数据完备", art.get("mime") == "text/markdown" and art.get("bytes", 0) > 0, str(art))
-            quoted = "/".join(urllib.parse.quote(seg, safe="") for seg in str(art["artifact_id"]).split("/"))
-            try:
-                req = urllib.request.Request(f"{BASE}/sessions/{sid_g}/artifacts/{quoted}")
-                with urllib.request.urlopen(req, timeout=10) as resp:
-                    body = resp.read()
-                    check("G: 产物端点回读（MIME+immutable+字节）",
-                          resp.status == 200 and resp.headers["content-type"] == "text/markdown"
-                          and "immutable" in resp.headers.get("cache-control", "")
-                          and "产物面已上线" in body.decode("utf-8"),
-                          f"{resp.status} {resp.headers.get('content-type')} {body[:60]!r}")
-            except urllib.error.HTTPError as e:
-                check("G: 产物端点回读（MIME+immutable+字节）", False, f"HTTP {e.code}")
         check("G: run.completed 收尾", kinds_g[-1:] == ["run.completed"], f"kinds={kinds_g}")
+        # 工作区直读：snapshot 清单含 note.md，files 端点回读字节含原文（零产物机制）。
+        st, snap_g = http("GET", f"/sessions/{sid_g}")
+        gfiles = {f["path"]: f for f in snap_g.get("files", [])}
+        check("G: snapshot.files 含 note.md", st == 200 and "note.md" in gfiles, str(list(gfiles)))
+        try:
+            req = urllib.request.Request(f"{BASE}/sessions/{sid_g}/files/note.md")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                body = resp.read()
+                check("G: files 端点回读（MIME+字节含原文）",
+                      resp.status == 200 and resp.headers["content-type"] == "text/markdown"
+                      and "产物面已上线" in body.decode("utf-8"),
+                      f"{resp.status} {resp.headers.get('content-type')} {body[:60]!r}")
+        except urllib.error.HTTPError as e:
+            check("G: files 端点回读（MIME+字节含原文）", False, f"HTTP {e.code}")
 
         print(f"  logs: {scratch}")
         if FAILURES:
