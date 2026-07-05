@@ -125,8 +125,10 @@ kokoro_agent/
     definitions.py
     types.py
 
-  skills/
-    mounts.py
+  assets/
+    source.py
+    skills.py
+    personas.py
 
   mcp/
     servers.py
@@ -200,7 +202,8 @@ todo。
 HITL approve/reject/edit/respond。
 state/local_shell/docker/e2b/custom backend（docker/e2b 带 run 级生命周期：
 sandbox/container id 入 ledger keep-first，HITL resume 重连而非新建；见 ADR-009）。
-agents/<type>.py 工厂分派（wire agent_type）：一类型一工厂，工具面政策即类属性。
+agents/<type>/ 工厂分派（wire agent_type）：一类型一子包，工具面政策即类属性；
+装配管线一步一模块（toolset/guardrails/delegates/persona），create() 只是目录页。
 raw agent events。
 ```
 

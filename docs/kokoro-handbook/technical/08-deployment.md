@@ -114,6 +114,14 @@ KOKORO_E2B_API_KEY / _TEMPLATE / _TIMEOUT    e2b 云沙箱档（选 e2b 时 api_
 KOKORO_CUSTOM_BACKEND / _CONFIG              BYO 自带沙箱（ADR-010）：pkg.module:factory + 自由参数 yaml。
 ```
 
+资产源（ADR-011；缺省=env 目录档，零配置可用）：
+
+```text
+KOKORO_SKILLS_DIR / KOKORO_PERSONAS_DIR      local 档资产目录（不配 ASSETS_CONFIG 时生效）。
+KOKORO_ASSETS_CONFIG                         资产源 yaml（type: local|s3）；配置后目录 env 失效。
+KOKORO_ASSETS_S3_ACCESS_KEY/_SECRET_KEY      s3 档凭据（不进 yaml）。
+```
+
 统一配置树（ADR-010）：`KOKORO_AGENT_CONFIG` 指向按域分组的单一 yaml，优先级
 **env > yaml > 内置默认**，凭据 env-only（写进 yaml fail-loud）。全部可用键与各部署
 形态的照抄模板见仓根 `config/examples/`。

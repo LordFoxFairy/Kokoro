@@ -1,0 +1,14 @@
+# 资产源 s3 档：skills/personas 放对象存储（minio/AWS），worker 启动一次装载为快照。
+# 多 pod 免分发：所有 pod 读同一 bucket，改资产=上传后滚动重启；platform 后台管理的落点。
+# 凭据 env-only：KOKORO_ASSETS_S3_ACCESS_KEY / KOKORO_ASSETS_S3_SECRET_KEY（写进 yaml 会被拒绝）。
+#
+# 对象键布局：
+#   {prefix}/skills/<name>/SKILL.md
+#   {prefix}/personas/<name>.md
+assets:
+  type: s3
+  endpoint: http://127.0.0.1:9100
+  bucket: kokoro-assets
+  region: us-east-1          # 缺省 us-east-1
+  force_path_style: true     # minio=true；AWS 可 false
+  prefix: ""                 # 缺省空=桶根

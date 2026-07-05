@@ -894,6 +894,7 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
     （容器写 → 宿主挂载 → minio → session 读）；verify-all 增 docker+s3 档。
 部署红线（多 pod）：skills/personas 资产目录必须随镜像/共享卷一致分发——
   worker 启动各自建锁，pod 间内容漂移会导致同 run resume 前后 prompt 不一致。
+  ［2026-07-05 更新：该红线仅剩 local 档；s3 资产源档已消解，见 ADR-011。］
 ```
 
 ## 实现注记（2026-07-05 追加：资产化——skills/persona 配置引用名称，资产统一入库）
@@ -979,4 +980,25 @@ context 层升级路径：运行时注入（steering/记忆预取）到来时经
 ④审核政策委派旁路：ToolResultReviewMiddleware 逐个下发子代理链（主链保持 policy 在
   review 外层的顺序）；review 载荷自带子图真实 tool_id，帧天然成立。
 命名对齐：AgentProduct→AgentEntry / GENERAL_ENTRY（入口层词汇与 session 一致）。
+```
+
+## 实现注记（2026-07-05 追加：可读性重构 + 资产源统一 ADR-011）
+
+```text
+用户裁定驱动的两包重构（行为保持，422 测试 + verify-all 六档复验全绿）：
+
+agents/general/ 子目录化：100 行 create() 独木函数拆为一步一模块——
+  toolset.py    工具面四路合流（注册表+记忆+联网+MCP）+ 授权白名单 + 派生索引
+  guardrails.py 中间件链组成规则（主链=守卫→steering→policy→review；子代理链=守卫+审核）
+                含 ask_user 审核悖论校验（ask_user 结果=人工答复，再送人审即死循环）
+  delegates.py  可委派子代理三路合流（内生 general-purpose + catalog + wire）+ 声明集
+  persona.py    system prompt 三级解析（内联→入口名资产→GENERAL_PERSONA）+ skills 注入
+  __init__.py   工厂本体，create() 只是目录页。新类型=agents/<type>/ 同构包。
+
+assets/ 域（ADR-011）：skills/personas 的"文件从哪来"与 workspace 同一套 type 判别
+  配置（local/s3 + 凭据 env-only + 缺省零配置）。skills/mounts.py 与 prompts 里的
+  PersonaLibrary 收编为 assets/{source,skills,personas}.py——源管装载、库管使用。
+  快照语义取代 sha256 运行期复核：启动读一次，进程期恒定，装配零 IO；
+  多 pod 资产分发红线在 s3 档消解（同 bucket 即同真源）。
+  minio 实测：s3 源装载/缺 SKILL.md fail-loud/端到端库装配三组真栈跑过。
 ```

@@ -140,6 +140,18 @@ docker 执行隔离（叠加档，已真栈验证）：
   e2b sandbox 即 workspace；run 收敛后归档到对象存储，session 读侧自动切换。见 ADR-009。
 ```
 
+## 资产面（skills/personas，ADR-011）
+
+```text
+单节点 / 单机 docker：
+  默认档零配置：KOKORO_SKILLS_DIR / KOKORO_PERSONAS_DIR 指向本地目录（或镜像内置）。
+
+多 Pod：
+  推荐 s3 资产源——KOKORO_ASSETS_CONFIG（type: s3，模板 config/examples/assets.example.s3.yaml）
+  + KOKORO_ASSETS_S3_ACCESS_KEY/_SECRET_KEY。所有 pod 启动读同一 bucket 装快照，免逐 pod 分发；
+  改资产 = 上传后滚动重启。仍走 local 档则须镜像内置或 RWX 共享卷保证目录一致。
+```
+
 ## 数据库
 
 第一阶段使用一个 MySQL database：`kokoro`。

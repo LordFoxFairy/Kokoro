@@ -1,0 +1,14 @@
+# 资产源 local 档（=不配 KOKORO_ASSETS_CONFIG 时的默认形态，此时目录走
+# KOKORO_SKILLS_DIR / KOKORO_PERSONAS_DIR 两个 env）。
+# 用法：KOKORO_ASSETS_CONFIG=./assets.yaml（或 agent.yaml 里 assets.config 指过来）
+#
+# 资产布局（与 CC plugins 同构）：
+#   {skills_dir}/<name>/SKILL.md      配置/wire 只传 <name>
+#   {personas_dir}/<name>.md          入口/子代理按名解析人格，可不写 system_prompt
+#
+# 多 pod 提醒：local 档要求每个 pod 看到同一份目录（镜像内置或共享卷）；
+# 免分发请用 assets.example.s3.yaml。
+assets:
+  type: local
+  skills_dir: /data/skills
+  personas_dir: /data/personas
