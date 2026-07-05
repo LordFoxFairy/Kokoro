@@ -45,4 +45,3 @@ limits:
 retention:
   events_ttl_s: 0              # 0=关闭（保留期是产品决策）
   run_ttl_s: 0
-  thread_ttl_s: 0

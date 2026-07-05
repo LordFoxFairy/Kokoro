@@ -702,3 +702,12 @@
 - Done: 真栈浏览器走查 UI-01/02 PASS（session:3913+agent LocalFake hitl+web:3014；ask_user 选项答复 → write_file 审批 → 结果审核采纳 → 文本收敛；刷新回放完整重建；plan.md 真落盘 {ns:sid}/ 下；截图存 scratchpad/ui-stack/）；modules/kokoro-agent.md 对账（orchestration→agents 工厂层、skills/mounts→assets 域、模块树/链路句全同步）；08 部署 env 修正（NEXT_PUBLIC_SESSION_BASE_URL 名、补 KOKORO_WEB_ORIGIN CORS 白名单——走查实踩）；清 execution/prompts 残渣空目录
 - Verified: verify-all 六档 PASS（本轮重跑）+ 三仓 L1（agent 425 / session 178 / web 173）全绿
 - 走查环境教训: 自起栈漏 KOKORO_WEB_ORIGIN 会得到"这一轮没能完成"，先怀疑环境再怀疑产品
+
+## 2026-07-05 V2 方案定案 + 双路审计 + 缺陷修复潮 + thread TTL 拆除
+- Done:
+  - 双路只读审计（agent 闭环 6 项 / 跨栈 7 项）结论入册 technical/15 §1
+  - 已修（各带回归钉）：session relay 投影漏（inserted 守卫）+ 终态次序（事件先落定）+ enqueue_failed 契约兑现（枚举扩值+503+收口）+ files 加固（软链 realpath 双侧/25MB 上限/nosniff）；web run.failed 按码讲人话（runError 入 state + failureCopy 表）；agent steer 入账失败不再误杀健康 run
+  - thread TTL 时间扫整体拆除（用户裁定 A）：threads 表/touch/purge/配置项/测试全链摘除；正解=会话删除级联 saga（technical/15 §2A：墓碑+thread.delete+全步幂等+确认重发，多 pod 逐格论证），V2-M1 实施
+  - V2 技术方案（technical/15：Skills V2 分发→供给→消费三层重构 + 支柱 P1-P5 + 里程碑）+ V2 PRD（product/09）
+- 审计遗留（V2-M1/M2 排期，未修）：裂脑 fencing、sandbox 终态 teardown、steer 排空原子性、web 409 对账、鉴权全裸（P1）
+- Verified: agent 423 / session 185 / web 174 全绿 + 三静态 0 + verify-all 六档（本轮末次复跑）
