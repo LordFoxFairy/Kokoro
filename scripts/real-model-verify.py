@@ -4,7 +4,7 @@
 场景 A：明令经 task 工具委派 researcher 子代理 → 断言 subagent.started/finished（+文本流）。
 场景 B：普通提问 → 断言 thinking.delta ≥ 1 且 message.completed 非空。
 场景 C：web_search 真调用（searxng 可达才跑，否则 SKIP）→ 断言 tool.invoked/returned。
-场景 D：namespace 挂载 skill（sha256 lock）→ 断言模型遵循 skill 输出标记。
+场景 D：skills 库按名挂载（启动即锁）→ 断言模型遵循 skill 输出标记。
 场景 E：backend=local_shell 下 execute 审批 → 真 shell 输出回流。
 全程 profile.backend=local_shell（沙箱=真文件系统，root 圈定 scratch/workspace）。
 前置：redis:6379 + mongo:27017 + kokoro-agent/.env 真实凭据（OPENAI_BASE_URL/OPENAI_API_KEY）。
@@ -21,7 +21,6 @@ import threading
 import time
 import urllib.error
 import urllib.parse
-import hashlib
 import urllib.request
 import uuid
 from pathlib import Path
@@ -138,22 +137,19 @@ def main() -> int:
         check=False, capture_output=True,
     )
     skill_dir = scratch / "skills" / "kokoro-style"
-    skill_dir.mkdir(parents=True)
+    skill_dir.mkdir(parents=True)  # 库形态：KOKORO_SKILLS_DIR/<name>/SKILL.md，配置只引名称
     skill_md = (
         "---\nname: kokoro-style\ndescription: 自我介绍风格约定\n---\n\n"
         "# Kokoro 自我介绍风格\n\n当用户要求你自我介绍时：\n"
         "1. 用一句话介绍自己。\n2. 最后单独一行输出字面量：via-skill:kokoro-style-v1\n"
     )
     (skill_dir / "SKILL.md").write_text(skill_md)
-    skill_lock = hashlib.sha256((skill_dir / "SKILL.md").read_bytes()).hexdigest()
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-rmv": {
                 "model_policy": {"default": {"provider": "openai", "name": "glm-5"}},
                 "backend": "local_shell",
-                "skills": [
-                    {"name": "kokoro-style", "path": str(skill_dir), "lock": skill_lock}
-                ],
+                "skills": ["kokoro-style"],
                 # 委派验证走产品正道：researcher 是 namespace 预设（内建目录按原则为空）。
                 "agents": {
                     "researcher": {
@@ -204,6 +200,7 @@ def main() -> int:
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_SKILLS_DIR": str(scratch / "skills"),
     }
     (scratch / "workspace").mkdir()
     ensure_port_free(SESSION_PORT)

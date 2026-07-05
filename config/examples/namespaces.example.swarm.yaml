@@ -5,14 +5,15 @@
 namespaces:
   local:
     agents:
+      # 人格可不内联：agent 按名解析 personas 库（KOKORO_PERSONAS_DIR/poet.md）；
+      # system_prompt 写在这里即覆盖资产。skills 同理按名引用（KOKORO_SKILLS_DIR）。
       poet:
         description: 诗歌创作专家
-        system_prompt: 你是诗人人格。
         swarm: [composer, critic]
+        skills: [kokoro-style]
       composer:
         description: 作曲结构专家
-        system_prompt: 你是作曲人格。
         swarm: [poet]
       critic:
         description: 审读与批评
-        system_prompt: 你是批评家人格。
+        system_prompt: 你是批评家人格。   # 内联覆盖示例

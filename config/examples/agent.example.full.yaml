@@ -33,6 +33,9 @@ web_tools:
   search:                      # KOKORO_WEB_SEARCH_API_KEY 走 env
     provider: searxng
     url: http://127.0.0.1:8080
+assets:
+  skills_dir: /data/skills        # 每 skill 一目录（<name>/SKILL.md），配置按名引用
+  personas_dir: /data/personas    # 人格资产（<name>.md）：入口/子代理按名解析，yaml 可不写 system_prompt
 subagents:
   builtin: [researcher]
 limits:

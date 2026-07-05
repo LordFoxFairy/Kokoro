@@ -882,6 +882,21 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
 仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```
 
+## 实现注记（2026-07-05 追加：资产化——skills/persona 配置引用名称，资产统一入库）
+
+```text
+用户裁定：配置不内联资产。落地两库（CC plugins 心智）：
+  skills 库：KOKORO_SKILLS_DIR/<name>/SKILL.md——worker 启动扫描建清单并锁内容
+    （sha256），装配期按名取用并复核（篡改 fail-loud）；配置与 wire 只传名称
+    （契约 runtime.skills: string[]，SkillMount 对象退役——path/lock 归库内部）。
+  personas 库：prompts/<name>.md（内置随包）+ KOKORO_PERSONAS_DIR（部署扩展，
+    同名覆盖）。契约 entry 上 wire（人格解析键）；system_prompt 降为可选内联覆盖
+    ——解析链：内联 → 资产（prompts/<入口或子代理名>.md）→ GENERAL_PERSONA
+    （仅主 agent；子代理两者皆无即 fail-loud，不设无人格下属）。
+  namespaces yaml 从此零 path/零 lock/可零人格文本：poet 只需 description +
+    swarm/tools 差异，人格放 personas 库。配置表整体后续归 platform 后台。
+```
+
 ## 实现注记（2026-07-05 追加：agents/ 工厂层定案——Factory Method，一类型一 py）
 
 ```text

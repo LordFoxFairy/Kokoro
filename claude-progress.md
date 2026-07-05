@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (资产化定案：skills/persona 配置引用名称，资产统一入库——用户"配置不内联资产"裁定)
+- skills 库：KOKORO_SKILLS_DIR/<name>/SKILL.md，启动扫描建清单+内容锁（篡改装配期 fail-loud）；契约 runtime.skills 变 string[]，SkillMount 退役（path/lock 归库内部，脚本手算 lock 的反人类形态消灭）。
+- personas 库：prompts/<name>.md 内置 + KOKORO_PERSONAS_DIR 部署覆盖；wire 加 entry（解析键）；system_prompt 全链 optional 内联覆盖——子代理人格解析链（内联→资产→fail-loud）。
+- namespaces yaml 从此零 path/零 lock/人格可零内联；配置表后续归 platform 后台。
+- 验证：agent 410（+skills 库 8 重写 +persona 3）/ session 178 / gate(local) PASS；real-model D 场景改库形态；examples/handbook 同步。
+
 - Date: 2026-07-05 (swarm 成员配置表落地：per-entry 声明 → wire，platform 后台为升级路径)
 - profile agents.<name>.swarm: [成员名]（加载期校验：未知入口/自引用/general 皆 fail-loud）→ 契约 RuntimeConfig.swarm_members（optional）→ wire。V1 桥语义：成员同时是层级下属，配置即生效；P2 langgraph-swarm 据此建 handoff 图。
 - 配置表 V1=namespaces 文件（loader 即接口位），后续归 platform 后台管理（用户裁定，handbook 注记）。

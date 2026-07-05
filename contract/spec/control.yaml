@@ -27,11 +27,6 @@ objects:
       - {name: provider, type: string_nonempty}
       - {name: name, type: string_nonempty}
       - {name: effort, type: string_nonempty, optional: true}
-  - name: SkillMount
-    fields:
-      - {name: name, type: string_nonempty}
-      - {name: path, type: string_nonempty}
-      - {name: lock, type: string_nonempty}
   - name: McpServer
     fields:
       - {name: name, type: string_nonempty}
@@ -45,7 +40,8 @@ objects:
     fields:
       - {name: name, type: string_nonempty}
       - {name: description, type: string}
-      - {name: system_prompt, type: string_nonempty}
+      # 人格可缺省：agent 按 name 查 personas 资产库（prompts/<name>.md）；内联即覆盖。
+      - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}
       - {name: model, type: object:ModelConfig, optional: true}
   - name: Permissions
@@ -58,10 +54,13 @@ objects:
     fields:
       # 类型决定配方与基础工具面（如 ask_user 只属对话型）；entry 是类型下的具名实例。
       - {name: agent_type, type: enum:agent_type}
+      # 入口名（人格资产解析键：prompts/<entry>.md）；缺省=general。
+      - {name: entry, type: string_nonempty, optional: true}
       - {name: model, type: object:ModelConfig}
       - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}
-      - {name: skills, type: array:object:SkillMount}
+      # skills 按名引用：资产库在 agent 侧（每 skill 一目录，启动扫描建清单+内容锁）。
+      - {name: skills, type: array:string_nonempty}
       - {name: mcp, type: array:object:McpServer}
       - {name: subagents, type: array:object:SubagentDef}
       - {name: backend, type: enum:backend}
