@@ -219,7 +219,7 @@ collections。
 ## 目录架构
 
 当前目录按执行链路组织。分层叙事一句话：contract 进 → worker 调度 →
-orchestration 拼装 → execution 执行 → agents 出人格；state 是图状态，
+agents 拼装 → execution 执行；prompts/assets 出人格与技能，state 是图状态，
 ledger 是账本。
 
 ```text
@@ -235,10 +235,15 @@ kokoro_agent/
     supervisor.py
     messages.py
 
-  orchestration/
-    assemble.py
-    general.py
-    context.py
+  agents/
+    __init__.py
+    base.py
+    general/
+      __init__.py
+      toolset.py
+      guardrails.py
+      delegates.py
+      persona.py
 
   execution/
     build_agent.py
@@ -253,8 +258,14 @@ kokoro_agent/
     general.md
     web-researcher.md
 
+  assets/
+    source.py
+    skills.py
+    personas.py
+
   tools/
     registry.py
+    toolbox.py
     permissions.py
     ask_user_question.py
     memory.py
@@ -264,10 +275,8 @@ kokoro_agent/
 
   subagents/
     __init__.py
+    assemble.py
     catalog.py
-
-  skills/
-    mounts.py
 
   mcp/
     servers.py
@@ -275,6 +284,10 @@ kokoro_agent/
 
   sandbox/
     backend.py
+    archive.py
+    docker_backend.py
+    e2b_backend.py
+    custom_backend.py
 
   storage/
     __init__.py
@@ -395,7 +408,7 @@ worker/supervisor.py
     调度是 worker 域职责，与进程装配（main.py）分开。
 
   禁止：
-    不拼装 agent 能力（那是 orchestration）。
+    不拼装 agent 能力（那是 agents 工厂层）。
     不构造 wire 事件。
     不做权限判断。
 
@@ -413,20 +426,21 @@ worker/messages.py
     不发布 raw events。
 ```
 
-### `orchestration/`
+### `agents/`
 
-`orchestration/` 是编排域：RunRequest + RuntimeConfig → 可运行 InvokableAgent。
-本次 run 被授权的能力（model、tools、skills、MCP、subagents、sandbox）
-经 wire RuntimeConfig 传入，在这里落地为一次装配。
+`agents/` 是业务 agent 工厂层（Factory Method）：RunRequest + RuntimeConfig →
+可运行 InvokableAgent。一个类型一个子包一个工厂类，注册表按 wire 的
+agent_type 分派；类型的工具面政策（core_tools/pause_tools）是工厂类属性。
 
 ```text
-orchestration/assemble.py
+agents/__init__.py
   存在理由：
-    每请求主配方：工具解析 → 守卫构造 → 子代理装配 → 上下文组合 → 图构建。
-    系统最重要的组装点。
+    FACTORIES 注册表 + assemble() 唯一装配入口 + approval_names()
+    （pending 识别集）。新增 studio 类型 = 新 agents/<type>/ 同构包 +
+    注册一行 + 契约枚举一值，机制零改动。
 
   放置理由：
-    编排是调度（worker）和执行（execution）之间的拼装层。
+    分派是工厂层的门面；worker 只认 assemble()。
 
   禁止：
     不消费 Redis。
@@ -434,32 +448,38 @@ orchestration/assemble.py
     不查询 Hub。
     不扩大 RuntimeConfig 授权范围。
 
-orchestration/general.py
+agents/base.py
   存在理由：
-    通用 agent 配方（现阶段唯一代码型成品）：工具解析 → 守卫 → 子代理 →
-    上下文 → 图。新增代码型成品（如 music）= prompts/<type>.md +
-    本目录 <type>.py + 契约加配方分派键，纯增量。
+    AgentFactory ABC（name/core_tools/pause_tools/create）+
+    AssembleDeps（进程级共享件）+ AssembledAgent（装配产物）。
 
   放置理由：
-    类型配方是编排域的本体；assemble.py 只留共享装配件。
+    工厂模板与依赖形状是各类型共享的骨架。
+
+  禁止：
+    不放任何类型专属政策。
+
+agents/general/
+  存在理由：
+    对话型通用 agent（对外缺省类型）。装配管线一步一模块，
+    工厂 create() 只是目录页：
+      toolset.py    工具面三路合流（注册表+核心 → toolbox 恒挂底座 → MCP）
+                    + 授权白名单 + 派生索引
+      guardrails.py 中间件链组成规则（主链/子代理链；含 ask_user
+                    审核悖论校验）
+      delegates.py  可委派子代理三路合流（内生 general-purpose +
+                    catalog + wire）+ deny 声明集；swarm V1 桥语义注记
+      persona.py    system prompt 三级解析（内联 → 入口名资产 →
+                    GENERAL_PERSONA）+ skills 全文注入
+    新增代码型成品（如 music）= prompts/<type>.md + agents/<type>/ +
+    契约枚举一值，纯增量。
+
+  放置理由：
+    类型装配配方是工厂层的本体。
 
   禁止：
     不消费 Redis。
     不发布事件。
-
-orchestration/context.py
-  存在理由：
-    模型可见面的组合：compose_system_prompt（人格 + skills 全文）。
-    工具用法不进 system prompt——活在各工具 description，
-    由 LangChain 经工具 schema 交给模型。
-
-  放置理由：
-    system prompt 组合属于每请求编排，不属于成品定义或执行。
-
-  禁止：
-    不放 secret。
-    不放 site/user/workspace 私有内容。
-    不读用户配置。
 ```
 
 ### `execution/`
@@ -556,15 +576,17 @@ execution/publish_agent_events.py
 
 ### `prompts/`
 
-`prompts/` 是 prompt 资产域：内置 agent 类型的人格文本集中管理。
-类型的两个家：资产在 prompts/<type>.md、配方在 orchestration/<type>.py；
-prompt 文本出现在 .py 里即红灯。入口元数据（名字/描述/能力束）归 session
-入口表（入口是数据不是代码），本仓不重复维护。
+`prompts/` 是内置 prompt 资产域：随包出厂的人格文本集中管理（部署扩展
+人格归 assets/ 域快照，同名覆盖内置）。类型的两个家：资产在
+prompts/<type>.md、配方在 agents/<type>/；prompt 文本出现在 .py 里即红灯。
+入口元数据（名字/描述/能力束）归 session 入口表（入口是数据不是代码），
+本仓不重复维护。
 
 ```text
 prompts/__init__.py
   存在理由：
-    load_prompt(name) 包资源加载器 + GENERAL_PERSONA 常量。
+    load_prompt(name) 包资源加载器 + GENERAL_PERSONA 常量 +
+    compose_system_prompt（人格 + skills 全文两段组合口）。
 
   放置理由：
     资产加载是本域唯一逻辑。
@@ -726,22 +748,44 @@ subagents/catalog.py
     不维护 RuntimeSubagentRegistry。
 ```
 
-### `skills/`
+### `assets/`
 
-`skills/` 只消费已授权 skill mount，不拥有 Hub。
+`assets/`（ADR-011）是资产域：skills/personas 从资产源（local/s3）
+启动装载为不可变快照库。配置与 wire 只传名称，不拥有 Hub。
 
 ```text
-skills/mounts.py
+assets/source.py
   存在理由：
-    校验并加载本次 run 已授权、已解析、可读取的 skill mounts。
+    "文件从哪来"：AssetSource 协议 + LocalAssetSource/S3AssetSource +
+    type 判别配置（与 workspace 同一套心智，凭据 env-only）。
 
   放置理由：
-    skill mount 是执行输入的一部分，但安装和审核不在 Agent。
+    装载是源的职责，库不知道源的存在。
 
   禁止：
     不做 git/http 安装。
-    不拥有审核状态。
+    不在运行期重读（装载即快照，改资产=滚动重启）。
+
+assets/skills.py
+  存在理由：
+    SkillLibrary 快照库：按名渲染 SKILL.md 全文进 system prompt，
+    未知名/超限 fail-loud。
+
+  放置理由：
+    "怎么用"归库。
+
+  禁止：
     不扩大工具、MCP 或 sandbox 权限。
+
+assets/personas.py
+  存在理由：
+    PersonaLibrary：部署快照优先于内置包资源（prompts/<name>.md）按名取人格。
+
+  放置理由:
+    同上，人格与技能同源装载。
+
+  禁止：
+    不拥有审核状态。
 ```
 
 ### `mcp/`
@@ -1032,7 +1076,7 @@ state.py
 命名红线按读者视角定义，不按框架内部术语定义：
 
 1. 不用框架品牌名或泛词做目录名。DeepAgents 是底座，可以 import，不成为 Kokoro 的架构语言；`runtime`、`adapters` 也太泛。
-2. 不套重 DDD 四层模板。Agent worker 是执行链路，目录必须按 `contract/worker/orchestration/execution/agents/tools/subagents/skills/mcp/sandbox/storage/streams/model` 这条链路展开。
+2. 不套重 DDD 四层模板。Agent worker 是执行链路，目录必须按 `contract/worker/agents/execution/prompts/assets/tools/subagents/mcp/sandbox/storage/streams/model` 这条链路展开。
 3. 不自造 LangChain/DeepAgents 已经有的事件系统，不新增 read/map event wrapper。
 4. 不用框架动作名或学术词做文件名。`invoke`、`projection`、`transformer` 不能告诉维护者业务职责。
 5. 不保留含糊类型名：`RuntimeSubagentRegistry`、`_LangChainActionRequest`、`RunJob`、`AgentRunOptions`、`KokoroRunContext`。

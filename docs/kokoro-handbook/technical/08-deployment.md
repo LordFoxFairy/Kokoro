@@ -94,7 +94,9 @@ KOKORO_<NAME>_BASE_URL
 运行时：
 
 ```text
-NEXT_PUBLIC_KOKORO_SESSION_BASE_URL   web 浏览器端访问 session 的入口。
+NEXT_PUBLIC_SESSION_BASE_URL          web 浏览器端访问 session 的入口（缺失即 fail-loud）。
+KOKORO_WEB_ORIGIN                     session CORS 白名单（web 的浏览器 origin）；不配则
+                                      浏览器跨源请求全拒（缺省仅 http://localhost:3000）。
 KOKORO_STREAM_BACKEND                 实时流后端选择。
 KOKORO_REDIS_URL                      run queue / event stream / live fanout / lock。
 KOKORO_MESSAGE_STORE_BACKEND          session 消息存储后端。

@@ -697,3 +697,8 @@
 ## 2026-07-05 run.failed 错误码化（错误本地化边界定案）
 - Done: 契约 run.failed → [code, error_kind, message]（run_error_code 闭集枚举）；agent 归码器 failure_code + 装配点显式 assembly_failed；session/web regenerate + 夹具；technical/14 风险⑥改"已修"，11 注记入册
 - Verified: verify-all 六档 PASS；agent 425 / session 178 / web 173 全绿；pyright/mypy/ruff/tsc 全 0
+
+## 2026-07-05 端到端自跑验证 + handbook 模块文档对账
+- Done: 真栈浏览器走查 UI-01/02 PASS（session:3913+agent LocalFake hitl+web:3014；ask_user 选项答复 → write_file 审批 → 结果审核采纳 → 文本收敛；刷新回放完整重建；plan.md 真落盘 {ns:sid}/ 下；截图存 scratchpad/ui-stack/）；modules/kokoro-agent.md 对账（orchestration→agents 工厂层、skills/mounts→assets 域、模块树/链路句全同步）；08 部署 env 修正（NEXT_PUBLIC_SESSION_BASE_URL 名、补 KOKORO_WEB_ORIGIN CORS 白名单——走查实踩）；清 execution/prompts 残渣空目录
+- Verified: verify-all 六档 PASS（本轮重跑）+ 三仓 L1（agent 425 / session 178 / web 173）全绿
+- 走查环境教训: 自起栈漏 KOKORO_WEB_ORIGIN 会得到"这一轮没能完成"，先怀疑环境再怀疑产品
