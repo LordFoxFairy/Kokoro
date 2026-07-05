@@ -36,7 +36,18 @@ S3/对象存储只属于 e2b 云档，绝不上抬为默认或单节点要求。
 | --- | --- | --- | --- |
 | dev 单机 | `local_shell` 本地目录 | 本地目录 walk（现状） | `KOKORO_WORKSPACE_ROOT` 同根，零额外配置 |
 | 自托管多 pod | `local_shell` + RWX 共享卷（NFS/EFS/PVC） | 同一共享卷 | 纯部署配置：两类 pod 挂同一卷，代码零改动 |
+| **docker 执行隔离**（叠加档） | 文件工具留宿主 workspace（同上两档任一）；仅 `execute` 进容器（挂同一 workspace 到 /workspace） | 与所在文件面档完全一致 | namespace profile `backend: docker` + `KOKORO_DOCKER_IMAGE`（TTL 可选） |
 | 云生产 | `e2b` sandbox（远端统一挂载） | 活跃期经 sandbox files API 直读；sandbox 收敛后读对象存储归档 | `KOKORO_WORKSPACE_BACKEND=local\|s3` + e2b 凭据 |
+
+### docker 档的关键设计（2026-07-05 落地并真栈验证）
+
+- **混合体**：任意 shell（真正的危险面）在容器内跑，宿主仅暴露该 run 的 workspace 子目录；
+  文件工具保持 LocalShellBackend 虚拟根——session 直读/S3 归档/canvas 三条链零改动。
+- **生命周期与 e2b 同构**：container_id 复用 ledger sandbox 绑定（keep-first），HITL resume
+  复用活容器（容器内进程状态在）；容器 `sleep TTL` + `--rm` 自清，容器亡新起——workspace
+  在宿主，文件面永不因容器回收而丢（此点强于 e2b）。
+- 挂载用 `--mount` 键值语法：workspace 目录名含 `:`（`{namespace}:{session_id}` 约定），
+  `-v` 短语法会被撕裂。
 
 ### 云生产档的关键设计
 

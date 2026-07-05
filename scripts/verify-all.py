@@ -52,6 +52,19 @@ def main() -> int:
         if reachable("http://127.0.0.1:9100/minio/health/live")
         else "SKIP (minio :9100 不可达，启动见 docs/test-cases.md L2 前置)"
     )
+    # docker 执行隔离档（ADR-009）：execute 进容器、文件面留宿主；docker daemon 可达才跑。
+    docker_ok = subprocess.run(
+        ["docker", "info"], capture_output=True, check=False
+    ).returncode == 0
+    results["e2e-v21-gate(docker)"] = (
+        run("e2e-v21-gate.py", env={
+            "E2E_SANDBOX_BACKEND": "docker",
+            "E2E_SESSION_PORT": "3908",
+            "E2E_REDIS_URL": "redis://127.0.0.1:6379/11",
+        })
+        if docker_ok
+        else "SKIP (docker daemon 不可达)"
+    )
     results["chaos-verify"] = run("chaos-verify.py")
     results["trace-verify"] = (
         run("trace-verify.py")

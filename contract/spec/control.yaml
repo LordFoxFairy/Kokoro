@@ -10,7 +10,7 @@ enums:
   mcp_transport: [http, streamable_http]
   subagent_create: [deny, ask, allow]
   filesystem_perm: [read_only, workspace_write]
-  backend: [state, local_shell, e2b, custom]
+  backend: [state, local_shell, docker, e2b, custom]
   resume_decision: [approve, edit, reject, respond]
 
 # Reusable nested object shapes (dependency order: leaves first).

@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (docker 沙箱档落地并真栈全链验证——e2b 无账号的自主可测替代)
+- 契约 backend 枚举 +docker（spec 单源重新生成三仓）；session profile enum 补全五值。
+- DockerShellBackend 混合体：文件工具留宿主 workspace 虚拟根（三条文件面链零改动），仅 execute 进容器（--mount 挂 workspace，-v 会被 ns:sid 冒号撕裂）；容器 sleep TTL + --rm 自清。
+- 生命周期与 e2b 同构复用：container_id 入 ledger（keep-first）、resume 复用活容器、亡则新起（文件在宿主，强于 e2b）。
+- 验证：agent 379 全绿（+8 docker 真容器实测：hostname 铁证隔离/挂载可见性/复用/替换）+ pyright/mypy 0；session 173/web 181；gate docker 档全链 PASS + 容器零残留。
+
 - Date: 2026-07-05 (ADR-009 Phase 1b：e2b backend 编排结构就位，key 到手即真栈验证)
 - E2BSandboxBackend（BaseSandbox 4 抽象映射：commands.run/files API，非零退出码是结果）；SandboxClient Protocol 依赖倒置（fake 注入零穿透）。
 - make_backend_for_run：run 级生命周期——sandbox_id 入 ledger（协议+sqlite/mongo 双实现+同语义矩阵项）；HITL resume 用 Sandbox.connect(id) 类形态重连（paused 自动 resume）、绝不新建；箱亡新建兜底、绑定 keep-first。

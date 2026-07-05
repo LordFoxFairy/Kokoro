@@ -33,6 +33,8 @@ SID = f"ses_e2e_{uuid.uuid4().hex[:8]}"
 # 文件面底座：local（默认，目录直读）| s3（ADR-009 归档档，经 minio 全链）。断言两档同一套。
 WORKSPACE_BACKEND = os.environ.get("E2E_WORKSPACE_BACKEND", "local")
 MINIO_URL = os.environ.get("E2E_MINIO_URL", "http://127.0.0.1:9100")
+# 执行沙箱：local_shell（默认）| docker（ADR-009 执行隔离档，文件面语义不变）。
+SANDBOX_BACKEND = os.environ.get("E2E_SANDBOX_BACKEND", "local_shell")
 
 FAILURES: list[str] = []
 
@@ -129,8 +131,8 @@ def main() -> int:
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-e2e": {
-                # local_shell：write_file 真落盘，文件面（snapshot.files + files 端点）可断言。
-                "backend": "local_shell",
+                # local_shell/docker：write_file 真落盘（docker 档文件面同宿主），文件面断言同一套。
+                "backend": SANDBOX_BACKEND,
                 "agents": {
                     "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格"},
                     "coder": {"description": "代码专家", "system_prompt": "你是工程师人格"},
@@ -192,6 +194,7 @@ def main() -> int:
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
     if WORKSPACE_BACKEND == "s3":
         agent_env.update(s3_env)  # 双侧读同一 workspace.yaml：agent 写时归档、session 读对象存储
@@ -373,6 +376,14 @@ def main() -> int:
     finally:
         stop(session_proc)
         stop(agent_proc)
+        if SANDBOX_BACKEND == "docker":
+            # run 容器有 TTL 自清兜底；gate 收尾即时清理不留半小时残留。
+            cids = subprocess.run(
+                ["docker", "ps", "-q", "--filter", "label=kokoro-run"],
+                capture_output=True, text=True, check=False,
+            ).stdout.split()
+            if cids:
+                subprocess.run(["docker", "rm", "-f", *cids], capture_output=True, check=False)
         print(f"  logs: {scratch}")
 
     if FAILURES:
