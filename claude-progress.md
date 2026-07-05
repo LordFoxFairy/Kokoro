@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (文件面终版收敛落地 + 用户报刷新丢失 bug 定位)
+- **文件面终版全链绿**：工作区=真目录约定 {root}/{ns:session}/（session 直读，用户点破"镜像库=多虑"后整套产物机械删净：ArtifactStore/镜像/第五路/artifact.created/Artifact 对象全拆）；契约仅 snapshot.files + GET files/{path} 两标准件；web=FileChip(args.file_path 本地推断)+canvas(文件|预览 tab)。真模型七场景 PASS（G=write_file→审批→snapshot.files→files 端点直读原文）；chaos 三场景 PASS。
+- **顺手实锤安全修复**（agent ec5456a）：local_shell virtual_mode=False 时模型绝对路径直写宿主根——改 virtual_mode=True 虚拟根圈定。
+- **用户报 bug 已定位待修（下窗口第一件事）**：刷新后历史过程消失+失败轮空气泡。根因：水合只投 snapshot.messages+watermark 续传，过程步不回放。定案：引擎水合改全量事件回放（openStream from 0，mongo session_events 是回放真源、折叠幂等），stateFromSnapshot 不再直投 messages（防双份）；空失败气泡隐藏/标失败态。UI 走查（chip→canvas→文件树截图）依赖此修复后补。
+- 部署残留教训：多栈走查前先 pkill 全部残留 worker/session（本轮 3911 被旧实例占用误导半小时）。
+
 - Date: 2026-07-05 ("我信任你"自主批次：checkpoint TTL + steer 可见性 + 双 session chaos)
 - **checkpoint retention 三层补齐**：先实证 saver（官方 adelete_thread 存在、表无时间戳）→ 定案不穿透内部表：ledger 自养 thread 活跃账本（认领/resume 即 touch，三后端矩阵 34）+ 心跳清扫超龄 thread 经官方口删（KOKORO_RETENTION_THREAD_TTL_S，0=关；删=该会话新语义，session 消息史仍在）。
 - **steer 失败可见性（P1 尾巴清）**：engine 瞬态 notice 通道（不打断相位、下次提交自清）→ composer transport 行显示；web 179 tests。
