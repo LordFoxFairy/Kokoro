@@ -711,3 +711,10 @@
   - V2 技术方案（technical/15：Skills V2 分发→供给→消费三层重构 + 支柱 P1-P5 + 里程碑）+ V2 PRD（product/09）
 - 审计遗留（V2-M1/M2 排期，未修）：裂脑 fencing、sandbox 终态 teardown、steer 排空原子性、web 409 对账、鉴权全裸（P1）
 - Verified: agent 423 / session 185 / web 174 全绿 + 三静态 0 + verify-all 六档（本轮末次复跑）
+
+## 2026-07-06 V2-M1 会话软删除完整闭环（含测试报告+验收报告）
+- 裁定链：硬删级联 saga → 用户裁定改软删除（agent 侧一概不动，磁盘非稀缺，数据可恢复）；15 §2A saga 留档不实施，16 号规格重写为软删除
+- Done: 契约 DELETE /sessions/{id}（与 snapshot 同路径，202 deleted，幂等）+ session 状态位/四路 410 闸/活跃 run cancel 联动 + web deleteSession fire-and-forget + CORS 预检放行 DELETE（L5 走查实抓的缺陷，curl 测不出）
+- 测试: SD-S1..S3 + store 双后端矩阵 + SD-W1 + E2E-27/28（并入四个 gate 变体）+ L5 走查截图（scratchpad/ui-stack/sd-l5-after-delete-refresh.png）
+- 报告: docs/reports/m1-session-deletion-{test,acceptance}-report.md（验收 8/8 通过）
+- Verified: verify-all 六档 PASS + agent 423 / session 190 / web 175 + tsc/静态全 0

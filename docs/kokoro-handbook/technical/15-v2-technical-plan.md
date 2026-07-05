@@ -116,7 +116,7 @@ S5 测试矩阵：渐进披露真图断言（prompt 只含 description、read_fi
    同步改写。
 ```
 
-## 2A. 会话删除级联（本轮裁定：生命周期驱动，多 pod 正确）
+## 2A. 会话删除级联（2026-07-06 裁定修订：改软删除，本节 saga 仅留档不实施——见 technical/16）
 
 ### 现状与裁定
 
@@ -186,7 +186,7 @@ P5 第二 agent 类型"机制就绪门"：不实现 music/video（红线），�
 ## 4. 里程碑切片
 
 ```text
-M1 会话删除级联（§2A saga 全链）+ 审计遗留（fencing/sandbox teardown/steer 原子/409 对账）+ Skills V2（S1-S5）
+M1 会话软删除（technical/16）+ 审计遗留（fencing/sandbox teardown/steer 原子/409 对账）+ Skills V2（S1-S5）
 M2 鉴权主线（P1）+ 失败可读性（P2）
 M3 platform 配置后台最小集（P3）+ i18n 静态层（P4）
 M4 类型就绪门（P5）+ 全量马具扩展复验（verify-all 增渐进披露档）

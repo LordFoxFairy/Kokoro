@@ -624,6 +624,12 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
     L.append("")
 
+    dele = ep["delete_session"]
+    dele_receipt = ", ".join(ts_field(f, enums) for f in dele["receipt"])
+    L.append(f"export const {dele['receipt_const']} = z.object({{ {dele_receipt} }}).strict()")
+    L.append(f"export type DeleteSessionReceipt = z.infer<typeof {dele['receipt_const']}>")
+    L.append("")
+
     err = ", ".join(ts_field(f, enums) for f in spec["error"])
     L.append(f"export const {spec['error_const']} = z.object({{ {err} }}).strict()")
     L.append(f"export type ErrorResponse = z.infer<typeof {spec['error_const']}>")

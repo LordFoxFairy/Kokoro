@@ -124,6 +124,15 @@ endpoints:
     receipt_const: runControlReceiptSchema
     receipt:
       - {name: ok, type: literal_true}
+  delete_session:
+    method: DELETE
+    path_template: "/sessions/{session_id}"   # 与 snapshot 同路径（snapshotPath 复用），无新 path fn
+    params: [session_id]
+    status: 202
+    receipt_const: deleteSessionReceiptSchema
+    receipt:
+      # 恒为 "deleted"：软删除即时完成（technical/16）；幂等——重复删除/不存在同响应。
+      - {name: status, type: string_nonempty}
 
 error_const: errorResponseSchema
 error:

@@ -375,6 +375,40 @@ def main() -> int:
         expected = {"session.created", "run.created", "message.user", "tool.awaiting_approval",
                     "tool.returned", "message.delta", "message.completed", "run.completed"}
         check("事件面覆盖", expected <= kinds, f"missing={expected - kinds}")
+
+        # 8. 会话软删除（technical/16）——E2E-27 终态会话 / E2E-28 暂停中会话。
+        st13, del_body = http("DELETE", f"/sessions/{SID}")
+        check("E2E-27 DELETE → 202 {status:deleted}", st13 == 202 and del_body.get("status") == "deleted",
+              f"{st13} {del_body}")
+        st14, body14 = http("GET", f"/sessions/{SID}")
+        check("E2E-27 deleted snapshot → 410 session_deleted",
+              st14 == 410 and body14.get("error") == "session_deleted", f"{st14} {body14}")
+        st15, body15 = http("POST", f"/sessions/{SID}/messages",
+                            {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x"})
+        check("E2E-27 deleted 新消息 → 410", st15 == 410 and body15.get("error") == "session_deleted",
+              f"{st15} {body15}")
+        st16, del2 = http("DELETE", f"/sessions/{SID}")
+        check("E2E-27 重复 DELETE 幂等 202", st16 == 202 and del2.get("status") == "deleted", f"{st16}")
+        if WORKSPACE_BACKEND == "local" and SANDBOX_BACKEND == "local_shell":
+            # 软删不动产物：agent 侧零变化的显式断言（文件仍在磁盘）。
+            plan = scratch / "workspace" / f"team-e2e:{SID}" / "plan.md"
+            check("E2E-27 软删保留工作区文件", plan.is_file(), str(plan))
+
+        sid3 = f"ses_del_{uuid.uuid4().hex[:8]}"
+        st17, receipt5 = http("POST", f"/sessions/{sid3}/messages",
+                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "暂停中删除"})
+        sse4 = SseReader(f"/sessions/{sid3}/events")
+        pause4 = sse4.wait(lambda i: i[1] == "tool.awaiting_approval")
+        check("E2E-28 到达暂停", st17 == 202 and pause4 is not None)
+        st18, del3 = http("DELETE", f"/sessions/{sid3}")
+        cancelled2 = sse4.wait(lambda i: i[1] == "run.completed", timeout=40)
+        check("E2E-28 暂停中删除 → cancel 收敛 + 202",
+              st18 == 202 and del3.get("status") == "deleted" and cancelled2 is not None
+              and cancelled2[2]["payload"]["status"] == "cancelled",
+              f"{st18} {cancelled2[2]['payload'] if cancelled2 else {}}")
+        st19, body19 = http("GET", f"/sessions/{sid3}")
+        check("E2E-28 删除后 snapshot → 410", st19 == 410 and body19.get("error") == "session_deleted",
+              f"{st19}")
     finally:
         stop(session_proc)
         stop(agent_proc)
