@@ -693,3 +693,7 @@
 ## 2026-07-05 web i18n 判断入册 + 全量复验
 - Done: technical/14-web-i18n-capability（静态+动态双源高层判断，5 项输出齐；不落实现细节）；web 误形态 workbench/preview 7 文件撤除（web 528957e 后续提交）；05/11/README 挂接；生产级缺陷入册（web 42 文件硬编码中文、契约错误自由文本应 code 化——动契约待单独裁决）
 - Verified: verify-all 六档 PASS + agent 422 / session 178 / web 173（i18n 测试撤除后计数）全绿 + web tsc 干净
+
+## 2026-07-05 run.failed 错误码化（错误本地化边界定案）
+- Done: 契约 run.failed → [code, error_kind, message]（run_error_code 闭集枚举）；agent 归码器 failure_code + 装配点显式 assembly_failed；session/web regenerate + 夹具；technical/14 风险⑥改"已修"，11 注记入册
+- Verified: verify-all 六档 PASS；agent 425 / session 178 / web 173 全绿；pyright/mypy/ruff/tsc 全 0

@@ -1028,3 +1028,20 @@ api/i18n/preview 已撤（编辑面属 platform 后台方向，web 只消费）�
   ② 契约错误自由文本（run.failed.error 等）——应 code 为准、文案为辅，web 按
      code 本地化；动契约，须单独裁决。
 ```
+
+## 实现注记（2026-07-05 追加：run.failed 错误码化——错误本地化边界落地）
+
+```text
+用户裁定（"前端拿 text 走 i18n"的打磨定案）：code 为准、text 兜底，不做文本翻译。
+契约 run.failed 载荷 [code, error_kind, message] 三层语义：
+  code        闭集枚举 run_error_code（token_budget_exceeded / recursion_limit_exceeded
+              / assembly_failed / internal_error），web 按码本地化的键；新失败形态
+              必须扩枚举（单源扩表），internal_error 兜底。
+  error_kind  诊断用异常类名（观测/排障），不作展示依据。
+  message     人读原文：未知码/未译码时的兜底展示（用户"拿到 text"即此路径），
+              绝不裸露 key。
+归码住执行域（execution/events.failure_code，异常域 isinstance 归码）；装配期失败
+由 supervisor 调用点显式传 assembly_failed（不猜类型）。session relay 透传零改动。
+边界确认：tool.returned 错误文本=agent 域内容（工具真实输出），与模型回复同类，
+不进 UI i18n；HTTP 4xx 本就是码形态，web 本地化两处同一张码表。
+```

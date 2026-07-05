@@ -18,6 +18,8 @@ enums:
   awaiting_kind: [tool_approval, ask_user_question, result_review]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled]
+  # 失败码是闭集：新失败形态必须进枚举（单源扩表），internal_error 兜底。
+  run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, internal_error]
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
@@ -37,6 +39,7 @@ objects:
 
 # field-name -> abstract type. DEFAULT (unlisted) = string_nonempty.
 field_types:
+  code: enum:run_error_code
   delta: string
   content: string
   text: string
@@ -70,6 +73,7 @@ payload_nullable: [token_usage]
 terminal_kinds: [run.completed, run.failed]
 
 notes:
+  run.failed.code: "三层错误语义：code=稳定错误码（web 按码本地化的键，闭集枚举）；error_kind=诊断用异常类名（观测/排障，不作展示）；message=人读原文（未知码/未译码的兜底展示，绝不裸露 key）。"
   message.delta.delta: "流上文本恒为 assistant，无 role 字段；角色由 segment 归属决定。"
   tool.returned.is_error: "严格必填 fail-loud：生产端始终发送；缺失即报错，绝不用默认 false 掩盖真失败。"
   tool.returned.truncated: "wire 展示层截断标记：缺席=结果完整，true=已截断（完整结果在工作区文件，预览经 files 端点取）。"
@@ -100,7 +104,7 @@ raw_kinds:
   - {kind: subagent.tool.invoked, payload: [segment_id, subagent_id, tool_id, name, args]}
   - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?"]}
   - {kind: run.completed, payload: [status, token_usage]}
-  - {kind: run.failed, payload: [error_kind, message]}
+  - {kind: run.failed, payload: [code, error_kind, message]}
 
 # session-synthesized kinds (browser-only; metadata from the sessions collection).
 synthetic_kinds:

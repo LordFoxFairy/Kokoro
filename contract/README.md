@@ -35,7 +35,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
-| `run.failed` | error_kind, message |
+| `run.failed` | code, error_kind, message |
 
 ## Browser events (session -> web, 15)
 
@@ -60,7 +60,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `run.completed` | status, token_usage? |
-| `run.failed` | error_kind, message |
+| `run.failed` | code, error_kind, message |
 
 ## Control plane (session -> agent)
 
