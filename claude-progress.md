@@ -681,3 +681,11 @@
   - Local git commits are still pending because the Claude Code auto-mode classifier denied commit commands while the repo contains a `CLAUDE.md` instructions file.
 - Next verification / unblock step:
   - After commit authorization, review the parent-repo protocol doc diff together with the previously pending docs/progress changes, then run the parent-repo docs/progress commit.
+
+## 2026-07-05 可读性重构 + 资产源统一（ADR-011）
+- Done:
+  - `agents/general.py`（100 行独木 create()）→ `agents/general/` 子包：toolset / guardrails / delegates / persona 一步一模块，create() 只是目录页（kokoro-agent 633a70c）
+  - 资产源统一：新 `assets/` 域（source/skills/personas），skills+personas 由 local/s3 资产源启动装载为快照库；`KOKORO_ASSETS_CONFIG` + `KOKORO_ASSETS_S3_*` 凭据 env-only；快照语义取代 sha256 运行期复核（kokoro-agent b9a58c1）
+  - 多 pod 资产分发红线在 s3 档消解（ADR-011 入册；examples 增 assets.example.{local,s3}.yaml）
+- Verified: agent pytest 422 全绿 + ruff/pyright/mypy 0 + verify-all 六档 PASS（local/s3/docker/docker+s3/chaos/trace，minio 实测含 s3 资产源三组）+ 双仓 CI success
+- Pending（用户侧）: e2b key 后真栈复核；swarm 运行时 P2；platform 后台资产管理为升级路径
