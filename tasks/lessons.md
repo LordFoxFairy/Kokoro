@@ -80,3 +80,17 @@
 - 场景：web 挑拣提交组件文件时把 generate 产出的 src/contract 镜像留在工作区，本地 tsc 绿（工作区有新镜像）、CI 红（checkout 旧镜像），并连带父仓 byte-diff 门禁红。
 - 我做错的：绕开 git add -A（因他人现场）改挑拣提交后，没有把"镜像与消费代码同批"当硬规则。
 - 下次怎么避免：contract generate 之后，各仓 src/contract 的改动永远属于当前批次；挑拣提交前跑 `git status src/contract` 自查；本地绿≠CI 绿，挑拣模式下以"CI 视角文件集"过一遍。
+
+## 2026-07-05 platform i18n 预览放错仓
+- 场景：为验证 i18n 管理界面，把 admin i18n preview 放进 `kokoro-platform/src`，再挪到 `kokoro-platform/tools`，用户指出 platform 主仓和 tools 都不该承载 web/admin UI。
+- 我做错的：把"平台 i18n 能力验证"和"web/admin 页面承载"混成一块；子仓库边界被临时预览服务污染。
+- 下次怎么避免：platform 只放领域能力、catalog、registry、manifest 聚合和测试；任何 web/admin UI 与 HTTP route 必须在承载子仓一体化实现。宁可没有预览，也不要在 platform 增加 `src/*preview` 或 `tools/*preview`。
+
+## 2026-07-05 git add -A 三犯（web 仓 i18n 现场两度被打包）
+- 场景：web 仓提交三次误用 add -A 把 i18n 会话的进行中文件带进提交（4b2b3a2、ad0fb95）。
+- 我做错的：知道规则（挑拣提交）但肌肉记忆在多仓切换时带偏；且未在提交前跑 git status 自查。
+- 下次怎么避免：**web 仓永久禁 add -A**——一律 `git add <显式文件列表>`；任何仓提交前先 `git status --short` 扫一眼陌生文件；共享工作区（他人会话活跃）视为雷区。
+
+## 2026-07-05 刷新丢历史的根修（事件溯源闭环）
+- 场景：用户报"刷新后只剩输入的"；根因=wire 无 user 消息事件，线程被迫 snapshot 直投+续传混合体，过程步在夹缝里丢。
+- 收获：**事件史必须是线程的唯一完整真源**——补 message.user 合成事件后水合=全量回放（折叠幂等），三坨机械（snapshot 消息投影/hydratedStreaming 占位/空失败气泡）随之整体消失。混合真源=bug 温床。

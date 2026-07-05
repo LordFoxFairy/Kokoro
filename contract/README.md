@@ -43,6 +43,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | --- | --- |
 | `session.created` | title, owner_id |
 | `run.created` | run_id |
+| `message.user` | message_id, content |
 | `message.delta` | segment_id, delta |
 | `message.completed` | segment_id, content |
 | `thinking.delta` | segment_id, delta |

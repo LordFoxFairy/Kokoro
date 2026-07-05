@@ -5,7 +5,7 @@
 #
 # Two faces:
 #   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
-#   browser (19) — session emits, web parses. run.started is consumed by session and
+#   browser (20) — session emits, web parses. run.started is consumed by session and
 #                  replaced by the synthetic session.created + run.created; the other 17
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
 #
@@ -106,11 +106,14 @@ raw_kinds:
 synthetic_kinds:
   - {kind: session.created, payload: [title, owner_id]}
   - {kind: run.created, payload: [run_id]}
+  # user 消息进事件史：线程的唯一完整真源是事件回放（刷新水合=全量回放重建）。
+  - {kind: message.user, payload: [message_id, content]}
 
 # browser-facing kinds (session-out / web-in): synthetic pair + raw minus run.started.
 browser_order:
   - session.created
   - run.created
+  - message.user
   - message.delta
   - message.completed
   - thinking.delta

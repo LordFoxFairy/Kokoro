@@ -49,7 +49,7 @@ def test_raw_and_browser_kinds() -> None:
     raw = [e["kind"] for e in events["raw_kinds"]]
     browser = list(events["browser_order"])
     assert len(raw) == 18 and "run.started" in raw
-    assert len(browser) == 19
+    assert len(browser) == 20
     assert "run.started" not in browser
     assert {"session.created", "run.created"}.issubset(browser)
 

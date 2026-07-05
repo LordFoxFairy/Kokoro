@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-05 (刷新丢历史根修——事件溯源闭环 + 走查双截图收账)
+- **根修**：契约 synthetic 加 message.user（session 落库 user/steer 时 append 进事件史）→ 事件史成线程唯一完整真源；web 水合改全量回放（stateFromSnapshot 只留 meta/files/activeRunId，lastSeq=0 恒开流），本地 echo 经 receipt 对齐 id 防双份；三坨机械整体退役（snapshot 消息投影/hydratedStreaming+adopt/空失败气泡）。
+- 浏览器实证：run 完成→刷新→消息+问答已答复+write_file 行完整重建；chip plan.md→canvas markdown 渲染→文件树 tab；双截图 canvas-preview-final.png / canvas-files-tab.png。
+- 验证：web 171 + session 155 + tsc/lint；e2e PASS。教训入册：web 仓永久禁 add -A（三犯）；混合真源=bug 温床。
+
 - Date: 2026-07-05 (文件面终版收敛落地 + 用户报刷新丢失 bug 定位)
 - **文件面终版全链绿**：工作区=真目录约定 {root}/{ns:session}/（session 直读，用户点破"镜像库=多虑"后整套产物机械删净：ArtifactStore/镜像/第五路/artifact.created/Artifact 对象全拆）；契约仅 snapshot.files + GET files/{path} 两标准件；web=FileChip(args.file_path 本地推断)+canvas(文件|预览 tab)。真模型七场景 PASS（G=write_file→审批→snapshot.files→files 端点直读原文）；chaos 三场景 PASS。
 - **顺手实锤安全修复**（agent ec5456a）：local_shell virtual_mode=False 时模型绝对路径直写宿主根——改 virtual_mode=True 虚拟根圈定。
