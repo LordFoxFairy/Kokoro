@@ -1,0 +1,5 @@
+# 容器执行隔离：任意 shell 进容器（挂本 run workspace），文件面与 local 完全一致。
+# 另需 agent env/配置树：KOKORO_DOCKER_IMAGE（必填）、KOKORO_DOCKER_TTL（可选）。
+namespaces:
+  local:
+    backend: docker

@@ -1,0 +1,9 @@
+# BYO 自带沙箱（ADR-010）：pip 装自己的包 + 两个 env 即插入，不改 kokoro 源码。
+#   KOKORO_CUSTOM_BACKEND=my_pkg.sandbox:make_backend
+#   KOKORO_CUSTOM_BACKEND_CONFIG=./custom-backend.yaml   # 可选自由参数
+# 工厂契约：def make_backend(ctx: CustomBackendContext) -> BackendProtocol
+#   ctx: run_id / workspace / workspace_root / prior_sandbox_id（HITL resume 重连）/ config
+#   产物带 sandbox_id 属性即自动接入 run 级 ledger 生命周期（与 docker/e2b 同构）。
+namespaces:
+  local:
+    backend: custom

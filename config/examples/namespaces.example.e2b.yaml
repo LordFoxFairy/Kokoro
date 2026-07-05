@@ -1,0 +1,5 @@
+# e2b 云沙箱：箱即工作区，run 收敛归档到对象存储（配 workspace.example.s3.yaml）。
+# 另需 env：KOKORO_E2B_API_KEY（必填）；可选 KOKORO_E2B_TEMPLATE / KOKORO_E2B_TIMEOUT。
+namespaces:
+  local:
+    backend: e2b

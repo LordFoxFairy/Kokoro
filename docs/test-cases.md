@@ -25,7 +25,7 @@ python3 scripts/verify-all.py --real
 
 | 仓 | 命令 | 覆盖域 |
 |---|---|---|
-| kokoro-agent（pytest ~371） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/skills/MCP 挂载、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、e2b 编排（fake SDK：resume 重连/keep-first）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
+| kokoro-agent（pytest ~401） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/skills/MCP 挂载、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、docker/e2b/custom 编排（连接器注册表+枚举覆盖守卫；resume 重连/keep-first）、统一配置树（yaml 摊平+env 覆盖+凭据禁入）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
 | kokoro-session（vitest ~173） | `npm test` | 契约门禁（browser 20 kind + HTTP 形状）、relay 归一化、message.user 合成、control 裁决/幂等、SSE 续传、恢复扫描、store（memory+mongo）、transport（memory+redis）、namespace profile 解析 |
 | kokoro-web（vitest ~181） | `npm test` | reducer（20 kind 折叠幂等）、水合=全量回放语义、engine 状态机（开流/重连/adopt user id）、HITL staging、持久化、投影、UI smoke（session-shell 刷新重建线程） |
 
@@ -124,6 +124,7 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 
 ## 已知边界（显式不在本表）
 
-- e2b backend：编排结构就位（fake SDK 单测钉死生命周期语义），真栈行为待 key 复核；无 key 选 e2b 即 fail-loud。custom backend：未落地，fail-loud。
+- e2b backend：编排结构就位（fake SDK 单测钉死生命周期语义），真栈行为待 key 复核；无 key 选 e2b 即 fail-loud。
+- custom backend（ADR-010 BYO）：`pkg.module:factory` 引用自带实现，契约/加载/生命周期绑定已单测钉死；BYO 实现本身的正确性归其作者。
 - state 盘档（backend=state）：诚实降级无文件面，snapshot.files=[]。
 - trace-verify 依赖自托管 langfuse，默认 SKIP 不算失败。

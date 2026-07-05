@@ -1,0 +1,8 @@
+# 文件面：对象存储归档档（agent 写时归档，session 直读 S3；minio 与 AWS 同协议）。
+# 凭据走 env：KOKORO_WORKSPACE_S3_ACCESS_KEY / KOKORO_WORKSPACE_S3_SECRET_KEY。
+workspace:
+  type: s3
+  endpoint: http://127.0.0.1:9100
+  bucket: kokoro-workspace
+  # region: us-east-1          # 默认值；AWS 时按真实 region
+  # force_path_style: true     # minio 必需；AWS 可 false

@@ -1,0 +1,4 @@
+# 文件面：单节点/共享卷（=缺省行为，仅当想显式声明或改根时才需要本文件）。
+workspace:
+  type: local
+  root: /data/workspace

@@ -111,7 +111,12 @@ KOKORO_WORKSPACE_CONFIG               存储形态 yaml（type: local|s3），se
 KOKORO_WORKSPACE_S3_ACCESS_KEY/_SECRET_KEY   s3 档凭据（不进 yaml）。
 KOKORO_DOCKER_IMAGE / KOKORO_DOCKER_TTL      docker 执行隔离档：镜像（选 docker 必填）/容器存活期。
 KOKORO_E2B_API_KEY / _TEMPLATE / _TIMEOUT    e2b 云沙箱档（选 e2b 时 api_key 必填）。
+KOKORO_CUSTOM_BACKEND / _CONFIG              BYO 自带沙箱（ADR-010）：pkg.module:factory + 自由参数 yaml。
 ```
+
+统一配置树（ADR-010）：`KOKORO_AGENT_CONFIG` 指向按域分组的单一 yaml，优先级
+**env > yaml > 内置默认**，凭据 env-only（写进 yaml fail-loud）。全部可用键与各部署
+形态的照抄模板见仓根 `config/examples/`。
 
 端口固定：site:4201 / user:4211 / model:4221 / credit:4231 / payment:4241。其余端口以各子仓 `.env.example` 为准，缺失待补，不编造。
 

@@ -1,0 +1,4 @@
+# 自带工厂的自由参数（原样透传 CustomBackendContext.config，形状由你的工厂自校验）。
+pool: gpu-a100
+replicas: 2
+region: cn-east

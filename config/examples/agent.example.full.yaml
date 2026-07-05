@@ -1,0 +1,44 @@
+# kokoro-agent 统一配置树（KOKORO_AGENT_CONFIG 指向本文件）。
+# 全部键可省（省=内置默认）；env 同名键覆盖此处；凭据 env-only（写这里会 fail-loud）。
+model:
+  local_fake: false            # true=离线确定性假模型（开发/e2e）
+  openai_base_url: https://open.bigmodel.cn/api/paas/v4
+  openai_reasoning: true
+stream:
+  backend: redis               # memory | redis
+  redis_url: redis://127.0.0.1:6379/0
+mongo:
+  url: mongodb://127.0.0.1:27017
+  db: kokoro
+checkpoint:
+  backend: mongo               # sqlite 单机 | mongo 跨 pod
+ledger:
+  backend: mongo
+  lease_ttl_s: 30
+sandbox:
+  local_shell:
+    root: /data/workspace      # 与 session KOKORO_WORKSPACE_ROOT 同根（或共享卷挂载点）
+    timeout: 120
+  docker:                      # namespace profile backend: docker 时生效
+    image: python:3.12-slim
+    ttl: 1800
+  e2b:                         # backend: e2b 时生效；KOKORO_E2B_API_KEY 走 env
+    timeout: 1800
+  custom:                      # backend: custom 时生效（ADR-010 BYO）
+    factory: my_pkg.sandbox:make_backend
+    config: ./custom-backend.yaml
+workspace_config: ./workspace.yaml   # 文件面形态（与 session 共读；省=local 默认档）
+web_tools:
+  fetch_allow_private: false
+  search:                      # KOKORO_WEB_SEARCH_API_KEY 走 env
+    provider: searxng
+    url: http://127.0.0.1:8080
+subagents:
+  builtin: [researcher]
+limits:
+  recursion_limit: 100
+  run_token_budget: 0          # 0=关闭
+retention:
+  events_ttl_s: 0              # 0=关闭（保留期是产品决策）
+  run_ttl_s: 0
+  thread_ttl_s: 0

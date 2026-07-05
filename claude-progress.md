@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-05 (ADR-010：BYO custom backend + 连接器注册表 + 统一配置树 + examples 族)
+- custom backend：pkg.module:factory 引用（importlib+契约 isinstance 收口 BackendProtocol ABC）、CustomBackendContext（run_id/workspace/prior_sandbox_id/config 自由域）、可选 sandbox_id 生命周期绑定。
+- 设计模式重构：五档沙箱连接器注册表（Strategy），生命周期 keep-first 单点收口于分派器；registered_backends 枚举覆盖守卫。
+- 统一配置树：KOKORO_AGENT_CONFIG yaml 按映射表摊平作虚拟 env 底座（env>yaml>默认零破坏）；映射表即 schema，未知键/凭据键 fail-loud（凭据 env-only 强制）。回应 WebToolSettings 之问：全域收进 web_tools/sandbox/limits/retention 等分组。
+- config/examples/ 九件套（agent 全量树/workspace×2/namespaces×4/custom 参数/README）+ example 防漂移测试；session namespaces 文件升级 yaml 兼容。
+- 验证：agent 401 全绿 + 静态三件套 0；session 173；gate local+docker 回归 PASS；ADR-010 入册。
+
 - Date: 2026-07-05 (全量四层复验全绿 + handbook 同步至当前实现)
 - L1：agent 379+静态三件套 0 / session 173+tsc / web 181+tsc。L2：gate local/s3/docker 三底座 PASS。L3：chaos（mongo 生产形态）+ trace（langfuse 在线复验）PASS。L4：real-model A–G PASS。L5 上轮 8 用例全过（本轮 web 无行为改动未重跑）。
 - handbook 同步：ADR-006 策略表 +docker 行；03 篇 backend 五值+生命周期；08 篇 env 清单补 workspace/沙箱组；ops docker-k8s 补 docker 执行隔离档；testing-checklist 指向 docs/test-cases.md 单源。

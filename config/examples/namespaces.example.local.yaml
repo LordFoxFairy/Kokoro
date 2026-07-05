@@ -1,0 +1,8 @@
+# 单租户起步：local_shell 文件面 + 一个具名入口示例。
+namespaces:
+  local:
+    backend: local_shell
+    agents:
+      writer:
+        description: 写作专家
+        system_prompt: 你是文字风格严谨的写作助手。
