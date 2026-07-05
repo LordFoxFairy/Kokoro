@@ -83,13 +83,19 @@ agent 写侧不新增配置：backend 选择本就由 namespace profile 每请�
 
 ## 实施顺序
 
-1. **Phase 0（零代码，本 ADR 采纳即生效）**：operations 补部署说明——单节点默认本地/
-   同 volume；自托管多 pod = RWX 共享卷。前两档即刻可用。
-2. **Phase 1（与 e2b 同期，等外部件排期）**：e2b backend（`make_backend` e2b 分支）+
-   收敛归档器 + `WorkspaceReader` 的 e2b/S3 组合实现 + compose 加 minio，L2 文件面用例
-   （E2E-17/18/19）参数化跑 local/s3 两档。读写必须同期落地——先做 S3 读实现而无归档写侧，
-   是没有真实数据流的空中楼阁，验证只能自欺，故不拆分。
-3. **Phase 2**：files 端点鉴权（随 auth 主线）。
+1. **Phase 0（零代码，已生效）**：operations 部署说明——单节点默认本地/同 volume；
+   自托管多 pod = RWX 共享卷。
+2. **Phase 1a（已落地，2026-07-05）**：S3 归档档全链——agent `ArchivingLocalShellBackend`
+   （write/edit 增量上传，execute/upload 后全量兜底捕获 shell 直写；失败 log 可见绝不打断
+   工具，短超时防延迟黑洞）+ session `createS3WorkspaceReader` + 双侧共读 `type` 判别
+   workspace yaml。验证：agent 17 例（minio 实测）+ session 18 例 + gate 全量跑
+   `E2E_WORKSPACE_BACKEND=s3`（同一套断言透明换底）。**至此"多 pod 无共享卷"也只需配置。**
+3. **Phase 1b（等 e2b key，真栈验证驱动）**：e2b backend——继承 deepagents `BaseSandbox`
+   （仅 `execute()` 抽象）。关键生命周期设计：sandbox_id 须入 ledger run 级字段，HITL
+   resume 重建 backend 时 `connect(sandbox_id)` 重连而非新建（否则暂停期文件丢失）；TTL
+   到期由归档兜底。这些语义无 key 无法验证，不写无法验证的生命周期代码——`make_backend`
+   维持 fail-loud。
+4. **Phase 2**：files 端点鉴权（随 auth 主线）。
 
 ## 影响
 

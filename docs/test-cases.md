@@ -37,6 +37,15 @@ python3 scripts/verify-all.py --real
 
 真 redis+mongo+双进程（session npm start + agent worker），LocalFake hitl 脚本：ask_user → write_file（审批+结果审核双暂停）→ 文本流。
 
+**双底座**：默认 local（目录直读）；`E2E_WORKSPACE_BACKEND=s3` 切 S3 归档档（ADR-009，
+agent 写时归档 → minio → session S3 reader），断言两档同一套。minio 前置：
+
+```bash
+docker run -d --name kokoro-minio -p 9100:9000 \
+  -e MINIO_ROOT_USER=kokoro -e MINIO_ROOT_PASSWORD=kokoro-secret \
+  cgr.dev/chainguard/minio:latest server /data
+```
+
 | ID | 用例 | 预期 |
 |---|---|---|
 | E2E-01 | POST messages | 202 + receipt（run_id/user_message_id/assistant_message_id） |

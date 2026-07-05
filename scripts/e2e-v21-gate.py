@@ -30,6 +30,9 @@ REDIS_URL = os.environ.get("E2E_REDIS_URL", "redis://127.0.0.1:6379/14")
 MONGO_URL = os.environ.get("E2E_MONGO_URL", "mongodb://127.0.0.1:27017")
 MONGO_DB = "kokoro_e2e_v21"
 SID = f"ses_e2e_{uuid.uuid4().hex[:8]}"
+# 文件面底座：local（默认，目录直读）| s3（ADR-009 归档档，经 minio 全链）。断言两档同一套。
+WORKSPACE_BACKEND = os.environ.get("E2E_WORKSPACE_BACKEND", "local")
+MINIO_URL = os.environ.get("E2E_MINIO_URL", "http://127.0.0.1:9100")
 
 FAILURES: list[str] = []
 
@@ -156,6 +159,28 @@ def main() -> int:
         # 与 agent 同根：session files 端点按 {root}/{namespace:session_id} 直读。
         "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
     }
+    if WORKSPACE_BACKEND == "s3":
+        bucket = f"kokoro-e2e-{uuid.uuid4().hex[:8]}"
+        # 复用 agent venv 的 boto3 预建桶：生产桶由部署预建，脚本对齐该前置。
+        subprocess.run(
+            ["uv", "run", "python", "-c",
+             "import boto3, sys; from botocore.config import Config; "
+             "boto3.client('s3', endpoint_url=sys.argv[1], region_name='us-east-1', "
+             "aws_access_key_id='kokoro', aws_secret_access_key='kokoro-secret', "
+             "config=Config(s3={'addressing_style':'path'}, connect_timeout=2, retries={'max_attempts':1})"
+             ").create_bucket(Bucket=sys.argv[2])",
+             MINIO_URL, bucket],
+            cwd=ROOT / "kokoro-agent", check=True, capture_output=True,
+        )
+        (scratch / "workspace.yaml").write_text(
+            f"workspace:\n  type: s3\n  endpoint: {MINIO_URL}\n  bucket: {bucket}\n"
+        )
+        s3_env = {
+            "KOKORO_WORKSPACE_CONFIG": str(scratch / "workspace.yaml"),
+            "KOKORO_WORKSPACE_S3_ACCESS_KEY": "kokoro",
+            "KOKORO_WORKSPACE_S3_SECRET_KEY": "kokoro-secret",
+        }
+        session_env.update(s3_env)
     agent_env = {
         **os.environ,
         "KOKORO_STREAM_BACKEND": "redis",
@@ -168,6 +193,8 @@ def main() -> int:
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
     }
+    if WORKSPACE_BACKEND == "s3":
+        agent_env.update(s3_env)  # 双侧读同一 workspace.yaml：agent 写时归档、session 读对象存储
     ensure_port_free(SESSION_PORT)
     session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
                          log=scratch / "session.log")

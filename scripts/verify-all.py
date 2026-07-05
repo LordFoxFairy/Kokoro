@@ -25,8 +25,13 @@ def reachable(url: str) -> bool:
         return False
 
 
-def run(script: str) -> str:
-    proc = subprocess.run([sys.executable, str(ROOT / "scripts" / script)])
+def run(script: str, env: dict[str, str] | None = None) -> str:
+    import os
+
+    proc = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / script)],
+        env=None if env is None else {**os.environ, **env},
+    )
     return "PASS" if proc.returncode == 0 else "FAIL"
 
 
@@ -37,6 +42,16 @@ def main() -> int:
 
     results: dict[str, str] = {}
     results["e2e-v21-gate"] = run("e2e-v21-gate.py")
+    # S3 workspace 档（ADR-009）：同一 gate、minio 底座；独立端口/redis db 防串扰。
+    results["e2e-v21-gate(s3)"] = (
+        run("e2e-v21-gate.py", env={
+            "E2E_WORKSPACE_BACKEND": "s3",
+            "E2E_SESSION_PORT": "3907",
+            "E2E_REDIS_URL": "redis://127.0.0.1:6379/12",
+        })
+        if reachable("http://127.0.0.1:9100/minio/health/live")
+        else "SKIP (minio :9100 不可达，启动见 docs/test-cases.md L2 前置)"
+    )
     results["chaos-verify"] = run("chaos-verify.py")
     results["trace-verify"] = (
         run("trace-verify.py")

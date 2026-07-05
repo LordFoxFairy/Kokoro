@@ -34,3 +34,12 @@
 - MCP live smoke（真 server）；artifact_ref/summary 生产者（P1）
 - 真浏览器 × 真 session 联调走查（web 已有 preview 走查 + 全量单测，未跑真栈浏览器）
 - 分支收口：四仓 rewrite/v2 全部验证绿、未合 main、未 push——**等用户定夺合入方式**
+
+## 2026-07-05 ADR-009 Phase 1a：S3 workspace 档全链（"到时只需配置"）
+- [x] 共享 workspace yaml（KOKORO_WORKSPACE_CONFIG，type 判别）：session zod + agent pydantic 双侧 strict
+- [x] session S3 WorkspaceReader + main 接线 + 测试 18 例（minio 实测）
+- [x] agent ArchivingLocalShellBackend（write/edit 增量 + execute/upload 全量兜底，backend 层内聚非事件泵）+ 测试 17 例
+- [x] minio 裸容器 :9100（根仓无 compose，对齐 mongo 现状，启动命令入 test-cases）
+- [x] gate E2E_WORKSPACE_BACKEND=s3 全绿 + verify-all s3 档（minio 不可达 SKIP）
+- [x] 文档：ADR-009 Phase 1a 已落地注记 + e2b 生命周期设计（sandbox_id 入 ledger、resume 重连）
+- [x] agent 361 / session 173 / gate local+s3 双档全绿；CI 待推送确认

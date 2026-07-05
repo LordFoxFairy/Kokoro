@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-05 (ADR-009 Phase 1a：S3 workspace 档全链落地——多 pod 无共享卷也只需配置)
+- 双侧共读 type 判别 workspace yaml（KOKORO_WORKSPACE_CONFIG；缺省=local 零配置）；凭据 env 注入不进 yaml。
+- agent：ArchivingLocalShellBackend（write/edit 增量上传、execute/upload 后全量兜底捕获 shell 直写；归档失败 log 可见不打断工具、短超时防延迟黑洞）；boto3+lite stubs。
+- session：createS3WorkspaceReader（ListObjectsV2/GetObject，穿越防御，与 local 同语义）；@aws-sdk/client-s3+yaml。
+- 验证：agent 361（+17 minio 实测）/ session 173（+18）/ gate local+s3 双档全绿（同一套断言透明换底）/ verify-all 接 s3 档。
+- e2b=Phase 1b 等 key：生命周期设计已入 ADR（sandbox_id 入 ledger、HITL resume connect 重连），不写无法验证的代码。
+
 - Date: 2026-07-05 (chaos 升级 mongo 档：生产跨 pod 收养路径首次 e2e 实证)
 - 用户纠正确认：ledger/checkpoint 本就有 mongo 跨 pod 后端（sqlite 是单机可选档）、workspace 共享属部署配置（本地 docker 卷/多 pod 共享卷或对象存储）——此前盘点误列欠账。
 - chaos-verify 从 sqlite 共享文件切到 mongo ledger+checkpoint（无共享文件系统假设），三场景 20 项全绿。
