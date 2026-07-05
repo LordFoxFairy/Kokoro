@@ -1002,3 +1002,16 @@ assets/ 域（ADR-011）：skills/personas 的"文件从哪来"与 workspace 同
   多 pod 资产分发红线在 s3 档消解（同 bucket 即同真源）。
   minio 实测：s3 源装载/缺 SKILL.md fail-loud/端到端库装配三组真栈跑过。
 ```
+
+## 实现注记（2026-07-05 追加：ProcessToolbox——内置工具按参数轴归位）
+
+```text
+用户点破 AssembleDeps.web_tools 孤字段不对称。理论落成结构（tools/toolbox.py）：
+内置工具按"参数来自哪根轴"分类——无参常量（ask_user→registry）/进程配置态
+（web_search/web_fetch→启动构建入箱）/租户态（memory→箱按 run 的 namespace 实例化）；
+wire 点名注册表工具与 MCP 外接不在箱内。装配面收敛为三路：注册表+核心 → 
+toolbox.tools_for(namespace) 恒挂底座一口出 → MCP。未来配置态内置件（studio 系
+专属服务工具等）进同一个箱，AssembleDeps 不再逐类加字段。
+swarm 位置注记（delegates.py docstring 入册）：V1 桥语义 swarm_members ⊆ subagents，
+成员挂层级下属即可达；P2 langgraph-swarm 在工厂加 swarm.py 一步建 handoff 图。
+```
