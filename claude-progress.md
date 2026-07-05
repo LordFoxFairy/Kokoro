@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-05 (深度自审补刀：入口对偶性 + docker×s3 组合档；全量五档基线绿)
+- 全量复验：verify-all 五档 PASS（gate local/s3/docker + chaos + trace）为基线。
+- 自审修复①：SubagentDef 加 skills（契约）——成品作下属保留技能包，agent 与主链同 compose 渲染。
+- 自审修复②：归档 Mixin 化（ArchivingWritesMixin）+ ArchivingDockerShellBackend——docker+s3 组合不再静默丢文件面；组合档 e2e 全链 PASS（容器写→宿主→minio→session 读）；verify-all 增 docker+s3 档。
+- 部署红线入册：多 pod skills/personas 资产须一致分发（pod 间漂移=resume 前后 prompt 不一致）。
+- agent 411 / session 178 / web 181 全绿+静态 0。
+
 - Date: 2026-07-05 (资产化定案：skills/persona 配置引用名称，资产统一入库——用户"配置不内联资产"裁定)
 - skills 库：KOKORO_SKILLS_DIR/<name>/SKILL.md，启动扫描建清单+内容锁（篡改装配期 fail-loud）；契约 runtime.skills 变 string[]，SkillMount 退役（path/lock 归库内部，脚本手算 lock 的反人类形态消灭）。
 - personas 库：prompts/<name>.md 内置 + KOKORO_PERSONAS_DIR 部署覆盖；wire 加 entry（解析键）；system_prompt 全链 optional 内联覆盖——子代理人格解析链（内联→资产→fail-loud）。

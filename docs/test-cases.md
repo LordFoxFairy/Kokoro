@@ -25,7 +25,7 @@ python3 scripts/verify-all.py --real
 
 | 仓 | 命令 | 覆盖域 |
 |---|---|---|
-| kokoro-agent（pytest ~401） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/skills/MCP 挂载、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、docker/e2b/custom 编排（连接器注册表+枚举覆盖守卫；resume 重连/keep-first）、统一配置树（yaml 摊平+env 覆盖+凭据禁入）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
+| kokoro-agent（pytest ~411） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/skills/MCP 挂载、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、docker/e2b/custom 编排（连接器注册表+枚举覆盖守卫；resume 重连/keep-first）、统一配置树（yaml 摊平+env 覆盖+凭据禁入）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
 | kokoro-session（vitest ~178） | `npm test` | 契约门禁（browser 20 kind + HTTP 形状）、relay 归一化、message.user 合成、control 裁决/幂等、SSE 续传、恢复扫描、store（memory+mongo）、transport（memory+redis）、namespace profile 解析（含 swarm 成员校验矩阵） |
 | kokoro-web（vitest ~181） | `npm test` | reducer（20 kind 折叠幂等）、水合=全量回放语义、engine 状态机（开流/重连/adopt user id）、HITL staging、持久化、投影、UI smoke（session-shell 刷新重建线程） |
 
@@ -39,7 +39,7 @@ python3 scripts/verify-all.py --real
 
 **多底座同一套断言**：文件面默认 local（目录直读），`E2E_WORKSPACE_BACKEND=s3` 切 S3 归档档
 （agent 写时归档 → minio → session S3 reader）；执行沙箱默认 local_shell，
-`E2E_SANDBOX_BACKEND=docker` 切容器隔离档（execute 进容器、文件面留宿主）。minio 前置：
+`E2E_SANDBOX_BACKEND=docker` 切容器隔离档（execute 进容器、文件面留宿主）；两轴可组合（docker+s3 组合档）。minio 前置：
 
 ```bash
 docker run -d --name kokoro-minio -p 9100:9000 \

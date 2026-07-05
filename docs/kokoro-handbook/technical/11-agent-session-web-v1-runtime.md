@@ -882,6 +882,20 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
 仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```
 
+## 实现注记（2026-07-05 追加：深度自审补刀——对偶性缺口与静默组合缺陷）
+
+```text
+自审发现并修复两处"没想明白"：
+  入口对偶性缺口：成品降格为子代理时技能包丢失——契约 SubagentDef 加 skills
+    （按名引用），resolve 透传，agent 侧与主链同一 compose 语义渲染进子代理 prompt。
+  docker+s3 静默组合缺陷：归档装饰只挂 local_shell 分支，配 docker 隔离 + S3
+    文件面时写宿主不归档、session 读 S3 为空——归档 Mixin 化
+    （ArchivingWritesMixin，C3 线性化叠加 docker 变体），组合档真栈验证
+    （容器写 → 宿主挂载 → minio → session 读）；verify-all 增 docker+s3 档。
+部署红线（多 pod）：skills/personas 资产目录必须随镜像/共享卷一致分发——
+  worker 启动各自建锁，pod 间内容漂移会导致同 run resume 前后 prompt 不一致。
+```
+
 ## 实现注记（2026-07-05 追加：资产化——skills/persona 配置引用名称，资产统一入库）
 
 ```text

@@ -65,6 +65,16 @@ def main() -> int:
         if docker_ok
         else "SKIP (docker daemon 不可达)"
     )
+    results["e2e-v21-gate(docker+s3)"] = (
+        run("e2e-v21-gate.py", env={
+            "E2E_SANDBOX_BACKEND": "docker",
+            "E2E_WORKSPACE_BACKEND": "s3",
+            "E2E_SESSION_PORT": "3909",
+            "E2E_REDIS_URL": "redis://127.0.0.1:6379/9",
+        })
+        if docker_ok and reachable("http://127.0.0.1:9100/minio/health/live")
+        else "SKIP (docker 或 minio 不可达)"
+    )
     results["chaos-verify"] = run("chaos-verify.py")
     results["trace-verify"] = (
         run("trace-verify.py")

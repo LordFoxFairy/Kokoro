@@ -43,6 +43,8 @@ objects:
       # 人格可缺省：agent 按 name 查 personas 资产库（prompts/<name>.md）；内联即覆盖。
       - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}
+      # 入口对偶性：成品降格为子代理时保留其技能包（按名引用，agent 侧库渲染）。
+      - {name: skills, type: array:string_nonempty}
       - {name: model, type: object:ModelConfig, optional: true}
   - name: Permissions
     fields:
