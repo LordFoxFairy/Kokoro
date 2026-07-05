@@ -1,0 +1,18 @@
+# swarm 成员配置表（per-entry 对等 handoff 资格）；配置表 V1=本文件，后续归 platform 后台管理。
+# 语义：poet 作主 agent 时可把控制权转交给 composer/critic（P2 langgraph-swarm 建图；
+# 当下成员同时以层级下属身份可被 task 委派——配置立即生效，不是空字段）。
+# 约束（加载期 fail-loud）：成员必须是本 namespace 已声明入口、非自身、非 general（协调者）。
+namespaces:
+  local:
+    agents:
+      poet:
+        description: 诗歌创作专家
+        system_prompt: 你是诗人人格。
+        swarm: [composer, critic]
+      composer:
+        description: 作曲结构专家
+        system_prompt: 你是作曲人格。
+        swarm: [poet]
+      critic:
+        description: 审读与批评
+        system_prompt: 你是批评家人格。

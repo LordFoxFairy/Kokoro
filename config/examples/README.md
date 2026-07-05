@@ -12,4 +12,5 @@
 | `namespaces.example.docker.yaml` | 同上 | 容器执行隔离档 |
 | `namespaces.example.e2b.yaml` | 同上 | e2b 云沙箱档（另需 KOKORO_E2B_API_KEY） |
 | `namespaces.example.custom.yaml` | 同上 | BYO 自带沙箱实现 |
+| `namespaces.example.swarm.yaml` | 同上 | per-entry swarm 成员配置表（后续归 platform 后台） |
 | `custom-backend.example.yaml` | agent（`KOKORO_CUSTOM_BACKEND_CONFIG`） | 自带工厂的自由参数 |

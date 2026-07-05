@@ -66,6 +66,9 @@ objects:
       - {name: subagents, type: array:object:SubagentDef}
       - {name: backend, type: enum:backend}
       - {name: permissions, type: object:Permissions}
+      # swarm 成员（对等 handoff 资格，per-entry 配置；配置表后续归 platform 后台管理）。
+      # V1 桥语义：成员同时在 subagents 里作层级下属；P2 langgraph-swarm 据此建 handoff 图。
+      - {name: swarm_members, type: array:string_nonempty, optional: true}
   # 会话连续性由 thread checkpoint 承担；组织/用户维度等真实 auth 落地再进契约（拒绝投机字段）。
   - name: RuntimeContext
     fields:

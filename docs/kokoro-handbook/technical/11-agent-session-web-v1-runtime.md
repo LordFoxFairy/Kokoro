@@ -896,6 +896,12 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
     （prompt 不进 .py 裁定）；parts.py/package.py/类型子包全部退役。
   新增 studio 类型 = 新 <type>.py 工厂 + 注册一行 + 契约枚举一值。
 
+swarm 成员配置表（2026-07-05 落地）：
+  per-entry 声明（profile agents.<name>.swarm: [成员名]）→ 契约
+  RuntimeConfig.swarm_members（optional）上 wire；加载期校验（未知入口/自引用/
+  general 皆 fail-loud）。V1 桥语义：成员同时是层级下属（task 可委派），配置即生效；
+  配置表 V1=namespaces 文件，后续归 platform 后台管理（loader 即接口位）。
+
 swarm 升级路径（P2，langgraph-swarm 已评估）：
   各工厂产物即 LangGraph agent，langgraph-swarm 的 create_swarm/create_handoff_tool
   可在 FACTORIES 之上把 general ⇄ studio 类型接成 handoff 图（active agent 随

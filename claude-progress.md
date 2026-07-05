@@ -1,5 +1,10 @@
 # Claude Progress
 
+- Date: 2026-07-05 (swarm 成员配置表落地：per-entry 声明 → wire，platform 后台为升级路径)
+- profile agents.<name>.swarm: [成员名]（加载期校验：未知入口/自引用/general 皆 fail-loud）→ 契约 RuntimeConfig.swarm_members（optional）→ wire。V1 桥语义：成员同时是层级下属，配置即生效；P2 langgraph-swarm 据此建 handoff 图。
+- 配置表 V1=namespaces 文件（loader 即接口位），后续归 platform 后台管理（用户裁定，handbook 注记）。
+- example：namespaces.example.swarm.yaml；session 178 全绿（+5 swarm 矩阵）；gate wire 断言 swarm_members PASS。
+
 - Date: 2026-07-05 (AgentFactory 定案：一类型一 py，政策即类属性；swarm 路径入册)
 - agents/=三件：base.py（AgentFactory ABC+形状）、general.py（工厂：core_tools/pause_tools 类属性+create 管线）、__init__（FACTORIES 注册+assemble/approval_names 分派）。
 - 杂烩归位：子代理装配件→subagents/assemble.py；build_web_tools 内联回 worker/main；persona 回 prompts/；parts/package/类型子包退役。

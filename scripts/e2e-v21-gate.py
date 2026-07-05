@@ -134,7 +134,8 @@ def main() -> int:
                 # local_shell/docker：write_file 真落盘（docker 档文件面同宿主），文件面断言同一套。
                 "backend": SANDBOX_BACKEND,
                 "agents": {
-                    "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格"},
+                    "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格",
+                             "swarm": ["coder"]},
                     "coder": {"description": "代码专家", "system_prompt": "你是工程师人格"},
                 }
             }
@@ -357,8 +358,9 @@ def main() -> int:
                 rt = req["runtime"]
                 wire_ok = (rt.get("system_prompt") == "你是诗人人格"
                            and [s["name"] for s in rt["subagents"]] == ["coder"]
+                           and rt.get("swarm_members") == ["coder"]
                            and req["context"]["namespace"] == "team-e2e")
-        check("wire: entry 人格上 run.request + 其余预设为下属 + 租户 namespace", wire_ok)
+        check("wire: entry 人格 + 下属预设 + swarm 成员名单 + 租户 namespace", wire_ok)
         sse3 = SseReader(f"/sessions/{sid2}/events")
         pause3 = sse3.wait(lambda i: i[1] == "tool.awaiting_approval")
         check("entry run 启动并到达首个暂停", pause3 is not None)
