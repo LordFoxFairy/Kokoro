@@ -1,5 +1,12 @@
 # Claude Progress
 
+- Date: 2026-07-05 (成品验证轮：测试用例总表 + 全量执行 + 三个真 bug 修复)
+- **docs/test-cases.md**：四层验证体系总表（L1 三仓套件 / L2 gate 26 用例 / L3 chaos+trace / L4 real-model 7 场景 / L5 浏览器走查 8 用例），一键命令齐备。
+- **修复①合成事件顺序**：message.user 曾抢在 session.created 前落 seq（违契约 browser_order）→ emitSynthetics 产生点前移至 startMessage 受理点，relayRun 幂等兜底。
+- **修复②steer 双份消息**：SSE message.user 必然跑赢 HTTP receipt → React duplicate key。reducer 三态吸收本地 echo + adopt 侧 serverId 已存在改删除；4 条竞态回归测试。
+- **修复③验证基建假绿**：npm/uv 包装 kill 不死子进程 → 僵尸占端口测旧代码 + chaos 终判提前 return 吞 S3 失败。scripts/procutil.py（setsid/killpg/端口预检）接入四脚本。
+- 全量绿：agent 344+pyright+ruff / session 155+tsc / web 181+tsc / gate 37 / chaos 三场景（真注入）/ real-model A–G 35 项 / 浏览器 UI-01~08 全过零泄漏；截图 3 张存 scratchpad。
+
 - Date: 2026-07-05 (刷新丢历史根修——事件溯源闭环 + 走查双截图收账)
 - **根修**：契约 synthetic 加 message.user（session 落库 user/steer 时 append 进事件史）→ 事件史成线程唯一完整真源；web 水合改全量回放（stateFromSnapshot 只留 meta/files/activeRunId，lastSeq=0 恒开流），本地 echo 经 receipt 对齐 id 防双份；三坨机械整体退役（snapshot 消息投影/hydratedStreaming+adopt/空失败气泡）。
 - 浏览器实证：run 完成→刷新→消息+问答已答复+write_file 行完整重建；chip plan.md→canvas markdown 渲染→文件树 tab；双截图 canvas-preview-final.png / canvas-files-tab.png。

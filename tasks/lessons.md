@@ -94,3 +94,16 @@
 ## 2026-07-05 刷新丢历史的根修（事件溯源闭环）
 - 场景：用户报"刷新后只剩输入的"；根因=wire 无 user 消息事件，线程被迫 snapshot 直投+续传混合体，过程步在夹缝里丢。
 - 收获：**事件史必须是线程的唯一完整真源**——补 message.user 合成事件后水合=全量回放（折叠幂等），三坨机械（snapshot 消息投影/hydratedStreaming 占位/空失败气泡）随之整体消失。混合真源=bug 温床。
+
+## 2026-07-05 验证脚本进程泄漏 = 假绿制造机（本轮最大教训）
+- 场景：chaos S3 四项 FAIL 排查发现 session-2/session-b 全部 EADDRINUSE——历次运行泄漏的 tsx 僵尸占着端口，"验证"实际打在旧代码进程上（S1/S2 假绿、S3 假败）；且 `proc.kill()` 只杀 npm/uv 包装层，混沌注入 SIGKILL 等于没发生。
+- 我做错的：subprocess 直接 Popen+kill/terminate，从未管进程组；跑完也没检查端口归还。
+- 下次怎么避免：**验证脚本一律走 scripts/procutil.py**（start_new_session + killpg + ensure_port_free fail-loud）；新增常驻服务的脚本先想清楚"谁负责杀掉整棵进程树"；跑完 lsof 验端口归还。
+
+## 2026-07-05 终判提前 return = 吞失败（Fail Loud 违规）
+- 场景：chaos-verify 的 `if FAILURES: return 1` 写在 S3 场景之前，S3 四项 FAIL 后仍打 PASS、exit 0。
+- 下次怎么避免：多场景验证脚本的 FAILURES 终判只允许出现在**全部场景之后**一处；每加新场景检查终判位置。
+
+## 2026-07-05 走查 locator 惨案：非 exact 匹配点中删除按钮
+- 场景：`getByRole('button', {name: '标题'})` 同时命中"删除会话 标题"按钮，我把两个会话删光，然后花半小时排查"列表崩塌"这个不存在的产品 bug。
+- 下次怎么避免：走查里按可见文本定位一律 `exact: true`；破坏性按钮（×/删除）与标题同名时优先用 aria 精确名；出现"诡异丢数据"先怀疑自己的 locator。

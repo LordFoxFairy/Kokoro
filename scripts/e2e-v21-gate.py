@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """v2.1 跨栈 e2e 门禁：真 redis+mongo，agent(LocalFake HITL 脚本)→session→SSE 全链断言。
 
-覆盖：POST messages 幂等/活跃 run 转 steer、session.created/run.created 合成、ask_user respond、
-write_file 审批 approve、decision_id 幂等、snapshot 暂停点恢复、Last-Event-ID 续传、
-终态收口后可开新 run。前置：redis:6379 + mongo:27017 + 两仓依赖已装。
+覆盖：POST messages 幂等/活跃 run 转 steer、session.created/run.created/message.user 合成、
+ask_user respond、write_file 审批 approve、decision_id 幂等、snapshot 暂停点恢复、
+Last-Event-ID 续传、seq=0 全量回放（web 刷新水合语义）、工作区文件面（snapshot.files +
+files 端点直读）、终态收口后可开新 run。前置：redis:6379 + mongo:27017 + 两仓依赖已装。
 """
 
 from __future__ import annotations
@@ -19,6 +20,8 @@ import urllib.error
 import urllib.request
 import uuid
 from pathlib import Path
+
+from procutil import ensure_port_free, spawn, stop
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_PORT = int(os.environ.get("E2E_SESSION_PORT", "3901"))
@@ -50,6 +53,15 @@ def http(method: str, path: str, body: dict | None = None, headers: dict | None 
             return resp.status, json.loads(resp.read() or b"{}")
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read() or b"{}")
+
+
+def http_raw(path: str) -> tuple[int, bytes, str]:
+    """非 JSON 端点（文件字节）：返回 (status, body, content-type)。"""
+    try:
+        with urllib.request.urlopen(BASE + path, timeout=10) as resp:
+            return resp.status, resp.read(), resp.headers.get("content-type", "")
+    except urllib.error.HTTPError as e:
+        return e.code, e.read(), e.headers.get("content-type", "")
 
 
 class SseReader:
@@ -114,6 +126,8 @@ def main() -> int:
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-e2e": {
+                # local_shell：write_file 真落盘，文件面（snapshot.files + files 端点）可断言。
+                "backend": "local_shell",
                 "agents": {
                     "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格"},
                     "coder": {"description": "代码专家", "system_prompt": "你是工程师人格"},
@@ -139,6 +153,8 @@ def main() -> int:
         "KOKORO_REVIEW_TOOLS": "write_file",
         "KOKORO_NAMESPACE": "team-e2e",
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
+        # 与 agent 同根：session files 端点按 {root}/{namespace:session_id} 直读。
+        "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
     }
     agent_env = {
         **os.environ,
@@ -150,15 +166,13 @@ def main() -> int:
         "KOKORO_LEDGER_DB": str(scratch / "ledger.db"),
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
+        "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
     }
-    session_proc = subprocess.Popen(
-        ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
-        stdout=(scratch / "session.log").open("w"), stderr=subprocess.STDOUT,
-    )
-    agent_proc = subprocess.Popen(
-        ["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
-        stdout=(scratch / "agent.log").open("w"), stderr=subprocess.STDOUT,
-    )
+    ensure_port_free(SESSION_PORT)
+    session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+                         log=scratch / "session.log")
+    agent_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
+                       log=scratch / "agent.log")
     try:
         check("session 端口就绪", wait_port(SESSION_PORT))
         time.sleep(1.5)  # worker 订阅请求流的启动窗口
@@ -174,6 +188,11 @@ def main() -> int:
         sse = SseReader(f"/sessions/{SID}/events")
         check("SSE: session.created", sse.wait(lambda i: i[1] == "session.created") is not None)
         check("SSE: run.created", sse.wait(lambda i: i[1] == "run.created" and i[2]["payload"]["run_id"] == run_id) is not None)
+        mu1 = sse.wait(lambda i: i[1] == "message.user")
+        check("SSE: message.user 合成（event_id=user_message_id，事件史即线程真源）",
+              mu1 is not None and mu1[2]["payload"]["content"] == "帮我写个文件然后总结"
+              and mu1[2]["event_id"] == receipt.get("user_message_id"),
+              json.dumps(mu1[2] if mu1 else {}, ensure_ascii=False)[:200])
 
         # 2. ask_user 暂停
         awaiting1 = sse.wait(lambda i: i[1] == "tool.awaiting_approval")
@@ -187,6 +206,10 @@ def main() -> int:
               f"{st3} {body3}")
         st3b, body3b = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": ks, "content": "顺便注意编码"})
         check("steer 幂等：同 key 重发同 receipt", st3b == 202 and body3b == body3, f"{st3b} {body3b}")
+        mu2 = sse.wait(lambda i: i[1] == "message.user" and i[2]["payload"]["content"] == "顺便注意编码")
+        check("SSE: steer 消息也进事件史（message.user）",
+              mu2 is not None and mu2[2]["event_id"] == body3.get("user_message_id"),
+              json.dumps(mu2[2] if mu2 else {}, ensure_ascii=False)[:200])
 
         st4, snap = http("GET", f"/sessions/{SID}")
         pending = [p for p in snap.get("pending_pauses", []) if p["status"] == "pending"]
@@ -250,12 +273,33 @@ def main() -> int:
               and not [p for p in snap2.get("pending_pauses", []) if p["status"] == "pending"]
               and ("assistant", "completed") in roles, f"{roles} {snap2.get('active_run')}")
 
+        # 4b. 工作区文件面：write_file 已真落盘（审核 respond 只替换回流文本，不撤销执行）。
+        files = snap2.get("files", [])
+        plan = next((f for f in files if f["path"] == "plan.md"), None)
+        check("snapshot.files 含 plan.md（真目录 walk）",
+              plan is not None and plan["mime"] == "text/markdown" and plan["bytes"] > 0, str(files))
+        stf, body_f, mime_f = http_raw(f"/sessions/{SID}/files/plan.md")
+        check("files 端点直读字节", stf == 200 and body_f.decode() == "# 计划\n本地预览"
+              and mime_f == "text/markdown", f"{stf} {mime_f} {body_f[:40]!r}")
+        stf2, _, _ = http_raw(f"/sessions/{SID}/files/..%2F..%2Fetc%2Fpasswd")
+        check("files 端点路径穿越 → 404", stf2 == 404, str(stf2))
+
         # 5. Last-Event-ID 续传：从中段续，只收后续事件
         mid = awaiting2[0] if awaiting2 else 0
         sse2 = SseReader(f"/sessions/{SID}/events", last_event_id=str(mid))
         tail = sse2.wait(lambda i: i[1] == "run.completed", timeout=10)
         check("SSE 续传：拿到终态且不重放水位前事件", tail is not None and tail[0] == term_seq
               and all(seq > mid for seq, _ in sse2.seen), f"seen={sse2.seen[:5]}")
+
+        # 5b. seq=0 全量回放（web 刷新水合语义）：线程可完全由事件史重建。
+        sse0 = SseReader(f"/sessions/{SID}/events", last_event_id="0")
+        check("seq=0 回放：拿到终态", sse0.wait(lambda i: i[1] == "run.completed", timeout=10) is not None)
+        replay_kinds = [k for _, k in sse0.seen]
+        check("seq=0 回放：message.user ×2（user+steer）+ 全事件面",
+              replay_kinds.count("message.user") == 2
+              and {"session.created", "run.created", "tool.awaiting_approval", "tool.returned",
+                   "message.delta", "message.completed", "run.completed"} <= set(replay_kinds),
+              str(replay_kinds[:12]))
 
         # 6. 终态后可开新 run
         st9, receipt3 = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "再来一轮"})
@@ -296,14 +340,12 @@ def main() -> int:
               f"{st12} {cancelled[2]['payload'] if cancelled else {}}")
 
         kinds = {k for _, k in sse.seen}
-        expected = {"session.created", "run.created", "tool.awaiting_approval", "tool.returned",
-                    "message.delta", "message.completed", "run.completed"}
+        expected = {"session.created", "run.created", "message.user", "tool.awaiting_approval",
+                    "tool.returned", "message.delta", "message.completed", "run.completed"}
         check("事件面覆盖", expected <= kinds, f"missing={expected - kinds}")
     finally:
-        session_proc.terminate()
-        agent_proc.terminate()
-        session_proc.wait(timeout=10)
-        agent_proc.wait(timeout=10)
+        stop(session_proc)
+        stop(agent_proc)
         print(f"  logs: {scratch}")
 
     if FAILURES:

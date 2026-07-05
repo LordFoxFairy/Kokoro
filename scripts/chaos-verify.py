@@ -20,6 +20,8 @@ import urllib.request
 import uuid
 from pathlib import Path
 
+from procutil import ensure_port_free, spawn, stop
+
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_PORT = int(os.environ.get("CHV_SESSION_PORT", "3904"))
 BASE = f"http://127.0.0.1:{SESSION_PORT}"
@@ -99,10 +101,8 @@ def spawn_worker(scratch: Path, tag: str) -> subprocess.Popen:
         # 秒级心跳：收养窗口从默认 30s 压到 2s，混沌验证不用干等。
         "KOKORO_LEASE_HEARTBEAT_S": "2",
     }
-    return subprocess.Popen(
-        ["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=env,
-        stdout=(scratch / f"agent-{tag}.log").open("w"), stderr=subprocess.STDOUT,
-    )
+    return spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=env,
+                 log=scratch / f"agent-{tag}.log")
 
 
 def main() -> int:
@@ -127,11 +127,11 @@ def main() -> int:
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
     }
     def spawn_session(tag: str) -> subprocess.Popen:
-        return subprocess.Popen(
-            ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
-            stdout=(scratch / f"session-{tag}.log").open("w"), stderr=subprocess.STDOUT,
-        )
+        return spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+                     log=scratch / f"session-{tag}.log")
 
+    ensure_port_free(SESSION_PORT)
+    ensure_port_free(SESSION_PORT + 7)  # S3 的 B 实例端口
     session_proc = spawn_session("1")
     worker_a = spawn_worker(scratch, "a")
     worker_b: subprocess.Popen | None = None
@@ -150,9 +150,8 @@ def main() -> int:
         if pause1 is None:
             return 1
 
-        # 混沌注入：SIGKILL 认领 worker——不给任何清理机会。
-        worker_a.kill()
-        worker_a.wait(timeout=10)
+        # 混沌注入：SIGKILL 认领 worker 全进程组——uv 包装层和真 worker 一个都不留。
+        stop(worker_a, sig=signal.SIGKILL)
         check("worker A 已被 SIGKILL", worker_a.returncode is not None)
 
         worker_b = spawn_worker(scratch, "b")
@@ -183,9 +182,10 @@ def main() -> int:
         check("S2: ask_user 暂停出现", pause_s1 is not None, str(pause_s1))
         if pause_s1 is None:
             return 1
-        session_proc.kill()
-        session_proc.wait(timeout=10)
+        # SIGKILL 全进程组：只杀 npm 包装层的话 tsx 子进程仍在服务，混沌注入等于没发生。
+        stop(session_proc, sig=signal.SIGKILL)
         check("S2: session 已被 SIGKILL", session_proc.returncode is not None)
+        ensure_port_free(SESSION_PORT)
         session_proc = spawn_session("2")
         check("S2: session 重启就绪", wait_port(SESSION_PORT))
         time.sleep(1.0)
@@ -207,17 +207,12 @@ def main() -> int:
         check("S2: run 走到终态", wait_run_done(sid2))
 
         print(f"  logs: {scratch}")
-        if FAILURES:
-            print(f"\nCHAOS VERIFY FAIL — {len(FAILURES)} 项")
-            return 1
         # 场景三：双 session 实例（多 pod 形态）——B 实例跨读/跨控同一 run，mongo 为一致性真源。
         port_b = SESSION_PORT + 7
         base_b = f"http://127.0.0.1:{port_b}"
         env_b = {**session_env, "KOKORO_SESSION_PORT": str(port_b)}
-        session_b = subprocess.Popen(
-            ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=env_b,
-            stdout=(scratch / "session-b.log").open("w"), stderr=subprocess.STDOUT,
-        )
+        session_b = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=env_b,
+                          log=scratch / "session-b.log")
         try:
             check("S3: session B 端口就绪", wait_port(port_b))
             sid3 = f"ses_chv_{uuid.uuid4().hex[:8]}"
@@ -255,15 +250,21 @@ def main() -> int:
                     base=base_b)
             check("S3: run 收敛终态（A 侧落库）", wait_run_done(sid3))
         finally:
-            session_b.kill()
+            stop(session_b, sig=signal.SIGKILL)
 
+        # 终判必须在全部场景之后：S3 的失败绝不允许被提前 return 吞掉。
+        if FAILURES:
+            print(f"\nCHAOS VERIFY FAIL — {len(FAILURES)} 项")
+            for f in FAILURES:
+                print(f"  - {f}")
+            return 1
         print("\nCHAOS VERIFY PASS — worker 崩溃收养 + session 崩溃恢复 + 双 session 实例 三场景全绿")
         return 0
     finally:
-        session_proc.terminate()
+        stop(session_proc)
         for proc in (worker_a, worker_b):
-            if proc is not None and proc.poll() is None:
-                proc.send_signal(signal.SIGTERM)
+            if proc is not None:
+                stop(proc)
 
 
 if __name__ == "__main__":

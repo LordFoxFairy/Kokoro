@@ -26,6 +26,8 @@ import urllib.request
 import uuid
 from pathlib import Path
 
+from procutil import ensure_port_free, spawn, stop
+
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_PORT = int(os.environ.get("RMV_SESSION_PORT", "3902"))
 BASE = f"http://127.0.0.1:{SESSION_PORT}"
@@ -204,14 +206,11 @@ def main() -> int:
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
     }
     (scratch / "workspace").mkdir()
-    session_proc = subprocess.Popen(
-        ["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
-        stdout=(scratch / "session.log").open("w"), stderr=subprocess.STDOUT,
-    )
-    agent_proc = subprocess.Popen(
-        ["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
-        stdout=(scratch / "agent.log").open("w"), stderr=subprocess.STDOUT,
-    )
+    ensure_port_free(SESSION_PORT)
+    session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+                         log=scratch / "session.log")
+    agent_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
+                       log=scratch / "agent.log")
     try:
         check("session 端口就绪", wait_port(SESSION_PORT))
         time.sleep(1.5)
@@ -410,8 +409,8 @@ def main() -> int:
         print("\nREAL-MODEL VERIFY PASS — thinking/subagent/web_search/skills/execute/steering/artifact 真栈全绿")
         return 0
     finally:
-        session_proc.terminate()
-        agent_proc.terminate()
+        stop(session_proc)
+        stop(agent_proc)
 
 
 if __name__ == "__main__":
