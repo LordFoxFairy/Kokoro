@@ -1,5 +1,9 @@
 # Claude Progress
 
+- Date: 2026-07-05 (orchestration→assembly 正名：用户批"看不懂"后的结构清账)
+- agents/ 空壳残渣删除（07-04 分域后人格归 prompts/，目录忘删）；orchestration/ 更名 assembly/（它做装配不做编排；orchestration 留给 swarm 域）；context.py 9 行单函数并入 general.py；包公开面收窄至 worker 真实消费的 5 名。
+- agent 401 全绿 + 静态 0 + gate(local) 回归 PASS；handbook 11 篇追加正名注记。
+
 - Date: 2026-07-05 (ADR-010：BYO custom backend + 连接器注册表 + 统一配置树 + examples 族)
 - custom backend：pkg.module:factory 引用（importlib+契约 isinstance 收口 BackendProtocol ABC）、CustomBackendContext（run_id/workspace/prior_sandbox_id/config 自由域）、可选 sandbox_id 生命周期绑定。
 - 设计模式重构：五档沙箱连接器注册表（Strategy），生命周期 keep-first 单点收口于分派器；registered_backends 枚举覆盖守卫。

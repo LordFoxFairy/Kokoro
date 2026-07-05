@@ -882,6 +882,18 @@ wire 子代理逐个下发（不下发=task 委派旁路）。残余注记：dee
 仅在 subagent_create=allow 档可达且不带闸；默认 deny 档不可达，allow 档使用者自担。
 ```
 
+## 实现注记（2026-07-05 追加：orchestration→assembly 正名，agents/ 空壳清除）
+
+```text
+用户裁定"看不懂 orchestration/agents 这环"后正名：
+  该目录做的是装配（RunRequest+进程依赖 → 可运行 agent），不是运行时编排——
+  orchestration 一词让给未来 swarm 域（多 agent 调度），目录更名 assembly/。
+  agents/ 是 07-04 分域后的空壳残渣（人格已归 prompts/ 资产域），删除。
+  context.py（9 行单函数）并入 general.py；包公开面收窄为 worker 真实消费的
+  5 个名字（AssembleDeps/AssembledAgent/approval_names/assemble_general/build_web_tools），
+  共享装配件归 assembly/parts.py（包内直取）。
+```
+
 ## 实现注记（2026-07-04 追加：心脏重构——orchestration/agents/State 轴）
 
 ```text
