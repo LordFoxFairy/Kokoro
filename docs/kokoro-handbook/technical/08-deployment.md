@@ -39,7 +39,7 @@ Redis          run queue、raw event stream、live fanout、短租约、限流�
 对象存储        文件产物。
 ```
 
-存储边界细则见 [06-data-storage](06-data-storage.md)。Redis 只承载传输与短期锁，恢复以 Mongo 和 MySQL 为准。
+存储边界细则见 [06-data-storage](06-data-storage.md)。Redis 只承载传输与短期锁，恢复以 Mongo 和 MySQL 为准。Workspace 文件面的三档部署（单节点本地默认 / 共享卷 / e2b+对象存储）见 [ADR-009](../decisions/ADR-009-workspace-storage.md) 与 [operations/docker-and-k8s](../operations/docker-and-k8s.md)。
 
 ## Docker Compose（本地）
 

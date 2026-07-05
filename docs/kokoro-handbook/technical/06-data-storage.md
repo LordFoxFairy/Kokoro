@@ -13,7 +13,7 @@ Redis:
   run queue、raw event stream、live fanout、session/run lease、短期去重、限流辅助。
 
 Object Storage:
-  大文件和导出文件。
+  大文件和导出文件；e2b 云档的 workspace 收敛归档（见 ADR-009，单节点默认本地目录不涉及）。
 
 PostgreSQL:
   当前方案不引入。SQLite 不作为 V1 runtime 存储策略。

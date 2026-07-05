@@ -32,3 +32,6 @@ tmp/
 output/
 *.png
 docs/superpowers/plans/2026-07-04-i18n-admin-workbench.md
+
+# workspace 文件面默认本地根（ADR-009）：运行痕迹不入库
+kokoro_workspace/

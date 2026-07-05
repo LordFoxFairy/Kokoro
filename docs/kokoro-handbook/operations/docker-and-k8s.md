@@ -113,6 +113,28 @@ K8s 原则：
 - 暴露 `/healthz`，供 readiness/liveness probe 使用。
 - 优雅关闭：先停止接收请求，再关闭 Prisma/DB 连接。
 
+## Workspace 文件面（ADR-009）
+
+agent 写文件与 session 直读共用约定 `{WORKSPACE_ROOT}/{namespace:session_id}/`，按部署形态三档递进：
+
+```text
+单节点（本地开发 / 单机 docker）：
+  默认档，零额外配置。进程同机即同目录；docker 下 agent 与 session 两容器挂同一个
+  volume，KOKORO_WORKSPACE_ROOT 指向挂载点即可。
+    volumes:
+      kokoro-workspace:
+    services:
+      kokoro-session: { volumes: ["kokoro-workspace:/data/workspace"], environment: { KOKORO_WORKSPACE_ROOT: /data/workspace } }
+      kokoro-agent:   { volumes: ["kokoro-workspace:/data/workspace"], environment: { KOKORO_AGENT_LOCAL_SHELL_ROOT: /data/workspace } }
+
+自托管多 Pod（K8s）：
+  RWX 共享卷（NFS/EFS/PVC accessModes: ReadWriteMany），agent 与 session 的 Deployment
+  挂同一 PVC。纯部署配置，零代码改动。仅限受控自托管环境（ADR-006 红线）。
+
+云生产（e2b，随 Phase 1 落地）：
+  e2b sandbox 即 workspace；run 收敛后归档到对象存储，session 读侧自动切换。见 ADR-009。
+```
+
 ## 数据库
 
 第一阶段使用一个 MySQL database：`kokoro`。
