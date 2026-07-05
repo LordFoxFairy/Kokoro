@@ -200,6 +200,7 @@ todo。
 HITL approve/reject/edit/respond。
 state/local_shell/docker/e2b/custom backend（docker/e2b 带 run 级生命周期：
 sandbox/container id 入 ledger keep-first，HITL resume 重连而非新建；见 ADR-009）。
+agents/<type>/ 业务包分派（wire agent_type）：类型自带配方/人格/工具面政策。
 raw agent events。
 ```
 

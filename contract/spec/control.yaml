@@ -11,6 +11,8 @@ enums:
   subagent_create: [deny, ask, allow]
   filesystem_perm: [read_only, workspace_write]
   backend: [state, local_shell, docker, e2b, custom]
+  # 装配配方分派键（assembly/<type>.py）：general=对话型对外缺省；studio 类型落地时扩枚举。
+  agent_type: [general]
   resume_decision: [approve, edit, reject, respond]
 
 # Reusable nested object shapes (dependency order: leaves first).
@@ -54,6 +56,8 @@ objects:
       - {name: filesystem, type: enum:filesystem_perm}
   - name: RuntimeConfig
     fields:
+      # 类型决定配方与基础工具面（如 ask_user 只属对话型）；entry 是类型下的具名实例。
+      - {name: agent_type, type: enum:agent_type}
       - {name: model, type: object:ModelConfig}
       - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}

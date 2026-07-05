@@ -1,5 +1,11 @@
 # Claude Progress
 
+- Date: 2026-07-05 (agents/ 业务包层定案：plugin 式类型包 + wire agent_type 分派)
+- 用户主张落地：每 agent 类型=自包含业务包（agents/<type>/：recipe.py+persona.md+未来专属 tools/skills，类似 CC plugins）；契约 RuntimeConfig 加 agent_type（enum [general]），web→session 解析→agent AGENT_TYPES 注册表分派（assemble 唯一入口）。
+- 工具面=类型政策：AgentTypePackage.pause_tools 单点（general={ask_user}）；approval_names/build_interrupt_on/resolve_tools 全参数化吃包政策——无 chat 面的 studio 类型不挂人机问答工具。
+- assembly/ 并入 agents/（parts.py 共享装配件）；prompts/ 留跨包共享（general 人格随包迁移）。
+- 验证：agent 406 全绿+静态 0；session 173；gate local+docker 双档回归 PASS（agent_type 真栈全链）；handbook 03/11 注记。
+
 - Date: 2026-07-05 (orchestration→assembly 正名：用户批"看不懂"后的结构清账)
 - agents/ 空壳残渣删除（07-04 分域后人格归 prompts/，目录忘删）；orchestration/ 更名 assembly/（它做装配不做编排；orchestration 留给 swarm 域）；context.py 9 行单函数并入 general.py；包公开面收窄至 worker 真实消费的 5 名。
 - agent 401 全绿 + 静态 0 + gate(local) 回归 PASS；handbook 11 篇追加正名注记。
