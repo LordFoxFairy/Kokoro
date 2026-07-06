@@ -97,6 +97,10 @@ KOKORO_<NAME>_BASE_URL
 NEXT_PUBLIC_SESSION_BASE_URL          web 浏览器端访问 session 的入口（缺失即 fail-loud）。
 KOKORO_WEB_ORIGIN                     session CORS 白名单（web 的浏览器 origin）；不配则
                                       浏览器跨源请求全拒（缺省仅 http://localhost:3000）。
+KOKORO_AUTH_JWT_SECRET                session 鉴权（M2-P1）：未配置=直通模式（开发零配置）；
+                                      配置后全路由强制 Bearer JWT（HS256，owner=sub）+ 属主裁权。
+                                      web 侧 token 暂由 localStorage kokoro.auth.token 注入
+                                      （platform 登录体系接入前的部署方通道）。
 KOKORO_STREAM_BACKEND                 实时流后端选择。
 KOKORO_REDIS_URL                      run queue / event stream / live fanout / lock。
 KOKORO_MESSAGE_STORE_BACKEND          session 消息存储后端。

@@ -1085,3 +1085,22 @@ frontmatter，待下次 --real 复核。
    → 清暂存 + snapshot 对账重建，不再卡死 awaiting-hitl；普通网络错保留可重试
    语义不回归。
 ```
+
+## 实现注记（2026-07-06 追加：M2——鉴权主线 P1 落地 + 失败可读性 P2 收口）
+
+```text
+P1 鉴权（最简正解，零新依赖）：
+  session：KOKORO_AUTH_JWT_SECRET 未配置=直通模式（owner=本地常量，开发零配置
+  不变）；配置后全路由强制 Bearer JWT（HS256 手写验签 ~30 行，node:crypto
+  timingSafeEqual；sub=owner，exp 可选强校验）。属主裁权一处收口
+  （rejectIfDeleted 并入）：他人会话六路（messages/snapshot/events/files/
+  control/delete）一律 403 session_forbidden；软删 410 序后于 403。
+  web：createSessionClient({token}) 全请求（含 fetch-SSE）携 Authorization；
+  token 来源 localStorage kokoro.auth.token——platform 登录体系接入前的部署方
+  通道（签发归 platform，session 只验不签）。
+  e2e：gate 全程 auth-on 跑全部断言 + E2E-30 负例（401/403）。
+  边界入册：agent 侧不加 user 维度——信任边界=session（RunRequest 只能由
+  session 从内网 Redis 投递）；审计⑥的同租户互访由属主裁权在唯一入口收口。
+P2 失败可读性：前几轮已交付（run.failed 按码文案表 failureCopy + enqueue/
+  assembly 区分 + 重试语义），本轮收口确认，无新改动。
+```

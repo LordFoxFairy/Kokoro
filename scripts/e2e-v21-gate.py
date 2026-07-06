@@ -35,6 +35,25 @@ WORKSPACE_BACKEND = os.environ.get("E2E_WORKSPACE_BACKEND", "local")
 MINIO_URL = os.environ.get("E2E_MINIO_URL", "http://127.0.0.1:9100")
 # 执行沙箱：local_shell（默认）| docker（ADR-009 执行隔离档，文件面语义不变）。
 SANDBOX_BACKEND = os.environ.get("E2E_SANDBOX_BACKEND", "local_shell")
+AUTH_SECRET = "e2e-secret"
+
+
+def _b64url(data: bytes) -> str:
+    import base64
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+
+def sign_token(sub: str, secret: str = AUTH_SECRET) -> str:
+    """gate 全程在鉴权强制模式下跑：HS256 手签（与 session/http/auth.ts 同规格）。"""
+    import hashlib
+    import hmac as hmac_mod
+    head = _b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
+    body = _b64url(json.dumps({"sub": sub}).encode())
+    sig = _b64url(hmac_mod.new(secret.encode(), f"{head}.{body}".encode(), hashlib.sha256).digest())
+    return f"{head}.{body}.{sig}"
+
+
+AUTH_HEADER = {"authorization": f"Bearer {sign_token('e2e-user')}"}
 
 FAILURES: list[str] = []
 
@@ -51,7 +70,7 @@ def http(method: str, path: str, body: dict | None = None, headers: dict | None 
         BASE + path,
         method=method,
         data=None if body is None else json.dumps(body).encode(),
-        headers={"content-type": "application/json", **(headers or {})},
+        headers={"content-type": "application/json", **AUTH_HEADER, **(headers or {})},
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -63,7 +82,8 @@ def http(method: str, path: str, body: dict | None = None, headers: dict | None 
 def http_raw(path: str) -> tuple[int, bytes, str]:
     """非 JSON 端点（文件字节）：返回 (status, body, content-type)。"""
     try:
-        with urllib.request.urlopen(BASE + path, timeout=10) as resp:
+        req = urllib.request.Request(BASE + path, headers=AUTH_HEADER)
+        with urllib.request.urlopen(req, timeout=10) as resp:
             return resp.status, resp.read(), resp.headers.get("content-type", "")
     except urllib.error.HTTPError as e:
         return e.code, e.read(), e.headers.get("content-type", "")
@@ -75,7 +95,7 @@ class SseReader:
     def __init__(self, path: str, last_event_id: str | None = None):
         self.q: queue.Queue[tuple[int, str, dict]] = queue.Queue()
         self.seen: list[tuple[int, str]] = []
-        headers = {} if last_event_id is None else {"last-event-id": last_event_id}
+        headers = dict(AUTH_HEADER) if last_event_id is None else {"last-event-id": last_event_id, **AUTH_HEADER}
         req = urllib.request.Request(BASE + path, headers=headers)
         self.resp = urllib.request.urlopen(req, timeout=60)
         threading.Thread(target=self._pump, daemon=True).start()
@@ -168,6 +188,8 @@ def main() -> int:
         "KOKORO_NAMESPACES_FILE": str(scratch / "namespaces.json"),
         # 与 agent 同根：session files 端点按 {root}/{namespace:session_id} 直读。
         "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
+        # 鉴权强制模式：gate 全部 26+ 断言在 auth-on 下跑（M2-P1 真栈证据）。
+        "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
     }
     if WORKSPACE_BACKEND == "s3":
         bucket = f"kokoro-e2e-{uuid.uuid4().hex[:8]}"
@@ -417,6 +439,19 @@ def main() -> int:
         st19, body19 = http("GET", f"/sessions/{sid3}")
         check("E2E-28 删除后 snapshot → 410", st19 == 410 and body19.get("error") == "session_deleted",
               f"{st19}")
+
+        # 9a. 鉴权负例（E2E-30）：无 token 401；他人 token 探测他人会话 403。
+        bare_req = urllib.request.Request(f"{BASE}/sessions/{SID}", method="GET")
+        try:
+            with urllib.request.urlopen(bare_req, timeout=10) as resp:
+                st_bare = resp.status
+        except urllib.error.HTTPError as e:
+            st_bare = e.code
+        check("E2E-30 无 token → 401", st_bare == 401, str(st_bare))
+        st_bob, body_bob = http("GET", f"/sessions/{SID}",
+                                headers={"authorization": f"Bearer {sign_token('bob')}"})
+        check("E2E-30 他人 token → 403 session_forbidden",
+              st_bob == 403 and body_bob.get("error") == "session_forbidden", f"{st_bob} {body_bob}")
 
         # 9. Skills V2（E2E-29）：授权包物化进 run 的 backend（文件面同宿主的档位直接断言磁盘）。
         if WORKSPACE_BACKEND == "local":

@@ -732,3 +732,10 @@
 - 报告: docs/reports/m1-audit-residuals-acceptance-report.md（5/5 通过，含诚实边界三条）
 - Verified: verify-all 六档 PASS（chaos 直压租约/收养/fencing）+ 静态全 0
 - 里程碑: **V2-M1 四大项全部交付**（软删除/Skills V2/审计加固/马具扩展）；下一步 M2（鉴权主线 P1 + 失败可读性 P2）待指令
+
+## 2026-07-06 M2 开工：鉴权主线 P1 + 失败可读性 P2 收口
+- Done P1（最简正解，零新依赖）: session HS256 JWT 验签（node:crypto，KOKORO_AUTH_JWT_SECRET 未配=直通模式开发零配置不变；配置后全路由 401 门，owner=sub）+ 属主裁权一处收口（他人会话六路 403 session_forbidden）；web 全请求含 SSE 携 Bearer（localStorage token 通道）；gate 全程 auth-on + E2E-30 负例
+- Done P2: 前几轮已交付（failureCopy 码表/enqueue-assembly 区分/重试），收口确认无新改动
+- 测试: session 194 / web 176 / verify-all 六档 PASS（四 gate 变体 auth-on + chaos 跨 pod 鉴权下）
+- 报告: docs/reports/m2-auth-acceptance-report.md（6/6 通过）
+- 边界入册: agent 不加 user 维度（信任边界=session）；token 签发+登录 UI 归 platform 主线
