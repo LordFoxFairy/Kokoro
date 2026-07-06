@@ -25,7 +25,7 @@ python3 scripts/verify-all.py --real
 
 | 仓 | 命令 | 覆盖域 |
 |---|---|---|
-| kokoro-agent（pytest ~423） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/MCP 挂载、资产域（local/s3 资产源快照装载 + skills 渲染 + 配置矩阵，minio 实测；`tests/test_assets.py`）、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、docker/e2b/custom 编排（连接器注册表+枚举覆盖守卫；resume 重连/keep-first）、统一配置树（yaml 摊平+env 覆盖+凭据禁入）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
+| kokoro-agent（pytest ~430） | `uv run pytest -q` | 契约门禁（raw 18 kind 逐字段）、HITL 中间件（审批/问答/结果审核）、steering、subagent HITL 透传、supervisor、memory/MCP 挂载、资产域（local/s3 资产源快照装载 + skills 渲染 + 配置矩阵，minio 实测；`tests/test_assets.py`）、run-scope state、storage/streams（sqlite/mongo 同语义矩阵含 sandbox 绑定）、docker/e2b/custom 编排（连接器注册表+枚举覆盖守卫；resume 重连/keep-first）、统一配置树（yaml 摊平+env 覆盖+凭据禁入）、workspace S3 归档（minio 实测）、架构分层守卫、边界 pragma 审计、LocalFake 全链（`tests/e2e/test_local_fake_run.py`） |
 | kokoro-session（vitest ~190） | `npm test` | 契约门禁（browser 20 kind + HTTP 形状）、relay 归一化、message.user 合成、control 裁决/幂等、SSE 续传、恢复扫描、store（memory+mongo）、transport（memory+redis）、namespace profile 解析（含 swarm 成员校验矩阵） |
 | kokoro-web（vitest ~175） | `npm test` | reducer（20 kind 折叠幂等）、水合=全量回放语义、engine 状态机（开流/重连/adopt user id）、HITL staging、持久化、投影、UI smoke（session-shell 刷新重建线程） |
 
@@ -77,6 +77,7 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 | E2E-26 | 事件面覆盖 | 首连收齐 8 类核心 kind |
 | E2E-27 | **会话软删除（终态会话）** | DELETE→202 deleted；snapshot/新消息→410 session_deleted；重删幂等 202；工作区文件仍在磁盘（agent 侧零变化） |
 | E2E-28 | **暂停中删除** | ask_user 暂停中 DELETE→202 + run 收敛 cancelled + snapshot 410 |
+| E2E-29 | **Skills V2 供给物化** | namespace 授权技能 → run 工作区 /.skills/main/<name>/SKILL.md 整包落地；点前缀不进 snapshot.files |
 
 ---
 
@@ -98,7 +99,7 @@ docker run -d --name kokoro-minio -p 9100:9000 \
 | RM-A | 明令 task 委派 researcher 子代理 | subagent.started/finished、子代理文本流、子代理内工具事件成对且带 subagent_id |
 | RM-B | 普通提问 | thinking.delta ≥1、message.completed 非空、token_usage 上 wire |
 | RM-C | web_search 真调用 | tool.invoked/returned 且结果非错误（searxng 不可达则 SKIP） |
-| RM-D | namespace 挂载 skill（sha256 lock） | 模型输出遵循 skill 标记约定 |
+| RM-D | namespace 挂载 skill（渐进披露：prompt 只见 description，正文按需 read_file） | 模型输出遵循 skill 标记约定 |
 | RM-E | local_shell 下 execute 审批 | approve 后真 shell 输出回流 |
 | RM-F | 运行中插话（steering） | 202 归属同 run，产出反映插话内容 |
 | RM-G | 真模型 write_file 文件面 | 审批 → 落盘 → snapshot.files 含 note.md → files 端点回读原文 |

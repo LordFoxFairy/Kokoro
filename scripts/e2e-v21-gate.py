@@ -128,11 +128,18 @@ def main() -> int:
     scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-e2e-{uuid.uuid4().hex[:6]}"
     scratch.mkdir(parents=True)
     subprocess.run(["redis-cli", "-u", REDIS_URL, "flushdb"], check=True, capture_output=True)
+    skill_dir = scratch / "skills" / "e2e-style"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\nname: e2e-style\ndescription: e2e 渐进披露样例\n---\n\n正文 GATE-SKILL-BODY\n"
+    )
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-e2e": {
                 # local_shell/docker：write_file 真落盘（docker 档文件面同宿主），文件面断言同一套。
                 "backend": SANDBOX_BACKEND,
+                # Skills V2：namespace 常挂技能 → 装配期供给进 backend（E2E-29 断言物化）。
+                "skills": ["e2e-style"],
                 "agents": {
                     "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格",
                              "swarm": ["coder"]},
@@ -195,6 +202,7 @@ def main() -> int:
         "KOKORO_CHECKPOINT_BACKEND": "sqlite",
         "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_SKILLS_DIR": str(scratch / "skills"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
     if WORKSPACE_BACKEND == "s3":
@@ -409,6 +417,21 @@ def main() -> int:
         st19, body19 = http("GET", f"/sessions/{sid3}")
         check("E2E-28 删除后 snapshot → 410", st19 == 410 and body19.get("error") == "session_deleted",
               f"{st19}")
+
+        # 9. Skills V2（E2E-29）：授权包物化进 run 的 backend（文件面同宿主的档位直接断言磁盘）。
+        if WORKSPACE_BACKEND == "local":
+            provisioned = (scratch / "workspace" / f"team-e2e:{SID}"
+                           / ".skills" / "main" / "e2e-style" / "SKILL.md")
+            check("E2E-29 skills 供给物化（/.skills/main/…）", provisioned.is_file(), str(provisioned))
+            if provisioned.is_file():
+                check("E2E-29 供给内容=资产整包", "GATE-SKILL-BODY" in provisioned.read_text())
+            # 点前缀=能力供给不进用户文件面：snapshot.files 不得列出 skills。
+            st20, snap20 = http("GET", f"/sessions/{sid3}")  # sid3 已删——改用第二轮会话
+            st21, snap21 = http("GET", f"/sessions/{SID}")
+            _ = (st20, snap20, st21)
+            listed = [f["path"] for f in snap21.get("files", [])] if st21 == 200 else []
+            check("E2E-29 skills 不进 snapshot.files", all(".skills" not in p for p in listed),
+                  str(listed[:5]))
     finally:
         stop(session_proc)
         stop(agent_proc)

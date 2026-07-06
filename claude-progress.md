@@ -718,3 +718,10 @@
 - 测试: SD-S1..S3 + store 双后端矩阵 + SD-W1 + E2E-27/28（并入四个 gate 变体）+ L5 走查截图（scratchpad/ui-stack/sd-l5-after-delete-refresh.png）
 - 报告: docs/reports/m1-session-deletion-{test,acceptance}-report.md（验收 8/8 通过）
 - Verified: verify-all 六档 PASS + agent 423 / session 190 / web 175 + tsc/静态全 0
+
+## 2026-07-06 Skills V2 完整闭环（M1 工程项收官）
+- Done: 三层落地——分发（frontmatter 契约+整包装载 SkillPackage，local/s3）/供给（provision_skills：state 档 invoke files[FileData]、真实 backend upload_files，/.skills/main 与 sub-<name>/ 前缀隔离）/消费（create_deep_agent(skills=) 原生渐进披露，子代理 SubAgent.skills 同机制）。V1 全文注入（render_prompt/compose skills 段/32k 上限）全删
+- 测试: agent 430（净增 7：frontmatter 五负例/供给矩阵/渐进披露真图/子代理源）+ E2E-29×3（供给物化/整包/点前缀不进 files）入四 gate 变体
+- 报告: docs/reports/m1-skills-v2-{test,acceptance}-report.md（8/8 通过）
+- 裁定记录: S4 personas 迁出缓行（随 platform 配置管理归位）；RM-D 真模型复核待 --real
+- Verified: verify-all 六档 PASS + agent 430/session 190/web 175 + 静态全 0

@@ -1045,3 +1045,25 @@ api/i18n/preview 已撤（编辑面属 platform 后台方向，web 只消费）�
 边界确认：tool.returned 错误文本=agent 域内容（工具真实输出），与模型回复同类，
 不进 UI i18n；HTTP 4xx 本就是码形态，web 本地化两处同一张码表。
 ```
+
+## 实现注记（2026-07-06 追加：Skills V2——backend 供给 + 原生渐进披露落地）
+
+```text
+V1 全文注入退役（SkillLibrary.render_prompt/compose_system_prompt skills 段/32k
+上限全删，不留兼容层）。三层落成（technical/15 §2）：
+  分发  资产源整包装载（SKILL.md 必带 YAML frontmatter：name=目录名、description
+        必填，装载期 fail-loud；可携辅助文件）→ SkillPackage 快照。
+  供给  agents/general/skills.provision_skills：授权包物化进 run 的 backend——
+        state 档经官方 invoke files（FileData 口径，supervisor 首 invoke 注入）；
+        真实 backend 走 upload_files（幂等覆盖，resume/重拾重供无害）。
+        布局 /.skills/main/ 与 /.skills/sub-<name>/（点前缀：能力供给不进用户
+        文件面——session 清单与 S3 归档按隐藏目录跳过，E2E-29 断言）。
+  消费  create_deep_agent(skills=sources) 挂原生 SkillsMiddleware：prompt 只挂
+        name+description，正文 read_file 按需读取（渐进披露真图断言：description
+        在 system prompt、正文哨兵不在）。子代理经 SubAgent.skills 源同机制
+        （入口对偶性保持：前缀隔离，授权面互不越界）。
+S4（personas 迁出 assets）裁定缓行：装载面留 assets（源职责），消费面本就在
+agents 工厂层；纯目录搬迁无行为收益，待 platform 配置管理主线一并归位。
+RM-D（真模型 skill 遵循）行为语义变更：全文注入 → 按需读取，夹具已带
+frontmatter，待下次 --real 复核。
+```
