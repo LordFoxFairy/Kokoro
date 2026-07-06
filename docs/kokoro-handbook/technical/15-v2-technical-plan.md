@@ -186,7 +186,7 @@ P5 第二 agent 类型"机制就绪门"：不实现 music/video（红线），�
 ## 4. 里程碑切片
 
 ```text
-M1 会话软删除（technical/16）+ 审计遗留（fencing/sandbox teardown/steer 原子/409 对账）+ Skills V2（S1-S5）
+M1 会话软删除（technical/16）+ 审计遗留（fencing/sandbox teardown/steer 原子/409 对账）+ Skills V2（S1-S5）——【已全部交付，验收见 docs/reports/m1-*】
 M2 鉴权主线（P1）+ 失败可读性（P2）
 M3 platform 配置后台最小集（P3）+ i18n 静态层（P4）
 M4 类型就绪门（P5）+ 全量马具扩展复验（verify-all 增渐进披露档）

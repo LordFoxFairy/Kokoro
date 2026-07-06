@@ -725,3 +725,10 @@
 - 报告: docs/reports/m1-skills-v2-{test,acceptance}-report.md（8/8 通过）
 - 裁定记录: S4 personas 迁出缓行（随 platform 配置管理归位）；RM-D 真模型复核待 --real
 - Verified: verify-all 六档 PASS + agent 430/session 190/web 175 + 静态全 0
+
+## 2026-07-06 M1 审计遗留四件收口（M1 全部交付）
+- Done: ①裂脑 fencing（租约 owner 维度+严格属主 renew+心跳失权让渡+resume adopt 交接，双跑窗=一心跳）②沙箱终态回收（终态漏斗挂 docker rm -f/e2b kill 尽力而为）③steer peek+下一轮见证 ack（落定才删，任意崩溃点不丢插话）④web 409/410 对账（清暂存+snapshot 重建，不卡 awaiting-hitl）
+- 测试: agent 434（矩阵 owner_fencing/steer_mailbox 重写/漏斗/让渡）+ web 176（对账+不回归）
+- 报告: docs/reports/m1-audit-residuals-acceptance-report.md（5/5 通过，含诚实边界三条）
+- Verified: verify-all 六档 PASS（chaos 直压租约/收养/fencing）+ 静态全 0
+- 里程碑: **V2-M1 四大项全部交付**（软删除/Skills V2/审计加固/马具扩展）；下一步 M2（鉴权主线 P1 + 失败可读性 P2）待指令

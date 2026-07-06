@@ -1067,3 +1067,21 @@ agents 工厂层；纯目录搬迁无行为收益，待 platform 配置管理主
 RM-D（真模型 skill 遵循）行为语义变更：全文注入 → 按需读取，夹具已带
 frontmatter，待下次 --real 复核。
 ```
+
+## 实现注记（2026-07-06 追加：M1 审计遗留四件收口）
+
+```text
+① 裂脑 fencing：租约加 owner 维度——try_claim/reclaim/adopt 记属主，renew 严格
+   属主校验（False=已失权）；心跳发现失权即取消本地任务且不发终态（终态权归新
+   属主），双跑窗收窄到一个心跳周期。resume 收养经 adopt 完成所有权交接。
+   矩阵项 owner_fencing（sqlite/mongo 同语义）+ supervisor 让渡测试。
+② 沙箱终态回收：终态统一漏斗（_teardown_control）挂 teardown——docker rm -f /
+   e2b Sandbox.kill，尽力而为失败落回 TTL 自清；state/local_shell 无箱，custom
+   归 BYO 作者（升级路径：工厂返回 teardown 钩子）。
+③ steer 排空原子：drain 改 peek + 下一轮见证 ack——只有已随 checkpoint 落定
+   （出现在消息史）的插话才从信箱删除；未落定的每轮重注入、稳定 id 去重。
+   任意崩溃点收敛且绝不丢插话；run 终态后的信箱残留随 run TTL 清扫（设计内）。
+④ web 409 对账：resume/裁决撞 run_not_active/no_pending_pause/session_deleted
+   → 清暂存 + snapshot 对账重建，不再卡死 awaiting-hitl；普通网络错保留可重试
+   语义不回归。
+```
