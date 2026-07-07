@@ -1,5 +1,9 @@
 # Skill Hub 与 MCP Hub 产品手册
 
+> 2026-07-07 修订：产品上可以继续呈现 Skill Hub / MCP Hub 两个分区，但服务边界不拆
+> 两套 registry。能力控制面采用一个 capability hub，内部按 kind 区分 skill / mcp /
+> subagent，共享 namespace 归属、启用态、版本、审核、配额和 grant 骨架。
+
 ## 定位
 
 Skill Hub 和 MCP Hub 是两个能力市场。

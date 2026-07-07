@@ -11,7 +11,7 @@
 
 ```text
 已建（V1 运行时三仓 + 根契约）：
-  kokoro-web / kokoro-session / kokoro-agent 的通用聊天主链路、Skills、MCP、HITL、sandbox。
+  kokoro-web / kokoro-session / kokoro-agent 的通用聊天主链路、HITL、基础 Skills/MCP、sandbox。
 
 规划 / 部分实现（平台域）：
   kokoro-platform 下 site/user/model/credit/payment/litellm 多为 planned 或最小实现。
@@ -40,7 +40,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 1. 文档必须中文。
 2. 主仓 docs/kokoro-handbook 是总入口。
 3. 子仓 docs 只能补实现细节，不能替代主仓手册。
-4. siteId 是第一业务隔离边界。
+4. siteId 是平台业务隔离边界；namespace 是 GA/runtime 唯一隔离键。
 5. 同邮箱跨站默认不同用户。
 6. 不新增 kokoro-contracts。
 7. 不使用 ports 目录命名。
@@ -55,6 +55,8 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 16. 浏览器只消费 kokoro-session 的 SSE。
 17. kokoro-agent 不直接面向浏览器。
 18. kokoro-session 不执行 agent。
+19. GA 契约不得新增 userId / ownerId / workspaceId 作为隔离辅助字段。
+20. namespace 不加 user:/team: 等业务前缀；上游选择空间 id，GA 只消费 opaque namespace。
 ```
 
 ## 目录
@@ -88,6 +90,9 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [12-agent-hitl-tool-interception](technical/12-agent-hitl-tool-interception.md)
 - [13-agent-docs-map](technical/13-agent-docs-map.md)
 - [14-web-i18n-capability](technical/14-web-i18n-capability.md)
+- [15-v2-technical-plan](technical/15-v2-technical-plan.md)
+- [16-session-deletion-cascade](technical/16-session-deletion-cascade.md)
+- [17-namespace-runtime-isolation](technical/17-namespace-runtime-isolation.md)
 
 ### 模块 modules/
 

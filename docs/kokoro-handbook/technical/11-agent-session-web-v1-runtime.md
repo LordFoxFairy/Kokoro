@@ -701,6 +701,11 @@ wire 序列化
 
 ## 实现注记（2026-07-03 追加：namespace profile 与具名入口）
 
+> 2026-07-07 修订：本节记录 V1 配置形态。生产多用户闭环中，`KOKORO_NAMESPACE`
+> 不能继续作为实例级运行时身份；session 必须从认证上下文解析并持久化每个
+> session 的 namespace，再写入 `RunRequest.context.namespace`。GA 仍只消费 opaque
+> namespace，不理解 user/team/site。
+
 ```text
 RuntimeConfig 的解析来源已落地为 session 的 namespace profile（KOKORO_NAMESPACES_FILE，
 JSON strict schema，启动 fail-fast）：namespace 拥有 skills / mcp / 具名 agent 预设 /

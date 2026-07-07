@@ -3,7 +3,9 @@
 一个有人格的通用 AI agent。主战场是把「想法」一起做成可分享的产物，气质柔、温、内观。
 当前真实在跑的是**三仓 stream 聊天系统**：对话 + agent 活动流（计划 / 工具 / 子代理 / 思考），边生成边流式呈现，可中断可续传。
 
-> 这份 README 面向新贡献者。产品需求看 [`docs/requirements/`](docs/requirements/)；架构与决策细节看 [`docs/superpowers/specs/`](docs/superpowers/specs/) 与 [`docs/decisions/`](docs/decisions/)。
+> 这份 README 面向新贡献者。稳定总设计先看 [`docs/kokoro-handbook/`](docs/kokoro-handbook/)；
+> 仓库与文档归属看 [`docs/CODEBASE_MAP.md`](docs/CODEBASE_MAP.md)；过程方案看
+> [`docs/superpowers/specs/`](docs/superpowers/specs/)。
 
 ## 架构一图
 
@@ -75,8 +77,11 @@ agent 执行可经 [Langfuse](https://langfuse.com) 追踪(LLM/工具/子代理)
 
 | 目录 | 内容 |
 |---|---|
+| [`docs/kokoro-handbook/`](docs/kokoro-handbook/) | 跨仓权威手册：产品、技术、模块、业务链路、运营、ADR |
+| [`docs/CODEBASE_MAP.md`](docs/CODEBASE_MAP.md) | 根仓/子仓地图、文档归属、验证入口、并行派工上下文 |
 | [`docs/requirements/`](docs/requirements/) | 产品需求手册（愿景 → 能力 → 流程 → 契约映射，可验收） |
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | 工程设计 spec（stream 架构 / 测试总目录 / codegen / 连续性 / 质量评估） |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | 有日期的工程设计 spec；稳定后要沉淀回 handbook |
+| [`docs/handoffs/`](docs/handoffs/) | 短期派工交接稿，不是长期权威 |
 | [`docs/protocol/`](docs/protocol/) | 跨仓协议契约 |
 | [`docs/decisions/`](docs/decisions/) | ADR 决策记录 |
 

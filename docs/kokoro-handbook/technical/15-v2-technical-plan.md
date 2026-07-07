@@ -29,8 +29,9 @@
    窄窗丢一条插话（可重发）→ V2-M1：checkpoint 提交后再消费信箱。
 ⑤ retention 竞态      thread TTL 时间扫会误删活现场（高危）→ 本轮裁定 A：
    机制整体拆除，转会话删除级联（见 §2A）。events/run TTL 保留（只清终态垃圾）。
-⑥ namespace 隔离      设计边界：隔离粒度=namespace，无 user 维度——同租户内可
-   互访 thread/memory → 归 V2-P1 鉴权主线（身份落地时 scoped id 补 user 维度）。
+⑥ namespace 隔离      修订后边界：GA 只认 namespace，且 namespace 自身就是独立空间。
+   不补 user 维度，不在 GA 契约里加 userId/ownerId/workspaceId。web/session/platform
+   负责把用户、团队、站点和权限解析成最终 namespace。
 ```
 
 ### 1.2 跨栈整体（七项）
@@ -168,8 +169,8 @@ events/run TTL 保留：它们只清"已终态 run"的派生垃圾，与用户�
 
 ```text
 P1 鉴权主线（生产红线）：session HTTP/SSE 全端点当前无身份校验——接平台
-   账号体系（site/user JWT），files/messages/control 按 namespace+owner 裁权。
-   多租户隔离从"约定"变"强制"。
+   账号体系（site/user JWT），files/messages/control 按 auth owner 和 session.namespace
+   裁权。GA 仍只消费 namespace，多租户隔离从"约定"变"强制"。
 P2 失败可读性收口：run.failed code 已上 wire（V1 末梢）——web 按码呈现
    人话失败卡（含重试按钮语义）、enqueue_failed/assembly_failed 区分展示；
    与 i18n 静态层同波（错误码→文案表是静态 i18n 第一批内容）。
