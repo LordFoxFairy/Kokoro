@@ -144,14 +144,12 @@ kokoro_agent/
     leases.py
     run_state.py
     mongo_lease_store.py
-    sqlite_lease_store.py
 
   streams/
     factory.py
     protocol.py
     json_types.py
     redis.py
-    memory.py
 
   model/
     factory.py

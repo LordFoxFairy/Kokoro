@@ -105,8 +105,8 @@ KOKORO_STREAM_BACKEND                 实时流后端选择。
 KOKORO_REDIS_URL                      run queue / event stream / live fanout / lock。
 KOKORO_MESSAGE_STORE_BACKEND          session 消息存储后端。
 KOKORO_MESSAGE_STORE_MONGO_URL        session 消息 Mongo 连接。
-KOKORO_LEDGER_BACKEND                 agent run 状态后端（sqlite 单机 / mongo 跨 pod）。
-KOKORO_CHECKPOINT_BACKEND             agent checkpoint 后端（sqlite 单机 / mongo 跨 pod）。
+KOKORO_MONGO_URL / KOKORO_MONGO_DB    agent 存储（checkpoint / ledger / 长期记忆）统一后端，唯一 mongo。
+KOKORO_REDIS_URL（agent 复用上行）     agent 实时流传输，唯一 redis。
 ```
 
 Workspace 与沙箱（ADR-009；全部可选，缺省=单节点 local 零配置）：

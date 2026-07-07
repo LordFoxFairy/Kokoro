@@ -177,9 +177,7 @@ def main() -> int:
     session_env = {
         **os.environ,
         "KOKORO_SESSION_PORT": str(SESSION_PORT),
-        "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
-        "KOKORO_MESSAGE_STORE_BACKEND": "mongo",
         "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
         # write_file 同时配 审批+审核：批参数 → 执行 → 审结果（串联双暂停，实证缓存防双跑）。
@@ -215,14 +213,12 @@ def main() -> int:
         session_env.update(s3_env)
     agent_env = {
         **os.environ,
-        "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
         "KOKORO_LOCAL_FAKE_MODEL": "1",
         "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
-        "KOKORO_LEDGER_BACKEND": "sqlite",
-        "KOKORO_LEDGER_DB": str(scratch / "ledger.db"),
-        "KOKORO_CHECKPOINT_BACKEND": "sqlite",
-        "KOKORO_CHECKPOINT_DB": str(scratch / "checkpoints.db"),
+        # ledger/checkpoint 走 mongo（唯一真后端）；与 session 同 db 隔离，run 后随 dropDatabase 清扫。
+        "KOKORO_MONGO_URL": MONGO_URL,
+        "KOKORO_MONGO_DB": MONGO_DB,
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
         "KOKORO_SKILLS_DIR": str(scratch / "skills"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),

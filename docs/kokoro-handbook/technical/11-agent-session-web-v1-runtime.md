@@ -719,8 +719,7 @@ model_policy / permissions 覆盖；本实例租户由 KOKORO_NAMESPACE 决定�
 
 ```text
 长期记忆（模块文档 Owns memory 落地）
-  create_deep_agent(store=)：后端与 checkpoint 对齐（memory=InMemoryStore /
-  sqlite=AsyncSqliteStore(<path>.store) / mongo=官方 langgraph-store-mongodb，
+  create_deep_agent(store=)：后端与 checkpoint 对齐（mongo=官方 langgraph-store-mongodb，
   集合 kokoro_agent_memory）。工具 save_memory / search_memory 恒挂载（核心工具，
   与 ask_user_question 同级）。工具是通用存取原语（体内无租户概念）：隔离政策
   在 worker 装配点经 make_memory_tools(scope) 注入，scope=租户 namespace，
@@ -1074,7 +1073,7 @@ frontmatter，待下次 --real 复核。
 ① 裂脑 fencing：租约加 owner 维度——try_claim/reclaim/adopt 记属主，renew 严格
    属主校验（False=已失权）；心跳发现失权即取消本地任务且不发终态（终态权归新
    属主），双跑窗收窄到一个心跳周期。resume 收养经 adopt 完成所有权交接。
-   矩阵项 owner_fencing（sqlite/mongo 同语义）+ supervisor 让渡测试。
+   矩阵项 owner_fencing（mongo）+ supervisor 让渡测试。
 ② 沙箱终态回收：终态统一漏斗（_teardown_control）挂 teardown——docker rm -f /
    e2b Sandbox.kill，尽力而为失败落回 TTL 自清；state/local_shell 无箱，custom
    归 BYO 作者（升级路径：工厂返回 teardown 钩子）。

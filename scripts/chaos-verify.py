@@ -4,8 +4,8 @@ control 流并接续 resume 到终态。场景二：session 进程在暂停期�
 收敛恢复（snapshot 暂停现场完好，resume/审批续走到终态）。场景三：双 session 实例跨读跨控。
 前置：redis:6379 + mongo:27017。
 
-关键点：ledger/checkpoint 走 mongo（生产跨 pod 形态——双 worker 无共享文件系统假设）；
-sqlite 单机档语义由 tests/test_storage.py 的同语义矩阵覆盖。
+关键点：ledger/checkpoint 走 mongo（唯一真后端，生产跨 pod 形态——双 worker 无共享文件系统假设）；
+ledger 语义由 tests/test_storage.py 的 mongo 矩阵覆盖。
 KOKORO_LEASE_HEARTBEAT_S=2 让收养在秒级发生。
 """
 
@@ -94,10 +94,7 @@ def spawn_worker(scratch: Path, tag: str) -> subprocess.Popen:
         **os.environ,
         "KOKORO_LOCAL_FAKE_MODEL": "1",
         "KOKORO_LOCAL_FAKE_SCRIPT": "hitl",
-        "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
-        "KOKORO_LEDGER_BACKEND": "mongo",
-        "KOKORO_CHECKPOINT_BACKEND": "mongo",
         "KOKORO_MONGO_URL": MONGO_URL,
         "KOKORO_MONGO_DB": MONGO_DB,
         # 秒级心跳：收养窗口从默认 30s 压到 2s，混沌验证不用干等。
@@ -120,9 +117,7 @@ def main() -> int:
     session_env: dict[str, str] = {
         **os.environ,
         "KOKORO_SESSION_PORT": str(SESSION_PORT),
-        "KOKORO_STREAM_BACKEND": "redis",
         "KOKORO_REDIS_URL": REDIS_URL,
-        "KOKORO_MESSAGE_STORE_BACKEND": "mongo",
         "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
         "KOKORO_NAMESPACE": "team-chv",

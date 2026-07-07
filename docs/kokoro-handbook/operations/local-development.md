@@ -47,7 +47,7 @@
   NEXT_PUBLIC_KOKORO_SESSION_BASE_URL
   KOKORO_STREAM_BACKEND / KOKORO_REDIS_URL
   KOKORO_MESSAGE_STORE_BACKEND / KOKORO_MESSAGE_STORE_MONGO_URL
-  KOKORO_AGENT_RUN_STATE_BACKEND
+  KOKORO_MONGO_URL / KOKORO_MONGO_DB  (agent checkpoint/ledger/记忆 store)
 ```
 
 具体端口/服务名见 [docker-and-k8s](docker-and-k8s.md) 与 [deployment](../technical/08-deployment.md)。

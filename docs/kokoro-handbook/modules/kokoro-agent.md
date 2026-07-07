@@ -294,7 +294,6 @@ kokoro_agent/
     checkpoints.py
     memory_store.py
     ledger.py
-    sqlite.py
     mongo.py
 
   streams/
@@ -302,7 +301,6 @@ kokoro_agent/
     factory.py
     protocol.py
     redis.py
-    memory.py
 
   model/
     __init__.py
@@ -857,8 +855,8 @@ storage/__init__.py
 
 storage/checkpoints.py
   存在理由：
-    LangGraph checkpointer 工厂：sqlite（落盘）/ mongo（跨 pod）/
-    memory（易失），用于 resume、HITL 和故障恢复。
+    LangGraph checkpointer 工厂：mongo（跨 pod），
+    用于 resume、HITL 和故障恢复。
 
   放置理由：
     checkpoint 是 Agent 执行侧状态。
@@ -870,7 +868,7 @@ storage/checkpoints.py
 storage/memory_store.py
   存在理由：
     长期记忆 store 工厂（LangGraph BaseStore）：后端与 checkpoint 对齐
-    （memory/sqlite/mongo），全官方实现。
+    （mongo），官方实现。
 
   放置理由：
     memory 是 Agent 长期上下文，不是 session messages。
@@ -905,17 +903,6 @@ storage/mongo.py
   禁止：
     不存 session messages。
     不存浏览器事件。
-
-storage/sqlite.py
-  存在理由：
-    SqliteLedger：跨进程/重启的 run 状态存储，
-    WAL+busy_timeout 保真实争用下的原子性。
-
-  放置理由：
-    SQLite 服务本地开发、测试和单机部署。
-
-  禁止：
-    不跨 Pod 使用。
 ```
 
 ### `streams/`
@@ -925,7 +912,7 @@ storage/sqlite.py
 ```text
 streams/__init__.py
   存在理由：
-    导出 stream 稳定入口，如 make_stream、MemoryStream、RedisStream。
+    导出 stream 稳定入口，如 make_stream、RedisStream。
 
   放置理由：
     只服务包导入，不承载业务逻辑。
@@ -936,7 +923,7 @@ streams/__init__.py
 
 streams/factory.py
   存在理由：
-    根据配置选择 Redis 或 memory stream。
+    构造 Redis stream。
 
   放置理由：
     stream 后端选择属于传输层。
@@ -970,18 +957,6 @@ streams/redis.py
     不做 Mongo 轮询。
     不放 Agent 执行业务流程。
     不生成 browser cursor。
-
-streams/memory.py
-  存在理由：
-    内存事件流：单进程默认后端，publish 即裁剪，
-    group 订阅与 ack 给 redis 等价语义。
-
-  放置理由：
-    单测和单进程部署需要快速替代 Redis。
-
-  禁止：
-    不跨进程使用。
-    不成为第二事实源。
 ```
 
 ### `model/`
@@ -1033,7 +1008,7 @@ model/local_fake.py
 config.py
   存在理由：
     AppConfig：全部环境变量的唯一解析点，仅 worker/main.py 调用一次
-    并显式注入（含 KOKORO_LEDGER_BACKEND / KOKORO_LEDGER_DB 等）。
+    并显式注入（含 KOKORO_MONGO_URL / KOKORO_MONGO_DB 等）。
 
   放置理由：
     配置是全局启动输入。
@@ -1591,8 +1566,6 @@ kokoro:agent:leases:{runId}
 ```text
 Agent 不写 MySQL 账务表。
 Agent 不写 session messages。
-Agent 不使用 SQLite 作为生产策略。
-SQLite 只允许作为本地测试 checkpointer fixture。
 ```
 
 ## API / RPC / Events
@@ -1706,11 +1679,8 @@ sandbox provider 状态。
   Python + uv
 
 关键环境变量：
-  KOKORO_STREAM_BACKEND=memory|redis
   KOKORO_REDIS_URL
   KOKORO_MONGO_URL / KOKORO_MONGO_DB
-  KOKORO_CHECKPOINT_BACKEND / KOKORO_CHECKPOINT_DB
-  KOKORO_LEDGER_BACKEND / KOKORO_LEDGER_DB
   KOKORO_BUILTIN_SUBAGENTS / KOKORO_CUSTOM_SUBAGENTS
   OPENAI_API_KEY
   ANTHROPIC_API_KEY
@@ -1865,9 +1835,8 @@ sandbox/backend.py / storage/ledger.py。
 KokoroAgentState（DeepAgentState 扩展键 scope）与 RunScope（身份四元组
 namespace/session_id/run_id/thread_id）。
 控制面账本改名 ledger：storage/ledger.py = RunLedger 协议 + make_ledger +
-LedgerSettings，后端实现为 SqliteLedger（storage/sqlite.py）与
-MongoLedger（storage/mongo.py）；env 变量为 KOKORO_LEDGER_BACKEND /
-KOKORO_LEDGER_DB（原 KOKORO_RUN_STATE_* 拼写作废）。
+LedgerSettings，后端实现为 MongoLedger（storage/mongo.py）；
+连接经 KOKORO_MONGO_URL / KOKORO_MONGO_DB。
 分层叙事一句话：contract 进 → worker 调度 → orchestration 拼装 →
 execution 执行 → agents 出人格；state 是图状态，ledger 是账本。
 ```

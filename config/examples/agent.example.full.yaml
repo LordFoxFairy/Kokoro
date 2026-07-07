@@ -5,15 +5,11 @@ model:
   openai_base_url: https://open.bigmodel.cn/api/paas/v4
   openai_reasoning: true
 stream:
-  backend: redis               # memory | redis
-  redis_url: redis://127.0.0.1:6379/0
-mongo:
+  redis_url: redis://127.0.0.1:6379/0    # 传输唯一真后端 = redis
+mongo:                                    # checkpoint / ledger / 长期记忆 store 共用（唯一真后端）
   url: mongodb://127.0.0.1:27017
   db: kokoro
-checkpoint:
-  backend: mongo               # sqlite 单机 | mongo 跨 pod
 ledger:
-  backend: mongo
   lease_ttl_s: 30
 sandbox:
   local_shell:
