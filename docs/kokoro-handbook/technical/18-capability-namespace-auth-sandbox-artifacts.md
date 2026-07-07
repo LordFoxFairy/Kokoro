@@ -173,6 +173,56 @@ TrustAndControl
 - auth/session/canvas adapter 放在功能层，换皮不动它。
 - CSS Modules 或现有样式组织继续随组件走，不新增重型 UI 框架。
 
+### 1.5 Site 驱动的前端底座：一个 site 一个皮
+
+Kokoro Web 的底座要先支持多站点产品化：
+
+```text
+site -> skin -> product surface -> capability visibility -> auth entry -> app shell
+```
+
+`site` 是前端产品面和平台业务面的组织轴，不是 GA 运行时隔离轴。一个 site 可以长成一个独立 AI 产品站：
+
+- 独立域名、SEO、品牌、首页文案、导航、价格入口。
+- 独立 theme tokens、layout preset、首页 content config。
+- 独立 capability visibility：哪些能力入口露出、哪些默认启用、哪些只做 waitlist。
+- 独立 auth entry：登录、邮箱注册、邀请、白标入口。
+- 独立 analytics/growth 归因。
+
+但底层 runtime 不随皮肤变化：
+
+```text
+siteId / SiteContext
+  -> web 选择 skin、copy、layout、feature gates
+  -> auth/session 仍签发和携带 token
+  -> session 解析 namespace
+  -> GA 只消费 namespace
+```
+
+也就是说：
+
+- `siteId` 决定“这个站怎么展示、开放哪些入口、怎么增长归因”。
+- `namespace` 决定“这个用户/空间的 runtime 数据怎么隔离”。
+- GA 不读 site skin，不根据 site 改 checkpoint/memory/skills/sandbox 的身份模型。
+
+前端底座建议分成四层：
+
+```text
+SiteContext adapter
+  host/app/surface -> siteKey/siteId/locale/feature flags
+
+Skin registry
+  theme tokens / brand assets / layout preset / navigation
+
+Content registry
+  homepage copy / task examples / capability chips / workflow cards
+
+Feature adapters
+  auth token / session client / canvas file fetch / pending task
+```
+
+后续换皮只允许替换 skin registry 和 content registry；不能改 session client、contract schema、namespace 规则或 GA 接口。
+
 前端不能做的事：
 
 - 不把具体外部参考站的路径、文案、类名、组件结构写进正式代码或正式文档。
@@ -214,6 +264,7 @@ flowchart LR
 
 - kokoro-user 是用户、团队、成员关系的权威。第一阶段只调用，不改 platform。
 - kokoro-web 负责产品主页、登录/邮箱注册 UI、auth client adapter、settings、canvas 和产物展示；auth facade 如需签发 JWT，也只作为 web 内部薄接线，不进入 GA 边界。
+- kokoro-site / SiteContext 负责前端 skin、copy、layout、SEO 和 capability visibility 的上游配置；web 消费它构建站点面，不把 siteId 传成 GA 隔离轴。
 - kokoro-session 是 namespace 进入 GA 的唯一闸门，负责验签、裁权、session.namespace 持久化。
 - kokoro-agent 只消费 namespace，不查询用户主数据，不判断 owner/team/site，不扣积分。
 - 对象存储承载 workspace 文件、skill 包字节、artifact 大文件。
@@ -417,7 +468,8 @@ updatedAt
 | capability metadata / enablement | Mongo | capability hub 注册读模型 |
 | MCP secret | secret store | 不进明文 Mongo，不进沙箱 |
 | artifact record | Mongo | 记录最终态、展示分区和 storageRef |
-| homepage content/theme | kokoro-web | 前端可换皮配置，不拥有后端业务真源 |
+| SiteContext / site skin | kokoro-site + kokoro-web adapter | site 决定皮肤、文案、SEO、功能可见性，不进入 GA |
+| homepage content/theme | kokoro-web | 前端可换皮配置，不拥有 runtime 真源 |
 
 不新增：
 
@@ -465,12 +517,19 @@ GA 继续只消费 namespace。
 
 ```text
 先把 kokoro-web 的产品入口层整理好。
-主页、登录、邮箱注册、settings、会话入口是可换皮的 frontend shell。
+主页、登录、邮箱注册、settings、会话入口是 site-driven、可换皮的 frontend shell。
 功能通过 auth/session/canvas adapter 套进去，不把业务接线写死在视觉层。
+一个 site 可以是一套独立皮肤和产品入口，但 GA/runtime 不变。
 ```
 
 主要改动：
 
+- Site-driven 前端底座：
+  - 增加 site context adapter，先可用静态 fixture / env / host 映射，后续接 kokoro-site resolve。
+  - 定义 `SiteSkin`：theme tokens、brand assets、layout preset、navigation。
+  - 定义 `SiteContent`：homepage headline、task examples、capability chips、workflow cards、SEO copy。
+  - 定义 feature gates：哪些入口展示、哪些能力默认露出、哪些需要登录或 waitlist。
+  - site config 只驱动前端展示和功能可见性，不改变 session client、contract schema、namespace 或 GA。
 - 路由和入口整理：
   - 将现有 `/` 从直接 `SessionShell` 调整为 public homepage。
   - 将 authenticated app shell 挪到 `/app` 或等价受保护入口。
@@ -500,6 +559,7 @@ GA 继续只消费 namespace。
   - 首页 sections 用数据配置或小组件组合，避免 copy/布局硬编码在业务调用里。
   - 首页视觉组件不直接调用 session API，只通过 action props / adapter。
   - 主页视觉风格先走“任务输入优先 + 克制高端 AI workspace”方向，避免过重卡片堆叠；后续换皮只替换 tokens 和 content config。
+  - 不同 site 的皮肤、文案、功能入口通过配置切换，不复制一套页面代码。
 - 外部消费者 UI 参考只作为 tmp 中间产物：不把来源路径、分支名、逐字文案、命名或 CSS/组件结构写进正式文档和源码。
 
 非目标：
@@ -517,6 +577,8 @@ GA 继续只消费 namespace。
 - token 能访问 session；Playwright 走通登录 -> 发消息 -> 刷新恢复。
 - 登录、邮箱注册、错误、loading、退出都有可见状态。
 - 换一套 theme tokens 或 homepage content config 不需要改 auth/session/canvas 业务代码。
+- 换一个 site config 可以改变主页皮肤、导航、能力入口和 SEO 文案，但同一条 session/GA 链路不变。
+- siteId 不进入 GA 契约，也不被当作 namespace。
 - 首页、登录、注册、settings 在移动端和桌面端都无文本溢出、无遮挡、CTA 清晰。
 - 正式源码和正式文档不出现外部参考来源路径/分支/代码标识。
 
@@ -668,6 +730,7 @@ flowchart TD
 | 风险 | 防护 |
 |---|---|
 | namespace 又被写成 user/owner 双轴 | 文档、契约、测试都只断言 GA 消费 namespace |
+| site 被误当成 runtime 隔离轴 | site 只驱动皮肤、SEO、功能可见性和业务策略；GA 仍只消费 namespace |
 | JWT sub 不是 kokoro-user User.id | web auth facade 统一签发，sub 固定用 user.id |
 | session 刷新后丢 namespace | session 创建时持久化 namespace，snapshot/file/recover 都从 session/run 恢复 |
 | workspace 仍用实例级 env namespace | 文件端点测试覆盖两个 namespace 同名 path 不串 |
@@ -687,19 +750,21 @@ flowchart TD
 2. session 创建、run.request、workspace key 使用同一个 namespace。
 3. GA 侧没有 userId / ownerId / workspaceId 隔离字段。
 4. 两个 namespace 的 checkpoint、memory、workspace、skills 不串。
-5. web 可以登录、进入会话、刷新恢复、查看文件。
-6. Daytona dev 闭环能 execute、resume、归档远程文件。
-7. skill registry 设计能同时覆盖 skill/mcp/subagent，不重复骨架。
-8. artifact record 能区分 final artifacts 和 workspace files，刷新后不丢。
-9. 外部 UI 参考只作为 tmp 中间产物，不进入正式源码和正式文档来源路径。
+5. 一个 site config 可以换首页皮肤、文案、能力入口和 SEO，而不改 session/GA 代码。
+6. web 可以登录、进入会话、刷新恢复、查看文件。
+7. Daytona dev 闭环能 execute、resume、归档远程文件。
+8. skill registry 设计能同时覆盖 skill/mcp/subagent，不重复骨架。
+9. artifact record 能区分 final artifacts 和 workspace files，刷新后不丢。
+10. 外部 UI 参考只作为 tmp 中间产物，不进入正式源码和正式文档来源路径。
 
 ## 9. 给人类评审的检查点
 
 评审时先看这四个问题，不需要先读代码：
 
 1. `namespace` 是否已经被写成唯一运行时隔离轴？
-2. kokoro-user 是否只作为身份来源，不把 user/team/site 语义泄漏进 GA？
-3. capability hub 是否共享一套 registry 骨架，而不是 skill/mcp 各写一遍？
-4. 产物链路是否从沙箱写文件一直闭到 web 展示和 final 标记？
+2. `site` 是否只驱动前端皮肤、SEO、功能可见性和业务策略，而没有泄漏进 GA 隔离模型？
+3. kokoro-user 是否只作为身份来源，不把 user/team/site 语义泄漏进 GA？
+4. capability hub 是否共享一套 registry 骨架，而不是 skill/mcp 各写一遍？
+5. 产物链路是否从沙箱写文件一直闭到 web 展示和 final 标记？
 
 如果这四点成立，就可以先开 WP-0。WP-0 完成后，再并行推进 web 登录、Daytona 和 skill 动态化。
