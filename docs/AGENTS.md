@@ -28,9 +28,9 @@ docs/superpowers/plans/
 如果文档之间冲突：
 
 ```text
-docs/kokoro-handbook/        已确认的长期规则优先级最高
+docs/kokoro-handbook/        正式技术方案和已确认长期规则优先级最高
 docs/CURRENT.md              当前活跃白名单
-docs/superpowers/specs/      过程方案，只有被用户确认后才提升为长期规则
+docs/superpowers/specs/      草案/过程方案，正式后应迁入 handbook
 docs/handoffs/               短期派工
 历史 product/prototype/research 仅作背景
 ```

@@ -1,11 +1,11 @@
 # Kokoro 总手册
 
-本目录是 Kokoro 的长期权威手册，只放已经沉淀下来的产品形态、跨仓架构、
-模块边界、业务链路、运营规范和关键 ADR。
+本目录是 Kokoro 的长期权威手册，放正式的产品形态、跨仓架构、模块边界、
+业务链路、技术方案、运营规范和关键 ADR。
 
-它不是过程方案池，也不是派工单目录。正在讨论或尚未拍板的跨仓方案放在
-`docs/superpowers/specs/`；执行计划放在 `docs/superpowers/plans/`；短期交接放在
-`docs/handoffs/`。当方案被确认后，只把稳定结论提炼回本手册，不整篇复制过程稿。
+它不是过程方案池，也不是派工单目录。正在打磨、尚未成为正式版的跨仓方案放在
+`docs/superpowers/specs/`；正式技术方案放回本目录的 `technical/` 或 `product/`；
+执行计划放在 `docs/superpowers/plans/`；短期交接放在 `docs/handoffs/`。
 
 子仓 README 说明当前实现，子仓 docs 说明局部实现细节；本手册负责把全局总设计统一起来。
 子仓 docs 只能补实现细节，不能替代本手册。
@@ -98,6 +98,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [15-v2-technical-plan](technical/15-v2-technical-plan.md)
 - [16-session-deletion-cascade](technical/16-session-deletion-cascade.md)
 - [17-namespace-runtime-isolation](technical/17-namespace-runtime-isolation.md)
+- [18-capability-namespace-auth-sandbox-artifacts](technical/18-capability-namespace-auth-sandbox-artifacts.md)
 
 ### 模块 modules/
 

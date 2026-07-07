@@ -382,8 +382,8 @@ Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录�
 
 ### 技术方案放哪里
 
-- 稳定跨仓规则、长期架构、产品/技术权威结论：放 `docs/kokoro-handbook/`，并在 `docs/kokoro-handbook/README.md` 保持入口。
-- 跨仓技术方案稿：放 `docs/superpowers/specs/YYYY-MM-DD-<topic>.md`。这是“方案讨论与设计稿”，稳定结论必须回流到 handbook。
+- 正式跨仓技术方案、稳定跨仓规则、长期架构、产品/技术权威结论：放 `docs/kokoro-handbook/`，并在 `docs/kokoro-handbook/README.md` 保持入口。
+- 打磨期跨仓草案、方案对比、历史入口：放 `docs/superpowers/specs/YYYY-MM-DD-<topic>.md`。一旦成为正式技术方案，迁入 handbook，specs 只保留指针或历史入口。
 - 实现计划：放 `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`。这是执行用计划，不是长期权威。
 - 短期派工、交接、worker handoff：放 `docs/handoffs/YYYY-MM-DD-<topic>.md`。派工单过期后不要继续当架构事实。
 - 审计、测试、验收、阶段性结果：放 `docs/reports/`。
@@ -393,8 +393,8 @@ Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录�
 
 通常判断：
 
-- 影响多个子仓或定义系统边界：先写主仓 `docs/superpowers/specs/`。
-- 已经形成长期规则：沉淀到 `docs/kokoro-handbook/`。
+- 影响多个子仓或定义系统边界，且仍在打磨：先写主仓 `docs/superpowers/specs/`。
+- 已经作为正式方案或长期规则：迁入 `docs/kokoro-handbook/`。
 - 只解释某个子仓怎么实现、怎么运行、怎么测试：写到该子仓 `docs/`。
 - 只是为了本轮 agent 参考、比对或截图：写到 `tmp/`。
 

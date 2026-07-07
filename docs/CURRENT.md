@@ -12,7 +12,7 @@
 
 ## 当前技术主线
 
-1. [能力中台、namespace、登录与沙箱技术方案](superpowers/specs/2026-07-07-capability-namespace-auth-technical-plan.md)
+1. [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 2. [Capability Hub 设计](superpowers/specs/2026-07-07-capability-hub-design.md)
 3. [产品化技术主图](superpowers/specs/2026-07-07-product-technical-roadmap.md)
 4. [能力 buildout 派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
@@ -22,6 +22,7 @@
 - [仓库地图](kokoro-handbook/technical/01-repository-map.md)
 - [Agent / Session / Web V1 运行时](kokoro-handbook/technical/11-agent-session-web-v1-runtime.md)
 - [V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)
+- [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 - [Skill Hub 与 MCP Hub 产品手册](kokoro-handbook/product/06-skill-hub-and-mcp-hub.md)
 
 ## 默认不读

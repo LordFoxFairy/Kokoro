@@ -8,7 +8,7 @@
    给 agent 和人类的最小阅读集合。当前主线默认只读这里列出的文档。
 
 1. [Kokoro 总手册](kokoro-handbook/README.md)
-   稳定权威入口。只放已沉淀结论；讨论中的技术方案不直接塞进这里。
+   稳定权威入口。正式技术方案、长期规则和 ADR 从这里进入；草案才放 specs。
 
 2. [Codebase Map](CODEBASE_MAP.md)
    给 code agent / worker 的仓库地图。包含根仓、子仓、文档归属、验证命令和并行派工约束。
@@ -20,7 +20,7 @@
 
 能力中台、auth、namespace、sandbox、最终产物这条线，按这个顺序读：
 
-1. [能力中台、namespace、登录与沙箱技术方案](superpowers/specs/2026-07-07-capability-namespace-auth-technical-plan.md)
+1. [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 2. [Capability Hub 设计](superpowers/specs/2026-07-07-capability-hub-design.md)
 3. [产品化技术主图](superpowers/specs/2026-07-07-product-technical-roadmap.md)
 4. [能力 buildout 派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
@@ -46,7 +46,7 @@
 ### 权威层
 
 - `kokoro-handbook/`
-  长期稳定的总手册。只承载已确认的产品形态、模块边界、技术规则和 ADR。
+  长期稳定的总手册。承载正式技术方案、已确认产品形态、模块边界、技术规则和 ADR。
 
 - `CODEBASE_MAP.md`
   给人和 agent 的仓库导航。涉及并行 worker 时必须注入。
@@ -54,7 +54,7 @@
 ### 过程层
 
 - `superpowers/specs/`
-  有日期的技术方案稿。讨论、打磨、时序图和取舍放这里；拍板后只把稳定结论提炼回 handbook。
+  有日期的草案和过程稿。讨论、打磨、方案对比和历史入口放这里；正式版迁入 handbook。
 
 - `superpowers/plans/`
   有日期的实现计划。用于执行，不作为长期权威。
@@ -88,8 +88,9 @@
 ## 写新文档
 
 ```text
-稳定跨仓规则        -> docs/kokoro-handbook/
-跨仓方案稿          -> docs/superpowers/specs/YYYY-MM-DD-*.md
+正式跨仓技术方案    -> docs/kokoro-handbook/technical/
+稳定产品/技术规则   -> docs/kokoro-handbook/
+跨仓草案/方案对比    -> docs/superpowers/specs/YYYY-MM-DD-*.md
 实现计划            -> docs/superpowers/plans/YYYY-MM-DD-*.md
 短期派工            -> docs/handoffs/YYYY-MM-DD-*.md
 子仓实现细节        -> kokoro-*/docs/
@@ -99,7 +100,7 @@
 治理规则：
 
 1. 子仓 docs 只写实现细节、调试和测试说明，不替代主仓手册。
-2. 新关键决策讨论期放 `superpowers/specs/`；拍板后必须在 handbook 有入口，再落到子仓 README 或实现文档。
+2. 新关键决策讨论期放 `superpowers/specs/`；作为正式技术方案后迁入 handbook，再落到子仓 README 或实现文档。
 3. siteId 是平台业务隔离边界；namespace 是 GA/runtime 的唯一隔离键。两者不能互相替代。
 4. GA 只消费 namespace；不得把 ownerId/userId/workspaceId 作为第二身份轴传入 GA。
 5. 不新增 kokoro-contracts，不引入 PostgreSQL，不把 Redis 当长期真源。
