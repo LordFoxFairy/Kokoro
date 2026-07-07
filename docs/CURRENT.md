@@ -15,7 +15,8 @@
 1. [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 2. [Capability Hub 设计](superpowers/specs/2026-07-07-capability-hub-design.md)
 3. [产品化技术主图](superpowers/specs/2026-07-07-product-technical-roadmap.md)
-4. [能力 buildout 派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
+4. [runtime namespace、能力、沙箱与最终产物下一阶段派工单](handoffs/2026-07-07-runtime-buildout-next-handoff.md)
+5. [能力 buildout 历史派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
 
 ## 稳定架构入口
 
