@@ -42,7 +42,7 @@
 非平凡修改前：
 
 - 确认工作目录与仓库根目录。
-- 阅读实际存在的最近指导文件：`CLAUDE.md`、`README.md`、`INDEX.md`、`docs/*`、`tasks/*` 或同等文件。
+- 阅读实际存在的最近指导入口：`CLAUDE.md`、`AGENTS.md`、`README.md`、`INDEX.md`、`docs/AGENTS.md`、`docs/README.md`、`docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、`tasks/*` 或同等入口文件；不要递归展开整个 `docs/`。
 - 修改前检查相关 imports、exports、调用方、测试与运行入口。
 - 如果是 git 仓库，先检查工作区状态。
 - 未经明确要求，不得覆盖、回滚或清理用户已有改动。
@@ -364,3 +364,43 @@ Python/TypeScript 混合系统优先从单一事实来源生成客户端类型�
 - **验证**：是否运行了能证明变更正确的真实命令，而非只跑 happy path？跳过的是否已说明？（§10 §12）
 - **安全**：是否可能读取、输出或提交 secrets、生产数据或个人信息？（§7）
 - **收尾**：中间产物是否已删除或确认被忽略？是否避免了无关清理与暴露 AI 身份的尾注？（§9 §12）
+
+---
+
+## 本仓库事实：Kokoro 文档归属
+
+本节只适用于 Kokoro 主仓。若本文件被复制到其他项目，应替换为目标项目自己的文档归属规则。
+
+Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录。默认入口是：
+
+1. `docs/AGENTS.md`
+2. `docs/CURRENT.md`
+3. `docs/README.md`
+4. `docs/CODEBASE_MAP.md`
+
+除非任务点名或上述入口明确要求，不要把 `docs/product/`、`docs/prototypes/`、`docs/research/`、`docs/brainstorm/`、`docs/plans/` 当作当前实现事实来源。
+
+### 技术方案放哪里
+
+- 稳定跨仓规则、长期架构、产品/技术权威结论：放 `docs/kokoro-handbook/`，并在 `docs/kokoro-handbook/README.md` 保持入口。
+- 跨仓技术方案稿：放 `docs/superpowers/specs/YYYY-MM-DD-<topic>.md`。这是“方案讨论与设计稿”，稳定结论必须回流到 handbook。
+- 实现计划：放 `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`。这是执行用计划，不是长期权威。
+- 短期派工、交接、worker handoff：放 `docs/handoffs/YYYY-MM-DD-<topic>.md`。派工单过期后不要继续当架构事实。
+- 审计、测试、验收、阶段性结果：放 `docs/reports/`。
+- 子仓实现细节、调试说明、局部测试说明：放对应子仓的 `kokoro-*/docs/README.md` 和 `kokoro-*/docs/<repo>/...`。不要把跨仓总方案放进 `kokoro-web/docs/`。
+- 贴近代码的局部架构地图：放相邻 `INDEX.md`。
+- 外部参考、截图、探索笔记、一次性对比、临时脚本：只放 `tmp/` 或 `kokoro-*/tmp/`，不得进入正式文档或正式代码。
+
+通常判断：
+
+- 影响多个子仓或定义系统边界：先写主仓 `docs/superpowers/specs/`。
+- 已经形成长期规则：沉淀到 `docs/kokoro-handbook/`。
+- 只解释某个子仓怎么实现、怎么运行、怎么测试：写到该子仓 `docs/`。
+- 只是为了本轮 agent 参考、比对或截图：写到 `tmp/`。
+
+### 当前活跃规则
+
+- 当前主线白名单由 `docs/CURRENT.md` 维护；新增或切换主线时同步更新。
+- 给并行 worker 派活时必须注入 `docs/CODEBASE_MAP.md` 和任务相关 spec/plan/handoff。
+- 文档冲突时，优先级为：当前用户指令 > 本文件 > `docs/kokoro-handbook/` > `docs/CURRENT.md` / `docs/README.md` / `docs/CODEBASE_MAP.md` > 当前 spec/plan/handoff > 历史产品/原型/研究材料。
+- GA / kokoro-agent 只消费不透明 `namespace` 作为运行时隔离键。不得在 GA 侧把 `namespace` 改写为 `user:<ownerId>`，也不得把 `ownerId` / `userId` / `workspaceId` 作为第二身份轴传入 GA；这些身份语义由上游 web/session/platform 解析后映射到 namespace。
