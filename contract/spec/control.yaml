@@ -27,6 +27,7 @@ objects:
       - {name: provider, type: string_nonempty}
       - {name: name, type: string_nonempty}
       - {name: effort, type: string_nonempty, optional: true}
+      - {name: thinking, type: boolean, optional: true}
   - name: McpServer
     fields:
       - {name: name, type: string_nonempty}
