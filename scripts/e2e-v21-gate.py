@@ -385,8 +385,8 @@ def main() -> int:
                 wire_ok = (rt.get("agent") == "poet"
                            and rt["subagents"] == ["coder"]
                            and "system_prompt" not in rt  # 契约负向：wire 恒无内联 prompt
-                           and req["context"]["namespace"] == "team-e2e")
-        check("wire: agent 名 + names 下属 + 无内联 prompt + 租户 namespace", wire_ok)
+                           and req["context"]["namespace"] == "e2e-user")  # namespace=token sub（块1 语义）
+        check("wire: agent 名 + names 下属 + 无内联 prompt + namespace=sub", wire_ok)
         sse3 = SseReader(f"/sessions/{sid2}/events")
         pause3 = sse3.wait(lambda i: i[1] == "tool.awaiting_approval")
         check("agent run 启动并到达首个暂停", pause3 is not None)
@@ -417,7 +417,7 @@ def main() -> int:
         check("E2E-27 重复 DELETE 幂等 202", st16 == 202 and del2.get("status") == "deleted", f"{st16}")
         if WORKSPACE_BACKEND == "local" and SANDBOX_BACKEND == "local_shell":
             # 软删不动产物：agent 侧零变化的显式断言（文件仍在磁盘）。
-            plan = scratch / "workspace" / f"team-e2e:{SID}" / "plan.md"
+            plan = scratch / "workspace" / f"e2e-user:{SID}" / "plan.md"
             check("E2E-27 软删保留工作区文件", plan.is_file(), str(plan))
 
         sid3 = f"ses_del_{uuid.uuid4().hex[:8]}"
@@ -452,7 +452,7 @@ def main() -> int:
         # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——装配期【不再】物化任何 skill 文件；
         # 发现/读取走 find_skill/read_skill 内存直返（单测覆盖），资产仅在 read 时按需单包供给。
         if WORKSPACE_BACKEND == "local":
-            skills_dir = scratch / "workspace" / f"team-e2e:{SID}" / ".skills"
+            skills_dir = scratch / "workspace" / f"e2e-user:{SID}" / ".skills"
             check("E2E-29 装配期零物化（/.skills 不存在）", not skills_dir.exists(), str(skills_dir))
             # 点前缀=能力供给不进用户文件面：snapshot.files 不得列出 skills。
             st21, snap21 = http("GET", f"/sessions/{SID}")

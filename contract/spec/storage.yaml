@@ -1,0 +1,55 @@
+# Kokoro storage read-models — the ONE truth for cross-language Mongo document shapes.
+#
+# session(TS) 与 agent(Python) 共读的持久化文档形状（非 wire 消息）。
+# 首个用例：skills 池（hub）——session 创建会话时查池做快照，agent 读写全量。
+# 法则：跨语言共读的集合，schema 必须在此单源生成，禁止两侧手写对齐。
+
+enums:
+  skill_source: [deploy, upload, github]
+
+objects:
+  # 清单卡片：会话快照与 system prompt 技能清单的最小面。
+  - name: SkillCard
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: description, type: string_nonempty}
+      - {name: content_hash, type: string_nonempty}
+  - name: SkillFileEntry
+    fields:
+      - {name: path, type: string_nonempty}
+      - {name: size, type: int}
+  # skills 集合文档（hub 真源的 Mongo 侧；包体权威源在 S3，见 package_ref）。
+  - name: SkillDoc
+    fields:
+      - {name: scope, type: string_nonempty}          # "official" | <namespace>
+      - {name: name, type: string_nonempty}
+      - {name: description, type: string_nonempty}
+      # SKILL.md 正文快照（当前版快读面；旧版按 content_hash 走 S3 zip 取回）。
+      - {name: skill_md, type: string_nonempty}
+      - {name: files_manifest, type: array:object:SkillFileEntry}
+      - {name: file_count, type: int}
+      - {name: package_size, type: int}
+      - {name: content_hash, type: string_nonempty}   # 整包 sha256 = 版本标识/内容锁
+      - {name: package_ref, type: string_nonempty}    # S3/local 包体键
+      - {name: source, type: enum:skill_source}
+      - {name: revision, type: int}                   # 文档级 CAS，防并发写半截
+      - {name: official_enabled, type: boolean}
+      - {name: official_required, type: boolean}      # 恒注入、拒绝用户关闭
+      - {name: updated_at, type: int}
+      - {name: deleted_at, type: int, optional: true} # 软删=状态位；活跃文档为空
+
+  # per-user 启停偏好（不改共享本体）。
+  - name: SkillStateDoc
+    fields:
+      - {name: namespace, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: enabled, type: boolean}
+      - {name: updated_at, type: int}
+
+collections:
+  skills:
+    doc: SkillDoc
+    unique: [scope, name]
+  skill_state:
+    doc: SkillStateDoc
+    unique: [namespace, name]

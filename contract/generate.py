@@ -785,11 +785,68 @@ def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
 # --------------------------------------------------------------------------- #
 
 
+# --------------------------------------------------------------------------- #
+# storage read-models: cross-language Mongo document shapes (agent .py + session .ts)
+# --------------------------------------------------------------------------- #
+
+STORAGE_SRC = "contract/spec/storage.yaml"
+
+
+def storage_enum_aliases(spec: dict) -> dict[str, str]:
+    return {name: enum_alias(name) for name in spec.get("enums", {})}
+
+
+def _storage_collections(spec: dict) -> list[tuple[str, dict]]:
+    return sorted((spec.get("collections") or {}).items())
+
+
+def emit_storage_py(spec: dict) -> str:
+    enums = spec.get("enums", {})
+    aliases = storage_enum_aliases(spec)
+    L = [py_header(STORAGE_SRC).rstrip("\n"), "from __future__ import annotations", ""]
+    L += [
+        "from typing import Annotated, Literal",
+        "",
+        "from pydantic import BaseModel, ConfigDict, StringConstraints, TypeAdapter",
+        "",
+        "NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]",
+    ]
+    L.append("")
+    for name, alias in aliases.items():
+        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
+    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
+    for obj in spec["objects"]:
+        L += ["", ""] + py_object(obj, aliases)
+    L += ["", ""]
+    for coll, meta in _storage_collections(spec):
+        L.append(f'{coll.upper()}_COLLECTION = "{coll}"')
+        unique = ", ".join(f'"{k}"' for k in meta["unique"])
+        L.append(f"{coll.upper()}_UNIQUE: tuple[str, ...] = ({unique},)")
+    # 显式适配器：文档从 Mongo 读出后一次洗净。
+    L.append("")
+    for coll, meta in _storage_collections(spec):
+        doc = meta["doc"]
+        L.append(f"{coll}_doc_adapter: TypeAdapter[{doc}] = TypeAdapter({doc})")
+    return "\n".join(L) + "\n"
+
+
+def emit_storage_ts(spec: dict) -> str:
+    enums = spec.get("enums", {})
+    L = [ts_header(STORAGE_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+    for obj in spec["objects"]:
+        L += ts_object(obj, enums, export=True)
+        L.append("")
+    for coll, meta in _storage_collections(spec):
+        L.append(f'export const {coll.upper()}_COLLECTION = "{coll}"')
+    return "\n".join(L) + "\n"
+
+
 def build() -> dict[Path, str]:
     events = load("events.yaml")
     control = load("control.yaml")
     streams = load("streams.yaml")
     http = load("http.yaml")
+    storage = load("storage.yaml")
 
     session_events = emit_session_events_ts(events)
     control_ts = emit_control_ts(control)
@@ -806,6 +863,8 @@ def build() -> dict[Path, str]:
         SESSION / "control.ts": control_ts,
         SESSION / "streams.ts": emit_streams_ts(streams),
         SESSION / "http.ts": http_ts,
+        AGENT / "storage.py": emit_storage_py(storage),
+        SESSION / "storage.ts": emit_storage_ts(storage),
         WEB / "session-events.ts": session_events,
         WEB / "control.ts": control_ts,
         WEB / "http.ts": http_ts,
