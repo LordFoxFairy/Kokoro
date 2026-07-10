@@ -75,7 +75,7 @@ V1 定案（最小、不建服务）：
 - contract 变更：`RuntimeConfig.mcp: McpServer[]` → `mcp_servers: string[]`（names only），旧字段直接删、不做兼容层（无存量生产依赖）。
 - MCP server 完整配置（transport/url/headers）移到 **agent 侧部署配置**（env/yaml，按 server name 索引）。agent 收到 names → 查本地配置 → 连接。
 - secret 只存在于 agent 部署配置；RunRequest / ledger / events 全链路无明文凭据（负向测试）。
-- 工具注册沿用现有 `load_mcp_tools` 动态展开。**已知不一致（主动标注）**：wire 已允许 per-run 选 `mcp_servers`，而动态注册意味着不同 server 集 → 不同工具 schema——**MCP 维度的 prefix 稳定性只以部署为界，不以 run 为界**。V1 语义定死为"部署静态集的子集选择"，且无选择 UI、字段实际无人发，风险休眠；真正闭合靠 P1.5 的稳定 `mcp_list/describe/call` adapter（用户可选 MCP 时一并落）。
+- **工具面定案（2026-07-10 修正，用户指出前缀缓存问题后）**：动态注册（`load_mcp_tools` 展开进工具列表）**V1 即删除**，换稳定 adapter `mcp_list_tools / mcp_describe_tool / mcp_call` 三个恒定工具（与 `find_skill` 同构）。原因：tools 块位于 API 前缀最前，动态注册下**远端 server 的 schema/顺序漂移（不受我们控制）会打穿同会话全部缓存**——历史越长损失越大，等效每次新会话。server/tool/schema 全部降为工具返回的数据：数据变不动前缀。此前"标注为已知不一致、P1.5 再修"是低估，不留账。
 - secret-ref / gateway 服务 = P2。
 
 **与 skill 池模型的同构与差异（定案）**：MCP 同样走"池自动注入、不逐消息勾选"，但池的性质不同——skill 是静态文本（躺着零成本、可海量），MCP 是**活的外部连接**（有凭据、有副作用、天然少量）。因此：
@@ -145,6 +145,21 @@ deliver(path, title, note?)                     # agent 可见的唯一交付工
 - snapshot 1000 条静默截断 → 显式 `truncated` 失败面。
 - `run.steer` contract 已有、web HTTP 未暴露 → 接通。
 
+### D9 前缀缓存不变量（动态性设计的硬约束）
+
+一次 API 调用的前缀 = tools schema → system prompt → 历史 messages；任何"动态"设计先过这张表：
+
+| 前缀段 | 变化源 | 保证 |
+|---|---|---|
+| tools schema | registry/toolbox/skill 工具 | 恒定集合+固定合流顺序（A/B 逐字节测试钉死） |
+| 〃 | MCP | 稳定 `mcp_*` 三工具（D3 定案）；server/tool/schema 是数据不是 schema |
+| 〃 | task 工具的子代理枚举 | catalog/profile 均部署级；变化以部署为界 |
+| system prompt | preset 名 → 静态 .md | 同 preset 恒定；换 preset = 岗位切换，新前缀合理 |
+| 历史 messages | 新消息/steer/工具结果 | **append-only**：steer 追加不插入、runtime note 请求级不落 checkpoint |
+| model/thinking | 用户主动切换 | 该模型下重新积累，用户行为非设计洞 |
+
+法则：**能力/配置的变化只允许表现为"工具返回的数据变化"或"append 的新消息"，绝不允许表现为前缀段的字节变化**（换 preset 除外）。
+
 ### D8 命名法则（wire 字段 / 工具 / 函数）
 
 V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时命名一次到位，不留"以后再改"。
@@ -203,10 +218,15 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
      逐字节相同（prompt 本就不含 skill 信息）；未授权包 find 不可见/read fail-closed；
      纯文档包零物化；资产包整包幂等供给；state 档显式降级。e2e E2E-29 改为
      "装配期零物化"反向断言（需 docker 环境跑）
-块4  preset 化：profile 子系统重构为 preset/部署配置、entry 正名选 preset、
-     删 wire 内联 prompt/subagent 覆盖；机制用测试 fixture preset 验证
-     断言：wire 注入 system_prompt 被拒（负向测试）；新增 preset = 仅加目录+配置，
-     零运行时代码改动（fixture 证明）；general 与 fixture 的 system prompt 各自稳定
+块3b [已完成] MCP 稳定工具面（D9 驱动，从 P1.5 提前）：删动态注册，换恒定
+     mcp_list_tools/mcp_describe_tool/mcp_call（懒连接+run 内缓存，与 find_skill 同构）
+     已验：agent 417 pytest（含 FastMCP live e2e）+ruff+pyright 三绿；断言达成——
+     server 集 A/B/空 切换工具面逐字节相同；装配期零连接（run 不被挂掉的 server
+     拖死）；运行时不可达降级 error 文本；未知名装配期 fail-loud
+块4  preset 化：profile 子系统重构为 preset/部署配置（entry 正名已在块2 完成）；
+     机制用测试 fixture preset 验证
+     断言：新增 preset = 仅加目录+配置，零运行时代码改动（fixture 证明）；
+     general 与 fixture 的 system prompt 各自稳定
 块5  deliver 端到端（agent 工具 → 事件 → session 读模型 → web list/download）
      断言：deliver 后改/删源文件，下载内容不变；同内容重复 deliver 同记录
 块6  一致性加固（D7 四项）+ WP-2 远程沙箱（Daytona + pull 读路径）
