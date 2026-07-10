@@ -1,5 +1,10 @@
 # 派工单:能力中台 + 沙箱 + 产物 + 用户面(交 code agent 执行)
 
+> 历史派工单。当前正式执行口径以
+> `docs/kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md`
+> 和 `docs/handoffs/2026-07-07-runtime-buildout-next-handoff.md` 为准。
+> 本文件不再作为 capability/context 主线的派工依据。
+
 > 2026-07-07。主控在 Claude,本单把已定案的活拆成可独立执行的包。
 > 依据:`specs/2026-07-07-product-technical-roadmap.md` + `specs/2026-07-07-capability-hub-design.md`。
 > **全局边界(每个包都适用)**:🚧 不改 kokoro-platform(另一会话的树,只读其 API/协调);GA 只认 opaque `namespace`,不开 user_id/owner_id 第二轴;外部 UI 参考只进 tmp 中间产物,路径/逐字零进正式 repo;kokoro-model 不碰;声明完成必须真跑验证并贴输出。

@@ -6,6 +6,7 @@
 ## 先读顺序
 
 ```text
+0. 19-current-runtime-capability-review-plan（当前 runtime/capability 主线）
 1. ADR-004 agent 编排边界
 2. 11-agent-session-web-v1-runtime
 3. 03-agent-architecture
@@ -19,6 +20,10 @@
 ### ADR-004
 
 定义三仓边界，回答“agent 编排应该发生在哪里，不应该发生在哪里”。
+
+### 19-current-runtime-capability-review-plan
+
+当前 namespace / capability / skills / MCP / context / sandbox / artifact 主线的人类评审入口。
 
 ### 11-agent-session-web-v1-runtime
 

@@ -1,5 +1,19 @@
 # 系统总览
 
+## 当前主线评审入口
+
+当前 runtime / capability / namespace / auth / sandbox / artifact 主线先读：
+
+```text
+19-current-runtime-capability-review-plan.md
+```
+
+详细字段、时序和工作包附录：
+
+```text
+18-capability-namespace-auth-sandbox-artifacts.md
+```
+
 ## 目标
 
 V1 目标不是一次性做完整中台，而是先把通用 agent platform 的三仓运行时做到稳定、可恢复、可扩展、可审计：

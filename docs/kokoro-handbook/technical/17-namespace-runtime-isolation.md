@@ -11,13 +11,17 @@ GA 侧只认 `namespace`。
 platform 的上游身份或业务语义。它们可以用于登录、鉴权、裁权、计费和 UI 展示，但不能作为
 第二条身份轴进入 GA。
 
+platform/user 侧不把这个值叫 namespace。正式业务概念是 `principalId`：全局唯一运行主体 id。
+人、team、未来 workspace/org 都是 principal。`kokoro-session` 接收 `principalId` 后, 在自己的
+运行时模型里持久化为 `session.namespace`；GA 仍只看到 `context.namespace`。
+
 ```text
 web / platform:
-  user, team, site, membership, auth policy
+  user, team, site, membership, auth policy, principalId
         |
         v
 kokoro-session:
-  choose and persist namespace for this session/run
+  persist session.namespace = principalId
         |
         v
 kokoro-agent:
@@ -26,13 +30,12 @@ kokoro-agent:
 
 ## 命名规则
 
-namespace 是 opaque 空间 id，不加业务前缀。
+namespace 是 opaque 空间 id，不加业务前缀。它的值来自 platform/user 分配的 `principalId`。
 
 允许：
 
 ```text
-namespace = kokoro-user User.id
-namespace = future team/workspace namespace id
+namespace = principal.id   # personal principal / team principal / future workspace principal
 namespace = local-user   # dev passthrough
 ```
 
@@ -45,8 +48,43 @@ site:<siteId>:user:<userId>
 GA contract userId / ownerId / workspaceId helper fields
 ```
 
-如果未来要支持团队空间，仍由 web/session/platform 选择一个 namespace id 并校验 membership。
-GA 不需要知道这个 namespace 代表用户还是团队。
+如果未来要支持团队空间，仍由 platform/user 选择对应的 `principalId` 并校验 membership。
+GA 不需要知道这个 namespace 代表用户、团队还是未来 workspace。
+
+## principalId 来源
+
+`principalId` 属于 platform/user 边界，不属于 GA，也不由 kokoro-session 分配。
+
+建议的最小模型：
+
+```text
+Principal
+  id        全局唯一主体 id，例如 prn_xxx
+  kind      user | team | workspace
+  ref_id    user.id / team.id / workspace.id
+  site_id   所属 site，用于平台治理和查询，不进入 GA
+  status
+  created_at
+  updated_at
+```
+
+V1 暂时没有 team，也按这个模型走：
+
+```text
+User.personal_principal_id -> Principal.id
+VerifiedSessionContext.principalId = User.personal_principal_id
+session.namespace = principalId
+```
+
+后续 team 只是在创建 session 时换一个 principal：
+
+```text
+Team.principal_id -> Principal.id
+VerifiedSessionContext.principalId = Team.principal_id
+session.namespace = principalId
+```
+
+session 和 GA 的核心模型不需要变化。
 
 ## siteId 与 namespace 的关系
 
@@ -69,12 +107,16 @@ namespace 运行时工作空间和能力空间
 
 session 是 namespace 进入 GA 的唯一闸门：
 
-- 从认证上下文解析 `{ ownerId, namespace }`。
+- 从已验证的会话上下文读取 `{ ownerId, principalId }`。
 - 创建 session 时持久化 `session.namespace`。
 - 构造 `RunRequest.context.namespace`。
 - workspace list/read 使用 `session.namespace + sessionId`。
 - snapshot 可以不向 web 暴露 namespace；web 只需要鉴权后的文件和产物投影。
 - 不再让实例级 `KOKORO_NAMESPACE` 充当多用户运行时身份。
+
+传输格式不进入业务模型：`principalId` 可以由内部 header、JWS/JWT、HMAC assertion 或服务内调用
+携带。无论使用哪种载体，session 看到的都应该是已验证后的 `{ ownerId, principalId }`，而不是
+把 JWT `sub` 当正式业务概念扩散。
 
 ## agent 责任
 
@@ -112,4 +154,5 @@ subagent  定义, agent 编译 graph 时装配
 - GA 契约没有 `userId` / `ownerId` / `workspaceId` 作为隔离字段。
 - 两个 namespace 的 checkpoint、memory、workspace、skills 不串。
 - session 刷新和 relay recover 后仍能拿到原 session namespace。
+- platform/user 能返回全局唯一 `principalId`; user/team 不会因为不同表 id 碰撞而污染 namespace。
 - 外部参考来源只在 tmp 中间产物出现，不进入正式文档或代码。

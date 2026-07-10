@@ -30,10 +30,11 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 ## 当前稳定规则
 
 - `siteId` 是平台业务隔离边界。
-- `namespace` 是 GA/runtime 唯一隔离键。
-- GA 只消费 `namespace`，不消费 `userId` / `ownerId` / `workspaceId`。
+- `namespace` 是 GA（kokoro-agent runtime）唯一隔离键。
+- GA（kokoro-agent runtime）只消费 `namespace`，不消费 `userId` / `ownerId` / `workspaceId`。
 - namespace 是 opaque id，不拼 `user:<id>` / `team:<id>` 业务前缀。
-- capability hub 采用一个 registry 边界，内部按 `skill` / `mcp` / `subagent` 分 kind。
+- capability registry 采用一个边界，V1 只覆盖 `skill` / `mcp`。
+- DeepAgents graph 内部运行节点不是 capability kind，不做 package / enablement。
 - web 只消费 session HTTP/SSE，不直连 agent。
 - session 不执行 agent。
 - agent 不面向浏览器，不写 session messages，不扣积分。
