@@ -19,7 +19,7 @@
 | 层 | V1 形态 | 状态 |
 |---|---|---|
 | 身份 | `namespace = JWT sub`（opaque 主体 id），session 持久化 + 全链路反查；缺 secret 启动即拒 | **已落地三绿** |
-| 能力 | skill = 沙盒挂载的文件包 + 内置 `find_skill`；MCP = agent 侧部署配置，wire 只传 server names | 待落地 |
+| 能力 | skills/MCP 现行方案见 `docs/superpowers/specs/2026-07-10-*.md`（hub+会话快照+skill 单工具+MCP 三工具） | specs 待认可 |
 | 执行 | 单 `general` agent + deepagents task 子代理 + 现有 HITL 回路 | **已跑通（e2e 门禁）** |
 | 交付 | `deliver` 单工具：读字节 → sha256 → 传 `deliveries/<ns>/<hash>` → marker 事件 → session 读模型 | 待落地 |
 | 编排（业务 agent） | **preset 配置包**（见 D6）：prompt（岗位 SOP .md）× 挂载集（RuntimeConfig names）× 策略（HITL/交付）。入口在 run 受理时选 preset；swarm 中途 handoff = P2 | 待落地（`entry` 机制已是雏形） |
@@ -42,25 +42,25 @@ worktree：`kokoro-session/.gitwarp/worktrees/agent/session-namespace-auth-persi
 
 结论：**持久化的 RunRequest 就是本 run 的不可变 capability binding**。
 
-- session 在受理瞬间把本 run 的 `skills`（names）与 `mcp_servers`（names）快照进 RunRequest —— 之后用户改设置不影响本 run。
+- session 在受理瞬间把 `skills` 与 `mcp_servers` 写进 RunRequest —— **来源已升级为 session 级快照**（specs：会话创建时定死,run 只是复制,不回查池）。
 - steer / HITL resume / crash recover 复用同一 request（既有行为），天然"不重解析"。
 - 终态后的新消息 = 新 run = 新快照。能力变化只在 run 边界生效。
 - **不建** CapabilityResolver、RunCapabilityBinding 表、binding store。
 
 ### D2 skill：沙盒挂载 + `find_skill`（杀掉 registry 四层）
 
+> **本节已被取代（2026-07-10）**：skills 现行方案见 `docs/superpowers/specs/2026-07-10-skills-design.md`（v2.1）——要点：Mongo 元数据+S3 包体的 hub、**会话级快照（卡片全量+内容锁）**、清单常驻+`skill(name)` 单工具（find_skill 已废）、hash 增量物化。本节正文保留为演进历史，**勿照此实现**；specs 认可后回灌本节。
+
 代码事实：skill 已有"上传进 backend `/.skills/<name>/` 前缀"的供给机制（`skills/provision.py`）；现在的问题只是它接到了 `create_deep_agent(skills=)`，导致 skill 集变化会动 system prompt。
 
-V1 设计（三种消费各用各的最便宜通道；挂载=逻辑授权，不是物理搬运）：
+**定案（2026-07-10 二次修订：存储按多租户，行为按 Claude Code——用户明确"参考 CC，不用自己乱设计"）**：
 
-- skill 包 = 目录（`SKILL.md` frontmatter: name/description + 辅助文件）。官方 skill 随部署提供（目录或对象存储，沿用现有 `content_source` 扫描进程内库）。
-- **发现**：`find_skill(query?)` 查**内存库索引**、按本 run names 过滤，返回紧凑卡片（name/description）。零上传零文件系统；query 缺省=列全部（V1 子串匹配，不上语义检索）。
-- **读取**：`read_skill(name)` 校验 name ∈ 本 run 池后**从库直返** `SKILL.md` 正文——不走文件系统，路径穿越/未授权列目录两类问题根本不存在。
-- **执行资产**：包含非 .md 资产（脚本等）且 backend 真实时，`read_skill` 把**该单包**幂等上传 `/.skills/<name>/` 并返回路径供 `execute` 用——成本=实际用到的包数，与池大小无关，「零成本躺着」全链路成立。`/.skills/**` 不做 deny（资产就是给沙盒脚本执行的；skill 是知识非凭据）。
-- **退役**：每 run 全量 provision 上传路径、deepagents `skills=`（它还注入 prompt，去掉正好满足前缀恒定）。
-- **沙盒残留不是权限**：find/read 严格按本 run names（内存过滤），上 run 资产文件残留不构成可见性。
-- 子代理继承主工具面、同 run 同池；state 档（无沙盒）正文照读、执行资产声明不支持。
-- 块3 机器可验证断言：**skill 池 A/B 切换，system_prompt 与 tool schema diff 为空**。纯 agent 侧改动（wire 已 names，session/web/contract 零动）。
+- **存储真源 = Mongo**（多租户必然；此前"启动扫描进内存"是单机 CLI 形态的错误移植）。`skills` 集合：`{scope: official|<namespace>, name, description, files, content_hash, updated_at, deleted_at}`，(scope,name) 唯一索引；同名时 namespace 覆盖 official。**写入即生效（下一 run），不再重启**。官方包：部署目录只是 seed 输入，启动 upsert 进 Mongo（content_hash 不变则不写）。进程内 LRU 按 content_hash 缓存（内容寻址永不失效）。
+- **发现 = 清单常驻（CC 本源，无检索）**：装配期按本 run names 查 Mongo 拿 name+description，组装"可用技能"段落进 system prompt——模型恒见清单，发现=阅读。**没有 find 工具、没有 query、没有向量**：不存在"想不起来查/关键词不匹配/召回差"这些问题。
+- **调用 = `skill(name)` 单工具（CC 的 Skill 同款）**：校验 name ∈ 本 run 授权集 → Mongo 取包（LRU）→ SKILL.md 正文直返；含非 .md 资产的包**此刻**按需整包幂等上传沙盒 `/.skills/<name>/` 供 execute。未授权/不存在 → error 文本 fail-closed。
+- **前缀（D9 增补）**：同池且内容未变 → system prompt 字节恒定；技能池/内容变更 → **下一 run 一次性换轨**（显式低频，与 swarm 移交同级的合法触发；CC 同款代价：装新技能=新前缀）。
+- 授权快照（RunRequest.runtime.skills names，run 内不可变）、沙盒残留非权限、子代理同池、state 档资产降级——均保留。
+- V1 范围：agent 侧真源化+seed+清单+单工具；session 池查询与用户上传接口 = 紧随的写面块（存储模型已按多用户建好）。
 - 内置核心 skill 恒挂；其余按启用挂载——"内置一部分、其余 find"即渐进披露。
 - **选择模式定案（池自动注入，用户不勾选）**：skill 池是**账户/部署级**管理面（新增/update/启停，settings 级低频操作），每次 run **自动快照整个可用池**挂载，agent 靠 `find_skill` 按需自取——用户从不逐消息选择。三层分离：池（可随时变，生效于下一 run）→ run 快照（不可变）→ 使用（agent 运行时判断）。渐进披露的意义就是让"不选"成为可能；让用户勾选 = 把系统的智能负担转嫁给用户。wire `skills` 字段降级为**程序化例外口**（preset 强制注入 / API 精确控制 / 测试），不做大众输入框交互；缺省（不发）= 全池，即现实现语义，代码零改动。MCP 同理：enabled servers 是账户/部署状态，非逐消息勾选。
 - **不建** `skill_registry` / `principal_skill_state` 数据库。用户上传 skill、启用状态持久化 = P1.5（届时加一张最小 state 表即可，挂载机制不变）。
@@ -108,6 +108,8 @@ deliver(path, title, note?)                     # agent 可见的唯一交付工
 
 ### D5 动态性（一张表说完）
 
+> **口径升级（2026-07-10 specs）**：能力快照从 run 级上收为 **session 级**（会话创建定死,含内容锁）——表中"新 run 重新快照"应读作"从 session 快照复制"；池演进只作用于新会话/fork。
+
 | 入口 | 新 run？ | 能力重新快照？ |
 |---|---|---|
 | 无 active run 发消息 | 是 | 是（受理瞬间） |
@@ -134,7 +136,10 @@ deliver(path, title, note?)                     # agent 可见的唯一交付工
 **形态与切换**：
 
 - preset = 一个目录（`agent.md` + 清单：挂载 names、interrupt_on、交付约定）。**新增业务 agent = 加目录，零运行时改动。**
-- 进 studio = 入口选 preset（run 受理时定，前缀各自稳定）；swarm 中途对等交接 = P2 锦上添花，不是业务 agent 成立的前提。
+- **切换两层模型（2026-07-10 定案：场景 + 功能）**：
+  - **场景层（入口，wire 字段）**：`session.agent` 首条消息定死并持久化——进 studio 的会话生来就是该 agent 当主。后续消息带不同 agent → 400 拒绝（堵现状 wire 洞）：**字段层永不换**。
+  - **功能层（会话内，swarm 机制，P2 落地）**：swarm graph 挂全部 agents（各带自己的 prompt+tools）；用户消息让当前 agent **自己判断**该不该调 handoff 工具移交主导权（模型驱动、不强制，与"该不该调 find_skill"同一种智能）；`active_agent` 落 checkpoint、共享消息历史，session/wire 不参与切换。
+  - 换 agent 的合法通道有且只有这两个：开新会话（换场景）或 swarm 移交（换功能）；没有"改字段"这种第三通道。
 - 旧 `namespace/profile.ts` 子系统重构并入 preset/部署配置（它本就是"实例=租户"旧世界残留）。
 - **V1 只落 `general` 一个产品 preset，聚焦通用底座。**"加目录 = 加 agent"用测试 fixture preset 验证，不新增产品面 agent。后续垂类 agent = 再加一个配置包（自己的 prompt/tools/skills 按配置），入口直连使用；agent 间协作走 swarm（P2）。垂类细节（含入口形态）等启动时再写。
 
@@ -154,7 +159,7 @@ deliver(path, title, note?)                     # agent 可见的唯一交付工
 | tools schema | registry/toolbox/skill 工具 | 恒定集合+固定合流顺序（A/B 逐字节测试钉死） |
 | 〃 | MCP | 稳定 `mcp_*` 三工具（D3 定案）；server/tool/schema 是数据不是 schema |
 | 〃 | task 工具的子代理枚举 | catalog/profile 均部署级；变化以部署为界 |
-| system prompt | preset 名 → 静态 .md | 同 preset 恒定；换 preset = 岗位切换，新前缀合理 |
+| system prompt | agent（配置包）名 → 静态 .md + 技能清单段（会话快照卡片渲染） | **会话内前缀字节恒定是结构保证**（能力全量随 session 创建快照+内容锁，改字段=400；池演进只作用于新会话/fork）；唯一会话内换轨 = swarm 移交（P2，显式低频一次性） |
 | 历史 messages | 新消息/steer/工具结果 | **append-only**：steer 追加不插入、runtime note 请求级不落 checkpoint |
 | model/thinking | 用户主动切换 | 该模型下重新积累，用户行为非设计洞 |
 
@@ -170,7 +175,7 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 1. **调用方视角**：字段说"是什么"，不泄漏实现或 UI 状态。
 2. **一个概念一个词，全链路同名**：web→session→agent→文档同一个名。
 3. **无装饰词**：`selected_` / `current_` / `_info` / `_data` 不携带信息即删。
-4. **模型可见工具名 = 普通英语动词**（`find_skill` / `deliver`），禁 DevOps 黑话。
+4. **模型可见工具名 = 普通英语动词/生态惯例名**（`skill` / `deliver`），禁 DevOps 黑话。
 5. **缩写只用行业通用**（id / mcp / url），不自造。
 
 已循规范的正面样板（核实过，别动）：`KokoroAgentState → DeepAgentState → AgentState`（框架官方继承链，deepagents 推荐扩展方式）、`thread_id`（langgraph 同名）、`run`（OpenAI Assistants 同概念）、checkpoint/store/middleware（框架词）。
@@ -186,7 +191,7 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 | 新增能力字段 | `skills` / `mcp_servers` | 与 RuntimeConfig 同名，全链路不换名 |
 | `provision_skills` | `mount_skills`（块3） | 贴 D2 挂载心智 |
 
-保留的好名（不为改而改）：`idempotency_key`、`content`、`thinking`、`namespace`、`RunScope`、`RuntimeConfig`、`ensure/claim/put/get` 系、`try_claim/renew/reclaim_expired`、`find_skill`、`deliver`。
+保留的好名（不为改而改）：`idempotency_key`、`content`、`thinking`、`namespace`、`RunScope`、`RuntimeConfig`、`ensure/claim/put/get` 系、`try_claim/renew/reclaim_expired`、`skill`、`deliver`。
 
 ## 4. 明确砍掉的（防止复活）
 
@@ -198,7 +203,7 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 | C 层 / AgentProfile / StageSpec 状态机 | 编排不是运行时层，是 preset 配置包（D6）；软流程归 SOP 文档，硬约束只四个状态机 |
 | swarm 中途 handoff（V1） | 入口选 preset 已覆盖 studio 场景；langgraph-swarm 未依赖；对等交接 = P2 锦上添花 |
 | wire 内联 system_prompt / subagent prompt 覆盖 | 客户端供给系统提示词 = 安全洞 + 破坏前缀稳定；只留 entry 具名选择 |
-| MCP 稳定 adapter（V1） | server 集部署静态时无收益；用户可选 MCP（P1.5）时再上 |
+| ~~MCP 稳定 adapter 推迟~~（已撤销） | D9 前缀审计后**提前至 V1 并已完成**（见块3b）——远端漂移打穿缓存,不可休眠 |
 | 用户 promote/demote 产物 | agent 唯一定稿已闭环；读模型天然可后加人工覆盖 |
 
 ## 5. 落地顺序（每块验收 = typecheck + test + lint 三绿 + 该块断言）
@@ -212,7 +217,8 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
      已验：agent 410 pytest+ruff+pyright / session 195+tc+lint / web 214+tc+lint 三仓三绿；
      负向测试（wire 注入 system_prompt/McpServer 对象/内联 subagent/swarm_members 全拒）；
      generate --check 14 镜像零漂移；旧名 grep 零残留。e2e-v21-gate 已同步（需 docker 环境跑）
-块3  [已完成] find_skill/read_skill 渐进披露（挂载=逻辑授权，去 skills=/装配期物化/
+块3  [已完成→已被 specs v2 取代] find_skill/read_skill 渐进披露（该实现后由
+     skills spec v2 演进为 skill 单工具+清单常驻+Mongo/S3 hub，见 specs）（挂载=逻辑授权，去 skills=/装配期物化/
      initial_files；资产按需单包幂等供给；工具恒挂）
      已验：agent 413 pytest+ruff+pyright 三绿；断言达成——skill 池 A/B 切换工具面
      逐字节相同（prompt 本就不含 skill 信息）；未授权包 find 不可见/read fail-closed；
@@ -223,10 +229,10 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
      已验：agent 417 pytest（含 FastMCP live e2e）+ruff+pyright 三绿；断言达成——
      server 集 A/B/空 切换工具面逐字节相同；装配期零连接（run 不被挂掉的 server
      拖死）；运行时不可达降级 error 文本；未知名装配期 fail-loud
-块4  preset 化：profile 子系统重构为 preset/部署配置（entry 正名已在块2 完成）；
-     机制用测试 fixture preset 验证
-     断言：新增 preset = 仅加目录+配置，零运行时代码改动（fixture 证明）；
-     general 与 fixture 的 system prompt 各自稳定
+块4  agent 配置包化：session.agent 持久化（首条定死，后续不同值 400 fail-loud，
+     同 session 前缀结构保证）；profile 子系统重构为部署配置；机制用测试 fixture 验证
+     断言：同 session 第二条消息换 agent 被 400 拒；新增 agent 配置包 = 仅加目录+配置，
+     零运行时代码改动（fixture 证明）；general 与 fixture 的 system prompt 各自稳定
 块5  deliver 端到端（agent 工具 → 事件 → session 读模型 → web list/download）
      断言：deliver 后改/删源文件，下载内容不变；同内容重复 deliver 同记录
 块6  一致性加固（D7 四项）+ WP-2 远程沙箱（Daytona + pull 读路径）
