@@ -99,6 +99,8 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [16-session-deletion-cascade](technical/16-session-deletion-cascade.md)
 - [17-namespace-runtime-isolation](technical/17-namespace-runtime-isolation.md)
 - [18-capability-namespace-auth-sandbox-artifacts](technical/18-capability-namespace-auth-sandbox-artifacts.md)
+- [19-current-runtime-capability-review-plan](technical/19-current-runtime-capability-review-plan.md)（已被 20 取代，保留为扩展附录）
+- [20-kokoro-v1-technical-plan](technical/20-kokoro-v1-technical-plan.md)（**V1 定稿事实源**）
 
 ### 模块 modules/
 

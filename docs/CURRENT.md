@@ -1,22 +1,21 @@
 # 当前活跃文档白名单
 
-状态：2026-07-07
-用途：降低 agent 阅读负担。做当前能力中台 / namespace / auth / sandbox / artifact 主线时，默认只读这里列出的文档。
+状态：2026-07-10
+用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
 
 ## 必读
 
 1. [Codebase Map](CODEBASE_MAP.md)
 2. [docs 总入口](README.md)
 3. [Kokoro 总手册](kokoro-handbook/README.md)
-4. [Namespace 运行时隔离](kokoro-handbook/technical/17-namespace-runtime-isolation.md)
+4. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
 
 ## 当前技术主线
 
-1. [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
-2. [Capability Hub 设计](superpowers/specs/2026-07-07-capability-hub-design.md)
-3. [产品化技术主图](superpowers/specs/2026-07-07-product-technical-roadmap.md)
-4. [runtime namespace、能力、沙箱与最终产物下一阶段派工单](handoffs/2026-07-07-runtime-buildout-next-handoff.md)
-5. [能力 buildout 历史派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
+1. [V1 最终技术方案（定稿）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+2. [WP-0 落地与审核交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md)
+3. 扩展附录（查细节才读，冲突以 20 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
+4. 历史派工单（已过期，不作架构事实）：[2026-07-07 runtime buildout](handoffs/2026-07-07-runtime-buildout-next-handoff.md)、[2026-07-07 capability buildout](handoffs/2026-07-07-capability-buildout-handoff.md)
 
 ## 稳定架构入口
 

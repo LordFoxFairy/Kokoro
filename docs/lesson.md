@@ -1,0 +1,21 @@
+# 操作教训
+
+只记操作级教训（场景 / 我做错的 / 下次怎么避免）。用户档案归 memory 系统。
+
+## 别拿通用 LLM 架构直觉套 kokoro 的 agent 运行机制
+
+- 场景：打磨 `docs/kokoro-handbook/technical/19-...` 的 C 层（业务 agent 编排）时，我直接写"每个业务 agent 自定义 system prompt""切 profile 走新 run"。
+- 我做错的：凭通用 agent 架构直觉 + 文档"应然"下笔，没先核 kokoro-agent 实际的 prompt 组织和 agent 切换机制，被用户连续纠正两次——(1) prompt 是 `kokoro-agent/src/kokoro_agent/prompts/` 专门目录的**静态 .md**、通用统一（`general.md`），业务差异靠 subagent/skill/tool + 阶段策略，**不是运行时拼 prompt**；(2) agent 间切换是 **langgraph-swarm handoff**（同 graph/checkpoint 对等移交主导权），**不是走新 run**。
+- 下次怎么避免：写 agent 运行机制类结论（prompt 装配 / agent 切换 / 委派 / checkpoint）前，先派只读探子核 kokoro-agent 实际代码（`prompts/`、`agents/`、swarm/handoff 现状、`uv.lock` 依赖），**事实优先于直觉和文档应然**。
+
+## 用户口头举例垂类 ≠ 允许把垂类细节写进正式文档
+
+- 场景：讨论业务 agent 编排时，用户多次拿 music studio 举例；我顺势把 quick/advanced 双模（Suno 式入口形态）写进了 handbook `20` 正式方案。用户纠正："music 还没开始，暂时不写，聚焦通用和 agent 底座，你跑偏了。"
+- 我做错的：把讨论中的垂类举例当成了给垂类写正式设计的许可。举例是帮助对齐抽象机制的，不是启动垂类。
+- 下次怎么避免：正式文档只写通用机制 + "垂类 = 再加一个配置包"的抽象结论；任何垂类专属细节（入口形态、双模、阶段流程）等该垂类明确启动再写。
+
+## 纸面方案会无限膨胀，只有落地才收敛（贯穿一整场的元教训）
+
+- 场景：runtime/capability 技术方案，我连续十几轮在文档层打磨（加层、定案、全链路走查、派证伪 agent），每轮宣告"闭环 / 零开放项 / 最佳方案"，用户始终"总感觉有问题"。
+- 我做错的：纸面方案能无限自洽地长大，我用"更周全"冒充"更成立"。几版"最佳方案"（registry 四层 → deliver 薄标记复用一个**不存在的** run 快照 → 内容寻址脊椎）前两版一证伪就塌；第三版可能又是我爱"优雅统一抽象"的过度设计。纸面推演给不出"真的 ok"这个答案。
+- 下次怎么避免：方案主干清晰后就**转落地**——挑最小垂直切片真跑到 **typecheck + test + lint 全绿**，用运行证伪文档。实测教训：看 diff 觉得好但 `AU-2` 跑出 fail；`test 191 绿`但 `tsc` 还红；vitest 运行时不严格校验、typecheck 才抓到 fixture 漏字段。**落地一块的真绿，胜过纸面十轮的自洽。** 用户"总感觉有问题"的解药是落地，不是再审方案。
