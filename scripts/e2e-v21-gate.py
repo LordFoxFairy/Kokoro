@@ -486,8 +486,8 @@ def main() -> int:
         check("E2E-30 他人 token → 403 session_forbidden",
               st_bob == 403 and body_bob.get("error") == "session_forbidden", f"{st_bob} {body_bob}")
 
-        # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——装配期【不再】物化任何 skill 文件；
-        # 发现/读取走 find_skill/read_skill 内存直返（单测覆盖），资产仅在 read 时按需单包供给。
+        # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——纯正文技能（无附件）永不物化；
+        # 正文走 skill 工具直返（单测覆盖），有附件的包才由装配期 reconcile 按账本物化（块C）。
         if WORKSPACE_BACKEND == "local":
             skills_dir = scratch / "workspace" / f"e2e-user:{SID}" / ".skills"
             check("E2E-29 装配期零物化（/.skills 不存在）", not skills_dir.exists(), str(skills_dir))
