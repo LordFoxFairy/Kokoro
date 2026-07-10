@@ -51,15 +51,20 @@ worktree：`kokoro-session/.gitwarp/worktrees/agent/session-namespace-auth-persi
 
 代码事实：skill 已有"上传进 backend `/.skills/<name>/` 前缀"的供给机制（`skills/provision.py`）；现在的问题只是它接到了 `create_deep_agent(skills=)`，导致 skill 集变化会动 system prompt。
 
-V1 设计：
+V1 设计（三种消费各用各的最便宜通道；挂载=逻辑授权，不是物理搬运）：
 
-- skill 包 = 目录（`SKILL.md` frontmatter: name/description + 辅助文件）。官方 skill 随部署提供（目录或对象存储，沿用现有 `content_source` 扫描）。
-- run 装配时，把 request 里 names 对应的包挂载到 `/.skills/<name>/`；**不再传 `skills=`**，system prompt 与 tool schema 恒定。
-- 新增一个内置工具：`find_skill(query)` —— 返回**本 run request names 范围内**的 skill 短卡片（name/description/入口路径）。正文用现有文件读工具按需读。
-- **沙盒残留不是权限**：`find_skill` 按当前 run 的 names 过滤，不是裸扫磁盘；上一 run 挂过、本 run 未启用的包不可见。
-- session 文件列示与归档排除 `/.skills/**`（不进用户 workspace 视图）。
+- skill 包 = 目录（`SKILL.md` frontmatter: name/description + 辅助文件）。官方 skill 随部署提供（目录或对象存储，沿用现有 `content_source` 扫描进程内库）。
+- **发现**：`find_skill(query?)` 查**内存库索引**、按本 run names 过滤，返回紧凑卡片（name/description）。零上传零文件系统；query 缺省=列全部（V1 子串匹配，不上语义检索）。
+- **读取**：`read_skill(name)` 校验 name ∈ 本 run 池后**从库直返** `SKILL.md` 正文——不走文件系统，路径穿越/未授权列目录两类问题根本不存在。
+- **执行资产**：包含非 .md 资产（脚本等）且 backend 真实时，`read_skill` 把**该单包**幂等上传 `/.skills/<name>/` 并返回路径供 `execute` 用——成本=实际用到的包数，与池大小无关，「零成本躺着」全链路成立。`/.skills/**` 不做 deny（资产就是给沙盒脚本执行的；skill 是知识非凭据）。
+- **退役**：每 run 全量 provision 上传路径、deepagents `skills=`（它还注入 prompt，去掉正好满足前缀恒定）。
+- **沙盒残留不是权限**：find/read 严格按本 run names（内存过滤），上 run 资产文件残留不构成可见性。
+- 子代理继承主工具面、同 run 同池；state 档（无沙盒）正文照读、执行资产声明不支持。
+- 块3 机器可验证断言：**skill 池 A/B 切换，system_prompt 与 tool schema diff 为空**。纯 agent 侧改动（wire 已 names，session/web/contract 零动）。
 - 内置核心 skill 恒挂；其余按启用挂载——"内置一部分、其余 find"即渐进披露。
+- **选择模式定案（池自动注入，用户不勾选）**：skill 池是**账户/部署级**管理面（新增/update/启停，settings 级低频操作），每次 run **自动快照整个可用池**挂载，agent 靠 `find_skill` 按需自取——用户从不逐消息选择。三层分离：池（可随时变，生效于下一 run）→ run 快照（不可变）→ 使用（agent 运行时判断）。渐进披露的意义就是让"不选"成为可能；让用户勾选 = 把系统的智能负担转嫁给用户。wire `skills` 字段降级为**程序化例外口**（preset 强制注入 / API 精确控制 / 测试），不做大众输入框交互；缺省（不发）= 全池，即现实现语义，代码零改动。MCP 同理：enabled servers 是账户/部署状态，非逐消息勾选。
 - **不建** `skill_registry` / `principal_skill_state` 数据库。用户上传 skill、启用状态持久化 = P1.5（届时加一张最小 state 表即可，挂载机制不变）。
+- **简化代价（主动标注）**：binding 的不可变是 **names 级**、非内容级——skill 库是进程级部署快照，部署更新后 crash-resume 的旧 run 按旧 names 解析到新内容。V1 以"部署=不可变单元"为界可接受（官方 skill 随部署版本走）；用户上传 skill（P1.5）落地时必须补内容锁（content_hash/read_ref），届时此简化失效。
 
 ### D3 MCP：wire 只传 names，secret 不出 agent 侧（最小修法）
 
@@ -70,8 +75,14 @@ V1 定案（最小、不建服务）：
 - contract 变更：`RuntimeConfig.mcp: McpServer[]` → `mcp_servers: string[]`（names only），旧字段直接删、不做兼容层（无存量生产依赖）。
 - MCP server 完整配置（transport/url/headers）移到 **agent 侧部署配置**（env/yaml，按 server name 索引）。agent 收到 names → 查本地配置 → 连接。
 - secret 只存在于 agent 部署配置；RunRequest / ledger / events 全链路无明文凭据（负向测试）。
-- 工具注册沿用现有 `load_mcp_tools` 动态展开——**V1 server 集是部署静态的，schema 稳定，不构成 prefix 问题**。`mcp_list/describe/call` 稳定 adapter 推迟到 P1.5（用户可选 MCP 时才需要）。
+- 工具注册沿用现有 `load_mcp_tools` 动态展开。**已知不一致（主动标注）**：wire 已允许 per-run 选 `mcp_servers`，而动态注册意味着不同 server 集 → 不同工具 schema——**MCP 维度的 prefix 稳定性只以部署为界，不以 run 为界**。V1 语义定死为"部署静态集的子集选择"，且无选择 UI、字段实际无人发，风险休眠；真正闭合靠 P1.5 的稳定 `mcp_list/describe/call` adapter（用户可选 MCP 时一并落）。
 - secret-ref / gateway 服务 = P2。
+
+**与 skill 池模型的同构与差异（定案）**：MCP 同样走"池自动注入、不逐消息勾选"，但池的性质不同——skill 是静态文本（躺着零成本、可海量），MCP 是**活的外部连接**（有凭据、有副作用、天然少量）。因此：
+
+- 入池动词不同：skill = "添加/启停"；MCP = **"连接/断开"**（显式授权动作，ChatGPT connectors 同款心智）。连接后自动可用。
+- 故障语义分裂：未知 server 名 = 配置错误 fail-loud（已实现）；**server 运行时不可达 = 外部常态**，P1.5 起降级为"该 server 本次不可用 + 显式事件"，不杀整个 run（V1 现状全 fail-closed，部署静态+个位数 server 可承受，已知脆点）。
+- 终态统一：skill 用 `find_skill`+文件读、MCP 用 `mcp_list/describe/call`——都是"恒定小工具面 + 惰性发现"，池再大 prompt 不膨胀。V1 动态注册是池小时期的过渡。
 
 ### D4 deliver：hash 键冻结（一次 hash、一次上传、零额外机器）
 
@@ -186,8 +197,12 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
      已验：agent 410 pytest+ruff+pyright / session 195+tc+lint / web 214+tc+lint 三仓三绿；
      负向测试（wire 注入 system_prompt/McpServer 对象/内联 subagent/swarm_members 全拒）；
      generate --check 14 镜像零漂移；旧名 grep 零残留。e2e-v21-gate 已同步（需 docker 环境跑）
-块3  skill 挂载 + find_skill（去 skills=）
-     断言：skill 集 A/B 切换 system prompt diff 为空；未启用包 find 不可见
+块3  [已完成] find_skill/read_skill 渐进披露（挂载=逻辑授权，去 skills=/装配期物化/
+     initial_files；资产按需单包幂等供给；工具恒挂）
+     已验：agent 413 pytest+ruff+pyright 三绿；断言达成——skill 池 A/B 切换工具面
+     逐字节相同（prompt 本就不含 skill 信息）；未授权包 find 不可见/read fail-closed；
+     纯文档包零物化；资产包整包幂等供给；state 档显式降级。e2e E2E-29 改为
+     "装配期零物化"反向断言（需 docker 环境跑）
 块4  preset 化：profile 子系统重构为 preset/部署配置、entry 正名选 preset、
      删 wire 内联 prompt/subagent 覆盖；机制用测试 fixture preset 验证
      断言：wire 注入 system_prompt 被拒（负向测试）；新增 preset = 仅加目录+配置，
@@ -195,7 +210,7 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 块5  deliver 端到端（agent 工具 → 事件 → session 读模型 → web list/download）
      断言：deliver 后改/删源文件，下载内容不变；同内容重复 deliver 同记录
 块6  一致性加固（D7 四项）+ WP-2 远程沙箱（Daytona + pull 读路径）
-块7  web 底座（auth/settings/capabilities 选择 UI/成果面板）
+块7  web 底座（auth/settings/能力池管理面[启停/新增，非逐消息勾选]/成果面板）
 ```
 
 P1.5（V1 全绿后）：用户上传 skill、启用状态表、用户可选 MCP + 稳定 `mcp_*` adapter。

@@ -449,17 +449,13 @@ def main() -> int:
         check("E2E-30 他人 token → 403 session_forbidden",
               st_bob == 403 and body_bob.get("error") == "session_forbidden", f"{st_bob} {body_bob}")
 
-        # 9. Skills V2（E2E-29）：授权包物化进 run 的 backend（文件面同宿主的档位直接断言磁盘）。
+        # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——装配期【不再】物化任何 skill 文件；
+        # 发现/读取走 find_skill/read_skill 内存直返（单测覆盖），资产仅在 read 时按需单包供给。
         if WORKSPACE_BACKEND == "local":
-            provisioned = (scratch / "workspace" / f"team-e2e:{SID}"
-                           / ".skills" / "main" / "e2e-style" / "SKILL.md")
-            check("E2E-29 skills 供给物化（/.skills/main/…）", provisioned.is_file(), str(provisioned))
-            if provisioned.is_file():
-                check("E2E-29 供给内容=资产整包", "GATE-SKILL-BODY" in provisioned.read_text())
+            skills_dir = scratch / "workspace" / f"team-e2e:{SID}" / ".skills"
+            check("E2E-29 装配期零物化（/.skills 不存在）", not skills_dir.exists(), str(skills_dir))
             # 点前缀=能力供给不进用户文件面：snapshot.files 不得列出 skills。
-            st20, snap20 = http("GET", f"/sessions/{sid3}")  # sid3 已删——改用第二轮会话
             st21, snap21 = http("GET", f"/sessions/{SID}")
-            _ = (st20, snap20, st21)
             listed = [f["path"] for f in snap21.get("files", [])] if st21 == 200 else []
             check("E2E-29 skills 不进 snapshot.files", all(".skills" not in p for p in listed),
                   str(listed[:5]))
