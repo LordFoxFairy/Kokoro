@@ -12,7 +12,7 @@ enums:
   backend: [state, local_shell, docker, e2b, custom]
   # 装配配方分派键（assembly/<type>.py）：general=对话型对外缺省；studio 类型落地时扩枚举。
   agent_type: [general]
-  resume_decision: [approve, edit, reject, respond]
+  resume_decision: [approve, edit, reject, respond, submit]
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
@@ -106,6 +106,13 @@ resume_decisions:
     fields:
       - {name: tool_id, type: string_nonempty}
       - {name: response, type: string_nonempty}
+  # kind=input（request_human 通用输入请求,如 MCP elicitation）的回应：结构化 value 按
+  # 请求随附的 input_schema 校验（校验在 agent 侧,靠近消费点）。request_id=幂等锚——
+  # 工具边界场景与 tool_id 同值,pause 存储沿用同一锚位。
+  - type: submit
+    fields:
+      - {name: request_id, type: string_nonempty}
+      - {name: value, type: record}
 
 notes:
   run.request.thread_id: "LangGraph configurable.thread_id；V1 取值=session_id，命名只在 agent 边界。"

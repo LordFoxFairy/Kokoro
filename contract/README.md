@@ -79,6 +79,7 @@ ResumeDecision (discriminated on `type`):
 - `edit`: tool_id, args
 - `reject`: tool_id, reason?
 - `respond`: tool_id, response
+- `submit`: request_id, value
 
 ## Streams
 

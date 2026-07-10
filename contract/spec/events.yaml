@@ -14,8 +14,8 @@
 
 enums:
   subagent_source: [built-in, config-custom, runtime-custom]
-  resume_decision: [approve, edit, reject, respond]
-  awaiting_kind: [tool_approval, ask_user_question, result_review]
+  resume_decision: [approve, edit, reject, respond, submit]
+  awaiting_kind: [tool_approval, ask_user_question, result_review, input]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled]
   # 失败码是闭集：新失败形态必须进枚举（单源扩表），internal_error 兜底。

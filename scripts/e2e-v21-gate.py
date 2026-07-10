@@ -25,6 +25,7 @@ from procutil import ensure_port_free, spawn, stop
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_PORT = int(os.environ.get("E2E_SESSION_PORT", "3901"))
+MCP_PORT = int(os.environ.get("E2E_MCP_PORT", "3907"))
 BASE = f"http://127.0.0.1:{SESSION_PORT}"
 REDIS_URL = os.environ.get("E2E_REDIS_URL", "redis://127.0.0.1:6379/14")
 MONGO_URL = os.environ.get("E2E_MONGO_URL", "mongodb://127.0.0.1:27017")
@@ -162,10 +163,36 @@ def main() -> int:
                 "agents": {
                     "poet": {"description": "诗歌创作专家"},
                     "coder": {"description": "代码专家"},
-                }
+                },
+                # E2E-32：首条消息缺省 mcp_servers 时快照落 profile 默认；连接惰性,只有 SID 第三轮真调。
+                "mcp_servers": ["e2e-elicit"],
             }
         }
     }))
+    # E2E-32 真 MCP 服务器（stateful streamable_http,elicitation 需会话内双向关联）：
+    # 工具 verify 中途 ctx.elicit → agent 桥为 kind=input 暂停;accept 回 verified:<otp>。
+    (scratch / "mcp_server.py").write_text(
+        "from mcp.server.fastmcp import Context, FastMCP\n"
+        "from mcp.server.session import ServerSession\n"
+        "from pydantic import BaseModel\n"
+        "import uvicorn\n"
+        "server = FastMCP('e2e-elicit', stateless_http=False)\n"
+        "class OtpForm(BaseModel):\n"
+        "    otp: str\n"
+        "async def verify(ctx: Context[ServerSession, None, None]) -> str:\n"
+        "    result = await ctx.elicit(message='请输入验证码', schema=OtpForm)\n"
+        "    if result.action == 'accept':\n"
+        "        return f'verified:{result.data.otp}'\n"
+        "    return f'declined:{result.action}'\n"
+        "server.add_tool(verify, name='verify')\n"
+        f"uvicorn.run(server.streamable_http_app(), host='127.0.0.1', port={MCP_PORT}, log_level='error')\n"
+    )
+    (scratch / "mcp.yaml").write_text(
+        "servers:\n"
+        "  e2e-elicit:\n"
+        f"    url: http://127.0.0.1:{MCP_PORT}/mcp\n"
+        "    allowed_tools: [verify]\n"
+    )
     subprocess.run(
         ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
          f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
@@ -227,6 +254,7 @@ def main() -> int:
         "KOKORO_MONGO_URL": MONGO_URL,
         "KOKORO_MONGO_DB": MONGO_DB,
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_MCP_CONFIG": str(scratch / "mcp.yaml"),
         "KOKORO_SKILLS_DIR": str(scratch / "skills"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
@@ -234,10 +262,14 @@ def main() -> int:
     ensure_port_free(SESSION_PORT)
     session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
                          log=scratch / "session.log")
+    ensure_port_free(MCP_PORT)
+    mcp_proc = spawn(["uv", "run", "python", str(scratch / "mcp_server.py")], cwd=ROOT / "kokoro-agent",
+                     env=dict(os.environ), log=scratch / "mcp.log")
     agent_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
                        log=scratch / "agent.log")
     try:
         check("session 端口就绪", wait_port(SESSION_PORT))
+        check("mcp fixture 端口就绪", wait_port(MCP_PORT))
         time.sleep(1.5)  # worker 订阅请求流的启动窗口
 
         # 1. 发消息 + 幂等 + 409 准入
@@ -397,6 +429,41 @@ def main() -> int:
         stbad, _, _ = http_raw(f"/sessions/{SID}/deliveries/{'0' * 64}")
         check("E2E-31 未知 hash → 404", stbad == 404, str(stbad))
 
+        # 6c. MCP elicitation（E2E-32，H2/H3）：第三轮脚本 mcp_call → 服务器中途 elicit →
+        # kind=input 暂停（input_schema 上 wire）→ submit 回灌 value → 服务器续跑 → verified 回流。
+        st26, receipt6 = http("POST", f"/sessions/{SID}/messages",
+                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "调用远端校验"})
+        check("E2E-32 第三轮受理", st26 == 202, f"{st26} {receipt6}")
+        run3 = receipt6.get("run_id", "")
+        aw = sse.wait(lambda i: i[1] == "tool.awaiting_approval" and i[2]["run_id"] == run3, timeout=40)
+        pay = aw[2]["payload"] if aw else {}
+        # 暂停帧 name=内层具名工具（mcp__<server>__<tool>）而非外层 mcp_call：卡片直接呈现
+        # 哪个服务器的哪个工具在要输入;elicit message 进 args 供渲染。
+        check("E2E-32 SSE: kind=input 暂停（schema+决策集上 wire）",
+              aw is not None and pay.get("kind") == "input" and "verify" in pay.get("name", "")
+              and pay.get("args", {}).get("message") == "请输入验证码"
+              and "otp" in json.dumps(pay.get("input_schema", {}))
+              and set(pay.get("allowed_decisions", [])) == {"submit", "reject"},
+              json.dumps(pay, ensure_ascii=False)[:220])
+        req_id = pay.get("tool_id", "?")
+        st27, snap27 = http("GET", f"/sessions/{SID}")
+        pend27 = [p for p in snap27.get("pending_pauses", []) if p["status"] == "pending"]
+        check("E2E-32 snapshot: input 暂停可恢复（含 input_schema）",
+              st27 == 200 and len(pend27) == 1 and pend27[0]["kind"] == "input"
+              and pend27[0].get("input_schema") is not None, f"{st27} {pend27[:1]}")
+        st28, _ = http("POST", f"/sessions/{SID}/runs/{run3}/control",
+                       {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                        "decisions": [{"type": "submit", "request_id": req_id, "value": {"otp": "246810"}}]})
+        check("E2E-32 submit 提交 → 202", st28 == 202, str(st28))
+        ret3 = sse.wait(lambda i: i[1] == "tool.returned" and i[2]["run_id"] == run3
+                        and i[2]["payload"]["tool_id"] == req_id, timeout=40)
+        check("E2E-32 value 回灌全链（服务器 accept → verified 回流）",
+              ret3 is not None and "verified:246810" in ret3[2]["payload"].get("result", "")
+              and ret3[2]["payload"].get("is_error") is False,
+              json.dumps(ret3[2]["payload"] if ret3 else {}, ensure_ascii=False)[:160])
+        done3 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == run3, timeout=40)
+        check("E2E-32 第三轮终态", done3 is not None)
+
         # 7. 具名 agent：agent=poet 作主，wire 只传 names（无内联 prompt/定义/凭据）。
         sid2 = f"ses_agent_{uuid.uuid4().hex[:8]}"
         st10, receipt4 = http("POST", f"/sessions/{sid2}/messages",
@@ -499,6 +566,7 @@ def main() -> int:
     finally:
         stop(session_proc)
         stop(agent_proc)
+        stop(mcp_proc)
         if SANDBOX_BACKEND == "docker":
             # run 容器有 TTL 自清兜底；gate 收尾即时清理不留半小时残留。
             cids = subprocess.run(
