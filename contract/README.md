@@ -34,6 +34,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.text.completed` | segment_id, subagent_id, text |
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
+| `delivery.created` | path, title, mime, size, content_hash, note? |
 | `run.completed` | status, token_usage? |
 | `run.failed` | code, error_kind, message |
 
@@ -51,6 +52,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `tool.output.delta` | segment_id, tool_id, name, delta |
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
 | `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, summary? |
+| `delivery.created` | path, title, mime, size, content_hash, note? |
 | `todo.updated` | todos |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
@@ -95,6 +97,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | --- | --- |
 | POST | `/sessions/{session_id}/messages` |
 | GET | `/sessions/{session_id}` |
+| GET | `/sessions/{session_id}/deliveries/{content_hash}` |
 | GET | `/sessions/{session_id}/events` |
 | GET | `/sessions/{session_id}/files/{path}` |
 | POST | `/sessions/{session_id}/runs/{run_id}/control` |

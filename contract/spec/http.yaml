@@ -66,6 +66,16 @@ objects:
       - {name: path, type: string_nonempty}
       - {name: mime, type: string_nonempty}
       - {name: bytes, type: int}
+  # 成果（deliver 冻结件）读模型：内容寻址,永不漂移;下载走 delivery_content 端点。
+  - name: Delivery
+    fields:
+      - {name: content_hash, type: string_nonempty}
+      - {name: path, type: string_nonempty}
+      - {name: title, type: string_nonempty}
+      - {name: mime, type: string_nonempty}
+      - {name: size, type: int}
+      - {name: run_id, type: string_nonempty}
+      - {name: created_at, type: string_nonempty}
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
@@ -74,6 +84,8 @@ objects:
       - {name: pending_pauses, type: array:object:PendingPause}
       # 会话工作区文件清单（真实目录 walk；工作区=真文件系统 backend，state 盘档为空列表）。
       - {name: files, type: array:object:WorkspaceFile}
+      # 会话成果清单（delivery.created 投影;冻结件,与 files 的可变语义分开）。
+      - {name: deliveries, type: array:object:Delivery}
       # server-internal high-water the snapshot folded to; web never sorts by it.
       - {name: event_watermark, type: int}
 
@@ -107,6 +119,12 @@ endpoints:
     params: [session_id]
     response_const: sessionSnapshotSchema
     response_object: SessionSnapshot
+  delivery_content:
+    method: GET
+    path_fn: deliveryPath
+    path_template: "/sessions/{session_id}/deliveries/{content_hash}"
+    params: [session_id, content_hash]
+    note: "成果冻结副本下载：内容寻址（改/删源文件不影响）；content-type 按记录 mime，immutable 可长缓存。"
   stream:
     method: GET
     path_fn: eventsPath

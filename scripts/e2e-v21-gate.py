@@ -200,15 +200,24 @@ def main() -> int:
              MINIO_URL, bucket],
             cwd=ROOT / "kokoro-agent", check=True, capture_output=True,
         )
+        # deliveries 冻结件同桶（key 前缀 deliveries/… 与归档 {ns:sid}/… 不同 keyspace）。
         (scratch / "workspace.yaml").write_text(
             f"workspace:\n  type: s3\n  endpoint: {MINIO_URL}\n  bucket: {bucket}\n"
+            f"deliveries:\n  type: s3\n  endpoint: {MINIO_URL}\n  bucket: {bucket}\n"
         )
-        s3_env = {
+        storage_env = {
             "KOKORO_WORKSPACE_CONFIG": str(scratch / "workspace.yaml"),
             "KOKORO_WORKSPACE_S3_ACCESS_KEY": "kokoro",
             "KOKORO_WORKSPACE_S3_SECRET_KEY": "kokoro-secret",
         }
-        session_env.update(s3_env)
+    else:
+        # local 档也走显式 storage yaml：workspace 节与 env 根同值（行为不变），deliveries 节启用交付链。
+        (scratch / "workspace.yaml").write_text(
+            f"workspace:\n  type: local\n  root: {scratch / 'workspace'}\n"
+            f"deliveries:\n  type: local\n  root: {scratch / 'deliveries'}\n"
+        )
+        storage_env = {"KOKORO_WORKSPACE_CONFIG": str(scratch / "workspace.yaml")}
+    session_env.update(storage_env)
     agent_env = {
         **os.environ,
         "KOKORO_REDIS_URL": REDIS_URL,
@@ -221,8 +230,7 @@ def main() -> int:
         "KOKORO_SKILLS_DIR": str(scratch / "skills"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
-    if WORKSPACE_BACKEND == "s3":
-        agent_env.update(s3_env)  # 双侧读同一 workspace.yaml：agent 写时归档、session 读对象存储
+    agent_env.update(storage_env)  # 双侧读同一 storage yaml：workspace 归档 + deliveries 冻结件
     ensure_port_free(SESSION_PORT)
     session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
                          log=scratch / "session.log")
@@ -359,8 +367,35 @@ def main() -> int:
         # 6. 终态后可开新 run
         st9, receipt3 = http("POST", f"/sessions/{SID}/messages", {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "再来一轮"})
         check("终态后新 run 受理", st9 == 202 and receipt3.get("run_id") != run_id, f"{st9}")
-        done2 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == receipt3.get("run_id"), timeout=40)
+        # 6b. 成果交付（E2E-31，块D）：第二轮脚本 deliver plan.md → 事件 → 读模型 → 下载 → 冻结证明。
+        # SseReader.wait 是消费型游标：delivery.created 先于 run.completed，必须先等它再等终态。
+        run2 = receipt3.get("run_id", "")
+        dc = sse.wait(lambda i: i[1] == "delivery.created" and i[2]["run_id"] == run2, timeout=40)
+        done2 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == run2, timeout=40)
         check("第二轮 run 终态", done2 is not None)
+        check("E2E-31 SSE: delivery.created（tool.returned 追发）", dc is not None
+              and dc[2]["payload"]["path"] == "/plan.md"
+              and dc[2]["payload"]["title"] == "执行计划"
+              and dc[2]["payload"]["size"] > 0,
+              json.dumps(dc[2]["payload"] if dc else {}, ensure_ascii=False)[:200])
+        dhash = dc[2]["payload"]["content_hash"] if dc else "?"
+        st22, snap22 = http("GET", f"/sessions/{SID}")
+        entry = next((d for d in snap22.get("deliveries", []) if d["content_hash"] == dhash), None)
+        check("E2E-31 snapshot.deliveries 投影", st22 == 200 and entry is not None
+              and entry["run_id"] == run2 and entry["mime"] == "text/markdown",
+              str(snap22.get("deliveries"))[:200])
+        st23, body23, mime23 = http_raw(f"/sessions/{SID}/deliveries/{dhash}")
+        check("E2E-31 下载冻结副本（mime+字节）", st23 == 200 and body23.decode() == "# 计划\n本地预览"
+              and mime23 == "text/markdown", f"{st23} {mime23} {body23[:40]!r}")
+        # 冻结的跨栈证明：改掉工作区源文件后，下载字节不变（内容寻址，成果与工作区解耦）。
+        src_plan = scratch / "workspace" / f"e2e-user:{SID}" / "plan.md"
+        if src_plan.is_file():
+            src_plan.write_text("源文件已被改写")
+            st24, body24, _ = http_raw(f"/sessions/{SID}/deliveries/{dhash}")
+            check("E2E-31 改源文件后下载不变（交付即冻结）",
+                  st24 == 200 and body24.decode() == "# 计划\n本地预览", f"{st24} {body24[:40]!r}")
+        stbad, _, _ = http_raw(f"/sessions/{SID}/deliveries/{'0' * 64}")
+        check("E2E-31 未知 hash → 404", stbad == 404, str(stbad))
 
         # 7. 具名 agent：agent=poet 作主，wire 只传 names（无内联 prompt/定义/凭据）。
         sid2 = f"ses_agent_{uuid.uuid4().hex[:8]}"
