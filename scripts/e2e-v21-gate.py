@@ -93,11 +93,13 @@ def http_raw(path: str) -> tuple[int, bytes, str]:
 class SseReader:
     """后台线程读 SSE，帧入队列；wait() 按谓词取帧。"""
 
-    def __init__(self, path: str, last_event_id: str | None = None):
+    def __init__(self, path: str, last_event_id: str | None = None,
+                 base: str | None = None, token: str | None = None):
         self.q: queue.Queue[tuple[int, str, dict]] = queue.Queue()
         self.seen: list[tuple[int, str]] = []
-        headers = dict(AUTH_HEADER) if last_event_id is None else {"last-event-id": last_event_id, **AUTH_HEADER}
-        req = urllib.request.Request(BASE + path, headers=headers)
+        auth = AUTH_HEADER if token is None else {"authorization": f"Bearer {token}"}
+        headers = dict(auth) if last_event_id is None else {"last-event-id": last_event_id, **auth}
+        req = urllib.request.Request((base or BASE) + path, headers=headers)
         self.resp = urllib.request.urlopen(req, timeout=60)
         threading.Thread(target=self._pump, daemon=True).start()
 
@@ -260,6 +262,8 @@ def main() -> int:
     }
     agent_env.update(storage_env)  # 双侧读同一 storage yaml：workspace 归档 + deliveries 冻结件
     ensure_port_free(SESSION_PORT)
+    plat_procs: list = []   # E2E-40 platform 服务(site/user/model/credit),finally 统一收
+    session2_proc = None    # E2E-40 enforce 计费档 session 实例
     session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
                          log=scratch / "session.log")
     ensure_port_free(MCP_PORT)
@@ -563,10 +567,153 @@ def main() -> int:
             listed = [f["path"] for f in snap21.get("files", [])] if st21 == 200 else []
             check("E2E-29 skills 不进 snapshot.files", all(".skills" not in p for p in listed),
                   str(listed[:5]))
+
+        # 10. Platform 闭环（E2E-40）：真 user 签发 → enforce 计费受理 → run 全链 → ledger 落账。
+        # 前置：platform mysql(3307,kokoro-platform docker compose)在位——闭环门禁,缺失即 FAIL 不静默跳过。
+        check("E2E-40 platform mysql 前置(3307)", wait_port(3307, timeout=3),
+              "cd kokoro-platform && docker compose up -d")
+        plat_root = ROOT / "kokoro-platform"
+        pdb = "mysql://root:kokoro_root@127.0.0.1:3307/kokoro"
+        pports = {"site": 4601, "user": 4611, "model": 4621, "credit": 4631}
+        pbase = {k: f"http://127.0.0.1:{v}" for k, v in pports.items()}
+        penv: dict[str, dict[str, str]] = {
+            "site": {"DATABASE_URL_SITE": pdb, "KOKORO_SITE_PORT": str(pports["site"])},
+            "user": {"DATABASE_URL_USER": pdb, "KOKORO_USER_PORT": str(pports["user"]),
+                     "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET},
+            "model": {"DATABASE_URL_MODEL": pdb, "KOKORO_MODEL_PORT": str(pports["model"])},
+            "credit": {"DATABASE_URL_CREDIT": pdb, "KOKORO_CREDIT_PORT": str(pports["credit"]),
+                       "KOKORO_USER_BASE_URL": pbase["user"], "KOKORO_SITE_BASE_URL": pbase["site"],
+                       "KOKORO_MODEL_BASE_URL": pbase["model"]},
+        }
+        for pname, extra in penv.items():
+            ensure_port_free(pports[pname])
+            plat_procs.append(spawn(["pnpm", "run", "start"], cwd=plat_root / f"kokoro-{pname}",
+                                    env={**os.environ, **extra}, log=scratch / f"plat-{pname}.log"))
+        for pname in penv:
+            check(f"E2E-40 {pname} 端口就绪", wait_port(pports[pname], timeout=60))
+
+        def plat(method: str, url: str, body: dict | None = None, site: str | None = None):
+            # site 缺省=闭包后绑定的 site40（真实 site id="site-"+key,由 upsert 响应取）。
+            req = urllib.request.Request(url, method=method,
+                                         data=None if body is None else json.dumps(body).encode(),
+                                         headers={"content-type": "application/json",
+                                                  "x-kokoro-site-id": site or site40})
+            try:
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    return resp.status, json.loads(resp.read() or b"{}")
+            except urllib.error.HTTPError as e:
+                return e.code, json.loads(e.read() or b"{}")
+
+        # 种子：站点 / direct 绑定（不走网关,fake 模型照跑,链路断言聚焦计费）/ null-label 计价。
+        st40, site_resp = plat("POST", f"{pbase['site']}/sites/upsert",
+                       {"key": "site-e2e", "name": "E2E 闭环站", "status": "active"}, site="boot")
+        site40 = str((site_resp.get("data") or {}).get("id", ""))
+        check("E2E-40 site 就位（隔离键=site id）", st40 == 200 and site40 != "", f"{st40} {str(site_resp)[:120]}")
+        st41, acc = plat("POST", f"{pbase['model']}/provider-accounts/ensure",
+                         {"provider": "anthropic", "key": "e2e-direct", "label": "e2e 直连",
+                          "secretRef": "env:EXAMPLE_NOT_REAL", "transportKind": "direct"})
+        acc_id = str((acc.get("data") or {}).get("id", ""))
+        st42, _ = plat("POST", f"{pbase['model']}/model-bindings/ensure",
+                       {"providerAccountId": acc_id, "modelName": "claude-sonnet-4-6",
+                        "displayName": "E2E 直连绑定", "featureKey": "chat",
+                        "labelKeys": ["claude-sonnet-4-6"], "transportKind": "direct"})
+        check("E2E-40 model 绑定就位", st41 == 200 and st42 == 200, f"{st41}/{st42} {str(acc)[:120]}")
+        for unit, price in (("input_token", 20), ("output_token", 60)):
+            stp, _ = plat("POST", f"{pbase['credit']}/credit/pricing-rules",
+                          {"featureKey": "chat", "unit": unit, "amountMicros": price})
+            check(f"E2E-40 计价规则 {unit}", stp == 200, str(stp))
+        # external_user_id 每轮唯一：platform mysql 跨 gate 持久,复用会带着上轮授信破坏"无余额"前置。
+        st43, issued = plat("POST", f"{pbase['user']}/auth/sessions",
+                            {"site_id": site40, "external_user_id": f"e2e-closure-{uuid.uuid4().hex[:6]}"})
+        idata = issued.get("data") or {}
+        tok40 = str(idata.get("token", ""))
+        ns40 = str(idata.get("namespace", ""))
+        check("E2E-40 真签发（user 服务出 token+namespace）",
+              st43 == 200 and tok40 != "" and ns40 != "", f"{st43} {str(issued)[:150]}")
+
+        # enforce 计费档 session 实例（无 namespaces 文件=内置默认档,state 后端;共享 redis/mongo/worker）。
+        SESSION2 = int(os.environ.get("E2E_SESSION2_PORT", "3902"))
+        ensure_port_free(SESSION2)
+        session2_env = {k: v for k, v in session_env.items()
+                        if k not in ("KOKORO_NAMESPACES_FILE", "KOKORO_REVIEW_TOOLS")}
+        session2_env.update({
+            "KOKORO_SESSION_PORT": str(SESSION2),
+            "KOKORO_BILLING_MODE": "enforce",
+            "KOKORO_CREDIT_BASE_URL": pbase["credit"],
+            "KOKORO_MODEL_BASE_URL": pbase["model"],
+            "KOKORO_SITE_ID": site40,
+        })
+        session2_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session2_env,
+                              log=scratch / "session2.log")
+        check("E2E-40 session(enforce) 端口就绪", wait_port(SESSION2))
+
+        def s2(method: str, path: str, body: dict | None = None):
+            req = urllib.request.Request(f"http://127.0.0.1:{SESSION2}{path}", method=method,
+                                         data=None if body is None else json.dumps(body).encode(),
+                                         headers={"content-type": "application/json",
+                                                  "authorization": f"Bearer {tok40}"})
+            try:
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    return resp.status, json.loads(resp.read() or b"{}")
+            except urllib.error.HTTPError as e:
+                return e.code, json.loads(e.read() or b"{}")
+
+        sid40 = f"ses_closure_{uuid.uuid4().hex[:8]}"
+        st44, body44 = s2("POST", f"/sessions/{sid40}/messages",
+                          {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "闭环首跑"})
+        check("E2E-40 无余额 → 402 credit_insufficient",
+              st44 == 402 and body44.get("error") == "credit_insufficient", f"{st44} {body44}")
+        ste, acc40 = plat("POST", f"{pbase['credit']}/credit/accounts/ensure",
+                          {"ownerKind": "team", "ownerId": ns40})
+        accid40 = str((acc40.get("data") or {}).get("id", ""))
+        stg, _ = plat("POST", f"{pbase['credit']}/credit/grant",
+                      {"accountId": accid40, "amountMicros": 100_000_000,
+                       "idempotencyKey": f"grant_{uuid.uuid4().hex[:8]}", "reason": "manual_adjustment"})
+        check("E2E-40 授信（ensure→grant）", ste == 200 and stg == 200, f"{ste}/{stg} {str(acc40)[:120]}")
+        st45, r40 = s2("POST", f"/sessions/{sid40}/messages",
+                       {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "闭环跑一单"})
+        check("E2E-40 授信后受理 202", st45 == 202, f"{st45} {r40}")
+        run40 = str(r40.get("run_id", ""))
+        sse40 = SseReader(f"/sessions/{sid40}/events", base=f"http://127.0.0.1:{SESSION2}", token=tok40)
+        aw40 = sse40.wait(lambda i: i[1] == "tool.awaiting_approval")
+        check("E2E-40 ask_user 暂停（默认档全链可跑）",
+              aw40 is not None and aw40[2]["payload"]["kind"] == "ask_user_question")
+        st46, _ = s2("POST", f"/sessions/{sid40}/runs/{run40}/control",
+                     {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                      "decisions": [{"type": "respond", "tool_id": aw40[2]["payload"]["tool_id"] if aw40 else "?",
+                                     "response": "中文"}]})
+        aw41 = sse40.wait(lambda i: i[1] == "tool.awaiting_approval"
+                          and i[2]["payload"]["kind"] == "tool_approval")
+        st47, _ = s2("POST", f"/sessions/{sid40}/runs/{run40}/control",
+                     {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                      "decisions": [{"type": "approve", "tool_id": aw41[2]["payload"]["tool_id"] if aw41 else "?"}]})
+        done40 = sse40.wait(lambda i: i[1] == "run.completed", timeout=60)
+        check("E2E-40 run 终态 completed", st46 == 202 and st47 == 202 and done40 is not None
+              and done40[2]["payload"]["status"] == "completed",
+              f"{st46}/{st47} {done40[2]['payload'] if done40 else {}}")
+        # ledger 落账（settle 异步于终态投影,轮询 mysql）：幂等键含 run_id 的账本行 ≥1 = hold→capture 闭环铁证。
+        # run40 为空时 LIKE '%%' 会假阳——先守空值。
+        ledger_rows = 0 if run40 else -1
+        for _ in range(30 if run40 else 0):
+            q = subprocess.run(
+                ["docker", "exec", "kokoro-platform-mysql-1", "mysql", "-uroot", "-pkokoro_root",
+                 "kokoro", "-N", "-e",
+                 f"SELECT COUNT(*) FROM credit_ledger_entries WHERE idempotencyKey LIKE '%{run40}%'"],
+                capture_output=True, text=True, check=False)
+            ledger_rows = int(q.stdout.strip() or 0) if q.returncode == 0 else 0
+            if ledger_rows > 0:
+                break
+            time.sleep(0.5)
+        check("E2E-40 credit ledger 落账（按 run_id 幂等键）", ledger_rows > 0,
+              f"rows={ledger_rows} run_id={run40}")
     finally:
         stop(session_proc)
         stop(agent_proc)
         stop(mcp_proc)
+        if session2_proc is not None:
+            stop(session2_proc)
+        for proc in plat_procs:
+            stop(proc)
         if SANDBOX_BACKEND == "docker":
             # run 容器有 TTL 自清兜底；gate 收尾即时清理不留半小时残留。
             cids = subprocess.run(
