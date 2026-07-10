@@ -138,6 +138,8 @@ def boot() -> dict[str, int]:
         "KOKORO_CREDIT_BASE_URL": BASE["credit"],
         "KOKORO_MODEL_BASE_URL": BASE["model"],
         "KOKORO_SITE_ID": "site-site-dev",
+        # 浏览器直连(web dev 档)的 CORS 白名单(session 原生单源开关);生产按真实站点域名配置。
+        "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", "http://127.0.0.1:3000"),
     }
     agent_env = {
         **os.environ,
