@@ -78,20 +78,23 @@ objects:
       - {name: event_watermark, type: int}
 
 endpoints:
-  start_message:
+  create_message:
     method: POST
     path_fn: messagesPath
     path_template: "/sessions/{session_id}/messages"
     params: [session_id]
     status: 202
-    body_const: startMessageBodySchema
+    body_const: messageCreateParamsSchema
     body:
       - {name: idempotency_key, type: string_nonempty}
       - {name: content, type: string_nonempty}
-      - {name: selected_model, type: string_nonempty, optional: true}
-      - {name: entry, type: string_nonempty, optional: true}
+      - {name: model, type: string_nonempty, optional: true}
+      - {name: agent, type: string_nonempty, optional: true}
       - {name: thinking, type: boolean, optional: true}
-    receipt_const: startMessageReceiptSchema
+      # 本 run 能力选择（受理瞬间快照进 RunRequest）；缺省=沿用部署默认，不表示全量启用。
+      - {name: skills, type: array:string_nonempty, optional: true}
+      - {name: mcp_servers, type: array:string_nonempty, optional: true}
+    receipt_const: messageCreateReceiptSchema
     receipt:
       - {name: run_id, type: string_nonempty}
       - {name: user_message_id, type: string_nonempty}

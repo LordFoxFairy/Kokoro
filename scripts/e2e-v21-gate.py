@@ -160,10 +160,10 @@ def main() -> int:
                 "backend": SANDBOX_BACKEND,
                 # Skills V2：namespace 常挂技能 → 装配期供给进 backend（E2E-29 断言物化）。
                 "skills": ["e2e-style"],
+                # wire 只传 names：prompt 定义住 agent 侧（prompts/<name>.md），profile 不再内联。
                 "agents": {
-                    "poet": {"description": "诗歌创作专家", "system_prompt": "你是诗人人格",
-                             "swarm": ["coder"]},
-                    "coder": {"description": "代码专家", "system_prompt": "你是工程师人格"},
+                    "poet": {"description": "诗歌创作专家"},
+                    "coder": {"description": "代码专家"},
                 }
             }
         }
@@ -364,14 +364,14 @@ def main() -> int:
         done2 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == receipt3.get("run_id"), timeout=40)
         check("第二轮 run 终态", done2 is not None)
 
-        # 7. 具名入口：entry=poet 作主 agent，wire 上人格与下属断言。
-        sid2 = f"ses_entry_{uuid.uuid4().hex[:8]}"
+        # 7. 具名 agent：agent=poet 作主，wire 只传 names（无内联 prompt/定义/凭据）。
+        sid2 = f"ses_agent_{uuid.uuid4().hex[:8]}"
         st10, receipt4 = http("POST", f"/sessions/{sid2}/messages",
-                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "写首诗", "entry": "poet"})
-        check("entry=poet 受理", st10 == 202, f"{st10} {receipt4}")
+                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "写首诗", "agent": "poet"})
+        check("agent=poet 受理", st10 == 202, f"{st10} {receipt4}")
         st11, body11 = http("POST", f"/sessions/{sid2}/messages",
-                            {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x", "entry": "ghost"})
-        check("entry 未知 → 400", st11 == 400 and body11.get("error") == "unknown_entry", f"{st11} {body11}")
+                            {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x", "agent": "ghost"})
+        check("agent 未知 → 400", st11 == 400 and body11.get("error") == "unknown_agent", f"{st11} {body11}")
         raw = subprocess.run(["redis-cli", "-u", REDIS_URL, "XRANGE", "kokoro:runs:requests", "-", "+"],
                              capture_output=True, text=True, check=True).stdout
         wire_ok = False
@@ -382,14 +382,14 @@ def main() -> int:
             req = json.loads(line)
             if req.get("run_id") == receipt4.get("run_id"):
                 rt = req["runtime"]
-                wire_ok = (rt.get("system_prompt") == "你是诗人人格"
-                           and [s["name"] for s in rt["subagents"]] == ["coder"]
-                           and rt.get("swarm_members") == ["coder"]
+                wire_ok = (rt.get("agent") == "poet"
+                           and rt["subagents"] == ["coder"]
+                           and "system_prompt" not in rt  # 契约负向：wire 恒无内联 prompt
                            and req["context"]["namespace"] == "team-e2e")
-        check("wire: entry 人格 + 下属预设 + swarm 成员名单 + 租户 namespace", wire_ok)
+        check("wire: agent 名 + names 下属 + 无内联 prompt + 租户 namespace", wire_ok)
         sse3 = SseReader(f"/sessions/{sid2}/events")
         pause3 = sse3.wait(lambda i: i[1] == "tool.awaiting_approval")
-        check("entry run 启动并到达首个暂停", pause3 is not None)
+        check("agent run 启动并到达首个暂停", pause3 is not None)
         st12, _ = http("POST", f"/sessions/{sid2}/runs/{receipt4['run_id']}/control",
                        {"kind": "run.cancel", "decision_id": f"dec_{uuid.uuid4().hex[:8]}"})
         cancelled = sse3.wait(lambda i: i[1] == "run.completed")

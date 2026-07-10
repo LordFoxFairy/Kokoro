@@ -179,11 +179,13 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 
 ```text
 块1  [已完成] namespace 事实源化 + fail-closed auth（195 tests 绿）
-块2  contract 与命名一次到位（D3+D8）：MessageCreateParams（原 StartMessageBody，
-     +skills/mcp_servers、selected_model→model、entry→agent）、
-     RuntimeConfig.mcp→mcp_servers、agent 侧 MCP 配置
-     断言：request ledger 无明文 headers（负向测试）；names 受理快照生效；
-     旧字段名全仓 grep 零残留
+块2  [已完成] contract 与命名一次到位（D3+D8），并超额完成 wire 全面 names 化：
+     MessageCreateParams（+skills/mcp_servers、model、agent）、RuntimeConfig
+     （mcp_servers/subagents 全 names、删 system_prompt 内联与 swarm_members）、
+     agent 侧 KOKORO_MCP_CONFIG（headers 值 ${ENV} 占位，凭据不进 yaml/wire/ledger）
+     已验：agent 410 pytest+ruff+pyright / session 195+tc+lint / web 214+tc+lint 三仓三绿；
+     负向测试（wire 注入 system_prompt/McpServer 对象/内联 subagent/swarm_members 全拒）；
+     generate --check 14 镜像零漂移；旧名 grep 零残留。e2e-v21-gate 已同步（需 docker 环境跑）
 块3  skill 挂载 + find_skill（去 skills=）
      断言：skill 集 A/B 切换 system prompt diff 为空；未启用包 find 不可见
 块4  preset 化：profile 子系统重构为 preset/部署配置、entry 正名选 preset、

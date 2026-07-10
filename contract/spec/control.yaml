@@ -7,7 +7,6 @@
 # source data. conversation_id / execution_style / permission_mode are deleted.
 
 enums:
-  mcp_transport: [http, streamable_http]
   subagent_create: [deny, ask, allow]
   filesystem_perm: [read_only, workspace_write]
   backend: [state, local_shell, docker, e2b, custom]
@@ -28,49 +27,29 @@ objects:
       - {name: name, type: string_nonempty}
       - {name: effort, type: string_nonempty, optional: true}
       - {name: thinking, type: boolean, optional: true}
-  - name: McpServer
-    fields:
-      - {name: name, type: string_nonempty}
-      - {name: transport, type: enum:mcp_transport}
-      - {name: url, type: string_nonempty}
-      - {name: allowed_tools, type: array:string_nonempty}
-      - {name: timeout_s, type: int, optional: true}
-      # 个人/私有 MCP 的凭据直传（V1 内网）；升级路径=secret 引用+worker 侧解析。
-      - {name: headers, type: string_map, optional: true}
-  - name: SubagentDef
-    fields:
-      - {name: name, type: string_nonempty}
-      - {name: description, type: string}
-      # 人格可缺省：agent 按 name 查 personas 资产库（prompts/<name>.md）；内联即覆盖。
-      - {name: system_prompt, type: string_nonempty, optional: true}
-      - {name: tools, type: array:string_nonempty}
-      # 入口对偶性：成品降格为子代理时保留其技能包（按名引用，agent 侧库渲染）。
-      - {name: skills, type: array:string_nonempty}
-      - {name: model, type: object:ModelConfig, optional: true}
   - name: Permissions
     fields:
       - {name: approval_tools, type: array:string_nonempty}
       - {name: review_tools, type: array:string_nonempty}
       - {name: subagent_create, type: enum:subagent_create}
       - {name: filesystem, type: enum:filesystem_perm}
+  # wire 只传 names + 已解析上下文；一切定义（prompt/subagent/MCP server）归 agent 侧资产/配置。
   - name: RuntimeConfig
     fields:
-      # 类型决定配方与基础工具面（如 ask_user 只属对话型）；entry 是类型下的具名实例。
+      # 类型决定配方与基础工具面（如 ask_user 只属对话型）；agent 是类型下的具名实例。
       - {name: agent_type, type: enum:agent_type}
-      # 入口名（人格资产解析键：prompts/<entry>.md）；缺省=general。
-      - {name: entry, type: string_nonempty, optional: true}
+      # agent（preset）名：人格资产解析键 prompts/<agent>.md；缺省=general。
+      - {name: agent, type: string_nonempty, optional: true}
       - {name: model, type: object:ModelConfig}
-      - {name: system_prompt, type: string_nonempty, optional: true}
       - {name: tools, type: array:string_nonempty}
       # skills 按名引用：资产库在 agent 侧（每 skill 一目录，启动扫描建清单+内容锁）。
       - {name: skills, type: array:string_nonempty}
-      - {name: mcp, type: array:object:McpServer}
-      - {name: subagents, type: array:object:SubagentDef}
+      # MCP server 按名引用：完整配置（transport/url/headers）在 agent 侧部署配置，凭据不上 wire。
+      - {name: mcp_servers, type: array:string_nonempty}
+      # subagent 按名引用：定义住 agent 侧 catalog/资产库，wire 不携带内联 prompt。
+      - {name: subagents, type: array:string_nonempty}
       - {name: backend, type: enum:backend}
       - {name: permissions, type: object:Permissions}
-      # swarm 成员（对等 handoff 资格，per-entry 配置；配置表后续归 platform 后台管理）。
-      # V1 桥语义：成员同时在 subagents 里作层级下属；P2 langgraph-swarm 据此建 handoff 图。
-      - {name: swarm_members, type: array:string_nonempty, optional: true}
   # 会话连续性由 thread checkpoint 承担；组织/用户维度等真实 auth 落地再进契约（拒绝投机字段）。
   - name: RuntimeContext
     fields:

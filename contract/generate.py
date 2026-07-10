@@ -593,18 +593,18 @@ def emit_http_ts(spec: dict) -> str:
     L.append("}")
     L.append("")
 
-    start = ep["start_message"]
+    start = ep["create_message"]
     L.append(f"export const {start['body_const']} = z")
     L.append("  .object({")
     L += [f"    {ts_field(f, enums)}," for f in start["body"]]
     L += ["  })", "  .strict()"]
-    L.append(f"export type StartMessageBody = z.infer<typeof {start['body_const']}>")
+    L.append(f"export type MessageCreateParams = z.infer<typeof {start['body_const']}>")
     L.append("")
     L.append(f"export const {start['receipt_const']} = z")
     L.append("  .object({")
     L += [f"    {ts_field(f, enums)}," for f in start["receipt"]]
     L += ["  })", "  .strict()"]
-    L.append(f"export type StartMessageReceipt = z.infer<typeof {start['receipt_const']}>")
+    L.append(f"export type MessageCreateReceipt = z.infer<typeof {start['receipt_const']}>")
     L.append("")
 
     ctrl = ep["run_control"]
@@ -637,7 +637,7 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
     L.append("")
 
-    for key in ("start_message", "snapshot", "stream", "file", "run_control"):
+    for key in ("create_message", "snapshot", "stream", "file", "run_control"):
         e = ep[key]
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
         body = _ts_template(e["path_template"], e["params"])
