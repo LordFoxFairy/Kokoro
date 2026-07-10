@@ -56,6 +56,14 @@ response = await request_human(kind="input", schema=OtpSchema, context={...})
 - H2：`kind=input` + schema 驱动表单（web）+ `run.resume{responses}` 契约演进。**迁移面明示**：session 的 pauses 存储现以 tool_id 为唯一锚（resolvePause 按其过滤），H2 需加 request_id 锚并兼容映射（tool 边界场景 request_id=tool_id），这是 session store 改动，不只是契约改动。
 - H3：MCP elicitation 桥接；policy 超时/默认行为；manifest 审批策略。
 
-## 7. 不做
+## 7. 呈现协议（web 侧，打磨补充）
+
+- **一 kind 一渲染器，schema 兜底**：approval/question/review 沿用现有三卡升级为 HumanRequest 渲染器；`kind=input` 用 **JSON Schema 驱动表单**（字段类型→控件映射：string→输入框、enum→单选、boolean→开关、array→多选；不认识的 schema 给原始 JSON 编辑器兜底）——新场景零前端开发的落点。
+- **与预览联动**（见 preview spec §4）：write_file 审批卡内嵌内容预览（批前看到要写什么）；review 卡一键在 canvas 打开被审文件。
+- **多 pending 呈现**：同 run 多个待决请求按序列出（队列可见），resume 可单条或批量提交（契约 responses 数组天然支持）；已决请求落为已决态卡片（决策+时间戳，可追溯不消失）。
+- **过期/失效态**：run 已终态（如被 cancel）后仍挂着的请求卡渲染为失效态（不可交互，说明原因）——防"点了没反应"。
+- 移动端：卡片纵向堆叠可用即可，canvas 联动降级为全屏预览（V1 不做专门布局）。
+
+## 8. 不做
 
 不做审批工作流引擎（多级审批/会签——那是平台后台域）；不做同步阻塞式 UI 长轮询（一切走既有 SSE+resume）。

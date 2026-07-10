@@ -62,7 +62,8 @@
 - MCP：`2026-07-10-mcp-design.md`
 - 成果：`2026-07-10-deliver-design.md`
 - agent 配置包与编排：`2026-07-10-agent-preset-design.md`（v2，阶段即技能）
-- HITL 通用化：`2026-07-10-hitl-design.md`（HumanRequest 单原语）
+- HITL 通用化：`2026-07-10-hitl-design.md`（HumanRequest 单原语 + §7 呈现协议）
+- 产物预览与成果呈现：`2026-07-10-preview-and-delivery-ux.md`（三层内容面）
 - Python 实现美学：`2026-07-10-python-style.md`
 
 ## 5. 实施主序（认可后执行）

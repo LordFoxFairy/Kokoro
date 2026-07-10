@@ -83,6 +83,10 @@ name 正则（小写/长度上限/保留字拒绝）、description 长度、fron
 
 fixture=磁盘真实技能包目录；链路=真扫描 → seed → **真 Mongo + 真 minio**（docker,本仓 test 口径）→ 装配断言。覆盖：seed 幂等/内容更新不影响已快照会话（内容锁）/namespace 覆盖 official/required 强制注入/校验清单逐条负向/物化 hash 增量与缺目录自愈/GC/单包失败不阻断/skill 工具授权与去重/会话内 prompt 两次装配字节相同。
 
+## 7.5 已知 P1 边角（块B 链路自查记档）
+
+同名跨 scope 的 hash 归属错位：会话快照了 official 版卡片后，用户又上传**同名**技能——旧会话按 official hash 读取时，`_find_in_scopes` 先命中 namespace 文档、取包用其 scope 拼 ref → miss → 工具返回 error（fail-closed 不炸 run，但本应读到 official 旧版）。概率低；修法=SkillGrant 增 `scope` 字段（快照时定死归属）或取包按 scope 退避，随用户上传功能（写面块）一并落。
+
 ## 8. 与冻结代码的关系
 
 冻结代码中可复用：Mongo store 骨架、真文件+真库测试形态；作废：files 全进 Mongo（改分层）、无脑每 run 重供（改 hash 增量 + **graph state 账本**——冻结代码的闭包局部变量 `supplied` 不算账本,重启/resume 不识别,必须按 spec 改）、零工具方案（skill 工具回归）、`fetch(scopes,name)` 无 hash 参数（改为按 hash 取,双路）。

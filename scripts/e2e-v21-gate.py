@@ -158,8 +158,6 @@ def main() -> int:
             "team-e2e": {
                 # local_shell/docker：write_file 真落盘（docker 档文件面同宿主），文件面断言同一套。
                 "backend": SANDBOX_BACKEND,
-                # Skills V2：namespace 常挂技能 → 装配期供给进 backend（E2E-29 断言物化）。
-                "skills": ["e2e-style"],
                 # wire 只传 names：prompt 定义住 agent 侧（prompts/<name>.md），profile 不再内联。
                 "agents": {
                     "poet": {"description": "诗歌创作专家"},
@@ -369,9 +367,13 @@ def main() -> int:
         st10, receipt4 = http("POST", f"/sessions/{sid2}/messages",
                               {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "写首诗", "agent": "poet"})
         check("agent=poet 受理", st10 == 202, f"{st10} {receipt4}")
-        st11, body11 = http("POST", f"/sessions/{sid2}/messages",
+        st11, body11 = http("POST", f"/sessions/ses_ghost_{uuid.uuid4().hex[:6]}/messages",
                             {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x", "agent": "ghost"})
-        check("agent 未知 → 400", st11 == 400 and body11.get("error") == "unknown_agent", f"{st11} {body11}")
+        check("agent 未知（新会话）→ 400", st11 == 400 and body11.get("error") == "unknown_agent", f"{st11} {body11}")
+        st11b, body11b = http("POST", f"/sessions/{sid2}/messages",
+                              {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "x", "agent": "coder"})
+        check("同会话改 agent → 400 能力锁", st11b == 400 and body11b.get("error") == "session_capabilities_locked",
+              f"{st11b} {body11b}")
         raw = subprocess.run(["redis-cli", "-u", REDIS_URL, "XRANGE", "kokoro:runs:requests", "-", "+"],
                              capture_output=True, text=True, check=True).stdout
         wire_ok = False

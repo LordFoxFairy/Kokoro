@@ -91,8 +91,9 @@ endpoints:
       - {name: model, type: string_nonempty, optional: true}
       - {name: agent, type: string_nonempty, optional: true}
       - {name: thinking, type: boolean, optional: true}
-      # 本 run 能力选择（受理瞬间快照进 RunRequest）；缺省=沿用部署默认，不表示全量启用。
-      - {name: skills, type: array:string_nonempty, optional: true}
+      # 会话级能力（仅首条消息生效并定死；后续消息带不同值 → 400 session_capabilities_locked）：
+      # pinned_skills=输入框强调集（授权池快照由 session 查 enabled 池自动完成,不上 wire）。
+      - {name: pinned_skills, type: array:string_nonempty, optional: true}
       - {name: mcp_servers, type: array:string_nonempty, optional: true}
     receipt_const: messageCreateReceiptSchema
     receipt:

@@ -27,6 +27,12 @@ objects:
       - {name: name, type: string_nonempty}
       - {name: effort, type: string_nonempty, optional: true}
       - {name: thinking, type: boolean, optional: true}
+  # 会话快照的技能卡片（内容锁）：装配清单零查询,恢复重放零决策。
+  - name: SkillGrant
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: content_hash, type: string_nonempty}
+      - {name: description, type: string_nonempty}
   - name: Permissions
     fields:
       - {name: approval_tools, type: array:string_nonempty}
@@ -42,8 +48,8 @@ objects:
       - {name: agent, type: string_nonempty, optional: true}
       - {name: model, type: object:ModelConfig}
       - {name: tools, type: array:string_nonempty}
-      # skills 按名引用：资产库在 agent 侧（每 skill 一目录，启动扫描建清单+内容锁）。
-      - {name: skills, type: array:string_nonempty}
+      # skills = 会话快照卡片（session 创建时查池定死,含内容锁 hash）；run 只是复制。
+      - {name: skills, type: array:object:SkillGrant}
       # MCP server 按名引用：完整配置（transport/url/headers）在 agent 侧部署配置，凭据不上 wire。
       - {name: mcp_servers, type: array:string_nonempty}
       # subagent 按名引用：定义住 agent 侧 catalog/资产库，wire 不携带内联 prompt。
