@@ -33,6 +33,9 @@ objects:
       - {name: name, type: string_nonempty}
       - {name: content_hash, type: string_nonempty}
       - {name: description, type: string_nonempty}
+      # 快照时定死归属（"official" | <namespace>）：同名跨 scope 时按 hash 取包不再猜先后
+      # （skills spec §7.5 边角:用户上传同名技能后,旧会话仍按 official 卡读到正确旧版）。
+      - {name: scope, type: string_nonempty}
   - name: Permissions
     fields:
       - {name: approval_tools, type: array:string_nonempty}
