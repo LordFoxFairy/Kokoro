@@ -7,6 +7,7 @@
 enums:
   skill_source: [deploy, upload, github]
   mcp_transport: [http, streamable_http]
+  review_status: [pending, approved, rejected]
 
 objects:
   # 清单卡片：会话快照与 system prompt 技能清单的最小面。
@@ -34,6 +35,11 @@ objects:
       - {name: package_ref, type: string_nonempty}    # S3/local 包体键
       - {name: source, type: enum:skill_source}
       - {name: revision, type: int}                   # 文档级 CAS，防并发写半截
+      # 运营位与审核(HUB-4;缺省语义=读侧 backfill:weight 0/pinned false/category null/approved)。
+      - {name: display_weight, type: int, optional: true}
+      - {name: pinned, type: boolean, optional: true}
+      - {name: category, type: string_nonempty, optional: true, nullable: true}
+      - {name: review_status, type: enum:review_status, optional: true}
       - {name: official_enabled, type: boolean}
       - {name: official_required, type: boolean}      # 恒注入、拒绝用户关闭
       - {name: updated_at, type: int}
