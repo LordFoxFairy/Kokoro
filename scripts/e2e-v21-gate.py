@@ -390,14 +390,16 @@ def main() -> int:
         check("SSE 续传：拿到终态且不重放水位前事件", tail is not None and tail[0] == term_seq
               and all(seq > mid for seq, _ in sse2.seen), f"seen={sse2.seen[:5]}")
 
-        # 5b. seq=0 全量回放（web 刷新水合语义）：线程可完全由事件史重建。
+        # 5b. seq=0 全量回放（web 刷新水合语义）：线程由落库帧重建——M-6 读模型压缩后
+        # delta 类帧只走 live 不落库,回放必须【不含】delta;终文本由 completed 帧承载。
         sse0 = SseReader(f"/sessions/{SID}/events", last_event_id="0")
         check("seq=0 回放：拿到终态", sse0.wait(lambda i: i[1] == "run.completed", timeout=10) is not None)
         replay_kinds = [k for _, k in sse0.seen]
-        check("seq=0 回放：message.user ×2（user+steer）+ 全事件面",
+        check("seq=0 回放：message.user ×2（user+steer）+ 完整帧面（无 delta）",
               replay_kinds.count("message.user") == 2
               and {"session.created", "run.created", "tool.awaiting_approval", "tool.returned",
-                   "message.delta", "message.completed", "run.completed"} <= set(replay_kinds),
+                   "message.completed", "run.completed"} <= set(replay_kinds)
+              and "message.delta" not in replay_kinds and "thinking.delta" not in replay_kinds,
               str(replay_kinds[:12]))
 
         # 6. 终态后可开新 run

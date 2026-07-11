@@ -6,6 +6,7 @@
 
 enums:
   skill_source: [deploy, upload, github]
+  mcp_transport: [http, streamable_http]
 
 objects:
   # 清单卡片：会话快照与 system prompt 技能清单的最小面。
@@ -57,6 +58,20 @@ objects:
       - {name: source, type: enum:skill_source}
       - {name: created_at, type: int}
 
+  # MCP server 注册表(HUB-3):scope=official|<namespace>,namespace 覆盖 official 同名;
+  # secret_ref 只存 env:VAR / secret:path 引用,绝不明文;enabled=文档级启停;软删同 skills。
+  - name: McpServerDoc
+    fields:
+      - {name: scope, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: transport, type: enum:mcp_transport}
+      - {name: url, type: string_nonempty}
+      - {name: allowed_tools, type: array:string_nonempty}
+      - {name: secret_ref, type: string_nonempty, nullable: true}
+      - {name: enabled, type: boolean}
+      - {name: updated_at, type: int}
+      - {name: deleted_at, type: int, nullable: true}
+
 collections:
   skills:
     doc: SkillDoc
@@ -67,6 +82,9 @@ collections:
   skill_revisions:
     doc: SkillRevisionDoc
     unique: [scope, name, content_hash]
+  mcp_servers:
+    doc: McpServerDoc
+    unique: [scope, name]
 
 # 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
 workspace_key_template: "{namespace}:{session_id}"
