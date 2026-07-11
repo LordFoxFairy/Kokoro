@@ -15,6 +15,7 @@ SPEC = HERE / "spec"
 AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
 SESSION = ROOT / "kokoro-session/src/contract"
 WEB = ROOT / "kokoro-web/src/contract"
+HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
 
 EVENTS_SRC = "contract/spec/events.yaml"
 CONTROL_SRC = "contract/spec/control.yaml"
@@ -889,6 +890,7 @@ def build() -> dict[Path, str]:
         SESSION / "http.ts": http_ts,
         AGENT / "storage.py": emit_storage_py(storage),
         SESSION / "storage.ts": emit_storage_ts(storage),
+        HUB / "storage.ts": emit_storage_ts(storage),
         WEB / "session-events.ts": session_events,
         WEB / "control.ts": control_ts,
         WEB / "http.ts": http_ts,
