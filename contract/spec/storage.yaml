@@ -46,6 +46,17 @@ objects:
       - {name: enabled, type: boolean}
       - {name: updated_at, type: int}
 
+  # 版本历史(append-only,hub 上传/官方 seed 每次内容变更落一条;回滚=按 hash 取 S3 永存 zip)。
+  - name: SkillRevisionDoc
+    fields:
+      - {name: scope, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: revision, type: int}                   # 落此版时的文档 revision(排序/审计)
+      - {name: content_hash, type: string_nonempty}
+      - {name: package_size, type: int}
+      - {name: source, type: enum:skill_source}
+      - {name: created_at, type: int}
+
 collections:
   skills:
     doc: SkillDoc
@@ -53,6 +64,9 @@ collections:
   skill_state:
     doc: SkillStateDoc
     unique: [namespace, name]
+  skill_revisions:
+    doc: SkillRevisionDoc
+    unique: [scope, name, content_hash]
 
 # 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
 workspace_key_template: "{namespace}:{session_id}"
