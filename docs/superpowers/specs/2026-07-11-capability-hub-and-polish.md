@@ -1,5 +1,9 @@
 # 能力中台(kokoro-hub) × 全域打磨方案(v1 定案稿)
 
+> **已收编 handbook**：本方案 §1-§3（HUB-1/2 已落地、HUB-3/4 进行中，tRPC 定案）正式事实册见
+> [`docs/kokoro-handbook/technical/22-capability-hub.md`](../../kokoro-handbook/technical/22-capability-hub.md)。
+> 本文转为历史入口，不再作为架构事实来源。
+
 状态:定案执行稿(五路侦察证据支撑;与用户"内部走 trpc"意向的分歧见 §2,依证据给出替代定案)
 日期:2026-07-11
 上级:`20-kokoro-v1-technical-plan.md`、`2026-07-11-platform-mainchain-closure.md`、skills/mcp 两 spec

@@ -101,6 +101,8 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [18-capability-namespace-auth-sandbox-artifacts](technical/18-capability-namespace-auth-sandbox-artifacts.md)
 - [19-current-runtime-capability-review-plan](technical/19-current-runtime-capability-review-plan.md)（已被 20 取代，保留为扩展附录）
 - [20-kokoro-v1-technical-plan](technical/20-kokoro-v1-technical-plan.md)（**V1 定稿事实源**）
+- [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（签发链/计费链/编排/E2E-40，P1-P5 已落地事实）
+- [22-capability-hub](technical/22-capability-hub.md)（kokoro-hub 边界与 tRPC 不换定案；HUB-1/2 已落地，HUB-3/4 进行中）
 
 ### 模块 modules/
 

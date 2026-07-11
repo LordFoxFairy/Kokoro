@@ -1,5 +1,9 @@
 # Platform × 主链完整闭环技术方案（v1 定案稿）
 
+> **已收编 handbook**：本方案 P1-P5 已全部落地，正式事实册见
+> [`docs/kokoro-handbook/technical/21-platform-mainchain-closure.md`](../../kokoro-handbook/technical/21-platform-mainchain-closure.md)。
+> 本文转为历史入口，不再作为架构事实来源。
+
 状态：定案执行稿（用户已授权自主推进；发现与 handbook 冲突时停下列冲突）
 日期：2026-07-11
 上级：`docs/kokoro-handbook/technical/20-kokoro-v1-technical-plan.md`、`18-capability-namespace-auth-sandbox-artifacts.md`
