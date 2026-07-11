@@ -827,6 +827,18 @@ def emit_storage_py(spec: dict) -> str:
     for coll, meta in _storage_collections(spec):
         doc = meta["doc"]
         L.append(f"{coll}_doc_adapter: TypeAdapter[{doc}] = TypeAdapter({doc})")
+    template = spec.get("workspace_key_template")
+    if template:
+        L += [
+            "",
+            "",
+            f'WORKSPACE_KEY_TEMPLATE = "{template}"',
+            "",
+            "",
+            "def workspace_key(namespace: str, session_id: str) -> str:",
+            '    """会话工作区键（本地目录名 / S3 归档前缀）：单源模板，双语言同构，禁手拼。"""',
+            "    return WORKSPACE_KEY_TEMPLATE.format(namespace=namespace, session_id=session_id)",
+        ]
     return "\n".join(L) + "\n"
 
 
@@ -838,6 +850,18 @@ def emit_storage_ts(spec: dict) -> str:
         L.append("")
     for coll, meta in _storage_collections(spec):
         L.append(f'export const {coll.upper()}_COLLECTION = "{coll}"')
+    template = spec.get("workspace_key_template")
+    if template:
+        ts_expr = template.replace("{namespace}", "${namespace}").replace("{session_id}", "${sessionId}")
+        L += [
+            "",
+            f'export const WORKSPACE_KEY_TEMPLATE = "{template}"',
+            "",
+            "// 会话工作区键（本地目录名 / S3 归档前缀）：单源模板，双语言同构，禁手拼。",
+            "export function workspaceKey(namespace: string, sessionId: string): string {",
+            f"  return `{ts_expr}`",
+            "}",
+        ]
     return "\n".join(L) + "\n"
 
 

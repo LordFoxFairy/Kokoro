@@ -53,3 +53,6 @@ collections:
   skill_state:
     doc: SkillStateDoc
     unique: [namespace, name]
+
+# 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
+workspace_key_template: "{namespace}:{session_id}"
