@@ -132,6 +132,7 @@ def boot() -> dict[str, int]:
         "KOKORO_MESSAGE_STORE_MONGO_URL": "mongodb://127.0.0.1:27017",
         "KOKORO_MESSAGE_STORE_MONGO_DB": "kokoro_dev",
         "KOKORO_WORKSPACE_ROOT": str(STATE / "workspace"),
+        "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
         "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
         # shadow：计费全链打点但不拒绝——dev 默认不挡人;enforce 用 E2E-40/生产档。
         "KOKORO_BILLING_MODE": os.environ.get("KOKORO_BILLING_MODE", "shadow"),
@@ -141,8 +142,13 @@ def boot() -> dict[str, int]:
         # 浏览器直连(web dev 档)的 CORS 白名单(session 原生单源开关);生产按真实站点域名配置。
         "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", "http://127.0.0.1:3000"),
     }
+    (STATE / "storage.yaml").write_text(
+        f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
+        f"deliveries:\n  type: local\n  root: {STATE / 'deliveries'}\n"
+    )
     agent_env = {
         **os.environ,
+        "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
         "KOKORO_REDIS_URL": "redis://127.0.0.1:6379/0",
         "KOKORO_MONGO_URL": "mongodb://127.0.0.1:27017",
         "KOKORO_MONGO_DB": "kokoro_dev",

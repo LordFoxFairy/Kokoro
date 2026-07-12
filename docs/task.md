@@ -12,6 +12,9 @@
 - [ ] **CREDIT-CACHE**:owner 正缓存键补 siteId(现跨站复用 owner active 结果)。
 - [ ] **MODEL-SOURCE**:profile.allowed 降展示过滤,platform resolve 为可用性权威(M-1 后半)。
 
+**P0.5(新发现,归 agent)**:
+- [ ] **MCP-REVALIDATION-HANG**:kind=input 重问后二次 submit,服务器 accept 而 run 悬挂(证据②实录);复现=真 FastMCP pattern 约束+两次 control submit;疑点=_ElicitBridge/adapter receive-loop 跨 interrupt teardown 的 future 配对。
+
 **Wave 2 可靠性(D5 持久意图模型,R0-R7 顺序)**:
 - [ ] request/control 在 durable claim/inbox 前 ACK、agent 终态在发布前消耗终态权、settle/release 失败无持久重试——run_dispatches CAS/durable_seq/receipt manifest/quarantine 全套(纲领 §5/§8.3 故障矩阵)。
 
@@ -50,7 +53,10 @@
 
 ## Round-4/5 真实状态(纠偏)
 
-- Round-4 四路**代码已提交**(2181938/5c937ef/f0f3c62):AGENT-MCP/WEB-3/HUB-4/AUTH-2——**证据待补**(ROUND4-EVIDENCE:AGENT-MCP 真注册表 e2e + WEB-3 真 elicitation 浏览器验收),补齐前不称收口。
+- Round-4 四路代码已提交(2181938/5c937ef/f0f3c62)。ROUND4-EVIDENCE 进展:
+  - [x] 证据①AGENT-MCP:E2E-33 铁证(yaml 死端口,真地址仅 Mongo 注册表,elicitation 全链通;d4cf07e)——顺手抓修跨语言 BSON 真雷(BsonInt,56523bf:hub-TS 写整数落 double,strict int 全拒)
+  - [~] 证据②WEB-3 浏览器验收(2026-07-12 实走,截图 tmp/screenshots/web3-evidence-*):input 卡渲染✓/非法提交→**重问带真实 jsonschema 错误上卡**✓('abc' does not match pattern)/表单交互✓;**但发现新 bug MCP-REVALIDATION-HANG**:重问后合法提交,MCP 服务器已 accept 返回(服务器日志实锤 CallToolRequest+Terminating),agent run 悬不收口(疑 elicit 桥/adapter receive-loop 在多次 teardown 重放后 future 未回)——单仓测试未覆盖"两次 submit 跨 resume 重放链"。修复归 agent 仓,列 P0.5。
+  - 附带发现:closure-up 缺 deliveries 存储节致 deliver 降级(已修,storage.yaml 节补上);浏览器全链 respond/approve/deliver pill 全部实走通过。
 - Round-5 被额度墙击落,**五路零落地**;SESS-LIST 仅契约草稿。大 lane 派工方式按纲领 §11 废止,后续按 Wave 逐项单 spec/plan。
 
 ## 已收口(近期,全部全链 e2e 绿;commit 详单见交接档)
