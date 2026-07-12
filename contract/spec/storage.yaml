@@ -93,6 +93,18 @@ objects:
       - {name: created_at, type: int}
       - {name: updated_at, type: int}
 
+  # MCP secret 句柄库(MCP-SECRET):明文绝不落库,ciphertext=AES-256-GCM 信封,key_id=主密钥指纹(轮换双读)。
+  # handle 形状 srt_+32hex 由 hub 侧校验(正则不入 yaml 类型系统,契约注记)。
+  - name: McpSecretDoc
+    fields:
+      - {name: scope, type: string_nonempty}
+      - {name: handle, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: ciphertext, type: string_nonempty}
+      - {name: key_id, type: string_nonempty}
+      - {name: created_at, type: int}
+      - {name: deleted_at, type: int, nullable: true}
+
 collections:
   skills:
     doc: SkillDoc
@@ -109,6 +121,9 @@ collections:
   run_dispatches:
     doc: RunDispatchDoc
     unique: [run_id]
+  mcp_secrets:
+    doc: McpSecretDoc
+    unique: [scope, handle]
 
 # 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
 workspace_key_template: "{namespace}:{session_id}"
