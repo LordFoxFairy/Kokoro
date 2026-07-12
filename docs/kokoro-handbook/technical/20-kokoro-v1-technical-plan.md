@@ -19,10 +19,10 @@
 | 层 | V1 形态 | 状态 |
 |---|---|---|
 | 身份 | `namespace = JWT sub`（opaque 主体 id），session 持久化 + 全链路反查；缺 secret 启动即拒 | **已落地三绿** |
-| 能力 | skills/MCP 现行方案见 `docs/superpowers/specs/2026-07-10-*.md`（hub+会话快照+skill 单工具+MCP 三工具） | specs 待认可 |
+| 能力 | skills/MCP：hub+会话快照+skill 单工具+MCP 三工具+注册表(McpServerDoc) | 已落地(块A/B/C+HUB-1..4+AGENT-MCP);管理权威=technical/22 |
 | 执行 | 单 `general` agent + deepagents task 子代理 + 现有 HITL 回路 | **已跑通（e2e 门禁）** |
-| 交付 | `deliver` 单工具：读字节 → sha256 → 传 `deliveries/<ns>/<hash>` → marker 事件 → session 读模型 | 待落地 |
-| 编排（业务 agent） | **preset 配置包**（见 D6）：prompt（岗位 SOP .md）× 挂载集（RuntimeConfig names）× 策略（HITL/交付）。入口在 run 受理时选 preset；swarm 中途 handoff = P2 | 待落地（`entry` 机制已是雏形） |
+| 交付 | `deliver` 单工具：读字节 → sha256 → `deliveries/<ns>/<hash>` → delivery.created → session 读模型+下载端点+web 成果卡 | 已落地(E2E-31) |
+| 编排（业务 agent） | **preset 配置包**（见 D6）；swarm 中途 handoff = P2 | session 首条锁已落;agent 侧目录化 preset 未落(=AGENT-PRESET) |
 
 ## 2. 已落地的事实（三绿，不要重做）
 

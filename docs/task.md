@@ -1,14 +1,23 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-11(全域冲刺,gap-audit 四路审计合成)。原型期(2026-05)旧台账见文末归档。
+> 最后更新:2026-07-12(Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
-## P0(用户可感的硬缺口)
+## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
-- [ ] **AUTH-P0 登录冒充洞**:web dev-login 输任意邮箱即得该身份 token。magic-link 服务端半场 round-4 在飞(AUTH-2);缺 web 接线(发链→点链/输码→consume 换 token)+SMTP 投递留位。上线前必堵。
-- [ ] **SESS-LIST 会话列表服务端化**:session 无 GET /sessions 列表 API,web rail 只存 localStorage,换设备即丢。需:契约端点(owner 会话分页列表)+web rail 服务端水合。
-- [ ] **WEB-BILLING 余额/402/账单**:web 对 402 credit_insufficient 零处理;无余额显示、无用量账单页。前置:credit 缺终端用户余额/流水查询 API(现只有 admin 面)→ CRED-BAL 端点 + web 页。
-- [ ] **WEB-SKILLS 能力池管理面**(块7):hub 全量 API(池/启停/上传/版本/配额/审核)零 UI。技能列表/启停/上传向导 + pinned_skills 输入框接线(契约字段已在,web 不发)。
+**Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
+- [ ] **TRUST-ROUTES**:platform default-internal 全路由策略+per-caller 分级凭据(public/runtime-internal/web-bff/admin)+生产 fail-closed。现状纠偏:守门件只护 /admin 前缀且共享单 secret 空值直通——hub 路由完全无鉴权、namespace/scope 来自请求、credit 启 secret 后 session billing client 不带密钥。
+- [ ] **AUTH-P0**(D3):web BFF 密封 cookie(浏览器不持 bearer)+magic-link web 流+nonce 防 CSRF+SMTP+日志脱敏(现 magic-link log 档把原文 token 写日志!)+/auth/sessions 收编为内部口。现状:任意邮箱直登+token 在 localStorage。
+- [ ] **HUB-AUTHZ→MCP-REVISION→MCP-SECRET→HUB-CONSIST**(D4 链):Hub 三权限面;McpGrant {scope,name,revision,config_hash} 版本锁+实时撤销;secret handle broker+SSRF/egress;**split-brain 修复**(hub/session/agent 默认 Mongo DB 不同!session 池解析忽略审核/运营排序——session 改调 Hub 单解析器,MCP mutation 在跨仓门通过前 503)。
+- [ ] **CREDIT-CACHE**:owner 正缓存键补 siteId(现跨站复用 owner active 结果)。
+- [ ] **MODEL-SOURCE**:profile.allowed 降展示过滤,platform resolve 为可用性权威(M-1 后半)。
+
+**Wave 2 可靠性(D5 持久意图模型,R0-R7 顺序)**:
+- [ ] request/control 在 durable claim/inbox 前 ACK、agent 终态在发布前消耗终态权、settle/release 失败无持久重试——run_dispatches CAS/durable_seq/receipt manifest/quarantine 全套(纲领 §5/§8.3 故障矩阵)。
+
+**Wave 3 用户可感 P0(必须后端+BFF+UI 竖切)**:
+- [ ] **SESS-LIST**:契约草稿已封存(c4a0718),store/route/rail 水合全未实现。
+- [ ] **WEB-BILLING**(前置 CRED-BAL 窄读 API)/- [ ] **WEB-SKILLS**(认证 BFF 后)。
 
 ## P1
 
@@ -37,11 +46,12 @@
 - [ ] web 工作台形态入正式册(Canvas/三栏/四卡现只在历史入口 spec)
 - [ ] 状态位刷新:20 §1§5 / 21 §2§6 / 22 §2§4 / 15+09 状态头(代码已超前文档)
 - [ ] 归位七项:CURRENT.md 指 22/docs README 主线节/00 指针/CODEBASE_MAP 补 hub/modules 补 hub/platform README 补 hub(子仓)/tmp/closure 清理
-- [ ] hub 运营字段(display_weight/pinned/category/review_status)收编 storage.yaml 单源
+- [x] hub 运营字段收编 storage.yaml 单源(39b02f2);mcp_servers/skill_revisions 同已收编
 
-## 在飞(round-4;收口流程与验证口径见 handoffs/2026-07-11-mega-sprint-handoff.md)
+## Round-4/5 真实状态(纠偏)
 
-- [ ] AGENT-MCP 注册表消费 / WEB-3 kind=input 动态表单 / HUB-4 运营位+审核 / AUTH-2 magic-link 服务端
+- Round-4 四路**代码已提交**(2181938/5c937ef/f0f3c62):AGENT-MCP/WEB-3/HUB-4/AUTH-2——**证据待补**(ROUND4-EVIDENCE:AGENT-MCP 真注册表 e2e + WEB-3 真 elicitation 浏览器验收),补齐前不称收口。
+- Round-5 被额度墙击落,**五路零落地**;SESS-LIST 仅契约草稿。大 lane 派工方式按纲领 §11 废止,后续按 Wave 逐项单 spec/plan。
 
 ## 已收口(近期,全部全链 e2e 绿;commit 详单见交接档)
 

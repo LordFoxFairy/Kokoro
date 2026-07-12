@@ -1,6 +1,6 @@
 # 22. 能力中台 kokoro-hub 与内部通信定案
 
-状态：正式册（HUB-1/HUB-2 已落地；HUB-3/HUB-4 进行中，如实标注）
+状态：正式册（HUB-1/2/3/4 代码已提交；HUB-4 灰度未做；跨仓运行证据部分待补，见总设计稿 Wave 0 ROUND4-EVIDENCE）
 收编自：`docs/superpowers/specs/2026-07-11-capability-hub-and-polish.md` §1-§3（该文已转历史入口；§4 web 打磨不属本册）
 上级：[20-kokoro-v1-technical-plan](20-kokoro-v1-technical-plan.md)、[21-platform-mainchain-closure](21-platform-mainchain-closure.md)
 
@@ -34,8 +34,8 @@
 |---|---|---|
 | HUB-1 | 脚手架 + skills 读写面迁移（seed 改调 hub）+ 启停/配额 API + storage 镜像输出 | **已落地** |
 | HUB-2 | 上传/GitHub 导入 preview→confirm + 版本历史 | **已落地** |
-| HUB-3 | MCP 注册表 + admin manifest 接入 | 进行中 |
-| HUB-4 | 审核/运营位/灰度（配置表驱动） | 进行中 |
+| HUB-3 | MCP 注册表 + admin manifest 接入 | 已提交(8baaf95) |
+| HUB-4 | 审核三态/运营位 已提交(f0f3c62)；灰度未做 | 部分 |
 
 ## 3. 内部通信：不换 tRPC（证据定案）
 
@@ -48,11 +48,11 @@
 **达成同等收益（类型端到端、减漂移、减通信）的定案**：
 
 - **P-A contracts 共享包**：各模块经 `@kokoro/<mod>` 导出 interfaces schemas，消费方 import 代替手写镜像（实锤漂移案例：credit 的 activeSchema、payment 的 ensureAccountResponseSchema 均为手抄）。编译期即漂移信号，零运行时改动。
-- **P-B 修四洞**：①payment→credit 裸 fetch 归队 callService（补 principal/internalSecret/错误信封）；②requestId 头统一为 x-kokoro-request-id 单名；③internal-secret 服务端强制校验（中台化前必须，否则触达端口即可绕 RBAC 打 /admin 路由）；④payment↔credit 补 outbox/重试驱动（防 confirmOrder 中途崩溃订单悬挂）。
+- **P-B 修四洞**：①payment→credit 裸 fetch 归队 callService（补 principal/internalSecret/错误信封）；②requestId 头统一为 x-kokoro-request-id 单名；③internal-secret 入站守门件已落（/admin 前缀,env 配置后 401）——**纠偏(2026-07-11)**：这不等于内部信任面闭合，default-internal 全路由策略/per-caller 分级凭据/生产 fail-closed 未做，属 Wave 1 TRUST-ROUTES；④payment↔credit 补 outbox/重试驱动（防 confirmOrder 中途崩溃订单悬挂）。
 - **P-C 减通信**：credit 改账热路径 site/user active 双查加短 TTL 缓存；主链 delta 事件读模型压缩记档为独立块。
 - tRPC 保留给 kokoro-web 自己的 BFF 层（单仓内）若后续需要——不强推。
 
-## 4. 主链修缮清单（已立项，按危害排序）
+## 4. 主链修缮清单（M-1~M-7 代码已提交；M-1 后半「model 可用性收敛 platform 单源」未做=MODEL-SOURCE）
 
 - M-1 model 允许集三处漂移 + resolveModel undefined 时 hold 缺 modelBindingId 仍放行：enforce 档下无绑定应拒绝；model 可用性收敛 platform 单源，profile.allowed 降级为展示过滤。
 - M-2 store→relay 依赖反转（SessionEventDraft 下沉 store 或 contract）。

@@ -14,10 +14,11 @@
 
 1. [V1 最终技术方案（定稿）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
 2. [Platform × 主链闭环（正式册,P1-P5 已落地事实）](kokoro-handbook/technical/21-platform-mainchain-closure.md)
-3. [能力中台×全域打磨方案（定案执行稿,HUB/P/M/WEB 块）](superpowers/specs/2026-07-11-capability-hub-and-polish.md)
-4. [WP-0 落地与审核交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md)
-5. 扩展附录（查细节才读，冲突以 20 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
-6. 历史派工单（已过期，不作架构事实）：[2026-07-07 runtime buildout](handoffs/2026-07-07-runtime-buildout-next-handoff.md)、[2026-07-07 capability buildout](handoffs/2026-07-07-capability-buildout-handoff.md)
+3. [跨仓闭环与遗留对齐总设计（待评审纲领,Wave 0-6）](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
+4. [能力中台正式册](kokoro-handbook/technical/22-capability-hub.md)（历史入口:specs/2026-07-11-capability-hub-and-polish.md）
+5. [WP-0 落地与审核交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md)
+6. 扩展附录（查细节才读，冲突以 20 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
+7. 历史派工单（已过期，不作架构事实）：[2026-07-07 runtime buildout](handoffs/2026-07-07-runtime-buildout-next-handoff.md)、[2026-07-07 capability buildout](handoffs/2026-07-07-capability-buildout-handoff.md)
 
 ## 稳定架构入口
 

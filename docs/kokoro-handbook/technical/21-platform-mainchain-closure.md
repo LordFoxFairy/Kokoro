@@ -24,7 +24,9 @@
          入参: {site_id, external_user_id, email?}   出参: {token, namespace, user, team}
          行为: resolve-or-create user + personal team → 签发 HS256 JWT
                sub = teamId（ULID，天然不透明，个人=personal team）/ exp / iss=kokoro-user / site_id claim
-      → web 把 token 经 httpOnly cookie 下发，前端调 session 全部带 Bearer
+      → 目标态(设计纠偏 2026-07-11):web BFF 把签发结果密封进 httpOnly cookie,浏览器只访问
+        同源 /api/session/* 代理,由 BFF 注入 Bearer——浏览器 JS 无法读 httpOnly cookie 加头,
+        「cookie 下发+前端带 Bearer」旧表述不可执行。现状:dev 直登+localStorage(AUTH-P0 在办)
       → session auth.ts 验签零改动（共享 KOKORO_AUTH_JWT_SECRET）
       → agent namespace 隔离零改动
 ```
@@ -76,7 +78,7 @@ run 收口（session relay 终态）:
 
 ## 6. 闭环外遗留（记档，不属本册范围）
 
-platform 内环遗留（payment provider config/webhook 验签/Subscription 写路径/hold 过期回收任务/ModelLabel.defaultBinding 消费）→ 独立硬化块；RS256/JWKS 轮换、团队切换 UX、多站点真解析、kokoro-i18n 复活 → 后续；swarm/组织级配额 → P2。
+platform 内环遗留：~~webhook 面~~（已落地：验签框架/重放幂等/状态机/驱动确认，PAY-1）、~~hold 过期回收~~（已落地：原子 sweep+TTL）；仍留 stripe/alipay/wechat 真验签(注册表 501 留位)/Subscription 写路径/refund 回链/ModelLabel.defaultBinding 消费 → 独立硬化块；RS256/JWKS 轮换、团队切换 UX、多站点真解析、kokoro-i18n 复活 → 后续；swarm/组织级配额 → P2。
 
 ## 7. 已知风险
 
