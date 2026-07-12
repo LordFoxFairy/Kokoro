@@ -38,6 +38,22 @@ MINIO_URL = os.environ.get("E2E_MINIO_URL", "http://127.0.0.1:9100")
 SANDBOX_BACKEND = os.environ.get("E2E_SANDBOX_BACKEND", "local_shell")
 AUTH_SECRET = "e2e-secret"
 
+# TRUST-ROUTES：platform 服务 default-internal，按 per-caller secret 校验（secret 全配 = 纲领 §8.2-2 场景）。
+# dev 全用明显假值。全服务共用同一注册表，各自据 x-kokoro-service 定位期望 secret。
+INTERNAL_SECRETS = {
+    "KOKORO_INTERNAL_SECRET_SESSION": "e2e-internal-session-not-real",
+    "KOKORO_INTERNAL_SECRET_WEB_BFF": "e2e-internal-web-bff-not-real",
+    "KOKORO_INTERNAL_SECRET_ADMIN": "e2e-internal-admin-not-real",
+    "KOKORO_INTERNAL_SECRET_HUB": "e2e-internal-hub-not-real",
+    "KOKORO_INTERNAL_SECRET_PAYMENT": "e2e-internal-payment-not-real",
+    "KOKORO_INTERNAL_SECRET_CREDIT": "e2e-internal-credit-not-real",
+}
+# gate 直调 user/site/model/credit 的 runtime-internal 路由（含收编的 /auth/sessions）：冒充 runtime caller=session。
+RUNTIME_HDR = {
+    "x-kokoro-service": "session",
+    "x-kokoro-internal-secret": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_SESSION"],
+}
+
 
 def _b64url(data: bytes) -> str:
     import base64
@@ -605,16 +621,19 @@ def main() -> int:
         for pname, extra in penv.items():
             ensure_port_free(pports[pname])
             plat_procs.append(spawn(["pnpm", "run", "start"], cwd=plat_root / f"kokoro-{pname}",
-                                    env={**os.environ, **extra}, log=scratch / f"plat-{pname}.log"))
+                                    env={**os.environ, **INTERNAL_SECRETS, **extra},
+                                    log=scratch / f"plat-{pname}.log"))
         for pname in penv:
             check(f"E2E-40 {pname} 端口就绪", wait_port(pports[pname], timeout=60))
 
         def plat(method: str, url: str, body: dict | None = None, site: str | None = None):
             # site 缺省=闭包后绑定的 site40（真实 site id="site-"+key,由 upsert 响应取）。
+            # runtime caller 头：platform 服务 default-internal，直调 runtime-internal 路由须冒充 runtime caller。
             req = urllib.request.Request(url, method=method,
                                          data=None if body is None else json.dumps(body).encode(),
                                          headers={"content-type": "application/json",
-                                                  "x-kokoro-site-id": site or site40})
+                                                  "x-kokoro-site-id": site or site40,
+                                                  **RUNTIME_HDR})
             try:
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     return resp.status, json.loads(resp.read() or b"{}")
@@ -659,6 +678,9 @@ def main() -> int:
             "KOKORO_CREDIT_BASE_URL": pbase["credit"],
             "KOKORO_MODEL_BASE_URL": pbase["model"],
             "KOKORO_SITE_ID": site40,
+            # session 出站 caller 头由主控合流 kokoro-session 改动后启用；此处先备好 session caller secret，
+            # 使 enforce 计费档 session→credit hold/settle 在 default-internal 下被 credit 接受。
+            **INTERNAL_SECRETS,
         })
         session2_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session2_env,
                               log=scratch / "session2.log")
