@@ -32,6 +32,11 @@ LITELLM_KEY = "dev-master-key-not-real"
 PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231}
 BASE = {k: f"http://127.0.0.1:{v}" for k, v in PORTS.items()}
 SESSION_PORT = 3900
+WEB_PORT = 3000
+# web BFF 会话信封 dev 密钥（明显假值；生产走 secret 注入）。逗号分隔即双钥轮换（current 在前）。
+WEB_SESSION_SECRET = "dev-web-session-secret-not-real"
+# dev 站点 id：session/smoke/web BFF 全用此常量（与 seed 的站点解析一致）。
+SITE_ID = "site-site-dev"
 
 # TRUST-ROUTES：platform 服务 default-internal，按 per-caller secret 校验。dev 全用明显假值；
 # 生产走各自 secret 注入。全服务共用同一注册表，各自据 x-kokoro-service 定位期望 secret。
@@ -130,7 +135,9 @@ def boot() -> dict[str, int]:
     penv = {
         "site": {"DATABASE_URL_SITE": DB, "KOKORO_SITE_PORT": str(PORTS["site"])},
         "user": {"DATABASE_URL_USER": DB, "KOKORO_USER_PORT": str(PORTS["user"]),
-                 "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET},
+                 "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
+                 # dev：magic-link 原文 token 回响应体，web BFF 据此生成可点开发链（生产走邮件）。
+                 "KOKORO_AUTH_MAGIC_DELIVERY": "response"},
         "model": {"DATABASE_URL_MODEL": DB, "KOKORO_MODEL_PORT": str(PORTS["model"])},
         "credit": {"DATABASE_URL_CREDIT": DB, "KOKORO_CREDIT_PORT": str(PORTS["credit"]),
                    "KOKORO_USER_BASE_URL": BASE["user"], "KOKORO_SITE_BASE_URL": BASE["site"],
@@ -156,9 +163,10 @@ def boot() -> dict[str, int]:
         "KOKORO_BILLING_MODE": os.environ.get("KOKORO_BILLING_MODE", "shadow"),
         "KOKORO_CREDIT_BASE_URL": BASE["credit"],
         "KOKORO_MODEL_BASE_URL": BASE["model"],
-        "KOKORO_SITE_ID": "site-site-dev",
-        # 浏览器直连(web dev 档)的 CORS 白名单(session 原生单源开关);生产按真实站点域名配置。
-        "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", "http://127.0.0.1:3000"),
+        "KOKORO_SITE_ID": SITE_ID,
+        # 直连档保留：浏览器直连 session 时的 CORS 白名单（session 原生单源开关）。AUTH-P0 起
+        # 默认走同源 web BFF，浏览器同源不再依赖此项；生产按真实站点域名配置。
+        "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", f"http://127.0.0.1:{WEB_PORT}"),
     }
     (STATE / "storage.yaml").write_text(
         f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
@@ -187,6 +195,25 @@ def boot() -> dict[str, int]:
                           STATE / "agent.log")
     step("agent worker(独占)", True)
     return pids
+
+
+def web_bff_env() -> dict[str, str]:
+    # 浏览器同源走 web BFF 代理（AUTH-P0），不再直连 session 3900。以下是 web dev 的**服务端** env
+    # （非 NEXT_PUBLIC，浏览器读不到）：user/session 地址、站点 id、信封密钥、web-bff 出站凭据全留服务端。
+    return {
+        "KOKORO_WEB_SESSION_SECRET": WEB_SESSION_SECRET,
+        "KOKORO_USER_BASE_URL": BASE["user"],
+        "KOKORO_SESSION_BASE_URL": f"http://127.0.0.1:{SESSION_PORT}",
+        "KOKORO_SITE_ID": SITE_ID,
+        "KOKORO_INTERNAL_SECRET_WEB_BFF": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_WEB_BFF"],
+    }
+
+
+def write_web_bff_env() -> Path:
+    # 落一个 env 文件，web dev 可直接吃：`set -a; source tmp/closure/web-bff.env; set +a; pnpm --dir kokoro-web dev`。
+    path = STATE / "web-bff.env"
+    path.write_text("".join(f"{k}={v}\n" for k, v in web_bff_env().items()))
+    return path
 
 
 def seed() -> None:
@@ -234,8 +261,11 @@ def cmd_up() -> None:
     (STATE / "pids.json").write_text(json.dumps(pids))
     print("== seed"); seed()
     print("== smoke"); smoke()
+    web_env = write_web_bff_env()
     print(f"\n闭环已就绪：session http://127.0.0.1:{SESSION_PORT} / litellm :4000 / platform {PORTS}")
     print(f"日志与 pid: {STATE}/ ；收环: python3 scripts/closure-up.py down")
+    print("web dev（同源 BFF，浏览器不直连 3900）：")
+    print(f"  set -a; source {web_env}; set +a; pnpm --dir kokoro-web dev")
 
 
 def cmd_down() -> None:
