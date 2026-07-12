@@ -1,6 +1,6 @@
 # Kokoro Codebase Map
 
-状态：2026-07-07
+状态：2026-07-12
 用途：给主控会话、code agent 和并行 worker 的最小上下文地图。
 
 ## 仓库边界
@@ -91,6 +91,8 @@ npm run build
 ### kokoro-platform
 
 平台域父仓。管理 site/user/model/credit/payment/litellm/admin 等平台模块和部署/验证约束。
+
+其中 **kokoro-hub**（`@kokoro/hub`，端口 4251）是能力中台模块：skill/MCP 注册管理写面（上传/审核/版本/启停/配额/运营位），与 agent 装配热路径**读写分离同库**（hub 写 Mongo+S3，agent 直读，每 run 不跨 hub RPC）。边界见 `docs/kokoro-handbook/technical/22-capability-hub.md` 与 `docs/kokoro-handbook/modules/kokoro-hub.md`；运营台见 `docs/kokoro-handbook/technical/23-platform-ops-console.md`。
 
 正式文档入口：`kokoro-platform/README.md`、`kokoro-platform/docs/README.md`。
 

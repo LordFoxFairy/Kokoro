@@ -13,6 +13,19 @@ HITL/ask_user_question UI、Skills/MCP 管理入口。
 
 它不拥有 session 真源，不执行 agent，不直接写 Mongo/Redis。
 
+## 工作台形态
+
+web 采用三栏工作台形态（形态提炼自 [specs/2026-07-11-capability-hub-and-polish](../../superpowers/specs/2026-07-11-capability-hub-and-polish.md) §4，此处记为当前有效界面骨架）：
+
+- **三栏 IA**：折叠式单列侧栏（导航/会话）+ 事件序穿插的会话流 + 可拖拽/全屏的 **Canvas 工作区**。Canvas 由事件总线开合，产物点击即进 Canvas（非弹窗），开合状态带会话级记忆。
+- **四卡**（会话流内的结构化卡片）：
+  - 工具胶囊 pill：状态映射语义色，loading 流光，点击入 Canvas。
+  - 计划链卡：逐项状态、可折叠。
+  - 审批卡 = 动态表单：schema 驱动，与 HITL `kind=input` 契约天然对齐（`input_schema` 已上 wire）。
+  - 交付物文件卡：骨架占位 → 实体卡，支持下载与二次加工。
+- **语义 design tokens**：全色走 `--k-*` 语义变量（text 四级 / bg 多层 / 语义色三梯度），组件零裸色值；暗色主题换色相而非反色。
+- **登录闸**：整站入口由登录闸（`login-gate`）把守，未登录不进会话。当前 web 端换签为 dev-login + localStorage token 形态；AUTH-P0（[specs/2026-07-12-wave1-auth-p0](../../superpowers/specs/2026-07-12-wave1-auth-p0.md)）落地后改为 **BFF 密封 httpOnly cookie + 同源 `/api/session` 代理**，浏览器不再持 bearer，localStorage token 途径删除。
+
 ## V1 能力范围
 
 ```text
@@ -187,5 +200,5 @@ run.completed.status 被 mapper 丢弃。
 ## i18n
 
 能力边界与静态/动态双源判断见 [14-web-i18n-capability](14-web-i18n-capability.md)。
-现状：42 个源文件硬编码中文（无静态层）、无 locale 概念；实现细节由 web 侧
+现状（2026-07 更新）：静态 i18n 层已落地（src/i18n：zh 真源+en 增量+useT，i18n 门禁测试钉硬编码回归）；实现细节由 web 侧
 落地时自行设计，本手册只锁能力与边界。

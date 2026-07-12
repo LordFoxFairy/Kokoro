@@ -18,14 +18,20 @@
 
 ## 当前主线
 
-能力中台、auth、namespace、sandbox、最终产物这条线，按这个顺序读：
+当前活跃阅读集合以 [CURRENT.md](CURRENT.md) 为**唯一入口**；下面是主线骨架，阅读顺序、附录与派工状态以 CURRENT.md 为准：
 
-1. [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
-2. [Capability Hub 设计](superpowers/specs/2026-07-07-capability-hub-design.md)
-3. [产品化技术主图](superpowers/specs/2026-07-07-product-technical-roadmap.md)
-4. [能力 buildout 派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
+1. [V1 最终技术方案（定稿事实源）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+2. [Platform × 主链闭环（P1-P5 已落地事实）](kokoro-handbook/technical/21-platform-mainchain-closure.md)
+3. [能力中台 kokoro-hub 与内部通信定案](kokoro-handbook/technical/22-capability-hub.md)
+4. [Platform 运营台（现状事实）](kokoro-handbook/technical/23-platform-ops-console.md)
+5. [跨仓闭环与遗留对齐总设计（获批纲领，Wave 0-6）](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
 
 注意：`handoffs/` 是短期派工单，不是长期权威。派工单里的稳定结论必须回流到 handbook。
+
+历史入口（已过期，不作架构事实，仅供考古）：
+
+- [2026-07-07 能力 buildout 派工单](handoffs/2026-07-07-capability-buildout-handoff.md)
+- [2026-07-07 runtime buildout 派工单](handoffs/2026-07-07-runtime-buildout-next-handoff.md)
 
 ## 按任务找
 

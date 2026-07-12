@@ -3,6 +3,7 @@
 - 状态：思考定稿，待用户裁决（2026-07-05）
 - 姊妹篇：`technical/15-v2-technical-plan.md`（技术切片与里程碑）
 - 上游：00-product-shape / 01-general-chat / 06-skill-hub-and-mcp-hub
+- 落地更新（2026-07）：**G1 有身份 / G2 失败讲人话 / G4 语言可切换 已落地**。G2 失败卡按码讲人话已上线；G4 web 静态 i18n（中/英切换，`kokoro-web/src/i18n`）已上线；G1 身份签发+验签链与登录闸已落地，浏览器密封 cookie 硬化形态见 [AUTH-P0](../../superpowers/specs/2026-07-12-wave1-auth-p0.md)（在办）。下方 G1-G5 为 2026-07-05 定案原文，保留不改。
 
 ## 版本主题
 

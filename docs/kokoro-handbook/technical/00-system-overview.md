@@ -5,12 +5,13 @@
 当前 runtime / capability / namespace / auth / sandbox / artifact 主线先读：
 
 ```text
-19-current-runtime-capability-review-plan.md
+20-kokoro-v1-technical-plan.md   （V1 定稿事实源）
 ```
 
-详细字段、时序和工作包附录：
+详细字段、时序、工作包与评审全记录附录（查细节才读，冲突以 20 为准）：
 
 ```text
+19-current-runtime-capability-review-plan.md   （已被 20 取代，保留为扩展附录）
 18-capability-namespace-auth-sandbox-artifacts.md
 ```
 
