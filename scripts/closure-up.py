@@ -179,6 +179,8 @@ def boot() -> dict[str, int]:
         "KOKORO_MONGO_URL": "mongodb://127.0.0.1:27017",
         "KOKORO_MONGO_DB": "kokoro_dev",
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(STATE / "workspace"),
+        # MCP egress 防线放行环回：本地 127.0.0.1 MCP fixture（strict 缺省会拒 loopback）。
+        "KOKORO_MCP_EGRESS_MODE": "off",
         # dev 缺省离线模型;接真模型改 env(litellm 档已配好网关对)。
         "KOKORO_LOCAL_FAKE_MODEL": os.environ.get("KOKORO_LOCAL_FAKE_MODEL", "1"),
         "KOKORO_LITELLM_BASE_URL": "http://127.0.0.1:4000/v1",

@@ -285,6 +285,8 @@ def main() -> int:
         "KOKORO_MONGO_DB": MONGO_DB,
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
         "KOKORO_MCP_CONFIG": str(scratch / "mcp.yaml"),
+        # MCP egress 防线放行环回：本地 127.0.0.1 MCP fixture（strict 缺省会拒 loopback）。
+        "KOKORO_MCP_EGRESS_MODE": "off",
         "KOKORO_SKILLS_DIR": str(scratch / "skills"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
