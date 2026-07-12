@@ -25,6 +25,14 @@
 ### 文档
 - handbook technical/21(闭环)/22(能力中台+tRPC 不换定案)正式册;specs 转历史入口;8+ 份 INDEX.md 边界地图
 
+## 一点五、Wave 0 已收口(2026-07-12,纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
+
+用户投放项目级总设计稿(待评审)后,已按其 Wave 0 完成:镜像/契约/gitlink 封存(7193bff/9a06e69/c4a0718/19b29cf)、
+DOC-AUTHORITY 纠偏(06bc181:handbook 20/21/22 状态与不可执行链路、CURRENT 纲领入链、task.md 新 P0 台账)、
+ROUND4-EVIDENCE①E2E-33 注册表铁证+BsonInt 跨语言修复(d4cf07e/56523bf)、证据②浏览器实录+新 bug
+MCP-REVALIDATION-HANG 记档(4560b33,修复在飞 fixRevalidationHang)。**后续执行序以该纲领 Wave 1-6 为准,
+大 lane workflow 派工方式废止;根契约/gitlink/task/handoff 主控串行。**
+
 ## 二、在飞(接手先收这两个 workflow)
 
 结果文件在 `/private/tmp/claude-501/-Users-nako-WebstormProjects-github-thefoxfairy-Kokoro/4185abf7-*/tasks/` 下:
