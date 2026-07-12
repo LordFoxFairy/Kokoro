@@ -33,6 +33,22 @@ PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231}
 BASE = {k: f"http://127.0.0.1:{v}" for k, v in PORTS.items()}
 SESSION_PORT = 3900
 
+# TRUST-ROUTES：platform 服务 default-internal，按 per-caller secret 校验。dev 全用明显假值；
+# 生产走各自 secret 注入。全服务共用同一注册表，各自据 x-kokoro-service 定位期望 secret。
+INTERNAL_SECRETS = {
+    "KOKORO_INTERNAL_SECRET_SESSION": "dev-internal-session-not-real",
+    "KOKORO_INTERNAL_SECRET_WEB_BFF": "dev-internal-web-bff-not-real",
+    "KOKORO_INTERNAL_SECRET_ADMIN": "dev-internal-admin-not-real",
+    "KOKORO_INTERNAL_SECRET_HUB": "dev-internal-hub-not-real",
+    "KOKORO_INTERNAL_SECRET_PAYMENT": "dev-internal-payment-not-real",
+    "KOKORO_INTERNAL_SECRET_CREDIT": "dev-internal-credit-not-real",
+}
+# 脚本直调 user/site/model/credit 的 runtime-internal 路由：冒充 runtime caller=session。
+RUNTIME_HDR = {
+    "x-kokoro-service": "session",
+    "x-kokoro-internal-secret": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_SESSION"],
+}
+
 
 def port_open(port: int) -> bool:
     with socket.socket() as s:
@@ -123,10 +139,12 @@ def boot() -> dict[str, int]:
     for name, extra in penv.items():
         if not port_open(PORTS[name]):
             pids[name] = spawn(["pnpm", "run", "start"], PLAT / f"kokoro-{name}",
-                               {**os.environ, **extra}, STATE / f"{name}.log")
+                               {**os.environ, **INTERNAL_SECRETS, **extra}, STATE / f"{name}.log")
         step(f"platform {name} {PORTS[name]}", wait_port(PORTS[name]))
     session_env = {
         **os.environ,
+        # session 出站 caller 头由主控合流 kokoro-session 改动后启用；此处先备好 caller secret。
+        **INTERNAL_SECRETS,
         "KOKORO_SESSION_PORT": str(SESSION_PORT),
         "KOKORO_REDIS_URL": "redis://127.0.0.1:6379/0",
         "KOKORO_MESSAGE_STORE_MONGO_URL": "mongodb://127.0.0.1:27017",
@@ -162,18 +180,21 @@ def boot() -> dict[str, int]:
         pids["session"] = spawn(["npm", "run", "start"], ROOT / "kokoro-session", session_env,
                                 STATE / "session.log")
     step(f"session {SESSION_PORT}", wait_port(SESSION_PORT))
+    # 双 worker 守卫:残留 worker 同组消费会制造 control/replay 竞争(P0.5 实录主嫌),先清后起。
+    subprocess.run(["pkill", "-f", "kokoro-agent-worker"], check=False, capture_output=True)
+    time.sleep(1)
     pids["agent"] = spawn(["uv", "run", "kokoro-agent-worker"], ROOT / "kokoro-agent", agent_env,
                           STATE / "agent.log")
-    step("agent worker", True)
+    step("agent worker(独占)", True)
     return pids
 
 
 def seed() -> None:
     st, resp = http("POST", f"{BASE['site']}/sites/upsert",
-                    {"key": "site-dev", "name": "Dev 闭环站", "status": "active"})
+                    {"key": "site-dev", "name": "Dev 闭环站", "status": "active"}, RUNTIME_HDR)
     site_id = str((resp.get("data") or {}).get("id", ""))
     step("seed site", st == 200 and site_id != "", f"{st} {resp}")
-    hdr = {"x-kokoro-site-id": site_id}
+    hdr = {"x-kokoro-site-id": site_id, **RUNTIME_HDR}
     st, acc = http("POST", f"{BASE['model']}/provider-accounts/ensure",
                    {"provider": "litellm", "key": "dev-gateway", "label": "dev 网关",
                     "secretRef": "env:LITELLM_MASTER_KEY", "transportKind": "litellm"}, hdr)
@@ -191,8 +212,9 @@ def seed() -> None:
 
 
 def smoke() -> None:
+    # /auth/sessions 收编 runtime-internal（纲领 §5.1）：带 runtime caller 头调用。
     st, resp = http("POST", f"{BASE['user']}/auth/sessions",
-                    {"site_id": "site-site-dev", "external_user_id": "dev-smoke"})
+                    {"site_id": "site-site-dev", "external_user_id": "dev-smoke"}, RUNTIME_HDR)
     tok = str((resp.get("data") or {}).get("token", ""))
     step("smoke: user 签发", st == 200 and tok != "", f"{st} {str(resp)[:120]}")
     st, snap = http("GET", f"http://127.0.0.1:{SESSION_PORT}/sessions/ses_dev_smoke",

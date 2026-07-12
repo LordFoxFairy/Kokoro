@@ -12,8 +12,8 @@
 - [ ] **CREDIT-CACHE**:owner 正缓存键补 siteId(现跨站复用 owner active 结果)。
 - [ ] **MODEL-SOURCE**:profile.allowed 降展示过滤,platform resolve 为可用性权威(M-1 后半)。
 
-**P0.5(新发现,归 agent)**:
-- [ ] **MCP-REVALIDATION-HANG**:kind=input 重问后二次 submit,服务器 accept 而 run 悬挂(证据②实录);复现=真 FastMCP pattern 约束+两次 control submit;疑点=_ElicitBridge/adapter receive-loop 跨 interrupt teardown 的 future 配对。
+**P0.5 结案(2026-07-12 调查完毕)**:
+- [x] **MCP-REVALIDATION-HANG 调查**:单 worker 下五类忠实建模(真 FastMCP+supervisor+control,双重问四连接链)全部到终态,桥配对 trace 无误——agent 桥/连接生命周期无罪(绿钉 ed5fc62 留作护栏)。**主嫌=双 worker control 竞争**(实录第 4 条多余 MCP 连接;closure-up 曾无条件 spawn worker,残留同组消费者拿走 resume 重放)——已加独占守卫缓解;**根治归 Wave 2 R2**(control durable inbox/receipt/lease fencing,正合纲领故障矩阵"agent inbox 后 apply 前"场景)。
 
 **Wave 2 可靠性(D5 持久意图模型,R0-R7 顺序)**:
 - [ ] request/control 在 durable claim/inbox 前 ACK、agent 终态在发布前消耗终态权、settle/release 失败无持久重试——run_dispatches CAS/durable_seq/receipt manifest/quarantine 全套(纲领 §5/§8.3 故障矩阵)。
