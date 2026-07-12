@@ -808,16 +808,30 @@ def emit_storage_py(spec: dict) -> str:
     L += [
         "from typing import Annotated, Literal",
         "",
-        "from pydantic import BaseModel, ConfigDict, StringConstraints, TypeAdapter",
+        "from pydantic import BaseModel, BeforeValidator, ConfigDict, StringConstraints, TypeAdapter",
         "",
         "NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]",
+        "",
+        "",
+        "def _int_from_bson_number(value: object) -> object:",
+        "    # BSON 数字模型:JS 写者(hub TS/mongosh)的整数落库为 double;整值 float 视为 int,其余交 strict 报错。",
+        "    if isinstance(value, float) and value.is_integer():",
+        "        return int(value)",
+        "    return value",
+        "",
+        "",
+        "# 存储文档专用 int:跨语言写者容忍(仅此镜像;wire JSON 面仍纯 strict int)。",
+        "BsonInt = Annotated[int, BeforeValidator(_int_from_bson_number)]",
     ]
     L.append("")
     for name, alias in aliases.items():
         L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
     L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
     for obj in spec["objects"]:
-        L += ["", ""] + py_object(obj, aliases)
+        body = py_object(obj, aliases)
+        body = [line.replace(": int |", ": BsonInt |").replace(": int", ": BsonInt")
+                if line.startswith("    ") else line for line in body]
+        L += ["", ""] + body
     L += ["", ""]
     for coll, meta in _storage_collections(spec):
         L.append(f'{coll.upper()}_COLLECTION = "{coll}"')

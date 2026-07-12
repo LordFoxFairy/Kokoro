@@ -189,11 +189,23 @@ def main() -> int:
         "server.add_tool(verify, name='verify')\n"
         f"uvicorn.run(server.streamable_http_app(), host='127.0.0.1', port={MCP_PORT}, log_level='error')\n"
     )
+    # E2E-33(ROUND4-EVIDENCE): yaml 基线故意指死端口;真地址由 Mongo mcp_servers 注册表的
+    # namespace 文档提供(AGENT-MCP 双源合并,namespace 覆盖 yaml)。E2E-32 链仍通=注册表读路实锤。
     (scratch / "mcp.yaml").write_text(
         "servers:\n"
         "  e2e-elicit:\n"
-        f"    url: http://127.0.0.1:{MCP_PORT}/mcp\n"
+        f"    url: http://127.0.0.1:{MCP_PORT + 1}/mcp\n"
         "    allowed_tools: [verify]\n"
+    )
+    seed_mcp = subprocess.run(
+        ["docker", "exec", "kokoro-dev-mongo", "mongosh", "--quiet", "--eval",
+         f'db.getSiblingDB("{MONGO_DB}").mcp_servers.replaceOne('
+         f'{{scope: "e2e-user", name: "e2e-elicit"}},'
+         f'{{scope: "e2e-user", name: "e2e-elicit", transport: "streamable_http",'
+         f' url: "http://127.0.0.1:{MCP_PORT}/mcp", allowed_tools: ["verify"],'
+         f' secret_ref: null, enabled: true, updated_at: {int(__import__("time").time() * 1000)},'
+         f' deleted_at: null}}, {{upsert: true}})'],
+        capture_output=True, text=True, check=False,
     )
     subprocess.run(
         ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
@@ -440,6 +452,9 @@ def main() -> int:
         st26, receipt6 = http("POST", f"/sessions/{SID}/messages",
                               {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "调用远端校验"})
         check("E2E-32 第三轮受理", st26 == 202, f"{st26} {receipt6}")
+        check("E2E-33 注册表种子就位(yaml 死端口,真地址仅在 Mongo)",
+              seed_mcp.returncode == 0 and "acknowledged" in seed_mcp.stdout.lower().replace("'", '"'),
+              seed_mcp.stdout[-120:] + seed_mcp.stderr[-120:])
         run3 = receipt6.get("run_id", "")
         aw = sse.wait(lambda i: i[1] == "tool.awaiting_approval" and i[2]["run_id"] == run3, timeout=40)
         pay = aw[2]["payload"] if aw else {}
