@@ -35,6 +35,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
 | `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
 | `delivery.created` | path, title, mime, size, content_hash, note? |
+| `run.control.receipt` | decision_id, control_status |
 | `run.completed` | status, token_usage? |
 | `run.failed` | code, error_kind, message |
 
@@ -69,8 +70,8 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | message | fields |
 | --- | --- |
 | `run.request` | run_id, thread_id, input, runtime, context, trace |
-| `run.resume` | run_id, thread_id, decisions |
-| `run.cancel` | run_id, thread_id |
+| `run.resume` | run_id, thread_id, decision_id, decisions |
+| `run.cancel` | run_id, thread_id, decision_id |
 | `run.steer` | run_id, thread_id, message_id, content |
 
 ResumeDecision (discriminated on `type`):
@@ -102,6 +103,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | GET | `/sessions/{session_id}/deliveries/{content_hash}` |
 | GET | `/sessions/{session_id}/events` |
 | GET | `/sessions/{session_id}/files/{path}` |
+| GET | `/sessions/{session_id}/runs/{run_id}/control/{decision_id}` |
 | POST | `/sessions/{session_id}/runs/{run_id}/control` |
 | DELETE | `/sessions/{session_id}` |
 

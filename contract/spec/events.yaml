@@ -20,6 +20,7 @@ enums:
   run_completed_status: [completed, cancelled]
   # 失败码是闭集：新失败形态必须进枚举（单源扩表），internal_error 兜底。
   # enqueue_failed 由 session 合成（投递失败收口，agent 永不发它）。
+  control_receipt_status: [persisted, applied]
   run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, enqueue_failed, dispatch_exhausted, internal_error]
 
 # Reusable nested object shapes (dependency order: leaves first).
@@ -64,6 +65,7 @@ field_types:
   summary: record
   todos: array:object:Todo
   status: enum:run_completed_status
+  control_status: enum:control_receipt_status
   token_usage: object:TokenUsage
   size: int
   note: string
@@ -108,6 +110,9 @@ raw_kinds:
   - {kind: subagent.tool.invoked, payload: [segment_id, subagent_id, tool_id, name, args]}
   - {kind: subagent.tool.returned, payload: [segment_id, subagent_id, tool_id, name, result, is_error, "truncated?"]}
   - {kind: delivery.created, payload: [path, title, mime, size, content_hash, "note?"]}
+  # internal-only(R2):control 回执两时点(persisted/applied);session 消费进 receipt 存储,
+  # 不入 browser_order 永不投影浏览器。
+  - {kind: run.control.receipt, payload: [decision_id, control_status]}
   - {kind: run.completed, payload: [status, token_usage]}
   - {kind: run.failed, payload: [code, error_kind, message]}
 

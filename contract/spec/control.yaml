@@ -79,11 +79,14 @@ messages:
     fields:
       - {name: run_id, type: string_nonempty}
       - {name: thread_id, type: string_nonempty}
+      # R2:幂等锚上 wire(agent inbox 按它去重;receipt 按它回执)。
+      - {name: decision_id, type: string_nonempty}
       - {name: decisions, type: decision_message_list}
   - kind: run.cancel
     fields:
       - {name: run_id, type: string_nonempty}
       - {name: thread_id, type: string_nonempty}
+      - {name: decision_id, type: string_nonempty}
   - kind: run.steer
     fields:
       - {name: run_id, type: string_nonempty}

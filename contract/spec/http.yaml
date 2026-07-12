@@ -156,6 +156,12 @@ endpoints:
     path_template: "/sessions/{session_id}/files/{path}"
     params: [session_id, path]
     note: "工作区文件字节：content-type 按扩展名，路径含 '/' 须逐段编码；穿越/不存在 => 404。文件可变（agent 迭代），不设 immutable 缓存。"
+  control_receipt:
+    method: GET
+    path_fn: controlReceiptPath
+    path_template: "/sessions/{session_id}/runs/{run_id}/control/{decision_id}"
+    params: [session_id, run_id, decision_id]
+    note: "R2 回执查询:{decision_id,status: pending|persisted|applied|failed};同属主守门同 snapshot。"
   run_control:
     method: POST
     path_fn: controlPath
