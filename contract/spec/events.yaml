@@ -20,7 +20,7 @@ enums:
   run_completed_status: [completed, cancelled]
   # 失败码是闭集：新失败形态必须进枚举（单源扩表），internal_error 兜底。
   # enqueue_failed 由 session 合成（投递失败收口，agent 永不发它）。
-  run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, enqueue_failed, internal_error]
+  run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, enqueue_failed, dispatch_exhausted, internal_error]
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
