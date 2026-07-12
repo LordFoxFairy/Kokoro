@@ -8,6 +8,7 @@ enums:
   skill_source: [deploy, upload, github]
   mcp_transport: [http, streamable_http]
   review_status: [pending, approved, rejected]
+  dispatch_status: [pending, claimed, expired]
 
 objects:
   # 清单卡片：会话快照与 system prompt 技能清单的最小面。
@@ -78,6 +79,20 @@ objects:
       - {name: updated_at, type: int}
       - {name: deleted_at, type: int, nullable: true}
 
+  # 投递竞争单文档 CAS(纲领 D5/R1):session 写 pending+deadline+fence;agent 抢 claimed;
+  # 超时方只能把仍 pending 的改 expired。claimed 后终态权归 agent;expired 后迟到帧永不执行。
+  - name: RunDispatchDoc
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: session_id, type: string_nonempty}
+      - {name: namespace, type: string_nonempty}
+      - {name: fence, type: string_nonempty}
+      - {name: status, type: enum:dispatch_status}
+      - {name: deadline_at, type: int}
+      - {name: claimed_by, type: string_nonempty, optional: true, nullable: true}
+      - {name: created_at, type: int}
+      - {name: updated_at, type: int}
+
 collections:
   skills:
     doc: SkillDoc
@@ -91,6 +106,9 @@ collections:
   mcp_servers:
     doc: McpServerDoc
     unique: [scope, name]
+  run_dispatches:
+    doc: RunDispatchDoc
+    unique: [run_id]
 
 # 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
 workspace_key_template: "{namespace}:{session_id}"
