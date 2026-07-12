@@ -76,6 +76,17 @@ objects:
       - {name: size, type: int}
       - {name: run_id, type: string_nonempty}
       - {name: created_at, type: string_nonempty}
+  # 会话列表项(服务端化的 rail 数据源;线程内容仍走 snapshot+回放)。
+  - name: SessionListItem
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: title, type: string_nonempty}
+      - {name: updated_at, type: string_nonempty}
+  - name: SessionList
+    fields:
+      - {name: sessions, type: array:object:SessionListItem}
+      # 复合游标(updated_at+session_id 稳定分页);缺席=没有下一页。
+      - {name: next_cursor, type: string_nonempty, optional: true}
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
@@ -112,6 +123,14 @@ endpoints:
       - {name: run_id, type: string_nonempty}
       - {name: user_message_id, type: string_nonempty}
       - {name: assistant_message_id, type: string_nonempty}
+  list_sessions:
+    method: GET
+    path_fn: sessionsPath
+    path_template: "/sessions"
+    params: []
+    response_const: sessionListSchema
+    response_object: SessionList
+    note: "属主会话列表(updated_at desc,软删不出);query limit/cursor 不进契约 path,由实现读 querystring。"
   snapshot:
     method: GET
     path_fn: snapshotPath
