@@ -36,18 +36,19 @@ MCP-REVALIDATION-HANG 记档(4560b33,修复在飞 fixRevalidationHang)。**后�
 ## 一点七、Wave 1 全项收口 + Wave 2 R0-R2 落地(2026-07-12/13)
 
 - **Wave 1 六项全绿**:TRUST-ROUTES/AUTH-P0/CREDIT-CACHE/MODEL-SOURCE/HUB-AUTHZ/MCP-SECRET(双半场)/MCP-REVISION 契约(7f8cc7f+24b6dd2)/**HUB-CONSIST**(hub 9710400、session dfd1280、agent 2e30fe0、gate 560d70c)。要点:config_hash 唯一计算方=hub(sha256 规范化 {transport,url,allowed_tools 排序,secret_ref});revision append-only,secret 轮换不 bump;session 经 `/hub/runtime/resolve` 取 SkillGrant[]+McpGrant[](MongoSkillPool 双实现已删,hub 不可达建会话 fail-loud);agent 按 (scope,name,revision) 直读同库快照行(裁决:同库部署内直读=经 hub 拥有的数据;HTTP 快照端点已备作拆库切轨)+config_hash 不符/disable/revoke 一律拒装;MCP mutation 门=env `KOKORO_HUB_MCP_MUTATION`(缺省 off 恒 503)。
-- **Wave 2**:R0 五钉→R1 dispatch CAS→**R2 control outbox/inbox+receipt**(session merge 6dd62fd;agent 4a056e3):outbox 先落库后 XADD+补发 scanner;agent inbox persist→ACK→apply→applied+双时点 `run.control.receipt`+重启续办(fingerprint 不符=superseded);`GET /sessions/:id/runs/:rid/control/:decisionId` 回执端点(契约 controlReceiptViewSchema);R0 钉1/钉3 已转绿,剩钉2(R4 终态帧)/钉4(R7 settle)/钉5(R5 reprojection)。P0.5 MCP-REVALIDATION-HANG 的双 worker control 竞争由 R2 inbox 去重根治。
-- gate 新断言:§8.2-9/14/15(McpGrant 全链/版本锁定+紧急撤销/门 env)+ R2 receipt applied。
+- **Wave 2 R0-R7 全闭环(2026-07-13,R0 五钉清零)**:R1 dispatch CAS→R2 control outbox/inbox+receipt(P0.5 根治)→R3 tool journal(工具内 HITL interrupt 撤销 started 放行重入)→R4 critical outbox(durable_seq/event_id 上 raw 信封;head-of-line 折衷=live 即发+durable 并行确认;published 无回执超 KOKORO_OUTBOX_REPUBLISH_MS 重发;fence/superseded;consume/close 握手)→R5 双水位(persisted=连续前缀/projected 逐 seq CAS;quarantine→contract_incompatible;finalization reconciler,间隔 env KOKORO_FINALIZATION_RECONCILE_MS)→R6/R7 billing journal+compensation(相机见 store/port.ts;stuck 不阻投影只阻 finalized)。
+- **缝合教训(跨仓联测抓修三处)**:①session control receipt 分支必须落 durable 回执推水位,否则终态连续性永久缺口(relay-run.ts);②R3 守门要区分 interrupt 与崩溃;③gate mongo 容器名笔误致两断言假空转——守卫式断言会静默软过,写断言先验依赖真的在跑。
+- gate 断言现役:§8.2-9/14/15 + R2 receipt applied + R7 journal 终局 + R5 producer_closed。契约:6329f8a(durable 位+receipt/manifest 单源)、24b6dd2(receipt 端点补射)。
 
 ## 二、在飞
 
-无。下一步执行序:R3-R7 子 spec(主控写)→逐项落;Wave 3 SESS-LIST/WEB-BILLING/WEB-SKILLS 竖切。
+无。下一步执行序:Wave 3 竖切(SESS-LIST→WEB-BILLING(前置 CRED-BAL)→WEB-SKILLS);Wave 2 非阻塞硬化(gate chaos 脚手架/manifest GC)记 task.md。
 
 **收口流程(每轮铁律)**:逐 lane `git diff` 自审+全量测试自跑(不信 lane 汇报数字)→ 全链 `python3 scripts/e2e-v21-gate.py` 必须 PASS → 按仓分主题 commit(中文 conventional,行为+验证入 body)→ 汇报。lane 越界=回滚重派。
 
 ## 三、验证口径(接手照抄)
-- agent:`uv run pytest -q`(当前基线 570+1 xfail)/`ruff check .`/`pyright` 0
-- session:`npm run typecheck`/`npx vitest run`(289+2 expected-fail)/`npx eslint .`(0 error)
+- agent:`uv run pytest -q`(当前基线 589,0 xfail)/`ruff check .`/`pyright` 0
+- session:`npm run typecheck`/`npx vitest run`(314,0 expected-fail)/`npx eslint .`(0 error)
 - platform hub:`vitest run`(289)+integration(mongo 27017+minio 9100)
 - web:同上(285,分支 agent/p2-auth-wiring;`npm run lint` 管道会吞退出码,务必看 error 计数)
 - platform 各模块:`pnpm test` + `DATABASE_URL_<MOD>=mysql://root:kokoro_root@127.0.0.1:3307/kokoro pnpm test:integration`(hub 用 mongo 27017+minio 9100)

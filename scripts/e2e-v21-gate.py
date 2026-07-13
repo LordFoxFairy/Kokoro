@@ -260,7 +260,7 @@ def main() -> int:
         "    allowed_tools: [verify]\n"
     )
     subprocess.run(
-        ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
+        ["docker", "exec", "kokoro-dev-mongo", "mongosh", "--quiet", "--eval",
          f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
         check=False, capture_output=True,
     )
@@ -273,6 +273,8 @@ def main() -> int:
         "KOKORO_REDIS_URL": REDIS_URL,
         "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
+        # R5 finalization reconciler 调快（缺省 30s;gate 断言窗口内须至少一跳）。
+        "KOKORO_FINALIZATION_RECONCILE_MS": "1500",
         # 能力中台 hub 基址（HUB-CONSIST）：buildSnapshot 经此取 skills + McpGrant[] 定死会话快照。
         "KOKORO_HUB_BASE_URL": HUB_BASE,
         # write_file 同时配 审批+审核：批参数 → 执行 → 审结果（串联双暂停，实证缓存防双跑）。
@@ -881,7 +883,7 @@ def main() -> int:
         # 默认 session 共享 MONGO_DB）。journal 私有集合 billing_journal，键 run_id。
         def mongo_scalar(js: str) -> str:
             q = subprocess.run(
-                ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval", js],
+                ["docker", "exec", "kokoro-dev-mongo", "mongosh", "--quiet", "--eval", js],
                 capture_output=True, text=True, check=False)
             return q.stdout.strip() if q.returncode == 0 else ""
 

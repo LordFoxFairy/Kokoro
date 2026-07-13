@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-12(Wave 1 全项收口+R2 落地;下一步 R3-R7 spec+Wave 3 竖切;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(Wave 2 R0-R7 全闭环,R0 五钉清零;下一步 Wave 3 竖切;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -19,7 +19,11 @@
 - [x] R0 故障护栏五钉(8ca5fc6/4c154dc)+R1 契约冻结(e471822)
 - [x] **R1 dispatch CAS**(e40fb76/d844d5c/85aec79):session 写 pending+fence→agent CAS claim→ACK 后置;超时 reconciler 合成 dispatch_exhausted+billing release;dispatch_dlq;run.started 最小 outbox;R0 钉1 转正式绿。
 - [x] **R2 control outbox/inbox+receipt**(契约 74e6dfc/24b6dd2;session c688817/4bb25be→merge 6dd62fd;agent 4a056e3):session control_outbox 先落库后 XADD+启动补发 scanner+receipt 消费+GET 回执端点;agent inbox persist→ACK→apply→applied+双时点回执+重启续办+fingerprint 防 stale;R0 钉3 转绿;gate 增 receipt applied 断言,e2e 全绿。P0.5 双 worker control 竞争根治于此。
-- [ ] R3-R7:agent 终态在发布前消耗终态权、settle/release 失败无持久重试——durable_seq/receipt manifest/quarantine 全套(纲领 §5/§8.3 故障矩阵);specs 待写。
+- [x] **R3 tool effect journal**(agent 7887e0c/feb09e3):副作用工具 started/succeeded/failed 记账+重放守门(unknown-outcome 不自动重放,幂等白名单收敛);工具内 HITL interrupt 撤销 started 行放行重入(跨仓联测抓修)。
+- [x] **R4 critical/terminal outbox**(agent f0a4616/6edbc23,契约 6329f8a):durable_seq/event_id 上 raw 信封(critical 集=started/control.receipt/terminal);queued→published 补发 scanner+published 无回执超宽限重发;first-terminal fence+superseded;consume/close 握手(写者分域 CAS manifest);R0 钉2 转绿。
+- [x] **R5 双水位+quarantine+finalization**(session ff40c5c/01c1c9c):persisted=receipt 连续前缀/projected 逐 seq CAS;终态连续性门(跳号不收口);two-stage parse quarantine→contract_incompatible 终态权;finalization reconciler(间隔 env 可调);R0 钉5 转绿。缝合修复:control receipt 落 durable 回执(终态 deferred 卡死)。
+- [x] **R6/R7 billing durable**(session f005910):billing_journal 相机 hold_pending→held→settle/release_pending→终局;崩溃窗口 adopt/孤儿释放;compensation scanner+stuck 告警;hold 临期告警;R0 钉4 转绿。**Wave 2 R0-R7 全闭环,R0 五钉清零**;gate += R2 receipt/R7 journal/R5 producer_closed 断言全绿(容器名假空转已修)。
+- [ ] 后续硬化(非阻塞):gate kill/chaos 脚手架(kill agent 于 publish 后/kill session 于 settle 前,单元级故障注入已全覆盖);manifest 自动 GC(门已留)。
 
 **Wave 3 用户可感 P0(必须后端+BFF+UI 竖切)**:
 - [ ] **SESS-LIST**:契约草稿已封存(c4a0718),store/route/rail 水合全未实现。
