@@ -146,7 +146,9 @@ objects:
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
-      - {name: messages, type: array:object:MessageRecord}
+      # M6 后半(裁决 2026-07-13):属主面省略(web 水合恒丢弃,线程唯一真源=事件回放);
+      # 公共 /shared 面必携(无回放面,这是其唯一内容源)。缺席=属主面,存在=分享面。
+      - {name: messages, type: array:object:MessageRecord, optional: true}
       - {name: active_run, type: object:ActiveRun, optional: true}
       - {name: pending_pauses, type: array:object:PendingPause}
       # 会话工作区文件清单（真实目录 walk；工作区=真文件系统 backend，state 盘档为空列表）。
