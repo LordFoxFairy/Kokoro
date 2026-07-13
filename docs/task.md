@@ -53,12 +53,10 @@
 - [ ] session 测试 flake 治理(并发时序,单跑绿)/M-6 后续(snapshot.messages 双份另一半)
 - [ ] swarm/组织级配额(handbook 定 P2)
 
-## 文档欠账(DOC-2 在办)
+## 文档欠账(2026-07-13 核验刷新;终局审计归 Wave 6)
 
-- [ ] technical/23 platform 运营台册(RBAC/审批流/审计/webhook/hold 回收/多租户——已落地无主仓册)
-- [ ] web 工作台形态入正式册(Canvas/三栏/四卡现只在历史入口 spec)
-- [ ] 状态位刷新:20 §1§5 / 21 §2§6 / 22 §2§4 / 15+09 状态头(代码已超前文档)
-- [ ] 归位七项:CURRENT.md 指 22/docs README 主线节/00 指针/CODEBASE_MAP 补 hub/modules 补 hub/platform README 补 hub(子仓)/tmp/closure 清理
+- [x] technical/23 运营台册已在;modules/ 十册已在(含 kokoro-hub);CURRENT 已指 22;CODEBASE_MAP 已含 hub;contract README 事件数改计数派生(6295f36)。
+- [ ] **Wave6 handbook 全册事实审计**:状态位刷新(如 handbook README 105 行仍写"HUB-3/4 进行中",Wave1-4 大量超前文档)/web 工作台形态入正式册/00 指针复核/tmp/closure 清理。
 - [x] hub 运营字段收编 storage.yaml 单源(39b02f2);mcp_servers/skill_revisions 同已收编
 
 ## Round-4/5 真实状态(纠偏)
