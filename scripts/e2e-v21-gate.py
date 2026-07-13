@@ -110,6 +110,16 @@ def http_raw(path: str) -> tuple[int, bytes, str]:
         return e.code, e.read(), e.headers.get("content-type", "")
 
 
+def http_public(method: str, path: str):
+    """公共无 auth 面（SHARE-1 /shared）：不带 Authorization 头，验证公共读绕行与撤销 404。"""
+    req = urllib.request.Request(BASE + path, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.status, json.loads(resp.read() or b"{}")
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read() or b"{}")
+
+
 def hub(method: str, path: str, body: dict | None = None, *, caller: str = "admin"):
     """直调 hub 内部路由，冒充 caller（admin=管理面 seed；web-bff=self 面门探针）。"""
     secret = INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_ADMIN" if caller == "admin"
@@ -552,6 +562,42 @@ def main() -> int:
                   st24 == 200 and body24.decode() == "# 计划\n本地预览", f"{st24} {body24[:40]!r}")
         stbad, _, _ = http_raw(f"/sessions/{SID}/deliveries/{'0' * 64}")
         check("E2E-31 未知 hash → 404", stbad == 404, str(stbad))
+
+        # 6b'. 作品库跨会话聚合（ARTIFACT-LIB）：属主 namespace 全部成果聚合含本轮交付物；
+        # 单件下载 namespace 守门；跨 namespace 枚举保护 404。
+        st_al, al_body = http("GET", "/artifacts")
+        al_hashes = [a["content_hash"] for a in al_body.get("artifacts", [])]
+        al_entry = next((a for a in al_body.get("artifacts", []) if a["content_hash"] == dhash), None)
+        check("ARTIFACT-LIB GET /artifacts 含 E2E-31 交付物", st_al == 200 and al_entry is not None
+              and al_entry["session_id"] == SID and al_entry["mime"] == "text/markdown",
+              f"{st_al} {al_hashes[:5]}")
+        st_ac, ac_body, ac_mime = http_raw(f"/artifacts/{dhash}")
+        check("ARTIFACT-LIB GET /artifacts/{hash} 下载冻结副本",
+              st_ac == 200 and ac_body.decode() == "# 计划\n本地预览" and ac_mime == "text/markdown",
+              f"{st_ac} {ac_mime}")
+        st_alx, _ = http("GET", f"/artifacts/{dhash}",
+                         headers={"authorization": f"Bearer {sign_token('e2e-intruder')}"})
+        check("ARTIFACT-LIB 跨 namespace 内容 → 404（枚举保护）", st_alx == 404, str(st_alx))
+
+        # 6b''. 可撤销只读分享（SHARE-1）：创建 → 无 auth 公共读 200（pending_pauses 恒 []）→
+        # 撤销 → 公共读 404。
+        st_sc, sc_body = http("POST", f"/sessions/{SID}/share")
+        share_id = sc_body.get("share_id", "")
+        check("SHARE-1 POST /share → share_id（shr_+32hex）",
+              st_sc == 200 and share_id.startswith("shr_") and len(share_id) == 36, f"{st_sc} {share_id}")
+        # 幂等：活跃分享重复创建返同 id。
+        _, sc_body2 = http("POST", f"/sessions/{SID}/share")
+        check("SHARE-1 活跃分享重复创建幂等（同 id）", sc_body2.get("share_id") == share_id,
+              f"{sc_body2.get('share_id')} vs {share_id}")
+        st_pub, pub_snap = http_public("GET", f"/shared/{share_id}")
+        check("SHARE-1 无 auth 公共读 → 200 只读快照（pending_pauses 恒 []）",
+              st_pub == 200 and pub_snap.get("session", {}).get("session_id") == SID
+              and pub_snap.get("pending_pauses") == [] and len(pub_snap.get("messages", [])) > 0,
+              f"{st_pub} msgs={len(pub_snap.get('messages', []))}")
+        st_rev, _ = http("DELETE", f"/sessions/{SID}/share")
+        check("SHARE-1 DELETE /share 撤销 → 200", st_rev == 200, str(st_rev))
+        st_pub2, _ = http_public("GET", f"/shared/{share_id}")
+        check("SHARE-1 撤销后公共读 → 404", st_pub2 == 404, str(st_pub2))
 
         # 6c. MCP elicitation（E2E-32，H2/H3）：第三轮脚本 mcp_call → 服务器中途 elicit →
         # kind=input 暂停（input_schema 上 wire）→ submit 回灌 value → 服务器续跑 → verified 回流。
