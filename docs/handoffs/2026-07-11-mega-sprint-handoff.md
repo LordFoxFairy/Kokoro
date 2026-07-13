@@ -1,6 +1,6 @@
-# 2026-07-11 全域冲刺交接档
+# 2026-07-11 全域冲刺交接档(已归档)
 
-状态:活文档,每轮收口更新。接手者从这里 + `docs/CURRENT.md` + `docs/task.md` 开始,不要翻旧 handoff。
+**状态:已被 `2026-07-13-full-closure-handoff.md` 取代(全 Wave 0-6 闭环终稿),本档仅存史。**
 
 ## 一、已落库(全部经全链 e2e 验证,`python3 scripts/e2e-v21-gate.py` 全绿)
 

@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(**Wave4+Wave5 全清**;在飞:WEB-ARCH 五阶段重构(用户点名对照参考定案 b6a7a94);待启:Wave6 终局审计;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(**纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure**;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -58,8 +58,11 @@
 ## 文档欠账(2026-07-13 核验刷新;终局审计归 Wave 6)
 
 - [x] technical/23 运营台册已在;modules/ 十册已在(含 kokoro-hub);CURRENT 已指 22;CODEBASE_MAP 已含 hub;contract README 事件数改计数派生(6295f36)。
-- [ ] **Wave6 handbook 全册事实审计**:状态位刷新(如 handbook README 105 行仍写"HUB-3/4 进行中",Wave1-4 大量超前文档)/web 工作台形态入正式册/00 指针复核/tmp/closure 清理。
+- [x] **Wave6 全册事实审计+部署面**(c79b2fa 九册状态位刷平/存疑六项裁决入终稿;compose 11b7a7a 补 mongo+minio+hub 段;.env.example 四仓补齐 b9ca96b/46d6c36/c8c4526/94d1741;credit 册 d240c15;tmp/closure 陈旧件已清含 evidence-token)。
+- [x] **WEB-ARCH 重构**(用户点名;定案 b6a7a94;web f4da915→d46c138 八支):共享查询层(useResource SWR/竞态丢弃/invalidate)+七面板迁移+shell 774→364 行(7 域 controller)+规则下沉纯模块+11 张域 INDEX+FALLBACK 收紧(失败不入缓存+KOKORO_SITE_STRICT 门);web 455 绿,行为零变化(面板重开 SWR 即显=已知优化差异)。
 - [x] hub 运营字段收编 storage.yaml 单源(39b02f2);mcp_servers/skill_revisions 同已收编
+
+**终账(2026-07-13)**:纲领 Wave 0-6 全清;终局 gate 115 断言 PASS;完整交接=docs/handoffs/2026-07-13-full-closure-handoff.md。
 
 ## Round-4/5 真实状态(纠偏)
 
