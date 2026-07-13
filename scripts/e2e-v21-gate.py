@@ -216,6 +216,11 @@ def main() -> int:
     (skill_dir / "SKILL.md").write_text(
         "---\nname: e2e-style\ndescription: e2e 渐进披露样例\n---\n\n正文 GATE-SKILL-BODY\n"
     )
+    # AGENT-PRESET:profile 声明的具名 agent 必须有 persona 资产(fail-loud,不静默回退 general)。
+    # 加目录=加文件零代码——poet.md 即 e2e 的活证据。
+    personas_dir = scratch / "personas"
+    personas_dir.mkdir(parents=True)
+    (personas_dir / "poet.md").write_text("你是诗歌创作专家 GATE-POET-PERSONA。\n")
     (scratch / "namespaces.json").write_text(json.dumps({
         "namespaces": {
             "team-e2e": {
@@ -330,6 +335,7 @@ def main() -> int:
         # MCP egress 防线放行环回：本地 127.0.0.1 MCP fixture（strict 缺省会拒 loopback）。
         "KOKORO_MCP_EGRESS_MODE": "off",
         "KOKORO_SKILLS_DIR": str(scratch / "skills"),
+        "KOKORO_PERSONAS_DIR": str(scratch / "personas"),
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
     agent_env.update(storage_env)  # 双侧读同一 storage yaml：workspace 归档 + deliveries 冻结件
