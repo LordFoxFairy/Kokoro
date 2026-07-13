@@ -15,6 +15,8 @@ enums:
   pause_status: [pending, resolved, cancelled, expired]
   awaiting_kind: [tool_approval, ask_user_question, result_review, input]
   resume_decision: [approve, edit, reject, respond, submit]
+  # R2 回执查询面状态:pending=已受理未见 agent 回执;persisted/applied=agent 两时点;failed=终局失败。
+  control_receipt_view_status: [pending, persisted, applied, failed]
 
 # Snapshot read-model shapes (dependency order: leaves first). Exported for session/web.
 objects:
@@ -161,6 +163,10 @@ endpoints:
     path_fn: controlReceiptPath
     path_template: "/sessions/{session_id}/runs/{run_id}/control/{decision_id}"
     params: [session_id, run_id, decision_id]
+    receipt_const: controlReceiptViewSchema
+    receipt:
+      - {name: decision_id, type: string_nonempty}
+      - {name: status, type: enum:control_receipt_view_status}
     note: "R2 回执查询:{decision_id,status: pending|persisted|applied|failed};同属主守门同 snapshot。"
   run_control:
     method: POST

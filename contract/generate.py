@@ -625,6 +625,12 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
     L.append("")
 
+    rcpt = ep["control_receipt"]
+    rcpt_fields = ", ".join(ts_field(f, enums) for f in rcpt["receipt"])
+    L.append(f"export const {rcpt['receipt_const']} = z.object({{ {rcpt_fields} }}).strict()")
+    L.append(f"export type ControlReceiptView = z.infer<typeof {rcpt['receipt_const']}>")
+    L.append("")
+
     dele = ep["delete_session"]
     dele_receipt = ", ".join(ts_field(f, enums) for f in dele["receipt"])
     L.append(f"export const {dele['receipt_const']} = z.object({{ {dele_receipt} }}).strict()")
@@ -638,7 +644,15 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
     L.append("")
 
-    for key in ("create_message", "snapshot", "stream", "file", "delivery_content", "run_control"):
+    for key in (
+        "create_message",
+        "snapshot",
+        "stream",
+        "file",
+        "delivery_content",
+        "run_control",
+        "control_receipt",
+    ):
         e = ep[key]
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
         body = _ts_template(e["path_template"], e["params"])
