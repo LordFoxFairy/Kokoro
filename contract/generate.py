@@ -658,6 +658,9 @@ def emit_http_ts(spec: dict) -> str:
         "delivery_content",
         "run_control",
         "control_receipt",
+        "list_sessions",
+        "billing_summary",
+        "billing_ledger",
     ):
         e = ep[key]
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])

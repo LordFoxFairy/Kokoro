@@ -89,6 +89,25 @@ objects:
       - {name: sessions, type: array:object:SessionListItem}
       # 复合游标(updated_at+session_id 稳定分页);缺席=没有下一页。
       - {name: next_cursor, type: string_nonempty, optional: true}
+  # WEB-BILLING(Wave3):credit 余额/流水窄读,session 从 auth namespace 派生账户并代理。
+  # 金额一律微单位 bigint 序列化为字符串(credit 单源 balanceMicros 形状),换算归展示层。
+  - name: BillingSummary
+    fields:
+      - {name: balance_micros, type: string_nonempty}
+      - {name: held_micros, type: string_nonempty}
+  - name: BillingLedgerEntry
+    fields:
+      - {name: entry_id, type: string_nonempty}
+      # 有符号微单位字符串:授予为正,扣费为负。
+      - {name: delta_micros, type: string_nonempty}
+      - {name: reason, type: string_nonempty}
+      - {name: created_at, type: int}
+      # 幂等键可解析出 run 时回填;否则 null(如人工调整)。
+      - {name: run_id, type: string_nonempty, optional: true, nullable: true}
+  - name: BillingLedger
+    fields:
+      - {name: entries, type: array:object:BillingLedgerEntry}
+      - {name: next_cursor, type: string_nonempty, optional: true}
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
@@ -133,6 +152,22 @@ endpoints:
     response_const: sessionListSchema
     response_object: SessionList
     note: "属主会话列表(updated_at desc,软删不出);query limit/cursor 不进契约 path,由实现读 querystring。"
+  billing_summary:
+    method: GET
+    path_fn: billingSummaryPath
+    path_template: "/billing/summary"
+    params: []
+    response_const: billingSummarySchema
+    response_object: BillingSummary
+    note: "WEB-BILLING:账户按已验 namespace 派生(路径不收参);无账户=零额(不隐式建账)。"
+  billing_ledger:
+    method: GET
+    path_fn: billingLedgerPath
+    path_template: "/billing/ledger"
+    params: []
+    response_const: billingLedgerSchema
+    response_object: BillingLedger
+    note: "WEB-BILLING:流水 created_at desc;query limit/cursor 同 list_sessions 注。"
   snapshot:
     method: GET
     path_fn: snapshotPath
