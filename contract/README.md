@@ -9,12 +9,13 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 
 ## Envelopes
 
-- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic.
+- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic;
+  critical frames additionally carry `durable_seq`/`event_id` (R4, absent on live frames).
 - session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`
   — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is
-  replaced by the synthetic session.created + run.created; the other 13 raw kinds pass through.
+  replaced by the synthetic session.created + run.created; internal-only raw kinds never project.
 
-## Raw events (agent -> session, 14)
+## Raw events (agent -> session, 20)
 
 | kind | payload |
 | --- | --- |
@@ -39,7 +40,7 @@ One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 | `run.completed` | status, token_usage? |
 | `run.failed` | code, error_kind, message |
 
-## Browser events (session -> web, 15)
+## Browser events (session -> web, 21)
 
 | kind | payload |
 | --- | --- |

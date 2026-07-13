@@ -771,12 +771,13 @@ def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
         "",
         "## Envelopes",
         "",
-        "- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic.",
+        "- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic;",
+        "  critical frames additionally carry `durable_seq`/`event_id` (R4, absent on live frames).",
         "- session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`",
         "  — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is",
-        "  replaced by the synthetic session.created + run.created; the other 13 raw kinds pass through.",
+        "  replaced by the synthetic session.created + run.created; internal-only raw kinds never project.",
         "",
-        "## Raw events (agent -> session, 14)",
+        f"## Raw events (agent -> session, {len(events['raw_kinds'])})",
         "",
         "| kind | payload |",
         "| --- | --- |",
@@ -786,7 +787,13 @@ def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
         rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"
         L.append(f"| `{entry['kind']}` | {rendered} |")
 
-    L += ["", "## Browser events (session -> web, 15)", "", "| kind | payload |", "| --- | --- |"]
+    L += [
+        "",
+        f"## Browser events (session -> web, {len(events['browser_order'])})",
+        "",
+        "| kind | payload |",
+        "| --- | --- |",
+    ]
     for kind in events["browser_order"]:
         fields = payload_by_kind[kind]
         rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"

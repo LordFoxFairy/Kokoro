@@ -3,13 +3,13 @@
 # One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
-# Two faces:
-#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}
-#                  + 可选 durable 身份位 {durable_seq, event_id}(R4:critical 帧必带,live 帧缺席;
-#                  browser 面不携带——durable 身份不出内部面)。
-#   browser (20) — session emits, web parses. run.started is consumed by session and
-#                  replaced by the synthetic session.created + run.created; the other 17
-#                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
+# Two faces(数量以本文件清单为准,README 由生成器计数派生,不再手写数字):
+#   raw     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}
+#             + 可选 durable 身份位 {durable_seq, event_id}(R4:critical 帧必带,live 帧缺席;
+#             browser 面不携带——durable 身份不出内部面)。
+#   browser — session emits, web parses. run.started 由 session 消费并换成合成的
+#             session.created + run.created;internal-only kind(run.control.receipt)永不投影;
+#             其余 raw kinds 原样透传。Envelope adds event_id/seq/session ids.
 #
 # tool.awaiting_approval.payload carries its own `kind` (tool_approval|ask_user_question) — a
 # nested field, distinct from the envelope `kind`; both stay readable side by side.
