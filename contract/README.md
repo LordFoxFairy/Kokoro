@@ -99,6 +99,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | --- | --- |
 | POST | `/sessions/{session_id}/messages` |
 | GET | `/sessions` |
+| GET | `/models` |
 | GET | `/billing/summary` |
 | GET | `/billing/ledger` |
 | GET | `/sessions/{session_id}` |

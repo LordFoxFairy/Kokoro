@@ -89,6 +89,17 @@ objects:
       - {name: sessions, type: array:object:SessionListItem}
       # 复合游标(updated_at+session_id 稳定分页);缺席=没有下一页。
       - {name: next_cursor, type: string_nonempty, optional: true}
+  # MODEL-UX(Wave4):模型候选窄读——session 按信封 namespace 出「可选且可用」列表
+  # (profile.allowed 展示过滤 ∩ platform resolve 可用性权威,MODEL-SOURCE 定案)。
+  # 字段最小面(D1 拒投机):provider/name 即 wire ModelConfig 的引用键;is_default=缺省高亮。
+  - name: ModelCandidate
+    fields:
+      - {name: provider, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: is_default, type: boolean}
+  - name: ModelCandidateList
+    fields:
+      - {name: models, type: array:object:ModelCandidate}
   # WEB-BILLING(Wave3):credit 余额/流水窄读,session 从 auth namespace 派生账户并代理。
   # 金额一律微单位 bigint 序列化为字符串(credit 单源 balanceMicros 形状),换算归展示层。
   - name: BillingSummary
@@ -152,6 +163,14 @@ endpoints:
     response_const: sessionListSchema
     response_object: SessionList
     note: "属主会话列表(updated_at desc,软删不出);query limit/cursor 不进契约 path,由实现读 querystring。"
+  model_candidates:
+    method: GET
+    path_fn: modelCandidatesPath
+    path_template: "/models"
+    params: []
+    response_const: modelCandidateListSchema
+    response_object: ModelCandidateList
+    note: "MODEL-UX:候选=allowed∩可用;不可用不出列;空列表=只剩缺省档(web 隐选择器)。"
   billing_summary:
     method: GET
     path_fn: billingSummaryPath
