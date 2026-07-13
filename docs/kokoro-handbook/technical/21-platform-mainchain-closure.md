@@ -26,7 +26,8 @@
                sub = teamId（ULID，天然不透明，个人=personal team）/ exp / iss=kokoro-user / site_id claim
       → 目标态(设计纠偏 2026-07-11):web BFF 把签发结果密封进 httpOnly cookie,浏览器只访问
         同源 /api/session/* 代理,由 BFF 注入 Bearer——浏览器 JS 无法读 httpOnly cookie 加头,
-        「cookie 下发+前端带 Bearer」旧表述不可执行。现状:dev 直登+localStorage(AUTH-P0 在办)
+        「cookie 下发+前端带 Bearer」旧表述不可执行。现状:AUTH-P0 已落地(user e4068d6/6260da5/8c26740)
+        ——web BFF 密封 httpOnly cookie + magic-link web 流 + nonce 防 CSRF + 日志脱敏,浏览器不再持 bearer
       → session auth.ts 验签零改动（共享 KOKORO_AUTH_JWT_SECRET）
       → agent namespace 隔离零改动
 ```
@@ -35,7 +36,7 @@
 
 - **签发权威=kokoro-user**：身份数据与 token 生命周期同源治理；web 不自己签，避免双权威。
 - **namespace=teamId**：个人即 personal team，切团队=换 namespace 重新签发；session/agent 无团队概念。
-- V1 使用 HS256 共享 secret（与 session 现状一致）；RS256/JWKS 轮换属后续硬化块。
+- V1 起用 HS256 共享 secret；RS256/JWKS 轮换**已落地(SEC-2，user 95d68c2/session 6e70b9d/gate 2f7ff59)**：user RS256 签发+kid 指纹+/.well-known/jwks.json 双 kid 轮换,session KOKORO_AUTH_MODE=jwks|hs256(生产 hs256 fail-fast,JWKS 不可达 fail-closed)。
 - admin 双后台（oidc/magic-link）是运营者身份，与终端用户签发**两套并行**，互不复用。
 - host→site 解析 V1 为单站点缺省常量。
 - secret 不进日志/错误输出（platform-kit envelope 掩码，有测试覆盖）。
@@ -78,7 +79,7 @@ run 收口（session relay 终态）:
 
 ## 6. 闭环外遗留（记档，不属本册范围）
 
-platform 内环遗留：~~webhook 面~~（已落地：验签框架/重放幂等/状态机/驱动确认，PAY-1）、~~hold 过期回收~~（已落地：原子 sweep+TTL）；仍留 stripe/alipay/wechat 真验签(注册表 501 留位)/Subscription 写路径/refund 回链/ModelLabel.defaultBinding 消费 → 独立硬化块；RS256/JWKS 轮换、团队切换 UX、多站点真解析、kokoro-i18n 复活 → 后续；swarm/组织级配额 → P2。
+platform 内环遗留：~~webhook 面~~（已落地：验签框架/重放幂等/状态机/驱动确认，PAY-1）、~~hold 过期回收~~（已落地：原子 sweep+TTL）、~~stripe/alipay/wechat 真验签/Subscription 写路径/refund 回链~~（已落地 PAY-2，platform ac3376f+00bdcff；provider 沙箱真跑通留运营配置）、~~RS256/JWKS 轮换~~（已落地 SEC-2，user 95d68c2）、~~团队切换 UX~~（已落地 TEAM-1，user e4cecd4/web 4ea1352）、~~多站点真解析~~（已落地 SITE-REAL，site 8940841/web 8428eed）、~~kokoro-i18n 复活~~（已落地 I18N-REVIVE，platform 69bb2e8；主 web 是否切共享包 Wave6 评估）、~~swarm/组织级配额~~（已落地 SWARM-QUOTA，agent 7cfa48e/platform d417a72）；仍留 ModelLabel.defaultBinding 消费 → 独立硬化块。
 
 ## 7. 已知风险
 

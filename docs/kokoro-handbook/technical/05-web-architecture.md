@@ -24,7 +24,17 @@ web 采用三栏工作台形态（形态提炼自 [specs/2026-07-11-capability-h
   - 审批卡 = 动态表单：schema 驱动，与 HITL `kind=input` 契约天然对齐（`input_schema` 已上 wire）。
   - 交付物文件卡：骨架占位 → 实体卡，支持下载与二次加工。
 - **语义 design tokens**：全色走 `--k-*` 语义变量（text 四级 / bg 多层 / 语义色三梯度），组件零裸色值；暗色主题换色相而非反色。
-- **登录闸**：整站入口由登录闸（`login-gate`）把守，未登录不进会话。当前 web 端换签为 dev-login + localStorage token 形态；AUTH-P0（[specs/2026-07-12-wave1-auth-p0](../../superpowers/specs/2026-07-12-wave1-auth-p0.md)）落地后改为 **BFF 密封 httpOnly cookie + 同源 `/api/session` 代理**，浏览器不再持 bearer，localStorage token 途径删除。
+- **登录闸**：整站入口由登录闸（`login-gate`）把守，未登录不进会话。AUTH-P0（[specs/2026-07-12-wave1-auth-p0](../../superpowers/specs/2026-07-12-wave1-auth-p0.md)，**已落地** user e4068d6/6260da5/8c26740）后，登录形态为 **BFF 密封 httpOnly cookie + 同源 `/api/session` 代理 + magic-link web 流 + nonce 防 CSRF**，浏览器不再持 bearer，localStorage token 途径已删除。
+
+## Wave 4-5 web 打磨（已落地事实）
+
+在三栏骨架上，Wave 4-5 逐项落地了以下 web 打磨（均浏览器实走+截图，见 tmp/screenshots/wave4-*、wave5-*）：
+
+- **WEB-THEME 暖纸暗色档**（web 四重奏 fabb316）：亮/暗/系统三态切换，暗色档换色相而非冷灰反色，全走 `--k-*` 语义 token。
+- **ERROR-UX**（web 2eb57c5）：run.failed 7 码逐码人话文案 + 恢复引导 + 原文折叠。
+- **HITL-NOTIFY**（web 0f04c8f）：跨会话待批徽标 + tab 前缀 + 系统通知。
+- **WEB-MOBILE**（web fd86a2a）：≤768px rail 抽屉化 + 主路径单栏。
+- **能力池管理面/成果面板**：Skills/MCP 管理入口（WEB-SKILLS d3403f7、MCP-UX df101fc）、余额卡+流水（WEB-BILLING 3b81166）、跨会话作品网格（ARTIFACT-LIB 4058aeb）、分享只读页（SHARE-1 df140cd）、会话重命名（CONV-UX 1a6191f）均已接线。
 
 ## V1 能力范围
 

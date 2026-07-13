@@ -1,6 +1,6 @@
 # 23. Platform 运营台（现状事实）
 
-状态：正式册（除 §6 明标"在办"外，均为 kokoro-platform 已落地并有代码/子仓 docs 支撑的当前有效事实）
+状态：正式册（均为 kokoro-platform 已落地并有代码/子仓 docs 支撑的当前有效事实；§6 内部信任面已随 Wave 1 TRUST-ROUTES 闭合）
 事实源：`kokoro-platform` 子仓代码与 `kokoro-platform/docs`（只读取证）
 上级：[02-platform-architecture](02-platform-architecture.md)、[21-platform-mainchain-closure](21-platform-mainchain-closure.md)、[09-security-permissions](09-security-permissions.md)
 
@@ -58,17 +58,16 @@ operator 每次动作都落库（`kokoro-platform-admin/src/audit.ts` 的 `Prism
 - 执行成功、执行失败、以及**准备阶段被拒绝**都写审计，不只记成功。
 - 审计与 RBAC/审批同层：谁、在哪个 site、对什么资源做了什么动作、结果如何，均可回溯。
 
-## 6. internal-secret 守门现状（如实）
+## 6. 内部信任面（TRUST-ROUTES 已落地）
 
-内部服务面守门件**已落但未闭合**，诚实区分：
+内部服务面守门已由 Wave 1 TRUST-ROUTES 闭合（platform 150aa25/f9802f1/c4b89a1，e2e 凭据强制档绿；见 [specs/2026-07-12-wave1-trust-routes.md](../../superpowers/specs/2026-07-12-wave1-trust-routes.md)）：
 
-- **已落**：platform-kit 的 internal-secret guard 已上线，守 `/admin` 前缀；env 配置 secret 后，凭据不符返回 401。
-- **在办（属 Wave 1 TRUST-ROUTES，见 [specs/2026-07-12-wave1-trust-routes.md](../../superpowers/specs/2026-07-12-wave1-trust-routes.md)）**：
-  - 当前只有**单个共享 secret**，未做"每路由声明访问等级 + per-caller 独立凭据"。
-  - 未配置 secret 时**直通并只告警一次**（fail-open 过渡态），生产缺凭据尚不会 fail-fast。
-  - default-internal（全服务默认内部、public 显式声明、runtime/web-bff/admin 分级凭据、生产缺凭据启动失败）是 TRUST-ROUTES 的交付目标，尚未落地。
+- **default-internal 全路由策略**：全服务路由默认内部，public 需显式声明。
+- **per-caller 分级凭据**：public / runtime-internal / web-bff / admin 四级独立凭据，取代原单一共享 secret。
+- **生产 fail-closed**：生产缺凭据启动失败，不再是原 fail-open 过渡态（未配 secret 直通并只告警一次）。
+- 历史现状（留档）：原守门件只护 `/admin` 前缀且共享单 secret 空值直通；hub 路由曾完全无鉴权、namespace/scope 来自请求——已由 TRUST-ROUTES + HUB-AUTHZ 纠正。
 
-即：能触达端口≠能调路由的强不变量，在 TRUST-ROUTES 合流后才成立。当前不要把 guard 已落误读为内部信任面已闭合。
+即：能触达端口≠能调路由的强不变量，已随 TRUST-ROUTES 合流成立，内部信任面已闭合。
 
 ## 7. webhook 面
 
@@ -76,7 +75,7 @@ provider webhook 是运营台之外的 **public 等级** 入口（见 [21](21-pl
 
 - 路由 `POST /payments/webhooks/:provider`（`kokoro-payment`），不在 `/admin` 前缀下，不受 internal-secret guard，对外可达。
 - 安全靠 **provider 签名另验**：独立 context 保留原始请求体做验签；验签密钥缺失时 fail-closed；`(provider, eventId)` 幂等入库防重放。
-- stripe/alipay/wechat 的真实验签实现仍有留位（注册表 501），属独立硬化块。
+- stripe/alipay/wechat 的真实验签**已落地**（PAY-2，platform ac3376f+00bdcff：三驱动真验签+Subscription+refund）；provider 沙箱真跑通留运营配置后，非代码欠账。
 
 ## 8. hold 回收
 

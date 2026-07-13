@@ -22,7 +22,7 @@
 | 能力 | skills/MCP：hub+会话快照+skill 单工具+MCP 三工具+注册表(McpServerDoc) | 已落地(块A/B/C+HUB-1..4+AGENT-MCP);管理权威=technical/22 |
 | 执行 | 单 `general` agent + deepagents task 子代理 + 现有 HITL 回路 | **已跑通（e2e 门禁）** |
 | 交付 | `deliver` 单工具：读字节 → sha256 → `deliveries/<ns>/<hash>` → delivery.created → session 读模型+下载端点+web 成果卡 | 已落地(E2E-31) |
-| 编排（业务 agent） | **preset 配置包**（见 D6）；swarm 中途 handoff = P2 | session 首条锁已落;agent 侧目录化 preset 未落(=AGENT-PRESET) |
+| 编排（业务 agent） | **preset 配置包**（见 D6）；swarm 中途 handoff 已落地 | session 首条锁已落;agent 侧目录化 preset **已落地(AGENT-PRESET，agent f4e7b6b/web bf3973b)**;swarm handoff **已落地(SWARM-QUOTA，agent 7cfa48e)** |
 
 ## 2. 已落地的事实（三绿，不要重做）
 
@@ -229,11 +229,11 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
      已验：agent 417 pytest（含 FastMCP live e2e）+ruff+pyright 三绿；断言达成——
      server 集 A/B/空 切换工具面逐字节相同；装配期零连接（run 不被挂掉的 server
      拖死）；运行时不可达降级 error 文本；未知名装配期 fail-loud
-块4  agent 配置包化：session.agent 持久化（首条定死，后续不同值 400 fail-loud，
+块4  [已完成] agent 配置包化：session.agent 持久化（首条定死，后续不同值 400 fail-loud，
      同 session 前缀结构保证）；profile 子系统重构为部署配置；机制用测试 fixture 验证
      断言：同 session 第二条消息换 agent 被 400 拒；新增 agent 配置包 = 仅加目录+配置，
      零运行时代码改动（fixture 证明）；general 与 fixture 的 system prompt 各自稳定
-块5  deliver 端到端（agent 工具 → 事件 → session 读模型 → web list/download）
+块5  [已完成] deliver 端到端（agent 工具 → 事件 → session 读模型 → web list/download）
      断言：deliver 后改/删源文件，下载内容不变；同内容重复 deliver 同记录
 块6  一致性加固（D7 四项）+ WP-2 远程沙箱（Daytona + pull 读路径）
 块7  web 底座（auth/settings/能力池管理面[启停/新增，非逐消息勾选]/成果面板）

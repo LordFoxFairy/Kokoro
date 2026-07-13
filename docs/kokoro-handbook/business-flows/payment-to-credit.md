@@ -93,7 +93,7 @@ grant             idempotencyKey="order:<id>" 防重复发放(支付成功仅发
 ```text
 支付确认   confirmOrder 后积分到账，可在余额看到。
 重复确认   不重复发积分。
-(规划)权益/订阅/退款   EntitlementGrant、Subscription 刷新、Refund 回退尚未实现。
+订阅/退款   Subscription 刷新、Refund 回退已落地（PAY-2，platform ac3376f+00bdcff）；provider 沙箱真跑通留运营配置。EntitlementGrant 权益仍为规划。
 ```
 
 ## 验收标准

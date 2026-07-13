@@ -102,7 +102,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [19-current-runtime-capability-review-plan](technical/19-current-runtime-capability-review-plan.md)（已被 20 取代，保留为扩展附录）
 - [20-kokoro-v1-technical-plan](technical/20-kokoro-v1-technical-plan.md)（**V1 定稿事实源**）
 - [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（签发链/计费链/编排/E2E-40，P1-P5 已落地事实）
-- [22-capability-hub](technical/22-capability-hub.md)（kokoro-hub 边界与 tRPC 不换定案；HUB-1/2 已落地，HUB-3/4 进行中）
+- [22-capability-hub](technical/22-capability-hub.md)（kokoro-hub 边界与 tRPC 不换定案；HUB-1/2/3/4 代码已落地，HUB 链经 HUB-CONSIST 收口（hub 9710400/session dfd1280/agent 2e30fe0）；仅 HUB-4 灰度未做）
 - [23-platform-ops-console](technical/23-platform-ops-console.md)（运营台现状：三维 RBAC / maker-checker / DB 审计 / manifest 代理 / internal-secret 现状）
 
 ### 模块 modules/

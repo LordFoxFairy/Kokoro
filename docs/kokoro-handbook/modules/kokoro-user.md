@@ -6,7 +6,7 @@ kokoro-user 是站点内身份、团队/workspace、成员、权限、服务账�
 
 它的核心判断：User 是站点内用户，不是全局邮箱账号。同邮箱在不同 siteId 下默认是不同 User。
 
-实现状态：users/teams/memberships/roles/invites/service_accounts/user_audit_logs 表已建，ensure/me-teams 最小接口已实现；站点化（全字段加 siteId）、workspace 重构、权限 key、邀请/成员管理 API 为规划。
+实现状态：users/teams/memberships/roles/invites/service_accounts/user_audit_logs 表已建，ensure/me-teams 最小接口已实现；邀请/成员管理 API **已落地**（TEAM-1，user e4cecd4：邀请 token 只存 sha256、换签=活跃成员校验→teamId 重签→BFF 重密封）；RS256/JWKS 签发+magic-link 限频 **已落地**（SEC-2，user 95d68c2）；站点化（全字段加 siteId）、workspace 重构、权限 key 为规划。
 
 ## 业务职责
 
