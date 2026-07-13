@@ -811,6 +811,26 @@ def main() -> int:
         check("SESS-LIST 跨 owner 不可枚举：bob 列表不含 e2e-user 的活跃会话 sid2",
               st_bl == 200 and sid2 not in bl_ids, f"{st_bl} bob_ids={bl_ids[:5]}")
 
+        # 9b-rename. CONV-UX（PATCH /sessions/{id}/title）：改题→列表/快照即时反映新题；他人 403；超 256 → 422。
+        new_title = f"改名_{uuid.uuid4().hex[:8]}"
+        st_rn, rn = http("PATCH", f"/sessions/{sid2}/title", {"title": new_title})
+        check("CONV-UX PATCH /title → 200 {ok:true}", st_rn == 200 and rn.get("ok") is True, f"{st_rn} {rn}")
+        st_rn_snap, rn_snap = http("GET", f"/sessions/{sid2}")
+        check("CONV-UX 改题即时反映：snapshot.session.title = 新题",
+              st_rn_snap == 200 and rn_snap.get("session", {}).get("title") == new_title,
+              f"{st_rn_snap} {rn_snap.get('session', {}).get('title')}")
+        st_rn_list, rn_list = http("GET", "/sessions?limit=200")
+        rn_title = next((s["title"] for s in rn_list.get("sessions", []) if s["session_id"] == sid2), None)
+        check("CONV-UX 改题即时反映：列表 sid2 题 = 新题", st_rn_list == 200 and rn_title == new_title,
+              f"list_title={rn_title}")
+        st_rn_bob, rn_bob = http("PATCH", f"/sessions/{sid2}/title", {"title": "steal"},
+                                 headers={"authorization": f"Bearer {sign_token('bob')}"})
+        check("CONV-UX 他人改题 → 403 session_forbidden",
+              st_rn_bob == 403 and rn_bob.get("error") == "session_forbidden", f"{st_rn_bob} {rn_bob}")
+        st_rn_long, rn_long = http("PATCH", f"/sessions/{sid2}/title", {"title": "a" * 257})
+        check("CONV-UX 超 256 → 422 title_too_long",
+              st_rn_long == 422 and rn_long.get("error") == "title_too_long", f"{st_rn_long} {rn_long}")
+
         # 9c. MODEL-UX：GET /models 候选窄读（契约 ModelCandidateList）——billing off 档退化
         # allowed 全列且恒含缺省档,恰一个 is_default(populated 跨栈铁证,web 下拉即消费此面)。
         st_mc, mc = http("GET", "/models")
