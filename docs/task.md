@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(Wave 2 R0-R7 全闭环,R0 五钉清零;下一步 Wave 3 竖切;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(Wave 1-3 P0 全清:Wave3 三竖切浏览器实走收口;下一步 Wave 4 P1;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -25,9 +25,11 @@
 - [x] **R6/R7 billing durable**(session f005910):billing_journal 相机 hold_pending→held→settle/release_pending→终局;崩溃窗口 adopt/孤儿释放;compensation scanner+stuck 告警;hold 临期告警;R0 钉4 转绿。**Wave 2 R0-R7 全闭环,R0 五钉清零**;gate += R2 receipt/R7 journal/R5 producer_closed 断言全绿(容器名假空转已修)。
 - [ ] 后续硬化(非阻塞):gate kill/chaos 脚手架(kill agent 于 publish 后/kill session 于 settle 前,单元级故障注入已全覆盖);manifest 自动 GC(门已留)。
 
-**Wave 3 用户可感 P0(必须后端+BFF+UI 竖切)**:
-- [ ] **SESS-LIST**:契约草稿已封存(c4a0718),store/route/rail 水合全未实现。
-- [ ] **WEB-BILLING**(前置 CRED-BAL 窄读 API)/- [ ] **WEB-SKILLS**(认证 BFF 后)。
+**Wave 3 用户可感 P0(后端+BFF+UI 完整竖切,全部浏览器实走+截图 tmp/screenshots/wave3-*)**:
+- [x] **SESS-LIST**(session 3125a65/web eee8320/gate 8846b07):GET /sessions owner 隔离+复合游标+软删不出+跨 owner 不可枚举;web rail 服务端水合,localStorage 退为访问缓存;§8.2-6 五断言绿。
+- [x] **WEB-BILLING**(credit 5986941/session 3125a65/web 3b81166,契约 23b6f7c):credit runtime 窄读→session /billing/summary|ledger 代理(namespace 派生账户,微单位字符串直透)→web 余额卡+流水+402 专用说明(无假充值);gate 授信/settle/run_id 回填真数断言绿。
+- [x] **WEB-SKILLS**(web d3403f7/e9587e3):/api/hub BFF 接通 hub self 面(web-bff 凭据+信封 scope,浏览器伪造头天然丢弃);技能池/启停/required 锁/上传 preview→confirm/配额/审核三态/pinned 接线。**Wave 1-3 P0 全清**。
+- 收口备忘:dev 闭环 user 服务 magic-link 签发 500(陈旧进程/SMTP 留位,SEC-2 范围;gate E2E-30 auth 断言绿,非回归)。
 
 ## P1
 

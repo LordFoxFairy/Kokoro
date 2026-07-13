@@ -42,7 +42,7 @@ MCP-REVALIDATION-HANG 记档(4560b33,修复在飞 fixRevalidationHang)。**后�
 
 ## 二、在飞
 
-无。下一步执行序:Wave 3 竖切(SESS-LIST→WEB-BILLING(前置 CRED-BAL)→WEB-SKILLS);Wave 2 非阻塞硬化(gate chaos 脚手架/manifest GC)记 task.md。
+无。**Wave 1-3 P0 全清**(Wave3 三竖切:SESS-LIST/WEB-BILLING/WEB-SKILLS 后端+BFF+UI+浏览器实走,截图 tmp/screenshots/wave3-*;gate += §8.2-6 五断言+billing 真数断言)。下一步:Wave 4 P1 十项(TEAM-1/MCP-UX/MODEL-UX/AGENT-PRESET/ARTIFACT-LIB/PAY-2/SITE-REAL/OBS-1/SEC-2/SHARE-1)按 task.md 逐项;非阻塞硬化(gate chaos/manifest GC)同表。
 
 **收口流程(每轮铁律)**:逐 lane `git diff` 自审+全量测试自跑(不信 lane 汇报数字)→ 全链 `python3 scripts/e2e-v21-gate.py` 必须 PASS → 按仓分主题 commit(中文 conventional,行为+验证入 body)→ 汇报。lane 越界=回滚重派。
 
