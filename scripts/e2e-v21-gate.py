@@ -765,6 +765,16 @@ def main() -> int:
         check("SESS-LIST 跨 owner 不可枚举：bob 列表不含 e2e-user 的活跃会话 sid2",
               st_bl == 200 and sid2 not in bl_ids, f"{st_bl} bob_ids={bl_ids[:5]}")
 
+        # 9c. MODEL-UX：GET /models 候选窄读（契约 ModelCandidateList）——billing off 档退化
+        # allowed 全列且恒含缺省档,恰一个 is_default(populated 跨栈铁证,web 下拉即消费此面)。
+        st_mc, mc = http("GET", "/models")
+        mc_models = mc.get("models", [])
+        check("MODEL-UX GET /models：200 + 候选≥1 + 恰一个 is_default",
+              st_mc == 200 and len(mc_models) >= 1
+              and sum(1 for m in mc_models if m.get("is_default") is True) == 1
+              and all(m.get("provider") and m.get("name") for m in mc_models),
+              f"{st_mc} {json.dumps(mc, ensure_ascii=False)[:160]}")
+
         # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——纯正文技能（无附件）永不物化；
         # 正文走 skill 工具直返（单测覆盖），有附件的包才由装配期 reconcile 按账本物化（块C）。
         if WORKSPACE_BACKEND == "local":
