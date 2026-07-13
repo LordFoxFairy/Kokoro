@@ -33,18 +33,23 @@ ROUND4-EVIDENCE①E2E-33 注册表铁证+BsonInt 跨语言修复(d4cf07e/56523bf
 MCP-REVALIDATION-HANG 记档(4560b33,修复在飞 fixRevalidationHang)。**后续执行序以该纲领 Wave 1-6 为准,
 大 lane workflow 派工方式废止;根契约/gitlink/task/handoff 主控串行。**
 
-## 二、在飞(接手先收这两个 workflow)
+## 一点七、Wave 1 全项收口 + Wave 2 R0-R2 落地(2026-07-12/13)
 
-结果文件在 `/private/tmp/claude-501/-Users-nako-WebstormProjects-github-thefoxfairy-Kokoro/4185abf7-*/tasks/` 下:
-1. **round-4**(写,task woy1d0qpi):AGENT-MCP(agent 消费 mcp_servers 注册表,双源合并)/WEB-3(kind=input 动态表单卡)/HUB-4(运营位+审核三态)/AUTH-2(user magic-link 服务端)。各 lane 汇报含 verify 真实尾行与 notes 偏差。
-2. **gap-audit**(读,task wffukzjv3):能力缺口矩阵/PRD 覆盖三列/文档归位/工程债台账——结果用于合成 `docs/task.md` 总台账与 round-5 排块。
+- **Wave 1 六项全绿**:TRUST-ROUTES/AUTH-P0/CREDIT-CACHE/MODEL-SOURCE/HUB-AUTHZ/MCP-SECRET(双半场)/MCP-REVISION 契约(7f8cc7f+24b6dd2)/**HUB-CONSIST**(hub 9710400、session dfd1280、agent 2e30fe0、gate 560d70c)。要点:config_hash 唯一计算方=hub(sha256 规范化 {transport,url,allowed_tools 排序,secret_ref});revision append-only,secret 轮换不 bump;session 经 `/hub/runtime/resolve` 取 SkillGrant[]+McpGrant[](MongoSkillPool 双实现已删,hub 不可达建会话 fail-loud);agent 按 (scope,name,revision) 直读同库快照行(裁决:同库部署内直读=经 hub 拥有的数据;HTTP 快照端点已备作拆库切轨)+config_hash 不符/disable/revoke 一律拒装;MCP mutation 门=env `KOKORO_HUB_MCP_MUTATION`(缺省 off 恒 503)。
+- **Wave 2**:R0 五钉→R1 dispatch CAS→**R2 control outbox/inbox+receipt**(session merge 6dd62fd;agent 4a056e3):outbox 先落库后 XADD+补发 scanner;agent inbox persist→ACK→apply→applied+双时点 `run.control.receipt`+重启续办(fingerprint 不符=superseded);`GET /sessions/:id/runs/:rid/control/:decisionId` 回执端点(契约 controlReceiptViewSchema);R0 钉1/钉3 已转绿,剩钉2(R4 终态帧)/钉4(R7 settle)/钉5(R5 reprojection)。P0.5 MCP-REVALIDATION-HANG 的双 worker control 竞争由 R2 inbox 去重根治。
+- gate 新断言:§8.2-9/14/15(McpGrant 全链/版本锁定+紧急撤销/门 env)+ R2 receipt applied。
+
+## 二、在飞
+
+无。下一步执行序:R3-R7 子 spec(主控写)→逐项落;Wave 3 SESS-LIST/WEB-BILLING/WEB-SKILLS 竖切。
 
 **收口流程(每轮铁律)**:逐 lane `git diff` 自审+全量测试自跑(不信 lane 汇报数字)→ 全链 `python3 scripts/e2e-v21-gate.py` 必须 PASS → 按仓分主题 commit(中文 conventional,行为+验证入 body)→ 汇报。lane 越界=回滚重派。
 
 ## 三、验证口径(接手照抄)
-- agent:`uv run pytest -q`(当前基线 485)/`ruff check .`/`pyright` 0
-- session:`npm run typecheck`/`npx vitest run`(263)/`npx eslint .`(0 error)
-- web:同上(231;`npm run lint` 管道会吞退出码,务必看 error 计数)
+- agent:`uv run pytest -q`(当前基线 570+1 xfail)/`ruff check .`/`pyright` 0
+- session:`npm run typecheck`/`npx vitest run`(289+2 expected-fail)/`npx eslint .`(0 error)
+- platform hub:`vitest run`(289)+integration(mongo 27017+minio 9100)
+- web:同上(285,分支 agent/p2-auth-wiring;`npm run lint` 管道会吞退出码,务必看 error 计数)
 - platform 各模块:`pnpm test` + `DATABASE_URL_<MOD>=mysql://root:kokoro_root@127.0.0.1:3307/kokoro pnpm test:integration`(hub 用 mongo 27017+minio 9100)
 - 环境:mongo 27017/redis 6379/minio 9100(kokoro/kokoro-secret)/mysql 3307(root:kokoro_root)/litellm dev 4000;一键 `python3 scripts/closure-up.py up|down|status`
 - e2e gate 前先 `lsof -ti:4601,4611,4621,4631,3902,3901,3907 | xargs kill`

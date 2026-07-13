@@ -435,8 +435,9 @@ def main() -> int:
                           {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
                            "decisions": [{"type": "respond", "tool_id": tool_id2, "response": "x"}]})
         check("respond 用于审批工具被拒", 400 <= st6 < 500, f"{st6} {body6}")
+        d7 = f"dec_{uuid.uuid4().hex[:8]}"
         st7, _ = http("POST", f"/sessions/{SID}/runs/{run_id}/control",
-                      {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                      {"kind": "run.resume", "decision_id": d7,
                        "decisions": [{"type": "approve", "tool_id": tool_id2}]})
         check("approve 提交", st7 == 202, str(st7))
 
@@ -446,6 +447,16 @@ def main() -> int:
               and isinstance(review[2]["payload"].get("result"), str)
               and review[2]["payload"]["allowed_decisions"] == ["approve", "respond", "reject"],
               json.dumps(review[2]["payload"] if review else {}, ensure_ascii=False)[:200])
+        # R2: control receipt 两时点可查——approve 的 decision_id 经 outbox/inbox 推进到 applied。
+        rc_st, rc_body = 0, {}
+        for _ in range(50):
+            rc_st, rc_body = http("GET", f"/sessions/{SID}/runs/{run_id}/control/{d7}")
+            if rc_st == 200 and rc_body.get("status") == "applied":
+                break
+            time.sleep(0.2)
+        check("R2: control receipt 查询 status=applied", rc_st == 200 and rc_body.get("status") == "applied",
+              f"{rc_st} {json.dumps(rc_body, ensure_ascii=False)[:120]}")
+
         st7b, _ = http("POST", f"/sessions/{SID}/runs/{run_id}/control",
                        {"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
                         "decisions": [{"type": "respond", "tool_id": tool_id2, "response": "人工替换后的结果"}]})

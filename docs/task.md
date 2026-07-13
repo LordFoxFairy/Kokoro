@@ -1,14 +1,14 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-12(Wave 1 收尾在飞:HUB-CONSIST+R2 实现双线;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-12(Wave 1 全项收口+R2 落地;下一步 R3-R7 spec+Wave 3 竖切;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
 **Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
 - [x] **TRUST-ROUTES**(150aa25/f9802f1/c4b89a1,e2e 凭据强制档绿):platform default-internal 全路由策略+per-caller 分级凭据(public/runtime-internal/web-bff/admin)+生产 fail-closed。现状纠偏:守门件只护 /admin 前缀且共享单 secret 空值直通——hub 路由完全无鉴权、namespace/scope 来自请求、credit 启 secret 后 session billing client 不带密钥。
 - [x] **AUTH-P0**(e4068d6/6260da5/8c26740,浏览器六步实走+截图;SMTP 仍留位=SEC-2):web BFF 密封 cookie(浏览器不持 bearer)+magic-link web 流+nonce 防 CSRF+SMTP+日志脱敏(现 magic-link log 档把原文 token 写日志!)+/auth/sessions 收编为内部口。现状:任意邮箱直登+token 在 localStorage。
-- [~] **HUB 链**:HUB-AUTHZ✓(0bccba3 三权限面+mutation 503 门)→MCP-SECRET✓双半场(ed198f6/d11ae9a hub;9c8f4cd agent,e2e 绿)→MCP-REVISION 契约✓已冻结(7f8cc7f:McpGrant 上 wire+mcp_server_revisions 入单源+mcp_servers 破坏性切换,session/agent 树故意红)→HUB-CONSIST 在飞(spec 74488cc,单 worker 三仓缝合+开门);原缺陷句留档:Hub 三权限面;McpGrant {scope,name,revision,config_hash} 版本锁+实时撤销;secret handle broker+SSRF/egress;**split-brain 修复**(hub/session/agent 默认 Mongo DB 不同!session 池解析忽略审核/运营排序——session 改调 Hub 单解析器,MCP mutation 在跨仓门通过前 503)。
+- [~] **HUB 链**:HUB-AUTHZ✓(0bccba3 三权限面+mutation 503 门)→MCP-SECRET✓双半场(ed198f6/d11ae9a hub;9c8f4cd agent,e2e 绿)→MCP-REVISION 契约✓(7f8cc7f)→**HUB-CONSIST✓**(hub 9710400/session dfd1280/agent 2e30fe0/gate 560d70c:revision 簿记+config_hash 单算方=hub+runtime McpGrant 面+session 经 hub resolve 删 MongoSkillPool+agent 按 revision 快照消费 fail-closed+mutation 门 KOKORO_HUB_MCP_MUTATION+§8.2 9/14/15 断言,e2e 全绿)——**Wave 1 全项收口**;原缺陷句留档:Hub 三权限面;McpGrant {scope,name,revision,config_hash} 版本锁+实时撤销;secret handle broker+SSRF/egress;**split-brain 修复**(hub/session/agent 默认 Mongo DB 不同!session 池解析忽略审核/运营排序——session 改调 Hub 单解析器,MCP mutation 在跨仓门通过前 503)。
 - [x] **CREDIT-CACHE**(c5a8ac3):owner 正缓存键补 siteId(现跨站复用 owner active 结果)。
 - [x] **MODEL-SOURCE**(3b4c743):profile.allowed 降展示过滤,platform resolve 为可用性权威(M-1 后半)。
 
@@ -18,7 +18,7 @@
 **Wave 2 可靠性(D5 持久意图模型,R0-R7 顺序)**:
 - [x] R0 故障护栏五钉(8ca5fc6/4c154dc)+R1 契约冻结(e471822)
 - [x] **R1 dispatch CAS**(e40fb76/d844d5c/85aec79):session 写 pending+fence→agent CAS claim→ACK 后置;超时 reconciler 合成 dispatch_exhausted+billing release;dispatch_dlq;run.started 最小 outbox;R0 钉1 转正式绿。
-- [~] **R2 control outbox/inbox+receipt**:契约已冻结(74e6dfc decision_id 上 wire/run.control.receipt/receipt 端点)+wire 缝合已落(session/agent fixtures 全改);实现在飞(worker 于两子仓 .wt/r2 worktree,分支 wave2-r2;R0 钉3 收口随之)。
+- [x] **R2 control outbox/inbox+receipt**(契约 74e6dfc/24b6dd2;session c688817/4bb25be→merge 6dd62fd;agent 4a056e3):session control_outbox 先落库后 XADD+启动补发 scanner+receipt 消费+GET 回执端点;agent inbox persist→ACK→apply→applied+双时点回执+重启续办+fingerprint 防 stale;R0 钉3 转绿;gate 增 receipt applied 断言,e2e 全绿。P0.5 双 worker control 竞争根治于此。
 - [ ] R3-R7:agent 终态在发布前消耗终态权、settle/release 失败无持久重试——durable_seq/receipt manifest/quarantine 全套(纲领 §5/§8.3 故障矩阵);specs 待写。
 
 **Wave 3 用户可感 P0(必须后端+BFF+UI 竖切)**:
