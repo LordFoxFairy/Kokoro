@@ -41,7 +41,6 @@
 - [ ] ARTIFACT-LIB 跨会话作品库(读模型 (namespace,content_hash) 已预留,无页面)
 - [ ] PAY-2 支付外环:stripe/alipay/wechat 真验签(注册表 501 留位)/Subscription 写路径/refund 回链/价格页购买流
 - [ ] SITE-REAL 多站点真解析(host→site/域名验证流转/品牌注入;现单站点 env 常量)
-- [ ] OBS-1 可观测:session/agent 零 metrics/tracing(仅 console);run 卡死/计费失败无告警
 - [ ] SEC-2 签发链硬化:RS256/JWKS(现 HS256 双持共享 secret)/magic-link 限频内存→redis/MCP secret:path 档
 - [ ] SHARE-1 会话只读分享(snapshot 已不暴露 namespace,有地基)
 
