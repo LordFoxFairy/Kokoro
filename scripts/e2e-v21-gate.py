@@ -927,6 +927,9 @@ def main() -> int:
             "KOKORO_CREDIT_BASE_URL": pbase["credit"],
             "KOKORO_MODEL_BASE_URL": pbase["model"],
             "KOKORO_SITE_ID": site40,
+            # SEC-2：enforce 档 session 走 jwks 验签——真签发 token（RS256）经 user JWKS 验签全链。
+            "KOKORO_AUTH_MODE": "jwks",
+            "KOKORO_AUTH_JWKS_URL": user_jwks_url,
             # session 出站 caller 头由主控合流 kokoro-session 改动后启用；此处先备好 session caller secret，
             # 使 enforce 计费档 session→credit hold/settle 在 default-internal 下被 credit 接受。
             **INTERNAL_SECRETS,
@@ -934,6 +937,30 @@ def main() -> int:
         session2_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session2_env,
                               log=scratch / "session2.log")
         check("E2E-40 session(enforce) 端口就绪", wait_port(SESSION2))
+
+        # SEC-2 真签发链：user 出的 token header.alg 应为 RS256（RS256/JWKS 全链，非 hs256 手签）。
+        def _jwt_alg(tok: str) -> str:
+            import base64
+            seg = tok.split(".")[0]
+            pad = "=" * (-len(seg) % 4)
+            try:
+                return json.loads(base64.urlsafe_b64decode(seg + pad)).get("alg", "")
+            except Exception:
+                return ""
+        check("E2E-40 真签发为 RS256（签发链硬化）", _jwt_alg(tok40) == "RS256", f"alg={_jwt_alg(tok40)}")
+
+        # SEC-2 负向：hs256 手签 token 打 jwks 档 session2 → 401（jwks 只收 RS256，拒 alg 降级/混淆）。
+        def s2_raw_status(path: str, token: str) -> int:
+            req = urllib.request.Request(f"http://127.0.0.1:{SESSION2}{path}", method="GET",
+                                         headers={"authorization": f"Bearer {token}"})
+            try:
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    return resp.status
+            except urllib.error.HTTPError as e:
+                return e.code
+        hs_forged = sign_token(ns40)  # 合法不透明 namespace + hs256 签名（jwks 档应拒）
+        check("E2E-40 jwks 档拒 hs256 手签 token → 401（负向）",
+              s2_raw_status("/sessions", hs_forged) == 401, "expected 401")
 
         def s2(method: str, path: str, body: dict | None = None):
             req = urllib.request.Request(f"http://127.0.0.1:{SESSION2}{path}", method=method,
