@@ -66,11 +66,14 @@ objects:
       - {name: created_at, type: int}
 
   # MCP server 注册表(HUB-3):scope=official|<namespace>,namespace 覆盖 official 同名;
-  # secret_ref 只存 env:VAR / secret:path 引用,绝不明文;enabled=文档级启停;软删同 skills。
+  # secret_ref 只存 env:VAR / handle:srt_... 引用,绝不明文(secret:path 已废除,D1 不留兼容轴);
+  # enabled=文档级启停;软删同 skills。revision=当前版号(MCP-REVISION:每次 define/update 递增,
+  # 并同步 append 一行 McpServerRevisionDoc;grant 按 (scope,name,revision) 取不可变快照)。
   - name: McpServerDoc
     fields:
       - {name: scope, type: string_nonempty}
       - {name: name, type: string_nonempty}
+      - {name: revision, type: int}
       - {name: transport, type: enum:mcp_transport}
       - {name: url, type: string_nonempty}
       - {name: allowed_tools, type: array:string_nonempty}
@@ -78,6 +81,21 @@ objects:
       - {name: enabled, type: boolean}
       - {name: updated_at, type: int}
       - {name: deleted_at, type: int, nullable: true}
+
+  # MCP server 版本快照(MCP-REVISION,append-only 同 skill_revisions):define/update 时整份配置
+  # 定格;config_hash=规范化配置 sha256(会话快照锁内容,agent 按 hash 校验取到的就是授权那份)。
+  # 行永不改写;disable/revoke 是活文档(McpServerDoc)的事,快照只保真历史。
+  - name: McpServerRevisionDoc
+    fields:
+      - {name: scope, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: revision, type: int}
+      - {name: config_hash, type: string_nonempty}
+      - {name: transport, type: enum:mcp_transport}
+      - {name: url, type: string_nonempty}
+      - {name: allowed_tools, type: array:string_nonempty}
+      - {name: secret_ref, type: string_nonempty, nullable: true}
+      - {name: created_at, type: int}
 
   # 投递竞争单文档 CAS(纲领 D5/R1):session 写 pending+deadline+fence;agent 抢 claimed;
   # 超时方只能把仍 pending 的改 expired。claimed 后终态权归 agent;expired 后迟到帧永不执行。
@@ -118,6 +136,9 @@ collections:
   mcp_servers:
     doc: McpServerDoc
     unique: [scope, name]
+  mcp_server_revisions:
+    doc: McpServerRevisionDoc
+    unique: [scope, name, revision]
   run_dispatches:
     doc: RunDispatchDoc
     unique: [run_id]

@@ -36,6 +36,15 @@ objects:
       # 快照时定死归属（"official" | <namespace>）：同名跨 scope 时按 hash 取包不再猜先后
       # （skills spec §7.5 边角:用户上传同名技能后,旧会话仍按 official 卡读到正确旧版）。
       - {name: scope, type: string_nonempty}
+  # 会话快照的 MCP 授权卡(MCP-REVISION,对偶 SkillGrant):session 创建时按解析结果定死
+  # (scope,name,revision),config_hash=该 revision 规范化配置 sha256(内容锁)。agent 装配按
+  # revision 取不可变快照,disable/revoke 走活文档 fail-closed 检查,不靠 wire 猜"现在的配置"。
+  - name: McpGrant
+    fields:
+      - {name: scope, type: string_nonempty}
+      - {name: name, type: string_nonempty}
+      - {name: revision, type: int}
+      - {name: config_hash, type: string_nonempty}
   - name: Permissions
     fields:
       - {name: approval_tools, type: array:string_nonempty}
@@ -53,8 +62,9 @@ objects:
       - {name: tools, type: array:string_nonempty}
       # skills = 会话快照卡片（session 创建时查池定死,含内容锁 hash）；run 只是复制。
       - {name: skills, type: array:object:SkillGrant}
-      # MCP server 按名引用：完整配置（transport/url/headers）在 agent 侧部署配置，凭据不上 wire。
-      - {name: mcp_servers, type: array:string_nonempty}
+      # MCP server = 会话快照授权卡（MCP-REVISION 破坏性切换）：按 (scope,name,revision) 引用
+      # 不可变快照,凭据仍不上 wire（secret_ref 在 hub/agent 侧按 handle 解析）。
+      - {name: mcp_servers, type: array:object:McpGrant}
       # subagent 按名引用：定义住 agent 侧 catalog/资产库，wire 不携带内联 prompt。
       - {name: subagents, type: array:string_nonempty}
       - {name: backend, type: enum:backend}
