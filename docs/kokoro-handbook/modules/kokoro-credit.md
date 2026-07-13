@@ -151,7 +151,7 @@ resources accounts / ledger / usage / pricing(后续 holds / entitlements / spen
 审计      grant / spend / 手动调整应写审计(规划接入统一审计)。
 ```
 
-注：上述读端点(ledger/usage 查询、余额查询、hold 列表)当前 HTTP 层尚未实现，为后台规划。
+注：runtime-internal 只读窄读面(余额+活跃 holds 聚合、ledger 分页)已落地(WEB-BILLING,credit 5986941)，经 session /billing/* 代理服务 web;admin 全量审计读面见 /admin/credits/*。
 
 ## 业务链路
 
