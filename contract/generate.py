@@ -668,6 +668,7 @@ def emit_http_ts(spec: dict) -> str:
         "billing_summary",
         "billing_ledger",
         "model_candidates",
+        "agent_candidates",
         "list_artifacts",
         "artifact_content",
         "share_create",

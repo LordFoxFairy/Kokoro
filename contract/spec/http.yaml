@@ -114,6 +114,16 @@ objects:
   - name: ModelCandidateList
     fields:
       - {name: models, type: array:object:ModelCandidate}
+  # AGENT-PRESET web 半场(Wave4):具名 agent 候选窄读,同 /models 模式(profile.agents 派生;
+  # 无 profile 档=只有 general 缺省,web 隐选择器)。
+  - name: AgentCandidate
+    fields:
+      - {name: name, type: string_nonempty}
+      - {name: description, type: string_nonempty}
+      - {name: is_default, type: boolean}
+  - name: AgentCandidateList
+    fields:
+      - {name: agents, type: array:object:AgentCandidate}
   # WEB-BILLING(Wave3):credit 余额/流水窄读,session 从 auth namespace 派生账户并代理。
   # 金额一律微单位 bigint 序列化为字符串(credit 单源 balanceMicros 形状),换算归展示层。
   - name: BillingSummary
@@ -223,6 +233,14 @@ endpoints:
     response_const: modelCandidateListSchema
     response_object: ModelCandidateList
     note: "MODEL-UX:候选=allowed∩可用;不可用不出列;空列表=只剩缺省档(web 隐选择器)。"
+  agent_candidates:
+    method: GET
+    path_fn: agentCandidatesPath
+    path_template: "/agents"
+    params: []
+    response_const: agentCandidateListSchema
+    response_object: AgentCandidateList
+    note: "AGENT-PRESET:候选=profile.agents+general 缺省(is_default);首条锁语义同 model/mcp。"
   billing_summary:
     method: GET
     path_fn: billingSummaryPath

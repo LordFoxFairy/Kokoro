@@ -105,6 +105,7 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | DELETE | `/sessions/{session_id}/share` |
 | GET | `/shared/{share_id}` |
 | GET | `/models` |
+| GET | `/agents` |
 | GET | `/billing/summary` |
 | GET | `/billing/ledger` |
 | GET | `/sessions/{session_id}` |
