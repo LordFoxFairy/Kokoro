@@ -26,6 +26,10 @@ from procutil import ensure_port_free, spawn, stop
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_PORT = int(os.environ.get("E2E_SESSION_PORT", "3901"))
 MCP_PORT = int(os.environ.get("E2E_MCP_PORT", "3907"))
+# 能力中台 hub（HUB-CONSIST）：session 建会话经 /hub/runtime/resolve 取 skills+McpGrant[]；
+# agent 侧仍直读同库 mcp_server_revisions/mcp_servers（读写分离，不跨 hub RPC）。
+HUB_PORT = int(os.environ.get("E2E_HUB_PORT", "3951"))
+HUB_BASE = f"http://127.0.0.1:{HUB_PORT}"
 BASE = f"http://127.0.0.1:{SESSION_PORT}"
 REDIS_URL = os.environ.get("E2E_REDIS_URL", "redis://127.0.0.1:6379/14")
 MONGO_URL = os.environ.get("E2E_MONGO_URL", "mongodb://127.0.0.1:27017")
@@ -106,6 +110,40 @@ def http_raw(path: str) -> tuple[int, bytes, str]:
         return e.code, e.read(), e.headers.get("content-type", "")
 
 
+def hub(method: str, path: str, body: dict | None = None, *, caller: str = "admin"):
+    """直调 hub 内部路由，冒充 caller（admin=管理面 seed；web-bff=self 面门探针）。"""
+    secret = INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_ADMIN" if caller == "admin"
+                              else "KOKORO_INTERNAL_SECRET_WEB_BFF"]
+    headers = {
+        "x-kokoro-service": caller,
+        "x-kokoro-internal-secret": secret,
+    }
+    # 仅有 body 时才声明 JSON content-type：无 body 的 POST（enable/disable）带 content-type
+    # 会让 fastify 尝试解析空体而 400。
+    if body is not None:
+        headers["content-type"] = "application/json"
+    req = urllib.request.Request(
+        HUB_BASE + path,
+        method=method,
+        data=None if body is None else json.dumps(body).encode(),
+        headers=headers,
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return resp.status, json.loads(resp.read() or b"{}")
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read() or b"{}")
+
+
+def hub_register(scope: str, name: str, url: str, allowed_tools: list[str]) -> tuple[int, dict]:
+    """经 hub admin 面注册/更新 MCP server（hub 权威簿记 revision + config_hash + 快照行，
+    保证 session resolve 出的 grant.config_hash 与 agent 读的快照行一致——单源 hub 计算，零跨语言复算）。"""
+    return hub("POST", "/hub/admin/mcp/servers", {
+        "scope": scope, "name": name, "transport": "streamable_http",
+        "url": url, "allowed_tools": allowed_tools, "secret_ref": None,
+    })
+
+
 class SseReader:
     """后台线程读 SSE，帧入队列；wait() 按谓词取帧。"""
 
@@ -167,6 +205,12 @@ def main() -> int:
     scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-e2e-{uuid.uuid4().hex[:6]}"
     scratch.mkdir(parents=True)
     subprocess.run(["redis-cli", "-u", REDIS_URL, "flushdb"], check=True, capture_output=True)
+    # 清库起跑：MCP 注册表跨 run 残留（如上轮 §8.2-14 把 e2e-elicit bump 到 rev2）会污染 revision 断言。
+    subprocess.run(
+        ["docker", "exec", "kokoro-dev-mongo", "mongosh", "--quiet", "--eval",
+         f'db.getSiblingDB("{MONGO_DB}").dropDatabase()'],
+        check=False, capture_output=True,
+    )
     skill_dir = scratch / "skills" / "e2e-style"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
@@ -205,23 +249,15 @@ def main() -> int:
         "server.add_tool(verify, name='verify')\n"
         f"uvicorn.run(server.streamable_http_app(), host='127.0.0.1', port={MCP_PORT}, log_level='error')\n"
     )
-    # E2E-33(ROUND4-EVIDENCE): yaml 基线故意指死端口;真地址由 Mongo mcp_servers 注册表的
-    # namespace 文档提供(AGENT-MCP 双源合并,namespace 覆盖 yaml)。E2E-32 链仍通=注册表读路实锤。
+    # E2E-33(ROUND4-EVIDENCE): yaml 基线故意指死端口;真地址由 hub 注册表(mcp_server_revisions 快照)提供。
+    # HUB-CONSIST 重述:真相在 grant/快照,yaml 不再参与 namespace 池(grant 覆盖 yaml 同名)。
+    # seed 经 hub admin 面(post-boot,见 try 块),hub 权威簿记 revision+config_hash+快照行,
+    # 保证 session resolve 的 grant.config_hash 与 agent 读的快照行一致(单源 hub 计算)。
     (scratch / "mcp.yaml").write_text(
         "servers:\n"
         "  e2e-elicit:\n"
         f"    url: http://127.0.0.1:{MCP_PORT + 1}/mcp\n"
         "    allowed_tools: [verify]\n"
-    )
-    seed_mcp = subprocess.run(
-        ["docker", "exec", "kokoro-dev-mongo", "mongosh", "--quiet", "--eval",
-         f'db.getSiblingDB("{MONGO_DB}").mcp_servers.replaceOne('
-         f'{{scope: "e2e-user", name: "e2e-elicit"}},'
-         f'{{scope: "e2e-user", name: "e2e-elicit", transport: "streamable_http",'
-         f' url: "http://127.0.0.1:{MCP_PORT}/mcp", allowed_tools: ["verify"],'
-         f' secret_ref: null, enabled: true, updated_at: {int(__import__("time").time() * 1000)},'
-         f' deleted_at: null}}, {{upsert: true}})'],
-        capture_output=True, text=True, check=False,
     )
     subprocess.run(
         ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval",
@@ -231,10 +267,14 @@ def main() -> int:
 
     session_env = {
         **os.environ,
+        # session 出站 caller 头（runtime caller=session）：调 hub /hub/runtime/resolve 建会话快照。
+        **INTERNAL_SECRETS,
         "KOKORO_SESSION_PORT": str(SESSION_PORT),
         "KOKORO_REDIS_URL": REDIS_URL,
         "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
         "KOKORO_MESSAGE_STORE_MONGO_DB": MONGO_DB,
+        # 能力中台 hub 基址（HUB-CONSIST）：buildSnapshot 经此取 skills + McpGrant[] 定死会话快照。
+        "KOKORO_HUB_BASE_URL": HUB_BASE,
         # write_file 同时配 审批+审核：批参数 → 执行 → 审结果（串联双暂停，实证缓存防双跑）。
         "KOKORO_REVIEW_TOOLS": "write_file",
         "KOKORO_NAMESPACE": "team-e2e",
@@ -291,9 +331,22 @@ def main() -> int:
         "KOKORO_DOCKER_IMAGE": os.environ.get("E2E_DOCKER_IMAGE", "busybox"),
     }
     agent_env.update(storage_env)  # 双侧读同一 storage yaml：workspace 归档 + deliveries 冻结件
+    # 能力中台 hub（HUB-CONSIST）：与 session/agent 同库（读写分离），MCP mutation 门置 on（§8.2-15：
+    # 门 env 控，跨仓 E2E 才开）。secret broker 不配主密钥=off（本 gate fixture secret_ref=null 不需）。
+    hub_env = {
+        **os.environ,
+        **INTERNAL_SECRETS,
+        "KOKORO_HUB_PORT": str(HUB_PORT),
+        "KOKORO_HUB_MONGO_URL": MONGO_URL,
+        "KOKORO_HUB_MONGO_DB": MONGO_DB,
+        "KOKORO_HUB_MCP_MUTATION": "on",
+    }
     ensure_port_free(SESSION_PORT)
     plat_procs: list = []   # E2E-40 platform 服务(site/user/model/credit),finally 统一收
     session2_proc = None    # E2E-40 enforce 计费档 session 实例
+    ensure_port_free(HUB_PORT)
+    hub_proc = spawn(["pnpm", "run", "start"], cwd=ROOT / "kokoro-platform" / "kokoro-hub",
+                     env=hub_env, log=scratch / "hub.log")
     session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
                          log=scratch / "session.log")
     ensure_port_free(MCP_PORT)
@@ -304,7 +357,23 @@ def main() -> int:
     try:
         check("session 端口就绪", wait_port(SESSION_PORT))
         check("mcp fixture 端口就绪", wait_port(MCP_PORT))
+        check("hub 端口就绪", wait_port(HUB_PORT, timeout=45))
+        # E2E-33 种子经 hub admin 面（hub 权威簿记 revision=1 + config_hash + mcp_server_revisions 快照行）：
+        # session resolve 出的 grant 与 agent 读的快照行同源一致（零跨语言复算 config_hash）。
+        seed_st, seed_body = hub_register("e2e-user", "e2e-elicit", f"http://127.0.0.1:{MCP_PORT}/mcp", ["verify"])
+        check("E2E-33 hub 注册种子就位（revision=1，真地址仅在 hub 快照）",
+              seed_st == 201 and seed_body.get("data", {}).get("server", {}).get("revision") == 1,
+              f"{seed_st} {json.dumps(seed_body, ensure_ascii=False)[:160]}")
         time.sleep(1.5)  # worker 订阅请求流的启动窗口
+
+        # §8.2-15：MCP mutation 门 env 控（KOKORO_HUB_MCP_MUTATION）。gate 置 on 后 self 面不再恒 503——
+        # 无成员上下文的裸请求命中 writeGuard(400 缺信封头)而非 capability_registration_disabled(503)，
+        # 即证门已开（门 off 时该路由在 guard 前恒 503）。门 off→503 与开门后安全负向由 hub 单测族权威覆盖。
+        door_st, door_body = hub("POST", "/hub/self/mcp/servers", {"name": "x", "transport": "http",
+                                 "url": "https://mcp.example/x", "allowed_tools": []}, caller="web-bff")
+        check("§8.2-15 MCP mutation 门 env 控（gate 置 on → self 面非 503 capability_registration_disabled）",
+              door_body.get("error", {}).get("code") != "capability_registration_disabled",
+              f"{door_st} {json.dumps(door_body, ensure_ascii=False)[:160]}")
 
         # 1. 发消息 + 幂等 + 409 准入
         k1 = f"idem_{uuid.uuid4().hex[:8]}"
@@ -470,9 +539,6 @@ def main() -> int:
         st26, receipt6 = http("POST", f"/sessions/{SID}/messages",
                               {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "调用远端校验"})
         check("E2E-32 第三轮受理", st26 == 202, f"{st26} {receipt6}")
-        check("E2E-33 注册表种子就位(yaml 死端口,真地址仅在 Mongo)",
-              seed_mcp.returncode == 0 and "acknowledged" in seed_mcp.stdout.lower().replace("'", '"'),
-              seed_mcp.stdout[-120:] + seed_mcp.stderr[-120:])
         run3 = receipt6.get("run_id", "")
         aw = sse.wait(lambda i: i[1] == "tool.awaiting_approval" and i[2]["run_id"] == run3, timeout=40)
         pay = aw[2]["payload"] if aw else {}
@@ -501,7 +567,58 @@ def main() -> int:
               and ret3[2]["payload"].get("is_error") is False,
               json.dumps(ret3[2]["payload"] if ret3 else {}, ensure_ascii=False)[:160])
         done3 = sse.wait(lambda i: i[1] == "run.completed" and i[2]["run_id"] == run3, timeout=40)
-        check("E2E-32 第三轮终态", done3 is not None)
+        check("E2E-32 第三轮终态（§8.2-9 agent 三工具面真连：grant→快照→config_hash→活文档→连接全绿）", done3 is not None)
+
+        # §8.2-9：wire 上 SID 会话快照的 mcp_servers 是 McpGrant（scope/name/revision/config_hash），
+        # 非 names——session 经 hub resolve 定死内容锁，agent 按 (scope,name,revision) 取快照校验 config_hash。
+        def _wire_runtime(run_id: str) -> dict:
+            raw = subprocess.run(["redis-cli", "-u", REDIS_URL, "XRANGE", "kokoro:runs:requests", "-", "+"],
+                                 capture_output=True, text=True, check=True).stdout
+            for line in raw.splitlines():
+                line = line.strip()
+                if not line.startswith("{"):
+                    continue
+                req = json.loads(line)
+                if req.get("run_id") == run_id:
+                    return req.get("runtime", {})
+            return {}
+        grants = _wire_runtime(run3).get("mcp_servers", [])
+        grant0 = grants[0] if grants else {}
+        check("§8.2-9 wire mcp_servers 是 McpGrant（含 revision + config_hash 内容锁）",
+              len(grants) == 1 and grant0.get("scope") == "e2e-user" and grant0.get("name") == "e2e-elicit"
+              and grant0.get("revision") == 1 and len(str(grant0.get("config_hash", ""))) == 64,
+              json.dumps(grant0, ensure_ascii=False)[:200])
+        rev1_hash = grant0.get("config_hash")
+
+        # §8.2-14 配置版本锁定 + 紧急撤销（跨仓）：
+        # (a) 改版：hub 改 e2e-elicit 配置（allowed_tools 变）→ revision bump 到 2；新会话快照取 rev2，
+        #     旧会话（SID）快照仍锁 rev1（会话快照持久不可变，改版不回灌）。
+        rev2_st, _ = hub_register("e2e-user", "e2e-elicit", f"http://127.0.0.1:{MCP_PORT}/mcp", ["verify", "extra"])
+        sid_v2 = f"ses_rev_{uuid.uuid4().hex[:8]}"
+        stv2, rv2 = http("POST", f"/sessions/{sid_v2}/messages",
+                         {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "新会话取新版"})
+        SseReader(f"/sessions/{sid_v2}/events").wait(lambda i: i[1] == "run.created")
+        new_grant = (_wire_runtime(str(rv2.get("run_id", ""))).get("mcp_servers") or [{}])[0]
+        # 旧会话再发一条：快照锁定，仍是 rev1（keep-first，改版不回灌）。
+        stold, rold = http("POST", f"/sessions/{SID}/messages",
+                           {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "旧会话仍锁原版"})
+        old_grant = (_wire_runtime(str(rold.get("run_id", ""))).get("mcp_servers") or [{}])[0]
+        check("§8.2-14 改版：新会话取 rev2、旧会话锁 rev1（内容锁不回灌）",
+              rev2_st == 201 and new_grant.get("revision") == 2 and old_grant.get("revision") == 1
+              and new_grant.get("config_hash") != rev1_hash and old_grant.get("config_hash") == rev1_hash,
+              f"new={new_grant.get('revision')} old={old_grant.get('revision')}")
+        # (b) 紧急撤销：hub disable e2e-elicit → 池即刻不含它 → 新会话快照 mcp_servers 为空
+        #     （活文档 disable 立即对新会话生效；对已锁旧会话由 agent 装配期活文档 fail-closed 拒装）。
+        dis_st, _ = hub("POST", "/hub/admin/mcp/servers/e2e-user/e2e-elicit/disable")
+        sid_dis = f"ses_dis_{uuid.uuid4().hex[:8]}"
+        stdis, rdis = http("POST", f"/sessions/{sid_dis}/messages",
+                           {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "撤销后新会话"})
+        SseReader(f"/sessions/{sid_dis}/events").wait(lambda i: i[1] == "run.created")
+        dis_grants = _wire_runtime(str(rdis.get("run_id", ""))).get("mcp_servers", [])
+        check("§8.2-14 紧急撤销：disable 后新会话快照池即刻不含该 server（立即生效）",
+              dis_st == 200 and dis_grants == [], f"{dis_st} grants={dis_grants}")
+        # 复位：重启用，避免影响后续复用同库的断言（幂等，revision 不变）。
+        hub("POST", "/hub/admin/mcp/servers/e2e-user/e2e-elicit/enable")
 
         # 7. 具名 agent：agent=poet 作主，wire 只传 names（无内联 prompt/定义/凭据）。
         sid2 = f"ses_agent_{uuid.uuid4().hex[:8]}"
@@ -751,6 +868,7 @@ def main() -> int:
         stop(session_proc)
         stop(agent_proc)
         stop(mcp_proc)
+        stop(hub_proc)
         if session2_proc is not None:
             stop(session2_proc)
         for proc in plat_procs:

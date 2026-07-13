@@ -31,6 +31,9 @@ AUTH_SECRET = os.environ.get("KOKORO_AUTH_JWT_SECRET", "dev-secret-not-real")
 LITELLM_KEY = "dev-master-key-not-real"
 PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231}
 BASE = {k: f"http://127.0.0.1:{v}" for k, v in PORTS.items()}
+# 能力中台 hub（HUB-CONSIST）：session 建会话经 /hub/runtime/resolve 取 skills+McpGrant[]，dev 必起。
+HUB_PORT = 4251
+HUB_BASE = f"http://127.0.0.1:{HUB_PORT}"
 SESSION_PORT = 3900
 WEB_PORT = 3000
 # web BFF 会话信封 dev 密钥（明显假值；生产走 secret 注入）。逗号分隔即双钥轮换（current 在前）。
@@ -148,6 +151,19 @@ def boot() -> dict[str, int]:
             pids[name] = spawn(["pnpm", "run", "start"], PLAT / f"kokoro-{name}",
                                {**os.environ, **INTERNAL_SECRETS, **extra}, STATE / f"{name}.log")
         step(f"platform {name} {PORTS[name]}", wait_port(PORTS[name]))
+    # 能力中台 hub（HUB-CONSIST）：与 session/agent 同库（kokoro_dev，读写分离）。
+    # dev 默认开 MCP mutation 门（自服务注册可用，可 KOKORO_HUB_MCP_MUTATION=off 关）。
+    if not port_open(HUB_PORT):
+        pids["hub"] = spawn(
+            ["pnpm", "run", "start"], PLAT / "kokoro-hub",
+            {**os.environ, **INTERNAL_SECRETS,
+             "KOKORO_HUB_PORT": str(HUB_PORT),
+             "KOKORO_HUB_MONGO_URL": "mongodb://127.0.0.1:27017",
+             "KOKORO_HUB_MONGO_DB": "kokoro_dev",
+             "KOKORO_USER_BASE_URL": BASE["user"],
+             "KOKORO_HUB_MCP_MUTATION": os.environ.get("KOKORO_HUB_MCP_MUTATION", "on")},
+            STATE / "hub.log")
+    step(f"hub {HUB_PORT}", wait_port(HUB_PORT))
     session_env = {
         **os.environ,
         # session 出站 caller 头由主控合流 kokoro-session 改动后启用；此处先备好 caller secret。
@@ -156,6 +172,8 @@ def boot() -> dict[str, int]:
         "KOKORO_REDIS_URL": "redis://127.0.0.1:6379/0",
         "KOKORO_MESSAGE_STORE_MONGO_URL": "mongodb://127.0.0.1:27017",
         "KOKORO_MESSAGE_STORE_MONGO_DB": "kokoro_dev",
+        # 能力中台 hub 基址（HUB-CONSIST）：buildSnapshot 经此取 skills + McpGrant[] 定死会话快照。
+        "KOKORO_HUB_BASE_URL": HUB_BASE,
         "KOKORO_WORKSPACE_ROOT": str(STATE / "workspace"),
         "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
         "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
@@ -285,7 +303,7 @@ def cmd_down() -> None:
 
 
 def cmd_status() -> None:
-    for name, port in {**PORTS, "session": SESSION_PORT, "litellm": 4000,
+    for name, port in {**PORTS, "hub": HUB_PORT, "session": SESSION_PORT, "litellm": 4000,
                        "mysql": 3307, "mongo": 27017, "redis": 6379, "minio": 9100}.items():
         print(f"  {'UP  ' if port_open(port) else 'DOWN'} {name}:{port}")
 
