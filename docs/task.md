@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(Wave4 批2 MCP-UX+MODEL-UX+AGENT-PRESET 半场收口;批3=ARTIFACT-LIB/SHARE-1/SEC-2/AGENT-PRESET web 半场待排;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(Wave4 批3 ARTIFACT-LIB+SHARE-1+PAY-2 半场收口;批4=SEC-2/SITE-REAL/AGENT-PRESET web+PAY-2 web 待排;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -38,11 +38,12 @@
 - [x] **MCP-UX**(web df101fc,spec 89b78e8):连接面板(servers/secrets 两 tab,注册向导/启停/软删/handle 管理值只进不出);hub 错误信封人话化(http/私网拒/broker 503);secrets 503 不拖垮 servers 面(实走抓修);浏览器实走+4 截图(wave4-mcp-*)。
 - [x] **MODEL-UX**(session 9f0ffde/web 00687df,契约 7bcd361):GET /models=allowed∩platform resolve 可用性(off 档退化全列,恒含缺省);web 输入框模型下拉+首条锁+wire model;gate += populated 断言(候选≥1+恰一 is_default)绿;web 组件/engine wire 测试全覆盖。配置面事实:动态 teamId 无法静态预声明(activeProfile fail-loud),真 auth 栈恒单候选;per-team 模型策略需未来运营配置源(归 MODEL-ADMIN/站点运营,非欠账)。
 - [x] **AGENT-PRESET agent 半场**(agent f4e7b6b,spec 89b78e8):三源目录基建已在,补未知 preset fail-loud=assembly_failed(不再静默回退 general);gate 补 personas/poet.md(db93470)成"加文件零代码"活证据。web 选择 UX 归批3。
-- [ ] ARTIFACT-LIB 跨会话作品库(读模型 (namespace,content_hash) 已预留,无页面)
-- [ ] PAY-2 支付外环:stripe/alipay/wechat 真验签(注册表 501 留位)/Subscription 写路径/refund 回链/价格页购买流
+- [x] **ARTIFACT-LIB**(session 2f524fd+5ed8292/web 4058aeb,契约 62985d5):GET /artifacts 跨会话聚合(sessions $lookup 收窄 namespace,同 hash 收敛取最近,复合游标)+内容寻址下载(跨 namespace 404);web rail"作品"卡片网格;gate 3 断言绿。
+- [x] **SHARE-1**(session 同上/web df140cd):session_shares(shr_+32hex 不可枚举,partial unique 幂等,撤销即 404);公共 /shared/:id 无 auth 只读面(鉴权门前单段精确放行,pending_pauses 恒空,不泄 namespace);web 分享按钮+公共只读页;gate 5 断言绿;公共页/撤销 404 主控 live 复证(截图 wave4-share-public-live)。
+- [~] **PAY-2**(platform ac3376f):platform 半场✓——三驱动真验签(stripe HMAC t/v1/alipay RSA2/wechat APIv3 证书,node:crypto 纯实现+自造向量)/providers env 白名单未配置恒 501/Subscription 幂等 upsert+每期 credit 授予/refund 幂等冲正/迁移一条唯一索引;**web 价格页购买流待批(需 provider 沙箱)**。
 - [ ] SITE-REAL 多站点真解析(host→site/域名验证流转/品牌注入;现单站点 env 常量)
 - [ ] SEC-2 签发链硬化:RS256/JWKS(现 HS256 双持共享 secret)/magic-link 限频内存→redis/MCP secret:path 档
-- [ ] SHARE-1 会话只读分享(snapshot 已不暴露 namespace,有地基)
+- [ ] AGENT-PRESET web 半场(agent 选择 UX;需 agents 候选端点契约冻结,同 /models 模式)
 
 ## P2
 
