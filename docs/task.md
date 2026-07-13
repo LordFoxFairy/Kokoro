@@ -36,7 +36,7 @@
 - [x] **TEAM-1**(user e4cecd4/web 4ea1352+c4fb354,spec dd8f87a):/bff 团队自助面(邀请 token 只存 sha256、V1 登录后 in-app 露出;换签=活跃成员校验→teamId 重签→BFF 重密封,token 不回浏览器);web 团队面板(切换/邀请/成员管理);admin manifest 团队动作已"点了即真";双上下文五步实走+7 截图(wave4-team-*);user principal 未下 runtime。
 - [x] **OBS-1**(session 079fb26/agent b22baa2,spec dd8f87a):双仓 /metrics(prom-client/prometheus_client,kokoro_ 前缀 20 项;agent 端口 env 缺省关);卡死检测(KOKORO_STUCK_RUN_THRESHOLD_MS 缺省 10min,只告警不杀 run);补偿/水位滞后指标;fail-open;V1 无 tracing(明确不镀金)。
 - [x] **MCP-UX**(web df101fc,spec 89b78e8):连接面板(servers/secrets 两 tab,注册向导/启停/软删/handle 管理值只进不出);hub 错误信封人话化(http/私网拒/broker 503);secrets 503 不拖垮 servers 面(实走抓修);浏览器实走+4 截图(wave4-mcp-*)。
-- [x] **MODEL-UX**(session 9f0ffde/web 00687df,契约 7bcd361):GET /models=allowed∩platform resolve 可用性(off 档退化全列,恒含缺省);web 输入框模型下拉+首条锁+wire model;gate += populated 断言(候选≥1+恰一 is_default)绿;web 组件/engine wire 测试全覆盖。
+- [x] **MODEL-UX**(session 9f0ffde/web 00687df,契约 7bcd361):GET /models=allowed∩platform resolve 可用性(off 档退化全列,恒含缺省);web 输入框模型下拉+首条锁+wire model;gate += populated 断言(候选≥1+恰一 is_default)绿;web 组件/engine wire 测试全覆盖。配置面事实:动态 teamId 无法静态预声明(activeProfile fail-loud),真 auth 栈恒单候选;per-team 模型策略需未来运营配置源(归 MODEL-ADMIN/站点运营,非欠账)。
 - [x] **AGENT-PRESET agent 半场**(agent f4e7b6b,spec 89b78e8):三源目录基建已在,补未知 preset fail-loud=assembly_failed(不再静默回退 general);gate 补 personas/poet.md(db93470)成"加文件零代码"活证据。web 选择 UX 归批3。
 - [ ] ARTIFACT-LIB 跨会话作品库(读模型 (namespace,content_hash) 已预留,无页面)
 - [ ] PAY-2 支付外环:stripe/alipay/wechat 真验签(注册表 501 留位)/Subscription 写路径/refund 回链/价格页购买流
