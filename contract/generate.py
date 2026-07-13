@@ -631,6 +631,15 @@ def emit_http_ts(spec: dict) -> str:
     L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
     L.append("")
 
+    ren = ep["rename_session"]
+    ren_body = ", ".join(ts_field(f, enums) for f in ren["body"])
+    L.append(f"export const {ren['body_const']} = z.object({{ {ren_body} }}).strict()")
+    L.append(f"export type RenameSessionBody = z.infer<typeof {ren['body_const']}>")
+    ren_rcpt = ", ".join(ts_field(f, enums) for f in ren["receipt"])
+    L.append(f"export const {ren['receipt_const']} = z.object({{ {ren_rcpt} }}).strict()")
+    L.append(f"export type RenameSessionReceipt = z.infer<typeof {ren['receipt_const']}>")
+    L.append("")
+
     shr = ep["share_create"]
     shr_fields = ", ".join(ts_field(f, enums) for f in shr["receipt"])
     L.append(f"export const {shr['receipt_const']} = z.object({{ {shr_fields} }}).strict()")
@@ -673,6 +682,7 @@ def emit_http_ts(spec: dict) -> str:
         "artifact_content",
         "share_create",
         "shared_snapshot",
+        "rename_session",
     ):
         e = ep[key]
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])

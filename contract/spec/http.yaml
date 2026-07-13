@@ -302,6 +302,18 @@ endpoints:
     receipt_const: runControlReceiptSchema
     receipt:
       - {name: ok, type: literal_true}
+  rename_session:
+    method: PATCH
+    path_fn: renameSessionPath
+    path_template: "/sessions/{session_id}/title"
+    params: [session_id]
+    body_const: renameSessionBodySchema
+    body:
+      - {name: title, type: string_nonempty}
+    receipt_const: renameSessionReceiptSchema
+    receipt:
+      - {name: ok, type: literal_true}
+    note: "CONV-UX(Wave5):同属主重命名;keep-first 语义解除(title 显式改写);软删/不存在=404;长度上限实现层定(422)。"
   delete_session:
     method: DELETE
     path_template: "/sessions/{session_id}"   # 与 snapshot 同路径（snapshotPath 复用），无新 path fn
