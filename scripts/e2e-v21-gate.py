@@ -722,6 +722,43 @@ def main() -> int:
         check("E2E-30 他人 token → 403 session_forbidden",
               st_bob == 403 and body_bob.get("error") == "session_forbidden", f"{st_bob} {body_bob}")
 
+        # 9b. SESS-LIST（§8.2-6）：owner 会话列表——owner 隔离、软删不出、updated_at desc、复合游标分页、
+        #     跨 owner 不可枚举。sid2(ses_agent) 为本 owner 活跃会话；SID 已在 E2E-27、sid3 已在 E2E-28 软删（不得出现）。
+        st_sl, sl = http("GET", "/sessions?limit=200")
+        sl_ids = [s["session_id"] for s in sl.get("sessions", [])]
+        sl_updated = [s["updated_at"] for s in sl.get("sessions", [])]
+        check("SESS-LIST 列表：本 owner 活跃会话可枚举（含 sid2）+ updated_at desc",
+              st_sl == 200 and sid2 in sl_ids
+              and all(sl_updated[i] >= sl_updated[i + 1] for i in range(len(sl_updated) - 1)),
+              f"{st_sl} ids={sl_ids[:5]}")
+        check("SESS-LIST 软删不出：E2E-27 软删的 SID 与 E2E-28 软删的 sid3 均不在列表",
+              SID not in sl_ids and sid3 not in sl_ids, f"SID={SID} sid3={sid3}")
+        # 复合游标分页：limit=1 逐页翻，累积集合应与全量一致、无重复。
+        seen_pages: list[str] = []
+        cur: str | None = None
+        for _ in range(len(sl_ids) + 2):
+            path = "/sessions?limit=1" + (f"&cursor={cur}" if cur else "")
+            st_pg, pg = http("GET", path)
+            if st_pg != 200:
+                break
+            seen_pages.extend(s["session_id"] for s in pg.get("sessions", []))
+            cur = pg.get("next_cursor")
+            if not cur:
+                break
+        check("SESS-LIST 复合游标分页：逐页翻到底 = 全量一致、无重复",
+              seen_pages == sl_ids and len(set(seen_pages)) == len(seen_pages),
+              f"pages={seen_pages[:5]} full={sl_ids[:5]}")
+        # 非法游标 → 400 invalid_cursor。
+        st_badc, badc = http("GET", "/sessions?cursor=%20")
+        check("SESS-LIST 非法 cursor → 400 invalid_cursor",
+              st_badc == 400 and badc.get("error") == "invalid_cursor", f"{st_badc} {badc}")
+        # 跨 owner 不可枚举：bob token 列表不含 e2e-user 的活跃会话 sid2。
+        st_bl, bl = http("GET", "/sessions",
+                         headers={"authorization": f"Bearer {sign_token('bob')}"})
+        bl_ids = [s["session_id"] for s in bl.get("sessions", [])]
+        check("SESS-LIST 跨 owner 不可枚举：bob 列表不含 e2e-user 的活跃会话 sid2",
+              st_bl == 200 and sid2 not in bl_ids, f"{st_bl} bob_ids={bl_ids[:5]}")
+
         # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——纯正文技能（无附件）永不物化；
         # 正文走 skill 工具直返（单测覆盖），有附件的包才由装配期 reconcile 按账本物化（块C）。
         if WORKSPACE_BACKEND == "local":
@@ -841,6 +878,12 @@ def main() -> int:
                       {"accountId": accid40, "amountMicros": 100_000_000,
                        "idempotencyKey": f"grant_{uuid.uuid4().hex[:8]}", "reason": "manual_adjustment"})
         check("E2E-40 授信（ensure→grant）", ste == 200 and stg == 200, f"{ste}/{stg} {str(acc40)[:120]}")
+        # WEB-BILLING 竖切后端：session /billing/summary 代理 credit 窄读——授信后余额真数（>0）、held 归零。
+        st_bs0, bs0 = s2("GET", "/billing/summary")
+        bal0 = int(bs0.get("balance_micros", "0")) if st_bs0 == 200 else -1
+        check("E2E-40 billing summary 授信后余额真数（balance>0，held=0）",
+              st_bs0 == 200 and bal0 == 100_000_000 and bs0.get("held_micros") == "0",
+              f"{st_bs0} {bs0}")
         st45, r40 = s2("POST", f"/sessions/{sid40}/messages",
                        {"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": "闭环跑一单"})
         check("E2E-40 授信后受理 202", st45 == 202, f"{st45} {r40}")
@@ -896,6 +939,23 @@ def main() -> int:
             time.sleep(0.5)
         check("E2E-40 billing journal 收敛终局（settled/released）——R7 settle/release durable compensation 闭环",
               bj_phase in ("settled", "released"), f"phase={bj_phase!r} run_id={run40}")
+
+        # WEB-BILLING 竖切后端：settle 落账后经 session /billing/summary 复验余额下降（真 credit 结算真数），
+        # 并经 /billing/ledger 验流水回填 run_id（受理 hold 带 requestId=run_id，capture 贯通到 ledger 行）。
+        # settle 异步于终态投影，轮询直到余额下降。
+        bal1 = bal0
+        for _ in range(30 if bal0 > 0 else 0):
+            st_bs1, bs1 = s2("GET", "/billing/summary")
+            bal1 = int(bs1.get("balance_micros", "0")) if st_bs1 == 200 else bal0
+            if bal1 < bal0:
+                break
+            time.sleep(0.5)
+        check("E2E-40 billing summary settle 后余额下降（真 credit 结算真数）",
+              0 <= bal1 < bal0, f"before={bal0} after={bal1}")
+        st_lg, lg = s2("GET", "/billing/ledger?limit=50")
+        lg_runs = [e.get("run_id") for e in lg.get("entries", [])] if st_lg == 200 else []
+        check("E2E-40 billing ledger 回填 run_id（hold.requestId→capture→ledger 贯通）",
+              st_lg == 200 and run40 in lg_runs, f"{st_lg} run_id={run40} rows={len(lg_runs)}")
 
         # R5 finalization（纲领 §5.4 Wave2-6）：终态经 receipt→projected→finalized 全链。守卫式——仅当 agent
         # 侧 R4 durable 帧已流入（run_receipt_manifests 有本 run 行）才断言 producer_closed 收敛；无 receipt
