@@ -78,6 +78,20 @@ objects:
       - {name: size, type: int}
       - {name: run_id, type: string_nonempty}
       - {name: created_at, type: string_nonempty}
+  # ARTIFACT-LIB(Wave4):跨会话作品库读模型——namespace 维度聚合 deliveries(内容寻址,同 hash
+  # 跨会话收敛一条,session_id=最近一次交付归属,便于回跳)。
+  - name: ArtifactRecord
+    fields:
+      - {name: content_hash, type: string_nonempty}
+      - {name: session_id, type: string_nonempty}
+      - {name: title, type: string_nonempty}
+      - {name: mime, type: string_nonempty}
+      - {name: size, type: int}
+      - {name: created_at, type: string_nonempty}
+  - name: ArtifactList
+    fields:
+      - {name: artifacts, type: array:object:ArtifactRecord}
+      - {name: next_cursor, type: string_nonempty, optional: true}
   # 会话列表项(服务端化的 rail 数据源;线程内容仍走 snapshot+回放)。
   - name: SessionListItem
     fields:
@@ -163,6 +177,44 @@ endpoints:
     response_const: sessionListSchema
     response_object: SessionList
     note: "属主会话列表(updated_at desc,软删不出);query limit/cursor 不进契约 path,由实现读 querystring。"
+  list_artifacts:
+    method: GET
+    path_fn: artifactsPath
+    path_template: "/artifacts"
+    params: []
+    response_const: artifactListSchema
+    response_object: ArtifactList
+    note: "ARTIFACT-LIB:属主 namespace 全部成果,created_at desc;query limit/cursor 同 list_sessions 注。"
+  artifact_content:
+    method: GET
+    path_fn: artifactContentPath
+    path_template: "/artifacts/{content_hash}"
+    params: [content_hash]
+    note: "跨会话冻结副本下载:内容寻址同 delivery_content 语义(immutable 可长缓存),namespace 守门。"
+  share_create:
+    method: POST
+    path_fn: sharePath
+    path_template: "/sessions/{session_id}/share"
+    params: [session_id]
+    status: 201
+    receipt_const: shareReceiptSchema
+    receipt:
+      - {name: share_id, type: string_nonempty}
+    note: "SHARE-1:同属主创建只读分享;share_id=不可枚举 capability id(shr_ 前缀);幂等=重复创建返同 id(未撤销时)。"
+  share_revoke:
+    method: DELETE
+    path_fn: sharePath
+    path_template: "/sessions/{session_id}/share"
+    params: [session_id]
+    note: "撤销分享:撤销后公共读 404;再创建=新 share_id(旧链接永久失效)。"
+  shared_snapshot:
+    method: GET
+    path_fn: sharedSnapshotPath
+    path_template: "/shared/{share_id}"
+    params: [share_id]
+    response_const: sessionSnapshotSchema
+    response_object: SessionSnapshot
+    note: "公共只读面(无 auth,capability URL 即权限):复用 SessionSnapshot 形状(已不含 namespace);pending_pauses 恒空数组(分享不暴露待批);不可枚举,撤销即 404。"
   model_candidates:
     method: GET
     path_fn: modelCandidatesPath
