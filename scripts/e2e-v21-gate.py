@@ -875,6 +875,44 @@ def main() -> int:
             time.sleep(0.5)
         check("E2E-40 credit ledger 落账（按 run_id 幂等键）", ledger_rows > 0,
               f"rows={ledger_rows} run_id={run40}")
+
+        # R7 计费收敛（纲领 §5.4 Wave2-8）：session 侧 billing journal 收敛到终局（settled/released）——
+        # settle/release durable compensation 闭环铁证。异步于终态投影，轮询 session mongo（session2 与
+        # 默认 session 共享 MONGO_DB）。journal 私有集合 billing_journal，键 run_id。
+        def mongo_scalar(js: str) -> str:
+            q = subprocess.run(
+                ["docker", "exec", "kokoro-e2e-mongo", "mongosh", "--quiet", "--eval", js],
+                capture_output=True, text=True, check=False)
+            return q.stdout.strip() if q.returncode == 0 else ""
+
+        bj_phase = ""
+        for _ in range(30 if run40 else 0):
+            bj_phase = mongo_scalar(
+                f'print(((db.getSiblingDB("{MONGO_DB}").billing_journal.findOne({{run_id:"{run40}"}}))||{{}}).phase||"")')
+            if bj_phase in ("settled", "released"):
+                break
+            time.sleep(0.5)
+        check("E2E-40 billing journal 收敛终局（settled/released）——R7 settle/release durable compensation 闭环",
+              bj_phase in ("settled", "released"), f"phase={bj_phase!r} run_id={run40}")
+
+        # R5 finalization（纲领 §5.4 Wave2-6）：终态经 receipt→projected→finalized 全链。守卫式——仅当 agent
+        # 侧 R4 durable 帧已流入（run_receipt_manifests 有本 run 行）才断言 producer_closed 收敛；无 receipt
+        # （R4 未在该 agent build 发 durable 帧）则记录依赖、不硬失败（跨仓联测归主控收口）。
+        mani_exists = run40 and mongo_scalar(
+            f'print(db.getSiblingDB("{MONGO_DB}").run_receipt_manifests.countDocuments({{run_id:"{run40}"}}))') == "1"
+        if mani_exists:
+            closed = ""
+            for _ in range(30):
+                closed = mongo_scalar(
+                    f'print(((db.getSiblingDB("{MONGO_DB}").run_receipt_manifests.findOne({{run_id:"{run40}"}}))||{{}}).producer_closed)')
+                if closed == "true":
+                    break
+                time.sleep(0.5)
+            check("E2E-40 R5 finalization 收敛（producer_closed）——receipt→projected→finalized 全链",
+                  closed == "true", f"producer_closed={closed!r} run_id={run40}")
+        else:
+            check("E2E-40 R5 finalization 依赖 R4 durable 帧（本 run 无 receipt manifest，跨仓联测归主控收口）",
+                  True, "no receipt manifest — R4 durable frames not observed in this agent build")
     finally:
         stop(session_proc)
         stop(agent_proc)
