@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(Wave4 批4 SEC-2+SITE-REAL 收口;批5 PAY-2 web+AGENT-PRESET web 在飞,收口即 Wave4 全清;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(**Wave4 十项全清**;Wave5 已落 5 项(CONV-UX/FLAKE/M6/ADMIN-MANIFEST/I18N),剩 web 四重奏+SWARM-QUOTA;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -40,18 +40,20 @@
 - [x] **AGENT-PRESET agent 半场**(agent f4e7b6b,spec 89b78e8):三源目录基建已在,补未知 preset fail-loud=assembly_failed(不再静默回退 general);gate 补 personas/poet.md(db93470)成"加文件零代码"活证据。web 选择 UX 归批3。
 - [x] **ARTIFACT-LIB**(session 2f524fd+5ed8292/web 4058aeb,契约 62985d5):GET /artifacts 跨会话聚合(sessions $lookup 收窄 namespace,同 hash 收敛取最近,复合游标)+内容寻址下载(跨 namespace 404);web rail"作品"卡片网格;gate 3 断言绿。
 - [x] **SHARE-1**(session 同上/web df140cd):session_shares(shr_+32hex 不可枚举,partial unique 幂等,撤销即 404);公共 /shared/:id 无 auth 只读面(鉴权门前单段精确放行,pending_pauses 恒空,不泄 namespace);web 分享按钮+公共只读页;gate 5 断言绿;公共页/撤销 404 主控 live 复证(截图 wave4-share-public-live)。
-- [~] **PAY-2**(platform ac3376f):platform 半场✓——三驱动真验签(stripe HMAC t/v1/alipay RSA2/wechat APIv3 证书,node:crypto 纯实现+自造向量)/providers env 白名单未配置恒 501/Subscription 幂等 upsert+每期 credit 授予/refund 幂等冲正/迁移一条唯一索引;**web 价格页购买流待批(需 provider 沙箱)**。
+- [x] **PAY-2**(platform ac3376f+00bdcff/web 2032528):三驱动真验签+Subscription+refund(半场同前);storefront GET /plans+POST /orders/checkout(未配 provider 诚实 501);web 价格页套餐卡+"支付暂未开通"诚实态(截图 wave4-pay2web-*,payment 203+70 绿)。provider 沙箱真跑通留运营配置后(非代码欠账)。
 - [x] **SITE-REAL**(site 8940841/web 8428eed/gate 6c3d5c8,spec 75eb3d1):域名子资源(一次性 TXT token,node:dns 验证,本地域 admin 直标,公网直标 400)+host→resolve 只出 verified(brand 直挂两可空列);web Host 派生 site+品牌注入(30s TTL 缓存,SITE-REAL-FALLBACK 待 Wave6 收紧);双域名双品牌实走截图(wave4-site-a/b:Kokoro Music vs Acme Studio);gate resolve 断言绿。
 - [x] **SEC-2**(user 95d68c2/session 6e70b9d/gate 2f7ff59,spec 75eb3d1):user RS256 签发+kid 指纹+/.well-known/jwks.json 双 kid 轮换;session KOKORO_AUTH_MODE=jwks|hs256(生产 hs256 fail-fast,JWKS 不可达 fail-closed 401,未知 kid 强刷一次);magic-link email+ip 双维 Redis 限频(挂了 fail-open+WARN);gate E2E-40 真签发切 RS256/JWKS 档+hs256 打 jwks 401 负向,全绿。
-- [ ] AGENT-PRESET web 半场(agent 选择 UX;需 agents 候选端点契约冻结,同 /models 模式)
+- [x] **AGENT-PRESET web 半场**(session 263c623/web bf3973b/gate b8f30c9,契约 8ad4384):GET /agents(profile.agents+general 缺省)+输入框 agent 选择器(首条锁/单候选隐)+wire agent;gate populated 断言(poet+coder+general 恰一缺省)绿;空态截图 wave4-preset-*。**Wave 4 十项全清**。
 
-## P2
+## P2(Wave 5)
 
-- [ ] 会话重命名/HITL 待批通知/run.failed 按码文案/错误恢复引导
-- [ ] web 暗色模式(.dark 槽位已留)/移动端主路径打磨
-- [ ] admin-web manifest 元数据驱动页面(现硬编码)/admin-web i18n/kokoro-i18n 复活
-- [ ] session 测试 flake 治理(并发时序,单跑绿)/M-6 后续(snapshot.messages 双份另一半)
-- [ ] swarm/组织级配额(handbook 定 P2)
+- [x] **CONV-UX 会话重命名**(session a3b4501/web 1a6191f/gate 5c83979,契约 4f20939):PATCH /sessions/:id/title 全负向(403/404/422)+侧栏内联/头部双击改题+乐观回滚;gate 5 断言绿。
+- [x] **SESSION-FLAKE 根治**(session b8b8295):根因=vitest fork 复用进程致 undici 陈旧 keep-alive socket 跨文件复用("other side closed");修=setupFile 每响应 Connection: close(非调超时);5 轮 378 全绿实证。
+- [x] **M6-SNAPSHOT 后半**(契约 9f33734;session 13b6f6f/web 87f422f/gate a38ac30):裁决 B 变体——属主 snapshot 省略 messages(web 水合恒丢弃=纯浪费),/shared 公共面必携(唯一内容源),回放保持属主线程唯一真源;gate 属主无/分享必携断言绿。
+- [x] **ADMIN-MANIFEST**(platform e9782be):资源/动作/列头全取 manifest labelKey(删 RESOURCE_LABELS/ACTION_LABELS 硬编码表);新 /hub 能力枢纽通用页;manifest 外专属页注释标注;实走截图 wave5-admin-manifest-*。跟进:共享网关实例刷新(含 DELETE schema 构建)后补 user/hub 在线截图(源码已对,实例滞后)。
+- [x] **I18N-REVIVE**(platform 69bb2e8):kokoro-i18n 复活为零依赖窄包(12 tests/100% cov);admin-web zh/en 全键+切换器;主 web 是否切共享包留 Wave6 评估。
+- [ ] **web 四重奏**(spec df819ed,待派——web 写者位已随 strio 释放):ERROR-UX 按码文案/WEB-THEME 暗色/HITL-NOTIFY 待批通知/WEB-MOBILE 移动主路径。
+- [ ] **SWARM-QUOTA**(Wave5 尾项):swarm 编排+组织级配额——需先读 handbook 定案出设计单(主控串行),Wave5 最后一项。
 
 ## 文档欠账(2026-07-13 核验刷新;终局审计归 Wave 6)
 
