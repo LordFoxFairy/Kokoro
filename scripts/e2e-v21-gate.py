@@ -840,10 +840,20 @@ def main() -> int:
         pdb = "mysql://root:kokoro_root@127.0.0.1:3307/kokoro"
         pports = {"site": 4601, "user": 4611, "model": 4621, "credit": 4631}
         pbase = {k: f"http://127.0.0.1:{v}" for k, v in pports.items()}
+        # SEC-2 真签发链：user 以 RS256 签发，session2 走 jwks 验签。测试私钥 openssl 生成于 scratch（不入库）。
+        user_jwt_key = scratch / "user_jwt_private.pem"
+        subprocess.run(
+            ["openssl", "genpkey", "-algorithm", "RSA", "-pkeyopt", "rsa_keygen_bits:2048",
+             "-out", str(user_jwt_key)],
+            check=True, capture_output=True,
+        )
+        user_jwks_url = f"{pbase['user']}/.well-known/jwks.json"
         penv: dict[str, dict[str, str]] = {
             "site": {"DATABASE_URL_SITE": pdb, "KOKORO_SITE_PORT": str(pports["site"])},
+            # RS256 私钥就位即以 RS256 签发（KOKORO_AUTH_JWT_SECRET 仍留作 dev 退化档，但私钥优先）。
             "user": {"DATABASE_URL_USER": pdb, "KOKORO_USER_PORT": str(pports["user"]),
-                     "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET},
+                     "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
+                     "KOKORO_USER_JWT_PRIVATE_KEY": user_jwt_key.read_text()},
             "model": {"DATABASE_URL_MODEL": pdb, "KOKORO_MODEL_PORT": str(pports["model"])},
             "credit": {"DATABASE_URL_CREDIT": pdb, "KOKORO_CREDIT_PORT": str(pports["credit"]),
                        "KOKORO_USER_BASE_URL": pbase["user"], "KOKORO_SITE_BASE_URL": pbase["site"],
@@ -876,6 +886,14 @@ def main() -> int:
                        {"key": "site-e2e", "name": "E2E 闭环站", "status": "active"}, site="boot")
         site40 = str((site_resp.get("data") or {}).get("id", ""))
         check("E2E-40 site 就位（隔离键=site id）", st40 == 200 and site40 != "", f"{st40} {str(site_resp)[:120]}")
+        # SITE-REAL：host→site 真解析——绑定 verified 域名后 resolve 命中返 site_id（品牌面随行）。
+        stdom, _ = plat("POST", f"{pbase['site']}/site-domains/upsert",
+                        {"siteId": site40, "host": "e2e-closure.example", "status": "active"})
+        strs, rs = plat("GET", f"{pbase['site']}/site-context/resolve?host=e2e-closure.example")
+        rs_ctx = (rs.get("data") or {}).get("context") or {}
+        check("E2E-40 site resolve 命中返 site_id（SITE-REAL host→site）",
+              stdom == 200 and strs == 200 and rs_ctx.get("siteId") == site40,
+              f"{stdom}/{strs} {str(rs)[:120]}")
         st41, acc = plat("POST", f"{pbase['model']}/provider-accounts/ensure",
                          {"provider": "anthropic", "key": "e2e-direct", "label": "e2e 直连",
                           "secretRef": "env:EXAMPLE_NOT_REAL", "transportKind": "direct"})
