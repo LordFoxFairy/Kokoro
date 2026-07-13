@@ -494,11 +494,13 @@ def main() -> int:
         term_seq = terminal[0] if terminal else -1
 
         st8, snap2 = http("GET", f"/sessions/{SID}")
-        roles = [(m["role"], m["status"]) for m in snap2.get("messages", [])]
-        check("终态 snapshot：activeRun 清零 + 无 pending + assistant completed",
+        # M-6 读模型压缩:属主面省略 messages 键(assistant completed 已由上方 SSE message.completed +
+        # run.completed 断言覆盖;线程真源=事件史回放,不再由 snapshot.messages 携带)。
+        check("终态 snapshot：activeRun 清零 + 无 pending + M-6 属主面无 messages 键",
               st8 == 200 and "active_run" not in snap2
-              and not [p for p in snap2.get("pending_pauses", []) if p["status"] == "pending"]
-              and ("assistant", "completed") in roles, f"{roles} {snap2.get('active_run')}")
+              and "messages" not in snap2
+              and not [p for p in snap2.get("pending_pauses", []) if p["status"] == "pending"],
+              f"active={snap2.get('active_run')} msgkey={'messages' in snap2}")
 
         # 4b. 工作区文件面：write_file 已真落盘（审核 respond 只替换回流文本，不撤销执行）。
         files = snap2.get("files", [])
@@ -590,10 +592,11 @@ def main() -> int:
         check("SHARE-1 活跃分享重复创建幂等（同 id）", sc_body2.get("share_id") == share_id,
               f"{sc_body2.get('share_id')} vs {share_id}")
         st_pub, pub_snap = http_public("GET", f"/shared/{share_id}")
-        check("SHARE-1 无 auth 公共读 → 200 只读快照（pending_pauses 恒 []）",
+        check("SHARE-1 无 auth 公共读 → 200 只读快照（pending_pauses 恒 [] + M-6 分享面必携 messages）",
               st_pub == 200 and pub_snap.get("session", {}).get("session_id") == SID
-              and pub_snap.get("pending_pauses") == [] and len(pub_snap.get("messages", [])) > 0,
-              f"{st_pub} msgs={len(pub_snap.get('messages', []))}")
+              and pub_snap.get("pending_pauses") == []
+              and "messages" in pub_snap and len(pub_snap["messages"]) > 0,
+              f"{st_pub} msgkey={'messages' in pub_snap} msgs={len(pub_snap.get('messages', []))}")
         st_rev, _ = http("DELETE", f"/sessions/{SID}/share")
         check("SHARE-1 DELETE /share 撤销 → 200", st_rev == 200, str(st_rev))
         st_pub2, _ = http_public("GET", f"/shared/{share_id}")
