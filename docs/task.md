@@ -1,7 +1,7 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(Wave 1-3 P0 全清:Wave3 三竖切浏览器实走收口;下一步 Wave 4 P1;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-13(Wave4 批1 TEAM-1+OBS-1 收口;批2 MCP-UX/MODEL-UX/AGENT-PRESET 待排;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
@@ -33,8 +33,9 @@
 
 ## P1
 
-- [ ] TEAM-1 邀请/成员管理(user:invite 表有路由零;Team/Membership/Role 逻辑空;admin manifest 动作无后端路由——点了即败)+ web 团队切换 UX
-- [ ] MCP-UX web 连接向导(hub 注册表 API 已有;agent 消费 round-4 在飞)
+- [x] **TEAM-1**(user e4cecd4/web 4ea1352+c4fb354,spec dd8f87a):/bff 团队自助面(邀请 token 只存 sha256、V1 登录后 in-app 露出;换签=活跃成员校验→teamId 重签→BFF 重密封,token 不回浏览器);web 团队面板(切换/邀请/成员管理);admin manifest 团队动作已"点了即真";双上下文五步实走+7 截图(wave4-team-*);user principal 未下 runtime。
+- [x] **OBS-1**(session 079fb26/agent b22baa2,spec dd8f87a):双仓 /metrics(prom-client/prometheus_client,kokoro_ 前缀 20 项;agent 端口 env 缺省关);卡死检测(KOKORO_STUCK_RUN_THRESHOLD_MS 缺省 10min,只告警不杀 run);补偿/水位滞后指标;fail-open;V1 无 tracing(明确不镀金)。
+- [ ] MCP-UX web 连接向导(hub 注册表 API 已有+mutation 门已可开;agent 消费已落)
 - [ ] MODEL-UX web 模型选择(wire model 字段已通,web 只发 thinking 布尔)+ M-1 后半(model 可用性收敛 platform 单源,profile.allowed 降展示过滤)
 - [ ] AGENT-PRESET 块4(preset"加目录零代码"agent 侧未落;session 首条锁已落)+ agent 选择 UX
 - [ ] ARTIFACT-LIB 跨会话作品库(读模型 (namespace,content_hash) 已预留,无页面)
