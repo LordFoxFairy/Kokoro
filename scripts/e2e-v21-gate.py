@@ -821,6 +821,18 @@ def main() -> int:
               and all(m.get("provider") and m.get("name") for m in mc_models),
               f"{st_mc} {json.dumps(mc, ensure_ascii=False)[:160]}")
 
+        # 9c-bis. AGENT-PRESET：GET /agents 候选窄读（契约 AgentCandidateList）——profile 声明的具名预设
+        # poet+coder + general 缺省入口全列，恰一个 is_default=general（populated 跨栈铁证,web 选择器即消费此面）。
+        st_ac, ac = http("GET", "/agents")
+        ac_agents = ac.get("agents", [])
+        ac_names = {a.get("name") for a in ac_agents}
+        ac_default = [a.get("name") for a in ac_agents if a.get("is_default") is True]
+        check("AGENT-PRESET GET /agents：200 + 含 poet+coder+general + 恰一 is_default=general",
+              st_ac == 200 and {"poet", "coder", "general"} <= ac_names
+              and ac_default == ["general"]
+              and all(a.get("name") and a.get("description") for a in ac_agents),
+              f"{st_ac} {json.dumps(ac, ensure_ascii=False)[:200]}")
+
         # 9. Skills（E2E-29，渐进披露）：挂载=逻辑授权——纯正文技能（无附件）永不物化；
         # 正文走 skill 工具直返（单测覆盖），有附件的包才由装配期 reconcile 按账本物化（块C）。
         if WORKSPACE_BACKEND == "local":
