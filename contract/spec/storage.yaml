@@ -9,6 +9,9 @@ enums:
   mcp_transport: [http, streamable_http]
   review_status: [pending, approved, rejected]
   dispatch_status: [pending, claimed, expired]
+  # R4/R5 critical 帧回执:persisted=session 已连续落位;rejected=quarantine(identity 已识别但
+  # payload 不可应用,该 seq 仍被占据);superseded=fence 后缀,永不投影。
+  event_receipt_status: [persisted, rejected, superseded]
 
 objects:
   # 清单卡片：会话快照与 system prompt 技能清单的最小面。
@@ -123,6 +126,32 @@ objects:
       - {name: created_at, type: int}
       - {name: deleted_at, type: int, nullable: true}
 
+  # critical 帧回执行(R4/R5):agent outbox 发布→session 按 durable_seq 落回执;agent 读回执
+  # 收敛本地 outbox(consume 序推进,校验 event_id)。行 append-only,状态一经 rejected/superseded 不回改。
+  - name: RunEventReceiptDoc
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: durable_seq, type: int}
+      - {name: event_id, type: string_nonempty}
+      - {name: status, type: enum:event_receipt_status}
+      - {name: reason, type: string_nonempty, optional: true, nullable: true}
+      - {name: created_at, type: int}
+
+  # per-run 回执清单(R4/R5 两阶段回收):session 推进 persisted/projected 与 fence/superseded;
+  # agent 推进 consumed 与 producer_close_requested;session 终设 producer_closed 后才可 GC。
+  # 同库部署下双方 CAS 各自字段(写者分域);close 前 404=receipt_state_lost,agent 不得删 outbox。
+  - name: RunReceiptManifestDoc
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: persisted_seq, type: int}
+      - {name: projected_seq, type: int}
+      - {name: consumed_seq, type: int}
+      - {name: terminal_fence_seq, type: int, optional: true, nullable: true}
+      - {name: superseded_from, type: int, optional: true, nullable: true}
+      - {name: producer_close_requested, type: boolean}
+      - {name: producer_closed, type: boolean}
+      - {name: updated_at, type: int}
+
 collections:
   skills:
     doc: SkillDoc
@@ -145,6 +174,12 @@ collections:
   mcp_secrets:
     doc: McpSecretDoc
     unique: [scope, handle]
+  run_event_receipts:
+    doc: RunEventReceiptDoc
+    unique: [run_id, durable_seq]
+  run_receipt_manifests:
+    doc: RunReceiptManifestDoc
+    unique: [run_id]
 
 # 会话工作区键（本地目录名 / S3 归档前缀共用约定）：生成双语言 helper 单源，禁止再手拼。
 workspace_key_template: "{namespace}:{session_id}"

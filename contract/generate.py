@@ -268,6 +268,9 @@ def emit_events_py(spec: dict) -> str:
             "    run_id: NonEmptyStr",
             "    index: NonNegInt",
             "    timestamp: int",
+            "    # R4 durable 身份位:critical 帧必带(per-run 连续 seq 从 1 起),live 帧缺席。",
+            "    durable_seq: Annotated[int, Field(ge=1)] | None = None",
+            "    event_id: NonEmptyStr | None = None",
             f"    payload: {name}Payload",
         ]
 
@@ -421,6 +424,9 @@ def emit_wire_events_ts(spec: dict) -> str:
         "run_id: z.string().min(1),",
         "index: z.number().int().nonnegative(),",
         "timestamp: z.number().int(),",
+        "// R4 durable 身份位:critical 帧必带(per-run 连续 seq 从 1 起),live 帧缺席。",
+        "durable_seq: z.number().int().min(1).optional(),",
+        "event_id: z.string().min(1).optional(),",
     ]
     L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
     L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="wireEventSchema", envelope=envelope)

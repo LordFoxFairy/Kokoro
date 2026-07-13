@@ -4,7 +4,9 @@
 # `contract/generate.py` renders every mirror; `contract/check.py` gates drift.
 #
 # Two faces:
-#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}.
+#   raw (18)     — agent emits, session parses. Envelope {kind, run_id, index, timestamp}
+#                  + 可选 durable 身份位 {durable_seq, event_id}(R4:critical 帧必带,live 帧缺席;
+#                  browser 面不携带——durable 身份不出内部面)。
 #   browser (20) — session emits, web parses. run.started is consumed by session and
 #                  replaced by the synthetic session.created + run.created; the other 17
 #                  raw kinds pass through verbatim. Envelope adds event_id/seq/session ids.
@@ -21,7 +23,10 @@ enums:
   # 失败码是闭集：新失败形态必须进枚举（单源扩表），internal_error 兜底。
   # enqueue_failed 由 session 合成（投递失败收口，agent 永不发它）。
   control_receipt_status: [persisted, applied]
-  run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, enqueue_failed, dispatch_exhausted, internal_error]
+  # contract_incompatible 由 session 合成(R5 quarantine 收口:identity 已识别但 payload 不可应用
+  # 的 critical 帧被隔离,contract-failure reconciler 原子投影为该终态——session 除 dispatch
+  # expire 外唯一合法终态权场景)。
+  run_error_code: [token_budget_exceeded, recursion_limit_exceeded, assembly_failed, enqueue_failed, dispatch_exhausted, contract_incompatible, internal_error]
 
 # Reusable nested object shapes (dependency order: leaves first).
 objects:
