@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import queue
+import signal
 import subprocess
 import sys
 import threading
@@ -209,6 +210,427 @@ def wait_port(port: int, timeout: float = 30.0) -> bool:
                 return True
         time.sleep(0.3)
     return False
+
+
+# ============================================================================
+# 进程级 chaos 段（E2E_CHAOS=1 才跑；缺省 gate 零改动零耗时）：自起独立 scratch/
+# redis db/mongo db，SIGKILL 真崩溃点用确定性状态窗口（mongo 状态轮询，非 sleep 碰运气）。
+# 两场景：A=kill agent 于 run.started 回执落库后→重启→事件史精确计数不重不漏（durable_seq 去重铁证）；
+# B=kill session 于 billing held（settle 前）→重启→billing journal 收敛 settled 且 ledger 恰一笔（R6/R7 补偿铁证）。
+# ============================================================================
+
+MONGO_CONTAINER = "kokoro-dev-mongo"
+MYSQL_CONTAINER = "kokoro-platform-mysql-1"
+
+
+def hard_kill(proc: subprocess.Popen) -> None:
+    """SIGKILL 整个进程组模拟崩溃：不给优雅关停窗口，逼出 durable 恢复路径。"""
+    if proc.poll() is not None:
+        return
+    try:
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+    except (ProcessLookupError, PermissionError):
+        return
+    try:
+        proc.wait(timeout=5)
+    except Exception:
+        pass
+
+
+def mongo_eval(db: str, js: str) -> str:
+    q = subprocess.run(
+        ["docker", "exec", MONGO_CONTAINER, "mongosh", "--quiet", "--eval",
+         f'const db=db.getSiblingDB("{db}");{js}'],
+        capture_output=True, text=True, check=False,
+    )
+    return q.stdout.strip() if q.returncode == 0 else ""
+
+
+def drop_mongo_db(db: str) -> None:
+    subprocess.run(
+        ["docker", "exec", MONGO_CONTAINER, "mongosh", "--quiet", "--eval",
+         f'db.getSiblingDB("{db}").dropDatabase()'],
+        check=False, capture_output=True,
+    )
+
+
+def wait_port_free(port: int, timeout: float = 30.0) -> bool:
+    """等端口释放（SIGKILL 后旧 listen socket 未即时回收会让重启进程 EADDRINUSE）：连不上即已释放。"""
+    import socket
+
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        with socket.socket() as s:
+            s.settimeout(0.5)
+            if s.connect_ex(("127.0.0.1", port)) != 0:
+                return True
+        time.sleep(0.3)
+    return False
+
+
+def poll_until(pred, timeout: float = 40.0, interval: float = 0.3) -> bool:
+    """轮询确定性状态（非 sleep 碰运气）：pred 命中即返 True，超时 False（调用方 fail-loud）。"""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if pred():
+            return True
+        time.sleep(interval)
+    return False
+
+
+def _post_message(base: str, sid: str, token: str, content: str) -> tuple[int, dict]:
+    req = urllib.request.Request(
+        f"{base}/sessions/{sid}/messages", method="POST",
+        data=json.dumps({"idempotency_key": f"idem_{uuid.uuid4().hex[:8]}", "content": content}).encode(),
+        headers={"content-type": "application/json", "authorization": f"Bearer {token}"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.status, json.loads(resp.read() or b"{}")
+    except urllib.error.HTTPError as e:
+        return e.code, json.loads(e.read() or b"{}")
+
+
+def _write_local_workspace_yaml(scratch: Path) -> Path:
+    path = scratch / "workspace.yaml"
+    path.write_text(
+        f"workspace:\n  type: local\n  root: {scratch / 'workspace'}\n"
+        f"deliveries:\n  type: local\n  root: {scratch / 'deliveries'}\n"
+    )
+    return path
+
+
+def chaos_scenario_a() -> None:
+    """A：kill agent 于 run.started 回执落库后、run 收敛前 → 重启 → 断言收敛终态且事件史不重不漏。"""
+    print("\n== CHAOS A: SIGKILL agent post run.started-receipt, pre-terminal ==")
+    redis_url = "redis://127.0.0.1:6379/13"
+    db = "kokoro_e2e_chaos_a"
+    sport = int(os.environ.get("E2E_CHAOS_SESSION_PORT", "3911"))
+    hport = int(os.environ.get("E2E_CHAOS_HUB_PORT", "3961"))
+    base = f"http://127.0.0.1:{sport}"
+    hub_base = f"http://127.0.0.1:{hport}"
+    token = sign_token("chaos-user")
+    sid = f"ses_chaos_a_{uuid.uuid4().hex[:8]}"
+    scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-chaos-a-{uuid.uuid4().hex[:6]}"
+    scratch.mkdir(parents=True)
+    subprocess.run(["redis-cli", "-u", redis_url, "flushdb"], check=True, capture_output=True)
+    drop_mongo_db(db)
+    ws_yaml = _write_local_workspace_yaml(scratch)
+
+    session_env = {
+        **os.environ, **INTERNAL_SECRETS,
+        "KOKORO_SESSION_PORT": str(sport),
+        "KOKORO_REDIS_URL": redis_url,
+        "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
+        "KOKORO_MESSAGE_STORE_MONGO_DB": db,
+        "KOKORO_FINALIZATION_RECONCILE_MS": "1000",
+        "KOKORO_HUB_BASE_URL": hub_base,
+        "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
+        "KOKORO_WORKSPACE_CONFIG": str(ws_yaml),
+        "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
+    }
+    # script=default（write_todos→文本，无 HITL）→ run 自收敛；短 lease/heartbeat 使崩溃后 reclaim 秒级。
+    agent_env = {
+        **os.environ,
+        "KOKORO_REDIS_URL": redis_url,
+        "KOKORO_LOCAL_FAKE_MODEL": "1",
+        "KOKORO_LOCAL_FAKE_SCRIPT": "default",
+        "KOKORO_MONGO_URL": MONGO_URL,
+        "KOKORO_MONGO_DB": db,
+        "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"),
+        "KOKORO_MCP_EGRESS_MODE": "off",
+        "KOKORO_LEASE_TTL_S": "2",
+        "KOKORO_LEASE_HEARTBEAT_S": "1",
+        "KOKORO_WORKSPACE_CONFIG": str(ws_yaml),
+    }
+    hub_env = {
+        **os.environ, **INTERNAL_SECRETS,
+        "KOKORO_HUB_PORT": str(hport),
+        "KOKORO_HUB_MONGO_URL": MONGO_URL,
+        "KOKORO_HUB_MONGO_DB": db,
+    }
+    ensure_port_free(sport)
+    ensure_port_free(hport)
+    hub_proc = spawn(["pnpm", "run", "start"], cwd=ROOT / "kokoro-platform" / "kokoro-hub",
+                     env=hub_env, log=scratch / "hub.log")
+    session_proc = spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=session_env,
+                         log=scratch / "session.log")
+    agent_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
+                       log=scratch / "agent.log")
+    agent2_proc = None
+    try:
+        check("CHAOS-A session 端口就绪", wait_port(sport, timeout=45))
+        check("CHAOS-A hub 端口就绪", wait_port(hport, timeout=45))
+        time.sleep(1.5)  # worker 订阅请求流启动窗口
+        st, receipt = _post_message(base, sid, token, "跑一单")
+        run_id = receipt.get("run_id", "")
+        check("CHAOS-A 受理 202 + run_id", st == 202 and run_id != "", f"{st} {receipt}")
+
+        # 确定性 kill 窗口：run.started 回执行已落库（run_event_receipts 出现该 run 的行）。
+        landed = poll_until(lambda: mongo_eval(
+            db, f'print(db.run_event_receipts.countDocuments({{run_id:"{run_id}"}}))') not in ("", "0"))
+        check("CHAOS-A run.started 回执落库（kill 窗口=确定状态）", landed)
+
+        hard_kill(agent_proc)
+        check("CHAOS-A agent 已崩溃（SIGKILL）", agent_proc.poll() is not None)
+
+        # 重启 agent（同 env）：短 lease 过期后 reclaim 续跑，outbox 补发按固定 durable_seq/event_id 去重。
+        agent2_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
+                            log=scratch / "agent2.log")
+
+        # 事件史全量回放（seq=0）：等 run.completed 收敛，再精确计数（单 run/单 session，按 kind 匹配即唯一）。
+        sse = SseReader(f"/sessions/{sid}/events", last_event_id="0", base=base, token=token)
+        done = sse.wait(lambda i: i[1] == "run.completed", timeout=90)
+        check("CHAOS-A run 崩溃后收敛终态 completed", done is not None)
+        created = [s for s in sse.seen if s[1] == "run.created"]
+        completed = [s for s in sse.seen if s[1] == "run.completed"]
+        check("CHAOS-A 不重：事件史 run.created 恰一 + run.completed 恰一（崩溃补发不双投影）",
+              len(created) == 1 and len(completed) == 1,
+              f"created={len(created)} completed={len(completed)}")
+
+        # durable_seq 去重铁证：receipt 行数 == distinct durable_seq 数（补发重投未生成重复行），且≥2。
+        recv = mongo_eval(db, f'print(db.run_event_receipts.countDocuments({{run_id:"{run_id}"}}))')
+        distinct = mongo_eval(
+            db, f'print(db.run_event_receipts.distinct("durable_seq",{{run_id:"{run_id}"}}).length)')
+        check("CHAOS-A 不漏/不重：receipt 行数==distinct durable_seq 数 且≥2（durable_seq 去重）",
+              recv == distinct and recv.isdigit() and int(recv) >= 2, f"rows={recv} distinct={distinct}")
+    finally:
+        stop(session_proc)
+        stop(agent_proc)
+        if agent2_proc is not None:
+            stop(agent2_proc)
+        stop(hub_proc)
+        print(f"  CHAOS-A logs: {scratch}")
+
+
+def chaos_scenario_b() -> None:
+    """B：kill session 于 billing held（settle 前）→ 重启 → 断言 journal 收敛 settled 且 ledger 恰一笔。"""
+    print("\n== CHAOS B: SIGKILL session at billing held (pre-settle) ==")
+    redis_url = "redis://127.0.0.1:6379/15"
+    db = "kokoro_e2e_chaos_b"
+    sport = int(os.environ.get("E2E_CHAOS_SESSION2_PORT", "3912"))
+    hport = int(os.environ.get("E2E_CHAOS_HUB2_PORT", "3962"))
+    base = f"http://127.0.0.1:{sport}"
+    hub_base = f"http://127.0.0.1:{hport}"
+    pports = {"site": 4701, "user": 4711, "model": 4721, "credit": 4731}
+    pbase = {k: f"http://127.0.0.1:{v}" for k, v in pports.items()}
+    scratch = Path(os.environ.get("TMPDIR", "/tmp")) / f"kokoro-chaos-b-{uuid.uuid4().hex[:6]}"
+    scratch.mkdir(parents=True)
+    subprocess.run(["redis-cli", "-u", redis_url, "flushdb"], check=True, capture_output=True)
+    drop_mongo_db(db)
+    ws_yaml = _write_local_workspace_yaml(scratch)
+    pdb = "mysql://root:kokoro_root@127.0.0.1:3307/kokoro"
+
+    check("CHAOS-B platform mysql 前置(3307)", wait_port(3307, timeout=3),
+          "cd kokoro-platform && docker compose up -d")
+
+    # RS256 真签发链（与 E2E-40 同规格）：user 服务以私钥签发，enforce session 走 jwks 验签。
+    user_jwt_key = scratch / "user_jwt_private.pem"
+    subprocess.run(["openssl", "genpkey", "-algorithm", "RSA", "-pkeyopt", "rsa_keygen_bits:2048",
+                    "-out", str(user_jwt_key)], check=True, capture_output=True)
+    user_jwks_url = f"{pbase['user']}/.well-known/jwks.json"
+    penv = {
+        "site": {"DATABASE_URL_SITE": pdb, "KOKORO_SITE_PORT": str(pports["site"])},
+        "user": {"DATABASE_URL_USER": pdb, "KOKORO_USER_PORT": str(pports["user"]),
+                 "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
+                 "KOKORO_USER_JWT_PRIVATE_KEY": user_jwt_key.read_text()},
+        "model": {"DATABASE_URL_MODEL": pdb, "KOKORO_MODEL_PORT": str(pports["model"])},
+        "credit": {"DATABASE_URL_CREDIT": pdb, "KOKORO_CREDIT_PORT": str(pports["credit"]),
+                   "KOKORO_USER_BASE_URL": pbase["user"], "KOKORO_SITE_BASE_URL": pbase["site"],
+                   "KOKORO_MODEL_BASE_URL": pbase["model"]},
+    }
+    plat_procs: list = []
+    hub_proc = None
+    session_proc = None
+    session2_proc = None
+    agent_proc = None
+    site_id = ""
+
+    def plat(method: str, url: str, body: dict | None = None, site: str | None = None):
+        req = urllib.request.Request(
+            url, method=method, data=None if body is None else json.dumps(body).encode(),
+            headers={"content-type": "application/json", "x-kokoro-site-id": site or site_id, **RUNTIME_HDR})
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return resp.status, json.loads(resp.read() or b"{}")
+        except urllib.error.HTTPError as e:
+            return e.code, json.loads(e.read() or b"{}")
+
+    def start_session2():
+        env = {
+            **os.environ, **INTERNAL_SECRETS,
+            "KOKORO_SESSION_PORT": str(sport),
+            "KOKORO_REDIS_URL": redis_url,
+            "KOKORO_MESSAGE_STORE_MONGO_URL": MONGO_URL,
+            "KOKORO_MESSAGE_STORE_MONGO_DB": db,
+            # finalization 用缺省 30s（不加速）：settle 由 live 终态投影路径完成，避免快 finalization
+            # 与 live 路径并发调 settleRunBilling 造成 settled→settle_pending 相位回退（journal 收敛铁证）。
+            "KOKORO_HUB_BASE_URL": hub_base,
+            "KOKORO_WORKSPACE_ROOT": str(scratch / "workspace"),
+            "KOKORO_WORKSPACE_CONFIG": str(ws_yaml),
+            "KOKORO_BILLING_MODE": "enforce",
+            "KOKORO_CREDIT_BASE_URL": pbase["credit"],
+            "KOKORO_MODEL_BASE_URL": pbase["model"],
+            "KOKORO_SITE_ID": site_id,
+            "KOKORO_AUTH_MODE": "jwks",
+            "KOKORO_AUTH_JWKS_URL": user_jwks_url,
+        }
+        return spawn(["npm", "run", "start"], cwd=ROOT / "kokoro-session", env=env,
+                     log=scratch / "session2.log")
+
+    try:
+        # 平台服务 + hub + agent（script=default 自收敛）。
+        for pname, extra in penv.items():
+            ensure_port_free(pports[pname])
+            plat_procs.append(spawn(["pnpm", "run", "start"], cwd=ROOT / "kokoro-platform" / f"kokoro-{pname}",
+                                    env={**os.environ, **INTERNAL_SECRETS, **extra},
+                                    log=scratch / f"plat-{pname}.log"))
+        for pname in penv:
+            check(f"CHAOS-B {pname} 端口就绪", wait_port(pports[pname], timeout=60))
+        ensure_port_free(hport)
+        hub_proc = spawn(["pnpm", "run", "start"], cwd=ROOT / "kokoro-platform" / "kokoro-hub",
+                         env={**os.environ, **INTERNAL_SECRETS, "KOKORO_HUB_PORT": str(hport),
+                              "KOKORO_HUB_MONGO_URL": MONGO_URL, "KOKORO_HUB_MONGO_DB": db},
+                         log=scratch / "hub.log")
+        # hitl 首停在 ask_user（run 未终态→未 settle）：给出稳定的 settle 前 held 窗口（default 自收敛过快难捕获）。
+        agent_env = {
+            **os.environ, "KOKORO_REDIS_URL": redis_url, "KOKORO_LOCAL_FAKE_MODEL": "1",
+            "KOKORO_LOCAL_FAKE_SCRIPT": "hitl", "KOKORO_MONGO_URL": MONGO_URL, "KOKORO_MONGO_DB": db,
+            "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(scratch / "workspace"), "KOKORO_MCP_EGRESS_MODE": "off",
+            "KOKORO_WORKSPACE_CONFIG": str(ws_yaml),
+        }
+        agent_proc = spawn(["uv", "run", "kokoro-agent-worker"], cwd=ROOT / "kokoro-agent", env=agent_env,
+                           log=scratch / "agent.log")
+        check("CHAOS-B hub 端口就绪", wait_port(hport, timeout=45))
+
+        # 平台种子（site / direct 模型绑定 / 计价 / 授信 / 真签发），照 E2E-40。
+        st40, site_resp = plat("POST", f"{pbase['site']}/sites/upsert",
+                               {"key": "site-chaos", "name": "CHAOS 站", "status": "active"}, site="boot")
+        site_id = str((site_resp.get("data") or {}).get("id", ""))
+        check("CHAOS-B site 就位", st40 == 200 and site_id != "", f"{st40} {str(site_resp)[:120]}")
+        st41, acc = plat("POST", f"{pbase['model']}/provider-accounts/ensure",
+                         {"provider": "anthropic", "key": "chaos-direct", "label": "chaos 直连",
+                          "secretRef": "env:EXAMPLE_NOT_REAL", "transportKind": "direct"})
+        acc_id = str((acc.get("data") or {}).get("id", ""))
+        st42, _ = plat("POST", f"{pbase['model']}/model-bindings/ensure",
+                       {"providerAccountId": acc_id, "modelName": "claude-sonnet-4-6",
+                        "displayName": "CHAOS 直连绑定", "featureKey": "chat",
+                        "labelKeys": ["claude-sonnet-4-6"], "transportKind": "direct"})
+        check("CHAOS-B model 绑定就位", st41 == 200 and st42 == 200, f"{st41}/{st42}")
+        for unit, price in (("input_token", 20), ("output_token", 60)):
+            plat("POST", f"{pbase['credit']}/credit/pricing-rules",
+                 {"featureKey": "chat", "unit": unit, "amountMicros": price})
+        st43, issued = plat("POST", f"{pbase['user']}/auth/sessions",
+                            {"site_id": site_id, "external_user_id": f"chaos-{uuid.uuid4().hex[:6]}"})
+        idata = issued.get("data") or {}
+        tok = str(idata.get("token", ""))
+        ns = str(idata.get("namespace", ""))
+        check("CHAOS-B 真签发 token+namespace", st43 == 200 and tok != "" and ns != "", f"{st43}")
+        ste, acc40 = plat("POST", f"{pbase['credit']}/credit/accounts/ensure",
+                          {"ownerKind": "team", "ownerId": ns})
+        accid = str((acc40.get("data") or {}).get("id", ""))
+        plat("POST", f"{pbase['credit']}/credit/grant",
+             {"accountId": accid, "amountMicros": 100_000_000,
+              "idempotencyKey": f"grant_{uuid.uuid4().hex[:8]}", "reason": "manual_adjustment"})
+        check("CHAOS-B 授信就位", ste == 200 and accid != "", f"{ste}")
+
+        session2_proc = start_session2()
+        check("CHAOS-B enforce session 端口就绪", wait_port(sport, timeout=45))
+        time.sleep(1.0)
+        sid = f"ses_chaos_b_{uuid.uuid4().hex[:8]}"
+
+        def s2ctl(rid: str, decisions: list) -> int:
+            req = urllib.request.Request(
+                f"{base}/sessions/{sid}/runs/{rid}/control", method="POST",
+                data=json.dumps({"kind": "run.resume", "decision_id": f"dec_{uuid.uuid4().hex[:8]}",
+                                 "decisions": decisions}).encode(),
+                headers={"content-type": "application/json", "authorization": f"Bearer {tok}"})
+            try:
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    return resp.status
+            except urllib.error.HTTPError as e:
+                return e.code
+
+        st45, r = _post_message(base, sid, tok, "计费跑一单")
+        run_id = str(r.get("run_id", ""))
+        check("CHAOS-B enforce 受理 202 + run_id", st45 == 202 and run_id != "", f"{st45} {r}")
+
+        # 确定性 kill 窗口：hitl 停在 ask_user（run 未终态→未 settle），此时 hold 已成功=journal held（稳定态）。
+        sse = SseReader(f"/sessions/{sid}/events", base=base, token=tok)
+        aw = sse.wait(lambda i: i[1] == "tool.awaiting_approval"
+                      and i[2]["payload"]["kind"] == "ask_user_question", timeout=45)
+        check("CHAOS-B run 停在 ask_user（settle 前稳定态）", aw is not None)
+        phase_held = mongo_eval(
+            db, f'print(((db.billing_journal.findOne({{run_id:"{run_id}"}}))||{{}}).phase||"")')
+        check("CHAOS-B billing 到 held（hold 成功、settle 前）", phase_held == "held", f"phase={phase_held!r}")
+
+        hard_kill(session2_proc)
+        check("CHAOS-B session 已崩溃（SIGKILL）", session2_proc.poll() is not None)
+
+        # 重启 session（同 env）：durable pause/hold 状态在库，续办 resume→run 收敛→settle→settled，
+        # settle capture 幂等键含 run_id，崩溃重入不双花（ledger 恰一笔）。
+        # 先等旧 listen socket 释放，避免重启进程 EADDRINUSE（SIGKILL 后 socket 非即时回收）。
+        check("CHAOS-B 崩溃端口释放", wait_port_free(sport, timeout=30))
+        session2_proc = start_session2()
+        check("CHAOS-B session 重启端口就绪", wait_port(sport, timeout=45))
+        sse2 = SseReader(f"/sessions/{sid}/events", last_event_id="0", base=base, token=tok)
+        aw0 = sse2.wait(lambda i: i[1] == "tool.awaiting_approval"
+                        and i[2]["payload"]["kind"] == "ask_user_question", timeout=45)
+        check("CHAOS-B 重启后事件史保留暂停态", aw0 is not None)
+        tid0 = aw0[2]["payload"]["tool_id"] if aw0 else "?"
+        st_r1 = s2ctl(run_id, [{"type": "respond", "tool_id": tid0, "response": "中文"}])
+        aw1 = sse2.wait(lambda i: i[1] == "tool.awaiting_approval"
+                        and i[2]["payload"]["kind"] == "tool_approval", timeout=45)
+        tid1 = aw1[2]["payload"]["tool_id"] if aw1 else "?"
+        st_r2 = s2ctl(run_id, [{"type": "approve", "tool_id": tid1}])
+        done = sse2.wait(lambda i: i[1] == "run.completed", timeout=90)
+        check("CHAOS-B 重启后续办 resume→run 收敛 completed",
+              st_r1 == 202 and st_r2 == 202 and done is not None, f"{st_r1}/{st_r2}")
+
+        # settled 收敛窗口取 150s：live settle 若瞬时失败留 settle_pending，交 billing compensation
+        # reconciler（硬编码 30s tick）幂等重试收敛。settled=终局；真卡死会走 compensation_stuck → 下方断言 fail-loud。
+        settled = poll_until(lambda: mongo_eval(
+            db, f'print(((db.billing_journal.findOne({{run_id:"{run_id}"}}))||{{}}).phase||"")')
+            in ("settled", "released"), timeout=150)
+        phase = mongo_eval(db, f'print(((db.billing_journal.findOne({{run_id:"{run_id}"}}))||{{}}).phase||"")')
+        check("CHAOS-B billing journal 崩溃后收敛 settled（R7 settle durable compensation）",
+              settled and phase == "settled", f"phase={phase!r}")
+
+        # ledger 恰一笔（capture 幂等键含 run_id）：崩溃重入不双花。
+        def ledger_rows() -> int:
+            q = subprocess.run(
+                ["docker", "exec", MYSQL_CONTAINER, "mysql", "-uroot", "-pkokoro_root", "kokoro", "-N", "-e",
+                 f"SELECT COUNT(*) FROM credit_ledger_entries WHERE idempotencyKey LIKE '%{run_id}%'"],
+                capture_output=True, text=True, check=False)
+            return int(q.stdout.strip() or 0) if q.returncode == 0 else -1
+        poll_until(lambda: ledger_rows() >= 1, timeout=30)
+        rows = ledger_rows()
+        check("CHAOS-B credit ledger 恰一笔（capture 幂等，崩溃重入不双花）", rows == 1, f"rows={rows}")
+    finally:
+        if session2_proc is not None:
+            stop(session2_proc)
+        if agent_proc is not None:
+            stop(agent_proc)
+        if hub_proc is not None:
+            stop(hub_proc)
+        if session_proc is not None:
+            stop(session_proc)
+        for proc in plat_procs:
+            stop(proc)
+        print(f"  CHAOS-B logs: {scratch}")
+
+
+def run_chaos() -> int:
+    print("E2E CHAOS — 进程级崩溃恢复（durable_seq 去重 + R6/R7 补偿）")
+    chaos_scenario_a()
+    chaos_scenario_b()
+    if FAILURES:
+        print(f"\nCHAOS FAIL ({len(FAILURES)}):")
+        for f in FAILURES:
+            print(f"  - {f}")
+        return 1
+    print("\nCHAOS PASS — 崩溃恢复两场景全绿")
+    return 0
 
 
 def main() -> int:
@@ -1146,4 +1568,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # E2E_CHAOS=1 → 只跑进程级 chaos 段（自起独立栈）；缺省 → 标准 gate（行为与耗时零改动）。
+    sys.exit(run_chaos() if os.environ.get("E2E_CHAOS") == "1" else main())
