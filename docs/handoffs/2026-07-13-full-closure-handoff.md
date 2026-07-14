@@ -55,7 +55,7 @@
 - gate kill/chaos 进程级脚手架未做(单元级故障注入两仓全覆盖);receipt manifest 自动 GC 只留门。
 - PAY-2 provider 沙箱真跑通、SMTP 真发信(magic-link 现 dev response 档)、HUB-4 灰度=运营配置动作,非代码欠账。
 - admin 共享网关实例刷新(含 DELETE schema 构建)后补 user/hub manifest 在线截图(源码已对,payment 面已实走等价证据)。
-- web 主线合入:全部 web 工作在 `agent/p2-auth-wiring` 分支,合入 main 时机归用户。
+- ~~web 主线合入~~:已合入(2026-07-13 用户指令,fast-forward fc2cc85→d46c138 零冲突,42 支;分支保留存档)。
 - 主 web 是否切共享 kokoro-i18n:评估结论=不急切(主 web 键体系自洽;等下次大 web 文案波再并轨)。
 - webarch 已知行为差:面板重开由 loading-flash 变 SWR 缓存即显(更优;要复刻旧感受在 open 处 invalidate)。
 - 存疑存档:Daytona 远程沙箱落地态未查证(handbook 20 §5 块6 原文保留);product/00-08 册未逐字深审(抽查无漂移)。
