@@ -273,6 +273,77 @@ def smoke() -> None:
     step("smoke: litellm 网关", st == 200, str(st))
 
 
+def _record_pid(name: str, pid: int) -> None:
+    # 把独立起的进程（如 web）pid 并入 pids.json，供 down 一并收环。
+    f = STATE / "pids.json"
+    pids: dict[str, int] = json.loads(f.read_text()) if f.exists() else {}
+    pids[name] = pid
+    f.write_text(json.dumps(pids))
+
+
+def boot_web() -> int | None:
+    # 纳管 web dev：注入同源 BFF env 后台起 next dev；已在跑则跳过。pid 记入 pids.json 供 down 清。
+    if port_open(WEB_PORT):
+        print(f"  [OK] web {WEB_PORT}（已在跑，跳过）")
+        return None
+    pid = spawn(["pnpm", "run", "dev"], ROOT / "kokoro-web",
+                {**os.environ, **web_bff_env()}, STATE / "web.log")
+    step(f"web dev {WEB_PORT}（首次编译稍慢，≤90s）", wait_port(WEB_PORT, 90),
+         "web 启动失败，看 tmp/closure/web.log")
+    _record_pid("web", pid)
+    return pid
+
+
+def chat_smoke() -> None:
+    # 端到端对话真验：签发 token → POST 首消息（隐式建会话）→ 轮询 snapshot 至 run 终态
+    # → 断言 assistant 完成。这是"对话是否跑通"的可重复回归探针（防 activeId 越权类前端断链复发）。
+    st, resp = http("POST", f"{BASE['user']}/auth/sessions",
+                    {"site_id": SITE_ID, "external_user_id": "dev-chat-smoke"}, RUNTIME_HDR)
+    tok = str((resp.get("data") or {}).get("token", ""))
+    step("chat: user 签发 token", st == 200 and tok != "", f"{st} {str(resp)[:120]}")
+    auth = {"authorization": f"Bearer {tok}"}
+    sid = "ses_chat_smoke"
+    st, rec = http("POST", f"http://127.0.0.1:{SESSION_PORT}/sessions/{sid}/messages",
+                   {"idempotency_key": f"idem-chat-{int(time.time())}",
+                    "content": "ping，请用一句话确认你在线。"}, auth)
+    run_id = str(rec.get("run_id", ""))
+    # 202 Accepted：消息已受理、run 异步开跑（session 的正常回执码）。
+    step("chat: 发首条消息（隐式建会话）", st in (200, 201, 202) and run_id != "",
+         f"{st} {str(rec)[:160]}")
+    # 终态以事件流为权威：snapshot 不含 messages（历史走 SSE 回放）。回放 last-event-id=0
+    # 逐帧读，抓 run.completed（成功）/ run.failed（失败）。fake 模型不走 delta，回复在 message.completed。
+    ereq = urllib.request.Request(
+        f"http://127.0.0.1:{SESSION_PORT}/sessions/{sid}/events",
+        headers={**auth, "accept": "text/event-stream", "last-event-id": "0"})
+    kinds: list[str] = []
+    reply = ""
+    outcome = ""
+    try:
+        with urllib.request.urlopen(ereq, timeout=25) as stream:
+            for raw in stream:
+                s = raw.decode(errors="replace").strip()
+                if not s.startswith("data:"):
+                    continue
+                try:
+                    ev = json.loads(s[len("data:"):].strip())
+                except json.JSONDecodeError:
+                    continue
+                kind = str(ev.get("kind", ""))
+                kinds.append(kind)
+                if kind == "message.completed":
+                    reply = str((ev.get("payload") or {}).get("content", ""))[:70]
+                if kind in ("run.completed", "run.failed"):
+                    outcome = kind
+                    break
+    except Exception as exc:  # noqa: BLE001 — 探针：任何流异常都视作未跑通并如实报出
+        outcome = f"stream_error:{type(exc).__name__}"
+    step("chat: run 端到端跑完（事件流见 run.completed）", outcome == "run.completed",
+         f"未见 run.completed（收到 {outcome or '无终态'}；kinds={kinds}）——对话链路可能断裂")
+    print(f"  [OK] 对话跑通 — 事件序列：{kinds}")
+    if reply:
+        print(f"       assistant 回复片段：{reply}")
+
+
 def cmd_up() -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     print("== infra"); ensure_infra()
@@ -281,11 +352,14 @@ def cmd_up() -> None:
     (STATE / "pids.json").write_text(json.dumps(pids))
     print("== seed"); seed()
     print("== smoke"); smoke()
-    web_env = write_web_bff_env()
-    print(f"\n闭环已就绪：session http://127.0.0.1:{SESSION_PORT} / litellm :4000 / platform {PORTS}")
-    print(f"日志与 pid: {STATE}/ ；收环: python3 scripts/closure-up.py down")
-    print("web dev（同源 BFF，浏览器不直连 3900）：")
-    print(f"  set -a; source {web_env}; set +a; pnpm --dir kokoro-web dev")
+    write_web_bff_env()
+    print("== web"); boot_web()
+    print(f"\n闭环已就绪：web http://127.0.0.1:{WEB_PORT} / session :{SESSION_PORT} / "
+          f"litellm :4000 / platform {PORTS}")
+    print(f"日志与 pid: {STATE}/")
+    print("  收环: python3 scripts/closure-up.py down")
+    print("  重启: python3 scripts/closure-up.py restart")
+    print("  测对话(端到端): python3 scripts/closure-up.py chat")
 
 
 def cmd_down() -> None:
@@ -303,11 +377,32 @@ def cmd_down() -> None:
 
 
 def cmd_status() -> None:
-    for name, port in {**PORTS, "hub": HUB_PORT, "session": SESSION_PORT, "litellm": 4000,
-                       "mysql": 3307, "mongo": 27017, "redis": 6379, "minio": 9100}.items():
+    for name, port in {**PORTS, "hub": HUB_PORT, "session": SESSION_PORT, "web": WEB_PORT,
+                       "litellm": 4000, "mysql": 3307, "mongo": 27017, "redis": 6379,
+                       "minio": 9100}.items():
         print(f"  {'UP  ' if port_open(port) else 'DOWN'} {name}:{port}")
 
 
+def cmd_restart() -> None:
+    # 快速重起本脚本起的进程栈（infra 容器保留）：先收后起。
+    cmd_down()
+    print()
+    cmd_up()
+
+
+def cmd_web() -> None:
+    # 只起/纳管 web dev（其余栈需已 up）。
+    STATE.mkdir(parents=True, exist_ok=True)
+    write_web_bff_env()
+    print("== web"); boot_web()
+
+
+def cmd_chat() -> None:
+    # 端到端对话回归探针（栈需已 up）。
+    print("== chat 端到端"); chat_smoke()
+
+
 if __name__ == "__main__":
-    {"up": cmd_up, "down": cmd_down, "status": cmd_status}.get(
+    {"up": cmd_up, "down": cmd_down, "status": cmd_status,
+     "restart": cmd_restart, "web": cmd_web, "chat": cmd_chat}.get(
         sys.argv[1] if len(sys.argv) > 1 else "status", cmd_status)()
