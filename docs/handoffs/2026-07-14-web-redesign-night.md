@@ -32,13 +32,24 @@
   截图 night-convo-07.png。
 - settings 页：五卡纵向布局在新蓝调下干净专业，零后台元素。截图 night-settings-08.png。
 
-## 三、已知问题（非本次 web 工作，需你知悉）
+## 三、billing off + 对话跑通尝试（诚实完整记录）
 
-- **agent run 跑不完**：发消息后 agent 运行返回"这一轮没能完成"。根因是 dev 闭环 **billing hold 409**
-  （session.log 有 credit hold failed 409），测试 namespace 无 seeded credit / enforce 计费拒绝——
-  是 dev 栈计费/额度配置问题，不是 web 重设计。web 层错误处理优雅（友好重试卡=ERROR-UX 生效）。
-  要完整跑通对话，需给测试 namespace 播 credit（closure 计费档），或 billing_mode=off。
-- 夜间在 dev 库造了测试用户 night-owl@kokoro.local + 一条测试会话（用户已授权测试数据无所谓）。
+你要求"把 billing 改成 off 让对话跑通"。做了：
+- **billing 已改 off**：dev 闭环 session 现以 `KOKORO_BILLING_MODE=off` 运行（起法：
+  `KOKORO_BILLING_MODE=off python3 scripts/closure-up.py up`）。
+- **顺带修了一个真 agent bug**：dev 交互流下 agent worker 崩溃 `NOGROUP No such key
+  'kokoro:runs:requests'`——空流被 redis 回收 key→组消失→下次 XREADGROUP 未捕获→worker 崩。已在
+  `kokoro-agent/src/kokoro_agent/streams/redis.py` subscribe 加 NOGROUP 恢复（重建组重读），
+  验证 worker 不再崩（agent 609 测试全绿，已提交 713a2dc 并 push）。
+
+**但对话仍未跑通**（诚实）：即便 billing off + NOGROUP 修复 + 全清重启，run 仍"这一轮没能完成"，
+agent 侧无接单活动——run 卡在 session→redis→agent 的**投递环节**（agent 收不到 run）。关键事实：
+**本次 dev 闭环从今晚一开始（我改动前）对话就跑不通**（第一次测试即 billing 409），说明这是 dev 栈
+**既有的坏掉的对话路径**，非 web 重设计引入。web 层始终正常（消息气泡/会话创建/侧栏/错误重试卡都对）。
+后续要真跑通需在**干净环境**（建议整机/docker 全清后重起）单独排 session dispatch，属后端专项。
+- 夜间反复重启 dev 栈排查，可能残留脏态；醒来建议 `closure-up down` + 全清 redis/mongo 后
+  `KOKORO_BILLING_MODE=off ...up` 重起干净栈。
+- 夜间在 dev 库造了测试用户 night-owl@kokoro.local + 测试会话（你已授权测试数据无所谓）。
 
 ## 四、子仓 push 状态
 
