@@ -23,7 +23,8 @@
 - [x] **R4 critical/terminal outbox**(agent f0a4616/6edbc23,契约 6329f8a):durable_seq/event_id 上 raw 信封(critical 集=started/control.receipt/terminal);queued→published 补发 scanner+published 无回执超宽限重发;first-terminal fence+superseded;consume/close 握手(写者分域 CAS manifest);R0 钉2 转绿。
 - [x] **R5 双水位+quarantine+finalization**(session ff40c5c/01c1c9c):persisted=receipt 连续前缀/projected 逐 seq CAS;终态连续性门(跳号不收口);two-stage parse quarantine→contract_incompatible 终态权;finalization reconciler(间隔 env 可调);R0 钉5 转绿。缝合修复:control receipt 落 durable 回执(终态 deferred 卡死)。
 - [x] **R6/R7 billing durable**(session f005910):billing_journal 相机 hold_pending→held→settle/release_pending→终局;崩溃窗口 adopt/孤儿释放;compensation scanner+stuck 告警;hold 临期告警;R0 钉4 转绿。**Wave 2 R0-R7 全闭环,R0 五钉清零**;gate += R2 receipt/R7 journal/R5 producer_closed 断言全绿(容器名假空转已修)。
-- [ ] 后续硬化(非阻塞):gate kill/chaos 脚手架(kill agent 于 publish 后/kill session 于 settle 前,单元级故障注入已全覆盖);manifest 自动 GC(门已留)。
+- [x] **后续硬化**(HARDEN,spec 268c220):gate chaos 门控段(3352a95,E2E_CHAOS=1 kill agent 验 durable 去重/kill session 验 billing 补偿,3 轮绿,缺省档零影响)+manifest 自动 GC(session 0641a1e,producer_closed+TTL 才删,381 绿)+admin 网关刷新六模块 online 补证(截图 wave5-admin-{user,hub}-online)。
+- [ ] 新隐患(非阻塞,harden 发现):settleRunBilling 的 settle_pending→settled 非原子——快 finalization 与 live 终态路径并发会相位回退(ledger 幂等未双花,仅 journal bookkeeping 抖动);建议后续原子化 CAS 排期。现网 4290 stale admin 网关待授权重启到当前构建。
 
 **Wave 3 用户可感 P0(后端+BFF+UI 完整竖切,全部浏览器实走+截图 tmp/screenshots/wave3-*)**:
 - [x] **SESS-LIST**(session 3125a65/web eee8320/gate 8846b07):GET /sessions owner 隔离+复合游标+软删不出+跨 owner 不可枚举;web rail 服务端水合,localStorage 退为访问缓存;§8.2-6 五断言绿。
