@@ -73,6 +73,21 @@
   - 附带发现:closure-up 缺 deliveries 存储节致 deliver 降级(已修,storage.yaml 节补上);浏览器全链 respond/approve/deliver pill 全部实走通过。
 - Round-5 被额度墙击落,**五路零落地**;SESS-LIST 仅契约草稿。大 lane 派工方式按纲领 §11 废止,后续按 Wave 逐项单 spec/plan。
 
+## WEB-FACE 用户面重设计 + 对话打通(2026-07-14,全部浏览器实证+已 push)
+
+- [x] **对话"这轮未完成"根因修复**(web 2bdc2ea):真根因=前端 localStorage 跨用户缓存越权
+  activeId→session 403 session_forbidden→hydrate fail-loud 卡死;引擎遇越权码驱逐 activeId
+  回退空态(非当 404)。TDD 红→绿(engine+core 200 测试),浏览器塞越权 id→自动驱逐→发消息
+  端到端跑通。投递链路(session→redis→agent)本身一直健康,此前夜间误判 worker/dispatch。
+- [x] **dev 脚本增强**(主仓 4271c64):closure-up 加端到端对话探针 `chat`(签发→发消息→SSE 抓
+  run.completed)、`restart`、up 自动纳管 web dev。
+- [x] **线 A 用户面重设计**:A1(web ae95573)rail 用户区占位身份→真实团队名+蓝渐变首字母头像、
+  "像太阳"齿轮修真、settings 几何字符 ◍◐✦◆◈→SVG、主题/语言收归 settings 单一真源(移除 rail
+  裸 chips);A2(web 33e87f4)Settings 两栏 overlay 浮层(rail 齿轮触发,左 SVG 导航+右分区流,
+  backdrop 模糊+入场动效,复用 settings-sections,/settings 整页深链兜底),dead CSS 清理(0b0f177)。
+- 遗留(非本线):artifact-card.test pre-existing 红——AUTH-P0 工作线 impl 已改同源 cookie 但 test
+  未跟上,修复在 `archive/auth-p0-tests` tag(kokoro-web),不擅自接管。
+
 ## 已收口(近期,全部全链 e2e 绿;commit 详单见交接档)
 
 - [x] 主链块1→HITL H3 / P1-P5 闭环+E2E-40 / HUB-1/2/3 / P-A/B/C / PAY-1 / CONV-1 / M-1→M-7 / WEB-1/2 / handbook 21/22
