@@ -140,7 +140,9 @@ def boot() -> dict[str, int]:
         "user": {"DATABASE_URL_USER": DB, "KOKORO_USER_PORT": str(PORTS["user"]),
                  "KOKORO_AUTH_JWT_SECRET": AUTH_SECRET,
                  # dev：magic-link 原文 token 回响应体，web BFF 据此生成可点开发链（生产走邮件）。
-                 "KOKORO_AUTH_MAGIC_DELIVERY": "response"},
+                 "KOKORO_AUTH_MAGIC_DELIVERY": "response",
+                 # dev 会话 24h（默认 1h，反复测试易过期致 401 加载失败）；生产用默认。
+                 "KOKORO_AUTH_JWT_TTL_SECONDS": "86400"},
         "model": {"DATABASE_URL_MODEL": DB, "KOKORO_MODEL_PORT": str(PORTS["model"])},
         "credit": {"DATABASE_URL_CREDIT": DB, "KOKORO_CREDIT_PORT": str(PORTS["credit"]),
                    "KOKORO_USER_BASE_URL": BASE["user"], "KOKORO_SITE_BASE_URL": BASE["site"],
