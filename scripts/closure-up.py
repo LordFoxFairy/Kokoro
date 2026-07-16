@@ -227,6 +227,8 @@ def web_bff_env() -> dict[str, str]:
         "KOKORO_USER_BASE_URL": BASE["user"],
         "KOKORO_SESSION_BASE_URL": f"http://127.0.0.1:{SESSION_PORT}",
         "KOKORO_SITE_ID": SITE_ID,
+        # hub 基址：缺则 web BFF 的 /api/hub 代理回 503、设置中心技能/连接 tab 不可用。
+        "KOKORO_HUB_BASE_URL": HUB_BASE,
         "KOKORO_INTERNAL_SECRET_WEB_BFF": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_WEB_BFF"],
     }
 
