@@ -58,6 +58,107 @@ RUNTIME_HDR = {
 }
 
 
+def load_glm_creds() -> dict[str, str]:
+    """从 gitignored 的 kokoro-agent/.env 取 GLM(openai 兼容)凭据 → GLM_API_KEY/GLM_BASE_URL。
+    只运行时读、注入子进程 env(litellm 容器据此以 claude-code 别名调 GLM),绝不落任何提交文件;
+    缺任一返回 {}(→ 回落假模型,dev chat 不受影响)。"""
+    env_file = ROOT / "kokoro-agent" / ".env"
+    if not env_file.exists():
+        return {}
+    creds: dict[str, str] = {}
+    for raw in env_file.read_text().splitlines():
+        line = raw.strip()
+        if line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        creds[k.strip()] = v.strip().strip('"').strip("'")
+    key, base = creds.get("OPENAI_API_KEY", ""), creds.get("OPENAI_BASE_URL", "")
+    return {"GLM_API_KEY": key, "GLM_BASE_URL": base} if key and base else {}
+
+
+def claude_code_reachable() -> bool:
+    """经本地 litellm 网关探 claude-code 别名是否真能出文(200)。后端由 resolve_claude_code_backend
+    定(GLM/ollama);任一探通=真档,否则回落假模型。不阻塞起环。"""
+    try:
+        body = json.dumps({"model": "claude-code",
+                           "messages": [{"role": "user", "content": "ping"}],
+                           "max_tokens": 8}).encode()
+        req = urllib.request.Request(
+            "http://127.0.0.1:4000/v1/chat/completions", data=body,
+            headers={"authorization": f"Bearer {LITELLM_KEY}", "content-type": "application/json"})
+        with urllib.request.urlopen(req, timeout=90) as r:
+            return r.status == 200
+    except Exception:
+        return False
+
+
+def ollama_available() -> str | None:
+    """本机 ollama 在跑且有模型 → 返回 openai/<tag>(优先 qwen3:8b);否则 None。
+    GLM 不可用时的本地真模型回落源——保证 dev 真人始终能看到真实(非 fake)输出。
+    放宽超时 + 两次重试:docker 重建 IO 高峰期短暂不可达不误判为无。"""
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:11434/v1/models", timeout=6) as r:
+                models = [m["id"] for m in json.loads(r.read()).get("data", [])]
+            if models:
+                return f"openai/{next((m for m in models if 'qwen3:8b' in m), models[0])}"
+            return None
+        except Exception:
+            if attempt == 0:
+                time.sleep(2)
+    return None
+
+
+def litellm_ready() -> bool:
+    """litellm health/liveliness 200。force-recreate 后端口先开、~20s 才就绪,故等 health 而非端口。"""
+    for _ in range(40):
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:4000/health/liveliness", timeout=2) as r:
+                if r.status == 200:
+                    return True
+        except Exception:
+            pass
+        time.sleep(1)
+    return False
+
+
+def _recreate_litellm(extra_env: dict[str, str]) -> None:
+    """按选中的 claude-code 后端 env 重建 litellm 网关(凭据只经进程 env,不落文件),等其真就绪。"""
+    subprocess.run(["docker", "compose", "-f", "docker-compose.dev.yml", "up", "-d", "--force-recreate"],
+                   cwd=PLAT / "kokoro-litellm", check=True, capture_output=True,
+                   env={**os.environ, **extra_env})
+    litellm_ready()
+
+
+def resolve_claude_code_backend() -> dict[str, str]:
+    """决定 claude-code 别名的真后端并重建网关,三级回落:
+      ① GLM 凭据探通 → GLM(生产意图);② 否则本机 ollama 在 → 本地真模型;③ 都不行 → mock-only(上游 fake)。
+    「对外 claude-code 名不变、网关侧一处换后端」——返回选中的 CLAUDE_CODE_* env(空={}=无真后端)。"""
+    glm = load_glm_creds()
+    if glm:
+        env = {"CLAUDE_CODE_MODEL": "openai/glm-5",
+               "CLAUDE_CODE_BASE_URL": glm["GLM_BASE_URL"], "CLAUDE_CODE_API_KEY": glm["GLM_API_KEY"]}
+        _recreate_litellm(env)
+        if claude_code_reachable():
+            step("模型: claude-code → GLM(凭据探通)", True)
+            return env
+    # 本地 ollama 回落默认关(opt-in KOKORO_DEV_LOCAL_FALLBACK=1)：小模型(如 qwen3:8b)能应付
+    # 简单补全,但驱动不了完整 deepagents 编排(多步工具/结构化输出),run 会失败——默认宁可 fake 兜底文案。
+    # 有能力的本地模型(30B+/工具能力强)可显式开启,或用 KOKORO_DEV_LOCAL_MODEL 指定 tag。
+    if os.environ.get("KOKORO_DEV_LOCAL_FALLBACK") == "1":
+        tag = os.environ.get("KOKORO_DEV_LOCAL_MODEL") or ollama_available()
+        if tag:
+            env = {"CLAUDE_CODE_MODEL": tag if tag.startswith(("openai/", "ollama/")) else f"openai/{tag}",
+                   "CLAUDE_CODE_BASE_URL": "http://host.docker.internal:11434/v1", "CLAUDE_CODE_API_KEY": "ollama"}
+            _recreate_litellm(env)
+            if claude_code_reachable():
+                step(f"模型: claude-code → 本地 {env['CLAUDE_CODE_MODEL']}(opt-in 本地回落)", True)
+                return env
+    _recreate_litellm({})
+    step("模型: 无真后端(GLM 失效且无 ollama)→ 假模型回落", True)
+    return {}
+
+
 def port_open(port: int) -> bool:
     with socket.socket() as s:
         s.settimeout(0.5)
@@ -118,10 +219,7 @@ def ensure_infra() -> None:
             subprocess.run(["docker", "start", f"kokoro-dev-{name}" if name == "mongo" else f"kokoro-{name}"],
                            check=False, capture_output=True)
         step(f"{name} {port}", wait_port(port, 15), hint)
-    if not port_open(4000):
-        subprocess.run(["docker", "compose", "-f", "docker-compose.dev.yml", "up", "-d"],
-                       cwd=PLAT / "kokoro-litellm", check=True, capture_output=True)
-    step("litellm 4000（dev mock 档）", wait_port(4000))
+    # litellm 网关由 resolve_claude_code_backend() 起（需按 GLM/ollama 探测结果注入后端 env）。
 
 
 def migrate() -> None:
@@ -133,7 +231,7 @@ def migrate() -> None:
         step(f"migrate {m}", r.returncode == 0, r.stdout[-200:] + r.stderr[-200:])
 
 
-def boot() -> dict[str, int]:
+def boot(real_model: bool) -> dict[str, int]:
     pids: dict[str, int] = {}
     penv = {
         "site": {"DATABASE_URL_SITE": DB, "KOKORO_SITE_PORT": str(PORTS["site"])},
@@ -201,8 +299,9 @@ def boot() -> dict[str, int]:
         "KOKORO_AGENT_LOCAL_SHELL_ROOT": str(STATE / "workspace"),
         # MCP egress 防线放行环回：本地 127.0.0.1 MCP fixture（strict 缺省会拒 loopback）。
         "KOKORO_MCP_EGRESS_MODE": "off",
-        # dev 缺省离线模型;接真模型改 env(litellm 档已配好网关对)。
-        "KOKORO_LOCAL_FAKE_MODEL": os.environ.get("KOKORO_LOCAL_FAKE_MODEL", "1"),
+        # 真档(GLM 凭据探通)=关离线假模型,chat 走 litellm→GLM(claude-code);否则回落假模型
+        # (dev 照常可用)。显式 env 覆盖优先。
+        "KOKORO_LOCAL_FAKE_MODEL": os.environ.get("KOKORO_LOCAL_FAKE_MODEL", "0" if real_model else "1"),
         "KOKORO_LITELLM_BASE_URL": "http://127.0.0.1:4000/v1",
         "KOKORO_LITELLM_API_KEY": LITELLM_KEY,
     }
@@ -210,9 +309,15 @@ def boot() -> dict[str, int]:
         pids["session"] = spawn(["npm", "run", "start"], ROOT / "kokoro-session", session_env,
                                 STATE / "session.log")
     step(f"session {SESSION_PORT}", wait_port(SESSION_PORT))
-    # 双 worker 守卫:残留 worker 同组消费会制造 control/replay 竞争(P0.5 实录主嫌),先清后起。
-    subprocess.run(["pkill", "-f", "kokoro-agent-worker"], check=False, capture_output=True)
-    time.sleep(1)
+    # 双 worker 守卫:残留 worker 同组消费制造 control/replay 竞争(P0.5 实录主嫌)。
+    # SIGTERM 触发 agent 优雅停机(drain 可达 drain_timeout_s=60s),与新 worker 重叠成 60s 竞争窗——
+    # 重启后几秒内的 run 会被还在 drain 的旧 worker 抢走(错模型/错档)。故用 SIGKILL 立即清,
+    # 并轮询等旧 worker 真正退场再起新的,彻底消除重启期双 worker。
+    subprocess.run(["pkill", "-9", "-f", "kokoro-agent-worker"], check=False, capture_output=True)
+    for _ in range(30):
+        if subprocess.run(["pgrep", "-f", "kokoro-agent-worker"], capture_output=True).returncode != 0:
+            break  # 无匹配进程=旧 worker 已退场
+        time.sleep(0.3)
     pids["agent"] = spawn(["uv", "run", "kokoro-agent-worker"], ROOT / "kokoro-agent", agent_env,
                           STATE / "agent.log")
     step("agent worker(独占)", True)
@@ -256,6 +361,14 @@ def seed() -> None:
                    "labelKeys": ["kokoro-dev-mock", "claude-sonnet-4-6"],
                    "transportKind": "litellm", "gatewayModelName": "kokoro-dev-mock"}, hdr)
     step("seed model binding（litellm 档）", st == 200 and st2 == 200, f"{st}/{st2}")
+    # claude-code 对外别名 → litellm→GLM 的可路由绑定(featureKey=chat)：与网关 model_name、
+    # session 默认模型 name 三处对齐,billing resolve 据此把 runtime.model 改写到网关。
+    st3, _ = http("POST", f"{BASE['model']}/model-bindings/ensure",
+                  {"providerAccountId": acc_id, "modelName": "claude-code",
+                   "displayName": "Claude Code（litellm→GLM）", "featureKey": "chat",
+                   "labelKeys": ["claude-code"],
+                   "transportKind": "litellm", "gatewayModelName": "claude-code"}, hdr)
+    step("seed claude-code binding（litellm→GLM）", st3 == 200, str(st3))
     for unit, price in (("input_token", 20), ("output_token", 60)):
         stp, _ = http("POST", f"{BASE['credit']}/credit/pricing-rules",
                       {"featureKey": "chat", "unit": unit, "amountMicros": price}, hdr)
@@ -351,8 +464,10 @@ def chat_smoke() -> None:
 def cmd_up() -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     print("== infra"); ensure_infra()
+    # claude-code 真后端三级回落(GLM→ollama→fake)+ 据此定真/假档。
+    print("== 模型后端"); real_model = bool(resolve_claude_code_backend())
     print("== migrations"); migrate()
-    print("== services"); pids = boot()
+    print("== services"); pids = boot(real_model)
     (STATE / "pids.json").write_text(json.dumps(pids))
     print("== seed"); seed()
     print("== smoke"); smoke()
