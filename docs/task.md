@@ -17,6 +17,20 @@
 - [x] **WEB 多模型下拉(消费侧 wire)**(model 5051b42 / session e3df799 / web df31e09):候选源从静态 profile 升为 kokoro-model 目录。leaf→根 TDD:①model 加 runtime `GET /model-labels?featureKey`(active 过滤,runtime-internal 层);②session billing client `listModelCatalog` + handleModelCandidates 优先目录源(name=label.key、display_name 透传、key 命中缺省名=is_default),**fail-open** 目录不可达/空则回落 profile 候选,可用性过滤(resolve)语义不变;③web ModelCandidate 加 display_name?、composer 三处渲染 modelLabel(display_name??name);④seed label.key 对齐 binding.labelKeys(claude-code/kokoro-dev-mock)否则被可用性过滤剔除。验证:model 108单测+33集成(真MySQL)、session 384(MODEL-5/6/7目录源+契约锁 listModelCatalog wire)、web 473(唯一红=既有 artifact-card 遗留)、model HTTP 抛弃式实例(4229)实测。
 - [x] **skill 上传(bespoke)**(platform 8d49af5 / 主仓 closure-up 存储位补 hub 节):admin-web SkillUploadModal 两步流(Upload.Dragger→裸 base64→preview 候选表+冲突/勾选→confirm 逐项 published/unchanged/failed),走 /api/action 网关透传上游 UploadPreview/ConfirmResult 享 RBAC+审计;上传归属恒 namespace(官方位只 seed/管理)。**顺带修** closure-up storage.yaml 缺 hub 节导致 confirm 恒 503——补 hub 本地包体节 + 提前落盘 + hub env 传 KOKORO_WORKSPACE_CONFIG。验证:tsc/lint/Next 编译清、19 单测绿;契约 e2e 真 hub 实测 preview 200/confirm 200 published rev1/幂等 unchanged/坏包 400,形状精确吻合 schema。
 
+## 积分（credit）定价与利润体系（2026-07-17;PRD=specs/2026-07-17-credit-pricing-strategy.md）
+
+> 目标(用户):高利润且合理的积分策略(要赚钱)、本地 admin 手动充值测试、支付后续。吸收 hix general_agent
+> 思路(credit-USD 锚点/加价倍率/ceil house-favor/计量与钱包分离),超越其短板(加价单一可配可审计、钱包侧套餐/充值我方自研)。
+
+- [x] **研究**：参考项目钱模型(1 credit=$0.006/媒体 2×加价/ceil/无套餐充值) + Kokoro credit 架构(per-labelKey 定价/hold-settle/owner=namespace team/shadow 仍扣减)。
+- [x] **PRD 定案**：1 积分=10000 micros=¥0.01;售价=真成本×margin(≥4×文本);grant(+delta)+reset(set-to-value);向上取整/套餐/免费额度/支付/媒体计费/内置定价迁 seed:builtin 留挂点。
+- [x] **credit 落地**(platform b662a38)：domain/amount(MICROS_PER_CREDIT/ceilToCreditMicros/非负解析)、resetBalance(repo/service)+ POST /admin/credits/reset(set-to-value 带符号分录,不得低于 held)。单测 157/集成 105 绿。
+- [x] **加价计价**(主仓 closure-up)：chat 20/60→40/120 micros/token(≥4× 毛利)。
+- [x] **admin 手动充值**(platform 0f3b502)：credit-accounts 加 reset 动作 + admin-web ROW_ACTION_FORMS grant/reset(账户行,owner 预填,整数积分→micros)。契约+buildBody 单测绿。
+- [x] **用户面积分展示**(web cc26b37)：billing/format formatCredits(÷10000)、计费面板显示「N 积分」。web 476 绿。
+- [x] **全链 e2e 验收**(真栈,新 40/120 计价)：签→清零→发放100→重置到50(set-to-value 分录 -500000)→对话 run.completed→结算扣减 50→47.96 积分、ledger model_call -20400 带 run_id。**全绿**。
+- 挂点(未做,PRD §9 记明)：向上取整(需夹具升尺度)、支付充值、套餐/免费额度周期发放、媒体计费、长上下文加价、内置定价迁 kokoro-credit seed:builtin。
+
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
 **Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
