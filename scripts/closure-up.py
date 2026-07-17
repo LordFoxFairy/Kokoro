@@ -372,9 +372,10 @@ def seed() -> None:
     cc_bid = str((cc.get("data") or {}).get("id", ""))
     step("seed claude-code binding（litellm→GLM）", st3 == 200, str(st3))
     # 用户可选模型标签（面向用户的模型目录）：内置默认 = claude-code 门面，dev-mock 作离线档。
-    # 兜底 binding 指向对应 chat binding，运营台/未来 web 下拉据此展示完整目录。
+    # label.key 必须 = 可 resolve 的 labelKey（= binding.labelKeys 成员 = session 候选 name），
+    # 否则 /models 可用性过滤会剔除；claude-code 键与 session DEFAULT_MODEL.name 对齐 → is_default。
     labels = (
-        {"key": "kokoro-default", "displayName": "Kokoro 默认", "featureKey": "chat",
+        {"key": "claude-code", "displayName": "Kokoro 默认", "featureKey": "chat",
          "tier": "standard", "description": "平台内置默认模型（claude-code → GLM）", "defaultBindingId": cc_bid},
         {"key": "kokoro-dev-mock", "displayName": "Dev Mock（离线）", "featureKey": "chat",
          "tier": "mock", "description": "离线假模型档，无需真凭据", "defaultBindingId": mock_bid},

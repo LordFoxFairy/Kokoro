@@ -14,7 +14,7 @@
 - [x] **HUB MCP 运营官方目录面**(platform 0558b66):listOfficialCatalog + 单参 official 启停/软删 + admin-web 注册表单(transport/allowed_tools/secret_ref)。hub 294 pass。
 - [x] **MODEL ModelLabel 写侧闭环**(platform cef91ef):ensureModelLabel(幂等 upsert)+ POST /model-labels/ensure + admin manifest create 动作 + admin-web model:model-labels 表单。model 单测 105 / 集成 33(真 MySQL)pass。
 - [x] **MODEL 目录 seed**(主仓 0958d76):closure-up seed 补种 kokoro-default/dev-mock 标签,兜底 binding 回填;抛弃式实例(4229 同库)验证建/幂等/列出 200。
-- [ ] **WEB 多模型下拉(消费侧 wire)**:当前 web `/models` 候选源=session namespace profile.model_policy(静态,默认单条 litellm:claude-code),**未**读 kokoro-model 已 seed 的 label 目录。下一步=session `/models` 消费侧接 kokoro-model 目录(或默认 profile.allowed 注入目录)。属核心路径行为变更,需 TDD + 同步 handleModelCandidates/listModelCandidates 现有测试,留待专注一轮。
+- [x] **WEB 多模型下拉(消费侧 wire)**(model 5051b42 / session e3df799 / web df31e09):候选源从静态 profile 升为 kokoro-model 目录。leaf→根 TDD:①model 加 runtime `GET /model-labels?featureKey`(active 过滤,runtime-internal 层);②session billing client `listModelCatalog` + handleModelCandidates 优先目录源(name=label.key、display_name 透传、key 命中缺省名=is_default),**fail-open** 目录不可达/空则回落 profile 候选,可用性过滤(resolve)语义不变;③web ModelCandidate 加 display_name?、composer 三处渲染 modelLabel(display_name??name);④seed label.key 对齐 binding.labelKeys(claude-code/kokoro-dev-mock)否则被可用性过滤剔除。验证:model 108单测+33集成(真MySQL)、session 384(MODEL-5/6/7目录源+契约锁 listModelCatalog wire)、web 473(唯一红=既有 artifact-card 遗留)、model HTTP 抛弃式实例(4229)实测。
 - [ ] **skill 上传(bespoke)**:file→base64 两步预览/确认(成本最高,后置)。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
