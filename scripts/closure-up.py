@@ -379,7 +379,10 @@ def seed() -> None:
                   {"key": "kokoro-dev-mock", "displayName": "Dev Mock（离线）", "featureKey": "chat",
                    "tier": "mock", "description": "离线假模型档，无需真凭据", "defaultBindingId": mock_bid}, hdr)
     step("seed dev 离线假模型（dev-only）", st == 200 and st2 == 200 and stl == 200, f"{st}/{st2}/{stl}")
-    for unit, price in (("input_token", 20), ("output_token", 60)):
+    # 计价（PRD 2026-07-17-credit-pricing-strategy §7 内置默认档 dev 加价值）：
+    # 售价 = 真成本 × margin(≥4×)；chat input 40 / output 120 micros/token。1 积分=10000 micros。
+    # 典型 500+500 token 对话 ≈ (500×40+500×120)/10000 = 8 积分 ≈ ¥0.08。
+    for unit, price in (("input_token", 40), ("output_token", 120)):
         stp, _ = http("POST", f"{BASE['credit']}/credit/pricing-rules",
                       {"featureKey": "chat", "unit": unit, "amountMicros": price}, hdr)
         step(f"seed 计价 {unit}", stp == 200, str(stp))

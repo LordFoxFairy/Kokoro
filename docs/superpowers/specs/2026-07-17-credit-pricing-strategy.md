@@ -87,12 +87,14 @@
 ## 9. 落地任务台账（本轮）
 
 - [x] 研究（参考 + Kokoro 架构）
-- [~] 本 PRD 定案
-- [ ] credit：加价定价（§7）+ MICROS_PER_CREDIT 单位 + reset（§5）
-- [ ] credit：向上取整 + 最小消费保底（§4）
+- [x] 本 PRD 定案
+- [x] credit：MICROS_PER_CREDIT 单位（domain/amount）+ reset（§5，set-to-value 带符号分录）
+- [ ] credit：加价定价（§7，closure-up 种高加价档）
 - [ ] admin-web：手动充值 grant + 重置 reset（§5）
 - [ ] web 用户面：积分余额/流水/消费展示（§2 换算）
 - [ ] 全链 e2e 验收（签→发放/重置→对话→扣减→核对余额+流水）
-- 挂点（不实现，本轮不勾）：支付充值、套餐/免费额度周期发放、媒体计费、长上下文加价、内置定价迁 kokoro-credit seed:builtin
+- **挂点（本轮不实现）**：
+  - **向上取整/碎屑归房（§4）**：`ceilToCreditMicros` 已落 domain/amount 并单测，但**启用需先把整套 credit 测试夹具从亚积分 micro-pricing（如 in=2/out=6）升到积分尺度**，否则 settle 对亚积分实额取整会撞 hold clamp、破坏 quota「buffer 释放不双算」语义。留作专注一轮（连夹具重标定）。当前 settle 按实额 clamp，毛利由 §3 加价（≥4×）承载——加价才是利润主引擎，取整是碎屑级次要杠杆。
+  - 支付充值、套餐/免费额度周期发放、媒体计费、长上下文加价、内置定价迁 kokoro-credit seed:builtin
 
 以上勾销状态与本仓 `docs/task.md` 及会话 task 列表同步。
