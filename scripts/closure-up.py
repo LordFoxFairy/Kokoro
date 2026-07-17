@@ -356,8 +356,17 @@ def seed() -> None:
     site_id = str((resp.get("data") or {}).get("id", ""))
     step("seed site", st == 200 and site_id != "", f"{st} {resp}")
     hdr = {"x-kokoro-site-id": site_id, **RUNTIME_HDR}
+    # 平台内置默认目录（claude-code 门面 = provider gateway + claude-code binding + label）：
+    # 定义在 kokoro-model 单一真源，此处只触发其 seed:builtin，编排层不再硬编码内置目录内容。
+    r = subprocess.run(["pnpm", "run", "seed:builtin"], cwd=PLAT / "kokoro-model",
+                       env={**os.environ, "DATABASE_URL_MODEL": DB},
+                       capture_output=True, text=True)
+    step("seed 内置默认目录（kokoro-model seed:builtin）", r.returncode == 0,
+         (r.stdout + r.stderr).strip().splitlines()[-1] if (r.stdout or r.stderr) else str(r.returncode))
+    # dev-only：离线假模型档（kokoro-dev-mock），GLM 缺时 /models 仍有可选项。自有 dev provider，
+    # 不进平台内置目录（生产不该出现「Dev Mock」）。label.key ∈ binding.labelKeys 才不被可用性过滤剔除。
     st, acc = http("POST", f"{BASE['model']}/provider-accounts/ensure",
-                   {"provider": "litellm", "key": "dev-gateway", "label": "dev 网关",
+                   {"provider": "litellm", "key": "dev-fake", "label": "dev 假模型网关",
                     "secretRef": "env:LITELLM_MASTER_KEY", "transportKind": "litellm"}, hdr)
     acc_id = str((acc.get("data") or {}).get("id", ""))
     st2, mock = http("POST", f"{BASE['model']}/model-bindings/ensure",
@@ -366,30 +375,10 @@ def seed() -> None:
                       "labelKeys": ["kokoro-dev-mock", "claude-sonnet-4-6"],
                       "transportKind": "litellm", "gatewayModelName": "kokoro-dev-mock"}, hdr)
     mock_bid = str((mock.get("data") or {}).get("id", ""))
-    step("seed model binding（litellm 档）", st == 200 and st2 == 200, f"{st}/{st2}")
-    # claude-code 对外别名 → litellm→GLM 的可路由绑定(featureKey=chat)：与网关 model_name、
-    # session 默认模型 name 三处对齐,billing resolve 据此把 runtime.model 改写到网关。
-    st3, cc = http("POST", f"{BASE['model']}/model-bindings/ensure",
-                   {"providerAccountId": acc_id, "modelName": "claude-code",
-                    "displayName": "Claude Code（litellm→GLM）", "featureKey": "chat",
-                    "labelKeys": ["claude-code"],
-                    "transportKind": "litellm", "gatewayModelName": "claude-code"}, hdr)
-    cc_bid = str((cc.get("data") or {}).get("id", ""))
-    step("seed claude-code binding（litellm→GLM）", st3 == 200, str(st3))
-    # 用户可选模型标签（面向用户的模型目录）：内置默认 = claude-code 门面，dev-mock 作离线档。
-    # label.key 必须 = 可 resolve 的 labelKey（= binding.labelKeys 成员 = session 候选 name），
-    # 否则 /models 可用性过滤会剔除；claude-code 键与 session DEFAULT_MODEL.name 对齐 → is_default。
-    labels = (
-        {"key": "claude-code", "displayName": "Kokoro 默认", "featureKey": "chat",
-         "tier": "standard", "description": "平台内置默认模型（claude-code → GLM）", "defaultBindingId": cc_bid},
-        {"key": "kokoro-dev-mock", "displayName": "Dev Mock（离线）", "featureKey": "chat",
-         "tier": "mock", "description": "离线假模型档，无需真凭据", "defaultBindingId": mock_bid},
-    )
-    lab_ok = True
-    for lab in labels:
-        stl, _ = http("POST", f"{BASE['model']}/model-labels/ensure", lab, hdr)
-        lab_ok = lab_ok and stl == 200
-    step("seed model labels（用户可选目录）", lab_ok, f"{len(labels)} labels")
+    stl, _ = http("POST", f"{BASE['model']}/model-labels/ensure",
+                  {"key": "kokoro-dev-mock", "displayName": "Dev Mock（离线）", "featureKey": "chat",
+                   "tier": "mock", "description": "离线假模型档，无需真凭据", "defaultBindingId": mock_bid}, hdr)
+    step("seed dev 离线假模型（dev-only）", st == 200 and st2 == 200 and stl == 200, f"{st}/{st2}/{stl}")
     for unit, price in (("input_token", 20), ("output_token", 60)):
         stp, _ = http("POST", f"{BASE['credit']}/credit/pricing-rules",
                       {"featureKey": "chat", "unit": unit, "amountMicros": price}, hdr)
