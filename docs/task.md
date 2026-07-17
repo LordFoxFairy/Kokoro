@@ -15,7 +15,7 @@
 - [x] **MODEL ModelLabel 写侧闭环**(platform cef91ef):ensureModelLabel(幂等 upsert)+ POST /model-labels/ensure + admin manifest create 动作 + admin-web model:model-labels 表单。model 单测 105 / 集成 33(真 MySQL)pass。
 - [x] **MODEL 目录 seed**(主仓 0958d76):closure-up seed 补种 kokoro-default/dev-mock 标签,兜底 binding 回填;抛弃式实例(4229 同库)验证建/幂等/列出 200。
 - [x] **WEB 多模型下拉(消费侧 wire)**(model 5051b42 / session e3df799 / web df31e09):候选源从静态 profile 升为 kokoro-model 目录。leaf→根 TDD:①model 加 runtime `GET /model-labels?featureKey`(active 过滤,runtime-internal 层);②session billing client `listModelCatalog` + handleModelCandidates 优先目录源(name=label.key、display_name 透传、key 命中缺省名=is_default),**fail-open** 目录不可达/空则回落 profile 候选,可用性过滤(resolve)语义不变;③web ModelCandidate 加 display_name?、composer 三处渲染 modelLabel(display_name??name);④seed label.key 对齐 binding.labelKeys(claude-code/kokoro-dev-mock)否则被可用性过滤剔除。验证:model 108单测+33集成(真MySQL)、session 384(MODEL-5/6/7目录源+契约锁 listModelCatalog wire)、web 473(唯一红=既有 artifact-card 遗留)、model HTTP 抛弃式实例(4229)实测。
-- [ ] **skill 上传(bespoke)**:file→base64 两步预览/确认(成本最高,后置)。
+- [x] **skill 上传(bespoke)**(platform 8d49af5 / 主仓 closure-up 存储位补 hub 节):admin-web SkillUploadModal 两步流(Upload.Dragger→裸 base64→preview 候选表+冲突/勾选→confirm 逐项 published/unchanged/failed),走 /api/action 网关透传上游 UploadPreview/ConfirmResult 享 RBAC+审计;上传归属恒 namespace(官方位只 seed/管理)。**顺带修** closure-up storage.yaml 缺 hub 节导致 confirm 恒 503——补 hub 本地包体节 + 提前落盘 + hub env 传 KOKORO_WORKSPACE_CONFIG。验证:tsc/lint/Next 编译清、19 单测绿;契约 e2e 真 hub 实测 preview 200/confirm 200 published rev1/幂等 unchanged/坏包 400,形状精确吻合 schema。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 

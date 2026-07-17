@@ -233,6 +233,13 @@ def migrate() -> None:
 
 def boot(real_model: bool) -> dict[str, int]:
     pids: dict[str, int] = {}
+    # 包体/工作区存储配置：session/agent 取 workspace+deliveries，hub 取 hub 节（skills 包体权威源）。
+    # 必须在 hub/session spawn 前落盘（服务启动即读 KOKORO_WORKSPACE_CONFIG）——缺 hub 节=上传 confirm 503。
+    (STATE / "storage.yaml").write_text(
+        f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
+        f"deliveries:\n  type: local\n  root: {STATE / 'deliveries'}\n"
+        f"hub:\n  type: local\n  root: {STATE / 'hub-packages'}\n"
+    )
     penv = {
         "site": {"DATABASE_URL_SITE": DB, "KOKORO_SITE_PORT": str(PORTS["site"])},
         "user": {"DATABASE_URL_USER": DB, "KOKORO_USER_PORT": str(PORTS["user"]),
@@ -261,6 +268,8 @@ def boot(real_model: bool) -> dict[str, int]:
              "KOKORO_HUB_MONGO_URL": "mongodb://127.0.0.1:27017",
              "KOKORO_HUB_MONGO_DB": "kokoro_dev",
              "KOKORO_USER_BASE_URL": BASE["user"],
+             # 包体存储：hub 取 storage.yaml 的 hub 节（local），skills 上传 confirm 据此落包。
+             "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
              "KOKORO_HUB_MCP_MUTATION": os.environ.get("KOKORO_HUB_MCP_MUTATION", "on")},
             STATE / "hub.log")
     step(f"hub {HUB_PORT}", wait_port(HUB_PORT))
@@ -286,10 +295,6 @@ def boot(real_model: bool) -> dict[str, int]:
         # 默认走同源 web BFF，浏览器同源不再依赖此项；生产按真实站点域名配置。
         "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", f"http://127.0.0.1:{WEB_PORT}"),
     }
-    (STATE / "storage.yaml").write_text(
-        f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
-        f"deliveries:\n  type: local\n  root: {STATE / 'deliveries'}\n"
-    )
     agent_env = {
         **os.environ,
         "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
