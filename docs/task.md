@@ -3,6 +3,20 @@
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
 > 最后更新:2026-07-13(**纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure**;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
+## 第二轮全仓打磨(2026-07-16 起;用户面 + 能力运营面 + model 消费侧对齐)
+
+> 目标(用户 /goal):所有功能打通、用户真实进来体验、GLM 注册进去、litellm 对外 claude-code 门面。
+> fast/thinking=用户选的两种模式,与 model 正交,都保留(见 memory)。model 目录=kokoro-model 权威,我只做消费侧对齐。
+
+- [x] **WEB settings 弹窗化 + 深度打磨**:settings 整页→卡片浮层;i18n 9 语数据驱动 overlays + google 免费翻译管线(config-not-code);skills/mcp 面板搜索/空态/两步确认;composer fast/thinking 标签 i18n。(web 多 commit,已 push)
+- [x] **GLM + litellm claude-code 门面**:litellm 网关 claude-code 别名→GLM;session DEFAULT_MODEL=litellm:claude-code;closure-up 三级后端回落(GLM→opt-in ollama→fake)+ SIGKILL 重启防竞争。GLM 凭据只经 gitignored .env 运行时注入,绝不落提交文件。
+- [x] **HUB skills 运营官方目录面**(platform 前序 commit):listOfficialCatalog + 单参 official 治理路由 + admin-web ROW_ACTION_FORMS(official-flags/curation/review)。
+- [x] **HUB MCP 运营官方目录面**(platform 0558b66):listOfficialCatalog + 单参 official 启停/软删 + admin-web 注册表单(transport/allowed_tools/secret_ref)。hub 294 pass。
+- [x] **MODEL ModelLabel 写侧闭环**(platform cef91ef):ensureModelLabel(幂等 upsert)+ POST /model-labels/ensure + admin manifest create 动作 + admin-web model:model-labels 表单。model 单测 105 / 集成 33(真 MySQL)pass。
+- [x] **MODEL 目录 seed**(主仓 0958d76):closure-up seed 补种 kokoro-default/dev-mock 标签,兜底 binding 回填;抛弃式实例(4229 同库)验证建/幂等/列出 200。
+- [ ] **WEB 多模型下拉(消费侧 wire)**:当前 web `/models` 候选源=session namespace profile.model_policy(静态,默认单条 litellm:claude-code),**未**读 kokoro-model 已 seed 的 label 目录。下一步=session `/models` 消费侧接 kokoro-model 目录(或默认 profile.allowed 注入目录)。属核心路径行为变更,需 TDD + 同步 handleModelCandidates/listModelCandidates 现有测试,留待专注一轮。
+- [ ] **skill 上传(bespoke)**:file→base64 两步预览/确认(成本最高,后置)。
+
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
 **Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
