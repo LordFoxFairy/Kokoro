@@ -66,7 +66,7 @@
   - [ ] B1d 按模型分解(最重,剩余):UsageRecord 无用户端点+modelBindingId→模型名映射,需新聚合端点。归后续。
 - [~] **B2 管理侧运营台**(admin 侧):
   - [x] B2a/B2b 聚合端点(platform f273336):credit GET /admin/credits/stats(账户计数+余额/冻结/发放/消费,DB aggregate)+ payment GET /admin/payments/stats(订单按状态计数+营收按币种 groupBy)。credit 164/payment 204 单测绿。**全栈实测**:credit 6账户/余额4245.92积分(=发放4700−消费454.08 自洽)/payment 5单4paid/营收¥34.50 多币种正确。
-  - [ ] B2c admin 总览页(后续):网关 getBillingOverview(仿 getUser360 聚合两 stats)+ server.ts 路由 + admin-web 运营台页(卡片)。UI+网关件。
+  - [x] B2c admin 总览页(platform 936d4b6):网关 getBillingOverview(直取两 stats,route 可信常量,单模块降级 null)+ server.ts GET /api/billing-overview + admin-web 运营概览首页「计费总览」卡片(营收/订单/发放/消费/余额/账户)。网关 getBillingOverview 单测 2 条+gateway 31 绿,四仓 tsc 干净。admin 全栈浏览器实测需另起网关栈(记录在案)。
 - [~] **B3 定价规则治理**(纠正:无"加价倍率"字段,是平价 amountMicros 规则,毛利靠定高):
   - [x] B3a update 端点(platform 84b881f):credit domain/prisma/service/schema/route/contract 补 updatePricingRule(仅可变字段:价/状态/生效窗;身份键不可变);POST /admin/credits/pricing-rules/:id。credit 单测 115 绿。**全栈实测**:真 credit+DB 改价 120→480/disabled→持久化→404/400 负向→改回 120,全通。
   - [x] B3b admin 表单(platform cd12fa7):RESOURCE_FORMS credit:pricing-rules(create,新增 createOnly 抑制误走 create 的行内 Edit)+ ROW_ACTION_FORMS pricing update/set-quota;buildBody 单测 11 绿、tsc 干净。admin-web 浏览器实测需另起 admin 栈(4290 不在 closure-up 托管),声明式配置由单测+既有 resource-table 保障。
