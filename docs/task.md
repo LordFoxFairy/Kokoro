@@ -44,6 +44,29 @@
 - [x] **整体闭环全链验收**(真栈,全绿):签→清零→浏览 4 套餐→下单得 checkoutUrl→mock 支付验签→到账 100 积分(+幂等重放不双发)→对话 run.completed→扣减 100→97.96 积分→流水含到账(+)与 model_call(-)。
 - 挂点(未做,PRD 记明):真网关 hosted checkout(Stripe/支付宝/微信 session)、订阅周期计费 UI、发票/税、web 支付成功页打磨。
 
+## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
+
+> 用户定调:真网关收钱砍掉(个人无商户、做海外,mock 闭环够用);两条轨——A 全仓 UI/交互打磨(我自主推)、
+> B 计费管理(三切面全要,且"计费面板两处:用户 settings 里的 + 后台 admin 的"都覆盖)。
+> 方法:每面 Playwright 自动化体检(横向溢出/布局抖动/热区/吸顶/字体回流)→根因→修→真栈实测→分批提交。
+
+### 轨 A：UI / 交互打磨（逐面体检）
+- [x] **落地页 `/` 顶栏三缺陷**(web 86014d0):高度抖动(.page/.topbar flex-shrink:0)+不吸顶(.page>*:not(header):not(nav))+横向滚动条(.hero::before 横向 bleed 归零)+页脚热区 17→32px。真栈实测:顶栏恒 64px/sticky、滚动吸顶、桌面+375移动无横滚。
+- [ ] 登录页 `/login` 体检(共用顶栏,验证修复覆盖)
+- [ ] 登录后工作台体检(空态 hero / 对话线 / composer / 设置浮层)
+- [ ] canvas 三栏 + 各面移动档体检
+
+### 轨 B：计费管理（三切面 × 两侧;侦察中）
+- [~] **侦察**:并行两 Explore agent 摸用户侧(web 设置计费面板+BFF+session/credit 数据链路+ledger 分录字段)与 admin 侧(admin-web 计费资源/行动作+credit/payment admin 端点+定价规则存储)现状与缺口。
+- [~] **B1 用户用量透视**(用户 settings 侧):
+  - [x] B1a 契约补吐(credit 9f7c82a/session 0d88bc1/web 9b18728):ledger 补 balance_after_micros、summary 补 quota_micros/quota_period(DB/domain 早有,HTTP 此前丢弃)。credit 19/session 76/web 9 单测绿。
+  - [x] B1b 面板升级(web 9b18728):按天分组+当日净额、余额走势 sparkline、消费/入账筛选、run 标记、配额行;顺修 formatDate epoch ms ×1000 既有 bug。
+  - [x] B1c 低余额预警(web 9b18728):可用余额<50 积分预警条引导充值。
+  - [x] 全栈实测(restart 全栈,真数据):summary 经 BFF→session→credit 返 200 带新字段;两笔充值造流水→面板显示余额 4000 积分、趋势 sparkline 上升、按天分组「2026/7/18 +4000」(日期修复实证,旧 bug 显公元 5 万年)、reason/时间/±正确、低余额条与配额行按逻辑正确不显。
+  - [ ] B1d 按模型分解(最重,剩余):UsageRecord 无用户端点+modelBindingId→模型名映射,需新聚合端点。归后续。
+- [ ] **B2 管理侧运营台**(admin 侧):发放/消耗/收入统计 + 账户列表带余额+配额+用量 + 订单→到账→流水对账视图。多为新聚合端点。
+- [ ] **B3 定价规则治理**:散在 closure-up 的定价(featureKey×model×加价倍率)收进权威 seed + admin 查看/编辑面,加价倍率可审计可调。
+
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
 **Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
