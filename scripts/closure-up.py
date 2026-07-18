@@ -29,8 +29,10 @@ STATE = ROOT / "tmp" / "closure"
 DB = "mysql://root:kokoro_root@127.0.0.1:3307/kokoro"
 AUTH_SECRET = os.environ.get("KOKORO_AUTH_JWT_SECRET", "dev-secret-not-real")
 LITELLM_KEY = "dev-master-key-not-real"
-PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231}
+PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231, "payment": 4241}
 BASE = {k: f"http://127.0.0.1:{v}" for k, v in PORTS.items()}
+# dev mock 支付网关 webhook 签名密钥（仅 dev；payment 验签 + web BFF 签发 mock 支付回调共用）。
+MOCK_WEBHOOK_SECRET = "dev-mock-webhook-secret-not-real"
 # 能力中台 hub（HUB-CONSIST）：session 建会话经 /hub/runtime/resolve 取 skills+McpGrant[]，dev 必起。
 HUB_PORT = 4251
 HUB_BASE = f"http://127.0.0.1:{HUB_PORT}"
@@ -252,6 +254,12 @@ def boot(real_model: bool) -> dict[str, int]:
         "credit": {"DATABASE_URL_CREDIT": DB, "KOKORO_CREDIT_PORT": str(PORTS["credit"]),
                    "KOKORO_USER_BASE_URL": BASE["user"], "KOKORO_SITE_BASE_URL": BASE["site"],
                    "KOKORO_MODEL_BASE_URL": BASE["model"]},
+        # 支付：用户自助购买积分包 → 支付成功到账 credit（payment→credit grant 已 wired，恰一次）。
+        # mock provider 恒挂,webhookSecretRef 指向下面这个 env 名,dev 用它验签模拟支付回调。
+        "payment": {"DATABASE_URL_PAYMENT": DB, "KOKORO_PAYMENT_PORT": str(PORTS["payment"]),
+                    "KOKORO_CREDIT_BASE_URL": BASE["credit"], "KOKORO_USER_BASE_URL": BASE["user"],
+                    "KOKORO_MODEL_BASE_URL": BASE["model"],
+                    "KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET": MOCK_WEBHOOK_SECRET},
     }
     for name, extra in penv.items():
         if not port_open(PORTS[name]):
@@ -339,6 +347,9 @@ def web_bff_env() -> dict[str, str]:
         "KOKORO_SITE_ID": SITE_ID,
         # hub 基址：缺则 web BFF 的 /api/hub 代理回 503、设置中心技能/连接 tab 不可用。
         "KOKORO_HUB_BASE_URL": HUB_BASE,
+        # 支付：缺则 web 价格页/充值诚实「支付暂未开通」。mock secret 供 dev 模拟收银台 BFF 签发支付回调。
+        "KOKORO_PAYMENT_BASE_URL": BASE["payment"],
+        "KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET": MOCK_WEBHOOK_SECRET,
         "KOKORO_INTERNAL_SECRET_WEB_BFF": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_WEB_BFF"],
     }
 
@@ -386,6 +397,29 @@ def seed() -> None:
         stp, _ = http("POST", f"{BASE['credit']}/credit/pricing-rules",
                       {"featureKey": "chat", "unit": unit, "amountMicros": price}, hdr)
         step(f"seed 计价 {unit}", stp == 200, str(stp))
+    # 支付 seed：积分包目录 + mock 支付网关。payment 只收 admin/payment caller,seed 用 admin 头。
+    phdr = {"x-kokoro-site-id": site_id, "x-kokoro-service": "admin",
+            "x-kokoro-internal-secret": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_ADMIN"]}
+    # 积分包（PRD §2 量折扣：¥0.01/积分,大包更省;1 积分=10000 micros）。billingInterval=once。
+    packs = (
+        ("pack-100", "入门包 100 积分", 100, 1_000_000),
+        ("pack-500", "标准包 500 积分", 450, 5_000_000),
+        ("pack-1000", "超值包 1000 积分", 850, 10_000_000),
+        ("pack-3000", "尊享包 3000 积分", 2400, 30_000_000),
+    )
+    pok = True
+    for key, name, amount_minor, credit_micros in packs:
+        stp, _ = http("POST", f"{BASE['payment']}/plans/upsert",
+                      {"key": key, "name": name, "currency": "CNY",
+                       "amountMinor": str(amount_minor), "creditMicros": str(credit_micros),
+                       "billingInterval": "once"}, phdr)
+        pok = pok and stp == 200
+    step("seed 积分包目录", pok, f"{len(packs)} plans")
+    # mock 支付网关：webhookSecretRef 指向 payment env KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET（验签用）。
+    stp, _ = http("POST", f"{BASE['payment']}/admin/payments/providers/upsert",
+                  {"key": "mock", "kind": "mock",
+                   "webhookSecretRef": "KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET", "enabled": True}, phdr)
+    step("seed mock 支付网关", stp == 200, str(stp))
 
 
 def smoke() -> None:

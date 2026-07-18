@@ -54,11 +54,11 @@ payment 已有完整：Plan/Order/Subscription/PaymentEvent/Provider/Refund 模�
 ## 5. 落地任务（本轮）
 
 - [x] 研究（payment 全景 + 缺口）
-- [~] 本 PRD 定案
-- [ ] closure-up：boot payment(4241) + enable mock provider + seed 积分包 plans + seed mock provider 行 + web KOKORO_PAYMENT_BASE_URL/mock secret（补 G2/G3）
-- [ ] payment：`startCheckout` mock 档实现（建 order + 返回 web 模拟收银台 URL）（补 G1）
-- [ ] web：`/billing/pay/[orderId]` 模拟收银台 + `/api/billing/mock-pay` BFF（签发 mock webhook 驱动到账）
-- [ ] 整体闭环全链验收（浏览套餐→下单→支付→到账→余额→对话→扣减→流水）
+- [x] 本 PRD 定案
+- [x] closure-up：boot payment(4241) + seed 积分包 plans + seed mock provider + web KOKORO_PAYMENT_BASE_URL/mock secret（补 G2/G3）
+- [x] payment：`startCheckout` mock 档（建 order + 返回 /billing/pay/<orderId>）（补 G1）+ web-bff caller 放行店面/结账
+- [x] web：`/billing/pay/[orderId]` 模拟收银台 + `/api/billing/mock-pay` BFF（签 mock webhook 驱动到账）
+- [x] 整体闭环全链验收（真栈全绿：浏览→下单→支付→到账[+幂等]→对话→扣减→流水）
 - 挂点（不实现）：真网关 hosted checkout（Stripe/支付宝/微信 session 创建）、订阅周期计费 UI、发票/税、web 支付成功页打磨。
 
 ## 6. 边界：admin 手动 vs 用户支付

@@ -31,6 +31,19 @@
 - [x] **全链 e2e 验收**(真栈,新 40/120 计价)：签→清零→发放100→重置到50(set-to-value 分录 -500000)→对话 run.completed→结算扣减 50→47.96 积分、ledger model_call -20400 带 run_id。**全绿**。
 - 挂点(未做,PRD §9 记明)：向上取整(需夹具升尺度)、支付充值、套餐/免费额度周期发放、媒体计费、长上下文加价、内置定价迁 kokoro-credit seed:builtin。
 
+## 支付充值整体闭环（2026-07-17;PRD=specs/2026-07-17-payment-topup-strategy.md）
+
+> 目标(用户):用户自助购买积分整体闭环(浏览→下单→支付→到账→用→扣→查),与 admin 手动充值/重置并存不冲突。
+> 研究结论:payment→credit 到账闭环已在代码(订单/webhook/幂等 grant order:<id>/退款/web 购买 UI),仅 3 缺口。
+
+- [x] **研究**:payment 全景 + 缺口(startCheckout 501 / dev 无 seed plans / payment 未 boot)。
+- [x] **PRD 定案**:mock provider 打通同形 dev 闭环(切真网关流程不变);积分包量折扣(¥0.01/积分,大包更省);毛利仍由消费侧 ≥4× 加价承载。
+- [x] **payment**(platform 2b963ab/2b94a5a):startCheckout mock 档(建单+返回 /billing/pay/<orderId>) + web-bff caller 放行店面(/plans GET)/结账(/orders/checkout);到账走既有 confirmOrder→grant 恰一次。单测 205/集成 70+23 绿。
+- [x] **web**(web 85069b6):模拟收银台页 /billing/pay/[orderId] + /api/billing/mock-pay BFF(签 mock webhook 驱动到账) + auth mockWebhookSecret(仅 dev)。web 477 绿。
+- [x] **closure-up**(主仓):boot payment(4241) + seed 4 积分包 + seed mock 网关 + web KOKORO_PAYMENT_BASE_URL/mock secret。
+- [x] **整体闭环全链验收**(真栈,全绿):签→清零→浏览 4 套餐→下单得 checkoutUrl→mock 支付验签→到账 100 积分(+幂等重放不双发)→对话 run.completed→扣减 100→97.96 积分→流水含到账(+)与 model_call(-)。
+- 挂点(未做,PRD 记明):真网关 hosted checkout(Stripe/支付宝/微信 session)、订阅周期计费 UI、发票/税、web 支付成功页打磨。
+
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
 **Wave 1 安全与能力基础**(顺序:TRUST-ROUTES 先冻结内部调用契约):
