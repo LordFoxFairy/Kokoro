@@ -65,7 +65,10 @@
   - [x] 全栈实测(restart 全栈,真数据):summary 经 BFF→session→credit 返 200 带新字段;两笔充值造流水→面板显示余额 4000 积分、趋势 sparkline 上升、按天分组「2026/7/18 +4000」(日期修复实证,旧 bug 显公元 5 万年)、reason/时间/±正确、低余额条与配额行按逻辑正确不显。
   - [ ] B1d 按模型分解(最重,剩余):UsageRecord 无用户端点+modelBindingId→模型名映射,需新聚合端点。归后续。
 - [ ] **B2 管理侧运营台**(admin 侧):发放/消耗/收入统计 + 账户列表带余额+配额+用量 + 订单→到账→流水对账视图。多为新聚合端点。
-- [ ] **B3 定价规则治理**:散在 closure-up 的定价(featureKey×model×加价倍率)收进权威 seed + admin 查看/编辑面,加价倍率可审计可调。
+- [~] **B3 定价规则治理**(纠正:无"加价倍率"字段,是平价 amountMicros 规则,毛利靠定高):
+  - [x] B3a update 端点(platform 84b881f):credit domain/prisma/service/schema/route/contract 补 updatePricingRule(仅可变字段:价/状态/生效窗;身份键不可变);POST /admin/credits/pricing-rules/:id。credit 单测 115 绿。**全栈实测**:真 credit+DB 改价 120→480/disabled→持久化→404/400 负向→改回 120,全通。
+  - [x] B3b admin 表单(platform cd12fa7):RESOURCE_FORMS credit:pricing-rules(create,新增 createOnly 抑制误走 create 的行内 Edit)+ ROW_ACTION_FORMS pricing update/set-quota;buildBody 单测 11 绿、tsc 干净。admin-web 浏览器实测需另起 admin 栈(4290 不在 closure-up 托管),声明式配置由单测+既有 resource-table 保障。
+  - [ ] B3c seed 收编(后续,清理):散在 closure-up 的定价(chat 40/120)迁 kokoro-credit 权威 seed:builtin(仿 model)。非能力,纯架构清理。
 
 ## P0(总设计稿 Wave 1-3;信任与一致性新 P0 来自代码审计,先于产品 P0)
 
