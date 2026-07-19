@@ -56,7 +56,7 @@
   - **`docker compose config` 校验通过(16 服务全解析)**;最终 build&up 真烟测需用户主机(拉基础镜像),README 记明
   - 根 .gitignore 补 .env 兜底
 - [ ] **块2 k8s manifests 补平**:hub/redis/secret 资源/litellm + 应用层单元,与 compose 对齐
-- [ ] **块3 SMTP 邮件 + deliveryMode 生产硬闸**:kokoro-user magic-link 真邮件投递(读 env),生产禁 response 档
+- [x] **块3 SMTP 邮件 + deliveryMode 生产硬闸**(platform defbbf7):kokoro-user 加 smtp 档(nodemailer,窄口 MagicLinkMailer,原文 token 只进邮件)+ config SMTP_*/MAGIC_LINK_BASE_URL + 路由 smtp 分支(链=<base>?token=,发信失败 502)+ main.ts 生产禁 response fail-fast/smtp 缺配拒启动。user 单测 109 绿、tsc 干净(集成 8 需 DATABASE_URL_USER,环境性)。
 - [ ] **块4 env.example(平台侧)+ 可观测 + 卫生**:model/site/credit/payment 补 internal secret 变量;平台 /metrics、session /health;ops/langfuse/.env.local 移出跟踪
 - [ ] **做完整**:B3c 定价 seed 收编、B1d 按模型消费分解
 
