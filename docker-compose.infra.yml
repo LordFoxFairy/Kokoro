@@ -1,0 +1,86 @@
+# Kokoro 基建层 —— 全局唯一一套 stateful 基础设施：mysql / redis / mongo / minio / litellm 各一个。
+#
+# 设计（认真收口）：
+#   - 无论 dev 还是 prod，都只跑这一套基建；上层应用一律「拿 URL 去连」，绝不自带第二个 mysql/redis。
+#   - 端口绑 127.0.0.1：本机 host 进程(dev tsx)与容器(prod app 经网络)都能连，且不对外暴露。
+#   - 命名网络 kokoro-net：prod app 容器与 langfuse 以 external 方式接入，用服务名互访。
+#   - 命名卷各一个：数据单源，不再散成多份。
+#   - prod 若改用托管云库：不起本层对应服务，把上层 env 的 DATABASE_URL 等指向云 URL 即可。
+#
+# 起（唯一一套，常驻）：
+#   docker compose --env-file deploy/dev.env -p kokoro -f docker-compose.infra.yml up -d
+# 上层应用（dev host 进程 / prod app.yml 容器 / langfuse）都连它，见各自说明。
+
+services:
+  mysql:
+    image: mysql:8.4
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports: ["127.0.0.1:${KOKORO_MYSQL_PORT:-3307}:3306"]
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes: ["kokoro-mysql:/var/lib/mysql"]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:${KOKORO_REDIS_PORT:-6379}:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes: ["kokoro-redis:/data"]
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    ports: ["127.0.0.1:${KOKORO_MONGO_PORT:-27017}:27017"]
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ping:1})'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes: ["kokoro-mongo:/data/db"]
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    command: ["server", "/data", "--address", ":9100", "--console-address", ":9101"]
+    ports:
+      - "127.0.0.1:${KOKORO_MINIO_PORT:-9100}:9100"
+      - "127.0.0.1:${KOKORO_MINIO_CONSOLE_PORT:-9101}:9101"
+    volumes: ["kokoro-minio:/data"]
+    restart: unless-stopped
+
+  # 模型网关：归基建层（模型访问的基础设施）。后端(claude-code 别名→GLM/本地)经 env 注入，不烘焙。
+  litellm:
+    image: ${LITELLM_IMAGE:-ghcr.io/berriai/litellm:main-stable}
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    ports: ["127.0.0.1:${KOKORO_LITELLM_PORT:-4000}:4000"]
+    volumes:
+      - ./kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml:/app/config.yaml:ro
+    command: ["--config=/app/config.yaml"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4000/health/liveliness >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  kokoro-mysql:
+  kokoro-redis:
+  kokoro-mongo:
+  kokoro-minio:
+
+# 命名网络（参数化保多环境隔离）：prod app 与 langfuse 以 external 接入本网。
+networks:
+  default:
+    name: ${KOKORO_NETWORK:-kokoro-net}

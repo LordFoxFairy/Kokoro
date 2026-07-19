@@ -1,0 +1,115 @@
+# Kokoro 业务层（prod 应用容器）：migrate + 7 平台服务 + session + agent + web。
+#
+# 设计（认真收口）：本层「拿 URL 去连」基建，自身不含任何 mysql/redis/mongo/minio/litellm。
+#   - 后端一律经 env 的 URL 注入：DATABASE_URL_* / KOKORO_REDIS_URL / KOKORO_*_MONGO_URL /
+#     KOKORO_LITELLM_BASE_URL / minio(S3) endpoint。想连本机基建就用服务名(mysql:3306…)，
+#     想连托管云库就把 URL 换成云地址——app 不关心，也不再起第二套 infra。
+#   - 以 external 方式接入基建的命名网络 kokoro-net，从而用服务名解析到基建容器。
+#   - 无跨项目 depends_on(基建是独立项目)；启动次序由 provision.sh 保证(先 infra、再 migrate、再服务)。
+#
+# 前置：先起基建层(docker-compose.infra.yml)。全流程见 deploy/provision.sh。
+#   docker compose --env-file deploy/prod.env -p kokoro \
+#     -f docker-compose.app.yml up -d --build
+
+x-platform-build: &platform-build
+  # 7 平台服务 + migrate 共用同一镜像，靠 KOKORO_SERVICE_PACKAGE 选包运行。
+  image: kokoro-platform:latest
+  build:
+    context: ./kokoro-platform
+    dockerfile: deploy/docker/Dockerfile
+  env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+  networks: [default]
+  restart: unless-stopped
+
+services:
+  # ---- 一次性迁移：跑各平台 DB 的 prisma migrate deploy。由 provision.sh 在基建就绪后先行触发。----
+  migrate:
+    <<: *platform-build
+    restart: "no"
+    command: ["pnpm", "-r", "db:migrate"]
+
+  # ---- 平台服务（同镜像，KOKORO_SERVICE_PACKAGE 选包；连基建走 env URL）----
+  kokoro-site:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/site" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4201:4201"]
+
+  kokoro-user:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/user" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4211:4211"]
+
+  kokoro-model:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/model" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4221:4221"]
+
+  kokoro-credit:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/credit" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4231:4231"]
+
+  kokoro-payment:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/payment" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4241:4241"]
+
+  kokoro-hub:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/hub" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    volumes:
+      - kokoro-workspace:/data/workspace
+      - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
+    ports: ["4251:4251"]
+
+  kokoro-platform-admin:
+    <<: *platform-build
+    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/platform-admin" }
+    depends_on: { migrate: { condition: service_completed_successfully } }
+    ports: ["4290:4290"]
+
+  # ---- 应用层（各子仓独立镜像；连基建/平台走 env URL）----
+  kokoro-session:
+    build: { context: ./kokoro-session }
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    networks: [default]
+    depends_on: { kokoro-user: { condition: service_started } }
+    volumes:
+      - kokoro-workspace:/data/workspace
+      - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
+    ports: ["${KOKORO_SESSION_HOST_PORT:-3900}:3900"]
+    restart: unless-stopped
+
+  kokoro-agent:
+    build: { context: ./kokoro-agent }
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    networks: [default]
+    volumes:
+      - kokoro-workspace:/data/workspace
+      - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
+    restart: unless-stopped
+
+  kokoro-web:
+    build: { context: ./kokoro-web }
+    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    networks: [default]
+    depends_on:
+      kokoro-session: { condition: service_started }
+      kokoro-user: { condition: service_started }
+    ports: ["${KOKORO_WEB_HOST_PORT:-3000}:3000"]
+    restart: unless-stopped
+
+# 接入基建层创建的命名网络（external）：app 容器用服务名解析到基建 mysql/redis/mongo/minio/litellm。
+networks:
+  default:
+    external: true
+    name: ${KOKORO_NETWORK:-kokoro-net}
+
+volumes:
+  kokoro-workspace:
