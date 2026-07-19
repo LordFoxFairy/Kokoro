@@ -16,14 +16,14 @@ resources:
 secretGenerator:
   - name: kokoro-env
     envs:
-      - ../.env.prod
+      - ../../.env.prod
 configMapGenerator:
   - name: kokoro-storage
     files:
-      - storage.yaml=../storage.yaml
+      - storage.yaml=../../storage.yaml
   - name: kokoro-litellm-config
     files:
-      - config.yaml=../../kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml
+      - config.yaml=../../../kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml
 
 # 固定名（不加 hash）：与各 manifest 的 envFrom/volume 引用对齐，也便于手动 kubectl。
 # 代价：改 Secret/ConfigMap 后需手动 rollout restart（见 README）。

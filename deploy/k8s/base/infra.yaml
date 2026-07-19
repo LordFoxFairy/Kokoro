@@ -23,8 +23,15 @@ spec:
       containers:
         - name: mysql
           image: mysql:8.4
-          args: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+          # innodb buffer pool 收小 + 关 performance_schema：省内存（内存受限节点/kind 更稳；大流量可调大）。
+          args:
+            - "--character-set-server=utf8mb4"
+            - "--collation-server=utf8mb4_unicode_ci"
+            - "--innodb-buffer-pool-size=128M"
+            - "--performance-schema=OFF"
           envFrom: [{ secretRef: { name: kokoro-env } }]
+          resources:
+            requests: { memory: 256Mi }
           ports: [{ containerPort: 3306 }]
           volumeMounts: [{ name: data, mountPath: /var/lib/mysql }]
           readinessProbe:
@@ -164,6 +171,9 @@ spec:
           image: ghcr.io/berriai/litellm:main-stable
           args: ["--config=/app/config.yaml"]
           envFrom: [{ secretRef: { name: kokoro-env } }]
+          resources:
+            requests: { memory: 512Mi }
+            limits: { memory: 1536Mi }
           ports: [{ containerPort: 4000 }]
           volumeMounts: [{ name: config, mountPath: /app/config.yaml, subPath: config.yaml }]
           readinessProbe:

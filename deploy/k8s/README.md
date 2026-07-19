@@ -4,6 +4,14 @@
 Secret/ConfigMap 直接从 compose 用的同一批文件生成（`deploy/.env.prod` / `deploy/storage.yaml` /
 litellm 配置），**k8s 与 compose 单源不漂移**。
 
+## 布局
+
+```
+deploy/k8s/
+  base/            # 生产基线：infra / platform / app / jobs + kustomization(单源生成 Secret/CM)
+  overlays/kind/   # 本地 kind 集群 overlay（workspace RWX→RWO,单节点 local-path）
+```
+
 ## 拓扑（namespace `kokoro`，41 资源）
 
 - **基建**（`infra.yaml`，各一个，Deployment+RWO PVC+Recreate+Service）：mysql / redis / mongo / minio / litellm
@@ -25,15 +33,20 @@ Service 名 = env URL 主机名（`mysql` / `kokoro-user` / …），故 `DATABA
 ## 部署
 
 ```bash
-# 渲染（generators 引用 deploy/ 下同源文件，需放开 load-restrictor）+ 应用：
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s | kubectl apply -f -
+# 云集群（base；generators 引用 deploy/ 下同源文件，需放开 load-restrictor）：
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply -f -
+
+# 本地 kind（overlay：workspace 降 RWO）：
+kind create cluster --name kokoro
+for img in kokoro-platform kokoro-kokoro-session kokoro-kokoro-agent kokoro-kokoro-web; do kind load docker-image $img:latest --name kokoro; done
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/overlays/kind | kubectl apply -f -
 
 # 观察就绪：
 kubectl -n kokoro get pods -w
 
 # provisioning：migrate/provision 是 Job；重跑需先删旧同名 Job：
 kubectl -n kokoro delete job migrate provision --ignore-not-found
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s | kubectl apply -f -
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply -f -
 ```
 
 Ingress `host: kokoro.local`（`app.yaml`）按真实域名改，并与 `KOKORO_WEB_ORIGIN` / 站点 seed 对齐。
@@ -49,5 +62,5 @@ Ingress `host: kokoro.local`（`app.yaml`）按真实域名改，并与 `KOKORO_
 ## 校验（离线，无需集群）
 
 ```bash
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s | kubectl apply --dry-run=client -f -
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply --dry-run=client -f -
 ```

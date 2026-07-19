@@ -20,7 +20,27 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ["pnpm", "-r", "db:migrate"]
           envFrom: [{ secretRef: { name: kokoro-env } }]
-# ---------------------------------------------------------------- provision（幂等 seed）
+# ---------------------------------------------------------------- provision RBAC（initContainer 需读 migrate Job 状态）
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata: { name: kokoro-provisioner }
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: { name: kokoro-provisioner }
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: { name: kokoro-provisioner }
+roleRef: { apiGroup: rbac.authorization.k8s.io, kind: Role, name: kokoro-provisioner }
+subjects:
+  - { kind: ServiceAccount, name: kokoro-provisioner }
+# ---------------------------------------------------------------- provision（幂等 seed；等 migrate Job 真完成）
 ---
 apiVersion: batch/v1
 kind: Job
@@ -31,11 +51,12 @@ spec:
     metadata: { labels: { app: provision } }
     spec:
       restartPolicy: Never
-      # 等平台就绪（kokoro-user healthz 通 = migrate 完成 + 平台起）后再 seed。
+      serviceAccountName: kokoro-provisioner
+      # 等 migrate Job 完成（全平台迁移就绪）——平台 healthz 不 gate DB,故必须等 Job 而非端口。
       initContainers:
-        - name: wait-platform
-          image: busybox:1.36
-          command: ["sh", "-c", "until wget -q -O- http://kokoro-user:4211/healthz >/dev/null 2>&1; do echo waiting platform; sleep 3; done"]
+        - name: wait-migrate
+          image: bitnami/kubectl:latest
+          command: ["kubectl", "wait", "--for=condition=complete", "--timeout=900s", "job/migrate"]
       containers:
         - name: provision
           image: kokoro-platform:latest
