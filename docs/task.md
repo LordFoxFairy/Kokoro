@@ -57,7 +57,10 @@
   - 根 .gitignore 补 .env 兜底
 - [ ] **块2 k8s manifests 补平**:hub/redis/secret 资源/litellm + 应用层单元,与 compose 对齐
 - [x] **块3 SMTP 邮件 + deliveryMode 生产硬闸**(platform defbbf7):kokoro-user 加 smtp 档(nodemailer,窄口 MagicLinkMailer,原文 token 只进邮件)+ config SMTP_*/MAGIC_LINK_BASE_URL + 路由 smtp 分支(链=<base>?token=,发信失败 502)+ main.ts 生产禁 response fail-fast/smtp 缺配拒启动。user 单测 109 绿、tsc 干净(集成 8 需 DATABASE_URL_USER,环境性)。
-- [ ] **块4 env.example(平台侧)+ 可观测 + 卫生**:model/site/credit/payment 补 internal secret 变量;平台 /metrics、session /health;ops/langfuse/.env.local 移出跟踪
+- [~] **块4 env.example(平台侧)+ 可观测 + 卫生**:
+  - [x] env 部分(platform f866ff5):平台 5 服务(site/user/model/credit/payment).env.example 补 6 个 KOKORO_INTERNAL_SECRET_* + model provider 变量占位。
+  - [ ] 可观测(剩余):平台 6 服务补 /metrics、session 补 /health(需改 session 自定义路由器)。
+  - [ ] 卫生:ops/langfuse/.env.local 被跟踪(低敏 dev INIT 占位)——是共享 dev 配置,不擅自 untrack,待用户确认。
 - [ ] **做完整**:B3c 定价 seed 收编、B1d 按模型消费分解
 
 ## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
