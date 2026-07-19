@@ -413,36 +413,16 @@ def seed() -> None:
                   {"key": "kokoro-dev-mock", "displayName": "Dev Mock（离线）", "featureKey": "chat",
                    "tier": "mock", "description": "离线假模型档，无需真凭据", "defaultBindingId": mock_bid}, hdr)
     step("seed dev 离线假模型（dev-only）", st == 200 and st2 == 200 and stl == 200, f"{st}/{st2}/{stl}")
-    # 计价（PRD 2026-07-17-credit-pricing-strategy §7 内置默认档 dev 加价值）：
-    # 售价 = 真成本 × margin(≥4×)；chat input 40 / output 120 micros/token。1 积分=10000 micros。
-    # 典型 500+500 token 对话 ≈ (500×40+500×120)/10000 = 8 积分 ≈ ¥0.08。
-    for unit, price in (("input_token", 40), ("output_token", 120)):
-        stp, _ = http("POST", f"{BASE['credit']}/credit/pricing-rules",
-                      {"featureKey": "chat", "unit": unit, "amountMicros": price}, hdr)
-        step(f"seed 计价 {unit}", stp == 200, str(stp))
-    # 支付 seed：积分包目录 + mock 支付网关。payment 只收 admin/payment caller,seed 用 admin 头。
-    phdr = {"x-kokoro-site-id": site_id, "x-kokoro-service": "admin",
-            "x-kokoro-internal-secret": INTERNAL_SECRETS["KOKORO_INTERNAL_SECRET_ADMIN"]}
-    # 积分包（PRD §2 量折扣：¥0.01/积分,大包更省;1 积分=10000 micros）。billingInterval=once。
-    packs = (
-        ("pack-100", "入门包 100 积分", 100, 1_000_000),
-        ("pack-500", "标准包 500 积分", 450, 5_000_000),
-        ("pack-1000", "超值包 1000 积分", 850, 10_000_000),
-        ("pack-3000", "尊享包 3000 积分", 2400, 30_000_000),
-    )
-    pok = True
-    for key, name, amount_minor, credit_micros in packs:
-        stp, _ = http("POST", f"{BASE['payment']}/plans/upsert",
-                      {"key": key, "name": name, "currency": "CNY",
-                       "amountMinor": str(amount_minor), "creditMicros": str(credit_micros),
-                       "billingInterval": "once"}, phdr)
-        pok = pok and stp == 200
-    step("seed 积分包目录", pok, f"{len(packs)} plans")
-    # mock 支付网关：webhookSecretRef 指向 payment env KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET（验签用）。
-    stp, _ = http("POST", f"{BASE['payment']}/admin/payments/providers/upsert",
-                  {"key": "mock", "kind": "mock",
-                   "webhookSecretRef": "KOKORO_PAYMENT_MOCK_WEBHOOK_SECRET", "enabled": True}, phdr)
-    step("seed mock 支付网关", stp == 200, str(stp))
+    # 计价 + 积分包：收编到 canonical seed 脚本（kokoro-credit seed:pricing / kokoro-payment seed:packs），
+    # dev 与 prod(provision.sh) 共用同一单源，编排层不再各写一份内置定价/套餐定义。
+    r = subprocess.run(["pnpm", "run", "seed:pricing"], cwd=PLAT / "kokoro-credit",
+                       env={**os.environ, "DATABASE_URL_CREDIT": DB}, capture_output=True, text=True)
+    step("seed 计价（kokoro-credit seed:pricing）", r.returncode == 0, (r.stdout + r.stderr).strip()[-200:])
+    r = subprocess.run(["pnpm", "run", "seed:packs"], cwd=PLAT / "kokoro-payment",
+                       env={**os.environ, "DATABASE_URL_PAYMENT": DB, "KOKORO_SITE_ID": site_id},
+                       capture_output=True, text=True)
+    step("seed 积分包+mock 网关（kokoro-payment seed:packs）", r.returncode == 0,
+         (r.stdout + r.stderr).strip()[-200:])
 
 
 def smoke() -> None:

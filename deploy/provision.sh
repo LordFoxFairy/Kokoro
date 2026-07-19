@@ -50,9 +50,11 @@ wait_healthz kokoro-site 4201 || true
 wait_healthz kokoro-model 4221 || true
 wait_healthz kokoro-platform-admin 4290 || true
 
-echo "==> [4/4] 幂等 seed（模型内置 / 运营数据 / 默认站点 active）"
+echo "==> [4/4] 幂等 seed（模型内置 / 运营数据 / 站点 active / 计价 / 积分包+mock 网关）"
 "${APP[@]}" exec -T kokoro-model sh -lc "pnpm --filter @kokoro/model seed:builtin"
 "${APP[@]}" exec -T kokoro-platform-admin sh -lc "pnpm --filter @kokoro/platform-admin db:seed"
 "${APP[@]}" exec -T kokoro-site sh -lc "pnpm --filter @kokoro/site seed:site"
+"${APP[@]}" exec -T kokoro-credit sh -lc "pnpm --filter @kokoro/credit seed:pricing"
+"${APP[@]}" exec -T kokoro-payment sh -lc "pnpm --filter @kokoro/payment seed:packs"
 
 echo "==> 完成。web http://localhost:${KOKORO_WEB_HOST_PORT:-3000}"
