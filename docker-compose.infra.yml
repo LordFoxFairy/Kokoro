@@ -59,12 +59,18 @@ services:
     restart: unless-stopped
 
   # 模型网关：归基建层（模型访问的基础设施）。后端(claude-code 别名→GLM/本地)经 env 注入，不烘焙。
+  # config 文件参数化：dev 用带 claude-code 别名+后端切换的 dev 配置，prod 用 example；CLAUDE_CODE_* 透传。
   litellm:
     image: ${LITELLM_IMAGE:-ghcr.io/berriai/litellm:main-stable}
     env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-}
+      CLAUDE_CODE_MODEL: ${CLAUDE_CODE_MODEL:-}
+      CLAUDE_CODE_BASE_URL: ${CLAUDE_CODE_BASE_URL:-}
+      CLAUDE_CODE_API_KEY: ${CLAUDE_CODE_API_KEY:-}
     ports: ["127.0.0.1:${KOKORO_LITELLM_PORT:-4000}:4000"]
     volumes:
-      - ./kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml:/app/config.yaml:ro
+      - ${KOKORO_LITELLM_CONFIG:-./kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml}:/app/config.yaml:ro
     command: ["--config=/app/config.yaml"]
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4000/health/liveliness >/dev/null"]

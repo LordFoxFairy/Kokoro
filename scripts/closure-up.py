@@ -26,7 +26,31 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PLAT = ROOT / "kokoro-platform"
 STATE = ROOT / "tmp" / "closure"
-DB = "mysql://root:kokoro_root@127.0.0.1:3307/kokoro"
+ENV_DEV = ROOT / "deploy" / ".env.dev"
+
+
+def _load_env_file(path: Path) -> dict[str, str]:
+    env: dict[str, str] = {}
+    if path.exists():
+        for raw in path.read_text().splitlines():
+            line = raw.strip()
+            if line.startswith("#") or "=" not in line:
+                continue
+            k, _, v = line.partition("=")
+            env[k.strip()] = v.strip().strip('"').strip("'")
+    return env
+
+
+# 单一事实来源：dev 与 prod 共用 docker-compose.infra.yml，只差 env 文件。这里把 deploy/.env.dev
+# 合并进进程环境（不覆盖已显式设置的 shell 值），任何新增共享变量自动流到 dev host 进程与 infra 起停。
+DEV_ENV = _load_env_file(ENV_DEV)
+for _k, _v in DEV_ENV.items():
+    os.environ.setdefault(_k, _v)
+
+# DB / 端口从 .env.dev 派生，与 infra.yml 单源一致（不再各写一份密码/端口）。
+_MYSQL_PW = DEV_ENV.get("MYSQL_ROOT_PASSWORD", "kokoro_root")
+_MYSQL_PORT = DEV_ENV.get("KOKORO_MYSQL_PORT", "3307")
+DB = f"mysql://root:{_MYSQL_PW}@127.0.0.1:{_MYSQL_PORT}/kokoro"
 AUTH_SECRET = os.environ.get("KOKORO_AUTH_JWT_SECRET", "dev-secret-not-real")
 LITELLM_KEY = "dev-master-key-not-real"
 PORTS = {"site": 4201, "user": 4211, "model": 4221, "credit": 4231, "payment": 4241}
@@ -124,11 +148,18 @@ def litellm_ready() -> bool:
     return False
 
 
+def _infra_compose(*args: str, extra_env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+    """对唯一一套基建(docker-compose.infra.yml，项目 kokoro-infra，dev env)执行 compose 子命令。"""
+    return subprocess.run(
+        ["docker", "compose", "--env-file", "deploy/.env.dev", "-p", "kokoro-infra",
+         "-f", "docker-compose.infra.yml", *args],
+        cwd=ROOT, check=True, capture_output=True,
+        env={**os.environ, "KOKORO_ENV_FILE": "deploy/.env.dev", **(extra_env or {})})
+
+
 def _recreate_litellm(extra_env: dict[str, str]) -> None:
-    """按选中的 claude-code 后端 env 重建 litellm 网关(凭据只经进程 env,不落文件),等其真就绪。"""
-    subprocess.run(["docker", "compose", "-f", "docker-compose.dev.yml", "up", "-d", "--force-recreate"],
-                   cwd=PLAT / "kokoro-litellm", check=True, capture_output=True,
-                   env={**os.environ, **extra_env})
+    """按选中的 claude-code 后端 env 重建**统一基建里的** litellm 网关(凭据只经进程 env,不落文件),等其就绪。"""
+    _infra_compose("up", "-d", "--force-recreate", "litellm", extra_env=extra_env)
     litellm_ready()
 
 
@@ -208,20 +239,12 @@ def spawn(cmd: list[str], cwd: Path, env: dict[str, str], log: Path) -> int:
 
 
 def ensure_infra() -> None:
-    # mysql：kokoro-platform 根 compose 管；mongo/redis/minio：dev 机常驻容器,不在则拉起提示。
-    if not port_open(3307):
-        subprocess.run(["docker", "compose", "up", "-d"], cwd=PLAT, check=True, capture_output=True)
-    step("mysql 3307", wait_port(3307), "kokoro-platform docker compose 启动失败,看 docker 日志")
-    for name, port, hint in (
-        ("mongo", 27017, "docker start kokoro-dev-mongo"),
-        ("redis", 6379, "docker start <redis 容器> 或本机 redis-server"),
-        ("minio", 9100, "docker start kokoro-minio"),
-    ):
-        if not port_open(port):
-            subprocess.run(["docker", "start", f"kokoro-dev-{name}" if name == "mongo" else f"kokoro-{name}"],
-                           check=False, capture_output=True)
-        step(f"{name} {port}", wait_port(port, 15), hint)
-    # litellm 网关由 resolve_claude_code_backend() 起（需按 GLM/ollama 探测结果注入后端 env）。
+    # 唯一一套基建：与 prod 同一个 docker-compose.infra.yml（项目 kokoro-infra），只是用 deploy/.env.dev。
+    # 消除以往散落的多套 infra（kokoro-platform 根 compose + docker start kokoro-dev-* + 独立 litellm compose）。
+    # litellm 不在此拉起——由 resolve_claude_code_backend() 按 GLM/ollama 探测注入后端 env 后 recreate。
+    _infra_compose("up", "-d", "mysql", "redis", "mongo", "minio")
+    for name, port in (("mysql", int(_MYSQL_PORT)), ("mongo", 27017), ("redis", 6379), ("minio", 9100)):
+        step(f"{name} {port}", wait_port(port, 60), "docker-compose.infra.yml 启动失败,看 docker 日志")
 
 
 def migrate() -> None:
@@ -538,8 +561,8 @@ def cmd_down() -> None:
             except ProcessLookupError:
                 print(f"  {name} 已不在 ({pid})")
         pids_file.unlink()
-    print("infra 容器保留（mysql/mongo/redis/minio/litellm）;要停 litellm:")
-    print("  docker compose -f kokoro-platform/kokoro-litellm/docker-compose.dev.yml down")
+    print("基建容器保留（唯一一套 docker-compose.infra.yml，项目 kokoro-infra）;要停基建:")
+    print("  docker compose --env-file deploy/.env.dev -p kokoro-infra -f docker-compose.infra.yml down")
 
 
 def cmd_status() -> None:
