@@ -1,0 +1,182 @@
+# Kokoro 基建层（k8s）：mysql / redis / mongo / minio / litellm 各一个。与 compose 同一套设计——
+# 全局唯一一套基建，上层「拿 Service DNS + env URL」连（Service 名 = env 里的主机名：mysql / redis / …）。
+# 单实例 + RWO PVC + Recreate 策略（避免滚更时 RWO 卷抢占死锁）。prod 若用托管云库：删掉对应块，
+# 把 Secret 里的 DATABASE_URL_* 指向云地址即可（app 层不变）。
+# ---------------------------------------------------------------- mysql
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: mysql-data }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: 10Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: mysql }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: mysql } }
+  template:
+    metadata: { labels: { app: mysql } }
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4
+          args: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+          envFrom: [{ secretRef: { name: kokoro-env } }]
+          ports: [{ containerPort: 3306 }]
+          volumeMounts: [{ name: data, mountPath: /var/lib/mysql }]
+          readinessProbe:
+            exec: { command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent"] }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: mysql-data } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: mysql }
+spec:
+  selector: { app: mysql }
+  ports: [{ port: 3306, targetPort: 3306 }]
+# ---------------------------------------------------------------- redis
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: redis-data }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: 2Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: redis }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: redis } }
+  template:
+    metadata: { labels: { app: redis } }
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          args: ["redis-server", "--appendonly", "yes"]
+          ports: [{ containerPort: 6379 }]
+          volumeMounts: [{ name: data, mountPath: /data }]
+          readinessProbe:
+            exec: { command: ["redis-cli", "ping"] }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: redis-data } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: redis }
+spec:
+  selector: { app: redis }
+  ports: [{ port: 6379, targetPort: 6379 }]
+# ---------------------------------------------------------------- mongo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: mongo-data }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: 5Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: mongo }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: mongo } }
+  template:
+    metadata: { labels: { app: mongo } }
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7
+          ports: [{ containerPort: 27017 }]
+          volumeMounts: [{ name: data, mountPath: /data/db }]
+          readinessProbe:
+            exec: { command: ["mongosh", "--quiet", "--eval", "db.runCommand({ping:1})"] }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: mongo-data } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: mongo }
+spec:
+  selector: { app: mongo }
+  ports: [{ port: 27017, targetPort: 27017 }]
+# ---------------------------------------------------------------- minio
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: minio-data }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: 20Gi } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: minio }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }
+  selector: { matchLabels: { app: minio } }
+  template:
+    metadata: { labels: { app: minio } }
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio
+          args: ["server", "/data", "--address", ":9100", "--console-address", ":9101"]
+          envFrom: [{ secretRef: { name: kokoro-env } }]
+          ports: [{ containerPort: 9100 }, { containerPort: 9101 }]
+          volumeMounts: [{ name: data, mountPath: /data }]
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: minio-data } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: minio }
+spec:
+  selector: { app: minio }
+  ports:
+    - { name: s3, port: 9100, targetPort: 9100 }
+    - { name: console, port: 9101, targetPort: 9101 }
+# ---------------------------------------------------------------- litellm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: litellm }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: litellm } }
+  template:
+    metadata: { labels: { app: litellm } }
+    spec:
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm:main-stable
+          args: ["--config=/app/config.yaml"]
+          envFrom: [{ secretRef: { name: kokoro-env } }]
+          ports: [{ containerPort: 4000 }]
+          volumeMounts: [{ name: config, mountPath: /app/config.yaml, subPath: config.yaml }]
+          readinessProbe:
+            httpGet: { path: /health/liveliness, port: 4000 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap: { name: kokoro-litellm-config }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: litellm }
+spec:
+  selector: { app: litellm }
+  ports: [{ port: 4000, targetPort: 4000 }]

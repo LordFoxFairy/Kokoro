@@ -1,0 +1,52 @@
+# Kokoro provisioning（k8s Jobs）：与 provision.sh 同序 —— migrate → seed（模型/运营/站点/计价/积分包）。
+# 全幂等，可重复 apply（同名 Job 需先删旧：kubectl delete job -n kokoro migrate provision）。
+# ---------------------------------------------------------------- migrate（一次性迁移）
+apiVersion: batch/v1
+kind: Job
+metadata: { name: migrate }
+spec:
+  backoffLimit: 6
+  template:
+    metadata: { labels: { app: migrate } }
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-mysql
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z mysql 3306; do echo waiting mysql; sleep 2; done"]
+      containers:
+        - name: migrate
+          image: kokoro-platform:latest
+          imagePullPolicy: IfNotPresent
+          command: ["pnpm", "-r", "db:migrate"]
+          envFrom: [{ secretRef: { name: kokoro-env } }]
+# ---------------------------------------------------------------- provision（幂等 seed）
+---
+apiVersion: batch/v1
+kind: Job
+metadata: { name: provision }
+spec:
+  backoffLimit: 6
+  template:
+    metadata: { labels: { app: provision } }
+    spec:
+      restartPolicy: Never
+      # 等平台就绪（kokoro-user healthz 通 = migrate 完成 + 平台起）后再 seed。
+      initContainers:
+        - name: wait-platform
+          image: busybox:1.36
+          command: ["sh", "-c", "until wget -q -O- http://kokoro-user:4211/healthz >/dev/null 2>&1; do echo waiting platform; sleep 3; done"]
+      containers:
+        - name: provision
+          image: kokoro-platform:latest
+          imagePullPolicy: IfNotPresent
+          envFrom: [{ secretRef: { name: kokoro-env } }]
+          command:
+            - sh
+            - -c
+            - >
+              pnpm --filter @kokoro/model seed:builtin &&
+              pnpm --filter @kokoro/platform-admin db:seed &&
+              pnpm --filter @kokoro/site seed:site &&
+              pnpm --filter @kokoro/credit seed:pricing &&
+              pnpm --filter @kokoro/payment seed:packs
