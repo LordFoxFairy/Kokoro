@@ -44,6 +44,22 @@
 - [x] **整体闭环全链验收**(真栈,全绿):签→清零→浏览 4 套餐→下单得 checkoutUrl→mock 支付验签→到账 100 积分(+幂等重放不双发)→对话 run.completed→扣减 100→97.96 积分→流水含到账(+)与 model_call(-)。
 - 挂点(未做,PRD 记明):真网关 hosted checkout(Stripe/支付宝/微信 session)、订阅周期计费 UI、发票/税、web 支付成功页打磨。
 
+## 上线准备（2026-07-19 起;用户 /goal:做完整 + 为上线做准备。部署目标=单机 compose(当前)+k8s(都支持);真模型后接、先 fake 跑通)
+
+> 只读上线审计结论:安全底子强(生产 fail-closed/JWKS/RS256/无误提交 secret);6 真阻塞(部署编排不可启/Dockerfile 缺 hub/无 redis/SMTP 未实现/生产模型链路缺/缺应用层部署单元)。
+
+- [x] **块1 单机全栈 compose 基线**(web 75c8a71/session 6c6547d/agent 6ecf473/platform f6d9217/主仓 829ed47):
+  - platform Dockerfile 预拷全 workspace 成员(补 i18n/platform-admin/hub/admin-web,阻塞#2)
+  - web/session/agent 各生产 Dockerfile + .dockerignore(web Next standalone/session tsx/agent uv,均非 root);web next.config output:standalone
+  - 主仓 `docker-compose.prod.yml`:infra(mysql/mongo/**redis**/minio)+一次性 migrate+平台七服务+session/agent/web+litellm,env 经 `deploy/.env` 注入,存储共享本地卷,生产硬化(jwks/enforce/strict egress)
+  - `deploy/.env.example`(全变量占位)+`storage.prod.yaml`+`README.md`(RS256/secret 生成/seed/硬化清单)
+  - **`docker compose config` 校验通过(16 服务全解析)**;最终 build&up 真烟测需用户主机(拉基础镜像),README 记明
+  - 根 .gitignore 补 .env 兜底
+- [ ] **块2 k8s manifests 补平**:hub/redis/secret 资源/litellm + 应用层单元,与 compose 对齐
+- [ ] **块3 SMTP 邮件 + deliveryMode 生产硬闸**:kokoro-user magic-link 真邮件投递(读 env),生产禁 response 档
+- [ ] **块4 env.example(平台侧)+ 可观测 + 卫生**:model/site/credit/payment 补 internal secret 变量;平台 /metrics、session /health;ops/langfuse/.env.local 移出跟踪
+- [ ] **做完整**:B3c 定价 seed 收编、B1d 按模型消费分解
+
 ## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
 
 > 用户定调:真网关收钱砍掉(个人无商户、做海外,mock 闭环够用);两条轨——A 全仓 UI/交互打磨(我自主推)、
