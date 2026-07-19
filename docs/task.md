@@ -60,7 +60,7 @@
 - [~] **块4 env.example(平台侧)+ 可观测 + 卫生**:
   - [x] env 部分(platform f866ff5):平台 5 服务(site/user/model/credit/payment).env.example 补 6 个 KOKORO_INTERNAL_SECRET_* + model provider 变量占位。
   - [ ] 可观测(剩余):平台 6 服务补 /metrics、session 补 /health(需改 session 自定义路由器)。
-  - [ ] 卫生:ops/langfuse/.env.local 被跟踪(低敏 dev INIT 占位)——是共享 dev 配置,不擅自 untrack,待用户确认。
+  - [x] 卫生(主仓):ops/langfuse/.env.local untrack(保留磁盘)+ 建 .env.local.example + 根 .gitignore 负例外 !.env.*.example。用户已确认。
 - [ ] **做完整**:B3c 定价 seed 收编、B1d 按模型消费分解
 
 ## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
