@@ -73,6 +73,16 @@
 - [x] **⑦ 产物预览媒体/HTML**(web 28c6620):delivery 分支改用 PreviewBody 统一分派(图片/音视频不再被挡 unsupported);text/html 排除出 isTextual 落 MediaPreview sandbox iframe 真渲染。(注:audio 单测预存红,jsdom blob 环境,非本次引入)
 - [x] **③ S3 真存储可零改切换**(主仓 a7ba5f3):deploy/storage.s3.yaml(三段 S3 单桶 kokoro/minio:9100)+ provision.sh minio/mc 幂等建桶 + .env.example 切换开关+WORKSPACE_S3 凭据键。**对真 minio 往返验证**:S3PackageStore put/get+幂等、S3Archiver archive_tree 键布局/隐藏跳过;storage.s3.yaml 经真 load_storage_file 校验。
 - [x] **④ docker 沙箱 + 部署默认 backend**(session bc684b5/主仓 51f6677):根因=deploy 无 namespaces 文件→EMPTY_PROFILE→backend 'state'(虚拟 FS)=用户所见"模拟"。加部署级 env 兜底 KOKORO_DEFAULT_BACKEND(profile.backend>部署默认>库内 state,不改库默认;避多租户枚举冲突),deploy 设 local_shell;.env.example 补 KOKORO_DOCKER_IMAGE(注 docker.sock 权限敏感故非默认)。**docker 后端对真 docker 往返验证**(bind mount/exec/双向文件/复用/回收);namespace 32 测试绿含新优先级三档。
+- [x] **测试信号治理**(web a3f56f8 / session 9ba2d21 / agent a33b2c8 / platform 2a1a5ab):跑全量才发现"绿"是假的——
+  ① web 3 红(2 条我引入:面板硬编码中文、i18n 新键压破 95% 闸);
+  ② **MT 管线真 bug**:哨兵 KVARn 是拉丁词,ru 音译成 КВАР0、ja/ko 拆成「KVAR は 0」,还原失配 → 7 语种 17 条坏译文
+     带着 'KVAR' 字样进 UI。改无字母哨兵 %%n%% + 容错还原 + **占位符校验闸**(丢了就判失败,宁可回退中文源);
+     en 长期不在 TARGET_LOCALES 从没翻过 → 补进列表 + 人工精修 20 条术语(MT 把「积分」译成 integral/Points)。8 语种现 100%;
+  ③ session 8 条 / agent 10 条 S3 集成因**写死的 minio 密码**整组静默跳过(S3 链路真覆盖为零)→ 改取真源、跳过必出声,现全打真 minio 绿;
+  ④ **platform 569 条集成层从没被跑过**(pnpm -r test 只含单测、集成需 DATABASE_URL_* 无人接线)→ 一跑 27 红,
+     其中 9 条是我整数扣费的回归(只更了单测夹具);quota「不双算 buffer」用例因 ceil 后 hold==实收而失去区分度,
+     加高价 label 造真 buffer 保住验证意图;补 scripts/integration-dev.mjs 一键入口防再空转。
+  **现状:web 484 / session 387(零跳过) / agent 609(零跳过) / platform 单测 1056 + 集成 569,全绿。**
 - [x] **⑥ dev debug 面板**(web 05a9ef7):右下角可拖拽/折叠 dev-only 浮层,聚合 namespace/余额(真)/引擎相位/run/会话/模式;/api/dev/status 门控靠 prod 缺失的 mockWebhookSecret 信号(与 mock-pay 同源,生产恒不渲染)、只读非机密无写入面。**Playwright 实测渲染+真数据(余额 192.86 积分)**。
 - [~] **② 真实模型**:GLM key 定死(用户给的 Aura config.json 那把 = kokoro-agent/.env 现有同一把;raw+JWT×openai/anthropic×paas/coding/anthropic×glm-5/4.6 全 401,连 GET /models 纯鉴权都 401——bigmodel 侧拒,非接线)。**改接本机 ollama qwen3:8b 真模型**:litellm claude-code 别名 → host.docker.internal:11434(直调实测 claude-code→"4" 真出);dev 默认持久化(deploy/.env.dev KOKORO_DEV_LOCAL_FALLBACK=1,gitignored)。**端到端实测**:全新会话 chat 回 MANGO/PONG(流式 message.delta,非 fake 罐头)。坑:①固定会话 ses_chat_smoke 重启前残留仍出 fake,新会话才真;②8B 简单 chat 真且快,重多步工具编排慢/偶卡(小模型限,非接线)——**要稳的生产真模型仍需有效 GLM/云 key**(有效 key 进 kokoro-agent/.env 即自动升级,GLM 优先级>ollama)。
 
