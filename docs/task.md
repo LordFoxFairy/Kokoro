@@ -74,7 +74,7 @@
 - [x] **③ S3 真存储可零改切换**(主仓 a7ba5f3):deploy/storage.s3.yaml(三段 S3 单桶 kokoro/minio:9100)+ provision.sh minio/mc 幂等建桶 + .env.example 切换开关+WORKSPACE_S3 凭据键。**对真 minio 往返验证**:S3PackageStore put/get+幂等、S3Archiver archive_tree 键布局/隐藏跳过;storage.s3.yaml 经真 load_storage_file 校验。
 - [x] **④ docker 沙箱 + 部署默认 backend**(session bc684b5/主仓 51f6677):根因=deploy 无 namespaces 文件→EMPTY_PROFILE→backend 'state'(虚拟 FS)=用户所见"模拟"。加部署级 env 兜底 KOKORO_DEFAULT_BACKEND(profile.backend>部署默认>库内 state,不改库默认;避多租户枚举冲突),deploy 设 local_shell;.env.example 补 KOKORO_DOCKER_IMAGE(注 docker.sock 权限敏感故非默认)。**docker 后端对真 docker 往返验证**(bind mount/exec/双向文件/复用/回收);namespace 32 测试绿含新优先级三档。
 - [x] **⑥ dev debug 面板**(web 05a9ef7):右下角可拖拽/折叠 dev-only 浮层,聚合 namespace/余额(真)/引擎相位/run/会话/模式;/api/dev/status 门控靠 prod 缺失的 mockWebhookSecret 信号(与 mock-pay 同源,生产恒不渲染)、只读非机密无写入面。**Playwright 实测渲染+真数据(余额 192.86 积分)**。
-- [ ] **② 真实 GLM**（阻塞）:key 已死——raw key + HS256 JWT across paas/coding/anthropic 全 401(code 1000 身份验证失败)。架构设计=GLM 经 litellm、凭据在 model 子仓加密管理(非 env)。**需用户提供有效 GLM key** 才能接线+验证真模型多步回答。
+- [~] **② 真实模型**:GLM key 定死(用户给的 Aura config.json 那把 = kokoro-agent/.env 现有同一把;raw+JWT×openai/anthropic×paas/coding/anthropic×glm-5/4.6 全 401,连 GET /models 纯鉴权都 401——bigmodel 侧拒,非接线)。**改接本机 ollama qwen3:8b 真模型**:litellm claude-code 别名 → host.docker.internal:11434(直调实测 claude-code→"4" 真出);dev 默认持久化(deploy/.env.dev KOKORO_DEV_LOCAL_FALLBACK=1,gitignored)。**端到端实测**:全新会话 chat 回 MANGO/PONG(流式 message.delta,非 fake 罐头)。坑:①固定会话 ses_chat_smoke 重启前残留仍出 fake,新会话才真;②8B 简单 chat 真且快,重多步工具编排慢/偶卡(小模型限,非接线)——**要稳的生产真模型仍需有效 GLM/云 key**(有效 key 进 kokoro-agent/.env 即自动升级,GLM 优先级>ollama)。
 
 ## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
 
