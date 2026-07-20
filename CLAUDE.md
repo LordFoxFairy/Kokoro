@@ -42,7 +42,7 @@
 非平凡修改前：
 
 - 确认工作目录与仓库根目录。
-- 阅读实际存在的最近指导入口：`CLAUDE.md`、`AGENTS.md`、`README.md`、`INDEX.md`、`docs/AGENTS.md`、`docs/README.md`、`docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、`tasks/*` 或同等入口文件；不要递归展开整个 `docs/`。
+- 阅读实际存在的最近指导入口：`CLAUDE.md`、`AGENTS.md`、`README.md`、`INDEX.md`、`docs/AGENTS.md`、`docs/README.md`、`docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、`docs/task.md`、`docs/lesson.md` 或同等入口文件；不要递归展开整个 `docs/`。
 - 修改前检查相关 imports、exports、调用方、测试与运行入口。
 - 如果是 git 仓库，先检查工作区状态。
 - 未经明确要求，不得覆盖、回滚或清理用户已有改动。
@@ -349,7 +349,7 @@ Python/TypeScript 混合系统优先从单一事实来源生成客户端类型�
 - 运行了哪些验证命令，结果是什么。
 - 已知风险、阻塞点或后续工作。
 
-长任务若已有 `progress.md`、`tasks/todo.md` 或 issue tracker，维护事实型进度记录：已完成、阻塞点、下一步命令、下一步文件。
+长任务若已有 `docs/task.md`（跨会话任务状态）或 issue tracker，维护事实型进度记录：已完成、阻塞点、下一步命令、下一步文件。操作级教训归 `docs/lesson.md`（唯一权威，勿再另起 lessons 文件）。
 
 不要留下过时计划、失真架构说明或误导性 TODO。
 
