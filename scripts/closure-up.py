@@ -247,6 +247,57 @@ def ensure_infra() -> None:
         step(f"{name} {port}", wait_port(port, 60), "docker-compose.infra.yml 启动失败,看 docker 日志")
 
 
+# 存储档（三段同形:workspace 工作区文件 / deliveries 交付冻结件 / hub skills 包体）。
+# 默认 local(单机零配置);KOKORO_DEV_STORAGE=s3 切到本机 minio——多 pod/多机的真实形态,
+# dev 也能实证 S3 链路(skills 包体、产物、工作区归档全落对象存储)。凭据取 .env.dev,不写死。
+S3_BUCKET = os.environ.get("KOKORO_DEV_S3_BUCKET", "kokoro-dev")
+S3_ENDPOINT = os.environ.get("KOKORO_TEST_MINIO_URL", "http://127.0.0.1:9100")
+S3_ACCESS = DEV_ENV.get("MINIO_ROOT_USER", "")
+S3_SECRET = DEV_ENV.get("MINIO_ROOT_PASSWORD", "")
+
+
+def storage_is_s3() -> bool:
+    return os.environ.get("KOKORO_DEV_STORAGE") == "s3" and bool(S3_ACCESS and S3_SECRET)
+
+
+def storage_yaml() -> str:
+    if not storage_is_s3():
+        return (
+            f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
+            f"deliveries:\n  type: local\n  root: {STATE / 'deliveries'}\n"
+            f"hub:\n  type: local\n  root: {STATE / 'hub-packages'}\n"
+        )
+    seg = (
+        f"  type: s3\n  endpoint: {S3_ENDPOINT}\n  bucket: {S3_BUCKET}\n"
+        f"  region: us-east-1\n  force_path_style: true\n"
+    )
+    return f"workspace:\n{seg}deliveries:\n{seg}hub:\n{seg}"
+
+
+def storage_env() -> dict[str, str]:
+    """S3 档下三方(agent/session/hub)共用的凭据 env;local 档为空。"""
+    if not storage_is_s3():
+        return {}
+    return {"KOKORO_WORKSPACE_S3_ACCESS_KEY": S3_ACCESS,
+            "KOKORO_WORKSPACE_S3_SECRET_KEY": S3_SECRET}
+
+
+def ensure_s3_bucket() -> None:
+    """S3 档启动前幂等建桶(minio 已在 ensure_infra 起好)。"""
+    if not storage_is_s3():
+        return
+    code = (
+        "import boto3;"
+        f"c=boto3.client('s3',endpoint_url='{S3_ENDPOINT}',region_name='us-east-1',"
+        f"aws_access_key_id='{S3_ACCESS}',aws_secret_access_key='{S3_SECRET}');"
+        f"b='{S3_BUCKET}';"
+        "names=[x['Name'] for x in c.list_buckets().get('Buckets',[])];"
+        "c.create_bucket(Bucket=b) if b not in names else None"
+    )
+    r = subprocess.run([str(ROOT / "kokoro-agent" / ".venv" / "bin" / "python"), "-c", code], capture_output=True, text=True)
+    step(f"S3 桶 {S3_BUCKET}", r.returncode == 0, r.stderr[-200:])
+
+
 def migrate() -> None:
     for m, envkey in (("site", "DATABASE_URL_SITE"), ("user", "DATABASE_URL_USER"),
                       ("model", "DATABASE_URL_MODEL"), ("credit", "DATABASE_URL_CREDIT"),
@@ -260,11 +311,7 @@ def boot(real_model: bool) -> dict[str, int]:
     pids: dict[str, int] = {}
     # 包体/工作区存储配置：session/agent 取 workspace+deliveries，hub 取 hub 节（skills 包体权威源）。
     # 必须在 hub/session spawn 前落盘（服务启动即读 KOKORO_WORKSPACE_CONFIG）——缺 hub 节=上传 confirm 503。
-    (STATE / "storage.yaml").write_text(
-        f"workspace:\n  type: local\n  root: {STATE / 'workspace'}\n"
-        f"deliveries:\n  type: local\n  root: {STATE / 'deliveries'}\n"
-        f"hub:\n  type: local\n  root: {STATE / 'hub-packages'}\n"
-    )
+    (STATE / "storage.yaml").write_text(storage_yaml())
     penv = {
         "site": {"DATABASE_URL_SITE": DB, "KOKORO_SITE_PORT": str(PORTS["site"])},
         "user": {"DATABASE_URL_USER": DB, "KOKORO_USER_PORT": str(PORTS["user"]),
@@ -301,7 +348,8 @@ def boot(real_model: bool) -> dict[str, int]:
              "KOKORO_USER_BASE_URL": BASE["user"],
              # 包体存储：hub 取 storage.yaml 的 hub 节（local），skills 上传 confirm 据此落包。
              "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
-             "KOKORO_HUB_MCP_MUTATION": os.environ.get("KOKORO_HUB_MCP_MUTATION", "on")},
+             "KOKORO_HUB_MCP_MUTATION": os.environ.get("KOKORO_HUB_MCP_MUTATION", "on"),
+             **storage_env()},
             STATE / "hub.log")
     step(f"hub {HUB_PORT}", wait_port(HUB_PORT))
     session_env = {
@@ -325,9 +373,11 @@ def boot(real_model: bool) -> dict[str, int]:
         # 直连档保留：浏览器直连 session 时的 CORS 白名单（session 原生单源开关）。AUTH-P0 起
         # 默认走同源 web BFF，浏览器同源不再依赖此项；生产按真实站点域名配置。
         "KOKORO_WEB_ORIGIN": os.environ.get("KOKORO_WEB_ORIGIN", f"http://127.0.0.1:{WEB_PORT}"),
+        **storage_env(),
     }
     agent_env = {
         **os.environ,
+        **storage_env(),
         "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
         "KOKORO_REDIS_URL": "redis://127.0.0.1:6379/0",
         "KOKORO_MONGO_URL": "mongodb://127.0.0.1:27017",
@@ -515,6 +565,7 @@ def cmd_up() -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     print("== infra"); ensure_infra()
     # claude-code 真后端三级回落(GLM→ollama→fake)+ 据此定真/假档。
+    ensure_s3_bucket()  # S3 存储档才动作(local 档 no-op)
     print("== 模型后端"); real_model = bool(resolve_claude_code_backend())
     print("== migrations"); migrate()
     print("== services"); pids = boot(real_model)
