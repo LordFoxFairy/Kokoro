@@ -1,0 +1,30 @@
+# 工作区/交付物/hub 包体存储配置（S3 口径：横向扩展/多 pod/多机时用，取代单机共享本地卷）。
+# 三段共用一个桶 kokoro——键前缀天然隔离：workspace 用 {namespace:session}/、deliveries 用 delivery ref、
+# hub 用 package ref，互不相撞（呼应「基建只允许一套」：一个桶足够）。
+#
+# 启用方式（compose）：.env.* 里
+#   KOKORO_STORAGE_FILE=./deploy/storage.s3.yaml
+#   KOKORO_WORKSPACE_S3_ACCESS_KEY=<MINIO_ROOT_USER>
+#   KOKORO_WORKSPACE_S3_SECRET_KEY=<MINIO_ROOT_PASSWORD>
+# 桶由 provision.sh 幂等创建（mc mb --ignore-existing）。凭据 env-only（ADR-009/010），绝不入本文件。
+#
+# endpoint 用基建服务名 minio:9100（compose/k8s 同网内解析；本机调试用 http://127.0.0.1:9100）。
+# 已对真 minio 往返验证：S3PackageStore put/get + 幂等、S3Archiver archive_tree 键布局/隐藏跳过。
+workspace:
+  type: s3
+  endpoint: http://minio:9100
+  bucket: kokoro
+  region: us-east-1
+  force_path_style: true
+deliveries:
+  type: s3
+  endpoint: http://minio:9100
+  bucket: kokoro
+  region: us-east-1
+  force_path_style: true
+hub:
+  type: s3
+  endpoint: http://minio:9100
+  bucket: kokoro
+  region: us-east-1
+  force_path_style: true

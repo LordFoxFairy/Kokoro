@@ -34,6 +34,15 @@ for i in $(seq 1 60); do
   sleep 2
 done
 
+# S3 桶幂等创建：本地卷(storage.yaml)不需要，但预先建好让 S3 模式(storage.s3.yaml)可零改切换。
+# 失败不阻断编排（本地卷模式下 minio 仅预留），仅告警。
+echo "    确保 S3 桶 kokoro 存在（S3 模式即用）"
+docker run --rm --network "${KOKORO_NETWORK:-kokoro-net}" --env-file "$ENV_FILE" \
+  --entrypoint sh minio/mc -c \
+  'mc alias set k http://minio:9100 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 \
+   && mc mb --ignore-existing k/kokoro && echo "    桶 kokoro 就绪"' \
+  || echo "    (跳过建桶：minio 未就绪或凭据缺失；本地卷模式无碍)" >&2
+
 echo "==> [2/4] 迁移（业务 migrate 一次性服务，拿 URL 连基建跑 prisma migrate deploy）"
 "${APP[@]}" build
 "${APP[@]}" run --rm migrate

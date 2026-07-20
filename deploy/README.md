@@ -60,7 +60,7 @@ docker compose -f docker-compose.prod.yml logs kokoro-user | grep magic
 - [ ] DB/Redis/Mongo 备份策略；卷（kokoro-mysql/mongo/redis/workspace）持久化确认
 
 ## 说明
-- **存储**：workspace/deliveries/hub 包体用共享本地卷 `kokoro-workspace`（`deploy/storage.prod.yaml`，单机口径）。多机改 S3（minio 已在编排）。
+- **存储**：workspace/deliveries/hub 包体默认用共享本地卷（`deploy/storage.yaml`，单机口径）。横向扩展/多 pod/多机切 S3：设 `KOKORO_STORAGE_FILE=./deploy/storage.s3.yaml` + `KOKORO_WORKSPACE_S3_ACCESS_KEY/SECRET_KEY`（取 minio root 账密）；桶 `kokoro` 由 `provision.sh` 幂等创建。S3 路径已对真 minio 往返验证（package put/get+幂等、workspace archive 键布局）。
 - **计费**：生产 `KOKORO_BILLING_MODE=enforce`（余额不足拒 run）。
 - **MCP egress**：生产 `KOKORO_MCP_EGRESS_MODE=strict`（拒私网/环回，防 SSRF）。
 - **端口**：web 3000 / session 3900 / litellm 4000 / 平台 4201-4251 / admin 4290。生产只把 web、必要时 admin 暴露到公网，其余留内网。
