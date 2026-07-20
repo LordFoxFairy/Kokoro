@@ -63,6 +63,19 @@
   - [x] 卫生(主仓):ops/langfuse/.env.local untrack(保留磁盘)+ 建 .env.local.example + 根 .gitignore 负例外 !.env.*.example。用户已确认。
 - [ ] **做完整**:B3c 定价 seed 收编、B1d 按模型消费分解
 
+## prod-realness + UX 打磨批次（2026-07-20;用户 /goal:为什么本地还是模拟、prod 怎么办;认真打磨真实走）
+
+> 用户诉求:积分小数→整数;settings 跳/大小不一;订阅与积分面板分开;GLM 真 key 进 model 子仓;产物预览;
+> sandbox+s3 真实走;docker 沙箱 + local 默认;dev debug 面板(参考 ai-collection AccountDevTool)。「你自己定顺序全做」。
+
+- [x] **① 积分整数扣费**(credit 1e6e59f):holdForUsage/settleUsage 走 ceilToCreditMicros(每次最小 1、向上取整);夹具升到整积分尺度;164 credit 测试绿。
+- [x] **⑤ settings 拆分 + 不跳 + 尺寸统一**(web a231296/f780634):积分/订阅拆两 tab(CoinIcon/SparkleIcon);.layout 固定高 min(72vh,640px) 消除按 tab 变形;contentBody 动画去 translateY 只淡入消跳动。
+- [x] **⑦ 产物预览媒体/HTML**(web 28c6620):delivery 分支改用 PreviewBody 统一分派(图片/音视频不再被挡 unsupported);text/html 排除出 isTextual 落 MediaPreview sandbox iframe 真渲染。(注:audio 单测预存红,jsdom blob 环境,非本次引入)
+- [x] **③ S3 真存储可零改切换**(主仓 a7ba5f3):deploy/storage.s3.yaml(三段 S3 单桶 kokoro/minio:9100)+ provision.sh minio/mc 幂等建桶 + .env.example 切换开关+WORKSPACE_S3 凭据键。**对真 minio 往返验证**:S3PackageStore put/get+幂等、S3Archiver archive_tree 键布局/隐藏跳过;storage.s3.yaml 经真 load_storage_file 校验。
+- [x] **④ docker 沙箱 + 部署默认 backend**(session bc684b5/主仓 51f6677):根因=deploy 无 namespaces 文件→EMPTY_PROFILE→backend 'state'(虚拟 FS)=用户所见"模拟"。加部署级 env 兜底 KOKORO_DEFAULT_BACKEND(profile.backend>部署默认>库内 state,不改库默认;避多租户枚举冲突),deploy 设 local_shell;.env.example 补 KOKORO_DOCKER_IMAGE(注 docker.sock 权限敏感故非默认)。**docker 后端对真 docker 往返验证**(bind mount/exec/双向文件/复用/回收);namespace 32 测试绿含新优先级三档。
+- [x] **⑥ dev debug 面板**(web 05a9ef7):右下角可拖拽/折叠 dev-only 浮层,聚合 namespace/余额(真)/引擎相位/run/会话/模式;/api/dev/status 门控靠 prod 缺失的 mockWebhookSecret 信号(与 mock-pay 同源,生产恒不渲染)、只读非机密无写入面。**Playwright 实测渲染+真数据(余额 192.86 积分)**。
+- [ ] **② 真实 GLM**（阻塞）:key 已死——raw key + HS256 JWT across paas/coding/anthropic 全 401(code 1000 身份验证失败)。架构设计=GLM 经 litellm、凭据在 model 子仓加密管理(非 env)。**需用户提供有效 GLM key** 才能接线+验证真模型多步回答。
+
 ## 全仓体验打磨 + 计费管理 campaign（2026-07-18 起;用户 /goal:好好打磨、完整全面、计费管理两侧覆盖）
 
 > 用户定调:真网关收钱砍掉(个人无商户、做海外,mock 闭环够用);两条轨——A 全仓 UI/交互打磨(我自主推)、
