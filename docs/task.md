@@ -71,6 +71,17 @@
 - [x] **① 积分整数扣费**(credit 1e6e59f):holdForUsage/settleUsage 走 ceilToCreditMicros(每次最小 1、向上取整);夹具升到整积分尺度;164 credit 测试绿。
 - [x] **⑤ settings 拆分 + 不跳 + 尺寸统一**(web a231296/f780634):积分/订阅拆两 tab(CoinIcon/SparkleIcon);.layout 固定高 min(72vh,640px) 消除按 tab 变形;contentBody 动画去 translateY 只淡入消跳动。
 - [x] **⑦ 产物预览媒体/HTML**(web 28c6620):delivery 分支改用 PreviewBody 统一分派(图片/音视频不再被挡 unsupported);text/html 排除出 isTextual 落 MediaPreview sandbox iframe 真渲染。(注:audio 单测预存红,jsdom blob 环境,非本次引入)
+- [x] **S3 真持久化落地实证 + 工作区清理**(主仓 bc57c3e/5370bc6):
+  ① closure-up 加 dev S3 存储档(KOKORO_DEV_STORAGE=s3,三段切 minio,凭据取 .env.dev,启动幂等建桶;
+     默认仍 local 向后安全)。**真跑实证**:经运行中的 hub 真发布 skill(preview→confirm published rev1)→
+     包体落 minio `skills/<ns>/<name>/<content-hash>.zip`,本地 hub-packages 无新增 —— 确证 skills
+     持久化走对象存储。dev 档已持久化在 .env.dev。
+     口径澄清:skills **元数据真源=Mongo**(多租户),**包体(内容寻址 zip)=storage.yaml 的 hub 段**,
+     与 workspace/deliveries 三段同形,一起切 S3。
+  ② 工作区清理:根目录 8 张散落截图 + web 2 张 + kokoro_artifacts/kokoro_hub + kokoro-web/tmp(5.6M)
+     + 全仓 __pycache__;保留 tmp/closure(运行态)与 tmp/参考。
+  ③ 教训文件三处并一处(docs/lesson.md 41 条为唯一权威),移除被 docs/task.md 取代的 tasks/ 与
+     claude-progress.md,并修掉 CLAUDE.md/PROTOTYPE-STATE.md 里指向已删文件的活引用。
 - [x] **③ S3 真存储可零改切换**(主仓 a7ba5f3):deploy/storage.s3.yaml(三段 S3 单桶 kokoro/minio:9100)+ provision.sh minio/mc 幂等建桶 + .env.example 切换开关+WORKSPACE_S3 凭据键。**对真 minio 往返验证**:S3PackageStore put/get+幂等、S3Archiver archive_tree 键布局/隐藏跳过;storage.s3.yaml 经真 load_storage_file 校验。
 - [x] **④ docker 沙箱 + 部署默认 backend**(session bc684b5/主仓 51f6677):根因=deploy 无 namespaces 文件→EMPTY_PROFILE→backend 'state'(虚拟 FS)=用户所见"模拟"。加部署级 env 兜底 KOKORO_DEFAULT_BACKEND(profile.backend>部署默认>库内 state,不改库默认;避多租户枚举冲突),deploy 设 local_shell;.env.example 补 KOKORO_DOCKER_IMAGE(注 docker.sock 权限敏感故非默认)。**docker 后端对真 docker 往返验证**(bind mount/exec/双向文件/复用/回收);namespace 32 测试绿含新优先级三档。
 - [x] **测试信号治理**(web a3f56f8 / session 9ba2d21 / agent a33b2c8 / platform 2a1a5ab):跑全量才发现"绿"是假的——
