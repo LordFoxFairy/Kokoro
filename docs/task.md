@@ -27,7 +27,14 @@
     peer(strict 下 53 文件全挂);pnpm-lock/workspace 转入库(原按 npm 忽略)。验证:typecheck 干净/484 测试绿/web GET 200。
   - [x] phase-1b 首个共享包 @kokoro/tsconfig:apps/user extends,证 packages/*→apps 消费。
   - [x] 生成器 contract/generate.py WEB 路径 → apps/user/src/contract(+test 路径);还原误生成的陈旧契约(session/web)保最小。
-  - [ ] phase-2 admin-web 从 platform 迁入 apps/admin;phase-3 i18n 引擎泛型化/ui 共享(两消费者到位后)。
+  - [x] phase-2 admin-web + i18n 迁入(web f8e044c/platform a3a8cb3):kokoro-admin-web→apps/admin(62 文件)、
+    kokoro-i18n→packages/i18n(@kokoro/i18n,admin 唯一使用者)。**关键攻坚**:①两 app 版本全面分歧
+    (admin R18/Next15/antd5/vitest2 vs user R19/Next16/antd6/vitest4)→ .npmrc 从 hoisted 切 isolated
+    让各 app 隔离 node_modules 拿正确版本(hoisted 扁平会 React 混版破 user 渲染);②pnpm isolated 下
+    jest-dom /vitest 自动集成解析到异实例致 matcher 静默不注册 → setup 改显式 expect.extend(从 /matchers)。
+    platform 移除后剩 8 包全绿(1020 单测)。验证:user 484/admin 25/i18n 12 测试全绿、三方 typecheck 干净、web 200。
+    遗留:platform 盘上 admin-web/i18n 产物目录待清(rm 受限,待授权)。
+  - [ ] phase-3 i18n 引擎泛型化/ui 共享/版本对齐(两消费者已到位,可做)。
   - 注:prod Dockerfile/compose 构建上下文待 repoint(WS5);contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
 - [ ] **WS5 真机总证**:主机 compose build&up 烟测(docker 已起,可做)。
 - [ ] **WS7 INDEX.md**:随 WS6 落地补局部架构地图。
