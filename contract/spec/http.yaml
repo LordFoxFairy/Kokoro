@@ -111,6 +111,8 @@ objects:
       - {name: provider, type: string_nonempty}
       - {name: name, type: string_nonempty}
       - {name: is_default, type: boolean}
+      # 展示名(来自 kokoro-model 目录 label.displayName);缺省时前端回落 name。
+      - {name: display_name, type: string_nonempty, optional: true}
   - name: ModelCandidateList
     fields:
       - {name: models, type: array:object:ModelCandidate}
@@ -130,6 +132,9 @@ objects:
     fields:
       - {name: balance_micros, type: string_nonempty}
       - {name: held_micros, type: string_nonempty}
+      # 组织配额(微单位)与周期口径;null=未设配额(不限)。供用户面配额进度/低余额预警。
+      - {name: quota_micros, type: string_nonempty, nullable: true}
+      - {name: quota_period, type: string_nonempty, nullable: true}
   - name: BillingLedgerEntry
     fields:
       - {name: entry_id, type: string_nonempty}
@@ -137,12 +142,26 @@ objects:
       - {name: delta_micros, type: string_nonempty}
       - {name: reason, type: string_nonempty}
       - {name: created_at, type: int}
+      # 入账后余额快照(微单位):供用户面「余额趋势」逐点重建。
+      - {name: balance_after_micros, type: string_nonempty}
       # 幂等键可解析出 run 时回填;否则 null(如人工调整)。
       - {name: run_id, type: string_nonempty, optional: true, nullable: true}
   - name: BillingLedger
     fields:
       - {name: entries, type: array:object:BillingLedgerEntry}
       - {name: next_cursor, type: string_nonempty, optional: true}
+  # 按模型消费分解(B1d):model_binding_id=null→未归属。
+  - name: BillingByModelItem
+    fields:
+      - {name: model_binding_id, type: string_nonempty, nullable: true}
+      - {name: model_name, type: string_nonempty}
+      - {name: spent_micros, type: string_nonempty}
+      - {name: run_count, type: int}
+  - name: BillingByModel
+    fields:
+      # 统计周期起点(自然月 UTC,ISO 串)。
+      - {name: period_start, type: string_nonempty}
+      - {name: items, type: array:object:BillingByModelItem}
   - name: SessionSnapshot
     fields:
       - {name: session, type: object:SessionMeta}
@@ -259,6 +278,14 @@ endpoints:
     response_const: billingLedgerSchema
     response_object: BillingLedger
     note: "WEB-BILLING:流水 created_at desc;query limit/cursor 同 list_sessions 注。"
+  billing_by_model:
+    method: GET
+    path_fn: billingByModelPath
+    path_template: "/billing/by-model"
+    params: []
+    response_const: billingByModelSchema
+    response_object: BillingByModel
+    note: "B1d:本周期按模型消费分解。"
   snapshot:
     method: GET
     path_fn: snapshotPath

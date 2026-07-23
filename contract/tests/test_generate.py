@@ -48,8 +48,8 @@ def test_raw_and_browser_kinds() -> None:
     events = load("events.yaml")
     raw = [e["kind"] for e in events["raw_kinds"]]
     browser = list(events["browser_order"])
-    assert len(raw) == 18 and "run.started" in raw
-    assert len(browser) == 20
+    assert len(raw) == 20 and "run.started" in raw
+    assert len(browser) == 21
     assert "run.started" not in browser
     assert {"session.created", "run.created"}.issubset(browser)
 
@@ -69,13 +69,14 @@ def test_raw_and_browser_kinds() -> None:
 
 
 def test_no_legacy_vocabulary() -> None:
+    # 注：request_id 曾在禁用列表,但已是合法 control 词汇——HITL submit 决策的幂等锚
+    # (contract/spec/control.yaml 定义)。故移出;其余仍为应绝迹的旧词汇。
     blob = "\n".join(OUTPUTS.values())
     for banned in (
         "agui_out_web_extra",
         "conversation_id",
         "execution_style",
         "permission_mode",
-        "request_id",
         "awaiting_kind",
         'z.literal("text.delta")',
         'z.literal("text.completed")',

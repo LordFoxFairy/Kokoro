@@ -493,6 +493,10 @@ def emit_control_ts(spec: dict) -> str:
         L += ts_object(obj, enums, export=True)
         L.append("")
 
+    # Backend 便捷别名：RuntimeConfig.backend 的字面量联合（消费方按后端分派，如 namespace 解析）。
+    L.append('export type Backend = RuntimeConfig["backend"]')
+    L.append("")
+
     arm_consts = []
     for arm in spec["resume_decisions"]:
         const = f"{arm['type']}DecisionSchema"
@@ -676,6 +680,7 @@ def emit_http_ts(spec: dict) -> str:
         "list_sessions",
         "billing_summary",
         "billing_ledger",
+        "billing_by_model",
         "model_candidates",
         "agent_candidates",
         "list_artifacts",
