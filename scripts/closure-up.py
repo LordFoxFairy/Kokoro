@@ -349,6 +349,10 @@ def boot(real_model: bool) -> dict[str, int]:
              # 包体存储：hub 取 storage.yaml 的 hub 节（local），skills 上传 confirm 据此落包。
              "KOKORO_WORKSPACE_CONFIG": str(STATE / "storage.yaml"),
              "KOKORO_HUB_MCP_MUTATION": os.environ.get("KOKORO_HUB_MCP_MUTATION", "on"),
+             # secret broker(WS3):dev 主密钥=base64(32B),稳定跨重启(否则旧密文解不开);
+             # 生产由 deploy env 注真密钥。缺此值时 broker 503（凭据保管暂未开放）。
+             "KOKORO_HUB_SECRET_MASTER_KEY": os.environ.get(
+                 "KOKORO_HUB_SECRET_MASTER_KEY", "a29rb3JvLWRldi1odWItc2VjcmV0LW1hc3Rlci1rZXk="),
              **storage_env()},
             STATE / "hub.log")
     step(f"hub {HUB_PORT}", wait_port(HUB_PORT))

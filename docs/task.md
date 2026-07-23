@@ -3,6 +3,21 @@
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
 > 最后更新:2026-07-13(**纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure**;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
+## 全面"真正 OK" campaign(2026-07-22;PRD=specs/2026-07-22-comprehensive-realness-campaign.md;审计=reports/2026-07-22-capability-debt-audit.md)
+
+> 用户 /goal:除支付真网关外一切真实测试真正打通;核心洞察=债不是"没造"是"造好了默认 OFF"。
+> GLM key 定论:Aura config 那把对 bigmodel 四端点×四模型×两头×GET/models 全 401(鉴权层拒 token,非接线);
+> model 库接线本就完整(claude-code→litellm→后端,secretRef env 引用),缺的纯是有效凭据——换任意有效 key=改一处网关 env。
+> web 决策:收拢为 monorepo(apps/user+apps/admin+packages/*),两独立部署,不合单 app(admin=antd+NextAuth+Prisma 直连,不能与公网面同源)。
+
+- [x] **WS4 可观测**(platform ba7c3f4 / session 4a77f9f):platform-kit registerMetricsRoute(prom-client 默认进程指标+module 标签+fail-open),6 服务各注册+/metrics public 声明;session 补 /healthz(同信封,鉴权门前公开)。kit 110 单测绿(+2)、session observability 7 绿(+2)、全平台单测无回归。agent /metrics 保持 opt-in(端口归部署 env)。
+- [ ] **WS2 计费点亮**:dev 默认 shadow→切 enforce 真测(余额不足硬拦 402+正常扣费+配额);mock/离线充值作唯一到账路径。**待栈**。
+- [ ] **WS3 能力开门**:MCP 写面(closure-up 默认已 on)+ secret broker 打开真测。**待栈**。
+- [ ] **WS1 真模型**:ollama 证全链真;有效 key 即生产级(依赖用户给 key)。**待栈**。
+- [ ] **WS6 web 收拢**:kokoro-web 升 monorepo,admin-web 从 platform 迁入。纯结构,分阶段可验。
+- [ ] **WS5 真机总证**:用户主机 compose build&up 烟测。**待 docker+用户**。
+- [ ] **WS7 INDEX.md**:随各 WS 落地补局部架构地图。
+
 ## 第二轮全仓打磨(2026-07-16 起;用户面 + 能力运营面 + model 消费侧对齐)
 
 > 目标(用户 /goal):所有功能打通、用户真实进来体验、GLM 注册进去、litellm 对外 claude-code 门面。
