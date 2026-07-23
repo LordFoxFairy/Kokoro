@@ -108,7 +108,10 @@
   - `deploy/.env.example`(全变量占位)+`storage.prod.yaml`+`README.md`(RS256/secret 生成/seed/硬化清单)
   - **`docker compose config` 校验通过(16 服务全解析)**;最终 build&up 真烟测需用户主机(拉基础镜像),README 记明
   - 根 .gitignore 补 .env 兜底
-- [ ] **块2 k8s manifests 补平**:hub/redis/secret 资源/litellm + 应用层单元,与 compose 对齐
+- [x] **块2 k8s manifests**(核验已完整):deploy/k8s/base(namespace/infra/platform/app/jobs/kustomization + kind overlay)
+  带 --load-restrictor LoadRestrictionsNone 渲染出 **44 资源**(15 Deployment+14 Service+5 PVC+2 Job[migrate/provision]
+  +Ingress+RBAC+Secret/ConfigMap),覆盖全 16 服务+迁移/seed,无陈旧 admin-web/i18n 引用,README 已记 flag。
+  真集群部署待用户集群(与 compose 同状态)。原"补平中"台账陈旧,实早成型。
 - [x] **块3 SMTP 邮件 + deliveryMode 生产硬闸**(platform defbbf7):kokoro-user 加 smtp 档(nodemailer,窄口 MagicLinkMailer,原文 token 只进邮件)+ config SMTP_*/MAGIC_LINK_BASE_URL + 路由 smtp 分支(链=<base>?token=,发信失败 502)+ main.ts 生产禁 response fail-fast/smtp 缺配拒启动。user 单测 109 绿、tsc 干净(集成 8 需 DATABASE_URL_USER,环境性)。
 - [~] **块4 env.example(平台侧)+ 可观测 + 卫生**:
   - [x] env 部分(platform f866ff5):平台 5 服务(site/user/model/credit/payment).env.example 补 6 个 KOKORO_INTERNAL_SECRET_* + model provider 变量占位。
