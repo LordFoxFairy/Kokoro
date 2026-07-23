@@ -37,7 +37,9 @@
   - [ ] phase-3 i18n 引擎泛型化/ui 共享/版本对齐(两消费者已到位,可做)。
   - 注:prod Dockerfile/compose 构建上下文待 repoint(WS5);contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
 - [ ] **WS5 真机总证**:主机 compose build&up 烟测(docker 已起,可做)。
-- [ ] **WS7 INDEX.md**:随 WS6 落地补局部架构地图。
+- [~] **WS7 INDEX.md**(web e063b44/根):新增 kokoro-web/INDEX.md monorepo 根架构地图(固化 phase-1/2 攻坚:
+  两 app 边界/isolated linker/jest-dom 坑/扩展规则/欠账);docs/CODEBASE_MAP.md kokoro-web 条目改 monorepo+pnpm;
+  packages/i18n/INDEX.md 随迁移已带(消费方含 admin,现同仓准确)。剩余局部 INDEX 随 phase-3 补。
 
 ## 第二轮全仓打磨(2026-07-16 起;用户面 + 能力运营面 + model 消费侧对齐)
 

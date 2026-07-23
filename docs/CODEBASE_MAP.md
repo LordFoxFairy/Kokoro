@@ -11,7 +11,7 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
   docs/                 总手册、规格、计划、交接、报告、历史资料
   kokoro-agent/         Python agent runtime subrepo
   kokoro-session/       TypeScript session/SSE subrepo
-  kokoro-web/           Next.js web UI subrepo
+  kokoro-web/           Web pnpm monorepo：apps/user(用户面) + apps/admin(运营后台) + packages/*(共享)
   kokoro-platform/      Platform domain parent subrepo
 ```
 
@@ -70,23 +70,28 @@ npm run typecheck
 npm run lint
 ```
 
-### kokoro-web
+### kokoro-web（pnpm monorepo）
 
-Next.js UI。消费 session HTTP/SSE，折叠本地 thread/activity/files/canvas 投影。
+一个子仓两个独立部署的 Next.js app + 共享包（架构地图见 `kokoro-web/INDEX.md`）：
 
-正式文档入口：`kokoro-web/README.md`、`kokoro-web/docs/README.md`。
+- `apps/user`（`@kokoro/web-user`）：用户面工作台。消费 session HTTP/SSE，走 web BFF 不直连 DB。Next16/React19/antd6。
+- `apps/admin`（`@kokoro/admin-web`）：运营后台。NextAuth + Prisma 直连 DB 的特权面。Next15/React18/antd5。
+- `packages/*`：`@kokoro/tsconfig`（共享 TS 基线）、`@kokoro/i18n`（i18n 引擎）。
 
-常用验证：
+**两 app 版本全面分歧，靠 pnpm `node-linker=isolated` 共存**（切 hoisted 会 React 混版，见 INDEX 陷阱段）。
+正式文档入口：`kokoro-web/README.md`、`kokoro-web/apps/user/docs/README.md`。
+
+常用验证（pnpm workspace）：
 
 ```bash
-npm test
-npm run typecheck
-npm run lint
-npm run build
+pnpm install
+pnpm -r typecheck
+pnpm -r test                          # user 484 / admin 25 / i18n 12
+pnpm --filter @kokoro/web-user build
 ```
 
 注意：Next.js 版本有项目规则要求。修改 framework-facing code 前先读
-`kokoro-web/node_modules/next/dist/docs/` 中相关文档。
+`apps/user/node_modules/next/dist/docs/` 中相关文档。
 
 ### kokoro-platform
 
