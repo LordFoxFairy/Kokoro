@@ -11,12 +11,19 @@
 > web 决策:收拢为 monorepo(apps/user+apps/admin+packages/*),两独立部署,不合单 app(admin=antd+NextAuth+Prisma 直连,不能与公网面同源)。
 
 - [x] **WS4 可观测**(platform ba7c3f4 / session 4a77f9f):platform-kit registerMetricsRoute(prom-client 默认进程指标+module 标签+fail-open),6 服务各注册+/metrics public 声明;session 补 /healthz(同信封,鉴权门前公开)。kit 110 单测绿(+2)、session observability 7 绿(+2)、全平台单测无回归。agent /metrics 保持 opt-in(端口归部署 env)。
-- [ ] **WS2 计费点亮**:dev 默认 shadow→切 enforce 真测(余额不足硬拦 402+正常扣费+配额);mock/离线充值作唯一到账路径。**待栈**。
-- [ ] **WS3 能力开门**:MCP 写面(closure-up 默认已 on)+ secret broker 打开真测。**待栈**。
-- [ ] **WS1 真模型**:ollama 证全链真;有效 key 即生产级(依赖用户给 key)。**待栈**。
-- [ ] **WS6 web 收拢**:kokoro-web 升 monorepo,admin-web 从 platform 迁入。纯结构,分阶段可验。
-- [ ] **WS5 真机总证**:用户主机 compose build&up 烟测。**待 docker+用户**。
-- [ ] **WS7 INDEX.md**:随各 WS 落地补局部架构地图。
+- [x] **WS1 真模型链路**(实证):enforce 真栈 ollama qwen3:8b→全新会话 run.completed、5 帧真流式 delta、
+  回"中国的首都是北京。"(非 fake 罐头)。生产级稳定仍需有效云 key(进 .env 即自动升级,GLM>ollama)。
+- [x] **WS2 计费点亮**(agent 18b394d/根 52fab2e,实证):切 enforce 真测——零余额受理 **402 硬拦**、
+  admin 充值到账、对话结算**真扣 20 积分**(余额 100→80)、ledger 现 model_call 带 run_id。
+  **顺带修真 bug**:网关流式模型默认不回 usage→结算捕获 0→零扣费;加 stream_usage(include_usage)修复,
+  对生产模型同益。summary/ledger 读面正常(直返对象非 data 包裹)。welcome 100 积分赠额确认。
+- [x] **WS3 能力开门**(根 52fab2e,实证):closure-up 补 KOKORO_HUB_SECRET_MASTER_KEY 开启 secret broker
+  (原默认 OFF→503→现 resolve 非 503);MCP 写面本已 mutation=on(非 capability_registration_disabled)。
+  self 面完整往返受 dev membership 限(namespace=userId 非真 team 成员),归既有 MCP-SECRET e2e。
+- [x] **WS4 可观测**(platform ba7c3f4/session 4a77f9f):见上;live 实证 /metrics 真出、/healthz 200。
+- [ ] **WS6 web 收拢**:kokoro-web 升 monorepo,admin-web 从 platform 迁入。纯结构,分阶段可验。**大件,下一步**。
+- [ ] **WS5 真机总证**:主机 compose build&up 烟测(docker 已起,可做)。
+- [ ] **WS7 INDEX.md**:随 WS6 落地补局部架构地图。
 
 ## 第二轮全仓打磨(2026-07-16 起;用户面 + 能力运营面 + model 消费侧对齐)
 
