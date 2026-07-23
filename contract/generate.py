@@ -14,7 +14,7 @@ SPEC = HERE / "spec"
 
 AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
 SESSION = ROOT / "kokoro-session/src/contract"
-WEB = ROOT / "kokoro-web/src/contract"
+WEB = ROOT / "kokoro-web/apps/user/src/contract"
 HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
 
 EVENTS_SRC = "contract/spec/events.yaml"

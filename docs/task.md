@@ -21,7 +21,14 @@
   (原默认 OFF→503→现 resolve 非 503);MCP 写面本已 mutation=on(非 capability_registration_disabled)。
   self 面完整往返受 dev membership 限(namespace=userId 非真 team 成员),归既有 MCP-SECRET e2e。
 - [x] **WS4 可观测**(platform ba7c3f4/session 4a77f9f):见上;live 实证 /metrics 真出、/healthz 200。
-- [ ] **WS6 web 收拢**:kokoro-web 升 monorepo,admin-web 从 platform 迁入。纯结构,分阶段可验。**大件,下一步**。
+- [~] **WS6 web 收拢**(web 9dc80f8/2c4626a):
+  - [x] phase-1a monorepo 骨架:kokoro-web 从单包(npm)转 pnpm workspace;app 迁 apps/user(249 rename 保历史,
+    name=@kokoro/web-user);根 package.json 委派(closure-up 不变);.npmrc node-linker=hoisted 复原 jest-dom→vitest
+    peer(strict 下 53 文件全挂);pnpm-lock/workspace 转入库(原按 npm 忽略)。验证:typecheck 干净/484 测试绿/web GET 200。
+  - [x] phase-1b 首个共享包 @kokoro/tsconfig:apps/user extends,证 packages/*→apps 消费。
+  - [x] 生成器 contract/generate.py WEB 路径 → apps/user/src/contract(+test 路径);还原误生成的陈旧契约(session/web)保最小。
+  - [ ] phase-2 admin-web 从 platform 迁入 apps/admin;phase-3 i18n 引擎泛型化/ui 共享(两消费者到位后)。
+  - 注:prod Dockerfile/compose 构建上下文待 repoint(WS5);contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
 - [ ] **WS5 真机总证**:主机 compose build&up 烟测(docker 已起,可做)。
 - [ ] **WS7 INDEX.md**:随 WS6 落地补局部架构地图。
 

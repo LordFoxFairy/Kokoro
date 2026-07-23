@@ -60,7 +60,7 @@ def test_raw_and_browser_kinds() -> None:
         assert f'Literal["{kind}"]' in events_py, kind
 
     session = _find("kokoro-session/src/contract/session-events.ts")
-    names = _find("kokoro-web/src/contract/event-names.ts")
+    names = _find("kokoro-web/apps/user/src/contract/event-names.ts")
     for kind in browser:
         assert f'z.literal("{kind}")' in session, kind
         assert f'"{kind}",' in names, kind
@@ -98,9 +98,9 @@ def test_run_request_shape() -> None:
 
 def test_web_and_session_share_outbound_bytes() -> None:
     assert _find("kokoro-session/src/contract/session-events.ts") == _find(
-        "kokoro-web/src/contract/session-events.ts"
+        "kokoro-web/apps/user/src/contract/session-events.ts"
     )
     assert _find("kokoro-session/src/contract/control.ts") == _find(
-        "kokoro-web/src/contract/control.ts"
+        "kokoro-web/apps/user/src/contract/control.ts"
     )
-    assert _find("kokoro-session/src/contract/http.ts") == _find("kokoro-web/src/contract/http.ts")
+    assert _find("kokoro-session/src/contract/http.ts") == _find("kokoro-web/apps/user/src/contract/http.ts")
