@@ -96,7 +96,7 @@ services:
     restart: unless-stopped
 
   kokoro-web:
-    build: { context: ./kokoro-web }
+    build: { context: ./kokoro-web, dockerfile: apps/user/Dockerfile }
     env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
     networks: [default]
     depends_on:
