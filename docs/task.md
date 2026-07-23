@@ -34,9 +34,16 @@
     jest-dom /vitest 自动集成解析到异实例致 matcher 静默不注册 → setup 改显式 expect.extend(从 /matchers)。
     platform 移除后剩 8 包全绿(1020 单测)。验证:user 484/admin 25/i18n 12 测试全绿、三方 typecheck 干净、web 200。
     遗留:platform 盘上 admin-web/i18n 产物目录待清(rm 受限,待授权)。
-  - [ ] phase-3 i18n 引擎泛型化/ui 共享/版本对齐(两消费者已到位,可做)。
-  - 注:prod Dockerfile/compose 构建上下文待 repoint(WS5);contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
-- [ ] **WS5 真机总证**:主机 compose build&up 烟测(docker 已起,可做)。
+  - [x] phase-3 i18n 泛型化 + 版本对齐(web 61cb01d/b544aa0→35b90e0/33975c8):
+    ① i18n 引擎泛型化:apps/user/src/i18n/resolve.ts 委派 @kokoro/i18n(与 admin 同引擎),公共面不变 42 处零改动,484 绿。
+    ② 版本对齐:admin R18/Next15/antd5/vitest2 → **R19/Next16/antd6/vitest4 与 user 完全一致**。
+       React19 补 2 处 useRef(undefined);Next16 加 force-dynamic(后台全动态,避 turbopack 预渲染模块初始化坑);
+       antd6+pro-components(官方 peer 为 antd5)经 typecheck/25 测试/Next16 生产构建三验通过(build SSR 模块求值暴露缺失导出→通过=导入全满足)。
+       验证:admin typecheck+25 测试+生产构建绿、user 484 绿、web 200。**版本分歧债清零**。
+    - 残留(非阻塞):antd6 上 pro-components 运行时视觉 smoke 待 admin 栈浏览器验(需 platform-admin 网关+DB);ui 共享包随需再抽。
+  - 注:contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
+- [~] **WS5 真机总证**:web prod 镜像**真 build 成功**(kokoro-web 1727f0a monorepo Dockerfile,401MB,exit 0;
+  compose 加 dockerfile: apps/user/Dockerfile)。剩余:其余服务镜像 build + 主机 compose up 全栈烟测(需用户主机)。
 - [~] **WS7 INDEX.md**(web e063b44/根):新增 kokoro-web/INDEX.md monorepo 根架构地图(固化 phase-1/2 攻坚:
   两 app 边界/isolated linker/jest-dom 坑/扩展规则/欠账);docs/CODEBASE_MAP.md kokoro-web 条目改 monorepo+pnpm;
   packages/i18n/INDEX.md 随迁移已带(消费方含 admin,现同仓准确)。剩余局部 INDEX 随 phase-3 补。
