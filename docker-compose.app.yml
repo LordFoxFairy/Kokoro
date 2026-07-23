@@ -28,6 +28,17 @@ services:
     restart: "no"
     command: ["pnpm", "-r", "db:migrate"]
 
+  # ---- 一次性 workspace 卷授权：共享卷 kokoro-workspace 默认 root:root,但 session/agent 以非 root
+  # (uid 1001) 跑,建不了 workspace 子目录 → agent assembly PermissionError。此 init chown 到 1001:999
+  # (session/agent 用户;hub 为 root 不受影响),令三者皆可写。----
+  workspace-init:
+    image: busybox
+    command: ["sh", "-c", "mkdir -p /data/workspace/workspace && chown -R 1001:999 /data/workspace"]
+    volumes:
+      - kokoro-workspace:/data/workspace
+    networks: [default]
+    restart: "no"
+
   # ---- 平台服务（同镜像，KOKORO_SERVICE_PACKAGE 选包；连基建走 env URL）----
   kokoro-site:
     <<: *platform-build
@@ -62,7 +73,9 @@ services:
   kokoro-hub:
     <<: *platform-build
     environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/hub" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
@@ -79,7 +92,9 @@ services:
     build: { context: ./kokoro-session }
     env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
     networks: [default]
-    depends_on: { kokoro-user: { condition: service_started } }
+    depends_on:
+      kokoro-user: { condition: service_started }
+      workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
@@ -90,6 +105,8 @@ services:
     build: { context: ./kokoro-agent }
     env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
     networks: [default]
+    depends_on:
+      workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro

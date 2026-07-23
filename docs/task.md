@@ -42,8 +42,16 @@
        验证:admin typecheck+25 测试+生产构建绿、user 484 绿、web 200。**版本分歧债清零**。
     - 残留(非阻塞):antd6 上 pro-components 运行时视觉 smoke 待 admin 栈浏览器验(需 platform-admin 网关+DB);ui 共享包随需再抽。
   - 注:contract/tests/test_generate.py 2 预存红(raw_kinds 18 vs spec 20、request_id 禁用词)=spec 漂移老债,非本次。
-- [~] **WS5 真机总证**:web prod 镜像**真 build 成功**(kokoro-web 1727f0a monorepo Dockerfile,401MB,exit 0;
-  compose 加 dockerfile: apps/user/Dockerfile)。剩余:其余服务镜像 build + 主机 compose up 全栈烟测(需用户主机)。
+- [x] **WS5 真机总证**(全栈真起真测,不留尾巴):
+  - **4 镜像全 build 成功**:platform 1.7G(修 Dockerfile 删已迁走的 admin-web/i18n COPY,9c81c41)、session 878M、
+    agent 1.26G、web 401M(monorepo Dockerfile,1727f0a)。
+  - **provision.sh 起全 prod 容器栈**(连同一套 infra,.env.prod 生成密钥/RS256):exit 0,7 平台服务+session+agent+web 全 Up,seed 完成。
+  - **全栈烟测全 200**:7 平台 /healthz + session /healthz+/metrics(WS4) + platform /metrics(WS4) + web /。
+  - **端到端对话 run.completed**:RS256/jwks 签发 + enforce+welcome 100 积分受理 + agent fake 模型 + SSE 全链(todo/delta/completed)。
+  - **抓修真尾巴**:共享卷 kokoro-workspace 默认 root:root,但 session/agent 非 root(uid1001)→ agent assembly
+    PermissionError。compose 加一次性 workspace-init 服务 chown 1001:999,三者依赖它。**修后对话 run.completed 验证**。
+  - README 修正为 provision.sh 真入口(原引用不存在的 docker-compose.prod.yml)。
+  - 剩余(非阻塞):真模型仍需有效 key(fake 罐头是 prod 预期占位);admin-web 未入 prod compose(独立部署,需 platform-admin 网关栈);k8s manifests(deploy/k8s 半成品)。
 - [~] **WS7 INDEX.md**(web e063b44/根):新增 kokoro-web/INDEX.md monorepo 根架构地图(固化 phase-1/2 攻坚:
   两 app 边界/isolated linker/jest-dom 坑/扩展规则/欠账);docs/CODEBASE_MAP.md kokoro-web 条目改 monorepo+pnpm;
   packages/i18n/INDEX.md 随迁移已带(消费方含 admin,现同仓准确)。剩余局部 INDEX 随 phase-3 补。
