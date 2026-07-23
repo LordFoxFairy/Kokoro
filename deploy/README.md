@@ -1,9 +1,12 @@
 # Kokoro 单机全栈部署（docker-compose）
 
-一台主机上用 `docker compose` 起全栈：infra（mysql/mongo/redis/minio）+ 平台七服务 + session/agent/web + litellm 网关。
-编排文件：仓库根 `docker-compose.prod.yml`。变量模板：`deploy/.env.example`。
+一台主机上用 `docker compose` 起全栈：infra（mysql/mongo/redis/minio/litellm）+ 平台七服务 + session/agent/web。
+架构=基建与业务两个独立 compose 项目，经命名网络 `kokoro-net` 相连：
+- 基建：`docker-compose.infra.yml`（唯一一套 mysql/redis/mongo/minio/litellm）。
+- 业务：`docker-compose.app.yml`（migrate + 7 平台服务 + session/agent/web，一律 env URL 连基建）。
+- **一键编排：`deploy/provision.sh`**（infra→build→migrate→服务→幂等 seed，全流程）。变量模板：`deploy/.env.example`。
 
-> 目标形态之一（单机）。k8s 形态见 `kokoro-platform/deploy/k8s/`（上线任务 #56 补平中）。
+> 目标形态之一（单机）。k8s 形态见 `kokoro-platform/deploy/k8s/`。
 
 ## 前置
 - Docker + Docker Compose v2
@@ -13,9 +16,9 @@
 
 ### 1. 配置
 ```bash
-cp deploy/.env.example deploy/.env
+cp deploy/.env.example deploy/.env.prod   # provision.sh 默认读 deploy/.env.prod（.env.* 已 gitignore）
 ```
-把 `deploy/.env` 里所有 `CHANGE_ME` 换成真值：
+把 `deploy/.env.prod` 里所有 `CHANGE_ME` 换成真值：
 
 - **内部服务凭据**（6 个 `KOKORO_INTERNAL_SECRET_*`）+ **web 信封密钥** + **mock webhook secret**：各生成独立强随机
   ```bash
@@ -30,25 +33,25 @@ cp deploy/.env.example deploy/.env
 - **KOKORO_SITE_ID**：与下方 seed 的站点一致（`site-<key>`）
 - **KOKORO_WEB_ORIGIN**：真实对外域名
 
-### 2. 起栈
+### 2. 起栈（一键）
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+bash deploy/provision.sh deploy/.env.prod
 ```
-`migrate` 一次性服务先跑完 `prisma migrate deploy`（各平台 DB），平台服务才启动。首次构建较慢（多镜像）。
+脚本按序：① 起基建 + 等 mysql healthy + 幂等建 S3 桶；② `docker compose ... build` 全镜像 + `run --rm migrate`（各平台 DB `prisma migrate deploy`）；③ 起 7 平台服务 + session/agent/web + 等 healthz；④ 幂等 seed（model 内置目录 / 运营数据 / 站点 active / 计价 / 积分包+mock 网关）。首次构建较慢（多镜像）。
 
-### 3. 首次 provisioning（起栈后一次性）
-- **站点**：调 site 服务 upsert 建站点（key 与 `KOKORO_SITE_ID` 对应），令 host→site 解析生效
-- **平台内置目录**：model `seed:builtin`（内置默认模型 label）
-- **首个 admin operator**：platform-admin 初期用 `KOKORO_ADMIN_AUTH_MODE=dev`（固定 operator，无真鉴权）——仅用于首次进后台；**生产务必切 `oidc` 或 `proxy`**（见 .env 注释）
-- （定价/积分包 seed：接真收费前按需，参考 `scripts/closure-up.py` 的 seed 段）
+> 手动分步（等价）：`docker compose --env-file deploy/.env.prod -p kokoro-infra -f docker-compose.infra.yml up -d` → `docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml build && ... run --rm migrate && ... up -d`。
+
+### 3. 站点绑定（首次一次性；seed 已建站点，此步确认 host→site 解析）
+- provision.sh 的 seed 已建站点（key 与 `KOKORO_SITE_ID` 对应）。多域名/自定义站点在 admin 后台补域名绑定。
+- **首个 admin operator**：初期 `KOKORO_ADMIN_AUTH_MODE=dev`（固定 operator，无真鉴权），仅用于首次进后台；**生产务必切 `oidc`/`proxy`**（见 .env 注释）。
 
 ### 4. 验证
 ```bash
-docker compose -f docker-compose.prod.yml ps        # 各服务 healthy/running
-curl -fsS http://<host>:4211/healthz                # user 健康
-curl -fsS http://<host>:3900/metrics | head         # session 指标
+docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml ps   # 各服务 running
+curl -fsS http://<host>:4211/healthz                # user 健康(平台服务同法:4201/4221/4231/4241/4251/4290)
+curl -fsS http://<host>:3900/metrics | head         # session 指标(session 亦有 /healthz)
 # 浏览器开 http://<host>:3000 → 落地页 → 登录（magic-link 现走 log 档,链接看 user 服务日志）
-docker compose -f docker-compose.prod.yml logs kokoro-user | grep magic
+docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml logs kokoro-user | grep magic
 ```
 
 ## 上线硬化清单（部署跑通后）
