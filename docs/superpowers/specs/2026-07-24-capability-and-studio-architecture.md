@@ -1,101 +1,89 @@
-# 能力(Capability) × Studio × Chat 架构 — 技术方案
+# 通用引擎架构：一个本质，surface + 模型 是唯一变量 — 技术方案
 
-状态：草案待评审
+状态：草案待评审（v3，收敛到"共同本质"）
 日期：2026-07-24
-缘起：产品愿景是"AI 产品工厂（Chat + 专业 Studio）"，但 Studio 与媒体能力=0。
-用户定向：**优先 Music Studio + Image Studio，能过快速，且做好后反哺 Chat 当二级子功能。**
-关键：**"反哺 chat"从架构上强制了一个统一抽象**——能力不能焊死在 Studio 里。
+用户定向：优先 Music/Image Studio、能过快、反哺 Chat；**先把通用的基本能力打通**。
 
-> 论据只来自我们自己的约束（design soul：能力放对层 / 扩张=加配置 / chat 复用专业能力 / 不自建媒体模型）。
+> 论据只来自我们自己的约束（design soul：智能给 agent / 能力放对层 / 扩张=加配置 / chat 复用能力 / 不自建媒体模型）。
 
 ---
 
-## 0. 核心原则：**能力是原子，Studio 与 Chat 是它的两个界面**
+## 0. 共同本质：**只有一台通用引擎**
 
-一句话定架构：
-- **Capability（能力）** = 可被调用的一个"产品能做 X"的原子单位（对话、生成音乐、生成图片、代码…）。
-- **Studio** = 某能力之上的**专业工作台界面**（参数/预览/版本/队列/批量/导出）。付费、可增长。
-- **Chat** = agent 把**同一个能力**当**工具**调用的低门槛界面。
+Chat、Music Studio、Image Studio、以后 Video/Code——**不是不同的东西，是同一台引擎的不同配置**。
 
-**同一份能力，两个界面。建一次，surface 两次。** 这就是"Studio 反哺 Chat"的机制——
-Studio 依赖的能力**本就在 Chat 可调用**，不是再实现一遍。焊死在 Studio 里则永远反哺不了。
+**本质（一条链）：**
+```
+用户意图 → GA 编排能力 → 能力调用 kokoro-model 里的模型（任意厂商/任意模态）
+        → 产出 artifact → credit 计量 → namespace 隔离
+```
 
----
+**全局只有两个变量：**
+1. **surface**：Chat（语言表意、GA 自选） vs Studio（参数直给、专业控制面）。**只差意图表达 + 产出呈现。**
+2. **模型**：调 kokoro-model 里的哪个——LLM / 音乐模型 / 图片模型 / 视频模型。**都是一个"模型"，平级。**
 
-## 1. 能力模型（Capability）
+其余（GA、能力抽象、credit、artifact、namespace）**恒定不变**。
 
-一个能力声明：
-- **调用契约**：入参 schema（如 image：prompt/尺寸/风格/张数）→ 出参（artifact/message）。
-- **执行模式**：`sync-stream`（LLM 对话，流式）| **`async-job`（媒体生成，耗时秒~分）**。
-- **provider**：谁执行——LLM=litellm 网关；**媒体=外部 provider（Suno/Replicate/fal/OpenAI-images…），我方不自建模型**。
-- **featureKey（计费）**：如何计量/定价（music / image 各自费率；接 credit hold/settle）。
-- **产出**：message（chat 内联）| **artifact（媒体产物，进产物库）**。
-- **权益 gating**：哪些 Plan 可用 / 什么档（免费=基础、订阅=高级模型/更快/更低倍率——接 §权益层）。
-
-> 加一种能力（video/code/tts）= 声明一条 = provider 适配 + featureKey + 参数 schema，**不改 job/计费/产物/界面机器**。
+> 推论：**根本没有"做一个 Music Studio / Image Studio"这种事**——只有"给通用引擎加一份配置（surface 布局 + 指定模型 + featureKey）"。
+> 产品工厂是字面的：**工厂=这台引擎；产品=配置。** 所以要打磨的是**引擎的通用基本能力**，不是某个 studio。
 
 ---
 
-## 2. 媒体能力 = 异步 job + 外部 provider（这也是"能快"的原因）
+## 1. 三个统一（把"不同的东西"收成"同一本质的实例"）
 
-**能过快，因为我方不训练/不托管媒体模型——只做集成**：
-- **provider 适配层**（类比 litellm 之于 LLM，但 job 形态）：把 Suno/Replicate/fal 等的 API 归一化成统一"媒体 job"。
-  凭据同模型 key，走加密/env 注入（provider key 需你提供，架构可先用一个 provider/mock 跑通）。
-- **job 生命周期**：enqueue → hold 积分 → 调 provider → poll/webhook → 结果 → settle 积分 → 落 artifact → SSE 通知。
-- **复用现有机器**：credit hold/settle、artifact 库、SSE、Redis 队列、namespace 隔离——**全都现成**。
-  真正的新件只有：**provider 适配 + job 编排 + 两个界面**。
+| 维度 | 唯一抽象 | 实例（只是配置/数据） |
+|---|---|---|
+| **执行** | **GA（一个运行时）** | chat run / studio run 全跑它；GA run 本身就是 job |
+| **模型** | **kokoro-model（一个注册表，所有厂商所有模态）** | GPT/Claude(LLM) · Suno(音乐) · 某(图片/视频) 全平级 |
+| **能力** | **Capability（GA 可调用）** | tools · skills · MCP · subagents · **调某模型（含媒体）** |
+| **货币** | **credit（一种）** | 对话/音乐/图片 按 featureKey 计，同一 hold/settle |
+| **产物** | **artifact（一个库）** | 文本/音频/图片/视频 同一库，按 studio/project 归类 |
+| **surface** | **通用 Chat / 通用 Studio 框架** | Music/Image = 两份 Studio 配置 |
+| **商业** | **Plan（一个抽象）** | 免费/积分包/订阅（见货币化 spec） |
 
----
-
-## 3. 两个界面：反哺的机制
-
-**能力层（job）被两个入口共用**：
-- **Chat（二级子功能）**：agent 把能力当**工具**调——"生成一张猫的图" → agent 调 image 工具 → job → 产物卡回到对话。
-  低门槛、语言驱动。这就是"反哺"：Studio 建好的能力，Chat 立刻能用。
-- **Studio（主打付费）**：专业工作台 UI，参数表/实时预览/多版本/队列/批量/导出，驱动**同一个 job**。
-  主界面不是聊天，是控制面。
-
-**落位待定（§6 决策）**：job 层需要 agent 工具**和** Studio 后端都能调 → 是共享的"能力 job 服务"（非 agent 私有）。
+**kokoro-model 是所有模型的家**（你的定调）：一个音乐模型就是一个模型，和 LLM 走同一套 label/binding/provider/凭据/网关。
+媒体不是"另接一个 provider 网关"，是**kokoro-model 多一种模态的模型**；能力调它、GA 编排它，与调 LLM 同构。
 
 ---
 
-## 4. Studio 即配置（扩张=加配置不是加代码）
+## 2. Studio 通用：一份配置，不是一套代码
 
-一个 Studio = `{能力 ref, 参数 schema, UI 布局模板, featureKey, 产物类型}`。
-- **Music Studio** = music 能力 + 音乐参数（时长/风格/歌词/人声）+ 音频产物 + 音乐 featureKey。
-- **Image Studio** = image 能力 + 图片参数（尺寸/风格/张数/参考图）+ 图片产物 + 图片 featureKey。
-- **后续 Video/Code Studio** = 新 provider + 新配置，**复用 job/计费/产物/界面骨架**。
-这就是"产品工厂"：新垂类 = 共享能力机器之上加一份配置。
+通用 Studio 框架 = 读配置渲染控制面 + 组装一次 GA run：
+```
+{ surface布局: 左参数/右预览/下版本, 参数schema: {…}, 调用: 指定 kokoro-model 的某模型 + featureKey, 产物类型: … }
+```
+- **Image Studio** = 图片模型 + 图片参数(尺寸/风格/张数/参考图) + 图片 featureKey。
+- **Music Studio** = 音乐模型 + 音乐参数(时长/风格/歌词/人声) + 音乐 featureKey。
+- **加 Video/Code = 再加一份配置 + kokoro-model 里注册对应模型**，框架/GA/credit/artifact **零改动**。
 
----
-
-## 5. 分层落位（映射现有仓）
-
-- **provider 适配 + 凭据**：归模型/provider 域（kokoro-model 扩出"媒体 provider"，或平行新模块）。凭据同 model key 口径。
-- **能力 job 编排**：新"能力 job"层（enqueue/hold/provider/settle/artifact/notify）——agent 工具与 Studio 后端共调。
-- **Chat 工具**：kokoro-agent 加媒体工具（wrap job）。
-- **Studio UI**：kokoro-web/apps/user 加 studio 路由/工作台（暖纸感设计系统）。
-- **产物**：现有 artifact 库（按 studio/project 归类，接 §组织纵深）。
-- **计费**：credit hold/settle + 媒体 featureKey；卡密/订阅/包三渠道供给积分。
+Chat 是另一个通用 surface：对话 → GA 自主从能力池选（含媒体能力）→ 产物卡回对话。**反哺=自动**（同一 GA、同一能力池、同一 kokoro-model）。
 
 ---
 
-## 6. 待你确认的架构决策（我已定倾向，供纠偏）
+## 3. 落位（全是现有层扩展，**无新服务、无平行 job**）
 
-1. **能力 job 层落位**：独立"能力 job 服务"（agent 工具 + Studio 后端共调）——倾向此，避免 Studio 被迫走 agent run。
-   次选：Studio 也走 headless agent run（复用最彻底但耦合 agent）。
-2. **provider 归属**：媒体 provider 收进 kokoro-model 的 provider/凭据体系（一个 provider 就是一个 provider），还是平行新模块。
-3. **反哺时序**：先把能力 job + Studio 做好 → 再在 chat 挂工具（反哺）。即 **Studio 先行、Chat 工具随后**。
+- **模型（含媒体）**：kokoro-model 注册所有模态模型 + provider/凭据（同 model key 口径）；网关调用（litellm 之于 LLM，媒体同理经网关/adapter）。
+- **能力挂载**：hub 按 namespace（与 skills/MCP 同装配路径）。
+- **执行/job/流式/durable/HITL**：kokoro-agent GA（现成，GA run 即 job）。
+- **计费**：credit hold/settle + featureKey。**产物**：artifact 库。**供给**：卡密/订阅/包。
+- **surface**：kokoro-web 通用 Chat + 通用 Studio 框架。
 
 ---
 
-## 7. 执行序（提案，先对齐再动）
+## 4. 执行序：**先打通通用基本能力，studio 才是配置**（你的定调）
 
-1. 能力 job 层骨架（enqueue/hold/provider/settle/artifact/notify）+ 一个真 provider（或 mock）跑通。
-2. **Image Studio**（图片最快：单次调用、产物直观）→ 参数表/预览/版本/导出。
-3. **Music Studio**（音频：时长/风格/歌词/人声）。
-4. 两个能力**挂进 Chat 工具**（反哺，二级子功能）。
-5. featureKey 计费接入（图片/音乐费率）+ 卡密/订阅/包供给。
-6. 产物库按 studio/project 归类（依赖组织纵深 workspace/project）。
+1. **kokoro-model 收全模态**：模型注册表容纳"媒体模型"（音乐/图片），与 LLM 同构（label/binding/provider/凭据/网关调用）。
+2. **能力调模型的通用链打通**：GA 能力池加"调某模型（含媒体）"这类能力，经 hub 挂载；run 按 featureKey 计费；产出落 artifact。**这条通用链打通=引擎成。**
+3. **通用 Studio 框架**：读配置→控制面→组装 GA run→预览/版本/导出。
+4. **Image Studio / Music Studio = 各一份配置**（图片先，最直观最快）。
+5. **反哺自动**：能力已在池，chat 里 GA 自选即用。
+6. 产物按 studio/project 归类（依赖组织纵深 workspace/project）。
 
-> 依赖：媒体 provider key（同"真模型 key"，你提供即真；架构先用单 provider/mock 验证）。
+> 依赖：媒体模型的 provider key（同"真模型 key"，你提供即真；先用单模型/mock 验证通用链）。
+
+---
+
+## 5. 待你确认（v3 收敛后几乎不剩）
+
+1. **能力调媒体模型的形态**：GA 内置能力（provider 适配在 model 网关侧，GA 只"调 kokoro-model 的某模型"）——倾向此，最贴"共同本质"。
+2. 其余（GA/Studio/模型/credit/artifact 统一 + 反哺自动 + 无新服务）**已随"共同本质"定死，不再是问题**。
