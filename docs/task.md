@@ -22,7 +22,19 @@
 - **相序**:阶段 A 引擎通用链(model 收媒体模型→GA invoke_model→artifact+featureKey 计费,e2e 为铁证)
   ∥ B 商业(三桶/Plan/权益/卡密/订阅)→ C 通用 Studio+Image/Music→ D 反哺 chat→ E 组织纵深→ F 运营+风控→ G 增长+设计系统。
 - **卡点**:LLM+媒体 provider key(用户给即真,先 mock/单 provider 验证);商业收口点确认(消费顺序/订阅=权益/USD)。
-- 状态:**规划已成型,待用户过目对齐后逐层写详细规划;仍不动代码。**
+- 状态:规划成型 + **已开工实现(用户批 A-媒体+L3.1 三桶,TDD 接线)**。详规=plans/2026-07-24-phaseA-L3-detailed-plan.md。
+- **DeepSeek 已解真模型阻塞**:sk 用户临时给(会注销),仅存 deploy/.env.dev(gitignore),closure-up 从 env 读无字面 key;
+  对话 run.completed + 真 usage 结算 + ledger model_call 带 run_id 已实证(GLM key 仍全 401,弃)。
+
+### L3.1 三桶实现进度(TDD;真 DB=隔离库 kokoro_credit_test@3307,`scratchpad/credit-it-env.sh` source 出 DATABASE_URL_CREDIT)
+> **架构定案 B1(不走 C 胶合)**:三桶统一——hold 时按序从桶扣走+明细快照到 hold,capture 拆实额、
+> release 按**夹紧当期额度**归还,删 heldMicros。理由=完美/不妥协+未上线无后向兼容;clamp 补上后无日界竞态。
+> **心黑但合理决策矩阵**(14 条)见货币化 spec §3.9:歧义一律 house-favor 但对用户站得住。
+- [x] 域 `buckets.ts`:available/debit(过期先扣+shortfall)/refresh(reset 非累加)/**creditBack 时间桶夹紧额度**(堵日界复活过期赠额)。18 单测绿。
+- [x] **阶段1**:CreditAccount 加 daily/period 桶列+水位(加法迁移 20260724120000);实体+mapper 暴露;5 fixture 补齐。182 单测+107 集成绿。
+- [ ] **阶段2**(下一步,大):hold/capture/release/expire 切 decrement-at-hold+明细+夹紧归还,弃 heldMicros。
+  **注:改 balance/held 观测语义**(held 消失,balance=available);动可靠性脊柱,chaos/hold-cycle 逐条重验。
+- [ ] **阶段3**:service `ensureAllowancesFresh` 懒刷新(水位 CAS)+ 桶余额 API(balance()→三桶+水位)。allowances 到 L3.2 Plan 才非 0。
 
 ## 全面"真正 OK" campaign(2026-07-22;PRD=specs/2026-07-22-comprehensive-realness-campaign.md;审计=reports/2026-07-22-capability-debt-audit.md)
 
