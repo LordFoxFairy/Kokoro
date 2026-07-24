@@ -3,6 +3,27 @@
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
 > 最后更新:2026-07-13(**纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure**;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
 
+## 通用引擎重塑 campaign(2026-07-24;规划阶段,未碰代码——用户要求先思考对齐再动)
+
+> 缘起:用户判"整体业务设计很烂"。深挖发现根因=**先造机器没设计产品**(billing 只是第一个实例)。
+> **共同本质(已对齐)**:一台通用引擎——意图→GA 编排能力→调 kokoro-model 的模型(任意厂商/任意模态)
+> →artifact→credit→namespace。**唯二变量:surface(Chat/Studio)× 模型;产品=配置,引擎=打磨对象。**
+> 三统一:GA(一运行时)· kokoro-model(一全模态模型注册表,音乐/图片模型与 LLM 平级)· Plan(一套餐抽象)。
+> 用户定向:优先 Music/Image Studio、能过快、反哺 chat(自动,同一 GA/能力池)、先打通通用基本能力。
+
+- **总规划**:plans/2026-07-24-universal-engine-master-plan.md(分层 L1-L7 + 依赖图 + 阶段 A-G + 卡点)。
+- **货币化**:specs/2026-07-24-unified-plan-monetization-design.md(Plan 免费/包/订阅 + 三桶每日/周期/永久 +
+  消费过期先扣 + 懒 materialize 非 cron + **卡密兑换零支付集成** + 权益层)。
+- **能力/Studio**:specs/2026-07-24-capability-and-studio-architecture.md(v3 共同本质;Studio 通用=配置;
+  媒体=kokoro-model 多一模态的模型,GA 只"调某模型",无平行 job/无新服务)。
+- **盘点**:reports/2026-07-24-product-capability-inventory.md(有/缺/不足;实现度~20-30%,机器强产品弱)。
+- **地基事实**:model binding schema 已多模态就绪(featureKey/in-out modalities/transport);真缺=agent 只有
+  make_chat_model(LLM-only)→"调非对话模型(音乐/图片→artifact)"是引擎核心新链。
+- **相序**:阶段 A 引擎通用链(model 收媒体模型→GA invoke_model→artifact+featureKey 计费,e2e 为铁证)
+  ∥ B 商业(三桶/Plan/权益/卡密/订阅)→ C 通用 Studio+Image/Music→ D 反哺 chat→ E 组织纵深→ F 运营+风控→ G 增长+设计系统。
+- **卡点**:LLM+媒体 provider key(用户给即真,先 mock/单 provider 验证);商业收口点确认(消费顺序/订阅=权益/USD)。
+- 状态:**规划已成型,待用户过目对齐后逐层写详细规划;仍不动代码。**
+
 ## 全面"真正 OK" campaign(2026-07-22;PRD=specs/2026-07-22-comprehensive-realness-campaign.md;审计=reports/2026-07-22-capability-debt-audit.md)
 
 > 用户 /goal:除支付真网关外一切真实测试真正打通;核心洞察=债不是"没造"是"造好了默认 OFF"。
