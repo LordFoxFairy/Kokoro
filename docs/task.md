@@ -31,10 +31,26 @@
 > release 按**夹紧当期额度**归还,删 heldMicros。理由=完美/不妥协+未上线无后向兼容;clamp 补上后无日界竞态。
 > **心黑但合理决策矩阵**(14 条)见货币化 spec §3.9:歧义一律 house-favor 但对用户站得住。
 - [x] 域 `buckets.ts`:available/debit(过期先扣+shortfall)/refresh(reset 非累加)/**creditBack 时间桶夹紧额度**(堵日界复活过期赠额)。18 单测绿。
-- [x] **阶段1**:CreditAccount 加 daily/period 桶列+水位(加法迁移 20260724120000);实体+mapper 暴露;5 fixture 补齐。182 单测+107 集成绿。
-- [ ] **阶段2**(下一步,大):hold/capture/release/expire 切 decrement-at-hold+明细+夹紧归还,弃 heldMicros。
-  **注:改 balance/held 观测语义**(held 消失,balance=available);动可靠性脊柱,chaos/hold-cycle 逐条重验。
-- [ ] **阶段3**:service `ensureAllowancesFresh` 懒刷新(水位 CAS)+ 桶余额 API(balance()→三桶+水位)。allowances 到 L3.2 Plan 才非 0。
+- [x] **阶段1**(75b6780):CreditAccount 加 daily/period 桶列+水位(加法迁移 20260724120000);实体+mapper 暴露;5 fixture 补齐。182 单测+107 集成绿。
+- [x] **阶段2**(070dce9,脊柱手术):hold/capture/release/expire/spend 全切 B1 decrement-at-hold(FOR UPDATE 锁+
+  域 debit/creditBack 唯一事实源+预留明细快照 CreditHold+applyBucketReturn 私有 helper 三处复用夹紧归还)。
+  heldMicros 保留作预留总额缓存(唯一预留机制下的报表 denorm,非双机制胶合)。
+  死代码清理:assertCreditSpendAllowed 无调用方,连同专测删除。
+  TDD 新增 4 条证明 B1 真多桶行为(按序扣/分摊守恒/release 复原/**日界夹紧堵过期赠额复活**)+
+  既有 6 条 mid-hold 断言按 B1 语义更新(终态不变量全保持)。174 单测+111 集成+typecheck 净,全真 DB chaos。
+- [x] **阶段3**(d30a16a):懒刷新接线——域 `reset-boundary.ts`(dailyBoundary/periodBoundary 统一 UTC
+  自然日/自然月,与既有 quotaPeriod=monthly 同口径;isStale 判水位)。repo `refreshRow()`唯一换算点,
+  hold/spend/`refreshAllowances`(新读路径 API)三处复用;FOR UPDATE 锁内刷新+扣减一次写完。
+  readUsageSummary 读前刷新,余额展示天然反映当日/当期最新额度。
+  TDD 新增 5 条真实证明过期水位场景(此前测试全 allowance=0 从未真触发 stale):
+  hold/spend 触发刷新、只读路径持久化、**惰性不重复刷新**、未过期不误触发。
+  **时区决策**:统一按 UTC(行业标准=存储/边界算 UTC,展示层才转本地);以后接 site/用户时区
+  只需换 `refreshRow` 一个换算点,不动 schema/域层。
+  全绿:182 单测(+8)+116 集成(+5)+typecheck 净。
+
+**L3.1 三桶(域+阶段1/2/3)已全部完成。** 下一步(L3.2,未开工):Plan 目录+权益层——
+仅当 Plan 给账户写入非 0 allowance,懒刷新/三桶消费才在真实业务中显效;
+另需落**卡密=支付=同一 Grant**抽象(渠道薄适配器,ledger 归因元数据区分,不建三套扣账实现)。
 
 ## 全面"真正 OK" campaign(2026-07-22;PRD=specs/2026-07-22-comprehensive-realness-campaign.md;审计=reports/2026-07-22-capability-debt-audit.md)
 
