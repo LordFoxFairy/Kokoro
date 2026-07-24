@@ -167,6 +167,16 @@ def resolve_claude_code_backend() -> dict[str, str]:
     """决定 claude-code 别名的真后端并重建网关,三级回落:
       ① GLM 凭据探通 → GLM(生产意图);② 否则本机 ollama 在 → 本地真模型;③ 都不行 → mock-only(上游 fake)。
     「对外 claude-code 名不变、网关侧一处换后端」——返回选中的 CLAUDE_CODE_* env(空={}=无真后端)。"""
+    # DeepSeek(OpenAI 兼容,报 usage→计费真扣):凭据在 gitignored .env.dev,置顶为 dev 首选真云模型。
+    ds_key = (DEV_ENV.get("DEEPSEEK_API_KEY") or os.environ.get("DEEPSEEK_API_KEY", "")).strip()
+    if ds_key:
+        env = {"CLAUDE_CODE_MODEL": "openai/deepseek-chat",
+               "CLAUDE_CODE_BASE_URL": "https://api.deepseek.com",
+               "CLAUDE_CODE_API_KEY": ds_key}
+        _recreate_litellm(env)
+        if claude_code_reachable():
+            step("模型: claude-code → DeepSeek(凭据探通)", True)
+            return env
     glm = load_glm_creds()
     if glm:
         env = {"CLAUDE_CODE_MODEL": "openai/glm-5",
