@@ -1,8 +1,8 @@
 ---
 artifact: prd-and-architecture-spec
-version: "1.2"
+version: "1.3"
 created: 2026-07-25
-status: direction-approved-awaiting-written-spec-review
+status: direction-approved-production-addendum-awaiting-review
 scope: kokoro-overall-business-runtime-and-agent-product-capabilities
 ---
 
@@ -19,8 +19,9 @@ Spec，后续每个实施波次必须拆出独立子 Spec 和实现计划。
 与本文冲突时，在本文完成书面复审并迁入 handbook 后，以本文为新目标；迁入前不得把目标状态
 误写成“已经落地”。
 
-快速复审路径：先读 §0、§2、§3.3、§4、§5、§16、§17、§23、§25、§27，可在十五分钟内判断产品目标、
-系统边界、主链、验收和实施顺序；领域负责人再进入对应详细章节。
+快速复审路径：先读 §0、§2、§2.5、§3.3、§4、§5、§7.4、§16、§17、§19.1、§23、§25、§27，
+可在二十分钟内判断产品目标、系统边界、Redeem 首发、主链、验证/维护和实施顺序；领域负责人再进入
+对应详细章节。
 
 已确认的不可变前提：
 
@@ -74,6 +75,8 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 8. 统一 TypeScript 工具链、契约、lockfile 和服务装配方式。
 9. 建立 Claude Code 类开发代理与 Manus 类行动代理共用的 ExecutionTarget、Permission、Routine、
    TaskView、多端继续和多 Agent 产品底座，不复制第二套 Runtime。
+10. 以 production-ready、redeem-first 纵切完成首次真实上线；即使未接 Payment Provider，也能通过卡密
+    原子取得与购买等价的 Subscription/Entitlement/Credit，并具备验证、回滚、运维和文档治理。
 
 ### 2.2 成功指标
 
@@ -93,6 +96,9 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 | 跨 Site 数据泄漏 | 尚无目标架构级证明 | 安全矩阵中跨站越权成功数为 0 | 安全验收 |
 | 重复履约/重复扣费 | 当前按局部幂等实现 | webhook/replay/chaos 矩阵重复数为 0 | Commerce 验收 |
 | 高风险后台操作审计 | 各模块覆盖不一致 | 定义范围内 mutation 审计覆盖率 100% | Admin 验收 |
+| Redeem 原子性 | 尚无 production 链 | 并发/故障注入下 Code 与 Grant 部分成功数为 0 | Commerce 验收 |
+| Production 可恢复 | 当前局部验证 | restore/rollback/chaos 达到 RPO/RTO，重复 effect/Grant 为 0 | Wave 9 |
+| 架构文档漂移 | INDEX/CODEBASE_MAP 已失真 | 受管 public root coverage 100%，dead path/old owner 为 0 | Wave 0/8/9 |
 
 ### 2.3 非目标
 
@@ -122,6 +128,25 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 - Artifact Blob 使用校验和、版本化/对象锁策略和生命周期规则；数据库备份不替代对象存储备份。
 - 所有关键链路可按 correlationId 在五分钟内定位到 Site、Admission、Run/Job、Attempt、Usage 和
   Fulfillment 时间线，同时不暴露敏感内容。
+
+### 2.5 Production-ready 与“功能完整”的定义
+
+本方案的完成态是可直接承载真实用户的 production release，不存在“先以 Demo/半成品上线，再补核心
+安全、账务和恢复”的中间完成口径。
+
+- 只有通过对应 Wave 全部 contract、integration、E2E、security、load、recovery 和 operation gate 的
+  Capability/Surface revision 才能进入 production SiteRelease。
+- SiteRelease 只能引用 `production_ready` revision；未实现、仅 mock、仅管理员手工补偿或没有 runbook 的
+  功能必须在 route、bootstrap、API authorization 和后台入口四层同时关闭，不能只隐藏按钮。
+- SiteRelease compile 生成 machine-readable `EnabledCapabilityInventory`：每个 Surface/route/API/Admin
+  mutation/Capability 绑定 revision、P0 journey、test report digest、runbook、dashboard/alert owner、accepted
+  risk/expiry 和 production-ready attestation。unknown、stub、证据缺失/过期或只隐藏 UI 的 entry fail closed。
+- “功能完整”按已发布 Site 的用户承诺判断：注册/登录、套餐展示、权益取得、Credit、Chat/Studio、Job、
+  Artifact、Library、错误恢复、Admin/Support、删除导出与通知形成闭环；不能出现能进入但无法完成的旅程。
+- Claude Code/Manus 类 P1/P2 能力可以由 Site assignment 分阶段开放，但任何一项一旦对真实用户开放，就
+  必须以完整 Target/Permission/Usage/TaskView/Recovery 链上线，不使用实验性旁路。
+- 最终 Program Completion 只在 Wave 0-9 全部退出、旧实现和旧文档清零、Production Certification 通过后
+  宣告；单个 Wave 通过只表示该纵切可被后续 Wave 依赖，不表示全产品可上线。
 
 ## 3. 用户与核心产品旅程
 
@@ -633,9 +658,39 @@ WebhookInbox(paymentProviderAccountId, providerEventId)
 Credit 是 closed-loop、不可转让、不可提现的产品使用额度，不与 Money 混账，也不把 CreditJournal
 伪装成法定货币总账。
 
+Fulfillment 使用 discriminated acquisition source，统一后半链但不伪造前半链：
+
+```text
+FulfillmentSource =
+  PaymentAcquisition {
+    paymentFactId, orderId, offeringVersionId, priceId
+  }
+  | RedemptionAcquisition {
+    redemptionId, redeemProgramVersionId, batchId, codeId,
+    siteId, billingAccountId, productVersionId, planVersionId?,
+    fulfillmentProgramVersionId, liabilityMerchantAccountId,
+    termApplicationPolicy
+  }
+  | AdminGrantAcquisition {
+    adminGrantCommandId, actor, reason, approvalRef
+  }
+  | ProgramWindowAcquisition {
+    creditProgramVersionId, subjectRef, windowKey, materializationId
+  }
+```
+
+Payment source 必须引用 Order/Payment/Offering/Price；Redemption source 禁止制造零金额 Price、Order、
+Payment、Invoice 或 Refund。两者只在 FulfillmentTransaction 之后共享 Subscription/Grant/Admission/Usage。
+每个 FulfillmentTransaction、FulfillmentCycle、SubscriptionTermAllocation、EntitlementGrant 和 CreditGrant
+都保留 root source ref；daily/period window 也不能成为“无来源自动加余额”。
+
 ### 7.3 Subscription
 
-- Subscription 引用确切 PlanVersion、OfferingVersion、Price 和 FulfillmentProgramVersion。
+- Subscription 是持续关系，只保存稳定 subject、Plan identity、current billing binding 和
+  `createdByFulfillmentTransactionId`，不能用单一 acquisitionSource 代表整个生命周期。
+- 每个 `FulfillmentCycle/SubscriptionTermAllocation` 引用确切 PlanVersion、FulfillmentProgramVersion 和
+  FulfillmentSource；`offeringVersionId/priceId` 仅 PaymentAcquisition source 必填，RedemptionAcquisition
+  source 必须为空。续费、第二张 Code、Admin extension 分别形成独立 source lineage。
 - PlanVersion 只冻结允许的 renewal modes、DunningPolicy 和 GracePolicy 模板；Fulfillment source 创建
   Subscription 时冻结实际 `SubscriptionBillingBinding(subscriptionId, authority, providerAccountId?,
   externalSubscriptionRef?, scheduleRef?, revision)`，其中 authority 为 `platform | payment_provider | none`。
@@ -658,18 +713,165 @@ Credit 是 closed-loop、不可转让、不可提现的产品使用额度，不�
 
 ```text
 RedeemProgramVersion
+RedeemProgramAvailability
 RedeemBatch
+RedeemBatchAvailability
 RedeemCode
+RedemptionAttempt
 Redemption
+RedemptionRevocationFact
+RedemptionRevocationCampaign
+ReplacementCodeIssuance
+SecretDeliveryArtifact
+BatchExportArtifact
+SecretDeliveryClaim
 FulfillmentTransaction
 ```
 
-- Code 使用高熵随机值，数据库只存 keyed HMAC，不存可恢复明文。
-- 批量明文只允许一次性安全导出；平台之后不可再次展示。
+- Code 使用 CSPRNG 且至少 128-bit 随机熵；数据库只存带 key version 的 keyed HMAC 和安全 fingerprint，
+  不存可恢复明文。除批准的一次性加密 SecretDeliveryArtifact 外，Code 原文不得进入普通 export、event、
+  log、trace、analytics、Admin 或 Support。
+- 用户 token 使用版本化、可规范化的人类输入格式：public format/key selector + ≥128-bit secret + typo
+  checksum；HMAC domain separator 绑定 environment/Site/Program/Batch，防止跨环境或跨批次复用。Secret
+  Manager 保留 active Code 所需旧 HMAC key 到 Program retention 到期，rotation 不使未兑换 Code 失效。
+- 批量明文只允许一次性加密导出，带 TTL、recipient/distributorRef、maker-checker 和 download audit；
+  平台之后不可再次展示。
 - Redemption 通过唯一约束和 CAS 原子占用。
 - Redeem 不直接改余额，只触发同一 FulfillmentTransaction。
-- Program 可绑定 Offering/FulfillmentProgram，也可限制 Site、时间窗、用户资格和兑换次数。
-- 枚举攻击返回统一错误并执行账号/IP/设备维度限速。
+- Program 冻结 ProductVersion、可选 PlanVersion、FulfillmentProgramVersion、liabilityMerchantAccountId、
+  Site/用户资格、生效窗口、termApplicationPolicy、stacking limit 和兑换次数，不能在兑换时读取当前 Merchant。
+- Redeem 只接受可信 SiteContext 下已登录 User/BillingAccount 的 CSRF-protected command；没有匿名试码接口。
+- 枚举攻击统一返回安全错误，并按 Site、账号、IP、设备、Batch 和失败速度多维限速。
+- 全局 velocity/risk/revocation 依赖不可用时 Redeem fail closed 为统一 `REDEEM_TEMPORARILY_UNAVAILABLE`，
+  Code 不 claim；禁止无声降级为进程内计数或跳过 Risk。Redis 可承载限速状态但不是业务真源，恢复后仍由
+  Program/Batch/Code/Risk 的 Platform transaction 决定兑换事实。
+
+Redeem-first production launch 是正式销售模式，不是支付 mock：
+
+```text
+SalesPolicyRevision
+  acquisitionMode = redeem_only | payment_only | payment_and_redeem | free
+  legalMerchantAccountId
+  allowedRedeemProgramVersionIds
+  eligiblePaymentProviderAccountIds
+  paymentRoutingPolicyRevision?
+
+RedeemCode submitted
+→ verify SiteContext/User/BillingAccount/CSRF
+→ keyed-HMAC lookup + eligibility/current RestrictionEpoch/rate-limit
+→ PlatformUnitOfWork
+   → recheck SalesPolicy/Program/Batch/Code/Risk epoch
+   → CAS claim code
+   → Redemption
+   → FulfillmentTransaction(source=redemption)
+   → optional SubscriptionBillingBinding(authority=none)
+   → EntitlementGrant/CreditGrant
+   → idempotency + Outbox
+→ same entitlement/balance/product projection as paid acquisition
+```
+
+- `redeem_only` Site 不要求 Payment Provider account 或 secret；Checkout/payment mutation 在 bootstrap、路由
+  和 API Admission 中以 `ACQUISITION_CHANNEL_DISABLED` fail closed，UI 提供独立兑换入口，不把失败支付
+  自动改写成兑换。该模式要求 legalMerchantAccountId、至少一个 production-ready Program，且 eligible
+  PaymentProviderAccount 集合为空；法律责任 Merchant 可以没有 Payment Provider account。
+- SiteRelease compile 校验 SalesPolicy、Program、Site、Merchant liability、Product/Plan、Fulfillment、
+  Grant unit 全部兼容，并强制 `Program.liabilityMerchantAccountId == SalesPolicy.legalMerchantAccountId`；
+  eligible ProviderAccount 全部属于同一 Merchant/environment 并满足冻结 currency/capture/refund capability，
+  payment routing policy 只能是该集合子集。
+  Program/Batch live suspension、Restriction 和紧急 kill switch 可覆盖旧 Release。
+- RedeemProgramVersion 引用与购买相同的 ProductVersion/PlanVersion/FulfillmentProgramVersion，因此最终
+  Subscription、EntitlementGrant、CreditGrant、Usage、Artifact 能力完全相同；差异只在 acquisition source。
+- 不创建零金额假 Order、假 Payment 或假退款。Redemption 自身就是取得凭证；如需用户收据，展示
+  Redemption/Fulfillment/Grant provenance。
+- 卡密 claim、Redemption、Fulfillment 和 Grant issuance 位于同一 PlatformUnitOfWork；任一写入失败全部
+  回滚，不能出现“卡已用但权益未到账”。`(siteId,billingAccountId,idempotencyKey)` 重试返回同一
+  Redemption；同一 Code 并发最多一个事务成功，其他账号只收到统一失败，不泄漏已用/跨站/过期状态。
+- 幂等记录同时绑定 canonical requestDigest，至少覆盖 environment/Site、BillingAccount、Program、Code
+  HMAC/fingerprint、term policy 和 command schema version；同 key 同 digest 返回原 Redemption，同 key 不同
+  digest 返回 `IDEMPOTENCY_CONFLICT`，不得错误返回旧用户/旧 Code 的结果。
+- 卡密签发的 fixed-term Subscription 使用 `authority=none`，到期不自动续费；续期通过新 Redemption 或
+  后续真实购买形成新 FulfillmentCycle，不能由 cron 擅自延长。
+- Program 必须冻结 `termApplicationPolicy = new_subscription | extend_from_max(now,currentPeriodEnd) |
+  reject_if_active`，以及 duration、anchor、Plan mismatch、stacking limit 和 max expiry；第二张订阅卡不能
+  由 handler 临场决定覆盖或重叠周期。
+- Risk 在 redeem transaction commit 前发生变化时，整个 UoW 回滚且 Code 保持 available；commit 后的新
+  Restriction 不改写 Redemption/Grant，只阻止后续 Admission，除非另有正式追加撤销事实。
+- 需要人工审核时只创建 RedemptionAttempt 和 RiskCase，不 claim/预留 Code。Attempt 状态为
+  `received | evaluating | pending_review | approved | denied | expired | superseded`；批准生成绑定 attemptId、
+  requestDigest、review decision、expiry、RestrictionEpoch 的 single-use RedeemApprovalGrant。继续兑换仍重新
+  校验 Site/Program/Batch/Code/Risk/余额并运行完整 UoW；期间 Code 被他人使用则安全失败，批准不保证成功。
+- 已兑换 Code 永不恢复成可再次使用。售后撤销链固定为：
+
+```text
+RevokeRedemption
+→ RedemptionRevocationFact
+→ FulfillmentReversalTransaction(source=redemption)
+   → revoke unused source SubscriptionTermAllocation / recompute effective term
+   → revoke remaining EntitlementGrant/CreditGrant
+   → consumed amount → RecoveryCase
+→ optional ReplacementCodeIssuance / AdminGrant
+```
+
+- 撤销只处理该 Redemption 来源的 TermAllocation 和剩余 Grant，不缩短其他 Payment/Redemption/Admin 来源
+  已取得的 term；若该 source 是 Subscription 唯一有效来源，effective status 才可投影为 expired/canceled。
+  误绑不能转移 owner，使用撤销 + 新 Code/Grant。Replacement 引用原 Redemption/Revocation，并经过 maker-checker。
+- 外部售卡方的金钱退款不创建 Platform Payment/Refund Fact；只保存受控、审计后的 external reference，并
+  触发 Redemption reversal。Platform 不声称处理了外部资金。
+- Payment adapter 后续接入时只新增 ProviderAccount/adapter 和启用 sales policy；不得复制 Catalog、
+  Fulfillment、Subscription、Entitlement、Credit 或用户成功页逻辑。
+
+状态机：
+
+```text
+RedeemProgramVersion: draft → validating → ready → published
+RedeemProgramAvailability: inactive → active ↔ suspended → retired
+RedeemBatch: draft → generated → exported
+RedeemBatchAvailability: inactive → active ↔ suspended
+                         active/suspended → compromised/revoked/expired
+RedeemCode: available → redeemed
+          available → revoked/expired
+BatchExportArtifact: staged → ready → claimed → delivered → destroyed
+                   staged/ready/claimed → failed/expired/unknown → destroyed
+```
+
+Redemption 是不可变完成事实，不通过 mutable status 重新开放 Code；撤销和补发均为追加事实。
+Batch `exhausted` 是所有 Code 均 redeemed/revoked/expired 的可重建 projection，不是与 live Availability
+竞争的 mutable terminal state。
+Batch suspend/compromise/revoke 立即阻止未兑换 Code；不能自动抹掉已完成 Redemption。对已兑换用户的处理
+必须由 scoped Case 生成可审计 RedemptionRevocationFact，避免一次误操作批量吞掉正常用户权益。
+- 若 compromised Batch 确需处理多个已兑换用户，创建 maker-checker 的
+  `RedemptionRevocationCampaign(planned → approved → running → completed/partially_completed/failed/canceled)`；
+  Campaign 冻结 scope/reason/policy，按 RedemptionId 幂等执行独立 reversal，持久化 cursor/result/Case，
+  可暂停和恢复。不得在一个大事务中批量删 Grant，也不得把 partial failure 伪装成整批完成。
+
+Secret export/delivery 协议：
+
+- 获批的 `BatchExportArtifact` 是唯一允许短暂包含 Code 原文的载体：生成隔离进程将 plaintext 直接以
+  recipient public key/KMS envelope 加密后上传，数据库只保存 encrypted blob ref、cipher/hash、recipient、
+  TTL 和 audit metadata；普通 export 永远不含原文。
+- `SecretDeliveryClaim` 以 CAS 绑定 artifact、recipient、actor、single-use token、expiry 和 download audit；
+  claimed 后只允许同一 claim 在 TTL 内恢复，不签发第二个 claim。确认 delivered 后删除密文并写 GC receipt。
+- 进程在 upload/ready 前崩溃时 Batch 保持 inactive；无法证明密文是否安全交付时进入 unknown、自动 suspend
+  Batch，并由安全 workflow revoke 未兑换 Code/生成新 Batch，不能重新构造原文。
+- encrypted object upload 成功但 DB ready record 失败时，以 object tag/intention id 识别 orphan 并由 GC 删除；
+  DB 已生成 HMAC inventory 但 artifact 丢失/损坏时 Batch 永不 activate，只能 revoke 后生成新 Batch，不能从
+  HMAC、日志或备份“恢复” plaintext。所有 crash point 都有幂等 resume/GC receipt。
+- TTL 到期由 GC 删除 encrypted object 并记录 receipt；ReplacementCode 使用同一 SecretDeliveryArtifact/
+  Claim 协议。除这些批准的一次性加密 artifact 外，DB、log、event、trace、Admin、Support 和用户数据导出
+  中 Code 原文命中数必须为 0。
+
+Live availability 使用单调 epoch 和数据库锁形成线性化点：
+
+- Program/Batch 的版本化内容不可变，独立 Availability 行保存 `status、availabilityEpoch、reason、actor、
+  updatedAt`；suspend/compromise/revoke 在 Platform DB 事务中锁行、推进 epoch、写 Audit/Outbox 后提交。
+- Redeem UnitOfWork 以固定顺序取得 `Program Availability FOR SHARE → Batch Availability FOR SHARE → Code
+  FOR UPDATE`，验证 expected/current epoch、active status、SalesPolicy 和 Restriction 后才 claim Code。
+- Availability update 使用排他锁并等待已经取得 share lock 的兑换事务完成。语义是：可能有一个在停用命令
+  线性化之前已获锁的 Redemption 先提交；停用事务 commit/返回之后，不得再有新 Redemption 成功。
+- 锁顺序固定为 Program → Batch → Code，所有 publish/suspend/redeem/revoke workflow 共用，避免死锁；
+  serialization/deadlock retry 复用原 idempotency key，不生成第二次 Redemption。
+- Runtime cache 只能加速读，不能批准兑换；紧急 kill 后即使 cache 未刷新，事务内 availability lock/recheck
+  仍 fail closed。事件传播时延只影响 UI，不影响兑换正确性。
 
 ### 7.5 Refund、Dispute 与 Reconciliation
 
@@ -747,6 +949,12 @@ BalanceProjection
 - Merchant/Offering assignment 变更只影响新 Quote/Admission；旧 Grant 仍归原 liability account，并按冻结
   GrantScopePolicy 消费或退款。禁止为了新 Merchant 可用性把旧 Credit 静默迁账；确需迁移必须是可审计的
   liability transfer/regrant workflow，不属于普通路由 fallback。
+- V1 不实现一次 Admission 跨多个 liability account 的 multi-Hold funding plan；同一 Site + credit unit 对
+  正常 acquisition/admission 只能有一个 active liabilityMerchantAccountId。SiteRelease 切换 Merchant 前，
+  旧可消费 Grant 必须已用尽/过期，或完成法律批准、Journal 守恒、source provenance 保留的
+  LiabilityTransfer/Regrant workflow；否则 compile 阻断。
+- BalanceProjection 和 Web 必须按 CreditAccount/liability 展示 `spendableForCurrentSite`，不可把不能共同为
+  一次 Operation funding 的旧/新 account 简单相加成虚假“总可用余额”。
 - CreditJournalTransaction 内同一 credit unit 的 signed entries 必须和为 0；BalanceProjection 只是可重建缓存。
 
 `CreditGrant` 至少记录：
@@ -1269,6 +1477,11 @@ System Health
 
 - Site provision、domain verification、release preview/publish/rollback、config diff。
 - Refund、Dispute、Webhook Inbox、Provider Fact、Settlement、Reconciliation。
+- Redeem Program publish、Batch generate/export/activate/suspend/compromise/revoke、Redemption timeline、
+  source reversal 和 replacement。时间线展示 Program → Batch → Code fingerprint → Redemption → Fulfillment
+  → Subscription/Grant → consumption/reversal，永不展示完整 Code。
+- Redemption pending-review queue 支持 approve/deny/expire 和 approval replay audit；compromised Batch 的
+  RedemptionRevocationCampaign 支持 dry-run、maker-checker、pause/resume、逐项进度、partial failure/Case。
 - CreditGrant provenance、Journal、HoldAllocation、adjust/revoke。
 - Model deployment health、cooldown、routing dry-run、Site assignment。
 - Session/Run/Job 卡死诊断、cancel、retry、DLQ、ExecutionManifest。
@@ -1960,7 +2173,24 @@ CreateArtifactVersion
 CreateCheckout
 FulfillSource
 RequestRefund
+PublishRedeemProgram
+ActivateRedeemProgram
+SuspendRedeemProgram
+RetireRedeemProgram
+CreateRedeemBatch
+ExportRedeemBatchOnce
+ActivateRedeemBatch
+SuspendRedeemBatch
+MarkRedeemBatchCompromised
+RevokeRedeemBatch
 RedeemCode
+ApproveRedemptionAttempt
+DenyRedemptionAttempt
+RevokeRedemption
+IssueReplacementCode
+CreateRedemptionRevocationCampaign
+PauseRedemptionRevocationCampaign
+ResumeRedemptionRevocationCampaign
 BindExecutionTarget
 AcquireExecutionTargetLease
 RequestTakeover
@@ -2000,6 +2230,12 @@ payment.fact.recorded
 refund.reserved/submitted/succeeded/failed/unknown
 dispute.opened/won/lost/late_won
 fulfillment.completed/failed/reversed
+redeem.program.published/availability_changed/retired
+redeem.batch.generated/exported/availability_changed/compromised/revoked
+redeem.secret_delivery.ready/claimed/delivered/expired/destroyed/unknown
+redemption.completed/revoked/replacement_issued
+redemption_attempt.pending_review/approved/denied/expired/superseded
+redemption_revocation_campaign.started/progressed/partially_completed/completed/failed
 subscription.period.started/changed/cancel_scheduled/canceled
 entitlement.granted/revoked
 credit.granted/reserved/committed/captured/released/expired/revoked
@@ -2165,6 +2401,52 @@ contract/
 这是一个 polyglot Monorepo。独立 deployable 不等于独立 Git 仓库。新增 Image/Music/Video 只新增
 Surface、Operation definition 和 Worker adapter，不新增子仓库。
 
+### 19.1 INDEX.md 与架构地图治理
+
+`INDEX.md` 是贴近代码的当前架构契约，不是 README 副本、任务进度或历史说明。目标层级：
+
+```text
+/INDEX.md                         跨仓依赖、deployable、事实源和入口
+apps/<site>/INDEX.md              本 Site route/brand/release ownership 与允许依赖
+apps/admin/INDEX.md               Admin BFF、认证和禁止 DB import
+services/<service>/INDEX.md       process role、启动入口、公开 transport、数据 owner、运行约束
+packages/<bounded-context>/INDEX.md
+                                  domain/application public API、事件、表 ownership、禁止依赖
+packages/web/<surface>/INDEX.md    Surface contracts、状态归属、扩展方式
+```
+
+只在存在公开入口、稳定跨目录 import、持久化、副作用、运行时装配或复杂扩展规则的目录建立 INDEX；不为
+每个 route/component/table 机械创建。每份 INDEX 必须包含：
+
+```text
+职责 / 非职责
+公开 API、exports、transport entrypoints
+上游调用方与下游依赖
+owned data / emitted-consumed events
+runtime、security、idempotency、recovery constraints
+扩展位置与禁止 import
+仍然有效的 traps
+验证命令
+```
+
+治理规则：
+
+- 改变目录职责、public export、schema/transport、持久化、副作用或依赖方向时，相关 INDEX 与代码同一
+  commit 更新；移动代码同时更新来源与目标 INDEX。
+- clean replacement 后直接删除或重写旧 INDEX 中的 Host 多 Site、Session billing、GA Provider、Admin
+  DB import、旧版本工具链等描述；不保留“旧方式已废弃”的历史段，Git 已承担历史。
+- 根 `docs/CODEBASE_MAP.md` 只保留仓库/deployable/事实源与真实验证命令，并链接相邻 INDEX；不复制包内
+  文件清单。`docs/CURRENT.md` 只指向已批准 handbook/spec，不让旧 handoff 重新成为事实源。
+- CI 的 `index-coverage` 检查受管 public root 均有 INDEX、INDEX 中路径/命令存在、禁止依赖规则与实际
+  import graph 一致；语义准确性由每 Wave 架构 review 和 CODEOWNERS 负责，不能假装纯脚本可理解文字。
+- Wave 0 固定治理入口为 `config/architecture/index-roots.yaml`、`docs/templates/INDEX.md`、
+  `scripts/architecture/check-index-coverage.ts` 和 `scripts/architecture/check-dependencies.ts`。Manifest 覆盖
+  package.json/pyproject/public barrel/transport/migration/process entry roots；豁免必须带 owner、reason、expiry。
+- PR diff 若改变受管 root 的 public export、contract/schema、migration、process entry 或 dependency rule，
+  `index-coverage` 要求同 PR 修改对应 INDEX；这只能证明“有同步动作”，最终语义仍由 owner review 签署。
+- Wave 0 建立根 INDEX、coverage manifest 和校验脚本；后续每个 Wave 的退出条件都包含受影响 INDEX、
+  CODEBASE_MAP、handbook/ADR 同步。Wave 8 最终扫描不得留下指向已删除文件、旧 env 或旧 owner 的描述。
+
 ## 20. 数据与技术栈
 
 ### 20.1 数据存储
@@ -2222,6 +2504,23 @@ Pydantic 2
 - AI SDK 仅作为 Web typed-part/stream primitive，Session contract 仍是系统真相。
 - 对外 Site Web 使用 headless primitives + semantic tokens；Admin 可以继续使用 Ant Design。
 
+### 20.3 Production 部署基线
+
+- 每个 Site Web、Admin、Platform API/Worker、Session、Job、Capability、Model Gateway、Device Gateway、
+  GA 产出独立、不可变、带 SBOM 和 provenance 的 OCI image；以 digest 部署，不使用 mutable latest。
+- 初始可单区域部署，但 PostgreSQL/Redis/Mongo/Object Storage/Secret Manager 使用托管或具备等价 HA、
+  encryption、backup 和 restore 能力的服务；生产凭据与 dev/staging 完全隔离。
+- API、stream、worker、scheduler 和 migration 是不同 process role；migration 使用一次性、互斥、可前滚
+  job，Web/API 启动不得隐式改 schema。
+- 所有 process 实现 startup/readiness/liveness、graceful shutdown、lease drain 和 bounded retry；readiness
+  只在依赖可安全承接新工作时通过，不能把外部 Provider 故障等同进程死亡。
+- 外部入口经 TLS、CDN/WAF/rate limit；内部调用使用 workload identity、短期凭据和 audience-bound token。
+  staging 与 production 拓扑同构，仅容量和 Provider account 不同。
+- 发布顺序遵守 expand → compatible deploy → backfill/verify → contract；数据库回滚默认前滚修复。Site Web
+  rollback、backend rollback、schema compatibility 和 active Release pointer 分别演练。
+- 首发允许 `redeem_only` 且无 Payment Provider，但不允许无 Secret Manager、无备份恢复、无告警、无
+  Admin/Support 或用测试 Code batch 进入生产。
+
 ## 21. 安全、可靠性与可观测性
 
 ### 21.1 安全
@@ -2254,7 +2553,8 @@ Pydantic 2
   Fulfillment correlation。
 - 指标至少覆盖 admission latency/deny reason、SSE reconnect、run recovery、job queue/age、
   provider error、model fallback、usage lag、hold age、fulfillment lag、webhook DLQ、release health、
-  target online/lease/wait age、routine misfire、interaction wait、team fan-out/budget 和 notification delivery。
+  target online/lease/wait age、routine misfire、interaction wait、team fan-out/budget、redeem success/failure/
+  CAS conflict/risk deny/fulfillment lag/batch anomaly/reversal failure 和 notification delivery。
 - 日志只记录 opaque ref 和安全 metadata，不记录 prompt secret、Provider key、卡密明文和原始支付敏感字段。
 - Admin 提供按 correlationId 聚合的业务时间线。
 
@@ -2296,6 +2596,11 @@ Pydantic 2
 | 删除流程中某 context 不可用 | Request 保持 partial/failed 可恢复；不得提前显示 completed 或跳过 mandatory receipt |
 | Routine/本地 Target 长期离线 | 证明无 Attempt 后以 reconciliation 零 capture 收口；恢复时重新 Admission，不按 TTL 释放 committed Hold |
 | Team 节点重试和预算转移并发 | CAS 保证 parent ceiling；旧 allocation 未释放前不得创建超额 Hold |
+| redeem_only Site 调用 Checkout API | fail closed；不要求 Payment Provider，也不创建 Order/Payment |
+| 两个请求并发兑换同一 Code | 同一 UnitOfWork/CAS 只有一个成功；另一个返回统一已使用结果，不重复 Grant |
+| Code claim 后 Grant 写入失败 | 整个 UnitOfWork 回滚，Code 仍可安全重试；不存在已用未到账 |
+| 已兑换卡密被管理员撤销 | Code 仍保持 redeemed；追加 source-specific reversal/revocation，不回写历史 |
+| RC 仅在 mock/fake Provider 通过 | 对应 adapter 不得进入 production assignment；redeem_only 不伪造 Payment 认证 |
 
 ## 23. 测试与验收门
 
@@ -2321,14 +2626,26 @@ Pydantic 2
   renewal idempotency、dunning/grace 和同周期不重复扣款。
 - Refund/Dispute 并发测试始终满足 refundable amount invariant，unknown reservation 不被提前释放。
   Provider 强制 Dispute 即使造成 RecoveryExposure 也必须入账，不能被本地 invariant 拒绝。
-- Risk/Commerce 交错测试 restriction 在 PaymentAttempt→Webhook、Redeem→Fulfillment 之间生效：Fact 永远入账，
-  履约进入 blocked review；退款只走原 Payment provider account，账号不可用进入 reconciliation。
+- Redeem 测试 Program/Batch/Code 状态机、128-bit/HMAC key version、一次性加密 export、wrong-site/统一错误、
+  多维限速/依赖不可用 fail-closed、并发 CAS、四组 idempotency digest、Risk review/race/UoW rollback、
+  Outbox recovery、term stacking、Program/Batch availability 线性化、固定锁序/deadlock retry、export 每个
+  crash point/single-use claim/TTL/orphan GC、source-specific TermAllocation reversal/replacement、可恢复
+  Campaign，且除批准密文 artifact 外扫描 DB/log/event/trace/Admin/Support/普通 export 无 Code 原文。
+- SiteRelease Commerce compile 测试 Program liability、SalesPolicy legal Merchant、Provider account
+  Merchant/environment/currency/capture/refund capability、routing subset、单 active liability 任一不匹配均阻断。
+- Credit merchant migration 测试旧/新 account 不虚假求和、未完成 Transfer/Regrant 时 Release 被阻断、
+  Journal/source provenance 守恒和单 Hold 不跨 liability。
+- Risk/Commerce 交错测试分开证明：PaymentAttempt 后的 Provider Fact 永远入账并可 blocked review；Redeem
+  commit 前 Risk epoch 变化使整个 UoW 回滚、Code 仍 available，commit 后 Restriction 只限制后续 Admission。
+  Payment 退款只走原 provider account，账号不可用进入 reconciliation。
 - Model 测试 deployment failover、跨模型 policy、首 token 边界和每 Attempt Evidence。
 - Job 测试 lease reclaim、epoch fencing、unknown outcome、callback replay。
 - Session 测试 typed parts、projection + attach、branch/regenerate、approval CAS。
 - GA 测试 effect claim CAS、旧 epoch 拒写、冻结 revision 恢复、真实 Handoff。
 - Web 使用 Playwright 覆盖两个 Site app 的独立 build、Cookie、品牌、路由、购买和生成链。
 - SiteRelease 测试 current/candidate drain、active pointer CAS、失败不切流和回滚前重新验证。
+- Release inventory 测试 Surface/route/API/Admin/Capability 全量枚举、revision/evidence/runbook/alert/risk expiry；
+  故意启用 hidden route、stub API 或无/过期 Evidence entry 时 compile 必须失败。
 - Growth 测试 assignment 稳定性、互斥实验、登录前后 identity stitch、真实 exposure 幂等、consent/retention
   和实验无法绕过 Price/Entitlement/Risk gate。
 - Risk 测试 RestrictionEpoch 单调、revocation 传播时延、旧 PolicyDecisionToken 在副作用前被拒绝、跨服务
@@ -2358,6 +2675,8 @@ Multi-Site
 
 Commerce
   Quote → Payment Fact → Fulfillment → Grant 可完整追踪；退款按 source 精确逆转。
+  RedeemProgram/Batch/Code → Redemption → 同一 Fulfillment/Grant 可完整追踪；无 Payment adapter 也可启动，
+  claim/issuance 原子，reversal/replacement 不影响其他 acquisition source。
 
 Runtime
   Direct Studio 与 GA Tool 产生同结构 Operation/Job/ArtifactVersion。
@@ -2407,6 +2726,103 @@ Toolchain
   单根 catalog/lock；Node/TS/Zod/Vitest 无未批准漂移；所有 Site 独立 build。
 ```
 
+Redeem-only Production Certification 额外要求：
+
+- 无 PaymentProviderAccount、Payment secret 或 Payment SDK 仍能完整启动、发布和运维。
+- Checkout/Payment/Refund route、bootstrap entry、API 和 Admin mutation 四层 fail closed。
+- 两个并发用户兑换同一 Code 恰好一个成功；UoW 任一点失败后 Code 未消耗、Grant 未部分签发。
+- commit 后进程崩溃由 Outbox 恢复，不重复 Redemption/Fulfillment/Grant。
+- wrong-site、expired、revoked、suspended、compromised、restricted Code 安全拒绝且响应不泄漏状态。
+- Program/Batch suspend/compromise command 返回后新兑换成功数为 0；与在途兑换的先后关系可由 lock/
+  availabilityEpoch/audit timeline 唯一解释。
+- fixed-term authority=none；第二张 Code 严格按冻结 stacking/term policy 生效。
+- Subscription 每个 FulfillmentCycle/TermAllocation 都有 root source；reversal 只撤销原 Redemption 的剩余
+  term/权利，已消费部分进入 Case；replacement 全链审计。
+- 除批准的一次性加密 BatchExport/Replacement SecretDeliveryArtifact 外，Code 原文不出现在
+  DB/log/event/trace/Admin/Support/普通 export；single-use claim、TTL/GC/crash recovery、compromise/mass
+  revoke 均有 maker-checker、告警和演练过的 runbook。
+- 成功后的 Admission、Usage、CreditJournal、Artifact 与等价 Payment acquisition 后半链结构一致。
+- 切换到 `payment_and_redeem` 不新增第二套 Catalog/Fulfillment/Subscription/Credit/Web success flow；
+  Payment refund 不碰 Redemption Grant，Redemption reversal 不碰 Payment Grant。
+
+### 23.4 分层验证策略
+
+| 层级 | 必须证明 | 运行环境与门槛 |
+|---|---|---|
+| Static/Architecture | 类型、schema、生成物、依赖方向、Site 特判、secret/import 禁令、INDEX coverage | 每 PR；任一错误阻断 |
+| Unit/Property | 状态转移、Money/Credit/Journal/Hold/Slice 守恒、policy precedence、canonical digest | 每 PR；关键领域 mutation/property seed 可复现 |
+| Component | 单 process role 的 HTTP/SSE/worker/lease/recovery、错误映射、graceful shutdown | 每 PR；真实 runtime + isolated dependencies |
+| Contract | TypeScript/Python generated clients、向前/向后兼容、event schema、unknown version | 每 PR；producer/consumer 双向矩阵零漂移 |
+| Integration | PlatformUnitOfWork、PostgreSQL constraint/outbox、Redis replay、Mongo checkpoint、S3 lifecycle、Secret lease | 每 PR/nightly；使用真实数据库/兼容 emulator，不以 repository mock 证明事务 |
+| End-to-End | 两个独立 Site 的注册、redeem、Chat、Studio、Job、Artifact、Admin、删除导出 | RC；浏览器 + 全服务；跨 Site 越权成功数为 0 |
+| Provider Certification | 每个 Model/MCP/Storage/Notification/未来 Payment adapter 的 sandbox account、callback、unknown、限流 | adapter 上线前；未认证 adapter 不可进入 assignment |
+| Failure/Chaos | process crash、lease steal、事件重复/乱序/丢失、DB failover、Target 离线、Provider unknown | nightly/RC；无重复 effect/Grant/Credit capture |
+| Performance/Soak | §2.4 基线、5 倍 burst、24h SSE/worker soak、queue recovery、成本 envelope | RC；p95/SLO/资源与 backlog gate 全通过 |
+| Security/Privacy | SAST/SCA/SBOM/secret/license、DAST、SSRF/path/command、RBAC/Site scope、deletion/retention | 每 PR + RC；Critical/High 未处置为 No-Go |
+| Data/DR | migration dry-run、backup restore、PITR、Object restore、reconciliation rebuild、projection rebuild | RC；达到 RPO/RTO，恢复后 invariants 全通过 |
+| UX/UAT | error/empty/loading、mobile/browser、a11y、i18n、Support/Admin 操作和真实用户旅程 | RC；P0 journey 无阻断，WCAG gate 按 Site policy |
+
+测试工程规则：
+
+- Test pyramid 不能退化为“全 mock 单测”或“只跑 happy-path E2E”。交易、Credit、Admission、Job 和删除
+  必须同时有 property/integration/chaos 证据。
+- 时间、ID、Provider response、callback 和随机故障使用可注入 deterministic fixture；失败时记录 seed、
+  contract revision、image digest 和 correlationId，保证可重放。
+- Adapter fake 只证明本方状态机；Provider Certification 必须使用真实 sandbox/测试账号。首发无 Payment
+  adapter 时不伪造认证结果，而是证明 `redeem_only` 全链和 payment path fail closed。
+- Redeem launch 必测：HMAC 查找、枚举限速、并发双兑、事务中途 crash、重复请求、Program expiry、Site/
+  user eligibility、fixed-term authority=none、source reversal，以及“Code claim/Grant 要么都成功要么都失败”。
+- Release test data 使用独立 Site、账号、Code batch 和 Provider sandbox，绝不复制生产 secrets/PII；生产
+  smoke 使用专用 synthetic tenant/Code，并在测试后按 workflow 清理。
+
+### 23.5 Production Certification 与 Release Evidence
+
+每个候选版本生成不可变 `ReleaseEvidenceBundle`，至少引用：
+
+```text
+source commit / contract digest / dependency lock digest
+EnabledCapabilityInventory digest and per-entry evidence refs
+OCI image digests / SBOM / signatures / vulnerability and license reports
+migration and rollback-forward rehearsal
+unit/property/component/contract/integration/E2E/chaos/load/security/DR reports
+SiteRelease compile + preview + a11y + business-flow evidence
+known issues / accepted risks / owner / expiry
+runbook and alert coverage
+backup restore proof / canary plan / rollback decision
+```
+
+Go/No-Go blockers：
+
+- 任一 P0 journey 不完整，或启用 route/API 仍指向 stub/mock。
+- Credit/Payment/Redemption/Grant/Usage/Team budget invariant 失败或无法 reconciliation。
+- 跨 Site 越权、secret 泄漏、Critical/High 可利用漏洞、删除/LegalHold 错误。
+- migration/restore/rollback 未演练，SLO/load/soak 不通过，关键告警和 runbook 缺失。
+- INDEX/CODEBASE_MAP/handbook 与实际 public contract、入口或 owner 不一致。
+- 无值班负责人、无回滚权限，或 production batch/credentials 未执行双人核验。
+
+通过后先发布 backend compatible revision，再发布 candidate SiteRelease；使用 synthetic smoke → internal
+tenant → 小流量/allowlist → 全量的渐进步骤。任何安全、账务、重复副作用、数据丢失或错误 Site 内容触发
+立即停止 promote，并按已演练路径回滚 Release/traffic；已发生不可逆外部事实走 reconciliation，不伪造回滚。
+
+### 23.6 上线后的维护机制
+
+- 每个 SLO 有 owner、dashboard、page/ticket threshold、error budget 和用户影响定义；外部 Provider 与本系统
+  可用性分开度量。
+- Runbook 至少覆盖：SiteRelease 回滚、Platform/Session/GA/Job 卡死、queue/DLQ、CreditHold aging、
+  Redemption 异常、Provider unknown、secret revocation、Target takeover、数据删除失败和跨站安全事件。
+- 日常自动检查 backup、certificate/domain、queue age、hold/reconciliation、provider health、storage
+  lifecycle、notification DLQ 和 capacity；每周审阅 reconciliation/成本异常，每月审阅依赖与容量。
+- PostgreSQL/Mongo/Object restore 至少季度演练，区域 DR 至少半年演练；演练必须从备份真正恢复并运行
+  business invariant/E2E，不以“备份任务成功”代替恢复证明。
+- Critical exploitable vulnerability 4 小时内完成缓解决策、24 小时内修复或隔离；High 默认 7 天。secret
+  泄漏立即 revoke/rotate，并审计受影响 audience、event/log 和 Artifact。
+- Contract/schema 采用兼容窗口和 consumer inventory；删除字段、event kind、env 或公开 export 前先证明
+  所有消费者迁移。未上线阶段 clean replace，正式上线后遵循 expand/migrate/contract。
+- 每次 incident 形成 timeline、root cause、invariant breach、检测缺口、永久修复和回归测试；不把手工数据
+  修复当最终方案。Support compensation 只能走正式 Admin workflow。
+- 每次 release 同步受影响 INDEX、runbook、ADR/CODEBASE_MAP、API/event docs；季度清理失效说明、owner、
+  feature flag、Site assignment 和过期兼容层，防止文档和运行时再次分叉。
+
 ## 24. 迁移与清理原则
 
 由于系统未上线，采用 clean replacement，不维护长期 dual-read/dual-write：
@@ -2417,6 +2833,17 @@ Toolchain
 4. 逐条切换消费方，并通过跨仓 contract/E2E gate。
 5. 切换完成后同一波删除旧表、旧 service、旧 env、旧 header、旧注释、旧测试和兼容 adapter。
 6. 更新 handbook、ADR、CODEBASE_MAP、运行手册和部署配置，确保只有一个事实源。
+
+Submodule → true Monorepo 采用 pinned snapshot import：
+
+- Wave 0 记录每个 gitlink 的 origin URL、pinned commit、tree hash、license 和验证命令；在一个可 review 的
+  cutover series 中移除 gitlink/`.gitmodules`，把确切 pinned tree 作为普通目录纳入根仓，排除嵌套 `.git`。
+- 不把四个子仓完整历史强行 merge/filter 进主仓，避免无关历史和 rename 推断污染；旧历史仍由原 remote
+  和根仓历史 gitlink commit 可追溯。导入后的第一个根仓 commit 是新权威 lineage 起点。
+- 原 remote 在 cutover 后归档/read-only，禁止继续合并或发布；CI、release、issue/PR 入口和开发文档只指向
+  根仓。任何必须带入的未提交变更在 import 前先于来源仓形成明确 commit，不复制脏工作树。
+- Wave 0 先允许以现有 `kokoro-*` 普通目录接入根 workspace，后续领域 Wave 按 §19 移动到最终
+  `apps/services/packages`；每次移动同步 exports、contracts、tests、deploy、INDEX，Wave 8 清零旧路径。
 
 明确删除目标：
 
@@ -2439,9 +2866,9 @@ Toolchain
 
 | Wave | 子方案 | 退出条件 |
 |---|---|---|
-| 0 | Repository/Toolchain/Contract Foundation | 单 Monorepo、根 catalog/lock、生成契约、CI 边界门成立 |
+| 0 | Repository/Toolchain/Contract/Documentation Foundation | 单 Monorepo、根 catalog/lock、生成契约、根/受管 INDEX、coverage manifest、CI 边界门成立 |
 | 1 | Platform Core、SiteContext、SiteRelease 与 Cross-cutting Policy | UnitOfWork、DeploymentBinding、Release/Experiment、RestrictionEpoch/PolicyDecisionToken 和双 Release drain 闭环 |
-| 2 | Catalog、Commerce、Subscription、Fulfillment、Credit、Usage | 冻结 §7 状态机、Provider routing、renewal authority/dunning、外部 Dispute 与退款并发不变量；支付/卡密统一履约，单 liability Grant/Hold/Journal/Rating 闭环 |
+| 2 | Catalog、Commerce、Subscription、Fulfillment、Credit、Usage | 冻结 §7 状态机、Provider routing、renewal authority/dunning、外部 Dispute/退款并发与 Redeem Program/Batch/Code/reversal/stacking；通过 Redeem-only Production Certification，单 liability Grant/Hold/Journal/Rating 闭环 |
 | 3 | Session Projection、Branch、Admission Boundary | reserved→committed Admission、Session 商业逻辑清零，typed parts/branch/reconnect 闭环 |
 | 4 | Operation、Job、Artifact、专业 Studio | Direct/Agent 统一 Operation，后台 Job 和 ArtifactVersion 闭环 |
 | 5 | Model Gateway、Capability Runtime、AgentRevision/Handoff Safety | 单 Gateway、真实 Handoff、epoch/effect safety 通过 chaos gate |
@@ -2450,7 +2877,8 @@ Toolchain
 | 6C | Automation、Connector、Plugin、TaskView | Routine concurrency/Segment、Connection、Hook/Plugin、Notification 状态/源 Release binding 与唯一 TaskAnchor read model 闭环 |
 | 6D | AgentTeam、Wide Research、Application Runtime | TaskGraph/root Hold/Slice/聚合与 ApplicationRevision → Rollout → EnvironmentDeployment 长期服务闭环 |
 | 7 | Site Fleet、标准 Admin 与业务治理 | 发布、财务、模型、运行恢复、Growth assignment/exposure analytics、Risk Case/Appeal、全 participant Export/Deletion/Retention/LegalHold epoch 专用流程全部可审计 |
-| 8 | Clean Cutover 与 Handbook 收口 | 旧代码/表/文档清零，全仓 E2E 和部署验证通过 |
+| 8 | Clean Cutover 与 Handbook 收口 | 旧代码/表/env/header/compat/INDEX 清零，CODEBASE_MAP/ADR/runbook 单事实源，全仓 E2E 通过 |
+| 9 | Production Certification 与 Launch | redeem_only 真实纵切、RC EvidenceBundle、security/load/soak/DR/rollback、on-call/Support 和 Go/No-Go 全通过 |
 
 Wave 3 与 Wave 2 的只读契约设计可以并行；Wave 4 依赖 Wave 2 的 Admission/Rating 和 Wave 3 的
 Session projection。Wave 5 的 GA 内部安全加固可与 Wave 4 Worker 开发并行，但 Gateway/Capability
@@ -2458,7 +2886,8 @@ Session projection。Wave 5 的 GA 内部安全加固可与 Wave 4 Worker 开发
 6C 依赖 Admission、Capability 和 Wave 3 的 Task Projection 基础 contract；6D 依赖 6A/6B 的隔离和
 6C 的长期运行/通知。Risk enforcement contract 必须在 Wave 1 冻结，并随每个执行 Wave 接入；不能等到
 Wave 7 Admin 才补。Data Governance participant contract 在 Wave 1 冻结，各 context 在自身 Wave 实现，
-Wave 7 只完成跨 context coordinator 和运营面。
+Wave 7 只完成跨 context coordinator 和运营面。Wave 8 不接受“旧代码暂留后续删除”；Wave 9 只认证
+已经 clean cutover 的唯一实现，不在 RC 阶段补领域功能。
 
 ## 26. 依赖与风险
 
@@ -2512,6 +2941,12 @@ Wave 7 只完成跨 context coordinator 和运营面。
 - Experiment/Growth 有版本化 assignment/exposure，但永远不能绕过 Release、Commerce、Admission 和 Risk。
 - Risk enforcement 是所有执行边界的早期横切契约；Data Governance 用跨 context participant workflow，
   Notification 由领域事实驱动且不改变源业务终态。
+- 首发可以不接真实 Payment Provider，Site 通过 SalesPolicyRevision 使用 `redeem_only`；Redemption 与购买
+  复用同一 Fulfillment/Grant，绝不创建假 Payment 或第二套 Credit 路径。
+- “完成”以 Production Certification 为准：启用功能无 stub/mock、恢复/安全/运维证据齐全，Wave 9
+  Go/No-Go 通过后才可宣告直接上线。
+- INDEX.md 是贴近代码的当前架构契约；Wave 0 建治理和 CI，每个 Wave 同 commit 更新，clean cutover 删除
+  旧描述，不以历史兼容说明污染新实现。
 - Claude Code 类 Developer Surface 与 Manus 类 Task Surface 共用底层执行体系，不拆两套 GA/Job。
 
 具体 Site 套餐价格、开放的 Surface、模型池内容、Provider 和 Merchant 配置属于运营数据，不是架构
@@ -2521,6 +2956,8 @@ Wave 7 只完成跨 context coordinator 和运营面。
 ## 28. 相关材料
 
 - `docs/handoffs/2026-07-24-credit-three-bucket-l3.1.md`
+- `docs/reports/2026-07-25-kokoro-production-launch-readiness-checklist.md`
+- `docs/superpowers/plans/2026-07-25-kokoro-production-delivery-program.md`
 - `docs/superpowers/specs/2026-07-24-capability-and-studio-architecture.md`
 - `docs/superpowers/specs/2026-07-24-unified-plan-monetization-design.md`
 - `docs/kokoro-handbook/technical/20-kokoro-v1-technical-plan.md`
@@ -2538,3 +2975,4 @@ Wave 7 只完成跨 context coordinator 和运营面。
 | 1.0 | 2026-07-25 | 汇总多轮讨论、三路独立源码审查和用户批准的目标架构方向；等待书面 Spec 复审 |
 | 1.1 | 2026-07-25 | 关闭 Commerce 红队 P0：Platform process role/UoW、Hold finalize、Operation admission、Release/交易状态与复审门 |
 | 1.2 | 2026-07-25 | 补齐顶级 Agent 产品能力与业务能力地图；经 Runtime/Commerce 红队关闭 ExecutionGrant、Target fencing、AuthorizationSegment、Team budget、Growth/Risk/Governance/Notification 等边界问题 |
+| 1.3 | 2026-07-25 | 冻结 production-ready、redeem_only source/term/availability/export/reversal 正式首发链、分层验证/RC Evidence/Go-No-Go/维护机制、INDEX.md/Monorepo 治理与 Wave 9 上线门 |
