@@ -75,10 +75,11 @@ npm run lint
 一个子仓两个独立部署的 Next.js app + 共享包（架构地图见 `kokoro-web/INDEX.md`）：
 
 - `apps/user`（`@kokoro/web-user`）：用户面工作台。消费 session HTTP/SSE，走 web BFF 不直连 DB。Next16/React19/antd6。
-- `apps/admin`（`@kokoro/admin-web`）：运营后台。NextAuth + Prisma 直连 DB 的特权面。Next15/React18/antd5。
+- `apps/admin`（`@kokoro/admin-web`）：运营后台。NextAuth + Prisma 直连 DB 的特权面。Next16/React19/antd6。
 - `packages/*`：`@kokoro/tsconfig`（共享 TS 基线）、`@kokoro/i18n`（i18n 引擎）。
 
-**两 app 版本全面分歧，靠 pnpm `node-linker=isolated` 共存**（切 hoisted 会 React 混版，见 INDEX 陷阱段）。
+**两 app 当前已统一 Next 16.2.6 / React 19.2.4 / antd 6.5.0 / Vitest 4.1.x**。pnpm 仍使用
+`node-linker=isolated` 保护依赖边界；跨仓 TS/Vitest/Node/package-manager/lockfile 分裂由 Wave 0 统一。
 正式文档入口：`kokoro-web/README.md`、`kokoro-web/apps/user/docs/README.md`。
 
 常用验证（pnpm workspace）：
