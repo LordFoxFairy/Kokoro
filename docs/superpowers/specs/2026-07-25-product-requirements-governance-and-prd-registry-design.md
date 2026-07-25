@@ -181,7 +181,7 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-A2 [`2026-07-25-prd-a2-target-device-permission-and-interaction.md`](2026-07-25-prd-a2-target-device-permission-and-interaction.md) | 6A | advanced | onboard/pair/trust/select/takeover/approval/revoke |
 | PRD-A3 [`2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md`](2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md) | 6B | advanced | repo/worktree/diff/test/checkpoint/rewind/PR/attach/fork |
 | PRD-A4 [`2026-07-25-prd-a4-routine-connector-and-taskview.md`](2026-07-25-prd-a4-routine-connector-and-taskview.md) | 6C | advanced | builder/schedule/DST/misfire/OAuth/wait/notification/task timeline |
-| PRD-A5 `2026-07-25-prd-a5-agent-team-research-and-application-runtime.md` | 6D | advanced | team plan/budget/nodes/partial/cancel/aggregate/deploy/rollback |
+| PRD-A5 [`2026-07-25-prd-a5-agent-team-research-and-application-runtime.md`](2026-07-25-prd-a5-agent-team-research-and-application-runtime.md) | 6D | advanced | team plan/budget/nodes/partial/cancel/aggregate/deploy/rollback |
 
 每份 PRD 必须通过 `deliver-prd` 质量项，并由产品红队检查 Journey、state、recovery、metrics、scope 和运营闭环。
 
