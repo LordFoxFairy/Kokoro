@@ -81,8 +81,8 @@ Payment/Invoice/Refund。
 ## INDEX.md Current-state Gap
 
 当前仓共有 28 份 INDEX：`kokoro-agent` 4、`kokoro-session` 4、`kokoro-web` 20、`kokoro-platform` 0；
-根仓也没有 INDEX。现有 `kokoro-web/INDEX.md` 仍描述版本分裂、Admin DB 直连和旧部署方式，不能作为
-目标架构事实。
+根仓也没有 INDEX。`kokoro-web/INDEX.md` 已在 `f3936be` 修正两 app 当前版本事实，但仍按当前实现记录 Admin
+DB 直连、旧部署与跨仓工具链分裂；它只能作为 current-state map，不能冒充目标架构事实。
 
 正确处理顺序：
 

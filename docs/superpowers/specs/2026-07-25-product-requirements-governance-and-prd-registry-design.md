@@ -163,8 +163,8 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-02 [`2026-07-25-prd-02-workspace-membership-and-project.md`](2026-07-25-prd-02-workspace-membership-and-project.md) | 1 | core+if-enabled | personal bootstrap、invite、role、last owner、Project lifecycle |
 | PRD-03 [`2026-07-25-prd-03-account-plan-redeem-and-credit.md`](2026-07-25-prd-03-account-plan-redeem-and-credit.md) | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
 | PRD-04 [`2026-07-25-prd-04-checkout-subscription-and-billing.md`](2026-07-25-prd-04-checkout-subscription-and-billing.md) | 2B | if-enabled | quote/checkout/redirect/renew/change/cancel/refund/dispute |
-| PRD-05 `2026-07-25-prd-05-chat-conversation-run-and-interaction.md` | 3/5A | core profile | onboarding/manage/composer/stream/control/branch/HITL/model/Job |
-| PRD-06 `2026-07-25-prd-06-asset-intake-and-attachment-safety.md` | 3/4 | if-enabled | upload/resume/scan/quarantine/quota/delete/appeal |
+| PRD-05 [`2026-07-25-prd-05-chat-conversation-run-and-interaction.md`](2026-07-25-prd-05-chat-conversation-run-and-interaction.md) | 3/5A | core profile | onboarding/manage/composer/stream/control/branch/HITL/model/Job |
+| PRD-06 [`2026-07-25-prd-06-asset-intake-and-attachment-safety.md`](2026-07-25-prd-06-asset-intake-and-attachment-safety.md) | 3/4 | if-enabled | upload/resume/scan/quarantine/quota/delete/appeal |
 | PRD-07 `2026-07-25-prd-07-studio-common-job-and-cost-ux.md` | 4 | if-enabled | draft/autosave/quote/submit/queue/unknown/partial/export |
 | PRD-08I `2026-07-25-prd-08i-image-studio.md` | 4 | if-enabled | generate/reference/mask/inpaint/outpaint/batch/upscale |
 | PRD-08M `2026-07-25-prd-08m-music-studio.md` | 4 | if-enabled | lyrics/player/generate/extend/remix/stem/export |
