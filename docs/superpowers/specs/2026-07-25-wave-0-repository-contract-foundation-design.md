@@ -27,8 +27,8 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 
 本 Wave 的一句话结论：
 
-> 将四个 pinned 子仓精确导入一个真正的 polyglot Monorepo，在不改变业务和 GA 行为的前提下，建立唯一
-> workspace/lock、确定性 contract、根 CI、架构依赖门与当前事实型 INDEX；只有 fresh clone 能完全复现，
+> 将四个 pinned 子仓精确导入一个真正的共享Backend/Admin/capability-source polyglot Monorepo，在不改变业务和GA行为的
+> 前提下，建立该作用域唯一workspace/lock、确定性contract、根CI、架构依赖门与当前事实型INDEX；只有fresh clone能完全复现，
 > 才允许关闭旧仓写入口。
 
 ### 0.1 已裁决事项
@@ -36,9 +36,10 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 1. 采用 pinned snapshot import，不合并四套完整 Git 历史，不使用 subtree，不继续长期 submodule。
 2. Wave 0 保留 `kokoro-agent/`、`kokoro-platform/`、`kokoro-session/`、`kokoro-web/` 路径；最终
    `apps/services/workers/packages` 移动留给对应领域 Wave，Wave 8 清零旧路径。
-3. 根仓成为唯一写入、PR、CI、Release 和依赖锁事实源；旧 remote 只保留只读历史。
-4. JavaScript/TypeScript 只允许根 pnpm workspace 与根 `pnpm-lock.yaml`；Python 只允许根 uv workspace
-   与根 `uv.lock`。
+3. 根仓成为导入的Backend、Session、Platform、Admin与共享capability source唯一写入、PR、CI、Release和依赖锁事实源；
+   旧remote只保留只读历史。独立Site Web Project遵循ADR-WEB-01，不属于该workspace authority。
+4. 本Wave受管Monorepo内JavaScript/TypeScript只允许根pnpm workspace与根`pnpm-lock.yaml`；Python只允许根uv workspace
+   与根`uv.lock`。每个产品命名Site Web Project拥有独立repo/lock/CI，只消费已发布签名package，不作为nested workspace。
 5. 当前 wire contract 的语义和 17 个 generated outputs 保持不变；Wave 0 增加 consumer inventory、确定性 digest、
    orphan 检查和锁定依赖，不在本 Wave 引入第二套 JSON Schema/protobuf 真源。
 6. INDEX 只描述已经存在的代码现实。目标架构继续由 Parent Spec 描述，不能提前把 Session billing、
@@ -46,6 +47,8 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 7. 不引入 Turborepo/Nx。当前规模下 pnpm 原生 workspace、显式根任务和完整 CI 更容易证明；只有未来 CI
    时间达到已定义阈值，才通过独立 ADR 引入增量构建系统。
 8. TypeScript 固定 5.9.3，不在生产地基中采用 2026-07-08 刚发布且尚无稳定编程 API 的 TypeScript 7。
+9. `kokoro-web/apps/user`在Wave 0只是导入期reference Site source；首个生产Site candidate前必须按ADR-WEB-01抽离为独立
+   Project dependency authority。Wave 0的single-lock证明不冒充最终Fleet Site lock模型。
 9. Prisma 6/MySQL 是按 bounded context 到期的 Foundation 例外：site/user/platform-admin 在 Wave 1，
    payment/credit 在 Wave 2A，model-control 在 Wave 5A；各 context 与自身 schema clean replacement 同波迁到
    Prisma 7/PostgreSQL 18，禁止 Wave 0 提前改业务模型或做一次无价值的中间迁移。
@@ -191,10 +194,10 @@ process/migration 入口却完全无局部架构地图；Web 有许多组件 IND
 |---|---|
 | Gitlink | `160000` entry 为 0，`.gitmodules` 不存在，nested `.git` 为 0 |
 | Fresh clone | `--no-local` clone 后不执行 submodule 命令即可完成所有 required gate |
-| JS lock | 只有根 `pnpm-lock.yaml` 和根 `pnpm-workspace.yaml` |
+| JS lock | 受管Monorepo只有根`pnpm-lock.yaml`/workspace；独立Site Projects不位于该树或workspace |
 | Python lock | 只有根 `uv.lock` |
-| 其他 lock | `package-lock.json`、yarn/bun lock、nested pnpm/uv lock 为 0 |
-| Package manager declaration | 只有根 `package.json#packageManager`；nested declaration 为 0 |
+| 其他 lock | 受管Monorepo内`package-lock.json`、yarn/bun lock、nested pnpm/uv lock为0 |
+| Package manager declaration | 受管Monorepo只有根`package.json#packageManager`；Site Project在自身authority声明 |
 | Runtime | Node 24.18.0、pnpm 11.17.0、Python 3.12.13、uv 0.11.32 |
 | TS policy | 受控 package 全部引用 catalog；无未批准 major/patch 漂移 |
 | Contract | 16 个代码 outputs + 1 个文档 output 全、无 orphan、生成两次一致、digest 稳定 |
@@ -497,7 +500,8 @@ payment/credit=2A，model-control=5A。Wave 0 禁止新增 Prisma schema、Clien
 `Authority Switch Set` 必须同时完成：
 
 - 生成根 `pnpm-lock.yaml`、根 `uv.lock`；
-- 删除 Platform/Web/Session nested pnpm workspace/lock；
+- 删除受管Monorepo内Platform/Web/Session旧nested pnpm workspace/lock；reference Site抽离后使用自身Project lock，
+  不作为Monorepo nested authority；
 - 删除 Session/Agent package-lock；
 - 删除 Agent nested uv.lock；
 - 更新 Docker、scripts 和 CI 不再读取子 lock；
@@ -953,7 +957,7 @@ Wave 0 不含 schema/data migration，因此 Git 拓扑回滚不与数据库回�
 ### 16.2 Foundation static gates
 
 - topology/no-gitlink/no-nested-git；
-- single-lock/no-npm-yarn-bun/nested-workspace；
+- managed-monorepo-single-lock/no-npm-yarn-bun/nested-workspace，并验证Site Projects不被workspace吸入；
 - single root `packageManager` declaration；
 - exact runtime/catalog/exception；
 - contract generate/inventory/orphan/digest；
@@ -1049,7 +1053,7 @@ CI run URL；每个外部 archive/bundle/ruleset evidence 记录 verifiedAt/By/r
 - `config/repository/imported-snapshots.yaml`。
 - true Monorepo ADR、旧 ADR superseded。
 - 根 Node/pnpm/Python/uv manifests、versions、locks、policies。
-- nested lock/workspace/package-lock 清零。
+- 受管Monorepo nested lock/workspace/package-lock清零；Site Projects按ADR-WEB-01在独立authority验证。
 - root scripts 与 root Docker context。
 
 ### 18.2 Contract
@@ -1101,7 +1105,7 @@ CI run URL；每个外部 archive/bundle/ruleset evidence 记录 verifiedAt/By/r
 - [ ] Platform pinned commit 已存入 remote archive ref，四仓 bundle digest 已验证。
 - [ ] 四个 imported prefix tree 与 §2.1 完全一致。
 - [ ] gitlink、`.gitmodules`、nested `.git` 为 0。
-- [ ] 根单 pnpm/uv lock 成立，其他 package manager lock 为 0。
+- [ ] 受管Monorepo根单pnpm/uv lock成立，其他package manager lock为0；Site Project独立lock未被误扫为nested例外。
 - [ ] §7 exact versions 与 catalog/exception policy 全过。
 - [ ] Zod 4 wire accept/reject truth table 与基线等价。
 - [ ] Contract 16 个代码 outputs + 1 个文档 output、consumer inventory、orphan、digest、determinism 全过。

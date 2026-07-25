@@ -88,8 +88,8 @@ flowchart LR
   A["Admin / Evaluation Pipeline"] --> MC["Platform Model Control"]
   SR["SiteRelease / Plan / Surface Assignment"] --> AD["Platform Admission"]
   MC --> AD
-  AD -->|"ModelExecutionAuthorization ref"| GA["GA or Job Worker"]
-  GA -->|"ModelInvocation command"| MG["Model Gateway"]
+  AD -->|"opaque modelAuthorizationHandle"| GA["GA or Job Worker"]
+  GA -->|"handle + logicalModelCallId + typed request"| MG["Model Gateway"]
   MG --> PA["Direct Provider Adapters"]
   MG --> LA["LiteLLM Adapter"]
   LA --> LL["External LiteLLM Runtime"]
@@ -195,9 +195,9 @@ AttemptUsageFact
 
 ### 4.3 Runtime facts
 
-- `ModelExecutionAuthorization`：execution root/authorization segment 级签名授权，冻结 EffectiveBundle、Site/Billing/
-  root Hold/Rating linkage、允许 roles、bounded invocation budget 与 epochs；Gateway 原子消费 budget，GA adapter 不为
-  每个 turn 回调 Platform。
+- `ModelExecutionAuthorization`：execution root/authorization segment级server-side授权记录，冻结EffectiveBundle、
+  Site/Billing/root Hold/Rating linkage、允许roles、bounded invocation budget与epochs；Gateway原子消费budget。GA adapter
+  只持有opaque handle，不读取record，也不为每个turn回调Platform。
 - `ModelInvocationAuthorization`：Gateway 从 ExecutionAuthorization 原子派生的一次 logical model call 授权，绑定
   stable `logicalModelCallId`、role/request digest 与 invocation budget ordinal。
 - `ResolutionRecord`：Gateway 在 effect point 对一个 Attempt 的确定选择和排除解释。
@@ -296,7 +296,8 @@ candidate
 ## 7. Admission and Authorization Contract
 
 Platform Admission 输入可信 SiteRelease、Surface/Agent role、ModelOption、PlanModelGrant、ContentPolicy、data region、
-Restriction、budget/rating refs，输出：
+Restriction、budget/rating refs，持久化server-side授权记录并向GA/Job Worker只输出高熵随机、不可解析的
+`modelAuthorizationHandle`：
 
 ```text
 ModelExecutionAuthorization {
@@ -313,14 +314,18 @@ ModelExecutionAuthorization {
 }
 ```
 
+`ModelExecutionAuthorization`是Platform/Gateway可解析的server-side record，不是交给GA的claims token。Admission通过
+outbox将加密记录预物化到Gateway authorization store；Gateway确认materialized后execution才可dispatch。GA只透传handle，
+不得decode、branch、index、join或记录raw value，日志最多保存salted correlation hash。
+
 - Browser/Session 不能提交 SiteId/Plan/Deployment 扩权；BFF/Platform 从 trusted context 编译。
 - Gateway 校验 signature/audience/expiry/command digest/epoch/budget before effect，并原子派生/消费单 logical-call
   `ModelInvocationAuthorization`。同一 authorization + logicalModelCallId + request digest 可查询/attach，不能创建第二
   logical invocation；相同 grant 配不同 digest/ID 拒绝。
 - 一个 execution root 只允许一个 root Hold；每个 Invocation/Attempt allocation 从该 root Hold 原子派生，总和不超过
   reservation。AttemptUsageFact 直接携带 Site/Billing/rootHold/allocation/rating settlement linkage，不靠事后按 Run 搜索。
-- Route token 不包含 Provider secret、customer price 或业务 PII。GA 仍只使用 opaque namespace 作为 runtime
-  isolation；Platform business refs 不成为 GA 第二身份轴。
+- handle不包含任何可读claim、Provider secret、customer price或业务PII。GA仍只使用opaque namespace作为runtime isolation；
+  Site/Billing/Plan/rootHold等refs只存在于Gateway解析的server-side record，不成为GA第二身份轴。
 - token expiry 阻止新 Invocation/Attempt，不截断已不可逆提交的 Attempt；Gateway 在有效 ExecutionAuthorization 的
   bounded budget 中服务多 turn，GA adapter 不新增 Platform dependency。HITL/resume 超过 TTL 时由现有 Session/
   Platform admission 边界续发 execution segment；旧 authorization 不可创建 Attempt。managed deny/revocation 对未
@@ -334,7 +339,7 @@ ModelExecutionAuthorization {
 
 ```text
 caller persists invocation intent/idempotency
-→ Gateway accepts ModelExecutionAuthorization + logicalModelCallId + typed ModelRequest
+→ Gateway accepts opaque modelAuthorizationHandle + logicalModelCallId + typed ModelRequest
 → atomically derives ModelInvocationAuthorization and allocation
 → persist ModelInvocation
 → resolve eligible candidates at effect point

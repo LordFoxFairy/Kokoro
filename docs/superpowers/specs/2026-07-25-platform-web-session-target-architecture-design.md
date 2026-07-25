@@ -77,7 +77,8 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 6. 建立标准 Catalog、Offering、Payment Fact、Fulfillment、EntitlementGrant、CreditGrant 和
    CreditJournal 模型。
 7. 建立可运营的标准 Admin，而不是以通用数据表替代发布、财务和运行恢复流程。
-8. 统一 TypeScript 工具链、契约、lockfile 和服务装配方式。
+8. 统一 Backend/Admin/共享 Web capability source 的 TypeScript 工具链、契约、lockfile 和服务装配方式；每个Site Web
+   Project保留独立source、lock、CI、artifact与release authority，并只消费已签名发布包。
 9. 建立 Claude Code 类开发代理与 Manus 类行动代理共用的 ExecutionTarget、Permission、Routine、
    TaskView、多端继续和多 Agent 产品底座，不复制第二套 Runtime。
 10. 以 production-ready、redeem-first 纵切完成首次真实上线；即使未接 Payment Provider，也能通过卡密
@@ -97,7 +98,7 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 | Artifact lineage | delivery/hash 为主 | 每个版本有 Operation/Job/Attempt provenance | Artifact 验收 |
 | Credit 可逆性 | 只能按桶归还 | 可按源 Grant 精确撤销和退款 | Commerce 验收 |
 | Provider 事实覆盖 | 终态 usage 为主 | 每个 terminal Attempt 与本地 AttemptUsageFact 原子持久化，canonical UsageEvidence 无重复 | Model/Usage 验收 |
-| 工具链漂移 | 多 TS/Vitest/Zod/lockfile | 根 catalog 和单 lockfile，无非批准多版本 | Toolchain 验收 |
+| 工具链漂移 | 多 TS/Vitest/Zod/lockfile | 共享source workspace单catalog/lock；每个Site Project独立锁定已发布兼容版本 | Toolchain 验收 |
 | 跨 Site 数据泄漏 | 尚无目标架构级证明 | 安全矩阵中跨站越权成功数为 0 | 安全验收 |
 | 重复履约/重复扣费 | 当前按局部幂等实现 | webhook/replay/chaos 矩阵重复数为 0 | Commerce 验收 |
 | 高风险后台操作审计 | 各模块覆盖不一致 | 定义范围内 mutation 审计覆盖率 100% | Admin 验收 |
@@ -1362,14 +1363,15 @@ Job 的跨 Context 完成使用可恢复 finalization saga：
 persist provider outcome + terminal JobAttempt + AttemptUsageFact + outbox
 → Job = finalizing
 → CreateArtifactVersion(jobId/attemptId, idempotencyKey)
-→ IngestUsageEvidence(producer/attempt/revision, idempotencyKey)
-→ persist both receipts
+→ persist Artifact receipt + local AttemptUsageEvidenceReceipt
 → Job = completed + cost_pending | completed + cost_final
+→ async canonical Usage ingest → Rating → Settlement/Correction
 ```
 
 - Artifact 是该 Operation 的必需产出时，没有 Artifact receipt 不得标 completed。
 - Usage 已有 raw fact 但 Rating 未完成时允许 `completed/cost_pending`；没有 raw fact 不允许假完成。
-- finalizer crash 只重试 receipt 创建/摄取，不重跑 Provider effect。
+- finalizer crash只重试validation、Blob/Artifact/Trust与producer-local Usage receipt，不重跑Provider effect；canonical
+  ingestion/rating/settlement outage不阻塞合格作品completed，但committed allocation不得因timeout释放。
 - Provider outcome unknown 保持 Job/Attempt unknown 并由 reconciler 查询，不能进入 finalizing。
 - cancel 与 finalization 使用 expectedVersion；late callback 按相同 Attempt/inbox 去重并进入确定性 reducer。
 
@@ -2434,7 +2436,7 @@ allowed degradation、forbidden fallback。首批权威矩阵：
 | 调用 | 模式 / audience | 幂等与恢复 | Failure owner / 禁止 fallback |
 |---|---|---|---|
 | Site BFF → Platform `ExchangeSiteContext` | sync / `platform.site-context` | binding + request key；只重试 transport failure | Platform；禁止 Host/default Site |
-| Site BFF → Session command | HTTP / `session.command` | client command key + body digest | Session；禁止浏览器直连 GA |
+| Site BFF → Session HTTP/SSE/read/control | `SessionAccessGrant` / `session.*` | command key+digest；cursor绑定Site/session/subject generation；snapshot重建 | Session；禁止namespace=owner shortcut、浏览器直连GA或全历史SSE作真源 |
 | Session → Platform Prepare/FinalizeRun | sync / `platform.admission` | admission key；Finalize CAS | Platform；禁止 Session 自行授权/扣费 |
 | Session → GA LaunchRunExecution/CancelRunExecution | control RPC + async facts / `ga.run-control` | launch key + digest、expectedVersion | GA；禁止 Session 自判 terminal；pre-create cancel 由 launch projection 收口，GA accepted 后只认 GA cancel |
 | GA → Model Gateway InvokeModel | streaming / `model-gateway.invoke` | 只在首 token/effect 前按 RoutePolicy retry | Gateway；禁止 GA 直连 Provider |
@@ -2447,6 +2449,11 @@ allowed degradation、forbidden fallback。首批权威矩阵：
 | 各真源 → Session/TaskView | async facts / `projection.consume` | eventId + aggregateVersion | Projection owner；禁止投影写回真源 |
 | Platform → deployment provider | durable intent/reconcile | ActivationAttempt provider key | Site reconciler；unknown 时禁止再次 promote |
 | Provider callback → owning Context | inbox/fact | provider account/environment/event id | Domain owner；callback 禁止跨域直接写表 |
+
+`SessionAccessGrant`由Platform根据BFF workload identity、server-resolved SiteContext、AuthSession/actor、workspace/project
+membership与current epochs签发；Session在每个HTTP/SSE/read/control effect point使用同一evaluator，并维护最小授权projection。
+Session snapshot是完整长期页面projection，SSE只传增量。具体claims、revocation、cursor、non-disclosure与GA opaque boundary以
+[Platform/Web/Session P0 Contract Closure](2026-07-25-platform-web-session-p0-contract-closure-design.md)为准。
 
 统一事件 envelope 至少包含 `eventId/eventType/schemaVersion/producer/aggregateType/aggregateId/
 aggregateVersion/occurredAt/recordedAt/correlationId/causationId/securityClassification/payload`，并登记 partition
@@ -2797,10 +2804,12 @@ Pyright
 Pydantic 2
 ```
 
-- 根 `package.json`、`pnpm-workspace.yaml`、catalog 和单一 lockfile 锁定版本。
+- 根 `package.json`、`pnpm-workspace.yaml`、catalog 和单一 lockfile只锁定Backend、Session、Platform、Admin与共享Web
+  capability source。独立Site Web Project不属于根workspace，拥有自己的lock/CI并只消费registry中已签名immutable package。
 - Python packages 使用根 uv workspace 和单一 `uv.lock`；GA 特殊 native dependency 必须显式分组，
   不允许服务各自维护不可解释的 Python 版本漂移。
-- Site app、Admin、Session、Platform 不允许各自漂移 TS/Zod/Vitest major。
+- Admin、Session、Platform与共享package不允许各自漂移TS/Zod/Vitest major；Site Project必须满足发布包compatibility floor，
+  但升级通过逐Project lock diff/candidate完成，不由根lock隐式改变。
 - Next/React 可因安全修复统一升级 patch，不允许 Site 私自升级 major。
 - Prisma 只用于后端；Web app 不生成或 import Platform Prisma Client。
 - AI SDK 仅作为 Web typed-part/stream primitive，Session contract 仍是系统真相。

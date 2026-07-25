@@ -502,6 +502,9 @@ owner、预计/最大等待窗口和 Support deep link。
 
 - 每个 command 重新验证可信 SiteContext、actor principal、Session/Project authorization、CSRF、expectedVersion、
   restriction epoch 和 audience；浏览器 siteId/releaseId/namespace 不作为授权证据。
+- BFF通过workload identity把上述可信上下文换成audience-bound `SessionAccessGrant`；Session对HTTP/SSE/read/control使用同一
+  evaluator和epoch projection。cursor绑定Site/session/subject generation，snapshot必须能在无历史SSE的浏览器完整重建；
+  namespace不等于owner/subject，且这些claims不得下推GA。
 - prompt、attachment、tool result、citation 与 model output 都是不可信内容，必须经过 typed rendering/sanitization；
   禁止任意 HTML、URL scheme、filename、Markdown link、SVG 或 code execution 逃逸。
 - attachment intake、ContentPolicy、moderation、appeal 由 PRD-06/16 管理；Chat 不把 policy deny 伪装 Provider error。

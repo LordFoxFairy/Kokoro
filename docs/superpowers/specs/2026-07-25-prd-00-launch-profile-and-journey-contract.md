@@ -26,8 +26,9 @@ Kokoro 支持一个后端服务多个独立 Site，每个 Site 又可以只开�
 
 ### 1.2 Solution Summary
 
-建立版本化 `LaunchProductProfile`、`EnabledSurfaceInventory`、`CanonicalJourneyCatalog` 与
-`CertificationInstance` 产品合同。SiteRelease 只能引用已发布 Profile；compile 时展开所有 Surface、Journey、
+建立版本化 `LaunchProductProfile`、`EnabledSurfaceInventory`、`CanonicalJourneyCatalog`、
+`CapabilityQualificationAttestation`与`ReleaseCertificationInstance`产品合同。SiteRelease只能引用已发布Profile；
+compile时展开所有Surface、Journey、
 route、API、Admin command、Model/Agent/Capability assignment 和 evidence。未知、缺 owner、缺恢复、缺证据、
 证据过期或只隐藏 UI 的条目全部 fail closed。
 
@@ -128,12 +129,13 @@ journeyRevisionRefs
 productPrdRevisionRefs / architectureSpecRevisionRefs
 testReportRefs / runbookRefs / dashboardAlertRefs
 supportCaseKindRefs / contentPolicyRefs
-productionReadyAttestation
+capabilityQualificationAttestationRefs
 acceptedRiskRefs with owner/expiry
 ```
 
-`productionReadyAttestation` 必须是由 accountable owners 签名、引用 Certification evidence digest 的记录，
-不能是自由布尔值。`enabled` 条目缺任一 mandatory ref 时 compile 失败；`disabled` 条目必须提供四层关闭
+`capabilityQualificationAttestationRefs`必须由accountable owners签名，在具体Release之前存在并绑定PRD/spec/contract/
+test/runbook revision与适用范围；它不能是自由布尔值，也不能引用尚未生成的Release certificate。`enabled`条目缺任一
+mandatory ref时compile失败；`disabled`条目必须提供四层关闭
 证据，不能只省略 enabled entry。
 
 Profile command family 固定为 `CreateProfileDraft`、`ValidateProfileCandidate`、`PublishProfileRevision`、
@@ -154,7 +156,10 @@ requiredSurfaceRefs / childPrdRef
 acceptanceScenarioRefs
 ```
 
-### 3.4 CertificationInstance
+### 3.4 Qualification and ReleaseCertificationInstance
+
+Profile candidate compile只消费有效`CapabilityQualificationAttestation`；compile/build/preview完成后才生成
+`ReleaseCertificationInstance`。两层digest严格单向，禁止placeholder、自引用或复用其他Site/candidate证据。
 
 ```text
 certificationId
@@ -173,6 +178,9 @@ decision = passed | failed | expired | revoked
 
 Core certification 可以允许对应 SiteRelease 上线，但不关闭 Transformation Program；高级能力用 delta
 Certification，最终以 transformation-final instance 收口。
+
+Release activation必须持有匹配全部compiled inventory、source、contract、lock、image与config digest的有效instance。
+Qualification只证明能力在声明范围内合格，不单独授权任何SiteRelease上线。
 
 ## 4. Reference Profile：`core-redeem-chat@1`
 
