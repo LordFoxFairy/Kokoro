@@ -170,7 +170,7 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-08M [`2026-07-25-prd-08m-music-studio.md`](2026-07-25-prd-08m-music-studio.md) | 4 | if-enabled | lyrics/player/generate/extend/remix/stem/export |
 | PRD-08V [`2026-07-25-prd-08v-video-studio.md`](2026-07-25-prd-08v-video-studio.md) | 4 | if-enabled | storyboard/assets/shot/long queue/partial/upscale/export |
 | PRD-09 [`2026-07-25-prd-09-library-artifact-export-and-share.md`](2026-07-25-prd-09-library-artifact-export-and-share.md) | 4 | core minimal + if-enabled Share | lineage/search/trash/quota/rendition/share/revoke/moderation |
-| PRD-10 `2026-07-25-prd-10-admin-operating-console.md` | 7 + annex per cut | core | auth/scope/queues/commands/approval/diagnosis/audit |
+| PRD-10 [`2026-07-25-prd-10-admin-operating-console.md`](2026-07-25-prd-10-admin-operating-console.md) | 7 + annex per cut | core | auth/scope/queues/commands/approval/diagnosis/audit |
 | PRD-11 [`2026-07-25-prd-11-support-recovery-and-appeals.md`](2026-07-25-prd-11-support-recovery-and-appeals.md) | 1 contract/7 | core | user center/intake/triage/SLA/evidence/escalation/compensation |
 | PRD-12 [`2026-07-25-prd-12-site-lifecycle-and-fleet.md`](2026-07-25-prd-12-site-lifecycle-and-fleet.md) | 1/7 | core | provision/domain/certificate/preview/promote/rollback/suspend/decommission |
 | PRD-13 `2026-07-25-prd-13-growth-seo-experiment-and-attribution.md` | 7 | if-enabled | acquisition/deep link/consent/stitch/exposure/guardrail/share SEO |
