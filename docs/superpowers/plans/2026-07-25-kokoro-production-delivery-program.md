@@ -4,7 +4,10 @@
 
 **Goal:** 将 Kokoro 从当前多子仓/旧边界 clean replace 为可直接上线的多 Site AI 产品，并以 `redeem_only` 完成首个真实 acquisition→Fulfillment→Grant→Usage 生产闭环。
 
-**Architecture:** 本文件是实施总控索引，不授权直接修改业务代码。整体按 Wave 0-9 拆成十份独立子 Spec 和十份精确实现计划；每个 Wave 只在依赖、测试证据、INDEX/文档与同波旧实现清理全部完成后退出。Platform 使用模块化 Core，Session/Job/Capability/Model Gateway/GA 等保持独立运行边界，一 Site 一 Web Project，共享后端。
+**Architecture:** 本文件是实施总控索引，不授权直接修改业务代码。整体按依赖拆成 15 个可独立评审的
+Wave/cut，每个 cut 都有独立子 Spec 和精确实现计划；只有依赖、测试证据、INDEX/文档与同波旧实现清理
+全部完成后退出。Platform 使用模块化 Core，Session/Job/Capability/Model Gateway/GA 等保持独立运行边界，
+一 Site 一 Web Project，共享后端。
 
 **Tech Stack:** Node.js 24 LTS、pnpm 11、TypeScript 5.9、Next.js 16.2、React 19.2、Zod 4、Vitest 4.1、Prisma 7、PostgreSQL 18；Python 3.12、uv、Ruff、Pyright、Pydantic 2；MongoDB、Redis、S3-compatible storage、Secret Manager、OpenTelemetry。
 
@@ -22,28 +25,41 @@
 
 冲突时按上述顺序裁决；历史 handoff、旧 handbook 和旧实现不能覆盖新方案。
 
+`Core Production Launch` 与 `Advanced Agent Program` 分开验收：首发 Site 只需对其冻结
+`LaunchProductProfile/EnabledSurfaceInventory` 中启用的 P0 旅程完成生产认证；未启用的 6A-6D 高级能力不
+阻塞 Core Launch。任何高级能力一旦进入 production SiteRelease，仍须通过对应完整门。整体 Transformation
 Program 只有在以下条件同时成立时 complete：
 
-- [ ] Wave 0-9 全部退出。
+- [ ] 本 Program 表中的 Wave 0、1、2A、2B、3、5A、4、5B、6A-6D、7-9 全部退出。
 - [ ] 启用的用户、Admin 和 Support 旅程不存在 stub/mock/手工数据库步骤。
 - [ ] `redeem_only` production certification 与完整 Release Checklist 通过。
 - [ ] 旧代码、表、env、header、兼容 adapter、测试和失真 INDEX/文档清零。
 - [ ] Production RC 通过 security、load、soak、chaos、backup restore、rollback 和 Go/No-Go。
 
+Wave 8/9 是可重复的 profile-scoped release gate。Core pass 生成 `CertificationInstance` 并可授权对应
+SiteRelease 上线，但 Wave 8/9 保持 active；2B、5B、6A-6D 与全部目标 profile 完成后再执行
+`transformation-final` pass，只有该 instance 通过才把 Wave 8/9 与本 Program 标记 complete。
+
 ## 2. Mandatory Child Spec and Plan Set
 
-每行必须依次完成 `child Spec → 用户书面复审 → writing-plans child plan → implementation → evidence → cleanup`。
+每行必须依次完成 `产品子 PRD → child architecture Spec → 用户书面复审 → writing-plans child plan →
+implementation → evidence → cleanup`；Wave 0 作为工程地基不需要业务产品子 PRD。
 
 | Wave | Child Spec filename | Child implementation plan filename | Production-capable exit |
 |---|---|---|---|
 | 0 | `2026-07-25-wave-0-repository-contract-foundation-design.md` | `2026-07-25-wave-0-repository-contract-foundation-implementation-plan.md` | 真 Monorepo、根 lock/catalog、contract generation、INDEX governance、CI architecture gate |
-| 1 | `2026-07-25-wave-1-platform-site-policy-design.md` | `2026-07-25-wave-1-platform-site-policy-implementation-plan.md` | PlatformUnitOfWork、SiteContext/Release、Experiment、Restriction token/epoch、双 Release drain |
-| 2 | `2026-07-25-wave-2-commerce-redeem-credit-design.md` | `2026-07-25-wave-2-commerce-redeem-credit-implementation-plan.md` | Catalog/Subscription/Fulfillment/Credit/Usage 与 Redeem-only certification |
+| 1 | `2026-07-25-wave-1-platform-identity-site-policy-design.md` | `2026-07-25-wave-1-platform-identity-site-policy-implementation-plan.md` | Identity/Auth PRD、RequestSecurityContext、PlatformUnitOfWork、ActivationAttempt、Restriction token/epoch |
+| 2A | `2026-07-25-wave-2a-commerce-redeem-credit-design.md` | `2026-07-25-wave-2a-commerce-redeem-credit-implementation-plan.md` | Account/Redeem PRD、Catalog/Subscription/Fulfillment/Credit/Usage 与 Redeem-only certification |
+| 2B | `2026-07-25-wave-2b-payment-provider-enablement-design.md` | `2026-07-25-wave-2b-payment-provider-enablement-implementation-plan.md` | Checkout/Payment/Refund/Dispute/dunning 与真实 Provider certification；非 Core redeem-only blocker |
 | 3 | `2026-07-25-wave-3-session-admission-projection-design.md` | `2026-07-25-wave-3-session-admission-projection-implementation-plan.md` | Session 商业逻辑清零、typed parts、branch、reconnect、AuthorizationSegment |
+| 5A | `2026-07-25-wave-5a-model-capability-production-spine-design.md` | `2026-07-25-wave-5a-model-capability-production-spine-implementation-plan.md` | Model Control/Gateway/Capability 最小生产链、AuthorizedModelRoute/ExecutionGrant、AttemptUsageFact、Core 所需最小 GA adapter cutover；不改 graph/checkpoint/Handoff/effect 语义，触及 GA 前专项批准 |
 | 4 | `2026-07-25-wave-4-operation-job-artifact-studio-design.md` | `2026-07-25-wave-4-operation-job-artifact-studio-implementation-plan.md` | Direct/Agent Operation、durable Job、ArtifactVersion、Image/Music/Video Studio |
-| 5 | `2026-07-25-wave-5-model-capability-agent-safety-design.md` | `2026-07-25-wave-5-model-capability-agent-safety-implementation-plan.md` | 单 Model Gateway、Capability Runtime、真实 Handoff、effect/epoch safety |
-| 6 | `2026-07-25-wave-6-agent-product-plane-design.md` | `2026-07-25-wave-6-agent-product-plane-implementation-plan.md` | Target/Permission/Workspace/Memory/Routine/TaskView/AgentTeam/Application Runtime |
-| 7 | `2026-07-25-wave-7-admin-governance-operations-design.md` | `2026-07-25-wave-7-admin-governance-operations-implementation-plan.md` | Site Fleet、财务/运行专用流程、Risk Case、Export/Deletion、Notification、Support |
+| 5B | `2026-07-25-wave-5b-advanced-agent-handoff-safety-design.md` | `2026-07-25-wave-5b-advanced-agent-handoff-safety-implementation-plan.md` | 经专项用户批准的 AgentRevision、真实 Handoff、高级 effect/epoch safety；不承担 Core adapter |
+| 6A | `2026-07-25-wave-6a-target-permission-interaction-design.md` | `2026-07-25-wave-6a-target-permission-interaction-implementation-plan.md` | Target/Permission/Interaction |
+| 6B | `2026-07-25-wave-6b-developer-workspace-context-design.md` | `2026-07-25-wave-6b-developer-workspace-context-implementation-plan.md` | Developer Workspace/Context/Memory/多端 |
+| 6C | `2026-07-25-wave-6c-automation-connector-taskview-design.md` | `2026-07-25-wave-6c-automation-connector-taskview-implementation-plan.md` | Routine/Connector/Plugin/TaskView/最小 Notification 生产链 |
+| 6D | `2026-07-25-wave-6d-agent-team-application-runtime-design.md` | `2026-07-25-wave-6d-agent-team-application-runtime-implementation-plan.md` | AgentTeam/Wide Research/Application Runtime |
+| 7 | `2026-07-25-wave-7-core-admin-governance-operations-design.md` | `2026-07-25-wave-7-core-admin-governance-operations-implementation-plan.md` | Core Site Fleet、财务/运行专用流程、Risk Case、Export/Deletion、Notification、Support；高级 Surface 治理随 6A-6D 同波交付 |
 | 8 | `2026-07-25-wave-8-clean-cutover-documentation-design.md` | `2026-07-25-wave-8-clean-cutover-documentation-implementation-plan.md` | 旧事实源清零，handbook/ADR/INDEX/CODEBASE_MAP/runbook 与唯一实现一致 |
 | 9 | `2026-07-25-wave-9-production-certification-launch-design.md` | `2026-07-25-wave-9-production-certification-launch-implementation-plan.md` | RC EvidenceBundle、真实 redeem-only 纵切、Go/No-Go、canary、rollback、on-call |
 
@@ -98,21 +114,22 @@ Program 只有在以下条件同时成立时 complete：
 ```text
 Wave 0
   → Wave 1
-      → Wave 2 ─────────────┐
-      → Wave 3 (read contracts may parallel Wave 2)
-            └───────────────→ Wave 4
-Wave 4 + Wave 5 safety contract
-  → Wave 6A/6B/6C/6D implementation cuts
-  → Wave 7
-  → Wave 8
-  → Wave 9
+      → Wave 2A ────────────┐
+      → Wave 3 (read contracts may parallel 2A)
+            └───────────────→ Wave 5A
+                                 → Wave 4
+                                     ├→ Wave 7 → Wave 8/9 Core certification instance
+                                     └→ Wave 5B → Wave 6A/6B/6C/6D
+                                                      → Advanced profile delta certification
+All planned cuts ────────────────────────────────────→ Wave 8/9 transformation-final instance
 ```
 
 允许并行：
 
-- Wave 2 领域实现与 Wave 3 只读 contract/projection 设计，在 Admission/Rating contract 冻结后并行。
-- Wave 4 Job/Artifact 与 Wave 5 GA 内部 epoch/effect safety 按不同文件树并行；Gateway/Capability 切换必须串行过 contract gate。
-- Wave 6 的 Target/Permission、Developer Workspace、Automation/TaskView、AgentTeam/Application Runtime 在共同 contract 冻结后按包并行。
+- Wave 2A 领域实现与 Wave 3 只读 contract/projection 设计，在 Admission/Rating contract 冻结后并行。
+- Wave 2B 可在 2A 后独立推进，不阻塞 redeem-only 首发。
+- Wave 4 的非 GA 文件树与 Wave 5B 设计可并行；真实 Studio 必须先通过 5A Gateway/Capability contract gate。
+- Wave 6A-6D 的 Target/Permission、Developer Workspace、Automation/TaskView、AgentTeam/Application Runtime 在共同 contract 冻结后按包并行。
 - 每个 Site Web Project 可以在共享 Surface contract 冻结后并行，但同一 Site 的 route/release owner 唯一。
 
 禁止并行：
@@ -132,19 +149,19 @@ Wave 0-1 后证明：两个独立 Web artifact 只能交换自己的 SiteContext
 
 ### Slice B — Redeem Acquisition
 
-Wave 2 后证明：生产形态无 Payment secret 也能启动，用户兑换 Code 原子取得 Subscription/Entitlement/Credit；Admin 可生成、一次性导出、暂停、compromise、撤销和补发。
+Wave 2A 后证明：生产形态无 Payment secret 也能启动，用户兑换 Code 原子取得 Subscription/Entitlement/Credit；Admin 可生成、一次性导出、暂停、compromise、撤销和补发。
 
 ### Slice C — Usable AI Product
 
-Wave 3-5 后证明：用户从兑换额度进入 Chat/Studio，Run/Job 可恢复，Artifact 可追踪，Model/Capability/GA 副作用安全，Credit 可结算。
+Wave 3、5A、4 后证明：用户从兑换额度进入 Chat/Studio，Run/Job 可恢复，Artifact 可追踪，Model/Capability 副作用安全，Credit 可结算。5A 包含 Core 所需最小 GA adapter cutover；任何实际 GA runtime 行为变化先走专项用户批准门，但不把真实 Handoff 等高级能力塞入 Core Launch。
 
 ### Slice D — Advanced Agent Product
 
-Wave 6 后证明：Local/Cloud Target、Worktree、Permission、Routine、TaskView、多端和 AgentTeam 复用同一业务/执行体系。
+Wave 5B、6A-6D 后证明：Local/Cloud Target、Worktree、Permission、Routine、TaskView、多端和 AgentTeam 复用同一业务/执行体系；每个 cut 同波交付其 Admin/Support/治理面和 production certification。
 
 ### Slice E — Operable Production
 
-Wave 7-9 后证明：运营、Support、Risk、Deletion、Notification、on-call、DR、rollback、文档和 RC evidence 全部闭环，才允许真实流量。
+Core profile 在 Wave 7-9 后证明：运营、Support、Risk、Deletion、Notification、on-call、DR、rollback、文档和 RC evidence 全部闭环，才允许真实流量。高级 profile 只需对新增 Surface 做 delta certification，不复用过期 Core evidence。
 
 ## 6. INDEX.md Deliverables by Wave
 
@@ -152,11 +169,11 @@ Wave 7-9 后证明：运营、Support、Risk、Deletion、Notification、on-call
 |---|---|
 | 0 | 创建根 `INDEX.md`、每个 service/package public root INDEX、`config/architecture/index-roots.yaml`、`docs/templates/INDEX.md`、`scripts/architecture/check-index-coverage.ts`/`check-dependencies.ts`；重写失真的 `kokoro-web/INDEX.md`，建立 CODEBASE_MAP 链接规则 |
 | 1 | Platform root、site/workspace/risk/growth modules、publish/authorize workflows |
-| 2 | catalog/commerce/subscription/fulfillment/credit/usage/payment/redeem workflows 与 Admin redeem surface |
+| 2A/2B | 2A：catalog/commerce/subscription/fulfillment/credit/usage/redeem；2B：payment/refund/dispute/dunning 与 Provider adapter |
 | 3 | Session root、message/branch/projection/admission/control modules；删除 billing/hub/model 旧职责描述 |
 | 4 | Job、Artifact、Operation SDK、各 Studio/Library Surface |
-| 5 | Model Gateway、Capability Runtime、GA assembly/execution/Handoff/effect safety |
-| 6 | Execution Runtime、Device Gateway、Developer Workspace、Automation、Task Projection、Application Runtime |
+| 5A/5B | 5A：Model Gateway、Capability Runtime、Core GA adapter；5B：AgentRevision/Handoff/effect safety |
+| 6A-6D | Execution Runtime、Device Gateway、Developer Workspace、Automation、Task Projection、Application Runtime |
 | 7 | Admin、notification、data governance、Support/reconciliation/runbook roots |
 | 8 | 全仓 dead-link/old-owner/old-env 扫描，迁入 handbook，CURRENT 只指向正式事实源 |
 | 9 | 生产入口、部署/rollback/incident runbook、真实验证命令和 Release Evidence 索引 |
@@ -168,22 +185,23 @@ INDEX 只描述当前代码；历史保留在 Git 和正式 ADR，不在“当�
 | Evidence | Accountable role | Blocking Waves |
 |---|---|---|
 | Architecture/import/INDEX/contract | Architecture + Foundation | 0-9 |
-| Unit/property/invariant | Domain Lead + QA | 1-7 |
-| Transaction/migration/reconciliation | Platform/Data | 1-3, 7-9 |
-| Runtime/lease/effect/chaos | Runtime/Reliability | 3-6, 9 |
-| Multi-Site/Web/Studio/a11y | Web/Product QA | 1, 3-4, 7, 9 |
-| Redeem-only certification | Commerce/Security/Support | 2, 7, 9 |
-| Security/privacy/governance | Security/Privacy | 1-9 |
-| Load/soak/DR/rollback | SRE/Data | 8-9 |
+| Unit/property/invariant | Domain Lead + QA | 1、2A/2B、3、5A、4、5B、6A-6D、7 |
+| Transaction/migration/reconciliation | Platform/Data | 1、2A/2B、3、7、8/9 instances |
+| Runtime/lease/effect/chaos | Runtime/Reliability | 3、5A、4、5B、6A-6D、9 instances |
+| Multi-Site/Web/Studio/a11y | Web/Product QA | 1、3、5A、4、7、9 instances |
+| Redeem-only certification | Commerce/Security/Support | 2A、7、Core 9 instance |
+| Security/privacy/governance | Security/Privacy | 所有实现 cut 与 certification instance |
+| Load/soak/DR/rollback | SRE/Data | 每个 8/9 certification instance |
 
 ## 8. Implementation Start Gate
 
 第一个允许进入 `superpowers:writing-plans` 精确代码任务的目标是 Wave 0。开始前必须：
 
-- [ ] 用户确认 Umbrella Spec v1.3 的 production/redeem/verification/INDEX addendum。
+- [ ] 用户确认 Umbrella Spec v1.4 的 ownership、Core/Advanced launch、production/redeem/verification/INDEX addendum。
 - [ ] 完成 Wave 0 child Spec，并按 Umbrella Spec 冻结的 pinned snapshot import 策略列出四个 gitlink
   provenance、归档和 cutover 步骤。
 - [ ] 确认根目录目标和第一批受管 INDEX roots。
 - [ ] 确认 CI/部署环境可运行 Node 24、pnpm 11、Python 3.12 和 PostgreSQL 18 测试。
+- [ ] 仓库所有者书面确认四个来源仓属于同一 Kokoro 项目的自有内部代码，可登记批准的内部 LicenseRef。
 
-未满足上述四项时，不执行 gitlink 删除、目录迁移、lockfile 重建或业务代码修改。
+未满足上述五项时，不执行 gitlink 删除、目录迁移、lockfile 重建或业务代码修改。

@@ -1,8 +1,8 @@
 ---
 artifact: wave-child-prd-and-architecture-spec
-version: "1.0"
+version: "1.2"
 created: 2026-07-25
-status: draft-awaiting-user-review
+status: internally-technically-approved-awaiting-owner-attestation-and-user-review
 parent: 2026-07-25-platform-web-session-target-architecture-design.md
 scope: wave-0-repository-toolchain-contract-documentation-foundation
 implementationAuthorized: false
@@ -14,6 +14,11 @@ implementationAuthorized: false
 
 本文是 Kokoro Production Delivery Program 的 Wave 0 子 PRD 与技术设计。它只建立后续 Wave 可以安全
 依赖的工程地基，不重写 Platform、Web、Session 或 GA 的业务行为。
+
+2026-07-25 两轮架构/产品/工具链红队已关闭 Zod 4、lock drift、Prisma lifecycle、Run/Usage 外围依赖和
+Prisma 分波等 Foundation P0，内部技术裁决为 `APPROVE-INTERNAL-TECHNICAL`。这不等于实施授权：
+`implementationAuthorized` 仍为 false；用户书面复审、代码权属/LicenseRef attestation 和 implementation
+plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 root lock cutover。
 
 本文批准后才允许调用 `superpowers:writing-plans` 生成精确实施计划；在书面批准前，禁止删除 gitlink、
 生成根 lock、迁移 Docker build context 或修改任何运行时代码。
@@ -41,8 +46,9 @@ implementationAuthorized: false
 7. 不引入 Turborepo/Nx。当前规模下 pnpm 原生 workspace、显式根任务和完整 CI 更容易证明；只有未来 CI
    时间达到已定义阈值，才通过独立 ADR 引入增量构建系统。
 8. TypeScript 固定 5.9.3，不在生产地基中采用 2026-07-08 刚发布且尚无稳定编程 API 的 TypeScript 7。
-9. Prisma 6/MySQL 是 Wave 1 前唯一有期限的 Foundation 例外；Prisma 7/PostgreSQL 18 与 Platform schema
-   clean replacement 同波完成，禁止在 Wave 0 偷做数据迁移。
+9. Prisma 6/MySQL 是按 bounded context 到期的 Foundation 例外：site/user/platform-admin 在 Wave 1，
+   payment/credit 在 Wave 2A，model-control 在 Wave 5A；各 context 与自身 schema clean replacement 同波迁到
+   Prisma 7/PostgreSQL 18，禁止 Wave 0 提前改业务模型或做一次无价值的中间迁移。
 10. Wave 0 触及 GA 的仓库形态、Python 版本、lock、Docker 与 CI，但不触及 GA runtime 行为。
 11. 整个 cutover 是一个 protected merge transaction：内部 review commits 允许分层，但禁止 partial merge、
     单独 cherry-pick 或 squash；`main` 只能看到全部 required gate 通过的最终 green head。
@@ -171,7 +177,7 @@ process/migration 入口却完全无局部架构地图；Web 有许多组件 IND
 
 - 不修改 Site、Commerce、Credit、Payment、Subscription、Model 或 Session 状态机。
 - 不移除 Session billing/Hub/Model 业务逻辑；属于 Wave 3。
-- 不移动 GA Provider、Capability、Artifact 职责；属于 Wave 5。
+- 不移动 GA Provider、Capability、Artifact 职责；Core adapter cutover 属于 Wave 5A，高级行为属于 5B。
 - 不把 Platform 变为模块化 Core/PostgreSQL；属于 Wave 1/2。
 - 不创建 Job、Artifact、Operation、Studio、Model Gateway 等空包或空 INDEX。
 - 不移动至最终 `apps/services/workers/packages` 目录。
@@ -423,7 +429,7 @@ raw-error 兼容层。
 | React / React DOM | `19.2.8` | 两个 App 同 patch |
 | Python | `3.12.13` | `>=3.12,<3.13` + `.python-version` exact |
 | uv | `0.11.32` | CI/开发 pin exact |
-| Prisma | `6.19.3` | Wave 1 前 named legacy catalog；禁止新增用法 |
+| Prisma | `6.19.3` | named legacy catalog；按 context 在 Wave 1/2/5 到期，禁止新增用法 |
 | ESLint / `@eslint/js` | `9.39.5` | 全仓唯一稳定 major |
 | typescript-eslint | `8.65.0` | 与 TS 5.9/ESLint 9 同组验证 |
 | tsx | `4.23.1` | Node service dev/runtime tool |
@@ -465,8 +471,9 @@ transport cache，必须验证 upstream integrity，不能成为 committed sourc
 Prettier、Prisma。它们在 package manifest
 中必须使用 `catalog:` 或批准的 named catalog；普通业务 adapter 依赖不机械进入 catalog。
 
-Prisma 例外必须有 owner、reason、expiry、removeByWave=1。Wave 0 禁止新增 Prisma schema、Client import 或
-MySQL-specific behavior。
+每个 Prisma schema 的例外必须独立登记 owner、reason、expiry 与 removeByWave：site/user/platform-admin=1，
+payment/credit=2A，model-control=5A。Wave 0 禁止新增 Prisma schema、Client import 或 MySQL-specific behavior；
+对应 Wave 退出时，该 context 的 Prisma 6/MySQL exception 必须归零。
 
 ### 7.4 根 uv policy
 
@@ -739,7 +746,7 @@ Wave 0 不得重写成目标完成态：
 
 - Platform README 仍可描述当前 MySQL/小进程实现，但必须降级为 current implementation 并链接目标 Spec。
 - Session billing INDEX 继续描述当前代码，Wave 3 删除职责时同波更新。
-- GA skills INDEX 继续描述当前代码，Wave 5 迁出时同波更新。
+- GA skills INDEX 继续描述当前代码，Wave 5A/5B 对应职责迁出或行为切换时同波更新。
 - 不能写“Platform 已 PostgreSQL”“Session 已无商业逻辑”“GA 已无 Provider”等假事实。
 
 ## 11. Root CI 设计
@@ -1127,12 +1134,15 @@ CI run URL；每个外部 archive/bundle/ruleset evidence 记录 verifiedAt/By/r
 
 Wave 0 输出给后续 Wave 的不是新业务 API，而是稳定工程契约：
 
-- Wave 1：在 Platform boundary roots、单 lock、PostgreSQL/Prisma clean rewrite exception 上工作。
-- Wave 2：扩展 Catalog/Commerce/Redeem contract，并清理对应 legacy Platform package。
+- Wave 1：在 Platform boundary roots、单 lock上完成 site/user/platform-admin 的 PostgreSQL/Prisma clean rewrite。
+- Wave 2A：随 Commerce/Credit 模型重写清除 payment/credit 的 Prisma 6/MySQL exception，并扩展
+  Catalog/Commerce/Redeem contract、清理对应 legacy Platform package。
+- Wave 5A：随 model-control/Model Gateway 切换清除 model-control 的 Prisma 6/MySQL exception。
 - Wave 3：删除 Session billing/hub/model 职责与豁免，同波更新 INDEX。
 - Wave 4：创建真实 Operation/Job/Artifact/Studio roots，出现代码后才登记。
-- Wave 5：迁出 GA Provider/Capability/Artifact，任何 GA runtime 行为变更继续单独通知。
-- Wave 6/7：按真实 deployable/package 新增 roots 和 runtime contract。
+- Wave 5A/5B：先迁出 Core 必需 Provider/Capability/Artifact adapter，再处理高级 Agent 行为；任何 GA runtime
+  行为变更继续单独通知。
+- Wave 6A-6D/7：按真实 deployable/package 新增 roots 和 runtime contract。
 - Wave 8：移动到最终目录、清零 `kokoro-*`、legacy deploy、旧 source 和临时 exception。
 - Wave 9：以同一根命令/INDEX verification/contract digest 生成 RC EvidenceBundle。
 

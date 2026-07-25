@@ -1,8 +1,8 @@
 ---
 artifact: prd-and-architecture-spec
-version: "1.3"
+version: "1.4"
 created: 2026-07-25
-status: direction-approved-production-addendum-awaiting-review
+status: internal-review-active
 scope: kokoro-overall-business-runtime-and-agent-product-capabilities
 ---
 
@@ -91,7 +91,7 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 | Chat 分支 | 无 | edit/regenerate 不覆盖历史 | Web 验收 |
 | Artifact lineage | delivery/hash 为主 | 每个版本有 Operation/Job/Attempt provenance | Artifact 验收 |
 | Credit 可逆性 | 只能按桶归还 | 可按源 Grant 精确撤销和退款 | Commerce 验收 |
-| Provider 事实覆盖 | 终态 usage 为主 | 每个 ModelAttempt 都有 UsageEvidence | Model 验收 |
+| Provider 事实覆盖 | 终态 usage 为主 | 每个 terminal Attempt 与本地 AttemptUsageFact 原子持久化，canonical UsageEvidence 无重复 | Model/Usage 验收 |
 | 工具链漂移 | 多 TS/Vitest/Zod/lockfile | 根 catalog 和单 lockfile，无非批准多版本 | Toolchain 验收 |
 | 跨 Site 数据泄漏 | 尚无目标架构级证明 | 安全矩阵中跨站越权成功数为 0 | 安全验收 |
 | 重复履约/重复扣费 | 当前按局部幂等实现 | webhook/replay/chaos 矩阵重复数为 0 | Commerce 验收 |
@@ -99,6 +99,9 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 | Redeem 原子性 | 尚无 production 链 | 并发/故障注入下 Code 与 Grant 部分成功数为 0 | Commerce 验收 |
 | Production 可恢复 | 当前局部验证 | restore/rollback/chaos 达到 RPO/RTO，重复 effect/Grant 为 0 | Wave 9 |
 | 架构文档漂移 | INDEX/CODEBASE_MAP 已失真 | 受管 public root coverage 100%，dead path/old owner 为 0 | Wave 0/8/9 |
+| 首个价值时间 | 尚无生产基线 | 注册或兑换后到首个成功 Run/Job 的 p50/p95 可观测，并由首发 Site 冻结目标 | Core Launch |
+| 用户成功率 | 尚无统一口径 | Redeem、Chat Run、Studio Job、Artifact export 分别有成功/恢复/放弃漏斗 | Core Launch |
+| Support contact rate | 尚无生产基线 | 每千次 Redeem/Run/Job 的 Case 数可按 Site 与原因审计 | Core Launch |
 
 ### 2.3 非目标
 
@@ -122,8 +125,10 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 - Platform/Session/Job API 月可用性目标 99.9%；外部 Provider 故障单独计量，不掩盖为本系统成功。
 - Site bootstrap 在已缓存有效 manifest 时 p95 小于 200 ms；Platform admission 自身处理时间 p95
   小于 250 ms，不包含外部模型或支付 Provider 时间。
-- Order、Payment Fact、Fulfillment、CreditJournal 的已确认事务 RPO 为 0；单区域故障恢复目标
-  RTO 小于 30 分钟。
+- instance/AZ 故障下，Order、Payment Fact、Fulfillment、CreditJournal 已确认事务 RPO 为 0、服务 RTO
+  小于 5 分钟。redeem-only 首发的完整 region loss 目标为 PostgreSQL WAL/Object version 异地复制
+  RPO 不高于 5 分钟、服务 RTO 不高于 60 分钟；若要宣称 region-loss RPO 0/RTO 30 分钟，必须另行提供
+  同步跨区复制、warm standby、DNS/Secret/Object failover 与演练证据。
 - 已接受的 Run/Operation/Job 不因单 Worker、Session 实例或浏览器退出而丢失。
 - Artifact Blob 使用校验和、版本化/对象锁策略和生命周期规则；数据库备份不替代对象存储备份。
 - 所有关键链路可按 correlationId 在五分钟内定位到 Site、Admission、Run/Job、Attempt、Usage 和
@@ -145,8 +150,21 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
   Artifact、Library、错误恢复、Admin/Support、删除导出与通知形成闭环；不能出现能进入但无法完成的旅程。
 - Claude Code/Manus 类 P1/P2 能力可以由 Site assignment 分阶段开放，但任何一项一旦对真实用户开放，就
   必须以完整 Target/Permission/Usage/TaskView/Recovery 链上线，不使用实验性旁路。
-- 最终 Program Completion 只在 Wave 0-9 全部退出、旧实现和旧文档清零、Production Certification 通过后
-  宣告；单个 Wave 通过只表示该纵切可被后续 Wave 依赖，不表示全产品可上线。
+- `Core Production Launch` 与 `Advanced Agent Program` 是两个不同完成口径。Core Launch 只要求首发
+  `LaunchProductProfile` 中启用的 Identity、Account/Redeem、Chat、Studio/Library、Admin/Support 与对应
+  后端纵切完成生产认证；未进入 profile 的 Target/Developer Workspace/Routine/AgentTeam/Application
+  Runtime 不阻塞 Core Launch。
+- `Advanced Agent Program` 在 6A-6D 全部退出后完成；任一高级 Surface 一旦进入 SiteRelease，仍必须通过
+  自身完整安全、恢复、计费、通知和运维门，不存在 beta 旁路。
+- 每次候选发布必须生成 `EnabledSurfaceInventory`，逐项绑定 route、API、Admin command、revision、P0
+  journey、owner、测试证据、runbook 与 kill switch。`LaunchProductProfile` 只引用该 inventory 和冻结的
+  SiteRelease，不靠文档中的笼统 P0/P1 标签决定上线范围。
+- 整体 Transformation Program 只有在全部计划 Wave、clean cutover 与目标高级能力退出后才完成；它与
+  “某个 Core Site 已可生产上线”不是同一个状态。
+- Wave 8/9 是可参数化、可重复执行的 release gate，不是首次通过即永久完成的布尔值。每次执行生成
+  `CertificationInstance(profileId, enabledSurfaceInventoryDigest, source/contract/image digests, evidence,
+  validUntil, supersedes)`。Core instance 通过可授权该 profile 上线，但 Wave 8/9 保持 active；2B、5B、6A-6D
+  和全部目标 profile 完成后再运行 `transformation-final` instance，才正式退出 Wave 和整体 Program。
 
 ## 3. 用户与核心产品旅程
 
@@ -219,7 +237,8 @@ SiteRelease 选择 Surface、Offering、Agent、Model、Capability 和 Sales Pol
 → EntitlementGrant/CreditGrant 形成可执行权利
 → Admission 编译 ExecutionManifest/OperationAuthorization 并 reserved Hold
 → Run/Operation 在 ExecutionTarget 上执行
-→ Model/Capability/Job 产生 UsageEvidence 和 ArtifactVersion
+→ Model/Capability/Job 原子产生 AttemptUsageFact，Job finalizer 创建 ArtifactVersion
+→ Platform usage-rating 摄取 canonical UsageEvidence
 → Rating/Settlement 完成 CreditJournal
 → Library/Share/Deployment/Notification 交付结果
 → Admin/Risk/Reconciliation/Retention 处理长期治理
@@ -283,22 +302,36 @@ Platform 数据库和事务语义，但可以独立部署、扩缩容。Platform
 |---|---|---|
 | Platform API | 通过 Platform modules 读写 Site、Identity、Workspace、Project、ExecutionSpace/Target Assignment、Catalog、Offering、Order、Payment/Refund/Dispute Fact、Fulfillment、Subscription、Entitlement、Credit、Model/Agent、Risk/Growth/DataGovernance、Notification records/policy | 不执行 Agent、Job Worker 或 Provider 模型调用 |
 | Platform Worker | 通过同一 Platform modules 执行 webhook inbox、outbox、fulfillment、settlement、reconciliation、周期 materialization 和 notification delivery | 不拥有第二套领域真源，不复制领域规则 |
-| Session | Session、Message、MessagePart、Branch、RunView、Approval/Interaction/PlanProposal projection、SessionEvent、ControlOutbox | 不拥有 standalone Proposal，不 resolve 套餐/模型/Capability，不扣积分，不执行 Job |
+| Session | Session、Message、MessagePart、Branch、RunLaunchProjection/RunView、Approval/Interaction/PlanProposal projection、SessionEvent、ControlOutbox | 不拥有 RunExecution 或 standalone Proposal，不 resolve 套餐/模型/Capability，不扣积分，不执行 Job |
 | Task Projection component（V1 由 Session process 托管） | TaskView read model、跨域 timeline/search projection | 不接受领域 mutation，不成为 Run/Job/Artifact 真源 |
 | GA | RunExecution、Checkpoint、RunLease/Epoch、EffectRecord、AgentEventOutbox | 不知道 Site/Plan/Payment，不持有 Artifact/Provider 商业真源 |
-| Job | Operation、Job、JobAttempt、WorkerLease、Progress、Provider callback state | 不写 Session Message，不修改余额 |
+| Job | Operation、Job、JobAttempt、WorkerLease、Progress、provider-independent finalization；非模型 adapter 的 callback state | 不拥有 Model Provider callback，不写 Session Message，不修改余额 |
 | Execution Runtime component（V1 由 Job process 托管） | TargetRegistration/Connection/CapabilityObservation、Lease、Environment、BrowserSession | 不拥有 Workspace/Project Assignment，不解释 Site/Plan，不持有长期 OAuth/Provider secret 明文 |
 | Developer Workspace component（V1 由 Job process 托管） | RepositoryBinding/Revision、Worktree、ChangeSet、CodeCheckpoint、Commit/PR/CI references | 不拥有 Git Provider secret 明文，不把 Worktree 当 ExecutionTarget |
 | Automation component（V1 由 Job process 托管） | Routine、Revision、Trigger、Schedule、RoutineRun | 不绕过 Admission，不直接执行 GA |
 | Device Gateway | local_device/local_browser 长连接、在线状态、scoped channel | 不读取 Workspace/Credit 领域表，不信任设备自报权限 |
 | Capability | Skill/Connector/Plugin/Hook/Command Revision、Package、Connection、SecretRef、CapabilityCall | 不解释套餐和积分 |
-| Model Gateway | ModelInvocation、ModelAttempt、ResolutionRecord、DeploymentHealth、UsageEvidence | 不维护用户余额，不决定客户价格 |
+| Model Gateway | ModelInvocation、ModelAttempt、ResolutionRecord、runtime HealthObservation、AttemptUsageFact | 不拥有 canonical UsageEvidence，不维护用户余额，不决定客户价格或 Model Catalog |
 | Artifact component（V1 由 Job process 托管） | Asset、ArtifactVersion、Blob、Lineage、Share/Publish | 不执行 Agent 或 Provider |
 | Application Runtime component（V1 由 Job process 托管） | Application/Revision、EnvironmentDeployment、DeploymentRollout、ServiceInstance、health/log reference | 不等同 SiteRelease/Routine/Job，不获得 Platform 内部凭据 |
 | Site Web | 路由、品牌、SEO、UI composition、Cookie、浏览器草稿 | 不拥有业务数据，不报价、不写余额 |
 | Admin Web | 管理 UI、只读聚合视图、命令入口 | 不直连任何业务领域表 |
 
 Artifact V1 允许与 Job 同部署，但必须使用独立 application interface、表 ownership 和对象模型。
+
+唯一权威补充：
+
+- GA 的 `RunExecution` 是 Run 唯一写真源；Session 中 admission 之前的对象明确叫
+  `RunLaunchProjection`，不得以 Run 状态机名义接受 terminal/cancel mutation。
+- Platform `usage-rating` 是 `CanonicalUsageEvidence`、`RatingSnapshot`、`RatedUsage` 与 `Settlement`
+  的唯一 Owner。Model Gateway、Job、Capability Runtime 只拥有本地 `AttemptUsageFact`。
+- Platform `model-control` 拥有 ModelDefinition、ProviderAccount metadata/SecretRef、Deployment、CostRate、
+  Profile、Pool、RoutePolicy 与 Assignment；Gateway 只拥有实际 invocation/attempt/resolution/health 事实。
+- Platform `admin` 是 application façade，不拥有独立业务表；它调用各领域受控 command 并组合只读视图。
+- `Project` 归 Platform workspace 模块；Session、Job、Artifact、Developer Workspace 只保存 opaque ProjectRef。
+- Payment、Refund、Dispute、Redemption、Fulfillment、SubscriptionTerm、Grant、Hold、Usage、Settlement 必须
+  保留不可变 `originSiteId`、BillingAccount、法律责任主体和 source provenance。允许 GlobalScope 查询不等于
+  这些事实是无 Site 授权语义的“全局事实”。
 
 ## 6. Platform Core 设计
 
@@ -409,6 +442,26 @@ issuedAt
 expiresAt
 ```
 
+`SiteContext` 只证明产品部署，不证明操作者身份。所有受保护请求统一使用：
+
+```text
+RequestSecurityContext
+  trustedProductContext
+  actorPrincipal (AnonymousPrincipal | UserPrincipal | OperatorPrincipal | WorkloadPrincipal)
+  optional delegatedExecutionGrant
+  correlationId / audience / issuedAt / expiresAt
+```
+
+- Web BFF：Site workload binding + 本地用户 session/access principal。
+- 注册、登录、验证、找回等 pre-auth endpoint 使用 Site-bound `AnonymousPrincipal`，包含匿名会话/设备/risk
+  refs，但不伪造 UserPrincipal；成功认证后才升级为本地 UserPrincipal。
+- CLI/Desktop/IDE：绑定单 Site registered client 的 OAuth PKCE 或 device flow，不持有 Web workload secret。
+- Admin：独立 `OperatorPrincipal` + `SiteScope | GlobalScope`；高风险命令要求 step-up、reason 与 maker-checker。
+- Worker：`WorkloadPrincipal`，只能调用自身 audience 的 command。
+- GA 调用 Job/Capability/Model：使用 effect-specific `DelegatedExecutionGrant`，不把 User/Site 作为 GA 第二身份轴。
+- 每个 mutation 和最终副作用点重新验证 product、actor、audience、scope、expiry、restriction epoch；不得只信
+  BFF 转发字段或上游“已验证”的布尔值。
+
 规则：
 
 - 浏览器不得提交可信 `siteId`。
@@ -449,6 +502,12 @@ draft → validating → ready → activating → active → retired
 `validating` 内完成 effective manifest compile、schema/cross-domain validation、preview deployment 和
 smoke/a11y/business-flow tests；`ready → activating` 执行 risk-based approval；`activating → active`
 使用 active pointer CAS 并 promote traffic/domain；旧 active 在 drain 完成后进入 retired。
+
+激活不是数据库指针与外部流量提供商之间的伪原子事务。Site 模块拥有 `ActivationAttempt`，记录
+provider idempotency key、expected active version、candidate/current/draining deployment set、每一步 observation
+与最终 commit receipt。外部 promote 完成后写入 `DeploymentObservation`，reconciler 在 crash 后查询 provider
+真实状态并继续同一 Attempt；只有满足冻结 commit predicate 才 CAS active pointer。失败不得创建第二个
+Attempt 来掩盖未知结果，旧 Release 在确认 candidate 可承接流量前保持 current。
 
 任何校验或激活失败进入 `failed` 并保留原因。`SiteDeploymentBinding(providerDeploymentRef, releaseId,
 artifactDigest)` 将可信部署身份绑定到确切 Release；SiteContext 必须通过这个绑定解析 releaseId，不能由
@@ -530,6 +589,20 @@ ExecutionSpace
   更换本地/云 Target 不得改变 namespace，也不能把 Target ID 当第二身份轴。
 - 默认一个 Project 一个 ExecutionSpace；未来需要共享执行空间时通过显式 Project binding 配置，
   不改变 GA 契约。
+
+### 6.7 Identity/Auth P0 产品闭环
+
+Wave 1 必须以独立产品子 PRD 冻结并验收以下旅程，不能只交付 User/Credential 表：
+
+- 注册、邮箱验证、登录、登出、忘记密码、凭据轮换、账户恢复与删除前重新认证。
+- OAuth/OIDC state、redirect allowlist、link/unlink、冲突处理；未来跨站 issuer/subject 复用不自动合并本地 User。
+- MFA enrollment/challenge/recovery、异常登录提醒、会话与设备列表、单会话及全设备撤销。
+- 所有 token、Cookie、邮件链接、模板、redirect、CSRF 与 rate-limit key 绑定 Site/domain/audience。
+- `(siteId, normalizedEmail)` 隔离；相同邮箱在 Site A/B 的注册、找回、邮件、会话和 Support 搜索互不可见。
+- 风险依赖不可用时，注册/恢复/敏感变更按冻结 policy fail closed，不退化成仅本机限速。
+
+最低浏览器 E2E 必须覆盖：同邮箱双站注册与找回、过期/重放验证链接、OAuth callback 串站、被盗会话撤销、
+MFA recovery、删除前 re-auth。Identity 未通过这些旅程，Core Launch No-Go。
 
 ## 7. Catalog、Offering、Payment、Subscription 与 Fulfillment
 
@@ -623,7 +696,7 @@ fulfillmentStatus
 disputeStatus
 ```
 
-Wave 2 子 Spec 必须冻结合法状态转移，最低状态集合如下：
+Wave 2A/2B 子 Spec 分别冻结自身合法状态转移，最低状态集合如下：
 
 ```text
 CheckoutSession: created | ready | completed | expired | canceled | failed
@@ -708,6 +781,10 @@ Payment、Invoice 或 Refund。两者只在 FulfillmentTransaction 之后共享 
   aggregate version；无法确定时进入 reconciliation。
 - Payment succeeded 但 Fulfillment 失败时，保持 `paymentStatus=paid` 与
   `fulfillmentStatus=failed|pending_retry`，后台重试并告警，不重复收费。
+- 首发同一 `(billingAccountId, serviceScope)` 最多一个 effective base Subscription；相同 Plan 的第二张卡
+  采用 `extend_from_max(now,currentPeriodEnd)`，不同 Plan 默认拒绝并要求显式 `ChangePlan` workflow。
+  `credit_pack` 只创建独立 Grant，不创建 Subscription。upgrade/downgrade、Term allocation 和旧 Grant
+  处理必须由已发布 policy 决定，禁止 Redeem handler 隐式覆盖 active Plan。
 
 ### 7.4 Redeem/Card Code
 
@@ -875,6 +952,13 @@ Live availability 使用单调 epoch 和数据库锁形成线性化点：
 
 ### 7.5 Refund、Dispute 与 Reconciliation
 
+真实 Payment 属于 Wave 2B。V1 Provider adapter 默认只支持 automatic capture；若 provider/Offering 需要
+manual capture，必须先扩展 `requires_capture/partially_captured` 状态和 CaptureAttempt/Fact，不能把 authorization
+当作 paid。同一 Order 的 PaymentAttempt 按 ordinal 串行；存在 unknown Attempt 时禁止再发可能双收款的新
+Attempt。redirect success 只表示浏览器返回，不确认付款；webhook 必须按 ProviderAccount/environment 验签，
+原始 payload 先进入 Inbox 后异步 normalize/reduce。late success、overpayment、unknown、callback 乱序都进入
+append-only Fact + reconciliation，不通过覆盖旧 Attempt 收口。
+
 退款链：
 
 ```text
@@ -929,6 +1013,45 @@ Plan 模板与实际 Subscription/Manual override 分开。Platform Admission �
 effective status 由 issuance、revocation facts 和时间窗口投影，不原地修改 Grant 历史。
 
 ### 8.2 Credit 权威模型
+
+三桶仅是面向用户的余额投影，不是账务 authority。Wave 2A clean replace 当前 decrement-at-hold/
+`creditBack()` 机制，权威模型固定为 `CreditGrant + append-only CreditJournal + CreditHoldAllocation`；不在旧
+三桶表上继续叠加套餐、卡密或支付逻辑。
+
+Journal 至少有以下 ledger account type：
+
+```text
+grant_source_or_liability
+customer_available
+customer_reserved
+customer_consumed
+expired
+revoked
+adjustment
+recovery
+```
+
+Grant、reserve、capture、release、expiry、revoke 均以同单位借贷平衡的 JournalTransaction 过账；历史 Entry
+不可更新，纠错使用引用原交易的 reversal + correction transaction。Release 必须按原 HoldAllocation 回到仍
+有效的 Grant，已过期/撤销部分进入对应终结账户，不能复活也不能污染其他来源。
+
+执行预算拓扑只有一棵树：
+
+```text
+ExecutionRoot
+  → AuthorizationBudget
+  → AuthorizationSegment
+  → one CreditHold per liability account
+  → UsageAllocation / DelegatedBudgetAllocation
+```
+
+- Chat Run 创建 root Hold；GA 内 Model/Capability 调用消费其 allocation，不重新预留。
+- GA 发起 Job 时授予 `DelegatedBudgetAllocation`；Job 不再按 Direct Studio 流程创建第二份 Hold。
+  AgentTeam 的 `ChildBudgetSlice` 是它的受约束子类型，继续服从同一 parent ceiling/守恒协议。
+- Direct Studio 是新 ExecutionRoot，独立 admission 与 Hold。
+- retry 可产生多个 AttemptUsageFact，但客户承担哪些 Attempt 由冻结 RatingPolicy 决定。
+- Hold 不足时只能截断、停止或创建经重新授权的新 Segment，禁止透支和静默换 liability。
+- V1 一个 ExecutionRoot 只使用一个 liability account；跨 liability multi-hold 延后，避免含混结算。
 
 ```text
 CreditAccount
@@ -1021,14 +1144,18 @@ AuthorizationSegment
 客户计费与 Provider 成本分离：
 
 ```text
-UsageEvidence
+AttemptUsageFact
+→ CanonicalUsageEvidence
 → RatingSnapshot
 → RatedUsage
 → capture/release CreditHold
 ```
 
 - Admission 冻结客户计费规则、估算、buffer、最小扣费和上限。
-- Model Gateway、Job Worker、Capability Runtime 分别产生 UsageEvidence。
+- Model Gateway、Job Worker、Capability Runtime 在本地事务中原子保存 terminal Attempt、原始
+  `AttemptUsageFact` 和 Outbox；它们不写 canonical UsageEvidence。
+- Platform `usage-rating` 以 `producerKind + producerContext + attemptId + evidenceKind + revision` 唯一去重，
+  拥有 canonical UsageEvidence、Rating 与 Settlement；修正通过新 revision/correction fact，禁止覆盖历史。
 - 每个 Provider Attempt，包括失败 Attempt，都产生独立 Evidence 和成本事实。
 - 是否把失败 Attempt 计入客户费用由冻结的产品 RatingPolicy 决定，不由 Gateway 决定。
 - Session 的终态 token usage 只用于 UI/观测，不是计费真源。
@@ -1037,7 +1164,7 @@ UsageEvidence
   reconciliation，不得按普通 timeout 直接释放。
 - 实际计价不得静默超过已授权 Hold：可预测操作在执行前精确 authorize；可变操作达到预算前必须停止、
   请求增量授权或按冻结 policy 截断。余额不得因运行超支被动变成负数。
-- Run/Job 先持久化执行终态与 UsageEvidence，再向用户展示 `completed / cost_pending`；Rating/Settlement
+- Run/Job 在本地 terminal outcome 与 AttemptUsageFact 已持久化后可展示 `completed / cost_pending`；Rating/Settlement
   异步完成后更新 cost projection。结算失败进入 retry/reconciliation，不得重跑已完成的 Provider side effect。
 
 ## 9. Model Control 与 Model Gateway
@@ -1056,15 +1183,22 @@ ModelPool
 RoutePolicy
 PlanModelGrant
 ModelAssignment
-ResolvedModelBinding
+AuthorizedModelRoute
 ResolutionRecord
 ModelInvocation
 ModelAttempt
-UsageEvidence
+AttemptUsageFact
 ```
 
 `ModelDefinition` 是 canonical logical model；`ModelDeployment` 是某 ModelProviderAccount 上的真实部署。
 Site、Plan 和 Surface 不复制 ModelDefinition，只通过 assignment 引用 Profile/Pool。
+
+Platform `model-control` 是目录和配置权威；Provider secret 只以 SecretRef 出现在 Control Plane。Admission
+根据 SiteRelease、PlanModelGrant、Surface/Agent role 与当前 restriction 编译带 audience/expiry 的
+`AuthorizedModelRoute`。Model Gateway 验证授权后才在允许集合中选择 Deployment，并拥有 Invocation、
+Attempt、ResolutionRecord、HealthObservation 与 AttemptUsageFact。LiteLLM 只能是 Gateway 内可替换的
+provider adapter/router engine：其 DB、virtual key、budget、model list 与 fallback 配置都不是 Kokoro 业务
+真源，并受 contract test、kill switch、shadow/canary 与直连 adapter fallback 保护。
 
 Admission 冻结的是 `ModelProfile + ModelPool + RoutePolicy` revision 和授权 route token，不冻结某个健康
 状态瞬变的 Deployment。Model Gateway 在每个 ModelAttempt 开始前选择实际 Deployment，并写
@@ -1085,6 +1219,12 @@ music.generation
 image.generation
 video.generation
 ```
+
+组合层使用 `ModelBundleRevision(roleKey → ModelProfileRevision)`；`SurfaceModelAssignmentRevision` 冻结某
+Site/Surface 的 default bundle、用户可见 `ModelOptionRevision` 与 hidden internal roles。General Chat、Music、
+Video 共用底层 ModelDefinition/Deployment，不复制 model list：Music/Video 的 orchestrator 可复用 Chat 类
+Profile，而 generation role 指向专业 Pool。普通用户只选择可见 generation/chat option，内置主模型和
+summarizer/orchestrator 可以隐藏但必须在 Release compile 时通过 role completeness 校验。
 
 - General Chat 有自己的内部默认主模型 Profile。
 - 用户可见 ModelOption 映射到允许的 Profile，不暴露 Deployment ID。
@@ -1122,6 +1262,12 @@ video.generation
 | ArtifactVersion | 不可变作品版本和 provenance |
 | Asset | 用户上传、导入或被 Artifact 引用的可复用输入资源 |
 | Blob | 内容寻址的二进制对象 |
+
+`Run` 的唯一权威实现是 GA `RunExecution`。发起者可生成 proposed `runId`，但 GA 必须以
+`(namespace, launchIdempotencyKey)` 幂等创建并校验 `runId + executionManifestDigest`；同 key/同 digest 返回
+同一 Run，同 key/不同 digest 或相同 runId/不同 launch identity 返回冲突。GA 拥有 started/paused/
+terminal、cancel expectedVersion、runEpoch 与最终事件。Platform 只拥有 Admission/Hold，Session 只拥有
+`RunLaunchProjection/RunView` 和 ControlOutbox；admission_pending/waiting_prerequisite 不是第二套 Run 状态机。
 
 ### 10.2 Job 成立条件
 
@@ -1168,8 +1314,25 @@ OperationSpec
 → JobAttempt
 → Provider Request
 → ArtifactVersion
-→ UsageEvidence
+→ AttemptUsageFact → canonical UsageEvidence
 ```
+
+Job 的跨 Context 完成使用可恢复 finalization saga：
+
+```text
+persist provider outcome + terminal JobAttempt + AttemptUsageFact + outbox
+→ Job = finalizing
+→ CreateArtifactVersion(jobId/attemptId, idempotencyKey)
+→ IngestUsageEvidence(producer/attempt/revision, idempotencyKey)
+→ persist both receipts
+→ Job = completed + cost_pending | completed + cost_final
+```
+
+- Artifact 是该 Operation 的必需产出时，没有 Artifact receipt 不得标 completed。
+- Usage 已有 raw fact 但 Rating 未完成时允许 `completed/cost_pending`；没有 raw fact 不允许假完成。
+- finalizer crash 只重试 receipt 创建/摄取，不重跑 Provider effect。
+- Provider outcome unknown 保持 Job/Attempt unknown 并由 reconciler 查询，不能进入 finalizing。
+- cancel 与 finalization 使用 expectedVersion；late callback 按相同 Attempt/inbox 去重并进入确定性 reducer。
 
 Agent 创建 Job 时显式选择：
 
@@ -1224,7 +1387,9 @@ Session 不再执行：
 - 客户价格计算或积分 capture。
 - Job Worker 和 Artifact 存储。
 
-Session 创建 Run 时调用 Platform `PrepareRun`，保存 `manifestId/configurationRevisionId`，然后派发 GA。
+Session 发起 Run launch 时调用 Platform `PrepareRun`，保存 `RunLaunchProjection` 与
+`manifestId/configurationRevisionId`；Finalize 后以稳定 launchId 调用 GA `LaunchRunExecution`。只有 GA
+幂等创建 `RunExecution` 后 Run 才成立，Session 不得自行宣告 Run terminal。
 
 `PlanProposal` 不是 Session 专属真源。它携带 `ownerRef = RunRef | OperationRef | RoutineRunRef |
 AgentTeamRunRef`，由真实 initiating aggregate 拥有 lifecycle；Session 只保存对话场景 projection，TaskView
@@ -1292,6 +1457,13 @@ LiveRunDelta
 - Skills progressive disclosure。
 - Tool effect journal 思想。
 - streaming 和 terminal projection 收口。
+
+外围工作可由总体架构直接推进：Platform model-control、独立 Model Gateway/LiteLLM adapter、usage-rating、
+Session 投影、Job/Artifact finalization、RequestSecurityContext/RPC，以及 Gateway 提供兼容 GA 当前调用形态的
+endpoint。以下任何一项进入实现前必须单独通知用户并取得批准：GA RunLedger/dispatch/terminal/lease/
+runEpoch，graph/assembly/swarm，Agent/Prompt/Tool/Skill/MCP 装配，Provider factory/streaming/reasoning 行为，
+effect claim/tool journal/unknown recovery，checkpoint schema/activeAgentRevision，namespace key，durable event kind/
+terminal semantics，以及 GA 调用 Job delegated grant 的 tool 行为。
 
 ### 12.2 ExecutionManifest
 
@@ -1446,6 +1618,28 @@ Capability Runtime
 - Share 是 Site-bound、可撤销、有过期和访问策略的引用。
 - 删除区分软删除、retention、法律保留和对象存储 garbage collection。
 
+### 14.6 Core Web P0 旅程与 Site Fleet
+
+能力清单不能代替可上线旅程。对应 child PRD 必须冻结：
+
+- Chat：onboarding/示例/空状态，新建、列表、搜索、重命名、归档、删除/恢复；Stop、cancel、continue、
+  regenerate 的对象和时机语义；刷新、断网、重复提交与 terminal event 丢失恢复。
+- Attachment/Asset：选择、客户端预检、分片上传、服务端类型/大小校验、恶意文件扫描、quarantine、配额、
+  retry/cancel；未通过扫描的输入绝不创建可执行 Run/Job。
+- Studio：draft、autosave version、提交 idempotency、queue、cancel、retry、unknown outcome、compare、export；
+  重复点击不创建重复 Operation。
+- Library：版本历史、trash/restore、retention、storage quota、rendition/export、Share 的创建/撤销/过期；
+  生成成功但 moderation 禁止分享时，生成、分享与费用状态分别解释。
+- Account/Redeem：当前 Plan/source/start/end、`authority=none` 不自动续费、Entitlement、三桶投影、available/
+  reserved/cost_pending、Grant/Hold/usage receipt、Redeem history、stacking preview、响应丢失恢复和 Support 入口；
+  Redeem-only 站点不得显示假 Order/Invoice/Payment/Refund。
+- i18n/a11y：locale fallback、时区、数字/Credit 格式、RTL、法务/通知模板版本、keyboard/screen reader、
+  browser/mobile matrix 均进入 Release evidence。
+
+多 Site 采用共享 scaffold 而不是复制后漂移：`create-site-app` 生成独立 app/INDEX/release manifest；模板版本、
+dependency policy、brand token schema、domain/TLS、preview 环境和 fleet drift 由 Site Fleet 检查。升级通过可审阅
+codemod/模板 diff 逐 Site 合入，不在运行时强迫所有 Site 同版发布。
+
 ## 15. Admin 产品架构
 
 Admin 通过 Admin BFF 调用 Admin API/RPC，不 import Platform Prisma 或业务表。Admin API 每次重新执行
@@ -1549,6 +1743,34 @@ LegalHold
   completed 前重新校验；处理中新增 LegalHold 必须暂停/重算，不得沿用旧计划继续不可逆删除。
 - Site 独立意味着导出、删除和 Restriction 默认限定当前 Site；Platform 全局封禁必须使用显式全局 policy、
   高权限和审计。
+
+### 15.4 Admin RBAC 与 Support 产品模型
+
+角色至少区分 `SiteSupport`、`SiteCommerceOperator`、`SiteFinanceApprover`、
+`PlatformCommerceOperator`、`RiskOperator`、`SecurityApprover`、`DataGovernanceOperator`、`Auditor` 与
+`BreakGlassOperator`；每个 command 登记允许角色、Site/Global scope、step-up、maker-checker、队列 owner
+和 SLA。角色不是前端菜单权限，API 必须独立执行授权。
+
+Support 使用正式 aggregate：
+
+```text
+SupportCase
+CaseMessage
+CaseEvidenceRef
+CaseTimelineProjection
+CaseSla
+Escalation
+Resolution
+```
+
+- Case 必须 Site-scoped；按邮箱搜索不得泄露其他 Site 是否存在同一用户。
+- 处理前完成身份核验；受控 impersonation/break-glass 必须短期、只读优先、reason/approval/audit 齐全。
+- 标准 case kind 覆盖 Redeem 误绑/未到账/泄漏、余额争议、Run/Job unknown、Artifact moderation/share 申诉、
+  删除/导出与安全事件。
+- 补偿不允许直接写 Journal：赠送走 AdminGrant acquisition，撤销走 source-specific reversal，纠错走
+  CorrectionTransaction，补发走 replacement workflow。
+- maker-checker、用户通知与用户可见最终 Resolution 是关闭财务/安全 Case 的必要条件。
+- Admin façade 只路由领域 command 和聚合 read model；SupportCase 自身只拥有支持协作状态，不复制业务事实。
 
 ## 16. Agent Product Capability Plane
 
@@ -1807,7 +2029,8 @@ AggregationPlan
 - 守恒式固定为 `authorized = unallocated + active slices + captured + released`；任一 Slice 的 limit 必须
   完整分解为 active/committed、captured、released 和 reconciliation_required。重分配前先 CAS 释放旧 Slice。
 - TaskClaim、concurrency slot 和 ChildBudgetSlice 在同一 Team transaction/CAS 中获得；缺任一项都不得
-  dispatch。UsageEvidence 携带 teamRun/taskNode/childRun/segment/slice refs；AgentTeamRun 只聚合，不二次扣费。
+  dispatch。AttemptUsageFact/canonical UsageEvidence 携带 teamRun/taskNode/childRun/segment/slice refs；
+  AgentTeamRun 只聚合，不二次扣费。
 - TaskNode 使用 claim/lease/epoch，失败节点按 retry policy 处理；整体可 partial success，不因单节点失败
   丢弃已完成证据。
 - 代码类 AgentTeam 默认 Worktree 隔离；媒体/研究类成员通过 Project/Artifact refs 协作，不共享可变目录。
@@ -2009,11 +2232,12 @@ Browser
    → rating snapshot + CreditHold
    → ExecutionManifest
 → if required, Execution Runtime acquires TargetLease from signed TargetAuthorization
-→ Session persists RunView + manifest ref
+→ Session persists RunLaunchProjection + manifest ref
 → Platform.finalizeRunAuthorization CAS reserved Hold to committed
-→ GA dispatch
+→ GA.LaunchRunExecution(runId, launchId, manifest digest, RunStartAuthorization)
+   → atomically persist RunExecution + launch receipt + dispatch outbox
 → Model Gateway / Capability / Job
-→ UsageEvidence
+→ AttemptUsageFact → canonical UsageEvidence
 → Session durable completion projection
 → completed / cost_pending
 → Platform asynchronous rating + settlement
@@ -2022,10 +2246,11 @@ Browser
 失败补偿：
 
 - Admission 失败不创建可执行 Run。
-- Target/required pre-start interaction 未满足时，Run 可持久化为 waiting_prerequisite，但不得 finalize 或
+- Target/required pre-start interaction 未满足时，RunLaunchProjection 可持久化为 waiting_prerequisite，但不得 finalize 或
   dispatch；reserved Hold 按短 TTL 释放，恢复时以同一 Run identity 重新 Admission。
-- Run 持久化后必须 finalize authorization 才能 dispatch。Finalize 前失败可释放 reserved Hold；Finalize
-  后 dispatch 失败由 reconciler 重试或进入 reconciliation，不能按 TTL 释放 committed Hold。
+- RunLaunchProjection 持久化后必须 finalize authorization 才能调用 GA。Finalize 前失败可释放 reserved
+  Hold；Finalize 后 GA 不可达时只重试同一 launchId/runId。只有 GA authoritative lookup 证明不存在
+  RunExecution、Attempt 或 effect 后才能释放 committed Hold；不能创建第二个 Run。
 - GA unknown outcome 不自动重做外部副作用。
 - Session 漏事件时从 durable event/Job 真相重建 projection。
 
@@ -2039,7 +2264,8 @@ Browser → Site BFF → Job.submitOperation façade
 → Platform.finalizeOperationAuthorization
 → Job queued + dispatch outbox
 → Worker / Model Gateway
-→ ArtifactVersion + UsageEvidence
+→ persist ProviderOutcome + AttemptUsageFact + finalization intent
+→ idempotent ArtifactVersion receipt + Usage ingestion receipt
 → Job completion + Library projection + cost_pending
 → Platform asynchronous rating + settlement
 ```
@@ -2050,7 +2276,8 @@ Browser → Site BFF → Job.submitOperation façade
 GA invoke_operation
 → delegated execution grant
 → same Job.submitOperation
-→ same Operation/Job/ArtifactVersion
+→ delegated ChildBudgetSlice from root AuthorizationBudget
+→ same Operation/Job/ArtifactVersion without a second account Hold
 ```
 
 GA 不携带 Site/Plan/Account；Job/Platform 使用 signed delegated grant 关联原 Run authorization。
@@ -2155,6 +2382,36 @@ completed/partially_completed + cost_pending，全部 Slice settled/released/rec
 - Task projection 提供 root-kind aware read/event API，例如 `GET /tasks/{rootKind}/{rootId}` 和 events；
   mutation endpoint 只做 typed target routing，必须携带真实 ownerRef/expectedVersion，不能直接修改 TaskView。
 
+每条跨 Context 调用都必须进入 machine-readable RPC/Event registry，字段为：caller、owner、sync/async、
+schema source、security audience、deadline、retry class、idempotency key/body digest、receipt、failure owner、
+allowed degradation、forbidden fallback。首批权威矩阵：
+
+| 调用 | 模式 / audience | 幂等与恢复 | Failure owner / 禁止 fallback |
+|---|---|---|---|
+| Site BFF → Platform `ExchangeSiteContext` | sync / `platform.site-context` | binding + request key；只重试 transport failure | Platform；禁止 Host/default Site |
+| Site BFF → Session command | HTTP / `session.command` | client command key + body digest | Session；禁止浏览器直连 GA |
+| Session → Platform Prepare/FinalizeRun | sync / `platform.admission` | admission key；Finalize CAS | Platform；禁止 Session 自行授权/扣费 |
+| Session → GA LaunchRunExecution/CancelRunExecution | control RPC + async facts / `ga.run-control` | launch key + digest、expectedVersion | GA；禁止 Session 自判 terminal；pre-create cancel 由 launch projection 收口，GA accepted 后只认 GA cancel |
+| GA → Model Gateway InvokeModel | streaming / `model-gateway.invoke` | 只在首 token/effect 前按 RoutePolicy retry | Gateway；禁止 GA 直连 Provider |
+| GA → Capability Runtime | sync/stream / `capability.invoke` | 按 capability-declared retry safety | Capability；禁止 GA 获取 MCP secret |
+| Web/GA → Job SubmitOperation | sync / `job.submit` | operation key + spec digest；delegated slice | Job；禁止 GA 自建后台任务/重复 Hold |
+| Job Worker → Model Gateway InvokeModel | sync/async/stream / `model-gateway.invoke-operation` | OperationAuthorization + attempt key；callback 归 Gateway | Gateway/Job finalizer；禁止 Worker 直连模型 Provider |
+| Job Worker → Capability Runtime | sync/async / `capability.invoke-operation` | effect-specific ExecutionGrant + attempt key | Capability/Job finalizer；禁止 Worker 获取 connector secret |
+| Job → Artifact CreateVersion | sync idempotent / `artifact.write` | attempt + output ordinal；timeout 后查 receipt | Job finalizer；禁止重跑 Provider |
+| Attempt producer → usage-rating | outbox/inbox / `usage.ingest` | producer/attempt/kind/revision | usage-rating；禁止 producer 直接 capture |
+| 各真源 → Session/TaskView | async facts / `projection.consume` | eventId + aggregateVersion | Projection owner；禁止投影写回真源 |
+| Platform → deployment provider | durable intent/reconcile | ActivationAttempt provider key | Site reconciler；unknown 时禁止再次 promote |
+| Provider callback → owning Context | inbox/fact | provider account/environment/event id | Domain owner；callback 禁止跨域直接写表 |
+
+统一事件 envelope 至少包含 `eventId/eventType/schemaVersion/producer/aggregateType/aggregateId/
+aggregateVersion/occurredAt/recordedAt/correlationId/causationId/securityClassification/payload`，并登记 partition
+key、Inbox 唯一键、retry/DLQ owner、replay 授权与 compatibility window。Replay 必须证明不会重触发 Provider
+副作用。
+
+Usage ingestion 虽走异步 Outbox/Inbox，Job finalizer 仍需确定性 receipt：usage-rating 成功后发布
+`usage.evidence.ingested` 并提供按 evidence identity 查询 receipt 的只读接口；event 丢失/timeout 时先查询，
+DLQ 由 usage-rating owner 恢复。Wave 4 子 Spec 冻结等待期限、receipt schema 与 cost_pending 条件。
+
 ### 18.2 关键命令
 
 ```text
@@ -2166,7 +2423,7 @@ FinalizeOperationAuthorization
 CreateOperation
 CancelJob
 RetryJob
-ResolveModelBinding
+AuthorizeModelRoute
 InvokeModel
 PromoteWorkspaceFile
 CreateArtifactVersion
@@ -2521,6 +2778,20 @@ Pydantic 2
 - 首发允许 `redeem_only` 且无 Payment Provider，但不允许无 Secret Manager、无备份恢复、无告警、无
   Admin/Support 或用测试 Code batch 进入生产。
 
+每个 child Spec 必须维护 `deployables.yaml`，把目录、数据 Owner 与实际运行单元一一映射，至少登记：
+
+```text
+deployable / imageBuildRoot / processRole / command / linkedPackages
+ownedSchemaAndDatabaseRole / inboundTransport / outboundDependencies
+secretClasses / scalingKey / readiness / leaseAndDrain / releaseOwner
+```
+
+覆盖每个 Site Web、Admin、Platform API/Worker、Session API/SSE/projection worker、Job API/scheduler/
+reconciler、media/browser/sandbox/deployment worker、Capability Hub/Runtime、Model Gateway、Device Gateway、
+GA 当前 control/worker 与 migration one-shot role。同一 image 不等于同一 process role；API、stream、scheduler、
+worker、reconciler、migration 必须有独立 command、伸缩、readiness 与 drain 语义。Worker 通过 owner service 的
+claim/lease/receipt 工作，不因独立部署获得领域表 ownership。
+
 ## 21. 安全、可靠性与可观测性
 
 ### 21.1 安全
@@ -2542,7 +2813,7 @@ Pydantic 2
 - webhook/callback 先落 Inbox/Fact，再推进 projection。
 - Job Provider 超时且结果未知时进入 `unknown`/reconciliation，不盲目重试非幂等操作。
 - lease 使用 epoch fencing；旧 Worker 写入被拒绝。
-- ArtifactVersion 和 UsageEvidence 在重放时幂等。
+- ArtifactVersion 和 canonical UsageEvidence ingestion 在重放时幂等。
 - Site release 激活失败不影响旧 Release。
 - Routine trigger、Target command、AgentTeam TaskClaim 和 Notification 均有独立 idempotency/epoch；一个
   子系统重放不能复制另一个子系统的副作用。
@@ -2557,6 +2828,13 @@ Pydantic 2
   CAS conflict/risk deny/fulfillment lag/batch anomaly/reversal failure 和 notification delivery。
 - 日志只记录 opaque ref 和安全 metadata，不记录 prompt secret、Provider key、卡密明文和原始支付敏感字段。
 - Admin 提供按 correlationId 聚合的业务时间线。
+- 每个 SLO 在对应 Wave 冻结 SLI numerator/denominator、窗口、排除项、数据源、owner、page/ticket 阈值和
+  error-budget release policy：Wave 1 覆盖 SiteContext/Auth/Admission，2A 覆盖 Redeem/Fulfillment/Settlement，
+  3/5A/4 覆盖 SSE/Run/Gateway/Job。Wave 9 只验证，不能临时补指标定义。
+- metrics label 禁止 userId、prompt、Code fingerprint、raw provider error 等高基数/敏感值；Payment/Redeem/
+  unknown/reconciliation/security failure trace 强制保留，普通成功链可按冻结策略采样。
+- 超过容量 envelope 时使用有界 admission shed/429、per-Site fairness、SSE quota、Job max queue age、Provider
+  concurrency 与 worker lease saturation；不得以跳过 Risk/Admission/Usage、丢 Outbox 或无限延长 Hold 降级。
 
 ## 22. 失败与边界场景
 
@@ -2603,6 +2881,21 @@ Pydantic 2
 | RC 仅在 mock/fake Provider 通过 | 对应 adapter 不得进入 production assignment；redeem_only 不伪造 Payment 认证 |
 
 ## 23. 测试与验收门
+
+所有 gate 必须登记 scope，避免 Core Launch 被未启用能力错误阻塞：
+
+- `core-always`：Identity/Site、Redeem、Credit/Usage、Session/Run、Gateway、启用的 Chat/Studio/Library、
+  Core Admin/Support、Risk/Governance/Notification、可靠性与安全。
+- `if-enabled`：真实 Payment/Refund/Dispute、某个 Studio/Provider/Share/Connector 等，只有进入该
+  EnabledSurfaceInventory/assignment 才阻塞该 certification instance。
+- `advanced-cut`：Handoff、ExecutionTarget、Developer Workspace、Automation、Application Runtime、AgentTeam、
+  多端等；阻塞对应 5B/6A-6D 与包含它的 profile，不阻塞未启用它们的 Core profile。
+- `transformation-final`：全计划能力、旧实现/文档/exception 清零和全部目标 profile delta certification；
+  只阻塞整体 Program completion。
+
+下文未显式标注的基础架构/安全项默认 `core-always`；Payment 系列默认 `if-enabled`；Agent/Execution/
+Developer/Automation/Application/Multi-Agent/多端系列默认 `advanced-cut`；“所有目标能力/全仓清零”默认
+`transformation-final`。每份 Release Evidence 必须列出 applied/skipped gate 及 scope reason，禁止 silent skip。
 
 ### 23.1 架构测试
 
@@ -2668,6 +2961,10 @@ Pydantic 2
 - 多端 contract 测试 Web/CLI/Desktop/Mobile 对同一 TaskView 的 attach/fork/new-run 语义一致。
 
 ### 23.3 必须通过的最终验收
+
+以下是完整能力目录，不代表每个 certification instance 无条件执行全部条目；按 §23 scope 和冻结
+EnabledSurfaceInventory 选择。Core instance 不含 `if-enabled/advanced-cut` 时必须证明其 route/API/Admin/
+assignment 四层关闭；Transformation-final instance 才要求所有计划条目均有最终证据。
 
 ```text
 Multi-Site
@@ -2791,6 +3088,10 @@ runbook and alert coverage
 backup restore proof / canary plan / rollback decision
 ```
 
+Bundle 必须绑定 `CertificationInstance` 的 profile、inventory digest、evidence schema version、generatedAt/
+validUntil、producer identity/signature 与 supersedes ref。Core certification 通过后 Wave 8/9 仍保持 active；
+后续高级 profile 生成 delta instance，所有目标 cut 完成后再生成 transformation-final instance 并退出。
+
 Go/No-Go blockers：
 
 - 任一 P0 journey 不完整，或启用 route/API 仍指向 stub/mock。
@@ -2867,11 +3168,13 @@ Submodule → true Monorepo 采用 pinned snapshot import：
 | Wave | 子方案 | 退出条件 |
 |---|---|---|
 | 0 | Repository/Toolchain/Contract/Documentation Foundation | 单 Monorepo、根 catalog/lock、生成契约、根/受管 INDEX、coverage manifest、CI 边界门成立 |
-| 1 | Platform Core、SiteContext、SiteRelease 与 Cross-cutting Policy | UnitOfWork、DeploymentBinding、Release/Experiment、RestrictionEpoch/PolicyDecisionToken 和双 Release drain 闭环 |
-| 2 | Catalog、Commerce、Subscription、Fulfillment、Credit、Usage | 冻结 §7 状态机、Provider routing、renewal authority/dunning、外部 Dispute/退款并发与 Redeem Program/Batch/Code/reversal/stacking；通过 Redeem-only Production Certification，单 liability Grant/Hold/Journal/Rating 闭环 |
+| 1 | Platform Core、Identity/Auth、SiteContext、SiteRelease 与 Cross-cutting Policy | Auth 产品旅程、RequestSecurityContext、UnitOfWork、ActivationAttempt、RestrictionEpoch 和双 Release drain 闭环 |
+| 2A | Commerce Core、Account/Redeem、Subscription、Fulfillment、Credit、Usage | Account/Redeem PRD、单基础订阅规则、复式 Journal、root budget topology、Redeem-only Production Certification 闭环 |
+| 2B | Payment Provider Enablement | Checkout/Attempt、webhook reducer、Payment/Refund/Dispute、renewal/dunning 与 provider certification；不阻塞 redeem-only Core Launch |
 | 3 | Session Projection、Branch、Admission Boundary | reserved→committed Admission、Session 商业逻辑清零，typed parts/branch/reconnect 闭环 |
-| 4 | Operation、Job、Artifact、专业 Studio | Direct/Agent 统一 Operation，后台 Job 和 ArtifactVersion 闭环 |
-| 5 | Model Gateway、Capability Runtime、AgentRevision/Handoff Safety | 单 Gateway、真实 Handoff、epoch/effect safety 通过 chaos gate |
+| 5A | Model Gateway 与 Capability Runtime Production Spine | Model ownership、AuthorizedModelRoute/ExecutionGrant、AttemptUsageFact、最小真实 adapter 与 Core 所需 GA Model/Capability adapter cutover；不修改 graph/checkpoint/Handoff/effect 语义，触及 GA 前走专项批准 |
+| 4 | Operation、Job、Artifact、专业 Studio | 依赖 5A；Direct/Agent Operation、finalization saga、ArtifactVersion 与专业产品 PRD 闭环 |
+| 5B | Advanced AgentRevision/Handoff Safety | 经单独用户对齐后处理真实 Handoff、AgentRevision 与高级 epoch/effect safety chaos gate；不承担 Core 必需 adapter |
 | 6A | ExecutionTarget、Permission、Interaction | cloud/local/browser/worktree target、sandbox、Takeover 和 scoped approval 闭环 |
 | 6B | Developer Workspace、Context、Memory、多端 | Repository/Worktree/Checkpoint/Rewind 与 ProjectContext revision、多端 attach 闭环 |
 | 6C | Automation、Connector、Plugin、TaskView | Routine concurrency/Segment、Connection、Hook/Plugin、Notification 状态/源 Release binding 与唯一 TaskAnchor read model 闭环 |
@@ -2880,9 +3183,10 @@ Submodule → true Monorepo 采用 pinned snapshot import：
 | 8 | Clean Cutover 与 Handbook 收口 | 旧代码/表/env/header/compat/INDEX 清零，CODEBASE_MAP/ADR/runbook 单事实源，全仓 E2E 通过 |
 | 9 | Production Certification 与 Launch | redeem_only 真实纵切、RC EvidenceBundle、security/load/soak/DR/rollback、on-call/Support 和 Go/No-Go 全通过 |
 
-Wave 3 与 Wave 2 的只读契约设计可以并行；Wave 4 依赖 Wave 2 的 Admission/Rating 和 Wave 3 的
-Session projection。Wave 5 的 GA 内部安全加固可与 Wave 4 Worker 开发并行，但 Gateway/Capability
-切换必须遵守冻结 Manifest 契约。Wave 6A 依赖 Wave 4/5；6B 可在 6A Target contract 冻结后并行；
+Wave 3 与 Wave 2A 的只读契约设计可以并行；Wave 5A 依赖 Wave 1 的安全上下文和 Wave 2A 的 Usage
+contract。Wave 4 依赖 Wave 2A、Wave 3 与 Wave 5A，禁止用旧 GA Provider 或 fake adapter 冒充生产链。
+Wave 5B 可与 Wave 4 非 GA 文件树并行，但任何 GA graph/checkpoint/control/effect/Handoff 行为变更必须先与
+用户单独对齐。Wave 6A 依赖 Wave 4/5B；6B 可在 6A Target contract 冻结后并行；
 6C 依赖 Admission、Capability 和 Wave 3 的 Task Projection 基础 contract；6D 依赖 6A/6B 的隔离和
 6C 的长期运行/通知。Risk enforcement contract 必须在 Wave 1 冻结，并随每个执行 Wave 接入；不能等到
 Wave 7 Admin 才补。Data Governance participant contract 在 Wave 1 冻结，各 context 在自身 Wave 实现，
@@ -2976,3 +3280,4 @@ Wave 7 只完成跨 context coordinator 和运营面。Wave 8 不接受“旧代
 | 1.1 | 2026-07-25 | 关闭 Commerce 红队 P0：Platform process role/UoW、Hold finalize、Operation admission、Release/交易状态与复审门 |
 | 1.2 | 2026-07-25 | 补齐顶级 Agent 产品能力与业务能力地图；经 Runtime/Commerce 红队关闭 ExecutionGrant、Target fencing、AuthorizationSegment、Team budget、Growth/Risk/Governance/Notification 等边界问题 |
 | 1.3 | 2026-07-25 | 冻结 production-ready、redeem_only source/term/availability/export/reversal 正式首发链、分层验证/RC Evidence/Go-No-Go/维护机制、INDEX.md/Monorepo 治理与 Wave 9 上线门 |
+| 1.4 | 2026-07-25 | 经产品、Commerce、Agent/Model/LiteLLM、架构与可靠性多路红队：冻结 Core/Advanced launch profile、Identity/Account/Chat/Studio/Support PRD、Run/Usage/Model 唯一 owner、root budget topology、Job finalization、RequestSecurityContext、ActivationAttempt、RPC/deployable matrix，并调整 2A/2B、5A→4→5B 与 6A-6D 分波 |

@@ -17,7 +17,7 @@ scope: kokoro-redeem-first-production-launch
 | Launch Type | Major Release / First Production Launch |
 | Launch Owner | Product Owner + Engineering Lead |
 | Go/No-Go Decision | Product、Engineering、SRE、Security 对各自 blocker domain 共同签署；任一安全/账务/数据 blocker 可否决 |
-| Architecture Authority | `docs/superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md` v1.3，批准后迁入 handbook |
+| Architecture Authority | `docs/superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md` v1.4，内部批准并由用户复审后迁入 handbook |
 
 `T` 表示相对生产切流时间；每项 owner 是必须承担签署责任的角色，不以“全体工程师”代替。
 
@@ -25,7 +25,7 @@ scope: kokoro-redeem-first-production-launch
 
 | Item | Owner | Due | Status | Evidence |
 |---|---|---:|---|---|
-| [ ] 冻结首发 Site、域名、Surface、Agent、Model、Capability、Offering 与 `redeem_only` SalesPolicyRevision | Product Owner | T-21d | Not started | SiteRelease manifest diff |
+| [ ] 冻结首发 Site、域名、`LaunchProductProfile`、`EnabledSurfaceInventory`、Agent、Model、Capability、Offering 与 `redeem_only` SalesPolicyRevision | Product Owner | T-21d | Not started | SiteRelease manifest diff |
 | [ ] 所有启用 revision 标记 `production_ready`，无 stub/mock/手工补偿依赖 | Engineering Lead | T-21d | Not started | Revision inventory |
 | [ ] 未启用能力在 route、bootstrap、API authorization、Admin 四层均关闭 | Web + Platform Leads | T-14d | Not started | Negative E2E report |
 | [ ] 真实 Payment Provider 明确不在首发 scope；Checkout/payment mutation fail closed | Commerce Lead | T-14d | Not started | Contract/E2E evidence |
