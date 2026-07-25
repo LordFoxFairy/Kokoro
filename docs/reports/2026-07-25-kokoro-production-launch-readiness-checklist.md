@@ -17,7 +17,7 @@ scope: kokoro-redeem-first-production-launch
 | Launch Type | Major Release / First Production Launch |
 | Launch Owner | Product Owner + Engineering Lead |
 | Go/No-Go Decision | Product、Engineering、SRE、Security 对各自 blocker domain 共同签署；任一安全/账务/数据 blocker 可否决 |
-| Architecture Authority | `docs/superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md` v1.4，内部批准并由用户复审后迁入 handbook |
+| Architecture Authority | `docs/superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md` v1.5，内部批准并由用户复审后迁入 handbook |
 
 `T` 表示相对生产切流时间；每项 owner 是必须承担签署责任的角色，不以“全体工程师”代替。
 
@@ -26,6 +26,7 @@ scope: kokoro-redeem-first-production-launch
 | Item | Owner | Due | Status | Evidence |
 |---|---|---:|---|---|
 | [ ] 冻结首发 Site、域名、`LaunchProductProfile`、`EnabledSurfaceInventory`、Agent、Model、Capability、Offering 与 `redeem_only` SalesPolicyRevision | Product Owner | T-21d | Not started | SiteRelease manifest diff |
+| [ ] Profile 的 CanonicalJourney、UserVisibleState、RecoveryAction、ProductMetric 与 ContentPolicy revision 全部冻结 | Product Owner | T-21d | Not started | Product contract bundle |
 | [ ] 所有启用 revision 标记 `production_ready`，无 stub/mock/手工补偿依赖 | Engineering Lead | T-21d | Not started | Revision inventory |
 | [ ] 未启用能力在 route、bootstrap、API authorization、Admin 四层均关闭 | Web + Platform Leads | T-14d | Not started | Negative E2E report |
 | [ ] 真实 Payment Provider 明确不在首发 scope；Checkout/payment mutation fail closed | Commerce Lead | T-14d | Not started | Contract/E2E evidence |
@@ -76,7 +77,7 @@ scope: kokoro-redeem-first-production-launch
 | [ ] 全服务 E2E 覆盖注册→兑换→Chat/Studio→Job→Artifact→再次登录恢复 | QA Lead | T-5d | Not started | E2E trace |
 | [ ] Chaos 覆盖 process crash、lease steal、重复/乱序事件、Provider unknown、Target offline | Reliability Lead | T-5d | Not started | Chaos report |
 | [ ] 5 倍 burst、24h soak、SSE 连接、Job queue、DB pool、对象存储达到 §2.4 envelope | Performance Owner | T-5d | Not started | Load/soak report |
-| [ ] Chrome/Safari/Firefox + mobile breakpoints + keyboard/screen reader/a11y gate 通过 | Web QA | T-5d | Not started | Browser/a11y report |
+| [ ] Chrome/Safari/Firefox + mobile breakpoints + keyboard/screen reader；所有 Core P0 Journey 达到 WCAG 2.2 AA | Web QA | T-5d | Not started | Browser/a11y report |
 | [ ] Staging 使用 production topology 与独立 secrets 完成 RC rehearsal | Release Engineer | T-3d | Not started | RC deployment record |
 
 ## Security, Privacy & Legal
@@ -108,6 +109,8 @@ scope: kokoro-redeem-first-production-launch
 |---|---|---:|---|---|
 | [ ] Landing、auth、redeem、balance、Chat/Studio、Library、settings、support IA 完成 Design QA | Product Design | T-7d | Not started | Design QA report |
 | [ ] loading/empty/error/partial/unknown/cost_pending/insufficient/restricted 状态均有可解释 UX | Product Design | T-7d | Not started | State inventory |
+| [ ] OperatorCommandMatrix 的 role/scope/step-up/maker-checker/notification 与 API enforcement 一致 | Admin + Security | T-5d | Not started | Command matrix UAT |
+| [ ] Text/Image/Music/Voice/Video/Upload/Share ContentPolicy、rights consent、appeal 和 SLA 已认证 | Trust + Legal | T-5d | Not started | Content policy certification |
 | [ ] i18n、SEO、social metadata、legal/footer、email/push Site brand binding 正确 | Web + Content | T-5d | Not started | Content review |
 | [ ] Support 可按 correlationId 查看 User/Redemption/Grant/Run/Job/Artifact 时间线 | Support Lead | T-5d | Not started | Support UAT |
 | [ ] FAQ 和 canned responses 覆盖卡密无效/已用/过期、未到账、生成失败、额度、删除和安全限制 | Support Lead | T-3d | Not started | Support pack |

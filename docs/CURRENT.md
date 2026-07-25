@@ -1,6 +1,6 @@
 # 当前活跃文档白名单
 
-状态：2026-07-10
+状态：2026-07-25
 用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
 
 ## 必读
@@ -9,6 +9,18 @@
 2. [docs 总入口](README.md)
 3. [Kokoro 总手册](kokoro-handbook/README.md)
 4. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+
+## 当前目标架构评审主线
+
+以下文档描述尚未实现、正在书面复审的 clean-rewrite 目标。它们优先于旧过程稿，但在批准并迁入 handbook
+前不得写成当前代码事实：
+
+1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
+2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)
+3. [Wave 0 Repository/Toolchain/Contract Foundation v1.2](superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)
+4. [产品需求治理、Launch Profile 与 PRD Registry](superpowers/specs/2026-07-25-product-requirements-governance-and-prd-registry-design.md)
+5. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
+6. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
 
 ## 当前技术主线
 

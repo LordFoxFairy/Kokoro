@@ -1,6 +1,6 @@
 ---
 artifact: prd-and-architecture-spec
-version: "1.4"
+version: "1.5"
 created: 2026-07-25
 status: internal-review-active
 scope: kokoro-overall-business-runtime-and-agent-product-capabilities
@@ -18,6 +18,11 @@ Spec，后续每个实施波次必须拆出独立子 Spec 和实现计划。
 本文描述的是**目标状态**，不是当前实现事实。代码、旧 handoff、旧 Plan/三桶实现和旧 handbook
 与本文冲突时，在本文完成书面复审并迁入 handbook 后，以本文为新目标；迁入前不得把目标状态
 误写成“已经落地”。
+
+产品需求治理、具体 Reference Launch Profile、Journey/State/Recovery/Metric Catalog 与 Mandatory PRD
+Registry 由 `2026-07-25-product-requirements-governance-and-prd-registry-design.md` 承载；模块到 Journey/Spec/
+Evidence 的完整追踪由 `2026-07-25-kokoro-module-capability-coverage-audit.md` 承载。二者不能修改本文的
+领域 ownership 和运行时不变量。
 
 快速复审路径：先读 §0、§2、§2.5、§3.3、§4、§5、§7.4、§16、§17、§19.1、§23、§25、§27，
 可在二十分钟内判断产品目标、系统边界、Redeem 首发、主链、验证/维护和实施顺序；领域负责人再进入
@@ -165,6 +170,10 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
   `CertificationInstance(profileId, enabledSurfaceInventoryDigest, source/contract/image digests, evidence,
   validUntil, supersedes)`。Core instance 通过可授权该 profile 上线，但 Wave 8/9 保持 active；2B、5B、6A-6D
   和全部目标 profile 完成后再运行 `transformation-final` instance，才正式退出 Wave 和整体 Program。
+- 首个工程认证基线为 `core-redeem-chat`：启用 Site-bound Identity、personal Workspace/Project、Account/
+  Redeem/Credit、General Chat、最小 Artifact/Library、Notification、Support、Core Admin 与 Data Rights；
+  Payment、专业 Studio、Public Share、Workspace Collaboration 和 Advanced Agent 默认四层关闭。具体 Site
+  可使用 Music/Image 等 Profile，但必须绑定同等级 Core journey 和证据。
 
 ## 3. 用户与核心产品旅程
 
@@ -516,6 +525,22 @@ Web 请求任意声明。激活窗口允许 current/candidate 两个 Release 同
 
 审批由 environment/risk policy 决定：preview/dev 可自动化；production 中涉及法律、Merchant、Price、
 Entitlement、Model safety 或跨站范围的变更强制 maker-checker。
+
+Site 本身具有独立于 SiteRelease 的产品生命周期：
+
+```text
+requested → provisioning → configuring → preview_ready → active
+active ↔ suspended
+active/suspended → decommissioning → decommissioned
+```
+
+- provision 原子关联 owner、独立 Web app/project、domain/certificate、SiteProjectBinding、brand/legal refs 和
+  baseline LaunchProductProfile；部分失败可恢复或显式 teardown，不留下可交换 SiteContext 的 orphan binding。
+- suspend 是安全/运营命令，冻结新登录/购买/生成策略，但已运行 Job、历史 Artifact、Support/Data Rights 的
+  行为由冻结 policy 决定，不能简单整站 404。
+- decommission 先阻止新写入，完成用户通知、数据导出、Subscription/Case、retention/LegalHold、domain redirect
+  与 certificate/secret 处置，再删除可删资源；不等于直接删除 Site 行。
+- domain/certificate 失效、provider project 丢失和 workload identity 撤销有独立 observation/alert/runbook。
 
 失败和回滚：
 
@@ -1183,6 +1208,12 @@ ModelPool
 RoutePolicy
 PlanModelGrant
 ModelAssignment
+ModelBundleRevision
+ModelOptionRevision
+SurfaceModelAssignmentRevision
+GatewayConfigRevision
+ModelEvaluationSuiteRevision
+ModelPromotionDecision
 AuthorizedModelRoute
 ResolutionRecord
 ModelInvocation
@@ -1199,6 +1230,14 @@ Platform `model-control` 是目录和配置权威；Provider secret 只以 Secre
 Attempt、ResolutionRecord、HealthObservation 与 AttemptUsageFact。LiteLLM 只能是 Gateway 内可替换的
 provider adapter/router engine：其 DB、virtual key、budget、model list 与 fallback 配置都不是 Kokoro 业务
 真源，并受 contract test、kill switch、shadow/canary 与直连 adapter fallback 保护。
+
+模型、Route、Prompt 或 Agent candidate 不能靠人工“试一下”上线。model-control/agent-registry 拥有版本化
+EvaluationSuite/Policy 与 PromotionDecision；Evaluation Dataset 只保存受治理的 Artifact/DataRef、许可、PII
+与 safety metadata。评测通过普通 `model.evaluate` Operation/Job 调用 Gateway，产生 AttemptUsageFact 和
+不可变报告 Artifact；Platform Worker 汇总 quality/safety/latency/cost/parameter/fallback guardrail 后形成
+signed decision。candidate 只有经过 offline evaluation → provider contract certification → shadow/canary →
+activation 才能进入 assignment；报告失败、数据权利不明或 evidence 过期均阻断 promote。评测不扣用户
+Credit，但 Provider cost 必须进入成本事实。
 
 Admission 冻结的是 `ModelProfile + ModelPool + RoutePolicy` revision 和授权 route token，不冻结某个健康
 状态瞬变的 Deployment。Model Gateway 在每个 ModelAttempt 开始前选择实际 Deployment，并写
@@ -1724,6 +1763,12 @@ LegalHold
   Wave 1/对应执行 Wave 同步落地；Wave 7 只补齐 Case、Appeal 和运营工作流。
 - 内容安全分别在输入、模型/Capability 调用前、Artifact 发布前执行；内部生成完成与公开分享可以有不同
   policy，不能把 moderation failure 伪装成 Provider failure。
+- `ContentPolicyProfile` 按 text/upload、Image、Music/Voice、Video/Likeness、Code/Execution、Public Share
+  冻结输入权利、年龄/地域、NSFW、版权/许可、声音克隆明示同意、人物肖像/深伪、水印/披露、moderation、
+  retention 与 appeal SLA。Site policy 只能在 Platform 法律/安全基线上收紧，不能放宽；对应 Profile 未经
+  产品/Legal/Security 批准不得进入 SiteRelease。
+- 生成权、下载权和公开分享权是三个可独立决定的状态；moderation 限制分享时，用户仍看到生成终态、费用
+  处理、原因类别和申诉入口，不能用模糊 Provider error 隐藏政策决定。
 - 用户申诉创建 Appeal 和新的 RiskDecision，不覆盖原决定。
 - Export/Deletion 覆盖 Identity、Session、Artifact、Connection、Memory、Payment metadata 和 Audit 的可导出/
   可删除分类；Financial/Audit/LegalHold 按法定 retention 保留最小记录并去标识化。
@@ -2932,6 +2977,8 @@ Developer/Automation/Application/Multi-Agent/多端系列默认 `advanced-cut`�
   commit 前 Risk epoch 变化使整个 UoW 回滚、Code 仍 available，commit 后 Restriction 只限制后续 Admission。
   Payment 退款只走原 provider account，账号不可用进入 reconciliation。
 - Model 测试 deployment failover、跨模型 policy、首 token 边界和每 Attempt Evidence。
+- Model/Agent promotion 测试 dataset rights/PII metadata、quality/safety/latency/cost guardrail、evidence expiry、
+  candidate/shadow/canary/rollback；任一失败或缺失 decision 时 assignment compile 必须拒绝。
 - Job 测试 lease reclaim、epoch fencing、unknown outcome、callback replay。
 - Session 测试 typed parts、projection + attach、branch/regenerate、approval CAS。
 - GA 测试 effect claim CAS、旧 epoch 拒写、冻结 revision 恢复、真实 Handoff。
@@ -3057,7 +3104,7 @@ Redeem-only Production Certification 额外要求：
 | Performance/Soak | §2.4 基线、5 倍 burst、24h SSE/worker soak、queue recovery、成本 envelope | RC；p95/SLO/资源与 backlog gate 全通过 |
 | Security/Privacy | SAST/SCA/SBOM/secret/license、DAST、SSRF/path/command、RBAC/Site scope、deletion/retention | 每 PR + RC；Critical/High 未处置为 No-Go |
 | Data/DR | migration dry-run、backup restore、PITR、Object restore、reconciliation rebuild、projection rebuild | RC；达到 RPO/RTO，恢复后 invariants 全通过 |
-| UX/UAT | error/empty/loading、mobile/browser、a11y、i18n、Support/Admin 操作和真实用户旅程 | RC；P0 journey 无阻断，WCAG gate 按 Site policy |
+| UX/UAT | error/empty/loading、mobile/browser、a11y、i18n、Support/Admin 操作和真实用户旅程 | RC；P0 journey 无阻断，全球最低 WCAG 2.2 AA；Site 只能收紧 |
 
 测试工程规则：
 
@@ -3259,6 +3306,8 @@ Wave 7 只完成跨 context coordinator 和运营面。Wave 8 不接受“旧代
 
 ## 28. 相关材料
 
+- `docs/superpowers/specs/2026-07-25-product-requirements-governance-and-prd-registry-design.md`
+- `docs/reports/2026-07-25-kokoro-module-capability-coverage-audit.md`
 - `docs/handoffs/2026-07-24-credit-three-bucket-l3.1.md`
 - `docs/reports/2026-07-25-kokoro-production-launch-readiness-checklist.md`
 - `docs/superpowers/plans/2026-07-25-kokoro-production-delivery-program.md`
@@ -3281,3 +3330,4 @@ Wave 7 只完成跨 context coordinator 和运营面。Wave 8 不接受“旧代
 | 1.2 | 2026-07-25 | 补齐顶级 Agent 产品能力与业务能力地图；经 Runtime/Commerce 红队关闭 ExecutionGrant、Target fencing、AuthorizationSegment、Team budget、Growth/Risk/Governance/Notification 等边界问题 |
 | 1.3 | 2026-07-25 | 冻结 production-ready、redeem_only source/term/availability/export/reversal 正式首发链、分层验证/RC Evidence/Go-No-Go/维护机制、INDEX.md/Monorepo 治理与 Wave 9 上线门 |
 | 1.4 | 2026-07-25 | 经产品、Commerce、Agent/Model/LiteLLM、架构与可靠性多路红队：冻结 Core/Advanced launch profile、Identity/Account/Chat/Studio/Support PRD、Run/Usage/Model 唯一 owner、root budget topology、Job finalization、RequestSecurityContext、ActivationAttempt、RPC/deployable matrix，并调整 2A/2B、5A→4→5B 与 6A-6D 分波 |
+| 1.5 | 2026-07-25 | 经产品旅程覆盖红队补齐：具体 `core-redeem-chat` Reference Profile、Canonical Journey/State/Recovery/Metric/Operator/Content Policy 治理、Mandatory Product PRD Registry、Workspace/Site lifecycle、WCAG 2.2 AA 全局下限与全模块追踪审计 |

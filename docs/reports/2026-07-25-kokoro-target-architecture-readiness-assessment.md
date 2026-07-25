@@ -2,7 +2,7 @@
 artifact: architecture-readiness-assessment
 version: "1.1"
 created: 2026-07-25
-status: superseded-by-v1.4-internal-review
+status: superseded-by-v1.5-internal-review
 scope: kokoro-production-target
 ---
 
@@ -10,15 +10,15 @@ scope: kokoro-production-target
 
 ## Executive Verdict
 
-本报告 v1.0 的 design-pass 结论已被 2026-07-25 第二轮多角色红队取代。目标方向仍成立：不新增万能后端、
+本报告 v1.0 的 design-pass 结论已被 2026-07-25 多轮多角色红队和 Parent v1.5 取代。目标方向仍成立：不新增万能后端、
 第二套支付/卡密链或第二套 Claude Code/Manus runtime；`redeem_only` 仍可成为真实首发 acquisition
-channel。但在 Parent Spec v1.4 完成内部复审前，不再声称整体设计已经通过。
+channel。但在 Parent Spec v1.5 和产品治理 Spec 完成内部复审前，不再声称整体设计已经通过。
 
 当前仓库仍是 **No-Go for production**：Wave 尚未实现和认证。只有
 `docs/reports/2026-07-25-kokoro-production-launch-readiness-checklist.md` 的 Must Have 全部签署，才可把状态
 从 design-pass 改成 production-ready。
 
-v1.4 已修订 Run/Usage/Model 唯一 ownership、Job finalization、RequestSecurityContext、Site ActivationAttempt、
+v1.5 已修订 Run/Usage/Model 唯一 ownership、Job finalization、RequestSecurityContext、Site ActivationAttempt、
 RPC/deployable matrix、root budget topology、产品 P0 旅程以及 2A/2B、5A→4→5B 分波。内部复审结果应写入
 新的 assessment revision；本文件其余评分仅保留为 v1.0 历史快照，不再作为实现授权证据。
 

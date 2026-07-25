@@ -42,26 +42,26 @@ SiteRelease 上线，但 Wave 8/9 保持 active；2B、5B、6A-6D 与全部目�
 
 ## 2. Mandatory Child Spec and Plan Set
 
-每行必须依次完成 `产品子 PRD → child architecture Spec → 用户书面复审 → writing-plans child plan →
-implementation → evidence → cleanup`；Wave 0 作为工程地基不需要业务产品子 PRD。
+每行必须依次完成 `产品子 PRD → 产品红队 → child architecture Spec → 架构/可靠性/安全评审 → 用户书面复审
+→ writing-plans child plan → implementation → evidence → cleanup`；Wave 0 作为工程地基不需要业务产品子 PRD。
 
-| Wave | Child Spec filename | Child implementation plan filename | Production-capable exit |
-|---|---|---|---|
-| 0 | `2026-07-25-wave-0-repository-contract-foundation-design.md` | `2026-07-25-wave-0-repository-contract-foundation-implementation-plan.md` | 真 Monorepo、根 lock/catalog、contract generation、INDEX governance、CI architecture gate |
-| 1 | `2026-07-25-wave-1-platform-identity-site-policy-design.md` | `2026-07-25-wave-1-platform-identity-site-policy-implementation-plan.md` | Identity/Auth PRD、RequestSecurityContext、PlatformUnitOfWork、ActivationAttempt、Restriction token/epoch |
-| 2A | `2026-07-25-wave-2a-commerce-redeem-credit-design.md` | `2026-07-25-wave-2a-commerce-redeem-credit-implementation-plan.md` | Account/Redeem PRD、Catalog/Subscription/Fulfillment/Credit/Usage 与 Redeem-only certification |
-| 2B | `2026-07-25-wave-2b-payment-provider-enablement-design.md` | `2026-07-25-wave-2b-payment-provider-enablement-implementation-plan.md` | Checkout/Payment/Refund/Dispute/dunning 与真实 Provider certification；非 Core redeem-only blocker |
-| 3 | `2026-07-25-wave-3-session-admission-projection-design.md` | `2026-07-25-wave-3-session-admission-projection-implementation-plan.md` | Session 商业逻辑清零、typed parts、branch、reconnect、AuthorizationSegment |
-| 5A | `2026-07-25-wave-5a-model-capability-production-spine-design.md` | `2026-07-25-wave-5a-model-capability-production-spine-implementation-plan.md` | Model Control/Gateway/Capability 最小生产链、AuthorizedModelRoute/ExecutionGrant、AttemptUsageFact、Core 所需最小 GA adapter cutover；不改 graph/checkpoint/Handoff/effect 语义，触及 GA 前专项批准 |
-| 4 | `2026-07-25-wave-4-operation-job-artifact-studio-design.md` | `2026-07-25-wave-4-operation-job-artifact-studio-implementation-plan.md` | Direct/Agent Operation、durable Job、ArtifactVersion、Image/Music/Video Studio |
-| 5B | `2026-07-25-wave-5b-advanced-agent-handoff-safety-design.md` | `2026-07-25-wave-5b-advanced-agent-handoff-safety-implementation-plan.md` | 经专项用户批准的 AgentRevision、真实 Handoff、高级 effect/epoch safety；不承担 Core adapter |
-| 6A | `2026-07-25-wave-6a-target-permission-interaction-design.md` | `2026-07-25-wave-6a-target-permission-interaction-implementation-plan.md` | Target/Permission/Interaction |
-| 6B | `2026-07-25-wave-6b-developer-workspace-context-design.md` | `2026-07-25-wave-6b-developer-workspace-context-implementation-plan.md` | Developer Workspace/Context/Memory/多端 |
-| 6C | `2026-07-25-wave-6c-automation-connector-taskview-design.md` | `2026-07-25-wave-6c-automation-connector-taskview-implementation-plan.md` | Routine/Connector/Plugin/TaskView/最小 Notification 生产链 |
-| 6D | `2026-07-25-wave-6d-agent-team-application-runtime-design.md` | `2026-07-25-wave-6d-agent-team-application-runtime-implementation-plan.md` | AgentTeam/Wide Research/Application Runtime |
-| 7 | `2026-07-25-wave-7-core-admin-governance-operations-design.md` | `2026-07-25-wave-7-core-admin-governance-operations-implementation-plan.md` | Core Site Fleet、财务/运行专用流程、Risk Case、Export/Deletion、Notification、Support；高级 Surface 治理随 6A-6D 同波交付 |
-| 8 | `2026-07-25-wave-8-clean-cutover-documentation-design.md` | `2026-07-25-wave-8-clean-cutover-documentation-implementation-plan.md` | 旧事实源清零，handbook/ADR/INDEX/CODEBASE_MAP/runbook 与唯一实现一致 |
-| 9 | `2026-07-25-wave-9-production-certification-launch-design.md` | `2026-07-25-wave-9-production-certification-launch-implementation-plan.md` | RC EvidenceBundle、真实 redeem-only 纵切、Go/No-Go、canary、rollback、on-call |
+| Wave | Mandatory PRD IDs | Child Spec filename | Child implementation plan filename | Production-capable exit |
+|---|---|---|---|---|
+| 0 | none | `2026-07-25-wave-0-repository-contract-foundation-design.md` | `2026-07-25-wave-0-repository-contract-foundation-implementation-plan.md` | 真 Monorepo、根 lock/catalog、contract generation、INDEX governance、CI architecture gate |
+| 1 | PRD-00、PRD-01、PRD-02、PRD-11、PRD-12、PRD-14、PRD-15、PRD-16 core contracts | `2026-07-25-wave-1-platform-identity-site-policy-design.md` | `2026-07-25-wave-1-platform-identity-site-policy-implementation-plan.md` | Identity/Auth、Workspace/Project、RequestSecurityContext、PlatformUnitOfWork、ActivationAttempt、Restriction token/epoch |
+| 2A | PRD-03 | `2026-07-25-wave-2a-commerce-redeem-credit-design.md` | `2026-07-25-wave-2a-commerce-redeem-credit-implementation-plan.md` | Account/Redeem、Catalog/Subscription/Fulfillment/Credit/Usage 与 Redeem-only certification |
+| 2B | PRD-04 | `2026-07-25-wave-2b-payment-provider-enablement-design.md` | `2026-07-25-wave-2b-payment-provider-enablement-implementation-plan.md` | Checkout/Payment/Refund/Dispute/dunning 与真实 Provider certification；非 Core redeem-only blocker |
+| 3 | PRD-05/06 intake contract | `2026-07-25-wave-3-session-admission-projection-design.md` | `2026-07-25-wave-3-session-admission-projection-implementation-plan.md` | Session 商业逻辑清零、typed parts、branch、reconnect、AuthorizationSegment |
+| 5A | PRD-05 model/capability annex | `2026-07-25-wave-5a-model-capability-production-spine-design.md` | `2026-07-25-wave-5a-model-capability-production-spine-implementation-plan.md` | Gateway/Capability、AuthorizedModelRoute/ExecutionGrant、AttemptUsageFact、Core 最小 GA adapter；触及 GA 前专项批准 |
+| 4 | PRD-06、PRD-07、PRD-08I、PRD-08M、PRD-08V、PRD-09、PRD-16 modality annex | `2026-07-25-wave-4-operation-job-artifact-studio-design.md` | `2026-07-25-wave-4-operation-job-artifact-studio-implementation-plan.md` | Direct/Agent Operation、durable Job、ArtifactVersion 与每个启用 Studio 专业闭环 |
+| 5B | PRD-A1 | `2026-07-25-wave-5b-advanced-agent-handoff-safety-design.md` | `2026-07-25-wave-5b-advanced-agent-handoff-safety-implementation-plan.md` | 经专项用户批准的 AgentRevision、真实 Handoff、高级 effect/epoch safety |
+| 6A | PRD-A2 | `2026-07-25-wave-6a-target-permission-interaction-design.md` | `2026-07-25-wave-6a-target-permission-interaction-implementation-plan.md` | Target/Device/Permission/Interaction |
+| 6B | PRD-A3 | `2026-07-25-wave-6b-developer-workspace-context-design.md` | `2026-07-25-wave-6b-developer-workspace-context-implementation-plan.md` | Developer Workspace/Context/Memory/多端 |
+| 6C | PRD-A4 + PRD-15 runtime | `2026-07-25-wave-6c-automation-connector-taskview-design.md` | `2026-07-25-wave-6c-automation-connector-taskview-implementation-plan.md` | Routine/Connector/Plugin/TaskView/最小 Notification 生产链 |
+| 6D | PRD-A5 | `2026-07-25-wave-6d-agent-team-application-runtime-design.md` | `2026-07-25-wave-6d-agent-team-application-runtime-implementation-plan.md` | AgentTeam/Wide Research/Application Runtime |
+| 7 | PRD-10、PRD-11、PRD-12、PRD-13、PRD-15、PRD-16 | `2026-07-25-wave-7-core-admin-governance-operations-design.md` | `2026-07-25-wave-7-core-admin-governance-operations-implementation-plan.md` | Site Fleet、Admin/Support、Risk/Safety、Growth、Data Rights、Notification；高级治理随 6A-6D |
+| 8 | PRD-00、PRD-14 + enabled PRDs | `2026-07-25-wave-8-clean-cutover-documentation-design.md` | `2026-07-25-wave-8-clean-cutover-documentation-implementation-plan.md` | 当前 profile 旧事实源清零，handbook/ADR/INDEX/CODEBASE_MAP/runbook 与唯一实现一致 |
+| 9 | PRD-00、PRD-14 + enabled PRDs | `2026-07-25-wave-9-production-certification-launch-design.md` | `2026-07-25-wave-9-production-certification-launch-implementation-plan.md` | profile-scoped EvidenceBundle、Go/No-Go、canary、rollback、on-call |
 
 不得预创建空 child 文件。开始某 Wave 时完整设计并复审，避免占位文档伪装成完成。
 
@@ -77,35 +77,40 @@ implementation → evidence → cleanup`；Wave 0 作为工程地基不需要业
 
   读取真实 imports/exports、schema、migration、test、deployment entrypoint。记录要保留、替换和删除的准确路径，不从旧文档推测代码。
 
-- [ ] **Step 3: Write and review the child Spec**
+- [ ] **Step 3: Write and product-red-team the child PRD**
+
+  使用 Product PRD Registry 中的精确文件名；冻结 Journey、UserVisibleState、RecoveryAction、metric target、
+  scope 与 Support/Admin 旅程。P0 产品 finding 清零后才能写 architecture child Spec。
+
+- [ ] **Step 4: Write and review the child architecture Spec**
 
   子 Spec 必须冻结数据 owner、合法状态转移、command/event schema、幂等键、transaction boundary、security/recovery 和 cutover；用户批准前不写实现计划。
 
-- [ ] **Step 4: Generate the exact child implementation plan**
+- [ ] **Step 5: Generate the exact child implementation plan**
 
   使用 `superpowers:writing-plans`；每个代码步骤给出完整 snippet、精确命令和预期失败/成功，采用 TDD 和小 commit。
 
-- [ ] **Step 5: Create an isolated implementation worktree**
+- [ ] **Step 6: Create an isolated implementation worktree**
 
   使用 `superpowers:using-git-worktrees`；多个 worker 只按互不重叠的文件/模块切分，禁止共同修改同一 migration、contract 或 barrel export。
 
-- [ ] **Step 6: Execute with two-stage review**
+- [ ] **Step 7: Execute with two-stage review**
 
   推荐 `superpowers:subagent-driven-development`；每个任务先审 spec compliance，再审 code quality。子代理成功不替代主仓 verification。
 
-- [ ] **Step 7: Run the Wave evidence matrix**
+- [ ] **Step 8: Run the Wave evidence matrix**
 
   至少包含 static、unit/property、component、contract、integration、targeted E2E、failure/security；涉及 runtime/transaction 的 Wave 不能只靠 mock。
 
-- [ ] **Step 8: Clean cut in the same Wave**
+- [ ] **Step 9: Clean cut in the same Wave**
 
   删除被替代的代码、表、env、header、compat、注释、测试和 INDEX 描述；`rg` 和 dependency tests 证明不存在旧入口。
 
-- [ ] **Step 9: Update architecture maps and reports**
+- [ ] **Step 10: Update architecture maps and reports**
 
   同 commit 更新受影响 INDEX、生成契约、runbook、ADR/CODEBASE_MAP 和 Wave report；不得留下两个当前事实源。
 
-- [ ] **Step 10: Exit only with fresh main-worktree verification**
+- [ ] **Step 11: Exit only with fresh main-worktree verification**
 
   在主工作树重新运行 child plan 的全部 gate，生成 commit/image/contract digests 和证据索引；失败则 Wave 保持 active。
 
@@ -197,7 +202,7 @@ INDEX 只描述当前代码；历史保留在 Git 和正式 ADR，不在“当�
 
 第一个允许进入 `superpowers:writing-plans` 精确代码任务的目标是 Wave 0。开始前必须：
 
-- [ ] 用户确认 Umbrella Spec v1.4 的 ownership、Core/Advanced launch、production/redeem/verification/INDEX addendum。
+- [ ] 用户确认 Umbrella Spec v1.5 与 Product Requirements Governance v1.0 的 ownership、Profile/Journey/PRD Registry、Core/Advanced launch、production/redeem/verification/INDEX addendum。
 - [ ] 完成 Wave 0 child Spec，并按 Umbrella Spec 冻结的 pinned snapshot import 策略列出四个 gitlink
   provenance、归档和 cutover 步骤。
 - [ ] 确认根目录目标和第一批受管 INDEX roots。
