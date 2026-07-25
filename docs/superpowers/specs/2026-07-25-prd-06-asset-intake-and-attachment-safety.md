@@ -116,7 +116,9 @@ AssetReference
 ObjectGcIntent / ObjectGcReceipt
 ```
 
-- Asset context 独占 upload/scan/Asset metadata 与 Blob reference authority；Object Storage 只保存 bytes/observations。
+- Media Resource bounded context中的Asset module独占upload/scan/Asset metadata与Asset侧Blob reference authority；Artifact module
+  独立拥有output versions/lineage。共享Blob/Lifecycle module只管理physical references/retention/GC，Object Storage只保存bytes/
+  observations；相同Blob不合并Asset/Artifact identity。
   `ScanEvaluation` 是 evidence，Trust 拥有 canonical safety Decision；`AssetEligibilityProjection` 只组合当前 receipts，
   Platform Admission 才能签发 AssetGrant。Asset/Scanner 不得自行 allow 被 Trust/Restriction deny 的内容。
 - `Blob` 可以按 encrypted storage domain + content hash 物理去重，但 AssetVersion、ownership、Site authorization、

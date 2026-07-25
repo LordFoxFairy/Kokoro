@@ -324,12 +324,14 @@ Platform 数据库和事务语义，但可以独立部署、扩缩容。Platform
 | Device Gateway | local_device/local_browser 长连接、在线状态、scoped channel | 不读取 Workspace/Credit 领域表，不信任设备自报权限 |
 | Capability | Skill/Connector/Plugin/Hook/Command Revision、Package、Connection、SecretRef、CapabilityCall | 不解释套餐和积分 |
 | Model Gateway | ModelInvocation、ModelAttempt、ResolutionRecord、runtime HealthObservation、AttemptUsageFact | 不拥有 canonical UsageEvidence，不维护用户余额，不决定客户价格或 Model Catalog |
-| Artifact component（V1 由 Job process 托管） | Asset、ArtifactVersion、Blob、Lineage、Share/Publish | 不执行 Agent 或 Provider |
+| Media Resource component（V1 workers可由Job process托管） | Asset module拥有upload/scan/AssetVersion/AssetGrant；Artifact module拥有Artifact/ArtifactVersion/Lineage/Rendition；Blob/Lifecycle module拥有physical reference/retention/GC | 不执行Agent/Provider，不因托管process让Job拥有资源表，也不把scanner evidence当Trust Decision |
 | Application Runtime component（V1 由 Job process 托管） | Application/Revision、EnvironmentDeployment、DeploymentRollout、ServiceInstance、health/log reference | 不等同 SiteRelease/Routine/Job，不获得 Platform 内部凭据 |
 | Site Web | 路由、品牌、SEO、UI composition、Cookie、浏览器草稿 | 不拥有业务数据，不报价、不写余额 |
 | Admin Web | 管理 UI、只读聚合视图、命令入口 | 不直连任何业务领域表 |
 
-Artifact V1 允许与 Job 同部署，但必须使用独立 application interface、表 ownership 和对象模型。
+Media Resource V1允许workers与Job同部署，但Asset、Artifact和Blob/Lifecycle分别拥有明确application interface、表和对象模型；
+Job只编排finalization并消费receipt。相同Blob不合并业务identity，Artifact作为输入使用DerivedInputVersion而非复制bytes。
+详见[Asset、Artifact、Blob Ownership、Promotion 与 GC](2026-07-25-asset-artifact-ownership-promotion-gc-design.md)。
 
 唯一权威补充：
 
