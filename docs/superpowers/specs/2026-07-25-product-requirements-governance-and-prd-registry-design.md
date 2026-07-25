@@ -173,7 +173,7 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-10 [`2026-07-25-prd-10-admin-operating-console.md`](2026-07-25-prd-10-admin-operating-console.md) | 7 + annex per cut | core | auth/scope/queues/commands/approval/diagnosis/audit |
 | PRD-11 [`2026-07-25-prd-11-support-recovery-and-appeals.md`](2026-07-25-prd-11-support-recovery-and-appeals.md) | 1 contract/7 | core | user center/intake/triage/SLA/evidence/escalation/compensation |
 | PRD-12 [`2026-07-25-prd-12-site-lifecycle-and-fleet.md`](2026-07-25-prd-12-site-lifecycle-and-fleet.md) | 1/7 | core | provision/domain/certificate/preview/promote/rollback/suspend/decommission |
-| PRD-13 `2026-07-25-prd-13-growth-seo-experiment-and-attribution.md` | 7 | if-enabled | acquisition/deep link/consent/stitch/exposure/guardrail/share SEO |
+| PRD-13 [`2026-07-25-prd-13-growth-seo-experiment-and-attribution.md`](2026-07-25-prd-13-growth-seo-experiment-and-attribution.md) | 7 | if-enabled | acquisition/deep link/consent/stitch/exposure/guardrail/share SEO |
 | PRD-14 [`2026-07-25-prd-14-localization-and-accessibility.md`](2026-07-25-prd-14-localization-and-accessibility.md) | cross-wave | core | locale/fallback/time/number/RTL/WCAG/browser/AT |
 | PRD-15 [`2026-07-25-prd-15-notification-preferences-and-data-rights.md`](2026-07-25-prd-15-notification-preferences-and-data-rights.md) | 1/6C/7 | core | mandatory events/preferences/delivery/deep link/export/delete UX |
 | PRD-16 [`2026-07-25-prd-16-trust-content-safety-and-media-rights.md`](2026-07-25-prd-16-trust-content-safety-and-media-rights.md) | 1/4/7 | core+if-enabled | input/generation/share/appeal/voice/likeness/copyright/NSFW |
