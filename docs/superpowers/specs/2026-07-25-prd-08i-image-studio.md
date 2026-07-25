@@ -63,6 +63,8 @@ reference用途、parent lineage、候选费用和安全限制会丢失；若直
 | Image Operation 缺 source/mask/reference/output provenance | 0 |
 | mask 坐标/方向/缩放漂移导致编辑错误 | 0 certification failures |
 | batch candidate Artifact/Usage/Decision/charge 串位 | 0 |
+| Image/source/mask/rights/consent对象跨 Site 引用成功 | 0 |
+| assistant/generation Usage、candidate eligibility或source snapshot串位 | 0 |
 | source ArtifactVersion 被编辑操作原地覆盖 | 0 |
 | disabled/unsupported parameter 被静默 drop | 0 |
 | seed 被错误承诺跨 Deployment/adapter bitwise reproduce | 0 |
@@ -83,30 +85,42 @@ reference用途、parent lineage、候选费用和安全限制会丢失；若直
 
 ```text
 ImageDraftRevision
-  draftRef / canvasRevision / operationFamily / prompt+negative intent
+  immutable siteId / draftRef / canvasRevision / operationFamily / prompt+negative intent
   sourceArtifactVersion? / referenceBindings[] / layerRefs[] / selectionRefs[]
   maskRevision? / outputLayout / candidateCount / ModelOption / parameterSet
 
 ImageReferenceBinding
-  assetOrArtifactVersionRef / role=content|composition|style|color|identity|edit_base
+  immutable siteId / assetOrArtifactVersionRef / role=content|composition|style|color|identity|edit_base
   influence class/range / crop+transform / rights+consent refs / policy revision
 
 ImageCanvasRevision
-  logical width+height / coordinateSpaceRevision / background / ordered layers
+  immutable siteId / logical width+height / coordinateSpaceRevision / background / ordered layers
   viewport transform (UI only) / object list / selection/mask refs
 
 ImageMaskRevision
-  sourceCanvasRevision / coordinate space / width+height / polarity / feather intent
+  immutable siteId / sourceCanvasRevision / coordinate space / width+height / polarity / feather intent
   raster or vector region Blob ref / checksum / createdBy+tool revision
 
+ImageCoordinateMappingRevision
+  immutable siteId / source media / normalized representation digest / orientation+pixel-aspect transform
+  source-to-canvas matrix / boundary rounding+sampling policy / tool revision
+
+ImageSourceSnapshotRevision
+  immutable siteId / source+reference versions / Canvas+CoordinateMapping+Mask revisions
+  layers+selections / prompt+parameter revisions / rights+consent epochs / coherence digest
+
 ImageOperationSpec
-  family / immutable inputs / typed parameters / output contract
+  immutable siteId / family / ImageSourceSnapshotRevision + explicit deltas / typed parameters / output contract
   assistant+generation role requirements / candidate slots / quote dimensions
 
 ImageCandidateResult
-  candidateId / ArtifactVersion / width+height / media metadata
-  Decision+rights+usage+cost refs / preview+export eligibility
+  immutable siteId / candidateId / ArtifactVersion / width+height / media metadata / MediaAccessibility refs
+  owner-issued Decision+rights+usage+cost projection refs / preview+export eligibility
 ```
+
+除Platform baseline外，所有Image业务对象、唯一键、队列分区、callback mapping和引用都冻结immutable `siteId`；Quote、submit、
+每个effect、finalization、preview/export mint均验证同Site/Project/purpose。跨Site拒绝不得泄漏对象存在性，相同hash、用户、
+subject或Provider operation ID也不继承授权。
 
 | Family | Required input | Product output |
 |---|---|---|
@@ -122,6 +136,8 @@ ImageCandidateResult
   含糊schema；这与成熟 Diffusers “one task, one pipeline”原则一致。
 - OperationDefinition 固定可见参数、合法组合、capability mapping、quote dimensions、fallback equivalence、input/output
   media constraints。Provider adapter只映射，不静默补值/drop行为参数。
+- 每个Definition还冻结runtime role set、effect/candidate identity、`cancelScope=operation|attempt|candidate_slot`、preview
+  retention、ChargeTreatment与fallback certification；Provider只支持attempt cancel时UI不得声称逐candidate cancel。
 
 ## 4. Create and Prompt Assistance
 
@@ -130,8 +146,11 @@ ImageCandidateResult
 - `image.assistant` 可帮助澄清、改写prompt、从reference提取可编辑描述或建议参数；它不自动提交generation、不拥有
   reference rights、不修改current draft、不代表用户接受更高费用。
 - assistant建议以proposed diff显示，用户apply后创建新DraftRevision；拒绝不影响原draft。
-- 模型选择只展示Image ModelOption的能力/速度/相对质量/支持family/尺寸/费用范围。内部`image.assistant`和
-  `image.generation` role必须同时由EffectiveModelBundle完整解析。
+- 模型选择只展示Image ModelOption的能力/速度/相对质量/支持family/尺寸/费用范围。每个enabled family只要求其Definition
+  明示的required roles完整；纯rendition/upscale未使用assistant时不产生assistant Usage，也不临场补默认role。
+- assistant是显式、独立的authorized ModelInvocation，具有logical call identity、Trust input gate、provenance、
+  AttemptUsageFact、Quote/charge policy与root Hold allocation；它只创建proposed DraftRevision，Submit不得隐式调用、自动apply、
+  扩大rights或把assistant Usage混入generation/edit/upscale/rendition Attempt。
 - 具体Provider不支持negative prompt/seed/style reference/mask feather时，Admission按capability fail closed或要求改参数；
   禁止静默drop。
 - prompt/parameter client limit只是UX；server按grapheme/schema/policy重新验证。IME期间Enter不提交。
@@ -144,6 +163,10 @@ ImageCandidateResult
 - edit_base是像素修改source；content/composition/style/color是conditioning；identity/face/likeness进入PRD-16更高强度
   consent、age、public figure、minor/deepfake gate。
 - RightsBasis按asset/version/right type/territory/use/term/public/remix保存。普通checkbox/assertion不是已验证rights。
+- 每个enabled family发布 `ImageRightsRequirementMatrixRevision`，按reference role × family × output kind × private/download/
+  export/public/remix/training × territory冻结required evidence、deny/review与disclosure；矩阵缺失的Site/Profile fail closed。
+- Asset/Artifact owner创建purpose-bound `DerivedImageInputVersion`，冻结Site、source/reference、crop/transform、CoordinateMapping、
+  checksum、TTL、revoke epoch与allowed Deployment；Gateway不得读取整库、扩大purpose或复用过期派生输入。
 - reference crop/rotate/flip/color transform属于DraftRevision和OperationSpec；原AssetVersion不变。
 - source/references在queued Job后被revoke：未effectAttempt拒绝；已effect只finalize到quarantine/reconcile，不发布。
 - image-to-image、variation、upscale、mask edit继承parent最严格restriction/rights/retention，不能通过派生洗白。
@@ -159,6 +182,8 @@ ImageCandidateResult
 - mask明确polarity（edited/protected）、alpha/threshold/feather intent、width/height/checksum。Provider adapter负责精确
   polarity/size mapping，并通过golden mask corpus验证；不能默认“白=edit”适用于所有Provider。
 - base/canvas/mask revision不匹配、mask空/全选、区域越界或尺寸变化时提交前typed reject/reconfirmation，不自动拉伸。
+- `ImageSourceSnapshotRevision`把source/reference、Canvas/CoordinateMapping/Mask、layer/selection、prompt/parameter与rights epochs
+  冻结为coherence digest。Quote后任一dependency head变化，submit必须CAS失败并展示reconfirmation diff，不读取latest/current。
 
 ### 6.2 Editing behavior
 
@@ -217,7 +242,8 @@ ImageCandidateResult
   Site不能放宽，guardian consent不能覆盖absolute deny。
 - output allowed for private不等于download/export/share/remix；每次mint/refresh验证current policy/rights/consent/
   restriction epochs与shortTTLauthorization。
-- watermark/C2PA/provenance adapter按Site/policy要求；缺失、损坏、被剥离时明确降级并阻断需要它的export/share。
+- preview、download、export、Share与remix使用短期purpose-bound `PublicationAuthorization`，冻结siteId、ArtifactVersion、audience、
+  policy/rights/consent/restriction epochs；每次mint/受控访问复验，旧token、Appeal、重建Share或CDN缓存不复活。
 - Takedown先revokeorigin/新token，再异步purge managed thumbnails/CDN/search；UI诚实显示partial/unknown。
 - ChargeTreatment逐stage/candidate冻结：pre-effectdeny、post-effectquarantine、partial、unknown、appealoverturn；受限内容不出现在cost receipt。
 
@@ -231,6 +257,9 @@ ImageCandidateResult
   Definition中认证色彩、alpha、metadata、quality与browser/clientmatrix，不能只按扩展名。
 - resize/crop/compress/format conversion若跨worker或耗时，创建RenditionJob；不重跑generation。source ArtifactVersion不变。
 - export确认exact size/format/quality/alpha/color profile/metadata/watermark/rights/estimatedcost，并提供accessible text alternative。
+- 每个candidate/export冻结 `MediaAccessibilityRevision` 与 `AccessibleOutputProfileRevision`，包含media class、content language、
+  reviewed text alternative、复杂图像long description要求、适用criterion与exception evidence；自动描述未reviewed时不能满足
+  需要reviewed alternative的public/export gate。
 - download使用BFF/Artifactauthorization，不暴露storage key；过期delivery可重建rendition/delivery，不新生成source。
 - Chat→Image Studio传同ArtifactVersion/Asset refs创建Draft，不复制字节；Image→Library也使用同identity。
 
@@ -383,6 +412,69 @@ Then Job remains finalizing/failed under typed output validation and no ready Ar
 And recovery retries validation/storage receipts without rerunning Provider
 ```
 
+### AC-IMG-12 — Cross-Site image references are confined
+
+```gherkin
+Given Site A owns a source, Canvas, Mapping, Mask, reference, rights or Consent reference
+When Site B submits an Operation, callback or operator command containing any such reference
+Then authorization rejects before metadata disclosure, bytes, preview, export or Provider effect
+And no existence, timing, rights, policy or content signal from Site A is returned
+```
+
+### AC-IMG-13 — Source snapshot remains revision-coherent
+
+```gherkin
+Given a Quote freezes source, references, Canvas, CoordinateMapping, Mask, layers and parameter revisions
+When any dependency head changes before submit or rendition
+Then snapshot CAS or coherence digest validation fails and a new diff and Quote are required
+And no current-head object or mixed revision set is read implicitly
+```
+
+### AC-IMG-14 — Assistant and image effects are separately authorized
+
+```gherkin
+Given a user requests assistant help before generation, edit, upscale or rendition
+When the assistant proposes prompt, reference-role or parameter changes
+Then it runs as an explicit ModelInvocation with its own provenance, Usage and charge policy
+And submit never invokes it implicitly or mixes its Attempt with any image effect settlement
+```
+
+### AC-IMG-15 — Derived image input is purpose-bound
+
+```gherkin
+Given one normalized source crop or reference is prepared for a Site, Operation and Deployment
+When a caller requests another transform, purpose, Deployment or an expired input
+Then the DerivedImageInputVersion grant is rejected before bytes or Provider effect
+And Gateway cannot read the source library or widen the grant
+```
+
+### AC-IMG-16 — Publication epoch race fails closed
+
+```gherkin
+Given an image was eligible when a PublicationAuthorization was issued
+When rights, consent, accessibility or restriction epoch changes before token mint or controlled access
+Then the stale authorization is rejected and origin access remains revoked
+And no Appeal, rebuilt Share or cached token restores the old use
+```
+
+### AC-IMG-17 — Accessibility evidence gates delivery
+
+```gherkin
+Given a complex image requires a reviewed text alternative or long description under its output profile
+When only an estimated automatic description is available
+Then conforming export or public delivery is blocked with a review remedy
+And private Artifact history and cost remain intact without claiming accessibility conformance
+```
+
+### AC-IMG-18 — Cancel scope is truthful
+
+```gherkin
+Given the certified Provider can cancel only an entire Attempt containing multiple candidate slots
+When one candidate requests cancellation
+Then Web does not claim candidate-level canceled certainty or discard late canonical facts
+And every output, Usage and charge reconciles under the frozen attempt-level cancel policy
+```
+
 ## 16. Verification and Release Gates
 
 - schema/golden：每family参数、capability、mask polarity/coordinates、EXIF、alpha/colorspace、output dimensions、unsupported
@@ -393,6 +485,13 @@ And recovery retries validation/storage receipts without rerunning Provider
   Trust/Usage/Artifact outage、Site rollback/revocation。
 - UX/a11y：desktop/mobile、keyboard/screen reader/magnification/speech/switch、Canvas/structured equivalence、RTL/IME、compare/export。
 - Trust/legal：minor/likeness/deepfake、rightsbundle、appeal、watermark/provenance、takedown partial purge。
+
+内部批准还要求：
+
+- 每个enabled family已发布OperationDefinition、runtime roles、ImageRightsRequirementMatrix、cancel scope、ChargeTreatment、
+  output validator、fallback equivalence与real Provider sandbox certification，缺任一项即fail closed。
+- 两Site交叉source/Canvas/Mapping/Mask/reference/rights/consent/callback负向矩阵、EXIF/coordinate/mask golden corpus、
+  minor/likeness Legal matrix、partial/cancel/unknown/finalizer chaos、Usage/root Hold守恒和Browser/AT认证全部通过。
 
 No-Go：arbitraryProvider/node payload；mask mapping无evidence；reference role/rights不明确；candidate串位；source overwrite；
 unknown retry；seed false guarantee；private allow绕过export/share；Canvas pointer-only；GA出现imageProvider业务分支。
