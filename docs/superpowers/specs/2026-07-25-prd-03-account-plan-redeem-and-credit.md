@@ -227,6 +227,8 @@ Grant 的独立维度，不使用一个 `source_or_liability` 类型同时表达
 
 - 一个 ExecutionRoot/AuthorizationSegment 对一个 liability account 只有一个 root Hold；GA Model/Capability 和
   delegated Job 从其 allocation 消费，不创建第二 Hold。Direct Studio 是新 ExecutionRoot。
+- Platform Credit owner从parent unassigned额度原子签发audience-bound child allocation；任何时刻active child ceilings、
+  committed与captured总和不得超过parent。consumer不能自行扩容/reparent，unknown额度不可归还或复用，stale worker必须先fence。
 - reserve 过账 available→reserved，并记录 exact Grant allocation。Finalize 前 `reserved` 可 TTL release；
   Finalize 后 `committed` 永不被普通 TTL 释放。
 - committed unknown 进入 reconciliation_required；Grant 后续到期/撤销不阻止已 committed allocation capture，

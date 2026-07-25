@@ -1083,6 +1083,10 @@ ExecutionRoot
 - retry 可产生多个 AttemptUsageFact，但客户承担哪些 Attempt 由冻结 RatingPolicy 决定。
 - Hold 不足时只能截断、停止或创建经重新授权的新 Segment，禁止透支和静默换 liability。
 - V1 一个 ExecutionRoot 只使用一个 liability account；跨 liability multi-hold 延后，避免含混结算。
+- Gateway、Capability、Job、AgentTeam与Target不能各自拿root完整ceiling。Platform Credit owner先以CAS从parent
+  `unassigned`原子切出audience-bound child allocation；active children、committed与captured总和永不超过parent。
+  unknown额度不可return/reuse，child return必须fence全部descendants。完整协议见
+  [Execution Budget Allocation Protocol](2026-07-25-execution-budget-allocation-protocol-design.md)。
 
 ```text
 CreditAccount
