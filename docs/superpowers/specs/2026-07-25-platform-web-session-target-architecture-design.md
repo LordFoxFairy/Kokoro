@@ -301,7 +301,9 @@ Platform 数据库和事务语义，但可以独立部署、扩缩容。Platform
 - 每个领域模块输出窄 Application Interface，不暴露数据库模型。
 - 跨领域流程由 `workflows/` 编排，不允许模块 A 直接写模块 B 的表。
 - Factory 只装配依赖与公开 use case，不持有领域规则。
-- 当前本地调用和未来 RPC 调用实现同一个 application interface。
+- transaction-scoped本地application port与remote RPC contract是两类接口：前者只在同一bounded context/UoW内使用；
+  后者拥有独立command identity、deadline、receipt和failure semantics。未来提取服务必须重画owner/transaction/saga，
+  不承诺“换adapter即可拆分”。
 - 不使用 `operation-kernel`、service locator 或全局 mutable registry。
 - 不使用 `ports/` 目录；接口放在模块的 `application/contracts` 或 `application/interfaces`。
 - 跨语言单源继续使用根 `contract/`，不新增第二个 contracts 仓库。
@@ -407,6 +409,9 @@ PlatformUnitOfWork.execute(workflow)
   source idempotency record 和 Outbox event。
 - 外部 Provider 调用永远不在 PlatformUnitOfWork 内；先记录 intent/inbox/fact，再由后续事务推进状态。
 - API 与 Worker 都使用同一个 UnitOfWork implementation 和 Platform schema。
+- `PlatformUnitOfWork`不得跨Session、Job、Gateway、Capability、GA或未来提取service边界传播；跨process使用版本化RPC与
+  owner-local transaction/outbox。完整规则见
+  [Platform Modular Core 与 Internal RPC](2026-07-25-platform-modular-core-internal-rpc-design.md)。
 
 ### 6.3 Site 与可信上下文
 
