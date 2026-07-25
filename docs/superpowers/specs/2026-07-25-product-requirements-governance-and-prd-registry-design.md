@@ -143,7 +143,7 @@ provider certification 和 delta CertificationInstance。
 | 已接受 Chat Run 形成 completed/partial/可解释 terminal | ≥ 99%，排除用户 cancel |
 | active Run 刷新/断网后恢复 | ≥ 99.9% |
 | committed Hold 无 owner、重复 capture 或负余额 | 0 |
-| Critical/High a11y defect | 0；所有 P0 旅程达到 WCAG 2.2 AA |
+| enabled Surface 任一适用 WCAG 2.2 A/AA failure | 0；完整页面、状态、变体与 complete process 均为 Release blocker |
 | Support 首次响应/解决 | 生产支持时段 p90 ≤ 4h / p90 ≤ 2 business days |
 | Critical security、账务或数据 blocker | 0 |
 
@@ -161,8 +161,8 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-00 [`2026-07-25-prd-00-launch-profile-and-journey-contract.md`](2026-07-25-prd-00-launch-profile-and-journey-contract.md) | cross-wave | core | Profile、inventory、catalog、metrics、enable/disable evidence |
 | PRD-01 [`2026-07-25-prd-01-site-identity-and-account-security.md`](2026-07-25-prd-01-site-identity-and-account-security.md) | 1 | core | register/verify/login/logout/recovery/OAuth/MFA/device/session |
 | PRD-02 [`2026-07-25-prd-02-workspace-membership-and-project.md`](2026-07-25-prd-02-workspace-membership-and-project.md) | 1 | core+if-enabled | personal bootstrap、invite、role、last owner、Project lifecycle |
-| PRD-03 `2026-07-25-prd-03-account-plan-redeem-and-credit.md` | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
-| PRD-04 `2026-07-25-prd-04-checkout-subscription-and-billing.md` | 2B | if-enabled | quote/checkout/redirect/renew/change/cancel/refund/dispute |
+| PRD-03 [`2026-07-25-prd-03-account-plan-redeem-and-credit.md`](2026-07-25-prd-03-account-plan-redeem-and-credit.md) | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
+| PRD-04 [`2026-07-25-prd-04-checkout-subscription-and-billing.md`](2026-07-25-prd-04-checkout-subscription-and-billing.md) | 2B | if-enabled | quote/checkout/redirect/renew/change/cancel/refund/dispute |
 | PRD-05 `2026-07-25-prd-05-chat-conversation-run-and-interaction.md` | 3/5A | core profile | onboarding/manage/composer/stream/control/branch/HITL/model/Job |
 | PRD-06 `2026-07-25-prd-06-asset-intake-and-attachment-safety.md` | 3/4 | if-enabled | upload/resume/scan/quarantine/quota/delete/appeal |
 | PRD-07 `2026-07-25-prd-07-studio-common-job-and-cost-ux.md` | 4 | if-enabled | draft/autosave/quote/submit/queue/unknown/partial/export |
@@ -174,9 +174,9 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-11 [`2026-07-25-prd-11-support-recovery-and-appeals.md`](2026-07-25-prd-11-support-recovery-and-appeals.md) | 1 contract/7 | core | user center/intake/triage/SLA/evidence/escalation/compensation |
 | PRD-12 [`2026-07-25-prd-12-site-lifecycle-and-fleet.md`](2026-07-25-prd-12-site-lifecycle-and-fleet.md) | 1/7 | core | provision/domain/certificate/preview/promote/rollback/suspend/decommission |
 | PRD-13 `2026-07-25-prd-13-growth-seo-experiment-and-attribution.md` | 7 | if-enabled | acquisition/deep link/consent/stitch/exposure/guardrail/share SEO |
-| PRD-14 `2026-07-25-prd-14-localization-and-accessibility.md` | cross-wave | core | locale/fallback/time/number/RTL/WCAG/browser/AT |
-| PRD-15 `2026-07-25-prd-15-notification-preferences-and-data-rights.md` | 1/6C/7 | core | mandatory events/preferences/delivery/deep link/export/delete UX |
-| PRD-16 `2026-07-25-prd-16-trust-content-safety-and-media-rights.md` | 1/4/7 | core+if-enabled | input/generation/share/appeal/voice/likeness/copyright/NSFW |
+| PRD-14 [`2026-07-25-prd-14-localization-and-accessibility.md`](2026-07-25-prd-14-localization-and-accessibility.md) | cross-wave | core | locale/fallback/time/number/RTL/WCAG/browser/AT |
+| PRD-15 [`2026-07-25-prd-15-notification-preferences-and-data-rights.md`](2026-07-25-prd-15-notification-preferences-and-data-rights.md) | 1/6C/7 | core | mandatory events/preferences/delivery/deep link/export/delete UX |
+| PRD-16 [`2026-07-25-prd-16-trust-content-safety-and-media-rights.md`](2026-07-25-prd-16-trust-content-safety-and-media-rights.md) | 1/4/7 | core+if-enabled | input/generation/share/appeal/voice/likeness/copyright/NSFW |
 | PRD-A1 `2026-07-25-prd-a1-agent-revision-and-handoff-product.md` | 5B | advanced | publish/select/handoff visibility/recovery；GA专项批准 |
 | PRD-A2 `2026-07-25-prd-a2-target-device-permission-and-interaction.md` | 6A | advanced | onboard/pair/trust/select/takeover/approval/revoke |
 | PRD-A3 `2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md` | 6B | advanced | repo/worktree/diff/test/checkpoint/rewind/PR/attach/fork |
