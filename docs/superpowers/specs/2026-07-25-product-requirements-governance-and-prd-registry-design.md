@@ -99,7 +99,7 @@ Site policy 只能在 Platform 最低安全线之上收紧，不能放宽法律/
 ### 2.1 Enabled
 
 ```text
-Site-bound Identity/Auth/MFA/Recovery/Device Session
+Site-bound email/password Identity、TOTP/Recovery、Device Session
 Personal Workspace + BillingAccount + Project
 Account/Plan/Entitlement/Credit/Usage history
 Redeem input/preview/review/receipt/reversal-support
@@ -116,6 +116,7 @@ Export/Deletion/Retention/LegalHold
 
 ```text
 Checkout/Payment/Refund/Dispute UI and mutation
+Magic Link login、OAuth/OIDC、Passkey/WebAuthn、Enterprise SSO
 Image/Music/Video Studio
 public Share/SEO remix
 multi-member Workspace collaboration
@@ -158,8 +159,8 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | ID / canonical filename | Wave | Scope | Mandatory journeys |
 |---|---|---|---|
 | PRD-00 [`2026-07-25-prd-00-launch-profile-and-journey-contract.md`](2026-07-25-prd-00-launch-profile-and-journey-contract.md) | cross-wave | core | Profile、inventory、catalog、metrics、enable/disable evidence |
-| PRD-01 `2026-07-25-prd-01-site-identity-and-account-security.md` | 1 | core | register/verify/login/logout/recovery/OAuth/MFA/device/session |
-| PRD-02 `2026-07-25-prd-02-workspace-membership-and-project.md` | 1 | core+if-enabled | personal bootstrap、invite、role、last owner、Project lifecycle |
+| PRD-01 [`2026-07-25-prd-01-site-identity-and-account-security.md`](2026-07-25-prd-01-site-identity-and-account-security.md) | 1 | core | register/verify/login/logout/recovery/OAuth/MFA/device/session |
+| PRD-02 [`2026-07-25-prd-02-workspace-membership-and-project.md`](2026-07-25-prd-02-workspace-membership-and-project.md) | 1 | core+if-enabled | personal bootstrap、invite、role、last owner、Project lifecycle |
 | PRD-03 `2026-07-25-prd-03-account-plan-redeem-and-credit.md` | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
 | PRD-04 `2026-07-25-prd-04-checkout-subscription-and-billing.md` | 2B | if-enabled | quote/checkout/redirect/renew/change/cancel/refund/dispute |
 | PRD-05 `2026-07-25-prd-05-chat-conversation-run-and-interaction.md` | 3/5A | core profile | onboarding/manage/composer/stream/control/branch/HITL/model/Job |
@@ -170,8 +171,8 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-08V `2026-07-25-prd-08v-video-studio.md` | 4 | if-enabled | storyboard/assets/shot/long queue/partial/upscale/export |
 | PRD-09 `2026-07-25-prd-09-library-artifact-export-and-share.md` | 4 | if-enabled | lineage/search/trash/quota/rendition/share/revoke/moderation |
 | PRD-10 `2026-07-25-prd-10-admin-operating-console.md` | 7 + annex per cut | core | auth/scope/queues/commands/approval/diagnosis/audit |
-| PRD-11 `2026-07-25-prd-11-support-recovery-and-appeals.md` | 1 contract/7 | core | user center/intake/triage/SLA/evidence/escalation/compensation |
-| PRD-12 `2026-07-25-prd-12-site-lifecycle-and-fleet.md` | 1/7 | core | provision/domain/certificate/preview/promote/rollback/suspend/decommission |
+| PRD-11 [`2026-07-25-prd-11-support-recovery-and-appeals.md`](2026-07-25-prd-11-support-recovery-and-appeals.md) | 1 contract/7 | core | user center/intake/triage/SLA/evidence/escalation/compensation |
+| PRD-12 [`2026-07-25-prd-12-site-lifecycle-and-fleet.md`](2026-07-25-prd-12-site-lifecycle-and-fleet.md) | 1/7 | core | provision/domain/certificate/preview/promote/rollback/suspend/decommission |
 | PRD-13 `2026-07-25-prd-13-growth-seo-experiment-and-attribution.md` | 7 | if-enabled | acquisition/deep link/consent/stitch/exposure/guardrail/share SEO |
 | PRD-14 `2026-07-25-prd-14-localization-and-accessibility.md` | cross-wave | core | locale/fallback/time/number/RTL/WCAG/browser/AT |
 | PRD-15 `2026-07-25-prd-15-notification-preferences-and-data-rights.md` | 1/6C/7 | core | mandatory events/preferences/delivery/deep link/export/delete UX |
@@ -199,8 +200,8 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-15/16 | Privacy/Trust Product Lead | Legal、Security、Support、Content Ops |
 | PRD-A1-A5 | Agent Product Lead | GA owner、Runtime/Security、Support、SRE |
 
-每份实际 PRD frontmatter 还必须登记 named Engineering、QA、Support/Operations owner；角色空缺时不能批准，
-不能用“全体团队”代替 accountable owner。
+每份实际 PRD frontmatter 还必须登记 named Engineering、QA、Support/Operations owner；可以使用唯一、可路由的
+team responsibility ID，但不能使用“全体团队”或无 owner 角色。责任 ID 无 on-call/approval mapping 时不能批准。
 
 ## 4. Canonical Journey Families
 

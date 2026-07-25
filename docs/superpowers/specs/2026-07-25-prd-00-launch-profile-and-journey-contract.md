@@ -6,6 +6,11 @@ created: 2026-07-25
 status: internal-review-active
 scope: launch-profile-enabled-surface-journey-state-metric-certification-contract
 accountableProductRole: Platform Product Lead
+mandatoryCosigners: [Site Fleet, SRE, Security, Release, Product Operations, QA]
+engineeringOwner: team:site-platform-engineering
+qaOwner: team:release-quality
+supportOperationsOwner: team:site-fleet-operations
+namedOwnerAssignmentStatus: assigned-team-responsibility-ids
 implementationAuthorized: false
 ---
 
@@ -88,6 +93,7 @@ enabledSurfaceInventoryRef
 disabledSurfaceInventoryRef
 requiredJourneyRevisionRefs
 assortment/model/agent/capability policy refs
+authMethodPolicyRevisionRef
 salesPolicyRevisionRef
 contentPolicyProfileRef
 localeAccessibilityBaselineRef
@@ -160,6 +166,7 @@ appliedGateRefs / skippedGateRefs with scope reason
 evidenceBundleRef
 generatedAt/validUntil
 producerIdentity/signature
+producerTrustPolicyRevisionRef/keyVersion/signatureAudience
 supersedesCertificationId?
 decision = passed | failed | expired | revoked
 ```
@@ -173,7 +180,8 @@ Certification，最终以 transformation-final instance 收口。
 
 | Surface | Required Journey families | Authority / minimum dependency |
 |---|---|---|
-| auth | ID-01…07 | Identity、Notification、Risk、Data Governance |
+| auth-password | ID-01…03、ID-06 | Identity password/verification/session adapters、Notification、Risk |
+| auth-totp-recovery | ID-03、ID-05…06 | Identity authenticator/recovery/session adapters、Notification、Risk、Support |
 | personal-workspace | WS-01、WS-04 | Workspace/Project/ExecutionSpace mapping |
 | account | AC-01、CR-01 | Subscription/Entitlement/Credit/Usage projections |
 | redeem | RD-01…05 | Redeem/Fulfillment/Grant/Support |
@@ -189,6 +197,10 @@ Certification，最终以 transformation-final instance 收口。
 
 | Surface | Disabled proof |
 |---|---|
+| auth-magic-link-login | initiation/callback/link route absent or denied、bootstrap method absent、provider/config/secret unused、Admin cannot enable |
+| auth-oauth-oidc | each provider/client initiation/callback/link/unlink route denied、provider assignment absent、secret unused、Admin cannot enable |
+| auth-passkey-webauthn | registration/challenge/verification route denied、bootstrap method absent、RP configuration unused、Admin cannot enable |
+| auth-enterprise-saml-oidc | discovery/initiation/callback/link route denied、tenant/provider assignment absent、secret/certificate unused、Admin cannot enable |
 | checkout/new payment acquisition | route absent、bootstrap capability absent、mutation returns channel disabled、Admin cannot create new Provider IO |
 | Image/Music/Video Studio | no route/assignment/operation family authorization/Admin publish |
 | public Share/SEO remix | no public route/share command/crawler artifact |
@@ -226,6 +238,12 @@ Certification，最终以 transformation-final instance 收口。
   不允许 accepted-risk waiver；只能修复或关闭 Surface。
 - FR-017：Profile 与 SiteRelease 的 LegalRevision、SalesPolicy、ContentPolicy、locale 和 age/region eligibility
   必须兼容；Profile 本身不复制法务内容。
+- FR-018：认证不是一个可整体放行的黑盒 Surface。每个 method/provider/client 必须有独立 inventory entry，
+  覆盖 bootstrap discovery、initiation、callback、link/unlink、Admin/config、secret dependency 与负向证据。
+  未具备完整 Journey/FR/AC/运营闭环的方法状态只能是 `not_enableable`，不能借 `auth` 已启用而上线。
+- FR-019：Certification producer 必须来自版本化 trusted-producer registry；签名绑定 environment、Profile、
+  SiteRelease、inventory/evidence digest、algorithm/key version、audience、validity 与 revocation status。跨环境、
+  跨 Release、已撤销 key 或过期 attestation 的重放必须失败。
 
 ### 5.3 Preview and Certification
 
@@ -238,7 +256,9 @@ Certification，最终以 transformation-final instance 收口。
 ### 5.4 Activate, Rollback and Evolve
 
 - FR-030：Profile 只随 SiteRelease ActivationAttempt 切换，不直接修改 active product。
-- FR-031：旧 tab 在 compatibility/drain window 使用原 Release；过窗要求刷新，不静默换 Journey semantics。
+- FR-031：同一 Site 的 AuthSession 可以跨兼容 Release 继续有效；旧 tab 的静态资源和请求仍绑定其可信
+  deployment/release context，并在 compatibility/drain window 内使用原 Release。过窗要求刷新，不静默换
+  Journey semantics。浏览器提交的 release id 永远不是授权依据。
 - FR-032：已启动 Run/Job/transaction 使用冻结 Manifest/Operation/Quote，不因 Profile rollback 重跑。
 - FR-033：rollback 前重新校验当前 kill switch、secret revocation、schema/contract 和安全 policy。
 - FR-034：新增 Surface 使用 delta Certification；删除 Surface 明确历史数据/deep link/notification/support 行为。
@@ -277,6 +297,7 @@ certification validity、drift 和 rollback target。Profile publish 与 Release
 | disable Chat 时存在旧 deep link | 按 retention policy read/export 或受控 gone page，不开放新 Run |
 | Profile rollback 与新交易并发 | active pointer/Release snapshot 决定；不改写已提交事实 |
 | Site A Profile 被 Site B deployment 声明 | DeploymentBinding/SiteContext 校验拒绝 |
+| password-only Profile 调用 OAuth/Magic Link/Passkey/SAML | initiation、callback、link/unlink 和 Admin/config 全部拒绝；不读取 provider secret，不创建 AuthTransaction/AuthSession |
 | Certification event 丢失 | 以 immutable instance/query 恢复，不重跑 Provider effect |
 | accepted risk 过期 | 下一次 promote 阻断；active Release 告警并按 risk policy 处置 |
 | Product owner 删除 mandatory Journey | schema/dependency validation 拒绝 |
@@ -343,6 +364,29 @@ Given Site A and Site B use different Profiles and Web deployments
 When their cookies, hosts, binding credentials or release ids are crossed
 Then all protected requests fail closed
 And neither Site reveals the other Site's account, entitlement, data or enabled surfaces
+```
+
+这里的 crossed release id 指跨 Site、伪造或与可信 DeploymentBinding 不一致；同一 Site 在发布兼容窗口内的
+旧 AuthSession 仍可使用，但只能由其原 workload/deployment binding 建立 Release context，不能由 cookie/query/header
+自由指定。
+
+### AC-007 — Disabled auth method fail closed
+
+```gherkin
+Given a Profile enables password and TOTP but marks OAuth, Magic Link, Passkey and enterprise SSO disabled or not_enableable
+When a browser, stale client or operator invokes any disabled method initiation, callback, link, unlink or configuration command
+Then the request is denied before provider or secret access
+And no AuthTransaction, User, Credential, FederatedIdentity or AuthSession is created or changed
+And certification contains one negative result for every registered method/provider/client entry
+```
+
+### AC-008 — Certification signature replay
+
+```gherkin
+Given a valid certification signature belongs to another environment, SiteRelease, evidence digest, audience or revoked key
+When it is attached to a production candidate
+Then trust-policy validation rejects it
+And the candidate cannot be promoted
 ```
 
 ## 9. Analytics and Product Operations
