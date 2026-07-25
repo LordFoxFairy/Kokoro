@@ -45,12 +45,13 @@
 28. [PRD-14 Localization 与 Accessibility](superpowers/specs/2026-07-25-prd-14-localization-and-accessibility.md)
 29. [PRD-15 Notification、Preferences 与 Data Rights](superpowers/specs/2026-07-25-prd-15-notification-preferences-and-data-rights.md)
 30. [PRD-16 Trust、Content Safety 与 Media Rights](superpowers/specs/2026-07-25-prd-16-trust-content-safety-and-media-rights.md)
-31. [PRD-A2 ExecutionTarget、Device、Permission 与 Interaction](superpowers/specs/2026-07-25-prd-a2-target-device-permission-and-interaction.md)
-32. [PRD-A3 Developer Workspace、Context 与 Multi-device](superpowers/specs/2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md)
-33. [PRD-A4 Routine、Connector 与 TaskView](superpowers/specs/2026-07-25-prd-a4-routine-connector-and-taskview.md)
-34. [PRD-A5 Agent Team、Wide Research 与 Application Runtime](superpowers/specs/2026-07-25-prd-a5-agent-team-research-and-application-runtime.md)
-35. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
-36. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
+31. [PRD-A1 AgentRevision、Selection 与 Handoff](superpowers/specs/2026-07-25-prd-a1-agent-revision-and-handoff-product.md)
+32. [PRD-A2 ExecutionTarget、Device、Permission 与 Interaction](superpowers/specs/2026-07-25-prd-a2-target-device-permission-and-interaction.md)
+33. [PRD-A3 Developer Workspace、Context 与 Multi-device](superpowers/specs/2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md)
+34. [PRD-A4 Routine、Connector 与 TaskView](superpowers/specs/2026-07-25-prd-a4-routine-connector-and-taskview.md)
+35. [PRD-A5 Agent Team、Wide Research 与 Application Runtime](superpowers/specs/2026-07-25-prd-a5-agent-team-research-and-application-runtime.md)
+36. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
+37. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
 
 ## 当前技术主线
 
