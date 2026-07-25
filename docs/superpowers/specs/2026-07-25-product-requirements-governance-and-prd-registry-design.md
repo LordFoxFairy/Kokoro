@@ -157,7 +157,7 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 
 | ID / canonical filename | Wave | Scope | Mandatory journeys |
 |---|---|---|---|
-| PRD-00 `2026-07-25-prd-00-launch-profile-and-journey-contract.md` | cross-wave | core | Profile、inventory、catalog、metrics、enable/disable evidence |
+| PRD-00 [`2026-07-25-prd-00-launch-profile-and-journey-contract.md`](2026-07-25-prd-00-launch-profile-and-journey-contract.md) | cross-wave | core | Profile、inventory、catalog、metrics、enable/disable evidence |
 | PRD-01 `2026-07-25-prd-01-site-identity-and-account-security.md` | 1 | core | register/verify/login/logout/recovery/OAuth/MFA/device/session |
 | PRD-02 `2026-07-25-prd-02-workspace-membership-and-project.md` | 1 | core+if-enabled | personal bootstrap、invite、role、last owner、Project lifecycle |
 | PRD-03 `2026-07-25-prd-03-account-plan-redeem-and-credit.md` | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
