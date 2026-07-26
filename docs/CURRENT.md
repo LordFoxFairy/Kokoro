@@ -24,6 +24,7 @@
 7. [Platform Modular Core 与 Internal RPC](superpowers/specs/2026-07-25-platform-modular-core-internal-rpc-design.md)
 8. [Execution Budget Allocation Protocol](superpowers/specs/2026-07-25-execution-budget-allocation-protocol-design.md)
 9. [Asset、Artifact、Blob Ownership、Promotion 与 GC](superpowers/specs/2026-07-25-asset-artifact-ownership-promotion-gc-design.md)
+10. [Projection Rebuild、Event Retention 与 Migration](superpowers/specs/2026-07-25-projection-rebuild-event-retention-migration-design.md)
 10. [Session HTTP/SSE Production Transport](superpowers/specs/2026-07-25-session-http-sse-production-transport-design.md)
 11. [Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-client-access-plane-developer-client-design.md)
 12. [PRD-00 Launch Profile 与 Journey Contract](superpowers/specs/2026-07-25-prd-00-launch-profile-and-journey-contract.md)
