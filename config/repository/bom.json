@@ -55,7 +55,7 @@
   "contractsDigest": "1de8f590f0fa643ba8e27802fc423533b4c402e995dec5bca657fa1cd27dcf0d",
   "evidence": [
     {
-      "digest": "b7e6b9c71e2aa0ca4713a00807ef133472ff7948b8e594f2fea02eb7450f159a",
+      "digest": "7562c323605d1f7cb68f1775096ab48f667fb7adcb3725ecc04418fd4d7506fa",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,11 +63,11 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "28b2c6c6612206d5ae14a612b6eff9e3da8033d6279f211c7ae5c62ad567820e",
+  "evidenceDigest": "52fa214627f67bb0b8d971fbe79893e5478289c3cd0b3cffa84e013280bd48f0",
   "generatorVersion": 1,
-  "manifestDigest": "0e00566469735418b6513868af4315b1170e040ee5978c490f8718942757073e",
-  "matrixDigest": "21dbd6d3c5c3ea54d02ee8e636d7008c24a6b6669d2c662c14b28e535a1ffec5",
-  "promotionCommit": "5e4747c08814cbb30f3e806f738228f14ec5666a",
+  "manifestDigest": "99ee5ce6009768758cdc8034484bdb529b2c54cd27d190a379967fee1013a5e7",
+  "matrixDigest": "ba3dee0f630be76536535ada33823d9d928a79f4b42419b91e28f2322f3700f5",
+  "promotionCommit": "a56dc6e4e084e65ab8a6d5fa88695c470c2689af",
   "repositories": [
     {
       "id": "kokoro-agent",
@@ -92,7 +92,7 @@
       "id": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
       "path": "kokoro-platform",
-      "pin": "92a293d68ce41a0e10497b217c52e04f787c7cd3",
+      "pin": "7b50b5c0f1ba372cb4c656e77c71fde611fff6a6",
       "protocols": [
         {
           "id": "model-gateway",
@@ -110,7 +110,7 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-index-truth-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-admission-contract-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
@@ -140,7 +140,7 @@
       "id": "kokoro-web",
       "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
       "path": "kokoro-web",
-      "pin": "b65e86d39767636362ae253147b5d7925616ea03",
+      "pin": "17fcaccb56e62de29c7c699f7f8fd373a5eac480",
       "protocols": [
         {
           "id": "platform-admin-auth",
@@ -153,14 +153,14 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-index-truth-2026-07-27-web"
+      "recoverableRef": "refs/tags/kokoro-wave0-admission-contract-2026-07-27-web"
     }
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "e3009fbd2765343d23858169109a8f599caa4a92b459ebe8bec486e6f76d03c0",
-    "combinationId": "wave0-index-truth-2026-07-27",
-    "evidenceDigest": "b8e347e457a26f5269ef1241aba4d162f3593ad48f7d36228bcfc81a6b246bb5",
+    "combinationDigest": "adb66759dd2a5a6873bce11fe5a549eadb0d381ce7ed4de085d9e43d78aeeba4",
+    "combinationId": "wave0-admission-contract-2026-07-27",
+    "evidenceDigest": "4a3c3d391ed47f199bfa16e5778b596b838c8f5bcbf4b41e57026b18d9bd5285",
     "outcome": "pass",
     "treeMode": "index"
   },

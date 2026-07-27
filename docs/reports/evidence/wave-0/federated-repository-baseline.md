@@ -424,3 +424,94 @@ removed.
 2. Wave T2 (Public Admin API over OpenAPI 3.1) has not started.
 3. Removing `default = true` from the user-level uv configuration would make canonical locking the default instead
    of something each locking session has to remember.
+
+---
+
+# Round 4 — Admin browser contract and Platform Admission (2026-07-27)
+
+Promotion commit: `a56dc6e4e084e65ab8a6d5fa88695c470c2689af`. Platform and Web moved; Agent and Session keep
+their round-3 pins. Both child CIs were green on the exact promoted SHA before their tags were cut, and both
+tags peel to their pin on the remote.
+
+| Repository | Pin | Recoverable ref |
+|---|---|---|
+| Platform | `7b50b5c0f1ba372cb4c656e77c71fde611fff6a6` | `refs/tags/kokoro-wave0-admission-contract-2026-07-27-platform` |
+| Web | `17fcaccb56e62de29c7c699f7f8fd373a5eac480` | `refs/tags/kokoro-wave0-admission-contract-2026-07-27-web` |
+
+## Admin browser plane now has a contract
+
+`contract/openapi/admin-web-v1.yaml` describes the Admin browser API in OpenAPI 3.1: 14 paths, 16 operations,
+54 reusable schemas, derived from the Fastify handlers rather than from the pages that call them. The
+`sendData`/`sendError` envelopes are modelled as actually emitted, including that only `POST /api/action`
+carries a `requestId`. The privileged Connect plane appears only in comments explaining its exclusion.
+
+`scripts/contract/check_admin_openapi.py` keeps it honest by parsing the route registrations and demanding
+exact set equality. That gate was itself audited by injecting real routes into the server, which exposed six
+ways it stayed green on routes it could not see: `head`/`options` verbs, `app.all`/`app.route`, non-literal
+paths, an exclusion keyed on path that ignored method, and a helper pattern that missed the plural. All six
+now fail closed, and the fixture count went from 11 to 23. Fixing it also revealed that the route regex had
+been consuming an 80-character window, letting one registration hide the next.
+
+Two error-model inconsistencies are recorded rather than tidied away, because both are visible to the Admin
+UI: only `request.invalid` overlaps platform-kit's shared `ERROR_STATUS` table, and `operator.auth` spans both
+401 and 403 so neither code nor status determines the other.
+
+## Site isolation stops being uniformly header-derived
+
+`contract/proto/kokoro/platform/admission/v1/admission.proto` publishes Prepare/Finalize/GetCommandReceipt.
+Session declares these today in its admission port, but nothing implements them, so every call resolves
+through a legacy adapter answering `outcome_unknown` or `not_found`.
+
+The contract differs from that port in one deliberate way: `site_id` is a required field of every request
+message rather than a hop-level header. Session's `PrepareRunInput` carries `namespace` and no site identifier
+at all, so the Platform business isolation key was absent from the declared shape. `namespace` stays inside
+the effect as the GA runtime key; the two are not interchangeable.
+
+Registering a published-but-unimplemented boundary needed a `lifecycle` distinction. `platform-admission` is
+`contract-only`, and the gate now rejects such a boundary appearing in the compatibility matrix, because that
+matrix drives the runtime gate and listing an unimplemented protocol would claim a capability that does not
+exist. Registry fixtures went from 46 to 49.
+
+```text
+boundary_registry_ok: 6 boundaries, 80 operations, 46 header-bound site scopes (migration debt),
+  1 declared-only boundary (no machine-readable source), 3 request-field site scopes,
+  1 contract-only (published, no provider)
+```
+
+The 3 `request-field` operations are proven, not asserted: deleting `site_id` from the proto fails the gate.
+The 46 header-bound operations remain Wave T3 debt.
+
+## Round 4 runtime compatibility gate
+
+```text
+outcome: pass       treeMode: index      durationMs: 81628
+combinationId:     wave0-admission-contract-2026-07-27
+combinationDigest: adb66759dd2a5a6873bce11fe5a549eadb0d381ce7ed4de085d9e43d78aeeba4
+manifestDigest:    5e2e5d12eba99b4194f52f4f5dedda1bb87bdbbfdcfe9819845439fdc2449f59
+matrixDigest:      b20a7c2970c9d394aa2434a942abcb2ad4ed108b0b20102e41fcdff9c2e002f2
+```
+
+| Scenario | Outcome | ms |
+|---|---|---:|
+| `web-session-http-sse` | pass | 7368 |
+| `session-platform-internal-rpc` | pass | 2704 |
+| `session-agent-durable-localfake` | pass | 2776 |
+| `agent-model-gateway-localfake` | pass | 3439 |
+| `platform-admin-auth-connect` | pass | 2507 |
+
+## A generation coupling worth knowing
+
+`contract/generate.mjs` hashes every proto in the module into `contract-metadata.ts` and mirrors the whole
+module, so adding any service updates both Admin mirrors even when neither Admin repository consumes it. An
+attempt to scope generation through `buf.gen.yaml` inputs was reverted because it cannot work against that
+wrapper, and leaving the comment would have described behaviour the tooling does not have. Splitting mirrors
+per consumer is the real fix whenever Admission gains a provider.
+
+## Still open
+
+1. Root remote CI has never run: the repository has no Actions secrets, so `contract.yml` stops at its own
+   `KOKORO_SUBMODULE_TOKEN` guard. Owner action; no root BOM tag until a green run exists.
+2. Wave T2 step 2 — generate the browser client and runtime validators, replace the hand-written page schemas,
+   surface the domain error code that `lib/api.ts` discards, and delete the transparent catch-all rewrite.
+3. Wave T3 implementation — a provider for `platform-admission`, then Session shadow-comparing old and new
+   decisions before switching. Only that converts the 46 header-bound operations.
