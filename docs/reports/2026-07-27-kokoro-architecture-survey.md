@@ -34,7 +34,7 @@ pin 权威是 `config/repository/federated-repositories.json`：每仓一条 `pi
 **每仓独立**的 `recoverableRef`（annotated tag）。校验器 `scripts/repository/verify-federated-repositories.mjs`
 支持 `--tree index|head` 与 `--remote`。
 
-架构清单 `config/architecture/index-roots.yaml` 登记 **57 个 root：23 boundary + 34 component**。
+架构清单 `config/architecture/index-roots.yaml` 登记 **58 个 root：23 boundary + 35 component**。
 `kokoro-platform` 内部再分 10 个 module boundary（credit / hub / litellm / model / payment / admin /
 kit / site / user / deploy.docker）。
 
@@ -57,10 +57,12 @@ kit / site / user / deploy.docker）。
 - `contract/spec/*.yaml` 生成的 Zod mirror（19 份，字节级校验）——有 schema，但没有服务定义、没有方法级契约；
 - `kokoro-platform/kokoro-platform-kit/src/http/internal-client.ts` 的 `callService`——**stringly-typed**：
   path 是字符串、响应 schema 由**调用方**自己声明，服务端与客户端之间没有编译期链接。
-  现存 4 处：`payment→credit`、`credit→site`、`credit→user`、`hub→user`。
+  现存 6 处：`payment→credit`×3、`credit→site`、`credit→user`、`hub→user`。
 
 `callService` 里还留着 `@deprecated` legacy 单一共享密钥模式（`caller` 省略时走旧共享密钥比对）。
-**已逐点核实：4 处生产调用全部显式传 `caller`（`payment` / `credit` / `hub`），该模式消费者数为 0，是死代码。**
+**已逐点核实：6 处生产调用全部显式传 `caller`（`payment`×3 / `credit`×2 / `hub`×1），该模式消费者数为 0，是死代码。**
+真正做旧共享密钥比对的是 `internal-secret-guard.ts`（`route-access.ts` 缺 caller 头直接 401，没有回落分支），
+该模块同样零生产消费者，只剩 `platform-kit` 的公开 re-export 与自身单测。
 删除本身安全，但属 `kokoro-platform` 子仓改动，需走下一轮 pin promotion；spec §13 也把手写 internal client
 的清除排在 Wave T6。
 
@@ -88,6 +90,16 @@ Connect 同时支持 HTTP/JSON 与二进制。因此**保留 protobuf/Connect �
 当前 `siteId` 以 request context header 形态流转，**由每条路由各自再派生**，尚未成为内部 RPC 信封的
 一等字段。这是隔离模型最薄的一环。
 
+这个差距现在是**可计量**的：`contract/registry/boundaries.yaml` 给每个 operation 标 `siteBinding`
+（`request-field` / `context-header` / `not-applicable`），门禁把 header 绑定的数量打进成功输出：
+
+```text
+boundary_registry_ok: 5 boundaries, 77 operations, 46 header-bound site scopes (migration debt), 1 declared-only boundary (no machine-readable source)
+```
+
+即 **77 个 operation 里 46 个靠 header 拿 siteId，`request-field` 为 0**。门禁同时禁止 GA 侧
+（`scope: namespace`）出现 `site_id` / `user_id` / `owner_id` / `workspace_id`，把 namespace 单轴写死成机器可查规则。
+
 ## 5. 已真实强制的治理门
 
 根仓 CI（`.github/workflows/contract.yml`）与本地同一套命令，全部在干净 recursive clone 复现通过：
@@ -99,10 +111,11 @@ Connect 同时支持 HTTP/JSON 与二进制。因此**保留 protobuf/Connect �
 | contract 生成器与契约测试 | 35 passed |
 | buf format / lint / breaking | pass |
 | 生成 RPC 契约镜像一致性 | pass |
-| architecture 治理测试 | 15 passed |
-| INDEX 覆盖门 | 57 roots |
-| 依赖方向门 | 57 roots / 13 internal package edges |
-| repository 治理测试 | 72 passed |
+| architecture 治理测试 | 23 passed |
+| INDEX 覆盖门 | 58 roots |
+| 依赖方向门 | 58 roots / 13 internal package edges |
+| boundary registry 门 | 5 boundaries / 77 operations，46 header-bound、1 declared-only |
+| repository 治理测试 | 90 passed |
 | Python 兼容适配器测试 | 6 passed |
 | 真基建运行时兼容性门 | 5 场景全 pass（mysql/redis/mongo/minio/litellm） |
 
@@ -123,15 +136,28 @@ Connect 同时支持 HTTP/JSON 与二进制。因此**保留 protobuf/Connect �
 
 ## 7. 诚实差距清单（按优先级）
 
-1. **内部 RPC 只迁了 1/5 契约。** 4 处 `callService` 仍是 stringly-typed，响应 schema 由调用方声明，
+1. **内部 RPC 只迁了 1/5 契约。** 6 处 `callService` 仍是 stringly-typed，响应 schema 由调用方声明，
    服务端改形状不会让调用方编译失败。
 2. **`siteId` 不是 RPC 信封的一等字段**，靠每条路由自觉派生；缺跨 site / 跨 environment replay 的
    否定矩阵。
-3. **`callService` 的 `@deprecated` legacy 共享密钥模式未删**（未上线不需要兼容）。
-4. **`kokoro-agent` 无 `.python-version`**：`requires-python = ">=3.11"`，本机 `uv` 解析到 3.14，
-   子仓 CI 用 3.11——同一 lock 在不同解释器下跑，determinism 有缺口。
-5. **`freeze-snapshots.mjs` 仍服务已废弃的单体 monorepo baseline**，与 federated manifest 方向不一致。
-6. **session `legacy-admission-adapter.ts` 的 unknown / not_found 未实现真 Admission RPC**——
+3. **~~`callService` 的 `@deprecated` legacy 共享密钥模式未删~~（已修，待 pin promotion）**：
+   `caller` 已转必填，零消费者的 `internal-secret-guard` 模块及其公开 re-export 已删除。
+4. **~~`kokoro-agent` 无 `.python-version`~~（已修，待 pin promotion）**：原先 `requires-python = ">=3.11"`
+   且无 `.python-version`，而子仓 CI 用 `astral-sh/setup-uv` 且**不传 python-version**——所以不只是本机
+   （干净 clone 解析到 CPython 3.14.3），**CI 自身也是不确定的**。现已钉 `.python-version = 3.11`。
+
+5. **两个 `uv.lock` 把制品 URL 钉死在 Aliyun 镜像上**（最严重的可复现性缺陷）：
+   `kokoro-agent/uv.lock` 含 **1821 条 `mirrors.aliyun.com`、0 条 `files.pythonhosted.org`**，
+   根 `uv.lock` 是 29 / 0。锁是在配了镜像的机器上生成的，于是 GitHub runner 必须回源 Aliyun：
+   实测 run `30208008816` 因 `greenlet==3.5.2` 拉取超时（3 次重试 129s）而失败。
+   `kokoro-agent/.github/workflows/ci.yml:37` 的注释声称"用官方源锁定（UV_NO_CONFIG）"，**与事实不符**。
+   注意：**不能直接重解析修**——删锁重跑 `UV_NO_CONFIG=1 uv lock` 虽然把 URL 换成官方源，但会连带
+   升级约 60 个包（`langgraph` 1.2.2→1.2.9、`langchain-core` 1.4.0→1.5.1、`deepagents` 0.6.6→0.6.12、
+   `protobuf` 6→7、`wrapt` 1→2，`websockets` 还会**降级** 16.0→15.0.1），属于未经批准的 GA 依赖变更。
+   正确做法是从现锁导出 134 条 `name==version` 约束，在约束下对官方源重新解析，证明版本零漂移后再采纳。
+6. **~~`freeze-snapshots.mjs` 仍服务已废弃的单体 monorepo baseline~~（已修）**：现已明确降级为
+   "只冻结历史 source baseline"，promotion authority 归 federated manifest / verifier / BOM。
+7. **session `legacy-admission-adapter.ts` 的 unknown / not_found 未实现真 Admission RPC**——
    归 Wave 3，不得当作已完成。
 
 ## 8. 相关文档
