@@ -149,6 +149,7 @@ test("root CI checks out only recorded pins and uses the root-only tooling lock"
   const workflow = await readFile(resolve(root, ".github/workflows/contract.yml"), "utf8");
   assert.match(workflow, /submodules:\s*recursive/u);
   assert.match(workflow, /token:\s*\$\{\{\s*secrets\.KOKORO_SUBMODULE_TOKEN\s*\}\}/u);
+  assert.match(workflow, /validate private submodule token/u);
   assert.doesNotMatch(workflow, /repository:\s*LordFoxFairy\/kokoro-/u);
   assert.doesNotMatch(workflow, /ref:\s*main/u);
   assert.doesNotMatch(workflow, /submodule update --remote/u);
