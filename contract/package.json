@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "packageManager": "pnpm@11.2.2",
   "scripts": {
+    "buf:breaking": "buf breaking",
     "buf:format": "buf format -w",
     "buf:format:check": "buf format --diff --exit-code",
     "buf:lint": "buf lint",
-    "buf:generate": "buf generate"
+    "buf:generate": "node generate.mjs"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.72.0",

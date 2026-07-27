@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, relative, resolve } from "node:path";
 import { promisify } from "node:util";
@@ -78,27 +78,13 @@ export async function compareGeneratedMirror(expectedRoot, mirrorRoot, label) {
   }
 }
 
-function generationTemplate(output) {
-  return `version: v2
-clean: true
-plugins:
-  - local: protoc-gen-es
-    out: ${JSON.stringify(output)}
-    include_imports: true
-    opt:
-      - target=ts
-      - import_extension=js
-`;
-}
-
-async function generateToTemporaryDirectory(root, output, template) {
+async function generateToTemporaryDirectory(root, output) {
   const contract = resolve(root, "contract");
-  await writeFile(template, generationTemplate(output), "utf8");
   const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
   try {
     await execFileAsync(
       command,
-      ["--dir", contract, "exec", "buf", "generate", "--template", template],
+      generationCommandArguments(contract, output),
       { cwd: root, timeout: 120_000, maxBuffer: 1024 * 1024 },
     );
   } catch (error) {
@@ -107,12 +93,15 @@ async function generateToTemporaryDirectory(root, output, template) {
   }
 }
 
+export function generationCommandArguments(contract, output) {
+  return ["--dir", contract, "run", "buf:generate", "--output", output];
+}
+
 export async function checkGeneratedContracts({ root }) {
   const temporary = await mkdtemp(resolve(tmpdir(), "kokoro-generated-contracts-"));
   const output = resolve(temporary, "generated");
-  const template = resolve(temporary, "buf.gen.yaml");
   try {
-    await generateToTemporaryDirectory(root, output, template);
+    await generateToTemporaryDirectory(root, output);
     for (const mirror of DEFAULT_MIRRORS) {
       await compareGeneratedMirror(output, resolve(root, mirror), mirror);
     }

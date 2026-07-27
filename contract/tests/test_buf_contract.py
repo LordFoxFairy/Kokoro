@@ -22,6 +22,13 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "@bufbuild/protobuf": "2.13.0",
         "@bufbuild/protoc-gen-es": "2.13.0",
     }
+    assert package["scripts"] == {
+        "buf:breaking": "buf breaking",
+        "buf:format": "buf format -w",
+        "buf:format:check": "buf format --diff --exit-code",
+        "buf:generate": "node generate.mjs",
+        "buf:lint": "buf lint",
+    }
     assert "pnpm" not in package
     workspace = yaml.safe_load((CONTRACT / "pnpm-workspace.yaml").read_text())
     assert workspace["allowBuilds"] == {"@bufbuild/buf": True}

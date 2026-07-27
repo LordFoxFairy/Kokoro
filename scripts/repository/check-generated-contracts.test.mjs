@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -10,8 +11,39 @@ import {
   compareGeneratedMirror,
   parseArguments,
 } from "./check-generated-contracts.mjs";
+import * as generatedChecker from "./check-generated-contracts.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
+
+async function sourceDigest(directory, current = directory) {
+  const entries = await readdir(current, { withFileTypes: true });
+  const chunks = [];
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    const path = resolve(current, entry.name);
+    if (entry.isDirectory()) chunks.push(...(await sourceDigest(directory, path)));
+    else if (entry.isFile() && entry.name.endsWith(".proto")) {
+      const relativePath = path.slice(directory.length + 1).replaceAll("\\", "/");
+      chunks.push(Buffer.from(`${relativePath}\0`), await readFile(path), Buffer.from("\0"));
+    }
+  }
+  if (current !== directory) return chunks;
+  return createHash("sha256").update(Buffer.concat(chunks)).digest("hex");
+}
+
+async function artifactDigest(directory, current = directory) {
+  const entries = await readdir(current, { withFileTypes: true });
+  const chunks = [];
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    const path = resolve(current, entry.name);
+    if (entry.isDirectory()) chunks.push(...(await artifactDigest(directory, path)));
+    else if (entry.isFile() && entry.name !== "contract-metadata.ts") {
+      const relativePath = path.slice(directory.length + 1).replaceAll("\\", "/");
+      chunks.push(Buffer.from(`${relativePath}\0`), await readFile(path), Buffer.from("\0"));
+    }
+  }
+  if (current !== directory) return chunks;
+  return createHash("sha256").update(Buffer.concat(chunks)).digest("hex");
+}
 
 async function withTrees(run) {
   const root = await mkdtemp(resolve(tmpdir(), "kokoro-generated-contract-test-"));
@@ -62,6 +94,37 @@ test("production arguments are closed", () => {
     name: "GeneratedContractError",
     code: "generated_contract_arguments_invalid",
   });
+});
+
+test("checker forwards a single closed output argument through pnpm", () => {
+  assert.equal(typeof generatedChecker.generationCommandArguments, "function");
+  assert.deepEqual(
+    generatedChecker.generationCommandArguments("/repo/contract", "/tmp/generated"),
+    ["--dir", "/repo/contract", "run", "buf:generate", "--output", "/tmp/generated"],
+  );
+});
+
+test("generation emits pinned source metadata into every committed mirror", async () => {
+  const packageJson = JSON.parse(await readFile(resolve(repositoryRoot, "contract/package.json"), "utf8"));
+  assert.equal(packageJson.scripts["buf:generate"], "node generate.mjs");
+
+  const expectedDigest = await sourceDigest(resolve(repositoryRoot, "contract/proto"));
+  for (const mirror of [
+    "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
+    "kokoro-web/apps/admin/lib/generated/contracts",
+  ]) {
+    const metadataPath = resolve(repositoryRoot, mirror, "contract-metadata.ts");
+    const metadata = await readFile(metadataPath, "utf8").catch(() => null);
+    assert.notEqual(metadata, null, `${mirror} is missing contract-metadata.ts`);
+    const expectedArtifactDigest = await artifactDigest(resolve(repositoryRoot, mirror));
+    assert.match(metadata, new RegExp(`sourceDigestSha256: "${expectedDigest}"`, "u"));
+    assert.match(metadata, new RegExp(`artifactDigestSha256: "${expectedArtifactDigest}"`, "u"));
+    assert.notEqual(expectedArtifactDigest, expectedDigest);
+    assert.match(metadata, /schemaId: "kokoro\.platform\.admin\.v1\.AdminAuthService"/u);
+    assert.match(metadata, /generatorVersion: "2\.13\.0"/u);
+    assert.match(metadata, /runtimeVersion: "2\.13\.0"/u);
+    assert.match(metadata, /kokoro\/platform\/admin\/v1\/admin_auth\.proto/u);
+  }
 });
 
 test("federated contract CI runs the pinned Buf and generated-mirror gates", async () => {
