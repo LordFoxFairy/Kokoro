@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "combinationId": "wave1-federated-ci-2026-07-27",
+  "combinationId": "wave0-hardening-2026-07-27",
   "contracts": [
     {
       "id": "session-agent-execution",
