@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "approvedSpecCommit": "31ed730a41ec79130ca530d6acbd3f3d9b445485",
+  "archiveTag": "kokoro-monorepo-cutover-2026-07-26",
+  "sources": [
+    {
+      "id": "kokoro-agent",
+      "path": "kokoro-agent",
+      "origin": "https://github.com/LordFoxFairy/kokoro-agent.git",
+      "commit": "18b394dc3df019244875e643c142c2b08b9db708",
+      "tree": "b06557b5876125f2a014bc6b9597bb7ac9a30780",
+      "archiveSha256": "670927a78d57bef29a4a11ff6782960ae117cc526b0c88af3a234154c0f78340",
+      "trackedFileCount": 150
+    },
+    {
+      "id": "kokoro-platform",
+      "path": "kokoro-platform",
+      "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
+      "commit": "d30a16a782aca0fe131acbe8cbfbbd63fdf1b989",
+      "tree": "4093ce419d57089b5128ff1783a41fc6bc1733b8",
+      "archiveSha256": "d43330451610cfea414e9256dc640a09be2fcd727446ed99f01b000c885392c5",
+      "trackedFileCount": 525
+    },
+    {
+      "id": "kokoro-session",
+      "path": "kokoro-session",
+      "origin": "https://github.com/LordFoxFairy/kokoro-session.git",
+      "commit": "4f4aa3defc5cce79be58c447d7f053c6204ef48f",
+      "tree": "55ea2b5d6c50eb172e5eb1cedf6b09f7b7526bca",
+      "archiveSha256": "32d8d5fd8db3cdae8a03e6d375cb66483be67abaf0ebe7da9cab438518218d7a",
+      "trackedFileCount": 97
+    },
+    {
+      "id": "kokoro-web",
+      "path": "kokoro-web",
+      "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
+      "commit": "f3936befb7ae4c219273ae9b7f4efb97cb6a1425",
+      "tree": "c88c4f29197fafb1158c561e1bfe8153d04e7fcc",
+      "archiveSha256": "202b99d74fd2720298d78df95b18f3372adf2f11c1a2751f712e8a84f0a9d047",
+      "trackedFileCount": 329
+    }
+  ]
+}
