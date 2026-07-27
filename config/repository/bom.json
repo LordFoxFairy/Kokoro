@@ -65,9 +65,9 @@
   ],
   "evidenceDigest": "91429d22db60949695e9dcf558ecafc880dcd32ed8f7816e7ba8665281155f55",
   "generatorVersion": 1,
-  "manifestDigest": "d9357338c42aa83718e4e27b87f9d6851bcdfacd05d1ff791f5fbed9a0964a5e",
-  "matrixDigest": "b226ea2a7abc04142f290a6190fda52f4d76d41d8993a9ee900b6df8f152505d",
-  "promotionCommit": "24a43723ae28646299d3328abaf0c7d9959fb419",
+  "manifestDigest": "0a15fa131c9d9aa670ebf55069aeb7463d7ea7147930118ba3ebf6ff10799f2c",
+  "matrixDigest": "ee54e5d4d959eb7bdfadb0c3dbed2e19e2c4009e60c138c7f968f16d409a0201",
+  "promotionCommit": "536fcba3303da99fd4d2a450ba5b6b99c4d128f2",
   "repositories": [
     {
       "id": "kokoro-agent",
@@ -92,7 +92,7 @@
       "id": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
       "path": "kokoro-platform",
-      "pin": "26f81d1336145774960f9bc7f21e327fb74ccc89",
+      "pin": "95ce3647547861e950c6dec40c3c93ced4be3b98",
       "protocols": [
         {
           "id": "model-gateway",
@@ -110,13 +110,13 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-model-site-required-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-site-in-catalogue-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
       "origin": "https://github.com/LordFoxFairy/kokoro-session.git",
       "path": "kokoro-session",
-      "pin": "aec8de642a818125cc056fee1b5a628adc23dd9f",
+      "pin": "49372a23cf98c32ae9ccd22a4f453a0653d3fa1b",
       "protocols": [
         {
           "id": "platform-runtime",
@@ -134,7 +134,7 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-model-site-required-2026-07-27-session"
+      "recoverableRef": "refs/tags/kokoro-wave0-site-in-catalogue-2026-07-27-session"
     },
     {
       "id": "kokoro-web",
@@ -158,9 +158,9 @@
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "fa76877c2d91bdd43d8ee824bbb6eb8f7ce6e567da49274cbd67c83526ff36a6",
-    "combinationId": "wave0-model-site-required-2026-07-27",
-    "evidenceDigest": "ccd703f5f522ce9f81c0533e81e78cdaa7018cc59757b973a6947f3565c22214",
+    "combinationDigest": "825ec40098abaaa7d79f5a04d12f58e11270ffa39d1876eae73a65c55a714c9a",
+    "combinationId": "wave0-site-in-catalogue-2026-07-27",
+    "evidenceDigest": "0797344ca823d34472cac4e5747ac3546f7d261ceab5bdd4875539914b0fc59c",
     "outcome": "pass",
     "treeMode": "index"
   },
