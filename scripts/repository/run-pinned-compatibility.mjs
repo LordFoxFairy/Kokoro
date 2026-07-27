@@ -26,6 +26,7 @@ const COMMANDS = new Map([
   ["node-session-platform-internal-rpc-v1", [process.execPath, "scripts/compatibility/session-platform-internal-rpc.mjs"]],
   ["python-session-agent-durable-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/session_agent_durable.py"]],
   ["python-agent-model-gateway-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/agent_model_gateway.py"]],
+  ["node-platform-admin-auth-connect-v1", [process.execPath, "scripts/compatibility/admin-auth-connect.mjs"]],
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const SAFE_REASON = /^[a-z][a-z0-9_]{1,63}$/u;
@@ -436,7 +437,11 @@ async function defaultCleanupLease(lease) {
 
 function makeEvidence({ matrix, matrixSource, manifestSource, pins, tree, now }) {
   const repositories = REPOSITORY_IDS.map((id) => ({ id, sha: pins[id] }));
-  const contracts = matrix.contracts.map(({ id, version }) => ({ id, version }));
+  const contracts = matrix.contracts.map(({ id, version, artifactDigest }) => ({
+    id,
+    version,
+    ...(artifactDigest === undefined ? {} : { artifactDigest }),
+  }));
   const requiredScenarios = matrix.runtimeGate.scenarios
     .filter(({ required }) => required)
     .map(({ id, protocols }) => ({ id, protocols }));

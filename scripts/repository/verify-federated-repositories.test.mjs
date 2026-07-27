@@ -11,6 +11,7 @@ import {
   remoteTagTargetsPin,
   validateCompatibility,
 } from "./verify-federated-repositories.mjs";
+import { contractMetadata } from "../../contract/generate.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ids = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
@@ -93,6 +94,11 @@ test("compatibility matrix rejects undeclared or version-skewed protocols", () =
     },
   };
   assert.doesNotThrow(() => validateCompatibility(parsed, compatible));
+  const attested = structuredClone(compatible);
+  attested.contracts[0].artifactDigest = "a".repeat(64);
+  assert.doesNotThrow(() => validateCompatibility(parsed, attested));
+  attested.contracts[0].artifactDigest = "not-a-sha256";
+  assert.throws(() => validateCompatibility(parsed, attested), /compatibility_contract/u);
   const skewed = structuredClone(compatible);
   skewed.contracts[0].version = 2;
   assert.throws(() => validateCompatibility(parsed, skewed), /compatibility_protocol/u);
@@ -143,6 +149,39 @@ test("runtime compatibility schema is closed and every contract has required cov
   const excessiveTimeout = structuredClone(matrix);
   excessiveTimeout.runtimeGate.scenarios[0].timeoutSeconds = 901;
   assert.throws(() => validateCompatibility(parsed, excessiveTimeout), /compatibility_runtime_timeout/u);
+});
+
+test("Admin Auth registry binds the exact provider, consumer, scenario, and generated digest", async () => {
+  const currentManifest = parseManifest(
+    await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
+  );
+  const currentMatrix = JSON.parse(
+    await readFile(resolve(root, "config/repository/compatibility-matrix.json"), "utf8"),
+  );
+  assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
+
+  const expectedDigest = (await contractMetadata()).artifactDigestSha256;
+  assert.deepEqual(
+    currentMatrix.contracts.find(({ id }) => id === "platform-admin-auth"),
+    {
+      id: "platform-admin-auth",
+      version: 1,
+      artifactDigest: expectedDigest,
+      providers: ["kokoro-platform"],
+      consumers: ["kokoro-web"],
+    },
+  );
+  assert.deepEqual(
+    currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "platform-admin-auth-connect"),
+    {
+      id: "platform-admin-auth-connect",
+      commandId: "node-platform-admin-auth-connect-v1",
+      required: true,
+      participants: ["kokoro-platform", "kokoro-web"],
+      protocols: [{ id: "platform-admin-auth", version: 1 }],
+      timeoutSeconds: 180,
+    },
+  );
 });
 
 test("root CI checks out only recorded pins and uses the root-only tooling lock", async () => {

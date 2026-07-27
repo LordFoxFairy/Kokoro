@@ -115,6 +115,7 @@ test("code-owned scenario commands point at existing root adapters", async () =>
   const source = await readFile(new URL("./run-pinned-compatibility.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /scripts\/compatibility\/session-agent-durable\.py/u);
   assert.match(source, /scripts\/compatibility\/session_agent_durable\.py/u);
+  assert.match(source, /scripts\/compatibility\/admin-auth-connect\.mjs/u);
 });
 
 test("evidence target must be inside ignored tmp and cannot traverse a symlink", async () => {
@@ -169,6 +170,22 @@ test("successful run writes running then pass evidence with exact four pins", as
     assert.equal(JSON.parse(await readFile(item.evidencePath, "utf8")).outcome, "pass");
   } finally {
     await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("combination digest changes when an attested contract artifact changes", async () => {
+  const first = await fixture();
+  const second = await fixture();
+  try {
+    const baseline = await runCompatibility(first, dependencies().deps);
+    const attestedMatrix = JSON.parse(await readFile(second.matrixPath, "utf8"));
+    attestedMatrix.contracts[0].artifactDigest = "a".repeat(64);
+    await writeFile(second.matrixPath, `${JSON.stringify(attestedMatrix)}\n`);
+    const attested = await runCompatibility(second, dependencies().deps);
+    assert.notEqual(attested.evidence.combinationDigest, baseline.evidence.combinationDigest);
+  } finally {
+    await rm(first.root, { recursive: true, force: true });
+    await rm(second.root, { recursive: true, force: true });
   }
 });
 

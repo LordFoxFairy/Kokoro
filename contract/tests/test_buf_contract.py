@@ -90,6 +90,60 @@ def test_effect_requests_use_common_command_identity_and_timestamps() -> None:
     assert "google.protobuf.Timestamp occurred_at" in source
 
 
+def test_effect_requests_embed_method_specific_digest_payloads() -> None:
+    source = _proto("kokoro/platform/admin/v1/admin_auth.proto")
+    expected = {
+        "CreateVerificationTokenRequest": "CreateVerificationTokenEffect",
+        "ConsumeVerificationTokenRequest": "ConsumeVerificationTokenEffect",
+        "RecordAuthEventRequest": "RecordAuthEventEffect",
+    }
+
+    for request, effect in expected.items():
+        body = re.search(rf"message {request} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+        assert body is not None
+        assert f"{effect} effect = 2 [(buf.validate.field).required = true];" in body.group("body")
+
+    for effect in expected.values():
+        body = re.search(rf"message {effect} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+        assert body is not None
+        assert " map<" not in body.group("body")
+        assert " repeated " not in body.group("body")
+
+
+def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:
+    receipt = _proto("kokoro/common/v1/receipt.proto")
+    admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")
+
+    assert "COMMAND_DIGEST_ALGORITHM_SHA256_PROTOBUF_V1 = 1;" in receipt
+    assert "CommandDigestAlgorithm digest_algorithm" in receipt
+    assert "len: 64" in receipt
+    assert 'pattern: "^[0-9a-f]{64}$"' in receipt
+    assert "CommandDigestAlgorithm digest_algorithm" in admin
+    assert "len: 64" in admin
+    assert 'pattern: "^[0-9a-f]{64}$"' in admin
+
+    # The owner schema uses MySQL VARCHAR(191) for these indexed/auth fields.
+    # Proto-valid requests must therefore never fail later as persistence errors.
+    assert "max_len: 256" not in receipt
+    for unsupported_bound in ("max_len: 320", "max_len: 512", "max_len: 2048"):
+        assert unsupported_bound not in admin
+
+
+def test_generation_owns_the_node_digest_helper_for_both_mirrors() -> None:
+    generator = (CONTRACT / "generate.mjs").read_text()
+    helper = re.search(
+        r"function adminAuthEffectDigestSource\(\).*?\n\}\n\nfunction singleOutputTemplate",
+        generator,
+        flags=re.DOTALL,
+    )
+
+    assert helper is not None
+    assert '"admin-auth-effect-digest.ts"' in generator
+    assert "CommandDigestAlgorithm.SHA256_PROTOBUF_V1" in generator
+    assert "writeUnknownFields: false" in generator
+    assert "JSON.stringify" not in helper.group(0)
+
+
 def test_receipt_contract_never_contains_raw_secret_fields() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
     admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")

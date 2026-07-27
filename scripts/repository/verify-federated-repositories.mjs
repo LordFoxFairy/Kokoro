@@ -22,6 +22,7 @@ const ARTIFACT_KEYS = ["descriptor", "id"];
 const PROTOCOL_KEYS = ["id", "role", "version"];
 const MATRIX_KEYS = ["combinationId", "contracts", "requiredGates", "runtimeGate", "schemaVersion"];
 const CONTRACT_KEYS = ["consumers", "id", "providers", "version"];
+const ATTESTED_CONTRACT_KEYS = ["artifactDigest", ...CONTRACT_KEYS];
 const RUNTIME_GATE_KEYS = ["requiredServices", "scenarios", "schemaVersion"];
 const SCENARIO_KEYS = ["commandId", "id", "participants", "protocols", "required", "timeoutSeconds"];
 const SCENARIO_PROTOCOL_KEYS = ["id", "version"];
@@ -31,8 +32,10 @@ const SCENARIO_COMMANDS = new Map([
   ["session-platform-internal-rpc", "node-session-platform-internal-rpc-v1"],
   ["session-agent-durable-localfake", "python-session-agent-durable-v1"],
   ["agent-model-gateway-localfake", "python-agent-model-gateway-v1"],
+  ["platform-admin-auth-connect", "node-platform-admin-auth-connect-v1"],
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
+const ARTIFACT_DIGEST_PATTERN = /^[0-9a-f]{64}$/u;
 
 class RepositoryError extends Error {
   constructor(code, detail = "") {
@@ -164,8 +167,13 @@ export function validateCompatibility(manifest, matrix) {
   }
   const contracts = new Map();
   for (const contract of matrix.contracts) {
-    if (!exactKeys(contract, CONTRACT_KEYS) || typeof contract.id !== "string" || !Number.isInteger(contract.version) || !nonEmptyStrings(contract.providers) || !nonEmptyStrings(contract.consumers)) {
+    const keysValid = exactKeys(contract, CONTRACT_KEYS) || exactKeys(contract, ATTESTED_CONTRACT_KEYS);
+    const digestValid = !Object.hasOwn(contract, "artifactDigest") || ARTIFACT_DIGEST_PATTERN.test(contract.artifactDigest);
+    if (!keysValid || !digestValid || typeof contract.id !== "string" || !Number.isInteger(contract.version) || !nonEmptyStrings(contract.providers) || !nonEmptyStrings(contract.consumers)) {
       throw new RepositoryError("compatibility_contract");
+    }
+    if (contract.id === "platform-admin-auth" && !Object.hasOwn(contract, "artifactDigest")) {
+      throw new RepositoryError("compatibility_contract", contract.id);
     }
     if (contracts.has(contract.id)) throw new RepositoryError("compatibility_duplicate", contract.id);
     contracts.set(contract.id, contract);
