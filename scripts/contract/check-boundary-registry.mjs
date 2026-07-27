@@ -354,6 +354,41 @@ export function readSpecFieldNames(source, select) {
  * question — can this contract prove a Site field exists at all — so it scans the whole file and
  * works for block-mapping sections that name no fields of their own.
  */
+
+// Fields declared by one spec object, following object: references. Used to prove a
+// site claim against the operation's own request shape rather than the whole file.
+export function readSpecObjectFields(source, objectName) {
+  const objects = new Map();
+  const objectBody = sectionLines(source, "objects");
+  if (objectBody) {
+    let current = null;
+    for (const line of objectBody) {
+      const trimmed = line.trim();
+      const name = /^-\s+name:\s*(.+)$/u.exec(trimmed);
+      if (name) {
+        current = unquote(name[1]);
+        objects.set(current, []);
+        continue;
+      }
+      if (!current || !trimmed.startsWith("- {")) continue;
+      const entry = parseFlowMapping(trimmed.slice(3).replace(/\}$/u, ""));
+      if (entry.name) objects.get(current).push({ name: entry.name, type: entry.type ?? "" });
+    }
+  }
+  const names = new Set();
+  const visited = new Set();
+  (function visit(name) {
+    if (visited.has(name) || !objects.has(name)) return;
+    visited.add(name);
+    for (const field of objects.get(name)) {
+      names.add(field.name);
+      const reference = /object:([A-Za-z0-9_]+)/u.exec(field.type);
+      if (reference) visit(reference[1]);
+    }
+  })(objectName);
+  return { known: objects.has(objectName), names };
+}
+
 export function readSpecDeclaredFieldNames(source) {
   const names = new Set();
   for (const rawLine of source.split(/\r?\n/u)) {
@@ -723,6 +758,25 @@ function checkArchitectureBoundaries(registry, roots, errors) {
   }
 }
 
+
+// Invert the select transform: an operation id derived from `UsageHoldRequest` by
+// stripping the suffix and snake-casing maps back to that object name.
+function specObjectCandidates(operationId, select) {
+  const pascal = operationId
+    .split("_")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+  const suffixes = /Request\|Query/u.test(String(select?.match ?? ""))
+    ? ["Request", "Query"]
+    : ["Request", "Query", ""];
+  return [...new Set(suffixes.map((suffix) => `${pascal}${suffix}`))];
+}
+
+// Operations whose site claim rests only on a file-wide match, because their source
+// section declares no per-operation fields. Weaker evidence, so it is counted.
+const fileWideProof = new Set();
+
 function hasSiteField(fields) {
   return SITE_FIELDS.some((field) => fields.has(field));
 }
@@ -777,8 +831,27 @@ function checkIsolationAxes(root, registry, errors) {
           }
         }
       }
-      // A spec YAML file names one wire vocabulary, so the proof is per source, not per endpoint.
-      if (hasSiteField(readSpecDeclaredFieldNames(text))) unproven.clear();
+      // Where operation ids are derived from object names, each operation can be proved
+      // against its own request shape; checking the file as a whole let one object's
+      // siteId vouch for siblings that had none.
+      //
+      // Where they come from a block-mapping section such as `endpoints`, the section
+      // declares no fields, so the only available proof is file-wide. That is weaker and
+      // is counted separately rather than presented as per-operation evidence.
+      if (source.select?.section === "objects") {
+        for (const id of [...unproven]) {
+          for (const candidate of specObjectCandidates(id, source.select)) {
+            const { known, names } = readSpecObjectFields(text, candidate);
+            if (known && hasSiteField(names)) {
+              unproven.delete(id);
+              break;
+            }
+          }
+        }
+      } else if (hasSiteField(readSpecDeclaredFieldNames(text))) {
+        for (const id of [...unproven]) fileWideProof.add(`${boundary.id}/${id}`);
+        unproven.clear();
+      }
     }
 
     for (const id of [...unproven].sort()) {

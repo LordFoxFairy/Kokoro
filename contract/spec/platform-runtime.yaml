@@ -6,6 +6,9 @@ enums:
 objects:
   - name: UsageHoldRequest
     fields:
+      # Site is the Platform business isolation boundary. It travels in the body so the
+      # owner can persist and enforce it, rather than trusting hop-level metadata.
+      - {name: siteId, type: string_nonempty}
       - {name: namespace, type: string_nonempty}
       - {name: featureKey, type: string_nonempty}
       - {name: labelKey, type: string_nonempty, optional: true}
@@ -18,11 +21,13 @@ objects:
       - {name: outputTokens, type: nonnegative_int}
   - name: UsageSettleRequest
     fields:
+      - {name: siteId, type: string_nonempty}
       - {name: holdId, type: string_nonempty}
       - {name: usage, type: object:UsageSettleUsage}
       - {name: idempotencyKey, type: string_nonempty}
   - name: ReleaseCreditRequest
     fields:
+      - {name: siteId, type: string_nonempty}
       - {name: holdId, type: string_nonempty}
       - {name: idempotencyKey, type: string_nonempty}
   - name: ResolveModelBindingsQuery

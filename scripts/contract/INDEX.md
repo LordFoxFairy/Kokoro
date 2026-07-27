@@ -70,12 +70,12 @@ Two blind spots are recorded rather than hidden, and both appear in every succes
 contract source for it, so its operations get no orphan check at all. It is the one boundary that can drift
 without the gate noticing, which is exactly why the count is printed.
 
-Site binding is split three ways and every count is printed. 46 `site`-scoped operations remain
+Site binding is split three ways and every count is printed. 43 `site`-scoped operations remain
 `context-header`: `platform-runtime` sends `x-kokoro-site-id` derived per route, and `session-browser` is
 pinned to one Site by the `KOKORO_SITE_ID` process constant rather than by anything on the wire. That number
-is Wave T3 debt and must shrink rather than grow. Against it, 3 operations now bind Site as a
-`request-field`, all on `platform-admission`, and the gate proves that claim by finding `site_id` in the
-actual proto request message rather than trusting the declaration.
+is Wave T3 debt and must shrink rather than grow. Against it, 6 operations now bind Site as a
+`request-field`: three on `platform-admission` and the three effectful credit writes on `platform-runtime`.
+The gate proves each claim against that operation's own request shape rather than trusting the declaration.
 
 `platform-admission` is the first `contract-only` boundary: its shape is published in
 `contract/proto/kokoro/platform/admission/v1/admission.proto`, but no provider implements it, so it is
@@ -83,8 +83,12 @@ deliberately absent from the compatibility matrix. The matrix drives the runtime
 unimplemented protocol there would assert a capability that does not exist. Registering it as `active`
 before a provider ships fails.
 
-The `request-field` proof is per request message for proto sources but per file for spec YAML sources,
-because a block-mapping section such as `endpoints` declares no fields of its own. Every `deadlineMs` is
+The `request-field` proof is per request message for proto sources. For spec YAML it depends on how the
+source declares operations: when their ids derive from object names the proof is per operation, resolved
+against that operation's own request object. Only a block-mapping section such as `endpoints`, which
+declares no fields of its own, still falls back to a file-wide match — weaker evidence, so those operations
+are tracked separately rather than presented as per-operation proof. The file-wide form previously applied
+everywhere, which let one object's `siteId` vouch for siblings that had none. Every `deadlineMs` is
 `null` because no boundary declares a deadline in code yet; that is a recorded fact, not an implied default.
 
 The Admin gate scopes itself to the browser plane and names its exclusions rather than skipping them

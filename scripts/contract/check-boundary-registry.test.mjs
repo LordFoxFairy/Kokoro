@@ -735,3 +735,38 @@ test("a contract-only boundary must stay out of the compatibility matrix", async
     "boundary_registry_matrix_drift: contract-only boundary in matrix: fixture-http",
   );
 });
+
+test("one object's siteId does not vouch for a sibling operation that lacks it", async () => {
+  // Object-derived operation ids can be proved individually. Checking the file as a
+  // whole previously let any single siteId clear every operation in the source.
+  const yaml = [
+    "objects:",
+    "  - name: AlphaRequest",
+    "    fields:",
+    "      - {name: siteId, type: string_nonempty}",
+    "  - name: BetaRequest",
+    "    fields:",
+    "      - {name: other, type: string_nonempty}",
+    "",
+  ].join("\n");
+  const boundary = httpBoundary({
+    sources: [
+      {
+        kind: "spec-yaml",
+        path: "contract/spec/ops.yaml",
+        select: { section: "objects", member: "field", field: "name", match: "^(.+?)Request$", case: "snake" },
+      },
+    ],
+    operations: [
+      { id: "alpha", transport: "http-json", effect: false, retryClass: "after_delay", scope: "site", siteBinding: "request-field", receipt: null },
+      { id: "beta", transport: "http-json", effect: false, retryClass: "after_delay", scope: "site", siteBinding: "request-field", receipt: null },
+    ],
+  });
+  const root = await makeFixture({ boundaries: [boundary], files: { "contract/spec/ops.yaml": yaml } });
+
+  const result = run(root);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /site_scope_unstructured: fixture-http\/beta/u);
+  assert.doesNotMatch(result.stderr, /site_scope_unstructured: fixture-http\/alpha/u);
+});

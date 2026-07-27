@@ -230,7 +230,7 @@
           },
           "retryClass": "same_identity",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "request-field",
           "transport": "http-json"
         },
         {
@@ -242,7 +242,7 @@
           },
           "retryClass": "same_identity",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "request-field",
           "transport": "http-json"
         },
         {
@@ -254,7 +254,7 @@
           },
           "retryClass": "same_identity",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "request-field",
           "transport": "http-json"
         },
         {
