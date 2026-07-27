@@ -654,11 +654,75 @@ The default session run reports 382 passed / 27 skipped; supplying Redis and Mon
 adding MinIO credentials reaches 409/0. Reporting the first number as green would have hidden 27 unexecuted
 tests.
 
+## Round 8 — the catalogue disagreed with the resolver
+
+`GET /model-labels` is the runtime model catalogue: Session calls it to build the user's model picker. It
+filtered on `status` and `featureKey` only. It read no Site at all, so a label a Site had marked `hidden`
+still appeared in that Site's picker — and `resolveModelBindings`, corrected in round 7, refuses exactly
+those labels. A user could select a model the system would then decline to resolve.
+
+The registry made this look handled. `list_model_labels` was declared `siteBinding: context-header`, and
+Session did send `x-kokoro-site-id` on the call, so the claim was satisfied from the caller's side. The
+provider ignored the header entirely. That is the structural lesson of this round: `request-field` is proven
+against the operation's own request shape, but nothing proves a `context-header` claim, because the gate
+cannot see whether a provider reads the header it says it reads. The remaining count is unverified debt, and
+`scripts/contract/INDEX.md` now says so instead of presenting it as coverage.
+
+`siteId` is now a required query field on the catalogue, matching resolution, and both apply the same hidden
+set. The admin `listModelLabels()` stays unscoped: operators manage labels across Sites and are a different
+trust plane. Header-bound scopes 42 → 41; `request-field` 7 → 8.
+
+Both routes now validate in-handler rather than through a Fastify `querystring` schema. Declaring the schema
+to Fastify meant a missing `siteId` returned Fastify's error shape while its sibling returned this service's
+`{error:{code}}` envelope — the same failure, two shapes, on two endpoints one caller uses together.
+
+### The fix is load-bearing
+
+Neutering the filter to `return labels.map(mapModelLabel)` turns exactly one test red —
+`site-model-policy.test.ts > catalogue hides the same labels resolve hides, per site` (1 failed / 151 passed)
+— and the file restores to SHA-256 `54af00a48abc332fcc5118395604372b1deeee31d06ad9a0ded763c56d794ca9`.
+
+### A flaky gate is not a gate
+
+Platform CI was non-deterministic: commit `26f81d1` went green at 19:21 and red at 19:26 on the same SHA,
+failing on an extra `rpc_outcome`. The deadline case calls a handler that sleeps 50ms with `timeoutMs: 1`, so
+the client gives up while the server runs on and records its outcome. The telemetry closures captured the
+describe-scoped `let`, which the next `beforeEach` reassigns — so that late record landed in a later test's
+array. Each server instance now records into arrays created alongside it.
+
+Five local runs did not reproduce it either way, so the mechanism was proven directly instead: with the
+handler at 300ms and a 400ms wait in the asserting test, instance-bound recording passes 7/7 and the outer
+capture fails with the stray `rpc_outcome` present. This matters beyond one test — the promotion protocol
+gates on child CI being green, so a test that flips on identical source can admit an unverified pin.
+
+## Verification
+
+All against real services, with no silent skips:
+
+| Suite | Result |
+|---|---|
+| session, real Redis + Mongo + MinIO | 409 passed, 0 skipped |
+| model, real MySQL (`--no-file-parallelism`) | 152 passed |
+| platform-admin Connect suite, 5 consecutive runs | 7 passed each |
+| root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
+| architecture gates | 23 passed |
+| Python gates (compatibility, admin OpenAPI, GA isolation) | 53 passed |
+| contract generator tests | 35 passed |
+| round 8 compatibility gate | 5/5 scenarios, 7 session-platform assertions |
+
+The model package's plain `vitest run` is not a valid command: its integration files share one database and
+truncate in `beforeEach`, so running them in parallel with the unit files fails 15 tests for reasons that have
+nothing to do with the code. CI already separates `test:integration`; locally the run needs
+`--no-file-parallelism`.
+
 ## Still open
 
 1. Root remote CI has never run — no Actions secrets, so `contract.yml` stops at its `KOKORO_SUBMODULE_TOKEN`
    guard. Owner action; no root BOM tag until a green run exists.
-2. 43 operations remain header-bound. `session-browser` is pinned by a process constant rather than anything
-   on the wire, and the remaining `platform-runtime` reads still derive site per route.
+2. 41 operations remain header-bound, and no gate proves any of them. `session-browser` is pinned by a process
+   constant rather than anything on the wire; the remaining `platform-runtime` reads derive site per route.
 3. Wave T3 implementation: a provider for `platform-admission`, then Session shadow-comparing before cutover.
 4. Generated browser client for Admin, and the Admin error taxonomy decision.
+5. The dev MySQL volume (`kokoro-infra_kokoro-mysql`, created 2026-07-19) does not accept the credentials in
+   `deploy/.env.example`, so `manager.mjs ensure --profiles platform --scope dev` starts a container nothing
+   can authenticate against. Left untouched — it is the owner's data. Round 8 used a disposable tmpfs instance.

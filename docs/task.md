@@ -70,7 +70,7 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 - **site 隔离实质推进**:credit 三个写口 + model resolve 的 `siteId` 从 header 迁到 request payload
 - GA 隔离门(`check_ga_isolation.py`):84 个 GA 源文件,8 条 Platform 身份轴零出现
 
-**过程中发现并修掉的两个 fail-open(比计数更要紧,同一形状:缺隔离值 → 静默退化成"不隔离"而非"拒绝")**:
+**过程中发现并修掉的三个 fail-open(比计数更要紧,同一形状:缺隔离值 → 静默退化成"不隔离"而非"拒绝")**:
 
 1. `KOKORO_SITE_ID` 的 `z.string().min(1).catch("site-local")`:生产漏配会把**全部租户用量静默记到兜底站**,
    且 credit 账目落定后无法再归因。已删默认值,生产启动即 fail-fast,开发档回落但 WARN 一次。
@@ -78,12 +78,20 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 2. `resolveModelBindings` 缺 site header 时 `hiddenLabelKeys` 返回空集合 → **完全不按站过滤**,
    调用方只要不发 header 就能绕过该站隐藏策略。已把类型收窄成 `siteId: string`,该分支不可能存在;
    真 DB 断言"A 站隐藏的 label 在 A 拿不到、在 B 拿得到",并经变异验证该测试承重。
+3. (round 8)`GET /model-labels` 运行时目录**完全不按站点过滤**,只筛 `status`/`featureKey`。
+   于是该站已 `hidden` 的 label 照样进用户选择器,选中后才被 round 7 修好的 resolve 拒——目录与解析互相矛盾。
+   注册表当时标的是 `siteBinding: context-header` 且 session 确实发了 header,**声明从调用方一侧看是成立的,
+   而 provider 整个忽略它**。已把 `siteId` 收成必填 query,目录与 resolve 共用同一份 hidden 集合;
+   admin 的 `listModelLabels()` 保持不按站过滤(运维面本就该看全)。变异验证:去掉过滤只有那条新集成用例转红。
+
+   **结构性教训**:`request-field` 是拿该操作自己的请求形状证出来的,`context-header` 根本没有证据——
+   门禁看不到 provider 到底读没读它声明要读的那个 header。剩下的 header-bound 计数是**未经验证的欠账**,
+   不是覆盖率;`scripts/contract/INDEX.md` 已按此改写。
 
 **剩余(按优先级)**:
 
-1. **43 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上),
-   `platform-runtime` 剩余只读口仍按路由派生。要真正清零需 T3 provider + Session shadow-compare 后切换,
-   **不得跳过 shadow 阶段**(计费相邻路径)。
+1. **41 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上)。
+   要真正清零需 T3 provider + Session shadow-compare 后切换,**不得跳过 shadow 阶段**(计费相邻路径)。
 2. **Admin 浏览器 client 代码生成**:需引入生成器依赖,pnpm 11 有 24h release-age 窗口,单独一轮做。
 3. **Admin error taxonomy 裁决**(任务 #17):只有 `request.invalid` 与共享 `ERROR_STATUS` 重合;
    `operator.auth` 横跨 401/403。**wire-visible,不能静默改名**,需用户裁决。
