@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kokoro.internal/schemas/ownership-attestation.schema.json",
+  "title": "Kokoro source ownership attestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attestedBy",
+    "authority",
+    "attestedAt",
+    "attestationRef",
+    "repositories",
+    "licenseRef"
+  ],
+  "properties": {
+    "attestedBy": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!\\s*$)(?!.*(?:[Pp][Ee][Nn][Dd][Ii][Nn][Gg]|[Tt][Oo][Dd][Oo]|[Pp][Ll][Aa][Cc][Ee][Hh][Oo][Ll][Dd][Ee][Rr])).+$"
+    },
+    "authority": {
+      "const": "repository-owner"
+    },
+    "attestedAt": {
+      "type": "string",
+      "format": "date-time",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:[Pp][Ee][Nn][Dd][Ii][Nn][Gg]|[Tt][Oo][Dd][Oo]|[Pp][Ll][Aa][Cc][Ee][Hh][Oo][Ll][Dd][Ee][Rr])).+$"
+    },
+    "attestationRef": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!\\s*$)(?!.*(?:[Pp][Ee][Nn][Dd][Ii][Nn][Gg]|[Tt][Oo][Dd][Oo]|[Pp][Ll][Aa][Cc][Ee][Hh][Oo][Ll][Dd][Ee][Rr])).+$"
+    },
+    "repositories": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "Kokoro",
+          "kokoro-agent",
+          "kokoro-platform",
+          "kokoro-session",
+          "kokoro-web"
+        ]
+      },
+      "allOf": [
+        { "contains": { "const": "Kokoro" }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "const": "kokoro-agent" }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "const": "kokoro-platform" }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "const": "kokoro-session" }, "minContains": 1, "maxContains": 1 },
+        { "contains": { "const": "kokoro-web" }, "minContains": 1, "maxContains": 1 }
+      ]
+    },
+    "licenseRef": {
+      "const": "LicenseRef-Kokoro-Internal-Proprietary"
+    }
+  }
+}

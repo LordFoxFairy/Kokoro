@@ -2,10 +2,11 @@
 artifact: wave-child-prd-and-architecture-spec
 version: "1.3"
 created: 2026-07-25
-status: internally-technically-approved-awaiting-owner-attestation-and-user-review
+status: approved-for-wave-0-implementation
 parent: 2026-07-25-platform-web-session-target-architecture-design.md
 scope: wave-0-repository-toolchain-contract-documentation-foundation
-implementationAuthorized: false
+implementationAuthorized: true
+gaRuntimeSemanticChangeAuthorized: false
 ---
 
 # Wave 0：Repository、Toolchain、Contract 与 Documentation Foundation
@@ -16,12 +17,13 @@ implementationAuthorized: false
 依赖的工程地基，不重写 Platform、Web、Session 或 GA 的业务行为。
 
 2026-07-25 两轮架构/产品/工具链红队已关闭 Zod 4、lock drift、Prisma lifecycle、Run/Usage 外围依赖和
-Prisma 分波等 Foundation P0，内部技术裁决为 `APPROVE-INTERNAL-TECHNICAL`。这不等于实施授权：
-`implementationAuthorized` 仍为 false；用户书面复审、代码权属/LicenseRef attestation 和 implementation
-plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 root lock cutover。
+Prisma 分波等 Foundation P0，内部技术裁决为 `APPROVE-INTERNAL-TECHNICAL`。仓库所有者已确认根仓及
+`kokoro-agent`、`kokoro-platform`、`kokoro-session`、`kokoro-web` 均由同一 Kokoro 项目拥有/控制，并可按
+`LicenseRef-Kokoro-Internal-Proprietary` 合并；机器可读证明仅引用
+`codex-task:019f95dd-a6ff-7a90-818f-250bb72408d5#owner-confirmation-2026-07-26`，不复制私人法律材料。
 
-本文批准后才允许调用 `superpowers:writing-plans` 生成精确实施计划；在书面批准前，禁止删除 gitlink、
-生成根 lock、迁移 Docker build context 或修改任何运行时代码。
+因此 Wave 0 的 `implementationAuthorized` 为 true，实施计划可进入执行；授权仍受本 Wave 的 protected
+transaction 与逐任务验证门约束。`gaRuntimeSemanticChangeAuthorized` 为 false：本授权不允许改变 GA runtime 语义。
 
 建议复审顺序：§0、§2、§3、§4、§5、§6、§8、§11、§15、§18、§20。
 
@@ -56,11 +58,11 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 11. 整个 cutover 是一个 protected merge transaction：内部 review commits 允许分层，但禁止 partial merge、
     单独 cherry-pick 或 squash；`main` 只能看到全部 required gate 通过的最终 green head。
 
-### 0.2 唯一需要所有者确认的法律事实
+### 0.2 已满足的所有者权属确认
 
-四个来源仓和根仓均没有受跟踪 License 文件。实施前必须由仓库所有者确认四仓代码属于同一 Kokoro
-项目可合并的自有内部代码，并在 provenance 中登记为批准的内部 LicenseRef；Agent 不得猜测 MIT、Apache
-或其他开源许可。若存在第三方或不同权属代码，Wave 0 在导入前停止。
+四个来源仓和根仓均没有受跟踪 License 文件。仓库所有者已确认五个仓库属于同一 Kokoro 项目拥有/控制、
+可合并的内部专有代码；provenance 登记为 `LicenseRef-Kokoro-Internal-Proprietary`。该确认只覆盖上述五个仓库，
+不替代后续对新增第三方来源的许可审查；若发现第三方或不同权属代码，Wave 0 在导入相关路径前停止。
 
 ## 1. PRD：问题、用户与价值
 
@@ -345,10 +347,10 @@ sources:
     trackedFileCount: 150
     licenseRef: LicenseRef-Kokoro-Internal-Proprietary
     ownershipAttestation:
-      attestedBy: PENDING_REVIEW
+      attestedBy: kokoro-repository-owner
       authority: repository-owner
-      attestedAt: PENDING_REVIEW
-      attestationRef: PENDING_REVIEW
+      attestedAt: 2026-07-27T03:45:17Z
+      attestationRef: codex-task:019f95dd-a6ff-7a90-818f-250bb72408d5#owner-confirmation-2026-07-26
       scope: source-tree-and-history
     archiveTag: kokoro-monorepo-cutover-2026-07-25
     bundleSha256: PENDING_IMPLEMENTATION

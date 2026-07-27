@@ -1,0 +1,11 @@
+attestedBy: kokoro-repository-owner
+authority: repository-owner
+attestedAt: 2026-07-27T03:45:17Z
+attestationRef: codex-task:019f95dd-a6ff-7a90-818f-250bb72408d5#owner-confirmation-2026-07-26
+repositories:
+  - Kokoro
+  - kokoro-agent
+  - kokoro-platform
+  - kokoro-session
+  - kokoro-web
+licenseRef: LicenseRef-Kokoro-Internal-Proprietary

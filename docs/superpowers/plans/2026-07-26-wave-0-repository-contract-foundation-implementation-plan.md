@@ -13,14 +13,15 @@
 ## Plan status and hard gate
 
 ```yaml
-planStatus: ready-after-owner-attestation
-implementationAuthorized: false
+planStatus: implementation-active
+implementationAuthorized: true
 gaRuntimeSemanticChangeAuthorized: false
-blockingFact: four-source ownership-and-internal-LicenseRef-attestation
+blockingFact: null
 ```
 
-本计划已经可以评审和执行 Task 0 的只读检查，但在仓库所有者明确确认四个来源仓均属于同一 Kokoro 项目的自有
-内部代码前，不得执行 tag push、bundle、gitlink 删除、snapshot import、root lock 生成或旧 remote 权限变更。
+仓库所有者已经确认根仓和四个来源仓均属于同一 Kokoro 项目拥有/控制、可合并的内部专有代码，Task 0 的
+机器可读 attestation 已登记。Wave 0 可按本计划继续执行；`gaRuntimeSemanticChangeAuthorized` 仍为 false，且
+tag push、bundle、gitlink 删除、snapshot import、root lock 生成或旧 remote 权限变更仍须通过各自后续任务门禁。
 
 当前重验基线（2026-07-26；真正 cutover 前 Task 1 再计算）：
 
@@ -82,28 +83,28 @@ i18n 12 tests 和两 App typecheck 通过，但 i18n lint 找不到 ESLint；Pla
 - Create after owner confirmation: `docs/reports/evidence/wave-0/ownership-attestation.yaml`
 - Test: `docs/reports/evidence/wave-0/ownership-attestation.schema.json`
 
-- [ ] **Step 1: Record the owner decision without inventing a license**
+- [x] **Step 1: Record the owner decision without inventing a license**
 
   Required user statement: the root plus `kokoro-agent`、`kokoro-platform`、`kokoro-session`、`kokoro-web` source trees and
   histories are owned/controlled by the same Kokoro project and may be consolidated as internal proprietary source. If the answer
   is qualified or negative, stop and inventory third-party/differently-owned paths before any import.
 
-- [ ] **Step 2: Write the failing evidence-schema test**
+- [x] **Step 2: Write the failing evidence-schema test**
 
   The schema must require `attestedBy`、`authority=repository-owner`、`attestedAt`、`attestationRef`、all five repositories and
   `licenseRef=LicenseRef-Kokoro-Internal-Proprietary`; placeholder values fail.
 
-- [ ] **Step 3: Validate the missing attestation fails**
+- [x] **Step 3: Validate the missing attestation fails**
 
   Run: `node scripts/foundation/check-evidence.mjs --require-ownership`
 
   Expected: FAIL `ownership_attestation_missing` before any state-changing task.
 
-- [ ] **Step 4: Add the owner-provided attestation reference and validate**
+- [x] **Step 4: Add the owner-provided attestation reference and validate**
 
   Expected: PASS without copying private legal correspondence into the repository; store only an opaque approved reference.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/reports/evidence/wave-0/ownership-attestation.yaml docs/reports/evidence/wave-0/ownership-attestation.schema.json
