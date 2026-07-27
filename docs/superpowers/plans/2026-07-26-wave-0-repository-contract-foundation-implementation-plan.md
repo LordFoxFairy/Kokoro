@@ -54,6 +54,7 @@ i18n 12 tests 和两 App typecheck 通过，但 i18n lint 找不到 ESLint；Pla
 |---|---|
 | `config/repository/imported-snapshots.yaml` | 当前四个来源 commit/tree/archive/bundle/ownership attestation 真源 |
 | `config/repository/toolchain-policy.yaml` | exact runtime、catalog、lock、legacy exception 与 registry policy |
+| `config/repository/infrastructure-policy.yaml` | 每环境单 Infra、canonical identity、profiles、restart、test isolation、cleanup policy |
 | `config/architecture/index-roots.yaml` | boundary/component root、owner、signals、verification、dependency policy |
 | `package.json` / `pnpm-workspace.yaml` / `pnpm-lock.yaml` | 根 TS workspace 与唯一 lock authority |
 | `pyproject.toml` / `uv.lock` / `.python-version` | 根 Python workspace 与唯一 lock authority |
@@ -72,6 +73,7 @@ i18n 12 tests 和两 App typecheck 通过，但 i18n lint 找不到 ESLint；Pla
 | `.github/workflows/ci.yml` | 根 required jobs，仅验证当前 commit |
 | `.github/CODEOWNERS` | contract/lock/architecture/provenance/boundary owner review |
 | `.dockerignore` / four existing Dockerfiles | root-context reproducible image builds |
+| `docker-compose.infra.yml` / `scripts/infra/*` | 唯一 Infra lifecycle authority；所有 dev/CI/provision 入口复用 |
 | `INDEX.md` + boundary `INDEX.md` files | 当前实现职责、公开边界、依赖、数据、运行与验证 |
 
 ## Chunk 1: Authorization、baseline and exact snapshot import
@@ -148,11 +150,14 @@ git ls-remote <origin> refs/heads/main refs/tags/<archive-tag>
   No shell-string interpolation in production code；hash raw tar bytes with Node `createHash("sha256")`；sort source IDs before
   canonical YAML output；never read `.env` or ignored worktree content.
 
-- [ ] **Step 4: Run current package baselines with real prerequisites**
+- [ ] **Step 4: Run current package baselines through the root Infra authority**
 
-  Start isolated Redis/Mongo/MySQL/MinIO using fixed local-only ports and non-production DBs. Record the exact current pass/fail,
-  including Platform bootstrap layout and Web i18n lint failures. Agent baseline must run with its old lock and Python 3.11, not the
-  developer's current Python 3.14.
+  Use only root `docker-compose.infra.yml` with canonical project `kokoro-infra`; select the minimum required services and never start
+  parallel stateful containers with `docker run`. Isolate tests using logical MySQL databases、Mongo databases、Redis namespace/keyspace
+  and MinIO buckets/prefixes. Record exact current pass/fail, including Platform bootstrap layout and Web i18n lint failures. Agent
+  baseline must run with its old lock and Python 3.11, not the developer's current Python 3.14. Inventory existing project/network/volume
+  identities and resource use without reading data or deleting volumes. If an earlier ad-hoc run occurred, preserve it as a diagnosed
+  baseline-process defect and re-run the required certification through the canonical authority before Wave 0 completion.
 
 - [ ] **Step 5: Generate and review the provenance diff**
 
@@ -345,7 +350,8 @@ git commit -m "build: scaffold root workspace policy"
 
 - [ ] **Step 1: Capture the old Python 3.11 + old lock corpus before deleting it**
 
-  Start isolated Redis/Mongo. Freeze seed、clock、IDs and fake model. Record graph selection、tool calls、HITL、checkpoint、memory、
+  Through the canonical root Infra manager, ensure the shared `runtime` profile once and allocate a leased Redis DB/key scope plus a
+  unique Mongo test DB; do not start isolated Redis/Mongo containers. Freeze seed、clock、IDs and fake model. Record graph selection、tool calls、HITL、checkpoint、memory、
   raw event kind/order/payload and terminal after normalization. Never include prompts containing secrets or real user data.
 
 - [ ] **Step 2: Write comparator negative fixtures**
@@ -643,6 +649,7 @@ git commit -am "build(architecture): enforce dependency boundaries"
 **Files:**
 - Modify: root `package.json`
 - Create: `scripts/verify/foundation.mjs`, `contract.mjs`, `platform.mjs`, `session.mjs`, `web-user.mjs`, `web-admin.mjs`, `agent.mjs`, `cross-runtime.mjs`, `images.mjs`
+- Create: `scripts/verify/integration-runtime.mjs`
 - Create: `scripts/verify/command-inventory.test.ts`
 
 - [ ] **Step 1: Test every managed boundary has a required command**
@@ -653,10 +660,12 @@ git commit -am "build(architecture): enforce dependency boundaries"
 
   Each runner reports command/cwd/start/end/exit/report path and propagates signals; failure/skip is nonzero unless explicitly RC-external.
 
-- [ ] **Step 3: Run each command locally with fixed services**
+- [ ] **Step 3: Separate static commands from the single integration lifecycle**
 
-  Platform includes current real MySQL integration；Session/Agent include Redis/Mongo/S3-relevant tests；Web apps build separately；
-  cross-runtime uses fake model and namespace negative tests.
+  Platform/Session/Agent static runners never start Infra. `integration-runtime.mjs` is the only real-dependency runner: it acquires the
+  canonical Infra lease、ensures minimum profiles、creates run-scoped MySQL/Mongo/Redis/MinIO resources、serially runs Platform、Session、
+  Agent and fake-model cross-runtime gates, then cleans only the leased scope in `finally`. No runner may use a fixed shared DB、unguarded
+  `FLUSHDB`、hard-coded old container name or package-owned compose file.
 
 - [ ] **Step 4: Commit**
 
@@ -679,8 +688,10 @@ git commit -m "build: add explicit root verification commands"
 
 - [ ] **Step 2: Add required jobs**
 
-  `foundation`、`contract`、`ts-platform`、`ts-session`、`ts-web-user`、`ts-web-admin`、`python-agent`、`cross-runtime`、
-  `images`、`security-foundation`. Pin actions and service images by digest with human-readable tag comments.
+  `foundation`、`contract`、`ts-platform-static`、`ts-session-static`、`ts-web-user`、`ts-web-admin`、`python-agent-static`、
+  `integration-runtime`、`images`、`security-foundation`. Static jobs must not declare service containers. `integration-runtime` starts
+  exactly one root-managed Infra lifecycle, and self-hosted execution uses a concurrency group/lease. Pin actions and Infra/build images
+  by digest with human-readable tag comments.
 
 - [ ] **Step 3: Add CODEOWNERS consistency test**
 
@@ -702,40 +713,70 @@ git commit -m "ci: establish root required checks"
 
 **Files:**
 - Modify: `kokoro-agent/Dockerfile`, `kokoro-session/Dockerfile`, `kokoro-web/apps/user/Dockerfile`, `kokoro-platform/deploy/docker/Dockerfile`
-- Modify: `docker-compose.app.yml` and relevant compose files
+- Modify: `docker-compose.infra.yml`, `docker-compose.app.yml`, `deploy/provision.sh`, `scripts/closure-up.py`, `scripts/verify-all.py`
+- Modify: `scripts/e2e-v21-gate.py`, `scripts/chaos-verify.py`, `scripts/trace-verify.py`, `scripts/real-model-verify.py`
+- Modify after snapshot import: `kokoro-platform/scripts/integration-dev.mjs` and Session/Agent integration fixtures that own DB/bucket cleanup
+- Delete or downgrade to non-runnable pointer: `kokoro-platform/kokoro-litellm/docker-compose.example.yml`, `kokoro-platform/deploy/docker-compose.services.yml`
 - Modify: root `.dockerignore`
 - Create: `scripts/docker/check-context.mjs`, `scripts/docker/smoke.mjs`, tests
+- Create: `scripts/infra/manager.mjs`, `scripts/infra/scope.mjs`, `scripts/infra/inventory.mjs`, tests
+- Create: `config/repository/infrastructure-policy.yaml`
 
 - [ ] **Step 1: Test Docker context contents before build**
 
   Fail if `.git`、`.env*`、node_modules、`.venv`、tmp、coverage、DB data or secret-like files enter context. Inspect names/digests only;
   do not print secret content.
 
-- [ ] **Step 2: Convert all builds to root context**
+- [ ] **Step 2: Write failing Infra-authority and destructive-cleanup fixtures**
+
+  Reject non-canonical project names、Compose-auto-prefixed volume identity、multiple stateful declarations、mutable image tags、whole-file
+  secret injection、dev auto-restart、missing healthcheck、package-owned stateful Compose、fixed shared test DB/bucket、unguarded `FLUSHDB`、
+  hard-coded container names and cleanup without endpoint/prefix/lease validation. Inventory reports names/labels/size only and never reads
+  volume data. Existing duplicate volumes are evidence, not automatic deletion targets.
+
+- [ ] **Step 3: Implement the canonical Infra lifecycle**
+
+  Fix local authority to `kokoro-infra`; explicitly scope network/volume names so caller cwd/`-p` cannot create a second set. Add
+  `platform`、`runtime`、`storage`、`model` and `full` selection through the manager. Dev defaults to no automatic restart; production
+  override enables its explicit restart policy. Infra images are immutable digests; each service receives only required env. Manager flow:
+
+```text
+inspect/refuse competing authority → ensure minimal services without recreate → wait real health
+→ lease run scope → provision logical DB/key/bucket → run suites
+→ cleanup only validated leased scope → local keep-or-stop / CI down --volumes for its ephemeral scope only
+```
+
+  Local `down` never deletes volumes. `destroy-data` is a separate exact-target command requiring inventory、backup/restore evidence and
+  owner confirmation; do not implement a broad prune shortcut.
+
+- [ ] **Step 4: Convert all builds to root context**
 
   Copy root manifests/workspace/lock + required leaf manifests first, frozen filtered install, then source. Agent uses Python 3.12.13;
   TS images use Node 24.18.0/pnpm 11.17.0. Existing process behavior remains unchanged.
 
-- [ ] **Step 3: Fix Web standalone tracing from root**
+- [ ] **Step 5: Fix Web standalone tracing from root**
 
   Assert the actual generated standalone manifest/path and run container HTTP readiness. Do not invent an Admin production Dockerfile.
 
-- [ ] **Step 4: Build and smoke all roles**
+- [ ] **Step 6: Build and smoke all roles through one Infra scope**
 
 ```bash
 docker build -f kokoro-agent/Dockerfile .
 docker build -f kokoro-session/Dockerfile .
 docker build -f kokoro-web/apps/user/Dockerfile .
 docker build -f kokoro-platform/deploy/docker/Dockerfile .
+pnpm infra:config
+pnpm verify:integration-runtime
 docker compose -f docker-compose.app.yml config
 pnpm exec node scripts/docker/smoke.mjs
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add .dockerignore docker-compose.app.yml kokoro-*/Dockerfile kokoro-platform/deploy/docker/Dockerfile scripts/docker
-git commit -m "build(docker): use root workspace context"
+git add .dockerignore docker-compose.infra.yml docker-compose.app.yml deploy scripts config/repository/infrastructure-policy.yaml \
+  kokoro-*/Dockerfile kokoro-platform/deploy/docker/Dockerfile
+git commit -m "build(infra): establish one managed runtime authority"
 ```
 
 ## Chunk 5: Current docs、fresh clone and external verification
@@ -795,6 +836,9 @@ foundation → contract → ts-platform → ts-session → ts-web-user → ts-we
 ```
 
   Re-run codegen/locks twice and require `git diff --exit-code`. Record argv/cwd/tool versions/start/end/exit/report digest and CI URL.
+  The matrix invokes exactly one `integration-runtime` lifecycle. Evidence records Infra manifest digest、canonical project、profiles、
+  container/image digests、health results、lease/scope IDs、logical MySQL/Mongo/Redis/MinIO allocations and cleanup receipt without
+  recording credentials. Static gates must prove they did not start Infra. At the end, no test DB/key/bucket scope or test container remains.
 
 - [ ] **Step 4: Push the candidate branch and enable root branch protection**
 
@@ -850,6 +894,8 @@ Before execution handoff, the plan reviewer must confirm:
 - [ ] root workspace does not absorb production Site Projects；
 - [ ] snapshot import is mechanical and isolated from toolchain changes；
 - [ ] root lock/Docker/CI/nested workflow deletion is one protected authority switch set；
+- [ ] one root Infra authority exists per environment；project/network/volume identity、profiles、restart、health、lease、logical test
+      isolation and non-destructive cleanup are enforced, and no package/ad-hoc second stateful stack remains；
 - [ ] current baseline failures are visible and resolved/accepted before claiming regression-free；
 - [ ] GA old/new corpus precedes old-lock deletion and semantic diff is zero；
 - [ ] no real Provider/payment/production secret is required；

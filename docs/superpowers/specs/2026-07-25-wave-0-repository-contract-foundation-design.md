@@ -57,6 +57,8 @@ transaction 与逐任务验证门约束。`gaRuntimeSemanticChangeAuthorized` �
 10. Wave 0 触及 GA 的仓库形态、Python 版本、lock、Docker 与 CI，但不触及 GA runtime 行为。
 11. 整个 cutover 是一个 protected merge transaction：内部 review commits 允许分层，但禁止 partial merge、
     单独 cherry-pick 或 squash；`main` 只能看到全部 required gate 通过的最终 green head。
+12. `docker-compose.infra.yml` 是每个部署环境唯一的 Infra 生命周期入口；Site、Platform、Session、GA、Hub、测试和
+    运维脚本都只能消费或编排这套 Infra，不得各自再起 MySQL/Redis/Mongo/MinIO/LiteLLM。测试隔离数据，不复制基建。
 
 ### 0.2 已满足的所有者权属确认
 
@@ -177,6 +179,7 @@ process/migration 入口却完全无局部架构地图；Web 有许多组件 IND
 6. 建立最小但真实的 INDEX/dependency governance，不制造文档噪音。
 7. 为后续 clean rewrite 建立 dependency exceptions 的期限与清理 Wave。
 8. 在 Node 24/Python 3.12 上证明 GA、Session、Web、Platform 当前基线没有行为回归。
+9. 建立单一 Infra lifecycle authority，消除 compose project/network/volume 身份漂移并支持按资源预算选择性启动。
 
 ### 3.2 非目标
 
@@ -189,6 +192,7 @@ process/migration 入口却完全无局部架构地图；Web 有许多组件 IND
 - 不建立发布到 npm/PyPI 的版本体系；所有 workspace package 当前均 private/internal。
 - 不引入增量构建平台、Changesets、微服务框架或第二个 contract 仓库。
 - 不运行真实付费模型测试作为普通 PR gate。
+- 不自动删除或重置现有 Docker volume；只冻结 inventory 与迁移方案，数据清理需备份/恢复验证和所有者单独确认。
 
 ### 3.3 Wave 0 完成指标
 
@@ -207,6 +211,7 @@ process/migration 入口却完全无局部架构地图；Web 有许多组件 IND
 | Dependency | deep import、deny edge、cycle、过期豁免均阻断 CI |
 | CI | 不 checkout sibling remote、不调用未锁 pip/npm ci/npx、不依赖嵌套 workflow |
 | Docker | 四个当前受跟踪 Dockerfile 从根 context + 根 lock 构建 |
+| Infra | 每环境一个 root-managed stack；project/network/volume identity 稳定，无 package/ad-hoc 第二套 stateful Infra |
 | GA 行为 | runtime source 行为 diff 为 0；Python 3.12 前后同一 suite 与 smoke 均通过 |
 
 ## 4. 方案比较与架构裁决
@@ -775,7 +780,11 @@ Wave 0 不得重写成目标完成态：
 - 初始阶段全仓 gate，不做 affected skip；避免 dependency graph 尚未可信时漏测。
 - `index-roots.yaml` 中每个 package/deployable 必须绑定至少一个 required job；CI 校验 coverage 无遗漏，
   `@kokoro/i18n` 运行自身 typecheck/test，`@kokoro/tsconfig` 以 compile fixtures 验证 Node/Next variants。
-- required job 不把缺依赖、无 Docker daemon、无数据库或 silent skip 当成功。
+- static job 不启动 Infra；所有真实依赖集成集中到一个 required `integration-runtime` job，由根 Infra manager
+  一次 ensure、分配 run scope、串行执行、finally cleanup。required job 不把缺依赖、无 Docker daemon、无数据库或
+  silent skip 当成功。
+- self-hosted runner 必须使用 concurrency group/lease，拒绝同一 Docker daemon 上的平行 Infra；GitHub hosted runner
+  是独立 execution environment，但仍必须通过同一根 lifecycle contract，不能让各语言 job 自建 service containers。
 - real-provider/付费测试只允许受控 manual/scheduled/RC，不在 fork PR 暴露 secret。
 
 ### 11.2 Required jobs
@@ -784,13 +793,13 @@ Wave 0 不得重写成目标完成态：
 |---|---|---|
 | `foundation` | topology、single-lock、version、catalog、INDEX、dependency、dead path | 任一漂移阻断 |
 | `contract` | generate check、golden、inventory、orphan、digest、二次生成 clean | 任一消费者漂移阻断 |
-| `ts-platform` | Platform lint/typecheck/unit + current integration prerequisites | 无 skip |
-| `ts-session` | Session lint/typecheck/unit + Redis/Mongo integration | 服务不可用失败 |
+| `ts-platform-static` | Platform lint/typecheck/unit、Prisma generate/schema checks | 不启动 Infra |
+| `ts-session-static` | Session lint/typecheck/unit | 不启动 Infra |
 | `ts-web-user` | lint/typecheck/unit/build | build 不可省略 |
 | `ts-web-admin` | lint/typecheck/unit/build + Auth Prisma generate | 不直连业务 DB |
-| `python-agent` | Ruff、Pyright、pytest、wheel isolated smoke | Python 3.12 only |
-| `cross-runtime` | fake-model Agent↔Session contract/E2E、namespace negative | 不走真实付费模型 |
-| `images` | 四个当前 Dockerfile 根 context build + Platform 七 service/migration role + Session/Agent/Web bounded smoke | ignored 文件依赖失败 |
+| `python-agent-static` | Ruff、Pyright、无外部依赖 pytest、wheel isolated smoke | Python 3.12 only；不启动 Infra |
+| `integration-runtime` | 一套 root-managed Infra 上串行执行 Platform、Session、Agent、cross-runtime、namespace negative 与真实后端 smoke | scope/health/cleanup 任一失败即红 |
+| `images` | 四个当前 Dockerfile 根 context build + Platform 七 service/migration role；不重复启动 stateful Infra | ignored 文件依赖失败 |
 | `security-foundation` | secret、dependency、license、action pin、Docker context/SBOM scan | 无 silent allow |
 
 Heavy chaos、trace、real model、load、DR 在后续 Wave/RC 运行。现有 `verify-all.py` 的 SKIP 汇总只能作本地
@@ -827,7 +836,35 @@ Dockerfile：
 根 `.dockerignore` 必须先于 context 切换建立，至少排除 `.git`、`.env*`（保留 example）、node_modules、
 `.venv`、cache、coverage、tmp、IDE、截图、数据库卷和 local workspace。
 
-### 12.2 Script 规则
+### 12.2 Infra 生命周期唯一权威
+
+`infra` 是共享后端能力的部署基础，不是某个业务模块，也不是测试夹具。其正式边界如下：
+
+- **一环境一套：** dev、CI run、staging、production 可以是独立环境，但同一环境内只有一个 Infra stack；多 Site
+  共用该环境的后端和 Infra，不因 Site、App、Service、Worker 或测试套件复制实例。
+- **唯一入口：** 根 `docker-compose.infra.yml` 与根 `scripts/infra/*` 是 compose project name、network、volume、profile、
+  health、up/down/status 的唯一事实源。`deploy/provision.sh`、`closure-up.py`、CI 和文档不得手写不同 `-p` 值。
+- **固定身份：** 唯一受支持的 Infra project 为 `kokoro-infra`，调用方不得覆盖；network/volume 使用显式 environment scope
+  派生的稳定名称，不能
+  依赖调用者 cwd 或 Compose project 自动前缀。Site key 绝不能进入 project/network/volume 名。
+- **资源分层：** manager 提供 `platform`（MySQL）、`runtime`（Redis/Mongo）、`storage`（MinIO）、`model`
+  （LiteLLM）和组合 `full`；observability 独立 stack 只复用所需 `runtime/storage`。本地默认不因 Docker daemon 重启而
+  恢复整套重资源，生产 restart policy 由 production override 显式开启。
+- **应用只消费：** `docker-compose.app.yml` 不声明第二套 stateful Infra，经稳定 network 或托管服务 URL 连接；业务服务
+  不拥有 Infra volume 生命周期，也不得在 package test/dev script 中执行 stateful `docker run`。
+- **测试隔离：** MySQL 用独立 logical database、Mongo 用唯一 DB、MinIO 用唯一 bucket/prefix、Redis 用实现支持的
+  namespace/key prefix；当前实现不支持安全并发隔离时，使用串行 gate 和明确 cleanup，不能复制服务实例规避。
+- **清理语义：** 普通 `down` 只停止/删除 container/network，不带 `--volumes`。data reset、volume migration/delete、image/cache
+  prune 是单独 destructive operation，必须先 inventory、备份/恢复验证并取得所有者确认。
+- **CI 语义：** 一个 CI execution environment 可启动一套短生命周期 root-managed Infra；不同隔离 runner 属于不同环境，
+  但每个环境仍使用同一 manifest、project naming 和 cleanup contract，不能用 ad-hoc container 拼装另一套拓扑。
+- **一次性工具：** migration、seed、bucket admin 等无状态 one-shot job由 Compose `run --rm` 执行，不形成第二份 stateful
+  authority。直接 `docker run` 只允许 policy 白名单化的无状态诊断工具，不能运行数据库、对象存储或模型网关。
+
+当前机器已发现 `kokoro` 与 `kokoro-infra` 两种 project name 生成的重复 volume，以及更早的 `kokoro_dev_*`、
+`kokoro-platform_*` 遗留卷。Wave 0 先冻结 inventory、选定 canonical scope 并阻止继续增长；不能凭名称猜测哪份可删。
+
+### 12.3 Script 规则
 
 - 所有正式命令从根执行并按 package name 过滤。
 - 删除 `npm run`、`npm ci`、`npx`、直接 `.venv/bin/python` 与子 cwd lock 假设。
@@ -841,7 +878,7 @@ Web user Docker 显式设置并验证以根仓为 tracing 边界的 `outputFileT
 继续位于旧 `apps/user/server.js`。Build gate 解析真实 standalone manifest/路径，runtime image 按实际
 `kokoro-web/apps/user/server.js` 或生成结果 COPY/CMD，并通过容器 HTTP readiness/smoke 证明。
 
-### 12.3 Legacy deploy 声明
+### 12.4 Legacy deploy 声明
 
 当前 Compose 与四个受跟踪 Dockerfile 仍是 MySQL、七个 Platform 小进程和旧 service topology；Admin
 当前没有独立 Dockerfile。Wave 0 只使既有镜像从根 lock 可复现，
@@ -892,6 +929,11 @@ GA 证明拆成两类，不能用 source diff 冒充行为证明：
 - Action 固定 commit SHA；Release Evidence 记录 action、runtime、lock 和 image digest。
 - Node/Python/uv build base 与 Redis/Mongo/MySQL/MinIO 等 CI service image 均固定 immutable digest；人类可读
   tag 只作注释。更新 digest 必须走 dependency/security review，Evidence 记录 registry、platform 和 digest。
+- Infra container 不接收整份共享 `env_file`；每个 service 只接收自身所需变量。测试由 Infra manager 注入临时最小 env，
+  不允许 test helper 回读 `deploy/.env.dev`；生产凭据由 Secret Manager/Docker secrets/Kubernetes Secret 注入。
+- Redis/Mongo 的生产认证、MinIO healthcheck、服务级健康等待为部署硬门；只等 TCP port 不等于 ready。
+- 测试 cleanup 必须先校验 endpoint、`kokoro_test_<run>` scope 前缀和本次 lease token；禁止无保护 `FLUSHDB`、
+  固定共享 DB、`docker system prune`、`volume prune` 或宽泛删除。
 - Provenance bundle 存在访问控制存储，不进入 repo，不包含 secret 或本机 untracked 文件。
 - Root dependency scanner 与 secret scanner 在 fresh clone 和 CI 都执行。
 
@@ -962,6 +1004,8 @@ Wave 0 不含 schema/data migration，因此 Git 拓扑回滚不与数据库回�
 - Contract 17 generated outputs/23 tests。
 - GA fake-model worker、namespace negative、checkpoint/memory、contract suite。
 - Docker/Compose 记录 current pass/fail；Session clean-checkout build failure登记为已知缺陷，不伪造 baseline pass。
+- 外部依赖通过根 Infra authority 选择性启动；用 logical DB/key/bucket 隔离，禁止 ad-hoc 平行 stateful container。
+- 记录 canonical project/network/volume identity、重复 volume inventory 和资源用量；不读取数据内容，不自动删卷。
 
 ### 16.2 Foundation static gates
 
@@ -1105,6 +1149,10 @@ commit 自引用。报告内不得复制 secret、生产数据或完整环境变
 | Python 3.12 暴露兼容问题 | 中 | 高 | 独立 commit、完整 GA suite、非生成 runtime diff gate |
 | Nested workflow 静默失效 | 必然 | 高 | 同一 cutover series 建 root CI、branch protection 验证 |
 | Root Docker context 泄露 secret | 中 | 高 | `.dockerignore` 先行、context content test、secret scan |
+| Compose project name 漂移复制数据卷 | 已发生 | 高 | canonical `kokoro-infra` + 显式 scope name + inventory gate；迁移前不删卷 |
+| 并发测试清空共享 Redis/Mongo/MySQL/MinIO 数据 | 已发生风险 | 高 | run lease、受控 scope、前缀校验、串行 integration-runtime、finally cleanup |
+| Docker daemon 启动自动恢复整套重资源 | 已发生 | 中 | dev restart 默认关闭、按 profile ensure；production override 显式开启 |
+| 多个 CI job 各起真实依赖形成平行 Infra | 高 | 高 | static jobs 无 Infra；单一 required integration-runtime lifecycle |
 | INDEX 数量造成维护噪音 | 中 | 中 | 两级 roots、signal-trigger diff、非机械建图 |
 | Dependency checker 误称运行时图 | 中 | 高 | 明确证明边界，runtime 交给 contract/integration |
 | Legacy exemption 永久化 | 中 | 高 | 90 天、removeByWave、expiry hard fail |
@@ -1129,6 +1177,8 @@ commit 自引用。报告内不得复制 secret、生产数据或完整环境变
 - [ ] Root required CI 只验证当前 commit且 branch protection 已生效。
 - [ ] Platform/Session/Web/Admin/Agent/cross-runtime 全部 required evidence 无 silent skip。
 - [ ] 所有 Dockerfile root context build/smoke，Compose config 通过。
+- [ ] Infra project/network/volume identity 唯一；dev/CI/prod 生命周期入口一致，选择性启动、restart policy、逻辑测试隔离与
+      non-volume cleanup 均有自动化验证，且没有 package 自建 stateful Infra。
 - [ ] `--no-local` fresh clone certification 通过。
 - [ ] README/CURRENT/CODEBASE_MAP/ADR/INDEX 不再把旧仓或未来目标写成错误事实。
 - [ ] GA 非生成 runtime 行为 diff 为 0；Python 3.12 regression 为 0。
