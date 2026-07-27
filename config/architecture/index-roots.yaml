@@ -555,6 +555,54 @@
       "verification": [{ "cwd": "kokoro-web", "argv": ["pnpm", "--filter", "@kokoro/web-user", "test"] }]
     },
     {
+      "id": "web.user.ui.common",
+      "path": "kokoro-web/apps/user/src/ui/common",
+      "kind": "component",
+      "index": "kokoro-web/apps/user/src/ui/common/INDEX.md",
+      "owners": ["@LordFoxFairy"],
+      "boundary": "web.user",
+      "language": "typescript-react",
+      "signals": ["kokoro-web/apps/user/src/ui/common/INDEX.md"],
+      "dependencies": {"allow": []},
+      "verification": [{"cwd": "kokoro-web", "argv": ["pnpm", "--filter", "@kokoro/web-user", "test"]}]
+    },
+    {
+      "id": "web.user.ui.library",
+      "path": "kokoro-web/apps/user/src/ui/library",
+      "kind": "component",
+      "index": "kokoro-web/apps/user/src/ui/library/INDEX.md",
+      "owners": ["@LordFoxFairy"],
+      "boundary": "web.user",
+      "language": "typescript-react",
+      "signals": ["kokoro-web/apps/user/src/ui/library/INDEX.md"],
+      "dependencies": {"allow": []},
+      "verification": [{"cwd": "kokoro-web", "argv": ["pnpm", "--filter", "@kokoro/web-user", "test"]}]
+    },
+    {
+      "id": "web.user.ui.share",
+      "path": "kokoro-web/apps/user/src/ui/share",
+      "kind": "component",
+      "index": "kokoro-web/apps/user/src/ui/share/INDEX.md",
+      "owners": ["@LordFoxFairy"],
+      "boundary": "web.user",
+      "language": "typescript-react",
+      "signals": ["kokoro-web/apps/user/src/ui/share/INDEX.md"],
+      "dependencies": {"allow": []},
+      "verification": [{"cwd": "kokoro-web", "argv": ["pnpm", "--filter", "@kokoro/web-user", "test"]}]
+    },
+    {
+      "id": "web.user.ui.todo",
+      "path": "kokoro-web/apps/user/src/ui/todo",
+      "kind": "component",
+      "index": "kokoro-web/apps/user/src/ui/todo/INDEX.md",
+      "owners": ["@LordFoxFairy"],
+      "boundary": "web.user",
+      "language": "typescript-react",
+      "signals": ["kokoro-web/apps/user/src/ui/todo/INDEX.md"],
+      "dependencies": {"allow": []},
+      "verification": [{"cwd": "kokoro-web", "argv": ["pnpm", "--filter", "@kokoro/web-user", "test"]}]
+    },
+    {
       "id": "web.user.ui.billing",
       "path": "kokoro-web/apps/user/src/ui/billing",
       "kind": "component",

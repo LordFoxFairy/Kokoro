@@ -341,3 +341,86 @@ preflightPinVerification: pass    postflightPinVerification: pass
    downgrade — an unapproved GA dependency change. Requires a constraints-pinned re-lock proving zero version drift.
 3. Subrepo INDEX findings from the audit (5 Critical / 9 Important / 10 Minor) are partly addressed; the remainder
    needs its own promotion round.
+
+---
+
+# Round 3 — index truth and canonical locks (2026-07-27)
+
+Promotion commit: `5e4747c08814cbb30f3e806f738228f14ec5666a`. All four children moved; each child CI was green on the
+exact promoted SHA before its tag was cut, and every tag's peeled SHA was verified against the pin on the remote.
+
+| Repository | Pin | Recoverable ref |
+|---|---|---|
+| Agent | `5c118e59f3a8bf6adcbe2a8f984021029b6ae9ca` | `refs/tags/kokoro-wave0-index-truth-2026-07-27-agent` |
+| Platform | `92a293d68ce41a0e10497b217c52e04f787c7cd3` | `refs/tags/kokoro-wave0-index-truth-2026-07-27-platform` |
+| Session | `be2174d1c01b4d9016d84ace7c6394e13a637c76` | `refs/tags/kokoro-wave0-index-truth-2026-07-27-session` |
+| Web | `b65e86d39767636362ae253147b5d7925616ea03` | `refs/tags/kokoro-wave0-index-truth-2026-07-27-web` |
+
+## Canonical dependency sources
+
+Both `uv.lock` files resolved every artifact URL through a local mirror, which is what timed out an earlier Agent CI
+run. Re-resolved under constraints derived from the existing locks, so only the source host changed:
+
+| Lock | Mirror URLs | Canonical URLs | Version drift |
+|---|---:|---:|---|
+| root | 29 → 0 | 0 → 22 | none |
+| agent | 1821 → 0 | 0 → 1686 | none |
+
+Deleting a lock to force re-resolution discards uv's version preferences and would have upgraded roughly sixty
+packages including `langgraph`, `langchain-core`, `deepagents`, `protobuf` 6→7 and `wrapt` 1→2, with a `websockets`
+downgrade. The constraints reproduce the recorded resolution exactly. Because the Agent lock is universal, `numpy`
+legitimately resolves to both `2.4.6` and `2.5.0` under different markers, so multi-version packages are capped
+rather than pinned — pinning both is unsatisfiable.
+
+Two limits are recorded rather than papered over. An in-repo `[[tool.uv.index]]` does **not** override a user-level
+default index on uv 0.10.4, so locking on a mirror-configured machine still requires `UV_NO_CONFIG=1`. And any `uv`
+command run without `--locked` silently re-resolves and rewrites the lock, which is how an earlier attempt committed
+mirror URLs while claiming to have removed them; the committed bytes must be checked with `git show <sha>:uv.lock`.
+
+## INDEX accuracy
+
+A full audit of all 58 INDEX files produced 5 Critical, 9 Important and 10 Minor findings. Each repository was fixed
+by one agent and then checked by an independent reader that re-derived the public surface from the real
+`index.ts` / `__all__` rather than trusting the report. Three claims were rejected on that pass and corrected: an
+assertion that every non-Connect call goes through `callService` (the Admin gateway issues raw `fetch` at four
+sites), a leftover "was removed once it had zero consumers" narrative, and two modules naming an unimplemented
+Platform Admission as a current caller.
+
+Substantive mismatches the review found in the code itself: `kokoro-site/src/index.ts` does not re-export
+`createSiteServer` although the other four modules export their `create*Server`, and `kokoro-user/src/index.ts`
+omits `RefreshService` entirely. `skills/__init__.py` does not export `PackageStore`, `make_package_store` or
+`ExecCapableBackend`, yet `worker/main.py`, `agents/deps.py` and `tools/deliver.py` deep-import them; that INDEX now
+records the open boundary gap instead of describing it as a supported surface.
+
+The coverage gate then rejected the four newly added Web UI maps as unregistered roots, which is the gate behaving
+correctly. Registering them takes the architecture manifest from 58 to **62 roots**.
+
+## Round 3 runtime compatibility gate
+
+```text
+outcome: pass       treeMode: index      durationMs: 86628
+combinationId:     wave0-index-truth-2026-07-27
+combinationDigest: e3009fbd2765343d23858169109a8f599caa4a92b459ebe8bec486e6f76d03c0
+manifestDigest:    526fed2fe357b6534cebc47759860f9caf3ffa3ba35ba2271408d06e44714962
+matrixDigest:      393e5d8974fb5d50f4959e65d2fb314b675e58556b1079d9f7a6c5cc179b0866
+preflightPinVerification: pass    postflightPinVerification: pass
+```
+
+| Scenario | Outcome | ms |
+|---|---|---:|
+| `web-session-http-sse` | pass | 7536 |
+| `session-platform-internal-rpc` | pass | 2610 |
+| `session-agent-durable-localfake` | pass | 6804 |
+| `agent-model-gateway-localfake` | pass | 3838 |
+| `platform-admin-auth-connect` | pass | 2902 |
+
+Infra ran under the root authority and was stopped in a trap; zero containers remained and no volume or image was
+removed.
+
+## Still open
+
+1. Root remote CI has never run — the repository has no Actions secrets, so `contract.yml` stops at its own
+   `KOKORO_SUBMODULE_TOKEN` guard. Owner action. No root BOM tag until a green run exists.
+2. Wave T2 (Public Admin API over OpenAPI 3.1) has not started.
+3. Removing `default = true` from the user-level uv configuration would make canonical locking the default instead
+   of something each locking session has to remember.
