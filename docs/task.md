@@ -150,6 +150,13 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   `platform.admin` 挂着 credit/hub/model/payment/site/user **六条幽灵许可**,而它只 import `platform-kit`
   (那些模块它是走 HTTP 的)。六张没人用的通行证,任何一张都能放行一次没人审过的 import。
   `check-dependencies.ts` 现在对"没有任何包用到的 allow 条目"报错,`platform.admin` 收窄为 `[platform.kit]`。
+- **(round 13 已补)** round 12 交接时我自己指出的下一个洞:窄入口有了、门禁也拦了,但**包根仍在
+  `export * from schemas.js`**,所以门禁是**唯一**屏障——只活在检查器里的规则，一个 `--no-verify` 就没了。
+  查下来那条 re-export **零消费方**(`platform-registry.ts` 是唯一从包根导入的地方,拿的是 module descriptor)。
+  已从 user/site/credit 删除,八个包 typecheck 全部不变,从包根拿 schema 现在是**编译错误**而不只是门禁发现:
+  `error TS2305: Module '"@kokoro/user"' has no exported member 'membershipCheckResponseSchema'`。
+  顺带修了 round 12 门禁的一个糙边:它对任何包根导入都说"去 bind `<pkg>/contract`",
+  但 model/payment/hub 没有 peer、根本没建那个入口——指向一个不存在的路径比说清真实缺口更糟,现已分开两种报错。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。

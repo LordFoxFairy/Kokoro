@@ -72,7 +72,14 @@ function packageNames(root) {
     if (SKIP_DIRECTORIES.has(entry)) continue;
     const manifest = join(root, entry, "package.json");
     try {
-      names.set(JSON.parse(readFileSync(manifest, "utf8")).name, entry);
+      const parsed = JSON.parse(readFileSync(manifest, "utf8"));
+      names.set(parsed.name, {
+        directory: entry,
+        // Whether the target actually publishes the entry a peer is required to use. A package with
+        // no peers has not needed one yet; saying so beats telling the caller to import a path that
+        // does not exist.
+        publishesContract: Object.hasOwn(parsed.exports ?? {}, `.${CONTRACT_SUBPATH}`),
+      });
     } catch {
       // Not a package directory.
     }
@@ -96,7 +103,7 @@ export function scan(root) {
   for (const file of files) {
     const owner = owningPackage(file, root);
     // Not inside any child package -> workspace-root code, i.e. the composition root.
-    const isCompositionRoot = ![...directories.values()].includes(owner);
+    const isCompositionRoot = ![...directories.values()].some((entry) => entry.directory === owner);
     const lines = readFileSync(file, "utf8").split(/\r?\n/u);
     for (const [index, line] of lines.entries()) {
       for (const match of line.matchAll(IMPORT_RE)) {
@@ -106,11 +113,11 @@ export function scan(root) {
           sharedImports += 1;
           continue;
         }
-        const targetDirectory = directories.get(base);
+        const target = directories.get(base);
         // Not a workspace service package; nothing this rule governs.
-        if (targetDirectory === undefined) continue;
+        if (target === undefined) continue;
         // A package importing itself by name still resolves to its own root; not a peer edge.
-        if (targetDirectory === owner) continue;
+        if (target.directory === owner) continue;
         if (isCompositionRoot) {
           compositionImports += 1;
           continue;
@@ -120,8 +127,12 @@ export function scan(root) {
           continue;
         }
         violations.push(
-          `contract_imports_not_narrow: ${relative(ROOT, file)}:${index + 1}: imports "${spec}"; ` +
-            `a peer must bind "${base}${CONTRACT_SUBPATH}", not the package root`,
+          target.publishesContract
+            ? `contract_imports_not_narrow: ${relative(ROOT, file)}:${index + 1}: imports "${spec}"; ` +
+              `a peer must bind "${base}${CONTRACT_SUBPATH}", not the package root`
+            : `contract_imports_no_contract_entry: ${relative(ROOT, file)}:${index + 1}: imports ` +
+              `"${spec}", but ${base} publishes no "${CONTRACT_SUBPATH}" entry; add one exposing its ` +
+              `HTTP schemas module and import that, rather than reaching into the package root`,
         );
       }
     }

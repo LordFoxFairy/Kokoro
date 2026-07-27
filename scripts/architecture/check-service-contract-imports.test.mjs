@@ -16,7 +16,12 @@ function fixture(files) {
   return root;
 }
 
-const USER_PKG = { "kokoro-user/package.json": { name: "@kokoro/user" } };
+const USER_PKG = {
+  "kokoro-user/package.json": {
+    name: "@kokoro/user",
+    exports: { ".": "./src/index.ts", "./contract": "./src/contract.ts" },
+  },
+};
 const HUB_PKG = { "kokoro-hub/package.json": { name: "@kokoro/hub" } };
 
 test("passes when a peer binds the narrow contract entry", () => {
@@ -54,6 +59,20 @@ test("rejects a peer reaching into a private subpath", () => {
     "kokoro-hub/src/a.ts": 'import { x } from "@kokoro/user/src/domain/user.js";\n',
   });
   assert.throws(() => run(root), /contract_imports_not_narrow/u);
+});
+
+// Telling a caller to import a path that does not exist is a worse error than naming the real gap.
+test("names the missing contract entry rather than the root import", () => {
+  const root = fixture({
+    "kokoro-model/package.json": { name: "@kokoro/model", exports: { ".": "./src/index.ts" } },
+    ...HUB_PKG,
+    "kokoro-hub/src/a.ts": 'import { x } from "@kokoro/model";\n',
+  });
+  assert.throws(() => run(root), (error) => {
+    assert.equal(error.code, "contract_imports_no_contract_entry");
+    assert.match(error.message, /@kokoro\/model publishes no "\/contract" entry/u);
+    return true;
+  });
 });
 
 test("exempts the shared library", () => {

@@ -650,6 +650,8 @@ All against real services, with no silent skips:
 | platform integration, real MySQL + Redis + Mongo + MinIO (round 10) | 611 passed, 0 skipped |
 | platform unit (round 11) | 1,093 passed |
 | platform integration, real MySQL + Redis + Mongo + MinIO (round 11) | 611 passed, 0 skipped |
+| platform unit (round 13) | 1,093 passed |
+| platform integration, real MySQL + Redis + Mongo + MinIO (round 13) | 611 passed, 0 skipped |
 | registry fixtures | 50 passed |
 | round 6 compatibility gate | 5/5 scenarios pass |
 
@@ -876,6 +878,31 @@ Roots owning no package are skipped: they have nothing to draw an edge from, so 
 not evidence of anything. Restoring one phantom allowance fails the gate, and the manifest restores
 byte-identical.
 
+## Round 13 — a gate is a weaker barrier than an absent export
+
+Rounds 11 and 12 gave each service a narrow `./contract` entry and gated peers onto it, but the
+package root still re-exported the same schemas module. The gate was therefore the *only* barrier:
+nothing physically stopped the next caller reaching the schemas through the root, and a rule that
+lives only in a checker is one `--no-verify` away from not existing.
+
+The re-export turned out to have no consumers left. `platform-registry.ts` is the sole importer of
+these package roots and takes module descriptors; every peer already binds `./contract`. Removing it
+from user, site and credit leaves all eight packages typechecking unchanged, and converts a policy
+finding into a compile error:
+
+```
+error TS2305: Module '"@kokoro/user"' has no exported member 'membershipCheckResponseSchema'
+```
+
+The package root now exposes services, servers, manifests and domain contracts; the wire contract
+lives at `./contract` alone. That is the split boundary too — a peer depends on what would be
+published, not on whatever happens to be exported today.
+
+Writing this exposed a rough edge in round 12's gate. It told any root importer to "bind
+`<pkg>/contract`" even when the target published no such entry — model, payment and hub have no peers
+and so never needed one. Directing someone to an import that does not resolve is a worse error than
+naming the real gap, so the gate now distinguishes the two and says which is which.
+
 ## Verification
 
 All against real services, with no silent skips:
@@ -886,7 +913,7 @@ All against real services, with no silent skips:
 | model, real MySQL (`--no-file-parallelism`) | 152 passed |
 | platform-admin Connect suite, 5 consecutive runs | 7 passed each |
 | root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
-| architecture gates (round 12: + contract-import and unused-allowance fixtures) | 51 passed |
+| architecture gates (round 13) | 52 passed |
 | Python gates (compatibility, admin OpenAPI, admin browser schemas, GA isolation) | 66 passed |
 | contract generator tests | 35 passed |
 | round 8 compatibility gate | 5/5 scenarios, 7 session-platform assertions |
