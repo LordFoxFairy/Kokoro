@@ -59,7 +59,10 @@ kit / site / user / deploy.docker）。
   path 是字符串、响应 schema 由**调用方**自己声明，服务端与客户端之间没有编译期链接。
   现存 4 处：`payment→credit`、`credit→site`、`credit→user`、`hub→user`。
 
-`callService` 里还留着一处 `@deprecated` legacy 单一共享密钥模式——项目未上线，这是应删的兼容残留。
+`callService` 里还留着 `@deprecated` legacy 单一共享密钥模式（`caller` 省略时走旧共享密钥比对）。
+**已逐点核实：4 处生产调用全部显式传 `caller`（`payment` / `credit` / `hub`），该模式消费者数为 0，是死代码。**
+删除本身安全，但属 `kokoro-platform` 子仓改动，需走下一轮 pin promotion；spec §13 也把手写 internal client
+的清除排在 Wave T6。
 
 ### 3.1 为什么用 protobuf/Connect 而不是 tRPC
 

@@ -40,8 +40,10 @@
 - 迁移序(spec §13):T0 contract foundation → T1 Admin Auth pilot(**已完成**)→ T2 Public Admin API(OpenAPI 3.1)
   → T3 Platform Admission(**这一步才处理那 4 处 callService**:§3.2 判定其中部分本属同一 Platform workflow,
   应收拢为本地 application interface 而非包装成 RPC)→ T4 Session HTTP/SSE → T5 durable ownership → T6 legacy 删除。
-- 因此**现在不要删** `callService` 的 legacy 单密钥模式:spec §6.3 允许本地开发临时兼容 per-caller static secret
-  (须集中封装+标注 migration expiry),删除归 T6 且以 consumer inventory 归零为前置。
+- `callService` 的 legacy 单密钥模式(`caller` 省略走旧共享密钥):**已核实 4 处生产调用全部显式传 `caller`
+  (payment/credit/hub),消费者数为 0 = 死代码**,删除安全。但它是 kokoro-platform 子仓改动,要走下一轮
+  pin promotion + 子仓 CI;spec §13 也把手写 internal client 清除排在 T6,故本轮只记录不动手。
+  注意别误删 per-caller static secret 本身——spec §6.3 允许本地开发临时保留(须集中封装+标注 migration expiry)。
 
 ## 通用引擎重塑 campaign(2026-07-24;规划阶段,未碰代码——用户要求先思考对齐再动)
 
