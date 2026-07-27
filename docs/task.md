@@ -131,7 +131,15 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 - 现状:5 条声明契约里**只有 `platform-admin-auth v1` 真走 protobuf/Connect**(带 protovalidate、
   CommandIdentity/CommandReceipt 幂等信封、GetCommandReceipt 超时对账、RetryClass 错误分类)。
   其余仍是 `contract/spec/*.yaml` 生成的 Zod mirror + `callService` 手写出站(4 处:payment→credit、
-  credit→site、credit→user、hub→user),**响应 schema 由调用方自己声明,服务端改形状不会让调用方编译红**。
+  credit→site、credit→user、hub→user)。
+- **(round 11 已修)** 那句"响应 schema 由调用方自己声明"只剩 hub→user 一处成立,已修:hub 原来自己抄了
+  user `/memberships/check` 的响应形状,provider 改名两边都能编译、只在运行期 parse 时炸;现在 import
+  provider 的 `membershipCheckResponseSchema`,同样的改名让 hub typecheck 立刻红(加字段仍能编译——
+  加法本就是兼容演进)。另三处虽已 import provider,但走的是包根入口,为一个两字段 schema 把 user 的
+  prisma/fastify/ioredis/jose/nodemailer 全拖进来;已给 user/site/credit 各加 `./contract` 窄入口
+  (只出 HTTP schemas 模块,除 zod 与 platform-kit 外零依赖),四处调用方全部改走它。
+  **这个窄入口就是将来拆库后对外发布的那一层**:同伴依赖已发布契约,而不是实现。
+  同时把 hub→user 这条**本来就存在于 wire 上、却不在包图里**的依赖显式声明,依赖门禁边数 13→14。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。

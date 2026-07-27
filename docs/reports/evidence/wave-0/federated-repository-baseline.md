@@ -648,6 +648,8 @@ All against real services, with no silent skips:
 | credit integration, real MySQL | 117 passed |
 | platform unit (round 10) | 1,093 passed |
 | platform integration, real MySQL + Redis + Mongo + MinIO (round 10) | 611 passed, 0 skipped |
+| platform unit (round 11) | 1,093 passed |
+| platform integration, real MySQL + Redis + Mongo + MinIO (round 11) | 611 passed, 0 skipped |
 | registry fixtures | 50 passed |
 | round 6 compatibility gate | 5/5 scenarios pass |
 
@@ -802,6 +804,39 @@ Tests  1 failed | 16 passed (17)
 
 `route-access.ts` restored byte-identical afterwards. A repository-wide sweep leaves zero references
 outside that test.
+
+## Round 11 — a caller-declared response schema is not a contract
+
+Four services call peers over HTTP through `callService`. The backlog recorded the risk as "响应 schema
+由调用方自己声明，服务端改形状不会让调用方编译红". Three of the four had already been fixed to import
+from the provider; one had not.
+
+Hub kept its own copy of user's `/memberships/check` response shape, with a comment acknowledging the
+single source lived in `kokoro-user`. A rename on the provider compiled cleanly on both sides and would
+have failed at runtime, when `callService` parsed a live response against the stale mirror. Hub now
+imports `membershipCheckResponseSchema`, so the same rename fails its typecheck:
+
+```
+error TS2741: Property 'active' is missing in type
+'{ role: "admin" | "owner" | "member" | null; isActive: boolean; }'
+but required in type 'MembershipCheck'
+```
+
+Adding a field to the provider still compiles, which is correct — additive evolution is compatible, and
+a gate that flagged it would be wrong.
+
+The other three imported from the provider's package *root*, which drags the whole service in: importing
+`@kokoro/user` for a two-field schema pulls Prisma, Fastify, ioredis, jose and nodemailer. So `user`,
+`site` and `credit` each gained a `./contract` export exposing only their HTTP schemas module — which
+imports nothing beyond zod and platform-kit — and all four callers now bind through it. This is the
+entry point that survives the services being split into separate repositories: peers depend on the
+published contract, not the implementation.
+
+Hub gained a declared dependency on user. It already had that dependency on the wire and the package
+graph did not show it, so the dependency gate could not see an edge that already existed. Recording it
+moves `platform.hub`'s allowlist from `[platform.kit]` to `[platform.kit, platform.user]` and the
+internal edge count from 13 to 14. The lockfile grows by three lines: a workspace link, no new external
+package.
 
 ## Verification
 
