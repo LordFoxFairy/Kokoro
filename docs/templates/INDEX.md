@@ -17,7 +17,7 @@ Name adjacent concerns owned elsewhere.
 
 ## Public boundary
 
-List supported exports, routes, commands, protocols, or process entrypoints.
+Name the real exports, routes, commands, protocols, or process entrypoints in backticks — `src/index.ts`, `POST /things`, `module.main`. A boundary INDEX must name at least one, and prose generic enough to read the same for any module is rejected as a duplicate of its twin.
 
 ## Callers and dependencies
 

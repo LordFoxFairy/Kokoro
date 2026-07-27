@@ -17,11 +17,11 @@ This directory does not own Kokoro product services, business state, provider cr
 
 ## Public boundary
 
-[`README.md`](README.md) and each dependency's explicit example configuration are the supported operator boundary.
+[`README.md`](README.md) plus two example stacks: `langfuse/docker-compose.yml` with `langfuse/.env.local.example` (LLM tracing), and `searxng/settings.yml` (search backend). No script here is executable automation; operators copy and adapt.
 
 ## Callers and dependencies
 
-Operators may enable these dependencies through approved deployment composition. Product code consumes only declared remote protocols.
+Operators may enable these dependencies through approved deployment composition. Product code reaches them only over their declared remote HTTP endpoints. Langfuse shares the Root Infra Redis and MinIO and keeps its own Postgres and ClickHouse.
 
 ## Data ownership and events
 
@@ -29,11 +29,11 @@ Optional dependencies own their own local volumes when enabled; Kokoro service r
 
 ## Runtime and security
 
-Only example configuration is committed. Credentials, cookies, and production telemetry payloads must not enter Git or verification output.
+Only example configuration is committed. `langfuse/.env.local.example` carries placeholder values only — real keys come from the deployment environment. Credentials, cookies, and production telemetry payloads must not enter Git or verification output.
 
 ## Idempotency, failure, and recovery
 
-An optional dependency failure must degrade according to its product policy and must not corrupt Kokoro business transactions.
+N/A — this root holds example configuration with no runtime of its own. Degradation and retry belong to the enabling deployment composition and to the consuming service's own policy.
 
 ## Extension rules and forbidden dependencies
 
@@ -45,4 +45,4 @@ The presence of an example does not mean the dependency is enabled in every Site
 
 ## Verification
 
-Validate configuration syntax through the owning Root Infra or deployment gate before enabling a profile.
+Run `git diff --check`, then `docker compose -f ops/langfuse/docker-compose.yml config` to render the stack without starting it. Do not point either example at production credentials.

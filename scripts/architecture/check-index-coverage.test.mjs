@@ -20,10 +20,13 @@ const requiredSections = [
   "Verification",
 ];
 
-async function writeIndex(root, relativePath, rootId = "root.example") {
+async function writeIndex(root, relativePath, rootId = "root.example", bodies = {}) {
   const path = join(root, relativePath);
   await mkdir(join(path, ".."), { recursive: true });
-  const sections = requiredSections.map((section) => `## ${section}\n\nCurrent fact.\n`).join("\n");
+  const defaults = { "Public boundary": `\`src/${rootId}.ts\` is the supported entrypoint.` };
+  const sections = requiredSections
+    .map((section) => `## ${section}\n\n${bodies[section] ?? defaults[section] ?? "Current fact."}\n`)
+    .join("\n");
   await writeFile(
     path,
     `---\narchitectureIndex: 1\nrootId: ${rootId}\nowners:\n  - "@owner"\n---\n\n# Example\n\n${sections}`,
@@ -132,6 +135,121 @@ test("ignores documentation templates and generated package artifacts", async ()
   await writeIndex(fixture.root, "docs/templates/INDEX.md", "replace.with.stable.id");
   await mkdir(join(fixture.root, "service/generated/prisma"), { recursive: true });
   await writeFile(join(fixture.root, "service/generated/prisma/package.json"), '{"name":"generated"}\n');
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects a required section that has a heading but no content", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", { "Current gotchas": "" });
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /required section is empty: Current gotchas/);
+});
+
+test("accepts an N/A section that states a reason", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", {
+    "Idempotency, failure, and recovery": "N/A — this root owns declarative configuration only.",
+  });
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects a bare N/A section with no stated reason", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", {
+    "Idempotency, failure, and recovery": "N/A",
+  });
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /"N\/A" section must state a reason: Idempotency, failure, and recovery/);
+});
+
+test("rejects a Public boundary that names no concrete entrypoint in backticks", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", {
+    "Public boundary": "Application services and adapters are the supported entrypoints.",
+  });
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Public boundary must name at least one concrete entrypoint in backticks/);
+});
+
+test("rejects two root-owned boundaries that share interchangeable Public boundary prose", async () => {
+  const fixture = await makeFixture([
+    entry(),
+    entry({
+      id: "root.second",
+      path: "second",
+      index: "second/INDEX.md",
+      boundary: "root.second",
+      signals: ["second/INDEX.md"],
+    }),
+  ]);
+  const shared = { "Public boundary": "Application services plus `src/interfaces/http` are the entrypoints." };
+  await writeIndex(fixture.root, "INDEX.md", "root.example", shared);
+  await writeIndex(fixture.root, "second/INDEX.md", "root.second", shared);
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Public boundary duplicates/);
+});
+
+test("allows shared Public boundary prose when the duplicate lives in a federated child repository", async () => {
+  const fixture = await makeFixture([
+    entry(),
+    entry({
+      id: "service.child",
+      path: "kokoro-child",
+      index: "kokoro-child/INDEX.md",
+      boundary: "service.child",
+      signals: ["kokoro-child/INDEX.md"],
+    }),
+  ]);
+  await writeFile(
+    join(fixture.root, ".gitmodules"),
+    '[submodule "kokoro-child"]\n\tpath = kokoro-child\n\turl = https://example.invalid/child.git\n',
+  );
+  const shared = { "Public boundary": "Application services plus `src/interfaces/http` are the entrypoints." };
+  await writeIndex(fixture.root, "INDEX.md", "root.example", shared);
+  await writeIndex(fixture.root, "kokoro-child/INDEX.md", "service.child", shared);
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects a relative link whose anchor does not exist in the target file", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", {
+    "Callers and dependencies": "See [the runbook](README.md#missing-heading).",
+  });
+  await writeFile(join(fixture.root, "README.md"), "# Title\n\n## Present Heading\n\nBody.\n");
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /broken link anchor: README\.md#missing-heading/);
+});
+
+test("accepts a relative link whose anchor resolves to a heading", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md", "root.example", {
+    "Callers and dependencies": "See [the runbook](README.md#present-heading).",
+  });
+  await writeFile(join(fixture.root, "README.md"), "# Title\n\n## Present Heading\n\nBody.\n");
 
   const result = run(fixture.root, fixture.manifestPath);
 

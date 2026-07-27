@@ -134,6 +134,37 @@ function markdownLinks(markdown) {
   return [...markdown.matchAll(/!?(?:\[[^\]]*\])\(([^)\s]+)(?:\s+"[^"]*")?\)/gu)].map((match) => match[1]);
 }
 
+function sectionBody(markdown, section) {
+  const escaped = section.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  const heading = new RegExp(`^##\\s+${escaped}\\s*$`, "imu").exec(markdown);
+  if (!heading) return null;
+  const rest = markdown.slice(heading.index + heading[0].length);
+  const next = /^##\s+/mu.exec(rest);
+  return (next ? rest.slice(0, next.index) : rest).trim();
+}
+
+function headingSlugs(markdown) {
+  return [...markdown.matchAll(/^#{1,6}\s+(.+?)\s*$/gmu)].map((match) =>
+    match[1].trim().toLowerCase().replace(/[^\w\s-]/gu, "").replace(/\s+/gu, "-"),
+  );
+}
+
+function federatedChildPaths(root) {
+  const modules = resolve(root, ".gitmodules");
+  if (!existsSync(modules)) return [];
+  return [...readFileSync(modules, "utf8").matchAll(/^\s*path\s*=\s*(.+?)\s*$/gmu)].map((match) =>
+    normalizedRelative(match[1]),
+  );
+}
+
+function isChildOwned(rootPath, childPaths) {
+  return childPaths.some((child) => rootPath === child || rootPath.startsWith(`${child}/`));
+}
+
+function normalizeProse(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/gu, " ").trim();
+}
+
 function walk(root, visitor, current = root) {
   for (const entry of readdirSync(current, { withFileTypes: true })) {
     if (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name)) continue;
@@ -182,16 +213,38 @@ function validateIndex(root, entry, errors) {
   }
   if (entry.kind === "boundary") {
     for (const section of REQUIRED_SECTIONS) {
-      const heading = new RegExp(`^##\\s+${section.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}\\s*$`, "imu");
-      if (!heading.test(markdown)) errors.push(`${entry.index}: missing required section: ${section}`);
+      const body = sectionBody(markdown, section);
+      if (body === null) {
+        errors.push(`${entry.index}: missing required section: ${section}`);
+        continue;
+      }
+      if (body.length === 0) {
+        errors.push(`${entry.index}: required section is empty: ${section}`);
+        continue;
+      }
+      // "N/A" is a legitimate answer for a genuinely inapplicable concern, but only with a stated reason.
+      if (/^n\/a\b/iu.test(body) && !/^n\/a\s*[—:-]\s*\S/iu.test(body)) {
+        errors.push(`${entry.index}: "N/A" section must state a reason: ${section}`);
+      }
+    }
+    const publicBoundary = sectionBody(markdown, "Public boundary");
+    if (publicBoundary && !/`[^`\n]+`/u.test(publicBoundary)) {
+      errors.push(`${entry.index}: Public boundary must name at least one concrete entrypoint in backticks`);
     }
   }
   for (const target of markdownLinks(markdown)) {
-    if (/^(?:[a-z]+:|#)/iu.test(target)) continue;
-    const pathOnly = decodeURIComponent(target.split("#", 1)[0]);
-    if (!pathOnly) continue;
-    const targetPath = resolve(dirname(indexPath), pathOnly);
-    if (!existsSync(targetPath)) errors.push(`${entry.index}: broken relative link: ${target}`);
+    if (/^[a-z]+:/iu.test(target)) continue;
+    const hash = target.indexOf("#");
+    const pathOnly = decodeURIComponent(hash < 0 ? target : target.slice(0, hash));
+    const anchor = hash < 0 ? "" : target.slice(hash + 1);
+    const targetPath = pathOnly ? resolve(dirname(indexPath), pathOnly) : indexPath;
+    if (pathOnly && !existsSync(targetPath)) {
+      errors.push(`${entry.index}: broken relative link: ${target}`);
+      continue;
+    }
+    if (anchor && !headingSlugs(readFileSync(targetPath, "utf8")).includes(anchor.toLowerCase())) {
+      errors.push(`${entry.index}: broken link anchor: ${target}`);
+    }
   }
 }
 
@@ -236,6 +289,22 @@ function validateRepository(root, manifest) {
     for (const dependency of entry.dependencies?.allow ?? []) {
       if (!ids.has(dependency)) errors.push(`root ${entry.id} allows unknown dependency: ${dependency}`);
     }
+  }
+  // Interchangeable boundary prose carries no navigational value. Root-owned boundaries only: a
+  // federated child repository owns its own INDEX text and cannot be fixed from this repository.
+  const childPaths = federatedChildPaths(root);
+  const boundaryProse = new Map();
+  for (const entry of manifest.roots) {
+    if (entry.kind !== "boundary") continue;
+    if (isChildOwned(normalizedRelative(entry.path), childPaths)) continue;
+    const indexPath = resolve(root, entry.index);
+    if (!existsSync(indexPath)) continue;
+    const body = sectionBody(readFileSync(indexPath, "utf8"), "Public boundary");
+    if (!body) continue;
+    const key = normalizeProse(body);
+    const previous = boundaryProse.get(key);
+    if (previous) errors.push(`${entry.index}: Public boundary duplicates ${previous}`);
+    else boundaryProse.set(key, entry.index);
   }
   const discovered = discover(root);
   for (const indexPath of discovered.indexes) {

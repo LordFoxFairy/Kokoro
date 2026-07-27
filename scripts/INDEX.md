@@ -17,7 +17,11 @@ Scripts do not implement product behavior, replace child CI, or write another se
 
 ## Public boundary
 
-The supported command families are documented by the adjacent component INDEX files for [`architecture`](architecture/INDEX.md), [`compatibility`](compatibility/INDEX.md), [`infra`](infra/INDEX.md), and [`repository`](repository/INDEX.md).
+Component command families, each with its own INDEX: [`architecture`](architecture/INDEX.md), [`compatibility`](compatibility/INDEX.md), [`contract`](contract/INDEX.md), [`infra`](infra/INDEX.md), and [`repository`](repository/INDEX.md).
+
+`foundation/` has no INDEX yet and is documented here: `foundation/check-evidence.mjs` validates release evidence shape and `foundation/ownership-attestation.mjs` emits the ownership attestation. Both are Root-only and read-only.
+
+Root-level Python entrypoints, invoked from the superproject root: `closure-up.py` (local dev bring-up, referenced by the Web INDEX), `verify-all.py` (aggregate gate), `chaos-verify.py`, `e2e-v21-gate.py`, `real-model-verify.py`, and `trace-verify.py`. `procutil.py` is a shared helper, not an entrypoint.
 
 ## Callers and dependencies
 
