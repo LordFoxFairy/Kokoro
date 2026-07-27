@@ -37,7 +37,7 @@
       "id": "kokoro-platform",
       "path": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
-      "pin": "95ce3647547861e950c6dec40c3c93ced4be3b98",
+      "pin": "bd527f0a763eba5ce696969f1703409ce45a40c3",
       "lockfiles": [
         "pnpm-lock.yaml"
       ],
@@ -67,7 +67,7 @@
           "role": "provider"
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-site-in-catalogue-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-drop-shared-secret-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
