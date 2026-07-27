@@ -26,6 +26,23 @@ any of the eight Platform identity axes (`site_id`/`siteId`, `owner_id`/`ownerId
 `workspace_id`/`workspaceId`, `user_id`/`userId`) as well as a namespace composed from a business
 prefix such as `user:`. `--source` takes an alternate tree for fixtures.
 
+`check-site-scope-planes.mjs` is the supported entrypoint for the companion rule on the Platform side,
+with `check-site-scope-planes.test.mjs` defining its fail-closed behaviour. It scans `kokoro-platform`
+for repository and service methods that take an isolation key optionally (`siteId`, `ownerId`,
+`workspaceId`, `tenantId`) and requires every call that *declines to scope* — omitting the argument or
+passing a literal `undefined` — to sit in an admin-plane file. `--source` takes an alternate tree.
+
+Unscoped reads are legitimate: operators list across every Site. They are legitimate only there. The
+same method reached from a user-facing route hands one Site's user every Site's rows, and three
+fail-opens have already shipped in exactly that shape — a missing isolation value degrading to *no
+isolation* rather than a refusal, each documented in a comment as intended. All three were found by
+reading, not by a gate, which is why this one exists.
+
+Its blind spot is recorded rather than hidden: a call passing a variable that happens to be undefined
+at runtime reads as scoped. The gate proves intent at the callsite, not the value on the wire. It also
+fails closed when it finds no declarations at all, because a parser that stopped matching would
+otherwise report a clean tree.
+
 GA is not a Platform module and must not become one: `namespace` is its only isolation key and stays
 opaque, while `siteId` is resolved and enforced entirely on the Platform side. The rule was documented
 in the codebase map but nothing checked it, so this gate freezes the currently-clean state — an empty
@@ -57,4 +74,6 @@ The checker consumes JSON-compatible YAML to avoid adding a Root runtime depende
 
 ## Verification
 
-Run `node --test scripts/architecture/*.test.mjs` followed by both architecture check entrypoints.
+Run `node --test scripts/architecture/*.test.mjs`, then `node scripts/architecture/check-index-coverage.ts`,
+`node scripts/architecture/check-dependencies.ts`, `node scripts/architecture/check-site-scope-planes.mjs`,
+and `uv run --locked python scripts/architecture/check_ga_isolation.py`.

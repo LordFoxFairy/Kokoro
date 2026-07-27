@@ -695,6 +695,37 @@ handler at 300ms and a 400ms wait in the asserting test, instance-bound recordin
 capture fails with the stray `rpc_outcome` present. This matters beyond one test — the promotion protocol
 gates on child CI being green, so a test that flips on identical source can admit an unverified pin.
 
+## Round 8b — the sweep for a fourth instance
+
+Three fail-opens in the same shape is a pattern, not a coincidence, and nothing in the repository could
+find the fourth. So the whole Platform tree was swept for the three forms the shape takes.
+
+**Optional isolation key in a signature.** Six methods take their Site optionally: `listAccounts`
+(credit), `listPlans` / `listOrders` (payment), `listUsers` / `listTeams` (user), `listSiteModelPolicies`
+(model). Every caller is in an `admin-routes.ts` — the operator plane, where listing across Sites is the
+point. The one non-admin caller, `payment-service.listSellablePlans`, takes `siteId: string` required and
+passes it through. `/plans` is served on the user-facing `web-bff` plane and already fails closed with
+`400 payment.site_required` when the request context carries no Site.
+
+**Empty collection used as a filter.** The only denylist in the tree is `hiddenLabelKeys`, and both its
+call sites now require `siteId`. `parseEnvRefAllowlist` returns an empty set when its env var is missing,
+which is the *inverse* shape and correct: an empty allowlist denies everything. `listPendingInvitesForUser`
+returns `[]` for an inactive user — also a refusal. No fail-open.
+
+**Spread-built isolation constraints.** All five `...(siteId === undefined ? {} : { siteId })` sites are
+the admin-plane methods above.
+
+No fourth instance. The finding is that nothing kept it that way, so
+`scripts/architecture/check-site-scope-planes.mjs` now does: a call that declines to scope — argument
+omitted, or a literal `undefined` in the Site position — must sit on the admin plane. It fails closed
+when it finds no declarations, because a parser that quietly stopped matching would report a clean tree.
+Its blind spot is stated in the INDEX rather than hidden: a variable that happens to be undefined at
+runtime reads as scoped, since the gate proves intent at the callsite, not the value on the wire.
+
+Verified load-bearing against the real tree, not only fixtures: appending `await repository.listUsers()`
+to `kokoro-user/src/interfaces/http/routes.ts` fails with
+`site_scope_unscoped_call: ... routes.ts:391`, and the file restores byte-identical. 11 fixtures.
+
 ## Verification
 
 All against real services, with no silent skips:
@@ -705,7 +736,7 @@ All against real services, with no silent skips:
 | model, real MySQL (`--no-file-parallelism`) | 152 passed |
 | platform-admin Connect suite, 5 consecutive runs | 7 passed each |
 | root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
-| architecture gates | 23 passed |
+| architecture gates (incl. new site-scope-plane fixtures) | 34 passed |
 | Python gates (compatibility, admin OpenAPI, GA isolation) | 53 passed |
 | contract generator tests | 35 passed |
 | round 8 compatibility gate | 5/5 scenarios, 7 session-platform assertions |

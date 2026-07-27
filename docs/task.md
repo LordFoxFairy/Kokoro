@@ -90,7 +90,7 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 
 **剩余(按优先级)**:
 
-0. **系统性排查同一形状的 fail-open**(不依赖任何人,优先做)。三轮下来同一个形状出现了三次:
+0. ~~**系统性排查同一形状的 fail-open**~~ **(round 8b 已完成:无第四处,已固化成门禁)**。三轮下来同一个形状出现了三次:
    缺隔离值 → 静默退化成"不隔离"而非"拒绝",且三次都在注释里写着是有意为之。
    已知的三处已修(`KOKORO_SITE_ID` 兜底、`resolveModelBindings`、`/model-labels`),
    但**没有任何门禁能发现第四处**。要找的模式:
@@ -99,7 +99,13 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
    - `where` 条件用展开式 `...(x === undefined ? {} : {...})` 拼站点/租户约束
    重点面:kokoro-platform 各服务的 repository 层(credit/user/site/payment/hub),
    `listSiteModelPolicies(siteId: string | undefined)` 已知是同形状,先看它是不是同一个洞。
-   产出:要么修掉,要么证明该处不是隔离边界;能固化成门禁的固化成门禁。
+   **结论:三种形状全扫完,没有第四处。** 6 个可选 siteId 的方法调用方全在 `admin-routes.ts`(运维面,
+   跨站列举本就是它的目的);唯一非 admin 调用方 `listSellablePlans(siteId: string)` 是必填透传;
+   `/plans` 在 web-bff 面已 `400 payment.site_required` fail-closed。全树唯一的 denylist 是
+   `hiddenLabelKeys`,两个调用点现在都必填 siteId;`parseEnvRefAllowlist` 空集=全拒,是反向形状、正确。
+   真正的问题是**没有任何东西保证它继续如此**,已补 `scripts/architecture/check-site-scope-planes.mjs`:
+   "放弃传站点"的调用(省略实参或传字面量 `undefined`)只允许出现在 admin 面文件;
+   找不到任何声明时 fail-closed(解析器失配不能读成干净)。真树变异验证过,11 条 fixture。
 
 1. **41 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上)。
    要真正清零需 T3 provider + Session shadow-compare 后切换,**不得跳过 shadow 阶段**(计费相邻路径)。
