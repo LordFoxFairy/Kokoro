@@ -41,6 +41,7 @@ DEFAULT_OPENAPI = ROOT / "contract" / "openapi" / "admin-web-v1.yaml"
 DEFAULT_SERVER = (
     ROOT / "kokoro-platform" / "kokoro-platform-admin" / "src" / "server.ts"
 )
+DEFAULT_PROXY = ROOT / "kokoro-web" / "apps" / "admin" / "next.config.ts"
 
 # Every verb Fastify exposes as app.<verb>(). Missing one silently hides routes.
 HTTP_METHODS = ("get", "post", "put", "patch", "delete", "head", "options")
@@ -76,6 +77,12 @@ ROUTE_RE = re.compile(
 LITERAL_RE = re.compile(r"""^(?P<quote>["'`])(?P<path>[^"'`]*)(?P=quote)""")
 HELPER_RE = re.compile(r"\b(?P<helper>register[A-Za-z]*Routes?)\s*\(")
 VERSION_RE = re.compile(r"^3\.1\.\d+$")
+
+# The Admin app forwards exactly these paths to the gateway. Enumerating them
+# replaced a catch-all rewrite, which means the list is now a third thing that
+# can drift from the contract, so it is checked like the other two.
+PROXY_LIST_RE = re.compile(r"GATEWAY_PROXY_PATHS\s*=\s*\[(?P<body>.*?)\]\s*as const", re.DOTALL)
+PROXY_ENTRY_RE = re.compile(r'"(?P<path>/[^"]*)"')
 
 
 class GateError(Exception):
@@ -156,6 +163,38 @@ def parse_server_routes(source: Path) -> tuple[set[tuple[str, str]], set[tuple[s
     if not routes:
         raise GateError("admin_openapi_no_routes_parsed", str(source))
     return routes, seen_exclusions
+
+
+def parse_proxy_paths(config: Path) -> set[str]:
+    """Read the Admin app's enumerated proxy list, normalised to OpenAPI syntax."""
+    if not config.is_file():
+        raise GateError("admin_openapi_proxy_config_missing", str(config))
+    text = config.read_text(encoding="utf-8")
+    block = PROXY_LIST_RE.search(text)
+    if block is None:
+        raise GateError(
+            "admin_openapi_proxy_list_unreadable",
+            "GATEWAY_PROXY_PATHS not found; the browser proxy surface cannot be verified",
+        )
+    paths = {
+        re.sub(r":([A-Za-z_][A-Za-z0-9_]*)", r"{\1}", m.group("path"))
+        for m in PROXY_ENTRY_RE.finditer(block.group("body"))
+    }
+    if not paths:
+        raise GateError("admin_openapi_proxy_list_unreadable", "GATEWAY_PROXY_PATHS is empty")
+    return paths
+
+
+def compare_proxy(document_paths: set[str], proxy: set[str]) -> None:
+    problems: list[str] = []
+    missing = sorted(document_paths - proxy)
+    if missing:
+        problems.append("admin_openapi_proxy_path_missing: " + ", ".join(missing))
+    orphan = sorted(proxy - document_paths)
+    if orphan:
+        problems.append("admin_openapi_proxy_path_orphan: " + ", ".join(orphan))
+    if problems:
+        raise GateError(problems[0].split(":", 1)[0], "; ".join(problems), preformatted=True)
 
 
 def parse_openapi(document: Path) -> set[tuple[str, str]]:
@@ -239,16 +278,23 @@ def check_stale_exclusions(seen: set[tuple[str, str]]) -> None:
         )
 
 
-def run(openapi: Path, server: Path) -> str:
+def run(openapi: Path, server: Path, proxy: Path | None = None) -> str:
     routes, seen_exclusions = parse_server_routes(server)
     operations = parse_openapi(openapi)
     compare(routes, operations)
     check_stale_exclusions(seen_exclusions)
-    paths = len({p for _, p in operations})
+    document_paths = {p for _, p in operations}
+    proxied = 0
+    if proxy is not None:
+        proxy_paths = parse_proxy_paths(proxy)
+        compare_proxy(document_paths, proxy_paths)
+        proxied = len(proxy_paths)
+    paths = len(document_paths)
     return (
         f"admin_openapi_ok: {paths} paths, {len(operations)} operations, "
         f"{len(seen_exclusions)} excluded at source, "
-        f"{len(HELPER_PROVIDED)} helper-registered"
+        f"{len(HELPER_PROVIDED)} helper-registered, "
+        f"{proxied} browser-proxied"
     )
 
 
@@ -256,9 +302,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--openapi", type=Path, default=DEFAULT_OPENAPI)
     parser.add_argument("--server", type=Path, default=DEFAULT_SERVER)
+    parser.add_argument("--proxy", type=Path, default=DEFAULT_PROXY)
     args = parser.parse_args(argv)
     try:
-        sys.stdout.write(run(args.openapi, args.server) + "\n")
+        sys.stdout.write(run(args.openapi, args.server, args.proxy) + "\n")
     except GateError as exc:
         sys.stderr.write(f"{exc}\n")
         return 1

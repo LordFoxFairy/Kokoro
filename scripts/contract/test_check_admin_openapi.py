@@ -248,3 +248,51 @@ def test_success_line_separates_source_and_helper_exclusions(tmp_path: Path) -> 
     line = run(openapi, server)
     assert "1 excluded at source" in line
     assert "2 helper-registered" in line
+
+
+# --- browser proxy list -------------------------------------------------------
+# Enumerating the proxied paths removed a catch-all rewrite, which makes the list
+# a third thing that can drift from the contract.
+
+PROXY = """
+const GATEWAY_PROXY_PATHS = [
+  "/api/me",
+  "/api/operators/:id/status",
+] as const;
+"""
+
+
+def test_proxy_list_matching_the_contract_passes(tmp_path: Path) -> None:
+    openapi, server = write(tmp_path)
+    proxy = tmp_path / "next.config.ts"
+    proxy.write_text(PROXY, encoding="utf-8")
+    line = run(openapi, server, proxy)
+    assert "2 browser-proxied" in line
+
+
+def test_proxy_missing_a_contract_path_fails(tmp_path: Path) -> None:
+    openapi, server = write(tmp_path)
+    proxy = tmp_path / "next.config.ts"
+    proxy.write_text(PROXY.replace('  "/api/me",\n', ""), encoding="utf-8")
+    with pytest.raises(GateError) as excinfo:
+        run(openapi, server, proxy)
+    assert excinfo.value.code == "admin_openapi_proxy_path_missing"
+
+
+def test_proxy_forwarding_an_undeclared_path_fails(tmp_path: Path) -> None:
+    openapi, server = write(tmp_path)
+    proxy = tmp_path / "next.config.ts"
+    proxy.write_text(PROXY.replace('] as const', '  "/api/ghost",\n] as const'), encoding="utf-8")
+    with pytest.raises(GateError) as excinfo:
+        run(openapi, server, proxy)
+    assert excinfo.value.code == "admin_openapi_proxy_path_orphan"
+
+
+def test_missing_proxy_list_stops_the_gate(tmp_path: Path) -> None:
+    """Renaming or deleting the constant must fail, not silently skip the check."""
+    openapi, server = write(tmp_path)
+    proxy = tmp_path / "next.config.ts"
+    proxy.write_text("const OTHER = [] as const;\n", encoding="utf-8")
+    with pytest.raises(GateError) as excinfo:
+        run(openapi, server, proxy)
+    assert excinfo.value.code == "admin_openapi_proxy_list_unreadable"
