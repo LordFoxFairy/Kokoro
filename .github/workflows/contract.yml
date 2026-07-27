@@ -40,7 +40,9 @@ jobs:
           corepack enable
           corepack prepare pnpm@11.2.2 --activate
       - name: install root-only contract tooling
-        run: uv sync --locked
+        run: |
+          uv sync --locked
+          pnpm --dir contract install --frozen-lockfile
       - name: install exact child locks for compatibility execution
         run: |
           uv sync --project kokoro-agent --locked
@@ -53,6 +55,18 @@ jobs:
         run: uv run python contract/check.py
       - name: generator and contract tests
         run: uv run pytest contract/tests -q
+      - name: standard protobuf contract gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm --dir contract run buf:format:check
+          pnpm --dir contract run buf:lint
+          node scripts/repository/check-generated-contracts.mjs
+          if git ls-tree -r --name-only origin/main -- contract/proto | grep -q '\.proto$'; then
+            pnpm --dir contract exec buf breaking --against '../.git#branch=origin/main,subdir=contract'
+          else
+            echo 'Buf breaking baseline bootstrap: origin/main has no contract/proto files yet.'
+          fi
       - name: repository governance tests
         run: node --test scripts/repository/*.test.mjs scripts/compatibility/*.test.mjs scripts/foundation/check-evidence.test.mjs
       - name: Python compatibility adapter tests
