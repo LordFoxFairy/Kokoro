@@ -6,7 +6,7 @@
       "id": "kokoro-agent",
       "path": "kokoro-agent",
       "origin": "https://github.com/LordFoxFairy/kokoro-agent.git",
-      "pin": "c2a92c85dcf68e5fe0da9fd5bba84131c9d9e537",
+      "pin": "e01b6eab3e4b8b9b1fc193c53590e3ca564c2b51",
       "lockfiles": ["uv.lock"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [{ "id": "agent-worker", "descriptor": "pyproject.toml" }],
@@ -14,13 +14,13 @@
         { "id": "session-agent-execution", "version": 1, "role": "provider" },
         { "id": "model-gateway", "version": 1, "role": "consumer" }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave1-federated-ci-2026-07-27-agent"
+      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-agent"
     },
     {
       "id": "kokoro-platform",
       "path": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
-      "pin": "0463513cb9dc04a9fe7fea4f06f098fc1f890845",
+      "pin": "fe5b755f7b1a98247f33e3318f4ade9c4ae87f18",
       "lockfiles": ["pnpm-lock.yaml"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [{ "id": "platform-services", "descriptor": "deploy/docker/Dockerfile" }],
@@ -29,13 +29,13 @@
         { "id": "platform-admin-auth", "version": 1, "role": "provider" },
         { "id": "model-gateway", "version": 1, "role": "provider" }
       ],
-      "recoverableRef": "refs/tags/kokoro-admin-auth-connect-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
       "path": "kokoro-session",
       "origin": "https://github.com/LordFoxFairy/kokoro-session.git",
-      "pin": "ffc9b39c993d4272f6d115de411a133ea1290a70",
+      "pin": "c24080c117aeafa3ec02db1700549057218baefa",
       "lockfiles": ["package-lock.json"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [{ "id": "session-service", "descriptor": "package.json" }],
@@ -44,13 +44,13 @@
         { "id": "platform-runtime", "version": 1, "role": "consumer" },
         { "id": "session-browser", "version": 1, "role": "provider" }
       ],
-      "recoverableRef": "refs/tags/kokoro-platform-admission-boundary-2026-07-27-session"
+      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-session"
     },
     {
       "id": "kokoro-web",
       "path": "kokoro-web",
       "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
-      "pin": "da320354262befea51e9d868def8bcd8532a1762",
+      "pin": "1934383ea4a72be9f2cc664af5de62b46c77c81c",
       "lockfiles": ["pnpm-lock.yaml"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [
@@ -61,7 +61,7 @@
         { "id": "session-browser", "version": 1, "role": "consumer" },
         { "id": "platform-admin-auth", "version": 1, "role": "consumer" }
       ],
-      "recoverableRef": "refs/tags/kokoro-admin-auth-connect-2026-07-27-web"
+      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-web-2"
     }
   ]
 }
