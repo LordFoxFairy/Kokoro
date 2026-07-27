@@ -515,3 +515,68 @@ per consumer is the real fix whenever Admission gains a provider.
    surface the domain error code that `lib/api.ts` discards, and delete the transparent catch-all rewrite.
 3. Wave T3 implementation — a provider for `platform-admission`, then Session shadow-comparing old and new
    decisions before switching. Only that converts the 46 header-bound operations.
+
+---
+
+# Round 5 — Admin client consumes the contract (2026-07-27)
+
+Promotion commit: `ae55c10b90083490979293c8424bb08af0e8f743`. Web alone moved to
+`ed14fa989505d2e7dcae1a2f46dcb8a43347d04f`, recoverable at
+`refs/tags/kokoro-wave0-t2-admin-client-2026-07-27-web`, whose peeled SHA was verified on the remote. Child CI
+was green on that exact SHA first.
+
+## Domain error codes stop disappearing
+
+`apps/admin/lib/api.ts` parsed only `error.message` and discarded `error.code`, so every failure arrived at
+the UI as prose with nothing to branch on. `ApiError` now carries `code`, `details` and `requestId` beside
+`status`, matching the `sendError` envelope. `code` stays a `string` rather than a union of the four the
+gateway currently emits, so a new backend code cannot break the console; the contract's `DomainErrorCode`
+enum remains the source of truth for what that set is today.
+
+A fifth code turned up during the work and is deliberately outside the contract: `auth.unauthenticated` is
+produced by the Admin app's own BFF middleware when nobody is signed in, never by the gateway.
+
+## The proxy surface became auditable
+
+`next.config.ts` forwarded `/api/:path*` to the gateway blind. Any backend route change passed through
+unnoticed and the proxied surface could not be reviewed. It now enumerates the fourteen paths the contract
+declares. They stay under `fallback` rather than `afterFiles`, so local routes still win and `/api/auth/*`
+keeps reaching Auth.js without that property depending on the list being correct.
+
+Enumerating created a third list that can drift, so `scripts/contract/check_admin_openapi.py` now checks it
+too: exact set equality against the document, with a missing or renamed `GATEWAY_PROXY_PATHS` stopping the
+gate instead of skipping the comparison. Verified in four directions — matching list passes, a dropped path
+raises `admin_openapi_proxy_path_missing`, an undeclared path raises `admin_openapi_proxy_path_orphan`, and a
+renamed constant raises `admin_openapi_proxy_list_unreadable`. Fixtures went from 23 to 27.
+
+```text
+admin_openapi_ok: 14 paths, 16 operations, 1 excluded at source, 2 helper-registered, 14 browser-proxied
+```
+
+The gate is deliberately unable to pass against a pin that predates the constant; it was held out of the tree
+until the promotion landed rather than committed red.
+
+Web verification before promotion: typecheck, lint, production build, and tests `41 -> 45` with the four new
+cases covering the enriched `ApiError`. No code anywhere still branches on error message strings.
+
+## Round 5 runtime compatibility gate
+
+```text
+outcome: pass       combinationId: wave0-t2-admin-client-2026-07-27      durationMs: 79732
+combinationDigest: 83e31c13f1d546ec7415c60d76f4d607...
+```
+
+All five scenarios pass: `web-session-http-sse`, `session-platform-internal-rpc`,
+`session-agent-durable-localfake`, `agent-model-gateway-localfake`, `platform-admin-auth-connect`.
+
+## Still open
+
+1. Root remote CI has never run; the repository has no Actions secrets, so `contract.yml` stops at its own
+   `KOKORO_SUBMODULE_TOKEN` guard. Owner action, and no root BOM tag until a green run exists.
+2. Generated browser client and runtime validators. The hand-written page schemas in `apps/admin/lib/schemas.ts`
+   remain, because generating from OpenAPI needs a generator dependency and pnpm 11 enforces a release-age
+   window; that belongs in its own change with its own review.
+3. Wave T3 implementation. The contract exists and binds `site_id` as a request field, but 46 operations stay
+   header-bound until a provider ships and Session shadow-compares before cutting over.
+4. The Admin error taxonomy decision: only `request.invalid` overlaps the shared `ERROR_STATUS` table, and
+   `operator.auth` spans 401 and 403. Both are wire-visible, so neither should be renamed quietly.

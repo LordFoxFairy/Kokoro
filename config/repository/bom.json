@@ -55,7 +55,7 @@
   "contractsDigest": "dcc4e02f1616943e053637f4dc149d6cda890448fd9d83a17cb994927706cb7d",
   "evidence": [
     {
-      "digest": "7562c323605d1f7cb68f1775096ab48f667fb7adcb3725ecc04418fd4d7506fa",
+      "digest": "fee686129a896009efebdaa53ccd5afb58bedc56cde135afbe2442bbf39fd04a",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,11 +63,11 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "52fa214627f67bb0b8d971fbe79893e5478289c3cd0b3cffa84e013280bd48f0",
+  "evidenceDigest": "a3884ed92126f483a3462e923500d0dc0c6adc7adda154bd8ffdef02fdc0ca66",
   "generatorVersion": 1,
-  "manifestDigest": "99ee5ce6009768758cdc8034484bdb529b2c54cd27d190a379967fee1013a5e7",
-  "matrixDigest": "f92a8e9e9810da13d150292614ff6266934b747d2de1aa207535c0f58d8d1389",
-  "promotionCommit": "a56dc6e4e084e65ab8a6d5fa88695c470c2689af",
+  "manifestDigest": "bf8bf1ee37eb615fc3bb87a776012d4374f52cedc59a19af43a141f89f92922c",
+  "matrixDigest": "057e2aba3bf321063e231e4dae094e6ebde7ca5f487a92b435490f70ac8ee2d5",
+  "promotionCommit": "ae55c10b90083490979293c8424bb08af0e8f743",
   "repositories": [
     {
       "id": "kokoro-agent",
@@ -140,7 +140,7 @@
       "id": "kokoro-web",
       "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
       "path": "kokoro-web",
-      "pin": "17fcaccb56e62de29c7c699f7f8fd373a5eac480",
+      "pin": "ed14fa989505d2e7dcae1a2f46dcb8a43347d04f",
       "protocols": [
         {
           "id": "platform-admin-auth",
@@ -153,16 +153,16 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-admission-contract-2026-07-27-web"
+      "recoverableRef": "refs/tags/kokoro-wave0-t2-admin-client-2026-07-27-web"
     }
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "6d682621c828bb128da6de575c7750d9eef330f5470eda7255252de929f58c6f",
-    "combinationId": "wave0-admission-contract-2026-07-27",
-    "evidenceDigest": "2f1e850ef663df2d7be32d8de840dc6033545728dc629dff2c3a07ff0cd0c601",
+    "combinationDigest": "83e31c13f1d546ec7415c60d76f4d6072ff3c579e43747b3aa8d9fe5ae3f19f1",
+    "combinationId": "wave0-t2-admin-client-2026-07-27",
+    "evidenceDigest": "c989b03ed140d4421de63f4e9f571b9d514bb15e48e65ef9aca7db699ed33ef6",
     "outcome": "pass",
-    "treeMode": "head"
+    "treeMode": "index"
   },
   "schemaVersion": 1
 }
