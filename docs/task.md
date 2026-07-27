@@ -90,6 +90,17 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 
 **剩余(按优先级)**:
 
+0. **系统性排查同一形状的 fail-open**(不依赖任何人,优先做)。三轮下来同一个形状出现了三次:
+   缺隔离值 → 静默退化成"不隔离"而非"拒绝",且三次都在注释里写着是有意为之。
+   已知的三处已修(`KOKORO_SITE_ID` 兜底、`resolveModelBindings`、`/model-labels`),
+   但**没有任何门禁能发现第四处**。要找的模式:
+   - 隔离键类型是 `T | undefined` / `.optional()` / `.catch(...)` / `?? default`,且缺失分支返回"全部"而非拒绝
+   - 过滤集合在缺参数时返回空集合(空集合 = 不过滤 = 放行全部)
+   - `where` 条件用展开式 `...(x === undefined ? {} : {...})` 拼站点/租户约束
+   重点面:kokoro-platform 各服务的 repository 层(credit/user/site/payment/hub),
+   `listSiteModelPolicies(siteId: string | undefined)` 已知是同形状,先看它是不是同一个洞。
+   产出:要么修掉,要么证明该处不是隔离边界;能固化成门禁的固化成门禁。
+
 1. **41 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上)。
    要真正清零需 T3 provider + Session shadow-compare 后切换,**不得跳过 shadow 阶段**(计费相邻路径)。
 2. **Admin 浏览器 client 代码生成**:需引入生成器依赖,pnpm 11 有 24h release-age 窗口,单独一轮做。
