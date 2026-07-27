@@ -55,7 +55,7 @@
   "contractsDigest": "dcc4e02f1616943e053637f4dc149d6cda890448fd9d83a17cb994927706cb7d",
   "evidence": [
     {
-      "digest": "32df9ac276c7e212563bdb1fadd586b30c6ff393ad743465f0c29297346dc3cd",
+      "digest": "c1275e60af14b5f80654fbd3a7a36b94f983f86861d2a154566b0f02ae02bce0",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,11 +63,11 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "f0749c7ec16e1076862d5d8f54482e35407a37256a090a382884d0fe305a289f",
+  "evidenceDigest": "149a7f328efb71b06f4c1eb977650a2749f93a8d2f38016b70fc54ae39611252",
   "generatorVersion": 1,
-  "manifestDigest": "b2690aa56377c9e4bcdfd962a952a833009db187acbf41f98fc25cefa766f0fe",
-  "matrixDigest": "296178e0d463e9071ccaffc351fa85219a38b5c6b05a0800592c33fb69e896c2",
-  "promotionCommit": "0778df786ed261668fe757dc9eeeec3c4fe9323d",
+  "manifestDigest": "4e3b27086bbadbb3d5c072d3e81092240990749d61471146c197939db420361b",
+  "matrixDigest": "7f416f735ff674deda2d9ee8f5c14ad46fa04d16dcf3c7ddb8b333442e113af3",
+  "promotionCommit": "c03a49857ad82aff376aed14045eb66537cbd47f",
   "repositories": [
     {
       "id": "kokoro-agent",
@@ -92,7 +92,7 @@
       "id": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
       "path": "kokoro-platform",
-      "pin": "bd527f0a763eba5ce696969f1703409ce45a40c3",
+      "pin": "948b31bea33404aa65def967d4e13f97eb4da461",
       "protocols": [
         {
           "id": "model-gateway",
@@ -110,7 +110,7 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-drop-shared-secret-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-provider-contracts-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
@@ -158,9 +158,9 @@
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "94e0329d3352b7e35fcff03f051e17f53dba699c2ffb57322cd57d1be3d3de06",
-    "combinationId": "wave0-drop-shared-secret-2026-07-27",
-    "evidenceDigest": "b7af2e7771436f5e447b3d204419ab20461f1a5546c7e3a8a6b2f52bb9050a9b",
+    "combinationDigest": "2d3403a470aaa2b8c6b10f52e922a5326214275b2dd2b45453cdfe260f208e5d",
+    "combinationId": "wave0-provider-contracts-2026-07-27",
+    "evidenceDigest": "821a3525341b8080d9a4d3dcffa9ef65738a21ecd03d37331039604cc05e065b",
     "outcome": "pass",
     "treeMode": "index"
   },
