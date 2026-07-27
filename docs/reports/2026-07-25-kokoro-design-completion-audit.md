@@ -149,8 +149,8 @@ requester 与 attached/detached wait relation，不产生第二套 generation ba
 
 | Gate | Owner | Current state | Exit |
 |---|---|---|---|
-| Product cross-PRD review | Product/Architecture/Domain owners | active | 27 PRD journey/state/recovery/metric 无冲突 |
-| Architecture boundary review | Platform/Web/Session/Commerce/Model/Runtime/Security/SRE | active | ownership/RPC/data/failure/DR 无 P0 |
+| Product cross-PRD review | Product/Architecture/Domain owners | autonomous red-team complete；human cosign pending | 27 PRD journey/state/recovery/metric 无 P0；指定 cosigner 签署 |
+| Architecture boundary review | Platform/Web/Session/Commerce/Model/Runtime/Security/SRE | autonomous red-team complete；human cosign pending | ownership/RPC/data/failure/DR 无 P0；领域 owner 签署 |
 | Named owner routing | Product leadership | not evidenced | team responsibility ID 映射 DRI、backup、on-call、signer |
 | User design approval | User | pending | 书面批准当前设计包或提出修改 |
 | GA Phase B changes | User + GA owner | not authorized | 每项语义 delta 独立批准；否则 Phase A zero-delta only |
@@ -159,12 +159,12 @@ requester 与 attached/detached wait relation，不产生第二套 generation ba
 
 ## 8. Final verdict
 
-设计包已达到“可以继续做最终交叉评审”的状态，但尚不能宣称“已批准”或“可上线”。实现仍禁止启动，直到：
+设计包已通过本轮多代理与机器化内部红队，达到“提交用户做最终设计复审”的状态，但尚不能宣称“已批准”或
+“可上线”。实现仍禁止启动，直到：
 
-1. 当前剩余内部交叉评审无 P0；
-2. 用户审阅并批准设计包；
-3. 对任何实际 GA 语义变化取得单独批准；
-4. 随后使用 `writing-plans` 生成按 Wave、文件、测试和回滚拆分的实现计划。
+1. 用户审阅并批准设计包；
+2. 对任何实际 GA 语义变化取得单独批准；
+3. 随后使用 `writing-plans` 生成按 Wave、文件、测试和回滚拆分的实现计划。
 
 设计批准不会自动生成生产证据。真实上线必须再通过 Launch Checklist 的 implementation、RC、security、load、DR、
 rollback 和 digest-bound ReleaseCertification gates。
