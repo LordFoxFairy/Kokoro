@@ -58,17 +58,38 @@
 
 ### 待办优先级(下一会话/loop 从这里接)
 
-1. **Wave T2 Public Admin API**(见任务 #7)——**step 1 已完成**:
-   `contract/openapi/admin-web-v1.yaml`(3.1,14 paths / 16 operations,信封与 4 个 domain error code
-   全部对着 handler 核过)+ 防漂移门 `scripts/contract/check_admin_openapi.py`(11 条否定 fixture,
-   已对真文件实测会 fail,已进根 CI)。**剩余部分要动 kokoro-web,需走 pin promotion**:
-   生成浏览器 client/validators、替换 `lib/schemas.ts` 手写 schema、让 `lib/api.ts` 不再吞掉 domain code、
-   删掉 `apps/admin/next.config.ts` 的透明 catch-all rewrite。两个 trust plane 不得合并成一个 client 包。:按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
-   建完整 OpenAPI 3.1 + 生成客户端 + 删透明 rewrite/页面手写 schema。**注意**:那 6 处 `callService` 不属 T2,
-   spec §3.2 判定其中部分本属同一 Platform workflow,应在 T3 收拢为本地 application interface 而非包装成 RPC。
-2. **根 CI 仍阻塞在用户侧**:需用户建 `KOKORO_SUBMODULE_TOKEN`(对四个私有子仓只读 Contents 的
-   fine-grained PAT)。根 CI 绿之前不打 BOM tag。
-3. 可选:把 user-level `~/.config/uv/uv.toml` 里 `index[0].default = true` 去掉,这样官方源锁定成为默认,
+**已完成(promotion round 1-6,每轮均:子仓 CI 绿 → annotated tag 远端 peel 核对 → 真基建兼容性门 5/5 →
+atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
+
+- 两个 uv.lock 归一到官方源(根 29→0、agent 1821→0,**版本零漂移**;方法与两个坑见证据文档)
+- 子仓 INDEX 事实校正(4 修 + 4 独立复核,8 agent 0 error)
+- Wave T2:Admin 浏览器面 OpenAPI 3.1 契约 + 防漂移门;`ApiError` 不再吞 domain code;
+  透明 catch-all rewrite → 按契约枚举的 14 条并进门禁
+- Wave T3 起步:`platform-admission` proto 发布(`site_id` 为一等请求字段),`lifecycle: contract-only`
+  表示"已发布未实现",门禁禁止它出现在 compatibility matrix
+- **site 隔离实质推进**:credit 三个写口 + model resolve 的 `siteId` 从 header 迁到 request payload
+- GA 隔离门(`check_ga_isolation.py`):84 个 GA 源文件,8 条 Platform 身份轴零出现
+
+**过程中发现并修掉的两个 fail-open(比计数更要紧,同一形状:缺隔离值 → 静默退化成"不隔离"而非"拒绝")**:
+
+1. `KOKORO_SITE_ID` 的 `z.string().min(1).catch("site-local")`:生产漏配会把**全部租户用量静默记到兜底站**,
+   且 credit 账目落定后无法再归因。已删默认值,生产启动即 fail-fast,开发档回落但 WARN 一次。
+   **不按 billing 档收窄**——`billing=off` 不妨碍明天有人切 `enforce`。
+2. `resolveModelBindings` 缺 site header 时 `hiddenLabelKeys` 返回空集合 → **完全不按站过滤**,
+   调用方只要不发 header 就能绕过该站隐藏策略。已把类型收窄成 `siteId: string`,该分支不可能存在;
+   真 DB 断言"A 站隐藏的 label 在 A 拿不到、在 B 拿得到",并经变异验证该测试承重。
+
+**剩余(按优先级)**:
+
+1. **43 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上),
+   `platform-runtime` 剩余只读口仍按路由派生。要真正清零需 T3 provider + Session shadow-compare 后切换,
+   **不得跳过 shadow 阶段**(计费相邻路径)。
+2. **Admin 浏览器 client 代码生成**:需引入生成器依赖,pnpm 11 有 24h release-age 窗口,单独一轮做。
+3. **Admin error taxonomy 裁决**(任务 #17):只有 `request.invalid` 与共享 `ERROR_STATUS` 重合;
+   `operator.auth` 横跨 401/403。**wire-visible,不能静默改名**,需用户裁决。
+4. **根 CI 仍阻塞在用户侧**:需用户建 `KOKORO_SUBMODULE_TOKEN`(对四个私有子仓只读 Contents 的
+   fine-grained PAT)。根 CI 绿之前不打 BOM tag。**我不代签凭据。**
+5. 可选:去掉 user-level `~/.config/uv/uv.toml` 的 `index[0].default = true`,让官方源锁定成为默认,
    不必每次重解析都记得加 `UV_NO_CONFIG=1`。
 
 ### 内部 RPC 现状与下一步(别再重复问)
