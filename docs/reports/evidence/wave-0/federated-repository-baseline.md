@@ -646,7 +646,8 @@ All against real services, with no silent skips:
 |---|---|
 | session, real Redis + Mongo + MinIO | 409 passed, 0 skipped |
 | credit integration, real MySQL | 117 passed |
-| platform unit | 1,086 passed |
+| platform unit (round 10) | 1,093 passed |
+| platform integration, real MySQL + Redis + Mongo + MinIO (round 10) | 611 passed, 0 skipped |
 | registry fixtures | 50 passed |
 | round 6 compatibility gate | 5/5 scenarios pass |
 
@@ -765,6 +766,42 @@ not declare it`, and the file restores byte-identical. 13 fixtures.
 
 When D4 is decided and rows gain a real shape, that count of four drops and generation becomes the
 better answer for exactly those readers. Until then it is the honest state, printed on every run.
+
+## Round 10 — a shared secret that could never have authenticated anything
+
+`KOKORO_INTERNAL_SECRET` was kept across six services as a fallback for whenever a service's
+per-caller secret was missing, commented as a migration aid. It could never have worked.
+`loadCallerSecrets` reads only `KOKORO_INTERNAL_SECRET_<CALLER>`; no receiver has ever looked at the
+shared variable. A deployment that configured just it would send, on every internal call, a credential
+every peer rejects — while appearing configured.
+
+Three of the six services declared it and never even read it. Two used it as an outbound fallback and
+admin as a config fallback. All removed, with the comments that described it; git history keeps those.
+
+Auditing the inbound side first found no fail-open, and that is worth recording since it is the shape
+that has bitten three times. `registerRouteAccess` throws at startup in production when a required
+caller's secret is missing or empty; `anyConfigured` requires `length > 0`; and `loadCallerSecrets`
+drops empty values, so `expected` is `undefined` and the comparison refuses. An empty secret cannot
+become an accepted credential.
+
+Removing the fallback also improved the unconfigured case: it used to yield `""`, so `callService`
+sent an empty `x-kokoro-internal-secret` header. It now yields `undefined` and the header is omitted.
+`CallServiceOptions.internalSecret` is typed `string | undefined` rather than `?: string` because
+`exactOptionalPropertyTypes` distinguishes an omitted property from an undefined one, and the runtime
+check was already `!== undefined`.
+
+A test pins the premise the removal rests on: `loadCallerSecrets` ignores the shared variable.
+Restoring the fallback inside it turns that test red and shows why the variable was worse than dead —
+all ten callers collapse onto one shared credential:
+
+```
+FAIL test/route-access.test.ts > loadCallerSecrets > 忽略遗留的共享 KOKORO_INTERNAL_SECRET
+AssertionError: expected { session: 'legacy-shared', …(9) } to deeply equal {}
+Tests  1 failed | 16 passed (17)
+```
+
+`route-access.ts` restored byte-identical afterwards. A repository-wide sweep leaves zero references
+outside that test.
 
 ## Verification
 

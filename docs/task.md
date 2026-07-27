@@ -142,6 +142,13 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   (payment/credit/hub),消费者数为 0 = 死代码**,删除安全。但它是 kokoro-platform 子仓改动,要走下一轮
   pin promotion + 子仓 CI;spec §13 也把手写 internal client 清除排在 T6,故本轮只记录不动手。
   注意别误删 per-caller static secret 本身——spec §6.3 允许本地开发临时保留(须集中封装+标注 migration expiry)。
+- **(round 10 已做)** 遗留共享单密钥 `KOKORO_INTERNAL_SECRET` 已从 6 个服务全删(含其注释)。
+  它比"死代码"更糟:接收端 `loadCallerSecrets` 只读 `KOKORO_INTERNAL_SECRET_<CALLER>`,**从来没有任何
+  接收方读过这个共享变量**——只配它的部署会在每次内部调用带上一个必被拒的凭据,却看着像配好了。
+  6 个服务里有 3 个只声明从不读取。未配现在返回 `undefined`(而非 `""`),`callService` 据此不带该头,
+  不再发空值头。已加测试锁住前提;把回退加回去会让 10 个 caller 塌缩成同一个共享凭据,该测试转红。
+  入站面同时审过:生产缺凭据启动即抛、`anyConfigured` 要求 `length > 0`、空值被 `loadCallerSecrets` 丢弃,
+  **空 secret 不可能变成被接受的凭据** —— 这次没有 fail-open。
 
 ## 通用引擎重塑 campaign(2026-07-24;规划阶段,未碰代码——用户要求先思考对齐再动)
 
