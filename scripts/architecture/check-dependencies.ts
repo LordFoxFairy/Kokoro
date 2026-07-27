@@ -261,6 +261,8 @@ function validatePackageDependencies(root, entries, boundaryEntries, errors) {
   }
 
   let edgeCount = 0;
+  // Which boundaries each root actually depends on, so an allowance nobody uses can be reported.
+  const usedAllowances = new Map();
   for (const source of packages) {
     const dependencyNames = new Set();
     for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
@@ -276,11 +278,28 @@ function validatePackageDependencies(root, entries, boundaryEntries, errors) {
       if (!sourceBoundary || !targetBoundary || sourceBoundary.id === targetBoundary.id) continue;
       if (isInsidePath(dirname(target.packagePath), dirname(source.packagePath), false)) continue;
       edgeCount += 1;
+      if (!usedAllowances.has(source.entry.id)) usedAllowances.set(source.entry.id, new Set());
+      usedAllowances.get(source.entry.id).add(targetBoundary.id);
       if (!source.entry.dependencies.allow.includes(targetBoundary.id)) {
         errors.push(
           `${source.relativePath}: package ${source.manifest.name} depends on ${targetBoundary.id} but ${source.entry.id} does not allow it`,
         );
       }
+    }
+  }
+
+  // An allowance no package uses is a standing permission: the gate would wave through an import
+  // nobody reviewed, and the policy stops describing the architecture it claims to describe.
+  // Roots owning no package are skipped -- they have nothing to draw an edge from.
+  const rootsOwningPackages = new Set(packages.map((entry) => entry.entry.id));
+  for (const entry of boundaryEntries) {
+    if (!rootsOwningPackages.has(entry.id)) continue;
+    const used = usedAllowances.get(entry.id) ?? new Set();
+    for (const allowed of entry.dependencies.allow) {
+      if (allowed === entry.id || used.has(allowed)) continue;
+      errors.push(
+        `root ${entry.id} allows ${allowed} but no package under it depends on ${allowed}; drop the unused allowance`,
+      );
     }
   }
   return edgeCount;

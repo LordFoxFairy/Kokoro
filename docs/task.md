@@ -140,6 +140,16 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   (只出 HTTP schemas 模块,除 zod 与 platform-kit 外零依赖),四处调用方全部改走它。
   **这个窄入口就是将来拆库后对外发布的那一层**:同伴依赖已发布契约,而不是实现。
   同时把 hub→user 这条**本来就存在于 wire 上、却不在包图里**的依赖显式声明,依赖门禁边数 13→14。
+- **(round 12 已补)** round 11 交接时我自己指出的洞:窄入口有了,但**没东西拦住下一个人再从包根导入**
+  ——依赖门禁读 package.json,`@kokoro/user` 与 `@kokoro/user/contract` 在那儿是同一条依赖。
+  已加 `scripts/architecture/check-service-contract-imports.mjs` 在**导入点**拦。
+  写它时发现手工排查漏掉的一处:`kokoro-platform/src/platform-registry.ts` 从包根导入全部 6 个服务,
+  而这是**对的**——它是组装根(把 module descriptor 拼成一个可部署体),两者之间根本没有 wire。
+  豁免按**结构**判定(不在任何子包目录内的代码),不是写死文件名。
+- **(round 12)** 依赖策略反方向也是错的:门禁只问"声明的依赖是否被允许",从不问"允许的边是否真存在"。
+  `platform.admin` 挂着 credit/hub/model/payment/site/user **六条幽灵许可**,而它只 import `platform-kit`
+  (那些模块它是走 HTTP 的)。六张没人用的通行证,任何一张都能放行一次没人审过的 import。
+  `check-dependencies.ts` 现在对"没有任何包用到的 allow 条目"报错,`platform.admin` 收窄为 `[platform.kit]`。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。

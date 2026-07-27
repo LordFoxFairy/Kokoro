@@ -132,6 +132,54 @@ test("rejects undeclared dependencies between registered workspace packages", as
   );
 });
 
+// An allowance nobody uses is a standing permission: the gate would wave through an import
+// nobody reviewed, and the policy stops describing the architecture it claims to describe.
+test("rejects an allowance no package under the root uses", async () => {
+  const fixture = await makeFixture([
+    boundary("service.foundation", "foundation"),
+    boundary("service.feature", "feature", ["service.foundation"]),
+  ]);
+  await writePackage(fixture.root, "foundation", "@example/foundation");
+  await writePackage(fixture.root, "feature", "@example/feature");
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  assert.match(
+    result.stderr,
+    /root service\.feature allows service\.foundation but no package under it depends on service\.foundation/,
+  );
+});
+
+test("accepts an allowance the root actually uses", async () => {
+  const fixture = await makeFixture([
+    boundary("service.foundation", "foundation"),
+    boundary("service.feature", "feature", ["service.foundation"]),
+  ]);
+  await writePackage(fixture.root, "foundation", "@example/foundation");
+  await writePackage(fixture.root, "feature", "@example/feature", {
+    "@example/foundation": "workspace:*",
+  });
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+// A root owning no package has nothing to draw an edge from, so its allowances are not evidence
+// of anything and must not be reported as unused.
+test("ignores allowances on a root that owns no package", async () => {
+  const fixture = await makeFixture([
+    boundary("service.foundation", "foundation"),
+    boundary("service.docs", "docs", ["service.foundation"]),
+  ]);
+  await writePackage(fixture.root, "foundation", "@example/foundation");
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
 test("rejects relative imports into another registered boundary's private source", async () => {
   const fixture = await makeFixture([
     boundary("service.a", "service-a", ["service.b"]),

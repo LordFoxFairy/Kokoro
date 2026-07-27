@@ -632,13 +632,7 @@
       ],
       "dependencies": {
         "allow": [
-          "platform.kit",
-          "platform.credit",
-          "platform.hub",
-          "platform.model",
-          "platform.payment",
-          "platform.site",
-          "platform.user"
+          "platform.kit"
         ]
       },
       "verification": [

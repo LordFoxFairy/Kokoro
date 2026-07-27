@@ -838,6 +838,44 @@ moves `platform.hub`'s allowlist from `[platform.kit]` to `[platform.kit, platfo
 internal edge count from 13 to 14. The lockfile grows by three lines: a workspace link, no new external
 package.
 
+## Round 12 — the dependency policy did not match the architecture, in both directions
+
+Round 11 added the `./contract` entries and moved all four callers onto them, but left the hole open
+in its own handoff: nothing stopped the next caller importing the package root again, because the
+dependency gate reads `package.json`, where `@kokoro/user` and `@kokoro/user/contract` are the same
+dependency. `check-service-contract-imports.mjs` closes it at the import site.
+
+Writing it surfaced a case the hand survey had missed. `kokoro-platform/src/platform-registry.ts`
+imports all six services at their roots — and should. It is the composition root, assembling module
+descriptors into one deployable, which is an implementation relationship with no wire between the two
+halves to put a contract on. The exemption is structural rather than a named file: code outside every
+child package directory. A parent that *contains* these packages is not their peer, which is the same
+distinction `check-dependencies.ts` already draws for nested packages.
+
+```
+service_contract_imports_ok: 379 sources, 4 cross-service imports all via /contract,
+6 composition-root imports, 63 shared-library imports exempt
+```
+
+Reverting round 11's narrowing fails it precisely, and the file restores byte-identical:
+
+```
+contract_imports_not_narrow: kokoro-platform/kokoro-hub/src/interfaces/http/membership-authorizer.ts:8:
+imports "@kokoro/user"; a peer must bind "@kokoro/user/contract", not the package root
+```
+
+The policy was wrong in the other direction too. The gate only ever asked whether a declared
+dependency was allowed; it never asked whether an allowance was used. `platform.admin` carried six —
+credit, hub, model, payment, site, user — while importing nothing but `platform-kit`, because it
+reaches those modules over HTTP through its gateway. Six standing permissions for edges that do not
+exist, any of which would have waved through an import nobody reviewed. `check-dependencies.ts` now
+fails on an allowance no package under the root uses, and `platform.admin` is narrowed to
+`[platform.kit]`.
+
+Roots owning no package are skipped: they have nothing to draw an edge from, so their allowances are
+not evidence of anything. Restoring one phantom allowance fails the gate, and the manifest restores
+byte-identical.
+
 ## Verification
 
 All against real services, with no silent skips:
@@ -848,7 +886,7 @@ All against real services, with no silent skips:
 | model, real MySQL (`--no-file-parallelism`) | 152 passed |
 | platform-admin Connect suite, 5 consecutive runs | 7 passed each |
 | root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
-| architecture gates (incl. new site-scope-plane fixtures) | 34 passed |
+| architecture gates (round 12: + contract-import and unused-allowance fixtures) | 51 passed |
 | Python gates (compatibility, admin OpenAPI, admin browser schemas, GA isolation) | 66 passed |
 | contract generator tests | 35 passed |
 | round 8 compatibility gate | 5/5 scenarios, 7 session-platform assertions |

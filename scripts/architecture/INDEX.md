@@ -43,6 +43,30 @@ at runtime reads as scoped. The gate proves intent at the callsite, not the valu
 fails closed when it finds no declarations at all, because a parser that stopped matching would
 otherwise report a clean tree.
 
+`check-service-contract-imports.mjs` is the supported entrypoint for the peer-import rule, with
+`check-service-contract-imports.test.mjs` defining its fail-closed behaviour. Each Platform service
+exports a package root, which re-exports its services, servers and domain types, and a `./contract`
+entry exposing only its HTTP schemas. A peer must bind the second. `--source` takes an alternate tree.
+
+The sibling dependency gate reads `package.json`, where both spellings are the same dependency, so
+this can only be enforced at the import site. Importing the root for a two-field response schema
+drags the whole service in — `@kokoro/user` alone brings Prisma, Fastify, ioredis, jose and
+nodemailer — and it decides how much survives the services being split into separate repositories:
+what a peer imports today is what has to be published tomorrow.
+
+Two exemptions, both counted in every successful run rather than hidden. `platform-kit` is the shared
+library every service builds on, not a service with a wire contract. And the workspace root is the
+composition root, not a peer: a parent that *contains* these packages assembles their module
+descriptors into one deployable, which is an implementation relationship with no wire to put a
+contract on. That exemption is structural — code outside every child package directory — rather than
+a named file, so it cannot be widened by moving a file.
+
+That rule has a companion in `check-dependencies.ts`: an allowance no package under a root uses now
+fails. A standing permission nobody exercises would wave through an import nobody reviewed, and it
+makes the policy stop describing the architecture it claims to describe. `platform.admin` carried six
+such allowances — credit, hub, model, payment, site, user — while importing only `platform-kit`,
+because it reaches those modules over HTTP.
+
 GA is not a Platform module and must not become one: `namespace` is its only isolation key and stays
 opaque, while `siteId` is resolved and enforced entirely on the Platform side. The rule was documented
 in the codebase map but nothing checked it, so this gate freezes the currently-clean state — an empty
@@ -76,4 +100,5 @@ The checker consumes JSON-compatible YAML to avoid adding a Root runtime depende
 
 Run `node --test scripts/architecture/*.test.mjs`, then `node scripts/architecture/check-index-coverage.ts`,
 `node scripts/architecture/check-dependencies.ts`, `node scripts/architecture/check-site-scope-planes.mjs`,
+`node scripts/architecture/check-service-contract-imports.mjs`,
 and `uv run --locked python scripts/architecture/check_ga_isolation.py`.

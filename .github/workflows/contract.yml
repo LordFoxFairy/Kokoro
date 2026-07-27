@@ -87,6 +87,7 @@ jobs:
           node scripts/architecture/check-index-coverage.ts
           node scripts/architecture/check-dependencies.ts
           node scripts/architecture/check-site-scope-planes.mjs
+          node scripts/architecture/check-service-contract-imports.mjs
       - name: repository governance tests
         run: node --test scripts/repository/*.test.mjs scripts/compatibility/*.test.mjs scripts/foundation/check-evidence.test.mjs
       - name: Python compatibility adapter tests
