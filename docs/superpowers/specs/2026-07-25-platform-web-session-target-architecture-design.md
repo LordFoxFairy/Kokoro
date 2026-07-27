@@ -147,11 +147,14 @@ Kokoro 已经有扎实的 Chat、SSE、HITL、LangGraph/DeepAgents、sandbox 和
 
 - 只有通过对应 Wave 全部 contract、integration、E2E、security、load、recovery 和 operation gate 的
   Capability/Surface revision 才能进入 production SiteRelease。
-- SiteRelease 只能引用 `production_ready` revision；未实现、仅 mock、仅管理员手工补偿或没有 runbook 的
-  功能必须在 route、bootstrap、API authorization 和后台入口四层同时关闭，不能只隐藏按钮。
+- SiteRelease candidate compile 只能引用拥有当前有效、scope 匹配 `CapabilityQualificationAttestation` 的 revision；
+  未实现、仅 mock、仅管理员手工补偿或没有 runbook 的功能必须在 route、bootstrap、API authorization 和后台入口
+  四层同时关闭，不能只隐藏按钮。Qualification 只允许进入 candidate，不单独授权上线。
 - SiteRelease compile 生成 machine-readable `EnabledCapabilityInventory`：每个 Surface/route/API/Admin
   mutation/Capability 绑定 revision、P0 journey、test report digest、runbook、dashboard/alert owner、accepted
-  risk/expiry 和 production-ready attestation。unknown、stub、证据缺失/过期或只隐藏 UI 的 entry fail closed。
+  risk/expiry 和 Qualification refs。compile/build/preview 后必须生成与 Site/candidate/inventory/source/contract/lock/image/
+  config digests 完全匹配的 `ReleaseCertificationInstance`，Activation 才可继续；unknown、stub、证据缺失/过期或
+  只隐藏 UI 的 entry fail closed。
 - “功能完整”按已发布 Site 的用户承诺判断：注册/登录、套餐展示、权益取得、Credit、Chat/Studio、Job、
   Artifact、Library、错误恢复、Admin/Support、删除导出与通知形成闭环；不能出现能进入但无法完成的旅程。
 - Claude Code/Manus 类 P1/P2 能力可以由 Site assignment 分阶段开放，但任何一项一旦对真实用户开放，就

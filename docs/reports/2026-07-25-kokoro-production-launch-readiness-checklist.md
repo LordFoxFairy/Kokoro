@@ -1,6 +1,6 @@
 ---
 artifact: launch-checklist
-version: "1.0"
+version: "1.1"
 created: 2026-07-25
 status: planned
 scope: kokoro-redeem-first-production-launch
@@ -21,15 +21,20 @@ scope: kokoro-redeem-first-production-launch
 
 `T` 表示相对生产切流时间；每项 owner 是必须承担签署责任的角色，不以“全体工程师”代替。
 
+每项状态必须按顺序留下四类独立证据：`Design approved → Implemented → RC verified → Signed`。设计文档、
+自报标签、UAT 截图或人工说明不能替代实现与 RC 证据。本文在实现获批前所有执行项均保持 `Not started`。
+
 ## Scope Freeze
 
 | Item | Owner | Due | Status | Evidence |
 |---|---|---:|---|---|
 | [ ] 冻结首发 Site、域名、`LaunchProductProfile`、`EnabledSurfaceInventory`、Agent、Model、Capability、Offering 与 `redeem_only` SalesPolicyRevision | Product Owner | T-21d | Not started | SiteRelease manifest diff |
 | [ ] Profile 的 CanonicalJourney、UserVisibleState、RecoveryAction、ProductMetric 与 ContentPolicy revision 全部冻结 | Product Owner | T-21d | Not started | Product contract bundle |
-| [ ] 所有启用 revision 标记 `production_ready`，无 stub/mock/手工补偿依赖 | Engineering Lead | T-21d | Not started | Revision inventory |
+| [ ] 每个启用 capability/surface revision 均有有效 `CapabilityQualificationAttestation`；compile/build/preview 后的 candidate 再取得 digest 完全匹配的 `ReleaseCertificationInstance` | Engineering + Release | T-21d | Not started | Qualification set + Release certificate DAG |
 | [ ] 未启用能力在 route、bootstrap、API authorization、Admin 四层均关闭 | Web + Platform Leads | T-14d | Not started | Negative E2E report |
 | [ ] 真实 Payment Provider 明确不在首发 scope；Checkout/payment mutation fail closed | Commerce Lead | T-14d | Not started | Contract/E2E evidence |
+| [ ] Redeem-only 在 route/bootstrap/API/Admin/domain effect/secret/egress 七层关闭新 Payment acquisition；生产 Site 无 Merchant/Provider binding、Payment secret 或可调用 Provider IO | Commerce + Security | T-14d | Not started | Negative matrix + binding/secret/egress inventory |
+| [ ] 外部售卡退款只记录 external reference 并走 Redemption source reversal/replacement；不伪造 Platform Order/Payment/Invoice/Refund，历史 Payment duty 若存在仍可收口 | Commerce + Support | T-14d | Not started | Source-lineage E2E |
 | [ ] 已知问题逐项记录 owner、用户影响、缓解和接受期限；无未接受 blocker | Product Owner | T-2d | Not started | Accepted-risk register |
 
 ## Engineering Readiness
@@ -40,10 +45,14 @@ scope: kokoro-redeem-first-production-launch
 | [ ] 根 lock/catalog、Python lock、generated contracts 零漂移 | Foundation Lead | T-14d | Not started | CI artifact |
 | [ ] PlatformUnitOfWork、Outbox/Inbox、epoch fencing、Effect/Grant 幂等全部通过 | Platform + Runtime Leads | T-14d | Not started | Integration/chaos reports |
 | [ ] Redeem 并发双兑、事务 crash、重复请求、Program expiry、reversal 全部通过 | Commerce Lead | T-14d | Not started | Redeem certification report |
-| [ ] 两个独立 Site build/deploy/rollback 且无 Cookie/cache/brand/data 串站 | Web Lead | T-14d | Not started | Multi-Site E2E |
+| [ ] 两个 production-like Site 使用不同产品源码根、lockfile、CI、artifact、deployment、domain、workload identity 与 SiteProjectBinding；单站升级/回滚不改变另一站，且无 Cookie/cache/brand/data 串站 | Web + Fleet + Security | T-14d | Not started | Multi-Site provenance + negative E2E |
 | [ ] Session branch/reconnect、GA recovery、Job callback/unknown、Artifact lineage 全部通过 | Session + Runtime Leads | T-14d | Not started | Runtime E2E/chaos |
+| [ ] 干净浏览器只凭完整 Session snapshot + watermark 恢复 large/branched/HITL/media/cost-pending 页面，不依赖 GA checkpoint 或全历史 SSE | Session + Web | T-14d | Not started | Snapshot conformance trace |
+| [ ] SSE cursor malformed/ahead/expired/wrong-Site/wrong-subject/schema/epoch 均 typed fail，无 seq-0 fallback；append-before-broadcast、slow consumer、grant revoke、proxy drain、Redis/Mongo outage 通过 | Session + SRE + Security | T-14d | Not started | Transport chaos report |
 | [ ] Admin 零业务 DB import；财务、发布、支持、治理使用专用 workflow | Admin Lead | T-14d | Not started | Architecture test + UAT |
+| [ ] Admin Web/BFF 无业务 DB role、SQL/script/generic mutation bypass；privileged auth、scope、environment/region、epoch revoke、maker-checker、JIT access 与 audit fail-closed 负向矩阵全过 | Admin + Security | T-14d | Not started | Static/runtime boundary proof + AC-ADM matrix |
 | [ ] 所有 migration 完成 expand/compatibility rehearsal，contract step 有 consumer inventory | Data Lead | T-7d | Not started | Migration report |
+| [ ] 每个 projection 有 definition/source/retention/rebuild runbook；空 shadow 从 owner truth 重建、live catch-up 无 gap、replay 无 effect、Credit/terminal 零差异，authority switch/rollback 可逆 | Data + Domain Owners | T-7d | Not started | AC-PROJ-01..06 report |
 | [ ] OCI image 使用 digest、签名、SBOM/provenance；无 mutable production tag | Release Engineer | T-7d | Not started | Image manifest |
 | [ ] 根/受管目录 INDEX、CODEBASE_MAP、handbook/ADR、runbook 与实际入口一致 | Architecture Owner | T-7d | Not started | index-coverage + review |
 
@@ -72,11 +81,12 @@ scope: kokoro-redeem-first-production-launch
 |---|---|---:|---|---|
 | [ ] Static/type/lint/schema/generate/dependency/index gates 全绿 | QA Lead | T-7d | Not started | CI run |
 | [ ] Unit/property tests 覆盖 Credit/Journal/Hold/Slice/Money/permission invariants | QA + Domain Leads | T-7d | Not started | Seeded report |
+| [ ] Credit chaos/property 证明单 root Hold、child allocation CAS 守恒、delegated Job 无第二 Hold、unknown 不释放、fenced return、exact-source settlement、provider overage 不形成静默客户债务 | Credit + Runtime + QA | T-7d | Not started | AC-BUD-01..06 + journal proof |
 | [ ] 真实 PostgreSQL/Redis/Mongo/S3-compatible integration suite 全绿 | QA Lead | T-7d | Not started | Integration report |
 | [ ] TypeScript/Python producer-consumer compatibility matrix全绿 | Contract Owner | T-7d | Not started | Contract matrix |
 | [ ] 全服务 E2E 覆盖注册→兑换→Chat/Studio→Job→Artifact→再次登录恢复 | QA Lead | T-5d | Not started | E2E trace |
 | [ ] Chaos 覆盖 process crash、lease steal、重复/乱序事件、Provider unknown、Target offline | Reliability Lead | T-5d | Not started | Chaos report |
-| [ ] 5 倍 burst、24h soak、SSE 连接、Job queue、DB pool、对象存储达到 §2.4 envelope | Performance Owner | T-5d | Not started | Load/soak report |
+| [ ] `LaunchCapacityProfileRevision` 冻结并发、5 倍 burst、p95/p99、queue/DB/storage ceiling；SSE 10k/24h、Job queue、DB pool、对象存储达到该 revision | Performance Owner | T-5d | Not started | Capacity profile + load/soak report |
 | [ ] Chrome/Safari/Firefox + mobile breakpoints + keyboard/screen reader；所有 Core P0 Journey 达到 WCAG 2.2 AA | Web QA | T-5d | Not started | Browser/a11y report |
 | [ ] Staging 使用 production topology 与独立 secrets 完成 RC rehearsal | Release Engineer | T-3d | Not started | RC deployment record |
 
@@ -89,6 +99,7 @@ scope: kokoro-redeem-first-production-launch
 | [ ] SSRF/path traversal/command injection/plugin/package/connector/ExecutionGrant 逃逸验证 | Security Lead | T-5d | Not started | Abuse-case report |
 | [ ] Privacy Policy、Terms、Acceptable Use、Credit/Card Code 条款、退款不适用说明与 Site 法务版本批准 | Legal + Product | T-7d | Not started | LegalRevision |
 | [ ] Export/Deletion/Retention/LegalHold participant 全链通过；强制财务事实不会被删除拒收 | Privacy Owner | T-5d | Not started | Governance E2E |
+| [ ] Media GC 仅执行有效 GCPlan，effect 前按 watermark/epoch 重验 active grant/job/share/lineage/LegalHold/backup refs；same Blob 多资源安全，delete timeout 保持 unknown，所有 target 有 DestructionReceipt | Media + Data Governance + SRE | T-5d | Not started | GC race/DR/provider-unknown report |
 | [ ] 生产访问权限最小化、break-glass、step-up、maker-checker 和审计验证 | Security + SRE | T-3d | Not started | Access review |
 
 ## Operations & Infrastructure
@@ -97,9 +108,12 @@ scope: kokoro-redeem-first-production-launch
 |---|---|---:|---|---|
 | [ ] DNS/TLS/CDN/WAF/rate limit、domain binding 和 canonical URL 正确 | SRE | T-5d | Not started | Edge checklist |
 | [ ] PostgreSQL/Mongo/Object Storage backup、PITR 和从备份恢复演练达到 RPO/RTO | Data + SRE | T-5d | Not started | Restore proof |
+| [ ] DR 同时恢复 owner DB、outbox archive、schema/decoder registry、projection definitions/snapshots；fence old writers 后处理 cursor/inbox/lease epoch，证明 known-gap reconciliation、effect dedupe 与 two-Site isolation | Data + SRE + Domain Owners | T-5d | Not started | Timed DR exercise |
+| [ ] Event retention manifest 冻结 owner/outbox/transport/inbox/UI-SSE 各 tier 的 duration、archive/restore、decoder、LegalHold/Data Rights/destruction policy，覆盖 reconnect/rebuild/DR 窗口 | Data Governance + SRE | T-5d | Not started | Signed retention manifest + restore/replay proof |
 | [ ] Readiness/liveness/graceful shutdown/lease drain 在 rolling deploy 中无丢单 | SRE | T-5d | Not started | Rollout test |
 | [ ] capacity、autoscaling、DB connection、queue concurrency、storage lifecycle 与配额已冻结 | SRE | T-3d | Not started | Capacity plan |
 | [ ] dashboards/alerts 覆盖 SLO、queue age、hold/reconciliation、redeem、run/job、provider、storage、errors | Observability Owner | T-5d | Not started | Alert inventory |
+| [ ] 观测清单显式覆盖 SSE buffer/replay/cursor/drain、projection lag/gap/diff/fairness、allocation unknown/overage、GC partial/unknown、audit fail-closed、Trust purge/reporting 与 Data Rights backlog | Observability + SRE | T-5d | Not started | Metric/alert/runbook rehearsal bundle |
 | [ ] 每个 page alert 有 owner、runbook、权限和 rehearsal；on-call rotation 已确认 | SRE Lead | T-2d | Not started | On-call schedule |
 | [ ] SiteRelease、backend、migration-forward、Code batch、secret compromise 回滚/处置已桌面演练 | Incident Commander | T-2d | Not started | Tabletop report |
 
@@ -155,7 +169,7 @@ scope: kokoro-redeem-first-production-launch
 | Criterion | Owner | Due | Status |
 |---|---|---:|---|
 | [ ] 非关键渠道 Notification delivery receipt 完整 | Notification Owner | T-2d | Not started |
-| [ ] 第二个 production Site 完成同样的预发布演练 | Web + SRE | T-2d | Not started |
+| [ ] 第二个真实 production Site 在其独立发布窗口完成同等级演练（首发前的双 Site production-like 隔离认证已属于 Must Have） | Web + SRE | Post-launch scoped release | Not started |
 | [ ] 非首发语言营销内容完成本地化复核 | Content Owner | T-2d | Not started |
 
 ### Nice to Have — 不影响首发

@@ -38,7 +38,7 @@ Platform workflow 原子创建可引用 AssetVersion。Chat/Studio/Job/GA 只消
 
 | ID | User story | Priority |
 |---|---|---|
-| AST-US-01 | 用户可选择、预检、断点续传、暂停/取消文件，并在刷新后恢复同一上传 | P0 if-enabled |
+| AST-US-01 | Reference Profile 用户可选择、预检、断点续传、暂停/取消安全附件，并在刷新后恢复同一上传 | Core P0 |
 | AST-US-02 | 用户准确看到验证、扫描、隔离、可用、失败及修复动作，不把“上传完成”误报为“可使用” | P0 |
 | AST-US-03 | Chat/Studio 只能提交当前 Site、Project、purpose 和 policy 允许的 AssetVersion | P0 |
 | AST-US-04 | 用户可删除未使用上传或 Asset，并理解被作品引用、Retention/LegalHold 阻止时的结果 | P0 |
@@ -387,6 +387,10 @@ And historical AssetVersion, ScanEvaluation and prior Provider effects remain im
 Wave 3 只冻结 Chat attachment projection/admission gate；Wave 4 实现 Asset/Blob/upload/scan/promotion/GC 与各 Studio
 用途；Wave 7 完成 Admin/Support/Trust/Data Rights queues；Wave 9 对每个 enabled Site/Profile 运行真实 object store、
 scanner outage、multipart crash、archive bomb、cross-Site、GC/restore certification。
+
+`core-redeem-chat@1` 的 safe text/file attachment 属于启用 Surface，因此格式白名单、大小/数量限制、resume、
+scan/quarantine、delete/appeal 与 Admission gate 均为 Core 证据。跨云盘导入、大型媒体批量 intake、专业 mask/stem/
+storyboard 等扩展能力仍为 `if-enabled`，由具体 Vertical Site Profile 单独认证。
 
 外部模式参考：
 

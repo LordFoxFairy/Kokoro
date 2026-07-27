@@ -28,7 +28,7 @@ RPC/deployable matrix、root budget topology、产品 P0 旅程以及 2A/2B、5A
 |---|---|---|---|
 | 实施完成即可直接上线 | Pass at design level | Production topology、分层验证、EvidenceBundle、Go/No-Go、rollback、maintenance、Wave 9 | Not started |
 | 未接支付时用卡密取得同等产品能力 | Pass | FulfillmentSource union、redeem_only SalesPolicy、同 UoW Redemption/Fulfillment/Grant、source reversal | Not started |
-| 功能完整 | Pass with SiteRelease rule | production_ready revision、四层关闭未完成功能、Wave 0-9 completion rule | Not started |
+| 功能完整 | Pass with SiteRelease rule | capability Qualification、四层关闭未完成功能、digest-bound ReleaseCertification、Wave 0-9 completion rule | Not started |
 | 验证和测试完整 | Pass | static/property/contract/integration/E2E/chaos/load/security/DR/UAT matrix | Not started |
 | 可长期维护 | Pass | SLO/on-call/runbook/restore/patch SLA/contract lifecycle/incident review | Not started |
 | CLAUDE.md 的 INDEX.md 规划 | Pass | root/service/package/surface 分层、coverage manifest/CI、同 commit 更新、Wave 8 dead-doc 清理 | Not started |

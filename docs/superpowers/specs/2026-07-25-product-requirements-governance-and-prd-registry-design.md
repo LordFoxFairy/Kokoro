@@ -1,6 +1,6 @@
 ---
 artifact: product-requirements-governance-design
-version: "1.0"
+version: "1.1"
 created: 2026-07-25
 status: internal-review-active
 parent: 2026-07-25-platform-web-session-target-architecture-design.md
@@ -152,9 +152,32 @@ Reference Profile 使用 `core-standard` SupportTierRevision：安全、跨站�
 24×7 page，15 分钟内 acknowledgement；普通 Case 使用 SiteRelease 发布的 5×9 business calendar，上表 4h/2
 business days 只在该 calendar 内计时。用户提交前必须看到适用 SLA，不能在出错后才解释“非工作时间”。
 
+### 2.4 Vertical Site Profile review fixtures
+
+以下三个 fixture 用于证明“一 Site 一独立产品”不是同一 Chat App 的换色。它们是产品评审基线，不是自动启用的
+production assignment；实际 SiteRelease 仍绑定不可变 revision、Qualification 与 ReleaseCertification。
+
+| Profile fixture | Enabled product surfaces | Disabled by default | First-value metric | Required governed bindings |
+|---|---|---|---|---|
+| `image-studio@1` | Site-bound Identity、Account/Redeem/Credit、safe attachment、Image Studio、minimal Library、Notification、Support、Core Admin、Data Rights | Payment、General Chat、Music/Video、Public Share、Advanced Agent | eligible user 从兑换/登录到首张可下载 allowed image 的 p50/p95 | Image Offering、generation+editing/upscale model roles、image tools、rights/NSFW policy、Artifact/Export |
+| `music-studio@1` | Site-bound Identity、Account/Redeem/Credit、safe attachment、Music Studio、minimal Library、Notification、Support、Core Admin、Data Rights | Payment、General Chat、Image/Video、Public Share、Advanced Agent | eligible user 到首个可播放且可导出的 allowed track 的 p50/p95 | Music Offering、main orchestrator+music generation roles、lyrics/audio capabilities、voice/music rights、Artifact/Export |
+| `video-studio@1` | Site-bound Identity、Account/Redeem/Credit、safe attachment、Video Studio、minimal Library、Notification、Support、Core Admin、Data Rights | Payment、General Chat、Image/Music standalone、Public Share、Advanced Agent | eligible user 到首个可预览 allowed shot，以及完整 export 的 p50/p95 | Video Offering、main orchestrator+video/image/audio roles、storyboard/render capabilities、likeness/voice policy、Artifact/Export |
+
+共同规则：
+
+- 每个 fixture 编译自己的 enabled/disabled inventory、Offering、ModelBundle、Capability、ContentPolicy、metric 与
+  Support tier；不能继承另一个 Site 的 mutable 配置。
+- General Chat 是否开放是显式 Surface 决策；即使不开放，Studio 的 hidden main/orchestrator model role 仍由
+  ModelBundle 提供，不能把浏览器表单直接绑 Provider。
+- disabled Surface 在 route、bootstrap、API authorization、Admin 四层 fail closed；共享后端存在能力不等于该 Site
+  对用户承诺能力。
+- 三个 fixture 均使用独立 Web Project、lockfile、CI、artifact、deployment 和 rollback authority；共享的是已发布
+  Web capability packages 与同一套 Backend/Session/Job/GA/Gateway。
+
 ## 3. Mandatory Product PRD Registry
 
-文件只在对应 cut 启动时创建；本 Registry 预先冻结名称、owner 和范围，禁止用一份万能 PRD 合并专业产品。
+PRD 可以在对应 cut 之前创建为 `internal-review-active` 草案，以便跨域红队；但不得提前批准、写成实现事实或
+作为 implementation authorization。本 Registry 冻结名称、owner 和范围，禁止用一份万能 PRD 合并专业产品。
 
 | ID / canonical filename | Wave | Scope | Mandatory journeys |
 |---|---|---|---|
@@ -164,7 +187,7 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-03 [`2026-07-25-prd-03-account-plan-redeem-and-credit.md`](2026-07-25-prd-03-account-plan-redeem-and-credit.md) | 2A | core | plan/term/credit、redeem preview/result/review/reversal/support |
 | PRD-04 [`2026-07-25-prd-04-checkout-subscription-and-billing.md`](2026-07-25-prd-04-checkout-subscription-and-billing.md) | 2B | if-enabled | quote/checkout/redirect/renew/change/cancel/refund/dispute |
 | PRD-05 [`2026-07-25-prd-05-chat-conversation-run-and-interaction.md`](2026-07-25-prd-05-chat-conversation-run-and-interaction.md) | 3/5A | core profile | onboarding/manage/composer/stream/control/branch/HITL/model/Job |
-| PRD-06 [`2026-07-25-prd-06-asset-intake-and-attachment-safety.md`](2026-07-25-prd-06-asset-intake-and-attachment-safety.md) | 3/4 | if-enabled | upload/resume/scan/quarantine/quota/delete/appeal |
+| PRD-06 [`2026-07-25-prd-06-asset-intake-and-attachment-safety.md`](2026-07-25-prd-06-asset-intake-and-attachment-safety.md) | 3/4 | core safe attachment + if-enabled extended import | upload/resume/scan/quarantine/quota/delete/appeal |
 | PRD-07 [`2026-07-25-prd-07-studio-common-job-and-cost-ux.md`](2026-07-25-prd-07-studio-common-job-and-cost-ux.md) | 4 | if-enabled | draft/autosave/quote/submit/queue/unknown/partial/export |
 | PRD-08I [`2026-07-25-prd-08i-image-studio.md`](2026-07-25-prd-08i-image-studio.md) | 4 | if-enabled | generate/reference/mask/inpaint/outpaint/batch/upscale |
 | PRD-08M [`2026-07-25-prd-08m-music-studio.md`](2026-07-25-prd-08m-music-studio.md) | 4 | if-enabled | lyrics/player/generate/extend/remix/stem/export |
@@ -177,11 +200,14 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-14 [`2026-07-25-prd-14-localization-and-accessibility.md`](2026-07-25-prd-14-localization-and-accessibility.md) | cross-wave | core | locale/fallback/time/number/RTL/WCAG/browser/AT |
 | PRD-15 [`2026-07-25-prd-15-notification-preferences-and-data-rights.md`](2026-07-25-prd-15-notification-preferences-and-data-rights.md) | 1/6C/7 | core | mandatory events/preferences/delivery/deep link/export/delete UX |
 | PRD-16 [`2026-07-25-prd-16-trust-content-safety-and-media-rights.md`](2026-07-25-prd-16-trust-content-safety-and-media-rights.md) | 1/4/7 | core+if-enabled | input/generation/share/appeal/voice/likeness/copyright/NSFW |
+| PRD-17 [`2026-07-25-prd-17-model-option-control-and-provider-operations.md`](2026-07-25-prd-17-model-option-control-and-provider-operations.md) | 5A | core dependency + if-enabled operator surface | model option/default/unavailable、evaluation/promotion/canary/rollback、provider certification |
+| PRD-18 [`2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md`](2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md) | 5A/6C | core dependency + if-enabled catalog/connection | skill/MCP discovery、qualification、connection/consent/revoke、elicitation、runtime cost/unknown |
 | PRD-A1 [`2026-07-25-prd-a1-agent-revision-and-handoff-product.md`](2026-07-25-prd-a1-agent-revision-and-handoff-product.md) | 5B | advanced | publish/select/handoff visibility/recovery；GA专项批准 |
 | PRD-A2 [`2026-07-25-prd-a2-target-device-permission-and-interaction.md`](2026-07-25-prd-a2-target-device-permission-and-interaction.md) | 6A | advanced | onboard/pair/trust/select/takeover/approval/revoke |
 | PRD-A3 [`2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md`](2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md) | 6B | advanced | repo/worktree/diff/test/checkpoint/rewind/PR/attach/fork |
 | PRD-A4 [`2026-07-25-prd-a4-routine-connector-and-taskview.md`](2026-07-25-prd-a4-routine-connector-and-taskview.md) | 6C | advanced | builder/schedule/DST/misfire/OAuth/wait/notification/task timeline |
 | PRD-A5 [`2026-07-25-prd-a5-agent-team-research-and-application-runtime.md`](2026-07-25-prd-a5-agent-team-research-and-application-runtime.md) | 6D | advanced | team plan/budget/nodes/partial/cancel/aggregate/deploy/rollback |
+| PRD-A6 [`2026-07-25-prd-a6-client-access-plane-cli-desktop-and-ide.md`](2026-07-25-prd-a6-client-access-plane-cli-desktop-and-ide.md) | 6A-6C | advanced | install/update、OAuth/device flow、attach/fork/new run、offline、revocation、compatibility、Support |
 
 每份 PRD 必须通过 `deliver-prd` 质量项，并由产品红队检查 Journey、state、recovery、metrics、scope 和运营闭环。
 
@@ -198,7 +224,9 @@ business days 只在该 calendar 内计时。用户提交前必须看到适用 S
 | PRD-13 | Growth PM | Privacy、Site Fleet、Analytics |
 | PRD-14 | Design Systems/A11y Lead | each Surface PM、Web QA |
 | PRD-15/16 | Privacy/Trust Product Lead | Legal、Security、Support、Content Ops |
-| PRD-A1-A5 | Agent Product Lead | GA owner、Runtime/Security、Support、SRE |
+| PRD-17 | Model Product Lead | Model Platform、Gateway、GA owner、Usage Rating、Trust、Support、SRE |
+| PRD-18 | Capability Product Lead | Capability Hub/Runtime、GA owner、Security、Trust、Support、SRE |
+| PRD-A1-A6 | Agent Product Lead | GA owner、Runtime/Security、Support、SRE |
 
 每份实际 PRD frontmatter 还必须登记 named Engineering、QA、Support/Operations owner；可以使用唯一、可路由的
 team responsibility ID，但不能使用“全体团队”或无 owner 角色。责任 ID 无 on-call/approval mapping 时不能批准。
@@ -222,7 +250,13 @@ team responsibility ID，但不能使用“全体团队”或无 owner 角色。
 | Library/Share | LIB-01 browse/organize、02 quota/trash/GC、SHR-01 share/revoke/report |
 | Admin/Support | ADM-01 auth/scope、02 high-risk command、03 recovery；SUP-01 user case、02 operator lifecycle、03 compensation/confirmation |
 | Growth/UX/Safety | GR-01/02/03、UX-01 locale、UX-02 a11y、SAF-01 block/appeal、SAF-02 media rights、NOT-01 notification |
-| Advanced | ADV-01 device、02 developer、03 routine、04 team/research、05 application deploy |
+| Model/Capability | MOD-01 option/default、MOD-02 unavailable/reconfirmation、MOD-03 operator lifecycle；CAP-01 discover/assign、CAP-02 connect/consent、CAP-03 invoke/elicitation/revoke、CAP-04 operator lifecycle |
+| Advanced Agent | AGT-01 select、AGT-02 handoff |
+| Target | TGT-01 pair/select、TGT-02 permission、TGT-03 takeover/revoke |
+| Developer | DEV-01 repo/worktree、DEV-02 checkpoint/git、DEV-03 multidevice/context |
+| Automation | AUT-01 routine、CON-01 connector、TASK-01 task view |
+| Team/Application | TEAM-01 team、RES-01 wide research、APP-01 application deploy |
+| Client | CLIENT-01 install/auth/revoke、CLIENT-02 attach/fork/new run/offline |
 
 ## 5. UserVisibleStateCatalog Minimum
 
@@ -336,7 +370,7 @@ domain/certificate 处置，再删除可删资源。它不等于删除 Site 表�
 ### 10.3 Milestones
 
 1. Foundation：建立 Registry/Journey/requirements/evidence schema 与 coverage gate。
-2. Core definition：批准 Reference Profile 和 PRD-00/01/02/03/05/10/11/12/14/15/16。
+2. Core definition：批准 Reference Profile 和 PRD-00/01/02/03/05/06/09/10/11/12/14/15/16/17/18。
 3. Core execution：按 1→2A→3→5A→4→7 交付启用旅程。
 4. Core certification：生成 profile-scoped Wave 8/9 instance 并上线。
 5. Optional commerce/studios：2B 和各专业 Studio 按独立 Profile delta certification 开放。
