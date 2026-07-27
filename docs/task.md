@@ -26,7 +26,32 @@
       reverted tree 上 verifier pass → 四个**旧** recoverableRef tag 仍远端可解析。
 - [~] BOM 生成器/schema/测试 + freeze-snapshots 方向对齐(freezer 原本仍服务已废弃的单体 baseline)。
 - [~] boundary registry(**T0 真缺口**:`config/` 下无此物,但 spec §13 T0 要求它冻结每 operation 唯一 transport)。
-- [ ] 根仓 branch push + 根 remote CI + BOM tag(唯一对外动作,全绿后才做)。
+- [x] BOM 生成器/schema/测试 + freeze-snapshots 降级为「只冻结历史 source baseline」(promotion authority 归 manifest/verifier/BOM)。
+- [x] **boundary registry**(补上 T0 真缺口):`contract/registry/boundaries.yaml` 记 5 boundary / 77 operation,
+      门 `scripts/contract/check-boundary-registry.mjs` 已进根 CI。**首次量化两个此前无人度量的事实**:
+      46 个 operation 的 siteId 靠 header 派生、`request-field` 为 0;`model-gateway` 无机器可读契约源。
+      两者都进成功输出当欠账计数,不被默默盖章。四类篡改实测全部 fail-closed。
+- [x] **第二轮 pin promotion**(`06997bd`):agent `9d3180e`(钉 `.python-version=3.11`)+ platform `f0fd2e4`
+      (callService `caller` 转必填、删零消费者 `internal-secret-guard`、修 INDEX 失真)。两仓子 CI 均 success,
+      新 annotated tag `kokoro-wave0-hardening-2026-07-27-{agent,platform}` 远端 peeled SHA 已核。
+      round-2 兼容性门 5 场景全 pass(`wave0-hardening-2026-07-27`)。session/web 维持 round-1 pin 不动。
+- [ ] **根 remote CI + BOM tag —— 阻塞在用户侧**:仓库 Actions secrets 为空(`total_count: 0`),
+      `contract.yml` 在自己的守卫处 fail-fast:「Configure KOKORO_SUBMODULE_TOKEN with read-only access to
+      the four private kokoro-* repositories」。需用户建一个对四个私有子仓有只读 Contents 权限的
+      fine-grained PAT 并加为该 secret。**我不代为签发凭据。** 根 CI 绿之前不打 BOM tag。
+
+### 待办优先级(下一会话/loop 从这里接)
+
+1. **lockfile 镜像缺陷**(见任务 #14):`kokoro-agent/uv.lock` 1821 条 aliyun URL、0 条官方源;根 lock 29/0。
+   这是首次 agent CI 失败的真因(`greenlet` 拉取超时 129s)。**不要直接重解析**——会连带升级 ~60 个包
+   (`langgraph`/`langchain-core`/`deepagents`/`protobuf` 6→7/`wrapt` 1→2,`websockets` 还降级),
+   属未批准的 GA 依赖变更。正确路径:从现锁导出 134 条 `name==version` 约束 → 约束下对官方源重解析 →
+   证明版本零漂移 → 跑满 609 测试 → 再采纳。
+2. **子仓 INDEX 欠账**(见任务 #13):审计出 5 Critical / 9 Important / 10 Minor,platform 的 Critical-2
+   已在 round-2 修掉;其余按仓分批,走下一轮 pin promotion。
+3. **Wave T2 Public Admin API**(见任务 #7):按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
+   建完整 OpenAPI 3.1 + 生成客户端 + 删透明 rewrite/页面手写 schema。**注意**:那 6 处 `callService` 不属 T2,
+   spec §3.2 判定其中部分本属同一 Platform workflow,应在 T3 收拢为本地 application interface 而非包装成 RPC。
 
 ### 内部 RPC 现状与下一步(别再重复问)
 
