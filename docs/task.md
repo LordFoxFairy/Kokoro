@@ -40,18 +40,31 @@
       the four private kokoro-* repositories」。需用户建一个对四个私有子仓有只读 Contents 权限的
       fine-grained PAT 并加为该 secret。**我不代为签发凭据。** 根 CI 绿之前不打 BOM tag。
 
+- [x] **第三轮 pin promotion**(`5e4747c`,四仓全动):agent `5c118e5` / platform `92a293d` / session `be2174d` /
+      web `b65e86d`,四仓子 CI 全 success、四个 annotated tag 远端 peeled SHA 已核,round-3 兼容性门 5 场景全 pass
+      (`wave0-index-truth-2026-07-27`)。内容 = 制品源归一 + INDEX 事实校正。
+- [x] **两个 uv.lock 归一到官方源**:根 29→0(官方 0→22)、agent 1821→0(官方 0→1686),**版本零漂移**。
+      方法:从现锁导出约束再重解析(删锁重解析会丢 uv 的 version preference,连带升 ~60 个包);
+      universal lock 里 numpy 按环境标记同时存在 2.4.6/2.5.0,多版本包用**上界**而非等值,否则不可满足。
+      两条坑已写进 pyproject 注释:①仓内 `[[tool.uv.index]]` **不**覆盖 user-level `default=true` 的 index
+      (uv 0.10.4 实测),配了镜像的机器重解析必须 `UV_NO_CONFIG=1`;②任何不带 `--locked` 的 uv 命令会静默
+      重解析并改写锁——必须用 `git show <sha>:uv.lock` 核对**已提交字节**,我曾因此提交过一次假修复。
+- [x] **子仓 INDEX 欠账**(workflow 4 修 + 4 独立复核,8 agent 0 error):platform 复核 FAIL 并已修正三条
+      (admin gateway 实为裸 fetch 非 callService、残留"was removed"历史叙事、credit/model 把未实现的
+      Admission 写成当前调用方)。顺带查出真实代码不符:`kokoro-site/src/index.ts` 未 re-export
+      `createSiteServer`、`kokoro-user/src/index.ts` 漏 `RefreshService`、`skills/__init__.py` 未导出
+      `PackageStore`/`make_package_store`/`ExecCapableBackend` 却被三处深导入(已记为未收口边界缺口)。
+      新增 4 个 web ui INDEX 被覆盖门判为未注册(门正确生效),注册后架构清单 58→**62 roots**。
+
 ### 待办优先级(下一会话/loop 从这里接)
 
-1. **lockfile 镜像缺陷**(见任务 #14):`kokoro-agent/uv.lock` 1821 条 aliyun URL、0 条官方源;根 lock 29/0。
-   这是首次 agent CI 失败的真因(`greenlet` 拉取超时 129s)。**不要直接重解析**——会连带升级 ~60 个包
-   (`langgraph`/`langchain-core`/`deepagents`/`protobuf` 6→7/`wrapt` 1→2,`websockets` 还降级),
-   属未批准的 GA 依赖变更。正确路径:从现锁导出 134 条 `name==version` 约束 → 约束下对官方源重解析 →
-   证明版本零漂移 → 跑满 609 测试 → 再采纳。
-2. **子仓 INDEX 欠账**(见任务 #13):审计出 5 Critical / 9 Important / 10 Minor,platform 的 Critical-2
-   已在 round-2 修掉;其余按仓分批,走下一轮 pin promotion。
-3. **Wave T2 Public Admin API**(见任务 #7):按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
+1. **Wave T2 Public Admin API**(见任务 #7)——**唯一未开工项**:按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
    建完整 OpenAPI 3.1 + 生成客户端 + 删透明 rewrite/页面手写 schema。**注意**:那 6 处 `callService` 不属 T2,
    spec §3.2 判定其中部分本属同一 Platform workflow,应在 T3 收拢为本地 application interface 而非包装成 RPC。
+2. **根 CI 仍阻塞在用户侧**:需用户建 `KOKORO_SUBMODULE_TOKEN`(对四个私有子仓只读 Contents 的
+   fine-grained PAT)。根 CI 绿之前不打 BOM tag。
+3. 可选:把 user-level `~/.config/uv/uv.toml` 里 `index[0].default = true` 去掉,这样官方源锁定成为默认,
+   不必每次重解析都记得加 `UV_NO_CONFIG=1`。
 
 ### 内部 RPC 现状与下一步(别再重复问)
 
