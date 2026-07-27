@@ -9,6 +9,8 @@ services:
     # mysql:8.4, pinned 2026-07-27
     image: mysql:8.4@sha256:c592c15aaf4a1961e15d82eb31ea5987dda862d1c4b1e93424438c0e91dc1f8d
     profiles: [platform]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-}"
       MYSQL_DATABASE: "${MYSQL_DATABASE:-kokoro}"
@@ -28,6 +30,8 @@ services:
     # redis:7, pinned 2026-07-27
     image: redis:7@sha256:a8f08480e1f88f2647fed492d1178c06abb0d0c1fbf02c682a61e2f483fb3954
     profiles: [runtime]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
     command: ["redis-server", "--appendonly", "yes"]
     ports: ["127.0.0.1:${KOKORO_REDIS_PORT:-6379}:6379"]
     healthcheck:
@@ -42,6 +46,8 @@ services:
     # mongo:7, pinned 2026-07-27
     image: mongo:7@sha256:340c1c56fb10e95cf79ff547f8664b96bc6ead9909bc355238cbf865a9695a6f
     profiles: [runtime]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
     ports: ["127.0.0.1:${KOKORO_MONGO_PORT:-27017}:27017"]
     healthcheck:
       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ping:1}).ok' | grep -q '^1$'"]
@@ -55,6 +61,8 @@ services:
     # minio/minio immutable image digest, pinned 2026-07-27
     image: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     profiles: [storage]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
     environment:
       MINIO_ROOT_USER: "${MINIO_ROOT_USER:-}"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-}"
@@ -74,17 +82,27 @@ services:
     # ghcr.io/berriai/litellm:main-stable, pinned 2026-07-27
     image: ghcr.io/berriai/litellm:main-stable@sha256:47afa74b495c802317712e5b8c8a65e7ca30c96636e9b618a5f8130eec72a8ee
     profiles: [model]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
     environment:
       LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY:-}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      OPENAI_COMPAT_BASE_URL: "${OPENAI_COMPAT_BASE_URL:-}"
+      OPENAI_COMPAT_API_KEY: "${OPENAI_COMPAT_API_KEY:-}"
       CLAUDE_CODE_MODEL: "${CLAUDE_CODE_MODEL:-}"
       CLAUDE_CODE_BASE_URL: "${CLAUDE_CODE_BASE_URL:-}"
       CLAUDE_CODE_API_KEY: "${CLAUDE_CODE_API_KEY:-}"
     ports: ["127.0.0.1:${KOKORO_LITELLM_PORT:-4000}:4000"]
     volumes:
-      - "${KOKORO_LITELLM_CONFIG:-./kokoro-platform/kokoro-litellm/config/litellm.config.example.yaml}:/app/config.yaml:ro"
+      - "${KOKORO_LITELLM_CONFIG:-./config/infra/litellm.config.example.yaml}:/app/config.yaml:ro"
     command: ["--config=/app/config.yaml"]
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4000/health/liveliness >/dev/null"]
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness', timeout=3).read(1)"
       interval: 10s
       timeout: 5s
       retries: 5

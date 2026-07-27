@@ -1,0 +1,15 @@
+[project]
+name = "kokoro-root-tooling"
+version = "0.0.0"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "PyYAML==6.0.3",
+]
+
+[dependency-groups]
+dev = [
+  "pytest==9.0.2",
+]
+
+[tool.uv]
+package = false

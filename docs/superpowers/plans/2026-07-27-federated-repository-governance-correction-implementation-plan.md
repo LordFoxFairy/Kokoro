@@ -166,16 +166,44 @@ repositoryTopology: federated-submodules-v1
 - [ ] Add static tests to `verify-federated-repositories.test.mjs` proving these workflow invariants.
 - [ ] Run: `uv sync --locked && uv run python contract/check.py && uv run pytest contract/tests -q`.
 
-### Task 3C: Add a deterministic pinned-combination runtime gate
+### Task 3C: Make Root Infra scope convergence truthful
+
+**Files:**
+- Modify: `config/repository/infrastructure-policy.yaml`
+- Modify: `docker-compose.infra.yml`
+- Create: `config/infra/litellm.config.example.yaml`
+- Create or modify: `scripts/infra/INDEX.md`
+- Modify: `scripts/infra/manager.mjs`
+- Modify: `scripts/infra/manager.test.mjs`
+
+- [ ] Write RED tests for exact environment-category scopes; Site/tenant/workspace rejection; canonical container scope labels; actual stateful mount-prefix agreement; matching-scope idempotence; full-only scope transition; partial-transition rejection; wrong-scope `stop`/`status` rejection; and postflight convergence.
+- [ ] Keep one fixed Compose project, but require requested environment scope, container scope label, and actual stateful mount prefix to agree. An environment-scope transition may only force-recreate the complete `full` service set; it never removes volumes.
+- [ ] Ordinary matching-scope `ensure` must allow normal Compose config/image convergence and must not use `--no-recreate`. A scope transition uses explicit `--force-recreate`.
+- [ ] Move the Root-operated LiteLLM example config out of the Platform source tree. Root Infra must not bind-mount `./kokoro-*` paths at runtime.
+- [ ] Run GREEN: `node --test scripts/infra/manager.test.mjs scripts/infra/scope.test.mjs scripts/infra/inventory.test.mjs`.
+
+### Task 3D: Add a deterministic pinned-combination runtime gate
 
 **Files:**
 - Create: `scripts/repository/run-pinned-compatibility.mjs`
 - Create: `scripts/repository/run-pinned-compatibility.test.mjs`
-- Modify: `scripts/e2e-v21-gate.py` only where it bypasses root Infra authority or assumes old container names.
+- Create focused root-owned compatibility scenario adapters under: `scripts/compatibility/`
+- Create or modify: `scripts/repository/INDEX.md`
 - Modify: `config/repository/compatibility-matrix.json`
+- Modify: `.github/workflows/contract.yml`
 
-- [ ] Write RED tests proving the runner rejects a child HEAD not equal to the selected HEAD/index pins, contract/API version mismatch, missing required service, skipped required scenario, and evidence without all four repository SHAs.
-- [ ] The runner invokes exact commands, captures exit codes, and writes sanitized JSON evidence under ignored `tmp/`; it never reads or prints secrets.
+- [ ] Extend the matrix with one closed `runtimeGate` schema. Scenario IDs and command IDs come from code-owned enums; the matrix cannot contain arbitrary argv. Required services are a closed enum, timeout is bounded, participants are exact repository IDs, and every declared contract must be covered by at least one required scenario containing its provider and consumer.
+- [ ] Write RED tests proving the runner rejects: child HEAD/index pin drift before or after execution; contract/API version mismatch; uncovered contract; missing/unhealthy required service; missing/duplicate/malformed machine result; required `SKIP`; timeout/interruption; evidence without all four SHAs; evidence outside ignored Root `tmp/`; symlink targets; and unsanitized secret-shaped output.
+- [ ] Required scenarios cover all four declared remote boundaries:
+  - `web-session-http-sse`: a pinned Web BFF request and SSE/resume path reaches pinned Session; a direct Python call to Session does not count as Web coverage;
+  - `session-platform-internal-rpc`: Session reaches pinned Platform through its versioned internal HTTP contract and asserts only public receipts/responses, never private tables;
+  - `session-agent-durable-localfake`: Session admission, durable request/event transport, HITL resume, terminal state, idempotency, and SSE replay cross the pinned Session/Agent boundary;
+  - `agent-model-gateway-localfake`: pinned Agent reaches an OpenAI-compatible LocalFake fixture through the real model-gateway HTTP adapter; `KOKORO_LOCAL_FAKE_MODEL=1` is forbidden in this scenario.
+- [ ] A journey may cover several boundaries, but evidence records the result for every contract. Web and Model Gateway cannot be marked covered merely because their repository SHAs appear in evidence.
+- [ ] The runner uses fixed argv arrays with `shell: false`, takes an exclusive Root test-data lease, provisions only lease-owned MySQL/Mongo/Redis/MinIO resources, and always performs token/fingerprint-guarded cleanup in `finally`. It never invokes child compose or writes another service's private database.
+- [ ] Scenario results use a closed allowlisted machine protocol, not parsed human stdout. Required `SKIP` becomes `incomplete` and nonzero. Timeout and interruption terminate registered child process groups and cannot leave a stale PASS.
+- [ ] Evidence first atomically records `running`, then atomically replaces it with `pass`, `fail`, `incomplete`, or `interrupted`. It records exact four pins, manifest/matrix digests, combination digest, required-service preflight, per-contract scenario results, and postflight pin verification; it never records env values, headers, bodies, tokens, keys, private paths, or unbounded logs.
+- [ ] `scripts/e2e-v21-gate.py` remains a historical regression gate and is not invoked or parsed by the promotion runner. Its old container/private-DB assumptions are not compatibility evidence and are removed in a separate cleanup task rather than silently inherited.
 - [ ] Root-owned integration sequence:
 
   ```bash
@@ -184,11 +212,9 @@ repositoryTopology: federated-submodules-v1
   node scripts/infra/manager.mjs stop --profiles full --scope ci-federated --mode ci --infra-env-file deploy/.env.dev
   ```
 
-  The runner executes the deterministic LocalFake cross-service scenarios from `scripts/e2e-v21-gate.py`; required scenarios cannot be reported as SKIP. Cleanup runs in a `finally` path. The command never invokes a child compose file.
-
 - [ ] Run unit GREEN first, then the real root-owned integration sequence. If required local Infra cannot be started, the gate remains incomplete rather than being described as passing.
 
-### Task 3D: Commit the proposed root combination
+### Task 3E: Commit the proposed root combination
 
 - [ ] Checkout the reviewed child candidate commits in root submodules and stage `.gitmodules`, four gitlinks, manifests, contract mirrors, and evidence.
 - [ ] Run `node scripts/repository/verify-federated-repositories.mjs --tree index --remote` and the freezer in `--tree index` mode.

@@ -88,7 +88,12 @@ async function makeFixture() {
   git(root, "config", "user.email", "test@example.com");
   git(root, "config", "user.name", "Kokoro Test");
   await writeFile(resolve(root, ".gitignore"), "root-ignored.txt\n", "utf8");
-  git(root, "add", ".gitignore");
+  await writeFile(
+    resolve(root, ".gitmodules"),
+    `[submodule "fixture"]\n\tpath = source\n\turl = ${remote}\n`,
+    "utf8",
+  );
+  git(root, "add", ".gitignore", ".gitmodules");
   const pin = git(source, "rev-parse", "HEAD");
   git(root, "update-index", "--add", "--cacheinfo", `160000,${pin},source`);
   git(root, "commit", "-m", "pin source");
@@ -225,6 +230,34 @@ test("fails when a gitlink pin differs from the checked-out source HEAD", async 
     const result = runFreezer(fixture);
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /gitlink_head_mismatch/);
+  });
+});
+
+test("freezes a staged proposed gitlink tree before the root promotion commit", async () => {
+  await withFixture(async (fixture) => {
+    await writeFile(resolve(fixture.source, "tracked.txt"), "candidate\n", "utf8");
+    git(fixture.source, "commit", "-am", "candidate");
+    fixture.pin = git(fixture.source, "rev-parse", "HEAD");
+    git(fixture.root, "update-index", "--cacheinfo", `160000,${fixture.pin},source`);
+    await writeExpected(fixture);
+
+    const result = runFreezer(fixture, "--tree", "index");
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(await readFile(fixture.output, "utf8"), new RegExp(fixture.pin, "u"));
+  });
+});
+
+test("rejects floating branch or update controls in gitmodules", async () => {
+  await withFixture(async (fixture) => {
+    await writeFile(
+      resolve(fixture.root, ".gitmodules"),
+      `[submodule "fixture"]\n\tpath = source\n\turl = ${fixture.remote}\n\tbranch = main\n`,
+      "utf8",
+    );
+    git(fixture.root, "add", ".gitmodules");
+    const result = runFreezer(fixture, "--tree", "index");
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /gitmodules_field/);
   });
 });
 

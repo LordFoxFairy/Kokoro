@@ -64,6 +64,7 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
   const run = (command, args, options = {}) => {
     calls.push({ command, args, input: options.input ?? "" });
     if (args.includes("GET")) return { status: 0, stdout: `${options.expectedToken ?? ""}\n`, stderr: "" };
+    if (args.includes("EVAL")) return { status: 0, stdout: "1\n", stderr: "" };
     return { status: 0, stdout: "OK\n", stderr: "" };
   };
   try {
@@ -72,7 +73,8 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
     assert.equal(calls.filter(({ input }) => /CREATE DATABASE/u.test(input)).length, 1);
     assert.match(calls.find(({ input }) => /CREATE DATABASE/u.test(input)).input, /CREATE USER[\s\S]*GRANT ALL PRIVILEGES ON `kokoro_test_run_real01_site`\.\*/u);
     assert.equal(calls.filter(({ input }) => /getSiblingDB/u.test(input)).length, 1);
-    assert.ok(calls.some(({ args }) => args.includes("SET") && args.includes("NX")));
+    assert.ok(calls.some(({ args, input }) =>
+      args.includes("EVAL") && args.includes(lease.redis.markerKey) && input === lease.leaseToken));
     assert.ok(calls.some(({ command, args }) => command === "mc" && args[0] === "mb"));
     assert.ok(calls.every(({ args }) => !args.includes(lease.leaseToken)));
 
@@ -127,6 +129,49 @@ test("refuses unsafe cleanup identity, prefix or endpoint", async () => {
       }),
       /infra_scope_token_mismatch/u,
     );
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("a selective lease provisions and cleans only its declared resources", async () => {
+  const { acquireScope, cleanupScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  const run = (command, args, options = {}) => {
+    calls.push({ command, args, input: options.input ?? "" });
+    if (args.includes("GET")) return { status: 0, stdout: `${lease.leaseToken}\n`, stderr: "" };
+    if (args.includes("EVAL")) return { status: 0, stdout: "1\n", stderr: "" };
+    return { status: 0, stdout: "OK\n", stderr: "" };
+  };
+  let lease;
+  try {
+    lease = await acquireScope({
+      stateRoot,
+      runId: "run_runtime",
+      endpointFingerprint: "local-dev",
+      resources: ["redis", "mongo"],
+    });
+    assert.deepEqual(lease.resources, ["mongo", "redis"]);
+    await provisionScope({ lease, run });
+    assert.ok(calls.some(({ input }) => /getSiblingDB/u.test(input)));
+    assert.ok(calls.some(({ args, input }) =>
+      args.includes("EVAL") && args.includes(lease.redis.markerKey) && input === lease.leaseToken));
+    assert.equal(calls.some(({ input }) => /CREATE DATABASE/u.test(input)), false);
+    assert.equal(calls.some(({ command }) => command === "mc"), false);
+
+    calls.length = 0;
+    await cleanupScope({
+      stateRoot,
+      runId: lease.runId,
+      leaseToken: lease.leaseToken,
+      endpointFingerprint: lease.endpointFingerprint,
+      run,
+    });
+    assert.ok(calls.some(({ input }) => /dropDatabase/u.test(input)));
+    assert.ok(calls.some(({ args }) => args.includes("EVAL")));
+    assert.equal(calls.some(({ input }) => /DROP DATABASE/u.test(input)), false);
+    assert.equal(calls.some(({ command }) => command === "mc"), false);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }

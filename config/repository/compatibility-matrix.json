@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "combinationId": "wave1-federated-ci-2026-07-27",
+  "contracts": [
+    {
+      "id": "session-agent-execution",
+      "version": 1,
+      "providers": ["kokoro-agent"],
+      "consumers": ["kokoro-session"]
+    },
+    {
+      "id": "platform-runtime",
+      "version": 1,
+      "providers": ["kokoro-platform"],
+      "consumers": ["kokoro-session"]
+    },
+    {
+      "id": "session-browser",
+      "version": 1,
+      "providers": ["kokoro-session"],
+      "consumers": ["kokoro-web"]
+    },
+    {
+      "id": "model-gateway",
+      "version": 1,
+      "providers": ["kokoro-platform"],
+      "consumers": ["kokoro-agent"]
+    }
+  ],
+  "requiredGates": ["contract-byte-check", "child-lock-ci", "root-infra-runtime-smoke"],
+  "runtimeGate": {
+    "schemaVersion": 1,
+    "requiredServices": ["mysql", "redis", "mongo", "minio", "litellm"],
+    "scenarios": [
+      {
+        "id": "web-session-http-sse",
+        "commandId": "node-web-session-http-sse-v1",
+        "required": true,
+        "participants": ["kokoro-session", "kokoro-web"],
+        "protocols": [{ "id": "session-browser", "version": 1 }],
+        "timeoutSeconds": 180
+      },
+      {
+        "id": "session-platform-internal-rpc",
+        "commandId": "node-session-platform-internal-rpc-v1",
+        "required": true,
+        "participants": ["kokoro-platform", "kokoro-session"],
+        "protocols": [{ "id": "platform-runtime", "version": 1 }],
+        "timeoutSeconds": 180
+      },
+      {
+        "id": "session-agent-durable-localfake",
+        "commandId": "python-session-agent-durable-v1",
+        "required": true,
+        "participants": ["kokoro-agent", "kokoro-session"],
+        "protocols": [{ "id": "session-agent-execution", "version": 1 }],
+        "timeoutSeconds": 300
+      },
+      {
+        "id": "agent-model-gateway-localfake",
+        "commandId": "python-agent-model-gateway-v1",
+        "required": true,
+        "participants": ["kokoro-agent", "kokoro-platform"],
+        "protocols": [{ "id": "model-gateway", "version": 1 }],
+        "timeoutSeconds": 180
+      }
+    ]
+  }
+}

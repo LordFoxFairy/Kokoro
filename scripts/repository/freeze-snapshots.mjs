@@ -63,6 +63,7 @@ function parseArguments(argv) {
     expected: null,
     approvedSpecCommit: null,
     requireArchiveRef: false,
+    tree: "head",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -101,6 +102,9 @@ function parseArguments(argv) {
       case "--approved-spec-commit":
         options.approvedSpecCommit = value;
         break;
+      case "--tree":
+        options.tree = value;
+        break;
       default:
         throw new FreezeError("snapshot_arguments_invalid", `unsupported argument: ${argument}`);
     }
@@ -128,6 +132,12 @@ function parseArguments(argv) {
     throw new FreezeError("custom_sources_forbidden", "--source is test-only");
   }
   options.sources = options.sources.length > 0 ? options.sources : DEFAULT_SOURCES;
+  if (!["head", "index"].includes(options.tree)) {
+    throw new FreezeError("snapshot_arguments_invalid", "--tree must be head or index");
+  }
+  if (process.env.KOKORO_FREEZE_TEST_ALLOW_CUSTOM_SOURCES !== "1") {
+    options.requireArchiveRef = true;
+  }
   options.output ??= resolve(options.root, "config/repository/frozen-submodules.yaml");
   const ids = options.sources.map(([id]) => id);
   if (new Set(ids).size !== ids.length) {
@@ -158,7 +168,9 @@ function gitText(cwd, args, options) {
 }
 
 function parseGitlink(line, expectedPath) {
-  const match = /^(\d{6})\s+commit\s+([0-9a-f]{40})\t(.+)$/u.exec(line);
+  const tree = /^(\d{6})\s+commit\s+([0-9a-f]{40})\t(.+)$/u.exec(line);
+  const index = /^(\d{6})\s+([0-9a-f]{40})\s+0\t(.+)$/u.exec(line);
+  const match = tree ?? index;
   if (!match || match[1] !== "160000" || match[3] !== expectedPath) {
     throw new FreezeError("gitlink_invalid", expectedPath);
   }
@@ -173,6 +185,34 @@ function parseRemoteRefs(output) {
     if (sha && ref) refs.set(ref, sha);
   }
   return refs;
+}
+
+function parseGitmodules(source, expectedSources) {
+  const entries = [];
+  let current = null;
+  for (const rawLine of source.split(/\r?\n/u)) {
+    const line = rawLine.trim();
+    if (line === "") continue;
+    const section = /^\[submodule "([^"]+)"\]$/u.exec(line);
+    if (section) {
+      current = { id: section[1] };
+      entries.push(current);
+      continue;
+    }
+    const field = /^(\w+)\s*=\s*(.+)$/u.exec(line);
+    if (!current || !field) throw new FreezeError("gitmodules_syntax", line);
+    if (!["path", "url"].includes(field[1])) throw new FreezeError("gitmodules_field", field[1]);
+    if (Object.hasOwn(current, field[1])) throw new FreezeError("gitmodules_duplicate", field[1]);
+    current[field[1]] = field[2];
+  }
+  const expected = new Map(expectedSources.map(([id, path]) => [id, path]));
+  if (entries.length !== expected.size) throw new FreezeError("gitmodules_inventory");
+  for (const entry of entries) {
+    if (!expected.has(entry.id) || entry.path !== expected.get(entry.id) || typeof entry.url !== "string") {
+      throw new FreezeError("gitmodules_values", entry.id);
+    }
+  }
+  return new Map(entries.map((entry) => [entry.id, entry]));
 }
 
 function yamlScalar(value) {
@@ -335,14 +375,20 @@ async function freeze(options) {
   const ownershipBytes = await readOwnership(options);
   const expected = await readExpected(options);
   options.archiveTag ??= expected.archiveTag;
+  const gitmodules = parseGitmodules(
+    await readFile(resolve(options.root, ".gitmodules"), "utf8"),
+    options.sources,
+  );
 
-  const rootTrackedStatus = gitText(options.root, [
-    "status",
-    "--porcelain=v1",
-    "-z",
-    "--untracked-files=no",
-    "--ignore-submodules=all",
-  ]);
+  const rootTrackedStatus = options.tree === "head"
+    ? gitText(options.root, [
+      "status",
+      "--porcelain=v1",
+      "-z",
+      "--untracked-files=no",
+      "--ignore-submodules=all",
+    ])
+    : gitText(options.root, ["diff", "--name-only", "--ignore-submodules=all"]);
   if (rootTrackedStatus !== "") {
     throw new FreezeError("root_tracked_worktree_dirty");
   }
@@ -378,7 +424,9 @@ async function freeze(options) {
       throw new FreezeError("source_path_outside_root", sourcePath);
     }
 
-    const gitlinkLine = gitText(options.root, ["ls-tree", "HEAD", rootRelativePath]);
+    const gitlinkLine = options.tree === "head"
+      ? gitText(options.root, ["ls-tree", "HEAD", rootRelativePath])
+      : gitText(options.root, ["ls-files", "--stage", rootRelativePath]);
     const pin = parseGitlink(gitlinkLine, rootRelativePath);
     const head = gitText(absoluteSourcePath, ["rev-parse", "HEAD"]);
     if (pin !== head) throw new FreezeError("gitlink_head_mismatch", id);
@@ -395,6 +443,7 @@ async function freeze(options) {
 
     const tree = gitText(absoluteSourcePath, ["rev-parse", "HEAD^{tree}"]);
     const origin = gitText(absoluteSourcePath, ["remote", "get-url", "origin"]);
+    if (gitmodules.get(id)?.url !== origin) throw new FreezeError("gitmodules_origin_mismatch", id);
     const trackedFiles = git(absoluteSourcePath, ["ls-files", "-z"], {
       encoding: null,
     }).stdout;

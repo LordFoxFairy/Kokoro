@@ -8,6 +8,7 @@ const RUN_ID_PATTERN = /^run_[a-z0-9][a-z0-9_-]{2,31}$/u;
 const ENDPOINT_PATTERN = /^[a-z0-9][a-z0-9._-]{1,63}$/u;
 const REDIS_DATABASES = [8, 9, 10, 11, 12, 13, 14, 15];
 const LOCK_FILE = ".lease.lock";
+const DATA_RESOURCES = ["mysql", "mongo", "redis", "minio"];
 
 function scopeError(code, detail = "") {
   const error = new Error(`${code}${detail ? `: ${detail}` : ""}`);
@@ -36,13 +37,26 @@ function sqlString(value) {
   return `'${value}'`;
 }
 
-function createLease({ runId, endpointFingerprint, redisDatabase }) {
+function normalizeResources(resources = DATA_RESOURCES) {
+  if (
+    !Array.isArray(resources) ||
+    resources.length === 0 ||
+    resources.some((resource) => !DATA_RESOURCES.includes(resource)) ||
+    new Set(resources).size !== resources.length
+  ) {
+    throw scopeError("infra_scope_resources_invalid");
+  }
+  return [...resources].sort();
+}
+
+function createLease({ runId, endpointFingerprint, redisDatabase, resources }) {
   const databaseStem = `kokoro_test_${runId}`.replaceAll("-", "_");
   const bucketRun = runId.replaceAll("_", "-");
   return {
     schemaVersion: 1,
     runId,
     endpointFingerprint,
+    resources: normalizeResources(resources),
     leaseToken: randomBytes(32).toString("hex"),
     createdAt: new Date().toISOString(),
     mysql: Object.fromEntries(
@@ -103,8 +117,9 @@ async function activeLeases(stateRoot) {
   return leases;
 }
 
-export async function acquireScope({ stateRoot, runId, endpointFingerprint }) {
+export async function acquireScope({ stateRoot, runId, endpointFingerprint, resources = DATA_RESOURCES }) {
   validateIdentity({ runId, endpointFingerprint });
+  const selectedResources = normalizeResources(resources);
   return withLeaseLock(stateRoot, async () => {
     try {
       await readFile(leasePath(stateRoot, runId));
@@ -115,7 +130,12 @@ export async function acquireScope({ stateRoot, runId, endpointFingerprint }) {
     const used = new Set((await activeLeases(stateRoot)).map((lease) => lease.redis?.database));
     const redisDatabase = REDIS_DATABASES.find((database) => !used.has(database));
     if (redisDatabase === undefined) throw scopeError("infra_scope_redis_exhausted");
-    const lease = createLease({ runId, endpointFingerprint, redisDatabase });
+    const lease = createLease({
+      runId,
+      endpointFingerprint,
+      redisDatabase,
+      resources: selectedResources,
+    });
     const handle = await open(leasePath(stateRoot, runId), "wx", 0o600);
     try {
       await handle.writeFile(`${JSON.stringify(lease, null, 2)}\n`, "utf8");
@@ -202,22 +222,37 @@ const composeExec = (service, command) => [
 
 export async function provisionScope({ lease, run = defaultRun }) {
   validateIdentity(lease);
-  checkedRun(run, "docker", composeExec("mysql", [
-    "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
-  ]), { input: mysqlSql(lease, "create") });
+  const resources = normalizeResources(lease.resources);
+  if (resources.includes("mysql")) {
+    checkedRun(run, "docker", composeExec("mysql", [
+      "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
+    ]), { input: mysqlSql(lease, "create") });
+  }
 
-  const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)})` +
-    `.getCollection("__kokoro_scope").updateOne({_id:"lease"},{$set:{active:true}},{upsert:true});\n`;
-  checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
+  if (resources.includes("mongo")) {
+    const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)})` +
+      `.getCollection("__kokoro_scope").updateOne({_id:"lease"},{$set:{active:true}},{upsert:true});\n`;
+    checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
+  }
 
-  const redisResult = checkedRun(run, "docker", composeExec("redis", [
-    "redis-cli", "-n", String(lease.redis.database), "-x", "SET", lease.redis.markerKey, "NX",
-  ]), { input: lease.leaseToken });
-  if (redisResult.stdout.trim() !== "OK") throw scopeError("infra_scope_redis_busy");
+  if (resources.includes("redis")) {
+    const guardedSetScript = [
+      'if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end',
+      'redis.call("SET", KEYS[1], ARGV[1])',
+      "return 1",
+    ].join(" ");
+    const redisResult = checkedRun(run, "docker", composeExec("redis", [
+      "redis-cli", "--raw", "-n", String(lease.redis.database), "-x",
+      "EVAL", guardedSetScript, "1", lease.redis.markerKey,
+    ]), { input: lease.leaseToken });
+    if (redisResult.stdout.trim() !== "1") throw scopeError("infra_scope_redis_busy");
+  }
 
-  const target = `${lease.minio.alias}/${lease.minio.bucket}`;
-  checkedRun(run, "mc", ["mb", "--ignore-existing", target]);
-  checkedRun(run, "mc", ["pipe", `${target}/${lease.minio.prefix}__scope`], { input: "scope\n" });
+  if (resources.includes("minio")) {
+    const target = `${lease.minio.alias}/${lease.minio.bucket}`;
+    checkedRun(run, "mc", ["mb", "--ignore-existing", target]);
+    checkedRun(run, "mc", ["pipe", `${target}/${lease.minio.prefix}__scope`], { input: "scope\n" });
+  }
 }
 
 export async function releaseScope({ stateRoot, runId, leaseToken, endpointFingerprint }) {
@@ -242,39 +277,58 @@ export async function cleanupScope({
   if (lease.endpointFingerprint !== endpointFingerprint) {
     throw scopeError("infra_scope_endpoint_mismatch");
   }
-  for (const name of Object.values(lease.mysql)) {
-    assertCleanupTarget({ lease, kind: "mysql", name, endpointFingerprint });
+  const resources = normalizeResources(lease.resources);
+  if (resources.includes("mysql")) {
+    for (const name of Object.values(lease.mysql)) {
+      assertCleanupTarget({ lease, kind: "mysql", name, endpointFingerprint });
+    }
   }
-  assertCleanupTarget({ lease, kind: "mongo", name: lease.mongo.database, endpointFingerprint });
-  assertCleanupTarget({ lease, kind: "redis", name: `redis-db-${lease.redis.database}`, endpointFingerprint });
-  assertCleanupTarget({ lease, kind: "redis", name: lease.redis.keyPrefix, endpointFingerprint });
-  assertCleanupTarget({ lease, kind: "minio", name: lease.minio.bucket, endpointFingerprint });
-  assertCleanupTarget({ lease, kind: "minio", name: lease.minio.prefix, endpointFingerprint });
+  if (resources.includes("mongo")) {
+    assertCleanupTarget({ lease, kind: "mongo", name: lease.mongo.database, endpointFingerprint });
+  }
+  if (resources.includes("redis")) {
+    assertCleanupTarget({ lease, kind: "redis", name: `redis-db-${lease.redis.database}`, endpointFingerprint });
+    assertCleanupTarget({ lease, kind: "redis", name: lease.redis.keyPrefix, endpointFingerprint });
+  }
+  if (resources.includes("minio")) {
+    assertCleanupTarget({ lease, kind: "minio", name: lease.minio.bucket, endpointFingerprint });
+    assertCleanupTarget({ lease, kind: "minio", name: lease.minio.prefix, endpointFingerprint });
+  }
 
-  const marker = checkedRun(run, "docker", composeExec("redis", [
-    "redis-cli", "--raw", "-n", String(lease.redis.database), "GET", lease.redis.markerKey,
-  ])).stdout.trim();
-  if (marker !== leaseToken) throw scopeError("infra_scope_redis_token_mismatch");
+  if (resources.includes("redis")) {
+    const marker = checkedRun(run, "docker", composeExec("redis", [
+      "redis-cli", "--raw", "-n", String(lease.redis.database), "GET", lease.redis.markerKey,
+    ])).stdout.trim();
+    if (marker !== leaseToken) throw scopeError("infra_scope_redis_token_mismatch");
+  }
 
-  checkedRun(run, "docker", composeExec("mysql", [
-    "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
-  ]), { input: mysqlSql(lease, "drop") });
-  const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)}).dropDatabase();\n`;
-  checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
-  const guardedFlushScript = [
-    'if redis.call("GET", KEYS[1]) ~= ARGV[1] then return 0 end',
-    'redis.call("FLUSHDB")',
-    "return 1",
-  ].join(" ");
-  const flushResult = checkedRun(run, "docker", composeExec("redis", [
-    "redis-cli", "--raw", "-n", String(lease.redis.database), "-x",
-    "EVAL", guardedFlushScript, "1", lease.redis.markerKey,
-  ]), { input: leaseToken });
-  if (flushResult.stdout.trim() !== "1") throw scopeError("infra_scope_redis_token_mismatch");
+  if (resources.includes("mysql")) {
+    checkedRun(run, "docker", composeExec("mysql", [
+      "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
+    ]), { input: mysqlSql(lease, "drop") });
+  }
+  if (resources.includes("mongo")) {
+    const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)}).dropDatabase();\n`;
+    checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
+  }
+  if (resources.includes("redis")) {
+    const guardedFlushScript = [
+      'if redis.call("GET", KEYS[1]) ~= ARGV[1] then return 0 end',
+      'redis.call("FLUSHDB")',
+      "return 1",
+    ].join(" ");
+    const flushResult = checkedRun(run, "docker", composeExec("redis", [
+      "redis-cli", "--raw", "-n", String(lease.redis.database), "-x",
+      "EVAL", guardedFlushScript, "1", lease.redis.markerKey,
+    ]), { input: leaseToken });
+    if (flushResult.stdout.trim() !== "1") throw scopeError("infra_scope_redis_token_mismatch");
+  }
 
-  const target = `${lease.minio.alias}/${lease.minio.bucket}/${lease.minio.prefix}`;
-  checkedRun(run, "mc", ["rm", "--incomplete", "--recursive", "--force", target]);
-  checkedRun(run, "mc", ["rm", "--recursive", "--force", target]);
-  checkedRun(run, "mc", ["rb", "--force", `${lease.minio.alias}/${lease.minio.bucket}`]);
+  if (resources.includes("minio")) {
+    const target = `${lease.minio.alias}/${lease.minio.bucket}/${lease.minio.prefix}`;
+    checkedRun(run, "mc", ["rm", "--incomplete", "--recursive", "--force", target]);
+    checkedRun(run, "mc", ["rm", "--recursive", "--force", target]);
+    checkedRun(run, "mc", ["rb", "--force", `${lease.minio.alias}/${lease.minio.bucket}`]);
+  }
   await releaseScope({ stateRoot, runId, leaseToken, endpointFingerprint });
 }

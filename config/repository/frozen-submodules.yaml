@@ -1,62 +1,62 @@
 schemaVersion: 1
 gitVersion: "git version 2.39.5 (Apple Git-154)"
-freezeParentCommit: "c74a607ddf99f999ae0f748c71313b9bcd3622ee"
-approvedSpecCommit: "31ed730a41ec79130ca530d6acbd3f3d9b445485"
+freezeParentCommit: "77fd28b2cc12f1d15f9b27ccf07166b4a76bd90a"
+approvedSpecCommit: "77fd28b2cc12f1d15f9b27ccf07166b4a76bd90a"
 rootTrackedDirty: false
 rootTrackedStatusSha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 ownershipAttestationRef: "docs/reports/evidence/wave-0/ownership-attestation.yaml"
 ownershipAttestationSha256: "0b7fed877bffecb9c0ec8c54e4915d9a935bca046fac7aed0b99765921dbe143"
-archiveTag: "kokoro-wave1-foundation-2026-07-27"
+archiveTag: "kokoro-federated-ci-2026-07-27"
 sources:
   - id: "kokoro-agent"
     path: "kokoro-agent"
     origin: "https://github.com/LordFoxFairy/kokoro-agent.git"
-    commit: "18b394dc3df019244875e643c142c2b08b9db708"
-    tree: "b06557b5876125f2a014bc6b9597bb7ac9a30780"
-    archiveSha256: "670927a78d57bef29a4a11ff6782960ae117cc526b0c88af3a234154c0f78340"
+    commit: "c2a92c85dcf68e5fe0da9fd5bba84131c9d9e537"
+    tree: "351649ef006d319a21fc210b71c03197ea67545d"
+    archiveSha256: "342e293bbccd235cd372a76030ae392c26f65e594d614cfb39ff5f89194be54c"
     archiveCommandVersion: 1
-    trackedFileCount: 150
+    trackedFileCount: 151
     remoteMainRef: "refs/heads/main"
     remoteMainCommit: "18b394dc3df019244875e643c142c2b08b9db708"
-    archiveRef: "refs/tags/kokoro-wave1-foundation-2026-07-27"
+    archiveRef: "refs/tags/kokoro-federated-ci-2026-07-27"
     archiveRemoteRefReachable: true
     licenseRef: "LicenseRef-Kokoro-Internal-Proprietary"
   - id: "kokoro-platform"
     path: "kokoro-platform"
     origin: "https://github.com/LordFoxFairy/kokoro-platform.git"
-    commit: "2531b32231d63f5848c6fc91f981c96a794eda64"
-    tree: "e4ceda7d5b4000a0f07b9292419d1a25c2547a67"
-    archiveSha256: "7c5a0ab9be9d06f1dd703139b4f657978da8d9307836cae01a6e1a88b141096c"
+    commit: "de86a8be25ba7cd69b8b79bac48be7dde703c924"
+    tree: "c3a804d0df424e81651df330d6a20d771092e541"
+    archiveSha256: "ffd06e0077096cb38008159ec0ea2f6dd9ce4a8a56202a9b3cea4dd79621b8de"
     archiveCommandVersion: 1
-    trackedFileCount: 527
+    trackedFileCount: 529
     remoteMainRef: "refs/heads/main"
     remoteMainCommit: "9c81c413d054f858436fb781ad24692b14981746"
-    archiveRef: "refs/tags/kokoro-wave1-foundation-2026-07-27"
+    archiveRef: "refs/tags/kokoro-federated-ci-2026-07-27"
     archiveRemoteRefReachable: true
     licenseRef: "LicenseRef-Kokoro-Internal-Proprietary"
   - id: "kokoro-session"
     path: "kokoro-session"
     origin: "https://github.com/LordFoxFairy/kokoro-session.git"
-    commit: "4b975bf1d04dad61f9b456178628486511eccebc"
-    tree: "15e2a47aef3bdcb67f300ac6d3679dcabcdd45fc"
-    archiveSha256: "5ef0ed150a2779b11807d28f284d5ad338d3b104431a5f646c14e706603f8f83"
+    commit: "14e86308cbcab58ae85270486fd6f8c4b82162a6"
+    tree: "931a1bd2ebf51aa362120f447c4ae5efcfc9e1e2"
+    archiveSha256: "ae4f69357a360ff7d9a78201088c875156e531342fcd74ed46aadeb3dd6431db"
     archiveCommandVersion: 1
-    trackedFileCount: 99
+    trackedFileCount: 100
     remoteMainRef: "refs/heads/main"
     remoteMainCommit: "4f4aa3defc5cce79be58c447d7f053c6204ef48f"
-    archiveRef: "refs/tags/kokoro-wave1-foundation-2026-07-27"
+    archiveRef: "refs/tags/kokoro-federated-ci-2026-07-27"
     archiveRemoteRefReachable: true
     licenseRef: "LicenseRef-Kokoro-Internal-Proprietary"
   - id: "kokoro-web"
     path: "kokoro-web"
     origin: "https://github.com/LordFoxFairy/kokoro-web.git"
-    commit: "b46aa862c58ef25f2edc9d0f5f6142a2299f638e"
-    tree: "3eac9d4b85e4825740a9a018506a11746be0f61f"
-    archiveSha256: "002a350179531115ef8783825a982e3bd44657dc3867ab39411ae7ec3357b98f"
+    commit: "18a40d60d6d2a04f713b3624679c36c9581e9e58"
+    tree: "6d9511290ff324b93ef1fe73d8f0b379a90014ad"
+    archiveSha256: "5b7e902707ae22e2d3ab63c28cc9dcf1169f258efa1de920b3645bfc347c444c"
     archiveCommandVersion: 1
-    trackedFileCount: 329
+    trackedFileCount: 331
     remoteMainRef: "refs/heads/main"
     remoteMainCommit: "5a3a0c4cb72ba80ba19dd335824e504119f7ef4b"
-    archiveRef: "refs/tags/kokoro-wave1-foundation-2026-07-27"
+    archiveRef: "refs/tags/kokoro-federated-ci-2026-07-27"
     archiveRemoteRefReachable: true
     licenseRef: "LicenseRef-Kokoro-Internal-Proprietary"

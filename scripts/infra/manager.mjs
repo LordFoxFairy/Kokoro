@@ -11,6 +11,14 @@ const policyPath = resolve(root, "config/repository/infrastructure-policy.yaml")
 const DEFAULT_ENV_FILE = resolve(root, "deploy/.env.dev");
 const ACTIONS = new Set(["config", "ensure", "refresh", "stop", "status"]);
 const MODES = new Set(["development", "ci", "production"]);
+const CANONICAL_PROJECT = "kokoro-infra";
+const FULL_SERVICES = ["mysql", "redis", "mongo", "minio", "litellm"];
+const STATEFUL_MOUNTS = {
+  mysql: { destination: "/var/lib/mysql", suffix: "mysql" },
+  redis: { destination: "/data", suffix: "redis" },
+  mongo: { destination: "/data/db", suffix: "mongo" },
+  minio: { destination: "/data", suffix: "minio" },
+};
 
 class InfraError extends Error {
   constructor(code, detail = "") {
@@ -125,7 +133,17 @@ function requiredVariables(services) {
     required.add("MINIO_ROOT_USER");
     required.add("MINIO_ROOT_PASSWORD");
   }
-  if (services.includes("litellm")) required.add("LITELLM_MASTER_KEY");
+  if (services.includes("litellm")) {
+    for (const name of [
+      "LITELLM_MASTER_KEY",
+      "OPENAI_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "OPENAI_COMPAT_BASE_URL",
+      "OPENAI_COMPAT_API_KEY",
+    ]) {
+      required.add(name);
+    }
+  }
   return [...required];
 }
 
@@ -141,11 +159,117 @@ function composeArgv({ action, composeProfiles, services, envFile }) {
   ];
   for (const profile of composeProfiles) argv.push("--profile", profile);
   if (action === "config") argv.push("config", "--quiet");
-  else if (action === "ensure") argv.push("up", "-d", "--wait", "--no-recreate", ...services);
+  else if (action === "ensure") argv.push("up", "-d", "--wait", ...services);
   else if (action === "refresh") argv.push("up", "-d", "--wait", "--force-recreate", ...services);
   else if (action === "stop") argv.push("stop", ...services);
   else if (action === "status") argv.push("ps", ...services);
   return argv;
+}
+
+function dockerProjection(args) {
+  return spawnSync("docker", args, {
+    encoding: "utf8",
+    shell: false,
+    maxBuffer: 1024 * 1024,
+  });
+}
+
+function checkedProjection(runDocker, args) {
+  const result = runDocker(args);
+  if (result.error || result.status !== 0) {
+    throw new InfraError("infra_scope_inspection_failed");
+  }
+  return result.stdout;
+}
+
+function inspectCanonicalContainers(runDocker = dockerProjection) {
+  const ids = checkedProjection(runDocker, [
+    "ps",
+    "-aq",
+    "--filter",
+    `label=com.docker.compose.project=${CANONICAL_PROJECT}`,
+  ]).split(/\r?\n/u).filter(Boolean);
+  return ids.map((id) => {
+    const [service = "", rawScope = ""] = checkedProjection(runDocker, [
+      "inspect",
+      "--format",
+      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}',
+      id,
+    ]).trim().split("\t");
+    const mounts = checkedProjection(runDocker, [
+      "inspect",
+      "--format",
+      '{{range .Mounts}}{{printf "%s\\t%s\\t%s\\n" .Type .Name .Destination}}{{end}}',
+      id,
+    ]).split(/\r?\n/u).filter(Boolean).map((line) => {
+      const [type, source, destination] = line.split("\t");
+      return { type, source, destination };
+    });
+    return {
+      service,
+      scope: rawScope === "<no value>" ? "" : rawScope,
+      mounts,
+    };
+  });
+}
+
+function containerMatchesPlan(container, plan) {
+  if (!FULL_SERVICES.includes(container.service)) return false;
+  if (container.scope !== plan.environmentScope) return false;
+  const expected = STATEFUL_MOUNTS[container.service];
+  if (!expected) return true;
+  return container.mounts.some(
+    ({ type, source, destination }) =>
+      type === "volume" &&
+      source === `${plan.resourcePrefix}-${expected.suffix}` &&
+      destination === expected.destination,
+  );
+}
+
+function forceFullRecreate(argv) {
+  const upIndex = argv.indexOf("up");
+  if (upIndex < 0) throw new InfraError("infra_scope_transition_invalid");
+  return [
+    ...argv.slice(0, upIndex + 1),
+    "-d",
+    "--wait",
+    "--force-recreate",
+    ...FULL_SERVICES,
+  ];
+}
+
+function convergeCanonicalScope(plan, containers) {
+  if (containers.length === 0) return { ...plan, scopeTransition: "absent" };
+  if (containers.every((container) => containerMatchesPlan(container, plan))) {
+    return { ...plan, scopeTransition: "matching" };
+  }
+  if (["stop", "status"].includes(plan.action)) {
+    throw new InfraError("infra_scope_mismatch");
+  }
+  if (
+    !["ensure", "refresh"].includes(plan.action) ||
+    !plan.profiles.includes("full")
+  ) {
+    throw new InfraError("infra_scope_transition_requires_full");
+  }
+  return {
+    ...plan,
+    services: [...FULL_SERVICES],
+    executionArgv: forceFullRecreate(plan.executionArgv),
+    argv: forceFullRecreate(plan.argv),
+    scopeTransition: "force-full-recreate",
+  };
+}
+
+function assertCanonicalPostcondition(plan, containers) {
+  const presentServices = new Set(containers.map(({ service }) => service));
+  if (
+    containers.length === 0 ||
+    !containers.every((container) => containerMatchesPlan(container, plan)) ||
+    !plan.services.every((service) => presentServices.has(service))
+  ) {
+    throw new InfraError("infra_scope_convergence_failed");
+  }
 }
 
 function hasCompetingActiveAuthority(inventory) {
@@ -186,6 +310,7 @@ async function buildPlan(options) {
     requiredVariables: requiredVariables(selection.services),
     environment: {
       KOKORO_INFRA_SCOPE: resourcePrefix,
+      KOKORO_INFRA_ENVIRONMENT_SCOPE: options.scope,
       KOKORO_INFRA_RESTART_POLICY: policy.restartPolicy[options.mode],
     },
   };
@@ -198,13 +323,17 @@ async function execute(plan, options) {
   if (missing.length > 0) {
     throw new InfraError("infra_required_environment_missing", missing.join(","));
   }
+  let executionPlan = plan;
   if (["ensure", "refresh"].includes(plan.action)) {
     const inventory = collectInventory();
     if (hasCompetingActiveAuthority(inventory)) {
       throw new InfraError("infra_competing_authority_active");
     }
   }
-  const result = spawnSync("docker", plan.executionArgv, {
+  if (["ensure", "refresh", "stop", "status"].includes(plan.action)) {
+    executionPlan = convergeCanonicalScope(plan, inspectCanonicalContainers());
+  }
+  const result = spawnSync("docker", executionPlan.executionArgv, {
     cwd: root,
     encoding: "utf8",
     shell: false,
@@ -212,20 +341,24 @@ async function execute(plan, options) {
     env: {
       ...process.env,
       ...values,
-      ...plan.environment,
+      ...executionPlan.environment,
     },
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new InfraError("infra_compose_failed", `exit ${result.status}`);
   }
+  if (["ensure", "refresh"].includes(executionPlan.action)) {
+    assertCanonicalPostcondition(executionPlan, inspectCanonicalContainers());
+  }
+  return executionPlan;
 }
 
 async function main() {
   const options = parseArguments(process.argv.slice(2));
   const plan = await buildPlan(options);
-  if (!options.dryRun) await execute(plan, options);
-  const sanitized = { ...plan };
+  const completedPlan = options.dryRun ? plan : await execute(plan, options);
+  const sanitized = { ...completedPlan };
   delete sanitized.executionArgv;
   delete sanitized.requiredVariables;
   delete sanitized.environment;
@@ -233,7 +366,7 @@ async function main() {
   else {
     process.stdout.write(
       `infra_${options.dryRun ? "plan" : "ok"}: ${plan.action} ` +
-        `profiles=${plan.profiles.join(",")} services=${plan.services.join(",")}\n`,
+        `profiles=${completedPlan.profiles.join(",")} services=${completedPlan.services.join(",")}\n`,
     );
   }
 }
@@ -245,4 +378,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { buildPlan, hasCompetingActiveAuthority, parseEnv, requiredVariables };
+export {
+  assertCanonicalPostcondition,
+  buildPlan,
+  convergeCanonicalScope,
+  hasCompetingActiveAuthority,
+  inspectCanonicalContainers,
+  parseEnv,
+  requiredVariables,
+};
