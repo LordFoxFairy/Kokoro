@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "combinationId": "wave0-drop-shared-secret-2026-07-27",
+ "combinationId": "wave0-provider-contracts-2026-07-27",
  "contracts": [
   {
    "id": "session-agent-execution",
