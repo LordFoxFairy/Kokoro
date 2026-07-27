@@ -25,6 +25,15 @@ described by [`contract/registry/boundaries.schema.json`](../../contract/registr
 The registry is JSON-compatible YAML, following `config/architecture/index-roots.yaml`: the filename the spec
 mandates, without adding a YAML parser dependency.
 
+`check_admin_openapi.py` is the supported entrypoint for the Admin browser plane, and
+`test_check_admin_openapi.py` defines its fail-closed behaviour. It parses the Fastify route
+registrations out of `kokoro-platform/kokoro-platform-admin/src/server.ts` and requires exact set
+equality with [`contract/openapi/admin-web-v1.yaml`](../../contract/openapi/admin-web-v1.yaml), so a
+route added, removed or re-verbed on either side fails. `--openapi` and `--server` take alternate
+paths for fixtures. It is Python because that document is hand-written YAML carrying comments and the
+root workspace already provides PyYAML; the sibling registry gate stays on Node because its data is
+JSON-compatible.
+
 ## Callers and dependencies
 
 Root CI and contract owners call the check. It reads `contract/proto/`, `contract/spec/`,
@@ -70,6 +79,14 @@ The `request-field` proof is per request message for proto sources but per file 
 because a block-mapping section such as `endpoints` declares no fields of its own. Every `deadlineMs` is
 `null` because no boundary declares a deadline in code yet; that is a recorded fact, not an implied default.
 
+The Admin gate scopes itself to the browser plane and names its exclusions rather than skipping them
+quietly: `/` serves HTML, `/healthz` and `/metrics` are probe endpoints registered by platform-kit
+helpers, and `kokoro.platform.admin.v1.AdminAuthService` is the privileged Connect plane the transport
+spec keeps separate. Declaring an excluded path in the document fails, and an unrecognised
+`register*Route` helper fails too, because such a helper registers routes this gate cannot see.
+
 ## Verification
 
-Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`.
+Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
+then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py -q` and
+`uv run --locked python scripts/contract/check_admin_openapi.py`.

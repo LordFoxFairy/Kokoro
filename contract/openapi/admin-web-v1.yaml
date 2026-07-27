@@ -1,0 +1,1716 @@
+# Kokoro Admin browser API —— 浏览器面的唯一契约事实源（Wave T2 产物）
+#
+# 权威设计：docs/superpowers/specs/2026-07-27-contract-transport-and-internal-rpc-design.md
+#   §1  浏览器/公开面 = OpenAPI 3.1 + HTTP/JSON；特权 service→service = ConnectRPC + Protobuf
+#   §7  OpenAPI 3.1 文件是 route / method / params / body / response / error / security 的事实源
+#   §13 Wave T2：为 Admin browser API 建完整 OpenAPI；普通 Admin browser HTTP 与特权
+#       Admin BFF→Platform Connect 保持两个不同 trust plane，不共享万能 client package
+#
+# 本文件只描述 kokoro-platform-admin 的**普通 Admin browser HTTP 面**（16 条 /api/*）。
+# 同一个 Fastify 实例上刻意排除的三类路由（不同面，勿混入本契约）：
+#   - POST /kokoro.platform.admin.v1.AdminAuthService/*
+#       特权 service→service Connect 面（另一个 trust plane）。事实源：
+#       contract/proto/kokoro/platform/admin/v1/admin_auth.proto
+#   - GET /healthz、GET /metrics
+#       运维探针（/metrics 是 Prometheus 文本，不走 JSON 信封）
+#   - GET /
+#       网关自带的 vanilla 运营台 SPA（text/html，public/index.html）。它是本 API 的第二个
+#       消费者（同源直连 4290、不经 Next BFF），也是 GET/POST /api/roles、POST /api/operators、
+#       POST /api/operators/{id}/status 的唯一现存调用方。去留见「待裁决 D14」。
+#
+# 全部形状来自静态阅读提供方源码（未起服务、未抓包）：
+#   kokoro-platform/kokoro-platform-admin/src/{server,gateway,rbac,auth,approval,audit,config}.ts
+#   kokoro-platform/kokoro-platform-admin/prisma/schema.prisma
+#   kokoro-platform/kokoro-platform-kit/src/http/responses.ts         ← 信封唯一真源（sendData / sendError）
+#   kokoro-platform/kokoro-platform-kit/src/admin/manifest-schema.ts  ← manifest 唯一真源
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# 待裁决（代码自相矛盾或无法从代码定论，本文件一律标注、不擅自定形状）
+#
+# D1  registerErrorHandler 从未挂载（src/ 与 test/ 下 grep 零命中）。未捕获异常 / 未匹配路由 /
+#     body 解析失败走 Fastify 默认形状 {statusCode,error,message}，不是本文件的错误信封，且 500
+#     会回显原始 err.message。本文件按实照写为 FastifyDefaultError（见 components.schemas），
+#     待裁决：本 wave 是否顺手挂 registerErrorHandler 使其收敛为统一信封（改子仓，本轮禁止）。
+# D2  domain error code 两套词汇表并存：本面用 operator.auth / request.invalid / gateway.error /
+#     approval.error（handler 硬编码），platform-kit 的 ERROR_STATUS 登记的是
+#     auth.unauthenticated / auth.forbidden / upstream.error / resource.not_found 等。
+#     另外经 Next BFF 时，未登录会由 middleware（kokoro-web/apps/admin/proxy.ts）直接回
+#     401 {"error":{"code":"auth.unauthenticated"}}，该 code 不由本服务产生。
+#     本文件的 DomainErrorCode 只登记本服务实际发出的 4 个 code；是否统一词汇表待裁决。
+# D3  同一 code 映射多个 HTTP 状态：gateway.error ∈ {400,403,502}，operator.auth ∈ {401,403}，
+#     approval.error ∈ {403,404}。与 ERROR_STATUS「code ⇒ 唯一 status」的设计相反。
+#     是否拆细为 gateway.unknown_module / gateway.forbidden / gateway.upstream 待裁决，本文件不擅自拆。
+# D4  三处响应体黑洞，只能写「任意 JSON」：(a) /api/resource 与 /api/sites 的行；
+#     (b) /api/user360 三段；(c) /api/action 200 的 data（下游透传）。真形状分散在 6 个下游模块。
+#     本轮铁律禁止读改子仓契约，故先占位；代价是生成的 browser validator 对这三条等于没校验。
+# D5  /api/manifests 无条件把内网 baseUrl（形如 http://kokoro-credit:4231）下发浏览器。
+#     写进契约（现状）还是本 wave 剥掉（需改子仓）待裁决 —— 本文件照实登记并标注。
+# D6  /api/approvals 把 executionKey（内部幂等 uuid）与 error（上游原始错误文本）整行下发浏览器。
+#     同 D5：本文件照实登记并标注，是否收缩待裁决。
+# D7  POST /api/action 的 body 校验在认证之前（400 先于 401），与其余 15 条相反。既定设计还是待修 bug，待裁决。
+# D8  resourceQuerySchema 缺 .strict()（其余 3 个 query schema 都是 strict），未知 query 被 strip 而非 400。
+#     本文件按实照写（strip），是否对齐代码待裁决。
+# D9  /api/sites、/api/billing-overview、/api/user360 无静态权限检查：任何激活 operator 都能读
+#     （readonly 角色可看全平台营收）；/api/sites 更以 scope=undefined 主动跳过 manifest 的
+#     requiredPermission 强制。刻意还是漏检待裁决 —— 直接决定这三条的 security 语义。
+# D10 POST /api/approvals/{id}/approve 在下游执行失败时仍回 HTTP 200，失败信息在载荷内
+#     （status=failed、resultStatusCode、error）。是否需要独立的非 2xx 响应待裁决。
+# D11 列表路由无分页契约：/api/operators、/api/roles 无 take；/api/approvals 硬编码 take:100 且
+#     不告知是否被截断；/api/audit 有 limit 无游标、无 total。照实写（现状）还是本 wave 补分页（改子仓）待裁决。
+# D12 两个 trust plane 的入口共用同一张路径表：从浏览器看认证是 Next 的 Auth.js session cookie；
+#     从本 Fastify 服务看认证是 x-kokoro-proxy-secret + x-kokoro-operator（或 OIDC Bearer）。
+#     本文件的 securitySchemes 描述的是**提供方（网关）端**的真实形状；若直接生成 browser client，
+#     其 auth 代码会是错的（浏览器不该也不能持有 proxy secret）。生成链如何切分待裁决。
+# D13 （本文件新增）OperatorListRow.scopeSites 与 RoleListRow.permissions 是裸 Prisma Json：写路径
+#     经 stringArraySchema 保证是 string[]，读路径（listOperators / listRoles）未再收窄。契约按
+#     JsonValue 照实写，还是收窄为 string[]，待裁决。
+# D14 （本文件新增）GET / 老运营台 SPA 及其独占的 4 条写路由（GET/POST /api/roles、
+#     POST /api/operators、POST /api/operators/{id}/status，新 Admin 无 UI 入口）的去留。
+#     不先裁决会把「web 不用」误判成「可以删」。本文件先全量登记这 4 条。
+# ─────────────────────────────────────────────────────────────────────────────
+
+openapi: 3.1.0
+
+info:
+  title: Kokoro Admin Browser API
+  version: 1.0.0
+  summary: kokoro-platform-admin 运营网关的浏览器面（普通 trust plane）
+  description: |
+    运营台（Admin）浏览器面的唯一契约事实源，提供方是 `kokoro-platform-admin` 的 Fastify 网关（默认端口 4290）。
+
+    ## 信封
+
+    成功：`{"data": <payload>}`；仅 `POST /api/action` 会额外回显 `{"data": ..., "requestId": "..."}`。
+    失败：`{"error": {"code": ..., "message": ..., "details"?: ...}, "requestId"?: ...}`。
+    两者的唯一真源是 `@kokoro/platform-kit` 的 `sendData` / `sendError`
+    （`kokoro-platform/kokoro-platform-kit/src/http/responses.ts`）。
+
+    `details` 目前只有一种实际形态：zod 校验失败时的 `{"issues": ZodIssue[]}`。
+
+    ## 未被信封覆盖的响应（待裁决 D1）
+
+    本服务未挂载 `registerErrorHandler`，因此以下三类响应是 Fastify 默认形状
+    `{"statusCode": ..., "error": ..., "message": ...}`，**不是**上面的错误信封：
+
+    - 未捕获异常（Prisma 报错、非 AppError throw）→ 500，且 `message` 为原始错误文本；
+    - 未匹配路由 → 404；
+    - `content-type: application/json` 但 body 为空 → 400（`FST_ERR_CTP_EMPTY_JSON_BODY`）。
+
+    本文件为它们声明了 `FastifyDefaultError`，并在每条 operation 上登记 500。
+
+    ## 边界分工
+
+    本文件**只**覆盖普通 Admin browser HTTP。特权 Admin BFF→Platform 的
+    `kokoro.platform.admin.v1.AdminAuthService` 属于另一个 trust plane，事实源是
+    `contract/proto/kokoro/platform/admin/v1/admin_auth.proto`，两者不共享 client package。
+
+servers:
+  - url: http://127.0.0.1:4290
+    description: |
+      提供方直连地址（本文件描述的就是这一端的真实形状）。老运营台 SPA（GET /）同源直连此地址。
+  - url: /
+    description: |
+      浏览器实际使用的同源地址：请求先过 Next Admin BFF（middleware 注入 x-kokoro-operator 与
+      x-kokoro-proxy-secret）再落到网关。待裁决 D12：生成 browser client 时此端的 security 与本文件
+      声明的提供方端 security 不一致。
+
+tags:
+  - name: identity
+    description: 当前操作员的能力面
+  - name: modules
+    description: 下游模块 manifest（功能/页面可见性的数据源）
+  - name: operators
+    description: 操作员与角色治理（当前只有老运营台 SPA 在用，见 D14）
+  - name: resources
+    description: 经 manifest 白名单代理的下游模块只读资源
+  - name: actions
+    description: 经 manifest 白名单代理的下游模块写操作（含审批分流）
+  - name: approvals
+    description: 二次审批工单
+  - name: audit
+    description: 运营审计日志
+
+# 认证由 KOKORO_ADMIN_AUTH_MODE 决定（src/auth.ts）：
+#   oidc（默认）→ operatorBearer
+#   proxy（生产 BFF）→ proxySecret AND operatorEmail
+#   dev（仅本地）→ 不校验任何凭据，x-kokoro-operator 可省略并回退 KOKORO_ADMIN_DEV_OPERATOR。
+#     dev 模式不在下面登记：它是本地开关，不是契约允许的匿名访问。
+# 认证只解决「你是谁」；授权（角色权限 glob + 租户作用域）在每条 operation 的 description 里登记。
+security:
+  - operatorBearer: []
+  - proxySecret: []
+    operatorEmail: []
+
+paths:
+  /api/me:
+    get:
+      operationId: getMe
+      tags: [identity]
+      summary: 读取当前操作员的能力面
+      description: |
+        UI 据此决定可见功能/页面/操作；服务端在每条路由上仍二次强制。
+
+        静态权限要求：无（任何 status=active 的操作员均可读）。
+
+        注意：不返回 `operator.id`，而 `POST /api/approvals/{id}/approve` 的「不能批自己的单」判定用的正是 id。
+      responses:
+        "200":
+          description: 当前操作员的能力面
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/manifests:
+    get:
+      operationId: listManifests
+      tags: [modules]
+      summary: 列出 6 个下游模块的 admin manifest
+      description: |
+        静态权限要求：无。返回内容按 operator 权限过滤（`filterManifestForOperator`）：
+        只保留有权读的 navItems / resources 及有权执行的 actions。
+
+        数组长度恒为 6、顺序固定（site / user / model / credit / payment / hub，见 src/config.ts）。
+        模块离线不报错，降级为 `online: false` 的成员。
+      responses:
+        "200":
+          description: 模块状态列表（长度恒为 6）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleStatusListResponse"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/operators:
+    get:
+      operationId: listOperators
+      tags: [operators]
+      summary: 列出操作员账号
+      description: |
+        静态权限要求：`operator.read`（seed 角色矩阵里只有 superadmin 的 `*` 覆盖它）。
+
+        按 email 升序，无分页、无 take 上限（待裁决 D11）。
+        与 `POST /api/operators` 的返回形状不一致：此处不含 createdAt / updatedAt。
+      x-kokoro-required-permission: operator.read
+      responses:
+        "200":
+          description: 操作员列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatorListResponse"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+    post:
+      operationId: upsertOperator
+      tags: [operators]
+      summary: 新建或更新操作员（按 email upsert）
+      description: |
+        静态权限要求：`operator.manage`。当前只有老运营台 SPA 在调用（待裁决 D14）。
+
+        `email` 只校验非空，不校验邮箱格式；`roleKey` 不校验角色是否存在 —— 外键违例会走
+        Fastify 默认 500 而非 4xx（待裁决 D1）。
+      x-kokoro-required-permission: operator.manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OperatorUpsertRequest"
+      responses:
+        "200":
+          description: upsert 后的整行
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatorResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/operators/{id}/status:
+    post:
+      operationId: setOperatorStatus
+      tags: [operators]
+      summary: 启用/停用操作员
+      description: |
+        静态权限要求：`operator.manage`。当前只有老运营台 SPA 在调用（待裁决 D14）。
+
+        `id` 不存在时 Prisma 抛 P2025 且未被捕获 → Fastify 默认 500，**不是** 404（待裁决 D1）。
+      x-kokoro-required-permission: operator.manage
+      parameters:
+        - $ref: "#/components/parameters/OperatorIdPath"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OperatorStatusRequest"
+      responses:
+        "200":
+          description: 更新后的整行
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatorResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/roles:
+    get:
+      operationId: listRoles
+      tags: [operators]
+      summary: 列出角色及其权限集合
+      description: |
+        静态权限要求：`operator.manage`（注意不是 `operator.read`）。
+        按 key 升序，无分页（待裁决 D11）。当前只有老运营台 SPA 在调用（待裁决 D14）。
+      x-kokoro-required-permission: operator.manage
+      responses:
+        "200":
+          description: 角色列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleListResponse"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+    post:
+      operationId: upsertRole
+      tags: [operators]
+      summary: 新建或更新角色（按 key upsert）
+      description: |
+        静态权限要求：`operator.manage`。当前只有老运营台 SPA 在调用（待裁决 D14）。
+
+        返回整行，比 `GET /api/roles` 的列表行多 createdAt / updatedAt。
+      x-kokoro-required-permission: operator.manage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleUpsertRequest"
+      responses:
+        "200":
+          description: upsert 后的整行
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/sites:
+    get:
+      operationId: listSites
+      tags: [resources]
+      summary: 站点选择器数据源（转发 site 模块 /admin/sites）
+      description: |
+        静态权限要求：**无**（待裁决 D9）。`getSites` 以 `scope=undefined` 调用 `proxyResource`，
+        因此**跳过** manifest 声明的 `site.read` 强制，只在返回后按 operator 的 `scopeSites` 过滤行
+        （`scopeSites` 含 `*` 时见全部）。
+
+        行本身没有字段契约（待裁决 D4）。
+      responses:
+        "200":
+          description: 站点行列表（无字段契约，见 D4）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceRowListResponse"
+        "400":
+          $ref: "#/components/responses/GatewayBadRequest"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/GatewayForbidden"
+        "502":
+          $ref: "#/components/responses/GatewayBadGateway"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/billing-overview:
+    get:
+      operationId: getBillingOverview
+      tags: [resources]
+      summary: 运营台总览（聚合 credit + payment stats）
+      description: |
+        静态权限要求：**无** —— 任何激活 operator（含 readonly 角色）都能看到全平台营收（待裁决 D9）。
+
+        两段各自降级：模块离线/报错时该段为 `null`，不拖垮整体。因此下面的 502 分支在实现里
+        实际不可达（`fetchStats` 的异常都被 `.catch(() => null)` 吞掉），但 handler 仍写了该 catch，
+        故照实登记。
+      responses:
+        "200":
+          description: 总览卡片数据（离线段为 null）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillingOverviewResponse"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "502":
+          $ref: "#/components/responses/GatewayBadGateway"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/user360:
+    get:
+      operationId: getUser360
+      tags: [resources]
+      summary: 用户 360（按 siteId + owner 聚合身份/积分账户/订单）
+      description: |
+        静态权限要求：**无**，只校验租户作用域 `permitsSite(operator.scopeSites, siteId)`（待裁决 D9）。
+
+        query schema 是 `.strict()`：出现未声明的 query key 直接 400。重复 key 会被解析成数组从而 400。
+
+        三段各自 `.catch(() => [])`：任一下游模块挂掉，该段静默降级为空/`null`，
+        **不会**有任何错误信号回给浏览器（所以本 operation 没有 502）。行本身无字段契约（待裁决 D4）。
+      parameters:
+        - name: siteId
+          in: query
+          required: true
+          description: 租户站点 id；超出 operator 作用域时 403。
+          schema:
+            type: string
+            minLength: 1
+        - name: ownerKind
+          in: query
+          required: true
+          description: 归属主体类型；`team` 时 identity 段恒为 null。
+          schema:
+            type: string
+            enum: [user, team]
+        - name: ownerId
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: 聚合结果（各段无字段契约，见 D4）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User360Response"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/resource:
+    get:
+      operationId: listResource
+      tags: [resources]
+      summary: 按 manifest 白名单代理下游模块的只读资源
+      description: |
+        静态权限要求：**动态** —— 强制 manifest 中该 resource 的 `requiredPermission`；
+        给了 `siteId` 时额外强制 `permitsSite`。
+
+        `route` 必须精确等于该模块 manifest 里某个 `resources[].route`，否则 403（防开放代理 / SSRF）。
+
+        行过滤：给 `siteId` 时按 `row.siteId` 精确过滤；否则按 operator 的 `scopeSites` 过滤
+        （含 `*` 时全放行）。行本身无字段契约（待裁决 D4）。
+
+        query schema 缺 `.strict()`：未知 query key 被 strip 而非报错，与 /api/user360、
+        /api/approvals、/api/audit 不一致（待裁决 D8）。
+      parameters:
+        - name: moduleId
+          in: query
+          required: true
+          description: 模块 id，必须命中 src/config.ts 的固定 6 模块表，否则 400 `gateway.error`。
+          schema:
+            type: string
+            minLength: 1
+        - name: route
+          in: query
+          required: true
+          description: 下游模块路由，必须由该模块 manifest 声明为 resource route，否则 403 `gateway.error`。
+          schema:
+            type: string
+            minLength: 1
+        - $ref: "#/components/parameters/SiteIdQuery"
+      responses:
+        "200":
+          description: 资源行列表（无字段契约，见 D4）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceRowListResponse"
+        "400":
+          description: |
+            `request.invalid`：query 校验失败（缺 moduleId / route）。
+            `gateway.error`：`unknown module: <moduleId>`。
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/RequestInvalidEnvelope"
+                  - $ref: "#/components/schemas/GatewayErrorEnvelope"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/GatewayForbidden"
+        "502":
+          $ref: "#/components/responses/GatewayBadGateway"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/action:
+    post:
+      operationId: dispatchAction
+      tags: [actions]
+      summary: 按 manifest 白名单代理下游模块的写操作（含审批分流）
+      description: |
+        静态权限要求：**动态** —— 强制 manifest 中该 action 的 `requiredPermission`；
+        给了 `siteId` 时强制 `permitsSite`，**未给 siteId 时要求 `scopeSites` 含 `*`**；
+        `kind: dangerMutation` 必须给非空 `reason`。权限/作用域被拒时先落审计再抛错。
+
+        审批分流（`needsApproval`）：`dangerMutation` 一律需审批；`mutation` 且
+        `body.amountMicros`（十进制字符串）超过 `KOKORO_APPROVAL_GRANT_THRESHOLD_MICROS`
+        （默认 100000000）需审批。需审批 → 202 + approvalId；否则 → 200 + 下游透传结果。
+
+        本路由是 16 条里唯一回显 `requestId`、唯一可能返回 202 的。
+
+        执行顺序反常（待裁决 D7）：**body 校验（400）先于认证（401）**，与其余 15 条相反。
+
+        兜底 catch 把一切非 GatewayError 也变成 502 `gateway.error`（含 `createApprovalRequest`
+        的 Prisma 错误）—— DB 故障对外表现为「上游网关错误」。
+      parameters:
+        - $ref: "#/components/parameters/RequestIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActionRequest"
+      responses:
+        "200":
+          description: |
+            已直接执行。`data` 是下游响应**拆掉一层信封后的 data**；若下游响应不是 `{data:...}` 形状，
+            则原样返回整个 body。故不可静态建模（待裁决 D4）。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResultResponse"
+        "202":
+          description: 命中审批策略，已创建待审工单，未执行。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionPendingApprovalResponse"
+        "400":
+          description: |
+            `request.invalid`：body 校验失败（含 `details.issues`）。
+            `gateway.error`：`unknown module` / `missing path param: <key>` /
+            `action not proxyable (no route declared)` / `reason required for dangerous action`。
+            两者都携带 `requestId`。
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/RequestInvalidEnvelope"
+                  - $ref: "#/components/schemas/GatewayErrorEnvelope"
+        "401":
+          description: 认证失败或操作员未激活；与其它路由不同，此处必带 `requestId`。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatorAuthEnvelope"
+        "403":
+          description: |
+            `gateway.error`：`unknown action: <resourceId>/<actionId>` /
+            `permission denied: <perm>` / `tenant out of scope: <siteId|platform>`。必带 `requestId`。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatewayErrorEnvelope"
+        "502":
+          description: |
+            `gateway.error`：`module offline` / `upstream returned HTTP <code>` / fetch 失败，
+            以及兜底 catch 捕获的任何非 GatewayError（含 DB 错误）。必带 `requestId`。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatewayErrorEnvelope"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/approvals:
+    get:
+      operationId: listApprovals
+      tags: [approvals]
+      summary: 列出审批工单
+      description: |
+        静态权限要求：`approval.read`。
+
+        作用域：给了 `siteId` 且超出作用域 → 403；未给 `siteId` 且作用域不含 `*` 时自动加
+        `siteId IN scopeSites` —— 副作用是 `siteId` 为 null 的平台级审批对非超管不可见。
+
+        按 requestedAt 降序，硬编码 `take: 100`，无分页参数、无 total、不告知是否被截断（待裁决 D11）。
+
+        query schema 是 `.strict()`：未知 query key 直接 400。
+
+        响应整行包含 `executionKey`（内部幂等 uuid）与 `error`（上游原始错误文本）（待裁决 D6）。
+      x-kokoro-required-permission: approval.read
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: 无默认值；不传即不按状态过滤。
+          schema:
+            $ref: "#/components/schemas/ApprovalStatus"
+        - $ref: "#/components/parameters/SiteIdQuery"
+      responses:
+        "200":
+          description: 审批工单列表（最多 100 条）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalListResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/approvals/{id}/approve:
+    post:
+      operationId: approveApproval
+      tags: [approvals]
+      summary: 批准并执行审批工单
+      description: |
+        静态权限要求：**无**（没有 `approval.decide` 之类的权限词）。动态校验（`assertChecker`）：
+        不能批自己的单（403）、必须 `permits(checker.permissions, row.requiredPermission)`（403）、
+        工单 `siteId` 非 null 时必须在 checker 作用域内（403）。
+
+        幂等：已决工单直接返回当前行，绝不二次执行；`updateMany where status=pending` 原子认领，
+        保证至多执行一次。
+
+        **请求体完全不读、不校验**（现有 web 端发 `{}`）。若发 `content-type: application/json`
+        但 body 为空串，Fastify 会以默认形状回 400（`FST_ERR_CTP_EMPTY_JSON_BODY`，待裁决 D1）。
+
+        可选请求头 `x-kokoro-request-id` 只用于内部执行审计，**不回显**。
+
+        待裁决 D10：下游执行失败时 HTTP 仍是 200，失败信息在载荷里
+        （`status: "failed"`、`resultStatusCode`、`error`）。
+      parameters:
+        - $ref: "#/components/parameters/ApprovalIdPath"
+        - $ref: "#/components/parameters/RequestIdHeader"
+      responses:
+        "200":
+          description: 决策后的整行（执行成功为 executed，执行失败为 failed —— 见 D10）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/ApprovalForbidden"
+        "404":
+          $ref: "#/components/responses/ApprovalNotFound"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/approvals/{id}/reject:
+    post:
+      operationId: rejectApproval
+      tags: [approvals]
+      summary: 驳回审批工单
+      description: |
+        静态权限要求：**无**；动态校验同 approve（`assertChecker`）。
+        幂等：已决工单原样返回。
+
+        请求体整体可省略（handler 对 `request.body ?? {}` 做 safeParse）；给了则必须是
+        `{ "note": <非空字符串> }`，未知字段 400。
+      parameters:
+        - $ref: "#/components/parameters/ApprovalIdPath"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApprovalRejectRequest"
+      responses:
+        "200":
+          description: 驳回后的整行（status = rejected）
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApprovalResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/ApprovalForbidden"
+        "404":
+          $ref: "#/components/responses/ApprovalNotFound"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/audit:
+    get:
+      operationId: listAudit
+      tags: [audit]
+      summary: 查询运营审计日志
+      description: |
+        静态权限要求：`audit.read`。
+
+        作用域（与其它路由不同，用的是裸 `scopeSites.includes("*")` 而非 `permitsSite`）：
+        未给 `siteId` 时必须持有 `*` 才能跨租户全量查，否则 403「请指定本作用域内的站点」；
+        给了 `siteId` 时走 `permitsSite`，失败 403「租户超出作用域」。
+
+        按 createdAt 降序，`take = limit`，无游标、无 total（待裁决 D11）。
+
+        query schema 是 `.strict()`：未知 query key 直接 400。
+      x-kokoro-required-permission: audit.read
+      parameters:
+        - $ref: "#/components/parameters/SiteIdQuery"
+        - name: limit
+          in: query
+          required: false
+          description: |
+            `z.coerce.number().int().min(1).max(200).default(50)`。边界行为：
+            `limit=abc` → NaN → 400；`limit=`（空值）→ 0 → 400；`limit=0` / `limit=201` → 400；
+            **只有 key 完全缺席**才走默认值 50。
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        "200":
+          description: 审计日志列表
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditListResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
+        "401":
+          $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "500":
+          $ref: "#/components/responses/UncaughtInternalError"
+
+components:
+  securitySchemes:
+    # 待裁决 D12：这里描述的是提供方（Fastify 网关）端。浏览器端的真实凭据是 Next Auth.js 的
+    # 同源 session cookie，由 BFF middleware 换成下面两个头。浏览器不该也不能持有 proxy secret。
+    operatorBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        `KOKORO_ADMIN_AUTH_MODE=oidc`（默认）：JWKS 验签 + issuer/audience 校验，
+        operator email 取自 `KOKORO_ADMIN_OIDC_EMAIL_CLAIM`（默认 `email`）claim。
+    proxySecret:
+      type: apiKey
+      in: header
+      name: x-kokoro-proxy-secret
+      description: |
+        `KOKORO_ADMIN_AUTH_MODE=proxy`（生产 BFF 模式）：BFF 注入的内部共享密钥，
+        timingSafeEqual 比对，支持逗号分隔多值轮换。必须与 `x-kokoro-operator` 同时出现。
+    operatorEmail:
+      type: apiKey
+      in: header
+      name: x-kokoro-operator
+      description: |
+        `KOKORO_ADMIN_AUTH_MODE=proxy`：由 BFF 从已认证 session 注入的 operator email，必须非空。
+        （`dev` 模式下该头可选，缺省回退 `KOKORO_ADMIN_DEV_OPERATOR`；dev 是本地开关，不在
+        本文件的 security 里登记。）
+
+  parameters:
+    OperatorIdPath:
+      name: id
+      in: path
+      required: true
+      description: 操作员 id（cuid）。不存在时走 Fastify 默认 500，见 D1。
+      schema:
+        type: string
+        minLength: 1
+    ApprovalIdPath:
+      name: id
+      in: path
+      required: true
+      description: 审批工单 id（cuid）。不存在时 404 `approval.error`。
+      schema:
+        type: string
+        minLength: 1
+    SiteIdQuery:
+      name: siteId
+      in: query
+      required: false
+      description: |
+        租户站点 id，无默认值。各路由语义不同，详见对应 operation 的 description
+        （/api/resource：行过滤 + 作用域强制；/api/approvals、/api/audit：查询过滤 + 作用域强制）。
+      schema:
+        type: string
+        minLength: 1
+    RequestIdHeader:
+      name: x-kokoro-request-id
+      in: header
+      required: false
+      description: |
+        链路 id。缺省时服务端生成 uuid。`POST /api/action` 会把它回显在信封的 `requestId` 并透传给下游；
+        `POST /api/approvals/{id}/approve` 只用于内部执行审计，不回显。
+      schema:
+        type: string
+        minLength: 1
+
+  responses:
+    OperatorUnauthorized:
+      description: |
+        401 `operator.auth`。来自认证失败（missing bearer token / invalid token /
+        token missing valid claim / invalid proxy secret / missing operator header）
+        或 operator 不存在、status ≠ active。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OperatorAuthEnvelope"
+    OperatorForbidden:
+      description: |
+        403 `operator.auth`。静态权限不足或租户超出作用域，message 为中文文案
+        （如「无权查看操作员列表」「无权管理权限」「无权管理操作员」「无权查看审批」
+        「无权查看审计」「租户超出作用域」「请指定本作用域内的站点」）。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OperatorAuthEnvelope"
+    RequestInvalid:
+      description: 400 `request.invalid`，`details.issues` 携带 zod issues。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RequestInvalidEnvelope"
+    GatewayBadRequest:
+      description: "400 `gateway.error`，如 `unknown module: <moduleId>`。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GatewayErrorEnvelope"
+    GatewayForbidden:
+      description: |
+        403 `gateway.error`，如 `route not allowed for module <id>: <route>` /
+        `permission denied: <perm>` / `tenant out of scope: <siteId>`。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GatewayErrorEnvelope"
+    GatewayBadGateway:
+      description: |
+        502 `gateway.error`，如 `module offline: <err>` / `upstream returned HTTP <code>`，
+        以及 handler 兜底 catch 到的任何非 GatewayError（含下游响应 zod 解析失败）。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GatewayErrorEnvelope"
+    ApprovalForbidden:
+      description: |
+        403 `approval.error`：`cannot decide your own request` / `permission denied: <perm>` /
+        `tenant out of scope`。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApprovalErrorEnvelope"
+    ApprovalNotFound:
+      description: "404 `approval.error`：`approval not found: <id>`。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApprovalErrorEnvelope"
+    UncaughtInternalError:
+      description: |
+        待裁决 D1：本服务未挂载 registerErrorHandler，未捕获异常（Prisma 报错、非 AppError throw）
+        走 Fastify 默认 500，**不是**本文件的错误信封，且 `message` 会回显原始内部错误文本。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/FastifyDefaultError"
+
+  schemas:
+    # ── 错误信封 ────────────────────────────────────────────────────────────
+    DomainErrorCode:
+      description: |
+        本服务实际发出的 domain error code 全集（handler 硬编码字符串）。
+        与 platform-kit `ERROR_STATUS` 的通用码表只有 `request.invalid` 重合（待裁决 D2）；
+        同一个 code 会映射多个 HTTP 状态（待裁决 D3）。
+      type: string
+      enum:
+        - operator.auth
+        - request.invalid
+        - gateway.error
+        - approval.error
+    ErrorEnvelopeBase:
+      description: |
+        `sendError()` 的形状（platform-kit responses.ts）。`details` 仅在 handler 显式传入时出现；
+        `requestId` 仅在 handler 显式传入且非空时出现（本面上只有 POST /api/action 会传）。
+      type: object
+      required: [error]
+      additionalProperties: false
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          additionalProperties: false
+          properties:
+            code:
+              $ref: "#/components/schemas/DomainErrorCode"
+            message:
+              type: string
+            details:
+              description: '目前唯一实际形态是 `{ "issues": ZodIssue[] }`。'
+        requestId:
+          type: string
+    OperatorAuthEnvelope:
+      description: 401 / 403。认证失败、operator 未激活，或静态权限/租户作用域不足。
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: operator.auth
+    RequestInvalidEnvelope:
+      description: 400。zod 校验失败，`details.issues` 必然存在。
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              required: [details]
+              properties:
+                code:
+                  const: request.invalid
+                details:
+                  $ref: "#/components/schemas/ZodIssueDetails"
+    GatewayErrorEnvelope:
+      description: 400 / 403 / 502。转发层错误，statusCode 由 GatewayError 原样透传（待裁决 D3）。
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: gateway.error
+    ApprovalErrorEnvelope:
+      description: 403 / 404。审批决策校验失败或工单不存在。
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: approval.error
+    FastifyDefaultError:
+      description: |
+        待裁决 D1：未挂载 error handler 时 Fastify 的默认错误形状。出现在未捕获异常（500，
+        `message` 为原始内部错误文本）、未匹配路由（404）与 body 解析失败（400）三类响应上。
+      type: object
+      required: [statusCode, error, message]
+      additionalProperties: true
+      properties:
+        statusCode:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+    ZodIssueDetails:
+      description: zod safeParse 失败时放进 `error.details` 的形状。
+      type: object
+      required: [issues]
+      additionalProperties: false
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZodIssue"
+    ZodIssue:
+      description: |
+        zod 3.25 的 issue。`code` / `path` / `message` 恒有；其余字段随 issue code 变化
+        （`expected`、`received`、`keys`、`unionErrors` …），故不封闭。
+      type: object
+      required: [code, path, message]
+      additionalProperties: true
+      properties:
+        code:
+          type: string
+        path:
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        message:
+          type: string
+
+    # ── 通用值类型 ──────────────────────────────────────────────────────────
+    JsonValue:
+      description: |
+        任意 JSON 值。用于 Prisma `Json` 列在读路径上未被收窄的字段（待裁决 D13）
+        以及审批工单存下来的 params / body。
+    ResourceRow:
+      description: |
+        下游模块返回的一行。待裁决 D4：**没有字段契约** —— 网关只把上游信封校验到
+        `z.array(z.record(z.unknown()))`，行内字段完全未建模。真形状分散在 6 个下游模块的
+        admin 端点里。生成的 browser validator 对这类载荷等于没校验。
+      type: object
+      additionalProperties: true
+    DateTimeIso:
+      description: Prisma `DateTime` 经 JSON 序列化后的 ISO 8601 字符串。
+      type: string
+      format: date-time
+
+    # ── 身份 / 能力面 ───────────────────────────────────────────────────────
+    Me:
+      description: 当前操作员的能力面。permissions / scopeSites 已在 operator lookup 里被 zod 洗成 string[]。
+      type: object
+      required: [email, roleKey, permissions, scopeSites]
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        roleKey:
+          type: string
+        permissions:
+          description: 权限 glob 列表。`*` 全通；精确相等；`prefix.*` 前缀匹配。
+          type: array
+          items:
+            type: string
+        scopeSites:
+          description: 租户作用域。含 `*` 表示跨租户超级权限。
+          type: array
+          items:
+            type: string
+    MeResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/Me"
+
+    # ── 模块 manifest ───────────────────────────────────────────────────────
+    AdminActionManifest:
+      description: platform-kit `adminActionManifestSchema`（`.strict()`）。`method` 有默认值 POST，解析后必然存在。
+      type: object
+      required: [id, labelKey, kind, requiredPermission, method]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        labelKey:
+          type: string
+          minLength: 1
+        kind:
+          type: string
+          enum: [link, mutation, dangerMutation]
+        requiredPermission:
+          type: string
+          minLength: 1
+        route:
+          description: 下游写路由模板，可含 `:param`。未声明 route 的 action 不可代理（POST /api/action 会 400）。
+          type: string
+          minLength: 1
+        method:
+          type: string
+          enum: [POST, DELETE]
+          default: POST
+    AdminResourceManifest:
+      description: platform-kit `adminResourceManifestSchema`（`.strict()`）。`actions` 有默认值 []，解析后必然存在。
+      type: object
+      required: [id, labelKey, route, requiredPermission, actions]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        labelKey:
+          type: string
+          minLength: 1
+        route:
+          type: string
+          minLength: 1
+        requiredPermission:
+          type: string
+          minLength: 1
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminActionManifest"
+    AdminNavItemManifest:
+      description: platform-kit `adminNavItemManifestSchema`（`.strict()`）。
+      type: object
+      required: [id, labelKey, route, requiredPermission]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        labelKey:
+          type: string
+          minLength: 1
+        route:
+          type: string
+          minLength: 1
+        requiredPermission:
+          type: string
+          minLength: 1
+    AdminModuleManifest:
+      description: |
+        platform-kit `adminModuleManifestSchema`（`.strict()`），是 manifest 的唯一真源。
+        网关下发前会按 operator 权限过滤 navItems / resources / actions（形状不变）。
+      type: object
+      required: [id, labelKey, basePath, requiredPermission, navItems, resources]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        labelKey:
+          type: string
+          minLength: 1
+        basePath:
+          type: string
+          minLength: 1
+        requiredPermission:
+          type: string
+          minLength: 1
+        navItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminNavItemManifest"
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminResourceManifest"
+    ModuleOnline:
+      type: object
+      required: [id, label, baseUrl, online, manifest]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        baseUrl:
+          description: |
+            待裁决 D5：模块的**内网服务地址**（形如 `http://kokoro-credit:4231`），当前无条件下发浏览器。
+          type: string
+        online:
+          const: true
+        manifest:
+          $ref: "#/components/schemas/AdminModuleManifest"
+    ModuleOffline:
+      type: object
+      required: [id, label, baseUrl, online, error]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        baseUrl:
+          description: 同 ModuleOnline.baseUrl，待裁决 D5。
+          type: string
+        online:
+          const: false
+        error:
+          description: 拉 manifest 失败的原始原因（`HTTP <code>` 或 fetch 错误文本）。
+          type: string
+    ModuleStatus:
+      description: 判别键是 `online`。
+      oneOf:
+        - $ref: "#/components/schemas/ModuleOnline"
+        - $ref: "#/components/schemas/ModuleOffline"
+    ModuleStatusListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          description: 长度恒为 6，顺序固定：site / user / model / credit / payment / hub。
+          type: array
+          items:
+            $ref: "#/components/schemas/ModuleStatus"
+
+    # ── 操作员与角色 ────────────────────────────────────────────────────────
+    OperatorStatus:
+      type: string
+      enum: [active, disabled]
+    OperatorListRow:
+      description: |
+        `GET /api/operators` 的行（Prisma select，不含 createdAt / updatedAt）。
+      type: object
+      required: [id, email, displayName, roleKey, scopeSites, status]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        displayName:
+          type: string
+        roleKey:
+          type: string
+        scopeSites:
+          description: |
+            待裁决 D13：裸 Prisma `Json` 列。写路径（upsert）用 zod 保证是 string[]，
+            但此读路径未再收窄，故契约按 JsonValue 照实写。
+          $ref: "#/components/schemas/JsonValue"
+        status:
+          $ref: "#/components/schemas/OperatorStatus"
+    OperatorAccountFull:
+      description: upsert / status 更新返回的整行，比列表行多 createdAt / updatedAt。
+      type: object
+      required: [id, email, displayName, roleKey, scopeSites, status, createdAt, updatedAt]
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        displayName:
+          type: string
+        roleKey:
+          type: string
+        scopeSites:
+          description: 待裁决 D13，同 OperatorListRow.scopeSites。
+          $ref: "#/components/schemas/JsonValue"
+        status:
+          $ref: "#/components/schemas/OperatorStatus"
+        createdAt:
+          $ref: "#/components/schemas/DateTimeIso"
+        updatedAt:
+          $ref: "#/components/schemas/DateTimeIso"
+    RoleListRow:
+      description: "`GET /api/roles` 的行（Prisma select，不含时间字段）。"
+      type: object
+      required: [key, name, permissions]
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        permissions:
+          description: 待裁决 D13：裸 Prisma `Json` 列，此读路径未收窄为 string[]。
+          $ref: "#/components/schemas/JsonValue"
+    OperatorRoleFull:
+      description: "`POST /api/roles` 返回的整行，比列表行多 createdAt / updatedAt。"
+      type: object
+      required: [key, name, permissions, createdAt, updatedAt]
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        permissions:
+          description: 待裁决 D13，同 RoleListRow.permissions。
+          $ref: "#/components/schemas/JsonValue"
+        createdAt:
+          $ref: "#/components/schemas/DateTimeIso"
+        updatedAt:
+          $ref: "#/components/schemas/DateTimeIso"
+    OperatorListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          description: 按 email 升序，无分页（待裁决 D11）。
+          type: array
+          items:
+            $ref: "#/components/schemas/OperatorListRow"
+    OperatorResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/OperatorAccountFull"
+    RoleListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          description: 按 key 升序，无分页（待裁决 D11）。
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleListRow"
+    RoleResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/OperatorRoleFull"
+    OperatorUpsertRequest:
+      description: server.ts `operatorBodySchema`（`.strict()`：未知字段 400）。
+      type: object
+      required: [email, displayName, roleKey, scopeSites]
+      additionalProperties: false
+      properties:
+        email:
+          description: 仅校验非空，**未**做邮箱格式校验。
+          type: string
+          minLength: 1
+        displayName:
+          type: string
+          minLength: 1
+        roleKey:
+          description: 不校验角色是否存在；外键违例走 Fastify 默认 500（待裁决 D1）。
+          type: string
+          minLength: 1
+        scopeSites:
+          type: array
+          items:
+            type: string
+    OperatorStatusRequest:
+      description: server.ts `operatorStatusBodySchema`（`.strict()`）。
+      type: object
+      required: [status]
+      additionalProperties: false
+      properties:
+        status:
+          $ref: "#/components/schemas/OperatorStatus"
+    RoleUpsertRequest:
+      description: server.ts `roleBodySchema`（`.strict()`）。
+      type: object
+      required: [key, name, permissions]
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        permissions:
+          description: 权限 glob 列表，可为空数组；元素无长度约束。
+          type: array
+          items:
+            type: string
+
+    # ── 资源代理与聚合读 ────────────────────────────────────────────────────
+    ResourceRowListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceRow"
+    CreditStats:
+      description: credit 模块 `/admin/credits/stats` 的载荷（网关侧 zod 已 strip 未知字段）。
+      type: object
+      required:
+        - accountsTotal
+        - accountsActive
+        - balanceSumMicros
+        - heldSumMicros
+        - grantedTotalMicros
+        - spentTotalMicros
+      additionalProperties: false
+      properties:
+        accountsTotal:
+          description: 网关只校验到 `z.number()`，未收窄为整数。
+          type: number
+        accountsActive:
+          type: number
+        balanceSumMicros:
+          description: micros 十进制字符串（避免 JS number 精度丢失）。
+          type: string
+        heldSumMicros:
+          type: string
+        grantedTotalMicros:
+          type: string
+        spentTotalMicros:
+          type: string
+    PaymentRevenueByCurrency:
+      type: object
+      required: [currency, amountMinor]
+      additionalProperties: false
+      properties:
+        currency:
+          type: string
+        amountMinor:
+          description: 最小货币单位的十进制字符串。
+          type: string
+    PaymentStats:
+      description: payment 模块 `/admin/payments/stats` 的载荷（网关侧 zod 已 strip 未知字段）。
+      type: object
+      required:
+        - ordersTotal
+        - ordersPaid
+        - ordersPending
+        - ordersRefunded
+        - ordersCanceled
+        - revenueByCurrency
+      additionalProperties: false
+      properties:
+        ordersTotal:
+          type: number
+        ordersPaid:
+          type: number
+        ordersPending:
+          type: number
+        ordersRefunded:
+          type: number
+        ordersCanceled:
+          type: number
+        revenueByCurrency:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentRevenueByCurrency"
+    BillingOverview:
+      description: 两段各自降级：对应模块离线或报错时该段为 null。
+      type: object
+      required: [credit, payment]
+      additionalProperties: false
+      properties:
+        credit:
+          oneOf:
+            - $ref: "#/components/schemas/CreditStats"
+            - type: "null"
+        payment:
+          oneOf:
+            - $ref: "#/components/schemas/PaymentStats"
+            - type: "null"
+    BillingOverviewResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/BillingOverview"
+    User360:
+      description: |
+        三段各自 `.catch(() => [])`：任一下游模块不可用时静默降级为空/null，无错误信号。
+        各段行无字段契约（待裁决 D4）。
+      type: object
+      required: [creditAccount, orders, identity]
+      additionalProperties: false
+      properties:
+        creditAccount:
+          oneOf:
+            - $ref: "#/components/schemas/ResourceRow"
+            - type: "null"
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceRow"
+        identity:
+          description: 仅 `ownerKind=user` 时可能非 null。
+          oneOf:
+            - $ref: "#/components/schemas/ResourceRow"
+            - type: "null"
+    User360Response:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/User360"
+
+    # ── 写操作代理 ──────────────────────────────────────────────────────────
+    ActionRequest:
+      description: server.ts `actionBodySchema`（`.strict()`：未知字段 400）。
+      type: object
+      required: [moduleId, resourceId, actionId]
+      additionalProperties: false
+      properties:
+        moduleId:
+          description: 必须命中 src/config.ts 的固定 6 模块表。
+          type: string
+          minLength: 1
+        resourceId:
+          description: 必须是该模块 manifest 里的 resource id。
+          type: string
+          minLength: 1
+        actionId:
+          description: 必须是该 resource 下的 action id，且该 action 必须声明了 route。
+          type: string
+          minLength: 1
+        params:
+          description: 填充 manifest route 模板里的 `:name`，值经 encodeURIComponent；缺参数 400。
+          type: object
+          additionalProperties:
+            type: string
+        body:
+          description: |
+            原样转发给下游模块的请求体（缺省转发 `{}`）。网关**不校验**其内容
+            （`z.unknown()`），正确性目前只由前端手写表保证。
+            `mutation` 类动作会读取其中的 `amountMicros`（十进制字符串）判定是否触发审批。
+        siteId:
+          description: 租户站点 id。**不传时要求 operator 的 scopeSites 含 `*`**。
+          type: string
+          minLength: 1
+        reason:
+          description: "`kind: dangerMutation` 时必填且 trim 后非空，否则 400。"
+          type: string
+          minLength: 1
+    ActionResultResponse:
+      description: 200。唯一会回显 requestId 的成功响应。
+      type: object
+      required: [data, requestId]
+      additionalProperties: false
+      properties:
+        data:
+          description: |
+            待裁决 D4：下游响应拆掉一层信封后的 `data`；下游若不是 `{data:...}` 形状则为整个 body。
+            不可静态建模。
+        requestId:
+          type: string
+    ActionPendingApproval:
+      type: object
+      required: [pendingApproval, approvalId]
+      additionalProperties: false
+      properties:
+        pendingApproval:
+          const: true
+        approvalId:
+          type: string
+    ActionPendingApprovalResponse:
+      description: 202。命中审批策略，工单已创建但未执行。
+      type: object
+      required: [data, requestId]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/ActionPendingApproval"
+        requestId:
+          type: string
+
+    # ── 审批 ────────────────────────────────────────────────────────────────
+    ApprovalStatus:
+      type: string
+      enum: [pending, approved, rejected, executed, failed]
+    ApprovalRequestRow:
+      description: |
+        审批工单整行（Prisma `approval_requests`，无 select 裁剪）。
+        待裁决 D6：`executionKey`（内部幂等 uuid）与 `error`（上游原始错误文本）当前无条件下发浏览器。
+      type: object
+      required:
+        - id
+        - status
+        - moduleId
+        - resourceId
+        - actionId
+        - params
+        - body
+        - siteId
+        - reason
+        - requiredPermission
+        - executionKey
+        - requestedById
+        - requestedByEmail
+        - decidedById
+        - decidedByEmail
+        - decisionNote
+        - resultStatusCode
+        - error
+        - requestedAt
+        - decidedAt
+        - executedAt
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        status:
+          $ref: "#/components/schemas/ApprovalStatus"
+        moduleId:
+          type: string
+        resourceId:
+          type: string
+        actionId:
+          type: string
+        params:
+          description: 提交时的 params（Prisma Json，可为 null）。
+          $ref: "#/components/schemas/JsonValue"
+        body:
+          description: 提交时的下游 body（Prisma Json，可为 null）。
+          $ref: "#/components/schemas/JsonValue"
+        siteId:
+          description: null 表示平台级工单；非 `*` 作用域的 operator 在不传 siteId 时看不到这类工单。
+          type: [string, "null"]
+        reason:
+          type: [string, "null"]
+        requiredPermission:
+          description: 决策者必须持有的权限（`assertChecker` 用它二次校验）。
+          type: string
+        executionKey:
+          description: 待裁决 D6：内部幂等 uuid，当前直接下发浏览器。
+          type: string
+        requestedById:
+          type: string
+        requestedByEmail:
+          type: string
+        decidedById:
+          type: [string, "null"]
+        decidedByEmail:
+          type: [string, "null"]
+        decisionNote:
+          type: [string, "null"]
+        resultStatusCode:
+          description: 执行后的上游状态码；<400 视为成功（status=executed），否则 failed。
+          type: [integer, "null"]
+        error:
+          description: 待裁决 D6：上游原始错误文本，当前直接下发浏览器。
+          type: [string, "null"]
+        requestedAt:
+          $ref: "#/components/schemas/DateTimeIso"
+        decidedAt:
+          oneOf:
+            - $ref: "#/components/schemas/DateTimeIso"
+            - type: "null"
+        executedAt:
+          oneOf:
+            - $ref: "#/components/schemas/DateTimeIso"
+            - type: "null"
+    ApprovalListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          description: 按 requestedAt 降序，硬编码上限 100 条且不告知是否被截断（待裁决 D11）。
+          type: array
+          items:
+            $ref: "#/components/schemas/ApprovalRequestRow"
+    ApprovalResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          $ref: "#/components/schemas/ApprovalRequestRow"
+    ApprovalRejectRequest:
+      description: server.ts `approvalRejectBodySchema`（`.strict()`）。整个 body 可省略。
+      type: object
+      additionalProperties: false
+      properties:
+        note:
+          description: 省略或不传时 decisionNote 保持 null。
+          type: string
+          minLength: 1
+
+    # ── 审计 ────────────────────────────────────────────────────────────────
+    AuditResult:
+      type: string
+      enum: [ok, error]
+    AuditLogRow:
+      description: 审计日志整行（Prisma `audit_logs`）。每个动作（含被拒）都会落一条。
+      type: object
+      required:
+        - id
+        - actorOperatorId
+        - actorEmail
+        - moduleId
+        - resourceId
+        - actionId
+        - targetRoute
+        - siteId
+        - reason
+        - result
+        - statusCode
+        - requestId
+        - createdAt
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        actorOperatorId:
+          type: [string, "null"]
+        actorEmail:
+          type: [string, "null"]
+        moduleId:
+          type: string
+        resourceId:
+          type: string
+        actionId:
+          type: string
+        targetRoute:
+          description: 已填充 `:param` 后的下游实际路由。
+          type: string
+        siteId:
+          type: [string, "null"]
+        reason:
+          type: [string, "null"]
+        result:
+          $ref: "#/components/schemas/AuditResult"
+        statusCode:
+          description: 下游响应状态码；转发前被拒为 403，fetch 失败为 0，命中审批为 202。
+          type: integer
+        requestId:
+          type: string
+        createdAt:
+          $ref: "#/components/schemas/DateTimeIso"
+    AuditListResponse:
+      type: object
+      required: [data]
+      additionalProperties: false
+      properties:
+        data:
+          description: 按 createdAt 降序，条数 = limit（默认 50，上限 200），无游标、无 total（待裁决 D11）。
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogRow"
