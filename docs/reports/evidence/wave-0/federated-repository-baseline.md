@@ -133,3 +133,124 @@ then passed 569/569. This proves the dependency is real and fail-loud rather tha
 
 No red result in this table may be described as a new Wave 0 regression. It must either be resolved by the named task or remain an
 explicitly accepted, time-bounded exception in the final evidence.
+
+---
+
+# Final converged evidence (2026-07-27)
+
+This section closes the baseline above. Every number below was observed in this run; nothing is copied forward as assumed.
+
+## Promotion
+
+Atomic pin promotion commit: `0f30276146fbde276da9569bab87205695690c94`
+(`build(repository): promote verified wave 0 pins`), containing exactly five paths — the pin manifest and the
+four gitlinks. No toolchain, contract or business change shares this commit.
+
+| Repository | Promoted pin | Recoverable ref | Child remote CI |
+|---|---|---|---|
+| Agent | `e01b6eab3e4b8b9b1fc193c53590e3ca564c2b51` | `refs/tags/kokoro-wave0-foundation-2026-07-27-agent` | run `30203330241` success |
+| Platform | `fe5b755f7b1a98247f33e3318f4ade9c4ae87f18` | `refs/tags/kokoro-wave0-foundation-2026-07-27-platform` | run `30203426690` success |
+| Session | `c24080c117aeafa3ec02db1700549057218baefa` | `refs/tags/kokoro-wave0-foundation-2026-07-27-session` | run `30203819683` success |
+| Web | `1934383ea4a72be9f2cc664af5de62b46c77c81c` | `refs/tags/kokoro-wave0-foundation-2026-07-27-web-2` | run `30204922834` success |
+
+The superseded Web candidate tag `kokoro-wave0-foundation-2026-07-27-web` (`fdf73b5`) was left in place and not moved.
+
+## Root Infra runtime compatibility gate
+
+Run against the staged pin combination before the promotion commit existed, using the root Infra authority
+(`scripts/infra/manager.mjs`, profile `full`, scope `ci-federated`, mode `ci`) — no ad-hoc containers, which is the
+defect the baseline section above recorded.
+
+```text
+outcome: pass          reasonCode: ok         treeMode: index
+combinationId:     wave1-federated-ci-2026-07-27
+startedAt:         2026-07-27T14:34:00.306Z
+completedAt:       2026-07-27T14:35:27.250Z   durationMs: 86944
+combinationDigest: f5be9e5cf53b0cc3603cfa064d1bcdf40476f2287505da8e6ba6584cdf60b3e9
+manifestDigest:    2482f7ff5f7f3f7b04c2a8a2528daa6f92cb44ddb73282d5957af9539535a919
+matrixDigest:      4b9b8a397248f4bbf0a6c28030f03fc12fed28ddbc63c078e9ff02e3456b9c32
+preflightPinVerification: pass    postflightPinVerification: pass
+services healthy: mysql, redis, mongo, minio, litellm
+```
+
+| Scenario | Participants | Outcome | ms |
+|---|---|---|---:|
+| `web-session-http-sse` | session → web | pass | 9120 |
+| `session-platform-internal-rpc` | platform → session | pass | 2938 |
+| `session-agent-durable-localfake` | agent → session | pass | 2549 |
+| `agent-model-gateway-localfake` | platform → agent | pass | 3781 |
+| `platform-admin-auth-connect` | platform → web | pass | 5845 |
+
+Infra was stopped in a trap, the five containers were removed, and `docker ps -a` reported zero containers
+afterwards. No volume and no image was deleted.
+
+## Clean recursive clone replay
+
+Root was cloned over the `file://` transport with `--no-local`, so the clone has an independent object database
+(`.git/objects/info/alternates` absent — verified). The four children were initialised from their own GitHub
+remotes, not from local worktrees.
+
+| Gate | Result |
+|---|---|
+| `verify-federated-repositories --tree head --remote` | PASS — 4 repositories |
+| `contract/check.py` | PASS — 19 generated mirrors match |
+| `pytest contract/tests -q` | PASS — 35 tests |
+| `buf format --check`, `buf lint` | PASS |
+| `check-generated-contracts.mjs` | PASS — generated RPC mirrors match |
+| `node --test scripts/architecture/*.test.mjs` | PASS — 15 tests |
+| `check-index-coverage.ts` | PASS — 57 roots |
+| `check-dependencies.ts` | PASS — 57 roots, 13 internal package edges |
+| `node --test scripts/repository/*.test.mjs scripts/compatibility/*.test.mjs scripts/foundation/check-evidence.test.mjs` | PASS — 72 tests |
+| `pytest scripts/compatibility/test_*.py -q` | PASS — 6 tests |
+| contract regenerated twice, then `git diff --exit-code` in root and all four children | PASS — deterministic, clean tree |
+
+## Rollback rehearsal
+
+Performed on a throwaway branch inside the disposable replay clone; never pushed, and `git reset` was never used
+on a working repository.
+
+- `git revert` of the promotion commit produced `f887f3b`, touching the same five paths.
+- `git submodule update --init --recursive` restored the four previous pins
+  (`c2a92c8` / `0463513` / `ffc9b39` / `da32035`).
+- `verify-federated-repositories --tree head --remote` PASSED on the reverted tree.
+- All four *previous* recoverable tags still resolve on their remotes, so the rollback target is anchored:
+  `kokoro-wave1-federated-ci-2026-07-27-agent`, `kokoro-admin-auth-connect-2026-07-27-platform`,
+  `kokoro-platform-admission-boundary-2026-07-27-session`, `kokoro-admin-auth-connect-2026-07-27-web`.
+
+## Baseline reds — final disposition
+
+| Baseline red | Disposition |
+|---|---|
+| Platform DDD layout (`kokoro-site/src/bootstrap`) | Resolved in Platform: seed moved to `interfaces/cli`; the DDD allowlist was not widened |
+| Platform root lint (`scripts/integration-dev.mjs`) | Resolved in Platform lint gate; child CI green |
+| Web i18n lint executable resolution | Resolved in Web: leaf declares its own ESLint under the isolated linker; i18n lint runs |
+| Agent ruff/pyright stale imports | Resolved in Agent with no GA runtime semantic change; Ruff + Pyright green |
+| Session dependency audit (2 high) | Resolved in Session: `npm audit` reports 0 vulnerabilities |
+
+All five baseline reds are closed in their owning repository, each with its own green remote CI run recorded above.
+
+## Toolchain actually used for this closure
+
+| Tool | Observed version |
+|---|---|
+| Git | `2.39.5 (Apple Git-154)` |
+| Node.js | `22.22.2` |
+| pnpm | `11.2.2` |
+| uv | `0.10.4` |
+| Root Python | `3.13.5` |
+| Docker Engine | `28.5.1` |
+
+## Still open after this closure
+
+These are recorded as open, not as passed:
+
+1. Root feature branch remote CI on the exact promoted SHA. Root CI evidence is an external artifact and is not
+   claimed by this document.
+2. Root BOM tag creation and remote tag-object verification.
+3. `kokoro-agent` has no `.python-version`; `requires-python = ">=3.11"` resolved to CPython `3.14.3` in the
+   replay clone while child CI uses `3.11`. The same lock therefore runs under different interpreters depending
+   on host. Determinism gap owned by the Agent repository.
+4. Internal RPC coverage is 1 of 5 declared contracts. Only `platform-admin-auth v1` is protobuf/Connect; the
+   remaining internal calls stay on JSON/Zod mirrors plus `callService`. See
+   [architecture survey](../../2026-07-27-kokoro-architecture-survey.md) §3.
+5. Session `legacy-admission-adapter.ts` unknown/not_found still lacks a real Admission RPC — Wave 3, not Wave 0.

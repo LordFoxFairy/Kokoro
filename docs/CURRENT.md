@@ -7,10 +7,11 @@ repositoryTopology: federated-submodules-v1
 
 ## 必读
 
-1. [Codebase Map](CODEBASE_MAP.md)
-2. [docs 总入口](README.md)
-3. [Kokoro 总手册](kokoro-handbook/README.md)
-4. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+1. [**架构梳理（当前事实，先读这份）**](reports/2026-07-27-kokoro-architecture-survey.md)
+2. [Codebase Map](CODEBASE_MAP.md)
+3. [docs 总入口](README.md)
+4. [Kokoro 总手册](kokoro-handbook/README.md)
+5. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
 
 ## 当前目标架构评审主线
 
@@ -68,6 +69,7 @@ repositoryTopology: federated-submodules-v1
 2. [ADR-007 Governed Submodules](kokoro-handbook/decisions/ADR-007-kokoro-platform-submodule.md)
 3. [Contract Foundation and Admin Auth Connect Pilot Implementation Plan](superpowers/plans/2026-07-27-contract-foundation-admin-auth-pilot-implementation-plan.md)
 4. [Contract Foundation / Admin Auth Pilot Verification](reports/2026-07-27-contract-foundation-admin-auth-pilot-verification.md)
+5. [**Wave 0 收敛证据（federated baseline + 最终收口）**](reports/evidence/wave-0/federated-repository-baseline.md)
 
 ## 当前技术主线
 

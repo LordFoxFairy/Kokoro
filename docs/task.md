@@ -1,7 +1,47 @@
 # Kokoro 任务状态（跨会话）
 
 > 主 agent 维护；子 agent 只读。会话开始读一次。状态以**代码为准**(handbook 状态位可能滞后,以本表校正)。
-> 最后更新:2026-07-13(**纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure**;Wave 1-3 P0 全清;Wave 0 事实封存;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md,其 Wave 划分为执行序)。原型期旧台账见文末归档。
+> 最后更新:2026-07-27(federated Wave 0 pin promotion 收口;见下节)。
+> 历史:2026-07-13 纲领 Wave 0-6 全清+WEB-ARCH 重构收口;终局 gate 115 断言 PASS;交接终稿=handoffs/2026-07-13-full-closure;纲领=specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md。原型期旧台账见文末归档。
+
+## Federated Wave 0 收口(2026-07-27)
+
+> 架构定案:**federated repositories**——根仓永久保留 `.gitmodules` 与四个 gitlink,四个子仓各自拥有
+> source/lock/CI/artifact/deploy/rollback,跨仓只走版本化协议。**"snapshot import 成单体 monorepo"方向已废弃**
+> (旧计划 plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md 仅存史,不要照做)。
+> 传输权威=specs/2026-07-27-contract-transport-and-internal-rpc-design.md(internally-approved,
+> implementationAuthorized: true)。当前事实梳理=reports/2026-07-27-kokoro-architecture-survey.md。
+
+- [x] **真基建运行时兼容性门**(staged pins,`--tree index`):5 场景全 pass
+      (web-session-http-sse / session-platform-internal-rpc / session-agent-durable / agent-model-gateway /
+      platform-admin-auth-connect),走根 Infra authority(profiles=full scope=ci-federated),trap 收尾后
+      `docker ps -a` 归零,未删 volume/image。
+- [x] **atomic pin promotion**:commit `0f30276`,恰好 5 条路径(manifest + 四 gitlink),无工具链/契约/业务混入;
+      HEAD-mode verifier pass。四子仓 remote CI 均 success。
+- [x] **干净 recursive clone 复现**:`file://` + `--no-local`(无 alternates,独立 object db),四子仓从各自
+      GitHub remote 初始化。19 contract mirror / 35 contract 测试 / buf format+lint / 15 architecture 测试 /
+      INDEX 覆盖 57 roots / 依赖门 57 roots+13 edges / 72 repository 治理测试 / 6 Python 适配器测试,
+      二次 regenerate 后根仓与四子仓 `git diff --exit-code` 全干净。
+- [x] **rollback 演练**(一次性 clone,未 push):revert promotion → 四子仓回退到前一组 pin →
+      reverted tree 上 verifier pass → 四个**旧** recoverableRef tag 仍远端可解析。
+- [~] BOM 生成器/schema/测试 + freeze-snapshots 方向对齐(freezer 原本仍服务已废弃的单体 baseline)。
+- [~] boundary registry(**T0 真缺口**:`config/` 下无此物,但 spec §13 T0 要求它冻结每 operation 唯一 transport)。
+- [ ] 根仓 branch push + 根 remote CI + BOM tag(唯一对外动作,全绿后才做)。
+
+### 内部 RPC 现状与下一步(别再重复问)
+
+- 现状:5 条声明契约里**只有 `platform-admin-auth v1` 真走 protobuf/Connect**(带 protovalidate、
+  CommandIdentity/CommandReceipt 幂等信封、GetCommandReceipt 超时对账、RetryClass 错误分类)。
+  其余仍是 `contract/spec/*.yaml` 生成的 Zod mirror + `callService` 手写出站(4 处:payment→credit、
+  credit→site、credit→user、hub→user),**响应 schema 由调用方自己声明,服务端改形状不会让调用方编译红**。
+- **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
+  `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
+  `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。
+- 迁移序(spec §13):T0 contract foundation → T1 Admin Auth pilot(**已完成**)→ T2 Public Admin API(OpenAPI 3.1)
+  → T3 Platform Admission(**这一步才处理那 4 处 callService**:§3.2 判定其中部分本属同一 Platform workflow,
+  应收拢为本地 application interface 而非包装成 RPC)→ T4 Session HTTP/SSE → T5 durable ownership → T6 legacy 删除。
+- 因此**现在不要删** `callService` 的 legacy 单密钥模式:spec §6.3 允许本地开发临时兼容 per-caller static secret
+  (须集中封装+标注 migration expiry),删除归 T6 且以 consumer inventory 归零为前置。
 
 ## 通用引擎重塑 campaign(2026-07-24;规划阶段,未碰代码——用户要求先思考对齐再动)
 
