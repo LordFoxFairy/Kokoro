@@ -19,6 +19,18 @@ Static architecture checks do not prove remote protocol behavior, runtime author
 
 `check-index-coverage.ts` and `check-dependencies.ts` are the supported policy entrypoints; their tests define fail-closed behavior.
 
+
+`check_ga_isolation.py` is the supported entrypoint for the GA runtime's isolation rule, with
+`test_check_ga_isolation.py` defining its fail-closed behaviour. It scans `kokoro-agent/src` and rejects
+any of the eight Platform identity axes (`site_id`/`siteId`, `owner_id`/`ownerId`,
+`workspace_id`/`workspaceId`, `user_id`/`userId`) as well as a namespace composed from a business
+prefix such as `user:`. `--source` takes an alternate tree for fixtures.
+
+GA is not a Platform module and must not become one: `namespace` is its only isolation key and stays
+opaque, while `siteId` is resolved and enforced entirely on the Platform side. The rule was documented
+in the codebase map but nothing checked it, so this gate freezes the currently-clean state — an empty
+scan fails rather than reading as clean.
+
 ## Callers and dependencies
 
 Root CI and module owners call these checks. Policy is read from `config/architecture/index-roots.yaml`.

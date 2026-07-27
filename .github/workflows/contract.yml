@@ -75,6 +75,10 @@ jobs:
         run: |
           uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py -q
           uv run --locked python scripts/contract/check_admin_openapi.py
+      - name: GA isolation gate
+        run: |
+          uv run --locked python -m pytest scripts/architecture/test_check_ga_isolation.py -q
+          uv run --locked python scripts/architecture/check_ga_isolation.py
       - name: architecture governance gates
         run: |
           node --test scripts/architecture/*.test.mjs
