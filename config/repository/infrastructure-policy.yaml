@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "authority": {
+    "projectName": "kokoro-infra",
+    "composeFile": "docker-compose.infra.yml",
+    "siteScoped": false,
+    "environmentScopePattern": "^[a-z][a-z0-9-]{0,31}$",
+    "forbiddenScopePrefixes": ["site-", "site_"],
+    "networkNameTemplate": "${KOKORO_NETWORK:-kokoro-net}",
+    "volumeNameTemplate": "kokoro-{scope}-{service}",
+    "resourcePrefixes": {
+      "dev": "kokoro-infra_kokoro"
+    },
+    "defaultResourcePrefixTemplate": "kokoro-infra-{scope}"
+  },
+  "profiles": {
+    "platform": ["mysql"],
+    "runtime": ["redis", "mongo"],
+    "storage": ["minio"],
+    "model": ["litellm"],
+    "full": ["mysql", "redis", "mongo", "minio", "litellm"]
+  },
+  "restartPolicy": {
+    "development": "no",
+    "ci": "no",
+    "production": "unless-stopped"
+  },
+  "testScope": {
+    "prefix": "kokoro_test_",
+    "mysqlContexts": ["site", "user", "model", "credit", "payment", "admin"],
+    "mongoContexts": ["agent", "session", "hub"],
+    "redisDatabaseMin": 8,
+    "redisDatabaseMax": 15,
+    "redisExclusiveLease": true,
+    "minioBucketSuffix": "runtime"
+  },
+  "cleanup": {
+    "localDownRemovesVolumes": false,
+    "requiresEndpointFingerprint": true,
+    "requiresLeaseToken": true,
+    "allowsSystemPrune": false,
+    "allowsVolumePrune": false
+  }
+}

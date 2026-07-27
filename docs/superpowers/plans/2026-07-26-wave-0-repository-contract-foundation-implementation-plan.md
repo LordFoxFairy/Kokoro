@@ -113,11 +113,55 @@ git add docs/reports/evidence/wave-0/ownership-attestation.yaml docs/reports/evi
 git commit -m "docs(provenance): attest source ownership"
 ```
 
+### Task 0A: Establish the Infra authority before any real baseline
+
+**Files:**
+- Create: `config/repository/infrastructure-policy.yaml`
+- Create: `scripts/infra/manager.mjs`, `scripts/infra/scope.mjs`, `scripts/infra/inventory.mjs`, tests
+- Modify: `docker-compose.infra.yml`, `deploy/provision.sh`, `scripts/closure-up.py`
+- Modify: root Infra commands/documentation that still use a non-canonical project name
+
+- [ ] **Step 1: Write failing authority, resource and cleanup tests**
+
+  Fixtures reject non-`kokoro-infra` official project names、Compose-auto-prefixed volume identity、missing profiles/health、dev
+  auto-restart、mutable stateful image refs、whole-file secret fanout、package-owned stateful Compose、unguarded `FLUSHDB`、fixed shared
+  test DB/bucket and cleanup without endpoint/prefix/lease validation. Inventory may inspect only Docker names/labels/digests/sizes.
+
+- [ ] **Step 2: Implement one root manager without changing application/runtime semantics**
+
+  Profiles are `platform`、`runtime`、`storage`、`model` and manager-composed `full`. Official project identity is fixed to
+  `kokoro-infra`; network/volume names derive from an explicit environment scope, never Site. Local dev restart defaults off；production
+  restart requires an explicit override. The manager reads the selected environment source only in the provisioning boundary, never logs
+  values, and passes each process/container the minimum required variables.
+
+- [ ] **Step 3: Implement leased logical test scopes**
+
+  MySQL: per-run/per-context databases and restricted test user；Mongo: per-run DB；Redis: reserved DB 8–15 plus an exclusive lease until
+  runtime key-prefix support exists；MinIO: per-run bucket/prefix and complete object/multipart/bucket cleanup. Every cleanup checks
+  endpoint、`kokoro_test_<run>` prefix and lease token. Local stop never removes volumes；data destroy is not exposed as a normal test path.
+
+- [ ] **Step 4: Inventory and refuse competing active authorities**
+
+  Record the existing `kokoro`、`kokoro-infra`、`kokoro_dev_*` and `kokoro-platform_*` volume families without reading their contents.
+  Refuse to start if another local stateful project is active. Do not delete/adopt volumes in this task.
+
+- [ ] **Step 5: Re-run the manager tests and commit**
+
+```bash
+node --test scripts/infra/*.test.mjs
+node scripts/infra/manager.mjs config
+node scripts/infra/inventory.mjs --format summary
+git add config/repository/infrastructure-policy.yaml scripts/infra docker-compose.infra.yml \
+  deploy/provision.sh scripts/closure-up.py docs/superpowers
+git commit -m "build(infra): establish canonical lifecycle authority"
+```
+
 ### Task 1: Freeze the actual parent and baseline
 
 **Files:**
 - Create: `scripts/repository/freeze-snapshots.mjs`
 - Create: `scripts/repository/freeze-snapshots.test.mjs`
+- Create: `config/repository/expected-snapshots.json`
 - Create: `config/repository/imported-snapshots.yaml`
 - Create: `docs/reports/evidence/wave-0/pre-import-baseline.md`
 
@@ -164,11 +208,18 @@ git ls-remote <origin> refs/heads/main refs/tags/<archive-tag>
   Expected sources are the four rows in this plan unless the root pin changes. Any change requires updating Spec, plan baseline and
   reviewer approval; never accept `--update-expected` during cutover.
 
+```bash
+node scripts/repository/freeze-snapshots.mjs \
+  --approved-spec-commit 31ed730a41ec79130ca530d6acbd3f3d9b445485 \
+  --expected config/repository/expected-snapshots.json
+```
+
 - [ ] **Step 6: Commit**
 
 ```bash
 git add scripts/repository/freeze-snapshots.mjs scripts/repository/freeze-snapshots.test.mjs \
-  config/repository/imported-snapshots.yaml docs/reports/evidence/wave-0/pre-import-baseline.md
+  config/repository/expected-snapshots.json config/repository/imported-snapshots.yaml \
+  docs/reports/evidence/wave-0/pre-import-baseline.md
 git commit -m "build(repository): freeze source snapshots"
 ```
 
@@ -719,26 +770,25 @@ git commit -m "ci: establish root required checks"
 - Delete or downgrade to non-runnable pointer: `kokoro-platform/kokoro-litellm/docker-compose.example.yml`, `kokoro-platform/deploy/docker-compose.services.yml`
 - Modify: root `.dockerignore`
 - Create: `scripts/docker/check-context.mjs`, `scripts/docker/smoke.mjs`, tests
-- Create: `scripts/infra/manager.mjs`, `scripts/infra/scope.mjs`, `scripts/infra/inventory.mjs`, tests
-- Create: `config/repository/infrastructure-policy.yaml`
+- Modify: `scripts/infra/manager.mjs`, `scripts/infra/scope.mjs`, `scripts/infra/inventory.mjs`, tests
+- Modify: `config/repository/infrastructure-policy.yaml`
 
 - [ ] **Step 1: Test Docker context contents before build**
 
   Fail if `.git`、`.env*`、node_modules、`.venv`、tmp、coverage、DB data or secret-like files enter context. Inspect names/digests only;
   do not print secret content.
 
-- [ ] **Step 2: Write failing Infra-authority and destructive-cleanup fixtures**
+- [ ] **Step 2: Write failing imported-consumer and Docker integration fixtures**
 
-  Reject non-canonical project names、Compose-auto-prefixed volume identity、multiple stateful declarations、mutable image tags、whole-file
-  secret injection、dev auto-restart、missing healthcheck、package-owned stateful Compose、fixed shared test DB/bucket、unguarded `FLUSHDB`、
-  hard-coded container names and cleanup without endpoint/prefix/lease validation. Inventory reports names/labels/size only and never reads
-  volume data. Existing duplicate volumes are evidence, not automatic deletion targets.
+  Extend Task 0A gates across the now-imported packages: reject package-owned stateful Compose、fixed shared test DB/bucket、unguarded
+  `FLUSHDB`、hard-coded old container names、test helpers that read shared dev env、incomplete MinIO cleanup and bypasses of the root manager.
+  Docker context fixtures additionally reject secret/cache/local-data inclusion.
 
-- [ ] **Step 3: Implement the canonical Infra lifecycle**
+- [ ] **Step 3: Complete all imported consumers of the canonical Infra lifecycle**
 
-  Fix local authority to `kokoro-infra`; explicitly scope network/volume names so caller cwd/`-p` cannot create a second set. Add
-  `platform`、`runtime`、`storage`、`model` and `full` selection through the manager. Dev defaults to no automatic restart; production
-  override enables its explicit restart policy. Infra images are immutable digests; each service receives only required env. Manager flow:
+  Preserve Task 0A's fixed identity/profiles and migrate every package/root verification entry to its lease/scope API. Pin remaining images,
+  narrow per-service env, add missing production auth/health policy, remove or downgrade duplicate Compose authorities, and make Platform use
+  separate context databases. Manager flow remains:
 
 ```text
 inspect/refuse competing authority → ensure minimal services without recreate → wait real health
@@ -776,7 +826,7 @@ pnpm exec node scripts/docker/smoke.mjs
 ```bash
 git add .dockerignore docker-compose.infra.yml docker-compose.app.yml deploy scripts config/repository/infrastructure-policy.yaml \
   kokoro-*/Dockerfile kokoro-platform/deploy/docker/Dockerfile
-git commit -m "build(infra): establish one managed runtime authority"
+git commit -m "build(docker): complete managed runtime integration"
 ```
 
 ## Chunk 5: Current docs、fresh clone and external verification

@@ -149,16 +149,30 @@ def litellm_ready() -> bool:
 
 
 def _infra_compose(*args: str, extra_env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
-    """对唯一一套基建(docker-compose.infra.yml，项目 kokoro-infra，dev env)执行 compose 子命令。"""
+    """通过 root infra manager 操作唯一基建；不允许调用方覆盖 compose project。"""
+    refresh = tuple(args[:3]) == ("up", "-d", "--force-recreate")
+    if tuple(args[:2]) != ("up", "-d"):
+        raise ValueError("unsupported infra lifecycle request")
+    services = set(args[3:] if refresh else args[2:])
+    profiles: list[str] = []
+    if services & {"mysql"}:
+        profiles.append("platform")
+    if services & {"redis", "mongo"}:
+        profiles.append("runtime")
+    if services & {"minio"}:
+        profiles.append("storage")
+    if services & {"litellm"}:
+        profiles.append("model")
     return subprocess.run(
-        ["docker", "compose", "--env-file", "deploy/.env.dev", "-p", "kokoro-infra",
-         "-f", "docker-compose.infra.yml", *args],
+        ["node", str(ROOT / "scripts" / "infra" / "manager.mjs"), "refresh" if refresh else "ensure",
+         "--profiles", ",".join(profiles), "--scope", "dev", "--mode", "development",
+         "--infra-env-file", "deploy/.env.dev"],
         cwd=ROOT, check=True, capture_output=True,
         env={**os.environ, "KOKORO_ENV_FILE": "deploy/.env.dev", **(extra_env or {})})
 
 
 def _recreate_litellm(extra_env: dict[str, str]) -> None:
-    """按选中的 claude-code 后端 env 重建**统一基建里的** litellm 网关(凭据只经进程 env,不落文件),等其就绪。"""
+    """通过 authority 确保统一基建里的 litellm 网关，凭据只经进程环境传递。"""
     _infra_compose("up", "-d", "--force-recreate", "litellm", extra_env=extra_env)
     litellm_ready()
 
@@ -607,7 +621,7 @@ def cmd_down() -> None:
                 print(f"  {name} 已不在 ({pid})")
         pids_file.unlink()
     print("基建容器保留（唯一一套 docker-compose.infra.yml，项目 kokoro-infra）;要停基建:")
-    print("  docker compose --env-file deploy/.env.dev -p kokoro-infra -f docker-compose.infra.yml down")
+    print("  node scripts/infra/manager.mjs stop --profiles full --scope dev --infra-env-file deploy/.env.dev")
 
 
 def cmd_status() -> None:
