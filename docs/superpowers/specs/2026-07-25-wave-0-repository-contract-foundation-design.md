@@ -321,7 +321,7 @@ Kokoro/
 归档 ref 建议统一为：
 
 ```text
-refs/tags/kokoro-monorepo-cutover-2026-07-25
+refs/tags/kokoro-monorepo-cutover-2026-07-26
 ```
 
 Remote tag 必须受保护；若托管平台不支持不可变 tag，则以 bundle digest 和访问控制作为第二恢复锚。
@@ -333,9 +333,9 @@ Remote tag 必须受保护；若托管平台不支持不可变 tag，则以 bund
 ```yaml
 schemaVersion: 1
 designBaselineCommit: ec9886b800a379511390b578187d26eadd869645
-approvedSpecCommit: PENDING_REVIEW
+approvedSpecCommit: 31ed730a41ec79130ca530d6acbd3f3d9b445485
 cutoverParentCommit: PENDING_IMPLEMENTATION
-cutoverRef: refs/tags/kokoro-monorepo-cutover-2026-07-25
+cutoverRef: refs/tags/kokoro-monorepo-cutover-2026-07-26
 sources:
   - id: kokoro-agent
     path: kokoro-agent
@@ -352,7 +352,7 @@ sources:
       attestedAt: 2026-07-27T03:45:17Z
       attestationRef: codex-task:019f95dd-a6ff-7a90-818f-250bb72408d5#owner-confirmation-2026-07-26
       scope: source-tree-and-history
-    archiveTag: kokoro-monorepo-cutover-2026-07-25
+    archiveTag: kokoro-monorepo-cutover-2026-07-26
     bundleSha256: PENDING_IMPLEMENTATION
     bundleStorageRef: PENDING_IMPLEMENTATION
     bundleRetentionUntil: PENDING_IMPLEMENTATION
@@ -1115,7 +1115,7 @@ commit 自引用。报告内不得复制 secret、生产数据或完整环境变
 
 ### 20.1 P0 Exit Checklist
 
-- [ ] 所有者完成四来源代码权属/内部 LicenseRef 确认。
+- [x] 所有者完成四来源代码权属/内部 LicenseRef 确认。
 - [ ] Platform pinned commit 已存入 remote archive ref，四仓 bundle digest 已验证。
 - [ ] 四个 imported prefix tree 与 §2.1 完全一致。
 - [ ] gitlink、`.gitmodules`、nested `.git` 为 0。
@@ -1164,9 +1164,9 @@ Wave 0 输出给后续 Wave 的不是新业务 API，而是稳定工程契约：
 - Wave 8：移动到最终目录、清零 `kokoro-*`、legacy deploy、旧 source 和临时 exception。
 - Wave 9：以同一根命令/INDEX verification/contract digest 生成 RC EvidenceBundle。
 
-## 22. 复审门
+## 22. 已完成的复审门与持续约束
 
-书面复审需要确认：
+2026-07-26 的书面复审与仓库所有者确认已经完成以下事项：
 
 1. 同意 pinned snapshot import 与旧 remote archive/read-only 策略。
 2. 同意 §7 精确工具链版本及 TS 5.9 暂不升级 TS7 的裁决。
@@ -1175,6 +1175,6 @@ Wave 0 输出给后续 Wave 的不是新业务 API，而是稳定工程契约：
 5. 确认四个来源仓是同一 Kokoro 项目的自有内部代码，可登记内部 LicenseRef。
 6. 同意本 Wave 触及 Agent 打包/Python/Docker/CI，但不改变 GA runtime 行为。
 
-批准后下一步：使用 `superpowers:writing-plans` 生成
-`docs/superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md`，再进入隔离
-worktree 和 TDD/双阶段 review。本文本身不授权直接实施。
+对应实施计划已生成并进入隔离 worktree 的 TDD/双阶段 review。本文授权 Wave 0 工程地基实施，但不授权
+GA runtime 语义变化；任何 graph、prompt、tool、HITL、checkpoint、memory、event、terminal、namespace 或 Handoff
+语义调整仍须暂停并单独取得用户批准。
