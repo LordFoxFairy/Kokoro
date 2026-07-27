@@ -25,8 +25,11 @@ constraint-dependencies = [
 ]
 package = false
 
-# 显式声明官方源：uv 的仓内声明优先于开发机 user-level 配置。
-# 没有它时，制品 URL 取决于谁最后跑的 uv lock。
+# 声明官方源为默认制品来源。
+# 注意（uv 0.10.4 实测）：本声明**不**覆盖 user-level `~/.config/uv/uv.toml` 里
+# `default = true` 的 index —— 用户级配置优先。所以在配了镜像的机器上重新解析时，
+# 必须显式 `UV_NO_CONFIG=1 uv lock`，否则 URL 会被改写回镜像。本声明只在
+# 没有冲突用户配置的机器（含 CI）上生效。
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
