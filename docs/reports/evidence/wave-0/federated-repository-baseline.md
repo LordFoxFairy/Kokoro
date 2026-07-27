@@ -726,6 +726,46 @@ Verified load-bearing against the real tree, not only fixtures: appending `await
 to `kokoro-user/src/interfaces/http/routes.ts` fails with
 `site_scope_unscoped_call: ... routes.ts:391`, and the file restores byte-identical. 11 fixtures.
 
+## Round 9 — generating the Admin browser client would have lost checking
+
+The backlog said to replace `kokoro-web/apps/admin/lib/schemas.ts` with a generated browser client.
+Reading the contract first showed that would be a downgrade for part of the surface.
+
+The Admin gateway validates downstream rows only to `z.array(z.record(z.unknown()))`. So
+`contract/openapi/admin-web-v1.yaml` declares `ResourceRow` with **no properties** and
+`additionalProperties: true`, recorded there as open decision D4 — the real row shapes live in six
+downstream modules' admin endpoints and were never modelled. Four of the hand-written readers
+(`siteSchema`, `creditAccountSchema`, `orderSchema`, `identitySchema`) sit on that schema. Generating
+from the contract would replace readers that at least name `amountMinor`, `currency`, `balanceMicros`
+and `heldMicros` with validators that accept anything. The hand-written file currently encodes *more*
+field knowledge than the contract does.
+
+The readers are also deliberately lenient, and their comments say why: unknown keys strip, missing
+keys go nullish, so one dirty row degrades one row instead of blanking the page. Generating strict
+validators would turn a bad field into a blank screen.
+
+So the readers stay, and `scripts/contract/check_admin_browser_schemas.py` now proves they do not
+contradict the contract: every field the browser reads must be declared by the schema it maps to.
+Adding a reader without mapping it fails; removing one while leaving its mapping fails; a contract
+schema that models no fields is counted and printed rather than passed off as verified.
+
+```
+admin_browser_schemas_ok: 11 browser schemas, 17 fields proven against the contract,
+4 mapped to a schema with no field contract (creditAccountSchema->ResourceRow,
+identitySchema->ResourceRow, orderSchema->ResourceRow, siteSchema->ResourceRow),
+2 uncontracted by design
+```
+
+The two uncontracted readers are hub's skill-upload preview and confirm payloads, which reach the
+browser through the gateway's opaque `/api/action` passthrough and are not part of this contract.
+
+Verified load-bearing against the real reader, not only fixtures: adding `tenantLabel` to `meSchema`
+fails with `admin_browser_field_undeclared: meSchema.tenantLabel is read by the browser but Me does
+not declare it`, and the file restores byte-identical. 13 fixtures.
+
+When D4 is decided and rows gain a real shape, that count of four drops and generation becomes the
+better answer for exactly those readers. Until then it is the honest state, printed on every run.
+
 ## Verification
 
 All against real services, with no silent skips:
@@ -737,7 +777,7 @@ All against real services, with no silent skips:
 | platform-admin Connect suite, 5 consecutive runs | 7 passed each |
 | root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
 | architecture gates (incl. new site-scope-plane fixtures) | 34 passed |
-| Python gates (compatibility, admin OpenAPI, GA isolation) | 53 passed |
+| Python gates (compatibility, admin OpenAPI, admin browser schemas, GA isolation) | 66 passed |
 | contract generator tests | 35 passed |
 | round 8 compatibility gate | 5/5 scenarios, 7 session-platform assertions |
 

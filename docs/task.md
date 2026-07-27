@@ -109,7 +109,16 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
 
 1. **41 → 更低**:`session-browser` 41 条靠进程常量 `KOKORO_SITE_ID` 定站(不在 wire 上)。
    要真正清零需 T3 provider + Session shadow-compare 后切换,**不得跳过 shadow 阶段**(计费相邻路径)。
-2. **Admin 浏览器 client 代码生成**:需引入生成器依赖,pnpm 11 有 24h release-age 窗口,单独一轮做。
+2. ~~**Admin 浏览器 client 代码生成**~~ **(round 9:查清后不做代码生成,改补漂移门禁)**。
+   先读契约才发现生成是**降级**:网关只把下游行校验到 `z.array(z.record(z.unknown()))`,所以
+   `ResourceRow` 在契约里 **零 properties + `additionalProperties: true`**(待裁决 D4)。
+   4 个手写 reader(site/creditAccount/order/identity)正落在它上面——生成出来的 validator 什么都不校,
+   反而抹掉手写里仅有的 `amountMinor`/`currency`/`balanceMicros`/`heldMicros` 字段知识。
+   而且这些 reader 是**故意宽松**的(未知键 strip、缺省 nullish),生成严格校验会把一个脏字段变成整页白屏。
+   已补 `scripts/contract/check_admin_browser_schemas.py`:浏览器读的每个字段必须被契约声明;
+   新增 reader 不映射即失败,删了 reader 留着映射也失败;映射到无字段契约的 schema 逐条计数打印、不算覆盖。
+   **D4 落地后这个 4 会降下来,那时对这 4 个 reader 生成才是更好的答案。**
+   (原顾虑的 pnpm 11 release-age 窗口因此没有触发——本轮零新依赖。)
 3. **Admin error taxonomy 裁决**(任务 #17):只有 `request.invalid` 与共享 `ERROR_STATUS` 重合;
    `operator.auth` 横跨 401/403。**wire-visible,不能静默改名**,需用户裁决。
 4. **根 CI 仍阻塞在用户侧**:需用户建 `KOKORO_SUBMODULE_TOKEN`(对四个私有子仓只读 Contents 的

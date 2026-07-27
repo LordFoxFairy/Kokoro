@@ -34,10 +34,28 @@ paths for fixtures. It is Python because that document is hand-written YAML carr
 root workspace already provides PyYAML; the sibling registry gate stays on Node because its data is
 JSON-compatible.
 
+`check_admin_browser_schemas.py` is the supported entrypoint for the other end of that plane, with
+`test_check_admin_browser_schemas.py` defining its fail-closed behaviour. It proves the browser's
+hand-written readers in `kokoro-web/apps/admin/lib/schemas.ts` do not contradict the published
+contract: every field the browser reads must be declared by the contract schema it is mapped to.
+`--openapi` and `--schemas` take alternate paths for fixtures.
+
+It is a gate rather than a generator on purpose. Generating the browser validators from the contract
+would *lose* checking for part of this surface: the gateway validates downstream rows only to
+`z.array(z.record(z.unknown()))`, so `ResourceRow` is declared with no properties and
+`additionalProperties: true` (open decision D4). The hand-written `orderSchema` at least names
+`amountMinor` and `currency`, so it currently encodes more field knowledge than the contract does.
+The readers also stay deliberately lenient — a dirty row degrades one row instead of blanking the
+page. Four readers map onto `ResourceRow` and therefore cannot be verified at all; that count is
+printed on every run rather than presented as coverage. When D4 lands, the count drops and generation
+becomes the better answer for those four.
+
 ## Callers and dependencies
 
-Root CI and contract owners call the check. It reads `contract/proto/`, `contract/spec/`,
-`config/repository/compatibility-matrix.json` and `config/architecture/index-roots.yaml`, and writes nothing.
+Root CI and contract owners call the checks. They read `contract/proto/`, `contract/spec/`,
+`contract/openapi/`, `config/repository/compatibility-matrix.json`, `config/architecture/index-roots.yaml`,
+`kokoro-platform/kokoro-platform-admin/src/server.ts` and `kokoro-web/apps/admin/lib/schemas.ts`, and
+write nothing.
 
 ## Data ownership and events
 
@@ -47,7 +65,8 @@ failure owner, and how each operation binds its Site. Wire shapes stay owned by 
 
 ## Runtime and security
 
-Read-only and deterministic, Node standard library only, no new dependencies and no network. Source paths must
+Read-only and deterministic, no new dependencies and no network: the Node gates use the standard library
+only, and the Python gates use PyYAML, which the root workspace already provides. Source paths must
 stay repository-relative and are rejected if they escape the repository.
 
 ## Idempotency, failure, and recovery
@@ -107,5 +126,7 @@ spec keeps separate. Declaring an excluded path in the document fails, and an un
 ## Verification
 
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
-then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py -q` and
-`uv run --locked python scripts/contract/check_admin_openapi.py`.
+then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py
+scripts/contract/test_check_admin_browser_schemas.py -q`,
+`uv run --locked python scripts/contract/check_admin_openapi.py` and
+`uv run --locked python scripts/contract/check_admin_browser_schemas.py`.
