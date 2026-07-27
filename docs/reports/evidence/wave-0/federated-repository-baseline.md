@@ -580,3 +580,85 @@ All five scenarios pass: `web-session-http-sse`, `session-platform-internal-rpc`
    header-bound until a provider ships and Session shadow-compares before cutting over.
 4. The Admin error taxonomy decision: only `request.invalid` overlaps the shared `ERROR_STATUS` table, and
    `operator.auth` spans 401 and 403. Both are wire-visible, so neither should be renamed quietly.
+
+---
+
+# Round 6 — site becomes a request field on the money path (2026-07-27)
+
+Promotion commit: `cbc725de37cf11b092f8d89480a8110a4a7fbad2`. Session moved to
+`3bd3214f38ae1a90b18a079ff90a3781d4fcccf2` and Platform to `ee5131b8c258d694f0b29465f5a130ff6daf3c91`,
+recoverable at `refs/tags/kokoro-wave0-site-in-body-2026-07-27-{session,platform}`, both peel-verified on the
+remote after child CI was green on the exact SHA.
+
+## What moved
+
+`siteId` is now a required field of `UsageHoldRequest`, `UsageSettleRequest` and `ReleaseCreditRequest`
+rather than a hop header. A header is the caller's own claim about itself; the owner needs the value as
+payload it can persist and enforce at the effect point. Credit still accepts the header, but only as a
+cross-check: disagreement with the body means the caller is confused about its own identity, so the request
+is rejected rather than resolved in favour of one side. It answers 400 rather than 403 because the request
+contradicts itself — that is not an authorization verdict, and 403 would disclose which side is believed.
+
+```text
+boundary_registry_ok: 6 boundaries, 80 operations, 43 header-bound site scopes (migration debt),
+  1 declared-only boundary, 6 request-field site scopes, 1 contract-only (published, no provider)
+```
+
+Header-bound drops 46 → 43; request-field rises 3 → 6.
+
+## The larger defect this uncovered
+
+`KOKORO_SITE_ID` was declared `z.string().min(1).catch("site-local")`. The `.catch()` silently substitutes a
+default, which made any empty-site guard unreachable: a production deploy missing the variable would attribute
+every tenant's usage to one fallback site, with no error and no warning. Credit entries cannot be
+re-attributed once written, so that is an irreversible accounting fault sitting behind a green startup.
+
+The default is gone. Production fails at startup; development falls back but warns once. The guard is
+deliberately **not** narrowed by billing mode — `billing=off` today does not stop someone enabling `enforce`
+tomorrow against a fallback site, and site is deployment identity rather than a billing accessory. Seven
+tests cover it, including one asserting `resolveEnv({}).KOKORO_SITE_ID` is `undefined` specifically to stop
+the default being reinstated.
+
+The three outbound bodies are also now bound to the generated contract types with `satisfies`, so a future
+field change fails at typecheck. This one surfaced only in a runtime contract test, which is precisely the
+gap that binding closes.
+
+## The gate was proving less than it claimed
+
+Tamper-testing the new `request-field` claims showed the gate passing when it should have failed. For spec
+YAML sources the site proof was **file-wide**: any one object carrying `siteId` cleared every operation in
+that file, so deleting the field from `UsageHoldRequest` alone still passed.
+
+Where operation ids derive from object names, each operation is now resolved against its own request object.
+Both tampers are caught by name (`platform-runtime/usage_hold`, `platform-runtime/release_credit`). Sections
+such as `endpoints` declare no fields of their own, so they keep the file-wide fallback and are tracked
+separately rather than presented as per-operation evidence. Registry fixtures 49 → 50.
+
+This matters beyond the immediate fix: the previous three `request-field` operations on `platform-admission`
+were proto-backed and genuinely per-message, but had the credit operations been added before this correction,
+the counter would have reported stronger evidence than existed.
+
+## Verification
+
+All against real services, with no silent skips:
+
+| Suite | Result |
+|---|---|
+| session, real Redis + Mongo + MinIO | 409 passed, 0 skipped |
+| credit integration, real MySQL | 117 passed |
+| platform unit | 1,086 passed |
+| registry fixtures | 50 passed |
+| round 6 compatibility gate | 5/5 scenarios pass |
+
+The default session run reports 382 passed / 27 skipped; supplying Redis and Mongo reaches 401/8, and only
+adding MinIO credentials reaches 409/0. Reporting the first number as green would have hidden 27 unexecuted
+tests.
+
+## Still open
+
+1. Root remote CI has never run — no Actions secrets, so `contract.yml` stops at its `KOKORO_SUBMODULE_TOKEN`
+   guard. Owner action; no root BOM tag until a green run exists.
+2. 43 operations remain header-bound. `session-browser` is pinned by a process constant rather than anything
+   on the wire, and the remaining `platform-runtime` reads still derive site per route.
+3. Wave T3 implementation: a provider for `platform-admission`, then Session shadow-comparing before cutover.
+4. Generated browser client for Admin, and the Admin error taxonomy decision.
