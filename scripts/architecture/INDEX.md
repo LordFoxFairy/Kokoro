@@ -67,6 +67,14 @@ makes the policy stop describing the architecture it claims to describe. `platfo
 such allowances — credit, hub, model, payment, site, user — while importing only `platform-kit`,
 because it reaches those modules over HTTP.
 
+It also rejects a `namespace` typed optional or given a default. That key is GA's *only* isolation
+key, so an absent one is not a weaker scope — it is no scope, and every fail-open found so far began
+exactly there: a missing isolation value degrading to no isolation instead of a refusal. Today every
+occurrence in GA is `str` or `NonEmptyStr`; the rule freezes that. `namespace: list[str]` stays
+allowed, because LangGraph streams use the name for a node path that decides no tenancy. The check
+reads the annotation only, stopping at the comma or closing paren — scanning to end of line read a
+function's `-> None` return type as if it were the parameter's, which is regression-tested.
+
 GA is not a Platform module and must not become one: `namespace` is its only isolation key and stays
 opaque, while `siteId` is resolved and enforced entirely on the Platform side. The rule was documented
 in the codebase map but nothing checked it, so this gate freezes the currently-clean state — an empty

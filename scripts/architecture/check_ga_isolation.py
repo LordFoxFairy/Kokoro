@@ -46,6 +46,25 @@ FORBIDDEN_AXES = (
 # tenancy GA is supposed not to know, just spelled as a string.
 NAMESPACE_PREFIX_RE = re.compile(r"""["'](?:user|team|site|workspace|owner|tenant):\{?""")
 
+# ``namespace`` is GA's *only* isolation key, so an absent one is not a weaker scope -- it is no
+# scope. Typing it optional, or giving it a default, makes "a run belonging to nobody" expressible,
+# and every Platform fail-open found so far began exactly there: a missing isolation value degrading
+# to no isolation instead of a refusal. Today every occurrence is ``str`` or ``NonEmptyStr``; this
+# freezes that.
+#
+# ``namespace: list[str]`` is deliberately still allowed: LangGraph streams use that name for a node
+# path, which is not an isolation key and never reaches a tenancy decision.
+# The annotation only: everything up to the comma, closing paren or end of line that ends it.
+# Scanning further would read a function's ``-> None`` return type as if it were the parameter's.
+NAMESPACE_OPTIONAL_RE = re.compile(r"\bnamespace\s*:\s*(?P<annotation>[^,)\n]+)")
+
+
+def namespace_is_optional(annotation: str) -> bool:
+    annotation = annotation.strip()
+    if "=" in annotation:  # a default makes the argument omittable
+        return True
+    return bool(re.search(r"\b(?:None|Optional)\b", annotation))
+
 AXIS_RE = re.compile(r"\b(?P<axis>%s)\b" % "|".join(FORBIDDEN_AXES))
 
 SKIP_DIRECTORIES = {"__pycache__", ".venv", "node_modules", ".git"}
@@ -86,6 +105,13 @@ def scan(root: Path) -> tuple[int, list[str]]:
                     f"ga_isolation_namespace_composed: {rel}:{number}: a namespace must stay "
                     "opaque and must not be built from a business identity prefix"
                 )
+            optional = NAMESPACE_OPTIONAL_RE.search(line)
+            if optional is not None and namespace_is_optional(optional.group("annotation")):
+                violations.append(
+                    f"ga_isolation_namespace_optional: {rel}:{number}: namespace is GA's only "
+                    "isolation key; typing it optional or defaulting it makes an unscoped run "
+                    "expressible"
+                )
     return len(files), violations
 
 
@@ -98,7 +124,8 @@ def run(source: Path) -> str:
         )
     return (
         f"ga_isolation_ok: {scanned} GA source files, "
-        f"0 of {len(FORBIDDEN_AXES)} Platform identity axes present"
+        f"0 of {len(FORBIDDEN_AXES)} Platform identity axes present, "
+        "namespace never optional"
     )
 
 

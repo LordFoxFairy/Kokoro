@@ -86,3 +86,49 @@ def test_empty_source_tree_fails(tmp_path: Path) -> None:
     with pytest.raises(GaIsolationError) as excinfo:
         run(empty)
     assert excinfo.value.code == "ga_isolation_no_sources"
+
+
+# namespace is GA's only isolation key: absent is not a weaker scope, it is no scope.
+def test_rejects_an_optional_namespace(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "run.py").write_text("def start(namespace: str | None) -> None:\n    ...\n")
+    with pytest.raises(GaIsolationError) as excinfo:
+        run(source)
+    assert excinfo.value.code == "ga_isolation_namespace_optional"
+
+
+def test_rejects_the_Optional_spelling(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "run.py").write_text("def start(namespace: Optional[str]) -> None:\n    ...\n")
+    with pytest.raises(GaIsolationError):
+        run(source)
+
+
+# A default makes the argument omittable, which is the same hole spelled differently.
+def test_rejects_a_defaulted_namespace(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "run.py").write_text('def start(namespace: str = "") -> None:\n    ...\n')
+    with pytest.raises(GaIsolationError):
+        run(source)
+
+
+# Regression: the annotation ends at the comma. Reading to end of line made a plain `namespace: str`
+# parameter look optional because the function's `-> None` return type mentions None.
+def test_a_required_namespace_beside_a_None_return_is_accepted(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "run.py").write_text(
+        "async def set_enabled(self, namespace: str, name: str, *, enabled: bool) -> None:\n    ...\n"
+    )
+    assert "namespace never optional" in run(source)
+
+
+# LangGraph streams use the name for a node path, which decides no tenancy.
+def test_a_list_namespace_is_not_an_isolation_key(tmp_path):
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "protocols.py").write_text("class S:\n    namespace: list[str]\n")
+    assert "namespace never optional" in run(source)

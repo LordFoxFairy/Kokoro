@@ -981,6 +981,30 @@ answer. Had that gone unchecked, this round would have reported "the session HTT
 ownership checks", which is false: there are three, at lines 254, 268 and 285, plus owner-scoped
 listing.
 
+## Round 16 — the last repository, and freezing what it already gets right
+
+Round 15 swept session and web but said agent was still uncovered. It is now. **No fourth instance
+anywhere**: the sweep is complete across all four repositories.
+
+Agent is clean for a structural reason worth recording. Its only isolation key is `namespace`, and
+across 84 source files and 65 occurrences every typed one is `str` or `NonEmptyStr`
+(`Annotated[str, StringConstraints(min_length=1)]`) — never `str | None`, never defaulted. Every
+`| None` in its contracts sits on a non-isolation field: `event_id`, `effort`, `agent`, `category`,
+`claimed_by`, `reason`. An unscoped run is not expressible, which is why there was nothing to find.
+
+A zero-result scan proves nothing unless the scanner demonstrably sees its subject, so the counts were
+established first — 84 files, 65 occurrences — before concluding.
+
+Nothing enforced that discipline, so `check_ga_isolation.py` now rejects a `namespace` typed optional
+or given a default, and its success line says `namespace never optional`. Retyping
+`state.py:36` to `str | None` fails it precisely, and the file restores byte-identical. Fixtures 20 → 25.
+
+Building it produced one false positive worth keeping as a regression test. The first pattern scanned
+to end of line, so `async def set_enabled(self, namespace: str, ...) -> None:` tripped it — the `None`
+belonged to the return type, not the parameter. The check now reads the annotation only, stopping at
+the comma or closing paren. `namespace: list[str]` stays allowed: LangGraph streams use that name for
+a node path that decides no tenancy.
+
 ## Verification
 
 All against real services, with no silent skips:

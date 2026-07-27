@@ -174,6 +174,13 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   **教训:这个形状不能只看请求路径判定**——看着像静默降级的默认值,可能被另一个文件里的启动守卫围住
   (platform 的 `route-access.ts` 就是同一手法)。只读 handler 会得出一个看起来很严重的假阳性。
   真正那三处之所以是真的,正因为它们没有这道围栏。
+- **(round 16)** agent 也扫完了,**四个仓全覆盖,没有第四处**。agent 干净是结构性的:唯一隔离键
+  `namespace` 在 84 个源文件 65 处出现中,**全部**是 `str` 或 `NonEmptyStr`,没有 `str | None`、没有默认值
+  ——"无归属的 run"根本不可表达。零结果先验证扫描器确实看得见目标(84 文件 / 65 次)再下结论。
+  这条纪律此前无人守,已在 `check_ga_isolation.py` 加规则:`namespace` 不得可选或带默认,
+  成功行加印 `namespace never optional`;把 `state.py:36` 改成 `str | None` 即报错,还原字节一致。fixture 20→25。
+  过程中出过一个假阳性并留作回归:首版正则扫到行尾,把函数的 `-> None` 返回类型当成了参数注解;
+  现在只读注解本身(遇 `,` 或 `)` 停)。`namespace: list[str]` 仍放行——那是 LangGraph 的节点路径,不定租户。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。
