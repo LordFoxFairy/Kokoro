@@ -16,11 +16,13 @@ AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
 SESSION = ROOT / "kokoro-session/src/contract"
 WEB = ROOT / "kokoro-web/apps/user/src/contract"
 HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
+PLATFORM_KIT = ROOT / "kokoro-platform/kokoro-platform-kit/src/contract"
 
 EVENTS_SRC = "contract/spec/events.yaml"
 CONTROL_SRC = "contract/spec/control.yaml"
 STREAMS_SRC = "contract/spec/streams.yaml"
 HTTP_SRC = "contract/spec/http.yaml"
+PLATFORM_RUNTIME_SRC = "contract/spec/platform-runtime.yaml"
 
 
 def load(name: str) -> dict:
@@ -71,6 +73,7 @@ _ZOD_SCALAR = {
     "string": "z.string()",
     "boolean": "z.boolean()",
     "int": "z.number().int()",
+    "nonnegative_int": "z.number().int().nonnegative()",
     "record": "z.record(z.unknown())",
     "string_map": "z.record(z.string())",
     "unknown": "z.unknown()",
@@ -699,6 +702,22 @@ def emit_http_ts(spec: dict) -> str:
 
 
 # --------------------------------------------------------------------------- #
+# Platform runtime contract: platform producer + session consumer
+# --------------------------------------------------------------------------- #
+
+
+def emit_platform_runtime_ts(spec: dict) -> str:
+    enums = spec.get("enums", {})
+    L = [ts_header(PLATFORM_RUNTIME_SRC).rstrip("\n"), 'import { z } from "zod"', ""]
+    for name, values in enums.items():
+        L += [f"export const {camel(name)}Schema = z.enum([{enum_lit(values)}])", ""]
+    for obj in spec.get("objects", []):
+        L += ts_object(obj, enums, export=True)
+        L.append("")
+    return "\n".join(L).rstrip() + "\n"
+
+
+# --------------------------------------------------------------------------- #
 # agent/contract/__init__.py
 # --------------------------------------------------------------------------- #
 
@@ -943,10 +962,12 @@ def build() -> dict[Path, str]:
     streams = load("streams.yaml")
     http = load("http.yaml")
     storage = load("storage.yaml")
+    platform_runtime = load("platform-runtime.yaml")
 
     session_events = emit_session_events_ts(events)
     control_ts = emit_control_ts(control)
     http_ts = emit_http_ts(http)
+    platform_runtime_ts = emit_platform_runtime_ts(platform_runtime)
 
     return {
         HERE / "README.md": emit_readme(events, control, streams, http),
@@ -962,6 +983,8 @@ def build() -> dict[Path, str]:
         AGENT / "storage.py": emit_storage_py(storage),
         SESSION / "storage.ts": emit_storage_ts(storage),
         HUB / "storage.ts": emit_storage_ts(storage),
+        PLATFORM_KIT / "platform-runtime.ts": platform_runtime_ts,
+        SESSION / "platform-runtime.ts": platform_runtime_ts,
         WEB / "session-events.ts": session_events,
         WEB / "control.ts": control_ts,
         WEB / "http.ts": http_ts,

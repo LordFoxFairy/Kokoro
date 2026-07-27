@@ -11,7 +11,7 @@ CONTRACT = Path(__file__).resolve().parents[1]
 ROOT = CONTRACT.parent
 sys.path.insert(0, str(CONTRACT))
 
-from generate import build, load  # noqa: E402
+from generate import build, emit_platform_runtime_ts, load  # noqa: E402
 
 OUTPUTS = build()
 
@@ -105,3 +105,19 @@ def test_web_and_session_share_outbound_bytes() -> None:
         "kokoro-web/apps/user/src/contract/control.ts"
     )
     assert _find("kokoro-session/src/contract/http.ts") == _find("kokoro-web/apps/user/src/contract/http.ts")
+
+
+def test_platform_and_session_share_runtime_contract_bytes() -> None:
+    spec = load("platform-runtime.yaml")
+    generated = emit_platform_runtime_ts(spec)
+    assert generated == _find("kokoro-platform/kokoro-platform-kit/src/contract/platform-runtime.ts")
+    assert generated == _find("kokoro-session/src/contract/platform-runtime.ts")
+    for symbol in (
+        "usageHoldRequestSchema",
+        "usageSettleRequestSchema",
+        "releaseCreditRequestSchema",
+        "resolveModelBindingsQuerySchema",
+        "listModelLabelsQuerySchema",
+        "modelTransportKindSchema",
+    ):
+        assert f"export const {symbol}" in generated

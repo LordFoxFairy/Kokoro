@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "approvedSpecCommit": "31ed730a41ec79130ca530d6acbd3f3d9b445485",
-  "archiveTag": "kokoro-monorepo-cutover-2026-07-26",
+  "archiveTag": "kokoro-wave1-foundation-2026-07-27",
   "sources": [
     {
       "id": "kokoro-agent",
@@ -16,27 +16,27 @@
       "id": "kokoro-platform",
       "path": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
-      "commit": "d30a16a782aca0fe131acbe8cbfbbd63fdf1b989",
-      "tree": "4093ce419d57089b5128ff1783a41fc6bc1733b8",
-      "archiveSha256": "d43330451610cfea414e9256dc640a09be2fcd727446ed99f01b000c885392c5",
-      "trackedFileCount": 525
+      "commit": "2531b32231d63f5848c6fc91f981c96a794eda64",
+      "tree": "e4ceda7d5b4000a0f07b9292419d1a25c2547a67",
+      "archiveSha256": "7c5a0ab9be9d06f1dd703139b4f657978da8d9307836cae01a6e1a88b141096c",
+      "trackedFileCount": 527
     },
     {
       "id": "kokoro-session",
       "path": "kokoro-session",
       "origin": "https://github.com/LordFoxFairy/kokoro-session.git",
-      "commit": "4f4aa3defc5cce79be58c447d7f053c6204ef48f",
-      "tree": "55ea2b5d6c50eb172e5eb1cedf6b09f7b7526bca",
-      "archiveSha256": "32d8d5fd8db3cdae8a03e6d375cb66483be67abaf0ebe7da9cab438518218d7a",
-      "trackedFileCount": 97
+      "commit": "4b975bf1d04dad61f9b456178628486511eccebc",
+      "tree": "15e2a47aef3bdcb67f300ac6d3679dcabcdd45fc",
+      "archiveSha256": "5ef0ed150a2779b11807d28f284d5ad338d3b104431a5f646c14e706603f8f83",
+      "trackedFileCount": 99
     },
     {
       "id": "kokoro-web",
       "path": "kokoro-web",
       "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
-      "commit": "f3936befb7ae4c219273ae9b7f4efb97cb6a1425",
-      "tree": "c88c4f29197fafb1158c561e1bfe8153d04e7fcc",
-      "archiveSha256": "202b99d74fd2720298d78df95b18f3372adf2f11c1a2751f712e8a84f0a9d047",
+      "commit": "b46aa862c58ef25f2edc9d0f5f6142a2299f638e",
+      "tree": "3eac9d4b85e4825740a9a018506a11746be0f61f",
+      "archiveSha256": "002a350179531115ef8783825a982e3bd44657dc3867ab39411ae7ec3357b98f",
       "trackedFileCount": 329
     }
   ]

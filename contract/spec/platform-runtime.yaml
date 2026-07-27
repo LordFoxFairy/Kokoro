@@ -1,0 +1,44 @@
+# Platform runtime APIs consumed by Session. Root contract is the cross-repository truth;
+# generated mirrors are committed in both independent repositories.
+enums:
+  model_transport_kind: [litellm, direct, internal]
+
+objects:
+  - name: UsageHoldRequest
+    fields:
+      - {name: namespace, type: string_nonempty}
+      - {name: featureKey, type: string_nonempty}
+      - {name: labelKey, type: string_nonempty, optional: true}
+      - {name: idempotencyKey, type: string_nonempty}
+      - {name: modelBindingId, type: string_nonempty, optional: true}
+      - {name: requestId, type: string_nonempty, optional: true}
+  - name: UsageSettleUsage
+    fields:
+      - {name: inputTokens, type: nonnegative_int}
+      - {name: outputTokens, type: nonnegative_int}
+  - name: UsageSettleRequest
+    fields:
+      - {name: holdId, type: string_nonempty}
+      - {name: usage, type: object:UsageSettleUsage}
+      - {name: idempotencyKey, type: string_nonempty}
+  - name: ReleaseCreditRequest
+    fields:
+      - {name: holdId, type: string_nonempty}
+      - {name: idempotencyKey, type: string_nonempty}
+  - name: ResolveModelBindingsQuery
+    fields:
+      - {name: featureKey, type: string_nonempty}
+      - {name: labelKey, type: string_nonempty, optional: true}
+      - {name: transportKind, type: enum:model_transport_kind, optional: true}
+  - name: ListModelLabelsQuery
+    fields:
+      - {name: featureKey, type: string_nonempty, optional: true}
+  - name: ResolvedModelBinding
+    fields:
+      - {name: id, type: string_nonempty}
+      - {name: transportKind, type: enum:model_transport_kind}
+      - {name: gatewayModelName, type: string_nonempty, nullable: true}
+  - name: ModelLabelCatalogItem
+    fields:
+      - {name: key, type: string_nonempty}
+      - {name: displayName, type: string_nonempty}
