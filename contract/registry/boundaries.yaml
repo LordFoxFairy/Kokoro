@@ -272,7 +272,7 @@
           "receipt": null,
           "retryClass": "after_delay",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "request-field",
           "transport": "http-json"
         }
       ],

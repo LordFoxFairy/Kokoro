@@ -26,6 +26,8 @@ const ASSERTION_IDS = [
   "session-platform:missing-caller-rejected",
   "session-platform:wrong-caller-rejected",
   "session-platform:session-caller-authorized",
+  "session-platform:catalogue-unscoped-rejected",
+  "session-platform:catalogue-scoped-authorized",
 ];
 
 function validateLease(value) {
@@ -307,6 +309,17 @@ async function run() {
     const authorized = await request(resolveUrl, { headers: platformRequestHeaders() });
     if (authorized.status !== 200) throw new Error("compatibility_session_caller_rejected");
     assertResolvedBinding(await authorized.json());
+
+    // The catalogue binds its Site the same way and must fail closed the same way: omitting
+    // siteId has to be rejected outright, not answered with every Site's labels. This ran
+    // unfiltered before -- the caller sent only a header and the provider ignored it.
+    const labelsUrl = new URL("/model-labels", modelBaseUrl);
+    labelsUrl.search = new URLSearchParams({ featureKey: "chat" });
+    const unscoped = await request(labelsUrl, { headers: platformRequestHeaders() });
+    if (unscoped.status !== 400) throw new Error("compatibility_catalogue_unscoped_not_rejected");
+    labelsUrl.search = new URLSearchParams({ siteId: SITE_ID, featureKey: "chat" });
+    const scoped = await request(labelsUrl, { headers: platformRequestHeaders() });
+    if (scoped.status !== 200) throw new Error("compatibility_catalogue_scoped_rejected");
 
     const sessionBaseUrl = `http://127.0.0.1:${sessionPort}`;
     const session = start(

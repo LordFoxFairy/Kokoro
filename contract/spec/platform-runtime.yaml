@@ -41,6 +41,10 @@ objects:
       - {name: transportKind, type: enum:model_transport_kind, optional: true}
   - name: ListModelLabelsQuery
     fields:
+      # Required for the same reason as resolution, and it must be the same value: the
+      # catalogue and the resolver have to agree about a Site's hidden labels. An
+      # unscoped catalogue offers labels the Site hid, which only fail once selected.
+      - {name: siteId, type: string_nonempty}
       - {name: featureKey, type: string_nonempty, optional: true}
   - name: ResolvedModelBinding
     fields:

@@ -121,6 +121,8 @@ test("emits the fixed closed machine result schema with bounded duration", () =>
       "session-platform:missing-caller-rejected",
       "session-platform:wrong-caller-rejected",
       "session-platform:session-caller-authorized",
+      "session-platform:catalogue-unscoped-rejected",
+      "session-platform:catalogue-scoped-authorized",
     ],
     durationMs: 179_999,
   });
