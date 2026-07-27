@@ -157,6 +157,13 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   `error TS2305: Module '"@kokoro/user"' has no exported member 'membershipCheckResponseSchema'`。
   顺带修了 round 12 门禁的一个糙边:它对任何包根导入都说"去 bind `<pkg>/contract`",
   但 model/payment/hub 没有 peer、根本没建那个入口——指向一个不存在的路径比说清真实缺口更糟,现已分开两种报错。
+- **(round 14)** 上次干净克隆重放之后又加了 4 个门禁,**从没在工作树之外验证过**。已按当前 4 个 pin
+  做完整重放:全部通过,且计数与工作树逐项一致(62 roots / 14 edges / 80 operations / 226 / 379 /
+  101 python / 192 node)。**各门禁真正的前置条件此前没有任何地方写过**,已补进证据文档与两个 INDEX:
+  6 个 node 门禁 + 192 个 node 测试**零安装**;4 个 python 门禁只要 `uv sync --locked`(约 2s);
+  buf 门禁要 contract 依赖(pnpm 11 首次跑脚本时自动装);`generate-bom.mjs --check` 要兼容性门产出的
+  证据文件,缺了**退出 1**(fail-closed,已实测);只有 pinned compatibility 门需要 Docker,裸克隆跑不了。
+  python 那步顺带在**全新环境**里复验了 lockfile 修复:从 PyPI 解析、无镜像介入。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。

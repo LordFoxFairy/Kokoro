@@ -903,6 +903,42 @@ Writing this exposed a rough edge in round 12's gate. It told any root importer 
 and so never needed one. Directing someone to an import that does not resolve is a worse error than
 naming the real gap, so the gate now distinguishes the two and says which is which.
 
+## Round 14 — replaying every gate from a clean clone
+
+Four gates were added after the last clean-clone replay: `check-site-scope-planes.mjs`,
+`check-service-contract-imports.mjs`, `check_admin_browser_schemas.py`, and the unused-allowance rule
+inside `check-dependencies.ts`. Nothing had verified any of them outside the working tree they were
+written in. A gate that quietly reads local `node_modules`, a generated Prisma client or an untracked
+file passes where it was written and fails — or worse, reads clean for the wrong reason — anywhere
+else.
+
+The root was cloned recursively at `fd5193f`, checked out to the exact four pins
+(agent `5c118e5`, platform `7b288a6`, session `49372a2`, web `ed14fa9`), and every gate CI runs was
+executed against it. All pass, and every count matches this working tree exactly: 62 roots, 14
+internal package edges, 80 registered operations, 226 and 379 scanned sources, 101 Python tests, 192
+Node tests.
+
+What each gate actually needs, which was not written down anywhere before:
+
+| Gate | Prerequisite |
+|---|---|
+| `check-index-coverage.ts`, `check-dependencies.ts`, `check-site-scope-planes.mjs`, `check-service-contract-imports.mjs`, `check-boundary-registry.mjs`, `verify-federated-repositories.mjs` | none — Node standard library against the committed tree |
+| all 192 `node --test` suites | none |
+| the four Python gates and their 101 tests | `uv sync --locked`, ~2s |
+| `buf:format:check`, `buf:lint` | contract dev dependencies; pnpm 11 installs them on first script run |
+| `generate-bom.mjs --check` | the runtime evidence file the compatibility gate writes; absent, it exits 1 |
+| `run-pinned-compatibility.mjs` | Docker infrastructure; not runnable in a bare clone |
+
+The Python sync incidentally re-verified the lockfile work from a genuinely fresh environment: it
+resolved from PyPI with no mirror involvement, which is the condition that first broke agent CI.
+
+Three measurement traps caught along the way, all mine rather than the repository's. Two loops read
+`rc=$?` after a pipe, so they reported `tail`'s status instead of the gate's — the same defect class
+as the unreachable failure branches found in earlier rounds, and the reason the BOM check briefly
+looked like it exited 0 on missing evidence when it exits 1. And a `for` loop passed an unquoted
+variable to `uv run`, which zsh does not word-split, so five gates appeared to fail to spawn. None of
+these were repository defects; all three were re-run correctly before anything was concluded.
+
 ## Verification
 
 All against real services, with no silent skips:

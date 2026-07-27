@@ -102,3 +102,8 @@ Run `node --test scripts/architecture/*.test.mjs`, then `node scripts/architectu
 `node scripts/architecture/check-dependencies.ts`, `node scripts/architecture/check-site-scope-planes.mjs`,
 `node scripts/architecture/check-service-contract-imports.mjs`,
 and `uv run --locked python scripts/architecture/check_ga_isolation.py`.
+
+Every check here except the Python one needs no install at all: they read the committed tree with the
+Node standard library, and were replayed from a bare recursive clone to confirm it. The Python gate
+needs `uv sync --locked` first. Read the exit code directly rather than through a pipe — `cmd | tail`
+reports `tail`'s status, which turns a failing gate into a passing one.

@@ -130,3 +130,7 @@ then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi
 scripts/contract/test_check_admin_browser_schemas.py -q`,
 `uv run --locked python scripts/contract/check_admin_openapi.py` and
 `uv run --locked python scripts/contract/check_admin_browser_schemas.py`.
+
+The Node checks need no install; the Python ones need `uv sync --locked` first. Both were replayed
+from a bare recursive clone at the pinned state. Read exit codes directly rather than through a pipe,
+which reports the last command's status instead of the gate's.
