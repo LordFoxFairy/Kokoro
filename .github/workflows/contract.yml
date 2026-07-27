@@ -67,6 +67,11 @@ jobs:
           else
             echo 'Buf breaking baseline bootstrap: origin/main has no contract/proto files yet.'
           fi
+      - name: architecture governance gates
+        run: |
+          node --test scripts/architecture/*.test.mjs
+          node scripts/architecture/check-index-coverage.ts
+          node scripts/architecture/check-dependencies.ts
       - name: repository governance tests
         run: node --test scripts/repository/*.test.mjs scripts/compatibility/*.test.mjs scripts/foundation/check-evidence.test.mjs
       - name: Python compatibility adapter tests
