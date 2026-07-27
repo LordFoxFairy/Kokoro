@@ -1,175 +1,364 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://kokoro.local/schemas/boundary-registry-v1.json",
-  "title": "Kokoro cross-repository boundary registry",
-  "description": "Wave T0 contract foundation, stored as JSON-compatible YAML at contract/registry/boundaries.yaml. Every cross-repository boundary declares its owner, callers, audience, protocol, deadline, retry class, receipt and failure owner, and freezes exactly one transport per operation. scripts/contract/check-boundary-registry.mjs enforces this schema plus the source-parity, transport-freeze and isolation-axis rules, and fails if the enums below drift from contract/proto/kokoro/common/v1/error.proto.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["schemaVersion", "owners", "boundaries"],
-  "properties": {
-    "schemaVersion": { "const": 1 },
-    "owners": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-    "boundaries": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/boundary" } }
-  },
   "$defs": {
-    "scope": {
-      "description": "site = Platform business isolation. platform = cross-Site platform plane. namespace = GA runtime isolation.",
-      "enum": ["namespace", "platform", "site"]
-    },
-    "retryClass": {
-      "description": "Mirrors kokoro.common.v1.RetryClass minus its proto3 zero sentinel. The gate re-derives this list from the proto and fails on drift.",
-      "enum": ["after_delay", "never", "reconcile_receipt", "same_identity"]
-    },
-    "receiptKind": {
-      "description": "How a caller re-reads the authoritative outcome of an effectful operation.",
-      "enum": ["command-receipt", "durable-event", "http-receipt-body", "idempotency-key", "state-read"]
-    },
-    "siteBinding": {
-      "description": "How the operation binds its Site. request-field = a first-class field of the request message, which the gate verifies against the real contract source. context-header = carried out of band and re-derived per route, which the spec (§6.3) forbids as a long-term answer, so the gate counts it as migration debt. not-applicable = the boundary does not isolate by Site.",
-      "enum": ["context-header", "not-applicable", "request-field"]
-    },
-    "sourceStatus": {
-      "description": "Whether this repository holds a contract source for the boundary. machine-readable = sources is non-empty and the gate enforces exact two-way parity between declared operations and that source. declared-only = no contract source exists here yet, so no orphan check can run; the gate counts these boundaries on every successful run so the blind spot stays visible instead of passing as covered.",
-      "enum": ["declared-only", "machine-readable"]
-    },
-    "party": {
-      "type": "object",
+    "boundary": {
       "additionalProperties": false,
-      "required": ["repository", "boundary"],
       "properties": {
-        "repository": { "type": "string", "minLength": 1 },
-        "boundary": {
-          "description": "An exact root id from config/architecture/index-roots.yaml with kind=boundary, nested inside repository.",
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9.-]*$"
-        }
-      }
-    },
-    "source": {
-      "description": "A machine-readable contract source. The set of operations it declares must equal the registered operation set exactly, in both directions.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["kind", "path", "select"],
-      "properties": {
-        "kind": { "enum": ["proto", "spec-yaml"] },
-        "path": { "type": "string", "minLength": 1 },
-        "select": {
+        "audience": {
+          "description": "Who ultimately reaches this boundary. Two boundaries must not offer one consumer the same operation over different transports.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "consumers": {
+          "items": {
+            "$ref": "#/$defs/party"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "deadlineMs": {
+          "description": "null means no deadline is declared in code yet; it is a recorded gap, not an implied default.",
           "oneOf": [
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["service"],
-              "properties": { "service": { "type": "string", "minLength": 1 } }
+              "minimum": 1,
+              "type": "integer"
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["section", "member"],
-              "properties": {
-                "section": { "type": "string", "minLength": 1 },
-                "member": { "enum": ["field", "mapping-key", "scalar"] },
-                "field": { "type": "string", "minLength": 1 },
-                "match": { "type": "string", "minLength": 1 },
-                "case": { "enum": ["snake"] }
-              }
+              "type": "null"
             }
           ]
+        },
+        "failureOwner": {
+          "description": "Repository paged when this boundary breaks.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "id": {
+          "description": "Must match a contract id in config/repository/compatibility-matrix.json.",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "type": "string"
+        },
+        "lifecycle": {
+          "description": "active: a provider implements this boundary and it is listed in the compatibility matrix. contract-only: the shape is published but no provider exists yet, so it is deliberately absent from the matrix that drives the runtime gate.",
+          "enum": [
+            "active",
+            "contract-only"
+          ],
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/operation"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "protocol": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "provider": {
+          "$ref": "#/$defs/party"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "sourceStatus": {
+          "$ref": "#/$defs/sourceStatus"
+        },
+        "sources": {
+          "description": "Must be non-empty when sourceStatus is machine-readable, and empty when it is declared-only.",
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "type": "array"
+        },
+        "transportSource": {
+          "description": "When set, every declared transport must exist as a real channel in this source.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/source"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transports": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "trustPlane": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "version": {
+          "minimum": 1,
+          "type": "integer"
         }
-      }
+      },
+      "required": [
+        "audience",
+        "consumers",
+        "deadlineMs",
+        "failureOwner",
+        "id",
+        "lifecycle",
+        "operations",
+        "protocol",
+        "provider",
+        "scope",
+        "sourceStatus",
+        "sources",
+        "transportSource",
+        "transports",
+        "trustPlane",
+        "version"
+      ],
+      "type": "object"
     },
     "operation": {
-      "type": "object",
       "additionalProperties": false,
-      "required": ["id", "transport", "effect", "retryClass", "scope", "siteBinding", "receipt"],
+      "if": {
+        "properties": {
+          "effect": {
+            "const": true
+          }
+        }
+      },
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "transport": {
-          "description": "Must appear in the owning boundary's transports list. One operation, one transport, forever.",
-          "type": "string",
-          "minLength": 1
+        "effect": {
+          "type": "boolean"
         },
-        "effect": { "type": "boolean" },
-        "retryClass": { "$ref": "#/$defs/retryClass" },
-        "scope": { "$ref": "#/$defs/scope" },
-        "siteBinding": { "$ref": "#/$defs/siteBinding" },
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
         "receipt": {
           "description": "Required whenever effect is true; null otherwise.",
           "oneOf": [
             {
-              "type": "object",
               "additionalProperties": false,
-              "required": ["kind", "ref"],
               "properties": {
-                "kind": { "$ref": "#/$defs/receiptKind" },
-                "ref": { "type": "string", "minLength": 1 }
-              }
+                "kind": {
+                  "$ref": "#/$defs/receiptKind"
+                },
+                "ref": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "ref"
+              ],
+              "type": "object"
             },
-            { "type": "null" }
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retryClass": {
+          "$ref": "#/$defs/retryClass"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "siteBinding": {
+          "$ref": "#/$defs/siteBinding"
+        },
+        "transport": {
+          "description": "Must appear in the owning boundary's transports list. One operation, one transport, forever.",
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "transport",
+        "effect",
+        "retryClass",
+        "scope",
+        "siteBinding",
+        "receipt"
+      ],
+      "then": {
+        "properties": {
+          "receipt": {
+            "type": "object"
+          }
+        }
+      },
+      "type": "object"
+    },
+    "party": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "description": "An exact root id from config/architecture/index-roots.yaml with kind=boundary, nested inside repository.",
+          "pattern": "^[a-z0-9][a-z0-9.-]*$",
+          "type": "string"
+        },
+        "repository": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "boundary"
+      ],
+      "type": "object"
+    },
+    "receiptKind": {
+      "description": "How a caller re-reads the authoritative outcome of an effectful operation.",
+      "enum": [
+        "command-receipt",
+        "durable-event",
+        "http-receipt-body",
+        "idempotency-key",
+        "state-read"
+      ]
+    },
+    "retryClass": {
+      "description": "Mirrors kokoro.common.v1.RetryClass minus its proto3 zero sentinel. The gate re-derives this list from the proto and fails on drift.",
+      "enum": [
+        "after_delay",
+        "never",
+        "reconcile_receipt",
+        "same_identity"
+      ]
+    },
+    "scope": {
+      "description": "site = Platform business isolation. platform = cross-Site platform plane. namespace = GA runtime isolation.",
+      "enum": [
+        "namespace",
+        "platform",
+        "site"
+      ]
+    },
+    "siteBinding": {
+      "description": "How the operation binds its Site. request-field = a first-class field of the request message, which the gate verifies against the real contract source. context-header = carried out of band and re-derived per route, which the spec (§6.3) forbids as a long-term answer, so the gate counts it as migration debt. not-applicable = the boundary does not isolate by Site.",
+      "enum": [
+        "context-header",
+        "not-applicable",
+        "request-field"
+      ]
+    },
+    "source": {
+      "additionalProperties": false,
+      "description": "A machine-readable contract source. The set of operations it declares must equal the registered operation set exactly, in both directions.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "proto",
+            "spec-yaml"
+          ]
+        },
+        "path": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "select": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "service": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "service"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "case": {
+                  "enum": [
+                    "snake"
+                  ]
+                },
+                "field": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "match": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "member": {
+                  "enum": [
+                    "field",
+                    "mapping-key",
+                    "scalar"
+                  ]
+                },
+                "section": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "section",
+                "member"
+              ],
+              "type": "object"
+            }
           ]
         }
       },
-      "if": { "properties": { "effect": { "const": true } } },
-      "then": { "properties": { "receipt": { "type": "object" } } }
-    },
-    "boundary": {
-      "type": "object",
-      "additionalProperties": false,
       "required": [
-        "id",
-        "version",
-        "protocol",
-        "trustPlane",
-        "scope",
-        "audience",
-        "provider",
-        "consumers",
-        "failureOwner",
-        "deadlineMs",
-        "sourceStatus",
-        "sources",
-        "transports",
-        "transportSource",
-        "operations"
+        "kind",
+        "path",
+        "select"
       ],
-      "properties": {
-        "id": {
-          "description": "Must match a contract id in config/repository/compatibility-matrix.json.",
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
-        },
-        "version": { "type": "integer", "minimum": 1 },
-        "protocol": { "type": "string", "minLength": 1 },
-        "trustPlane": { "type": "string", "minLength": 1 },
-        "scope": { "$ref": "#/$defs/scope" },
-        "audience": {
-          "description": "Who ultimately reaches this boundary. Two boundaries must not offer one consumer the same operation over different transports.",
-          "type": "string",
-          "minLength": 1
-        },
-        "provider": { "$ref": "#/$defs/party" },
-        "consumers": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/party" } },
-        "failureOwner": {
-          "description": "Repository paged when this boundary breaks.",
-          "type": "string",
-          "minLength": 1
-        },
-        "deadlineMs": {
-          "description": "null means no deadline is declared in code yet; it is a recorded gap, not an implied default.",
-          "oneOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }]
-        },
-        "sourceStatus": { "$ref": "#/$defs/sourceStatus" },
-        "sources": {
-          "description": "Must be non-empty when sourceStatus is machine-readable, and empty when it is declared-only.",
-          "type": "array",
-          "items": { "$ref": "#/$defs/source" }
-        },
-        "transports": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "transportSource": {
-          "description": "When set, every declared transport must exist as a real channel in this source.",
-          "oneOf": [{ "$ref": "#/$defs/source" }, { "type": "null" }]
-        },
-        "operations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/operation" } }
-      }
+      "type": "object"
+    },
+    "sourceStatus": {
+      "description": "Whether this repository holds a contract source for the boundary. machine-readable = sources is non-empty and the gate enforces exact two-way parity between declared operations and that source. declared-only = no contract source exists here yet, so no orphan check can run; the gate counts these boundaries on every successful run so the blind spot stays visible instead of passing as covered.",
+      "enum": [
+        "declared-only",
+        "machine-readable"
+      ]
     }
-  }
+  },
+  "$id": "https://kokoro.local/schemas/boundary-registry-v1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Wave T0 contract foundation, stored as JSON-compatible YAML at contract/registry/boundaries.yaml. Every cross-repository boundary declares its owner, callers, audience, protocol, deadline, retry class, receipt and failure owner, and freezes exactly one transport per operation. scripts/contract/check-boundary-registry.mjs enforces this schema plus the source-parity, transport-freeze and isolation-axis rules, and fails if the enums below drift from contract/proto/kokoro/common/v1/error.proto.",
+  "properties": {
+    "boundaries": {
+      "items": {
+        "$ref": "#/$defs/boundary"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "owners": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "schemaVersion": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "owners",
+    "boundaries"
+  ],
+  "title": "Kokoro cross-repository boundary registry",
+  "type": "object"
 }

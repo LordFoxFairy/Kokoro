@@ -29,6 +29,7 @@ const SITE_BINDINGS = ["request-field", "context-header", "not-applicable"];
 // Whether this repository actually holds a contract source for the boundary. declared-only means
 // the orphan check cannot run at all, so the boundary is counted in the success line instead of
 // being waved through as though it were covered.
+const LIFECYCLES = ["active", "contract-only"];
 const SOURCE_STATUSES = ["machine-readable", "declared-only"];
 const RECEIPT_KINDS = [
   "command-receipt",
@@ -44,6 +45,7 @@ const BOUNDARY_KEYS = [
   "deadlineMs",
   "failureOwner",
   "id",
+  "lifecycle",
   "operations",
   "protocol",
   "provider",
@@ -483,6 +485,9 @@ function validateShape(registry, retryClasses, errors) {
     if (!Array.isArray(boundary.transports) || boundary.transports.length === 0) {
       errors.push(`boundary_registry_shape: boundary transports: ${label}`);
     }
+    if (!LIFECYCLES.includes(boundary.lifecycle)) {
+      errors.push(`boundary_registry_shape: boundary lifecycle: ${label}: ${String(boundary.lifecycle)}`);
+    }
     if (!SOURCE_STATUSES.includes(boundary.sourceStatus)) {
       errors.push(`boundary_registry_shape: boundary sourceStatus: ${label}: ${String(boundary.sourceStatus)}`);
     }
@@ -655,7 +660,13 @@ function checkCompatibilityMatrix(registry, matrix, errors) {
     errors.push("boundary_registry_matrix_drift: compatibility matrix declares no contracts");
     return;
   }
-  const registryKeys = sortedSet(registry.boundaries.map((boundary) => `${boundary.id}@v${boundary.version}`));
+  // A contract-only boundary has a published shape but no provider yet, so it is
+  // deliberately absent from the compatibility matrix: the matrix drives the
+  // runtime gate, and listing an unimplemented protocol there would assert a
+  // capability that does not exist.
+  const live = registry.boundaries.filter((boundary) => boundary.lifecycle !== "contract-only");
+  const declaredOnly = registry.boundaries.filter((boundary) => boundary.lifecycle === "contract-only");
+  const registryKeys = sortedSet(live.map((boundary) => `${boundary.id}@v${boundary.version}`));
   const matrixKeys = sortedSet(contracts.map((contract) => `${contract.id}@v${contract.version}`));
   const matrixSet = new Set(matrixKeys);
   const registrySet = new Set(registryKeys);
@@ -667,7 +678,12 @@ function checkCompatibilityMatrix(registry, matrix, errors) {
   }
 
   const byKey = new Map(contracts.map((contract) => [`${contract.id}@v${contract.version}`, contract]));
-  for (const boundary of registry.boundaries) {
+  for (const boundary of declaredOnly) {
+    if (byKey.has(`${boundary.id}@v${boundary.version}`)) {
+      errors.push(`boundary_registry_matrix_drift: contract-only boundary in matrix: ${boundary.id}`);
+    }
+  }
+  for (const boundary of live) {
     const contract = byKey.get(`${boundary.id}@v${boundary.version}`);
     if (!contract) continue;
     const providers = sortedSet([boundary.provider?.repository]);
@@ -869,13 +885,18 @@ export function checkBoundaryRegistry(options) {
     operations,
     headerBound,
     declaredOnly,
+    requestField: registry.boundaries
+      .flatMap((boundary) => boundary.operations ?? [])
+      .filter((operation) => operation?.siteBinding === "request-field").length,
+    contractOnly: registry.boundaries.filter((boundary) => boundary.lifecycle === "contract-only").length,
   };
 }
 
 function main() {
   try {
     const options = parseArguments(process.argv.slice(2));
-    const { errors, boundaries, operations, headerBound, declaredOnly } = checkBoundaryRegistry(options);
+    const { errors, boundaries, operations, headerBound, declaredOnly, requestField, contractOnly } =
+      checkBoundaryRegistry(options);
     if (errors.length > 0) {
       process.stderr.write(`${errors.join("\n")}\n`);
       process.exitCode = 1;
@@ -885,7 +906,8 @@ function main() {
     process.stdout.write(
       `boundary_registry_ok: ${boundaries} boundaries, ${operations} operations, ` +
         `${headerBound} header-bound site scopes (migration debt), ` +
-        `${declaredOnly} declared-only ${noun} (no machine-readable source)\n`,
+        `${declaredOnly} declared-only ${noun} (no machine-readable source), ` +
+        `${requestField} request-field site scopes, ${contractOnly} contract-only (published, no provider)\n`,
     );
   } catch (error) {
     const code = error instanceof BoundaryRegistryError ? error.message : `boundary_registry_check_failed: ${error.message}`;

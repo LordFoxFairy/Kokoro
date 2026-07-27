@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package kokoro.platform.admission.v1;
+
+import "buf/validate/validate.proto";
+import "kokoro/common/v1/receipt.proto";
+
+// Platform Admission decides whether a run may start and records how it ended.
+//
+// Session declares this shape today in `kokoro-session/src/platform/admission-port.ts`
+// but has no remote provider, so every call resolves through a legacy adapter that
+// answers outcome_unknown or not_found. This file is the versioned contract that
+// provider will implement.
+//
+// The one deliberate difference from the TypeScript port: `site_id` is a required
+// field of every request message rather than a hop-level header. Site is the
+// Platform business isolation boundary, and the transport spec forbids a caller
+// self-asserting it through bare metadata, so the owner must receive it as signed,
+// persistable payload it can enforce at the effect point.
+//
+// `namespace` stays inside the effect as the GA runtime isolation key. The two keys
+// are not interchangeable: GA consumes only the opaque namespace and never learns
+// site, user, owner or workspace identity.
+service AdmissionService {
+  // Decide whether a run may start. Effectful: consumes budget and reserves capability.
+  rpc PrepareRun(PrepareRunRequest) returns (PrepareRunResponse) {}
+
+  // Record how a prepared run ended. Effectful: settles what PrepareRun reserved.
+  rpc FinalizeRun(FinalizeRunRequest) returns (FinalizeRunResponse) {}
+
+  // Recover the authoritative outcome of a command whose response was lost.
+  // A caller that timed out queries the same command identity; it never issues a
+  // new one, because a timeout says nothing about whether the owner committed.
+  rpc GetCommandReceipt(GetCommandReceiptRequest) returns (GetCommandReceiptResponse) {}
+}
+
+// Which command a receipt belongs to. Receipts are per operation, so a prepare
+// receipt can never be mistaken for a finalize receipt on the same command id.
+enum AdmissionOperation {
+  ADMISSION_OPERATION_UNSPECIFIED = 0;
+  ADMISSION_OPERATION_PREPARE_RUN = 1;
+  ADMISSION_OPERATION_FINALIZE_RUN = 2;
+}
+
+// Outcome of PrepareRun.
+//
+// PENDING and OUTCOME_UNKNOWN are distinct on purpose. PENDING means the owner
+// durably accepted the intent and is still working. OUTCOME_UNKNOWN means the
+// caller does not know whether the owner committed, which is recoverable only by
+// querying the same command identity.
+enum PrepareRunOutcome {
+  PREPARE_RUN_OUTCOME_UNSPECIFIED = 0;
+  PREPARE_RUN_OUTCOME_ACCEPTED = 1;
+  PREPARE_RUN_OUTCOME_DENIED = 2;
+  PREPARE_RUN_OUTCOME_PENDING = 3;
+  PREPARE_RUN_OUTCOME_OUTCOME_UNKNOWN = 4;
+  // Only valid on a receipt lookup: no such command was ever recorded.
+  PREPARE_RUN_OUTCOME_NOT_FOUND = 5;
+}
+
+enum FinalizeRunOutcome {
+  FINALIZE_RUN_OUTCOME_UNSPECIFIED = 0;
+  FINALIZE_RUN_OUTCOME_COMMITTED = 1;
+  FINALIZE_RUN_OUTCOME_PENDING = 2;
+  FINALIZE_RUN_OUTCOME_OUTCOME_UNKNOWN = 3;
+  // Only valid on a receipt lookup: no such command was ever recorded.
+  FINALIZE_RUN_OUTCOME_NOT_FOUND = 4;
+}
+
+message PrepareRunEffect {
+  // Opaque GA runtime isolation key. Carries no site, user or workspace meaning
+  // and must not be parsed into one.
+  string namespace = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+
+  // Authorization facts the caller already resolved, as safe references rather
+  // than tokens. The owner re-checks them; it does not trust them as granted.
+  repeated string authorization_refs = 2 [(buf.validate.field).repeated = {
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message PrepareRunRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+
+  // Platform business isolation boundary. Required, and enforced by the owner at
+  // the effect point; a caller cannot widen its own scope by omitting it.
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+
+  PrepareRunEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PrepareRunResponse {
+  PrepareRunOutcome outcome = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+
+  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
+
+  // Present when the outcome is ACCEPTED: the handle FinalizeRun must quote.
+  optional string manifest_ref = 3 [(buf.validate.field).string.max_len = 256];
+
+  // Present when the outcome is DENIED: a safe, non-disclosing reason code.
+  optional string denied_reason = 4 [(buf.validate.field).string.max_len = 191];
+}
+
+message FinalizeRunEffect {
+  // The manifest handle PrepareRun issued. Ties settlement to what was reserved.
+  string manifest_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+
+  // Reference to the terminal outcome being settled.
+  string outcome_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message FinalizeRunRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+
+  FinalizeRunEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message FinalizeRunResponse {
+  FinalizeRunOutcome outcome = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+
+  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
+}
+
+message GetCommandReceiptRequest {
+  string command_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+
+  kokoro.common.v1.CommandDigestAlgorithm digest_algorithm = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+
+  // Same digest the original command carried. A different digest under the same
+  // command id is a conflict, not a match.
+  string request_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+
+  AdmissionOperation operation = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+
+  // Receipts are Site-scoped. Looking one up from another Site is not-found
+  // rather than forbidden, so existence is never disclosed across the boundary.
+  string site_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetCommandReceiptResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+
+  oneof result {
+    PrepareRunResponse prepare_run = 2;
+    FinalizeRunResponse finalize_run = 3;
+  }
+}

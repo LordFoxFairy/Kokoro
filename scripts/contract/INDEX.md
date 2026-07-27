@@ -70,10 +70,18 @@ Two blind spots are recorded rather than hidden, and both appear in every succes
 contract source for it, so its operations get no orphan check at all. It is the one boundary that can drift
 without the gate noticing, which is exactly why the count is printed.
 
-No operation binds its Site as a `request-field` yet. All 46 `site`-scoped operations are `context-header`:
-`platform-runtime` sends `x-kokoro-site-id` derived per route, and `session-browser` is pinned to one Site by
-the `KOKORO_SITE_ID` process constant rather than by anything on the wire. Both are Wave T3 debt, not settled
-design, and both counts must shrink rather than grow.
+Site binding is split three ways and every count is printed. 46 `site`-scoped operations remain
+`context-header`: `platform-runtime` sends `x-kokoro-site-id` derived per route, and `session-browser` is
+pinned to one Site by the `KOKORO_SITE_ID` process constant rather than by anything on the wire. That number
+is Wave T3 debt and must shrink rather than grow. Against it, 3 operations now bind Site as a
+`request-field`, all on `platform-admission`, and the gate proves that claim by finding `site_id` in the
+actual proto request message rather than trusting the declaration.
+
+`platform-admission` is the first `contract-only` boundary: its shape is published in
+`contract/proto/kokoro/platform/admission/v1/admission.proto`, but no provider implements it, so it is
+deliberately absent from the compatibility matrix. The matrix drives the runtime gate, and listing an
+unimplemented protocol there would assert a capability that does not exist. Registering it as `active`
+before a provider ships fails.
 
 The `request-field` proof is per request message for proto sources but per file for spec YAML sources,
 because a block-mapping section such as `endpoints` declares no fields of its own. Every `deadlineMs` is

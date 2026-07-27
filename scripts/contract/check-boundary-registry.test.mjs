@@ -116,6 +116,7 @@ function httpBoundary(overrides = {}) {
     id: "fixture-http",
     version: 1,
     protocol: "http-json",
+    lifecycle: "active",
     trustPlane: "site-bff",
     scope: "site",
     audience: "browser-user",
@@ -205,7 +206,7 @@ test("accepts a registry whose operations match their contract source", async ()
   assert.equal(
     result.stdout,
     "boundary_registry_ok: 1 boundaries, 2 operations, 2 header-bound site scopes (migration debt), " +
-      "0 declared-only boundaries (no machine-readable source)\n",
+      "0 declared-only boundaries (no machine-readable source), 0 request-field site scopes, 0 contract-only (published, no provider)\n",
   );
 });
 
@@ -215,7 +216,7 @@ test("the shipped registry matches the shipped contract sources", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.match(
     result.stdout,
-    /^boundary_registry_ok: \d+ boundaries, \d+ operations, \d+ header-bound site scopes \(migration debt\), \d+ declared-only boundar(?:y|ies) \(no machine-readable source\)\n$/u,
+    /^boundary_registry_ok: \d+ boundaries, \d+ operations, \d+ header-bound site scopes \(migration debt\), \d+ declared-only boundar(?:y|ies) \(no machine-readable source\), \d+ request-field site scopes, \d+ contract-only \(published, no provider\)\n$/u,
   );
 });
 
@@ -307,6 +308,7 @@ function protoBoundary(overrides = {}) {
     id: "fixture-proto",
     version: 1,
     protocol: "connect-rpc",
+    lifecycle: "active",
     trustPlane: "internal-control",
     scope: "platform",
     audience: "operator",
@@ -710,4 +712,26 @@ test("rejects unknown arguments", () => {
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /boundary_registry_arguments_invalid/u);
+});
+
+test("rejects a boundary with no lifecycle", async () => {
+  const boundary = httpBoundary();
+  delete boundary.lifecycle;
+  await expectFailure({ boundaries: [boundary] }, "boundary_registry_shape: boundary keys");
+});
+
+test("rejects an unknown lifecycle", async () => {
+  await expectFailure(
+    { boundaries: [httpBoundary({ lifecycle: "someday" })] },
+    "boundary_registry_shape: boundary lifecycle: fixture-http@v1: someday",
+  );
+});
+
+test("a contract-only boundary must stay out of the compatibility matrix", async () => {
+  // The matrix drives the runtime gate, so listing a protocol with no provider
+  // there would assert a capability that does not exist.
+  await expectFailure(
+    { boundaries: [httpBoundary({ lifecycle: "contract-only" })] },
+    "boundary_registry_matrix_drift: contract-only boundary in matrix: fixture-http",
+  );
 });
