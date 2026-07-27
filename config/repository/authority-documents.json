@@ -1,0 +1,15 @@
+{
+  "repositoryTopology": "federated-submodules-v1",
+  "documents": [
+    "README.md",
+    "docs/CODEBASE_MAP.md",
+    "docs/CURRENT.md",
+    "docs/kokoro-handbook/decisions/ADR-007-kokoro-platform-submodule.md",
+    "docs/kokoro-handbook/technical/01-repository-map.md",
+    "docs/superpowers/plans/2026-07-25-kokoro-production-delivery-program.md",
+    "docs/superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md",
+    "docs/superpowers/plans/2026-07-27-federated-repository-governance-correction-implementation-plan.md",
+    "docs/superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md",
+    "docs/superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md"
+  ]
+}

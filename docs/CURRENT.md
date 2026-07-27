@@ -1,5 +1,7 @@
 # 当前活跃文档白名单
 
+repositoryTopology: federated-submodules-v1
+
 状态：2026-07-25
 用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
 
@@ -17,7 +19,7 @@
 
 1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
 2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)
-3. [Wave 0 Repository/Toolchain/Contract Foundation v1.2](superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)
+3. [Wave 0 Federated Repository/Contract/Infra Foundation v2.0](superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)
 4. [产品需求治理、Launch Profile 与 PRD Registry](superpowers/specs/2026-07-25-product-requirements-governance-and-prd-registry-design.md)
 5. [Model Control、Model Gateway 与 LiteLLM 目标架构](superpowers/specs/2026-07-25-model-control-gateway-litellm-architecture-design.md)
 6. [Platform/Web/Session P0 Contract Closure](superpowers/specs/2026-07-25-platform-web-session-p0-contract-closure-design.md)
@@ -61,7 +63,8 @@
 
 ## 当前实施计划
 
-1. [Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
+1. [Federated Repository Governance Correction Implementation Plan](superpowers/plans/2026-07-27-federated-repository-governance-correction-implementation-plan.md)
+2. [ADR-007 Governed Submodules](kokoro-handbook/decisions/ADR-007-kokoro-platform-submodule.md)
 
 ## 当前技术主线
 

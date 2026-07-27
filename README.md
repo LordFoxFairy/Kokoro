@@ -1,7 +1,10 @@
 # Kokoro（こころ）
 
+repositoryTopology: federated-submodules-v1
+
 一个有人格的通用 AI agent。主战场是把「想法」一起做成可分享的产物，气质柔、温、内观。
-当前真实在跑的是**三仓 stream 聊天系统**：对话 + agent 活动流（计划 / 工具 / 子代理 / 思考），边生成边流式呈现，可中断可续传。
+当前由根 superproject 精确 pin 四个独立仓：Platform、Agent、Session、Web。它们独立构建、部署、发布和回滚，
+通过版本化 HTTP/RPC、SSE 与异步事件协议协作。
 
 > 这份 README 面向新贡献者。稳定总设计先看 [`docs/kokoro-handbook/`](docs/kokoro-handbook/)；
 > 仓库与文档归属看 [`docs/CODEBASE_MAP.md`](docs/CODEBASE_MAP.md)；过程方案看
@@ -9,7 +12,7 @@
 
 ## 架构一图
 
-三层，经 **Redis Stream + Mongo history + SSE** 协议耦合，各自独立部署：
+核心运行链路经版本化远程协议耦合，各自独立部署：
 
 ```
 kokoro-agent ──redis run-events──▶ kokoro-session ──Mongo history + SSE──▶ kokoro-web
@@ -19,6 +22,7 @@ kokoro-agent ──redis run-events──▶ kokoro-session ──Mongo history 
 ```
 
 - **[kokoro-agent](kokoro-agent/)** — DeepAgents/LangChain worker，产出原始执行事件（text/tool/todo/subagent/thinking/run.*），写 Redis。
+- **[kokoro-platform](kokoro-platform/)** — Site、Identity、Model、Credit、Payment、Capability 等业务事实与内部 RPC。
 - **[kokoro-session](kokoro-session/)** — 消费 → 归一化 AGUI 信封 → Mongo 历史真源 + Redis live tail → SSE fan-out + `Last-Event-ID` 续订。不执行 agent，不渲染。
 - **[kokoro-web](kokoro-web/)** — Next.js 聊天壳，消费 SSE，折叠成有序 thread 并渲染。
 
@@ -65,7 +69,7 @@ npm run dev
 | 契约 | `python3 contract/verify.py && python3 contract/generate.py --check` |
 | SSE 回环 e2e | `scripts/sse-loopback-gate.sh`（需 redis + session + 假模型 worker） |
 
-CI：四仓各有 `.github/workflows`（agent/session/web 各自门禁 + root 跨仓契约）。
+CI 目标：四个子仓各自按本仓 lock 执行门禁；根仓只验证当前四个 gitlink 的 contract、兼容组合和 BOM。
 
 ## 可观测性
 

@@ -1,5 +1,7 @@
 # Federated Repository Governance Correction Implementation Plan
 
+repositoryTopology: federated-submodules-v1
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make Kokoro a reproducible superproject whose four permanently independent service repositories can be built, deployed, scaled, released, and rolled back independently while interoperating through versioned remote protocols.

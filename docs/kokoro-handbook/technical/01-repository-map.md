@@ -1,5 +1,7 @@
 # 仓库地图
 
+repositoryTopology: federated-submodules-v1
+
 ## 主仓 Kokoro
 
 定位：产品、架构、跨仓契约、handbook、ADR、原型和治理入口。
@@ -95,13 +97,18 @@ Does not own:
 - session event replay
 - Web 本地渲染
 
-## 根仓拓扑建议
+## 已定案的根仓拓扑
 
-V1 推荐承认主仓是治理型顶级仓库：子仓可以作为受控 submodule/gitlink 管理版本，但 CI 和文档必须一致。不能同时出现"文档说非 submodule、Git 实际是 submodule、CI 又 checkout sibling main"的混合状态。
+Kokoro 根仓永久采用治理型 superproject：`.gitmodules` 管理四个独立子仓，根 tree 以 mode `160000`
+精确锁定每个经过组合验证的 commit。该选择服务于独立构建、部署、扩缩容、发布与回滚，不是页面展示。
 
-后续实现前先选定：
+子仓拥有自己的 lock、CI、artifact、migration、release、rollback 和历史；根仓拥有 contract 单源、root-only
+工具、统一 Infra/集成编排、兼容矩阵、BOM 和 gitlink promotion。根 CI 只初始化当前 root commit 的 pin，
+不得 checkout 浮动 sibling branch。
 
-1. 治理型 submodule 根仓：根仓提交锁定每个子仓 commit，CI 按 gitlink 版本验证。
-2. 纯 docs/protocol 根仓：移除 gitlink，子仓通过 `repos.yaml` 或 `docs/CODEBASE_MAP.md` 标注。
+跨仓运行时通过 HTTP/RPC、SSE 或 durable async command/event transport；禁止兄弟源码 import、共享进程内
+对象或跨服务直写数据库。仓库边界不机械决定 Platform 内部进程拆分：同仓 modular core 可以为独立部署
+提供 RPC adapter，无需为每个后台能力创建新 Git 仓库。
 
-如果目标是"看着是一个顶级代码仓库"，推荐第 1 种。子模块当前状态和差异见 [migration-checklist](../operations/migration-checklist.md) 与本仓 `.gitmodules`。
+版本提升与恢复规则见 [ADR-007](../decisions/ADR-007-kokoro-platform-submodule.md) 和
+[Wave 0 v2.0](../../superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)。

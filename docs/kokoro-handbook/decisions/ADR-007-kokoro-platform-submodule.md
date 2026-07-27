@@ -1,47 +1,47 @@
-# ADR-007 kokoro-platform 纳入受控子模块
+# ADR-007 四个独立仓库纳入受控 Submodule
 
-状态：已采纳（2026-06-28）。
+repositoryTopology: federated-submodules-v1
+
+状态：已采纳；2026-07-27 扩展为四仓永久治理裁决。
 
 ## 背景
 
-kokoro-platform 长期在 `.gitmodules` 中声明，却从未作为 gitlink 提交进主仓树（一直是 untracked）。审计 M7 指出它"尚未纳入任何 ADR，要么补 ADR、要么移出规划区"；ADR-009 又规定主仓只承载 docs/protocol/原型、不承载运行时代码。三者叠加形成"声明了却不跟踪"的混合态：GitHub 主仓页面看不到它，版本也无法被复现锁定。
+Kokoro 需要同时满足两件事：从一个根 commit 可复现完整系统组合；Agent、Platform、Session、Web 又必须
+独立构建、部署、扩缩容、发布和回滚。把源码导入一个 root workspace 会消除第二项能力；让 CI checkout
+浮动 sibling branch 又会破坏第一项能力。
 
 ## 决策
 
-把 kokoro-platform 作为受控 submodule 纳入主仓，与 kokoro-agent/session/web 一视同仁：
+根仓通过 `.gitmodules` 永久管理以下四个独立 Git 仓库：
 
-```text
-.gitmodules 增第 4 条：path=kokoro-platform，url=…/kokoro-platform.git，branch=main。
-gitlink 指向其 main 最新且已推送的 commit（首次 c6eff6a）。
-主仓只记录指针（gitlink），不承载其运行时源码。
-```
+- `kokoro-agent`
+- `kokoro-platform`
+- `kokoro-session`
+- `kokoro-web`
 
-## 理由
+根 tree 对四个路径只记录 mode-`160000` gitlink。子仓分别拥有 branch、lock、CI、artifact、migration、
+release、rollback 与版本历史；根仓只记录经过 contract/compatibility/E2E 验证的一组 pin，并管理 root Infra、
+BOM 与 promotion evidence。
 
-```text
-平台域（site/user/model/credit/payment/litellm）是本手册的核心模块，需要可复现地锁定版本。
-与运行时三仓统一管理，消除"四仓声明、三仓跟踪"的不一致。
-gitlink 是版本指针不是源码，纳入它不违反 ADR-009（主仓不承载运行时代码）。
-```
+跨仓调用只走版本化 HTTP/RPC、SSE 或 durable async command/event transport。不得导入兄弟仓私有源码、
+共享进程内对象或跨服务直写数据库。生成 contract mirror 是消费仓提交的公开边界产物。
 
-## 约束
+## Promotion
 
-```text
-指针 bump 是显式动作：子仓 main 前进后，须在主仓 git add 子模块再提交，git 不会自动跟。
-gitlink 指向的 commit 必须已推送到子仓 main，否则 GitHub 上是坏链。
-branch=main 仅供 git submodule update --remote 拉取，不改变页面显示（页面恒显示 SHA）。
-不把 kokoro-platform 源码合并进主仓（保持四仓独立，见 ADR-009）。
-```
+1. 子仓 commit 先通过本仓 lock-driven CI。
+2. commit 推送到本仓 remote，并由新的 recoverable tag 精确锚定。
+3. 根仓在 proposed gitlink 上运行 contract、compatibility matrix 和 root Infra E2E。
+4. 根仓原子提交 gitlink、manifest、contract mirror 与 evidence。
+5. clean recursive clone 和远端 root CI 通过后创建 root BOM tag。
 
-## 替代方案（已否决）
-
-```text
-仅跟踪运行时三仓（审计 M7 现状）   平台域在手册中是核心，却不可复现锁定，自相矛盾。
-把 kokoro-platform 源码并入主仓     违反四仓独立边界（ADR-009）。
-```
+`.gitmodules` 只声明 name/path/url，不声明浮动 branch 或自定义 update command。生产和 CI 禁止
+`git submodule update --remote`。回滚通过新的 root revert 恢复上一组 pin；不得 force-update branch/tag。
 
 ## 影响
 
-`.gitmodules` 变为 4 条；主仓 main 显示 4 个子模块；仓库地图随之更新。落地提交为注册 gitlink → c6eff6a 的那次提交。后续子仓前进按上述约束手动 bump 指针。
+- 一个子仓故障可以单独回滚服务；根仓组合也可以整体回退。
+- Root-only tooling lock 不得吸收任何子仓依赖，子仓 lock 永远独立。
+- Platform 内部可按模块和 RPC adapter 支持独立部署，但“可部署”本身不足以创建新仓库。
+- 新增第五个子仓需要新的 ADR，证明所有权、发布、安全或规模边界，而不是只证明代码能拆开。
 
-相关：[ADR-005 MySQL 与 Mongo 数据边界](ADR-005-mysql-and-mongo.md)、[仓库地图](../technical/01-repository-map.md)、[kokoro-platform 模块](../modules/kokoro-platform.md)。
+相关：[仓库地图](../technical/01-repository-map.md)、[Wave 0 v2.0](../../superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)。

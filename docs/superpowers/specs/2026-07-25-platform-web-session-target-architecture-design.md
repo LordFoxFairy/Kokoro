@@ -4,6 +4,7 @@ version: "1.5"
 created: 2026-07-25
 status: internal-review-active
 scope: kokoro-overall-business-runtime-and-agent-product-capabilities
+repositoryTopology: federated-submodules-v1
 ---
 
 # Kokoro 整体业务、Platform、Web、Session 与 Agent 产品目标架构
@@ -3205,16 +3206,15 @@ tenant → 小流量/allowlist → 全量的渐进步骤。任何安全、账务
 5. 切换完成后同一波删除旧表、旧 service、旧 env、旧 header、旧注释、旧测试和兼容 adapter。
 6. 更新 handbook、ADR、CODEBASE_MAP、运行手册和部署配置，确保只有一个事实源。
 
-Submodule → true Monorepo 采用 pinned snapshot import：
+Repository federation 采用长期 governed submodules：
 
-- Wave 0 记录每个 gitlink 的 origin URL、pinned commit、tree hash、license 和验证命令；在一个可 review 的
-  cutover series 中移除 gitlink/`.gitmodules`，把确切 pinned tree 作为普通目录纳入根仓，排除嵌套 `.git`。
-- 不把四个子仓完整历史强行 merge/filter 进主仓，避免无关历史和 rename 推断污染；旧历史仍由原 remote
-  和根仓历史 gitlink commit 可追溯。导入后的第一个根仓 commit 是新权威 lineage 起点。
-- 原 remote 在 cutover 后归档/read-only，禁止继续合并或发布；CI、release、issue/PR 入口和开发文档只指向
-  根仓。任何必须带入的未提交变更在 import 前先于来源仓形成明确 commit，不复制脏工作树。
-- Wave 0 先允许以现有 `kokoro-*` 普通目录接入根 workspace，后续领域 Wave 按 §19 移动到最终
-  `apps/services/packages`；每次移动同步 exports、contracts、tests、deploy、INDEX，Wave 8 清零旧路径。
+- `.gitmodules` 和四个 mode-`160000` gitlink 永久保留；根 commit 锁定经过组合验证的四仓 BOM。
+- 四个子仓分别拥有 lock、CI、artifact、deployment、release、rollback、issue/PR 与历史。
+- 跨仓运行时只走版本化 HTTP/RPC、SSE 或声明的异步 command/event transport；禁止兄弟仓源码 import、
+  共享进程内对象和跨服务直写数据库。
+- root 只拥有 contract 单源、root-only tooling、Infra/E2E、兼容矩阵、BOM 和 pin promotion evidence。
+- 子仓 commit 先独立验证并形成远端可恢复 ref，根仓再原子提升 gitlink；root CI 只验证当前 pin，禁止浮动
+  sibling branch。详细协议见 Wave 0 v2.0 Spec 与 2026-07-27 实现计划。
 
 明确删除目标：
 
@@ -3237,7 +3237,7 @@ Submodule → true Monorepo 采用 pinned snapshot import：
 
 | Wave | 子方案 | 退出条件 |
 |---|---|---|
-| 0 | Repository/Toolchain/Contract/Documentation Foundation | 单 Monorepo、根 catalog/lock、生成契约、根/受管 INDEX、coverage manifest、CI 边界门成立 |
+| 0 | Federated Repository/Toolchain/Contract/Documentation Foundation | 四仓独立 lock/CI/release、根 contract/Infra/compatibility/BOM、exact-pin promotion gate 成立 |
 | 1 | Platform Core、Identity/Auth、SiteContext、SiteRelease 与 Cross-cutting Policy | Auth 产品旅程、RequestSecurityContext、UnitOfWork、ActivationAttempt、RestrictionEpoch 和双 Release drain 闭环 |
 | 2A | Commerce Core、Account/Redeem、Subscription、Fulfillment、Credit、Usage | Account/Redeem PRD、单基础订阅规则、复式 Journal、root budget topology、Redeem-only Production Certification 闭环 |
 | 2B | Payment Provider Enablement | Checkout/Attempt、webhook reducer、Payment/Refund/Dispute、renewal/dunning 与 provider certification；不阻塞 redeem-only Core Launch |

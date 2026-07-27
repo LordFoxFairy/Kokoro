@@ -1,8 +1,10 @@
 # Kokoro Production Delivery Program Implementation Plan
 
+repositoryTopology: federated-submodules-v1
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement each approved child plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将 Kokoro 从当前多子仓/旧边界 clean replace 为可直接上线的多 Site AI 产品，并以 `redeem_only` 完成首个真实 acquisition→Fulfillment→Grant→Usage 生产闭环。
+**Goal:** 在永久保留四个独立子仓及其独立部署能力的前提下，将 Kokoro clean replace 为可直接上线的多 Site AI 产品，并以 `redeem_only` 完成首个真实 acquisition→Fulfillment→Grant→Usage 生产闭环。
 
 **Architecture:** 本文件是实施总控索引，不授权直接修改业务代码。整体按依赖拆成 15 个可独立评审的
 Wave/cut，每个 cut 都有独立子 Spec 和精确实现计划；只有依赖、测试证据、INDEX/文档与同波旧实现清理
@@ -147,7 +149,7 @@ All planned cuts ─────────────────────
 - 根 contract schema 与生成物的两个写者。
 - 同一数据库 migration chain 的两个写者。
 - PlatformUnitOfWork/Fulfillment/CreditJournal authority 的并行替代实现。
-- Site active Release pointer、root lock/catalog、barrel export 和 CODEBASE_MAP 的无 owner 并发写。
+- Site active Release pointer、root compatibility/BOM manifest、barrel export 和 CODEBASE_MAP 的无 owner 并发写。
 
 ## 5. Vertical Release Slices
 
@@ -194,7 +196,7 @@ INDEX 只描述当前代码；历史保留在 Git 和正式 ADR，不在“当�
 
 | Evidence | Accountable role | Blocking Waves |
 |---|---|---|
-| Architecture/import/INDEX/contract | Architecture + Foundation | 0-9 |
+| Federated pins/compatibility/INDEX/contract | Architecture + Foundation | 0-9 |
 | Unit/property/invariant | Domain Lead + QA | 1、2A/2B、3、5A、4、5B、6A-6D、7 |
 | Transaction/migration/reconciliation | Platform/Data | 1、2A/2B、3、7、8/9 instances |
 | Runtime/lease/effect/chaos | Runtime/Reliability | 3、5A、4、5B、6A-6D、9 instances |
@@ -208,9 +210,10 @@ INDEX 只描述当前代码；历史保留在 Git 和正式 ADR，不在“当�
 第一个允许进入 `superpowers:writing-plans` 精确代码任务的目标是 Wave 0。开始前必须：
 
 - [ ] 用户确认 Umbrella Spec v1.5 与 Product Requirements Governance v1.0 的 ownership、Profile/Journey/PRD Registry、Core/Advanced launch、production/redeem/verification/INDEX addendum。
-- [ ] 完成 Wave 0 child Spec，并按 federated repository 策略列出四个 gitlink 的 provenance、恢复锚点和 pin promotion 步骤。
+- [ ] 完成 Wave 0 v2.0 child Spec 与 2026-07-27 执行计划，并按 federated repository 策略列出四个 gitlink 的 provenance、恢复锚点和 pin promotion 步骤。
 - [ ] 确认根目录目标和第一批受管 INDEX roots。
 - [ ] 确认 CI/部署环境可运行 Node 24、pnpm 11、Python 3.12 和 PostgreSQL 18 测试。
 - [ ] 仓库所有者书面确认四个来源仓属于同一 Kokoro 项目的自有内部代码，可登记批准的内部 LicenseRef。
 
-未满足上述五项时，不执行 gitlink 删除、目录迁移、lockfile 重建或业务代码修改。
+无论上述门禁是否满足，均不得删除 gitlink/`.gitmodules`、导入普通源码树、合并子仓 lock 或关闭子仓
+CI/release。门禁只授权 federated pin/contract/Infra/compatibility 工作和其后的业务 Wave。

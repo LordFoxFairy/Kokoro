@@ -1,5 +1,7 @@
 # Kokoro Codebase Map
 
+repositoryTopology: federated-submodules-v1
+
 状态：2026-07-12
 用途：给主控会话、code agent 和并行 worker 的最小上下文地图。
 
@@ -7,10 +9,16 @@
 
 四个 `kokoro-*` 目录是根仓通过 `.gitmodules` 固定 commit 的**独立 Git 仓库**，不是等待导入根仓的普通目录：
 
-- 子仓分别拥有自己的 branch、lockfile、CI、release、rollback 与版本历史；
+- 子仓分别拥有自己的 branch、lockfile、CI、artifact、独立构建、独立部署、独立发布、独立扩缩容、
+  独立回滚与版本历史；
 - 根仓只拥有跨仓 contract、统一 Infra/运行编排、兼容矩阵和经过验证的 gitlink pin；
 - 根仓更新子仓只能提交新的 gitlink pin，不得删除 `.gitmodules`、复制 snapshot 覆盖子仓或建立单根 lock；
 - 跨仓一致性通过 contract generation、版本兼容矩阵和 root verification 实现，不通过源码物理合并实现。
+
+跨子仓运行时边界必须远程协议化：Web→Session 使用 HTTP/SSE；Session↔Platform 使用内部 HTTP/RPC；
+Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 使用 HTTP。不得跨仓导入
+兄弟仓源码、共享进程内对象或跨服务直写数据库。生成 contract mirror 由消费仓提交和验证，不形成运行时
+文件系统依赖。
 
 ```text
 Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule pins, scripts
@@ -86,7 +94,7 @@ npm run lint
 - `packages/*`：`@kokoro/tsconfig`（共享 TS 基线）、`@kokoro/i18n`（i18n 引擎）。
 
 **两 app 当前已统一 Next 16.2.6 / React 19.2.4 / antd 6.5.0 / Vitest 4.1.x**。pnpm 仍使用
-`node-linker=isolated` 保护依赖边界；跨仓 TS/Vitest/Node/package-manager/lockfile 分裂由 Wave 0 统一。
+`node-linker=isolated` 保护依赖边界；Wave 0 只对齐兼容的 runtime/toolchain policy，各子仓继续独立拥有 lock。
 正式文档入口：`kokoro-web/README.md`、`kokoro-web/apps/user/docs/README.md`。
 
 常用验证（pnpm workspace）：
