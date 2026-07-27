@@ -67,6 +67,10 @@ jobs:
           else
             echo 'Buf breaking baseline bootstrap: origin/main has no contract/proto files yet.'
           fi
+      - name: boundary registry gate
+        run: |
+          node --test scripts/contract/check-boundary-registry.test.mjs
+          node scripts/contract/check-boundary-registry.mjs
       - name: architecture governance gates
         run: |
           node --test scripts/architecture/*.test.mjs
