@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Required because all four sibling submodule repositories are private.
+          token: ${{ secrets.KOKORO_SUBMODULE_TOKEN }}
           submodules: recursive
           fetch-depth: 0
       - uses: actions/setup-node@v4
