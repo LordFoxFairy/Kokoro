@@ -24,3 +24,10 @@ constraint-dependencies = [
   "pyyaml==6.0.3",
 ]
 package = false
+
+# 显式声明官方源：uv 的仓内声明优先于开发机 user-level 配置。
+# 没有它时，制品 URL 取决于谁最后跑的 uv lock。
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
