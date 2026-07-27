@@ -292,7 +292,14 @@ async function run() {
     await waitHttp(`${modelBaseUrl}/healthz`, { child: model });
 
     const resolveUrl = new URL("/model-bindings/resolve", modelBaseUrl);
-    resolveUrl.search = new URLSearchParams({ featureKey: "chat", labelKey: "claude-code" });
+    // siteId is a required query parameter: model applies that Site's hidden-label policy
+    // from it. Omitting it now fails schema validation before the caller checks below run,
+    // which would silently stop this scenario from testing authorization at all.
+    resolveUrl.search = new URLSearchParams({
+      siteId: SITE_ID,
+      featureKey: "chat",
+      labelKey: "claude-code",
+    });
     const missing = await request(resolveUrl, { headers: { "x-kokoro-site-id": SITE_ID } });
     if (missing.status !== 401) throw new Error("compatibility_missing_caller_not_rejected");
     const wrong = await request(resolveUrl, { headers: platformRequestHeaders("wrong-not-real") });

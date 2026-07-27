@@ -32,6 +32,10 @@ objects:
       - {name: idempotencyKey, type: string_nonempty}
   - name: ResolveModelBindingsQuery
     fields:
+      # Required so resolution cannot silently fall back to an unfiltered catalogue:
+      # an absent site previously disabled the per-site hide list entirely, letting the
+      # caller choose whether Site policy applied.
+      - {name: siteId, type: string_nonempty}
       - {name: featureKey, type: string_nonempty}
       - {name: labelKey, type: string_nonempty, optional: true}
       - {name: transportKind, type: enum:model_transport_kind, optional: true}
