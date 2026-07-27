@@ -20,7 +20,7 @@
       "id": "kokoro-platform",
       "path": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
-      "pin": "92a293d68ce41a0e10497b217c52e04f787c7cd3",
+      "pin": "7b50b5c0f1ba372cb4c656e77c71fde611fff6a6",
       "lockfiles": ["pnpm-lock.yaml"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [{ "id": "platform-services", "descriptor": "deploy/docker/Dockerfile" }],
@@ -29,7 +29,7 @@
         { "id": "platform-admin-auth", "version": 1, "role": "provider" },
         { "id": "model-gateway", "version": 1, "role": "provider" }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-index-truth-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-admission-contract-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
@@ -50,7 +50,7 @@
       "id": "kokoro-web",
       "path": "kokoro-web",
       "origin": "https://github.com/LordFoxFairy/kokoro-web.git",
-      "pin": "b65e86d39767636362ae253147b5d7925616ea03",
+      "pin": "17fcaccb56e62de29c7c699f7f8fd373a5eac480",
       "lockfiles": ["pnpm-lock.yaml"],
       "requiredWorkflows": [".github/workflows/ci.yml"],
       "artifacts": [
@@ -61,7 +61,7 @@
         { "id": "session-browser", "version": 1, "role": "consumer" },
         { "id": "platform-admin-auth", "version": 1, "role": "consumer" }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-index-truth-2026-07-27-web"
+      "recoverableRef": "refs/tags/kokoro-wave0-admission-contract-2026-07-27-web"
     }
   ]
 }
