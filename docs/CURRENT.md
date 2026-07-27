@@ -2,7 +2,7 @@
 
 repositoryTopology: federated-submodules-v1
 
-状态：2026-07-25
+状态：2026-07-27
 用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
 
 ## 必读
@@ -60,11 +60,13 @@ repositoryTopology: federated-submodules-v1
 41. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
 42. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
 43. [全局设计完成度与实现授权审计](reports/2026-07-25-kokoro-design-completion-audit.md)
+44. [Contract、Transport 与 Internal RPC 统一技术方案](superpowers/specs/2026-07-27-contract-transport-and-internal-rpc-design.md)
 
 ## 当前实施计划
 
 1. [Federated Repository Governance Correction Implementation Plan](superpowers/plans/2026-07-27-federated-repository-governance-correction-implementation-plan.md)
 2. [ADR-007 Governed Submodules](kokoro-handbook/decisions/ADR-007-kokoro-platform-submodule.md)
+3. [Contract Foundation and Admin Auth Connect Pilot Implementation Plan](superpowers/plans/2026-07-27-contract-foundation-admin-auth-pilot-implementation-plan.md)
 
 ## 当前技术主线
 

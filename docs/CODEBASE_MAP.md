@@ -2,7 +2,7 @@
 
 repositoryTopology: federated-submodules-v1
 
-状态：2026-07-12
+状态：2026-07-27
 用途：给主控会话、code agent 和并行 worker 的最小上下文地图。
 
 ## 仓库边界
@@ -15,14 +15,15 @@ repositoryTopology: federated-submodules-v1
 - 根仓更新子仓只能提交新的 gitlink pin，不得删除 `.gitmodules`、复制 snapshot 覆盖子仓或建立单根 lock；
 - 跨仓一致性通过 contract generation、版本兼容矩阵和 root verification 实现，不通过源码物理合并实现。
 
-跨子仓运行时边界必须远程协议化：Web→Session 使用 HTTP/SSE；Session↔Platform 使用内部 HTTP/RPC；
+跨子仓运行时边界必须远程协议化：Browser/Site Web 普通产品面使用 OpenAPI HTTP/JSON，Web→Session 使用
+HTTP/SSE；privileged/control plane 使用 ConnectRPC/Protobuf；Session→Platform 目标态只保留 Connect Admission；
 Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 使用 HTTP。不得跨仓导入
 兄弟仓源码、共享进程内对象或跨服务直写数据库。生成 contract mirror 由消费仓提交和验证，不形成运行时
 文件系统依赖。
 
 ```text
 Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule pins, scripts
-  contract/             跨仓契约单源和生成器
+  contract/             跨仓契约单源：旧 wire YAML + 新 internal RPC Proto/Buf + 生成器
   docs/                 总手册、规格、计划、交接、报告、历史资料
   kokoro-agent/         Python agent runtime subrepo
   kokoro-session/       TypeScript session/SSE subrepo
@@ -50,9 +51,13 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 - namespace 是 opaque id，不拼 `user:<id>` / `team:<id>` 业务前缀。
 - capability registry 采用一个边界，V1 只覆盖 `skill` / `mcp`。
 - DeepAgents graph 内部运行节点不是 capability kind，不做 package / enablement。
-- web 只消费 session HTTP/SSE，不直连 agent。
+- web 不直连 agent；对话与实时状态只消费 session HTTP/SSE，普通产品面经 Site/Admin BFF 调用 Platform。
 - session 不执行 agent。
 - agent 不面向浏览器，不写 session messages，不扣积分。
+- Platform 同 bounded context 使用本地 application interface/UoW，禁止 self-RPC。
+- Site Web BFF→Platform 普通产品 API 使用 OpenAPI；Admin/Admission 等 privileged control plane 使用 Connect。
+- 同一个远程 operation 只有一个权威 transport contract；不得同时维护 OpenAPI/Connect 双写入口。
+- Root `contract/proto/` 是新 internal RPC 单源，生成镜像提交进 provider/consumer 子仓；禁止手改生成物。
 - 外部参考项目路径、分支名、逐字文案和代码只允许出现在 `tmp/` 中间产物。
 
 ## 子仓说明

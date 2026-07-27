@@ -25,6 +25,7 @@
 3. [能力中台 kokoro-hub 与内部通信定案](kokoro-handbook/technical/22-capability-hub.md)
 4. [Platform 运营台（现状事实）](kokoro-handbook/technical/23-platform-ops-console.md)
 5. [跨仓闭环与遗留对齐总设计（获批纲领，Wave 0-6）](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
+6. [Contract、Transport 与 Internal RPC 统一技术方案](superpowers/specs/2026-07-27-contract-transport-and-internal-rpc-design.md)
 
 注意：`handoffs/` 是短期派工单，不是长期权威。派工单里的稳定结论必须回流到 handbook。
 
