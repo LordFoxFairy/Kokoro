@@ -233,17 +233,64 @@ test("fails when a gitlink pin differs from the checked-out source HEAD", async 
   });
 });
 
-test("freezes a staged proposed gitlink tree before the root promotion commit", async () => {
+test("refuses staged promotion candidates and declares its historical baseline scope", async () => {
   await withFixture(async (fixture) => {
     await writeFile(resolve(fixture.source, "tracked.txt"), "candidate\n", "utf8");
     git(fixture.source, "commit", "-am", "candidate");
-    fixture.pin = git(fixture.source, "rev-parse", "HEAD");
-    git(fixture.root, "update-index", "--cacheinfo", `160000,${fixture.pin},source`);
-    await writeExpected(fixture);
+    const candidate = git(fixture.source, "rev-parse", "HEAD");
+    git(fixture.root, "update-index", "--cacheinfo", `160000,${candidate},source`);
 
     const result = runFreezer(fixture, "--tree", "index");
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /snapshot_promotion_scope_forbidden/);
+    await assertNoOutput(fixture);
+  });
+});
+
+test("reads only the committed tree, never a staged promotion candidate", async () => {
+  const source = await readFile(freezer, "utf8");
+  assert.doesNotMatch(source, /ls-files", "--stage"/u);
+  assert.match(source, /\["ls-tree", "HEAD", rootRelativePath\]/u);
+});
+
+test("names the historical baseline scope on success", async () => {
+  await withFixture(async (fixture) => {
+    const result = runFreezer(fixture);
     assert.equal(result.status, 0, result.stderr);
-    assert.match(await readFile(fixture.output, "utf8"), new RegExp(fixture.pin, "u"));
+    assert.match(
+      result.stdout,
+      /historical_source_baseline_frozen: 1 source\(s\) scope=historical-source-baseline-v1/u,
+    );
+  });
+});
+
+test("refuses to reuse a per-repository federated recoverable tag as the shared archive tag", async () => {
+  await withFixture(async (fixture) => {
+    await writeFile(
+      resolve(fixture.root, "config/repository/federated-repositories.json"),
+      JSON.stringify({
+        repositories: [{ id: "kokoro-agent", recoverableRef: "refs/tags/cutover-test" }],
+      }),
+      "utf8",
+    );
+    const result = runFreezer(fixture);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /recoverable_ref_reuse_forbidden/);
+    await assertNoOutput(fixture);
+  });
+});
+
+test("keeps freezing when the federated manifest declares unrelated recoverable tags", async () => {
+  await withFixture(async (fixture) => {
+    await writeFile(
+      resolve(fixture.root, "config/repository/federated-repositories.json"),
+      JSON.stringify({
+        repositories: [{ id: "kokoro-agent", recoverableRef: "refs/tags/promotion-only" }],
+      }),
+      "utf8",
+    );
+    const result = runFreezer(fixture);
+    assert.equal(result.status, 0, result.stderr);
   });
 });
 
@@ -254,8 +301,7 @@ test("rejects floating branch or update controls in gitmodules", async () => {
       `[submodule "fixture"]\n\tpath = source\n\turl = ${fixture.remote}\n\tbranch = main\n`,
       "utf8",
     );
-    git(fixture.root, "add", ".gitmodules");
-    const result = runFreezer(fixture, "--tree", "index");
+    const result = runFreezer(fixture);
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /gitmodules_field/);
   });

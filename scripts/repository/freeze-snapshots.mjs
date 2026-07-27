@@ -1,5 +1,18 @@
 #!/usr/bin/env node
 
+// Historical source-baseline freezer.
+//
+// Scope: this command records content-level recovery provenance (tree, tar archive digest, tracked
+// file count, remote reachability) for the one committed source baseline declared by
+// `config/repository/expected-snapshots.json`. It is bound to that baseline by design and fails
+// closed when the checked-out pins differ from it.
+//
+// Non-scope: it is not a promotion gate. Root pin promotion authority belongs to
+// `config/repository/federated-repositories.json`, `verify-federated-repositories.mjs` and
+// `generate-bom.mjs`, which carry one independent `recoverableRef` per repository. This command
+// therefore refuses staged candidate trees and refuses to reuse any per-repository recoverable tag
+// as its single shared baseline archive tag.
+
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { lstat, mkdir, readFile, writeFile } from "node:fs/promises";
@@ -9,6 +22,8 @@ import {
   validateOwnership,
 } from "../foundation/ownership-attestation.mjs";
 
+const BASELINE_SCOPE = "historical-source-baseline-v1";
+const FEDERATED_MANIFEST_PATH = "config/repository/federated-repositories.json";
 const DEFAULT_SOURCES = [
   ["kokoro-agent", "kokoro-agent"],
   ["kokoro-platform", "kokoro-platform"],
@@ -103,6 +118,12 @@ function parseArguments(argv) {
         options.approvedSpecCommit = value;
         break;
       case "--tree":
+        if (value === "index") {
+          throw new FreezeError(
+            "snapshot_promotion_scope_forbidden",
+            "staged candidate trees belong to the federated manifest, verifier and BOM",
+          );
+        }
         options.tree = value;
         break;
       default:
@@ -132,8 +153,8 @@ function parseArguments(argv) {
     throw new FreezeError("custom_sources_forbidden", "--source is test-only");
   }
   options.sources = options.sources.length > 0 ? options.sources : DEFAULT_SOURCES;
-  if (!["head", "index"].includes(options.tree)) {
-    throw new FreezeError("snapshot_arguments_invalid", "--tree must be head or index");
+  if (options.tree !== "head") {
+    throw new FreezeError("snapshot_arguments_invalid", "--tree must be head");
   }
   if (process.env.KOKORO_FREEZE_TEST_ALLOW_CUSTOM_SOURCES !== "1") {
     options.requireArchiveRef = true;
@@ -168,9 +189,7 @@ function gitText(cwd, args, options) {
 }
 
 function parseGitlink(line, expectedPath) {
-  const tree = /^(\d{6})\s+commit\s+([0-9a-f]{40})\t(.+)$/u.exec(line);
-  const index = /^(\d{6})\s+([0-9a-f]{40})\s+0\t(.+)$/u.exec(line);
-  const match = tree ?? index;
+  const match = /^(\d{6})\s+commit\s+([0-9a-f]{40})\t(.+)$/u.exec(line);
   if (!match || match[1] !== "160000" || match[3] !== expectedPath) {
     throw new FreezeError("gitlink_invalid", expectedPath);
   }
@@ -371,24 +390,51 @@ async function readExpected(options) {
   return expected;
 }
 
+// The four federated repositories each carry their own promotion tag. A single shared baseline
+// archive tag must never be one of them, otherwise this command would look like the promotion
+// authority and would invite collapsing four independent tags into one mutable tag.
+async function assertArchiveTagIsNotRecoverableRef(options) {
+  const manifestPath = resolve(options.root, FEDERATED_MANIFEST_PATH);
+  let source;
+  try {
+    source = await readFile(manifestPath, "utf8");
+  } catch (error) {
+    if (error.code === "ENOENT") return;
+    throw new FreezeError("federated_manifest_unreadable", error.message);
+  }
+  let manifest;
+  try {
+    manifest = JSON.parse(source);
+  } catch (error) {
+    throw new FreezeError("federated_manifest_invalid", error.message);
+  }
+  const recoverableRefs = new Set(
+    (Array.isArray(manifest?.repositories) ? manifest.repositories : []).map(
+      ({ recoverableRef }) => recoverableRef,
+    ),
+  );
+  if (recoverableRefs.has(`refs/tags/${options.archiveTag}`)) {
+    throw new FreezeError("recoverable_ref_reuse_forbidden", options.archiveTag);
+  }
+}
+
 async function freeze(options) {
   const ownershipBytes = await readOwnership(options);
   const expected = await readExpected(options);
   options.archiveTag ??= expected.archiveTag;
+  await assertArchiveTagIsNotRecoverableRef(options);
   const gitmodules = parseGitmodules(
     await readFile(resolve(options.root, ".gitmodules"), "utf8"),
     options.sources,
   );
 
-  const rootTrackedStatus = options.tree === "head"
-    ? gitText(options.root, [
-      "status",
-      "--porcelain=v1",
-      "-z",
-      "--untracked-files=no",
-      "--ignore-submodules=all",
-    ])
-    : gitText(options.root, ["diff", "--name-only", "--ignore-submodules=all"]);
+  const rootTrackedStatus = gitText(options.root, [
+    "status",
+    "--porcelain=v1",
+    "-z",
+    "--untracked-files=no",
+    "--ignore-submodules=all",
+  ]);
   if (rootTrackedStatus !== "") {
     throw new FreezeError("root_tracked_worktree_dirty");
   }
@@ -424,9 +470,7 @@ async function freeze(options) {
       throw new FreezeError("source_path_outside_root", sourcePath);
     }
 
-    const gitlinkLine = options.tree === "head"
-      ? gitText(options.root, ["ls-tree", "HEAD", rootRelativePath])
-      : gitText(options.root, ["ls-files", "--stage", rootRelativePath]);
+    const gitlinkLine = gitText(options.root, ["ls-tree", "HEAD", rootRelativePath]);
     const pin = parseGitlink(gitlinkLine, rootRelativePath);
     const head = gitText(absoluteSourcePath, ["rev-parse", "HEAD"]);
     if (pin !== head) throw new FreezeError("gitlink_head_mismatch", id);
@@ -507,7 +551,9 @@ async function freeze(options) {
   };
   await mkdir(dirname(options.output), { recursive: true });
   await writeFile(options.output, renderManifest(manifest), "utf8");
-  process.stdout.write(`snapshots_frozen: ${sources.length} source(s)\n`);
+  process.stdout.write(
+    `historical_source_baseline_frozen: ${sources.length} source(s) scope=${BASELINE_SCOPE}\n`,
+  );
 }
 
 try {
