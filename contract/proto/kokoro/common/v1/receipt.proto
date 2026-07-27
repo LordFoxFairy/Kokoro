@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package kokoro.common.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/error.proto";
+
+message CommandIdentity {
+  string command_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string request_digest = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 128
+  }];
+}
+
+enum CommandReceiptState {
+  COMMAND_RECEIPT_STATE_UNSPECIFIED = 0;
+  COMMAND_RECEIPT_STATE_ACCEPTED = 1;
+  COMMAND_RECEIPT_STATE_COMMITTED = 2;
+  COMMAND_RECEIPT_STATE_REJECTED = 3;
+  COMMAND_RECEIPT_STATE_OUTCOME_UNKNOWN = 4;
+}
+
+message CommandReceipt {
+  CommandIdentity identity = 1 [(buf.validate.field).required = true];
+  string operation = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CommandReceiptState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp recorded_at = 4 [(buf.validate.field).required = true];
+  optional KokoroErrorDetail error = 5;
+}

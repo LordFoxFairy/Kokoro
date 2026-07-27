@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package kokoro.platform.admin.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/receipt.proto";
+
+service AdminAuthService {
+  rpc GetOperatorByEmail(GetOperatorByEmailRequest) returns (GetOperatorByEmailResponse) {}
+  rpc GetOperator(GetOperatorRequest) returns (GetOperatorResponse) {}
+  rpc CreateVerificationToken(CreateVerificationTokenRequest) returns (CreateVerificationTokenResponse) {}
+  rpc ConsumeVerificationToken(ConsumeVerificationTokenRequest) returns (ConsumeVerificationTokenResponse) {}
+  rpc RecordAuthEvent(RecordAuthEventRequest) returns (RecordAuthEventResponse) {}
+  rpc GetCommandReceipt(GetCommandReceiptRequest) returns (GetCommandReceiptResponse) {}
+}
+
+enum OperatorStatus {
+  OPERATOR_STATUS_UNSPECIFIED = 0;
+  OPERATOR_STATUS_ACTIVE = 1;
+  OPERATOR_STATUS_DISABLED = 2;
+}
+
+message Operator {
+  string id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string email = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+  string display_name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  OperatorStatus status = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message VerificationToken {
+  string identifier = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+  string token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+  google.protobuf.Timestamp expires = 3 [(buf.validate.field).required = true];
+}
+
+message GetOperatorByEmailRequest {
+  string email = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+}
+
+message GetOperatorRequest {
+  string id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetOperatorByEmailResponse {
+  Operator operator = 1 [(buf.validate.field).required = true];
+}
+
+message GetOperatorResponse {
+  Operator operator = 1 [(buf.validate.field).required = true];
+}
+
+message CreateVerificationTokenRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string identifier = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+  string token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+  google.protobuf.Timestamp expires = 4 [(buf.validate.field).required = true];
+}
+
+message ConsumeVerificationTokenRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string identifier = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+  string token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+}
+
+message CreateVerificationTokenResponse {
+  VerificationToken verification_token = 1 [(buf.validate.field).required = true];
+  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
+}
+
+message ConsumeVerificationTokenResponse {
+  VerificationToken verification_token = 1 [(buf.validate.field).required = true];
+  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
+}
+
+enum AuthEventKind {
+  AUTH_EVENT_KIND_UNSPECIFIED = 0;
+  AUTH_EVENT_KIND_SIGN_IN = 1;
+  AUTH_EVENT_KIND_SIGN_OUT = 2;
+  AUTH_EVENT_KIND_DENIED = 3;
+}
+
+message RecordAuthEventRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string email = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 320
+  }];
+  AuthEventKind event = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string reason = 4 [(buf.validate.field).string.max_len = 512];
+  google.protobuf.Timestamp occurred_at = 5 [(buf.validate.field).required = true];
+}
+
+message RecordAuthEventResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+}
+
+message GetCommandReceiptRequest {
+  string command_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string request_digest = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 128
+  }];
+}
+
+message VerificationTokenReceiptResult {
+  string identifier = 1 [(buf.validate.field).string.max_len = 320];
+  google.protobuf.Timestamp expires = 2;
+  bool consumed = 3;
+}
+
+message AuthEventReceiptResult {
+  AuthEventKind event = 1;
+  google.protobuf.Timestamp occurred_at = 2;
+}
+
+message GetCommandReceiptResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    VerificationTokenReceiptResult verification_token = 2;
+    AuthEventReceiptResult auth_event = 3;
+  }
+}
