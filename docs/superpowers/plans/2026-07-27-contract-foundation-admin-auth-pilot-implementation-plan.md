@@ -126,16 +126,16 @@ Run: `pnpm --dir contract install`
 
 Expected: `contract/pnpm-lock.yaml` created; no root or child lock changes.
 
-- [ ] **Step 5: Prove GREEN and lint the empty module**
+- [ ] **Step 5: Prove GREEN and execute the pinned CLI**
 
 Run:
 
 ```bash
 uv run pytest contract/tests/test_buf_contract.py -q
-pnpm --dir contract run buf:lint
+pnpm --dir contract exec buf --version
 ```
 
-Expected: PASS.
+Expected: tests PASS and Buf reports `1.72.0`. Buf lint begins in Task 2 after the first real proto exists; an empty Buf module correctly fails lint and must not be hidden with a placeholder schema.
 
 - [ ] **Step 6: Commit**
 

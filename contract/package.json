@@ -1,0 +1,17 @@
+{
+  "name": "@kokoro/contract-tooling",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@11.2.2",
+  "scripts": {
+    "buf:format": "buf format -w",
+    "buf:format:check": "buf format --diff --exit-code",
+    "buf:lint": "buf lint",
+    "buf:generate": "buf generate"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "1.72.0",
+    "@bufbuild/protobuf": "2.13.0",
+    "@bufbuild/protoc-gen-es": "2.13.0"
+  }
+}
