@@ -67,6 +67,7 @@ repositoryTopology: federated-submodules-v1
 1. [Federated Repository Governance Correction Implementation Plan](superpowers/plans/2026-07-27-federated-repository-governance-correction-implementation-plan.md)
 2. [ADR-007 Governed Submodules](kokoro-handbook/decisions/ADR-007-kokoro-platform-submodule.md)
 3. [Contract Foundation and Admin Auth Connect Pilot Implementation Plan](superpowers/plans/2026-07-27-contract-foundation-admin-auth-pilot-implementation-plan.md)
+4. [Contract Foundation / Admin Auth Pilot Verification](reports/2026-07-27-contract-foundation-admin-auth-pilot-verification.md)
 
 ## 当前技术主线
 
