@@ -59,6 +59,10 @@
 42. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
 43. [全局设计完成度与实现授权审计](reports/2026-07-25-kokoro-design-completion-audit.md)
 
+## 当前实施计划
+
+1. [Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
+
 ## 当前技术主线
 
 1. [V1 最终技术方案（定稿）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)

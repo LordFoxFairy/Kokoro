@@ -25,6 +25,11 @@ Wave/cut，每个 cut 都有独立子 Spec 和精确实现计划；只有依赖�
 
 冲突时按上述顺序裁决；历史 handoff、旧 handbook 和旧实现不能覆盖新方案。
 
+同一 Wave 内，已评审 child Spec 是 Umbrella 对该 scope 的强制细化：它不能改变 Umbrella 的全局 owner/不变量，
+但对目录、锁、切换顺序和验收细节拥有优先解释权。例如 Wave 0 根 workspace 只接纳导入期 reference Site source；
+独立 production Site Project 的 source/lock/CI/artifact/release authority 不得因 Umbrella 的共享 Web capability source
+被吸入根 workspace，也不得用 Wave 0 single-lock 证据冒充 Fleet 已完成。
+
 `Core Production Launch` 与 `Advanced Agent Program` 分开验收：首发 Site 只需对其冻结
 `LaunchProductProfile/EnabledSurfaceInventory` 中启用的 P0 旅程完成生产认证；未启用的 6A-6D 高级能力不
 阻塞 Core Launch。任何高级能力一旦进入 production SiteRelease，仍须通过对应完整门。整体 Transformation
@@ -47,7 +52,7 @@ SiteRelease 上线，但 Wave 8/9 保持 active；2B、5B、6A-6D 与全部目�
 
 | Wave | Mandatory PRD IDs | Child Spec filename | Child implementation plan filename | Production-capable exit |
 |---|---|---|---|---|
-| 0 | none | `2026-07-25-wave-0-repository-contract-foundation-design.md` | `2026-07-25-wave-0-repository-contract-foundation-implementation-plan.md` | 真 Monorepo、根 lock/catalog、contract generation、INDEX governance、CI architecture gate |
+| 0 | none | `2026-07-25-wave-0-repository-contract-foundation-design.md` | `2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md` | 真 Monorepo、根 lock/catalog、contract generation、INDEX governance、CI architecture gate |
 | 1 | PRD-00、PRD-01、PRD-02、PRD-11、PRD-12、PRD-14、PRD-15、PRD-16 core contracts | `2026-07-25-wave-1-platform-identity-site-policy-design.md` | `2026-07-25-wave-1-platform-identity-site-policy-implementation-plan.md` | Identity/Auth、Workspace/Project、RequestSecurityContext、PlatformUnitOfWork、ActivationAttempt、Restriction token/epoch |
 | 2A | PRD-03 | `2026-07-25-wave-2a-commerce-redeem-credit-design.md` | `2026-07-25-wave-2a-commerce-redeem-credit-implementation-plan.md` | Account/Redeem、Catalog/Subscription/Fulfillment/Credit/Usage 与 Redeem-only certification |
 | 2B | PRD-04 | `2026-07-25-wave-2b-payment-provider-enablement-design.md` | `2026-07-25-wave-2b-payment-provider-enablement-implementation-plan.md` | Checkout/Payment/Refund/Dispute/dunning 与真实 Provider certification；非 Core redeem-only blocker |

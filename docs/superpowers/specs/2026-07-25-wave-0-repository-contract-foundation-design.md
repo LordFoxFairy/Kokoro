@@ -1,6 +1,6 @@
 ---
 artifact: wave-child-prd-and-architecture-spec
-version: "1.2"
+version: "1.3"
 created: 2026-07-25
 status: internally-technically-approved-awaiting-owner-attestation-and-user-review
 parent: 2026-07-25-platform-web-session-target-architecture-design.md
@@ -108,7 +108,7 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 
 ### 2.1 Git 与来源快照
 
-设计调查基线 commit：`730c59747c987ea48b9e8d0c70653e601a2a88d9`。它不是未来机械导入的 parent；
+设计/计划前重验基线 commit：`ec9886b800a379511390b578187d26eadd869645`。它不是未来机械导入的 parent；
 批准 Spec、实施 Plan 与 provenance 形成后，真正 parent 按 §6.2 单独记录。
 
 | Path | Origin | Pinned commit | Tree | Archive SHA-256 | Remote 状态 |
@@ -116,7 +116,7 @@ plan 三项门禁未完成前，不执行 snapshot import、gitlink 删除或 ro
 | `kokoro-agent` | `LordFoxFairy/kokoro-agent` | `18b394dc3df019244875e643c142c2b08b9db708` | `b06557b5876125f2a014bc6b9597bb7ac9a30780` | `670927a78d57bef29a4a11ff6782960ae117cc526b0c88af3a234154c0f78340` | 与 origin/main 一致 |
 | `kokoro-platform` | `LordFoxFairy/kokoro-platform` | `d30a16a782aca0fe131acbe8cbfbbd63fdf1b989` | `4093ce419d57089b5128ff1783a41fc6bc1733b8` | `d43330451610cfea414e9256dc640a09be2fcd727446ed99f01b000c885392c5` | 本地超前 origin/main 5 commit |
 | `kokoro-session` | `LordFoxFairy/kokoro-session` | `4f4aa3defc5cce79be58c447d7f053c6204ef48f` | `55ea2b5d6c50eb172e5eb1cedf6b09f7b7526bca` | `32d8d5fd8db3cdae8a03e6d375cb66483be67abaf0ebe7da9cab438518218d7a` | 与 origin/main 一致 |
-| `kokoro-web` | `LordFoxFairy/kokoro-web` | `5a3a0c4cb72ba80ba19dd335824e504119f7ef4b` | `fa2286484ca485eb532fc0a4f9df990b5a24d677` | `284579091d5b62e5d49116099eb58d272879b0009578d9d281db7e0a59c42277` | 与 origin/main 一致 |
+| `kokoro-web` | `LordFoxFairy/kokoro-web` | `f3936befb7ae4c219273ae9b7f4efb97cb6a1425` | `c88c4f29197fafb1158c561e1bfe8153d04e7fcc` | `202b99d74fd2720298d78df95b18f3372adf2f11c1a2751f712e8a84f0a9d047` | 本地 `heads/main`；import 前重验 remote archive ref |
 
 四个受跟踪工作树均干净，共约 1,101 个 tracked files、6.5 MB；无 nested gitlink、Git LFS 或 tracked
 symlink。四个目录存在大量 ignored 本机文件，因此导入必须来自 `git archive <pinnedCommit>`，禁止直接
@@ -273,11 +273,16 @@ Kokoro/
     tests/
 
   scripts/
+    repository/
+      freeze-snapshots.mjs
+      import-snapshots.mjs
+    foundation/
+      check-toolchain.mjs
+      check-evidence.mjs
     architecture/
       check-index-coverage.ts
       check-dependencies.ts
       check-python-dependencies.py
-      check-toolchain.ts
 
   docs/reports/evidence/wave-0/
     evidence.yaml
@@ -325,10 +330,9 @@ Remote tag 必须受保护；若托管平台不支持不可变 tag，则以 bund
 
 ```yaml
 schemaVersion: 1
-designBaselineCommit: 730c59747c987ea48b9e8d0c70653e601a2a88d9
+designBaselineCommit: ec9886b800a379511390b578187d26eadd869645
 approvedSpecCommit: PENDING_REVIEW
 cutoverParentCommit: PENDING_IMPLEMENTATION
-cutoverCommit: PENDING_IMPLEMENTATION
 cutoverRef: refs/tags/kokoro-monorepo-cutover-2026-07-25
 sources:
   - id: kokoro-agent
@@ -355,8 +359,11 @@ sources:
     bundleRestoreTestDigest: PENDING_IMPLEMENTATION
 ```
 
-其他三仓使用 §2.1 冻结值。`approvedSpecCommit` 与 ownership attestation 在实施计划开始前清零；所有
-`PENDING_IMPLEMENTATION` 在 import commit 前清零。Git tree hash 是内容权威，archive hash 只是传输证据。
+其他三仓使用 §2.1 冻结值。`approvedSpecCommit` 与 ownership attestation 在实施计划开始前清零；import 所需的
+`cutoverParentCommit`、archive/bundle/restore 字段在机械 import 前清零。未来 commit 不写进其自身内容：
+`exactSnapshotImportCommit` 与 `implementationCommit` 只由后续 evidence commit引用已经存在的历史 commit；最终验证
+head 由外部 CI/签名 attestation 记录并以 URL/digest 引用，禁止在被哈希对象内预填自身 SHA。
+Git tree hash 是内容权威，archive hash 只是传输证据。
 Archive digest 的标准命令固定为来源仓同一 Git toolchain 下执行：
 
 ```bash
@@ -382,7 +389,7 @@ tree 权威。Bundle 至少保留至 Wave 9 上线后 180 天，并在另一 che
 test "$(git rev-parse HEAD:kokoro-agent)" = b06557b5876125f2a014bc6b9597bb7ac9a30780
 test "$(git rev-parse HEAD:kokoro-platform)" = 4093ce419d57089b5128ff1783a41fc6bc1733b8
 test "$(git rev-parse HEAD:kokoro-session)" = 55ea2b5d6c50eb172e5eb1cedf6b09f7b7526bca
-test "$(git rev-parse HEAD:kokoro-web)" = fa2286484ca485eb532fc0a4f9df990b5a24d677
+test "$(git rev-parse HEAD:kokoro-web)" = c88c4f29197fafb1158c561e1bfe8153d04e7fcc
 test ! -f .gitmodules
 test -z "$(git ls-files -s | awk '$1 == 160000 {print}')"
 test -z "$(find kokoro-agent kokoro-platform kokoro-session kokoro-web -name .git -print -quit)"
@@ -1000,8 +1007,8 @@ schemaVersion: 1
 wave: 0
 root:
   cutoverParentCommit: <sha>
-  cutoverCommit: <sha>
-  verifiedCommit: <sha>
+  exactSnapshotImportCommit: <earlier-sha>
+  implementationCommit: <earlier-sha>
 digests:
   pnpmLock: <sha256>
   uvLock: <sha256>
@@ -1016,6 +1023,9 @@ repositoryControls:
   codeownersDigest: <sha256>
   noOpProtectionPr: <url>
 sourceArchives: []
+externalAttestations:
+  finalHeadVerificationRef: <ci-artifact-or-signed-attestation-ref>
+  finalHeadVerificationDigest: <sha256>
 dependencyMigration:
   report: <repo-relative-path>
 security:
@@ -1027,8 +1037,10 @@ exceptions: []
 ```
 
 每个 command entry 记录 argv、cwd、runtime/tool version、started/finished、exit status、report path/digest 和
-CI run URL；每个外部 archive/bundle/ruleset evidence 记录 verifiedAt/By/reference。报告内不得复制 secret、
-生产数据或完整环境变量。Manifest schema、引用文件、digest 与 completed status 由 `foundation` job 校验。
+CI run URL；每个外部 archive/bundle/ruleset evidence 记录 verifiedAt/By/reference。repo 内 manifest 只能引用其 parent
+或更早的 implementation/import commit；最终 head 的 commit/digest、命令和签名由不可变外部 attestation 记录，避免
+commit 自引用。报告内不得复制 secret、生产数据或完整环境变量。Manifest schema、引用文件、digest 与 completed status
+由 `foundation` job 校验。
 
 ## 17. INDEX/Dependency 负向 Fixture 矩阵
 
@@ -1162,5 +1174,5 @@ Wave 0 输出给后续 Wave 的不是新业务 API，而是稳定工程契约：
 6. 同意本 Wave 触及 Agent 打包/Python/Docker/CI，但不改变 GA runtime 行为。
 
 批准后下一步：使用 `superpowers:writing-plans` 生成
-`docs/superpowers/plans/2026-07-25-wave-0-repository-contract-foundation-implementation-plan.md`，再进入隔离
+`docs/superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md`，再进入隔离
 worktree 和 TDD/双阶段 review。本文本身不授权直接实施。
