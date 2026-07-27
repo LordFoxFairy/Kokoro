@@ -55,7 +55,7 @@
   "contractsDigest": "dcc4e02f1616943e053637f4dc149d6cda890448fd9d83a17cb994927706cb7d",
   "evidence": [
     {
-      "digest": "c1275e60af14b5f80654fbd3a7a36b94f983f86861d2a154566b0f02ae02bce0",
+      "digest": "4b92714868a39ad79d3f0b21901d7596314e4e41dee65760259a7c3801886b12",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,11 +63,11 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "149a7f328efb71b06f4c1eb977650a2749f93a8d2f38016b70fc54ae39611252",
+  "evidenceDigest": "46b9b4fd2b964657e1b16d77770a93dd8073fe64c2a350e5e22f94f7cbdb9155",
   "generatorVersion": 1,
-  "manifestDigest": "4e3b27086bbadbb3d5c072d3e81092240990749d61471146c197939db420361b",
-  "matrixDigest": "7f416f735ff674deda2d9ee8f5c14ad46fa04d16dcf3c7ddb8b333442e113af3",
-  "promotionCommit": "c03a49857ad82aff376aed14045eb66537cbd47f",
+  "manifestDigest": "cacab1c45f3fd0c513ad7f629a0bae9bcb236a9f59237b3b6d07db855b5ad709",
+  "matrixDigest": "e25c571ba304ed6704b091ce6497bbdc17204904ff5e0d15611a216603f73616",
+  "promotionCommit": "6f46f3f7b0e539b04a8a52e11cf2798b082de0ff",
   "repositories": [
     {
       "id": "kokoro-agent",
@@ -92,7 +92,7 @@
       "id": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
       "path": "kokoro-platform",
-      "pin": "948b31bea33404aa65def967d4e13f97eb4da461",
+      "pin": "7b288a6497609b206ac6cca4d2516b2a59a100c2",
       "protocols": [
         {
           "id": "model-gateway",
@@ -110,7 +110,7 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-provider-contracts-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-contract-only-entry-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
@@ -158,9 +158,9 @@
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "2d3403a470aaa2b8c6b10f52e922a5326214275b2dd2b45453cdfe260f208e5d",
-    "combinationId": "wave0-provider-contracts-2026-07-27",
-    "evidenceDigest": "821a3525341b8080d9a4d3dcffa9ef65738a21ecd03d37331039604cc05e065b",
+    "combinationDigest": "18269ec5bf3347746ded47f62cbe2a764b771b7e8cd5fbd627294706bf0efecc",
+    "combinationId": "wave0-contract-only-entry-2026-07-27",
+    "evidenceDigest": "bca3fb7ffbe8ebc8dd50b6096f59d62913eb7a03dfb457b4834a0712bca25a10",
     "outcome": "pass",
     "treeMode": "index"
   },
