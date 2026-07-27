@@ -36,6 +36,17 @@ i18n 12 tests 和两 App typecheck 通过，但 i18n lint 找不到 ESLint；Pla
 `kokoro-site/src/bootstrap` 失败；Agent 当前被 uv 解析到 Python 3.14 且无 Mongo/Redis 服务，完整 suite 出错/等待，已人工中止。
 这些都必须在 Task 1 evidence 中准确记录，不得写成绿色基线。
 
+已确认根因（只诊断，尚未实施修复）：
+
+- Platform：commit `3434245` 新增 `kokoro-site/src/bootstrap/seed-default-site.ts`，但自初始 DDD gate 起允许集合只含
+  application/config/domain/infrastructure/interfaces。不是 Vitest 偶发；机械导入必须先保持该事实，随后 Task 6 把 seed
+  composition entry 移入明确的 `interfaces/cli`（并更新 package script），而不是给所有模块宽泛放开 `bootstrap`。
+- Web：`@kokoro/i18n` 声明 `eslint .`，但在 `node-linker=isolated` 下既无自身 ESLint devDependency，也无可继承的根工具
+  package，因此 `.bin/eslint` 不存在；这由 Task 6 的根 catalog + leaf executable declaration修复。
+- Agent：`requires-python >=3.11` 且无 exact `.python-version`，当前 uv venv 已解析为 Python 3.14；测试 fixture 又明确要求真实
+  Redis/Mongo、不可达 fail-loud，故无服务运行产生大量 error并在 Mongo teardown等待。这不是 GA 语义失败；Task 1 必须用
+  Python 3.11旧锁+隔离服务取得旧 corpus，Task 5再用3.12比较。
+
 ## File map
 
 | Path | Responsibility |
