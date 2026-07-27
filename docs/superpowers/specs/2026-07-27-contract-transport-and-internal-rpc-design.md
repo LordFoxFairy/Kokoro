@@ -2,10 +2,14 @@
 artifact: architecture-design
 version: "1.0"
 created: 2026-07-27
-status: internal-review-active
+status: internally-approved
 scope: cross-repository-contract-transport-internal-rpc-public-http-sse-durable-messaging
-implementationAuthorized: false
+implementationAuthorized: true
 gaRuntimeSemanticChangeAuthorized: false
+reviewedBy:
+  - platform-owner
+  - web-owner
+  - session-owner
 supersedesTransportSectionsOf:
   - 2026-07-25-platform-modular-core-internal-rpc-design.md
 ---
