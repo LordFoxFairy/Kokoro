@@ -428,6 +428,7 @@ AdminAuthService.v1
   CreateVerificationToken
   ConsumeVerificationToken
   RecordAuthEvent
+  GetCommandReceipt
 ```
 
 要求：
