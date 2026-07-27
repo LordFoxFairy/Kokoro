@@ -373,6 +373,10 @@ Python/TypeScript 混合系统优先从单一事实来源生成客户端类型�
 
 Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录。默认入口是：
 
+Kokoro 的 `kokoro-agent`、`kokoro-platform`、`kokoro-session`、`kokoro-web` 是 `.gitmodules`
+管理的独立仓库。根仓不得把它们机械导入为 ordinary tracked tree，也不得删除 gitlink、合并为单 lock/单 CI；
+跨仓治理由 root contract、Infra、兼容矩阵、验证编排和明确的 submodule pin 更新承担。
+
 1. `docs/AGENTS.md`
 2. `docs/CURRENT.md`
 3. `docs/README.md`

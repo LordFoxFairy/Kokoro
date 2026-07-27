@@ -11,6 +11,12 @@ gaRuntimeSemanticChangeAuthorized: false
 
 # Wave 0：Repository、Toolchain、Contract 与 Documentation Foundation
 
+> **2026-07-27 owner correction（高于本文后续旧段落）**：四个 `kokoro-*` 是长期独立仓库，由根仓
+> `.gitmodules`/gitlink 固定版本。取消 snapshot import、删除 `.gitmodules`、single lock、single PR 和取消子仓 CI 的方案。
+> Wave 0 的目标改为 federated repositories：根仓统一 contract、Infra、compatibility matrix、验证编排与 pin promotion；
+> 子仓分别拥有 lock、CI、release、rollback 与历史。本文后续与本裁决冲突的旧 monorepo/cutover 描述均不再授权实现，
+> 必须在本 Wave 收口时删除或重写。
+
 ## 0. 文档定位与复审结论
 
 本文是 Kokoro Production Delivery Program 的 Wave 0 子 PRD 与技术设计。它只建立后续 Wave 可以安全

@@ -5,6 +5,13 @@
 
 ## 仓库边界
 
+四个 `kokoro-*` 目录是根仓通过 `.gitmodules` 固定 commit 的**独立 Git 仓库**，不是等待导入根仓的普通目录：
+
+- 子仓分别拥有自己的 branch、lockfile、CI、release、rollback 与版本历史；
+- 根仓只拥有跨仓 contract、统一 Infra/运行编排、兼容矩阵和经过验证的 gitlink pin；
+- 根仓更新子仓只能提交新的 gitlink pin，不得删除 `.gitmodules`、复制 snapshot 覆盖子仓或建立单根 lock；
+- 跨仓一致性通过 contract generation、版本兼容矩阵和 root verification 实现，不通过源码物理合并实现。
+
 ```text
 Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule pins, scripts
   contract/             跨仓契约单源和生成器

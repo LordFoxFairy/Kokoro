@@ -1,5 +1,10 @@
 # Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan
 
+> **2026-07-27 execution correction**：保留 `.gitmodules` 和四个 gitlink，四个子仓长期独立管理。
+> Task 3 的 mechanical snapshot import 以及后续 single-root-lock / 删除子仓 lock/CI 的步骤全部取消，不得执行。
+> 替代路径是：验证冻结 pin → 各子仓独立 feature worktree/lock/CI → root compatibility matrix 与跨仓 gate →
+> 通过审核后只更新 root gitlink pin。已创建的 recovery tags/bundles 作为独立仓恢复锚点继续保留。
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 将四个当前 gitlink 的精确快照导入根仓，并在不改变业务或 GA runtime 语义的前提下建立唯一根 workspace/lock、确定性 contract、INDEX/dependency governance、root CI、root Docker build 与可恢复证据链。
