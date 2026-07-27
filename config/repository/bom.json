@@ -55,7 +55,7 @@
   "contractsDigest": "1de8f590f0fa643ba8e27802fc423533b4c402e995dec5bca657fa1cd27dcf0d",
   "evidence": [
     {
-      "digest": "b686d3ba3b33342c95a7c257079656174b173b6ad2aa8c5d0a5065055463abb7",
+      "digest": "527e9fcee312cb96593aca75ce5114d67ab8acc1e51f98f9c56e4fd811fa8b03",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,17 +63,17 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "45c7d92f4d96d2df3f1b0788c37c8e81b52d46ed7ad704f9cdc6bd1face00169",
+  "evidenceDigest": "0f840f8f5f135bc7399d48067891d1509a9826d7b2b18f3e5dbe6c496a9ece63",
   "generatorVersion": 1,
-  "manifestDigest": "86bca00ec13ab0af5555e7aa7a7dff0e47aff8691851f8d85b6961bc82ffc739",
-  "matrixDigest": "559e4735907508f42e50b4d1a68537a91744f62af564a7ff566b32db9678cc6a",
-  "promotionCommit": "0f30276146fbde276da9569bab87205695690c94",
+  "manifestDigest": "c54c3cacae82fde5bb04272b5b6d7c2047ad829d0d3e4a8e42bf3ea09288b20e",
+  "matrixDigest": "ca7968e1744995ecd99156175aeca676e66e776aadfdd8b3e54c537f2de2e1e9",
+  "promotionCommit": "06997bd0e5a26c34ed25c3f185ce4dde7412060f",
   "repositories": [
     {
       "id": "kokoro-agent",
       "origin": "https://github.com/LordFoxFairy/kokoro-agent.git",
       "path": "kokoro-agent",
-      "pin": "e01b6eab3e4b8b9b1fc193c53590e3ca564c2b51",
+      "pin": "9d3180e5b26b25d2ef8ce9c42636ef18a3305204",
       "protocols": [
         {
           "id": "model-gateway",
@@ -86,13 +86,13 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-agent"
+      "recoverableRef": "refs/tags/kokoro-wave0-hardening-2026-07-27-agent"
     },
     {
       "id": "kokoro-platform",
       "origin": "https://github.com/LordFoxFairy/kokoro-platform.git",
       "path": "kokoro-platform",
-      "pin": "fe5b755f7b1a98247f33e3318f4ade9c4ae87f18",
+      "pin": "f0fd2e4e1e1de1017e0ad5dfacf42e1135576487",
       "protocols": [
         {
           "id": "model-gateway",
@@ -110,7 +110,7 @@
           "version": 1
         }
       ],
-      "recoverableRef": "refs/tags/kokoro-wave0-foundation-2026-07-27-platform"
+      "recoverableRef": "refs/tags/kokoro-wave0-hardening-2026-07-27-platform"
     },
     {
       "id": "kokoro-session",
@@ -158,9 +158,9 @@
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "f5be9e5cf53b0cc3603cfa064d1bcdf40476f2287505da8e6ba6584cdf60b3e9",
-    "combinationId": "wave1-federated-ci-2026-07-27",
-    "evidenceDigest": "1dfb6f78b99744b719b7e21cebc530b66c3e8c7fcd187f1aa400942b438211cc",
+    "combinationDigest": "e9f70fa06605aba4d53dfb4347f8671bc62e3d7a7cb9b035deec31612fcba73e",
+    "combinationId": "wave0-hardening-2026-07-27",
+    "evidenceDigest": "0bd44e4a9232ac58c345768f474cf2e880ac1fee31a11c2032f718fbe2bb8565",
     "outcome": "pass",
     "treeMode": "index"
   },

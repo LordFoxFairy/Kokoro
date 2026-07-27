@@ -254,3 +254,90 @@ These are recorded as open, not as passed:
    remaining internal calls stay on JSON/Zod mirrors plus `callService`. See
    [architecture survey](../../2026-07-27-kokoro-architecture-survey.md) §3.
 5. Session `legacy-admission-adapter.ts` unknown/not_found still lacks a real Admission RPC — Wave 3, not Wave 0.
+
+---
+
+# Round 2 — hardening promotion (2026-07-27)
+
+Two children advanced past the first promotion; Session and Web are unchanged and keep their round-1 pins.
+
+Promotion commit: `06997bd0e5a26c34ed25c3f185ce4dde7412060f` (`build(repository): promote wave 0 hardening pins`),
+four paths: the manifest, the compatibility matrix `combinationId`, and the two moved gitlinks.
+
+| Repository | Pin | Recoverable ref | Child CI |
+|---|---|---|---|
+| Agent | `9d3180e5b26b25d2ef8ce9c42636ef18a3305204` | `refs/tags/kokoro-wave0-hardening-2026-07-27-agent` | success |
+| Platform | `f0fd2e4e1e1de1017e0ad5dfacf42e1135576487` | `refs/tags/kokoro-wave0-hardening-2026-07-27-platform` | success |
+
+Both new tags are annotated and their peeled SHA was verified against the pin on the remote.
+
+## What changed and why
+
+**Agent** — added `.python-version` (3.11). The repository had no interpreter pin and its CI installs uv without a
+`python-version` input, so `uv sync --locked` resolved whichever interpreter the runner offered; a clean clone here
+picked CPython 3.14.3 against a lock whose recorded baseline was 3.11. Anchored to the four agreeing in-repo
+declarations: `Dockerfile: FROM python:3.11-slim`, Pyright `pythonVersion`, Mypy `python_version`, and the
+`requires-python` lower bound. `uv.lock` is byte-identical and no `src/` file changed, so GA semantics are untouched.
+Verified: Ruff clean, Pyright `0 errors, 0 warnings, 0 informations`, pytest `609 passed, 1 skipped` — matching the
+recorded baseline, with the single skip environmental (`parent-repo examples not present`) and announced.
+
+**Platform** — `callService` now requires an explicit `caller`, and the unreachable shared-secret fallback module
+`internal-secret-guard.ts` was deleted along with its public re-export. All six production call sites already passed a
+caller and `route-access` answers 401 without the header, so the fallback had zero consumers. Unit tests move
+`1,082 → 1,076`; the delta is exactly the six cases in the deleted module's own test file, with every other package
+unchanged. Integration is `603 passed / 0 failed` across eight packages.
+
+Two documentation defects found by the INDEX audit were fixed in the same commit: `platform-kit/INDEX.md` now
+enumerates its six export subtrees instead of asserting only that `src/index.ts` is supported, and `src/rpc/INDEX.md`
+now states that Connect covers `platform-admin-auth v1` alone. `callService` had appeared in none of the 58 INDEX
+files, so the RPC component read as evidence that internal traffic had already migrated.
+
+## A silent skip that had never run in CI
+
+`kokoro-platform-admin/test/integration/admin-auth-prisma.test.ts` guarded itself with `describe.skipIf`, requiring a
+database literally named `kokoro_admin_verify`. Platform CI provisions `kokoro_admin_test` under its `<service>_test`
+convention, so **those five tests had never executed in CI while the workflow reported green**. Converting the guard to
+fail-loud surfaced this immediately as a red run. The guard now accepts either admin-only throwaway database and still
+refuses shared ones, because the suite truncates operator/auth tables. Verified both directions: with the CI name the
+five tests execute (12 passed), and a shared database is refused rather than skipped.
+
+## Round 2 runtime compatibility gate
+
+```text
+outcome: pass       treeMode: index      durationMs: 83292
+combinationId:     wave0-hardening-2026-07-27
+combinationDigest: e9f70fa06605aba4d53dfb4347f8671bc62e3d7a7cb9b035deec31612fcba73e
+manifestDigest:    10d9c1bd341738b3320831f8ff2c310ec208e97577c69e2b5d7dec74acde374a
+matrixDigest:      ff8457799946a62f2732400e34f6dfc80c6a85dc880a87515fea294d9e096fdd
+preflightPinVerification: pass    postflightPinVerification: pass
+```
+
+| Scenario | Outcome | ms |
+|---|---|---:|
+| `web-session-http-sse` | pass | 7361 |
+| `session-platform-internal-rpc` | pass | 2538 |
+| `session-agent-durable-localfake` | pass | 2631 |
+| `agent-model-gateway-localfake` | pass | 4776 |
+| `platform-admin-auth-connect` | pass | 2830 |
+
+## New root governance in this round
+
+- `contract/registry/boundaries.yaml` records all five boundaries and their 77 operations against their real contract
+  sources, gated by `scripts/contract/check-boundary-registry.mjs` and wired into root CI. It reports two facts the
+  codebase could not previously measure: **46 operations derive `siteId` from a hop-level header and none carry it as a
+  request field**, and `model-gateway` has no machine-readable contract source. Both appear in the success line as
+  counted debt rather than being silently blessed. The gate was verified to reject source-missing, unstructured
+  site-scope, operation-orphan and namespace-axis-pollution mutations.
+- The INDEX coverage gate now requires a concrete backticked entrypoint in `Public boundary`, rejects empty sections,
+  permits `N/A` only with a stated reason, and validates link anchors.
+
+## Open after round 2
+
+1. Root remote CI has never run: the repository has zero Actions secrets, so `contract.yml` fails on its own
+   `KOKORO_SUBMODULE_TOKEN` guard. Owner action; no root BOM tag until a green run exists.
+2. Both `uv.lock` files pin every artifact URL to an Aliyun mirror (agent 1821 / root 29, zero canonical PyPI), which
+   is what timed out the first agent CI run. A plain re-resolve fixes the URLs but mass-upgrades roughly sixty
+   packages including `langgraph`, `langchain-core`, `deepagents`, `protobuf` 6→7 and `wrapt` 1→2, plus a `websockets`
+   downgrade — an unapproved GA dependency change. Requires a constraints-pinned re-lock proving zero version drift.
+3. Subrepo INDEX findings from the audit (5 Critical / 9 Important / 10 Minor) are partly addressed; the remainder
+   needs its own promotion round.
