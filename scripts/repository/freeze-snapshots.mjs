@@ -128,7 +128,7 @@ function parseArguments(argv) {
     throw new FreezeError("custom_sources_forbidden", "--source is test-only");
   }
   options.sources = options.sources.length > 0 ? options.sources : DEFAULT_SOURCES;
-  options.output ??= resolve(options.root, "config/repository/imported-snapshots.yaml");
+  options.output ??= resolve(options.root, "config/repository/frozen-submodules.yaml");
   options.archiveTag ??= "kokoro-monorepo-cutover-2026-07-26";
   const ids = options.sources.map(([id]) => id);
   if (new Set(ids).size !== ids.length) {
@@ -188,7 +188,6 @@ function renderManifest(manifest) {
     `gitVersion: ${yamlScalar(manifest.gitVersion)}`,
     `freezeParentCommit: ${yamlScalar(manifest.freezeParentCommit)}`,
     `approvedSpecCommit: ${yamlScalar(manifest.approvedSpecCommit)}`,
-    "cutoverParentCommit: null",
     `rootTrackedDirty: ${manifest.rootTrackedDirty}`,
     `rootTrackedStatusSha256: ${yamlScalar(manifest.rootTrackedStatusSha256)}`,
     `ownershipAttestationRef: ${yamlScalar(manifest.ownershipAttestationRef)}`,

@@ -250,6 +250,7 @@ test("ignores ignored source files", async () => {
     assert.match(baseline, /trackedFileCount: 3/);
     assert.match(baseline, /rootTrackedDirty: false/);
     assert.match(baseline, /gitVersion: "git version /);
+    assert.doesNotMatch(baseline, /cutoverParentCommit|exactSnapshotImportCommit/u);
   });
 });
 
