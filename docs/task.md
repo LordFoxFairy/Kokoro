@@ -58,7 +58,12 @@
 
 ### 待办优先级(下一会话/loop 从这里接)
 
-1. **Wave T2 Public Admin API**(见任务 #7)——**唯一未开工项**:按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
+1. **Wave T2 Public Admin API**(见任务 #7)——**step 1 已完成**:
+   `contract/openapi/admin-web-v1.yaml`(3.1,14 paths / 16 operations,信封与 4 个 domain error code
+   全部对着 handler 核过)+ 防漂移门 `scripts/contract/check_admin_openapi.py`(11 条否定 fixture,
+   已对真文件实测会 fail,已进根 CI)。**剩余部分要动 kokoro-web,需走 pin promotion**:
+   生成浏览器 client/validators、替换 `lib/schemas.ts` 手写 schema、让 `lib/api.ts` 不再吞掉 domain code、
+   删掉 `apps/admin/next.config.ts` 的透明 catch-all rewrite。两个 trust plane 不得合并成一个 client 包。:按 spec §13 顺序,T0/T1 已完成,下一步是给 Admin 浏览器面
    建完整 OpenAPI 3.1 + 生成客户端 + 删透明 rewrite/页面手写 schema。**注意**:那 6 处 `callService` 不属 T2,
    spec §3.2 判定其中部分本属同一 Platform workflow,应在 T3 收拢为本地 application interface 而非包装成 RPC。
 2. **根 CI 仍阻塞在用户侧**:需用户建 `KOKORO_SUBMODULE_TOKEN`(对四个私有子仓只读 Contents 的
