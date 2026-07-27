@@ -1,0 +1,955 @@
+{
+  "schemaVersion": 1,
+  "owners": [
+    "@LordFoxFairy"
+  ],
+  "boundaries": [
+    {
+      "id": "model-gateway",
+      "version": 1,
+      "protocol": "http-json-openai",
+      "trustPlane": "internal-service",
+      "scope": "namespace",
+      "audience": "internal-workload",
+      "provider": {
+        "repository": "kokoro-platform",
+        "boundary": "platform.litellm"
+      },
+      "consumers": [
+        {
+          "repository": "kokoro-agent",
+          "boundary": "service.agent"
+        }
+      ],
+      "failureOwner": "kokoro-platform",
+      "deadlineMs": null,
+      "sourceStatus": "declared-only",
+      "sources": [],
+      "transports": [
+        "http-json-openai"
+      ],
+      "transportSource": null,
+      "operations": [
+        {
+          "id": "chat_completions",
+          "transport": "http-json-openai",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        }
+      ]
+    },
+    {
+      "id": "platform-admin-auth",
+      "version": 1,
+      "protocol": "connect-rpc",
+      "trustPlane": "internal-control",
+      "scope": "platform",
+      "audience": "operator",
+      "provider": {
+        "repository": "kokoro-platform",
+        "boundary": "platform.admin"
+      },
+      "consumers": [
+        {
+          "repository": "kokoro-web",
+          "boundary": "web.admin"
+        }
+      ],
+      "failureOwner": "kokoro-platform",
+      "deadlineMs": null,
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/admin/v1/admin_auth.proto",
+          "select": {
+            "service": "AdminAuthService"
+          }
+        }
+      ],
+      "transports": [
+        "connect-rpc"
+      ],
+      "transportSource": null,
+      "operations": [
+        {
+          "id": "GetOperatorByEmail",
+          "transport": "connect-rpc",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "GetOperator",
+          "transport": "connect-rpc",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "CreateVerificationToken",
+          "transport": "connect-rpc",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "command-receipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          }
+        },
+        {
+          "id": "ConsumeVerificationToken",
+          "transport": "connect-rpc",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "command-receipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          }
+        },
+        {
+          "id": "RecordAuthEvent",
+          "transport": "connect-rpc",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "command-receipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          }
+        },
+        {
+          "id": "GetCommandReceipt",
+          "transport": "connect-rpc",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        }
+      ]
+    },
+    {
+      "id": "platform-runtime",
+      "version": 1,
+      "protocol": "http-json",
+      "trustPlane": "internal-service",
+      "scope": "site",
+      "audience": "internal-workload",
+      "provider": {
+        "repository": "kokoro-platform",
+        "boundary": "service.platform"
+      },
+      "consumers": [
+        {
+          "repository": "kokoro-session",
+          "boundary": "service.session"
+        }
+      ],
+      "failureOwner": "kokoro-platform",
+      "deadlineMs": null,
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/platform-runtime.yaml",
+          "select": {
+            "section": "objects",
+            "member": "field",
+            "field": "name",
+            "match": "^(.+?)(?:Request|Query)$",
+            "case": "snake"
+          }
+        }
+      ],
+      "transports": [
+        "http-json"
+      ],
+      "transportSource": null,
+      "operations": [
+        {
+          "id": "usage_hold",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "idempotencyKey"
+          }
+        },
+        {
+          "id": "usage_settle",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "idempotencyKey"
+          }
+        },
+        {
+          "id": "release_credit",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "idempotencyKey"
+          }
+        },
+        {
+          "id": "resolve_model_bindings",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "list_model_labels",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        }
+      ]
+    },
+    {
+      "id": "session-agent-execution",
+      "version": 1,
+      "protocol": "redis-stream",
+      "trustPlane": "internal-durable",
+      "scope": "namespace",
+      "audience": "agent-runtime",
+      "provider": {
+        "repository": "kokoro-agent",
+        "boundary": "service.agent"
+      },
+      "consumers": [
+        {
+          "repository": "kokoro-session",
+          "boundary": "service.session"
+        }
+      ],
+      "failureOwner": "kokoro-agent",
+      "deadlineMs": null,
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/control.yaml",
+          "select": {
+            "section": "messages",
+            "member": "field",
+            "field": "kind"
+          }
+        },
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/events.yaml",
+          "select": {
+            "section": "raw_kinds",
+            "member": "field",
+            "field": "kind"
+          }
+        }
+      ],
+      "transports": [
+        "requests",
+        "run_control",
+        "run_events"
+      ],
+      "transportSource": {
+        "kind": "spec-yaml",
+        "path": "contract/spec/streams.yaml",
+        "select": {
+          "section": "streams",
+          "member": "mapping-key"
+        }
+      },
+      "operations": [
+        {
+          "id": "run.request",
+          "transport": "requests",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "durable-event",
+            "ref": "run.started"
+          }
+        },
+        {
+          "id": "run.resume",
+          "transport": "run_control",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "durable-event",
+            "ref": "run.control.receipt"
+          }
+        },
+        {
+          "id": "run.cancel",
+          "transport": "run_control",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "durable-event",
+            "ref": "run.control.receipt"
+          }
+        },
+        {
+          "id": "run.steer",
+          "transport": "run_control",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "message_id"
+          }
+        },
+        {
+          "id": "run.started",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "thinking.delta",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "message.delta",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "message.completed",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "tool.invoked",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "tool.output.delta",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "tool.awaiting_approval",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "tool.returned",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "todo.updated",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.started",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.finished",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.thinking.delta",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.text.delta",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.text.completed",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.tool.invoked",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "subagent.tool.returned",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "delivery.created",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "run.control.receipt",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "run.completed",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        },
+        {
+          "id": "run.failed",
+          "transport": "run_events",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "receipt": null
+        }
+      ]
+    },
+    {
+      "id": "session-browser",
+      "version": 1,
+      "protocol": "http-json-sse",
+      "trustPlane": "site-bff",
+      "scope": "site",
+      "audience": "browser-user",
+      "provider": {
+        "repository": "kokoro-session",
+        "boundary": "service.session"
+      },
+      "consumers": [
+        {
+          "repository": "kokoro-web",
+          "boundary": "service.web"
+        }
+      ],
+      "failureOwner": "kokoro-session",
+      "deadlineMs": null,
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/http.yaml",
+          "select": {
+            "section": "endpoints",
+            "member": "mapping-key"
+          }
+        },
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/events.yaml",
+          "select": {
+            "section": "browser_order",
+            "member": "scalar"
+          }
+        }
+      ],
+      "transports": [
+        "http-json",
+        "http-sse"
+      ],
+      "transportSource": null,
+      "operations": [
+        {
+          "id": "agent_candidates",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "artifact_content",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "billing_by_model",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "billing_ledger",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "billing_summary",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "control_receipt",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "create_message",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "http-receipt-body",
+            "ref": "messageCreateReceiptSchema"
+          }
+        },
+        {
+          "id": "delete_session",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "http-receipt-body",
+            "ref": "deleteSessionReceiptSchema"
+          }
+        },
+        {
+          "id": "delivery_content",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "file",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "list_artifacts",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "list_sessions",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "model_candidates",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "rename_session",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "http-receipt-body",
+            "ref": "renameSessionReceiptSchema"
+          }
+        },
+        {
+          "id": "run_control",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "http-receipt-body",
+            "ref": "runControlReceiptSchema"
+          }
+        },
+        {
+          "id": "share_create",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "http-receipt-body",
+            "ref": "shareReceiptSchema"
+          }
+        },
+        {
+          "id": "share_revoke",
+          "transport": "http-json",
+          "effect": true,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": {
+            "kind": "state-read",
+            "ref": "shared_snapshot"
+          }
+        },
+        {
+          "id": "shared_snapshot",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "snapshot",
+          "transport": "http-json",
+          "effect": false,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "stream",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "same_identity",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "session.created",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "run.created",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "message.user",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "message.delta",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "message.completed",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "thinking.delta",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "tool.invoked",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "tool.output.delta",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "tool.awaiting_approval",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "tool.returned",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "delivery.created",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "todo.updated",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.started",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.finished",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.thinking.delta",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.text.delta",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.text.completed",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.tool.invoked",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "subagent.tool.returned",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "run.completed",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        },
+        {
+          "id": "run.failed",
+          "transport": "http-sse",
+          "effect": false,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "context-header",
+          "receipt": null
+        }
+      ]
+    }
+  ]
+}

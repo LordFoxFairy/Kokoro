@@ -87,6 +87,18 @@
       "verification": [{ "cwd": ".", "argv": ["node", "--test", "scripts/compatibility/*.test.mjs"] }]
     },
     {
+      "id": "root.scripts.contract",
+      "path": "scripts/contract",
+      "kind": "component",
+      "index": "scripts/contract/INDEX.md",
+      "owners": ["@LordFoxFairy"],
+      "boundary": "root.scripts",
+      "language": "javascript",
+      "signals": ["scripts/contract/INDEX.md"],
+      "dependencies": { "allow": ["root.contract"] },
+      "verification": [{ "cwd": ".", "argv": ["node", "--test", "scripts/contract/*.test.mjs"] }]
+    },
+    {
       "id": "root.scripts.infra",
       "path": "scripts/infra",
       "kind": "component",
