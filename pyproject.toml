@@ -12,4 +12,15 @@ dev = [
 ]
 
 [tool.uv]
+# 锁定制品来源用：uv 把 constraint-dependencies 记进 lock manifest，
+# 移除它们会让 `uv lock --check` 要求重新解析，所以这些约束必须常驻。
+constraint-dependencies = [
+  "colorama==0.4.6",
+  "iniconfig==2.3.0",
+  "packaging==26.2",
+  "pluggy==1.6.0",
+  "pygments==2.20.0",
+  "pytest==9.0.2",
+  "pyyaml==6.0.3",
+]
 package = false

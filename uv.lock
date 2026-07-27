@@ -2,6 +2,17 @@ version = 1
 revision = 3
 requires-python = "==3.11.*"
 
+[manifest]
+constraints = [
+    { name = "colorama", specifier = "==0.4.6" },
+    { name = "iniconfig", specifier = "==2.3.0" },
+    { name = "packaging", specifier = "==26.2" },
+    { name = "pluggy", specifier = "==1.6.0" },
+    { name = "pygments", specifier = "==2.20.0" },
+    { name = "pytest", specifier = "==9.0.2" },
+    { name = "pyyaml", specifier = "==6.0.3" },
+]
+
 [[package]]
 name = "colorama"
 version = "0.4.6"
