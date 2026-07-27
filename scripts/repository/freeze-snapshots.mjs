@@ -129,7 +129,6 @@ function parseArguments(argv) {
   }
   options.sources = options.sources.length > 0 ? options.sources : DEFAULT_SOURCES;
   options.output ??= resolve(options.root, "config/repository/frozen-submodules.yaml");
-  options.archiveTag ??= "kokoro-monorepo-cutover-2026-07-26";
   const ids = options.sources.map(([id]) => id);
   if (new Set(ids).size !== ids.length) {
     throw new FreezeError("snapshot_arguments_invalid", "source ids must be unique");
@@ -335,6 +334,7 @@ async function readExpected(options) {
 async function freeze(options) {
   const ownershipBytes = await readOwnership(options);
   const expected = await readExpected(options);
+  options.archiveTag ??= expected.archiveTag;
 
   const rootTrackedStatus = gitText(options.root, [
     "status",

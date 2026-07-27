@@ -359,3 +359,19 @@ test("reports remote archive-ref reachability without claiming protection", asyn
     assert.equal(anchored.status, 0, anchored.stderr);
   });
 });
+
+test("uses the canonical expected archive tag when the CLI override is omitted", async () => {
+  await withFixture(async (fixture) => {
+    git(fixture.source, "tag", "cutover-test", fixture.pin);
+    git(fixture.source, "push", "origin", "refs/tags/cutover-test");
+    const args = freezeArgs(fixture, "--require-archive-ref");
+    const archiveIndex = args.indexOf("--archive-tag");
+    args.splice(archiveIndex, 2);
+    const result = spawnSync(process.execPath, args, {
+      cwd: fixture.root,
+      encoding: "utf8",
+      env: { ...process.env, KOKORO_FREEZE_TEST_ALLOW_CUSTOM_SOURCES: "1" },
+    });
+    assert.equal(result.status, 0, result.stderr);
+  });
+});
