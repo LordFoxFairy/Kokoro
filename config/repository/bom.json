@@ -55,7 +55,7 @@
   "contractsDigest": "dcc4e02f1616943e053637f4dc149d6cda890448fd9d83a17cb994927706cb7d",
   "evidence": [
     {
-      "digest": "e9fba064f2c80a4a6201c93b85daf65a2ee745a84901950473b508e9eee40dcc",
+      "digest": "2d13cbe9794a88afad4d4077cb38a85a56ff60eb07f37e59603dc9e688924ab4",
       "path": "docs/reports/evidence/wave-0/federated-repository-baseline.md"
     },
     {
@@ -63,7 +63,7 @@
       "path": "docs/reports/evidence/wave-0/ownership-attestation.yaml"
     }
   ],
-  "evidenceDigest": "91429d22db60949695e9dcf558ecafc880dcd32ed8f7816e7ba8665281155f55",
+  "evidenceDigest": "5c90783dc18d44073695278ca56e04964951e0fc1988989d6ca73a3e1cc7f8f1",
   "generatorVersion": 1,
   "manifestDigest": "0a15fa131c9d9aa670ebf55069aeb7463d7ea7147930118ba3ebf6ff10799f2c",
   "matrixDigest": "ee54e5d4d959eb7bdfadb0c3dbed2e19e2c4009e60c138c7f968f16d409a0201",
