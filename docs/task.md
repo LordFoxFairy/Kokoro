@@ -164,6 +164,16 @@ atomic promotion(只含 manifest + gitlink)→ BOM 重绑 → 证据归档)**:
   buf 门禁要 contract 依赖(pnpm 11 首次跑脚本时自动装);`generate-bom.mjs --check` 要兼容性门产出的
   证据文件,缺了**退出 1**(fail-closed,已实测);只有 pinned compatibility 门需要 Docker,裸克隆跑不了。
   python 那步顺带在**全新环境**里复验了 lockfile 修复:从 PyPI 解析、无镜像介入。
+- **(round 15)** round 8b 的 fail-open 排查**只覆盖了 kokoro-platform**——session 在计费链路上、web 在它前面,
+  漏扫是那轮自己声明的缺口而非有意划界。两者现已扫完:**没有第四处**。
+  session 的请求路径乍看**完全就是那个形状**(两个验签器都没配 → 每个请求都是 `LOCAL_OWNER_ID`,
+  且 `namespace = ownerId` → 全体用户共用一个 GA namespace,还是前门,注释里也写着是有意为之)。
+  但它**不是** fail-open:`resolveAuthMode` 在启动期就挡住了——生产直接拒绝 hs256、jwks 缺 URL 抛错、
+  未知 mode 抛错、passthrough 必须显式 `KOKORO_ALLOW_INSECURE_LOCAL_AUTH=true` **且**非生产。
+  `tests/auth-config.test.ts` 10 条钉死;删掉生产那道检查恰好两条转红,`auth.ts` 还原字节一致。
+  **教训:这个形状不能只看请求路径判定**——看着像静默降级的默认值,可能被另一个文件里的启动守卫围住
+  (platform 的 `route-access.ts` 就是同一手法)。只读 handler 会得出一个看起来很严重的假阳性。
+  真正那三处之所以是真的,正因为它们没有这道围栏。
 - **tRPC 不作为跨仓/跨语言标准**(spec §1 明确):四仓是独立仓库没有共享 TS 类型图,且 kokoro-agent 是 Python,
   `model-gateway`/`session-agent-execution` 两条契约跨语言。protobuf+buf 同时给 TS 与 Python 生成客户端并提供
   `buf breaking` 兼容门。仅允许未来同仓同发布单元内经 ADR 批准局部使用 tRPC。

@@ -703,7 +703,8 @@ gates on child CI being green, so a test that flips on identical source can admi
 ## Round 8b — the sweep for a fourth instance
 
 Three fail-opens in the same shape is a pattern, not a coincidence, and nothing in the repository could
-find the fourth. So the whole Platform tree was swept for the three forms the shape takes.
+find the fourth. So the whole Platform tree was swept for the three forms the shape takes. **Platform
+only** — session, web and agent were not covered here; round 15 closes that.
 
 **Optional isolation key in a signature.** Six methods take their Site optionally: `listAccounts`
 (credit), `listPlans` / `listOrders` (payment), `listUsers` / `listTeams` (user), `listSiteModelPolicies`
@@ -939,6 +940,47 @@ looked like it exited 0 on missing evidence when it exits 1. And a `for` loop pa
 variable to `uv run`, which zsh does not word-split, so five gates appeared to fail to spawn. None of
 these were repository defects; all three were re-run correctly before anything was concluded.
 
+## Round 15 — finishing the sweep, and a false positive avoided
+
+Round 8b's sweep for the fail-open shape covered `kokoro-platform` only. Session sits on the billing
+path and web fronts it, so leaving them unswept was a gap in that round's own claim rather than a
+deliberate scope. Both are now swept. **No fourth instance.**
+
+Session's request path looked, at first read, exactly like the shape:
+
+```js
+let ownerId = LOCAL_OWNER_ID
+let namespace = LOCAL_OWNER_ID
+if (deps.authVerifier !== undefined) { ... } else if (deps.authSecret !== undefined) { ... }
+```
+
+Neither configured means every request authenticates as one owner with no credential, and since
+`namespace = ownerId`, every user would share one GA namespace. That is the front door, and it is
+documented in a comment as intended — which is how all three real instances presented.
+
+It is not a fail-open, because the branch is unreachable in production. `resolveAuthMode` refuses to
+start: `hs256` is rejected outright in production, `jwks` without its URL throws, an unknown mode
+throws, and the passthrough requires `KOKORO_ALLOW_INSECURE_LOCAL_AUTH=true` *and* non-production.
+`tests/auth-config.test.ts` pins all of it, 10 tests. Deleting the production check turns exactly two
+of them red — "生产 + hs256 → fail-fast" and "生产 + mode 缺省（视作 hs256）同样 fail-fast" — and
+`auth.ts` restores byte-identical.
+
+That is the correction worth carrying forward: **this shape cannot be judged from the request path
+alone.** A default that reads as a silent downgrade may be fenced by a startup guard in another file,
+exactly as `route-access.ts` fences platform's equivalent. Reading only the handler produces a
+critical-looking false positive. The three real instances had no such fence, which is what made them
+real.
+
+Web contributed nothing: its three candidate lines are a UI state enum, a tool-message fallback
+string and a comment. Its trust boundary is server-side regardless.
+
+One tooling note, since it nearly produced the opposite error. Several single-file `grep` invocations
+in this environment returned no output on files that demonstrably contain the pattern — `ownerId`
+appears 16 times in `server.ts`, yet `grep -c` printed nothing. Counting with Python gave the real
+answer. Had that gone unchecked, this round would have reported "the session HTTP server performs no
+ownership checks", which is false: there are three, at lines 254, 268 and 285, plus owner-scoped
+listing.
+
 ## Verification
 
 All against real services, with no silent skips:
@@ -946,6 +988,7 @@ All against real services, with no silent skips:
 | Suite | Result |
 |---|---|
 | session, real Redis + Mongo + MinIO | 409 passed, 0 skipped |
+| session, real Redis + Mongo + MinIO (round 15) | 409 passed, 0 skipped |
 | model, real MySQL (`--no-file-parallelism`) | 152 passed |
 | platform-admin Connect suite, 5 consecutive runs | 7 passed each |
 | root governance (`scripts/repository` + `compatibility` + `foundation`) | 90 passed |
