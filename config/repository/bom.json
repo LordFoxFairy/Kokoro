@@ -11,7 +11,7 @@
       "version": 1
     },
     {
-      "artifactDigest": "e4c0f68e5891c9f83a26b8a6c74552931f5d6d6c559c3d35a036aa3e53f90267",
+      "artifactDigest": "b1910b839161af1e65ec36edc004efd7379334786e1950d816e7a15140d14bde",
       "consumers": [
         "kokoro-web"
       ],
@@ -52,7 +52,7 @@
       "version": 1
     }
   ],
-  "contractsDigest": "1de8f590f0fa643ba8e27802fc423533b4c402e995dec5bca657fa1cd27dcf0d",
+  "contractsDigest": "dcc4e02f1616943e053637f4dc149d6cda890448fd9d83a17cb994927706cb7d",
   "evidence": [
     {
       "digest": "7562c323605d1f7cb68f1775096ab48f667fb7adcb3725ecc04418fd4d7506fa",
@@ -66,7 +66,7 @@
   "evidenceDigest": "52fa214627f67bb0b8d971fbe79893e5478289c3cd0b3cffa84e013280bd48f0",
   "generatorVersion": 1,
   "manifestDigest": "99ee5ce6009768758cdc8034484bdb529b2c54cd27d190a379967fee1013a5e7",
-  "matrixDigest": "ba3dee0f630be76536535ada33823d9d928a79f4b42419b91e28f2322f3700f5",
+  "matrixDigest": "f92a8e9e9810da13d150292614ff6266934b747d2de1aa207535c0f58d8d1389",
   "promotionCommit": "a56dc6e4e084e65ab8a6d5fa88695c470c2689af",
   "repositories": [
     {
@@ -158,11 +158,11 @@
   ],
   "repositoryTopology": "federated-submodules-v1",
   "runtimeGate": {
-    "combinationDigest": "adb66759dd2a5a6873bce11fe5a549eadb0d381ce7ed4de085d9e43d78aeeba4",
+    "combinationDigest": "6d682621c828bb128da6de575c7750d9eef330f5470eda7255252de929f58c6f",
     "combinationId": "wave0-admission-contract-2026-07-27",
-    "evidenceDigest": "4a3c3d391ed47f199bfa16e5778b596b838c8f5bcbf4b41e57026b18d9bd5285",
+    "evidenceDigest": "2f1e850ef663df2d7be32d8de840dc6033545728dc629dff2c3a07ff0cd0c601",
     "outcome": "pass",
-    "treeMode": "index"
+    "treeMode": "head"
   },
   "schemaVersion": 1
 }
