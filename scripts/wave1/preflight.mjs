@@ -2,8 +2,8 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
-import { lstatSync, realpathSync } from "node:fs";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { constants, lstatSync, realpathSync } from "node:fs";
+import { lstat, mkdir, open, readFile, realpath, rename, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,6 +32,25 @@ const EXPECTED_REPOSITORIES = [
 ];
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const DIGEST_PATTERN = /^[0-9a-f]{64}$/u;
+const SNAPSHOT_KEYS = [
+  "decisions", "ga", "repository", "schemaVersion", "specification", "wave",
+];
+const SPECIFICATION_KEYS = [
+  "gaRuntimeSemanticChangeAuthorized", "implementationAuthorized", "parent", "status",
+];
+const PARENT_KEYS = ["actualVersion", "declaredFile", "declaredVersion", "exists"];
+const DECISION_KEYS = ["adr005", "adr012", "expectedAdr012Digest"];
+const ADR012_KEYS = ["adopted", "digest"];
+const ADR005_KEYS = ["reverseLink", "supersededBy"];
+const REPOSITORY_KEYS = [
+  "bomManifestDigest", "contractsDigest", "evidenceDigest", "evidenceVerified",
+  "generatedContractsVerified", "manifestDigest", "repositories", "rootStatus",
+];
+const REPOSITORY_ITEM_KEYS = ["actualSha", "expectedSha", "id", "status"];
+const GA_KEYS = [
+  "actualSha", "controlAdapterSha256", "controlSpecSha256",
+  "expectedControlAdapterSha256", "expectedControlSpecSha256", "expectedSha", "status",
+];
 
 export class PreflightError extends Error {
   constructor(code, detail = "") {
@@ -51,6 +70,40 @@ function isDigest(value) {
 
 function isSha(value) {
   return typeof value === "string" && SHA_PATTERN.test(value);
+}
+
+function exactKeys(value, keys) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
+}
+
+function assertClosedSnapshotShape(snapshot) {
+  if (
+    !exactKeys(snapshot, SNAPSHOT_KEYS) ||
+    !exactKeys(snapshot.specification, SPECIFICATION_KEYS) ||
+    !exactKeys(snapshot.specification.parent, PARENT_KEYS) ||
+    !exactKeys(snapshot.decisions, DECISION_KEYS) ||
+    !exactKeys(snapshot.decisions.adr012, ADR012_KEYS) ||
+    !exactKeys(snapshot.decisions.adr005, ADR005_KEYS) ||
+    !exactKeys(snapshot.repository, REPOSITORY_KEYS) ||
+    !exactKeys(snapshot.ga, GA_KEYS) ||
+    !Array.isArray(snapshot.repository.repositories) ||
+    snapshot.repository.repositories.length !== EXPECTED_REPOSITORIES.length ||
+    snapshot.repository.repositories.some(
+      (repository) => !exactKeys(repository, REPOSITORY_ITEM_KEYS),
+    )
+  ) {
+    fail("wave1_snapshot_invalid");
+  }
+  const ids = snapshot.repository.repositories.map(({ id }) => id);
+  if (
+    new Set(ids).size !== EXPECTED_REPOSITORIES.length ||
+    EXPECTED_REPOSITORIES.some((id) => !ids.includes(id))
+  ) {
+    fail("wave1_snapshot_invalid");
+  }
 }
 
 function sha256(bytes) {
@@ -102,7 +155,9 @@ async function readJson(root, path, code) {
 async function readOptionalBaseline(path) {
   try {
     const source = await readFile(path, "utf8");
-    return JSON.parse(source);
+    const baseline = JSON.parse(source);
+    assertPreflightSnapshot(baseline);
+    return baseline;
   } catch (error) {
     if (error.code === "ENOENT") return null;
     fail("wave1_baseline_invalid", error.message);
@@ -135,7 +190,84 @@ function assertNoSymlinkPath(base, target) {
   }
 }
 
+function identity(status) {
+  return { dev: status.dev, ino: status.ino };
+}
+
+function sameIdentity(left, right) {
+  return left.dev === right.dev && left.ino === right.ino;
+}
+
+async function checkedDirectoryIdentity(path, expectedPath, expectedIdentity = null) {
+  let status;
+  let actualPath;
+  try {
+    status = await lstat(path);
+    if (status.isSymbolicLink() || !status.isDirectory()) fail("wave1_baseline_path_changed");
+    actualPath = await realpath(path);
+  } catch (error) {
+    if (error instanceof PreflightError) throw error;
+    fail("wave1_baseline_path_changed");
+  }
+  const actualIdentity = identity(status);
+  if (
+    actualPath !== expectedPath ||
+    (expectedIdentity && !sameIdentity(actualIdentity, expectedIdentity))
+  ) {
+    fail("wave1_baseline_path_changed");
+  }
+  return actualIdentity;
+}
+
+async function prepareBaselineDirectory(target) {
+  await checkedDirectoryIdentity(
+    target.gitDirectory,
+    target.gitDirectory,
+    target.gitDirectoryIdentity,
+  );
+  if (target.directoryIdentity === null) {
+    try {
+      await mkdir(target.directory, { mode: 0o700 });
+    } catch {
+      fail("wave1_baseline_path_changed");
+    }
+  }
+  return checkedDirectoryIdentity(
+    target.directory,
+    target.directory,
+    target.directoryIdentity,
+  );
+}
+
+async function syncDirectory(path) {
+  let handle;
+  try {
+    handle = await open(path, constants.O_RDONLY | (constants.O_DIRECTORY ?? 0));
+    await handle.sync();
+  } catch (error) {
+    const unsupported = ["EINVAL", "ENOTSUP", "EOPNOTSUPP", "EBADF"].includes(error.code) ||
+      (process.platform === "win32" && ["EISDIR", "EPERM"].includes(error.code));
+    if (!unsupported) throw error;
+  } finally {
+    await handle?.close();
+  }
+}
+
+async function cleanupOwnedTemporary(target, temporary) {
+  try {
+    await checkedDirectoryIdentity(
+      target.gitDirectory,
+      target.gitDirectory,
+      target.gitDirectoryIdentity,
+    );
+    await rm(temporary, { force: true });
+  } catch {
+    // A changed directory identity is untrusted; never follow it for cleanup.
+  }
+}
+
 export function assertPreflightSnapshot(snapshot) {
+  assertClosedSnapshotShape(snapshot);
   if (snapshot?.schemaVersion !== 1 || snapshot.wave !== "wave-1-platform-identity-site-policy") {
     fail("wave1_snapshot_invalid");
   }
@@ -216,23 +348,52 @@ export function assertPreflightSnapshot(snapshot) {
   }
 }
 
-export async function writeBaselineAtomic(path, snapshot) {
+export async function writeBaselineAtomic(target, snapshot, hooks = {}) {
   assertPreflightSnapshot(snapshot);
-  const directory = dirname(path);
-  await mkdir(directory, { recursive: true });
+  if (
+    !exactKeys(
+      target,
+      ["baselinePath", "directory", "directoryIdentity", "gitDirectory", "gitDirectoryIdentity"],
+    )
+  ) {
+    fail("wave1_baseline_path_changed");
+  }
+  const directoryIdentity = await prepareBaselineDirectory(target);
   const temporary = resolve(
-    directory,
-    `.baseline.${process.pid}.${randomBytes(8).toString("hex")}.tmp`,
+    target.gitDirectory,
+    `.wave1-baseline.${process.pid}.${randomBytes(8).toString("hex")}.tmp`,
   );
+  let handle = null;
   try {
-    await writeFile(temporary, `${JSON.stringify(snapshot, null, 2)}\n`, {
-      encoding: "utf8",
-      flag: "wx",
-      mode: 0o600,
-    });
-    await rename(temporary, path);
+    await hooks.beforeTemporaryOpen?.();
+    await checkedDirectoryIdentity(
+      target.gitDirectory,
+      target.gitDirectory,
+      target.gitDirectoryIdentity,
+    );
+    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
+    handle = await open(
+      temporary,
+      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
+      0o600,
+    );
+    await handle.writeFile(`${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+    await handle.sync();
+    await handle.close();
+    handle = null;
+    await hooks.beforeRename?.();
+    await checkedDirectoryIdentity(
+      target.gitDirectory,
+      target.gitDirectory,
+      target.gitDirectoryIdentity,
+    );
+    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
+    await rename(temporary, target.baselinePath);
+    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
+    await syncDirectory(target.directory);
   } finally {
-    await rm(temporary, { force: true });
+    await handle?.close();
+    await cleanupOwnedTemporary(target, temporary);
   }
 }
 
@@ -403,11 +564,13 @@ export function parseArguments(argv) {
     fail("wave1_arguments_invalid", "--write-baseline is required");
   }
   const rawGitDirectory = git(root, ["rev-parse", "--absolute-git-dir"]).trim();
-  if (lstatSync(rawGitDirectory).isSymbolicLink()) {
+  const rawGitStatus = lstatSync(rawGitDirectory);
+  if (rawGitStatus.isSymbolicLink() || !rawGitStatus.isDirectory()) {
     fail("wave1_arguments_invalid", "--write-baseline");
   }
   const gitDirectory = realpathSync(rawGitDirectory);
   const baselinePath = resolve(gitDirectory, "kokoro-wave1/baseline.json");
+  const directory = dirname(baselinePath);
   const parsedPath = baselineArgument === ".git/kokoro-wave1/baseline.json"
     ? baselinePath
     : resolve(root, baselineArgument);
@@ -415,15 +578,36 @@ export function parseArguments(argv) {
     fail("wave1_arguments_invalid", "--write-baseline");
   }
   assertNoSymlinkPath(resolve(gitDirectory), baselinePath);
-  return { baselinePath, root };
+  let directoryIdentity = null;
+  try {
+    const directoryStatus = lstatSync(directory);
+    if (directoryStatus.isSymbolicLink() || !directoryStatus.isDirectory()) {
+      fail("wave1_arguments_invalid", "--write-baseline");
+    }
+    if (realpathSync(directory) !== directory) {
+      fail("wave1_arguments_invalid", "--write-baseline");
+    }
+    directoryIdentity = identity(directoryStatus);
+  } catch (error) {
+    if (error instanceof PreflightError) throw error;
+    if (error.code !== "ENOENT") fail("wave1_arguments_invalid", "--write-baseline");
+  }
+  const baselineTarget = {
+    baselinePath,
+    directory,
+    directoryIdentity,
+    gitDirectory,
+    gitDirectoryIdentity: identity(lstatSync(gitDirectory)),
+  };
+  return { baselinePath, baselineTarget, root };
 }
 
 async function main() {
   try {
-    const { baselinePath, root } = parseArguments(process.argv.slice(2));
+    const { baselinePath, baselineTarget, root } = parseArguments(process.argv.slice(2));
     const previous = await readOptionalBaseline(baselinePath);
     const snapshot = await collectPreflightSnapshot(root, previous);
-    await writeBaselineAtomic(baselinePath, snapshot);
+    await writeBaselineAtomic(baselineTarget, snapshot);
     process.stdout.write(`wave1_preflight_ok: ${baselinePath}\n`);
   } catch (error) {
     if (error instanceof PreflightError) {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rename, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -371,6 +371,40 @@ test("fails closed on approval, authorization, parent, and ADR drift", () => {
   }
 });
 
+test("rejects unknown fields throughout the closed baseline schema", () => {
+  expectCode(null, "wave1_snapshot_invalid");
+  expectCode([], "wave1_snapshot_invalid");
+  const mutations = [
+    (value) => { value.unknown = true; },
+    (value) => { value.specification.unknown = true; },
+    (value) => { value.specification.parent.unknown = true; },
+    (value) => { value.decisions.unknown = true; },
+    (value) => { value.decisions.adr012.unknown = true; },
+    (value) => { value.decisions.adr005.unknown = true; },
+    (value) => { value.repository.unknown = true; },
+    (value) => { value.repository.repositories[0].unknown = true; },
+    (value) => { value.ga.unknown = true; },
+  ];
+  for (const mutate of mutations) {
+    const snapshot = validSnapshot();
+    mutate(snapshot);
+    expectCode(snapshot, "wave1_snapshot_invalid");
+  }
+
+  const malformed = validSnapshot();
+  malformed.repository.repositories = [
+    malformed.repository.repositories[0],
+    malformed.repository.repositories[0],
+    malformed.repository.repositories[1],
+    malformed.repository.repositories[2],
+  ];
+  expectCode(malformed, "wave1_snapshot_invalid");
+
+  const nullRepository = validSnapshot();
+  nullRepository.repository.repositories[0] = null;
+  expectCode(nullRepository, "wave1_snapshot_invalid");
+});
+
 test("fails closed on absent or mismatched evidence, pins, contracts, and generated artifacts", () => {
   const cases = [
     ["wave1_manifest_digest_missing", (value) => { value.repository.manifestDigest = null; }],
@@ -503,6 +537,32 @@ test("CLI preserves a previous baseline when manifest and BOM advance past the c
   assert.equal(await readFile(baselinePath, "utf8"), previousBaseline);
 });
 
+test("CLI validates a previous baseline as a closed document before replacing it", async (t) => {
+  const fixture = await createBomFixture({ emptyEvidence: false });
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  const baselineArgument = ".git/kokoro-wave1/baseline.json";
+  const baselinePath = resolve(fixture, baselineArgument);
+  const initial = spawnSync(
+    process.execPath,
+    [preflightScript, "--root", fixture, "--write-baseline", baselineArgument],
+    { cwd: fixture, encoding: "utf8", shell: false },
+  );
+  assert.equal(initial.status, 0, initial.stderr);
+  const malformed = JSON.parse(await readFile(baselinePath, "utf8"));
+  malformed.repository.repositories[0].unknown = true;
+  const malformedSource = `${JSON.stringify(malformed, null, 2)}\n`;
+  await writeFile(baselinePath, malformedSource, "utf8");
+
+  const result = spawnSync(
+    process.execPath,
+    [preflightScript, "--root", fixture, "--write-baseline", baselineArgument],
+    { cwd: fixture, encoding: "utf8", shell: false },
+  );
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /^wave1_baseline_invalid: wave1_snapshot_invalid\s*$/u);
+  assert.equal(await readFile(baselinePath, "utf8"), malformedSource);
+});
+
 test("baseline arguments reject worktree paths, other absolute paths, and unknown options", async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   t.after(() => rm(fixture, { recursive: true, force: true }));
@@ -544,6 +604,61 @@ test("CLI rejects a symlink escape from the exact baseline location", async (t) 
   await assert.rejects(readFile(resolve(escaped, "baseline.json")), { code: "ENOENT" });
 });
 
+test("atomic writer rejects a directory swap before rename and never touches the escape target", async (t) => {
+  const fixture = await mkdtemp(join(tmpdir(), "kokoro-wave1-writer-race-"));
+  const escaped = await mkdtemp(join(tmpdir(), "kokoro-wave1-writer-escape-"));
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  t.after(() => rm(escaped, { recursive: true, force: true }));
+  configureRepository(fixture);
+  const options = parseArguments([
+    "--root",
+    fixture,
+    "--write-baseline",
+    ".git/kokoro-wave1/baseline.json",
+  ]);
+  const targetDirectory = resolve(options.baselinePath, "..");
+  const displaced = resolve(options.baselinePath, "..", "..", "kokoro-wave1-displaced");
+  await writeFile(resolve(escaped, "baseline.json"), "sentinel\n", "utf8");
+
+  await assert.rejects(
+    () => writeBaselineAtomic(options.baselineTarget, validSnapshot(), {
+      beforeRename: async () => {
+        await rename(targetDirectory, displaced);
+        await symlink(escaped, targetDirectory, "dir");
+      },
+    }),
+    { code: "wave1_baseline_path_changed" },
+  );
+  assert.equal(await readFile(resolve(escaped, "baseline.json"), "utf8"), "sentinel\n");
+  assert.deepEqual(await stat(displaced).then((value) => value.isDirectory()), true);
+});
+
+test("atomic writer targets the per-worktree git directory and persists mode 0600", async (t) => {
+  const fixture = await mkdtemp(join(tmpdir(), "kokoro-wave1-linked-worktree-"));
+  const linked = resolve(fixture, "linked");
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  configureRepository(fixture);
+  await writeFixtureFile(fixture, "README.md", "primary\n");
+  run("git", ["add", "README.md"], fixture);
+  run("git", ["commit", "--quiet", "-m", "primary"], fixture);
+  run("git", ["worktree", "add", "--quiet", "--detach", linked], fixture);
+  const options = parseArguments([
+    "--root",
+    linked,
+    "--write-baseline",
+    ".git/kokoro-wave1/baseline.json",
+  ]);
+
+  await writeBaselineAtomic(options.baselineTarget, validSnapshot());
+
+  assert.deepEqual(JSON.parse(await readFile(options.baselinePath, "utf8")), validSnapshot());
+  assert.equal((await stat(options.baselinePath)).mode & 0o777, 0o600);
+  await assert.rejects(
+    readFile(resolve(fixture, ".git/kokoro-wave1/baseline.json")),
+    { code: "ENOENT" },
+  );
+});
+
 test("CLI keeps the dirty Root failure authoritative and does not write a baseline", async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   t.after(() => rm(fixture, { recursive: true, force: true }));
@@ -570,16 +685,22 @@ test("CLI keeps the dirty Root failure authoritative and does not write a baseli
 
 test("writes a validated baseline atomically and never overwrites on validation failure", async () => {
   const directory = await mkdtemp(join(tmpdir(), "kokoro-wave1-preflight-"));
-  const target = join(directory, "nested", "baseline.json");
+  configureRepository(directory);
+  const options = parseArguments([
+    "--root",
+    directory,
+    "--write-baseline",
+    ".git/kokoro-wave1/baseline.json",
+  ]);
   const snapshot = validSnapshot();
 
-  await writeBaselineAtomic(target, snapshot);
-  assert.deepEqual(JSON.parse(await readFile(target, "utf8")), snapshot);
+  await writeBaselineAtomic(options.baselineTarget, snapshot);
+  assert.deepEqual(JSON.parse(await readFile(options.baselinePath, "utf8")), snapshot);
 
   const invalid = validSnapshot();
   invalid.repository.rootStatus = "?? dirty\n";
-  await assert.rejects(() => writeBaselineAtomic(target, invalid), {
+  await assert.rejects(() => writeBaselineAtomic(options.baselineTarget, invalid), {
     code: "wave1_root_dirty",
   });
-  assert.deepEqual(JSON.parse(await readFile(target, "utf8")), snapshot);
+  assert.deepEqual(JSON.parse(await readFile(options.baselinePath, "utf8")), snapshot);
 });
