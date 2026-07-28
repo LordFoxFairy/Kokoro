@@ -14,12 +14,18 @@ CONTRACT = {
         "schemas": {
             "Me": {
                 "type": "object",
-                "properties": {"email": {"type": "string"}, "roleKey": {"type": "string"}},
+                "properties": {
+                    "email": {"type": "string"},
+                    "roleKey": {"type": "string"},
+                },
             },
             "ResourceRow": {"type": "object", "additionalProperties": True},
             "ModuleOnline": {
                 "type": "object",
-                "properties": {"id": {"type": "string"}, "manifest": {"type": "object"}},
+                "properties": {
+                    "id": {"type": "string"},
+                    "manifest": {"type": "object"},
+                },
             },
             "ModuleOffline": {
                 "type": "object",
@@ -36,7 +42,9 @@ CONTRACT = {
 }
 
 
-def write(tmp_path: Path, reader: str, contract: dict | None = None) -> tuple[Path, Path]:
+def write(
+    tmp_path: Path, reader: str, contract: dict | None = None
+) -> tuple[Path, Path]:
     openapi = tmp_path / "admin-web-v1.yaml"
     openapi.write_text(yaml.safe_dump(contract if contract is not None else CONTRACT))
     schemas = tmp_path / "schemas.ts"
@@ -54,7 +62,9 @@ def patch_map(
 
     monkeypatch.setattr(module, "SCHEMA_MAP", mapping)
     monkeypatch.setattr(module, "UNCONTRACTED", uncontracted or {})
-    monkeypatch.setattr(module, "TRANSITIONAL_SCHEMA_MAP", transitional or {}, raising=False)
+    monkeypatch.setattr(
+        module, "TRANSITIONAL_SCHEMA_MAP", transitional or {}, raising=False
+    )
 
 
 def test_passes_when_every_field_is_declared(tmp_path, monkeypatch):
@@ -95,7 +105,9 @@ def test_rejects_a_field_the_contract_does_not_declare(tmp_path, monkeypatch):
 
 def test_new_reader_must_be_mapped(tmp_path, monkeypatch):
     patch_map(monkeypatch, {}, transitional={"orderSchema": "ResourceRow"})
-    openapi, schemas = write(tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});")
+    openapi, schemas = write(
+        tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});"
+    )
     with pytest.raises(BrowserSchemaError) as excinfo:
         run(openapi, schemas)
     assert excinfo.value.code == "admin_browser_schema_unmapped"
@@ -103,13 +115,17 @@ def test_new_reader_must_be_mapped(tmp_path, monkeypatch):
 
 def test_removed_reader_makes_its_mapping_fail(tmp_path, monkeypatch):
     patch_map(monkeypatch, {"meSchema": "Me", "goneSchema": "Me"})
-    openapi, schemas = write(tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});")
+    openapi, schemas = write(
+        tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});"
+    )
     with pytest.raises(BrowserSchemaError) as excinfo:
         run(openapi, schemas)
     assert excinfo.value.code == "admin_browser_mapping_stale"
 
 
-def test_transitional_reader_is_checked_while_the_old_pin_still_exports_it(tmp_path, monkeypatch):
+def test_transitional_reader_is_checked_while_the_old_pin_still_exports_it(
+    tmp_path, monkeypatch
+):
     patch_map(monkeypatch, {}, transitional={"orderSchema": "ResourceRow"})
     contract = {
         **CONTRACT,
@@ -143,7 +159,9 @@ def test_transitional_reader_is_checked_while_the_old_pin_still_exports_it(tmp_p
     assert "1 transitional reader present (orderSchema)" in message
 
 
-def test_transitional_reader_still_rejects_a_field_missing_from_the_contract(tmp_path, monkeypatch):
+def test_transitional_reader_still_rejects_a_field_missing_from_the_contract(
+    tmp_path, monkeypatch
+):
     patch_map(monkeypatch, {}, transitional={"orderSchema": "Me"})
     openapi, schemas = write(
         tmp_path,
@@ -161,7 +179,9 @@ def test_transitional_reader_still_rejects_a_field_missing_from_the_contract(tmp
     assert "orderSchema.removedUpstream" in str(excinfo.value)
 
 
-def test_transitional_reader_may_be_absent_after_the_new_pin_lands(tmp_path, monkeypatch):
+def test_transitional_reader_may_be_absent_after_the_new_pin_lands(
+    tmp_path, monkeypatch
+):
     patch_map(
         monkeypatch,
         {"meSchema": "Me"},
@@ -196,7 +216,10 @@ def test_counts_schemas_with_no_field_contract(tmp_path, monkeypatch):
     )
     message = run(openapi, schemas)
     assert "0 fields proven against the contract" in message
-    assert "1 mapped to a schema with no field contract (orderSchema->ResourceRow)" in message
+    assert (
+        "1 mapped to a schema with no field contract (orderSchema->ResourceRow)"
+        in message
+    )
 
 
 def test_resolves_a_oneof_union_across_both_branches(tmp_path, monkeypatch):
@@ -227,13 +250,17 @@ def test_rejects_a_field_in_neither_union_branch(tmp_path, monkeypatch):
 
 def test_uncontracted_readers_are_skipped_but_still_tracked(tmp_path, monkeypatch):
     patch_map(monkeypatch, {}, {"hubSchema": "hub payload"})
-    openapi, schemas = write(tmp_path, "export const hubSchema = z.object({\n  anything: z.string(),\n});")
+    openapi, schemas = write(
+        tmp_path, "export const hubSchema = z.object({\n  anything: z.string(),\n});"
+    )
     assert "1 uncontracted by design" in run(openapi, schemas)
 
 
 def test_missing_contract_schema_fails(tmp_path, monkeypatch):
     patch_map(monkeypatch, {"meSchema": "NoSuchSchema"})
-    openapi, schemas = write(tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});")
+    openapi, schemas = write(
+        tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});"
+    )
     with pytest.raises(BrowserSchemaError) as excinfo:
         run(openapi, schemas)
     assert excinfo.value.code == "admin_browser_contract_schema_missing"
@@ -292,7 +319,9 @@ def test_real_repository_passes():
 def test_admin_resource_manifest_requires_an_explicit_site_scope_field():
     root = Path(__file__).resolve().parents[2]
     document = yaml.safe_load(
-        (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(encoding="utf-8")
+        (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(
+            encoding="utf-8"
+        )
     )
     schema = document["components"]["schemas"]["AdminResourceManifest"]
 
@@ -306,7 +335,9 @@ def test_admin_resource_manifest_requires_an_explicit_site_scope_field():
 
 def test_sites_and_billing_contract_publish_the_resolved_permissions_and_scope():
     root = Path(__file__).resolve().parents[2]
-    source = (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(encoding="utf-8")
+    source = (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(
+        encoding="utf-8"
+    )
     document = yaml.safe_load(source)
     sites = document["paths"]["/api/sites"]["get"]
     billing = document["paths"]["/api/billing-overview"]["get"]

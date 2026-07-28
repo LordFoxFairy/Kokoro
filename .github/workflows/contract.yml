@@ -74,7 +74,7 @@ jobs:
           node scripts/contract/check-boundary-coverage.mjs
       - name: admin browser contract gate
         run: |
-          uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py -q
+          uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py scripts/contract/test_admin_browser_public_shapes.py -q
           uv run --locked python scripts/contract/check_admin_openapi.py
           uv run --locked python -m pytest scripts/contract/test_check_admin_browser_schemas.py -q
           uv run --locked python scripts/contract/check_admin_browser_schemas.py

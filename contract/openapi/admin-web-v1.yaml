@@ -6,7 +6,7 @@
 #   §13 Wave T2：为 Admin browser API 建完整 OpenAPI；普通 Admin browser HTTP 与特权
 #       Admin BFF→Platform Connect 保持两个不同 trust plane，不共享万能 client package
 #
-# 本文件只描述 kokoro-platform-admin 的**普通 Admin browser HTTP 面**（16 条 /api/*）。
+# 本文件只描述 kokoro-platform-admin 的**普通 Admin browser HTTP 面**（17 条 /api/* operation）。
 # 同一个 Fastify 实例上刻意排除的三类路由（不同面，勿混入本契约）：
 #   - POST /kokoro.platform.admin.v1.AdminAuthService/*
 #       特权 service→service Connect 面（另一个 trust plane）。事实源：
@@ -41,7 +41,7 @@
 #     approval.error ∈ {403,404}。与 ERROR_STATUS「code ⇒ 唯一 status」的设计相反。
 #     是否拆细为 gateway.unknown_module / gateway.forbidden / gateway.upstream 待裁决，本文件不擅自拆。
 # D4  三处响应体黑洞，只能写「任意 JSON」：(a) /api/resource 与 /api/sites 的行；
-#     (b) /api/user360 三段；(c) /api/action 200 的 data（下游透传）。真形状分散在 6 个下游模块。
+#     (b) /api/user360 对浏览器公开的两段；(c) /api/action 200 的 data（下游透传）。真形状分散在下游模块。
 #     本轮铁律禁止读改子仓契约，故先占位；代价是生成的 browser validator 对这三条等于没校验。
 # D5  /api/manifests 无条件把内网 baseUrl（形如 http://kokoro-credit:4231）下发浏览器。
 #     写进契约（现状）还是本 wave 剥掉（需改子仓）待裁决 —— 本文件照实登记并标注。
@@ -75,7 +75,9 @@ info:
 
     ## 信封
 
-    成功：`{"data": <payload>}`；仅 `POST /api/action` 会额外回显 `{"data": ..., "requestId": "..."}`。
+    成功通常是 `{"data": <payload>}`；仅 `POST /api/action` 会额外回显
+    `{"data": ..., "requestId": "..."}`。`GET /api/openapi/{moduleId}` 是有意的例外：它返回经过
+    Web BFF 二次校验和限流后的原始 OpenAPI JSON 文档，不套 data 信封。
     失败：`{"error": {"code": ..., "message": ..., "details"?: ...}, "requestId"?: ...}`。
     两者的唯一真源是 `@kokoro/platform-kit` 的 `sendData` / `sendError`
     （`kokoro-platform/kokoro-platform-kit/src/http/responses.ts`）。
@@ -113,7 +115,7 @@ tags:
   - name: identity
     description: 当前操作员的能力面
   - name: modules
-    description: 下游模块 manifest（功能/页面可见性的数据源）
+    description: 下游模块 manifest 与受控 OpenAPI 文档
   - name: operators
     description: 操作员与角色治理（当前只有老运营台 SPA 在用，见 D14）
   - name: resources
@@ -182,6 +184,60 @@ paths:
           $ref: "#/components/responses/OperatorUnauthorized"
         "500":
           $ref: "#/components/responses/UncaughtInternalError"
+
+  /api/openapi/{moduleId}:
+    get:
+      operationId: getModuleOpenApi
+      tags: [modules]
+      summary: 读取固定 Platform 模块的 OpenAPI 文档
+      description: |
+        Browser BFF 先强制 Auth.js 注入的可信 operator 边界，再只允许固定的非支付模块
+        `site/user/model/credit/hub`。它不会接受 URL、任意 path 或 `payment` moduleId，因此不是开放代理，
+        也不会恢复已关闭的 acquisition surface。
+
+        BFF 对成功载荷做 JSON + `openapi` 字段校验，以 Content-Length 预检和流式读取共同限制为 2 MiB，
+        整个 fetch/read 生命周期上限为 5 秒。`Content-Disposition` 由 allowlist 中的 moduleId 重建，
+        不透传上游文件名。Platform 仍是 `docs.read` 的最终授权者，并把请求映射到自身固定 module registry
+        的 `/docs/json`，所以 Web 不复制 RBAC 业务规则。
+
+        与其余路由不同，200 直接返回 OpenAPI document，不套 `{data: ...}` 信封。
+      x-kokoro-required-permission: docs.read
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          description: 浏览器可查看的固定非支付 Platform 模块。
+          schema:
+            type: string
+            enum: [site, user, model, credit, hub]
+      responses:
+        "200":
+          description: 经过 BFF 校验和限额的原始 OpenAPI JSON 文档
+          headers:
+            Content-Disposition:
+              required: true
+              description: 由 allowlisted moduleId 本地重建的安全 inline 文件名。
+              schema:
+                type: string
+                pattern: '^inline; filename="(?:site|user|model|credit|hub)-openapi\.json"$'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenApiDocument"
+        "400":
+          $ref: "#/components/responses/OpenApiBadRequest"
+        "401":
+          $ref: "#/components/responses/OpenApiUnauthorized"
+        "403":
+          $ref: "#/components/responses/OperatorForbidden"
+        "404":
+          $ref: "#/components/responses/OpenApiAcquisitionDisabled"
+        "502":
+          $ref: "#/components/responses/OpenApiBadGateway"
+        "503":
+          $ref: "#/components/responses/OpenApiBoundaryUnavailable"
+        "504":
+          $ref: "#/components/responses/OpenApiTimeout"
 
   /api/operators:
     get:
@@ -402,16 +458,17 @@ paths:
     get:
       operationId: getUser360
       tags: [resources]
-      summary: 用户 360（按 siteId + owner 聚合身份/积分账户/订单）
+      summary: 用户 360（按 siteId + owner 公开身份与积分账户）
       description: |
-        聚合路由没有单一静态权限；它先校验 `permitsSite(operator.scopeSites, siteId)`，再让三个
-        manifest 资源分别强制各自的 `requiredPermission`。同一 `siteId` 会下推给各 provider，
-        返回行再按 manifest 的 `siteScopeField` 校验。
+        Platform 上游聚合路由没有单一静态权限；它先校验 `permitsSite(operator.scopeSites, siteId)`，
+        再让 manifest 资源分别强制各自的 `requiredPermission`。同一 `siteId` 会下推给各 provider，
+        返回行再按 manifest 的 `siteScopeField` 校验。Web BFF 随后用封闭正向 schema 只发布
+        `identity` 与 `creditAccount`；上游即使仍返回 `orders` 或其他 acquisition 字段，也会在到达浏览器前丢弃。
 
         query schema 是 `.strict()`：出现未声明的 query key 直接 400。重复 key 会被解析成数组从而 400。
 
-        三段各自 `.catch(() => [])`：任一下游模块挂掉，该段静默降级为空/`null`，
-        **不会**有任何错误信号回给浏览器（所以本 operation 没有 502）。行本身无字段契约（待裁决 D4）。
+        上游各段各自 `.catch(() => [])`：任一下游模块挂掉，公开段静默降级为 `null`，
+        **不会**有任何错误信号回给浏览器（所以本 operation 没有 502）。公开行本身仍无字段契约（待裁决 D4）。
       parameters:
         - name: siteId
           in: query
@@ -519,9 +576,9 @@ paths:
         `body.amountMicros`（十进制字符串）超过 `KOKORO_APPROVAL_GRANT_THRESHOLD_MICROS`
         （默认 100000000）需审批。需审批 → 202 + approvalId；否则 → 200 + 下游透传结果。
 
-        本路由是 16 条里唯一回显 `requestId`、唯一可能返回 202 的。
+        本路由是 17 条 operation 里唯一回显 `requestId`、唯一可能返回 202 的。
 
-        执行顺序反常（待裁决 D7）：**body 校验（400）先于认证（401）**，与其余 15 条相反。
+        执行顺序反常（待裁决 D7）：**body 校验（400）先于认证（401）**，与其余 16 条相反。
 
         兜底 catch 把一切非 GatewayError 也变成 502 `gateway.error`（含 `createApprovalRequest`
         的 Prisma 错误）—— DB 故障对外表现为「上游网关错误」。
@@ -828,7 +885,7 @@ components:
     OperatorForbidden:
       description: |
         403 `operator.auth`。静态权限不足或租户超出作用域，message 为中文文案
-        （如「无权查看操作员列表」「无权管理权限」「无权管理操作员」「无权查看审批」
+        （如「无权查看接口契约」「无权查看操作员列表」「无权管理权限」「无权管理操作员」「无权查看审批」
         「无权查看审计」「租户超出作用域」「请指定本作用域内的站点」）。
       content:
         application/json:
@@ -862,6 +919,56 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/GatewayErrorEnvelope"
+    OpenApiBadRequest:
+      description: |
+        Browser BFF 对不在固定非支付 allowlist 的 moduleId 返回 400 `request.invalid`，
+        且不会向 Platform 发请求。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiBadRequestEnvelope"
+    OpenApiUnauthorized:
+      description: |
+        Browser Auth.js middleware 未建立 session 时返回 401 `auth.unauthenticated`；
+        Platform 直连认证失败时返回 401 `operator.auth`。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiUnauthorizedEnvelope"
+    OpenApiAcquisitionDisabled:
+      description: |
+        已认证调用者显式请求 `payment` 时，Browser BFF 在 gateway egress 前返回
+        404 `ACQUISITION_CHANNEL_DISABLED`；Payment 不属于本 operation 的合法 moduleId enum。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiAcquisitionDisabledEnvelope"
+    OpenApiBadGateway:
+      description: |
+        502。Browser BFF 的稳定 code 为 `gateway.bad_response`、`gateway.response_too_large`、
+        `gateway.unavailable`；它只允许 Platform 的 `gateway.openapi_upstream`、
+        `gateway.openapi_invalid`、`gateway.openapi_too_large` 这三个 502 code 原样通过，
+        其余未声明 status/code、Fastify 默认错误或非信封响应统一收敛为 502 `gateway.error`。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiBadGatewayEnvelope"
+    OpenApiBoundaryUnavailable:
+      description: |
+        503 `auth.boundary_unavailable`。Admin BFF 缺少服务端 proxy secret，或请求没有经过
+        Auth.js middleware 的可信身份注入；不会向 Platform 发请求。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiBoundaryUnavailableEnvelope"
+    OpenApiTimeout:
+      description: |
+        504。Browser BFF 的 5 秒生命周期 deadline 返回 `gateway.timeout`；若 Platform 先触发
+        自身 3 秒 deadline，则透传 `gateway.openapi_timeout`。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OpenApiTimeoutEnvelope"
     ApprovalForbidden:
       description: |
         403 `approval.error`：`cannot decide your own request` / `permission denied: <perm>` /
@@ -889,14 +996,24 @@ components:
     # ── 错误信封 ────────────────────────────────────────────────────────────
     DomainErrorCode:
       description: |
-        本服务实际发出的 domain error code 全集（handler 硬编码字符串）。
-        与 platform-kit `ERROR_STATUS` 的通用码表只有 `request.invalid` 重合（待裁决 D2）；
-        同一个 code 会映射多个 HTTP 状态（待裁决 D3）。
+        Admin browser surface 实际发出的 domain error code 全集，包含 Browser BFF 与 Platform provider。
+        两层尚未统一为同一 taxonomy（待裁决 D2）；同一个 code 也可能映射多个 HTTP 状态（待裁决 D3）。
       type: string
       enum:
         - operator.auth
+        - auth.unauthenticated
+        - auth.boundary_unavailable
         - request.invalid
         - gateway.error
+        - gateway.bad_response
+        - gateway.response_too_large
+        - gateway.unavailable
+        - gateway.timeout
+        - gateway.openapi_upstream
+        - gateway.openapi_invalid
+        - gateway.openapi_too_large
+        - gateway.openapi_timeout
+        - ACQUISITION_CHANNEL_DISABLED
         - approval.error
     ErrorEnvelopeBase:
       description: |
@@ -955,6 +1072,73 @@ components:
               properties:
                 code:
                   const: gateway.error
+    OpenApiBadRequestEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: request.invalid
+    OpenApiUnauthorizedEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  enum: [auth.unauthenticated, operator.auth]
+    OpenApiAcquisitionDisabledEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: ACQUISITION_CHANNEL_DISABLED
+    OpenApiBadGatewayEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  enum:
+                    - gateway.bad_response
+                    - gateway.response_too_large
+                    - gateway.unavailable
+                    - gateway.openapi_upstream
+                    - gateway.openapi_invalid
+                    - gateway.openapi_too_large
+                    - gateway.error
+    OpenApiBoundaryUnavailableEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  const: auth.boundary_unavailable
+    OpenApiTimeoutEnvelope:
+      allOf:
+        - $ref: "#/components/schemas/ErrorEnvelopeBase"
+        - type: object
+          properties:
+            error:
+              type: object
+              properties:
+                code:
+                  enum: [gateway.timeout, gateway.openapi_timeout]
     ApprovalErrorEnvelope:
       description: 403 / 404。审批决策校验失败或工单不存在。
       allOf:
@@ -1021,6 +1205,17 @@ components:
         admin 端点里。生成的 browser validator 对这类载荷等于没校验。
       type: object
       additionalProperties: true
+    OpenApiDocument:
+      description: |
+        经过 Platform 与 Browser BFF 两层最小结构校验的 OpenAPI JSON。具体模块文档字段由模块自身拥有，
+        因此这里只封住 `openapi` discriminator，不复制各模块 contract 成为第二事实源。
+      type: object
+      required: [openapi]
+      additionalProperties: true
+      properties:
+        openapi:
+          type: string
+          minLength: 1
     DateTimeIso:
       description: Prisma `DateTime` 经 JSON 序列化后的 ISO 8601 字符串。
       type: string
@@ -1459,20 +1654,16 @@ components:
           $ref: "#/components/schemas/BillingOverview"
     User360:
       description: |
-        三段各自 `.catch(() => [])`：任一下游模块不可用时静默降级为空/null，无错误信号。
-        各段行无字段契约（待裁决 D4）。
+        Browser BFF 只发布 identity 与 creditAccount；Platform 上游即使返回 orders 或其他字段，
+        也会被 BFF 的封闭正向 schema 丢弃。两个公开段的行仍无字段契约（待裁决 D4）。
       type: object
-      required: [creditAccount, orders, identity]
+      required: [creditAccount, identity]
       additionalProperties: false
       properties:
         creditAccount:
           oneOf:
             - $ref: "#/components/schemas/ResourceRow"
             - type: "null"
-        orders:
-          type: array
-          items:
-            $ref: "#/components/schemas/ResourceRow"
         identity:
           description: 仅 `ownerKind=user` 时可能非 null。
           oneOf:

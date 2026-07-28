@@ -33,19 +33,35 @@ and neither can vouch for `platform.litellm`. Web's public BFF plane is outside 
 covered by the Admin/OpenAPI and Session browser gates rather than being silently claimed here.
 
 `check_admin_openapi.py` is the supported entrypoint for the Admin browser plane, and
-`test_check_admin_openapi.py` defines its fail-closed behaviour. It parses the Fastify route
-registrations out of `kokoro-platform/kokoro-platform-admin/src/server.ts` and requires exact set
-equality with [`contract/openapi/admin-web-v1.yaml`](../../contract/openapi/admin-web-v1.yaml), so a
-route added, removed or re-verbed on either side fails. `--openapi` and `--server` take alternate
-paths for fixtures. It is Python because that document is hand-written YAML carrying comments and the
-root workspace already provides PyYAML; the sibling registry gate stays on Node because its data is
-JSON-compatible.
+`test_check_admin_openapi.py` defines its fail-closed behaviour. The companion
+`inspect_admin_browser_sources.mjs` uses the Web-pinned TypeScript compiler AST to inventory Fastify
+registrations in `kokoro-platform/kokoro-platform-admin/src/server.ts` and top-level exports in
+`apps/admin/app/api/**/route.*`. The gate requires exact set equality with
+[`contract/openapi/admin-web-v1.yaml`](../../contract/openapi/admin-web-v1.yaml), so a route added,
+removed, aliased behind an unverified receiver or method reference, or re-verbed on either side fails.
+TRACE, custom Fastify HTTP shorthands, and other methods unavailable to Fetch are recognized and
+rejected instead of disappearing from the inventory. For transparent Web
+authority it executes the actual `next.config.ts` `rewrites()` under a credential-free fixed production
+environment and validates every fallback source and destination; a source-only text list cannot provide evidence.
+Transparent paths inherit the exact provider method set, while local handlers must declare the exact
+callable methods at the top level. Their union must equal the OpenAPI operation set, while duplicate
+ownership, orphan/missing operations, unreadable dynamic routes, and local method drift all fail.
+Auth.js's local `/api/auth/*` owner is explicitly outside this Platform contract. `--openapi`,
+`--server`, `--proxy`, and `--local-routes` take alternate paths for fixtures. It is Python because that
+document is hand-written YAML carrying comments and the root workspace already provides PyYAML; the
+sibling registry gate stays on Node because its data is JSON-compatible.
 
 `check_admin_browser_schemas.py` is the supported entrypoint for the other end of that plane, with
 `test_check_admin_browser_schemas.py` defining its fail-closed behaviour. It proves the browser's
 hand-written readers in `kokoro-web/apps/admin/lib/schemas.ts` do not contradict the published
 contract: every field the browser reads must be declared by the contract schema it is mapped to.
 `--openapi` and `--schemas` take alternate paths for fixtures.
+
+`test_admin_browser_public_shapes.py` is the narrow exact-shape companion for filtered responses. It
+requires the Root `User360` schema, the Admin BFF's positive `user360EnvelopeSchema.data`, and the
+browser's `user360Schema` reader to publish the same closed field set in both directions. It also freezes
+the bounded non-payment module OpenAPI operation so an upstream Platform payload may stay wider without
+re-publishing acquisition data to the browser.
 
 It is a gate rather than a generator on purpose. Generating the browser validators from the contract
 would *lose* checking for part of this surface: the gateway validates downstream rows only to
@@ -68,8 +84,8 @@ pin promotion and checker change are squashed into a history in which every comm
 
 Root CI and contract owners call the checks. They read `contract/proto/`, `contract/spec/`,
 `contract/openapi/`, `config/repository/compatibility-matrix.json`, `config/architecture/index-roots.yaml`,
-`kokoro-platform/kokoro-platform-admin/src/server.ts` and `kokoro-web/apps/admin/lib/schemas.ts`, and
-write nothing.
+`kokoro-platform/kokoro-platform-admin/src/server.ts`, `kokoro-web/apps/admin/next.config.ts`, the Admin
+local Route Handler tree, and `kokoro-web/apps/admin/lib/{admin-gateway,schemas}.ts`, and write nothing.
 
 ## Data ownership and events
 
@@ -142,7 +158,8 @@ spec keeps separate. Declaring an excluded path in the document fails, and an un
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
 and `node scripts/contract/check-boundary-coverage.mjs`,
 then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py
-scripts/contract/test_check_admin_browser_schemas.py -q`,
+scripts/contract/test_check_admin_browser_schemas.py
+scripts/contract/test_admin_browser_public_shapes.py -q`,
 `uv run --locked python scripts/contract/check_admin_openapi.py` and
 `uv run --locked python scripts/contract/check_admin_browser_schemas.py`.
 

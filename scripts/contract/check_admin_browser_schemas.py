@@ -72,7 +72,9 @@ UNCONTRACTED = {
     "skillUploadConfirmSchema": "hub ConfirmResult[], proxied opaquely through /api/action",
 }
 
-EXPORT_RE = re.compile(r"^export const (?P<name>\w+) = z\s*$|^export const (?P<inline>\w+) = z\.object\(\{")
+EXPORT_RE = re.compile(
+    r"^export const (?P<name>\w+) = z\s*$|^export const (?P<inline>\w+) = z\.object\(\{"
+)
 FIELD_RE = re.compile(r"^\s{2}(?P<field>[A-Za-z_]\w*):")
 
 
@@ -106,7 +108,9 @@ def parse_browser_schemas(text: str) -> dict[str, list[str]]:
                 field = FIELD_RE.match(line)
                 if field is not None:
                     fields.append(field.group("field"))
-            depth += line.count("{") + line.count("(") - line.count("}") - line.count(")")
+            depth += (
+                line.count("{") + line.count("(") - line.count("}") - line.count(")")
+            )
             index += 1
         schemas[name] = fields
     return schemas
@@ -173,7 +177,9 @@ def run(openapi: Path, schemas_path: Path) -> str:
                     f"{target} does not declare it"
                 )
 
-    stale = sorted(set(SCHEMA_MAP) - set(browser)) + sorted(set(UNCONTRACTED) - set(browser))
+    stale = sorted(set(SCHEMA_MAP) - set(browser)) + sorted(
+        set(UNCONTRACTED) - set(browser)
+    )
     for name in stale:
         violations.append(
             f"admin_browser_mapping_stale: {name} is mapped but no longer exists in the reader"
@@ -181,7 +187,9 @@ def run(openapi: Path, schemas_path: Path) -> str:
 
     if violations:
         raise BrowserSchemaError(
-            violations[0].split(":", 1)[0], "; ".join(sorted(violations)), preformatted=True
+            violations[0].split(":", 1)[0],
+            "; ".join(sorted(violations)),
+            preformatted=True,
         )
 
     return (
