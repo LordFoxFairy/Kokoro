@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -9,6 +9,7 @@ import { combinationDigest, framedDigest } from "../repository/generate-bom.mjs"
 import {
   PreflightError,
   assertPreflightSnapshot,
+  parseArguments,
   writeBaselineAtomic,
 } from "./preflight.mjs";
 
@@ -250,6 +251,42 @@ async function createBomFixture({ emptyEvidence }) {
   return root;
 }
 
+async function advanceManifestAndBomButRestoreCheckout(root, id) {
+  const manifestPath = resolve(root, "config/repository/federated-repositories.json");
+  const matrixPath = resolve(root, "config/repository/compatibility-matrix.json");
+  const bomPath = resolve(root, "config/repository/bom.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  const matrix = JSON.parse(await readFile(matrixPath, "utf8"));
+  const bom = JSON.parse(await readFile(bomPath, "utf8"));
+  const repository = manifest.repositories.find((candidate) => candidate.id === id);
+  const oldSha = repository.pin;
+  const child = resolve(root, repository.path);
+
+  await writeFixtureFile(child, "README.md", `${id} advanced\n`);
+  run("git", ["add", "README.md"], child);
+  run("git", ["commit", "--quiet", "-m", "advance fixture"], child);
+  const newSha = run("git", ["rev-parse", "HEAD"], child);
+  repository.pin = newSha;
+  const manifestSource = `${JSON.stringify(manifest, null, 2)}\n`;
+  await writeFile(manifestPath, manifestSource, "utf8");
+  run("git", ["add", "config/repository/federated-repositories.json", id], root);
+  run("git", ["commit", "--quiet", "-m", "promote advanced fixture pin"], root);
+  const promotionCommit = run("git", ["rev-parse", "HEAD"], root);
+
+  bom.manifestDigest = framedDigest([Buffer.from(manifestSource, "utf8")]);
+  bom.promotionCommit = promotionCommit;
+  bom.repositories.find((candidate) => candidate.id === id).pin = newSha;
+  bom.runtimeGate.combinationDigest = combinationDigest(manifest, matrix);
+  await writeFile(bomPath, `${JSON.stringify(canonical(bom), null, 2)}\n`, "utf8");
+  run("git", ["add", "config/repository/bom.json"], root);
+  run("git", ["commit", "--quiet", "-m", "record advanced fixture BOM"], root);
+
+  run("git", ["checkout", "--quiet", "--detach", oldSha], child);
+  run("git", ["add", id], root);
+  run("git", ["commit", "--quiet", "-m", "restore stale fixture gitlink"], root);
+  return { newSha, oldSha };
+}
+
 function validSnapshot() {
   return {
     schemaVersion: 1,
@@ -438,6 +475,73 @@ test("CLI writes a private baseline for an authoritative clean BOM", async (t) =
     await readFile(resolve(fixture, ".git/kokoro-wave1/baseline.json"), "utf8"),
   );
   assert.equal(baseline.repository.evidenceVerified, true);
+});
+
+test("CLI preserves a previous baseline when manifest and BOM advance past the current gitlink and child", async (t) => {
+  const fixture = await createBomFixture({ emptyEvidence: false });
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  const baselineArgument = ".git/kokoro-wave1/baseline.json";
+  const baselinePath = resolve(fixture, baselineArgument);
+  const initial = spawnSync(
+    process.execPath,
+    [preflightScript, "--root", fixture, "--write-baseline", baselineArgument],
+    { cwd: fixture, encoding: "utf8", shell: false },
+  );
+  assert.equal(initial.status, 0, initial.stderr);
+  const previousBaseline = await readFile(baselinePath, "utf8");
+
+  await advanceManifestAndBomButRestoreCheckout(fixture, "kokoro-agent");
+  assert.equal(run("git", ["status", "--porcelain=v1", "--untracked-files=all"], fixture), "");
+  const result = spawnSync(
+    process.execPath,
+    [preflightScript, "--root", fixture, "--write-baseline", baselineArgument],
+    { cwd: fixture, encoding: "utf8", shell: false },
+  );
+
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /^wave1_child_pin_mismatch: kokoro-agent\s*$/u);
+  assert.equal(await readFile(baselinePath, "utf8"), previousBaseline);
+});
+
+test("baseline arguments reject worktree paths, other absolute paths, and unknown options", async (t) => {
+  const fixture = await createBomFixture({ emptyEvidence: false });
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  const cases = [
+    ["--write-baseline", "baseline.json"],
+    ["--write-baseline", resolve(fixture, "elsewhere", "baseline.json")],
+    ["--verify-baseline", ".git/kokoro-wave1/baseline.json"],
+  ];
+
+  for (const arguments_ of cases) {
+    assert.throws(
+      () => parseArguments(["--root", fixture, ...arguments_]),
+      (error) => error instanceof PreflightError && error.code === "wave1_arguments_invalid",
+    );
+  }
+});
+
+test("CLI rejects a symlink escape from the exact baseline location", async (t) => {
+  const fixture = await createBomFixture({ emptyEvidence: false });
+  const escaped = await mkdtemp(join(tmpdir(), "kokoro-wave1-baseline-escape-"));
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  t.after(() => rm(escaped, { recursive: true, force: true }));
+  await symlink(escaped, resolve(fixture, ".git/kokoro-wave1"), "dir");
+
+  const result = spawnSync(
+    process.execPath,
+    [
+      preflightScript,
+      "--root",
+      fixture,
+      "--write-baseline",
+      ".git/kokoro-wave1/baseline.json",
+    ],
+    { cwd: fixture, encoding: "utf8", shell: false },
+  );
+
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /^wave1_arguments_invalid: --write-baseline\s*$/u);
+  await assert.rejects(readFile(resolve(escaped, "baseline.json")), { code: "ENOENT" });
 });
 
 test("CLI keeps the dirty Root failure authoritative and does not write a baseline", async (t) => {

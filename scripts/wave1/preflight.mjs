@@ -2,8 +2,9 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
+import { lstatSync, realpathSync } from "node:fs";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { checkGeneratedContracts } from "../repository/check-generated-contracts.mjs";
@@ -108,9 +109,30 @@ async function readOptionalBaseline(path) {
   }
 }
 
-function baselineRepositorySha(baseline, id, fallback) {
-  const repository = baseline?.repository?.repositories?.find((candidate) => candidate.id === id);
-  return repository?.actualSha ?? fallback;
+function rootGitlinkSha(root, path, id) {
+  const source = git(root, ["ls-tree", "HEAD", "--", path]).trim();
+  const match = /^160000 commit ([0-9a-f]{40})\t([^\n]+)$/u.exec(source);
+  if (!match || match[2] !== path) fail("wave1_child_pin_mismatch", id);
+  return match[1];
+}
+
+function assertNoSymlinkPath(base, target) {
+  let current = target;
+  while (true) {
+    let status;
+    try {
+      status = lstatSync(current);
+    } catch (error) {
+      if (error.code !== "ENOENT") fail("wave1_arguments_invalid", "--write-baseline");
+    }
+    if (status?.isSymbolicLink()) {
+      fail("wave1_arguments_invalid", "--write-baseline");
+    }
+    if (current === base) return;
+    const parent = dirname(current);
+    if (parent === current) fail("wave1_arguments_invalid", "--write-baseline");
+    current = parent;
+  }
 }
 
 export function assertPreflightSnapshot(snapshot) {
@@ -271,10 +293,30 @@ export async function collectPreflightSnapshot(root, baseline = null) {
       fail("wave1_manifest_repository_invalid", repository.id ?? "unknown");
     }
     const childRoot = resolve(root, repository.path);
+    const actualSha = git(childRoot, ["rev-parse", "HEAD"]).trim();
+    const bomSha = bom.repositories?.find((candidate) => candidate.id === repository.id)?.pin;
+    const gitlinkSha = rootGitlinkSha(root, repository.path, repository.id);
+    const previousRepository = baseline?.repository?.repositories?.find(
+      (candidate) => candidate.id === repository.id,
+    );
+    const authoritativeShas = [repository.pin, bomSha, gitlinkSha, actualSha];
+    if (baseline !== null) {
+      authoritativeShas.push(
+        previousRepository?.expectedSha,
+        previousRepository?.actualSha,
+      );
+    }
+    if (
+      authoritativeShas.some(
+        (candidate) => !isSha(candidate) || candidate !== repository.pin,
+      )
+    ) {
+      fail("wave1_child_pin_mismatch", repository.id);
+    }
     return {
       id: repository.id,
-      expectedSha: baselineRepositorySha(baseline, repository.id, repository.pin),
-      actualSha: git(childRoot, ["rev-parse", "HEAD"]).trim(),
+      expectedSha: repository.pin,
+      actualSha,
       status: git(childRoot, ["status", "--porcelain=v1", "--untracked-files=all"]),
     };
   });
@@ -328,7 +370,7 @@ export async function collectPreflightSnapshot(root, baseline = null) {
       repositories,
     },
     ga: {
-      expectedSha: baseline?.ga?.actualSha ?? agent?.expectedSha ?? null,
+      expectedSha: agent?.expectedSha ?? null,
       actualSha: agent?.actualSha ?? null,
       status: agent?.status ?? null,
       expectedControlSpecSha256:
@@ -344,27 +386,35 @@ export async function collectPreflightSnapshot(root, baseline = null) {
 export function parseArguments(argv) {
   let root = process.cwd();
   let baselineArgument = null;
+  let rootSeen = false;
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const value = argv[index + 1];
     if (!value) fail("wave1_arguments_invalid", argument);
     index += 1;
-    if (argument === "--root") root = resolve(value);
-    else if (argument === "--write-baseline") baselineArgument = value;
-    else fail("wave1_arguments_invalid", argument);
+    if (argument === "--root" && !rootSeen) {
+      root = resolve(value);
+      rootSeen = true;
+    } else if (argument === "--write-baseline" && baselineArgument === null) {
+      baselineArgument = value;
+    } else fail("wave1_arguments_invalid", argument);
   }
   if (baselineArgument === null) {
     fail("wave1_arguments_invalid", "--write-baseline is required");
   }
-  let baselinePath;
-  if (baselineArgument.startsWith(".git/")) {
-    const gitPath = git(root, ["rev-parse", "--git-path", baselineArgument.slice(5)]).trim();
-    baselinePath = isAbsolute(gitPath) ? gitPath : resolve(root, gitPath);
-  } else {
-    baselinePath = isAbsolute(baselineArgument)
-      ? baselineArgument
-      : resolve(root, baselineArgument);
+  const rawGitDirectory = git(root, ["rev-parse", "--absolute-git-dir"]).trim();
+  if (lstatSync(rawGitDirectory).isSymbolicLink()) {
+    fail("wave1_arguments_invalid", "--write-baseline");
   }
+  const gitDirectory = realpathSync(rawGitDirectory);
+  const baselinePath = resolve(gitDirectory, "kokoro-wave1/baseline.json");
+  const parsedPath = baselineArgument === ".git/kokoro-wave1/baseline.json"
+    ? baselinePath
+    : resolve(root, baselineArgument);
+  if (parsedPath !== baselinePath) {
+    fail("wave1_arguments_invalid", "--write-baseline");
+  }
+  assertNoSymlinkPath(resolve(gitDirectory), baselinePath);
   return { baselinePath, root };
 }
 
