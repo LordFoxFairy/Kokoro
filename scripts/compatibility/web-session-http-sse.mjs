@@ -4,7 +4,7 @@ import { createCipheriv, createHash, createHmac, randomBytes } from "node:crypto
 import { spawn } from "node:child_process";
 import { writeSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { createServer as createHttpServer } from "node:http";
+import { createServer as createHttpServer, request as httpRequest } from "node:http";
 import { createServer as createNetServer } from "node:net";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -18,6 +18,7 @@ const NAMESPACE = "namespace-compatibility";
 const WEB_INTERNAL_SECRET = "compatibility-web-not-real";
 const SESSION_INTERNAL_SECRET = "compatibility-session-not-real";
 const READINESS_PHASES = new Set(["session", "web"]);
+const AUTHORITY_PROBE_MAX_BYTES = 64 * 1024;
 const children = new Set();
 
 class ScenarioFailure extends Error {
@@ -344,6 +345,58 @@ async function startBoundaryFixture({ siteHost = SITE_HOST } = {}) {
   };
 }
 
+async function requestWithAuthority(url, authority, headers = {}, options = {}) {
+  if (
+    typeof authority !== "string" ||
+    authority.length === 0 ||
+    authority.length > 253 ||
+    /[\r\n/\\]/u.test(authority)
+  ) {
+    fail("site_probe_authority_invalid");
+  }
+  const timeoutMs = options.timeoutMs ?? 10_000;
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 30_000) {
+    fail("site_probe_timeout_invalid");
+  }
+  return new Promise((resolveRequest, rejectRequest) => {
+    const request = httpRequest(url, {
+      method: "GET",
+      headers: { ...headers, host: authority },
+      signal: AbortSignal.timeout(timeoutMs),
+    }, (response) => {
+      const chunks = [];
+      let size = 0;
+      response.on("data", (chunk) => {
+        size += chunk.length;
+        if (size > AUTHORITY_PROBE_MAX_BYTES) {
+          response.destroy(new ScenarioFailure("site_probe_response_too_large"));
+          return;
+        }
+        chunks.push(chunk);
+      });
+      response.once("error", rejectRequest);
+      response.once("end", () => {
+        let json;
+        try {
+          json = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+        } catch {
+          rejectRequest(new ScenarioFailure("site_probe_response_invalid"));
+          return;
+        }
+        resolveRequest({ status: response.statusCode ?? 0, json });
+      });
+    });
+    request.once("error", (error) => {
+      if (error?.name === "AbortError") {
+        rejectRequest(new ScenarioFailure("site_probe_timeout"));
+        return;
+      }
+      rejectRequest(error);
+    });
+    request.end();
+  });
+}
+
 async function readReplay(url, headers, options = {}) {
   const controller = new AbortController();
   const handshakeController = new AbortController();
@@ -498,13 +551,14 @@ async function run() {
     });
     if (wrongSite.status !== 401) fail(`site_binding_http_${wrongSite.status}`);
 
-    const unknownHost = await fetch(`${webOrigin}/api/session/sessions/compatibility-unknown-host`, {
-      headers: { cookie, host: "unbound.compatibility.invalid" },
-      signal: AbortSignal.timeout(10_000),
-    });
+    const unknownHost = await requestWithAuthority(
+      `${webOrigin}/api/session/sessions/compatibility-unknown-host`,
+      "unbound.compatibility.invalid",
+      { cookie },
+    );
     if (
       unknownHost.status !== 404 ||
-      (await unknownHost.json()).error !== "site_unresolved"
+      unknownHost.json?.error !== "site_unresolved"
     ) {
       fail(`site_unresolved_http_${unknownHost.status}`);
     }
@@ -602,4 +656,5 @@ export {
   stopChild,
   waitHttp,
   readReplay,
+  requestWithAuthority,
 };

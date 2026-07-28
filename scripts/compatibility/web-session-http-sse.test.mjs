@@ -204,6 +204,35 @@ test("controlled fixture resolves only the bound Host and keeps Hub resolution r
   }
 });
 
+test("authority probe sends the requested Host over the HTTP socket", async () => {
+  assert.equal(typeof adapter.requestWithAuthority, "function");
+  let observedHost = null;
+  const server = (await import("node:http")).createServer((request, response) => {
+    observedHost = request.headers.host ?? null;
+    response.writeHead(404, { "content-type": "application/json" });
+    response.end(JSON.stringify({ error: "site_unresolved" }));
+  });
+  await new Promise((done, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", done);
+  });
+  const address = server.address();
+  assert.notEqual(address, null);
+  assert.equal(typeof address, "object");
+  try {
+    const response = await adapter.requestWithAuthority(
+      `http://127.0.0.1:${address.port}/api/session/sessions/probe`,
+      "unbound.compatibility.invalid",
+      { cookie: "opaque" },
+    );
+    assert.equal(response.status, 404);
+    assert.deepEqual(response.json, { error: "site_unresolved" });
+    assert.equal(observedHost, "unbound.compatibility.invalid");
+  } finally {
+    await new Promise((done) => server.close(done));
+  }
+});
+
 test("readiness fails fast on deterministic HTTP rejection and child exit", async () => {
   assert.equal(typeof adapter.waitHttp, "function");
   let calls = 0;
