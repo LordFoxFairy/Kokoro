@@ -7,6 +7,7 @@ import { dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { checkGeneratedContracts } from "../repository/check-generated-contracts.mjs";
+import { framedDigest, runBom } from "../repository/generate-bom.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SPECIFICATION_PATH =
@@ -16,7 +17,6 @@ const ADR012_PATH =
   "docs/kokoro-handbook/decisions/ADR-012-postgresql-platform-session-boundary.md";
 const ADR005_PATH = "docs/kokoro-handbook/decisions/ADR-005-mysql-and-mongo.md";
 const MANIFEST_PATH = "config/repository/federated-repositories.json";
-const MATRIX_PATH = "config/repository/compatibility-matrix.json";
 const BOM_PATH = "config/repository/bom.json";
 const CONTROL_SPEC_PATH = "contract/spec/control.yaml";
 const CONTROL_ADAPTER_PATH = "kokoro-agent/src/kokoro_agent/contract/control.py";
@@ -47,32 +47,6 @@ function isDigest(value) {
 
 function isSha(value) {
   return typeof value === "string" && SHA_PATTERN.test(value);
-}
-
-function canonical(value) {
-  if (Array.isArray(value)) return value.map(canonical);
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.keys(value)
-        .sort()
-        .map((key) => [key, canonical(value[key])]),
-    );
-  }
-  return value;
-}
-
-function canonicalJson(value) {
-  return JSON.stringify(canonical(value));
-}
-
-function framedDigest(parts) {
-  const hash = createHash("sha256");
-  for (const part of parts) {
-    const bytes = Buffer.isBuffer(part) ? part : Buffer.from(String(part), "utf8");
-    hash.update(`${bytes.byteLength}:`, "utf8");
-    hash.update(bytes);
-  }
-  return hash.digest("hex");
 }
 
 function sha256(bytes) {
@@ -134,45 +108,6 @@ async function readOptionalBaseline(path) {
 function baselineRepositorySha(baseline, id, fallback) {
   const repository = baseline?.repository?.repositories?.find((candidate) => candidate.id === id);
   return repository?.actualSha ?? fallback;
-}
-
-async function verifyBomEvidence(root, manifestSource, matrixSource, manifest, bom) {
-  if (
-    !Array.isArray(bom.evidence) ||
-    !Array.isArray(bom.contracts) ||
-    !Array.isArray(bom.repositories)
-  ) {
-    return false;
-  }
-
-  const evidenceParts = [];
-  for (const item of bom.evidence) {
-    if (typeof item?.path !== "string" || !isDigest(item.digest)) return false;
-    let bytes;
-    try {
-      bytes = await readFile(resolve(root, item.path));
-    } catch {
-      return false;
-    }
-    if (framedDigest([bytes]) !== item.digest) return false;
-    evidenceParts.push(item.path, bytes);
-  }
-
-  const manifestPins = new Map(
-    manifest.repositories.map((repository) => [repository.id, repository.pin]),
-  );
-  const bomPinsMatch = bom.repositories.every(
-    (repository) => manifestPins.get(repository.id) === repository.pin,
-  );
-
-  return (
-    bomPinsMatch &&
-    framedDigest([Buffer.from(manifestSource, "utf8")]) === bom.manifestDigest &&
-    framedDigest([Buffer.from(matrixSource, "utf8")]) === bom.matrixDigest &&
-    framedDigest(bom.contracts.map((contract) => canonicalJson(contract))) ===
-      bom.contractsDigest &&
-    framedDigest(evidenceParts) === bom.evidenceDigest
-  );
 }
 
 export function assertPreflightSnapshot(snapshot) {
@@ -276,6 +211,12 @@ export async function writeBaselineAtomic(path, snapshot) {
 }
 
 export async function collectPreflightSnapshot(root, baseline = null) {
+  let bomVerified = true;
+  try {
+    await runBom({ root, check: true, promotionCommit: null, runtimeEvidence: null });
+  } catch {
+    bomVerified = false;
+  }
   const [specificationSource, adr012Source, adr005Source] = await Promise.all([
     readFile(resolve(root, SPECIFICATION_PATH), "utf8"),
     readFile(resolve(root, ADR012_PATH), "utf8"),
@@ -302,12 +243,10 @@ export async function collectPreflightSnapshot(root, baseline = null) {
   const actualVersion = parentSource
     ? /^version:\s*["']?([^\s"']+)["']?\s*$/mu.exec(parentSource)?.[1] ?? null
     : null;
-  const [{ source: manifestSource, value: manifest }, { source: matrixSource }, { value: bom }] =
-    await Promise.all([
-      readJson(root, MANIFEST_PATH, "wave1_manifest_invalid"),
-      readJson(root, MATRIX_PATH, "wave1_matrix_invalid"),
-      readJson(root, BOM_PATH, "wave1_bom_invalid"),
-    ]);
+  const [{ source: manifestSource, value: manifest }, { value: bom }] = await Promise.all([
+    readJson(root, MANIFEST_PATH, "wave1_manifest_invalid"),
+    readJson(root, BOM_PATH, "wave1_bom_invalid"),
+  ]);
   if (!Array.isArray(manifest.repositories)) fail("wave1_manifest_invalid");
 
   let generatedContractsVerified = true;
@@ -374,13 +313,7 @@ export async function collectPreflightSnapshot(root, baseline = null) {
       bomManifestDigest: bom.manifestDigest ?? null,
       contractsDigest: bom.contractsDigest ?? null,
       evidenceDigest: bom.evidenceDigest ?? null,
-      evidenceVerified: await verifyBomEvidence(
-        root,
-        manifestSource,
-        matrixSource,
-        manifest,
-        bom,
-      ),
+      evidenceVerified: bomVerified,
       generatedContractsVerified,
       repositories,
     },
