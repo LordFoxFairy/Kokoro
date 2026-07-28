@@ -13,6 +13,9 @@ const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SPECIFICATION_PATH =
   "docs/superpowers/specs/2026-07-28-wave-1-platform-identity-site-policy-design.md";
 const SPECIFICATION_DIRECTORY = "docs/superpowers/specs";
+const PARENT_SPECIFICATION_FILE =
+  "2026-07-25-platform-web-session-target-architecture-design.md";
+const PARENT_SPECIFICATION_VERSION = "1.5";
 const ADR012_PATH =
   "docs/kokoro-handbook/decisions/ADR-012-postgresql-platform-session-boundary.md";
 const ADR005_PATH = "docs/kokoro-handbook/decisions/ADR-005-mysql-and-mongo.md";
@@ -123,8 +126,9 @@ export function assertPreflightSnapshot(snapshot) {
   }
   if (snapshot.specification.parent?.exists !== true) fail("wave1_parent_missing");
   if (
-    snapshot.specification.parent.declaredVersion !==
-      snapshot.specification.parent.actualVersion
+    snapshot.specification.parent.declaredFile !== PARENT_SPECIFICATION_FILE ||
+    snapshot.specification.parent.declaredVersion !== PARENT_SPECIFICATION_VERSION ||
+    snapshot.specification.parent.actualVersion !== PARENT_SPECIFICATION_VERSION
   ) {
     fail("wave1_parent_mismatch");
   }
@@ -233,6 +237,12 @@ export async function collectPreflightSnapshot(root, baseline = null) {
   if (!rawParent) fail("wave1_parent_declaration_missing");
   const declaredFile = rawParent[1];
   const declaredVersion = rawParent[2];
+  if (
+    declaredFile !== PARENT_SPECIFICATION_FILE ||
+    declaredVersion !== PARENT_SPECIFICATION_VERSION
+  ) {
+    fail("wave1_parent_mismatch");
+  }
   const parentPath = resolve(root, SPECIFICATION_DIRECTORY, declaredFile);
   let parentSource = null;
   try {

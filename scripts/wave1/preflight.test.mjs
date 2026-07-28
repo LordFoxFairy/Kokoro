@@ -315,7 +315,13 @@ test("fails closed on approval, authorization, parent, and ADR drift", () => {
     ["wave1_ga_semantic_change_authorized", (value) => { value.specification.gaRuntimeSemanticChangeAuthorized = true; }],
     ["wave1_parent_missing", (value) => { value.specification.parent.exists = false; }],
     ["wave1_parent_mismatch", (value) => { value.specification.parent.actualVersion = "1.4"; }],
+    ["wave1_parent_mismatch", (value) => { value.specification.parent.declaredFile = "replacement-parent.md"; }],
+    ["wave1_parent_mismatch", (value) => {
+      value.specification.parent.declaredVersion = "1.6";
+      value.specification.parent.actualVersion = "1.6";
+    }],
     ["wave1_adr012_not_adopted", (value) => { value.decisions.adr012.adopted = false; }],
+    ["wave1_adr012_digest_mismatch", (value) => { value.decisions.adr012.digest = null; }],
     ["wave1_adr012_digest_mismatch", (value) => { value.decisions.expectedAdr012Digest = OTHER_DIGEST; }],
     ["wave1_adr005_not_superseded", (value) => { value.decisions.adr005.supersededBy = null; }],
     ["wave1_adr005_reverse_link_missing", (value) => { value.decisions.adr005.reverseLink = false; }],
@@ -336,6 +342,7 @@ test("fails closed on absent or mismatched evidence, pins, contracts, and genera
     ["wave1_evidence_digest_missing", (value) => { value.repository.evidenceDigest = null; }],
     ["wave1_evidence_invalid", (value) => { value.repository.evidenceVerified = false; }],
     ["wave1_generated_contracts_invalid", (value) => { value.repository.generatedContractsVerified = false; }],
+    ["wave1_child_pin_mismatch", (value) => { value.repository.repositories[0].expectedSha = null; }],
     ["wave1_child_pin_mismatch", (value) => { value.repository.repositories[2].actualSha = OTHER_SHA; }],
   ];
 
