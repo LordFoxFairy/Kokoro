@@ -6,6 +6,22 @@ import test from "node:test";
 
 const scopeModule = new URL("./scope.mjs", import.meta.url);
 
+function isRedisFlushCall({ args }) {
+  const evalIndex = args.indexOf("EVAL");
+  return evalIndex >= 0 && args[evalIndex + 1]?.includes('redis.call("FLUSHDB")');
+}
+
+function evaluateRedisClaim(script, database, markerKey, token) {
+  assert.match(script, /redis\.call\("SET", KEYS\[1\], ARGV\[1\]\)/u);
+  let occupied;
+  if (script.includes('redis.call("DBSIZE")')) occupied = database.size !== 0;
+  else if (script.includes('redis.call("EXISTS", KEYS[1])')) occupied = database.has(markerKey);
+  else assert.fail("claim script has no interpretable occupancy guard");
+  if (occupied) return 0;
+  database.set(markerKey, token);
+  return 1;
+}
+
 test("leases concurrent run-scoped allocations with exclusive Redis databases", async () => {
   const { acquireScope, releaseScope } = await import(scopeModule);
   const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
@@ -221,6 +237,39 @@ test("default scope commands use process-environment credentials without inherit
   }
 });
 
+test("omitting environment reads the MySQL credential from process.env without child inheritance", async () => {
+  const { acquireScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const mysqlRootPassword = "temporary-process-env-secret";
+  const previousMysqlRootPassword = process.env.MYSQL_ROOT_PASSWORD;
+  const calls = [];
+  const spawn = (command, args, options) => {
+    calls.push({ command, args, options });
+    return { status: 0, stdout: "OK\n", stderr: "" };
+  };
+  process.env.MYSQL_ROOT_PASSWORD = mysqlRootPassword;
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_realenv",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql"],
+    });
+    await provisionScope({ lease, spawn });
+
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].command, "docker");
+    assert.match(calls[0].options.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
+    assert.equal(JSON.stringify(calls[0].args).includes(mysqlRootPassword), false);
+    assert.equal("MYSQL_ROOT_PASSWORD" in calls[0].options.env, false);
+    assert.equal(JSON.stringify(calls[0].options.env).includes(mysqlRootPassword), false);
+  } finally {
+    if (previousMysqlRootPassword === undefined) delete process.env.MYSQL_ROOT_PASSWORD;
+    else process.env.MYSQL_ROOT_PASSWORD = previousMysqlRootPassword;
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
 test("scope command failures do not expose credentials from child errors or output", async () => {
   const { acquireScope, provisionScope } = await import(scopeModule);
   const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
@@ -290,6 +339,76 @@ test("Redis refuses to claim a nonempty database before provisioning MySQL or Mo
   }
 });
 
+test("Redis claim state controls marker ownership and all later provision mutations", async () => {
+  const { acquireScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const databases = new Map();
+  const calls = [];
+  const claimResults = [];
+  const run = (command, args, options = {}) => {
+    calls.push({ command, args, input: options.input ?? "" });
+    if (!args.includes("EVAL")) return { status: 0, stdout: "OK\n", stderr: "" };
+    const databaseNumber = Number(args[args.indexOf("-n") + 1]);
+    const database = databases.get(databaseNumber) ?? new Map();
+    databases.set(databaseNumber, database);
+    const script = args[args.indexOf("EVAL") + 1];
+    const result = evaluateRedisClaim(script, database, args.at(-1), options.input);
+    claimResults.push(result);
+    return { status: 0, stdout: `${result}\n`, stderr: "" };
+  };
+  try {
+    const [emptyLease, usedLease, markedLease] = await Promise.all([
+      "run_claimempty", "run_claimused", "run_claimmarked",
+    ].map((runId) => acquireScope({
+      stateRoot,
+      runId,
+      endpointFingerprint: "local-dev",
+      resources: ["mysql", "mongo", "redis"],
+    })));
+    databases.set(usedLease.redis.database, new Map([["foreign:key", "foreign-value"]]));
+    databases.set(markedLease.redis.database, new Map([
+      [markedLease.redis.markerKey, "another-lease-token"],
+    ]));
+
+    let start = calls.length;
+    await provisionScope({ lease: emptyLease, mysqlRootPassword: "scope-root-secret", run });
+    const emptyCalls = calls.slice(start);
+    assert.deepEqual(emptyCalls.map(({ args, input }) => {
+      if (args.includes("EVAL")) return "redis:claim";
+      if (/CREATE DATABASE/u.test(input)) return "mysql:create";
+      if (/getSiblingDB/u.test(input)) return "mongo:create";
+      return "unexpected";
+    }), ["redis:claim", "mysql:create", "mongo:create"]);
+    assert.equal(
+      databases.get(emptyLease.redis.database).get(emptyLease.redis.markerKey),
+      emptyLease.leaseToken,
+    );
+
+    start = calls.length;
+    await assert.rejects(
+      provisionScope({ lease: usedLease, mysqlRootPassword: "scope-root-secret", run }),
+      /infra_scope_redis_busy/u,
+    );
+    assert.equal(calls.length - start, 1);
+    assert.deepEqual([...databases.get(usedLease.redis.database)], [["foreign:key", "foreign-value"]]);
+    assert.equal(databases.get(usedLease.redis.database).has(usedLease.redis.markerKey), false);
+
+    start = calls.length;
+    await assert.rejects(
+      provisionScope({ lease: markedLease, mysqlRootPassword: "scope-root-secret", run }),
+      /infra_scope_redis_busy/u,
+    );
+    assert.equal(calls.length - start, 1);
+    assert.equal(
+      databases.get(markedLease.redis.database).get(markedLease.redis.markerKey),
+      "another-lease-token",
+    );
+    assert.deepEqual(claimResults, [1, 0, 0]);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
 test("cleanup recovers lease-owned resources when provision failed before the Redis marker", async () => {
   const { acquireScope, cleanupScope, readScope } = await import(scopeModule);
   const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
@@ -323,7 +442,7 @@ test("cleanup recovers lease-owned resources when provision failed before the Re
       if (/dropDatabase/u.test(input)) return "mongo:drop";
       return "unexpected";
     }), ["redis:get-marker", "redis:database-size", "mysql:drop", "mongo:drop"]);
-    assert.equal(calls.some(({ args }) => args.includes("FLUSHDB")), false);
+    assert.equal(calls.some(isRedisFlushCall), false);
     await assert.rejects(readScope({ stateRoot, runId: lease.runId }), /infra_scope_missing/u);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
@@ -339,7 +458,7 @@ test("cleanup preserves the lease when a markerless Redis database contains unow
       stateRoot,
       runId: "run_stale",
       endpointFingerprint: "local-dev",
-      resources: ["redis"],
+      resources: ["mysql", "mongo", "redis", "minio"],
     });
     const run = (command, args, options = {}) => {
       calls.push({ command, args, input: options.input ?? "" });
@@ -353,13 +472,19 @@ test("cleanup preserves the lease when a markerless Redis database contains unow
         runId: lease.runId,
         leaseToken: lease.leaseToken,
         endpointFingerprint: lease.endpointFingerprint,
+        mysqlRootPassword: "scope-root-secret",
         run,
       }),
       /infra_scope_redis_unowned_data/u,
     );
 
+    assert.deepEqual(calls.map(({ args }) => {
+      if (args.includes("GET")) return "redis:get-marker";
+      if (args.includes("DBSIZE")) return "redis:database-size";
+      return "unexpected";
+    }), ["redis:get-marker", "redis:database-size"]);
     assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
-    assert.equal(calls.some(({ args }) => args.includes("FLUSHDB")), false);
+    assert.equal(calls.some(isRedisFlushCall), false);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }
@@ -374,7 +499,7 @@ test("cleanup accepts only exact Redis marker bytes and preserves the lease on a
       stateRoot,
       runId: "run_wrongmark",
       endpointFingerprint: "local-dev",
-      resources: ["redis"],
+      resources: ["mysql", "mongo", "redis", "minio"],
     });
     for (const marker of ["f".repeat(64), `${lease.leaseToken} `, `${lease.leaseToken}\r`, " "]) {
       calls.length = 0;
@@ -389,13 +514,17 @@ test("cleanup accepts only exact Redis marker bytes and preserves the lease on a
           runId: lease.runId,
           leaseToken: lease.leaseToken,
           endpointFingerprint: lease.endpointFingerprint,
+          mysqlRootPassword: "scope-root-secret",
           run,
         }),
         /infra_scope_redis_token_mismatch/u,
       );
 
       assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
+      assert.equal(calls.length, 1);
+      assert.ok(calls[0].args.includes("GET"));
       assert.equal(calls.some(({ args }) => args.includes("DBSIZE") || args.includes("EVAL")), false);
+      assert.equal(calls.some(isRedisFlushCall), false);
     }
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
