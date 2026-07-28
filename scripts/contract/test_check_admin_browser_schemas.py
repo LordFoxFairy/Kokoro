@@ -207,3 +207,42 @@ def test_real_repository_passes():
     # D4 is still open, so the four row readers cannot be verified. If this drops, the
     # contract gained a row shape and generation becomes the better answer for them.
     assert "4 mapped to a schema with no field contract" in message
+
+
+def test_admin_resource_manifest_requires_an_explicit_site_scope_field():
+    root = Path(__file__).resolve().parents[2]
+    document = yaml.safe_load(
+        (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(encoding="utf-8")
+    )
+    schema = document["components"]["schemas"]["AdminResourceManifest"]
+
+    assert "siteScopeField" in schema["required"]
+    assert schema["properties"]["siteScopeField"] == {
+        "description": "返回行中承载 Site scope 的字段；null 表示真正的平台级资源。",
+        "type": ["string", "null"],
+        "enum": ["siteId", "id", None],
+    }
+
+
+def test_sites_and_billing_contract_publish_the_resolved_permissions_and_scope():
+    root = Path(__file__).resolve().parents[2]
+    source = (root / "contract" / "openapi" / "admin-web-v1.yaml").read_text(encoding="utf-8")
+    document = yaml.safe_load(source)
+    sites = document["paths"]["/api/sites"]["get"]
+    billing = document["paths"]["/api/billing-overview"]["get"]
+
+    assert sites["x-kokoro-required-permission"] == "site.read"
+    assert billing["x-kokoro-required-permission"] == "billing.read"
+    assert billing["parameters"] == [
+        {
+            "name": "siteId",
+            "in": "query",
+            "required": True,
+            "description": "计费聚合所属 Site；超出 operator 作用域时 403。",
+            "schema": {"type": "string", "minLength": 1},
+        }
+    ]
+    assert "400" in billing["responses"]
+    assert "403" in billing["responses"]
+    assert "待裁决 D9" not in source
+    assert "# D9" not in source

@@ -48,11 +48,6 @@
 # D6  /api/approvals 把 executionKey（内部幂等 uuid）与 error（上游原始错误文本）整行下发浏览器。
 #     同 D5：本文件照实登记并标注，是否收缩待裁决。
 # D7  POST /api/action 的 body 校验在认证之前（400 先于 401），与其余 15 条相反。既定设计还是待修 bug，待裁决。
-# D8  resourceQuerySchema 缺 .strict()（其余 3 个 query schema 都是 strict），未知 query 被 strip 而非 400。
-#     本文件按实照写（strip），是否对齐代码待裁决。
-# D9  /api/sites、/api/billing-overview、/api/user360 无静态权限检查：任何激活 operator 都能读
-#     （readonly 角色可看全平台营收）；/api/sites 更以 scope=undefined 主动跳过 manifest 的
-#     requiredPermission 强制。刻意还是漏检待裁决 —— 直接决定这三条的 security 语义。
 # D10 POST /api/approvals/{id}/approve 在下游执行失败时仍回 HTTP 200，失败信息在载荷内
 #     （status=failed、resultStatusCode、error）。是否需要独立的非 2xx 响应待裁决。
 # D11 列表路由无分页契约：/api/operators、/api/roles 无 take；/api/approvals 硬编码 take:100 且
@@ -339,11 +334,13 @@ paths:
       tags: [resources]
       summary: 站点选择器数据源（转发 site 模块 /admin/sites）
       description: |
-        静态权限要求：**无**（待裁决 D9）。`getSites` 以 `scope=undefined` 调用 `proxyResource`，
-        因此**跳过** manifest 声明的 `site.read` 强制，只在返回后按 operator 的 `scopeSites` 过滤行
-        （`scopeSites` 含 `*` 时见全部）。
+        静态权限要求：`site.read`。`getSites` 把 operator 交给 manifest 驱动的 `proxyResource`，
+        不再绕过资源权限。sites 资源声明 `siteScopeField: id`；有限 Site scope 会逐 Site 把
+        `siteId` 下推给 provider，并在 provider 的 `take` 前按 `id` 查询，返回后再按 `row.id` 校验。
+        wildcard Site scope 可读取 provider 返回的全部有效 Site 行。
 
         行本身没有字段契约（待裁决 D4）。
+      x-kokoro-required-permission: site.read
       responses:
         "200":
           description: 站点行列表（无字段契约，见 D4）
@@ -368,11 +365,21 @@ paths:
       tags: [resources]
       summary: 运营台总览（聚合 credit + payment stats）
       description: |
-        静态权限要求：**无** —— 任何激活 operator（含 readonly 角色）都能看到全平台营收（待裁决 D9）。
+        静态权限要求：`billing.read`。query 中 `siteId` 必填且必须命中 operator 的 `scopeSites`；
+        网关把同一 `siteId` 下推给 credit/payment stats，两个 provider 都在聚合层按 Site 过滤。
 
         两段各自降级：模块离线/报错时该段为 `null`，不拖垮整体。因此下面的 502 分支在实现里
         实际不可达（`fetchStats` 的异常都被 `.catch(() => null)` 吞掉），但 handler 仍写了该 catch，
         故照实登记。
+      x-kokoro-required-permission: billing.read
+      parameters:
+        - name: siteId
+          in: query
+          required: true
+          description: 计费聚合所属 Site；超出 operator 作用域时 403。
+          schema:
+            type: string
+            minLength: 1
       responses:
         "200":
           description: 总览卡片数据（离线段为 null）
@@ -380,8 +387,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BillingOverviewResponse"
+        "400":
+          $ref: "#/components/responses/RequestInvalid"
         "401":
           $ref: "#/components/responses/OperatorUnauthorized"
+        "403":
+          $ref: "#/components/responses/GatewayForbidden"
         "502":
           $ref: "#/components/responses/GatewayBadGateway"
         "500":
@@ -393,7 +404,9 @@ paths:
       tags: [resources]
       summary: 用户 360（按 siteId + owner 聚合身份/积分账户/订单）
       description: |
-        静态权限要求：**无**，只校验租户作用域 `permitsSite(operator.scopeSites, siteId)`（待裁决 D9）。
+        聚合路由没有单一静态权限；它先校验 `permitsSite(operator.scopeSites, siteId)`，再让三个
+        manifest 资源分别强制各自的 `requiredPermission`。同一 `siteId` 会下推给各 provider，
+        返回行再按 manifest 的 `siteScopeField` 校验。
 
         query schema 是 `.strict()`：出现未声明的 query key 直接 400。重复 key 会被解析成数组从而 400。
 
@@ -447,11 +460,9 @@ paths:
 
         `route` 必须精确等于该模块 manifest 里某个 `resources[].route`，否则 403（防开放代理 / SSRF）。
 
-        行过滤：给 `siteId` 时按 `row.siteId` 精确过滤；否则按 operator 的 `scopeSites` 过滤
-        （含 `*` 时全放行）。行本身无字段契约（待裁决 D4）。
-
-        query schema 缺 `.strict()`：未知 query key 被 strip 而非报错，与 /api/user360、
-        /api/approvals、/api/audit 不一致（待裁决 D8）。
+        scope 由 resource 的 `siteScopeField` 决定。`null` 资源只允许 wildcard Site scope；
+        `siteId`/`id` 资源在显式 Site 或有限多 Site scope 下逐站下推 provider，并在返回后再次校验。
+        query schema 是 `.strict()`，未知 query key 返回 400。行本身无字段契约（待裁决 D4）。
       parameters:
         - name: moduleId
           in: query
@@ -1074,7 +1085,7 @@ components:
     AdminResourceManifest:
       description: platform-kit `adminResourceManifestSchema`（`.strict()`）。`actions` 有默认值 []，解析后必然存在。
       type: object
-      required: [id, labelKey, route, requiredPermission, actions]
+      required: [id, labelKey, route, requiredPermission, siteScopeField, actions]
       additionalProperties: false
       properties:
         id:
@@ -1089,6 +1100,10 @@ components:
         requiredPermission:
           type: string
           minLength: 1
+        siteScopeField:
+          description: 返回行中承载 Site scope 的字段；null 表示真正的平台级资源。
+          type: [string, "null"]
+          enum: [siteId, id, null]
         actions:
           type: array
           items:
