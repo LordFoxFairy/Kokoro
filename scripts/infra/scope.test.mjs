@@ -92,6 +92,11 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
     assert.equal(calls.filter(({ input }) => /CREATE DATABASE/u.test(input)).length, 1);
     assert.match(mysqlProvision.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
     assert.match(mysqlProvision.input, /CREATE USER[\s\S]*GRANT ALL PRIVILEGES ON `kokoro_test_run_real01_site`\.\*/u);
+    assert.deepEqual(mysqlProvision.args.slice(-3), [
+      "sh", "-c",
+      'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=TCP -h127.0.0.1 -uroot',
+    ]);
+    assert.doesNotMatch(JSON.stringify(mysqlProvision.args), /protocol=socket/u);
     assert.doesNotMatch(JSON.stringify(mysqlProvision.args), new RegExp(mysqlRootPassword, "u"));
     assert.doesNotMatch(JSON.stringify(mysqlProvision.args), /MYSQL_ROOT_PASSWORD/u);
     assert.equal(calls.filter(({ input }) => /getSiblingDB/u.test(input)).length, 1);
@@ -123,6 +128,11 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
     const mysqlCleanup = calls.slice(markerRead).find(({ input }) => /DROP DATABASE/u.test(input));
     assert.ok(mysqlCleanup);
     assert.match(mysqlCleanup.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
+    assert.deepEqual(mysqlCleanup.args.slice(-3), [
+      "sh", "-c",
+      'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=TCP -h127.0.0.1 -uroot',
+    ]);
+    assert.doesNotMatch(JSON.stringify(mysqlCleanup.args), /protocol=socket/u);
     assert.doesNotMatch(JSON.stringify(mysqlCleanup.args), new RegExp(mysqlRootPassword, "u"));
     assert.doesNotMatch(JSON.stringify(mysqlCleanup.args), /MYSQL_ROOT_PASSWORD/u);
     assert.ok(calls.slice(markerRead).some(({ args, input }) =>

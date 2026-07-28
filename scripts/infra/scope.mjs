@@ -393,7 +393,7 @@ export async function provisionScope({
   }
   if (resources.includes("mysql")) {
     checkedRun(execute, "docker", composeExec("mysql", [
-      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=socket -uroot',
+      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=TCP -h127.0.0.1 -uroot',
     ]), { input: mysqlInput(mysqlAdminCredential, mysqlSql(lease, "create")) });
   }
   if (resources.includes("postgres")) {
@@ -489,7 +489,7 @@ export async function cleanupScope({
 
   if (resources.includes("mysql")) {
     checkedRun(execute, "docker", composeExec("mysql", [
-      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=socket -uroot',
+      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=TCP -h127.0.0.1 -uroot',
     ]), { input: mysqlInput(mysqlAdminCredential, mysqlSql(lease, "drop")) });
   }
   if (resources.includes("postgres")) {
