@@ -13,11 +13,39 @@
 ## Execution rules and dependency graph
 
 - Root, `kokoro-platform`, and `kokoro-web` are separate repositories. Every task commits in its owning repository; only Task 20 promotes child pins in Root.
+- The single-writer DAG is fixed: Root `Task 0 → 1 → 2`; Platform `Task 3 → 4 → … → 17 → 19`; Web `Task 18` may run
+  after Task 1's generated-contract handoff; Task 20 joins the clean child commits. Exactly one worker owns each repository
+  worktree/index/lockfile at a time. Tasks within `kokoro-platform` are serial; no Site/Identity/Admin/ModelControl parallel writes.
 - Tasks 1–19 MUST NOT start a private Docker/Compose stack. Unit and contract tests run without containers; PostgreSQL component tests reuse the single Root-managed default Infra instance through a leased database/role.
-- Only the Task 20 integrator may start or reconcile the default Infra stack. After verification it stops surplus containers; it never prunes or deletes volumes, images, or developer data.
+- The Root integrator may perform only Task 2's bounded default-Infra MySQL→PostgreSQL activation/lease and Task 20's final
+  reconciliation. No other worker may start a stack. Both operations preserve Redis/Mongo/MinIO and never prune/delete volumes,
+  images, or developer data.
 - No task edits `kokoro-agent`. GA verification is read-only: golden-byte, forbidden-field, and compatibility assertions only.
 - `chat.execution.prepare`, Redeem routes, and Credit admission remain absent until both their owner Waves are independently qualified. A placeholder, compatibility route, or declared-but-unimplemented descriptor is a failure.
-- Suggested parallel cuts after Tasks 1–5 establish contracts/storage: Site (7–10), Identity/Workspace (11–14), and Admin/Data Rights (15–17). ModelControl (6) and Web (18) can run independently once their contracts are frozen. Task 19 follows consumer cutover; Task 20 is serial integration.
+- Cross-repository Web Task 18 may overlap the serial Platform lane only after Task 1 handoff. Task 19 follows all Platform consumer
+  cutovers; Task 20 is serial integration. Every task stages only declared paths with `git add --`; `git add -A` is forbidden.
+
+### Task 0: Install and pass the executable approval/dependency baseline gate
+
+**Repository:** Root
+
+**Files:**
+
+- Create: `scripts/wave1/preflight.mjs`
+- Create: `scripts/wave1/preflight.test.mjs`
+- Runtime-only, never commit: `.git/kokoro-wave1/baseline.json`
+
+- [ ] Write failing fixture tests for unapproved/unauthorized Wave 1 spec, missing or mismatched ADR-012 digest/adoption and ADR-005
+  supersession, parent-spec mismatch, absent evidence/pin/contract digest, dirty Root/child state, or unexpected child SHA.
+- [ ] Add GA baseline fixtures requiring exact `kokoro-agent` SHA, full porcelain status including untracked files, and SHA-256 of
+  `contract/spec/control.yaml` plus `kokoro-agent/src/kokoro_agent/contract/control.py`.
+- [ ] Run `node --test scripts/wave1/preflight.test.mjs`; confirm RED because the gate is missing.
+- [ ] Implement a read-only, fail-closed checker that atomically writes the baseline only after all approval, ADR, evidence,
+  generated-contract, pin and clean-worktree requirements pass.
+- [ ] Run `node --test scripts/wave1/preflight.test.mjs`, then separately run
+  `node scripts/wave1/preflight.mjs --write-baseline .git/kokoro-wave1/baseline.json`. Any failure stops before Task 1; this plan
+  cannot change approved spec/ADR state or fabricate evidence.
+- [ ] Commit only the gate: `git add -- scripts/wave1/preflight.mjs scripts/wave1/preflight.test.mjs && git commit -m "build(wave1): add approval and isolation preflight"`.
 
 ## Chunk 1 — Root authority and Platform kernel
 
@@ -40,11 +68,13 @@
 - Create: `scripts/contract/check-wave1-surface.test.mjs`
 
 - [ ] Write failing contract tests for Site-bound registration/login/session management, Site lifecycle/release commands, typed Admin scope/axes/approval, operation receipts, stable error codes, request IDs, idempotency keys, and generated-only consumer artifacts. Assert that no Payment purchase route and no `chat.execution.prepare` descriptor exists.
-- [ ] Run `python -m pytest contract/tests/test_buf_contract.py contract/tests/test_generate.py -q && node --test scripts/contract/check-wave1-surface.test.mjs`; confirm RED because the Wave 1 schemas and registry edges are missing.
+- [ ] Run `uv run --locked python -m pytest contract/tests/test_buf_contract.py contract/tests/test_generate.py -q`; record its
+  expected RED independently. Then run `node --test scripts/contract/check-wave1-surface.test.mjs`; record its expected RED
+  independently. Do not join expected-red suites with `&&`, which would short-circuit the second test.
 - [ ] Add additive versioned contracts and exact boundary registry ownership. Keep public browser HTTP separate from privileged ConnectRPC; do not expose raw database identifiers or internal policy records.
 - [ ] Generate deterministic mirrors with `pnpm --dir contract buf:lint && pnpm --dir contract buf:generate`; ensure a second generation produces no diff.
 - [ ] Run the targeted tests plus `node scripts/contract/check-boundary-coverage.mjs`; confirm all new provider/consumer edges match the exact boundary, not merely the repository pair.
-- [ ] Commit in Root: `git add contract scripts/contract && git commit -m "feat(contract): freeze wave1 platform surfaces"`.
+- [ ] Commit only declared paths with `git add -- contract/openapi/platform-public-v1.yaml contract/proto/kokoro/platform/site/v1/site_lifecycle.proto contract/proto/kokoro/platform/identity/v1/admin_identity.proto contract/proto/kokoro/platform/admin/v2/admin_control.proto contract/buf.yaml contract/generate.mjs contract/registry/boundaries.yaml contract/tests/test_buf_contract.py contract/tests/test_generate.py scripts/contract/check-wave1-surface.mjs scripts/contract/check-wave1-surface.test.mjs`, then commit.
 
 ### Task 2: Replace the default MySQL Infra contract with isolated PostgreSQL databases
 
@@ -63,11 +93,19 @@
 - Modify: `scripts/infra/INDEX.md`
 
 - [ ] Add failing policy tests requiring PostgreSQL 18 in `platform`/`full`, separate `kokoro_platform` and `kokoro_session` databases, separate runtime/migrator/test roles, leased test schemas/databases, bounded health checks, and zero MySQL runtime contexts.
-- [ ] Add failing lifecycle tests proving `stop`/lease cleanup never invokes volume/image prune or removes named developer data; prove only the Root manager owns default-stack lifecycle.
+- [ ] Before changing Compose, persist a machine-readable inventory of MySQL/PostgreSQL, Redis, Mongo and MinIO service/image/
+  profile/port/volume IDs plus named-volume existence/data markers. Add failing lifecycle tests proving `stop`/lease cleanup never
+  invokes volume/image prune or removes named developer data; prove only the Root manager owns default-stack lifecycle.
+- [ ] Add exact before/after assertions: only active MySQL service/profile is replaced by PostgreSQL 18; Redis/Mongo/MinIO
+  image/profile/port/volume identity and data markers are unchanged, and the old MySQL volume is stopped/archived but not deleted.
 - [ ] Run `node --test scripts/infra/*.test.mjs`; confirm RED on MySQL service/profile/lease expectations.
 - [ ] Implement the PostgreSQL service, roles, health check, manager inventory, and lease behavior. Remove MySQL from active profiles without deleting historical volumes.
-- [ ] Re-run the Node suite and `node scripts/infra/inventory.mjs --check`; inspect rendered Compose config only with `docker compose -f docker-compose.infra.yml config`—do not start containers in this task.
-- [ ] Commit in Root: `git add docker-compose.infra.yml config/repository/infrastructure-policy.yaml scripts/infra && git commit -m "feat(infra): standardize isolated postgres authority"`.
+- [ ] As the Root integrator, after static tests pass, use the sole manager for one bounded activation: reconcile the existing default
+  stack to PostgreSQL, acquire the Platform test database/role lease needed by Tasks 3–19, verify Redis/Mongo/MinIO inventory/data
+  equality, and record an activation receipt. Do not start a second Compose project and do not cut application traffic here.
+- [ ] Re-run the Node suite, `node scripts/infra/inventory.mjs --check`, rendered Compose config, and the bounded activation receipt;
+  confirm the leased PostgreSQL endpoint is available for Task 3 while all preserved-service assertions remain true.
+- [ ] Commit in Root: `git add -- docker-compose.infra.yml config/repository/infrastructure-policy.yaml scripts/infra/manager.mjs scripts/infra/manager.test.mjs scripts/infra/scope.mjs scripts/infra/scope.test.mjs scripts/infra/inventory.mjs scripts/infra/inventory.test.mjs scripts/infra/INDEX.md && git commit -m "feat(infra): standardize isolated postgres authority"`.
 
 ### Task 3: Establish the Platform PostgreSQL schema, clients, migrator, and deployable roles
 
@@ -91,7 +129,7 @@
 - [ ] Run `pnpm vitest run test/component/postgres-foundation.test.ts test/architecture/deployable-roles.test.ts`; confirm RED because the root Platform schema and roles do not exist.
 - [ ] Add pinned Prisma 7/PostgreSQL dependencies, safe client construction, one-shot migrator, process health/readiness behavior, and shutdown draining. Do not add self-RPC between local modules.
 - [ ] Run `pnpm db:generate && pnpm typecheck && pnpm vitest run test/architecture/deployable-roles.test.ts`; then run the component test against the pre-existing leased default PostgreSQL database.
-- [ ] Commit in Platform: `git add prisma prisma.config.ts src/infrastructure src/process package.json pnpm-lock.yaml test && git commit -m "feat(platform): establish postgres runtime foundation"`.
+- [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma.config.ts prisma/migrations/0001_platform_foundation/migration.sql src/infrastructure/postgres/client.ts src/infrastructure/postgres/migrator.ts src/process/api.ts src/process/worker.ts package.json pnpm-lock.yaml test/component/postgres-foundation.test.ts test/architecture/deployable-roles.test.ts && git commit -m "feat(platform): establish postgres runtime foundation"`.
 
 ### Task 4: Implement the opaque Unit of Work, owner ports, outbox/inbox, and import gates
 
@@ -115,7 +153,7 @@
 - [ ] Run `pnpm vitest run test/unit/unit-of-work.test.ts test/component/outbox-inbox.test.ts test/architecture/module-imports.test.ts`; confirm RED.
 - [ ] Implement `PlatformTransaction` as an opaque capability that exposes owner-scoped repositories only. Add outbox/inbox/receipt adapters and ESLint boundaries; local workflows receive application ports, never Prisma.
 - [ ] Re-run targeted tests, `pnpm lint`, and `pnpm typecheck`; inspect that no local module URL/env/service-discovery config was introduced.
-- [ ] Commit in Platform: `git add src/shared test eslint.config.mjs && git commit -m "feat(platform): add transactional module kernel"`.
+- [ ] Commit in Platform: `git add -- src/shared/unit-of-work/platform-transaction.ts src/shared/unit-of-work/unit-of-work.ts src/shared/outbox-inbox/outbox.ts src/shared/outbox-inbox/inbox.ts src/shared/outbox-inbox/receipt.ts src/shared/INDEX.md test/unit/unit-of-work.test.ts test/component/outbox-inbox.test.ts test/architecture/module-imports.test.ts eslint.config.mjs && git commit -m "feat(platform): add transactional module kernel"`.
 
 ### Task 5: Enforce RequestSecurityContext, operation policy, and Risk snapshots
 
@@ -137,7 +175,7 @@
 - [ ] Run `pnpm vitest run test/unit/operation-policy.test.ts test/component/effect-point-authorization.test.ts`; confirm RED.
 - [ ] Implement typed immutable security context and operation-policy evaluation. Persist only signed/identified Risk evidence; prohibit Risk network access inside Unit of Work.
 - [ ] Re-run targeted tests, import gates, lint, and typecheck.
-- [ ] Commit in Platform: `git add src/shared/security-context src/modules/policy test && git commit -m "feat(platform): enforce effect point policy"`.
+- [ ] Commit in Platform: `git add -- src/shared/security-context/request-security-context.ts src/modules/policy/domain/operation-policy.ts src/modules/policy/application/contracts/risk-assessor.ts src/modules/policy/application/services/authorize-effect.ts src/modules/policy/infrastructure/postgres/policy-repository.ts src/modules/policy/INDEX.md test/unit/operation-policy.test.ts test/component/effect-point-authorization.test.ts && git commit -m "feat(platform): enforce effect point policy"`.
 
 ## Chunk 2 — ModelControl and complete Site lifecycle
 
@@ -163,7 +201,7 @@
 - [ ] Run `pnpm vitest run test/component/model-control-import.test.ts test/architecture/model-control-consumers.test.ts`; confirm RED.
 - [ ] Implement the target module and repeatable import with source/import digests; migrate consumers before removal and make fallback selection deterministic/auditable.
 - [ ] Run parity twice against a fresh leased database and verify identical digest and row counts; run lint/typecheck.
-- [ ] Commit in Platform: `git add src/modules/model-control scripts/model-control test && git commit -m "feat(platform): make model control canonical"`.
+- [ ] Commit in Platform: `git add -- src/modules/model-control/domain/model-catalog.ts src/modules/model-control/application/contracts/model-control-ports.ts src/modules/model-control/application/services/import-model-control.ts src/modules/model-control/application/services/resolve-model-policy.ts src/modules/model-control/infrastructure/postgres/model-control-repository.ts src/modules/model-control/INDEX.md scripts/model-control/export-legacy.mts scripts/model-control/import-canonical.mts test/component/model-control-import.test.ts test/architecture/model-control-consumers.test.ts && git commit -m "feat(platform): make model control canonical"`.
 
 ### Task 7: Build Site aggregate, binding, immutable releases, and active-pointer CAS
 
@@ -186,7 +224,7 @@
 - [ ] Run `pnpm vitest run test/component/site-aggregate.test.ts`; confirm RED.
 - [ ] Add schema, owner repository, and domain transitions in one UoW. Store provenance/digests, not mutable Web build configuration.
 - [ ] Re-run against PostgreSQL, then lint/typecheck/import gates.
-- [ ] Commit in Platform: `git add prisma src/modules/site test/component/site-aggregate.test.ts && git commit -m "feat(platform): add immutable site releases"`.
+- [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma/migrations/0002_site_release_binding/migration.sql src/modules/site/domain/site.ts src/modules/site/domain/site-release.ts src/modules/site/domain/site-binding.ts src/modules/site/application/contracts/site-ports.ts src/modules/site/infrastructure/postgres/site-repository.ts src/modules/site/INDEX.md test/component/site-aggregate.test.ts && git commit -m "feat(platform): add immutable site releases"`.
 
 ### Task 8: Implement Site request, provisioning intents, and reconciliation
 
@@ -207,7 +245,7 @@
 - [ ] Run `pnpm vitest run test/component/site-provisioning.test.ts test/contract/site-lifecycle-connect.test.ts`; confirm RED.
 - [ ] Implement workflow/application services and generated Connect adapter. Authenticate workload identity and bind every command to exact Site/environment/idempotency context.
 - [ ] Re-run targeted tests and the module import/network-in-transaction gates.
-- [ ] Commit in Platform: `git add src/workflows/site-lifecycle src/modules/site/application src/interfaces/connect test && git commit -m "feat(platform): orchestrate site provisioning"`.
+- [ ] Commit in Platform: `git add -- src/workflows/site-lifecycle/request-site.ts src/workflows/site-lifecycle/provision-site.ts src/workflows/site-lifecycle/reconcile-provisioning.ts src/modules/site/application/services/site-provisioning.ts src/interfaces/connect/site-lifecycle.ts test/component/site-provisioning.test.ts test/contract/site-lifecycle-connect.test.ts && git commit -m "feat(platform): orchestrate site provisioning"`.
 
 ### Task 9: Qualify activation, drain, rollback, and unknown release outcomes
 
@@ -227,7 +265,7 @@
 - [ ] Run `pnpm vitest run test/component/site-release-lifecycle.test.ts test/contract/site-release-receipts.test.ts`; confirm RED.
 - [ ] Implement release workflows using durable attempts and observations; never infer provider success from a timeout and never mutate an existing release.
 - [ ] Re-run targeted tests plus Postgres concurrency tests.
-- [ ] Commit in Platform: `git add src/workflows/site-lifecycle src/modules/site/application test && git commit -m "feat(platform): qualify site release lifecycle"`.
+- [ ] Commit in Platform: `git add -- src/workflows/site-lifecycle/activate-release.ts src/workflows/site-lifecycle/drain-release.ts src/workflows/site-lifecycle/rollback-release.ts src/modules/site/application/services/release-lifecycle.ts test/component/site-release-lifecycle.test.ts test/contract/site-release-receipts.test.ts && git commit -m "feat(platform): qualify site release lifecycle"`.
 
 ### Task 10: Complete suspend, resume, decommission, and domain reuse semantics
 
@@ -247,7 +285,7 @@
 - [ ] Run `pnpm vitest run test/component/site-disposition.test.ts test/contract/site-participant-receipts.test.ts`; confirm RED.
 - [ ] Implement state transitions and durable participant orchestration. Domain reuse requires explicit verified disposition and new binding generation.
 - [ ] Re-run targeted tests, lint, typecheck, and policy effect-point tests.
-- [ ] Commit in Platform: `git add src/workflows/site-lifecycle src/modules/site/domain test && git commit -m "feat(platform): close site disposition lifecycle"`.
+- [ ] Commit in Platform: `git add -- src/workflows/site-lifecycle/suspend-site.ts src/workflows/site-lifecycle/resume-site.ts src/workflows/site-lifecycle/decommission-site.ts src/modules/site/domain/site-disposition.ts test/component/site-disposition.test.ts test/contract/site-participant-receipts.test.ts && git commit -m "feat(platform): close site disposition lifecycle"`.
 
 ## Chunk 3 — Complete Identity and personal Workspace bootstrap
 
@@ -272,13 +310,16 @@
 - [ ] Run `pnpm vitest run test/component/identity-registration.test.ts`; confirm RED.
 - [ ] Implement pending-registration and activation in the Platform UoW with notification outbox and effect-point Site/policy checks.
 - [ ] Re-run targeted tests against PostgreSQL and run the OpenAPI contract test.
-- [ ] Commit in Platform: `git add prisma src/modules/identity src/interfaces/http test && git commit -m "feat(platform): add site bound registration"`.
+- [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma/migrations/0003_identity_registration/migration.sql src/modules/identity/domain/pending-registration.ts src/modules/identity/domain/user-account.ts src/modules/identity/application/services/begin-registration.ts src/modules/identity/application/services/verify-registration.ts src/modules/identity/infrastructure/postgres/identity-repository.ts src/interfaces/http/identity-registration.ts test/component/identity-registration.test.ts && git commit -m "feat(platform): add site bound registration"`.
 
 ### Task 12: Implement password login, TOTP, recovery codes, and session issuance
 
 **Repository:** `kokoro-platform`
 
 **Files:**
+
+- Modify: `package.json`
+- Modify: `pnpm-lock.yaml`
 
 - Create: `src/modules/identity/domain/authenticator.ts`
 - Create: `src/modules/identity/domain/user-session.ts`
@@ -294,7 +335,7 @@
 - [ ] Run `pnpm vitest run test/security/password-login.test.ts test/security/mfa-lifecycle.test.ts`; confirm RED.
 - [ ] Implement with reviewed libraries pinned in `package.json` (`argon2`, `otplib`, `jose`) and Platform-owned key/config ports. Store only hashes and necessary audit metadata.
 - [ ] Re-run security tests, dependency audit, lint, and typecheck.
-- [ ] Commit in Platform: `git add src/modules/identity test/security package.json pnpm-lock.yaml && git commit -m "feat(platform): complete password and mfa login"`.
+- [ ] Commit in Platform: `git add -- package.json pnpm-lock.yaml src/modules/identity/domain/authenticator.ts src/modules/identity/domain/user-session.ts src/modules/identity/application/services/password-login.ts src/modules/identity/application/services/totp-lifecycle.ts src/modules/identity/application/services/recovery-code-lifecycle.ts src/modules/identity/infrastructure/postgres/session-repository.ts test/security/password-login.test.ts test/security/mfa-lifecycle.test.ts && git commit -m "feat(platform): complete password and mfa login"`.
 
 ### Task 13: Complete credential recovery, email change, refresh rotation, and revocation
 
@@ -316,7 +357,7 @@
 - [ ] Run `pnpm vitest run test/security/identity-recovery.test.ts test/security/session-lifecycle.test.ts`; confirm RED.
 - [ ] Implement all state transitions through the identity owner port and one UoW; evaluate Site/user/session epochs again at issue/refresh/revoke effect points.
 - [ ] Re-run targeted security and OpenAPI contract tests, lint, and typecheck.
-- [ ] Commit in Platform: `git add src/modules/identity src/interfaces/http test/security && git commit -m "feat(platform): close identity recovery and sessions"`.
+- [ ] Commit in Platform: `git add -- src/modules/identity/application/services/password-reset.ts src/modules/identity/application/services/password-change.ts src/modules/identity/application/services/account-recovery.ts src/modules/identity/application/services/email-change.ts src/modules/identity/application/services/session-lifecycle.ts src/interfaces/http/identity-session.ts test/security/identity-recovery.test.ts test/security/session-lifecycle.test.ts && git commit -m "feat(platform): close identity recovery and sessions"`.
 
 ### Task 14: Atomically bootstrap the personal Workspace and billing shell
 
@@ -338,7 +379,7 @@
 - [ ] Run `pnpm vitest run test/component/personal-bootstrap.test.ts`; confirm RED.
 - [ ] Implement owner modules and activation workflow; external namespace allocation is a durable intent reconciled after commit, never a GA call in transaction.
 - [ ] Re-run targeted tests and architecture scans for W2A ownership violations.
-- [ ] Commit in Platform: `git add prisma src/modules/workspace src/modules/commerce src/workflows/registration test && git commit -m "feat(platform): bootstrap personal workspace atomically"`.
+- [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma/migrations/0004_personal_workspace/migration.sql src/modules/workspace/domain/personal-workspace.ts src/modules/workspace/application/services/bootstrap-personal-workspace.ts src/modules/workspace/infrastructure/postgres/workspace-repository.ts src/modules/commerce/domain/personal-billing-account.ts src/workflows/registration/activate-registration.ts test/component/personal-bootstrap.test.ts && git commit -m "feat(platform): bootstrap personal workspace atomically"`.
 
 ## Chunk 4 — Admin, Data Rights, Web products, and clean replacement
 
@@ -347,6 +388,9 @@
 **Repository:** `kokoro-platform`
 
 **Files:**
+
+- Modify: `package.json`
+- Modify: `pnpm-lock.yaml`
 
 - Create: `src/modules/admin/domain/admin-principal.ts`
 - Create: `src/modules/admin/domain/admin-scope.ts`
@@ -361,7 +405,7 @@
 - [ ] Run `pnpm vitest run test/security/admin-oidc.test.ts test/security/admin-authorization.test.ts`; confirm RED.
 - [ ] Implement OIDC using `openid-client` and generated Connect handlers. Admin Web never receives a database credential and never calls repositories directly.
 - [ ] Re-run targeted tests, generated-contract drift, lint, and typecheck.
-- [ ] Commit in Platform: `git add src/modules/admin src/interfaces/connect test/security package.json pnpm-lock.yaml && git commit -m "feat(platform): secure admin identity and scopes"`.
+- [ ] Commit in Platform: `git add -- package.json pnpm-lock.yaml src/modules/admin/domain/admin-principal.ts src/modules/admin/domain/admin-scope.ts src/modules/admin/application/services/complete-oidc-login.ts src/modules/admin/application/services/authorize-admin-command.ts src/interfaces/connect/admin-control.ts test/security/admin-oidc.test.ts test/security/admin-authorization.test.ts && git commit -m "feat(platform): secure admin identity and scopes"`.
 
 ### Task 16: Make Admin approvals, attempts, effects, and audit fail closed
 
@@ -383,7 +427,7 @@
 - [ ] Run `pnpm vitest run test/component/admin-command-atomicity.test.ts test/security/admin-attempt-gate.test.ts`; confirm RED.
 - [ ] Implement the independent attempt gate, local command bus/UoW, and external reconciliation path; redact secrets while retaining actor, target, policy, request, and result digests.
 - [ ] Re-run targeted tests, Postgres fault injection, lint, and typecheck.
-- [ ] Commit in Platform: `git add prisma src/modules/admin src/modules/audit src/workflows/admin-command test && git commit -m "feat(platform): make admin commands auditable"`.
+- [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma/migrations/0005_admin_command_audit/migration.sql src/modules/admin/domain/admin-command.ts src/modules/admin/application/services/execute-admin-command.ts src/modules/audit/application/services/append-admin-attempt.ts src/workflows/admin-command/dispatch-admin-command.ts test/component/admin-command-atomicity.test.ts test/security/admin-attempt-gate.test.ts && git commit -m "feat(platform): make admin commands auditable"`.
 
 ### Task 17: Add Data Rights, notification, and support participant contracts
 
@@ -405,7 +449,7 @@
 - [ ] Run `pnpm vitest run test/contract/data-rights-participants.test.ts test/component/data-rights-receipts.test.ts`; confirm RED.
 - [ ] Implement owner participant adapters and notification outbox. Keep orchestration external and make every plan/verify pair generation-bound.
 - [ ] Re-run targeted tests, policy tests, lint, and typecheck.
-- [ ] Commit in Platform: `git add src/modules src/interfaces/connect test && git commit -m "feat(platform): add data rights participants"`.
+- [ ] Commit in Platform: `git add -- src/modules/identity/application/contracts/data-rights-participant.ts src/modules/workspace/application/contracts/data-rights-participant.ts src/modules/site/application/contracts/data-rights-participant.ts src/modules/audit/application/contracts/audit-export.ts src/modules/identity/application/services/notification-outbox.ts src/interfaces/connect/data-rights-participants.ts test/contract/data-rights-participants.test.ts test/component/data-rights-receipts.test.ts && git commit -m "feat(platform): add data rights participants"`.
 
 ### Task 18: Publish the Site app-kit and prove two independent Web projects
 
@@ -423,14 +467,29 @@
 - Create: `apps/reference-site/src/site-bootstrap.ts`
 - Create: `test/site/site-project-isolation.test.ts`
 - Create: `test/site/site-auth-journey.test.ts`
+- Create: `scripts/certify-external-sites.mjs`
+- Create: `packages/site-scaffold/templates/site/.github/workflows/site-ci.yml`
+- Create generated sanitized report: `test/reports/external-sites/site-alpha.json`
+- Create generated sanitized report: `test/reports/external-sites/site-beta.json`
+- Create generated sanitized report: `test/reports/external-sites/summary.json`
 - Modify: `pnpm-workspace.yaml`
+- Modify: `pnpm-lock.yaml`
 
-- [ ] Write failing tests that generate Site Alpha and Site Beta into separate temporary Git repositories with independent package names, lockfiles, CI, artifact manifests, deployment config, release IDs, domain bindings, and signed app-kit/contract floors.
+- [ ] First add a minimal test-runner package/script so the red command resolves the intended tests; do not depend on an undeclared
+  workspace-root Vitest binary. Write failing tests for one orchestrator that packs exact app-kit/client versions and generates Site
+  Alpha/Beta into separate temporary Git repositories with independent package names, CI configs, frozen lockfiles, commits,
+  artifact manifests, deployment configs, release IDs, domain bindings, and signed contract floors.
 - [ ] Assert no runtime Host-based theme switch, shared account/session, raw Platform URL construction, Admin import, or database client. Exercise registration→verify→explicit login→MFA→session revoke through the generated Platform client with isolated cookies.
-- [ ] Run `pnpm vitest run test/site/site-project-isolation.test.ts test/site/site-auth-journey.test.ts`; confirm RED.
+- [ ] Run `pnpm --filter @kokoro/site-scaffold --fail-if-no-match test -- --run site-project-isolation.test.ts site-auth-journey.test.ts`; confirm RED for missing orchestration behavior, never for a missing filter/binary.
 - [ ] Implement the versioned app-kit, generated Site client, scaffold, and reference Site. Use Auth.js only as the Web session/cookie integration surface; Platform remains credential authority.
-- [ ] Re-run targeted tests, `pnpm lint`, `pnpm typecheck`, `pnpm test`, and build each generated fixture separately. Do not add Wave 3 Chat/session-client behavior here.
-- [ ] Commit in Web: `git add packages apps/reference-site test pnpm-workspace.yaml pnpm-lock.yaml && git commit -m "feat(web): publish isolated site application kit"`.
+- [ ] Implement `certify-external-sites.mjs` as the single lifecycle owner: pack exact packages → generate both repos → git
+  init/commit → frozen clean install → independent CI command/build → launch two deployments → activate exact Platform bindings →
+  cross-Site/Host/cookie/auth journey → rollback Alpha and Beta independently → shutdown/cleanup. Persist only sanitized package,
+  lock, commit, artifact, binding, deployment, isolation and rollback digests/results in the three declared reports.
+- [ ] Run `pnpm --filter @kokoro/site-scaffold --fail-if-no-match test`, then
+  `node scripts/certify-external-sites.mjs --output test/reports/external-sites`, followed by Web lint/typecheck/full test. Confirm
+  both deployments and independent rollback receipts; do not add Wave 3 Chat/session-client behavior here.
+- [ ] Commit only declared Web paths with `git add -- packages/site-app-kit/package.json packages/site-app-kit/src/index.ts packages/site-client/package.json packages/site-client/src/generated/platform-public.ts packages/site-scaffold/package.json packages/site-scaffold/src/scaffold.ts packages/site-scaffold/templates/site/.github/workflows/site-ci.yml apps/reference-site/package.json apps/reference-site/src/site-bootstrap.ts test/site/site-project-isolation.test.ts test/site/site-auth-journey.test.ts scripts/certify-external-sites.mjs test/reports/external-sites/site-alpha.json test/reports/external-sites/site-beta.json test/reports/external-sites/summary.json pnpm-workspace.yaml pnpm-lock.yaml`, then commit.
 
 ### Task 19: Remove legacy Payment, MySQL, self-RPC, and owner duplicates after consumer cutover
 
@@ -439,8 +498,11 @@
 **Files:**
 
 - Create: `test/architecture/wave1-clean-replacement.test.ts`
+- Create: `scripts/clean-replacement/stage-allowlist.mjs`
+- Create generated reviewed allowlist: `scripts/clean-replacement/wave1-delete-allowlist.txt`
 - Modify: `package.json`
 - Modify: `pnpm-workspace.yaml`
+- Modify: `pnpm-lock.yaml`
 - Delete after preflight: `kokoro-payment/**`
 - Delete after preflight: `kokoro-model/**`
 - Delete after preflight: `kokoro-site/**`
@@ -455,9 +517,19 @@
 - [ ] Write failing seven-layer Payment closure tests: no UI/link, route/descriptor, server handler, package/process, secret/env, outbound provider egress, database row/fact, or runtime capability. Stable disabled errors are allowed only on explicitly contracted non-purchase discovery surfaces.
 - [ ] Add failing scans for MySQL drivers/URLs, local self-RPC, duplicate Site/User/Admin/Model owners, Host theme fallback, Magic Link/dev auth, and compatibility adapters. Assert W2A-owned Redeem/Credit surfaces remain unreachable until W2A qualification.
 - [ ] Run Platform architecture tests and Root scan tests; confirm RED against the legacy tree.
-- [ ] Complete all consumer cutovers, run preflight parity/evidence, then remove legacy packages and obsolete deploy/docs/config in one bounded deletion commit. Do not delete historical database volumes or external financial records.
+- [ ] Implement `stage-allowlist.mjs` to generate a reviewed, newline-delimited list of every tracked legacy file from the five
+  declared roots, compare that list to the frozen preflight inventory, reject directories/globs/untracked paths/path traversal, and
+  stage deletions one exact path at a time with `git add -- <path>`. Complete all consumer cutovers and preflight parity/evidence,
+  review and freeze `wave1-delete-allowlist.txt`, then remove only those files. Do not delete historical database volumes or
+  external financial records.
 - [ ] Run `pnpm lint && pnpm typecheck && pnpm test` in Platform and `node --test scripts/contract/check-wave1-clean-replacement.test.mjs` in Root; confirm legacy consumer count and forbidden surface count are zero.
-- [ ] Commit Platform deletion: `git add -A && git commit -m "refactor(platform): complete wave1 clean replacement"`; then commit Root scanner separately: `git add scripts/contract && git commit -m "test(contract): enforce wave1 clean replacement"`.
+- [ ] Stage the non-deletion files exactly with
+  `git add -- package.json pnpm-workspace.yaml pnpm-lock.yaml test/architecture/wave1-clean-replacement.test.ts scripts/clean-replacement/stage-allowlist.mjs scripts/clean-replacement/wave1-delete-allowlist.txt INDEX.md README.md`.
+  Then run
+  `node scripts/clean-replacement/stage-allowlist.mjs --allowlist scripts/clean-replacement/wave1-delete-allowlist.txt --stage-deletions --assert-index-exact package.json pnpm-workspace.yaml pnpm-lock.yaml test/architecture/wave1-clean-replacement.test.ts scripts/clean-replacement/stage-allowlist.mjs scripts/clean-replacement/wave1-delete-allowlist.txt INDEX.md README.md`.
+  The script must fail if the staged set differs from the explicit static paths plus exact allowlist entries; only then commit the
+  deletion. Commit the Root scanner separately with
+  `git add -- scripts/contract/check-wave1-clean-replacement.mjs scripts/contract/check-wave1-clean-replacement.test.mjs`.
 
 ## Chunk 5 — Production qualification and atomic promotion
 
@@ -467,32 +539,92 @@
 
 **Files:**
 
+- Modify gitlink: `kokoro-platform`
+- Modify gitlink: `kokoro-web`
 - Create: `scripts/verification/wave1-qualification.mjs`
 - Create: `scripts/verification/wave1-qualification.test.mjs`
-- Create: `docs/evidence/wave-1/platform-postgres-uow.md`
-- Create: `docs/evidence/wave-1/identity-security-journeys.md`
-- Create: `docs/evidence/wave-1/site-lifecycle-two-projects.md`
-- Create: `docs/evidence/wave-1/admin-security-and-audit.md`
-- Create: `docs/evidence/wave-1/model-control-cutover.md`
-- Create: `docs/evidence/wave-1/payment-closure.md`
-- Create: `docs/evidence/wave-1/platform-deployables-slo-load-and-dr.md`
-- Create: `docs/evidence/wave-1/ga-semantic-non-regression.md`
-- Create: `docs/evidence/wave-1/wave-1-clean-replacement-inventory.md`
+- Create: `docs/reports/evidence/wave-1/platform-postgres-uow.md`
+- Create: `docs/reports/evidence/wave-1/identity-security-journeys.md`
+- Create: `docs/reports/evidence/wave-1/site-lifecycle-two-projects.md`
+- Create: `docs/reports/evidence/wave-1/admin-security-and-audit.md`
+- Create: `docs/reports/evidence/wave-1/model-control-cutover.md`
+- Create: `docs/reports/evidence/wave-1/payment-closure.md`
+- Create: `docs/reports/evidence/wave-1/platform-deployables-slo-load-and-dr.md`
+- Create: `docs/reports/evidence/wave-1/ga-semantic-non-regression.md`
+- Create: `docs/reports/evidence/wave-1/wave-1-clean-replacement-inventory.md`
 - Modify: `config/repository/compatibility-matrix.json`
 - Modify: `config/repository/federated-repositories.json`
-- Modify: `config/repository/bom.json`
+- Modify in follow-up evidence/provenance commit: `config/repository/bom.json`
 - Modify: `docs/task.md`
 
-- [ ] Write failing qualification tests that require exact child SHAs, contract/artifact/evidence digests, PostgreSQL 18, independent Platform/Session databases and roles, two independent Site artifacts, GA golden-byte evidence, no Payment/MySQL surface, and every Wave 1 evidence document populated from machine-readable reports.
+- [ ] Write failing qualification modes: `--candidate` requires exact child SHAs, contract/artifact/report digests, PostgreSQL 18,
+  independent Platform/Session databases/roles, two independent Site artifacts, GA golden bytes and no Payment/MySQL surface;
+  `--rollback-of` verifies restored pins/registry/Infra; `--release` additionally requires every Wave 1 evidence document populated
+  from machine-readable reports. Candidate verification must not require evidence that can only be written after its own clone run.
 - [ ] As main integrator, inspect existing containers and leases. Start or reconcile exactly one default Infra stack only if needed; do not permit subagents to create stacks. Stop surplus test containers before proceeding, without pruning volumes/images/developer data.
 - [ ] Run child repository gates from clean states: Platform `pnpm audit --audit-level high && pnpm lint && pnpm typecheck && pnpm test`; Web `pnpm audit --audit-level high && pnpm lint && pnpm typecheck && pnpm test && pnpm build`; Root contract/infra/repository suites; GA read-only golden-byte and forbidden-field tests.
 - [ ] Run real PostgreSQL qualification: fresh migrate, rollback-safe failure injection, backup while active, restore into an isolated leased database, row/digest parity, point-in-time/operational recovery procedure, API/Worker/migrator independent restart, and connection/timeout exhaustion behavior.
 - [ ] Run production-like journeys across Site Alpha/Beta: complete Identity/MFA/recovery/session flows; Site request/provision/activate/drain/rollback/suspend/resume/decommission; Admin approval/rejection/audit; ModelControl selection/fallback; Data Rights participant plan/verify; cross-Site leakage and stale-epoch negative tests.
 - [ ] Run load/SLO checks with at least 100 Sites and 100 admission/policy decisions per second at the agreed fixture size; record p50/p95/p99, error budget, database saturation, queue lag, reconciliation latency, and recovery thresholds. Averages alone do not qualify.
-- [ ] Create a recursive clean clone, hydrate exact pins, regenerate contracts, verify both Site artifacts, and rehearse rollback to the previous BOM. Root remote CI must be green; missing `KOKORO_SUBMODULE_TOKEN` is a release blocker, not an exception.
-- [ ] Stop surplus/default verification containers through the Root manager; record final `docker ps` inventory. Preserve volumes/images/developer data.
-- [ ] Tag and push each child repository only after its independent CI is green. Update Root gitlinks, compatibility matrix, federated roles, BOM, and evidence digests atomically; run the full Root gate again.
-- [ ] Commit Root promotion: `git add kokoro-platform kokoro-web config/repository docs scripts/verification && git commit -m "release(root): qualify wave1 platform foundation"`. Create the Root BOM tag only after remote Root CI is green.
+- [ ] Re-run `node scripts/wave1/preflight.mjs --verify-baseline .git/kokoro-wave1/baseline.json --ga-only`. Require the
+  original Agent SHA, empty full porcelain status including untracked files, identical SHA-256 for both control files, and
+  `run.request`/`run.cancel` golden-byte tests. Generated parity alone is insufficient.
+- [ ] Stop surplus/default verification containers through the Root manager; record final service/image/profile/port/volume/data
+  inventory proving PostgreSQL replaced only MySQL and Redis/Mongo/MinIO remain exact. Preserve all volumes/images/developer data.
+- [ ] Finalize Platform and Web child commits first. Run each child’s complete local and remote CI, push the exact commits, create/push
+  unique annotated release tags, and record commit/tag/artifact digests. Before any Root candidate commit, use the qualification
+  verifier to fetch each tag/commit from its configured remote into an isolated temporary Git object database and require
+  `cat-file -e <sha>^{commit}` plus annotated-tag target equality. A local child object, branch ref, or tag that the remote cannot
+  supply is a hard stop; recursive-clone qualification may never rely on an unpushed submodule SHA.
+- [ ] Prepare compatibility/federated changes and exact remotely retrievable child gitlinks, then create a local candidate promotion commit before
+  any clean-clone claim. Stage only declared paths:
+
+```bash
+git add -- kokoro-platform kokoro-web config/repository/compatibility-matrix.json config/repository/federated-repositories.json scripts/verification/wave1-qualification.mjs scripts/verification/wave1-qualification.test.mjs
+git commit -m "release(root): candidate wave1 platform foundation"
+wave1_candidate_sha=$(git rev-parse HEAD)
+```
+
+- [ ] Verify that exact SHA in a recursive local clone, then create a second clone and rehearse rollback as a new revert commit:
+
+```bash
+wave1_source_root=$(git rev-parse --show-toplevel)
+wave1_candidate_clone=$(mktemp -d)
+wave1_revert_clone=$(mktemp -d)
+git clone --recurse-submodules "$wave1_source_root" "$wave1_candidate_clone/repo"
+git -C "$wave1_candidate_clone/repo" checkout --detach "$wave1_candidate_sha"
+git -C "$wave1_candidate_clone/repo" submodule update --init --recursive
+node "$wave1_candidate_clone/repo/scripts/verification/wave1-qualification.mjs" --repo "$wave1_candidate_clone/repo" --candidate "$wave1_candidate_sha" --baseline "$wave1_source_root/.git/kokoro-wave1/baseline.json"
+git clone --recurse-submodules "$wave1_source_root" "$wave1_revert_clone/repo"
+git -C "$wave1_revert_clone/repo" checkout --detach "$wave1_candidate_sha"
+git -C "$wave1_revert_clone/repo" switch -c wave1-rollback-rehearsal
+git -C "$wave1_revert_clone/repo" revert --no-edit "$wave1_candidate_sha"
+git -C "$wave1_revert_clone/repo" submodule update --init --recursive
+node "$wave1_candidate_clone/repo/scripts/verification/wave1-qualification.mjs" --repo "$wave1_revert_clone/repo" --rollback-of "$wave1_candidate_sha" --baseline "$wave1_source_root/.git/kokoro-wave1/baseline.json"
+```
+
+- [ ] Persist sanitized candidate/revert SHAs, exact command results, GA SHA/status/two hashes/golden bytes, external-Site reports,
+  Postgres/DR/SLO evidence and preserved Infra inventory in the declared evidence files. Remove only validated temporary clone
+  directories. Have `wave1-qualification.mjs` emit the canonical machine-readable runtime gate at
+  `.git/kokoro-wave1/runtime-evidence.json`; validate that it binds the candidate SHA, child artifact/tag digests, compatibility
+  assertions, evidence inputs and preserved Infra inventory. Generate and verify the BOM only after `wave1_candidate_sha` exists:
+
+```bash
+node scripts/repository/generate-bom.mjs --promotion-commit "$wave1_candidate_sha" --runtime-evidence .git/kokoro-wave1/runtime-evidence.json
+node scripts/repository/generate-bom.mjs --check --promotion-commit "$wave1_candidate_sha"
+```
+
+  Create the follow-up evidence/provenance commit with exact paths:
+
+```bash
+git add -- docs/reports/evidence/wave-1/platform-postgres-uow.md docs/reports/evidence/wave-1/identity-security-journeys.md docs/reports/evidence/wave-1/site-lifecycle-two-projects.md docs/reports/evidence/wave-1/admin-security-and-audit.md docs/reports/evidence/wave-1/model-control-cutover.md docs/reports/evidence/wave-1/payment-closure.md docs/reports/evidence/wave-1/platform-deployables-slo-load-and-dr.md docs/reports/evidence/wave-1/ga-semantic-non-regression.md docs/reports/evidence/wave-1/wave-1-clean-replacement-inventory.md docs/task.md config/repository/bom.json
+git commit -m "release(wave1): record qualification and BOM provenance"
+```
+
+- [ ] Only after both local Root commits are reviewed, push the Root candidate branch; child commits and annotated tags are already
+  remote-verified prerequisites. Root remote CI
+  must hydrate the exact pins using the user-owned `KOKORO_SUBMODULE_TOKEN` and pass both commits. Create/push the Root BOM tag only
+  after that exact remote CI is green; missing token/CI is a blocker, never an exception.
 
 ## Definition of Done
 
