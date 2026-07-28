@@ -73,13 +73,6 @@ blanking the page. These three readers map onto `ResourceRow` and therefore cann
 that count is printed on every run rather than presented as coverage. When D4 lands, the count drops
 and generation becomes the better answer for those three.
 
-`orderSchema` is the one explicit transitional mapping during the atomic Web gitlink promotion that
-retires the acquisition surface. The gate validates it normally while an older Web pin still exports
-it, but does not call the mapping stale after the new pin removes it; every run reports whether the
-transitional reader is present. This is not permission to restore acquisition UI: Web's independent
-acquisition-shutdown negative gate forbids that regression. Delete the transitional mapping after the
-pin promotion and checker change are squashed into a history in which every commit verifies.
-
 ## Callers and dependencies
 
 Root CI and contract owners call the checks. They read `contract/proto/`, `contract/spec/`,

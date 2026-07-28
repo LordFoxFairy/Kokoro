@@ -56,14 +56,6 @@ SCHEMA_MAP = {
     "moduleManifestSchema": "ModuleStatus",
 }
 
-# Temporary compatibility for the atomic Web gitlink promotion that retires the
-# Admin acquisition surface. The old pin exports this reader and must still be
-# checked; the new pin omits it and must not fail as stale. Remove this map after
-# the pin promotion is part of the same verified history.
-TRANSITIONAL_SCHEMA_MAP = {
-    "orderSchema": "ResourceRow",
-}
-
 # Readers with no contract counterpart, and why. Hub owns these payloads; they reach
 # the browser through the gateway's opaque /api/action passthrough and are not part of
 # the Admin browser contract.
@@ -153,12 +145,10 @@ def run(openapi: Path, schemas_path: Path) -> str:
     violations: list[str] = []
     unmodelled: list[str] = []
     checked_fields = 0
-    transitional_readers = sorted(set(browser) & set(TRANSITIONAL_SCHEMA_MAP))
-
     for name, fields in sorted(browser.items()):
         if name in UNCONTRACTED:
             continue
-        target = SCHEMA_MAP.get(name, TRANSITIONAL_SCHEMA_MAP.get(name))
+        target = SCHEMA_MAP.get(name)
         if target is None:
             violations.append(
                 f"admin_browser_schema_unmapped: {name} has no contract counterpart; map it in "
@@ -196,9 +186,7 @@ def run(openapi: Path, schemas_path: Path) -> str:
         f"admin_browser_schemas_ok: {len(browser)} browser schemas, {checked_fields} fields "
         f"proven against the contract, {len(unmodelled)} mapped to a schema with no field "
         f"contract ({', '.join(sorted(unmodelled)) or 'none'}), "
-        f"{len(UNCONTRACTED)} uncontracted by design, {len(transitional_readers)} transitional "
-        f"reader{'s' if len(transitional_readers) != 1 else ''} present "
-        f"({', '.join(transitional_readers) or 'none'})"
+        f"{len(UNCONTRACTED)} uncontracted by design"
     )
 
 

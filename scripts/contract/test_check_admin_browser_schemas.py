@@ -56,15 +56,11 @@ def patch_map(
     monkeypatch,
     mapping: dict[str, str],
     uncontracted: dict[str, str] | None = None,
-    transitional: dict[str, str] | None = None,
 ):
     import check_admin_browser_schemas as module
 
     monkeypatch.setattr(module, "SCHEMA_MAP", mapping)
     monkeypatch.setattr(module, "UNCONTRACTED", uncontracted or {})
-    monkeypatch.setattr(
-        module, "TRANSITIONAL_SCHEMA_MAP", transitional or {}, raising=False
-    )
 
 
 def test_passes_when_every_field_is_declared(tmp_path, monkeypatch):
@@ -104,7 +100,7 @@ def test_rejects_a_field_the_contract_does_not_declare(tmp_path, monkeypatch):
 
 
 def test_new_reader_must_be_mapped(tmp_path, monkeypatch):
-    patch_map(monkeypatch, {}, transitional={"orderSchema": "ResourceRow"})
+    patch_map(monkeypatch, {})
     openapi, schemas = write(
         tmp_path, "export const meSchema = z.object({\n  email: z.string(),\n});"
     )
@@ -121,86 +117,6 @@ def test_removed_reader_makes_its_mapping_fail(tmp_path, monkeypatch):
     with pytest.raises(BrowserSchemaError) as excinfo:
         run(openapi, schemas)
     assert excinfo.value.code == "admin_browser_mapping_stale"
-
-
-def test_transitional_reader_is_checked_while_the_old_pin_still_exports_it(
-    tmp_path, monkeypatch
-):
-    patch_map(monkeypatch, {}, transitional={"orderSchema": "ResourceRow"})
-    contract = {
-        **CONTRACT,
-        "components": {
-            "schemas": {
-                **CONTRACT["components"]["schemas"],
-                "ResourceRow": {
-                    "type": "object",
-                    "properties": {
-                        "id": {"type": "string"},
-                        "amountMinor": {"type": "string"},
-                    },
-                },
-            }
-        },
-    }
-    openapi, schemas = write(
-        tmp_path,
-        """
-        export const orderSchema = z.object({
-          id: z.string(),
-          amountMinor: z.string(),
-        });
-        """,
-        contract=contract,
-    )
-
-    message = run(openapi, schemas)
-
-    assert "2 fields proven against the contract" in message
-    assert "1 transitional reader present (orderSchema)" in message
-
-
-def test_transitional_reader_still_rejects_a_field_missing_from_the_contract(
-    tmp_path, monkeypatch
-):
-    patch_map(monkeypatch, {}, transitional={"orderSchema": "Me"})
-    openapi, schemas = write(
-        tmp_path,
-        """
-        export const orderSchema = z.object({
-          removedUpstream: z.string(),
-        });
-        """,
-    )
-
-    with pytest.raises(BrowserSchemaError) as excinfo:
-        run(openapi, schemas)
-
-    assert excinfo.value.code == "admin_browser_field_undeclared"
-    assert "orderSchema.removedUpstream" in str(excinfo.value)
-
-
-def test_transitional_reader_may_be_absent_after_the_new_pin_lands(
-    tmp_path, monkeypatch
-):
-    patch_map(
-        monkeypatch,
-        {"meSchema": "Me"},
-        transitional={"orderSchema": "ResourceRow"},
-    )
-    openapi, schemas = write(
-        tmp_path,
-        """
-        export const meSchema = z.object({
-          email: z.string(),
-          roleKey: z.string(),
-        });
-        """,
-    )
-
-    message = run(openapi, schemas)
-
-    assert "2 fields proven against the contract" in message
-    assert "0 transitional readers present" in message
 
 
 # A contract entry with no field contract cannot verify anything; it must be counted, not passed off.
