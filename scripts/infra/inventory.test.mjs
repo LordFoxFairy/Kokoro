@@ -123,6 +123,15 @@ test("records deterministic sanitized infrastructure identity and verifies exact
     () => compareInventoryRecords(tampered, repeated),
     /infra_inventory_record_digest_mismatch/u,
   );
+
+  const forgedBaseline = createInventoryRecord(changed.inventory);
+  assert.equal(compareInventoryRecords(forgedBaseline, changed).matches, true);
+  assert.throws(
+    () => compareInventoryRecords(forgedBaseline, changed, {
+      expectedBaselineDigest: baseline.inventoryDigest,
+    }),
+    /infra_inventory_expected_digest_mismatch/u,
+  );
 });
 
 test("inventory record/check arguments are explicit and mutually exclusive", async () => {
@@ -131,12 +140,21 @@ test("inventory record/check arguments are explicit and mutually exclusive", asy
     format: "json",
     mode: "record",
     path: "/tmp/baseline.json",
+    expectedDigest: null,
   });
-  assert.deepEqual(parseInventoryArguments(["--check", "/tmp/baseline.json"]), {
+  const expectedDigest = `sha256:${"a".repeat(64)}`;
+  assert.deepEqual(parseInventoryArguments([
+    "--check", "/tmp/baseline.json", "--expect-digest", expectedDigest,
+  ]), {
     format: "json",
     mode: "check",
     path: "/tmp/baseline.json",
+    expectedDigest,
   });
+  assert.throws(
+    () => parseInventoryArguments(["--check", "/tmp/baseline.json"]),
+    /infra_inventory_arguments_invalid/u,
+  );
   assert.throws(
     () => parseInventoryArguments(["--record", "a", "--check", "b"]),
     /infra_inventory_arguments_invalid/u,

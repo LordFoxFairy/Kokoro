@@ -129,7 +129,7 @@
   activation receipt binding before/after inventory digests, consumer SHAs, checks, and rollback pointer.
 - [ ] Rehearse rollback by stopping only the candidate database and restoring the canonical MySQL pointer/service; verify preserved
   service identities remain byte-for-byte equal. A rollback must not recreate Redis, Mongo, MinIO, or LiteLLM.
-- [ ] Run `node --test scripts/infra/*.test.mjs`, `node scripts/infra/inventory.mjs --check <baseline-or-approved-transition-path>`,
+- [ ] Run `node --test scripts/infra/*.test.mjs`, `node scripts/infra/inventory.mjs --check <baseline-or-approved-transition-path> --expect-digest <externally-pinned-sha256>`,
   rendered Compose validation, consumer compatibility, and receipt validation before committing the bounded activation.
 
 ### Task 3: Establish the Platform PostgreSQL schema, clients, migrator, and deployable roles

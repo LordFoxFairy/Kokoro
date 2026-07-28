@@ -206,11 +206,14 @@ test("an additive PostgreSQL lease isolates platform and session databases with 
 
     await provisionScope({ lease, run });
     assert.equal(calls.length, 1);
-    assert.deepEqual(calls[0].args.slice(-5), [
-      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+    assert.deepEqual(calls[0].args.slice(-3), [
+      "sh", "-c", 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d postgres',
     ]);
-    assert.ok(calls[0].args.includes("postgres"));
+    assert.doesNotMatch(JSON.stringify(calls[0].args), /-U["',\s]+postgres/u);
     assert.match(calls[0].input, /CREATE ROLE[\s\S]*CREATE DATABASE/u);
+    assert.match(calls[0].input, /REVOKE CONNECT, TEMPORARY ON DATABASE[\s\S]*FROM PUBLIC/u);
+    assert.match(calls[0].input, /REVOKE ALL ON SCHEMA public FROM PUBLIC/u);
+    assert.match(calls[0].input, /GRANT CONNECT ON DATABASE[\s\S]*migrator/u);
     assert.match(calls[0].input, /ALTER DEFAULT PRIVILEGES[\s\S]*GRANT SELECT, INSERT, UPDATE, DELETE/u);
     assert.match(calls[0].input, /GRANT "kt_pg_platformmigrator_[a-f0-9]{12}" TO "kt_pg_platformtest_[a-f0-9]{12}"/u);
     assert.doesNotMatch(calls[0].input, /CREATE USER|mysql/u);
@@ -225,7 +228,7 @@ test("an additive PostgreSQL lease isolates platform and session databases with 
     });
     assert.equal(calls.length, 1);
     assert.match(calls[0].input, /pg_terminate_backend[\s\S]*DROP DATABASE[\s\S]*DROP ROLE/u);
-    assert.ok(calls[0].args.includes("postgres"));
+    assert.match(calls[0].args.at(-1), /\$POSTGRES_USER/u);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }

@@ -149,9 +149,12 @@ export function createInventoryRecord(inventory, { recordedAt = new Date().toISO
   };
 }
 
-export function compareInventoryRecords(baseline, current) {
+export function compareInventoryRecords(baseline, current, { expectedBaselineDigest = null } = {}) {
   if (baseline?.schemaVersion !== 1 || current?.schemaVersion !== 1) {
     throw new Error("infra_inventory_record_invalid");
+  }
+  if (expectedBaselineDigest && baseline.inventoryDigest !== expectedBaselineDigest) {
+    throw new Error("infra_inventory_expected_digest_mismatch");
   }
   const baselineDigest = digest(inventoryIdentity(baseline.inventory));
   const currentDigest = digest(inventoryIdentity(current.inventory));
@@ -180,7 +183,7 @@ export function compareInventoryRecords(baseline, current) {
 }
 
 export function parseInventoryArguments(args) {
-  const options = { format: "json", mode: "print", path: null };
+  const options = { format: "json", mode: "print", path: null, expectedDigest: null };
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index];
     const value = args[index + 1];
@@ -195,9 +198,24 @@ export function parseInventoryArguments(args) {
       index += 1;
       continue;
     }
+    if (
+      argument === "--expect-digest" &&
+      /^sha256:[0-9a-f]{64}$/u.test(value ?? "") &&
+      options.expectedDigest === null
+    ) {
+      options.expectedDigest = value;
+      index += 1;
+      continue;
+    }
     throw new Error("infra_inventory_arguments_invalid");
   }
   if (options.mode !== "print" && options.format !== "json") {
+    throw new Error("infra_inventory_arguments_invalid");
+  }
+  if (
+    (options.mode === "check" && options.expectedDigest === null) ||
+    (options.mode !== "check" && options.expectedDigest !== null)
+  ) {
     throw new Error("infra_inventory_arguments_invalid");
   }
   return options;
@@ -271,7 +289,7 @@ export function collectInventory() {
 }
 
 async function main() {
-  const { format, mode, path } = parseInventoryArguments(process.argv.slice(2));
+  const { format, mode, path, expectedDigest } = parseInventoryArguments(process.argv.slice(2));
   const inventory = collectInventory();
   if (mode === "record") {
     const record = createInventoryRecord(inventory);
@@ -283,7 +301,9 @@ async function main() {
   }
   if (mode === "check") {
     const baseline = JSON.parse(await readFile(path, "utf8"));
-    const result = compareInventoryRecords(baseline, createInventoryRecord(inventory));
+    const result = compareInventoryRecords(baseline, createInventoryRecord(inventory), {
+      expectedBaselineDigest: expectedDigest,
+    });
     process.stdout.write(`${JSON.stringify(result)}\n`);
     if (!result.matches) throw new Error("infra_inventory_drift");
     return;

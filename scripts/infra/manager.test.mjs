@@ -101,13 +101,21 @@ test("stateful profiles cannot use force-recreate refresh", async () => {
   );
 });
 
-test("rejects active stateful Kokoro projects but ignores unrelated Docker projects", () => {
+test("rejects active stateful Kokoro projects and unlabeled exact authority signals", async () => {
+  const input = await plan("ensure", ["platform"]);
   assert.equal(hasCompetingActiveAuthority({
     containers: [{ project: "personal-db", service: "mysql", name: "mysql", status: "Up 1 hour" }],
-  }), false);
+  }, input), false);
   assert.equal(hasCompetingActiveAuthority({
     containers: [{ project: "kokoro-platform", service: "mysql", name: "db", status: "running" }],
-  }), true);
+  }, input), true);
+  for (const container of [
+    { project: "", service: "", name: "kokoro-infra-mysql-1", status: "running" },
+    { project: "", service: "", name: "legacy-db", status: "running", volumes: ["kokoro-infra_kokoro-mysql"] },
+    { project: "", service: "", name: "legacy-db", status: "running", ports: "127.0.0.1:3307->3306/tcp" },
+  ]) {
+    assert.equal(hasCompetingActiveAuthority({ containers: [container] }, input), true);
+  }
 });
 
 test("rejects site-derived, unsafe, or unsupported lifecycle arguments", () => {
@@ -148,6 +156,7 @@ function canonicalContainer({ service, scope = "dev", source, authMarker = "auth
     minio: "/data",
   };
   return {
+    id: `container-${service}`,
     service,
     scope,
     authMarker,
@@ -181,13 +190,13 @@ test("matching canonical scope label and stateful mount is idempotent", async ()
   ]);
   assert.equal(output.scopeTransition, "matching");
   assert.deepEqual(output.services, ["redis", "mongo"]);
-  assert.equal(output.executionArgv.includes("--no-recreate"), false);
+  assert.equal(output.executionArgv.includes("--no-recreate"), true);
 });
 
 test("no canonical containers requires no scope transition", async () => {
   const output = managerApi.convergeCanonicalScope(await plan("ensure"), []);
   assert.equal(output.scopeTransition, "absent");
-  assert.equal(output.executionArgv.includes("--no-recreate"), false);
+  assert.equal(output.executionArgv.includes("--no-recreate"), true);
 });
 
 test("canonical preflight inspection projects only service, scope label, and mounts", () => {
@@ -205,6 +214,7 @@ test("canonical preflight inspection projects only service, scope label, and mou
     };
   };
   assert.deepEqual(managerApi.inspectCanonicalContainers(runDocker), [{
+    id: "container-id",
     service: "redis",
     scope: "dev",
     authMarker: "",
@@ -252,6 +262,95 @@ test("generic full ensure never force-recreates preserved services on a scope mi
     /infra_scope_transition_requires_explicit_activation/u,
   );
   assert.equal(input.executionArgv.includes("--force-recreate"), false);
+  assert.equal(input.executionArgv.includes("--no-recreate"), true);
+});
+
+test("stateful and mixed ensure plans preserve all existing containers on ordinary config drift", async () => {
+  for (const profiles of [["platform"], ["runtime"], ["full"], ["postgres-transition"]]) {
+    const input = await plan("ensure", profiles);
+    assert.ok(input.executionArgv.includes("--no-recreate"), profiles.join(","));
+    assert.equal(input.executionArgv.includes("--force-recreate"), false);
+  }
+  assert.equal((await plan("ensure", ["model"])).executionArgv.includes("--no-recreate"), false);
+});
+
+test("persistent target inspection resolves exact volume labels and every mount user", async () => {
+  const input = await plan("ensure", ["platform"]);
+  const calls = [];
+  const runDocker = (args) => {
+    calls.push(args);
+    if (args[0] === "volume") {
+      return {
+        status: 0,
+        stdout: "kokoro-infra_kokoro-mysql\tkokoro-infra\tmysql-data\tmysql-data-v1\n",
+        stderr: "",
+      };
+    }
+    if (args[0] === "ps") return { status: 0, stdout: "mysql-id\n", stderr: "" };
+    return {
+      status: 0,
+      stdout: "kokoro-infra\tmysql\tkokoro-infra-mysql-1\t127.0.0.1:3307->3306/tcp\n",
+      stderr: "",
+    };
+  };
+  assert.deepEqual(managerApi.inspectPersistentTargets(input, runDocker), [{
+    service: "mysql",
+    name: "kokoro-infra_kokoro-mysql",
+    exists: true,
+    project: "kokoro-infra",
+    composeVolume: "mysql-data",
+    dataMarker: "mysql-data-v1",
+    mountUsers: [{
+      id: "mysql-id",
+      project: "kokoro-infra",
+      service: "mysql",
+      name: "kokoro-infra-mysql-1",
+      ports: "127.0.0.1:3307->3306/tcp",
+    }],
+  }]);
+  assert.ok(calls[0].includes("volume"));
+  assert.ok(calls.some((args) => args.includes("volume=kokoro-infra_kokoro-mysql")));
+  assert.doesNotMatch(JSON.stringify(calls), /\.Config\.Env|\.Mounts.*\.Source/u);
+});
+
+test("existing persistent targets fail closed before compose when ownership is ambiguous", async () => {
+  const input = await plan("ensure", ["platform"]);
+  const mysql = canonicalContainer({
+    service: "mysql",
+    source: "kokoro-infra_kokoro-mysql",
+    authMarker: "mysql-auth-v1",
+  });
+  const validTarget = {
+    service: "mysql",
+    name: "kokoro-infra_kokoro-mysql",
+    exists: true,
+    project: "kokoro-infra",
+    composeVolume: "mysql-data",
+    dataMarker: "mysql-data-v1",
+    mountUsers: [{
+      id: mysql.id,
+      project: "kokoro-infra",
+      service: "mysql",
+      name: "kokoro-infra-mysql-1",
+      ports: "127.0.0.1:3307->3306/tcp",
+    }],
+  };
+  assert.doesNotThrow(() => managerApi.assertPersistentTargetCompatibility(input, [mysql], [validTarget]));
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [], [{ ...validTarget, mountUsers: [] }]),
+    /infra_persistent_volume_orphaned: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [mysql], [{ ...validTarget, project: "", dataMarker: "" }]),
+    /infra_persistent_volume_ownership_missing: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [mysql], [{
+      ...validTarget,
+      mountUsers: [{ ...validTarget.mountUsers[0], id: "unknown", project: "" }],
+    }]),
+    /infra_persistent_volume_unknown_mount: mysql/u,
+  );
 });
 
 test("partial mismatch fails with a stable transition code", async () => {
@@ -281,12 +380,59 @@ test("persistent credentials fail fast when an attached volume has a different a
     ),
     /infra_persistent_auth_drift: mysql/u,
   );
+  assert.doesNotThrow(() => managerApi.assertPersistentAuthCompatibility(
+    [{ ...mountedMysql, authMarker: "" }],
+    { mysql: "mysql-auth-v1" },
+  ));
   assert.throws(
     () => managerApi.assertPersistentAuthCompatibility(
-      [{ ...mountedMysql, authMarker: "" }],
-      { mysql: "mysql-auth-v1" },
+      [canonicalContainer({
+        service: "minio",
+        source: "kokoro-infra_kokoro-minio",
+        authMarker: "",
+      })],
+      { minio: "minio-auth-v1" },
     ),
-    /infra_persistent_auth_marker_missing: mysql/u,
+    /infra_persistent_auth_marker_missing: minio/u,
+  );
+});
+
+test("existing MySQL and PostgreSQL credentials are probed via stdin without secret argv", async () => {
+  const values = {
+    MYSQL_ROOT_PASSWORD: "root-secret",
+    MYSQL_USER: "kokoro",
+    MYSQL_PASSWORD: "app-secret",
+    MYSQL_DATABASE: "kokoro",
+    POSTGRES_USER: "platform_admin",
+    POSTGRES_PASSWORD: "pg-secret",
+    POSTGRES_DB: "postgres",
+  };
+  const calls = [];
+  const runDocker = (args, options) => {
+    calls.push({ args, options });
+    return { status: 0, stdout: "", stderr: "" };
+  };
+  await managerApi.probePersistentCredentials(
+    await plan("ensure", ["platform", "postgres-transition"]),
+    [
+      canonicalContainer({ service: "mysql", source: "kokoro-infra_kokoro-mysql", authMarker: "" }),
+      canonicalContainer({ service: "postgres", source: "kokoro-infra_kokoro-postgres", authMarker: "" }),
+    ],
+    values,
+    runDocker,
+  );
+  assert.deepEqual(calls.map(({ options }) => options.input), ["root-secret\n", "app-secret\n", "pg-secret\n"]);
+  assert.doesNotMatch(JSON.stringify(calls.map(({ args }) => args)), /root-secret|app-secret|pg-secret/u);
+  assert.ok(calls.every(({ args }) => args.slice(0, 3).join(" ").startsWith("exec -i container-")));
+
+  assert.throws(
+    () => managerApi.probePersistentCredentials(
+      { services: ["postgres"] },
+      [canonicalContainer({ service: "postgres", source: "kokoro-infra_kokoro-postgres", authMarker: "" })],
+      values,
+      () => ({ status: 1, stdout: "", stderr: "authentication failed" }),
+    ),
+    /infra_persistent_auth_probe_failed: postgres/u,
   );
 });
 

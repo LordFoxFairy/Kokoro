@@ -29,11 +29,11 @@ Infra owns environment-category labels and physical test resources. Services own
 
 ## Runtime and security
 
-Commands project metadata without container environment values or host mount paths, preserve `shell: false`, and reject business identifiers as Infra scope. Persistent authenticated services use non-secret auth-generation markers so credential/volume drift fails before mutation.
+Commands project metadata without container environment values or host mount paths, preserve `shell: false`, and reject business identifiers as Infra scope. Preflight checks exact volume ownership, data markers, and mount users. Existing MySQL/PostgreSQL credentials are authenticated with secrets sent only on stdin; MinIO requires an explicit matching non-secret auth-generation marker.
 
 ## Idempotency, failure, and recovery
 
-Matching-scope ensure converges configuration. Generic ensure never force-recreates a mismatched stateful stack; transitions require a separate receipt-bound activation. Stop/status reject the wrong scope, and prune, destructive volume/image removal, implicit orphan removal, and stateful refresh are denied.
+Matching-scope stateful or mixed ensure uses `--no-recreate`; ordinary Compose configuration drift cannot replace existing services. Unknown/orphaned target volumes and exact-name/port/mount competing containers fail before mutation. Transitions require a separate receipt-bound activation. Stop/status reject the wrong scope, and prune, destructive volume/image removal, implicit orphan removal, and stateful refresh are denied.
 
 ## Extension rules and forbidden dependencies
 
@@ -45,4 +45,4 @@ The lifecycle environment scope and per-run logical data lease are separate iden
 
 ## Verification
 
-Run `node --test scripts/infra/*.test.mjs`. Use `node scripts/infra/inventory.mjs --record <path>` before a bounded transition and `--check <path>` for exact identity verification. Use real Docker only after consumers and rollback gates are ready, then clean up only explicitly owned containers—never volumes, images, or developer data.
+Run `node --test scripts/infra/*.test.mjs`. Use `node scripts/infra/inventory.mjs --record <path>` before a bounded transition, store the emitted checksum in an external immutable authority, then run `--check <path> --expect-digest <sha256:...>` for exact identity verification. The record's self-hash is an integrity checksum, not authorization. Use real Docker only after consumers and rollback gates are ready, then clean up only explicitly owned containers—never volumes, images, or developer data.

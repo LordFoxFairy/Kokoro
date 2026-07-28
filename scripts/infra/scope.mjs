@@ -275,11 +275,14 @@ function postgresSql(lease, action) {
       statements.push(
         `SELECT format('CREATE DATABASE %I OWNER %I', ${database}, ${migrator}) ` +
           `WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = ${database}) \\gexec`,
+        `SELECT format('REVOKE CONNECT, TEMPORARY ON DATABASE %I FROM PUBLIC', ${database}) \\gexec`,
+        `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ${migrator}) \\gexec`,
         `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
           `${pgLiteral(allocation.roles.runtime.username)}) \\gexec`,
         `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
           `${pgLiteral(allocation.roles.test.username)}) \\gexec`,
         `\\connect ${pgIdentifier(allocation.database)}`,
+        "REVOKE ALL ON SCHEMA public FROM PUBLIC;",
         `GRANT USAGE ON SCHEMA public TO ${pgIdentifier(allocation.roles.runtime.username)};`,
         `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ` +
           `${pgIdentifier(allocation.roles.runtime.username)};`,
@@ -324,7 +327,7 @@ export async function provisionScope({ lease, run = defaultRun }) {
   }
   if (resources.includes("postgres")) {
     checkedRun(run, "docker", composeExec("postgres", [
-      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+      "sh", "-c", 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d postgres',
     ]), { input: postgresSql(lease, "create") });
   }
 
@@ -416,7 +419,7 @@ export async function cleanupScope({
   }
   if (resources.includes("postgres")) {
     checkedRun(run, "docker", composeExec("postgres", [
-      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+      "sh", "-c", 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d postgres',
     ]), { input: postgresSql(lease, "drop") });
   }
   if (resources.includes("mongo")) {
