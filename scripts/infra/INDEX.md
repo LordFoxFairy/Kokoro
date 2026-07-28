@@ -43,6 +43,8 @@ Add lifecycle behavior only through `manager.mjs` and matching tests. Do not add
 
 The lifecycle environment scope and per-run logical data lease are separate identities. Default leases retain MySQL compatibility; callers must request `postgres` explicitly during the additive phase. A PostgreSQL-only lease does not consume a Redis database.
 
+Volumes created before Task 2A have Compose project/volume ownership labels but no Kokoro data marker. They are accepted only as explicit legacy evidence when exactly one matching-scope canonical container for the exact service mounts the expected volume and that container also lacks the Task 2A profile/data/auth labels. `--no-recreate` deliberately leaves those labels untouched. This exception is not a path for new markerless volumes: orphaned volumes, unknown mount users, incomplete Compose ownership, non-empty wrong markers, or current-format containers with a missing volume marker still fail closed. MySQL legacy credentials must pass the stdin-only authentication probes. Legacy MinIO credentials are not authenticated by this path; the unchanged container remains usable, but external credential validation is required before any activation or credential migration.
+
 ## Verification
 
 Run `node --test scripts/infra/*.test.mjs`. Use `node scripts/infra/inventory.mjs --record <path>` before a bounded transition, store the emitted checksum in an external immutable authority, then run `--check <path> --expect-digest <sha256:...>` for exact identity verification. The record's self-hash is an integrity checksum, not authorization. Use real Docker only after consumers and rollback gates are ready, then clean up only explicitly owned containers—never volumes, images, or developer data.

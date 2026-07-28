@@ -147,7 +147,23 @@ test("accepts only named environment categories and bounded CI scopes", () => {
   assert.match(overlong.stderr, /infra_scope_invalid/u);
 });
 
-function canonicalContainer({ service, scope = "dev", source, authMarker = "auth-v1" }) {
+function canonicalContainer({
+  service,
+  scope = "dev",
+  source,
+  authMarker = ["mysql", "postgres", "minio"].includes(service) ? `${service}-auth-v1` : "",
+  profile = {
+    mysql: "platform",
+    postgres: "postgres-transition",
+    redis: "runtime",
+    mongo: "runtime",
+    minio: "storage",
+    litellm: "model",
+  }[service] ?? "",
+  dataMarker = ["mysql", "postgres", "redis", "mongo", "minio"].includes(service)
+    ? `${service}-data-v1`
+    : "",
+}) {
   const destinations = {
     mysql: "/var/lib/mysql",
     postgres: "/var/lib/postgresql",
@@ -159,6 +175,8 @@ function canonicalContainer({ service, scope = "dev", source, authMarker = "auth
     id: `container-${service}`,
     service,
     scope,
+    profile,
+    dataMarker,
     authMarker,
     mounts: source === undefined ? [] : [{
       type: "volume",
@@ -205,7 +223,11 @@ test("canonical preflight inspection projects only service, scope label, and mou
     calls.push(args);
     if (args[0] === "ps") return { status: 0, stdout: "container-id\n", stderr: "" };
     if (args[2].includes(".Config.Labels")) {
-      return { status: 0, stdout: "redis\tdev\t<no value>\n", stderr: "" };
+      return {
+        status: 0,
+        stdout: "redis\tdev\truntime\tredis-data-v1\t<no value>\n",
+        stderr: "",
+      };
     }
     return {
       status: 0,
@@ -217,6 +239,8 @@ test("canonical preflight inspection projects only service, scope label, and mou
     id: "container-id",
     service: "redis",
     scope: "dev",
+    profile: "runtime",
+    dataMarker: "redis-data-v1",
     authMarker: "",
     mounts: [{
       type: "volume",
@@ -348,6 +372,117 @@ test("existing persistent targets fail closed before compose when ownership is a
     () => managerApi.assertPersistentTargetCompatibility(input, [mysql], [{
       ...validTarget,
       mountUsers: [{ ...validTarget.mountUsers[0], id: "unknown", project: "" }],
+    }]),
+    /infra_persistent_volume_unknown_mount: mysql/u,
+  );
+});
+
+test("pre-Task2A canonical volumes use explicit legacy evidence without recreating services", async () => {
+  const input = await plan("ensure", ["full"]);
+  const legacyContainers = [
+    ["mysql", "kokoro-infra_kokoro-mysql"],
+    ["redis", "kokoro-infra_kokoro-redis"],
+    ["mongo", "kokoro-infra_kokoro-mongo"],
+    ["minio", "kokoro-infra_kokoro-minio"],
+  ].map(([service, source]) => canonicalContainer({
+    service,
+    source,
+    authMarker: "",
+    profile: "",
+    dataMarker: "",
+  }));
+  const legacyTargets = legacyContainers.map((container) => ({
+    service: container.service,
+    name: container.mounts[0].source,
+    exists: true,
+    project: "kokoro-infra",
+    composeVolume: `${container.service}-data`,
+    dataMarker: "",
+    mountUsers: [{
+      id: container.id,
+      project: "kokoro-infra",
+      service: container.service,
+      name: `kokoro-infra-${container.service}-1`,
+      ports: "",
+    }],
+  }));
+
+  const evidence = managerApi.assertPersistentTargetCompatibility(input, legacyContainers, legacyTargets);
+  assert.deepEqual([...evidence.legacyServices].sort(), ["minio", "mongo", "mysql", "redis"]);
+  assert.doesNotThrow(() => managerApi.assertPersistentAuthCompatibility(
+    legacyContainers,
+    { mysql: "mysql-auth-v1", minio: "minio-auth-v1" },
+    evidence,
+  ));
+  assert.equal(input.executionArgv.includes("--no-recreate"), true);
+
+  const credentialInputs = [];
+  assert.doesNotThrow(() => managerApi.probePersistentCredentials(
+    input,
+    legacyContainers,
+    {
+      MYSQL_ROOT_PASSWORD: "legacy-root",
+      MYSQL_USER: "kokoro",
+      MYSQL_PASSWORD: "legacy-app",
+      MYSQL_DATABASE: "kokoro",
+    },
+    (_args, options) => {
+      credentialInputs.push(options.input);
+      return { status: 0, stdout: "", stderr: "" };
+    },
+  ));
+  assert.deepEqual(credentialInputs, ["legacy-root\n", "legacy-app\n"]);
+});
+
+test("missing data markers are legacy-only evidence, never a new-volume bypass", async () => {
+  const input = await plan("ensure", ["platform"]);
+  const currentMysql = canonicalContainer({
+    service: "mysql",
+    source: "kokoro-infra_kokoro-mysql",
+  });
+  const legacyMysql = {
+    ...currentMysql,
+    profile: "",
+    dataMarker: "",
+    authMarker: "",
+  };
+  const markerlessTarget = {
+    service: "mysql",
+    name: "kokoro-infra_kokoro-mysql",
+    exists: true,
+    project: "kokoro-infra",
+    composeVolume: "mysql-data",
+    dataMarker: "",
+    mountUsers: [{
+      id: currentMysql.id,
+      project: "kokoro-infra",
+      service: "mysql",
+      name: "kokoro-infra-mysql-1",
+      ports: "127.0.0.1:3307->3306/tcp",
+    }],
+  };
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [currentMysql], [markerlessTarget]),
+    /infra_persistent_data_marker_missing: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [], [{
+      ...markerlessTarget,
+      mountUsers: [],
+    }]),
+    /infra_persistent_volume_orphaned: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [legacyMysql], [{
+      ...markerlessTarget,
+      dataMarker: "mysql-data-v0",
+    }]),
+    /infra_persistent_data_marker_drift: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentTargetCompatibility(input, [legacyMysql], [{
+      ...markerlessTarget,
+      mountUsers: [{ ...markerlessTarget.mountUsers[0], id: "unknown", project: "" }],
     }]),
     /infra_persistent_volume_unknown_mount: mysql/u,
   );

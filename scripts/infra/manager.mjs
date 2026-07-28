@@ -14,6 +14,7 @@ const MODES = new Set(["development", "ci", "production"]);
 const CANONICAL_PROJECT = "kokoro-infra";
 const FULL_SERVICES = ["mysql", "redis", "mongo", "minio", "litellm"];
 const MANAGED_SERVICES = [...FULL_SERVICES, "postgres"];
+const LEGACY_CANONICAL_SERVICES = new Set(["mysql", "redis", "mongo", "minio"]);
 const STATEFUL_MOUNTS = {
   mysql: { destination: "/var/lib/mysql", suffix: "mysql", composeVolume: "mysql-data" },
   postgres: { destination: "/var/lib/postgresql", suffix: "postgres", composeVolume: "postgres-data" },
@@ -231,10 +232,16 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
     `label=com.docker.compose.project=${CANONICAL_PROJECT}`,
   ]).split(/\r?\n/u).filter(Boolean);
   return ids.map((id) => {
-    const [service = "", rawScope = "", rawAuthMarker = ""] = checkedProjection(runDocker, [
+    const [
+      service = "",
+      rawScope = "",
+      rawProfile = "",
+      rawDataMarker = "",
+      rawAuthMarker = "",
+    ] = checkedProjection(runDocker, [
       "inspect",
       "--format",
-      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}\t{{index .Config.Labels "io.kokoro.infra.auth-marker"}}',
+      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}\t{{index .Config.Labels "io.kokoro.infra.profile"}}\t{{index .Config.Labels "io.kokoro.infra.data-marker"}}\t{{index .Config.Labels "io.kokoro.infra.auth-marker"}}',
       id,
     ]).trim().split("\t");
     const mounts = checkedProjection(runDocker, [
@@ -250,6 +257,8 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
       id,
       service,
       scope: rawScope === "<no value>" ? "" : rawScope,
+      profile: rawProfile === "<no value>" ? "" : rawProfile,
+      dataMarker: rawDataMarker === "<no value>" ? "" : rawDataMarker,
       authMarker: rawAuthMarker === "<no value>" ? "" : rawAuthMarker,
       mounts,
     };
@@ -316,6 +325,7 @@ function inspectPersistentTargets(plan, runDocker = dockerProjection) {
 
 function assertPersistentTargetCompatibility(plan, containers, targets) {
   const expectedByService = new Map(expectedPersistentTargets(plan).map((target) => [target.service, target]));
+  const legacyServices = new Set();
   for (const target of targets) {
     const expected = expectedByService.get(target.service);
     if (!expected) continue;
@@ -330,12 +340,6 @@ function assertPersistentTargetCompatibility(plan, containers, targets) {
     if (target.project !== CANONICAL_PROJECT || target.composeVolume !== expected.composeVolume) {
       throw new InfraError("infra_persistent_volume_ownership_drift", target.service);
     }
-    if (!target.dataMarker) {
-      throw new InfraError("infra_persistent_data_marker_missing", target.service);
-    }
-    if (target.dataMarker !== expected.dataMarker) {
-      throw new InfraError("infra_persistent_data_marker_drift", target.service);
-    }
     if (!container) throw new InfraError("infra_persistent_volume_orphaned", target.service);
     if (
       target.mountUsers.length === 0 ||
@@ -344,8 +348,24 @@ function assertPersistentTargetCompatibility(plan, containers, targets) {
     ) {
       throw new InfraError("infra_persistent_volume_unknown_mount", target.service);
     }
+    if (!target.dataMarker) {
+      const legacyCanonical =
+        LEGACY_CANONICAL_SERVICES.has(target.service) &&
+        containerMatchesPlan(container, plan) &&
+        !container.profile &&
+        !container.dataMarker &&
+        !container.authMarker;
+      if (!legacyCanonical) {
+        throw new InfraError("infra_persistent_data_marker_missing", target.service);
+      }
+      legacyServices.add(target.service);
+      continue;
+    }
+    if (target.dataMarker !== expected.dataMarker) {
+      throw new InfraError("infra_persistent_data_marker_drift", target.service);
+    }
   }
-  return true;
+  return { legacyServices };
 }
 
 function containerMatchesPlan(container, plan) {
@@ -372,7 +392,8 @@ function convergeCanonicalScope(plan, containers) {
   throw new InfraError("infra_scope_transition_requires_explicit_activation");
 }
 
-function assertPersistentAuthCompatibility(containers, expectedMarkers) {
+function assertPersistentAuthCompatibility(containers, expectedMarkers, evidence = {}) {
+  const legacyServices = evidence.legacyServices ?? new Set();
   for (const [service, expectedMarker] of Object.entries(expectedMarkers)) {
     if (!expectedMarker) continue;
     const container = containers.find((candidate) => candidate.service === service);
@@ -380,7 +401,7 @@ function assertPersistentAuthCompatibility(containers, expectedMarkers) {
     const persistentMount = STATEFUL_MOUNTS[service];
     if (!persistentMount || !container.mounts.some(({ type, destination }) =>
       type === "volume" && destination === persistentMount.destination)) continue;
-    if (!container.authMarker && service === "minio") {
+    if (!container.authMarker && service === "minio" && !legacyServices.has(service)) {
       throw new InfraError("infra_persistent_auth_marker_missing", service);
     }
     if (container.authMarker && container.authMarker !== expectedMarker) {
@@ -526,8 +547,8 @@ async function execute(plan, options) {
           ]),
       );
       const targets = inspectPersistentTargets(plan);
-      assertPersistentTargetCompatibility(plan, containers, targets);
-      assertPersistentAuthCompatibility(containers, expectedMarkers);
+      const persistentEvidence = assertPersistentTargetCompatibility(plan, containers, targets);
+      assertPersistentAuthCompatibility(containers, expectedMarkers, persistentEvidence);
       probePersistentCredentials(plan, containers, values);
     }
   }
