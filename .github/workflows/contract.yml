@@ -124,4 +124,5 @@ jobs:
           node scripts/repository/run-pinned-compatibility.mjs \
             --matrix config/repository/compatibility-matrix.json \
             --tree head \
+            --infra-env-file tmp/ci-infra.env \
             --evidence tmp/federated-compatibility.json

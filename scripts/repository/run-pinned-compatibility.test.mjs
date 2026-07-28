@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { lstat, mkdtemp, mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
+import { lstat, mkdtemp, mkdir, open, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -17,6 +18,7 @@ const {
 
 const ids = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
 const pins = Object.fromEntries(ids.map((id, index) => [id, String(index + 1).repeat(40)]));
+const mysqlRootPassword = "fixture-mysql-root-password";
 
 function matrix() {
   return {
@@ -57,9 +59,11 @@ async function fixture() {
   const matrixPath = resolve(root, "matrix.json");
   const manifestPath = resolve(root, "manifest.json");
   const evidencePath = resolve(root, "tmp/evidence.json");
+  const infraEnvFile = resolve(root, "infra.env");
   await writeFile(matrixPath, `${JSON.stringify(matrix())}\n`);
   await writeFile(manifestPath, `${JSON.stringify(manifest())}\n`);
-  return { root, matrixPath, manifestPath, evidencePath };
+  await writeFile(infraEnvFile, `MYSQL_ROOT_PASSWORD=${mysqlRootPassword}\n`);
+  return { root, matrixPath, manifestPath, evidencePath, infraEnvFile };
 }
 
 function dependencies(overrides = {}) {
@@ -74,9 +78,14 @@ function dependencies(overrides = {}) {
       return { ...pins };
     },
     preflightServices: async (services) => services.map((id) => ({ id, healthy: true })),
-    acquireLease: async () => ({ runId: "run_fixture", leaseToken: "not-recorded" }),
-    provisionLease: async () => {},
-    cleanupLease: async () => { calls.cleanup += 1; },
+    acquireLease: async () => ({
+      runId: "run_fixture",
+      leaseToken: "not-recorded",
+      stateRoot: "/fixture/state",
+      endpointFingerprint: "fixture-endpoint",
+    }),
+    provisionScope: async () => {},
+    cleanupScope: async () => { calls.cleanup += 1; },
     runScenario: async (scenario) => {
       calls.scenarios.push(scenario.id);
       return {
@@ -94,21 +103,207 @@ function dependencies(overrides = {}) {
   return { deps, calls };
 }
 
-test("CLI accepts only matrix, manifest, tree, and ignored tmp evidence", () => {
+test("CLI accepts only matrix, manifest, tree, ignored tmp evidence, and an Infra env file", () => {
   assert.deepEqual(parseRunnerArguments([
     "--matrix", "matrix.json",
     "--manifest", "manifest.json",
     "--tree", "index",
     "--evidence", "tmp/evidence.json",
+    "--infra-env-file", "tmp/ci-infra.env",
   ], "/repo"), {
     root: "/repo",
     matrixPath: "/repo/matrix.json",
     manifestPath: "/repo/manifest.json",
     tree: "index",
     evidencePath: "/repo/tmp/evidence.json",
+    infraEnvFile: "/repo/tmp/ci-infra.env",
   });
   assert.throws(() => parseRunnerArguments(["--tree", "branch"], "/repo"), /compatibility_arguments/u);
   assert.throws(() => parseRunnerArguments(["--command", "sh -c anything"], "/repo"), /compatibility_arguments/u);
+});
+
+test("Infra env-file credential is passed only to the default scope boundaries", async () => {
+  const item = await fixture();
+  const scopeCalls = { cleanup: [], provision: [] };
+  const scenarioEnvironments = [];
+  const { deps } = dependencies({
+    provisionScope: async (options) => { scopeCalls.provision.push(options); },
+    cleanupScope: async (options) => { scopeCalls.cleanup.push(options); },
+    runScenario: async (scenario, context) => {
+      scenarioEnvironments.push(context.environment);
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 0);
+    assert.equal(scopeCalls.provision.length, 1);
+    assert.equal(scopeCalls.cleanup.length, 1);
+    assert.equal(scopeCalls.provision[0].mysqlRootPassword, mysqlRootPassword);
+    assert.equal(scopeCalls.cleanup[0].mysqlRootPassword, mysqlRootPassword);
+    for (const environment of scenarioEnvironments) {
+      assert.equal(Object.hasOwn(environment, "MYSQL_ROOT_PASSWORD"), false);
+      assert.equal(JSON.stringify(environment).includes(mysqlRootPassword), false);
+    }
+    const serializedEvidence = await readFile(item.evidencePath, "utf8");
+    assert.equal(serializedEvidence.includes(mysqlRootPassword), false);
+    assert.equal(serializedEvidence.includes(item.infraEnvFile), false);
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("Infra credential read is bound to an O_NOFOLLOW file descriptor across path replacement", async () => {
+  const item = await fixture();
+  const originalPath = `${item.infraEnvFile}.original`;
+  const replacementPath = `${item.infraEnvFile}.replacement`;
+  const replacementPassword = "replacement-mysql-root-password";
+  const scopeCalls = [];
+  let openCalls = 0;
+  await writeFile(replacementPath, `MYSQL_ROOT_PASSWORD=${replacementPassword}\n`);
+  const { deps } = dependencies({
+    openInfraEnvFile: async (path, flags) => {
+      openCalls += 1;
+      assert.notEqual(flags & fsConstants.O_NOFOLLOW, 0);
+      const handle = await open(path, flags);
+      await rename(path, originalPath);
+      await symlink(replacementPath, path);
+      return handle;
+    },
+    provisionScope: async (options) => { scopeCalls.push(options); },
+    cleanupScope: async (options) => { scopeCalls.push(options); },
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 0);
+    assert.equal(openCalls, 1);
+    assert.equal(scopeCalls.length, 2);
+    assert.ok(scopeCalls.every((options) => options.mysqlRootPassword === mysqlRootPassword));
+    assert.equal(JSON.stringify(result.evidence).includes(replacementPassword), false);
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("process environment credential remains an explicit local fallback without scenario inheritance", async () => {
+  const item = await fixture();
+  const { infraEnvFile: _infraEnvFile, ...options } = item;
+  const scopeCalls = [];
+  const scenarioEnvironments = [];
+  const { deps } = dependencies({
+    environment: { PATH: process.env.PATH, MYSQL_ROOT_PASSWORD: mysqlRootPassword },
+    provisionScope: async (scopeOptions) => { scopeCalls.push(scopeOptions); },
+    cleanupScope: async (scopeOptions) => { scopeCalls.push(scopeOptions); },
+    runScenario: async (scenario, context) => {
+      scenarioEnvironments.push(context.environment);
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  try {
+    const result = await runCompatibility(options, deps);
+    assert.equal(result.exitCode, 0);
+    assert.equal(scopeCalls.length, 2);
+    assert.ok(scopeCalls.every((scopeOptions) => scopeOptions.mysqlRootPassword === mysqlRootPassword));
+    assert.ok(scenarioEnvironments.every((environment) =>
+      !Object.hasOwn(environment, "MYSQL_ROOT_PASSWORD")));
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("invalid Infra credential authorities fail before verification, Docker preflight, lease, or scenario", async () => {
+  const cases = [
+    {
+      name: "missing file",
+      prepare: async (item) => ({ ...item, infraEnvFile: resolve(item.root, "missing.env") }),
+      reason: /compatibility_infra_env_file_missing/u,
+    },
+    {
+      name: "non-file",
+      prepare: async (item) => ({ ...item, infraEnvFile: item.root }),
+      reason: /compatibility_infra_env_file_invalid/u,
+    },
+    {
+      name: "symlink",
+      prepare: async (item) => {
+        const link = resolve(item.root, "linked-infra.env");
+        await symlink(item.infraEnvFile, link);
+        return { ...item, infraEnvFile: link };
+      },
+      reason: /compatibility_infra_env_file_symlink/u,
+    },
+    {
+      name: "missing credential",
+      prepare: async (item) => {
+        await writeFile(item.infraEnvFile, "MYSQL_PASSWORD=not-the-root-credential\n");
+        return item;
+      },
+      reason: /compatibility_mysql_admin_credential_missing/u,
+    },
+    {
+      name: "invalid credential",
+      prepare: async (item) => {
+        await writeFile(item.infraEnvFile, "MYSQL_ROOT_PASSWORD=unsafe\0credential\n");
+        return item;
+      },
+      reason: /compatibility_mysql_admin_credential_invalid/u,
+    },
+  ];
+
+  for (const current of cases) {
+    const item = await fixture();
+    const calls = { acquire: 0, preflight: 0, provision: 0, scenario: 0, verify: 0 };
+    const { deps } = dependencies({
+      verifyPins: async () => { calls.verify += 1; return { ...pins }; },
+      preflightServices: async () => { calls.preflight += 1; return []; },
+      acquireLease: async () => { calls.acquire += 1; return {}; },
+      provisionScope: async () => { calls.provision += 1; },
+      runScenario: async () => { calls.scenario += 1; return {}; },
+    });
+    try {
+      const options = await current.prepare(item);
+      await assert.rejects(runCompatibility(options, deps), current.reason, current.name);
+      assert.deepEqual(calls, { acquire: 0, preflight: 0, provision: 0, scenario: 0, verify: 0 });
+      await assert.rejects(lstat(item.evidencePath), { code: "ENOENT" });
+    } finally {
+      await rm(item.root, { recursive: true, force: true });
+    }
+  }
+});
+
+test("missing Infra credential fallback fails closed before external boundaries", async () => {
+  const item = await fixture();
+  const { infraEnvFile: _infraEnvFile, ...options } = item;
+  let boundaryCalls = 0;
+  const { deps } = dependencies({
+    environment: {},
+    verifyPins: async () => { boundaryCalls += 1; return { ...pins }; },
+    preflightServices: async () => { boundaryCalls += 1; return []; },
+    acquireLease: async () => { boundaryCalls += 1; return {}; },
+  });
+  try {
+    await assert.rejects(
+      runCompatibility(options, deps),
+      /compatibility_mysql_admin_credential_missing/u,
+    );
+    assert.equal(boundaryCalls, 0);
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
 });
 
 test("code-owned scenario commands point at existing root adapters", async () => {

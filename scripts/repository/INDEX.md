@@ -20,7 +20,7 @@ Repository tooling does not own child branches, locks, releases, tags, runtime s
 - `verify-federated-repositories.mjs` validates the exact `.gitmodules` inventory, selected HEAD/index gitlinks, child checkout/origin/clean state, recoverable refs, protocol declarations, and the closed compatibility matrix.
 - `generate-bom.mjs` writes and re-checks `config/repository/bom.json`, the versioned record of one atomic pin promotion: the promotion commit, four exact pins, each repository's independent `recoverableRef`, the declared protocol and contract list, and length-framed SHA-256 digests of the manifest, matrix, committed evidence and the runtime gate that certified the combination. Generation requires runtime evidence whose combination digest, pins and pre/postflight pin verification match the manifest, so BOM authority is transitively bound to the verifier. `--check` regenerates and byte-compares, reusing the recorded promotion commit instead of re-reading HEAD.
 - `freeze-snapshots.mjs` is scoped to the single historical source baseline declared by `config/repository/expected-snapshots.json`: tree, tar archive digest, tracked file count and remote archive reachability. It is not a promotion gate, reads only the committed tree, and refuses to reuse a per-repository `recoverableRef` as its shared baseline archive tag. It does not import child source into Root.
-- `run-pinned-compatibility.mjs` owns runtime combination evidence. It accepts only code-owned scenario commands, uses Root Infra and lease-scoped test data, and writes sanitized atomic evidence under ignored `tmp/`.
+- `run-pinned-compatibility.mjs` owns runtime combination evidence. Its closed CLI accepts the same `--infra-env-file` authority used by Root Infra manager, extracts only `MYSQL_ROOT_PASSWORD`, and passes that credential explicitly to lease provision/cleanup. A validated `MYSQL_ROOT_PASSWORD` already present in the runner process remains a local fallback. It accepts only code-owned scenario commands, uses Root Infra and lease-scoped test data, and writes sanitized atomic evidence under ignored `tmp/`.
 - `check-generated-contracts.mjs` generates Protobuf-ES output in a temporary directory and byte-compares every declared child mirror. Check mode never rewrites a child working tree.
 - `federated-governance.test.mjs` protects the active documentation authorities from returning to snapshot-import or single-lock topology.
 
@@ -42,7 +42,7 @@ This component owns repository manifests, the promotion bill of materials, exact
 
 ## Runtime and security
 
-Commands use fixed argv, reject secret-shaped output, verify remote refs read-only, and never force-update a branch or tag.
+Commands use fixed argv, reject secret-shaped output, verify remote refs read-only, and never force-update a branch or tag. Compatibility Infra authority files must be ordinary non-symlink files; their path and credential never enter evidence, and scenario child environments never receive the MySQL root credential.
 
 ## Idempotency, failure, and recovery
 

@@ -247,5 +247,15 @@ test("root CI checks out only recorded pins and uses the root-only tooling lock"
   assert.match(workflow, /manager\.mjs ensure --profiles full --scope ci-federated/u);
   assert.match(workflow, /run-pinned-compatibility\.mjs[\s\S]*--tree head/u);
   assert.match(workflow, /manager\.mjs stop --profiles full --scope ci-federated/u);
+  const managerEnvFile = workflow.match(
+    /manager\.mjs ensure[^\n]*--infra-env-file\s+(\S+)/u,
+  )?.[1];
+  const runnerEnvFile = workflow.match(
+    /run-pinned-compatibility\.mjs[\s\S]*?--infra-env-file\s+(\S+)/u,
+  )?.[1];
+  assert.equal(managerEnvFile, "tmp/ci-infra.env");
+  assert.equal(runnerEnvFile, managerEnvFile);
+  assert.doesNotMatch(workflow, /(?:source|\.)(?:\s+)["']?tmp\/ci-infra\.env/u);
+  assert.doesNotMatch(workflow, /export\s+MYSQL_ROOT_PASSWORD/u);
   assert.doesNotMatch(workflow, /deploy\/\.env\.dev/u);
 });

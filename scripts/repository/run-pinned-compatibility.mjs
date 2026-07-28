@@ -2,6 +2,7 @@
 
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync } from "node:child_process";
+import { constants as fsConstants } from "node:fs";
 import {
   lstat,
   mkdir,
@@ -15,6 +16,7 @@ import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { acquireScope, cleanupScope, provisionScope } from "../infra/scope.mjs";
+import { parseEnv } from "../infra/manager.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const REPOSITORY_IDS = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
@@ -69,6 +71,7 @@ function parseRunnerArguments(argv, repositoryRoot = root) {
     manifestPath: resolve(repositoryRoot, "config/repository/federated-repositories.json"),
     tree: "head",
     evidencePath: null,
+    infraEnvFile: null,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -79,12 +82,86 @@ function parseRunnerArguments(argv, repositoryRoot = root) {
     else if (argument === "--manifest") options.manifestPath = resolve(repositoryRoot, value);
     else if (argument === "--tree") options.tree = value;
     else if (argument === "--evidence") options.evidencePath = resolve(repositoryRoot, value);
+    else if (argument === "--infra-env-file") options.infraEnvFile = resolve(repositoryRoot, value);
     else throw new CompatibilityError("compatibility_arguments", argument);
   }
   if (!["head", "index"].includes(options.tree) || options.evidencePath === null) {
     throw new CompatibilityError("compatibility_arguments");
   }
   return options;
+}
+
+function validateMysqlRootPassword(value) {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new CompatibilityError("compatibility_mysql_admin_credential_missing");
+  }
+  if (/[\r\n\0]/u.test(value)) {
+    throw new CompatibilityError("compatibility_mysql_admin_credential_invalid");
+  }
+  return value;
+}
+
+function sameFileIdentity(before, after) {
+  return before.dev === after.dev &&
+    before.ino === after.ino &&
+    before.size === after.size &&
+    before.mtimeNs === after.mtimeNs &&
+    before.ctimeNs === after.ctimeNs;
+}
+
+async function acquireMysqlRootPassword(infraEnvFile, environment, openInfraEnvFile) {
+  if (infraEnvFile === null || infraEnvFile === undefined) {
+    return validateMysqlRootPassword(environment.MYSQL_ROOT_PASSWORD);
+  }
+  let handle;
+  try {
+    handle = await openInfraEnvFile(
+      infraEnvFile,
+      fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW,
+    );
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      throw new CompatibilityError("compatibility_infra_env_file_missing");
+    }
+    if (error.code === "ELOOP") {
+      throw new CompatibilityError("compatibility_infra_env_file_symlink");
+    }
+    throw new CompatibilityError("compatibility_infra_env_file_unreadable");
+  }
+  let source;
+  let failure = null;
+  try {
+    const before = await handle.stat({ bigint: true });
+    if (!before.isFile()) {
+      throw new CompatibilityError("compatibility_infra_env_file_invalid");
+    }
+    source = await handle.readFile("utf8");
+    const after = await handle.stat({ bigint: true });
+    if (!sameFileIdentity(before, after)) {
+      throw new CompatibilityError("compatibility_infra_env_file_changed");
+    }
+  } catch (error) {
+    failure = error instanceof CompatibilityError
+      ? error
+      : new CompatibilityError("compatibility_infra_env_file_unreadable");
+  }
+  try {
+    await handle.close();
+  } catch {
+    failure ??= new CompatibilityError("compatibility_infra_env_file_unreadable");
+  }
+  if (failure !== null) throw failure;
+  return validateMysqlRootPassword(parseEnv(source).MYSQL_ROOT_PASSWORD);
+}
+
+function scenarioEnvironment(environment, scopeFile, scenarioId) {
+  const sanitized = { ...environment };
+  delete sanitized.MYSQL_ROOT_PASSWORD;
+  return {
+    ...sanitized,
+    KOKORO_COMPAT_SCOPE_FILE: scopeFile,
+    KOKORO_COMPAT_SCENARIO_ID: scenarioId,
+  };
 }
 
 async function existingParent(path) {
@@ -380,11 +457,7 @@ async function defaultRunScenario(scenario, context) {
     cwd: context.root,
     timeoutMs: scenario.timeoutSeconds * 1000,
     signal: context.signal,
-    env: {
-      ...process.env,
-      KOKORO_COMPAT_SCOPE_FILE: context.scopeFile,
-      KOKORO_COMPAT_SCENARIO_ID: scenario.id,
-    },
+    env: context.environment,
   });
   if (result.kind === "timeout") {
     return validateScenarioResult({
@@ -427,15 +500,6 @@ async function defaultAcquireLease({ root: repositoryRoot }) {
   return { ...lease, stateRoot, endpointFingerprint };
 }
 
-async function defaultCleanupLease(lease) {
-  await cleanupScope({
-    stateRoot: lease.stateRoot,
-    runId: lease.runId,
-    leaseToken: lease.leaseToken,
-    endpointFingerprint: lease.endpointFingerprint,
-  });
-}
-
 function makeEvidence({ matrix, matrixSource, manifestSource, pins, tree, now }) {
   const repositories = REPOSITORY_IDS.map((id) => ({ id, sha: pins[id] }));
   const contracts = matrix.contracts.map(({ id, version, artifactDigest }) => ({
@@ -468,6 +532,16 @@ function makeEvidence({ matrix, matrixSource, manifestSource, pins, tree, now })
 }
 
 async function runCompatibility(options, overrides = {}, control = {}) {
+  const {
+    environment = process.env,
+    openInfraEnvFile = open,
+    ...dependencyOverrides
+  } = overrides;
+  const mysqlRootPassword = await acquireMysqlRootPassword(
+    options.infraEnvFile,
+    environment,
+    openInfraEnvFile,
+  );
   const evidencePath = await validateEvidenceTarget(options.root, options.evidencePath);
   const matrixSource = await readFile(options.matrixPath, "utf8");
   const manifestSource = await readFile(options.manifestPath, "utf8");
@@ -482,11 +556,11 @@ async function runCompatibility(options, overrides = {}, control = {}) {
     },
     preflightServices: defaultPreflightServices,
     acquireLease: defaultAcquireLease,
-    provisionLease: async (lease) => provisionScope({ lease }),
-    cleanupLease: defaultCleanupLease,
+    provisionScope,
+    cleanupScope,
     runScenario: defaultRunScenario,
     onEvidence: () => {},
-    ...overrides,
+    ...dependencyOverrides,
   };
   const context = {
     root: options.root,
@@ -529,11 +603,15 @@ async function runCompatibility(options, overrides = {}, control = {}) {
       exitCode = 2;
     } else {
       lease = await dependencies.acquireLease({ root: options.root, services: evidence.services });
-      await dependencies.provisionLease(lease);
+      await dependencies.provisionScope({ lease, mysqlRootPassword });
       scopeFile = await writeLeaseFile(options.root, lease);
       for (const scenario of matrix.runtimeGate.scenarios) {
         const result = validateScenarioResult(
-          await dependencies.runScenario(scenario, { ...context, scopeFile }),
+          await dependencies.runScenario(scenario, {
+            ...context,
+            scopeFile,
+            environment: scenarioEnvironment(environment, scopeFile, scenario.id),
+          }),
           scenario.id,
         );
         evidence.scenarios.push({
@@ -575,7 +653,13 @@ async function runCompatibility(options, overrides = {}, control = {}) {
     if (scopeFile !== null) await rm(scopeFile, { force: true });
     if (lease !== null) {
       try {
-        await dependencies.cleanupLease(lease);
+        await dependencies.cleanupScope({
+          stateRoot: lease.stateRoot,
+          runId: lease.runId,
+          leaseToken: lease.leaseToken,
+          endpointFingerprint: lease.endpointFingerprint,
+          mysqlRootPassword,
+        });
       } catch {
         evidence.outcome = "error";
         evidence.reasonCode = "lease_cleanup_failed";
