@@ -17,7 +17,7 @@ Infra does not own business Site/tenant/workspace identity, child service deploy
 
 ## Public boundary
 
-`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports sanitized Docker ownership, and `scope.mjs` leases test partitions.
+`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports/records/checks sanitized Docker identity, and `scope.mjs` leases test partitions. PostgreSQL is additive under `postgres-transition`; MySQL remains canonical until a separately reviewed activation.
 
 ## Callers and dependencies
 
@@ -29,11 +29,11 @@ Infra owns environment-category labels and physical test resources. Services own
 
 ## Runtime and security
 
-Commands project metadata without container environment values, preserve `shell: false`, and reject business identifiers as Infra scope.
+Commands project metadata without container environment values or host mount paths, preserve `shell: false`, and reject business identifiers as Infra scope. Persistent authenticated services use non-secret auth-generation markers so credential/volume drift fails before mutation.
 
 ## Idempotency, failure, and recovery
 
-Matching-scope ensure converges configuration. Scope transitions require full-set recreation; stop/status reject the wrong scope and volumes are not implicitly deleted.
+Matching-scope ensure converges configuration. Generic ensure never force-recreates a mismatched stateful stack; transitions require a separate receipt-bound activation. Stop/status reject the wrong scope, and prune, destructive volume/image removal, implicit orphan removal, and stateful refresh are denied.
 
 ## Extension rules and forbidden dependencies
 
@@ -41,8 +41,8 @@ Add lifecycle behavior only through `manager.mjs` and matching tests. Do not add
 
 ## Current gotchas
 
-The lifecycle environment scope and per-run logical data lease are separate identities.
+The lifecycle environment scope and per-run logical data lease are separate identities. Default leases retain MySQL compatibility; callers must request `postgres` explicitly during the additive phase. A PostgreSQL-only lease does not consume a Redis database.
 
 ## Verification
 
-Run `node --test scripts/infra/*.test.mjs`; use real Docker only once at promotion and clean up owned containers afterward.
+Run `node --test scripts/infra/*.test.mjs`. Use `node scripts/infra/inventory.mjs --record <path>` before a bounded transition and `--check <path>` for exact identity verification. Use real Docker only after consumers and rollback gates are ready, then clean up only explicitly owned containers—never volumes, images, or developer data.

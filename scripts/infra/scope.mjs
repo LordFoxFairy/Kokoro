@@ -4,11 +4,14 @@ import { mkdir, open, readFile, readdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const MYSQL_CONTEXTS = ["site", "user", "model", "credit", "payment", "admin"];
+const POSTGRES_CONTEXTS = ["platform", "session"];
+const POSTGRES_ROLES = ["runtime", "migrator", "test"];
 const RUN_ID_PATTERN = /^run_[a-z0-9][a-z0-9_-]{2,31}$/u;
 const ENDPOINT_PATTERN = /^[a-z0-9][a-z0-9._-]{1,63}$/u;
 const REDIS_DATABASES = [8, 9, 10, 11, 12, 13, 14, 15];
 const LOCK_FILE = ".lease.lock";
-const DATA_RESOURCES = ["mysql", "mongo", "redis", "minio"];
+const DEFAULT_DATA_RESOURCES = ["mysql", "mongo", "redis", "minio"];
+const DATA_RESOURCES = [...DEFAULT_DATA_RESOURCES, "postgres"];
 
 function scopeError(code, detail = "") {
   const error = new Error(`${code}${detail ? `: ${detail}` : ""}`);
@@ -37,7 +40,7 @@ function sqlString(value) {
   return `'${value}'`;
 }
 
-function normalizeResources(resources = DATA_RESOURCES) {
+function normalizeResources(resources = DEFAULT_DATA_RESOURCES) {
   if (
     !Array.isArray(resources) ||
     resources.length === 0 ||
@@ -71,8 +74,25 @@ function createLease({ runId, endpointFingerprint, redisDatabase, resources }) {
         }];
       }),
     ),
+    postgres: Object.fromEntries(
+      POSTGRES_CONTEXTS.map((context) => [context, {
+        database: `${databaseStem}_${context}`,
+        roles: Object.fromEntries(
+          POSTGRES_ROLES.map((role) => {
+            const suffix = createHash("sha256")
+              .update(`${runId}:postgres:${context}:${role}`)
+              .digest("hex")
+              .slice(0, 12);
+            return [role, {
+              username: `kt_pg_${context}${role}_${suffix}`,
+              password: randomBytes(24).toString("base64url"),
+            }];
+          }),
+        ),
+      }]),
+    ),
     mongo: { database: databaseStem },
-    redis: {
+    redis: redisDatabase === null ? null : {
       database: redisDatabase,
       keyPrefix: `${databaseStem}:`,
       markerKey: `${databaseStem}:__lease`,
@@ -117,7 +137,12 @@ async function activeLeases(stateRoot) {
   return leases;
 }
 
-export async function acquireScope({ stateRoot, runId, endpointFingerprint, resources = DATA_RESOURCES }) {
+export async function acquireScope({
+  stateRoot,
+  runId,
+  endpointFingerprint,
+  resources = DEFAULT_DATA_RESOURCES,
+}) {
   validateIdentity({ runId, endpointFingerprint });
   const selectedResources = normalizeResources(resources);
   return withLeaseLock(stateRoot, async () => {
@@ -128,7 +153,9 @@ export async function acquireScope({ stateRoot, runId, endpointFingerprint, reso
       if (error.code !== "ENOENT") throw error;
     }
     const used = new Set((await activeLeases(stateRoot)).map((lease) => lease.redis?.database));
-    const redisDatabase = REDIS_DATABASES.find((database) => !used.has(database));
+    const redisDatabase = selectedResources.includes("redis")
+      ? REDIS_DATABASES.find((database) => !used.has(database))
+      : null;
     if (redisDatabase === undefined) throw scopeError("infra_scope_redis_exhausted");
     const lease = createLease({
       runId,
@@ -162,16 +189,21 @@ export function assertCleanupTarget({ lease, kind, name, endpointFingerprint }) 
   }
   const allowed = new Set([
     ...Object.values(lease.mysql),
+    ...Object.values(lease.postgres ?? {}).flatMap(({ database, roles }) => [
+      database,
+      ...Object.values(roles).map(({ username }) => username),
+    ]),
     lease.mongo.database,
     lease.minio.bucket,
     lease.minio.prefix,
-    `redis-db-${lease.redis.database}`,
-    lease.redis.keyPrefix,
+    ...(lease.redis ? [`redis-db-${lease.redis.database}`, lease.redis.keyPrefix] : []),
   ]);
   const prefixValid = kind === "minio"
     ? name.startsWith("kokoro-test-") || name.startsWith("run_")
     : kind === "redis"
       ? name.startsWith("redis-db-") || name.startsWith("kokoro_test_")
+      : kind === "postgres"
+        ? name.startsWith("kokoro_test_") || name.startsWith("kt_pg_")
       : name.startsWith("kokoro_test_");
   if (!allowed.has(name) || !prefixValid) {
     throw scopeError("infra_cleanup_target_invalid", `${kind}:${name}`);
@@ -215,6 +247,68 @@ function mysqlSql(lease, action) {
   return `${statements.join("\n")}\n`;
 }
 
+function pgLiteral(value) {
+  if (!/^[a-zA-Z0-9_-]+$/u.test(value)) throw scopeError("infra_scope_credential_invalid");
+  return `'${value}'`;
+}
+
+function pgIdentifier(value) {
+  if (!/^[a-z0-9_]+$/u.test(value)) throw scopeError("infra_scope_identifier_invalid");
+  return `"${value}"`;
+}
+
+function postgresSql(lease, action) {
+  const statements = [];
+  for (const context of POSTGRES_CONTEXTS) {
+    const allocation = lease.postgres[context];
+    const database = pgLiteral(allocation.database);
+    const migrator = pgLiteral(allocation.roles.migrator.username);
+    if (action === "create") {
+      for (const role of POSTGRES_ROLES) {
+        const { username, password } = allocation.roles[role];
+        statements.push(
+          `SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', ${pgLiteral(username)}, ${pgLiteral(password)}) ` +
+            `WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = ${pgLiteral(username)}) \\gexec`,
+          `SELECT format('ALTER ROLE %I LOGIN PASSWORD %L', ${pgLiteral(username)}, ${pgLiteral(password)}) \\gexec`,
+        );
+      }
+      statements.push(
+        `SELECT format('CREATE DATABASE %I OWNER %I', ${database}, ${migrator}) ` +
+          `WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = ${database}) \\gexec`,
+        `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
+          `${pgLiteral(allocation.roles.runtime.username)}) \\gexec`,
+        `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
+          `${pgLiteral(allocation.roles.test.username)}) \\gexec`,
+        `\\connect ${pgIdentifier(allocation.database)}`,
+        `GRANT USAGE ON SCHEMA public TO ${pgIdentifier(allocation.roles.runtime.username)};`,
+        `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ` +
+          `${pgIdentifier(allocation.roles.runtime.username)};`,
+        `GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO ` +
+          `${pgIdentifier(allocation.roles.runtime.username)};`,
+        `ALTER DEFAULT PRIVILEGES FOR ROLE ${pgIdentifier(allocation.roles.migrator.username)} ` +
+          `IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ` +
+          `${pgIdentifier(allocation.roles.runtime.username)};`,
+        `ALTER DEFAULT PRIVILEGES FOR ROLE ${pgIdentifier(allocation.roles.migrator.username)} ` +
+          `IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO ` +
+          `${pgIdentifier(allocation.roles.runtime.username)};`,
+        `GRANT ${pgIdentifier(allocation.roles.migrator.username)} TO ` +
+          `${pgIdentifier(allocation.roles.test.username)};`,
+        "\\connect postgres",
+      );
+    } else {
+      statements.push(
+        `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = ${database} AND pid <> pg_backend_pid();`,
+        `SELECT format('DROP DATABASE IF EXISTS %I', ${database}) \\gexec`,
+      );
+      for (const role of [...POSTGRES_ROLES].reverse()) {
+        const username = pgLiteral(allocation.roles[role].username);
+        statements.push(`SELECT format('DROP ROLE IF EXISTS %I', ${username}) \\gexec`);
+      }
+    }
+  }
+  return `${statements.join("\n")}\n`;
+}
+
 const composeExec = (service, command) => [
   "compose", "--project-name", "kokoro-infra", "-f", "docker-compose.infra.yml",
   "exec", "-T", service, ...command,
@@ -227,6 +321,11 @@ export async function provisionScope({ lease, run = defaultRun }) {
     checkedRun(run, "docker", composeExec("mysql", [
       "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
     ]), { input: mysqlSql(lease, "create") });
+  }
+  if (resources.includes("postgres")) {
+    checkedRun(run, "docker", composeExec("postgres", [
+      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+    ]), { input: postgresSql(lease, "create") });
   }
 
   if (resources.includes("mongo")) {
@@ -283,6 +382,14 @@ export async function cleanupScope({
       assertCleanupTarget({ lease, kind: "mysql", name, endpointFingerprint });
     }
   }
+  if (resources.includes("postgres")) {
+    for (const { database, roles } of Object.values(lease.postgres)) {
+      assertCleanupTarget({ lease, kind: "postgres", name: database, endpointFingerprint });
+      for (const { username } of Object.values(roles)) {
+        assertCleanupTarget({ lease, kind: "postgres", name: username, endpointFingerprint });
+      }
+    }
+  }
   if (resources.includes("mongo")) {
     assertCleanupTarget({ lease, kind: "mongo", name: lease.mongo.database, endpointFingerprint });
   }
@@ -306,6 +413,11 @@ export async function cleanupScope({
     checkedRun(run, "docker", composeExec("mysql", [
       "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
     ]), { input: mysqlSql(lease, "drop") });
+  }
+  if (resources.includes("postgres")) {
+    checkedRun(run, "docker", composeExec("postgres", [
+      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+    ]), { input: postgresSql(lease, "drop") });
   }
   if (resources.includes("mongo")) {
     const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)}).dropDatabase();\n`;

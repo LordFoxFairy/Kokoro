@@ -13,11 +13,13 @@
 ## Execution rules and dependency graph
 
 - Root, `kokoro-platform`, and `kokoro-web` are separate repositories. Every task commits in its owning repository; only Task 20 promotes child pins in Root.
-- The single-writer DAG is fixed: Root `Task 0 → 1 → 2`; Platform `Task 3 → 4 → … → 17 → 19`; Web `Task 18` may run
+- The single-writer DAG is fixed: Root `Task 0 → 1 → 2A`, then delayed `Task 2B` after PostgreSQL consumers are ready;
+  Platform `Task 3 → 4 → … → 17 → 19`; Web `Task 18` may run
   after Task 1's generated-contract handoff; Task 20 joins the clean child commits. Exactly one worker owns each repository
   worktree/index/lockfile at a time. Tasks within `kokoro-platform` are serial; no Site/Identity/Admin/ModelControl parallel writes.
 - Tasks 1–19 MUST NOT start a private Docker/Compose stack. Unit and contract tests run without containers; PostgreSQL component tests reuse the single Root-managed default Infra instance through a leased database/role.
-- The Root integrator may perform only Task 2's bounded default-Infra MySQL→PostgreSQL activation/lease and Task 20's final
+- The Root integrator may perform only Task 2A's additive PostgreSQL candidate lifecycle, Task 2B's bounded default-Infra
+  MySQL→PostgreSQL activation/lease, and Task 20's final
   reconciliation. No other worker may start a stack. Both operations preserve Redis/Mongo/MinIO and never prune/delete volumes,
   images, or developer data.
 - No task edits `kokoro-agent`. GA verification is read-only: golden-byte, forbidden-field, and compatibility assertions only.
@@ -76,7 +78,7 @@
 - [ ] Run the targeted tests plus `node scripts/contract/check-boundary-coverage.mjs`; confirm all new provider/consumer edges match the exact boundary, not merely the repository pair.
 - [ ] Commit only declared paths with `git add -- contract/openapi/platform-public-v1.yaml contract/proto/kokoro/platform/site/v1/site_lifecycle.proto contract/proto/kokoro/platform/identity/v1/admin_identity.proto contract/proto/kokoro/platform/admin/v2/admin_control.proto contract/buf.yaml contract/generate.mjs contract/registry/boundaries.yaml contract/tests/test_buf_contract.py contract/tests/test_generate.py scripts/contract/check-wave1-surface.mjs scripts/contract/check-wave1-surface.test.mjs`, then commit.
 
-### Task 2: Replace the default MySQL Infra contract with isolated PostgreSQL databases
+### Task 2A: Add the PostgreSQL transition foundation without changing the default MySQL contract
 
 **Repository:** Root
 
@@ -84,6 +86,7 @@
 
 - Modify: `docker-compose.infra.yml`
 - Modify: `config/repository/infrastructure-policy.yaml`
+- Modify: `deploy/.env.example`
 - Modify: `scripts/infra/manager.mjs`
 - Modify: `scripts/infra/manager.test.mjs`
 - Modify: `scripts/infra/scope.mjs`
@@ -92,20 +95,42 @@
 - Modify: `scripts/infra/inventory.test.mjs`
 - Modify: `scripts/infra/INDEX.md`
 
-- [ ] Add failing policy tests requiring PostgreSQL 18 in `platform`/`full`, separate `kokoro_platform` and `kokoro_session` databases, separate runtime/migrator/test roles, leased test schemas/databases, bounded health checks, and zero MySQL runtime contexts.
-- [ ] Before changing Compose, persist a machine-readable inventory of MySQL/PostgreSQL, Redis, Mongo and MinIO service/image/
-  profile/port/volume IDs plus named-volume existence/data markers. Add failing lifecycle tests proving `stop`/lease cleanup never
-  invokes volume/image prune or removes named developer data; prove only the Root manager owns default-stack lifecycle.
-- [ ] Add exact before/after assertions: only active MySQL service/profile is replaced by PostgreSQL 18; Redis/Mongo/MinIO
-  image/profile/port/volume identity and data markers are unchanged, and the old MySQL volume is stopped/archived but not deleted.
-- [ ] Run `node --test scripts/infra/*.test.mjs`; confirm RED on MySQL service/profile/lease expectations.
-- [ ] Implement the PostgreSQL service, roles, health check, manager inventory, and lease behavior. Remove MySQL from active profiles without deleting historical volumes.
-- [ ] As the Root integrator, after static tests pass, use the sole manager for one bounded activation: reconcile the existing default
-  stack to PostgreSQL, acquire the Platform test database/role lease needed by Tasks 3–19, verify Redis/Mongo/MinIO inventory/data
-  equality, and record an activation receipt. Do not start a second Compose project and do not cut application traffic here.
-- [ ] Re-run the Node suite, `node scripts/infra/inventory.mjs --check`, rendered Compose config, and the bounded activation receipt;
-  confirm the leased PostgreSQL endpoint is available for Task 3 while all preserved-service assertions remain true.
-- [ ] Commit in Root: `git add -- docker-compose.infra.yml config/repository/infrastructure-policy.yaml scripts/infra/manager.mjs scripts/infra/manager.test.mjs scripts/infra/scope.mjs scripts/infra/scope.test.mjs scripts/infra/inventory.mjs scripts/infra/inventory.test.mjs scripts/infra/INDEX.md && git commit -m "feat(infra): standardize isolated postgres authority"`.
+- [ ] Write failing tests for a digest-pinned PostgreSQL 18 candidate profile, separate Platform/Session databases and
+  runtime/migrator/test roles, safe leased cleanup, credential/persistent-volume auth-generation drift, sanitized deterministic
+  inventory record/check receipts, and rejection of destructive Docker operations.
+- [ ] Add a regression test proving `platform` and `full` still select MySQL and that generic `ensure` never force-recreates a
+  mismatched stateful stack. A scope mismatch must fail with an explicit-activation error.
+- [ ] Run `node --test scripts/infra/manager.test.mjs scripts/infra/scope.test.mjs scripts/infra/inventory.test.mjs`; confirm RED on
+  the missing additive profile, lease, drift gates, and inventory receipt behavior.
+- [ ] Add `postgres-transition` to the one Root-owned Compose project and policy. It is additive and
+  `activationAuthorized=false`; do not edit the canonical `platform`/`full` MySQL membership in 2A.
+- [ ] Add explicit PostgreSQL-only leases for Platform/Session databases and bounded runtime/migrator/test roles while retaining
+  current MySQL compatibility leases. PostgreSQL-only leases must not reserve Redis capacity.
+- [ ] Implement metadata-only inventory `--record <path>` / `--check <path>`, non-secret data/auth generation markers, and hard
+  denials for prune/remove/down-with-volumes/orphan-removal. Never inspect container env or mount host paths.
+- [ ] Re-run all non-Docker Infra tests. Task 2A must not inspect, start, stop, or reconcile Docker and must not produce an activation
+  receipt; it only makes the candidate safe to start later through the canonical manager.
+- [ ] Commit in Root: `git add -- docker-compose.infra.yml config/repository/infrastructure-policy.yaml deploy/.env.example scripts/infra/manager.mjs scripts/infra/manager.test.mjs scripts/infra/scope.mjs scripts/infra/scope.test.mjs scripts/infra/inventory.mjs scripts/infra/inventory.test.mjs scripts/infra/INDEX.md docs/superpowers/plans/2026-07-28-wave-1-platform-identity-site-policy-implementation-plan.md && git commit -m "feat(infra): add guarded postgres transition foundation"`.
+
+### Task 2B: Activate PostgreSQL only after consumers and rollback evidence are ready
+
+**Repository:** Root
+
+**Depends on:** Task 2A plus reviewed PostgreSQL support in every Platform/Session consumer selected for activation.
+
+- [ ] Add failing activation tests first. Require an immutable baseline inventory digest, exact candidate/consumer SHAs, no active
+  test leases, no competing Kokoro Compose authority, matching persistent-auth generations, healthy PostgreSQL, and an explicit
+  one-time activation intent. Missing or stale evidence fails closed.
+- [ ] Record the baseline with `node scripts/infra/inventory.mjs --record <baseline-path>`. Compare exact service/image/profile/port/
+  volume/health/data-marker identities and prove Redis, Mongo, MinIO, and LiteLLM are the preserved set.
+- [ ] Change only the canonical database selection from MySQL to PostgreSQL. Do not force-recreate preserved services, delete either
+  database volume, prune images/volumes, or use a second Compose project. Stop/archive the MySQL service only after traffic readiness.
+- [ ] Acquire explicit PostgreSQL test leases, run the ready consumers' component/compatibility suites, and persist a sanitized
+  activation receipt binding before/after inventory digests, consumer SHAs, checks, and rollback pointer.
+- [ ] Rehearse rollback by stopping only the candidate database and restoring the canonical MySQL pointer/service; verify preserved
+  service identities remain byte-for-byte equal. A rollback must not recreate Redis, Mongo, MinIO, or LiteLLM.
+- [ ] Run `node --test scripts/infra/*.test.mjs`, `node scripts/infra/inventory.mjs --check <baseline-or-approved-transition-path>`,
+  rendered Compose validation, consumer compatibility, and receipt validation before committing the bounded activation.
 
 ### Task 3: Establish the Platform PostgreSQL schema, clients, migrator, and deployable roles
 
@@ -628,7 +653,7 @@ git commit -m "release(wave1): record qualification and BOM provenance"
 
 ## Definition of Done
 
-Wave 1 is DONE only when all 20 task commits and Task 20 evidence pass from a recursive clean clone. In particular:
+Wave 1 is DONE only when every Task 0–20 commit, including both 2A and 2B, and Task 20 evidence pass from a recursive clean clone. In particular:
 
 - Platform has one PostgreSQL authority, local owner ports/UoW, no local self-RPC, no raw cross-owner Prisma access, no MySQL active path, and no duplicate legacy owner process.
 - Identity is a complete Site-bound lifecycle, not only signup/login; personal Workspace/BillingAccount shell bootstrap is atomic and does not trespass on W2A facts.

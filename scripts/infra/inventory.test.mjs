@@ -46,3 +46,99 @@ test("reports Docker volume totals without inventing per-volume precision", asyn
   assert.equal(summary.volumes[1].sizeBytes, 125);
   assert.equal(summary.volumes[1].sizeAvailable, true);
 });
+
+test("records deterministic sanitized infrastructure identity and verifies exact drift", async () => {
+  const { compareInventoryRecords, createInventoryRecord, summarizeInventory } = await import(inventoryModule);
+  const inventory = summarizeInventory({
+    containers: [{
+      id: "container-1",
+      name: "kokoro-infra-redis-1",
+      project: "kokoro-infra",
+      service: "redis",
+      profile: "runtime",
+      image: "redis:7@sha256:immutable",
+      imageId: "sha256:image-id",
+      ports: "127.0.0.1:6379->6379/tcp",
+      status: "Up 1 minute (healthy)",
+      health: "healthy",
+      volumes: ["kokoro-infra_kokoro-redis:/data"],
+      dataMarker: "redis-data-v1",
+      secret: "must-not-survive",
+      mountpoint: "/private/docker/data",
+    }],
+    volumes: [{
+      name: "kokoro-infra_kokoro-redis",
+      project: "kokoro-infra",
+      composeVolume: "redis-data",
+      driver: "local",
+      dataMarker: "redis-data-v1",
+      sizeBytes: 100,
+      mountpoint: "/private/docker/volumes/redis",
+    }],
+    images: [{
+      repository: "redis",
+      tag: "7",
+      digest: "sha256:immutable",
+      id: "sha256:image-id",
+      sizeBytes: 300,
+    }],
+  });
+  const baseline = createInventoryRecord(inventory, { recordedAt: "2026-07-28T00:00:00.000Z" });
+  const repeated = createInventoryRecord(inventory, { recordedAt: "2026-07-29T00:00:00.000Z" });
+  assert.equal(baseline.inventoryDigest, repeated.inventoryDigest);
+  assert.equal(baseline.schemaVersion, 1);
+  assert.equal(compareInventoryRecords(baseline, repeated).matches, true);
+  assert.doesNotMatch(JSON.stringify(baseline), /must-not-survive|private|mountpoint|secret/u);
+
+  const withUnrelatedDockerResources = structuredClone(inventory);
+  withUnrelatedDockerResources.containers.push({
+    name: "personal-postgres",
+    project: "personal-project",
+    service: "postgres",
+    image: "postgres:17",
+    ports: "127.0.0.1:15432->5432/tcp",
+  });
+  withUnrelatedDockerResources.volumes.push({
+    name: "personal-data",
+    project: "personal-project",
+    composeVolume: "data",
+  });
+  withUnrelatedDockerResources.images.push({ repository: "postgres", tag: "17" });
+  assert.equal(
+    createInventoryRecord(withUnrelatedDockerResources).inventoryDigest,
+    baseline.inventoryDigest,
+  );
+
+  const changedInventory = structuredClone(repeated.inventory);
+  changedInventory.containers[0].ports = "127.0.0.1:6380->6379/tcp";
+  const changed = createInventoryRecord(changedInventory);
+  const result = compareInventoryRecords(baseline, changed);
+  assert.equal(result.matches, false);
+  assert.deepEqual(result.changedServices, ["redis"]);
+  assert.match(result.receiptId, /^sha256:[0-9a-f]{64}$/u);
+
+  const tampered = structuredClone(baseline);
+  tampered.inventory.containers[0].ports = "127.0.0.1:6390->6379/tcp";
+  assert.throws(
+    () => compareInventoryRecords(tampered, repeated),
+    /infra_inventory_record_digest_mismatch/u,
+  );
+});
+
+test("inventory record/check arguments are explicit and mutually exclusive", async () => {
+  const { parseInventoryArguments } = await import(inventoryModule);
+  assert.deepEqual(parseInventoryArguments(["--record", "/tmp/baseline.json"]), {
+    format: "json",
+    mode: "record",
+    path: "/tmp/baseline.json",
+  });
+  assert.deepEqual(parseInventoryArguments(["--check", "/tmp/baseline.json"]), {
+    format: "json",
+    mode: "check",
+    path: "/tmp/baseline.json",
+  });
+  assert.throws(
+    () => parseInventoryArguments(["--record", "a", "--check", "b"]),
+    /infra_inventory_arguments_invalid/u,
+  );
+});

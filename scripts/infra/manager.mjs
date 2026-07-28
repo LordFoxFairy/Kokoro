@@ -13,8 +13,10 @@ const ACTIONS = new Set(["config", "ensure", "refresh", "stop", "status"]);
 const MODES = new Set(["development", "ci", "production"]);
 const CANONICAL_PROJECT = "kokoro-infra";
 const FULL_SERVICES = ["mysql", "redis", "mongo", "minio", "litellm"];
+const MANAGED_SERVICES = [...FULL_SERVICES, "postgres"];
 const STATEFUL_MOUNTS = {
   mysql: { destination: "/var/lib/mysql", suffix: "mysql" },
+  postgres: { destination: "/var/lib/postgresql", suffix: "postgres" },
   redis: { destination: "/data", suffix: "redis" },
   mongo: { destination: "/data/db", suffix: "mongo" },
   minio: { destination: "/data", suffix: "minio" },
@@ -129,6 +131,7 @@ function requiredVariables(services) {
   if (services.includes("mysql")) {
     for (const name of ["MYSQL_ROOT_PASSWORD", "MYSQL_PASSWORD"]) required.add(name);
   }
+  if (services.includes("postgres")) required.add("POSTGRES_PASSWORD");
   if (services.includes("minio")) {
     required.add("MINIO_ROOT_USER");
     required.add("MINIO_ROOT_PASSWORD");
@@ -160,13 +163,33 @@ function composeArgv({ action, composeProfiles, services, envFile }) {
   for (const profile of composeProfiles) argv.push("--profile", profile);
   if (action === "config") argv.push("config", "--quiet");
   else if (action === "ensure") argv.push("up", "-d", "--wait", ...services);
-  else if (action === "refresh") argv.push("up", "-d", "--wait", "--force-recreate", ...services);
+  else if (action === "refresh") {
+    if (services.some((service) => Object.hasOwn(STATEFUL_MOUNTS, service))) {
+      throw new InfraError("infra_destructive_operation_forbidden", "stateful refresh");
+    }
+    argv.push("up", "-d", "--wait", "--force-recreate", ...services);
+  }
   else if (action === "stop") argv.push("stop", ...services);
   else if (action === "status") argv.push("ps", ...services);
   return argv;
 }
 
+function assertSafeDockerArguments(args) {
+  const [group] = args;
+  const destructiveCommand =
+    (group === "compose" && args.includes("down")) ||
+    (["system", "volume", "image", "builder"].includes(group) &&
+      args.some((argument) => ["prune", "rm"].includes(argument)));
+  const destructiveFlag = args.some((argument) =>
+    ["--volumes", "--remove-orphans"].includes(argument) || argument === "-v");
+  if (destructiveCommand || destructiveFlag) {
+    throw new InfraError("infra_destructive_operation_forbidden");
+  }
+  return true;
+}
+
 function dockerProjection(args) {
+  assertSafeDockerArguments(args);
   return spawnSync("docker", args, {
     encoding: "utf8",
     shell: false,
@@ -190,10 +213,10 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
     `label=com.docker.compose.project=${CANONICAL_PROJECT}`,
   ]).split(/\r?\n/u).filter(Boolean);
   return ids.map((id) => {
-    const [service = "", rawScope = ""] = checkedProjection(runDocker, [
+    const [service = "", rawScope = "", rawAuthMarker = ""] = checkedProjection(runDocker, [
       "inspect",
       "--format",
-      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}',
+      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}\t{{index .Config.Labels "io.kokoro.infra.auth-marker"}}',
       id,
     ]).trim().split("\t");
     const mounts = checkedProjection(runDocker, [
@@ -208,13 +231,14 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
     return {
       service,
       scope: rawScope === "<no value>" ? "" : rawScope,
+      authMarker: rawAuthMarker === "<no value>" ? "" : rawAuthMarker,
       mounts,
     };
   });
 }
 
 function containerMatchesPlan(container, plan) {
-  if (!FULL_SERVICES.includes(container.service)) return false;
+  if (!MANAGED_SERVICES.includes(container.service)) return false;
   if (container.scope !== plan.environmentScope) return false;
   const expected = STATEFUL_MOUNTS[container.service];
   if (!expected) return true;
@@ -226,18 +250,6 @@ function containerMatchesPlan(container, plan) {
   );
 }
 
-function forceFullRecreate(argv) {
-  const upIndex = argv.indexOf("up");
-  if (upIndex < 0) throw new InfraError("infra_scope_transition_invalid");
-  return [
-    ...argv.slice(0, upIndex + 1),
-    "-d",
-    "--wait",
-    "--force-recreate",
-    ...FULL_SERVICES,
-  ];
-}
-
 function convergeCanonicalScope(plan, containers) {
   if (containers.length === 0) return { ...plan, scopeTransition: "absent" };
   if (containers.every((container) => containerMatchesPlan(container, plan))) {
@@ -246,19 +258,25 @@ function convergeCanonicalScope(plan, containers) {
   if (["stop", "status"].includes(plan.action)) {
     throw new InfraError("infra_scope_mismatch");
   }
-  if (
-    !["ensure", "refresh"].includes(plan.action) ||
-    !plan.profiles.includes("full")
-  ) {
-    throw new InfraError("infra_scope_transition_requires_full");
+  throw new InfraError("infra_scope_transition_requires_explicit_activation");
+}
+
+function assertPersistentAuthCompatibility(containers, expectedMarkers) {
+  for (const [service, expectedMarker] of Object.entries(expectedMarkers)) {
+    if (!expectedMarker) continue;
+    const container = containers.find((candidate) => candidate.service === service);
+    if (!container) continue;
+    const persistentMount = STATEFUL_MOUNTS[service];
+    if (!persistentMount || !container.mounts.some(({ type, destination }) =>
+      type === "volume" && destination === persistentMount.destination)) continue;
+    if (!container.authMarker) {
+      throw new InfraError("infra_persistent_auth_marker_missing", service);
+    }
+    if (container.authMarker !== expectedMarker) {
+      throw new InfraError("infra_persistent_auth_drift", service);
+    }
   }
-  return {
-    ...plan,
-    services: [...FULL_SERVICES],
-    executionArgv: forceFullRecreate(plan.executionArgv),
-    argv: forceFullRecreate(plan.argv),
-    scopeTransition: "force-full-recreate",
-  };
+  return true;
 }
 
 function assertCanonicalPostcondition(plan, containers) {
@@ -277,7 +295,7 @@ function hasCompetingActiveAuthority(inventory) {
     ({ project, service, name, status }) =>
       project !== "kokoro-infra" &&
       /^(?:kokoro|kokoro[-_])/u.test(project ?? "") &&
-      /(?:mysql|redis|mongo|minio|litellm)/u.test(service || name) &&
+      /(?:mysql|postgres|redis|mongo|minio|litellm)/u.test(service || name) &&
       /(?:up|running)/iu.test(status),
   );
 }
@@ -331,8 +349,26 @@ async function execute(plan, options) {
     }
   }
   if (["ensure", "refresh", "stop", "status"].includes(plan.action)) {
-    executionPlan = convergeCanonicalScope(plan, inspectCanonicalContainers());
+    const containers = inspectCanonicalContainers();
+    executionPlan = convergeCanonicalScope(plan, containers);
+    if (["ensure", "refresh"].includes(plan.action)) {
+      const markerDefaults = {
+        mysql: "mysql-auth-v1",
+        postgres: "postgres-auth-v1",
+        minio: "minio-auth-v1",
+      };
+      const expectedMarkers = Object.fromEntries(
+        plan.services
+          .filter((service) => Object.hasOwn(markerDefaults, service))
+          .map((service) => [
+            service,
+            values[`KOKORO_${service.toUpperCase()}_AUTH_MARKER`] ?? markerDefaults[service],
+          ]),
+      );
+      assertPersistentAuthCompatibility(containers, expectedMarkers);
+    }
   }
+  assertSafeDockerArguments(executionPlan.executionArgv);
   const result = spawnSync("docker", executionPlan.executionArgv, {
     cwd: root,
     encoding: "utf8",
@@ -380,6 +416,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 
 export {
   assertCanonicalPostcondition,
+  assertPersistentAuthCompatibility,
+  assertSafeDockerArguments,
   buildPlan,
   convergeCanonicalScope,
   hasCompetingActiveAuthority,

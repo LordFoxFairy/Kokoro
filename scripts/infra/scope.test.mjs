@@ -176,3 +176,57 @@ test("a selective lease provisions and cleans only its declared resources", asyn
     await rm(stateRoot, { recursive: true, force: true });
   }
 });
+
+test("an additive PostgreSQL lease isolates platform and session databases with bounded roles", async () => {
+  const { acquireScope, cleanupScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  const run = (command, args, options = {}) => {
+    calls.push({ command, args, input: options.input ?? "" });
+    return { status: 0, stdout: "OK\n", stderr: "" };
+  };
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_pgcut1",
+      endpointFingerprint: "local-dev",
+      resources: ["postgres"],
+    });
+    assert.deepEqual(lease.resources, ["postgres"]);
+    assert.equal(lease.redis, null);
+    assert.deepEqual(Object.keys(lease.postgres).sort(), ["platform", "session"]);
+    for (const context of ["platform", "session"]) {
+      assert.match(lease.postgres[context].database, new RegExp(`^kokoro_test_run_pgcut1_${context}$`, "u"));
+      assert.deepEqual(Object.keys(lease.postgres[context].roles).sort(), ["migrator", "runtime", "test"]);
+      for (const role of Object.values(lease.postgres[context].roles)) {
+        assert.match(role.username, /^kt_pg_[a-z]+_[a-f0-9]{12}$/u);
+        assert.match(role.password, /^[A-Za-z0-9_-]{24,}$/u);
+      }
+    }
+
+    await provisionScope({ lease, run });
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0].args.slice(-5), [
+      "psql", "-v", "ON_ERROR_STOP=1", "-U", "postgres",
+    ]);
+    assert.ok(calls[0].args.includes("postgres"));
+    assert.match(calls[0].input, /CREATE ROLE[\s\S]*CREATE DATABASE/u);
+    assert.match(calls[0].input, /ALTER DEFAULT PRIVILEGES[\s\S]*GRANT SELECT, INSERT, UPDATE, DELETE/u);
+    assert.match(calls[0].input, /GRANT "kt_pg_platformmigrator_[a-f0-9]{12}" TO "kt_pg_platformtest_[a-f0-9]{12}"/u);
+    assert.doesNotMatch(calls[0].input, /CREATE USER|mysql/u);
+
+    calls.length = 0;
+    await cleanupScope({
+      stateRoot,
+      runId: lease.runId,
+      leaseToken: lease.leaseToken,
+      endpointFingerprint: lease.endpointFingerprint,
+      run,
+    });
+    assert.equal(calls.length, 1);
+    assert.match(calls[0].input, /pg_terminate_backend[\s\S]*DROP DATABASE[\s\S]*DROP ROLE/u);
+    assert.ok(calls[0].args.includes("postgres"));
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});

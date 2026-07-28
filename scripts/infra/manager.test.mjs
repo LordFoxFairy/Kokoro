@@ -71,6 +71,7 @@ test("legacy entrypoints delegate infra lifecycle to the root manager", async ()
 
 test("requires only non-default credentials for the selected services", () => {
   assert.deepEqual(requiredVariables(["mysql"]), ["MYSQL_ROOT_PASSWORD", "MYSQL_PASSWORD"]);
+  assert.deepEqual(requiredVariables(["postgres"]), ["POSTGRES_PASSWORD"]);
   assert.deepEqual(requiredVariables(["redis", "mongo"]), []);
   assert.deepEqual(requiredVariables(["litellm"]), [
     "LITELLM_MASTER_KEY",
@@ -91,6 +92,13 @@ test("offers a fixed-project refresh path for configuration-dependent services",
   assert.equal(plan.mutatesState, true);
   assert.ok(plan.argv.includes("--force-recreate"));
   assert.ok(plan.argv.includes("litellm"));
+});
+
+test("stateful profiles cannot use force-recreate refresh", async () => {
+  await assert.rejects(
+    plan("refresh", ["full"]),
+    /infra_destructive_operation_forbidden: stateful refresh/u,
+  );
 });
 
 test("rejects active stateful Kokoro projects but ignores unrelated Docker projects", () => {
@@ -131,9 +139,10 @@ test("accepts only named environment categories and bounded CI scopes", () => {
   assert.match(overlong.stderr, /infra_scope_invalid/u);
 });
 
-function canonicalContainer({ service, scope = "dev", source }) {
+function canonicalContainer({ service, scope = "dev", source, authMarker = "auth-v1" }) {
   const destinations = {
     mysql: "/var/lib/mysql",
+    postgres: "/var/lib/postgresql",
     redis: "/data",
     mongo: "/data/db",
     minio: "/data",
@@ -141,6 +150,7 @@ function canonicalContainer({ service, scope = "dev", source }) {
   return {
     service,
     scope,
+    authMarker,
     mounts: source === undefined ? [] : [{
       type: "volume",
       source,
@@ -186,7 +196,7 @@ test("canonical preflight inspection projects only service, scope label, and mou
     calls.push(args);
     if (args[0] === "ps") return { status: 0, stdout: "container-id\n", stderr: "" };
     if (args[2].includes(".Config.Labels")) {
-      return { status: 0, stdout: "redis\tdev\n", stderr: "" };
+      return { status: 0, stdout: "redis\tdev\t<no value>\n", stderr: "" };
     }
     return {
       status: 0,
@@ -197,6 +207,7 @@ test("canonical preflight inspection projects only service, scope label, and mou
   assert.deepEqual(managerApi.inspectCanonicalContainers(runDocker), [{
     service: "redis",
     scope: "dev",
+    authMarker: "",
     mounts: [{
       type: "volume",
       source: "kokoro-infra_kokoro-redis",
@@ -218,7 +229,7 @@ test("wrong scope label is a mismatch", async () => {
       input,
       [canonicalContainer({ service: "redis", scope: "staging", source: "kokoro-infra_kokoro-redis" })],
     ),
-    /infra_scope_transition_requires_full/u,
+    /infra_scope_transition_requires_explicit_activation/u,
   );
 });
 
@@ -228,20 +239,19 @@ test("correct scope label with wrong stateful mount is a mismatch", async () => 
     () => managerApi.convergeCanonicalScope(input, [
       canonicalContainer({ service: "redis", source: "other-prefix-redis" }),
     ]),
-    /infra_scope_transition_requires_full/u,
+    /infra_scope_transition_requires_explicit_activation/u,
   );
 });
 
-test("full mismatch force recreates the complete service set", async () => {
+test("generic full ensure never force-recreates preserved services on a scope mismatch", async () => {
   const input = await plan("ensure", ["full"], "staging");
-  const output = managerApi.convergeCanonicalScope(input, [
-    canonicalContainer({ service: "redis", scope: "dev", source: "kokoro-infra_kokoro-redis" }),
-  ]);
-  assert.equal(output.scopeTransition, "force-full-recreate");
-  assert.deepEqual(output.services, ["mysql", "redis", "mongo", "minio", "litellm"]);
-  assert.ok(output.executionArgv.includes("--force-recreate"));
-  assert.equal(output.executionArgv.includes("--no-recreate"), false);
-  for (const service of output.services) assert.ok(output.executionArgv.includes(service));
+  assert.throws(
+    () => managerApi.convergeCanonicalScope(input, [
+      canonicalContainer({ service: "redis", scope: "dev", source: "kokoro-infra_kokoro-redis" }),
+    ]),
+    /infra_scope_transition_requires_explicit_activation/u,
+  );
+  assert.equal(input.executionArgv.includes("--force-recreate"), false);
 });
 
 test("partial mismatch fails with a stable transition code", async () => {
@@ -250,8 +260,53 @@ test("partial mismatch fails with a stable transition code", async () => {
     () => managerApi.convergeCanonicalScope(input, [
       canonicalContainer({ service: "litellm", scope: "dev" }),
     ]),
-    /infra_scope_transition_requires_full/u,
+    /infra_scope_transition_requires_explicit_activation/u,
   );
+});
+
+test("persistent credentials fail fast when an attached volume has a different auth generation", () => {
+  const mountedMysql = canonicalContainer({
+    service: "mysql",
+    source: "kokoro-infra_kokoro-mysql",
+    authMarker: "mysql-auth-v1",
+  });
+  assert.doesNotThrow(() => managerApi.assertPersistentAuthCompatibility(
+    [mountedMysql],
+    { mysql: "mysql-auth-v1" },
+  ));
+  assert.throws(
+    () => managerApi.assertPersistentAuthCompatibility(
+      [mountedMysql],
+      { mysql: "mysql-auth-v2" },
+    ),
+    /infra_persistent_auth_drift: mysql/u,
+  );
+  assert.throws(
+    () => managerApi.assertPersistentAuthCompatibility(
+      [{ ...mountedMysql, authMarker: "" }],
+      { mysql: "mysql-auth-v1" },
+    ),
+    /infra_persistent_auth_marker_missing: mysql/u,
+  );
+});
+
+test("destructive Docker cleanup and implicit orphan removal are rejected", () => {
+  for (const argv of [
+    ["compose", "down", "--volumes"],
+    ["compose", "--project-name", "kokoro-infra", "down"],
+    ["system", "prune", "--force"],
+    ["volume", "rm", "kokoro-infra_kokoro-mysql"],
+    ["image", "rm", "sha256:deadbeef"],
+    ["compose", "up", "--remove-orphans"],
+  ]) {
+    assert.throws(
+      () => managerApi.assertSafeDockerArguments(argv),
+      /infra_destructive_operation_forbidden/u,
+    );
+  }
+  assert.doesNotThrow(() => managerApi.assertSafeDockerArguments([
+    "compose", "up", "-d", "--wait", "postgres",
+  ]));
 });
 
 test("stop and status fail loudly against a mismatched canonical scope", async () => {
@@ -280,6 +335,18 @@ test("postflight rejects a requested scope that did not converge", async () => {
   ]));
 });
 
+test("the additive PostgreSQL candidate converges under the same canonical authority", async () => {
+  const input = await plan("ensure", ["postgres-transition"], "dev");
+  assert.deepEqual(input.services, ["postgres"]);
+  assert.doesNotThrow(() => managerApi.assertCanonicalPostcondition(input, [
+    canonicalContainer({
+      service: "postgres",
+      source: "kokoro-infra_kokoro-postgres",
+      authMarker: "postgres-auth-v1",
+    }),
+  ]));
+});
+
 test("root compose encodes one authority, explicit identities, profiles and bounded secrets", async () => {
   const compose = await readFile(resolve(root, "docker-compose.infra.yml"), "utf8");
   const litellm = compose.split("  litellm:", 2)[1]?.split("\nvolumes:", 1)[0] ?? "";
@@ -288,7 +355,7 @@ test("root compose encodes one authority, explicit identities, profiles and boun
   assert.doesNotMatch(compose, /env_file:/u);
   assert.doesNotMatch(compose, /restart:\s+(?:always|unless-stopped)\s*$/mu);
   assert.match(compose, /restart:\s+"\$\{KOKORO_INFRA_RESTART_POLICY:-no\}"/u);
-  assert.equal((compose.match(/io\.kokoro\.infra\.scope:/gu) ?? []).length, 5);
+  assert.equal((compose.match(/io\.kokoro\.infra\.scope:/gu) ?? []).length, 6);
   assert.doesNotMatch(compose, /(?:^|["'])\.\/kokoro-[^:"']+/mu);
   assert.match(compose, /\.\/config\/infra\/litellm\.config\.example\.yaml/u);
   assert.doesNotMatch(litellm, /\bcurl\b/u);
@@ -301,18 +368,23 @@ test("root compose encodes one authority, explicit identities, profiles and boun
   ]) {
     assert.match(compose, new RegExp(`${variable}:\\s+"\\$\\{${variable}:-\\}"`, "u"));
   }
-  for (const profile of ["platform", "runtime", "storage", "model"]) {
+  for (const profile of ["platform", "runtime", "storage", "model", "postgres-transition"]) {
     assert.match(compose, new RegExp(`profiles:\\s*\\[[^\\]]*${profile}[^\\]]*\\]`, "u"));
   }
-  for (const volume of ["mysql", "redis", "mongo", "minio"]) {
+  for (const volume of ["mysql", "postgres", "redis", "mongo", "minio"]) {
     assert.match(
       compose,
       new RegExp(`name:\\s+"?\\$\\{KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro\\}-${volume}"?`, "u"),
     );
   }
-  for (const image of ["mysql", "redis", "mongo", "minio/minio", "ghcr.io/berriai/litellm"]) {
+  for (const image of ["mysql", "postgres", "redis", "mongo", "minio/minio", "ghcr.io/berriai/litellm"]) {
     assert.match(compose, new RegExp(`image:\\s+${image.replaceAll("/", "\\/")}:[^\\s@]+@sha256:[0-9a-f]{64}`, "u"));
   }
+  const postgres = compose.split("  postgres:", 2)[1]?.split("\n  redis:", 1)[0] ?? "";
+  assert.match(postgres, /image:\s+postgres:18\.4@sha256:[0-9a-f]{64}/u);
+  assert.match(postgres, /127\.0\.0\.1:\$\{KOKORO_POSTGRES_PORT:-5433\}:5432/u);
+  assert.match(postgres, /pg_isready/u);
+  assert.match(postgres, /postgres-data:\/var\/lib\/postgresql/u);
 });
 
 test("infrastructure policy derives volume identity from the canonical resource prefix", async () => {
@@ -321,6 +393,14 @@ test("infrastructure policy derives volume identity from the canonical resource 
     "utf8",
   ));
   assert.equal(policy.authority.volumeNameTemplate, "{resourcePrefix}-{service}");
+  assert.deepEqual(policy.profiles.platform, ["mysql"]);
+  assert.deepEqual(policy.profiles.full, ["mysql", "redis", "mongo", "minio", "litellm"]);
+  assert.deepEqual(policy.profiles["postgres-transition"], ["postgres"]);
+  assert.equal(policy.databaseTransition.phase, "additive-2a");
+  assert.equal(policy.databaseTransition.canonicalService, "mysql");
+  assert.equal(policy.databaseTransition.candidateService, "postgres");
+  assert.equal(policy.databaseTransition.activationAuthorized, false);
+  assert.deepEqual(policy.databaseTransition.preservedServices, ["redis", "mongo", "minio", "litellm"]);
 });
 
 test("root owns the example LiteLLM configuration", async () => {

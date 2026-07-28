@@ -1,6 +1,7 @@
 # Kokoro 每环境唯一 Infra authority。
 # 正式生命周期入口：node scripts/infra/manager.mjs；不要手写 -p、volume 名或第二套 stateful compose。
 # profiles: platform=mysql, runtime=redis+mongo, storage=minio, model=litellm；full 由 manager 组合。
+# postgres-transition 仅提供未激活的 PostgreSQL 候选，不改变 platform/full 的 MySQL 默认契约。
 
 name: kokoro-infra
 
@@ -11,6 +12,9 @@ services:
     profiles: [platform]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "platform"
+      io.kokoro.infra.data-marker: "mysql-data-v1"
+      io.kokoro.infra.auth-marker: "${KOKORO_MYSQL_AUTH_MARKER:-mysql-auth-v1}"
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-}"
       MYSQL_DATABASE: "${MYSQL_DATABASE:-kokoro}"
@@ -26,12 +30,37 @@ services:
     volumes: ["mysql-data:/var/lib/mysql"]
     restart: "${KOKORO_INFRA_RESTART_POLICY:-no}"
 
+  postgres:
+    # postgres:18.4, additive transition candidate pinned 2026-07-28
+    image: postgres:18.4@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a
+    profiles: [postgres-transition]
+    labels:
+      io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "postgres-transition"
+      io.kokoro.infra.data-marker: "postgres-data-v1"
+      io.kokoro.infra.auth-marker: "${KOKORO_POSTGRES_AUTH_MARKER:-postgres-auth-v1}"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-}"
+      POSTGRES_DB: "${POSTGRES_DB:-postgres}"
+      PGDATA: "/var/lib/postgresql/18/docker"
+    ports: ["127.0.0.1:${KOKORO_POSTGRES_PORT:-5433}:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes: ["postgres-data:/var/lib/postgresql"]
+    restart: "${KOKORO_INFRA_RESTART_POLICY:-no}"
+
   redis:
     # redis:7, pinned 2026-07-27
     image: redis:7@sha256:a8f08480e1f88f2647fed492d1178c06abb0d0c1fbf02c682a61e2f483fb3954
     profiles: [runtime]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "runtime"
+      io.kokoro.infra.data-marker: "redis-data-v1"
     command: ["redis-server", "--appendonly", "yes"]
     ports: ["127.0.0.1:${KOKORO_REDIS_PORT:-6379}:6379"]
     healthcheck:
@@ -48,6 +77,8 @@ services:
     profiles: [runtime]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "runtime"
+      io.kokoro.infra.data-marker: "mongo-data-v1"
     ports: ["127.0.0.1:${KOKORO_MONGO_PORT:-27017}:27017"]
     healthcheck:
       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ping:1}).ok' | grep -q '^1$'"]
@@ -63,6 +94,9 @@ services:
     profiles: [storage]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "storage"
+      io.kokoro.infra.data-marker: "minio-data-v1"
+      io.kokoro.infra.auth-marker: "${KOKORO_MINIO_AUTH_MARKER:-minio-auth-v1}"
     environment:
       MINIO_ROOT_USER: "${MINIO_ROOT_USER:-}"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-}"
@@ -84,6 +118,7 @@ services:
     profiles: [model]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
+      io.kokoro.infra.profile: "model"
     environment:
       LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY:-}"
       OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
@@ -112,12 +147,24 @@ services:
 volumes:
   mysql-data:
     name: "${KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro}-mysql"
+    labels:
+      io.kokoro.infra.data-marker: "mysql-data-v1"
+  postgres-data:
+    name: "${KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro}-postgres"
+    labels:
+      io.kokoro.infra.data-marker: "postgres-data-v1"
   redis-data:
     name: "${KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro}-redis"
+    labels:
+      io.kokoro.infra.data-marker: "redis-data-v1"
   mongo-data:
     name: "${KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro}-mongo"
+    labels:
+      io.kokoro.infra.data-marker: "mongo-data-v1"
   minio-data:
     name: "${KOKORO_INFRA_SCOPE:-kokoro-infra_kokoro}-minio"
+    labels:
+      io.kokoro.infra.data-marker: "minio-data-v1"
 
 networks:
   default:
