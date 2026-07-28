@@ -42,8 +42,14 @@ def _b64url(value: bytes) -> str:
 
 def sign_token(subject: str) -> str:
     header = _b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
-    body = _b64url(json.dumps({"sub": subject, "exp": int(time.time()) + 3_600}).encode())
-    signature = _b64url(hmac.new(AUTH_SECRET.encode(), f"{header}.{body}".encode(), hashlib.sha256).digest())
+    body = _b64url(
+        json.dumps({"sub": subject, "exp": int(time.time()) + 3_600}).encode()
+    )
+    signature = _b64url(
+        hmac.new(
+            AUTH_SECRET.encode(), f"{header}.{body}".encode(), hashlib.sha256
+        ).digest()
+    )
     return f"{header}.{body}.{signature}"
 
 
@@ -103,7 +109,9 @@ def build_session_environment(
     }
 
 
-def build_agent_environment(lease: dict[str, object], *, scratch: Path) -> dict[str, str]:
+def build_agent_environment(
+    lease: dict[str, object], *, scratch: Path
+) -> dict[str, str]:
     return {
         "KOKORO_REDIS_URL": _redis_url(lease),
         "KOKORO_MONGO_URL": "mongodb://127.0.0.1:27017",
@@ -153,7 +161,9 @@ class SseReader:
         headers = {"authorization": f"Bearer {token}", "accept": "text/event-stream"}
         if last_event_id is not None:
             headers["last-event-id"] = str(last_event_id)
-        self.response = urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60)
+        self.response = urllib.request.urlopen(
+            urllib.request.Request(url, headers=headers), timeout=60
+        )
         self.events: queue.Queue[tuple[int, str, dict[str, object]]] = queue.Queue()
         self.error: BaseException | None = None
         threading.Thread(target=self._pump, daemon=True).start()
@@ -170,12 +180,16 @@ class SseReader:
                 elif line.startswith("data: "):
                     frame["data"] = line[6:]
                 elif line == "" and "data" in frame:
-                    self.events.put((int(frame["id"]), frame["event"], json.loads(frame["data"])))
+                    self.events.put(
+                        (int(frame["id"]), frame["event"], json.loads(frame["data"]))
+                    )
                     frame = {}
         except BaseException as error:  # surfaced by wait(), never treated as success
             self.error = error
 
-    def wait(self, kind: str, timeout: float = 45.0) -> tuple[int, str, dict[str, object]]:
+    def wait(
+        self, kind: str, timeout: float = 45.0
+    ) -> tuple[int, str, dict[str, object]]:
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
             try:
@@ -209,7 +223,9 @@ def _wait_port(port: int, timeout: float = 45.0) -> None:
     raise TimeoutError("compatibility_service_not_ready")
 
 
-def _start(command: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.Popen[bytes]:
+def _start(
+    command: list[str], *, cwd: Path, env: dict[str, str]
+) -> subprocess.Popen[bytes]:
     process = subprocess.Popen(
         command,
         cwd=cwd,
@@ -316,7 +332,10 @@ def run() -> dict[str, object]:
             token,
             "POST",
             f"/sessions/{session_id}/messages",
-            {"idempotency_key": idempotency_key, "content": "compatibility durable run"},
+            {
+                "idempotency_key": idempotency_key,
+                "content": "compatibility durable run",
+            },
         )
         if status != 202 or not isinstance(receipt.get("run_id"), str):
             raise RuntimeError("compatibility_admission_failed")
@@ -325,7 +344,10 @@ def run() -> dict[str, object]:
             token,
             "POST",
             f"/sessions/{session_id}/messages",
-            {"idempotency_key": idempotency_key, "content": "compatibility durable run"},
+            {
+                "idempotency_key": idempotency_key,
+                "content": "compatibility durable run",
+            },
         )
         if replay_status != 202 or replayed_receipt != receipt:
             raise RuntimeError("compatibility_idempotency_failed")
@@ -347,7 +369,10 @@ def run() -> dict[str, object]:
 
         first_pause = reader.wait("tool.awaiting_approval", timeout=60)
         first_payload = first_pause[2].get("payload")
-        if not isinstance(first_payload, dict) or first_payload.get("kind") != "ask_user_question":
+        if (
+            not isinstance(first_payload, dict)
+            or first_payload.get("kind") != "ask_user_question"
+        ):
             raise RuntimeError("compatibility_hitl_question_missing")
         run_id = str(receipt["run_id"])
         resume_status, _ = _request(
@@ -358,11 +383,13 @@ def run() -> dict[str, object]:
             {
                 "kind": "run.resume",
                 "decision_id": f"dec_{os.urandom(6).hex()}",
-                "decisions": [{
-                    "type": "respond",
-                    "tool_id": first_payload.get("tool_id"),
-                    "response": "continue",
-                }],
+                "decisions": [
+                    {
+                        "type": "respond",
+                        "tool_id": first_payload.get("tool_id"),
+                        "response": "continue",
+                    }
+                ],
             },
         )
         if resume_status != 202:
@@ -370,7 +397,10 @@ def run() -> dict[str, object]:
 
         second_pause = reader.wait("tool.awaiting_approval", timeout=60)
         second_payload = second_pause[2].get("payload")
-        if not isinstance(second_payload, dict) or second_payload.get("kind") != "tool_approval":
+        if (
+            not isinstance(second_payload, dict)
+            or second_payload.get("kind") != "tool_approval"
+        ):
             raise RuntimeError("compatibility_tool_approval_missing")
         approve_status, _ = _request(
             base_url,
@@ -380,14 +410,19 @@ def run() -> dict[str, object]:
             {
                 "kind": "run.resume",
                 "decision_id": f"dec_{os.urandom(6).hex()}",
-                "decisions": [{"type": "approve", "tool_id": second_payload.get("tool_id")}],
+                "decisions": [
+                    {"type": "approve", "tool_id": second_payload.get("tool_id")}
+                ],
             },
         )
         if approve_status != 202:
             raise RuntimeError("compatibility_tool_approve_failed")
         completed = reader.wait("run.completed", timeout=60)
         completed_payload = completed[2].get("payload")
-        if not isinstance(completed_payload, dict) or completed_payload.get("status") != "completed":
+        if (
+            not isinstance(completed_payload, dict)
+            or completed_payload.get("status") != "completed"
+        ):
             raise RuntimeError("compatibility_terminal_failed")
         if NAMESPACE not in _HubHandler.seen_namespaces:
             raise RuntimeError("compatibility_namespace_failed")

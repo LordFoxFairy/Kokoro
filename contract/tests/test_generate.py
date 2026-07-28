@@ -40,7 +40,11 @@ def test_mirrors_match_on_disk() -> None:
 )
 def test_generated_header(path: Path, content: str) -> None:
     assert content.startswith(
-        ("# GENERATED — DO NOT EDIT", "// GENERATED — DO NOT EDIT", "<!-- GENERATED — DO NOT EDIT")
+        (
+            "# GENERATED — DO NOT EDIT",
+            "// GENERATED — DO NOT EDIT",
+            "<!-- GENERATED — DO NOT EDIT",
+        )
     )
 
 
@@ -104,13 +108,17 @@ def test_web_and_session_share_outbound_bytes() -> None:
     assert _find("kokoro-session/src/contract/control.ts") == _find(
         "kokoro-web/apps/user/src/contract/control.ts"
     )
-    assert _find("kokoro-session/src/contract/http.ts") == _find("kokoro-web/apps/user/src/contract/http.ts")
+    assert _find("kokoro-session/src/contract/http.ts") == _find(
+        "kokoro-web/apps/user/src/contract/http.ts"
+    )
 
 
 def test_platform_and_session_share_runtime_contract_bytes() -> None:
     spec = load("platform-runtime.yaml")
     generated = emit_platform_runtime_ts(spec)
-    assert generated == _find("kokoro-platform/kokoro-platform-kit/src/contract/platform-runtime.ts")
+    assert generated == _find(
+        "kokoro-platform/kokoro-platform-kit/src/contract/platform-runtime.ts"
+    )
     assert generated == _find("kokoro-session/src/contract/platform-runtime.ts")
     for symbol in (
         "usageHoldRequestSchema",

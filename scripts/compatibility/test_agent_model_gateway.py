@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from scripts.compatibility.agent_model_gateway import build_commands, build_result, sanitized_environment
+from scripts.compatibility.agent_model_gateway import (
+    build_commands,
+    build_result,
+    sanitized_environment,
+)
 
 
 def test_commands_use_each_pinned_repository_lock_and_real_gateway_tests() -> None:
@@ -37,11 +41,13 @@ def test_commands_use_each_pinned_repository_lock_and_real_gateway_tests() -> No
 
 
 def test_local_fake_bypass_is_removed_from_child_environment() -> None:
-    env = sanitized_environment({
-        "PATH": "/bin",
-        "KOKORO_LOCAL_FAKE_MODEL": "1",
-        "EXAMPLE_TOKEN": "not-recorded",
-    })
+    env = sanitized_environment(
+        {
+            "PATH": "/bin",
+            "KOKORO_LOCAL_FAKE_MODEL": "1",
+            "EXAMPLE_TOKEN": "not-recorded",
+        }
+    )
     assert env["PATH"] == "/bin"
     assert "KOKORO_LOCAL_FAKE_MODEL" not in env
     assert env["EXAMPLE_TOKEN"] == "not-recorded"

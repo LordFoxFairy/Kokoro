@@ -95,7 +95,9 @@ def run(root: Path) -> dict[str, object]:
         exit_codes.append(completed.returncode)
         if completed.returncode != 0:
             break
-    return build_result(exit_codes, duration_ms=int((time.monotonic() - started) * 1000))
+    return build_result(
+        exit_codes, duration_ms=int((time.monotonic() - started) * 1000)
+    )
 
 
 def main() -> int:

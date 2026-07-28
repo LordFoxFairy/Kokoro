@@ -53,7 +53,10 @@ def test_generation_targets_only_committed_child_mirrors() -> None:
         "../kokoro-web/apps/admin/lib/generated/contracts",
     ]
     assert all(plugin["local"] == "protoc-gen-es" for plugin in config["plugins"])
-    assert all(plugin["opt"] == ["target=ts", "import_extension=js"] for plugin in config["plugins"])
+    assert all(
+        plugin["opt"] == ["target=ts", "import_extension=js"]
+        for plugin in config["plugins"]
+    )
 
 
 def _proto(relative_path: str) -> str:
@@ -83,7 +86,9 @@ def test_effect_requests_use_common_command_identity_and_timestamps() -> None:
         "ConsumeVerificationTokenRequest",
         "RecordAuthEventRequest",
     ):
-        body = re.search(rf"message {message} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+        body = re.search(
+            rf"message {message} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL
+        )
         assert body is not None
         assert "kokoro.common.v1.CommandIdentity command = 1" in body.group("body")
     assert "google.protobuf.Timestamp expires" in source
@@ -99,12 +104,19 @@ def test_effect_requests_embed_method_specific_digest_payloads() -> None:
     }
 
     for request, effect in expected.items():
-        body = re.search(rf"message {request} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+        body = re.search(
+            rf"message {request} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL
+        )
         assert body is not None
-        assert f"{effect} effect = 2 [(buf.validate.field).required = true];" in body.group("body")
+        assert (
+            f"{effect} effect = 2 [(buf.validate.field).required = true];"
+            in body.group("body")
+        )
 
     for effect in expected.values():
-        body = re.search(rf"message {effect} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+        body = re.search(
+            rf"message {effect} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL
+        )
         assert body is not None
         assert " map<" not in body.group("body")
         assert " repeated " not in body.group("body")
@@ -147,7 +159,9 @@ def test_generation_owns_the_node_digest_helper_for_both_mirrors() -> None:
 def test_receipt_contract_never_contains_raw_secret_fields() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
     admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")
-    receipt_messages = re.findall(r"message \w*Receipt\w* \{.*?\n\}", receipt + admin, flags=re.DOTALL)
+    receipt_messages = re.findall(
+        r"message \w*Receipt\w* \{.*?\n\}", receipt + admin, flags=re.DOTALL
+    )
 
     assert receipt_messages
     assert all(" token " not in message for message in receipt_messages)

@@ -60,7 +60,7 @@ def test_adapter_has_no_private_store_or_child_infra_operations() -> None:
     source = Path("scripts/compatibility/session_agent_durable.py").read_text()
     for forbidden in [
         "docker compose",
-        "docker\", \"exec",
+        'docker", "exec',
         "FLUSHDB",
         "dropDatabase",
         "billing_journal",
