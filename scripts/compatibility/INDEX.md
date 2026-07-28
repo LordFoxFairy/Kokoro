@@ -38,8 +38,9 @@ Root never imports sibling runtime source or seeds a private Hub collection.
 The Web/Session scenario's closed local HTTP fixture exposes only the production-shaped
 `/site-context/resolve` and `/hub/runtime/resolve` reads. Web runs with strict Host resolution and no development
 fallback; unknown Hosts, callers, namespaces, methods, and paths fail closed. Readiness reports phase/status-only
-reason codes and aborts immediately when a child exits, while the SSE reader consumes only blank-line-terminated
-frames and retains an incomplete tail across chunks.
+reason codes, drains rejected probe bodies, and aborts immediately when a child exits. Fixture routes accept one
+exact query key with cardinality one. The SSE handshake and reads are bounded; its parser consumes only
+blank-line-terminated frames and retains an incomplete tail across chunks.
 
 ## Callers and dependencies
 

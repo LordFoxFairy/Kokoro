@@ -155,12 +155,34 @@ test("controlled fixture resolves only the bound Host and keeps Hub resolution r
     assert.equal(untrustedSite.status, 401);
     assert.equal((await untrustedSite.json()).error.code, "fixture.unauthorized");
 
+    for (const query of [
+      "host=site.compat.test&host=site.compat.test",
+      "host=site.compat.test&extra=1",
+    ]) {
+      const invalidSiteQuery = await fetch(`${fixture.baseUrl}/site-context/resolve?${query}`, {
+        headers: webHeaders,
+      });
+      assert.equal(invalidSiteQuery.status, 400);
+      assert.equal((await invalidSiteQuery.json()).error.code, "fixture.query_invalid");
+    }
+
     const hub = await fetch(
       `${fixture.baseUrl}/hub/runtime/resolve?namespace=namespace-compatibility`,
       { headers: sessionHeaders },
     );
     assert.equal(hub.status, 200);
     assert.deepEqual(await hub.json(), { data: { skills: [], mcp_servers: [] } });
+
+    for (const query of [
+      "namespace=namespace-compatibility&namespace=namespace-compatibility",
+      "namespace=namespace-compatibility&extra=1",
+    ]) {
+      const invalidHubQuery = await fetch(`${fixture.baseUrl}/hub/runtime/resolve?${query}`, {
+        headers: sessionHeaders,
+      });
+      assert.equal(invalidHubQuery.status, 400);
+      assert.equal((await invalidHubQuery.json()).error.code, "fixture.query_invalid");
+    }
 
     const unknownRoute = await fetch(`${fixture.baseUrl}/unknown`, { headers: sessionHeaders });
     assert.equal(unknownRoute.status, 404);
@@ -170,6 +192,10 @@ test("controlled fixture resolves only the bound Host and keeps Hub resolution r
       { method: "GET", pathname: "/site-context/resolve", caller: "web-bff", host: "site.compat.test", namespace: null },
       { method: "GET", pathname: "/site-context/resolve", caller: "web-bff", host: "unknown.test", namespace: null },
       { method: "GET", pathname: "/site-context/resolve", caller: null, host: "site.compat.test", namespace: null },
+      { method: "GET", pathname: "/site-context/resolve", caller: "web-bff", host: "site.compat.test", namespace: null },
+      { method: "GET", pathname: "/site-context/resolve", caller: "web-bff", host: "site.compat.test", namespace: null },
+      { method: "GET", pathname: "/hub/runtime/resolve", caller: "session", host: null, namespace: "namespace-compatibility" },
+      { method: "GET", pathname: "/hub/runtime/resolve", caller: "session", host: null, namespace: "namespace-compatibility" },
       { method: "GET", pathname: "/hub/runtime/resolve", caller: "session", host: null, namespace: "namespace-compatibility" },
       { method: "GET", pathname: "/unknown", caller: "session", host: null, namespace: null },
     ]);
@@ -215,18 +241,23 @@ test("readiness fails fast on deterministic HTTP rejection and child exit", asyn
 
 test("readiness retries transient failures and reports the sanitized last HTTP status", async () => {
   let calls = 0;
+  let cancelledBodies = 0;
   const response = await adapter.waitHttp("http://service.test/probe", {
     phase: "session",
     accept: [401],
     child: { pid: 123, exitCode: null, signalCode: null },
     fetchImpl: async () => {
       calls += 1;
-      return new Response(null, { status: calls === 1 ? 503 : 401 });
+      if (calls === 1) {
+        return new Response(new ReadableStream({ cancel: () => { cancelledBodies += 1; } }), { status: 503 });
+      }
+      return new Response(null, { status: 401 });
     },
     sleep: async () => {},
   });
   assert.equal(response.status, 401);
   assert.equal(calls, 2);
+  assert.equal(cancelledBodies, 1);
 
   let now = 0;
   await assert.rejects(
@@ -241,6 +272,38 @@ test("readiness retries transient failures and reports the sanitized last HTTP s
     }),
     (error) => error?.reasonCode === "web_readiness_timeout_http_503",
   );
+});
+
+test("stopChild treats signal termination as complete without waiting or sending another signal", async () => {
+  assert.equal(typeof adapter.stopChild, "function");
+  let killCalls = 0;
+  let sleepCalls = 0;
+  await adapter.stopChild(
+    { pid: 123, exitCode: null, signalCode: "SIGTERM" },
+    {
+      kill: () => { killCalls += 1; },
+      sleep: async () => { sleepCalls += 1; },
+    },
+  );
+  assert.equal(killCalls, 0);
+  assert.equal(sleepCalls, 0);
+});
+
+test("SSE handshake timeout aborts a hanging fetch with a closed reason", async () => {
+  assert.equal(typeof adapter.readReplay, "function");
+  let observedAbort = false;
+  const fetchImpl = async (_url, init) => new Promise((_resolve, reject) => {
+    init.signal.addEventListener("abort", () => {
+      observedAbort = true;
+      reject(init.signal.reason);
+    }, { once: true });
+  });
+
+  await assert.rejects(
+    adapter.readReplay("http://service.test/events", {}, { fetchImpl, handshakeTimeoutMs: 5 }),
+    (error) => error?.reasonCode === "sse_handshake_timeout",
+  );
+  assert.equal(observedAbort, true);
 });
 
 test("machine result advertises Host-to-Site binding as a first-class assertion", () => {

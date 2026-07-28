@@ -163,15 +163,22 @@ function start(command, args, options) {
   return child;
 }
 
-async function stopChild(child) {
-  if (child.exitCode !== null || child.pid === undefined) return;
-  try { process.kill(-child.pid, "SIGTERM"); } catch {}
-  const deadline = Date.now() + 5_000;
-  while (child.exitCode === null && Date.now() < deadline) {
-    await new Promise((done) => setTimeout(done, 50));
+function childCompleted(child) {
+  return child.exitCode !== null || child.signalCode !== null;
+}
+
+async function stopChild(child, options = {}) {
+  const kill = options.kill ?? process.kill;
+  const now = options.now ?? Date.now;
+  const sleep = options.sleep ?? ((durationMs) => new Promise((done) => setTimeout(done, durationMs)));
+  if (childCompleted(child) || child.pid === undefined) return;
+  try { kill(-child.pid, "SIGTERM"); } catch {}
+  const deadline = now() + 5_000;
+  while (!childCompleted(child) && now() < deadline) {
+    await sleep(50);
   }
-  if (child.exitCode === null) {
-    try { process.kill(-child.pid, "SIGKILL"); } catch {}
+  if (!childCompleted(child)) {
+    try { kill(-child.pid, "SIGKILL"); } catch {}
   }
 }
 
@@ -181,7 +188,7 @@ async function stopAll() {
 
 function childExited(child) {
   return child !== undefined && (
-    child.pid === undefined || child.exitCode !== null || child.signalCode !== null
+    child.pid === undefined || childCompleted(child)
   );
 }
 
@@ -212,6 +219,7 @@ async function waitHttp(url, options = {}) {
       });
       lastStatus = response.status;
       if (options.accept?.includes(response.status) ?? response.status < 500) return response;
+      try { await response.body?.cancel(); } catch {}
       if (response.status < 500) fail(readinessReason(phase, "rejected", response.status));
     } catch (error) {
       if (error instanceof ScenarioFailure) throw error;
@@ -237,6 +245,11 @@ function sendFixtureError(response, statusCode, code) {
   sendJson(response, statusCode, { error: { code, message: "Compatibility fixture rejected request" } });
 }
 
+function hasExactQuery(url, key) {
+  const entries = [...url.searchParams.entries()];
+  return entries.length === 1 && entries[0][0] === key;
+}
+
 async function startBoundaryFixture({ siteHost = SITE_HOST } = {}) {
   const requests = [];
   const server = createHttpServer((request, response) => {
@@ -256,6 +269,10 @@ async function startBoundaryFixture({ siteHost = SITE_HOST } = {}) {
         headerValue(request, "x-kokoro-internal-secret") !== WEB_INTERNAL_SECRET
       ) {
         sendFixtureError(response, 401, "fixture.unauthorized");
+        return;
+      }
+      if (!hasExactQuery(url, "host")) {
+        sendFixtureError(response, 400, "fixture.query_invalid");
         return;
       }
       if (host !== siteHost) {
@@ -300,6 +317,10 @@ async function startBoundaryFixture({ siteHost = SITE_HOST } = {}) {
         sendFixtureError(response, 401, "fixture.unauthorized");
         return;
       }
+      if (!hasExactQuery(url, "namespace")) {
+        sendFixtureError(response, 400, "fixture.query_invalid");
+        return;
+      }
       if (namespace !== NAMESPACE) {
         sendFixtureError(response, 404, "hub_runtime.not_found");
         return;
@@ -323,16 +344,34 @@ async function startBoundaryFixture({ siteHost = SITE_HOST } = {}) {
   };
 }
 
-async function readReplay(url, headers) {
+async function readReplay(url, headers, options = {}) {
   const controller = new AbortController();
+  const handshakeController = new AbortController();
+  const handshakeTimeoutMs = options.handshakeTimeoutMs ?? 10_000;
+  if (!Number.isInteger(handshakeTimeoutMs) || handshakeTimeoutMs < 1 || handshakeTimeoutMs > 30_000) {
+    fail("sse_handshake_timeout_invalid");
+  }
+  const handshakeTimer = setTimeout(
+    () => handshakeController.abort(new ScenarioFailure("sse_handshake_timeout")),
+    handshakeTimeoutMs,
+  );
   let response;
   try {
-    response = await fetch(url, { headers, signal: controller.signal });
+    response = await (options.fetchImpl ?? fetch)(url, {
+      headers,
+      signal: AbortSignal.any([controller.signal, handshakeController.signal]),
+    });
   } catch {
+    const handshakeTimedOut = handshakeController.signal.aborted;
+    controller.abort();
+    if (handshakeTimedOut) fail("sse_handshake_timeout");
     fail("sse_unreachable");
+  } finally {
+    clearTimeout(handshakeTimer);
   }
   if (response.status !== 200 || !response.headers.get("content-type")?.includes("text/event-stream")) {
     controller.abort();
+    try { await response.body?.cancel(); } catch {}
     fail(`sse_http_${response.status}`);
   }
   const reader = response.body?.getReader();
@@ -560,5 +599,7 @@ export {
   sealEnvelope,
   signToken,
   startBoundaryFixture,
+  stopChild,
   waitHttp,
+  readReplay,
 };
