@@ -91,6 +91,8 @@ jobs:
           node scripts/architecture/check-service-contract-imports.mjs
       - name: repository governance tests
         run: node --test scripts/repository/*.test.mjs scripts/compatibility/*.test.mjs scripts/foundation/check-evidence.test.mjs
+      - name: non-container infrastructure contracts
+        run: node --test scripts/infra/*.test.mjs
       - name: Python compatibility adapter tests
         run: uv run --locked pytest scripts/compatibility/test_*.py -q
       - name: pinned runtime compatibility gate
