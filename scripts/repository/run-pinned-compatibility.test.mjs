@@ -122,6 +122,34 @@ test("CLI accepts only matrix, manifest, tree, ignored tmp evidence, and an Infr
   assert.throws(() => parseRunnerArguments(["--command", "sh -c anything"], "/repo"), /compatibility_arguments/u);
 });
 
+test("CLI rejects every repeated single-value argument before any external boundary", async () => {
+  const item = await fixture();
+  let externalBoundaryCalls = 0;
+  const duplicates = [
+    ["--matrix", "first-matrix.json", "second-matrix.json"],
+    ["--manifest", "first-manifest.json", "second-manifest.json"],
+    ["--tree", "head", "index"],
+    ["--evidence", "tmp/first-evidence.json", "tmp/second-evidence.json"],
+    ["--infra-env-file", "first-infra.env", "second-infra.env"],
+  ];
+  try {
+    for (const [argument, first, second] of duplicates) {
+      await assert.rejects(async () => {
+        const options = parseRunnerArguments([
+          "--evidence", "tmp/evidence.json",
+          argument, first,
+          argument, second,
+        ], item.root);
+        externalBoundaryCalls += 1;
+        await runCompatibility(options, dependencies().deps);
+      }, /compatibility_arguments/u, argument);
+    }
+    assert.equal(externalBoundaryCalls, 0);
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
 test("Infra env-file credential is passed only to the default scope boundaries", async () => {
   const item = await fixture();
   const scopeCalls = { cleanup: [], provision: [] };
@@ -364,6 +392,75 @@ test("successful run writes running then pass evidence with exact four pins", as
     assert.deepEqual(calls.scenarios, matrix().runtimeGate.scenarios.map(({ id }) => id));
     assert.equal((await lstat(item.evidencePath)).mode & 0o777, 0o600);
     assert.equal(JSON.parse(await readFile(item.evidencePath, "utf8")).outcome, "pass");
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("scope-file removal failure still performs credential-bound lease cleanup", async () => {
+  const item = await fixture();
+  const cleanupCalls = [];
+  let replaced = false;
+  const { deps } = dependencies({
+    cleanupScope: async (options) => { cleanupCalls.push(options); },
+    runScenario: async (scenario, context) => {
+      if (!replaced) {
+        await rm(context.scopeFile);
+        await mkdir(context.scopeFile);
+        replaced = true;
+      }
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 3);
+    assert.equal(result.evidence.reasonCode, "scope_file_cleanup_failed");
+    assert.equal(cleanupCalls.length, 1);
+    assert.equal(cleanupCalls[0].mysqlRootPassword, mysqlRootPassword);
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("lease cleanup failure takes priority over scope-file removal failure", async () => {
+  const item = await fixture();
+  const cleanupCalls = [];
+  let replaced = false;
+  const { deps } = dependencies({
+    cleanupScope: async (options) => {
+      cleanupCalls.push(options);
+      throw new Error("fixture cleanup failure");
+    },
+    runScenario: async (scenario, context) => {
+      if (!replaced) {
+        await rm(context.scopeFile);
+        await mkdir(context.scopeFile);
+        replaced = true;
+      }
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 3);
+    assert.equal(result.evidence.reasonCode, "lease_cleanup_failed");
+    assert.equal(cleanupCalls.length, 1);
+    assert.equal(cleanupCalls[0].mysqlRootPassword, mysqlRootPassword);
   } finally {
     await rm(item.root, { recursive: true, force: true });
   }

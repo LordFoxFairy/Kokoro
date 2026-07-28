@@ -73,10 +73,15 @@ function parseRunnerArguments(argv, repositoryRoot = root) {
     evidencePath: null,
     infraEnvFile: null,
   };
+  const seenArguments = new Set();
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     const value = argv[index + 1];
     if (!value) throw new CompatibilityError("compatibility_arguments", argument);
+    if (seenArguments.has(argument)) {
+      throw new CompatibilityError("compatibility_arguments", argument);
+    }
+    seenArguments.add(argument);
     index += 1;
     if (argument === "--matrix") options.matrixPath = resolve(repositoryRoot, value);
     else if (argument === "--manifest") options.manifestPath = resolve(repositoryRoot, value);
@@ -650,21 +655,37 @@ async function runCompatibility(options, overrides = {}, control = {}) {
     evidence.reasonCode = error instanceof CompatibilityError ? error.code : "runner_internal_error";
     exitCode = 3;
   } finally {
-    if (scopeFile !== null) await rm(scopeFile, { force: true });
-    if (lease !== null) {
-      try {
-        await dependencies.cleanupScope({
-          stateRoot: lease.stateRoot,
-          runId: lease.runId,
-          leaseToken: lease.leaseToken,
-          endpointFingerprint: lease.endpointFingerprint,
-          mysqlRootPassword,
-        });
-      } catch {
-        evidence.outcome = "error";
-        evidence.reasonCode = "lease_cleanup_failed";
-        exitCode = 3;
+    let scopeFileCleanupFailed = false;
+    let leaseCleanupFailed = false;
+    try {
+      if (scopeFile !== null) {
+        try {
+          await rm(scopeFile, { force: true });
+        } catch {
+          scopeFileCleanupFailed = true;
+        }
       }
+    } finally {
+      if (lease !== null) {
+        try {
+          await dependencies.cleanupScope({
+            stateRoot: lease.stateRoot,
+            runId: lease.runId,
+            leaseToken: lease.leaseToken,
+            endpointFingerprint: lease.endpointFingerprint,
+            mysqlRootPassword,
+          });
+        } catch {
+          leaseCleanupFailed = true;
+        }
+      }
+    }
+    if (leaseCleanupFailed || scopeFileCleanupFailed) {
+      evidence.outcome = "error";
+      evidence.reasonCode = leaseCleanupFailed
+        ? "lease_cleanup_failed"
+        : "scope_file_cleanup_failed";
+      exitCode = 3;
     }
   }
   try {
