@@ -13,9 +13,9 @@ the hand-written file. For part of this surface that would *lose* checking. The
 gateway validates downstream rows only to ``z.array(z.record(z.unknown()))``, so the
 contract declares ``ResourceRow`` with no properties at all and
 ``additionalProperties: true`` (recorded there as open decision D4). Generating from
-that yields a validator which accepts anything, while the hand-written
-``orderSchema`` at least names ``amountMinor`` and ``currency``. The hand-written
-file currently encodes *more* field knowledge than the contract does.
+that yields a validator which accepts anything, while the hand-written Site, credit
+account, and identity readers name the fields their screens consume. The
+hand-written file currently encodes *more* field knowledge than the contract does.
 
 So the browser keeps its lenient readers -- a dirty row degrades one row instead of
 blanking the page -- and this gate proves they do not contradict the contract:
@@ -47,7 +47,6 @@ DEFAULT_SCHEMAS = ROOT / "kokoro-web" / "apps" / "admin" / "lib" / "schemas.ts"
 SCHEMA_MAP = {
     "siteSchema": "ResourceRow",
     "creditAccountSchema": "ResourceRow",
-    "orderSchema": "ResourceRow",
     "identitySchema": "ResourceRow",
     "user360Schema": "User360",
     # The browser reads the unwrapped `data`; a deferred action carries this shape.
@@ -55,6 +54,14 @@ SCHEMA_MAP = {
     "meSchema": "Me",
     "actionMetaSchema": "AdminActionManifest",
     "moduleManifestSchema": "ModuleStatus",
+}
+
+# Temporary compatibility for the atomic Web gitlink promotion that retires the
+# Admin acquisition surface. The old pin exports this reader and must still be
+# checked; the new pin omits it and must not fail as stale. Remove this map after
+# the pin promotion is part of the same verified history.
+TRANSITIONAL_SCHEMA_MAP = {
+    "orderSchema": "ResourceRow",
 }
 
 # Readers with no contract counterpart, and why. Hub owns these payloads; they reach
@@ -142,11 +149,12 @@ def run(openapi: Path, schemas_path: Path) -> str:
     violations: list[str] = []
     unmodelled: list[str] = []
     checked_fields = 0
+    transitional_readers = sorted(set(browser) & set(TRANSITIONAL_SCHEMA_MAP))
 
     for name, fields in sorted(browser.items()):
         if name in UNCONTRACTED:
             continue
-        target = SCHEMA_MAP.get(name)
+        target = SCHEMA_MAP.get(name, TRANSITIONAL_SCHEMA_MAP.get(name))
         if target is None:
             violations.append(
                 f"admin_browser_schema_unmapped: {name} has no contract counterpart; map it in "
@@ -180,7 +188,9 @@ def run(openapi: Path, schemas_path: Path) -> str:
         f"admin_browser_schemas_ok: {len(browser)} browser schemas, {checked_fields} fields "
         f"proven against the contract, {len(unmodelled)} mapped to a schema with no field "
         f"contract ({', '.join(sorted(unmodelled)) or 'none'}), "
-        f"{len(UNCONTRACTED)} uncontracted by design"
+        f"{len(UNCONTRACTED)} uncontracted by design, {len(transitional_readers)} transitional "
+        f"reader{'s' if len(transitional_readers) != 1 else ''} present "
+        f"({', '.join(transitional_readers) or 'none'})"
     )
 
 

@@ -50,12 +50,19 @@ contract: every field the browser reads must be declared by the contract schema 
 It is a gate rather than a generator on purpose. Generating the browser validators from the contract
 would *lose* checking for part of this surface: the gateway validates downstream rows only to
 `z.array(z.record(z.unknown()))`, so `ResourceRow` is declared with no properties and
-`additionalProperties: true` (open decision D4). The hand-written `orderSchema` at least names
-`amountMinor` and `currency`, so it currently encodes more field knowledge than the contract does.
-The readers also stay deliberately lenient — a dirty row degrades one row instead of blanking the
-page. Four readers map onto `ResourceRow` and therefore cannot be verified at all; that count is
-printed on every run rather than presented as coverage. When D4 lands, the count drops and generation
-becomes the better answer for those four.
+`additionalProperties: true` (open decision D4). The hand-written Site, credit-account, and identity
+readers name the fields their screens consume, so they currently encode more field knowledge than the
+contract does. The readers also stay deliberately lenient — a dirty row degrades one row instead of
+blanking the page. These three readers map onto `ResourceRow` and therefore cannot be verified at all;
+that count is printed on every run rather than presented as coverage. When D4 lands, the count drops
+and generation becomes the better answer for those three.
+
+`orderSchema` is the one explicit transitional mapping during the atomic Web gitlink promotion that
+retires the acquisition surface. The gate validates it normally while an older Web pin still exports
+it, but does not call the mapping stale after the new pin removes it; every run reports whether the
+transitional reader is present. This is not permission to restore acquisition UI: Web's independent
+acquisition-shutdown negative gate forbids that regression. Delete the transitional mapping after the
+pin promotion and checker change are squashed into a history in which every commit verifies.
 
 ## Callers and dependencies
 
