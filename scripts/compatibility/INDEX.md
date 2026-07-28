@@ -19,7 +19,7 @@ Scenarios do not replace child tests, mutate product data, or inspect private se
 
 | Scenario | Provider | Consumer | Boundary |
 |---|---|---|---|
-| `web-session-http-sse.mjs` | Session | Web | HTTP snapshot + resumable SSE |
+| `web-session-http-sse.mjs` | Session | Web | Host-bound Site resolution + authenticated HTTP snapshot + resumable SSE |
 | `session-platform-internal-rpc.mjs` | Platform | Session | Legacy Platform runtime characterization |
 | `session_agent_durable.py` | Agent | Session | Durable command/fact transport |
 | `agent_model_gateway.py` | Platform | Agent | Model gateway HTTP |
@@ -34,6 +34,12 @@ The Hub runtime scenario starts the real Hub against the lease-scoped Mongo data
 fixture that validates Hub's own caller credential. It creates the test secret only through the public self
 API, then invokes Session and Agent's child-owned compatibility commands, which wrap their production clients.
 Root never imports sibling runtime source or seeds a private Hub collection.
+
+The Web/Session scenario's closed local HTTP fixture exposes only the production-shaped
+`/site-context/resolve` and `/hub/runtime/resolve` reads. Web runs with strict Host resolution and no development
+fallback; unknown Hosts, callers, namespaces, methods, and paths fail closed. Readiness reports phase/status-only
+reason codes and aborts immediately when a child exits, while the SSE reader consumes only blank-line-terminated
+frames and retains an incomplete tail across chunks.
 
 ## Callers and dependencies
 
