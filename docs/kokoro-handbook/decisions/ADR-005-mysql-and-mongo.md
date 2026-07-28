@@ -1,6 +1,8 @@
 # ADR-005 MySQL + Mongo 数据边界，不引入 PostgreSQL
 
-状态：已采纳。
+状态：已被 [ADR-012](ADR-012-postgresql-platform-session-boundary.md) 取代（2026-07-28）。
+
+本文件仅保留历史决策背景，不再指导新实现、Infra、迁移或上线验证。
 
 ## 背景
 
