@@ -36,6 +36,13 @@ const SAFE_REASON = /^[a-z][a-z0-9_]{1,63}$/u;
 const SAFE_ASSERTION = /^[a-z0-9][a-z0-9:._-]{1,127}$/u;
 const MAX_MACHINE_RESULT_BYTES = 64 * 1024;
 const PROCESS_GROUP_GRACE_MS = 5_000;
+const SUPPORTED_RUNTIME_PLATFORMS = new Set(["darwin", "linux"]);
+const TERMINAL_FAILURE_PRIORITY = new Map([
+  ["postflight_pin_drift", 1],
+  ["postflight_pin_verification_failed", 2],
+  ["scope_file_cleanup_failed", 3],
+  ["lease_cleanup_failed", 4],
+]);
 
 class CompatibilityError extends Error {
   constructor(code, detail = "") {
@@ -114,16 +121,31 @@ function sameFileIdentity(before, after) {
     before.ctimeNs === after.ctimeNs;
 }
 
-async function acquireMysqlRootPassword(infraEnvFile, environment, openInfraEnvFile) {
+function secureInfraOpenFlags(platform, noFollowFlag) {
+  if (
+    !SUPPORTED_RUNTIME_PLATFORMS.has(platform) ||
+    !Number.isInteger(noFollowFlag) ||
+    noFollowFlag <= 0
+  ) {
+    throw new CompatibilityError("compatibility_infra_env_file_unsupported");
+  }
+  return fsConstants.O_RDONLY | noFollowFlag;
+}
+
+async function acquireMysqlRootPassword(
+  infraEnvFile,
+  environment,
+  openInfraEnvFile,
+  platform,
+  noFollowFlag,
+) {
   if (infraEnvFile === null || infraEnvFile === undefined) {
     return validateMysqlRootPassword(environment.MYSQL_ROOT_PASSWORD);
   }
+  const openFlags = secureInfraOpenFlags(platform, noFollowFlag);
   let handle;
   try {
-    handle = await openInfraEnvFile(
-      infraEnvFile,
-      fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW,
-    );
+    handle = await openInfraEnvFile(infraEnvFile, openFlags);
   } catch (error) {
     if (error.code === "ENOENT") {
       throw new CompatibilityError("compatibility_infra_env_file_missing");
@@ -159,11 +181,16 @@ async function acquireMysqlRootPassword(infraEnvFile, environment, openInfraEnvF
   return validateMysqlRootPassword(parseEnv(source).MYSQL_ROOT_PASSWORD);
 }
 
+function safeChildEnvironment(environment) {
+  return Object.fromEntries(
+    Object.entries(environment)
+      .filter(([key]) => key.toLowerCase() !== "mysql_root_password"),
+  );
+}
+
 function scenarioEnvironment(environment, scopeFile, scenarioId) {
-  const sanitized = { ...environment };
-  delete sanitized.MYSQL_ROOT_PASSWORD;
   return {
-    ...sanitized,
+    ...safeChildEnvironment(environment),
     KOKORO_COMPAT_SCOPE_FILE: scopeFile,
     KOKORO_COMPAT_SCENARIO_ID: scenarioId,
   };
@@ -269,6 +296,14 @@ function samePins(left, right) {
   return REPOSITORY_IDS.every((id) => left[id] === right[id]);
 }
 
+function highestPriorityFailure(failures) {
+  return failures.reduce((selected, candidate) =>
+    selected === null ||
+    TERMINAL_FAILURE_PRIORITY.get(candidate) > TERMINAL_FAILURE_PRIORITY.get(selected)
+      ? candidate
+      : selected, null);
+}
+
 async function atomicWriteJson(path, value) {
   await mkdir(dirname(path), { recursive: true });
   const temporary = resolve(dirname(path), `.${randomBytes(12).toString("hex")}.tmp`);
@@ -288,39 +323,48 @@ async function atomicWriteJson(path, value) {
   }
 }
 
-function docker(args) {
-  const result = spawnSync("docker", args, { encoding: "utf8", shell: false });
+function docker(args, environment) {
+  const result = spawnSync("docker", args, {
+    encoding: "utf8",
+    env: safeChildEnvironment(environment),
+    shell: false,
+  });
   if (result.error || result.status !== 0) {
     throw new CompatibilityError("compatibility_infra_inspection");
   }
   return result.stdout.trim();
 }
 
-async function defaultPreflightServices(services) {
+async function defaultPreflightServices(services, context) {
   return services.map((id) => {
     const containerIds = docker([
       "ps", "-q",
       "--filter", "label=com.docker.compose.project=kokoro-infra",
       "--filter", `label=com.docker.compose.service=${id}`,
-    ]).split(/\r?\n/u).filter(Boolean);
+    ], context.environment).split(/\r?\n/u).filter(Boolean);
     if (containerIds.length !== 1) return { id, healthy: false };
     const [status = "", health = ""] = docker([
       "inspect", "--format",
       '{{.State.Status}}\t{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}',
       containerIds[0],
-    ]).split("\t");
+    ], context.environment).split("\t");
     return { id, healthy: status === "running" && ["healthy", "none"].includes(health) };
   });
 }
 
-function defaultVerifyPins({ root: repositoryRoot, tree, manifestPath, matrixPath }) {
+function defaultVerifyPins({ environment, root: repositoryRoot, tree, manifestPath, matrixPath }) {
   const result = spawnSync(process.execPath, [
     resolve(repositoryRoot, "scripts/repository/verify-federated-repositories.mjs"),
     "--root", repositoryRoot,
     "--tree", tree,
     "--manifest", manifestPath,
     "--matrix", matrixPath,
-  ], { cwd: repositoryRoot, encoding: "utf8", shell: false });
+  ], {
+    cwd: repositoryRoot,
+    encoding: "utf8",
+    env: safeChildEnvironment(environment),
+    shell: false,
+  });
   if (result.error || result.status !== 0) {
     throw new CompatibilityError("compatibility_pin_verification");
   }
@@ -392,7 +436,7 @@ async function runScenarioProcess(command, { cwd, env, timeoutMs, signal }) {
   if (signal?.aborted) return { kind: "interrupted", machineOutput: "" };
   const child = spawn(command[0], command.slice(1), {
     cwd,
-    env,
+    env: safeChildEnvironment(env),
     detached: true,
     shell: false,
     stdio: ["ignore", "ignore", "ignore", "pipe"],
@@ -537,15 +581,22 @@ function makeEvidence({ matrix, matrixSource, manifestSource, pins, tree, now })
 }
 
 async function runCompatibility(options, overrides = {}, control = {}) {
+  const noFollowFlag = Object.hasOwn(overrides, "noFollowFlag")
+    ? overrides.noFollowFlag
+    : fsConstants.O_NOFOLLOW;
   const {
     environment = process.env,
+    noFollowFlag: _noFollowFlag,
     openInfraEnvFile = open,
+    platform = process.platform,
     ...dependencyOverrides
   } = overrides;
   const mysqlRootPassword = await acquireMysqlRootPassword(
     options.infraEnvFile,
     environment,
     openInfraEnvFile,
+    platform,
+    noFollowFlag,
   );
   const evidencePath = await validateEvidenceTarget(options.root, options.evidencePath);
   const matrixSource = await readFile(options.matrixPath, "utf8");
@@ -568,6 +619,7 @@ async function runCompatibility(options, overrides = {}, control = {}) {
     ...dependencyOverrides,
   };
   const context = {
+    environment: safeChildEnvironment(environment),
     root: options.root,
     tree: options.tree,
     manifestPath: options.manifestPath,
@@ -595,8 +647,12 @@ async function runCompatibility(options, overrides = {}, control = {}) {
   let lease = null;
   let scopeFile = null;
   let exitCode = 3;
+  const terminalFailures = [];
   try {
-    evidence.services = await dependencies.preflightServices(matrix.runtimeGate.requiredServices);
+    evidence.services = await dependencies.preflightServices(
+      matrix.runtimeGate.requiredServices,
+      context,
+    );
     const healthy =
       evidence.services.length === matrix.runtimeGate.requiredServices.length &&
       evidence.services.every(({ id, healthy: serviceHealthy }, index) =>
@@ -615,7 +671,7 @@ async function runCompatibility(options, overrides = {}, control = {}) {
           await dependencies.runScenario(scenario, {
             ...context,
             scopeFile,
-            environment: scenarioEnvironment(environment, scopeFile, scenario.id),
+            environment: scenarioEnvironment(context.environment, scopeFile, scenario.id),
           }),
           scenario.id,
         );
@@ -680,28 +736,25 @@ async function runCompatibility(options, overrides = {}, control = {}) {
         }
       }
     }
-    if (leaseCleanupFailed || scopeFileCleanupFailed) {
-      evidence.outcome = "error";
-      evidence.reasonCode = leaseCleanupFailed
-        ? "lease_cleanup_failed"
-        : "scope_file_cleanup_failed";
-      exitCode = 3;
-    }
+    if (scopeFileCleanupFailed) terminalFailures.push("scope_file_cleanup_failed");
+    if (leaseCleanupFailed) terminalFailures.push("lease_cleanup_failed");
   }
   try {
     const postflightPins = await dependencies.verifyPins(context);
     if (!samePins(postflightPins, preflightPins)) {
-      evidence.outcome = "error";
-      evidence.reasonCode = "postflight_pin_drift";
+      terminalFailures.push("postflight_pin_drift");
       evidence.postflightPinVerification = "fail";
-      exitCode = 3;
     } else {
       evidence.postflightPinVerification = "pass";
     }
   } catch {
-    evidence.outcome = "error";
-    evidence.reasonCode = "postflight_pin_verification_failed";
+    terminalFailures.push("postflight_pin_verification_failed");
     evidence.postflightPinVerification = "fail";
+  }
+  const terminalFailure = highestPriorityFailure(terminalFailures);
+  if (terminalFailure !== null) {
+    evidence.outcome = "error";
+    evidence.reasonCode = terminalFailure;
     exitCode = 3;
   }
   evidence.completedAt = dependencies.now();

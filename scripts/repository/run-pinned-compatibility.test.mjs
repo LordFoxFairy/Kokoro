@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { constants as fsConstants } from "node:fs";
-import { lstat, mkdtemp, mkdir, open, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
+import { chmod, lstat, mkdtemp, mkdir, open, readFile, rename, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
@@ -101,6 +101,79 @@ function dependencies(overrides = {}) {
     ...overrides,
   };
   return { deps, calls };
+}
+
+async function installChildBoundaryFixture(item) {
+  const binDirectory = resolve(item.root, "bin");
+  const verifierDirectory = resolve(item.root, "scripts/repository");
+  const capturePath = resolve(item.root, "child-environments.jsonl");
+  await mkdir(binDirectory);
+  await mkdir(verifierDirectory, { recursive: true });
+  const captureExpression = JSON.stringify(capturePath);
+  const credentialKeysExpression =
+    'Object.keys(process.env).filter((key) => key.toLowerCase() === "mysql_root_password")';
+  const dockerPath = resolve(binDirectory, "docker");
+  await writeFile(dockerPath, [
+    "#!/usr/bin/env node",
+    'const { appendFileSync } = require("node:fs")',
+    `appendFileSync(${captureExpression}, JSON.stringify({ kind: "docker", ` +
+      `credentialKeys: ${credentialKeysExpression} }) + "\\n")`,
+    'if (process.argv[2] === "ps") process.stdout.write("fixture-container\\n")',
+    'else if (process.argv[2] === "inspect") process.stdout.write("running\\tnone\\n")',
+    "else process.exitCode = 1",
+  ].join("\n"));
+  await chmod(dockerPath, 0o700);
+  await writeFile(resolve(verifierDirectory, "verify-federated-repositories.mjs"), [
+    'import { appendFileSync } from "node:fs";',
+    `appendFileSync(${captureExpression}, JSON.stringify({ kind: "verifier", ` +
+      `credentialKeys: ${credentialKeysExpression} }) + "\\n");`,
+  ].join("\n"));
+  return { binDirectory, capturePath };
+}
+
+async function withProcessEnvironment(values, operation) {
+  const previous = new Map(
+    Object.keys(values).map((key) => [key, Object.hasOwn(process.env, key) ? process.env[key] : null]),
+  );
+  try {
+    for (const [key, value] of Object.entries(values)) {
+      if (value === null) delete process.env[key];
+      else process.env[key] = value;
+    }
+    return await operation();
+  } finally {
+    for (const [key, value] of previous) {
+      if (value === null) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
+}
+
+function defaultChildBoundaryDependencies(scenarioEnvironments) {
+  const { deps } = dependencies({
+    runScenario: async (scenario, context) => {
+      scenarioEnvironments.push(context.environment);
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  delete deps.verifyPins;
+  delete deps.preflightServices;
+  return deps;
+}
+
+async function capturedChildEnvironments(path) {
+  return (await readFile(path, "utf8"))
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
 }
 
 test("CLI accepts only matrix, manifest, tree, ignored tmp evidence, and an Infra env file", () => {
@@ -253,6 +326,51 @@ test("process environment credential remains an explicit local fallback without 
   }
 });
 
+test("process-environment fallback credential is absent from real verifier and Docker child boundaries", async () => {
+  const item = await fixture();
+  const { infraEnvFile: _infraEnvFile, ...options } = item;
+  const { binDirectory, capturePath } = await installChildBoundaryFixture(item);
+  const scenarioEnvironments = [];
+  try {
+    const result = await withProcessEnvironment({
+      PATH: `${binDirectory}:${process.env.PATH}`,
+      MYSQL_ROOT_PASSWORD: mysqlRootPassword,
+      Mysql_Root_Password: null,
+    }, () => runCompatibility(options, defaultChildBoundaryDependencies(scenarioEnvironments)));
+    assert.equal(result.exitCode, 0);
+    const captures = await capturedChildEnvironments(capturePath);
+    assert.ok(captures.some(({ kind }) => kind === "verifier"));
+    assert.ok(captures.some(({ kind }) => kind === "docker"));
+    assert.ok(captures.every(({ credentialKeys }) => credentialKeys.length === 0));
+    assert.ok(scenarioEnvironments.every((environment) =>
+      Object.keys(environment).every((key) => key.toLowerCase() !== "mysql_root_password")));
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("env-file authority strips exact and case-variant residual credentials from every real child", async () => {
+  const item = await fixture();
+  const { binDirectory, capturePath } = await installChildBoundaryFixture(item);
+  const scenarioEnvironments = [];
+  try {
+    const result = await withProcessEnvironment({
+      PATH: `${binDirectory}:${process.env.PATH}`,
+      MYSQL_ROOT_PASSWORD: "residual-parent-credential",
+      Mysql_Root_Password: "case-variant-parent-credential",
+    }, () => runCompatibility(item, defaultChildBoundaryDependencies(scenarioEnvironments)));
+    assert.equal(result.exitCode, 0);
+    const captures = await capturedChildEnvironments(capturePath);
+    assert.ok(captures.some(({ kind }) => kind === "verifier"));
+    assert.ok(captures.some(({ kind }) => kind === "docker"));
+    assert.ok(captures.every(({ credentialKeys }) => credentialKeys.length === 0));
+    assert.ok(scenarioEnvironments.every((environment) =>
+      Object.keys(environment).every((key) => key.toLowerCase() !== "mysql_root_password")));
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
 test("invalid Infra credential authorities fail before verification, Docker preflight, lease, or scenario", async () => {
   const cases = [
     {
@@ -307,6 +425,35 @@ test("invalid Infra credential authorities fail before verification, Docker pref
       await assert.rejects(runCompatibility(options, deps), current.reason, current.name);
       assert.deepEqual(calls, { acquire: 0, preflight: 0, provision: 0, scenario: 0, verify: 0 });
       await assert.rejects(lstat(item.evidencePath), { code: "ENOENT" });
+    } finally {
+      await rm(item.root, { recursive: true, force: true });
+    }
+  }
+});
+
+test("Infra env-file authority fails closed without supported POSIX O_NOFOLLOW semantics", async () => {
+  const cases = [
+    { name: "non-POSIX platform", platform: "win32", noFollowFlag: fsConstants.O_NOFOLLOW },
+    { name: "missing O_NOFOLLOW", platform: "linux", noFollowFlag: undefined },
+  ];
+  for (const current of cases) {
+    const item = await fixture();
+    const calls = { acquire: 0, preflight: 0, scenario: 0, verify: 0 };
+    const { deps } = dependencies({
+      platform: current.platform,
+      noFollowFlag: current.noFollowFlag,
+      verifyPins: async () => { calls.verify += 1; return { ...pins }; },
+      preflightServices: async () => { calls.preflight += 1; return []; },
+      acquireLease: async () => { calls.acquire += 1; return {}; },
+      runScenario: async () => { calls.scenario += 1; return {}; },
+    });
+    try {
+      await assert.rejects(
+        runCompatibility(item, deps),
+        /compatibility_infra_env_file_unsupported/u,
+        current.name,
+      );
+      assert.deepEqual(calls, { acquire: 0, preflight: 0, scenario: 0, verify: 0 });
     } finally {
       await rm(item.root, { recursive: true, force: true });
     }
@@ -466,6 +613,68 @@ test("lease cleanup failure takes priority over scope-file removal failure", asy
   }
 });
 
+test("lease cleanup failure remains final when postflight pins also drift", async () => {
+  const item = await fixture();
+  let verification = 0;
+  const drifted = { ...pins, "kokoro-web": "f".repeat(40) };
+  const { deps } = dependencies({
+    cleanupScope: async () => { throw new Error("fixture cleanup failure"); },
+    verifyPins: async () => (++verification === 1 ? { ...pins } : drifted),
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 3);
+    assert.equal(result.evidence.reasonCode, "lease_cleanup_failed");
+    assert.equal(result.evidence.postflightPinVerification, "fail");
+    assert.equal(
+      JSON.parse(await readFile(item.evidencePath, "utf8")).reasonCode,
+      "lease_cleanup_failed",
+    );
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
+test("scope-file cleanup failure remains final when postflight verification also errors", async () => {
+  const item = await fixture();
+  let replaced = false;
+  let verification = 0;
+  const { deps } = dependencies({
+    verifyPins: async () => {
+      verification += 1;
+      if (verification === 1) return { ...pins };
+      throw new Error("fixture postflight failure");
+    },
+    runScenario: async (scenario, context) => {
+      if (!replaced) {
+        await rm(context.scopeFile);
+        await mkdir(context.scopeFile);
+        replaced = true;
+      }
+      return {
+        schemaVersion: 1,
+        scenarioId: scenario.id,
+        outcome: "pass",
+        reasonCode: "ok",
+        assertionIds: [`${scenario.id}:contract`],
+        durationMs: 1,
+      };
+    },
+  });
+  try {
+    const result = await runCompatibility(item, deps);
+    assert.equal(result.exitCode, 3);
+    assert.equal(result.evidence.reasonCode, "scope_file_cleanup_failed");
+    assert.equal(result.evidence.postflightPinVerification, "fail");
+    assert.equal(
+      JSON.parse(await readFile(item.evidencePath, "utf8")).reasonCode,
+      "scope_file_cleanup_failed",
+    );
+  } finally {
+    await rm(item.root, { recursive: true, force: true });
+  }
+});
+
 test("combination digest changes when an attested contract artifact changes", async () => {
   const first = await fixture();
   const second = await fixture();
@@ -557,6 +766,24 @@ test("an interrupted required scenario produces interrupted evidence and still c
   } finally {
     await rm(item.root, { recursive: true, force: true });
   }
+});
+
+test("scenario process boundary strips exact and case-variant MySQL root credentials", async () => {
+  const script = [
+    'const keys = Object.keys(process.env).filter((key) => key.toLowerCase() === "mysql_root_password")',
+    'require("node:fs").writeFileSync(3, JSON.stringify(keys))',
+  ].join(";");
+  const result = await runScenarioProcess([process.execPath, "-e", script], {
+    cwd: process.cwd(),
+    env: {
+      PATH: process.env.PATH,
+      MYSQL_ROOT_PASSWORD: mysqlRootPassword,
+      Mysql_Root_Password: "case-variant-parent-credential",
+    },
+    timeoutMs: 3_000,
+  });
+  assert.equal(result.kind, "exit");
+  assert.deepEqual(JSON.parse(result.machineOutput), []);
 });
 
 test("scenario timeout terminates the complete detached process group", async () => {
