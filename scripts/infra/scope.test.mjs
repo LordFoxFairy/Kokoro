@@ -60,6 +60,7 @@ test("leases concurrent run-scoped allocations with exclusive Redis databases", 
 test("provisions and cleans databases, Redis marker, and MinIO prefix through bounded commands", async () => {
   const { acquireScope, cleanupScope, provisionScope } = await import(scopeModule);
   const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const mysqlRootPassword = "scope-root-secret";
   const calls = [];
   const run = (command, args, options = {}) => {
     calls.push({ command, args, input: options.input ?? "" });
@@ -69,12 +70,21 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
   };
   try {
     const lease = await acquireScope({ stateRoot, runId: "run_real01", endpointFingerprint: "local-dev" });
-    await provisionScope({ lease, run });
+    await provisionScope({ lease, mysqlRootPassword, run });
+    const mysqlProvision = calls.find(({ input }) => /CREATE DATABASE/u.test(input));
     assert.equal(calls.filter(({ input }) => /CREATE DATABASE/u.test(input)).length, 1);
-    assert.match(calls.find(({ input }) => /CREATE DATABASE/u.test(input)).input, /CREATE USER[\s\S]*GRANT ALL PRIVILEGES ON `kokoro_test_run_real01_site`\.\*/u);
+    assert.match(mysqlProvision.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
+    assert.match(mysqlProvision.input, /CREATE USER[\s\S]*GRANT ALL PRIVILEGES ON `kokoro_test_run_real01_site`\.\*/u);
+    assert.doesNotMatch(JSON.stringify(mysqlProvision.args), new RegExp(mysqlRootPassword, "u"));
+    assert.doesNotMatch(JSON.stringify(mysqlProvision.args), /MYSQL_ROOT_PASSWORD/u);
     assert.equal(calls.filter(({ input }) => /getSiblingDB/u.test(input)).length, 1);
     assert.ok(calls.some(({ args, input }) =>
-      args.includes("EVAL") && args.includes(lease.redis.markerKey) && input === lease.leaseToken));
+      args.includes("EVAL") && args.includes(lease.redis.markerKey) &&
+      args.some((argument) => argument.includes("DBSIZE")) && input === lease.leaseToken));
+    assert.ok(
+      calls.findIndex(({ args }) => args.includes("EVAL")) <
+      calls.findIndex(({ input }) => /CREATE DATABASE/u.test(input)),
+    );
     assert.ok(calls.some(({ command, args }) => command === "mc" && args[0] === "mb"));
     assert.ok(calls.every(({ args }) => !args.includes(lease.leaseToken)));
 
@@ -90,14 +100,163 @@ test("provisions and cleans databases, Redis marker, and MinIO prefix through bo
       runId: lease.runId,
       leaseToken: lease.leaseToken,
       endpointFingerprint: lease.endpointFingerprint,
+      mysqlRootPassword,
       run: cleanupRun,
     });
-    assert.ok(calls.slice(markerRead).some(({ input }) => /DROP DATABASE/u.test(input)));
+    const mysqlCleanup = calls.slice(markerRead).find(({ input }) => /DROP DATABASE/u.test(input));
+    assert.ok(mysqlCleanup);
+    assert.match(mysqlCleanup.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
+    assert.doesNotMatch(JSON.stringify(mysqlCleanup.args), new RegExp(mysqlRootPassword, "u"));
+    assert.doesNotMatch(JSON.stringify(mysqlCleanup.args), /MYSQL_ROOT_PASSWORD/u);
     assert.ok(calls.slice(markerRead).some(({ args, input }) =>
       args.includes("EVAL") && /FLUSHDB/u.test(args.join(" ")) && input === lease.leaseToken));
     assert.ok(calls.slice(markerRead).every(({ args }) => args[args.length - 1] !== lease.leaseToken));
     assert.ok(calls.slice(markerRead).some(({ command, args }) => command === "mc" && args[0] === "rm"));
     assert.ok(calls.slice(markerRead).some(({ command, args }) => command === "mc" && args.includes("--incomplete")));
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("MySQL scope operations fail closed before commands with a missing or unsafe host admin credential", async () => {
+  const { acquireScope, cleanupScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  let commandCount = 0;
+  const run = () => {
+    commandCount += 1;
+    return { status: 0, stdout: "OK\n", stderr: "" };
+  };
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_nocred",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql"],
+    });
+    await assert.rejects(
+      provisionScope({ lease, mysqlRootPassword: "", run }),
+      /infra_scope_mysql_admin_credential_missing/u,
+    );
+    await assert.rejects(
+      provisionScope({ lease, mysqlRootPassword: "unsafe\ncredential", run }),
+      /infra_scope_mysql_admin_credential_invalid/u,
+    );
+    await assert.rejects(
+      cleanupScope({
+        stateRoot,
+        runId: lease.runId,
+        leaseToken: lease.leaseToken,
+        endpointFingerprint: lease.endpointFingerprint,
+        mysqlRootPassword: "",
+        run,
+      }),
+      /infra_scope_mysql_admin_credential_missing/u,
+    );
+    assert.equal(commandCount, 0);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("cleanup recovers lease-owned resources when provision failed before the Redis marker", async () => {
+  const { acquireScope, cleanupScope, readScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_partial",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql", "mongo", "redis"],
+    });
+    const run = (command, args, options = {}) => {
+      calls.push({ command, args, input: options.input ?? "" });
+      if (args.includes("GET")) return { status: 0, stdout: "\n", stderr: "" };
+      if (args.includes("DBSIZE")) return { status: 0, stdout: "0\n", stderr: "" };
+      return { status: 0, stdout: "OK\n", stderr: "" };
+    };
+    await cleanupScope({
+      stateRoot,
+      runId: lease.runId,
+      leaseToken: lease.leaseToken,
+      endpointFingerprint: lease.endpointFingerprint,
+      mysqlRootPassword: "scope-root-secret",
+      run,
+    });
+
+    assert.ok(calls.some(({ input }) => /DROP DATABASE/u.test(input)));
+    assert.ok(calls.some(({ input }) => /dropDatabase/u.test(input)));
+    assert.equal(calls.some(({ args }) => args.includes("FLUSHDB")), false);
+    await assert.rejects(readScope({ stateRoot, runId: lease.runId }), /infra_scope_missing/u);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("cleanup preserves the lease when a markerless Redis database contains unowned data", async () => {
+  const { acquireScope, cleanupScope, readScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_stale",
+      endpointFingerprint: "local-dev",
+      resources: ["redis"],
+    });
+    const run = (command, args, options = {}) => {
+      calls.push({ command, args, input: options.input ?? "" });
+      if (args.includes("GET")) return { status: 0, stdout: "\n", stderr: "" };
+      if (args.includes("DBSIZE")) return { status: 0, stdout: "2\n", stderr: "" };
+      return { status: 0, stdout: "1\n", stderr: "" };
+    };
+    await assert.rejects(
+      cleanupScope({
+        stateRoot,
+        runId: lease.runId,
+        leaseToken: lease.leaseToken,
+        endpointFingerprint: lease.endpointFingerprint,
+        run,
+      }),
+      /infra_scope_redis_unowned_data/u,
+    );
+
+    assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
+    assert.equal(calls.some(({ args }) => args.includes("FLUSHDB")), false);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("cleanup rejects a mismatched Redis marker without inspecting or deleting database contents", async () => {
+  const { acquireScope, cleanupScope, readScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_wrongmark",
+      endpointFingerprint: "local-dev",
+      resources: ["redis"],
+    });
+    const run = (command, args, options = {}) => {
+      calls.push({ command, args, input: options.input ?? "" });
+      if (args.includes("GET")) return { status: 0, stdout: `${"f".repeat(64)}\n`, stderr: "" };
+      return { status: 0, stdout: "0\n", stderr: "" };
+    };
+    await assert.rejects(
+      cleanupScope({
+        stateRoot,
+        runId: lease.runId,
+        leaseToken: lease.leaseToken,
+        endpointFingerprint: lease.endpointFingerprint,
+        run,
+      }),
+      /infra_scope_redis_token_mismatch/u,
+    );
+
+    assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
+    assert.equal(calls.some(({ args }) => args.includes("DBSIZE") || args.includes("EVAL")), false);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }

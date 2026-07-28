@@ -228,6 +228,20 @@ function checkedRun(run, command, args, options = {}) {
   return result;
 }
 
+function requireMysqlAdminCredential(value) {
+  if (typeof value !== "string" || value.length === 0) {
+    throw scopeError("infra_scope_mysql_admin_credential_missing");
+  }
+  if (/[\r\n\0]/u.test(value)) {
+    throw scopeError("infra_scope_mysql_admin_credential_invalid");
+  }
+  return value;
+}
+
+function mysqlInput(rootPassword, sql) {
+  return `${rootPassword}\n${sql}`;
+}
+
 function mysqlSql(lease, action) {
   const statements = [];
   for (const context of MYSQL_CONTEXTS) {
@@ -317,13 +331,32 @@ const composeExec = (service, command) => [
   "exec", "-T", service, ...command,
 ];
 
-export async function provisionScope({ lease, run = defaultRun }) {
+export async function provisionScope({
+  lease,
+  mysqlRootPassword = process.env.MYSQL_ROOT_PASSWORD,
+  run = defaultRun,
+}) {
   validateIdentity(lease);
   const resources = normalizeResources(lease.resources);
+  const mysqlAdminCredential = resources.includes("mysql")
+    ? requireMysqlAdminCredential(mysqlRootPassword)
+    : null;
+  if (resources.includes("redis")) {
+    const guardedSetScript = [
+      'if redis.call("DBSIZE") ~= 0 then return 0 end',
+      'redis.call("SET", KEYS[1], ARGV[1])',
+      "return 1",
+    ].join(" ");
+    const redisResult = checkedRun(run, "docker", composeExec("redis", [
+      "redis-cli", "--raw", "-n", String(lease.redis.database), "-x",
+      "EVAL", guardedSetScript, "1", lease.redis.markerKey,
+    ]), { input: lease.leaseToken });
+    if (redisResult.stdout.trim() !== "1") throw scopeError("infra_scope_redis_busy");
+  }
   if (resources.includes("mysql")) {
     checkedRun(run, "docker", composeExec("mysql", [
-      "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
-    ]), { input: mysqlSql(lease, "create") });
+      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=socket -uroot',
+    ]), { input: mysqlInput(mysqlAdminCredential, mysqlSql(lease, "create")) });
   }
   if (resources.includes("postgres")) {
     checkedRun(run, "docker", composeExec("postgres", [
@@ -335,19 +368,6 @@ export async function provisionScope({ lease, run = defaultRun }) {
     const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)})` +
       `.getCollection("__kokoro_scope").updateOne({_id:"lease"},{$set:{active:true}},{upsert:true});\n`;
     checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
-  }
-
-  if (resources.includes("redis")) {
-    const guardedSetScript = [
-      'if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end',
-      'redis.call("SET", KEYS[1], ARGV[1])',
-      "return 1",
-    ].join(" ");
-    const redisResult = checkedRun(run, "docker", composeExec("redis", [
-      "redis-cli", "--raw", "-n", String(lease.redis.database), "-x",
-      "EVAL", guardedSetScript, "1", lease.redis.markerKey,
-    ]), { input: lease.leaseToken });
-    if (redisResult.stdout.trim() !== "1") throw scopeError("infra_scope_redis_busy");
   }
 
   if (resources.includes("minio")) {
@@ -372,6 +392,7 @@ export async function cleanupScope({
   runId,
   leaseToken,
   endpointFingerprint,
+  mysqlRootPassword = process.env.MYSQL_ROOT_PASSWORD,
   run = defaultRun,
 }) {
   const lease = await readScope({ stateRoot, runId });
@@ -380,6 +401,9 @@ export async function cleanupScope({
     throw scopeError("infra_scope_endpoint_mismatch");
   }
   const resources = normalizeResources(lease.resources);
+  const mysqlAdminCredential = resources.includes("mysql")
+    ? requireMysqlAdminCredential(mysqlRootPassword)
+    : null;
   if (resources.includes("mysql")) {
     for (const name of Object.values(lease.mysql)) {
       assertCleanupTarget({ lease, kind: "mysql", name, endpointFingerprint });
@@ -405,17 +429,25 @@ export async function cleanupScope({
     assertCleanupTarget({ lease, kind: "minio", name: lease.minio.prefix, endpointFingerprint });
   }
 
+  let redisMarkerPresent = false;
   if (resources.includes("redis")) {
     const marker = checkedRun(run, "docker", composeExec("redis", [
       "redis-cli", "--raw", "-n", String(lease.redis.database), "GET", lease.redis.markerKey,
     ])).stdout.trim();
-    if (marker !== leaseToken) throw scopeError("infra_scope_redis_token_mismatch");
+    if (marker !== "" && marker !== leaseToken) throw scopeError("infra_scope_redis_token_mismatch");
+    if (marker === "") {
+      const databaseSize = checkedRun(run, "docker", composeExec("redis", [
+        "redis-cli", "--raw", "-n", String(lease.redis.database), "DBSIZE",
+      ])).stdout.trim();
+      if (databaseSize !== "0") throw scopeError("infra_scope_redis_unowned_data");
+    }
+    redisMarkerPresent = marker === leaseToken;
   }
 
   if (resources.includes("mysql")) {
     checkedRun(run, "docker", composeExec("mysql", [
-      "sh", "-c", 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql --protocol=socket -uroot',
-    ]), { input: mysqlSql(lease, "drop") });
+      "sh", "-c", 'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec mysql --protocol=socket -uroot',
+    ]), { input: mysqlInput(mysqlAdminCredential, mysqlSql(lease, "drop")) });
   }
   if (resources.includes("postgres")) {
     checkedRun(run, "docker", composeExec("postgres", [
@@ -426,7 +458,7 @@ export async function cleanupScope({
     const mongoScript = `db.getSiblingDB(${JSON.stringify(lease.mongo.database)}).dropDatabase();\n`;
     checkedRun(run, "docker", composeExec("mongo", ["mongosh", "--quiet"]), { input: mongoScript });
   }
-  if (resources.includes("redis")) {
+  if (redisMarkerPresent) {
     const guardedFlushScript = [
       'if redis.call("GET", KEYS[1]) ~= ARGV[1] then return 0 end',
       'redis.call("FLUSHDB")',
