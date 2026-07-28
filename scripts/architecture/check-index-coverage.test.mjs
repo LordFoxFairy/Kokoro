@@ -141,6 +141,45 @@ test("ignores documentation templates and generated package artifacts", async ()
   assert.equal(result.status, 0, result.stderr);
 });
 
+test("ignores package and process signals below structural test fixture roots", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md");
+  const boundaries = [
+    "service/test/repository/fixtures/dockerfile-policy/invalid-runtime",
+    "service/tests/fixtures/acquisition-shutdown/payment-rewrite/apps/user",
+  ];
+  for (const boundary of boundaries) {
+    await mkdir(join(fixture.root, boundary), { recursive: true });
+    await writeFile(join(fixture.root, boundary, "package.json"), '{"name":"fixture-only"}\n');
+    await writeFile(join(fixture.root, boundary, "Dockerfile"), "FROM scratch\n");
+  }
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("does not hide real boundaries behind fixture-like production paths", async () => {
+  const fixture = await makeFixture([entry()]);
+  await writeIndex(fixture.root, "INDEX.md");
+  const boundaries = [
+    "apps/user",
+    "service/src/fixtures/live-adapter",
+    "service/testing/fixtures/live-worker",
+  ];
+  for (const boundary of boundaries) {
+    await mkdir(join(fixture.root, boundary), { recursive: true });
+    await writeFile(join(fixture.root, boundary, "package.json"), '{"name":"production"}\n');
+  }
+
+  const result = run(fixture.root, fixture.manifestPath);
+
+  assert.notEqual(result.status, 0);
+  for (const boundary of boundaries) {
+    assert.match(result.stderr, new RegExp(`unregistered boundary: ${boundary.replaceAll("/", "\\/")}`));
+  }
+});
+
 test("rejects a required section that has a heading but no content", async () => {
   const fixture = await makeFixture([entry()]);
   await writeIndex(fixture.root, "INDEX.md", "root.example", { "Current gotchas": "" });

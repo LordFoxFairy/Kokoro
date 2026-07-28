@@ -29,6 +29,7 @@ const IGNORED_DIRECTORIES = new Set([
   "templates",
   "tmp",
 ]);
+const TEST_DIRECTORIES = new Set(["test", "tests"]);
 
 function fail(message) {
   throw new Error(message);
@@ -165,10 +166,17 @@ function normalizeProse(value) {
   return value.toLowerCase().replace(/[^a-z0-9]+/gu, " ").trim();
 }
 
+function isTestFixtureRoot(root, path, entry) {
+  if (!entry.isDirectory() || entry.name !== "fixtures") return false;
+  const segments = normalizedRelative(relative(root, path)).split("/");
+  return segments.slice(0, -1).some((segment) => TEST_DIRECTORIES.has(segment));
+}
+
 function walk(root, visitor, current = root) {
   for (const entry of readdirSync(current, { withFileTypes: true })) {
     if (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name)) continue;
     const path = join(current, entry.name);
+    if (isTestFixtureRoot(root, path, entry)) continue;
     if (entry.isSymbolicLink()) continue;
     visitor(path, entry);
     if (entry.isDirectory()) walk(root, visitor, path);

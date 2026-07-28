@@ -100,6 +100,10 @@ Checks are read-only and deterministic. Invalid or incomplete inventory exits no
 
 Register new public roots in the same change. Do not add broad or permanent exemptions, shell commands, or target-state claims before code exists.
 
+Coverage discovery prunes only a directory named `fixtures` that is structurally below an exact `test` or `tests`
+path segment. Package, Dockerfile, and Next.js signals in real `src`/`apps` trees or lookalike paths such as
+`testing/fixtures` remain production boundaries and must be registered.
+
 ## Current gotchas
 
 The checker consumes JSON-compatible YAML to avoid adding a Root runtime dependency solely for policy parsing.
