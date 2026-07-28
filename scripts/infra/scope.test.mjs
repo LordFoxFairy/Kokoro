@@ -12,12 +12,13 @@ function isRedisFlushCall({ args }) {
 }
 
 function evaluateRedisClaim(script, database, markerKey, token) {
-  assert.match(script, /redis\.call\("SET", KEYS\[1\], ARGV\[1\]\)/u);
-  let occupied;
-  if (script.includes('redis.call("DBSIZE")')) occupied = database.size !== 0;
-  else if (script.includes('redis.call("EXISTS", KEYS[1])')) occupied = database.has(markerKey);
-  else assert.fail("claim script has no interpretable occupancy guard");
-  if (occupied) return 0;
+  const normalized = script.replace(/\s+/gu, " ").trim();
+  assert.equal(normalized, [
+    'if redis.call("DBSIZE") ~= 0 then return 0 end',
+    'redis.call("SET", KEYS[1], ARGV[1])',
+    "return 1",
+  ].join(" "));
+  if (database.size !== 0) return 0;
   database.set(markerKey, token);
   return 1;
 }
