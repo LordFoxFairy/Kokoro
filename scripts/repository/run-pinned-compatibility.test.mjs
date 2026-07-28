@@ -116,6 +116,7 @@ test("code-owned scenario commands point at existing root adapters", async () =>
   assert.doesNotMatch(source, /scripts\/compatibility\/session-agent-durable\.py/u);
   assert.match(source, /scripts\/compatibility\/session_agent_durable\.py/u);
   assert.match(source, /scripts\/compatibility\/admin-auth-connect\.mjs/u);
+  assert.match(source, /scripts\/compatibility\/hub-runtime\.mjs/u);
 });
 
 test("evidence target must be inside ignored tmp and cannot traverse a symlink", async () => {

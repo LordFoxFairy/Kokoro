@@ -6,6 +6,57 @@
         {
           "boundary": "service.agent",
           "repository": "kokoro-agent"
+        },
+        {
+          "boundary": "service.session",
+          "repository": "kokoro-session"
+        }
+      ],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "hub-runtime",
+      "lifecycle": "active",
+      "operations": [
+        {
+          "effect": false,
+          "id": "resolve_capabilities",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "http-json"
+        },
+        {
+          "effect": false,
+          "id": "resolve_mcp_secrets",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "http-json"
+        }
+      ],
+      "protocol": "http-json",
+      "provider": {
+        "boundary": "platform.hub",
+        "repository": "kokoro-platform"
+      },
+      "scope": "namespace",
+      "sourceStatus": "declared-only",
+      "sources": [],
+      "transportSource": null,
+      "transports": [
+        "http-json"
+      ],
+      "trustPlane": "internal-service",
+      "version": 1
+    },
+    {
+      "audience": "internal-workload",
+      "consumers": [
+        {
+          "boundary": "service.agent",
+          "repository": "kokoro-agent"
         }
       ],
       "deadlineMs": null,

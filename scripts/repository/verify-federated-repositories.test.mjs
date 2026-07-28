@@ -184,6 +184,46 @@ test("Admin Auth registry binds the exact provider, consumer, scenario, and gene
   );
 });
 
+test("Hub runtime binds the exact provider, both official consumers, and one live scenario", async () => {
+  const currentManifest = parseManifest(
+    await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
+  );
+  const currentMatrix = JSON.parse(
+    await readFile(resolve(root, "config/repository/compatibility-matrix.json"), "utf8"),
+  );
+  assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
+
+  assert.deepEqual(
+    currentMatrix.contracts.find(({ id }) => id === "hub-runtime"),
+    {
+      id: "hub-runtime",
+      version: 1,
+      providers: ["kokoro-platform"],
+      consumers: ["kokoro-agent", "kokoro-session"],
+    },
+  );
+  assert.deepEqual(
+    currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "hub-runtime"),
+    {
+      id: "hub-runtime",
+      commandId: "node-hub-runtime-v1",
+      required: true,
+      participants: ["kokoro-agent", "kokoro-platform", "kokoro-session"],
+      protocols: [{ id: "hub-runtime", version: 1 }],
+      timeoutSeconds: 180,
+    },
+  );
+  const protocols = Object.fromEntries(
+    currentManifest.repositories.map(({ id, protocols }) => [id, protocols]),
+  );
+  assert.ok(protocols["kokoro-platform"].some((item) =>
+    item.id === "hub-runtime" && item.version === 1 && item.role === "provider"));
+  for (const consumer of ["kokoro-agent", "kokoro-session"]) {
+    assert.ok(protocols[consumer].some((item) =>
+      item.id === "hub-runtime" && item.version === 1 && item.role === "consumer"));
+  }
+});
+
 test("root CI checks out only recorded pins and uses the root-only tooling lock", async () => {
   const workflow = await readFile(resolve(root, ".github/workflows/contract.yml"), "utf8");
   assert.match(workflow, /submodules:\s*recursive/u);

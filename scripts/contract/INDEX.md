@@ -25,6 +25,13 @@ described by [`contract/registry/boundaries.schema.json`](../../contract/registr
 The registry is JSON-compatible YAML, following `config/architecture/index-roots.yaml`: the filename the spec
 mandates, without adding a YAML parser dependency.
 
+`check-boundary-coverage.mjs` is the companion source-to-registry gate. It scans the two internal runtime
+consumers (Session and Agent), reduces their detected Platform dependencies to unique service edges, and
+requires an `active` registry entry with both the exact provider boundary and the actual consumer.
+Repository-pair matching is intentionally insufficient: `service.platform` cannot vouch for `platform.hub`,
+and neither can vouch for `platform.litellm`. Web's public BFF plane is outside this narrow scanner and remains
+covered by the Admin/OpenAPI and Session browser gates rather than being silently claimed here.
+
 `check_admin_openapi.py` is the supported entrypoint for the Admin browser plane, and
 `test_check_admin_openapi.py` defines its fail-closed behaviour. It parses the Fastify route
 registrations out of `kokoro-platform/kokoro-platform-admin/src/server.ts` and requires exact set
@@ -125,7 +132,8 @@ spec keeps separate. Declaring an excluded path in the document fails, and an un
 
 ## Verification
 
-Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
+Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
+and `node scripts/contract/check-boundary-coverage.mjs`,
 then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py
 scripts/contract/test_check_admin_browser_schemas.py -q`,
 `uv run --locked python scripts/contract/check_admin_openapi.py` and

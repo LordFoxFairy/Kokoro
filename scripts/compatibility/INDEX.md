@@ -24,10 +24,16 @@ Scenarios do not replace child tests, mutate product data, or inspect private se
 | `session_agent_durable.py` | Agent | Session | Durable command/fact transport |
 | `agent_model_gateway.py` | Platform | Agent | Model gateway HTTP |
 | `admin-auth-connect.mjs` | Platform | Admin Web | Generated ConnectRPC `AdminAuthService.v1` |
+| `hub-runtime.mjs` | Platform Hub | Session + Agent | Capability resolve + secret resolve HTTP |
 
 The Admin Auth scenario runs Platform's official migration and seed commands, starts the real
 Fastify provider, and invokes Web's `compat:admin-auth` command. The consumer command owns protocol
 assertions; Root owns isolation, timeout, cleanup, digest attestation, and the single machine result.
+
+The Hub runtime scenario starts the real Hub against the lease-scoped Mongo database and an HTTP membership
+fixture that validates Hub's own caller credential. It creates the test secret only through the public self
+API, then invokes Session and Agent's child-owned compatibility commands, which wrap their production clients.
+Root never imports sibling runtime source or seeds a private Hub collection.
 
 ## Callers and dependencies
 

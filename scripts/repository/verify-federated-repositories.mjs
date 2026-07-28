@@ -32,6 +32,7 @@ const SCENARIO_COMMANDS = new Map([
   ["session-platform-internal-rpc", "node-session-platform-internal-rpc-v1"],
   ["session-agent-durable-localfake", "python-session-agent-durable-v1"],
   ["agent-model-gateway-localfake", "python-agent-model-gateway-v1"],
+  ["hub-runtime", "node-hub-runtime-v1"],
   ["platform-admin-auth-connect", "node-platform-admin-auth-connect-v1"],
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
