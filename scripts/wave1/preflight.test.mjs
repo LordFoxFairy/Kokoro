@@ -17,6 +17,7 @@ const SHA = "1".repeat(40);
 const OTHER_SHA = "2".repeat(40);
 const DIGEST = "a".repeat(64);
 const OTHER_DIGEST = "b".repeat(64);
+const supportsPosixDirFd = process.platform !== "win32";
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const preflightScript = resolve(repositoryRoot, "scripts/wave1/preflight.mjs");
 
@@ -487,7 +488,9 @@ test("CLI rejects an empty BOM evidence inventory even when its digest is self-c
   });
 });
 
-test("CLI writes a private baseline for an authoritative clean BOM", async (t) => {
+test("CLI writes a private baseline for an authoritative clean BOM", {
+  skip: !supportsPosixDirFd,
+}, async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   t.after(() => rm(fixture, { recursive: true, force: true }));
 
@@ -511,7 +514,9 @@ test("CLI writes a private baseline for an authoritative clean BOM", async (t) =
   assert.equal(baseline.repository.evidenceVerified, true);
 });
 
-test("CLI preserves a previous baseline when manifest and BOM advance past the current gitlink and child", async (t) => {
+test("CLI preserves a previous baseline when manifest and BOM advance past the current gitlink and child", {
+  skip: !supportsPosixDirFd,
+}, async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   t.after(() => rm(fixture, { recursive: true, force: true }));
   const baselineArgument = ".git/kokoro-wave1/baseline.json";
@@ -537,7 +542,9 @@ test("CLI preserves a previous baseline when manifest and BOM advance past the c
   assert.equal(await readFile(baselinePath, "utf8"), previousBaseline);
 });
 
-test("CLI validates a previous baseline as a closed document before replacing it", async (t) => {
+test("CLI validates a previous baseline as a closed document before replacing it", {
+  skip: !supportsPosixDirFd,
+}, async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   t.after(() => rm(fixture, { recursive: true, force: true }));
   const baselineArgument = ".git/kokoro-wave1/baseline.json";
@@ -580,7 +587,9 @@ test("baseline arguments reject worktree paths, other absolute paths, and unknow
   }
 });
 
-test("CLI rejects a symlink escape from the exact baseline location", async (t) => {
+test("CLI rejects a symlink escape from the exact baseline location", {
+  skip: process.platform === "win32",
+}, async (t) => {
   const fixture = await createBomFixture({ emptyEvidence: false });
   const escaped = await mkdtemp(join(tmpdir(), "kokoro-wave1-baseline-escape-"));
   t.after(() => rm(fixture, { recursive: true, force: true }));
@@ -604,7 +613,9 @@ test("CLI rejects a symlink escape from the exact baseline location", async (t) 
   await assert.rejects(readFile(resolve(escaped, "baseline.json")), { code: "ENOENT" });
 });
 
-test("atomic writer rejects a directory swap before rename and never touches the escape target", async (t) => {
+test("atomic writer rejects a directory swap before rename and never touches the escape target", {
+  skip: process.platform === "win32",
+}, async (t) => {
   const fixture = await mkdtemp(join(tmpdir(), "kokoro-wave1-writer-race-"));
   const escaped = await mkdtemp(join(tmpdir(), "kokoro-wave1-writer-escape-"));
   t.after(() => rm(fixture, { recursive: true, force: true }));
@@ -633,7 +644,39 @@ test("atomic writer rejects a directory swap before rename and never touches the
   assert.deepEqual(await stat(displaced).then((value) => value.isDirectory()), true);
 });
 
-test("atomic writer targets the per-worktree git directory and persists mode 0600", async (t) => {
+test("atomic writer cannot escape when the directory swaps after the final identity check", {
+  skip: process.platform === "win32",
+}, async (t) => {
+  const fixture = await mkdtemp(join(tmpdir(), "kokoro-wave1-final-race-"));
+  const escaped = await mkdtemp(join(tmpdir(), "kokoro-wave1-final-escape-"));
+  t.after(() => rm(fixture, { recursive: true, force: true }));
+  t.after(() => rm(escaped, { recursive: true, force: true }));
+  configureRepository(fixture);
+  const options = parseArguments([
+    "--root",
+    fixture,
+    "--write-baseline",
+    ".git/kokoro-wave1/baseline.json",
+  ]);
+  const targetDirectory = resolve(options.baselinePath, "..");
+  const displaced = resolve(options.baselinePath, "..", "..", "kokoro-wave1-final-displaced");
+  await writeFile(resolve(escaped, "baseline.json"), "sentinel\n", "utf8");
+
+  await assert.rejects(
+    () => writeBaselineAtomic(options.baselineTarget, validSnapshot(), {
+      afterFinalCheck: async () => {
+        await rename(targetDirectory, displaced);
+        await symlink(escaped, targetDirectory, "dir");
+      },
+    }),
+    { code: "wave1_baseline_path_changed" },
+  );
+  assert.equal(await readFile(resolve(escaped, "baseline.json"), "utf8"), "sentinel\n");
+});
+
+test("atomic writer targets the per-worktree git directory and persists mode 0600", {
+  skip: !supportsPosixDirFd,
+}, async (t) => {
   const fixture = await mkdtemp(join(tmpdir(), "kokoro-wave1-linked-worktree-"));
   const linked = resolve(fixture, "linked");
   t.after(() => rm(fixture, { recursive: true, force: true }));
@@ -652,7 +695,9 @@ test("atomic writer targets the per-worktree git directory and persists mode 060
   await writeBaselineAtomic(options.baselineTarget, validSnapshot());
 
   assert.deepEqual(JSON.parse(await readFile(options.baselinePath, "utf8")), validSnapshot());
-  assert.equal((await stat(options.baselinePath)).mode & 0o777, 0o600);
+  if (process.platform !== "win32") {
+    assert.equal((await stat(options.baselinePath)).mode & 0o777, 0o600);
+  }
   await assert.rejects(
     readFile(resolve(fixture, ".git/kokoro-wave1/baseline.json")),
     { code: "ENOENT" },
@@ -683,7 +728,9 @@ test("CLI keeps the dirty Root failure authoritative and does not write a baseli
   });
 });
 
-test("writes a validated baseline atomically and never overwrites on validation failure", async () => {
+test("writes a validated baseline atomically and never overwrites on validation failure", {
+  skip: !supportsPosixDirFd,
+}, async () => {
   const directory = await mkdtemp(join(tmpdir(), "kokoro-wave1-preflight-"));
   configureRepository(directory);
   const options = parseArguments([

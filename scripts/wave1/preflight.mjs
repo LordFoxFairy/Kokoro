@@ -2,8 +2,8 @@
 
 import { spawnSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
-import { constants, lstatSync, realpathSync } from "node:fs";
-import { lstat, mkdir, open, readFile, realpath, rename, rm } from "node:fs/promises";
+import { lstatSync, realpathSync } from "node:fs";
+import { lstat, readFile, realpath } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -51,6 +51,116 @@ const GA_KEYS = [
   "actualSha", "controlAdapterSha256", "controlSpecSha256",
   "expectedControlAdapterSha256", "expectedControlSpecSha256", "expectedSha", "status",
 ];
+const DIR_FD_HELPER = String.raw`
+import errno
+import os
+import sys
+
+def stop(marker):
+    sys.stderr.write(marker + "\n")
+    raise SystemExit(1)
+
+required = ("O_DIRECTORY", "O_NOFOLLOW")
+if any(not hasattr(os, name) for name in required):
+    stop("UNSUPPORTED")
+if os.open not in os.supports_dir_fd or os.mkdir not in os.supports_dir_fd:
+    stop("UNSUPPORTED")
+if os.rename not in os.supports_dir_fd or os.unlink not in os.supports_dir_fd:
+    stop("UNSUPPORTED")
+
+mode, git_directory, git_dev, git_ino, directory_dev, directory_ino, temporary = sys.argv[1:]
+if "/" in temporary or "\\" in temporary or not temporary.startswith(".wave1-baseline."):
+    stop("WRITE_FAILED")
+payload = sys.stdin.buffer.read()
+git_fd = None
+directory_fd = None
+temporary_fd = None
+temporary_created = False
+try:
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        directory_flags |= os.O_CLOEXEC
+    git_fd = os.open(git_directory, directory_flags)
+    git_status = os.fstat(git_fd)
+    if git_status.st_dev != int(git_dev) or git_status.st_ino != int(git_ino):
+        stop("PATH_CHANGED")
+
+    if directory_dev == "-":
+        try:
+            os.mkdir("kokoro-wave1", 0o700, dir_fd=git_fd)
+        except FileExistsError:
+            stop("PATH_CHANGED")
+        os.fsync(git_fd)
+
+    directory_fd = os.open("kokoro-wave1", directory_flags, dir_fd=git_fd)
+    directory_status = os.fstat(directory_fd)
+    if directory_dev != "-" and (
+        directory_status.st_dev != int(directory_dev) or
+        directory_status.st_ino != int(directory_ino)
+    ):
+        stop("PATH_CHANGED")
+    entry_status = os.stat("kokoro-wave1", dir_fd=git_fd, follow_symlinks=False)
+    if (
+        entry_status.st_dev != directory_status.st_dev or
+        entry_status.st_ino != directory_status.st_ino
+    ):
+        stop("PATH_CHANGED")
+
+    if mode == "prepare":
+        sys.stdout.write(f"{directory_status.st_dev}:{directory_status.st_ino}\n")
+        raise SystemExit(0)
+    if mode != "write":
+        stop("WRITE_FAILED")
+
+    file_flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+    if hasattr(os, "O_CLOEXEC"):
+        file_flags |= os.O_CLOEXEC
+    temporary_fd = os.open(temporary, file_flags, 0o600, dir_fd=directory_fd)
+    temporary_created = True
+    view = memoryview(payload)
+    while view:
+        written = os.write(temporary_fd, view)
+        if written <= 0:
+            stop("WRITE_FAILED")
+        view = view[written:]
+    os.fsync(temporary_fd)
+    os.close(temporary_fd)
+    temporary_fd = None
+
+    entry_status = os.stat("kokoro-wave1", dir_fd=git_fd, follow_symlinks=False)
+    if (
+        entry_status.st_dev != directory_status.st_dev or
+        entry_status.st_ino != directory_status.st_ino
+    ):
+        stop("PATH_CHANGED")
+    os.rename(
+        temporary,
+        "baseline.json",
+        src_dir_fd=directory_fd,
+        dst_dir_fd=directory_fd,
+    )
+    temporary_created = False
+    # The temporary and destination entries share this directory FD, so one fsync covers both.
+    os.fsync(directory_fd)
+except OSError as error:
+    if error.errno in (errno.ELOOP, errno.ENOENT, errno.ENOTDIR, errno.ESTALE):
+        stop("PATH_CHANGED")
+    if error.errno in (errno.ENOSYS, errno.ENOTSUP, errno.EOPNOTSUPP, errno.EINVAL):
+        stop("UNSUPPORTED")
+    stop("WRITE_FAILED")
+finally:
+    if temporary_fd is not None:
+        os.close(temporary_fd)
+    if temporary_created and directory_fd is not None:
+        try:
+            os.unlink(temporary, dir_fd=directory_fd)
+        except FileNotFoundError:
+            pass
+    if directory_fd is not None:
+        os.close(directory_fd)
+    if git_fd is not None:
+        os.close(git_fd)
+`;
 
 export class PreflightError extends Error {
   constructor(code, detail = "") {
@@ -191,7 +301,7 @@ function assertNoSymlinkPath(base, target) {
 }
 
 function identity(status) {
-  return { dev: status.dev, ino: status.ino };
+  return { dev: String(status.dev), ino: String(status.ino) };
 }
 
 function sameIdentity(left, right) {
@@ -202,7 +312,7 @@ async function checkedDirectoryIdentity(path, expectedPath, expectedIdentity = n
   let status;
   let actualPath;
   try {
-    status = await lstat(path);
+    status = await lstat(path, { bigint: true });
     if (status.isSymbolicLink() || !status.isDirectory()) fail("wave1_baseline_path_changed");
     actualPath = await realpath(path);
   } catch (error) {
@@ -219,51 +329,48 @@ async function checkedDirectoryIdentity(path, expectedPath, expectedIdentity = n
   return actualIdentity;
 }
 
-async function prepareBaselineDirectory(target) {
-  await checkedDirectoryIdentity(
-    target.gitDirectory,
-    target.gitDirectory,
-    target.gitDirectoryIdentity,
+function runDirFdHelper(mode, target, directoryIdentity, temporary, payload = "") {
+  const expectedDirectory = directoryIdentity ?? target.directoryIdentity;
+  const result = spawnSync(
+    "python3",
+    [
+      "-c",
+      DIR_FD_HELPER,
+      mode,
+      target.gitDirectory,
+      String(target.gitDirectoryIdentity.dev),
+      String(target.gitDirectoryIdentity.ino),
+      expectedDirectory === null ? "-" : String(expectedDirectory.dev),
+      expectedDirectory === null ? "-" : String(expectedDirectory.ino),
+      temporary,
+    ],
+    {
+      encoding: "utf8",
+      input: payload,
+      maxBuffer: 16 * 1024 * 1024,
+      shell: false,
+    },
   );
-  if (target.directoryIdentity === null) {
-    try {
-      await mkdir(target.directory, { mode: 0o700 });
-    } catch {
-      fail("wave1_baseline_path_changed");
-    }
+  if (result.error) fail("wave1_baseline_platform_unsupported", result.error.code ?? "python3");
+  if (result.status !== 0) {
+    const marker = result.stderr.trim().split("\n", 1)[0];
+    if (marker === "PATH_CHANGED") fail("wave1_baseline_path_changed");
+    if (marker === "UNSUPPORTED") fail("wave1_baseline_platform_unsupported");
+    fail("wave1_baseline_write_failed");
   }
-  return checkedDirectoryIdentity(
-    target.directory,
-    target.directory,
+  return result.stdout.trim();
+}
+
+function prepareBaselineDirectory(target) {
+  const output = runDirFdHelper(
+    "prepare",
+    target,
     target.directoryIdentity,
+    ".wave1-baseline.prepare",
   );
-}
-
-async function syncDirectory(path) {
-  let handle;
-  try {
-    handle = await open(path, constants.O_RDONLY | (constants.O_DIRECTORY ?? 0));
-    await handle.sync();
-  } catch (error) {
-    const unsupported = ["EINVAL", "ENOTSUP", "EOPNOTSUPP", "EBADF"].includes(error.code) ||
-      (process.platform === "win32" && ["EISDIR", "EPERM"].includes(error.code));
-    if (!unsupported) throw error;
-  } finally {
-    await handle?.close();
-  }
-}
-
-async function cleanupOwnedTemporary(target, temporary) {
-  try {
-    await checkedDirectoryIdentity(
-      target.gitDirectory,
-      target.gitDirectory,
-      target.gitDirectoryIdentity,
-    );
-    await rm(temporary, { force: true });
-  } catch {
-    // A changed directory identity is untrusted; never follow it for cleanup.
-  }
+  const match = /^(\d+):(\d+)$/u.exec(output);
+  if (!match) fail("wave1_baseline_write_failed");
+  return { dev: match[1], ino: match[2] };
 }
 
 export function assertPreflightSnapshot(snapshot) {
@@ -358,43 +465,25 @@ export async function writeBaselineAtomic(target, snapshot, hooks = {}) {
   ) {
     fail("wave1_baseline_path_changed");
   }
-  const directoryIdentity = await prepareBaselineDirectory(target);
-  const temporary = resolve(
+  const directoryIdentity = prepareBaselineDirectory(target);
+  const temporary = `.wave1-baseline.${process.pid}.${randomBytes(8).toString("hex")}.tmp`;
+  await hooks.beforeTemporaryOpen?.();
+  await checkedDirectoryIdentity(
     target.gitDirectory,
-    `.wave1-baseline.${process.pid}.${randomBytes(8).toString("hex")}.tmp`,
+    target.gitDirectory,
+    target.gitDirectoryIdentity,
   );
-  let handle = null;
-  try {
-    await hooks.beforeTemporaryOpen?.();
-    await checkedDirectoryIdentity(
-      target.gitDirectory,
-      target.gitDirectory,
-      target.gitDirectoryIdentity,
-    );
-    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
-    handle = await open(
-      temporary,
-      constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | (constants.O_NOFOLLOW ?? 0),
-      0o600,
-    );
-    await handle.writeFile(`${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
-    await handle.sync();
-    await handle.close();
-    handle = null;
-    await hooks.beforeRename?.();
-    await checkedDirectoryIdentity(
-      target.gitDirectory,
-      target.gitDirectory,
-      target.gitDirectoryIdentity,
-    );
-    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
-    await rename(temporary, target.baselinePath);
-    await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
-    await syncDirectory(target.directory);
-  } finally {
-    await handle?.close();
-    await cleanupOwnedTemporary(target, temporary);
-  }
+  await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
+  await hooks.beforeRename?.();
+  await checkedDirectoryIdentity(target.directory, target.directory, directoryIdentity);
+  await hooks.afterFinalCheck?.();
+  runDirFdHelper(
+    "write",
+    target,
+    directoryIdentity,
+    temporary,
+    `${JSON.stringify(snapshot, null, 2)}\n`,
+  );
 }
 
 export async function collectPreflightSnapshot(root, baseline = null) {
@@ -564,7 +653,7 @@ export function parseArguments(argv) {
     fail("wave1_arguments_invalid", "--write-baseline is required");
   }
   const rawGitDirectory = git(root, ["rev-parse", "--absolute-git-dir"]).trim();
-  const rawGitStatus = lstatSync(rawGitDirectory);
+  const rawGitStatus = lstatSync(rawGitDirectory, { bigint: true });
   if (rawGitStatus.isSymbolicLink() || !rawGitStatus.isDirectory()) {
     fail("wave1_arguments_invalid", "--write-baseline");
   }
@@ -580,7 +669,7 @@ export function parseArguments(argv) {
   assertNoSymlinkPath(resolve(gitDirectory), baselinePath);
   let directoryIdentity = null;
   try {
-    const directoryStatus = lstatSync(directory);
+    const directoryStatus = lstatSync(directory, { bigint: true });
     if (directoryStatus.isSymbolicLink() || !directoryStatus.isDirectory()) {
       fail("wave1_arguments_invalid", "--write-baseline");
     }
@@ -597,7 +686,7 @@ export function parseArguments(argv) {
     directory,
     directoryIdentity,
     gitDirectory,
-    gitDirectoryIdentity: identity(lstatSync(gitDirectory)),
+    gitDirectoryIdentity: identity(lstatSync(gitDirectory, { bigint: true })),
   };
   return { baselinePath, baselineTarget, root };
 }
