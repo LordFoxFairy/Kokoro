@@ -243,6 +243,7 @@ export function checkWave1Surface(root) {
 }
 
 function parseRoot(argv) {
+  if (argv.length === 0) return process.cwd();
   if (argv.length !== 2 || argv[0] !== "--root" || argv[1].length === 0) throw new Error("arguments_invalid");
   return isAbsolute(argv[1]) ? argv[1] : resolve(argv[1]);
 }

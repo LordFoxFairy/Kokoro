@@ -18,6 +18,16 @@ test("the shipped Wave 1 surface is closed and internally consistent", () => {
   );
 });
 
+test("the live command checks the Wave 1 surface from the current working directory", () => {
+  const result = spawnSync(process.execPath, [checker], { cwd: root, encoding: "utf8" });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(
+    result.stdout,
+    "wave1_surface_ok: 22 public operations, 4 privileged services, 5 contract-only boundaries\n",
+  );
+});
+
 test("the checker fails closed when invoked outside a Wave 1 contract root", () => {
   const result = spawnSync(process.execPath, [checker, "--root", here], { encoding: "utf8" });
 

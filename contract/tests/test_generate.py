@@ -200,4 +200,6 @@ def test_admin_auth_v1_frozen_metadata_is_reproducible() -> None:
         )
         assert (output / "contract-metadata.ts").read_bytes() == committed.read_bytes()
         committed_helper = committed.with_name("admin-auth-effect-digest.ts")
-        assert (output / "admin-auth-effect-digest.ts").read_bytes() == committed_helper.read_bytes()
+        assert (
+            output / "admin-auth-effect-digest.ts"
+        ).read_bytes() == committed_helper.read_bytes()
