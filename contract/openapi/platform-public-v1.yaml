@@ -1,0 +1,517 @@
+openapi: 3.1.0
+info:
+  title: Kokoro Platform Public API
+  version: 1.0.0
+  description: >-
+    Public BFF contract for independently deployed Site products. Site authority is derived from
+    the authenticated workload binding; host names and browser input are never authoritative.
+servers:
+  - url: https://platform.invalid
+security:
+  - ProductWorkload: []
+paths:
+  /v1/product-context:exchange:
+    post:
+      operationId: exchangeProductContext
+      parameters: &mutationParameters
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        $ref: '#/components/requestBodies/CommandRequest'
+      responses: &commandResponses
+        '200':
+          $ref: '#/components/responses/CommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/identity/registrations:
+    post:
+      operationId: beginRegistration
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/RegistrationRequest'
+      responses: *commandResponses
+  /v1/identity/verifications/{id}:complete:
+    parameters:
+      - $ref: '#/components/parameters/TransactionRef'
+    post:
+      operationId: completeEmailVerification
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/CommandRequest'
+      responses: *commandResponses
+  /v1/identity/verifications:resend:
+    post:
+      operationId: resendEmailVerification
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/IdentifierRequest'
+      responses: *commandResponses
+  /v1/identity/sessions:
+    post:
+      operationId: createIdentitySession
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/LoginRequest'
+      responses: *commandResponses
+    get:
+      operationId: listIdentitySessions
+      parameters: &readParameters
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses: &readResponses
+        '200':
+          $ref: '#/components/responses/ReadResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/identity/sessions/{id}:verify-mfa:
+    parameters:
+      - $ref: '#/components/parameters/TransactionRef'
+    post:
+      operationId: completeSessionMfa
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/OtpRequest'
+      responses: *commandResponses
+  /v1/identity/sessions:refresh:
+    post:
+      operationId: refreshIdentitySession
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/OpaqueCredentialRequest'
+      responses: *commandResponses
+  /v1/identity/sessions:revoke:
+    post:
+      operationId: revokeIdentitySessions
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/RevokeRequest'
+      responses: *commandResponses
+  /v1/identity/password-resets:
+    post:
+      operationId: beginPasswordReset
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/IdentifierRequest'
+      responses: *commandResponses
+  /v1/identity/password-resets/{id}:complete:
+    parameters:
+      - $ref: '#/components/parameters/TransactionRef'
+    post:
+      operationId: completePasswordReset
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/PasswordRequest'
+      responses: *commandResponses
+  /v1/identity/password:change:
+    post:
+      operationId: changePassword
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/PasswordChangeRequest'
+      responses: *commandResponses
+  /v1/identity/email-changes:
+    post:
+      operationId: beginEmailChange
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/IdentifierRequest'
+      responses: *commandResponses
+  /v1/identity/email-changes/{id}:complete:
+    parameters:
+      - $ref: '#/components/parameters/TransactionRef'
+    post:
+      operationId: completeEmailChange
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/CommandRequest'
+      responses: *commandResponses
+  /v1/identity/totp/enroll:
+    post:
+      operationId: beginTotpEnrollment
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/CommandRequest'
+      responses: *commandResponses
+  /v1/identity/totp/confirm:
+    post:
+      operationId: confirmTotpEnrollment
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/OtpRequest'
+      responses: *commandResponses
+  /v1/identity/totp/disable:
+    post:
+      operationId: disableTotp
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/OtpRequest'
+      responses: *commandResponses
+  /v1/identity/recovery-codes:regenerate:
+    post:
+      operationId: regenerateRecoveryCodes
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/CommandRequest'
+      responses: *commandResponses
+  /v1/identity/account-recoveries:
+    post:
+      operationId: beginAccountRecovery
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/IdentifierRequest'
+      responses: *commandResponses
+  /v1/identity/account-recoveries/{id}:complete:
+    parameters:
+      - $ref: '#/components/parameters/TransactionRef'
+    post:
+      operationId: completeAccountRecovery
+      parameters: *mutationParameters
+      requestBody:
+        $ref: '#/components/requestBodies/RecoveryRequest'
+      responses: *commandResponses
+  /v1/identity/sessions:reauthenticate:
+    post:
+      operationId: reauthenticateIdentitySession
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/LoginRequest'
+      responses: *commandResponses
+  /v1/me/personal-context:
+    get:
+      operationId: getPersonalContext
+      parameters: *readParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses: *readResponses
+components:
+  securitySchemes:
+    ProductWorkload:
+      type: mutualTLS
+      description: Deployment workload identity bound by Platform to one Site release and audience.
+    UserSession:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-platform-session
+  parameters:
+    ContractVersion:
+      name: Kokoro-Contract-Version
+      in: header
+      required: true
+      schema:
+        type: string
+        const: '1'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 16
+        maxLength: 191
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema:
+        type: string
+        minLength: 32
+        maxLength: 512
+    TransactionRef:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+  headers:
+    RequestId:
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+  requestBodies:
+    CommandRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommandInput'
+    RegistrationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegistrationInput'
+    IdentifierRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentifierInput'
+    LoginRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginInput'
+    OtpRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OtpInput'
+    OpaqueCredentialRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OpaqueCredentialInput'
+    RevokeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RevokeInput'
+    PasswordRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PasswordInput'
+    PasswordChangeRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PasswordChangeInput'
+    RecoveryRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecoveryInput'
+  responses:
+    CommandResponse:
+      description: The authoritative idempotent command outcome.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommandOutcome'
+    ReadResponse:
+      description: A caller-scoped projection containing opaque references only.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReadOutcome'
+    ErrorResponse:
+      description: Stable, non-disclosing Platform error.
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    CommandInput:
+      type: object
+      additionalProperties: false
+      properties:
+        commandRef:
+          type: string
+          maxLength: 128
+      required: [commandRef]
+    RegistrationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 191
+        password:
+          type: string
+          minLength: 15
+          maxLength: 1024
+        legalAcceptanceRefs:
+          type: array
+          maxItems: 16
+          items:
+            type: string
+            maxLength: 128
+      required: [email, password, legalAcceptanceRefs]
+    IdentifierInput:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 191
+      required: [email]
+    LoginInput:
+      type: object
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 191
+        password:
+          type: string
+          maxLength: 1024
+        returnIntent:
+          type: string
+          maxLength: 512
+      required: [email, password]
+    OtpInput:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          minLength: 6
+          maxLength: 32
+      required: [code]
+    OpaqueCredentialInput:
+      type: object
+      additionalProperties: false
+      properties:
+        opaqueCredential:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [opaqueCredential]
+    RevokeInput:
+      type: object
+      additionalProperties: false
+      properties:
+        target:
+          type: string
+          enum: [current, single, others, all]
+        sessionRef:
+          type: string
+          maxLength: 128
+      required: [target]
+    PasswordInput:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionSecret:
+          type: string
+          maxLength: 2048
+        newPassword:
+          type: string
+          minLength: 15
+          maxLength: 1024
+      required: [transactionSecret, newPassword]
+    PasswordChangeInput:
+      type: object
+      additionalProperties: false
+      properties:
+        currentPassword:
+          type: string
+          maxLength: 1024
+        newPassword:
+          type: string
+          minLength: 15
+          maxLength: 1024
+      required: [currentPassword, newPassword]
+    RecoveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionSecret:
+          type: string
+          maxLength: 2048
+        proofCode:
+          type: string
+          maxLength: 256
+        replacementFactor:
+          type: string
+          enum: [password, totp]
+      required: [transactionSecret, proofCode, replacementFactor]
+    CommandOutcome:
+      type: object
+      additionalProperties: false
+      properties:
+        receiptRef:
+          type: string
+          maxLength: 256
+        state:
+          type: string
+          enum: [accepted, committed, rejected, outcome_unknown]
+        resultRef:
+          type: string
+          maxLength: 256
+      required: [receiptRef, state]
+    ReadOutcome:
+      type: object
+      additionalProperties: false
+      properties:
+        resultRef:
+          type: string
+          maxLength: 256
+        revision:
+          type: string
+          maxLength: 128
+      required: [resultRef, revision]
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: '^[A-Z][A-Z0-9_]{2,127}$'
+        retryClass:
+          type: string
+          enum: [never, after_delay, same_identity, reconcile_receipt]
+        requestId:
+          type: string
+          maxLength: 128
+        correlationId:
+          type: string
+          maxLength: 128
+        safeMessage:
+          type: string
+          maxLength: 512
+        receiptRef:
+          type: string
+          maxLength: 256
+      required: [code, retryClass, requestId, correlationId, safeMessage]

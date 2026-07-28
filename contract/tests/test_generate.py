@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import sys
+import subprocess
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -129,3 +131,73 @@ def test_platform_and_session_share_runtime_contract_bytes() -> None:
         "modelTransportKindSchema",
     ):
         assert f"export const {symbol}" in generated
+
+
+def test_node_generator_declares_boundary_scoped_bundles() -> None:
+    generator = (CONTRACT / "generate.mjs").read_text()
+
+    for boundary in (
+        "platform-admin-auth@v1",
+        "platform-admin-identity@v1",
+        "platform-admin-query@v2",
+        "platform-admin-command@v2",
+        "platform-site-lifecycle@v1",
+    ):
+        assert boundary in generator
+    assert "await protoFiles(protoRoot)" not in generator
+    assert 'schemaId: "kokoro.platform.admin.v1.AdminAuthService"' not in generator
+
+
+def test_node_generator_isolates_new_boundary_output() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        output = Path(directory) / "bundle"
+        result = subprocess.run(
+            [
+                "node",
+                str(CONTRACT / "generate.mjs"),
+                "--boundary",
+                "platform-site-lifecycle@v1",
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        assert result.returncode == 0, result.stderr
+        metadata = (output / "contract-metadata.ts").read_text()
+        assert 'schemaId: "kokoro.platform.site.v1.SiteLifecycleService"' in metadata
+        assert '"kokoro/platform/site/v1/site_lifecycle.proto"' in metadata
+        assert '"kokoro/platform/admission/v1/admission.proto"' not in metadata
+        assert (output / "kokoro/platform/site/v1/site_lifecycle_pb.ts").is_file()
+        assert not (output / "kokoro/platform/admission/v1/admission_pb.ts").exists()
+
+
+def test_admin_auth_v1_frozen_metadata_is_reproducible() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        output = Path(directory) / "bundle"
+        result = subprocess.run(
+            [
+                "node",
+                str(CONTRACT / "generate.mjs"),
+                "--boundary",
+                "platform-admin-auth@v1",
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        assert result.returncode == 0, result.stderr
+        committed = (
+            ROOT
+            / "kokoro-platform/kokoro-platform-admin/src/generated/contracts/contract-metadata.ts"
+        )
+        assert (output / "contract-metadata.ts").read_bytes() == committed.read_bytes()
+        committed_helper = committed.with_name("admin-auth-effect-digest.ts")
+        assert (output / "admin-auth-effect-digest.ts").read_bytes() == committed_helper.read_bytes()

@@ -1,0 +1,169 @@
+syntax = "proto3";
+
+package kokoro.platform.identity.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/receipt.proto";
+import "kokoro/platform/admin/v2/admin_control.proto";
+
+// AdminIdentityService owns operator OIDC transactions and sessions. Platform is
+// the only component that redeems an authorization code with the identity provider.
+service AdminIdentityService {
+  rpc BeginOperatorLogin(BeginOperatorLoginRequest) returns (BeginOperatorLoginResponse) {}
+  rpc ExchangeOidcSession(ExchangeOidcSessionRequest) returns (ExchangeOidcSessionResponse) {}
+  rpc BeginStepUp(BeginStepUpRequest) returns (BeginStepUpResponse) {}
+  rpc CompleteStepUp(CompleteStepUpRequest) returns (CompleteStepUpResponse) {}
+  rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
+}
+
+message AdminIdentityCommandContext {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string environment = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string managed_device_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  kokoro.platform.admin.v2.SecurityEpochs security_epochs = 5 [(buf.validate.field).required = true];
+  kokoro.platform.admin.v2.OperatorScope scope = 6 [(buf.validate.field).required = true];
+}
+
+message BeginOperatorLoginEffect {
+  string issuer = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  string audience = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string redirect_uri = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+  string pkce_challenge = 4 [(buf.validate.field).string = {
+    min_len: 43
+    max_len: 128
+  }];
+  string return_intent = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+}
+
+message BeginOperatorLoginRequest {
+  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  BeginOperatorLoginEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message BeginOperatorLoginResponse {
+  string transaction_ref = 1 [(buf.validate.field).string.max_len = 128];
+  string authorization_uri = 2 [(buf.validate.field).string.max_len = 2048];
+  google.protobuf.Timestamp expires_at = 3;
+  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
+}
+
+message ExchangeOidcSessionEffect {
+  string transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authorization_code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+  string callback_uri = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+}
+
+message ExchangeOidcSessionRequest {
+  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  ExchangeOidcSessionEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message ExchangeOidcSessionResponse {
+  string operator_session_ref = 1 [(buf.validate.field).string.max_len = 128];
+  string opaque_session_handle = 2 [(buf.validate.field).string.max_len = 512];
+  google.protobuf.Timestamp expires_at = 3;
+  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
+}
+
+message BeginStepUpEffect {
+  string operator_session_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string requested_operation = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  repeated string resource_refs = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 100
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message BeginStepUpRequest {
+  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  BeginStepUpEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message BeginStepUpResponse {
+  string transaction_ref = 1 [(buf.validate.field).string.max_len = 128];
+  string authorization_uri = 2 [(buf.validate.field).string.max_len = 2048];
+  google.protobuf.Timestamp expires_at = 3;
+  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
+}
+
+message CompleteStepUpEffect {
+  string transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authorization_code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+  }];
+}
+
+message CompleteStepUpRequest {
+  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  CompleteStepUpEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message CompleteStepUpResponse {
+  string operator_session_ref = 1 [(buf.validate.field).string.max_len = 128];
+  google.protobuf.Timestamp step_up_at = 2;
+  kokoro.common.v1.CommandReceipt receipt = 3 [(buf.validate.field).required = true];
+}
+
+message SignOutEffect {
+  string operator_session_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message SignOutRequest {
+  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  SignOutEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message SignOutResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+}

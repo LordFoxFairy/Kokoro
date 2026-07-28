@@ -242,11 +242,19 @@
       ]
     },
     "siteBinding": {
-      "description": "How the operation binds its Site. request-field = a first-class field of the request message, which the gate verifies against the real contract source. context-header = carried out of band and re-derived per route, which the spec (§6.3) forbids as a long-term answer, so the gate counts it as migration debt. not-applicable = the boundary does not isolate by Site.",
+      "description": "How the operation binds its Site. request-field = an owner-verified request field. workload-binding = derived from authenticated deployment identity, never browser input. context-header = migration debt. not-applicable = no Site isolation.",
       "enum": [
         "context-header",
         "not-applicable",
-        "request-field"
+        "request-field",
+        "workload-binding"
+      ]
+    },
+    "sourceKind": {
+      "enum": [
+        "openapi",
+        "proto",
+        "spec-yaml"
       ]
     },
     "source": {
@@ -254,10 +262,7 @@
       "description": "A machine-readable contract source. The set of operations it declares must equal the registered operation set exactly, in both directions.",
       "properties": {
         "kind": {
-          "enum": [
-            "proto",
-            "spec-yaml"
-          ]
+          "$ref": "#/$defs/sourceKind"
         },
         "path": {
           "minLength": 1,
@@ -308,6 +313,18 @@
               },
               "required": [
                 "section",
+                "member"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "member": {
+                  "const": "operation-id"
+                }
+              },
+              "required": [
                 "member"
               ],
               "type": "object"

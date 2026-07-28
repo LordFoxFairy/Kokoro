@@ -63,6 +63,14 @@ def _proto(relative_path: str) -> str:
     return (PROTO / relative_path).read_text()
 
 
+def _service_methods(source: str, service: str) -> list[str]:
+    block = re.search(
+        rf"service {service} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL
+    )
+    assert block is not None
+    return re.findall(r"^\s*rpc\s+(\w+)\(", block.group("body"), flags=re.MULTILINE)
+
+
 def test_admin_auth_v1_has_the_closed_service_surface() -> None:
     source = _proto("kokoro/platform/admin/v1/admin_auth.proto")
 
@@ -167,3 +175,107 @@ def test_receipt_contract_never_contains_raw_secret_fields() -> None:
     assert all(" token " not in message for message in receipt_messages)
     assert "string request_digest" in receipt
     assert "string idempotency_key" in receipt
+
+
+def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+
+    assert _service_methods(identity, "AdminIdentityService") == [
+        "BeginOperatorLogin",
+        "ExchangeOidcSession",
+        "BeginStepUp",
+        "CompleteStepUp",
+        "SignOut",
+    ]
+    assert _service_methods(control, "AdminQueryService") == [
+        "GetSite",
+        "ListSites",
+        "GetUserWithinSite",
+        "GetAuditWithinScope",
+    ]
+    assert _service_methods(control, "AdminCommandService") == [
+        "PrepareCommand",
+        "SubmitForApproval",
+        "DecideApproval",
+        "ExecuteApproved",
+        "GetReceipt",
+    ]
+    assert _service_methods(lifecycle, "SiteLifecycleService") == [
+        "RequestSite",
+        "ReconcileProvisioning",
+        "CreateRelease",
+        "ActivateRelease",
+        "SuspendSite",
+        "ResumeSite",
+        "PlanDecommission",
+        "CancelDecommission",
+        "ExecuteDecommission",
+        "GetDecommissionReceipt",
+    ]
+
+
+def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+    blob = "\n".join((identity, control, lifecycle))
+
+    assert "message AdminCommandContext" in control
+    for field in (
+        "kokoro.common.v1.CommandIdentity command",
+        "string environment",
+        "string region",
+        "string managed_device_ref",
+        "SecurityEpochs security_epochs",
+        "OperatorScope scope",
+    ):
+        assert field in control
+    assert "oneof kind" in control
+    assert "SiteScope site" in control
+    assert "GlobalScope global" in control
+    assert "BreakGlassScope breakglass" in control
+    assert "string incident_id" in control
+    assert "repeated string field_allowlist" in control
+    assert "kokoro.common.v1.CommandReceipt receipt" in blob
+    assert "authorization_code" in identity
+    assert "id_token" not in identity
+
+
+def test_site_lifecycle_is_typed_and_not_a_generic_admin_effect() -> None:
+    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+
+    for forbidden in (
+        "REQUEST_SITE",
+        "CREATE_RELEASE",
+        "ACTIVATE_RELEASE",
+        "SUSPEND_SITE",
+        "RESUME_SITE",
+        "DECOMMISSION",
+    ):
+        assert forbidden not in control
+    assert "bytes payload" not in control
+    assert "string operation" not in control
+    for effect in (
+        "RequestSiteEffect",
+        "CreateReleaseEffect",
+        "ActivateReleaseEffect",
+        "SuspendSiteEffect",
+        "ResumeSiteEffect",
+        "PlanDecommissionEffect",
+        "ExecuteDecommissionEffect",
+    ):
+        assert f"message {effect}" in lifecycle
+
+
+def test_platform_admission_v1_surface_remains_frozen() -> None:
+    source = _proto("kokoro/platform/admission/v1/admission.proto")
+    assert _service_methods(source, "AdmissionService") == [
+        "PrepareRun",
+        "FinalizeRun",
+        "GetCommandReceipt",
+    ]
+    assert "AuthorizeEffect" not in source
+    assert "GetRestrictionEpochs" not in source

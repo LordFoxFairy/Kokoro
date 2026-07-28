@@ -35,6 +35,19 @@ endpoints:
     path_template: "/things/{id}"
 `;
 
+const OPENAPI_YAML = `openapi: 3.1.0
+info:
+  title: Fixture
+  version: 1.0.0
+paths:
+  /things:
+    post:
+      operationId: createThing
+  /things/{id}:
+    get:
+      operationId: readThing
+`;
+
 // A stream registry, mirroring the shape of contract/spec/streams.yaml.
 const CHANNELS_YAML = `streams:
   requests:
@@ -142,6 +155,24 @@ function httpBoundary(overrides = {}) {
   };
 }
 
+function openapiBoundary(overrides = {}) {
+  return httpBoundary({
+    id: "fixture-openapi",
+    sources: [
+      {
+        kind: "openapi",
+        path: "contract/openapi/fixture.yaml",
+        select: { member: "operation-id" },
+      },
+    ],
+    operations: [
+      operation({ id: "createThing" }),
+      operation({ id: "readThing", effect: false, retryClass: "after_delay", receipt: null }),
+    ],
+    ...overrides,
+  });
+}
+
 function matrixFor(boundaries) {
   return {
     schemaVersion: 1,
@@ -171,6 +202,7 @@ async function makeFixture({ boundaries = [httpBoundary()], matrix, roots = ROOT
   await write(root, "contract/spec/ops.yaml", OPS_YAML);
   await write(root, "contract/spec/channels.yaml", CHANNELS_YAML);
   await write(root, "contract/spec/commands.yaml", COMMANDS_YAML);
+  await write(root, "contract/openapi/fixture.yaml", OPENAPI_YAML);
   await write(root, "config/architecture/index-roots.yaml", roots);
   await write(root, "config/repository/compatibility-matrix.json", matrix ?? matrixFor(boundaries));
   await write(root, "contract/registry/boundaries.yaml", {
@@ -249,6 +281,33 @@ test("rejects a registered operation absent from the proto service", async () =>
   await expectFailure(
     { boundaries: [boundary] },
     "boundary_registry_operation_undeclared: fixture-proto: InventedRpc",
+  );
+});
+
+test("accepts an OpenAPI source whose operationIds exactly match the registry", async () => {
+  const boundary = openapiBoundary();
+  const root = await makeFixture({ boundaries: [boundary] });
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects an OpenAPI operationId missing from the registry", async () => {
+  const boundary = openapiBoundary();
+  boundary.operations = [boundary.operations[0]];
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_operation_orphan: fixture-openapi: readThing",
+  );
+});
+
+test("rejects a registered operation absent from the OpenAPI descriptor", async () => {
+  const boundary = openapiBoundary();
+  boundary.operations.push(operation({ id: "inventedThing" }));
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_operation_undeclared: fixture-openapi: inventedThing",
   );
 });
 

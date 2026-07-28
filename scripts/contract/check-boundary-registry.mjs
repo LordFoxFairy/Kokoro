@@ -25,7 +25,8 @@ const SITE_FIELDS = ["site_id", "siteId"];
 // How an operation really binds its Site. Only request-field is structurally verifiable. The spec
 // (§6.3) forbids callers self-asserting Site from bare metadata, so context-header is recorded
 // migration debt that this gate counts out loud rather than silently blessing.
-const SITE_BINDINGS = ["request-field", "context-header", "not-applicable"];
+const SITE_BINDINGS = ["request-field", "context-header", "workload-binding", "not-applicable"];
+const SOURCE_KINDS = ["openapi", "proto", "spec-yaml"];
 // Whether this repository actually holds a contract source for the boundary. declared-only means
 // the orphan check cannot run at all, so the boundary is counted in the success line instead of
 // being waved through as though it were covered.
@@ -437,6 +438,62 @@ export function readProtoServiceMethods(source, service) {
   return methods;
 }
 
+// OpenAPI is intentionally parsed without accepting a second YAML implementation. The contract
+// gate needs only the standard paths/<path>/<method>/operationId shape and fails closed on missing,
+// duplicate, or malformed operation ids.
+export function readOpenApiOperationIds(source) {
+  const lines = source.split(/\r?\n/u);
+  const methods = new Set(["delete", "get", "head", "options", "patch", "post", "put", "trace"]);
+  const operations = [];
+  const seen = new Set();
+  let inPaths = false;
+  let path = null;
+  let method = null;
+  let operationId = null;
+
+  function finishOperation() {
+    if (method === null) return;
+    if (operationId === null) fail("boundary_registry_source_unreadable", `missing operationId: ${method} ${path}`);
+    if (seen.has(operationId)) fail("boundary_registry_source_unreadable", `duplicate operationId: ${operationId}`);
+    seen.add(operationId);
+    operations.push(operationId);
+    method = null;
+    operationId = null;
+  }
+
+  for (const rawLine of lines) {
+    const line = stripComment(rawLine).replace(/\s+$/u, "");
+    if (line.trim() === "paths:") {
+      inPaths = true;
+      continue;
+    }
+    if (!inPaths || line.trim() === "") continue;
+    const indent = line.match(/^\s*/u)[0].length;
+    if (indent === 0) {
+      finishOperation();
+      break;
+    }
+    const pathMatch = /^  (\/.+):\s*$/u.exec(line);
+    if (pathMatch) {
+      finishOperation();
+      path = pathMatch[1];
+      continue;
+    }
+    const methodMatch = /^    ([a-z]+):\s*$/u.exec(line);
+    if (methodMatch && methods.has(methodMatch[1])) {
+      finishOperation();
+      if (path === null) fail("boundary_registry_source_unreadable", `method outside path: ${methodMatch[1]}`);
+      method = methodMatch[1];
+      continue;
+    }
+    const idMatch = /^      operationId:\s*([A-Za-z][A-Za-z0-9_.-]*)\s*$/u.exec(line);
+    if (idMatch && method !== null) operationId = idMatch[1];
+  }
+  finishOperation();
+  if (operations.length === 0) fail("boundary_registry_source_unreadable", "OpenAPI has no operations");
+  return operations;
+}
+
 export function readProtoMessages(source) {
   const messages = new Map();
   for (const match of source.matchAll(/message\s+(\w+)\s*\{([\s\S]*?)\n\}/gu)) {
@@ -596,7 +653,7 @@ function validateSourceShape(source, label, errors) {
     errors.push(`boundary_registry_shape: source keys: ${label}`);
     return;
   }
-  if (source.kind !== "proto" && source.kind !== "spec-yaml") {
+  if (!SOURCE_KINDS.includes(source.kind)) {
     errors.push(`boundary_registry_shape: source kind: ${label}: ${String(source.kind)}`);
   }
   if (!isRepositoryRelative(source.path)) {
@@ -604,6 +661,11 @@ function validateSourceShape(source, label, errors) {
   }
   if (!source.select || typeof source.select !== "object" || Array.isArray(source.select)) {
     errors.push(`boundary_registry_shape: source select: ${label}`);
+  } else if (
+    source.kind === "openapi" &&
+    (!exactKeys(source.select, ["member"]) || source.select.member !== "operation-id")
+  ) {
+    errors.push(`boundary_registry_shape: OpenAPI source select: ${label}`);
   }
 }
 
@@ -628,6 +690,7 @@ function sourceOperations(root, boundary, source, errors) {
     if (source.kind === "proto") {
       return readProtoServiceMethods(text, source.select.service).map((method) => method.name);
     }
+    if (source.kind === "openapi") return readOpenApiOperationIds(text);
     return readSpecMembers(text, source.select);
   } catch (error) {
     errors.push(`${error.message} (${boundary.id}: ${source.path})`);
@@ -817,6 +880,7 @@ function checkIsolationAxes(root, registry, errors) {
         checkProtoIsolation(text, boundary, source, namespaceScoped, unproven, errors);
         continue;
       }
+      if (source.kind === "openapi") continue;
       let fields;
       try {
         fields = readSpecFieldNames(text, source.select);
@@ -908,6 +972,7 @@ function checkSchemaParity(schema, retryClasses, errors) {
     ["receiptKind", sortedSet(RECEIPT_KINDS)],
     ["siteBinding", sortedSet(SITE_BINDINGS)],
     ["sourceStatus", sortedSet(SOURCE_STATUSES)],
+    ["sourceKind", sortedSet(SOURCE_KINDS)],
   ];
   for (const [name, values] of expected) {
     const actual = definitions[name]?.enum;

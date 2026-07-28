@@ -16,23 +16,87 @@ const defaultMirrors = [
   resolve(repositoryRoot, "kokoro-web/apps/admin/lib/generated/contracts"),
 ];
 
-function parseArguments(argv) {
-  if (argv.length === 0) return { output: null };
-  if (argv.length !== 2 || argv[0] !== "--output" || argv[1].length === 0) {
-    throw new Error("contract_generation_arguments_invalid");
-  }
-  return { output: resolve(argv[1]) };
-}
+const DEFAULT_BOUNDARY = "platform-admin-auth@v1";
+const BOUNDARIES = Object.freeze({
+  "platform-admin-auth@v1": Object.freeze({
+    schema: "kokoro.platform.admin.v1.AdminAuthService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/admin/v1/admin_auth.proto",
+      "proto/kokoro/platform/admission/v1/admission.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admin/v1/admin_auth.proto",
+      "kokoro/platform/admission/v1/admission.proto",
+    ]),
+    helper: "admin-auth-effect-digest.ts",
+  }),
+  "platform-admin-identity@v1": Object.freeze({
+    schema: "kokoro.platform.identity.v1.AdminIdentityService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/identity/v1/admin_identity.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admin/v2/admin_control.proto",
+      "kokoro/platform/identity/v1/admin_identity.proto",
+    ]),
+    helper: null,
+  }),
+  "platform-admin-query@v2": Object.freeze({
+    schema: "kokoro.platform.admin.v2.AdminQueryService",
+    version: 2,
+    inputs: Object.freeze(["proto/kokoro/platform/admin/v2/admin_control.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admin/v2/admin_control.proto",
+    ]),
+    helper: null,
+  }),
+  "platform-admin-command@v2": Object.freeze({
+    schema: "kokoro.platform.admin.v2.AdminCommandService",
+    version: 2,
+    inputs: Object.freeze(["proto/kokoro/platform/admin/v2/admin_control.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admin/v2/admin_control.proto",
+    ]),
+    helper: null,
+  }),
+  "platform-site-lifecycle@v1": Object.freeze({
+    schema: "kokoro.platform.site.v1.SiteLifecycleService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/site/v1/site_lifecycle.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admin/v2/admin_control.proto",
+      "kokoro/platform/site/v1/site_lifecycle.proto",
+    ]),
+    helper: null,
+  }),
+});
 
-async function protoFiles(directory, current = directory) {
-  const entries = await readdir(current, { withFileTypes: true });
-  const files = [];
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    const path = resolve(current, entry.name);
-    if (entry.isDirectory()) files.push(...(await protoFiles(directory, path)));
-    else if (entry.isFile() && entry.name.endsWith(".proto")) files.push(path);
+function parseArguments(argv) {
+  const options = { boundary: DEFAULT_BOUNDARY, output: null };
+  for (let index = 0; index < argv.length; index += 2) {
+    const flag = argv[index];
+    const value = argv[index + 1];
+    if (!value || (flag !== "--boundary" && flag !== "--output")) {
+      throw new Error("contract_generation_arguments_invalid");
+    }
+    if (flag === "--boundary") options.boundary = value;
+    else options.output = resolve(value);
   }
-  return files;
+  if (!(options.boundary in BOUNDARIES)) throw new Error("contract_generation_boundary_unknown");
+  if (options.boundary !== DEFAULT_BOUNDARY && options.output === null) {
+    throw new Error("contract_generation_output_required");
+  }
+  return options;
 }
 
 async function artifactFiles(directory, current = directory) {
@@ -46,31 +110,28 @@ async function artifactFiles(directory, current = directory) {
   return files;
 }
 
-async function sourceMetadata() {
+async function sourceMetadata(boundary) {
   const protoRoot = resolve(contractRoot, "proto");
-  const files = await protoFiles(protoRoot);
   const hash = createHash("sha256");
-  const sourcePaths = [];
-  for (const path of files) {
-    const sourcePath = relative(protoRoot, path).replaceAll("\\", "/");
-    sourcePaths.push(sourcePath);
+  for (const sourcePath of boundary.sources) {
+    const path = resolve(protoRoot, sourcePath);
     hash.update(`${sourcePath}\0`);
     hash.update(await readFile(path));
     hash.update("\0");
   }
   const packageJson = JSON.parse(await readFile(resolve(contractRoot, "package.json"), "utf8"));
   return {
-    schemaId: "kokoro.platform.admin.v1.AdminAuthService",
-    schemaVersion: 1,
+    schemaId: boundary.schema,
+    schemaVersion: boundary.version,
     sourceDigestSha256: hash.digest("hex"),
-    sourcePaths,
+    sourcePaths: [...boundary.sources],
     generatorVersion: packageJson.devDependencies["@bufbuild/protoc-gen-es"],
     runtimeVersion: packageJson.devDependencies["@bufbuild/protobuf"],
   };
 }
 
-async function contractMetadata(mirror = defaultMirrors[0]) {
-  const metadata = await sourceMetadata();
+async function contractMetadata(mirror = defaultMirrors[0], boundary = BOUNDARIES[DEFAULT_BOUNDARY]) {
+  const metadata = await sourceMetadata(boundary);
   const hash = createHash("sha256");
   for (const path of await artifactFiles(mirror)) {
     const artifactPath = relative(mirror, path).replaceAll("\\", "/");
@@ -173,10 +234,11 @@ function singleOutputTemplate(output) {
   return `version: v2\nclean: true\nplugins:\n  - local: protoc-gen-es\n    out: ${JSON.stringify(output)}\n    include_imports: true\n    opt:\n      - target=ts\n      - import_extension=js\n`;
 }
 
-async function runBufGenerate(output) {
+async function runBufGenerate(output, boundary) {
   const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+  const paths = boundary.inputs.flatMap((path) => ["--path", path]);
   if (output === null) {
-    await execFileAsync(command, ["exec", "buf", "generate"], {
+    await execFileAsync(command, ["exec", "buf", "generate", ...paths], {
       cwd: contractRoot,
       timeout: 120_000,
       maxBuffer: 1024 * 1024,
@@ -188,7 +250,7 @@ async function runBufGenerate(output) {
   const template = resolve(temporary, "buf.gen.yaml");
   try {
     await writeFile(template, singleOutputTemplate(output), "utf8");
-    await execFileAsync(command, ["exec", "buf", "generate", "--template", template], {
+    await execFileAsync(command, ["exec", "buf", "generate", "--template", template, ...paths], {
       cwd: contractRoot,
       timeout: 120_000,
       maxBuffer: 1024 * 1024,
@@ -200,12 +262,13 @@ async function runBufGenerate(output) {
 }
 
 async function generate(options) {
-  const mirrors = await runBufGenerate(options.output);
-  const digestSource = adminAuthEffectDigestSource();
-  await Promise.all(
-    mirrors.map((mirror) => writeFile(resolve(mirror, "admin-auth-effect-digest.ts"), digestSource, "utf8")),
-  );
-  const metadata = await Promise.all(mirrors.map((mirror) => contractMetadata(mirror)));
+  const boundary = BOUNDARIES[options.boundary];
+  const mirrors = await runBufGenerate(options.output, boundary);
+  if (boundary.helper === "admin-auth-effect-digest.ts") {
+    const digestSource = adminAuthEffectDigestSource();
+    await Promise.all(mirrors.map((mirror) => writeFile(resolve(mirror, boundary.helper), digestSource, "utf8")));
+  }
+  const metadata = await Promise.all(mirrors.map((mirror) => contractMetadata(mirror, boundary)));
   if (metadata.some(({ artifactDigestSha256 }) => artifactDigestSha256 !== metadata[0].artifactDigestSha256)) {
     throw new Error("contract_generation_artifact_mismatch");
   }

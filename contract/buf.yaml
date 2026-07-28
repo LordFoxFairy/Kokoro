@@ -1,4 +1,5 @@
 version: v2
+# Root publishes additive, versioned boundary bundles; consumers never compile handwritten mirrors.
 modules:
   - path: proto
 deps:
