@@ -133,26 +133,158 @@ test("MySQL scope operations fail closed before commands with a missing or unsaf
       endpointFingerprint: "local-dev",
       resources: ["mysql"],
     });
-    await assert.rejects(
-      provisionScope({ lease, mysqlRootPassword: "", run }),
-      /infra_scope_mysql_admin_credential_missing/u,
-    );
-    await assert.rejects(
-      provisionScope({ lease, mysqlRootPassword: "unsafe\ncredential", run }),
-      /infra_scope_mysql_admin_credential_invalid/u,
-    );
-    await assert.rejects(
-      cleanupScope({
-        stateRoot,
-        runId: lease.runId,
-        leaseToken: lease.leaseToken,
-        endpointFingerprint: lease.endpointFingerprint,
-        mysqlRootPassword: "",
-        run,
-      }),
-      /infra_scope_mysql_admin_credential_missing/u,
-    );
+    for (const { password, error } of [
+      { password: "", error: /infra_scope_mysql_admin_credential_missing/u },
+      { password: "unsafe\rcredential", error: /infra_scope_mysql_admin_credential_invalid/u },
+      { password: "unsafe\ncredential", error: /infra_scope_mysql_admin_credential_invalid/u },
+      { password: "unsafe\0credential", error: /infra_scope_mysql_admin_credential_invalid/u },
+    ]) {
+      await assert.rejects(provisionScope({ lease, mysqlRootPassword: password, run }), error);
+      await assert.rejects(
+        cleanupScope({
+          stateRoot,
+          runId: lease.runId,
+          leaseToken: lease.leaseToken,
+          endpointFingerprint: lease.endpointFingerprint,
+          mysqlRootPassword: password,
+          run,
+        }),
+        error,
+      );
+    }
     assert.equal(commandCount, 0);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("default scope commands use process-environment credentials without inheriting secrets", async () => {
+  const { acquireScope, cleanupScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const mysqlRootPassword = "process-environment-secret";
+  const environment = {
+    PATH: "/test/bin",
+    HOME: "/test/home",
+    LANG: "C",
+    DOCKER_HOST: "unix:///test/docker.sock",
+    DOCKER_CONTEXT: "scope-context",
+    DOCKER_CONFIG: "/test/docker-config",
+    COMPOSE_PROGRESS: "plain",
+    MC_CONFIG_DIR: "/test/mc",
+    MYSQL_ROOT_PASSWORD: mysqlRootPassword,
+    OTHER_API_TOKEN: "other-sensitive-value",
+  };
+  const calls = [];
+  const spawn = (command, args, options) => {
+    calls.push({ command, args, options });
+    return { status: 0, stdout: "OK\n", stderr: "" };
+  };
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_envpath",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql", "minio"],
+    });
+    await provisionScope({ lease, environment, spawn });
+    await cleanupScope({
+      stateRoot,
+      runId: lease.runId,
+      leaseToken: lease.leaseToken,
+      endpointFingerprint: lease.endpointFingerprint,
+      environment,
+      spawn,
+    });
+
+    assert.deepEqual(calls.map(({ command }) => command), [
+      "docker", "mc", "mc", "docker", "mc", "mc", "mc",
+    ]);
+    for (const { args, options } of calls) {
+      assert.equal(options.env.PATH, environment.PATH);
+      assert.equal(options.env.HOME, environment.HOME);
+      assert.equal(options.env.DOCKER_HOST, environment.DOCKER_HOST);
+      assert.equal(options.env.DOCKER_CONTEXT, environment.DOCKER_CONTEXT);
+      assert.equal(options.env.DOCKER_CONFIG, environment.DOCKER_CONFIG);
+      assert.equal(options.env.COMPOSE_PROGRESS, environment.COMPOSE_PROGRESS);
+      assert.equal(options.env.MC_CONFIG_DIR, environment.MC_CONFIG_DIR);
+      assert.equal("MYSQL_ROOT_PASSWORD" in options.env, false);
+      assert.equal("OTHER_API_TOKEN" in options.env, false);
+      assert.equal(JSON.stringify(args).includes(mysqlRootPassword), false);
+    }
+    const mysqlCalls = calls.filter(({ command }) => command === "docker");
+    assert.equal(mysqlCalls.length, 2);
+    assert.ok(mysqlCalls.every(({ options }) => options.input.startsWith(`${mysqlRootPassword}\n`)));
+    assert.equal(calls.filter(({ command }) => command === "mc")
+      .some(({ options }) => options.input.includes(mysqlRootPassword)), false);
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("scope command failures do not expose credentials from child errors or output", async () => {
+  const { acquireScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const mysqlRootPassword = "failure-path-secret";
+  const calls = [];
+  const spawn = (command, args, options) => {
+    calls.push({ command, args, options });
+    return {
+      error: new Error(mysqlRootPassword),
+      status: null,
+      stdout: `${mysqlRootPassword}\n`,
+      stderr: `${mysqlRootPassword}\n`,
+    };
+  };
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_errsafe",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql"],
+    });
+    const error = await provisionScope({
+      lease,
+      environment: { PATH: "/test/bin", MYSQL_ROOT_PASSWORD: mysqlRootPassword },
+      spawn,
+    }).then(
+      () => null,
+      (failure) => failure,
+    );
+
+    assert.equal(error.code, "infra_scope_command_failed");
+    assert.equal(error.message.includes(mysqlRootPassword), false);
+    assert.equal(JSON.stringify(calls[0].args).includes(mysqlRootPassword), false);
+    assert.equal(JSON.stringify(calls[0].options.env).includes(mysqlRootPassword), false);
+    assert.match(calls[0].options.input, new RegExp(`^${mysqlRootPassword}\\n`, "u"));
+  } finally {
+    await rm(stateRoot, { recursive: true, force: true });
+  }
+});
+
+test("Redis refuses to claim a nonempty database before provisioning MySQL or Mongo", async () => {
+  const { acquireScope, provisionScope } = await import(scopeModule);
+  const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
+  const calls = [];
+  try {
+    const lease = await acquireScope({
+      stateRoot,
+      runId: "run_busydb",
+      endpointFingerprint: "local-dev",
+      resources: ["mysql", "mongo", "redis"],
+    });
+    const run = (command, args, options = {}) => {
+      calls.push({ command, args, input: options.input ?? "" });
+      return { status: 0, stdout: args.includes("EVAL") ? "0\n" : "OK\n", stderr: "" };
+    };
+    await assert.rejects(
+      provisionScope({ lease, mysqlRootPassword: "scope-root-secret", run }),
+      /infra_scope_redis_busy/u,
+    );
+
+    assert.equal(calls.length, 1);
+    assert.ok(calls[0].args.includes("EVAL"));
+    assert.ok(calls[0].args.some((argument) => argument.includes("DBSIZE")));
+    assert.equal(calls.some(({ input }) => /CREATE DATABASE|getSiblingDB/u.test(input)), false);
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }
@@ -184,8 +316,13 @@ test("cleanup recovers lease-owned resources when provision failed before the Re
       run,
     });
 
-    assert.ok(calls.some(({ input }) => /DROP DATABASE/u.test(input)));
-    assert.ok(calls.some(({ input }) => /dropDatabase/u.test(input)));
+    assert.deepEqual(calls.map(({ args, input }) => {
+      if (args.includes("GET")) return "redis:get-marker";
+      if (args.includes("DBSIZE")) return "redis:database-size";
+      if (/DROP DATABASE/u.test(input)) return "mysql:drop";
+      if (/dropDatabase/u.test(input)) return "mongo:drop";
+      return "unexpected";
+    }), ["redis:get-marker", "redis:database-size", "mysql:drop", "mongo:drop"]);
     assert.equal(calls.some(({ args }) => args.includes("FLUSHDB")), false);
     await assert.rejects(readScope({ stateRoot, runId: lease.runId }), /infra_scope_missing/u);
   } finally {
@@ -228,7 +365,7 @@ test("cleanup preserves the lease when a markerless Redis database contains unow
   }
 });
 
-test("cleanup rejects a mismatched Redis marker without inspecting or deleting database contents", async () => {
+test("cleanup accepts only exact Redis marker bytes and preserves the lease on any mismatch", async () => {
   const { acquireScope, cleanupScope, readScope } = await import(scopeModule);
   const stateRoot = await mkdtemp(resolve(tmpdir(), "kokoro-infra-scope-"));
   const calls = [];
@@ -239,24 +376,27 @@ test("cleanup rejects a mismatched Redis marker without inspecting or deleting d
       endpointFingerprint: "local-dev",
       resources: ["redis"],
     });
-    const run = (command, args, options = {}) => {
-      calls.push({ command, args, input: options.input ?? "" });
-      if (args.includes("GET")) return { status: 0, stdout: `${"f".repeat(64)}\n`, stderr: "" };
-      return { status: 0, stdout: "0\n", stderr: "" };
-    };
-    await assert.rejects(
-      cleanupScope({
-        stateRoot,
-        runId: lease.runId,
-        leaseToken: lease.leaseToken,
-        endpointFingerprint: lease.endpointFingerprint,
-        run,
-      }),
-      /infra_scope_redis_token_mismatch/u,
-    );
+    for (const marker of ["f".repeat(64), `${lease.leaseToken} `, `${lease.leaseToken}\r`, " "]) {
+      calls.length = 0;
+      const run = (command, args, options = {}) => {
+        calls.push({ command, args, input: options.input ?? "" });
+        if (args.includes("GET")) return { status: 0, stdout: `${marker}\n`, stderr: "" };
+        return { status: 0, stdout: "1\n", stderr: "" };
+      };
+      await assert.rejects(
+        cleanupScope({
+          stateRoot,
+          runId: lease.runId,
+          leaseToken: lease.leaseToken,
+          endpointFingerprint: lease.endpointFingerprint,
+          run,
+        }),
+        /infra_scope_redis_token_mismatch/u,
+      );
 
-    assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
-    assert.equal(calls.some(({ args }) => args.includes("DBSIZE") || args.includes("EVAL")), false);
+      assert.equal((await readScope({ stateRoot, runId: lease.runId })).leaseToken, lease.leaseToken);
+      assert.equal(calls.some(({ args }) => args.includes("DBSIZE") || args.includes("EVAL")), false);
+    }
   } finally {
     await rm(stateRoot, { recursive: true, force: true });
   }
