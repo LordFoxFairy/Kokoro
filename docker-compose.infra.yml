@@ -1,7 +1,7 @@
 # Kokoro 每环境唯一 Infra authority。
 # 正式生命周期入口：node scripts/infra/manager.mjs；不要手写 -p、volume 名或第二套 stateful compose。
-# profiles: platform=mysql, runtime=redis+mongo, storage=minio, model=litellm；full 由 manager 组合。
-# postgres-transition 仅提供未激活的 PostgreSQL 候选，不改变 platform/full 的 MySQL 默认契约。
+# profiles: platform=mysql+postgres, runtime=redis+mongo, storage=minio, model=litellm；full 由 manager 组合。
+# postgres-transition 仅保留为聚焦 PostgreSQL 调试的兼容 profile；默认 Platform 已以 PostgreSQL 为权威。
 
 name: kokoro-infra
 
@@ -31,12 +31,12 @@ services:
     restart: "${KOKORO_INFRA_RESTART_POLICY:-no}"
 
   postgres:
-    # postgres:18.4, additive transition candidate pinned 2026-07-28
+    # postgres:18.4, Platform/Session primary authority pinned 2026-07-28
     image: postgres:18.4@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a
-    profiles: [postgres-transition]
+    profiles: [platform, postgres-transition]
     labels:
       io.kokoro.infra.scope: "${KOKORO_INFRA_ENVIRONMENT_SCOPE:-dev}"
-      io.kokoro.infra.profile: "postgres-transition"
+      io.kokoro.infra.profile: "platform"
       io.kokoro.infra.data-marker: "postgres-data-v1"
       io.kokoro.infra.auth-marker: "${KOKORO_POSTGRES_AUTH_MARKER:-postgres-auth-v1}"
     environment:

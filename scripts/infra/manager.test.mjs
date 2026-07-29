@@ -317,21 +317,29 @@ test("persistent target inspection resolves exact volume labels and every mount 
       stderr: "",
     };
   };
-  assert.deepEqual(managerApi.inspectPersistentTargets(input, runDocker), [{
-    service: "mysql",
-    name: "kokoro-infra_kokoro-mysql",
-    exists: true,
-    project: "kokoro-infra",
-    composeVolume: "mysql-data",
-    dataMarker: "mysql-data-v1",
-    mountUsers: [{
-      id: "mysql-id",
-      project: "kokoro-infra",
+  assert.deepEqual(managerApi.inspectPersistentTargets(input, runDocker), [
+    {
       service: "mysql",
-      name: "kokoro-infra-mysql-1",
-      ports: "127.0.0.1:3307->3306/tcp",
-    }],
-  }]);
+      name: "kokoro-infra_kokoro-mysql",
+      exists: true,
+      project: "kokoro-infra",
+      composeVolume: "mysql-data",
+      dataMarker: "mysql-data-v1",
+      mountUsers: [{
+        id: "mysql-id",
+        project: "kokoro-infra",
+        service: "mysql",
+        name: "kokoro-infra-mysql-1",
+        ports: "127.0.0.1:3307->3306/tcp",
+      }],
+    },
+    {
+      service: "postgres",
+      name: "kokoro-infra_kokoro-postgres",
+      exists: false,
+      mountUsers: [],
+    },
+  ]);
   assert.ok(calls[0].includes("volume"));
   assert.ok(calls.some((args) => args.includes("volume=kokoro-infra_kokoro-mysql")));
   assert.doesNotMatch(JSON.stringify(calls), /\.Config\.Env|\.Mounts.*\.Source/u);
@@ -628,6 +636,14 @@ test("the additive PostgreSQL candidate converges under the same canonical autho
   ]));
 });
 
+test("the default full infrastructure includes PostgreSQL for the current Platform and Session authorities", async () => {
+  const input = await plan("ensure", ["full"], "dev");
+  assert.deepEqual(input.services, ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]);
+  assert.ok(input.executionArgv.includes("--profile"));
+  assert.ok(input.executionArgv.includes("platform"));
+  assert.ok(input.requiredVariables.includes("POSTGRES_PASSWORD"));
+});
+
 test("root compose encodes one authority, explicit identities, profiles and bounded secrets", async () => {
   const compose = await readFile(resolve(root, "docker-compose.infra.yml"), "utf8");
   const litellm = compose.split("  litellm:", 2)[1]?.split("\nvolumes:", 1)[0] ?? "";
@@ -666,6 +682,7 @@ test("root compose encodes one authority, explicit identities, profiles and boun
   assert.match(postgres, /127\.0\.0\.1:\$\{KOKORO_POSTGRES_PORT:-5433\}:5432/u);
   assert.match(postgres, /pg_isready/u);
   assert.match(postgres, /postgres-data:\/var\/lib\/postgresql/u);
+  assert.match(postgres, /profiles:\s*\[[^\]]*platform[^\]]*postgres-transition[^\]]*\]/u);
 });
 
 test("infrastructure policy derives volume identity from the canonical resource prefix", async () => {
@@ -674,14 +691,14 @@ test("infrastructure policy derives volume identity from the canonical resource 
     "utf8",
   ));
   assert.equal(policy.authority.volumeNameTemplate, "{resourcePrefix}-{service}");
-  assert.deepEqual(policy.profiles.platform, ["mysql"]);
-  assert.deepEqual(policy.profiles.full, ["mysql", "redis", "mongo", "minio", "litellm"]);
+  assert.deepEqual(policy.profiles.platform, ["mysql", "postgres"]);
+  assert.deepEqual(policy.profiles.full, ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]);
   assert.deepEqual(policy.profiles["postgres-transition"], ["postgres"]);
-  assert.equal(policy.databaseTransition.phase, "additive-2a");
-  assert.equal(policy.databaseTransition.canonicalService, "mysql");
-  assert.equal(policy.databaseTransition.candidateService, "postgres");
-  assert.equal(policy.databaseTransition.activationAuthorized, false);
-  assert.deepEqual(policy.databaseTransition.preservedServices, ["redis", "mongo", "minio", "litellm"]);
+  assert.equal(policy.databaseAuthority.phase, "postgres-primary");
+  assert.equal(policy.databaseAuthority.canonicalService, "postgres");
+  assert.deepEqual(policy.databaseAuthority.compatibilityServices, ["mysql"]);
+  assert.equal(policy.databaseAuthority.activationAuthorized, true);
+  assert.deepEqual(policy.databaseAuthority.preservedServices, ["redis", "mongo", "minio", "litellm"]);
 });
 
 test("root owns the example LiteLLM configuration", async () => {

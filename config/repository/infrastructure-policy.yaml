@@ -14,30 +14,22 @@
     "defaultResourcePrefixTemplate": "kokoro-infra-{scope}"
   },
   "profiles": {
-    "platform": ["mysql"],
+    "platform": ["mysql", "postgres"],
     "postgres-transition": ["postgres"],
     "runtime": ["redis", "mongo"],
     "storage": ["minio"],
     "model": ["litellm"],
-    "full": ["mysql", "redis", "mongo", "minio", "litellm"]
+    "full": ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]
   },
-  "databaseTransition": {
-    "phase": "additive-2a",
-    "canonicalService": "mysql",
-    "candidateService": "postgres",
-    "candidateProfile": "postgres-transition",
-    "activationAuthorized": false,
+  "databaseAuthority": {
+    "phase": "postgres-primary",
+    "canonicalService": "postgres",
+    "compatibilityServices": ["mysql"],
+    "activationAuthorized": true,
     "preservedServices": ["redis", "mongo", "minio", "litellm"],
-    "activationRequires": [
-      "baselineInventoryDigest",
-      "comparisonReceipt",
-      "noActiveLeases",
-      "noCompetingProjects",
-      "persistentAuthMatch"
-    ],
     "rollback": {
-      "preserveCanonicalVolume": true,
-      "preserveCandidateVolume": true,
+      "preservePostgresVolume": true,
+      "preserveCompatibilityMysqlVolume": true,
       "recreatePreservedServices": false
     }
   },

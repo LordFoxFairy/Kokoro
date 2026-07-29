@@ -17,7 +17,7 @@ Infra does not own business Site/tenant/workspace identity, child service deploy
 
 ## Public boundary
 
-`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports/records/checks sanitized Docker identity, and `scope.mjs` leases test partitions. PostgreSQL is additive under `postgres-transition`; MySQL remains canonical until a separately reviewed activation.
+`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports/records/checks sanitized Docker identity, and `scope.mjs` leases test partitions. PostgreSQL is the canonical relational authority for the latest Platform and Session design. MySQL remains a bounded compatibility service only while still-current Platform modules are being moved; there is no legacy-data migration or dual-write authority.
 
 ## Callers and dependencies
 
@@ -41,7 +41,7 @@ Add lifecycle behavior only through `manager.mjs` and matching tests. Do not add
 
 ## Current gotchas
 
-The lifecycle environment scope and per-run logical data lease are separate identities. Default leases retain MySQL compatibility; callers must request `postgres` explicitly during the additive phase. A PostgreSQL-only lease does not consume a Redis database. Platform receives distinct `api`, `worker`, `admin`, `migrator`, and `test` identities; Session receives distinct `api`, `worker`, `migrator`, and `test` identities. The Platform `admin` identity is a narrow control-plane credential, not an API/Worker alias. Child migrators own schema-specific grants, and Root grants only CONNECT plus the test-to-migrator setup membership; child migrations own exact schema/table/function privileges.
+The lifecycle environment scope and per-run logical data lease are separate identities. The default `platform` and `full` profiles include PostgreSQL; `postgres-transition` remains only as a focused compatibility alias. A PostgreSQL-only lease does not consume a Redis database. Platform receives distinct `api`, `worker`, `admin`, `migrator`, and `test` identities; Session receives distinct `api`, `worker`, `migrator`, and `test` identities. The Platform `admin` identity is a narrow control-plane credential, not an API/Worker alias. Child migrators own schema-specific grants, and Root grants only CONNECT plus the test-to-migrator setup membership; child migrations own exact schema/table/function privileges.
 
 Volumes created before Task 2A have Compose project/volume ownership labels but no Kokoro data marker. They are accepted only as explicit legacy evidence when exactly one matching-scope canonical container for the exact service mounts the expected volume and that container also lacks the Task 2A profile/data/auth labels. `--no-recreate` deliberately leaves those labels untouched. This exception is not a path for new markerless volumes: orphaned volumes, unknown mount users, incomplete Compose ownership, non-empty wrong markers, or current-format containers with a missing volume marker still fail closed. MySQL legacy credentials must pass the stdin-only authentication probes. Legacy MinIO credentials are not authenticated by this path; the unchanged container remains usable, but external credential validation is required before any activation or credential migration.
 

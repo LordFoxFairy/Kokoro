@@ -12,8 +12,8 @@ const DEFAULT_ENV_FILE = resolve(root, "deploy/.env.dev");
 const ACTIONS = new Set(["config", "ensure", "refresh", "stop", "status"]);
 const MODES = new Set(["development", "ci", "production"]);
 const CANONICAL_PROJECT = "kokoro-infra";
-const FULL_SERVICES = ["mysql", "redis", "mongo", "minio", "litellm"];
-const MANAGED_SERVICES = [...FULL_SERVICES, "postgres"];
+const FULL_SERVICES = ["mysql", "postgres", "redis", "mongo", "minio", "litellm"];
+const MANAGED_SERVICES = [...FULL_SERVICES];
 const LEGACY_CANONICAL_SERVICES = new Set(["mysql", "redis", "mongo", "minio"]);
 const STATEFUL_MOUNTS = {
   mysql: { destination: "/var/lib/mysql", suffix: "mysql", composeVolume: "mysql-data" },
