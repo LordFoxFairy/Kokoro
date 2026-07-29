@@ -85,7 +85,14 @@ message VerifyFinalizeOwnerRequest {
   }];
 }
 
-message SessionAdmissionOwnerVerified {}
+message SessionAdmissionPrepareOwnerVerified {
+  string thread_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message SessionAdmissionFinalizeOwnerVerified {}
 
 message SessionAdmissionOwnerMismatch {
   string code = 1 [(buf.validate.field).string = {
@@ -108,7 +115,7 @@ message VerifyPrepareOwnerResponse {
   oneof outcome {
     option (buf.validate.oneof).required = true;
 
-    SessionAdmissionOwnerVerified verified = 1;
+    SessionAdmissionPrepareOwnerVerified verified = 1;
     SessionAdmissionOwnerMismatch mismatch = 2;
     SessionAdmissionOwnerNotReady not_ready = 3;
   }
@@ -118,7 +125,7 @@ message VerifyFinalizeOwnerResponse {
   oneof outcome {
     option (buf.validate.oneof).required = true;
 
-    SessionAdmissionOwnerVerified verified = 1;
+    SessionAdmissionFinalizeOwnerVerified verified = 1;
     SessionAdmissionOwnerMismatch mismatch = 2;
     SessionAdmissionOwnerNotReady not_ready = 3;
   }
