@@ -171,7 +171,15 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
         "attachment_refs",
         "model_option_revision_ref",
     }.issubset(submit_fields)
-    assert "SHA256_CANONICAL_JSON_V1" in generated
+    assert "SHA256_CANONICAL_JSON_V2" in generated
+    assert "canonicalBrowserCommandDigestPreimage" in generated
+    assert '"fork_branch": Object.freeze(["session_id", "branch_id"])' in generated
+    assert '"create_session": Object.freeze([])' in generated
+    assert "BROWSER_COMMAND_TARGETS_INVALID" in generated
+    assert http["command_digest"] == {
+        "algorithm": "SHA256_CANONICAL_JSON_V2",
+        "preimage_fields": ["operation", "targets", "effect"],
+    }
     assert 'commandReceiptViewSchema = z.discriminatedUnion("status"' in generated
     assert 'sessionCommandEffectSchema = z.discriminatedUnion("kind"' in generated
     assert "command receipt operation/effect mismatch" in generated

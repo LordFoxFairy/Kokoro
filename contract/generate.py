@@ -700,6 +700,92 @@ def emit_streams_ts(spec: dict) -> str:
 # --------------------------------------------------------------------------- #
 
 
+def emit_browser_command_digest_ts(spec: dict) -> list[str]:
+    config = spec["command_digest"]
+    algorithm = config["algorithm"]
+    if config["preimage_fields"] != ["operation", "targets", "effect"]:
+        raise ValueError("unsupported browser command digest preimage")
+    operations = spec["enums"]["browser_command_operation"]
+    endpoints = spec["endpoints"]
+    target_rows: list[str] = []
+    for operation in operations:
+        endpoint = endpoints.get(operation)
+        if endpoint is None or endpoint.get("request_object") is None:
+            raise ValueError(f"browser command operation missing endpoint: {operation}")
+        if endpoint.get("query") or endpoint.get("query_object"):
+            raise ValueError(f"browser mutation query is not digest-bound: {operation}")
+        params = ", ".join(json.dumps(value) for value in endpoint["params"])
+        target_rows.append(f'  {json.dumps(operation)}: Object.freeze([{params}]),')
+
+    return [
+        f'export const BROWSER_COMMAND_DIGEST_ALGORITHM = "{algorithm}" as const',
+        "",
+        "export const BROWSER_COMMAND_TARGET_KEYS = Object.freeze({",
+        *target_rows,
+        "} as const)",
+        "",
+        "export type BrowserCommandOperation = keyof typeof BROWSER_COMMAND_TARGET_KEYS",
+        "",
+        "export type BrowserCommandDigestInput = Readonly<{",
+        "  operation: BrowserCommandOperation",
+        "  targets: Readonly<Record<string, string>>",
+        "  effect: Readonly<Record<string, unknown>>",
+        "}>",
+        "",
+        "/** Exact v2 preimage shared by browser and Session before SHA-256. */",
+        "export function canonicalBrowserCommandDigestPreimage(input: BrowserCommandDigestInput): string {",
+        "  const expectedKeys = BROWSER_COMMAND_TARGET_KEYS[input.operation] as readonly string[] | undefined",
+        '  if (expectedKeys === undefined) throw new Error("BROWSER_COMMAND_OPERATION_INVALID")',
+        "  if (!plainBrowserCommandRecord(input.targets)) {",
+        '    throw new Error("BROWSER_COMMAND_TARGETS_INVALID")',
+        "  }",
+        "  const actualKeys = Object.keys(input.targets).sort()",
+        "  const canonicalExpectedKeys = [...expectedKeys].sort()",
+        "  if (",
+        "    actualKeys.length !== canonicalExpectedKeys.length ||",
+        "    actualKeys.some((key, index) => key !== canonicalExpectedKeys[index])",
+        '  ) throw new Error("BROWSER_COMMAND_TARGETS_INVALID")',
+        "  const targets: Record<string, string> = {}",
+        "  for (const key of expectedKeys) {",
+        "    const value = input.targets[key]",
+        "    if (typeof value !== \"string\" || value.length < 1 || value.length > 128) {",
+        '      throw new Error("BROWSER_COMMAND_TARGETS_INVALID")',
+        "    }",
+        "    targets[key] = value",
+        "  }",
+        "  if (!plainBrowserCommandRecord(input.effect) || Object.hasOwn(input.effect, \"command\")) {",
+        '    throw new Error("BROWSER_COMMAND_EFFECT_INVALID")',
+        "  }",
+        "  return canonicalBrowserCommandJson({ operation: input.operation, targets, effect: input.effect })",
+        "}",
+        "",
+        "function canonicalBrowserCommandJson(value: unknown): string {",
+        "  if (value === null || typeof value === \"boolean\" || typeof value === \"string\") {",
+        "    return JSON.stringify(value)",
+        "  }",
+        "  if (typeof value === \"number\") {",
+        '    if (!Number.isFinite(value)) throw new Error("BROWSER_COMMAND_EFFECT_INVALID")',
+        "    return JSON.stringify(value)",
+        "  }",
+        "  if (Array.isArray(value)) return `[${value.map(canonicalBrowserCommandJson).join(\",\")}]`",
+        "  if (plainBrowserCommandRecord(value)) {",
+        "    const entries = Object.entries(value)",
+        "      .filter(([, child]) => child !== undefined)",
+        "      .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)",
+        "    return `{${entries.map(([key, child]) =>",
+        "      `${JSON.stringify(key)}:${canonicalBrowserCommandJson(child)}`).join(\",\")}}`",
+        "  }",
+        '  throw new Error("BROWSER_COMMAND_EFFECT_INVALID")',
+        "}",
+        "",
+        "function plainBrowserCommandRecord(value: unknown): value is Record<string, unknown> {",
+        "  if (value === null || typeof value !== \"object\" || Array.isArray(value)) return false",
+        "  const prototype = Object.getPrototypeOf(value)",
+        "  return prototype === Object.prototype || prototype === null",
+        "}",
+    ]
+
+
 def emit_http_ts(spec: dict) -> str:
     enums = spec["enums"]
     ep = spec["endpoints"]
@@ -718,6 +804,9 @@ def emit_http_ts(spec: dict) -> str:
         emitter = ts_tagged_union if obj.get("variants") else ts_object
         L += emitter(obj, enums, export=True)
         L.append("")
+
+    L += emit_browser_command_digest_ts(spec)
+    L.append("")
 
     snap = ep["snapshot"]
     L.append(

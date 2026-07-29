@@ -11,6 +11,14 @@ path_param_types:
   command_id: entity_id
   folder_id: entity_id
 
+# Browser command identities bind the complete semantic target, not only the JSON body. The
+# canonical helper generated into Session and Web validates the exact path-target key set for the
+# operation and hashes UTF8(canonical JSON({operation,targets,effect})). `effect` is the validated
+# request body with `command` removed; semantic mutation query parameters are forbidden in v3.
+command_digest:
+  algorithm: SHA256_CANONICAL_JSON_V2
+  preimage_fields: [operation, targets, effect]
+
 enums:
   message_role: [user, assistant, system]
   message_lifecycle: [created, streaming, completed, partial, failed, canceled]
@@ -35,7 +43,7 @@ objects:
     fields:
       - {name: command_id, type: entity_id}
       - {name: idempotency_key, type: idempotency_key}
-      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V2}
       - {name: request_digest, type: sha256}
   - name: ErrorDetail
     fields:
@@ -157,7 +165,7 @@ objects:
       - {name: operation, type: enum:browser_command_operation}
       - {name: command_id, type: entity_id}
       - {name: idempotency_key, type: idempotency_key}
-      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V2}
       - {name: request_digest, type: sha256}
       - {name: updated_at, type: timestamp}
     variants:
@@ -170,7 +178,7 @@ objects:
     fields:
       - {name: operation, type: enum:browser_command_operation}
       - {name: idempotency_key, type: idempotency_key}
-      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V2}
       - {name: request_digest, type: sha256}
   - name: SessionCommandResponse
     fields:
