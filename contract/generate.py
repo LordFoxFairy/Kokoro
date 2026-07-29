@@ -84,6 +84,7 @@ _ZOD_SCALAR = {
     "entity_id": "z.string().min(1).max(128)",
     "idempotency_key": "z.string().min(1).max(191)",
     "opaque_ref": "z.string().min(1).max(256)",
+    "reference": "z.string().min(1).max(256).refine((value) => value.trim() === value)",
     "title": "z.string().min(1).max(256)",
     "trusted_locale": "z.string().min(2).max(35)",
     "input_text": "z.string().min(1).max(1048576)",
@@ -108,6 +109,7 @@ _PY_SCALAR = {
     "int": "int",
     "positive_int": "PositiveInt",
     "sha256": "Sha256Str",
+    "reference": "Reference",
     "record": "dict[str, JsonValue]",
     "string_map": "dict[str, str]",
     "unknown": "JsonValue",
@@ -401,7 +403,20 @@ def emit_control_py(spec: dict) -> str:
 
     L = [py_header(CONTROL_SRC).rstrip("\n"), "from __future__ import annotations", ""]
     L += _PY_PREAMBLE
+    L += [
+        "from pydantic import AfterValidator",
+        "",
+        "def _trimmed_reference(value: str) -> str:",
+        "    if value.strip() != value:",
+        '        raise ValueError("reference must not have surrounding whitespace")',
+        "    return value",
+        "",
+    ]
     L.append('Sha256Str = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]')
+    L.append(
+        "Reference = Annotated[str, StringConstraints(min_length=1, max_length=256), "
+        "AfterValidator(_trimmed_reference)]"
+    )
     L.append("")
     for name, alias in aliases.items():
         L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")

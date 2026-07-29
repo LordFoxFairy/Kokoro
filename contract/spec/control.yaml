@@ -84,11 +84,11 @@ objects:
         fields: []
       - value: continue
         fields:
-          - {name: parent_anchor, type: string_nonempty}
+          - {name: parent_anchor, type: reference}
           - {name: parent_digest, type: sha256}
       - value: fork
         fields:
-          - {name: parent_anchor, type: string_nonempty}
+          - {name: parent_anchor, type: reference}
           - {name: parent_digest, type: sha256}
 
 # Inbound messages, discriminated on `kind`.

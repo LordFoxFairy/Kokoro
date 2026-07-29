@@ -296,6 +296,7 @@ def test_run_request_shape() -> None:
     assert "class ExecutionContextIntentContinue(StrictModel):" in control_py
     assert "class ExecutionContextIntentFork(StrictModel):" in control_py
     assert 'Field(discriminator="mode")' in control_py
+    assert "parent_anchor: Reference" in control_py
     assert "parent_digest: Sha256Str" in control_py
 
     control_ts = _find("kokoro-session/src/contract/control.ts")
@@ -303,7 +304,22 @@ def test_run_request_shape() -> None:
     assert 'mode: z.literal("root")' in control_ts
     assert 'mode: z.literal("continue")' in control_ts
     assert 'mode: z.literal("fork")' in control_ts
+    assert (
+        "parent_anchor: z.string().min(1).max(256).refine((value) => "
+        "value.trim() === value)"
+    ) in control_ts
     assert "parent_digest: z.string().regex(/^[0-9a-f]{64}$/u)" in control_ts
+
+    namespace: dict[str, object] = {}
+    exec(control_py, namespace)
+    arm = namespace["ExecutionContextIntentContinue"]
+    assert callable(arm)
+    arm.model_rebuild(_types_namespace=namespace)
+    digest = "a" * 64
+    arm(mode="continue", parent_anchor="ctx_valid", parent_digest=digest)
+    for anchor in (" ctx", "ctx ", "x" * 257, "ctx\n"):
+        with pytest.raises(Exception):
+            arm(mode="continue", parent_anchor=anchor, parent_digest=digest)
 
 
 def test_web_and_session_share_outbound_bytes() -> None:
