@@ -105,6 +105,16 @@ def _public_operations() -> dict[str, dict]:
     }
 
 
+def test_redemption_preview_credentials_reject_whitespace_without_escaping_the_regex() -> None:
+    schemas = yaml.safe_load(PUBLIC_OPENAPI.read_text())["components"]["schemas"]
+
+    for schema_name in ("RedemptionConfirmInput", "RedemptionPreview"):
+        pattern = schemas[schema_name]["properties"]["previewCredential"]["pattern"]
+        assert pattern == r"^\S+$"
+        assert re.fullmatch(pattern, "opaque-preview-credential-1234567890")
+        assert re.fullmatch(pattern, "contains whitespace") is None
+
+
 def _response_schema(document: dict, operation: dict) -> str:
     success = [
         response

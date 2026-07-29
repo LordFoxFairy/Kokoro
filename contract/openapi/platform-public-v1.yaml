@@ -2693,7 +2693,7 @@ components:
           type: string
           minLength: 32
           maxLength: 4096
-          pattern: '^\\S+$'
+          pattern: '^\S+$'
         legalAcceptanceRefs:
           type: array
           maxItems: 16
@@ -2772,7 +2772,7 @@ components:
           type: string
           minLength: 32
           maxLength: 4096
-          pattern: '^\\S+$'
+          pattern: '^\S+$'
         previewDigest:
           type: string
           pattern: '^[0-9a-f]{64}$'
