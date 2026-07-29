@@ -308,6 +308,33 @@ def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> Non
         "RunFailedEvidenceV1 run_failed = 6;",
     ):
         assert payload in canonical
+
+    action_owner = _message_body(source, "ActionOwnerEvidenceV1")
+    for field in (
+        "ActionAwaitingKindV1 awaiting_kind = 5",
+        "string description = 7",
+        "repeated ActionDecisionV1 allowed_decisions = 8",
+        "repeated string pending_owner_refs = 9",
+        "bool editable = 10",
+        "optional ActionRiskSummaryV1 risk = 11",
+        "optional bytes safe_request_json = 12",
+        "optional string input_schema_ref = 13",
+        "optional bytes safe_input_schema_json = 14",
+        "optional string safe_result_preview = 15",
+    ):
+        assert field in action_owner
+    assert "max_len = 16384" in action_owner
+
+    plan_owner = _message_body(source, "PlanOwnerEvidenceV1")
+    for field in (
+        "string summary = 5",
+        "repeated PlanStepV1 steps = 6",
+        "repeated PlanDecisionV1 allowed_decisions = 7",
+    ):
+        assert field in plan_owner
+    for forbidden in ("site_id", "project_ref", "session_id", "dispatch_id", "user_id", "namespace"):
+        assert forbidden not in action_owner
+        assert forbidden not in plan_owner
     owner = _message_body(source, "RunOwnerCompletedEvidenceV1")
     assert "string execution_context_anchor = 1" in owner
     assert "string execution_context_digest = 2" in owner

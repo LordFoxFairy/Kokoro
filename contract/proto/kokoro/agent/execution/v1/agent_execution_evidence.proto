@@ -42,6 +42,38 @@ message DurableExecutionCanonicalPayloadV1 {
 
 message RunStartedEvidenceV1 {}
 
+enum ActionAwaitingKindV1 {
+  ACTION_AWAITING_KIND_V1_UNSPECIFIED = 0;
+  ACTION_AWAITING_KIND_V1_TOOL_APPROVAL = 1;
+  ACTION_AWAITING_KIND_V1_ASK_USER_QUESTION = 2;
+  ACTION_AWAITING_KIND_V1_RESULT_REVIEW = 3;
+  ACTION_AWAITING_KIND_V1_INPUT = 4;
+}
+
+enum ActionDecisionV1 {
+  ACTION_DECISION_V1_UNSPECIFIED = 0;
+  ACTION_DECISION_V1_APPROVE = 1;
+  ACTION_DECISION_V1_EDIT = 2;
+  ACTION_DECISION_V1_REJECT = 3;
+  ACTION_DECISION_V1_RESPOND = 4;
+  ACTION_DECISION_V1_SUBMIT = 5;
+}
+
+message ActionRiskSummaryV1 {
+  string level = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string source = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 4096
+  }];
+}
+
 message ActionOwnerEvidenceV1 {
   string owner_ref = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -56,15 +88,78 @@ message ActionOwnerEvidenceV1 {
     min_len: 1
     max_len: 256
   }];
-  string awaiting_kind = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 64
+  ActionAwaitingKindV1 awaiting_kind = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
   }];
   // SHA-256 of the canonical full Agent action-owner event payload. Session
   // can compare its durable raw event without this boundary re-publishing args.
   string action_payload_sha256 = 6 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
+  }];
+  string description = 7 [(buf.validate.field).string.max_len = 4096];
+  repeated ActionDecisionV1 allowed_decisions = 8 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 5
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+  repeated string pending_owner_refs = 9 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+    unique: true
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+  bool editable = 10;
+  optional ActionRiskSummaryV1 risk = 11;
+  // These are bounded canonical JSON objects produced by Agent's redaction
+  // policy. They are presentation facts, never executable tool arguments.
+  optional bytes safe_request_json = 12 [(buf.validate.field).bytes.max_len = 16384];
+  optional string input_schema_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional bytes safe_input_schema_json = 14 [(buf.validate.field).bytes.max_len = 16384];
+  // Present only for result-review owners and already bounded/redacted by Agent.
+  optional string safe_result_preview = 15 [(buf.validate.field).string.max_len = 16384];
+}
+
+enum PlanStepStatusV1 {
+  PLAN_STEP_STATUS_V1_UNSPECIFIED = 0;
+  PLAN_STEP_STATUS_V1_PENDING = 1;
+  PLAN_STEP_STATUS_V1_IN_PROGRESS = 2;
+  PLAN_STEP_STATUS_V1_COMPLETED = 3;
+}
+
+enum PlanDecisionV1 {
+  PLAN_DECISION_V1_UNSPECIFIED = 0;
+  PLAN_DECISION_V1_ACCEPT = 1;
+  PLAN_DECISION_V1_REJECT = 2;
+}
+
+message PlanStepV1 {
+  string step_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+  PlanStepStatusV1 status = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
   }];
 }
 
@@ -82,6 +177,24 @@ message PlanOwnerEvidenceV1 {
   string proposal_payload_sha256 = 4 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
+  }];
+  string summary = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 4096
+  }];
+  repeated PlanStepV1 steps = 6 [(buf.validate.field).repeated = {
+    max_items: 256
+  }];
+  repeated PlanDecisionV1 allowed_decisions = 7 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 2
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
   }];
 }
 
