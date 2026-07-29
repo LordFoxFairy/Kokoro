@@ -224,6 +224,25 @@ test("Hub runtime binds the exact provider, both official consumers, and one liv
   }
 });
 
+test("Web publishes the Site project factory rather than the retired shared user app", async () => {
+  const manifest = parseManifest(
+    await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
+  );
+  const web = manifest.repositories.find(({ id }) => id === "kokoro-web");
+
+  assert.deepEqual(web?.artifacts, [
+    {
+      id: "site-project-factory",
+      descriptor: "packages/site-scaffold/package.json",
+    },
+    {
+      id: "admin-web",
+      descriptor: "apps/admin/package.json",
+    },
+  ]);
+  assert.equal(web?.artifacts.some(({ descriptor }) => descriptor.startsWith("apps/user/")), false);
+});
+
 test("root CI checks out only recorded pins and uses the root-only tooling lock", async () => {
   const workflow = await readFile(resolve(root, ".github/workflows/contract.yml"), "utf8");
   assert.match(workflow, /submodules:\s*recursive/u);

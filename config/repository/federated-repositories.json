@@ -133,8 +133,8 @@
       ],
       "artifacts": [
         {
-          "id": "site-web",
-          "descriptor": "apps/user/package.json"
+          "id": "site-project-factory",
+          "descriptor": "packages/site-scaffold/package.json"
         },
         {
           "id": "admin-web",
