@@ -56,7 +56,8 @@ def test_raw_and_browser_kinds() -> None:
     events = load("events.yaml")
     raw = [e["kind"] for e in events["raw_kinds"]]
     browser = list(events["browser_order"])
-    assert len(raw) == 20 and "run.started" in raw
+    assert len(raw) == 21 and "run.started" in raw
+    assert "plan.proposed" in raw
     assert len(browser) == 10
     assert "run.started" not in browser
     assert {"message.part.updated", "run.launch.updated"}.issubset(browser)
@@ -75,6 +76,23 @@ def test_raw_and_browser_kinds() -> None:
         assert f'"{kind}",' in names, kind
     # run.started is raw-only: never a browser literal.
     assert 'z.literal("run.started")' not in session
+
+
+def test_plan_proposal_raw_contract_is_typed_and_owner_safe() -> None:
+    events_py = _find("kokoro-agent/src/kokoro_agent/contract/events.py")
+    wire = _find("kokoro-session/src/contract/wire-events.ts")
+
+    assert "class PlanStep(StrictModel):" in events_py
+    assert "class PlanProposal(StrictModel):" in events_py
+    assert "class PlanProposedPayload(StrictModel):" in events_py
+    assert "owner_version: PositiveInt" in events_py
+    assert "proposal: PlanProposal" in events_py
+    assert 'PlanAction = Literal["accept", "reject"]' in events_py
+
+    assert "const planStepSchema = z" in wire
+    assert "const planProposalSchema = z" in wire
+    assert "owner_version: z.number().int().positive()" in wire
+    assert "proposal: planProposalSchema" in wire
 
 
 def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:

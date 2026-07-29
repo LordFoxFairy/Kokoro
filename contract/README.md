@@ -34,7 +34,7 @@ the verified child commits through exact root gitlinks.
   projection_version, schema_revision, recorded_at, payload }`; cursor is opaque and signed.
   Browser events are owner-safe projection deltas; raw GA events never pass through directly.
 
-## Raw events (agent -> session, 20)
+## Raw events (agent -> session, 21)
 
 | kind | payload |
 | --- | --- |
@@ -47,6 +47,7 @@ the verified child commits through exact root gitlinks.
 | `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
 | `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, summary? |
 | `todo.updated` | todos |
+| `plan.proposed` | segment_id, owner_ref, owner_version, proposal |
 | `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
 | `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
 | `subagent.thinking.delta` | segment_id, subagent_id, delta |

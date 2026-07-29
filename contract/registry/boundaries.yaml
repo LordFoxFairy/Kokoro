@@ -697,6 +697,15 @@
         },
         {
           "effect": false,
+          "id": "plan.proposed",
+          "receipt": null,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "run_events"
+        },
+        {
+          "effect": false,
           "id": "subagent.started",
           "receipt": null,
           "retryClass": "never",

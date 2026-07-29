@@ -106,6 +106,7 @@ _PY_SCALAR = {
     "string": "str",
     "boolean": "bool",
     "int": "int",
+    "positive_int": "PositiveInt",
     "record": "dict[str, JsonValue]",
     "string_map": "dict[str, str]",
     "unknown": "JsonValue",
@@ -306,6 +307,7 @@ def emit_events_py(spec: dict) -> str:
     L = [py_header(EVENTS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
     L += _PY_PREAMBLE
     L.append("NonNegInt = Annotated[int, Field(ge=0)]")
+    L.append("PositiveInt = Annotated[int, Field(gt=0)]")
     L.append("")
     for name, alias in aliases.items():
         L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")

@@ -17,6 +17,7 @@
 enums:
   subagent_source: [built-in, config-custom, runtime-custom]
   resume_decision: [approve, edit, reject, respond, submit]
+  plan_action: [accept, reject]
   awaiting_kind: [tool_approval, ask_user_question, result_review, input]
   todo_status: [pending, in_progress, completed]
   run_completed_status: [completed, cancelled]
@@ -43,6 +44,16 @@ objects:
       - {name: level, type: string_nonempty}
       - {name: source, type: string_nonempty}
       - {name: reason, type: string_nonempty}
+  - name: PlanStep
+    fields:
+      - {name: step_ref, type: string_nonempty}
+      - {name: label, type: string_nonempty}
+      - {name: status, type: enum:todo_status}
+  - name: PlanProposal
+    fields:
+      - {name: summary, type: string_nonempty}
+      - {name: steps, type: array:object:PlanStep, min_items: 1, max_items: 256}
+      - {name: allowed_actions, type: array:enum:plan_action, min_items: 2, max_items: 2}
 
 # field-name -> abstract type. DEFAULT (unlisted) = string_nonempty.
 field_types:
@@ -74,6 +85,8 @@ field_types:
   token_usage: object:TokenUsage
   size: int
   note: string
+  owner_version: positive_int
+  proposal: object:PlanProposal
 
 # Fields whose KEY may be absent on the common path.
 payload_optional: [risk, input_schema, rejected, reject_reason, responded, summary, failed, error, token_usage, note]
@@ -95,6 +108,9 @@ notes:
   subagent.tool.invoked.args: "子代理内工具过程可见性通道；HITL 审批仍走主通道嵌套帧，无输出增量通道（终值走 returned）。"
   subagent.tool.returned.truncated: "同 tool.returned.truncated：缺席=结果完整。"
   delivery.created.content_hash: "成果冻结键：deliveries/<namespace>/<content_hash> 内容寻址,永不漂移；由 deliver 工具归档时计算,emitter 在 tool.returned 后追发本事件。"
+  plan.proposed.owner_ref: "计划 owner 的唯一身份；必须逐字等于真实 LangGraph tool_call_id，Session resume 用它回填 decision.tool_id。"
+  plan.proposed.owner_version: "V1 immutable proposal 恒为 1；修订必须创建新的 propose_plan tool call/owner_ref，禁止原位覆盖。"
+  plan.proposed.proposal: "专用计划提案；与 todo.updated 的内部进度清单语义严格分离，禁止互相推断。"
 
 # raw wire kinds (agent-out / session-in), wire order.
 raw_kinds:
@@ -107,6 +123,7 @@ raw_kinds:
   - {kind: tool.awaiting_approval, payload: [segment_id, tool_id, name, args, description, allowed_decisions, kind, risk, editable, input_schema, pending_tool_ids, "result?"]}
   - {kind: tool.returned, payload: [segment_id, tool_id, name, result, is_error, "truncated?", rejected, reject_reason, responded, summary]}
   - {kind: todo.updated, payload: [todos]}
+  - {kind: plan.proposed, payload: [segment_id, owner_ref, owner_version, proposal]}
   - {kind: subagent.started, payload: [segment_id, subagent_id, name, description, subagent_type, source]}
   - {kind: subagent.finished, payload: [segment_id, subagent_id, name, subagent_type, source, failed, error]}
   - {kind: subagent.thinking.delta, payload: [segment_id, subagent_id, delta]}
