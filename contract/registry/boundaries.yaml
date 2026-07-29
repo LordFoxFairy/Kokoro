@@ -852,108 +852,16 @@
       "lifecycle": "active",
       "operations": [
         {
-          "effect": false,
-          "id": "agent_candidates",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "artifact_content",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "billing_by_model",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "billing_ledger",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "billing_summary",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "control_receipt",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
           "effect": true,
-          "id": "create_message",
+          "id": "create_session",
           "receipt": {
-            "kind": "http-receipt-body",
-            "ref": "messageCreateReceiptSchema"
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
           },
-          "retryClass": "same_identity",
+          "retryClass": "reconcile_receipt",
           "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": true,
-          "id": "delete_session",
-          "receipt": {
-            "kind": "http-receipt-body",
-            "ref": "deleteSessionReceiptSchema"
-          },
-          "retryClass": "same_identity",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "delivery_content",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "file",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "list_artifacts",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-json"
         },
         {
@@ -962,73 +870,7 @@
           "receipt": null,
           "retryClass": "after_delay",
           "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "model_candidates",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": true,
-          "id": "rename_session",
-          "receipt": {
-            "kind": "http-receipt-body",
-            "ref": "renameSessionReceiptSchema"
-          },
-          "retryClass": "same_identity",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": true,
-          "id": "run_control",
-          "receipt": {
-            "kind": "http-receipt-body",
-            "ref": "runControlReceiptSchema"
-          },
-          "retryClass": "reconcile_receipt",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": true,
-          "id": "share_create",
-          "receipt": {
-            "kind": "http-receipt-body",
-            "ref": "shareReceiptSchema"
-          },
-          "retryClass": "same_identity",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": true,
-          "id": "share_revoke",
-          "receipt": {
-            "kind": "state-read",
-            "ref": "shared_snapshot"
-          },
-          "retryClass": "same_identity",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "shared_snapshot",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-json"
         },
         {
@@ -1037,7 +879,7 @@
           "receipt": null,
           "retryClass": "after_delay",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-json"
         },
         {
@@ -1046,196 +888,323 @@
           "receipt": null,
           "retryClass": "same_identity",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
+          "transport": "http-sse"
+        },
+        {
+          "effect": true,
+          "id": "submit_message",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "edit_message",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "regenerate_message",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "fork_branch",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "activate_branch",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "cancel_run",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "decide_action",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "decide_plan",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": false,
+          "id": "get_command_receipt",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "update_session",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "archive_session",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "restore_session",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "trash_session",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "put_preference",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": false,
+          "id": "list_folders",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "create_folder",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "update_folder",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": true,
+          "id": "delete_folder",
+          "receipt": {
+            "kind": "state-read",
+            "recoveryOperation": "get_command_receipt",
+            "ref": "get_command_receipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "workload-binding",
+          "transport": "http-json"
+        },
+        {
+          "effect": false,
+          "id": "session.updated",
+          "receipt": null,
+          "retryClass": "never",
+          "scope": "site",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "session.created",
+          "id": "branch.created",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "run.created",
+          "id": "branch.activated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "message.user",
+          "id": "message.created",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "message.delta",
+          "id": "message.part.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "message.completed",
+          "id": "run.launch.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "thinking.delta",
+          "id": "run.view.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "tool.invoked",
+          "id": "run.control.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "tool.output.delta",
+          "id": "run.cost.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         },
         {
           "effect": false,
-          "id": "tool.awaiting_approval",
+          "id": "command.receipt.updated",
           "receipt": null,
           "retryClass": "never",
           "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "tool.returned",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "delivery.created",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "todo.updated",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.started",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.finished",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.thinking.delta",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.text.delta",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.text.completed",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.tool.invoked",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "subagent.tool.returned",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "run.completed",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
-          "transport": "http-sse"
-        },
-        {
-          "effect": false,
-          "id": "run.failed",
-          "receipt": null,
-          "retryClass": "never",
-          "scope": "site",
-          "siteBinding": "context-header",
+          "siteBinding": "workload-binding",
           "transport": "http-sse"
         }
       ],

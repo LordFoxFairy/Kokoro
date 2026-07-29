@@ -249,7 +249,10 @@ export function readSpecMembers(source, select) {
     if (depth !== indent) continue;
     const content = line.slice(indent);
     if (select.member === "mapping-key") {
-      const match = /^([A-Za-z0-9_.-]+):\s*$/u.exec(content);
+      // A mapping key is still authoritative when its value is an inline flow mapping. The
+      // Browser HTTP source deliberately keeps one complete endpoint per line so reviews can see
+      // method/path/request/response together; accepting only block values silently orphaned it.
+      const match = /^([A-Za-z0-9_.-]+):(?:\s*$|\s+\{.*\}\s*$)/u.exec(content);
       if (match) members.push(match[1]);
       continue;
     }
@@ -452,7 +455,10 @@ export function readOpenApiOperationIds(source) {
 
 export function readProtoMessages(source) {
   const messages = new Map();
-  for (const match of source.matchAll(/message\s+(\w+)\s*\{([\s\S]*?)\n\}/gu)) {
+  // Buf canonicalizes empty messages to `message Name {}`. Normalize that valid spelling so an
+  // empty message cannot consume the next message block and hide its receipt fields.
+  const normalized = source.replace(/message\s+(\w+)\s*\{\s*\}/gu, "message $1 {\n}");
+  for (const match of normalized.matchAll(/message\s+(\w+)\s*\{([\s\S]*?)\n\}/gu)) {
     const fields = [];
     for (const field of match[2].matchAll(/^\s*(?:optional\s+|repeated\s+)?([\w.]+)\s+(\w+)\s*=\s*\d+/gmu)) {
       if (field[2] === "oneof") continue;

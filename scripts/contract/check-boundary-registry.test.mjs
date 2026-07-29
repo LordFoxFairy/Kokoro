@@ -35,6 +35,12 @@ endpoints:
     path_template: "/things/{id}"
 `;
 
+const INLINE_OPS_YAML = `# fixture
+endpoints:
+  create_thing: {method: POST, path_template: "/things"}
+  read_thing: {method: GET, path_template: "/things/{id}"}
+`;
+
 const OPENAPI_YAML = `openapi: 3.1.0
 info:
   title: Fixture
@@ -106,6 +112,9 @@ message DoThingEffect {
 message DoThingRequest {
   DoThingEffect effect = 1;
 }
+
+// Buf's canonical inline-empty spelling must not hide the following receipt response.
+message EmptyResult {}
 
 message DoThingResponse {
   string id = 1;
@@ -264,6 +273,13 @@ test("accepts a registry whose operations match their contract source", async ()
     "boundary_registry_ok: 1 boundaries, 2 operations, 2 header-bound site scopes (migration debt), " +
       "0 declared-only boundaries (no machine-readable source), 0 request-field site scopes, 0 contract-only (published, no provider)\n",
   );
+});
+
+test("accepts authoritative mapping keys whose values are inline flow mappings", async () => {
+  const root = await makeFixture({ files: { "contract/spec/ops.yaml": INLINE_OPS_YAML } });
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stderr);
 });
 
 test("the shipped registry matches the shipped contract sources", () => {
@@ -799,7 +815,7 @@ test("rejects a site-scoped operation that claims no site binding at all", async
   );
 });
 
-// ------------------------------------------------ rule 11: header-bound site scopes stay countable
+// ------------------------------ rule 11: any remaining header-bound site scopes stay countable
 
 test("counts header-bound site scopes in the success line", async () => {
   const root = await makeFixture();
@@ -816,8 +832,9 @@ test("reports the real header-bound count for the shipped registry", () => {
   assert.equal(result.status, 0, result.stderr);
   const match = /(\d+) header-bound site scopes/u.exec(result.stdout);
   assert.ok(match, result.stdout);
-  // Wave T0 records the gap rather than hiding it; this must shrink as Wave T3 lands, not grow.
-  assert.ok(Number(match[1]) > 0, "shipped registry is expected to carry recorded site debt");
+  // Browser v3 moved its last legacy context-header operations onto the independently verified
+  // workload binding. A newly added header-bound operation must not silently recreate that debt.
+  assert.equal(Number(match[1]), 0, "shipped registry must not reintroduce header-bound Site authority");
 });
 
 // --------------------------------------------------------- rule 8: the GA namespace axis stays clean

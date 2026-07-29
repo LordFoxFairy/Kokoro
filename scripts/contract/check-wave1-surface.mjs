@@ -90,7 +90,7 @@ const PRIVILEGED = Object.freeze({
 
 // Wave 3 intentionally replaced the unused contract-only Admission v1 before any provider existed.
 // Keep the approved five-command shape and its registry declaration byte-frozen from this point.
-const ADMISSION_SHA256 = "3fbd4c9ff7c7a4f0dbf7b6313399a45360ae02e2ad43829f34698c4e2d4a1752";
+const ADMISSION_SHA256 = "da6654a79b87b38849b6dbad9ada790143b8cc28b8c864415389fb9ad6030778";
 const ADMISSION_REGISTRY_SHA256 = "462730285d52aad2ce4ee2b8446d0b549c2084ae375cdaee427c025ba6e61c8b";
 
 function fail(errors, code) {

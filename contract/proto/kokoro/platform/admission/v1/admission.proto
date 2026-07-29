@@ -531,12 +531,16 @@ message GetCommandReceiptRequest {
 message CommandReceiptNotFound {}
 
 message GetCommandReceiptResponse {
+  // Present for every found result and byte-identical to the receipt nested in the typed result.
+  // A generic recovery client can therefore reconcile command identity without knowing which
+  // operation-specific result arm was returned. It is absent only for not_found.
+  optional kokoro.common.v1.CommandReceipt receipt = 1;
   oneof result {
     option (buf.validate.oneof).required = true;
-    PrepareRunResponse prepare_run = 1;
-    FinalizeRunAuthorizationResponse finalize_run_authorization = 2;
-    ReleaseRunAuthorizationResponse release_run_authorization = 3;
-    ReconcileRunAuthorizationResponse reconcile_run_authorization = 4;
-    CommandReceiptNotFound not_found = 5;
+    PrepareRunResponse prepare_run = 2;
+    FinalizeRunAuthorizationResponse finalize_run_authorization = 3;
+    ReleaseRunAuthorizationResponse release_run_authorization = 4;
+    ReconcileRunAuthorizationResponse reconcile_run_authorization = 5;
+    CommandReceiptNotFound not_found = 6;
   }
 }
