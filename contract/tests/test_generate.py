@@ -291,6 +291,19 @@ def test_run_request_shape() -> None:
     assert "input: RunInput" in control_py
     assert "runtime: RuntimeConfig" in control_py
     assert "context: RuntimeContext" in control_py
+    assert "execution_context: ExecutionContextIntent" in control_py
+    assert "class ExecutionContextIntentRoot(StrictModel):" in control_py
+    assert "class ExecutionContextIntentContinue(StrictModel):" in control_py
+    assert "class ExecutionContextIntentFork(StrictModel):" in control_py
+    assert 'Field(discriminator="mode")' in control_py
+    assert "parent_digest: Sha256Str" in control_py
+
+    control_ts = _find("kokoro-session/src/contract/control.ts")
+    assert 'executionContextIntentSchema = z.discriminatedUnion("mode"' in control_ts
+    assert 'mode: z.literal("root")' in control_ts
+    assert 'mode: z.literal("continue")' in control_ts
+    assert 'mode: z.literal("fork")' in control_ts
+    assert "parent_digest: z.string().regex(/^[0-9a-f]{64}$/u)" in control_ts
 
 
 def test_web_and_session_share_outbound_bytes() -> None:

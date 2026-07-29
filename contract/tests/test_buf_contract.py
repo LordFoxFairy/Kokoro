@@ -190,6 +190,26 @@ def test_effect_requests_embed_method_specific_digest_payloads() -> None:
         assert " repeated " not in body.group("body")
 
 
+def test_admission_binds_a_strict_opaque_execution_context_intent() -> None:
+    source = _proto("kokoro/platform/admission/v1/admission.proto")
+    prepare = _message_body(source, "PrepareRunEffect")
+    intent = _message_body(source, "OpaqueExecutionContextIntent")
+    parent = _message_body(source, "ParentExecutionContextAnchor")
+
+    assert (
+        "OpaqueExecutionContextIntent execution_context = 12 "
+        "[(buf.validate.field).required = true];"
+    ) in prepare
+    assert "option (buf.validate.oneof).required = true;" in intent
+    assert "bool root = 1 [(buf.validate.field).bool.const = true];" in intent
+    assert "ParentExecutionContextAnchor continue_from = 2;" in intent
+    assert "ParentExecutionContextAnchor fork_from = 3;" in intent
+    assert "string anchor = 1" in parent
+    assert "max_len: 256" in parent
+    assert "string digest = 2" in parent
+    assert 'pattern: "^[0-9a-f]{64}$"' in parent
+
+
 def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
     admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")

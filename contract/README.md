@@ -79,7 +79,7 @@ the verified child commits through exact root gitlinks.
 
 | message | fields |
 | --- | --- |
-| `run.request` | run_id, thread_id, input, runtime, context, trace |
+| `run.request` | run_id, thread_id, input, runtime, context, execution_context, trace |
 | `run.resume` | run_id, thread_id, decision_id, decisions |
 | `run.cancel` | run_id, thread_id, decision_id |
 | `run.steer` | run_id, thread_id, message_id, content |

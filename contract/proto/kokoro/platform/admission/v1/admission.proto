@@ -165,6 +165,28 @@ message AttachmentAdmissionRef {
   }];
 }
 
+// Platform binds this owner-safe intent into the command digest and sealed GA
+// draft, but never resolves or inspects Agent checkpoint state.
+message ParentExecutionContextAnchor {
+  string anchor = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message OpaqueExecutionContextIntent {
+  oneof mode {
+    option (buf.validate.oneof).required = true;
+    bool root = 1 [(buf.validate.field).bool.const = true];
+    ParentExecutionContextAnchor continue_from = 2;
+    ParentExecutionContextAnchor fork_from = 3;
+  }
+}
+
 message PrepareRunEffect {
   string session_access_grant = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -206,6 +228,7 @@ message PrepareRunEffect {
   }];
   optional InitialCapabilityIntent initial_intent = 10;
   ClientRunIntent client_intent = 11 [(buf.validate.field).required = true];
+  OpaqueExecutionContextIntent execution_context = 12 [(buf.validate.field).required = true];
 }
 
 message PrepareRunRequest {

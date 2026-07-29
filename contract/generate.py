@@ -107,6 +107,7 @@ _PY_SCALAR = {
     "boolean": "bool",
     "int": "int",
     "positive_int": "PositiveInt",
+    "sha256": "Sha256Str",
     "record": "dict[str, JsonValue]",
     "string_map": "dict[str, str]",
     "unknown": "JsonValue",
@@ -228,7 +229,8 @@ def ts_tagged_union(obj: dict, enums: dict, *, export: bool) -> list[str]:
         L += [f"    {ts_field(field, enums)}," for field in obj.get("common_fields", [])]
         L += [f"    {ts_field(field, enums)}," for field in variant.get("fields", [])]
         L.append(f'    {obj["discriminator"]}: z.literal("{variant["value"]}"),')
-        L.append(f"    payload: {zod_type(variant['payload_type'], enums)},")
+        if variant.get("payload_type") is not None:
+            L.append(f"    payload: {zod_type(variant['payload_type'], enums)},")
         L += ["  })", "  .strict()", ""]
     L.append(f'{kw} {const} = z.discriminatedUnion("{obj["discriminator"]}", [')
     L += [f"  {variant}," for variant in variants]
@@ -249,6 +251,30 @@ def ts_tagged_union(obj: dict, enums: dict, *, export: bool) -> list[str]:
     if export:
         L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
     return L
+
+
+def py_tagged_union(obj: dict, aliases: dict[str, str]) -> list[str]:
+    """Emit strict Pydantic arms plus a discriminator-bound union alias."""
+    names: list[str] = []
+    lines: list[str] = []
+    discriminator = obj["discriminator"]
+    for variant in obj["variants"]:
+        name = f"{obj['name']}{pascal(variant['value'])}"
+        names.append(name)
+        lines += [f"class {name}(StrictModel):"]
+        lines += [py_field(field, aliases) for field in obj.get("common_fields", [])]
+        lines += [py_field(field, aliases) for field in variant.get("fields", [])]
+        lines.append(f'    {discriminator}: Literal["{variant["value"]}"]')
+        if variant.get("payload_type") is not None:
+            lines.append(f"    payload: {py_type(variant['payload_type'], aliases)}")
+        lines += ["", ""]
+    lines += [
+        f"{obj['name']} = Annotated[",
+        "    Union[" + ", ".join(names) + "],",
+        f'    Field(discriminator="{discriminator}"),',
+        "]",
+    ]
+    return lines
 
 
 # --------------------------------------------------------------------------- #
@@ -359,7 +385,11 @@ def emit_events_py(spec: dict) -> str:
 
 
 def control_enum_aliases(spec: dict) -> dict[str, str]:
-    types = [f["type"] for obj in spec["objects"] for f in obj["fields"]]
+    types: list[str] = []
+    for obj in spec["objects"]:
+        types += [f["type"] for f in obj.get("fields", [])]
+        for variant in obj.get("variants", []):
+            types += [f["type"] for f in variant.get("fields", [])]
     for msg in spec["messages"]:
         types += [f["type"] for f in msg["fields"] if f["type"] != "decision_message_list"]
     return {name: enum_alias(name) for name in enum_names_in(types)}
@@ -371,13 +401,15 @@ def emit_control_py(spec: dict) -> str:
 
     L = [py_header(CONTROL_SRC).rstrip("\n"), "from __future__ import annotations", ""]
     L += _PY_PREAMBLE
+    L.append('Sha256Str = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]')
     L.append("")
     for name, alias in aliases.items():
         L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
     L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
 
     for obj in spec["objects"]:
-        L += ["", ""] + py_object(obj, aliases)
+        emitter = py_tagged_union if obj.get("variants") else py_object
+        L += ["", ""] + emitter(obj, aliases)
 
     arm_names = []
     for arm in spec["resume_decisions"]:

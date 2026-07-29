@@ -74,6 +74,22 @@ objects:
     fields:
       - {name: namespace, type: string_nonempty}
       - {name: session_id, type: string_nonempty}
+  # Session owns conversation topology but never sees a GA checkpoint config.
+  # It transports only the opaque anchor returned by Agent and its integrity
+  # digest. The tagged union makes half-populated parent intents impossible.
+  - name: ExecutionContextIntent
+    discriminator: mode
+    variants:
+      - value: root
+        fields: []
+      - value: continue
+        fields:
+          - {name: parent_anchor, type: string_nonempty}
+          - {name: parent_digest, type: sha256}
+      - value: fork
+        fields:
+          - {name: parent_anchor, type: string_nonempty}
+          - {name: parent_digest, type: sha256}
 
 # Inbound messages, discriminated on `kind`.
 messages:
@@ -84,6 +100,7 @@ messages:
       - {name: input, type: object:RunInput}
       - {name: runtime, type: object:RuntimeConfig}
       - {name: context, type: object:RuntimeContext}
+      - {name: execution_context, type: object:ExecutionContextIntent}
       - {name: trace, type: record, optional: true}
   - kind: run.resume
     fields:
@@ -133,4 +150,5 @@ resume_decisions:
 notes:
   run.request.thread_id: "LangGraph configurable.thread_id；V1 取值=session_id，命名只在 agent 边界。"
   run.request.trace: "观测专用（langfuse_trace_id 等），不参与业务；record 直透。"
+  run.request.execution_context: "Agent-owned opaque checkpoint anchor intent；Session/Platform 只绑定并透传，不读取 checkpoint。"
   run.steer.message_id: "运行中插话（模型轮粒度注入）；幂等键=message_id（keep-first），不打断进行中的工具。"
