@@ -314,8 +314,10 @@ def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> Non
     assert "uint64 owner_revision = 3" in owner
     completed = _message_body(source, "RunCompletedEvidenceV1")
     assert "RunCompletedEvidenceStatus status = 1" in completed
-    assert "optional uint64 input_tokens = 2;" in completed
-    assert "optional uint64 output_tokens = 3;" in completed
+    assert "TokenUsageEvidenceV1 token_usage = 2;" in completed
+    usage = _message_body(source, "TokenUsageEvidenceV1")
+    assert "uint64 input_tokens = 1;" in usage
+    assert "uint64 output_tokens = 2;" in usage
     failed = _message_body(source, "RunFailedEvidenceV1")
     assert "string code = 1" in failed
     assert "string error_kind = 2" in failed

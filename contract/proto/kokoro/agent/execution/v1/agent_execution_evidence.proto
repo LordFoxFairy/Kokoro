@@ -108,8 +108,14 @@ message RunCompletedEvidenceV1 {
     defined_only: true
     not_in: 0
   }];
-  optional uint64 input_tokens = 2;
-  optional uint64 output_tokens = 3;
+  // Presence is unified: absent means no usage fact; present always carries
+  // both non-negative counters, matching Agent RunCompletedPayload exactly.
+  TokenUsageEvidenceV1 token_usage = 2;
+}
+
+message TokenUsageEvidenceV1 {
+  uint64 input_tokens = 1;
+  uint64 output_tokens = 2;
 }
 
 message RunFailedEvidenceV1 {
