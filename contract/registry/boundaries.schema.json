@@ -247,8 +247,9 @@
       ]
     },
     "siteBinding": {
-      "description": "How the operation binds its Site. request-field = an owner-verified request field. workload-binding = derived from authenticated deployment identity, never browser input. context-header = migration debt. not-applicable = no Site isolation.",
+      "description": "How the operation binds its Site. request-field = an owner-verified request field. workload-binding = derived from authenticated deployment identity, never browser input. capability-binding = derived from a sealed, owner-issued bearer capability and revalidated against current owner state. context-header = migration debt. not-applicable = no Site isolation.",
       "enum": [
+        "capability-binding",
         "context-header",
         "not-applicable",
         "request-field",

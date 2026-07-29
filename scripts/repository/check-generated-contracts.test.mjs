@@ -139,16 +139,32 @@ test("production arguments are closed", () => {
 });
 
 test("public OpenAPI generation writes both registered live mirrors or one isolated temporary output", () => {
-  assert.deepEqual(parsePublicGeneratorArguments([]), {
-    outputs: [
-      resolve(repositoryRoot, "kokoro-platform/src/interfaces/http/generated/platform-public"),
-      resolve(repositoryRoot, "kokoro-web/packages/site-client/src/generated/platform-public"),
-    ],
-  });
-  assert.deepEqual(
-    parsePublicGeneratorArguments(["--output", resolve(tmpdir(), "kokoro-public-generator-test")]),
-    { outputs: [resolve(tmpdir(), "kokoro-public-generator-test")] },
-  );
+  const platformPublic = parsePublicGeneratorArguments([]);
+  assert.equal(platformPublic.contract.schemaId, "platform-public-v1");
+  assert.deepEqual(platformPublic.outputs, [
+    resolve(repositoryRoot, "kokoro-platform/src/interfaces/http/generated/platform-public"),
+    resolve(repositoryRoot, "kokoro-web/packages/site-client/src/generated/platform-public"),
+  ]);
+
+  const isolatedPlatformPublic = parsePublicGeneratorArguments([
+    "--output",
+    resolve(tmpdir(), "kokoro-public-generator-test"),
+  ]);
+  assert.equal(isolatedPlatformPublic.contract.schemaId, "platform-public-v1");
+  assert.deepEqual(isolatedPlatformPublic.outputs, [
+    resolve(tmpdir(), "kokoro-public-generator-test"),
+  ]);
+
+  const assetDataPlane = parsePublicGeneratorArguments([
+    "--schema",
+    "asset-data-plane-v1",
+    "--output",
+    resolve(tmpdir(), "kokoro-asset-data-plane-generator-test"),
+  ]);
+  assert.equal(assetDataPlane.contract.schemaId, "asset-data-plane-v1");
+  assert.deepEqual(assetDataPlane.outputs, [
+    resolve(tmpdir(), "kokoro-asset-data-plane-generator-test"),
+  ]);
   assert.throws(
     () => parsePublicGeneratorArguments(["--output", resolve(repositoryRoot, "tmp/not-system-temp")]),
     /public_openapi_generation_output_must_be_temporary/u,

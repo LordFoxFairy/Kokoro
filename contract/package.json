@@ -10,7 +10,8 @@
     "buf:lint": "buf lint",
     "buf:generate": "node generate.mjs",
     "openapi:generate:public": "node generate-public-openapi.mjs",
-    "openapi:lint": "redocly lint --extends=spec openapi/platform-public-v1.yaml openapi/admin-web-v1.yaml"
+    "openapi:generate:asset-data-plane": "node generate-public-openapi.mjs --schema asset-data-plane-v1",
+    "openapi:lint": "redocly lint --extends=spec openapi/platform-public-v1.yaml openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.72.0",

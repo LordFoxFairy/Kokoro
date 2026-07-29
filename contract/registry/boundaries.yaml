@@ -449,6 +449,49 @@
       "version": 1
     },
     {
+      "audience": "browser-upload",
+      "consumers": [
+        {
+          "boundary": "service.web",
+          "repository": "kokoro-web"
+        }
+      ],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-asset-data-plane",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": false, "id": "preflightInitiateAssetMultipartUpload", "receipt": null, "retryClass": "never", "scope": "platform", "siteBinding": "not-applicable", "transport": "http-json"},
+        {"effect": true, "id": "initiateAssetMultipartUpload", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/MultipartUploadStateResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "http-json"},
+        {"effect": false, "id": "preflightPutAssetMultipartPart", "receipt": null, "retryClass": "never", "scope": "platform", "siteBinding": "not-applicable", "transport": "http-json"},
+        {"effect": true, "id": "putAssetMultipartPart", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/MultipartPartResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "http-json"},
+        {"effect": false, "id": "preflightCompleteAssetMultipartUpload", "receipt": null, "retryClass": "never", "scope": "platform", "siteBinding": "not-applicable", "transport": "http-json"},
+        {"effect": true, "id": "completeAssetMultipartUpload", "receipt": {"kind": "state-read", "recoveryOperation": "getAssetMultipartUploadStatus", "ref": "getAssetMultipartUploadStatus"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "http-json"},
+        {"effect": false, "id": "preflightAbortAssetMultipartUpload", "receipt": null, "retryClass": "never", "scope": "platform", "siteBinding": "not-applicable", "transport": "http-json"},
+        {"effect": true, "id": "abortAssetMultipartUpload", "receipt": {"kind": "state-read", "recoveryOperation": "getAssetMultipartUploadStatus", "ref": "getAssetMultipartUploadStatus"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "http-json"},
+        {"effect": false, "id": "preflightGetAssetMultipartUploadStatus", "receipt": null, "retryClass": "never", "scope": "platform", "siteBinding": "not-applicable", "transport": "http-json"},
+        {"effect": false, "id": "getAssetMultipartUploadStatus", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "http-json"}
+      ],
+      "protocol": "openapi-http-json",
+      "provider": {
+        "boundary": "service.platform",
+        "repository": "kokoro-platform"
+      },
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "openapi",
+          "path": "contract/openapi/asset-data-plane-v1.yaml",
+          "select": {"member": "operation-id"}
+        }
+      ],
+      "transportSource": null,
+      "transports": ["http-json"],
+      "trustPlane": "capability-data-plane",
+      "version": 1
+    },
+    {
       "audience": "operator",
       "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
       "deadlineMs": null,

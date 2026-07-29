@@ -131,14 +131,12 @@ Two blind spots are recorded rather than hidden, and both appear in every succes
 contract source for it, so its operations get no orphan check at all. It is the one boundary that can drift
 without the gate noticing, which is exactly why the count is printed.
 
-Site binding is split three ways and every count is printed. 41 `site`-scoped operations remain
-`context-header`: `platform-runtime` sends `x-kokoro-site-id` derived per route, and `session-browser` is
-pinned to one Site by the `KOKORO_SITE_ID` process constant rather than by anything on the wire. That number
-is Wave T3 debt and must shrink rather than grow. Against it, 8 operations now bind Site as a
-`request-field`: three on `platform-admission`, the three effectful credit writes on `platform-runtime`, and
-its two model reads (`resolve_model_bindings`, `list_model_labels`), which must agree about a Site's hidden
-labels or the catalogue offers models resolution then refuses.
-The gate proves each claim against that operation's own request shape rather than trusting the declaration.
+Site binding is explicit and every count is printed. `request-field` means the provider validates an
+owner-authoritative Site field on the operation itself; the gate proves that claim against the operation's
+own request shape. `workload-binding` derives Site from an authenticated deployment identity rather than
+browser input. `capability-binding` is reserved for a sealed, owner-issued bearer capability whose Site and
+revocation axes are revalidated against current owner state on every request. Browser multipart upload uses
+that form; CORS preflight is separately platform-scoped and conveys no Site authority.
 
 `context-header` is the weaker of the two claims and is not proven at all: the gate cannot see whether a
 provider reads the header it is declared to read. `list_model_labels` was declared `context-header` while its

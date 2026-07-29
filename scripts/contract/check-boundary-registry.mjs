@@ -26,7 +26,13 @@ const SITE_FIELDS = ["site_id", "siteId"];
 // How an operation really binds its Site. Only request-field is structurally verifiable. The spec
 // (§6.3) forbids callers self-asserting Site from bare metadata, so context-header is recorded
 // migration debt that this gate counts out loud rather than silently blessing.
-const SITE_BINDINGS = ["request-field", "context-header", "workload-binding", "not-applicable"];
+const SITE_BINDINGS = [
+  "capability-binding",
+  "request-field",
+  "context-header",
+  "workload-binding",
+  "not-applicable",
+];
 const SOURCE_KINDS = ["openapi", "proto", "spec-yaml"];
 // Whether this repository actually holds a contract source for the boundary. declared-only means
 // the orphan check cannot run at all, so the boundary is counted in the success line instead of

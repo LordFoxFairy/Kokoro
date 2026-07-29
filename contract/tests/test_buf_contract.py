@@ -11,6 +11,7 @@ import yaml
 CONTRACT = Path(__file__).resolve().parents[1]
 PROTO = CONTRACT / "proto"
 PUBLIC_OPENAPI = CONTRACT / "openapi/platform-public-v1.yaml"
+ASSET_DATA_PLANE_OPENAPI = CONTRACT / "openapi/asset-data-plane-v1.yaml"
 
 
 def test_buf_contract_toolchain_is_exact_and_local() -> None:
@@ -34,7 +35,10 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "buf:lint": "buf lint",
             "openapi:lint": (
                 "redocly lint --extends=spec openapi/platform-public-v1.yaml "
-                "openapi/admin-web-v1.yaml"
+                "openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml"
+            ),
+            "openapi:generate:asset-data-plane": (
+                "node generate-public-openapi.mjs --schema asset-data-plane-v1"
             ),
             "openapi:generate:public": "node generate-public-openapi.mjs",
         }
@@ -756,6 +760,110 @@ def test_asset_public_surface_is_owner_scoped_and_non_disclosing() -> None:
         "ASSET_QUOTA_EXCEEDED",
         "ASSET_TEMPORARILY_UNAVAILABLE",
     }.issubset(set(schemas["ErrorCode"]["enum"]))
+
+
+def test_asset_data_plane_is_capability_scoped_resumable_and_provider_neutral() -> None:
+    document = yaml.safe_load(ASSET_DATA_PLANE_OPENAPI.read_text())
+    operations = {
+        operation["operationId"]: operation
+        for item in document["paths"].values()
+        for operation in item.values()
+        if isinstance(operation, dict) and "operationId" in operation
+    }
+    authenticated_operation_ids = {
+        "initiateAssetMultipartUpload",
+        "putAssetMultipartPart",
+        "completeAssetMultipartUpload",
+        "abortAssetMultipartUpload",
+        "getAssetMultipartUploadStatus",
+    }
+    preflight_operation_ids = {
+        "preflightInitiateAssetMultipartUpload",
+        "preflightPutAssetMultipartPart",
+        "preflightCompleteAssetMultipartUpload",
+        "preflightAbortAssetMultipartUpload",
+        "preflightGetAssetMultipartUploadStatus",
+    }
+    assert set(operations) == authenticated_operation_ids | preflight_operation_ids
+    assert all(
+        operation.get("security", document["security"])
+        == [{"AssetUploadCapability": []}]
+        for operation_id, operation in operations.items()
+        if operation_id in authenticated_operation_ids
+    )
+    assert all(operations[operation_id]["security"] == [] for operation_id in preflight_operation_ids)
+    schemas = document["components"]["schemas"]
+    wire = yaml.safe_dump(
+        {
+            name: schemas[name]
+            for name in (
+                "MultipartCommandReceipt",
+                "MultipartPart",
+                "MultipartUploadState",
+                "MultipartPartResponse",
+                "MultipartUploadStateResponse",
+            )
+        }
+    ).lower()
+    for forbidden in (
+        "bucket",
+        "objectref",
+        "objectkey",
+        "providerupload",
+        "provideretag",
+        "presigned",
+        "accesskey",
+        "secretkey",
+    ):
+        assert forbidden not in wire
+    assert schemas["MultipartUploadState"]["properties"]["parts"]["maxItems"] == 10000
+    assert schemas["MultipartPartCommit"]["properties"]["partNumber"]["maximum"] == 10000
+    assert set(schemas["CompleteMultipartUploadInput"]["required"]) == {
+        "expectedVersion",
+        "expectedSize",
+        "expectedChecksumSha256",
+        "parts",
+    }
+    for response_name in ("MultipartPartResponse", "MultipartUploadStateResponse"):
+        headers = document["components"]["responses"][response_name]["headers"]
+        assert headers["Cache-Control"]["schema"]["const"] == "no-store"
+        origin = headers["Access-Control-Allow-Origin"]["schema"]
+        assert origin["pattern"] == (
+            r"^https://(?:[A-Za-z0-9.-]+|\[[0-9A-Fa-f:.]+\])"
+            r"(?::[1-9][0-9]{0,4})?$"
+        )
+        assert "const" not in origin
+        assert headers["Vary"]["schema"]["const"] == "Origin"
+
+    responses = document["components"]["responses"]
+    assert responses["PostPreflightResponse"]["headers"]["Access-Control-Allow-Methods"][
+        "schema"
+    ]["const"] == "POST, OPTIONS"
+    assert responses["PutPreflightResponse"]["headers"]["Access-Control-Allow-Methods"][
+        "schema"
+    ]["const"] == "PUT, OPTIONS"
+    assert responses["GetPreflightResponse"]["headers"]["Access-Control-Allow-Methods"][
+        "schema"
+    ]["const"] == "GET, OPTIONS"
+    assert responses["PostPreflightResponse"]["headers"]["Access-Control-Max-Age"][
+        "schema"
+    ]["const"] == 300
+    put_allowed_headers = responses["PutPreflightResponse"]["headers"][
+        "Access-Control-Allow-Headers"
+    ]["schema"]["const"]
+    assert "x-kokoro-content-length" in put_allowed_headers
+    assert "x-kokoro-content-sha256" in put_allowed_headers
+    assert document["components"]["parameters"]["ContentLength"]["name"] == (
+        "X-Kokoro-Content-Length"
+    )
+    assert document["components"]["responses"]["ErrorResponse"]["headers"][
+        "Access-Control-Allow-Origin"
+    ]["required"] is False
+
+    complete_description = operations["completeAssetMultipartUpload"]["description"].lower()
+    assert "streaming the completed quarantine object" in complete_description
+    assert "multipart etag" in complete_description
+    assert "never accepted" in complete_description
 
 
 def test_public_auth_and_personal_context_payloads_are_complete() -> None:
