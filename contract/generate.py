@@ -958,6 +958,11 @@ def emit_init_py(events: dict, control: dict, streams: dict) -> str:
         "ResumeDecision",
         *control_enum_aliases(control).values(),
         *(o["name"] for o in control["objects"]),
+        *(
+            f"{obj['name']}{pascal(variant['value'])}"
+            for obj in control["objects"]
+            for variant in obj.get("variants", [])
+        ),
         *(f"{a['type'].capitalize()}Decision" for a in control["resume_decisions"]),
         *(pascal(m["kind"]) for m in control["messages"]),
     ]

@@ -318,6 +318,11 @@ def test_run_request_shape() -> None:
     assert "parent_anchor: Reference" in control_py
     assert "parent_digest: Sha256Str" in control_py
 
+    control_init = _find("kokoro-agent/src/kokoro_agent/contract/__init__.py")
+    assert "ExecutionContextIntentRoot" in control_init
+    assert "ExecutionContextIntentContinue" in control_init
+    assert "ExecutionContextIntentFork" in control_init
+
     control_ts = _find("kokoro-session/src/contract/control.ts")
     assert 'executionContextIntentSchema = z.discriminatedUnion("mode"' in control_ts
     assert 'mode: z.literal("root")' in control_ts
