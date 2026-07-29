@@ -210,6 +210,15 @@ def test_admission_binds_a_strict_opaque_execution_context_intent() -> None:
     assert 'pattern: "^[0-9a-f]{64}$"' in parent
 
 
+def test_admission_binds_the_session_owned_trigger_content_into_the_effect_digest() -> None:
+    source = _proto("kokoro/platform/admission/v1/admission.proto")
+    prepare = _message_body(source, "PrepareRunEffect")
+
+    assert "string trigger_message_content = 13" in prepare
+    assert "min_len: 1" in prepare
+    assert "max_bytes: 524288" in prepare
+
+
 def test_dispatch_owner_evidence_is_a_closed_session_owned_read_boundary() -> None:
     source = _proto("kokoro/session/dispatch/v1/dispatch_owner_evidence.proto")
 
@@ -1144,6 +1153,7 @@ def test_platform_admission_v1_surface_remains_frozen() -> None:
         "launch_id",
         "proposed_run_id",
         "trigger_message_id",
+        "trigger_message_content",
         "model_option_revision_ref",
     ):
         assert required in prepare

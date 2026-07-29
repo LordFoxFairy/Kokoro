@@ -229,6 +229,13 @@ message PrepareRunEffect {
   optional InitialCapabilityIntent initial_intent = 10;
   ClientRunIntent client_intent = 11 [(buf.validate.field).required = true];
   OpaqueExecutionContextIntent execution_context = 12 [(buf.validate.field).required = true];
+  // Session owns the immutable message graph. The authenticated Session caller
+  // supplies the exact trigger content and the command digest binds these UTF-8
+  // bytes; Platform independently resolves every policy/entitlement owner fact.
+  string trigger_message_content = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 524288
+  }];
 }
 
 message PrepareRunRequest {
