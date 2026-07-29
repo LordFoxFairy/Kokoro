@@ -349,7 +349,7 @@ def emit_events_py(spec: dict) -> str:
         "    return value",
         "",
         'Sha256Str = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]',
-        "Reference = Annotated[str, StringConstraints(min_length=1, max_length=256), ",
+        "Reference = Annotated[str, StringConstraints(min_length=1, max_length=256),",
         "    AfterValidator(_trimmed_reference)]",
     ]
     L.append("NonNegInt = Annotated[int, Field(ge=0)]")
@@ -420,9 +420,15 @@ def emit_control_py(spec: dict) -> str:
     aliases = control_enum_aliases(spec)
 
     L = [py_header(CONTROL_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += _PY_PREAMBLE
+    control_preamble = [
+        line.replace(
+            "from pydantic import BaseModel,",
+            "from pydantic import AfterValidator, BaseModel,",
+        )
+        for line in _PY_PREAMBLE
+    ]
+    L += control_preamble
     L += [
-        "from pydantic import AfterValidator",
         "",
         "def _trimmed_reference(value: str) -> str:",
         "    if value.strip() != value:",
