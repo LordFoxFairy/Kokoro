@@ -398,6 +398,7 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         "platform-site-lifecycle@v1",
         "platform-admission@v1",
         "platform-session-authorization@v2",
+        "session-dispatch-owner-evidence@v1",
     ):
         assert boundary in generator
     assert "await protoFiles(protoRoot)" not in generator
@@ -489,6 +490,15 @@ def test_node_generator_isolates_new_boundary_output() -> None:
             "kokoro/platform/authorization/v2/scoped_session_authorization_pb.ts",
             [
                 "kokoro/platform/authorization/v1/session_authorization_pb.ts",
+                "kokoro/platform/admission/v1/admission_pb.ts",
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+            ],
+        ),
+        (
+            "session-dispatch-owner-evidence@v1",
+            "kokoro/session/dispatch/v1/dispatch_owner_evidence_pb.ts",
+            [
+                "kokoro/platform/authorization/v2/scoped_session_authorization_pb.ts",
                 "kokoro/platform/admission/v1/admission_pb.ts",
                 "kokoro/platform/admin/v2/admin_query_pb.ts",
             ],

@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package kokoro.session.dispatch.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// Session is the sole authority for immutable dispatch publication evidence.
+// Platform Admission consumes this read-only boundary when a publish outcome is
+// ambiguous; browsers, Site BFFs, Admin operators and Agent are not consumers.
+service DispatchOwnerEvidenceService {
+  rpc GetDispatchOwnerEvidence(GetDispatchOwnerEvidenceRequest) returns (GetDispatchOwnerEvidenceResponse) {}
+}
+
+message GetDispatchOwnerEvidenceRequest {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string session_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+enum DispatchOwnerEvidenceKind {
+  DISPATCH_OWNER_EVIDENCE_KIND_UNSPECIFIED = 0;
+  DISPATCH_OWNER_EVIDENCE_KIND_NO_DISPATCH = 1;
+  DISPATCH_OWNER_EVIDENCE_KIND_OUTCOME_UNKNOWN = 2;
+}
+
+message DispatchOwnerEvidence {
+  string evidence_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 evidence_version = 2 [(buf.validate.field).uint64.const = 1];
+  DispatchOwnerEvidenceKind kind = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string site_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string session_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string dispatch_id = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string launch_id = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string run_id = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authorization_segment_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 authorization_segment_version = 10 [(buf.validate.field).uint64.gt = 0];
+  uint64 lease_generation = 11 [(buf.validate.field).uint64.gt = 0];
+  string payload_sha256 = 12 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 13 [(buf.validate.field).required = true];
+}
+
+message DispatchOwnerEvidenceNotFound {}
+
+message GetDispatchOwnerEvidenceResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+
+    DispatchOwnerEvidence evidence = 1;
+    DispatchOwnerEvidenceNotFound not_found = 2;
+  }
+}

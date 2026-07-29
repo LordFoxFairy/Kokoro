@@ -114,6 +114,16 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "session-dispatch-owner-evidence@v1": Object.freeze({
+    schema: "kokoro.session.dispatch.v1.DispatchOwnerEvidenceService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/session/dispatch/v1/dispatch_owner_evidence.proto"]),
+    sources: Object.freeze([
+      "kokoro/session/dispatch/v1/dispatch_owner_evidence.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
 });
 
 function parseArguments(argv) {

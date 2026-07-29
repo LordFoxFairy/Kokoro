@@ -210,6 +210,31 @@ def test_admission_binds_a_strict_opaque_execution_context_intent() -> None:
     assert 'pattern: "^[0-9a-f]{64}$"' in parent
 
 
+def test_dispatch_owner_evidence_is_a_closed_session_owned_read_boundary() -> None:
+    source = _proto("kokoro/session/dispatch/v1/dispatch_owner_evidence.proto")
+
+    assert "package kokoro.session.dispatch.v1;" in source
+    assert _service_methods(source, "DispatchOwnerEvidenceService") == [
+        "GetDispatchOwnerEvidence"
+    ]
+    request = _message_body(source, "GetDispatchOwnerEvidenceRequest")
+    assert "string site_id = 1" in request
+    assert "string session_id = 2" in request
+    assert "string evidence_ref = 3" in request
+    for forbidden in ("project_ref", "segment_version", "kind", "payload_sha256"):
+        assert forbidden not in request
+
+    evidence = _message_body(source, "DispatchOwnerEvidence")
+    assert "uint64 evidence_version = 2" in evidence
+    assert "uint64 authorization_segment_version = 10" in evidence
+    assert "uint64 lease_generation = 11" in evidence
+    assert 'pattern: "^[0-9a-f]{64}$"' in evidence
+    response = _message_body(source, "GetDispatchOwnerEvidenceResponse")
+    assert "option (buf.validate.oneof).required = true;" in response
+    assert "DispatchOwnerEvidence evidence = 1;" in response
+    assert "DispatchOwnerEvidenceNotFound not_found = 2;" in response
+
+
 def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
     admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")

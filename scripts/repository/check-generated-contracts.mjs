@@ -32,6 +32,13 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
   Object.freeze({
+    id: "session-dispatch-owner-evidence@v1",
+    mirrors: Object.freeze([
+      "kokoro-session/src/platform/evidence-generated",
+      "kokoro-platform/src/interfaces/connect/generated-session-evidence",
+    ]),
+  }),
+  Object.freeze({
     id: "platform-public@v1",
     mirrors: Object.freeze([
       "kokoro-platform/src/interfaces/http/generated/platform-public",

@@ -39,6 +39,9 @@ const sessionAuthorizationSourcePaths = [
 const scopedSessionAuthorizationSourcePaths = [
   "kokoro/platform/authorization/v2/scoped_session_authorization.proto",
 ];
+const dispatchOwnerEvidenceSourcePaths = [
+  "kokoro/session/dispatch/v1/dispatch_owner_evidence.proto",
+];
 
 async function sourceDigest(directory, sourcePaths) {
   const hash = createHash("sha256");
@@ -225,6 +228,13 @@ test("privileged and public contracts have independent provider/consumer mirrors
       ],
     },
     {
+      id: "session-dispatch-owner-evidence@v1",
+      mirrors: [
+        "kokoro-session/src/platform/evidence-generated",
+        "kokoro-platform/src/interfaces/connect/generated-session-evidence",
+      ],
+    },
+    {
       id: "platform-public@v1",
       mirrors: [
         "kokoro-platform/src/interfaces/http/generated/platform-public",
@@ -273,6 +283,12 @@ test("each isolated boundary emits its own pinned source metadata", async () => 
         schemaId: "kokoro.platform.authorization.v2.ScopedSessionAuthorizationService",
         sourcePaths: scopedSessionAuthorizationSourcePaths,
         forbidden: "kokoro/platform/authorization/v1/session_authorization.proto",
+      },
+      {
+        boundary: "session-dispatch-owner-evidence@v1",
+        schemaId: "kokoro.session.dispatch.v1.DispatchOwnerEvidenceService",
+        sourcePaths: dispatchOwnerEvidenceSourcePaths,
+        forbidden: "kokoro/platform/admission/v1/admission.proto",
       },
     ]) {
       const output = resolve(temporary, fixture.boundary);
