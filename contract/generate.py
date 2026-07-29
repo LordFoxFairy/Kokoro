@@ -16,7 +16,6 @@ SPEC = HERE / "spec"
 
 AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
 SESSION = ROOT / "kokoro-session/src/contract"
-WEB = ROOT / "kokoro-web/apps/user/src/contract"
 WEB_SESSION_CLIENT = ROOT / "kokoro-web/packages/session-client/src/generated"
 HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
 PLATFORM_KIT = ROOT / "kokoro-platform/kokoro-platform-kit/src/contract"
@@ -657,14 +656,6 @@ def emit_session_events_ts(spec: dict) -> str:
     return "\n".join(L) + "\n"
 
 
-def emit_event_names_ts(spec: dict) -> str:
-    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", "export const SESSION_EVENT_NAMES = ["]
-    for kind in spec["browser_order"]:
-        L.append(f'  "{kind}",')
-    L += ["] as const", "", "export type SessionEventName = (typeof SESSION_EVENT_NAMES)[number]"]
-    return "\n".join(L) + "\n"
-
-
 # --------------------------------------------------------------------------- #
 # session + web /contract/control.ts  (byte-identical)
 # --------------------------------------------------------------------------- #
@@ -1243,10 +1234,6 @@ def build() -> dict[Path, str]:
         PLATFORM_KIT / "control.ts": control_ts,
         PLATFORM_KIT / "platform-runtime.ts": platform_runtime_ts,
         SESSION / "platform-runtime.ts": platform_runtime_ts,
-        WEB / "session-events.ts": session_events,
-        WEB / "control.ts": control_ts,
-        WEB / "http.ts": http_ts,
-        WEB / "event-names.ts": emit_event_names_ts(events),
         WEB_SESSION_CLIENT / "session-events.ts": session_events,
         WEB_SESSION_CLIENT / "control.ts": control_ts,
         WEB_SESSION_CLIENT / "http.ts": http_ts,

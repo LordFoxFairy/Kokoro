@@ -70,10 +70,10 @@ def test_raw_and_browser_kinds() -> None:
         assert f'Literal["{kind}"]' in events_py, kind
 
     session = _find("kokoro-session/src/contract/session-events.ts")
-    names = _find("kokoro-web/apps/user/src/contract/event-names.ts")
+    web = _find("kokoro-web/packages/session-client/src/generated/session-events.ts")
     for kind in browser:
         assert f'z.literal("{kind}")' in session, kind
-        assert f'"{kind}",' in names, kind
+        assert f'z.literal("{kind}")' in web, kind
     # run.started is raw-only: never a browser literal.
     assert 'z.literal("run.started")' not in session
 
@@ -346,16 +346,21 @@ def test_run_request_shape() -> None:
             arm(mode="continue", parent_anchor=anchor, parent_digest=digest)
 
 
-def test_web_and_session_share_outbound_bytes() -> None:
+def test_session_client_and_session_share_outbound_bytes() -> None:
     assert _find("kokoro-session/src/contract/session-events.ts") == _find(
-        "kokoro-web/apps/user/src/contract/session-events.ts"
+        "kokoro-web/packages/session-client/src/generated/session-events.ts"
     )
     assert _find("kokoro-session/src/contract/control.ts") == _find(
-        "kokoro-web/apps/user/src/contract/control.ts"
+        "kokoro-web/packages/session-client/src/generated/control.ts"
     )
     assert _find("kokoro-session/src/contract/http.ts") == _find(
-        "kokoro-web/apps/user/src/contract/http.ts"
+        "kokoro-web/packages/session-client/src/generated/http.ts"
     )
+
+
+def test_generator_never_targets_retired_user_app() -> None:
+    retired = ROOT / "kokoro-web/apps/user"
+    assert all(not path.is_relative_to(retired) for path in OUTPUTS)
 
 
 def test_session_agent_and_platform_draft_producer_share_control_bytes() -> None:
