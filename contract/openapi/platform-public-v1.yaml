@@ -1947,6 +1947,9 @@ components:
     VerificationActivationResponse:
       type: object
       additionalProperties: false
+      description: >-
+        Durable proof that verification, Site-local account activation, and the complete personal
+        Workspace bootstrap committed atomically. Email verification never creates a browser session.
       properties:
         receipt:
           $ref: '#/components/schemas/CommandReceipt'
@@ -1954,9 +1957,7 @@ components:
           type: string
           minLength: 1
           maxLength: 128
-        personalContextPending:
-          type: boolean
-      required: [receipt, accountRef, personalContextPending]
+      required: [receipt, accountRef]
     AuthPending:
       type: object
       additionalProperties: false
