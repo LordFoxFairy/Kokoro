@@ -890,13 +890,18 @@ def test_reauthentication_proofs_are_bound_to_one_sensitive_identity_mutation() 
 
     for schema_name in (
         "BeginTotpEnrollmentInput",
-        "SupersedeTotpEnrollmentInput",
         "OtpInput",
         "RegenerateRecoveryCodesInput",
-        "SupersedeRecoveryCodeSetInput",
     ):
         assert schemas[schema_name]["properties"]["reauthenticationProof"]["minLength"] == 32
         assert "reauthenticationProof" in schemas[schema_name]["required"]
+
+    for schema_name in (
+        "SupersedeTotpEnrollmentInput",
+        "SupersedeRecoveryCodeSetInput",
+    ):
+        assert "reauthenticationProof" not in schemas[schema_name]["properties"]
+        assert "reauthenticationProof" not in schemas[schema_name]["required"]
 
     proof = schemas["ReauthenticationProof"]
     assert proof["properties"]["audience"]["const"] == "platform-public"
