@@ -22,7 +22,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const REPOSITORY_IDS = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
 const RESULT_KEYS = ["assertionIds", "durationMs", "outcome", "reasonCode", "scenarioId", "schemaVersion"];
 const RESULT_OUTCOMES = new Set(["pass", "fail", "incomplete", "interrupted"]);
-const COMPAT_DATA_RESOURCES = ["mysql", "mongo", "redis"];
+const COMPAT_DATA_RESOURCES = ["mysql", "postgres", "mongo", "redis"];
 const COMMANDS = new Map([
   ["node-web-session-http-sse-v1", [process.execPath, "scripts/compatibility/web-session-http-sse.mjs"]],
   ["node-session-platform-internal-rpc-v1", [process.execPath, "scripts/compatibility/session-platform-internal-rpc.mjs"]],

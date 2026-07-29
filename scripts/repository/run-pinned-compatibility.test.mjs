@@ -33,7 +33,7 @@ function matrix() {
     requiredGates: ["root-infra-runtime-smoke"],
     runtimeGate: {
       schemaVersion: 1,
-      requiredServices: ["mysql", "redis", "mongo", "minio", "litellm"],
+      requiredServices: ["mysql", "postgres", "redis", "mongo", "minio", "litellm"],
       scenarios: [
         { id: "web-session-http-sse", commandId: "node-web-session-http-sse-v1", required: true, participants: ["kokoro-session", "kokoro-web"], protocols: [{ id: "session-browser", version: 1 }], timeoutSeconds: 180 },
         { id: "session-platform-internal-rpc", commandId: "node-session-platform-internal-rpc-v1", required: true, participants: ["kokoro-platform", "kokoro-session"], protocols: [{ id: "platform-runtime", version: 1 }], timeoutSeconds: 180 },

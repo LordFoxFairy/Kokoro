@@ -74,6 +74,7 @@
   "schemaVersion": 1,
   "requiredServices": [
    "mysql",
+   "postgres",
    "redis",
    "mongo",
    "minio",

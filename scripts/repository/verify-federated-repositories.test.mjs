@@ -82,7 +82,7 @@ test("compatibility matrix rejects undeclared or version-skewed protocols", () =
     requiredGates: ["contract", "runtime-smoke"],
     runtimeGate: {
       schemaVersion: 1,
-      requiredServices: ["mysql", "redis", "mongo", "minio", "litellm"],
+      requiredServices: ["mysql", "postgres", "redis", "mongo", "minio", "litellm"],
       scenarios: [{
         id: "session-platform-internal-rpc",
         commandId: "node-session-platform-internal-rpc-v1",
@@ -113,7 +113,7 @@ test("runtime compatibility schema is closed and every contract has required cov
     requiredGates: ["runtime-smoke"],
     runtimeGate: {
       schemaVersion: 1,
-      requiredServices: ["mysql", "redis", "mongo", "minio", "litellm"],
+      requiredServices: ["mysql", "postgres", "redis", "mongo", "minio", "litellm"],
       scenarios: [{
         id: "session-platform-internal-rpc",
         commandId: "node-session-platform-internal-rpc-v1",
