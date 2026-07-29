@@ -318,6 +318,12 @@ def test_web_and_session_share_outbound_bytes() -> None:
     )
 
 
+def test_session_agent_and_platform_draft_producer_share_control_bytes() -> None:
+    session = _find("kokoro-session/src/contract/control.ts")
+    assert session == _find("kokoro-web/packages/session-client/src/generated/control.ts")
+    assert session == _find("kokoro-platform/kokoro-platform-kit/src/contract/control.ts")
+
+
 def test_platform_and_session_share_runtime_contract_bytes() -> None:
     spec = load("platform-runtime.yaml")
     generated = emit_platform_runtime_ts(spec)

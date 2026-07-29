@@ -1196,6 +1196,7 @@ def build() -> dict[Path, str]:
         AGENT / "storage.py": emit_storage_py(storage),
         SESSION / "storage.ts": emit_storage_ts(storage),
         HUB / "storage.ts": emit_storage_ts(storage),
+        PLATFORM_KIT / "control.ts": control_ts,
         PLATFORM_KIT / "platform-runtime.ts": platform_runtime_ts,
         SESSION / "platform-runtime.ts": platform_runtime_ts,
         WEB / "session-events.ts": session_events,
