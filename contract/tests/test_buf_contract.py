@@ -1058,6 +1058,46 @@ def test_platform_admission_v1_surface_remains_frozen() -> None:
         assert "option (buf.validate.oneof).required = true;" in body
 
 
+def test_platform_session_authorization_v1_surface_is_pull_snapshot_and_key_only() -> None:
+    source = _proto("kokoro/platform/authorization/v1/session_authorization.proto")
+    assert _service_methods(source, "SessionAuthorizationService") == [
+        "PullAuthorizationEvents",
+        "GetAuthorizationSnapshotPage",
+        "GetAuthorizationVerificationKeys",
+    ]
+    event = _message_body(source, "AuthorizationEventSigningPayload")
+    assert "uint64 stream_sequence" in event
+    assert "uint64 aggregate_sequence" in event
+    assert "DeliveredGrantFact grant_delivered" in event
+    assert "RevocationEpochChanged revocation_epoch_changed" in event
+    assert "key_rotated" not in event
+    assert "grant_prepared" not in event
+    delivered = _message_body(source, "DeliveredGrantFact")
+    assert "string site_ref" in delivered
+    snapshot = _message_body(source, "AuthorizationSnapshotPage")
+    assert "uint64 high_watermark_stream_sequence" in snapshot
+    assert "string key_set_revision" in snapshot
+    assert "pattern: \"^[0-9a-f]{64}$\"" in snapshot
+    assert "repeated AuthorizationSnapshotRecord records" in snapshot
+    assert "optional string next_page_cursor" in snapshot
+    site_snapshot = _message_body(source, "AuthorizationSiteSnapshot")
+    assert "uint64 aggregate_sequence = 2;" in site_snapshot
+    assert "AUTHORIZATION_SITE_STATE_DECOMMISSIONING" in source
+    keys = _message_body(source, "GetAuthorizationVerificationKeysResponse")
+    assert "oneof outcome" in keys
+    assert "AuthorizationVerificationKeys key_set" in keys
+    assert "AuthorizationVerificationKeysNotModified not_modified" in keys
+    assert "option (buf.validate.oneof).required = true;" in keys
+    verification_key = _message_body(source, "AuthorizationVerificationKey")
+    assert "AuthorizationVerificationKeyPurpose purpose" in verification_key
+    assert "AUTHORIZATION_VERIFICATION_KEY_PURPOSE_EVENT_SIGNING" in source
+    assert "AUTHORIZATION_VERIFICATION_KEY_PURPOSE_SESSION_ACCESS_GRANT" in source
+    registry_invariants = (CONTRACT / "registry/platform-session-authorization-v1.yaml").read_text()
+    assert "jwt-fact-nine-axis-equality" in registry_invariants
+    assert "universal-site-revocation-fence" in registry_invariants
+    assert "revoke an identity session, revoke a membership, and suspend a Site" in registry_invariants
+
+
 def test_safe_admission_capabilities_are_typed_for_browser_projection() -> None:
     source = _proto("kokoro/platform/admission/v1/admission.proto")
     snapshot = _message_body(source, "SafeAdmissionSnapshot")

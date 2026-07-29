@@ -1,0 +1,313 @@
+syntax = "proto3";
+
+package kokoro.platform.authorization.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// SessionAuthorizationService is the privileged, read-only replication boundary from Platform
+// Authorization to Session. Transport authentication is mTLS workload identity; browser and user
+// credentials are never accepted here. Session persists its own cursor and never calls this API on
+// an HTTP/SSE authorization hot path. V1 projects only current Site security/policy/revocation
+// epochs. Every owner mutation that can invalidate any other grant epoch MUST bump the Site
+// revocation epoch and append its signed event in the same transaction.
+service SessionAuthorizationService {
+  rpc PullAuthorizationEvents(PullAuthorizationEventsRequest) returns (PullAuthorizationEventsResponse) {}
+  rpc GetAuthorizationSnapshotPage(GetAuthorizationSnapshotPageRequest) returns (GetAuthorizationSnapshotPageResponse) {}
+  rpc GetAuthorizationVerificationKeys(GetAuthorizationVerificationKeysRequest) returns (GetAuthorizationVerificationKeysResponse) {}
+}
+
+enum AuthorizationSignatureAlgorithm {
+  AUTHORIZATION_SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+  AUTHORIZATION_SIGNATURE_ALGORITHM_RS256 = 1;
+}
+
+enum AuthorizationSnapshotReason {
+  AUTHORIZATION_SNAPSHOT_REASON_UNSPECIFIED = 0;
+  AUTHORIZATION_SNAPSHOT_REASON_CURSOR_EXPIRED = 1;
+  AUTHORIZATION_SNAPSHOT_REASON_SEQUENCE_GAP = 2;
+  AUTHORIZATION_SNAPSHOT_REASON_BOOTSTRAP_REQUIRED = 3;
+}
+
+enum AuthorizationSiteState {
+  AUTHORIZATION_SITE_STATE_UNSPECIFIED = 0;
+  AUTHORIZATION_SITE_STATE_ACTIVE = 1;
+  AUTHORIZATION_SITE_STATE_SUSPENDED = 2;
+  AUTHORIZATION_SITE_STATE_DECOMMISSIONED = 3;
+  AUTHORIZATION_SITE_STATE_DECOMMISSIONING = 4;
+}
+
+enum AuthorizationVerificationKeyState {
+  AUTHORIZATION_VERIFICATION_KEY_STATE_UNSPECIFIED = 0;
+  AUTHORIZATION_VERIFICATION_KEY_STATE_CURRENT = 1;
+  AUTHORIZATION_VERIFICATION_KEY_STATE_PREVIOUS = 2;
+}
+
+enum AuthorizationVerificationKeyPurpose {
+  AUTHORIZATION_VERIFICATION_KEY_PURPOSE_UNSPECIFIED = 0;
+  AUTHORIZATION_VERIFICATION_KEY_PURPOSE_EVENT_SIGNING = 1;
+  AUTHORIZATION_VERIFICATION_KEY_PURPOSE_SESSION_ACCESS_GRANT = 2;
+}
+
+// The nine values are copied exactly from one issued JWT. A DeliveredGrantFact is invalid unless
+// all nine values equal the JWT claims for the same grant_ref and claims_digest.
+message AuthorizationEpochVector {
+  uint64 site_security_epoch = 1 [(buf.validate.field).uint64.gt = 0];
+  uint64 subject_generation = 2 [(buf.validate.field).uint64.gt = 0];
+  uint64 identity_session_epoch = 3 [(buf.validate.field).uint64.gt = 0];
+  uint64 membership_epoch = 4 [(buf.validate.field).uint64.gt = 0];
+  uint64 authorization_epoch = 5 [(buf.validate.field).uint64.gt = 0];
+  uint64 restriction_epoch = 6 [(buf.validate.field).uint64.gt = 0];
+  uint64 credential_epoch = 7 [(buf.validate.field).uint64.gt = 0];
+  uint64 policy_epoch = 8 [(buf.validate.field).uint64.gt = 0];
+  uint64 revocation_epoch = 9 [(buf.validate.field).uint64.gt = 0];
+}
+
+message DeliveredGrantFact {
+  string grant_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string subject_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string identity_session_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string project_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string purpose = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 32
+  }];
+  string audience = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string claims_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string grant_key_revision = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  AuthorizationEpochVector epochs = 9 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp expires_at = 10 [(buf.validate.field).required = true];
+  string site_ref = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message RevocationEpochChanged {
+  uint64 revocation_epoch = 1 [(buf.validate.field).uint64.gt = 0];
+  string reason_code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+// Signature input is the protobuf binary encoding of this known-field message with unknown fields
+// discarded. The payload_digest is SHA-256 over that exact byte sequence. Consumers must first
+// recompute the digest and then verify signature over the same bytes; unknown fields never enter
+// the signature input.
+message AuthorizationEventSigningPayload {
+  string event_id = 1 [(buf.validate.field).string.uuid = true];
+  uint64 stream_sequence = 2 [(buf.validate.field).uint64.gt = 0];
+  string site_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 aggregate_sequence = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp occurred_at = 5 [(buf.validate.field).required = true];
+  oneof event {
+    option (buf.validate.oneof).required = true;
+    DeliveredGrantFact grant_delivered = 10;
+    RevocationEpochChanged revocation_epoch_changed = 11;
+  }
+}
+
+message SignedAuthorizationEvent {
+  AuthorizationEventSigningPayload payload = 1 [(buf.validate.field).required = true];
+  string payload_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string signing_key_revision = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  AuthorizationSignatureAlgorithm signature_algorithm = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bytes signature = 5 [(buf.validate.field).bytes = {
+    min_len: 64
+    max_len: 1024
+  }];
+}
+
+message PullAuthorizationEventsRequest {
+  uint64 after_stream_sequence = 1;
+  uint32 limit = 2 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 500
+  }];
+  optional uint32 wait_ms = 3 [(buf.validate.field).uint32.lte = 30000];
+}
+
+message AuthorizationEventBatch {
+  repeated SignedAuthorizationEvent events = 1 [(buf.validate.field).repeated.max_items = 500];
+  uint64 high_watermark_stream_sequence = 2;
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
+}
+
+message AuthorizationSnapshotRequired {
+  AuthorizationSnapshotReason reason = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 oldest_available_stream_sequence = 2;
+  uint64 high_watermark_stream_sequence = 3;
+}
+
+message PullAuthorizationEventsResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    AuthorizationEventBatch batch = 1;
+    AuthorizationSnapshotRequired snapshot_required = 2;
+  }
+}
+
+message AuthorizationSiteSnapshot {
+  string site_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  // Zero is the valid bootstrap value for a Site that has not emitted an authorization event.
+  uint64 aggregate_sequence = 2;
+  AuthorizationSiteState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 site_security_epoch = 4 [(buf.validate.field).uint64.gt = 0];
+  uint64 policy_epoch = 5 [(buf.validate.field).uint64.gt = 0];
+  uint64 revocation_epoch = 6 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
+}
+
+message AuthorizationVerificationKey {
+  string key_revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  AuthorizationVerificationKeyState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  AuthorizationSignatureAlgorithm algorithm = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string canonical_public_jwk_json = 4 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 16384
+  }];
+  google.protobuf.Timestamp not_before = 5 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp not_after = 6 [(buf.validate.field).required = true];
+  // Consumers index keys by (purpose,key_revision). Event signatures must never resolve a grant
+  // key, and SessionAccessGrant JWTs must never resolve an event-signing key.
+  AuthorizationVerificationKeyPurpose purpose = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message AuthorizationSnapshotRecord {
+  oneof record {
+    option (buf.validate.oneof).required = true;
+    AuthorizationSiteSnapshot site = 1;
+    DeliveredGrantFact delivered_grant = 2;
+    AuthorizationVerificationKey verification_key = 3;
+  }
+}
+
+// Omit snapshot_ref and page_cursor together to freeze a new snapshot. Subsequent calls must send
+// both values returned by the preceding page; mixing snapshots or omitting either is invalid.
+message GetAuthorizationSnapshotPageRequest {
+  optional string snapshot_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_cursor = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 4096
+  }];
+  uint32 limit = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 500
+  }];
+}
+
+message AuthorizationSnapshotPage {
+  string snapshot_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 high_watermark_stream_sequence = 2;
+  google.protobuf.Timestamp frozen_at = 3 [(buf.validate.field).required = true];
+  repeated AuthorizationSnapshotRecord records = 4 [(buf.validate.field).repeated.max_items = 500];
+  optional string next_page_cursor = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 4096
+  }];
+  // Frozen verification-key revision used to validate every event and grant fact in this snapshot.
+  // Consumers must persist this value; snapshot_ref is an opaque pagination identity, not a key revision.
+  string key_set_revision = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message GetAuthorizationSnapshotPageResponse {
+  AuthorizationSnapshotPage page = 1 [(buf.validate.field).required = true];
+}
+
+message GetAuthorizationVerificationKeysRequest {
+  optional string if_none_match_revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message AuthorizationVerificationKeys {
+  string revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  repeated AuthorizationVerificationKey keys = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 8
+  }];
+}
+
+message AuthorizationVerificationKeysNotModified {
+  string revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetAuthorizationVerificationKeysResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    AuthorizationVerificationKeys key_set = 1;
+    AuthorizationVerificationKeysNotModified not_modified = 2;
+  }
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
+}

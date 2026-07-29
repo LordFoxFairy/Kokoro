@@ -33,6 +33,9 @@ const admissionSourcePaths = [
   "kokoro/common/v1/receipt.proto",
   "kokoro/platform/admission/v1/admission.proto",
 ];
+const sessionAuthorizationSourcePaths = [
+  "kokoro/platform/authorization/v1/session_authorization.proto",
+];
 
 async function sourceDigest(directory, sourcePaths) {
   const hash = createHash("sha256");
@@ -212,6 +215,13 @@ test("privileged and public contracts have independent provider/consumer mirrors
       ],
     },
     {
+      id: "platform-session-authorization@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-authorization",
+        "kokoro-session/src/platform/authorization-generated",
+      ],
+    },
+    {
       id: "platform-public@v1",
       mirrors: [
         "kokoro-platform/src/interfaces/http/generated/platform-public",
@@ -245,6 +255,12 @@ test("each isolated boundary emits its own pinned source metadata", async () => 
         schemaId: "kokoro.platform.admission.v1.AdmissionService",
         sourcePaths: admissionSourcePaths,
         forbidden: "kokoro/platform/admin/v1/admin_auth.proto",
+      },
+      {
+        boundary: "platform-session-authorization@v1",
+        schemaId: "kokoro.platform.authorization.v1.SessionAuthorizationService",
+        sourcePaths: sessionAuthorizationSourcePaths,
+        forbidden: "kokoro/platform/admission/v1/admission.proto",
       },
     ]) {
       const output = resolve(temporary, fixture.boundary);

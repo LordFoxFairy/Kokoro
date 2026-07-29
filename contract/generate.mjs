@@ -94,6 +94,16 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "platform-session-authorization@v1": Object.freeze({
+    schema: "kokoro.platform.authorization.v1.SessionAuthorizationService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/authorization/v1/session_authorization.proto"]),
+    sources: Object.freeze([
+      "kokoro/platform/authorization/v1/session_authorization.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
 });
 
 function parseArguments(argv) {

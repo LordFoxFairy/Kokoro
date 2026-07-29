@@ -4,6 +4,78 @@
       "audience": "internal-workload",
       "consumers": [
         {
+          "boundary": "service.session",
+          "repository": "kokoro-session"
+        }
+      ],
+      "deadlineMs": 30000,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-session-authorization",
+      "lifecycle": "contract-only",
+      "operations": [
+        {
+          "effect": false,
+          "id": "PullAuthorizationEvents",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "GetAuthorizationSnapshotPage",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "GetAuthorizationVerificationKeys",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
+        }
+      ],
+      "protocol": "connect-rpc",
+      "provider": {
+        "boundary": "service.platform",
+        "repository": "kokoro-platform"
+      },
+      "scope": "platform",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/authorization/v1/session_authorization.proto",
+          "select": {
+            "service": "SessionAuthorizationService"
+          }
+        },
+        {
+          "kind": "spec-yaml",
+          "path": "contract/registry/platform-session-authorization-v1.yaml",
+          "select": {
+            "member": "scalar",
+            "section": "operations"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-service",
+      "version": 1
+    },
+    {
+      "audience": "internal-workload",
+      "consumers": [
+        {
           "boundary": "service.agent",
           "repository": "kokoro-agent"
         },

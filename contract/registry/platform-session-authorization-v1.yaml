@@ -1,0 +1,15 @@
+operations:
+  - PullAuthorizationEvents
+  - GetAuthorizationSnapshotPage
+  - GetAuthorizationVerificationKeys
+invariants:
+  - id: jwt-fact-nine-axis-equality
+    rule: DeliveredGrantFact must contain the exact nine epoch values signed into the JWT identified by grant_ref and claims_digest.
+  - id: verification-key-purpose-separation
+    rule: Consumers resolve event signatures only with EVENT_SIGNING keys and SessionAccessGrant JWTs only with SESSION_ACCESS_GRANT keys, indexed by purpose and revision.
+  - id: site-only-current-projection
+    rule: Session projects only current Site security, policy, and revocation epochs; JWT grant axes are not current owner state.
+  - id: universal-site-revocation-fence
+    rule: Every owner mutation that can invalidate subject, identity-session, membership, authorization, restriction, credential, Site, or policy facts must bump Site revocation_epoch and append the signed event in the same UoW.
+  - id: runtime-revocation-evidence
+    rule: Runtime compatibility must revoke an identity session, revoke a membership, and suspend a Site, proving each previously issued grant becomes inactive.
