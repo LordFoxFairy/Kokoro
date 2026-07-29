@@ -418,6 +418,38 @@ def test_admin_command_v2_is_submit_queue_worker_and_post_review_only() -> None:
     assert "Platform Worker is the sole authority" in command
 
 
+def test_admin_command_v2_advertises_only_the_real_worker_owned_authority_aggregate() -> None:
+    command = _proto("kokoro/platform/admin/v2/admin_command.proto")
+    effect = _message_body(command, "SubmitCommandEffect")
+    change = _message_body(command, "ChangeOperatorAuthority")
+
+    assert "ChangeOperatorAuthority change" in effect
+    assert "oneof change" not in effect
+    for unowned in (
+        "DisableUserChange",
+        "UpdateOperatorScopeChange",
+        "UpdatePolicyChange",
+        "disable_user",
+        "update_policy",
+    ):
+        assert unowned not in command
+    for field in (
+        "OperatorAuthorityChangeAction action",
+        "string operator_ref",
+        "uint64 operator_generation",
+        "optional uint64 expected_authorization_epoch",
+        "repeated string permissions",
+        "repeated string site_ids",
+        "repeated string environments",
+        "repeated string regions",
+        "google.protobuf.Timestamp expires_at",
+        "google.protobuf.Timestamp break_glass_expires_at",
+    ):
+        assert field in change
+    for action in ("PROVISION", "REPLACE", "SUSPEND", "REVOKE"):
+        assert f"OPERATOR_AUTHORITY_CHANGE_ACTION_{action}" in command
+
+
 def test_authenticated_operator_axes_are_exactly_canonical_and_attested() -> None:
     shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")
     envelope = _proto("kokoro/common/v2/command_envelope.proto")

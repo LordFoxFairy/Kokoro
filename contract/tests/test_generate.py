@@ -689,7 +689,8 @@ import {
   SiteScopeSchema,
 } from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
 import {
-  DisableUserChangeSchema,
+  ChangeOperatorAuthoritySchema,
+  OperatorAuthorityChangeAction,
   SubmitCommandEffectSchema,
 } from "./bundle/kokoro/platform/admin/v2/admin_command_pb.js";
 
@@ -731,10 +732,17 @@ const makeContext = (
   }),
 });
 const effect = create(SubmitCommandEffectSchema, {
-  change: {
-    case: "disableUser",
-    value: create(DisableUserChangeSchema, { siteId: "site:alpha", userRef: "user:42", reasonCode: "abuse" }),
-  },
+  change: create(ChangeOperatorAuthoritySchema, {
+    action: OperatorAuthorityChangeAction.REPLACE,
+    operatorRef: "operator:42",
+    operatorGeneration: 4n,
+    expectedAuthorizationEpoch: 7n,
+    permissions: ["admin.approval.execute", "admin.authority.manage"],
+    siteIds: ["site:beta", "site:alpha"],
+    environments: ["production"],
+    regions: ["us-west-2", "us-east-1"],
+    expiresAt: timestampFromDate(new Date("2027-07-29T12:00:00Z")),
+  }),
   reason: "security response",
 });
 const verified: VerifiedAuthenticatedAdminAxes = {
