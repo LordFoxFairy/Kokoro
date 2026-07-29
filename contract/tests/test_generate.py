@@ -127,6 +127,8 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
         "fork_branch",
         "activate_branch",
         "cancel_run",
+        "decide_action",
+        "decide_plan",
         "get_command_receipt",
         "archive_session",
         "restore_session",
@@ -157,6 +159,48 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     assert "command receipt operation/effect mismatch" in generated
     assert '"create_session": "session-created"' in generated
     assert '"delete_folder": "folder-deleted"' in generated
+    assert '"decide_action": "action-decision-recorded"' in generated
+    assert '"decide_plan": "plan-decision-recorded"' in generated
+    assert (
+        http["endpoints"]["decide_action"]["path_template"]
+        == "/v1/sessions/{session_id}/runs/{run_id}/actions:decide"
+    )
+    assert (
+        http["endpoints"]["decide_plan"]["path_template"]
+        == "/v1/sessions/{session_id}/runs/{run_id}/plans:decide"
+    )
+    action_decision = next(
+        obj for obj in http["objects"] if obj["name"] == "ActionDecision"
+    )
+    plan_decision = next(
+        obj for obj in http["objects"] if obj["name"] == "PlanDecision"
+    )
+    assert {variant["value"] for variant in action_decision["variants"]} == {
+        "approve",
+        "reject",
+        "edit",
+        "respond",
+    }
+    assert {variant["value"] for variant in plan_decision["variants"]} == {
+        "accept",
+        "reject",
+    }
+    action_projection = next(
+        obj for obj in http["objects"] if obj["name"] == "ActionPartPayload"
+    )
+    assert {
+        "decision_group_ref",
+        "required_owner_refs",
+        "safe_request_summary",
+        "input_schema_ref",
+        "safe_input_schema",
+    }.issubset({field["name"] for field in action_projection["fields"]})
+    plan_projection = next(
+        obj for obj in http["objects"] if obj["name"] == "PlanPartPayload"
+    )
+    assert {"plan_version", "allowed_actions", "status"}.issubset(
+        {field["name"] for field in plan_projection["fields"]}
+    )
     receipt_endpoint = http["endpoints"]["get_command_receipt"]
     assert receipt_endpoint["path_template"] == "/v1/session-commands/{command_id}/receipt"
     assert receipt_endpoint["params"] == ["command_id"]

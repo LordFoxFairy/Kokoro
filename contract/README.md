@@ -116,6 +116,8 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 | POST | `/v1/sessions/{session_id}/branches/{branch_id}:fork` |
 | POST | `/v1/sessions/{session_id}/branches/{branch_id}:activate` |
 | POST | `/v1/sessions/{session_id}/runs/{run_id}:cancel` |
+| POST | `/v1/sessions/{session_id}/runs/{run_id}/actions:decide` |
+| POST | `/v1/sessions/{session_id}/runs/{run_id}/plans:decide` |
 | GET | `/v1/session-commands/{command_id}/receipt` |
 | PATCH | `/v1/sessions/{session_id}` |
 | POST | `/v1/sessions/{session_id}:archive` |

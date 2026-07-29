@@ -93,3 +93,23 @@ test("the Session grant cannot drop a revocation axis or widen uint64 strings", 
   assert.match(result.stderr, /session_access_grant_resource_binding_drift/u);
   assert.match(result.stderr, /session_access_grant_credential_shape_drift/u);
 });
+
+test("a published Site release must carry a safe default model option per surface", async () => {
+  const fixture = await makeFixture();
+  const openapi = resolve(fixture, "contract/openapi/platform-public-v1.yaml");
+  const source = await readFile(openapi, "utf8");
+  await writeFile(
+    openapi,
+    source
+      .replace("        - modelOptionCatalogs\n", "")
+      .replace("        - defaultModelOptionRevisionRef\n", "")
+      .replace("        availability:\n", "        providerRef:\n          type: string\n        availability:\n"),
+  );
+
+  const result = spawnSync(process.execPath, [checker, "--root", fixture], { encoding: "utf8" });
+
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /product_context_axis_missing:modelOptionCatalogs/u);
+  assert.match(result.stderr, /model_option_catalog_field_missing:defaultModelOptionRevisionRef/u);
+  assert.match(result.stderr, /model_option_catalog_leaks_internal:providerRef/u);
+});

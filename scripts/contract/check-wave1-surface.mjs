@@ -199,9 +199,21 @@ function checkPublic(source, document, errors) {
   for (const axis of [
     "productContextRef", "siteProjectBindingRef", "deploymentRef", "siteRef", "siteReleaseRef",
     "webArtifactDigest", "runtimeEnvironment", "region", "sessionContractRevision", "policyEpoch",
-    "revocationEpoch", "issuedAt", "expiresAt",
+    "revocationEpoch", "modelOptionCatalogRef", "modelOptionCatalogs", "issuedAt", "expiresAt",
   ]) {
     if (!requiredProductAxes.has(axis)) fail(errors, `product_context_axis_missing:${axis}`);
+  }
+  const surfaceCatalogRequired = new Set(schemas.SurfaceModelOptionCatalog?.required ?? []);
+  for (const field of [
+    "surfaceId", "catalogRevisionRef", "defaultModelOptionRevisionRef", "options", "publishedAt",
+  ]) {
+    if (!surfaceCatalogRequired.has(field)) fail(errors, `model_option_catalog_field_missing:${field}`);
+  }
+  const publicOptionFields = new Set(Object.keys(schemas.PublishedModelOption?.properties ?? {}));
+  for (const forbidden of [
+    "provider", "providerRef", "route", "secretRef", "fallbackOrder", "orchestrationModelRef",
+  ]) {
+    if (publicOptionFields.has(forbidden)) fail(errors, `model_option_catalog_leaks_internal:${forbidden}`);
   }
   const requiredGrantAxes = new Set(schemas.SessionAccessGrantBinding?.required ?? []);
   for (const axis of [

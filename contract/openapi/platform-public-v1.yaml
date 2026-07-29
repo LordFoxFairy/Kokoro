@@ -1453,6 +1453,107 @@ components:
       maxLength: 20
       pattern: '^[1-9][0-9]{0,19}$'
       x-kokoro-maximum: '18446744073709551615'
+    PublishedModelOption:
+      type: object
+      additionalProperties: false
+      description: >-
+        Immutable, Site-release-published product option safe for an end-user selector. Provider,
+        route, credential, price internals, fallback order, and the hidden orchestration model are
+        deliberately absent. Admission resolves the revision reference to the complete bundle.
+      properties:
+        modelOptionRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        optionKey:
+          type: string
+          pattern: '^[a-z][a-z0-9._-]{1,127}$'
+        label:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description:
+          type: string
+          maxLength: 512
+        inputModalities:
+          type: array
+          minItems: 1
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '^[a-z][a-z0-9._-]{0,63}$'
+        outputModalities:
+          type: array
+          minItems: 1
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            pattern: '^[a-z][a-z0-9._-]{0,63}$'
+        supportedEfforts:
+          type: array
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+        badges:
+          type: array
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+        availability:
+          type: string
+          enum: [available, temporarily_unavailable]
+      required:
+        - modelOptionRevisionRef
+        - optionKey
+        - label
+        - inputModalities
+        - outputModalities
+        - supportedEfforts
+        - badges
+        - availability
+    SurfaceModelOptionCatalog:
+      type: object
+      additionalProperties: false
+      description: >-
+        The complete safe selector snapshot for one enabled product surface. A music, image, or
+        video option may resolve internally to both a generation model and a main chat/orchestration
+        model; the browser never selects or learns those base bindings independently.
+      properties:
+        surfaceId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        catalogRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        defaultModelOptionRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        options:
+          type: array
+          minItems: 1
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/PublishedModelOption'
+        publishedAt:
+          type: string
+          format: date-time
+      required:
+        - surfaceId
+        - catalogRevisionRef
+        - defaultModelOptionRevisionRef
+        - options
+        - publishedAt
     ProductContext:
       type: object
       additionalProperties: false
@@ -1518,6 +1619,11 @@ components:
           type: string
           minLength: 1
           maxLength: 256
+        modelOptionCatalogs:
+          type: array
+          maxItems: 64
+          items:
+            $ref: '#/components/schemas/SurfaceModelOptionCatalog'
         agentCatalogRef:
           type: string
           minLength: 1
@@ -1550,6 +1656,7 @@ components:
         - enabledSurfaceIds
         - featurePolicyRevision
         - modelOptionCatalogRef
+        - modelOptionCatalogs
         - agentCatalogRef
         - localePolicy
         - cacheMaxAgeSeconds
