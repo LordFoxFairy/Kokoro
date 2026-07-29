@@ -5,7 +5,10 @@ import { resolve } from "node:path";
 
 const MYSQL_CONTEXTS = ["site", "user", "model", "credit", "payment", "admin"];
 const POSTGRES_CONTEXTS = ["platform", "session"];
-const POSTGRES_ROLES = ["runtime", "migrator", "test"];
+const POSTGRES_ROLES = Object.freeze({
+  platform: Object.freeze(["api", "worker", "admin", "migrator", "test"]),
+  session: Object.freeze(["api", "worker", "migrator", "test"]),
+});
 const RUN_ID_PATTERN = /^run_[a-z0-9][a-z0-9_-]{2,31}$/u;
 const ENDPOINT_PATTERN = /^[a-z0-9][a-z0-9._-]{1,63}$/u;
 const REDIS_DATABASES = [8, 9, 10, 11, 12, 13, 14, 15];
@@ -89,7 +92,7 @@ function createLease({ runId, endpointFingerprint, redisDatabase, resources }) {
       POSTGRES_CONTEXTS.map((context) => [context, {
         database: `${databaseStem}_${context}`,
         roles: Object.fromEntries(
-          POSTGRES_ROLES.map((role) => {
+          POSTGRES_ROLES[context].map((role) => {
             const suffix = createHash("sha256")
               .update(`${runId}:postgres:${context}:${role}`)
               .digest("hex")
@@ -308,15 +311,18 @@ function postgresSql(lease, action) {
   const statements = [];
   for (const context of POSTGRES_CONTEXTS) {
     const allocation = lease.postgres[context];
+    const contextRoles = POSTGRES_ROLES[context];
     const database = pgLiteral(allocation.database);
     const migrator = pgLiteral(allocation.roles.migrator.username);
     if (action === "create") {
-      for (const role of POSTGRES_ROLES) {
+      for (const role of contextRoles) {
         const { username, password } = allocation.roles[role];
         statements.push(
           `SELECT format('CREATE ROLE %I LOGIN PASSWORD %L', ${pgLiteral(username)}, ${pgLiteral(password)}) ` +
             `WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = ${pgLiteral(username)}) \\gexec`,
-          `SELECT format('ALTER ROLE %I LOGIN PASSWORD %L', ${pgLiteral(username)}, ${pgLiteral(password)}) \\gexec`,
+          `SELECT format('ALTER ROLE %I LOGIN PASSWORD %L NOSUPERUSER NOCREATEDB NOCREATEROLE ` +
+            `${role === "test" ? "INHERIT" : "NOINHERIT"} NOREPLICATION NOBYPASSRLS', ` +
+            `${pgLiteral(username)}, ${pgLiteral(password)}) \\gexec`,
         );
       }
       statements.push(
@@ -324,23 +330,17 @@ function postgresSql(lease, action) {
           `WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = ${database}) \\gexec`,
         `SELECT format('REVOKE CONNECT, TEMPORARY ON DATABASE %I FROM PUBLIC', ${database}) \\gexec`,
         `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ${migrator}) \\gexec`,
-        `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
-          `${pgLiteral(allocation.roles.runtime.username)}) \\gexec`,
+        ...contextRoles.filter((role) => !["migrator", "test"].includes(role)).map((role) =>
+          `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
+            `${pgLiteral(allocation.roles[role].username)}) \\gexec`,
+        ),
         `SELECT format('GRANT CONNECT ON DATABASE %I TO %I', ${database}, ` +
           `${pgLiteral(allocation.roles.test.username)}) \\gexec`,
         `\\connect ${pgIdentifier(allocation.database)}`,
         "REVOKE ALL ON SCHEMA public FROM PUBLIC;",
-        `GRANT USAGE ON SCHEMA public TO ${pgIdentifier(allocation.roles.runtime.username)};`,
-        `GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ` +
-          `${pgIdentifier(allocation.roles.runtime.username)};`,
-        `GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO ` +
-          `${pgIdentifier(allocation.roles.runtime.username)};`,
-        `ALTER DEFAULT PRIVILEGES FOR ROLE ${pgIdentifier(allocation.roles.migrator.username)} ` +
-          `IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ` +
-          `${pgIdentifier(allocation.roles.runtime.username)};`,
-        `ALTER DEFAULT PRIVILEGES FOR ROLE ${pgIdentifier(allocation.roles.migrator.username)} ` +
-          `IN SCHEMA public GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO ` +
-          `${pgIdentifier(allocation.roles.runtime.username)};`,
+        // Root provisions identities and CONNECT only. Child migrations own
+        // schema/table grants so a new module cannot inherit broad DML by
+        // accident.
         `GRANT ${pgIdentifier(allocation.roles.migrator.username)} TO ` +
           `${pgIdentifier(allocation.roles.test.username)};`,
         "\\connect postgres",
@@ -350,7 +350,7 @@ function postgresSql(lease, action) {
         `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = ${database} AND pid <> pg_backend_pid();`,
         `SELECT format('DROP DATABASE IF EXISTS %I', ${database}) \\gexec`,
       );
-      for (const role of [...POSTGRES_ROLES].reverse()) {
+      for (const role of [...contextRoles].reverse()) {
         const username = pgLiteral(allocation.roles[role].username);
         statements.push(`SELECT format('DROP ROLE IF EXISTS %I', ${username}) \\gexec`);
       }

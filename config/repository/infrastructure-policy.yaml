@@ -50,7 +50,10 @@
     "prefix": "kokoro_test_",
     "mysqlContexts": ["site", "user", "model", "credit", "payment", "admin"],
     "postgresContexts": ["platform", "session"],
-    "postgresRoles": ["runtime", "migrator", "test"],
+    "postgresRolesByContext": {
+      "platform": ["api", "worker", "admin", "migrator", "test"],
+      "session": ["api", "worker", "migrator", "test"]
+    },
     "mongoContexts": ["agent", "session", "hub"],
     "redisDatabaseMin": 8,
     "redisDatabaseMax": 15,

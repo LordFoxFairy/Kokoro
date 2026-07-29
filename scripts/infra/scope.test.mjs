@@ -636,7 +636,12 @@ test("an additive PostgreSQL lease isolates platform and session databases with 
     assert.deepEqual(Object.keys(lease.postgres).sort(), ["platform", "session"]);
     for (const context of ["platform", "session"]) {
       assert.match(lease.postgres[context].database, new RegExp(`^kokoro_test_run_pgcut1_${context}$`, "u"));
-      assert.deepEqual(Object.keys(lease.postgres[context].roles).sort(), ["migrator", "runtime", "test"]);
+      assert.deepEqual(
+        Object.keys(lease.postgres[context].roles).sort(),
+        context === "platform"
+          ? ["admin", "api", "migrator", "test", "worker"]
+          : ["api", "migrator", "test", "worker"],
+      );
       for (const role of Object.values(lease.postgres[context].roles)) {
         assert.match(role.username, /^kt_pg_[a-z]+_[a-f0-9]{12}$/u);
         assert.match(role.password, /^[A-Za-z0-9_-]{24,}$/u);
@@ -653,7 +658,10 @@ test("an additive PostgreSQL lease isolates platform and session databases with 
     assert.match(calls[0].input, /REVOKE CONNECT, TEMPORARY ON DATABASE[\s\S]*FROM PUBLIC/u);
     assert.match(calls[0].input, /REVOKE ALL ON SCHEMA public FROM PUBLIC/u);
     assert.match(calls[0].input, /GRANT CONNECT ON DATABASE[\s\S]*migrator/u);
-    assert.match(calls[0].input, /ALTER DEFAULT PRIVILEGES[\s\S]*GRANT SELECT, INSERT, UPDATE, DELETE/u);
+    assert.match(calls[0].input, /GRANT CONNECT ON DATABASE[\s\S]*platformadmin/u);
+    assert.doesNotMatch(calls[0].input, /sessionadmin/u);
+    assert.doesNotMatch(calls[0].input, /ALTER DEFAULT PRIVILEGES/u);
+    assert.doesNotMatch(calls[0].input, /GRANT (?:SELECT|INSERT|UPDATE|DELETE) ON/u);
     assert.match(calls[0].input, /GRANT "kt_pg_platformmigrator_[a-f0-9]{12}" TO "kt_pg_platformtest_[a-f0-9]{12}"/u);
     assert.doesNotMatch(calls[0].input, /CREATE USER|mysql/u);
 
