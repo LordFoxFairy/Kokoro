@@ -51,6 +51,7 @@ export const GENERATED_BOUNDARIES = Object.freeze([
 export const CONTRACT_ONLY_GENERATED_BOUNDARIES = Object.freeze([
   "platform-session-authorization@v2",
   "agent-execution-evidence@v1",
+  "session-admission-owner@v1",
 ]);
 
 export class GeneratedContractError extends Error {

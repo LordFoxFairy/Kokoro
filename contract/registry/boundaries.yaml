@@ -69,6 +69,61 @@
       "version": 1
     },
     {
+      "audience": "platform-admission-workload",
+      "consumers": [
+        {
+          "boundary": "service.platform",
+          "repository": "kokoro-platform"
+        }
+      ],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-session",
+      "id": "session-admission-owner",
+      "lifecycle": "contract-only",
+      "operations": [
+        {
+          "effect": false,
+          "id": "VerifyPrepareOwner",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "VerifyFinalizeOwner",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        }
+      ],
+      "protocol": "connect-rpc",
+      "provider": {
+        "boundary": "service.session",
+        "repository": "kokoro-session"
+      },
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/session/admission/v1/session_admission_owner.proto",
+          "select": {
+            "service": "SessionAdmissionOwnerService"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
       "audience": "internal-workload",
       "consumers": [
         {

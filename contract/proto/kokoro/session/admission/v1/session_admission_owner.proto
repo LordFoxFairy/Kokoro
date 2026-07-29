@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package kokoro.session.admission.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// Session is the sole authority for the locally persisted launch/outbox facts
+// that Platform Admission must verify before preparing or finalizing a Run.
+// Requests carry canonical command identities, never prompt content or bearer
+// credentials. The service is read-only and available only to Platform mTLS.
+service SessionAdmissionOwnerService {
+  rpc VerifyPrepareOwner(VerifyPrepareOwnerRequest) returns (VerifyPrepareOwnerResponse) {}
+  rpc VerifyFinalizeOwner(VerifyFinalizeOwnerRequest) returns (VerifyFinalizeOwnerResponse) {}
+}
+
+message VerifyPrepareOwnerRequest {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string project_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string session_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string launch_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string proposed_run_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string trigger_message_id = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string admission_command_id = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string admission_request_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message VerifyFinalizeOwnerRequest {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string session_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string launch_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string manifest_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string authorization_segment_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_segment_version = 6 [(buf.validate.field).uint64.gt = 0];
+  string session_intent_receipt_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string admission_command_id = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string admission_request_digest = 9 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message SessionAdmissionOwnerVerified {}
+
+message SessionAdmissionOwnerMismatch {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Z0-9_]+$"
+  }];
+}
+
+message SessionAdmissionOwnerNotReady {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Z0-9_]+$"
+  }];
+  google.protobuf.Timestamp retry_after = 2 [(buf.validate.field).required = true];
+}
+
+message VerifyPrepareOwnerResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+
+    SessionAdmissionOwnerVerified verified = 1;
+    SessionAdmissionOwnerMismatch mismatch = 2;
+    SessionAdmissionOwnerNotReady not_ready = 3;
+  }
+}
+
+message VerifyFinalizeOwnerResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+
+    SessionAdmissionOwnerVerified verified = 1;
+    SessionAdmissionOwnerMismatch mismatch = 2;
+    SessionAdmissionOwnerNotReady not_ready = 3;
+  }
+}

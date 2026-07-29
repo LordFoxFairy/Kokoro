@@ -399,6 +399,7 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         "platform-admission@v1",
         "platform-session-authorization@v2",
         "session-dispatch-owner-evidence@v1",
+        "session-admission-owner@v1",
         "agent-execution-evidence@v1",
     ):
         assert boundary in generator
@@ -500,6 +501,15 @@ def test_node_generator_isolates_new_boundary_output() -> None:
             "kokoro/session/dispatch/v1/dispatch_owner_evidence_pb.ts",
             [
                 "kokoro/platform/authorization/v2/scoped_session_authorization_pb.ts",
+                "kokoro/platform/admission/v1/admission_pb.ts",
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+            ],
+        ),
+        (
+            "session-admission-owner@v1",
+            "kokoro/session/admission/v1/session_admission_owner_pb.ts",
+            [
+                "kokoro/session/dispatch/v1/dispatch_owner_evidence_pb.ts",
                 "kokoro/platform/admission/v1/admission_pb.ts",
                 "kokoro/platform/admin/v2/admin_query_pb.ts",
             ],

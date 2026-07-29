@@ -261,6 +261,7 @@ test("privileged and public contracts have independent provider/consumer mirrors
   assert.deepEqual(generatedChecker.CONTRACT_ONLY_GENERATED_BOUNDARIES, [
     "platform-session-authorization@v2",
     "agent-execution-evidence@v1",
+    "session-admission-owner@v1",
   ]);
   assert.equal(adminAuthSourcePaths.includes("kokoro/platform/admission/v1/admission.proto"), false);
   assert.deepEqual(admissionSourcePaths, [

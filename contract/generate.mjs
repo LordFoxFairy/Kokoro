@@ -124,6 +124,16 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "session-admission-owner@v1": Object.freeze({
+    schema: "kokoro.session.admission.v1.SessionAdmissionOwnerService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/session/admission/v1/session_admission_owner.proto"]),
+    sources: Object.freeze([
+      "kokoro/session/admission/v1/session_admission_owner.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "agent-execution-evidence@v1": Object.freeze({
     schema: "kokoro.agent.execution.v1.AgentExecutionEvidenceService",
     version: 1,
