@@ -398,6 +398,8 @@ objects:
       - {name: session, type: object:SessionMetadata}
       - {name: pinned, type: boolean}
       - {name: folder_id, type: string_nonempty, optional: true}
+      # Subject-scoped preference CAS; absent preference rows are exposed as implicit version 1.
+      - {name: preference_version, type: positive_int}
       - {name: safe_text_highlight, type: string, optional: true}
   - name: SessionList
     fields:
