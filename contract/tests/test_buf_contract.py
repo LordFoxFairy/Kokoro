@@ -313,10 +313,9 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
         "GetAuditWithinScope",
     ]
     assert _service_methods(command, "AdminCommandService") == [
-        "PrepareCommand",
-        "SubmitForApproval",
+        "SubmitCommand",
         "DecideApproval",
-        "ExecuteApproved",
+        "DecidePostEffectReview",
         "GetReceipt",
     ]
     assert _service_methods(lifecycle, "SiteLifecycleService") == [
@@ -355,6 +354,14 @@ def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
         "string managed_device_ref",
         "SecurityEpochs security_epochs",
         "OperatorScope scope",
+        "string actor_ref",
+        "uint64 operator_generation",
+        "kokoro.common.v2.OperatorAssuranceLevel assurance_level",
+        "repeated string factor_classes",
+        "google.protobuf.Timestamp authenticated_at",
+        "google.protobuf.Timestamp step_up_at",
+        "string operator_attestation_ref",
+        "string operator_attestation_digest",
     ):
         assert field in shared
     assert "oneof kind" in shared
@@ -369,6 +376,83 @@ def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
     )
     assert "authorization_code" in identity
     assert "id_token" not in identity
+
+
+def test_admin_command_v2_is_submit_queue_worker_and_post_review_only() -> None:
+    command = _proto("kokoro/platform/admin/v2/admin_command.proto")
+
+    for legacy in (
+        "PrepareCommand",
+        "SubmitForApproval",
+        "ExecuteApproved",
+        "prepared_command_ref",
+    ):
+        assert legacy not in command
+
+    submit = _message_body(command, "SubmitCommandResponse")
+    submit_state = _enum_body(command, "SubmitCommandState")
+    assert "SUBMIT_COMMAND_STATE_PENDING_APPROVAL" in submit_state
+    assert "SUBMIT_COMMAND_STATE_COMMITTED" in submit_state
+    assert "optional string approval_ref" in submit
+    assert "optional string post_effect_review_ref" in submit
+    assert "kokoro.common.v2.CommandReceiptV2 receipt" in submit
+
+    approval = _message_body(command, "DecideApprovalResponse")
+    approval_state = _enum_body(command, "ApprovalDecisionState")
+    for state in (
+        "APPROVAL_DECISION_STATE_EXECUTION_QUEUED",
+        "APPROVAL_DECISION_STATE_REJECTED",
+        "APPROVAL_DECISION_STATE_DENIED",
+    ):
+        assert state in approval_state
+    assert "ApprovalDecisionState state" in approval
+    assert "kokoro.common.v2.CommandReceiptV2 receipt" in approval
+
+    review = _message_body(command, "DecidePostEffectReviewEffect")
+    assert "string review_ref" in review
+    assert "PostEffectReviewDecision decision" in review
+    assert "string reason" in review
+    review_decision = _enum_body(command, "PostEffectReviewDecision")
+    assert "POST_EFFECT_REVIEW_DECISION_ACKNOWLEDGE" in review_decision
+    assert "POST_EFFECT_REVIEW_DECISION_ESCALATE" in review_decision
+    assert "Platform Worker is the sole authority" in command
+
+
+def test_authenticated_operator_axes_are_exactly_canonical_and_attested() -> None:
+    shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")
+    envelope = _proto("kokoro/common/v2/command_envelope.proto")
+    command_context = _message_body(shared, "AuthenticatedOperatorCommandContext")
+    query_context = _message_body(shared, "AuthenticatedOperatorQueryContext")
+    canonical = _message_body(envelope, "CanonicalCommandTrustAxesV2")
+
+    for context in (command_context, query_context):
+        for field in (
+            "actor_ref",
+            "operator_generation",
+            "assurance_level",
+            "factor_classes",
+            "authenticated_at",
+            "step_up_at",
+            "operator_attestation_ref",
+            "operator_attestation_digest",
+        ):
+            assert field in context
+        assert 'pattern: "^[0-9a-f]{64}$"' in context
+
+    for field in (
+        "actor_generation",
+        "assurance_level",
+        "factor_classes",
+        "authenticated_at",
+        "step_up_at",
+        "operator_attestation_ref",
+        "operator_attestation_digest",
+    ):
+        assert field in canonical
+    assurance = _enum_body(envelope, "OperatorAssuranceLevel")
+    assert "OPERATOR_ASSURANCE_LEVEL_PASSWORD" in assurance
+    assert "OPERATOR_ASSURANCE_LEVEL_MFA" in assurance
+    assert "OPERATOR_ASSURANCE_LEVEL_PHISHING_RESISTANT" in assurance
 
 
 def test_site_lifecycle_is_typed_and_not_a_generic_admin_effect() -> None:
@@ -1587,11 +1671,10 @@ def test_wave1_required_reference_fields_reject_empty_values() -> None:
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
 
     required_refs = {
-        (command, "PrepareCommandResponse"): (
-            "prepared_command_ref",
-            "approval_policy_ref",
+        (command, "SubmitCommandResponse"): (
+            "approval_ref",
+            "post_effect_review_ref",
         ),
-        (command, "SubmitForApprovalResponse"): ("approval_ref",),
         (query, "SiteSummary"): ("site_ref",),
         (query, "UserSummary"): ("user_ref",),
         (query, "AuditRecord"): ("audit_ref",),

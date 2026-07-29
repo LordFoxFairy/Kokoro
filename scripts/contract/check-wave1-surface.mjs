@@ -65,7 +65,7 @@ const PRIVILEGED = Object.freeze({
     path: "contract/proto/kokoro/platform/admin/v2/admin_command.proto",
     service: "AdminCommandService",
     version: 2,
-    methods: ["PrepareCommand", "SubmitForApproval", "DecideApproval", "ExecuteApproved", "GetReceipt"],
+    methods: ["SubmitCommand", "DecideApproval", "DecidePostEffectReview", "GetReceipt"],
   },
   "platform-site-lifecycle": {
     path: "contract/proto/kokoro/platform/site/v1/site_lifecycle.proto",
@@ -90,7 +90,7 @@ const PRIVILEGED = Object.freeze({
 
 // Wave 3 intentionally replaced the unused contract-only Admission v1 before any provider existed.
 // Keep the approved five-command shape and its registry declaration byte-frozen from this point.
-const ADMISSION_SHA256 = "da6654a79b87b38849b6dbad9ada790143b8cc28b8c864415389fb9ad6030778";
+const ADMISSION_SHA256 = "f9690f6d80cf8f2f994b9573af57a59f356d2a0ae25d3b5b0686688182adf68c";
 const ADMISSION_REGISTRY_SHA256 = "462730285d52aad2ce4ee2b8446d0b549c2084ae375cdaee427c025ba6e61c8b";
 
 function fail(errors, code) {
@@ -306,7 +306,8 @@ function checkRegistry(root, publicDocument, registry, errors) {
   );
   if (wave1.size !== 5) fail(errors, "wave1_boundary_count");
   for (const [id, boundary] of wave1) {
-    if (boundary.lifecycle !== "contract-only" || boundary.sourceStatus !== "machine-readable") {
+    const expectedLifecycle = id === "platform-admin-command" ? "active" : "contract-only";
+    if (boundary.lifecycle !== expectedLifecycle || boundary.sourceStatus !== "machine-readable") {
       fail(errors, `wave1_boundary_lifecycle:${id}`);
     }
   }
@@ -394,7 +395,7 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 5 contract-only boundaries\n");
+    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 1 active command boundary\n");
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

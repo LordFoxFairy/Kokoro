@@ -429,12 +429,11 @@
       "deadlineMs": null,
       "failureOwner": "kokoro-platform",
       "id": "platform-admin-command",
-      "lifecycle": "contract-only",
+      "lifecycle": "active",
       "operations": [
-        {"effect": true, "id": "PrepareCommand", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
-        {"effect": true, "id": "SubmitForApproval", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": true, "id": "SubmitCommand", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": true, "id": "DecideApproval", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
-        {"effect": true, "id": "ExecuteApproved", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": true, "id": "DecidePostEffectReview", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": false, "id": "GetReceipt", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
@@ -897,6 +896,15 @@
         {
           "effect": false,
           "id": "run.control.receipt",
+          "receipt": null,
+          "retryClass": "never",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "run_events"
+        },
+        {
+          "effect": false,
+          "id": "run.owner.completed",
           "receipt": null,
           "retryClass": "never",
           "scope": "namespace",

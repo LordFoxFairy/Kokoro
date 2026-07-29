@@ -8,11 +8,14 @@ import "kokoro/platform/admin/v2/admin_shared.proto";
 
 // AdminCommandService coordinates approval for non-lifecycle administrative effects.
 // Site lifecycle effects have their own typed service and are deliberately absent here.
+// A client can submit and govern a command, but can never execute an approved effect. Approval
+// commits only an execution_queued transition. The Platform Worker is the sole authority that
+// claims the durable execution intent, revalidates the frozen maker/checker authority epochs, and
+// atomically records the effect and terminal receipt.
 service AdminCommandService {
-  rpc PrepareCommand(PrepareCommandRequest) returns (PrepareCommandResponse) {}
-  rpc SubmitForApproval(SubmitForApprovalRequest) returns (SubmitForApprovalResponse) {}
+  rpc SubmitCommand(SubmitCommandRequest) returns (SubmitCommandResponse) {}
   rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse) {}
-  rpc ExecuteApproved(ExecuteApprovedRequest) returns (ExecuteApprovedResponse) {}
+  rpc DecidePostEffectReview(DecidePostEffectReviewRequest) returns (DecidePostEffectReviewResponse) {}
   rpc GetReceipt(GetReceiptRequest) returns (GetReceiptResponse) {}
 }
 
@@ -50,7 +53,7 @@ message UpdatePolicyChange {
   }];
 }
 
-message PrepareCommandEffect {
+message SubmitCommandEffect {
   oneof change {
     option (buf.validate.oneof).required = true;
     DisableUserChange disable_user = 1;
@@ -61,43 +64,41 @@ message PrepareCommandEffect {
     min_len: 1
     max_len: 512
   }];
+  // Required only for an operation admitted under a BreakGlassScope. Platform resolves and binds
+  // the ticket to the authenticated operator attestation; it is never execution authority.
+  optional string break_glass_ticket_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
 }
 
-message PrepareCommandRequest {
+message SubmitCommandRequest {
   AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  PrepareCommandEffect effect = 2 [(buf.validate.field).required = true];
+  SubmitCommandEffect effect = 2 [(buf.validate.field).required = true];
 }
 
-message PrepareCommandResponse {
-  string prepared_command_ref = 1 [(buf.validate.field).string = {
+enum SubmitCommandState {
+  SUBMIT_COMMAND_STATE_UNSPECIFIED = 0;
+  SUBMIT_COMMAND_STATE_PENDING_APPROVAL = 1;
+  SUBMIT_COMMAND_STATE_COMMITTED = 2;
+}
+
+message SubmitCommandResponse {
+  SubmitCommandState state = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  // Present exactly when state is PENDING_APPROVAL.
+  optional string approval_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-  string approval_policy_ref = 2 [(buf.validate.field).string = {
+  // Present only for a committed break-glass effect that requires independent post-effect review.
+  optional string post_effect_review_ref = 3 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
-}
-
-message SubmitForApprovalEffect {
-  string prepared_command_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-}
-
-message SubmitForApprovalRequest {
-  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  SubmitForApprovalEffect effect = 2 [(buf.validate.field).required = true];
-}
-
-message SubmitForApprovalResponse {
-  string approval_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
 }
 
 enum ApprovalDecision {
@@ -126,28 +127,63 @@ message DecideApprovalRequest {
   DecideApprovalEffect effect = 2 [(buf.validate.field).required = true];
 }
 
+enum ApprovalDecisionState {
+  APPROVAL_DECISION_STATE_UNSPECIFIED = 0;
+  // The approval decision is committed and a durable Platform Worker intent now owns execution.
+  APPROVAL_DECISION_STATE_EXECUTION_QUEUED = 1;
+  // The checker rejected the proposed command without creating execution authority.
+  APPROVAL_DECISION_STATE_REJECTED = 2;
+  // The decision request itself failed authorization or frozen-authority validation.
+  APPROVAL_DECISION_STATE_DENIED = 3;
+}
+
 message DecideApprovalResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  ApprovalDecisionState state = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
 }
 
-message ExecuteApprovedEffect {
-  string prepared_command_ref = 1 [(buf.validate.field).string = {
+enum PostEffectReviewDecision {
+  POST_EFFECT_REVIEW_DECISION_UNSPECIFIED = 0;
+  POST_EFFECT_REVIEW_DECISION_ACKNOWLEDGE = 1;
+  POST_EFFECT_REVIEW_DECISION_ESCALATE = 2;
+}
+
+message DecidePostEffectReviewEffect {
+  string review_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-  string approval_ref = 2 [(buf.validate.field).string = {
+  PostEffectReviewDecision decision = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string reason = 3 [(buf.validate.field).string = {
     min_len: 1
-    max_len: 128
+    max_len: 512
   }];
 }
 
-message ExecuteApprovedRequest {
+message DecidePostEffectReviewRequest {
   AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  ExecuteApprovedEffect effect = 2 [(buf.validate.field).required = true];
+  DecidePostEffectReviewEffect effect = 2 [(buf.validate.field).required = true];
 }
 
-message ExecuteApprovedResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+enum PostEffectReviewState {
+  POST_EFFECT_REVIEW_STATE_UNSPECIFIED = 0;
+  POST_EFFECT_REVIEW_STATE_ACKNOWLEDGED = 1;
+  POST_EFFECT_REVIEW_STATE_ESCALATED = 2;
+  POST_EFFECT_REVIEW_STATE_DENIED = 3;
+}
+
+message DecidePostEffectReviewResponse {
+  PostEffectReviewState state = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
 }
 
 message GetReceiptRequest {

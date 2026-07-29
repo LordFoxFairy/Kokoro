@@ -285,6 +285,7 @@ import {
   CanonicalSecurityEpochV2Schema,
   CanonicalTypedProtobufV2Schema,
   CommandDigestAlgorithmV2,
+  OperatorAssuranceLevel,
   type CanonicalCommandEnvelopeV2,
 } from "./kokoro/common/v2/command_envelope_pb.js";
 
@@ -296,6 +297,11 @@ type TypedPayload = Readonly<{
   bytes: Uint8Array;
 }>;
 
+type CanonicalInstant = Readonly<{
+  seconds: bigint;
+  nanos: number;
+}>;
+
 type TrustAxes = Readonly<{
   workloadIdentityRef?: string;
   audience?: string;
@@ -305,6 +311,13 @@ type TrustAxes = Readonly<{
   actorRef?: string;
   actorSessionRef?: string;
   managedDeviceRef?: string;
+  actorGeneration?: bigint;
+  assuranceLevel?: OperatorAssuranceLevel;
+  factorClasses?: readonly string[];
+  authenticatedAt?: CanonicalInstant;
+  stepUpAt?: CanonicalInstant;
+  operatorAttestationRef?: string;
+  operatorAttestationDigest?: string;
   securityEpochs: readonly Readonly<{ axis: string; value: bigint }>[];
 }>;
 
@@ -338,6 +351,94 @@ function assertAxisMatch(label: string, declared: string, verified: string): str
   return canonicalDeclared;
 }
 
+function requiredSha256(label: string, value: unknown): string {
+  if (typeof value !== "string" || !/^[0-9a-f]{64}$/u.test(value)) {
+    throw new Error("command_envelope_sha256_invalid:" + label);
+  }
+  return value;
+}
+
+function optionalSha256(label: string, value: string | undefined): string | undefined {
+  return value === undefined ? undefined : requiredSha256(label, value);
+}
+
+function assertSha256Match(label: string, declared: string, verified: string): string {
+  const canonicalDeclared = requiredSha256(label, declared);
+  if (canonicalDeclared !== requiredSha256("verified." + label, verified)) {
+    throw new Error("command_envelope_axis_mismatch:" + label);
+  }
+  return canonicalDeclared;
+}
+
+function requiredUint64(label: string, value: unknown): bigint {
+  if (typeof value !== "bigint" || value <= 0n || value > 18446744073709551615n) {
+    throw new Error("command_envelope_uint64_invalid:" + label);
+  }
+  return value;
+}
+
+function optionalUint64(label: string, value: bigint | undefined): bigint | undefined {
+  return value === undefined ? undefined : requiredUint64(label, value);
+}
+
+function assertUint64Match(label: string, declared: bigint, verified: bigint): bigint {
+  const canonicalDeclared = requiredUint64(label, declared);
+  if (canonicalDeclared !== requiredUint64("verified." + label, verified)) {
+    throw new Error("command_envelope_axis_mismatch:" + label);
+  }
+  return canonicalDeclared;
+}
+
+function requiredAssurance(label: string, value: OperatorAssuranceLevel): OperatorAssuranceLevel {
+  if (
+    value !== OperatorAssuranceLevel.PASSWORD &&
+    value !== OperatorAssuranceLevel.MFA &&
+    value !== OperatorAssuranceLevel.PHISHING_RESISTANT
+  ) throw new Error("command_envelope_assurance_invalid:" + label);
+  return value;
+}
+
+function assertAssuranceMatch(
+  label: string,
+  declared: OperatorAssuranceLevel,
+  verified: OperatorAssuranceLevel,
+): OperatorAssuranceLevel {
+  const canonicalDeclared = requiredAssurance(label, declared);
+  if (canonicalDeclared !== requiredAssurance("verified." + label, verified)) {
+    throw new Error("command_envelope_axis_mismatch:" + label);
+  }
+  return canonicalDeclared;
+}
+
+function optionalInstant(label: string, value: CanonicalInstant | undefined): CanonicalInstant | undefined {
+  if (value === undefined) return undefined;
+  if (
+    typeof value.seconds !== "bigint" ||
+    !Number.isInteger(value.nanos) ||
+    value.nanos < 0 ||
+    value.nanos > 999999999
+  ) throw new Error("command_envelope_instant_invalid:" + label);
+  return { seconds: value.seconds, nanos: value.nanos };
+}
+
+function assertInstantMatch(
+  label: string,
+  declared: CanonicalInstant | undefined,
+  verified: CanonicalInstant | undefined,
+  required: boolean,
+): CanonicalInstant | undefined {
+  const canonicalDeclared = optionalInstant(label, declared);
+  const canonicalVerified = optionalInstant("verified." + label, verified);
+  if (required && (canonicalDeclared === undefined || canonicalVerified === undefined)) {
+    throw new Error("command_envelope_axis_missing:" + label);
+  }
+  if (
+    canonicalDeclared?.seconds !== canonicalVerified?.seconds ||
+    canonicalDeclared?.nanos !== canonicalVerified?.nanos
+  ) throw new Error("command_envelope_axis_mismatch:" + label);
+  return canonicalDeclared;
+}
+
 function compare(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0;
 }
@@ -351,6 +452,22 @@ function uniqueSorted(label: string, values: readonly string[], maximum = 100): 
     throw new Error("command_envelope_collection_duplicate:" + label);
   }
   return sorted;
+}
+
+function assertCollectionMatch(
+  label: string,
+  declared: readonly string[],
+  verified: readonly string[],
+  maximum: number,
+): string[] {
+  const canonicalDeclared = uniqueSorted(label, declared, maximum);
+  const canonicalVerified = uniqueSorted("verified." + label, verified, maximum);
+  if (canonicalDeclared.length === 0) throw new Error("command_envelope_axis_missing:" + label);
+  if (
+    canonicalDeclared.length !== canonicalVerified.length ||
+    canonicalDeclared.some((value, index) => value !== canonicalVerified[index])
+  ) throw new Error("command_envelope_axis_mismatch:" + label);
+  return canonicalDeclared;
 }
 
 function canonicalTyped(label: string, input: TypedPayload) {
@@ -390,6 +507,21 @@ function canonicalCommandEnvelopeV2(input: CommandEnvelopeInput): CanonicalComma
     actorRef: optionalAxis("actorRef", input.trust.actorRef),
     actorSessionRef: optionalAxis("actorSessionRef", input.trust.actorSessionRef),
     managedDeviceRef: optionalAxis("managedDeviceRef", input.trust.managedDeviceRef),
+    actorGeneration: optionalUint64("actorGeneration", input.trust.actorGeneration),
+    assuranceLevel: input.trust.assuranceLevel,
+    factorClasses: input.trust.factorClasses === undefined
+      ? []
+      : uniqueSorted("factorClass", input.trust.factorClasses, 16),
+    authenticatedAt: optionalInstant("authenticatedAt", input.trust.authenticatedAt),
+    stepUpAt: optionalInstant("stepUpAt", input.trust.stepUpAt),
+    operatorAttestationRef: optionalAxis(
+      "operatorAttestationRef",
+      input.trust.operatorAttestationRef,
+    ),
+    operatorAttestationDigest: optionalSha256(
+      "operatorAttestationDigest",
+      input.trust.operatorAttestationDigest,
+    ),
     securityEpochs: canonicalSecurityEpochs(input.trust.securityEpochs),
   });
   return create(CanonicalCommandEnvelopeV2Schema, {
@@ -432,6 +564,13 @@ export type VerifiedAuthenticatedAdminAxes = Readonly<{
   environment: string;
   region: string;
   managedDeviceRef: string;
+  operatorGeneration: bigint;
+  assuranceLevel: OperatorAssuranceLevel;
+  factorClasses: readonly string[];
+  authenticatedAt: CanonicalInstant;
+  stepUpAt?: CanonicalInstant;
+  operatorAttestationRef: string;
+  operatorAttestationDigest: string;
 }>;
 
 function canonicalOperatorScope(
@@ -520,6 +659,39 @@ function authenticatedEnvelope(
     context.managedDeviceRef,
     verified.managedDeviceRef,
   );
+  const actorGeneration = assertUint64Match(
+    "operatorGeneration",
+    context.operatorGeneration,
+    verified.operatorGeneration,
+  );
+  const assuranceLevel = assertAssuranceMatch(
+    "assuranceLevel",
+    context.assuranceLevel,
+    verified.assuranceLevel,
+  );
+  const factorClasses = assertCollectionMatch(
+    "factorClass",
+    context.factorClasses,
+    verified.factorClasses,
+    16,
+  );
+  const authenticatedAt = assertInstantMatch(
+    "authenticatedAt",
+    context.authenticatedAt,
+    verified.authenticatedAt,
+    true,
+  );
+  const stepUpAt = assertInstantMatch("stepUpAt", context.stepUpAt, verified.stepUpAt, false);
+  const operatorAttestationRef = assertAxisMatch(
+    "operatorAttestationRef",
+    context.operatorAttestationRef,
+    verified.operatorAttestationRef,
+  );
+  const operatorAttestationDigest = assertSha256Match(
+    "operatorAttestationDigest",
+    context.operatorAttestationDigest,
+    verified.operatorAttestationDigest,
+  );
   const canonicalScope = canonicalOperatorScope(context.scope, environment, region);
   const epochs = context.securityEpochs;
   return commandEnvelopeV2Digest({
@@ -533,6 +705,13 @@ function authenticatedEnvelope(
       actorRef,
       actorSessionRef,
       managedDeviceRef,
+      actorGeneration,
+      assuranceLevel,
+      factorClasses,
+      authenticatedAt,
+      stepUpAt,
+      operatorAttestationRef,
+      operatorAttestationDigest,
       securityEpochs: [
         { axis: "operator", value: epochs.operatorSecurityEpoch },
         { axis: "policy", value: epochs.policyEpoch },
@@ -697,24 +876,22 @@ export function signOutRequestDigest(
 function adminCommandDigestSource() {
   return `${authenticatedCommandDigestSource()}
 import {
+  DecidePostEffectReviewEffectSchema,
   DecideApprovalEffectSchema,
-  ExecuteApprovedEffectSchema,
-  PrepareCommandEffectSchema,
-  SubmitForApprovalEffectSchema,
+  SubmitCommandEffectSchema,
   UpdateOperatorScopeChangeSchema,
+  type DecidePostEffectReviewEffect,
   type DecideApprovalEffect,
-  type ExecuteApprovedEffect,
-  type PrepareCommandEffect,
-  type SubmitForApprovalEffect,
+  type SubmitCommandEffect,
 } from "./kokoro/platform/admin/v2/admin_command_pb.js";
 
-function canonicalPrepareCommandEffect(
+function canonicalSubmitCommandEffect(
   context: AuthenticatedOperatorCommandContext,
-  effect: PrepareCommandEffect,
-): PrepareCommandEffect {
+  effect: SubmitCommandEffect,
+): SubmitCommandEffect {
   if (effect.change.case !== "updateOperatorScope") return effect;
   const replacement = canonicalOperatorScope(effect.change.value.replacementScope, context.environment, context.region);
-  return create(PrepareCommandEffectSchema, {
+  return create(SubmitCommandEffectSchema, {
     change: {
       case: "updateOperatorScope",
       value: create(UpdateOperatorScopeChangeSchema, {
@@ -723,10 +900,11 @@ function canonicalPrepareCommandEffect(
       }),
     },
     reason: effect.reason,
+    breakGlassTicketRef: effect.breakGlassTicketRef,
   });
 }
 
-function prepareCommandTargets(effect: PrepareCommandEffect): string[] {
+function submitCommandTargets(effect: SubmitCommandEffect): string[] {
   switch (effect.change.case) {
     case "disableUser": return [effect.change.value.siteId, effect.change.value.userRef];
     case "updateOperatorScope": return [effect.change.value.operatorRef];
@@ -735,33 +913,18 @@ function prepareCommandTargets(effect: PrepareCommandEffect): string[] {
   }
 }
 
-export function prepareCommandRequestDigest(
+export function submitCommandRequestDigest(
   context: AuthenticatedOperatorCommandContext,
-  effect: PrepareCommandEffect,
+  effect: SubmitCommandEffect,
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
-  const canonicalEffect = canonicalPrepareCommandEffect(context, effect);
+  const canonicalEffect = canonicalSubmitCommandEffect(context, effect);
   return authenticatedEnvelope(
     "platform-admin-command@v2",
-    "kokoro.platform.admin.v2.AdminCommandService/PrepareCommand",
+    "kokoro.platform.admin.v2.AdminCommandService/SubmitCommand",
     context,
-    { typeName: PrepareCommandEffectSchema.typeName, bytes: toBinary(PrepareCommandEffectSchema, canonicalEffect, { writeUnknownFields: false }) },
-    prepareCommandTargets(canonicalEffect),
-    verified,
-  );
-}
-
-export function submitForApprovalRequestDigest(
-  context: AuthenticatedOperatorCommandContext,
-  effect: SubmitForApprovalEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return authenticatedEnvelope(
-    "platform-admin-command@v2",
-    "kokoro.platform.admin.v2.AdminCommandService/SubmitForApproval",
-    context,
-    { typeName: SubmitForApprovalEffectSchema.typeName, bytes: toBinary(SubmitForApprovalEffectSchema, effect, { writeUnknownFields: false }) },
-    [effect.preparedCommandRef],
+    { typeName: SubmitCommandEffectSchema.typeName, bytes: toBinary(SubmitCommandEffectSchema, canonicalEffect, { writeUnknownFields: false }) },
+    submitCommandTargets(canonicalEffect),
     verified,
   );
 }
@@ -781,17 +944,17 @@ export function decideApprovalRequestDigest(
   );
 }
 
-export function executeApprovedRequestDigest(
+export function decidePostEffectReviewRequestDigest(
   context: AuthenticatedOperatorCommandContext,
-  effect: ExecuteApprovedEffect,
+  effect: DecidePostEffectReviewEffect,
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
   return authenticatedEnvelope(
     "platform-admin-command@v2",
-    "kokoro.platform.admin.v2.AdminCommandService/ExecuteApproved",
+    "kokoro.platform.admin.v2.AdminCommandService/DecidePostEffectReview",
     context,
-    { typeName: ExecuteApprovedEffectSchema.typeName, bytes: toBinary(ExecuteApprovedEffectSchema, effect, { writeUnknownFields: false }) },
-    [effect.preparedCommandRef, effect.approvalRef],
+    { typeName: DecidePostEffectReviewEffectSchema.typeName, bytes: toBinary(DecidePostEffectReviewEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.reviewRef],
     verified,
   );
 }

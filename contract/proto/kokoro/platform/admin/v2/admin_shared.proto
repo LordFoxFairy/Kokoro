@@ -127,6 +127,35 @@ message AuthenticatedOperatorQueryContext {
   }];
   SecurityEpochs security_epochs = 6 [(buf.validate.field).required = true];
   OperatorScope scope = 7 [(buf.validate.field).required = true];
+  string actor_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 operator_generation = 9 [(buf.validate.field).uint64.gt = 0];
+  kokoro.common.v2.OperatorAssuranceLevel assurance_level = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string factor_classes = 11 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 16
+    items: {
+      string: {
+        min_len: 1
+        max_len: 64
+      }
+    }
+  }];
+  google.protobuf.Timestamp authenticated_at = 12 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp step_up_at = 13;
+  string operator_attestation_ref = 14 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operator_attestation_digest = 15 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 message AuthenticatedOperatorCommandContext {
@@ -154,5 +183,32 @@ message AuthenticatedOperatorCommandContext {
   string actor_ref = 8 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
+  }];
+  uint64 operator_generation = 9 [(buf.validate.field).uint64.gt = 0];
+  kokoro.common.v2.OperatorAssuranceLevel assurance_level = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string factor_classes = 11 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 16
+    items: {
+      string: {
+        min_len: 1
+        max_len: 64
+      }
+    }
+  }];
+  google.protobuf.Timestamp authenticated_at = 12 [(buf.validate.field).required = true];
+  // Optional at wire level for lower-assurance operations. A phishing-resistant operation must
+  // require a fresh value and bind it to the server-verified operator session attestation.
+  google.protobuf.Timestamp step_up_at = 13;
+  string operator_attestation_ref = 14 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operator_attestation_digest = 15 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
 }

@@ -666,17 +666,22 @@ console.log(JSON.stringify({ golden, changedEffect, mismatch }));
         (
             "platform-admin-command@v2",
             [
-                "prepareCommandRequestDigest",
-                "submitForApprovalRequestDigest",
+                "submitCommandRequestDigest",
                 "decideApprovalRequestDigest",
-                "executeApprovedRequestDigest",
+                "decidePostEffectReviewRequestDigest",
             ],
             r'''
 import { create } from "@bufbuild/protobuf";
 import {
-  prepareCommandRequestDigest,
+  submitCommandRequestDigest,
+  type VerifiedAuthenticatedAdminAxes,
 } from "./bundle/command-envelope-digest.js";
-import { CommandDigestAlgorithmV2, CommandIdentityV2Schema } from "./bundle/kokoro/common/v2/command_envelope_pb.js";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import {
+  CommandDigestAlgorithmV2,
+  CommandIdentityV2Schema,
+  OperatorAssuranceLevel,
+} from "./bundle/kokoro/common/v2/command_envelope_pb.js";
 import {
   AuthenticatedOperatorCommandContextSchema,
   OperatorScopeSchema,
@@ -685,7 +690,7 @@ import {
 } from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
 import {
   DisableUserChangeSchema,
-  PrepareCommandEffectSchema,
+  SubmitCommandEffectSchema,
 } from "./bundle/kokoro/platform/admin/v2/admin_command_pb.js";
 
 const command = create(CommandIdentityV2Schema, {
@@ -694,13 +699,26 @@ const command = create(CommandIdentityV2Schema, {
   digestAlgorithm: CommandDigestAlgorithmV2.SHA256_COMMAND_ENVELOPE,
   requestDigest: "0".repeat(64),
 });
-const makeContext = (siteIds: string[], actorRef = "operator:7") => create(AuthenticatedOperatorCommandContextSchema, {
+const authenticatedAt = timestampFromDate(new Date("2026-07-29T12:00:00Z"));
+const stepUpAt = timestampFromDate(new Date("2026-07-29T12:02:00Z"));
+const makeContext = (
+  siteIds: string[],
+  actorRef = "operator:7",
+  factorClasses = ["webauthn", "oidc"],
+) => create(AuthenticatedOperatorCommandContextSchema, {
   command,
   actorRef,
+  operatorGeneration: 12n,
   operatorSessionRef: "session:9",
   environment: "production",
   region: "us-east-1",
   managedDeviceRef: "device:3",
+  assuranceLevel: OperatorAssuranceLevel.PHISHING_RESISTANT,
+  factorClasses,
+  authenticatedAt,
+  stepUpAt,
+  operatorAttestationRef: "attestation:operator:7:12",
+  operatorAttestationDigest: "a".repeat(64),
   securityEpochs: create(SecurityEpochsSchema, {
     operatorSecurityEpoch: 2n,
     sessionEpoch: 11n,
@@ -712,37 +730,88 @@ const makeContext = (siteIds: string[], actorRef = "operator:7") => create(Authe
     kind: { case: "site", value: create(SiteScopeSchema, { siteIds, environment: "production", region: "us-east-1" }) },
   }),
 });
-const effect = create(PrepareCommandEffectSchema, {
+const effect = create(SubmitCommandEffectSchema, {
   change: {
     case: "disableUser",
     value: create(DisableUserChangeSchema, { siteId: "site:alpha", userRef: "user:42", reasonCode: "abuse" }),
   },
   reason: "security response",
 });
-const verified = {
+const verified: VerifiedAuthenticatedAdminAxes = {
   workloadIdentityRef: "workload:web-admin",
   audience: "platform-admin",
   actorRef: "operator:7",
+  operatorGeneration: 12n,
   operatorSessionRef: "session:9",
   environment: "production",
   region: "us-east-1",
   managedDeviceRef: "device:3",
-} as const;
-const golden = prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, verified);
-const stable = prepareCommandRequestDigest(makeContext(["site:alpha", "site:beta"]), effect, verified);
-const changedActor = prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"], "operator:8"), effect, { ...verified, actorRef: "operator:8" });
-const changedEffect = prepareCommandRequestDigest(
+  assuranceLevel: OperatorAssuranceLevel.PHISHING_RESISTANT,
+  factorClasses: ["oidc", "webauthn"],
+  authenticatedAt,
+  stepUpAt,
+  operatorAttestationRef: "attestation:operator:7:12",
+  operatorAttestationDigest: "a".repeat(64),
+};
+const golden = submitCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, verified);
+const stable = submitCommandRequestDigest(makeContext(["site:alpha", "site:beta"], "operator:7", ["oidc", "webauthn"]), effect, verified);
+const changedActor = submitCommandRequestDigest(makeContext(["site:beta", "site:alpha"], "operator:8"), effect, { ...verified, actorRef: "operator:8" });
+const changedFactors = submitCommandRequestDigest(
+  makeContext(["site:beta", "site:alpha"], "operator:7", ["oidc", "totp"]),
+  effect,
+  { ...verified, factorClasses: ["totp", "oidc"] },
+);
+const changedEffect = submitCommandRequestDigest(
   makeContext(["site:beta", "site:alpha"]),
-  create(PrepareCommandEffectSchema, { ...effect, reason: "different" }),
+  create(SubmitCommandEffectSchema, { ...effect, reason: "different" }),
   verified,
 );
 let mismatch = "accepted";
 try {
-  prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, { ...verified, region: "eu-west-1" });
+  submitCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, { ...verified, region: "eu-west-1" });
 } catch (error) {
   mismatch = error instanceof Error ? error.message : String(error);
 }
-console.log(JSON.stringify({ golden, stable, changedActor, changedEffect, mismatch }));
+const mismatchFor = (next: VerifiedAuthenticatedAdminAxes): string => {
+  try {
+    submitCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, next);
+    return "accepted";
+  } catch (error) {
+    return error instanceof Error ? error.message : String(error);
+  }
+};
+const axisMismatches = [
+  mismatchFor({ ...verified, operatorGeneration: 13n }),
+  mismatchFor({ ...verified, assuranceLevel: OperatorAssuranceLevel.MFA }),
+  mismatchFor({ ...verified, factorClasses: ["oidc", "totp"] }),
+  mismatchFor({ ...verified, authenticatedAt: timestampFromDate(new Date("2026-07-29T12:00:01Z")) }),
+  mismatchFor({ ...verified, stepUpAt: undefined }),
+  mismatchFor({ ...verified, operatorAttestationRef: "attestation:other" }),
+  mismatchFor({ ...verified, operatorAttestationDigest: "b".repeat(64) }),
+];
+let invalidDigest = "accepted";
+try {
+  submitCommandRequestDigest(
+    create(AuthenticatedOperatorCommandContextSchema, {
+      ...makeContext(["site:beta", "site:alpha"]),
+      operatorAttestationDigest: "z".repeat(64),
+    }),
+    effect,
+    { ...verified, operatorAttestationDigest: "z".repeat(64) },
+  );
+} catch (error) {
+  invalidDigest = error instanceof Error ? error.message : String(error);
+}
+console.log(JSON.stringify({
+  golden,
+  stable,
+  changedActor,
+  changedFactors,
+  changedEffect,
+  mismatch,
+  axisMismatches,
+  invalidDigest,
+}));
 ''',
         ),
         (
@@ -763,7 +832,11 @@ import { create } from "@bufbuild/protobuf";
 import {
   planDecommissionRequestDigest,
 } from "./bundle/command-envelope-digest.js";
-import { CommandDigestAlgorithmV2, CommandIdentityV2Schema } from "./bundle/kokoro/common/v2/command_envelope_pb.js";
+import {
+  CommandDigestAlgorithmV2,
+  CommandIdentityV2Schema,
+  OperatorAssuranceLevel,
+} from "./bundle/kokoro/common/v2/command_envelope_pb.js";
 import {
   AuthenticatedOperatorCommandContextSchema,
   OperatorScopeSchema,
@@ -779,13 +852,22 @@ const command = create(CommandIdentityV2Schema, {
   digestAlgorithm: CommandDigestAlgorithmV2.SHA256_COMMAND_ENVELOPE,
   requestDigest: "0".repeat(64),
 });
+const authenticatedAt = timestampFromDate(new Date("2026-07-29T12:00:00Z"));
+const stepUpAt = timestampFromDate(new Date("2026-07-29T12:02:00Z"));
 const context = create(AuthenticatedOperatorCommandContextSchema, {
   command,
   actorRef: "operator:7",
+  operatorGeneration: 12n,
   operatorSessionRef: "session:9",
   environment: "production",
   region: "us-east-1",
   managedDeviceRef: "device:3",
+  assuranceLevel: OperatorAssuranceLevel.PHISHING_RESISTANT,
+  factorClasses: ["oidc", "webauthn"],
+  authenticatedAt,
+  stepUpAt,
+  operatorAttestationRef: "attestation:operator:7:12",
+  operatorAttestationDigest: "a".repeat(64),
   securityEpochs: create(SecurityEpochsSchema, { operatorSecurityEpoch: 2n, sessionEpoch: 11n, restrictionEpoch: 3n, policyEpoch: 5n, siteSecurityEpoch: 7n }),
   scope: create(OperatorScopeSchema, {
     kind: { case: "site", value: create(SiteScopeSchema, { siteIds: ["site:alpha"], environment: "production", region: "us-east-1" }) },
@@ -800,10 +882,17 @@ const verified = {
   workloadIdentityRef: "workload:web-admin",
   audience: "platform-admin",
   actorRef: "operator:7",
+  operatorGeneration: 12n,
   operatorSessionRef: "session:9",
   environment: "production",
   region: "us-east-1",
   managedDeviceRef: "device:3",
+  assuranceLevel: OperatorAssuranceLevel.PHISHING_RESISTANT,
+  factorClasses: ["webauthn", "oidc"],
+  authenticatedAt,
+  stepUpAt,
+  operatorAttestationRef: "attestation:operator:7:12",
+  operatorAttestationDigest: "a".repeat(64),
 } as const;
 const golden = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["billing", "storage"]), verified);
 const stable = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["storage", "billing"]), verified);
@@ -897,10 +986,23 @@ declare module "node:crypto" {
         if "stable" in evidence:
             assert evidence["stable"] == evidence["golden"]
         for name, digest in evidence.items():
-            if name not in {"golden", "stable", "mismatch"}:
+            if name not in {"golden", "stable", "mismatch", "axisMismatches", "invalidDigest"}:
                 assert digest != evidence["golden"], name
         if "mismatch" in evidence:
             assert evidence["mismatch"] == "command_envelope_axis_mismatch:region"
+        if "axisMismatches" in evidence:
+            assert evidence["axisMismatches"] == [
+                "command_envelope_axis_mismatch:operatorGeneration",
+                "command_envelope_axis_mismatch:assuranceLevel",
+                "command_envelope_axis_mismatch:factorClass",
+                "command_envelope_axis_mismatch:authenticatedAt",
+                "command_envelope_axis_mismatch:stepUpAt",
+                "command_envelope_axis_mismatch:operatorAttestationRef",
+                "command_envelope_axis_mismatch:operatorAttestationDigest",
+            ]
+            assert evidence["invalidDigest"] == (
+                "command_envelope_sha256_invalid:operatorAttestationDigest"
+            )
 
 
 def test_admin_auth_v1_frozen_metadata_is_reproducible() -> None:

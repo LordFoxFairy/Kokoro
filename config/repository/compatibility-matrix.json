@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
-  "combinationId": "wave0-round17-hardening-2026-07-28",
+  "combinationId": "wave1-admin-command-v2-2026-07-29",
   "contracts": [
     {
       "id": "hub-runtime",
@@ -57,6 +57,16 @@
    "id": "platform-admin-auth",
    "version": 1,
    "artifactDigest": "e4c0f68e5891c9f83a26b8a6c74552931f5d6d6c559c3d35a036aa3e53f90267",
+   "providers": [
+    "kokoro-platform"
+   ],
+   "consumers": [
+    "kokoro-web"
+   ]
+  },
+  {
+   "id": "platform-admin-command",
+   "version": 2,
    "providers": [
     "kokoro-platform"
    ],
@@ -173,6 +183,10 @@
      {
       "id": "platform-admin-auth",
       "version": 1
+     },
+     {
+      "id": "platform-admin-command",
+      "version": 2
      }
     ],
     "timeoutSeconds": 180

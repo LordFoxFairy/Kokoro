@@ -117,8 +117,9 @@ matrix. Declare `sourceStatus: "machine-readable"` only with a real contract sou
 with no source in this repository must say `declared-only` and be counted, never claim coverage it does not
 have. Allowed retry classes are derived from `kokoro.common.v1.RetryClass`; never hardcode that list here.
 New privileged effects use `kokoro.common.v2.CommandIdentityV2` and `CommandReceiptV2`: generated digest helpers
-bind exact typed effect bytes to canonical scope, Site, actor and resource sets. V1 remains byte-frozen for legacy
-consumers. A registry row must name the matching response receipt version; a V1 registry ref cannot silently
+bind exact typed effect bytes to canonical scope, Site, actor and resource sets. Admin Command v2 additionally binds
+operator generation, assurance/factor classes, authentication/step-up instants, and the operator attestation digest
+to server-verified axes before digesting. V1 remains byte-frozen for legacy consumers. A registry row must name the matching response receipt version; a V1 registry ref cannot silently
 vouch for a V2 response. `reconcile_receipt` is not documentation shorthand—command/state receipts must name the
 actual read operation callers use after an outcome-unknown response.
 
