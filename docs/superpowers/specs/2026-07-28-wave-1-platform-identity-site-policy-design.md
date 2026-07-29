@@ -524,6 +524,13 @@ required fields 和 capability compatibility。
 Rollback 是指向旧 immutable release 的新 ActivationAttempt；仍需以当前 contract/security/profile 重新验证，
 不能直接写 pointer。
 
+`RequestSite` 与 `ActivateRelease`/`ResumeSite` 的首响应只证明 durable intent/attempt 已创建，不证明外部部署完成。
+调用方以原 command id + V2 request digest 读取 `GetProvisioningReceipt` 或 `GetActivationReceipt`；读取返回原
+CommandReceipt、typed phase、intent/attempt/target refs 与最后 observation ref，不新建 effect。即使首响应为零字节，
+后台也能从 command identity 恢复 refs 并持续观察 requested→active 或
+preparing→promote_requested→observing→pointer_committing→draining→succeeded。`outcome_unknown` 继续同一
+intent/attempt reconcile，禁止用 `same_identity` 重放 accepted response 冒充最终状态，也禁止新建第二次部署。
+
 ### 7.5 Suspend、resume 与 decommission
 
 Suspend 在一个 transaction 中 bump `site_security_epoch`、冻结 `SuspensionPolicyRevision`、撤销用户 session 与
@@ -610,7 +617,12 @@ opaque ID。远程 provisioning 失败由 Worker reconcile，不创建第二个 
 - 单因子 password 至少 15 Unicode code points、支持至少 64/Unicode/space/password-manager paste，NFC 后完整
   hash、不截断、不强制字符组合/周期轮换；按版本化 blocklist 与 Argon2id policy 校验，成功登录可透明 rehash。
 - pre-auth/login/step-up/recovery completion 必须生成新高熵 AuthSession/family 并原子废弃旧 pre-auth id；
-  return intent 仅允许签名 allowlist path，禁止 session fixation/open redirect。
+  return intent 只接受 Platform 注册 allowlist 中的不透明 `return_intent_ref`，不得把调用方输入解释为 URL 或路径；
+  未注册引用 fail closed，禁止 session fixation/open redirect。
+- 所有 mutation 都要求 caller 在发送 body 前生成稳定 128-bit `X-Kokoro-Command-Id`（32 lowercase hex chars 或
+  UUIDv7 表示）；command id 不能由 password、OTP、Idempotency-Key 或 request body 派生。Platform 在可信边界内以
+  Site-scoped secret 计算 keyed request digest/HMAC，用于判定“同 command/different effect”、receipt 与审计；Web
+  不对 password/OTP 做客户端 SHA，也不需要预先知道服务端 digest 才能恢复首响应。
 
 认证密码学不得自研。Platform Identity 使用维护中的标准库：`argon2` 负责 Argon2id password hash/verify，
 `jose` 负责签名/验证 policy token，`otplib` 负责 RFC 6238 TOTP，`openid-client` 负责 OIDC discovery/JWKS/
@@ -636,7 +648,9 @@ issuer/audience/nonce/PKCE；若将来批准 Passkey/WebAuthn，只能使用 `@s
   有 attempt/time budget 并拒绝同 timestep replay。每组生成 10 个至少 128-bit 的 recovery code，只存 hash；
   regenerate 原子撤销旧组，disable/reset 要另一 active factor 或正式 recovery。
 - email change 创建 pending identifier；新邮箱验证前旧邮箱仍 primary/recovery。commit 原子切换 Site-local unique、
-  revoke others/rotate current，并通知旧/新邮箱；无旧渠道必须走 AccountRecovery，Support 不直接覆盖 email。
+  revoke others/rotate current，并通知旧/新邮箱。commit 前必须分别证明旧渠道确认与新邮箱确认，并重验 recent
+  password+MFA re-auth；两个 challenge 均绑定同一 Site/User/generation/transaction 且各自单次消费。无旧渠道必须走
+  AccountRecovery，Support 不直接覆盖 email。
 - Full AccountRecovery 由版本化 RecoveryPolicy 冻结 proof set、attempt/cooldown、Risk、恢复开始前 verified channel
   snapshot 与 replacement factor。Core 只接受未使用的预注册 recovery code，或 active authenticator + 原安全渠道；
   email/device/交易/KBA/Support 断言单独不够。完成时撤销旧 factor/session、挑战并绑定 replacement factor、推进
@@ -644,6 +658,14 @@ issuer/audience/nonce/PKCE；若将来批准 Passkey/WebAuthn，只能使用 `@s
   Site 预先认证的 external identity-proofing 流程可由 scoped JIT + maker/checker 承接。
 - recovery cooldown 内禁止 email/MFA、Redemption liability、ownership、export/delete 等高风险命令；每个 effect
   point 重验 recovery restriction epoch。所有 reset/change/MFA/recovery command 都使用同 key+digest receipt。
+
+会返回 session/refresh credential、TOTP secret、recovery code 或 factor-replacement capability 的命令，以及匿名
+secret completion，在发出请求前还必须由 Web BFF 生成一份 32-byte OS-CSPRNG receipt recovery capability。Platform
+只保存 domain-separated hash，constant-time 比较，并把 capability 绑定 workload-derived Site、purpose、subject
+generation、transaction 与 caller-generated command id；raw capability 不进入 response、日志、trace、audit 或 outbox。
+首响应丢失时，authenticated caller 可用自身 session 查询，匿名 caller 可用原 capability 查询；查询可重复且不消费
+capability，但 receipt 永不重放 one-time secret。若 delivery 已丢失，只有 receipt 指定的 replacement command 能原子
+消费同一 capability、废弃 orphan delivery 并生成新 secret；不返回新的 bearer capability，不允许任意命令 supersede。
 
 ### 8.5 cookie、refresh、revoke、disable
 
@@ -700,22 +722,35 @@ disabled；invite/member/team/switch operation 不在 policy registry，命中�
 
 ### 9.1 OIDC 与 principal
 
-Production/production-like Admin Web 只用 OIDC Authorization Code + PKCE。Admin Web/Auth.js 固定验证 state、
-nonce、code verifier；Platform 独立验证 issuer、audience、签名、exp/iat、nonce 与认证强度 claims。Operator
-identity 唯一键是 `(issuer, subject)`，email 只作显示/通知，不能作稳定主键。Admin session 短时、
-server-side、可撤销。
+Production/production-like Admin Web 只用 OIDC Authorization Code + PKCE。Platform 是唯一 authorization-code
+redeemer：`BeginOperatorLogin` 在服务端生成并保管 verifier，派生 challenge/nonce，冻结 issuer/client/audience/
+exact callback/environment/region/managed-device policy/return intent/expiry，并只向 Admin Web 返回单次 transaction ref
+与 authorization URI。verifier、nonce 原值和 client secret 永不跨 Connect 边界。Operator identity 唯一键是
+`(issuer, subject)`，email 只作显示/通知，不能作稳定主键；Admin session 短时、server-side、可撤销。
 
-Admin Web 使用 Auth.js 的 OIDC provider 与 browser-session/CSRF/state/nonce/PKCE 实现；Platform 使用标准
-OIDC/JOSE library 对提交给 `AdminIdentityService.ExchangeOidcSession` 的 token 独立验证。issuer 与 audience 在
-Web provider 和 Platform verifier 两侧都是 production 启动必填，不能因 discovery 成功而省略 audience，
-也不能手写 JWT parser 或只信 Admin Web 注入的 email。
+Admin Web/Auth.js 只拥有 browser session、CSRF/state 和 callback transport，不配置第二个 code redeemer，也不先消费
+code。开始登录前，Admin Web BFF 以 OS CSPRNG 生成 32-byte session-delivery recovery proof，只把 raw proof 保存在
+短期 server-side transaction state 并随 Begin 请求提交；Platform 仅保存 domain-separated SHA-256 digest。callback
+只把 authorization code、transaction ref 与同一 recovery proof 交给
+`AdminIdentityService.ExchangeOidcSession`，不提交 callback URI；Platform 使用 Begin 时按 workload registration 冻结的
+exact callback，原子 claim transaction 并用服务端 verifier 兑换 code，随后用
+标准 OIDC/JOSE library 完成 discovery/JWKS pin、签名、issuer/aud/azp、nonce、PKCE、exp/iat/auth_time、acr/amr、
+device claim 与 replay 验证，成功后才按 `(issuer,subject)` 加载 operator scope/epochs 并创建 OperatorSession。
+只提交 email/header、未绑定 transaction 的 ID token、caller 提供的 verifier/challenge/nonce 或二次兑换一律拒绝。
 
-`ExchangeOidcSession` 只接受由 Platform `BeginOperatorLogin` 预先创建的单次 `OperatorAuthTransactionRef`，该
-transaction 冻结 issuer/client/audience/exact redirect/nonce/PKCE challenge/environment/region/managed-device policy/
-return intent 与 expiry。Admin Web 完成 browser callback 后提交 authorization result + transaction ref；Platform
-对同一 transaction 原子消费 code/result，独立执行 discovery/JWKS pin、签名、issuer/aud/azp、nonce、PKCE、
-auth_time、acr/amr、device claim 与 replay 验证后才创建 OperatorSession。Web 验证用于 browser safety，不能替代
-Platform authority；只提交 email/header 或未绑定 transaction 的 ID token 一律拒绝。
+OperatorSession、committed Exchange receipt 与 exact delivery envelope 必须在首次响应前原子提交。delivery 使用固定
+signed-then-encrypted JOSE profile：inner compact JWS 仅 ES256/P-256；outer compact JWE 仅
+RSA-OAEP-256 + A256GCM、RSA >=3072，且校验精确 typ/cty/kid、claims、workload/environment/region/device/
+transaction/request digest。拒绝 `none`、`dir`、RSA1_5、CBC、zip/crit/jku/x5u/jwk/unprotected header、未知 kid、
+key-type/algorithm mismatch；Begin 冻结 signing/delivery key revision，相关 key 至少保留到 delivery TTL。
+`GetOperatorSessionDelivery` 是无 command identity、无 authorization code 的 verified-workload state read，只有同一
+transaction/recovery proof/axes 才返回首次保存的 byte-for-byte identical envelope 与原 Exchange receipt，绝不重新
+加密或访问 IdP。若 token endpoint outcome unknown，事务稳定进入 restart-login；旧 code 永不重兑，read 永不暴露
+session delivery。
+
+登录前 request 只使用可信 Admin workload axes；不能要求尚不存在的 OperatorScope/SecurityEpochs。消费登录 transaction
+使用同 workload/environment/region/device 绑定的 auth-transaction context；只有 OIDC 验证成功后，后续 query/command
+才使用包含 OperatorScope 与 SecurityEpochs 的 authenticated operator context。
 
 普通读要求 phishing-resistant authentication；权限/Scope/Site lifecycle/disable/redeem override 等 sensitive
 命令要求近期 step-up，`auth_time` 和批准的 `amr/acr` 均满足政策。dev header、默认 operator、proxy email、
@@ -893,9 +928,16 @@ session/grant、冻结新产品写入，再按 owner disposition retain/deidenti
 | begin/complete account recovery | `POST /v1/identity/account-recoveries[/{id}:complete]` | recovery transaction | Identity |
 | re-auth | `POST /v1/identity/sessions:reauthenticate` | User | Identity |
 | personal context | `GET /v1/me/personal-context` | User | Workspace read |
+| reconcile command receipt | `GET /v1/commands/{id}/receipt` | same authenticated User 或 caller-held recovery capability | command owner read |
 
-Mutation 要求 `Idempotency-Key`、contract version、CSRF 和 workload binding；body 禁止 siteId/userId/workspaceId
-authority fields。响应错误使用 versioned stable code，不泄露账号存在性。
+Mutation 要求 caller-generated `X-Kokoro-Command-Id`、`Idempotency-Key`、contract version、CSRF 和 workload binding；
+body 禁止 siteId/userId/workspaceId
+authority fields。每个 operation 返回自身可消费的 typed result；login/MFA/refresh 原子返回 opaque session/refresh
+credential 与各自 expiry，device/personal-context 返回 typed projection，不能用无 dereference route 的 `resultRef`
+占位。TOTP secret 与 recovery code 仅在首次 `Cache-Control: no-store` 响应出现，Platform 只保留 hash，receipt 不得
+重放。Platform 计算 keyed audit digest，caller 不需要知道或提交它。receipt read 同时绑定 workload-derived Site、
+原 caller subject 或 caller-held recovery capability、command id 与服务器 digest；任一不匹配都返回不可枚举的
+not-found。响应错误使用冻结的 versioned code enum，不泄露账号存在性。
 
 W1 只冻结 `chat.execution.prepare` 的 operation identity、request-security 与 default-deny Policy shell；
 `POST /v1/executions:prepare` 不进入 W1 OpenAPI descriptor、不注册 route，也不创建 Credit/Hold/grant。只有 W2A
@@ -909,18 +951,24 @@ W2A 未通过前，Core SiteRelease 不能把 Redeem 标记为 qualified。
 ### 12.2 Admin Web → Platform Connect
 
 ```text
-AdminIdentityService: BeginOperatorLogin, ExchangeOidcSession, BeginStepUp, CompleteStepUp, SignOut
+AdminIdentityService: BeginOperatorLogin, ExchangeOidcSession, GetOperatorSessionDelivery,
+                      BeginStepUp, CompleteStepUp, SignOut
 AdminQueryService: GetSite, ListSites, GetUserWithinSite, GetAuditWithinScope
 AdminCommandService: PrepareCommand, SubmitForApproval, DecideApproval, ExecuteApproved, GetReceipt
-SiteLifecycleService: RequestSite, ReconcileProvisioning, CreateRelease, ActivateRelease,
+SiteLifecycleService: RequestSite, GetProvisioningReceipt, ReconcileProvisioning, CreateRelease, ActivateRelease,
+                      GetActivationReceipt,
                       SuspendSite, ResumeSite, PlanDecommission, CancelDecommission,
                       ExecuteDecommission, GetDecommissionReceipt
 AdmissionService: AuthorizeEffect, GetRestrictionEpochs
 ```
 
-每个 command message 明确 `CommandIdentity{idempotencyKey,digestAlgorithm,requestDigest}`、environment、region、
+登录前 Begin/Exchange identity message 明确 workload/environment/region/managed-device 与 V2 command identity，但不含
+operator scope/epochs；delivery read 使用 verified workload read context，不含 command identity/code。登录 transaction
+消费与 delivery recovery 都重验同一 workload axes。OIDC 成功后的每个 command message 才明确
+`CommandIdentityV2{commandId,idempotencyKey,digestAlgorithm,requestDigest}`、`actorRef`、operator session、environment、region、
 managed-device ref、security epochs 和 typed Site/Global/BreakGlass scope oneof；不能用 omitted field 表达 global，
-不能用 GlobalScope 承载 breakglass。Admin Web 只使用 generated client。
+不能用 GlobalScope 承载 breakglass。Query、Command、shared context 分属独立 proto source，boundary generator 不得
+把 sibling privileged service 带入 consumer bundle。Admin Web 只使用 generated client。
 
 ### 12.3 Platform → runtime
 
@@ -935,7 +983,7 @@ workspaceId,projectId` 或 grant/auth/credit field；运行语义、checkpoint�
 |---|---|---|---|
 | registration begin | pending User/identifier + credential/legal + verification transaction + notification outbox | verification delivery | registration id + digest |
 | email verify/activation | verification consume + User active + personal bootstrap + outbox；不建 session | activation notification/namespace provision | verification id + digest |
-| password/MFA session | auth transaction consume + session/family + security event | cookie response | auth transaction id |
+| password/MFA session | auth transaction consume + session/family + security event | one-time credential delivery；丢失后 receipt/replacement ceremony | caller command id + recovery capability |
 | password reset/change | token/re-auth consume + credential epoch + session revoke/rotation + receipt/outbox | security notification | credential command id + digest |
 | email change | pending identifier consume + primary swap + session revoke/rotation + receipt/outbox | old/new channel notification | email-change id + digest |
 | TOTP/recovery code | enrollment/challenge consume + authenticator/set CAS + receipt/outbox | mandatory notification | authenticator command id + digest |
@@ -943,6 +991,7 @@ workspaceId,projectId` 或 grant/auth/credit field；运行语义、checkpoint�
 | refresh | old consume + family generation + new token + receipt | new cookie | token family + generation/digest |
 | disable/revoke | status/epoch + sessions/grants + audit/outbox | cache invalidation | command id |
 | Admin local command | effect 前 attempt audit gate；成功时 approval claim + domain mutation + receipt/audit/outbox 同 UoW；拒绝/回滚另写 fail-closed receipt | notify/security page | approval/command/attempt id |
+| Admin OIDC exchange | transaction claim + OperatorSession + exact JWS→JWE envelope + Exchange receipt | BFF decrypt；丢失时无 code 的 delivery read | transaction ref + caller-held recovery proof |
 | release activation | intent only；pointer commit 是后续独立 txn | provider promote/observe | activation attempt id |
 | Site suspend | SuspensionPolicy + Site epoch + session/grant revoke + restricted allowlist/audit | traffic/security propagation | suspend command id |
 | decommission | plan/fence/participant epoch + intent/receipt state；最终 tombstone 独立 txn | notify/export/provider/GC/verify | decommission plan/receipt id |

@@ -4,70 +4,156 @@ package kokoro.platform.identity.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
-import "kokoro/common/v1/receipt.proto";
-import "kokoro/platform/admin/v2/admin_control.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
 
-// AdminIdentityService owns operator OIDC transactions and sessions. Platform is
-// the only component that redeems an authorization code with the identity provider.
+// AdminIdentityService owns operator OIDC transactions and sessions. Platform is the only
+// authorization-code redeemer. Platform generates and durably binds the PKCE verifier,
+// derived challenge, nonce, exact callback, issuer and audience to a single-use transaction;
+// none of those private verifier values cross this boundary.
 service AdminIdentityService {
   rpc BeginOperatorLogin(BeginOperatorLoginRequest) returns (BeginOperatorLoginResponse) {}
   rpc ExchangeOidcSession(ExchangeOidcSessionRequest) returns (ExchangeOidcSessionResponse) {}
+  rpc GetOperatorSessionDelivery(GetOperatorSessionDeliveryRequest) returns (GetOperatorSessionDeliveryResponse) {}
   rpc BeginStepUp(BeginStepUpRequest) returns (BeginStepUpResponse) {}
   rpc CompleteStepUp(CompleteStepUpRequest) returns (CompleteStepUpResponse) {}
   rpc SignOut(SignOutRequest) returns (SignOutResponse) {}
 }
 
-message AdminIdentityCommandContext {
-  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
-  string environment = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 64
-  }];
-  string region = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 64
-  }];
-  string managed_device_ref = 4 [(buf.validate.field).string = {
+// Pre-login identity is a verified Admin Web workload, never a not-yet-known operator.
+message AdminPreLoginWorkloadContext {
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string workload_identity_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  kokoro.platform.admin.v2.SecurityEpochs security_epochs = 5 [(buf.validate.field).required = true];
-  kokoro.platform.admin.v2.OperatorScope scope = 6 [(buf.validate.field).required = true];
+  string environment = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string managed_device_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string audience = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+// The caller must present the same verified workload axes when consuming a login transaction.
+message AdminAuthTransactionContext {
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string workload_identity_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string environment = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string managed_device_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string audience = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+// Verified transport identity supplies the workload identity. This read-only context intentionally
+// has no CommandIdentity: recovery neither creates a command nor repeats the authorization code.
+message AdminVerifiedWorkloadReadContext {
+  string request_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string workload_identity_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string environment = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string managed_device_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string audience = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
 }
 
 message BeginOperatorLoginEffect {
-  string issuer = 1 [(buf.validate.field).string = {
+  // Issuer, client, audience and exact callback are selected from Platform's verified
+  // workload registration; callers cannot steer OIDC policy through this effect.
+  // This is an opaque key resolved through Platform's registered allowlist for that workload. It is
+  // never interpreted as a URL or path and an unknown key fails closed.
+  // Unknown callback or return refs fail closed without disclosing registrations.
+  string return_intent_ref = 1 [(buf.validate.field).string = {
     min_len: 1
-    max_len: 512
-  }];
-  string audience = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  string redirect_uri = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 2048
-  }];
-  string pkce_challenge = 4 [(buf.validate.field).string = {
-    min_len: 43
     max_len: 128
+    pattern: "^[a-z][a-z0-9_.-]{0,127}$"
   }];
-  string return_intent = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 512
-  }];
+  // Generated as exactly 32 bytes by the server-only Admin Web BFF with an OS CSPRNG before this
+  // request. BeginOperatorLogin freezes both signing and encryption key revisions. The registered
+  // verification and decryption keys for those revisions are retained through the delivery TTL.
+  AdminSessionRecoveryProof recovery_proof = 2 [(buf.validate.field).required = true];
+}
+
+// This high-entropy bearer proof is single-purpose: it can recover only the delivery result
+// of its bound login transaction. Platform derives a domain-separated SHA-256 digest using the
+// literal context "kokoro.admin-session-recovery.v1", stores only that digest, and compares it in
+// constant-time. The raw proof is never persisted or included in logs, traces, metrics, receipts,
+// outbox events, or audit payloads. Each digest must be unique among active recovery digests, and
+// Platform must never bind one proof to more than one transaction. It is bound to
+// workload_identity_ref, environment, region, managed_device_ref, audience, transaction_ref, and
+// the separate Begin and Exchange request digests. It remains valid only until delivery_expires_at
+// so a lost response can be recovered, and is revoked on transaction rejection, explicit
+// invalidation, security/key epoch revocation, or expiry.
+//
+// An unknown, expired, revoked, or mismatched transaction/proof/axis produces the same public
+// NOT_FOUND status and domain error, with no receipt reference or delivery payload and equivalent
+// externally observable, indistinguishable not-found behavior. The true reason is available only
+// to security audit. The caller must never be able to determine whether the transaction or
+// OperatorSession exists; it must never disclose whether the transaction or session exists.
+message AdminSessionRecoveryProof {
+  bytes recovery_handle = 1 [(buf.validate.field).bytes = {len: 32}];
 }
 
 message BeginOperatorLoginRequest {
-  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  AdminPreLoginWorkloadContext context = 1 [(buf.validate.field).required = true];
   BeginOperatorLoginEffect effect = 2 [(buf.validate.field).required = true];
 }
 
 message BeginOperatorLoginResponse {
-  string transaction_ref = 1 [(buf.validate.field).string.max_len = 128];
-  string authorization_uri = 2 [(buf.validate.field).string.max_len = 2048];
-  google.protobuf.Timestamp expires_at = 3;
-  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
+  string transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authorization_uri = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+    uri: true
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp recovery_expires_at = 5 [(buf.validate.field).required = true];
 }
 
 message ExchangeOidcSessionEffect {
@@ -79,34 +165,88 @@ message ExchangeOidcSessionEffect {
     min_len: 1
     max_len: 2048
   }];
-  string callback_uri = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 2048
-  }];
+  // Platform redeems with the exact callback frozen by BeginOperatorLogin.
+  // No callback authority is accepted from this request.
+  reserved 3;
+  // Required on both first exchange and idempotent response recovery.
+  AdminSessionRecoveryProof recovery_proof = 4 [(buf.validate.field).required = true];
 }
 
 message ExchangeOidcSessionRequest {
-  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  AdminAuthTransactionContext context = 1 [(buf.validate.field).required = true];
   ExchangeOidcSessionEffect effect = 2 [(buf.validate.field).required = true];
 }
 
-message ExchangeOidcSessionResponse {
-  string operator_session_ref = 1 [(buf.validate.field).string.max_len = 128];
-  string opaque_session_handle = 2 [(buf.validate.field).string.max_len = 512];
-  google.protobuf.Timestamp expires_at = 3;
-  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
-}
-
-message BeginStepUpEffect {
+// AdminSessionDelivery is a signed-then-encrypted, authenticated delivery to the registered Admin
+// Web BFF. session_delivery_envelope is an RFC 7516 compact JWE. It uses the registered delivery key.
+// Its authenticated content binds workload_identity_ref, transaction_ref, and request_digest.
+// The exact and only allowed JOSE profile is:
+//
+//   * inner compact JWS: ES256 with a P-256 Platform signing key and protected
+//     alg=ES256, typ=kokoro-admin-session-delivery+jwt, and kid headers;
+//   * outer compact JWE: RSA-OAEP-256 plus A256GCM with a registered RSA key of at least 3072 bits
+//     and protected alg=RSA-OAEP-256, enc=A256GCM,
+//     typ=kokoro-admin-session-delivery+jwe, cty=JWT, and kid headers.
+//
+// The signed claims are iss, aud, jti, iat, nbf, exp, workload_identity_ref, environment, region,
+// managed_device_ref, transaction_ref, exchange_request_digest, operator_session_ref,
+// opaque_session_credential, and session_expires_at. delivery_expires_at equals the signed exp claim.
+// Both JOSE layers reject none, dir, RSA1_5, CBC modes, zip, crit, jku, x5u, jwk, unprotected
+// headers, an unknown kid, a key-type mismatch, or any algorithm/key mismatch. Implementations
+// accept no algorithm negotiation or alternate suite.
+message AdminSessionDelivery {
   string operator_session_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-  string requested_operation = 2 [(buf.validate.field).string = {
+  string session_delivery_envelope = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp delivery_expires_at = 4 [(buf.validate.field).required = true];
+}
+
+message ExchangeOidcSessionResponse {
+  // AdminSessionDelivery carries the string session_delivery_envelope and
+  // google.protobuf.Timestamp delivery_expires_at. Generic CommandReceipt never contains the
+  // envelope or a plaintext session handle.
+  AdminSessionDelivery delivery = 1 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
+}
+
+// This is a non-effect state read. Before the first response, Platform atomically commits the
+// OperatorSession, exact delivery envelope, and committed Exchange receipt. This read succeeds only
+// after Platform has atomically committed the OperatorSession and exact delivery envelope. The
+// initial Exchange retry and this read return a byte-for-byte identical envelope and original
+// receipt; they never re-encrypt after key rotation and never call the identity provider. In
+// particular, they must never redeem the authorization code again.
+// Retries must not redeem the authorization code again. The atomic commit is before the first response.
+//
+// If IdP redemption reached provider_outcome_unknown, Platform records and returns a stable
+// restart-login failure: the caller must start a new BeginOperatorLogin and must not retry or
+// re-redeem the prior code. A provider_outcome_unknown transaction can never later expose a
+// delivery through this read.
+message GetOperatorSessionDeliveryRequest {
+  AdminVerifiedWorkloadReadContext context = 1 [(buf.validate.field).required = true];
+  string transaction_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-  repeated string resource_refs = 3 [(buf.validate.field).repeated = {
+  AdminSessionRecoveryProof recovery_proof = 3 [(buf.validate.field).required = true];
+}
+
+message GetOperatorSessionDeliveryResponse {
+  AdminSessionDelivery delivery = 1 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 original_exchange_receipt = 2 [(buf.validate.field).required = true];
+}
+
+message BeginStepUpEffect {
+  string requested_operation = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  repeated string resource_refs = 2 [(buf.validate.field).repeated = {
     min_items: 1
     max_items: 100
     items: {
@@ -116,18 +256,32 @@ message BeginStepUpEffect {
       }
     }
   }];
+  // Opaque key resolved only through the authenticated workload's registered workload allowlist.
+  // It is never interpreted as a caller-supplied URI.
+  string callback_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[a-z][a-z0-9_.-]{0,127}$"
+  }];
 }
 
 message BeginStepUpRequest {
-  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   BeginStepUpEffect effect = 2 [(buf.validate.field).required = true];
 }
 
 message BeginStepUpResponse {
-  string transaction_ref = 1 [(buf.validate.field).string.max_len = 128];
-  string authorization_uri = 2 [(buf.validate.field).string.max_len = 2048];
-  google.protobuf.Timestamp expires_at = 3;
-  kokoro.common.v1.CommandReceipt receipt = 4 [(buf.validate.field).required = true];
+  string transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authorization_uri = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 2048
+    uri: true
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
 }
 
 message CompleteStepUpEffect {
@@ -139,17 +293,22 @@ message CompleteStepUpEffect {
     min_len: 1
     max_len: 2048
   }];
+  // The exact callback is resolved from the single-use transaction created by BeginStepUp.
+  reserved 3;
 }
 
 message CompleteStepUpRequest {
-  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   CompleteStepUpEffect effect = 2 [(buf.validate.field).required = true];
 }
 
 message CompleteStepUpResponse {
-  string operator_session_ref = 1 [(buf.validate.field).string.max_len = 128];
-  google.protobuf.Timestamp step_up_at = 2;
-  kokoro.common.v1.CommandReceipt receipt = 3 [(buf.validate.field).required = true];
+  string operator_session_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  google.protobuf.Timestamp step_up_at = 2 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
 }
 
 message SignOutEffect {
@@ -160,10 +319,10 @@ message SignOutEffect {
 }
 
 message SignOutRequest {
-  AdminIdentityCommandContext context = 1 [(buf.validate.field).required = true];
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   SignOutEffect effect = 2 [(buf.validate.field).required = true];
 }
 
 message SignOutResponse {
-  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
 }

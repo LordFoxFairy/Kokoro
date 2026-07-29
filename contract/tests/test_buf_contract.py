@@ -10,6 +10,7 @@ import yaml
 
 CONTRACT = Path(__file__).resolve().parents[1]
 PROTO = CONTRACT / "proto"
+PUBLIC_OPENAPI = CONTRACT / "openapi/platform-public-v1.yaml"
 
 
 def test_buf_contract_toolchain_is_exact_and_local() -> None:
@@ -21,6 +22,7 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "@bufbuild/buf": "1.72.0",
         "@bufbuild/protobuf": "2.13.0",
         "@bufbuild/protoc-gen-es": "2.13.0",
+        "@redocly/cli": "2.41.0",
     }
     assert package["scripts"] == {
         "buf:breaking": "buf breaking",
@@ -28,6 +30,10 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "buf:format:check": "buf format --diff --exit-code",
         "buf:generate": "node generate.mjs",
         "buf:lint": "buf lint",
+        "openapi:lint": (
+            "redocly lint --extends=spec openapi/platform-public-v1.yaml "
+            "openapi/admin-web-v1.yaml"
+        ),
     }
     assert "pnpm" not in package
     workspace = yaml.safe_load((CONTRACT / "pnpm-workspace.yaml").read_text())
@@ -69,6 +75,40 @@ def _service_methods(source: str, service: str) -> list[str]:
     )
     assert block is not None
     return re.findall(r"^\s*rpc\s+(\w+)\(", block.group("body"), flags=re.MULTILINE)
+
+
+def _message_body(source: str, message: str) -> str:
+    block = re.search(
+        rf"message {message} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL
+    )
+    assert block is not None
+    return block.group("body")
+
+
+def _enum_body(source: str, enum: str) -> str:
+    block = re.search(rf"enum {enum} \{{(?P<body>.*?)\n\}}", source, flags=re.DOTALL)
+    assert block is not None
+    return block.group("body")
+
+
+def _public_operations() -> dict[str, dict]:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    return {
+        operation["operationId"]: operation
+        for path in document["paths"].values()
+        for method, operation in path.items()
+        if method.lower()
+        in {"delete", "get", "head", "options", "patch", "post", "put", "trace"}
+    }
+
+
+def _response_schema(document: dict, operation: dict) -> str:
+    response = operation["responses"]["200"]
+    if "$ref" in response:
+        response = document["components"]["responses"][
+            response["$ref"].rsplit("/", 1)[1]
+        ]
+    return response["content"]["application/json"]["schema"]["$ref"].rsplit("/", 1)[1]
 
 
 def test_admin_auth_v1_has_the_closed_service_surface() -> None:
@@ -179,23 +219,26 @@ def test_receipt_contract_never_contains_raw_secret_fields() -> None:
 
 def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
     identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
-    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")
+    query = _proto("kokoro/platform/admin/v2/admin_query.proto")
+    command = _proto("kokoro/platform/admin/v2/admin_command.proto")
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
 
     assert _service_methods(identity, "AdminIdentityService") == [
         "BeginOperatorLogin",
         "ExchangeOidcSession",
+        "GetOperatorSessionDelivery",
         "BeginStepUp",
         "CompleteStepUp",
         "SignOut",
     ]
-    assert _service_methods(control, "AdminQueryService") == [
+    assert _service_methods(query, "AdminQueryService") == [
         "GetSite",
         "ListSites",
         "GetUserWithinSite",
         "GetAuditWithinScope",
     ]
-    assert _service_methods(control, "AdminCommandService") == [
+    assert _service_methods(command, "AdminCommandService") == [
         "PrepareCommand",
         "SubmitForApproval",
         "DecideApproval",
@@ -204,9 +247,11 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
     ]
     assert _service_methods(lifecycle, "SiteLifecycleService") == [
         "RequestSite",
+        "GetProvisioningReceipt",
         "ReconcileProvisioning",
         "CreateRelease",
         "ActivateRelease",
+        "GetActivationReceipt",
         "SuspendSite",
         "ResumeSite",
         "PlanDecommission",
@@ -214,37 +259,46 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
         "ExecuteDecommission",
         "GetDecommissionReceipt",
     ]
+    assert "service " not in shared
+    assert "AdminCommandService" not in query
+    assert "AdminQueryService" not in command
+    assert not (PROTO / "kokoro/platform/admin/v2/admin_control.proto").exists()
 
 
 def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
     identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
-    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")
+    query = _proto("kokoro/platform/admin/v2/admin_query.proto")
+    command = _proto("kokoro/platform/admin/v2/admin_command.proto")
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
-    blob = "\n".join((identity, control, lifecycle))
+    blob = "\n".join((identity, shared, query, command, lifecycle))
 
-    assert "message AdminCommandContext" in control
+    assert "message AuthenticatedOperatorCommandContext" in shared
     for field in (
-        "kokoro.common.v1.CommandIdentity command",
+        "kokoro.common.v2.CommandIdentityV2 command",
         "string environment",
         "string region",
         "string managed_device_ref",
         "SecurityEpochs security_epochs",
         "OperatorScope scope",
     ):
-        assert field in control
-    assert "oneof kind" in control
-    assert "SiteScope site" in control
-    assert "GlobalScope global" in control
-    assert "BreakGlassScope breakglass" in control
-    assert "string incident_id" in control
-    assert "repeated string field_allowlist" in control
-    assert "kokoro.common.v1.CommandReceipt receipt" in blob
+        assert field in shared
+    assert "oneof kind" in shared
+    assert "SiteScope site" in shared
+    assert "GlobalScope global" in shared
+    assert "BreakGlassScope breakglass" in shared
+    assert "string incident_id" in shared
+    assert "repeated string field_allowlist" in shared
+    assert "kokoro.common.v2.CommandReceiptV2 receipt" in blob
+    assert "CommandIdentityV2" not in _message_body(
+        shared, "AuthenticatedOperatorQueryContext"
+    )
     assert "authorization_code" in identity
     assert "id_token" not in identity
 
 
 def test_site_lifecycle_is_typed_and_not_a_generic_admin_effect() -> None:
-    control = _proto("kokoro/platform/admin/v2/admin_control.proto")
+    control = _proto("kokoro/platform/admin/v2/admin_command.proto")
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
 
     for forbidden in (
@@ -270,6 +324,663 @@ def test_site_lifecycle_is_typed_and_not_a_generic_admin_effect() -> None:
         assert f"message {effect}" in lifecycle
 
 
+def test_admin_login_contexts_do_not_require_an_operator_before_oidc_exchange() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")
+
+    pre_login = _message_body(identity, "AdminPreLoginWorkloadContext")
+    transaction = _message_body(identity, "AdminAuthTransactionContext")
+    authenticated = _message_body(shared, "AuthenticatedOperatorCommandContext")
+    assert "OperatorScope" not in pre_login + transaction
+    assert "SecurityEpochs" not in pre_login + transaction
+    assert "OperatorScope scope" in authenticated
+    assert "SecurityEpochs security_epochs" in authenticated
+
+    begin = _message_body(identity, "BeginOperatorLoginEffect")
+    begin_fields = re.findall(r"\bstring\s+(\w+)\s*=", begin)
+    assert set(begin_fields).isdisjoint(
+        {
+            "issuer",
+            "audience",
+            "redirect_uri",
+            "pkce_challenge",
+            "pkce_verifier",
+            "nonce",
+        }
+    )
+    assert begin_fields == ["return_intent_ref"]
+    begin_effect = _message_body(identity, "BeginOperatorLoginEffect")
+    assert "^[a-z][a-z0-9_.-]{0,127}$" in begin_effect
+    assert "registered allowlist" in begin_effect
+    exchange = _message_body(identity, "ExchangeOidcSessionEffect")
+    assert re.findall(r"\bstring\s+(\w+)\s*=", exchange) == [
+        "transaction_ref",
+        "authorization_code",
+    ]
+    assert "Platform generates" in identity
+    assert "PKCE verifier" in identity
+    assert "nonce" in identity
+
+
+def test_public_operations_have_exact_implementable_response_schemas() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    expected = {
+        "exchangeProductContext": "ProductContextExchangeResponse",
+        "beginRegistration": "EmailVerificationTransactionResponse",
+        "completeEmailVerification": "VerificationActivationResponse",
+        "resendEmailVerification": "EmailVerificationTransactionResponse",
+        "createIdentitySession": "CreateSessionResponse",
+        "completeSessionMfa": "SessionCredentialPairResponse",
+        "refreshIdentitySession": "SessionCredentialPairResponse",
+        "listIdentitySessions": "IdentitySessionList",
+        "revokeIdentitySessions": "CommandReceiptResponse",
+        "beginPasswordReset": "PasswordResetTransactionResponse",
+        "completePasswordReset": "CommandReceiptResponse",
+        "changePassword": "SessionCredentialPairResponse",
+        "beginEmailChange": "EmailChangeTransactionResponse",
+        "completeEmailChange": "SessionCredentialPairResponse",
+        "beginTotpEnrollment": "TotpEnrollmentTransactionResponse",
+        "confirmTotpEnrollment": "RecoveryCodeSetResponse",
+        "disableTotp": "CommandReceiptResponse",
+        "regenerateRecoveryCodes": "RecoveryCodeSetResponse",
+        "beginAccountRecovery": "AccountRecoveryTransactionResponse",
+        "completeAccountRecovery": "AccountRecoveryCompletionResponse",
+        "reauthenticateIdentitySession": "ReauthenticationResponse",
+        "getPersonalContext": "PersonalContext",
+        "getPublicCommandReceipt": "PublicCommandReceiptResponse",
+    }
+
+    assert operations.keys() == expected.keys()
+    assert {
+        operation_id: _response_schema(document, operation)
+        for operation_id, operation in operations.items()
+    } == expected
+
+
+def test_public_auth_and_personal_context_payloads_are_complete() -> None:
+    schemas = yaml.safe_load(PUBLIC_OPENAPI.read_text())["components"]["schemas"]
+
+    assert schemas["CommandReceipt"]["properties"]["state"]["const"] == "committed"
+    assert "committedAt" in schemas["CommandReceipt"]["required"]
+    assert set(schemas["AuthPending"]["required"]) >= {
+        "transactionRef",
+        "challengeKind",
+        "expiresAt",
+    }
+    assert set(schemas["SessionCredentialPair"]["required"]) >= {
+        "sessionCredential",
+        "sessionCredentialExpiresAt",
+        "refreshCredential",
+        "refreshCredentialExpiresAt",
+    }
+    assert set(schemas["IdentitySessionList"]["required"]) >= {"sessions"}
+    assert set(schemas["PersonalContext"]["required"]) >= {
+        "workspaceRef",
+        "projectRef",
+        "executionSpaceRef",
+    }
+    for transaction_schema in (
+        "EmailVerificationTransaction",
+        "EmailChangeTransaction",
+        "PasswordResetTransaction",
+        "AccountRecoveryTransaction",
+        "TotpEnrollmentTransaction",
+    ):
+        assert {"transactionRef", "expiresAt"}.issubset(
+            schemas[transaction_schema]["required"]
+        )
+
+
+def test_one_time_public_payloads_are_no_store_and_never_receipt_replayable() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    for operation_id in (
+        "beginTotpEnrollment",
+        "confirmTotpEnrollment",
+        "regenerateRecoveryCodes",
+    ):
+        response = operations[operation_id]["responses"]["200"]
+        if "$ref" in response:
+            response = document["components"]["responses"][
+                response["$ref"].rsplit("/", 1)[1]
+            ]
+        assert response["headers"]["Cache-Control"]["schema"]["const"] == "no-store"
+
+    receipt = document["components"]["schemas"]["PublicCommandReceiptResponse"]
+    serialized = yaml.safe_dump(receipt).lower()
+    for forbidden in ("credential", "secret", "code", "otpauth", "recoverycodes"):
+        assert forbidden not in serialized
+    assert "oneOf" in receipt
+
+
+def test_public_secret_delivery_is_separate_and_retry_requires_supersession() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    schemas = document["components"]["schemas"]
+
+    response_alternatives = {}
+    for response_schema in (
+        "CreateSessionResponse",
+        "SessionCredentialPairResponse",
+        "TotpEnrollmentTransactionResponse",
+        "RecoveryCodeSetResponse",
+        "ReauthenticationResponse",
+    ):
+        alternatives = {
+            item["$ref"].rsplit("/", 1)[1]
+            for item in schemas[response_schema]["oneOf"]
+        }
+        response_alternatives[response_schema] = alternatives
+        assert "OneTimeDeliveryUnavailable" in alternatives
+    assert "AuthPendingResponse" in response_alternatives["CreateSessionResponse"]
+    assert "ReauthenticationPendingResponse" in response_alternatives[
+        "ReauthenticationResponse"
+    ]
+
+    recovery_alternatives = {
+        item["$ref"].rsplit("/", 1)[1]
+        for item in schemas["AccountRecoveryCompletionResponse"]["oneOf"]
+    }
+    assert "OneTimeDeliveryUnavailable" in recovery_alternatives
+    assert "OneTimeTotpRecoveryEnrollmentDelivery" in recovery_alternatives
+    assert "receipt" not in schemas["OneTimeTotpRecoveryEnrollmentDelivery"][
+        "properties"
+    ]
+
+    for delivery_schema in (
+        "OneTimeSessionCredentialDelivery",
+        "OneTimeTotpEnrollmentDelivery",
+        "OneTimeRecoveryCodeSetDelivery",
+        "OneTimeReauthenticationProofDelivery",
+    ):
+        delivery = schemas[delivery_schema]
+        assert {"commandId", "requestDigest"}.issubset(delivery["required"])
+        assert "receipt" not in delivery["properties"]
+
+    supersede = schemas["SupersedingCeremony"]
+    assert {
+        "transactionRef",
+        "operationId",
+        "bindingDigest",
+        "expiresAt",
+        "invalidatesPriorDelivery",
+    }.issubset(supersede["required"])
+    assert "capability" not in supersede["properties"]
+    assert supersede["properties"]["invalidatesPriorDelivery"]["const"] is True
+
+
+def test_public_secret_commands_have_an_executable_lost_response_path() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    schemas = document["components"]["schemas"]
+
+    request_unions = {
+        "createIdentitySession": (
+            "CreateSessionInput",
+            "SupersedeSessionCredentialDeliveryInput",
+        ),
+        "completeSessionMfa": (
+            "SessionMfaCompletionInput",
+            "SupersedeSessionCredentialDeliveryInput",
+        ),
+        "refreshIdentitySession": (
+            "RefreshSessionInput",
+            "SupersedeRefreshCredentialDeliveryInput",
+        ),
+        "beginTotpEnrollment": (
+            "TotpEnrollmentStartInput",
+            "SupersedeTotpEnrollmentInput",
+        ),
+        "regenerateRecoveryCodes": (
+            "RecoveryCodeRegenerationInput",
+            "SupersedeRecoveryCodeSetInput",
+        ),
+        "reauthenticateIdentitySession": (
+            "ReauthenticationInput",
+            "SupersedeReauthenticationProofInput",
+        ),
+    }
+    for operation_id, (union_schema, superseding_schema) in request_unions.items():
+        request_ref = operations[operation_id]["requestBody"]["$ref"]
+        request_body = document["components"]["requestBodies"][
+            request_ref.rsplit("/", 1)[1]
+        ]
+        assert request_body["content"]["application/json"]["schema"]["$ref"].endswith(
+            f"/{union_schema}"
+        )
+        alternatives = {
+            item["$ref"].rsplit("/", 1)[1]
+            for item in schemas[union_schema]["oneOf"]
+        }
+        assert superseding_schema in alternatives
+        assert "receiptReadCapability" not in schemas[superseding_schema].get(
+            "properties", {}
+        )
+        parameter_refs = {
+            parameter["$ref"].rsplit("/", 1)[1]
+            for parameter in operations[operation_id]["parameters"]
+        }
+        assert "ReceiptRecoveryCapability" not in parameter_refs
+        assert "ReceiptRecoveryCapabilityLookup" not in parameter_refs
+        assert "SupersedingCeremonyCapability" not in parameter_refs
+
+    for first_claim_input in (
+        "PasswordLoginInput",
+        "CompleteSessionMfaInput",
+        "RefreshCredentialInput",
+        "PasswordChangeInput",
+        "EmailChangeCompletionInput",
+        "BeginTotpEnrollmentInput",
+        "TotpConfirmationInput",
+        "RegenerateRecoveryCodesInput",
+        "PasswordReauthenticationInput",
+        "MfaReauthenticationInput",
+        "BeginTotpRecoveryReplacementInput",
+    ):
+        assert "receiptReadCapability" not in schemas[first_claim_input].get(
+            "properties", {}
+        )
+
+    password_login = schemas["PasswordLoginInput"]
+    assert "returnIntentRef" in password_login["properties"]
+    assert "returnIntent" not in password_login["properties"]
+    assert "registered allowlist" in password_login["properties"]["returnIntentRef"][
+        "description"
+    ]
+    receipt_capability = document["components"]["securitySchemes"][
+        "ReceiptRecoveryCapability"
+    ]
+    assert receipt_capability["type"] == "apiKey"
+    assert receipt_capability["name"] == "X-Kokoro-Receipt-Recovery-Capability"
+    assert receipt_capability["in"] == "header"
+    assert "caller-generated" in receipt_capability["description"]
+    assert "does not consume" in receipt_capability["description"]
+    assert "atomically consumes" in receipt_capability["description"]
+
+    for operation_id in (
+        "completeEmailVerification",
+        "createIdentitySession",
+        "completeSessionMfa",
+        "refreshIdentitySession",
+        "completePasswordReset",
+        "completeAccountRecovery",
+    ):
+        assert operations[operation_id]["security"] == [
+            {"ProductWorkload": [], "ReceiptRecoveryCapability": []}
+        ]
+
+    for operation_id in (
+        "changePassword",
+        "completeEmailChange",
+        "beginTotpEnrollment",
+        "confirmTotpEnrollment",
+        "regenerateRecoveryCodes",
+        "reauthenticateIdentitySession",
+    ):
+        assert operations[operation_id]["security"] == [
+            {
+                "ProductWorkload": [],
+                "UserSession": [],
+                "ReceiptRecoveryCapability": [],
+            }
+        ]
+
+    for operation_id in (
+        "exchangeProductContext",
+        "beginRegistration",
+        "resendEmailVerification",
+        "revokeIdentitySessions",
+        "beginPasswordReset",
+        "beginEmailChange",
+        "disableTotp",
+        "beginAccountRecovery",
+    ):
+        parameter_refs = {
+            parameter["$ref"].rsplit("/", 1)[1]
+            for parameter in operations[operation_id]["parameters"]
+        }
+        assert "ReceiptRecoveryCapability" not in parameter_refs
+
+
+def test_public_anonymous_recovery_receipts_are_capability_and_transaction_bound() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operation = document["paths"]["/v1/commands/{id}/receipt"]["get"]
+    security = operation["security"]
+    assert security == [
+        {"ProductWorkload": [], "UserSession": []},
+        {"ProductWorkload": [], "ReceiptRecoveryCapability": []},
+    ]
+
+    parameter_refs = {
+        parameter["$ref"].rsplit("/", 1)[1] for parameter in operation["parameters"]
+    }
+    assert {"CommandId", "ContractVersion"}.issubset(parameter_refs)
+    assert "ReceiptRecoveryCapability" not in parameter_refs
+    assert "ReceiptRecoveryCapabilityLookup" not in parameter_refs
+    assert "RequestDigest" not in parameter_refs
+    assert "RecoveryTransactionRef" not in parameter_refs
+    assert "RecoveryPurpose" not in parameter_refs
+    description = operation["description"]
+    for binding in (
+        "workload-derived Site",
+        "purpose",
+        "transaction",
+        "command",
+        "subject generation",
+        "not-found",
+        "login",
+        "MFA",
+        "refresh",
+    ):
+        assert binding in description
+    assert "does not require the caller to know the server-side request digest" in description
+    assert "does not consume" in description
+
+    schemas = document["components"]["schemas"]
+    assert "receiptReadCapability" not in schemas["PasswordInput"].get(
+        "properties", {}
+    )
+    for recovery_input in (
+        "PasswordRecoveryCompletionInput",
+        "BeginTotpRecoveryReplacementInput",
+        "ConfirmTotpRecoveryReplacementInput",
+    ):
+        assert "receiptReadCapability" not in schemas[recovery_input].get(
+            "properties", {}
+        )
+
+
+def test_account_recovery_binds_password_or_confirmed_totp_replacement() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    schemas = document["components"]["schemas"]
+    recovery = schemas["RecoveryInput"]
+    alternatives = [item["$ref"].rsplit("/", 1)[1] for item in recovery["oneOf"]]
+    assert alternatives == [
+        "PasswordRecoveryCompletionInput",
+        "BeginTotpRecoveryReplacementInput",
+        "ConfirmTotpRecoveryReplacementInput",
+        "SupersedeTotpRecoveryReplacementInput",
+    ]
+
+    password = schemas["PasswordRecoveryCompletionInput"]
+    assert password["properties"]["replacementFactor"]["const"] == "password"
+    assert "replacementPassword" in password["required"]
+
+    begin_totp = schemas["BeginTotpRecoveryReplacementInput"]
+    assert begin_totp["properties"]["replacementFactor"]["const"] == "totp"
+    assert begin_totp["properties"]["ceremonyAction"]["const"] == "begin"
+    assert {"transactionSecret", "proofCode"}.issubset(begin_totp["required"])
+
+    confirm_totp = schemas["ConfirmTotpRecoveryReplacementInput"]
+    assert confirm_totp["properties"]["replacementFactor"]["const"] == "totp"
+    assert confirm_totp["properties"]["ceremonyAction"]["const"] == "confirm"
+    assert {
+        "factorReplacementCapability",
+        "enrollmentTransactionRef",
+        "confirmationCode",
+    }.issubset(confirm_totp["required"])
+
+    supersede_totp = schemas["SupersedeTotpRecoveryReplacementInput"]
+    assert supersede_totp["properties"]["replacementFactor"]["const"] == "totp"
+    assert supersede_totp["properties"]["ceremonyAction"]["const"] == "supersede"
+    assert {"priorCommandId", "priorEnrollmentTransactionRef"}.issubset(
+        supersede_totp["required"]
+    )
+    assert "receiptReadCapability" not in supersede_totp.get("properties", {})
+
+    operation = _public_operations()["completeAccountRecovery"]
+    assert _response_schema(document, operation) == "AccountRecoveryCompletionResponse"
+    response_alternatives = {
+        item["$ref"].rsplit("/", 1)[1]
+        for item in schemas["AccountRecoveryCompletionResponse"]["oneOf"]
+    }
+    assert response_alternatives == {
+        "CommandReceiptResponse",
+        "OneTimeTotpRecoveryEnrollmentDelivery",
+        "OneTimeDeliveryUnavailable",
+    }
+
+
+def test_email_change_requires_session_recent_reauth_dual_channel_and_mfa() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    schemas = document["components"]["schemas"]
+
+    assert operations["beginEmailChange"]["security"] == [
+        {"ProductWorkload": [], "UserSession": []}
+    ]
+    assert operations["completeEmailChange"]["security"] == [
+        {
+            "ProductWorkload": [],
+            "UserSession": [],
+            "ReceiptRecoveryCapability": [],
+        }
+    ]
+
+    begin_request = operations["beginEmailChange"]["requestBody"]["$ref"]
+    complete_request = operations["completeEmailChange"]["requestBody"]["$ref"]
+    assert begin_request.endswith("/EmailChangeStartRequest")
+    assert complete_request.endswith("/EmailChangeCompletionRequest")
+    assert {"replacementEmail", "reauthenticationProof"}.issubset(
+        schemas["EmailChangeStartInput"]["required"]
+    )
+    assert {
+        "reauthenticationProof",
+        "currentAddressChallenge",
+        "replacementAddressChallenge",
+    }.issubset(schemas["EmailChangeCompletionInput"]["required"])
+
+    transaction = schemas["EmailChangeTransaction"]
+    assert {
+        "currentAddressChallengeRef",
+        "replacementAddressChallengeRef",
+    }.issubset(transaction["required"])
+    assert "distinct" in transaction["description"]
+
+    reauthentication = schemas["ReauthenticationInput"]
+    reauth_inputs = [
+        item["$ref"].rsplit("/", 1)[1] for item in reauthentication["oneOf"]
+    ]
+    assert reauth_inputs == [
+        "PasswordReauthenticationInput",
+        "MfaReauthenticationInput",
+        "SupersedeReauthenticationProofInput",
+    ]
+    mfa = schemas["MfaReauthenticationInput"]
+    assert {"transactionRef", "challengeKind", "proofCode"}.issubset(
+        mfa["required"]
+    )
+    reauth_response = schemas["ReauthenticationResponse"]
+    assert {
+        item["$ref"].rsplit("/", 1)[1] for item in reauth_response["oneOf"]
+    } == {
+        "ReauthenticationPendingResponse",
+        "OneTimeReauthenticationProofDelivery",
+        "OneTimeDeliveryUnavailable",
+    }
+    proof = schemas["ReauthenticationProof"]
+    assert {
+        "reauthenticationProof",
+        "sessionRef",
+        "userSecurityEpoch",
+        "sessionEpoch",
+        "authStrengthPolicyRevision",
+        "issuedAt",
+        "expiresAt",
+    }.issubset(proof["required"])
+
+
+def test_public_mutations_use_caller_generated_command_ids_for_zero_byte_recovery() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    command_identity = document["components"]["parameters"]["CommandIdentity"]
+    assert command_identity["name"] == "X-Kokoro-Command-Id"
+    assert command_identity["in"] == "header"
+    assert command_identity["required"] is True
+    expected_pattern = (
+        "^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-"
+        "[89ab][0-9a-f]{3}-[0-9a-f]{12})$"
+    )
+    assert command_identity["schema"]["pattern"] == expected_pattern
+    assert document["components"]["parameters"]["CommandId"]["schema"][
+        "pattern"
+    ] == expected_pattern
+    for phrase in (
+        "caller-generated",
+        "128-bit",
+        "must not be derived from Idempotency-Key",
+        "same command id with a different payload",
+    ):
+        assert phrase in command_identity["description"]
+
+    for operation_id, operation in operations.items():
+        if operation_id in {"listIdentitySessions", "getPersonalContext", "getPublicCommandReceipt"}:
+            continue
+        parameter_refs = {
+            parameter["$ref"].rsplit("/", 1)[1]
+            for parameter in operation["parameters"]
+        }
+        assert "CommandIdentity" in parameter_refs
+
+    for delivery_schema in (
+        "OneTimeSessionCredentialDelivery",
+        "OneTimeTotpEnrollmentDelivery",
+        "OneTimeRecoveryCodeSetDelivery",
+        "OneTimeTotpRecoveryEnrollmentDelivery",
+        "OneTimeReauthenticationProofDelivery",
+        "OneTimeDeliveryUnavailable",
+    ):
+        schema = document["components"]["schemas"][delivery_schema]
+        assert "commandId" in schema["required"]
+        assert schema["properties"]["commandId"]["pattern"] == expected_pattern
+    command_receipt = document["components"]["schemas"]["CommandReceipt"]
+    assert "commandId" in command_receipt["required"]
+    assert command_receipt["properties"]["commandId"]["pattern"] == expected_pattern
+    for superseding_schema in (
+        "SupersedeSessionCredentialDeliveryInput",
+        "SupersedeRefreshCredentialDeliveryInput",
+        "SupersedeTotpRecoveryReplacementInput",
+        "SupersedeTotpEnrollmentInput",
+        "SupersedeRecoveryCodeSetInput",
+        "SupersedeReauthenticationProofInput",
+    ):
+        assert document["components"]["schemas"][superseding_schema]["properties"][
+            "priorCommandId"
+        ]["pattern"] == expected_pattern
+
+
+def test_public_safe_pending_results_include_the_committed_command_receipt() -> None:
+    schemas = yaml.safe_load(PUBLIC_OPENAPI.read_text())["components"]["schemas"]
+    expected = {
+        "AuthPendingResponse": "AuthPending",
+        "ReauthenticationPendingResponse": "ReauthenticationPending",
+    }
+    for wrapper_name, result_name in expected.items():
+        wrapper = schemas[wrapper_name]
+        assert set(wrapper["required"]) == {"receipt", "pending"}
+        assert wrapper["properties"]["receipt"]["$ref"].endswith("/CommandReceipt")
+        assert wrapper["properties"]["pending"]["$ref"].endswith(f"/{result_name}")
+
+
+def test_public_receipt_state_and_reconciliation_combinations_are_closed() -> None:
+    schemas = yaml.safe_load(PUBLIC_OPENAPI.read_text())["components"]["schemas"]
+    response = schemas["PublicCommandReceiptResponse"]
+    alternatives = [item["$ref"].rsplit("/", 1)[1] for item in response["oneOf"]]
+    expected = {
+        "AcceptedPublicCommandReceiptResponse": (
+            "AcceptedPublicCommandReceipt",
+            "PendingCommandReconciliation",
+            "accepted",
+            "not_applicable",
+        ),
+        "OutcomeUnknownPublicCommandReceiptResponse": (
+            "OutcomeUnknownPublicCommandReceipt",
+            "PendingCommandReconciliation",
+            "outcome_unknown",
+            "not_applicable",
+        ),
+        "CommittedTerminalPublicCommandReceiptResponse": (
+            "CommittedPublicCommandReceipt",
+            "CommittedCommandReconciliation",
+            "committed",
+            "not_applicable",
+        ),
+        "RejectedTerminalPublicCommandReceiptResponse": (
+            "RejectedPublicCommandReceipt",
+            "RejectedCommandReconciliation",
+            "rejected",
+            "not_applicable",
+        ),
+        "CommittedSupersedingPublicCommandReceiptResponse": (
+            "CommittedDeliveryConsumedPublicCommandReceipt",
+            "SupersedingCeremonyReconciliation",
+            "committed",
+            "first_claim_consumed",
+        ),
+        "CommittedSupersededPublicCommandReceiptResponse": (
+            "CommittedDeliverySupersededPublicCommandReceipt",
+            "CommittedCommandReconciliation",
+            "committed",
+            "superseded",
+        ),
+    }
+    assert alternatives == list(expected)
+    for wrapper_name, (receipt_name, reconciliation_name, state, delivery) in expected.items():
+        wrapper = schemas[wrapper_name]
+        assert set(wrapper["required"]) == {"receipt", "reconciliation"}
+        assert wrapper["properties"]["receipt"]["$ref"].endswith(f"/{receipt_name}")
+        assert wrapper["properties"]["reconciliation"]["$ref"].endswith(
+            f"/{reconciliation_name}"
+        )
+        receipt = schemas[receipt_name]
+        assert receipt["properties"]["state"]["const"] == state
+        assert receipt["properties"]["deliveryState"]["const"] == delivery
+
+
+def test_public_receipt_lookup_is_non_enumerable_and_caller_recoverable() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operation = document["paths"]["/v1/commands/{id}/receipt"]["get"]
+    parameter_refs = {
+        parameter["$ref"].rsplit("/", 1)[1] for parameter in operation["parameters"]
+    }
+    assert {"CommandId", "ContractVersion"}.issubset(parameter_refs)
+    assert "ReceiptRecoveryCapability" not in parameter_refs
+    assert "ReceiptRecoveryCapabilityLookup" not in parameter_refs
+    assert "RequestDigest" not in parameter_refs
+    assert operation["security"] == [
+        {"ProductWorkload": [], "UserSession": []},
+        {"ProductWorkload": [], "ReceiptRecoveryCapability": []},
+    ]
+    description = operation["description"]
+    assert "workload-derived Site" in description
+    assert "same caller" in description
+    assert "not-found" in description
+    assert "caller-generated command id" in description
+    assert "zero response bytes" in description
+
+
+def test_public_error_codes_are_a_frozen_enum() -> None:
+    error_codes = yaml.safe_load(PUBLIC_OPENAPI.read_text())["components"]["schemas"][
+        "ErrorCode"
+    ]["enum"]
+    assert error_codes == [
+        "INVALID_REQUEST",
+        "CONTRACT_VERSION_UNSUPPORTED",
+        "AUTHENTICATION_REQUIRED",
+        "AUTHENTICATION_FAILED",
+        "AUTH_TRANSACTION_EXPIRED",
+        "MFA_REQUIRED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "CONFLICT",
+        "RATE_LIMITED",
+        "RISK_UNAVAILABLE",
+        "SITE_UNAVAILABLE",
+        "OUTCOME_UNKNOWN",
+        "INTERNAL_UNAVAILABLE",
+    ]
+
+
 def test_platform_admission_v1_surface_remains_frozen() -> None:
     source = _proto("kokoro/platform/admission/v1/admission.proto")
     assert _service_methods(source, "AdmissionService") == [
@@ -279,3 +990,341 @@ def test_platform_admission_v1_surface_remains_frozen() -> None:
     ]
     assert "AuthorizeEffect" not in source
     assert "GetRestrictionEpochs" not in source
+
+
+def test_admin_oidc_session_delivery_recovers_without_redeeming_the_code_again() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+
+    recovery = _message_body(identity, "AdminSessionRecoveryProof")
+    begin_effect = _message_body(identity, "BeginOperatorLoginEffect")
+    begin_response = _message_body(identity, "BeginOperatorLoginResponse")
+    exchange = _message_body(identity, "ExchangeOidcSessionEffect")
+    exchange_response = _message_body(identity, "ExchangeOidcSessionResponse")
+
+    assert "bytes recovery_handle" in recovery
+    assert "len: 32" in recovery
+    assert "AdminSessionRecoveryProof recovery_proof" in begin_effect
+    assert "AdminSessionRecoveryProof recovery_proof" not in begin_response
+    assert "AdminSessionRecoveryProof recovery_proof" in exchange
+    assert "string session_delivery_envelope" in exchange_response
+    assert "google.protobuf.Timestamp delivery_expires_at" in exchange_response
+    assert "opaque_session_handle" not in exchange_response
+    assert "RFC 7516 compact JWE" in identity
+    assert "registered delivery key" in identity
+    assert "workload_identity_ref, transaction_ref, and request_digest" in identity
+    assert "must not redeem the authorization code again" in identity
+    assert "before the first response" in identity
+    assert "Generic CommandReceipt never contains" in identity
+
+
+def test_admin_session_recovery_is_workload_bound_short_lived_and_non_enumerable() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+
+    pre_login = _message_body(identity, "AdminPreLoginWorkloadContext")
+    transaction = _message_body(identity, "AdminAuthTransactionContext")
+    begin_response = _message_body(identity, "BeginOperatorLoginResponse")
+    exchange = _message_body(identity, "ExchangeOidcSessionEffect")
+
+    for context in (pre_login, transaction):
+        for axis in (
+            "workload_identity_ref",
+            "environment",
+            "region",
+            "managed_device_ref",
+            "audience",
+        ):
+            assert axis in context
+    assert "google.protobuf.Timestamp recovery_expires_at" in begin_response
+    assert "recovery_proof" in exchange
+    assert "single-purpose" in identity
+    assert "constant-time" in identity
+    assert "indistinguishable not-found" in identity
+    assert "never disclose whether the transaction or session exists" in identity
+
+
+def test_admin_oidc_callbacks_and_return_targets_are_registered_opaque_refs() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+
+    begin_login = _message_body(identity, "BeginOperatorLoginEffect")
+    begin_step_up = _message_body(identity, "BeginStepUpEffect")
+    complete_step_up = _message_body(identity, "CompleteStepUpEffect")
+
+    assert re.findall(r"\bstring\s+(\w+)\s*=", begin_login) == ["return_intent_ref"]
+    assert "^[a-z][a-z0-9_.-]{0,127}$" in begin_login
+    assert "callback_uri" not in begin_step_up
+    assert "string callback_ref" in begin_step_up
+    assert "^[a-z][a-z0-9_.-]{0,127}$" in begin_step_up
+    assert "callback_uri" not in complete_step_up
+    assert "callback_ref" not in complete_step_up
+    exchange = _message_body(identity, "ExchangeOidcSessionEffect")
+    assert "callback_uri" not in exchange
+    assert "registered workload allowlist" in identity
+    assert "Unknown callback or return refs fail closed" in identity
+
+
+def test_admin_session_delivery_has_a_non_effect_recovery_read() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+
+    assert _service_methods(identity, "AdminIdentityService") == [
+        "BeginOperatorLogin",
+        "ExchangeOidcSession",
+        "GetOperatorSessionDelivery",
+        "BeginStepUp",
+        "CompleteStepUp",
+        "SignOut",
+    ]
+    read_context = _message_body(identity, "AdminVerifiedWorkloadReadContext")
+    assert "CommandIdentity" not in read_context
+    for field in (
+        "request_id",
+        "workload_identity_ref",
+        "environment",
+        "region",
+        "managed_device_ref",
+        "audience",
+    ):
+        assert f"string {field}" in read_context
+    request = _message_body(identity, "GetOperatorSessionDeliveryRequest")
+    assert "AdminVerifiedWorkloadReadContext context" in request
+    assert "string transaction_ref" in request
+    assert "AdminSessionRecoveryProof recovery_proof" in request
+    assert "CommandIdentity" not in request
+    assert "authorization_code" not in request
+    assert "Effect" not in request
+
+    exchange_response = _message_body(identity, "ExchangeOidcSessionResponse")
+    read_response = _message_body(identity, "GetOperatorSessionDeliveryResponse")
+    assert "AdminSessionDelivery delivery" in exchange_response
+    assert "kokoro.common.v2.CommandReceiptV2 receipt" in exchange_response
+    assert re.findall(r"^\s*\S+\s+(\w+)\s*=", exchange_response, re.MULTILINE) == [
+        "delivery",
+        "receipt",
+    ]
+    assert "AdminSessionDelivery delivery" in read_response
+    assert "kokoro.common.v2.CommandReceiptV2 original_exchange_receipt" in read_response
+    assert "oneof" not in exchange_response
+    assert "oneof" not in read_response
+
+
+def test_admin_session_delivery_read_is_committed_exact_and_never_redeems() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    policy = re.sub(r"\s*//\s*", " ", identity)
+
+    for phrase in (
+        "atomically committed the OperatorSession and exact delivery envelope",
+        "byte-for-byte identical",
+        "never re-encrypt after key rotation",
+        "never call the identity provider",
+        "provider_outcome_unknown",
+        "stable restart-login failure",
+        "new BeginOperatorLogin",
+        "must never redeem the authorization code again",
+    ):
+        assert phrase in policy
+    assert "unknown, expired, revoked, or mismatched" in policy
+    assert "same public NOT_FOUND" in policy
+
+
+def test_admin_session_delivery_freezes_authenticated_jose_profile() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    policy = re.sub(r"\s*//\s*", " ", identity)
+    delivery = _message_body(identity, "AdminSessionDelivery")
+
+    assert "string operator_session_ref" in delivery
+    assert "string session_delivery_envelope" in delivery
+    assert "google.protobuf.Timestamp expires_at" in delivery
+    assert "google.protobuf.Timestamp delivery_expires_at" in delivery
+    for phrase in (
+        "signed-then-encrypted",
+        "inner compact JWS",
+        "ES256",
+        "P-256",
+        "kokoro-admin-session-delivery+jwt",
+        "outer compact JWE",
+        "RSA-OAEP-256",
+        "A256GCM",
+        "RSA key of at least 3072 bits",
+        "kokoro-admin-session-delivery+jwe",
+        "cty=JWT",
+        "delivery_expires_at equals the signed exp claim",
+        "freezes both signing and encryption key revisions",
+        "retained through the delivery TTL",
+    ):
+        assert phrase in policy
+    for claim in (
+        "iss",
+        "aud",
+        "jti",
+        "iat",
+        "nbf",
+        "exp",
+        "workload_identity_ref",
+        "environment",
+        "region",
+        "managed_device_ref",
+        "transaction_ref",
+        "exchange_request_digest",
+        "operator_session_ref",
+        "opaque_session_credential",
+    ):
+        assert claim in policy
+    for forbidden in (
+        "none",
+        "dir",
+        "RSA1_5",
+        "CBC",
+        "zip",
+        "crit",
+        "jku",
+        "x5u",
+        "jwk",
+        "unprotected headers",
+        "unknown kid",
+        "key-type mismatch",
+    ):
+        assert forbidden in policy
+
+
+def test_admin_recovery_proof_lifecycle_is_unique_secret_and_non_enumerable() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+    policy = re.sub(r"\s*//\s*", " ", identity)
+    recovery_proof = _message_body(identity, "AdminSessionRecoveryProof")
+    assert re.search(r"bytes recovery_handle.*?len: 32", recovery_proof, re.DOTALL)
+    assert "min_len" not in recovery_proof
+    assert "max_len" not in recovery_proof
+
+    for phrase in (
+        "exactly 32 bytes",
+        "OS CSPRNG",
+        "unique among active recovery digests",
+        "must never bind one proof to more than one transaction",
+        "domain-separated SHA-256",
+        "kokoro.admin-session-recovery.v1",
+        "raw proof is never persisted",
+        "logs, traces, metrics, receipts, outbox events, or audit payloads",
+        "constant-time",
+        "valid only until delivery_expires_at",
+        "same public NOT_FOUND status and domain error",
+        "no receipt reference or delivery payload",
+        "true reason is available only to security audit",
+    ):
+        assert phrase in policy
+
+
+def test_admin_identity_success_responses_require_valid_refs_uris_and_times() -> None:
+    identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
+
+    begin = _message_body(identity, "BeginOperatorLoginResponse")
+    begin_step_up = _message_body(identity, "BeginStepUpResponse")
+    complete_step_up = _message_body(identity, "CompleteStepUpResponse")
+    delivery = _message_body(identity, "AdminSessionDelivery")
+    for body in (begin, begin_step_up):
+        assert re.search(r"string transaction_ref.*?min_len: 1", body, re.DOTALL)
+        assert re.search(
+            r"string authorization_uri.*?min_len: 1.*?uri: true", body, re.DOTALL
+        )
+        assert re.search(
+            r"google\.protobuf\.Timestamp expires_at.*?required = true", body
+        )
+    assert re.search(
+        r"string operator_session_ref.*?min_len: 1", delivery, re.DOTALL
+    )
+    for field in ("expires_at", "delivery_expires_at"):
+        assert re.search(
+            rf"google\.protobuf\.Timestamp {field}.*?required = true", delivery
+        )
+    assert re.search(
+        r"string operator_session_ref.*?min_len: 1", complete_step_up, re.DOTALL
+    )
+    assert re.search(
+        r"google\.protobuf\.Timestamp step_up_at.*?required = true",
+        complete_step_up,
+    )
+
+
+def test_wave1_required_reference_fields_reject_empty_values() -> None:
+    command = _proto("kokoro/platform/admin/v2/admin_command.proto")
+    query = _proto("kokoro/platform/admin/v2/admin_query.proto")
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+
+    required_refs = {
+        (command, "PrepareCommandResponse"): (
+            "prepared_command_ref",
+            "approval_policy_ref",
+        ),
+        (command, "SubmitForApprovalResponse"): ("approval_ref",),
+        (query, "SiteSummary"): ("site_ref",),
+        (query, "UserSummary"): ("user_ref",),
+        (query, "AuditRecord"): ("audit_ref",),
+        (lifecycle, "RequestSiteResponse"): (
+            "site_ref",
+            "provisioning_intent_ref",
+        ),
+        (lifecycle, "CreateReleaseResponse"): ("release_ref",),
+        (lifecycle, "ActivateReleaseResponse"): ("activation_attempt_ref",),
+        (lifecycle, "PlanDecommissionResponse"): ("decommission_plan_ref",),
+        (lifecycle, "ExecuteDecommissionResponse"): (
+            "decommission_receipt_ref",
+        ),
+    }
+    for (source, message), fields in required_refs.items():
+        body = _message_body(source, message)
+        for field in fields:
+            assert re.search(rf"string {field}.*?min_len: 1", body, re.DOTALL)
+
+
+def test_wave1_query_and_lifecycle_outputs_reject_empty_sentinels() -> None:
+    query = _proto("kokoro/platform/admin/v2/admin_query.proto")
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+
+    for message, field in (
+        ("SiteSummary", "status"),
+        ("UserSummary", "status"),
+        ("AuditRecord", "action_code"),
+    ):
+        assert re.search(
+            rf"string {field}.*?min_len: 1", _message_body(query, message), re.DOTALL
+        )
+    assert re.search(
+        r"google\.protobuf\.Timestamp occurred_at.*?required = true",
+        _message_body(query, "AuditRecord"),
+    )
+    for message in ("ListSitesRequest", "ListSitesResponse", "GetAuditWithinScopeRequest", "GetAuditWithinScopeResponse"):
+        body = _message_body(query, message)
+        if "page_token" in body:
+            assert re.search(r"optional string .*page_token.*?min_len: 1", body, re.DOTALL)
+
+    assert re.search(
+        r"string site_status.*?min_len: 1",
+        _message_body(lifecycle, "ReconcileProvisioningResponse"),
+        re.DOTALL,
+    )
+    activate = _message_body(lifecycle, "ActivateReleaseEffect")
+    assert "optional string expected_active_release_ref" in activate
+    assert re.search(r"expected_active_release_ref.*?min_len: 1", activate, re.DOTALL)
+    decommission = _message_body(lifecycle, "GetDecommissionReceiptResponse")
+    assert re.search(r"string phase.*?min_len: 1", decommission, re.DOTALL)
+    assert re.search(
+        r"pending_participant_refs.*?items:.*?min_len: 1",
+        decommission,
+        re.DOTALL,
+    )
+
+
+def test_site_lifecycle_durable_intents_have_typed_receipt_reads() -> None:
+    lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
+
+    for prefix in ("Provisioning", "Activation"):
+        request = _message_body(lifecycle, f"Get{prefix}ReceiptRequest")
+        response = _message_body(lifecycle, f"Get{prefix}ReceiptResponse")
+        assert "AuthenticatedOperatorQueryContext context" in request
+        for field in ("command_id", "digest_algorithm", "request_digest"):
+            assert field in request
+        assert "kokoro.common.v2.CommandReceiptV2 receipt" in response
+        assert f"{prefix}Phase phase" in response
+        enum = _enum_body(lifecycle, f"{prefix}Phase")
+        assert "_UNSPECIFIED = 0" in enum
+        assert len(re.findall(r"= \d+;", enum)) >= 5
+
+    resume = _message_body(lifecycle, "ResumeSiteResponse")
+    assert re.search(r"string activation_attempt_ref.*?min_len: 1", resume, re.DOTALL)

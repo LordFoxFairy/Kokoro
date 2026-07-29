@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { openApiOperations, readOpenApiDocument } from "./openapi-reader.mjs";
 
 const PUBLIC_OPERATIONS = new Map([
   ["exchangeProductContext", ["post", "/v1/product-context:exchange"]],
@@ -28,6 +29,7 @@ const PUBLIC_OPERATIONS = new Map([
   ["completeAccountRecovery", ["post", "/v1/identity/account-recoveries/{id}:complete"]],
   ["reauthenticateIdentitySession", ["post", "/v1/identity/sessions:reauthenticate"]],
   ["getPersonalContext", ["get", "/v1/me/personal-context"]],
+  ["getPublicCommandReceipt", ["get", "/v1/commands/{id}/receipt"]],
 ]);
 
 const PRIVILEGED = Object.freeze({
@@ -35,16 +37,23 @@ const PRIVILEGED = Object.freeze({
     path: "contract/proto/kokoro/platform/identity/v1/admin_identity.proto",
     service: "AdminIdentityService",
     version: 1,
-    methods: ["BeginOperatorLogin", "ExchangeOidcSession", "BeginStepUp", "CompleteStepUp", "SignOut"],
+    methods: [
+      "BeginOperatorLogin",
+      "ExchangeOidcSession",
+      "GetOperatorSessionDelivery",
+      "BeginStepUp",
+      "CompleteStepUp",
+      "SignOut",
+    ],
   },
   "platform-admin-query": {
-    path: "contract/proto/kokoro/platform/admin/v2/admin_control.proto",
+    path: "contract/proto/kokoro/platform/admin/v2/admin_query.proto",
     service: "AdminQueryService",
     version: 2,
     methods: ["GetSite", "ListSites", "GetUserWithinSite", "GetAuditWithinScope"],
   },
   "platform-admin-command": {
-    path: "contract/proto/kokoro/platform/admin/v2/admin_control.proto",
+    path: "contract/proto/kokoro/platform/admin/v2/admin_command.proto",
     service: "AdminCommandService",
     version: 2,
     methods: ["PrepareCommand", "SubmitForApproval", "DecideApproval", "ExecuteApproved", "GetReceipt"],
@@ -55,9 +64,11 @@ const PRIVILEGED = Object.freeze({
     version: 1,
     methods: [
       "RequestSite",
+      "GetProvisioningReceipt",
       "ReconcileProvisioning",
       "CreateRelease",
       "ActivateRelease",
+      "GetActivationReceipt",
       "SuspendSite",
       "ResumeSite",
       "PlanDecommission",
@@ -69,7 +80,9 @@ const PRIVILEGED = Object.freeze({
 });
 
 const ADMISSION_SHA256 = "cfe855ad4acd481e1d1a21c3bf4d3baa4362f454b5723b76ffc57b8a8b58d583";
-const ADMISSION_REGISTRY_SHA256 = "a14498e9357551030c16219cdae75dc7b8bd15124fbad02d2cdc719f8e6aa0e4";
+// The Admission wire remains byte-frozen. Its registry metadata now names the already-published
+// GetCommandReceipt recovery operation so reconcile_receipt is machine-verifiable.
+const ADMISSION_REGISTRY_SHA256 = "60c41c28bbf1beddceac870d9b946ad4c238421927d87547775b02e192aafc75";
 
 function fail(errors, code) {
   errors.push(code);
@@ -89,59 +102,71 @@ function serviceMethods(source, service) {
   return [...block[1].matchAll(/rpc\s+(\w+)\s*\(/gu)].map((match) => match[1]);
 }
 
-function openApiOperations(source, errors) {
-  const operations = new Map();
-  const methods = new Set(["delete", "get", "head", "options", "patch", "post", "put", "trace"]);
-  let inPaths = false;
-  let path = null;
-  let method = null;
-  for (const line of source.split(/\r?\n/u)) {
-    if (line.trim() === "paths:") {
-      inPaths = true;
-      continue;
-    }
-    if (!inPaths || line.trim() === "") continue;
-    if (/^\S/u.test(line)) break;
-    const pathMatch = /^  (\/.+):\s*$/u.exec(line);
-    if (pathMatch) {
-      path = pathMatch[1];
-      method = null;
-      continue;
-    }
-    const methodMatch = /^    ([a-z]+):\s*$/u.exec(line);
-    if (methodMatch && methods.has(methodMatch[1])) {
-      method = methodMatch[1];
-      continue;
-    }
-    const idMatch = /^      operationId:\s*([A-Za-z][A-Za-z0-9_.-]*)\s*$/u.exec(line);
-    if (!idMatch || path === null || method === null) continue;
-    if (operations.has(idMatch[1])) fail(errors, `duplicate_public_operation:${idMatch[1]}`);
-    operations.set(idMatch[1], [method, path]);
+function parsePublicOpenApi(source, errors) {
+  try {
+    return readOpenApiDocument(source);
+  } catch (error) {
+    fail(errors, `public_openapi_unreadable:${error.message}`);
+    return { paths: {}, security: [], components: {} };
   }
-  return operations;
 }
 
 function sameJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
-function checkPublic(source, errors) {
-  const actual = openApiOperations(source, errors);
+function hasProductWorkload(security) {
+  return (
+    Array.isArray(security) &&
+    security.some(
+      (requirement) =>
+        requirement !== null &&
+        typeof requirement === "object" &&
+        Array.isArray(requirement.ProductWorkload),
+    )
+  );
+}
+
+function checkPublic(source, document, errors) {
+  const parsed = openApiOperations(document);
+  const actual = new Map(
+    [...parsed].map(([operationId, { method, path }]) => [operationId, [method, path]]),
+  );
   if (!sameJson([...actual.entries()].sort(), [...PUBLIC_OPERATIONS.entries()].sort())) {
     fail(errors, "public_surface_drift");
   }
-  if (!/ProductWorkload:\s*\n\s+type: mutualTLS/u.test(source)) fail(errors, "public_workload_binding_missing");
-  if (!/^security:\s*\n\s+- ProductWorkload:/mu.test(source)) fail(errors, "public_workload_security_missing");
-  if (!/name: Idempotency-Key/u.test(source) || !/name: Kokoro-Contract-Version/u.test(source)) {
+  if (document.components?.securitySchemes?.ProductWorkload?.type !== "mutualTLS") {
+    fail(errors, "public_workload_binding_missing");
+  }
+  if (!hasProductWorkload(document.security)) fail(errors, "public_workload_security_missing");
+  for (const [operationId, { operation }] of parsed) {
+    if (!hasProductWorkload(operation.security ?? document.security)) {
+      fail(errors, `public_operation_security_missing:${operationId}`);
+    }
+  }
+  const parameters = document.components?.parameters ?? {};
+  if (
+    parameters.IdempotencyKey?.name !== "Idempotency-Key" ||
+    parameters.ContractVersion?.name !== "Kokoro-Contract-Version"
+  ) {
     fail(errors, "public_command_headers_missing");
   }
-  const postCount = [...actual.values()].filter(([method]) => method === "post").length;
-  if ((source.match(/parameters: \*mutationParameters/gu) ?? []).length !== postCount - 1) {
-    // The first operation defines the YAML anchor; every other POST consumes exactly that set.
-    fail(errors, "public_mutation_header_policy_drift");
+  const requiredMutationParameters = new Set(["ContractVersion", "IdempotencyKey", "CsrfToken"]);
+  for (const [operationId, { method, operation }] of parsed) {
+    if (method !== "post") continue;
+    const refs = new Set(
+      (operation.parameters ?? [])
+        .map((parameter) => parameter?.$ref?.split("/").at(-1))
+        .filter(Boolean),
+    );
+    if ([...requiredMutationParameters].some((parameter) => !refs.has(parameter))) {
+      fail(errors, `public_mutation_header_policy_drift:${operationId}`);
+    }
   }
-  for (const required of ["ErrorResponse:", "code:", "retryClass:", "requestId:", "correlationId:", "X-Request-Id:"]) {
-    if (!source.includes(required)) fail(errors, `public_error_contract_missing:${required}`);
+  const error = document.components?.schemas?.ErrorResponse;
+  const errorFields = new Set(Object.keys(error?.properties ?? {}));
+  for (const required of ["code", "retryClass", "requestId", "correlationId"]) {
+    if (!errorFields.has(required)) fail(errors, `public_error_contract_missing:${required}`);
   }
   for (const forbidden of [
     /x-kokoro-site-id/iu,
@@ -157,7 +182,7 @@ function checkPublic(source, errors) {
   }
 }
 
-function checkRegistry(root, publicSource, registry, errors) {
+function checkRegistry(root, publicDocument, registry, errors) {
   const wave1 = new Map(
     registry.boundaries
       .filter((boundary) => boundary.id === "platform-public" || boundary.id in PRIVILEGED)
@@ -194,7 +219,7 @@ function checkRegistry(root, publicSource, registry, errors) {
       fail(errors, `privileged_registry_drift:${id}`);
     }
   }
-  if (openApiOperations(publicSource, errors).size !== 22) fail(errors, "public_registry_source_count");
+  if (openApiOperations(publicDocument).size !== 23) fail(errors, "public_registry_source_count");
 
   const admission = registry.boundaries.find((boundary) => boundary.id === "platform-admission");
   if (digest(JSON.stringify(admission)) !== ADMISSION_REGISTRY_SHA256) fail(errors, "platform_admission_registry_changed");
@@ -206,9 +231,10 @@ function checkRegistry(root, publicSource, registry, errors) {
 export function checkWave1Surface(root) {
   const errors = [];
   const publicSource = read(root, "contract/openapi/platform-public-v1.yaml");
+  const publicDocument = parsePublicOpenApi(publicSource, errors);
   const registry = JSON.parse(read(root, "contract/registry/boundaries.yaml"));
-  checkPublic(publicSource, errors);
-  checkRegistry(root, publicSource, registry, errors);
+  checkPublic(publicSource, publicDocument, errors);
+  checkRegistry(root, publicDocument, registry, errors);
 
   const sources = new Map();
   for (const [id, definition] of Object.entries(PRIVILEGED)) {
@@ -252,7 +278,7 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 22 public operations, 4 privileged services, 5 contract-only boundaries\n");
+    process.stdout.write("wave1_surface_ok: 23 public operations, 4 privileged services, 5 contract-only boundaries\n");
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

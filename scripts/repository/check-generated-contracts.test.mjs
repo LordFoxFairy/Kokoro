@@ -15,19 +15,21 @@ import * as generatedChecker from "./check-generated-contracts.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
-async function sourceDigest(directory, current = directory) {
-  const entries = await readdir(current, { withFileTypes: true });
-  const chunks = [];
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    const path = resolve(current, entry.name);
-    if (entry.isDirectory()) chunks.push(...(await sourceDigest(directory, path)));
-    else if (entry.isFile() && entry.name.endsWith(".proto")) {
-      const relativePath = path.slice(directory.length + 1).replaceAll("\\", "/");
-      chunks.push(Buffer.from(`${relativePath}\0`), await readFile(path), Buffer.from("\0"));
-    }
+const adminAuthSourcePaths = [
+  "kokoro/common/v1/error.proto",
+  "kokoro/common/v1/receipt.proto",
+  "kokoro/platform/admin/v1/admin_auth.proto",
+  "kokoro/platform/admission/v1/admission.proto",
+];
+
+async function sourceDigest(directory, sourcePaths) {
+  const hash = createHash("sha256");
+  for (const sourcePath of sourcePaths) {
+    hash.update(`${sourcePath}\0`);
+    hash.update(await readFile(resolve(directory, sourcePath)));
+    hash.update("\0");
   }
-  if (current !== directory) return chunks;
-  return createHash("sha256").update(Buffer.concat(chunks)).digest("hex");
+  return hash.digest("hex");
 }
 
 async function artifactDigest(directory, current = directory) {
@@ -108,7 +110,7 @@ test("generation emits pinned source metadata into every committed mirror", asyn
   const packageJson = JSON.parse(await readFile(resolve(repositoryRoot, "contract/package.json"), "utf8"));
   assert.equal(packageJson.scripts["buf:generate"], "node generate.mjs");
 
-  const expectedDigest = await sourceDigest(resolve(repositoryRoot, "contract/proto"));
+  const expectedDigest = await sourceDigest(resolve(repositoryRoot, "contract/proto"), adminAuthSourcePaths);
   for (const mirror of [
     "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
     "kokoro-web/apps/admin/lib/generated/contracts",
@@ -123,7 +125,8 @@ test("generation emits pinned source metadata into every committed mirror", asyn
     assert.match(metadata, /schemaId: "kokoro\.platform\.admin\.v1\.AdminAuthService"/u);
     assert.match(metadata, /generatorVersion: "2\.13\.0"/u);
     assert.match(metadata, /runtimeVersion: "2\.13\.0"/u);
-    assert.match(metadata, /kokoro\/platform\/admin\/v1\/admin_auth\.proto/u);
+    for (const sourcePath of adminAuthSourcePaths) assert.match(metadata, new RegExp(sourcePath, "u"));
+    assert.doesNotMatch(metadata, /kokoro\/platform\/admin\/v2\/admin_(?:query|command)\.proto/u);
   }
 });
 
@@ -133,5 +136,6 @@ test("federated contract CI runs the pinned Buf and generated-mirror gates", asy
   assert.match(workflow, /pnpm --dir contract install --frozen-lockfile/u);
   assert.match(workflow, /pnpm --dir contract run buf:format:check/u);
   assert.match(workflow, /pnpm --dir contract run buf:lint/u);
+  assert.match(workflow, /pnpm --dir contract run openapi:lint/u);
   assert.match(workflow, /node scripts\/repository\/check-generated-contracts\.mjs/u);
 });

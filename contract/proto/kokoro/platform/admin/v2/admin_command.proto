@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package kokoro.platform.admin.v2;
+
+import "buf/validate/validate.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// AdminCommandService coordinates approval for non-lifecycle administrative effects.
+// Site lifecycle effects have their own typed service and are deliberately absent here.
+service AdminCommandService {
+  rpc PrepareCommand(PrepareCommandRequest) returns (PrepareCommandResponse) {}
+  rpc SubmitForApproval(SubmitForApprovalRequest) returns (SubmitForApprovalResponse) {}
+  rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse) {}
+  rpc ExecuteApproved(ExecuteApprovedRequest) returns (ExecuteApprovedResponse) {}
+  rpc GetReceipt(GetReceiptRequest) returns (GetReceiptResponse) {}
+}
+
+message DisableUserChange {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string user_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string reason_code = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message UpdateOperatorScopeChange {
+  string operator_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  OperatorScope replacement_scope = 2 [(buf.validate.field).required = true];
+}
+
+message UpdatePolicyChange {
+  string policy_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string policy_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message PrepareCommandEffect {
+  oneof change {
+    option (buf.validate.oneof).required = true;
+    DisableUserChange disable_user = 1;
+    UpdateOperatorScopeChange update_operator_scope = 2;
+    UpdatePolicyChange update_policy = 3;
+  }
+  string reason = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+}
+
+message PrepareCommandRequest {
+  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  PrepareCommandEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message PrepareCommandResponse {
+  string prepared_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string approval_policy_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message SubmitForApprovalEffect {
+  string prepared_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message SubmitForApprovalRequest {
+  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  SubmitForApprovalEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message SubmitForApprovalResponse {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
+}
+
+enum ApprovalDecision {
+  APPROVAL_DECISION_UNSPECIFIED = 0;
+  APPROVAL_DECISION_APPROVE = 1;
+  APPROVAL_DECISION_REJECT = 2;
+}
+
+message DecideApprovalEffect {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ApprovalDecision decision = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+}
+
+message DecideApprovalRequest {
+  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  DecideApprovalEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message DecideApprovalResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+}
+
+message ExecuteApprovedEffect {
+  string prepared_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string approval_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message ExecuteApprovedRequest {
+  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  ExecuteApprovedEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message ExecuteApprovedResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+}
+
+message GetReceiptRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string command_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message GetReceiptResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+}

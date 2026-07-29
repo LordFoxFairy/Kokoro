@@ -15,13 +15,14 @@ paths:
       operationId: exchangeProductContext
       parameters: &mutationParameters
         - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
         - $ref: '#/components/parameters/IdempotencyKey'
         - $ref: '#/components/parameters/CsrfToken'
       requestBody:
         $ref: '#/components/requestBodies/CommandRequest'
-      responses: &commandResponses
+      responses:
         '200':
-          $ref: '#/components/responses/CommandResponse'
+          $ref: '#/components/responses/ProductContextExchangeResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
   /v1/identity/registrations:
@@ -30,30 +31,56 @@ paths:
       parameters: *mutationParameters
       requestBody:
         $ref: '#/components/requestBodies/RegistrationRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/EmailVerificationTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/verifications/{id}:complete:
     parameters:
       - $ref: '#/components/parameters/TransactionRef'
     post:
       operationId: completeEmailVerification
-      parameters: *mutationParameters
+      parameters: &secretMutationParameters
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/CommandRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/TransactionSecretRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/VerificationActivationResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/verifications:resend:
     post:
       operationId: resendEmailVerification
       parameters: *mutationParameters
       requestBody:
         $ref: '#/components/requestBodies/IdentifierRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/EmailVerificationTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/sessions:
     post:
       operationId: createIdentitySession
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/LoginRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/CreateSessionRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/CreateSessionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
     get:
       operationId: listIdentitySessions
       parameters: &readParameters
@@ -61,9 +88,9 @@ paths:
       security:
         - ProductWorkload: []
           UserSession: []
-      responses: &readResponses
+      responses:
         '200':
-          $ref: '#/components/responses/ReadResponse'
+          $ref: '#/components/responses/IdentitySessionList'
         default:
           $ref: '#/components/responses/ErrorResponse'
   /v1/identity/sessions/{id}:verify-mfa:
@@ -71,17 +98,31 @@ paths:
       - $ref: '#/components/parameters/TransactionRef'
     post:
       operationId: completeSessionMfa
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/OtpRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/SessionMfaCompletionRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SessionCredentialPairResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/sessions:refresh:
     post:
       operationId: refreshIdentitySession
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/OpaqueCredentialRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/RefreshSessionRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SessionCredentialPairResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/sessions:revoke:
     post:
       operationId: revokeIdentitySessions
@@ -91,33 +132,53 @@ paths:
           UserSession: []
       requestBody:
         $ref: '#/components/requestBodies/RevokeRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/CommandReceiptResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/password-resets:
     post:
       operationId: beginPasswordReset
       parameters: *mutationParameters
       requestBody:
         $ref: '#/components/requestBodies/IdentifierRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/PasswordResetTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/password-resets/{id}:complete:
     parameters:
       - $ref: '#/components/parameters/TransactionRef'
     post:
       operationId: completePasswordReset
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
         $ref: '#/components/requestBodies/PasswordRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/CommandReceiptResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/password:change:
     post:
       operationId: changePassword
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
       security:
         - ProductWorkload: []
           UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
         $ref: '#/components/requestBodies/PasswordChangeRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/SessionCredentialPairResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/email-changes:
     post:
       operationId: beginEmailChange
@@ -126,37 +187,59 @@ paths:
         - ProductWorkload: []
           UserSession: []
       requestBody:
-        $ref: '#/components/requestBodies/IdentifierRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/EmailChangeStartRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/EmailChangeTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/email-changes/{id}:complete:
     parameters:
       - $ref: '#/components/parameters/TransactionRef'
     post:
       operationId: completeEmailChange
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/CommandRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/EmailChangeCompletionRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SessionCredentialPairResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/totp/enroll:
     post:
       operationId: beginTotpEnrollment
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
       security:
         - ProductWorkload: []
           UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/CommandRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/TotpEnrollmentStartRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/TotpEnrollmentTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/totp/confirm:
     post:
       operationId: confirmTotpEnrollment
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
       security:
         - ProductWorkload: []
           UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/OtpRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/TotpConfirmationRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RecoveryCodeSetResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/totp/disable:
     post:
       operationId: disableTotp
@@ -166,43 +249,68 @@ paths:
           UserSession: []
       requestBody:
         $ref: '#/components/requestBodies/OtpRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/CommandReceiptResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/recovery-codes:regenerate:
     post:
       operationId: regenerateRecoveryCodes
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
       security:
         - ProductWorkload: []
           UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/CommandRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/RecoveryCodeRegenerationRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RecoveryCodeSetResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/account-recoveries:
     post:
       operationId: beginAccountRecovery
       parameters: *mutationParameters
       requestBody:
         $ref: '#/components/requestBodies/IdentifierRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/AccountRecoveryTransactionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/account-recoveries/{id}:complete:
     parameters:
       - $ref: '#/components/parameters/TransactionRef'
     post:
       operationId: completeAccountRecovery
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
+      security:
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
       requestBody:
         $ref: '#/components/requestBodies/RecoveryRequest'
-      responses: *commandResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/AccountRecoveryCompletionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/sessions:reauthenticate:
     post:
       operationId: reauthenticateIdentitySession
-      parameters: *mutationParameters
+      parameters: *secretMutationParameters
       security:
         - ProductWorkload: []
           UserSession: []
+          ReceiptRecoveryCapability: []
       requestBody:
-        $ref: '#/components/requestBodies/LoginRequest'
-      responses: *commandResponses
+        $ref: '#/components/requestBodies/ReauthenticationRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/ReauthenticationResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/me/personal-context:
     get:
       operationId: getPersonalContext
@@ -210,7 +318,40 @@ paths:
       security:
         - ProductWorkload: []
           UserSession: []
-      responses: *readResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/PersonalContext'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/commands/{id}/receipt:
+    get:
+      operationId: getPublicCommandReceipt
+      description: >-
+        Returns only durable status and a typed recovery action, never a previously delivered
+        credential, TOTP seed, recovery code, reauthentication proof, or new bearer capability. The
+        caller-generated command id makes the receipt reachable even when the first response contains
+        zero response bytes; the lookup does not require the caller to know the server-side request digest.
+        An authenticated lookup is restricted to the same caller. Anonymous login, MFA, refresh,
+        password-reset, account-recovery, and other secret-delivery lookups present the same
+        X-Kokoro-Receipt-Recovery-Capability generated before the original command. Receipt lookup
+        does not consume it. Platform verifies its domain-separated hash bound to the workload-derived
+        Site, workload binding, purpose, subject generation, transaction, command, and expiry. A later
+        superseding command atomically consumes that same capability and invalidates the orphaned
+        delivery before producing fresh material. Unknown, consumed-for-supersession, mismatched, or
+        conflicting inputs produce the same rate-limited not-found response.
+      parameters:
+        - $ref: '#/components/parameters/CommandId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+        - ProductWorkload: []
+          ReceiptRecoveryCapability: []
+      responses:
+        '200':
+          $ref: '#/components/responses/PublicCommandReceiptResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
 components:
   securitySchemes:
     ProductWorkload:
@@ -220,6 +361,15 @@ components:
       type: http
       scheme: bearer
       bearerFormat: opaque-platform-session
+    ReceiptRecoveryCapability:
+      type: apiKey
+      in: header
+      name: X-Kokoro-Receipt-Recovery-Capability
+      description: >-
+        caller-generated high-entropy capability created before a secret-bearing or anonymous-completion
+        command. Platform stores only a domain-separated hash. A receipt read repeatedly verifies it and
+        does not consume it; the new command named by a superseding action atomically consumes the same
+        capability while invalidating the orphaned delivery. It never returns in a response body.
   parameters:
     ContractVersion:
       name: Kokoro-Contract-Version
@@ -228,6 +378,18 @@ components:
       schema:
         type: string
         const: '1'
+    CommandIdentity:
+      name: X-Kokoro-Command-Id
+      in: header
+      required: true
+      description: >-
+        Stable caller-generated 128-bit command identity, encoded as lowercase 32-hex or UUIDv7. It
+        must not be derived from Idempotency-Key, password, OTP, or request content. Platform owns a
+        unique workload/Site/caller/command row and rejects the same command id with a different payload
+        using an internal keyed digest; all responses and receipts echo this exact id.
+      schema: &commandIdSchema
+        type: string
+        pattern: '^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$'
     IdempotencyKey:
       name: Idempotency-Key
       in: header
@@ -252,6 +414,13 @@ components:
         type: string
         minLength: 1
         maxLength: 128
+    CommandId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$'
   headers:
     RequestId:
       required: true
@@ -278,24 +447,30 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/IdentifierInput'
-    LoginRequest:
+    CreateSessionRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/LoginInput'
+            $ref: '#/components/schemas/CreateSessionInput'
+    SessionMfaCompletionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SessionMfaCompletionInput'
+    RefreshSessionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefreshSessionInput'
     OtpRequest:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/OtpInput'
-    OpaqueCredentialRequest:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/OpaqueCredentialInput'
     RevokeRequest:
       required: true
       content:
@@ -320,25 +495,207 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RecoveryInput'
+    TransactionSecretRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionSecretInput'
+    TotpConfirmationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TotpConfirmationInput'
+    TotpEnrollmentStartRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TotpEnrollmentStartInput'
+    RecoveryCodeRegenerationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecoveryCodeRegenerationInput'
+    EmailChangeStartRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailChangeStartInput'
+    EmailChangeCompletionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailChangeCompletionInput'
+    ReauthenticationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReauthenticationInput'
   responses:
-    CommandResponse:
-      description: The authoritative idempotent command outcome.
-      headers:
+    ProductContextExchangeResponse:
+      description: A Site-release-bound product context.
+      headers: &standardResponseHeaders
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CommandOutcome'
-    ReadResponse:
-      description: A caller-scoped projection containing opaque references only.
-      headers:
-        X-Request-Id:
-          $ref: '#/components/headers/RequestId'
+            $ref: '#/components/schemas/ProductContextExchangeResponse'
+    EmailVerificationTransactionResponse:
+      description: An email-verification transaction; delivery details are never disclosed.
+      headers: *standardResponseHeaders
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ReadOutcome'
+            $ref: '#/components/schemas/EmailVerificationTransactionResponse'
+    VerificationActivationResponse:
+      description: The verified account activation result.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/VerificationActivationResponse'
+    CreateSessionResponse:
+      description: Either an MFA challenge or a newly issued opaque credential pair.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSessionResponse'
+    SessionCredentialPairResponse:
+      description: A rotated opaque session and refresh credential pair.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SessionCredentialPairResponse'
+    IdentitySessionList:
+      description: Caller-scoped device and identity sessions.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/IdentitySessionList'
+    CommandReceiptResponse:
+      description: An authoritative idempotent command receipt with no replayable secret payload.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CommandReceiptResponse'
+    PasswordResetTransactionResponse:
+      description: A non-disclosing password-reset transaction.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PasswordResetTransactionResponse'
+    EmailChangeTransactionResponse:
+      description: An email-change verification transaction.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailChangeTransactionResponse'
+    TotpEnrollmentTransactionResponse:
+      description: A one-time TOTP enrollment secret. It is never recoverable from a receipt.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TotpEnrollmentTransactionResponse'
+    RecoveryCodeSetResponse:
+      description: A one-time recovery set. Only hashes are retained by Platform.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RecoveryCodeSetResponse'
+    AccountRecoveryTransactionResponse:
+      description: A non-disclosing account-recovery transaction.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountRecoveryTransactionResponse'
+    AccountRecoveryCompletionResponse:
+      description: >-
+        Either a durable password/TOTP-confirmation receipt, a first-claim TOTP replacement seed, or
+        a typed instruction to reconcile and supersede a delivery that can no longer be replayed.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountRecoveryCompletionResponse'
+    ReauthenticationResponse:
+      description: A short-lived proof for a sensitive operation.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ReauthenticationResponse'
+    PersonalContext:
+      description: The caller's Site-bound personal workspace, project, and execution space.
+      headers: *standardResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PersonalContext'
+    PublicCommandReceiptResponse:
+      description: A caller-and-digest-bound command receipt without replayable one-time payloads.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PublicCommandReceiptResponse'
     ErrorResponse:
       description: Stable, non-disclosing Platform error.
       headers:
@@ -385,7 +742,11 @@ components:
           format: email
           maxLength: 191
       required: [email]
-    LoginInput:
+    CreateSessionInput:
+      oneOf:
+        - $ref: '#/components/schemas/PasswordLoginInput'
+        - $ref: '#/components/schemas/SupersedeSessionCredentialDeliveryInput'
+    PasswordLoginInput:
       type: object
       additionalProperties: false
       properties:
@@ -396,10 +757,35 @@ components:
         password:
           type: string
           maxLength: 1024
-        returnIntent:
+        returnIntentRef:
           type: string
-          maxLength: 512
+          minLength: 1
+          maxLength: 128
+          pattern: '^[a-z][a-z0-9_.-]{0,127}$'
+          description: Opaque reference resolved only through Platform's registered allowlist.
       required: [email, password]
+    SupersedeSessionCredentialDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        recoveryAction:
+          type: string
+          const: supersede_session_delivery
+        priorCommandId: *commandIdSchema
+      required: [recoveryAction, priorCommandId]
+    SessionMfaCompletionInput:
+      oneOf:
+        - $ref: '#/components/schemas/CompleteSessionMfaInput'
+        - $ref: '#/components/schemas/SupersedeSessionCredentialDeliveryInput'
+    CompleteSessionMfaInput:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          minLength: 6
+          maxLength: 32
+      required: [code]
     OtpInput:
       type: object
       additionalProperties: false
@@ -409,7 +795,11 @@ components:
           minLength: 6
           maxLength: 32
       required: [code]
-    OpaqueCredentialInput:
+    RefreshSessionInput:
+      oneOf:
+        - $ref: '#/components/schemas/RefreshCredentialInput'
+        - $ref: '#/components/schemas/SupersedeRefreshCredentialDeliveryInput'
+    RefreshCredentialInput:
       type: object
       additionalProperties: false
       properties:
@@ -418,6 +808,15 @@ components:
           minLength: 32
           maxLength: 2048
       required: [opaqueCredential]
+    SupersedeRefreshCredentialDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        recoveryAction:
+          type: string
+          const: supersede_refresh_delivery
+        priorCommandId: *commandIdSchema
+      required: [recoveryAction, priorCommandId]
     RevokeInput:
       type: object
       additionalProperties: false
@@ -454,51 +853,1000 @@ components:
           maxLength: 1024
       required: [currentPassword, newPassword]
     RecoveryInput:
+      oneOf:
+        - $ref: '#/components/schemas/PasswordRecoveryCompletionInput'
+        - $ref: '#/components/schemas/BeginTotpRecoveryReplacementInput'
+        - $ref: '#/components/schemas/ConfirmTotpRecoveryReplacementInput'
+        - $ref: '#/components/schemas/SupersedeTotpRecoveryReplacementInput'
+    PasswordRecoveryCompletionInput:
       type: object
       additionalProperties: false
       properties:
         transactionSecret:
           type: string
+          minLength: 32
           maxLength: 2048
         proofCode:
           type: string
+          minLength: 8
           maxLength: 256
         replacementFactor:
           type: string
-          enum: [password, totp]
-      required: [transactionSecret, proofCode, replacementFactor]
-    CommandOutcome:
+          const: password
+        replacementPassword:
+          type: string
+          minLength: 15
+          maxLength: 1024
+      required:
+        [transactionSecret, proofCode, replacementFactor, replacementPassword]
+    BeginTotpRecoveryReplacementInput:
       type: object
       additionalProperties: false
       properties:
+        transactionSecret:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        proofCode:
+          type: string
+          minLength: 8
+          maxLength: 256
+        replacementFactor:
+          type: string
+          const: totp
+        ceremonyAction:
+          type: string
+          const: begin
+      required:
+        [transactionSecret, proofCode, replacementFactor, ceremonyAction]
+    ConfirmTotpRecoveryReplacementInput:
+      type: object
+      additionalProperties: false
+      properties:
+        replacementFactor:
+          type: string
+          const: totp
+        ceremonyAction:
+          type: string
+          const: confirm
+        factorReplacementCapability:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        enrollmentTransactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        confirmationCode:
+          type: string
+          minLength: 6
+          maxLength: 32
+      required:
+        - replacementFactor
+        - ceremonyAction
+        - factorReplacementCapability
+        - enrollmentTransactionRef
+        - confirmationCode
+    SupersedeTotpRecoveryReplacementInput:
+      type: object
+      additionalProperties: false
+      properties:
+        replacementFactor:
+          type: string
+          const: totp
+        ceremonyAction:
+          type: string
+          const: supersede
+        priorCommandId: *commandIdSchema
+        priorEnrollmentTransactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+      required:
+        - replacementFactor
+        - ceremonyAction
+        - priorCommandId
+        - priorEnrollmentTransactionRef
+    TransactionSecretInput:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionSecret:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [transactionSecret]
+    TotpConfirmationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        code:
+          type: string
+          minLength: 6
+          maxLength: 32
+      required: [transactionRef, code]
+    TotpEnrollmentStartInput:
+      oneOf:
+        - $ref: '#/components/schemas/BeginTotpEnrollmentInput'
+        - $ref: '#/components/schemas/SupersedeTotpEnrollmentInput'
+    BeginTotpEnrollmentInput:
+      type: object
+      additionalProperties: false
+      properties:
+        ceremonyAction:
+          type: string
+          const: begin
+      required: [ceremonyAction]
+    SupersedeTotpEnrollmentInput:
+      type: object
+      additionalProperties: false
+      properties:
+        ceremonyAction:
+          type: string
+          const: supersede
+        priorCommandId: *commandIdSchema
+        priorTransactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+      required: [ceremonyAction, priorCommandId, priorTransactionRef]
+    RecoveryCodeRegenerationInput:
+      oneOf:
+        - $ref: '#/components/schemas/RegenerateRecoveryCodesInput'
+        - $ref: '#/components/schemas/SupersedeRecoveryCodeSetInput'
+    RegenerateRecoveryCodesInput:
+      type: object
+      additionalProperties: false
+      properties:
+        recoveryAction:
+          type: string
+          const: regenerate
+      required: [recoveryAction]
+    SupersedeRecoveryCodeSetInput:
+      type: object
+      additionalProperties: false
+      properties:
+        recoveryAction:
+          type: string
+          const: supersede
+        priorCommandId: *commandIdSchema
+      required: [recoveryAction, priorCommandId]
+    EmailChangeStartInput:
+      type: object
+      additionalProperties: false
+      properties:
+        replacementEmail:
+          type: string
+          format: email
+          maxLength: 191
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [replacementEmail, reauthenticationProof]
+    ChannelChallengeProofInput:
+      type: object
+      additionalProperties: false
+      properties:
+        challengeRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        proofSecret:
+          type: string
+          minLength: 16
+          maxLength: 2048
+      required: [challengeRef, proofSecret]
+    EmailChangeCompletionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        currentAddressChallenge:
+          $ref: '#/components/schemas/ChannelChallengeProofInput'
+        replacementAddressChallenge:
+          $ref: '#/components/schemas/ChannelChallengeProofInput'
+      required:
+        - reauthenticationProof
+        - currentAddressChallenge
+        - replacementAddressChallenge
+    ReauthenticationInput:
+      oneOf:
+        - $ref: '#/components/schemas/PasswordReauthenticationInput'
+        - $ref: '#/components/schemas/MfaReauthenticationInput'
+        - $ref: '#/components/schemas/SupersedeReauthenticationProofInput'
+    PasswordReauthenticationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          type: string
+          const: password
+        password:
+          type: string
+          maxLength: 1024
+      required: [stage, password]
+    MfaReauthenticationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          type: string
+          const: mfa
+        transactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        challengeKind:
+          type: string
+          enum: [totp, recovery]
+        proofCode:
+          type: string
+          minLength: 6
+          maxLength: 64
+      required: [stage, transactionRef, challengeKind, proofCode]
+    SupersedeReauthenticationProofInput:
+      type: object
+      additionalProperties: false
+      properties:
+        stage:
+          type: string
+          const: supersede
+        priorCommandId: *commandIdSchema
+      required: [stage, priorCommandId]
+    CommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
         receiptRef:
           type: string
+          minLength: 1
           maxLength: 256
         state:
           type: string
-          enum: [accepted, committed, rejected, outcome_unknown]
-        resultRef:
+          const: committed
+        committedAt:
           type: string
-          maxLength: 256
-      required: [receiptRef, state]
-    ReadOutcome:
+          format: date-time
+      required: [commandId, requestDigest, receiptRef, state, committedAt]
+    CommandReceiptResponse:
       type: object
       additionalProperties: false
       properties:
-        resultRef:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+      required: [receipt]
+    ProductContext:
+      type: object
+      additionalProperties: false
+      properties:
+        productContextRef:
           type: string
+          minLength: 1
           maxLength: 256
-        revision:
+        siteRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        siteReleaseRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        audience:
+          type: string
+          minLength: 1
+          maxLength: 256
+        expiresAt:
+          type: string
+          format: date-time
+      required: [productContextRef, siteRef, siteReleaseRef, audience, expiresAt]
+    ProductContextExchangeResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        context:
+          $ref: '#/components/schemas/ProductContext'
+      required: [receipt, context]
+    EmailVerificationTransaction:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+        deliveryState:
+          type: string
+          enum: [queued, sent, rate_limited]
+      required: [transactionRef, expiresAt, deliveryState]
+    EmailVerificationTransactionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        transaction:
+          $ref: '#/components/schemas/EmailVerificationTransaction'
+      required: [receipt, transaction]
+    VerificationActivationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        accountRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        personalContextPending:
+          type: boolean
+      required: [receipt, accountRef, personalContextPending]
+    AuthPending:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        challengeKind:
+          type: string
+          enum: [totp, recovery]
+        expiresAt:
+          type: string
+          format: date-time
+      required: [transactionRef, challengeKind, expiresAt]
+    AuthPendingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        pending:
+          $ref: '#/components/schemas/AuthPending'
+      required: [receipt, pending]
+    SessionCredentialPair:
+      type: object
+      additionalProperties: false
+      properties:
+        sessionCredential:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        sessionCredentialExpiresAt:
+          type: string
+          format: date-time
+        refreshCredential:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        refreshCredentialExpiresAt:
+          type: string
+          format: date-time
+        sessionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+        [sessionCredential, sessionCredentialExpiresAt, refreshCredential, refreshCredentialExpiresAt, sessionRef]
+    OneTimeDeliveryUnavailable:
+      type: object
+      additionalProperties: false
+      description: >-
+        Returned by an exact idempotent retry after the first one-time delivery was claimed. The
+        previous payload is never replayed; the caller must read the durable receipt and, when
+        offered, start the permitted replacement command with the caller-held receipt recovery capability.
+      properties:
+        kind:
+          type: string
+          const: delivery_unavailable
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        receiptRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required: [kind, commandId, requestDigest, receiptRef]
+    OneTimeSessionCredentialDelivery:
+      type: object
+      additionalProperties: false
+      description: Available only on the fresh command's first successful response claim.
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        credentials:
+          $ref: '#/components/schemas/SessionCredentialPair'
+      required: [commandId, requestDigest, credentials]
+    CreateSessionResponse:
+      oneOf:
+        - $ref: '#/components/schemas/AuthPendingResponse'
+        - $ref: '#/components/schemas/OneTimeSessionCredentialDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    SessionCredentialPairResponse:
+      oneOf:
+        - $ref: '#/components/schemas/OneTimeSessionCredentialDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    IdentitySession:
+      type: object
+      additionalProperties: false
+      properties:
+        sessionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        deviceLabel:
           type: string
           maxLength: 128
-      required: [resultRef, revision]
+        createdAt:
+          type: string
+          format: date-time
+        lastSeenAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        current:
+          type: boolean
+        status:
+          type: string
+          enum: [active, revoked, expired]
+      required: [sessionRef, deviceLabel, createdAt, lastSeenAt, expiresAt, current, status]
+    IdentitySessionList:
+      type: object
+      additionalProperties: false
+      properties:
+        sessions:
+          type: array
+          maxItems: 200
+          items:
+            $ref: '#/components/schemas/IdentitySession'
+        revision:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required: [sessions, revision]
+    PasswordResetTransaction:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+      required: [transactionRef, expiresAt]
+    PasswordResetTransactionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        transaction:
+          $ref: '#/components/schemas/PasswordResetTransaction'
+      required: [receipt, transaction]
+    EmailChangeTransaction:
+      type: object
+      additionalProperties: false
+      description: >-
+        The current-address and replacement-address challenge references are distinct, independently
+        hashed/consumed, and must both be confirmed before the primary identifier can change.
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+        currentAddressChallengeRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        replacementAddressChallengeRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+      required:
+        [transactionRef, expiresAt, currentAddressChallengeRef, replacementAddressChallengeRef]
+    EmailChangeTransactionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        transaction:
+          $ref: '#/components/schemas/EmailChangeTransaction'
+      required: [receipt, transaction]
+    TotpEnrollmentTransaction:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+        otpauthUri:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        manualEntrySecret:
+          type: string
+          minLength: 16
+          maxLength: 256
+      required: [transactionRef, expiresAt, otpauthUri, manualEntrySecret]
+    TotpEnrollmentTransactionResponse:
+      oneOf:
+        - $ref: '#/components/schemas/OneTimeTotpEnrollmentDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    OneTimeTotpEnrollmentDelivery:
+      type: object
+      additionalProperties: false
+      description: Available only on the fresh enrollment command's first successful response claim.
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        transaction:
+          $ref: '#/components/schemas/TotpEnrollmentTransaction'
+      required: [commandId, requestDigest, transaction]
+    RecoveryCodeSetResponse:
+      oneOf:
+        - $ref: '#/components/schemas/OneTimeRecoveryCodeSetDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    OneTimeRecoveryCodeSetDelivery:
+      type: object
+      additionalProperties: false
+      description: Available only on the fresh code-set command's first successful response claim.
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        recoveryCodes:
+          type: array
+          minItems: 8
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 8
+            maxLength: 64
+        generatedAt:
+          type: string
+          format: date-time
+      required: [commandId, requestDigest, recoveryCodes, generatedAt]
+    AccountRecoveryTransaction:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+        recoveryState:
+          type: string
+          enum: [proof_required, review_required, ready]
+      required: [transactionRef, expiresAt, recoveryState]
+    AccountRecoveryTransactionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        transaction:
+          $ref: '#/components/schemas/AccountRecoveryTransaction'
+      required: [receipt, transaction]
+    OneTimeTotpRecoveryEnrollmentDelivery:
+      type: object
+      additionalProperties: false
+      description: >-
+        First-claim replacement ceremony delivery. Recovery does not commit and old factors remain
+        authoritative until this pending seed is challenged successfully.
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        factorReplacementCapability:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        transaction:
+          $ref: '#/components/schemas/TotpEnrollmentTransaction'
+      required: [commandId, requestDigest, factorReplacementCapability, transaction]
+    AccountRecoveryCompletionResponse:
+      oneOf:
+        - $ref: '#/components/schemas/CommandReceiptResponse'
+        - $ref: '#/components/schemas/OneTimeTotpRecoveryEnrollmentDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    ReauthenticationPending:
+      type: object
+      additionalProperties: false
+      properties:
+        transactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        challengeKind:
+          type: string
+          enum: [totp, recovery]
+        expiresAt:
+          type: string
+          format: date-time
+      required: [transactionRef, challengeKind, expiresAt]
+    ReauthenticationPendingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        pending:
+          $ref: '#/components/schemas/ReauthenticationPending'
+      required: [receipt, pending]
+    ReauthenticationProof:
+      type: object
+      additionalProperties: false
+      properties:
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+        sessionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        userSecurityEpoch:
+          type: integer
+          format: int64
+          minimum: 0
+        sessionEpoch:
+          type: integer
+          format: int64
+          minimum: 0
+        authStrengthPolicyRevision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - reauthenticationProof
+        - sessionRef
+        - userSecurityEpoch
+        - sessionEpoch
+        - authStrengthPolicyRevision
+        - issuedAt
+        - expiresAt
+    OneTimeReauthenticationProofDelivery:
+      type: object
+      additionalProperties: false
+      description: Available only on the fresh reauthentication command's first successful claim.
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        proof:
+          $ref: '#/components/schemas/ReauthenticationProof'
+      required: [commandId, requestDigest, proof]
+    ReauthenticationResponse:
+      oneOf:
+        - $ref: '#/components/schemas/ReauthenticationPendingResponse'
+        - $ref: '#/components/schemas/OneTimeReauthenticationProofDelivery'
+        - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
+    PersonalContext:
+      type: object
+      additionalProperties: false
+      properties:
+        workspaceRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        projectRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        executionSpaceRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        contextRevision:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required: [workspaceRef, projectRef, executionSpaceRef, contextRevision]
+    AcceptedPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: &publicCommandId
+          type: string
+          pattern: '^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$'
+        requestDigest: &publicRequestDigest
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+          description: Server-side keyed audit digest; callers do not compute it from secret inputs.
+        observedAt: &publicObservedAt
+          type: string
+          format: date-time
+        state:
+          type: string
+          const: accepted
+        deliveryState:
+          type: string
+          const: not_applicable
+      required: &publicReceiptRequired [commandId, requestDigest, observedAt, state, deliveryState]
+    OutcomeUnknownPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *publicCommandId
+        requestDigest: *publicRequestDigest
+        observedAt: *publicObservedAt
+        state:
+          type: string
+          const: outcome_unknown
+        deliveryState:
+          type: string
+          const: not_applicable
+      required: *publicReceiptRequired
+    CommittedPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *publicCommandId
+        requestDigest: *publicRequestDigest
+        observedAt: *publicObservedAt
+        state:
+          type: string
+          const: committed
+        deliveryState:
+          type: string
+          const: not_applicable
+      required: *publicReceiptRequired
+    RejectedPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *publicCommandId
+        requestDigest: *publicRequestDigest
+        observedAt: *publicObservedAt
+        state:
+          type: string
+          const: rejected
+        deliveryState:
+          type: string
+          const: not_applicable
+      required: *publicReceiptRequired
+    CommittedDeliveryConsumedPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *publicCommandId
+        requestDigest: *publicRequestDigest
+        observedAt: *publicObservedAt
+        state:
+          type: string
+          const: committed
+        deliveryState:
+          type: string
+          const: first_claim_consumed
+      required: *publicReceiptRequired
+    CommittedDeliverySupersededPublicCommandReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *publicCommandId
+        requestDigest: *publicRequestDigest
+        observedAt: *publicObservedAt
+        state:
+          type: string
+          const: committed
+        deliveryState:
+          type: string
+          const: superseded
+      required: *publicReceiptRequired
+    PendingCommandReconciliation:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: pending
+        retryAfterSeconds:
+          type: integer
+          minimum: 1
+          maximum: 300
+      required: [kind, retryAfterSeconds]
+    CommittedCommandReconciliation:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: terminal
+        outcome:
+          type: string
+          const: committed
+      required: [kind, outcome]
+    RejectedCommandReconciliation:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: terminal
+        outcome:
+          type: string
+          const: rejected
+      required: [kind, outcome]
+    SupersedingCeremony:
+      type: object
+      additionalProperties: false
+      description: >-
+        Safe instruction naming the one new command allowed to consume the caller-held receipt recovery
+        capability. The response returns no bearer capability. Its binding digest covers the Site release,
+        workload, operation, original command, transaction, and expiry; consumption and orphan
+        invalidation are atomic.
+      properties:
+        transactionRef:
+          type: string
+          minLength: 16
+          maxLength: 128
+        operationId:
+          type: string
+          enum:
+            - createIdentitySession
+            - completeSessionMfa
+            - refreshIdentitySession
+            - beginTotpEnrollment
+            - regenerateRecoveryCodes
+            - reauthenticateIdentitySession
+            - completeAccountRecovery
+        bindingDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        expiresAt:
+          type: string
+          format: date-time
+        invalidatesPriorDelivery:
+          type: boolean
+          const: true
+      required:
+        - transactionRef
+        - operationId
+        - bindingDigest
+        - expiresAt
+        - invalidatesPriorDelivery
+    SupersedingCeremonyReconciliation:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: superseding_ceremony_required
+        ceremony:
+          $ref: '#/components/schemas/SupersedingCeremony'
+      required: [kind, ceremony]
+    AcceptedPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/AcceptedPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/PendingCommandReconciliation'
+      required: [receipt, reconciliation]
+    OutcomeUnknownPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/OutcomeUnknownPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/PendingCommandReconciliation'
+      required: [receipt, reconciliation]
+    CommittedTerminalPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommittedPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/CommittedCommandReconciliation'
+      required: [receipt, reconciliation]
+    RejectedTerminalPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/RejectedPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/RejectedCommandReconciliation'
+      required: [receipt, reconciliation]
+    CommittedSupersedingPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommittedDeliveryConsumedPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/SupersedingCeremonyReconciliation'
+      required: [receipt, reconciliation]
+    CommittedSupersededPublicCommandReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommittedDeliverySupersededPublicCommandReceipt'
+        reconciliation:
+          $ref: '#/components/schemas/CommittedCommandReconciliation'
+      required: [receipt, reconciliation]
+    PublicCommandReceiptResponse:
+      oneOf:
+        - $ref: '#/components/schemas/AcceptedPublicCommandReceiptResponse'
+        - $ref: '#/components/schemas/OutcomeUnknownPublicCommandReceiptResponse'
+        - $ref: '#/components/schemas/CommittedTerminalPublicCommandReceiptResponse'
+        - $ref: '#/components/schemas/RejectedTerminalPublicCommandReceiptResponse'
+        - $ref: '#/components/schemas/CommittedSupersedingPublicCommandReceiptResponse'
+        - $ref: '#/components/schemas/CommittedSupersededPublicCommandReceiptResponse'
+    ErrorCode:
+      type: string
+      enum:
+        - INVALID_REQUEST
+        - CONTRACT_VERSION_UNSUPPORTED
+        - AUTHENTICATION_REQUIRED
+        - AUTHENTICATION_FAILED
+        - AUTH_TRANSACTION_EXPIRED
+        - MFA_REQUIRED
+        - FORBIDDEN
+        - NOT_FOUND
+        - CONFLICT
+        - RATE_LIMITED
+        - RISK_UNAVAILABLE
+        - SITE_UNAVAILABLE
+        - OUTCOME_UNKNOWN
+        - INTERNAL_UNAVAILABLE
     ErrorResponse:
       type: object
       additionalProperties: false
       properties:
         code:
-          type: string
-          pattern: '^[A-Z][A-Z0-9_]{2,127}$'
+          $ref: '#/components/schemas/ErrorCode'
         retryClass:
           type: string
           enum: [never, after_delay, same_identity, reconcile_receipt]

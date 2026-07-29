@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import sys
+import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -173,6 +175,445 @@ def test_node_generator_isolates_new_boundary_output() -> None:
         assert '"kokoro/platform/admission/v1/admission.proto"' not in metadata
         assert (output / "kokoro/platform/site/v1/site_lifecycle_pb.ts").is_file()
         assert not (output / "kokoro/platform/admission/v1/admission_pb.ts").exists()
+
+
+@pytest.mark.parametrize(
+    "boundary,own_file,forbidden_files",
+    [
+        (
+            "platform-admin-identity@v1",
+            "kokoro/platform/identity/v1/admin_identity_pb.ts",
+            [
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+                "kokoro/platform/admin/v2/admin_command_pb.ts",
+                "kokoro/platform/admin/v2/admin_control_pb.ts",
+                "kokoro/platform/site/v1/site_lifecycle_pb.ts",
+            ],
+        ),
+        (
+            "platform-admin-query@v2",
+            "kokoro/platform/admin/v2/admin_query_pb.ts",
+            [
+                "kokoro/platform/admin/v2/admin_command_pb.ts",
+                "kokoro/platform/admin/v2/admin_control_pb.ts",
+                "kokoro/platform/identity/v1/admin_identity_pb.ts",
+                "kokoro/platform/site/v1/site_lifecycle_pb.ts",
+            ],
+        ),
+        (
+            "platform-admin-command@v2",
+            "kokoro/platform/admin/v2/admin_command_pb.ts",
+            [
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+                "kokoro/platform/admin/v2/admin_control_pb.ts",
+                "kokoro/platform/identity/v1/admin_identity_pb.ts",
+                "kokoro/platform/site/v1/site_lifecycle_pb.ts",
+            ],
+        ),
+        (
+            "platform-site-lifecycle@v1",
+            "kokoro/platform/site/v1/site_lifecycle_pb.ts",
+            [
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+                "kokoro/platform/admin/v2/admin_command_pb.ts",
+                "kokoro/platform/admin/v2/admin_control_pb.ts",
+                "kokoro/platform/identity/v1/admin_identity_pb.ts",
+            ],
+        ),
+    ],
+)
+def test_node_generator_never_leaks_sibling_services(
+    boundary: str, own_file: str, forbidden_files: list[str]
+) -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        output = Path(directory) / "bundle"
+        result = subprocess.run(
+            [
+                "node",
+                str(CONTRACT / "generate.mjs"),
+                "--boundary",
+                boundary,
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        assert result.returncode == 0, result.stderr
+        assert (output / own_file).is_file()
+        assert all(not (output / path).exists() for path in forbidden_files)
+
+
+def test_command_envelope_v2_is_frozen_in_the_common_proto() -> None:
+    legacy_receipt = (CONTRACT / "proto/kokoro/common/v1/receipt.proto").read_text()
+    envelope = (
+        CONTRACT / "proto/kokoro/common/v2/command_envelope.proto"
+    ).read_text()
+
+    assert "CanonicalCommandEnvelopeV2" not in legacy_receipt
+    assert "COMMAND_DIGEST_ALGORITHM_V2_SHA256_COMMAND_ENVELOPE = 1;" in envelope
+    for message in (
+        "CanonicalTypedProtobufV2",
+        "CanonicalSecurityEpochV2",
+        "CanonicalCommandTrustAxesV2",
+        "CanonicalCommandEnvelopeV2",
+        "CommandIdentityV2",
+        "CommandReceiptV2",
+    ):
+        assert f"message {message} {{" in envelope
+    canonical = _proto_message(envelope, "CanonicalCommandEnvelopeV2")
+    assert "CommandIdentityV2" not in canonical
+    assert "request_digest" not in canonical
+
+    shared = (
+        CONTRACT / "proto/kokoro/platform/admin/v2/admin_shared.proto"
+    ).read_text()
+    command_context = _proto_message(shared, "AuthenticatedOperatorCommandContext")
+    assert "string actor_ref = 8" in command_context
+
+    for relative_path in (
+        "kokoro/platform/identity/v1/admin_identity.proto",
+        "kokoro/platform/admin/v2/admin_shared.proto",
+        "kokoro/platform/admin/v2/admin_command.proto",
+        "kokoro/platform/site/v1/site_lifecycle.proto",
+    ):
+        source = (CONTRACT / "proto" / relative_path).read_text()
+        assert "kokoro.common.v2.CommandIdentityV2" in source or (
+            "kokoro.common.v2.CommandReceiptV2" in source
+        )
+        assert "kokoro.common.v1.CommandIdentity" not in source
+        assert "kokoro.common.v1.CommandReceipt" not in source
+
+
+def _proto_message(source: str, message: str) -> str:
+    marker = f"message {message} {{"
+    start = source.index(marker) + len(marker)
+    depth = 1
+    for index in range(start, len(source)):
+        if source[index] == "{":
+            depth += 1
+        elif source[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return source[start:index]
+    raise AssertionError(f"unterminated proto message: {message}")
+
+
+def _typescript_compiler() -> Path:
+    candidates = sorted(
+        (CONTRACT / "node_modules/.pnpm").glob(
+            "typescript@*/node_modules/typescript/bin/tsc"
+        )
+    )
+    assert len(candidates) == 1, candidates
+    return candidates[0]
+
+
+@pytest.mark.parametrize(
+    ("boundary", "expected_wrappers", "runner_source"),
+    [
+        (
+            "platform-admin-identity@v1",
+            [
+                "beginOperatorLoginRequestDigest",
+                "exchangeOidcSessionRequestDigest",
+                "beginStepUpRequestDigest",
+                "completeStepUpRequestDigest",
+                "signOutRequestDigest",
+            ],
+            r'''
+import { create } from "@bufbuild/protobuf";
+import {
+  beginOperatorLoginRequestDigest,
+} from "./bundle/command-envelope-digest.js";
+import { CommandDigestAlgorithmV2, CommandIdentityV2Schema } from "./bundle/kokoro/common/v2/command_envelope_pb.js";
+import {
+  AdminPreLoginWorkloadContextSchema,
+  AdminSessionRecoveryProofSchema,
+  BeginOperatorLoginEffectSchema,
+} from "./bundle/kokoro/platform/identity/v1/admin_identity_pb.js";
+
+const command = create(CommandIdentityV2Schema, {
+  commandId: "command:1",
+  idempotencyKey: "idempotency:1",
+  digestAlgorithm: CommandDigestAlgorithmV2.SHA256_COMMAND_ENVELOPE,
+  requestDigest: "0".repeat(64),
+});
+const context = create(AdminPreLoginWorkloadContextSchema, {
+  command,
+  workloadIdentityRef: "workload:web-admin",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+  audience: "platform-admin",
+});
+const effect = create(BeginOperatorLoginEffectSchema, {
+  returnIntentRef: "dashboard",
+  recoveryProof: create(AdminSessionRecoveryProofSchema, { recoveryHandle: Uint8Array.from({ length: 32 }, (_, i) => i) }),
+});
+const verified = {
+  workloadIdentityRef: "workload:web-admin",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+  audience: "platform-admin",
+} as const;
+const golden = beginOperatorLoginRequestDigest(context, effect, verified);
+const changedEffect = beginOperatorLoginRequestDigest(
+  context,
+  create(BeginOperatorLoginEffectSchema, { ...effect, returnIntentRef: "settings" }),
+  verified,
+);
+let mismatch = "accepted";
+try {
+  beginOperatorLoginRequestDigest(context, effect, { ...verified, region: "eu-west-1" });
+} catch (error) {
+  mismatch = error instanceof Error ? error.message : String(error);
+}
+console.log(JSON.stringify({ golden, changedEffect, mismatch }));
+''',
+        ),
+        (
+            "platform-admin-command@v2",
+            [
+                "prepareCommandRequestDigest",
+                "submitForApprovalRequestDigest",
+                "decideApprovalRequestDigest",
+                "executeApprovedRequestDigest",
+            ],
+            r'''
+import { create } from "@bufbuild/protobuf";
+import {
+  prepareCommandRequestDigest,
+} from "./bundle/command-envelope-digest.js";
+import { CommandDigestAlgorithmV2, CommandIdentityV2Schema } from "./bundle/kokoro/common/v2/command_envelope_pb.js";
+import {
+  AuthenticatedOperatorCommandContextSchema,
+  OperatorScopeSchema,
+  SecurityEpochsSchema,
+  SiteScopeSchema,
+} from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
+import {
+  DisableUserChangeSchema,
+  PrepareCommandEffectSchema,
+} from "./bundle/kokoro/platform/admin/v2/admin_command_pb.js";
+
+const command = create(CommandIdentityV2Schema, {
+  commandId: "command:1",
+  idempotencyKey: "idempotency:1",
+  digestAlgorithm: CommandDigestAlgorithmV2.SHA256_COMMAND_ENVELOPE,
+  requestDigest: "0".repeat(64),
+});
+const makeContext = (siteIds: string[], actorRef = "operator:7") => create(AuthenticatedOperatorCommandContextSchema, {
+  command,
+  actorRef,
+  operatorSessionRef: "session:9",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+  securityEpochs: create(SecurityEpochsSchema, {
+    operatorSecurityEpoch: 2n,
+    sessionEpoch: 11n,
+    restrictionEpoch: 3n,
+    policyEpoch: 5n,
+    siteSecurityEpoch: 7n,
+  }),
+  scope: create(OperatorScopeSchema, {
+    kind: { case: "site", value: create(SiteScopeSchema, { siteIds, environment: "production", region: "us-east-1" }) },
+  }),
+});
+const effect = create(PrepareCommandEffectSchema, {
+  change: {
+    case: "disableUser",
+    value: create(DisableUserChangeSchema, { siteId: "site:alpha", userRef: "user:42", reasonCode: "abuse" }),
+  },
+  reason: "security response",
+});
+const verified = {
+  workloadIdentityRef: "workload:web-admin",
+  audience: "platform-admin",
+  actorRef: "operator:7",
+  operatorSessionRef: "session:9",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+} as const;
+const golden = prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, verified);
+const stable = prepareCommandRequestDigest(makeContext(["site:alpha", "site:beta"]), effect, verified);
+const changedActor = prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"], "operator:8"), effect, { ...verified, actorRef: "operator:8" });
+const changedEffect = prepareCommandRequestDigest(
+  makeContext(["site:beta", "site:alpha"]),
+  create(PrepareCommandEffectSchema, { ...effect, reason: "different" }),
+  verified,
+);
+let mismatch = "accepted";
+try {
+  prepareCommandRequestDigest(makeContext(["site:beta", "site:alpha"]), effect, { ...verified, region: "eu-west-1" });
+} catch (error) {
+  mismatch = error instanceof Error ? error.message : String(error);
+}
+console.log(JSON.stringify({ golden, stable, changedActor, changedEffect, mismatch }));
+''',
+        ),
+        (
+            "platform-site-lifecycle@v1",
+            [
+                "requestSiteRequestDigest",
+                "reconcileProvisioningRequestDigest",
+                "createReleaseRequestDigest",
+                "activateReleaseRequestDigest",
+                "suspendSiteRequestDigest",
+                "resumeSiteRequestDigest",
+                "planDecommissionRequestDigest",
+                "cancelDecommissionRequestDigest",
+                "executeDecommissionRequestDigest",
+            ],
+            r'''
+import { create } from "@bufbuild/protobuf";
+import {
+  planDecommissionRequestDigest,
+} from "./bundle/command-envelope-digest.js";
+import { CommandDigestAlgorithmV2, CommandIdentityV2Schema } from "./bundle/kokoro/common/v2/command_envelope_pb.js";
+import {
+  AuthenticatedOperatorCommandContextSchema,
+  OperatorScopeSchema,
+  SecurityEpochsSchema,
+  SiteScopeSchema,
+} from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
+import { PlanDecommissionEffectSchema } from "./bundle/kokoro/platform/site/v1/site_lifecycle_pb.js";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+
+const command = create(CommandIdentityV2Schema, {
+  commandId: "command:1",
+  idempotencyKey: "idempotency:1",
+  digestAlgorithm: CommandDigestAlgorithmV2.SHA256_COMMAND_ENVELOPE,
+  requestDigest: "0".repeat(64),
+});
+const context = create(AuthenticatedOperatorCommandContextSchema, {
+  command,
+  actorRef: "operator:7",
+  operatorSessionRef: "session:9",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+  securityEpochs: create(SecurityEpochsSchema, { operatorSecurityEpoch: 2n, sessionEpoch: 11n, restrictionEpoch: 3n, policyEpoch: 5n, siteSecurityEpoch: 7n }),
+  scope: create(OperatorScopeSchema, {
+    kind: { case: "site", value: create(SiteScopeSchema, { siteIds: ["site:alpha"], environment: "production", region: "us-east-1" }) },
+  }),
+});
+const makeEffect = (participants: string[]) => create(PlanDecommissionEffectSchema, {
+  earliestExecutionAt: timestampFromDate(new Date("2027-01-01T00:00:00Z")),
+  requiredParticipantRefs: participants,
+  retentionPolicyRef: "retention:standard",
+});
+const verified = {
+  workloadIdentityRef: "workload:web-admin",
+  audience: "platform-admin",
+  actorRef: "operator:7",
+  operatorSessionRef: "session:9",
+  environment: "production",
+  region: "us-east-1",
+  managedDeviceRef: "device:3",
+} as const;
+const golden = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["billing", "storage"]), verified);
+const stable = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["storage", "billing"]), verified);
+const changedSite = planDecommissionRequestDigest(context, "site:beta", makeEffect(["billing", "storage"]), verified);
+const changedEffect = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["billing", "search"]), verified);
+console.log(JSON.stringify({ golden, stable, changedSite, changedEffect }));
+''',
+        ),
+    ],
+)
+def test_generated_command_envelope_v2_digest_executes_typed_boundary_vectors(
+    boundary: str, expected_wrappers: list[str], runner_source: str
+) -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        output = root / "bundle"
+        result = subprocess.run(
+            [
+                "node",
+                str(CONTRACT / "generate.mjs"),
+                "--boundary",
+                boundary,
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        helper = output / "command-envelope-digest.ts"
+        assert helper.is_file()
+        helper_source = helper.read_text()
+        for wrapper in expected_wrappers:
+            assert f"export function {wrapper}(" in helper_source
+        assert "export function commandEnvelopeV2Digest(" not in helper_source
+        assert "export function canonicalCommandEnvelopeV2(" not in helper_source
+        assert "export type CanonicalCommandEnvelopeV2Input" not in helper_source
+
+        (root / "package.json").write_text('{"type":"module"}\n')
+        os.symlink(CONTRACT / "node_modules", root / "node_modules", target_is_directory=True)
+        (root / "tsconfig.json").write_text(
+            json.dumps(
+                {
+                    "compilerOptions": {
+                        "target": "ES2022",
+                        "module": "NodeNext",
+                        "moduleResolution": "NodeNext",
+                        "strict": True,
+                        "skipLibCheck": True,
+                        "outDir": "dist",
+                        "rootDir": ".",
+                    },
+                    "include": ["bundle/**/*.ts", "runner.ts", "node-crypto.d.ts"],
+                }
+            )
+        )
+        (root / "node-crypto.d.ts").write_text(
+            """
+declare module "node:crypto" {
+  interface Hash {
+    update(data: string, encoding: "utf8"): Hash;
+    update(data: Uint8Array): Hash;
+    digest(encoding: "hex"): string;
+  }
+  export function createHash(algorithm: "sha256"): Hash;
+}
+"""
+        )
+        (root / "runner.ts").write_text(runner_source)
+        compile_result = subprocess.run(
+            ["node", str(_typescript_compiler()), "--project", "tsconfig.json"],
+            cwd=root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert compile_result.returncode == 0, compile_result.stdout + compile_result.stderr
+        runtime = subprocess.run(
+            ["node", "dist/runner.js"],
+            cwd=root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert runtime.returncode == 0, runtime.stderr
+        evidence = json.loads(runtime.stdout)
+
+        assert len(evidence["golden"]) == 64
+        if "stable" in evidence:
+            assert evidence["stable"] == evidence["golden"]
+        for name, digest in evidence.items():
+            if name not in {"golden", "stable", "mismatch"}:
+                assert digest != evidence["golden"], name
+        if "mismatch" in evidence:
+            assert evidence["mismatch"] == "command_envelope_axis_mismatch:region"
 
 
 def test_admin_auth_v1_frozen_metadata_is_reproducible() -> None:

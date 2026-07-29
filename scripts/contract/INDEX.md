@@ -15,7 +15,12 @@ contract source, and that each operation is frozen to exactly one transport.
 ## Non-responsibilities
 
 This gate reads declared contracts only. It does not prove wire behaviour, authorization, deadline enforcement,
-receipt durability, or that a provider actually implements a registered operation.
+receipt durability, or that a provider actually implements a registered operation. It does prove the narrower
+structural facts that a protobuf `command-receipt` ref is a direct field of the RPC response and that a
+`reconcile_receipt` command/state receipt names a non-effect recovery operation in the same boundary.
+For protobuf, that recovery request must carry either command-id/digest identity or a dedicated transaction/proof pair,
+and its response must directly carry the same fully-qualified receipt type. For OpenAPI state reads, the recovery
+operation must be a real GET with a declared 200 response. A same-named type from another protobuf package is rejected.
 
 ## Public boundary
 
@@ -24,6 +29,14 @@ fail-closed behaviour. Policy data is [`contract/registry/boundaries.yaml`](../.
 described by [`contract/registry/boundaries.schema.json`](../../contract/registry/boundaries.schema.json).
 The registry is JSON-compatible YAML, following `config/architecture/index-roots.yaml`: the filename the spec
 mandates, without adding a YAML parser dependency.
+
+OpenAPI descriptors are different: they are full YAML 1.2 documents and may legitimately use anchors, flow
+mappings, merge keys, and quoted scalars. `openapi-reader.mjs` invokes the root-lock-pinned PyYAML reader in
+`read-openapi.py`; its SafeLoader extension rejects duplicate keys before returning a JSON document. Both the
+registry parity gate and the Wave 1 surface gate consume this one reader, so a second partial indentation parser
+cannot silently omit an operation or an operation-level `security: []` override.
+The pinned Redocly CLI independently runs its OpenAPI 3.1 `spec` ruleset in CI; custom ownership/security checks
+complement that validator and never replace structural validation.
 
 `check-boundary-coverage.mjs` is the companion source-to-registry gate. It scans the two internal runtime
 consumers (Session and Agent), reduces their detected Platform dependencies to unique service edges, and
@@ -89,7 +102,7 @@ failure owner, and how each operation binds its Site. Wire shapes stay owned by 
 ## Runtime and security
 
 Read-only and deterministic, no new dependencies and no network: the Node gates use the standard library
-only, and the Python gates use PyYAML, which the root workspace already provides. Source paths must
+only; OpenAPI parsing and the Python gates use PyYAML, which the root workspace already pins. Source paths must
 stay repository-relative and are rejected if they escape the repository.
 
 ## Idempotency, failure, and recovery
@@ -103,6 +116,11 @@ Register a new boundary in the same change that introduces it, and keep it in st
 matrix. Declare `sourceStatus: "machine-readable"` only with a real contract source behind it; a boundary
 with no source in this repository must say `declared-only` and be counted, never claim coverage it does not
 have. Allowed retry classes are derived from `kokoro.common.v1.RetryClass`; never hardcode that list here.
+New privileged effects use `kokoro.common.v2.CommandIdentityV2` and `CommandReceiptV2`: generated digest helpers
+bind exact typed effect bytes to canonical scope, Site, actor and resource sets. V1 remains byte-frozen for legacy
+consumers. A registry row must name the matching response receipt version; a V1 registry ref cannot silently
+vouch for a V2 response. `reconcile_receipt` is not documentation shorthand—command/state receipts must name the
+actual read operation callers use after an outcome-unknown response.
 
 ## Current gotchas
 
@@ -150,6 +168,7 @@ spec keeps separate. Declaring an excluded path in the document fails, and an un
 
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
 and `node scripts/contract/check-boundary-coverage.mjs`,
+`pnpm --dir contract run openapi:lint`,
 then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py
 scripts/contract/test_check_admin_browser_schemas.py
 scripts/contract/test_admin_browser_public_shapes.py -q`,

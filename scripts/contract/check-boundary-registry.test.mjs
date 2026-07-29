@@ -46,6 +46,25 @@ paths:
   /things/{id}:
     get:
       operationId: readThing
+      responses:
+        '200':
+          description: receipt state
+`;
+
+const OPENAPI_FLOW_YAML = `openapi: 3.1.0
+info: {title: Fixture, version: 1.0.0}
+paths: {"/things": {post: {operationId: createThing}}, "/things/{id}": {get: {operationId: readThing}}}
+`;
+
+const OPENAPI_QUOTED_YAML = `openapi: 3.1.0
+info: {title: Fixture, version: 1.0.0}
+paths:
+  "/things":
+    "post":
+      operationId: "createThing"
+  "/things/{id}":
+    "get":
+      operationId: "readThing"
 `;
 
 // A stream registry, mirroring the shape of contract/spec/streams.yaml.
@@ -90,14 +109,19 @@ message DoThingRequest {
 
 message DoThingResponse {
   string id = 1;
+  kokoro.common.v1.CommandReceipt receipt = 2;
 }
 
 message ReadThingRequest {
   string site_id = 1;
+  string command_id = 2;
+  string digest_algorithm = 3;
+  string request_digest = 4;
 }
 
 message ReadThingResponse {
   string id = 1;
+  kokoro.common.v1.CommandReceipt receipt = 2;
 }
 `;
 
@@ -311,6 +335,66 @@ test("rejects a registered operation absent from the OpenAPI descriptor", async 
   );
 });
 
+test("accepts flow-style OpenAPI parsed by the real YAML loader", async () => {
+  const boundary = openapiBoundary();
+  const root = await makeFixture({
+    boundaries: [boundary],
+    files: { "contract/openapi/fixture.yaml": OPENAPI_FLOW_YAML },
+  });
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("accepts quoted OpenAPI path, method, and operationId scalars", async () => {
+  const boundary = openapiBoundary();
+  const root = await makeFixture({
+    boundaries: [boundary],
+    files: { "contract/openapi/fixture.yaml": OPENAPI_QUOTED_YAML },
+  });
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects duplicate OpenAPI mapping keys instead of silently overwriting", async () => {
+  const duplicate = `openapi: 3.1.0
+info: {title: Fixture, version: 1.0.0}
+paths:
+  /things:
+    post:
+      operationId: createThing
+    post:
+      operationId: readThing
+`;
+  const boundary = openapiBoundary();
+  await expectFailure(
+    {
+      boundaries: [boundary],
+      files: { "contract/openapi/fixture.yaml": duplicate },
+    },
+    "boundary_registry_source_unreadable: duplicate YAML key",
+  );
+});
+
+test("rejects an OpenAPI operation with no operationId", async () => {
+  const missing = `openapi: 3.1.0
+info: {title: Fixture, version: 1.0.0}
+paths:
+  /things:
+    post:
+      responses: {}
+`;
+  const boundary = openapiBoundary();
+  boundary.operations = [boundary.operations[0]];
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/openapi/fixture.yaml": missing } },
+    "boundary_registry_source_unreadable: missing operationId",
+  );
+});
+
 test("rejects a boundary whose source file does not exist", async () => {
   const boundary = httpBoundary();
   boundary.sources[0].path = "contract/spec/absent.yaml";
@@ -402,6 +486,112 @@ function protoBoundary(overrides = {}) {
     ...overrides,
   };
 }
+
+test("rejects a protobuf command receipt ref that is absent from the RPC response", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].receipt.ref = "kokoro.common.v2.CommandReceiptV2";
+
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_receipt_unbound: fixture-proto@v1/DoThing: DoThingResponse does not contain kokoro.common.v2.CommandReceiptV2",
+  );
+});
+
+test("compares protobuf receipt refs by fully-qualified type", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].receipt.ref = "kokoro.common.v2.CommandReceiptV2";
+  const source = SERVICE_PROTO.replace(
+    "kokoro.common.v1.CommandReceipt receipt = 2;",
+    "evil.CommandReceiptV2 receipt = 2;",
+  );
+
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/proto/fixture.proto": source } },
+    "boundary_registry_receipt_unbound: fixture-proto@v1/DoThing: DoThingResponse does not contain kokoro.common.v2.CommandReceiptV2",
+  );
+});
+
+test("requires reconcile_receipt to name a reachable non-effect operation", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].retryClass = "reconcile_receipt";
+
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_recovery_operation_missing: fixture-proto@v1/DoThing",
+  );
+
+  boundary.operations[0].receipt.recoveryOperation = "MissingReceiptRead";
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_recovery_operation_unknown: fixture-proto@v1/DoThing: MissingReceiptRead",
+  );
+
+  boundary.operations[0].receipt.recoveryOperation = "ReadThing";
+  const root = await makeFixture({ boundaries: [boundary] });
+  const result = run(root);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("forbids recoveryOperation outside reconcile_receipt", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].receipt.recoveryOperation = "ReadThing";
+
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_recovery_operation_forbidden: fixture-proto@v1/DoThing: same_identity",
+  );
+});
+
+test("rejects a recovery operation without a receipt lookup request and response", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].retryClass = "reconcile_receipt";
+  boundary.operations[0].receipt.recoveryOperation = "ReadThing";
+  const requestWithoutIdentity = SERVICE_PROTO.replace(
+    /message ReadThingRequest \{[\s\S]*?\n\}/u,
+    "message ReadThingRequest {\n  string site_id = 1;\n}",
+  );
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/proto/fixture.proto": requestWithoutIdentity } },
+    "boundary_registry_recovery_operation_unbound: fixture-proto@v1/DoThing: ReadThing request",
+  );
+
+  const responseWithoutReceipt = SERVICE_PROTO.replace(
+    /message ReadThingResponse \{[\s\S]*?\n\}/u,
+    "message ReadThingResponse {\n  string id = 1;\n}",
+  );
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/proto/fixture.proto": responseWithoutReceipt } },
+    "boundary_registry_recovery_operation_unbound: fixture-proto@v1/DoThing: ReadThing response",
+  );
+});
+
+test("requires an OpenAPI state-read recovery operation to be a real successful GET", async () => {
+  const boundary = openapiBoundary();
+  boundary.operations[0].retryClass = "reconcile_receipt";
+  boundary.operations[0].receipt = {
+    kind: "state-read",
+    recoveryOperation: "readThing",
+    ref: "readThing",
+  };
+  let root = await makeFixture({ boundaries: [boundary] });
+  let result = run(root);
+  assert.equal(result.status, 0, result.stderr);
+
+  const wrongMethod = OPENAPI_YAML.replace(
+    "    get:\n      operationId: readThing",
+    "    post:\n      operationId: readThing",
+  );
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/openapi/fixture.yaml": wrongMethod } },
+    "boundary_registry_recovery_operation_unbound: fixture-openapi@v1/createThing: readThing must be GET",
+  );
+
+  const noSuccess = OPENAPI_YAML.replace(/\n      responses:[\s\S]*?description: receipt state/u, "");
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/openapi/fixture.yaml": noSuccess } },
+    "boundary_registry_recovery_operation_unbound: fixture-openapi@v1/createThing: readThing response",
+  );
+});
 
 test("rejects one consumer reaching the same operation over two transports", async () => {
   // A second authority for create_thing: same consumer, same operation id, different transport.

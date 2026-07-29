@@ -7,6 +7,7 @@
 import { readFileSync } from "node:fs";
 import { isAbsolute, posix, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { openApiOperations, readOpenApiDocument } from "./openapi-reader.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 // JSON-compatible YAML, matching config/architecture/index-roots.yaml: the spec-mandated name
@@ -61,6 +62,7 @@ const BOUNDARY_KEYS = [
 const OPERATION_KEYS = ["effect", "id", "receipt", "retryClass", "scope", "siteBinding", "transport"];
 const PARTY_KEYS = ["boundary", "repository"];
 const RECEIPT_KEYS = ["kind", "ref"];
+const RECEIPT_RECOVERY_KEYS = ["kind", "recoveryOperation", "ref"];
 const SOURCE_KEYS = ["kind", "path", "select"];
 
 export class BoundaryRegistryError extends Error {
@@ -432,66 +434,20 @@ export function readProtoServiceMethods(source, service) {
   if (!block) fail("boundary_registry_source_unreadable", `missing proto service: ${service}`);
   const methods = [];
   for (const match of block[1].matchAll(/rpc\s+(\w+)\s*\(\s*([\w.]+)\s*\)\s*returns\s*\(\s*([\w.]+)\s*\)/gu)) {
-    methods.push({ name: match[1], request: match[2] });
+    methods.push({ name: match[1], request: match[2], response: match[3] });
   }
   if (methods.length === 0) fail("boundary_registry_source_unreadable", `empty proto service: ${service}`);
   return methods;
 }
 
-// OpenAPI is intentionally parsed without accepting a second YAML implementation. The contract
-// gate needs only the standard paths/<path>/<method>/operationId shape and fails closed on missing,
-// duplicate, or malformed operation ids.
+// OpenAPI uses the root's lock-pinned strict PyYAML reader. It supports the complete YAML syntax
+// used by OpenAPI (anchors, flow mappings and quoted scalars) while rejecting duplicate keys.
 export function readOpenApiOperationIds(source) {
-  const lines = source.split(/\r?\n/u);
-  const methods = new Set(["delete", "get", "head", "options", "patch", "post", "put", "trace"]);
-  const operations = [];
-  const seen = new Set();
-  let inPaths = false;
-  let path = null;
-  let method = null;
-  let operationId = null;
-
-  function finishOperation() {
-    if (method === null) return;
-    if (operationId === null) fail("boundary_registry_source_unreadable", `missing operationId: ${method} ${path}`);
-    if (seen.has(operationId)) fail("boundary_registry_source_unreadable", `duplicate operationId: ${operationId}`);
-    seen.add(operationId);
-    operations.push(operationId);
-    method = null;
-    operationId = null;
+  try {
+    return [...openApiOperations(readOpenApiDocument(source)).keys()];
+  } catch (error) {
+    return fail("boundary_registry_source_unreadable", error.message);
   }
-
-  for (const rawLine of lines) {
-    const line = stripComment(rawLine).replace(/\s+$/u, "");
-    if (line.trim() === "paths:") {
-      inPaths = true;
-      continue;
-    }
-    if (!inPaths || line.trim() === "") continue;
-    const indent = line.match(/^\s*/u)[0].length;
-    if (indent === 0) {
-      finishOperation();
-      break;
-    }
-    const pathMatch = /^  (\/.+):\s*$/u.exec(line);
-    if (pathMatch) {
-      finishOperation();
-      path = pathMatch[1];
-      continue;
-    }
-    const methodMatch = /^    ([a-z]+):\s*$/u.exec(line);
-    if (methodMatch && methods.has(methodMatch[1])) {
-      finishOperation();
-      if (path === null) fail("boundary_registry_source_unreadable", `method outside path: ${methodMatch[1]}`);
-      method = methodMatch[1];
-      continue;
-    }
-    const idMatch = /^      operationId:\s*([A-Za-z][A-Za-z0-9_.-]*)\s*$/u.exec(line);
-    if (idMatch && method !== null) operationId = idMatch[1];
-  }
-  finishOperation();
-  if (operations.length === 0) fail("boundary_registry_source_unreadable", "OpenAPI has no operations");
-  return operations;
 }
 
 export function readProtoMessages(source) {
@@ -638,10 +594,37 @@ function validateShape(registry, retryClasses, errors) {
         errors.push(`boundary_registry_receipt_missing: ${name}`);
       }
       if (operation.receipt !== null) {
-        if (!exactKeys(operation.receipt, RECEIPT_KEYS) || !RECEIPT_KINDS.includes(operation.receipt.kind)) {
+        const receiptKeysValid =
+          exactKeys(operation.receipt, RECEIPT_KEYS) || exactKeys(operation.receipt, RECEIPT_RECOVERY_KEYS);
+        if (!receiptKeysValid || !RECEIPT_KINDS.includes(operation.receipt.kind)) {
           errors.push(`boundary_registry_shape: operation receipt: ${name}`);
         } else if (typeof operation.receipt.ref !== "string" || operation.receipt.ref === "") {
           errors.push(`boundary_registry_shape: operation receipt ref: ${name}`);
+        } else if (
+          operation.retryClass === "reconcile_receipt" &&
+          ["command-receipt", "state-read"].includes(operation.receipt.kind)
+        ) {
+          if (
+            typeof operation.receipt.recoveryOperation !== "string" ||
+            operation.receipt.recoveryOperation === ""
+          ) {
+            errors.push(`boundary_registry_recovery_operation_missing: ${name}`);
+          } else {
+            const recovery = boundary.operations.find(
+              (candidate) => candidate.id === operation.receipt.recoveryOperation,
+            );
+            if (!recovery) {
+              errors.push(
+                `boundary_registry_recovery_operation_unknown: ${name}: ${operation.receipt.recoveryOperation}`,
+              );
+            } else if (recovery.effect !== false) {
+              errors.push(
+                `boundary_registry_recovery_operation_effectful: ${name}: ${operation.receipt.recoveryOperation}`,
+              );
+            }
+          }
+        } else if (Object.hasOwn(operation.receipt, "recoveryOperation")) {
+          errors.push(`boundary_registry_recovery_operation_forbidden: ${name}: ${operation.retryClass}`);
         }
       }
     }
@@ -716,6 +699,120 @@ function checkSourceParity(root, boundary, errors) {
   }
   for (const extra of setDifference(declared, actualSet)) {
     errors.push(`boundary_registry_operation_undeclared: ${boundary.id}: ${extra}`);
+  }
+}
+
+function protoTypeName(value) {
+  return String(value).slice(String(value).lastIndexOf(".") + 1);
+}
+
+function protoPackage(source) {
+  return /^\s*package\s+([A-Za-z0-9_.]+)\s*;/mu.exec(source)?.[1] ?? "";
+}
+
+function canonicalProtoType(type, packageName, messages) {
+  const value = String(type).replace(/^\./u, "");
+  if (value.includes(".")) return value;
+  return messages.has(value) && packageName !== "" ? `${packageName}.${value}` : value;
+}
+
+function responseContainsType(messages, response, expected, packageName) {
+  return (messages.get(protoTypeName(response)) ?? []).some(
+    (field) => canonicalProtoType(field.type, packageName, messages) === String(expected).replace(/^\./u, ""),
+  );
+}
+
+// A registry receipt reference is evidence only when the RPC response can actually return it.
+// Checking the direct response field is intentionally strict: a receipt hidden in an unrelated
+// nested payload would not be a stable, generic recovery surface.
+function checkProtoReceiptBindings(root, boundary, errors) {
+  for (const source of boundary.sources ?? []) {
+    if (source.kind !== "proto") continue;
+    let methods;
+    let messages;
+    let packageName;
+    try {
+      const text = readText(resolve(root, source.path), "boundary_registry_source_missing");
+      methods = readProtoServiceMethods(text, source.select.service);
+      messages = readProtoMessages(text);
+      packageName = protoPackage(text);
+    } catch (error) {
+      errors.push(`${error.message} (${boundary.id}: ${source.path})`);
+      continue;
+    }
+    const byMethod = new Map(methods.map((method) => [method.name, method]));
+    for (const operation of boundary.operations ?? []) {
+      if (operation.receipt?.kind !== "command-receipt") continue;
+      const method = byMethod.get(operation.id);
+      if (!method) continue;
+      const responseName = protoTypeName(method.response);
+      if (!responseContainsType(messages, method.response, operation.receipt.ref, packageName)) {
+        errors.push(
+          `boundary_registry_receipt_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
+          `${responseName} does not contain ${operation.receipt.ref}`,
+        );
+      }
+      if (operation.retryClass !== "reconcile_receipt" || !operation.receipt.recoveryOperation) continue;
+      const recovery = byMethod.get(operation.receipt.recoveryOperation);
+      if (!recovery) continue;
+      const requestFields = new Set(
+        (messages.get(protoTypeName(recovery.request)) ?? []).map((field) => field.name),
+      );
+      const commandLookup = ["command_id", "digest_algorithm", "request_digest"].every((field) =>
+        requestFields.has(field),
+      );
+      const proofLookup = requestFields.has("transaction_ref") && requestFields.has("recovery_proof");
+      if (!commandLookup && !proofLookup) {
+        errors.push(
+          `boundary_registry_recovery_operation_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
+            `${operation.receipt.recoveryOperation} request`,
+        );
+      }
+      if (!responseContainsType(messages, recovery.response, operation.receipt.ref, packageName)) {
+        errors.push(
+          `boundary_registry_recovery_operation_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
+            `${operation.receipt.recoveryOperation} response`,
+        );
+      }
+    }
+  }
+}
+
+function checkOpenApiRecoveryBindings(root, boundary, errors) {
+  for (const source of boundary.sources ?? []) {
+    if (source.kind !== "openapi") continue;
+    let operations;
+    try {
+      const text = readText(resolve(root, source.path), "boundary_registry_source_missing");
+      operations = openApiOperations(readOpenApiDocument(text));
+    } catch (error) {
+      errors.push(`${error.message} (${boundary.id}: ${source.path})`);
+      continue;
+    }
+    for (const operation of boundary.operations ?? []) {
+      if (
+        operation.retryClass !== "reconcile_receipt" ||
+        operation.receipt?.kind !== "state-read" ||
+        !operation.receipt.recoveryOperation
+      ) {
+        continue;
+      }
+      const recovery = operations.get(operation.receipt.recoveryOperation);
+      const label = `${boundary.id}@v${boundary.version}/${operation.id}`;
+      if (!recovery || recovery.method !== "get") {
+        errors.push(
+          `boundary_registry_recovery_operation_unbound: ${label}: ` +
+            `${operation.receipt.recoveryOperation} must be GET`,
+        );
+        continue;
+      }
+      if (recovery.operation?.responses?.["200"] === undefined) {
+        errors.push(
+          `boundary_registry_recovery_operation_unbound: ${label}: ` +
+            `${operation.receipt.recoveryOperation} response`,
+        );
+      }
+    }
   }
 }
 
@@ -998,6 +1095,8 @@ export function checkBoundaryRegistry(options) {
   for (const boundary of registry.boundaries) {
     if (!Array.isArray(boundary?.sources) || !Array.isArray(boundary?.operations)) continue;
     checkSourceParity(options.root, boundary, errors);
+    checkProtoReceiptBindings(options.root, boundary, errors);
+    checkOpenApiRecoveryBindings(options.root, boundary, errors);
   }
   checkTransportFreeze(options.root, registry, errors);
   checkCompatibilityMatrix(registry, matrix, errors);

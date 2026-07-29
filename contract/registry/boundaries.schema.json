@@ -149,6 +149,11 @@
                 "ref": {
                   "minLength": 1,
                   "type": "string"
+                },
+                "recoveryOperation": {
+                  "description": "Required only for retryClass=reconcile_receipt; names a non-effect operation in the same boundary that reads the authoritative result.",
+                  "minLength": 1,
+                  "type": "string"
                 }
               },
               "required": [

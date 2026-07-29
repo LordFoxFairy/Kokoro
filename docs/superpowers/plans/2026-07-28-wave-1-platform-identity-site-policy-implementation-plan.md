@@ -60,23 +60,49 @@
 - Create: `contract/openapi/platform-public-v1.yaml`
 - Create: `contract/proto/kokoro/platform/site/v1/site_lifecycle.proto`
 - Create: `contract/proto/kokoro/platform/identity/v1/admin_identity.proto`
-- Create: `contract/proto/kokoro/platform/admin/v2/admin_control.proto`
+- Create: `contract/proto/kokoro/platform/admin/v2/admin_shared.proto`
+- Create: `contract/proto/kokoro/platform/admin/v2/admin_query.proto`
+- Create: `contract/proto/kokoro/platform/admin/v2/admin_command.proto`
+- Create: `contract/proto/kokoro/common/v2/command_envelope.proto`
 - Modify: `contract/buf.yaml`
 - Modify: `contract/generate.mjs`
+- Modify: `contract/package.json`
+- Modify: `contract/pnpm-lock.yaml`
+- Modify: `contract/registry/boundaries.schema.json`
 - Modify: `contract/registry/boundaries.yaml`
 - Modify: `contract/tests/test_buf_contract.py`
 - Modify: `contract/tests/test_generate.py`
 - Create: `scripts/contract/check-wave1-surface.mjs`
 - Create: `scripts/contract/check-wave1-surface.test.mjs`
+- Create: `scripts/contract/openapi-reader.mjs`
+- Create: `scripts/contract/read-openapi.py`
+- Modify: `scripts/contract/check-boundary-registry.mjs`
+- Modify: `scripts/contract/check-boundary-registry.test.mjs`
+- Modify: `scripts/contract/INDEX.md`
+- Modify: `scripts/repository/check-generated-contracts.test.mjs`
+- Modify: `.github/workflows/contract.yml`
 
-- [ ] Write failing contract tests for Site-bound registration/login/session management, Site lifecycle/release commands, typed Admin scope/axes/approval, operation receipts, stable error codes, request IDs, idempotency keys, and generated-only consumer artifacts. Assert that no Payment purchase route and no `chat.execution.prepare` descriptor exists.
+- [ ] Write failing contract tests for Site-bound registration/login/session management, per-operation typed public results,
+  one-time no-store payloads, caller-generated command IDs, server-keyed request digests, caller-held recovery capabilities,
+  loss-safe receipt/supersede state machines, Site lifecycle/release commands, pre-login versus authenticated Admin contexts,
+  Platform-owned PKCE redemption, code-free Admin delivery recovery, fixed signed-then-encrypted JOSE delivery, typed Admin
+  scope/axes/approval, stable error codes, request IDs, idempotency keys, strict OpenAPI YAML parsing, and sibling-free generated
+  consumer artifacts. Assert that no Payment purchase route and no `chat.execution.prepare` descriptor exists.
+- [ ] Freeze typed provisioning/activation receipt reads so zero-byte first responses and provider outcome-unknown states resume
+  the same durable intent/attempt through explicit phases; `same_identity` must never masquerade as final deployment evidence.
 - [ ] Run `uv run --locked python -m pytest contract/tests/test_buf_contract.py contract/tests/test_generate.py -q`; record its
   expected RED independently. Then run `node --test scripts/contract/check-wave1-surface.test.mjs`; record its expected RED
   independently. Do not join expected-red suites with `&&`, which would short-circuit the second test.
-- [ ] Add additive versioned contracts and exact boundary registry ownership. Keep public browser HTTP separate from privileged ConnectRPC; do not expose raw database identifiers or internal policy records.
+- [ ] Add additive versioned contracts and exact boundary registry ownership. Keep the byte-frozen V1 envelope for legacy
+  boundaries and use V2 canonical scope/Site/actor/resource binding plus typed digest helpers for new privileged effects. Registry
+  receipt refs must exist in the real RPC response; `reconcile_receipt` command/state receipts must name a reachable non-effect
+  recovery operation. Keep public browser HTTP separate from privileged ConnectRPC; do not expose raw database identifiers or
+  internal policy records. Never use an unresolved generic `resultRef` for credentials, device/session lists, personal context,
+  enrollment secret, or recovery codes.
 - [ ] Generate deterministic mirrors with `pnpm --dir contract buf:lint && pnpm --dir contract buf:generate`; ensure a second generation produces no diff.
 - [ ] Run the targeted tests plus `node scripts/contract/check-boundary-coverage.mjs`; confirm all new provider/consumer edges match the exact boundary, not merely the repository pair.
-- [ ] Commit only declared paths with `git add -- contract/openapi/platform-public-v1.yaml contract/proto/kokoro/platform/site/v1/site_lifecycle.proto contract/proto/kokoro/platform/identity/v1/admin_identity.proto contract/proto/kokoro/platform/admin/v2/admin_control.proto contract/buf.yaml contract/generate.mjs contract/registry/boundaries.yaml contract/tests/test_buf_contract.py contract/tests/test_generate.py scripts/contract/check-wave1-surface.mjs scripts/contract/check-wave1-surface.test.mjs`, then commit.
+- [ ] Commit only declared Task 1 paths, including the V2 envelope, strict OpenAPI dependency pins/CI, registry schema/checker,
+  generator mirrors and contract index; stage them explicitly with `git add -- <Task-1-paths>` and never use `git add -A`.
 
 ### Task 2A: Add the PostgreSQL transition foundation without changing the default MySQL contract
 

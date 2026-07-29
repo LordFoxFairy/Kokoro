@@ -17,6 +17,9 @@ importers:
       '@bufbuild/protoc-gen-es':
         specifier: 2.13.0
         version: 2.13.0(@bufbuild/protobuf@2.13.0)
+      '@redocly/cli':
+        specifier: 2.41.0
+        version: 2.41.0
 
 packages:
 
@@ -82,6 +85,11 @@ packages:
 
   '@bufbuild/protoplugin@2.13.0':
     resolution: {integrity: sha512-32eMChKaL/A8Hh5AfMmXSdnuyznN85uoEjoyWiWeRrvtQOtpqX/v1R9PDe0g9vMIgzznK9inMT3CUaal0kjLUQ==}
+
+  '@redocly/cli@2.41.0':
+    resolution: {integrity: sha512-7MjbLQ7u7zPT5sWN6PaBBOCflue//fgmmoGYui8pKmi1dw6um2pYwjElXjC0qycNEGXo3pCJc599GqEgFdKbxQ==}
+    engines: {node: '>=22.12.0 || >=20.19.0 <21.0.0', npm: '>=10'}
+    hasBin: true
 
   '@typescript/vfs@1.6.4':
     resolution: {integrity: sha512-PJFXFS4ZJKiJ9Qiuix6Dz/OwEIqHD7Dme1UwZhTK11vR+5dqW2ACbdndWQexBzCx+CPuMe5WBYQWCsFyGlQLlQ==}
@@ -155,6 +163,8 @@ snapshots:
       typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
+
+  '@redocly/cli@2.41.0': {}
 
   '@typescript/vfs@1.6.4(typescript@5.4.5)':
     dependencies:

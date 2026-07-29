@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package kokoro.platform.admin.v2;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// AdminQueryService is the read-only privileged control-plane surface.
+service AdminQueryService {
+  rpc GetSite(GetSiteRequest) returns (GetSiteResponse) {}
+  rpc ListSites(ListSitesRequest) returns (ListSitesResponse) {}
+  rpc GetUserWithinSite(GetUserWithinSiteRequest) returns (GetUserWithinSiteResponse) {}
+  rpc GetAuditWithinScope(GetAuditWithinScopeRequest) returns (GetAuditWithinScopeResponse) {}
+}
+
+message SiteSummary {
+  string site_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string status = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  uint64 security_epoch = 3;
+}
+
+message UserSummary {
+  string user_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string status = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  uint64 security_epoch = 3;
+}
+
+message AuditRecord {
+  string audit_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string action_code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  google.protobuf.Timestamp occurred_at = 3 [(buf.validate.field).required = true];
+}
+
+message GetSiteRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetSiteResponse {
+  SiteSummary site = 1 [(buf.validate.field).required = true];
+}
+
+message ListSitesRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  optional string page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 3 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListSitesResponse {
+  repeated SiteSummary sites = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetUserWithinSiteRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string user_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetUserWithinSiteResponse {
+  UserSummary user = 1 [(buf.validate.field).required = true];
+}
+
+message GetAuditWithinScopeRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  optional string page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 3 [(buf.validate.field).uint32.lte = 200];
+}
+
+message GetAuditWithinScopeResponse {
+  repeated AuditRecord records = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}

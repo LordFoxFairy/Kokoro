@@ -67,6 +67,8 @@ jobs:
           else
             echo 'Buf breaking baseline bootstrap: origin/main has no contract/proto files yet.'
           fi
+      - name: standard OpenAPI 3.1 structural gate
+        run: pnpm --dir contract run openapi:lint
       - name: boundary registry gate
         run: |
           node --test scripts/contract/check-boundary-registry.test.mjs scripts/contract/check-boundary-coverage.test.mjs
