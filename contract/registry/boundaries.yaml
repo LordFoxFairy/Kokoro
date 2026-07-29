@@ -422,6 +422,11 @@
         {"effect": false, "id": "getCreditSummary", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": false, "id": "getCreditGrant", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": false, "id": "getUsageDetail", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": true, "id": "createAssetUploadIntent", "receipt": {"kind": "state-read", "recoveryOperation": "recoverAssetUploadCommand", "ref": "recoverAssetUploadCommand"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": true, "id": "completeAssetUpload", "receipt": {"kind": "state-read", "recoveryOperation": "recoverAssetUploadCommand", "ref": "recoverAssetUploadCommand"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getAssetUploadStatus", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "recoverAssetUploadCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getTrustedAssetGrant", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": false, "id": "getPublicCommandReceipt", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"}
       ],
       "protocol": "openapi-http-json",

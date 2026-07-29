@@ -686,6 +686,11 @@ def test_public_operations_have_exact_implementable_response_schemas() -> None:
         "getCreditSummary": "CreditSummaryResponse",
         "getCreditGrant": "CreditGrantResponse",
         "getUsageDetail": "UsageDetailResponse",
+        "createAssetUploadIntent": "AssetUploadIntentResponse",
+        "completeAssetUpload": "AssetUploadCommandResponse",
+        "getAssetUploadStatus": "AssetUploadStatusResponse",
+        "recoverAssetUploadCommand": "AssetUploadCommandResponse",
+        "getTrustedAssetGrant": "TrustedAssetGrantResponse",
         "getPublicCommandReceipt": "PublicCommandReceiptResponse",
     }
 
@@ -694,6 +699,63 @@ def test_public_operations_have_exact_implementable_response_schemas() -> None:
         operation_id: _response_schema(document, operation)
         for operation_id, operation in operations.items()
     } == expected
+
+
+def test_asset_public_surface_is_owner_scoped_and_non_disclosing() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    operations = _public_operations()
+    schemas = document["components"]["schemas"]
+
+    for operation_id in (
+        "createAssetUploadIntent",
+        "completeAssetUpload",
+        "getAssetUploadStatus",
+        "recoverAssetUploadCommand",
+        "getTrustedAssetGrant",
+    ):
+        operation = operations[operation_id]
+        assert operation["security"] == [{"ProductWorkload": [], "UserSession": []}]
+        assert "{projectRef}" in next(
+            path
+            for path, item in document["paths"].items()
+            if operation in item.values()
+        )
+
+    create_response = document["components"]["responses"]["AssetUploadIntentResponse"]
+    recovery_response = document["components"]["responses"]["AssetUploadCommandResponse"]
+    assert create_response["headers"]["Cache-Control"]["schema"]["const"] == "no-store"
+    assert recovery_response["headers"]["Cache-Control"]["schema"]["const"] == "no-store"
+
+    receipt = yaml.safe_dump(schemas["AssetUploadOwnerReceipt"]["properties"]).lower()
+    status = yaml.safe_dump(schemas["AssetUploadStatus"]["properties"]).lower()
+    grant = schemas["TrustedAssetGrant"]
+    for forbidden in (
+        "credential",
+        "presigned",
+        "bucket",
+        "storagekey",
+        "quarantineobject",
+        "provideretag",
+    ):
+        assert forbidden not in receipt
+        assert forbidden not in status
+    assert set(grant["required"]) >= {
+        "assetRef",
+        "assetVersionRef",
+        "assetGrantRef",
+        "projectRef",
+        "purpose",
+        "subjectGeneration",
+        "eligibilityEpoch",
+        "state",
+    }
+    assert "siteRef" not in grant["properties"]
+    assert {
+        "ASSET_NOT_ACCEPTED",
+        "ASSET_UPLOAD_CONFLICT",
+        "ASSET_QUOTA_EXCEEDED",
+        "ASSET_TEMPORARILY_UNAVAILABLE",
+    }.issubset(set(schemas["ErrorCode"]["enum"]))
 
 
 def test_public_auth_and_personal_context_payloads_are_complete() -> None:
@@ -1199,6 +1261,9 @@ def test_public_mutations_use_caller_generated_command_ids_for_zero_byte_recover
             "getCreditSummary",
             "getCreditGrant",
             "getUsageDetail",
+            "getAssetUploadStatus",
+            "recoverAssetUploadCommand",
+            "getTrustedAssetGrant",
             "getPublicCommandReceipt",
         }:
             continue
@@ -1348,6 +1413,10 @@ def test_public_error_codes_are_a_frozen_enum() -> None:
         "REDEEM_TEMPORARILY_UNAVAILABLE",
         "IDEMPOTENCY_CONFLICT",
         "ACQUISITION_CHANNEL_DISABLED",
+        "ASSET_NOT_ACCEPTED",
+        "ASSET_UPLOAD_CONFLICT",
+        "ASSET_QUOTA_EXCEEDED",
+        "ASSET_TEMPORARILY_UNAVAILABLE",
     ]
 
 

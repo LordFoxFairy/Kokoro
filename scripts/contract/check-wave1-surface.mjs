@@ -38,6 +38,11 @@ const PUBLIC_OPERATIONS = new Map([
   ["getCreditSummary", ["get", "/v1/me/credits"]],
   ["getCreditGrant", ["get", "/v1/me/credit-grants/{id}"]],
   ["getUsageDetail", ["get", "/v1/me/usage/{id}"]],
+  ["createAssetUploadIntent", ["post", "/v1/projects/{projectRef}/asset-upload-intents"]],
+  ["completeAssetUpload", ["post", "/v1/projects/{projectRef}/asset-upload-intents/{intentRef}:complete"]],
+  ["getAssetUploadStatus", ["get", "/v1/projects/{projectRef}/asset-upload-intents/{intentRef}"]],
+  ["recoverAssetUploadCommand", ["get", "/v1/projects/{projectRef}/asset-upload-commands/{commandId}"]],
+  ["getTrustedAssetGrant", ["get", "/v1/projects/{projectRef}/assets/{assetRef}/versions/{assetVersionRef}/grants/{assetGrantRef}"]],
   ["getPublicCommandReceipt", ["get", "/v1/commands/{id}/receipt"]],
 ]);
 
@@ -284,6 +289,46 @@ function checkPublic(source, document, errors) {
   ]) {
     if (!(schemas.ErrorCode?.enum ?? []).includes(code)) fail(errors, `commerce_error_code_missing:${code}`);
   }
+  const assetOperations = [
+    "createAssetUploadIntent", "completeAssetUpload", "getAssetUploadStatus",
+    "recoverAssetUploadCommand", "getTrustedAssetGrant",
+  ];
+  for (const operationId of assetOperations) {
+    const entry = parsed.get(operationId);
+    if (
+      !entry || !entry.path.includes("{projectRef}") ||
+      !sameJson(entry.operation.security, [{ ProductWorkload: [], UserSession: [] }])
+    ) fail(errors, `asset_owner_authority_drift:${operationId}`);
+  }
+  for (const responseName of [
+    "AssetUploadIntentResponse", "AssetUploadCommandResponse", "AssetUploadStatusResponse",
+    "TrustedAssetGrantResponse",
+  ]) {
+    if (document.components?.responses?.[responseName]?.headers?.["Cache-Control"]?.schema?.const !== "no-store") {
+      fail(errors, `asset_response_cache_policy_drift:${responseName}`);
+    }
+  }
+  const assetReceiptFields = Object.keys(schemas.AssetUploadOwnerReceipt?.properties ?? {});
+  const assetStatusFields = Object.keys(schemas.AssetUploadStatus?.properties ?? {});
+  const forbiddenAssetFields = [
+    "credential", "presignedUrl", "bucket", "storageKey", "quarantineObjectRef", "providerEtag",
+  ];
+  if (forbiddenAssetFields.some((field) => assetReceiptFields.includes(field) || assetStatusFields.includes(field))) {
+    fail(errors, "asset_owner_projection_leaks_storage_authority");
+  }
+  const trustedGrantRequired = new Set(schemas.TrustedAssetGrant?.required ?? []);
+  for (const field of [
+    "assetRef", "assetVersionRef", "assetGrantRef", "projectRef", "purpose",
+    "subjectGeneration", "eligibilityEpoch", "state",
+  ]) {
+    if (!trustedGrantRequired.has(field)) fail(errors, `trusted_asset_grant_axis_missing:${field}`);
+  }
+  for (const code of [
+    "ASSET_NOT_ACCEPTED", "ASSET_UPLOAD_CONFLICT", "ASSET_QUOTA_EXCEEDED",
+    "ASSET_TEMPORARILY_UNAVAILABLE",
+  ]) {
+    if (!(schemas.ErrorCode?.enum ?? []).includes(code)) fail(errors, `asset_error_code_missing:${code}`);
+  }
   for (const forbidden of [
     /x-kokoro-site-id/iu,
     /^\s+siteId:/mu,
@@ -336,7 +381,7 @@ function checkRegistry(root, publicDocument, registry, errors) {
       fail(errors, `privileged_registry_drift:${id}`);
     }
   }
-  if (openApiOperations(publicDocument).size !== 32) fail(errors, "public_registry_source_count");
+  if (openApiOperations(publicDocument).size !== 37) fail(errors, "public_registry_source_count");
 
   const admission = registry.boundaries.find((boundary) => boundary.id === "platform-admission");
   if (digest(JSON.stringify(admission)) !== ADMISSION_REGISTRY_SHA256) fail(errors, "platform_admission_registry_changed");
@@ -395,7 +440,7 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 0 active privileged boundaries\n");
+    process.stdout.write("wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n");
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

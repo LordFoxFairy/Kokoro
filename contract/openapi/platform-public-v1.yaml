@@ -475,6 +475,114 @@ paths:
           $ref: '#/components/responses/UsageDetailResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/asset-upload-intents:
+    post:
+      operationId: createAssetUploadIntent
+      description: >-
+        Reserves upload quota and issues a short-lived, single-session capability for the
+        authenticated owner. Platform derives Site and subject authority from the trusted workload
+        and UserSession. The capability never contains an object-store URL, bucket, key, or
+        presigned request and is never persisted in an owner receipt.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/AssetUploadIntentRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/AssetUploadIntentResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/asset-upload-intents/{intentRef}:complete:
+    post:
+      operationId: completeAssetUpload
+      description: >-
+        Freezes the canonical upload session and requests server-side object verification. A byte
+        complete upload is not an Asset and remains unusable until scan and promotion receipts are
+        current and closed.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/AssetUploadIntentRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/AssetUploadCompleteRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/AssetUploadCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/asset-upload-intents/{intentRef}:
+    get:
+      operationId: getAssetUploadStatus
+      description: >-
+        Returns the real owner-visible upload, scan, and promotion state. Scanner outages and
+        promotion reconciliation remain waiting states and never appear as ready.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/AssetUploadIntentRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/AssetUploadStatusResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/asset-upload-commands/{commandId}:
+    get:
+      operationId: recoverAssetUploadCommand
+      description: >-
+        Recovers only the durable owner receipt and current upload state after an unknown response.
+        It never returns or replays an upload capability. Unknown and mismatched authority are
+        indistinguishable.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/AssetCommandId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/AssetUploadCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/assets/{assetRef}/versions/{assetVersionRef}/grants/{assetGrantRef}:
+    get:
+      operationId: getTrustedAssetGrant
+      description: >-
+        Returns a ready owner projection only when the exact Site, Project, subject generation,
+        purpose, AssetVersion, AssetGrant, and eligibility epoch are current. Any mismatch is an
+        existence-safe denial and no storage locator is disclosed.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/AssetRef'
+        - $ref: '#/components/parameters/AssetVersionRef'
+        - $ref: '#/components/parameters/AssetGrantRef'
+        - $ref: '#/components/parameters/AssetPurpose'
+        - $ref: '#/components/parameters/AssetEligibilityEpoch'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/TrustedAssetGrantResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/commands/{id}/receipt:
     get:
       operationId: getPublicCommandReceipt
@@ -594,6 +702,71 @@ components:
       schema: &usageIdSchema
         type: string
         pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    ProjectRef:
+      name: projectRef
+      in: path
+      required: true
+      schema: &projectRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    AssetUploadIntentRef:
+      name: intentRef
+      in: path
+      required: true
+      schema: &assetUploadIntentRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    AssetCommandId:
+      name: commandId
+      in: path
+      required: true
+      schema: *commandIdSchema
+    AssetRef:
+      name: assetRef
+      in: path
+      required: true
+      schema: &assetRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    AssetVersionRef:
+      name: assetVersionRef
+      in: path
+      required: true
+      schema: &assetVersionRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    AssetGrantRef:
+      name: assetGrantRef
+      in: path
+      required: true
+      schema: &assetGrantRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    AssetPurpose:
+      name: purpose
+      in: query
+      required: true
+      schema: &assetPurposeSchema
+        type: string
+        minLength: 1
+        maxLength: 128
+        pattern: '^[a-z][a-z0-9._-]{0,127}$'
+    AssetEligibilityEpoch:
+      name: eligibilityEpoch
+      in: query
+      required: true
+      schema:
+        $ref: '#/components/schemas/PositiveUint64String'
   headers:
     RequestId:
       required: true
@@ -728,6 +901,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/RedemptionConfirmInput'
+    AssetUploadIntentRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetUploadIntentInput'
+    AssetUploadCompleteRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetUploadCompleteInput'
   responses:
     ProductContextExchangeResponse:
       description: A Site-release-bound product context.
@@ -997,6 +1182,58 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UsageDetailResponse'
+    AssetUploadIntentResponse:
+      description: A durable upload owner receipt plus a one-time short-lived upload capability.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetUploadIntentResponse'
+    AssetUploadCommandResponse:
+      description: A durable owner command state without any upload credential or storage locator.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetUploadCommandResponse'
+    AssetUploadStatusResponse:
+      description: The current owner-visible upload, validation, scan, and promotion state.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssetUploadStatusResponse'
+    TrustedAssetGrantResponse:
+      description: A current ready owner projection with no byte or storage authority.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TrustedAssetGrantResponse'
     ErrorResponse:
       description: Stable, non-disclosing Platform error.
       headers:
@@ -1499,6 +1736,238 @@ components:
       maxLength: 20
       pattern: '^[1-9][0-9]{0,19}$'
       x-kokoro-maximum: '18446744073709551615'
+    AssetUploadIntentInput:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose: *assetPurposeSchema
+        filename:
+          type: string
+          minLength: 1
+          maxLength: 255
+        clientMediaType:
+          type: string
+          minLength: 3
+          maxLength: 255
+          pattern: '^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+$'
+        expectedSize:
+          $ref: '#/components/schemas/PositiveUint64String'
+        expectedChecksumSha256:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+      required: [purpose, filename, clientMediaType, expectedSize, expectedChecksumSha256]
+    AssetUploadCompleteInput:
+      type: object
+      additionalProperties: false
+      properties:
+        sessionRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+        expectedVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [sessionRef, expectedVersion]
+    AssetUploadOwnerReceipt:
+      type: object
+      additionalProperties: false
+      description: >-
+        Durable owner command cursor. It deliberately excludes the upload capability and all
+        object-storage facts, so command recovery cannot replay a credential.
+      properties:
+        commandId: *commandIdSchema
+        receiptRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        operation:
+          type: string
+          enum: [create_asset_upload_intent, complete_asset_upload]
+        state:
+          type: string
+          enum: [pending, succeeded, failed, outcome_unknown]
+        receivedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [commandId, receiptRef, operation, state, receivedAt, updatedAt]
+    AssetUploadCapability:
+      type: object
+      additionalProperties: false
+      description: >-
+        Short-lived credential for one registered upload data plane. The endpoint is a shared
+        service endpoint, never a provider object URL or presigned request.
+      properties:
+        protocolRevision:
+          type: string
+          const: s3-multipart-v1
+        uploadEndpoint:
+          type: string
+          format: uri
+          pattern: '^https://'
+          maxLength: 512
+        credential:
+          type: string
+          minLength: 32
+          maxLength: 4096
+          pattern: '^\S+$'
+        capabilityEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        expiresAt:
+          type: string
+          format: date-time
+        minimumPartBytes:
+          $ref: '#/components/schemas/PositiveUint64String'
+        maximumPartBytes:
+          $ref: '#/components/schemas/PositiveUint64String'
+      required:
+        - protocolRevision
+        - uploadEndpoint
+        - credential
+        - capabilityEpoch
+        - expiresAt
+        - minimumPartBytes
+        - maximumPartBytes
+    AssetUploadStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        intentRef: *assetUploadIntentRefSchema
+        sessionRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        projectRef: *projectRefSchema
+        purpose: *assetPurposeSchema
+        safeDisplayName:
+          type: string
+          minLength: 1
+          maxLength: 255
+        clientMediaType:
+          type: string
+          minLength: 3
+          maxLength: 255
+        expectedSize:
+          $ref: '#/components/schemas/PositiveUint64String'
+        expectedVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        stage:
+          type: string
+          enum:
+            - upload_interrupted
+            - uploading
+            - upload_verification
+            - scan_waiting
+            - scanning
+            - promotion_recovering
+            - ready
+            - rejected
+            - aborted
+        terminal:
+          type: boolean
+        retryClass:
+          type: string
+          enum: [never, immediate, after_delay, after_user_action]
+        retryAfter:
+          type: [string, 'null']
+          format: date-time
+        safeReasonCode:
+          type: [string, 'null']
+          maxLength: 128
+          pattern: '^[A-Z][A-Z0-9_]{0,127}$'
+        trustedGrant:
+          oneOf:
+            - $ref: '#/components/schemas/TrustedAssetGrant'
+            - type: 'null'
+      required:
+        - intentRef
+        - sessionRef
+        - projectRef
+        - purpose
+        - safeDisplayName
+        - clientMediaType
+        - expectedSize
+        - expectedVersion
+        - stage
+        - terminal
+        - retryClass
+        - retryAfter
+        - safeReasonCode
+        - trustedGrant
+    AssetUploadIntentResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/AssetUploadOwnerReceipt'
+        upload:
+          $ref: '#/components/schemas/AssetUploadStatus'
+        capability:
+          $ref: '#/components/schemas/AssetUploadCapability'
+      required: [receipt, upload, capability]
+    AssetUploadCommandResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/AssetUploadOwnerReceipt'
+        upload:
+          oneOf:
+            - $ref: '#/components/schemas/AssetUploadStatus'
+            - type: 'null'
+      required: [receipt, upload]
+    AssetUploadStatusResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        upload:
+          $ref: '#/components/schemas/AssetUploadStatus'
+      required: [upload]
+    TrustedAssetGrant:
+      type: object
+      additionalProperties: false
+      description: >-
+        Current owner eligibility projection. The opaque assetGrantRef is consumed by Platform
+        Admission; it does not directly authorize storage access.
+      properties:
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        assetGrantRef: *assetGrantRefSchema
+        projectRef: *projectRefSchema
+        purpose: *assetPurposeSchema
+        subjectGeneration:
+          $ref: '#/components/schemas/PositiveUint64String'
+        eligibilityEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        detectedMediaType:
+          type: string
+          minLength: 3
+          maxLength: 255
+        size:
+          $ref: '#/components/schemas/PositiveUint64String'
+        state:
+          type: string
+          const: ready
+      required:
+        - assetRef
+        - assetVersionRef
+        - assetGrantRef
+        - projectRef
+        - purpose
+        - subjectGeneration
+        - eligibilityEpoch
+        - detectedMediaType
+        - size
+        - state
+    TrustedAssetGrantResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        grant:
+          $ref: '#/components/schemas/TrustedAssetGrant'
+      required: [grant]
     PublishedModelOption:
       type: object
       additionalProperties: false
@@ -3422,6 +3891,10 @@ components:
         - REDEEM_TEMPORARILY_UNAVAILABLE
         - IDEMPOTENCY_CONFLICT
         - ACQUISITION_CHANNEL_DISABLED
+        - ASSET_NOT_ACCEPTED
+        - ASSET_UPLOAD_CONFLICT
+        - ASSET_QUOTA_EXCEEDED
+        - ASSET_TEMPORARILY_UNAVAILABLE
     ErrorResponse:
       type: object
       additionalProperties: false

@@ -33,7 +33,7 @@ test("the shipped Wave 1 surface is closed and internally consistent", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 32 public operations, 4 privileged services, 0 active privileged boundaries\n",
+    "wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n",
   );
 });
 
@@ -43,7 +43,7 @@ test("the live command checks the Wave 1 surface from the current working direct
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 32 public operations, 4 privileged services, 0 active privileged boundaries\n",
+    "wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n",
   );
 });
 
@@ -112,4 +112,30 @@ test("a published Site release must carry a safe default model option per surfac
   assert.match(result.stderr, /product_context_axis_missing:modelOptionCatalogs/u);
   assert.match(result.stderr, /model_option_catalog_field_missing:defaultModelOptionRevisionRef/u);
   assert.match(result.stderr, /model_option_catalog_leaks_internal:providerRef/u);
+});
+
+test("Asset owner reads cannot drop project authority, no-store, or eligibility axes", async () => {
+  const fixture = await makeFixture();
+  const openapi = resolve(fixture, "contract/openapi/platform-public-v1.yaml");
+  const source = await readFile(openapi, "utf8");
+  await writeFile(
+    openapi,
+    source
+      .replace(
+        "  /v1/projects/{projectRef}/asset-upload-intents/{intentRef}:\n",
+        "  /v1/asset-upload-intents/{intentRef}:\n",
+      )
+      .replace(
+        "    AssetUploadStatusResponse:\n      description: The current owner-visible upload, validation, scan, and promotion state.\n      headers:\n        <<: *standardResponseHeaders\n        Cache-Control:\n          required: true\n          schema:\n            type: string\n            const: no-store\n",
+        "    AssetUploadStatusResponse:\n      description: The current owner-visible upload, validation, scan, and promotion state.\n      headers: *standardResponseHeaders\n",
+      )
+      .replace("        - eligibilityEpoch\n        - detectedMediaType\n", "        - detectedMediaType\n"),
+  );
+
+  const result = spawnSync(process.execPath, [checker, "--root", fixture], { encoding: "utf8" });
+
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /asset_owner_authority_drift:getAssetUploadStatus/u);
+  assert.match(result.stderr, /asset_response_cache_policy_drift:AssetUploadStatusResponse/u);
+  assert.match(result.stderr, /trusted_asset_grant_axis_missing:eligibilityEpoch/u);
 });
