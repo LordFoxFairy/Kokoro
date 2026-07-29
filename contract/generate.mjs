@@ -932,7 +932,6 @@ export function decideApprovalRequestDigest(
     verified,
   );
 }
-
 `;
 }
 
