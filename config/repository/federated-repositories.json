@@ -72,11 +72,6 @@
           "role": "provider"
         },
         {
-          "id": "platform-admin-command",
-          "version": 2,
-          "role": "provider"
-        },
-        {
           "id": "model-gateway",
           "version": 1,
           "role": "provider"
@@ -155,11 +150,6 @@
         {
           "id": "platform-admin-auth",
           "version": 1,
-          "role": "consumer"
-        },
-        {
-          "id": "platform-admin-command",
-          "version": 2,
           "role": "consumer"
         }
       ],

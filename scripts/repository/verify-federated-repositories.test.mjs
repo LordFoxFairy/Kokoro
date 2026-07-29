@@ -151,7 +151,7 @@ test("runtime compatibility schema is closed and every contract has required cov
   assert.throws(() => validateCompatibility(parsed, excessiveTimeout), /compatibility_runtime_timeout/u);
 });
 
-test("Admin control registry binds Auth v1 and Command v2 to one exact live scenario", async () => {
+test("Admin runtime evidence covers only the live Auth v1 provider", async () => {
   const currentManifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
   );
@@ -171,15 +171,7 @@ test("Admin control registry binds Auth v1 and Command v2 to one exact live scen
       consumers: ["kokoro-web"],
     },
   );
-  assert.deepEqual(
-    currentMatrix.contracts.find(({ id }) => id === "platform-admin-command"),
-    {
-      id: "platform-admin-command",
-      version: 2,
-      providers: ["kokoro-platform"],
-      consumers: ["kokoro-web"],
-    },
-  );
+  assert.equal(currentMatrix.contracts.find(({ id }) => id === "platform-admin-command"), undefined);
   assert.deepEqual(
     currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "platform-admin-auth-connect"),
     {
@@ -187,10 +179,7 @@ test("Admin control registry binds Auth v1 and Command v2 to one exact live scen
       commandId: "node-platform-admin-auth-connect-v1",
       required: true,
       participants: ["kokoro-platform", "kokoro-web"],
-      protocols: [
-        { id: "platform-admin-auth", version: 1 },
-        { id: "platform-admin-command", version: 2 },
-      ],
+      protocols: [{ id: "platform-admin-auth", version: 1 }],
       timeoutSeconds: 180,
     },
   );

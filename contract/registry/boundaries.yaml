@@ -429,11 +429,10 @@
       "deadlineMs": null,
       "failureOwner": "kokoro-platform",
       "id": "platform-admin-command",
-      "lifecycle": "active",
+      "lifecycle": "contract-only",
       "operations": [
         {"effect": true, "id": "SubmitCommand", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": true, "id": "DecideApproval", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
-        {"effect": true, "id": "DecidePostEffectReview", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": false, "id": "GetReceipt", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",

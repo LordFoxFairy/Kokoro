@@ -16,7 +16,6 @@ import "kokoro/platform/admin/v2/admin_shared.proto";
 service AdminCommandService {
   rpc SubmitCommand(SubmitCommandRequest) returns (SubmitCommandResponse) {}
   rpc DecideApproval(DecideApprovalRequest) returns (DecideApprovalResponse) {}
-  rpc DecidePostEffectReview(DecidePostEffectReviewRequest) returns (DecidePostEffectReviewResponse) {}
   rpc GetReceipt(GetReceiptRequest) returns (GetReceiptResponse) {}
 }
 
@@ -102,7 +101,6 @@ message SubmitCommandRequest {
 enum SubmitCommandState {
   SUBMIT_COMMAND_STATE_UNSPECIFIED = 0;
   SUBMIT_COMMAND_STATE_PENDING_APPROVAL = 1;
-  SUBMIT_COMMAND_STATE_COMMITTED = 2;
 }
 
 message SubmitCommandResponse {
@@ -115,12 +113,7 @@ message SubmitCommandResponse {
     min_len: 1
     max_len: 128
   }];
-  // Present only for a committed break-glass effect that requires independent post-effect review.
-  optional string post_effect_review_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
 }
 
 enum ApprovalDecision {
@@ -161,47 +154,6 @@ enum ApprovalDecisionState {
 
 message DecideApprovalResponse {
   ApprovalDecisionState state = 1 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-enum PostEffectReviewDecision {
-  POST_EFFECT_REVIEW_DECISION_UNSPECIFIED = 0;
-  POST_EFFECT_REVIEW_DECISION_ACKNOWLEDGE = 1;
-  POST_EFFECT_REVIEW_DECISION_ESCALATE = 2;
-}
-
-message DecidePostEffectReviewEffect {
-  string review_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  PostEffectReviewDecision decision = 2 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  string reason = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 512
-  }];
-}
-
-message DecidePostEffectReviewRequest {
-  AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  DecidePostEffectReviewEffect effect = 2 [(buf.validate.field).required = true];
-}
-
-enum PostEffectReviewState {
-  POST_EFFECT_REVIEW_STATE_UNSPECIFIED = 0;
-  POST_EFFECT_REVIEW_STATE_ACKNOWLEDGED = 1;
-  POST_EFFECT_REVIEW_STATE_ESCALATED = 2;
-  POST_EFFECT_REVIEW_STATE_DENIED = 3;
-}
-
-message DecidePostEffectReviewResponse {
-  PostEffectReviewState state = 1 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];

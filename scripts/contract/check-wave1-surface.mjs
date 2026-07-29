@@ -65,7 +65,7 @@ const PRIVILEGED = Object.freeze({
     path: "contract/proto/kokoro/platform/admin/v2/admin_command.proto",
     service: "AdminCommandService",
     version: 2,
-    methods: ["SubmitCommand", "DecideApproval", "DecidePostEffectReview", "GetReceipt"],
+    methods: ["SubmitCommand", "DecideApproval", "GetReceipt"],
   },
   "platform-site-lifecycle": {
     path: "contract/proto/kokoro/platform/site/v1/site_lifecycle.proto",
@@ -306,7 +306,7 @@ function checkRegistry(root, publicDocument, registry, errors) {
   );
   if (wave1.size !== 5) fail(errors, "wave1_boundary_count");
   for (const [id, boundary] of wave1) {
-    const expectedLifecycle = id === "platform-admin-command" ? "active" : "contract-only";
+    const expectedLifecycle = "contract-only";
     if (boundary.lifecycle !== expectedLifecycle || boundary.sourceStatus !== "machine-readable") {
       fail(errors, `wave1_boundary_lifecycle:${id}`);
     }
@@ -395,7 +395,7 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 1 active command boundary\n");
+    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 0 active privileged boundaries\n");
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

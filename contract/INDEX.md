@@ -51,7 +51,7 @@ older YAML schemas remain authoritative only for the legacy boundaries that stil
 the explicit two-argument Zod record form so Zod 3 and Zod 4 consumers remain byte-identical during the toolchain transition.
 
 `AdminCommandService.v2` is a fresh-only maker/checker/worker contract. Browser clients may call only
-`SubmitCommand`, `DecideApproval`, `DecidePostEffectReview`, and `GetReceipt`; approval queues execution and never
+`SubmitCommand`, `DecideApproval`, and `GetReceipt`; approval queues execution and never
 grants a client execution method. Its generated digest helper binds every caller-declared operator generation,
 assurance/factor, authentication/step-up instant, and attestation axis to the server-verified transport/session axes.
 The removed Prepare/SubmitForApproval/ExecuteApproved authority is intentionally unreachable and has no adapter.

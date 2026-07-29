@@ -315,7 +315,6 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
     assert _service_methods(command, "AdminCommandService") == [
         "SubmitCommand",
         "DecideApproval",
-        "DecidePostEffectReview",
         "GetReceipt",
     ]
     assert _service_methods(lifecycle, "SiteLifecycleService") == [
@@ -378,7 +377,7 @@ def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
     assert "id_token" not in identity
 
 
-def test_admin_command_v2_is_submit_queue_worker_and_post_review_only() -> None:
+def test_admin_command_v2_is_submit_queue_worker_and_receipt_only() -> None:
     command = _proto("kokoro/platform/admin/v2/admin_command.proto")
 
     for legacy in (
@@ -392,9 +391,7 @@ def test_admin_command_v2_is_submit_queue_worker_and_post_review_only() -> None:
     submit = _message_body(command, "SubmitCommandResponse")
     submit_state = _enum_body(command, "SubmitCommandState")
     assert "SUBMIT_COMMAND_STATE_PENDING_APPROVAL" in submit_state
-    assert "SUBMIT_COMMAND_STATE_COMMITTED" in submit_state
     assert "optional string approval_ref" in submit
-    assert "optional string post_effect_review_ref" in submit
     assert "kokoro.common.v2.CommandReceiptV2 receipt" in submit
 
     approval = _message_body(command, "DecideApprovalResponse")
@@ -408,13 +405,8 @@ def test_admin_command_v2_is_submit_queue_worker_and_post_review_only() -> None:
     assert "ApprovalDecisionState state" in approval
     assert "kokoro.common.v2.CommandReceiptV2 receipt" in approval
 
-    review = _message_body(command, "DecidePostEffectReviewEffect")
-    assert "string review_ref" in review
-    assert "PostEffectReviewDecision decision" in review
-    assert "string reason" in review
-    review_decision = _enum_body(command, "PostEffectReviewDecision")
-    assert "POST_EFFECT_REVIEW_DECISION_ACKNOWLEDGE" in review_decision
-    assert "POST_EFFECT_REVIEW_DECISION_ESCALATE" in review_decision
+    assert "DecidePostEffectReview" not in command
+    assert "post_effect_review" not in command
     assert "Platform Worker is the sole authority" in command
 
 
@@ -1703,10 +1695,7 @@ def test_wave1_required_reference_fields_reject_empty_values() -> None:
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
 
     required_refs = {
-        (command, "SubmitCommandResponse"): (
-            "approval_ref",
-            "post_effect_review_ref",
-        ),
+        (command, "SubmitCommandResponse"): ("approval_ref",),
         (query, "SiteSummary"): ("site_ref",),
         (query, "UserSummary"): ("user_ref",),
         (query, "AuditRecord"): ("audit_ref",),

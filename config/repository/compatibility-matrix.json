@@ -63,16 +63,6 @@
    "consumers": [
     "kokoro-web"
    ]
-  },
-  {
-   "id": "platform-admin-command",
-   "version": 2,
-   "providers": [
-    "kokoro-platform"
-   ],
-   "consumers": [
-    "kokoro-web"
-   ]
   }
  ],
  "requiredGates": [
@@ -183,10 +173,6 @@
      {
       "id": "platform-admin-auth",
       "version": 1
-     },
-     {
-      "id": "platform-admin-command",
-      "version": 2
      }
     ],
     "timeoutSeconds": 180

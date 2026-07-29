@@ -668,7 +668,6 @@ console.log(JSON.stringify({ golden, changedEffect, mismatch }));
             [
                 "submitCommandRequestDigest",
                 "decideApprovalRequestDigest",
-                "decidePostEffectReviewRequestDigest",
             ],
             r'''
 import { create } from "@bufbuild/protobuf";
