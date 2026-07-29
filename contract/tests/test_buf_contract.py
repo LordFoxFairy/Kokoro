@@ -244,6 +244,60 @@ def test_dispatch_owner_evidence_is_a_closed_session_owned_read_boundary() -> No
     assert "DispatchOwnerEvidenceNotFound not_found = 2;" in response
 
 
+def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> None:
+    source = _proto("kokoro/agent/execution/v1/agent_execution_evidence.proto")
+
+    assert "package kokoro.agent.execution.v1;" in source
+    assert _service_methods(source, "AgentExecutionEvidenceService") == [
+        "PullDurableExecutionEvidence",
+        "GetDurableExecutionEvidence",
+        "GetRunDurableCheckpoint",
+    ]
+
+    evidence = _message_body(source, "DurableExecutionEvidence")
+    for field in (
+        "string evidence_ref = 1",
+        "uint64 evidence_version = 2",
+        "string run_id = 3",
+        "uint64 durable_seq = 4",
+        "string event_id = 5",
+        "DurableExecutionEvidenceKind kind = 6",
+        "bytes canonical_payload = 7",
+        "string payload_sha256 = 8",
+        "google.protobuf.Timestamp recorded_at = 9",
+        "string producer_instance_ref = 10",
+        "uint64 producer_generation = 11",
+    ):
+        assert field in evidence
+    assert "max_len: 65536" in evidence
+    for forbidden in ("site_id", "project_ref", "user_id", "namespace"):
+        assert forbidden not in evidence
+
+    kinds = _enum_body(source, "DurableExecutionEvidenceKind")
+    for kind in (
+        "RUN_STARTED",
+        "ACTION_OWNER",
+        "PLAN_OWNER",
+        "RUN_OWNER_COMPLETED",
+        "RUN_COMPLETED",
+        "RUN_FAILED",
+    ):
+        assert f"DURABLE_EXECUTION_EVIDENCE_KIND_{kind}" in kinds
+
+    pull = _message_body(source, "PullDurableExecutionEvidenceRequest")
+    assert "string run_id = 1" in pull
+    assert "uint64 after_durable_seq = 2" in pull
+    assert "uint32 page_size = 3" in pull
+    assert "lte: 256" in pull
+
+    get_request = _message_body(source, "GetDurableExecutionEvidenceRequest")
+    assert "string run_id = 1" in get_request
+    assert "string evidence_ref = 2" in get_request
+    checkpoint = _message_body(source, "GetRunDurableCheckpointResponse")
+    assert "DurableExecutionEvidence evidence = 1;" in checkpoint
+    assert "DurableExecutionEvidenceNotFound not_found = 2;" in checkpoint
+
+
 def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
     admin = _proto("kokoro/platform/admin/v1/admin_auth.proto")

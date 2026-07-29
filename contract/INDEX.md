@@ -56,6 +56,10 @@ grants a client execution method. Its generated digest helper binds every caller
 assurance/factor, authentication/step-up instant, and attestation axis to the server-verified transport/session axes.
 The removed Prepare/SubmitForApproval/ExecuteApproved authority is intentionally unreachable and has no adapter.
 
+`agent-execution-evidence@v1` is the Agent-owned read-only reconciliation boundary. Its payload is deliberately
+business-identity-free: consumers receive only run-local durable sequence/event facts and the canonical Agent
+owner payload. It remains `contract-only` until a live mTLS provider/consumer compatibility probe exists.
+
 ## Verification
 
 Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract run buf:lint`,

@@ -50,6 +50,7 @@ export const GENERATED_BOUNDARIES = Object.freeze([
 // until provider, consumer, and compatibility evidence authorize promotion.
 export const CONTRACT_ONLY_GENERATED_BOUNDARIES = Object.freeze([
   "platform-session-authorization@v2",
+  "agent-execution-evidence@v1",
 ]);
 
 export class GeneratedContractError extends Error {

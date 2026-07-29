@@ -124,6 +124,18 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "agent-execution-evidence@v1": Object.freeze({
+    schema: "kokoro.agent.execution.v1.AgentExecutionEvidenceService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/agent/execution/v1/agent_execution_evidence.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/agent/execution/v1/agent_execution_evidence.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
 });
 
 function parseArguments(argv) {

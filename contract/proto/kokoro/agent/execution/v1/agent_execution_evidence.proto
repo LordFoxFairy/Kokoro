@@ -1,0 +1,114 @@
+syntax = "proto3";
+
+package kokoro.agent.execution.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// Agent is the sole authority for immutable durable execution facts. Session
+// and Platform consume this read-only boundary for reconciliation. The service
+// never accepts or returns Site, project, user or namespace business identity.
+service AgentExecutionEvidenceService {
+  rpc PullDurableExecutionEvidence(PullDurableExecutionEvidenceRequest) returns (PullDurableExecutionEvidenceResponse) {}
+  rpc GetDurableExecutionEvidence(GetDurableExecutionEvidenceRequest) returns (GetDurableExecutionEvidenceResponse) {}
+  rpc GetRunDurableCheckpoint(GetRunDurableCheckpointRequest) returns (GetRunDurableCheckpointResponse) {}
+}
+
+enum DurableExecutionEvidenceKind {
+  DURABLE_EXECUTION_EVIDENCE_KIND_UNSPECIFIED = 0;
+  DURABLE_EXECUTION_EVIDENCE_KIND_RUN_STARTED = 1;
+  DURABLE_EXECUTION_EVIDENCE_KIND_ACTION_OWNER = 2;
+  DURABLE_EXECUTION_EVIDENCE_KIND_PLAN_OWNER = 3;
+  DURABLE_EXECUTION_EVIDENCE_KIND_RUN_OWNER_COMPLETED = 4;
+  DURABLE_EXECUTION_EVIDENCE_KIND_RUN_COMPLETED = 5;
+  DURABLE_EXECUTION_EVIDENCE_KIND_RUN_FAILED = 6;
+}
+
+message DurableExecutionEvidence {
+  string evidence_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 evidence_version = 2 [(buf.validate.field).uint64.const = 1];
+  string run_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 durable_seq = 4 [(buf.validate.field).uint64.gt = 0];
+  string event_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  DurableExecutionEvidenceKind kind = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bytes canonical_payload = 7 [(buf.validate.field).bytes = {max_len: 65536}];
+  string payload_sha256 = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 9 [(buf.validate.field).required = true];
+  string producer_instance_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 11 [(buf.validate.field).uint64.gt = 0];
+}
+
+message PullDurableExecutionEvidenceRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  // Exclusive per-run cursor. Zero starts at the first durable evidence row.
+  uint64 after_durable_seq = 2;
+  uint32 page_size = 3 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 256
+  }];
+}
+
+message PullDurableExecutionEvidenceResponse {
+  repeated DurableExecutionEvidence evidence = 1 [(buf.validate.field).repeated.max_items = 256];
+  optional uint64 next_after_durable_seq = 2 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 3;
+}
+
+message GetDurableExecutionEvidenceRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string evidence_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message DurableExecutionEvidenceNotFound {}
+
+message GetDurableExecutionEvidenceResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+
+    DurableExecutionEvidence evidence = 1;
+    DurableExecutionEvidenceNotFound not_found = 2;
+  }
+}
+
+message GetRunDurableCheckpointRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetRunDurableCheckpointResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+
+    DurableExecutionEvidence evidence = 1;
+    DurableExecutionEvidenceNotFound not_found = 2;
+  }
+}
