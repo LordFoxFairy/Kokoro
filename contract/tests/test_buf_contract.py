@@ -862,6 +862,49 @@ def test_email_change_requires_session_recent_reauth_dual_channel_and_mfa() -> N
     }.issubset(proof["required"])
 
 
+def test_reauthentication_proofs_are_bound_to_one_sensitive_identity_mutation() -> None:
+    document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
+    schemas = document["components"]["schemas"]
+
+    target = schemas["ReauthenticationTarget"]
+    assert target["additionalProperties"] is False
+    assert target["properties"]["audience"]["const"] == "platform-public"
+    assert target["properties"]["operationId"]["enum"] == [
+        "beginTotpEnrollment",
+        "disableTotp",
+        "regenerateRecoveryCodes",
+    ]
+    assert target["properties"]["resource"]["$ref"].endswith(
+        "/IdentityAccountReauthenticationResource"
+    )
+    resource = schemas["IdentityAccountReauthenticationResource"]
+    assert resource["additionalProperties"] is False
+    assert resource["properties"]["kind"]["const"] == "identity_account"
+    assert set(resource["properties"]) == {"kind"}
+
+    for schema_name in ("PasswordReauthenticationInput", "MfaReauthenticationInput"):
+        assert schemas[schema_name]["properties"]["target"]["$ref"].endswith(
+            "/ReauthenticationTarget"
+        )
+        assert "target" in schemas[schema_name]["required"]
+
+    for schema_name in (
+        "BeginTotpEnrollmentInput",
+        "SupersedeTotpEnrollmentInput",
+        "OtpInput",
+        "RegenerateRecoveryCodesInput",
+        "SupersedeRecoveryCodeSetInput",
+    ):
+        assert schemas[schema_name]["properties"]["reauthenticationProof"]["minLength"] == 32
+        assert "reauthenticationProof" in schemas[schema_name]["required"]
+
+    proof = schemas["ReauthenticationProof"]
+    assert proof["properties"]["audience"]["const"] == "platform-public"
+    assert proof["properties"]["operationId"]["enum"] == target["properties"]["operationId"]["enum"]
+    assert proof["properties"]["resourceKind"]["const"] == "identity_account"
+    assert {"audience", "operationId", "resourceKind"}.issubset(proof["required"])
+
+
 def test_public_mutations_use_caller_generated_command_ids_for_zero_byte_recovery() -> None:
     document = yaml.safe_load(PUBLIC_OPENAPI.read_text())
     operations = _public_operations()

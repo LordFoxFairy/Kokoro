@@ -1095,7 +1095,11 @@ components:
           type: string
           minLength: 6
           maxLength: 32
-      required: [code]
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [code, reauthenticationProof]
     RefreshSessionInput:
       oneOf:
         - $ref: '#/components/schemas/RefreshCredentialInput'
@@ -1281,7 +1285,11 @@ components:
         ceremonyAction:
           type: string
           const: begin
-      required: [ceremonyAction]
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [ceremonyAction, reauthenticationProof]
     SupersedeTotpEnrollmentInput:
       type: object
       additionalProperties: false
@@ -1294,7 +1302,12 @@ components:
           type: string
           minLength: 16
           maxLength: 128
-      required: [ceremonyAction, priorCommandId, priorTransactionRef]
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required:
+        [ceremonyAction, priorCommandId, priorTransactionRef, reauthenticationProof]
     RecoveryCodeRegenerationInput:
       oneOf:
         - $ref: '#/components/schemas/RegenerateRecoveryCodesInput'
@@ -1306,7 +1319,11 @@ components:
         recoveryAction:
           type: string
           const: regenerate
-      required: [recoveryAction]
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [recoveryAction, reauthenticationProof]
     SupersedeRecoveryCodeSetInput:
       type: object
       additionalProperties: false
@@ -1315,7 +1332,11 @@ components:
           type: string
           const: supersede
         priorCommandId: *commandIdSchema
-      required: [recoveryAction, priorCommandId]
+        reauthenticationProof:
+          type: string
+          minLength: 32
+          maxLength: 2048
+      required: [recoveryAction, priorCommandId, reauthenticationProof]
     EmailChangeStartInput:
       type: object
       additionalProperties: false
@@ -1358,6 +1379,36 @@ components:
         - reauthenticationProof
         - currentAddressChallenge
         - replacementAddressChallenge
+    IdentityAccountReauthenticationResource:
+      type: object
+      additionalProperties: false
+      description: >-
+        The current authenticated session's identity account. The server resolves
+        the account reference; callers cannot select another account.
+      properties:
+        kind:
+          type: string
+          const: identity_account
+      required: [kind]
+    ReauthenticationTarget:
+      type: object
+      additionalProperties: false
+      description: >-
+        Exact one-time proof audience and sensitive mutation. A proof issued for
+        one operation cannot authorize another operation or another account.
+      properties:
+        audience:
+          type: string
+          const: platform-public
+        operationId:
+          type: string
+          enum:
+            - beginTotpEnrollment
+            - disableTotp
+            - regenerateRecoveryCodes
+        resource:
+          $ref: '#/components/schemas/IdentityAccountReauthenticationResource'
+      required: [audience, operationId, resource]
     ReauthenticationInput:
       oneOf:
         - $ref: '#/components/schemas/PasswordReauthenticationInput'
@@ -1373,7 +1424,9 @@ components:
         password:
           type: string
           maxLength: 1024
-      required: [stage, password]
+        target:
+          $ref: '#/components/schemas/ReauthenticationTarget'
+      required: [stage, password, target]
     MfaReauthenticationInput:
       type: object
       additionalProperties: false
@@ -1392,7 +1445,9 @@ components:
           type: string
           minLength: 6
           maxLength: 64
-      required: [stage, transactionRef, challengeKind, proofCode]
+        target:
+          $ref: '#/components/schemas/ReauthenticationTarget'
+      required: [stage, transactionRef, challengeKind, proofCode, target]
     SupersedeReauthenticationProofInput:
       type: object
       additionalProperties: false
@@ -2282,6 +2337,18 @@ components:
           type: string
           minLength: 32
           maxLength: 2048
+        audience:
+          type: string
+          const: platform-public
+        operationId:
+          type: string
+          enum:
+            - beginTotpEnrollment
+            - disableTotp
+            - regenerateRecoveryCodes
+        resourceKind:
+          type: string
+          const: identity_account
         sessionRef:
           type: string
           minLength: 16
@@ -2306,6 +2373,9 @@ components:
           format: date-time
       required:
         - reauthenticationProof
+        - audience
+        - operationId
+        - resourceKind
         - sessionRef
         - userSecurityEpoch
         - sessionEpoch
