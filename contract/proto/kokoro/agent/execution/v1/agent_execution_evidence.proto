@@ -24,6 +24,106 @@ enum DurableExecutionEvidenceKind {
   DURABLE_EXECUTION_EVIDENCE_KIND_RUN_FAILED = 6;
 }
 
+// canonical_payload is the deterministic protobuf serialization of exactly
+// this message. Consumers must parse this V1 oneof before projecting facts;
+// opaque or ad-hoc JSON parsing is not part of the contract.
+message DurableExecutionCanonicalPayloadV1 {
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+
+    RunStartedEvidenceV1 run_started = 1;
+    ActionOwnerEvidenceV1 action_owner = 2;
+    PlanOwnerEvidenceV1 plan_owner = 3;
+    RunOwnerCompletedEvidenceV1 run_owner_completed = 4;
+    RunCompletedEvidenceV1 run_completed = 5;
+    RunFailedEvidenceV1 run_failed = 6;
+  }
+}
+
+message RunStartedEvidenceV1 {}
+
+message ActionOwnerEvidenceV1 {
+  string owner_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 2 [(buf.validate.field).uint64.const = 1];
+  string segment_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string action_name = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string awaiting_kind = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  // SHA-256 of the canonical full Agent action-owner event payload. Session
+  // can compare its durable raw event without this boundary re-publishing args.
+  string action_payload_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message PlanOwnerEvidenceV1 {
+  string owner_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string segment_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  // SHA-256 of the canonical full Agent plan-owner event payload.
+  string proposal_payload_sha256 = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message RunOwnerCompletedEvidenceV1 {
+  string execution_context_anchor = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_context_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 owner_revision = 3 [(buf.validate.field).uint64.gt = 0];
+}
+
+enum RunCompletedEvidenceStatus {
+  RUN_COMPLETED_EVIDENCE_STATUS_UNSPECIFIED = 0;
+  RUN_COMPLETED_EVIDENCE_STATUS_COMPLETED = 1;
+  RUN_COMPLETED_EVIDENCE_STATUS_CANCELLED = 2;
+}
+
+message RunCompletedEvidenceV1 {
+  RunCompletedEvidenceStatus status = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional uint64 input_tokens = 2;
+  optional uint64 output_tokens = 3;
+}
+
+message RunFailedEvidenceV1 {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string error_kind = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string message = 3 [(buf.validate.field).string.max_len = 4096];
+}
+
 message DurableExecutionEvidence {
   string evidence_ref = 1 [(buf.validate.field).string = {
     min_len: 1

@@ -297,6 +297,30 @@ def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> Non
     assert "DurableExecutionEvidence evidence = 1;" in checkpoint
     assert "DurableExecutionEvidenceNotFound not_found = 2;" in checkpoint
 
+    canonical = _message_body(source, "DurableExecutionCanonicalPayloadV1")
+    assert "option (buf.validate.oneof).required = true;" in canonical
+    for payload in (
+        "RunStartedEvidenceV1 run_started = 1;",
+        "ActionOwnerEvidenceV1 action_owner = 2;",
+        "PlanOwnerEvidenceV1 plan_owner = 3;",
+        "RunOwnerCompletedEvidenceV1 run_owner_completed = 4;",
+        "RunCompletedEvidenceV1 run_completed = 5;",
+        "RunFailedEvidenceV1 run_failed = 6;",
+    ):
+        assert payload in canonical
+    owner = _message_body(source, "RunOwnerCompletedEvidenceV1")
+    assert "string execution_context_anchor = 1" in owner
+    assert "string execution_context_digest = 2" in owner
+    assert "uint64 owner_revision = 3" in owner
+    completed = _message_body(source, "RunCompletedEvidenceV1")
+    assert "RunCompletedEvidenceStatus status = 1" in completed
+    assert "optional uint64 input_tokens = 2;" in completed
+    assert "optional uint64 output_tokens = 3;" in completed
+    failed = _message_body(source, "RunFailedEvidenceV1")
+    assert "string code = 1" in failed
+    assert "string error_kind = 2" in failed
+    assert "string message = 3" in failed
+
 
 def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:
     receipt = _proto("kokoro/common/v1/receipt.proto")
