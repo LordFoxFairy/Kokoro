@@ -708,8 +708,8 @@ function authenticatedEnvelope(
       actorGeneration,
       assuranceLevel,
       factorClasses,
-      authenticatedAt,
-      stepUpAt,
+      ...(authenticatedAt === undefined ? {} : { authenticatedAt }),
+      ...(stepUpAt === undefined ? {} : { stepUpAt }),
       operatorAttestationRef,
       operatorAttestationDigest,
       securityEpochs: [

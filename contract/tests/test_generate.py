@@ -780,12 +780,13 @@ const mismatchFor = (next: VerifiedAuthenticatedAdminAxes): string => {
     return error instanceof Error ? error.message : String(error);
   }
 };
+const { stepUpAt: _omittedStepUpAt, ...withoutStepUpAt } = verified;
 const axisMismatches = [
   mismatchFor({ ...verified, operatorGeneration: 13n }),
   mismatchFor({ ...verified, assuranceLevel: OperatorAssuranceLevel.MFA }),
   mismatchFor({ ...verified, factorClasses: ["oidc", "totp"] }),
   mismatchFor({ ...verified, authenticatedAt: timestampFromDate(new Date("2026-07-29T12:00:01Z")) }),
-  mismatchFor({ ...verified, stepUpAt: undefined }),
+  mismatchFor(withoutStepUpAt),
   mismatchFor({ ...verified, operatorAttestationRef: "attestation:other" }),
   mismatchFor({ ...verified, operatorAttestationDigest: "b".repeat(64) }),
 ];
@@ -943,6 +944,7 @@ def test_generated_command_envelope_v2_digest_executes_typed_boundary_vectors(
                         "module": "NodeNext",
                         "moduleResolution": "NodeNext",
                         "strict": True,
+                        "exactOptionalPropertyTypes": True,
                         "skipLibCheck": True,
                         "outDir": "dist",
                         "rootDir": ".",
