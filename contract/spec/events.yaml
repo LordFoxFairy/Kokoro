@@ -86,6 +86,9 @@ field_types:
   size: int
   note: string
   owner_version: positive_int
+  owner_revision: positive_int
+  execution_context_anchor: reference
+  execution_context_digest: sha256
   proposal: object:PlanProposal
 
 # Fields whose KEY may be absent on the common path.
@@ -135,6 +138,9 @@ raw_kinds:
   # internal-only(R2):control 回执两时点(persisted/applied);session 消费进 receipt 存储,
   # 不入 browser_order 永不投影浏览器。
   - {kind: run.control.receipt, payload: [decision_id, control_status]}
+  # internal-only: authenticated durable completion evidence. Agent binds the opaque pair to its
+  # namespace/checkpoint authority; Session consumes it before run.completed and never projects it.
+  - {kind: run.owner.completed, payload: [execution_context_anchor, execution_context_digest, owner_revision]}
   - {kind: run.completed, payload: [status, token_usage]}
   - {kind: run.failed, payload: [code, error_kind, message]}
 

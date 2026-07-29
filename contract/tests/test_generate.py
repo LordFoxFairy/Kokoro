@@ -56,7 +56,7 @@ def test_raw_and_browser_kinds() -> None:
     events = load("events.yaml")
     raw = [e["kind"] for e in events["raw_kinds"]]
     browser = list(events["browser_order"])
-    assert len(raw) == 21 and "run.started" in raw
+    assert len(raw) == 22 and "run.started" in raw
     assert "plan.proposed" in raw
     assert len(browser) == 10
     assert "run.started" not in browser
@@ -76,6 +76,25 @@ def test_raw_and_browser_kinds() -> None:
         assert f'"{kind}",' in names, kind
     # run.started is raw-only: never a browser literal.
     assert 'z.literal("run.started")' not in session
+
+
+def test_completed_owner_milestone_is_private_strict_and_durable_capable() -> None:
+    events_py = _find("kokoro-agent/src/kokoro_agent/contract/events.py")
+    wire = _find("kokoro-session/src/contract/wire-events.ts")
+    browser = _find("kokoro-session/src/contract/session-events.ts")
+
+    assert "class RunOwnerCompletedPayload(StrictModel):" in events_py
+    assert "execution_context_anchor: Reference" in events_py
+    assert "execution_context_digest: Sha256Str" in events_py
+    assert "owner_revision: PositiveInt" in events_py
+    assert 'kind: Literal["run.owner.completed"]' in events_py
+
+    assert 'kind: z.literal("run.owner.completed")' in wire
+    assert "execution_context_anchor: z.string().min(1).max(256)" in wire
+    assert "execution_context_digest: z.string().regex(/^[0-9a-f]{64}$/u)" in wire
+    assert "owner_revision: z.number().int().positive()" in wire
+
+    assert 'z.literal("run.owner.completed")' not in browser
 
 
 def test_plan_proposal_raw_contract_is_typed_and_owner_safe() -> None:

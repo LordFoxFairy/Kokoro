@@ -333,7 +333,25 @@ def emit_events_py(spec: dict) -> str:
     aliases = events_enum_aliases(spec)
 
     L = [py_header(EVENTS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += _PY_PREAMBLE
+    events_preamble = [
+        line.replace(
+            "from pydantic import BaseModel,",
+            "from pydantic import AfterValidator, BaseModel,",
+        )
+        for line in _PY_PREAMBLE
+    ]
+    L += events_preamble
+    L += [
+        "",
+        "def _trimmed_reference(value: str) -> str:",
+        "    if value.strip() != value:",
+        '        raise ValueError("reference must not have surrounding whitespace")',
+        "    return value",
+        "",
+        'Sha256Str = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]',
+        "Reference = Annotated[str, StringConstraints(min_length=1, max_length=256), ",
+        "    AfterValidator(_trimmed_reference)]",
+    ]
     L.append("NonNegInt = Annotated[int, Field(ge=0)]")
     L.append("PositiveInt = Annotated[int, Field(gt=0)]")
     L.append("")
