@@ -902,6 +902,12 @@ def test_reauthentication_proofs_are_bound_to_one_sensitive_identity_mutation() 
     assert proof["properties"]["audience"]["const"] == "platform-public"
     assert proof["properties"]["operationId"]["enum"] == target["properties"]["operationId"]["enum"]
     assert proof["properties"]["resourceKind"]["const"] == "identity_account"
+    assert proof["properties"]["userSecurityEpoch"]["$ref"].endswith(
+        "/PositiveUint64String"
+    )
+    assert proof["properties"]["sessionEpoch"]["$ref"].endswith(
+        "/PositiveUint64String"
+    )
     assert {"audience", "operationId", "resourceKind"}.issubset(proof["required"])
 
 
