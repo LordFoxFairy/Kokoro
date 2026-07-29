@@ -36,6 +36,9 @@ const admissionSourcePaths = [
 const sessionAuthorizationSourcePaths = [
   "kokoro/platform/authorization/v1/session_authorization.proto",
 ];
+const scopedSessionAuthorizationSourcePaths = [
+  "kokoro/platform/authorization/v2/scoped_session_authorization.proto",
+];
 
 async function sourceDigest(directory, sourcePaths) {
   const hash = createHash("sha256");
@@ -229,6 +232,9 @@ test("privileged and public contracts have independent provider/consumer mirrors
       ],
     },
   ]);
+  assert.deepEqual(generatedChecker.CONTRACT_ONLY_GENERATED_BOUNDARIES, [
+    "platform-session-authorization@v2",
+  ]);
   assert.equal(adminAuthSourcePaths.includes("kokoro/platform/admission/v1/admission.proto"), false);
   assert.deepEqual(admissionSourcePaths, [
     "kokoro/common/v1/error.proto",
@@ -261,6 +267,12 @@ test("each isolated boundary emits its own pinned source metadata", async () => 
         schemaId: "kokoro.platform.authorization.v1.SessionAuthorizationService",
         sourcePaths: sessionAuthorizationSourcePaths,
         forbidden: "kokoro/platform/admission/v1/admission.proto",
+      },
+      {
+        boundary: "platform-session-authorization@v2",
+        schemaId: "kokoro.platform.authorization.v2.ScopedSessionAuthorizationService",
+        sourcePaths: scopedSessionAuthorizationSourcePaths,
+        forbidden: "kokoro/platform/authorization/v1/session_authorization.proto",
       },
     ]) {
       const output = resolve(temporary, fixture.boundary);

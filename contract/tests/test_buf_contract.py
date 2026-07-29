@@ -1108,6 +1108,106 @@ def test_platform_session_authorization_v1_surface_is_pull_snapshot_and_key_only
     assert "revoke an identity session, revoke a membership, and suspend a Site" in registry_invariants
 
 
+def test_platform_session_authorization_v2_projects_all_nine_axes_without_site_wide_owner_revocation() -> None:
+    source = _proto("kokoro/platform/authorization/v2/scoped_session_authorization.proto")
+    assert _service_methods(source, "ScopedSessionAuthorizationService") == [
+        "PullAuthorizationEvents",
+        "GetAuthorizationSnapshotPage",
+        "GetAuthorizationVerificationKeys",
+    ]
+
+    site = _message_body(source, "SiteCurrent")
+    for field in ("site_ref", "state", "site_security_epoch", "policy_epoch", "site_revocation_epoch"):
+        assert field in site
+    subject = _message_body(source, "SubjectCurrent")
+    for field in ("site_ref", "subject_ref", "state", "subject_generation", "restriction_epoch"):
+        assert field in subject
+    identity = _message_body(source, "IdentitySessionCurrent")
+    for field in (
+        "site_ref", "subject_ref", "identity_session_ref", "state",
+        "identity_session_epoch", "credential_epoch", "expires_at",
+    ):
+        assert field in identity
+    membership = _message_body(source, "ProjectMembershipCurrent")
+    for field in (
+        "site_ref", "subject_ref", "project_ref", "state", "membership_epoch", "authorization_epoch",
+    ):
+        assert field in membership
+    assert "membership_ref" not in membership
+
+    vector = _message_body(source, "AuthorizationEpochVector")
+    assert [
+        field for field in (
+            "site_security_epoch", "subject_generation", "identity_session_epoch",
+            "membership_epoch", "authorization_epoch", "restriction_epoch",
+            "credential_epoch", "policy_epoch", "site_revocation_epoch",
+        ) if field in vector
+    ] == [
+        "site_security_epoch", "subject_generation", "identity_session_epoch",
+        "membership_epoch", "authorization_epoch", "restriction_epoch",
+        "credential_epoch", "policy_epoch", "site_revocation_epoch",
+    ]
+    event = _message_body(source, "AuthorizationEventSigningPayload")
+    for fact in (
+        "SiteCurrent site_current_changed",
+        "SubjectCurrent subject_current_changed",
+        "IdentitySessionCurrent identity_session_current_changed",
+        "ProjectMembershipCurrent project_membership_current_changed",
+        "DeliveredGrantFact grant_delivered",
+    ):
+        assert fact in event
+    snapshot = _message_body(source, "AuthorizationSnapshotRecord")
+    for fact in (
+        "SiteCurrentSnapshot site_current",
+        "SubjectCurrent subject_current",
+        "IdentitySessionCurrent identity_session_current",
+        "ProjectMembershipCurrent project_membership_current",
+        "DeliveredGrantFact delivered_grant",
+        "AuthorizationVerificationKey verification_key",
+    ):
+        assert fact in snapshot
+    site_snapshot = _message_body(source, "SiteCurrentSnapshot")
+    assert "SiteCurrent current" in site_snapshot
+    assert "uint64 aggregate_sequence" in site_snapshot
+    for state in (
+        "AUTHORIZATION_SUBJECT_STATE_REMOVED",
+        "AUTHORIZATION_IDENTITY_SESSION_STATE_REVOKED",
+        "AUTHORIZATION_IDENTITY_SESSION_STATE_REMOVED",
+        "AUTHORIZATION_PROJECT_MEMBERSHIP_STATE_REVOKED",
+        "AUTHORIZATION_PROJECT_MEMBERSHIP_STATE_REMOVED",
+    ):
+        assert state in source
+    assert source.count("google.protobuf.Timestamp retain_until") == 4
+
+    registry = (CONTRACT / "registry/platform-session-authorization-v2.yaml").read_text()
+    for invariant in (
+        "nine-axis-current-fact-equality",
+        "global-site-owner-lock-order",
+        "owner-binding-integrity",
+        "owner-epoch-monotonicity",
+        "delivered-grant-is-not-current-state",
+        "owner-scoped-revocation-only",
+        "tombstone-retention",
+        "missing-current-fact-fail-closed",
+        "target-subject-invalid-neighbor-valid",
+        "target-identity-session-invalid-neighbor-valid",
+        "target-membership-invalid-neighbor-valid",
+        "site-suspend-invalidates-all-site-grants",
+    ):
+        assert invariant in registry
+    assert "lifecycle: contract-only" in registry
+    assert "activation: inactive" in registry
+    assert "universal-site-revocation-fence" not in registry
+    boundaries = json.loads((CONTRACT / "registry/boundaries.yaml").read_text())["boundaries"]
+    boundary = next(item for item in boundaries if item["id"] == "platform-session-authorization")
+    assert boundary["version"] == 2
+    assert boundary["lifecycle"] == "contract-only"
+    assert boundary["sources"][0]["path"].endswith(
+        "/authorization/v2/scoped_session_authorization.proto"
+    )
+    assert all("authorization/v1" not in item["path"] for item in boundary["sources"])
+
+
 def test_safe_admission_capabilities_are_typed_for_browser_projection() -> None:
     source = _proto("kokoro/platform/admission/v1/admission.proto")
     snapshot = _message_body(source, "SafeAdmissionSnapshot")

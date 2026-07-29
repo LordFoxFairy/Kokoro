@@ -39,6 +39,11 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
 ]);
+// Contract-only bundles are generated in isolation in CI, but have no live subrepository mirrors
+// until provider, consumer, and compatibility evidence authorize promotion.
+export const CONTRACT_ONLY_GENERATED_BOUNDARIES = Object.freeze([
+  "platform-session-authorization@v2",
+]);
 
 export class GeneratedContractError extends Error {
   constructor(code, detail = "") {
@@ -179,6 +184,9 @@ export async function checkGeneratedContracts({ root }) {
         await compareGeneratedMirror(output, resolve(root, mirror), `${boundary.id}:${mirror}`);
         await assertGeneratedMirrorTracked(root, mirror, `${boundary.id}:${mirror}`);
       }
+    }
+    for (const boundary of CONTRACT_ONLY_GENERATED_BOUNDARIES) {
+      await generateToTemporaryDirectory(root, boundary, resolve(temporary, boundary));
     }
   } finally {
     await rm(temporary, { recursive: true, force: true });

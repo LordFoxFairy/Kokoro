@@ -51,14 +51,14 @@
       "sources": [
         {
           "kind": "proto",
-          "path": "contract/proto/kokoro/platform/authorization/v1/session_authorization.proto",
+          "path": "contract/proto/kokoro/platform/authorization/v2/scoped_session_authorization.proto",
           "select": {
-            "service": "SessionAuthorizationService"
+            "service": "ScopedSessionAuthorizationService"
           }
         },
         {
           "kind": "spec-yaml",
-          "path": "contract/registry/platform-session-authorization-v1.yaml",
+          "path": "contract/registry/platform-session-authorization-v2.yaml",
           "select": {
             "member": "scalar",
             "section": "operations"
@@ -70,7 +70,7 @@
         "connect-rpc"
       ],
       "trustPlane": "internal-service",
-      "version": 1
+      "version": 2
     },
     {
       "audience": "internal-workload",
