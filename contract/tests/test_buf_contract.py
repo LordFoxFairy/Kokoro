@@ -817,6 +817,12 @@ def test_asset_data_plane_is_capability_scoped_resumable_and_provider_neutral() 
     ):
         assert forbidden not in wire
     assert schemas["MultipartUploadState"]["properties"]["parts"]["maxItems"] == 10000
+    assert "integrity_rejected" in schemas["MultipartCommandReceipt"]["properties"]["state"]["enum"]
+    assert "integrity_rejected" in schemas["MultipartUploadState"]["properties"]["state"]["enum"]
+    assert schemas["MultipartUploadState"]["properties"]["safeReasonCode"]["type"] == [
+        "string",
+        "null",
+    ]
     assert schemas["MultipartPartCommit"]["properties"]["partNumber"]["maximum"] == 10000
     assert set(schemas["CompleteMultipartUploadInput"]["required"]) == {
         "expectedVersion",
@@ -864,6 +870,8 @@ def test_asset_data_plane_is_capability_scoped_resumable_and_provider_neutral() 
     assert "streaming the completed quarantine object" in complete_description
     assert "multipart etag" in complete_description
     assert "never accepted" in complete_description
+    assert "integrity_rejected" in complete_description
+    assert "only transport ambiguity" in complete_description
 
 
 def test_public_auth_and_personal_context_payloads_are_complete() -> None:

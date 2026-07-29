@@ -108,7 +108,9 @@ paths:
         current capability epoch, total size, and flat whole-object SHA-256 before reporting
         uploaded. The SHA-256 is proven by streaming the completed quarantine object; a multipart
         ETag or a composite part checksum is never accepted as that proof. This does not make the
-        object an Asset; Platform owner completion and scanning still follow.
+        object an Asset; Platform owner completion and scanning still follow. A deterministic
+        whole-object size or SHA-256 mismatch is durably terminal as integrity_rejected and is
+        never promoted or retried. Only transport ambiguity may become outcome_unknown.
       parameters:
         - $ref: '#/components/parameters/UploadRef'
         - $ref: '#/components/parameters/ContractVersion'
@@ -332,7 +334,10 @@ components:
     MultipartCommandReceipt:
       type: object
       additionalProperties: false
-      description: Provider-neutral durable receipt; it never contains a provider upload id or etag.
+      description: >-
+        Provider-neutral durable receipt; it never contains a provider upload id or etag.
+        integrity_rejected is a stable terminal completion result, while outcome_unknown is
+        reserved for an effect whose transport result cannot yet be observed.
       properties:
         receiptRef: *opaqueRef
         operation:
@@ -340,7 +345,7 @@ components:
           enum: [initiate, put_part, complete, abort]
         state:
           type: string
-          enum: [succeeded, outcome_unknown]
+          enum: [succeeded, integrity_rejected, outcome_unknown]
         receivedAt:
           type: string
           format: date-time
@@ -371,7 +376,15 @@ components:
           const: s3-multipart-v1
         state:
           type: string
-          enum: [initiating, uploading, completing, uploaded, aborting, aborted, outcome_unknown]
+          enum:
+            - initiating
+            - uploading
+            - completing
+            - uploaded
+            - aborting
+            - aborted
+            - integrity_rejected
+            - outcome_unknown
         expectedVersion:
           $ref: '#/components/schemas/PositiveUint64String'
         expectedSize:
@@ -387,6 +400,9 @@ components:
         retryAfter:
           type: [string, 'null']
           format: date-time
+        safeReasonCode:
+          type: [string, 'null']
+          enum: [UPLOAD_PART_INVALID, null]
         parts:
           type: array
           maxItems: 10000
@@ -402,6 +418,7 @@ components:
         - expiresAt
         - retryClass
         - retryAfter
+        - safeReasonCode
         - parts
     MultipartPartResponse:
       type: object
