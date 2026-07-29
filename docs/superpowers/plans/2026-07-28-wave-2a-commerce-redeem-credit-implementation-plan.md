@@ -6,7 +6,7 @@
 
 **Architecture:** Root remains the only cross-repository contract authority. `kokoro-platform` implements Commerce as modules and cross-owner workflows over the single Wave 1 `PlatformUnitOfWork`; Credit owns one Journal/Hold/allocation/AuthorizationSegment model, while Wave 3 only adapts Session Admission to its typed application port. `kokoro-web` consumes generated contracts through Site-bound BFF routes, and Payment acquisition remains absent at route, domain, worker, secret, Admin, and deployment layers.
 
-**Tech Stack:** Inherit the qualified Wave 1 runtime exactly: Node.js 22, TypeScript 5.9, the Wave 1 pinned Zod major, Vitest,
+**Tech Stack:** Inherit the qualified Wave 1 runtime exactly: Node.js 24, TypeScript 5.9, Zod 4 for new runtime boundaries, Vitest,
 Prisma 7, PostgreSQL 18, Fastify/OpenAPI, ConnectRPC/Protobuf, RFC 8785 JCS, Redis-backed rate limiting only, S3-compatible
 encrypted object storage, Next.js 16.2, React 19.2, Playwright, and pnpm 11. Wave 2A is not a Node or Zod upgrade wave.
 

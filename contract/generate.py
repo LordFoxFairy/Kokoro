@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Deterministic codegen: contract/spec/*.yaml -> the three repos' contract/ mirrors."""
+"""Deterministic codegen: contract/spec/*.yaml -> federated consumer mirrors."""
 
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -15,6 +17,7 @@ SPEC = HERE / "spec"
 AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
 SESSION = ROOT / "kokoro-session/src/contract"
 WEB = ROOT / "kokoro-web/apps/user/src/contract"
+WEB_SESSION_CLIENT = ROOT / "kokoro-web/packages/session-client/src/generated"
 HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
 PLATFORM_KIT = ROOT / "kokoro-platform/kokoro-platform-kit/src/contract"
 
@@ -55,7 +58,7 @@ def camel(name: str) -> str:
 
 def _split(name: str) -> list[str]:
     out: list[str] = []
-    for part in name.replace(".", "_").split("_"):
+    for part in name.replace(".", "_").replace("-", "_").split("_"):
         out.append(part)
     return out
 
@@ -74,8 +77,27 @@ _ZOD_SCALAR = {
     "boolean": "z.boolean()",
     "int": "z.number().int()",
     "nonnegative_int": "z.number().int().nonnegative()",
-    "record": "z.record(z.unknown())",
-    "string_map": "z.record(z.string())",
+    "positive_int": "z.number().int().positive()",
+    "timestamp": "z.string().datetime({ offset: true })",
+    "sha256": 'z.string().regex(/^[0-9a-f]{64}$/u)',
+    "uint64_string": 'z.string().regex(/^(0|[1-9][0-9]{0,19})$/u).refine((value) => value.length < 20 || value <= "18446744073709551615")',
+    "entity_id": "z.string().min(1).max(128)",
+    "idempotency_key": "z.string().min(1).max(191)",
+    "opaque_ref": "z.string().min(1).max(256)",
+    "title": "z.string().min(1).max(256)",
+    "trusted_locale": "z.string().min(2).max(35)",
+    "input_text": "z.string().min(1).max(1048576)",
+    "folder_name": "z.string().min(1).max(128)",
+    "effort": "z.string().min(1).max(64)",
+    "reason_code": "z.string().min(1).max(128)",
+    "search_query": "z.string().min(1).max(512)",
+    "opaque_cursor": "z.string().min(1).max(8192)",
+    "page_limit": "z.number().int().min(1).max(100)",
+    # The explicit key/value form is accepted by Zod 3 and required by Zod 4.
+    # Keeping it in the Root generator lets mixed-version consumers share one
+    # byte-identical mirror during the toolchain transition.
+    "record": "z.record(z.string(), z.unknown())",
+    "string_map": "z.record(z.string(), z.string())",
     "unknown": "z.unknown()",
     "literal_true": "z.literal(true)",
 }
@@ -99,6 +121,10 @@ def zod_type(t: str, enums: dict) -> str:
         return f"z.array({zod_type(t[6:], enums)})"
     if t.startswith("object:"):
         return f"{camel(t[7:])}Schema"
+    if t.startswith("literal:"):
+        return f'z.literal("{t[8:]}")'
+    if t.startswith("literal_int:"):
+        return f"z.literal({int(t[12:])})"
     raise ValueError(f"unmapped zod type {t!r}")
 
 
@@ -147,6 +173,10 @@ def py_field(f: dict, aliases: dict[str, str]) -> str:
 
 def ts_field(f: dict, enums: dict) -> str:
     z = zod_type(f["type"], enums)
+    if f.get("min_items") is not None:
+        z += f".min({int(f['min_items'])})"
+    if f.get("max_items") is not None:
+        z += f".max({int(f['max_items'])})"
     if f.get("nullable"):
         z += ".nullable()"
     if f.get("optional"):
@@ -179,6 +209,42 @@ def ts_object(obj: dict, enums: dict, *, export: bool) -> list[str]:
         L = [f"{kw} {const} = z", "  .object({"]
         L += [f"    {ts_field(f, enums)}," for f in fields]
         L += ["  })", "  .strict()"]
+    if export:
+        L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
+    return L
+
+
+def ts_tagged_union(obj: dict, enums: dict, *, export: bool) -> list[str]:
+    """Emit a fail-closed kind→payload union; never a Cartesian product."""
+    const = f"{camel(obj['name'])}Schema"
+    kw = "export const" if export else "const"
+    variants: list[str] = []
+    L: list[str] = []
+    for variant in obj["variants"]:
+        variant_const = f"{camel(obj['name'])}{pascal(variant['value'])}Schema"
+        variants.append(variant_const)
+        L += [f"const {variant_const} = z", "  .object({"]
+        L += [f"    {ts_field(field, enums)}," for field in obj.get("common_fields", [])]
+        L += [f"    {ts_field(field, enums)}," for field in variant.get("fields", [])]
+        L.append(f'    {obj["discriminator"]}: z.literal("{variant["value"]}"),')
+        L.append(f"    payload: {zod_type(variant['payload_type'], enums)},")
+        L += ["  })", "  .strict()", ""]
+    L.append(f'{kw} {const} = z.discriminatedUnion("{obj["discriminator"]}", [')
+    L += [f"  {variant}," for variant in variants]
+    L.append("])")
+    effect_kinds = obj.get("effect_kind_by_operation")
+    if effect_kinds:
+        pairs = ", ".join(
+            f"{json.dumps(operation)}: {json.dumps(kind)}"
+            for operation, kind in effect_kinds.items()
+        )
+        L += [
+            ".superRefine((value, context) => {",
+            f'  if (value.{obj["discriminator"]} !== "accepted" && value.{obj["discriminator"]} !== "applied") return',
+            f"  const expectedKind = ({{ {pairs} }} as const)[value.operation]",
+            '  if (value.payload.kind !== expectedKind) context.addIssue({ code: "custom", path: ["payload", "kind"], message: "command receipt operation/effect mismatch" })',
+            "})",
+        ]
     if export:
         L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
     return L
@@ -446,6 +512,8 @@ def emit_wire_events_ts(spec: dict) -> str:
 
 
 def _browser_payloads(spec: dict) -> dict[str, list[dict]]:
+    if spec.get("browser_kinds"):
+        return {entry["kind"]: list(entry.get("fields") or []) for entry in spec["browser_kinds"]}
     by_kind = {e["kind"]: e.get("payload") or [] for e in spec["raw_kinds"]}
     by_kind.update({e["kind"]: e.get("payload") or [] for e in spec["synthetic_kinds"]})
     return {k: event_payload_fields(spec, by_kind[k]) for k in spec["browser_order"]}
@@ -456,12 +524,28 @@ def emit_session_events_ts(spec: dict) -> str:
     payloads = _browser_payloads(spec)
     envelope = [
         "event_id: z.string().min(1),",
-        "seq: z.number().int().nonnegative(),",
+        "cursor: z.string().min(1),",
         "session_id: z.string().min(1),",
-        "run_id: z.string().min(1),",
-        "timestamp: z.string().min(1),",
+        "stream_epoch: z.string().min(1),",
+        'durable_seq: z.string().regex(/^[1-9][0-9]{0,19}$/u).refine((value) => value.length < 20 || value <= "18446744073709551615"),',
+        "projection_version: z.number().int().positive(),",
+        "schema_revision: z.number().int().positive(),",
+        "recorded_at: z.string().datetime({ offset: true }),",
     ]
-    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+    digest = hashlib.sha256((SPEC / "events.yaml").read_bytes()).hexdigest()
+    imports = ", ".join(f"{camel(name)}Schema" for name in spec.get("browser_imports", []))
+    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"']
+    if imports:
+        L.append(f'import {{ {imports} }} from "./http.js"')
+    L += [
+        "",
+        "export const sessionEventContractMetadata = Object.freeze({",
+        f'  schemaId: "{spec["browser_schema_id"]}",',
+        f'  schemaVersion: {spec["browser_schema_version"]},',
+        f'  sourceDigestSha256: "{digest}",',
+        "})",
+        "",
+    ]
     L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="sessionEventSchema", envelope=envelope)
     L += [
         "",
@@ -472,6 +556,31 @@ def emit_session_events_ts(spec: dict) -> str:
         "  return sessionEventSchema.parse(input)",
         "}",
     ]
+    control_frames = spec.get("stream_control_frames") or []
+    if control_frames:
+        control_schemas: list[str] = []
+        L.append("")
+        for frame in control_frames:
+            const = f"{camel(frame['kind'])}ControlFrameSchema"
+            control_schemas.append(const)
+            L += [f"const {const} = z", "  .object({", f'    kind: z.literal("{frame["kind"]}"),']
+            L += [f"    {ts_field(field, spec['enums'])}," for field in frame.get("fields") or []]
+            L += ["  })", "  .strict()", ""]
+        if len(control_schemas) == 1:
+            L.append(f"export const streamControlFrameSchema = {control_schemas[0]}")
+        else:
+            L.append("export const streamControlFrameSchema = z.union([")
+            L += [f"  {const}," for const in control_schemas]
+            L.append("])")
+        L += [
+            "export type StreamControlFrame = z.infer<typeof streamControlFrameSchema>",
+            "export const sessionStreamFrameSchema = z.union([sessionEventSchema, streamControlFrameSchema])",
+            "export type SessionStreamFrame = z.infer<typeof sessionStreamFrameSchema>",
+            "",
+            "export function parseSessionStreamFrame(input: unknown): SessionStreamFrame {",
+            "  return sessionStreamFrameSchema.parse(input)",
+            "}",
+        ]
     return "\n".join(L) + "\n"
 
 
@@ -493,7 +602,8 @@ def emit_control_ts(spec: dict) -> str:
     L = [ts_header(CONTROL_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
 
     for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=True)
+        emitter = ts_tagged_union if obj.get("variants") else ts_object
+        L += emitter(obj, enums, export=True)
         L.append("")
 
     # Backend 便捷别名：RuntimeConfig.backend 的字面量联合（消费方按后端分派，如 namespace 解析）。
@@ -591,108 +701,63 @@ def emit_streams_ts(spec: dict) -> str:
 def emit_http_ts(spec: dict) -> str:
     enums = spec["enums"]
     ep = spec["endpoints"]
-    L = [ts_header(HTTP_SRC).rstrip("\n"), "", 'import { z } from "zod"']
-    L.append('import { resumeDecisionSchema } from "./control"')
-    L.append("")
+    digest = hashlib.sha256((SPEC / "http.yaml").read_bytes()).hexdigest()
+    L = [ts_header(HTTP_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
+    L += [
+        "export const sessionHttpContractMetadata = Object.freeze({",
+        f'  schemaId: "{spec["schema_id"]}",',
+        f'  schemaVersion: {spec["schema_version"]},',
+        f'  sourceDigestSha256: "{digest}",',
+        "})",
+        "",
+    ]
 
     for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=True)
+        emitter = ts_tagged_union if obj.get("variants") else ts_object
+        L += emitter(obj, enums, export=True)
         L.append("")
 
     snap = ep["snapshot"]
     L.append(
         f"export function parseSessionSnapshot(input: unknown): {snap['response_object']} {{"
     )
-    L.append(f"  return {snap['response_const']}.parse(input)")
+    L.append(f"  return {camel(snap['response_object'])}Schema.parse(input)")
     L.append("}")
     L.append("")
 
-    start = ep["create_message"]
-    L.append(f"export const {start['body_const']} = z")
-    L.append("  .object({")
-    L += [f"    {ts_field(f, enums)}," for f in start["body"]]
-    L += ["  })", "  .strict()"]
-    L.append(f"export type MessageCreateParams = z.infer<typeof {start['body_const']}>")
-    L.append("")
-    L.append(f"export const {start['receipt_const']} = z")
-    L.append("  .object({")
-    L += [f"    {ts_field(f, enums)}," for f in start["receipt"]]
-    L += ["  })", "  .strict()"]
-    L.append(f"export type MessageCreateReceipt = z.infer<typeof {start['receipt_const']}>")
-    L.append("")
-
-    ctrl = ep["run_control"]
-    L.append(f'export const {ctrl["body_const"]} = z.discriminatedUnion("kind", [')
-    L.append(
-        '  z.object({ kind: z.literal("run.cancel"), decision_id: z.string().min(1) }).strict(),'
-    )
-    L.append(
-        '  z.object({ kind: z.literal("run.resume"), decision_id: z.string().min(1), '
-        "decisions: z.array(resumeDecisionSchema).min(1) }).strict(),"
-    )
-    L.append("])")
-    L.append(f"export type RunControlBody = z.infer<typeof {ctrl['body_const']}>")
-    L.append("")
-    receipt = ", ".join(ts_field(f, enums) for f in ctrl["receipt"])
-    L.append(f"export const {ctrl['receipt_const']} = z.object({{ {receipt} }}).strict()")
-    L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
-    L.append("")
-
-    ren = ep["rename_session"]
-    ren_body = ", ".join(ts_field(f, enums) for f in ren["body"])
-    L.append(f"export const {ren['body_const']} = z.object({{ {ren_body} }}).strict()")
-    L.append(f"export type RenameSessionBody = z.infer<typeof {ren['body_const']}>")
-    ren_rcpt = ", ".join(ts_field(f, enums) for f in ren["receipt"])
-    L.append(f"export const {ren['receipt_const']} = z.object({{ {ren_rcpt} }}).strict()")
-    L.append(f"export type RenameSessionReceipt = z.infer<typeof {ren['receipt_const']}>")
-    L.append("")
-
-    shr = ep["share_create"]
-    shr_fields = ", ".join(ts_field(f, enums) for f in shr["receipt"])
-    L.append(f"export const {shr['receipt_const']} = z.object({{ {shr_fields} }}).strict()")
-    L.append(f"export type ShareReceipt = z.infer<typeof {shr['receipt_const']}>")
-    L.append("")
-
-    rcpt = ep["control_receipt"]
-    rcpt_fields = ", ".join(ts_field(f, enums) for f in rcpt["receipt"])
-    L.append(f"export const {rcpt['receipt_const']} = z.object({{ {rcpt_fields} }}).strict()")
-    L.append(f"export type ControlReceiptView = z.infer<typeof {rcpt['receipt_const']}>")
-    L.append("")
-
-    dele = ep["delete_session"]
-    dele_receipt = ", ".join(ts_field(f, enums) for f in dele["receipt"])
-    L.append(f"export const {dele['receipt_const']} = z.object({{ {dele_receipt} }}).strict()")
-    L.append(f"export type DeleteSessionReceipt = z.infer<typeof {dele['receipt_const']}>")
-    L.append("")
-
-    err = ", ".join(ts_field(f, enums) for f in spec["error"])
-    L.append(f"export const {spec['error_const']} = z.object({{ {err} }}).strict()")
-    L.append(f"export type ErrorResponse = z.infer<typeof {spec['error_const']}>")
-    L.append(f'export const SESSION_RUN_ACTIVE = "{spec["error_conflict_code"]}"')
+    error_schema = f"{camel(spec['error_object'])}Schema"
+    if spec["error_const"] != error_schema:
+        L.append(f"export const {spec['error_const']} = {error_schema}")
     L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
     L.append("")
+    path_schemas: dict[str, str] = {}
+    for key, e in ep.items():
+        if not e["params"]:
+            continue
+        const = f"{camel(key)}PathParamsSchema"
+        path_schemas[key] = const
+        L += [f"export const {const} = z", "  .object({"]
+        for parameter in e["params"]:
+            field = {"name": parameter, "type": spec["path_param_types"][parameter]}
+            L.append(f"    {ts_field(field, enums)},")
+        L += ["  })", "  .strict()", ""]
+    L += ["export const SESSION_HTTP_ENDPOINTS = Object.freeze({"]
+    for key, e in ep.items():
+        query = ", ".join(f'"{q}"' for q in e.get("query", []))
+        query_schema = f'{camel(e["query_object"])}Schema' if e.get("query_object") else "null"
+        request = f'{camel(e["request_object"])}Schema' if e.get("request_object") else "null"
+        response = f'{camel(e["response_object"])}Schema' if e.get("response_object") else "null"
+        path_schema = path_schemas.get(key, "null")
+        authorization = f'"{e["authorization"]}"' if e.get("authorization") else "null"
+        L.append(f'  {camel(key)}: Object.freeze({{ method: "{e["method"]}", path: "{e["path_template"]}", status: {e["status"]}, pathSchema: {path_schema}, requestSchema: {request}, querySchema: {query_schema}, responseSchema: {response}, query: Object.freeze([{query}]), authorization: {authorization} }}),')
+    L += ["})", ""]
 
-    for key in (
-        "create_message",
-        "snapshot",
-        "stream",
-        "file",
-        "delivery_content",
-        "run_control",
-        "control_receipt",
-        "list_sessions",
-        "billing_summary",
-        "billing_ledger",
-        "billing_by_model",
-        "model_candidates",
-        "agent_candidates",
-        "list_artifacts",
-        "artifact_content",
-        "share_create",
-        "shared_snapshot",
-        "rename_session",
-    ):
-        e = ep[key]
+    emitted: set[tuple[str, tuple[str, ...]]] = set()
+    for e in ep.values():
+        signature_key = (e["path_fn"], tuple(e["params"]))
+        if signature_key in emitted:
+            continue
+        emitted.add(signature_key)
         sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
         body = _ts_template(e["path_template"], e["params"])
         L.append(f"export function {e['path_fn']}({sig}): string {{")
@@ -781,7 +846,13 @@ def emit_init_py(events: dict, control: dict, streams: dict) -> str:
 def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
     optional = set(events.get("payload_optional") or [])
     payload_by_kind = {e["kind"]: e.get("payload") or [] for e in events["raw_kinds"]}
-    payload_by_kind.update({e["kind"]: e.get("payload") or [] for e in events["synthetic_kinds"]})
+    if events.get("browser_kinds"):
+        payload_by_kind = {
+            entry["kind"]: [field["name"] for field in entry.get("fields") or []]
+            for entry in events["browser_kinds"]
+        }
+    else:
+        payload_by_kind.update({e["kind"]: e.get("payload") or [] for e in events["synthetic_kinds"]})
 
     L = [
         "<!-- GENERATED — DO NOT EDIT. Source: contract/spec/*.yaml -->",
@@ -816,9 +887,9 @@ def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
         "",
         "- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic;",
         "  critical frames additionally carry `durable_seq`/`event_id` (R4, absent on live frames).",
-        "- session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`",
-        "  — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is",
-        "  replaced by the synthetic session.created + run.created; internal-only raw kinds never project.",
+        "- session -> web (browser): `{ kind, event_id, cursor, session_id, stream_epoch, durable_seq,",
+        "  projection_version, schema_revision, recorded_at, payload }`; cursor is opaque and signed.",
+        "  Browser events are owner-safe projection deltas; raw GA events never pass through directly.",
         "",
         f"## Raw events (agent -> session, {len(events['raw_kinds'])})",
         "",
@@ -869,9 +940,9 @@ def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
         L.append(f"| {e['method']} | `{e['path_template']}` |")
     L += [
         "",
-        "POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching",
-        f"idempotency_key against an active run returns 409 `{http['error_conflict_code']}`.",
-        "GET /sessions/:id returns the snapshot; SSE resumes from `Last-Event-ID` = last `seq`.",
+        "Every mutation carries a command identity and returns a recoverable command receipt.",
+        "GET /v1/sessions/:id/snapshot returns the complete projection; SSE resumes only from an opaque",
+        "signed cursor supplied through Last-Event-ID (query `after` is the polyfill fallback).",
     ]
     return "\n".join(L) + "\n"
 
@@ -1008,12 +1079,23 @@ def build() -> dict[Path, str]:
         WEB / "control.ts": control_ts,
         WEB / "http.ts": http_ts,
         WEB / "event-names.ts": emit_event_names_ts(events),
+        WEB_SESSION_CLIENT / "session-events.ts": session_events,
+        WEB_SESSION_CLIENT / "control.ts": control_ts,
+        WEB_SESSION_CLIENT / "http.ts": http_ts,
     }
 
 
 def main(argv: list[str]) -> int:
     outputs = build()
     check = "--check" in argv
+    output_root: Path | None = None
+    if "--output-root" in argv:
+        index = argv.index("--output-root")
+        if index + 1 >= len(argv):
+            raise SystemExit("--output-root requires a path")
+        output_root = Path(argv[index + 1]).resolve()
+        if check:
+            raise SystemExit("--check and --output-root are mutually exclusive")
     drift = False
     for path, content in outputs.items():
         rel = path.relative_to(ROOT)
@@ -1023,8 +1105,9 @@ def main(argv: list[str]) -> int:
                 print(f"DRIFT: {rel}")
                 drift = True
         else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content)
+            destination = output_root / rel if output_root is not None else path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(content)
             print(f"wrote {rel}")
     if check and drift:
         print("\nRun `python3 contract/generate.py` and commit the regenerated mirrors.")

@@ -206,6 +206,7 @@
       "lifecycle": "contract-only",
       "operations": [
         {"effect": true, "id": "exchangeProductContext", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/ProductContextExchangeResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": true, "id": "issueSessionAccessGrant", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/SessionAccessGrantResponse"}, "retryClass": "never", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": true, "id": "beginRegistration", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/EmailVerificationTransactionResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": true, "id": "completeEmailVerification", "receipt": {"kind": "state-read", "recoveryOperation": "getPublicCommandReceipt", "ref": "getPublicCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": true, "id": "resendEmailVerification", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/EmailVerificationTransactionResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
@@ -227,6 +228,14 @@
         {"effect": true, "id": "completeAccountRecovery", "receipt": {"kind": "state-read", "recoveryOperation": "getPublicCommandReceipt", "ref": "getPublicCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": true, "id": "reauthenticateIdentitySession", "receipt": {"kind": "state-read", "recoveryOperation": "getPublicCommandReceipt", "ref": "getPublicCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": false, "id": "getPersonalContext", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": true, "id": "previewRedemption", "receipt": {"kind": "http-receipt-body", "ref": "#/components/schemas/RedemptionPreviewResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": true, "id": "confirmRedemption", "receipt": {"kind": "state-read", "recoveryOperation": "recoverRedemptionCommand", "ref": "recoverRedemptionCommand"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "recoverRedemptionCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getRedemptionReceipt", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "listAccountProducts", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getCreditSummary", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getCreditGrant", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
+        {"effect": false, "id": "getUsageDetail", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"},
         {"effect": false, "id": "getPublicCommandReceipt", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "workload-binding", "transport": "http-json"}
       ],
       "protocol": "openapi-http-json",
@@ -379,7 +388,33 @@
         },
         {
           "effect": true,
-          "id": "FinalizeRun",
+          "id": "FinalizeRunAuthorization",
+          "receipt": {
+            "kind": "command-receipt",
+            "recoveryOperation": "GetCommandReceipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": true,
+          "id": "ReleaseRunAuthorization",
+          "receipt": {
+            "kind": "command-receipt",
+            "recoveryOperation": "GetCommandReceipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": true,
+          "id": "ReconcileRunAuthorization",
           "receipt": {
             "kind": "command-receipt",
             "recoveryOperation": "GetCommandReceipt",
@@ -402,7 +437,7 @@
       ],
       "protocol": "connect-rpc",
       "provider": {
-        "boundary": "platform.admin",
+        "boundary": "service.platform",
         "repository": "kokoro-platform"
       },
       "scope": "site",

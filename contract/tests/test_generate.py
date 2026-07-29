@@ -15,7 +15,7 @@ CONTRACT = Path(__file__).resolve().parents[1]
 ROOT = CONTRACT.parent
 sys.path.insert(0, str(CONTRACT))
 
-from generate import build, emit_platform_runtime_ts, load  # noqa: E402
+from generate import build, emit_platform_runtime_ts, emit_session_events_ts, load  # noqa: E402
 
 OUTPUTS = build()
 
@@ -57,9 +57,10 @@ def test_raw_and_browser_kinds() -> None:
     raw = [e["kind"] for e in events["raw_kinds"]]
     browser = list(events["browser_order"])
     assert len(raw) == 20 and "run.started" in raw
-    assert len(browser) == 21
+    assert len(browser) == 10
     assert "run.started" not in browser
-    assert {"session.created", "run.created"}.issubset(browser)
+    assert {"message.part.updated", "run.launch.updated"}.issubset(browser)
+    assert "stream.draining" not in browser
 
     wire = _find("kokoro-session/src/contract/wire-events.ts")
     events_py = _find("contract/events.py")
@@ -74,6 +75,122 @@ def test_raw_and_browser_kinds() -> None:
         assert f'"{kind}",' in names, kind
     # run.started is raw-only: never a browser literal.
     assert 'z.literal("run.started")' not in session
+
+
+def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
+    http = load("http.yaml")
+    snapshot = next(obj for obj in http["objects"] if obj["name"] == "SessionSnapshot")
+    fields = {field["name"]: field for field in snapshot["fields"]}
+    assert fields["messages"].get("optional") is not True
+    assert fields["branches"].get("optional") is not True
+    assert fields["snapshot_watermark"]["type"] == "object:SnapshotWatermark"
+    capability = next(
+        obj for obj in http["objects"] if obj["name"] == "CapabilityDisplaySnapshot"
+    )
+    capability_fields = {field["name"]: field for field in capability["fields"]}
+    assert capability_fields["agent_label"].get("optional") is True
+    assert capability_fields["source"]["type"] == "literal:admission_snapshot"
+    assert "availability" not in capability_fields
+
+    snapshot_query = next(
+        obj for obj in http["objects"] if obj["name"] == "SnapshotQuery"
+    )
+    snapshot_query_fields = {
+        field["name"]: field for field in snapshot_query["fields"]
+    }
+    assert snapshot_query_fields == {
+        "cursor": {"name": "cursor", "type": "opaque_cursor", "optional": True},
+        "limit": {"name": "limit", "type": "page_limit", "optional": True},
+    }
+    snapshot_endpoint = http["endpoints"]["snapshot"]
+    assert snapshot_endpoint["query_object"] == "SnapshotQuery"
+
+    stable_errors = set(http["enums"]["stable_error_code"])
+    assert {
+        "REQUEST_INVALID",
+        "PAYLOAD_TOO_LARGE",
+        "METHOD_NOT_ALLOWED",
+        "UNSUPPORTED_MEDIA_TYPE",
+        "BFF_WORKLOAD_REQUIRED",
+        "BFF_WORKLOAD_REVOKED",
+    }.issubset(stable_errors)
+
+    generated_events = emit_session_events_ts(load("events.yaml"))
+    assert 'from "./http.js"' in generated_events
+    assert 'from "./http"' not in generated_events
+
+    endpoint_names = set(http["endpoints"])
+    assert {
+        "submit_message",
+        "edit_message",
+        "regenerate_message",
+        "fork_branch",
+        "activate_branch",
+        "cancel_run",
+        "get_command_receipt",
+        "archive_session",
+        "restore_session",
+        "trash_session",
+        "put_preference",
+        "list_folders",
+        "create_folder",
+    }.issubset(endpoint_names)
+
+    generated = _find("kokoro-session/src/contract/http.ts")
+    assert "event_watermark" not in generated
+    assert "messagePartEnvelopeSchema = z.discriminatedUnion" in generated
+    assert "messageInputPartSchema = z.discriminatedUnion" in generated
+    submit = next(obj for obj in http["objects"] if obj["name"] == "SubmitMessageRequest")
+    submit_fields = {field["name"]: field for field in submit["fields"]}
+    assert "content" not in submit_fields
+    assert {
+        "branch_id",
+        "parent_message_id",
+        "trusted_locale",
+        "parts",
+        "attachment_refs",
+        "model_option_revision_ref",
+    }.issubset(submit_fields)
+    assert "SHA256_CANONICAL_JSON_V1" in generated
+    assert 'commandReceiptViewSchema = z.discriminatedUnion("status"' in generated
+    assert 'sessionCommandEffectSchema = z.discriminatedUnion("kind"' in generated
+    assert "command receipt operation/effect mismatch" in generated
+    assert '"create_session": "session-created"' in generated
+    assert '"delete_folder": "folder-deleted"' in generated
+    receipt_endpoint = http["endpoints"]["get_command_receipt"]
+    assert receipt_endpoint["path_template"] == "/v1/session-commands/{command_id}/receipt"
+    assert receipt_endpoint["params"] == ["command_id"]
+    assert receipt_endpoint["query_object"] == "CommandReceiptLookupQuery"
+    assert receipt_endpoint["authorization"] == "subject-site-command-receipt-grant"
+    assert http["endpoints"]["list_sessions"]["query_object"] == "ListSessionsQuery"
+    assert http["endpoints"]["stream"]["query_object"] == "StreamQuery"
+    assert http["endpoints"]["list_folders"]["query_object"] == "FolderListQuery"
+    assert "parts: z.array(messageInputPartSchema).min(1).max(64)" in generated
+    assert "attachment_refs: z.array(attachmentIntentSchema).max(64)" in generated
+    assert "command_id: z.string().min(1).max(128)" in generated
+    assert "idempotency_key: z.string().min(1).max(191)" in generated
+    assert "limit: z.number().int().min(1).max(100)" in generated
+
+    operations = set(http["enums"]["browser_command_operation"])
+    mutation_endpoints = {
+        name
+        for name, endpoint in http["endpoints"].items()
+        if endpoint.get("request_object") not in {None} and name != "get_command_receipt"
+    }
+    assert operations == mutation_endpoints
+    for name in mutation_endpoints:
+        assert http["endpoints"][name]["response_object"] == "SessionCommandResponse"
+    assert "seq: z.number().int().nonnegative()" not in _find(
+        "kokoro-session/src/contract/session-events.ts"
+    )
+    events_generated = _find("kokoro-session/src/contract/session-events.ts")
+    assert "cursor: z.string().min(1)" in events_generated
+    assert "durable_seq: z.string()" in events_generated
+    assert "streamControlFrameSchema" in events_generated
+    assert "sessionStreamFrameSchema" in events_generated
+    draining = events_generated.split("const streamDrainingControlFrameSchema", 1)[1]
+    assert "last_durable_cursor" in draining
+    assert "durable_seq" not in draining
 
 
 def test_no_legacy_vocabulary() -> None:
@@ -93,7 +210,8 @@ def test_no_legacy_vocabulary() -> None:
         assert banned not in blob, banned
     # the new vocabulary must be present.
     assert 'z.literal("message.delta")' in blob
-    assert 'z.literal("session.created")' in blob
+    assert 'z.literal("session.updated")' in blob
+    assert 'z.literal("run.view.updated")' in blob
 
 
 def test_run_request_shape() -> None:
@@ -144,6 +262,7 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         "platform-admin-query@v2",
         "platform-admin-command@v2",
         "platform-site-lifecycle@v1",
+        "platform-admission@v1",
     ):
         assert boundary in generator
     assert "await protoFiles(protoRoot)" not in generator
@@ -218,6 +337,16 @@ def test_node_generator_isolates_new_boundary_output() -> None:
                 "kokoro/platform/admin/v2/admin_command_pb.ts",
                 "kokoro/platform/admin/v2/admin_control_pb.ts",
                 "kokoro/platform/identity/v1/admin_identity_pb.ts",
+            ],
+        ),
+        (
+            "platform-admission@v1",
+            "kokoro/platform/admission/v1/admission_pb.ts",
+            [
+                "kokoro/platform/admin/v2/admin_query_pb.ts",
+                "kokoro/platform/admin/v2/admin_command_pb.ts",
+                "kokoro/platform/identity/v1/admin_identity_pb.ts",
+                "kokoro/platform/site/v1/site_lifecycle_pb.ts",
             ],
         ),
     ],
@@ -303,13 +432,17 @@ def _proto_message(source: str, message: str) -> str:
 
 
 def _typescript_compiler() -> Path:
-    candidates = sorted(
-        (CONTRACT / "node_modules/.pnpm").glob(
-            "typescript@*/node_modules/typescript/bin/tsc"
-        )
+    version = json.loads((CONTRACT / "package.json").read_text())["devDependencies"][
+        "typescript"
+    ]
+    compiler = (
+        CONTRACT
+        / "node_modules/.pnpm"
+        / f"typescript@{version}"
+        / "node_modules/typescript/bin/tsc"
     )
-    assert len(candidates) == 1, candidates
-    return candidates[0]
+    assert compiler.is_file(), compiler
+    return compiler
 
 
 @pytest.mark.parametrize(

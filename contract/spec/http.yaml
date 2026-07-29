@@ -1,358 +1,527 @@
-# Kokoro session HTTP face — the ONE truth for the endpoints.
-#
-# snake_case everywhere: the HTTP face shares the one wire vocabulary (no camelCase
-# rename layer). POST messages starts a run and returns a 202 receipt; GET /sessions/:id
-# is the authoritative snapshot for hydration; SSE resumes from Last-Event-ID = seq.
-
+# Breaking Wave 3 browser contract. Session snapshot is the complete projection;
+# SSE is a bounded delta stream resumed only by an opaque cursor.
+schema_id: kokoro.session.browser.v3
+schema_version: 3
 last_event_id_header: last-event-id
-# 400 = ZodError / decision error. 409 session_run_active = a non-matching
-# idempotency_key hit a session that already has an active run. 500 = opaque internal.
-error_conflict_code: session_run_active
+path_param_types:
+  session_id: entity_id
+  message_id: entity_id
+  branch_id: entity_id
+  run_id: entity_id
+  command_id: entity_id
+  folder_id: entity_id
 
 enums:
-  message_role: [user, assistant]
-  message_status: [pending, streaming, completed, failed]
-  pause_status: [pending, resolved, cancelled, expired]
-  awaiting_kind: [tool_approval, ask_user_question, result_review, input]
-  resume_decision: [approve, edit, reject, respond, submit]
-  # R2 回执查询面状态:pending=已受理未见 agent 回执;persisted/applied=agent 两时点;failed=终局失败。
-  control_receipt_view_status: [pending, persisted, applied, failed]
+  message_role: [user, assistant, system]
+  message_lifecycle: [created, streaming, completed, partial, failed, canceled]
+  part_lifecycle: [created, streaming, completed, partial, failed, canceled, unsupported]
+  supported_part_lifecycle: [created, streaming, completed, partial, failed, canceled]
+  branch_origin: [original, edit, regenerate, fork]
+  session_lifecycle: [active, archived, trashed]
+  execution_status: [admission_pending, waiting_prerequisite, running, paused, cancelling, completed, failed, canceled, outcome_unknown]
+  cost_status: [none, reserved, committed, cost_pending, settled, released, reconciliation_required]
+  launch_status: [intent_recorded, admission_pending, waiting_prerequisite, reserved, committed, dispatch_pending, dispatched, event_observed, released, denied, outcome_unknown, failed]
+  control_status: [pending, persisted, applied, failed, outcome_unknown]
+  retry_class: [never, immediate, after_delay, after_user_action, reconcile_receipt]
+  browser_command_operation: [create_session, submit_message, edit_message, regenerate_message, fork_branch, activate_branch, cancel_run, update_session, archive_session, restore_session, trash_session, put_preference, create_folder, update_folder, delete_folder]
+  session_sort: [updated_desc]
+  repair_action: [retry_same_cursor, refresh_grant, reauthenticate, refetch_snapshot, upgrade_client, stop, developer_error, wait_or_cancel, fork_new_session, choose_model, wait_prerequisite, remove_attachment, show_reason, reconcile_receipt, poll_or_stream, render_unsupported]
+  message_part_kind: [text, reasoning, citation, tool-call, approval, interaction, plan, job, artifact, cost, notice, error, unsupported]
+  stable_error_code: [REQUEST_INVALID, PAYLOAD_TOO_LARGE, METHOD_NOT_ALLOWED, UNSUPPORTED_MEDIA_TYPE, BFF_WORKLOAD_REQUIRED, BFF_WORKLOAD_REVOKED, SESSION_ACCESS_GRANT_REQUIRED, SESSION_ACCESS_GRANT_EXPIRED, SESSION_ACCESS_GRANT_REVOKED, SESSION_SCOPE_MISMATCH, SESSION_NOT_FOUND, SESSION_VERSION_CONFLICT, IDEMPOTENCY_CONFLICT, ACTIVE_RUN_EXISTS, CAPABILITY_SNAPSHOT_LOCKED, MODEL_OPTION_UNAVAILABLE, ATTACHMENT_NOT_READY, ATTACHMENT_REVOKED, ADMISSION_DENIED, ADMISSION_OUTCOME_UNKNOWN, LAUNCH_OUTCOME_UNKNOWN, RUN_CANCELLATION_PENDING, RUN_OUTCOME_UNKNOWN, CURSOR_INVALID, CURSOR_CONFLICT, CURSOR_AHEAD, SNAPSHOT_REQUIRED, CURSOR_SCOPE_MISMATCH, STREAM_EPOCH_MISMATCH, CLIENT_CONTRACT_UPGRADE_REQUIRED, PART_SCHEMA_UNSUPPORTED, INTERNAL_UNAVAILABLE]
 
-# Snapshot read-model shapes (dependency order: leaves first). Exported for session/web.
 objects:
-  - name: Risk
+  - name: CommandIdentity
     fields:
-      - {name: level, type: string_nonempty}
-      - {name: source, type: string_nonempty}
-      - {name: reason, type: string_nonempty}
-  - name: SessionMeta
+      - {name: command_id, type: entity_id}
+      - {name: idempotency_key, type: idempotency_key}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: request_digest, type: sha256}
+  - name: ErrorDetail
+    fields:
+      - {name: code, type: enum:stable_error_code}
+      - {name: message, type: string_nonempty}
+      - {name: retry_class, type: enum:retry_class}
+      - {name: action, type: enum:repair_action}
+      - {name: details, type: record, optional: true}
+  - name: ErrorEnvelope
+    fields:
+      - {name: error, type: object:ErrorDetail}
+      - {name: request_id, type: string_nonempty}
+      - {name: correlation_id, type: string_nonempty}
+  - name: SessionCreatedCommandResult
     fields:
       - {name: session_id, type: string_nonempty}
+      - {name: initial_branch_id, type: string_nonempty}
+      - {name: session_version, type: positive_int}
+  - name: RunLaunchCommandResult
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: branch_id, type: string_nonempty}
+      - {name: trigger_message_id, type: string_nonempty}
+      - {name: assistant_message_id, type: string_nonempty}
+      - {name: launch_id, type: string_nonempty}
+      - {name: proposed_run_id, type: string_nonempty}
+      - {name: session_version, type: positive_int}
+      - {name: branch_version, type: positive_int}
+  - name: BranchCommandResult
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: branch_id, type: string_nonempty}
+      - {name: active_leaf_message_id, type: string_nonempty, nullable: true}
+      - {name: session_version, type: positive_int}
+      - {name: branch_version, type: positive_int}
+  - name: CancellationCommandResult
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: run_id, type: string_nonempty}
+      - {name: decision_id, type: string_nonempty}
+      - {name: run_projection_version, type: positive_int}
+  - name: SessionMutationCommandResult
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: session_version, type: positive_int}
+      - {name: lifecycle, type: enum:session_lifecycle}
+  - name: FolderUpdatedCommandResult
+    fields:
+      - {name: folder_id, type: string_nonempty}
+      - {name: project_ref, type: string_nonempty}
+      - {name: folder_version, type: positive_int}
+  - name: FolderDeletedCommandResult
+    fields:
+      - {name: folder_id, type: string_nonempty}
+      - {name: project_ref, type: string_nonempty}
+  - name: PreferenceCommandResult
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: pinned, type: boolean}
+      - {name: folder_id, type: string_nonempty, nullable: true}
+      - {name: preference_version, type: positive_int}
+  - name: SessionCommandEffect
+    discriminator: kind
+    common_fields: []
+    variants:
+      - {value: session-created, payload_type: object:SessionCreatedCommandResult}
+      - {value: run-launch-created, payload_type: object:RunLaunchCommandResult}
+      - {value: branch-updated, payload_type: object:BranchCommandResult}
+      - {value: cancellation-requested, payload_type: object:CancellationCommandResult}
+      - {value: session-updated, payload_type: object:SessionMutationCommandResult}
+      - {value: preference-updated, payload_type: object:PreferenceCommandResult}
+      - {value: folder-updated, payload_type: object:FolderUpdatedCommandResult}
+      - {value: folder-deleted, payload_type: object:FolderDeletedCommandResult}
+  - name: CommandRecoveryPayload
+    fields:
+      - {name: retry_class, type: enum:retry_class}
+      - {name: action, type: enum:repair_action}
+      - {name: retry_after_ms, type: nonnegative_int, optional: true}
+  - name: CommandReceiptView
+    discriminator: status
+    effect_kind_by_operation:
+      create_session: session-created
+      submit_message: run-launch-created
+      edit_message: run-launch-created
+      regenerate_message: run-launch-created
+      fork_branch: branch-updated
+      activate_branch: branch-updated
+      cancel_run: cancellation-requested
+      update_session: session-updated
+      archive_session: session-updated
+      restore_session: session-updated
+      trash_session: session-updated
+      put_preference: preference-updated
+      create_folder: folder-updated
+      update_folder: folder-updated
+      delete_folder: folder-deleted
+    common_fields:
+      - {name: operation, type: enum:browser_command_operation}
+      - {name: command_id, type: entity_id}
+      - {name: idempotency_key, type: idempotency_key}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: request_digest, type: sha256}
+      - {name: updated_at, type: timestamp}
+    variants:
+      - {value: pending, payload_type: object:CommandRecoveryPayload}
+      - {value: outcome_unknown, payload_type: object:CommandRecoveryPayload}
+      - {value: accepted, payload_type: object:SessionCommandEffect}
+      - {value: applied, payload_type: object:SessionCommandEffect}
+      - {value: denied, payload_type: object:ErrorDetail}
+  - name: CommandReceiptLookupQuery
+    fields:
+      - {name: operation, type: enum:browser_command_operation}
+      - {name: idempotency_key, type: idempotency_key}
+      - {name: digest_algorithm, type: literal:SHA256_CANONICAL_JSON_V1}
+      - {name: request_digest, type: sha256}
+  - name: SessionCommandResponse
+    fields:
+      - {name: command_receipt, type: object:CommandReceiptView}
+  - name: TextSpan
+    fields:
+      - {name: text, type: string}
+  - name: TextPartPayload
+    fields:
+      - {name: spans, type: array:object:TextSpan}
+  - name: ReasoningPartPayload
+    fields:
+      - {name: safe_summary, type: string}
+  - name: CitationPartPayload
+    fields:
+      - {name: source_ref, type: string_nonempty}
       - {name: title, type: string_nonempty}
-      - {name: owner_id, type: string_nonempty}
-      - {name: created_at, type: string_nonempty}
-      - {name: updated_at, type: string_nonempty}
+      - {name: locator, type: string_nonempty, optional: true}
+      - {name: attribution, type: string_nonempty, optional: true}
+  - name: ToolCallPartPayload
+    fields:
+      - {name: tool_label, type: string_nonempty}
+      - {name: input_summary, type: record}
+      - {name: status, type: string_nonempty}
+      - {name: effect_ref, type: string_nonempty, optional: true}
+      - {name: receipt_ref, type: string_nonempty, optional: true}
+  - name: ActionPartPayload
+    fields:
+      - {name: owner_ref, type: string_nonempty}
+      - {name: expected_version, type: positive_int}
+      - {name: deadline, type: timestamp, optional: true}
+      - {name: allowed_actions, type: array:string_nonempty}
+      - {name: receipt_ref, type: string_nonempty, optional: true}
+      - {name: status, type: string_nonempty}
+  - name: PlanStep
+    fields:
+      - {name: step_ref, type: string_nonempty}
+      - {name: label, type: string_nonempty}
+      - {name: status, type: string_nonempty}
+  - name: PlanPartPayload
+    fields:
+      - {name: plan_proposal_ref, type: string_nonempty}
+      - {name: steps, type: array:object:PlanStep}
+  - name: OwnerProjectionPartPayload
+    fields:
+      - {name: owner_ref, type: string_nonempty}
+      - {name: status, type: string_nonempty}
+      - {name: safe_metadata, type: record}
+  - name: CostPartPayload
+    fields:
+      - {name: cost_projection_ref, type: string_nonempty}
+      - {name: status, type: enum:cost_status}
+      - {name: amount, type: string_nonempty, optional: true}
+      - {name: currency_or_credit_unit, type: string_nonempty, optional: true}
+      - {name: freshness, type: timestamp}
+  - name: NoticePartPayload
+    fields:
+      - {name: code, type: string_nonempty}
+      - {name: message, type: string_nonempty}
+      - {name: retry_class, type: enum:retry_class}
+      - {name: support_correlation_ref, type: string_nonempty, optional: true}
+  - name: UnsupportedPartPayload
+    fields:
+      - {name: original_kind, type: string_nonempty}
+      - {name: original_schema_version, type: positive_int}
+      - {name: safe_fallback, type: string_nonempty}
+  - name: MessagePartEnvelope
+    discriminator: kind
+    common_fields:
+      - {name: part_id, type: string_nonempty}
+      - {name: message_id, type: string_nonempty}
+      - {name: ordinal, type: nonnegative_int}
+      - {name: version, type: positive_int}
+    variants:
+      - {value: text, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:TextPartPayload}
+      - {value: reasoning, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ReasoningPartPayload}
+      - {value: citation, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:CitationPartPayload}
+      - {value: tool-call, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ToolCallPartPayload}
+      - {value: approval, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ActionPartPayload}
+      - {value: interaction, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ActionPartPayload}
+      - {value: plan, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:PlanPartPayload}
+      - {value: job, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:OwnerProjectionPartPayload}
+      - {value: artifact, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:OwnerProjectionPartPayload}
+      - {value: cost, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:CostPartPayload}
+      - {value: notice, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:NoticePartPayload}
+      - {value: error, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:NoticePartPayload}
+      - {value: unsupported, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: literal:unsupported}], payload_type: object:UnsupportedPartPayload}
+  - name: AttachmentSafeRef
+    fields:
+      - {name: ordinal, type: nonnegative_int}
+      - {name: asset_ref, type: string_nonempty}
+      - {name: asset_version_ref, type: string_nonempty}
+      - {name: asset_grant_ref, type: string_nonempty}
+      - {name: readiness, type: string_nonempty}
+      - {name: media_type, type: string_nonempty}
+      - {name: display_name, type: string_nonempty}
+      - {name: size_bytes, type: nonnegative_int}
   - name: MessageRecord
     fields:
       - {name: message_id, type: string_nonempty}
+      - {name: branch_id, type: string_nonempty}
+      - {name: parent_message_id, type: string_nonempty, optional: true}
       - {name: role, type: enum:message_role}
-      - {name: content, type: string}
-      - {name: status, type: enum:message_status}
-      - {name: created_at, type: string_nonempty}
+      - {name: ordinal, type: nonnegative_int}
+      - {name: trigger_message_id, type: string_nonempty, optional: true}
       - {name: run_id, type: string_nonempty, optional: true}
-  - name: ActiveRun
+      - {name: lifecycle, type: enum:message_lifecycle}
+      - {name: parts, type: array:object:MessagePartEnvelope}
+      - {name: attachments, type: array:object:AttachmentSafeRef}
+      - {name: created_at, type: timestamp}
+  - name: ConversationBranch
     fields:
-      - {name: run_id, type: string_nonempty}
-      - {name: status, type: string_nonempty}
-  - name: PendingPause
+      - {name: branch_id, type: string_nonempty}
+      - {name: parent_branch_id, type: string_nonempty, optional: true}
+      - {name: forked_from_message_id, type: string_nonempty, optional: true}
+      - {name: root_message_id, type: string_nonempty, optional: true}
+      - {name: leaf_message_id, type: string_nonempty, optional: true}
+      - {name: origin, type: enum:branch_origin}
+      - {name: version, type: positive_int}
+      - {name: created_at, type: timestamp}
+  - name: SessionMetadata
     fields:
-      - {name: pause_id, type: string_nonempty}
-      - {name: run_id, type: string_nonempty}
-      - {name: tool_id, type: string_nonempty}
-      - {name: segment_id, type: string_nonempty}
-      - {name: tool_name, type: string_nonempty}
-      - {name: kind, type: enum:awaiting_kind}
-      - {name: args, type: record}
-      - {name: description, type: string}
-      - {name: allowed_decisions, type: array:enum:resume_decision}
-      - {name: risk, type: object:Risk, optional: true}
-      - {name: editable, type: boolean}
-      - {name: input_schema, type: record, optional: true}
-      - {name: result, type: string, optional: true}
-      - {name: status, type: enum:pause_status}
-      - {name: decision, type: record, optional: true}
-      - {name: created_at, type: string_nonempty}
-      - {name: resolved_at, type: string_nonempty, optional: true}
-  - name: WorkspaceFile
-    fields:
-      - {name: path, type: string_nonempty}
-      - {name: mime, type: string_nonempty}
-      - {name: bytes, type: int}
-  # 成果（deliver 冻结件）读模型：内容寻址,永不漂移;下载走 delivery_content 端点。
-  - name: Delivery
-    fields:
-      - {name: content_hash, type: string_nonempty}
-      - {name: path, type: string_nonempty}
-      - {name: title, type: string_nonempty}
-      - {name: mime, type: string_nonempty}
-      - {name: size, type: int}
-      - {name: run_id, type: string_nonempty}
-      - {name: created_at, type: string_nonempty}
-  # ARTIFACT-LIB(Wave4):跨会话作品库读模型——namespace 维度聚合 deliveries(内容寻址,同 hash
-  # 跨会话收敛一条,session_id=最近一次交付归属,便于回跳)。
-  - name: ArtifactRecord
-    fields:
-      - {name: content_hash, type: string_nonempty}
       - {name: session_id, type: string_nonempty}
+      - {name: project_ref, type: string_nonempty}
       - {name: title, type: string_nonempty}
-      - {name: mime, type: string_nonempty}
-      - {name: size, type: int}
-      - {name: created_at, type: string_nonempty}
-  - name: ArtifactList
+      - {name: lifecycle, type: enum:session_lifecycle}
+      - {name: active_branch_id, type: string_nonempty}
+      - {name: active_leaf_message_id, type: string_nonempty, optional: true}
+      - {name: version, type: positive_int}
+      - {name: created_at, type: timestamp}
+      - {name: updated_at, type: timestamp}
+  - name: RunLaunchProjection
     fields:
-      - {name: artifacts, type: array:object:ArtifactRecord}
-      - {name: next_cursor, type: string_nonempty, optional: true}
-  # 会话列表项(服务端化的 rail 数据源;线程内容仍走 snapshot+回放)。
+      - {name: launch_id, type: string_nonempty}
+      - {name: branch_id, type: string_nonempty}
+      - {name: trigger_message_id, type: string_nonempty}
+      - {name: proposed_run_id, type: string_nonempty}
+      - {name: status, type: enum:launch_status}
+      - {name: command_receipt_ref, type: string_nonempty}
+      - {name: manifest_ref, type: string_nonempty, optional: true}
+      - {name: failure_code, type: string_nonempty, optional: true}
+      - {name: version, type: positive_int}
+      - {name: updated_at, type: timestamp}
+  - name: RunView
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: launch_id, type: string_nonempty}
+      - {name: branch_id, type: string_nonempty}
+      - {name: assistant_message_id, type: string_nonempty}
+      - {name: execution_status, type: enum:execution_status}
+      - {name: cost_status, type: enum:cost_status}
+      - {name: terminal_outcome, type: string_nonempty, optional: true}
+      - {name: last_durable_cursor, type: string_nonempty}
+      - {name: projection_version, type: positive_int}
+  - name: ControlProjection
+    fields:
+      - {name: decision_id, type: string_nonempty}
+      - {name: run_id, type: string_nonempty}
+      - {name: kind, type: string_nonempty}
+      - {name: status, type: enum:control_status}
+      - {name: command_receipt_ref, type: string_nonempty}
+      - {name: updated_at, type: timestamp}
+  - name: RunCostProjection
+    fields:
+      - {name: run_id, type: string_nonempty}
+      - {name: cost_status, type: enum:cost_status}
+      - {name: estimate, type: string_nonempty, optional: true}
+      - {name: rated_amount, type: string_nonempty, optional: true}
+      - {name: currency_or_credit_unit, type: string_nonempty, optional: true}
+      - {name: rating_snapshot_ref, type: string_nonempty, optional: true}
+      - {name: usage_evidence_refs, type: array:string_nonempty}
+      - {name: freshness, type: timestamp}
+  - name: CapabilityDisplaySnapshot
+    fields:
+      - {name: capability_snapshot_ref, type: string_nonempty}
+      - {name: agent_label, type: string_nonempty, optional: true}
+      - {name: skill_labels, type: array:string_nonempty}
+      - {name: mcp_labels, type: array:string_nonempty}
+      # Historical display facts come from the immutable admission snapshot;
+      # current package availability belongs to Platform capability catalog reads.
+      - {name: source, type: literal:admission_snapshot}
+  - name: ModelDisplaySnapshot
+    fields:
+      - {name: model_option_revision_ref, type: string_nonempty}
+      - {name: label, type: string_nonempty}
+      - {name: effort, type: effort, optional: true}
+  - name: SnapshotWatermark
+    fields:
+      - {name: cursor, type: string_nonempty}
+      - {name: stream_epoch, type: string_nonempty}
+      # Decimal uint64 string avoids JS number truncation while preserving exact ordering.
+      - {name: durable_seq, type: uint64_string}
+      - {name: projection_version, type: positive_int}
+  - name: SessionSnapshot
+    fields:
+      - {name: session, type: object:SessionMetadata}
+      - {name: branches, type: array:object:ConversationBranch}
+      - {name: messages, type: array:object:MessageRecord}
+      - {name: run_launches, type: array:object:RunLaunchProjection}
+      - {name: runs, type: array:object:RunView}
+      - {name: controls, type: array:object:ControlProjection}
+      - {name: costs, type: array:object:RunCostProjection}
+      - {name: capability_display, type: object:CapabilityDisplaySnapshot, optional: true}
+      - {name: model_history, type: array:object:ModelDisplaySnapshot}
+      - {name: snapshot_watermark, type: object:SnapshotWatermark}
+      - {name: next_page_cursor, type: string_nonempty, optional: true}
   - name: SessionListItem
     fields:
-      - {name: session_id, type: string_nonempty}
-      - {name: title, type: string_nonempty}
-      - {name: updated_at, type: string_nonempty}
+      - {name: session, type: object:SessionMetadata}
+      - {name: pinned, type: boolean}
+      - {name: folder_id, type: string_nonempty, optional: true}
+      - {name: safe_text_highlight, type: string, optional: true}
   - name: SessionList
     fields:
       - {name: sessions, type: array:object:SessionListItem}
-      # 复合游标(updated_at+session_id 稳定分页);缺席=没有下一页。
+      - {name: index_watermark, type: string_nonempty}
       - {name: next_cursor, type: string_nonempty, optional: true}
-  # MODEL-UX(Wave4):模型候选窄读——session 按信封 namespace 出「可选且可用」列表
-  # (profile.allowed 展示过滤 ∩ platform resolve 可用性权威,MODEL-SOURCE 定案)。
-  # 字段最小面(D1 拒投机):provider/name 即 wire ModelConfig 的引用键;is_default=缺省高亮。
-  - name: ModelCandidate
+  - name: ListSessionsQuery
     fields:
-      - {name: provider, type: string_nonempty}
+      - {name: project_ref, type: opaque_ref}
+      - {name: q, type: search_query, optional: true}
+      - {name: lifecycle, type: enum:session_lifecycle, optional: true}
+      - {name: folder_id, type: entity_id, optional: true}
+      - {name: pinned, type: boolean, optional: true}
+      - {name: sort, type: enum:session_sort, optional: true}
+      - {name: cursor, type: opaque_cursor, optional: true}
+      - {name: limit, type: page_limit, optional: true}
+  - name: SnapshotQuery
+    # The first page contains the complete active Branch and every active card.
+    # Cursor pages contain only immutable historical Branch projection rows at
+    # the first page's watermark; cursor scope/version drift requires a refetch.
+    fields:
+      - {name: cursor, type: opaque_cursor, optional: true}
+      - {name: limit, type: page_limit, optional: true}
+  - name: StreamQuery
+    fields:
+      - {name: after, type: opaque_cursor, optional: true}
+  - name: CreateSessionRequest
+    fields:
+      - {name: project_ref, type: opaque_ref}
+      - {name: command, type: object:CommandIdentity}
+      - {name: title, type: title, optional: true}
+  - name: AttachmentIntent
+    fields:
+      - {name: asset_ref, type: opaque_ref}
+      - {name: asset_version_ref, type: opaque_ref}
+      - {name: asset_grant_ref, type: opaque_ref}
+  - name: UserTextInputPayload
+    fields:
+      - {name: text, type: input_text}
+  - name: MessageInputPart
+    discriminator: kind
+    common_fields:
+      - {name: schema_version, type: literal_int:1}
+    variants:
+      - {value: text, payload_type: object:UserTextInputPayload}
+  - name: SubmitMessageRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_session_version, type: positive_int}
+      - {name: branch_id, type: entity_id}
+      - {name: parent_message_id, type: entity_id, nullable: true}
+      - {name: trusted_locale, type: trusted_locale}
+      - {name: parts, type: array:object:MessageInputPart, min_items: 1, max_items: 64}
+      - {name: attachment_refs, type: array:object:AttachmentIntent, max_items: 64}
+      - {name: model_option_revision_ref, type: opaque_ref}
+      - {name: effort, type: effort, optional: true}
+      - {name: requested_agent_option_ref, type: opaque_ref, optional: true}
+      - {name: requested_skill_option_refs, type: array:opaque_ref, max_items: 64, optional: true}
+      - {name: requested_mcp_option_refs, type: array:opaque_ref, max_items: 64, optional: true}
+  - name: EditMessageRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_session_version, type: positive_int}
+      - {name: expected_branch_version, type: positive_int}
+      - {name: source_branch_id, type: entity_id}
+      - {name: source_message_id, type: entity_id}
+      - {name: parent_message_id, type: entity_id, nullable: true}
+      - {name: trusted_locale, type: trusted_locale}
+      - {name: replacement_parts, type: array:object:MessageInputPart, min_items: 1, max_items: 64}
+      - {name: replacement_attachment_refs, type: array:object:AttachmentIntent, max_items: 64}
+      - {name: model_option_revision_ref, type: opaque_ref}
+      - {name: effort, type: effort, optional: true}
+  - name: RegenerateMessageRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_session_version, type: positive_int}
+      - {name: expected_branch_version, type: positive_int}
+      - {name: source_branch_id, type: entity_id}
+      - {name: source_assistant_message_id, type: entity_id}
+      - {name: trigger_message_id, type: entity_id}
+      - {name: parent_message_id, type: entity_id, nullable: true}
+      - {name: trusted_locale, type: trusted_locale}
+      - {name: input_parts, type: array:object:MessageInputPart, min_items: 1, max_items: 64}
+      - {name: attachment_refs, type: array:object:AttachmentIntent, max_items: 64}
+      - {name: model_option_revision_ref, type: opaque_ref}
+      - {name: effort, type: effort, optional: true}
+  - name: BranchCommandRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_session_version, type: positive_int}
+      - {name: expected_branch_version, type: positive_int}
+  - name: SessionLifecycleCommandRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_session_version, type: positive_int}
+  - name: CancellationRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_run_projection_version, type: positive_int}
+      - {name: reason_code, type: reason_code}
+  - name: UpdateSessionRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_version, type: positive_int}
+      - {name: title, type: title}
+  - name: PreferenceRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_version, type: positive_int}
+      - {name: pinned, type: boolean}
+      - {name: folder_id, type: entity_id, nullable: true}
+  - name: CreateFolderRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: project_ref, type: opaque_ref}
+      - {name: name, type: folder_name}
+  - name: UpdateFolderRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_version, type: positive_int}
+      - {name: name, type: folder_name}
+  - name: FolderDeleteRequest
+    fields:
+      - {name: command, type: object:CommandIdentity}
+      - {name: expected_version, type: positive_int}
+  - name: FolderView
+    fields:
+      - {name: folder_id, type: string_nonempty}
+      - {name: project_ref, type: string_nonempty}
       - {name: name, type: string_nonempty}
-      - {name: is_default, type: boolean}
-      # 展示名(来自 kokoro-model 目录 label.displayName);缺省时前端回落 name。
-      - {name: display_name, type: string_nonempty, optional: true}
-  - name: ModelCandidateList
+      - {name: version, type: positive_int}
+  - name: FolderListQuery
     fields:
-      - {name: models, type: array:object:ModelCandidate}
-  # AGENT-PRESET web 半场(Wave4):具名 agent 候选窄读,同 /models 模式(profile.agents 派生;
-  # 无 profile 档=只有 general 缺省,web 隐选择器)。
-  - name: AgentCandidate
+      - {name: project_ref, type: opaque_ref}
+      - {name: cursor, type: opaque_cursor, optional: true}
+      - {name: limit, type: page_limit, optional: true}
+  - name: FolderList
     fields:
-      - {name: name, type: string_nonempty}
-      - {name: description, type: string_nonempty}
-      - {name: is_default, type: boolean}
-  - name: AgentCandidateList
-    fields:
-      - {name: agents, type: array:object:AgentCandidate}
-  # WEB-BILLING(Wave3):credit 余额/流水窄读,session 从 auth namespace 派生账户并代理。
-  # 金额一律微单位 bigint 序列化为字符串(credit 单源 balanceMicros 形状),换算归展示层。
-  - name: BillingSummary
-    fields:
-      - {name: balance_micros, type: string_nonempty}
-      - {name: held_micros, type: string_nonempty}
-      # 组织配额(微单位)与周期口径;null=未设配额(不限)。供用户面配额进度/低余额预警。
-      - {name: quota_micros, type: string_nonempty, nullable: true}
-      - {name: quota_period, type: string_nonempty, nullable: true}
-  - name: BillingLedgerEntry
-    fields:
-      - {name: entry_id, type: string_nonempty}
-      # 有符号微单位字符串:授予为正,扣费为负。
-      - {name: delta_micros, type: string_nonempty}
-      - {name: reason, type: string_nonempty}
-      - {name: created_at, type: int}
-      # 入账后余额快照(微单位):供用户面「余额趋势」逐点重建。
-      - {name: balance_after_micros, type: string_nonempty}
-      # 幂等键可解析出 run 时回填;否则 null(如人工调整)。
-      - {name: run_id, type: string_nonempty, optional: true, nullable: true}
-  - name: BillingLedger
-    fields:
-      - {name: entries, type: array:object:BillingLedgerEntry}
+      - {name: folders, type: array:object:FolderView}
       - {name: next_cursor, type: string_nonempty, optional: true}
-  # 按模型消费分解(B1d):model_binding_id=null→未归属。
-  - name: BillingByModelItem
-    fields:
-      - {name: model_binding_id, type: string_nonempty, nullable: true}
-      - {name: model_name, type: string_nonempty}
-      - {name: spent_micros, type: string_nonempty}
-      - {name: run_count, type: int}
-  - name: BillingByModel
-    fields:
-      # 统计周期起点(自然月 UTC,ISO 串)。
-      - {name: period_start, type: string_nonempty}
-      - {name: items, type: array:object:BillingByModelItem}
-  - name: SessionSnapshot
-    fields:
-      - {name: session, type: object:SessionMeta}
-      # M6 后半(裁决 2026-07-13):属主面省略(web 水合恒丢弃,线程唯一真源=事件回放);
-      # 公共 /shared 面必携(无回放面,这是其唯一内容源)。缺席=属主面,存在=分享面。
-      - {name: messages, type: array:object:MessageRecord, optional: true}
-      - {name: active_run, type: object:ActiveRun, optional: true}
-      - {name: pending_pauses, type: array:object:PendingPause}
-      # 会话工作区文件清单（真实目录 walk；工作区=真文件系统 backend，state 盘档为空列表）。
-      - {name: files, type: array:object:WorkspaceFile}
-      # 会话成果清单（delivery.created 投影;冻结件,与 files 的可变语义分开）。
-      - {name: deliveries, type: array:object:Delivery}
-      # server-internal high-water the snapshot folded to; web never sorts by it.
-      - {name: event_watermark, type: int}
 
 endpoints:
-  create_message:
-    method: POST
-    path_fn: messagesPath
-    path_template: "/sessions/{session_id}/messages"
-    params: [session_id]
-    status: 202
-    body_const: messageCreateParamsSchema
-    body:
-      - {name: idempotency_key, type: string_nonempty}
-      - {name: content, type: string_nonempty}
-      - {name: model, type: string_nonempty, optional: true}
-      - {name: agent, type: string_nonempty, optional: true}
-      - {name: thinking, type: boolean, optional: true}
-      # 会话级能力（仅首条消息生效并定死；后续消息带不同值 → 400 session_capabilities_locked）：
-      # pinned_skills=输入框强调集（授权池快照由 session 查 enabled 池自动完成,不上 wire）。
-      - {name: pinned_skills, type: array:string_nonempty, optional: true}
-      - {name: mcp_servers, type: array:string_nonempty, optional: true}
-    receipt_const: messageCreateReceiptSchema
-    receipt:
-      - {name: run_id, type: string_nonempty}
-      - {name: user_message_id, type: string_nonempty}
-      - {name: assistant_message_id, type: string_nonempty}
-  list_sessions:
-    method: GET
-    path_fn: sessionsPath
-    path_template: "/sessions"
-    params: []
-    response_const: sessionListSchema
-    response_object: SessionList
-    note: "属主会话列表(updated_at desc,软删不出);query limit/cursor 不进契约 path,由实现读 querystring。"
-  list_artifacts:
-    method: GET
-    path_fn: artifactsPath
-    path_template: "/artifacts"
-    params: []
-    response_const: artifactListSchema
-    response_object: ArtifactList
-    note: "ARTIFACT-LIB:属主 namespace 全部成果,created_at desc;query limit/cursor 同 list_sessions 注。"
-  artifact_content:
-    method: GET
-    path_fn: artifactContentPath
-    path_template: "/artifacts/{content_hash}"
-    params: [content_hash]
-    note: "跨会话冻结副本下载:内容寻址同 delivery_content 语义(immutable 可长缓存),namespace 守门。"
-  share_create:
-    method: POST
-    path_fn: sharePath
-    path_template: "/sessions/{session_id}/share"
-    params: [session_id]
-    status: 201
-    receipt_const: shareReceiptSchema
-    receipt:
-      - {name: share_id, type: string_nonempty}
-    note: "SHARE-1:同属主创建只读分享;share_id=不可枚举 capability id(shr_ 前缀);幂等=重复创建返同 id(未撤销时)。"
-  share_revoke:
-    method: DELETE
-    path_fn: sharePath
-    path_template: "/sessions/{session_id}/share"
-    params: [session_id]
-    note: "撤销分享:撤销后公共读 404;再创建=新 share_id(旧链接永久失效)。"
-  shared_snapshot:
-    method: GET
-    path_fn: sharedSnapshotPath
-    path_template: "/shared/{share_id}"
-    params: [share_id]
-    response_const: sessionSnapshotSchema
-    response_object: SessionSnapshot
-    note: "公共只读面(无 auth,capability URL 即权限):复用 SessionSnapshot 形状(已不含 namespace);pending_pauses 恒空数组(分享不暴露待批);不可枚举,撤销即 404。"
-  model_candidates:
-    method: GET
-    path_fn: modelCandidatesPath
-    path_template: "/models"
-    params: []
-    response_const: modelCandidateListSchema
-    response_object: ModelCandidateList
-    note: "MODEL-UX:候选=allowed∩可用;不可用不出列;空列表=只剩缺省档(web 隐选择器)。"
-  agent_candidates:
-    method: GET
-    path_fn: agentCandidatesPath
-    path_template: "/agents"
-    params: []
-    response_const: agentCandidateListSchema
-    response_object: AgentCandidateList
-    note: "AGENT-PRESET:候选=profile.agents+general 缺省(is_default);首条锁语义同 model/mcp。"
-  billing_summary:
-    method: GET
-    path_fn: billingSummaryPath
-    path_template: "/billing/summary"
-    params: []
-    response_const: billingSummarySchema
-    response_object: BillingSummary
-    note: "WEB-BILLING:账户按已验 namespace 派生(路径不收参);无账户=零额(不隐式建账)。"
-  billing_ledger:
-    method: GET
-    path_fn: billingLedgerPath
-    path_template: "/billing/ledger"
-    params: []
-    response_const: billingLedgerSchema
-    response_object: BillingLedger
-    note: "WEB-BILLING:流水 created_at desc;query limit/cursor 同 list_sessions 注。"
-  billing_by_model:
-    method: GET
-    path_fn: billingByModelPath
-    path_template: "/billing/by-model"
-    params: []
-    response_const: billingByModelSchema
-    response_object: BillingByModel
-    note: "B1d:本周期按模型消费分解。"
-  snapshot:
-    method: GET
-    path_fn: snapshotPath
-    path_template: "/sessions/{session_id}"
-    params: [session_id]
-    response_const: sessionSnapshotSchema
-    response_object: SessionSnapshot
-  delivery_content:
-    method: GET
-    path_fn: deliveryPath
-    path_template: "/sessions/{session_id}/deliveries/{content_hash}"
-    params: [session_id, content_hash]
-    note: "成果冻结副本下载：内容寻址（改/删源文件不影响）；content-type 按记录 mime，immutable 可长缓存。"
-  stream:
-    method: GET
-    path_fn: eventsPath
-    path_template: "/sessions/{session_id}/events"
-    params: [session_id]
-    note: "SSE; Last-Event-ID header carries the last seq the client saw (illegal => snapshot replay)."
-  file:
-    method: GET
-    path_fn: filePath
-    path_template: "/sessions/{session_id}/files/{path}"
-    params: [session_id, path]
-    note: "工作区文件字节：content-type 按扩展名，路径含 '/' 须逐段编码；穿越/不存在 => 404。文件可变（agent 迭代），不设 immutable 缓存。"
-  control_receipt:
-    method: GET
-    path_fn: controlReceiptPath
-    path_template: "/sessions/{session_id}/runs/{run_id}/control/{decision_id}"
-    params: [session_id, run_id, decision_id]
-    receipt_const: controlReceiptViewSchema
-    receipt:
-      - {name: decision_id, type: string_nonempty}
-      - {name: status, type: enum:control_receipt_view_status}
-    note: "R2 回执查询:{decision_id,status: pending|persisted|applied|failed};同属主守门同 snapshot。"
-  run_control:
-    method: POST
-    path_fn: controlPath
-    path_template: "/sessions/{session_id}/runs/{run_id}/control"
-    params: [session_id, run_id]
-    status: 202
-    body_const: runControlBodySchema   # discriminated on kind; decision_id = idempotency guard
-    receipt_const: runControlReceiptSchema
-    receipt:
-      - {name: ok, type: literal_true}
-  rename_session:
-    method: PATCH
-    path_fn: renameSessionPath
-    path_template: "/sessions/{session_id}/title"
-    params: [session_id]
-    body_const: renameSessionBodySchema
-    body:
-      - {name: title, type: string_nonempty}
-    receipt_const: renameSessionReceiptSchema
-    receipt:
-      - {name: ok, type: literal_true}
-    note: "CONV-UX(Wave5):同属主重命名;keep-first 语义解除(title 显式改写);软删/不存在=404;长度上限实现层定(422)。"
-  delete_session:
-    method: DELETE
-    path_template: "/sessions/{session_id}"   # 与 snapshot 同路径（snapshotPath 复用），无新 path fn
-    params: [session_id]
-    status: 202
-    receipt_const: deleteSessionReceiptSchema
-    receipt:
-      # 恒为 "deleted"：软删除即时完成（technical/16）；幂等——重复删除/不存在同响应。
-      - {name: status, type: string_nonempty}
+  create_session: {method: POST, path_fn: sessionsPath, path_template: "/v1/sessions", params: [], status: 201, request_object: CreateSessionRequest, response_object: SessionCommandResponse}
+  list_sessions: {method: GET, path_fn: sessionsPath, path_template: "/v1/sessions", params: [], status: 200, query_object: ListSessionsQuery, response_object: SessionList}
+  snapshot: {method: GET, path_fn: snapshotPath, path_template: "/v1/sessions/{session_id}/snapshot", params: [session_id], status: 200, query_object: SnapshotQuery, response_object: SessionSnapshot}
+  stream: {method: GET, path_fn: eventsPath, path_template: "/v1/sessions/{session_id}/events", params: [session_id], status: 200, query_object: StreamQuery, protocol: sse}
+  submit_message: {method: POST, path_fn: messagesPath, path_template: "/v1/sessions/{session_id}/messages", params: [session_id], status: 202, request_object: SubmitMessageRequest, response_object: SessionCommandResponse}
+  edit_message: {method: POST, path_fn: editMessagePath, path_template: "/v1/sessions/{session_id}/messages/{message_id}:edit", params: [session_id, message_id], status: 202, request_object: EditMessageRequest, response_object: SessionCommandResponse}
+  regenerate_message: {method: POST, path_fn: regenerateMessagePath, path_template: "/v1/sessions/{session_id}/messages/{message_id}:regenerate", params: [session_id, message_id], status: 202, request_object: RegenerateMessageRequest, response_object: SessionCommandResponse}
+  fork_branch: {method: POST, path_fn: forkBranchPath, path_template: "/v1/sessions/{session_id}/branches/{branch_id}:fork", params: [session_id, branch_id], status: 202, request_object: BranchCommandRequest, response_object: SessionCommandResponse}
+  activate_branch: {method: POST, path_fn: activateBranchPath, path_template: "/v1/sessions/{session_id}/branches/{branch_id}:activate", params: [session_id, branch_id], status: 202, request_object: BranchCommandRequest, response_object: SessionCommandResponse}
+  cancel_run: {method: POST, path_fn: cancellationPath, path_template: "/v1/sessions/{session_id}/runs/{run_id}:cancel", params: [session_id, run_id], status: 202, request_object: CancellationRequest, response_object: SessionCommandResponse}
+  get_command_receipt: {method: GET, path_fn: commandReceiptPath, path_template: "/v1/session-commands/{command_id}/receipt", params: [command_id], status: 200, query_object: CommandReceiptLookupQuery, response_object: SessionCommandResponse, authorization: subject-site-command-receipt-grant}
+  update_session: {method: PATCH, path_fn: sessionPath, path_template: "/v1/sessions/{session_id}", params: [session_id], status: 202, request_object: UpdateSessionRequest, response_object: SessionCommandResponse}
+  archive_session: {method: POST, path_fn: archiveSessionPath, path_template: "/v1/sessions/{session_id}:archive", params: [session_id], status: 202, request_object: SessionLifecycleCommandRequest, response_object: SessionCommandResponse}
+  restore_session: {method: POST, path_fn: restoreSessionPath, path_template: "/v1/sessions/{session_id}:restore", params: [session_id], status: 202, request_object: SessionLifecycleCommandRequest, response_object: SessionCommandResponse}
+  trash_session: {method: POST, path_fn: trashSessionPath, path_template: "/v1/sessions/{session_id}:trash", params: [session_id], status: 202, request_object: SessionLifecycleCommandRequest, response_object: SessionCommandResponse}
+  put_preference: {method: PUT, path_fn: preferencePath, path_template: "/v1/sessions/{session_id}/preference", params: [session_id], status: 202, request_object: PreferenceRequest, response_object: SessionCommandResponse}
+  list_folders: {method: GET, path_fn: foldersPath, path_template: "/v1/session-folders", params: [], status: 200, query_object: FolderListQuery, response_object: FolderList}
+  create_folder: {method: POST, path_fn: foldersPath, path_template: "/v1/session-folders", params: [], status: 201, request_object: CreateFolderRequest, response_object: SessionCommandResponse}
+  update_folder: {method: PATCH, path_fn: folderPath, path_template: "/v1/session-folders/{folder_id}", params: [folder_id], status: 202, request_object: UpdateFolderRequest, response_object: SessionCommandResponse}
+  delete_folder: {method: DELETE, path_fn: folderPath, path_template: "/v1/session-folders/{folder_id}", params: [folder_id], status: 202, request_object: FolderDeleteRequest, response_object: SessionCommandResponse}
 
-error_const: errorResponseSchema
-error:
-  - {name: error, type: string_nonempty}
+error_const: errorEnvelopeSchema
+error_object: ErrorEnvelope

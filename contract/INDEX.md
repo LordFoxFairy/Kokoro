@@ -9,7 +9,7 @@ owners:
 
 ## Responsibilities
 
-Own versioned protobuf and legacy compatibility schemas plus deterministic generation inputs.
+Own versioned protobuf, OpenAPI, and legacy compatibility schemas plus deterministic generation inputs.
 
 ## Non-responsibilities
 
@@ -17,7 +17,8 @@ This directory does not implement providers, consumers, retries, authentication 
 
 ## Public boundary
 
-`proto/`, `spec/`, `buf.yaml`, `buf.gen.yaml`, and the generation/check commands documented in [`README.md`](README.md) form the public boundary.
+`proto/`, `openapi/`, `spec/`, `buf.yaml`, `buf.gen.yaml`, `generate.mjs`, `generate.py`,
+`generate-public-openapi.mjs`, and the generation/check commands documented in [`README.md`](README.md) form the public boundary.
 
 ## Callers and dependencies
 
@@ -30,6 +31,10 @@ Contracts describe wire data; they do not own persisted business records or emit
 ## Runtime and security
 
 Generation is deterministic and temporary check mode must not rewrite child working trees. Sensitive defaults are forbidden.
+The public Site client generator deliberately removes OpenAPI server locations and emits only strict request/response schemas,
+relative operation paths, exact success statuses, and contract metadata. One default generation updates the byte-identical Platform
+provider and Site Web consumer mirrors; an explicit `--output` is restricted to the system temporary directory. Site runtime binding
+resolves the actual Platform target.
 
 ## Idempotency, failure, and recovery
 
@@ -41,8 +46,11 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-Protobuf sources are authoritative for Admin Auth; older YAML schemas remain authoritative only for the legacy boundaries that still consume them.
+Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
+older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
+the explicit two-argument Zod record form so Zod 3 and Zod 4 consumers remain byte-identical during the toolchain transition.
 
 ## Verification
 
-Run `uv run pytest contract/tests -q`, `pnpm --dir contract run buf:lint`, and `node scripts/repository/check-generated-contracts.mjs`.
+Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract run buf:lint`,
+`pnpm --dir contract run openapi:generate:public`, and `node scripts/repository/check-generated-contracts.mjs`.

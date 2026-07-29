@@ -9,10 +9,29 @@ import { fileURLToPath } from "node:url";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
-const DEFAULT_MIRRORS = [
-  "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
-  "kokoro-web/apps/admin/lib/generated/contracts",
-];
+export const GENERATED_BOUNDARIES = Object.freeze([
+  Object.freeze({
+    id: "platform-admin-auth@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
+      "kokoro-web/apps/admin/lib/generated/contracts",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-admission@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated",
+      "kokoro-session/src/platform/generated",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-public@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/http/generated/platform-public",
+      "kokoro-web/packages/site-client/src/generated/platform-public",
+    ]),
+  }),
+]);
 
 export class GeneratedContractError extends Error {
   constructor(code, detail = "") {
@@ -78,13 +97,40 @@ export async function compareGeneratedMirror(expectedRoot, mirrorRoot, label) {
   }
 }
 
-async function generateToTemporaryDirectory(root, output) {
+export async function assertGeneratedMirrorTracked(root, mirror, label) {
+  const [repositoryName, ...relativeParts] = mirror.split("/");
+  if (!repositoryName || relativeParts.length === 0) {
+    throw new GeneratedContractError("generated_contract_repository_invalid", label);
+  }
+  const repository = resolve(root, repositoryName);
+  const relativeMirror = relativeParts.join("/");
+  const files = await listFiles(resolve(root, mirror));
+  let stdout;
+  try {
+    ({ stdout } = await execFileAsync(
+      "git",
+      ["-C", repository, "ls-files", "--", relativeMirror],
+      { cwd: root, timeout: 10_000, maxBuffer: 1024 * 1024 },
+    ));
+  } catch {
+    throw new GeneratedContractError("generated_contract_repository_invalid", label);
+  }
+  const tracked = new Set(stdout.split(/\r?\n/u).filter(Boolean));
+  const missing = files
+    .map((path) => `${relativeMirror}/${path}`)
+    .filter((path) => !tracked.has(path));
+  if (missing.length > 0) {
+    throw new GeneratedContractError("generated_contract_untracked", `${label}:${missing[0]}`);
+  }
+}
+
+async function generateToTemporaryDirectory(root, boundary, output) {
   const contract = resolve(root, "contract");
   const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
   try {
     await execFileAsync(
       command,
-      generationCommandArguments(contract, output),
+      generationCommandArguments(contract, boundary, output),
       { cwd: root, timeout: 120_000, maxBuffer: 1024 * 1024 },
     );
   } catch (error) {
@@ -93,17 +139,39 @@ async function generateToTemporaryDirectory(root, output) {
   }
 }
 
-export function generationCommandArguments(contract, output) {
-  return ["--dir", contract, "run", "buf:generate", "--output", output];
+export function generationCommandArguments(contract, boundary, output) {
+  if (boundary === "platform-public@v1") {
+    return [
+      "--dir",
+      contract,
+      "run",
+      "openapi:generate:public",
+      "--output",
+      output,
+    ];
+  }
+  return [
+    "--dir",
+    contract,
+    "run",
+    "buf:generate",
+    "--boundary",
+    boundary,
+    "--output",
+    output,
+  ];
 }
 
 export async function checkGeneratedContracts({ root }) {
   const temporary = await mkdtemp(resolve(tmpdir(), "kokoro-generated-contracts-"));
-  const output = resolve(temporary, "generated");
   try {
-    await generateToTemporaryDirectory(root, output);
-    for (const mirror of DEFAULT_MIRRORS) {
-      await compareGeneratedMirror(output, resolve(root, mirror), mirror);
+    for (const boundary of GENERATED_BOUNDARIES) {
+      const output = resolve(temporary, boundary.id);
+      await generateToTemporaryDirectory(root, boundary.id, output);
+      for (const mirror of boundary.mirrors) {
+        await compareGeneratedMirror(output, resolve(root, mirror), `${boundary.id}:${mirror}`);
+        await assertGeneratedMirrorTracked(root, mirror, `${boundary.id}:${mirror}`);
+      }
     }
   } finally {
     await rm(temporary, { recursive: true, force: true });

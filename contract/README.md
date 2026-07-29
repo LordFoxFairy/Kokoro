@@ -30,9 +30,9 @@ the verified child commits through exact root gitlinks.
 
 - agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic;
   critical frames additionally carry `durable_seq`/`event_id` (R4, absent on live frames).
-- session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`
-  — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is
-  replaced by the synthetic session.created + run.created; internal-only raw kinds never project.
+- session -> web (browser): `{ kind, event_id, cursor, session_id, stream_epoch, durable_seq,
+  projection_version, schema_revision, recorded_at, payload }`; cursor is opaque and signed.
+  Browser events are owner-safe projection deltas; raw GA events never pass through directly.
 
 ## Raw events (agent -> session, 20)
 
@@ -59,31 +59,20 @@ the verified child commits through exact root gitlinks.
 | `run.completed` | status, token_usage? |
 | `run.failed` | code, error_kind, message |
 
-## Browser events (session -> web, 21)
+## Browser events (session -> web, 10)
 
 | kind | payload |
 | --- | --- |
-| `session.created` | title, owner_id |
-| `run.created` | run_id |
-| `message.user` | message_id, content |
-| `message.delta` | segment_id, delta |
-| `message.completed` | segment_id, content |
-| `thinking.delta` | segment_id, delta |
-| `tool.invoked` | segment_id, tool_id, name, args |
-| `tool.output.delta` | segment_id, tool_id, name, delta |
-| `tool.awaiting_approval` | segment_id, tool_id, name, args, description, allowed_decisions, kind, risk?, editable, input_schema?, pending_tool_ids, result? |
-| `tool.returned` | segment_id, tool_id, name, result, is_error, truncated?, rejected?, reject_reason?, responded?, summary? |
-| `delivery.created` | path, title, mime, size, content_hash, note? |
-| `todo.updated` | todos |
-| `subagent.started` | segment_id, subagent_id, name, description, subagent_type, source |
-| `subagent.finished` | segment_id, subagent_id, name, subagent_type, source, failed?, error? |
-| `subagent.thinking.delta` | segment_id, subagent_id, delta |
-| `subagent.text.delta` | segment_id, subagent_id, text |
-| `subagent.text.completed` | segment_id, subagent_id, text |
-| `subagent.tool.invoked` | segment_id, subagent_id, tool_id, name, args |
-| `subagent.tool.returned` | segment_id, subagent_id, tool_id, name, result, is_error, truncated? |
-| `run.completed` | status, token_usage? |
-| `run.failed` | code, error_kind, message |
+| `session.updated` | session |
+| `branch.created` | branch |
+| `branch.activated` | branch_id, active_leaf_message_id, session_version |
+| `message.created` | message |
+| `message.part.updated` | part |
+| `run.launch.updated` | launch |
+| `run.view.updated` | run |
+| `run.control.updated` | control |
+| `run.cost.updated` | cost |
+| `command.receipt.updated` | receipt |
 
 ## Control plane (session -> agent)
 
@@ -117,27 +106,27 @@ Consumer group `kokoro-agent`; BLOCK 1000ms; `event_id = {run_id}:{index}`; leas
 
 | method | path |
 | --- | --- |
-| POST | `/sessions/{session_id}/messages` |
-| GET | `/sessions` |
-| GET | `/artifacts` |
-| GET | `/artifacts/{content_hash}` |
-| POST | `/sessions/{session_id}/share` |
-| DELETE | `/sessions/{session_id}/share` |
-| GET | `/shared/{share_id}` |
-| GET | `/models` |
-| GET | `/agents` |
-| GET | `/billing/summary` |
-| GET | `/billing/ledger` |
-| GET | `/billing/by-model` |
-| GET | `/sessions/{session_id}` |
-| GET | `/sessions/{session_id}/deliveries/{content_hash}` |
-| GET | `/sessions/{session_id}/events` |
-| GET | `/sessions/{session_id}/files/{path}` |
-| GET | `/sessions/{session_id}/runs/{run_id}/control/{decision_id}` |
-| POST | `/sessions/{session_id}/runs/{run_id}/control` |
-| PATCH | `/sessions/{session_id}/title` |
-| DELETE | `/sessions/{session_id}` |
+| POST | `/v1/sessions` |
+| GET | `/v1/sessions` |
+| GET | `/v1/sessions/{session_id}/snapshot` |
+| GET | `/v1/sessions/{session_id}/events` |
+| POST | `/v1/sessions/{session_id}/messages` |
+| POST | `/v1/sessions/{session_id}/messages/{message_id}:edit` |
+| POST | `/v1/sessions/{session_id}/messages/{message_id}:regenerate` |
+| POST | `/v1/sessions/{session_id}/branches/{branch_id}:fork` |
+| POST | `/v1/sessions/{session_id}/branches/{branch_id}:activate` |
+| POST | `/v1/sessions/{session_id}/runs/{run_id}:cancel` |
+| GET | `/v1/session-commands/{command_id}/receipt` |
+| PATCH | `/v1/sessions/{session_id}` |
+| POST | `/v1/sessions/{session_id}:archive` |
+| POST | `/v1/sessions/{session_id}:restore` |
+| POST | `/v1/sessions/{session_id}:trash` |
+| PUT | `/v1/sessions/{session_id}/preference` |
+| GET | `/v1/session-folders` |
+| POST | `/v1/session-folders` |
+| PATCH | `/v1/session-folders/{folder_id}` |
+| DELETE | `/v1/session-folders/{folder_id}` |
 
-POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching
-idempotency_key against an active run returns 409 `session_run_active`.
-GET /sessions/:id returns the snapshot; SSE resumes from `Last-Event-ID` = last `seq`.
+Every mutation carries a command identity and returns a recoverable command receipt.
+GET /v1/sessions/:id/snapshot returns the complete projection; SSE resumes only from an opaque
+signed cursor supplied through Last-Event-ID (query `after` is the polyfill fallback).

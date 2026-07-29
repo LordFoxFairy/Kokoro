@@ -21,15 +21,11 @@ const BOUNDARIES = Object.freeze({
   "platform-admin-auth@v1": Object.freeze({
     schema: "kokoro.platform.admin.v1.AdminAuthService",
     version: 1,
-    inputs: Object.freeze([
-      "proto/kokoro/platform/admin/v1/admin_auth.proto",
-      "proto/kokoro/platform/admission/v1/admission.proto",
-    ]),
+    inputs: Object.freeze(["proto/kokoro/platform/admin/v1/admin_auth.proto"]),
     sources: Object.freeze([
       "kokoro/common/v1/error.proto",
       "kokoro/common/v1/receipt.proto",
       "kokoro/platform/admin/v1/admin_auth.proto",
-      "kokoro/platform/admission/v1/admission.proto",
     ]),
     helper: "admin-auth-effect-digest.ts",
     commandEnvelopeDigest: null,
@@ -85,6 +81,18 @@ const BOUNDARIES = Object.freeze({
     ]),
     helper: null,
     commandEnvelopeDigest: "site-lifecycle",
+  }),
+  "platform-admission@v1": Object.freeze({
+    schema: "kokoro.platform.admission.v1.AdmissionService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/admission/v1/admission.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/admission/v1/admission.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
   }),
 });
 

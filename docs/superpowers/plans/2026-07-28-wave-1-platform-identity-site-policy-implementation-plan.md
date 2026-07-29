@@ -6,7 +6,7 @@
 
 **Architecture:** Root remains contract, Infra, compatibility, BOM, and pin-promotion authority. `kokoro-platform` is one deployable bounded context using a PostgreSQL modular monolith: owner modules collaborate through application ports and a single opaque Unit of Work, while true remote systems use generated Connect/HTTP contracts plus durable intent/reconciliation. Each public Site is an independent Web repository/artifact/deployment that consumes signed app-kit and generated clients. W2A exclusively owns Redeem/Fulfillment/Credit facts; W3 owns Session admission and Chat Web runtime. GA remains an opaque namespace consumer and its existing control wire is frozen.
 
-**Tech Stack:** TypeScript 5.9, Node.js 22, pnpm 11, PostgreSQL 18, Prisma 7, ConnectRPC/Protobuf, OpenAPI 3.1, Next.js/Auth.js, Vitest, Node test runner, Playwright, Buf, Docker Compose (single shared default Infra lifecycle only).
+**Tech Stack:** TypeScript 5.9, Node.js 24, pnpm 11, PostgreSQL 18, Prisma 7, Zod 4 for new runtime boundaries, ConnectRPC/Protobuf, OpenAPI 3.1, Next.js/Auth.js, Vitest, Node test runner, Playwright, Buf, Docker Compose (single shared default Infra lifecycle only). Legacy Zod 3 consumers remain supported only through Root-generated cross-version-compatible mirrors until their owning cutover task removes them.
 
 ---
 
@@ -14,8 +14,8 @@
 
 - Root, `kokoro-platform`, and `kokoro-web` are separate repositories. Every task commits in its owning repository; only Task 20 promotes child pins in Root.
 - The single-writer DAG is fixed: Root `Task 0 → 1 → 2A`, then delayed `Task 2B` after PostgreSQL consumers are ready;
-  Platform `Task 3 → 4 → … → 17 → 19`; Web `Task 18` may run
-  after Task 1's generated-contract handoff; Task 20 joins the clean child commits. Exactly one worker owns each repository
+  Platform `Task 3 → 4 → … → 14 → 14B → 15 → 16 → 17 → 19`; Web package scaffolding in `Task 18` may run
+  after Task 1's generated-contract handoff, but its authenticated runtime journey requires Platform Task 14B; Task 20 joins the clean child commits. Exactly one worker owns each repository
   worktree/index/lockfile at a time. Tasks within `kokoro-platform` are serial; no Site/Identity/Admin/ModelControl parallel writes.
 - Tasks 1–19 MUST NOT start a private Docker/Compose stack. Unit and contract tests run without containers; PostgreSQL component tests reuse the single Root-managed default Infra instance through a leased database/role.
 - The Root integrator may perform only Task 2A's additive PostgreSQL candidate lifecycle, Task 2B's bounded default-Infra
@@ -122,7 +122,7 @@
 - Modify: `scripts/infra/INDEX.md`
 
 - [ ] Write failing tests for a digest-pinned PostgreSQL 18 candidate profile, separate Platform/Session databases and
-  runtime/migrator/test roles, safe leased cleanup, credential/persistent-volume auth-generation drift, sanitized deterministic
+  API/worker/migrator/test roles, safe leased cleanup, credential/persistent-volume auth-generation drift, sanitized deterministic
   inventory record/check receipts, and rejection of destructive Docker operations.
 - [ ] Add a regression test proving `platform` and `full` still select MySQL and that generic `ensure` never force-recreates a
   mismatched stateful stack. A scope mismatch must fail with an explicit-activation error.
@@ -130,7 +130,7 @@
   the missing additive profile, lease, drift gates, and inventory receipt behavior.
 - [ ] Add `postgres-transition` to the one Root-owned Compose project and policy. It is additive and
   `activationAuthorized=false`; do not edit the canonical `platform`/`full` MySQL membership in 2A.
-- [ ] Add explicit PostgreSQL-only leases for Platform/Session databases and bounded runtime/migrator/test roles while retaining
+- [ ] Add explicit PostgreSQL-only leases for Platform/Session databases and bounded API/worker/migrator/test roles while retaining
   current MySQL compatibility leases. PostgreSQL-only leases must not reserve Redis capacity.
 - [ ] Implement metadata-only inventory `--record <path>` / `--check <path>`, non-secret data/auth generation markers, and hard
   denials for prune/remove/down-with-volumes/orphan-removal. Never inspect container env or mount host paths.
@@ -431,6 +431,43 @@
 - [ ] Implement owner modules and activation workflow; external namespace allocation is a durable intent reconciled after commit, never a GA call in transaction.
 - [ ] Re-run targeted tests and architecture scans for W2A ownership violations.
 - [ ] Commit in Platform: `git add -- prisma/schema.prisma prisma/migrations/0004_personal_workspace/migration.sql src/modules/workspace/domain/personal-workspace.ts src/modules/workspace/application/services/bootstrap-personal-workspace.ts src/modules/workspace/infrastructure/postgres/workspace-repository.ts src/modules/commerce/domain/personal-billing-account.ts src/workflows/registration/activate-registration.ts test/component/personal-bootstrap.test.ts && git commit -m "feat(platform): bootstrap personal workspace atomically"`.
+
+### Task 14B: Implement ProductContext and SessionAccessGrant authorization
+
+**Repository:** `kokoro-platform`
+
+**Files:**
+
+- Modify: `prisma/schema.prisma`
+- Create: `prisma/migrations/20260728_session_access_authorization/migration.sql`
+- Create: `src/modules/authorization/domain/session-access-grant.ts`
+- Create: `src/modules/authorization/application/services/exchange-product-context.ts`
+- Create: `src/modules/authorization/application/services/issue-session-access-grant.ts`
+- Create: `src/modules/authorization/application/services/publish-session-authorization.ts`
+- Create: `src/modules/authorization/infrastructure/jose/session-access-grant-signer.ts`
+- Create: `src/modules/authorization/infrastructure/postgres/session-authorization-repository.ts`
+- Create: `src/interfaces/http/platform-public.ts`
+- Create: `test/security/session-access-grant.test.ts`
+- Create: `test/component/session-authorization-outbox.test.ts`
+- Create: `test/contract/platform-public-http.test.ts`
+
+- [ ] Write failing behavior tables for ProductWorkload+deployment resolution, artifact/release/contract mismatch, active Site/User/
+  AuthSession/ProjectMembership checks, four exact audiences, explicit project/session/run resource union, five-minute maximum TTL,
+  independent `grantRef`, issuer/kid/nbf/expiry, and every Site/AuthSession/Membership/authorization/restriction/credential/policy/
+  revocation epoch. Browser-provided Site/subject/namespace claims must be rejected rather than ignored.
+- [ ] Add race cases that revoke/suspend/transfer/bump any epoch between context exchange and grant issue; the issue transaction must
+  re-lock current owner rows and emit no credential on stale facts. Credential signing occurs only after a committed immutable grant
+  record exists; signing failure leaves a recoverable failed-delivery state, never an untracked live grant.
+- [ ] Implement production RS256 with a dedicated Authorization key ring and JWKS/pinned-public-key delivery; no HS256 production
+  fallback and no reuse of the UserSession signer key. Persist only grant metadata/digests, never raw credentials or private material.
+- [ ] In the same UoW as revoke/suspend/security mutation, bump the aggregate `revocationEpoch` and append a signed durable
+  authorization outbox event. Keep this owner separate from Admission: Admission may consume verified authorization facts but never
+  signs browser/session transport credentials.
+- [ ] Expose the Root-generated Platform public HTTP adapter with strict request/response schemas, `Cache-Control: no-store`,
+  workload+UserSession dual authentication, stable safe errors, request correlation, and bounded bodies. Prove credential/log/error
+  redaction and two-Site non-disclosure.
+- [ ] Run the three targeted suites, generated-public contract drift, lint, typecheck and dependency audit; then commit only these
+  paths. This task supplies Platform facts but does not declare Session's local revocation projection complete.
 
 ## Chunk 4 — Admin, Data Rights, Web products, and clean replacement
 

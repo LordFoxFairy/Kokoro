@@ -8,6 +8,7 @@ import { openApiOperations, readOpenApiDocument } from "./openapi-reader.mjs";
 
 const PUBLIC_OPERATIONS = new Map([
   ["exchangeProductContext", ["post", "/v1/product-context:exchange"]],
+  ["issueSessionAccessGrant", ["post", "/v1/session-access-grants"]],
   ["beginRegistration", ["post", "/v1/identity/registrations"]],
   ["completeEmailVerification", ["post", "/v1/identity/verifications/{id}:complete"]],
   ["resendEmailVerification", ["post", "/v1/identity/verifications:resend"]],
@@ -29,6 +30,14 @@ const PUBLIC_OPERATIONS = new Map([
   ["completeAccountRecovery", ["post", "/v1/identity/account-recoveries/{id}:complete"]],
   ["reauthenticateIdentitySession", ["post", "/v1/identity/sessions:reauthenticate"]],
   ["getPersonalContext", ["get", "/v1/me/personal-context"]],
+  ["previewRedemption", ["post", "/v1/redemptions:preview"]],
+  ["confirmRedemption", ["post", "/v1/redemptions:confirm"]],
+  ["recoverRedemptionCommand", ["get", "/v1/redemption-commands:recover"]],
+  ["getRedemptionReceipt", ["get", "/v1/redemptions/{id}"]],
+  ["listAccountProducts", ["get", "/v1/me/products"]],
+  ["getCreditSummary", ["get", "/v1/me/credits"]],
+  ["getCreditGrant", ["get", "/v1/me/credit-grants/{id}"]],
+  ["getUsageDetail", ["get", "/v1/me/usage/{id}"]],
   ["getPublicCommandReceipt", ["get", "/v1/commands/{id}/receipt"]],
 ]);
 
@@ -79,10 +88,10 @@ const PRIVILEGED = Object.freeze({
   },
 });
 
-const ADMISSION_SHA256 = "cfe855ad4acd481e1d1a21c3bf4d3baa4362f454b5723b76ffc57b8a8b58d583";
-// The Admission wire remains byte-frozen. Its registry metadata now names the already-published
-// GetCommandReceipt recovery operation so reconcile_receipt is machine-verifiable.
-const ADMISSION_REGISTRY_SHA256 = "60c41c28bbf1beddceac870d9b946ad4c238421927d87547775b02e192aafc75";
+// Wave 3 intentionally replaced the unused contract-only Admission v1 before any provider existed.
+// Keep the approved five-command shape and its registry declaration byte-frozen from this point.
+const ADMISSION_SHA256 = "3fbd4c9ff7c7a4f0dbf7b6313399a45360ae02e2ad43829f34698c4e2d4a1752";
+const ADMISSION_REGISTRY_SHA256 = "462730285d52aad2ce4ee2b8446d0b549c2084ae375cdaee427c025ba6e61c8b";
 
 function fail(errors, code) {
   errors.push(code);
@@ -151,7 +160,7 @@ function checkPublic(source, document, errors) {
   ) {
     fail(errors, "public_command_headers_missing");
   }
-  const requiredMutationParameters = new Set(["ContractVersion", "IdempotencyKey", "CsrfToken"]);
+  const nonIdempotentCredentialOperations = new Set(["issueSessionAccessGrant"]);
   for (const [operationId, { method, operation }] of parsed) {
     if (method !== "post") continue;
     const refs = new Set(
@@ -159,14 +168,109 @@ function checkPublic(source, document, errors) {
         .map((parameter) => parameter?.$ref?.split("/").at(-1))
         .filter(Boolean),
     );
-    if ([...requiredMutationParameters].some((parameter) => !refs.has(parameter))) {
+    const required = nonIdempotentCredentialOperations.has(operationId)
+      ? ["ContractVersion", "CsrfToken"]
+      : ["ContractVersion", "IdempotencyKey", "CsrfToken"];
+    if (required.some((parameter) => !refs.has(parameter))) {
       fail(errors, `public_mutation_header_policy_drift:${operationId}`);
+    }
+    if (
+      nonIdempotentCredentialOperations.has(operationId) &&
+      (refs.has("IdempotencyKey") || refs.has("CommandIdentity"))
+    ) {
+      fail(errors, `public_ephemeral_credential_replay_policy_drift:${operationId}`);
     }
   }
   const error = document.components?.schemas?.ErrorResponse;
   const errorFields = new Set(Object.keys(error?.properties ?? {}));
   for (const required of ["code", "retryClass", "requestId", "correlationId"]) {
     if (!errorFields.has(required)) fail(errors, `public_error_contract_missing:${required}`);
+  }
+  const grantOperation = parsed.get("issueSessionAccessGrant")?.operation;
+  if (
+    !grantOperation ||
+    !sameJson(grantOperation.security, [{ ProductWorkload: [], UserSession: [] }]) ||
+    !grantOperation.responses?.["201"]
+  ) {
+    fail(errors, "session_access_grant_operation_drift");
+  }
+  const schemas = document.components?.schemas ?? {};
+  const requiredProductAxes = new Set(schemas.ProductContext?.required ?? []);
+  for (const axis of [
+    "productContextRef", "siteProjectBindingRef", "deploymentRef", "siteRef", "siteReleaseRef",
+    "webArtifactDigest", "runtimeEnvironment", "region", "sessionContractRevision", "policyEpoch",
+    "revocationEpoch", "issuedAt", "expiresAt",
+  ]) {
+    if (!requiredProductAxes.has(axis)) fail(errors, `product_context_axis_missing:${axis}`);
+  }
+  const requiredGrantAxes = new Set(schemas.SessionAccessGrantBinding?.required ?? []);
+  for (const axis of [
+    "productContextRef", "siteProjectBindingRef", "deploymentRef", "siteRef", "siteReleaseRef",
+    "webArtifactDigest", "runtimeEnvironment", "region", "sessionContractRevision", "projectRef",
+    "subjectRef", "subjectGeneration", "identitySessionRef", "issuer", "keyRevision", "notBefore",
+    "siteSecurityEpoch", "identitySessionEpoch", "membershipEpoch", "authorizationEpoch",
+    "restrictionEpoch", "credentialEpoch", "policyEpoch", "revocationEpoch", "issuedAt", "expiresAt",
+  ]) {
+    if (!requiredGrantAxes.has(axis)) fail(errors, `session_access_grant_axis_missing:${axis}`);
+  }
+  const uint64 = schemas.PositiveUint64String;
+  if (
+    uint64?.type !== "string" ||
+    uint64?.minLength !== 1 ||
+    uint64?.maxLength !== 20 ||
+    uint64?.["x-kokoro-maximum"] !== "18446744073709551615"
+  ) {
+    fail(errors, "positive_uint64_contract_drift");
+  }
+  const resourceVariants = schemas.SessionGrantResource?.oneOf ?? [];
+  if (
+    resourceVariants.length !== 3 ||
+    !new Set(resourceVariants.map((item) => item.$ref?.split("/").at(-1))).has("SessionGrantRunResource") ||
+    !(schemas.SessionAccessGrantInput?.required ?? []).includes("resource") ||
+    !(schemas.SessionAccessGrantBinding?.required ?? []).includes("resource")
+  ) {
+    fail(errors, "session_access_grant_resource_binding_drift");
+  }
+  const authorizationVariants = schemas.SessionGrantAuthorization?.oneOf ?? [];
+  if (authorizationVariants.length !== 4) fail(errors, "session_access_grant_authorization_drift");
+  if (
+    schemas.SessionAccessGrant?.properties?.credential?.pattern !==
+    "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$"
+  ) {
+    fail(errors, "session_access_grant_credential_shape_drift");
+  }
+  if (!(schemas.PersonalContext?.required ?? []).includes("productContextRef")) {
+    fail(errors, "personal_context_product_binding_missing");
+  }
+  const previewInputFields = new Set(Object.keys(schemas.RedemptionPreviewInput?.properties ?? {}));
+  if (!sameJson([...previewInputFields].sort(), ["code"])) {
+    fail(errors, "redemption_preview_authority_drift");
+  }
+  const confirmInputFields = new Set(Object.keys(schemas.RedemptionConfirmInput?.properties ?? {}));
+  if (!sameJson([...confirmInputFields].sort(), ["legalAcceptanceRefs", "previewCredential"])) {
+    fail(errors, "redemption_confirm_authority_drift");
+  }
+  const forbiddenCommerceRequestFields = new Set([
+    "siteId", "siteRef", "billingAccountId", "owner", "ownerId", "price", "provider", "paymentId",
+  ]);
+  for (const schemaName of ["RedemptionPreviewInput", "RedemptionConfirmInput"]) {
+    const fields = Object.keys(schemas[schemaName]?.properties ?? {});
+    if (fields.some((field) => forbiddenCommerceRequestFields.has(field))) {
+      fail(errors, `commerce_browser_authority_forbidden:${schemaName}`);
+    }
+  }
+  const acquisitionKinds = schemas.AcquisitionSourceSummary?.properties?.kind?.enum ?? [];
+  if (
+    !sameJson(acquisitionKinds, ["redemption", "admin_grant", "program_window"]) ||
+    JSON.stringify(schemas).includes('"payment"')
+  ) {
+    fail(errors, "redeem_only_acquisition_contract_drift");
+  }
+  for (const code of [
+    "REDEEM_NOT_ACCEPTED", "REDEEM_TEMPORARILY_UNAVAILABLE", "IDEMPOTENCY_CONFLICT",
+    "ACQUISITION_CHANNEL_DISABLED",
+  ]) {
+    if (!(schemas.ErrorCode?.enum ?? []).includes(code)) fail(errors, `commerce_error_code_missing:${code}`);
   }
   for (const forbidden of [
     /x-kokoro-site-id/iu,
@@ -219,7 +323,7 @@ function checkRegistry(root, publicDocument, registry, errors) {
       fail(errors, `privileged_registry_drift:${id}`);
     }
   }
-  if (openApiOperations(publicDocument).size !== 23) fail(errors, "public_registry_source_count");
+  if (openApiOperations(publicDocument).size !== 32) fail(errors, "public_registry_source_count");
 
   const admission = registry.boundaries.find((boundary) => boundary.id === "platform-admission");
   if (digest(JSON.stringify(admission)) !== ADMISSION_REGISTRY_SHA256) fail(errors, "platform_admission_registry_changed");
@@ -278,7 +382,7 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 23 public operations, 4 privileged services, 5 contract-only boundaries\n");
+    process.stdout.write("wave1_surface_ok: 32 public operations, 4 privileged services, 5 contract-only boundaries\n");
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

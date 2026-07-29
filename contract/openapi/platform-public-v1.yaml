@@ -25,6 +25,28 @@ paths:
           $ref: '#/components/responses/ProductContextExchangeResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
+  /v1/session-access-grants:
+    post:
+      operationId: issueSessionAccessGrant
+      description: >-
+        Issues a short-lived, purpose-specific credential for the registered Session service. The
+        authenticated workload and UserSession are authoritative; Site, release, deployment,
+        artifact, subject, and generation are resolved by Platform and cannot be supplied by a
+        browser. A retry may issue another independently revocable grant and therefore callers must
+        never treat the credential as an idempotent command response.
+      parameters:
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CsrfToken'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/SessionAccessGrantRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/SessionAccessGrantResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/identity/registrations:
     post:
       operationId: beginRegistration
@@ -323,6 +345,136 @@ paths:
           $ref: '#/components/responses/PersonalContext'
         default:
           $ref: '#/components/responses/ErrorResponse'
+  /v1/redemptions:preview:
+    post:
+      operationId: previewRedemption
+      description: >-
+        Resolves a redeem Code without claiming or reserving it. Platform derives Site and
+        BillingAccount authority from the authenticated workload and user session. The response
+        contains only a short-lived opaque preview credential and safe immutable product terms;
+        it never echoes the Code or exposes inventory, HMAC, Batch, or lookup facts.
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/RedemptionPreviewRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RedemptionPreviewResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/redemptions:confirm:
+    post:
+      operationId: confirmRedemption
+      description: >-
+        Atomically claims the Code represented by a live preview credential and executes the
+        frozen Fulfillment output plan. The same command identity and idempotency key always
+        recover the same result; a different payload conflicts before any business lock or effect.
+        Platform revalidates every live Site, Program, Batch, Code, account, risk, and stacking fact
+        at the effect point and never creates a Payment acquisition.
+      parameters: *mutationParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      requestBody:
+        $ref: '#/components/requestBodies/RedemptionConfirmRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RedemptionCommandResponse'
+        '202':
+          $ref: '#/components/responses/RedemptionCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/redemption-commands:recover:
+    get:
+      operationId: recoverRedemptionCommand
+      description: >-
+        Recovers the caller's durable redemption command by the exact Idempotency-Key after a lost
+        or unknown HTTP response. Unknown, cross-Site, cross-subject, stale-generation, or
+        mismatched commands are indistinguishable. The operation never replays a Code or preview
+        credential.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/RedemptionCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/redemptions/{id}:
+    get:
+      operationId: getRedemptionReceipt
+      description: >-
+        Returns the authenticated subject's immutable redemption and Fulfillment receipt. It uses
+        safe display facts and source references only; Code material and internal inventory facts
+        are never returned.
+      parameters:
+        - $ref: '#/components/parameters/RedemptionId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/RedemptionReceiptResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/me/products:
+    get:
+      operationId: listAccountProducts
+      parameters: *readParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/AccountProductsResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/me/credits:
+    get:
+      operationId: getCreditSummary
+      parameters: *readParameters
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/CreditSummaryResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/me/credit-grants/{id}:
+    get:
+      operationId: getCreditGrant
+      parameters:
+        - $ref: '#/components/parameters/CreditGrantId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/CreditGrantResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/me/usage/{id}:
+    get:
+      operationId: getUsageDetail
+      parameters:
+        - $ref: '#/components/parameters/UsageId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security:
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/UsageDetailResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/commands/{id}/receipt:
     get:
       operationId: getPublicCommandReceipt
@@ -421,6 +573,27 @@ components:
       schema:
         type: string
         pattern: '^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$'
+    RedemptionId:
+      name: id
+      in: path
+      required: true
+      schema: &redemptionIdSchema
+        type: string
+        pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    CreditGrantId:
+      name: id
+      in: path
+      required: true
+      schema: &creditGrantIdSchema
+        type: string
+        pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    UsageId:
+      name: id
+      in: path
+      required: true
+      schema: &usageIdSchema
+        type: string
+        pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
   headers:
     RequestId:
       required: true
@@ -537,6 +710,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ReauthenticationInput'
+    SessionAccessGrantRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SessionAccessGrantInput'
+    RedemptionPreviewRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedemptionPreviewInput'
+    RedemptionConfirmRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedemptionConfirmInput'
   responses:
     ProductContextExchangeResponse:
       description: A Site-release-bound product context.
@@ -547,6 +738,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ProductContextExchangeResponse'
+    SessionAccessGrantResponse:
+      description: A non-cacheable, short-lived Session credential bound to the exact product and subject context.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SessionAccessGrantResponse'
     EmailVerificationTransactionResponse:
       description: An email-verification transaction; delivery details are never disclosed.
       headers: *standardResponseHeaders
@@ -678,7 +882,13 @@ components:
             $ref: '#/components/schemas/ReauthenticationResponse'
     PersonalContext:
       description: The caller's Site-bound personal workspace, project, and execution space.
-      headers: *standardResponseHeaders
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
       content:
         application/json:
           schema:
@@ -696,6 +906,97 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PublicCommandReceiptResponse'
+    RedemptionPreviewResponse:
+      description: Safe, non-binding redemption terms and a short-lived opaque preview credential.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedemptionPreviewResponse'
+    RedemptionCommandResponse:
+      description: The current durable state of one authenticated redemption command.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedemptionCommandResponse'
+    RedemptionReceiptResponse:
+      description: An immutable safe redemption and Fulfillment receipt.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RedemptionReceiptResponse'
+    AccountProductsResponse:
+      description: Effective products, subscriptions, and entitlements for the authenticated account.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountProductsResponse'
+    CreditSummaryResponse:
+      description: Rebuildable credit projection over immutable grants, journal entries, and holds.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreditSummaryResponse'
+    CreditGrantResponse:
+      description: Safe source and balance details for one authenticated account CreditGrant.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreditGrantResponse'
+    UsageDetailResponse:
+      description: Rated usage and allocation lineage without provider credentials or GA internals.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UsageDetailResponse'
     ErrorResponse:
       description: Stable, non-disclosing Platform error.
       headers:
@@ -1127,11 +1428,47 @@ components:
         receipt:
           $ref: '#/components/schemas/CommandReceipt'
       required: [receipt]
-    ProductContext:
+    LocalePolicy:
       type: object
       additionalProperties: false
       properties:
+        defaultLocale:
+          type: string
+          minLength: 2
+          maxLength: 35
+        allowedLocales:
+          type: array
+          minItems: 1
+          maxItems: 64
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 2
+            maxLength: 35
+      required: [defaultLocale, allowedLocales]
+    PositiveUint64String:
+      type: string
+      description: A canonical positive unsigned 64-bit integer encoded as a decimal string.
+      minLength: 1
+      maxLength: 20
+      pattern: '^[1-9][0-9]{0,19}$'
+      x-kokoro-maximum: '18446744073709551615'
+    ProductContext:
+      type: object
+      additionalProperties: false
+      description: >-
+        Deployment-level Site authority. It is resolved exclusively from the authenticated
+        ProductWorkload and registered deployment; it never contains user-specific state.
+      properties:
         productContextRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        siteProjectBindingRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        deploymentRef:
           type: string
           minLength: 1
           maxLength: 256
@@ -1143,14 +1480,81 @@ components:
           type: string
           minLength: 1
           maxLength: 128
+        webArtifactDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        runtimeEnvironment:
+          type: string
+          enum: [development, preview, production]
+        region:
+          type: string
+          minLength: 1
+          maxLength: 128
         audience:
           type: string
           minLength: 1
           maxLength: 256
+        sessionContractRevision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        policyEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        revocationEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        enabledSurfaceIds:
+          type: array
+          maxItems: 256
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+        featurePolicyRevision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        modelOptionCatalogRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        agentCatalogRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        localePolicy:
+          $ref: '#/components/schemas/LocalePolicy'
+        cacheMaxAgeSeconds:
+          type: integer
+          minimum: 0
+          maximum: 300
+        issuedAt:
+          type: string
+          format: date-time
         expiresAt:
           type: string
           format: date-time
-      required: [productContextRef, siteRef, siteReleaseRef, audience, expiresAt]
+      required:
+        - productContextRef
+        - siteProjectBindingRef
+        - deploymentRef
+        - siteRef
+        - siteReleaseRef
+        - webArtifactDigest
+        - runtimeEnvironment
+        - region
+        - audience
+        - sessionContractRevision
+        - policyEpoch
+        - revocationEpoch
+        - enabledSurfaceIds
+        - featurePolicyRevision
+        - modelOptionCatalogRef
+        - agentCatalogRef
+        - localePolicy
+        - cacheMaxAgeSeconds
+        - issuedAt
+        - expiresAt
     ProductContextExchangeResponse:
       type: object
       additionalProperties: false
@@ -1160,6 +1564,255 @@ components:
         context:
           $ref: '#/components/schemas/ProductContext'
       required: [receipt, context]
+    SessionAccessGrantInput:
+      type: object
+      additionalProperties: false
+      properties:
+        productContextRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        projectRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        purpose:
+          type: string
+          enum: [read, write, control, stream]
+        resource:
+          $ref: '#/components/schemas/SessionGrantResource'
+      required: [productContextRef, projectRef, purpose, resource]
+    SessionGrantProjectResource:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: project
+      required: [kind]
+    SessionGrantSessionResource:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: session
+        sessionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required: [kind, sessionRef]
+    SessionGrantRunResource:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: run
+        sessionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        runRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required: [kind, sessionRef, runRef]
+    SessionGrantResource:
+      oneOf:
+        - $ref: '#/components/schemas/SessionGrantProjectResource'
+        - $ref: '#/components/schemas/SessionGrantSessionResource'
+        - $ref: '#/components/schemas/SessionGrantRunResource'
+    SessionGrantReadAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: read
+        audience:
+          type: string
+          const: session.read
+      required: [purpose, audience]
+    SessionGrantWriteAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: write
+        audience:
+          type: string
+          const: session.write
+      required: [purpose, audience]
+    SessionGrantControlAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: control
+        audience:
+          type: string
+          const: session.control
+      required: [purpose, audience]
+    SessionGrantStreamAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: stream
+        audience:
+          type: string
+          const: session.stream
+      required: [purpose, audience]
+    SessionGrantAuthorization:
+      oneOf:
+        - $ref: '#/components/schemas/SessionGrantReadAuthorization'
+        - $ref: '#/components/schemas/SessionGrantWriteAuthorization'
+        - $ref: '#/components/schemas/SessionGrantControlAuthorization'
+        - $ref: '#/components/schemas/SessionGrantStreamAuthorization'
+    SessionAccessGrantBinding:
+      type: object
+      additionalProperties: false
+      properties:
+        productContextRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        siteProjectBindingRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        deploymentRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        siteRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        siteReleaseRef:
+          type: string
+          minLength: 1
+          maxLength: 128
+        webArtifactDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        runtimeEnvironment:
+          type: string
+          enum: [development, preview, production]
+        region:
+          type: string
+          minLength: 1
+          maxLength: 128
+        sessionContractRevision:
+          type: string
+          minLength: 1
+          maxLength: 128
+        projectRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        subjectRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        subjectGeneration:
+          $ref: '#/components/schemas/PositiveUint64String'
+        identitySessionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        issuer:
+          type: string
+          format: uri
+          minLength: 1
+          maxLength: 512
+        keyRevision:
+          type: string
+          pattern: '^[A-Za-z0-9_-]{1,128}$'
+        notBefore:
+          type: string
+          format: date-time
+        siteSecurityEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        identitySessionEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        membershipEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        authorizationEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        restrictionEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        credentialEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        policyEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        revocationEpoch:
+          $ref: '#/components/schemas/PositiveUint64String'
+        resource:
+          $ref: '#/components/schemas/SessionGrantResource'
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - productContextRef
+        - siteProjectBindingRef
+        - deploymentRef
+        - siteRef
+        - siteReleaseRef
+        - webArtifactDigest
+        - runtimeEnvironment
+        - region
+        - sessionContractRevision
+        - projectRef
+        - subjectRef
+        - subjectGeneration
+        - identitySessionRef
+        - issuer
+        - keyRevision
+        - notBefore
+        - siteSecurityEpoch
+        - identitySessionEpoch
+        - membershipEpoch
+        - authorizationEpoch
+        - restrictionEpoch
+        - credentialEpoch
+        - policyEpoch
+        - revocationEpoch
+        - resource
+        - issuedAt
+        - expiresAt
+    SessionAccessGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        grantRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        credential:
+          type: string
+          minLength: 32
+          maxLength: 4096
+          pattern: '^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$'
+        binding:
+          $ref: '#/components/schemas/SessionAccessGrantBinding'
+        authorization:
+          $ref: '#/components/schemas/SessionGrantAuthorization'
+      required: [grantRef, credential, binding, authorization]
+    SessionAccessGrantResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        grant:
+          $ref: '#/components/schemas/SessionAccessGrant'
+      required: [grant]
     EmailVerificationTransaction:
       type: object
       additionalProperties: false
@@ -1568,27 +2221,91 @@ components:
         - $ref: '#/components/schemas/ReauthenticationPendingResponse'
         - $ref: '#/components/schemas/OneTimeReauthenticationProofDelivery'
         - $ref: '#/components/schemas/OneTimeDeliveryUnavailable'
-    PersonalContext:
+    PersonalContextActor:
       type: object
       additionalProperties: false
       properties:
-        workspaceRef:
+        subjectRef:
           type: string
           minLength: 1
-          maxLength: 128
+          maxLength: 256
+        subjectGeneration:
+          type: string
+          pattern: '^(?:0|[1-9][0-9]{0,18})$'
+        state:
+          type: string
+          const: active
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 160
+        avatarUrl:
+          type: [string, 'null']
+          format: uri
+          maxLength: 2048
+      required: [subjectRef, subjectGeneration, state, displayName, avatarUrl]
+    PersonalProjectSummary:
+      type: object
+      additionalProperties: false
+      properties:
         projectRef:
           type: string
           minLength: 1
-          maxLength: 128
+          maxLength: 256
+        workspaceRef:
+          type: string
+          minLength: 1
+          maxLength: 256
         executionSpaceRef:
           type: string
           minLength: 1
+          maxLength: 256
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 160
+        membershipRevision:
+          type: string
+          minLength: 1
           maxLength: 128
+      required: [projectRef, workspaceRef, executionSpaceRef, displayName, membershipRevision]
+    PersonalContext:
+      type: object
+      additionalProperties: false
+      description: Authenticated subject state for the workload-derived Site; never cache across users.
+      properties:
+        productContextRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        personalContextRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        actor:
+          $ref: '#/components/schemas/PersonalContextActor'
+        projects:
+          type: array
+          minItems: 1
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/PersonalProjectSummary'
+        defaultProjectRef:
+          type: string
+          minLength: 1
+          maxLength: 256
         contextRevision:
           type: string
           minLength: 1
           maxLength: 128
-      required: [workspaceRef, projectRef, executionSpaceRef, contextRevision]
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        [productContextRef, personalContextRef, actor, projects, defaultProjectRef, contextRevision, issuedAt, expiresAt]
     AcceptedPublicCommandReceipt:
       type: object
       additionalProperties: false
@@ -1824,6 +2541,701 @@ components:
         - $ref: '#/components/schemas/RejectedTerminalPublicCommandReceiptResponse'
         - $ref: '#/components/schemas/CommittedSupersedingPublicCommandReceiptResponse'
         - $ref: '#/components/schemas/CommittedSupersededPublicCommandReceiptResponse'
+    CreditAmount:
+      type: string
+      description: Exact non-negative integer amount; encoded as a decimal string to avoid JS precision loss.
+      pattern: '^(?:0|[1-9][0-9]{0,37})$'
+    ProjectionRevision:
+      type: string
+      pattern: '^(?:0|[1-9][0-9]{0,18})$'
+    ProjectionFreshness:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          enum: [current, stale, rebuilding]
+        revision:
+          $ref: '#/components/schemas/ProjectionRevision'
+        asOf:
+          type: string
+          format: date-time
+        lagSeconds:
+          type: integer
+          minimum: 0
+          maximum: 86400
+      required: [state, revision, asOf, lagSeconds]
+    RedemptionPreviewInput:
+      type: object
+      additionalProperties: false
+      description: >-
+        The only public request that carries a raw redeem Code. BFF and Platform must redact the
+        field from logs, traces, metrics, analytics, errors, durable requests, and receipts.
+      properties:
+        code:
+          type: string
+          minLength: 16
+          maxLength: 256
+          pattern: '^[A-Za-z0-9-]+$'
+      required: [code]
+    RedemptionConfirmInput:
+      type: object
+      additionalProperties: false
+      properties:
+        previewCredential:
+          type: string
+          minLength: 32
+          maxLength: 4096
+          pattern: '^\\S+$'
+        legalAcceptanceRefs:
+          type: array
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+      required: [previewCredential, legalAcceptanceRefs]
+    RedemptionTermPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          type: string
+          enum: [none, new_subscription, extend_from_max, reject_if_active]
+        startsAt:
+          type: [string, 'null']
+          format: date-time
+        endsAt:
+          type: [string, 'null']
+          format: date-time
+        automaticRenewal:
+          type: boolean
+          const: false
+      required: [action, startsAt, endsAt, automaticRenewal]
+    RedemptionCreditPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        creditProgramRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        bucketClass:
+          type: string
+          enum: [daily, period, permanent]
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 64
+        amount:
+          $ref: '#/components/schemas/CreditAmount'
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+      required: [creditProgramRevisionRef, bucketClass, unit, amount, expiresAt]
+    RedemptionEntitlementPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        entitlementTemplateRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        capabilityKey:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9._:-]{0,127}$'
+        safeLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+      required: [entitlementTemplateRevisionRef, capabilityKey, safeLabel, expiresAt]
+    RedemptionPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        previewRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        previewCredential:
+          type: string
+          minLength: 32
+          maxLength: 4096
+          pattern: '^\\S+$'
+        previewDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        productRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        productVersionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        productKind:
+          type: string
+          enum: [free, credit_pack, subscription, bundle]
+        safeProductLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        planRef:
+          type: [string, 'null']
+          maxLength: 256
+        planVersionRef:
+          type: [string, 'null']
+          maxLength: 256
+        safePlanLabel:
+          type: [string, 'null']
+          maxLength: 160
+        term:
+          $ref: '#/components/schemas/RedemptionTermPreview'
+        credits:
+          type: array
+          maxItems: 64
+          items:
+            $ref: '#/components/schemas/RedemptionCreditPreview'
+        entitlements:
+          type: array
+          maxItems: 128
+          items:
+            $ref: '#/components/schemas/RedemptionEntitlementPreview'
+        legalTermRefs:
+          type: array
+          maxItems: 16
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 128
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - previewRef
+        - previewCredential
+        - previewDigest
+        - productRef
+        - productVersionRef
+        - productKind
+        - safeProductLabel
+        - planRef
+        - planVersionRef
+        - safePlanLabel
+        - term
+        - credits
+        - entitlements
+        - legalTermRefs
+        - expiresAt
+    RedemptionPreviewResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/CommandReceipt'
+        preview:
+          $ref: '#/components/schemas/RedemptionPreview'
+      required: [receipt, preview]
+    RedemptionCommandCursor:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *commandIdSchema
+        requestDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        receiptRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        receivedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [commandId, requestDigest, receiptRef, receivedAt, updatedAt]
+    RedemptionCommandPendingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum: [accepted, executing, outcome_unknown]
+        command:
+          $ref: '#/components/schemas/RedemptionCommandCursor'
+        retryAfter:
+          type: string
+          format: date-time
+      required: [kind, command, retryAfter]
+    RedemptionCommandReviewResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: review_required
+        command:
+          $ref: '#/components/schemas/RedemptionCommandCursor'
+        attemptRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        caseRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        reviewExpiresAt:
+          type: string
+          format: date-time
+      required: [kind, command, attemptRef, caseRef, reviewExpiresAt]
+    RedemptionOutputRef:
+      type: object
+      additionalProperties: false
+      properties:
+        outputLineId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        kind:
+          type: string
+          enum: [subscription_term, entitlement_grant, credit_grant]
+        resourceRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        templateRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required: [outputLineId, kind, resourceRef, templateRevisionRef]
+    RedemptionReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        redemptionId: *redemptionIdSchema
+        commandId: *commandIdSchema
+        state:
+          type: string
+          enum: [fulfilled, reversed, reconciliation_required]
+        productRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        productVersionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        planRef:
+          type: [string, 'null']
+          maxLength: 256
+        planVersionRef:
+          type: [string, 'null']
+          maxLength: 256
+        safeCodeFingerprint:
+          type: string
+          pattern: '^[A-Z0-9-]{4,32}$'
+        fulfillmentRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        outputSetDigest:
+          type: string
+          pattern: '^[0-9a-f]{64}$'
+        outputs:
+          type: array
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/RedemptionOutputRef'
+        redeemedAt:
+          type: string
+          format: date-time
+        stateObservedAt:
+          type: string
+          format: date-time
+        reversalRefs:
+          type: array
+          maxItems: 64
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+      required:
+        - redemptionId
+        - commandId
+        - state
+        - productRef
+        - productVersionRef
+        - planRef
+        - planVersionRef
+        - safeCodeFingerprint
+        - fulfillmentRef
+        - outputSetDigest
+        - outputs
+        - redeemedAt
+        - stateObservedAt
+        - reversalRefs
+    RedemptionCommandSucceededResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: succeeded
+        command:
+          $ref: '#/components/schemas/RedemptionCommandCursor'
+        redemption:
+          $ref: '#/components/schemas/RedemptionReceipt'
+      required: [kind, command, redemption]
+    RedemptionRejection:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          enum: [REDEEM_NOT_ACCEPTED, REDEEM_TEMPORARILY_UNAVAILABLE]
+        retryClass:
+          type: string
+          enum: [never, after_delay, after_user_action]
+        retryAfter:
+          type: [string, 'null']
+          format: date-time
+      required: [code, retryClass, retryAfter]
+    RedemptionCommandRejectedResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: rejected
+        command:
+          $ref: '#/components/schemas/RedemptionCommandCursor'
+        rejection:
+          $ref: '#/components/schemas/RedemptionRejection'
+      required: [kind, command, rejection]
+    RedemptionCommandResponse:
+      oneOf:
+        - $ref: '#/components/schemas/RedemptionCommandPendingResponse'
+        - $ref: '#/components/schemas/RedemptionCommandReviewResponse'
+        - $ref: '#/components/schemas/RedemptionCommandSucceededResponse'
+        - $ref: '#/components/schemas/RedemptionCommandRejectedResponse'
+    RedemptionReceiptResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        redemption:
+          $ref: '#/components/schemas/RedemptionReceipt'
+      required: [redemption]
+    AcquisitionSourceSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum: [redemption, admin_grant, program_window]
+        sourceRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        acquiredAt:
+          type: string
+          format: date-time
+      required: [kind, sourceRef, acquiredAt]
+    AccountPlanSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        planRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        planVersionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        safeLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        automaticRenewal:
+          type: boolean
+          const: false
+      required: [planRef, planVersionRef, safeLabel, automaticRenewal]
+    AccountEntitlementSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        entitlementGrantRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        capabilityKey:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9._:-]{0,127}$'
+        safeLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        state:
+          type: string
+          enum: [active, expired, revoked]
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+      required: [entitlementGrantRef, capabilityKey, safeLabel, state, expiresAt]
+    AccountProduct:
+      type: object
+      additionalProperties: false
+      properties:
+        productRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        productVersionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        kind:
+          type: string
+          enum: [free, credit_pack, subscription, bundle]
+        safeLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        state:
+          type: string
+          enum: [active, expired, revoked]
+        source:
+          $ref: '#/components/schemas/AcquisitionSourceSummary'
+        plan:
+          oneOf:
+            - $ref: '#/components/schemas/AccountPlanSummary'
+            - type: 'null'
+        effectiveAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+        entitlements:
+          type: array
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/AccountEntitlementSummary'
+        creditGrantRefs:
+          type: array
+          maxItems: 256
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 256
+      required:
+        - productRef
+        - productVersionRef
+        - kind
+        - safeLabel
+        - state
+        - source
+        - plan
+        - effectiveAt
+        - expiresAt
+        - entitlements
+        - creditGrantRefs
+    AccountProductsResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        products:
+          type: array
+          maxItems: 512
+          items:
+            $ref: '#/components/schemas/AccountProduct'
+        freshness:
+          $ref: '#/components/schemas/ProjectionFreshness'
+      required: [products, freshness]
+    CreditBucketSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        bucketClass:
+          type: string
+          enum: [daily, period, permanent]
+        grantCount:
+          type: integer
+          minimum: 0
+        issued:
+          $ref: '#/components/schemas/CreditAmount'
+        available:
+          $ref: '#/components/schemas/CreditAmount'
+        held:
+          $ref: '#/components/schemas/CreditAmount'
+        consumed:
+          $ref: '#/components/schemas/CreditAmount'
+        expiredOrReversed:
+          $ref: '#/components/schemas/CreditAmount'
+      required: [bucketClass, grantCount, issued, available, held, consumed, expiredOrReversed]
+    CreditUnitSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 64
+        buckets:
+          type: array
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/CreditBucketSummary'
+      required: [unit, buckets]
+    CreditSummaryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        units:
+          type: array
+          maxItems: 16
+          items:
+            $ref: '#/components/schemas/CreditUnitSummary'
+        activeHoldCount:
+          type: integer
+          minimum: 0
+        freshness:
+          $ref: '#/components/schemas/ProjectionFreshness'
+      required: [units, activeHoldCount, freshness]
+    CreditGrantDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        grantId: *creditGrantIdSchema
+        creditProgramRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        source:
+          $ref: '#/components/schemas/AcquisitionSourceSummary'
+        bucketClass:
+          type: string
+          enum: [daily, period, permanent]
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 64
+        state:
+          type: string
+          enum: [active, exhausted, expired, reversed]
+        issued:
+          $ref: '#/components/schemas/CreditAmount'
+        available:
+          $ref: '#/components/schemas/CreditAmount'
+        held:
+          $ref: '#/components/schemas/CreditAmount'
+        consumed:
+          $ref: '#/components/schemas/CreditAmount'
+        effectiveAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+      required:
+        - grantId
+        - creditProgramRevisionRef
+        - source
+        - bucketClass
+        - unit
+        - state
+        - issued
+        - available
+        - held
+        - consumed
+        - effectiveAt
+        - expiresAt
+    CreditGrantResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        grant:
+          $ref: '#/components/schemas/CreditGrantDetail'
+        freshness:
+          $ref: '#/components/schemas/ProjectionFreshness'
+      required: [grant, freshness]
+    UsageCreditAllocation:
+      type: object
+      additionalProperties: false
+      properties:
+        creditGrantId: *creditGrantIdSchema
+        amount:
+          $ref: '#/components/schemas/CreditAmount'
+        journalReceiptRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+      required: [creditGrantId, amount, journalReceiptRef]
+    UsageDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        usageId: *usageIdSchema
+        runRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        executionBudgetRootRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        unit:
+          type: string
+          minLength: 1
+          maxLength: 64
+        state:
+          type: string
+          enum: [reserved, rated, settled, reversed, reconciliation_required]
+        estimatedAmount:
+          $ref: '#/components/schemas/CreditAmount'
+        ratedAmount:
+          oneOf:
+            - $ref: '#/components/schemas/CreditAmount'
+            - type: 'null'
+        allocations:
+          type: array
+          maxItems: 256
+          items:
+            $ref: '#/components/schemas/UsageCreditAllocation'
+        occurredAt:
+          type: string
+          format: date-time
+        settledAt:
+          type: [string, 'null']
+          format: date-time
+      required:
+        - usageId
+        - runRef
+        - executionBudgetRootRef
+        - unit
+        - state
+        - estimatedAmount
+        - ratedAmount
+        - allocations
+        - occurredAt
+        - settledAt
+    UsageDetailResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        usage:
+          $ref: '#/components/schemas/UsageDetail'
+        freshness:
+          $ref: '#/components/schemas/ProjectionFreshness'
+      required: [usage, freshness]
     ErrorCode:
       type: string
       enum:
@@ -1841,6 +3253,10 @@ components:
         - SITE_UNAVAILABLE
         - OUTCOME_UNKNOWN
         - INTERNAL_UNAVAILABLE
+        - REDEEM_NOT_ACCEPTED
+        - REDEEM_TEMPORARILY_UNAVAILABLE
+        - IDEMPOTENCY_CONFLICT
+        - ACQUISITION_CHANNEL_DISABLED
     ErrorResponse:
       type: object
       additionalProperties: false
@@ -1849,7 +3265,7 @@ components:
           $ref: '#/components/schemas/ErrorCode'
         retryClass:
           type: string
-          enum: [never, after_delay, same_identity, reconcile_receipt]
+          enum: [never, after_delay, after_user_action, same_identity, reconcile_receipt]
         requestId:
           type: string
           maxLength: 128

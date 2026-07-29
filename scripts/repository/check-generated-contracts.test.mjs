@@ -1,24 +1,36 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
 import {
+  assertGeneratedMirrorTracked,
   GeneratedContractError,
   compareGeneratedMirror,
   parseArguments,
 } from "./check-generated-contracts.mjs";
 import * as generatedChecker from "./check-generated-contracts.mjs";
+import {
+  hardenPublicZodSchemas,
+  parseArguments as parsePublicGeneratorArguments,
+} from "../../contract/generate-public-openapi.mjs";
 
 const repositoryRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
+const execFileAsync = promisify(execFile);
 
 const adminAuthSourcePaths = [
   "kokoro/common/v1/error.proto",
   "kokoro/common/v1/receipt.proto",
   "kokoro/platform/admin/v1/admin_auth.proto",
+];
+const admissionSourcePaths = [
+  "kokoro/common/v1/error.proto",
+  "kokoro/common/v1/receipt.proto",
   "kokoro/platform/admission/v1/admission.proto",
 ];
 
@@ -90,6 +102,25 @@ test("rejects missing, extra and byte-different generated files", async () => {
   }
 });
 
+test("rejects a byte-identical mirror that generation created only as ignored or untracked files", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "kokoro-generated-tracking-test-"));
+  const repository = resolve(root, "child");
+  const mirror = resolve(repository, "src/generated/contracts");
+  await mkdir(mirror, { recursive: true });
+  await writeFile(resolve(mirror, "service.ts"), "generated\n", "utf8");
+  try {
+    await execFileAsync("git", ["init", "--quiet"], { cwd: repository });
+    await assert.rejects(
+      assertGeneratedMirrorTracked(root, "child/src/generated/contracts", "fixture"),
+      (error) => error instanceof GeneratedContractError && error.code === "generated_contract_untracked",
+    );
+    await execFileAsync("git", ["add", "-f", "--", "src/generated/contracts/service.ts"], { cwd: repository });
+    await assertGeneratedMirrorTracked(root, "child/src/generated/contracts", "fixture");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("production arguments are closed", () => {
   assert.deepEqual(parseArguments([]), { root: process.cwd() });
   assert.throws(() => parseArguments(["--output", "/tmp/out"]), {
@@ -98,35 +129,152 @@ test("production arguments are closed", () => {
   });
 });
 
-test("checker forwards a single closed output argument through pnpm", () => {
-  assert.equal(typeof generatedChecker.generationCommandArguments, "function");
+test("public OpenAPI generation writes both registered live mirrors or one isolated temporary output", () => {
+  assert.deepEqual(parsePublicGeneratorArguments([]), {
+    outputs: [
+      resolve(repositoryRoot, "kokoro-platform/src/interfaces/http/generated/platform-public"),
+      resolve(repositoryRoot, "kokoro-web/packages/site-client/src/generated/platform-public"),
+    ],
+  });
   assert.deepEqual(
-    generatedChecker.generationCommandArguments("/repo/contract", "/tmp/generated"),
-    ["--dir", "/repo/contract", "run", "buf:generate", "--output", "/tmp/generated"],
+    parsePublicGeneratorArguments(["--output", resolve(tmpdir(), "kokoro-public-generator-test")]),
+    { outputs: [resolve(tmpdir(), "kokoro-public-generator-test")] },
+  );
+  assert.throws(
+    () => parsePublicGeneratorArguments(["--output", resolve(repositoryRoot, "tmp/not-system-temp")]),
+    /public_openapi_generation_output_must_be_temporary/u,
   );
 });
 
-test("generation emits pinned source metadata into every committed mirror", async () => {
+test("public Zod generation enforces the uint64 maximum omitted by generic OpenAPI codegen", () => {
+  const input = `import * as z from 'zod';\n` +
+    `export const zPositiveUint64String = z.string().min(1).max(20).regex(/^[1-9][0-9]{0,19}$/);\n`;
+  const output = hardenPublicZodSchemas(input);
+
+  assert.match(output, /value\.length < 20 \|\| value <= "18446744073709551615"/u);
+  assert.match(output, /must fit a positive uint64/u);
+  assert.throws(
+    () => hardenPublicZodSchemas("export const unrelated = 1;\n"),
+    /public_openapi_domain_schema_missing:zPositiveUint64String/u,
+  );
+});
+
+test("checker forwards an explicit isolated boundary and output through pnpm", () => {
+  assert.equal(typeof generatedChecker.generationCommandArguments, "function");
+  assert.deepEqual(
+    generatedChecker.generationCommandArguments(
+      "/repo/contract",
+      "platform-admission@v1",
+      "/tmp/generated",
+    ),
+    [
+      "--dir",
+      "/repo/contract",
+      "run",
+      "buf:generate",
+      "--boundary",
+      "platform-admission@v1",
+      "--output",
+      "/tmp/generated",
+    ],
+  );
+  assert.deepEqual(
+    generatedChecker.generationCommandArguments(
+      "/repo/contract",
+      "platform-public@v1",
+      "/tmp/generated-public",
+    ),
+    [
+      "--dir",
+      "/repo/contract",
+      "run",
+      "openapi:generate:public",
+      "--output",
+      "/tmp/generated-public",
+    ],
+  );
+});
+
+test("privileged and public contracts have independent provider/consumer mirrors", () => {
+  assert.deepEqual(generatedChecker.GENERATED_BOUNDARIES, [
+    {
+      id: "platform-admin-auth@v1",
+      mirrors: [
+        "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
+        "kokoro-web/apps/admin/lib/generated/contracts",
+      ],
+    },
+    {
+      id: "platform-admission@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated",
+        "kokoro-session/src/platform/generated",
+      ],
+    },
+    {
+      id: "platform-public@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/http/generated/platform-public",
+        "kokoro-web/packages/site-client/src/generated/platform-public",
+      ],
+    },
+  ]);
+  assert.equal(adminAuthSourcePaths.includes("kokoro/platform/admission/v1/admission.proto"), false);
+  assert.deepEqual(admissionSourcePaths, [
+    "kokoro/common/v1/error.proto",
+    "kokoro/common/v1/receipt.proto",
+    "kokoro/platform/admission/v1/admission.proto",
+  ]);
+});
+
+test("each isolated boundary emits its own pinned source metadata", async () => {
   const packageJson = JSON.parse(await readFile(resolve(repositoryRoot, "contract/package.json"), "utf8"));
   assert.equal(packageJson.scripts["buf:generate"], "node generate.mjs");
 
-  const expectedDigest = await sourceDigest(resolve(repositoryRoot, "contract/proto"), adminAuthSourcePaths);
-  for (const mirror of [
-    "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
-    "kokoro-web/apps/admin/lib/generated/contracts",
-  ]) {
-    const metadataPath = resolve(repositoryRoot, mirror, "contract-metadata.ts");
-    const metadata = await readFile(metadataPath, "utf8").catch(() => null);
-    assert.notEqual(metadata, null, `${mirror} is missing contract-metadata.ts`);
-    const expectedArtifactDigest = await artifactDigest(resolve(repositoryRoot, mirror));
-    assert.match(metadata, new RegExp(`sourceDigestSha256: "${expectedDigest}"`, "u"));
-    assert.match(metadata, new RegExp(`artifactDigestSha256: "${expectedArtifactDigest}"`, "u"));
-    assert.notEqual(expectedArtifactDigest, expectedDigest);
-    assert.match(metadata, /schemaId: "kokoro\.platform\.admin\.v1\.AdminAuthService"/u);
-    assert.match(metadata, /generatorVersion: "2\.13\.0"/u);
-    assert.match(metadata, /runtimeVersion: "2\.13\.0"/u);
-    for (const sourcePath of adminAuthSourcePaths) assert.match(metadata, new RegExp(sourcePath, "u"));
-    assert.doesNotMatch(metadata, /kokoro\/platform\/admin\/v2\/admin_(?:query|command)\.proto/u);
+  const temporary = await mkdtemp(resolve(tmpdir(), "kokoro-boundary-metadata-test-"));
+  try {
+    for (const fixture of [
+      {
+        boundary: "platform-admin-auth@v1",
+        schemaId: "kokoro.platform.admin.v1.AdminAuthService",
+        sourcePaths: adminAuthSourcePaths,
+        forbidden: "kokoro/platform/admission/v1/admission.proto",
+      },
+      {
+        boundary: "platform-admission@v1",
+        schemaId: "kokoro.platform.admission.v1.AdmissionService",
+        sourcePaths: admissionSourcePaths,
+        forbidden: "kokoro/platform/admin/v1/admin_auth.proto",
+      },
+    ]) {
+      const output = resolve(temporary, fixture.boundary);
+      await execFileAsync(
+        process.execPath,
+        [
+          resolve(repositoryRoot, "contract/generate.mjs"),
+          "--boundary",
+          fixture.boundary,
+          "--output",
+          output,
+        ],
+        {cwd: repositoryRoot},
+      );
+      const metadata = await readFile(resolve(output, "contract-metadata.ts"), "utf8");
+      const expectedSourceDigest = await sourceDigest(
+        resolve(repositoryRoot, "contract/proto"),
+        fixture.sourcePaths,
+      );
+      const expectedArtifactDigest = await artifactDigest(output);
+      assert.match(metadata, new RegExp(`sourceDigestSha256: "${expectedSourceDigest}"`, "u"));
+      assert.match(metadata, new RegExp(`artifactDigestSha256: "${expectedArtifactDigest}"`, "u"));
+      assert.match(metadata, new RegExp(`schemaId: "${fixture.schemaId.replaceAll(".", "\\.")}"`, "u"));
+      assert.match(metadata, /generatorVersion: "2\.13\.0"/u);
+      assert.match(metadata, /runtimeVersion: "2\.13\.0"/u);
+      for (const sourcePath of fixture.sourcePaths) assert.match(metadata, new RegExp(sourcePath, "u"));
+      assert.doesNotMatch(metadata, new RegExp(fixture.forbidden, "u"));
+    }
+  } finally {
+    await rm(temporary, {recursive: true, force: true});
   }
 });
 
@@ -137,5 +285,8 @@ test("federated contract CI runs the pinned Buf and generated-mirror gates", asy
   assert.match(workflow, /pnpm --dir contract run buf:format:check/u);
   assert.match(workflow, /pnpm --dir contract run buf:lint/u);
   assert.match(workflow, /pnpm --dir contract run openapi:lint/u);
+  assert.match(workflow, /git -C kokoro-platform diff --exit-code -- src\/interfaces\/http\/generated\/platform-public/u);
+  assert.match(workflow, /status --porcelain --untracked-files=all -- src\/interfaces\/http\/generated\/platform-public/u);
+  assert.match(workflow, /git -C kokoro-web diff --exit-code -- packages\/site-client\/src\/generated\/platform-public/u);
   assert.match(workflow, /node scripts\/repository\/check-generated-contracts\.mjs/u);
 });

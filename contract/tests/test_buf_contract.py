@@ -23,6 +23,8 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "@bufbuild/protobuf": "2.13.0",
         "@bufbuild/protoc-gen-es": "2.13.0",
         "@redocly/cli": "2.41.0",
+        "@hey-api/openapi-ts": "0.99.0",
+        "typescript": "5.9.3",
     }
     assert package["scripts"] == {
         "buf:breaking": "buf breaking",
@@ -30,11 +32,12 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "buf:format:check": "buf format --diff --exit-code",
         "buf:generate": "node generate.mjs",
         "buf:lint": "buf lint",
-        "openapi:lint": (
-            "redocly lint --extends=spec openapi/platform-public-v1.yaml "
-            "openapi/admin-web-v1.yaml"
-        ),
-    }
+            "openapi:lint": (
+                "redocly lint --extends=spec openapi/platform-public-v1.yaml "
+                "openapi/admin-web-v1.yaml"
+            ),
+            "openapi:generate:public": "node generate-public-openapi.mjs",
+        }
     assert "pnpm" not in package
     workspace = yaml.safe_load((CONTRACT / "pnpm-workspace.yaml").read_text())
     assert workspace["allowBuilds"] == {"@bufbuild/buf": True}
@@ -103,7 +106,14 @@ def _public_operations() -> dict[str, dict]:
 
 
 def _response_schema(document: dict, operation: dict) -> str:
-    response = operation["responses"]["200"]
+    success = [
+        response
+        for status, response in operation["responses"].items()
+        if str(status).startswith("2")
+    ]
+    response_refs = {response.get("$ref") for response in success}
+    assert len(response_refs) == 1
+    response = success[0]
     if "$ref" in response:
         response = document["components"]["responses"][
             response["$ref"].rsplit("/", 1)[1]
@@ -367,6 +377,7 @@ def test_public_operations_have_exact_implementable_response_schemas() -> None:
     operations = _public_operations()
     expected = {
         "exchangeProductContext": "ProductContextExchangeResponse",
+        "issueSessionAccessGrant": "SessionAccessGrantResponse",
         "beginRegistration": "EmailVerificationTransactionResponse",
         "completeEmailVerification": "VerificationActivationResponse",
         "resendEmailVerification": "EmailVerificationTransactionResponse",
@@ -388,6 +399,14 @@ def test_public_operations_have_exact_implementable_response_schemas() -> None:
         "completeAccountRecovery": "AccountRecoveryCompletionResponse",
         "reauthenticateIdentitySession": "ReauthenticationResponse",
         "getPersonalContext": "PersonalContext",
+        "previewRedemption": "RedemptionPreviewResponse",
+        "confirmRedemption": "RedemptionCommandResponse",
+        "recoverRedemptionCommand": "RedemptionCommandResponse",
+        "getRedemptionReceipt": "RedemptionReceiptResponse",
+        "listAccountProducts": "AccountProductsResponse",
+        "getCreditSummary": "CreditSummaryResponse",
+        "getCreditGrant": "CreditGrantResponse",
+        "getUsageDetail": "UsageDetailResponse",
         "getPublicCommandReceipt": "PublicCommandReceiptResponse",
     }
 
@@ -416,9 +435,12 @@ def test_public_auth_and_personal_context_payloads_are_complete() -> None:
     }
     assert set(schemas["IdentitySessionList"]["required"]) >= {"sessions"}
     assert set(schemas["PersonalContext"]["required"]) >= {
-        "workspaceRef",
-        "projectRef",
-        "executionSpaceRef",
+        "productContextRef",
+        "personalContextRef",
+        "actor",
+        "projects",
+        "defaultProjectRef",
+        "contextRevision",
     }
     for transaction_schema in (
         "EmailVerificationTransaction",
@@ -834,7 +856,18 @@ def test_public_mutations_use_caller_generated_command_ids_for_zero_byte_recover
         assert phrase in command_identity["description"]
 
     for operation_id, operation in operations.items():
-        if operation_id in {"listIdentitySessions", "getPersonalContext", "getPublicCommandReceipt"}:
+        if operation_id in {
+            "issueSessionAccessGrant",
+            "listIdentitySessions",
+            "getPersonalContext",
+            "recoverRedemptionCommand",
+            "getRedemptionReceipt",
+            "listAccountProducts",
+            "getCreditSummary",
+            "getCreditGrant",
+            "getUsageDetail",
+            "getPublicCommandReceipt",
+        }:
             continue
         parameter_refs = {
             parameter["$ref"].rsplit("/", 1)[1]
@@ -978,6 +1011,10 @@ def test_public_error_codes_are_a_frozen_enum() -> None:
         "SITE_UNAVAILABLE",
         "OUTCOME_UNKNOWN",
         "INTERNAL_UNAVAILABLE",
+        "REDEEM_NOT_ACCEPTED",
+        "REDEEM_TEMPORARILY_UNAVAILABLE",
+        "IDEMPOTENCY_CONFLICT",
+        "ACQUISITION_CHANNEL_DISABLED",
     ]
 
 
@@ -985,11 +1022,54 @@ def test_platform_admission_v1_surface_remains_frozen() -> None:
     source = _proto("kokoro/platform/admission/v1/admission.proto")
     assert _service_methods(source, "AdmissionService") == [
         "PrepareRun",
-        "FinalizeRun",
+        "FinalizeRunAuthorization",
+        "ReleaseRunAuthorization",
+        "ReconcileRunAuthorization",
         "GetCommandReceipt",
     ]
-    assert "AuthorizeEffect" not in source
-    assert "GetRestrictionEpochs" not in source
+    prepare = _message_body(source, "PrepareRunEffect")
+    for required in (
+        "session_access_grant",
+        "project_ref",
+        "session_id",
+        "launch_id",
+        "proposed_run_id",
+        "trigger_message_id",
+        "model_option_revision_ref",
+    ):
+        assert required in prepare
+    for owner_fact in (
+        "namespace",
+        "capability_snapshot_ref",
+        "runtime_config",
+        "root_hold_ref",
+        "authorization_segment_ref",
+    ):
+        assert owner_fact not in prepare
+    for response in (
+        "PrepareRunResponse",
+        "FinalizeRunAuthorizationResponse",
+        "ReleaseRunAuthorizationResponse",
+        "ReconcileRunAuthorizationResponse",
+        "GetCommandReceiptResponse",
+    ):
+        body = _message_body(source, response)
+        assert "oneof result" in body
+        assert "option (buf.validate.oneof).required = true;" in body
+
+
+def test_safe_admission_capabilities_are_typed_for_browser_projection() -> None:
+    source = _proto("kokoro/platform/admission/v1/admission.proto")
+    snapshot = _message_body(source, "SafeAdmissionSnapshot")
+    display = _message_body(source, "SafeCapabilityDisplay")
+
+    assert "enum SafeCapabilityKind" in source
+    assert "SAFE_CAPABILITY_KIND_SKILL" in source
+    assert "SAFE_CAPABILITY_KIND_MCP" in source
+    assert "repeated SafeCapabilityDisplay capabilities" in snapshot
+    assert "SafeCapabilityKind kind" in display
+    assert "string label" in display
+    assert "deprecated = true" in snapshot
 
 
 def test_admin_oidc_session_delivery_recovers_without_redeeming_the_code_again() -> None:

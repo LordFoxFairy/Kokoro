@@ -560,6 +560,38 @@ git -C kokoro-session add -- src/relay/run-dispatch-outbox.ts src/relay/control-
 git -C kokoro-session commit -m "feat(relay): fence dispatch on committed authorization"
 ```
 
+### Task 10A: Verify SessionAccessGrant and maintain the local revocation projection
+
+**Repository:** `kokoro-session`
+
+**Files:**
+- Create: `kokoro-session/src/browser/access-grant.ts`
+- Create: `kokoro-session/src/browser/workload-authenticator.ts`
+- Create: `kokoro-session/src/authorization/platform-authorization-consumer.ts`
+- Create: `kokoro-session/src/store/postgres/platform-authorization-projection.ts`
+- Create: `kokoro-session/prisma/migrations/20260728_platform_authorization_projection/migration.sql`
+- Modify: `kokoro-session/src/store/postgres/transaction.ts`
+- Modify: `kokoro-session/src/main.ts`
+- Create: `kokoro-session/tests/session-access-grant.test.ts`
+- Create: `kokoro-session/tests/platform-authorization-projection.test.ts`
+
+- [ ] Reject production startup without a dedicated Platform Authorization issuer/JWKS or pinned verifier key, an independent BFF
+  workload authenticator, and the compatible authorization-feed consumer. Do not accept the legacy general Auth JWT as a
+  SessionAccessGrant and do not provide browser CORS on the v3 server-to-server entry.
+- [ ] Verify `alg=RS256`, exact issuer/audience/kid/jti/iat/nbf/exp, five-minute maximum lifetime, the full positive-uint64 epoch
+  vector, and the explicit project/session/run resource union. Cross-bind the trusted workload claims and grant across
+  SiteProjectBinding/deployment/Site/release/artifact/environment/region/contract revision; mismatch is non-disclosing.
+- [ ] Consume signed Platform authorization events through inbox+digest dedupe and monotonic cursor/aggregate revocation epoch.
+  A signed grant may seed a missing projection but may never overwrite a higher epoch. Signature failure, cursor gap, epoch rollback,
+  unknown key, or projection freshness older than 30 seconds makes authorization unavailable/fail-closed until snapshot/replay heals.
+- [ ] Require both Platform authorization projection and Session-owned `session_access_acl_projection` for every read, mutation,
+  control, snapshot and SSE connection. Recheck on SSE heartbeat no slower than 15 seconds; do not make a synchronous Platform call
+  on every HTTP/SSE hot-path operation.
+- [ ] Prove Site suspend, session revoke, membership remove, subject generation and every security epoch closes existing SSE and
+  rejects old reads/controls within the revocation budget. Prove BFF workload failure has distinct
+  `BFF_WORKLOAD_REQUIRED|BFF_WORKLOAD_REVOKED` safe errors rather than masquerading as user grant failure.
+- [ ] Run focused security/projection suites, lint and typecheck, then commit this slice before Task 11 exposes the complete reader.
+
 ### Task 11: Build Inbox, projection, complete snapshot, and opaque SSE
 
 **Repository:** `kokoro-session`

@@ -3,81 +3,132 @@ syntax = "proto3";
 package kokoro.platform.admission.v1;
 
 import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 import "kokoro/common/v1/receipt.proto";
 
-// Platform Admission decides whether a run may start and records how it ended.
-//
-// Session declares this shape today in `kokoro-session/src/platform/admission-port.ts`
-// but has no remote provider, so every call resolves through a legacy adapter that
-// answers outcome_unknown or not_found. This file is the versioned contract that
-// provider will implement.
-//
-// The one deliberate difference from the TypeScript port: `site_id` is a required
-// field of every request message rather than a hop-level header. Site is the
-// Platform business isolation boundary, and the transport spec forbids a caller
-// self-asserting it through bare metadata, so the owner must receive it as signed,
-// persistable payload it can enforce at the effect point.
-//
-// `namespace` stays inside the effect as the GA runtime isolation key. The two keys
-// are not interchangeable: GA consumes only the opaque namespace and never learns
-// site, user, owner or workspace identity.
+// AdmissionService is the sole Platform owner for pre-dispatch run admission.
+// Session supplies intent and opaque authorization evidence only. Platform resolves
+// namespace, capability, model route, budget/Hold and AuthorizationSegment facts.
+// None of those owner facts may be asserted by Session in PrepareRunEffect.
 service AdmissionService {
-  // Decide whether a run may start. Effectful: consumes budget and reserves capability.
   rpc PrepareRun(PrepareRunRequest) returns (PrepareRunResponse) {}
-
-  // Record how a prepared run ended. Effectful: settles what PrepareRun reserved.
-  rpc FinalizeRun(FinalizeRunRequest) returns (FinalizeRunResponse) {}
-
-  // Recover the authoritative outcome of a command whose response was lost.
-  // A caller that timed out queries the same command identity; it never issues a
-  // new one, because a timeout says nothing about whether the owner committed.
+  rpc FinalizeRunAuthorization(FinalizeRunAuthorizationRequest) returns (FinalizeRunAuthorizationResponse) {}
+  rpc ReleaseRunAuthorization(ReleaseRunAuthorizationRequest) returns (ReleaseRunAuthorizationResponse) {}
+  rpc ReconcileRunAuthorization(ReconcileRunAuthorizationRequest) returns (ReconcileRunAuthorizationResponse) {}
   rpc GetCommandReceipt(GetCommandReceiptRequest) returns (GetCommandReceiptResponse) {}
 }
 
-// Which command a receipt belongs to. Receipts are per operation, so a prepare
-// receipt can never be mistaken for a finalize receipt on the same command id.
 enum AdmissionOperation {
   ADMISSION_OPERATION_UNSPECIFIED = 0;
   ADMISSION_OPERATION_PREPARE_RUN = 1;
-  ADMISSION_OPERATION_FINALIZE_RUN = 2;
+  ADMISSION_OPERATION_FINALIZE_RUN_AUTHORIZATION = 2;
+  ADMISSION_OPERATION_RELEASE_RUN_AUTHORIZATION = 3;
+  ADMISSION_OPERATION_RECONCILE_RUN_AUTHORIZATION = 4;
 }
 
-// Outcome of PrepareRun.
-//
-// PENDING and OUTCOME_UNKNOWN are distinct on purpose. PENDING means the owner
-// durably accepted the intent and is still working. OUTCOME_UNKNOWN means the
-// caller does not know whether the owner committed, which is recoverable only by
-// querying the same command identity.
-enum PrepareRunOutcome {
-  PREPARE_RUN_OUTCOME_UNSPECIFIED = 0;
-  PREPARE_RUN_OUTCOME_ACCEPTED = 1;
-  PREPARE_RUN_OUTCOME_DENIED = 2;
-  PREPARE_RUN_OUTCOME_PENDING = 3;
-  PREPARE_RUN_OUTCOME_OUTCOME_UNKNOWN = 4;
-  // Only valid on a receipt lookup: no such command was ever recorded.
-  PREPARE_RUN_OUTCOME_NOT_FOUND = 5;
+enum AdmissionRetryClass {
+  ADMISSION_RETRY_CLASS_UNSPECIFIED = 0;
+  ADMISSION_RETRY_CLASS_NEVER = 1;
+  ADMISSION_RETRY_CLASS_AFTER_DELAY = 2;
+  ADMISSION_RETRY_CLASS_AFTER_USER_ACTION = 3;
+  ADMISSION_RETRY_CLASS_RECONCILE_RECEIPT = 4;
 }
 
-enum FinalizeRunOutcome {
-  FINALIZE_RUN_OUTCOME_UNSPECIFIED = 0;
-  FINALIZE_RUN_OUTCOME_COMMITTED = 1;
-  FINALIZE_RUN_OUTCOME_PENDING = 2;
-  FINALIZE_RUN_OUTCOME_OUTCOME_UNKNOWN = 3;
-  // Only valid on a receipt lookup: no such command was ever recorded.
-  FINALIZE_RUN_OUTCOME_NOT_FOUND = 4;
+// Browser-safe capability classification. These values describe presentation
+// labels only; package ids, secret refs and executable configuration stay out of
+// the admission snapshot.
+enum SafeCapabilityKind {
+  SAFE_CAPABILITY_KIND_UNSPECIFIED = 0;
+  SAFE_CAPABILITY_KIND_SKILL = 1;
+  SAFE_CAPABILITY_KIND_MCP = 2;
 }
 
-message PrepareRunEffect {
-  // Opaque GA runtime isolation key. Carries no site, user or workspace meaning
-  // and must not be parsed into one.
-  string namespace = 1 [(buf.validate.field).string = {
+message SafeCapabilityDisplay {
+  SafeCapabilityKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string label = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 191
   }];
+}
 
-  // Authorization facts the caller already resolved, as safe references rather
-  // than tokens. The owner re-checks them; it does not trust them as granted.
-  repeated string authorization_refs = 2 [(buf.validate.field).repeated = {
+message SafeAdmissionSnapshot {
+  string model_label = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  optional string agent_label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  // Retained only for wire/source compatibility with the pre-provider draft.
+  // Active providers leave it empty and populate typed capabilities below.
+  repeated string capability_labels = 3 [
+    deprecated = true,
+    (buf.validate.field).repeated = {
+      max_items: 64
+      items: {
+        string: {
+          min_len: 1
+          max_len: 191
+        }
+      }
+    }
+  ];
+  optional string estimated_cost_display = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  string policy_decision_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated SafeCapabilityDisplay capabilities = 6 [(buf.validate.field).repeated.max_items = 64];
+}
+
+// Encrypted material is audience-bound to Session's dispatch worker. It is not a
+// bearer credential and must never be returned to a browser or persisted in logs.
+message EncryptedRunRequestMaterial {
+  bytes ciphertext = 1 [(buf.validate.field).bytes = {
+    min_len: 32
+    max_len: 1048576
+  }];
+  string encryption_algorithm = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string key_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string audience = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  google.protobuf.Timestamp expires_at = 5 [(buf.validate.field).required = true];
+  string plaintext_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message InitialCapabilityIntent {
+  optional string requested_agent_option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated string requested_skill_option_refs = 2 [(buf.validate.field).repeated = {
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+  repeated string requested_mcp_option_refs = 3 [(buf.validate.field).repeated = {
     max_items: 64
     items: {
       string: {
@@ -88,104 +139,404 @@ message PrepareRunEffect {
   }];
 }
 
+message ClientRunIntent {
+  optional string effort = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string locale = 2 [(buf.validate.field).string = {
+    min_len: 2
+    max_len: 35
+  }];
+}
+
+message AttachmentAdmissionRef {
+  string asset_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_grant_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message PrepareRunEffect {
+  string session_access_grant = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 8192
+  }];
+  string project_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string session_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string launch_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string proposed_run_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string trigger_message_id = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string model_option_revision_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated AttachmentAdmissionRef attachment_refs = 8 [(buf.validate.field).repeated.max_items = 64];
+  repeated string interaction_prerequisite_refs = 9 [(buf.validate.field).repeated = {
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+  optional InitialCapabilityIntent initial_intent = 10;
+  ClientRunIntent client_intent = 11 [(buf.validate.field).required = true];
+}
+
 message PrepareRunRequest {
   kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
-
-  // Platform business isolation boundary. Required, and enforced by the owner at
-  // the effect point; a caller cannot widen its own scope by omitting it.
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-
   PrepareRunEffect effect = 3 [(buf.validate.field).required = true];
 }
 
-message PrepareRunResponse {
-  PrepareRunOutcome outcome = 1 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-
-  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
-
-  // Present when the outcome is ACCEPTED: the handle FinalizeRun must quote.
-  optional string manifest_ref = 3 [(buf.validate.field).string.max_len = 256];
-
-  // Present when the outcome is DENIED: a safe, non-disclosing reason code.
-  optional string denied_reason = 4 [(buf.validate.field).string.max_len = 191];
-}
-
-message FinalizeRunEffect {
-  // The manifest handle PrepareRun issued. Ties settlement to what was reserved.
+message PreparedRunAuthorization {
   string manifest_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
+  string manifest_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string session_execution_binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  EncryptedRunRequestMaterial run_request_material = 4 [(buf.validate.field).required = true];
+  string capability_snapshot_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string configuration_revision_id = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_budget_root_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string root_hold_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string authorization_segment_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 segment_version = 10 [(buf.validate.field).uint64.gte = 1];
+  google.protobuf.Timestamp expires_at = 11 [(buf.validate.field).required = true];
+  SafeAdmissionSnapshot safe_admission_snapshot = 12 [(buf.validate.field).required = true];
+}
 
-  // Reference to the terminal outcome being settled.
-  string outcome_ref = 2 [(buf.validate.field).string = {
+message AdmissionDenial {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  AdmissionRetryClass retry_class = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string safe_details = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+}
+
+message AdmissionPending {
+  google.protobuf.Timestamp retry_after = 1 [(buf.validate.field).required = true];
+}
+
+message AdmissionOutcomeUnknown {
+  AdmissionRetryClass retry_class = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp retry_after = 2 [(buf.validate.field).required = true];
+}
+
+message PrepareRunAccepted {
+  PreparedRunAuthorization prepared = 1 [(buf.validate.field).required = true];
+}
+
+message PrepareRunWaitingPrerequisite {
+  PreparedRunAuthorization prepared = 1 [(buf.validate.field).required = true];
+  repeated string prerequisite_refs = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message PrepareRunResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    PrepareRunAccepted accepted = 2;
+    PrepareRunWaitingPrerequisite waiting_prerequisite = 3;
+    AdmissionDenial denied = 4;
+    AdmissionPending pending = 5;
+    AdmissionOutcomeUnknown outcome_unknown = 6;
+  }
+}
+
+message FinalizeRunAuthorizationEffect {
+  string manifest_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string manifest_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string authorization_segment_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_segment_version = 4 [(buf.validate.field).uint64.gte = 1];
+  string launch_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string session_intent_receipt_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated string prerequisite_receipt_refs = 7 [(buf.validate.field).repeated = {
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message FinalizeRunAuthorizationRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  FinalizeRunAuthorizationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message CommittedRunAuthorization {
+  string authorization_segment_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 segment_version = 2 [(buf.validate.field).uint64.gte = 1];
+  google.protobuf.Timestamp committed_at = 3 [(buf.validate.field).required = true];
+}
+
+message AuthorizationExpired {
+  google.protobuf.Timestamp expired_at = 1 [(buf.validate.field).required = true];
+}
+
+message FinalizeRunAuthorizationResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    CommittedRunAuthorization committed = 2;
+    AuthorizationExpired expired = 3;
+    AdmissionDenial denied = 4;
+    AdmissionPending pending = 5;
+    AdmissionOutcomeUnknown outcome_unknown = 6;
+  }
+}
+
+message ReleaseRunAuthorizationEffect {
+  string manifest_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string authorization_segment_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_segment_version = 3 [(buf.validate.field).uint64.gte = 1];
+  string reason_code = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string no_dispatch_evidence_ref = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
 }
 
-message FinalizeRunRequest {
+message ReleaseRunAuthorizationRequest {
   kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
-
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-
-  FinalizeRunEffect effect = 3 [(buf.validate.field).required = true];
+  ReleaseRunAuthorizationEffect effect = 3 [(buf.validate.field).required = true];
 }
 
-message FinalizeRunResponse {
-  FinalizeRunOutcome outcome = 1 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
+message ReleasedRunAuthorization {
+  string authorization_segment_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
   }];
+  uint64 segment_version = 2 [(buf.validate.field).uint64.gte = 1];
+  google.protobuf.Timestamp released_at = 3 [(buf.validate.field).required = true];
+}
 
-  kokoro.common.v1.CommandReceipt receipt = 2 [(buf.validate.field).required = true];
+message AlreadyReleasedRunAuthorization {
+  ReleasedRunAuthorization release = 1 [(buf.validate.field).required = true];
+}
+
+message AuthorizationNotReleasable {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string safe_details = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1024
+  }];
+}
+
+message ReleaseRunAuthorizationResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    ReleasedRunAuthorization released = 2;
+    AlreadyReleasedRunAuthorization already_released = 3;
+    AuthorizationNotReleasable not_releasable = 4;
+    AdmissionPending pending = 5;
+    AdmissionOutcomeUnknown outcome_unknown = 6;
+  }
+}
+
+message ReconcileRunAuthorizationEffect {
+  string manifest_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string authorization_segment_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_segment_version = 3 [(buf.validate.field).uint64.gte = 1];
+  optional string session_dispatch_receipt_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string ga_durable_event_receipt_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string terminal_owner_evidence_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message ReconcileRunAuthorizationRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ReconcileRunAuthorizationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message AuthorizationReconciliationResult {
+  string authorization_segment_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 segment_version = 2 [(buf.validate.field).uint64.gte = 1];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
+  optional string safe_status_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message ReconcileRunAuthorizationResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    AuthorizationReconciliationResult execution_observed = 2;
+    AuthorizationReconciliationResult released_no_effect = 3;
+    AuthorizationReconciliationResult awaiting_owner_evidence = 4;
+    AuthorizationReconciliationResult reconciliation_required = 5;
+    AuthorizationReconciliationResult settled = 6;
+    AdmissionPending pending = 7;
+    AdmissionOutcomeUnknown outcome_unknown = 8;
+  }
 }
 
 message GetCommandReceiptRequest {
-  string command_id = 1 [(buf.validate.field).string = {
+  string site_id = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
   }];
-
-  kokoro.common.v1.CommandDigestAlgorithm digest_algorithm = 2 [(buf.validate.field).enum = {
+  AdmissionOperation operation = 2 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
-
-  // Same digest the original command carried. A different digest under the same
-  // command id is a conflict, not a match.
-  string request_digest = 3 [(buf.validate.field).string = {
+  string command_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v1.CommandDigestAlgorithm digest_algorithm = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 5 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-
-  AdmissionOperation operation = 4 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-
-  // Receipts are Site-scoped. Looking one up from another Site is not-found
-  // rather than forbidden, so existence is never disclosed across the boundary.
-  string site_id = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
 }
 
-message GetCommandReceiptResponse {
-  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+message CommandReceiptNotFound {}
 
+message GetCommandReceiptResponse {
   oneof result {
-    PrepareRunResponse prepare_run = 2;
-    FinalizeRunResponse finalize_run = 3;
+    option (buf.validate.oneof).required = true;
+    PrepareRunResponse prepare_run = 1;
+    FinalizeRunAuthorizationResponse finalize_run_authorization = 2;
+    ReleaseRunAuthorizationResponse release_run_authorization = 3;
+    ReconcileRunAuthorizationResponse reconcile_run_authorization = 4;
+    CommandReceiptNotFound not_found = 5;
   }
 }

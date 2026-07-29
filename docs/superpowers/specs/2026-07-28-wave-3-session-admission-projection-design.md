@@ -840,6 +840,41 @@ Project membership、grant verifier key、contract compatibility。不得回 `KO
 或 caller header。local development 可有显式 `KOKORO_LOCAL_UNSAFE_SITE_BINDING=1`，启动日志/页面水印必须醒目，
 且构建/部署 gate 禁止该值进入 production。
 
+#### 15.1.1 SessionAccessGrant 签发、双证据与撤销投影
+
+`SessionAccessGrant` 是 Platform Authorization 签发的独立 JOSE credential，不复用用户登录 access token，也不属于
+Admission。V1 使用 `jose` 的 asymmetric `RS256` compact JWS；production 禁止 HS256。签发私钥只在 Platform
+Authorization signer，Session 只持 JWKS/pinned public keys；该 key ring 与 UserSession key ring 分离，`kid` 必填，
+轮换采用 current+previous 双读和明确退役时间。固定 `iss`，`aud` 只能是
+`session.read|session.write|session.control|session.stream` 之一，`jti/iat/nbf/exp` 必填，TTL 不超过 5 分钟。
+
+签发时 Platform 在一个 transaction 中锁定并复核 ProductContext、Site/User/AuthSession/ProjectMembership、restriction
+与 credential 状态，持久化独立 `grantRef`、purpose、可选 exact session/run binding、epoch vector digest、key revision、
+expiry 与 status，再写 authorization outbox。每次签发可产生新 grant；不能把 credential 当幂等 command response。
+公开响应中的 binding 只是 BFF 的安全回显，Session 的可信 claims 必须来自 JWS 验签结果。
+
+Session v3 同时要求两个独立证据：
+
+1. transport adapter 验证 Site BFF workload credential（production 首选 mTLS/SPIFFE 或部署绑定的非用户 service
+   credential），形成 trusted workload claims；
+2. application provider 验证 purpose-bound SessionAccessGrant。
+
+任一缺失/失效都 fail closed。两份证据必须精确一致于 `siteProjectBindingRef/deploymentRef/siteRef/siteReleaseRef/
+webArtifactDigest/runtimeEnvironment/region/sessionContractRevision`；不一致按 non-disclosure
+`SESSION_SCOPE_MISMATCH`，不能相信浏览器 header/body 自填值。v3 是 server-to-server BFF 边界，不开放浏览器 CORS，
+raw grant 永不进入浏览器。
+
+仅靠短 TTL 不能满足主动撤销。Platform 为 Site suspend、AuthSession revoke、subject generation、Membership、
+authorization/restriction/credential/policy 变化原子 bump 聚合 `revocationEpoch` 并发布签名 durable authorization event。
+Session 以 inbox+digest 去重、单调 sequence/gap 检测更新本地 `platform_authorization_projection`；已有
+`session_access_acl_projection` 继续表达 Session-owned resource ACL，两者必须同时通过。新验签 grant 只允许在本地投影
+不存在时以其签名 epoch vector seed，或以严格更高的聚合 revocation epoch 前进，旧 grant 不得覆盖更新投影。
+
+所有 mutation/control、read/snapshot 建立和 SSE 建连前调用同一个 evaluator；SSE heartbeat 至少每 15 秒检查一次。
+authorization projection 超过 30 秒未收到 signed freshness/event、出现 sequence gap、签名/epoch 向后、feed bootstrap
+失败或 key revision 未知时 fail closed。正常 revocation SLO 为 30 秒；恢复通过 Platform 的 privileged snapshot/replay
+consumer contract 补齐 gap，不在 HTTP hot path 每次同步调用 Platform，也不把 Authorization 塞进 Admission。
+
 ### 15.2 Bootstrap 分工
 
 独立 Web artifact 本地拥有：route tree、brand assets/tokens、SEO、营销/法务文案、locale bundles 和 analytics
@@ -901,6 +936,8 @@ Chat UI 冻结精确依赖 `@assistant-ui/react@0.14.28`，不得使用 caret/ti
 
 | Code | HTTP | action |
 |---|---:|---|
+| `BFF_WORKLOAD_REQUIRED` | 401 | stop |
+| `BFF_WORKLOAD_REVOKED` | 403 | stop |
 | `SESSION_ACCESS_GRANT_REQUIRED` | 401 | refresh_grant |
 | `SESSION_ACCESS_GRANT_EXPIRED` | 401 | refresh_grant |
 | `SESSION_ACCESS_GRANT_REVOKED` | 401/403 | reauthenticate |

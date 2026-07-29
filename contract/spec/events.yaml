@@ -121,33 +121,64 @@ raw_kinds:
   - {kind: run.completed, payload: [status, token_usage]}
   - {kind: run.failed, payload: [code, error_kind, message]}
 
-# session-synthesized kinds (browser-only; metadata from the sessions collection).
-synthetic_kinds:
-  - {kind: session.created, payload: [title, owner_id]}
-  - {kind: run.created, payload: [run_id]}
-  # user 消息进事件史：线程的唯一完整真源是事件回放（刷新水合=全量回放重建）。
-  - {kind: message.user, payload: [message_id, content]}
+# Browser-facing projection contract. Raw GA kinds above are intentionally
+# unchanged; Session translates them into owner-safe durable projection deltas.
+browser_schema_id: kokoro.session.events.v3
+browser_schema_version: 3
+browser_imports:
+  - SessionMetadata
+  - ConversationBranch
+  - MessageRecord
+  - MessagePartEnvelope
+  - RunLaunchProjection
+  - RunView
+  - ControlProjection
+  - RunCostProjection
+  - CommandReceiptView
 
-# browser-facing kinds (session-out / web-in): synthetic pair + raw minus run.started.
+browser_kinds:
+  - kind: session.updated
+    fields: [{name: session, type: object:SessionMetadata}]
+  - kind: branch.created
+    fields: [{name: branch, type: object:ConversationBranch}]
+  - kind: branch.activated
+    fields:
+      - {name: branch_id, type: string_nonempty}
+      - {name: active_leaf_message_id, type: string_nonempty, optional: true}
+      - {name: session_version, type: positive_int}
+  - kind: message.created
+    fields: [{name: message, type: object:MessageRecord}]
+  - kind: message.part.updated
+    fields: [{name: part, type: object:MessagePartEnvelope}]
+  - kind: run.launch.updated
+    fields: [{name: launch, type: object:RunLaunchProjection}]
+  - kind: run.view.updated
+    fields: [{name: run, type: object:RunView}]
+  - kind: run.control.updated
+    fields: [{name: control, type: object:ControlProjection}]
+  - kind: run.cost.updated
+    fields: [{name: cost, type: object:RunCostProjection}]
+  - kind: command.receipt.updated
+    fields: [{name: receipt, type: object:CommandReceiptView}]
 browser_order:
-  - session.created
-  - run.created
-  - message.user
-  - message.delta
-  - message.completed
-  - thinking.delta
-  - tool.invoked
-  - tool.output.delta
-  - tool.awaiting_approval
-  - tool.returned
-  - delivery.created
-  - todo.updated
-  - subagent.started
-  - subagent.finished
-  - subagent.thinking.delta
-  - subagent.text.delta
-  - subagent.text.completed
-  - subagent.tool.invoked
-  - subagent.tool.returned
-  - run.completed
-  - run.failed
+  - session.updated
+  - branch.created
+  - branch.activated
+  - message.created
+  - message.part.updated
+  - run.launch.updated
+  - run.view.updated
+  - run.control.updated
+  - run.cost.updated
+  - command.receipt.updated
+
+# JSON control frames share the SSE connection but never enter the durable
+# sequence and never advance a resume cursor. Heartbeats remain SSE comments.
+stream_control_frames:
+  - kind: stream.draining
+    fields:
+      - {name: session_id, type: string_nonempty}
+      - {name: stream_epoch, type: string_nonempty}
+      - {name: last_durable_cursor, type: string_nonempty}
+      - {name: action, type: literal:retry_same_cursor}
+      - {name: retry_after_ms, type: nonnegative_int, optional: true}
