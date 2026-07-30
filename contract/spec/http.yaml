@@ -200,9 +200,13 @@ objects:
       - {name: attribution, type: string_nonempty, optional: true}
   - name: ToolCallPartPayload
     fields:
+      # Stable Agent-owned identity used to correlate tool start/finish output records.
+      - {name: tool_call_id, type: string_nonempty}
       - {name: tool_label, type: string_nonempty}
       - {name: input_summary, type: record}
       - {name: status, type: string_nonempty}
+      # Bounded/redacted by Agent before browser projection; never raw provider output.
+      - {name: safe_result_preview, type: safe_preview, optional: true}
       - {name: effect_ref, type: string_nonempty, optional: true}
       - {name: receipt_ref, type: string_nonempty, optional: true}
   - name: ActionPartPayload

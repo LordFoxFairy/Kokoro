@@ -116,6 +116,19 @@ def test_plan_proposal_raw_contract_is_typed_and_owner_safe() -> None:
 
 def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     http = load("http.yaml")
+    tool_call = next(obj for obj in http["objects"] if obj["name"] == "ToolCallPartPayload")
+    tool_call_fields = {field["name"]: field for field in tool_call["fields"]}
+    assert tool_call_fields["tool_call_id"] == {
+        "name": "tool_call_id",
+        "type": "string_nonempty",
+    }
+    assert tool_call_fields["safe_result_preview"] == {
+        "name": "safe_result_preview",
+        "type": "safe_preview",
+        "optional": True,
+    }
+    generated_browser = _find("kokoro-session/src/contract/http.ts")
+    assert "safe_result_preview: z.string().max(16384).optional()" in generated_browser
     snapshot = next(obj for obj in http["objects"] if obj["name"] == "SessionSnapshot")
     fields = {field["name"]: field for field in snapshot["fields"]}
     assert fields["messages"].get("optional") is not True

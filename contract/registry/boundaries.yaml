@@ -43,6 +43,15 @@
           "scope": "namespace",
           "siteBinding": "not-applicable",
           "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "PullDurableOutputRecords",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
         }
       ],
       "protocol": "connect-rpc",

@@ -256,6 +256,7 @@ def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> Non
         "PullDurableExecutionEvidence",
         "GetDurableExecutionEvidence",
         "GetRunDurableCheckpoint",
+        "PullDurableOutputRecords",
     ]
 
     evidence = _message_body(source, "DurableExecutionEvidence")
@@ -353,6 +354,93 @@ def test_agent_execution_evidence_is_a_closed_agent_owned_read_boundary() -> Non
     assert "string code = 1" in failed
     assert "string error_kind = 2" in failed
     assert "string message = 3" in failed
+
+
+def test_agent_durable_output_is_independent_bounded_and_digest_chained() -> None:
+    source = _proto("kokoro/agent/execution/v1/agent_execution_evidence.proto")
+
+    assert _service_methods(source, "AgentExecutionEvidenceService") == [
+        "PullDurableExecutionEvidence",
+        "GetDurableExecutionEvidence",
+        "GetRunDurableCheckpoint",
+        "PullDurableOutputRecords",
+    ]
+    record = _message_body(source, "DurableOutputRecord")
+    for field in (
+        "string output_ref = 1",
+        "uint64 output_version = 2",
+        "string run_id = 3",
+        "uint64 output_seq = 4",
+        "bytes canonical_payload = 5",
+        "string payload_sha256 = 6",
+        "google.protobuf.Timestamp recorded_at = 7",
+        "string producer_instance_ref = 8",
+        "uint64 producer_generation = 9",
+    ):
+        assert field in record
+    assert "max_len: 65536" in record
+    assert "durable_seq" not in record
+
+    request = _message_body(source, "PullDurableOutputRecordsRequest")
+    response = _message_body(source, "PullDurableOutputRecordsResponse")
+    assert "uint64 after_output_seq = 2" in request
+    assert "lte: 64" in request
+    assert "repeated DurableOutputRecord records = 1" in response
+    assert "max_items = 64" in response
+
+    canonical = _message_body(source, "DurableOutputCanonicalPayloadV1")
+    assert "option (buf.validate.oneof).required = true;" in canonical
+    for payload in (
+        "TextDeltaOutputV1 text_delta",
+        "TextSnapshotOutputV1 text_snapshot",
+        "SafeReasoningSummaryOutputV1 safe_reasoning_summary",
+        "ToolStartedOutputV1 tool_started",
+        "ToolFinishedOutputV1 tool_finished",
+        "PlanProgressOutputV1 plan_progress",
+        "SubagentProgressOutputV1 subagent_progress",
+        "ArtifactReferenceOutputV1 artifact_reference",
+        "NoticeOutputV1 notice",
+        "ErrorOutputV1 error",
+    ):
+        assert payload in canonical
+    assert "raw_reasoning" not in source
+    assert "reasoning_token" not in source
+
+    snapshot = _message_body(source, "TextSnapshotOutputV1")
+    assert "uint64 replaces_through_output_seq = 3;" in snapshot
+    artifact = _message_body(source, "ArtifactReferenceOutputV1")
+    assert "string artifact_version_ref = 2" in artifact
+
+    subagent = _message_body(source, "SubagentProgressOutputV1")
+    notice = _message_body(source, "NoticeOutputV1")
+    error = _message_body(source, "ErrorOutputV1")
+    assert "SubagentProgressStatusV1 status = 2" in subagent
+    assert "string notice_ref = 1" in notice
+    assert "NoticeSeverityV1 severity = 4" in notice
+    assert "optional OutputRetryClassV1 retry_class = 5" in notice
+    assert "string error_ref = 1" in error
+    assert "OutputRetryClassV1 retry_class = 4" in error
+
+    started = _message_body(source, "ToolStartedOutputV1")
+    finished = _message_body(source, "ToolFinishedOutputV1")
+    assert "string tool_call_id = 1" in started
+    assert "bytes redacted_input_summary_json = 3" in started
+    assert "string tool_call_id = 1" in finished
+    assert "string safe_result_preview = 2" in finished
+    assert "max_bytes: 16384" in finished
+
+    completed = _message_body(source, "RunCompletedEvidenceV1")
+    failed = _message_body(source, "RunFailedEvidenceV1")
+    assert "uint64 output_high_watermark = 3" in completed
+    assert "string output_digest_sha256 = 4" in completed
+    assert "uint64 output_high_watermark = 4" in failed
+    assert "string output_digest_sha256 = 5" in failed
+    assert "chain0 = SHA256('kokoro-output-chain-v1\\0' || UTF8(run_id))" in source
+    assert "chainN = SHA256(prev || UINT64_BE(output_seq) || HEX_DECODE(payload_sha256))" in source
+
+    boundaries = json.loads((CONTRACT / "registry/boundaries.yaml").read_text())["boundaries"]
+    boundary = next(item for item in boundaries if item["id"] == "agent-execution-evidence")
+    assert "PullDurableOutputRecords" in {operation["id"] for operation in boundary["operations"]}
 
 
 def test_command_digest_algorithm_is_explicit_and_storage_safe() -> None:

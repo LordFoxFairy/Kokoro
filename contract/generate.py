@@ -91,6 +91,7 @@ _ZOD_SCALAR = {
     "effort": "z.string().min(1).max(64)",
     "reason_code": "z.string().min(1).max(128)",
     "search_query": "z.string().min(1).max(512)",
+    "safe_preview": "z.string().max(16384)",
     "opaque_cursor": "z.string().min(1).max(8192)",
     "page_limit": "z.number().int().min(1).max(100)",
     # The explicit key/value form is accepted by Zod 3 and required by Zod 4.
@@ -104,6 +105,7 @@ _ZOD_SCALAR = {
 _PY_SCALAR = {
     "string_nonempty": "NonEmptyStr",
     "string": "str",
+    "safe_preview": "str",
     "boolean": "bool",
     "int": "int",
     "positive_int": "PositiveInt",

@@ -12,6 +12,7 @@ service AgentExecutionEvidenceService {
   rpc PullDurableExecutionEvidence(PullDurableExecutionEvidenceRequest) returns (PullDurableExecutionEvidenceResponse) {}
   rpc GetDurableExecutionEvidence(GetDurableExecutionEvidenceRequest) returns (GetDurableExecutionEvidenceResponse) {}
   rpc GetRunDurableCheckpoint(GetRunDurableCheckpointRequest) returns (GetRunDurableCheckpointResponse) {}
+  rpc PullDurableOutputRecords(PullDurableOutputRecordsRequest) returns (PullDurableOutputRecordsResponse) {}
 }
 
 enum DurableExecutionEvidenceKind {
@@ -222,6 +223,13 @@ message RunCompletedEvidenceV1 {
   // Presence is unified: absent means no usage fact; present always carries
   // both non-negative counters, matching Agent RunCompletedPayload exactly.
   TokenUsageEvidenceV1 token_usage = 2;
+  // Independent per-run output cursor. Zero means the run produced no output;
+  // output_digest_sha256 is chainN at this watermark (chain0 when zero).
+  uint64 output_high_watermark = 3;
+  string output_digest_sha256 = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 message TokenUsageEvidenceV1 {
@@ -239,6 +247,239 @@ message RunFailedEvidenceV1 {
     max_len: 128
   }];
   string message = 3 [(buf.validate.field).string.max_len = 4096];
+  // Terminal output evidence is recorded even when execution fails;
+  // output_digest_sha256 is chainN at this watermark (chain0 when zero).
+  uint64 output_high_watermark = 4;
+  string output_digest_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+// canonical_payload is the deterministic protobuf serialization of exactly
+// this message. Safe summaries and previews are already redacted for display.
+message DurableOutputCanonicalPayloadV1 {
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+
+    TextDeltaOutputV1 text_delta = 1;
+    TextSnapshotOutputV1 text_snapshot = 2;
+    SafeReasoningSummaryOutputV1 safe_reasoning_summary = 3;
+    ToolStartedOutputV1 tool_started = 4;
+    ToolFinishedOutputV1 tool_finished = 5;
+    PlanProgressOutputV1 plan_progress = 6;
+    SubagentProgressOutputV1 subagent_progress = 7;
+    ArtifactReferenceOutputV1 artifact_reference = 8;
+    NoticeOutputV1 notice = 9;
+    ErrorOutputV1 error = 10;
+  }
+}
+
+message TextDeltaOutputV1 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string delta = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 16384
+  }];
+}
+
+message TextSnapshotOutputV1 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string text = 2 [(buf.validate.field).string.max_bytes = 61440];
+  // Zero means no replacement. Otherwise this is the greatest earlier
+  // output_seq replaced by this snapshot and is less than its record's seq.
+  uint64 replaces_through_output_seq = 3;
+}
+
+message SafeReasoningSummaryOutputV1 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  // Policy-approved summary only; never hidden chain-of-thought or provider-internal material.
+  string safe_summary = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 8192
+  }];
+}
+
+message ToolStartedOutputV1 {
+  string tool_call_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string tool_label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional bytes redacted_input_summary_json = 3 [(buf.validate.field).bytes.max_len = 16384];
+}
+
+message ToolFinishedOutputV1 {
+  string tool_call_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_result_preview = 2 [(buf.validate.field).string = {max_bytes: 16384}];
+  bool is_error = 3;
+  bool truncated = 4;
+}
+
+message PlanProgressOutputV1 {
+  string plan_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_summary = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+  repeated PlanStepV1 steps = 3 [(buf.validate.field).repeated.max_items = 256];
+}
+
+enum SubagentProgressStatusV1 {
+  SUBAGENT_PROGRESS_STATUS_V1_UNSPECIFIED = 0;
+  SUBAGENT_PROGRESS_STATUS_V1_PENDING = 1;
+  SUBAGENT_PROGRESS_STATUS_V1_RUNNING = 2;
+  SUBAGENT_PROGRESS_STATUS_V1_COMPLETED = 3;
+  SUBAGENT_PROGRESS_STATUS_V1_FAILED = 4;
+  SUBAGENT_PROGRESS_STATUS_V1_CANCELED = 5;
+}
+
+message SubagentProgressOutputV1 {
+  string subagent_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  SubagentProgressStatusV1 status = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string safe_summary = 3 [(buf.validate.field).string.max_bytes = 4096];
+}
+
+message ArtifactReferenceOutputV1 {
+  string artifact_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  // Immutable version identity; artifact_ref alone may denote a mutable logical artifact.
+  string artifact_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string content_type = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional bytes safe_metadata_json = 4 [(buf.validate.field).bytes.max_len = 16384];
+}
+
+enum NoticeSeverityV1 {
+  NOTICE_SEVERITY_V1_UNSPECIFIED = 0;
+  NOTICE_SEVERITY_V1_INFO = 1;
+  NOTICE_SEVERITY_V1_WARNING = 2;
+}
+
+enum OutputRetryClassV1 {
+  OUTPUT_RETRY_CLASS_V1_UNSPECIFIED = 0;
+  OUTPUT_RETRY_CLASS_V1_NEVER = 1;
+  OUTPUT_RETRY_CLASS_V1_IMMEDIATE = 2;
+  OUTPUT_RETRY_CLASS_V1_AFTER_DELAY = 3;
+  OUTPUT_RETRY_CLASS_V1_AFTER_USER_ACTION = 4;
+  OUTPUT_RETRY_CLASS_V1_RECONCILE_RECEIPT = 5;
+}
+
+message NoticeOutputV1 {
+  string notice_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string message = 3 [(buf.validate.field).string.max_bytes = 4096];
+  NoticeSeverityV1 severity = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional OutputRetryClassV1 retry_class = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ErrorOutputV1 {
+  string error_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string message = 3 [(buf.validate.field).string.max_bytes = 4096];
+  OutputRetryClassV1 retry_class = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+// output_seq is an append-only per-run sequence independent of lifecycle
+// durable_seq. The terminal digest chain is frozen as follows:
+// chain0 = SHA256('kokoro-output-chain-v1\0' || UTF8(run_id))
+// chainN = SHA256(prev || UINT64_BE(output_seq) || HEX_DECODE(payload_sha256))
+message DurableOutputRecord {
+  string output_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 output_version = 2 [(buf.validate.field).uint64.const = 1];
+  string run_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 output_seq = 4 [(buf.validate.field).uint64.gt = 0];
+  bytes canonical_payload = 5 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 65536
+  }];
+  string payload_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
+  string producer_instance_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 9 [(buf.validate.field).uint64.gt = 0];
+}
+
+message PullDurableOutputRecordsRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  // Exclusive per-run cursor. Zero starts at the first output record.
+  uint64 after_output_seq = 2;
+  uint32 page_size = 3 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 64
+  }];
+}
+
+message PullDurableOutputRecordsResponse {
+  repeated DurableOutputRecord records = 1 [(buf.validate.field).repeated.max_items = 64];
+  optional uint64 next_after_output_seq = 2 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 3;
 }
 
 message DurableExecutionEvidence {

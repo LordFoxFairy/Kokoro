@@ -77,8 +77,10 @@ reference. Hold and RatedUsage allocation surfaces preserve bidirectional tracea
 snapshots, raw usage evidence, provider payloads, secrets or legal-liability dimensions.
 
 `agent-execution-evidence@v1` is the Agent-owned read-only reconciliation boundary. Its payload is deliberately
-business-identity-free: consumers receive only run-local durable sequence/event facts and the canonical Agent
-owner payload. It remains `contract-only` until a live mTLS provider/consumer compatibility probe exists.
+business-identity-free: consumers receive run-local lifecycle evidence plus an independent append-only output
+sequence with bounded typed payloads. Terminal completed/failed evidence commits the output high watermark and
+digest chain. Output sequence numbers never share or advance lifecycle `durable_seq`. It remains `contract-only`
+until a live mTLS provider/consumer compatibility probe exists.
 
 ## Verification
 
