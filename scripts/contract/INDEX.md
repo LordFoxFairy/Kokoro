@@ -181,8 +181,9 @@ identifier/reference item is independently bounded in `model_control.proto`, whi
 is the operational resource boundary.
 
 `platform-model-control@v1` also generates `model-control-errors.ts`. Platform must use this artifact
-when producing the inventory-not-found, command-receipt-conflict, and Admin-page-token errors, and Web
-must consume the same classifications when asserting HTTP status and safe domain-code projection. This
+when producing inventory-not-found, command-receipt-conflict, Admin-page-token, authentication, and
+authorization errors, and Web must consume the same classifications when asserting HTTP status and safe
+domain-code projection. This
 keeps Connect error details executable across the provider/consumer split instead of duplicating literals.
 
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`

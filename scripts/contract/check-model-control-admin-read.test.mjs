@@ -76,6 +76,8 @@ test("ModelControl generates one provider-consumer error classification contract
       "inventoryRevisionNotFound", "model.inventory.not_found", "not_found", "404",
       "commandReceiptConflict", "model.command_receipt_conflict", "already_exists", "409",
       "adminPageTokenInvalid", "model.admin_page_token.invalid", "invalid_argument", "400",
+      "adminSessionUnauthenticated", "admin.session.unauthenticated", "unauthenticated", "401",
+      "adminPermissionDenied", "admin.permission_denied", "permission_denied", "403",
     ]) assert.match(source, new RegExp(value, "u"));
     assert.match(source, /export function modelControlAdminErrorDetail/u);
   } finally {
