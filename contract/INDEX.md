@@ -68,8 +68,10 @@ export receipt metadata. Code-batch approval and lifecycle transitions remain Co
 
 `AdminCreditService.v1` is the dedicated read-only operator plane for Credit authority facts. Every request binds an exact Site,
 uses bounded opaque keyset pagination, and exposes decimal amounts as strings. Site/account summaries identify their authoritative
-transaction-snapshot freshness and `as_of`; Grant, Hold, Journal and RatedUsage rows retain safe source/execution trace refs without
-exposing rating snapshots, raw usage evidence, provider payloads, secrets or legal-liability dimensions.
+database observation. Paginated responses distinguish the immutable membership cutoff (`membership_watermark`) from the database
+time at which each page was observed (`observed_at`). Source filters are the exact `(source_type, source_ref)` identity, never a bare
+reference. Hold and RatedUsage allocation surfaces preserve bidirectional traceability through Grant without exposing rating
+snapshots, raw usage evidence, provider payloads, secrets or legal-liability dimensions.
 
 `agent-execution-evidence@v1` is the Agent-owned read-only reconciliation boundary. Its payload is deliberately
 business-identity-free: consumers receive only run-local durable sequence/event facts and the canonical Agent

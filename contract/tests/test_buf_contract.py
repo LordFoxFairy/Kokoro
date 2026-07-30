@@ -514,9 +514,11 @@ def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields()
         "GetCreditAccount",
         "ListCreditGrants",
         "ListCreditHolds",
+        "ListCreditHoldAllocations",
         "ListCreditJournalTransactions",
         "ListCreditJournalEntries",
         "ListRatedUsage",
+        "ListRatedUsageSourceAllocations",
     ]
     assert "AuthenticatedOperatorQueryContext context" in credit
     assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
@@ -529,6 +531,53 @@ def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields()
         "RatedUsageSummary",
     ):
         assert "string" in _message_body(credit, message)
+    for request in (
+        "ListCreditGrantsRequest",
+        "ListCreditHoldsRequest",
+        "ListCreditJournalTransactionsRequest",
+        "ListRatedUsageRequest",
+    ):
+        body = _message_body(credit, request)
+        assert "optional CreditGrantSourceType source_type" in body
+        assert "optional string source_ref" in body
+    for request in (
+        "ListCreditGrantsRequest",
+        "ListCreditHoldsRequest",
+        "ListRatedUsageRequest",
+    ):
+        assert "optional string credit_grant_id" in _message_body(credit, request)
+    for response in (
+        "ListCreditAccountsResponse",
+        "ListCreditGrantsResponse",
+        "ListCreditHoldsResponse",
+        "ListCreditHoldAllocationsResponse",
+        "ListCreditJournalTransactionsResponse",
+        "ListCreditJournalEntriesResponse",
+        "ListRatedUsageResponse",
+        "ListRatedUsageSourceAllocationsResponse",
+    ):
+        body = _message_body(credit, response)
+        assert "google.protobuf.Timestamp membership_watermark" in body
+        assert "google.protobuf.Timestamp observed_at" in body
+        assert "google.protobuf.Timestamp as_of" not in body
+    hold_allocation = _message_body(credit, "CreditHoldAllocationSummary")
+    for field in (
+        "string credit_hold_ref",
+        "string credit_grant_id",
+        "string allocated_amount",
+        "uint32 allocation_ordinal",
+    ):
+        assert field in hold_allocation
+    usage_allocation = _message_body(credit, "RatedUsageSourceAllocationSummary")
+    for field in (
+        "string rated_usage_ref",
+        "string settlement_ref",
+        "string credit_grant_id",
+        "CreditUsageSourceDirection direction",
+        "string amount",
+        "uint32 allocation_ordinal",
+    ):
+        assert field in usage_allocation
     assert "google.protobuf.Struct" not in credit
     assert "bytes raw" not in credit
     assert "provider_payload" not in credit

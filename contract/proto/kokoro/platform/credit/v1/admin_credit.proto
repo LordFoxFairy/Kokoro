@@ -13,9 +13,11 @@ service AdminCreditService {
   rpc GetCreditAccount(GetCreditAccountRequest) returns (GetCreditAccountResponse) {}
   rpc ListCreditGrants(ListCreditGrantsRequest) returns (ListCreditGrantsResponse) {}
   rpc ListCreditHolds(ListCreditHoldsRequest) returns (ListCreditHoldsResponse) {}
+  rpc ListCreditHoldAllocations(ListCreditHoldAllocationsRequest) returns (ListCreditHoldAllocationsResponse) {}
   rpc ListCreditJournalTransactions(ListCreditJournalTransactionsRequest) returns (ListCreditJournalTransactionsResponse) {}
   rpc ListCreditJournalEntries(ListCreditJournalEntriesRequest) returns (ListCreditJournalEntriesResponse) {}
   rpc ListRatedUsage(ListRatedUsageRequest) returns (ListRatedUsageResponse) {}
+  rpc ListRatedUsageSourceAllocations(ListRatedUsageSourceAllocationsRequest) returns (ListRatedUsageSourceAllocationsResponse) {}
 }
 
 enum CreditReadFreshness {
@@ -90,6 +92,13 @@ enum CreditJournalAccountType {
   CREDIT_JOURNAL_ACCOUNT_TYPE_REVOKED = 6;
   CREDIT_JOURNAL_ACCOUNT_TYPE_ADJUSTMENT = 7;
   CREDIT_JOURNAL_ACCOUNT_TYPE_RECOVERY_EXPOSURE = 8;
+}
+
+enum CreditUsageSourceDirection {
+  CREDIT_USAGE_SOURCE_DIRECTION_UNSPECIFIED = 0;
+  CREDIT_USAGE_SOURCE_DIRECTION_CAPTURE = 1;
+  CREDIT_USAGE_SOURCE_DIRECTION_INCREASE = 2;
+  CREDIT_USAGE_SOURCE_DIRECTION_DECREASE = 3;
 }
 
 message CreditBalanceSummary {
@@ -236,6 +245,24 @@ message CreditHoldSummary {
   uint64 source_count = 20;
 }
 
+message CreditHoldAllocationSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_hold_ref = 2 [(buf.validate.field).string.uuid = true];
+  string credit_grant_id = 3 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 4 [(buf.validate.field).string.uuid = true];
+  string unit = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string reserve_journal_transaction_ref = 6 [(buf.validate.field).string.uuid = true];
+  string allocated_amount = 7 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  uint32 allocation_ordinal = 8;
+  google.protobuf.Timestamp created_at = 9 [(buf.validate.field).required = true];
+}
+
 message CreditJournalTransactionSummary {
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -335,6 +362,22 @@ message RatedUsageSummary {
   google.protobuf.Timestamp created_at = 18 [(buf.validate.field).required = true];
 }
 
+message RatedUsageSourceAllocationSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string rated_usage_ref = 2 [(buf.validate.field).string.uuid = true];
+  string settlement_ref = 3 [(buf.validate.field).string.uuid = true];
+  string credit_grant_id = 4 [(buf.validate.field).string.uuid = true];
+  CreditUsageSourceDirection direction = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string amount = 6 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  uint32 allocation_ordinal = 7;
+}
+
 message GetSiteCreditSummaryRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
@@ -368,7 +411,8 @@ message ListCreditAccountsResponse {
     min_len: 1
     max_len: 512
   }];
-  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }
 
 message GetCreditAccountRequest {
@@ -384,6 +428,11 @@ message GetCreditAccountResponse {
 }
 
 message ListCreditGrantsRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.grants.source_pair"
+    message: "source_type and source_ref must be provided together"
+    expression: "has(this.source_type) == has(this.source_ref)"
+  };
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
@@ -403,6 +452,11 @@ message ListCreditGrantsRequest {
     max_len: 512
   }];
   uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+  optional CreditGrantSourceType source_type = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string credit_grant_id = 9 [(buf.validate.field).string.uuid = true];
 }
 message ListCreditGrantsResponse {
   repeated CreditGrantSummary grants = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -410,10 +464,16 @@ message ListCreditGrantsResponse {
     min_len: 1
     max_len: 512
   }];
-  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }
 
 message ListCreditHoldsRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.holds.source_pair"
+    message: "source_type and source_ref must be provided together"
+    expression: "has(this.source_type) == has(this.source_ref)"
+  };
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
@@ -433,6 +493,11 @@ message ListCreditHoldsRequest {
     max_len: 512
   }];
   uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+  optional CreditGrantSourceType source_type = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string credit_grant_id = 9 [(buf.validate.field).string.uuid = true];
 }
 message ListCreditHoldsResponse {
   repeated CreditHoldSummary holds = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -440,10 +505,43 @@ message ListCreditHoldsResponse {
     min_len: 1
     max_len: 512
   }];
-  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
+}
+
+message ListCreditHoldAllocationsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  oneof trace {
+    option (buf.validate.oneof).required = true;
+    string credit_hold_ref = 3 [(buf.validate.field).string.uuid = true];
+    string credit_grant_id = 4 [(buf.validate.field).string.uuid = true];
+  }
+  optional string page_token = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 6 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditHoldAllocationsResponse {
+  repeated CreditHoldAllocationSummary allocations = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }
 
 message ListCreditJournalTransactionsRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.journal.source_pair"
+    message: "source_type and source_ref must be provided together"
+    expression: "has(this.source_type) == has(this.source_ref)"
+  };
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
@@ -465,6 +563,10 @@ message ListCreditJournalTransactionsRequest {
     max_len: 512
   }];
   uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+  optional CreditGrantSourceType source_type = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
 }
 message ListCreditJournalTransactionsResponse {
   repeated CreditJournalTransactionSummary transactions = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -472,7 +574,8 @@ message ListCreditJournalTransactionsResponse {
     min_len: 1
     max_len: 512
   }];
-  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }
 
 message ListCreditJournalEntriesRequest {
@@ -494,9 +597,16 @@ message ListCreditJournalEntriesResponse {
     min_len: 1
     max_len: 512
   }];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }
 
 message ListRatedUsageRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.rated_usage.source_pair"
+    message: "source_type and source_ref must be provided together"
+    expression: "has(this.source_type) == has(this.source_ref)"
+  };
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 1
@@ -521,6 +631,11 @@ message ListRatedUsageRequest {
     max_len: 512
   }];
   uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+  optional CreditGrantSourceType source_type = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string credit_grant_id = 11 [(buf.validate.field).string.uuid = true];
 }
 message ListRatedUsageResponse {
   repeated RatedUsageSummary rated_usage = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -528,5 +643,33 @@ message ListRatedUsageResponse {
     min_len: 1
     max_len: 512
   }];
-  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
+}
+
+message ListRatedUsageSourceAllocationsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  oneof trace {
+    option (buf.validate.oneof).required = true;
+    string rated_usage_ref = 3 [(buf.validate.field).string.uuid = true];
+    string settlement_ref = 4 [(buf.validate.field).string.uuid = true];
+  }
+  optional string page_token = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 6 [(buf.validate.field).uint32.lte = 200];
+}
+message ListRatedUsageSourceAllocationsResponse {
+  repeated RatedUsageSourceAllocationSummary allocations = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
 }

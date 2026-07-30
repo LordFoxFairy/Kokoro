@@ -488,9 +488,11 @@
         {"effect": false, "id": "GetCreditAccount", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListCreditGrants", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListCreditHolds", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditHoldAllocations", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListCreditJournalTransactions", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListCreditJournalEntries", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": false, "id": "ListRatedUsage", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+        {"effect": false, "id": "ListRatedUsage", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListRatedUsageSourceAllocations", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
