@@ -253,6 +253,7 @@ message ListCreditProgramRevisionsResponse {
     min_len: 1
     max_len: 1024
   }];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
 }
 
 message GetCreditProgramRevisionRequest {
@@ -362,6 +363,7 @@ message ListEntitlementTemplateRevisionsResponse {
     min_len: 1
     max_len: 1024
   }];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
 }
 
 message GetEntitlementTemplateRevisionRequest {
@@ -586,6 +588,7 @@ message ListOffersResponse {
     min_len: 1
     max_len: 1024
   }];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
 }
 
 message GetOfferRequest {
@@ -700,6 +703,7 @@ message ListRedemptionProgramsResponse {
     min_len: 1
     max_len: 1024
   }];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
 }
 
 message GetRedemptionProgramRequest {
@@ -818,6 +822,7 @@ message ListCodeBatchesResponse {
     min_len: 1
     max_len: 1024
   }];
+  google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];
 }
 
 message GetCodeBatchRequest {

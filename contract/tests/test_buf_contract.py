@@ -2231,6 +2231,16 @@ def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -
                 f"{message}.{field} must fit PostgreSQL BIGINT"
             )
 
+    for response in (
+        "ListCreditProgramRevisionsResponse",
+        "ListEntitlementTemplateRevisionsResponse",
+        "ListOffersResponse",
+        "ListRedemptionProgramsResponse",
+        "ListCodeBatchesResponse",
+    ):
+        body = _message_body(source, response)
+        assert "google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];" in body
+
 def test_admin_commerce_credit_window_and_safe_label_are_executable_contracts() -> None:
     source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
 
