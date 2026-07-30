@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { readProtoServiceMethods } from "./check-boundary-registry.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const checker = resolve(here, "check-boundary-registry.mjs");
@@ -313,6 +314,17 @@ test("rejects a proto rpc missing from the registry", async () => {
   const boundary = protoBoundary();
   boundary.operations = [boundary.operations[0]];
   await expectFailure({ boundaries: [boundary] }, "boundary_registry_operation_orphan: fixture-proto: ReadThing");
+});
+
+test("reads server-streaming proto methods as declared operations", () => {
+  const source = `service StreamService {
+    rpc Tail(TailRequest) returns (stream TailFrame) {}
+}`;
+  assert.deepEqual(readProtoServiceMethods(source, "StreamService"), [{
+    name: "Tail",
+    request: "TailRequest",
+    response: "TailFrame",
+  }]);
 });
 
 test("rejects a registered operation absent from the proto service", async () => {

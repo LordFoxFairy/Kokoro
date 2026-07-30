@@ -8,6 +8,7 @@ import "buf/validate/validate.proto";
 // The opaque authorization handle binds Site, budget, route and pricing inside Platform.
 service ModelGatewayService {
   rpc InvokeModel(InvokeModelRequest) returns (InvokeModelResponse) {}
+  rpc StreamModel(StreamModelRequest) returns (stream StreamModelResponse) {}
 }
 
 enum ModelMessageRole {
@@ -168,5 +169,81 @@ message InvokeModelResponse {
     ModelCompleted completed = 4;
     ModelFailed failed = 5;
     ModelOutcomeUnknown outcome_unknown = 6;
+  }
+}
+
+// A reconnect supplies the same logical invocation and the last durably consumed
+// sequence. Zero starts from the persisted accepted frame; it never means a new
+// provider dispatch.
+message StreamModelRequest {
+  InvokeModelRequest invocation = 1 [(buf.validate.field).required = true];
+  uint64 after_sequence = 2;
+}
+
+message ModelAccepted {}
+
+message ModelContentDelta {
+  string content = 1 [(buf.validate.field).string = {
+    min_bytes: 1
+    max_bytes: 16384
+  }];
+}
+
+message ModelReasoningDelta {
+  string content = 1 [(buf.validate.field).string = {
+    min_bytes: 1
+    max_bytes: 16384
+  }];
+}
+
+// Tool-call identity is stable by tool_index. Providers may split id, name and
+// UTF-8 JSON arguments across multiple frames; Platform validates the complete
+// canonical object before the terminal frame is committed.
+message ModelToolCallDelta {
+  uint32 tool_index = 1 [(buf.validate.field).uint32.lte = 127];
+  optional string id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Za-z0-9_-]+$"
+  }];
+  bytes arguments_json_fragment = 4 [(buf.validate.field).bytes = {max_len: 16384}];
+}
+
+// Sequence one is the single durable accepted frame. Frames are visible only
+// after their encrypted journal row commits. The digest chain is integrity
+// evidence and is never an authorization token. Producers and consumers MUST
+// use the generated model-stream-frame-digest helper; no alternate JSON or
+// protobuf serialization is a valid digest preimage.
+message StreamModelResponse {
+  string invocation_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string attempt_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 sequence = 3 [(buf.validate.field).uint64 = {gte: 1}];
+  string previous_frame_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string frame_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+    ModelAccepted accepted = 6;
+    ModelContentDelta content_delta = 7;
+    ModelReasoningDelta reasoning_delta = 8;
+    ModelToolCallDelta tool_call_delta = 9;
+    ModelCompleted completed = 10;
+    ModelFailed failed = 11;
+    ModelOutcomeUnknown outcome_unknown = 12;
   }
 }

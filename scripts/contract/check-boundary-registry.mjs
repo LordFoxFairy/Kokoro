@@ -442,7 +442,9 @@ export function readProtoServiceMethods(source, service) {
   const block = new RegExp(`service\\s+${service}\\s*\\{([\\s\\S]*?)\\n\\}`, "u").exec(source);
   if (!block) fail("boundary_registry_source_unreadable", `missing proto service: ${service}`);
   const methods = [];
-  for (const match of block[1].matchAll(/rpc\s+(\w+)\s*\(\s*([\w.]+)\s*\)\s*returns\s*\(\s*([\w.]+)\s*\)/gu)) {
+  for (const match of block[1].matchAll(
+    /rpc\s+(\w+)\s*\(\s*([\w.]+)\s*\)\s*returns\s*\(\s*(?:stream\s+)?([\w.]+)\s*\)/gu,
+  )) {
     methods.push({ name: match[1], request: match[2], response: match[3] });
   }
   if (methods.length === 0) fail("boundary_registry_source_unreadable", `empty proto service: ${service}`);

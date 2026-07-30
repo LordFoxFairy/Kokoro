@@ -2061,3 +2061,57 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     assert "string activation_attempt_ref" in _message_body(
         lifecycle, "ApproveAndActivateEffect"
     )
+
+
+def test_model_gateway_publishes_one_resumable_server_stream() -> None:
+    source = _proto("kokoro/platform/model/v1/model_gateway.proto")
+
+    assert _service_methods(source, "ModelGatewayService") == [
+        "InvokeModel",
+        "StreamModel",
+    ]
+    assert re.search(
+        r"rpc StreamModel\(StreamModelRequest\) returns \(stream StreamModelResponse\)",
+        source,
+    )
+    request = _message_body(source, "StreamModelRequest")
+    assert (
+        "InvokeModelRequest invocation = 1 [(buf.validate.field).required = true];"
+        in request
+    )
+    assert "uint64 after_sequence = 2;" in request
+
+
+def test_model_gateway_stream_frame_is_closed_chained_and_bounded() -> None:
+    source = _proto("kokoro/platform/model/v1/model_gateway.proto")
+    frame = _message_body(source, "StreamModelResponse")
+
+    assert "uint64 sequence = 3" in frame
+    assert re.search(r"sequence.*?gte: 1", frame, re.DOTALL)
+    for field in ("previous_frame_digest", "frame_digest"):
+        assert re.search(
+            rf"string {field}.*?len: 64.*?\^\[0-9a-f\]\{{64\}}\$",
+            frame,
+            re.DOTALL,
+        )
+    assert "option (buf.validate.oneof).required = true;" in frame
+    for payload in (
+        "ModelAccepted accepted",
+        "ModelContentDelta content_delta",
+        "ModelReasoningDelta reasoning_delta",
+        "ModelToolCallDelta tool_call_delta",
+        "ModelCompleted completed",
+        "ModelFailed failed",
+        "ModelOutcomeUnknown outcome_unknown",
+    ):
+        assert payload in frame
+
+    content = _message_body(source, "ModelContentDelta")
+    reasoning = _message_body(source, "ModelReasoningDelta")
+    tool = _message_body(source, "ModelToolCallDelta")
+    assert re.search(r"string content.*?max_bytes: 16384", content, re.DOTALL)
+    assert re.search(r"string content.*?max_bytes: 16384", reasoning, re.DOTALL)
+    assert re.search(
+        r"bytes arguments_json_fragment.*?max_len: 16384", tool, re.DOTALL
+    )
+    assert re.search(r"uint32 tool_index.*?lte = 127", tool, re.DOTALL)

@@ -429,6 +429,18 @@
           "scope": "namespace",
           "siteBinding": "not-applicable",
           "transport": "connect-rpc"
+        },
+        {
+          "effect": true,
+          "id": "StreamModel",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "kokoro.platform.model.v1.StreamModelResponse.invocation_ref"
+          },
+          "retryClass": "same_identity",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
         }
       ],
       "protocol": "connect-rpc",
