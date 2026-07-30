@@ -410,7 +410,10 @@ message PlanVersionDraft {
     min_len: 1
     max_len: 256
   }];
-  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  uint64 revision = 3 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string safe_label = 4 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
@@ -420,7 +423,10 @@ message PlanVersionDraft {
     defined_only: true
     not_in: 0
   }];
-  optional uint64 term_seconds = 6 [(buf.validate.field).uint64.gt = 0];
+  optional uint64 term_seconds = 6 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string stacking_scope = 7 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
@@ -471,7 +477,10 @@ message PublishOfferEffect {
     min_len: 1
     max_len: 256
   }];
-  uint64 product_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  uint64 product_revision = 4 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string safe_label = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
@@ -486,7 +495,10 @@ message PublishOfferEffect {
     min_len: 1
     max_len: 256
   }];
-  uint64 fulfillment_program_revision = 9 [(buf.validate.field).uint64.gt = 0];
+  uint64 fulfillment_program_revision = 9 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   repeated FulfillmentOutputDraft outputs = 10 [(buf.validate.field).repeated = {
     min_items: 1
     max_items: 100
@@ -528,7 +540,10 @@ message OfferSummary {
     min_len: 1
     max_len: 256
   }];
-  uint64 revision = 5 [(buf.validate.field).uint64.gt = 0];
+  uint64 revision = 5 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string safe_label = 6 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
@@ -598,7 +613,10 @@ message PublishRedemptionProgramEffect {
     min_len: 1
     max_len: 256
   }];
-  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  uint64 revision = 3 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string product_version_ref = 4 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -635,7 +653,10 @@ message RedemptionProgramSummary {
     min_len: 1
     max_len: 256
   }];
-  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  uint64 revision = 4 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
   string product_version_ref = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256

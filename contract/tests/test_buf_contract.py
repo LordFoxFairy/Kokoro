@@ -2154,13 +2154,31 @@ def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -
     assert len(cursor_rules) == 10
     assert all("max_len: 1024" in rule for rule in cursor_rules)
 
-    credit_contract = source[
-        source.index("message PublishCreditProgramRevisionEffect"):
-        source.index("message PublishCreditProgramRevisionRequest")
-    ]
-    assert credit_contract.count("lte: 9223372036854775807") >= 2
-    assert source.count("lte: 9223372036854775807") >= 5
-
+    postgres_bigint_fields = {
+        "RecurringCreditWindowPolicy": ("expires_after_seconds",),
+        "PublishCreditProgramRevisionEffect": ("revision",),
+        "CreditProgramRevisionSummary": ("revision",),
+        "PublishEntitlementTemplateRevisionEffect": ("revision", "expires_after_seconds"),
+        "EntitlementTemplateRevisionSummary": ("revision", "expires_after_seconds"),
+        "PlanVersionDraft": ("revision", "term_seconds"),
+        "PublishOfferEffect": ("product_revision", "fulfillment_program_revision"),
+        "OfferSummary": ("revision",),
+        "PublishRedemptionProgramEffect": ("revision",),
+        "RedemptionProgramSummary": ("revision",),
+    }
+    for message, fields in postgres_bigint_fields.items():
+        body = _message_body(source, message)
+        for field in fields:
+            declaration = re.search(
+                rf"(?:optional )?uint64 {field} = \d+ "
+                r"\[\(buf\.validate\.field\)\.uint64 = \{(?P<constraints>.*?)\}\];",
+                body,
+                re.DOTALL,
+            )
+            assert declaration is not None, f"{message}.{field} must use an explicit uint64 constraint block"
+            assert "lte: 9223372036854775807" in declaration.group("constraints"), (
+                f"{message}.{field} must fit PostgreSQL BIGINT"
+            )
 
 def test_admin_commerce_credit_window_and_safe_label_are_executable_contracts() -> None:
     source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
