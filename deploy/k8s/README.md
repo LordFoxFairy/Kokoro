@@ -1,66 +1,64 @@
-# Kokoro k8s 部署
+# Kokoro Kubernetes release shape
 
-与单机 compose **同一套架构**（唯一一套基建 + URL 挂载的 app 层 + seed Jobs），翻译成 k8s。
-Secret/ConfigMap 直接从 compose 用的同一批文件生成（`deploy/.env.prod` / `deploy/storage.yaml` /
-litellm 配置），**k8s 与 compose 单源不漂移**。
+`base/` is the latest-only production shape corresponding to Root Compose. It is intentionally small
+(`replicas: 1`) so a default integration cluster does not waste resources; release overlays may scale
+each stateless process independently after its SLO evidence exists.
 
-## 布局
+## Contents
 
-```
-deploy/k8s/
-  base/            # 生产基线：infra / platform / app / jobs + kustomization(单源生成 Secret/CM)
-  overlays/kind/   # 本地 kind 集群 overlay（workspace RWX→RWO,单节点 local-path）
-```
+- `infra.yaml`: PostgreSQL 18, Redis, Mongo replica set, MinIO, and LiteLLM. Replace these with managed
+  services by changing workload URLs, not the application topology.
+- `runtime-config.yaml`: non-secret Platform database/role identity only.
+- `jobs.yaml`: the one-shot `platform-migrator` Job. No business seed Job exists.
+- `platform.yaml`: Platform API, Admission, Authorization, asset data plane, model gateway, worker,
+  typed Admin, Hub management HTTP, and Hub runtime Connect.
+- `app.yaml`: Session, Agent worker, Agent evidence provider, and one independent Site release image.
+- `overlays/kind`: changes only the shared workspace access mode for a one-node cluster.
 
-## 拓扑（namespace `kokoro`，41 资源）
+## Required Secrets
 
-- **基建**（`infra.yaml`，各一个，Deployment+RWO PVC+Recreate+Service）：mysql / redis / mongo / minio / litellm
-- **平台**（`platform.yaml`，共用 `kokoro-platform` 镜像 + `KOKORO_SERVICE_PACKAGE` 选包）：site/user/model/credit/payment/hub/platform-admin
-- **应用**（`app.yaml`）：session / agent(worker,无 Service) / web + Ingress；workspace 用 **RWX PVC** 共享给 hub/session/agent
-- **provisioning**（`jobs.yaml`）：`migrate` Job → `provision` Job（模型内置/运营/站点/计价/积分包，与 provision.sh 同序，幂等）
+`kokoro-infra-env` is generated from the gitignored `deploy/.env.prod` for local infrastructure only.
+Application credentials are external workload-specific Secrets. Create them through the cluster secret
+manager before applying workloads:
 
-Service 名 = env URL 主机名（`mysql` / `kokoro-user` / …），故 `DATABASE_URL_*` / `*_BASE_URL` 与 compose 一字不差。
+| Workload | Environment Secret | File Secret |
+|---|---|---|
+| Platform migrator | `platform-migrator-environment` | none |
+| Platform runtimes | `platform-<role>-environment` | `platform-<role>-files` |
+| Hub management | `hub-http-environment` | `hub-http-files` |
+| Hub runtime | `hub-runtime-environment` | `hub-runtime-files` |
+| Session | `session-environment` | `session-files` |
+| Agent worker | `agent-worker-environment` | `agent-worker-files` |
+| Agent evidence | `agent-evidence-environment` | `agent-evidence-files` |
+| Site release | `site-release-environment` | `site-release-files` |
 
-## 前置
+Every Platform environment Secret exposes its own value as `DATABASE_URL_PLATFORM`; no runtime Pod
+receives `DATABASE_URL_PLATFORM_MIGRATOR`. File keys are mounted at `/run/secrets/kokoro` and env paths
+must match the filenames. Peer registries and certificates must use the service DNS identities shown in
+the manifests. Session's Service deliberately exposes browser `3900` and owner authority `3901`; Agent
+evidence is a separate mTLS Service on `8443`.
 
-1. **镜像**：`docker compose ... build` 出 `kokoro-platform:latest` / `kokoro-kokoro-{session,agent,web}:latest`，
-   推到集群可拉的 registry（或 `kind load` / `minikube image load`）。真实 registry 在 `kustomization.yaml` 的
-   `images:` 把 `newName` 改成你的仓库。
-2. **env 单源**：`cp deploy/.env.example deploy/.env.prod` 填真值（服务名 URL：`mysql:3306` / `http://kokoro-user:4211`
-   / `http://litellm:4000/v1`；auth=jwks + RS256 私钥；hub master key；等）。**不入库**。
-3. **存储**：workspace 需 **RWX** storage class（nfs/cephfs/efs…）。单节点可用 hostPath PV 或 local-path + 单节点调度。
+## Images and Site isolation
 
-## 部署
+Replace the four local image names in a release overlay with verified digests: `kokoro-platform`,
+`kokoro-session`, `kokoro-agent`, and `kokoro-site-release`. The last image comes from one generated Site
+repository. Deploy another Site as another Deployment/image/host binding; do not add runtime `siteId`
+switching to the existing Site Pod.
 
-```bash
-# 云集群（base；generators 引用 deploy/ 下同源文件，需放开 load-restrictor）：
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply -f -
-
-# 本地 kind（overlay：workspace 降 RWO）：
-kind create cluster --name kokoro
-for img in kokoro-platform kokoro-kokoro-session kokoro-kokoro-agent kokoro-kokoro-web; do kind load docker-image $img:latest --name kokoro; done
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/overlays/kind | kubectl apply -f -
-
-# 观察就绪：
-kubectl -n kokoro get pods -w
-
-# provisioning：migrate/provision 是 Job；重跑需先删旧同名 Job：
-kubectl -n kokoro delete job migrate provision --ignore-not-found
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply -f -
-```
-
-Ingress `host: kokoro.local`（`app.yaml`）按真实域名改，并与 `KOKORO_WEB_ORIGIN` / 站点 seed 对齐。
-
-## 运维
-
-- **改 Secret/ConfigMap 后**（`disableNameSuffixHash: true`，固定名不触发滚更）：
-  `kubectl -n kokoro rollout restart deploy`（或按需重启特定 deploy）。
-- **托管云库**：删 `infra.yaml` 里对应块，把 Secret 的 `DATABASE_URL_*` / redis / mongo / S3 指向云地址即可，app 层不变。
-- **可观测（langfuse）**：与 compose 一致，作为独立观测栈（复用基建 redis+minio，自留 pg+ch），此处不含；
-  接入见 `ops/langfuse/` 与 `deploy/.env.example` 的 `LANGFUSE_*`。
-
-## 校验（离线，无需集群）
+## Render and apply
 
 ```bash
-kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply --dry-run=client -f -
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base >/dev/null
+kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/base | kubectl apply -f -
+kubectl -n kokoro wait --for=condition=complete --timeout=15m job/platform-migrator
+kubectl -n kokoro get deploy,service,pod
 ```
+
+Apply the migration Job before admitting traffic. Business bootstrap then goes through typed
+control-plane APIs; it is not a Kubernetes Job. Secure Connect services use TCP readiness in this base
+because kubelet cannot present the workload mTLS identity; production overlays should replace it with a
+mesh or dedicated authenticated readiness probe.
+
+The Kind overlay uses `ReadWriteOnce` only because every Pod is scheduled on one node. Cloud deployments
+must provide RWX storage or move workspace/package storage to S3. Stopping or rolling workloads never
+deletes PVCs, buckets, images, or developer data.

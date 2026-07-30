@@ -1,66 +1,81 @@
 #!/usr/bin/env bash
-# Kokoro prod 一键编排：先起「唯一一套基建」，再起业务(拿 URL 连基建)，最后幂等 seed。
-#
-# 架构：基建(docker-compose.infra.yml)与业务(docker-compose.app.yml)是两个独立 compose 项目，
-# 经命名网络 ${KOKORO_NETWORK:-kokoro-net} 相连；业务不自带任何 infra，一律 env URL 挂载。
-#
-# 用法：deploy/provision.sh [ENV_FILE] [APP_PROJECT]
-#   ENV_FILE       默认 deploy/.env.prod（.env.* 受 .gitignore 保护，不入库）
-#   APP_PROJECT    默认 kokoro
-#
-# dev 不用本脚本（dev 走 scripts/closure-up.py：同样起 infra.yml，再跑 host 进程）。
+# Latest-only single-host release orchestration: canonical infra -> immutable builds -> migrator ->
+# independent runtime processes. Business catalog/Site bootstrap is an explicit typed control-plane
+# operation and is never performed through retired seed packages.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 ENV_FILE="${1:-deploy/.env.prod}"
-APP_PROJECT="${2:-kokoro}"
+APP_PROJECT="${2:-kokoro-app}"
+[[ -f "$ENV_FILE" ]] || {
+  echo "missing release environment: $ENV_FILE" >&2
+  exit 1
+}
 
-[[ -f "$ENV_FILE" ]] || { echo "环境文件不存在：$ENV_FILE（cp deploy/.env.example $ENV_FILE 后填值）" >&2; exit 1; }
-export KOKORO_ENV_FILE="$ENV_FILE"
-
-APP=(docker compose --env-file "$ENV_FILE" -p "$APP_PROJECT" -f docker-compose.app.yml)
-
-echo "==> [1/4] 起默认基建（postgres/redis/mongo/minio/litellm），等 PostgreSQL 就绪"
-node scripts/infra/manager.mjs ensure --profiles full --scope production --mode production --infra-env-file "$ENV_FILE"
-# 等 PostgreSQL 健康（migrate 要连它）。
-for i in $(seq 1 60); do
-  st="$(docker inspect --format '{{.State.Health.Status}}' kokoro-infra-postgres-1 2>/dev/null || true)"
-  [[ "$st" == "healthy" ]] && { echo "    PostgreSQL healthy"; break; }
-  sleep 2
+# A single-host bring-up may intentionally use one protected master env file. Production promotion
+# should override each variable with a least-privilege per-process file; Compose already has those
+# boundaries and Kubernetes requires them.
+for variable in \
+  KOKORO_PLATFORM_MIGRATOR_ENV_FILE \
+  KOKORO_PLATFORM_API_ENV_FILE \
+  KOKORO_PLATFORM_ADMISSION_ENV_FILE \
+  KOKORO_PLATFORM_AUTHORIZATION_ENV_FILE \
+  KOKORO_PLATFORM_ASSET_DATA_PLANE_ENV_FILE \
+  KOKORO_PLATFORM_MODEL_GATEWAY_ENV_FILE \
+  KOKORO_PLATFORM_WORKER_ENV_FILE \
+  KOKORO_PLATFORM_ADMIN_ENV_FILE \
+  KOKORO_HUB_HTTP_ENV_FILE \
+  KOKORO_HUB_RUNTIME_ENV_FILE \
+  KOKORO_SESSION_ENV_FILE \
+  KOKORO_AGENT_WORKER_ENV_FILE \
+  KOKORO_AGENT_EVIDENCE_ENV_FILE \
+  KOKORO_SITE_ENV_FILE; do
+  if [[ -z "${!variable:-}" ]]; then
+    printf -v "$variable" '%s' "$ENV_FILE"
+    export "$variable"
+  fi
 done
 
-# S3 桶幂等创建：本地卷(storage.yaml)不需要，但预先建好让 S3 模式(storage.s3.yaml)可零改切换。
-# 失败不阻断编排（本地卷模式下 minio 仅预留），仅告警。
-echo "    确保 S3 桶 kokoro 存在（S3 模式即用）"
-docker run --rm --network "${KOKORO_NETWORK:-kokoro-net}" --env-file "$ENV_FILE" \
-  --entrypoint sh minio/mc -c \
-  'mc alias set k http://minio:9100 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 \
-   && mc mb --ignore-existing k/kokoro && echo "    桶 kokoro 就绪"' \
-  || echo "    (跳过建桶：minio 未就绪或凭据缺失；本地卷模式无碍)" >&2
+APP=(docker compose --env-file "$ENV_FILE" -p "$APP_PROJECT" -f docker-compose.app.yml)
+RUNTIMES=(
+  platform-api
+  platform-admission
+  platform-authorization
+  platform-asset-data-plane
+  platform-model-gateway
+  platform-worker
+  platform-admin
+  kokoro-hub
+  kokoro-hub-runtime
+  kokoro-agent-evidence
+  kokoro-session
+  kokoro-agent-worker
+  kokoro-site-release
+)
 
-echo "==> [2/4] 迁移（业务 migrate 一次性服务，拿 URL 连基建跑 prisma migrate deploy）"
-"${APP[@]}" build
-"${APP[@]}" run --rm migrate
+echo "==> [1/4] ensure canonical infrastructure"
+node scripts/infra/manager.mjs ensure \
+  --profiles full \
+  --scope production \
+  --mode production \
+  --infra-env-file "$ENV_FILE"
 
-echo "==> [3/4] 起业务服务（平台 7 + session + agent + web）"
-"${APP[@]}" up -d
+echo "==> [2/4] validate and build release artifacts"
+"${APP[@]}" config --quiet
+"${APP[@]}" build \
+  platform-migrator \
+  platform-api \
+  kokoro-session \
+  kokoro-agent-worker
 
-# 等平台服务 healthz。
-wait_healthz() { local n="$1" p="$2" i c; for i in $(seq 1 60); do
-  c="$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "http://localhost:${p}/healthz" 2>/dev/null || true)"
-  [[ "$c" == "200" ]] && { echo "    $n OK"; return 0; }; sleep 3; done
-  echo "    $n 未就绪(HTTP $c)" >&2; return 1; }
-wait_healthz kokoro-site 4201 || true
-wait_healthz kokoro-model 4221 || true
-wait_healthz kokoro-platform-admin 4290 || true
+echo "==> [3/4] apply Platform schema and role grants"
+"${APP[@]}" run --rm --no-deps platform-migrator
 
-echo "==> [4/4] 幂等 seed（模型内置 / 运营数据 / 站点 active / 计价 / 积分包+mock 网关）"
-"${APP[@]}" exec -T kokoro-model sh -lc "pnpm --filter @kokoro/model seed:builtin"
-"${APP[@]}" exec -T kokoro-platform-admin sh -lc "pnpm --filter @kokoro/platform-admin db:seed"
-"${APP[@]}" exec -T kokoro-site sh -lc "pnpm --filter @kokoro/site seed:site"
-"${APP[@]}" exec -T kokoro-credit sh -lc "pnpm --filter @kokoro/credit seed:pricing"
-"${APP[@]}" exec -T kokoro-payment sh -lc "pnpm --filter @kokoro/payment seed:packs"
+echo "==> [4/4] start independent runtime processes"
+"${APP[@]}" run --rm --no-deps workspace-init
+"${APP[@]}" up -d --no-deps "${RUNTIMES[@]}"
+"${APP[@]}" ps
 
-echo "==> 完成。web http://localhost:${KOKORO_WEB_HOST_PORT:-3000}"
+echo "release processes started; Site endpoint: http://localhost:${KOKORO_SITE_HOST_PORT:-3000}"

@@ -236,3 +236,18 @@ test("Kubernetes defaults to the current PostgreSQL authority and has no retired
   assert.equal(workloadDocument(jobs, "Job", "provision"), undefined);
   assert.doesNotMatch(jobs, /seed:|db:seed|@kokoro\/(?:site|model|credit|payment|platform-admin)/u);
 });
+
+test("operator entrypoints describe only latest runtime and typed bootstrap paths", async () => {
+  const sources = await Promise.all([
+    readFile(resolve(root, "deploy/provision.sh"), "utf8"),
+    readFile(resolve(root, "deploy/.env.example"), "utf8"),
+    readFile(resolve(root, "deploy/README.md"), "utf8"),
+    readFile(resolve(root, "deploy/k8s/README.md"), "utf8"),
+  ]);
+  const combined = sources.join("\n");
+  assert.doesNotMatch(combined, /@kokoro\/(?:site|user|model|credit|payment|platform-admin)/u);
+  assert.doesNotMatch(combined, /DATABASE_URL_(?:SITE|USER|MODEL|CREDIT|PAYMENT|ADMIN)=mysql:/u);
+  assert.doesNotMatch(combined, /(?:seed:builtin|seed:site|seed:pricing|seed:packs|db:seed)/u);
+  assert.match(combined, /typed control-plane/u);
+  assert.match(combined, /independent Site/u);
+});

@@ -1,69 +1,80 @@
-# Kokoro 单机全栈部署（docker-compose）
+# Kokoro single-host release
 
-一台主机上用 `docker compose` 起全栈：infra（postgres/mongo/redis/minio/litellm）+ 平台服务 + session/agent/web。MySQL 只保留为显式本地兼容 profile。
-架构=基建与业务两个独立 compose 项目，经命名网络 `kokoro-net` 相连：
-- 基建：`docker-compose.infra.yml`（默认 postgres/redis/mongo/minio/litellm；`mysql-compat` 非默认）。
-- 业务：`docker-compose.app.yml`（migrate + 7 平台服务 + session/agent/web，一律 env URL 连基建）。
-- **一键编排：`deploy/provision.sh`**（infra→build→migrate→服务→幂等 seed，全流程）。变量模板：`deploy/.env.example`。
+Root composes independently released artifacts; it does not merge the four child repositories into
+one runtime. `docker-compose.infra.yml` owns the canonical PostgreSQL/Redis/Mongo/MinIO/LiteLLM
+authority. `docker-compose.app.yml` joins its external network and starts the latest application
+topology only.
 
-> 目标形态之一（单机）。k8s 形态见 `kokoro-platform/deploy/k8s/`。
+## Runtime topology
 
-## 前置
-- Docker + Docker Compose v2
-- 域名（web 对外）+ 反代/TLS（compose 只暴露端口，TLS 由前置 nginx/caddy 承载）
+- one immutable Platform image: migrator, API, Admission, Authorization, asset data plane, model
+  gateway, worker, and typed Admin;
+- Hub management HTTP and Hub runtime Connect as separate processes from the same Platform image;
+- Session Browser v3, with browser port `3900` and owner-authority port `3901`;
+- Agent worker and Agent execution-evidence provider as separate processes from one Agent image;
+- one independently promoted Site image. `kokoro-web` is the Site factory and is never a shared
+  multi-Site production container.
 
-## 步骤
+All internal HTTP/2 or HTTPS boundaries use mTLS material owned by the calling and serving workloads.
+Only the Site port is public by default; operator ports bind to `127.0.0.1` for diagnostics.
 
-### 1. 配置
+## Release prerequisites
+
+1. Copy `deploy/.env.example` to the gitignored `deploy/.env.prod` and replace every `CHANGE_ME`.
+2. Provision `kokoro_platform` and the eight exact Platform LOGIN roles named in the template. Create
+   `kokoro_session` and the exact Session roles from `kokoro-session/.env.example`. The service
+   migrators own schemas/grants; runtime roles must not be database owners or role members.
+3. Populate `deploy/secrets/<process>/` with the files referenced by the env template. Each directory
+   is mounted only into that process:
+
+   ```text
+   platform-api/              platform-admission/
+   platform-authorization/    platform-asset-data-plane/
+   platform-model-gateway/    platform-worker/       platform-admin/
+   hub-http/                  hub-runtime/
+   session/                   agent-worker/          agent-evidence/
+   site-release/
+   ```
+
+4. Promote a generated Site project's verified standalone image as `KOKORO_SITE_IMAGE`. The canonical
+   image shape is `kokoro-web/packages/site-scaffold/templates/site/Dockerfile`; Root does not build it
+   from the Web monorepo.
+5. Set `KOKORO_*_ENV_FILE` overrides to process-specific protected files for production. The helper
+   script deliberately defaults them to the master env only for bounded single-host bring-up.
+
+## Start
+
 ```bash
-cp deploy/.env.example deploy/.env.prod   # provision.sh 默认读 deploy/.env.prod（.env.* 已 gitignore）
-```
-把 `deploy/.env.prod` 里所有 `CHANGE_ME` 换成真值：
-
-- **内部服务凭据**（6 个 `KOKORO_INTERNAL_SECRET_*`）+ **web 信封密钥** + **mock webhook secret**：各生成独立强随机
-  ```bash
-  openssl rand -hex 32
-  ```
-- **RS256 签发私钥**（`KOKORO_USER_JWT_PRIVATE_KEY`）：
-  ```bash
-  openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out user_jwt.pem
-  # 填入 .env 时单行化（PEM 换行转 \n），或改用支持多行的 env 注入方式
-  ```
-- **PostgreSQL 密码**：`POSTGRES_PASSWORD` 与 Platform/Session 连接配置保持一致
-- **KOKORO_SITE_ID**：与下方 seed 的站点一致（`site-<key>`）
-- **KOKORO_WEB_ORIGIN**：真实对外域名
-
-### 2. 起栈（一键）
-```bash
-bash deploy/provision.sh deploy/.env.prod
-```
-脚本按序：① 起默认基建 + 等 PostgreSQL healthy + 幂等建 S3 桶；② `docker compose ... build` 全镜像 + `run --rm migrate`；③ 起平台服务 + session/agent/web + 等 healthz；④ 执行发布所需的幂等初始化。首次构建较慢（多镜像）。
-
-> 手动分步（等价）：`docker compose --env-file deploy/.env.prod -p kokoro-infra -f docker-compose.infra.yml up -d` → `docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml build && ... run --rm migrate && ... up -d`。
-
-### 3. 站点绑定（首次一次性；seed 已建站点，此步确认 host→site 解析）
-- provision.sh 的 seed 已建站点（key 与 `KOKORO_SITE_ID` 对应）。多域名/自定义站点在 admin 后台补域名绑定。
-- **首个 admin operator**：初期 `KOKORO_ADMIN_AUTH_MODE=dev`（固定 operator，无真鉴权），仅用于首次进后台；**生产务必切 `oidc`/`proxy`**（见 .env 注释）。
-
-### 4. 验证
-```bash
-docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml ps   # 各服务 running
-curl -fsS http://<host>:4211/healthz                # user 健康(平台服务同法:4201/4221/4231/4241/4251/4290)
-curl -fsS http://<host>:3900/metrics | head         # session 指标(session 亦有 /healthz)
-# 浏览器开 http://<host>:3000 → 落地页 → 登录（magic-link 现走 log 档,链接看 user 服务日志）
-docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml logs kokoro-user | grep magic
+bash deploy/provision.sh deploy/.env.prod kokoro-app
 ```
 
-## 上线硬化清单（部署跑通后）
-- [ ] `KOKORO_ADMIN_AUTH_MODE` dev → oidc/proxy（真后台鉴权）
-- [ ] SMTP 接入 → `KOKORO_AUTH_MAGIC_DELIVERY=log` 改 `smtp`（登录邮件真发；任务 #57）
-- [ ] 真模型：`KOKORO_LOCAL_FAKE_MODEL=1`→`0` + litellm 配 provider 凭据（GLM 等，归 kokoro-model）
-- [ ] 真支付网关（有商户后；当前 mock 闭环）
-- [ ] 前置 TLS 反代 + 仅暴露 web:3000 / admin:4290 到可信网络
-- [ ] PostgreSQL/Redis/Mongo 备份策略；卷（postgres/mongo/redis/workspace）持久化确认
+The script performs exactly four phases: ensure canonical infrastructure, validate/build artifacts,
+run `platform-migrator`, then start independent runtime processes. It does not write business data.
+Initial Site/release/model/credit-program/offer/card-batch creation belongs to typed control-plane APIs;
+there is no direct SQL or retired package seed escape hatch.
 
-## 说明
-- **存储**：workspace/deliveries/hub 包体默认用共享本地卷（`deploy/storage.yaml`，单机口径）。横向扩展/多 pod/多机切 S3：设 `KOKORO_STORAGE_FILE=./deploy/storage.s3.yaml` + `KOKORO_WORKSPACE_S3_ACCESS_KEY/SECRET_KEY`（取 minio root 账密）；桶 `kokoro` 由 `provision.sh` 幂等创建。S3 路径已对真 minio 往返验证（package put/get+幂等、workspace archive 键布局）。
-- **计费**：生产 `KOKORO_BILLING_MODE=enforce`（余额不足拒 run）。
-- **MCP egress**：生产 `KOKORO_MCP_EGRESS_MODE=strict`（拒私网/环回，防 SSRF）。
-- **端口**：web 3000 / session 3900 / litellm 4000 / 平台 4201-4251 / admin 4290。生产只把 web、必要时 admin 暴露到公网，其余留内网。
+For manual operation:
+
+```bash
+docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml config
+docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml run --rm --no-deps platform-migrator
+docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml up -d
+```
+
+## Verification and rollback
+
+```bash
+node --test scripts/infra/*.test.mjs
+docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml config --quiet
+docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml ps
+```
+
+Verify the Site's `/api/health/ready`, Session ports `3900/3901`, Agent evidence `8443`, and every
+Platform port listed in `docker-compose.app.yml`. Secure Connect readiness requires a probe identity;
+a TCP-open signal alone is not activation evidence.
+
+Rollback promotes the previous verified Root BOM and child image digests. Never roll back by selecting
+retired services or reversing a forward-compatible schema migration. Runtime containers may be stopped
+or replaced; database, object-store, workspace, and developer volumes are preserved.
+
+Kubernetes shape and required Secrets are documented in `deploy/k8s/README.md`.
