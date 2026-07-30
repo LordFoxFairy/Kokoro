@@ -189,8 +189,17 @@ message ExchangeOidcSessionRequest {
 //     typ=kokoro-admin-session-delivery+jwe, cty=JWT, and kid headers.
 //
 // The signed claims are iss, aud, jti, iat, nbf, exp, workload_identity_ref, environment, region,
-// managed_device_ref, transaction_ref, exchange_request_digest, operator_session_ref,
-// opaque_session_credential, and session_expires_at. delivery_expires_at equals the signed exp claim.
+// managed_device_ref, transaction_ref, exchange_request_digest, operator_ref,
+// operator_generation, operator_session_ref, opaque_session_credential, session_expires_at,
+// operator_security_epoch, session_epoch, restriction_epoch, policy_epoch, assurance_level,
+// factor_classes, authenticated_at, step_up_at, operator_attestation_ref,
+// operator_attestation_digest, and authority. authority contains only the current active
+// permissions and typed site/global/break-glass grants (including their epochs and expiries) needed
+// by the Admin Web BFF to select a request scope; it contains no credential or IdP claim. The BFF
+// must treat these grants only as signed scope-selection hints: Platform re-authenticates the opaque
+// credential and re-authorizes every request against current authority. It must never invent a
+// missing epoch, attestation, grant, or scope from email, UI state, deployment defaults, or an
+// unsigned browser claim. delivery_expires_at equals the signed exp claim.
 // Both JOSE layers reject none, dir, RSA1_5, CBC modes, zip, crit, jku, x5u, jwk, unprotected
 // headers, an unknown kid, a key-type mismatch, or any algorithm/key mismatch. Implementations
 // accept no algorithm negotiation or alternate suite.
