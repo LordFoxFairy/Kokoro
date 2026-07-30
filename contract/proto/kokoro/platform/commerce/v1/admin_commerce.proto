@@ -291,7 +291,7 @@ message PublishEntitlementTemplateRevisionEffect {
   string safe_label = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
-    pattern: "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+    pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}](?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"
   }];
   optional uint64 expires_after_seconds = 6 [(buf.validate.field).uint64 = {
     gt: 0
@@ -320,7 +320,7 @@ message EntitlementTemplateRevisionSummary {
   string safe_label = 6 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
-    pattern: "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+    pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}](?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"
   }];
   optional uint64 expires_after_seconds = 7 [(buf.validate.field).uint64 = {
     gt: 0
@@ -419,7 +419,7 @@ message PlanVersionDraft {
   string safe_label = 4 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
-    pattern: "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+    pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}](?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"
   }];
   PlanTermAction term_action = 5 [(buf.validate.field).enum = {
     defined_only: true
@@ -486,7 +486,7 @@ message PublishOfferEffect {
   string safe_label = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
-    pattern: "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+    pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}](?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"
   }];
   optional PlanVersionDraft plan_version = 6;
   string fulfillment_program_revision_ref = 7 [(buf.validate.field).string = {
@@ -549,7 +549,7 @@ message OfferSummary {
   string safe_label = 6 [(buf.validate.field).string = {
     min_len: 1
     max_len: 160
-    pattern: "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+    pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}](?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"
   }];
   optional string plan_version_ref = 7 [(buf.validate.field).string = {
     min_len: 1

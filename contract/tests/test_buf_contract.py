@@ -2258,6 +2258,12 @@ def test_admin_commerce_credit_window_and_safe_label_are_executable_contracts() 
     assert source.count("rollover_policy") >= 2
     assert "NFC-normalized" in source
     assert "bidi formatting controls" in source
+    safe_label_pattern = (
+        r'pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]'
+        r'(?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*'
+        r'[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"'
+    )
+    assert source.count(safe_label_pattern) == 5
 
 
 def test_model_gateway_publishes_one_resumable_server_stream() -> None:
