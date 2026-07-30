@@ -454,13 +454,16 @@ objects:
     variants:
       - {value: text, payload_type: object:UserTextInputPayload}
   - name: SubmitMessageRequest
+    # Text parts and attachment intents have separate owners and wire shapes. A
+    # Submit may contain either, but an empty message is never a valid command.
+    require_nonempty_any: [parts, attachment_refs]
     fields:
       - {name: command, type: object:CommandIdentity}
       - {name: expected_session_version, type: positive_int}
       - {name: branch_id, type: entity_id}
       - {name: parent_message_id, type: entity_id, nullable: true}
       - {name: trusted_locale, type: trusted_locale}
-      - {name: parts, type: array:object:MessageInputPart, min_items: 1, max_items: 64}
+      - {name: parts, type: array:object:MessageInputPart, max_items: 64}
       - {name: attachment_refs, type: array:object:AttachmentIntent, max_items: 64}
       - {name: model_option_revision_ref, type: opaque_ref}
       - {name: effort, type: effort, optional: true}

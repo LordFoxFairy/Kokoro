@@ -190,6 +190,8 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
         "attachment_refs",
         "model_option_revision_ref",
     }.issubset(submit_fields)
+    assert submit["require_nonempty_any"] == ["parts", "attachment_refs"]
+    assert "min_items" not in submit_fields["parts"]
     assert "SHA256_CANONICAL_JSON_V2" in generated
     assert "canonicalBrowserCommandDigestPreimage" in generated
     assert '"fork_branch": Object.freeze(["session_id", "branch_id"])' in generated
@@ -254,8 +256,9 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     assert http["endpoints"]["list_sessions"]["query_object"] == "ListSessionsQuery"
     assert http["endpoints"]["stream"]["query_object"] == "StreamQuery"
     assert http["endpoints"]["list_folders"]["query_object"] == "FolderListQuery"
-    assert "parts: z.array(messageInputPartSchema).min(1).max(64)" in generated
+    assert "parts: z.array(messageInputPartSchema).max(64)" in generated
     assert "attachment_refs: z.array(attachmentIntentSchema).max(64)" in generated
+    assert 'path: ["parts"], message: "at least one of parts, attachment_refs must be non-empty"' in generated
     assert "command_id: z.string().min(1).max(128)" in generated
     assert "idempotency_key: z.string().min(1).max(191)" in generated
     assert "limit: z.number().int().min(1).max(100)" in generated

@@ -212,6 +212,34 @@ def ts_object(obj: dict, enums: dict, *, export: bool) -> list[str]:
         L = [f"{kw} {const} = z", "  .object({"]
         L += [f"    {ts_field(f, enums)}," for f in fields]
         L += ["  })", "  .strict()"]
+    require_nonempty_any = obj.get("require_nonempty_any")
+    if require_nonempty_any is not None:
+        fields_by_name = {field["name"]: field for field in fields}
+        if not isinstance(require_nonempty_any, list) or not require_nonempty_any:
+            raise ValueError(f"{obj['name']}.require_nonempty_any must be a non-empty list")
+        for name in require_nonempty_any:
+            if not isinstance(name, str):
+                raise ValueError(
+                    f"{obj['name']}.require_nonempty_any references non-required array {name!r}"
+                )
+            field = fields_by_name.get(name)
+            if (
+                field is None
+                or not field["type"].startswith("array:")
+                or field.get("optional") is True
+            ):
+                raise ValueError(
+                    f"{obj['name']}.require_nonempty_any references non-required array {name!r}"
+                )
+        condition = " && ".join(
+            f"value.{name}.length === 0" for name in require_nonempty_any
+        )
+        names = ", ".join(require_nonempty_any)
+        L += [
+            ".superRefine((value, context) => {",
+            f"  if ({condition}) context.addIssue({{ code: \"custom\", path: [\"{require_nonempty_any[0]}\"], message: \"at least one of {names} must be non-empty\" }})",
+            "})",
+        ]
     if export:
         L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
     return L

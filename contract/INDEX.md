@@ -49,6 +49,8 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
 the explicit two-argument Zod record form so Zod 3 and Zod 4 consumers remain byte-identical during the toolchain transition.
+Browser v3 Submit keeps renderable `parts` and Asset-owned `attachment_refs` separate. The generator's
+`require_nonempty_any` object constraint admits either source while rejecting an empty command; each text part remains non-empty.
 
 `AdminCommandService.v2` is a fresh-only maker/checker/worker contract. Browser clients may call only
 `SubmitCommand`, `DecideApproval`, and `GetReceipt`; approval queues execution and never
