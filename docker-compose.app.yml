@@ -1,128 +1,279 @@
-# Kokoro 业务层（prod 应用容器）：migrate + 7 平台服务 + session + agent + web。
+# Kokoro latest-only application topology.
 #
-# 设计（认真收口）：本层「拿 URL 去连」基建，自身不含任何 mysql/redis/mongo/minio/litellm。
-#   - 后端一律经 env 的 URL 注入：DATABASE_URL_* / KOKORO_REDIS_URL / KOKORO_*_MONGO_URL /
-#     KOKORO_LITELLM_BASE_URL / minio(S3) endpoint。想连本机基建就用服务名(mysql:3306…)，
-#     想连托管云库就把 URL 换成云地址——app 不关心，也不再起第二套 infra。
-#   - 以 external 方式接入基建的命名网络 kokoro-net，从而用服务名解析到基建容器。
-#   - 无跨项目 depends_on(基建是独立项目)；启动次序由 provision.sh 保证(先 infra、再 migrate、再服务)。
-#
-# 前置：先起基建层(docker-compose.infra.yml)。全流程见 deploy/provision.sh。
-#   docker compose --env-file deploy/prod.env -p kokoro \
-#     -f docker-compose.app.yml up -d --build
+# Infrastructure is owned by docker-compose.infra.yml and joined through kokoro-net. This file
+# contains no database, cache, object-store, or model-provider containers. Platform's immutable
+# image is selected only through deploy/docker/runtime-entrypoint.mjs. A generated Site project is
+# promoted as its own image; Root never builds a Site from the kokoro-web factory repository.
+
+name: kokoro-app
 
 x-platform-build: &platform-build
-  # 7 平台服务 + migrate 共用同一镜像，靠 KOKORO_SERVICE_PACKAGE 选包运行。
-  image: kokoro-platform:latest
+  image: ${KOKORO_PLATFORM_IMAGE:-kokoro-platform:latest}
   build:
     context: ./kokoro-platform
     dockerfile: deploy/docker/Dockerfile
-  env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+  networks: [default]
+  restart: unless-stopped
+
+x-platform-database: &platform-database
+  PLATFORM_DATABASE_EXPECTED_DATABASE: ${PLATFORM_DATABASE_EXPECTED_DATABASE:-kokoro_platform}
+  PLATFORM_DATABASE_MIGRATOR_ROLE: ${PLATFORM_DATABASE_MIGRATOR_ROLE:-platform_migrator}
+  PLATFORM_DATABASE_API_ROLE: ${PLATFORM_DATABASE_API_ROLE:-platform_api}
+  PLATFORM_DATABASE_ADMISSION_ROLE: ${PLATFORM_DATABASE_ADMISSION_ROLE:-platform_admission}
+  PLATFORM_DATABASE_AUTHORIZATION_ROLE: ${PLATFORM_DATABASE_AUTHORIZATION_ROLE:-platform_authorization}
+  PLATFORM_DATABASE_ASSET_DATA_PLANE_ROLE: ${PLATFORM_DATABASE_ASSET_DATA_PLANE_ROLE:-platform_asset_data_plane}
+  PLATFORM_DATABASE_MODEL_GATEWAY_ROLE: ${PLATFORM_DATABASE_MODEL_GATEWAY_ROLE:-platform_model_gateway}
+  PLATFORM_DATABASE_WORKER_ROLE: ${PLATFORM_DATABASE_WORKER_ROLE:-platform_worker}
+  PLATFORM_DATABASE_ADMIN_ROLE: ${PLATFORM_DATABASE_ADMIN_ROLE:-platform_admin}
+
+x-session-build: &session-build
+  image: ${KOKORO_SESSION_IMAGE:-kokoro-session:latest}
+  build:
+    context: ./kokoro-session
+  networks: [default]
+  restart: unless-stopped
+
+x-agent-build: &agent-build
+  image: ${KOKORO_AGENT_IMAGE:-kokoro-agent:latest}
+  build:
+    context: ./kokoro-agent
   networks: [default]
   restart: unless-stopped
 
 services:
-  # ---- 一次性迁移：跑各平台 DB 的 prisma migrate deploy。由 provision.sh 在基建就绪后先行触发。----
-  migrate:
+  platform-migrator:
     <<: *platform-build
     restart: "no"
-    command: ["pnpm", "-r", "db:migrate"]
+    env_file:
+      - path: ${KOKORO_PLATFORM_MIGRATOR_ENV_FILE:-./deploy/env/platform-migrator.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-migrator
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: migrator
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_MIGRATOR:?DATABASE_URL_PLATFORM_MIGRATOR is required}
 
-  # ---- 一次性 workspace 卷授权：共享卷 kokoro-workspace 默认 root:root,但 session/agent 以非 root
-  # (uid 1001) 跑,建不了 workspace 子目录 → agent assembly PermissionError。此 init chown 到 1001:999
-  # (session/agent 用户;hub 为 root 不受影响),令三者皆可写。----
-  workspace-init:
-    image: busybox
-    command: ["sh", "-c", "mkdir -p /data/workspace/workspace && chown -R 1001:999 /data/workspace"]
+  platform-api:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_API_ENV_FILE:-./deploy/env/platform-api.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-api
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: api
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_API:?DATABASE_URL_PLATFORM_API is required}
+      PLATFORM_API_PORT: "4100"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
     volumes:
-      - kokoro-workspace:/data/workspace
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-api:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_API_HOST_PORT:-4100}:4100"]
+
+  platform-admission:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_ADMISSION_ENV_FILE:-./deploy/env/platform-admission.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-admission
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: admission
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_ADMISSION:?DATABASE_URL_PLATFORM_ADMISSION is required}
+      PLATFORM_ADMISSION_PORT: "4244"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-admission:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_ADMISSION_HOST_PORT:-4244}:4244"]
+
+  platform-authorization:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_AUTHORIZATION_ENV_FILE:-./deploy/env/platform-authorization.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-authorization
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: authorization
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_AUTHORIZATION:?DATABASE_URL_PLATFORM_AUTHORIZATION is required}
+      PLATFORM_AUTHORIZATION_PORT: "4143"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-authorization:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_AUTHORIZATION_HOST_PORT:-4143}:4143"]
+
+  platform-asset-data-plane:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_ASSET_DATA_PLANE_ENV_FILE:-./deploy/env/platform-asset-data-plane.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-asset-data-plane
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: asset-data-plane
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_ASSET_DATA_PLANE:?DATABASE_URL_PLATFORM_ASSET_DATA_PLANE is required}
+      PLATFORM_ASSET_DATA_PLANE_PORT: "4246"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-asset-data-plane:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_ASSET_DATA_PLANE_HOST_PORT:-4246}:4246"]
+
+  platform-model-gateway:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_MODEL_GATEWAY_ENV_FILE:-./deploy/env/platform-model-gateway.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-model-gateway
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: model-gateway
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_MODEL_GATEWAY:?DATABASE_URL_PLATFORM_MODEL_GATEWAY is required}
+      PLATFORM_MODEL_GATEWAY_PORT: "4247"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-model-gateway:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_MODEL_GATEWAY_HOST_PORT:-4247}:4247"]
+
+  platform-worker:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_WORKER_ENV_FILE:-./deploy/env/platform-worker.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-worker
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: worker
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_WORKER:?DATABASE_URL_PLATFORM_WORKER is required}
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-worker:/run/secrets/kokoro:ro
+
+  platform-admin:
+    <<: *platform-build
+    env_file:
+      - path: ${KOKORO_PLATFORM_ADMIN_ENV_FILE:-./deploy/env/platform-admin.env}
+        required: false
+    environment:
+      <<: *platform-database
+      KOKORO_SERVICE_PACKAGE: platform-admin
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: admin
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_ADMIN:?DATABASE_URL_PLATFORM_ADMIN is required}
+      PLATFORM_ADMIN_PORT: "4101"
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/platform-admin:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${PLATFORM_ADMIN_HOST_PORT:-4101}:4101"]
+
+  workspace-init:
+    image: busybox:1.36
+    command: ["sh", "-c", "mkdir -p /data/workspace/workspace && chown -R 1001:999 /data/workspace"]
+    volumes: ["kokoro-workspace:/data/workspace"]
     networks: [default]
     restart: "no"
-
-  # ---- 平台服务（同镜像，KOKORO_SERVICE_PACKAGE 选包；连基建走 env URL）----
-  kokoro-site:
-    <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/site" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4201:4201"]
-
-  kokoro-user:
-    <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/user" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4211:4211"]
-
-  kokoro-model:
-    <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/model" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4221:4221"]
-
-  kokoro-credit:
-    <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/credit" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4231:4231"]
-
-  kokoro-payment:
-    <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/payment" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4241:4241"]
 
   kokoro-hub:
     <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/hub" }
+    env_file:
+      - path: ${KOKORO_HUB_HTTP_ENV_FILE:-./deploy/env/hub-http.env}
+        required: false
+    environment:
+      KOKORO_SERVICE_PACKAGE: "@kokoro/hub"
+      KOKORO_HUB_PORT: "4251"
     depends_on:
-      migrate: { condition: service_completed_successfully }
+      platform-migrator: { condition: service_completed_successfully }
       workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
-    ports: ["4251:4251"]
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/hub-http:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${KOKORO_HUB_HOST_PORT:-4251}:4251"]
 
-  kokoro-platform-admin:
+  kokoro-hub-runtime:
     <<: *platform-build
-    environment: { KOKORO_SERVICE_PACKAGE: "@kokoro/platform-admin" }
-    depends_on: { migrate: { condition: service_completed_successfully } }
-    ports: ["4290:4290"]
+    command: ["node", "--conditions=kokoro-runtime", "kokoro-hub/dist/interfaces/connect/main.js"]
+    env_file:
+      - path: ${KOKORO_HUB_RUNTIME_ENV_FILE:-./deploy/env/hub-runtime.env}
+        required: false
+    environment:
+      KOKORO_HUB_CONNECT_PORT: "4252"
+    depends_on:
+      platform-admission: { condition: service_started }
+      workspace-init: { condition: service_completed_successfully }
+    volumes:
+      - kokoro-workspace:/data/workspace
+      - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/hub-runtime:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${KOKORO_HUB_RUNTIME_HOST_PORT:-4252}:4252"]
 
-  # ---- 应用层（各子仓独立镜像；连基建/平台走 env URL）----
+  kokoro-agent-evidence:
+    <<: *agent-build
+    command: ["uv", "run", "--no-sync", "kokoro-agent-evidence"]
+    env_file:
+      - path: ${KOKORO_AGENT_EVIDENCE_ENV_FILE:-./deploy/env/agent-evidence.env}
+        required: false
+    environment:
+      KOKORO_AGENT_EVIDENCE_HOST: 0.0.0.0
+      KOKORO_AGENT_EVIDENCE_PORT: "8443"
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/agent-evidence:/run/secrets/kokoro:ro
+    ports: ["127.0.0.1:${KOKORO_AGENT_EVIDENCE_HOST_PORT:-8443}:8443"]
+
   kokoro-session:
-    build: { context: ./kokoro-session }
-    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
-    networks: [default]
+    <<: *session-build
+    env_file:
+      - path: ${KOKORO_SESSION_ENV_FILE:-./deploy/env/session.env}
+        required: false
+    environment:
+      KOKORO_SESSION_PORT: "3900"
+      KOKORO_SESSION_OWNER_AUTHORITY_PORT: "3901"
     depends_on:
-      kokoro-user: { condition: service_started }
+      platform-admission: { condition: service_started }
+      platform-authorization: { condition: service_started }
+      kokoro-agent-evidence: { condition: service_started }
       workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
-    ports: ["${KOKORO_SESSION_HOST_PORT:-3900}:3900"]
-    restart: unless-stopped
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/session:/run/secrets/kokoro:ro
+    ports:
+      - "127.0.0.1:${KOKORO_SESSION_HOST_PORT:-3900}:3900"
+      - "127.0.0.1:${KOKORO_SESSION_OWNER_AUTHORITY_HOST_PORT:-3901}:3901"
 
-  kokoro-agent:
-    build: { context: ./kokoro-agent }
-    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
-    networks: [default]
+  kokoro-agent-worker:
+    <<: *agent-build
+    env_file:
+      - path: ${KOKORO_AGENT_WORKER_ENV_FILE:-./deploy/env/agent-worker.env}
+        required: false
     depends_on:
+      platform-model-gateway: { condition: service_started }
+      kokoro-hub-runtime: { condition: service_started }
       workspace-init: { condition: service_completed_successfully }
     volumes:
       - kokoro-workspace:/data/workspace
       - ${KOKORO_STORAGE_FILE:-./deploy/storage.yaml}:/app/storage.yaml:ro
-    restart: unless-stopped
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/agent-worker:/run/secrets/kokoro:ro
 
-  kokoro-web:
-    build: { context: ./kokoro-web, dockerfile: apps/user/Dockerfile }
-    env_file: ["${KOKORO_ENV_FILE:-./deploy/.env}"]
+  kokoro-site-release:
+    image: ${KOKORO_SITE_IMAGE:-kokoro-reference-site:latest}
+    env_file:
+      - path: ${KOKORO_SITE_ENV_FILE:-./deploy/env/site-release.env}
+        required: false
     networks: [default]
     depends_on:
+      platform-api: { condition: service_started }
+      platform-asset-data-plane: { condition: service_started }
       kokoro-session: { condition: service_started }
-      kokoro-user: { condition: service_started }
-    ports: ["${KOKORO_WEB_HOST_PORT:-3000}:3000"]
+    volumes:
+      - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/site-release:/run/secrets/kokoro:ro
+    ports: ["${KOKORO_SITE_HOST_PORT:-3000}:3000"]
     restart: unless-stopped
 
-# 接入基建层创建的命名网络（external）：app 容器用服务名解析到基建 mysql/redis/mongo/minio/litellm。
 networks:
   default:
     external: true
