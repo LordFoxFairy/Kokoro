@@ -156,6 +156,18 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "platform-model-gateway@v1": Object.freeze({
+    schema: "kokoro.platform.model.v1.ModelGatewayService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/model/v1/model_gateway.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/model/v1/model_gateway.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
 });
 
 function parseArguments(argv) {

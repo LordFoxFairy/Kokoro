@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package kokoro.platform.model.v1;
+
+import "buf/validate/validate.proto";
+
+// ModelGatewayService is the only production model effect boundary consumed by GA.
+// The opaque authorization handle binds Site, budget, route and pricing inside Platform.
+service ModelGatewayService {
+  rpc InvokeModel(InvokeModelRequest) returns (InvokeModelResponse) {}
+}
+
+enum ModelMessageRole {
+  MODEL_MESSAGE_ROLE_UNSPECIFIED = 0;
+  MODEL_MESSAGE_ROLE_SYSTEM = 1;
+  MODEL_MESSAGE_ROLE_USER = 2;
+  MODEL_MESSAGE_ROLE_ASSISTANT = 3;
+  MODEL_MESSAGE_ROLE_TOOL = 4;
+}
+
+enum ModelToolChoice {
+  MODEL_TOOL_CHOICE_UNSPECIFIED = 0;
+  MODEL_TOOL_CHOICE_AUTO = 1;
+  MODEL_TOOL_CHOICE_NONE = 2;
+  MODEL_TOOL_CHOICE_REQUIRED = 3;
+}
+
+message ModelToolCall {
+  string id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Za-z0-9_-]+$"
+  }];
+  // Canonical UTF-8 JSON object. Platform validates and bounds it again before provider I/O.
+  bytes arguments_json = 3 [(buf.validate.field).bytes = {
+    min_len: 2
+    max_len: 1048576
+  }];
+}
+
+message ModelMessage {
+  ModelMessageRole role = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  // Empty content is valid for an assistant tool-call message.
+  string content = 2 [(buf.validate.field).string.max_bytes = 2097152];
+  repeated ModelToolCall tool_calls = 3 [(buf.validate.field).repeated.max_items = 128];
+  optional string tool_call_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string name = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Za-z0-9_-]+$"
+  }];
+}
+
+message ModelToolDefinition {
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Za-z0-9_-]+$"
+  }];
+  string description = 2 [(buf.validate.field).string.max_bytes = 65536];
+  // Canonical UTF-8 JSON Schema object. Platform rejects invalid/non-object schemas.
+  bytes input_schema_json = 3 [(buf.validate.field).bytes = {
+    min_len: 2
+    max_len: 1048576
+  }];
+}
+
+message ChatCompletionRequest {
+  string protocol = 1 [(buf.validate.field).string.const = "openai.chat.completions.v1"];
+  string model = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+  }];
+  repeated ModelMessage messages = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 512
+  }];
+  uint32 max_output_tokens = 4 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000000
+  }];
+  repeated ModelToolDefinition tools = 5 [(buf.validate.field).repeated.max_items = 128];
+  ModelToolChoice tool_choice = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string required_tool_name = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[A-Za-z0-9_-]+$"
+  }];
+}
+
+message InvokeModelRequest {
+  string model_authorization_handle = 1 [(buf.validate.field).string = {
+    len: 91
+    pattern: "^model-authorization:sha256:[0-9a-f]{64}$"
+  }];
+  string logical_call_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string attempt_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string producer_context = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 5 [(buf.validate.field).uint64.gte = 1];
+  ChatCompletionRequest request = 6 [(buf.validate.field).required = true];
+}
+
+message ModelUsage {
+  uint64 input_tokens = 1;
+  uint64 output_tokens = 2;
+}
+
+message ModelCompleted {
+  string response_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string content = 2 [(buf.validate.field).string.max_bytes = 8388608];
+  repeated ModelToolCall tool_calls = 3 [(buf.validate.field).repeated.max_items = 128];
+  optional string reasoning_content = 4 [(buf.validate.field).string.max_bytes = 8388608];
+  optional string finish_reason = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  optional ModelUsage usage = 6;
+}
+
+message ModelFailed {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  bool retryable = 2;
+}
+
+message ModelOutcomeUnknown {}
+
+message InvokeModelResponse {
+  string invocation_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string attempt_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  bool replayed = 3;
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    ModelCompleted completed = 4;
+    ModelFailed failed = 5;
+    ModelOutcomeUnknown outcome_unknown = 6;
+  }
+}

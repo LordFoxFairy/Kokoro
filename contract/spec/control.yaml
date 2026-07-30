@@ -25,6 +25,8 @@ objects:
     fields:
       - {name: provider, type: string_nonempty}
       - {name: name, type: string_nonempty}
+      # Platform-owned opaque capability for the exact execution manifest. GA never derives Site/budget/route.
+      - {name: authorization_handle, type: reference}
       - {name: effort, type: string_nonempty, optional: true}
       - {name: thinking, type: boolean, optional: true}
   # 会话快照的技能卡片（内容锁）：装配清单零查询,恢复重放零决策。

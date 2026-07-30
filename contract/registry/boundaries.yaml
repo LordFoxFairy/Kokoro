@@ -300,34 +300,45 @@
           "repository": "kokoro-agent"
         }
       ],
-      "deadlineMs": null,
+      "deadlineMs": 120000,
       "failureOwner": "kokoro-platform",
       "id": "model-gateway",
       "lifecycle": "active",
       "operations": [
         {
-          "effect": false,
-          "id": "chat_completions",
-          "receipt": null,
-          "retryClass": "after_delay",
+          "effect": true,
+          "id": "InvokeModel",
+          "receipt": {
+            "kind": "idempotency-key",
+            "ref": "kokoro.platform.model.v1.InvokeModelResponse.invocation_ref"
+          },
+          "retryClass": "same_identity",
           "scope": "namespace",
           "siteBinding": "not-applicable",
-          "transport": "http-json-openai"
+          "transport": "connect-rpc"
         }
       ],
-      "protocol": "http-json-openai",
+      "protocol": "connect-rpc",
       "provider": {
-        "boundary": "platform.litellm",
+        "boundary": "service.platform",
         "repository": "kokoro-platform"
       },
       "scope": "namespace",
-      "sourceStatus": "declared-only",
-      "sources": [],
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/model/v1/model_gateway.proto",
+          "select": {
+            "service": "ModelGatewayService"
+          }
+        }
+      ],
       "transportSource": null,
       "transports": [
-        "http-json-openai"
+        "connect-rpc"
       ],
-      "trustPlane": "internal-service",
+      "trustPlane": "internal-control",
       "version": 1
     },
     {
