@@ -19,6 +19,7 @@ service ModelControlService {
   rpc ListModelOptions(ListModelOptionsRequest) returns (ListModelOptionsResponse) {}
   rpc ListSiteModelPolicies(ListSiteModelPoliciesRequest) returns (ListSiteModelPoliciesResponse) {}
   rpc ListSiteReleaseCatalogs(ListSiteReleaseCatalogsRequest) returns (ListSiteReleaseCatalogsResponse) {}
+  rpc GetCommandReceipt(GetCommandReceiptRequest) returns (GetCommandReceiptResponse) {}
   rpc ImportInventory(ImportInventoryRequest) returns (ImportInventoryResponse) {}
   rpc ActivateInventory(ActivateInventoryRequest) returns (ActivateInventoryResponse) {}
   rpc ChangeSitePolicy(ChangeSitePolicyRequest) returns (ChangeSitePolicyResponse) {}
@@ -126,7 +127,10 @@ message CanonicalModelDefinition {
       }
     }
   }];
-  optional uint32 context_window = 6 [(buf.validate.field).uint32.gt = 0];
+  optional uint32 context_window = 6 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 2147483647
+  }];
   bool enabled = 7;
 }
 
@@ -215,7 +219,7 @@ message ProviderAvailability {
     defined_only: true
     not_in: 0
   }];
-  uint64 epoch = 4;
+  uint64 epoch = 4 [(buf.validate.field).uint64.lte = 9223372036854775807];
   optional string observation_ref = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -234,10 +238,10 @@ message ImportInventoryRequest {
 }
 
 message ModelInventoryCounts {
-  uint32 providers = 1;
-  uint32 models = 2;
-  uint32 bindings = 3;
-  uint32 product_routes = 4;
+  uint32 providers = 1 [(buf.validate.field).uint32.lte = 256];
+  uint32 models = 2 [(buf.validate.field).uint32.lte = 2048];
+  uint32 bindings = 3 [(buf.validate.field).uint32.lte = 4096];
+  uint32 product_routes = 4 [(buf.validate.field).uint32.lte = 4096];
 }
 
 message ImportInventoryResponse {
@@ -255,7 +259,7 @@ message ActivateInventoryEffect {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  uint64 expected_pointer_revision = 2;
+  uint64 expected_pointer_revision = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
 }
 
 message ActivateInventoryRequest {
@@ -268,7 +272,7 @@ message ActivateInventoryResponse {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  uint64 activated_revision = 2;
+  uint64 activated_revision = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   bool replayed = 3;
   kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
 }
@@ -328,7 +332,7 @@ message ChangeSitePolicyEffect {
     not_in: 0
   }];
   repeated SiteModelAssignment assignments = 6 [(buf.validate.field).repeated.max_items = 4096];
-  uint64 expected_revision = 7;
+  uint64 expected_revision = 7 [(buf.validate.field).uint64.lte = 9223372036854775807];
 }
 
 message ChangeSitePolicyRequest {
@@ -349,7 +353,7 @@ message ChangeSitePolicyResponse {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  uint64 revision = 3;
+  uint64 revision = 3 [(buf.validate.field).uint64.lte = 9223372036854775807];
   bool replayed = 4;
   kokoro.common.v2.CommandReceiptV2 receipt = 5 [(buf.validate.field).required = true];
 }
@@ -515,6 +519,124 @@ message PublishSiteReleaseCatalogResponse {
   kokoro.common.v2.CommandReceiptV2 receipt = 7 [(buf.validate.field).required = true];
 }
 
+enum ModelControlCommandOperation {
+  MODEL_CONTROL_COMMAND_OPERATION_UNSPECIFIED = 0;
+  MODEL_CONTROL_COMMAND_OPERATION_IMPORT_INVENTORY = 1;
+  MODEL_CONTROL_COMMAND_OPERATION_ACTIVATE_INVENTORY = 2;
+  MODEL_CONTROL_COMMAND_OPERATION_CHANGE_SITE_POLICY = 3;
+  MODEL_CONTROL_COMMAND_OPERATION_MATERIALIZE_MODEL_OPTIONS = 4;
+  MODEL_CONTROL_COMMAND_OPERATION_PUBLISH_SITE_RELEASE_CATALOG = 5;
+}
+
+message GetCommandReceiptRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string command_id = 2 [(buf.validate.field).string = {
+    len: 32
+    pattern: "^[0-9a-f]{32}$"
+  }];
+  ModelControlCommandOperation operation = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    in: 1
+  }];
+  string request_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional string site_id = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+}
+
+message ImportInventoryReceiptResult {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelInventoryCounts counts = 2 [(buf.validate.field).required = true];
+}
+
+message ActivateInventoryReceiptResult {
+  string target_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 activated_revision = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+}
+
+message ChangeSitePolicyReceiptResult {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string policy_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 revision = 3 [(buf.validate.field).uint64.lte = 9223372036854775807];
+}
+
+message MaterializeModelOptionsReceiptResult {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string source_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string materialization_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated string option_revision_refs = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+    unique: true
+    items: {
+      string: {
+        min_len: 3
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message PublishSiteReleaseCatalogReceiptResult {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string site_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string model_option_catalog_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string catalog_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp published_at = 5 [(buf.validate.field).required = true];
+}
+
+message GetCommandReceiptResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    ImportInventoryReceiptResult import_inventory = 2;
+    ActivateInventoryReceiptResult activate_inventory = 3;
+    ChangeSitePolicyReceiptResult change_site_policy = 4;
+    MaterializeModelOptionsReceiptResult materialize_model_options = 5;
+    PublishSiteReleaseCatalogReceiptResult publish_site_release_catalog = 6;
+  }
+}
+
 // Every list cursor is HMAC-protected by the provider and bound to the exact
 // authenticated operator authority, query kind, filters, and database watermark.
 message ModelAdminPage {
@@ -548,7 +670,7 @@ message AdminModelInventoryRevision {
   ModelInventoryCounts counts = 3 [(buf.validate.field).required = true];
   google.protobuf.Timestamp imported_at = 4 [(buf.validate.field).required = true];
   bool active = 5;
-  optional uint64 active_pointer_revision = 6;
+  optional uint64 active_pointer_revision = 6 [(buf.validate.field).uint64.lte = 9223372036854775807];
 }
 
 message ListInventoryRevisionsRequest {
@@ -601,7 +723,7 @@ message AdminModelProvider {
     defined_only: true
     not_in: 0
   }];
-  uint64 availability_epoch = 9;
+  uint64 availability_epoch = 9 [(buf.validate.field).uint64.lte = 9223372036854775807];
   optional google.protobuf.Timestamp observed_at = 10;
 }
 
@@ -661,7 +783,10 @@ message AdminModelDefinition {
       }
     }
   }];
-  optional uint32 context_window = 6 [(buf.validate.field).uint32.gt = 0];
+  optional uint32 context_window = 6 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 2147483647
+  }];
   bool enabled = 7;
 }
 
@@ -856,7 +981,7 @@ message AdminSiteModelPolicy {
     defined_only: true
     not_in: 0
   }];
-  uint64 revision = 3;
+  uint64 revision = 3 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string policy_digest = 4 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
@@ -874,7 +999,7 @@ message AdminSiteModelPolicy {
     defined_only: true
     not_in: 0
   }];
-  uint32 assignment_count = 9;
+  uint32 assignment_count = 9 [(buf.validate.field).uint32.lte = 4096];
   bool current = 10;
   google.protobuf.Timestamp changed_at = 11 [(buf.validate.field).required = true];
 }

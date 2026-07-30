@@ -17,7 +17,7 @@ test("ModelControl publishes bounded typed Admin read projections without provid
   for (const rpc of [
     "ListInventoryRevisions", "GetInventoryRevision", "ListInventoryProviders",
     "ListInventoryModels", "ListInventoryBindings", "ListInventoryProductRoutes",
-    "ListModelOptions", "ListSiteModelPolicies", "ListSiteReleaseCatalogs",
+    "ListModelOptions", "ListSiteModelPolicies", "ListSiteReleaseCatalogs", "GetCommandReceipt",
   ]) {
     assert.match(proto, new RegExp(`rpc ${rpc}\\(`, "u"));
     assert.match(registryText, new RegExp(`"id": "${rpc}"`, "u"));
@@ -29,6 +29,40 @@ test("ModelControl publishes bounded typed Admin read projections without provid
   assert.doesNotMatch(provider, /string secret_ref/u);
   assert.match(proto, /message ModelAdminPage[\s\S]*uint32 page_size[\s\S]*optional string page_token/u);
   assert.match(proto, /google\.protobuf\.Timestamp as_of/u);
+});
+
+test("ModelControl bounds persisted integers to PostgreSQL signed storage", async () => {
+  const proto = await readFile(protoPath, "utf8");
+  for (const field of [
+    "epoch", "expected_pointer_revision", "activated_revision", "expected_revision",
+    "active_pointer_revision", "availability_epoch", "revision",
+  ]) {
+    const declarations = [...proto.matchAll(new RegExp(
+      `(?:optional )?uint64 ${field} = \\d+ \\[\\(buf\\.validate\\.field\\)\\.uint64\\.lte = 9223372036854775807\\];`,
+      "gu",
+    ))];
+    assert.ok(declarations.length > 0, `${field} must fit PostgreSQL BIGINT`);
+  }
+  for (const field of ["context_window", "providers", "models", "bindings", "product_routes"]) {
+    assert.match(proto, new RegExp(
+      `(?:optional )?uint32 ${field} = \\d+ \\[\\(buf\\.validate\\.field\\)\\.uint32[\\s\\S]*?lte: (?:2147483647|256|2048|4096)`,
+      "u",
+    ), `${field} must fit PostgreSQL INTEGER`);
+  }
+});
+
+test("ModelControl exposes a typed command receipt reconciliation result", async () => {
+  const [proto, registry] = await Promise.all([readFile(protoPath, "utf8"), readFile(registryPath, "utf8")]);
+  assert.match(proto, /message GetCommandReceiptRequest[\s\S]*AuthenticatedOperatorQueryContext[\s\S]*string command_id[\s\S]*ModelControlCommandOperation operation[\s\S]*CommandDigestAlgorithmV2 digest_algorithm[\s\S]*string request_digest/u);
+  assert.match(proto, /message GetCommandReceiptResponse[\s\S]*CommandReceiptV2 receipt[\s\S]*oneof result/u);
+  for (const result of [
+    "import_inventory", "activate_inventory", "change_site_policy", "materialize_model_options",
+    "publish_site_release_catalog",
+  ]) assert.match(proto, new RegExp(`\\b${result} =`, "u"));
+  for (const operation of ["ImportInventory", "ActivateInventory", "ChangeSitePolicy",
+    "MaterializeModelOptions", "PublishSiteReleaseCatalog"]) {
+    assert.match(registry, new RegExp(`"id": "${operation}"[^\\n]*"recoveryOperation": "GetCommandReceipt"[^\\n]*"retryClass": "reconcile_receipt"`, "u"));
+  }
 });
 
 test("ModelControl bounds every repeated identifier and revision reference item", async () => {
@@ -78,8 +112,11 @@ test("ModelControl generates one provider-consumer error classification contract
       "adminPageTokenInvalid", "model.admin_page_token.invalid", "invalid_argument", "400",
       "adminSessionUnauthenticated", "admin.session.unauthenticated", "unauthenticated", "401",
       "adminPermissionDenied", "admin.permission_denied", "permission_denied", "403",
+      "commandReceiptNotFound", "model.command_receipt.not_found",
+      "commandReceiptMismatch", "model.command_receipt.mismatch",
     ]) assert.match(source, new RegExp(value, "u"));
     assert.match(source, /export function modelControlAdminErrorDetail/u);
+    assert.doesNotMatch(source, /\? value : "model-control"/u);
   } finally {
     await rm(output, { recursive: true, force: true });
   }

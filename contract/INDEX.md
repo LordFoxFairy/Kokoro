@@ -39,6 +39,9 @@ resolves the actual Platform target.
 ## Idempotency, failure, and recovery
 
 Repeated generation from the same source and tool versions must be byte-identical. Drift is a hard failure before pin promotion.
+Model Control effects expose `GetCommandReceipt`; callers reconcile an ambiguous timeout/Unavailable outcome by the original
+32-hex command ID, expected operation, and exact Site scope before considering a same-identity replay. Receipt results are typed
+safe projections of the five Model Control effects, never generic Admin resource payloads.
 
 ## Extension rules and forbidden dependencies
 
