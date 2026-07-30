@@ -1,0 +1,187 @@
+syntax = "proto3";
+
+package kokoro.platform.site.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// SiteProvisioningService is the typed fresh-deployment ingress for creating a Site
+// authority and publishing immutable SiteRelease facts. It is deliberately separate
+// from lifecycle promotion and does not expose a generic action proxy.
+service SiteProvisioningService {
+  rpc RegisterSite(RegisterSiteRequest) returns (RegisterSiteResponse) {}
+  rpc PublishSiteRelease(PublishSiteReleaseRequest) returns (PublishSiteReleaseResponse) {}
+}
+
+message RegisterSiteEffect {
+  string site_key = 1 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9-]{2,62}$"}];
+  string project_binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string repository_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  string provider_namespace = 4 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9.-]{1,63}$"}];
+  string provider_project_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  string workload_identity_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message RegisterSiteRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  RegisterSiteEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+enum ProvisionedSiteState {
+  PROVISIONED_SITE_STATE_UNSPECIFIED = 0;
+  PROVISIONED_SITE_STATE_PREVIEW_READY = 1;
+}
+
+message RegisterSiteResponse {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  ProvisionedSiteState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool replayed = 3;
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+}
+
+message SiteLocalePolicy {
+  string default_locale = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  repeated string allowed_locales = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 32
+    unique: true
+    items: {
+      string: {
+        min_len: 1
+        max_len: 64
+      }
+    }
+  }];
+}
+
+// The CI/release authority signs the canonical certification facts. The
+// certification_digest in PublishSiteReleaseEffect is the SHA-256 digest of those
+// facts and is the immutable value retained by Platform.
+message SiteReleaseCertificationProof {
+  string signing_key_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  google.protobuf.Timestamp issued_at = 2 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  bytes signature = 4 [(buf.validate.field).bytes = {
+    min_len: 64
+    max_len: 512
+  }];
+}
+
+message PublishSiteReleaseEffect {
+  string release_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string web_artifact_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string release_manifest_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string certification_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string launch_profile_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string site_config_revision_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string legal_revision_ref = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string feature_policy_revision = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string model_option_catalog_ref = 9 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string agent_catalog_ref = 10 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string identity_issuer_label = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string identity_auth_strength_policy_revision = 12 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  repeated string enabled_surface_ids = 13 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+    unique: true
+  }];
+  SiteLocalePolicy locale_policy = 14 [(buf.validate.field).required = true];
+  SiteReleaseCertificationProof certification = 15 [(buf.validate.field).required = true];
+}
+
+message PublishSiteReleaseRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PublishSiteReleaseEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+enum PublishedSiteReleaseState {
+  PUBLISHED_SITE_RELEASE_STATE_UNSPECIFIED = 0;
+  PUBLISHED_SITE_RELEASE_STATE_READY = 1;
+}
+
+message PublishSiteReleaseResponse {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string release_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PublishedSiteReleaseState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool replayed = 4;
+  kokoro.common.v2.CommandReceiptV2 receipt = 5 [(buf.validate.field).required = true];
+}

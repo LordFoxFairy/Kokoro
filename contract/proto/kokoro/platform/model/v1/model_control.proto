@@ -1,0 +1,464 @@
+syntax = "proto3";
+
+package kokoro.platform.model.v1;
+
+import "buf/validate/validate.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// ModelControlService is the typed operator control plane for the one canonical
+// inventory and the Site/product layers built above it. It never executes a model.
+service ModelControlService {
+  rpc ImportInventory(ImportInventoryRequest) returns (ImportInventoryResponse) {}
+  rpc ActivateInventory(ActivateInventoryRequest) returns (ActivateInventoryResponse) {}
+  rpc ChangeSitePolicy(ChangeSitePolicyRequest) returns (ChangeSitePolicyResponse) {}
+  rpc MaterializeModelOptions(MaterializeModelOptionsRequest) returns (MaterializeModelOptionsResponse) {}
+  rpc PublishSiteReleaseCatalog(PublishSiteReleaseCatalogRequest) returns (PublishSiteReleaseCatalogResponse) {}
+}
+
+enum ModelProduct {
+  MODEL_PRODUCT_UNSPECIFIED = 0;
+  MODEL_PRODUCT_CHAT = 1;
+  MODEL_PRODUCT_MUSIC = 2;
+  MODEL_PRODUCT_IMAGE = 3;
+  MODEL_PRODUCT_VIDEO = 4;
+}
+
+enum ModelRouteRole {
+  MODEL_ROUTE_ROLE_UNSPECIFIED = 0;
+  MODEL_ROUTE_ROLE_MAIN = 1;
+  MODEL_ROUTE_ROLE_GENERATION = 2;
+}
+
+enum ProviderAdapterKind {
+  PROVIDER_ADAPTER_KIND_UNSPECIFIED = 0;
+  PROVIDER_ADAPTER_KIND_LITELLM = 1;
+  PROVIDER_ADAPTER_KIND_DIRECT = 2;
+}
+
+enum ProviderOperationalStatus {
+  PROVIDER_OPERATIONAL_STATUS_UNSPECIFIED = 0;
+  PROVIDER_OPERATIONAL_STATUS_ACTIVE = 1;
+  PROVIDER_OPERATIONAL_STATUS_DISABLED = 2;
+}
+
+enum ProviderHealth {
+  PROVIDER_HEALTH_UNSPECIFIED = 0;
+  PROVIDER_HEALTH_UNKNOWN = 1;
+  PROVIDER_HEALTH_HEALTHY = 2;
+  PROVIDER_HEALTH_DEGRADED = 3;
+  PROVIDER_HEALTH_DOWN = 4;
+}
+
+message CanonicalProvider {
+  string key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string provider = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string account_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string secret_ref = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  ProviderAdapterKind adapter_kind = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 priority = 6 [(buf.validate.field).uint32.lte = 10000];
+}
+
+message CanonicalModelDefinition {
+  string key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string display_name = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  repeated string input_modalities = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 32
+    unique: true
+  }];
+  repeated string output_modalities = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 32
+    unique: true
+  }];
+  repeated string capabilities = 5 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+    unique: true
+  }];
+  optional uint32 context_window = 6 [(buf.validate.field).uint32.gt = 0];
+  bool enabled = 7;
+}
+
+message CanonicalProviderModelBinding {
+  string key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string model_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string provider_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string upstream_model = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  string gateway_model_name = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 priority = 6 [(buf.validate.field).uint32.lte = 10000];
+  bool enabled = 7;
+}
+
+message CanonicalProductRoute {
+  ModelProduct product = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ModelRouteRole role = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string model_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 position = 4 [(buf.validate.field).uint32.lte = 10000];
+  repeated string required_capabilities = 5 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+    unique: true
+  }];
+}
+
+message CanonicalModelInventory {
+  string source_reference = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  repeated CanonicalProvider providers = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+  }];
+  repeated CanonicalModelDefinition models = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 2048
+  }];
+  repeated CanonicalProviderModelBinding bindings = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 4096
+  }];
+  repeated CanonicalProductRoute product_routes = 5 [(buf.validate.field).repeated.max_items = 4096];
+}
+
+message ProviderAvailability {
+  string provider_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ProviderOperationalStatus status = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ProviderHealth health = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 epoch = 4;
+  optional string observation_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string observed_at = 6 [(buf.validate.field).string = {
+    min_len: 20
+    max_len: 40
+  }];
+}
+
+message ImportInventoryEffect {
+  CanonicalModelInventory inventory = 1 [(buf.validate.field).required = true];
+  repeated ProviderAvailability provider_availability = 2 [(buf.validate.field).repeated.max_items = 256];
+}
+
+message ImportInventoryRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  ImportInventoryEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message ModelInventoryCounts {
+  uint32 providers = 1;
+  uint32 models = 2;
+  uint32 bindings = 3;
+  uint32 product_routes = 4;
+}
+
+message ImportInventoryResponse {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelInventoryCounts counts = 2 [(buf.validate.field).required = true];
+  bool replayed = 3;
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+}
+
+message ActivateInventoryEffect {
+  string target_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 expected_pointer_revision = 2;
+}
+
+message ActivateInventoryRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  ActivateInventoryEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message ActivateInventoryResponse {
+  string target_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 activated_revision = 2;
+  bool replayed = 3;
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+}
+
+enum SiteModelCatalogMode {
+  SITE_MODEL_CATALOG_MODE_UNSPECIFIED = 0;
+  SITE_MODEL_CATALOG_MODE_FOLLOW_ACTIVE = 1;
+  SITE_MODEL_CATALOG_MODE_PINNED = 2;
+}
+
+enum SiteModelAssignmentMode {
+  SITE_MODEL_ASSIGNMENT_MODE_UNSPECIFIED = 0;
+  SITE_MODEL_ASSIGNMENT_MODE_INHERIT = 1;
+  SITE_MODEL_ASSIGNMENT_MODE_REPLACE = 2;
+}
+
+message SiteModelAssignment {
+  ModelRouteRole role = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string model_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 position = 3 [(buf.validate.field).uint32.lte = 10000];
+  repeated string required_capabilities = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+    unique: true
+  }];
+  bool enabled = 5;
+}
+
+message ChangeSitePolicyEffect {
+  ModelProduct product = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool enabled = 2;
+  SiteModelCatalogMode catalog_mode = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string catalog_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  SiteModelAssignmentMode assignment_mode = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated SiteModelAssignment assignments = 6 [(buf.validate.field).repeated.max_items = 4096];
+  uint64 expected_revision = 7;
+}
+
+message ChangeSitePolicyRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  ChangeSitePolicyEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message ChangeSitePolicyResponse {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string policy_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 revision = 3;
+  bool replayed = 4;
+  kokoro.common.v2.CommandReceiptV2 receipt = 5 [(buf.validate.field).required = true];
+}
+
+enum ModelOptionLifecycle {
+  MODEL_OPTION_LIFECYCLE_UNSPECIFIED = 0;
+  MODEL_OPTION_LIFECYCLE_ACTIVE = 1;
+  MODEL_OPTION_LIFECYCLE_DISABLED = 2;
+}
+
+message ModelOptionRoleSelection {
+  string primary_model_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  repeated string fallback_model_keys = 2 [(buf.validate.field).repeated = {
+    max_items: 64
+    unique: true
+  }];
+}
+
+message ModelOptionDraft {
+  string option_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ModelProduct surface = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string label = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional string description = 4 [(buf.validate.field).string.max_len = 512];
+  optional string tier = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  ModelOptionLifecycle lifecycle = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ModelOptionRoleSelection orchestration = 7 [(buf.validate.field).required = true];
+  ModelOptionRoleSelection generation = 8 [(buf.validate.field).required = true];
+}
+
+message MaterializeModelOptionsEffect {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated ModelOptionDraft options = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+  }];
+}
+
+message MaterializeModelOptionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  MaterializeModelOptionsEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message MaterializeModelOptionsResponse {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string source_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string materialization_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated string option_revision_refs = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+    unique: true
+  }];
+  bool replayed = 5;
+  kokoro.common.v2.CommandReceiptV2 receipt = 6 [(buf.validate.field).required = true];
+}
+
+message SiteReleaseModelSurface {
+  ModelProduct surface = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string allowed_option_revision_refs = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+    unique: true
+  }];
+  string default_option_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+
+message PublishSiteReleaseCatalogEffect {
+  string site_release_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string published_at = 3 [(buf.validate.field).string = {
+    min_len: 20
+    max_len: 40
+  }];
+  repeated SiteReleaseModelSurface surfaces = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 4
+  }];
+}
+
+message PublishSiteReleaseCatalogRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PublishSiteReleaseCatalogEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishSiteReleaseCatalogResponse {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string site_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string model_option_catalog_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string catalog_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  bool replayed = 5;
+  kokoro.common.v2.CommandReceiptV2 receipt = 6 [(buf.validate.field).required = true];
+}

@@ -95,6 +95,32 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: "site-lifecycle",
   }),
+  "platform-site-provisioning@v1": Object.freeze({
+    schema: "kokoro.platform.site.v1.SiteProvisioningService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/site/v1/site_provisioning.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/site/v1/site_provisioning.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "site-provisioning",
+  }),
+  "platform-model-control@v1": Object.freeze({
+    schema: "kokoro.platform.model.v1.ModelControlService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/model/v1/model_control.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/model/v1/model_control.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "model-control",
+  }),
   "platform-admission@v1": Object.freeze({
     schema: "kokoro.platform.admission.v1.AdmissionService",
     version: 1,
@@ -1187,12 +1213,145 @@ export const revokeCodeBatchRequestDigest = (context: AuthenticatedOperatorComma
 `;
 }
 
+function siteProvisioningDigestSource() {
+  return `${authenticatedCommandDigestSource()}
+import {
+  PublishSiteReleaseEffectSchema,
+  RegisterSiteEffectSchema,
+  type PublishSiteReleaseEffect,
+  type RegisterSiteEffect,
+} from "./kokoro/platform/site/v1/site_provisioning_pb.js";
+
+export function registerSiteRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  siteId: string,
+  effect: RegisterSiteEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return authenticatedEnvelope(
+    "platform-site-provisioning@v1",
+    "kokoro.platform.site.v1.SiteProvisioningService/RegisterSite",
+    context,
+    { typeName: RegisterSiteEffectSchema.typeName, bytes: toBinary(RegisterSiteEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId, effect.projectBindingRef, effect.repositoryRef, effect.providerProjectRef,
+      effect.workloadIdentityRef],
+    verified,
+  );
+}
+
+export function publishSiteReleaseRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  siteId: string,
+  effect: PublishSiteReleaseEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return authenticatedEnvelope(
+    "platform-site-provisioning@v1",
+    "kokoro.platform.site.v1.SiteProvisioningService/PublishSiteRelease",
+    context,
+    { typeName: PublishSiteReleaseEffectSchema.typeName, bytes: toBinary(PublishSiteReleaseEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId, effect.releaseRef, effect.launchProfileRef, effect.modelOptionCatalogRef,
+      effect.agentCatalogRef],
+    verified,
+  );
+}
+`;
+}
+
+function modelControlDigestSource() {
+  return `${authenticatedCommandDigestSource()}
+import {
+  ActivateInventoryEffectSchema,
+  ChangeSitePolicyEffectSchema,
+  ImportInventoryEffectSchema,
+  MaterializeModelOptionsEffectSchema,
+  PublishSiteReleaseCatalogEffectSchema,
+  type ActivateInventoryEffect,
+  type ChangeSitePolicyEffect,
+  type ImportInventoryEffect,
+  type MaterializeModelOptionsEffect,
+  type PublishSiteReleaseCatalogEffect,
+} from "./kokoro/platform/model/v1/model_control_pb.js";
+
+function modelControlDigest(
+  method: string,
+  context: AuthenticatedOperatorCommandContext,
+  effect: TypedPayload,
+  targetRefs: readonly string[],
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return authenticatedEnvelope(
+    "platform-model-control@v1",
+    \`kokoro.platform.model.v1.ModelControlService/\${method}\`,
+    context,
+    effect,
+    targetRefs,
+    verified,
+  );
+}
+
+export function importInventoryRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  effect: ImportInventoryEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return modelControlDigest("ImportInventory", context,
+    { typeName: ImportInventoryEffectSchema.typeName, bytes: toBinary(ImportInventoryEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.inventory?.sourceReference ?? ""], verified);
+}
+
+export function activateInventoryRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  effect: ActivateInventoryEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return modelControlDigest("ActivateInventory", context,
+    { typeName: ActivateInventoryEffectSchema.typeName, bytes: toBinary(ActivateInventoryEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.targetDigest], verified);
+}
+
+export function changeSitePolicyRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  siteId: string,
+  effect: ChangeSitePolicyEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return modelControlDigest("ChangeSitePolicy", context,
+    { typeName: ChangeSitePolicyEffectSchema.typeName, bytes: toBinary(ChangeSitePolicyEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId], verified);
+}
+
+export function materializeModelOptionsRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  effect: MaterializeModelOptionsEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return modelControlDigest("MaterializeModelOptions", context,
+    { typeName: MaterializeModelOptionsEffectSchema.typeName, bytes: toBinary(MaterializeModelOptionsEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.inventoryDigest, ...effect.options.map(({ optionKey }) => optionKey)], verified);
+}
+
+export function publishSiteReleaseCatalogRequestDigest(
+  context: AuthenticatedOperatorCommandContext,
+  siteId: string,
+  effect: PublishSiteReleaseCatalogEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return modelControlDigest("PublishSiteReleaseCatalog", context,
+    { typeName: PublishSiteReleaseCatalogEffectSchema.typeName, bytes: toBinary(PublishSiteReleaseCatalogEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId, effect.siteReleaseRef, effect.inventoryDigest], verified);
+}
+`;
+}
+
 function commandEnvelopeDigestSource(kind) {
   const wrappers = {
     identity: identityCommandDigestSource,
     "admin-command": adminCommandDigestSource,
     "site-lifecycle": siteLifecycleDigestSource,
+    "site-provisioning": siteProvisioningDigestSource,
     "admin-commerce": adminCommerceDigestSource,
+    "model-control": modelControlDigestSource,
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
