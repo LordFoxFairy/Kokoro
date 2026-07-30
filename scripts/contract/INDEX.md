@@ -172,6 +172,14 @@ operations and rejects any provider projection that exposes the persisted secret
 generated-contract repository gate treats `platform-model-control@v1` as a live two-party boundary:
 Platform owns the provider mirror and Web owns the Admin BFF consumer mirror.
 
+Model Admin unary calls have one explicit end-to-end transport budget: requests are limited to 16 MiB
+and responses to 8 MiB in both the Platform Admin Connect server and Web Admin Connect client. The Web
+BFF admits semantically valid inventories above the former 64 KiB ceiling and reports an over-budget
+browser body as HTTP 413 `request.payload_too_large`; field-level Buf Validate failures remain HTTP 400.
+The budget is intentionally not the Cartesian product of every repeated-field maximum. Every repeated
+identifier/reference item is independently bounded in `model_control.proto`, while the total unary budget
+is the operational resource boundary.
+
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
 and `node scripts/contract/check-boundary-coverage.mjs`,
 `pnpm --dir contract run openapi:lint`,
