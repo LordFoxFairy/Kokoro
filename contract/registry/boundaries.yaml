@@ -751,6 +751,12 @@
       "id": "platform-admin-commerce",
       "lifecycle": "contract-only",
       "operations": [
+        {"effect": true, "id": "PublishCreditProgramRevision", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditProgramRevisions", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetCreditProgramRevision", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishEntitlementTemplateRevision", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListEntitlementTemplateRevisions", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetEntitlementTemplateRevision", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": true, "id": "PublishOffer", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListOffers", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "GetOffer", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},

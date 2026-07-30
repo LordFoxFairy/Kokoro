@@ -446,6 +446,12 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
     commerce = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
 
     assert _service_methods(commerce, "AdminCommerceService") == [
+        "PublishCreditProgramRevision",
+        "ListCreditProgramRevisions",
+        "GetCreditProgramRevision",
+        "PublishEntitlementTemplateRevision",
+        "ListEntitlementTemplateRevisions",
+        "GetEntitlementTemplateRevision",
         "PublishOffer",
         "ListOffers",
         "GetOffer",
@@ -468,6 +474,33 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
         assert "raw_codes" not in _message_body(commerce, message)
     assert "safe_fingerprints" not in _message_body(commerce, "CodeBatchSummary")
     assert "CodeBatchApprovalState approval_state" in _message_body(commerce, "CodeBatchSummary")
+    credit = _message_body(commerce, "PublishCreditProgramRevisionEffect")
+    for field in (
+        "string credit_program_revision_ref",
+        "string program_ref",
+        "uint64 revision",
+        "CreditBucketClass ux_bucket_class",
+        "string unit",
+        "string amount",
+        "int32 burn_priority",
+        "CreditScopePolicy scope_policy",
+        "string liability_merchant_account_ref",
+        "optional string calendar_zone",
+        "optional string window_anchor",
+        "optional uint64 expires_after_seconds",
+    ):
+        assert field in credit
+    entitlement = _message_body(commerce, "PublishEntitlementTemplateRevisionEffect")
+    for field in (
+        "string entitlement_template_revision_ref",
+        "string template_ref",
+        "uint64 revision",
+        "string capability_key",
+        "string safe_label",
+        "optional uint64 expires_after_seconds",
+    ):
+        assert field in entitlement
+    assert "google.protobuf.Struct" not in commerce
     assert "rpc Route" not in commerce
     assert "string action" not in commerce
 

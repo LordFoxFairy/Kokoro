@@ -411,6 +411,16 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
     assert 'schemaId: "kokoro.platform.admin.v1.AdminAuthService"' not in generator
 
 
+def test_admin_commerce_digest_covers_catalog_primitive_publications() -> None:
+    generator = (CONTRACT / "generate.mjs").read_text()
+
+    assert "publishCreditProgramRevisionRequestDigest" in generator
+    assert "publishEntitlementTemplateRevisionRequestDigest" in generator
+    assert 'uniqueSorted("effect.scopePolicy.surfaceRefs"' in generator
+    assert 'uniqueSorted("effect.scopePolicy.capabilityKeys"' in generator
+    assert 'uniqueSorted("effect.scopePolicy.agentRefs"' in generator
+
+
 def test_node_generator_isolates_new_boundary_output() -> None:
     with tempfile.TemporaryDirectory() as directory:
         output = Path(directory) / "bundle"

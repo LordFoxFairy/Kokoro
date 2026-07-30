@@ -60,7 +60,9 @@ The removed Prepare/SubmitForApproval/ExecuteApproved authority is intentionally
 
 `AdminCommerceService.v1` is the fresh-only typed operator ingress for Commerce catalog and card administration. It exposes a
 closed method set—no arbitrary route/action proxy—and binds every effect to Site scope plus the shared authenticated operator
-command envelope. `PublishOffer` is one atomic immutable graph publication. Card secrets exist only in the first committed
+command envelope. CreditProgram and EntitlementTemplate prerequisite revisions publish through their own typed immutable
+operations before `PublishOffer` may reference them; both have Site-scoped list/get recovery surfaces. `PublishOffer` is one atomic
+immutable graph publication. Card secrets exist only in the first committed
 `IssueCodeBatch` response (maximum 1,000), while replay and all query types expose only delivery-unavailable state, counts and safe
 export receipt metadata. Code-batch approval and lifecycle transitions remain Commerce-owned database invariants.
 

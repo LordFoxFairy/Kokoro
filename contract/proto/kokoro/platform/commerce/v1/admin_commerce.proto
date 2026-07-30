@@ -9,6 +9,12 @@ import "kokoro/platform/admin/v2/admin_shared.proto";
 
 // AdminCommerceService is the only typed operator ingress into Commerce administration.
 service AdminCommerceService {
+  rpc PublishCreditProgramRevision(PublishCreditProgramRevisionRequest) returns (PublishCreditProgramRevisionResponse) {}
+  rpc ListCreditProgramRevisions(ListCreditProgramRevisionsRequest) returns (ListCreditProgramRevisionsResponse) {}
+  rpc GetCreditProgramRevision(GetCreditProgramRevisionRequest) returns (GetCreditProgramRevisionResponse) {}
+  rpc PublishEntitlementTemplateRevision(PublishEntitlementTemplateRevisionRequest) returns (PublishEntitlementTemplateRevisionResponse) {}
+  rpc ListEntitlementTemplateRevisions(ListEntitlementTemplateRevisionsRequest) returns (ListEntitlementTemplateRevisionsResponse) {}
+  rpc GetEntitlementTemplateRevision(GetEntitlementTemplateRevisionRequest) returns (GetEntitlementTemplateRevisionResponse) {}
   rpc PublishOffer(PublishOfferRequest) returns (PublishOfferResponse) {}
   rpc ListOffers(ListOffersRequest) returns (ListOffersResponse) {}
   rpc GetOffer(GetOfferRequest) returns (GetOfferResponse) {}
@@ -46,6 +52,262 @@ enum FulfillmentOutputKind {
   FULFILLMENT_OUTPUT_KIND_SUBSCRIPTION_TERM = 1;
   FULFILLMENT_OUTPUT_KIND_ENTITLEMENT_GRANT = 2;
   FULFILLMENT_OUTPUT_KIND_CREDIT_GRANT = 3;
+}
+
+enum CreditBucketClass {
+  CREDIT_BUCKET_CLASS_UNSPECIFIED = 0;
+  CREDIT_BUCKET_CLASS_DAILY = 1;
+  CREDIT_BUCKET_CLASS_PERIOD = 2;
+  CREDIT_BUCKET_CLASS_PERMANENT = 3;
+}
+
+message CreditScopePolicy {
+  repeated string surface_refs = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+    unique: true
+    items: {
+      string: {pattern: "^[a-z0-9][a-z0-9._:-]{0,255}$"}
+    }
+  }];
+  repeated string capability_keys = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 256
+    unique: true
+    items: {
+      string: {pattern: "^[a-z0-9][a-z0-9._:-]{0,255}$"}
+    }
+  }];
+  repeated string agent_refs = 3 [(buf.validate.field).repeated = {
+    max_items: 256
+    unique: true
+    items: {
+      string: {pattern: "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"}
+    }
+  }];
+  bool allow_unattributed_agent = 4;
+}
+
+message PublishCreditProgramRevisionEffect {
+  string credit_program_revision_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string program_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  CreditBucketClass ux_bucket_class = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string unit = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string amount = 6 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  int32 burn_priority = 7;
+  CreditScopePolicy scope_policy = 8 [(buf.validate.field).required = true];
+  string liability_merchant_account_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string calendar_zone = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  optional string window_anchor = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional uint64 expires_after_seconds = 12 [(buf.validate.field).uint64.gt = 0];
+}
+
+message CreditProgramRevisionSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_program_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string program_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  CreditBucketClass ux_bucket_class = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string unit = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string amount = 7 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  int32 burn_priority = 8;
+  CreditScopePolicy scope_policy = 9 [(buf.validate.field).required = true];
+  string liability_merchant_account_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string calendar_zone = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  optional string window_anchor = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional uint64 expires_after_seconds = 13 [(buf.validate.field).uint64.gt = 0];
+  string revision_digest = 14 [(buf.validate.field).string = {pattern: "^[a-f0-9]{64}$"}];
+  google.protobuf.Timestamp published_at = 15 [(buf.validate.field).required = true];
+}
+
+message PublishCreditProgramRevisionRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  PublishCreditProgramRevisionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishCreditProgramRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CreditProgramRevisionSummary credit_program_revision = 2 [(buf.validate.field).required = true];
+}
+
+message ListCreditProgramRevisionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListCreditProgramRevisionsResponse {
+  repeated CreditProgramRevisionSummary credit_program_revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetCreditProgramRevisionRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_program_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetCreditProgramRevisionResponse {
+  CreditProgramRevisionSummary credit_program_revision = 1 [(buf.validate.field).required = true];
+}
+
+message PublishEntitlementTemplateRevisionEffect {
+  string entitlement_template_revision_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string template_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  string capability_key = 4 [(buf.validate.field).string = {pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"}];
+  string safe_label = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional uint64 expires_after_seconds = 6 [(buf.validate.field).uint64.gt = 0];
+}
+
+message EntitlementTemplateRevisionSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string entitlement_template_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string template_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string capability_key = 5 [(buf.validate.field).string = {pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"}];
+  string safe_label = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional uint64 expires_after_seconds = 7 [(buf.validate.field).uint64.gt = 0];
+  string revision_digest = 8 [(buf.validate.field).string = {pattern: "^[a-f0-9]{64}$"}];
+  google.protobuf.Timestamp published_at = 9 [(buf.validate.field).required = true];
+}
+
+message PublishEntitlementTemplateRevisionRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  PublishEntitlementTemplateRevisionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishEntitlementTemplateRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  EntitlementTemplateRevisionSummary entitlement_template_revision = 2 [(buf.validate.field).required = true];
+}
+
+message ListEntitlementTemplateRevisionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListEntitlementTemplateRevisionsResponse {
+  repeated EntitlementTemplateRevisionSummary entitlement_template_revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetEntitlementTemplateRevisionRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string entitlement_template_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetEntitlementTemplateRevisionResponse {
+  EntitlementTemplateRevisionSummary entitlement_template_revision = 1 [(buf.validate.field).required = true];
 }
 
 enum CodeBatchState {
