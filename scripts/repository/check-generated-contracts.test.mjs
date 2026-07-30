@@ -237,6 +237,20 @@ test("privileged and public contracts have independent provider/consumer mirrors
       ],
     },
     {
+      id: "platform-asset-eligibility@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-asset-eligibility",
+        "kokoro-session/src/platform/asset-eligibility-generated",
+      ],
+    },
+    {
+      id: "platform-model-control@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-model-control",
+        "kokoro-web/apps/admin/lib/generated/model-control",
+      ],
+    },
+    {
       id: "platform-session-authorization@v1",
       mirrors: [
         "kokoro-platform/src/interfaces/connect/generated-authorization",

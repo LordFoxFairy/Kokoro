@@ -10,6 +10,15 @@ import "kokoro/platform/admin/v2/admin_shared.proto";
 // ModelControlService is the typed operator control plane for the one canonical
 // inventory and the Site/product layers built above it. It never executes a model.
 service ModelControlService {
+  rpc ListInventoryRevisions(ListInventoryRevisionsRequest) returns (ListInventoryRevisionsResponse) {}
+  rpc GetInventoryRevision(GetInventoryRevisionRequest) returns (GetInventoryRevisionResponse) {}
+  rpc ListInventoryProviders(ListInventoryProvidersRequest) returns (ListInventoryProvidersResponse) {}
+  rpc ListInventoryModels(ListInventoryModelsRequest) returns (ListInventoryModelsResponse) {}
+  rpc ListInventoryBindings(ListInventoryBindingsRequest) returns (ListInventoryBindingsResponse) {}
+  rpc ListInventoryProductRoutes(ListInventoryProductRoutesRequest) returns (ListInventoryProductRoutesResponse) {}
+  rpc ListModelOptions(ListModelOptionsRequest) returns (ListModelOptionsResponse) {}
+  rpc ListSiteModelPolicies(ListSiteModelPoliciesRequest) returns (ListSiteModelPoliciesResponse) {}
+  rpc ListSiteReleaseCatalogs(ListSiteReleaseCatalogsRequest) returns (ListSiteReleaseCatalogsResponse) {}
   rpc ImportInventory(ImportInventoryRequest) returns (ImportInventoryResponse) {}
   rpc ActivateInventory(ActivateInventoryRequest) returns (ActivateInventoryResponse) {}
   rpc ChangeSitePolicy(ChangeSitePolicyRequest) returns (ChangeSitePolicyResponse) {}
@@ -456,4 +465,345 @@ message PublishSiteReleaseCatalogResponse {
   google.protobuf.Timestamp published_at = 5 [(buf.validate.field).required = true];
   bool replayed = 6;
   kokoro.common.v2.CommandReceiptV2 receipt = 7 [(buf.validate.field).required = true];
+}
+
+// Every list cursor is HMAC-protected by the provider and bound to the exact
+// authenticated operator authority, query kind, filters, and database watermark.
+message ModelAdminPage {
+  uint32 page_size = 1 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
+  optional string page_token = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 1024
+  }];
+}
+
+message ModelAdminPageInfo {
+  optional string next_page_token = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 1024
+  }];
+  google.protobuf.Timestamp as_of = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelInventoryRevision {
+  string inventory_digest = 1 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string source_reference = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  ModelInventoryCounts counts = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp imported_at = 4 [(buf.validate.field).required = true];
+  bool active = 5;
+  optional uint64 active_pointer_revision = 6;
+}
+
+message ListInventoryRevisionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  ModelAdminPage page = 2 [(buf.validate.field).required = true];
+}
+
+message ListInventoryRevisionsResponse {
+  repeated AdminModelInventoryRevision revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message GetInventoryRevisionRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message GetInventoryRevisionResponse {
+  AdminModelInventoryRevision revision = 1 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp as_of = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelProvider {
+  string provider_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string provider = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string account_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ProviderAdapterKind adapter_kind = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 priority = 5 [(buf.validate.field).uint32.lte = 10000];
+  bool secret_reference_present = 6;
+  ProviderOperationalStatus status = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ProviderHealth health = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 availability_epoch = 9;
+  optional google.protobuf.Timestamp observed_at = 10;
+}
+
+message ListInventoryProvidersRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListInventoryProvidersResponse {
+  repeated AdminModelProvider providers = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelDefinition {
+  string model_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string display_name = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  repeated string input_modalities = 3 [(buf.validate.field).repeated.max_items = 32];
+  repeated string output_modalities = 4 [(buf.validate.field).repeated.max_items = 32];
+  repeated string capabilities = 5 [(buf.validate.field).repeated.max_items = 128];
+  optional uint32 context_window = 6 [(buf.validate.field).uint32.gt = 0];
+  bool enabled = 7;
+}
+
+message ListInventoryModelsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListInventoryModelsResponse {
+  repeated AdminModelDefinition models = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelBinding {
+  string binding_key = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string model_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string provider_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string upstream_model = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  string gateway_model_name = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 priority = 6 [(buf.validate.field).uint32.lte = 10000];
+  bool enabled = 7;
+}
+
+message ListInventoryBindingsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListInventoryBindingsResponse {
+  repeated AdminModelBinding bindings = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelProductRoute {
+  ModelProduct product = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ModelRouteRole role = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string model_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 position = 4 [(buf.validate.field).uint32.lte = 10000];
+  repeated string required_capabilities = 5 [(buf.validate.field).repeated.max_items = 128];
+}
+
+message ListInventoryProductRoutesRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListInventoryProductRoutesResponse {
+  repeated AdminModelProductRoute routes = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminModelOption {
+  string revision_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string option_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  ModelProduct surface = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string label = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional string description = 6 [(buf.validate.field).string.max_len = 512];
+  optional string tier = 7 [(buf.validate.field).string.max_len = 64];
+  ModelOptionLifecycle lifecycle = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string input_modalities = 9 [(buf.validate.field).repeated.max_items = 32];
+  repeated string output_modalities = 10 [(buf.validate.field).repeated.max_items = 32];
+  repeated string supported_efforts = 11 [(buf.validate.field).repeated.max_items = 32];
+  repeated string badges = 12 [(buf.validate.field).repeated.max_items = 32];
+  google.protobuf.Timestamp created_at = 13 [(buf.validate.field).required = true];
+}
+
+message ListModelOptionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  optional string inventory_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional ModelProduct surface = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  ModelAdminPage page = 4 [(buf.validate.field).required = true];
+}
+
+message ListModelOptionsResponse {
+  repeated AdminModelOption options = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminSiteModelPolicy {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  ModelProduct product = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 revision = 3;
+  string policy_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  bool enabled = 5;
+  SiteModelCatalogMode catalog_mode = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string catalog_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  SiteModelAssignmentMode assignment_mode = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 assignment_count = 9;
+  bool current = 10;
+  google.protobuf.Timestamp changed_at = 11 [(buf.validate.field).required = true];
+}
+
+message ListSiteModelPoliciesRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListSiteModelPoliciesResponse {
+  repeated AdminSiteModelPolicy policies = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message AdminSiteReleaseCatalog {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string site_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string model_option_catalog_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string catalog_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string inventory_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint32 surface_count = 6 [(buf.validate.field).uint32.lte = 4];
+  google.protobuf.Timestamp published_at = 7 [(buf.validate.field).required = true];
+}
+
+message ListSiteReleaseCatalogsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  ModelAdminPage page = 3 [(buf.validate.field).required = true];
+}
+
+message ListSiteReleaseCatalogsResponse {
+  repeated AdminSiteReleaseCatalog catalogs = 1 [(buf.validate.field).repeated.max_items = 200];
+  ModelAdminPageInfo page = 2 [(buf.validate.field).required = true];
 }

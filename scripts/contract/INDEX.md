@@ -166,6 +166,12 @@ spec keeps separate. Declaring an excluded path in the document fails, and an un
 
 ## Verification
 
+`check-model-control-admin-read.test.mjs` locks the privileged Model Control read plane to typed,
+bounded projections. It requires all nine inventory, option, Site-policy, and Site-release catalog
+operations and rejects any provider projection that exposes the persisted secret reference. The
+generated-contract repository gate treats `platform-model-control@v1` as a live two-party boundary:
+Platform owns the provider mirror and Web owns the Admin BFF consumer mirror.
+
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
 and `node scripts/contract/check-boundary-coverage.mjs`,
 `pnpm --dir contract run openapi:lint`,

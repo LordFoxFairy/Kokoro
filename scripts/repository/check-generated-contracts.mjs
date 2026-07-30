@@ -32,6 +32,13 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
   Object.freeze({
+    id: "platform-model-control@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-model-control",
+      "kokoro-web/apps/admin/lib/generated/model-control",
+    ]),
+  }),
+  Object.freeze({
     id: "platform-session-authorization@v1",
     mirrors: Object.freeze([
       "kokoro-platform/src/interfaces/connect/generated-authorization",
