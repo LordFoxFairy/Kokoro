@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { resolve } from "node:path";
 import { test } from "node:test";
+import { generate } from "../../contract/generate.mjs";
 
 const protoPath = new URL("../../contract/proto/kokoro/platform/model/v1/model_control.proto", import.meta.url);
 const registryPath = new URL("../../contract/registry/boundaries.yaml", import.meta.url);
@@ -62,4 +65,20 @@ test("ModelControl documents one end-to-end Admin unary transport budget", async
   assert.match(index, /above the former 64 KiB ceiling/u);
   assert.match(index, /HTTP 413 `request\.payload_too_large`/u);
   assert.match(index, /Buf Validate failures remain HTTP 400/u);
+});
+
+test("ModelControl generates one provider-consumer error classification contract", async () => {
+  const output = await mkdtemp(resolve(tmpdir(), "kokoro-model-errors-"));
+  try {
+    await generate({ boundary: "platform-model-control@v1", output });
+    const source = await readFile(resolve(output, "model-control-errors.ts"), "utf8").catch(() => "");
+    for (const value of [
+      "inventoryRevisionNotFound", "model.inventory.not_found", "not_found", "404",
+      "commandReceiptConflict", "model.command_receipt_conflict", "already_exists", "409",
+      "adminPageTokenInvalid", "model.admin_page_token.invalid", "invalid_argument", "400",
+    ]) assert.match(source, new RegExp(value, "u"));
+    assert.match(source, /export function modelControlAdminErrorDetail/u);
+  } finally {
+    await rm(output, { recursive: true, force: true });
+  }
 });
