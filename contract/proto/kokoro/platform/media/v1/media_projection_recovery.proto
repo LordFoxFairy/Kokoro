@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package kokoro.platform.media.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/platform/media/v1/media_projection.proto";
+
+// MediaProjectionRecoveryService is the Media-owner read plane used only by
+// Session to prove an exact chain head, fill a gap, or build a shadow replay.
+// Live push remains on the durable-event boundary.
+service MediaProjectionRecoveryService {
+  rpc GetProjectionHead(GetProjectionHeadRequest) returns (GetProjectionHeadResponse) {}
+  rpc PullProjectionEvents(PullProjectionEventsRequest) returns (PullProjectionEventsResponse) {}
+}
+
+message GetProjectionHeadRequest {
+  string owner_recovery_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 4 [(buf.validate.field).uint64.gt = 0];
+}
+
+message MediaProjectionHead {
+  string binding_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 3 [(buf.validate.field).uint64.gt = 0];
+  uint64 high_watermark = 4 [(buf.validate.field).uint64.gt = 0];
+  string head_event_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string head_event_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string owner_signature = 7 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string refreshed_owner_recovery_handle = 8 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp observed_at = 9 [(buf.validate.field).required = true];
+}
+
+message GetProjectionHeadResponse {
+  MediaProjectionHead head = 1 [(buf.validate.field).required = true];
+}
+
+message PullProjectionEventsRequest {
+  string owner_recovery_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 4 [(buf.validate.field).uint64.gt = 0];
+  uint64 after_sequence = 5;
+  uint32 limit = 6 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 256
+  }];
+}
+
+message MediaProjectionRecoveryRecord {
+  oneof event {
+    option (buf.validate.oneof).required = true;
+    MediaProjectionBindingCommittedRecord binding_committed = 1;
+    MediaProjectionEventRecord projection_changed = 2;
+  }
+}
+
+message PullProjectionEventsResponse {
+  repeated MediaProjectionRecoveryRecord events = 1 [(buf.validate.field).repeated = {max_items: 256}];
+  uint64 high_watermark = 2 [(buf.validate.field).uint64.gt = 0];
+  string head_event_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string head_event_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  bool has_more = 5;
+  string replay_delivery_authorization = 6 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp replay_authorization_expires_at = 7 [(buf.validate.field).required = true];
+}

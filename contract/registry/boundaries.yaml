@@ -1,6 +1,165 @@
 {
   "boundaries": [
     {
+      "audience": "agent-runtime-workload",
+      "consumers": [{"boundary": "service.agent", "repository": "kokoro-agent"}],
+      "deadlineMs": 30000,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-media-runtime",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "CreateAgentImageOperation", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverMediaOperationByCommand", "ref": "kokoro.platform.media.v1.MediaCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "CancelAgentMediaOperation", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverMediaOperationByCommand", "ref": "kokoro.platform.media.v1.MediaCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "RecoverMediaOperationByCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetAgentMediaOperation", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/media/v1/media_runtime.proto", "select": {"service": "MediaRuntimeService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "platform-media-worker",
+      "consumers": [{"boundary": "service.platform", "repository": "kokoro-platform"}],
+      "deadlineMs": 30000,
+      "failureOwner": "kokoro-platform",
+      "id": "model-image-effect",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "CreateImageEffect", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "RecoverImageEffectByCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetImageEffectByCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RequestCancelImageEffect", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "AttachNextAttemptAuthorization", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/model/image/v1/image_effect.proto", "select": {"service": "ImageEffectV1Service"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "platform-admission-media-credit-workloads",
+      "consumers": [{"boundary": "service.platform", "repository": "kokoro-platform"}],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-session",
+      "id": "session-media-projection",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "IssueMediaProjectionReservation", "receipt": {"kind": "idempotency-key", "ref": "kokoro.session.media.v1.IssueMediaProjectionReservationResponse.media_projection_reservation_handle"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "BindMediaProjectionTarget", "receipt": {"kind": "idempotency-key", "ref": "kokoro.session.media.v1.MediaProjectionBinding.binding_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RecoverMediaProjectionActivation", "receipt": {"kind": "state-read", "ref": "kokoro.session.media.v1.MediaProjectionActivationReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "CreateReplacementMediaProjectionBinding", "receipt": {"kind": "idempotency-key", "ref": "kokoro.session.media.v1.MediaProjectionBinding.binding_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RefreshMediaProjectionAccess", "receipt": {"kind": "state-read", "ref": "kokoro.session.media.v1.RefreshMediaProjectionAccessResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetMediaProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RefreshCreditCostProjectionAccess", "receipt": {"kind": "state-read", "ref": "kokoro.session.media.v1.RefreshCreditCostProjectionAccessResponse"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetCreditCostProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.session", "repository": "kokoro-session"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/session/media/v1/media_projection.proto", "select": {"service": "SessionMediaProjectionService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "session-media-projection-consumer",
+      "consumers": [{"boundary": "service.session", "repository": "kokoro-session"}],
+      "deadlineMs": 30000,
+      "failureOwner": "kokoro-platform",
+      "id": "media-session-projection-events",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "MediaProjectionBindingCommitted", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.MediaProjectionActivationReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
+        {"effect": true, "id": "MediaOperationProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
+        {"effect": true, "id": "MediaCandidateProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
+        {"effect": true, "id": "MediaArtifactProjectionLinked", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
+      ],
+      "protocol": "durable-event",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "spec-yaml", "path": "contract/spec/media-projection.yaml", "select": {"section": "media_projection_events", "member": "scalar"}}],
+      "transportSource": null,
+      "transports": ["durable-event"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "session-credit-projection-consumer",
+      "consumers": [{"boundary": "service.session", "repository": "kokoro-session"}],
+      "deadlineMs": 30000,
+      "failureOwner": "kokoro-platform",
+      "id": "credit-session-cost-projection-events",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "CreditCostProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
+      ],
+      "protocol": "durable-event",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "spec-yaml", "path": "contract/spec/media-projection.yaml", "select": {"section": "credit_cost_projection_events", "member": "scalar"}}],
+      "transportSource": null,
+      "transports": ["durable-event"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "session-media-projection-recovery-workload",
+      "consumers": [{"boundary": "service.session", "repository": "kokoro-session"}],
+      "deadlineMs": 10000,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-media-projection-recovery",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": false, "id": "GetProjectionHead", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/media/v1/media_projection_recovery.proto", "select": {"service": "MediaProjectionRecoveryService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "session-credit-cost-projection-recovery-workload",
+      "consumers": [{"boundary": "service.session", "repository": "kokoro-session"}],
+      "deadlineMs": 10000,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-credit-cost-projection-recovery",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": false, "id": "GetProjectionHead", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/credit/v1/cost_projection_recovery.proto", "select": {"service": "CreditCostProjectionRecoveryService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
       "audience": "internal-reconciliation-workload",
       "consumers": [
         {

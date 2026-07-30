@@ -25,7 +25,7 @@ function repository(id) {
     lockfiles: [id === "kokoro-agent" ? "uv.lock" : id === "kokoro-web" ? "pnpm-lock.yaml" : "package-lock.json"],
     requiredWorkflows: [".github/workflows/ci.yml"],
     artifacts: [{ id: `${id}-service`, descriptor: "package.json" }],
-    protocols: [{ id: "runtime-v1", version: 1, role: id === "kokoro-platform" ? "provider" : "consumer" }],
+    protocols: [{ id: "runtime-v1", version: 1, role: id === "kokoro-platform" ? "provider" : "consumer", lifecycle: "active" }],
     recoverableRef: `refs/tags/candidate-${id}`,
   };
 }
@@ -47,6 +47,16 @@ test("manifest schema is closed and requires the exact four repositories", () =>
   const duplicate = manifest();
   duplicate.repositories[3].id = "kokoro-agent";
   assert.throws(() => parseManifest(JSON.stringify(duplicate)), /manifest_inventory/u);
+});
+
+test("manifest protocol lifecycle is explicit and closed", () => {
+  const missing = manifest();
+  delete missing.repositories[0].protocols[0].lifecycle;
+  assert.throws(() => parseManifest(JSON.stringify(missing)), /manifest_protocol/u);
+
+  const invalid = manifest();
+  invalid.repositories[0].protocols[0].lifecycle = "draft";
+  assert.throws(() => parseManifest(JSON.stringify(invalid)), /manifest_protocol/u);
 });
 
 test("gitmodules accepts only name/path/url and rejects floating controls", async () => {
@@ -102,6 +112,62 @@ test("compatibility matrix rejects undeclared or version-skewed protocols", () =
   const skewed = structuredClone(compatible);
   skewed.contracts[0].version = 2;
   assert.throws(() => validateCompatibility(parsed, skewed), /compatibility_protocol/u);
+});
+
+test("active protocols require runtime compatibility and contract-only protocols forbid it", () => {
+  const parsed = parseManifest(JSON.stringify(manifest()));
+  const compatible = {
+    schemaVersion: 1,
+    combinationId: "wave1",
+    contracts: [{ id: "runtime-v1", version: 1, providers: ["kokoro-platform"], consumers: ["kokoro-agent", "kokoro-session", "kokoro-web"] }],
+    requiredGates: ["runtime-smoke"],
+    runtimeGate: {
+      schemaVersion: 1,
+      requiredServices: ["postgres", "redis", "mongo", "minio", "litellm"],
+      scenarios: [{
+        id: "session-platform-internal-rpc",
+        commandId: "node-session-platform-internal-rpc-v1",
+        required: true,
+        participants: ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"],
+        protocols: [{ id: "runtime-v1", version: 1 }],
+        timeoutSeconds: 180,
+      }],
+    },
+  };
+  assert.doesNotThrow(() => validateCompatibility(parsed, compatible));
+
+  const missingActive = structuredClone(parsed);
+  missingActive.repositories[0].protocols.push({
+    id: "missing-active",
+    version: 1,
+    role: "consumer",
+    lifecycle: "active",
+  });
+  assert.throws(() => validateCompatibility(missingActive, compatible), /compatibility_protocol/u);
+
+  const declared = structuredClone(parsed);
+  declared.repositories[0].protocols.push({
+    id: "future-v1",
+    version: 1,
+    role: "consumer",
+    lifecycle: "contract-only",
+  });
+  declared.repositories[1].protocols.push({
+    id: "future-v1",
+    version: 1,
+    role: "provider",
+    lifecycle: "contract-only",
+  });
+  assert.doesNotThrow(() => validateCompatibility(declared, compatible));
+
+  const falselyAttested = structuredClone(compatible);
+  falselyAttested.contracts.push({
+    id: "future-v1",
+    version: 1,
+    providers: ["kokoro-platform"],
+    consumers: ["kokoro-agent"],
+  });
+  assert.throws(() => validateCompatibility(declared, falselyAttested), /compatibility_contract_only_attested/u);
 });
 
 test("runtime compatibility schema is closed and every contract has required coverage", () => {
@@ -212,10 +278,10 @@ test("Hub Connect runtime is promoted only for the Platform provider and Agent c
     currentManifest.repositories.map(({ id, protocols }) => [id, protocols]),
   );
   assert.deepEqual(protocols["kokoro-agent"].find(({ id }) => id === "hub-runtime"), {
-    id: "hub-runtime", version: 1, role: "consumer",
+    id: "hub-runtime", version: 1, role: "consumer", lifecycle: "active",
   });
   assert.deepEqual(protocols["kokoro-platform"].find(({ id }) => id === "hub-runtime"), {
-    id: "hub-runtime", version: 1, role: "provider",
+    id: "hub-runtime", version: 1, role: "provider", lifecycle: "active",
   });
   assert.equal(protocols["kokoro-session"].some(({ id }) => id === "hub-runtime"), false);
 });

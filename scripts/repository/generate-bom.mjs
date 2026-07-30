@@ -403,6 +403,7 @@ async function composeBom({ root, promotionCommit, runtimeGate, ...context }) {
       path,
       pin,
       protocols: [...protocols]
+        .filter(({ lifecycle }) => lifecycle === "active")
         .sort((left, right) => left.id.localeCompare(right.id))
         .map(({ id: protocolId, role, version }) => ({ id: protocolId, role, version })),
       recoverableRef,

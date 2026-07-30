@@ -17,7 +17,7 @@ Repository tooling does not own child branches, locks, releases, tags, runtime s
 
 ## Public boundary
 
-- `verify-federated-repositories.mjs` validates the exact `.gitmodules` inventory, selected HEAD/index gitlinks, child checkout/origin/clean state, recoverable refs, protocol declarations, and the closed compatibility matrix.
+- `verify-federated-repositories.mjs` validates the exact `.gitmodules` inventory, selected HEAD/index gitlinks, child checkout/origin/clean state, recoverable refs, protocol declarations, and the closed compatibility matrix. Every protocol declaration has an explicit `active` or `contract-only` lifecycle: active roles must be attested by the matrix and required runtime evidence, while contract-only roles must declare both provider and consumer and are forbidden from the matrix.
 - `generate-bom.mjs` writes and re-checks `config/repository/bom.json`, the versioned record of one atomic pin promotion: the promotion commit, four exact pins, each repository's independent `recoverableRef`, the declared protocol and contract list, and length-framed SHA-256 digests of the manifest, matrix, committed evidence and the runtime gate that certified the combination. Generation requires runtime evidence whose combination digest, pins and pre/postflight pin verification match the manifest, so BOM authority is transitively bound to the verifier. `--check` regenerates and byte-compares, reusing the recorded promotion commit instead of re-reading HEAD.
 - `freeze-snapshots.mjs` is scoped to the single historical source baseline declared by `config/repository/expected-snapshots.json`: tree, tar archive digest, tracked file count and remote archive reachability. It is not a promotion gate, reads only the committed tree, and refuses to reuse a per-repository `recoverableRef` as its shared baseline archive tag. It does not import child source into Root.
 - `run-pinned-compatibility.mjs` owns runtime combination evidence. Its closed CLI retains the shared `--infra-env-file` invocation shape but does not open that file or derive a database administrator credential from it. The pinned gate requires PostgreSQL, Redis, MongoDB, MinIO, and LiteLLM; its isolated data leases allocate PostgreSQL, MongoDB, and Redis only. It accepts only code-owned scenario commands and writes sanitized atomic evidence under ignored `tmp/`.
@@ -33,6 +33,10 @@ compose published child runtime APIs for cross-repository evidence; it must not 
 write Hub Mongo directly.
 
 Promotion order is fixed: run the verifier and compatibility runner against the same selected tree (`head` or staged `index`), commit the four gitlinks and the manifest atomically, rerun the verifier in `head` mode, then generate the BOM against that commit and commit the BOM separately. A Root manifest may only reference its parent or an earlier commit, so the BOM never carries a field naming the commit that contains it.
+
+The manifest also records future contract ownership without presenting it as released capability. BOM repository
+protocol lists intentionally include only `active` declarations; contract-only roles remain bound indirectly by the
+manifest digest and cannot appear in the BOM contract/runtime evidence list until lifecycle promotion.
 
 ## Callers and dependencies
 

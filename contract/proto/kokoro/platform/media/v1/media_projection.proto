@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package kokoro.platform.media.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// MediaProjectionBindingCommittedRecord is immutable Media-owner evidence and
+// must be source sequence one. Rotating delivery capabilities are not signed.
+message MediaProjectionBindingCommittedRecord {
+  option (buf.validate.message).cel = {
+    id: "media_projection.activation_predecessor_absent"
+    message: "source sequence one must not carry a predecessor"
+    expression: "this.source_sequence == 1u && !has(this.predecessor_event_ref) && !has(this.predecessor_event_digest)"
+  };
+  string activation_event_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string media_command_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string command_commit_receipt_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string command_commit_receipt_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 producer_generation = 7 [(buf.validate.field).uint64.gt = 0];
+  string owner_signature = 8 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp committed_at = 9 [(buf.validate.field).required = true];
+  uint64 source_sequence = 10 [(buf.validate.field).uint64.const = 1];
+  optional string predecessor_event_ref = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_event_digest = 12 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string event_digest = 13 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+enum MediaProjectionOperationState {
+  MEDIA_PROJECTION_OPERATION_STATE_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_OPERATION_STATE_QUEUED = 1;
+  MEDIA_PROJECTION_OPERATION_STATE_ACTIVE = 2;
+  MEDIA_PROJECTION_OPERATION_STATE_FINALIZING = 3;
+  MEDIA_PROJECTION_OPERATION_STATE_CANCEL_REQUESTED = 4;
+  MEDIA_PROJECTION_OPERATION_STATE_RECONCILING = 5;
+  MEDIA_PROJECTION_OPERATION_STATE_COMPLETED = 6;
+  MEDIA_PROJECTION_OPERATION_STATE_PARTIAL = 7;
+  MEDIA_PROJECTION_OPERATION_STATE_FAILED = 8;
+  MEDIA_PROJECTION_OPERATION_STATE_CANCELED = 9;
+}
+
+message MediaOperationProjectionChanged {
+  MediaProjectionOperationState state = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 safe_progress_bps = 2 [(buf.validate.field).uint32.lte = 10000];
+}
+
+enum MediaProjectionCandidateState {
+  MEDIA_PROJECTION_CANDIDATE_STATE_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_CANDIDATE_STATE_PRODUCING = 1;
+  MEDIA_PROJECTION_CANDIDATE_STATE_VALIDATING = 2;
+  MEDIA_PROJECTION_CANDIDATE_STATE_READY = 3;
+  MEDIA_PROJECTION_CANDIDATE_STATE_RESTRICTED = 4;
+  MEDIA_PROJECTION_CANDIDATE_STATE_FAILED = 5;
+  MEDIA_PROJECTION_CANDIDATE_STATE_UNKNOWN = 6;
+  MEDIA_PROJECTION_CANDIDATE_STATE_CANCELED = 7;
+}
+
+message MediaCandidateProjectionChanged {
+  string candidate_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 candidate_owner_version = 2 [(buf.validate.field).uint64.gt = 0];
+  MediaProjectionCandidateState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message MediaArtifactProjectionLinked {
+  string candidate_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string artifact_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string artifact_version_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 artifact_owner_version = 4 [(buf.validate.field).uint64.gt = 0];
+}
+
+// Immutable signed chain record shared by live delivery and owner replay.
+// Media carries only the Credit-owned association ref/version, never cost facts.
+message MediaProjectionEventRecord {
+  option (buf.validate.message).cel = {
+    id: "media_projection.event_predecessor_required"
+    message: "source sequence two and above must carry a complete predecessor"
+    expression: "this.source_sequence >= 2u && has(this.predecessor_event_ref) && has(this.predecessor_event_digest)"
+  };
+  string event_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string event_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 operation_owner_version = 5 [(buf.validate.field).uint64.gt = 0];
+  uint64 producer_generation = 6 [(buf.validate.field).uint64.gt = 0];
+  optional string cost_projection_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional uint64 cost_projection_owner_version = 8 [(buf.validate.field).uint64.gt = 0];
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+    MediaOperationProjectionChanged operation_changed = 9;
+    MediaCandidateProjectionChanged candidate_changed = 10;
+    MediaArtifactProjectionLinked artifact_linked = 11;
+  }
+  google.protobuf.Timestamp recorded_at = 12 [(buf.validate.field).required = true];
+  uint64 source_sequence = 13 [(buf.validate.field).uint64.gte = 2];
+  optional string predecessor_event_ref = 14 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_event_digest = 15 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string owner_signature = 16 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+}

@@ -1,0 +1,266 @@
+syntax = "proto3";
+
+package kokoro.platform.media.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// MediaRuntimeService is the private GA product-tool boundary. It owns no GA
+// graph semantics and exposes only opaque, owner-validated Media authority.
+service MediaRuntimeService {
+  rpc CreateAgentImageOperation(CreateAgentImageOperationRequest) returns (CreateAgentImageOperationResponse) {}
+  rpc CancelAgentMediaOperation(CancelAgentMediaOperationRequest) returns (CancelAgentMediaOperationResponse) {}
+  rpc RecoverMediaOperationByCommand(RecoverMediaOperationByCommandRequest) returns (RecoverMediaOperationByCommandResponse) {}
+  rpc GetAgentMediaOperation(GetAgentMediaOperationRequest) returns (GetAgentMediaOperationResponse) {}
+}
+
+enum ImageAspectRatio {
+  IMAGE_ASPECT_RATIO_UNSPECIFIED = 0;
+  IMAGE_ASPECT_RATIO_SQUARE = 1;
+  IMAGE_ASPECT_RATIO_LANDSCAPE = 2;
+  IMAGE_ASPECT_RATIO_PORTRAIT = 3;
+}
+
+enum ImageOutputFormat {
+  IMAGE_OUTPUT_FORMAT_UNSPECIFIED = 0;
+  IMAGE_OUTPUT_FORMAT_PNG = 1;
+  IMAGE_OUTPUT_FORMAT_JPEG = 2;
+  IMAGE_OUTPUT_FORMAT_WEBP = 3;
+}
+
+message ImageCreateRequest {
+  string prompt_intent = 1 [(buf.validate.field).string = {
+    min_bytes: 1
+    max_bytes: 32768
+  }];
+  ImageAspectRatio aspect_ratio = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 candidate_count = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 4
+  }];
+  string model_option_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ImageOutputFormat output_format = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message CreateAgentImageOperationRequest {
+  string media_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string media_projection_reservation_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string stable_output_slot_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string agent_media_command_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string caller_request_fingerprint = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ImageCreateRequest image_request = 6 [(buf.validate.field).required = true];
+}
+
+enum MediaOperationState {
+  MEDIA_OPERATION_STATE_UNSPECIFIED = 0;
+  MEDIA_OPERATION_STATE_ADMISSION_PENDING = 1;
+  MEDIA_OPERATION_STATE_AUTHORIZED = 2;
+  MEDIA_OPERATION_STATE_QUEUED = 3;
+  MEDIA_OPERATION_STATE_ACTIVE = 4;
+  MEDIA_OPERATION_STATE_FINALIZING = 5;
+  MEDIA_OPERATION_STATE_CANCEL_REQUESTED = 6;
+  MEDIA_OPERATION_STATE_RECONCILING = 7;
+  MEDIA_OPERATION_STATE_COMPLETED = 8;
+  MEDIA_OPERATION_STATE_PARTIAL = 9;
+  MEDIA_OPERATION_STATE_FAILED = 10;
+  MEDIA_OPERATION_STATE_CANCELED = 11;
+}
+
+enum MediaOperationOutcomeClass {
+  MEDIA_OPERATION_OUTCOME_CLASS_UNSPECIFIED = 0;
+  MEDIA_OPERATION_OUTCOME_CLASS_CANONICAL = 1;
+  MEDIA_OPERATION_OUTCOME_CLASS_IRRECONCILABLE = 2;
+}
+
+enum MediaCandidateState {
+  MEDIA_CANDIDATE_STATE_UNSPECIFIED = 0;
+  MEDIA_CANDIDATE_STATE_ALLOCATED = 1;
+  MEDIA_CANDIDATE_STATE_PRODUCING = 2;
+  MEDIA_CANDIDATE_STATE_OUTPUT_RECEIVED = 3;
+  MEDIA_CANDIDATE_STATE_VALIDATING = 4;
+  MEDIA_CANDIDATE_STATE_READY = 5;
+  MEDIA_CANDIDATE_STATE_RESTRICTED = 6;
+  MEDIA_CANDIDATE_STATE_FAILED = 7;
+  MEDIA_CANDIDATE_STATE_UNKNOWN = 8;
+  MEDIA_CANDIDATE_STATE_CANCEL_REQUESTED = 9;
+  MEDIA_CANDIDATE_STATE_CANCELED = 10;
+}
+
+message AgentMediaCandidateView {
+  string candidate_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 2 [(buf.validate.field).uint64.gt = 0];
+  MediaCandidateState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string artifact_version_handle = 4 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+}
+
+message AgentMediaOperationView {
+  string media_operation_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 3 [(buf.validate.field).uint64.gt = 0];
+  MediaOperationState state = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  MediaOperationOutcomeClass outcome_class = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 safe_progress_bps = 6 [(buf.validate.field).uint32.lte = 10000];
+  repeated AgentMediaCandidateView candidates = 7 [(buf.validate.field).repeated.max_items = 4];
+  optional string cost_projection_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional uint64 cost_projection_owner_version = 9 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp observed_at = 10 [(buf.validate.field).required = true];
+}
+
+enum MediaRuntimeErrorCode {
+  MEDIA_RUNTIME_ERROR_CODE_UNSPECIFIED = 0;
+  MEDIA_RUNTIME_ERROR_CODE_ACCESS_DENIED = 1;
+  MEDIA_RUNTIME_ERROR_CODE_ACCESS_EXPIRED = 2;
+  MEDIA_RUNTIME_ERROR_CODE_IDEMPOTENCY_CONFLICT = 3;
+  MEDIA_RUNTIME_ERROR_CODE_OPERATION_NOT_FOUND = 4;
+  MEDIA_RUNTIME_ERROR_CODE_OPERATION_VERSION_CONFLICT = 5;
+  MEDIA_RUNTIME_ERROR_CODE_PROJECTION_BINDING_REJECTED = 6;
+  MEDIA_RUNTIME_ERROR_CODE_POLICY_REJECTED = 7;
+  MEDIA_RUNTIME_ERROR_CODE_OUTCOME_UNKNOWN = 8;
+}
+
+enum MediaCommandReceiptKind {
+  MEDIA_COMMAND_RECEIPT_KIND_UNSPECIFIED = 0;
+  MEDIA_COMMAND_RECEIPT_KIND_CREATE_COMMITTED = 1;
+  MEDIA_COMMAND_RECEIPT_KIND_CANCEL_INTENT_COMMITTED = 2;
+  MEDIA_COMMAND_RECEIPT_KIND_REJECTED = 3;
+  MEDIA_COMMAND_RECEIPT_KIND_OUTCOME_UNKNOWN = 4;
+}
+
+message MediaRuntimeError {
+  MediaRuntimeErrorCode code = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string safe_message = 2 [(buf.validate.field).string.max_len = 512];
+}
+
+// A cancel receipt commits only owner intent. Candidate and provider outcomes
+// remain authoritative owner facts and are never inferred from this receipt.
+message MediaCommandReceipt {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  MediaCommandReceiptKind kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+  optional MediaRuntimeError error = 6;
+}
+
+message CreateAgentImageOperationResponse {
+  MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional AgentMediaOperationView operation = 2;
+}
+
+message CancelAgentMediaOperationRequest {
+  string media_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string cancel_command_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_operation_version = 4 [(buf.validate.field).uint64.gt = 0];
+  string caller_request_fingerprint = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message CancelAgentMediaOperationResponse {
+  MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional AgentMediaOperationView operation = 2;
+}
+
+// Recovery is a journal lookup. Input, caller fingerprint and owner persistence
+// digest are deliberately absent from this wire shape.
+message RecoverMediaOperationByCommandRequest {
+  string media_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string media_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message RecoverMediaOperationByCommandResponse {
+  MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional AgentMediaOperationView operation = 2;
+}
+
+message GetAgentMediaOperationRequest {
+  string media_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetAgentMediaOperationResponse {
+  AgentMediaOperationView operation = 1 [(buf.validate.field).required = true];
+}

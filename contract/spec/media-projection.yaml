@@ -1,0 +1,12 @@
+schema_version: 1
+
+# Typed payloads live in kokoro/session/media/v1/media_projection.proto. This
+# source freezes durable event names separately from the Connect target API.
+media_projection_events:
+  - MediaProjectionBindingCommitted
+  - MediaOperationProjectionChanged
+  - MediaCandidateProjectionChanged
+  - MediaArtifactProjectionLinked
+
+credit_cost_projection_events:
+  - CreditCostProjectionChanged

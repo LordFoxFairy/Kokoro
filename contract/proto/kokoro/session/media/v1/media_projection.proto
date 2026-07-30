@@ -1,0 +1,357 @@
+syntax = "proto3";
+
+package kokoro.session.media.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/platform/credit/v1/cost_projection.proto";
+import "kokoro/platform/media/v1/media_projection.proto";
+
+// SessionMediaProjectionService is the Session-owned target authority. Media
+// and Credit receive separate audience-bound handles and cannot exchange them.
+service SessionMediaProjectionService {
+  rpc IssueMediaProjectionReservation(IssueMediaProjectionReservationRequest) returns (IssueMediaProjectionReservationResponse) {}
+  rpc BindMediaProjectionTarget(BindMediaProjectionTargetRequest) returns (BindMediaProjectionTargetResponse) {}
+  rpc RecoverMediaProjectionActivation(RecoverMediaProjectionActivationRequest) returns (RecoverMediaProjectionActivationResponse) {}
+  rpc CreateReplacementMediaProjectionBinding(CreateReplacementMediaProjectionBindingRequest) returns (CreateReplacementMediaProjectionBindingResponse) {}
+  rpc RefreshMediaProjectionAccess(RefreshMediaProjectionAccessRequest) returns (RefreshMediaProjectionAccessResponse) {}
+  rpc GetMediaProjectionBinding(GetMediaProjectionBindingRequest) returns (GetMediaProjectionBindingResponse) {}
+  rpc RefreshCreditCostProjectionAccess(RefreshCreditCostProjectionAccessRequest) returns (RefreshCreditCostProjectionAccessResponse) {}
+  rpc GetCreditCostProjectionBinding(GetCreditCostProjectionBindingRequest) returns (GetCreditCostProjectionBindingResponse) {}
+}
+
+message IssueMediaProjectionReservationRequest {
+  string session_projection_authorization_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string session_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string run_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string assistant_message_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 subject_generation = 5 [(buf.validate.field).uint64.gt = 0];
+  uint32 maximum_slots = 6 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 16
+  }];
+}
+
+message IssueMediaProjectionReservationResponse {
+  string media_projection_reservation_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
+}
+
+enum MediaProjectionBindingState {
+  MEDIA_PROJECTION_BINDING_STATE_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_BINDING_STATE_PENDING = 1;
+  MEDIA_PROJECTION_BINDING_STATE_ACTIVE = 2;
+  MEDIA_PROJECTION_BINDING_STATE_REJECTED = 3;
+  MEDIA_PROJECTION_BINDING_STATE_EXPIRED = 4;
+  MEDIA_PROJECTION_BINDING_STATE_REVOKED = 5;
+}
+
+message MediaProjectionBinding {
+  string binding_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  MediaProjectionBindingState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string media_command_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string session_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string run_id = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string assistant_message_id = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string part_id = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string stable_output_slot_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 10 [(buf.validate.field).uint64.gt = 0];
+  uint64 owner_event_watermark = 11;
+  optional string command_commit_receipt_ref = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string supersedes_binding_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  google.protobuf.Timestamp expires_at = 14 [(buf.validate.field).required = true];
+}
+
+message BoundMediaProjectionTarget {
+  MediaProjectionBinding binding = 1 [(buf.validate.field).required = true];
+  string media_projection_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string cost_projection_handle = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string media_projection_recovery_grant = 4 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string media_projection_refresh_grant = 5 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string credit_cost_projection_refresh_grant = 6 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp recovery_grant_expires_at = 7 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp media_refresh_grant_expires_at = 8 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp credit_refresh_grant_expires_at = 9 [(buf.validate.field).required = true];
+}
+
+message BindMediaProjectionTargetRequest {
+  string media_projection_reservation_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string media_command_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string stable_output_slot_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 5 [(buf.validate.field).uint64.gt = 0];
+}
+
+message BindMediaProjectionTargetResponse {
+  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+}
+
+// Refresh replaces only this delivery envelope. The nested record ref, digest,
+// sequence, predecessor and owner signature remain byte-identical on replay.
+// Delivers the immutable Media-owned first event together with rotating
+// Session-targeted capabilities that are intentionally excluded from it.
+message MediaProjectionBindingCommittedDeliveryEnvelope {
+  string pending_media_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string owner_recovery_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  kokoro.platform.media.v1.MediaProjectionBindingCommittedRecord record = 3 [(buf.validate.field).required = true];
+}
+
+enum ProjectionActivationOutcome {
+  PROJECTION_ACTIVATION_OUTCOME_UNSPECIFIED = 0;
+  PROJECTION_ACTIVATION_OUTCOME_ACTIVE = 1;
+  PROJECTION_ACTIVATION_OUTCOME_PENDING_RETRY = 2;
+  PROJECTION_ACTIVATION_OUTCOME_REJECTED = 3;
+  PROJECTION_ACTIVATION_OUTCOME_EXPIRED = 4;
+  PROJECTION_ACTIVATION_OUTCOME_REVOKED = 5;
+}
+
+message MediaProjectionActivationReceipt {
+  string activation_event_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ProjectionActivationOutcome outcome = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 binding_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+}
+
+message RecoverMediaProjectionActivationRequest {
+  MediaProjectionBindingCommittedDeliveryEnvelope committed_delivery = 1 [(buf.validate.field).required = true];
+}
+
+message RecoverMediaProjectionActivationResponse {
+  MediaProjectionActivationReceipt receipt = 1 [(buf.validate.field).required = true];
+}
+
+message CreateReplacementMediaProjectionBindingRequest {
+  string media_projection_recovery_grant = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string supersedes_binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  kokoro.platform.media.v1.MediaProjectionBindingCommittedRecord committed_record = 3 [(buf.validate.field).required = true];
+}
+
+message CreateReplacementMediaProjectionBindingResponse {
+  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+}
+
+message RefreshMediaProjectionAccessRequest {
+  string media_projection_refresh_grant = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string last_accepted_event_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message RefreshMediaProjectionAccessResponse {
+  string media_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
+  string media_projection_refresh_grant = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
+}
+
+message GetMediaProjectionBindingRequest {
+  string media_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetMediaProjectionBindingResponse {
+  MediaProjectionBinding binding = 1 [(buf.validate.field).required = true];
+}
+
+message RefreshCreditCostProjectionAccessRequest {
+  string credit_cost_projection_refresh_grant = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string last_accepted_event_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message RefreshCreditCostProjectionAccessResponse {
+  string cost_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
+  string credit_cost_projection_refresh_grant = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
+}
+
+message GetCreditCostProjectionBindingRequest {
+  string cost_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string binding_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetCreditCostProjectionBindingResponse {
+  string binding_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  MediaProjectionBindingState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string cost_projection_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional uint64 owner_version = 4 [(buf.validate.field).uint64.gt = 0];
+}
+
+// Refresh replaces only these capabilities, never the immutable record.
+message MediaProjectionDeliveryEnvelope {
+  string media_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string owner_recovery_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  kokoro.platform.media.v1.MediaProjectionEventRecord record = 3 [(buf.validate.field).required = true];
+}
+
+// Refresh replaces only these capabilities, never the immutable cost record.
+message CreditCostProjectionDeliveryEnvelope {
+  string cost_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string owner_recovery_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  kokoro.platform.credit.v1.CreditCostProjectionEventRecord record = 3 [(buf.validate.field).required = true];
+}

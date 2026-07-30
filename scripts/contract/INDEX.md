@@ -114,7 +114,8 @@ Repeated runs on unchanged inputs produce the same single-line result. Any viola
 ## Extension rules and forbidden dependencies
 
 Register a new boundary in the same change that introduces it, and keep it in step with the compatibility
-matrix. Declare `sourceStatus: "machine-readable"` only with a real contract source behind it; a boundary
+matrix according to lifecycle: `active` must appear with real runtime evidence, while `contract-only` must remain
+absent until provider and official consumer exist. Declare `sourceStatus: "machine-readable"` only with a real contract source behind it; a boundary
 with no source in this repository must say `declared-only` and be counted, never claim coverage it does not
 have. Allowed retry classes are derived from `kokoro.common.v1.RetryClass`; never hardcode that list here.
 New privileged effects use `kokoro.common.v2.CommandIdentityV2` and `CommandReceiptV2`: generated digest helpers

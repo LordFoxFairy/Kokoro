@@ -19,7 +19,7 @@ const REPOSITORY_KEYS = [
   "requiredWorkflows",
 ];
 const ARTIFACT_KEYS = ["descriptor", "id"];
-const PROTOCOL_KEYS = ["id", "role", "version"];
+const PROTOCOL_KEYS = ["id", "lifecycle", "role", "version"];
 const MATRIX_KEYS = ["combinationId", "contracts", "requiredGates", "runtimeGate", "schemaVersion"];
 const CONTRACT_KEYS = ["consumers", "id", "providers", "version"];
 const ATTESTED_CONTRACT_KEYS = ["artifactDigest", ...CONTRACT_KEYS];
@@ -100,6 +100,7 @@ export function parseManifest(source) {
         !exactKeys(protocol, PROTOCOL_KEYS) ||
         typeof protocol.id !== "string" ||
         !Number.isInteger(protocol.version) ||
+        !["active", "contract-only"].includes(protocol.lifecycle) ||
         !["provider", "consumer"].includes(protocol.role)
       ) throw new RepositoryError("manifest_protocol", repository.id);
     }
@@ -179,20 +180,52 @@ export function validateCompatibility(manifest, matrix) {
     if (contracts.has(contract.id)) throw new RepositoryError("compatibility_duplicate", contract.id);
     contracts.set(contract.id, contract);
   }
+  const declaredProtocols = new Map();
   for (const repository of manifest.repositories) {
     for (const protocol of repository.protocols) {
+      const declaration = declaredProtocols.get(protocol.id) ?? {
+        lifecycle: protocol.lifecycle,
+        version: protocol.version,
+        providers: new Set(),
+        consumers: new Set(),
+      };
+      if (declaration.lifecycle !== protocol.lifecycle || declaration.version !== protocol.version) {
+        throw new RepositoryError("compatibility_protocol_lifecycle", `${repository.id}:${protocol.id}`);
+      }
+      declaration[protocol.role === "provider" ? "providers" : "consumers"].add(repository.id);
+      declaredProtocols.set(protocol.id, declaration);
+
       const contract = contracts.get(protocol.id);
+      if (protocol.lifecycle === "contract-only") {
+        if (contract !== undefined) {
+          throw new RepositoryError("compatibility_contract_only_attested", protocol.id);
+        }
+        continue;
+      }
       const participants = protocol.role === "provider" ? contract?.providers : contract?.consumers;
       if (contract?.version !== protocol.version || !participants?.includes(repository.id)) {
         throw new RepositoryError("compatibility_protocol", `${repository.id}:${protocol.id}`);
       }
     }
   }
+  for (const [id, declaration] of declaredProtocols) {
+    if (
+      declaration.lifecycle === "contract-only" &&
+      (declaration.providers.size === 0 || declaration.consumers.size === 0)
+    ) {
+      throw new RepositoryError("compatibility_contract_only_roles", id);
+    }
+  }
   for (const contract of contracts.values()) {
     for (const id of [...contract.providers, ...contract.consumers]) {
       const repository = manifest.repositories.find((candidate) => candidate.id === id);
       const role = contract.providers.includes(id) ? "provider" : "consumer";
-      if (!repository?.protocols.some((protocol) => protocol.id === contract.id && protocol.version === contract.version && protocol.role === role)) {
+      if (!repository?.protocols.some((protocol) =>
+        protocol.id === contract.id &&
+        protocol.version === contract.version &&
+        protocol.role === role &&
+        protocol.lifecycle === "active"
+      )) {
         throw new RepositoryError("compatibility_participant", `${id}:${contract.id}`);
       }
     }

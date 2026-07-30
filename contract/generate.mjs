@@ -208,6 +208,70 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "platform-media-runtime@v1": Object.freeze({
+    schema: "kokoro.platform.media.v1.MediaRuntimeService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/media/v1/media_runtime.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/media/v1/media_runtime.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
+  "model-image-effect@v1": Object.freeze({
+    schema: "kokoro.platform.model.image.v1.ImageEffectV1Service",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/model/image/v1/image_effect.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/model/image/v1/image_effect.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
+  "session-media-projection@v1": Object.freeze({
+    schema: "kokoro.session.media.v1.SessionMediaProjectionService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/session/media/v1/media_projection.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/credit/v1/cost_projection.proto",
+      "kokoro/platform/media/v1/media_projection.proto",
+      "kokoro/session/media/v1/media_projection.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
+  "platform-media-projection-recovery@v1": Object.freeze({
+    schema: "kokoro.platform.media.v1.MediaProjectionRecoveryService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/media/v1/media_projection_recovery.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/media/v1/media_projection.proto",
+      "kokoro/platform/media/v1/media_projection_recovery.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
+  "platform-credit-cost-projection-recovery@v1": Object.freeze({
+    schema: "kokoro.platform.credit.v1.CreditCostProjectionRecoveryService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/credit/v1/cost_projection_recovery.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/credit/v1/cost_projection.proto",
+      "kokoro/platform/credit/v1/cost_projection_recovery.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-model-gateway@v1": Object.freeze({
     schema: "kokoro.platform.model.v1.ModelGatewayService",
     version: 1,

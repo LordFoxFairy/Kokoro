@@ -82,6 +82,23 @@ sequence with bounded typed payloads. Terminal completed/failed evidence commits
 digest chain. Output sequence numbers never share or advance lifecycle `durable_seq`. It remains `contract-only`
 until a live mTLS provider/consumer compatibility probe exists.
 
+ADR-015's image-first foundation publishes five isolated Protobuf bundles without claiming a runtime:
+`platform-media-runtime@v1` (GA to Platform Media), `model-image-effect@v1` (Platform Media to Model Gateway),
+and `session-media-projection@v1` (Session-owned reservation, pending binding, activation recovery, replacement,
+and separate Media/Credit access), plus separate Media-owner and Credit-owner projection recovery bundles.
+Durable `MediaProjectionBindingCommitted` must activate a pending binding
+before ordinary Media projection events; Media carries only the Credit-owned cost projection ref/version, while
+Credit publishes amount/state through its own audience-bound event. All five registered Media/Image/Session event
+families (seven registry boundaries including the two durable event planes) remain `contract-only` and absent from runtime compatibility until real providers and official consumers
+ship. Recovery requests use command ref plus opaque access only; owner HMACs, original inputs, Provider payloads,
+and top-level Generation/Job identities are not part of these contracts.
+
+Projection event identity is split from delivery capability: immutable owner-signed records carry source sequence,
+predecessor ref/digest and content; short-TTL Session target handles and owner recovery handles live only in rotating
+delivery envelopes. Replaying after refresh keeps the same record ref/digest/signature. Session repairs gaps and
+builds shadow generations through separate read-only `GetProjectionHead` / bounded `PullProjectionEvents` Connect
+services for Media and Credit; neither owner can read the other's projection facts.
+
 ## Verification
 
 Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract run buf:lint`,

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package kokoro.platform.credit.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+enum CreditCostProjectionState {
+  CREDIT_COST_PROJECTION_STATE_UNSPECIFIED = 0;
+  CREDIT_COST_PROJECTION_STATE_PENDING = 1;
+  CREDIT_COST_PROJECTION_STATE_ESTIMATED = 2;
+  CREDIT_COST_PROJECTION_STATE_FINAL = 3;
+  CREDIT_COST_PROJECTION_STATE_CORRECTED = 4;
+  CREDIT_COST_PROJECTION_STATE_UNAVAILABLE = 5;
+}
+
+// Immutable Credit-owned signed chain record. It contains no Media-owned state.
+message CreditCostProjectionEventRecord {
+  option (buf.validate.message).cel = {
+    id: "credit_cost_projection.predecessor_by_sequence"
+    message: "sequence one has no predecessor and later records require a complete predecessor"
+    expression: "(this.source_sequence == 1u && !has(this.predecessor_event_ref) && !has(this.predecessor_event_digest)) || (this.source_sequence > 1u && has(this.predecessor_event_ref) && has(this.predecessor_event_digest))"
+  };
+  string event_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string event_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string cost_projection_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 6 [(buf.validate.field).uint64.gt = 0];
+  CreditCostProjectionState cost_state = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string amount_micros = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 40
+    pattern: "^[0-9]+$"
+  }];
+  optional string currency_code = 9 [(buf.validate.field).string = {
+    len: 3
+    pattern: "^[A-Z]{3}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 10 [(buf.validate.field).required = true];
+  uint64 producer_generation = 11 [(buf.validate.field).uint64.gt = 0];
+  uint64 source_sequence = 12 [(buf.validate.field).uint64.gt = 0];
+  optional string predecessor_event_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_event_digest = 14 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string owner_signature = 15 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+}

@@ -1,0 +1,295 @@
+syntax = "proto3";
+
+package kokoro.platform.model.image.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// ImageEffectV1Service is the private Platform Media to Model Gateway effect
+// boundary. The caller preallocates every command identity before provider I/O.
+service ImageEffectV1Service {
+  rpc CreateImageEffect(CreateImageEffectRequest) returns (CreateImageEffectResponse) {}
+  rpc RecoverImageEffectByCommand(RecoverImageEffectByCommandRequest) returns (RecoverImageEffectByCommandResponse) {}
+  rpc GetImageEffectByCommand(GetImageEffectByCommandRequest) returns (GetImageEffectByCommandResponse) {}
+  rpc RequestCancelImageEffect(RequestCancelImageEffectRequest) returns (RequestCancelImageEffectResponse) {}
+  rpc AttachNextAttemptAuthorization(AttachNextAttemptAuthorizationRequest) returns (AttachNextAttemptAuthorizationResponse) {}
+}
+
+message LogicalImageOutputSlot {
+  string candidate_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string stable_output_slot_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message ImageEffectSourceGrant {
+  string source_version_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string purpose_grant_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+}
+
+message CreateImageEffectRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string model_invocation_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string caller_request_fingerprint = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string definition_role_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string model_option_authorization_handle = 5 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string operation_input_revision_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_input_revision_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated ImageEffectSourceGrant source_grants = 8 [(buf.validate.field).repeated.max_items = 16];
+  repeated LogicalImageOutputSlot logical_output_slots = 9 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 4
+  }];
+  string effect_budget_commit_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string effect_budget_commit_digest = 11 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint32 attempt_ordinal = 12 [(buf.validate.field).uint32.const = 1];
+  string trust_effect_allow_receipt_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string trust_effect_allow_receipt_digest = 14 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+enum ImageEffectState {
+  IMAGE_EFFECT_STATE_UNSPECIFIED = 0;
+  IMAGE_EFFECT_STATE_DEFINITELY_NOT_SUBMITTED = 1;
+  IMAGE_EFFECT_STATE_SUBMITTED = 2;
+  IMAGE_EFFECT_STATE_SUBMISSION_UNKNOWN = 3;
+  IMAGE_EFFECT_STATE_RUNNING = 4;
+  IMAGE_EFFECT_STATE_SUCCEEDED = 5;
+  IMAGE_EFFECT_STATE_FAILED = 6;
+  IMAGE_EFFECT_STATE_CANCEL_REQUESTED = 7;
+  IMAGE_EFFECT_STATE_CANCELED = 8;
+  IMAGE_EFFECT_STATE_OUTCOME_UNKNOWN = 9;
+}
+
+enum ImageEffectReceiptKind {
+  IMAGE_EFFECT_RECEIPT_KIND_UNSPECIFIED = 0;
+  IMAGE_EFFECT_RECEIPT_KIND_CREATE_COMMITTED = 1;
+  IMAGE_EFFECT_RECEIPT_KIND_DEFINITELY_NOT_SUBMITTED = 2;
+  IMAGE_EFFECT_RECEIPT_KIND_ATTEMPT_AUTHORIZATION_ATTACHED = 3;
+  IMAGE_EFFECT_RECEIPT_KIND_CANCEL_INTENT_COMMITTED = 4;
+  IMAGE_EFFECT_RECEIPT_KIND_REJECTED = 5;
+  IMAGE_EFFECT_RECEIPT_KIND_OUTCOME_UNKNOWN = 6;
+}
+
+enum ImageEffectErrorCode {
+  IMAGE_EFFECT_ERROR_CODE_UNSPECIFIED = 0;
+  IMAGE_EFFECT_ERROR_CODE_ACCESS_DENIED = 1;
+  IMAGE_EFFECT_ERROR_CODE_ACCESS_EXPIRED = 2;
+  IMAGE_EFFECT_ERROR_CODE_IDEMPOTENCY_CONFLICT = 3;
+  IMAGE_EFFECT_ERROR_CODE_COMMAND_NOT_FOUND = 4;
+  IMAGE_EFFECT_ERROR_CODE_ATTEMPT_ORDINAL_CONFLICT = 5;
+  IMAGE_EFFECT_ERROR_CODE_EFFECT_BUDGET_REJECTED = 6;
+  IMAGE_EFFECT_ERROR_CODE_PREVIOUS_ATTEMPT_NOT_SAFE = 7;
+  IMAGE_EFFECT_ERROR_CODE_INVOCATION_VERSION_CONFLICT = 8;
+  IMAGE_EFFECT_ERROR_CODE_OUTCOME_UNKNOWN = 9;
+}
+
+message ImageEffectError {
+  ImageEffectErrorCode code = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string safe_message = 2 [(buf.validate.field).string.max_len = 512];
+}
+
+message ImageEffectCommandReceipt {
+  string caller_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ImageEffectReceiptKind kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string logical_invocation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string attempt_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional uint32 attempt_ordinal = 5 [(buf.validate.field).uint32.gt = 0];
+  uint64 receipt_version = 6 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
+  optional ImageEffectError error = 8;
+}
+
+message ImageEffectView {
+  string logical_invocation_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string model_invocation_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_version = 3 [(buf.validate.field).uint64.gt = 0];
+  uint32 current_attempt_ordinal = 4 [(buf.validate.field).uint32.gt = 0];
+  ImageEffectState state = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string canonical_outcome_evidence_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string usage_evidence_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  google.protobuf.Timestamp observed_at = 8 [(buf.validate.field).required = true];
+}
+
+message CreateImageEffectResponse {
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectView invocation = 2;
+}
+
+// Recovery reads the owner journal by the original caller command. Request
+// digest, input revision and budget commit are intentionally absent.
+message RecoverImageEffectByCommandRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string caller_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message RecoverImageEffectByCommandResponse {
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectView invocation = 2;
+}
+
+message GetImageEffectByCommandRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string model_invocation_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetImageEffectByCommandResponse {
+  ImageEffectView invocation = 1 [(buf.validate.field).required = true];
+}
+
+message RequestCancelImageEffectRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string cancel_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string logical_invocation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_invocation_version = 4 [(buf.validate.field).uint64.gt = 0];
+  string caller_request_fingerprint = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message RequestCancelImageEffectResponse {
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectView invocation = 2;
+}
+
+// AttachNextAttemptAuthorization appends a planned authorization revision and
+// does not dispatch provider I/O. It is valid only with an exact signed
+// definitely-not-submitted receipt for the immediately previous attempt.
+message AttachNextAttemptAuthorizationRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string attempt_authorization_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string model_invocation_command_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string logical_invocation_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string definitely_not_submitted_receipt_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string definitely_not_submitted_receipt_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint32 next_attempt_ordinal = 7 [(buf.validate.field).uint32.gte = 2];
+  string effect_budget_commit_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string effect_budget_commit_digest = 9 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string caller_request_fingerprint = 10 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message AttachNextAttemptAuthorizationResponse {
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectView invocation = 2;
+}

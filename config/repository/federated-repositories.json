@@ -23,17 +23,26 @@
         {
           "id": "hub-runtime",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "session-agent-execution",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "model-gateway",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
+        },
+        {
+          "id": "platform-media-runtime",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round17-hardening-2026-07-28-agent"
@@ -59,32 +68,86 @@
         {
           "id": "hub-runtime",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "platform-runtime",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "platform-admission",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "platform-asset-eligibility",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "platform-admin-auth",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
         },
         {
           "id": "model-gateway",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
+        },
+        {
+          "id": "platform-media-runtime",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "model-image-effect",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "model-image-effect",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "session-media-projection",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "media-session-projection-events",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "credit-session-cost-projection-events",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "platform-media-projection-recovery",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "platform-credit-cost-projection-recovery",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round17-release-2026-07-28-platform"
@@ -110,27 +173,62 @@
         {
           "id": "session-agent-execution",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "platform-runtime",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "platform-admission",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "platform-asset-eligibility",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "session-browser",
           "version": 1,
-          "role": "provider"
+          "role": "provider",
+          "lifecycle": "active"
+        },
+        {
+          "id": "session-media-projection",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "media-session-projection-events",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "credit-session-cost-projection-events",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "platform-media-projection-recovery",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "platform-credit-cost-projection-recovery",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round17-release-2026-07-28-session"
@@ -160,12 +258,14 @@
         {
           "id": "session-browser",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         },
         {
           "id": "platform-admin-auth",
           "version": 1,
-          "role": "consumer"
+          "role": "consumer",
+          "lifecycle": "active"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round18-admin-openapi-2026-07-28-web"
