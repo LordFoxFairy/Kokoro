@@ -12,6 +12,10 @@ service AdminQueryService {
   rpc ListSites(ListSitesRequest) returns (ListSitesResponse) {}
   rpc GetUserWithinSite(GetUserWithinSiteRequest) returns (GetUserWithinSiteResponse) {}
   rpc GetAuditWithinScope(GetAuditWithinScopeRequest) returns (GetAuditWithinScopeResponse) {}
+  rpc GetCurrentOperator(GetCurrentOperatorRequest) returns (GetCurrentOperatorResponse) {}
+  rpc GetOperator(GetOperatorRequest) returns (GetOperatorResponse) {}
+  rpc ListOperators(ListOperatorsRequest) returns (ListOperatorsResponse) {}
+  rpc ListPendingApprovals(ListPendingApprovalsRequest) returns (ListPendingApprovalsResponse) {}
 }
 
 message SiteSummary {
@@ -106,6 +110,143 @@ message GetAuditWithinScopeRequest {
 
 message GetAuditWithinScopeResponse {
   repeated AuditRecord records = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message EffectiveSiteScope {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string environment = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  uint64 scope_epoch = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp expires_at = 5 [(buf.validate.field).required = true];
+}
+
+enum OperatorState {
+  OPERATOR_STATE_UNSPECIFIED = 0;
+  OPERATOR_STATE_ACTIVE = 1;
+  OPERATOR_STATE_SUSPENDED = 2;
+  OPERATOR_STATE_REVOKED = 3;
+}
+
+message OperatorSummary {
+  string operator_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 operator_generation = 2 [(buf.validate.field).uint64.gt = 0];
+  OperatorState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string effective_permissions = 4 [(buf.validate.field).repeated = {
+    max_items: 256
+    items: {
+      string: {
+        min_len: 1
+        max_len: 128
+      }
+    }
+  }];
+  repeated EffectiveSiteScope effective_site_scopes = 5 [(buf.validate.field).repeated.max_items = 1000];
+  uint64 operator_security_epoch = 6 [(buf.validate.field).uint64.gt = 0];
+  uint64 authorization_epoch = 7 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp expires_at = 8 [(buf.validate.field).required = true];
+}
+
+message PendingApprovalSummary {
+  string approval_ref = 1 [(buf.validate.field).string = {uuid: true}];
+  string operation = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string maker_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string target_site_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string environment = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string operator_reason = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1000
+  }];
+  google.protobuf.Timestamp admitted_at = 8 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp expires_at = 9 [(buf.validate.field).required = true];
+}
+
+message GetCurrentOperatorRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+}
+
+message GetCurrentOperatorResponse {
+  OperatorSummary operator = 1 [(buf.validate.field).required = true];
+}
+
+message GetOperatorRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string operator_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetOperatorResponse {
+  OperatorSummary operator = 1 [(buf.validate.field).required = true];
+}
+
+message ListOperatorsRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  optional string page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 3 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListOperatorsResponse {
+  repeated OperatorSummary operators = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message ListPendingApprovalsRequest {
+  AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  optional string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListPendingApprovalsResponse {
+  repeated PendingApprovalSummary approvals = 1 [(buf.validate.field).repeated.max_items = 200];
   optional string next_page_token = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256

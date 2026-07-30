@@ -56,6 +56,12 @@ grants a client execution method. Its generated digest helper binds every caller
 assurance/factor, authentication/step-up instant, and attestation axis to the server-verified transport/session axes.
 The removed Prepare/SubmitForApproval/ExecuteApproved authority is intentionally unreachable and has no adapter.
 
+`AdminCommerceService.v1` is the fresh-only typed operator ingress for Commerce catalog and card administration. It exposes a
+closed method set—no arbitrary route/action proxy—and binds every effect to Site scope plus the shared authenticated operator
+command envelope. `PublishOffer` is one atomic immutable graph publication. Card secrets exist only in the first committed
+`IssueCodeBatch` response (maximum 1,000), while replay and all query types expose only delivery-unavailable state, counts and safe
+export receipt metadata. Code-batch approval and lifecycle transitions remain Commerce-owned database invariants.
+
 `agent-execution-evidence@v1` is the Agent-owned read-only reconciliation boundary. Its payload is deliberately
 business-identity-free: consumers receive only run-local durable sequence/event facts and the canonical Agent
 owner payload. It remains `contract-only` until a live mTLS provider/consumer compatibility probe exists.

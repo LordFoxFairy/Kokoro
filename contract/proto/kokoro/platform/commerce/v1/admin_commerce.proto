@@ -1,0 +1,568 @@
+syntax = "proto3";
+
+package kokoro.platform.commerce.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// AdminCommerceService is the only typed operator ingress into Commerce administration.
+service AdminCommerceService {
+  rpc PublishOffer(PublishOfferRequest) returns (PublishOfferResponse) {}
+  rpc ListOffers(ListOffersRequest) returns (ListOffersResponse) {}
+  rpc GetOffer(GetOfferRequest) returns (GetOfferResponse) {}
+  rpc PublishRedemptionProgram(PublishRedemptionProgramRequest) returns (PublishRedemptionProgramResponse) {}
+  rpc ListRedemptionPrograms(ListRedemptionProgramsRequest) returns (ListRedemptionProgramsResponse) {}
+  rpc GetRedemptionProgram(GetRedemptionProgramRequest) returns (GetRedemptionProgramResponse) {}
+  rpc IssueCodeBatch(IssueCodeBatchRequest) returns (IssueCodeBatchResponse) {}
+  rpc ListCodeBatches(ListCodeBatchesRequest) returns (ListCodeBatchesResponse) {}
+  rpc GetCodeBatch(GetCodeBatchRequest) returns (GetCodeBatchResponse) {}
+  rpc ApproveCodeBatch(ApproveCodeBatchRequest) returns (ApproveCodeBatchResponse) {}
+  rpc ActivateCodeBatch(ActivateCodeBatchRequest) returns (ActivateCodeBatchResponse) {}
+  rpc AbandonCodeBatch(AbandonCodeBatchRequest) returns (AbandonCodeBatchResponse) {}
+  rpc SuspendCodeBatch(SuspendCodeBatchRequest) returns (SuspendCodeBatchResponse) {}
+  rpc RevokeCodeBatch(RevokeCodeBatchRequest) returns (RevokeCodeBatchResponse) {}
+}
+
+enum ProductKind {
+  PRODUCT_KIND_UNSPECIFIED = 0;
+  PRODUCT_KIND_FREE = 1;
+  PRODUCT_KIND_CREDIT_PACK = 2;
+  PRODUCT_KIND_SUBSCRIPTION = 3;
+  PRODUCT_KIND_BUNDLE = 4;
+}
+
+enum PlanTermAction {
+  PLAN_TERM_ACTION_UNSPECIFIED = 0;
+  PLAN_TERM_ACTION_NONE = 1;
+  PLAN_TERM_ACTION_NEW_SUBSCRIPTION = 2;
+  PLAN_TERM_ACTION_EXTEND_FROM_MAX = 3;
+  PLAN_TERM_ACTION_REJECT_IF_ACTIVE = 4;
+}
+
+enum FulfillmentOutputKind {
+  FULFILLMENT_OUTPUT_KIND_UNSPECIFIED = 0;
+  FULFILLMENT_OUTPUT_KIND_SUBSCRIPTION_TERM = 1;
+  FULFILLMENT_OUTPUT_KIND_ENTITLEMENT_GRANT = 2;
+  FULFILLMENT_OUTPUT_KIND_CREDIT_GRANT = 3;
+}
+
+enum CodeBatchState {
+  CODE_BATCH_STATE_UNSPECIFIED = 0;
+  CODE_BATCH_STATE_DRAFT = 1;
+  CODE_BATCH_STATE_ACTIVE = 2;
+  CODE_BATCH_STATE_SUSPENDED = 3;
+  CODE_BATCH_STATE_ABANDONED = 4;
+  CODE_BATCH_STATE_REVOKED = 5;
+}
+
+enum CodeDeliveryState {
+  CODE_DELIVERY_STATE_UNSPECIFIED = 0;
+  CODE_DELIVERY_STATE_SECRET_EXPORT = 1;
+  CODE_DELIVERY_STATE_DELIVERY_UNAVAILABLE = 2;
+}
+
+enum CodeBatchApprovalState {
+  CODE_BATCH_APPROVAL_STATE_UNSPECIFIED = 0;
+  CODE_BATCH_APPROVAL_STATE_PENDING = 1;
+  CODE_BATCH_APPROVAL_STATE_APPROVED = 2;
+}
+
+message PlanVersionDraft {
+  string plan_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string plan_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  string safe_label = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  PlanTermAction term_action = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional uint64 term_seconds = 6 [(buf.validate.field).uint64.gt = 0];
+  string stacking_scope = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message FulfillmentOutputDraft {
+  string output_line_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 ordinal = 2;
+  uint32 cardinality = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 100
+  }];
+  FulfillmentOutputKind output_kind = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  oneof target {
+    option (buf.validate.oneof).required = true;
+    string plan_version_ref = 5 [(buf.validate.field).string = {
+      min_len: 1
+      max_len: 256
+    }];
+    string entitlement_template_revision_ref = 6 [(buf.validate.field).string = {
+      min_len: 1
+      max_len: 256
+    }];
+    string credit_program_revision_ref = 7 [(buf.validate.field).string = {
+      min_len: 1
+      max_len: 256
+    }];
+  }
+}
+
+message PublishOfferEffect {
+  string product_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ProductKind product_kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string product_version_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 product_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string safe_label = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional PlanVersionDraft plan_version = 6;
+  string fulfillment_program_revision_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string fulfillment_program_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fulfillment_program_revision = 9 [(buf.validate.field).uint64.gt = 0];
+  repeated FulfillmentOutputDraft outputs = 10 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 100
+  }];
+  repeated string legal_term_refs = 11 [(buf.validate.field).repeated = {
+    max_items: 16
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message PublishOfferRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  PublishOfferEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message OfferSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string product_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ProductKind product_kind = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string product_version_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 5 [(buf.validate.field).uint64.gt = 0];
+  string safe_label = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 160
+  }];
+  optional string plan_version_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string fulfillment_program_revision_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated FulfillmentOutputDraft outputs = 9 [(buf.validate.field).repeated.max_items = 100];
+  repeated string legal_term_refs = 10 [(buf.validate.field).repeated.max_items = 16];
+  google.protobuf.Timestamp published_at = 11 [(buf.validate.field).required = true];
+}
+
+message PublishOfferResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  OfferSummary offer = 2 [(buf.validate.field).required = true];
+}
+
+message ListOffersRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListOffersResponse {
+  repeated OfferSummary offers = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetOfferRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string product_version_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetOfferResponse {
+  OfferSummary offer = 1 [(buf.validate.field).required = true];
+}
+
+message PublishRedemptionProgramEffect {
+  string redemption_program_revision_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string program_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 3 [(buf.validate.field).uint64.gt = 0];
+  string product_version_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string fulfillment_program_revision_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 max_redemptions_per_account = 6 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 10000
+  }];
+}
+
+message PublishRedemptionProgramRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  PublishRedemptionProgramEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message RedemptionProgramSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string redemption_program_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string program_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string product_version_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string fulfillment_program_revision_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 max_redemptions_per_account = 7 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 10000
+  }];
+  string availability_state = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  google.protobuf.Timestamp published_at = 9 [(buf.validate.field).required = true];
+}
+
+message PublishRedemptionProgramResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  RedemptionProgramSummary program = 2 [(buf.validate.field).required = true];
+}
+
+message ListRedemptionProgramsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListRedemptionProgramsResponse {
+  repeated RedemptionProgramSummary programs = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetRedemptionProgramRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string redemption_program_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetRedemptionProgramResponse {
+  RedemptionProgramSummary program = 1 [(buf.validate.field).required = true];
+}
+
+message IssueCodeBatchEffect {
+  string batch_ref = 1 [(buf.validate.field).string = {uuid: true}];
+  string redemption_program_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 count = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000
+  }];
+  optional google.protobuf.Timestamp starts_at = 4;
+  optional google.protobuf.Timestamp ends_at = 5;
+}
+
+message IssueCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  IssueCodeBatchEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message CodeExportReceipt {
+  string batch_ref = 1 [(buf.validate.field).string = {uuid: true}];
+  string export_command_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string exported_to_operator_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 code_count = 4 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000
+  }];
+  google.protobuf.Timestamp exported_at = 5 [(buf.validate.field).required = true];
+}
+
+message CodeBatchSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string batch_ref = 2 [(buf.validate.field).string = {uuid: true}];
+  string redemption_program_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CodeBatchState state = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 inventory_count = 5;
+  string created_by_operator_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional google.protobuf.Timestamp starts_at = 7;
+  optional google.protobuf.Timestamp ends_at = 8;
+  google.protobuf.Timestamp created_at = 9 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp activated_at = 10;
+  optional CodeExportReceipt export_receipt = 11;
+  CodeBatchApprovalState approval_state = 12 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message IssueCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeDeliveryState delivery_state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CodeBatchSummary batch = 3 [(buf.validate.field).required = true];
+  // Present only on the first committed issue response and never recoverable from a query.
+  repeated string raw_codes = 4 [(buf.validate.field).repeated.max_items = 1000];
+}
+
+message ListCodeBatchesRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string page_token = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 page_size = 4 [(buf.validate.field).uint32.lte = 200];
+}
+
+message ListCodeBatchesResponse {
+  repeated CodeBatchSummary batches = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string batch_ref = 3 [(buf.validate.field).string = {uuid: true}];
+}
+
+message GetCodeBatchResponse {
+  CodeBatchSummary batch = 1 [(buf.validate.field).required = true];
+}
+
+message CodeBatchActionEffect {
+  string batch_ref = 1 [(buf.validate.field).string = {uuid: true}];
+  string reason = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 1000
+  }];
+}
+
+message CodeBatchMutationResult {
+  string batch_ref = 1 [(buf.validate.field).string = {uuid: true}];
+  CodeBatchState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional CodeBatchApprovalState approval_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ApproveCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CodeBatchActionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message ApproveCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchMutationResult result = 2 [(buf.validate.field).required = true];
+}
+
+message ActivateCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CodeBatchActionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message ActivateCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchMutationResult result = 2 [(buf.validate.field).required = true];
+}
+
+message AbandonCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CodeBatchActionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message AbandonCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchMutationResult result = 2 [(buf.validate.field).required = true];
+}
+
+message SuspendCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CodeBatchActionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message SuspendCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchMutationResult result = 2 [(buf.validate.field).required = true];
+}
+
+message RevokeCodeBatchRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  CodeBatchActionEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message RevokeCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchMutationResult result = 2 [(buf.validate.field).required = true];
+}

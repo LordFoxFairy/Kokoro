@@ -69,6 +69,19 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: "admin-command",
   }),
+  "platform-admin-commerce@v1": Object.freeze({
+    schema: "kokoro.platform.commerce.v1.AdminCommerceService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/commerce/v1/admin_commerce.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/commerce/v1/admin_commerce.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "admin-commerce",
+  }),
   "platform-site-lifecycle@v1": Object.freeze({
     schema: "kokoro.platform.site.v1.SiteLifecycleService",
     version: 1,
@@ -1045,11 +1058,91 @@ export function approveAndActivateRequestDigest(
 `;
 }
 
+function adminCommerceDigestSource() {
+  return `${authenticatedCommandDigestSource()}
+import {
+  CodeBatchActionEffectSchema,
+  IssueCodeBatchEffectSchema,
+  PublishOfferEffectSchema,
+  PublishRedemptionProgramEffectSchema,
+  type CodeBatchActionEffect,
+  type IssueCodeBatchEffect,
+  type PublishOfferEffect,
+  type PublishRedemptionProgramEffect,
+} from "./kokoro/platform/commerce/v1/admin_commerce_pb.js";
+
+function commerceDigest(
+  operation: string,
+  context: AuthenticatedOperatorCommandContext,
+  siteId: string,
+  effect: TypedPayload,
+  targetRefs: readonly string[],
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return authenticatedEnvelope(
+    "platform-admin-commerce@v1", operation, context, effect, [siteId, ...targetRefs], verified,
+  );
+}
+
+export function publishOfferRequestDigest(
+  context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: PublishOfferEffect, verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return commerceDigest(
+    "kokoro.platform.commerce.v1.AdminCommerceService/PublishOffer", context, siteId,
+    { typeName: PublishOfferEffectSchema.typeName, bytes: toBinary(PublishOfferEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.productVersionRef, effect.fulfillmentProgramRevisionRef,
+      ...(effect.planVersion === undefined ? [] : [effect.planVersion.planVersionRef])], verified,
+  );
+}
+
+export function publishRedemptionProgramRequestDigest(
+  context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: PublishRedemptionProgramEffect, verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return commerceDigest(
+    "kokoro.platform.commerce.v1.AdminCommerceService/PublishRedemptionProgram", context, siteId,
+    { typeName: PublishRedemptionProgramEffectSchema.typeName, bytes: toBinary(PublishRedemptionProgramEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.redemptionProgramRevisionRef], verified,
+  );
+}
+
+export function issueCodeBatchRequestDigest(
+  context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: IssueCodeBatchEffect, verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return commerceDigest(
+    "kokoro.platform.commerce.v1.AdminCommerceService/IssueCodeBatch", context, siteId,
+    { typeName: IssueCodeBatchEffectSchema.typeName, bytes: toBinary(IssueCodeBatchEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.batchRef, effect.redemptionProgramRevisionRef], verified,
+  );
+}
+
+function codeBatchDigest(
+  method: string, context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return commerceDigest(
+    \`kokoro.platform.commerce.v1.AdminCommerceService/\${method}\`, context, siteId,
+    { typeName: CodeBatchActionEffectSchema.typeName, bytes: toBinary(CodeBatchActionEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.batchRef], verified,
+  );
+}
+
+export const approveCodeBatchRequestDigest = (context: AuthenticatedOperatorCommandContext, siteId: string, effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes) => codeBatchDigest("ApproveCodeBatch", context, siteId, effect, verified);
+export const activateCodeBatchRequestDigest = (context: AuthenticatedOperatorCommandContext, siteId: string, effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes) => codeBatchDigest("ActivateCodeBatch", context, siteId, effect, verified);
+export const abandonCodeBatchRequestDigest = (context: AuthenticatedOperatorCommandContext, siteId: string, effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes) => codeBatchDigest("AbandonCodeBatch", context, siteId, effect, verified);
+export const suspendCodeBatchRequestDigest = (context: AuthenticatedOperatorCommandContext, siteId: string, effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes) => codeBatchDigest("SuspendCodeBatch", context, siteId, effect, verified);
+export const revokeCodeBatchRequestDigest = (context: AuthenticatedOperatorCommandContext, siteId: string, effect: CodeBatchActionEffect, verified: VerifiedAuthenticatedAdminAxes) => codeBatchDigest("RevokeCodeBatch", context, siteId, effect, verified);
+`;
+}
+
 function commandEnvelopeDigestSource(kind) {
   const wrappers = {
     identity: identityCommandDigestSource,
     "admin-command": adminCommandDigestSource,
     "site-lifecycle": siteLifecycleDigestSource,
+    "admin-commerce": adminCommerceDigestSource,
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
@@ -1087,9 +1180,18 @@ async function runBufGenerate(output, boundary) {
   return [output];
 }
 
+async function normalizeGeneratedProtobuf(mirror) {
+  const files = await artifactFiles(mirror);
+  await Promise.all(files.filter((path) => path.endsWith("_pb.ts")).map(async (path) => {
+    const source = await readFile(path, "utf8");
+    await writeFile(path, source.replace(/\n+$/u, "\n"), "utf8");
+  }));
+}
+
 async function generate(options) {
   const boundary = BOUNDARIES[options.boundary];
   const mirrors = await runBufGenerate(options.output, boundary);
+  await Promise.all(mirrors.map(normalizeGeneratedProtobuf));
   if (boundary.helper === "admin-auth-effect-digest.ts") {
     const digestSource = adminAuthEffectDigestSource();
     await Promise.all(mirrors.map((mirror) => writeFile(resolve(mirror, boundary.helper), digestSource, "utf8")));

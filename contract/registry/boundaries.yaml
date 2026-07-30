@@ -706,7 +706,11 @@
         {"effect": false, "id": "GetSite", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": false, "id": "ListSites", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": false, "id": "GetUserWithinSite", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetAuditWithinScope", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"}
+        {"effect": false, "id": "GetAuditWithinScope", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetCurrentOperator", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetOperator", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListOperators", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListPendingApprovals", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
@@ -717,6 +721,39 @@
       "transports": ["connect-rpc"],
       "trustPlane": "privileged-control",
       "version": 2
+    },
+    {
+      "audience": "operator",
+      "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-admin-commerce",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "PublishOffer", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListOffers", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetOffer", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishRedemptionProgram", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListRedemptionPrograms", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetRedemptionProgram", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "IssueCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCodeBatches", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetCodeBatch", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "ApproveCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "ActivateCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "AbandonCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "SuspendCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "RevokeCodeBatch", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/commerce/v1/admin_commerce.proto", "select": {"service": "AdminCommerceService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "privileged-control",
+      "version": 1
     },
     {
       "audience": "operator",

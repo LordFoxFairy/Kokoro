@@ -422,6 +422,10 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
         "ListSites",
         "GetUserWithinSite",
         "GetAuditWithinScope",
+        "GetCurrentOperator",
+        "GetOperator",
+        "ListOperators",
+        "ListPendingApprovals",
     ]
     assert _service_methods(command, "AdminCommandService") == [
         "SubmitCommand",
@@ -436,6 +440,36 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
     assert "AdminCommandService" not in query
     assert "AdminQueryService" not in command
     assert not (PROTO / "kokoro/platform/admin/v2/admin_control.proto").exists()
+
+
+def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_secrets() -> None:
+    commerce = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+
+    assert _service_methods(commerce, "AdminCommerceService") == [
+        "PublishOffer",
+        "ListOffers",
+        "GetOffer",
+        "PublishRedemptionProgram",
+        "ListRedemptionPrograms",
+        "GetRedemptionProgram",
+        "IssueCodeBatch",
+        "ListCodeBatches",
+        "GetCodeBatch",
+        "ApproveCodeBatch",
+        "ActivateCodeBatch",
+        "AbandonCodeBatch",
+        "SuspendCodeBatch",
+        "RevokeCodeBatch",
+    ]
+    assert "AuthenticatedOperatorCommandContext context" in commerce
+    assert "AuthenticatedOperatorQueryContext context" in commerce
+    assert "repeated string raw_codes" in _message_body(commerce, "IssueCodeBatchResponse")
+    for message in ("CodeBatchSummary", "GetCodeBatchResponse", "CodeExportReceipt"):
+        assert "raw_codes" not in _message_body(commerce, message)
+    assert "safe_fingerprints" not in _message_body(commerce, "CodeBatchSummary")
+    assert "CodeBatchApprovalState approval_state" in _message_body(commerce, "CodeBatchSummary")
+    assert "rpc Route" not in commerce
+    assert "string action" not in commerce
 
 
 def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
