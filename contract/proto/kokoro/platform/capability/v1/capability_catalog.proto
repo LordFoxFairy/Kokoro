@@ -1,0 +1,332 @@
+syntax = "proto3";
+
+package kokoro.platform.capability.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/receipt.proto";
+
+// HubCatalogService owns immutable Skill/MCP/Agent catalog compilation. It persists a frozen
+// publication and a durable Platform-projection intent before acknowledging FreezeCatalog.
+service HubCatalogService {
+  rpc FreezeCatalog(FreezeCatalogRequest) returns (FreezeCatalogResponse) {}
+  rpc GetCatalogPublication(GetCatalogPublicationRequest) returns (GetCatalogPublicationResponse) {}
+}
+
+// HubRuntimeService is consumed only by the Agent assembly boundary. Session receives the
+// SiteRelease-pinned safe projection through Admission and never resolves Hub at run time.
+service HubRuntimeService {
+  rpc ResolveMcpSecrets(ResolveMcpSecretsRequest) returns (ResolveMcpSecretsResponse) {}
+}
+
+// CapabilityCatalogProjectionService is the Platform-owned inbox for Hub publications. Platform
+// verifies the Hub signature and exact SiteRelease binding before inserting its immutable local
+// projection. Admission reads that projection without a Hub hot-path dependency.
+service CapabilityCatalogProjectionService {
+  rpc ProjectCatalog(ProjectCatalogRequest) returns (ProjectCatalogResponse) {}
+  rpc GetProjectionReceipt(GetProjectionReceiptRequest) returns (GetProjectionReceiptResponse) {}
+}
+
+enum SignatureAlgorithm {
+  SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+  // Ed25519 signs the 32 bytes represented by signature_payload_digest.
+  SIGNATURE_ALGORITHM_ED25519_SHA256_V1 = 1;
+}
+
+enum CatalogProjectionState {
+  CATALOG_PROJECTION_STATE_UNSPECIFIED = 0;
+  CATALOG_PROJECTION_STATE_PENDING = 1;
+  CATALOG_PROJECTION_STATE_COMMITTED = 2;
+  CATALOG_PROJECTION_STATE_REJECTED = 3;
+  CATALOG_PROJECTION_STATE_OUTCOME_UNKNOWN = 4;
+}
+
+message AgentOption {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string agent = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string label = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message SkillOption {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string content_hash = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string description = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 2048
+  }];
+  string scope = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string prerequisite_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message McpOption {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string scope = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 5 [(buf.validate.field).uint64.gt = 0];
+  string config_hash = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional string prerequisite_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+// Field order is semantic: publishers canonicalize each repeated collection by its reference and
+// reject duplicates before hashing. Platform repeats those checks before accepting a publication.
+message CapabilityCatalogSnapshot {
+  uint32 schema_version = 1 [(buf.validate.field).uint32.const = 1];
+  repeated AgentOption agent_options = 2 [(buf.validate.field).repeated.max_items = 64];
+  optional string default_agent_option_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated string tools = 4 [(buf.validate.field).repeated = {
+    max_items: 256
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+  repeated SkillOption skill_options = 5 [(buf.validate.field).repeated.max_items = 256];
+  repeated McpOption mcp_options = 6 [(buf.validate.field).repeated.max_items = 256];
+  repeated string subagents = 7 [(buf.validate.field).repeated = {
+    max_items: 64
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+}
+
+message FrozenCatalogPublication {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string site_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string agent_catalog_ref = 3 [(buf.validate.field).string = {
+    len: 85
+    pattern: "^agent-catalog:sha256:[0-9a-f]{64}$"
+  }];
+  string snapshot_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  CapabilityCatalogSnapshot snapshot = 5 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp frozen_at = 6 [(buf.validate.field).required = true];
+  string signing_key_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  SignatureAlgorithm signature_algorithm = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  // sha256(canonical JSON of contract version + SiteRelease binding + snapshot digest + signing key ref).
+  string signature_payload_digest = 9 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  bytes signature = 10 [(buf.validate.field).bytes.len = 64];
+}
+
+message FreezeCatalogEffect {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string site_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CapabilityCatalogSnapshot snapshot = 3 [(buf.validate.field).required = true];
+}
+
+message FreezeCatalogRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  FreezeCatalogEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+message FreezeCatalogResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  FrozenCatalogPublication publication = 2 [(buf.validate.field).required = true];
+  CatalogProjectionState projection_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool replayed = 4;
+}
+
+message GetCatalogPublicationRequest {
+  string command_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  kokoro.common.v1.CommandDigestAlgorithm digest_algorithm = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string site_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string site_release_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetCatalogPublicationResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  FrozenCatalogPublication publication = 2 [(buf.validate.field).required = true];
+  CatalogProjectionState projection_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string last_projection_error_code = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message ResolveMcpSecretsRequest {
+  string namespace = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated string handles = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+    unique: true
+    items: {
+      string: {pattern: "^srt_[0-9a-f]{32}$"}
+    }
+  }];
+}
+
+message McpSecretMaterial {
+  string handle = 1 [(buf.validate.field).string = {pattern: "^srt_[0-9a-f]{32}$"}];
+  string value = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 8192
+  }];
+}
+
+message ResolveMcpSecretsResponse {
+  repeated McpSecretMaterial secrets = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+  }];
+}
+
+message ProjectCatalogRequest {
+  kokoro.common.v1.CommandIdentity command = 1 [(buf.validate.field).required = true];
+  FrozenCatalogPublication publication = 2 [(buf.validate.field).required = true];
+}
+
+message ProjectCatalogResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  string agent_catalog_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CatalogProjectionState projection_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool replayed = 4;
+}
+
+message GetProjectionReceiptRequest {
+  string command_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  kokoro.common.v1.CommandDigestAlgorithm digest_algorithm = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string site_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetProjectionReceiptResponse {
+  kokoro.common.v1.CommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional string agent_catalog_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CatalogProjectionState projection_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}

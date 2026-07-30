@@ -21,11 +21,6 @@
       ],
       "protocols": [
         {
-          "id": "hub-runtime",
-          "version": 1,
-          "role": "consumer"
-        },
-        {
           "id": "session-agent-execution",
           "version": 1,
           "role": "provider"
@@ -56,11 +51,6 @@
         }
       ],
       "protocols": [
-        {
-          "id": "hub-runtime",
-          "version": 1,
-          "role": "provider"
-        },
         {
           "id": "platform-runtime",
           "version": 1,
@@ -107,11 +97,6 @@
         }
       ],
       "protocols": [
-        {
-          "id": "hub-runtime",
-          "version": 1,
-          "role": "consumer"
-        },
         {
           "id": "session-agent-execution",
           "version": 1,

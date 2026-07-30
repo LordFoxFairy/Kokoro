@@ -168,6 +168,20 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "platform-capability-catalog@v1": Object.freeze({
+    schema: "kokoro.platform.capability.v1.HubCatalogService+HubRuntimeService+CapabilityCatalogProjectionService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/platform/capability/v1/capability_catalog.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/receipt.proto",
+      "kokoro/platform/capability/v1/capability_catalog.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
 });
 
 function parseArguments(argv) {

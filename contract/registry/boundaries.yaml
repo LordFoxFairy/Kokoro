@@ -247,49 +247,162 @@
         {
           "boundary": "service.agent",
           "repository": "kokoro-agent"
-        },
-        {
-          "boundary": "service.session",
-          "repository": "kokoro-session"
         }
       ],
-      "deadlineMs": null,
+      "deadlineMs": 5000,
       "failureOwner": "kokoro-platform",
       "id": "hub-runtime",
-      "lifecycle": "active",
+      "lifecycle": "contract-only",
       "operations": [
         {
           "effect": false,
-          "id": "resolve_capabilities",
+          "id": "ResolveMcpSecrets",
           "receipt": null,
           "retryClass": "after_delay",
           "scope": "namespace",
           "siteBinding": "not-applicable",
-          "transport": "http-json"
-        },
-        {
-          "effect": false,
-          "id": "resolve_mcp_secrets",
-          "receipt": null,
-          "retryClass": "after_delay",
-          "scope": "namespace",
-          "siteBinding": "not-applicable",
-          "transport": "http-json"
+          "transport": "connect-rpc"
         }
       ],
-      "protocol": "http-json",
+      "protocol": "connect-rpc",
       "provider": {
         "boundary": "platform.hub",
         "repository": "kokoro-platform"
       },
       "scope": "namespace",
-      "sourceStatus": "declared-only",
-      "sources": [],
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/capability/v1/capability_catalog.proto",
+          "select": {
+            "service": "HubRuntimeService"
+          }
+        }
+      ],
       "transportSource": null,
       "transports": [
-        "http-json"
+        "connect-rpc"
       ],
       "trustPlane": "internal-service",
+      "version": 1
+    },
+    {
+      "audience": "internal-control-workload",
+      "consumers": [
+        {
+          "boundary": "service.platform",
+          "repository": "kokoro-platform"
+        }
+      ],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-platform",
+      "id": "hub-capability-catalog",
+      "lifecycle": "contract-only",
+      "operations": [
+        {
+          "effect": true,
+          "id": "FreezeCatalog",
+          "receipt": {
+            "kind": "command-receipt",
+            "recoveryOperation": "GetCatalogPublication",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "GetCatalogPublication",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        }
+      ],
+      "protocol": "connect-rpc",
+      "provider": {
+        "boundary": "platform.hub",
+        "repository": "kokoro-platform"
+      },
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/capability/v1/capability_catalog.proto",
+          "select": {
+            "service": "HubCatalogService"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "internal-control-workload",
+      "consumers": [
+        {
+          "boundary": "platform.hub",
+          "repository": "kokoro-platform"
+        }
+      ],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-capability-projection",
+      "lifecycle": "contract-only",
+      "operations": [
+        {
+          "effect": true,
+          "id": "ProjectCatalog",
+          "receipt": {
+            "kind": "command-receipt",
+            "recoveryOperation": "GetProjectionReceipt",
+            "ref": "kokoro.common.v1.CommandReceipt"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "GetProjectionReceipt",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        }
+      ],
+      "protocol": "connect-rpc",
+      "provider": {
+        "boundary": "service.platform",
+        "repository": "kokoro-platform"
+      },
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/capability/v1/capability_catalog.proto",
+          "select": {
+            "service": "CapabilityCatalogProjectionService"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-control",
       "version": 1
     },
     {

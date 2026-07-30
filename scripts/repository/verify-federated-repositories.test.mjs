@@ -185,7 +185,7 @@ test("Admin runtime evidence covers only the live Auth v1 provider", async () =>
   );
 });
 
-test("Hub runtime binds the exact provider, both official consumers, and one live scenario", async () => {
+test("retired Hub HTTP runtime evidence is not promoted while Connect replacement is contract-only", async () => {
   const currentManifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
   );
@@ -194,34 +194,13 @@ test("Hub runtime binds the exact provider, both official consumers, and one liv
   );
   assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
 
-  assert.deepEqual(
-    currentMatrix.contracts.find(({ id }) => id === "hub-runtime"),
-    {
-      id: "hub-runtime",
-      version: 1,
-      providers: ["kokoro-platform"],
-      consumers: ["kokoro-agent", "kokoro-session"],
-    },
-  );
-  assert.deepEqual(
-    currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "hub-runtime"),
-    {
-      id: "hub-runtime",
-      commandId: "node-hub-runtime-v1",
-      required: true,
-      participants: ["kokoro-agent", "kokoro-platform", "kokoro-session"],
-      protocols: [{ id: "hub-runtime", version: 1 }],
-      timeoutSeconds: 180,
-    },
-  );
+  assert.equal(currentMatrix.contracts.find(({ id }) => id === "hub-runtime"), undefined);
+  assert.equal(currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "hub-runtime"), undefined);
   const protocols = Object.fromEntries(
     currentManifest.repositories.map(({ id, protocols }) => [id, protocols]),
   );
-  assert.ok(protocols["kokoro-platform"].some((item) =>
-    item.id === "hub-runtime" && item.version === 1 && item.role === "provider"));
-  for (const consumer of ["kokoro-agent", "kokoro-session"]) {
-    assert.ok(protocols[consumer].some((item) =>
-      item.id === "hub-runtime" && item.version === 1 && item.role === "consumer"));
+  for (const repository of ["kokoro-agent", "kokoro-platform", "kokoro-session"]) {
+    assert.equal(protocols[repository].some((item) => item.id === "hub-runtime"), false);
   }
 });
 
