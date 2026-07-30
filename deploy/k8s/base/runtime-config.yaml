@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: platform-runtime }
+data:
+  PLATFORM_DATABASE_EXPECTED_DATABASE: kokoro_platform
+  PLATFORM_DATABASE_MIGRATOR_ROLE: platform_migrator
+  PLATFORM_DATABASE_API_ROLE: platform_api
+  PLATFORM_DATABASE_ADMISSION_ROLE: platform_admission
+  PLATFORM_DATABASE_AUTHORIZATION_ROLE: platform_authorization
+  PLATFORM_DATABASE_ASSET_DATA_PLANE_ROLE: platform_asset_data_plane
+  PLATFORM_DATABASE_MODEL_GATEWAY_ROLE: platform_model_gateway
+  PLATFORM_DATABASE_WORKER_ROLE: platform_worker
+  PLATFORM_DATABASE_ADMIN_ROLE: platform_admin

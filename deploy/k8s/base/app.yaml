@@ -1,13 +1,11 @@
-# Kokoro 应用层（k8s）：session / agent / web。各子仓独立镜像；一律 envFrom kokoro-env 连基建/平台。
-# workspace 用 RWX PVC 共享给 hub（见 platform.yaml）/session/agent；storage.yaml 经 ConfigMap 挂 /app/storage.yaml。
-# ---------------------------------------------------------------- 共享工作区 PVC（RWX：多 pod 同挂）
+# Application processes from independent child artifacts. A Site release is an immutable image
+# produced by its generated Site repository; kokoro-web remains the factory, not a shared runtime.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata: { name: kokoro-workspace }
 spec:
-  accessModes: ["ReadWriteMany"] # 需 RWX 存储类（如 nfs/cephfs/efs）；单机可用 hostPath PV 或 local-path+单节点
+  accessModes: ["ReadWriteMany"]
   resources: { requests: { storage: 20Gi } }
-# ---------------------------------------------------------------- session
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -22,78 +20,125 @@ spec:
         fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
       containers:
-        - name: app
-          image: kokoro-kokoro-session:latest
-          imagePullPolicy: IfNotPresent
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 3900 }]
+        - name: kokoro-session
+          image: kokoro-session:latest
+          envFrom: [{ secretRef: { name: session-environment } }]
+          env:
+            - { name: KOKORO_SESSION_PORT, value: "3900" }
+            - { name: KOKORO_SESSION_OWNER_AUTHORITY_PORT, value: "3901" }
+          ports:
+            - { name: browser, containerPort: 3900 }
+            - { name: owner-authority, containerPort: 3901 }
+          readinessProbe: { tcpSocket: { port: browser }, initialDelaySeconds: 5, periodSeconds: 10 }
           volumeMounts:
             - { name: workspace, mountPath: /data/workspace }
             - { name: storage, mountPath: /app/storage.yaml, subPath: storage.yaml }
+            - { name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }
       volumes:
         - { name: workspace, persistentVolumeClaim: { claimName: kokoro-workspace } }
         - { name: storage, configMap: { name: kokoro-storage } }
+        - { name: secrets, secret: { secretName: session-files } }
 ---
 apiVersion: v1
 kind: Service
 metadata: { name: kokoro-session }
-spec: { selector: { app: kokoro-session }, ports: [{ port: 3900, targetPort: 3900 }] }
-# ---------------------------------------------------------------- agent（worker，无 Service）
+spec:
+  selector: { app: kokoro-session }
+  ports:
+    - { name: browser, port: 3900, targetPort: browser }
+    - { name: owner-authority, port: 3901, targetPort: owner-authority }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-agent }
+metadata: { name: kokoro-agent-worker }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-agent } }
+  selector: { matchLabels: { app: kokoro-agent-worker } }
   template:
-    metadata: { labels: { app: kokoro-agent } }
+    metadata: { labels: { app: kokoro-agent-worker } }
     spec:
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
       containers:
-        - name: app
-          image: kokoro-kokoro-agent:latest
-          imagePullPolicy: IfNotPresent
-          envFrom: [{ secretRef: { name: kokoro-env } }]
+        - name: kokoro-agent-worker
+          image: kokoro-agent:latest
+          envFrom: [{ secretRef: { name: agent-worker-environment } }]
           volumeMounts:
             - { name: workspace, mountPath: /data/workspace }
             - { name: storage, mountPath: /app/storage.yaml, subPath: storage.yaml }
+            - { name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }
       volumes:
         - { name: workspace, persistentVolumeClaim: { claimName: kokoro-workspace } }
         - { name: storage, configMap: { name: kokoro-storage } }
-# ---------------------------------------------------------------- web
+        - { name: secrets, secret: { secretName: agent-worker-files } }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-web }
+metadata: { name: kokoro-agent-evidence }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-web } }
+  selector: { matchLabels: { app: kokoro-agent-evidence } }
   template:
-    metadata: { labels: { app: kokoro-web } }
+    metadata: { labels: { app: kokoro-agent-evidence } }
     spec:
       containers:
-        - name: app
-          image: kokoro-kokoro-web:latest
-          imagePullPolicy: IfNotPresent
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 3000 }]
-          readinessProbe: { httpGet: { path: /, port: 3000 }, initialDelaySeconds: 15, periodSeconds: 10 }
+        - name: kokoro-agent-evidence
+          image: kokoro-agent:latest
+          command: ["uv", "run", "--no-sync", "kokoro-agent-evidence"]
+          envFrom: [{ secretRef: { name: agent-evidence-environment } }]
+          env:
+            - { name: KOKORO_AGENT_EVIDENCE_HOST, value: 0.0.0.0 }
+            - { name: KOKORO_AGENT_EVIDENCE_PORT, value: "8443" }
+          ports: [{ name: connect, containerPort: 8443 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: agent-evidence-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-web }
-spec: { selector: { app: kokoro-web }, ports: [{ port: 3000, targetPort: 3000 }] }
-# ---------------------------------------------------------------- web Ingress（按需改 host/ingressClassName）
+metadata: { name: kokoro-agent-evidence }
+spec:
+  selector: { app: kokoro-agent-evidence }
+  ports: [{ name: connect, port: 8443, targetPort: connect }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: kokoro-site-release }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: kokoro-site-release } }
+  template:
+    metadata: { labels: { app: kokoro-site-release } }
+    spec:
+      containers:
+        - name: kokoro-site-release
+          image: kokoro-site-release:latest
+          envFrom: [{ secretRef: { name: site-release-environment } }]
+          ports: [{ name: http, containerPort: 3000 }]
+          readinessProbe:
+            httpGet: { path: /api/health/ready, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /api/health/live, port: http }
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: site-release-files } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: kokoro-site-release }
+spec:
+  selector: { app: kokoro-site-release }
+  ports: [{ name: http, port: 3000, targetPort: http }]
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kokoro-web
+  name: kokoro-site-release
   annotations:
-    # 站点解析按 Host：真实域名替换下方 host（与 KOKORO_WEB_ORIGIN/站点 seed 对齐）。
     nginx.ingress.kubernetes.io/proxy-body-size: "25m"
 spec:
   rules:
@@ -104,5 +149,5 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kokoro-web
+                name: kokoro-site-release
                 port: { number: 3000 }

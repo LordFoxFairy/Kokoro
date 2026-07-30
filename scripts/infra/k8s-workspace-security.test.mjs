@@ -26,7 +26,7 @@ test("every workload mounting the shared workspace declares the writable pod gro
 
   assert.deepEqual(
     workspaceDeployments.map(({ name }) => name).sort(),
-    ["kokoro-agent", "kokoro-hub", "kokoro-session"],
+    ["kokoro-agent-worker", "kokoro-hub", "kokoro-hub-runtime", "kokoro-session"],
   );
   for (const { name, document } of workspaceDeployments) {
     assert.match(document, /^\s{6}securityContext:\s*$/mu, `${name} must set a pod securityContext`);

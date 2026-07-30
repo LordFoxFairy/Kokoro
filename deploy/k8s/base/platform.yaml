@@ -1,126 +1,217 @@
-# Kokoro 平台层（k8s）：7 服务共用同一镜像 kokoro-platform:latest，靠 KOKORO_SERVICE_PACKAGE 选包。
-# 一律 envFrom kokoro-env（= compose 的 env_file，单源 deploy/.env.prod）连基建/互访。
-# Service 名 = env URL 主机名（kokoro-user / kokoro-site / …），故 DATABASE_URL / *_BASE_URL 原样可用。
-# ---------------------------------------------------------------- site
+# Latest Platform topology. Every process gets its own environment Secret and file Secret; no
+# runtime Pod receives the migrator credential. The ConfigMap contains only non-secret role names.
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-site }
+metadata: { name: platform-api }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-site } }
+  selector: { matchLabels: { app: platform-api } }
   template:
-    metadata: { labels: { app: kokoro-site } }
+    metadata: { labels: { app: platform-api } }
     spec:
       containers:
-        - name: app
+        - name: platform-api
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/site" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4201 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4201 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-api-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-api }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: api }
+            - { name: PLATFORM_API_PORT, value: "4100" }
+          ports: [{ name: https, containerPort: 4100 }]
+          readinessProbe:
+            httpGet: { path: /health/ready, port: https, scheme: HTTPS }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-api-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-site }
-spec: { selector: { app: kokoro-site }, ports: [{ port: 4201, targetPort: 4201 }] }
-# ---------------------------------------------------------------- user
+metadata: { name: platform-api }
+spec:
+  selector: { app: platform-api }
+  ports: [{ name: https, port: 4100, targetPort: https }]
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-user }
+metadata: { name: platform-admission }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-user } }
+  selector: { matchLabels: { app: platform-admission } }
   template:
-    metadata: { labels: { app: kokoro-user } }
+    metadata: { labels: { app: platform-admission } }
     spec:
       containers:
-        - name: app
+        - name: platform-admission
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/user" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4211 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4211 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-admission-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-admission }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: admission }
+            - { name: PLATFORM_ADMISSION_PORT, value: "4244" }
+          ports: [{ name: connect, containerPort: 4244 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-admission-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-user }
-spec: { selector: { app: kokoro-user }, ports: [{ port: 4211, targetPort: 4211 }] }
-# ---------------------------------------------------------------- model
+metadata: { name: platform-admission }
+spec:
+  selector: { app: platform-admission }
+  ports: [{ name: connect, port: 4244, targetPort: connect }]
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-model }
+metadata: { name: platform-authorization }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-model } }
+  selector: { matchLabels: { app: platform-authorization } }
   template:
-    metadata: { labels: { app: kokoro-model } }
+    metadata: { labels: { app: platform-authorization } }
     spec:
       containers:
-        - name: app
+        - name: platform-authorization
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/model" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4221 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4221 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-authorization-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-authorization }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: authorization }
+            - { name: PLATFORM_AUTHORIZATION_PORT, value: "4143" }
+          ports: [{ name: connect, containerPort: 4143 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-authorization-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-model }
-spec: { selector: { app: kokoro-model }, ports: [{ port: 4221, targetPort: 4221 }] }
-# ---------------------------------------------------------------- credit
+metadata: { name: platform-authorization }
+spec:
+  selector: { app: platform-authorization }
+  ports: [{ name: connect, port: 4143, targetPort: connect }]
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-credit }
+metadata: { name: platform-asset-data-plane }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-credit } }
+  selector: { matchLabels: { app: platform-asset-data-plane } }
   template:
-    metadata: { labels: { app: kokoro-credit } }
+    metadata: { labels: { app: platform-asset-data-plane } }
     spec:
       containers:
-        - name: app
+        - name: platform-asset-data-plane
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/credit" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4231 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4231 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-asset-data-plane-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-asset-data-plane }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: asset-data-plane }
+            - { name: PLATFORM_ASSET_DATA_PLANE_PORT, value: "4246" }
+          ports: [{ name: https, containerPort: 4246 }]
+          readinessProbe:
+            httpGet: { path: /health/ready, port: https, scheme: HTTPS }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-asset-data-plane-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-credit }
-spec: { selector: { app: kokoro-credit }, ports: [{ port: 4231, targetPort: 4231 }] }
-# ---------------------------------------------------------------- payment
+metadata: { name: platform-asset-data-plane }
+spec:
+  selector: { app: platform-asset-data-plane }
+  ports: [{ name: https, port: 4246, targetPort: https }]
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-payment }
+metadata: { name: platform-model-gateway }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-payment } }
+  selector: { matchLabels: { app: platform-model-gateway } }
   template:
-    metadata: { labels: { app: kokoro-payment } }
+    metadata: { labels: { app: platform-model-gateway } }
     spec:
       containers:
-        - name: app
+        - name: platform-model-gateway
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/payment" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4241 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4241 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-model-gateway-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-model-gateway }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: model-gateway }
+            - { name: PLATFORM_MODEL_GATEWAY_PORT, value: "4247" }
+          ports: [{ name: connect, containerPort: 4247 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-model-gateway-files } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-payment }
-spec: { selector: { app: kokoro-payment }, ports: [{ port: 4241, targetPort: 4241 }] }
-# ---------------------------------------------------------------- hub（挂 workspace + storage.yaml）
+metadata: { name: platform-model-gateway }
+spec:
+  selector: { app: platform-model-gateway }
+  ports: [{ name: connect, port: 4247, targetPort: connect }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: platform-worker }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: platform-worker } }
+  template:
+    metadata: { labels: { app: platform-worker } }
+    spec:
+      containers:
+        - name: platform-worker
+          image: kokoro-platform:latest
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-worker-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-worker }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: worker }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-worker-files } }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: platform-admin }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: platform-admin } }
+  template:
+    metadata: { labels: { app: platform-admin } }
+    spec:
+      containers:
+        - name: platform-admin
+          image: kokoro-platform:latest
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-admin-environment }
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: platform-admin }
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: admin }
+            - { name: PLATFORM_ADMIN_PORT, value: "4101" }
+          ports: [{ name: connect, containerPort: 4101 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts: [{ name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }]
+      volumes: [{ name: secrets, secret: { secretName: platform-admin-files } }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: platform-admin }
+spec:
+  selector: { app: platform-admin }
+  ports: [{ name: connect, port: 4101, targetPort: connect }]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -135,45 +226,65 @@ spec:
         fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
       containers:
-        - name: app
+        - name: kokoro-hub
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/hub" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4251 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4251 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          envFrom: [{ secretRef: { name: hub-http-environment } }]
+          env:
+            - { name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/hub" }
+            - { name: KOKORO_HUB_PORT, value: "4251" }
+          ports: [{ name: http, containerPort: 4251 }]
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 5
+            periodSeconds: 10
           volumeMounts:
             - { name: workspace, mountPath: /data/workspace }
             - { name: storage, mountPath: /app/storage.yaml, subPath: storage.yaml }
+            - { name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }
       volumes:
         - { name: workspace, persistentVolumeClaim: { claimName: kokoro-workspace } }
         - { name: storage, configMap: { name: kokoro-storage } }
+        - { name: secrets, secret: { secretName: hub-http-files } }
 ---
 apiVersion: v1
 kind: Service
 metadata: { name: kokoro-hub }
-spec: { selector: { app: kokoro-hub }, ports: [{ port: 4251, targetPort: 4251 }] }
-# ---------------------------------------------------------------- platform-admin
+spec:
+  selector: { app: kokoro-hub }
+  ports: [{ name: http, port: 4251, targetPort: http }]
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: kokoro-platform-admin }
+metadata: { name: kokoro-hub-runtime }
 spec:
   replicas: 1
-  selector: { matchLabels: { app: kokoro-platform-admin } }
+  selector: { matchLabels: { app: kokoro-hub-runtime } }
   template:
-    metadata: { labels: { app: kokoro-platform-admin } }
+    metadata: { labels: { app: kokoro-hub-runtime } }
     spec:
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
       containers:
-        - name: app
+        - name: kokoro-hub-runtime
           image: kokoro-platform:latest
-          imagePullPolicy: IfNotPresent
-          env: [{ name: KOKORO_SERVICE_PACKAGE, value: "@kokoro/platform-admin" }]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
-          ports: [{ containerPort: 4290 }]
-          readinessProbe: { httpGet: { path: /healthz, port: 4290 }, initialDelaySeconds: 10, periodSeconds: 10 }
+          command: ["node", "--conditions=kokoro-runtime", "kokoro-hub/dist/interfaces/connect/main.js"]
+          envFrom: [{ secretRef: { name: hub-runtime-environment } }]
+          env: [{ name: KOKORO_HUB_CONNECT_PORT, value: "4252" }]
+          ports: [{ name: connect, containerPort: 4252 }]
+          readinessProbe: { tcpSocket: { port: connect }, initialDelaySeconds: 5, periodSeconds: 10 }
+          volumeMounts:
+            - { name: workspace, mountPath: /data/workspace }
+            - { name: storage, mountPath: /app/storage.yaml, subPath: storage.yaml }
+            - { name: secrets, mountPath: /run/secrets/kokoro, readOnly: true }
+      volumes:
+        - { name: workspace, persistentVolumeClaim: { claimName: kokoro-workspace } }
+        - { name: storage, configMap: { name: kokoro-storage } }
+        - { name: secrets, secret: { secretName: hub-runtime-files } }
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: kokoro-platform-admin }
-spec: { selector: { app: kokoro-platform-admin }, ports: [{ port: 4290, targetPort: 4290 }] }
+metadata: { name: kokoro-hub-runtime }
+spec:
+  selector: { app: kokoro-hub-runtime }
+  ports: [{ name: connect, port: 4252, targetPort: connect }]

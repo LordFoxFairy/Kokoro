@@ -1,51 +1,46 @@
-# Kokoro 基建层（k8s）：mysql / redis / mongo / minio / litellm 各一个。与 compose 同一套设计——
-# 全局唯一一套基建，上层「拿 Service DNS + env URL」连（Service 名 = env 里的主机名：mysql / redis / …）。
+# Kokoro 基建层（k8s）：postgres / redis / mongo / minio / litellm 各一个。与 compose 同一套设计——
+# 全局唯一一套基建，上层「拿 Service DNS + env URL」连（Service 名 = env 里的主机名）。
 # 单实例 + RWO PVC + Recreate 策略（避免滚更时 RWO 卷抢占死锁）。prod 若用托管云库：删掉对应块，
-# 把 Secret 里的 DATABASE_URL_* 指向云地址即可（app 层不变）。
-# ---------------------------------------------------------------- mysql
+# 把 workload Secret 里的 URL 指向云地址即可（app 层不变）。
+# ---------------------------------------------------------------- postgres
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: mysql-data }
+metadata: { name: postgres-data }
 spec:
   accessModes: ["ReadWriteOnce"]
   resources: { requests: { storage: 10Gi } }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: mysql }
+metadata: { name: postgres }
 spec:
   replicas: 1
   strategy: { type: Recreate }
-  selector: { matchLabels: { app: mysql } }
+  selector: { matchLabels: { app: postgres } }
   template:
-    metadata: { labels: { app: mysql } }
+    metadata: { labels: { app: postgres } }
     spec:
       containers:
-        - name: mysql
-          image: mysql:8.4
-          # innodb buffer pool 收小 + 关 performance_schema：省内存（内存受限节点/kind 更稳；大流量可调大）。
-          args:
-            - "--character-set-server=utf8mb4"
-            - "--collation-server=utf8mb4_unicode_ci"
-            - "--innodb-buffer-pool-size=128M"
-            - "--performance-schema=OFF"
-          envFrom: [{ secretRef: { name: kokoro-env } }]
+        - name: postgres
+          image: postgres:18.4@sha256:3a82e1f56c8f0f5616a11103ac3d47e632c3938698946a7ad26da0df1334744a
+          envFrom: [{ secretRef: { name: kokoro-infra-env } }]
+          env: [{ name: PGDATA, value: /var/lib/postgresql/18/docker }]
           resources:
             requests: { memory: 256Mi }
-          ports: [{ containerPort: 3306 }]
-          volumeMounts: [{ name: data, mountPath: /var/lib/mysql }]
+          ports: [{ containerPort: 5432 }]
+          volumeMounts: [{ name: data, mountPath: /var/lib/postgresql }]
           readinessProbe:
-            exec: { command: ["sh", "-c", "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD --silent"] }
+            exec: { command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"] }
             initialDelaySeconds: 10
             periodSeconds: 5
-      volumes: [{ name: data, persistentVolumeClaim: { claimName: mysql-data } }]
+      volumes: [{ name: data, persistentVolumeClaim: { claimName: postgres-data } }]
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: mysql }
+metadata: { name: postgres }
 spec:
-  selector: { app: mysql }
-  ports: [{ port: 3306, targetPort: 3306 }]
+  selector: { app: postgres }
+  ports: [{ port: 5432, targetPort: 5432 }]
 # ---------------------------------------------------------------- redis
 ---
 apiVersion: v1
@@ -67,7 +62,7 @@ spec:
     spec:
       containers:
         - name: redis
-          image: redis:7
+          image: redis:7@sha256:a8f08480e1f88f2647fed492d1178c06abb0d0c1fbf02c682a61e2f483fb3954
           args: ["redis-server", "--appendonly", "yes"]
           ports: [{ containerPort: 6379 }]
           volumeMounts: [{ name: data, mountPath: /data }]
@@ -104,7 +99,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo:7
+          image: mongo:7@sha256:340c1c56fb10e95cf79ff547f8664b96bc6ead9909bc355238cbf865a9695a6f
           args: ["mongod", "--replSet", "kokoro-rs", "--bind_ip_all"]
           ports: [{ containerPort: 27017 }]
           volumeMounts: [{ name: data, mountPath: /data/db }]
@@ -159,9 +154,9 @@ spec:
     spec:
       containers:
         - name: minio
-          image: minio/minio
+          image: minio/minio:latest@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
           args: ["server", "/data", "--address", ":9100", "--console-address", ":9101"]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
+          envFrom: [{ secretRef: { name: kokoro-infra-env } }]
           ports: [{ containerPort: 9100 }, { containerPort: 9101 }]
           volumeMounts: [{ name: data, mountPath: /data }]
       volumes: [{ name: data, persistentVolumeClaim: { claimName: minio-data } }]
@@ -187,9 +182,9 @@ spec:
     spec:
       containers:
         - name: litellm
-          image: ghcr.io/berriai/litellm:main-stable
+          image: ghcr.io/berriai/litellm:main-stable@sha256:47afa74b495c802317712e5b8c8a65e7ca30c96636e9b618a5f8130eec72a8ee
           args: ["--config=/app/config.yaml"]
-          envFrom: [{ secretRef: { name: kokoro-env } }]
+          envFrom: [{ secretRef: { name: kokoro-infra-env } }]
           resources:
             requests: { memory: 512Mi }
             limits: { memory: 1536Mi }
