@@ -12,8 +12,7 @@ const DEFAULT_ENV_FILE = resolve(root, "deploy/.env.dev");
 const ACTIONS = new Set(["config", "ensure", "refresh", "stop", "status"]);
 const MODES = new Set(["development", "ci", "production"]);
 const CANONICAL_PROJECT = "kokoro-infra";
-const FULL_SERVICES = ["mysql", "postgres", "redis", "mongo", "minio", "litellm"];
-const MANAGED_SERVICES = [...FULL_SERVICES];
+const MANAGED_SERVICES = ["mysql", "postgres", "redis", "mongo", "minio", "litellm"];
 const LEGACY_CANONICAL_SERVICES = new Set(["mysql", "redis", "mongo", "minio"]);
 const STATEFUL_MOUNTS = {
   mysql: { destination: "/var/lib/mysql", suffix: "mysql", composeVolume: "mysql-data" },
@@ -238,12 +237,16 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
       rawProfile = "",
       rawDataMarker = "",
       rawAuthMarker = "",
+      rawRunning = "",
     ] = checkedProjection(runDocker, [
       "inspect",
       "--format",
-      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}\t{{index .Config.Labels "io.kokoro.infra.profile"}}\t{{index .Config.Labels "io.kokoro.infra.data-marker"}}\t{{index .Config.Labels "io.kokoro.infra.auth-marker"}}',
+      '{{index .Config.Labels "com.docker.compose.service"}}\t{{index .Config.Labels "io.kokoro.infra.scope"}}\t{{index .Config.Labels "io.kokoro.infra.profile"}}\t{{index .Config.Labels "io.kokoro.infra.data-marker"}}\t{{index .Config.Labels "io.kokoro.infra.auth-marker"}}\t{{.State.Running}}',
       id,
     ]).trim().split("\t");
+    if (!new Set(["true", "false"]).has(rawRunning)) {
+      throw new InfraError("infra_scope_inspection_failed");
+    }
     const mounts = checkedProjection(runDocker, [
       "inspect",
       "--format",
@@ -256,6 +259,7 @@ function inspectCanonicalContainers(runDocker = dockerProjection) {
     return {
       id,
       service,
+      running: rawRunning === "true",
       scope: rawScope === "<no value>" ? "" : rawScope,
       profile: rawProfile === "<no value>" ? "" : rawProfile,
       dataMarker: rawDataMarker === "<no value>" ? "" : rawDataMarker,
@@ -445,11 +449,11 @@ function probePersistentCredentials(plan, containers, values, runDocker = docker
 }
 
 function assertCanonicalPostcondition(plan, containers) {
-  const presentServices = new Set(containers.map(({ service }) => service));
   if (
     containers.length === 0 ||
     !containers.every((container) => containerMatchesPlan(container, plan)) ||
-    !plan.services.every((service) => presentServices.has(service))
+    !plan.services.every((service) =>
+      containers.some((container) => container.service === service && container.running === true))
   ) {
     throw new InfraError("infra_scope_convergence_failed");
   }
@@ -515,7 +519,15 @@ async function buildPlan(options) {
   };
 }
 
-async function execute(plan, options) {
+async function execute(plan, options, dependencies = {}) {
+  const runtime = {
+    collectInventory,
+    inspectCanonicalContainers,
+    inspectPersistentTargets,
+    runDocker: dockerProjection,
+    runCompose: (args, spawnOptions) => spawnSync("docker", args, spawnOptions),
+    ...dependencies,
+  };
   await access(options.envFile);
   const values = parseEnv(await readFile(options.envFile, "utf8"));
   const missing = plan.requiredVariables.filter((name) => !values[name]);
@@ -524,13 +536,13 @@ async function execute(plan, options) {
   }
   let executionPlan = plan;
   if (["ensure", "refresh"].includes(plan.action)) {
-    const inventory = collectInventory();
+    const inventory = runtime.collectInventory();
     if (hasCompetingActiveAuthority(inventory, plan, values)) {
       throw new InfraError("infra_competing_authority_active");
     }
   }
   if (["ensure", "refresh", "stop", "status"].includes(plan.action)) {
-    const containers = inspectCanonicalContainers();
+    const containers = runtime.inspectCanonicalContainers();
     executionPlan = convergeCanonicalScope(plan, containers);
     if (["ensure", "refresh"].includes(plan.action)) {
       const markerDefaults = {
@@ -546,14 +558,19 @@ async function execute(plan, options) {
             values[`KOKORO_${service.toUpperCase()}_AUTH_MARKER`] ?? markerDefaults[service],
           ]),
       );
-      const targets = inspectPersistentTargets(plan);
+      const targets = runtime.inspectPersistentTargets(plan);
       const persistentEvidence = assertPersistentTargetCompatibility(plan, containers, targets);
       assertPersistentAuthCompatibility(containers, expectedMarkers, persistentEvidence);
-      probePersistentCredentials(plan, containers, values);
+      probePersistentCredentials(
+        plan,
+        containers.filter((container) => container.running === true),
+        values,
+        runtime.runDocker,
+      );
     }
   }
   assertSafeDockerArguments(executionPlan.executionArgv);
-  const result = spawnSync("docker", executionPlan.executionArgv, {
+  const result = runtime.runCompose(executionPlan.executionArgv, {
     cwd: root,
     encoding: "utf8",
     shell: false,
@@ -569,7 +586,9 @@ async function execute(plan, options) {
     throw new InfraError("infra_compose_failed", `exit ${result.status}`);
   }
   if (["ensure", "refresh"].includes(executionPlan.action)) {
-    assertCanonicalPostcondition(executionPlan, inspectCanonicalContainers());
+    const containers = runtime.inspectCanonicalContainers();
+    probePersistentCredentials(executionPlan, containers, values, runtime.runDocker);
+    assertCanonicalPostcondition(executionPlan, containers);
   }
   return executionPlan;
 }
@@ -605,6 +624,7 @@ export {
   assertSafeDockerArguments,
   buildPlan,
   convergeCanonicalScope,
+  execute,
   hasCompetingActiveAuthority,
   inspectCanonicalContainers,
   inspectPersistentTargets,

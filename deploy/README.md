@@ -1,8 +1,8 @@
 # Kokoro 单机全栈部署（docker-compose）
 
-一台主机上用 `docker compose` 起全栈：infra（mysql/mongo/redis/minio/litellm）+ 平台七服务 + session/agent/web。
+一台主机上用 `docker compose` 起全栈：infra（postgres/mongo/redis/minio/litellm）+ 平台服务 + session/agent/web。MySQL 只保留为显式本地兼容 profile。
 架构=基建与业务两个独立 compose 项目，经命名网络 `kokoro-net` 相连：
-- 基建：`docker-compose.infra.yml`（唯一一套 mysql/redis/mongo/minio/litellm）。
+- 基建：`docker-compose.infra.yml`（默认 postgres/redis/mongo/minio/litellm；`mysql-compat` 非默认）。
 - 业务：`docker-compose.app.yml`（migrate + 7 平台服务 + session/agent/web，一律 env URL 连基建）。
 - **一键编排：`deploy/provision.sh`**（infra→build→migrate→服务→幂等 seed，全流程）。变量模板：`deploy/.env.example`。
 
@@ -29,7 +29,7 @@ cp deploy/.env.example deploy/.env.prod   # provision.sh 默认读 deploy/.env.p
   openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out user_jwt.pem
   # 填入 .env 时单行化（PEM 换行转 \n），或改用支持多行的 env 注入方式
   ```
-- **MySQL 密码**：`MYSQL_ROOT_PASSWORD` 与所有 `DATABASE_URL_*` 里的密码保持一致
+- **PostgreSQL 密码**：`POSTGRES_PASSWORD` 与 Platform/Session 连接配置保持一致
 - **KOKORO_SITE_ID**：与下方 seed 的站点一致（`site-<key>`）
 - **KOKORO_WEB_ORIGIN**：真实对外域名
 
@@ -37,7 +37,7 @@ cp deploy/.env.example deploy/.env.prod   # provision.sh 默认读 deploy/.env.p
 ```bash
 bash deploy/provision.sh deploy/.env.prod
 ```
-脚本按序：① 起基建 + 等 mysql healthy + 幂等建 S3 桶；② `docker compose ... build` 全镜像 + `run --rm migrate`（各平台 DB `prisma migrate deploy`）；③ 起 7 平台服务 + session/agent/web + 等 healthz；④ 幂等 seed（model 内置目录 / 运营数据 / 站点 active / 计价 / 积分包+mock 网关）。首次构建较慢（多镜像）。
+脚本按序：① 起默认基建 + 等 PostgreSQL healthy + 幂等建 S3 桶；② `docker compose ... build` 全镜像 + `run --rm migrate`；③ 起平台服务 + session/agent/web + 等 healthz；④ 执行发布所需的幂等初始化。首次构建较慢（多镜像）。
 
 > 手动分步（等价）：`docker compose --env-file deploy/.env.prod -p kokoro-infra -f docker-compose.infra.yml up -d` → `docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml build && ... run --rm migrate && ... up -d`。
 
@@ -60,7 +60,7 @@ docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml l
 - [ ] 真模型：`KOKORO_LOCAL_FAKE_MODEL=1`→`0` + litellm 配 provider 凭据（GLM 等，归 kokoro-model）
 - [ ] 真支付网关（有商户后；当前 mock 闭环）
 - [ ] 前置 TLS 反代 + 仅暴露 web:3000 / admin:4290 到可信网络
-- [ ] DB/Redis/Mongo 备份策略；卷（kokoro-mysql/mongo/redis/workspace）持久化确认
+- [ ] PostgreSQL/Redis/Mongo 备份策略；卷（postgres/mongo/redis/workspace）持久化确认
 
 ## 说明
 - **存储**：workspace/deliveries/hub 包体默认用共享本地卷（`deploy/storage.yaml`，单机口径）。横向扩展/多 pod/多机切 S3：设 `KOKORO_STORAGE_FILE=./deploy/storage.s3.yaml` + `KOKORO_WORKSPACE_S3_ACCESS_KEY/SECRET_KEY`（取 minio root 账密）；桶 `kokoro` 由 `provision.sh` 幂等创建。S3 路径已对真 minio 往返验证（package put/get+幂等、workspace archive 键布局）。

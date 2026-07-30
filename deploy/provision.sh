@@ -22,12 +22,12 @@ export KOKORO_ENV_FILE="$ENV_FILE"
 
 APP=(docker compose --env-file "$ENV_FILE" -p "$APP_PROJECT" -f docker-compose.app.yml)
 
-echo "==> [1/4] 起唯一一套基建（mysql/redis/mongo/minio/litellm），等 mysql 就绪"
-node scripts/infra/manager.mjs ensure --profiles full --scope prod --mode production --infra-env-file "$ENV_FILE"
-# 等 mysql 健康（migrate 要连它）。
+echo "==> [1/4] 起默认基建（postgres/redis/mongo/minio/litellm），等 PostgreSQL 就绪"
+node scripts/infra/manager.mjs ensure --profiles full --scope production --mode production --infra-env-file "$ENV_FILE"
+# 等 PostgreSQL 健康（migrate 要连它）。
 for i in $(seq 1 60); do
-  st="$(docker inspect --format '{{.State.Health.Status}}' kokoro-infra-mysql-1 2>/dev/null || true)"
-  [[ "$st" == "healthy" ]] && { echo "    mysql healthy"; break; }
+  st="$(docker inspect --format '{{.State.Health.Status}}' kokoro-infra-postgres-1 2>/dev/null || true)"
+  [[ "$st" == "healthy" ]] && { echo "    PostgreSQL healthy"; break; }
   sleep 2
 done
 

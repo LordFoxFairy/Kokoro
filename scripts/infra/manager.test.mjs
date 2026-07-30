@@ -102,7 +102,7 @@ test("stateful profiles cannot use force-recreate refresh", async () => {
 });
 
 test("rejects active stateful Kokoro projects and unlabeled exact authority signals", async () => {
-  const input = await plan("ensure", ["platform"]);
+  const input = await plan("ensure", ["mysql-compat"]);
   assert.equal(hasCompetingActiveAuthority({
     containers: [{ project: "personal-db", service: "mysql", name: "mysql", status: "Up 1 hour" }],
   }, input), false);
@@ -151,10 +151,11 @@ function canonicalContainer({
   service,
   scope = "dev",
   source,
+  running = true,
   authMarker = ["mysql", "postgres", "minio"].includes(service) ? `${service}-auth-v1` : "",
   profile = {
-    mysql: "platform",
-    postgres: "postgres-transition",
+    mysql: "mysql-compat",
+    postgres: "platform",
     redis: "runtime",
     mongo: "runtime",
     minio: "storage",
@@ -174,6 +175,7 @@ function canonicalContainer({
   return {
     id: `container-${service}`,
     service,
+    running,
     scope,
     profile,
     dataMarker,
@@ -217,7 +219,7 @@ test("no canonical containers requires no scope transition", async () => {
   assert.equal(output.executionArgv.includes("--no-recreate"), true);
 });
 
-test("canonical preflight inspection projects only service, scope label, and mounts", () => {
+test("canonical preflight inspection projects running state without secrets", () => {
   const calls = [];
   const runDocker = (args) => {
     calls.push(args);
@@ -225,7 +227,7 @@ test("canonical preflight inspection projects only service, scope label, and mou
     if (args[2].includes(".Config.Labels")) {
       return {
         status: 0,
-        stdout: "redis\tdev\truntime\tredis-data-v1\t<no value>\n",
+        stdout: "redis\tdev\truntime\tredis-data-v1\t<no value>\tfalse\n",
         stderr: "",
       };
     }
@@ -238,6 +240,7 @@ test("canonical preflight inspection projects only service, scope label, and mou
   assert.deepEqual(managerApi.inspectCanonicalContainers(runDocker), [{
     id: "container-id",
     service: "redis",
+    running: false,
     scope: "dev",
     profile: "runtime",
     dataMarker: "redis-data-v1",
@@ -299,7 +302,7 @@ test("stateful and mixed ensure plans preserve all existing containers on ordina
 });
 
 test("persistent target inspection resolves exact volume labels and every mount user", async () => {
-  const input = await plan("ensure", ["platform"]);
+  const input = await plan("ensure", ["mysql-compat", "platform"]);
   const calls = [];
   const runDocker = (args) => {
     calls.push(args);
@@ -346,7 +349,7 @@ test("persistent target inspection resolves exact volume labels and every mount 
 });
 
 test("existing persistent targets fail closed before compose when ownership is ambiguous", async () => {
-  const input = await plan("ensure", ["platform"]);
+  const input = await plan("ensure", ["mysql-compat"]);
   const mysql = canonicalContainer({
     service: "mysql",
     source: "kokoro-infra_kokoro-mysql",
@@ -386,7 +389,7 @@ test("existing persistent targets fail closed before compose when ownership is a
 });
 
 test("pre-Task2A canonical volumes use explicit legacy evidence without recreating services", async () => {
-  const input = await plan("ensure", ["full"]);
+  const input = await plan("ensure", ["full", "mysql-compat"]);
   const legacyContainers = [
     ["mysql", "kokoro-infra_kokoro-mysql"],
     ["redis", "kokoro-infra_kokoro-redis"],
@@ -443,7 +446,7 @@ test("pre-Task2A canonical volumes use explicit legacy evidence without recreati
 });
 
 test("missing data markers are legacy-only evidence, never a new-volume bypass", async () => {
-  const input = await plan("ensure", ["platform"]);
+  const input = await plan("ensure", ["mysql-compat"]);
   const currentMysql = canonicalContainer({
     service: "mysql",
     source: "kokoro-infra_kokoro-mysql",
@@ -556,7 +559,7 @@ test("existing MySQL and PostgreSQL credentials are probed via stdin without sec
     return { status: 0, stdout: "", stderr: "" };
   };
   await managerApi.probePersistentCredentials(
-    await plan("ensure", ["platform", "postgres-transition"]),
+    await plan("ensure", ["mysql-compat", "platform"]),
     [
       canonicalContainer({ service: "mysql", source: "kokoro-infra_kokoro-mysql", authMarker: "" }),
       canonicalContainer({ service: "postgres", source: "kokoro-infra_kokoro-postgres", authMarker: "" }),
@@ -576,6 +579,102 @@ test("existing MySQL and PostgreSQL credentials are probed via stdin without sec
       () => ({ status: 1, stdout: "", stderr: "authentication failed" }),
     ),
     /infra_persistent_auth_probe_failed: postgres/u,
+  );
+});
+
+async function executeStoppedPostgresFixture(probeStatus = 0) {
+  const directory = await mkdtemp(resolve(tmpdir(), "kokoro-infra-stopped-postgres-"));
+  const envFile = resolve(directory, "infra.env");
+  const secret = "stopped-postgres-secret";
+  await writeFile(envFile, [
+    "POSTGRES_USER=postgres",
+    `POSTGRES_PASSWORD=${secret}`,
+    "POSTGRES_DB=postgres",
+    "KOKORO_POSTGRES_AUTH_MARKER=postgres-auth-v1",
+    "",
+  ].join("\n"));
+  const input = await buildPlan({
+    action: "ensure",
+    dryRun: false,
+    json: true,
+    profiles: ["platform"],
+    scope: "dev",
+    envFile,
+    mode: "development",
+  });
+  const stopped = canonicalContainer({
+    service: "postgres",
+    source: "kokoro-infra_kokoro-postgres",
+    running: false,
+  });
+  const running = { ...stopped, running: true };
+  const target = {
+    service: "postgres",
+    name: "kokoro-infra_kokoro-postgres",
+    exists: true,
+    project: "kokoro-infra",
+    composeVolume: "postgres-data",
+    dataMarker: "postgres-data-v1",
+    mountUsers: [{
+      id: stopped.id,
+      project: "kokoro-infra",
+      service: "postgres",
+      name: "kokoro-infra-postgres-1",
+      ports: "",
+    }],
+  };
+  const events = [];
+  const dockerCalls = [];
+  let inspection = 0;
+  try {
+    const result = await managerApi.execute(input, { envFile, json: true }, {
+      collectInventory: () => ({ containers: [] }),
+      inspectCanonicalContainers: () => {
+        inspection += 1;
+        events.push(`inspect:${inspection}`);
+        return inspection === 1 ? [stopped] : [running];
+      },
+      inspectPersistentTargets: () => {
+        events.push("targets");
+        return [target];
+      },
+      runCompose: (args) => {
+        events.push("compose");
+        dockerCalls.push({ args, options: {} });
+        return { status: 0, stdout: "", stderr: "" };
+      },
+      runDocker: (args, options) => {
+        events.push("probe");
+        dockerCalls.push({ args, options });
+        return { status: probeStatus, stdout: "", stderr: "authentication failed" };
+      },
+    });
+    return { result, events, dockerCalls, secret, error: null };
+  } catch (error) {
+    return { result: null, events, dockerCalls, secret, error };
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+}
+
+test("ensure starts an existing stopped PostgreSQL container before mandatory credential probe", async () => {
+  const outcome = await executeStoppedPostgresFixture();
+  assert.equal(outcome.error, null);
+  assert.deepEqual(outcome.events, ["inspect:1", "targets", "compose", "inspect:2", "probe"]);
+  const probe = outcome.dockerCalls.find(({ args }) => args[0] === "exec");
+  assert.ok(probe);
+  assert.equal(probe.options.input, `${outcome.secret}\n`);
+  assert.doesNotMatch(JSON.stringify(probe.args), new RegExp(outcome.secret, "u"));
+});
+
+test("ensure fails loudly when the mandatory post-start PostgreSQL credential probe mismatches", async () => {
+  const outcome = await executeStoppedPostgresFixture(1);
+  assert.match(outcome.error?.message ?? "", /infra_persistent_auth_probe_failed: postgres/u);
+  assert.ok(outcome.events.indexOf("compose") < outcome.events.indexOf("probe"));
+  assert.doesNotMatch(outcome.error?.message ?? "", new RegExp(outcome.secret, "u"));
+  assert.doesNotMatch(
+    JSON.stringify(outcome.dockerCalls.map(({ args }) => args)),
+    new RegExp(outcome.secret, "u"),
   );
 });
 
@@ -638,10 +737,20 @@ test("the additive PostgreSQL candidate converges under the same canonical autho
 
 test("the default full infrastructure includes PostgreSQL for the current Platform and Session authorities", async () => {
   const input = await plan("ensure", ["full"], "dev");
-  assert.deepEqual(input.services, ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]);
+  assert.deepEqual(input.services, ["postgres", "redis", "mongo", "minio", "litellm"]);
   assert.ok(input.executionArgv.includes("--profile"));
   assert.ok(input.executionArgv.includes("platform"));
   assert.ok(input.requiredVariables.includes("POSTGRES_PASSWORD"));
+  assert.equal(input.requiredVariables.includes("MYSQL_ROOT_PASSWORD"), false);
+  assert.equal(input.executionArgv.includes("mysql"), false);
+});
+
+test("legacy MySQL is selected only through its explicit compatibility profile", async () => {
+  const platform = await plan("ensure", ["platform"], "dev");
+  const compatibility = await plan("ensure", ["mysql-compat"], "dev");
+  assert.deepEqual(platform.services, ["postgres"]);
+  assert.deepEqual(compatibility.services, ["mysql"]);
+  assert.ok(compatibility.executionArgv.includes("--no-recreate"));
 });
 
 test("root compose encodes one authority, explicit identities, profiles and bounded secrets", async () => {
@@ -665,7 +774,7 @@ test("root compose encodes one authority, explicit identities, profiles and boun
   ]) {
     assert.match(compose, new RegExp(`${variable}:\\s+"\\$\\{${variable}:-\\}"`, "u"));
   }
-  for (const profile of ["platform", "runtime", "storage", "model", "postgres-transition"]) {
+  for (const profile of ["platform", "mysql-compat", "runtime", "storage", "model", "postgres-transition"]) {
     assert.match(compose, new RegExp(`profiles:\\s*\\[[^\\]]*${profile}[^\\]]*\\]`, "u"));
   }
   for (const volume of ["mysql", "postgres", "redis", "mongo", "minio"]) {
@@ -691,8 +800,9 @@ test("infrastructure policy derives volume identity from the canonical resource 
     "utf8",
   ));
   assert.equal(policy.authority.volumeNameTemplate, "{resourcePrefix}-{service}");
-  assert.deepEqual(policy.profiles.platform, ["mysql", "postgres"]);
-  assert.deepEqual(policy.profiles.full, ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]);
+  assert.deepEqual(policy.profiles.platform, ["postgres"]);
+  assert.deepEqual(policy.profiles["mysql-compat"], ["mysql"]);
+  assert.deepEqual(policy.profiles.full, ["postgres", "redis", "mongo", "minio", "litellm"]);
   assert.deepEqual(policy.profiles["postgres-transition"], ["postgres"]);
   assert.equal(policy.databaseAuthority.phase, "postgres-primary");
   assert.equal(policy.databaseAuthority.canonicalService, "postgres");

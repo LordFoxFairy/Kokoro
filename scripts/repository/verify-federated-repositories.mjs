@@ -26,7 +26,7 @@ const ATTESTED_CONTRACT_KEYS = ["artifactDigest", ...CONTRACT_KEYS];
 const RUNTIME_GATE_KEYS = ["requiredServices", "scenarios", "schemaVersion"];
 const SCENARIO_KEYS = ["commandId", "id", "participants", "protocols", "required", "timeoutSeconds"];
 const SCENARIO_PROTOCOL_KEYS = ["id", "version"];
-const RUNTIME_SERVICES = new Set(["mysql", "postgres", "redis", "mongo", "minio", "litellm"]);
+const RUNTIME_SERVICES = new Set(["postgres", "redis", "mongo", "minio", "litellm"]);
 const SCENARIO_COMMANDS = new Map([
   ["web-session-http-sse", "node-web-session-http-sse-v1"],
   ["session-platform-internal-rpc", "node-session-platform-internal-rpc-v1"],

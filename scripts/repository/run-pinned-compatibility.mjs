@@ -2,7 +2,6 @@
 
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync } from "node:child_process";
-import { constants as fsConstants } from "node:fs";
 import {
   lstat,
   mkdir,
@@ -16,13 +15,12 @@ import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { acquireScope, cleanupScope, provisionScope } from "../infra/scope.mjs";
-import { parseEnv } from "../infra/manager.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const REPOSITORY_IDS = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
 const RESULT_KEYS = ["assertionIds", "durationMs", "outcome", "reasonCode", "scenarioId", "schemaVersion"];
 const RESULT_OUTCOMES = new Set(["pass", "fail", "incomplete", "interrupted"]);
-const COMPAT_DATA_RESOURCES = ["mysql", "postgres", "mongo", "redis"];
+const COMPAT_DATA_RESOURCES = ["postgres", "mongo", "redis"];
 const COMMANDS = new Map([
   ["node-web-session-http-sse-v1", [process.execPath, "scripts/compatibility/web-session-http-sse.mjs"]],
   ["node-session-platform-internal-rpc-v1", [process.execPath, "scripts/compatibility/session-platform-internal-rpc.mjs"]],
@@ -36,7 +34,6 @@ const SAFE_REASON = /^[a-z][a-z0-9_]{1,63}$/u;
 const SAFE_ASSERTION = /^[a-z0-9][a-z0-9:._-]{1,127}$/u;
 const MAX_MACHINE_RESULT_BYTES = 64 * 1024;
 const PROCESS_GROUP_GRACE_MS = 5_000;
-const SUPPORTED_RUNTIME_PLATFORMS = new Set(["darwin", "linux"]);
 const TERMINAL_FAILURE_PRIORITY = new Map([
   ["postflight_pin_drift", 1],
   ["postflight_pin_verification_failed", 2],
@@ -101,84 +98,6 @@ function parseRunnerArguments(argv, repositoryRoot = root) {
     throw new CompatibilityError("compatibility_arguments");
   }
   return options;
-}
-
-function validateMysqlRootPassword(value) {
-  if (typeof value !== "string" || value.length === 0) {
-    throw new CompatibilityError("compatibility_mysql_admin_credential_missing");
-  }
-  if (/[\r\n\0]/u.test(value)) {
-    throw new CompatibilityError("compatibility_mysql_admin_credential_invalid");
-  }
-  return value;
-}
-
-function sameFileIdentity(before, after) {
-  return before.dev === after.dev &&
-    before.ino === after.ino &&
-    before.size === after.size &&
-    before.mtimeNs === after.mtimeNs &&
-    before.ctimeNs === after.ctimeNs;
-}
-
-function secureInfraOpenFlags(platform, noFollowFlag) {
-  if (
-    !SUPPORTED_RUNTIME_PLATFORMS.has(platform) ||
-    !Number.isInteger(noFollowFlag) ||
-    noFollowFlag <= 0
-  ) {
-    throw new CompatibilityError("compatibility_infra_env_file_unsupported");
-  }
-  return fsConstants.O_RDONLY | noFollowFlag;
-}
-
-async function acquireMysqlRootPassword(
-  infraEnvFile,
-  environment,
-  openInfraEnvFile,
-  platform,
-  noFollowFlag,
-) {
-  if (infraEnvFile === null || infraEnvFile === undefined) {
-    return validateMysqlRootPassword(environment.MYSQL_ROOT_PASSWORD);
-  }
-  const openFlags = secureInfraOpenFlags(platform, noFollowFlag);
-  let handle;
-  try {
-    handle = await openInfraEnvFile(infraEnvFile, openFlags);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      throw new CompatibilityError("compatibility_infra_env_file_missing");
-    }
-    if (error.code === "ELOOP") {
-      throw new CompatibilityError("compatibility_infra_env_file_symlink");
-    }
-    throw new CompatibilityError("compatibility_infra_env_file_unreadable");
-  }
-  let source;
-  let failure = null;
-  try {
-    const before = await handle.stat({ bigint: true });
-    if (!before.isFile()) {
-      throw new CompatibilityError("compatibility_infra_env_file_invalid");
-    }
-    source = await handle.readFile("utf8");
-    const after = await handle.stat({ bigint: true });
-    if (!sameFileIdentity(before, after)) {
-      throw new CompatibilityError("compatibility_infra_env_file_changed");
-    }
-  } catch (error) {
-    failure = error instanceof CompatibilityError
-      ? error
-      : new CompatibilityError("compatibility_infra_env_file_unreadable");
-  }
-  try {
-    await handle.close();
-  } catch {
-    failure ??= new CompatibilityError("compatibility_infra_env_file_unreadable");
-  }
-  if (failure !== null) throw failure;
-  return validateMysqlRootPassword(parseEnv(source).MYSQL_ROOT_PASSWORD);
 }
 
 function safeChildEnvironment(environment) {
@@ -581,23 +500,10 @@ function makeEvidence({ matrix, matrixSource, manifestSource, pins, tree, now })
 }
 
 async function runCompatibility(options, overrides = {}, control = {}) {
-  const noFollowFlag = Object.hasOwn(overrides, "noFollowFlag")
-    ? overrides.noFollowFlag
-    : fsConstants.O_NOFOLLOW;
   const {
     environment = process.env,
-    noFollowFlag: _noFollowFlag,
-    openInfraEnvFile = open,
-    platform = process.platform,
     ...dependencyOverrides
   } = overrides;
-  const mysqlRootPassword = await acquireMysqlRootPassword(
-    options.infraEnvFile,
-    environment,
-    openInfraEnvFile,
-    platform,
-    noFollowFlag,
-  );
   const evidencePath = await validateEvidenceTarget(options.root, options.evidencePath);
   const matrixSource = await readFile(options.matrixPath, "utf8");
   const manifestSource = await readFile(options.manifestPath, "utf8");
@@ -664,7 +570,7 @@ async function runCompatibility(options, overrides = {}, control = {}) {
       exitCode = 2;
     } else {
       lease = await dependencies.acquireLease({ root: options.root, services: evidence.services });
-      await dependencies.provisionScope({ lease, mysqlRootPassword });
+      await dependencies.provisionScope({ lease });
       scopeFile = await writeLeaseFile(options.root, lease);
       for (const scenario of matrix.runtimeGate.scenarios) {
         const result = validateScenarioResult(
@@ -729,7 +635,6 @@ async function runCompatibility(options, overrides = {}, control = {}) {
             runId: lease.runId,
             leaseToken: lease.leaseToken,
             endpointFingerprint: lease.endpointFingerprint,
-            mysqlRootPassword,
           });
         } catch {
           leaseCleanupFailed = true;

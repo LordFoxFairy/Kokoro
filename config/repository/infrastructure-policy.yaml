@@ -14,12 +14,13 @@
     "defaultResourcePrefixTemplate": "kokoro-infra-{scope}"
   },
   "profiles": {
-    "platform": ["mysql", "postgres"],
+    "platform": ["postgres"],
+    "mysql-compat": ["mysql"],
     "postgres-transition": ["postgres"],
     "runtime": ["redis", "mongo"],
     "storage": ["minio"],
     "model": ["litellm"],
-    "full": ["mysql", "postgres", "redis", "mongo", "minio", "litellm"]
+    "full": ["postgres", "redis", "mongo", "minio", "litellm"]
   },
   "databaseAuthority": {
     "phase": "postgres-primary",

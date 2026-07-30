@@ -65,7 +65,7 @@
   {
    "id": "platform-admin-auth",
    "version": 1,
-   "artifactDigest": "e4c0f68e5891c9f83a26b8a6c74552931f5d6d6c559c3d35a036aa3e53f90267",
+   "artifactDigest": "b1910b839161af1e65ec36edc004efd7379334786e1950d816e7a15140d14bde",
    "providers": [
     "kokoro-platform"
    ],
@@ -82,7 +82,6 @@
  "runtimeGate": {
   "schemaVersion": 1,
   "requiredServices": [
-   "mysql",
    "postgres",
    "redis",
    "mongo",
