@@ -318,6 +318,32 @@ message CompleteStepUpResponse {
   }];
   google.protobuf.Timestamp step_up_at = 2 [(buf.validate.field).required = true];
   kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+  // CompleteStepUp rotates session_epoch. The BFF must atomically replace its prior signed session
+  // facts with this continuation before making another authenticated call; retaining the old epoch
+  // or inventing assurance/attestation values fails closed.
+  uint64 session_epoch = 4 [(buf.validate.field).uint64.gt = 0];
+  kokoro.common.v2.OperatorAssuranceLevel assurance_level = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  repeated string factor_classes = 6 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 16
+    items: {
+      string: {
+        min_len: 1
+        max_len: 64
+      }
+    }
+  }];
+  string operator_attestation_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operator_attestation_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 message SignOutEffect {
