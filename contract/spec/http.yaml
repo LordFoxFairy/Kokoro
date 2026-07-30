@@ -28,6 +28,8 @@ enums:
   session_lifecycle: [active, archived, trashed]
   execution_status: [admission_pending, waiting_prerequisite, running, paused, cancelling, completed, failed, canceled, outcome_unknown]
   cost_status: [none, reserved, committed, cost_pending, settled, released, reconciliation_required]
+  notice_severity: [info, warning]
+  subagent_status: [pending, running, completed, failed, canceled]
   launch_status: [intent_recorded, admission_pending, waiting_prerequisite, reserved, committed, dispatch_pending, dispatched, event_observed, released, denied, outcome_unknown, failed]
   control_status: [pending, persisted, applied, failed, outcome_unknown]
   retry_class: [never, immediate, after_delay, after_user_action, reconcile_receipt]
@@ -35,7 +37,7 @@ enums:
   action_owner_kind: [approval, interaction]
   session_sort: [updated_desc]
   repair_action: [retry_same_cursor, refresh_grant, reauthenticate, refetch_snapshot, upgrade_client, stop, developer_error, wait_or_cancel, fork_new_session, choose_model, wait_prerequisite, remove_attachment, show_reason, reconcile_receipt, poll_or_stream, render_unsupported]
-  message_part_kind: [text, reasoning, citation, tool-call, approval, interaction, plan, job, artifact, cost, notice, error, unsupported]
+  message_part_kind: [text, reasoning-summary, citation, tool-call, approval, interaction, plan, plan-progress, subagent, media-operation, artifact, cost, notice, error, unsupported]
   stable_error_code: [REQUEST_INVALID, PAYLOAD_TOO_LARGE, METHOD_NOT_ALLOWED, UNSUPPORTED_MEDIA_TYPE, BFF_WORKLOAD_REQUIRED, BFF_WORKLOAD_REVOKED, SESSION_ACCESS_GRANT_REQUIRED, SESSION_ACCESS_GRANT_EXPIRED, SESSION_ACCESS_GRANT_REVOKED, SESSION_SCOPE_MISMATCH, SESSION_NOT_FOUND, SESSION_VERSION_CONFLICT, IDEMPOTENCY_CONFLICT, ACTIVE_RUN_EXISTS, CAPABILITY_SNAPSHOT_LOCKED, MODEL_OPTION_UNAVAILABLE, ATTACHMENT_NOT_READY, ATTACHMENT_REVOKED, ADMISSION_DENIED, ADMISSION_OUTCOME_UNKNOWN, LAUNCH_OUTCOME_UNKNOWN, RUN_CANCELLATION_PENDING, RUN_OUTCOME_UNKNOWN, ACTION_NOT_FOUND, ACTION_VERSION_CONFLICT, ACTION_EXPIRED, ACTION_NOT_ALLOWED, ACTION_DECISION_PENDING, PLAN_NOT_FOUND, PLAN_VERSION_CONFLICT, PLAN_EXPIRED, PLAN_DECISION_PENDING, CURSOR_INVALID, CURSOR_CONFLICT, CURSOR_AHEAD, SNAPSHOT_REQUIRED, CURSOR_SCOPE_MISMATCH, STREAM_EPOCH_MISMATCH, CLIENT_CONTRACT_UPGRADE_REQUIRED, PART_SCHEMA_UNSUPPORTED, INTERNAL_UNAVAILABLE]
 
 objects:
@@ -188,9 +190,11 @@ objects:
       - {name: text, type: string}
   - name: TextPartPayload
     fields:
+      - {name: part_ref, type: opaque_ref, optional: true}
       - {name: spans, type: array:object:TextSpan}
   - name: ReasoningPartPayload
     fields:
+      - {name: part_ref, type: opaque_ref}
       - {name: safe_summary, type: string}
   - name: CitationPartPayload
     fields:
@@ -203,10 +207,12 @@ objects:
       # Stable Agent-owned identity used to correlate tool start/finish output records.
       - {name: tool_call_id, type: string_nonempty}
       - {name: tool_label, type: string_nonempty}
-      - {name: input_summary, type: record}
+      - {name: input_summary, type: record, optional: true}
       - {name: status, type: string_nonempty}
       # Bounded/redacted by Agent before browser projection; never raw provider output.
       - {name: safe_result_preview, type: safe_preview, optional: true}
+      - {name: is_error, type: boolean, optional: true}
+      - {name: truncated, type: boolean, optional: true}
       - {name: effect_ref, type: string_nonempty, optional: true}
       - {name: receipt_ref, type: string_nonempty, optional: true}
   - name: ActionPartPayload
@@ -242,11 +248,30 @@ objects:
       - {name: deadline, type: timestamp, optional: true}
       - {name: receipt_ref, type: string_nonempty, optional: true}
       - {name: status, type: string_nonempty}
-  - name: OwnerProjectionPartPayload
+  - name: PlanProgressPartPayload
     fields:
-      - {name: owner_ref, type: string_nonempty}
+      - {name: plan_ref, type: opaque_ref}
+      - {name: safe_summary, type: string_nonempty}
+      - {name: steps, type: array:object:PlanStep}
+  - name: SubagentPartPayload
+    fields:
+      - {name: subagent_ref, type: opaque_ref}
+      - {name: status, type: enum:subagent_status}
+      - {name: safe_summary, type: string, optional: true}
+  - name: MediaOperationPartPayload
+    fields:
+      - {name: media_operation_ref, type: opaque_ref}
+      - {name: capability, type: string_nonempty}
       - {name: status, type: string_nonempty}
       - {name: safe_metadata, type: record}
+      - {name: progress_bps, type: basis_points, optional: true}
+      - {name: artifact_ref, type: opaque_ref, optional: true}
+  - name: ArtifactPartPayload
+    fields:
+      - {name: artifact_ref, type: opaque_ref}
+      - {name: version_ref, type: opaque_ref}
+      - {name: content_type, type: string_nonempty, optional: true}
+      - {name: safe_metadata, type: record, optional: true}
   - name: CostPartPayload
     fields:
       - {name: cost_projection_ref, type: string_nonempty}
@@ -256,8 +281,17 @@ objects:
       - {name: freshness, type: timestamp}
   - name: NoticePartPayload
     fields:
+      - {name: notice_ref, type: opaque_ref}
       - {name: code, type: string_nonempty}
-      - {name: message, type: string_nonempty}
+      - {name: message, type: string}
+      - {name: severity, type: enum:notice_severity}
+      - {name: retry_class, type: enum:retry_class, optional: true}
+      - {name: support_correlation_ref, type: string_nonempty, optional: true}
+  - name: ErrorPartPayload
+    fields:
+      - {name: error_ref, type: opaque_ref}
+      - {name: code, type: string_nonempty}
+      - {name: message, type: string}
       - {name: retry_class, type: enum:retry_class}
       - {name: support_correlation_ref, type: string_nonempty, optional: true}
   - name: UnsupportedPartPayload
@@ -274,17 +308,19 @@ objects:
       - {name: version, type: positive_int}
     variants:
       - {value: text, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:TextPartPayload}
-      - {value: reasoning, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ReasoningPartPayload}
+      - {value: reasoning-summary, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ReasoningPartPayload}
       - {value: citation, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:CitationPartPayload}
       - {value: tool-call, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ToolCallPartPayload}
       - {value: approval, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ActionPartPayload}
       - {value: interaction, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ActionPartPayload}
       - {value: plan, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:PlanPartPayload}
-      - {value: job, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:OwnerProjectionPartPayload}
-      - {value: artifact, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:OwnerProjectionPartPayload}
+      - {value: plan-progress, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:PlanProgressPartPayload}
+      - {value: subagent, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:SubagentPartPayload}
+      - {value: media-operation, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:MediaOperationPartPayload}
+      - {value: artifact, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ArtifactPartPayload}
       - {value: cost, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:CostPartPayload}
       - {value: notice, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:NoticePartPayload}
-      - {value: error, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:NoticePartPayload}
+      - {value: error, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: enum:supported_part_lifecycle}], payload_type: object:ErrorPartPayload}
       - {value: unsupported, fields: [{name: schema_version, type: literal_int:1}, {name: lifecycle, type: literal:unsupported}], payload_type: object:UnsupportedPartPayload}
   - name: AttachmentSafeRef
     fields:

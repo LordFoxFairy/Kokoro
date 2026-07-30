@@ -77,6 +77,7 @@ _ZOD_SCALAR = {
     "int": "z.number().int()",
     "nonnegative_int": "z.number().int().nonnegative()",
     "positive_int": "z.number().int().positive()",
+    "basis_points": "z.number().int().min(0).max(10000)",
     "timestamp": "z.string().datetime({ offset: true })",
     "sha256": 'z.string().regex(/^[0-9a-f]{64}$/u)',
     "uint64_string": 'z.string().regex(/^(0|[1-9][0-9]{0,19})$/u).refine((value) => value.length < 20 || value <= "18446744073709551615")',

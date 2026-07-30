@@ -116,6 +116,17 @@ def test_plan_proposal_raw_contract_is_typed_and_owner_safe() -> None:
 
 def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     http = load("http.yaml")
+    part_kinds = set(http["enums"]["message_part_kind"])
+    assert {"reasoning", "job"}.isdisjoint(part_kinds)
+    assert {
+        "reasoning-summary",
+        "plan-progress",
+        "subagent",
+        "media-operation",
+        "artifact",
+        "notice",
+        "error",
+    }.issubset(part_kinds)
     tool_call = next(obj for obj in http["objects"] if obj["name"] == "ToolCallPartPayload")
     tool_call_fields = {field["name"]: field for field in tool_call["fields"]}
     assert tool_call_fields["tool_call_id"] == {
@@ -127,8 +138,32 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
         "type": "safe_preview",
         "optional": True,
     }
+    assert tool_call_fields["input_summary"].get("optional") is True
+    message_parts = next(
+        obj for obj in http["objects"] if obj["name"] == "MessagePartEnvelope"
+    )
+    payload_by_kind = {
+        variant["value"]: variant["payload_type"]
+        for variant in message_parts["variants"]
+    }
+    assert payload_by_kind["artifact"] == "object:ArtifactPartPayload"
+    assert payload_by_kind["notice"] == "object:NoticePartPayload"
+    assert payload_by_kind["error"] == "object:ErrorPartPayload"
+    assert payload_by_kind["media-operation"] == "object:MediaOperationPartPayload"
+    media_operation = next(
+        obj for obj in http["objects"] if obj["name"] == "MediaOperationPartPayload"
+    )
+    assert {
+        "media_operation_ref",
+        "capability",
+        "status",
+        "safe_metadata",
+        "progress_bps",
+        "artifact_ref",
+    } == {field["name"] for field in media_operation["fields"]}
     generated_browser = _find("kokoro-session/src/contract/http.ts")
     assert "safe_result_preview: z.string().max(16384).optional()" in generated_browser
+    assert "progress_bps: z.number().int().min(0).max(10000).optional()" in generated_browser
     snapshot = next(obj for obj in http["objects"] if obj["name"] == "SessionSnapshot")
     fields = {field["name"]: field for field in snapshot["fields"]}
     assert fields["messages"].get("optional") is not True
