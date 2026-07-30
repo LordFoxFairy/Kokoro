@@ -658,7 +658,7 @@
       "deadlineMs": null,
       "failureOwner": "kokoro-platform",
       "id": "platform-admission",
-      "lifecycle": "contract-only",
+      "lifecycle": "active",
       "operations": [
         {
           "effect": true,
@@ -735,6 +735,61 @@
           "path": "contract/proto/kokoro/platform/admission/v1/admission.proto",
           "select": {
             "service": "AdmissionService"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "internal-workload",
+      "consumers": [
+        {
+          "boundary": "service.session",
+          "repository": "kokoro-session"
+        }
+      ],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-asset-eligibility",
+      "lifecycle": "active",
+      "operations": [
+        {
+          "effect": false,
+          "id": "CheckActive",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "platform",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "ResolveSessionAttachments",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "site",
+          "siteBinding": "request-field",
+          "transport": "connect-rpc"
+        }
+      ],
+      "protocol": "connect-rpc",
+      "provider": {
+        "boundary": "service.platform",
+        "repository": "kokoro-platform"
+      },
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/platform/asset/v1/asset_eligibility.proto",
+          "select": {
+            "service": "AssetEligibilityService"
           }
         }
       ],

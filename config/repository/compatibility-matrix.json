@@ -34,6 +34,26 @@
    ]
   },
   {
+   "id": "platform-admission",
+   "version": 1,
+   "providers": [
+    "kokoro-platform"
+   ],
+   "consumers": [
+    "kokoro-session"
+   ]
+  },
+  {
+   "id": "platform-asset-eligibility",
+   "version": 1,
+   "providers": [
+    "kokoro-platform"
+   ],
+   "consumers": [
+    "kokoro-session"
+   ]
+  },
+  {
    "id": "session-browser",
    "version": 1,
    "providers": [
@@ -108,6 +128,14 @@
     "protocols": [
      {
       "id": "platform-runtime",
+      "version": 1
+     },
+     {
+      "id": "platform-admission",
+      "version": 1
+     },
+     {
+      "id": "platform-asset-eligibility",
       "version": 1
      }
     ],

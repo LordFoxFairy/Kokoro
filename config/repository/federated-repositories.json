@@ -67,6 +67,16 @@
           "role": "provider"
         },
         {
+          "id": "platform-admission",
+          "version": 1,
+          "role": "provider"
+        },
+        {
+          "id": "platform-asset-eligibility",
+          "version": 1,
+          "role": "provider"
+        },
+        {
           "id": "platform-admin-auth",
           "version": 1,
           "role": "provider"
@@ -109,6 +119,16 @@
         },
         {
           "id": "platform-runtime",
+          "version": 1,
+          "role": "consumer"
+        },
+        {
+          "id": "platform-admission",
+          "version": 1,
+          "role": "consumer"
+        },
+        {
+          "id": "platform-asset-eligibility",
           "version": 1,
           "role": "consumer"
         },
