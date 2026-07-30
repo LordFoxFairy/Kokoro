@@ -628,25 +628,15 @@
       "version": 2
     },
     {
-      "audience": "operator-and-platform-worker",
+      "audience": "operator",
       "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
       "deadlineMs": null,
       "failureOwner": "kokoro-platform",
       "id": "platform-site-lifecycle",
       "lifecycle": "contract-only",
       "operations": [
-        {"effect": true, "id": "RequestSite", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetProvisioningReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetProvisioningReceipt", "receipt": null, "retryClass": "after_delay", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
-        {"effect": true, "id": "ReconcileProvisioning", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "CreateRelease", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "ActivateRelease", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetActivationReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetActivationReceipt", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "SuspendSite", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "ResumeSite", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetActivationReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "PlanDecommission", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "CancelDecommission", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "ExecuteDecommission", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetDecommissionReceipt", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+        {"effect": true, "id": "RequestActivationApproval", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "ApproveAndActivate", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},

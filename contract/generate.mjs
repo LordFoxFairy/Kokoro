@@ -982,24 +982,10 @@ export function decideApprovalRequestDigest(
 function siteLifecycleDigestSource() {
   return `${authenticatedCommandDigestSource()}
 import {
-  ActivateReleaseEffectSchema,
-  CancelDecommissionEffectSchema,
-  CreateReleaseEffectSchema,
-  ExecuteDecommissionEffectSchema,
-  PlanDecommissionEffectSchema,
-  ReconcileProvisioningEffectSchema,
-  RequestSiteEffectSchema,
-  ResumeSiteEffectSchema,
-  SuspendSiteEffectSchema,
-  type ActivateReleaseEffect,
-  type CancelDecommissionEffect,
-  type CreateReleaseEffect,
-  type ExecuteDecommissionEffect,
-  type PlanDecommissionEffect,
-  type ReconcileProvisioningEffect,
-  type RequestSiteEffect,
-  type ResumeSiteEffect,
-  type SuspendSiteEffect,
+  ApproveAndActivateEffectSchema,
+  RequestActivationApprovalEffectSchema,
+  type ApproveAndActivateEffect,
+  type RequestActivationApprovalEffect,
 } from "./kokoro/platform/site/v1/site_lifecycle_pb.js";
 
 function siteDigest(
@@ -1012,109 +998,34 @@ function siteDigest(
   return authenticatedEnvelope("platform-site-lifecycle@v1", operation, context, effect, targetRefs, verified);
 }
 
-export function requestSiteRequestDigest(
-  context: AuthenticatedOperatorCommandContext,
-  effect: RequestSiteEffect,
+export function requestActivationApprovalRequestDigest(
+  context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: RequestActivationApprovalEffect,
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
+  if (effect.activation === undefined) throw new Error("site_activation_facts_required");
   return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/RequestSite", context,
-    { typeName: RequestSiteEffectSchema.typeName, bytes: toBinary(RequestSiteEffectSchema, effect, { writeUnknownFields: false }) },
-    [effect.siteKey, effect.profileRef, effect.primaryDomain], verified,
+    "kokoro.platform.site.v1.SiteLifecycleService/RequestActivationApproval", context,
+    { typeName: RequestActivationApprovalEffectSchema.typeName, bytes: toBinary(RequestActivationApprovalEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId, effect.approvalRef, effect.activation.candidateReleaseRef,
+      ...(effect.activation.expectedActiveReleaseRef === undefined ? [] : [effect.activation.expectedActiveReleaseRef])],
+    verified,
   );
 }
 
-export function reconcileProvisioningRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: ReconcileProvisioningEffect,
+export function approveAndActivateRequestDigest(
+  context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: ApproveAndActivateEffect,
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
+  if (effect.activation === undefined) throw new Error("site_activation_facts_required");
   return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/ReconcileProvisioning", context,
-    { typeName: ReconcileProvisioningEffectSchema.typeName, bytes: toBinary(ReconcileProvisioningEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.provisioningIntentRef], verified,
-  );
-}
-
-export function createReleaseRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: CreateReleaseEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/CreateRelease", context,
-    { typeName: CreateReleaseEffectSchema.typeName, bytes: toBinary(CreateReleaseEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.sourceRevision, effect.deploymentManifestRef], verified,
-  );
-}
-
-export function activateReleaseRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: ActivateReleaseEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/ActivateRelease", context,
-    { typeName: ActivateReleaseEffectSchema.typeName, bytes: toBinary(ActivateReleaseEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.releaseRef, ...(effect.expectedActiveReleaseRef === undefined ? [] : [effect.expectedActiveReleaseRef])], verified,
-  );
-}
-
-export function suspendSiteRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: SuspendSiteEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/SuspendSite", context,
-    { typeName: SuspendSiteEffectSchema.typeName, bytes: toBinary(SuspendSiteEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.suspensionPolicyRef], verified,
-  );
-}
-
-export function resumeSiteRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: ResumeSiteEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/ResumeSite", context,
-    { typeName: ResumeSiteEffectSchema.typeName, bytes: toBinary(ResumeSiteEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.suspensionReceiptRef], verified,
-  );
-}
-
-export function planDecommissionRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: PlanDecommissionEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  const participants = uniqueSorted("effect.requiredParticipantRef", effect.requiredParticipantRefs);
-  const canonicalEffect = create(PlanDecommissionEffectSchema, {
-    earliestExecutionAt: effect.earliestExecutionAt,
-    requiredParticipantRefs: participants,
-    retentionPolicyRef: effect.retentionPolicyRef,
-  });
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/PlanDecommission", context,
-    { typeName: PlanDecommissionEffectSchema.typeName, bytes: toBinary(PlanDecommissionEffectSchema, canonicalEffect, { writeUnknownFields: false }) },
-    [siteId, effect.retentionPolicyRef, ...participants], verified,
-  );
-}
-
-export function cancelDecommissionRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: CancelDecommissionEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/CancelDecommission", context,
-    { typeName: CancelDecommissionEffectSchema.typeName, bytes: toBinary(CancelDecommissionEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.decommissionPlanRef], verified,
-  );
-}
-
-export function executeDecommissionRequestDigest(
-  context: AuthenticatedOperatorCommandContext, siteId: string, effect: ExecuteDecommissionEffect,
-  verified: VerifiedAuthenticatedAdminAxes,
-): string {
-  return siteDigest(
-    "kokoro.platform.site.v1.SiteLifecycleService/ExecuteDecommission", context,
-    { typeName: ExecuteDecommissionEffectSchema.typeName, bytes: toBinary(ExecuteDecommissionEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.decommissionPlanRef, effect.approvalRef], verified,
+    "kokoro.platform.site.v1.SiteLifecycleService/ApproveAndActivate", context,
+    { typeName: ApproveAndActivateEffectSchema.typeName, bytes: toBinary(ApproveAndActivateEffectSchema, effect, { writeUnknownFields: false }) },
+    [siteId, effect.approvalRef, effect.activationAttemptRef,
+      effect.activation.candidateReleaseRef,
+      ...(effect.activation.expectedActiveReleaseRef === undefined ? [] : [effect.activation.expectedActiveReleaseRef])],
+    verified,
   );
 }
 `;

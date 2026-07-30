@@ -7,423 +7,116 @@ import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
 
-// SiteLifecycleService is the only privileged API for Site and release transitions.
+// SiteLifecycleService exposes only Site owner operations implemented by the
+// production Platform control plane. Domain effects never pass through the
+// generic AdminCommandService.
 service SiteLifecycleService {
-  rpc RequestSite(RequestSiteRequest) returns (RequestSiteResponse) {}
-  rpc GetProvisioningReceipt(GetProvisioningReceiptRequest) returns (GetProvisioningReceiptResponse) {}
-  rpc ReconcileProvisioning(ReconcileProvisioningRequest) returns (ReconcileProvisioningResponse) {}
-  rpc CreateRelease(CreateReleaseRequest) returns (CreateReleaseResponse) {}
-  rpc ActivateRelease(ActivateReleaseRequest) returns (ActivateReleaseResponse) {}
-  rpc GetActivationReceipt(GetActivationReceiptRequest) returns (GetActivationReceiptResponse) {}
-  rpc SuspendSite(SuspendSiteRequest) returns (SuspendSiteResponse) {}
-  rpc ResumeSite(ResumeSiteRequest) returns (ResumeSiteResponse) {}
-  rpc PlanDecommission(PlanDecommissionRequest) returns (PlanDecommissionResponse) {}
-  rpc CancelDecommission(CancelDecommissionRequest) returns (CancelDecommissionResponse) {}
-  rpc ExecuteDecommission(ExecuteDecommissionRequest) returns (ExecuteDecommissionResponse) {}
-  rpc GetDecommissionReceipt(GetDecommissionReceiptRequest) returns (GetDecommissionReceiptResponse) {}
+  rpc RequestActivationApproval(RequestActivationApprovalRequest) returns (RequestActivationApprovalResponse) {}
+  rpc ApproveAndActivate(ApproveAndActivateRequest) returns (ApproveAndActivateResponse) {}
 }
 
-message RequestSiteEffect {
-  string site_key = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string profile_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string primary_domain = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 253
-  }];
-  string source_repository_ref = 4 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 512
-  }];
-}
-
-message RequestSiteRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  RequestSiteEffect effect = 2 [(buf.validate.field).required = true];
-}
-
-message RequestSiteResponse {
-  string site_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string provisioning_intent_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
-}
-
-enum ProvisioningPhase {
-  PROVISIONING_PHASE_UNSPECIFIED = 0;
-  PROVISIONING_PHASE_REQUESTED = 1;
-  PROVISIONING_PHASE_APPROVED = 2;
-  PROVISIONING_PHASE_PROVISIONING = 3;
-  PROVISIONING_PHASE_CONFIGURING = 4;
-  PROVISIONING_PHASE_PREVIEW_READY = 5;
-  PROVISIONING_PHASE_ACTIVE = 6;
-  PROVISIONING_PHASE_FAILED = 7;
-  PROVISIONING_PHASE_DECOMMISSIONING = 8;
-}
-
-message GetProvisioningReceiptRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string command_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 3 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  string request_digest = 4 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-}
-
-message GetProvisioningReceiptResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
-  string site_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string provisioning_intent_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  ProvisioningPhase phase = 4 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  optional string last_observation_ref = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-}
-
-message ReconcileProvisioningEffect {
-  string provisioning_intent_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string observed_state_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-}
-
-message ReconcileProvisioningRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  ReconcileProvisioningEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message ReconcileProvisioningResponse {
-  string site_status = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 64
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-message CreateReleaseEffect {
-  string source_revision = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string artifact_digest = 2 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-  string contract_digest = 3 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-  string deployment_manifest_ref = 4 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-}
-
-message CreateReleaseRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  CreateReleaseEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message CreateReleaseResponse {
-  string release_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-message ActivateReleaseEffect {
-  string release_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
+message ActivationFacts {
+  string candidate_release_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
   optional string expected_active_release_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
+    min_len: 3
     max_len: 128
   }];
-}
-
-message ActivateReleaseRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
+  string audience = 3 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
-  ActivateReleaseEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message ActivateReleaseResponse {
-  string activation_attempt_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
+  string session_contract_revision = 4 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-enum ActivationPhase {
-  ACTIVATION_PHASE_UNSPECIFIED = 0;
-  ACTIVATION_PHASE_PREPARING = 1;
-  ACTIVATION_PHASE_PROMOTE_REQUESTED = 2;
-  ACTIVATION_PHASE_OBSERVING = 3;
-  ACTIVATION_PHASE_POINTER_COMMITTING = 4;
-  ACTIVATION_PHASE_DRAINING = 5;
-  ACTIVATION_PHASE_SUCCEEDED = 6;
-  ACTIVATION_PHASE_FAILED = 7;
-  ACTIVATION_PHASE_OUTCOME_UNKNOWN = 8;
-}
-
-message GetActivationReceiptRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string command_id = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 4 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  string request_digest = 5 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-}
-
-message GetActivationReceiptResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
-  string activation_attempt_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string target_release_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  ActivationPhase phase = 4 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  optional string active_release_ref = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  optional string previous_release_ref = 6 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  optional string last_observation_ref = 7 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-}
-
-message SuspendSiteEffect {
-  string reason_code = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string suspension_policy_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-}
-
-message SuspendSiteRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  SuspendSiteEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message SuspendSiteResponse {
-  uint64 site_security_epoch = 1;
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-message ResumeSiteEffect {
-  string suspension_receipt_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string reason = 2 [(buf.validate.field).string = {
-    min_len: 1
+  string reason = 5 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 512
   }];
 }
 
-message ResumeSiteRequest {
+message RequestActivationApprovalEffect {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  ActivationFacts activation = 2 [(buf.validate.field).required = true];
+}
+
+message RequestActivationApprovalRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
+    min_len: 3
     max_len: 128
   }];
-  ResumeSiteEffect effect = 3 [(buf.validate.field).required = true];
+  RequestActivationApprovalEffect effect = 3 [(buf.validate.field).required = true];
 }
 
-message ResumeSiteResponse {
-  uint64 site_security_epoch = 1;
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-  string activation_attempt_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
+enum SiteEffectApprovalState {
+  SITE_EFFECT_APPROVAL_STATE_UNSPECIFIED = 0;
+  SITE_EFFECT_APPROVAL_STATE_PENDING = 1;
+  SITE_EFFECT_APPROVAL_STATE_APPROVED = 2;
+  SITE_EFFECT_APPROVAL_STATE_CONSUMED = 3;
+}
+
+message RequestActivationApprovalResponse {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
+  SiteEffectApprovalState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
 }
 
-message PlanDecommissionEffect {
-  google.protobuf.Timestamp earliest_execution_at = 1 [(buf.validate.field).required = true];
-  repeated string required_participant_refs = 2 [(buf.validate.field).repeated = {
-    min_items: 1
-    max_items: 100
-    items: {
-      string: {
-        min_len: 1
-        max_len: 128
-      }
-    }
-  }];
-  string retention_policy_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
+message ApproveAndActivateEffect {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
+  string activation_attempt_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  ActivationFacts activation = 3 [(buf.validate.field).required = true];
 }
 
-message PlanDecommissionRequest {
+message ApproveAndActivateRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
+    min_len: 3
     max_len: 128
   }];
-  PlanDecommissionEffect effect = 3 [(buf.validate.field).required = true];
+  ApproveAndActivateEffect effect = 3 [(buf.validate.field).required = true];
 }
 
-message PlanDecommissionResponse {
-  string decommission_plan_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  uint64 participant_epoch = 2;
-  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+enum SiteActivationState {
+  SITE_ACTIVATION_STATE_UNSPECIFIED = 0;
+  SITE_ACTIVATION_STATE_PREPARING = 1;
+  SITE_ACTIVATION_STATE_PROMOTE_REQUESTED = 2;
+  SITE_ACTIVATION_STATE_OBSERVING = 3;
+  SITE_ACTIVATION_STATE_POINTER_COMMITTING = 4;
+  SITE_ACTIVATION_STATE_DRAINING = 5;
+  SITE_ACTIVATION_STATE_SUCCEEDED = 6;
+  SITE_ACTIVATION_STATE_FAILED = 7;
+  SITE_ACTIVATION_STATE_OUTCOME_UNKNOWN = 8;
 }
 
-message CancelDecommissionEffect {
-  string decommission_plan_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
+message ApproveAndActivateResponse {
+  string activation_attempt_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
     max_len: 128
   }];
-  uint64 expected_participant_epoch = 2;
-}
-
-message CancelDecommissionRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
+  SiteActivationState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
   }];
-  CancelDecommissionEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message CancelDecommissionResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
-}
-
-message ExecuteDecommissionEffect {
-  string decommission_plan_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  uint64 expected_participant_epoch = 2;
-  string approval_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-}
-
-message ExecuteDecommissionRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  ExecuteDecommissionEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-message ExecuteDecommissionResponse {
-  string decommission_receipt_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  kokoro.common.v2.CommandReceiptV2 receipt = 2 [(buf.validate.field).required = true];
-}
-
-message GetDecommissionReceiptRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string decommission_receipt_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-}
-
-message GetDecommissionReceiptResponse {
-  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
-  string phase = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 64
-  }];
-  repeated string pending_participant_refs = 3 [(buf.validate.field).repeated = {
-    max_items: 100
-    items: {
-      string: {
-        min_len: 1
-        max_len: 256
-      }
-    }
-  }];
+  bool replayed = 3;
+  kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
 }

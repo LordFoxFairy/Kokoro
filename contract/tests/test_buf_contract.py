@@ -429,18 +429,8 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
         "GetReceipt",
     ]
     assert _service_methods(lifecycle, "SiteLifecycleService") == [
-        "RequestSite",
-        "GetProvisioningReceipt",
-        "ReconcileProvisioning",
-        "CreateRelease",
-        "ActivateRelease",
-        "GetActivationReceipt",
-        "SuspendSite",
-        "ResumeSite",
-        "PlanDecommission",
-        "CancelDecommission",
-        "ExecuteDecommission",
-        "GetDecommissionReceipt",
+        "RequestActivationApproval",
+        "ApproveAndActivate",
     ]
     assert "service " not in shared
     assert "AdminCommandService" not in query
@@ -605,15 +595,7 @@ def test_site_lifecycle_is_typed_and_not_a_generic_admin_effect() -> None:
         assert forbidden not in control
     assert "bytes payload" not in control
     assert "string operation" not in control
-    for effect in (
-        "RequestSiteEffect",
-        "CreateReleaseEffect",
-        "ActivateReleaseEffect",
-        "SuspendSiteEffect",
-        "ResumeSiteEffect",
-        "PlanDecommissionEffect",
-        "ExecuteDecommissionEffect",
-    ):
+    for effect in ("ActivationFacts", "RequestActivationApprovalEffect", "ApproveAndActivateEffect"):
         assert f"message {effect}" in lifecycle
 
 
@@ -1991,21 +1973,13 @@ def test_wave1_required_reference_fields_reject_empty_values() -> None:
         (query, "SiteSummary"): ("site_ref",),
         (query, "UserSummary"): ("user_ref",),
         (query, "AuditRecord"): ("audit_ref",),
-        (lifecycle, "RequestSiteResponse"): (
-            "site_ref",
-            "provisioning_intent_ref",
-        ),
-        (lifecycle, "CreateReleaseResponse"): ("release_ref",),
-        (lifecycle, "ActivateReleaseResponse"): ("activation_attempt_ref",),
-        (lifecycle, "PlanDecommissionResponse"): ("decommission_plan_ref",),
-        (lifecycle, "ExecuteDecommissionResponse"): (
-            "decommission_receipt_ref",
-        ),
+        (lifecycle, "RequestActivationApprovalResponse"): ("approval_ref",),
+        (lifecycle, "ApproveAndActivateResponse"): ("activation_attempt_ref",),
     }
     for (source, message), fields in required_refs.items():
         body = _message_body(source, message)
         for field in fields:
-            assert re.search(rf"string {field}.*?min_len: 1", body, re.DOTALL)
+            assert re.search(rf"string {field}.*?min_len: [1-9]", body, re.DOTALL)
 
 
 def test_wave1_query_and_lifecycle_outputs_reject_empty_sentinels() -> None:
@@ -2029,37 +2003,27 @@ def test_wave1_query_and_lifecycle_outputs_reject_empty_sentinels() -> None:
         if "page_token" in body:
             assert re.search(r"optional string .*page_token.*?min_len: 1", body, re.DOTALL)
 
-    assert re.search(
-        r"string site_status.*?min_len: 1",
-        _message_body(lifecycle, "ReconcileProvisioningResponse"),
-        re.DOTALL,
-    )
-    activate = _message_body(lifecycle, "ActivateReleaseEffect")
+    activate = _message_body(lifecycle, "ActivationFacts")
     assert "optional string expected_active_release_ref" in activate
-    assert re.search(r"expected_active_release_ref.*?min_len: 1", activate, re.DOTALL)
-    decommission = _message_body(lifecycle, "GetDecommissionReceiptResponse")
-    assert re.search(r"string phase.*?min_len: 1", decommission, re.DOTALL)
-    assert re.search(
-        r"pending_participant_refs.*?items:.*?min_len: 1",
-        decommission,
-        re.DOTALL,
-    )
+    assert re.search(r"expected_active_release_ref.*?min_len: [1-9]", activate, re.DOTALL)
+    assert re.search(r"string reason.*?min_len: 3", activate, re.DOTALL)
 
 
-def test_site_lifecycle_durable_intents_have_typed_receipt_reads() -> None:
+def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
-
-    for prefix in ("Provisioning", "Activation"):
-        request = _message_body(lifecycle, f"Get{prefix}ReceiptRequest")
-        response = _message_body(lifecycle, f"Get{prefix}ReceiptResponse")
-        assert "AuthenticatedOperatorQueryContext context" in request
-        for field in ("command_id", "digest_algorithm", "request_digest"):
-            assert field in request
-        assert "kokoro.common.v2.CommandReceiptV2 receipt" in response
-        assert f"{prefix}Phase phase" in response
-        enum = _enum_body(lifecycle, f"{prefix}Phase")
-        assert "_UNSPECIFIED = 0" in enum
-        assert len(re.findall(r"= \d+;", enum)) >= 5
-
-    resume = _message_body(lifecycle, "ResumeSiteResponse")
-    assert re.search(r"string activation_attempt_ref.*?min_len: 1", resume, re.DOTALL)
+    facts = _message_body(lifecycle, "ActivationFacts")
+    for field in (
+        "candidate_release_ref",
+        "expected_active_release_ref",
+        "audience",
+        "session_contract_revision",
+        "reason",
+    ):
+        assert field in facts
+    for message in ("RequestActivationApprovalEffect", "ApproveAndActivateEffect"):
+        body = _message_body(lifecycle, message)
+        assert "string approval_ref" in body
+        assert "ActivationFacts activation" in body
+    assert "string activation_attempt_ref" in _message_body(
+        lifecycle, "ApproveAndActivateEffect"
+    )

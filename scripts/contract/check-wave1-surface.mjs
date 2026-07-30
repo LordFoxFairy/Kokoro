@@ -76,20 +76,7 @@ const PRIVILEGED = Object.freeze({
     path: "contract/proto/kokoro/platform/site/v1/site_lifecycle.proto",
     service: "SiteLifecycleService",
     version: 1,
-    methods: [
-      "RequestSite",
-      "GetProvisioningReceipt",
-      "ReconcileProvisioning",
-      "CreateRelease",
-      "ActivateRelease",
-      "GetActivationReceipt",
-      "SuspendSite",
-      "ResumeSite",
-      "PlanDecommission",
-      "CancelDecommission",
-      "ExecuteDecommission",
-      "GetDecommissionReceipt",
-    ],
+    methods: ["RequestActivationApproval", "ApproveAndActivate"],
   },
 });
 

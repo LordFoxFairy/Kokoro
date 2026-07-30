@@ -590,7 +590,6 @@ def test_command_envelope_v2_is_frozen_in_the_common_proto() -> None:
         assert "kokoro.common.v1.CommandIdentity" not in source
         assert "kokoro.common.v1.CommandReceipt" not in source
 
-
 def _proto_message(source: str, message: str) -> str:
     marker = f"message {message} {{"
     start = source.index(marker) + len(marker)
@@ -845,20 +844,13 @@ console.log(JSON.stringify({
         (
             "platform-site-lifecycle@v1",
             [
-                "requestSiteRequestDigest",
-                "reconcileProvisioningRequestDigest",
-                "createReleaseRequestDigest",
-                "activateReleaseRequestDigest",
-                "suspendSiteRequestDigest",
-                "resumeSiteRequestDigest",
-                "planDecommissionRequestDigest",
-                "cancelDecommissionRequestDigest",
-                "executeDecommissionRequestDigest",
+                "requestActivationApprovalRequestDigest",
+                "approveAndActivateRequestDigest",
             ],
             r'''
 import { create } from "@bufbuild/protobuf";
 import {
-  planDecommissionRequestDigest,
+  requestActivationApprovalRequestDigest,
 } from "./bundle/command-envelope-digest.js";
 import {
   CommandDigestAlgorithmV2,
@@ -871,7 +863,10 @@ import {
   SecurityEpochsSchema,
   SiteScopeSchema,
 } from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
-import { PlanDecommissionEffectSchema } from "./bundle/kokoro/platform/site/v1/site_lifecycle_pb.js";
+import {
+  ActivationFactsSchema,
+  RequestActivationApprovalEffectSchema,
+} from "./bundle/kokoro/platform/site/v1/site_lifecycle_pb.js";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 
 const command = create(CommandIdentityV2Schema, {
@@ -901,10 +896,14 @@ const context = create(AuthenticatedOperatorCommandContextSchema, {
     kind: { case: "site", value: create(SiteScopeSchema, { siteIds: ["site:alpha"], environment: "production", region: "us-east-1" }) },
   }),
 });
-const makeEffect = (participants: string[]) => create(PlanDecommissionEffectSchema, {
-  earliestExecutionAt: timestampFromDate(new Date("2027-01-01T00:00:00Z")),
-  requiredParticipantRefs: participants,
-  retentionPolicyRef: "retention:standard",
+const makeEffect = (reason: string) => create(RequestActivationApprovalEffectSchema, {
+  approvalRef: "approval:1",
+  activation: create(ActivationFactsSchema, {
+    candidateReleaseRef: "release:7",
+    audience: "kokoro-session",
+    sessionContractRevision: "session-v7",
+    reason,
+  }),
 });
 const verified = {
   workloadIdentityRef: "workload:web-admin",
@@ -922,10 +921,10 @@ const verified = {
   operatorAttestationRef: "attestation:operator:7:12",
   operatorAttestationDigest: "a".repeat(64),
 } as const;
-const golden = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["billing", "storage"]), verified);
-const stable = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["storage", "billing"]), verified);
-const changedSite = planDecommissionRequestDigest(context, "site:beta", makeEffect(["billing", "storage"]), verified);
-const changedEffect = planDecommissionRequestDigest(context, "site:alpha", makeEffect(["billing", "search"]), verified);
+const golden = requestActivationApprovalRequestDigest(context, "site:alpha", makeEffect("launch approved"), verified);
+const stable = requestActivationApprovalRequestDigest(context, "site:alpha", makeEffect("launch approved"), verified);
+const changedSite = requestActivationApprovalRequestDigest(context, "site:beta", makeEffect("launch approved"), verified);
+const changedEffect = requestActivationApprovalRequestDigest(context, "site:alpha", makeEffect("different reason"), verified);
 console.log(JSON.stringify({ golden, stable, changedSite, changedEffect }));
 ''',
         ),
