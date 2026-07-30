@@ -505,6 +505,39 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
     assert "string action" not in commerce
 
 
+def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields() -> None:
+    credit = _proto("kokoro/platform/credit/v1/admin_credit.proto")
+
+    assert _service_methods(credit, "AdminCreditService") == [
+        "GetSiteCreditSummary",
+        "ListCreditAccounts",
+        "GetCreditAccount",
+        "ListCreditGrants",
+        "ListCreditHolds",
+        "ListCreditJournalTransactions",
+        "ListCreditJournalEntries",
+        "ListRatedUsage",
+    ]
+    assert "AuthenticatedOperatorQueryContext context" in credit
+    assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
+    assert "google.protobuf.Timestamp as_of" in _message_body(credit, "SiteCreditSummary")
+    for message in (
+        "CreditBalanceSummary",
+        "CreditGrantSummary",
+        "CreditHoldSummary",
+        "CreditJournalEntrySummary",
+        "RatedUsageSummary",
+    ):
+        assert "string" in _message_body(credit, message)
+    assert "google.protobuf.Struct" not in credit
+    assert "bytes raw" not in credit
+    assert "provider_payload" not in credit
+    assert "evidence_payload" not in credit
+    assert "rating_snapshot" not in credit
+    assert "liability_merchant_account_ref" not in credit
+    assert "CommandReceipt" not in credit
+
+
 def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
     identity = _proto("kokoro/platform/identity/v1/admin_identity.proto")
     shared = _proto("kokoro/platform/admin/v2/admin_shared.proto")

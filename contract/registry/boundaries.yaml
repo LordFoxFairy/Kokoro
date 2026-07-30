@@ -477,6 +477,33 @@
     },
     {
       "audience": "operator",
+      "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-admin-credit",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": false, "id": "GetSiteCreditSummary", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditAccounts", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetCreditAccount", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditGrants", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditHolds", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditJournalTransactions", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListCreditJournalEntries", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": false, "id": "ListRatedUsage", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/credit/v1/admin_credit.proto", "select": {"service": "AdminCreditService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "privileged-control",
+      "version": 1
+    },
+    {
+      "audience": "operator",
       "consumers": [
         {
           "boundary": "web.admin",

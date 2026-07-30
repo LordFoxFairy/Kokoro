@@ -82,6 +82,18 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: "admin-commerce",
   }),
+  "platform-admin-credit@v1": Object.freeze({
+    schema: "kokoro.platform.credit.v1.AdminCreditService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/credit/v1/admin_credit.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/credit/v1/admin_credit.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-site-lifecycle@v1": Object.freeze({
     schema: "kokoro.platform.site.v1.SiteLifecycleService",
     version: 1,

@@ -399,6 +399,7 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         "platform-admin-query@v2",
         "platform-admin-command@v2",
         "platform-admin-commerce@v1",
+        "platform-admin-credit@v1",
         "platform-site-lifecycle@v1",
         "platform-admission@v1",
         "platform-session-authorization@v2",

@@ -1,0 +1,532 @@
+syntax = "proto3";
+
+package kokoro.platform.credit.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+
+// AdminCreditService is the typed, read-only operator view over Credit authority facts.
+service AdminCreditService {
+  rpc GetSiteCreditSummary(GetSiteCreditSummaryRequest) returns (GetSiteCreditSummaryResponse) {}
+  rpc ListCreditAccounts(ListCreditAccountsRequest) returns (ListCreditAccountsResponse) {}
+  rpc GetCreditAccount(GetCreditAccountRequest) returns (GetCreditAccountResponse) {}
+  rpc ListCreditGrants(ListCreditGrantsRequest) returns (ListCreditGrantsResponse) {}
+  rpc ListCreditHolds(ListCreditHoldsRequest) returns (ListCreditHoldsResponse) {}
+  rpc ListCreditJournalTransactions(ListCreditJournalTransactionsRequest) returns (ListCreditJournalTransactionsResponse) {}
+  rpc ListCreditJournalEntries(ListCreditJournalEntriesRequest) returns (ListCreditJournalEntriesResponse) {}
+  rpc ListRatedUsage(ListRatedUsageRequest) returns (ListRatedUsageResponse) {}
+}
+
+enum CreditReadFreshness {
+  CREDIT_READ_FRESHNESS_UNSPECIFIED = 0;
+  CREDIT_READ_FRESHNESS_AUTHORITATIVE_TRANSACTION_SNAPSHOT = 1;
+}
+
+enum CreditAccountState {
+  CREDIT_ACCOUNT_STATE_UNSPECIFIED = 0;
+  CREDIT_ACCOUNT_STATE_ACTIVE = 1;
+  CREDIT_ACCOUNT_STATE_SUSPENDED = 2;
+  CREDIT_ACCOUNT_STATE_CLOSED = 3;
+}
+
+enum CreditBucketClass {
+  CREDIT_BUCKET_CLASS_UNSPECIFIED = 0;
+  CREDIT_BUCKET_CLASS_DAILY = 1;
+  CREDIT_BUCKET_CLASS_PERIOD = 2;
+  CREDIT_BUCKET_CLASS_PERMANENT = 3;
+}
+
+enum CreditGrantSourceType {
+  CREDIT_GRANT_SOURCE_TYPE_UNSPECIFIED = 0;
+  CREDIT_GRANT_SOURCE_TYPE_REDEMPTION = 1;
+  CREDIT_GRANT_SOURCE_TYPE_PAYMENT = 2;
+  CREDIT_GRANT_SOURCE_TYPE_ADMIN_GRANT = 3;
+  CREDIT_GRANT_SOURCE_TYPE_PROGRAM_WINDOW = 4;
+}
+
+enum CreditHoldState {
+  CREDIT_HOLD_STATE_UNSPECIFIED = 0;
+  CREDIT_HOLD_STATE_OPEN = 1;
+  CREDIT_HOLD_STATE_CLOSING = 2;
+  CREDIT_HOLD_STATE_SETTLED = 3;
+  CREDIT_HOLD_STATE_RELEASED = 4;
+  CREDIT_HOLD_STATE_EXPIRED = 5;
+  CREDIT_HOLD_STATE_RECONCILIATION_REQUIRED = 6;
+}
+
+enum CreditHoldResolutionKind {
+  CREDIT_HOLD_RESOLUTION_KIND_UNSPECIFIED = 0;
+  CREDIT_HOLD_RESOLUTION_KIND_RESERVATION_EXPIRY = 1;
+  CREDIT_HOLD_RESOLUTION_KIND_KNOWN_OUTCOME = 2;
+  CREDIT_HOLD_RESOLUTION_KIND_RECONCILED = 3;
+}
+
+enum CreditJournalOperationKind {
+  CREDIT_JOURNAL_OPERATION_KIND_UNSPECIFIED = 0;
+  CREDIT_JOURNAL_OPERATION_KIND_GRANT_ISSUE = 1;
+  CREDIT_JOURNAL_OPERATION_KIND_HOLD_RESERVE = 2;
+  CREDIT_JOURNAL_OPERATION_KIND_HOLD_CAPTURE = 3;
+  CREDIT_JOURNAL_OPERATION_KIND_HOLD_RELEASE = 4;
+  CREDIT_JOURNAL_OPERATION_KIND_GRANT_EXPIRE = 5;
+  CREDIT_JOURNAL_OPERATION_KIND_GRANT_REVOKE = 6;
+  CREDIT_JOURNAL_OPERATION_KIND_CORRECTION = 7;
+  CREDIT_JOURNAL_OPERATION_KIND_REVERSAL = 8;
+}
+
+enum CreditJournalEntrySide {
+  CREDIT_JOURNAL_ENTRY_SIDE_UNSPECIFIED = 0;
+  CREDIT_JOURNAL_ENTRY_SIDE_DEBIT = 1;
+  CREDIT_JOURNAL_ENTRY_SIDE_CREDIT = 2;
+}
+
+enum CreditJournalAccountType {
+  CREDIT_JOURNAL_ACCOUNT_TYPE_UNSPECIFIED = 0;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_GRANT_ISSUANCE_SOURCE = 1;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_CUSTOMER_AVAILABLE = 2;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_CUSTOMER_RESERVED = 3;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_CUSTOMER_CONSUMED = 4;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_EXPIRED = 5;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_REVOKED = 6;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_ADJUSTMENT = 7;
+  CREDIT_JOURNAL_ACCOUNT_TYPE_RECOVERY_EXPOSURE = 8;
+}
+
+message CreditBalanceSummary {
+  string unit = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string available_amount = 2 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+  string reserved_amount = 3 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+  string consumed_amount = 4 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+  string expired_amount = 5 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+  string revoked_amount = 6 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+  string recovery_exposure_amount = 7 [(buf.validate.field).string = {pattern: "^-?[0-9]{1,38}$"}];
+}
+
+message SiteCreditSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 credit_account_count = 2;
+  uint64 active_credit_account_count = 3;
+  uint64 open_hold_count = 4;
+  uint64 reconciliation_required_hold_count = 5;
+  repeated CreditBalanceSummary balances = 6 [(buf.validate.field).repeated.max_items = 64];
+  CreditReadFreshness freshness = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp as_of = 8 [(buf.validate.field).required = true];
+}
+
+message CreditAccountSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_account_ref = 2 [(buf.validate.field).string.uuid = true];
+  string billing_account_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string unit = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  CreditAccountState state = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 aggregate_version = 6 [(buf.validate.field).uint64.gt = 0];
+  CreditBalanceSummary balance = 7 [(buf.validate.field).required = true];
+  uint64 grant_count = 8;
+  uint64 open_hold_count = 9;
+  uint64 reconciliation_required_hold_count = 10;
+  google.protobuf.Timestamp created_at = 11 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
+  CreditReadFreshness freshness = 13 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp as_of = 14 [(buf.validate.field).required = true];
+}
+
+message CreditGrantSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_grant_id = 2 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  string billing_account_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string credit_program_revision_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CreditGrantSourceType source_type = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string source_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string issuance_journal_transaction_ref = 8 [(buf.validate.field).string.uuid = true];
+  CreditBucketClass ux_bucket_class = 9 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string unit = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string original_amount = 11 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  int32 burn_priority = 12;
+  google.protobuf.Timestamp effective_at = 13 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp expires_at = 14;
+  google.protobuf.Timestamp issued_at = 15 [(buf.validate.field).required = true];
+  uint64 related_hold_count = 16;
+  uint64 related_execution_count = 17;
+}
+
+message CreditHoldSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_hold_ref = 2 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  string execution_root_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string unit = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string requested_amount = 6 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  string reserved_amount = 7 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  string captured_amount = 8 [(buf.validate.field).string = {pattern: "^[0-9]{1,38}$"}];
+  string released_amount = 9 [(buf.validate.field).string = {pattern: "^[0-9]{1,38}$"}];
+  CreditHoldState state = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional CreditHoldResolutionKind resolution_kind = 11 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string resolution_ref = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fence_epoch = 13 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp expires_at = 14 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp settled_at = 15;
+  optional google.protobuf.Timestamp released_at = 16;
+  google.protobuf.Timestamp created_at = 17 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp updated_at = 18 [(buf.validate.field).required = true];
+  uint64 grant_count = 19;
+  uint64 source_count = 20;
+}
+
+message CreditJournalTransactionSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string journal_transaction_ref = 2 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  string unit = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string business_operation_key = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CreditJournalOperationKind operation_kind = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 entry_count = 7 [(buf.validate.field).uint32 = {
+    gte: 2
+    lte: 512
+  }];
+  optional string reversal_of_transaction_ref = 8 [(buf.validate.field).string.uuid = true];
+  google.protobuf.Timestamp occurred_at = 9 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp created_at = 10 [(buf.validate.field).required = true];
+}
+
+message CreditJournalEntrySummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string journal_transaction_ref = 2 [(buf.validate.field).string.uuid = true];
+  uint32 entry_ordinal = 3;
+  string credit_account_ref = 4 [(buf.validate.field).string.uuid = true];
+  string unit = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  CreditJournalEntrySide entry_side = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CreditJournalAccountType account_type = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string amount = 8 [(buf.validate.field).string = {pattern: "^[1-9][0-9]{0,37}$"}];
+  string credit_grant_id = 9 [(buf.validate.field).string.uuid = true];
+  optional string credit_hold_ref = 10 [(buf.validate.field).string.uuid = true];
+  CreditGrantSourceType source_type = 11 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string source_ref = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string execution_root_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  google.protobuf.Timestamp created_at = 14 [(buf.validate.field).required = true];
+}
+
+message RatedUsageSummary {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string rated_usage_ref = 2 [(buf.validate.field).string.uuid = true];
+  string authorization_segment_ref = 3 [(buf.validate.field).string.uuid = true];
+  string closure_ref = 4 [(buf.validate.field).string.uuid = true];
+  string settlement_ref = 5 [(buf.validate.field).string.uuid = true];
+  string evidence_ref = 6 [(buf.validate.field).string.uuid = true];
+  string attempt_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_root_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string credit_hold_ref = 9 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 10 [(buf.validate.field).string.uuid = true];
+  string unit = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string policy_rated_amount = 12 [(buf.validate.field).string = {pattern: "^[0-9]{1,38}$"}];
+  string customer_amount = 13 [(buf.validate.field).string = {pattern: "^[0-9]{1,38}$"}];
+  string platform_exposure_amount = 14 [(buf.validate.field).string = {pattern: "^[0-9]{1,38}$"}];
+  uint32 line_item_count = 15;
+  string rated_usage_digest = 16 [(buf.validate.field).string = {pattern: "^[a-f0-9]{64}$"}];
+  uint64 source_count = 17;
+  google.protobuf.Timestamp created_at = 18 [(buf.validate.field).required = true];
+}
+
+message GetSiteCreditSummaryRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+message GetSiteCreditSummaryResponse {
+  SiteCreditSummary summary = 1 [(buf.validate.field).required = true];
+}
+
+message ListCreditAccountsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string billing_account_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string page_token = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 5 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditAccountsResponse {
+  repeated CreditAccountSummary accounts = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+}
+
+message GetCreditAccountRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+}
+message GetCreditAccountResponse {
+  CreditAccountSummary account = 1 [(buf.validate.field).required = true];
+}
+
+message ListCreditGrantsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  optional string source_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string execution_root_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string page_token = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditGrantsResponse {
+  repeated CreditGrantSummary grants = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+}
+
+message ListCreditHoldsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  optional string source_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string execution_root_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string page_token = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditHoldsResponse {
+  repeated CreditHoldSummary holds = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+}
+
+message ListCreditJournalTransactionsRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  optional string credit_grant_id = 4 [(buf.validate.field).string.uuid = true];
+  optional string credit_hold_ref = 5 [(buf.validate.field).string.uuid = true];
+  optional string source_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string execution_root_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string page_token = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditJournalTransactionsResponse {
+  repeated CreditJournalTransactionSummary transactions = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+}
+
+message ListCreditJournalEntriesRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string journal_transaction_ref = 3 [(buf.validate.field).string.uuid = true];
+  optional string page_token = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 5 [(buf.validate.field).uint32.lte = 200];
+}
+message ListCreditJournalEntriesResponse {
+  repeated CreditJournalEntrySummary entries = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+}
+
+message ListRatedUsageRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
+  optional string credit_hold_ref = 4 [(buf.validate.field).string.uuid = true];
+  optional string source_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string execution_root_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string attempt_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string page_token = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+}
+message ListRatedUsageResponse {
+  repeated RatedUsageSummary rated_usage = 1 [(buf.validate.field).repeated.max_items = 200];
+  optional string next_page_token = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  google.protobuf.Timestamp as_of = 3 [(buf.validate.field).required = true];
+}
