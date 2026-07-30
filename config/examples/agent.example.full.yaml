@@ -30,9 +30,8 @@ web_tools:
     provider: searxng
     url: http://127.0.0.1:8080
 assets:
-  skills_dir: /data/skills        # 每 skill 一目录（<name>/SKILL.md），配置按名引用
   personas_dir: /data/personas    # 人格资产（<name>.md）：入口/子代理按名解析，yaml 可不写 system_prompt
-  # config: ./assets.yaml         # 资产源 yaml（local/s3，见 assets.example.*.yaml）；配了它上面两行失效
+  # config: ./assets.yaml         # 人格资产源 yaml（local/s3，见 assets.example.*.yaml）；配了它时上行失效
 subagents:
   builtin: [researcher]
 limits:
