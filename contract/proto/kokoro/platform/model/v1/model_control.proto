@@ -3,6 +3,7 @@ syntax = "proto3";
 package kokoro.platform.model.v1;
 
 import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
 
@@ -186,10 +187,7 @@ message ProviderAvailability {
     min_len: 1
     max_len: 256
   }];
-  optional string observed_at = 6 [(buf.validate.field).string = {
-    min_len: 20
-    max_len: 40
-  }];
+  google.protobuf.Timestamp observed_at = 6;
 }
 
 message ImportInventoryEffect {
@@ -298,7 +296,7 @@ message ChangeSitePolicyRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   ChangeSitePolicyEffect effect = 3 [(buf.validate.field).required = true];
 }
@@ -306,7 +304,7 @@ message ChangeSitePolicyRequest {
 message ChangeSitePolicyResponse {
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   string policy_digest = 2 [(buf.validate.field).string = {
     len: 64
@@ -423,11 +421,7 @@ message PublishSiteReleaseCatalogEffect {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string published_at = 3 [(buf.validate.field).string = {
-    min_len: 20
-    max_len: 40
-  }];
-  repeated SiteReleaseModelSurface surfaces = 4 [(buf.validate.field).repeated = {
+  repeated SiteReleaseModelSurface surfaces = 3 [(buf.validate.field).repeated = {
     min_items: 1
     max_items: 4
   }];
@@ -437,7 +431,7 @@ message PublishSiteReleaseCatalogRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   PublishSiteReleaseCatalogEffect effect = 3 [(buf.validate.field).required = true];
 }
@@ -445,7 +439,7 @@ message PublishSiteReleaseCatalogRequest {
 message PublishSiteReleaseCatalogResponse {
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   string site_release_ref = 2 [(buf.validate.field).string = {
     min_len: 3
@@ -459,6 +453,7 @@ message PublishSiteReleaseCatalogResponse {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  bool replayed = 5;
-  kokoro.common.v2.CommandReceiptV2 receipt = 6 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp published_at = 5 [(buf.validate.field).required = true];
+  bool replayed = 6;
+  kokoro.common.v2.CommandReceiptV2 receipt = 7 [(buf.validate.field).required = true];
 }

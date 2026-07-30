@@ -40,7 +40,7 @@ message RegisterSiteRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   RegisterSiteEffect effect = 3 [(buf.validate.field).required = true];
 }
@@ -53,7 +53,7 @@ enum ProvisionedSiteState {
 message RegisterSiteResponse {
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   ProvisionedSiteState state = 2 [(buf.validate.field).enum = {
     defined_only: true
@@ -159,7 +159,7 @@ message PublishSiteReleaseRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
   string site_id = 2 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   PublishSiteReleaseEffect effect = 3 [(buf.validate.field).required = true];
 }
@@ -172,7 +172,7 @@ enum PublishedSiteReleaseState {
 message PublishSiteReleaseResponse {
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 3
-    max_len: 256
+    max_len: 128
   }];
   string release_ref = 2 [(buf.validate.field).string = {
     min_len: 3
