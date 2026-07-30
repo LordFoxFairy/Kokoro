@@ -91,10 +91,7 @@ message SiteReleaseCertificationProof {
   }];
   google.protobuf.Timestamp issued_at = 2 [(buf.validate.field).required = true];
   google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
-  bytes signature = 4 [(buf.validate.field).bytes = {
-    min_len: 64
-    max_len: 512
-  }];
+  bytes signature = 4 [(buf.validate.field).bytes = {len: 64}];
 }
 
 message PublishSiteReleaseEffect {

@@ -2096,6 +2096,20 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     )
 
 
+def test_site_release_certification_signature_matches_the_ed25519_authority() -> None:
+    provisioning = _proto("kokoro/platform/site/v1/site_provisioning.proto")
+    proof = _message_body(provisioning, "SiteReleaseCertificationProof")
+
+    signature = re.search(
+        r"bytes signature = 4 \[\(buf\.validate\.field\)\.bytes = "
+        r"\{(?P<constraints>.*?)\}\];",
+        proof,
+        re.DOTALL,
+    )
+    assert signature is not None
+    assert signature.group("constraints").strip() == "len: 64"
+
+
 def test_model_gateway_publishes_one_resumable_server_stream() -> None:
     source = _proto("kokoro/platform/model/v1/model_gateway.proto")
 
