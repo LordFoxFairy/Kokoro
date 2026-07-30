@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "boundary": "admin-model-control-bff",
+  "protocol": "stateless-prepare-execute-reconcile",
+  "prepare": {
+    "validatesCommand": true,
+    "executesEffect": false,
+    "returns": ["recoveryRef"]
+  },
+  "browser": {
+    "persistRecoveryRefBeforeExecute": true,
+    "persistCommandBody": false,
+    "maximumPendingCommands": 1
+  },
+  "execute": {
+    "requires": ["recoveryRef", "command"],
+    "revalidatesAuthority": true,
+    "recomputesDigestAlgorithm": "SHA256_COMMAND_ENVELOPE",
+    "requiresExactOperationSiteDigestMatch": true,
+    "usesPreparedCommandId": true
+  },
+  "recoveryReference": {
+    "visibility": "opaque-to-browser",
+    "integrity": "server-recomputed",
+    "encoding": "base64url-canonical-json",
+    "maximumEncodedLength": 1024,
+    "maximumDecodedBytes": 768,
+    "fieldsInCanonicalOrder": [
+      "version",
+      "commandId",
+      "operation",
+      "digestAlgorithm",
+      "requestDigest",
+      "siteId"
+    ],
+    "version": 1,
+    "commandIdFormat": "lowercase-uuid-v4",
+    "digestAlgorithm": "SHA256_COMMAND_ENVELOPE",
+    "requestDigestFormat": "lowercase-sha256-hex",
+    "siteId": "null-for-global-required-for-site"
+  },
+  "reconcile": {
+    "queryAcceptsOnly": ["recoveryRef"],
+    "authoritativeOwner": "kokoro-platform",
+    "result": "typed-committed-command-receipt"
+  },
+  "unlock": {
+    "onlyAfter": "authoritative-committed-receipt",
+    "retainPendingOn": ["not_found", "timeout", "invalid_recovery", "response_loss"],
+    "operatorConfirmationCanUnlock": false,
+    "newCommandWhilePending": false
+  },
+  "operations": {
+    "global": ["import_inventory", "activate_inventory", "materialize_options"],
+    "site": ["change_site_policy", "publish_site_release_catalog"]
+  }
+}

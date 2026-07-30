@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { generate } from "../../contract/generate.mjs";
 
 const protoPath = new URL("../../contract/proto/kokoro/platform/model/v1/model_control.proto", import.meta.url);
+const browserRecoveryPath = new URL("../../contract/spec/model-control-browser-recovery.yaml", import.meta.url);
 const registryPath = new URL("../../contract/registry/boundaries.yaml", import.meta.url);
 const contractIndexPath = new URL("./INDEX.md", import.meta.url);
 
@@ -53,8 +54,20 @@ test("ModelControl bounds persisted integers to PostgreSQL signed storage", asyn
 
 test("ModelControl exposes a typed command receipt reconciliation result", async () => {
   const [proto, registry] = await Promise.all([readFile(protoPath, "utf8"), readFile(registryPath, "utf8")]);
-  assert.match(proto, /message GetCommandReceiptRequest[\s\S]*AuthenticatedOperatorQueryContext[\s\S]*string command_id[\s\S]*ModelControlCommandOperation operation[\s\S]*CommandDigestAlgorithmV2 digest_algorithm[\s\S]*string request_digest/u);
-  assert.match(proto, /message GetCommandReceiptResponse[\s\S]*CommandReceiptV2 receipt[\s\S]*oneof result/u);
+  const request = proto.match(/message GetCommandReceiptRequest \{[\s\S]*?\n\}/u)?.[0] ?? "";
+  assert.match(request, /AuthenticatedOperatorQueryContext/u);
+  assert.match(request, /string command_id/u);
+  assert.match(request, /len: 36/u);
+  assert.match(request, /\^\[0-9a-f\]\{8\}-\[0-9a-f\]\{4\}-4\[0-9a-f\]\{3\}-\[89ab\]\[0-9a-f\]\{3\}-\[0-9a-f\]\{12\}\$/u,
+    "receipt reconciliation accepts only the canonical lowercase UUID v4 command identity");
+  assert.match(request, /ModelControlCommandOperation operation/u);
+  assert.match(request, /CommandDigestAlgorithmV2 digest_algorithm/u);
+  assert.match(request, /string request_digest/u);
+  const response = proto.match(/message GetCommandReceiptResponse \{[\s\S]*?\n\}/u)?.[0] ?? "";
+  assert.match(response, /CommandReceiptV2 receipt/u);
+  assert.match(response, /oneof result/u);
+  assert.match(response, /option \(buf\.validate\.oneof\)\.required = true/u,
+    "a reconciled receipt without its typed result must fail closed");
   for (const result of [
     "import_inventory", "activate_inventory", "change_site_policy", "materialize_model_options",
     "publish_site_release_catalog",
@@ -63,6 +76,50 @@ test("ModelControl exposes a typed command receipt reconciliation result", async
     "MaterializeModelOptions", "PublishSiteReleaseCatalog"]) {
     assert.match(registry, new RegExp(`"id": "${operation}"[^\\n]*"recoveryOperation": "GetCommandReceipt"[^\\n]*"retryClass": "reconcile_receipt"`, "u"));
   }
+});
+
+test("ModelControl browser recovery is prepare-before-effect and owner-evidence unlocked", async () => {
+  const recovery = JSON.parse(await readFile(browserRecoveryPath, "utf8"));
+  assert.equal(recovery.schemaVersion, 1);
+  assert.equal(recovery.protocol, "stateless-prepare-execute-reconcile");
+  assert.deepEqual(recovery.prepare, {
+    validatesCommand: true,
+    executesEffect: false,
+    returns: ["recoveryRef"],
+  });
+  assert.deepEqual(recovery.browser, {
+    persistRecoveryRefBeforeExecute: true,
+    persistCommandBody: false,
+    maximumPendingCommands: 1,
+  });
+  assert.deepEqual(recovery.execute, {
+    requires: ["recoveryRef", "command"],
+    revalidatesAuthority: true,
+    recomputesDigestAlgorithm: "SHA256_COMMAND_ENVELOPE",
+    requiresExactOperationSiteDigestMatch: true,
+    usesPreparedCommandId: true,
+  });
+  assert.deepEqual(recovery.recoveryReference.fieldsInCanonicalOrder, [
+    "version", "commandId", "operation", "digestAlgorithm", "requestDigest", "siteId",
+  ]);
+  assert.equal(recovery.recoveryReference.maximumEncodedLength, 1024);
+  assert.equal(recovery.recoveryReference.maximumDecodedBytes, 768);
+  assert.equal(recovery.recoveryReference.commandIdFormat, "lowercase-uuid-v4");
+  assert.equal(recovery.recoveryReference.digestAlgorithm, "SHA256_COMMAND_ENVELOPE");
+  assert.deepEqual(recovery.reconcile, {
+    queryAcceptsOnly: ["recoveryRef"],
+    authoritativeOwner: "kokoro-platform",
+    result: "typed-committed-command-receipt",
+  });
+  assert.deepEqual(recovery.unlock.retainPendingOn,
+    ["not_found", "timeout", "invalid_recovery", "response_loss"]);
+  assert.equal(recovery.unlock.onlyAfter, "authoritative-committed-receipt");
+  assert.equal(recovery.unlock.operatorConfirmationCanUnlock, false);
+  assert.equal(recovery.unlock.newCommandWhilePending, false);
+  assert.deepEqual(recovery.operations.global,
+    ["import_inventory", "activate_inventory", "materialize_options"]);
+  assert.deepEqual(recovery.operations.site,
+    ["change_site_policy", "publish_site_release_catalog"]);
 });
 
 test("ModelControl bounds every repeated identifier and revision reference item", async () => {

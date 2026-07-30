@@ -531,8 +531,8 @@ enum ModelControlCommandOperation {
 message GetCommandReceiptRequest {
   kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
   string command_id = 2 [(buf.validate.field).string = {
-    len: 32
-    pattern: "^[0-9a-f]{32}$"
+    len: 36
+    pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
   }];
   ModelControlCommandOperation operation = 3 [(buf.validate.field).enum = {
     defined_only: true
@@ -629,6 +629,7 @@ message PublishSiteReleaseCatalogReceiptResult {
 message GetCommandReceiptResponse {
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   oneof result {
+    option (buf.validate.oneof).required = true;
     ImportInventoryReceiptResult import_inventory = 2;
     ActivateInventoryReceiptResult activate_inventory = 3;
     ChangeSitePolicyReceiptResult change_site_policy = 4;

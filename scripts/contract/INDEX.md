@@ -172,6 +172,14 @@ operations and rejects any provider projection that exposes the persisted secret
 generated-contract repository gate treats `platform-model-control@v1` as a live two-party boundary:
 Platform owns the provider mirror and Web owns the Admin BFF consumer mirror.
 
+The same gate owns the machine-readable browser recovery protocol in
+`contract/spec/model-control-browser-recovery.yaml`. Model effects use stateless prepare→execute:
+prepare validates but cannot execute, the browser persists one bounded opaque reference before execute
+and never persists the large command body, and execute must reauthorize and recompute the canonical
+operation/Site/digest while retaining the prepared UUIDv4. Response loss is reconciled against the
+Platform typed receipt. Only authoritative `committed` evidence unlocks another effect; NotFound,
+timeout, invalid recovery, and operator confirmation retain the pending lock.
+
 Model Admin unary calls have one explicit end-to-end transport budget: requests are limited to 16 MiB
 and responses to 8 MiB in both the Platform Admin Connect server and Web Admin Connect client. The Web
 BFF admits semantically valid inventories above the former 64 KiB ceiling and reports an over-budget
