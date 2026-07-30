@@ -55,14 +55,14 @@ RUNTIMES=(
   kokoro-site-release
 )
 
-echo "==> [1/4] ensure canonical infrastructure"
+echo "==> [1/5] ensure canonical infrastructure"
 node scripts/infra/manager.mjs ensure \
   --profiles full \
   --scope production \
   --mode production \
   --infra-env-file "$ENV_FILE"
 
-echo "==> [2/4] validate and build release artifacts"
+echo "==> [2/5] validate and build release artifacts"
 "${APP[@]}" config --quiet
 "${APP[@]}" build \
   platform-migrator \
@@ -70,10 +70,24 @@ echo "==> [2/4] validate and build release artifacts"
   kokoro-session \
   kokoro-agent-worker
 
-echo "==> [3/4] apply Platform schema and role grants"
+echo "==> [3/5] apply Platform schema and role grants"
 "${APP[@]}" run --rm --no-deps platform-migrator
 
-echo "==> [4/4] start independent runtime processes"
+echo "==> [4/5] install and seal initial Admin authorities when explicitly requested"
+if [[ -n "${KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE:-}" ]]; then
+  [[ -f "$KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE" ]] || {
+    echo "missing Admin authority bootstrap file: $KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE" >&2
+    exit 1
+  }
+  KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_UID="$(id -u)"
+  KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_GID="$(id -g)"
+  export KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_UID KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_GID
+  "${APP[@]}" run --rm --no-deps platform-admin-bootstrap
+else
+  echo "skip: export KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE for a fresh installation"
+fi
+
+echo "==> [5/5] start independent runtime processes"
 "${APP[@]}" run --rm --no-deps workspace-init
 "${APP[@]}" up -d --no-deps "${RUNTIMES[@]}"
 "${APP[@]}" ps

@@ -32,6 +32,11 @@ manager before applying workloads:
 | Agent evidence | `agent-evidence-environment` | `agent-evidence-files` |
 | Site release | `site-release-environment` | `site-release-files` |
 
+For a fresh database only, create `platform-admin-authority-bootstrap-file` with one key named
+`admin-authority-bootstrap.json`, apply `bootstrap/admin-authority-job.yaml` after the migrator, wait
+for completion, and delete both the Job and Secret. The document must define 2–16 distinct governors;
+the database transition is one-way (`open` to `sealed`). This Job is intentionally absent from `base/`.
+
 Every Platform environment Secret exposes its own value as `DATABASE_URL_PLATFORM`; no runtime Pod
 receives `DATABASE_URL_PLATFORM_MIGRATOR`. File keys are mounted at `/run/secrets/kokoro` and env paths
 must match the filenames. Peer registries and certificates must use the service DNS identities shown in
@@ -54,8 +59,9 @@ kubectl -n kokoro wait --for=condition=complete --timeout=15m job/platform-migra
 kubectl -n kokoro get deploy,service,pod
 ```
 
-Apply the migration Job before admitting traffic. Business bootstrap then goes through typed
-control-plane APIs; it is not a Kubernetes Job. Secure Connect services use TCP readiness in this base
+Apply the migration Job before admitting traffic, then perform the one-time Admin authority step on a
+fresh install. Business configuration then goes through typed control-plane APIs; it is not a
+Kubernetes Job. Secure Connect services use TCP readiness in this base
 because kubelet cannot present the workload mTLS identity; production overlays should replace it with a
 mesh or dedicated authenticated readiness probe.
 

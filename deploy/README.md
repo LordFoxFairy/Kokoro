@@ -41,6 +41,11 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
    from the Web monorepo.
 5. Set `KOKORO_*_ENV_FILE` overrides to process-specific protected files for production. The helper
    script deliberately defaults them to the master env only for bounded single-host bring-up.
+6. On a fresh database, prepare a mode-`0600` Admin authority document owned by the account running
+   `deploy/provision.sh`, containing 2–16 distinct
+   governors, their OIDC identities, unexpired global scopes, and all launch permissions they need.
+   Export its absolute host path as `KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE` for the first provision
+   only. The owner function permanently seals bootstrap; remove the source file after success.
 
 ## Start
 
@@ -48,8 +53,9 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
 bash deploy/provision.sh deploy/.env.prod kokoro-app
 ```
 
-The script performs exactly four phases: ensure canonical infrastructure, validate/build artifacts,
-run `platform-migrator`, then start independent runtime processes. It does not write business data.
+The script performs five phases: ensure canonical infrastructure, validate/build artifacts, run
+`platform-migrator`, optionally install and seal the initial Admin governors, then start independent
+runtime processes. Authority bootstrap is fresh-install control-plane setup, not business seeding.
 Initial Site/release/model/credit-program/offer/card-batch creation belongs to typed control-plane APIs;
 there is no direct SQL or retired package seed escape hatch.
 

@@ -102,3 +102,20 @@ test("Compose mounts file credentials into each owning process only", async () =
     assert.match(composeService(compose, name), /:\/run\/secrets\/kokoro:ro/u, name);
   }
 });
+
+test("fresh installs expose an explicit sealed Admin authority bootstrap job", async () => {
+  const [compose, provision, kubernetes] = await Promise.all([
+    readFile(resolve(root, "docker-compose.app.yml"), "utf8"),
+    readFile(resolve(root, "deploy/provision.sh"), "utf8"),
+    readFile(resolve(root, "deploy/k8s/bootstrap/admin-authority-job.yaml"), "utf8"),
+  ]);
+  const service = composeService(compose, "platform-admin-bootstrap");
+  assert.match(service, /dist\/src\/process\/admin-authority-bootstrap\.js/u);
+  assert.match(service, /PLATFORM_DATABASE_CREDENTIAL_CLASS:\s*migrator/u);
+  assert.match(service, /admin-authority-bootstrap\.json[^\n]*:\/run\/secrets\/kokoro\/admin-authority-bootstrap\.json:ro/u);
+  assert.match(provision, /KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE/u);
+  assert.match(provision, /run --rm --no-deps platform-admin-bootstrap/u);
+  assert.match(kubernetes, /kind:\s*Job/u);
+  assert.match(kubernetes, /admin-authority-bootstrap\.js/u);
+  assert.doesNotMatch(kubernetes, /stringData:|bootstrap_admin_authorities/u);
+});

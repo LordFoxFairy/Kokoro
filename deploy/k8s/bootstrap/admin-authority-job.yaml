@@ -1,0 +1,70 @@
+# Fresh-install only. Do not add this Job to the base kustomization or ordinary upgrades.
+# Create the referenced Secret out of band, apply this Job exactly once after platform-migrator,
+# wait for completion, then delete both the Job and the source Secret.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: platform-admin-authority-bootstrap
+  namespace: kokoro
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels: { app: platform-admin-authority-bootstrap }
+    spec:
+      restartPolicy: Never
+      securityContext:
+        seccompProfile: { type: RuntimeDefault }
+      initContainers:
+        - name: prepare-private-authority-file
+          image: kokoro-platform:latest
+          command:
+            - sh
+            - -c
+            - install -o 1000 -g 1000 -m 0600 /source/admin-authority-bootstrap.json /prepared/admin-authority-bootstrap.json
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 0
+            runAsGroup: 0
+            capabilities:
+              drop: [ALL]
+              add: [CHOWN]
+          volumeMounts:
+            - name: bootstrap-source
+              mountPath: /source
+              readOnly: true
+            - name: bootstrap-authorities
+              mountPath: /prepared
+      containers:
+        - name: bootstrap
+          image: kokoro-platform:latest
+          command:
+            - node
+            - --conditions=kokoro-runtime
+            - dist/src/process/admin-authority-bootstrap.js
+            - --file
+            - /run/secrets/kokoro/admin-authority-bootstrap.json
+          envFrom:
+            - configMapRef: { name: platform-runtime }
+            - secretRef: { name: platform-migrator-environment }
+          env:
+            - { name: PLATFORM_DATABASE_CREDENTIAL_CLASS, value: migrator }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          volumeMounts:
+            - name: bootstrap-authorities
+              mountPath: /run/secrets/kokoro
+              readOnly: true
+      volumes:
+        - name: bootstrap-source
+          secret:
+            secretName: platform-admin-authority-bootstrap-file
+            defaultMode: 0400
+        - name: bootstrap-authorities
+          emptyDir: { medium: Memory, sizeLimit: 1Mi }

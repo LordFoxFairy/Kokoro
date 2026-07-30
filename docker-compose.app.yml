@@ -53,6 +53,30 @@ services:
       PLATFORM_DATABASE_CREDENTIAL_CLASS: migrator
       DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_MIGRATOR:?DATABASE_URL_PLATFORM_MIGRATOR is required}
 
+  # Fresh-install only. This is deliberately excluded from the long-running runtime set and from
+  # normal upgrades: the database owner function seals itself after installing the first governors.
+  platform-admin-bootstrap:
+    <<: *platform-build
+    restart: "no"
+    user: "${KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_UID:-1000}:${KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_GID:-1000}"
+    command:
+      - node
+      - --conditions=kokoro-runtime
+      - dist/src/process/admin-authority-bootstrap.js
+      - --file
+      - /run/secrets/kokoro/admin-authority-bootstrap.json
+    env_file:
+      - path: ${KOKORO_PLATFORM_MIGRATOR_ENV_FILE:-./deploy/env/platform-migrator.env}
+        required: false
+    environment:
+      <<: *platform-database
+      PLATFORM_DATABASE_CREDENTIAL_CLASS: migrator
+      DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_MIGRATOR:?DATABASE_URL_PLATFORM_MIGRATOR is required}
+    depends_on:
+      platform-migrator: { condition: service_completed_successfully }
+    volumes:
+      - ${KOKORO_ADMIN_AUTHORITY_BOOTSTRAP_FILE:-./deploy/secrets/admin-authority-bootstrap.json}:/run/secrets/kokoro/admin-authority-bootstrap.json:ro
+
   platform-api:
     <<: *platform-build
     env_file:
@@ -164,6 +188,7 @@ services:
       PLATFORM_DATABASE_CREDENTIAL_CLASS: admin
       DATABASE_URL_PLATFORM: ${DATABASE_URL_PLATFORM_ADMIN:?DATABASE_URL_PLATFORM_ADMIN is required}
       PLATFORM_ADMIN_PORT: "4101"
+      PLATFORM_SITE_RELEASE_CERTIFICATION_KEYS_FILE: ${PLATFORM_SITE_RELEASE_CERTIFICATION_KEYS_FILE:-/run/secrets/kokoro/site-release-certification-keys.json}
     depends_on:
       platform-migrator: { condition: service_completed_successfully }
     volumes:
