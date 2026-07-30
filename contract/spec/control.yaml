@@ -32,6 +32,7 @@ objects:
   # 会话快照的技能卡片（内容锁）：装配清单零查询,恢复重放零决策。
   - name: SkillGrant
     fields:
+      - {name: option_ref, type: reference}
       - {name: name, type: string_nonempty}
       - {name: content_hash, type: string_nonempty}
       - {name: description, type: string_nonempty}
@@ -43,6 +44,7 @@ objects:
   # revision 取不可变快照,disable/revoke 走活文档 fail-closed 检查,不靠 wire 猜"现在的配置"。
   - name: McpGrant
     fields:
+      - {name: option_ref, type: reference}
       - {name: scope, type: string_nonempty}
       - {name: name, type: string_nonempty}
       - {name: revision, type: int}
@@ -56,6 +58,8 @@ objects:
   # wire 只传 names + 已解析上下文；一切定义（prompt/subagent/MCP server）归 agent 侧资产/配置。
   - name: RuntimeConfig
     fields:
+      # Platform Admission 从 SiteRelease 投影取得的冻结 Hub catalog 内容锁；Session 只密封透传。
+      - {name: agent_catalog_ref, type: reference}
       # 类型决定配方与基础工具面（如 ask_user 只属对话型）；agent 是类型下的具名实例。
       - {name: agent_type, type: enum:agent_type}
       # agent（preset）名：人格资产解析键 prompts/<agent>.md；缺省=general。

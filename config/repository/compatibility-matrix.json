@@ -3,6 +3,16 @@
   "combinationId": "wave1-admin-command-v2-2026-07-29",
   "contracts": [
   {
+   "id": "hub-runtime",
+   "version": 1,
+   "providers": [
+    "kokoro-platform"
+   ],
+   "consumers": [
+    "kokoro-agent"
+   ]
+  },
+  {
    "id": "session-agent-execution",
    "version": 1,
    "providers": [
@@ -146,7 +156,7 @@
     "timeoutSeconds": 300
    },
       {
-        "id": "agent-model-gateway-localfake",
+    "id": "agent-model-gateway-localfake",
     "commandId": "python-agent-model-gateway-v1",
     "required": true,
     "participants": [
@@ -159,7 +169,23 @@
       "version": 1
      }
     ],
-        "timeoutSeconds": 180
+    "timeoutSeconds": 180
+      },
+      {
+    "id": "hub-runtime",
+    "commandId": "node-hub-runtime-v1",
+    "required": true,
+    "participants": [
+     "kokoro-agent",
+     "kokoro-platform"
+    ],
+    "protocols": [
+     {
+      "id": "hub-runtime",
+      "version": 1
+     }
+    ],
+    "timeoutSeconds": 180
       },
       {
     "id": "platform-admin-auth-connect",

@@ -182,6 +182,27 @@ test("writes a canonical BOM that binds the promotion commit, pins and recoverab
       bom.repositories.every(({ protocols }) => protocols.length > 0),
       true,
     );
+    assert.deepEqual(bom.contracts.find(({ id }) => id === "hub-runtime"), {
+      consumers: ["kokoro-agent"],
+      id: "hub-runtime",
+      providers: ["kokoro-platform"],
+      version: 1,
+    });
+    assert.deepEqual(
+      bom.repositories.find(({ id }) => id === "kokoro-agent").protocols
+        .find(({ id }) => id === "hub-runtime"),
+      { id: "hub-runtime", role: "consumer", version: 1 },
+    );
+    assert.deepEqual(
+      bom.repositories.find(({ id }) => id === "kokoro-platform").protocols
+        .find(({ id }) => id === "hub-runtime"),
+      { id: "hub-runtime", role: "provider", version: 1 },
+    );
+    assert.equal(
+      bom.repositories.find(({ id }) => id === "kokoro-session").protocols
+        .some(({ id }) => id === "hub-runtime"),
+      false,
+    );
     assert.deepEqual(
       bom.evidence.map(({ path }) => path),
       [

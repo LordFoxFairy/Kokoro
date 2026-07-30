@@ -13,7 +13,9 @@ test("Hub capability publication is typed, signed, projected, and Agent-only at 
   assert.match(proto, /service HubCatalogService/u);
   assert.match(proto, /rpc FreezeCatalog\(/u);
   assert.match(proto, /service HubRuntimeService/u);
-  assert.match(proto, /rpc ResolveMcpSecrets\(/u);
+  assert.match(proto, /rpc ResolveExecutionAssembly\(/u);
+  assert.match(proto, /rpc FetchSkillArtifact\([^)]*\) returns \(stream FetchSkillArtifactResponse\)/u);
+  assert.doesNotMatch(proto, /ResolveMcpSecrets/u);
   assert.match(proto, /service CapabilityCatalogProjectionService/u);
   assert.match(proto, /rpc ProjectCatalog\(/u);
   assert.match(proto, /SIGNATURE_ALGORITHM_ED25519_SHA256_V1/u);
@@ -24,8 +26,12 @@ test("Hub capability publication is typed, signed, projected, and Agent-only at 
   const parsed = JSON.parse(registry);
   const runtime = parsed.boundaries.find(({ id }) => id === "hub-runtime");
   assert.deepEqual(runtime.consumers, [{ boundary: "service.agent", repository: "kokoro-agent" }]);
+  assert.equal(runtime.lifecycle, "active");
   assert.equal(runtime.protocol, "connect-rpc");
-  assert.deepEqual(runtime.operations.map(({ id }) => id), ["ResolveMcpSecrets"]);
+  assert.deepEqual(runtime.operations.map(({ id }) => id), [
+    "ResolveExecutionAssembly",
+    "FetchSkillArtifact",
+  ]);
 
   const authority = parsed.boundaries.find(({ id }) => id === "hub-capability-catalog");
   assert.equal(authority.provider.boundary, "platform.hub");

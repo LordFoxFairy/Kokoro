@@ -252,11 +252,20 @@
       "deadlineMs": 5000,
       "failureOwner": "kokoro-platform",
       "id": "hub-runtime",
-      "lifecycle": "contract-only",
+      "lifecycle": "active",
       "operations": [
         {
           "effect": false,
-          "id": "ResolveMcpSecrets",
+          "id": "ResolveExecutionAssembly",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc"
+        },
+        {
+          "effect": false,
+          "id": "FetchSkillArtifact",
           "receipt": null,
           "retryClass": "after_delay",
           "scope": "namespace",

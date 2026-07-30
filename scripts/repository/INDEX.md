@@ -26,9 +26,11 @@ Repository tooling does not own child branches, locks, releases, tags, runtime s
 
 The directory must not import sibling repository source, invoke child Compose files, update branches/tags, or write child databases directly. New compatibility scenarios belong under `scripts/compatibility/`; their machine result contract is closed and human stdout is never treated as evidence.
 
-The `hub-runtime` command demonstrates the intended ownership split: Root starts the provider and fixture,
-seeds only via public HTTP, and delegates consumer assertions to official commands inside Session and Agent.
-Adding a Root helper that imports either consumer's `src/` tree or writes Hub Mongo directly is forbidden.
+The `hub-runtime` command demonstrates the intended ownership split: Root orchestrates the published Platform
+Hub providers and a thin Platform driver over production projection and signature-verification APIs, seeds only
+through the official Admin HTTP API, and delegates runtime assertions to Agent's production client. Root may
+compose published child runtime APIs for cross-repository evidence; it must not reimplement product behavior or
+write Hub Mongo directly.
 
 Promotion order is fixed: run the verifier and compatibility runner against the same selected tree (`head` or staged `index`), commit the four gitlinks and the manifest atomically, rerun the verifier in `head` mode, then generate the BOM against that commit and commit the BOM separately. A Root manifest may only reference its parent or an earlier commit, so the BOM never carries a field naming the commit that contains it.
 

@@ -39,8 +39,9 @@ The pinned Redocly CLI independently runs its OpenAPI 3.1 `spec` ruleset in CI; 
 complement that validator and never replace structural validation.
 
 `check-boundary-coverage.mjs` is the companion source-to-registry gate. It scans the two internal runtime
-consumers (Session and Agent), reduces their detected Platform dependencies to unique service edges, and
-requires an `active` registry entry with both the exact provider boundary and the actual consumer.
+consumers (Session and Agent), reduces Session's Platform service dependencies and Agent's Hub/LiteLLM
+dependencies to unique service edges, and requires an `active` registry entry with both the exact provider
+boundary and the actual consumer.
 Repository-pair matching is intentionally insufficient: `service.platform` cannot vouch for `platform.hub`,
 and neither can vouch for `platform.litellm`. Web's public BFF plane is outside this narrow scanner and remains
 covered by the Admin/OpenAPI and Session browser gates rather than being silently claimed here.

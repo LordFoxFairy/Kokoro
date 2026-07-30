@@ -17,10 +17,11 @@ async function fixture() {
   await writeFile(join(root, "kokoro-session/src/main.ts"), [
     "KOKORO_CREDIT_BASE_URL",
     "KOKORO_MODEL_BASE_URL",
-    "KOKORO_HUB_BASE_URL",
   ].join("\n"));
   await writeFile(join(root, "kokoro-agent/src/config.py"), [
-    "KOKORO_HUB_BASE_URL",
+    "KOKORO_HUB_RPC_URL",
+    "resolve_execution_assembly",
+    "fetch_skill_artifact",
     "KOKORO_LITELLM_BASE_URL",
   ].join("\n"));
   await writeFile(join(root, "kokoro-web/src/ignored.ts"), "KOKORO_HUB_BASE_URL\n");
@@ -40,10 +41,7 @@ function registry() {
         id: "hub-runtime",
         lifecycle: "active",
         provider: { repository: "kokoro-platform", boundary: "platform.hub" },
-        consumers: [
-          { repository: "kokoro-session", boundary: "service.session" },
-          { repository: "kokoro-agent", boundary: "service.agent" },
-        ],
+        consumers: [{ repository: "kokoro-agent", boundary: "service.agent" }],
       },
       {
         id: "model-gateway",
@@ -63,7 +61,6 @@ test("matches every discovered consumer edge to the exact provider boundary", as
     assert.deepEqual(result.edges, [
       "kokoro-agent->platform.hub",
       "kokoro-agent->platform.litellm",
-      "kokoro-session->platform.hub",
       "kokoro-session->service.platform",
     ]);
   } finally {
@@ -81,7 +78,7 @@ test("a different boundary from the same provider repository cannot back the edg
       (error) =>
         error instanceof BoundaryCoverageError &&
         error.code === "boundary_coverage_missing" &&
-        error.detail === "kokoro-agent->platform.hub,kokoro-session->platform.hub",
+        error.detail === "kokoro-agent->platform.hub",
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -91,9 +88,7 @@ test("a different boundary from the same provider repository cannot back the edg
 test("the exact provider boundary must declare the discovered repository as a consumer", async () => {
   const root = await fixture();
   const wrong = registry();
-  wrong.boundaries.find(({ id }) => id === "hub-runtime").consumers = [
-    { repository: "kokoro-session", boundary: "service.session" },
-  ];
+  wrong.boundaries.find(({ id }) => id === "hub-runtime").consumers = [];
   try {
     await assert.rejects(
       checkBoundaryCoverage({ root, registry: wrong }),

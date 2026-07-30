@@ -17,14 +17,13 @@ const EDGE_DETECTORS = [
     patterns: [/KOKORO_CREDIT_BASE_URL/u, /KOKORO_MODEL_BASE_URL/u],
   },
   {
-    repository: "kokoro-session",
-    providerBoundary: "platform.hub",
-    patterns: [/KOKORO_HUB_BASE_URL/u, /\/hub\/runtime\//u],
-  },
-  {
     repository: "kokoro-agent",
     providerBoundary: "platform.hub",
-    patterns: [/KOKORO_HUB_BASE_URL/u, /\/hub\/runtime\//u],
+    patterns: [
+      /KOKORO_HUB_RPC_URL/u,
+      /resolve_execution_assembly/u,
+      /fetch_skill_artifact/u,
+    ],
   },
   {
     repository: "kokoro-agent",

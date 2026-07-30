@@ -1,46 +1,46 @@
 #!/usr/bin/env node
 
-import { createHash } from "node:crypto";
-import { spawn } from "node:child_process";
-import { writeSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { generateKeyPairSync, X509Certificate } from "node:crypto";
+import { spawn, spawnSync } from "node:child_process";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { connect as connectHttp2 } from "node:http2";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { createServer as createNetServer } from "node:net";
-import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-
-import { startMembershipFixture } from "./hub-runtime-membership-fixture.mjs";
+import { writeSync } from "node:fs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const REQUIRED_RESOURCES = ["mongo", "redis"];
-const SAFE_PARENT_ENV_KEYS = ["PATH", "LANG", "LC_ALL", "TMPDIR", "TMP", "TEMP"];
+const REQUIRED_RESOURCES = ["mongo"];
+const SAFE_PARENT_ENV_KEYS = ["PATH", "LANG", "LC_ALL", "TMPDIR", "TMP", "TEMP", "PNPM_HOME"];
 const MAX_DURATION_MS = 179_999;
 const MAX_PROBE_OUTPUT_BYTES = 16 * 1024;
 const children = new Set();
 const processErrors = new WeakMap();
 
-const SESSION_SECRET = "compatibility-session-not-real";
-const AGENT_SECRET = "compatibility-agent-not-real";
-const WEB_BFF_SECRET = "compatibility-web-bff-not-real";
 const ADMIN_SECRET = "compatibility-admin-not-real";
-const HUB_SECRET = "compatibility-hub-not-real";
 const MASTER_KEY = Buffer.alloc(32, 7).toString("base64");
-const NAMESPACE = "namespace-hub-compatibility";
-const USER_ID = "user-hub-compatibility";
-const SECRET_VALUE = "compatibility-secret-value-not-real";
+const PLATFORM_IDENTITY = "spiffe://kokoro.internal/platform";
+const AGENT_IDENTITY = "spiffe://kokoro.internal/agent";
+const HUB_IDENTITY = "spiffe://kokoro.internal/hub";
+const SIGNING_KEY_REF = "hub-signing:compatibility";
 
-export const HUB_START_COMMAND = ["pnpm", "--filter", "@kokoro/hub", "run", "start"];
-export const SESSION_PROBE_COMMAND = ["npm", "run", "--silent", "compat:hub-runtime", "--"];
+export const HUB_HTTP_START_COMMAND = ["pnpm", "--filter", "@kokoro/hub", "run", "dev"];
+export const HUB_CONNECT_START_COMMAND = ["pnpm", "--filter", "@kokoro/hub", "run", "dev:connect"];
+export const PLATFORM_FIXTURE_COMMAND = [
+  "pnpm", "exec", "tsx", resolve(root, "scripts/compatibility/hub-runtime-platform-fixture.mts"),
+];
 export const AGENT_PROBE_COMMAND = [
-  "uv", "run", "--locked", "python", "scripts/compat/hub_runtime_consumer.py",
+  "uv", "run", "--locked", "python", resolve(root, "scripts/compatibility/hub_runtime_agent.py"),
 ];
 export const ASSERTION_IDS = [
-  "hub-runtime:membership-authorizer",
-  "hub-runtime:self-secret-create",
-  "hub-runtime:session-capability-resolve",
-  "hub-runtime:agent-secret-resolve",
-  "hub-runtime:missing-caller-rejected",
-  "hub-runtime:wrong-caller-rejected",
-  "hub-runtime:cross-namespace-secret-rejected",
+  "hub-runtime:platform-provider-ready",
+  "hub-runtime:admin-skill-published",
+  "hub-runtime:catalog-publication-committed",
+  "hub-runtime:agent-resolve-execution-assembly",
+  "hub-runtime:agent-fetch-skill-artifact",
+  "hub-runtime:artifact-integrity-verified",
+  "hub-runtime:non-agent-runtime-rejected",
   "hub-runtime:process-cleanup",
 ];
 
@@ -57,13 +57,7 @@ export function validateLease(value) {
     !Array.isArray(value.resources) ||
     new Set(value.resources).size !== value.resources.length ||
     REQUIRED_RESOURCES.some((resource) => !value.resources.includes(resource)) ||
-    value.mongo?.database !== databaseStem ||
-    !Number.isInteger(value.redis?.database) ||
-    value.redis.database < 8 ||
-    value.redis.database > 15 ||
-    value.redis.keyPrefix !== `${databaseStem}:` ||
-    value.redis.markerKey !== `${databaseStem}:__lease` ||
-    value.redis.exclusive !== true
+    value.mongo?.database !== databaseStem
   ) {
     throw new Error("compatibility_scope_invalid");
   }
@@ -79,24 +73,47 @@ function isolatedEnvironment(parentEnv, explicit) {
   return { ...environment, ...explicit };
 }
 
-export function buildHubEnvironment(
+export function buildHttpEnvironment(
   lease,
-  { hubPort, membershipBaseUrl, parentEnv = process.env },
+  { port, workspaceConfig, parentEnv = process.env },
 ) {
   validateLease(lease);
   return isolatedEnvironment(parentEnv, {
     NODE_ENV: "test",
-    KOKORO_HUB_PORT: String(hubPort),
-    KOKORO_HUB_MONGO_URL: "mongodb://127.0.0.1:27017",
+    KOKORO_HUB_PORT: String(port),
+    KOKORO_HUB_MONGO_URL: "mongodb://127.0.0.1:27017/?directConnection=true",
     KOKORO_HUB_MONGO_DB: lease.mongo.database,
-    KOKORO_USER_BASE_URL: membershipBaseUrl,
+    KOKORO_WORKSPACE_CONFIG: workspaceConfig,
     KOKORO_HUB_SECRET_MASTER_KEY: MASTER_KEY,
-    KOKORO_HUB_MCP_MUTATION: "on",
-    KOKORO_INTERNAL_SECRET_SESSION: SESSION_SECRET,
-    KOKORO_INTERNAL_SECRET_AGENT: AGENT_SECRET,
-    KOKORO_INTERNAL_SECRET_WEB_BFF: WEB_BFF_SECRET,
     KOKORO_INTERNAL_SECRET_ADMIN: ADMIN_SECRET,
-    KOKORO_INTERNAL_SECRET_HUB: HUB_SECRET,
+  });
+}
+
+export function buildConnectEnvironment(
+  lease,
+  { port, projectionPort, workspaceConfig, trust, parentEnv = process.env },
+) {
+  validateLease(lease);
+  return isolatedEnvironment(parentEnv, {
+    NODE_ENV: "test",
+    KOKORO_HUB_CONNECT_PORT: String(port),
+    KOKORO_HUB_MONGO_URL: "mongodb://127.0.0.1:27017/?directConnection=true",
+    KOKORO_HUB_MONGO_DB: lease.mongo.database,
+    KOKORO_WORKSPACE_CONFIG: workspaceConfig,
+    KOKORO_HUB_SECRET_MASTER_KEY: MASTER_KEY,
+    KOKORO_HUB_CATALOG_PLATFORM_CALLER_SAN_URI: PLATFORM_IDENTITY,
+    KOKORO_HUB_RUNTIME_AGENT_CALLER_SAN_URI: AGENT_IDENTITY,
+    KOKORO_HUB_CONNECT_MTLS_PEERS_FILE: trust.peers,
+    KOKORO_HUB_CONNECT_TLS_KEY_FILE: trust.serverKey,
+    KOKORO_HUB_CONNECT_TLS_CERT_FILE: trust.serverCert,
+    KOKORO_HUB_CONNECT_TLS_CLIENT_CA_FILE: trust.ca,
+    KOKORO_HUB_CAPABILITY_SIGNING_KEY_FILE: trust.signingKey,
+    KOKORO_HUB_CAPABILITY_SIGNING_KEY_REF: SIGNING_KEY_REF,
+    KOKORO_HUB_PLATFORM_PROJECTION_BASE_URL: `https://localhost:${projectionPort}`,
+    KOKORO_HUB_PLATFORM_PROJECTION_SERVER_NAME: "localhost",
+    KOKORO_HUB_PLATFORM_PROJECTION_CLIENT_KEY_FILE: trust.hubKey ?? trust.platformKey,
+    KOKORO_HUB_PLATFORM_PROJECTION_CLIENT_CERT_FILE: trust.hubCert ?? trust.platformCert,
+    KOKORO_HUB_PLATFORM_PROJECTION_SERVER_CA_FILE: trust.ca,
   });
 }
 
@@ -131,7 +148,9 @@ function start(command, { cwd, env, capture = false }) {
     env,
     detached: true,
     shell: false,
-    stdio: capture ? ["ignore", "pipe", "ignore"] : "ignore",
+    stdio: capture
+      ? ["ignore", "pipe", process.env.KOKORO_COMPAT_DEBUG === "1" ? "inherit" : "ignore"]
+      : process.env.KOKORO_COMPAT_DEBUG === "1" ? ["ignore", "inherit", "inherit"] : "ignore",
   });
   children.add(child);
   child.once("error", (error) => {
@@ -183,7 +202,58 @@ async function waitHttp(url, child, timeoutMs = 30_000) {
     if (childExited(child)) throw new Error("compatibility_service_exited");
     try {
       const response = await fetch(url, { signal: AbortSignal.timeout(2_000) });
-      if (response.status < 500) return response;
+      if (response.status === 200) return;
+    } catch {}
+    await new Promise((done) => setTimeout(done, 200));
+  }
+  throw new Error("compatibility_service_not_ready");
+}
+
+async function http2Status({ port, path, ca, cert, key }) {
+  return new Promise((done, reject) => {
+    const client = connectHttp2(`https://localhost:${port}`, {
+      ca,
+      cert,
+      key,
+      servername: "localhost",
+      rejectUnauthorized: true,
+      minVersion: "TLSv1.3",
+    });
+    let settled = false;
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      client.destroy();
+      reject(error);
+    };
+    const timer = setTimeout(() => {
+      fail(new Error("compatibility_http2_timeout"));
+    }, 2_000);
+    client.once("error", fail);
+    const request = client.request({ ":method": "GET", ":path": path });
+    request.once("error", fail);
+    request.once("response", (headers) => {
+      const status = Number(headers[":status"]);
+      request.resume();
+      request.once("end", () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        client.close();
+        done(status);
+      });
+    });
+    request.end();
+  });
+}
+
+async function waitHttp2(options, child, timeoutMs = 30_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (childExited(child)) throw new Error("compatibility_service_exited");
+    try {
+      if (await http2Status(options) === 200) return;
     } catch {}
     await new Promise((done) => setTimeout(done, 200));
   }
@@ -199,10 +269,6 @@ async function runProbe(command, { cwd, env, timeoutMs = 45_000 }) {
     if (bytes <= MAX_PROBE_OUTPUT_BYTES) chunks.push(chunk);
   });
   const exitCode = await new Promise((done, reject) => {
-    if (processErrors.has(child)) {
-      reject(new Error("compatibility_probe_spawn_failed"));
-      return;
-    }
     const timer = setTimeout(() => {
       void stopChild(child);
       reject(new Error("compatibility_probe_timeout"));
@@ -222,112 +288,206 @@ async function runProbe(command, { cwd, env, timeoutMs = 45_000 }) {
   return JSON.parse(lines[0]);
 }
 
-function selfHeaders() {
-  return {
-    "content-type": "application/json",
-    "x-kokoro-service": "web-bff",
-    "x-kokoro-internal-secret": WEB_BFF_SECRET,
-    "x-kokoro-namespace": NAMESPACE,
-    "x-kokoro-user-id": USER_ID,
-  };
+function runCommand(command, args) {
+  const result = spawnSync(command, args, { encoding: "utf8", stdio: ["ignore", "ignore", "ignore"] });
+  if (result.status !== 0) throw new Error("compatibility_trust_generation_failed");
 }
 
-function runtimeHeaders(caller, secret) {
+async function certificate({ directory, caCert, caKey, name, san }) {
+  const key = join(directory, `${name}-key.pem`);
+  const csr = join(directory, `${name}.csr`);
+  const cert = join(directory, `${name}.pem`);
+  const extensions = join(directory, `${name}-extensions.cnf`);
+  await writeFile(extensions, `subjectAltName=${san}\n`, { mode: 0o600 });
+  runCommand("openssl", [
+    "req", "-new", "-newkey", "rsa:2048", "-nodes", "-keyout", key, "-out", csr,
+    "-subj", `/CN=${name}`, "-addext", `subjectAltName=${san}`,
+  ]);
+  runCommand("openssl", [
+    "x509", "-req", "-in", csr, "-CA", caCert, "-CAkey", caKey, "-CAcreateserial",
+    "-out", cert, "-days", "1", "-sha256", "-extfile", extensions,
+  ]);
+  await chmod(key, 0o600);
+  return { key, cert };
+}
+
+async function trustMaterial(directory) {
+  const caKey = join(directory, "ca-key.pem");
+  const ca = join(directory, "ca.pem");
+  runCommand("openssl", [
+    "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", caKey, "-out", ca,
+    "-days", "1", "-sha256", "-subj", "/CN=Kokoro compatibility CA",
+  ]);
+  await chmod(caKey, 0o600);
+  const server = await certificate({ directory, caCert: ca, caKey, name: "server", san: "DNS:localhost" });
+  const platform = await certificate({ directory, caCert: ca, caKey, name: "platform", san: `URI:${PLATFORM_IDENTITY}` });
+  const agent = await certificate({ directory, caCert: ca, caKey, name: "agent", san: `URI:${AGENT_IDENTITY}` });
+  const hub = await certificate({ directory, caCert: ca, caKey, name: "hub", san: `URI:${HUB_IDENTITY}` });
+  const signingKey = join(directory, "catalog-signing-key.pem");
+  const publicKey = join(directory, "catalog-signing-public.pem");
+  const signing = generateKeyPairSync("ed25519");
+  await Promise.all([
+    writeFile(signingKey, signing.privateKey.export({ format: "pem", type: "pkcs8" }), { mode: 0o600 }),
+    writeFile(publicKey, signing.publicKey.export({ format: "pem", type: "spki" }), { mode: 0o600 }),
+  ]);
+  const peers = join(directory, "hub-peers.json");
+  const platformCertificate = new X509Certificate(await readFile(platform.cert));
+  const agentCertificate = new X509Certificate(await readFile(agent.cert));
+  await writeFile(peers, `${JSON.stringify({ version: 1, peers: [
+    { sanUri: PLATFORM_IDENTITY, fingerprint256: platformCertificate.fingerprint256 },
+    { sanUri: AGENT_IDENTITY, fingerprint256: agentCertificate.fingerprint256 },
+  ] })}\n`, { mode: 0o600 });
   return {
-    "content-type": "application/json",
-    "x-kokoro-service": caller,
-    "x-kokoro-internal-secret": secret,
+    ca,
+    serverCert: server.cert,
+    serverKey: server.key,
+    platformCert: platform.cert,
+    platformKey: platform.key,
+    agentCert: agent.cert,
+    agentKey: agent.key,
+    hubCert: hub.cert,
+    hubKey: hub.key,
+    peers,
+    signingKey,
+    publicKey,
   };
 }
 
 async function run() {
   const started = Date.now();
   let passed = false;
-  let membership = null;
+  let temporary = null;
   try {
     const scopePath = process.env.KOKORO_COMPAT_SCOPE_FILE;
     if (typeof scopePath !== "string" || scopePath.length === 0) throw new Error("compatibility_scope_missing");
     const lease = validateLease(JSON.parse(await readFile(scopePath, "utf8")));
-    const hubPort = await freePort();
-    membership = await startMembershipFixture({
-      port: 0,
-      internalSecret: HUB_SECRET,
-      namespace: NAMESPACE,
-      userId: USER_ID,
-    });
-    const hubBaseUrl = `http://127.0.0.1:${hubPort}`;
-    const hubEnv = buildHubEnvironment(lease, {
-      hubPort,
-      membershipBaseUrl: membership.baseUrl,
-    });
-    const hub = start(HUB_START_COMMAND, {
-      cwd: resolve(root, "kokoro-platform"),
-      env: hubEnv,
-    });
-    await waitHttp(`${hubBaseUrl}/healthz`, hub);
+    temporary = await mkdtemp(join(tmpdir(), "kokoro-hub-runtime-"));
+    await chmod(temporary, 0o700);
+    const packageRoot = join(temporary, "hub-packages");
+    const workspaceRoot = join(temporary, "workspace");
+    await Promise.all([mkdir(packageRoot), mkdir(workspaceRoot)]);
+    const workspaceConfig = join(temporary, "workspace.yaml");
+    await writeFile(workspaceConfig, [
+      "workspace:",
+      "  type: local",
+      `  root: ${workspaceRoot}`,
+      "hub:",
+      "  type: local",
+      `  root: ${packageRoot}`,
+      "",
+    ].join("\n"), { mode: 0o600 });
+    const trust = await trustMaterial(temporary);
+    const [httpPort, connectPort, projectionPort] = await Promise.all([freePort(), freePort(), freePort()]);
+    const platformRoot = resolve(root, "kokoro-platform");
+    const agentRoot = resolve(root, "kokoro-agent");
+    const safeEnvironment = isolatedEnvironment(process.env, {});
+    const probeEnvironment = process.env.KOKORO_COMPAT_DEBUG === "1"
+      ? { ...safeEnvironment, KOKORO_COMPAT_DEBUG: "1" }
+      : safeEnvironment;
 
-    const missing = await fetch(`${hubBaseUrl}/hub/runtime/resolve?namespace=${NAMESPACE}`);
-    if (missing.status !== 401) throw new Error("compatibility_missing_caller_not_rejected");
-    const wrong = await fetch(`${hubBaseUrl}/hub/runtime/resolve?namespace=${NAMESPACE}`, {
-      headers: runtimeHeaders("web-bff", WEB_BFF_SECRET),
-    });
-    if (wrong.status !== 403) throw new Error("compatibility_wrong_caller_not_rejected");
+    const projection = start([
+      ...PLATFORM_FIXTURE_COMMAND,
+      "projection",
+      "--port", String(projectionPort),
+      "--tls-key", trust.serverKey,
+      "--tls-cert", trust.serverCert,
+      "--client-ca", trust.ca,
+      "--hub-cert", trust.hubCert,
+      "--hub-identity", HUB_IDENTITY,
+      "--public-key", trust.publicKey,
+      "--signing-key-ref", SIGNING_KEY_REF,
+    ], { cwd: platformRoot, env: safeEnvironment });
+    const ca = await readFile(trust.ca);
+    await waitHttp2({
+      port: projectionPort,
+      path: "/health/ready",
+      ca,
+      cert: await readFile(trust.hubCert),
+      key: await readFile(trust.hubKey),
+    }, projection);
 
-    const created = await fetch(`${hubBaseUrl}/hub/self/mcp/secrets`, {
-      method: "POST",
-      headers: selfHeaders(),
-      body: JSON.stringify({ name: "compatibility-secret", value: SECRET_VALUE }),
-      signal: AbortSignal.timeout(10_000),
+    const http = start(HUB_HTTP_START_COMMAND, {
+      cwd: platformRoot,
+      env: buildHttpEnvironment(lease, { port: httpPort, workspaceConfig }),
     });
-    if (created.status !== 201) throw new Error("compatibility_secret_create_failed");
-    const createdBody = await created.json();
-    const handle = createdBody?.data?.handle;
-    if (!/^srt_[0-9a-f]{32}$/u.test(handle ?? "")) throw new Error("compatibility_secret_handle_invalid");
-
-    const sessionResult = await runProbe([
-      ...SESSION_PROBE_COMMAND,
-      "--base-url", hubBaseUrl,
-      "--namespace", NAMESPACE,
-    ], {
-      cwd: resolve(root, "kokoro-session"),
-      env: isolatedEnvironment(process.env, { KOKORO_INTERNAL_SECRET_SESSION: SESSION_SECRET }),
+    await waitHttp(`http://127.0.0.1:${httpPort}/healthz`, http);
+    const hub = start(HUB_CONNECT_START_COMMAND, {
+      cwd: platformRoot,
+      env: buildConnectEnvironment(lease, { port: connectPort, projectionPort, workspaceConfig, trust }),
     });
-    if (
-      sessionResult?.schemaVersion !== 1 ||
-      !Number.isInteger(sessionResult.skills) ||
-      !Number.isInteger(sessionResult.mcpServers)
-    ) throw new Error("compatibility_session_probe_invalid");
+    await waitHttp2({
+      port: connectPort,
+      path: "/health/ready",
+      ca,
+      cert: await readFile(trust.platformCert),
+      key: await readFile(trust.platformKey),
+    }, hub);
 
-    const expectedDigest = createHash("sha256").update(SECRET_VALUE).digest("hex");
-    const agentResult = await runProbe([
+    const publication = await runProbe([
+      ...PLATFORM_FIXTURE_COMMAND,
+      "publish",
+      "--http-url", `http://127.0.0.1:${httpPort}`,
+      "--hub-url", `https://localhost:${connectPort}`,
+      "--server-name", "localhost",
+      "--admin-secret", ADMIN_SECRET,
+      "--ca", trust.ca,
+      "--cert", trust.platformCert,
+      "--key", trust.platformKey,
+    ], { cwd: platformRoot, env: safeEnvironment });
+    if (publication?.projectionState !== "committed" ||
+        !/^agent-catalog:sha256:[0-9a-f]{64}$/u.test(publication?.agentCatalogRef ?? "")) {
+      throw new Error("compatibility_publication_invalid");
+    }
+    const fixturePath = join(temporary, "publication.json");
+    await writeFile(fixturePath, `${JSON.stringify(publication)}\n`, { mode: 0o600 });
+
+    const commonProbe = [
+      "--fixture", fixturePath,
+      "--rpc-url", `https://localhost:${connectPort}`,
+      "--server-name", "localhost",
+      "--ca", trust.ca,
+      "--key", trust.agentKey,
+    ];
+    const agent = await runProbe([
       ...AGENT_PROBE_COMMAND,
-      "--base-url", hubBaseUrl,
-      "--namespace", NAMESPACE,
-      "--handle", handle,
-      "--expected-sha256", expectedDigest,
-    ], {
-      cwd: resolve(root, "kokoro-agent"),
-      env: isolatedEnvironment(process.env, { KOKORO_INTERNAL_SECRET_AGENT: AGENT_SECRET }),
-    });
-    if (agentResult?.schemaVersion !== 1 || agentResult.resolvedHandles !== 1) {
+      ...commonProbe,
+      "--cert", trust.agentCert,
+      "--cache", join(temporary, "agent-cache"),
+    ], { cwd: agentRoot, env: probeEnvironment });
+    if (agent?.schemaVersion !== 1 || agent.resolvedSkills !== 1 || agent.fetchedArtifacts !== 1 ||
+        agent.bodySha256 !== publication.expectedBodySha256 ||
+        !/^[0-9a-f]{64}$/u.test(agent.assemblyDigest ?? "")) {
       throw new Error("compatibility_agent_probe_invalid");
     }
-
-    const crossNamespace = await fetch(`${hubBaseUrl}/hub/runtime/mcp/secrets/resolve`, {
-      method: "POST",
-      headers: runtimeHeaders("agent", AGENT_SECRET),
-      body: JSON.stringify({ namespace: "namespace-other", handles: [handle] }),
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (crossNamespace.status !== 404) throw new Error("compatibility_cross_namespace_not_rejected");
+    const rejected = await runProbe([
+      ...AGENT_PROBE_COMMAND,
+      "--fixture", fixturePath,
+      "--rpc-url", `https://localhost:${connectPort}`,
+      "--server-name", "localhost",
+      "--ca", trust.ca,
+      "--cert", trust.platformCert,
+      "--key", trust.platformKey,
+      "--cache", join(temporary, "non-agent-cache"),
+      "--expect-rejected",
+    ], { cwd: agentRoot, env: probeEnvironment });
+    if (rejected?.schemaVersion !== 1 || rejected.rejected !== true) {
+      throw new Error("compatibility_non_agent_probe_invalid");
+    }
     passed = true;
-  } catch {
+  } catch (error) {
+    if (process.env.KOKORO_COMPAT_DEBUG === "1") {
+      process.stderr.write(`${error instanceof Error ? error.message : "hub_runtime_live_failed"}\n`);
+    }
     passed = false;
   }
   const cleanup = await stopAll();
-  if (membership !== null) {
+  if (temporary !== null) {
     try {
-      await membership.close();
+      if (process.env.KOKORO_COMPAT_DEBUG === "1" && process.env.KOKORO_COMPAT_KEEP_TEMP === "1") {
+        process.stderr.write(`hub_runtime_temp:${temporary}\n`);
+      } else {
+        await rm(temporary, { recursive: true, force: true });
+      }
     } catch {
       passed = false;
     }

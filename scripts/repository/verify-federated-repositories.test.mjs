@@ -185,7 +185,7 @@ test("Admin runtime evidence covers only the live Auth v1 provider", async () =>
   );
 });
 
-test("retired Hub HTTP runtime evidence is not promoted while Connect replacement is contract-only", async () => {
+test("Hub Connect runtime is promoted only for the Platform provider and Agent consumer", async () => {
   const currentManifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
   );
@@ -194,14 +194,30 @@ test("retired Hub HTTP runtime evidence is not promoted while Connect replacemen
   );
   assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
 
-  assert.equal(currentMatrix.contracts.find(({ id }) => id === "hub-runtime"), undefined);
-  assert.equal(currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "hub-runtime"), undefined);
+  assert.deepEqual(currentMatrix.contracts.find(({ id }) => id === "hub-runtime"), {
+    id: "hub-runtime",
+    version: 1,
+    providers: ["kokoro-platform"],
+    consumers: ["kokoro-agent"],
+  });
+  assert.deepEqual(currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "hub-runtime"), {
+    id: "hub-runtime",
+    commandId: "node-hub-runtime-v1",
+    required: true,
+    participants: ["kokoro-agent", "kokoro-platform"],
+    protocols: [{ id: "hub-runtime", version: 1 }],
+    timeoutSeconds: 180,
+  });
   const protocols = Object.fromEntries(
     currentManifest.repositories.map(({ id, protocols }) => [id, protocols]),
   );
-  for (const repository of ["kokoro-agent", "kokoro-platform", "kokoro-session"]) {
-    assert.equal(protocols[repository].some((item) => item.id === "hub-runtime"), false);
-  }
+  assert.deepEqual(protocols["kokoro-agent"].find(({ id }) => id === "hub-runtime"), {
+    id: "hub-runtime", version: 1, role: "consumer",
+  });
+  assert.deepEqual(protocols["kokoro-platform"].find(({ id }) => id === "hub-runtime"), {
+    id: "hub-runtime", version: 1, role: "provider",
+  });
+  assert.equal(protocols["kokoro-session"].some(({ id }) => id === "hub-runtime"), false);
 });
 
 test("Web publishes the Site project factory rather than the retired shared user app", async () => {

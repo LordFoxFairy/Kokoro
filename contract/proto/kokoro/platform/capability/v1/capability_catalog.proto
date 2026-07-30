@@ -16,7 +16,8 @@ service HubCatalogService {
 // HubRuntimeService is consumed only by the Agent assembly boundary. Session receives the
 // SiteRelease-pinned safe projection through Admission and never resolves Hub at run time.
 service HubRuntimeService {
-  rpc ResolveMcpSecrets(ResolveMcpSecretsRequest) returns (ResolveMcpSecretsResponse) {}
+  rpc ResolveExecutionAssembly(ResolveExecutionAssemblyRequest) returns (ResolveExecutionAssemblyResponse) {}
+  rpc FetchSkillArtifact(FetchSkillArtifactRequest) returns (stream FetchSkillArtifactResponse) {}
 }
 
 // CapabilityCatalogProjectionService is the Platform-owned inbox for Hub publications. Platform
@@ -248,33 +249,182 @@ message GetCatalogPublicationResponse {
   }];
 }
 
-message ResolveMcpSecretsRequest {
+message SkillGrantSelection {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string scope = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string content_hash = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string description = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 2048
+  }];
+}
+
+message McpGrantSelection {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string scope = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string config_hash = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message ResolveExecutionAssemblyRequest {
   string namespace = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  repeated string handles = 2 [(buf.validate.field).repeated = {
-    min_items: 1
-    max_items: 128
-    unique: true
-    items: {
-      string: {pattern: "^srt_[0-9a-f]{32}$"}
-    }
+  string agent_catalog_ref = 2 [(buf.validate.field).string = {
+    len: 85
+    pattern: "^agent-catalog:sha256:[0-9a-f]{64}$"
+  }];
+  repeated SkillGrantSelection skill_grants = 3 [(buf.validate.field).repeated = {max_items: 64}];
+  repeated McpGrantSelection mcp_grants = 4 [(buf.validate.field).repeated = {max_items: 64}];
+}
+
+message SkillArtifactManifest {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string scope = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string content_hash = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string description = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 2048
+  }];
+  string artifact_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 768
+  }];
+  uint64 artifact_size = 7 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 33554432
+  }];
+  string artifact_sha256 = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
 }
 
-message McpSecretMaterial {
-  string handle = 1 [(buf.validate.field).string = {pattern: "^srt_[0-9a-f]{32}$"}];
-  string value = 2 [(buf.validate.field).string = {
+message McpAssemblyConfig {
+  string option_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string scope = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string name = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string config_hash = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string transport = 6 [(buf.validate.field).string = {pattern: "^(http|streamable_http)$"}];
+  string url = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+  repeated string allowed_tools = 8 [(buf.validate.field).repeated = {
+    max_items: 256
+    unique: true
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
+  optional string authorization_value = 9 [(buf.validate.field).string = {
     min_len: 1
     max_bytes: 8192
   }];
 }
 
-message ResolveMcpSecretsResponse {
-  repeated McpSecretMaterial secrets = 1 [(buf.validate.field).repeated = {
-    min_items: 1
-    max_items: 128
+message ResolveExecutionAssemblyResponse {
+  string agent_catalog_ref = 1 [(buf.validate.field).string = {
+    len: 85
+    pattern: "^agent-catalog:sha256:[0-9a-f]{64}$"
+  }];
+  string assembly_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated SkillArtifactManifest skills = 3 [(buf.validate.field).repeated = {max_items: 64}];
+  repeated McpAssemblyConfig mcp_servers = 4 [(buf.validate.field).repeated = {max_items: 64}];
+}
+
+message FetchSkillArtifactRequest {
+  string namespace = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string agent_catalog_ref = 2 [(buf.validate.field).string = {
+    len: 85
+    pattern: "^agent-catalog:sha256:[0-9a-f]{64}$"
+  }];
+  SkillGrantSelection grant = 3 [(buf.validate.field).required = true];
+  string artifact_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 768
+  }];
+  uint64 expected_size = 5 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 33554432
+  }];
+  string expected_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message FetchSkillArtifactResponse {
+  string artifact_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 768
+  }];
+  uint64 offset = 2;
+  bytes data = 3 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 65536
   }];
 }
 

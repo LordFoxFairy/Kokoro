@@ -24,7 +24,7 @@ Scenarios do not replace child tests, mutate product data, or inspect private se
 | `session_agent_durable.py` | Agent | Session | Durable command/fact transport |
 | `agent_model_gateway.py` | Platform | Agent | Model gateway HTTP |
 | `admin-auth-connect.mjs` | Platform | Admin Web | Generated ConnectRPC `AdminAuthService.v1` + `AdminCommandService.v2` |
-| `hub-runtime.mjs` | Platform Hub | Session + Agent | Capability resolve + secret resolve HTTP |
+| `hub-runtime.mjs` | Platform Hub | Agent | Signed execution assembly resolve + streamed Skill artifact over ConnectRPC |
 
 The Admin control scenario runs Platform's official migration and seed commands, starts the real
 Fastify provider, and invokes Web's `compat:admin-auth` command. The consumer/provider probe set owns protocol
@@ -33,10 +33,11 @@ is closed over mTLS binding, exact command digest and operator attestation axes,
 checker-only queueing, Worker-only execution, frozen authority epochs, atomic terminalization, stale-authority
 no-effect, receipt recovery, break-glass review, and proof that the retired client execution authority is unreachable.
 
-The Hub runtime scenario starts the real Hub against the lease-scoped Mongo database and an HTTP membership
-fixture that validates Hub's own caller credential. It creates the test secret only through the public self
-API, then invokes Session and Agent's child-owned compatibility commands, which wrap their production clients.
-Root never imports sibling runtime source or seeds a private Hub collection.
+The Hub runtime scenario starts the real Hub HTTP and ConnectRPC providers against the lease-scoped Mongo
+database, uploads a Skill through the official Admin API, and freezes the signed catalog through the real
+Platform projection handler. It then invokes Agent's production Hub client to resolve the exact execution
+assembly and stream the referenced artifact, verifies the artifact digest, and proves a Platform identity
+cannot call the Agent-only runtime. Root never seeds a private Hub collection.
 
 The Web/Session scenario's closed local HTTP fixture exposes only the production-shaped
 `/site-context/resolve` and `/hub/runtime/resolve` reads. Web runs with strict Host resolution and no development

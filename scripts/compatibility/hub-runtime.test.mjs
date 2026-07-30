@@ -5,19 +5,21 @@ import test from "node:test";
 import {
   AGENT_PROBE_COMMAND,
   ASSERTION_IDS,
-  HUB_START_COMMAND,
-  SESSION_PROBE_COMMAND,
-  buildHubEnvironment,
+  HUB_CONNECT_START_COMMAND,
+  HUB_HTTP_START_COMMAND,
+  PLATFORM_FIXTURE_COMMAND,
+  buildConnectEnvironment,
+  buildHttpEnvironment,
   buildResult,
   validateLease,
 } from "./hub-runtime.mjs";
-import { startMembershipFixture } from "./hub-runtime-membership-fixture.mjs";
 
 const lease = {
   schemaVersion: 1,
   runId: "run_fixture",
   endpointFingerprint: "fixture-endpoint",
-  resources: ["mysql", "mongo", "redis"],
+  resources: ["postgres", "mongo", "redis"],
+  postgres: { database: "kokoro_test_run_fixture" },
   mongo: { database: "kokoro_test_run_fixture" },
   redis: {
     database: 8,
@@ -27,27 +29,49 @@ const lease = {
   },
 };
 
-test("validates the lease and isolates Hub to its Mongo database", () => {
+test("validates the lease and isolates both Hub provider processes to its Mongo database", () => {
   assert.deepEqual(validateLease(lease), lease);
   assert.throws(() => validateLease({ ...lease, mongo: { database: "kokoro_hub" } }), /compatibility_scope_invalid/u);
-  assert.throws(() => validateLease({ ...lease, resources: ["mongo"] }), /compatibility_scope_invalid/u);
+  assert.throws(() => validateLease({ ...lease, resources: ["postgres", "redis"] }), /compatibility_scope_invalid/u);
 
-  const env = buildHubEnvironment(lease, {
-    hubPort: 43123,
-    membershipBaseUrl: "http://127.0.0.1:43124",
+  const http = buildHttpEnvironment(lease, {
+    port: 43123,
+    workspaceConfig: "/tmp/workspace.yaml",
     parentEnv: { PATH: "/bin", UNSAFE_PARENT_SECRET: "must-not-flow" },
   });
-  assert.equal(env.KOKORO_HUB_MONGO_DB, lease.mongo.database);
-  assert.equal(env.KOKORO_HUB_MONGO_URL, "mongodb://127.0.0.1:27017");
-  assert.equal(env.KOKORO_USER_BASE_URL, "http://127.0.0.1:43124");
-  assert.equal(env.KOKORO_HUB_PORT, "43123");
-  assert.equal(env.KOKORO_HUB_MCP_MUTATION, "on");
-  assert.equal(env.UNSAFE_PARENT_SECRET, undefined);
+  assert.equal(http.KOKORO_HUB_MONGO_DB, lease.mongo.database);
+  assert.equal(http.KOKORO_HUB_MONGO_URL, "mongodb://127.0.0.1:27017/?directConnection=true");
+  assert.equal(http.KOKORO_HUB_PORT, "43123");
+  assert.equal(http.KOKORO_WORKSPACE_CONFIG, "/tmp/workspace.yaml");
+  assert.equal(http.UNSAFE_PARENT_SECRET, undefined);
+
+  const connect = buildConnectEnvironment(lease, {
+    port: 43124,
+    projectionPort: 43125,
+    workspaceConfig: "/tmp/workspace.yaml",
+    trust: {
+      ca: "/tmp/ca.pem",
+      serverCert: "/tmp/server.pem",
+      serverKey: "/tmp/server-key.pem",
+      platformCert: "/tmp/platform.pem",
+      platformKey: "/tmp/platform-key.pem",
+      peers: "/tmp/peers.json",
+      signingKey: "/tmp/signing.pem",
+    },
+    parentEnv: { PATH: "/bin", UNSAFE_PARENT_SECRET: "must-not-flow" },
+  });
+  assert.equal(connect.KOKORO_HUB_MONGO_DB, lease.mongo.database);
+  assert.equal(connect.KOKORO_HUB_MONGO_URL, "mongodb://127.0.0.1:27017/?directConnection=true");
+  assert.equal(connect.KOKORO_HUB_CONNECT_PORT, "43124");
+  assert.equal(connect.KOKORO_HUB_PLATFORM_PROJECTION_BASE_URL, "https://localhost:43125");
+  assert.equal(connect.KOKORO_HUB_RUNTIME_AGENT_CALLER_SAN_URI, "spiffe://kokoro.internal/agent");
+  assert.equal(connect.UNSAFE_PARENT_SECRET, undefined);
 });
 
-test("uses only child-owned official consumers and emits the closed assertion set", async () => {
-  assert.deepEqual(HUB_START_COMMAND, ["pnpm", "--filter", "@kokoro/hub", "run", "start"]);
-  assert.deepEqual(SESSION_PROBE_COMMAND, ["npm", "run", "--silent", "compat:hub-runtime", "--"]);
+test("runs the production Hub providers and Agent consumer with a closed assertion set", async () => {
+  assert.deepEqual(HUB_HTTP_START_COMMAND, ["pnpm", "--filter", "@kokoro/hub", "run", "dev"]);
+  assert.deepEqual(HUB_CONNECT_START_COMMAND, ["pnpm", "--filter", "@kokoro/hub", "run", "dev:connect"]);
+  assert.deepEqual(PLATFORM_FIXTURE_COMMAND.slice(0, 3), ["pnpm", "exec", "tsx"]);
   assert.deepEqual(AGENT_PROBE_COMMAND.slice(0, 4), ["uv", "run", "--locked", "python"]);
   assert.deepEqual(buildResult(true, 12), {
     schemaVersion: 1,
@@ -58,49 +82,20 @@ test("uses only child-owned official consumers and emits the closed assertion se
     durationMs: 12,
   });
 
-  const source = await readFile(new URL("./hub-runtime.mjs", import.meta.url), "utf8");
-  assert.doesNotMatch(source, /kokoro-(?:agent|platform|session)\/(?:src|test)\//u);
-  assert.doesNotMatch(source, /Mongo(?:Mcp|Skill|Secret)|hubCollections|insertOne/u);
-  assert.match(source, /\/hub\/self\/mcp\/secrets/u);
-});
-
-test("membership fixture verifies Hub caller credentials and returns the public envelope", async () => {
-  const fixture = await startMembershipFixture({
-    port: 0,
-    internalSecret: "fixture-hub-secret",
-    namespace: "namespace-fixture",
-    userId: "user-fixture",
-  });
-  try {
-    const authorized = await fetch(
-      `${fixture.baseUrl}/memberships/check?teamId=namespace-fixture&userId=user-fixture`,
-      { headers: {
-        "x-kokoro-service": "hub",
-        "x-kokoro-internal-secret": "fixture-hub-secret",
-      } },
-    );
-    assert.equal(authorized.status, 200);
-    assert.deepEqual(await authorized.json(), { data: { active: true, role: "owner" } });
-
-    const rejected = await fetch(
-      `${fixture.baseUrl}/memberships/check?teamId=namespace-fixture&userId=user-fixture`,
-      { headers: {
-        "x-kokoro-service": "session",
-        "x-kokoro-internal-secret": "fixture-hub-secret",
-      } },
-    );
-    assert.equal(rejected.status, 401);
-
-    const nonMember = await fetch(
-      `${fixture.baseUrl}/memberships/check?teamId=other&userId=user-fixture`,
-      { headers: {
-        "x-kokoro-service": "hub",
-        "x-kokoro-internal-secret": "fixture-hub-secret",
-      } },
-    );
-    assert.equal(nonMember.status, 200);
-    assert.deepEqual(await nonMember.json(), { data: { active: false, role: null } });
-  } finally {
-    await fixture.close();
-  }
+  const [runner, platformFixture, agentProbe] = await Promise.all([
+    readFile(new URL("./hub-runtime.mjs", import.meta.url), "utf8"),
+    readFile(new URL("./hub-runtime-platform-fixture.mts", import.meta.url), "utf8"),
+    readFile(new URL("./hub_runtime_agent.py", import.meta.url), "utf8"),
+  ]);
+  assert.doesNotMatch(`${runner}\n${platformFixture}\n${agentProbe}`, /ResolveMcpSecrets|KOKORO_HUB_BASE_URL|kokoro-session/u);
+  assert.doesNotMatch(`${runner}\n${platformFixture}`, /insertOne|updateOne|MongoClient/u);
+  assert.doesNotMatch(runner, /copy_extensions/u);
+  assert.match(runner, /"-extfile", extensions/u);
+  assert.doesNotMatch(runner, /"genpkey"/u);
+  assert.match(runner, /generateKeyPairSync\("ed25519"\)/u);
+  assert.match(runner, /request\.once\("error", fail\)/u);
+  assert.match(platformFixture, /HubCatalogService/u);
+  assert.match(platformFixture, /create\(FreezeCatalogEffectSchema/u);
+  assert.match(agentProbe, /HubExecutionAssemblyClient/u);
+  assert.match(agentProbe, /read_body/u);
 });
