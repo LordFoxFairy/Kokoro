@@ -522,6 +522,8 @@ def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields()
     ]
     assert "AuthenticatedOperatorQueryContext context" in credit
     assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
+    assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_DATABASE_OBSERVATION" in credit
+    assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_TRANSACTION_SNAPSHOT" not in credit
     assert "google.protobuf.Timestamp as_of" in _message_body(credit, "SiteCreditSummary")
     for message in (
         "CreditBalanceSummary",
