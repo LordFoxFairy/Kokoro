@@ -485,9 +485,9 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
         "int32 burn_priority",
         "CreditScopePolicy scope_policy",
         "string liability_merchant_account_ref",
-        "optional string calendar_zone",
-        "optional string window_anchor",
-        "optional uint64 expires_after_seconds",
+        "oneof window_policy",
+        "PermanentCreditWindowPolicy permanent_window",
+        "RecurringCreditWindowPolicy recurring_window",
     ):
         assert field in credit
     entitlement = _message_body(commerce, "PublishEntitlementTemplateRevisionEffect")
@@ -2141,6 +2141,44 @@ def test_site_release_certification_signature_matches_the_ed25519_authority() ->
     )
     assert signature is not None
     assert signature.group("constraints").strip() == "len: 64"
+
+
+def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -> None:
+    source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+
+    cursor_rules = re.findall(
+        r"optional string (?:next_)?page_token = \d+ \[\(buf\.validate\.field\)\.string = \{(.*?)\}\];",
+        source,
+        re.DOTALL,
+    )
+    assert len(cursor_rules) == 10
+    assert all("max_len: 1024" in rule for rule in cursor_rules)
+
+    credit_contract = source[
+        source.index("message PublishCreditProgramRevisionEffect"):
+        source.index("message PublishCreditProgramRevisionRequest")
+    ]
+    assert credit_contract.count("lte: 9223372036854775807") >= 2
+    assert source.count("lte: 9223372036854775807") >= 5
+
+
+def test_admin_commerce_credit_window_and_safe_label_are_executable_contracts() -> None:
+    source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+
+    assert "enum CreditRolloverPolicy" in source
+    assert "CREDIT_ROLLOVER_POLICY_NONE = 1;" in source
+    assert "message PermanentCreditWindowPolicy" in source
+    assert "message RecurringCreditWindowPolicy" in source
+    assert 'pattern: "^(?:UTC|[A-Za-z][A-Za-z0-9._+-]*(?:/[A-Za-z][A-Za-z0-9._+-]*)+)$"' in source
+    assert 'pattern: "^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"' in source
+    assert "string daily_local_time = 2" in source
+    assert "bool subscription_term_start = 3" in source
+    assert source.count("oneof window_policy") == 2
+    assert source.count("credit_program.window_policy_matches_bucket") == 2
+    assert source.count("credit_program.anchor_matches_bucket") == 2
+    assert source.count("rollover_policy") >= 2
+    assert "NFC-normalized" in source
+    assert "bidi formatting controls" in source
 
 
 def test_model_gateway_publishes_one_resumable_server_stream() -> None:
