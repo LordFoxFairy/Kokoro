@@ -64,7 +64,16 @@ const PRIVILEGED = Object.freeze({
     path: "contract/proto/kokoro/platform/admin/v2/admin_query.proto",
     service: "AdminQueryService",
     version: 2,
-    methods: ["GetSite", "ListSites", "GetUserWithinSite", "GetAuditWithinScope"],
+    methods: [
+      "GetSite",
+      "ListSites",
+      "GetUserWithinSite",
+      "GetAuditWithinScope",
+      "GetCurrentOperator",
+      "GetOperator",
+      "ListOperators",
+      "ListPendingApprovals",
+    ],
   },
   "platform-admin-command": {
     path: "contract/proto/kokoro/platform/admin/v2/admin_command.proto",
@@ -82,8 +91,8 @@ const PRIVILEGED = Object.freeze({
 
 // Wave 3 intentionally replaced the unused contract-only Admission v1 before any provider existed.
 // Keep the approved five-command shape and its registry declaration byte-frozen from this point.
-const ADMISSION_SHA256 = "f9690f6d80cf8f2f994b9573af57a59f356d2a0ae25d3b5b0686688182adf68c";
-const ADMISSION_REGISTRY_SHA256 = "462730285d52aad2ce4ee2b8446d0b549c2084ae375cdaee427c025ba6e61c8b";
+const ADMISSION_SHA256 = "327fc05c967b11a6905a56b8ea805d14cdbdf62190ecbc27034c2734d0e7c62e";
+const ADMISSION_REGISTRY_SHA256 = "a349ee6623ff6c7c527e82a804df3c3b539c44bbafb984bf337faeb9baec5a43";
 
 function fail(errors, code) {
   errors.push(code);
