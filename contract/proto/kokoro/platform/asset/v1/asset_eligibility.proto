@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package kokoro.platform.asset.v1;
+
+import "buf/validate/validate.proto";
+
+// AssetEligibilityService is the privileged owner boundary used by Session to
+// turn opaque browser attachment references into immutable display metadata.
+// The caller supplies a Platform-issued Session access grant; Platform derives
+// project/subject/generation from that grant and never trusts caller-asserted owner axes.
+service AssetEligibilityService {
+  rpc CheckActive(CheckActiveRequest) returns (CheckActiveResponse) {}
+  rpc ResolveSessionAttachments(ResolveSessionAttachmentsRequest) returns (ResolveSessionAttachmentsResponse) {}
+}
+
+message CheckActiveRequest {}
+
+message CheckActiveResponse {
+  string contract_revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message AttachmentEligibilityIntent {
+  string asset_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_grant_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message ResolveSessionAttachmentsRequest {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string session_access_grant = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 8192
+  }];
+  string session_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string purpose = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  repeated AttachmentEligibilityIntent attachments = 5 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+}
+
+message ReadySessionAttachment {
+  string asset_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string asset_grant_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string checksum_sha256 = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string safe_display_name = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 512
+  }];
+  string detected_media_type = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  uint64 size_bytes = 7;
+  uint64 eligibility_epoch = 8 [(buf.validate.field).uint64.gt = 0];
+}
+
+message ResolveSessionAttachmentsResponse {
+  // Same length and order as request.attachments. Partial success is forbidden.
+  repeated ReadySessionAttachment attachments = 1 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+}

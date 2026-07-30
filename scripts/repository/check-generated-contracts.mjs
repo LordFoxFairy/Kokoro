@@ -25,6 +25,13 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
   Object.freeze({
+    id: "platform-asset-eligibility@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-asset-eligibility",
+      "kokoro-session/src/platform/asset-eligibility-generated",
+    ]),
+  }),
+  Object.freeze({
     id: "platform-session-authorization@v1",
     mirrors: Object.freeze([
       "kokoro-platform/src/interfaces/connect/generated-authorization",

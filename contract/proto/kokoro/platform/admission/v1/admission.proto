@@ -519,6 +519,40 @@ message AuthorizationReconciliationResult {
     min_len: 1
     max_len: 256
   }];
+  optional SettledUsageProjection settled_usage = 5;
+}
+
+message SettledUsageProjection {
+  string settlement_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string closure_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string rated_amount = 3 [(buf.validate.field).string = {
+    pattern: "^(0|[1-9][0-9]*)$"
+    max_len: 78
+  }];
+  string currency_or_credit_unit = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string rating_snapshot_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  repeated string usage_evidence_refs = 6 [(buf.validate.field).repeated = {
+    max_items: 4096
+    unique: true
+    items: {
+      string: {
+        min_len: 1
+        max_len: 256
+      }
+    }
+  }];
 }
 
 message ReconcileRunAuthorizationResponse {

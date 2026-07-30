@@ -94,6 +94,16 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "platform-asset-eligibility@v1": Object.freeze({
+    schema: "kokoro.platform.asset.v1.AssetEligibilityService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/asset/v1/asset_eligibility.proto"]),
+    sources: Object.freeze([
+      "kokoro/platform/asset/v1/asset_eligibility.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-session-authorization@v1": Object.freeze({
     schema: "kokoro.platform.authorization.v1.SessionAuthorizationService",
     version: 1,
