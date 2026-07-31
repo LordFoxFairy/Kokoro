@@ -80,11 +80,20 @@ time at which each page was observed (`observed_at`). Source filters are the exa
 reference. Hold and RatedUsage allocation surfaces preserve bidirectional traceability through Grant without exposing rating
 snapshots, raw usage evidence, provider payloads, secrets or legal-liability dimensions.
 
-`agent-execution-evidence@v1` is the Agent-owned read-only reconciliation boundary. Its payload is deliberately
-business-identity-free: consumers receive run-local lifecycle evidence plus an independent append-only output
-sequence with bounded typed payloads. Terminal completed/failed evidence commits the output high watermark and
-digest chain. Output sequence numbers never share or advance lifecycle `durable_seq`. It remains `contract-only`
-until a live mTLS provider/consumer compatibility probe exists.
+ADR-014 hard-cuts the unpublished `agent-execution-evidence` registry boundary to V2. An Interaction is published only
+as one bounded, ordered `InteractionGroupRevisionEvidenceV2` envelope: every member carries the stable owner ref,
+monotonic revision, exact predecessor ref/digest, application request, frame fence and closed safe presentation. A
+half-group has no wire representation. Lifecycle evidence and the independent append-only output sequence remain
+read-only; output sequence numbers never share or advance lifecycle `durable_seq`.
+
+`session-agent-control@v2` is the matching durable control boundary. `RunResumeV2` binds one exact group revision and
+ordered decision vector without exposing any graph route. Sensitive decision values are typed encrypted envelopes.
+The stable resume receipt is projected as immutable predecessor-linked receipt events; an authenticated bounded
+`GetRunResumeReceiptEvents` read repairs gaps without overwriting history. Both V2 boundaries are machine-readable,
+generator-isolated and `contract-only`; neither appears in the active compatibility matrix until the real providers,
+official consumers and runtime assertions ship together. V1 files remain historical inputs only and are not advertised
+or double-written. `corpus/interaction-identity-v2.json` freezes all nine canonical ref planes using domain-separated
+SHA-256 and decimal-string revisions.
 
 ADR-015's image-first foundation publishes six isolated Protobuf bundles without claiming a runtime:
 `platform-media-runtime@v1` (GA to Platform Media), `model-image-effect@v1` (Platform Media to Model Gateway),

@@ -207,6 +207,30 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "agent-execution-evidence@v2": Object.freeze({
+    schema: "kokoro.agent.execution.v2.AgentExecutionEvidenceService",
+    version: 2,
+    inputs: Object.freeze([
+      "proto/kokoro/agent/execution/v2/agent_execution_evidence.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/agent/execution/v2/agent_execution_evidence.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
+  "session-agent-control@v2": Object.freeze({
+    schema: "kokoro.agent.control.v2.SessionAgentControlRecoveryService",
+    version: 2,
+    inputs: Object.freeze([
+      "proto/kokoro/agent/control/v2/session_agent_control.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/agent/control/v2/session_agent_control.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-media-runtime@v1": Object.freeze({
     schema: "kokoro.platform.media.v1.MediaRuntimeService",
     version: 1,

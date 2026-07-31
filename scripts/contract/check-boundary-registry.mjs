@@ -659,7 +659,9 @@ function validateShape(registry, retryClasses, errors) {
           errors.push(`boundary_registry_shape: operation receipt ref: ${name}`);
         } else if (
           operation.retryClass === "reconcile_receipt" &&
-          ["command-receipt", "state-read"].includes(operation.receipt.kind)
+          (["command-receipt", "state-read"].includes(operation.receipt.kind) ||
+            (operation.receipt.kind === "durable-event" &&
+              Object.hasOwn(operation.receipt, "recoveryOperation")))
         ) {
           if (
             typeof operation.receipt.recoveryOperation !== "string" ||

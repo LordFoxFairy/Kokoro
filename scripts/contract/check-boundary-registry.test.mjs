@@ -612,6 +612,20 @@ test("requires reconcile_receipt to name a reachable non-effect operation", asyn
   assert.equal(result.status, 0, result.stderr);
 });
 
+test("allows a durable receipt event to declare its authenticated recovery read", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].retryClass = "reconcile_receipt";
+  boundary.operations[0].receipt = {
+    kind: "durable-event",
+    recoveryOperation: "ReadThing",
+    ref: "fixture.receipt.event.v1",
+  };
+
+  const root = await makeFixture({ boundaries: [boundary] });
+  const result = run(root);
+  assert.equal(result.status, 0, result.stderr);
+});
+
 test("forbids recoveryOperation outside reconcile_receipt", async () => {
   const boundary = protoBoundary();
   boundary.operations[0].receipt.recoveryOperation = "ReadThing";

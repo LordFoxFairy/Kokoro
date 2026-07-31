@@ -251,7 +251,7 @@
       "sources": [
         {
           "kind": "proto",
-          "path": "contract/proto/kokoro/agent/execution/v1/agent_execution_evidence.proto",
+          "path": "contract/proto/kokoro/agent/execution/v2/agent_execution_evidence.proto",
           "select": {
             "service": "AgentExecutionEvidenceService"
           }
@@ -262,7 +262,97 @@
         "connect-rpc"
       ],
       "trustPlane": "internal-control",
-      "version": 1
+      "version": 2
+    },
+    {
+      "audience": "session-control-reconciliation-workload",
+      "consumers": [
+        {
+          "boundary": "service.session",
+          "repository": "kokoro-session"
+        }
+      ],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-agent",
+      "id": "session-agent-control",
+      "lifecycle": "contract-only",
+      "operations": [
+        {
+          "effect": true,
+          "id": "RunResumeV2",
+          "receipt": {
+            "kind": "durable-event",
+            "recoveryOperation": "GetRunResumeReceiptEvents",
+            "ref": "kokoro.agent.control.v2.RunResumeReceiptEventV2"
+          },
+          "retryClass": "reconcile_receipt",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "run-control-v2",
+          "trustedCallers": [
+            {
+              "audience": "agent.run-resume-control",
+              "role": "session-control-dispatcher"
+            }
+          ]
+        },
+        {
+          "effect": false,
+          "id": "RunResumeReceiptEventV2",
+          "receipt": null,
+          "retryClass": "same_identity",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "run-control-receipts-v2"
+        },
+        {
+          "effect": false,
+          "id": "GetRunResumeReceiptEvents",
+          "receipt": null,
+          "retryClass": "after_delay",
+          "scope": "namespace",
+          "siteBinding": "not-applicable",
+          "transport": "connect-rpc",
+          "trustedCallers": [
+            {
+              "audience": "agent.run-resume-recovery",
+              "role": "session-control-reconciler"
+            }
+          ]
+        }
+      ],
+      "protocol": "durable-control+connect-rpc",
+      "provider": {
+        "boundary": "service.agent",
+        "repository": "kokoro-agent"
+      },
+      "scope": "namespace",
+      "sourceStatus": "machine-readable",
+      "sources": [
+        {
+          "kind": "spec-yaml",
+          "path": "contract/spec/session-agent-control-v2.yaml",
+          "select": {
+            "member": "scalar",
+            "section": "durable_control_messages"
+          }
+        },
+        {
+          "kind": "proto",
+          "path": "contract/proto/kokoro/agent/control/v2/session_agent_control.proto",
+          "select": {
+            "service": "SessionAgentControlRecoveryService"
+          }
+        }
+      ],
+      "transportSource": null,
+      "transports": [
+        "run-control-v2",
+        "run-control-receipts-v2",
+        "connect-rpc"
+      ],
+      "trustPlane": "internal-control",
+      "version": 2
     },
     {
       "audience": "platform-admission-workload",

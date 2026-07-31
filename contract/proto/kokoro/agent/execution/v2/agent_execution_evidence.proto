@@ -1,0 +1,747 @@
+syntax = "proto3";
+
+package kokoro.agent.execution.v2;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// Agent owns immutable execution facts. V2 hard-cuts the V1 per-action owner
+// event into one atomic, ordered Interaction group revision envelope.
+service AgentExecutionEvidenceService {
+  rpc PullDurableExecutionEvidence(PullDurableExecutionEvidenceRequest) returns (PullDurableExecutionEvidenceResponse) {}
+  rpc GetDurableExecutionEvidence(GetDurableExecutionEvidenceRequest) returns (GetDurableExecutionEvidenceResponse) {}
+  rpc GetRunDurableCheckpoint(GetRunDurableCheckpointRequest) returns (GetRunDurableCheckpointResponse) {}
+  rpc PullDurableOutputRecords(PullDurableOutputRecordsRequest) returns (PullDurableOutputRecordsResponse) {}
+}
+
+enum DurableExecutionEvidenceKindV2 {
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_UNSPECIFIED = 0;
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_RUN_STARTED = 1;
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_INTERACTION_GROUP_REVISION = 2;
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_RUN_OWNER_COMPLETED = 3;
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_RUN_COMPLETED = 4;
+  DURABLE_EXECUTION_EVIDENCE_KIND_V2_RUN_FAILED = 5;
+}
+
+message DurableExecutionCanonicalPayloadV2 {
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+
+    RunStartedEvidenceV2 run_started = 1;
+    InteractionGroupRevisionEvidenceV2 interaction_group_revision = 2;
+    RunOwnerCompletedEvidenceV2 run_owner_completed = 3;
+    RunCompletedEvidenceV2 run_completed = 4;
+    RunFailedEvidenceV2 run_failed = 5;
+  }
+}
+
+message RunStartedEvidenceV2 {}
+
+enum InteractionKindV2 {
+  INTERACTION_KIND_V2_UNSPECIFIED = 0;
+  INTERACTION_KIND_V2_APPROVAL = 1;
+  INTERACTION_KIND_V2_QUESTION = 2;
+  INTERACTION_KIND_V2_STRUCTURED_INPUT = 3;
+  INTERACTION_KIND_V2_RESULT_REVIEW = 4;
+  INTERACTION_KIND_V2_PLAN = 5;
+}
+
+enum InteractionRevisionStateV2 {
+  INTERACTION_REVISION_STATE_V2_UNSPECIFIED = 0;
+  INTERACTION_REVISION_STATE_V2_PENDING = 1;
+  INTERACTION_REVISION_STATE_V2_RESUME_PERSISTED = 2;
+  INTERACTION_REVISION_STATE_V2_APPLYING = 3;
+  INTERACTION_REVISION_STATE_V2_APPLIED = 4;
+  INTERACTION_REVISION_STATE_V2_OUTCOME_UNKNOWN = 5;
+  INTERACTION_REVISION_STATE_V2_RESOLVED = 6;
+  INTERACTION_REVISION_STATE_V2_SUPERSEDED_BY_REVISION = 7;
+  INTERACTION_REVISION_STATE_V2_CANCELED = 8;
+  INTERACTION_REVISION_STATE_V2_CLOSED_BY_TERMINAL = 9;
+}
+
+enum InteractionDecisionKindV2 {
+  INTERACTION_DECISION_KIND_V2_UNSPECIFIED = 0;
+  INTERACTION_DECISION_KIND_V2_APPROVE = 1;
+  INTERACTION_DECISION_KIND_V2_EDIT = 2;
+  INTERACTION_DECISION_KIND_V2_REJECT = 3;
+  INTERACTION_DECISION_KIND_V2_RESPOND = 4;
+  INTERACTION_DECISION_KIND_V2_SUBMIT = 5;
+}
+
+message InteractionOwnerRevisionRefV2 {
+  string interaction_owner_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_revision = 2 [(buf.validate.field).uint64.gt = 0];
+}
+
+message InteractionRiskSummaryV2 {
+  string level = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string source = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+}
+
+message SafeInteractionPromptV2 {
+  option (buf.validate.message).cel = {
+    id: "interaction_prompt.input_schema_pair"
+    message: "input schema ref and safe schema bytes are an atomic pair"
+    expression: "has(this.input_schema_ref) == has(this.safe_input_schema_json)"
+  };
+  string title = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 512
+  }];
+  string description = 2 [(buf.validate.field).string.max_bytes = 4096];
+  optional InteractionRiskSummaryV2 risk = 3;
+  optional bytes safe_request_json = 4 [(buf.validate.field).bytes.max_len = 16384];
+  optional string input_schema_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional bytes safe_input_schema_json = 6 [(buf.validate.field).bytes.max_len = 16384];
+  optional string safe_validation_error = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+  optional google.protobuf.Timestamp deadline = 8;
+}
+
+message ApprovalPresentationV2 {
+  option (buf.validate.message).cel = {
+    id: "approval_presentation.allowed_actions"
+    message: "approval actions are limited to approve, edit, or reject"
+    expression: "this.allowed_decisions.all(d, d == 1 || d == 2 || d == 3)"
+  };
+  SafeInteractionPromptV2 prompt = 1 [(buf.validate.field).required = true];
+  repeated InteractionDecisionKindV2 allowed_decisions = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 3
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+}
+
+message QuestionPresentationV2 {
+  option (buf.validate.message).cel = {
+    id: "question_presentation.allowed_actions"
+    message: "question actions are limited to reject or respond"
+    expression: "this.allowed_decisions.all(d, d == 3 || d == 4)"
+  };
+  SafeInteractionPromptV2 prompt = 1 [(buf.validate.field).required = true];
+  repeated InteractionDecisionKindV2 allowed_decisions = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 2
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+}
+
+message StructuredInputPresentationV2 {
+  option (buf.validate.message).cel = {
+    id: "structured_input_presentation.allowed_actions"
+    message: "structured input actions are limited to reject or submit"
+    expression: "this.allowed_decisions.all(d, d == 3 || d == 5)"
+  };
+  SafeInteractionPromptV2 prompt = 1 [(buf.validate.field).required = true];
+  repeated InteractionDecisionKindV2 allowed_decisions = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 2
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+}
+
+message ResultReviewPresentationV2 {
+  option (buf.validate.message).cel = {
+    id: "result_review_presentation.allowed_actions"
+    message: "result review actions are limited to approve, edit, or reject"
+    expression: "this.allowed_decisions.all(d, d == 1 || d == 2 || d == 3)"
+  };
+  SafeInteractionPromptV2 prompt = 1 [(buf.validate.field).required = true];
+  string safe_result_preview = 2 [(buf.validate.field).string.max_bytes = 16384];
+  repeated InteractionDecisionKindV2 allowed_decisions = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 3
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+}
+
+enum PlanStepStatusV2 {
+  PLAN_STEP_STATUS_V2_UNSPECIFIED = 0;
+  PLAN_STEP_STATUS_V2_PENDING = 1;
+  PLAN_STEP_STATUS_V2_IN_PROGRESS = 2;
+  PLAN_STEP_STATUS_V2_COMPLETED = 3;
+}
+
+message PlanStepV2 {
+  string step_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 1024
+  }];
+  PlanStepStatusV2 status = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message PlanPresentationV2 {
+  option (buf.validate.message).cel = {
+    id: "plan_presentation.allowed_actions"
+    message: "plan actions are limited to approve or reject"
+    expression: "this.allowed_decisions.all(d, d == 1 || d == 3)"
+  };
+  string summary = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+  repeated PlanStepV2 steps = 2 [(buf.validate.field).repeated.max_items = 256];
+  repeated InteractionDecisionKindV2 allowed_decisions = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 2
+    unique: true
+    items: {
+      enum: {
+        defined_only: true
+        not_in: 0
+      }
+    }
+  }];
+  optional google.protobuf.Timestamp deadline = 4;
+}
+
+message InteractionPresentationV2 {
+  oneof presentation {
+    option (buf.validate.oneof).required = true;
+
+    ApprovalPresentationV2 approval = 1;
+    QuestionPresentationV2 question = 2;
+    StructuredInputPresentationV2 structured_input = 3;
+    ResultReviewPresentationV2 result_review = 4;
+    PlanPresentationV2 plan = 5;
+  }
+}
+
+message InteractionOwnerRevisionEvidenceV2 {
+  option (buf.validate.message).cel = {
+    id: "interaction_owner.predecessor_pair"
+    message: "predecessor event ref and evidence digest are an atomic pair"
+    expression: "has(this.predecessor_projection_event_ref) == has(this.predecessor_evidence_sha256)"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_owner.predecessor_revision"
+    message: "revision one has no predecessor; every successor names the exact predecessor"
+    expression: "(this.owner_revision == 1u && !has(this.predecessor_projection_event_ref)) || (this.owner_revision > 1u && has(this.predecessor_projection_event_ref))"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_owner.group_identity"
+    message: "a member belongs to one explicit positive group revision and frame"
+    expression: "this.decision_group_ref != '' && this.decision_group_revision > 0u && this.pending_frame_digest.matches('^[0-9a-f]{64}$')"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_owner.required_membership"
+    message: "the required owner revision vector is unique and contains this exact revision"
+    expression: "this.required_owner_revision_refs.exists(r, r.interaction_owner_ref == this.interaction_owner_ref && r.owner_revision == this.owner_revision) && this.required_owner_revision_refs.all(r, this.required_owner_revision_refs.filter(n, n.interaction_owner_ref == r.interaction_owner_ref && n.owner_revision == r.owner_revision).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_owner.presentation_kind"
+    message: "the closed presentation arm matches the declared interaction kind"
+    expression: "(this.interaction_kind == 1 && has(this.presentation.approval)) || (this.interaction_kind == 2 && has(this.presentation.question)) || (this.interaction_kind == 3 && has(this.presentation.structured_input)) || (this.interaction_kind == 4 && has(this.presentation.result_review)) || (this.interaction_kind == 5 && has(this.presentation.plan))"
+  };
+  string interaction_owner_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_revision = 2 [(buf.validate.field).uint64.gt = 0];
+  string projection_event_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_projection_event_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_evidence_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string projection_payload_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  InteractionKindV2 interaction_kind = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string application_request_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string decision_group_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 decision_group_revision = 10 [(buf.validate.field).uint64.gt = 0];
+  uint32 group_member_ordinal = 11 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 64
+  }];
+  repeated InteractionOwnerRevisionRefV2 required_owner_revision_refs = 12 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+  string pending_frame_digest = 13 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  InteractionPresentationV2 presentation = 14 [(buf.validate.field).required = true];
+  InteractionRevisionStateV2 state = 15 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message InteractionGroupRevisionEvidenceV2 {
+  option (buf.validate.message).cel = {
+    id: "interaction_group.member_ordinals"
+    message: "member ordinals are unique and cover the exact contiguous range one through N"
+    expression: "this.members.all(m, m.group_member_ordinal <= uint(this.members.size()) && this.members.filter(n, n.group_member_ordinal == m.group_member_ordinal).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_group.member_group_identity"
+    message: "every member is bound to this exact group revision and pending frame"
+    expression: "this.members.all(m, m.decision_group_ref == this.decision_group_ref && m.decision_group_revision == this.decision_group_revision && m.pending_frame_digest == this.pending_frame_digest)"
+  };
+  option (buf.validate.message).cel = {
+    id: "interaction_group.required_vector"
+    message: "every member commits to the exact ordered group member vector"
+    expression: "this.members.all(m, m.required_owner_revision_refs.map(r, r.interaction_owner_ref + ':' + string(r.owner_revision)) == this.members.map(n, n.interaction_owner_ref + ':' + string(n.owner_revision)))"
+  };
+  string decision_group_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 decision_group_revision = 2 [(buf.validate.field).uint64.gt = 0];
+  string group_projection_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string pending_frame_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string member_vector_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated InteractionOwnerRevisionEvidenceV2 members = 6 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+}
+
+message RunOwnerCompletedEvidenceV2 {
+  string execution_context_anchor = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_context_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 owner_revision = 3 [(buf.validate.field).uint64.gt = 0];
+}
+
+enum RunCompletedEvidenceStatusV2 {
+  RUN_COMPLETED_EVIDENCE_STATUS_V2_UNSPECIFIED = 0;
+  RUN_COMPLETED_EVIDENCE_STATUS_V2_COMPLETED = 1;
+  RUN_COMPLETED_EVIDENCE_STATUS_V2_CANCELLED = 2;
+}
+
+message TokenUsageEvidenceV2 {
+  uint64 input_tokens = 1;
+  uint64 output_tokens = 2;
+}
+
+message RunCompletedEvidenceV2 {
+  RunCompletedEvidenceStatusV2 status = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional TokenUsageEvidenceV2 token_usage = 2;
+  uint64 output_high_watermark = 3;
+  string output_digest_sha256 = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message RunFailedEvidenceV2 {
+  string code = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string error_kind = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string message = 3 [(buf.validate.field).string.max_bytes = 4096];
+  uint64 output_high_watermark = 4;
+  string output_digest_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message DurableOutputPayloadV2 {
+  oneof payload {
+    option (buf.validate.oneof).required = true;
+
+    TextDeltaOutputV2 text_delta = 1;
+    TextSnapshotOutputV2 text_snapshot = 2;
+    SafeReasoningSummaryOutputV2 safe_reasoning_summary = 3;
+    ToolStartedOutputV2 tool_started = 4;
+    ToolFinishedOutputV2 tool_finished = 5;
+    PlanProgressOutputV2 plan_progress = 6;
+    SubagentProgressOutputV2 subagent_progress = 7;
+    MediaOperationReferenceOutputV2 media_operation_reference = 8;
+    NoticeOutputV2 notice = 9;
+    ErrorOutputV2 error = 10;
+  }
+}
+
+message TextDeltaOutputV2 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string delta = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 16384
+  }];
+}
+
+message TextSnapshotOutputV2 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string text = 2 [(buf.validate.field).string.max_bytes = 61440];
+  uint64 replaces_through_output_seq = 3;
+}
+
+message SafeReasoningSummaryOutputV2 {
+  string part_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_summary = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 8192
+  }];
+}
+
+message ToolStartedOutputV2 {
+  string tool_call_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string tool_label = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional bytes redacted_input_summary_json = 3 [(buf.validate.field).bytes.max_len = 16384];
+}
+
+message ToolFinishedOutputV2 {
+  string tool_call_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_result_preview = 2 [(buf.validate.field).string.max_bytes = 16384];
+  bool is_error = 3;
+  bool truncated = 4;
+}
+
+message PlanProgressOutputV2 {
+  string plan_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_summary = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_bytes: 4096
+  }];
+  repeated PlanStepV2 steps = 3 [(buf.validate.field).repeated.max_items = 256];
+}
+
+enum SubagentProgressStatusV2 {
+  SUBAGENT_PROGRESS_STATUS_V2_UNSPECIFIED = 0;
+  SUBAGENT_PROGRESS_STATUS_V2_PENDING = 1;
+  SUBAGENT_PROGRESS_STATUS_V2_RUNNING = 2;
+  SUBAGENT_PROGRESS_STATUS_V2_COMPLETED = 3;
+  SUBAGENT_PROGRESS_STATUS_V2_FAILED = 4;
+  SUBAGENT_PROGRESS_STATUS_V2_CANCELED = 5;
+}
+
+message SubagentProgressOutputV2 {
+  string subagent_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  SubagentProgressStatusV2 status = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string safe_summary = 3 [(buf.validate.field).string.max_bytes = 4096];
+}
+
+message MediaOperationReferenceOutputV2 {
+  string stable_output_slot_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string agent_media_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+enum NoticeSeverityV2 {
+  NOTICE_SEVERITY_V2_UNSPECIFIED = 0;
+  NOTICE_SEVERITY_V2_INFO = 1;
+  NOTICE_SEVERITY_V2_WARNING = 2;
+}
+
+enum OutputRetryClassV2 {
+  OUTPUT_RETRY_CLASS_V2_UNSPECIFIED = 0;
+  OUTPUT_RETRY_CLASS_V2_NEVER = 1;
+  OUTPUT_RETRY_CLASS_V2_IMMEDIATE = 2;
+  OUTPUT_RETRY_CLASS_V2_AFTER_DELAY = 3;
+  OUTPUT_RETRY_CLASS_V2_AFTER_USER_ACTION = 4;
+  OUTPUT_RETRY_CLASS_V2_RECONCILE_RECEIPT = 5;
+}
+
+message NoticeOutputV2 {
+  string notice_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string message = 3 [(buf.validate.field).string.max_bytes = 4096];
+  NoticeSeverityV2 severity = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional OutputRetryClassV2 retry_class = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ErrorOutputV2 {
+  string error_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string message = 3 [(buf.validate.field).string.max_bytes = 4096];
+  OutputRetryClassV2 retry_class = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message DurableOutputRecordV2 {
+  string output_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 output_version = 2 [(buf.validate.field).uint64.const = 2];
+  string run_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 output_seq = 4 [(buf.validate.field).uint64.gt = 0];
+  bytes canonical_payload = 5 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 65536
+  }];
+  string payload_sha256 = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
+  string producer_instance_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 9 [(buf.validate.field).uint64.gt = 0];
+}
+
+message PullDurableOutputRecordsRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 after_output_seq = 2;
+  uint32 page_size = 3 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 64
+  }];
+}
+
+message PullDurableOutputRecordsResponse {
+  repeated DurableOutputRecordV2 records = 1 [(buf.validate.field).repeated.max_items = 64];
+  optional uint64 next_after_output_seq = 2 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 3;
+}
+
+message DurableExecutionEvidenceV2 {
+  string evidence_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 evidence_version = 2 [(buf.validate.field).uint64.const = 2];
+  string run_id = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 durable_seq = 4 [(buf.validate.field).uint64.gt = 0];
+  string event_id = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  DurableExecutionEvidenceKindV2 kind = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bytes canonical_payload = 7 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 1048576
+  }];
+  string payload_sha256 = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 9 [(buf.validate.field).required = true];
+  string producer_instance_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 11 [(buf.validate.field).uint64.gt = 0];
+  string dispatch_id = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string assistant_message_id = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string evidence_sha256 = 14 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string interaction_protocol_release_epoch = 15 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message PullDurableExecutionEvidenceRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint64 after_durable_seq = 2;
+  uint32 page_size = 3 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 256
+  }];
+}
+
+message PullDurableExecutionEvidenceResponse {
+  repeated DurableExecutionEvidenceV2 evidence = 1 [(buf.validate.field).repeated.max_items = 256];
+  optional uint64 next_after_durable_seq = 2 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 3;
+}
+
+message GetDurableExecutionEvidenceRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string evidence_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message DurableExecutionEvidenceNotFoundV2 {}
+
+message GetDurableExecutionEvidenceResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    DurableExecutionEvidenceV2 evidence = 1;
+    DurableExecutionEvidenceNotFoundV2 not_found = 2;
+  }
+}
+
+message GetRunDurableCheckpointRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+}
+
+message GetRunDurableCheckpointResponse {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    DurableExecutionEvidenceV2 evidence = 1;
+    DurableExecutionEvidenceNotFoundV2 not_found = 2;
+  }
+}

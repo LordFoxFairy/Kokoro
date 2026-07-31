@@ -1,0 +1,341 @@
+syntax = "proto3";
+
+package kokoro.agent.control.v2;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// Durable control is delivered by the Session outbox. Recovery reads use the
+// same authenticated internal workload boundary; caller claims never ride in
+// the business payload.
+service SessionAgentControlRecoveryService {
+  rpc GetRunResumeReceiptEvents(GetRunResumeReceiptEventsRequest) returns (GetRunResumeReceiptEventsResponse) {}
+}
+
+enum InteractionDecisionKindV2 {
+  INTERACTION_DECISION_KIND_V2_UNSPECIFIED = 0;
+  INTERACTION_DECISION_KIND_V2_APPROVE = 1;
+  INTERACTION_DECISION_KIND_V2_EDIT = 2;
+  INTERACTION_DECISION_KIND_V2_REJECT = 3;
+  INTERACTION_DECISION_KIND_V2_RESPOND = 4;
+  INTERACTION_DECISION_KIND_V2_SUBMIT = 5;
+}
+
+enum DecisionDataClassificationV2 {
+  DECISION_DATA_CLASSIFICATION_V2_UNSPECIFIED = 0;
+  DECISION_DATA_CLASSIFICATION_V2_INTERNAL = 1;
+  DECISION_DATA_CLASSIFICATION_V2_CONFIDENTIAL = 2;
+  DECISION_DATA_CLASSIFICATION_V2_RESTRICTED = 3;
+}
+
+// No plaintext decision value crosses this boundary. The audience-bound key
+// handle is resolved by the receiving workload and the digests bind the exact
+// ciphertext, nonce and associated data without logging their contents.
+message EncryptedDecisionValueV2 {
+  string encryption_key_handle = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  bytes ciphertext = 2 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 65536
+  }];
+  string ciphertext_sha256 = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  bytes nonce = 4 [(buf.validate.field).bytes = {
+    min_len: 12
+    max_len: 32
+  }];
+  string associated_data_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  DecisionDataClassificationV2 classification = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ApproveDecisionV2 {}
+
+message EditDecisionV2 {
+  EncryptedDecisionValueV2 value = 1 [(buf.validate.field).required = true];
+}
+
+message RejectDecisionV2 {
+  optional string safe_reason = 1 [(buf.validate.field).string.max_bytes = 4096];
+}
+
+message RespondDecisionV2 {
+  EncryptedDecisionValueV2 value = 1 [(buf.validate.field).required = true];
+}
+
+message SubmitDecisionV2 {
+  EncryptedDecisionValueV2 value = 1 [(buf.validate.field).required = true];
+}
+
+message InteractionDecisionPayloadV2 {
+  oneof decision {
+    option (buf.validate.oneof).required = true;
+
+    ApproveDecisionV2 approve = 1;
+    EditDecisionV2 edit = 2;
+    RejectDecisionV2 reject = 3;
+    RespondDecisionV2 respond = 4;
+    SubmitDecisionV2 submit = 5;
+  }
+}
+
+message RunResumeDecisionV2 {
+  option (buf.validate.message).cel = {
+    id: "run_resume_decision.payload_kind"
+    message: "the declared decision kind matches the closed payload arm"
+    expression: "(this.kind == 1 && has(this.decision.approve)) || (this.kind == 2 && has(this.decision.edit)) || (this.kind == 3 && has(this.decision.reject)) || (this.kind == 4 && has(this.decision.respond)) || (this.kind == 5 && has(this.decision.submit))"
+  };
+  string interaction_owner_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 owner_revision = 2 [(buf.validate.field).uint64.gt = 0];
+  string projection_event_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string application_request_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint32 group_member_ordinal = 5 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 64
+  }];
+  string decision_receipt_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string decision_payload_sha256 = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  InteractionDecisionKindV2 kind = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  InteractionDecisionPayloadV2 decision = 9 [(buf.validate.field).required = true];
+}
+
+message RunResumePayloadV2 {
+  option (buf.validate.message).cel = {
+    id: "run_resume.member_ordinals"
+    message: "decision ordinals are unique and cover the exact contiguous range one through N"
+    expression: "this.decisions.all(d, d.group_member_ordinal <= uint(this.decisions.size()) && this.decisions.filter(n, n.group_member_ordinal == d.group_member_ordinal).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "run_resume.owner_revisions_unique"
+    message: "an exact owner revision appears once in the ordered decision group"
+    expression: "this.decisions.all(d, this.decisions.filter(n, n.interaction_owner_ref == d.interaction_owner_ref && n.owner_revision == d.owner_revision).size() == 1)"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string resume_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string pending_frame_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string decision_group_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 decision_group_revision = 5 [(buf.validate.field).uint64.gt = 0];
+  repeated RunResumeDecisionV2 decisions = 6 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+}
+
+message RunResumeV2 {
+  RunResumePayloadV2 payload = 1 [(buf.validate.field).required = true];
+  string request_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string interaction_protocol_release_epoch = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+enum RunResumeReceiptStatusV2 {
+  RUN_RESUME_RECEIPT_STATUS_V2_UNSPECIFIED = 0;
+  RUN_RESUME_RECEIPT_STATUS_V2_PERSISTED = 1;
+  RUN_RESUME_RECEIPT_STATUS_V2_APPLYING = 2;
+  RUN_RESUME_RECEIPT_STATUS_V2_APPLIED = 3;
+  RUN_RESUME_RECEIPT_STATUS_V2_SUPERSEDED = 4;
+  RUN_RESUME_RECEIPT_STATUS_V2_REJECTED = 5;
+  RUN_RESUME_RECEIPT_STATUS_V2_OUTCOME_UNKNOWN = 6;
+  RUN_RESUME_RECEIPT_STATUS_V2_CLOSED_BY_TERMINAL = 7;
+}
+
+message RunResumeReceiptEventV2 {
+  option (buf.validate.message).cel = {
+    id: "resume_receipt.predecessor_pair"
+    message: "predecessor receipt event ref and digest are an atomic pair"
+    expression: "has(this.predecessor_receipt_event_ref) == has(this.predecessor_receipt_event_sha256)"
+  };
+  option (buf.validate.message).cel = {
+    id: "resume_receipt.predecessor_revision"
+    message: "revision one has no predecessor; every successor names the exact predecessor"
+    expression: "(this.resume_receipt_revision == 1u && !has(this.predecessor_receipt_event_ref)) || (this.resume_receipt_revision > 1u && has(this.predecessor_receipt_event_ref))"
+  };
+  option (buf.validate.message).cel = {
+    id: "resume_receipt.disposition_proof_pair"
+    message: "disposition proof ref and digest are an atomic pair"
+    expression: "has(this.disposition_proof_ref) == has(this.disposition_proof_sha256)"
+  };
+  option (buf.validate.message).cel = {
+    id: "resume_receipt.application_proof_pair"
+    message: "application proof ref and digest are an atomic pair"
+    expression: "has(this.application_proof_ref) == has(this.application_proof_sha256)"
+  };
+  option (buf.validate.message).cel = {
+    id: "resume_receipt.proof_requirements"
+    message: "terminal, superseded and applied dispositions carry their exact durable proof"
+    expression: "(this.status != 3 || (has(this.application_proof_ref) && has(this.applied_checkpoint_ref))) && (this.status != 4 || has(this.disposition_proof_ref)) && (this.status != 7 || has(this.terminal_evidence_ref))"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string resume_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string resume_receipt_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string resume_receipt_event_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 resume_receipt_revision = 5 [(buf.validate.field).uint64.gt = 0];
+  optional string predecessor_receipt_event_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_receipt_event_sha256 = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string request_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string receipt_event_sha256 = 9 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  RunResumeReceiptStatusV2 status = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string disposition_proof_ref = 11 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string disposition_proof_sha256 = 12 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional string application_proof_ref = 13 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string application_proof_sha256 = 14 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional string applied_checkpoint_ref = 15 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string terminal_evidence_ref = 16 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string safe_code = 17 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  google.protobuf.Timestamp recorded_at = 18 [(buf.validate.field).required = true];
+  string producer_instance_ref = 19 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 20 [(buf.validate.field).uint64.gt = 0];
+  string interaction_protocol_release_epoch = 21 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message GetRunResumeReceiptEventsRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string resume_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 after_receipt_revision = 3;
+  uint32 page_size = 4 [(buf.validate.field).uint32 = {
+    gt: 0
+    lte: 64
+  }];
+}
+
+message GetRunResumeReceiptEventsResponse {
+  option (buf.validate.message).cel = {
+    id: "resume_receipt_pull.contiguous_chain"
+    message: "returned receipt revisions are unique and cover the exact range after the echoed cursor"
+    expression: "this.events.all(e, e.resume_receipt_revision > this.returned_after_receipt_revision && e.resume_receipt_revision <= this.returned_after_receipt_revision + uint(this.events.size()) && this.events.filter(n, n.resume_receipt_revision == e.resume_receipt_revision).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "resume_receipt_pull.aggregate_identity"
+    message: "every returned event belongs to the stable receipt aggregate and cannot exceed its authenticated head"
+    expression: "this.events.all(e, e.run_id == this.run_id && e.resume_ref == this.resume_ref && e.resume_receipt_ref == this.resume_receipt_ref && e.resume_receipt_revision <= this.current_head_revision)"
+  };
+  string resume_receipt_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 current_head_revision = 2 [(buf.validate.field).uint64.gt = 0];
+  string current_head_event_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string current_head_event_sha256 = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated RunResumeReceiptEventV2 events = 5 [(buf.validate.field).repeated.max_items = 64];
+  optional uint64 next_after_receipt_revision = 6 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 7;
+  uint64 returned_after_receipt_revision = 8;
+  string run_id = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string resume_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
