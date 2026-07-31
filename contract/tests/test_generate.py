@@ -116,6 +116,7 @@ def test_plan_proposal_raw_contract_is_typed_and_owner_safe() -> None:
 
 def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     http = load("http.yaml")
+    assert http["enums"]["context_policy"] == ["standard", "temporary"]
     part_kinds = set(http["enums"]["message_part_kind"])
     assert {"reasoning", "job"}.isdisjoint(part_kinds)
     assert {
@@ -192,6 +193,28 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     assert fields["messages"].get("optional") is not True
     assert fields["branches"].get("optional") is not True
     assert fields["snapshot_watermark"]["type"] == "object:SnapshotWatermark"
+    session_metadata = next(
+        obj for obj in http["objects"] if obj["name"] == "SessionMetadata"
+    )
+    metadata_fields = {field["name"]: field for field in session_metadata["fields"]}
+    assert metadata_fields["context_policy"] == {
+        "name": "context_policy",
+        "type": "enum:context_policy",
+    }
+    create_request = next(
+        obj for obj in http["objects"] if obj["name"] == "CreateSessionRequest"
+    )
+    create_fields = {field["name"]: field for field in create_request["fields"]}
+    assert create_fields["context_policy"] == {
+        "name": "context_policy",
+        "type": "enum:context_policy",
+    }
+    assert create_fields["context_policy"].get("optional") is not True
+    create_result = next(
+        obj for obj in http["objects"] if obj["name"] == "SessionCreatedCommandResult"
+    )
+    assert {field["name"] for field in create_result["fields"]} >= {"context_policy"}
+    assert 'context_policy: z.enum(["standard", "temporary"])' in generated_browser
     capability = next(
         obj for obj in http["objects"] if obj["name"] == "CapabilityDisplaySnapshot"
     )

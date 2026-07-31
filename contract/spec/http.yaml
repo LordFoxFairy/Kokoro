@@ -26,6 +26,7 @@ enums:
   supported_part_lifecycle: [created, streaming, completed, partial, failed, canceled]
   branch_origin: [original, edit, regenerate, fork]
   session_lifecycle: [active, archived, trashed]
+  context_policy: [standard, temporary]
   execution_status: [admission_pending, waiting_prerequisite, running, paused, cancelling, completed, failed, canceled, outcome_unknown]
   cost_status: [none, reserved, committed, cost_pending, settled, released, reconciliation_required]
   notice_severity: [info, warning]
@@ -73,6 +74,7 @@ objects:
       - {name: session_id, type: string_nonempty}
       - {name: initial_branch_id, type: string_nonempty}
       - {name: session_version, type: positive_int}
+      - {name: context_policy, type: enum:context_policy}
   - name: RunLaunchCommandResult
     fields:
       - {name: session_id, type: string_nonempty}
@@ -436,6 +438,9 @@ objects:
       - {name: project_ref, type: string_nonempty}
       - {name: title, type: string_nonempty}
       - {name: lifecycle, type: enum:session_lifecycle}
+      # Owner-written at create and immutable for the Session lifetime. Every branch inherits it;
+      # changing policy always creates a different Session without inherited context.
+      - {name: context_policy, type: enum:context_policy}
       - {name: active_branch_id, type: string_nonempty}
       - {name: active_leaf_message_id, type: string_nonempty, optional: true}
       - {name: version, type: positive_int}
@@ -553,6 +558,8 @@ objects:
     fields:
       - {name: project_ref, type: opaque_ref}
       - {name: command, type: object:CommandIdentity}
+      # Required so the command digest binds an explicit privacy mode; there is no wire default.
+      - {name: context_policy, type: enum:context_policy}
       - {name: title, type: title, optional: true}
   - name: AttachmentIntent
     fields:
