@@ -127,7 +127,7 @@ git commit -m "feat(contract): publish product memory public API"
 
 1. Create `test/architecture/memory-m0-public-schema.test.ts` for static migration invariants.
 2. Extend `test/component/postgres-foundation.test.ts` with a focused `memory public role authority` case using real PostgreSQL.
-3. Prove three actual roles are `LOGIN NOINHERIT NOBYPASSRLS`, own no objects, have no memberships, cannot `SET ROLE`, have no database `CREATE`/`TEMP`, cannot create/use objects in `public`, and fail after rename/drop-recreate OID drift.
+3. Prove three actual roles are `LOGIN NOINHERIT NOBYPASSRLS`, own no database/schema/relation/sequence/routine/type objects, have no memberships, cannot `SET ROLE`, have no database `CREATE`/`TEMP`, cannot create/use objects in `public`, and fail on an exact pinned-OID mismatch. The test must never rename, drop or recreate a canonical cluster role.
 4. Prove public/runtime/worker cannot read tables directly, PUBLIC has no execute, neighboring roles cannot call Memory routines, arbitrary GUC injection grants nothing, and wrong Site/subject generation/Project membership/authorization epoch returns no fact.
 5. Run the focused tests; expect RED.
 
@@ -137,8 +137,8 @@ git commit -m "feat(contract): publish product memory public API"
 7. Add append-only `memory_public_command_inbox`, `memory_import_job`, `memory_export_job`, `memory_purge_job`, `memory_purge_participant_receipt` and content-free suppression tombstone tables. Do not add lexical, selection or ContextUse tables.
 8. Define a versioned participant manifest covering revision payload, public presentation cache, import quarantine object, export object, command/outbox payload and backup/object-GC acknowledgement. M1a/M2/M3 participants are recorded as policy-versioned `not_applicable`, never silently skipped.
 9. Replace the old immutable trigger only as needed to permit deletion of payload rows; immutable revision headers, provenance and receipt identities remain update/delete protected.
-10. Add operation-specific `SECURITY DEFINER` routines with fixed `search_path = pg_catalog, platform`; each checks exact `session_user` OID and revalidates current Site/subject/Project authority from Platform-owned facts. Do not trust caller-set GUCs as authorization.
-11. Add the three credential classes to the migrator authority inventory. `platform_memory_runtime` receives zero execute/table grants in M0.1.
+10. Keep the feature-off database surface closed. Internal owner-authority helpers use fixed `search_path = pg_catalog, platform`, but no generic `authorize_read` / `authorize_command` routine is granted to a runtime role. The operation-specific owner read/write routines and their grants land atomically in Task 5; do not create a reusable authorization oracle or trust caller-set GUCs.
+11. Add the three credential classes to the central migrator preflight, distinct-role set, ownership inventory, postflight and pinned-OID authority. `platform_memory_public` and `platform_memory_runtime` receive zero execute/table grants until their owning composition lands; `platform_memory_worker` receives only the exact purge routines already exercised in this task.
 12. Build and apply all migrations to a uniquely named temporary database using the existing Postgres service:
 
 ```bash
@@ -147,7 +147,7 @@ node dist/src/infrastructure/postgres/migrator.js
 pnpm test:component:postgres -- -t "memory public role authority"
 ```
 
-The verification helper must create and remove temporary roles/database itself. Afterward, default Infra inventory is unchanged.
+The verification helper creates and removes a uniquely named temporary database while treating the canonical cluster roles as immutable inputs. OID-drift tests mutate only transactional authority facts and roll them back. Before/after role OIDs, attributes, memberships, ownership, ACLs and default Infra inventory must be identical.
 13. Run the static schema test and commit `feat(memory): separate public authority and erasable payloads`.
 
 ### Task 4: implement one exact content-protection envelope
@@ -191,8 +191,10 @@ interface MemoryContentProtectionPort {
 2. Cover current authority revalidation, keep-first command replay/conflict, correction CAS, restore-as-new-revision, stable priority ordering, cursor binding, not-found/access collapse, revoked/purged states and response byte/item caps.
 3. Implement `MemoryPublicOwner` by orchestrating the existing `MemoryAuthorityService`; do not duplicate remember/correct/forget/reset rules.
 4. Public list reads support only exact category/source/state filters and stable keyset pagination over active explicit entries. Content FTS/trigram and relevance ranking remain M1a; M0.1 creates no search index or `MemorySelectionSnapshot`.
-5. Repositories receive only the dedicated Memory-public client and call authority routines; no public code imports migrator/admin clients or performs cross-module table joins.
-6. Run focused tests, lint and typecheck; commit `feat(memory): add explicit public owner and search`.
+5. Apply server-owned content admission before protection or persistence. M0.1 accepts only ordinary explicit facts/preferences; secret material and protected/special-category content fail closed as `policy_rejected`. A browser boolean or client classification is never sufficient. The explicit protected-category confirmation workflow remains M3 and must arrive with its own versioned challenge/receipt contract.
+6. Install exact operation-specific `SECURITY DEFINER` read/write routines with fixed `search_path`, exact `session_user` name/OID, current Site/subject/Project/feature-policy revalidation and closed result shapes. Grant only those routines to `platform_memory_public`; the generic authorization helpers remain inaccessible.
+7. Repositories receive only the dedicated Memory-public client and call those authority routines; no public code imports migrator/admin clients or performs cross-module table joins.
+8. Run focused tests, lint and typecheck; commit `feat(memory): add explicit public owner and search`.
 
 ### Task 6: make import/export and purge recoverable
 
@@ -245,7 +247,7 @@ pnpm test
 1. Create exact package files: `package.json`, `INDEX.md`, `eslint.config.mjs`, `tsconfig.json`, `tsconfig.build.json`, `vitest.config.ts`, `src/index.ts`, `src/memory-controller.ts`, `src/memory-product.tsx`, `src/memory-product.module.css`, `src/css.d.ts`, `test/memory-controller.test.ts`, `test/memory-product.test.tsx`.
 2. RED tests cover cursor pagination, A→B deep-link stale clearing, monotonic revision merge, command journal/recovery, restore conflict, purge pending, priority, import/export state, destructive confirmation, keyboard/focus/screen-reader status and reduced motion.
 3. Implement separate requested/effective/availability controls. Unavailable past-chat/automatic-learning axes are explanatory and cannot send mutation commands.
-4. Render text/typed fields only; never raw HTML. Protected categories require explicit confirmation. Source links reauthorize through the current Site.
+4. Render text/typed fields only; never raw HTML. In M0.1, server policy rejects protected/special-category content because the confirmation challenge contract does not yet exist; Web must not guess sensitivity or invent a boolean acknowledgement. Render only the contract's safe source label/state. A clickable source is forbidden until M1a provides an opaque, current-Site reauthorization action; raw Session/Asset/provider identifiers are never turned into links.
 5. Run package gates and commit `feat(memory): add saved-memory controls`.
 
 ### Task 10: include Memory in the independently deployable Site artifact
