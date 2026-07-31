@@ -2,7 +2,7 @@
 
 repositoryTopology: federated-submodules-v1
 
-状态：2026-07-27
+状态：2026-07-30
 用途：给主控会话、code agent 和并行 worker 的最小上下文地图。
 
 ## 仓库边界
@@ -16,8 +16,9 @@ repositoryTopology: federated-submodules-v1
 - 跨仓一致性通过 contract generation、版本兼容矩阵和 root verification 实现，不通过源码物理合并实现。
 
 跨子仓运行时边界必须远程协议化：Browser/Site Web 普通产品面使用 OpenAPI HTTP/JSON，Web→Session 使用
-HTTP/SSE；privileged/control plane 使用 ConnectRPC/Protobuf；Session→Platform 目标态只保留 Connect Admission；
-Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 使用 HTTP。不得跨仓导入
+HTTP/SSE；privileged/control plane 使用 ConnectRPC/Protobuf；Session→Platform 只使用 Root 声明的 Connect owner
+边界；Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 使用 HTTP，Agent→Hub runtime
+使用 ConnectRPC。不得跨仓导入
 兄弟仓源码、共享进程内对象或跨服务直写数据库。生成 contract mirror 由消费仓提交和验证，不形成运行时
 文件系统依赖。
 
@@ -27,7 +28,7 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
   docs/                 总手册、规格、计划、交接、报告、历史资料
   kokoro-agent/         Python agent runtime subrepo
   kokoro-session/       TypeScript session/SSE subrepo
-  kokoro-web/           Web pnpm monorepo：apps/user(用户面) + apps/admin(运营后台) + packages/*(共享)
+  kokoro-web/           Web pnpm monorepo：Site 项目工厂 + reference fixture + apps/admin + packages/*
   kokoro-platform/      Platform domain parent subrepo
 ```
 
@@ -51,7 +52,7 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 - namespace 是 opaque id，不拼 `user:<id>` / `team:<id>` 业务前缀。
 - capability registry 采用一个边界，V1 只覆盖 `skill` / `mcp`。
 - DeepAgents graph 内部运行节点不是 capability kind，不做 package / enablement。
-- web 不直连 agent；对话与实时状态只消费 session HTTP/SSE，普通产品面经 Site/Admin BFF 调用 Platform。
+- web 不直连 agent；对话与实时状态只消费 session HTTP/SSE，普通产品面经每个 Site 自己的 BFF 调用 Platform。
 - session 不执行 agent。
 - agent 不面向浏览器，不写 session messages，不扣积分。
 - Platform 同 bounded context 使用本地 application interface/UoW，禁止 self-RPC。
@@ -92,27 +93,32 @@ npm run lint
 
 ### kokoro-web（pnpm monorepo）
 
-一个子仓两个独立部署的 Next.js app + 共享包（架构地图见 `kokoro-web/INDEX.md`）：
+Site 项目工厂、一个独立 Admin app、一个非生产 reference fixture 和共享包（架构地图见
+`kokoro-web/INDEX.md`）：
 
-- `apps/user`（`@kokoro/web-user`）：用户面工作台。消费 session HTTP/SSE，走 web BFF 不直连 DB。Next16/React19/antd6。
-- `apps/admin`（`@kokoro/admin-web`）：运营后台。server-only authority session 通过 Platform-owned OIDC 和生成的 Connect clients 调用 Platform 控制面；Web 不持有 Platform DB 凭据、Prisma schema 或 Prisma client。Next16/React19/antd6。
-- `packages/*`：`@kokoro/tsconfig`（共享 TS 基线）、`@kokoro/i18n`（i18n 引擎）。
+- `packages/site-scaffold`：为每个 Site 生成独立仓库、品牌、BFF、artifact、CI、deploy 与 rollback 单元；
+  不存在共享生产用户站。
+- `apps/reference-site`：只验证 Site factory 组合和构建闭包，不是生产入口。
+- `apps/admin`（`@kokoro/admin-web`）：运营后台。server-only authority session 通过 Platform-owned OIDC 和生成的
+  Connect clients 调用 Platform 控制面；Web 不持有 Platform DB 凭据、Prisma schema 或 Prisma client。
+- `packages/*`：brand-neutral Chat/Account/Media 产品、Site BFF/runtime/client、共享 TS 基线与 i18n。
 
-**两 app 当前已统一 Next 16.2.6 / React 19.2.4 / antd 6.5.0 / Vitest 4.1.x**。pnpm 仍使用
-`node-linker=isolated` 保护依赖边界；Wave 0 只对齐兼容的 runtime/toolchain policy，各子仓继续独立拥有 lock。
-正式文档入口：`kokoro-web/README.md`、`kokoro-web/apps/user/docs/README.md`。
+正式 Next.js surfaces 当前统一为 **Next 16.2.12 / React 19.2.8**，Web TypeScript 统一为 5.9.3。pnpm 仍使用
+`node-linker=isolated` 保护依赖边界；各子仓继续独立拥有自己的 lockfile 和工具链。
+正式文档入口：`kokoro-web/README.md`、`kokoro-web/INDEX.md`。
 
 常用验证（pnpm workspace）：
 
 ```bash
 pnpm install
 pnpm -r typecheck
-pnpm -r test                          # user 484 / admin 25 / i18n 12
-pnpm --filter @kokoro/web-user build
+pnpm -r test
+pnpm run build:site
+pnpm run build:admin
 ```
 
 注意：Next.js 版本有项目规则要求。修改 framework-facing code 前先读
-`apps/user/node_modules/next/dist/docs/` 中相关文档。
+`apps/reference-site/node_modules/next/dist/docs/` 或 `apps/admin/node_modules/next/dist/docs/` 中相关文档。
 
 ### kokoro-platform
 
@@ -120,7 +126,10 @@ pnpm --filter @kokoro/web-user build
 
 `kokoro-platform-admin` 仍是 legacy Admin Auth 数据和 effect 的唯一 owner，并保留 Root Proto/Buf 生成的 `AdminAuthService` provider；当前 Admin Web 不再消费该 legacy surface，而是通过生成的 Admin Identity/Query/Commerce/Credit、Site Provisioning 与 Model Control clients 调用 Platform 控制面。Admin Auth command receipt 仍持久化明确的 `SHA256_PROTOBUF_V1` 算法与摘要，RPC metrics/security audit 由 Platform Kit 统一拦截器提供。
 
-其中 **kokoro-hub**（`@kokoro/hub`，端口 4251）是能力中台模块：skill/MCP 注册管理写面（上传/审核/版本/启停/配额/运营位），与 agent 装配热路径**读写分离同库**（hub 写 Mongo+S3，agent 直读，每 run 不跨 hub RPC）。边界见 `docs/kokoro-handbook/technical/22-capability-hub.md` 与 `docs/kokoro-handbook/modules/kokoro-hub.md`；运营台见 `docs/kokoro-handbook/technical/23-platform-ops-console.md`。
+其中 **kokoro-hub** 是 Platform 内的能力中台模块：管理面拥有 Skill/MCP 上传、审核、版本、启停、配额和运营位；
+运行面由独立 Platform Hub provider 暴露 Root 生成的 Connect contract，Agent 只作为远程 consumer 解析装配并流式
+获取已发布 Skill artifact。Agent 不跨仓直读 Hub Mongo/S3，Session 也不是 Hub runtime consumer。边界见
+`docs/kokoro-handbook/technical/22-capability-hub.md` 与 `docs/kokoro-handbook/modules/kokoro-hub.md`。
 
 正式文档入口：`kokoro-platform/README.md`、`kokoro-platform/docs/README.md`。
 
