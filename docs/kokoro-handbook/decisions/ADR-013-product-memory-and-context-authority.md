@@ -664,6 +664,34 @@ Responses that use memory or past chats expose source chips/book-style details. 
 to the source Session/branch and retain a delete action. A visible citation is part of the contract,
 not a best-effort model phrase.
 
+Every completed response also owns an immutable `ContextUseReceipt` that references the exact
+`RunContextManifest`, initial `MemorySelectionSnapshot`, and any dynamic Memory or past-chat search
+receipts actually made available to that model call. The receipt records only typed source kinds,
+entry/source revisions, truncation/use outcomes and policy/index revisions; it never records hidden
+reasoning or asks the model to self-report what it used. A model-generated sentence such as “I
+remember” is not evidence. Session projects the safe receipt next to the response as a compact
+`memory used` indicator with closed states (`none`, `instructions`, `saved_memory`, `project_memory`,
+`past_chat`, or a bounded combination). Opening it shows an owner-derived activity view:
+
+- exact source chips and current availability;
+- scope, validity time and whether the item was explicit, inferred, corrected or imported;
+- a bounded owner explanation such as explicit priority, project match, recency, corroboration or
+  semantic/lexical relevance, without scores that become a cross-Site oracle;
+- the correction, forget, source-delete and category-control actions the current user is authorized
+  to perform.
+
+Inline correction never edits a historical response or lets assistant text overwrite Memory. It
+submits an authenticated correction/forget command to the relevant owner, advances the applicable
+revision or suppression fence, and applies only at the next model/tool boundary. The historical
+`ContextUseReceipt` remains immutable and resolves corrected/deleted sources to typed current states.
+
+Project summaries are not anonymous learned-memory blobs. At M4, a generated summary is a proposed,
+cited `ProjectContextRevision` derived from exact project resources and accepted Memory/source
+revisions. Users can inspect its sources, compare revisions, edit or reject it, and choose whether it
+is admitted. Background consolidation may propose a new revision but cannot silently replace the
+active project context. This gives long-running projects a compact, restorable context comparable to
+leading agent products without transferring Project authority to GA or the summarization model.
+
 Citation refs are not raw URLs or bearer credentials. Opening a chip goes through the current owner
 BFF/API and reauthorizes the viewer's current Site, subject generation, Project membership and source
 generation. A caller may be permitted to use a shared derived Memory but not read another member's
@@ -876,7 +904,9 @@ not a unit-test fixture.
 - Agent replaces direct Mongo product-memory tools with `MemoryPort`;
 - hot-path search becomes a journaled immutable external-read receipt; proposal receipts are durable;
 - exact continue/fork/retry/resume, grant rotation/revocation, context-source typed parts and Web
-  display are proven across real provider/consumer calls.
+  display are proven across real provider/consumer calls;
+- Session projects the owner-derived `ContextUseReceipt`, and Web proves the per-response memory-use
+  indicator, source activity view and inline correction/forget flow without model self-reporting.
 
 This phase changes the sealed RunRequest, Agent context assembly, tool journal/replay, durable
 evidence, branch/continue/retry and revocation boundaries. It requires explicit Agent core review
@@ -893,7 +923,7 @@ before implementation and cannot be hidden inside a non-core tool refactor.
 
 #### Phase M4: advanced project/context memory
 
-- project summaries and branch copy-on-write context lineage;
+- cited, reviewable Project Context summary proposals and branch copy-on-write context lineage;
 - optional temporal relationship projection only after benchmark proof;
 - coding-agent repository/file context that preserves restorable paths/digests instead of copying
   whole files into learned memory;
