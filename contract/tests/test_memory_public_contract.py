@@ -245,6 +245,14 @@ def test_memory_requests_are_closed_bounded_and_have_no_caller_scope() -> None:
         assert content["x-kokoro-max-utf8-bytes"] == 16384
         assert content["maxLength"] == 16384
 
+    # M0.1 exposes only the caller's server-derived personal space. Category describes
+    # content semantics; it must never be reused as an implicit scope selector.
+    assert schemas["MemoryCategory"]["enum"] == ["profile", "preference", "fact"]
+    assert schemas["MemoryEntryActiveView"]["properties"]["scopeKind"] == {
+        "type": "string",
+        "const": "user",
+    }
+
     import_input = schemas["MemoryImportInput"]
     assert import_input["x-kokoro-referenced-manifest-max-utf8-bytes"] == 65536
     assert set(import_input["properties"]) == {

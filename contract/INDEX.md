@@ -162,11 +162,12 @@ fingerprint is not Platform's owner-keyed persistence digest and cannot be used 
 system temporary directory; the generated TypeScript helper is the Web/BFF header-injection authority, so callers
 never hash ad-hoc JSON. Provider and consumer mirrors are promoted separately by their repository owners.
 
-The same `platform-public@v1` boundary now freezes the Product Memory M0.1 public resources as a contract-only
+The same `platform-public@v1` boundary now freezes the personal Saved Memory M0.1 public resources as a contract-only
 surface. Its 17 operations cover explicit settings, bounded list/detail/history, remember/correct/restore-as-new,
-priority, immediate logical forget/reset, asynchronous import/export, and command recovery. Site, subject, Project,
-space, and namespace scope are derived from authenticated workload/user/product context and never accepted from the
-browser. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
+priority, immediate logical forget/reset, asynchronous import/export, and command recovery. Site, subject, space, and
+namespace scope are derived from authenticated workload/user context and never accepted from the browser. Category is
+limited to `profile | preference | fact` and never acts as a hidden scope selector. Project Memory remains feature-off
+until its distinct membership/operation policy and public intent are frozen. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
 only a non-bearer Artifact authorization request ref that still requires current Site/user reauthorization. Past-chat
 search, Temporary Chat, selection, ContextUse, automatic learning, and GA runtime are absent until their owning phases
 are promoted.

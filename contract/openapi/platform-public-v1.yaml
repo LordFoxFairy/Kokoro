@@ -828,8 +828,9 @@ paths:
     get:
       operationId: getMemorySettings
       description: >-
-        Returns the effective saved-memory controls for the caller context derived from the
-        authenticated Site workload, user session, and current product context.
+        Returns the effective personal saved-memory controls for the caller context derived from
+        the authenticated Site workload and user session. Project Memory has a separate policy and
+        is not exposed by the M0.1 public surface.
       parameters:
         - $ref: '#/components/parameters/ContractVersion'
       security: &memoryUserSecurity
@@ -861,7 +862,7 @@ paths:
   /v1/memory/entries:
     get:
       operationId: listMemoryEntries
-      description: Lists a bounded page of explicit active entries in the authenticated caller context.
+      description: Lists a bounded page of explicit active entries in the authenticated caller's personal space.
       parameters:
         - $ref: '#/components/parameters/MemoryCategoryFilter'
         - $ref: '#/components/parameters/MemorySourceFilter'
@@ -876,7 +877,7 @@ paths:
           $ref: '#/components/responses/ErrorResponse'
     post:
       operationId: rememberMemoryEntry
-      description: Creates an explicit saved entry in the server-derived current Memory space.
+      description: Creates an explicit saved entry in the server-derived personal Memory space.
       parameters: *memoryMutationParameters
       security: *memoryUserSecurity
       requestBody:
@@ -5887,7 +5888,8 @@ components:
       required: [expectedRevision, savedMemoryUseRequested]
     MemoryCategory:
       type: string
-      enum: [profile, preference, fact, project_fact]
+      description: Describes content semantics only; category never selects an owner scope.
+      enum: [profile, preference, fact]
     MemorySourceKind:
       type: string
       enum: [explicit, import]
@@ -6022,7 +6024,7 @@ components:
           const: active
         scopeKind:
           type: string
-          enum: [user, project]
+          const: user
         category:
           $ref: '#/components/schemas/MemoryCategory'
         source:

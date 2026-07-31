@@ -2,7 +2,7 @@
 
 > **Execution:** use `superpowers:subagent-driven-development`; one worker owns one repository cut, and the Root owner reviews and verifies every commit from the canonical worktree.
 
-**Goal:** ship the disabled-by-default, production-grade public authority for explicit saved/project Memory: versioned CRUD, history/restore, priority, controls, import/export, immediate logical revoke and receipt-backed physical purge. This slice changes Root, Platform and Web, but not Session or GA runtime semantics.
+**Goal:** ship the disabled-by-default, production-grade public authority for explicit personal Saved Memory: versioned CRUD, history/restore, priority, controls, import/export, immediate logical revoke and receipt-backed physical purge. This slice changes Root, Platform and Web, but not Session or GA runtime semantics.
 
 **Architecture:** `kokoro-platform/src/modules/memory` is the only Product Memory authority. `platform-api` mounts the public operations through a dedicated `platform_memory_public` PostgreSQL credential. `platform-memory-worker` owns import quarantine and purge through `platform_memory_worker`. The future `platform-memory-runtime` login is qualified but has zero grants and no deployable until M2. Every external Site remains an independent Web project and opts into Memory through its signed Site release; browser requests never carry Site, subject, Project, namespace or database scope.
 
@@ -12,7 +12,7 @@
 
 ## 0. Scope and non-negotiable gates
 
-M0.1 delivers only explicit saved/project Memory and its user controls. The public settings response reports each independent axis as `{ requested, effective, availability, policyReason? }`:
+M0.1 delivers only explicit personal Saved Memory and its user controls. Project Memory remains feature-off until its operation-specific membership/permission matrix and separate policy surface are frozen. `category = profile | preference | fact` describes content semantics only and never selects personal versus Project scope. The public settings response reports each independent axis as `{ requested, effective, availability, policyReason? }`:
 
 - saved-memory use: `available`; user may change it;
 - past-chat reference: `unavailable_until_session_m1a`; mutation is rejected;

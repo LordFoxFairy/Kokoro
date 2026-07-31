@@ -334,6 +334,13 @@ creator remains provenance, not exclusive ownership of shared Project memory. Ag
 an additional narrowing dimension inside one authorized user or Project space; it is never a
 cross-subject product bucket.
 
+Scope and category are orthogonal. `profile | preference | fact` describes what an entry means;
+none of those values selects an owner. A public caller may eventually request the closed intent
+`personal | current_project`, but never supplies Site, subject, Project or space identifiers. The
+M0.1 public surface is personal-only. Project Memory remains feature-off until read, contribution,
+policy, import/export, reset and purge permissions are frozen separately for member, editor,
+Project owner/admin and Data Governance actors.
+
 Workspace scope is deliberately reserved but not present in M0-M2 wire enums or production tables.
 It may be added only after Workspace membership, member removal, ownership transfer, shared-memory
 visibility and citation ACL semantics are accepted. Unknown scope kinds fail closed.
