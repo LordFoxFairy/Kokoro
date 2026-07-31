@@ -169,7 +169,7 @@ namespace scope are derived from authenticated workload/user context and never a
 limited to `profile | preference | fact` and never acts as a hidden scope selector. Project Memory remains feature-off
 until its distinct membership/operation policy and public intent are frozen. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
 only a non-bearer Artifact authorization request ref that still requires current Site/user reauthorization. Past-chat
-search, Temporary Chat, selection, ContextUse, automatic learning, and GA runtime are absent until their owning phases
+search, Temporary Chat, selection, ContextAssembly/ContextActivity, automatic learning, and GA runtime are absent until their owning phases
 are promoted.
 
 Session projection effects use a caller-generated command ref plus a dedicated recovery capability. Ambiguous effects

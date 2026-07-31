@@ -99,7 +99,8 @@ query、memory content、Session excerpt 或可逆个人标签。
 | MemorySearchReceipt | Run 内动态检索的 query identity、结果、分数、截断与索引版本 | Platform Memory |
 | ConversationSearchReceipt | 过去聊天检索的 exact cited result | Session |
 | RunContextManifest | 产品、项目、记忆与会话上下文的 admitted ref/digest 集合 | Platform Admission |
-| ContextUseReceipt | 某个完成回答实际使用过的 instruction/memory/chat-search refs | producing Run + Session projection |
+| ContextAssemblyReceipt | 某次模型调用实际收到的 instruction/memory/chat-search refs；不声称因果使用 | producing Run |
+| ContextActivityProjection | Session 挂到回答旁的安全上下文活动投影 | Session |
 
 ### 3.1 Scope
 
@@ -157,7 +158,7 @@ query、memory content、Session excerpt 或可逆个人标签。
 2. Platform Memory 对本轮 query 做 policy filter、exact lexical/semantic candidate search、deterministic fusion 和 budget cut。
 3. 固定/pinned 与本轮 retrieved items 分开标记，但进入同一个 immutable selection snapshot。
 4. GA 只能通过 run-bound handle 读取 snapshot 或发起 journaled dynamic search；不能更改 scope/policy。
-5. 完成回答形成 `ContextUseReceipt`。Web 至少显示 closed state：none、instructions、saved memory、project memory、
+5. 完成回答形成 `ContextAssemblyReceipt`，Session 生成 `ContextActivityProjection`。Web 至少显示 closed state：none、instructions、saved memory、project memory、
    past chats、mixed；展开后可看 citation、current state 与 correction/forget action。
 
 若 Memory 非 mandatory personalization 依赖不可用，回答可在明确 `memory_unavailable` 下无记忆继续；managed security/
@@ -192,8 +193,8 @@ Project instructions 无法解析时 admission fail closed。
 
 - FR-01：Web 必须提供 list/search/detail/create/correct/forget/pause-use/pause-learn/reset/export；每个 mutation 可按 receipt 恢复。
 - FR-02：Saved memory、past-chat history、explicit instructions 三类开关和说明必须分开，不得用一个模糊“个性化”开关。
-- FR-03：每个完成回答必须能解释是否以及使用了哪些上下文；“未使用”也是可验证状态。
-- FR-04：用户 correction/forget 后，相关 source citation 和旧 ContextUseReceipt 显示 current-state 提示，不篡改历史 receipt。
+- FR-03：每个完成回答必须能解释哪些上下文被装配进模型输入；`none` 也是可验证状态，但不得把 exposure 声称为模型因果使用。
+- FR-04：用户 correction/forget 后，相关 source citation 和旧 ContextAssemblyReceipt 显示 current-state 提示，不篡改历史 receipt。
 - FR-05：Temporary Chat 在入口、会话 header、export 和 branch flow 中持续可见，不能中途转为 standard。
 
 ### Learning and safety
@@ -256,14 +257,14 @@ Project instructions 无法解析时 admission fail closed。
 - Platform Identity/Site/Project：scope、subject generation、membership/authorization epoch、feature policy。
 - Platform Admission：RunContextManifest 与两个 owner-issued handles 的编排，不自行签发。
 - Model Gateway：embedding authorization、routing、usage evidence；Memory 不持 provider key。
-- Session：conversation search/source/outbox、ContextUse projection、data-governance participant。
+- Session：conversation search/source/outbox、ContextActivity projection、data-governance participant。
 - GA：Root-generated typed MemoryPort；proposal/read/search receipts 进入 durable evidence。
 - Data Governance：revoke/purge/export/LegalHold coordinator 与 participant receipts。
 - Web：Site BFF public controls、Temporary Chat、per-response explanation；不得直连 internal runtime。
 
 ### Data requirements
 
-- revision/provenance/selection/search/use receipts append-only；current head 以 CAS 推进。
+- revision/provenance/selection/search/assembly receipts append-only；current head 以 CAS 推进。
 - content 加密 at rest；key revision/audience/associated-data digest 显式；plaintext/query 不进入日志、metric、trace、receipt safe payload。
 - logical revoke 同步生效，physical purge 异步且有 cutoff/watermark；content-free tombstone 不能含稳定公共 content hash。
 - prelaunch 旧实验数据不迁移为产品记忆；M2 hard-cut 后 Agent 旧 free-form memory store 不进入生产 composition。
@@ -272,13 +273,13 @@ Project instructions 无法解析时 admission fail closed。
 
 | Dependency | Owner | Status | Impact if delayed |
 |---|---|---|---|
-| Platform M0 authority kernel and protected content adapter | Platform Memory | authority kernel dormant; protector absent | M1 public mutation不能激活 |
+| Platform M0 authority kernel and protected content adapter | Platform Memory | authority kernel + protector staged, public provider仍 dormant | M1 public mutation不能激活 |
 | Site/Subject/Project authorization facts | Platform Identity/Workspace | available foundation | 无法安全开放 user/project scope |
 | Session cited search/source contracts | Session + Root Contract | not implemented | past-chat 与 automatic learning 延后 |
 | MemoryPort/RunContextManifest promotion | Root + GA + Platform + Session | ADR accepted, contract absent | GA 不能生产使用 Memory |
 | Model Gateway embedding role | Model Platform | not qualified | M1b 延后，M1a lexical 仍可上线 |
 | Data Governance purge participants | Privacy/Data Governance | partial PRD only | delete/reset certification No-Go |
-| Web Memory settings/explanation | Web Site Kit | not implemented | 不能对用户开放 automatic learning |
+| Web Memory settings/explanation | Web Site Kit | M0 controls staged; per-response context activity未实现 | 不能对用户开放 automatic learning |
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---:|---:|---|
@@ -297,7 +298,7 @@ Project instructions 无法解析时 admission fail closed。
 | M0 — Authority | schema/domain/receipts/explicit mutation/control，全部 dormant | fresh migration、role/RLS audit、no route/process/grant |
 | M1a — User memory + lexical retrieval | public CRUD/settings、FTS/trigram、selection snapshot、Temporary Chat、purge/export | isolation/delete/citation 100%；Web controls complete |
 | M1b — Semantic retrieval | approved embeddings、deterministic hybrid rank、index rebuild/rollback | pgvector qualification、recall/latency/cost、RLS negative certification |
-| M2 — GA integration | MemoryPort、RunContextManifest、dynamic search/proposal receipts、ContextUse UI | four-repo compatibility、replay/revocation/expiry race suites、GA core review |
+| M2 — GA integration | MemoryPort、RunContextManifest、dynamic search/proposal receipts、ContextActivity UI | four-repo compatibility、replay/revocation/expiry race suites、GA core review |
 | M3 — Automatic learning | Session source feed、extract/dedupe/conflict/confirmation/suppression | precision target、sensitive-category No-Go tests、user opt-in and undo |
 | M4 — Advanced project context | reviewed project summaries、branch lineage、multi-agent attribution | Project membership/revocation/export/delete certification |
 

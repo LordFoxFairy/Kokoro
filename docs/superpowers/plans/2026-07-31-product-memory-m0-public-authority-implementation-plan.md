@@ -19,7 +19,7 @@ M0.1 delivers only explicit personal Saved Memory and its user controls. Project
 - automatic learning: `unavailable_until_memory_m3`; mutation is rejected;
 - Temporary Chat: absent, because Session is its owner.
 
-M0.1 does **not** create `MemorySelectionSnapshot`, `memory_context_use_receipt`, conversation search, embeddings, GA `MemoryPort`, automatic learning, Memory proposals, or per-response “memory used” UI. Those claims remain No-Go until their owning phases are promoted.
+M0.1 does **not** create `MemorySelectionSnapshot`, `context_assembly_receipt`, conversation search, embeddings, GA `MemoryPort`, automatic learning, Memory proposals, or per-response context-activity UI. Those claims remain No-Go until their owning phases are promoted.
 
 The release flag stays disabled until all runtime assertions in Task 12 pass. A disabled Site has no route, nav entry, bootstrap claim or authorized BFF operation.
 
@@ -134,7 +134,7 @@ git commit -m "feat(contract): publish product memory public API"
 **IMPLEMENT**
 
 6. In the forward migration, keep `platform.memory_revision` as immutable content-free header. Move `protected_ciphertext`, key revision and envelope metadata into a new erasable `platform.memory_revision_payload` keyed by the full `(site_ref, space_ref, entry_ref, revision, revision_ref)` identity.
-7. Add append-only `memory_public_command_inbox`, `memory_import_job`, `memory_export_job`, `memory_purge_job`, `memory_purge_participant_receipt` and content-free suppression tombstone tables. Do not add lexical, selection or ContextUse tables.
+7. Add append-only `memory_public_command_inbox`, `memory_import_job`, `memory_export_job`, `memory_purge_job`, `memory_purge_participant_receipt` and content-free suppression tombstone tables. Do not add lexical, selection or ContextAssembly tables.
 8. Define a versioned participant manifest covering revision payload, public presentation cache, import quarantine object, export object, command/outbox payload and backup/object-GC acknowledgement. M1a/M2/M3 participants are recorded as policy-versioned `not_applicable`, never silently skipped.
 9. Replace the old immutable trigger only as needed to permit deletion of payload rows; immutable revision headers, provenance and receipt identities remain update/delete protected.
 10. Keep the feature-off database surface closed. Internal owner-authority helpers use fixed `search_path = pg_catalog, platform`, but no generic `authorize_read` / `authorize_command` routine is granted to a runtime role. The operation-specific owner read/write routines and their grants land atomically in Task 5; do not create a reusable authorization oracle or trust caller-set GUCs.
@@ -284,7 +284,7 @@ pnpm test
 
 - **M1a:** Platform cited FTS/trigram `MemorySelectionSnapshot`, Session cited conversation search/source resolver, Temporary Chat enforcement and source deletion flow. This is a Root/Platform/Session/Web promotion.
 - **M1b:** Root-qualified pgvector PostgreSQL image, exact policy-prefiltered semantic search, shadow reindex and rollback.
-- **M2:** Admission `RunContextManifest`, GA `MemoryPort`, journaled dynamic searches, Session `ContextUseReceipt`, Web per-response source activity. Agent core notice and review are mandatory before implementation.
+- **M2:** Admission `RunContextManifest`, GA `MemoryPort`, journaled dynamic searches, GA `ContextAssemblyReceipt`, Session `ContextActivityProjection`, and Web per-response source activity. Agent core notice and review are mandatory before implementation.
 - **M3:** conversation-source learning feed, proposal/confirmation, extraction/consolidation and sensitive-category policies.
 
 No successor phase may reuse M0.1 UI labels to imply unavailable runtime behavior.

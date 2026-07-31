@@ -358,10 +358,9 @@ Every `MemoryEntry` has a stable identity and at least:
 memory_ref
 space_ref
 category
-state = proposed | active | contested | superseded | disabled | quarantined | deleted
+state = active | contested | disabled | revoked_purge_pending | purged
 sensitivity
-salience
-confidence_micros
+priority_class
 valid_from / valid_to
 system_from / system_to
 current_revision
@@ -371,6 +370,13 @@ policy_revision_ref
 space_generation / learning_generation / revocation_epoch
 created_at / updated_at
 ```
+
+Proposal workflow states such as `received`, `confirmation_required` and `quarantined` belong only
+to `MemoryProposal`; they are not partially active `MemoryEntry` states. Supersession belongs to
+revision lineage, so correcting an entry appends a successor revision while the entry remains
+active. User or policy priority is durable authority (`priority_class`); lexical, semantic, recency
+and confidence scores are retrieval evidence recorded on selection/search receipts, not mutable
+salience fields on the entry aggregate.
 
 Every append-only `MemoryRevision` has:
 
@@ -689,13 +695,13 @@ Responses that use memory or past chats expose source chips/book-style details. 
 to the source Session/branch and retain a delete action. A visible citation is part of the contract,
 not a best-effort model phrase.
 
-Every completed response also owns an immutable `ContextUseReceipt` that references the exact
+Every completed response also owns an immutable `ContextAssemblyReceipt` that references the exact
 `RunContextManifest`, initial `MemorySelectionSnapshot`, and any dynamic Memory or past-chat search
-receipts actually made available to that model call. The receipt records only typed source kinds,
-entry/source revisions, truncation/use outcomes and policy/index revisions; it never records hidden
-reasoning or asks the model to self-report what it used. A model-generated sentence such as “I
-remember” is not evidence. Session projects the safe receipt next to the response as a compact
-`memory used` indicator with closed states (`none`, `instructions`, `saved_memory`, `project_memory`,
+receipts actually assembled into that model call's input. The receipt records only typed source kinds,
+entry/source revisions, truncation/exposure outcomes and policy/index revisions; it never records hidden
+reasoning or claims causal influence on the model's output. A model-generated sentence such as “I
+remember” is not evidence. Session projects a safe `ContextActivityProjection` next to the response as
+a compact `context included` indicator with closed states (`none`, `instructions`, `saved_memory`, `project_memory`,
 `past_chat`, or a bounded combination). Opening it shows an owner-derived activity view:
 
 - exact source chips and current availability;
@@ -708,7 +714,7 @@ remember” is not evidence. Session projects the safe receipt next to the respo
 Inline correction never edits a historical response or lets assistant text overwrite Memory. It
 submits an authenticated correction/forget command to the relevant owner, advances the applicable
 revision or suppression fence, and applies only at the next model/tool boundary. The historical
-`ContextUseReceipt` remains immutable and resolves corrected/deleted sources to typed current states.
+`ContextAssemblyReceipt` remains immutable and resolves corrected/deleted sources to typed current states.
 
 Project summaries are not anonymous learned-memory blobs. At M4, a generated summary is a proposed,
 cited `ProjectContextRevision` derived from exact project resources and accepted Memory/source
@@ -930,7 +936,7 @@ not a unit-test fixture.
 - hot-path search becomes a journaled immutable external-read receipt; proposal receipts are durable;
 - exact continue/fork/retry/resume, grant rotation/revocation, context-source typed parts and Web
   display are proven across real provider/consumer calls;
-- Session projects the owner-derived `ContextUseReceipt`, and Web proves the per-response memory-use
+- Session projects the owner-derived `ContextActivityProjection`, and Web proves the per-response context-included
   indicator, source activity view and inline correction/forget flow without model self-reporting.
 
 This phase changes the sealed RunRequest, Agent context assembly, tool journal/replay, durable
