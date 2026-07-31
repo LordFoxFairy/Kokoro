@@ -202,6 +202,7 @@ PRD 可以在对应 cut 之前创建为 `internal-review-active` 草案，以便
 | PRD-16 [`2026-07-25-prd-16-trust-content-safety-and-media-rights.md`](2026-07-25-prd-16-trust-content-safety-and-media-rights.md) | 1/4/7 | core+if-enabled | input/generation/share/appeal/voice/likeness/copyright/NSFW |
 | PRD-17 [`2026-07-25-prd-17-model-option-control-and-provider-operations.md`](2026-07-25-prd-17-model-option-control-and-provider-operations.md) | 5A | core dependency + if-enabled operator surface | model option/default/unavailable、evaluation/promotion/canary/rollback、provider certification |
 | PRD-18 [`2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md`](2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md) | 5A/6C | core dependency + if-enabled catalog/connection | skill/MCP discovery、qualification、connection/consent/revoke、elicitation、runtime cost/unknown |
+| PRD-19 [`2026-07-30-prd-19-product-memory-and-context-use.md`](2026-07-30-prd-19-product-memory-and-context-use.md) | M0-M4 | core explicit + if-enabled learned/past-chat context | remember/correct/forget、selection/explanation、past-chat、temporary、pause/reset/export/purge |
 | PRD-A1 [`2026-07-25-prd-a1-agent-revision-and-handoff-product.md`](2026-07-25-prd-a1-agent-revision-and-handoff-product.md) | 5B | advanced | publish/select/handoff visibility/recovery；GA专项批准 |
 | PRD-A2 [`2026-07-25-prd-a2-target-device-permission-and-interaction.md`](2026-07-25-prd-a2-target-device-permission-and-interaction.md) | 6A | advanced | onboard/pair/trust/select/takeover/approval/revoke |
 | PRD-A3 [`2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md`](2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md) | 6B | advanced | repo/worktree/diff/test/checkpoint/rewind/PR/attach/fork |
@@ -226,6 +227,7 @@ PRD 可以在对应 cut 之前创建为 `internal-review-active` 草案，以便
 | PRD-15/16 | Privacy/Trust Product Lead | Legal、Security、Support、Content Ops |
 | PRD-17 | Model Product Lead | Model Platform、Gateway、GA owner、Usage Rating、Trust、Support、SRE |
 | PRD-18 | Capability Product Lead | Capability Hub/Runtime、GA owner、Security、Trust、Support、SRE |
+| PRD-19 | Personalization & Memory Product Lead | Privacy、Platform Memory、Session、GA、Web、Data Governance、Model Platform、Accessibility、Support、SRE |
 | PRD-A1-A6 | Agent Product Lead | GA owner、Runtime/Security、Support、SRE |
 
 每份实际 PRD frontmatter 还必须登记 named Engineering、QA、Support/Operations owner；可以使用唯一、可路由的
@@ -251,6 +253,7 @@ team responsibility ID，但不能使用“全体团队”或无 owner 角色。
 | Admin/Support | ADM-01 auth/scope、02 high-risk command、03 recovery；SUP-01 user case、02 operator lifecycle、03 compensation/confirmation |
 | Growth/UX/Safety | GR-01/02/03、UX-01 locale、UX-02 a11y、SAF-01 block/appeal、SAF-02 media rights、NOT-01 notification |
 | Model/Capability | MOD-01 option/default、MOD-02 unavailable/reconfirmation、MOD-03 operator lifecycle；CAP-01 discover/assign、CAP-02 connect/consent、CAP-03 invoke/elicitation/revoke、CAP-04 operator lifecycle |
+| Memory/Context | MEM-01 remember/inspect、MEM-02 correct/forget、MEM-03 proposal、MEM-04 selection/explanation、MEM-05 past-chat、MEM-06 pause/reset/temporary/data-rights、MEM-07 operator recovery |
 | Advanced Agent | AGT-01 select、AGT-02 handoff |
 | Target | TGT-01 pair/select、TGT-02 permission、TGT-03 takeover/revoke |
 | Developer | DEV-01 repo/worktree、DEV-02 checkpoint/git、DEV-03 multidevice/context |
