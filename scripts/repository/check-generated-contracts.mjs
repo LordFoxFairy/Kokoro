@@ -166,17 +166,28 @@ export async function assertGeneratedMirrorTracked(root, mirror, label) {
 
 async function generateToTemporaryDirectory(root, boundary, output) {
   const contract = resolve(root, "contract");
-  const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+  const command = process.platform === "win32" ? "corepack.cmd" : "corepack";
   try {
+    const packageManifest = JSON.parse(await readFile(resolve(contract, "package.json"), "utf8"));
     await execFileAsync(
       command,
-      generationCommandArguments(contract, boundary, output),
+      [
+        pinnedPnpmSpecifier(packageManifest.packageManager),
+        ...generationCommandArguments(contract, boundary, output),
+      ],
       { cwd: root, timeout: 120_000, maxBuffer: 1024 * 1024 },
     );
   } catch (error) {
     const code = error?.killed ? "generated_contract_timeout" : "generated_contract_generation_failed";
     throw new GeneratedContractError(code);
   }
+}
+
+export function pinnedPnpmSpecifier(packageManager) {
+  if (typeof packageManager !== "string" || !/^pnpm@[1-9][0-9]*\.[0-9]+\.[0-9]+$/u.test(packageManager)) {
+    throw new GeneratedContractError("generated_contract_package_manager_invalid");
+  }
+  return packageManager;
 }
 
 export function generationCommandArguments(contract, boundary, output) {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
+import { realpathSync } from "node:fs";
 import { mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
@@ -13,6 +14,7 @@ import {
   GeneratedContractError,
   compareGeneratedMirror,
   parseArguments,
+  pinnedPnpmSpecifier,
 } from "./check-generated-contracts.mjs";
 import * as generatedChecker from "./check-generated-contracts.mjs";
 import {
@@ -42,6 +44,18 @@ const scopedSessionAuthorizationSourcePaths = [
 const dispatchOwnerEvidenceSourcePaths = [
   "kokoro/session/dispatch/v1/dispatch_owner_evidence.proto",
 ];
+
+test("uses one exact pnpm release from the contract package manifest", () => {
+  assert.equal(pinnedPnpmSpecifier("pnpm@11.2.2"), "pnpm@11.2.2");
+  for (const invalid of [undefined, "", "npm@11.2.2", "pnpm@latest", "pnpm@11", "pnpm@0.0.0"]) {
+    assert.throws(
+      () => pinnedPnpmSpecifier(invalid),
+      (error) =>
+        error instanceof GeneratedContractError &&
+        error.code === "generated_contract_package_manager_invalid",
+    );
+  }
+});
 
 async function sourceDigest(directory, sourcePaths) {
   const hash = createHash("sha256");
@@ -139,6 +153,7 @@ test("production arguments are closed", () => {
 });
 
 test("public OpenAPI generation writes both registered live mirrors or one isolated temporary output", () => {
+  const canonicalTemporaryRoot = realpathSync(tmpdir());
   const platformPublic = parsePublicGeneratorArguments([]);
   assert.equal(platformPublic.contract.schemaId, "platform-public-v1");
   assert.deepEqual(platformPublic.outputs, [
@@ -148,22 +163,22 @@ test("public OpenAPI generation writes both registered live mirrors or one isola
 
   const isolatedPlatformPublic = parsePublicGeneratorArguments([
     "--output",
-    resolve(tmpdir(), "kokoro-public-generator-test"),
+    resolve(canonicalTemporaryRoot, "kokoro-public-generator-test"),
   ]);
   assert.equal(isolatedPlatformPublic.contract.schemaId, "platform-public-v1");
   assert.deepEqual(isolatedPlatformPublic.outputs, [
-    resolve(tmpdir(), "kokoro-public-generator-test"),
+    resolve(canonicalTemporaryRoot, "kokoro-public-generator-test"),
   ]);
 
   const assetDataPlane = parsePublicGeneratorArguments([
     "--schema",
     "asset-data-plane-v1",
     "--output",
-    resolve(tmpdir(), "kokoro-asset-data-plane-generator-test"),
+    resolve(canonicalTemporaryRoot, "kokoro-asset-data-plane-generator-test"),
   ]);
   assert.equal(assetDataPlane.contract.schemaId, "asset-data-plane-v1");
   assert.deepEqual(assetDataPlane.outputs, [
-    resolve(tmpdir(), "kokoro-asset-data-plane-generator-test"),
+    resolve(canonicalTemporaryRoot, "kokoro-asset-data-plane-generator-test"),
   ]);
   assert.throws(
     () => parsePublicGeneratorArguments(["--output", resolve(repositoryRoot, "tmp/not-system-temp")]),
