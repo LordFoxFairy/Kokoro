@@ -223,13 +223,16 @@ const BOUNDARIES = Object.freeze({
     schema: "kokoro.platform.model.image.v1.ImageEffectV1Service",
     version: 1,
     inputs: Object.freeze([
+      "proto/kokoro/common/v2/command_envelope.proto",
       "proto/kokoro/platform/model/image/v1/image_effect.proto",
     ]),
     sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
       "kokoro/platform/model/image/v1/image_effect.proto",
     ]),
     helper: null,
-    commandEnvelopeDigest: null,
+    commandEnvelopeDigest: "model-image-effect",
   }),
   "session-media-projection@v1": Object.freeze({
     schema: "kokoro.session.media.v1.SessionMediaProjectionService",
@@ -1629,6 +1632,103 @@ export function ${variant.functionName}(
 `;
 }
 
+function modelImageEffectDigestSource() {
+  return `
+import {
+  AttachNextAttemptAuthorizationEffectSchema,
+  CreateImageEffectEffectSchema,
+  IssueImageEffectOutputAccessEffectSchema,
+  RequestCancelImageEffectEffectSchema,
+  type AttachNextAttemptAuthorizationEffect,
+  type CreateImageEffectEffect,
+  type IssueImageEffectOutputAccessEffect,
+  type RequestCancelImageEffectEffect,
+} from "./kokoro/platform/model/image/v1/image_effect_pb.js";
+
+export type VerifiedModelImageEffectCommandAxes = Readonly<{
+  workloadIdentityRef: string;
+  audience: "platform-media-worker";
+  environment: string;
+  region: string;
+  siteRef: string;
+  callerIdentity: string;
+  authorizationGeneration: bigint;
+  securityEpoch: bigint;
+}>;
+
+function modelImageEffectDigest(
+  method: string,
+  effect: TypedPayload,
+  targetRefs: readonly string[],
+  verified: VerifiedModelImageEffectCommandAxes,
+): string {
+  if (verified.audience !== "platform-media-worker") {
+    throw new Error("command_envelope_axis_mismatch:audience");
+  }
+  return commandEnvelopeV2Digest({
+    contractVersion: "model-image-effect@v1",
+    operation: \`kokoro.platform.model.image.v1.ImageEffectV1Service/\${method}\`,
+    trust: {
+      workloadIdentityRef: requiredAxis("verified.workloadIdentityRef", verified.workloadIdentityRef),
+      audience: verified.audience,
+      environment: requiredAxis("verified.environment", verified.environment),
+      region: requiredAxis("verified.region", verified.region),
+      siteRef: requiredAxis("verified.siteRef", verified.siteRef),
+      actorRef: requiredAxis("verified.callerIdentity", verified.callerIdentity),
+      actorGeneration: requiredUint64("verified.authorizationGeneration", verified.authorizationGeneration),
+      securityEpochs: [{
+        axis: "caller-security-epoch",
+        value: requiredUint64("verified.securityEpoch", verified.securityEpoch),
+      }],
+    },
+    targetRefs,
+    effect,
+  });
+}
+
+export function createImageEffectRequestDigest(
+  effect: CreateImageEffectEffect,
+  verified: VerifiedModelImageEffectCommandAxes,
+): string {
+  return modelImageEffectDigest("CreateImageEffect", {
+    typeName: CreateImageEffectEffectSchema.typeName,
+    bytes: toBinary(CreateImageEffectEffectSchema, effect, { writeUnknownFields: false }),
+  }, [effect.definitionRoleRef, effect.modelOptionRevisionRef, effect.operationInputRevisionRef], verified);
+}
+
+export function requestCancelImageEffectRequestDigest(
+  effect: RequestCancelImageEffectEffect,
+  verified: VerifiedModelImageEffectCommandAxes,
+): string {
+  return modelImageEffectDigest("RequestCancelImageEffect", {
+    typeName: RequestCancelImageEffectEffectSchema.typeName,
+    bytes: toBinary(RequestCancelImageEffectEffectSchema, effect, { writeUnknownFields: false }),
+  }, [effect.logicalInvocationRef], verified);
+}
+
+export function issueImageEffectOutputAccessRequestDigest(
+  effect: IssueImageEffectOutputAccessEffect,
+  verified: VerifiedModelImageEffectCommandAxes,
+): string {
+  return modelImageEffectDigest("IssueImageEffectOutputAccess", {
+    typeName: IssueImageEffectOutputAccessEffectSchema.typeName,
+    bytes: toBinary(IssueImageEffectOutputAccessEffectSchema, effect, { writeUnknownFields: false }),
+  }, [effect.logicalInvocationRef, effect.outputEvidenceRef], verified);
+}
+
+export function attachNextAttemptAuthorizationRequestDigest(
+  effect: AttachNextAttemptAuthorizationEffect,
+  verified: VerifiedModelImageEffectCommandAxes,
+): string {
+  return modelImageEffectDigest("AttachNextAttemptAuthorization", {
+    typeName: AttachNextAttemptAuthorizationEffectSchema.typeName,
+    bytes: toBinary(AttachNextAttemptAuthorizationEffectSchema, effect, { writeUnknownFields: false }),
+  }, [effect.logicalInvocationRef, effect.modelInvocationCommandRef,
+    effect.definitelyNotSubmittedReceiptRef], verified);
+}
+`;
+}
+
 function commandEnvelopeDigestSource(kind) {
   const wrappers = {
     identity: identityCommandDigestSource,
@@ -1639,6 +1739,7 @@ function commandEnvelopeDigestSource(kind) {
     "model-control": modelControlDigestSource,
     "media-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
     "credit-cost-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
+    "model-image-effect": modelImageEffectDigestSource,
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
@@ -1734,5 +1835,6 @@ export {
   modelControlAdminErrorContractSource,
   modelStreamFrameDigestSource,
   mediaProjectionRecoveryDigestSource,
+  modelImageEffectDigestSource,
   parseArguments,
 };

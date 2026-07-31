@@ -97,8 +97,12 @@ def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() ->
         "CreateImageEffect",
         "RecoverImageEffectByCommand",
         "GetImageEffectByCommand",
+        "GetImageEffectEvidence",
+        "IssueImageEffectOutputAccess",
+        "RecoverImageEffectOutputAccessByCommand",
         "RequestCancelImageEffect",
         "AttachNextAttemptAuthorization",
+        "ReadImageEffectOutput",
     ]
     create = _message_body(source, "CreateImageEffectRequest")
     for field in (
@@ -107,6 +111,7 @@ def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() ->
         "effect_budget_commit_ref",
         "effect_budget_commit_digest",
         "attempt_ordinal",
+        "model_option_revision_ref",
     ):
         assert field in create
     assert "uint32 attempt_ordinal" in create
@@ -138,7 +143,57 @@ def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() ->
     assert "IMAGE_EFFECT_STATE_OUTCOME_UNKNOWN" in source
     assert "IMAGE_EFFECT_RECEIPT_KIND_DEFINITELY_NOT_SUBMITTED" in source
     assert "IMAGE_EFFECT_ERROR_CODE_IDEMPOTENCY_CONFLICT" in source
+    assert "message CreateImageEffectEffect" in source
+    assert "message RequestCancelImageEffectEffect" in source
+    assert "message AttachNextAttemptAuthorizationEffect" in source
+    assert "purpose_grant_handle_digest" in source
+    evidence = _message_body(source, "GetImageEffectEvidenceRequest")
+    assert "after_evidence_sequence" in evidence
+    assert "limit" in evidence
+    evidence_response = _message_body(source, "GetImageEffectEvidenceResponse")
+    assert "evidence_facts" in evidence_response
+    assert "next_evidence_sequence" in evidence_response
+    assert "caught_up" in evidence_response
+    output = _message_body(source, "ImageEffectOutputEvidence")
+    assert "source_access_handle" not in output
+    access = _message_body(source, "ImageEffectOutputAccess")
+    assert "source_access_handle" in access
+    assert "source_access_expires_at" in access
+    assert "max_readable_bytes" in access
+    issue = _message_body(source, "IssueImageEffectOutputAccessRequest")
+    assert "output_access_command_ref" in issue
+    assert "caller_request_fingerprint" in issue
+    assert "message IssueImageEffectOutputAccessEffect" in source
+    recover_access = _message_body(source, "RecoverImageEffectOutputAccessByCommandRequest")
+    assert "output_access_command_ref" in recover_access
+    read = _message_body(source, "ReadImageEffectOutputRequest")
+    assert "source_access_handle" in read
+    assert "output_evidence_ref" in read
+    assert "output_evidence_digest" in read
+    assert "offset" in read
+    assert "max_bytes" in read
+    chunk = _message_body(source, "ReadImageEffectOutputResponse")
+    assert "data" in chunk
+    assert "next_offset" in chunk
+    assert "eof" in chunk
+    assert "provider_url" not in source
+    assert "provider_response" not in source
     assert re.search(r"\bGeneration\b|\bJob\b", source) is None
+
+
+def test_image_effect_uses_generated_known_field_command_digests() -> None:
+    generator = (ROOT / "contract/generate.mjs").read_text()
+
+    assert 'commandEnvelopeDigest: "model-image-effect"' in generator
+    assert "function modelImageEffectDigestSource()" in generator
+    for helper in (
+        "createImageEffectRequestDigest",
+        "requestCancelImageEffectRequestDigest",
+        "attachNextAttemptAuthorizationRequestDigest",
+        "issueImageEffectOutputAccessRequestDigest",
+    ):
+        assert f"export function {helper}(" in generator
+    assert '"model-image-effect": modelImageEffectDigestSource' in generator
 
 
 def test_session_projection_activates_first_and_keeps_credit_owner_facts_separate() -> None:

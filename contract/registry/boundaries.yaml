@@ -34,8 +34,12 @@
         {"effect": true, "id": "CreateImageEffect", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
         {"effect": false, "id": "RecoverImageEffectByCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
         {"effect": false, "id": "GetImageEffectByCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "GetImageEffectEvidence", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "IssueImageEffectOutputAccess", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectOutputAccessByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "RecoverImageEffectOutputAccessByCommand", "receipt": null, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
         {"effect": true, "id": "RequestCancelImageEffect", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "AttachNextAttemptAuthorization", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+        {"effect": true, "id": "AttachNextAttemptAuthorization", "receipt": {"kind": "state-read", "recoveryOperation": "RecoverImageEffectByCommand", "ref": "kokoro.platform.model.image.v1.ImageEffectCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": false, "id": "ReadImageEffectOutput", "receipt": null, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},

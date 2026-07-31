@@ -540,7 +540,10 @@ Image effect不是现有Chat/LLM invocation boundary的“多传几个字段”�
 - `RecoverImageEffectByCommand`：按caller command读取authoritative receipt，不产生effect；
 - `GetImageEffectByCommand`：读取logical invocation、Attempt/outcome/evidence；
 - `RequestCancelImageEffect`：记录cancel intent并返回receipt，不伪造Provider canceled；
-- `GetImageEffectEvidence`：按owner cursor读取bounded canonical facts。
+- `GetImageEffectEvidence`：按owner cursor读取bounded immutable canonical facts，不在read path签发凭据；
+- `IssueImageEffectOutputAccess` / `RecoverImageEffectOutputAccessByCommand`：为exact output evidence显式、可恢复地签发
+  短期opaque source capability；
+- `ReadImageEffectOutput`：Artifact以exact evidence与source capability进行bounded server stream读取，不暴露底层位置。
 
 该boundary拥有独立caller identity、mTLS audience、deadline、retry/receipt/failure owner、Buf source、registry entry和
 真实Media consumer compatibility scenario。不得声称它沿用当前Agent->Model Gateway chat HTTP boundary，也不得让GA直接
@@ -550,6 +553,9 @@ Media application service在operation transaction中预分配`model_invocation_c
 Definition role、ModelOption authorization、`OperationInputRevision` digest、DerivedInput grants、ordered candidate/output
 slots、`EffectBudgetCommit` ref+digest和Trust allow。image-effect canonical request digest必须覆盖这些字段以及caller
 workload identity；换budget segment、candidate mapping、input revision或ModelOption都会产生不同digest并被同key冲突拒绝。
+Root生成的known-field helper是唯一摘要实现：rotating caller/model/source bearer bytes不进入digest，但verified caller/site/
+authorization generation/security epoch、ModelOption revision和每个source grant的stable claim digest必须进入；provider必须在
+解封后核对declared stable claims，consumer/provider不得各自拼接字符串实现第二套摘要。
 
 `CreateImageEffect` request digest只绑定Attempt 1 authorization，不能预留未知未来Attempt。每个后续Attempt使用上节独立
 attach command/digest；Gateway command journal对create与每次attach分别keep-first，并以unique
@@ -732,7 +738,7 @@ Root 是跨仓 contract 单源和 transport registry authority。目标 contract
 | Platform Media -> Session activation | Media-owned durable event + existing `RecoverMediaProjectionActivation` Connect delivery | first owner-signed command-commit activation；首次与重试同一方法、同一专用activation receipt |
 | Platform Media -> Session projection | Media-owned durable event + `SessionMediaProjectionIngestService.ApplyMediaProjectionEvent` Connect delivery | source sequence >= 2 operation/candidate/artifact refs with active handle；no cost amount/state |
 | Platform Credit -> Session | Credit-owned durable event + `SessionMediaProjectionIngestService.ApplyCreditCostProjectionEvent` Connect delivery | independent `CreditCostProjectionEvent` owner revisions with exact cost projection handle |
-| Platform Media -> Model Gateway | new `model-image-effect@v1` Connect | create、`AttachNextAttemptAuthorization`、recover/get by command、request cancel、get evidence |
+| Platform Media / Artifact -> Model Gateway | new `model-image-effect@v1` Connect | create、`AttachNextAttemptAuthorization`、recover/get by command、request cancel、get evidence、issue/recover output access、bounded output stream |
 | Platform Artifact -> Web BFF | public OpenAPI | get/list artifact/version、mint preview/download/export authorization |
 
 Artifact byte delivery 是流式 data plane：caller 必须提供 `AbortSignal` 与 1..30000ms deadline；HTTP 只接受一个 bounded

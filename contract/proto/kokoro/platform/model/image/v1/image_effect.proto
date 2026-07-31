@@ -11,8 +11,12 @@ service ImageEffectV1Service {
   rpc CreateImageEffect(CreateImageEffectRequest) returns (CreateImageEffectResponse) {}
   rpc RecoverImageEffectByCommand(RecoverImageEffectByCommandRequest) returns (RecoverImageEffectByCommandResponse) {}
   rpc GetImageEffectByCommand(GetImageEffectByCommandRequest) returns (GetImageEffectByCommandResponse) {}
+  rpc GetImageEffectEvidence(GetImageEffectEvidenceRequest) returns (GetImageEffectEvidenceResponse) {}
+  rpc IssueImageEffectOutputAccess(IssueImageEffectOutputAccessRequest) returns (IssueImageEffectOutputAccessResponse) {}
+  rpc RecoverImageEffectOutputAccessByCommand(RecoverImageEffectOutputAccessByCommandRequest) returns (RecoverImageEffectOutputAccessByCommandResponse) {}
   rpc RequestCancelImageEffect(RequestCancelImageEffectRequest) returns (RequestCancelImageEffectResponse) {}
   rpc AttachNextAttemptAuthorization(AttachNextAttemptAuthorizationRequest) returns (AttachNextAttemptAuthorizationResponse) {}
+  rpc ReadImageEffectOutput(ReadImageEffectOutputRequest) returns (stream ReadImageEffectOutputResponse) {}
 }
 
 message LogicalImageOutputSlot {
@@ -34,6 +38,23 @@ message ImageEffectSourceGrant {
   string purpose_grant_handle = 2 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
+  }];
+  // Stable digest of the verified grant claims. The rotating bearer above is
+  // deliberately excluded from command canonicalization.
+  string purpose_grant_handle_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message ImageEffectSourceGrantClaim {
+  string source_version_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string purpose_grant_handle_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
 }
 
@@ -88,6 +109,56 @@ message CreateImageEffectRequest {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
+  // Stable claim resolved by model_option_authorization_handle. Gateway must
+  // reject a mismatch; the opaque bearer is never part of the command digest.
+  string model_option_revision_ref = 15 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+// Known-field semantic effect used by the generated Root digest helper. It
+// intentionally excludes caller_access_handle, model-option bearer bytes and
+// source bearer bytes so access rotation cannot change command identity.
+message CreateImageEffectEffect {
+  string definition_role_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string model_option_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_input_revision_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_input_revision_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  repeated ImageEffectSourceGrantClaim source_grants = 5 [(buf.validate.field).repeated.max_items = 16];
+  repeated LogicalImageOutputSlot logical_output_slots = 6 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 4
+  }];
+  string effect_budget_commit_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string effect_budget_commit_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint32 attempt_ordinal = 9 [(buf.validate.field).uint32.const = 1];
+  string trust_effect_allow_receipt_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string trust_effect_allow_receipt_digest = 11 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 enum ImageEffectState {
@@ -115,6 +186,7 @@ enum ImageEffectReceiptKind {
   IMAGE_EFFECT_RECEIPT_KIND_CANCEL_INTENT_COMMITTED = 4;
   IMAGE_EFFECT_RECEIPT_KIND_REJECTED = 5;
   IMAGE_EFFECT_RECEIPT_KIND_OUTCOME_UNKNOWN = 6;
+  IMAGE_EFFECT_RECEIPT_KIND_OUTPUT_ACCESS_ISSUED = 7;
 }
 
 enum ImageEffectErrorCode {
@@ -128,6 +200,8 @@ enum ImageEffectErrorCode {
   IMAGE_EFFECT_ERROR_CODE_PREVIOUS_ATTEMPT_NOT_SAFE = 7;
   IMAGE_EFFECT_ERROR_CODE_INVOCATION_VERSION_CONFLICT = 8;
   IMAGE_EFFECT_ERROR_CODE_OUTCOME_UNKNOWN = 9;
+  IMAGE_EFFECT_ERROR_CODE_OUTPUT_ACCESS_EXPIRED = 10;
+  IMAGE_EFFECT_ERROR_CODE_OUTPUT_READ_LIMIT_EXCEEDED = 11;
 }
 
 message ImageEffectError {
@@ -225,6 +299,184 @@ message GetImageEffectByCommandResponse {
   ImageEffectView invocation = 1 [(buf.validate.field).required = true];
 }
 
+enum ImageEffectEvidenceKind {
+  IMAGE_EFFECT_EVIDENCE_KIND_UNSPECIFIED = 0;
+  IMAGE_EFFECT_EVIDENCE_KIND_OUTCOME = 1;
+  IMAGE_EFFECT_EVIDENCE_KIND_USAGE = 2;
+  IMAGE_EFFECT_EVIDENCE_KIND_OUTPUT = 3;
+}
+
+// Immutable output facts. A short-lived source capability is issued by the
+// explicit IssueImageEffectOutputAccess command and is never hidden in this read model.
+message ImageEffectOutputEvidence {
+  uint32 candidate_ordinal = 1 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 4
+  }];
+  string candidate_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string stable_output_slot_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string media_type = 6 [(buf.validate.field).string = {
+    in: [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ]
+  }];
+  uint32 width = 7 [(buf.validate.field).uint32.gt = 0];
+  uint32 height = 8 [(buf.validate.field).uint32.gt = 0];
+  optional uint64 declared_byte_size = 9 [(buf.validate.field).uint64.gt = 0];
+}
+
+message ImageEffectEvidenceFact {
+  option (buf.validate.message).cel = {
+    id: "model_image_effect.evidence_output_shape"
+    message: "only output facts carry output detail and their evidence identities must match"
+    expression: "(this.kind == kokoro.platform.model.image.v1.ImageEffectEvidenceKind.IMAGE_EFFECT_EVIDENCE_KIND_OUTPUT) == has(this.output) && (!has(this.output) || (this.evidence_ref == this.output.output_evidence_ref && this.evidence_digest == this.output.output_evidence_digest))"
+  };
+  uint64 evidence_sequence = 1 [(buf.validate.field).uint64.gt = 0];
+  ImageEffectEvidenceKind kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string evidence_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional ImageEffectOutputEvidence output = 5;
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+}
+
+message GetImageEffectEvidenceRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string logical_invocation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 after_evidence_sequence = 3;
+  uint32 limit = 4 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 64
+  }];
+}
+
+message GetImageEffectEvidenceResponse {
+  ImageEffectView invocation = 1 [(buf.validate.field).required = true];
+  repeated ImageEffectEvidenceFact evidence_facts = 2 [(buf.validate.field).repeated.max_items = 64];
+  uint64 next_evidence_sequence = 3;
+  bool caught_up = 4;
+}
+
+message IssueImageEffectOutputAccessEffect {
+  string logical_invocation_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message IssueImageEffectOutputAccessRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string output_access_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string logical_invocation_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string caller_request_fingerprint = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message ImageEffectOutputAccess {
+  string output_evidence_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string source_access_handle = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp source_access_expires_at = 4 [(buf.validate.field).required = true];
+  uint64 max_readable_bytes = 5 [(buf.validate.field).uint64.gt = 0];
+}
+
+message IssueImageEffectOutputAccessResponse {
+  option (buf.validate.message).cel = {
+    id: "model_image_effect.output_access_committed_shape"
+    message: "only a committed output-access receipt carries the issued capability"
+    expression: "(this.receipt.kind == kokoro.platform.model.image.v1.ImageEffectReceiptKind.IMAGE_EFFECT_RECEIPT_KIND_OUTPUT_ACCESS_ISSUED) == has(this.output_access)"
+  };
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectOutputAccess output_access = 2;
+}
+
+message RecoverImageEffectOutputAccessByCommandRequest {
+  string caller_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string output_access_command_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message RecoverImageEffectOutputAccessByCommandResponse {
+  option (buf.validate.message).cel = {
+    id: "model_image_effect.output_access_recovery_shape"
+    message: "recovery returns the exact issued capability only for a committed output-access receipt"
+    expression: "(this.receipt.kind == kokoro.platform.model.image.v1.ImageEffectReceiptKind.IMAGE_EFFECT_RECEIPT_KIND_OUTPUT_ACCESS_ISSUED) == has(this.output_access)"
+  };
+  ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  optional ImageEffectOutputAccess output_access = 2;
+}
+
 message RequestCancelImageEffectRequest {
   string caller_access_handle = 1 [(buf.validate.field).string = {
     min_len: 32
@@ -243,6 +495,14 @@ message RequestCancelImageEffectRequest {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
+}
+
+message RequestCancelImageEffectEffect {
+  string logical_invocation_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_invocation_version = 2 [(buf.validate.field).uint64.gt = 0];
 }
 
 message RequestCancelImageEffectResponse {
@@ -293,7 +553,71 @@ message AttachNextAttemptAuthorizationRequest {
   }];
 }
 
+message AttachNextAttemptAuthorizationEffect {
+  string model_invocation_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string logical_invocation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string definitely_not_submitted_receipt_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string definitely_not_submitted_receipt_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint32 next_attempt_ordinal = 5 [(buf.validate.field).uint32.gte = 2];
+  string effect_budget_commit_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string effect_budget_commit_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
 message AttachNextAttemptAuthorizationResponse {
   ImageEffectCommandReceipt receipt = 1 [(buf.validate.field).required = true];
   optional ImageEffectView invocation = 2;
+}
+
+// Streaming is resumable by exact byte offset. The source capability binds
+// invocation, output evidence, audience, expiry and maximum readable size.
+message ReadImageEffectOutputRequest {
+  string source_access_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string output_evidence_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string output_evidence_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  uint64 offset = 4;
+  uint32 max_bytes = 5 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1048576
+  }];
+}
+
+message ReadImageEffectOutputResponse {
+  uint64 offset = 1;
+  bytes data = 2 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 1048576
+  }];
+  uint64 next_offset = 3;
+  bool eof = 4;
+  string chunk_sha256 = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }

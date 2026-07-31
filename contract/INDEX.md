@@ -94,6 +94,10 @@ plus separate Media-owner and Credit-owner projection recovery bundles.
 The image-effect `ACCEPTED` state means only that Gateway durably committed the command, Attempt authorization and
 dispatch outbox. Provider `SUBMITTED` is a later owner observation; queue acceptance, lease ownership and transport send
 never imply it.
+Root also generates the image-effect Create/Cancel/Attach/OutputAccess command digest helper from typed known fields.
+Rotating access and source bearer bytes are excluded, while verified caller/site/security epochs and stable grant digests
+remain bound. Final output facts are read by owner cursor; a separate recoverable command issues short-lived source access,
+and Artifact consumes it only through the bounded server-streaming data plane.
 Durable `MediaProjectionBindingCommitted` must activate a pending binding
 before ordinary Media projection events; Media carries only the Credit-owned cost projection ref/version, while
 Credit publishes amount/state through its own audience-bound event. All six generated Media/Image/Session contract
