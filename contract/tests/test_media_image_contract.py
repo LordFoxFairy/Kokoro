@@ -49,7 +49,20 @@ def test_agent_media_runtime_is_opaque_recoverable_and_closed() -> None:
         assert forbidden not in create
     assert 'import "kokoro/platform/media/v1/media_canonical.proto";' in source
     assert "message ImageCreateRequest" not in source
-    assert "CanonicalMediaOperationInputV1 canonical_input" in create
+    assert "AgentImageIntentV1 image_intent" in create
+    assert "CanonicalMediaOperationInputV1 canonical_input" not in create
+    intent = _message_body(source, "AgentImageIntentV1")
+    for field in ("prompt_intent", "aspect_ratio", "candidate_count", "output_format"):
+        assert field in intent
+    for platform_owned in ("definition_revision_ref", "model_option_revision_ref"):
+        assert platform_owned not in intent
+    fingerprint_input = _message_body(
+        source, "AgentImageSubmissionFingerprintInputV1"
+    )
+    assert "stable_output_slot_ref" in fingerprint_input
+    assert "AgentImageIntentV1 image_intent" in fingerprint_input
+    assert "deterministic protobuf" in source
+    assert "stable_output_slot_ref" in source
 
     recover = _message_body(source, "RecoverMediaOperationByCommandRequest")
     assert "media_access_handle" in recover
@@ -67,6 +80,14 @@ def test_agent_media_runtime_is_opaque_recoverable_and_closed() -> None:
     assert "cancel_accepted" in receipt
     assert "provider_canceled" not in source.lower()
     assert re.search(r"\bGeneration\b|\bJob\b", source) is None
+
+
+def test_session_prepare_owner_returns_the_frozen_assistant_projection_target() -> None:
+    source = _read("kokoro/session/admission/v1/session_admission_owner.proto")
+    verified = _message_body(source, "SessionAdmissionPrepareOwnerVerified")
+
+    assert "string thread_id = 1" in verified
+    assert "string assistant_message_id = 2" in verified
 
 
 def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() -> None:

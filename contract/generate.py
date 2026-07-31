@@ -96,6 +96,7 @@ _ZOD_SCALAR = {
     "search_query": "z.string().min(1).max(512)",
     "safe_preview": "z.string().max(16384)",
     "opaque_cursor": "z.string().min(1).max(8192)",
+    "opaque_runtime_handle": "z.string().min(32).max(8192).refine((value) => value.trim() === value)",
     "page_limit": "z.number().int().min(1).max(100)",
     # The explicit key/value form is accepted by Zod 3 and required by Zod 4.
     # Keeping it in the Root generator lets mixed-version consumers share one
@@ -116,6 +117,7 @@ _PY_SCALAR = {
     "uint64_string": "Uint64String",
     "credit_decimal": "CreditDecimal",
     "reference": "Reference",
+    "opaque_runtime_handle": "OpaqueRuntimeHandle",
     "record": "dict[str, JsonValue]",
     "string_map": "dict[str, str]",
     "unknown": "JsonValue",
@@ -473,6 +475,10 @@ def emit_control_py(spec: dict) -> str:
     L.append('Sha256Str = Annotated[str, StringConstraints(pattern=r"^[0-9a-f]{64}$")]')
     L.append(
         "Reference = Annotated[str, StringConstraints(min_length=1, max_length=256), "
+        "AfterValidator(_trimmed_reference)]"
+    )
+    L.append(
+        "OpaqueRuntimeHandle = Annotated[str, StringConstraints(min_length=32, max_length=8192), "
         "AfterValidator(_trimmed_reference)]"
     )
     L.append("")

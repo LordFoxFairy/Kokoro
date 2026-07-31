@@ -15,6 +15,41 @@ service MediaRuntimeService {
   rpc GetAgentMediaOperation(GetAgentMediaOperationRequest) returns (GetAgentMediaOperationResponse) {}
 }
 
+// Agent supplies product intent only. Platform resolves the exact published
+// Media definition and default ModelOption from the SiteRelease authority
+// sealed into media_access_handle, then enters the same MediaOperation owner
+// core used by Direct Studio. These fields are safe model-facing semantics;
+// Site, credit, provider, storage and published revision refs never cross GA.
+message AgentImageIntentV1 {
+  string prompt_intent = 1 [(buf.validate.field).string = {
+    min_bytes: 1
+    max_bytes: 32768
+  }];
+  CanonicalImageAspectRatio aspect_ratio = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 candidate_count = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 4
+  }];
+  CanonicalImageOutputFormat output_format = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+// Canonical idempotency preimage payload. Callers and Platform serialize this
+// exact message with deterministic protobuf encoding before hashing.
+message AgentImageSubmissionFingerprintInputV1 {
+  string stable_output_slot_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
+  }];
+  AgentImageIntentV1 image_intent = 2 [(buf.validate.field).required = true];
+}
+
 message CreateAgentImageOperationRequest {
   string media_access_handle = 1 [(buf.validate.field).string = {
     min_len: 32
@@ -34,11 +69,16 @@ message CreateAgentImageOperationRequest {
     max_len: 256
     pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
   }];
+  // SHA-256 over the fixed domain separator
+  // `kokoro.platform.media.agent-image-submit.v1\0`, followed by deterministic
+  // protobuf bytes for AgentImageSubmissionFingerprintInputV1. Rotatable
+  // access/reservation handles and the command ref are deliberately excluded.
+  // Platform recomputes this value before admission.
   string caller_request_fingerprint = 5 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  CanonicalMediaOperationInputV1 canonical_input = 6 [(buf.validate.field).required = true];
+  AgentImageIntentV1 image_intent = 6 [(buf.validate.field).required = true];
 }
 
 enum MediaOperationState {

@@ -90,6 +90,12 @@ message SessionAdmissionPrepareOwnerVerified {
     min_len: 1
     max_len: 128
   }];
+  // Owner-frozen assistant projection target for the proposed Run. Platform
+  // must not substitute the triggering user message or mint a target itself.
+  string assistant_message_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
 }
 
 message SessionAdmissionFinalizeOwnerVerified {}

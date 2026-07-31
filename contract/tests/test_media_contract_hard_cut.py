@@ -135,13 +135,26 @@ def test_canonical_contract_is_byte_explicit_and_rejects_ambiguous_inputs(
     assert "outcomeClass" not in active and "safeFailure" not in active
 
 
-def test_ga_runtime_reuses_the_exact_canonical_studio_input_and_closed_receipts() -> None:
+def test_ga_runtime_keeps_product_revisions_platform_owned_and_closed_receipts() -> None:
     source = _read("contract/proto/kokoro/platform/media/v1/media_runtime.proto")
     assert 'import "kokoro/platform/media/v1/media_canonical.proto";' in source
     assert "message ImageCreateRequest" not in source
     assert "enum ImageAspectRatio" not in source
     create = _message(source, "CreateAgentImageOperationRequest")
-    assert "CanonicalMediaOperationInputV1 canonical_input" in create
+    assert "AgentImageIntentV1 image_intent" in create
+    assert "CanonicalMediaOperationInputV1 canonical_input" not in create
+    intent = _message(source, "AgentImageIntentV1")
+    assert "prompt_intent" in intent
+    assert "aspect_ratio" in intent
+    assert "candidate_count" in intent
+    assert "output_format" in intent
+    assert "definition_revision_ref" not in intent
+    assert "model_option_revision_ref" not in intent
+    fingerprint = _message(source, "AgentImageSubmissionFingerprintInputV1")
+    assert "stable_output_slot_ref" in fingerprint
+    assert "AgentImageIntentV1 image_intent" in fingerprint
+    assert "Platform resolves the exact published" in source
+    assert "same MediaOperation owner" in source
     assert "caller_request_fingerprint" in create
     cancel = _message(source, "CancelAgentMediaOperationRequest")
     assert "caller_request_fingerprint" not in cancel

@@ -392,8 +392,8 @@ def test_run_request_shape() -> None:
     assert "parent_anchor: Reference" in control_py
     assert "parent_digest: Sha256Str" in control_py
     assert "class MediaRuntimeGrant(StrictModel):" in control_py
-    assert "media_access_handle: Reference" in control_py
-    assert "media_projection_reservation_handle: Reference" in control_py
+    assert "media_access_handle: OpaqueRuntimeHandle" in control_py
+    assert "media_projection_reservation_handle: OpaqueRuntimeHandle" in control_py
     assert "media: MediaRuntimeGrant | None = None" in control_py
 
     control_init = _find("kokoro-agent/src/kokoro_agent/contract/__init__.py")
@@ -413,8 +413,8 @@ def test_run_request_shape() -> None:
     assert "parent_digest: z.string().regex(/^[0-9a-f]{64}$/u)" in control_ts
     assert "export const mediaRuntimeGrantSchema = z" in control_ts
     assert ".object({" in control_ts
-    assert "media_access_handle: z.string().min(1).max(256)" in control_ts
-    assert "media_projection_reservation_handle: z.string().min(1).max(256)" in control_ts
+    assert "media_access_handle: z.string().min(32).max(8192)" in control_ts
+    assert "media_projection_reservation_handle: z.string().min(32).max(8192)" in control_ts
     assert "media: mediaRuntimeGrantSchema.optional()" in control_ts
 
     namespace: dict[str, object] = {}
@@ -454,17 +454,17 @@ def test_run_request_shape() -> None:
     runtime.model_validate({
         **base_runtime,
         "media": {
-            "media_access_handle": "media-access:opaque",
-            "media_projection_reservation_handle": "projection-reservation:opaque",
+            "media_access_handle": "m" * 32,
+            "media_projection_reservation_handle": "p" * 32,
         },
     })
-    for invalid_handle in (" value", "value ", "x" * 257, "value\n"):
+    for invalid_handle in ("x" * 31, " value" + "x" * 27, "x" * 8193, "x" * 31 + "\n"):
         with pytest.raises(Exception):
             runtime.model_validate({
                 **base_runtime,
                 "media": {
                     "media_access_handle": invalid_handle,
-                    "media_projection_reservation_handle": "projection-reservation:opaque",
+                    "media_projection_reservation_handle": "p" * 32,
                 },
             })
 

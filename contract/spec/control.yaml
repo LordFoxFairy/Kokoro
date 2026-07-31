@@ -60,8 +60,8 @@ objects:
   # provider, or storage facts and are never exposed to model-editable input.
   - name: MediaRuntimeGrant
     fields:
-      - {name: media_access_handle, type: reference}
-      - {name: media_projection_reservation_handle, type: reference}
+      - {name: media_access_handle, type: opaque_runtime_handle}
+      - {name: media_projection_reservation_handle, type: opaque_runtime_handle}
   # wire 只传 names + 已解析上下文；一切定义（prompt/subagent/MCP server）归 agent 侧资产/配置。
   - name: RuntimeConfig
     fields:
