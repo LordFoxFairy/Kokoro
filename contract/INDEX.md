@@ -112,10 +112,15 @@ successful/replayed/suppressed receipts require no action. A temporary missing r
 under registry policy rather than fabricating a receipt outcome.
 
 Projection event identity is split from delivery capability: immutable Ed25519 owner-signed records carry source sequence,
-predecessor ref/digest and content; short-TTL Session target handles and owner recovery handles live only in rotating
-delivery envelopes. Replaying after refresh keeps the same record ref/digest/signature. Session repairs gaps and
-builds shadow generations through separate read-only `GetProjectionHead` / bounded `PullProjectionEvents` Connect
-services for Media and Credit; neither owner can read the other's projection facts. `projection-integrity.yaml` is the
+predecessor ref/digest and content; short-TTL Session target handles and complete owner recovery credentials live only in
+delivery envelopes. Owner recovery read access and refresh authority are separate bearer values. The common envelope binds
+an issued-at anchor, monotonically increasing access generation, access/refresh expiries, and an explicit previous-generation
+invalidation or bounded overlap. Replaying a delivery keeps the same record ref/digest/signature. Session repairs gaps and
+builds shadow generations through pure read-only `GetProjectionHead` / bounded `PullProjectionEvents` Connect services for
+Media and Credit; neither read rotates credentials or returns replay authorization, and neither owner can read the other's
+projection facts. Rotation is a separate `RefreshProjectionRecoveryAccess` V2 command-envelope effect. Its expected
+generation and owner-chain refs are part of the typed digest; a committed response persists the exact next credential and
+receipt so a response-loss retry with the same identity returns the same result. `projection-integrity.yaml` is the
 sole manifest for all five signed message descriptors, their domain separators, excluded digest fields, signature fields,
 forbidden credential fragments, and validation budgets. The reproducible Ed25519 corpus proves canonical wire form,
 digest/signature verification, and authenticated Protovalidate rejection on every signed surface. Signed heads never

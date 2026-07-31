@@ -4,6 +4,7 @@ package kokoro.session.media.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/projection_integrity.proto";
 import "kokoro/platform/credit/v1/cost_projection.proto";
 import "kokoro/platform/media/v1/media_projection.proto";
 
@@ -186,10 +187,7 @@ message MediaProjectionBindingCommittedDeliveryEnvelope {
     min_len: 32
     max_len: 8192
   }];
-  string owner_recovery_handle = 2 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential = 2 [(buf.validate.field).required = true];
   kokoro.platform.media.v1.MediaProjectionBindingCommittedRecord record = 3 [(buf.validate.field).required = true];
 }
 
@@ -348,10 +346,7 @@ message MediaProjectionDeliveryEnvelope {
     min_len: 32
     max_len: 8192
   }];
-  string owner_recovery_handle = 2 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential = 2 [(buf.validate.field).required = true];
   kokoro.platform.media.v1.MediaProjectionEventRecord record = 3 [(buf.validate.field).required = true];
 }
 
@@ -361,10 +356,7 @@ message CreditCostProjectionDeliveryEnvelope {
     min_len: 32
     max_len: 8192
   }];
-  string owner_recovery_handle = 2 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential = 2 [(buf.validate.field).required = true];
   kokoro.platform.credit.v1.CreditCostProjectionEventRecord record = 3 [(buf.validate.field).required = true];
 }
 

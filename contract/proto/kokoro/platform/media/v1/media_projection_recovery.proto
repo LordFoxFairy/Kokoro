@@ -5,6 +5,7 @@ package kokoro.platform.media.v1;
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "kokoro/common/v1/projection_integrity.proto";
+import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/media/v1/media_projection.proto";
 
 // MediaProjectionRecoveryService is the Media-owner read plane used only by
@@ -13,13 +14,11 @@ import "kokoro/platform/media/v1/media_projection.proto";
 service MediaProjectionRecoveryService {
   rpc GetProjectionHead(GetProjectionHeadRequest) returns (GetProjectionHeadResponse) {}
   rpc PullProjectionEvents(PullProjectionEventsRequest) returns (PullProjectionEventsResponse) {}
+  rpc RefreshProjectionRecoveryAccess(RefreshProjectionRecoveryAccessRequest) returns (RefreshProjectionRecoveryAccessResponse) {}
 }
 
 message GetProjectionHeadRequest {
-  string owner_recovery_handle = 1 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.ProjectionRecoveryAccessCredential owner_recovery_access = 1 [(buf.validate.field).required = true];
   string binding_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -60,17 +59,10 @@ message MediaProjectionHead {
 
 message GetProjectionHeadResponse {
   MediaProjectionHead head = 1 [(buf.validate.field).required = true];
-  string refreshed_owner_recovery_handle = 2 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
 }
 
 message PullProjectionEventsRequest {
-  string owner_recovery_handle = 1 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.ProjectionRecoveryAccessCredential owner_recovery_access = 1 [(buf.validate.field).required = true];
   string binding_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -107,9 +99,54 @@ message PullProjectionEventsResponse {
     pattern: "^[0-9a-f]{64}$"
   }];
   bool has_more = 5;
-  string replay_delivery_authorization = 6 [(buf.validate.field).string = {
+}
+
+// The refresh grant is accepted only by this effect. Its canonical command
+// digest covers the complete typed effect, including expected_generation and
+// the exact owner chain identity, so a command identity cannot be rebound.
+message RefreshMediaProjectionRecoveryAccessEffect {
+  string owner_recovery_refresh_grant = 1 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
   }];
-  google.protobuf.Timestamp replay_authorization_expires_at = 7 [(buf.validate.field).required = true];
+  uint64 expected_generation = 2 [(buf.validate.field).uint64 = {
+    gt: 0
+    lt: 18446744073709551615
+  }];
+  string binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 producer_generation = 5 [(buf.validate.field).uint64.gt = 0];
+}
+
+message RefreshProjectionRecoveryAccessRequest {
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  RefreshMediaProjectionRecoveryAccessEffect effect = 2 [(buf.validate.field).required = true];
+}
+
+// The owner persists the complete response before commit. A same-identity,
+// same-digest replay returns the byte-identical receipt and credential envelope;
+// a different digest is rejected without evaluating the stale refresh grant.
+message RefreshProjectionRecoveryAccessResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_recovery_refresh.receipt_operation"
+    message: "the receipt belongs to the projection recovery refresh operation"
+    expression: "this.receipt.operation == 'RefreshProjectionRecoveryAccess'"
+  };
+  option (buf.validate.message).cel = {
+    id: "projection_recovery_refresh.committed_result"
+    message: "only a committed refresh carries exactly the next credential generation"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.owner_recovery_credential) && this.owner_recovery_credential.access.generation == this.expected_generation + 1u) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.owner_recovery_credential))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  uint64 expected_generation = 2 [(buf.validate.field).uint64 = {
+    gt: 0
+    lt: 18446744073709551615
+  }];
+  optional kokoro.common.v1.OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential = 3;
 }

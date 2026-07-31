@@ -148,7 +148,8 @@
       "lifecycle": "contract-only",
       "operations": [
         {"effect": false, "id": "GetProjectionHead", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RefreshProjectionRecoveryAccess", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
@@ -169,7 +170,8 @@
       "lifecycle": "contract-only",
       "operations": [
         {"effect": false, "id": "GetProjectionHead", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+        {"effect": false, "id": "PullProjectionEvents", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
+        {"effect": true, "id": "RefreshProjectionRecoveryAccess", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},

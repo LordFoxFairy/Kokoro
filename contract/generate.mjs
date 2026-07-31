@@ -238,6 +238,7 @@ const BOUNDARIES = Object.freeze({
       "proto/kokoro/session/media/v1/media_projection.proto",
     ]),
     sources: Object.freeze([
+      "kokoro/common/v1/projection_integrity.proto",
       "kokoro/platform/credit/v1/cost_projection.proto",
       "kokoro/platform/media/v1/media_projection.proto",
       "kokoro/session/media/v1/media_projection.proto",
@@ -252,6 +253,7 @@ const BOUNDARIES = Object.freeze({
       "proto/kokoro/session/media/v1/media_projection_ingest.proto",
     ]),
     sources: Object.freeze([
+      "kokoro/common/v1/projection_integrity.proto",
       "kokoro/platform/credit/v1/cost_projection.proto",
       "kokoro/platform/media/v1/media_projection.proto",
       "kokoro/session/media/v1/media_projection.proto",
@@ -267,11 +269,14 @@ const BOUNDARIES = Object.freeze({
       "proto/kokoro/platform/media/v1/media_projection_recovery.proto",
     ]),
     sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/projection_integrity.proto",
+      "kokoro/common/v2/command_envelope.proto",
       "kokoro/platform/media/v1/media_projection.proto",
       "kokoro/platform/media/v1/media_projection_recovery.proto",
     ]),
     helper: null,
-    commandEnvelopeDigest: null,
+    commandEnvelopeDigest: "media-projection-recovery",
   }),
   "platform-credit-cost-projection-recovery@v1": Object.freeze({
     schema: "kokoro.platform.credit.v1.CreditCostProjectionRecoveryService",
@@ -280,11 +285,14 @@ const BOUNDARIES = Object.freeze({
       "proto/kokoro/platform/credit/v1/cost_projection_recovery.proto",
     ]),
     sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v1/projection_integrity.proto",
+      "kokoro/common/v2/command_envelope.proto",
       "kokoro/platform/credit/v1/cost_projection.proto",
       "kokoro/platform/credit/v1/cost_projection_recovery.proto",
     ]),
     helper: null,
-    commandEnvelopeDigest: null,
+    commandEnvelopeDigest: "credit-cost-projection-recovery",
   }),
   "platform-model-gateway@v1": Object.freeze({
     schema: "kokoro.platform.model.v1.ModelGatewayService",
@@ -1561,6 +1569,66 @@ export function publishSiteReleaseCatalogRequestDigest(
 `;
 }
 
+function mediaProjectionRecoveryDigestSource(kind) {
+  const variants = {
+    "media-projection-recovery": {
+      contractVersion: "platform-media-projection-recovery@v1",
+      operation: "kokoro.platform.media.v1.MediaProjectionRecoveryService/RefreshProjectionRecoveryAccess",
+      importPath: "./kokoro/platform/media/v1/media_projection_recovery_pb.js",
+      effect: "RefreshMediaProjectionRecoveryAccessEffect",
+      functionName: "mediaProjectionRecoveryRefreshRequestDigest",
+      projectionRef: "operationRef",
+    },
+    "credit-cost-projection-recovery": {
+      contractVersion: "platform-credit-cost-projection-recovery@v1",
+      operation: "kokoro.platform.credit.v1.CreditCostProjectionRecoveryService/RefreshProjectionRecoveryAccess",
+      importPath: "./kokoro/platform/credit/v1/cost_projection_recovery_pb.js",
+      effect: "RefreshCreditCostProjectionRecoveryAccessEffect",
+      functionName: "creditCostProjectionRecoveryRefreshRequestDigest",
+      projectionRef: "costProjectionRef",
+    },
+  };
+  const variant = variants[kind];
+  if (variant === undefined) throw new Error("projection_recovery_digest_boundary_unknown");
+  return `
+import {
+  ${variant.effect}Schema,
+  type ${variant.effect},
+} from "${variant.importPath}";
+
+export type VerifiedProjectionRecoveryCommandAxes = Readonly<{
+  workloadIdentityRef: string;
+  audience: string;
+  environment: string;
+  region: string;
+  siteRef: string;
+}>;
+
+export function ${variant.functionName}(
+  effect: ${variant.effect},
+  verified: VerifiedProjectionRecoveryCommandAxes,
+): string {
+  return commandEnvelopeV2Digest({
+    contractVersion: "${variant.contractVersion}",
+    operation: "${variant.operation}",
+    trust: {
+      workloadIdentityRef: requiredAxis("verified.workloadIdentityRef", verified.workloadIdentityRef),
+      audience: requiredAxis("verified.audience", verified.audience),
+      environment: requiredAxis("verified.environment", verified.environment),
+      region: requiredAxis("verified.region", verified.region),
+      siteRef: requiredAxis("verified.siteRef", verified.siteRef),
+      securityEpochs: [],
+    },
+    targetRefs: [effect.bindingRef, effect.${variant.projectionRef}],
+    effect: {
+      typeName: ${variant.effect}Schema.typeName,
+      bytes: toBinary(${variant.effect}Schema, effect, { writeUnknownFields: false }),
+    },
+  });
+}
+`;
+}
+
 function commandEnvelopeDigestSource(kind) {
   const wrappers = {
     identity: identityCommandDigestSource,
@@ -1569,6 +1637,8 @@ function commandEnvelopeDigestSource(kind) {
     "site-provisioning": siteProvisioningDigestSource,
     "admin-commerce": adminCommerceDigestSource,
     "model-control": modelControlDigestSource,
+    "media-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
+    "credit-cost-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
@@ -1663,5 +1733,6 @@ export {
   metadataSource,
   modelControlAdminErrorContractSource,
   modelStreamFrameDigestSource,
+  mediaProjectionRecoveryDigestSource,
   parseArguments,
 };

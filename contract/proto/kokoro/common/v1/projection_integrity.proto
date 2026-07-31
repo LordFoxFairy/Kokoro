@@ -3,6 +3,7 @@ syntax = "proto3";
 package kokoro.common.v1;
 
 import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 
 enum ProjectionSignatureAlgorithm {
   PROJECTION_SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
@@ -22,4 +23,56 @@ message ProjectionSignature {
     pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
   }];
   bytes signature = 3 [(buf.validate.field).bytes.len = 64];
+}
+
+// Read authority and rotation authority are deliberately different bearer
+// values. Read RPCs receive only this access credential and therefore cannot
+// rotate it or recover a lost refresh response under a new command identity.
+message ProjectionRecoveryAccessCredential {
+  string handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  uint64 generation = 2 [(buf.validate.field).uint64.gt = 0];
+}
+
+enum ProjectionRecoveryPreviousAccessState {
+  PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_UNSPECIFIED = 0;
+  PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_INITIAL = 1;
+  PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_INVALIDATED = 2;
+  PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_OVERLAP = 3;
+}
+
+// A first credential has no predecessor. Every later rotation either revokes
+// the previous access immediately or states the exact end of a bounded overlap.
+message ProjectionRecoveryCredentialTransition {
+  ProjectionRecoveryPreviousAccessState previous_access_state = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional google.protobuf.Timestamp previous_access_valid_until = 2;
+}
+
+// Complete owner-issued credential delivered to Session. The refresh grant is
+// stored for the explicit refresh effect but never sent to GetHead/Pull reads.
+message OwnerProjectionRecoveryCredentialEnvelope {
+  option (buf.validate.message).cel = {
+    id: "projection_recovery_credential.transition"
+    message: "generation one is initial; later generations explicitly invalidate or bound overlap with the prior access"
+    expression: "(this.access.generation == 1u && this.transition.previous_access_state == kokoro.common.v1.ProjectionRecoveryPreviousAccessState.PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_INITIAL && !has(this.transition.previous_access_valid_until)) || (this.access.generation > 1u && this.transition.previous_access_state == kokoro.common.v1.ProjectionRecoveryPreviousAccessState.PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_INVALIDATED && !has(this.transition.previous_access_valid_until)) || (this.access.generation > 1u && this.transition.previous_access_state == kokoro.common.v1.ProjectionRecoveryPreviousAccessState.PROJECTION_RECOVERY_PREVIOUS_ACCESS_STATE_OVERLAP && has(this.transition.previous_access_valid_until) && this.issued_at < this.transition.previous_access_valid_until && this.transition.previous_access_valid_until <= this.access_expires_at)"
+  };
+  option (buf.validate.message).cel = {
+    id: "projection_recovery_credential.expiry_order"
+    message: "refresh authority must outlive the access credential it rotates"
+    expression: "this.issued_at < this.access_expires_at && this.access_expires_at < this.refresh_grant_expires_at"
+  };
+  ProjectionRecoveryAccessCredential access = 1 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp access_expires_at = 2 [(buf.validate.field).required = true];
+  string refresh_grant = 3 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
+  ProjectionRecoveryCredentialTransition transition = 5 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp issued_at = 6 [(buf.validate.field).required = true];
 }

@@ -188,7 +188,7 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
     assert "ProjectionSignature signature" in activation
     activation_delivery = _message_body(source, "MediaProjectionBindingCommittedDeliveryEnvelope")
     assert "pending_media_projection_handle" in activation_delivery
-    assert "owner_recovery_handle" in activation_delivery
+    assert "OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential" in activation_delivery
     assert "MediaProjectionBindingCommittedRecord record" in activation_delivery
     assert "first event" in source
 
@@ -204,7 +204,7 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
 
     media_delivery = _message_body(source, "MediaProjectionDeliveryEnvelope")
     assert "media_projection_handle" in media_delivery
-    assert "owner_recovery_handle" in media_delivery
+    assert "OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential" in media_delivery
     assert "MediaProjectionEventRecord record" in media_delivery
 
     cost_event = _message_body(credit_owner, "CreditCostProjectionEventRecord")
@@ -220,7 +220,7 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
     assert "amount_micros" not in cost_event
     cost_delivery = _message_body(source, "CreditCostProjectionDeliveryEnvelope")
     assert "cost_projection_handle" in cost_delivery
-    assert "owner_recovery_handle" in cost_delivery
+    assert "OwnerProjectionRecoveryCredentialEnvelope owner_recovery_credential" in cost_delivery
     assert "CreditCostProjectionEventRecord record" in cost_delivery
 
     media_refresh = _message_body(source, "RefreshMediaProjectionAccessResponse")
@@ -307,9 +307,11 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
     assert _service_methods(media, "MediaProjectionRecoveryService") == [
         "GetProjectionHead",
         "PullProjectionEvents",
+        "RefreshProjectionRecoveryAccess",
     ]
     media_pull = _message_body(media, "PullProjectionEventsRequest")
-    assert "owner_recovery_handle" in media_pull
+    assert "ProjectionRecoveryAccessCredential owner_recovery_access" in media_pull
+    assert "refresh_grant" not in media_pull
     assert "after_sequence" in media_pull
     assert "limit" in media_pull
     assert "lte: 256" in media_pull
@@ -318,7 +320,7 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
         assert field in media_head
     assert "CreditCostProjectionEvent" not in media
     media_response = _message_body(media, "PullProjectionEventsResponse")
-    assert "replay_delivery_authorization" in media_response
+    assert "replay_delivery_authorization" not in media_response
     assert "MediaProjectionRecoveryRecord events" in media_response
     assert "min_items" not in media_response
     assert "max_items: 256" in media_response
@@ -326,9 +328,11 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
     assert _service_methods(credit, "CreditCostProjectionRecoveryService") == [
         "GetProjectionHead",
         "PullProjectionEvents",
+        "RefreshProjectionRecoveryAccess",
     ]
     credit_pull = _message_body(credit, "PullProjectionEventsRequest")
-    assert "owner_recovery_handle" in credit_pull
+    assert "ProjectionRecoveryAccessCredential owner_recovery_access" in credit_pull
+    assert "refresh_grant" not in credit_pull
     assert "after_sequence" in credit_pull
     assert "limit" in credit_pull
     assert "lte: 256" in credit_pull
@@ -337,7 +341,7 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
         assert field in credit_head
     assert "MediaProjectionEvent" not in credit
     credit_response = _message_body(credit, "PullProjectionEventsResponse")
-    assert "replay_delivery_authorization" in credit_response
+    assert "replay_delivery_authorization" not in credit_response
     assert "CreditCostProjectionEventRecord events" in credit_response
     assert "min_items" not in credit_response
     assert "max_items: 256" in credit_response

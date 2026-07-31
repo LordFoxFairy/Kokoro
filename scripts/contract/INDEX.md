@@ -126,6 +126,10 @@ caller audience, or SPIFFE identity. Wire shapes stay owned by `contract/proto/`
 
 Read-only and deterministic, with no runtime network: protobuf gates use Root-pinned Buf and
 `@bufbuild/protobuf`; projection validation additionally uses the exact pinned `@bufbuild/protovalidate` runtime.
+
+The two Platform projection-recovery boundaries keep `GetProjectionHead` and `PullProjectionEvents` pure reads and register
+`RefreshProjectionRecoveryAccess` as a `same_identity` command-receipt effect. Media and Credit use separate typed effects
+and digest helpers, while the common projection-integrity contract owns the monotonic access/refresh credential envelope.
 OpenAPI parsing and the Python gates use PyYAML, which the root workspace already pins. Source paths must stay
 repository-relative and are rejected if they escape the repository.
 
