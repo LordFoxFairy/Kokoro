@@ -26,6 +26,7 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "@bufbuild/protovalidate": "1.2.0",
         "@redocly/cli": "2.41.0",
         "@hey-api/openapi-ts": "0.99.0",
+        "ajv": "8.20.0",
         "typescript": "5.9.3",
     }
     assert package["scripts"] == {
@@ -42,6 +43,9 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
                 "node generate-public-openapi.mjs --schema asset-data-plane-v1"
             ),
             "openapi:generate:public": "node generate-public-openapi.mjs",
+            "web-release:check": (
+                "node ../scripts/contract/check-web-release-composition.mjs --root .."
+            ),
         }
     assert "pnpm" not in package
     workspace = yaml.safe_load((CONTRACT / "pnpm-workspace.yaml").read_text())

@@ -30,6 +30,13 @@ described by [`contract/registry/boundaries.schema.json`](../../contract/registr
 The registry is JSON-compatible YAML, following `config/architecture/index-roots.yaml`: the filename the spec
 mandates, without adding a YAML parser dependency.
 
+`check-web-release-composition.mjs` is the offline publication-contract gate for ADR-016. It compiles all seven
+JSON Schema 2020-12 documents with strict AJV, then verifies the closed owner registry, I-JSON/NFC input profile,
+RFC 8785 JCS SHA-256 vectors, DSSE PAE/Ed25519 vectors, exact Catalog-to-Inventory partition, owner digest chain,
+compiled unit/package/route/BFF graph and SLSA/in-toto provenance binding. It explicitly keeps Product Catalog and
+Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas
+are immutable under `--breaking-against`; a semantic change requires a new major contract id.
+
 OpenAPI descriptors are different: they are full YAML 1.2 documents and may legitimately use anchors, flow
 mappings, merge keys, and quoted scalars. `openapi-reader.mjs` invokes the root-lock-pinned PyYAML reader in
 `read-openapi.py`; its SafeLoader extension rejects duplicate keys before returning a JSON document. Both the
@@ -223,7 +230,8 @@ domain-code projection. This
 keeps Connect error details executable across the provider/consumer split instead of duplicating literals.
 
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
-`node scripts/contract/check-boundary-coverage.mjs`, and `node scripts/contract/check-wave1-surface.mjs`,
+`node scripts/contract/check-boundary-coverage.mjs`, `node scripts/contract/check-web-release-composition.mjs`,
+and `node scripts/contract/check-wave1-surface.mjs`,
 then `node contract/generate-projection-integrity-corpus.mjs --check` and
 `node contract/validate-projection-integrity.mjs --validate-corpus`,
 `pnpm --dir contract run openapi:lint`,

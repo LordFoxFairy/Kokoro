@@ -77,9 +77,15 @@ jobs:
           test -z "$(git -C kokoro-web status --porcelain --untracked-files=all -- packages/site-client/src/generated/platform-public)"
       - name: boundary registry gate
         run: |
-          node --test scripts/contract/check-boundary-registry.test.mjs scripts/contract/check-boundary-coverage.test.mjs
+          node --test scripts/contract/check-boundary-registry.test.mjs scripts/contract/check-boundary-coverage.test.mjs scripts/contract/check-web-release-composition.test.mjs
           node scripts/contract/check-boundary-registry.mjs
           node scripts/contract/check-boundary-coverage.mjs
+          node scripts/contract/check-web-release-composition.mjs
+          if git cat-file -e origin/main:contract/registry/web-release-composition.yaml 2>/dev/null; then
+            node scripts/contract/check-web-release-composition.mjs --breaking-against origin/main
+          else
+            echo 'Web release composition v1 breaking baseline bootstrap: origin/main has no registry yet.'
+          fi
       - name: admin browser contract gate
         run: |
           uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py scripts/contract/test_admin_browser_public_shapes.py -q

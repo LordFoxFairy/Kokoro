@@ -11,7 +11,8 @@
     "buf:generate": "node generate.mjs",
     "openapi:generate:public": "node generate-public-openapi.mjs",
     "openapi:generate:asset-data-plane": "node generate-public-openapi.mjs --schema asset-data-plane-v1",
-    "openapi:lint": "redocly lint --extends=spec openapi/platform-public-v1.yaml openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml"
+    "openapi:lint": "redocly lint --extends=spec openapi/platform-public-v1.yaml openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml",
+    "web-release:check": "node ../scripts/contract/check-web-release-composition.mjs --root .."
   },
   "devDependencies": {
     "@bufbuild/buf": "1.72.0",
@@ -20,6 +21,7 @@
     "@bufbuild/protovalidate": "1.2.0",
     "@hey-api/openapi-ts": "0.99.0",
     "@redocly/cli": "2.41.0",
+    "ajv": "8.20.0",
     "typescript": "5.9.3"
   }
 }

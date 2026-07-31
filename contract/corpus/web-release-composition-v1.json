@@ -1,0 +1,199 @@
+{
+  "schema": "kokoro.web-release-composition.corpus.v1",
+  "canonicalProfile": {
+    "jsonProfile": "I-JSON-NFC-KOKORO-V1",
+    "canonicalization": "RFC8785-JCS",
+    "objectKeyOrder": "utf16-code-unit-lexicographic",
+    "integerEncoding": "canonical-decimal-string",
+    "timestampEncoding": "utc-rfc3339-millisecond",
+    "digestAlgorithm": "sha256",
+    "selfDigest": "forbidden"
+  },
+  "positiveCases": [
+    {
+      "id": "catalog-published",
+      "contractId": "product-surface-catalog.v1",
+      "document": {
+        "contract": "kokoro.product-surface-catalog.v1",
+        "schemaRevision": "1",
+        "catalogRevisionRef": "catalog.core.1",
+        "revision": "1",
+        "state": "published",
+        "products": [
+          {"productRef": "product.chat", "revision": "1", "surfaceRefs": ["surface.chat"], "requiredProductRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"]},
+          {"productRef": "product.memory", "revision": "1", "surfaceRefs": ["surface.memory"], "requiredProductRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"]}
+        ],
+        "surfaces": [
+          {"surfaceRef": "surface.chat", "productRef": "product.chat", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"]},
+          {"surfaceRef": "surface.memory", "productRef": "product.memory", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"]}
+        ],
+        "canonicalJourneys": [
+          {"journeyRef": "journey.chat", "revision": "1", "entrySurfaceRef": "surface.chat", "requiredSurfaceRefs": ["surface.chat"], "operationFamilyRefs": ["operation.chat"]},
+          {"journeyRef": "journey.memory", "revision": "1", "entrySurfaceRef": "surface.memory", "requiredSurfaceRefs": ["surface.memory"], "operationFamilyRefs": ["operation.memory"]}
+        ],
+        "operationFamilyRefs": ["operation.chat", "operation.memory"],
+        "publishedAt": "2026-07-31T12:00:00.000Z"
+      }
+    },
+    {
+      "id": "inventory-chat-only",
+      "contractId": "surface-inventory.v1",
+      "document": {
+        "contract": "kokoro.surface-inventory.v1", "schemaRevision": "1", "inventoryRevisionRef": "inventory.site-alpha.1", "revision": "1",
+        "siteRef": "site.alpha", "releaseCandidateRef": "release-candidate.alpha.1", "launchProfileRevisionRef": "launch-profile.redeem-first.1",
+        "catalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
+        "enabledSurfaceRefs": ["surface.chat"], "disabledSurfaceRefs": ["surface.memory"], "shellRequirementRefs": ["shell.identity", "shell.health"]
+      }
+    },
+    {
+      "id": "material-site-alpha",
+      "contractId": "web-build-material-bundle.v1",
+      "document": {
+        "contract": "kokoro.web-build-material-bundle.v1", "schemaRevision": "1", "bundleRef": "material-bundle.site-alpha.1", "revision": "1", "siteRef": "site.alpha",
+        "brand": {"displayName": "Kokoro Alpha", "tokens": [{"tokenRef": "brand.color.primary", "kind": "color", "value": "#6f5ef9"}], "logos": [], "icons": [], "publicFonts": []},
+        "domainPolicy": {"canonicalHost": "alpha.example.com", "canonicalHttpsOrigin": "https://alpha.example.com", "wwwPolicy": "absent"},
+        "localePolicy": {"defaultLocale": "en-US", "translations": [{"locale": "en-US", "catalog": {"materialRef": "release-material.translation-en-us.1", "mediaType": "application/json", "sizeBytes": "2048", "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "scanEvidenceRef": "scan.translation-en-us.1"}}]},
+        "legal": {"documents": [{"documentRef": "legal.privacy.1", "kind": "privacy", "revision": "1", "content": {"materialRef": "release-material.privacy.1", "mediaType": "text/markdown", "sizeBytes": "4096", "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "scanEvidenceRef": "scan.privacy.1"}}], "consentPresentationRef": "presentation.consent.1", "cookiePresentationRef": "presentation.cookie.1"},
+        "seo": {"title": "Kokoro Alpha", "description": "A focused AI chat experience.", "robotsPolicy": "index-follow", "sitemapPolicy": "generated-enabled-surfaces", "socialCards": []},
+        "publicRuntimeConfig": [{"key": "PUBLIC_SUPPORT_LABEL", "kind": "text", "value": "Support"}]
+      }
+    },
+    {
+      "id": "toolchain-published",
+      "contractId": "web-build-toolchain.v1",
+      "document": {
+        "contract": "kokoro.web-build-toolchain.v1", "schemaRevision": "1", "toolchainRevisionRef": "web-toolchain.next16.1", "revision": "1", "state": "published",
+        "baseSource": {"repositoryRef": "repository.kokoro-web", "commitDigest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "treeDigest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+        "baseTemplate": {"ref": "template.site-base.1", "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+        "compilerArtifact": {"repositoryRef": "oci.kokoro.web-composition-compiler", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+        "inspectorArtifact": {"repositoryRef": "oci.kokoro.web-artifact-inspector", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
+        "buildSandboxImage": {"repositoryRef": "oci.kokoro.web-build-sandbox", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
+        "inspectionSandboxImage": {"repositoryRef": "oci.kokoro.web-inspection-sandbox", "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"},
+        "versions": {"node": "24.5.0", "pnpm": "11.2.2", "next": "16.2.12", "typescript": "5.9.3"},
+        "toolchainBomDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "lockfilePolicy": {"packageManager": "pnpm", "lockfileVersion": "9.0", "frozen": true, "ignoreLifecycleScripts": true, "network": "controller-materialized-only"},
+        "installPolicyRef": "policy.install.offline.1", "reproducibilityPolicyRef": "policy.reproducible-build.1", "publishedAt": "2026-07-31T12:10:00.000Z"
+      }
+    },
+    {
+      "id": "intent-site-alpha",
+      "contractId": "web-build-intent.v1",
+      "document": {
+        "contract": "kokoro.web-build-intent.v1", "schemaRevision": "1", "intentRef": "web-build-intent.alpha.1", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha",
+        "environment": "production", "audience": "kokoro.web-release-composition.build.v1", "launchProfileRevisionRef": "launch-profile.redeem-first.1", "shellRequirementRefs": ["shell.health", "shell.identity"],
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
+        "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"},
+        "webBuildToolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:7f69768eb10ab49d62e7cbea4a4522fac940d56bd8445f64fb43ae4925095192"},
+        "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
+        "contractFloor": [{"contractRef": "contract.platform-public", "minimumMajor": "1"}, {"contractRef": "contract.session-http", "minimumMajor": "1"}],
+        "requiredModelCatalogs": [{"role": "assistant", "catalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
+        "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"},
+        "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
+        "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"},
+        "issuedAt": "2026-07-31T12:20:00.000Z", "candidateAuthorizationEpoch": "7", "issuer": {"issuerRef": "platform.site-signer", "signingKeyId": "key.web-build-intent.3"}
+      }
+    },
+    {
+      "id": "manifest-chat-only",
+      "contractId": "compiled-web-manifest.v1",
+      "document": {
+        "contract": "kokoro.compiled-web-manifest.v1", "schemaRevision": "1", "manifestRef": "compiled-web-manifest.alpha.1", "intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:c892a4611d87a040858863d7fa1d8ebe6572e85d360246126bce836148f6abcc", "releaseCandidateRef": "release-candidate.alpha.1", "compilerRevisionRef": "web-compiler.next16.1",
+        "registry": {"ref": "web-registry.core.1", "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777"},
+        "catalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
+        "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:7f69768eb10ab49d62e7cbea4a4522fac940d56bd8445f64fb43ae4925095192"},
+        "measuredToolArtifacts": [
+          {"role": "compiler", "repositoryRef": "oci.kokoro.web-composition-compiler", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
+          {"role": "inspector", "repositoryRef": "oci.kokoro.web-artifact-inspector", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
+          {"role": "build-sandbox", "repositoryRef": "oci.kokoro.web-build-sandbox", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
+          {"role": "inspection-sandbox", "repositoryRef": "oci.kokoro.web-inspection-sandbox", "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"}
+        ],
+        "units": [
+          {"unitRef": "web.shell.base", "revision": "1", "kind": "shell", "providesSurfaceRefs": [], "providesShellRequirementRefs": ["shell.health", "shell.identity"], "requiresUnitRefs": ["web.dependency.trust"], "packageRefs": ["package.web-shell"]},
+          {"unitRef": "web.dependency.trust", "revision": "1", "kind": "dependency", "providesSurfaceRefs": [], "providesShellRequirementRefs": [], "requiresUnitRefs": [], "packageRefs": ["package.site-bff"]},
+          {"unitRef": "web.surface.chat", "revision": "1", "kind": "surface", "providesSurfaceRefs": ["surface.chat"], "providesShellRequirementRefs": [], "requiresUnitRefs": ["web.shell.base"], "packageRefs": ["package.chat-product"]}
+        ],
+        "packages": [
+          {"packageRef": "package.web-shell", "name": "@kokoro/site-shell", "version": "1.0.0", "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1", "unitRefs": ["web.shell.base"]},
+          {"packageRef": "package.site-bff", "name": "@kokoro/site-bff", "version": "1.0.0", "digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2", "unitRefs": ["web.dependency.trust"]},
+          {"packageRef": "package.chat-product", "name": "@kokoro/chat-product", "version": "1.0.0", "digest": "sha256:b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3", "unitRefs": ["web.surface.chat"]}
+        ],
+        "routes": [
+          {"routeRef": "route.home", "unitRef": "web.shell.base", "pathname": "/", "kind": "page", "methods": ["GET"], "runtime": "nodejs"},
+          {"routeRef": "route.chat", "unitRef": "web.surface.chat", "pathname": "/chat", "kind": "page", "methods": ["GET"], "runtime": "nodejs"},
+          {"routeRef": "route.api-session", "unitRef": "web.surface.chat", "pathname": "/api/session", "kind": "route-handler", "methods": ["GET", "POST"], "runtime": "nodejs"}
+        ],
+        "navigation": [{"navigationRef": "navigation.chat", "unitRef": "web.surface.chat", "routeRef": "route.chat", "order": "10"}],
+        "bffOperationGroups": [{"groupRef": "bff.session", "unitRef": "web.surface.chat", "operationIds": ["createSession", "getSessionSnapshot"]}],
+        "bootstrapRequirements": ["bootstrap.product-context", "bootstrap.session-contract"], "advertisedSurfaceRefs": ["surface.chat"],
+        "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "role": "assistant", "catalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "sourceCompositionDigest": "sha256:b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4", "lockfileDigest": "sha256:b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
+      }
+    },
+    {
+      "id": "provenance-site-alpha",
+      "contractId": "web-artifact-provenance-profile.v1",
+      "document": {
+        "_type": "https://in-toto.io/Statement/v1",
+        "subject": [{"name": "registry.kokoro.dev/sites/alpha-web", "digest": {"sha256": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0"}}],
+        "predicateType": "https://slsa.dev/provenance/v1",
+        "predicate": {
+          "buildDefinition": {
+            "buildType": "https://contracts.kokoro.dev/build-types/site-web/v1",
+            "externalParameters": {"intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:c892a4611d87a040858863d7fa1d8ebe6572e85d360246126bce836148f6abcc", "compiledWebManifestRef": "compiled-web-manifest.alpha.1", "compiledWebManifestDigest": "sha256:4e1f47eb73cfd69cba10c683631e7aa0a523cb1f4e25346699d4192e42b68523", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha", "candidateAuthorizationEpoch": "7", "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:7f69768eb10ab49d62e7cbea4a4522fac940d56bd8445f64fb43ae4925095192"}},
+            "resolvedDependencies": [
+              {"uri": "git.repository.kokoro-web.commit", "digest": {"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}},
+              {"uri": "git.repository.kokoro-web.tree", "digest": {"sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}},
+              {"uri": "template.site-base", "digest": {"sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}},
+              {"uri": "material.site-alpha", "digest": {"sha256": "3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}},
+              {"uri": "tool.compiler", "digest": {"sha256": "1111111111111111111111111111111111111111111111111111111111111111"}},
+              {"uri": "tool.inspector", "digest": {"sha256": "2222222222222222222222222222222222222222222222222222222222222222"}},
+              {"uri": "image.build-sandbox", "digest": {"sha256": "3333333333333333333333333333333333333333333333333333333333333333"}},
+              {"uri": "image.inspection-sandbox", "digest": {"sha256": "4444444444444444444444444444444444444444444444444444444444444444"}},
+              {"uri": "package.web-shell", "digest": {"sha256": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"}},
+              {"uri": "package.site-bff", "digest": {"sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"}},
+              {"uri": "package.chat-product", "digest": {"sha256": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}},
+              {"uri": "lockfile.site-alpha", "digest": {"sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"}}
+            ]
+          },
+          "runDetails": {"builder": {"id": "https://workloads.kokoro.dev/site-web-attestor/v1"}, "metadata": {"invocationId": "invocation.alpha.1", "startedOn": "2026-07-31T12:30:00.000Z", "finishedOn": "2026-07-31T12:32:00.000Z"}, "byproducts": [{"name": "inspection-report", "digest": "sha256:c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"}, {"name": "sbom", "digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"}, {"name": "vulnerability-scan", "digest": "sha256:c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"}, {"name": "certification", "digest": "sha256:c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"}]}
+        }
+      }
+    }
+  ],
+  "canonicalVectors": [
+    {"id": "jcs-catalog", "caseId": "catalog-published", "expectedDigest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
+    {"id": "jcs-inventory", "caseId": "inventory-chat-only", "expectedDigest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
+    {"id": "jcs-material", "caseId": "material-site-alpha", "expectedDigest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
+    {"id": "jcs-toolchain", "caseId": "toolchain-published", "expectedDigest": "sha256:7f69768eb10ab49d62e7cbea4a4522fac940d56bd8445f64fb43ae4925095192"},
+    {"id": "jcs-intent", "caseId": "intent-site-alpha", "expectedDigest": "sha256:c892a4611d87a040858863d7fa1d8ebe6572e85d360246126bce836148f6abcc"},
+    {"id": "jcs-manifest", "caseId": "manifest-chat-only", "expectedDigest": "sha256:4e1f47eb73cfd69cba10c683631e7aa0a523cb1f4e25346699d4192e42b68523"},
+    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:cd32951999602395901d3bb1f431befce180d68af4548e0bd94f2f3a1cb88ade"}
+  ],
+  "dsseVectors": [
+    {"id": "dsse-intent-site-alpha", "caseId": "intent-site-alpha", "keyId": "key.test.web-build-intent.1", "payloadType": "application/vnd.kokoro.web-build-intent.v1+json", "expectedPaeSha256": "2cedde849f39d6c5e188fbc4d1b44a6de0815cb2fdfc44b13a8dfdb0fb6e9706", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAwUZpKN5nkQpEt4WFg2Vdbs1LfE6kkQHMcxldBsE8gl8=", "signatureBase64": "TarubxYemPIa4mLSxH48yR3YTvhJDvysvws1kX8YjANeVWZVOlmez4jKajO/oZT7ldj6Sb2TUJcBEltcjy29CA=="},
+    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.test.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "ee354b40710571fc7f92b8f7ffd2d9ff77a42f077a4db2c51d404a624dd1f977", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA6bU5wMC1KAccFK0ZYE/2UEmtEI9nXjtFeQr2Kb6SkXI=", "signatureBase64": "2cpCplIIFEPo9axyhkaNCxnAlH6bJzyCHTgozAsN2wV0uw8LJqwsksDaHwWNZ9abIXIeMj/nFb+Ra8ycIYUWAA=="}
+  ],
+  "negativeCases": [
+    {"id": "catalog-unknown-field", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/unexpected", "value": true}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "catalog-duplicate-surface", "baseCaseId": "catalog-published", "mutation": {"op": "copy", "path": "/surfaces/0", "target": "/surfaces/-"}, "expectedCode": "web_release_catalog_duplicate_ref"},
+    {"id": "catalog-dangling-journey", "baseCaseId": "catalog-published", "mutation": {"op": "replace", "path": "/canonicalJourneys/0/entrySurfaceRef", "value": "surface.absent"}, "expectedCode": "web_release_catalog_reference_invalid"},
+    {"id": "inventory-overlap", "baseCaseId": "inventory-chat-only", "mutation": {"op": "add", "path": "/disabledSurfaceRefs/-", "value": "surface.chat"}, "expectedCode": "web_release_inventory_partition_invalid"},
+    {"id": "inventory-incomplete", "baseCaseId": "inventory-chat-only", "mutation": {"op": "remove", "path": "/disabledSurfaceRefs/0"}, "expectedCode": "web_release_inventory_partition_invalid"},
+    {"id": "inventory-unknown", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/enabledSurfaceRefs/0", "value": "surface.absent"}, "expectedCode": "web_release_inventory_partition_invalid"},
+    {"id": "material-secret-key", "baseCaseId": "material-site-alpha", "mutation": {"op": "replace", "path": "/publicRuntimeConfig/0/key", "value": "PUBLIC_API_SECRET"}, "expectedCode": "web_release_material_secret_invalid"},
+    {"id": "material-unscanned", "baseCaseId": "material-site-alpha", "mutation": {"op": "remove", "path": "/legal/documents/0/content/scanEvidenceRef"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "toolchain-tagged-artifact", "baseCaseId": "toolchain-published", "mutation": {"op": "add", "path": "/compilerArtifact/tag", "value": "latest"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "toolchain-network-url", "baseCaseId": "toolchain-published", "mutation": {"op": "replace", "path": "/baseSource/repositoryRef", "value": "https://github.com/example/repo"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "intent-selects-unit", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/unitRefs", "value": ["web.surface.chat"]}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "intent-expires", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/expiresAt", "value": "2026-07-31T13:20:00.000Z"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "intent-self-digest", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/buildIntentDigest", "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "manifest-unit-cycle", "baseCaseId": "manifest-chat-only", "mutation": {"op": "add", "path": "/units/1/requiresUnitRefs/-", "value": "web.surface.chat"}, "expectedCode": "web_release_manifest_cycle"},
+    {"id": "manifest-route-conflict", "baseCaseId": "manifest-chat-only", "mutation": {"op": "copy", "path": "/routes/1", "target": "/routes/-"}, "expectedCode": "web_release_manifest_route_conflict"},
+    {"id": "manifest-disabled-surface", "baseCaseId": "manifest-chat-only", "mutation": {"op": "add", "path": "/advertisedSurfaceRefs/-", "value": "surface.memory"}, "expectedCode": "web_release_manifest_surface_leak"},
+    {"id": "manifest-orphan-package", "baseCaseId": "manifest-chat-only", "mutation": {"op": "replace", "path": "/packages/0/unitRefs/0", "value": "web.surface.absent"}, "expectedCode": "web_release_manifest_reference_invalid"},
+    {"id": "provenance-toolchain-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/externalParameters/toolchain/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_provenance_reference_invalid"}
+  ]
+}

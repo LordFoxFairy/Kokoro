@@ -19,7 +19,8 @@ This directory does not implement providers, consumers, retries, authentication 
 
 `proto/`, `openapi/`, `spec/`, `buf.yaml`, `buf.gen.yaml`, `generate.mjs`, `generate.py`,
 `generate-public-openapi.mjs`, both Media canonical generators, the canonical and projection-integrity
-golden corpora, the semantic projection corpus generator, the descriptor/Protovalidate integrity validator, and the
+golden corpora, the Web Release Composition JSON Schema/registry/corpus family, the semantic projection corpus
+generator, the descriptor/Protovalidate integrity validator, and the
 generation/check commands documented in [`README.md`](README.md) form the public boundary.
 
 ## Callers and dependencies
@@ -52,6 +53,13 @@ safe projections of the five Model Control effects, never generic Admin resource
 Add a schema only with a real producer and consumer. Never create runtime filesystem coupling from a child to this directory.
 
 ## Current gotchas
+
+The seven Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
+new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform
+Product Catalog owns Product/Surface/Journey business records, Platform Site owns inventory/material/intent, and Web
+Release Composition owns toolchain/compiled-manifest/provenance publication. Payloads never contain their own digest
+or signature. Callers carry the digest when referencing another immutable payload; DSSE signatures and the final OCI
+artifact digest live outside the signed/canonical payload, preventing a digest cycle.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
@@ -188,4 +196,6 @@ operation narrative reference; Session joins that reference to Media- and Artifa
 Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract run buf:lint`,
 `pnpm --dir contract run openapi:generate:public`, `node contract/generate-projection-integrity-corpus.mjs --check`,
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
-`node scripts/repository/check-generated-contracts.mjs`.
+`node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
+`pnpm --dir contract run web-release:check`; once a baseline exists, CI also runs the immutable-v1 check against
+`origin/main`.

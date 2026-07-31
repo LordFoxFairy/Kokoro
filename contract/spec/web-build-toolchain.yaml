@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.dev/web-build-toolchain/v1",
+  "title": "Kokoro Web Build Toolchain Revision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract", "schemaRevision", "toolchainRevisionRef", "revision", "state", "baseSource", "baseTemplate", "compilerArtifact", "inspectorArtifact", "buildSandboxImage", "inspectionSandboxImage", "versions", "toolchainBomDigest", "lockfilePolicy", "installPolicyRef", "reproducibilityPolicyRef", "publishedAt"],
+  "properties": {
+    "contract": {"const": "kokoro.web-build-toolchain.v1"}, "schemaRevision": {"const": "1"},
+    "toolchainRevisionRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"}, "state": {"const": "published"},
+    "baseSource": {"$ref": "#/$defs/source"}, "baseTemplate": {"$ref": "#/$defs/digestRef"},
+    "compilerArtifact": {"$ref": "#/$defs/oci"}, "inspectorArtifact": {"$ref": "#/$defs/oci"},
+    "buildSandboxImage": {"$ref": "#/$defs/oci"}, "inspectionSandboxImage": {"$ref": "#/$defs/oci"},
+    "versions": {"$ref": "#/$defs/versions"}, "toolchainBomDigest": {"$ref": "#/$defs/digest"},
+    "lockfilePolicy": {"$ref": "#/$defs/lockPolicy"}, "installPolicyRef": {"$ref": "#/$defs/ref"},
+    "reproducibilityPolicyRef": {"$ref": "#/$defs/ref"}, "publishedAt": {"$ref": "#/$defs/timestamp"}
+  },
+  "$defs": {
+    "ref": {"type": "string", "minLength": 3, "maxLength": 200, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},
+    "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
+    "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "source": {"type": "object", "additionalProperties": false, "required": ["repositoryRef", "commitDigest", "treeDigest"], "properties": {"repositoryRef": {"$ref": "#/$defs/ref"}, "commitDigest": {"$ref": "#/$defs/digest"}, "treeDigest": {"$ref": "#/$defs/digest"}}},
+    "oci": {"type": "object", "additionalProperties": false, "required": ["repositoryRef", "digest"], "properties": {"repositoryRef": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "versions": {"type": "object", "additionalProperties": false, "required": ["node", "pnpm", "next", "typescript"], "properties": {"node": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "pnpm": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "next": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}, "typescript": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"}}},
+    "lockPolicy": {"type": "object", "additionalProperties": false, "required": ["packageManager", "lockfileVersion", "frozen", "ignoreLifecycleScripts", "network"], "properties": {"packageManager": {"const": "pnpm"}, "lockfileVersion": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}, "frozen": {"const": true}, "ignoreLifecycleScripts": {"const": true}, "network": {"const": "controller-materialized-only"}}}
+  }
+}

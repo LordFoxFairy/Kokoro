@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "registryId": "kokoro.web-release-composition-contracts.v1",
+  "schemaAuthority": "root.contract",
+  "canonicalProfile": {
+    "jsonProfile": "I-JSON-NFC-KOKORO-V1",
+    "canonicalization": "RFC8785-JCS",
+    "digestAlgorithm": "sha256",
+    "digestEncoding": "sha256-lowercase-hex",
+    "integerEncoding": "canonical-decimal-string",
+    "timestampEncoding": "utc-rfc3339-millisecond",
+    "unknownFields": "reject",
+    "selfDigest": "forbidden"
+  },
+  "breakingPolicy": {
+    "policy": "immutable-major-schema",
+    "rule": "An existing v1 registry row and schema are byte-semantically frozen; publish a new major contract id instead of editing them."
+  },
+  "contracts": [
+    {
+      "id": "product-surface-catalog.v1",
+      "schemaId": "https://contracts.kokoro.dev/product-surface-catalog/v1",
+      "schemaPath": "contract/spec/product-surface-catalog.yaml",
+      "businessOwner": "platform.product-catalog",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "none"
+    },
+    {
+      "id": "surface-inventory.v1",
+      "schemaId": "https://contracts.kokoro.dev/surface-inventory/v1",
+      "schemaPath": "contract/spec/surface-inventory.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "none"
+    },
+    {
+      "id": "web-build-material-bundle.v1",
+      "schemaId": "https://contracts.kokoro.dev/web-build-material-bundle/v1",
+      "schemaPath": "contract/spec/web-build-material-bundle.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "web-build-toolchain.v1",
+      "schemaId": "https://contracts.kokoro.dev/web-build-toolchain/v1",
+      "schemaPath": "contract/spec/web-build-toolchain.yaml",
+      "businessOwner": "web.release-composition",
+      "publisherRepository": "kokoro-web",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "web-build-intent.v1",
+      "schemaId": "https://contracts.kokoro.dev/web-build-intent/v1",
+      "schemaPath": "contract/spec/web-build-intent.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "dsse-kokoro-web-build-intent-v1"
+    },
+    {
+      "id": "compiled-web-manifest.v1",
+      "schemaId": "https://contracts.kokoro.dev/compiled-web-manifest/v1",
+      "schemaPath": "contract/spec/compiled-web-manifest.yaml",
+      "businessOwner": "web.release-composition",
+      "publisherRepository": "kokoro-web",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "provenance-bound"
+    },
+    {
+      "id": "web-artifact-provenance-profile.v1",
+      "schemaId": "https://contracts.kokoro.dev/web-artifact-provenance-profile/v1",
+      "schemaPath": "contract/spec/web-artifact-provenance-profile.yaml",
+      "businessOwner": "web.release-composition",
+      "publisherRepository": "kokoro-web",
+      "consumers": ["kokoro-platform"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "dsse-in-toto-slsa-provenance-v1"
+    }
+  ]
+}
