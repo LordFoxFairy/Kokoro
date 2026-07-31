@@ -48,8 +48,9 @@ These files are not production certification evidence; Wave 9 still requires can
 naming. It cannot identify a renamed fixture or prove artifact provenance. C1 release qualification remains incomplete until a later
 promotion gate verifies a digest-bound Site release manifest or attestation. Compose's `:?` interpolation remains a second
 missing-or-empty guard for direct Compose callers.
-Session Kubernetes probes use public browser health semantics: `/healthz` is startup/liveness only and `/readyz` is dependency
-readiness only. Secure Connect workloads retain TCP probes until an authenticated probe identity is available.
+Session Kubernetes probes use the dedicated Pod-only plain-HTTP listener on `3902`; it is not Service-exposed and accepts only
+`GET /healthz` for startup/liveness and `GET /readyz` for the exact aggregate dependency-readiness closure. Browser `3900` and
+owner authority `3901` remain mTLS. Secure Connect workloads retain TCP probes until an authenticated probe identity is available.
 
 ## Verification
 

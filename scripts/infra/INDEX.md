@@ -21,6 +21,8 @@ Infra does not own business Site/tenant/workspace identity, child service deploy
 
 ## Callers and dependencies
 
+The Session probe gate specifically pins the Pod-only plain-HTTP listener on `3902`, unchanged browser mTLS on `3900`, absence of `3902` from the Service, and reuse of the aggregate Browser readiness closure.
+
 Root verification and operators call these commands. The four child repositories remain independent and cannot bypass this lifecycle during Root integration.
 
 ## Data ownership and events

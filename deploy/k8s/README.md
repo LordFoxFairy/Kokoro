@@ -40,16 +40,18 @@ the database transition is one-way (`open` to `sealed`). This Job is intentional
 Every Platform environment Secret exposes its own value as `DATABASE_URL_PLATFORM`; no runtime Pod
 receives `DATABASE_URL_PLATFORM_MIGRATOR`. File keys are mounted at `/run/secrets/kokoro` and env paths
 must match the filenames. Peer registries and certificates must use the service DNS identities shown in
-the manifests. Session's Service deliberately exposes browser `3900` and owner authority `3901`; Agent
-evidence is a separate mTLS Service on `8443`.
+the manifests. Session's Service deliberately exposes only mTLS browser `3900` and mTLS owner authority
+`3901`; Agent evidence is a separate mTLS Service on `8443`. The probe listener is not exposed by a Service.
 
 ## Health and readiness probes
 
-Session browser port `3900` exposes the kubelet health endpoints `/healthz` and `/readyz` without using
-the authenticated browser API. `/healthz` reports process liveness only and is used for startup and
-liveness probes. `/readyz` reports aggregated dependency readiness and is used only for readiness, so
-an unavailable database, projection, authorization, evidence, attachment, admission, dispatch, control,
-or conversation-context dependency removes the Pod from Service endpoints without restarting it.
+Session's dedicated plain-HTTP listener `3902` exposes only `/healthz` and `/readyz` for kubelet.
+Port `3902` is Pod-only and is not published by the Session Service. Browser `3900` remains mTLS and
+cannot be used by a plain kubelet HTTP probe. `/healthz` reports process liveness only and is used for
+startup and liveness probes. `/readyz` delegates to the exact Browser aggregate dependency readiness
+closure and is used only for readiness, so an unavailable database, projection, authorization, evidence,
+attachment, admission, dispatch, control, or conversation-context dependency removes the Pod from Service
+endpoints without restarting it. The probe listener exposes no Browser, owner-authority, or data routes.
 
 Standalone secure Connect workloads keep TCP readiness because kubelet cannot present their workload
 mTLS identity. TCP reachability is not semantic readiness; production overlays should replace it with a

@@ -26,22 +26,25 @@ spec:
           env:
             - { name: KOKORO_SESSION_PORT, value: "3900" }
             - { name: KOKORO_SESSION_OWNER_AUTHORITY_PORT, value: "3901" }
+            - { name: KOKORO_SESSION_PROBE_HOST, value: "0.0.0.0" }
+            - { name: KOKORO_SESSION_PROBE_PORT, value: "3902" }
           ports:
             - { name: browser, containerPort: 3900 }
             - { name: owner-authority, containerPort: 3901 }
+            - { name: probe, containerPort: 3902 }
           startupProbe:
-            httpGet: { path: /healthz, port: browser }
+            httpGet: { path: /healthz, port: probe }
             timeoutSeconds: 2
             periodSeconds: 2
             failureThreshold: 30
           readinessProbe:
-            httpGet: { path: /readyz, port: browser }
+            httpGet: { path: /readyz, port: probe }
             timeoutSeconds: 3
             periodSeconds: 5
             failureThreshold: 3
             successThreshold: 1
           livenessProbe:
-            httpGet: { path: /healthz, port: browser }
+            httpGet: { path: /healthz, port: probe }
             timeoutSeconds: 2
             periodSeconds: 10
             failureThreshold: 3
