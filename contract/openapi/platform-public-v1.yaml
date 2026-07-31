@@ -6248,9 +6248,15 @@ components:
       type: object
       additionalProperties: false
       x-kokoro-immutable-history: true
+      x-kokoro-continuation-requires-same-owner-snapshot: true
+      x-kokoro-stale-owner-snapshot-rejected: true
       description: >-
-        Revisions are append-only. Restoring an available payload always appends a new current
-        revision; it never mutates an existing revision or rewinds the current head.
+        Revision identities and lineage are append-only, while the public availability of revision
+        payloads may still change after forget, reset, or purge. The first page creates
+        ownerSnapshot and every continuation returns the identical snapshotRef and spaceVersion.
+        If the owner version changed, the cursor is rejected instead of returning an older plaintext
+        projection. Restoring an available payload always appends a new current revision; it never
+        mutates an existing revision or rewinds the current head.
       properties:
         entryRef: *memoryEntryRefSchema
         items:
@@ -6260,7 +6266,9 @@ components:
             $ref: '#/components/schemas/MemoryRevisionView'
         pageInfo:
           $ref: '#/components/schemas/PageInfo'
-      required: [entryRef, items, pageInfo]
+        ownerSnapshot:
+          $ref: '#/components/schemas/MemoryOwnerSnapshot'
+      required: [entryRef, items, pageInfo, ownerSnapshot]
     MemoryPurgeState:
       type: string
       enum: [revoked_purge_pending, purged]
@@ -6289,8 +6297,23 @@ components:
     MemoryExportStatus:
       type: object
       additionalProperties: false
+      x-kokoro-monotonic-status-version: true
+      x-kokoro-allowed-state-transitions:
+        queued: [running, failed, expired, purged]
+        running: [ready, failed, expired, purged]
+        ready: [expired, purged]
+        failed: [purged]
+        expired: [purged]
+        purged: []
+      description: >-
+        statusVersion starts at one and increases on every persisted change to this public status
+        projection. For one exportRef, a lower version is stale and must never replace a higher one;
+        a replay at the same version is byte-equivalent. State transitions are restricted to the
+        declared directed graph, so ready, expired, failed, or purged cannot regress to active work.
       properties:
         exportRef: *memoryExportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
         state:
           $ref: '#/components/schemas/MemoryExportState'
         format:
@@ -6314,6 +6337,7 @@ components:
           enum: [null, policy_rejected, source_unavailable, temporarily_unavailable]
       required:
         - exportRef
+        - statusVersion
         - state
         - format
         - requestedAt
@@ -6334,8 +6358,27 @@ components:
     MemoryImportStatus:
       type: object
       additionalProperties: false
+      x-kokoro-monotonic-status-version: true
+      x-kokoro-completed-requires-resulting-space-version: true
+      x-kokoro-non-completed-requires-null-resulting-space-version: true
+      x-kokoro-allowed-state-transitions:
+        queued: [validating, rejected, failed]
+        validating: [quarantined, applying, rejected, failed]
+        quarantined: [applying, rejected, failed]
+        applying: [completed, failed]
+        completed: []
+        rejected: []
+        failed: []
+      description: >-
+        statusVersion starts at one and increases on every persisted change to this public status
+        projection. For one importRef, a lower version is stale and must never replace a higher one;
+        a replay at the same version is byte-equivalent. State transitions are restricted to the
+        declared directed graph. completed is terminal and carries the exact resultingSpaceVersion
+        committed by the apply transaction; every other state carries null.
       properties:
         importRef: *memoryImportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
         state:
           $ref: '#/components/schemas/MemoryImportState'
         assetRef: *assetRefSchema
@@ -6360,8 +6403,16 @@ components:
         updatedAt:
           type: string
           format: date-time
+        resultingSpaceVersion:
+          description: >-
+            Exact owner space version committed by a completed import, including a zero-entry
+            completion. Null for every non-completed state.
+          oneOf:
+            - $ref: '#/components/schemas/PositiveUint64String'
+            - type: 'null'
       required:
         - importRef
+        - statusVersion
         - state
         - assetRef
         - assetVersionRef
@@ -6371,6 +6422,7 @@ components:
         - safeStatusCode
         - requestedAt
         - updatedAt
+        - resultingSpaceVersion
     MemoryImportResponse:
       type: object
       additionalProperties: false

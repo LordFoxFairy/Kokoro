@@ -864,11 +864,18 @@ Contract maxima protect every caller even when a Site configures smaller budgets
 - proposal/query UTF-8 input: 32 KiB/8 KiB; one canonical Memory payload: 16 KiB;
 - at most 32 provenance sources and 20 returned entries per selection/search;
 - at most 4,096 injected Memory tokens per Run by default, with a lower product/Agent profile limit;
-- public list/search pages at most 100 entries with opaque, scope/filter/version-bound cursors. A
-  first page issues `snapshotRef + spaceVersion`; continuation is valid only at that exact owner
-  version and fails stale after entry content/head, priority, active membership, forget or reset
-  changes. Succeeded commands return their committed version and detail reads return their observed
-  version, so clients need one monotonic scope fence rather than an unbounded tombstone set;
+- public list/search and revision-history pages expose at most 100 items with opaque,
+  scope/filter/version-bound cursors. A first page issues `snapshotRef + spaceVersion`; continuation
+  is valid only at that exact owner version and fails stale after entry content/head, priority,
+  active membership, forget or reset changes. This prevents an in-flight history page from
+  reintroducing plaintext after purge. Succeeded commands return their committed version and detail
+  reads return their observed version, so clients need one monotonic scope fence rather than an
+  unbounded tombstone set;
+- each asynchronous import/export aggregate exposes a monotonic `statusVersion` and a closed,
+  non-regressing transition graph. Equal-version replay is byte-equivalent and lower-version polls
+  are stale. A completed import additionally exposes the exact `resultingSpaceVersion` committed by
+  its apply transaction, allowing clients to advance the same scope fence without a race-prone
+  timestamp comparison;
 - imports are streamed, content-count/byte limited and asynchronous above the public request budget;
 - every remote/model/index operation has an `AbortSignal`, deadline, bounded retries and a global plus
   Site/space concurrency limit. Worker leases and provider semaphores provide backpressure.

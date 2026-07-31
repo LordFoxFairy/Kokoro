@@ -266,6 +266,13 @@ def test_memory_requests_are_closed_bounded_and_have_no_caller_scope() -> None:
     ] is True
     assert schemas["MemoryEntryPage"]["x-kokoro-stale-owner-snapshot-rejected"] is True
     assert schemas["MemoryEntryResponse"]["required"] == ["entry", "observedSpaceVersion"]
+    history = schemas["MemoryEntryHistoryPage"]
+    assert history["required"] == ["entryRef", "items", "pageInfo", "ownerSnapshot"]
+    assert history["properties"]["ownerSnapshot"] == {
+        "$ref": "#/components/schemas/MemoryOwnerSnapshot"
+    }
+    assert history["x-kokoro-continuation-requires-same-owner-snapshot"] is True
+    assert history["x-kokoro-stale-owner-snapshot-rejected"] is True
     succeeded = schemas["MemoryCommandSucceededResponse"]
     assert succeeded["required"] == ["state", "command", "result", "committedSpaceVersion"]
     assert "committedSpaceVersion" not in schemas["MemoryCommandPendingResponse"]["properties"]
@@ -328,6 +335,41 @@ def test_memory_history_restore_purge_and_async_jobs_are_explicit() -> None:
         "completed",
         "rejected",
         "failed",
+    ]
+    export_status = schemas["MemoryExportStatus"]
+    assert "statusVersion" in export_status["required"]
+    assert export_status["properties"]["statusVersion"] == {
+        "$ref": "#/components/schemas/PositiveUint64String"
+    }
+    assert export_status["x-kokoro-monotonic-status-version"] is True
+    assert export_status["x-kokoro-allowed-state-transitions"] == {
+        "queued": ["running", "failed", "expired", "purged"],
+        "running": ["ready", "failed", "expired", "purged"],
+        "ready": ["expired", "purged"],
+        "failed": ["purged"],
+        "expired": ["purged"],
+        "purged": [],
+    }
+    import_status = schemas["MemoryImportStatus"]
+    assert {"statusVersion", "resultingSpaceVersion"}.issubset(import_status["required"])
+    assert import_status["properties"]["statusVersion"] == {
+        "$ref": "#/components/schemas/PositiveUint64String"
+    }
+    assert import_status["x-kokoro-monotonic-status-version"] is True
+    assert import_status["x-kokoro-completed-requires-resulting-space-version"] is True
+    assert import_status["x-kokoro-non-completed-requires-null-resulting-space-version"] is True
+    assert import_status["x-kokoro-allowed-state-transitions"] == {
+        "queued": ["validating", "rejected", "failed"],
+        "validating": ["quarantined", "applying", "rejected", "failed"],
+        "quarantined": ["applying", "rejected", "failed"],
+        "applying": ["completed", "failed"],
+        "completed": [],
+        "rejected": [],
+        "failed": [],
+    }
+    assert import_status["properties"]["resultingSpaceVersion"]["oneOf"] == [
+        {"$ref": "#/components/schemas/PositiveUint64String"},
+        {"type": "null"},
     ]
     export_wire = yaml.safe_dump(schemas["MemoryExportStatus"]).lower()
     assert "artifactdownloadrequest" in export_wire

@@ -168,7 +168,7 @@ priority, immediate logical forget/reset, asynchronous import/export, and comman
 namespace scope are derived from authenticated workload/user context and never accepted from the browser. Category is
 limited to `profile | preference | fact` and never acts as a hidden scope selector. Project Memory remains feature-off
 until its distinct membership/operation policy and public intent are frozen. Entry pages carry an owner-issued
-`snapshotRef + spaceVersion`; continuations are bound to that pair and fail stale after any public projection mutation.
+`snapshotRef + spaceVersion`; list and revision-history continuations are bound to that pair and fail stale after any public projection mutation. Import/export polling uses an aggregate-local monotonic `statusVersion`, while completed imports also return the exact resulting owner-space version.
 Succeeded commands and detail reads expose the committed/observed owner version, allowing Web to replace unbounded
 per-entry anti-revival state with one monotonic scope fence. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
 only a non-bearer Artifact authorization request ref that still requires current Site/user reauthorization. Past-chat
