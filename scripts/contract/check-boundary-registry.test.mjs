@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
-import { readProtoServiceMethods } from "./check-boundary-registry.mjs";
+import { protoRegistry, protoServiceMethods } from "./check-boundary-registry.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const checker = resolve(here, "check-boundary-registry.mjs");
@@ -23,6 +23,8 @@ enum RetryClass {
   RETRY_CLASS_SAME_IDENTITY = 3;
   RETRY_CLASS_RECONCILE_RECEIPT = 4;
 }
+
+message CommandReceipt {}
 `;
 
 // Two HTTP operations, mirroring the shape of contract/spec/http.yaml.
@@ -100,7 +102,10 @@ const SERVICE_PROTO = `syntax = "proto3";
 
 package kokoro.fixture.v1;
 
+import "kokoro/common/v1/error.proto";
+
 service FixtureService {
+  // rpc CommentOnly(CommentRequest) returns (CommentResponse) {}
   rpc DoThing(DoThingRequest) returns (DoThingResponse) {}
   rpc ReadThing(ReadThingRequest) returns (ReadThingResponse) {}
 }
@@ -316,15 +321,12 @@ test("rejects a proto rpc missing from the registry", async () => {
   await expectFailure({ boundaries: [boundary] }, "boundary_registry_operation_orphan: fixture-proto: ReadThing");
 });
 
-test("reads server-streaming proto methods as declared operations", () => {
-  const source = `service StreamService {
-    rpc Tail(TailRequest) returns (stream TailFrame) {}
-}`;
-  assert.deepEqual(readProtoServiceMethods(source, "StreamService"), [{
-    name: "Tail",
-    request: "TailRequest",
-    response: "TailFrame",
-  }]);
+test("descriptor service discovery ignores commented RPC lookalikes", async () => {
+  const root = await makeFixture();
+  assert.deepEqual(
+    protoServiceMethods(protoRegistry(root, "contract/proto/fixture.proto"), "FixtureService").map(({name})=>name),
+    ["DoThing", "ReadThing"],
+  );
 });
 
 test("rejects a registered operation absent from the proto service", async () => {
@@ -531,10 +533,19 @@ test("compares protobuf receipt refs by fully-qualified type", async () => {
   const source = SERVICE_PROTO.replace(
     "kokoro.common.v1.CommandReceipt receipt = 2;",
     "evil.CommandReceiptV2 receipt = 2;",
+  ).replace(
+    'import "kokoro/common/v1/error.proto";',
+    'import "kokoro/common/v1/error.proto";\nimport "evil.proto";',
   );
 
   await expectFailure(
-    { boundaries: [boundary], files: { "contract/proto/fixture.proto": source } },
+    {
+      boundaries: [boundary],
+      files: {
+        "contract/proto/fixture.proto": source,
+        "contract/proto/evil.proto": 'syntax = "proto3"; package evil; message CommandReceiptV2 {}\n',
+      },
+    },
     "boundary_registry_receipt_unbound: fixture-proto@v1/DoThing: DoThingResponse does not contain kokoro.common.v2.CommandReceiptV2",
   );
 });
@@ -591,6 +602,22 @@ test("rejects a recovery operation without a receipt lookup request and response
     { boundaries: [boundary], files: { "contract/proto/fixture.proto": responseWithoutReceipt } },
     "boundary_registry_recovery_operation_unbound: fixture-proto@v1/DoThing: ReadThing response",
   );
+});
+
+test("accepts an opaque projection command recovery capability lookup", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].retryClass = "reconcile_receipt";
+  boundary.operations[0].receipt.recoveryOperation = "ReadThing";
+  const projectionLookup = SERVICE_PROTO.replace(
+    /message ReadThingRequest \{[\s\S]*?\n\}/u,
+    "message ReadThingRequest {\n  string projection_command_ref = 1;\n  string projection_command_recovery_capability = 2;\n}",
+  );
+  const root = await makeFixture({
+    boundaries: [boundary],
+    files: { "contract/proto/fixture.proto": projectionLookup },
+  });
+  const result = run(root);
+  assert.equal(result.status, 0, result.stderr);
 });
 
 test("requires an OpenAPI state-read recovery operation to be a real successful GET", async () => {
@@ -778,7 +805,7 @@ test("rejects a request-field site claim whose proto request has no site id", as
   const headerOnly = SERVICE_PROTO.replace("  string site_id = 1;\n  string payload = 2;", "  string payload = 2;");
   const stderr = await expectFailure(
     { boundaries: [siteBoundProtoBoundary()], files: { "contract/proto/fixture.proto": headerOnly } },
-    "boundary_registry_site_scope_unstructured: fixture-proto/DoThing: DoThingRequest",
+    "boundary_registry_site_scope_unstructured: fixture-proto/DoThing: kokoro.fixture.v1.DoThingRequest",
   );
   assert.doesNotMatch(stderr, /ReadThing/u);
 });
@@ -888,9 +915,9 @@ test("rejects a second identity axis in a namespace proto request", async () => 
   for (const item of boundary.operations) item.scope = "namespace";
   const stderr = await expectFailure(
     { boundaries: [boundary] },
-    "boundary_registry_namespace_axis_polluted: fixture-proto/DoThing: DoThingRequest.site_id",
+    "boundary_registry_namespace_axis_polluted: fixture-proto/DoThing: kokoro.fixture.v1.DoThingRequest.site_id",
   );
-  assert.match(stderr, /fixture-proto\/ReadThing: ReadThingRequest\.site_id/u);
+  assert.match(stderr, /fixture-proto\/ReadThing: kokoro\.fixture\.v1\.ReadThingRequest\.site_id/u);
 });
 
 test("rejects a second identity axis reached through a nested durable command object", async () => {

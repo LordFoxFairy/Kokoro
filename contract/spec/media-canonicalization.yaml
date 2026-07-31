@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "algorithm": "SHA256_DETERMINISTIC_PROTOBUF_V1",
+  "domain_separator_hex": "6b6f6b6f726f2e6d656469612e63616c6c65722d726571756573742d66696e6765727072696e742e763100",
+  "message": "kokoro.platform.media.v1.CanonicalMediaOperationInputV1",
+  "unknown_fields": "reject",
+  "unicode_normalization": "none",
+  "kind": "image_text_to_image",
+  "input_errors": {
+    "$input": "MEDIA_CANONICAL_INPUT_REQUIRED",
+    "$shape": "MEDIA_CANONICAL_UNKNOWN_OR_MISSING_FIELD",
+    "$accessor": "MEDIA_CANONICAL_DATA_PROPERTY_REQUIRED",
+    "contractMajor": "MEDIA_CANONICAL_CONTRACT_UNSUPPORTED",
+    "definitionRevisionRef": "MEDIA_CANONICAL_REFERENCE_INVALID",
+    "kind": "MEDIA_CANONICAL_KIND_UNSUPPORTED",
+    "promptIntent": "MEDIA_CANONICAL_PROMPT_INVALID",
+    "aspectRatio": "MEDIA_CANONICAL_ASPECT_RATIO_INVALID",
+    "candidateCount": "MEDIA_CANONICAL_CANDIDATE_COUNT_INVALID",
+    "modelOptionRevisionRef": "MEDIA_CANONICAL_REFERENCE_INVALID",
+    "outputFormat": "MEDIA_CANONICAL_OUTPUT_FORMAT_INVALID"
+  }
+}

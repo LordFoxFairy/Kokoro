@@ -23,6 +23,7 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "@bufbuild/buf": "1.72.0",
         "@bufbuild/protobuf": "2.13.0",
         "@bufbuild/protoc-gen-es": "2.13.0",
+        "@bufbuild/protovalidate": "1.2.0",
         "@redocly/cli": "2.41.0",
         "@hey-api/openapi-ts": "0.99.0",
         "typescript": "5.9.3",
@@ -388,7 +389,7 @@ def test_agent_durable_output_is_independent_bounded_and_digest_chained() -> Non
     assert "repeated DurableOutputRecord records = 1" in response
     assert "max_items = 64" in response
 
-    canonical = _message_body(source, "DurableOutputCanonicalPayloadV1")
+    canonical = _message_body(source, "DurableOutputPayloadV1")
     assert "option (buf.validate.oneof).required = true;" in canonical
     for payload in (
         "TextDeltaOutputV1 text_delta",
@@ -398,7 +399,7 @@ def test_agent_durable_output_is_independent_bounded_and_digest_chained() -> Non
         "ToolFinishedOutputV1 tool_finished",
         "PlanProgressOutputV1 plan_progress",
         "SubagentProgressOutputV1 subagent_progress",
-        "ArtifactReferenceOutputV1 artifact_reference",
+            "MediaOperationReferenceOutputV1 media_operation_reference",
         "NoticeOutputV1 notice",
         "ErrorOutputV1 error",
     ):
@@ -408,8 +409,9 @@ def test_agent_durable_output_is_independent_bounded_and_digest_chained() -> Non
 
     snapshot = _message_body(source, "TextSnapshotOutputV1")
     assert "uint64 replaces_through_output_seq = 3;" in snapshot
-    artifact = _message_body(source, "ArtifactReferenceOutputV1")
-    assert "string artifact_version_ref = 2" in artifact
+    media_reference = _message_body(source, "MediaOperationReferenceOutputV1")
+    assert "string agent_media_command_ref = 2" in media_reference
+    assert "string operation_ref = 3" in media_reference
 
     subagent = _message_body(source, "SubagentProgressOutputV1")
     notice = _message_body(source, "NoticeOutputV1")
@@ -916,13 +918,29 @@ def test_public_operations_have_exact_implementable_response_schemas() -> None:
         "getAssetUploadStatus": "AssetUploadStatusResponse",
         "recoverAssetUploadCommand": "AssetUploadCommandResponse",
         "getTrustedAssetGrant": "TrustedAssetGrantResponse",
+        "listMediaOperationDefinitions": "MediaOperationDefinitionPage",
+        "getMediaOperationDefinition": "MediaOperationDefinitionResponse",
+        "listMediaOperationModelOptions": "MediaDefinitionModelOptionPage",
+        "quoteMediaOperation": "MediaOperationQuoteResponse",
+        "submitMediaOperation": "MediaOperationCommandResponse",
+        "listMediaOperations": "MediaOperationPage",
+        "getMediaOperation": "MediaOperationResponse",
+        "cancelMediaOperation": "MediaOperationCommandResponse",
+        "recoverMediaOperationCommand": "MediaOperationCommandResponse",
+        "listArtifacts": "ArtifactPage",
+        "getArtifact": "ArtifactResponse",
+        "listArtifactVersions": "ArtifactVersionPage",
+        "getArtifactVersion": "ArtifactVersionResponse",
+        "issueArtifactDeliveryAuthorization": "ArtifactDeliveryAuthorizationResponse",
+        "revokeArtifactDeliveryAuthorization": "ArtifactDeliveryRevocationResponse",
         "getPublicCommandReceipt": "PublicCommandReceiptResponse",
     }
 
-    assert operations.keys() == expected.keys()
+    assert set(operations) == set(expected) | {"redeemArtifactDeliveryAuthorization"}
     assert {
         operation_id: _response_schema(document, operation)
         for operation_id, operation in operations.items()
+        if operation_id != "redeemArtifactDeliveryAuthorization"
     } == expected
 
 
@@ -1601,7 +1619,19 @@ def test_public_mutations_use_caller_generated_command_ids_for_zero_byte_recover
             "getAssetUploadStatus",
             "recoverAssetUploadCommand",
             "getTrustedAssetGrant",
-            "getPublicCommandReceipt",
+            "listMediaOperationDefinitions",
+            "getMediaOperationDefinition",
+            "listMediaOperationModelOptions",
+            "listMediaOperations",
+            "getMediaOperation",
+            "recoverMediaOperationCommand",
+            "listArtifacts",
+            "getArtifact",
+            "listArtifactVersions",
+            "getArtifactVersion",
+                "issueArtifactDeliveryAuthorization",
+                "redeemArtifactDeliveryAuthorization",
+                "getPublicCommandReceipt",
         }:
             continue
         parameter_refs = {
@@ -1754,6 +1784,21 @@ def test_public_error_codes_are_a_frozen_enum() -> None:
         "ASSET_UPLOAD_CONFLICT",
         "ASSET_QUOTA_EXCEEDED",
         "ASSET_TEMPORARILY_UNAVAILABLE",
+        "MEDIA_INPUT_REJECTED",
+        "MEDIA_CALLER_FINGERPRINT_MISMATCH",
+        "MEDIA_DEFINITION_UNAVAILABLE",
+        "MEDIA_MODEL_OPTION_UNAVAILABLE",
+        "MEDIA_CREDIT_INSUFFICIENT",
+        "MEDIA_POLICY_REJECTED",
+        "MEDIA_OPERATION_VERSION_CONFLICT",
+        "MEDIA_CANCEL_NOT_ACCEPTED",
+        "MEDIA_TEMPORARILY_UNAVAILABLE",
+        "PAGE_CURSOR_INVALID",
+        "ARTIFACT_NOT_AVAILABLE",
+        "ARTIFACT_DELIVERY_NOT_ALLOWED",
+        "ARTIFACT_DELIVERY_AUTHORIZATION_REJECTED",
+        "ARTIFACT_TEMPORARILY_UNAVAILABLE",
+        "ARTIFACT_RANGE_NOT_SATISFIABLE",
     ]
 
 

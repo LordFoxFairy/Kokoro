@@ -18,6 +18,7 @@ service SessionMediaProjectionService {
   rpc GetMediaProjectionBinding(GetMediaProjectionBindingRequest) returns (GetMediaProjectionBindingResponse) {}
   rpc RefreshCreditCostProjectionAccess(RefreshCreditCostProjectionAccessRequest) returns (RefreshCreditCostProjectionAccessResponse) {}
   rpc GetCreditCostProjectionBinding(GetCreditCostProjectionBindingRequest) returns (GetCreditCostProjectionBindingResponse) {}
+  rpc RecoverProjectionCommand(RecoverProjectionCommandRequest) returns (RecoverProjectionCommandResponse) {}
 }
 
 message IssueMediaProjectionReservationRequest {
@@ -42,14 +43,14 @@ message IssueMediaProjectionReservationRequest {
     gte: 1
     lte: 16
   }];
-}
-
-message IssueMediaProjectionReservationResponse {
-  string media_projection_reservation_handle = 1 [(buf.validate.field).string = {
+  string projection_command_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 8 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
   }];
-  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
 }
 
 enum MediaProjectionBindingState {
@@ -109,6 +110,11 @@ message MediaProjectionBinding {
     max_len: 256
   }];
   google.protobuf.Timestamp expires_at = 14 [(buf.validate.field).required = true];
+  string binding_lineage_ref = 15 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 lineage_generation = 16 [(buf.validate.field).uint64.gt = 0];
 }
 
 message BoundMediaProjectionTarget {
@@ -156,10 +162,14 @@ message BindMediaProjectionTargetRequest {
     max_len: 256
   }];
   uint64 producer_generation = 5 [(buf.validate.field).uint64.gt = 0];
-}
-
-message BindMediaProjectionTargetResponse {
-  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+  string projection_command_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 7 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
 }
 
 // Refresh replaces only this delivery envelope. The nested record ref, digest,
@@ -222,10 +232,15 @@ message CreateReplacementMediaProjectionBindingRequest {
     max_len: 256
   }];
   kokoro.platform.media.v1.MediaProjectionBindingCommittedRecord committed_record = 3 [(buf.validate.field).required = true];
-}
-
-message CreateReplacementMediaProjectionBindingResponse {
-  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_lineage_generation = 4 [(buf.validate.field).uint64.gt = 0];
+  string projection_command_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 6 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
 }
 
 message RefreshMediaProjectionAccessRequest {
@@ -245,19 +260,14 @@ message RefreshMediaProjectionAccessRequest {
     min_len: 1
     max_len: 256
   }];
-}
-
-message RefreshMediaProjectionAccessResponse {
-  string media_projection_handle = 1 [(buf.validate.field).string = {
+  string projection_command_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 6 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
   }];
-  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
-  string media_projection_refresh_grant = 3 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
-  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
 }
 
 message GetMediaProjectionBindingRequest {
@@ -288,19 +298,14 @@ message RefreshCreditCostProjectionAccessRequest {
     min_len: 1
     max_len: 256
   }];
-}
-
-message RefreshCreditCostProjectionAccessResponse {
-  string cost_projection_handle = 1 [(buf.validate.field).string = {
+  string projection_command_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 5 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
   }];
-  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
-  string credit_cost_projection_refresh_grant = 3 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
-  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
 }
 
 message GetCreditCostProjectionBindingRequest {
@@ -330,7 +335,9 @@ message GetCreditCostProjectionBindingResponse {
   optional uint64 owner_version = 4 [(buf.validate.field).uint64.gt = 0];
 }
 
-// Refresh replaces only these capabilities, never the immutable record.
+// Refresh replaces only these capabilities, never the immutable record. This
+// signed Media-owned record is the sole operation/candidate/artifact fact from
+// which Session may build or advance a Chat projection part.
 message MediaProjectionDeliveryEnvelope {
   string media_projection_handle = 1 [(buf.validate.field).string = {
     min_len: 32
@@ -354,4 +361,256 @@ message CreditCostProjectionDeliveryEnvelope {
     max_len: 8192
   }];
   kokoro.platform.credit.v1.CreditCostProjectionEventRecord record = 3 [(buf.validate.field).required = true];
+}
+
+// A recovered effect never replays the original bearer bytes. When the effect
+// committed, Session rotates a fresh envelope and reports the old generation's
+// overlap/invalidation state explicitly.
+message ProjectionCredentialRotation {
+  option (buf.validate.message).cel = {
+    id: "projection_credentials.previous_generation_state"
+    message: "the first envelope has no predecessor; later envelopes either invalidate it or bound its overlap"
+    expression: "(this.envelope_generation == 1u && !has(this.previous_credentials_valid_until) && !this.previous_credentials_invalidated) || (this.envelope_generation > 1u && (this.previous_credentials_invalidated != has(this.previous_credentials_valid_until)))"
+  };
+  uint64 envelope_generation = 1 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp previous_credentials_valid_until = 2;
+  bool previous_credentials_invalidated = 3;
+}
+
+enum ProjectionCommandRecoveryAction {
+  PROJECTION_COMMAND_RECOVERY_ACTION_UNSPECIFIED = 0;
+  PROJECTION_COMMAND_RECOVERY_ACTION_NONE = 1;
+  PROJECTION_COMMAND_RECOVERY_ACTION_RECOVER_COMMAND = 2;
+  PROJECTION_COMMAND_RECOVERY_ACTION_CONTACT_SUPPORT = 3;
+}
+
+enum ProjectionCommandKind {
+  PROJECTION_COMMAND_KIND_UNSPECIFIED = 0;
+  PROJECTION_COMMAND_KIND_ISSUE_MEDIA_PROJECTION_RESERVATION = 1;
+  PROJECTION_COMMAND_KIND_BIND_MEDIA_PROJECTION_TARGET = 2;
+  PROJECTION_COMMAND_KIND_CREATE_REPLACEMENT_MEDIA_PROJECTION_BINDING = 3;
+  PROJECTION_COMMAND_KIND_REFRESH_MEDIA_PROJECTION_ACCESS = 4;
+  PROJECTION_COMMAND_KIND_REFRESH_CREDIT_COST_PROJECTION_ACCESS = 5;
+}
+
+// This taxonomy intentionally has the same closed members as the Media-owned
+// durable and public projections. Session may redact a safe message, but it may
+// not invent a new failure class while translating a signed producer fact.
+enum MediaProjectionFailureCode {
+  MEDIA_PROJECTION_FAILURE_CODE_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_FAILURE_CODE_INPUT_REJECTED = 1;
+  MEDIA_PROJECTION_FAILURE_CODE_POLICY_REJECTED = 2;
+  MEDIA_PROJECTION_FAILURE_CODE_CREDIT_REJECTED = 3;
+  MEDIA_PROJECTION_FAILURE_CODE_GENERATION_FAILED = 4;
+  MEDIA_PROJECTION_FAILURE_CODE_VALIDATION_FAILED = 5;
+  MEDIA_PROJECTION_FAILURE_CODE_TEMPORARILY_UNAVAILABLE = 6;
+  MEDIA_PROJECTION_FAILURE_CODE_OUTCOME_UNKNOWN = 7;
+  MEDIA_PROJECTION_FAILURE_CODE_ARTIFACT_RESTRICTED = 8;
+  MEDIA_PROJECTION_FAILURE_CODE_ARTIFACT_UNAVAILABLE = 9;
+}
+
+enum MediaProjectionRetryClass {
+  MEDIA_PROJECTION_RETRY_CLASS_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_RETRY_CLASS_NEVER = 1;
+  MEDIA_PROJECTION_RETRY_CLASS_AFTER_DELAY = 2;
+  MEDIA_PROJECTION_RETRY_CLASS_AFTER_USER_ACTION = 3;
+  MEDIA_PROJECTION_RETRY_CLASS_RECONCILE_RECEIPT = 4;
+}
+
+message ProjectionCommandAccepted {
+  string projection_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 receipt_version = 2 [(buf.validate.field).uint64.gt = 0];
+  ProjectionCommandRecoveryAction recovery_action = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp recorded_at = 4 [(buf.validate.field).required = true];
+  ProjectionCommandKind command_kind = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ProjectionCommandRejected {
+  string projection_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string safe_error_code = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string safe_message = 3 [(buf.validate.field).string.max_len = 512];
+  uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+  ProjectionCommandKind command_kind = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ProjectionCommandOutcomeUnknown {
+  string projection_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 receipt_version = 2 [(buf.validate.field).uint64.gt = 0];
+  ProjectionCommandRecoveryAction recovery_action = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp recorded_at = 4 [(buf.validate.field).required = true];
+  ProjectionCommandKind command_kind = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ProjectionCommandReceipt {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    ProjectionCommandAccepted accepted = 1;
+    ProjectionCommandRejected rejected = 2;
+    ProjectionCommandOutcomeUnknown outcome_unknown = 3;
+  }
+}
+
+message ProjectionReservationCredentialEnvelope {
+  string media_projection_reservation_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 2 [(buf.validate.field).required = true];
+  ProjectionCredentialRotation credential_rotation = 3 [(buf.validate.field).required = true];
+}
+
+message MediaProjectionAccessCredentialEnvelope {
+  string media_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string media_projection_refresh_grant = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
+  ProjectionCredentialRotation credential_rotation = 5 [(buf.validate.field).required = true];
+}
+
+message CreditCostProjectionAccessCredentialEnvelope {
+  string cost_projection_handle = 1 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  string credit_cost_projection_refresh_grant = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+  google.protobuf.Timestamp expires_at = 3 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp refresh_grant_expires_at = 4 [(buf.validate.field).required = true];
+  ProjectionCredentialRotation credential_rotation = 5 [(buf.validate.field).required = true];
+}
+
+message IssueMediaProjectionReservationAcceptedResult {
+  ProjectionReservationCredentialEnvelope reservation = 1 [(buf.validate.field).required = true];
+}
+
+message BindMediaProjectionTargetAcceptedResult {
+  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+  ProjectionCredentialRotation credential_rotation = 2 [(buf.validate.field).required = true];
+}
+
+message CreateReplacementMediaProjectionBindingAcceptedResult {
+  BoundMediaProjectionTarget target = 1 [(buf.validate.field).required = true];
+  ProjectionCredentialRotation credential_rotation = 2 [(buf.validate.field).required = true];
+}
+
+message RefreshMediaProjectionAccessAcceptedResult {
+  MediaProjectionAccessCredentialEnvelope media_access = 1 [(buf.validate.field).required = true];
+}
+
+message RefreshCreditProjectionAccessAcceptedResult {
+  CreditCostProjectionAccessCredentialEnvelope credit_access = 1 [(buf.validate.field).required = true];
+}
+
+message RecoverProjectionCommandRequest {
+  string projection_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string projection_command_recovery_capability = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
+}
+
+// Every direct command and recovery returns this single closed result union.
+// The symbolic enum mapping is compiled and executed by the pinned Protovalidate gate.
+message ProjectionCommandResolution {
+  option (buf.validate.message).cel = {
+    id: "projection_command_resolution.accepted_result_matches_command_kind"
+    message: "an accepted command resolution returns exactly the result arm for the recorded command kind"
+    expression: "(has(this.receipt.accepted) && ((this.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_ISSUE_MEDIA_PROJECTION_RESERVATION && has(this.issue_result)) || (this.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_BIND_MEDIA_PROJECTION_TARGET && has(this.bind_result)) || (this.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_CREATE_REPLACEMENT_MEDIA_PROJECTION_BINDING && has(this.replacement_result)) || (this.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_MEDIA_PROJECTION_ACCESS && has(this.refresh_media_result)) || (this.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_CREDIT_COST_PROJECTION_ACCESS && has(this.refresh_credit_result)))) || (!has(this.receipt.accepted) && !has(this.issue_result) && !has(this.bind_result) && !has(this.replacement_result) && !has(this.refresh_media_result) && !has(this.refresh_credit_result))"
+  };
+  ProjectionCommandReceipt receipt = 1 [(buf.validate.field).required = true];
+  oneof result {
+    IssueMediaProjectionReservationAcceptedResult issue_result = 2;
+    BindMediaProjectionTargetAcceptedResult bind_result = 3;
+    CreateReplacementMediaProjectionBindingAcceptedResult replacement_result = 4;
+    RefreshMediaProjectionAccessAcceptedResult refresh_media_result = 5;
+    RefreshCreditProjectionAccessAcceptedResult refresh_credit_result = 6;
+  }
+}
+
+message IssueMediaProjectionReservationResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_command.issue_receipt_kind"
+    message: "the issue RPC returns only an issue command receipt"
+    expression: "(has(this.resolution.receipt.accepted) && this.resolution.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_ISSUE_MEDIA_PROJECTION_RESERVATION) || (has(this.resolution.receipt.rejected) && this.resolution.receipt.rejected.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_ISSUE_MEDIA_PROJECTION_RESERVATION) || (has(this.resolution.receipt.outcome_unknown) && this.resolution.receipt.outcome_unknown.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_ISSUE_MEDIA_PROJECTION_RESERVATION)"
+  };
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
+}
+
+message BindMediaProjectionTargetResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_command.bind_receipt_kind"
+    message: "the bind RPC returns only a bind command receipt"
+    expression: "(has(this.resolution.receipt.accepted) && this.resolution.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_BIND_MEDIA_PROJECTION_TARGET) || (has(this.resolution.receipt.rejected) && this.resolution.receipt.rejected.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_BIND_MEDIA_PROJECTION_TARGET) || (has(this.resolution.receipt.outcome_unknown) && this.resolution.receipt.outcome_unknown.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_BIND_MEDIA_PROJECTION_TARGET)"
+  };
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
+}
+
+message CreateReplacementMediaProjectionBindingResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_command.replacement_receipt_kind"
+    message: "the replacement RPC returns only a replacement command receipt"
+    expression: "(has(this.resolution.receipt.accepted) && this.resolution.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_CREATE_REPLACEMENT_MEDIA_PROJECTION_BINDING) || (has(this.resolution.receipt.rejected) && this.resolution.receipt.rejected.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_CREATE_REPLACEMENT_MEDIA_PROJECTION_BINDING) || (has(this.resolution.receipt.outcome_unknown) && this.resolution.receipt.outcome_unknown.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_CREATE_REPLACEMENT_MEDIA_PROJECTION_BINDING)"
+  };
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
+}
+
+message RefreshMediaProjectionAccessResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_command.refresh_media_receipt_kind"
+    message: "the media refresh RPC returns only a media refresh command receipt"
+    expression: "(has(this.resolution.receipt.accepted) && this.resolution.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_MEDIA_PROJECTION_ACCESS) || (has(this.resolution.receipt.rejected) && this.resolution.receipt.rejected.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_MEDIA_PROJECTION_ACCESS) || (has(this.resolution.receipt.outcome_unknown) && this.resolution.receipt.outcome_unknown.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_MEDIA_PROJECTION_ACCESS)"
+  };
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
+}
+
+message RefreshCreditCostProjectionAccessResponse {
+  option (buf.validate.message).cel = {
+    id: "projection_command.refresh_credit_receipt_kind"
+    message: "the credit refresh RPC returns only a credit refresh command receipt"
+    expression: "(has(this.resolution.receipt.accepted) && this.resolution.receipt.accepted.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_CREDIT_COST_PROJECTION_ACCESS) || (has(this.resolution.receipt.rejected) && this.resolution.receipt.rejected.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_CREDIT_COST_PROJECTION_ACCESS) || (has(this.resolution.receipt.outcome_unknown) && this.resolution.receipt.outcome_unknown.command_kind == kokoro.session.media.v1.ProjectionCommandKind.PROJECTION_COMMAND_KIND_REFRESH_CREDIT_COST_PROJECTION_ACCESS)"
+  };
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
+}
+
+message RecoverProjectionCommandResponse {
+  ProjectionCommandResolution resolution = 1 [(buf.validate.field).required = true];
 }

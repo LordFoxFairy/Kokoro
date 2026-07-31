@@ -4,7 +4,9 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { ScalarType } from "../../contract/node_modules/@bufbuild/protobuf/dist/esm/index.js";
 import { openApiOperations, readOpenApiDocument } from "./openapi-reader.mjs";
+import { protoRegistry, protoServiceMethods, protoRequestFieldNames } from "./check-boundary-registry.mjs";
 
 const PUBLIC_OPERATIONS = new Map([
   ["exchangeProductContext", ["post", "/v1/product-context:exchange"]],
@@ -43,6 +45,22 @@ const PUBLIC_OPERATIONS = new Map([
   ["getAssetUploadStatus", ["get", "/v1/projects/{projectRef}/asset-upload-intents/{intentRef}"]],
   ["recoverAssetUploadCommand", ["get", "/v1/projects/{projectRef}/asset-upload-commands/{commandId}"]],
   ["getTrustedAssetGrant", ["get", "/v1/projects/{projectRef}/assets/{assetRef}/versions/{assetVersionRef}/grants/{assetGrantRef}"]],
+  ["listMediaOperationDefinitions", ["get", "/v1/projects/{projectRef}/media-operation-definitions"]],
+  ["getMediaOperationDefinition", ["get", "/v1/projects/{projectRef}/media-operation-definitions/{definitionRef}"]],
+  ["listMediaOperationModelOptions", ["get", "/v1/projects/{projectRef}/media-operation-definitions/{definitionRef}/model-options"]],
+  ["quoteMediaOperation", ["post", "/v1/projects/{projectRef}/media-operation-quotes"]],
+  ["submitMediaOperation", ["post", "/v1/projects/{projectRef}/media-operations"]],
+  ["listMediaOperations", ["get", "/v1/projects/{projectRef}/media-operations"]],
+  ["getMediaOperation", ["get", "/v1/projects/{projectRef}/media-operations/{operationRef}"]],
+  ["cancelMediaOperation", ["post", "/v1/projects/{projectRef}/media-operations/{operationRef}:cancel"]],
+  ["recoverMediaOperationCommand", ["get", "/v1/projects/{projectRef}/media-operation-commands/{commandId}"]],
+  ["listArtifacts", ["get", "/v1/projects/{projectRef}/artifacts"]],
+  ["getArtifact", ["get", "/v1/projects/{projectRef}/artifacts/{artifactRef}"]],
+  ["listArtifactVersions", ["get", "/v1/projects/{projectRef}/artifacts/{artifactRef}/versions"]],
+  ["getArtifactVersion", ["get", "/v1/projects/{projectRef}/artifacts/{artifactRef}/versions/{artifactVersionRef}"]],
+  ["issueArtifactDeliveryAuthorization", ["post", "/v1/projects/{projectRef}/artifacts/{artifactRef}/versions/{artifactVersionRef}/delivery-authorizations"]],
+  ["redeemArtifactDeliveryAuthorization", ["get", "/v1/artifact-delivery-authorizations/{authorizationRef}/content"]],
+  ["revokeArtifactDeliveryAuthorization", ["post", "/v1/projects/{projectRef}/artifact-delivery-authorizations/{authorizationRef}:revoke"]],
   ["getPublicCommandReceipt", ["get", "/v1/commands/{id}/receipt"]],
 ]);
 
@@ -106,10 +124,31 @@ function digest(value) {
   return createHash("sha256").update(value).digest("hex");
 }
 
-function serviceMethods(source, service) {
-  const block = new RegExp(`service\\s+${service}\\s*\\{([\\s\\S]*?)\\n\\}`, "u").exec(source);
-  if (!block) return [];
-  return [...block[1].matchAll(/rpc\s+(\w+)\s*\(/gu)].map((match) => match[1]);
+function serviceDescriptor(root, path, service) {
+  return protoServiceMethods(protoRegistry(root, path), service);
+}
+
+function serviceFieldNames(methods) {
+  const names = new Set();
+  for (const method of methods) {
+    for (const name of protoRequestFieldNames(method.request)) names.add(name);
+    for (const name of protoRequestFieldNames(method.response)) names.add(name);
+  }
+  return names;
+}
+
+function serviceContainsBytesPayload(methods) {
+  const visited = new Set();
+  function inspect(message) {
+    if (visited.has(message.typeName)) return false;
+    visited.add(message.typeName);
+    for (const field of message.fields) {
+      if (field.name === "payload" && field.fieldKind === "scalar" && field.scalar === ScalarType.BYTES) return true;
+      if (field.message !== undefined && inspect(field.message)) return true;
+    }
+    return false;
+  }
+  return methods.some((method) => inspect(method.request) || inspect(method.response));
 }
 
 function parsePublicOpenApi(source, errors) {
@@ -125,6 +164,57 @@ function sameJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 
+function structuredTextEntries(value, path = "$", entries = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      structuredTextEntries(value[index], `${path}[${index}]`, entries);
+    }
+    return entries;
+  }
+  if (value !== null && typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      entries.push({ kind: "key", path, text: key });
+      structuredTextEntries(nested, `${path}.${key}`, entries);
+    }
+    return entries;
+  }
+  if (typeof value === "string") entries.push({ kind: "value", path, text: value });
+  return entries;
+}
+
+function checkForbiddenPublicSurface(document, errors) {
+  const entries = structuredTextEntries(document);
+  const rules = [
+    {
+      id: "site-header",
+      matches: ({ text }) => text.toLowerCase().includes("x-kokoro-site-id"),
+    },
+    ...["siteId", "userId", "workspaceId"].map((axis) => ({
+      id: axis,
+      matches: ({ text }) => text === axis,
+    })),
+    {
+      id: "legacy-redeem-apply",
+      matches: ({ text }) => text.toLowerCase().includes("/v1/redeem:apply"),
+    },
+    {
+      id: "legacy-execution-prepare",
+      matches: ({ text }) => text.toLowerCase().includes("/v1/executions:prepare"),
+    },
+    {
+      id: "legacy-chat-execution-prepare",
+      matches: ({ text }) => text.toLowerCase().includes("chat.execution.prepare"),
+    },
+    {
+      id: "payment-route",
+      matches: ({ text }) => /\/(?:checkout|refund|dispute|payment)(?:\/|:|\b)/iu.test(text),
+    },
+  ];
+  for (const rule of rules) {
+    if (entries.some(rule.matches)) fail(errors, `public_forbidden_surface:${rule.id}`);
+  }
+}
+
 function hasProductWorkload(security) {
   return (
     Array.isArray(security) &&
@@ -137,7 +227,7 @@ function hasProductWorkload(security) {
   );
 }
 
-function checkPublic(source, document, errors) {
+function checkPublic(document, errors) {
   const parsed = openApiOperations(document);
   const actual = new Map(
     [...parsed].map(([operationId, { method, path }]) => [operationId, [method, path]]),
@@ -161,7 +251,10 @@ function checkPublic(source, document, errors) {
   ) {
     fail(errors, "public_command_headers_missing");
   }
-  const nonIdempotentCredentialOperations = new Set(["issueSessionAccessGrant"]);
+  const nonIdempotentCredentialOperations = new Set([
+    "issueSessionAccessGrant",
+    "issueArtifactDeliveryAuthorization",
+  ]);
   for (const [operationId, { method, operation }] of parsed) {
     if (method !== "post") continue;
     const refs = new Set(
@@ -325,18 +418,7 @@ function checkPublic(source, document, errors) {
   ]) {
     if (!(schemas.ErrorCode?.enum ?? []).includes(code)) fail(errors, `asset_error_code_missing:${code}`);
   }
-  for (const forbidden of [
-    /x-kokoro-site-id/iu,
-    /^\s+siteId:/mu,
-    /^\s+userId:/mu,
-    /^\s+workspaceId:/mu,
-    /\/v1\/redeem:apply/iu,
-    /\/v1\/executions:prepare/iu,
-    /chat\.execution\.prepare/iu,
-    /\/checkout|\/refund|\/dispute|\/payment/iu,
-  ]) {
-    if (forbidden.test(source)) fail(errors, `public_forbidden_surface:${forbidden.source}`);
-  }
+  checkForbiddenPublicSurface(document, errors);
 }
 
 function checkRegistry(root, publicDocument, registry, errors) {
@@ -377,7 +459,9 @@ function checkRegistry(root, publicDocument, registry, errors) {
       fail(errors, `privileged_registry_drift:${id}`);
     }
   }
-  if (openApiOperations(publicDocument).size !== 37) fail(errors, "public_registry_source_count");
+  if (openApiOperations(publicDocument).size !== PUBLIC_OPERATIONS.size) {
+    fail(errors, "public_registry_source_count");
+  }
 
   const admission = registry.boundaries.find((boundary) => boundary.id === "platform-admission");
   if (digest(JSON.stringify(admission)) !== ADMISSION_REGISTRY_SHA256) fail(errors, "platform_admission_registry_changed");
@@ -391,25 +475,32 @@ export function checkWave1Surface(root) {
   const publicSource = read(root, "contract/openapi/platform-public-v1.yaml");
   const publicDocument = parsePublicOpenApi(publicSource, errors);
   const registry = JSON.parse(read(root, "contract/registry/boundaries.yaml"));
-  checkPublic(publicSource, publicDocument, errors);
+  checkPublic(publicDocument, errors);
   checkRegistry(root, publicDocument, registry, errors);
 
-  const sources = new Map();
+  const services = new Map();
   for (const [id, definition] of Object.entries(PRIVILEGED)) {
-    const source = sources.get(definition.path) ?? read(root, definition.path);
-    sources.set(definition.path, source);
-    if (!sameJson(serviceMethods(source, definition.service), definition.methods)) {
+    const methods = serviceDescriptor(root, definition.path, definition.service);
+    services.set(id, methods);
+    if (!sameJson(methods.map(({ name }) => name), definition.methods)) {
       fail(errors, `privileged_service_drift:${id}`);
     }
   }
-  const identity = sources.get(PRIVILEGED["platform-admin-identity"].path);
-  if (!identity.includes("authorization_code") || identity.includes("id_token")) {
+  const identityMethods = services.get("platform-admin-identity");
+  const identityFields = serviceFieldNames(identityMethods);
+  const oidcRedeemers = ["ExchangeOidcSession", "CompleteStepUp"]
+    .map((name) => identityMethods.find((method) => method.name === name));
+  if (
+    oidcRedeemers.some(
+      (method) => method === undefined || !protoRequestFieldNames(method.request).has("authorization_code"),
+    ) || identityFields.has("id_token")
+  ) {
     fail(errors, "platform_oidc_redeemer_drift");
   }
-  const control = sources.get(PRIVILEGED["platform-admin-command"].path);
-  const commandMethods = serviceMethods(control, "AdminCommandService");
+  const commandDescriptors = services.get("platform-admin-command");
+  const commandMethods = commandDescriptors.map(({ name }) => name);
   const lifecycleMethods = PRIVILEGED["platform-site-lifecycle"].methods;
-  if (commandMethods.some((method) => lifecycleMethods.includes(method)) || control.includes("bytes payload")) {
+  if (commandMethods.some((method) => lifecycleMethods.includes(method)) || serviceContainsBytesPayload(commandDescriptors)) {
     fail(errors, "generic_site_lifecycle_effect_present");
   }
   const generator = read(root, "contract/generate.mjs");
@@ -436,7 +527,9 @@ function main() {
   try {
     const errors = checkWave1Surface(parseRoot(process.argv.slice(2)));
     if (errors.length > 0) throw new Error(errors.join(","));
-    process.stdout.write("wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n");
+    process.stdout.write(
+      `wave1_surface_ok: ${PUBLIC_OPERATIONS.size} public operations, 4 privileged services, 1 active command boundary\n`,
+    );
   } catch (error) {
     process.stderr.write(`wave1_surface_failed:${error.message}\n`);
     process.exitCode = 1;

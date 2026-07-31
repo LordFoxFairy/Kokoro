@@ -6,7 +6,7 @@ media_projection_events:
   - MediaProjectionBindingCommitted
   - MediaOperationProjectionChanged
   - MediaCandidateProjectionChanged
-  - MediaArtifactProjectionLinked
+  - MediaArtifactProjectionChanged
 
 credit_cost_projection_events:
   - CreditCostProjectionChanged

@@ -4,6 +4,7 @@ package kokoro.platform.media.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/projection_integrity.proto";
 import "kokoro/platform/media/v1/media_projection.proto";
 
 // MediaProjectionRecoveryService is the Media-owner read plane used only by
@@ -49,19 +50,20 @@ message MediaProjectionHead {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string owner_signature = 7 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
+  string head_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
-  string refreshed_owner_recovery_handle = 8 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
+  kokoro.common.v1.ProjectionSignature signature = 8 [(buf.validate.field).required = true];
   google.protobuf.Timestamp observed_at = 9 [(buf.validate.field).required = true];
 }
 
 message GetProjectionHeadResponse {
   MediaProjectionHead head = 1 [(buf.validate.field).required = true];
+  string refreshed_owner_recovery_handle = 2 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
 }
 
 message PullProjectionEventsRequest {

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "digest_algorithm": "SHA256",
+  "signature_algorithm": "ED25519",
+  "canonical_encoding": "DETERMINISTIC_PROTOBUF",
+  "signature_preimage": "signature_domain_separator || digest_bytes",
+  "signature_domain_hex": "6b6f6b6f726f2e70726f6a656374696f6e2e7369676e61747572652e763100",
+  "surfaces": [
+    {
+      "message_type": "kokoro.platform.media.v1.MediaProjectionBindingCommittedRecord",
+      "domain_separator": "kokoro.projection.record.media.binding.v1\u0000",
+      "digest_fields": ["event_digest", "record_digest"],
+      "signature_field": "signature"
+    },
+    {
+      "message_type": "kokoro.platform.media.v1.MediaProjectionEventRecord",
+      "domain_separator": "kokoro.projection.record.media.event.v1\u0000",
+      "digest_fields": ["event_digest", "record_digest"],
+      "signature_field": "signature"
+    },
+    {
+      "message_type": "kokoro.platform.credit.v1.CreditCostProjectionEventRecord",
+      "domain_separator": "kokoro.projection.record.credit.cost.v1\u0000",
+      "digest_fields": ["event_digest", "record_digest"],
+      "signature_field": "signature"
+    },
+    {
+      "message_type": "kokoro.platform.media.v1.MediaProjectionHead",
+      "domain_separator": "kokoro.projection.head.media.v1\u0000",
+      "digest_fields": ["head_digest"],
+      "signature_field": "signature"
+    },
+    {
+      "message_type": "kokoro.platform.credit.v1.CreditCostProjectionHead",
+      "domain_separator": "kokoro.projection.head.credit.cost.v1\u0000",
+      "digest_fields": ["head_digest"],
+      "signature_field": "signature"
+    }
+  ],
+  "forbidden_signed_field_fragments": ["credential", "grant", "recovery_handle", "authorization_token"],
+  "limits": {
+    "corpus_bytes": 1048576,
+    "positive_cases": 5,
+    "negative_cases": 32,
+    "record_bytes": 524288,
+    "descriptor_bytes": 4194304,
+    "message_depth": 16,
+    "repeated_items": 256,
+    "identifier_bytes": 256,
+    "public_key_bytes": 1024,
+    "signature_bytes": 64,
+    "buf_timeout_ms": 10000
+  }
+}

@@ -153,17 +153,40 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     media_operation = next(
         obj for obj in http["objects"] if obj["name"] == "MediaOperationPartPayload"
     )
+    assert media_operation["discriminator"] == "state"
     assert {
         "media_operation_ref",
-        "capability",
-        "status",
-        "safe_metadata",
+        "definition_ref",
+        "definition_revision_ref",
+        "owner_version",
         "progress_bps",
-        "artifact_ref",
-    } == {field["name"] for field in media_operation["fields"]}
+        "candidates",
+        "cost_projection",
+        "updated_at",
+    } == {field["name"] for field in media_operation["common_fields"]}
+    operation_variants = {
+        variant["value"]: variant for variant in media_operation["variants"]
+    }
+    assert set(operation_variants) == {
+        "admission_pending",
+        "authorized",
+        "queued",
+        "active",
+        "finalizing",
+        "cancel_requested",
+        "reconciling",
+        "completed",
+        "partial",
+        "failed",
+        "canceled",
+    }
     generated_browser = _find("kokoro-session/src/contract/http.ts")
     assert "safe_result_preview: z.string().max(16384).optional()" in generated_browser
-    assert "progress_bps: z.number().int().min(0).max(10000).optional()" in generated_browser
+    assert "progress_bps: z.number().int().min(0).max(10000)" in generated_browser
+    assert "candidates: z.array(mediaCandidatePartSchema).max(4)" in generated_browser
+    assert 'mediaOperationPartPayloadSchema = z.discriminatedUnion("state"' in generated_browser
+    assert 'artifactPartPayloadSchema = z.discriminatedUnion("availability"' in generated_browser
+    assert 'costPartPayloadSchema = z.discriminatedUnion("state"' in generated_browser
     snapshot = next(obj for obj in http["objects"] if obj["name"] == "SessionSnapshot")
     fields = {field["name"]: field for field in snapshot["fields"]}
     assert fields["messages"].get("optional") is not True

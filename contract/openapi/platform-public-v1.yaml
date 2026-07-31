@@ -583,6 +583,317 @@ paths:
           $ref: '#/components/responses/TrustedAssetGrantResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operation-definitions:
+    get:
+      operationId: listMediaOperationDefinitions
+      description: Lists immutable, Site-release-published media capabilities available to this product.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: &mediaUserSecurity
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationDefinitionPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operation-definitions/{definitionRef}:
+    get:
+      operationId: getMediaOperationDefinition
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/MediaDefinitionRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationDefinitionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operation-definitions/{definitionRef}/model-options:
+    get:
+      operationId: listMediaOperationModelOptions
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/MediaDefinitionRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaDefinitionModelOptionPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operation-quotes:
+    post:
+      operationId: quoteMediaOperation
+      description: Returns non-binding owner-safe cost guidance; it does not reserve credit or execution capacity.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *mediaUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MediaOperationQuoteRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationQuoteResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operations:
+    post:
+      operationId: submitMediaOperation
+      description: >-
+        Submits one deterministic product intent. The caller fingerprint covers the canonical public
+        intent only; Platform privately binds ownership and idempotency without exposing its digest.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+        - $ref: '#/components/parameters/CallerRequestFingerprint'
+      security: *mediaUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MediaOperationSubmitRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/MediaOperationCommandResponse'
+        '202':
+          $ref: '#/components/responses/MediaOperationCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      operationId: listMediaOperations
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operations/{operationRef}:
+    get:
+      operationId: getMediaOperation
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/MediaOperationRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operations/{operationRef}:cancel:
+    post:
+      operationId: cancelMediaOperation
+      description: Requests cancellation without claiming that already committed work can be reversed.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/MediaOperationRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *mediaUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MediaOperationCancelRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationCommandResponse'
+        '202':
+          $ref: '#/components/responses/MediaOperationCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/media-operation-commands/{commandId}:
+    get:
+      operationId: recoverMediaOperationCommand
+      description: Recovers the durable owner receipt after an ambiguous submit or cancellation response.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/MediaCommandId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MediaOperationCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifacts:
+    get:
+      operationId: listArtifacts
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/ArtifactPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifacts/{artifactRef}:
+    get:
+      operationId: getArtifact
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ArtifactRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/ArtifactResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifacts/{artifactRef}/versions:
+    get:
+      operationId: listArtifactVersions
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ArtifactRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/ArtifactVersionPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifacts/{artifactRef}/versions/{artifactVersionRef}:
+    get:
+      operationId: getArtifactVersion
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ArtifactRef'
+        - $ref: '#/components/parameters/ArtifactVersionRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *mediaUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/ArtifactVersionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifacts/{artifactRef}/versions/{artifactVersionRef}/delivery-authorizations:
+    post:
+      operationId: issueArtifactDeliveryAuthorization
+      description: >-
+        Issues a new short-lived, independently revocable bearer capability for one exact artifact
+        version. Response loss is never recovered by replaying a credential; retry issues a new grant.
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ArtifactRef'
+        - $ref: '#/components/parameters/ArtifactVersionRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *mediaUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/ArtifactDeliveryAuthorizationRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/ArtifactDeliveryAuthorizationResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/projects/{projectRef}/artifact-delivery-authorizations/{authorizationRef}:revoke:
+    post:
+      operationId: revokeArtifactDeliveryAuthorization
+      parameters:
+        - $ref: '#/components/parameters/ProjectRef'
+        - $ref: '#/components/parameters/ArtifactDeliveryAuthorizationRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *mediaUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/ArtifactDeliveryRevocationRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/ArtifactDeliveryRevocationResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/artifact-delivery-authorizations/{authorizationRef}/content:
+    get:
+      operationId: redeemArtifactDeliveryAuthorization
+      x-kokoro-max-range-bytes: 8388608
+      description: >-
+        Redeems one exact audience-bound delivery capability and streams owner-authorized bytes.
+        The BFF must stream with backpressure; it must not buffer the artifact as JSON or base64.
+      parameters:
+        - $ref: '#/components/parameters/ArtifactDeliveryAuthorizationRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/ArtifactByteRange'
+        - $ref: '#/components/parameters/RequestDeadline'
+      security:
+        - ProductWorkload: []
+          ArtifactDeliveryCapability: []
+      responses:
+        '200':
+          description: Authorized artifact byte stream.
+          headers:
+            Content-Disposition:
+              description: RFC 6266 disposition with RFC 8187 encoding for any non-ASCII filename.
+              schema: {type: string, maxLength: 2048}
+            Content-Length:
+              schema: {$ref: '#/components/schemas/PositiveUint64String'}
+            Cache-Control:
+              schema: {type: string, const: 'private, no-store'}
+            Accept-Ranges:
+              required: true
+              schema: {type: string, const: bytes}
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+        '206':
+          description: Authorized bounded single byte range.
+          headers:
+            Content-Disposition:
+              description: RFC 6266 disposition with RFC 8187 encoding for any non-ASCII filename.
+              schema: {type: string, maxLength: 2048}
+            Content-Length:
+              required: true
+              schema: {$ref: '#/components/schemas/PositiveUint64String'}
+            Content-Range:
+              required: true
+              schema: {type: string, pattern: '^bytes [0-9]+-[0-9]+/[0-9]+$'}
+            Accept-Ranges:
+              required: true
+              schema: {type: string, const: bytes}
+            Cache-Control:
+              required: true
+              schema: {type: string, const: 'private, no-store'}
+          content:
+            application/octet-stream:
+              schema: {type: string, format: binary}
+        '416':
+          description: The single byte range is malformed, exceeds 8 MiB, or is not satisfiable.
+          headers:
+            Content-Range:
+              required: true
+              schema: {type: string, pattern: '^bytes \*/[0-9]+$'}
+            Accept-Ranges:
+              required: true
+              schema: {type: string, const: bytes}
+            Cache-Control:
+              required: true
+              schema: {type: string, const: 'private, no-store'}
+          content:
+            application/problem+json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/commands/{id}/receipt:
     get:
       operationId: getPublicCommandReceipt
@@ -630,6 +941,13 @@ components:
         command. Platform stores only a domain-separated hash. A receipt read repeatedly verifies it and
         does not consume it; the new command named by a superseding action atomically consumes the same
         capability while invalidating the orphaned delivery. It never returns in a response body.
+    ArtifactDeliveryCapability:
+      type: apiKey
+      in: header
+      name: X-Kokoro-Artifact-Delivery-Capability
+      description: >-
+        Short-lived opaque capability bound to one authorization, artifact version, purpose, Site BFF
+        workload audience, and subject generation. It is independently revocable and never placed in a URL.
   parameters:
     ContractVersion:
       name: Kokoro-Contract-Version
@@ -767,6 +1085,104 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/PositiveUint64String'
+    MediaDefinitionRef:
+      name: definitionRef
+      in: path
+      required: true
+      schema: &mediaDefinitionRefSchema
+        type: string
+        minLength: 1
+        maxLength: 256
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$'
+    MediaOperationRef:
+      name: operationRef
+      in: path
+      required: true
+      schema: &mediaOperationRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MediaCommandId:
+      name: commandId
+      in: path
+      required: true
+      schema: *commandIdSchema
+    CallerRequestFingerprint:
+      name: X-Kokoro-Caller-Request-Fingerprint
+      in: header
+      required: true
+      description: Lowercase SHA-256 of the versioned, deterministic protobuf caller-intent preimage.
+      schema:
+        type: string
+        pattern: '^[0-9a-f]{64}$'
+    ArtifactRef:
+      name: artifactRef
+      in: path
+      required: true
+      schema: &artifactRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    ArtifactVersionRef:
+      name: artifactVersionRef
+      in: path
+      required: true
+      schema: &artifactVersionRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    ArtifactDeliveryAuthorizationRef:
+      name: authorizationRef
+      in: path
+      required: true
+      schema: &artifactDeliveryAuthorizationRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    ArtifactByteRange:
+      name: Range
+      in: header
+      required: false
+      description: >-
+        One bounded RFC 9110 byte range only. A start/end range and a suffix range are supported;
+        multipart and open-ended ranges are rejected. The requested span must not exceed 8 MiB.
+      schema:
+        type: string
+        maxLength: 64
+        pattern: '^bytes=([0-9]+-[0-9]+|-[1-9][0-9]*)$'
+    RequestDeadline:
+      name: X-Kokoro-Request-Deadline-Ms
+      in: header
+      required: true
+      description: >-
+        Caller-owned non-zero deadline. The generated caller seam requires an AbortSignal and
+        transports this deadline; expiration aborts the upstream stream rather than buffering it.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 30000
+    PageCursor:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque owner-bound cursor. Clients must never inspect or synthesize it.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 2048
+    PageLimit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
   headers:
     RequestId:
       required: true
@@ -913,6 +1329,36 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AssetUploadCompleteInput'
+    MediaOperationQuoteRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationInput'
+    MediaOperationSubmitRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationInput'
+    MediaOperationCancelRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationCancelInput'
+    ArtifactDeliveryAuthorizationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactDeliveryAuthorizationInput'
+    ArtifactDeliveryRevocationRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactDeliveryRevocationInput'
   responses:
     ProductContextExchangeResponse:
       description: A Site-release-bound product context.
@@ -1234,6 +1680,109 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/TrustedAssetGrantResponse'
+    MediaOperationDefinitionPageResponse:
+      description: A bounded page of Site-published media definitions.
+      headers: &ownerProjectionResponseHeaders
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationDefinitionPage'
+    MediaOperationDefinitionResponse:
+      description: One immutable Site-published media definition revision.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationDefinitionResponse'
+    MediaDefinitionModelOptionPageResponse:
+      description: Safe model selector options for one media definition revision.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaDefinitionModelOptionPage'
+    MediaOperationQuoteResponse:
+      description: Non-binding cost guidance; no hold or execution capacity is reserved.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationQuoteResponse'
+    MediaOperationCommandResponse:
+      description: Durable owner command receipt and current media projection.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationCommandResponse'
+    MediaOperationPageResponse:
+      description: A bounded owner-scoped media operation page.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationPage'
+    MediaOperationResponse:
+      description: Current owner-scoped media operation projection.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MediaOperationResponse'
+    ArtifactPageResponse:
+      description: A bounded owner-scoped artifact page.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactPage'
+    ArtifactResponse:
+      description: One logical artifact and its current exact version reference.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactResponse'
+    ArtifactVersionPageResponse:
+      description: A bounded immutable artifact-version page.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactVersionPage'
+    ArtifactVersionResponse:
+      description: One immutable artifact version without storage or provider authority.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactVersionResponse'
+    ArtifactDeliveryAuthorizationResponse:
+      description: A newly issued short-lived capability that must never be cached or replayed from a receipt.
+      headers:
+        <<: *standardResponseHeaders
+        Cache-Control:
+          required: true
+          schema:
+            type: string
+            const: no-store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactDeliveryAuthorizationResponse'
+    ArtifactDeliveryRevocationResponse:
+      description: Durable revocation state without the bearer capability.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtifactDeliveryRevocationResponse'
     ErrorResponse:
       description: Stable, non-disclosing Platform error.
       headers:
@@ -1980,6 +2529,7 @@ components:
           type: string
           minLength: 1
           maxLength: 256
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$'
         optionKey:
           type: string
           pattern: '^[a-z][a-z0-9._-]{1,127}$'
@@ -3176,9 +3726,23 @@ components:
         - $ref: '#/components/schemas/CommittedSupersedingPublicCommandReceiptResponse'
         - $ref: '#/components/schemas/CommittedSupersededPublicCommandReceiptResponse'
     CreditAmount:
+      type: object
+      additionalProperties: false
+      description: Credit-owned exact amount. The integer is a decimal string to avoid JS precision loss.
+      properties:
+        creditUnit:
+          type: string
+          minLength: 1
+          maxLength: 64
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:@-]{0,63}$'
+        amount:
+          type: string
+          pattern: '^(0|[1-9][0-9]{0,39})$'
+      required: [creditUnit, amount]
+    CreditDecimalAmount:
       type: string
-      description: Exact non-negative integer amount; encoded as a decimal string to avoid JS precision loss.
-      pattern: '^(?:0|[1-9][0-9]{0,37})$'
+      description: Exact non-negative integer within an enclosing credit-unit scope.
+      pattern: '^(0|[1-9][0-9]{0,39})$'
     ProjectionRevision:
       type: string
       pattern: '^(?:0|[1-9][0-9]{0,18})$'
@@ -3263,7 +3827,7 @@ components:
           minLength: 1
           maxLength: 64
         amount:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         expiresAt:
           type: [string, 'null']
           format: date-time
@@ -3705,15 +4269,15 @@ components:
           type: integer
           minimum: 0
         issued:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         available:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         held:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         consumed:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         expiredOrReversed:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
       required: [bucketClass, grantCount, issued, available, held, consumed, expiredOrReversed]
     CreditUnitSummary:
       type: object
@@ -3766,13 +4330,13 @@ components:
           type: string
           enum: [active, exhausted, expired, reversed]
         issued:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         available:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         held:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         consumed:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         effectiveAt:
           type: string
           format: date-time
@@ -3807,7 +4371,7 @@ components:
       properties:
         creditGrantId: *creditGrantIdSchema
         amount:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         journalReceiptRef:
           type: string
           minLength: 1
@@ -3834,10 +4398,10 @@ components:
           type: string
           enum: [reserved, rated, settled, reversed, reconciliation_required]
         estimatedAmount:
-          $ref: '#/components/schemas/CreditAmount'
+          $ref: '#/components/schemas/CreditDecimalAmount'
         ratedAmount:
           oneOf:
-            - $ref: '#/components/schemas/CreditAmount'
+            - $ref: '#/components/schemas/CreditDecimalAmount'
             - type: 'null'
         allocations:
           type: array
@@ -3870,6 +4434,956 @@ components:
         freshness:
           $ref: '#/components/schemas/ProjectionFreshness'
       required: [usage, freshness]
+    PageInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        nextCursor:
+          type: [string, 'null']
+          maxLength: 2048
+        hasMore:
+          type: boolean
+      required: [nextCursor, hasMore]
+    ImageAspectRatio:
+      type: string
+      enum: [square_1_1, landscape_4_3, landscape_16_9, portrait_3_4, portrait_9_16]
+    ImageOutputFormat:
+      type: string
+      enum: [png, jpeg, webp]
+    ImageTextToImageOperationDefinition:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: image_text_to_image
+        definitionKey:
+          type: string
+          const: image.text_to_image@v1
+        definitionRef: *mediaDefinitionRefSchema
+        definitionRevisionRef: *mediaDefinitionRefSchema
+        title:
+          type: string
+          minLength: 1
+          maxLength: 128
+        description:
+          type: string
+          maxLength: 1024
+        promptMaximumUtf8Bytes:
+          type: integer
+          const: 32768
+        maximumCandidateCount:
+          type: integer
+          minimum: 1
+          maximum: 4
+        supportedAspectRatios:
+          type: array
+          minItems: 1
+          maxItems: 5
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ImageAspectRatio'
+        supportedOutputFormats:
+          type: array
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ImageOutputFormat'
+        modelOptionCatalogRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        publishedAt:
+          type: string
+          format: date-time
+      required:
+        - kind
+        - definitionKey
+        - definitionRef
+        - definitionRevisionRef
+        - title
+        - description
+        - promptMaximumUtf8Bytes
+        - maximumCandidateCount
+        - supportedAspectRatios
+        - supportedOutputFormats
+        - modelOptionCatalogRevisionRef
+        - publishedAt
+    OperationDefinition:
+      discriminator:
+        propertyName: kind
+        mapping:
+          image_text_to_image: '#/components/schemas/ImageTextToImageOperationDefinition'
+      oneOf:
+        - $ref: '#/components/schemas/ImageTextToImageOperationDefinition'
+    MediaOperationDefinitionPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/OperationDefinition'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [items, pageInfo]
+    MediaOperationDefinitionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        definition:
+          $ref: '#/components/schemas/OperationDefinition'
+      required: [definition]
+    MediaDefinitionModelOptionPage:
+      type: object
+      additionalProperties: false
+      properties:
+        definitionRevisionRef: *mediaDefinitionRefSchema
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/PublishedModelOption'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [definitionRevisionRef, items, pageInfo]
+    ImageTextToImageOperationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          const: image_text_to_image
+        definitionRevisionRef: *mediaDefinitionRefSchema
+        promptIntent:
+          type: string
+          minLength: 1
+          maxLength: 32768
+          x-kokoro-max-utf8-bytes: 32768
+        aspectRatio:
+          $ref: '#/components/schemas/ImageAspectRatio'
+        candidateCount:
+          type: integer
+          minimum: 1
+          maximum: 4
+        modelOptionRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$'
+        outputFormat:
+          $ref: '#/components/schemas/ImageOutputFormat'
+      required:
+        - kind
+        - definitionRevisionRef
+        - promptIntent
+        - aspectRatio
+        - candidateCount
+        - modelOptionRevisionRef
+        - outputFormat
+    MediaOperationInput:
+      discriminator:
+        propertyName: kind
+        mapping:
+          image_text_to_image: '#/components/schemas/ImageTextToImageOperationInput'
+      oneOf:
+        - $ref: '#/components/schemas/ImageTextToImageOperationInput'
+    CreditEstimate:
+      type: object
+      additionalProperties: false
+      properties:
+        creditUnit:
+          type: string
+          minLength: 1
+          maxLength: 64
+        amount:
+          $ref: '#/components/schemas/CreditDecimalAmount'
+      required: [creditUnit, amount]
+    MediaOperationQuote:
+      type: object
+      additionalProperties: false
+      properties:
+        quoteRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        definitionRevisionRef: *mediaDefinitionRefSchema
+        modelOptionRevisionRef:
+          type: string
+          minLength: 1
+          maxLength: 256
+        estimate:
+          $ref: '#/components/schemas/CreditEstimate'
+        nonBinding:
+          type: boolean
+          const: true
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - quoteRef
+        - definitionRevisionRef
+        - modelOptionRevisionRef
+        - estimate
+        - nonBinding
+        - expiresAt
+    MediaOperationQuoteResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        quote:
+          $ref: '#/components/schemas/MediaOperationQuote'
+      required: [quote]
+    MediaOperationState:
+      type: string
+      enum:
+        - admission_pending
+        - authorized
+        - queued
+        - active
+        - finalizing
+        - cancel_requested
+        - reconciling
+        - completed
+        - partial
+        - failed
+        - canceled
+    MediaSafeFailure:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          enum: [input_rejected, policy_rejected, credit_rejected, generation_failed, validation_failed, temporarily_unavailable, outcome_unknown, artifact_restricted, artifact_unavailable]
+        retryClass:
+          type: string
+          enum: [never, after_delay, after_user_action, reconcile_receipt]
+        safeMessage:
+          type: string
+          maxLength: 512
+      required: [code, retryClass, safeMessage]
+    MediaCandidateView:
+      discriminator:
+        propertyName: state
+        mapping:
+          allocated: '#/components/schemas/MediaCandidateAllocatedView'
+          producing: '#/components/schemas/MediaCandidateProducingView'
+          output_received: '#/components/schemas/MediaCandidateOutputReceivedView'
+          validating: '#/components/schemas/MediaCandidateValidatingView'
+          ready: '#/components/schemas/MediaCandidateReadyView'
+          restricted: '#/components/schemas/MediaCandidateRestrictedView'
+          failed: '#/components/schemas/MediaCandidateFailedView'
+          unknown: '#/components/schemas/MediaCandidateUnknownView'
+          cancel_requested: '#/components/schemas/MediaCandidateCancelRequestedView'
+          canceled: '#/components/schemas/MediaCandidateCanceledView'
+      oneOf:
+        - $ref: '#/components/schemas/MediaCandidateAllocatedView'
+        - $ref: '#/components/schemas/MediaCandidateProducingView'
+        - $ref: '#/components/schemas/MediaCandidateOutputReceivedView'
+        - $ref: '#/components/schemas/MediaCandidateValidatingView'
+        - $ref: '#/components/schemas/MediaCandidateReadyView'
+        - $ref: '#/components/schemas/MediaCandidateRestrictedView'
+        - $ref: '#/components/schemas/MediaCandidateFailedView'
+        - $ref: '#/components/schemas/MediaCandidateUnknownView'
+        - $ref: '#/components/schemas/MediaCandidateCancelRequestedView'
+        - $ref: '#/components/schemas/MediaCandidateCanceledView'
+    MediaCandidateCommon:
+      type: object
+      additionalProperties: false
+      properties: &mediaCandidateNonterminalProperties
+        candidateRef: {type: string, minLength: 1, maxLength: 256}
+        ordinal: {type: integer, minimum: 0, maximum: 3}
+        ownerVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+      required: [candidateRef, ordinal, ownerVersion]
+    MediaCandidateProducingView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: producing}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateAllocatedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: allocated}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateOutputReceivedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: output_received}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateValidatingView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: validating}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateReadyView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: ready}
+        artifactRef: *artifactRefSchema
+        artifactVersionRef: *artifactVersionRefSchema
+      required: [candidateRef, ordinal, ownerVersion, state, artifactRef, artifactVersionRef]
+    MediaCandidateRestrictedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: restricted}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [candidateRef, ordinal, ownerVersion, state, safeFailure]
+    MediaCandidateFailedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: failed}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [candidateRef, ordinal, ownerVersion, state, safeFailure]
+    MediaCandidateUnknownView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: unknown}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateCancelRequestedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: cancel_requested}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCandidateCanceledView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaCandidateNonterminalProperties
+        state: {type: string, const: canceled}
+      required: [candidateRef, ordinal, ownerVersion, state]
+    MediaCostProjectionView:
+      discriminator:
+        propertyName: state
+        mapping:
+          pending: '#/components/schemas/CreditCostPending'
+          estimated: '#/components/schemas/CreditCostEstimated'
+          final: '#/components/schemas/CreditCostFinal'
+          corrected: '#/components/schemas/CreditCostCorrected'
+          unavailable: '#/components/schemas/CreditCostUnavailable'
+      oneOf:
+        - $ref: '#/components/schemas/CreditCostPending'
+        - $ref: '#/components/schemas/CreditCostEstimated'
+        - $ref: '#/components/schemas/CreditCostFinal'
+        - $ref: '#/components/schemas/CreditCostCorrected'
+        - $ref: '#/components/schemas/CreditCostUnavailable'
+    CreditCostCommon:
+      type: object
+      additionalProperties: false
+      properties: &creditCostBaseProperties
+        costProjectionRef: {type: string, minLength: 1, maxLength: 256}
+        ownerVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+        freshness: {type: string, enum: [current, stale, rebuilding, unavailable]}
+      required: [costProjectionRef, ownerVersion, freshness]
+    CreditCostPending:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *creditCostBaseProperties
+        state: {type: string, const: pending}
+      required: [costProjectionRef, ownerVersion, state, freshness]
+    CreditCostEstimated:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *creditCostBaseProperties
+        state: {type: string, const: estimated}
+        amount: {$ref: '#/components/schemas/CreditAmount'}
+      required: [costProjectionRef, ownerVersion, state, freshness, amount]
+    CreditCostFinal:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *creditCostBaseProperties
+        state: {type: string, const: final}
+        amount: {$ref: '#/components/schemas/CreditAmount'}
+      required: [costProjectionRef, ownerVersion, state, freshness, amount]
+    CreditCostCorrected:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *creditCostBaseProperties
+        state: {type: string, const: corrected}
+        amount: {$ref: '#/components/schemas/CreditAmount'}
+        correctsOwnerVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+      required: [costProjectionRef, ownerVersion, state, freshness, amount, correctsOwnerVersion]
+    CreditCostUnavailable:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *creditCostBaseProperties
+        state: {type: string, const: unavailable}
+        safeReason: {type: string, maxLength: 256}
+      required: [costProjectionRef, ownerVersion, state, freshness, safeReason]
+    MediaOperationView:
+      discriminator:
+        propertyName: state
+        mapping:
+          admission_pending: '#/components/schemas/MediaOperationAdmissionPendingView'
+          authorized: '#/components/schemas/MediaOperationAuthorizedView'
+          queued: '#/components/schemas/MediaOperationQueuedView'
+          active: '#/components/schemas/MediaOperationActiveView'
+          finalizing: '#/components/schemas/MediaOperationFinalizingView'
+          cancel_requested: '#/components/schemas/MediaOperationCancelRequestedView'
+          reconciling: '#/components/schemas/MediaOperationReconcilingView'
+          completed: '#/components/schemas/MediaOperationCompletedView'
+          partial: '#/components/schemas/MediaOperationPartialView'
+          failed: '#/components/schemas/MediaOperationFailedView'
+          canceled: '#/components/schemas/MediaOperationCanceledView'
+      oneOf:
+        - $ref: '#/components/schemas/MediaOperationAdmissionPendingView'
+        - $ref: '#/components/schemas/MediaOperationAuthorizedView'
+        - $ref: '#/components/schemas/MediaOperationQueuedView'
+        - $ref: '#/components/schemas/MediaOperationActiveView'
+        - $ref: '#/components/schemas/MediaOperationFinalizingView'
+        - $ref: '#/components/schemas/MediaOperationCancelRequestedView'
+        - $ref: '#/components/schemas/MediaOperationReconcilingView'
+        - $ref: '#/components/schemas/MediaOperationCompletedView'
+        - $ref: '#/components/schemas/MediaOperationPartialView'
+        - $ref: '#/components/schemas/MediaOperationFailedView'
+        - $ref: '#/components/schemas/MediaOperationCanceledView'
+    MediaOperationAdmissionPendingView: &mediaOperationVariant
+      type: object
+      additionalProperties: false
+      properties:
+        <<: &mediaOperationViewProperties
+          operationRef: *mediaOperationRefSchema
+          definitionRef: *mediaDefinitionRefSchema
+          definitionRevisionRef: *mediaDefinitionRefSchema
+          modelOptionRevisionRef:
+            type: string
+            minLength: 1
+            maxLength: 256
+          ownerVersion:
+            $ref: '#/components/schemas/PositiveUint64String'
+          progressBps:
+            type: integer
+            minimum: 0
+            maximum: 10000
+          candidates:
+            type: array
+            maxItems: 4
+            items:
+              $ref: '#/components/schemas/MediaCandidateView'
+          costProjection:
+            oneOf:
+              - $ref: '#/components/schemas/MediaCostProjectionView'
+              - type: 'null'
+          createdAt:
+            type: string
+            format: date-time
+          updatedAt:
+            type: string
+            format: date-time
+        state: {type: string, const: admission_pending}
+      required: &mediaOperationViewRequired [operationRef, definitionRef, definitionRevisionRef, modelOptionRevisionRef, ownerVersion, state, progressBps, candidates, costProjection, createdAt, updatedAt]
+    MediaOperationAuthorizedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: authorized}
+      required: *mediaOperationViewRequired
+    MediaOperationQueuedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: queued}
+      required: *mediaOperationViewRequired
+    MediaOperationActiveView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: active}
+      required: *mediaOperationViewRequired
+    MediaOperationFinalizingView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: finalizing}
+      required: *mediaOperationViewRequired
+    MediaOperationCancelRequestedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: cancel_requested}
+      required: *mediaOperationViewRequired
+    MediaOperationReconcilingView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: reconciling}
+      required: *mediaOperationViewRequired
+    MediaOperationCompletedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: completed}
+        outcomeClass: {type: string, enum: [canonical, irreconcilable]}
+      required: [operationRef, definitionRef, definitionRevisionRef, modelOptionRevisionRef, ownerVersion, state, progressBps, candidates, costProjection, outcomeClass, createdAt, updatedAt]
+    MediaOperationPartialView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: partial}
+        outcomeClass: {type: string, enum: [canonical, irreconcilable]}
+      required: [operationRef, definitionRef, definitionRevisionRef, modelOptionRevisionRef, ownerVersion, state, progressBps, candidates, costProjection, outcomeClass, createdAt, updatedAt]
+    MediaOperationFailedView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: failed}
+        outcomeClass: {type: string, enum: [canonical, irreconcilable]}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [operationRef, definitionRef, definitionRevisionRef, modelOptionRevisionRef, ownerVersion, state, progressBps, candidates, costProjection, outcomeClass, safeFailure, createdAt, updatedAt]
+    MediaOperationCanceledView:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *mediaOperationViewProperties
+        state: {type: string, const: canceled}
+        outcomeClass: {type: string, enum: [canonical, irreconcilable]}
+      required: [operationRef, definitionRef, definitionRevisionRef, modelOptionRevisionRef, ownerVersion, state, progressBps, candidates, costProjection, outcomeClass, createdAt, updatedAt]
+    MediaOperationPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/MediaOperationView'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [items, pageInfo]
+    MediaOperationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        operation:
+          $ref: '#/components/schemas/MediaOperationView'
+      required: [operation]
+    MediaOperationCommandReceipt:
+      discriminator:
+        propertyName: receiptKind
+        mapping:
+          submit_accepted: '#/components/schemas/SubmitMediaCommandAccepted'
+          submit_rejected: '#/components/schemas/SubmitMediaCommandRejected'
+          submit_outcome_unknown: '#/components/schemas/SubmitMediaCommandOutcomeUnknown'
+          cancel_accepted: '#/components/schemas/CancelMediaCommandAccepted'
+          cancel_rejected: '#/components/schemas/CancelMediaCommandRejected'
+          cancel_outcome_unknown: '#/components/schemas/CancelMediaCommandOutcomeUnknown'
+      oneOf:
+        - $ref: '#/components/schemas/SubmitMediaCommandAccepted'
+        - $ref: '#/components/schemas/SubmitMediaCommandRejected'
+        - $ref: '#/components/schemas/SubmitMediaCommandOutcomeUnknown'
+        - $ref: '#/components/schemas/CancelMediaCommandAccepted'
+        - $ref: '#/components/schemas/CancelMediaCommandRejected'
+        - $ref: '#/components/schemas/CancelMediaCommandOutcomeUnknown'
+    MediaCommandRecoveryAction:
+      type: string
+      enum: [get_operation, recover_command, contact_support]
+    SubmitMediaCommandReceiptCommon:
+      type: object
+      additionalProperties: false
+      properties: &submitMediaReceiptProperties
+        commandId: *commandIdSchema
+        receiptVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+        updatedAt: {type: string, format: date-time}
+      required: [commandId, receiptVersion, updatedAt]
+    SubmitMediaCommandAccepted:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *submitMediaReceiptProperties
+        receiptKind: {type: string, const: submit_accepted}
+        callerRequestFingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
+        operationRef: *mediaOperationRefSchema
+        recoveryAction: {$ref: '#/components/schemas/MediaCommandRecoveryAction'}
+      required: [receiptKind, commandId, callerRequestFingerprint, operationRef, receiptVersion, recoveryAction, updatedAt]
+    SubmitMediaCommandRejected:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *submitMediaReceiptProperties
+        receiptKind: {type: string, const: submit_rejected}
+        callerRequestFingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [receiptKind, commandId, callerRequestFingerprint, receiptVersion, safeFailure, updatedAt]
+    SubmitMediaCommandOutcomeUnknown:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *submitMediaReceiptProperties
+        receiptKind: {type: string, const: submit_outcome_unknown}
+        callerRequestFingerprint: {type: string, pattern: '^[0-9a-f]{64}$'}
+        recoveryAction: {$ref: '#/components/schemas/MediaCommandRecoveryAction'}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [receiptKind, commandId, callerRequestFingerprint, receiptVersion, recoveryAction, safeFailure, updatedAt]
+    CancelMediaCommandReceiptCommon:
+      type: object
+      additionalProperties: false
+      properties: &cancelMediaReceiptProperties
+        commandId: *commandIdSchema
+        receiptVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+        updatedAt: {type: string, format: date-time}
+      required: [commandId, receiptVersion, updatedAt]
+    CancelMediaCommandAccepted:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *cancelMediaReceiptProperties
+        receiptKind: {type: string, const: cancel_accepted}
+        operationRef: *mediaOperationRefSchema
+        recoveryAction: {$ref: '#/components/schemas/MediaCommandRecoveryAction'}
+      required: [receiptKind, commandId, operationRef, receiptVersion, recoveryAction, updatedAt]
+    CancelMediaCommandRejected:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *cancelMediaReceiptProperties
+        receiptKind: {type: string, const: cancel_rejected}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [receiptKind, commandId, receiptVersion, safeFailure, updatedAt]
+    CancelMediaCommandOutcomeUnknown:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *cancelMediaReceiptProperties
+        receiptKind: {type: string, const: cancel_outcome_unknown}
+        operationRef: *mediaOperationRefSchema
+        recoveryAction: {$ref: '#/components/schemas/MediaCommandRecoveryAction'}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [receiptKind, commandId, operationRef, receiptVersion, recoveryAction, safeFailure, updatedAt]
+    MediaOperationCommandResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/MediaOperationCommandReceipt'
+        operation:
+          oneOf:
+            - $ref: '#/components/schemas/MediaOperationView'
+            - type: 'null'
+      required: [receipt, operation]
+    MediaOperationCancelInput:
+      type: object
+      additionalProperties: false
+      properties:
+        expectedOwnerVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        reason:
+          type: string
+          maxLength: 256
+      required: [expectedOwnerVersion]
+    ArtifactAvailability:
+      type: string
+      enum: [processing, ready, restricted, unavailable, deleted]
+    ArtifactSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        artifactRef: *artifactRefSchema
+        currentArtifactVersionRef: *artifactVersionRefSchema
+        mediaClass:
+          type: string
+          const: image
+        availability:
+          $ref: '#/components/schemas/ArtifactAvailability'
+        title:
+          type: string
+          maxLength: 256
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [artifactRef, currentArtifactVersionRef, mediaClass, availability, title, createdAt, updatedAt]
+    ArtifactPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ArtifactSummary'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [items, pageInfo]
+    ArtifactResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        artifact:
+          $ref: '#/components/schemas/ArtifactSummary'
+      required: [artifact]
+    ImageArtifactDisplay:
+      type: object
+      additionalProperties: false
+      properties:
+        format:
+          $ref: '#/components/schemas/ImageOutputFormat'
+        width:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        height:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        byteSize:
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [format, width, height, byteSize]
+    ImageArtifactVersionCommon:
+      type: object
+      additionalProperties: false
+      properties: &imageArtifactVersionBaseProperties
+        mediaClass: {type: string, const: image}
+        artifactRef: *artifactRefSchema
+        artifactVersionRef: *artifactVersionRefSchema
+        ownerVersion: {$ref: '#/components/schemas/PositiveUint64String'}
+        versionNumber: {$ref: '#/components/schemas/PositiveUint64String'}
+        sourceArtifactVersionRefs:
+          type: array
+          maxItems: 16
+          uniqueItems: true
+          items: *artifactVersionRefSchema
+        createdAt:
+          type: string
+          format: date-time
+      required: [mediaClass, artifactRef, artifactVersionRef, ownerVersion, versionNumber, sourceArtifactVersionRefs, createdAt]
+    ImageArtifactVersionReady:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *imageArtifactVersionBaseProperties
+        availability: {type: string, const: ready}
+        display: {$ref: '#/components/schemas/ImageArtifactDisplay'}
+      required:
+        - mediaClass
+        - artifactRef
+        - artifactVersionRef
+        - ownerVersion
+        - versionNumber
+        - availability
+        - sourceArtifactVersionRefs
+        - display
+        - createdAt
+    ImageArtifactVersionProcessing:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *imageArtifactVersionBaseProperties
+        availability: {type: string, const: processing}
+      required: [mediaClass, artifactRef, artifactVersionRef, ownerVersion, versionNumber, availability, sourceArtifactVersionRefs, createdAt]
+    ImageArtifactVersionRestricted:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *imageArtifactVersionBaseProperties
+        availability: {type: string, const: restricted}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [mediaClass, artifactRef, artifactVersionRef, ownerVersion, versionNumber, availability, sourceArtifactVersionRefs, safeFailure, createdAt]
+    ImageArtifactVersionUnavailable:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *imageArtifactVersionBaseProperties
+        availability: {type: string, const: unavailable}
+        safeFailure: {$ref: '#/components/schemas/MediaSafeFailure'}
+      required: [mediaClass, artifactRef, artifactVersionRef, ownerVersion, versionNumber, availability, sourceArtifactVersionRefs, safeFailure, createdAt]
+    ImageArtifactVersionDeleted:
+      type: object
+      additionalProperties: false
+      properties:
+        <<: *imageArtifactVersionBaseProperties
+        availability: {type: string, const: deleted}
+      required: [mediaClass, artifactRef, artifactVersionRef, ownerVersion, versionNumber, availability, sourceArtifactVersionRefs, createdAt]
+    ImageArtifactVersion:
+      discriminator:
+        propertyName: availability
+      oneOf:
+        - $ref: '#/components/schemas/ImageArtifactVersionProcessing'
+        - $ref: '#/components/schemas/ImageArtifactVersionReady'
+        - $ref: '#/components/schemas/ImageArtifactVersionRestricted'
+        - $ref: '#/components/schemas/ImageArtifactVersionUnavailable'
+        - $ref: '#/components/schemas/ImageArtifactVersionDeleted'
+    ArtifactVersion:
+      discriminator:
+        propertyName: availability
+        mapping:
+          processing: '#/components/schemas/ImageArtifactVersionProcessing'
+          ready: '#/components/schemas/ImageArtifactVersionReady'
+          restricted: '#/components/schemas/ImageArtifactVersionRestricted'
+          unavailable: '#/components/schemas/ImageArtifactVersionUnavailable'
+          deleted: '#/components/schemas/ImageArtifactVersionDeleted'
+      oneOf:
+        - $ref: '#/components/schemas/ImageArtifactVersionProcessing'
+        - $ref: '#/components/schemas/ImageArtifactVersionReady'
+        - $ref: '#/components/schemas/ImageArtifactVersionRestricted'
+        - $ref: '#/components/schemas/ImageArtifactVersionUnavailable'
+        - $ref: '#/components/schemas/ImageArtifactVersionDeleted'
+    ArtifactVersionPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/ArtifactVersion'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [items, pageInfo]
+    ArtifactVersionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          $ref: '#/components/schemas/ArtifactVersion'
+      required: [version]
+    ArtifactPreviewDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: preview
+        viewportClass:
+          type: string
+          enum: [thumbnail, canvas, full]
+      required: [purpose, viewportClass]
+    ArtifactDownloadDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: download
+        suggestedFileName:
+          type: string
+          pattern: '^[^\x00-\x1F\x7F/\\]{1,255}$'
+          description: >-
+            Safe filename intent only. Platform emits Content-Disposition using RFC 6266 and RFC 8187;
+            callers must not concatenate this value into a filesystem path or response header.
+      required: [purpose]
+    ArtifactExportDeliveryInput:
+      type: object
+      additionalProperties: false
+      properties:
+        purpose:
+          type: string
+          const: export
+        exportIntentRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+      required: [purpose, exportIntentRef]
+    ArtifactDeliveryAuthorizationInput:
+      discriminator:
+        propertyName: purpose
+        mapping:
+          preview: '#/components/schemas/ArtifactPreviewDeliveryInput'
+          download: '#/components/schemas/ArtifactDownloadDeliveryInput'
+          export: '#/components/schemas/ArtifactExportDeliveryInput'
+      oneOf:
+        - $ref: '#/components/schemas/ArtifactPreviewDeliveryInput'
+        - $ref: '#/components/schemas/ArtifactDownloadDeliveryInput'
+        - $ref: '#/components/schemas/ArtifactExportDeliveryInput'
+    ArtifactDeliveryAuthorization:
+      type: object
+      additionalProperties: false
+      properties:
+        authorizationRef: *artifactDeliveryAuthorizationRefSchema
+        artifactRef: *artifactRefSchema
+        artifactVersionRef: *artifactVersionRefSchema
+        purpose:
+          type: string
+          enum: [preview, download, export]
+        audience:
+          type: string
+          const: site-bff.artifact-delivery
+        deliveryCapability:
+          type: string
+          minLength: 32
+          maxLength: 4096
+        issuedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+      required:
+        - authorizationRef
+        - artifactRef
+        - artifactVersionRef
+        - purpose
+        - audience
+        - deliveryCapability
+        - issuedAt
+        - expiresAt
+    ArtifactDeliveryAuthorizationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        authorization:
+          $ref: '#/components/schemas/ArtifactDeliveryAuthorization'
+      required: [authorization]
+    ArtifactDeliveryRevocationInput:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          maxLength: 256
+    ArtifactDeliveryRevocationReceipt:
+      type: object
+      additionalProperties: false
+      properties:
+        authorizationRef: *artifactDeliveryAuthorizationRefSchema
+        state:
+          type: string
+          enum: [revoked, already_revoked, expired]
+        revokedAt:
+          type: string
+          format: date-time
+      required: [authorizationRef, state, revokedAt]
+    ArtifactDeliveryRevocationResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receipt:
+          $ref: '#/components/schemas/ArtifactDeliveryRevocationReceipt'
+      required: [receipt]
     ErrorCode:
       type: string
       enum:
@@ -3895,6 +5409,21 @@ components:
         - ASSET_UPLOAD_CONFLICT
         - ASSET_QUOTA_EXCEEDED
         - ASSET_TEMPORARILY_UNAVAILABLE
+        - MEDIA_INPUT_REJECTED
+        - MEDIA_CALLER_FINGERPRINT_MISMATCH
+        - MEDIA_DEFINITION_UNAVAILABLE
+        - MEDIA_MODEL_OPTION_UNAVAILABLE
+        - MEDIA_CREDIT_INSUFFICIENT
+        - MEDIA_POLICY_REJECTED
+        - MEDIA_OPERATION_VERSION_CONFLICT
+        - MEDIA_CANCEL_NOT_ACCEPTED
+        - MEDIA_TEMPORARILY_UNAVAILABLE
+        - PAGE_CURSOR_INVALID
+        - ARTIFACT_NOT_AVAILABLE
+        - ARTIFACT_DELIVERY_NOT_ALLOWED
+        - ARTIFACT_DELIVERY_AUTHORIZATION_REJECTED
+        - ARTIFACT_TEMPORARILY_UNAVAILABLE
+        - ARTIFACT_RANGE_NOT_SATISFIABLE
     ErrorResponse:
       type: object
       additionalProperties: false

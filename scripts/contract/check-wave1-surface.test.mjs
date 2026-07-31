@@ -15,6 +15,8 @@ async function makeFixture() {
   await mkdir(resolve(fixture, "contract/openapi"), { recursive: true });
   await mkdir(resolve(fixture, "contract/registry"), { recursive: true });
   await cp(resolve(root, "contract/proto"), resolve(fixture, "contract/proto"), { recursive: true });
+  await copyFile(resolve(root, "contract/buf.yaml"), resolve(fixture, "contract/buf.yaml"));
+  await copyFile(resolve(root, "contract/buf.lock"), resolve(fixture, "contract/buf.lock"));
   await copyFile(
     resolve(root, "contract/openapi/platform-public-v1.yaml"),
     resolve(fixture, "contract/openapi/platform-public-v1.yaml"),
@@ -33,7 +35,7 @@ test("the shipped Wave 1 surface is closed and internally consistent", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n",
+    "wave1_surface_ok: 53 public operations, 4 privileged services, 1 active command boundary\n",
   );
 });
 
@@ -43,8 +45,27 @@ test("the live command checks the Wave 1 surface from the current working direct
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 37 public operations, 4 privileged services, 1 active command boundary\n",
+    "wave1_surface_ok: 53 public operations, 4 privileged services, 1 active command boundary\n",
   );
+});
+
+test("an Artifact delivery bearer cannot become an idempotent replay response", async () => {
+  const fixture = await makeFixture();
+  const openapi = resolve(fixture, "contract/openapi/platform-public-v1.yaml");
+  const source = await readFile(openapi, "utf8");
+  const operationStart = source.indexOf("      operationId: issueArtifactDeliveryAuthorization");
+  const operationEnd = source.indexOf("  /v1/projects/{projectRef}/artifact-delivery-authorizations/", operationStart);
+  assert.notEqual(operationStart, -1);
+  assert.notEqual(operationEnd, -1);
+  const operation = source.slice(operationStart, operationEnd).replace(
+    "        - $ref: '#/components/parameters/ContractVersion'\n        - $ref: '#/components/parameters/CsrfToken'",
+    "        - $ref: '#/components/parameters/ContractVersion'\n        - $ref: '#/components/parameters/IdempotencyKey'\n        - $ref: '#/components/parameters/CsrfToken'",
+  );
+  await writeFile(openapi, source.slice(0, operationStart) + operation + source.slice(operationEnd));
+
+  const result = spawnSync(process.execPath, [checker, "--root", fixture], { encoding: "utf8" });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /public_ephemeral_credential_replay_policy_drift:issueArtifactDeliveryAuthorization/u);
 });
 
 test("the checker fails closed when invoked outside a Wave 1 contract root", () => {
@@ -138,4 +159,30 @@ test("Asset owner reads cannot drop project authority, no-store, or eligibility 
   assert.match(result.stderr, /asset_owner_authority_drift:getAssetUploadStatus/u);
   assert.match(result.stderr, /asset_response_cache_policy_drift:AssetUploadStatusResponse/u);
   assert.match(result.stderr, /trusted_asset_grant_axis_missing:eligibilityEpoch/u);
+});
+
+test("forbidden authority axes are found in quoted flow mappings after YAML parsing", async () => {
+  const fixture = await makeFixture();
+  const openapi = resolve(fixture, "contract/openapi/platform-public-v1.yaml");
+  const source = await readFile(openapi, "utf8");
+  await writeFile(
+    openapi,
+    `${source}\n# siteId: comments are not contract data\nx-structural-probe: {"siteId": "forbidden"}\n`,
+  );
+
+  const result = spawnSync(process.execPath, [checker, "--root", fixture], { encoding: "utf8" });
+
+  assert.equal(result.status, 1, result.stdout);
+  assert.match(result.stderr, /public_forbidden_surface:siteId/u);
+});
+
+test("comments containing forbidden-looking text do not change the parsed public surface", async () => {
+  const fixture = await makeFixture();
+  const openapi = resolve(fixture, "contract/openapi/platform-public-v1.yaml");
+  const source = await readFile(openapi, "utf8");
+  await writeFile(openapi, `${source}\n# siteId: /v1/payment /v1/redeem:apply\n`);
+
+  const result = spawnSync(process.execPath, [checker, "--root", fixture], { encoding: "utf8" });
+
+  assert.equal(result.status, 0, result.stderr);
 });

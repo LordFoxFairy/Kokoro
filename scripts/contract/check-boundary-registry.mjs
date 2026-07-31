@@ -4,12 +4,16 @@
 // backed by a real contract source, and every operation has exactly one frozen transport.
 // Allowed retry classes are parsed from the protobuf enum so this file never hardcodes them.
 
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { isAbsolute, posix, relative, resolve, sep } from "node:path";
+import { dirname, isAbsolute, posix, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createFileRegistry, fromBinary } from "../../contract/node_modules/@bufbuild/protobuf/dist/esm/index.js";
+import { FileDescriptorSetSchema } from "../../contract/node_modules/@bufbuild/protobuf/dist/esm/wkt/index.js";
 import { openApiOperations, readOpenApiDocument } from "./openapi-reader.mjs";
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const BUF = resolve(dirname(SCRIPT_PATH), "../../contract/node_modules/.bin/buf");
 // JSON-compatible YAML, matching config/architecture/index-roots.yaml: the spec-mandated name
 // without a YAML dependency. JSON is valid YAML 1.2, so a real parser reads it unchanged later.
 const DEFAULT_REGISTRY = "contract/registry/boundaries.yaml";
@@ -419,36 +423,64 @@ export function readSpecDeclaredFieldNames(source) {
   return names;
 }
 
-export function readProtoEnumValues(source, name) {
-  const block = new RegExp(`enum\\s+${name}\\s*\\{([^}]*)\\}`, "u").exec(source);
-  if (!block) fail("boundary_registry_source_unreadable", `missing proto enum: ${name}`);
-  const values = [];
-  for (const match of block[1].matchAll(/^\s*([A-Z0-9_]+)\s*=\s*\d+\s*;/gmu)) values.push(match[1]);
-  if (values.length === 0) fail("boundary_registry_source_unreadable", `empty proto enum: ${name}`);
-  return values;
+const descriptorCache = new Map();
+export function protoRegistry(root, sourcePath) {
+  const key = `${root}\0${sourcePath}`;
+  const cached = descriptorCache.get(key);
+  if (cached !== undefined) return cached;
+  let bytes;
+  try {
+    bytes = execFileSync(BUF, ["build", sourcePath, "--as-file-descriptor-set", "-o", "-"], {
+      cwd: root,
+      encoding: "buffer",
+      timeout: 10_000,
+      maxBuffer: 8 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  } catch {
+    fail("boundary_registry_source_unreadable", `descriptor build failed: ${sourcePath}`);
+  }
+  let registry;
+  try {
+    registry = createFileRegistry(fromBinary(FileDescriptorSetSchema, bytes));
+  } catch {
+    fail("boundary_registry_source_unreadable", `descriptor set invalid: ${sourcePath}`);
+  }
+  descriptorCache.set(key, registry);
+  return registry;
+}
+
+function descriptorByName(registry, kind, name) {
+  const matches = [...registry].filter(
+    (descriptor) => descriptor.kind === kind && (descriptor.name === name || descriptor.typeName === name),
+  );
+  if (matches.length !== 1) {
+    fail("boundary_registry_source_unreadable", `missing or ambiguous proto ${kind}: ${name}`);
+  }
+  return matches[0];
 }
 
 /** Allowed retry classes, derived from the protobuf enum minus its proto3 zero sentinel. */
-export function retryClassesFromProto(source) {
+export function retryClassesFromProto(registry) {
   const prefix = "RETRY_CLASS_";
-  const values = readProtoEnumValues(source, "RetryClass")
+  const descriptor = descriptorByName(registry, "enum", "RetryClass");
+  const values = descriptor.values
+    .map(({ name }) => name)
     .filter((value) => value !== `${prefix}UNSPECIFIED`)
     .map((value) => value.slice(prefix.length).toLowerCase());
   if (values.length === 0) fail("boundary_registry_source_unreadable", "RetryClass has no usable values");
   return values;
 }
 
-export function readProtoServiceMethods(source, service) {
-  const block = new RegExp(`service\\s+${service}\\s*\\{([\\s\\S]*?)\\n\\}`, "u").exec(source);
-  if (!block) fail("boundary_registry_source_unreadable", `missing proto service: ${service}`);
-  const methods = [];
-  for (const match of block[1].matchAll(
-    /rpc\s+(\w+)\s*\(\s*([\w.]+)\s*\)\s*returns\s*\(\s*(?:stream\s+)?([\w.]+)\s*\)/gu,
-  )) {
-    methods.push({ name: match[1], request: match[2], response: match[3] });
-  }
-  if (methods.length === 0) fail("boundary_registry_source_unreadable", `empty proto service: ${service}`);
-  return methods;
+export function protoServiceMethods(registry, service) {
+  const descriptor = descriptorByName(registry, "service", service);
+  if (descriptor.methods.length === 0) fail("boundary_registry_source_unreadable", `empty proto service: ${service}`);
+  return descriptor.methods.map((method) => ({
+    name: method.name,
+    request: method.input,
+    response: method.output,
+    methodKind: method.methodKind,
+  }));
 }
 
 // OpenAPI uses the root's lock-pinned strict PyYAML reader. It supports the complete YAML syntax
@@ -461,33 +493,18 @@ export function readOpenApiOperationIds(source) {
   }
 }
 
-export function readProtoMessages(source) {
-  const messages = new Map();
-  // Buf canonicalizes empty messages to `message Name {}`. Normalize that valid spelling so an
-  // empty message cannot consume the next message block and hide its receipt fields.
-  const normalized = source.replace(/message\s+(\w+)\s*\{\s*\}/gu, "message $1 {\n}");
-  for (const match of normalized.matchAll(/message\s+(\w+)\s*\{([\s\S]*?)\n\}/gu)) {
-    const fields = [];
-    for (const field of match[2].matchAll(/^\s*(?:optional\s+|repeated\s+)?([\w.]+)\s+(\w+)\s*=\s*\d+/gmu)) {
-      if (field[2] === "oneof") continue;
-      fields.push({ type: field[1], name: field[2] });
-    }
-    messages.set(match[1], fields);
-  }
-  return messages;
-}
-
-/** Field names of a request message plus the messages it directly references. */
-export function protoRequestFieldNames(messages, request) {
-  const local = request.includes(".") ? request.slice(request.lastIndexOf(".") + 1) : request;
+/** Field names of a request message and every transitively referenced message. */
+export function protoRequestFieldNames(request) {
   const names = new Set();
-  const direct = messages.get(local);
-  if (!direct) return names;
-  for (const field of direct) {
-    names.add(field.name);
-    const referenced = field.type.includes(".") ? field.type.slice(field.type.lastIndexOf(".") + 1) : field.type;
-    for (const nested of messages.get(referenced) ?? []) names.add(nested.name);
-  }
+  const visited = new Set();
+  (function visit(message) {
+    if (visited.has(message.typeName)) return;
+    visited.add(message.typeName);
+    for (const field of message.fields) {
+      names.add(field.name);
+      if (field.message !== undefined) visit(field.message);
+    }
+  })(request);
   return names;
 }
 
@@ -685,7 +702,7 @@ function sourceOperations(root, boundary, source, errors) {
   }
   try {
     if (source.kind === "proto") {
-      return readProtoServiceMethods(text, source.select.service).map((method) => method.name);
+      return protoServiceMethods(protoRegistry(root, source.path), source.select.service).map((method) => method.name);
     }
     if (source.kind === "openapi") return readOpenApiOperationIds(text);
     return readSpecMembers(text, source.select);
@@ -717,39 +734,35 @@ function checkSourceParity(root, boundary, errors) {
 }
 
 function protoTypeName(value) {
-  return String(value).slice(String(value).lastIndexOf(".") + 1);
+  const typeName = typeof value === "string" ? value : value.typeName;
+  return String(typeName).slice(String(typeName).lastIndexOf(".") + 1);
 }
 
-function protoPackage(source) {
-  return /^\s*package\s+([A-Za-z0-9_.]+)\s*;/mu.exec(source)?.[1] ?? "";
-}
-
-function canonicalProtoType(type, packageName, messages) {
-  const value = String(type).replace(/^\./u, "");
-  if (value.includes(".")) return value;
-  return messages.has(value) && packageName !== "" ? `${packageName}.${value}` : value;
-}
-
-function responseContainsType(messages, response, expected, packageName) {
-  return (messages.get(protoTypeName(response)) ?? []).some(
-    (field) => canonicalProtoType(field.type, packageName, messages) === String(expected).replace(/^\./u, ""),
-  );
+function responseContainsType(response, expected) {
+  const target = String(expected).replace(/^\./u, "");
+  const visited = new Set();
+  function visit(message, depth) {
+    if (depth > 16 || visited.has(message.typeName)) return false;
+    visited.add(message.typeName);
+    for (const field of message.fields) {
+      if (field.message === undefined) continue;
+      if (field.message.typeName === target) return true;
+      if (visit(field.message, depth + 1)) return true;
+    }
+    return false;
+  }
+  return visit(response, 0);
 }
 
 // A registry receipt reference is evidence only when the RPC response can actually return it.
-// Checking the direct response field is intentionally strict: a receipt hidden in an unrelated
-// nested payload would not be a stable, generic recovery surface.
+// Descriptor traversal follows only typed message fields, so comments and lookalike source text
+// cannot vouch for a receipt. A bounded wrapper path supports a shared closed command resolution.
 function checkProtoReceiptBindings(root, boundary, errors) {
   for (const source of boundary.sources ?? []) {
     if (source.kind !== "proto") continue;
     let methods;
-    let messages;
-    let packageName;
     try {
-      const text = readText(resolve(root, source.path), "boundary_registry_source_missing");
-      methods = readProtoServiceMethods(text, source.select.service);
-      messages = readProtoMessages(text);
-      packageName = protoPackage(text);
+      methods = protoServiceMethods(protoRegistry(root, source.path), source.select.service);
     } catch (error) {
       errors.push(`${error.message} (${boundary.id}: ${source.path})`);
       continue;
@@ -760,7 +773,7 @@ function checkProtoReceiptBindings(root, boundary, errors) {
       const method = byMethod.get(operation.id);
       if (!method) continue;
       const responseName = protoTypeName(method.response);
-      if (!responseContainsType(messages, method.response, operation.receipt.ref, packageName)) {
+      if (!responseContainsType(method.response, operation.receipt.ref)) {
         errors.push(
           `boundary_registry_receipt_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
           `${responseName} does not contain ${operation.receipt.ref}`,
@@ -769,20 +782,21 @@ function checkProtoReceiptBindings(root, boundary, errors) {
       if (operation.retryClass !== "reconcile_receipt" || !operation.receipt.recoveryOperation) continue;
       const recovery = byMethod.get(operation.receipt.recoveryOperation);
       if (!recovery) continue;
-      const requestFields = new Set(
-        (messages.get(protoTypeName(recovery.request)) ?? []).map((field) => field.name),
-      );
+      const requestFields = protoRequestFieldNames(recovery.request);
       const commandLookup = ["command_id", "digest_algorithm", "request_digest"].every((field) =>
         requestFields.has(field),
       );
       const proofLookup = requestFields.has("transaction_ref") && requestFields.has("recovery_proof");
-      if (!commandLookup && !proofLookup) {
+      const capabilityCommandLookup =
+        requestFields.has("projection_command_ref") &&
+        requestFields.has("projection_command_recovery_capability");
+      if (!commandLookup && !proofLookup && !capabilityCommandLookup) {
         errors.push(
           `boundary_registry_recovery_operation_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
             `${operation.receipt.recoveryOperation} request`,
         );
       }
-      if (!responseContainsType(messages, recovery.response, operation.receipt.ref, packageName)) {
+      if (!responseContainsType(recovery.response, operation.receipt.ref)) {
         errors.push(
           `boundary_registry_recovery_operation_unbound: ${boundary.id}@v${boundary.version}/${operation.id}: ` +
             `${operation.receipt.recoveryOperation} response`,
@@ -988,7 +1002,7 @@ function checkIsolationAxes(root, registry, errors) {
         continue;
       }
       if (source.kind === "proto") {
-        checkProtoIsolation(text, boundary, source, namespaceScoped, unproven, errors);
+        checkProtoIsolation(root, boundary, source, namespaceScoped, unproven, errors);
         continue;
       }
       if (source.kind === "openapi") continue;
@@ -1035,12 +1049,10 @@ function checkIsolationAxes(root, registry, errors) {
   }
 }
 
-function checkProtoIsolation(text, boundary, source, namespaceScoped, unproven, errors) {
+function checkProtoIsolation(root, boundary, source, namespaceScoped, unproven, errors) {
   let methods;
-  let messages;
   try {
-    methods = readProtoServiceMethods(text, source.select.service);
-    messages = readProtoMessages(text);
+    methods = protoServiceMethods(protoRegistry(root, source.path), source.select.service);
   } catch (error) {
     errors.push(`${error.message} (${boundary.id}: ${source.path})`);
     return;
@@ -1049,12 +1061,12 @@ function checkProtoIsolation(text, boundary, source, namespaceScoped, unproven, 
   for (const operation of boundary.operations ?? []) {
     const request = requestByMethod.get(operation.id);
     if (!request) continue;
-    const fields = protoRequestFieldNames(messages, request);
+    const fields = protoRequestFieldNames(request);
     if (namespaceScoped) {
       for (const forbidden of GA_FORBIDDEN_FIELDS) {
         if (fields.has(forbidden)) {
           errors.push(
-            `boundary_registry_namespace_axis_polluted: ${boundary.id}/${operation.id}: ${request}.${forbidden}`,
+            `boundary_registry_namespace_axis_polluted: ${boundary.id}/${operation.id}: ${request.typeName}.${forbidden}`,
           );
         }
       }
@@ -1064,7 +1076,7 @@ function checkProtoIsolation(text, boundary, source, namespaceScoped, unproven, 
     if (unproven.has(operation.id)) {
       unproven.delete(operation.id);
       if (!hasSiteField(fields)) {
-        errors.push(`boundary_registry_site_scope_unstructured: ${boundary.id}/${operation.id}: ${request}`);
+        errors.push(`boundary_registry_site_scope_unstructured: ${boundary.id}/${operation.id}: ${request.typeName}`);
       }
     }
   }
@@ -1099,9 +1111,7 @@ export function checkBoundaryRegistry(options) {
   const matrix = readJson(options.matrix, "boundary_registry_json");
   // The architecture manifest is JSON-compatible YAML, matching scripts/architecture.
   const roots = readJson(options.roots, "boundary_registry_json");
-  const retryClasses = retryClassesFromProto(
-    readText(resolve(options.root, DEFAULT_RETRY_CLASS_PROTO), "boundary_registry_source_missing"),
-  );
+  const retryClasses = retryClassesFromProto(protoRegistry(options.root, DEFAULT_RETRY_CLASS_PROTO));
 
   const errors = [];
   validateShape(registry, retryClasses, errors);

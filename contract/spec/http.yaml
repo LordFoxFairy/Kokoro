@@ -30,9 +30,18 @@ enums:
   cost_status: [none, reserved, committed, cost_pending, settled, released, reconciliation_required]
   notice_severity: [info, warning]
   subagent_status: [pending, running, completed, failed, canceled]
+  media_operation_state: [admission_pending, authorized, queued, active, finalizing, cancel_requested, reconciling, completed, partial, failed, canceled]
+  media_terminal_outcome_class: [canonical, irreconcilable]
+  media_candidate_state: [allocated, producing, output_received, validating, ready, restricted, failed, unknown, cancel_requested, canceled]
+  artifact_availability: [processing, ready, restricted, unavailable, deleted]
+  artifact_media_class: [image]
+  credit_cost_projection_state: [pending, estimated, final, corrected, unavailable]
+  projection_freshness_state: [current, stale, rebuilding, unavailable]
+  media_safe_failure_code: [input_rejected, policy_rejected, credit_rejected, generation_failed, validation_failed, temporarily_unavailable, outcome_unknown, artifact_restricted, artifact_unavailable]
+  artifact_image_format: [png, jpeg, webp]
   launch_status: [intent_recorded, admission_pending, waiting_prerequisite, reserved, committed, dispatch_pending, dispatched, event_observed, released, denied, outcome_unknown, failed]
   control_status: [pending, persisted, applied, failed, outcome_unknown]
-  retry_class: [never, immediate, after_delay, after_user_action, reconcile_receipt]
+  retry_class: [never, after_delay, after_user_action, reconcile_receipt]
   browser_command_operation: [create_session, submit_message, edit_message, regenerate_message, fork_branch, activate_branch, cancel_run, decide_action, decide_plan, update_session, archive_session, restore_session, trash_session, put_preference, create_folder, update_folder, delete_folder]
   action_owner_kind: [approval, interaction]
   session_sort: [updated_desc]
@@ -258,27 +267,93 @@ objects:
       - {name: subagent_ref, type: opaque_ref}
       - {name: status, type: enum:subagent_status}
       - {name: safe_summary, type: string, optional: true}
+  - name: MediaSafeFailure
+    fields:
+      - {name: code, type: enum:media_safe_failure_code}
+      - {name: retry_class, type: enum:retry_class}
+      - {name: safe_message, type: string, optional: true}
+  - name: MediaCandidatePart
+    discriminator: state
+    common_fields:
+      - {name: candidate_ref, type: opaque_ref}
+      - {name: ordinal, type: nonnegative_int}
+      - {name: owner_version, type: uint64_string}
+    variants:
+      - {value: allocated}
+      - {value: producing}
+      - {value: output_received}
+      - {value: validating}
+      - {value: ready, fields: [{name: artifact_ref, type: opaque_ref}, {name: artifact_version_ref, type: opaque_ref}]}
+      - {value: restricted, fields: [{name: safe_failure, type: object:MediaSafeFailure}]}
+      - {value: failed, fields: [{name: safe_failure, type: object:MediaSafeFailure}]}
+      - {value: unknown}
+      - {value: cancel_requested}
+      - {value: canceled}
+  - name: CostProjectionLink
+    fields:
+      - {name: cost_projection_ref, type: opaque_ref}
+      - {name: owner_version, type: uint64_string}
   - name: MediaOperationPartPayload
-    fields:
+    discriminator: state
+    common_fields:
       - {name: media_operation_ref, type: opaque_ref}
-      - {name: capability, type: string_nonempty}
-      - {name: status, type: string_nonempty}
-      - {name: safe_metadata, type: record}
-      - {name: progress_bps, type: basis_points, optional: true}
-      - {name: artifact_ref, type: opaque_ref, optional: true}
+      - {name: definition_ref, type: opaque_ref}
+      - {name: definition_revision_ref, type: opaque_ref}
+      - {name: owner_version, type: uint64_string}
+      - {name: progress_bps, type: basis_points}
+      - {name: candidates, type: array:object:MediaCandidatePart, max_items: 4}
+      - {name: cost_projection, type: object:CostProjectionLink, optional: true}
+      - {name: updated_at, type: timestamp}
+    variants:
+      - {value: admission_pending}
+      - {value: authorized}
+      - {value: queued}
+      - {value: active}
+      - {value: finalizing}
+      - {value: cancel_requested}
+      - {value: reconciling}
+      - {value: completed, fields: [{name: outcome_class, type: enum:media_terminal_outcome_class}]}
+      - {value: partial, fields: [{name: outcome_class, type: enum:media_terminal_outcome_class}]}
+      - {value: failed, fields: [{name: outcome_class, type: enum:media_terminal_outcome_class}, {name: safe_failure, type: object:MediaSafeFailure}]}
+      - {value: canceled, fields: [{name: outcome_class, type: enum:media_terminal_outcome_class}]}
+  - name: ArtifactImageDisplay
+    fields:
+      - {name: format, type: enum:artifact_image_format}
+      - {name: width, type: positive_int}
+      - {name: height, type: positive_int}
+      - {name: byte_size, type: uint64_string}
   - name: ArtifactPartPayload
-    fields:
+    discriminator: availability
+    common_fields:
       - {name: artifact_ref, type: opaque_ref}
-      - {name: version_ref, type: opaque_ref}
-      - {name: content_type, type: string_nonempty, optional: true}
-      - {name: safe_metadata, type: record, optional: true}
-  - name: CostPartPayload
+      - {name: artifact_version_ref, type: opaque_ref}
+      - {name: owner_version, type: uint64_string}
+      - {name: media_class, type: enum:artifact_media_class}
+      - {name: updated_at, type: timestamp}
+    variants:
+      - {value: processing}
+      - {value: ready, payload_type: object:ArtifactImageDisplay}
+      - {value: restricted, fields: [{name: safe_failure, type: object:MediaSafeFailure}]}
+      - {value: unavailable, fields: [{name: safe_failure, type: object:MediaSafeFailure}]}
+      - {value: deleted}
+  - name: CreditCostAmount
     fields:
-      - {name: cost_projection_ref, type: string_nonempty}
-      - {name: status, type: enum:cost_status}
-      - {name: amount, type: string_nonempty, optional: true}
-      - {name: currency_or_credit_unit, type: string_nonempty, optional: true}
-      - {name: freshness, type: timestamp}
+      - {name: credit_unit, type: opaque_ref}
+      - {name: amount, type: credit_decimal}
+  - name: CostPartPayload
+    discriminator: state
+    common_fields:
+      - {name: media_operation_ref, type: opaque_ref}
+      - {name: cost_projection_ref, type: opaque_ref}
+      - {name: owner_version, type: uint64_string}
+      - {name: freshness, type: enum:projection_freshness_state}
+      - {name: updated_at, type: timestamp}
+    variants:
+      - {value: pending}
+      - {value: estimated, payload_type: object:CreditCostAmount}
+      - {value: final, payload_type: object:CreditCostAmount}
+      - {value: corrected, fields: [{name: corrects_owner_version, type: uint64_string}], payload_type: object:CreditCostAmount}
+      - {value: unavailable, fields: [{name: safe_reason, type: string_nonempty}]}
   - name: NoticePartPayload
     fields:
       - {name: notice_ref, type: opaque_ref}

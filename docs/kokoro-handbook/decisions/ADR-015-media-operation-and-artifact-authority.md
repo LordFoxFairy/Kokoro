@@ -309,6 +309,10 @@ active | finalizing -> reconciling -> active | finalizing | completed | partial 
 `completed`、`partial` 或可安全重试状态。超过已发布 reconciliation deadline 后必须写不可变
 `IrreconcilableOutcomeReceipt`，再按冻结 charge/retention/support policy 进入诚实 terminal。
 terminal receipt 必须保留 `outcome_class=irreconcilable`，不能用 `failed` 对外暗示 Provider 确定未执行。
+这个 truth 不是内部实现细节：durable fact 与 public read model 的每个 terminal arm 都必须显式携带闭合的
+`outcome_class=canonical|irreconcilable`；任何 nonterminal arm 都不得携带 outcome。`failed` arm 还必须携带闭合的 typed
+failure，其他 operation arm 禁止 failure。operation/candidate/artifact durable payload 使用 required `oneof` state fact，
+不能用 state enum 加 nullable failure/display 字段拼出非法组合。
 
 Operation `completed` 必须同时满足：
 
@@ -355,6 +359,10 @@ allocated | producing -> cancel_requested -> canceled | output_received | unknow
 `output_received` 只代表 Gateway 有 canonical output fact，不代表图片可见。`ready` 必须链接 exact ArtifactVersion 和
 允许当前私有用途的 Trust decision；`restricted` 可保留受控 ArtifactVersion/Usage/lineage，但普通 thumbnail、通知、
 下载和 Support projection 不得泄漏内容。ArtifactVersion 不原地修改；edit/variation/upscale 创建新的 operation 和 lineage。
+Media durable event 是 operation/candidate/artifact 状态与 failure 的唯一 producer fact。Session 只能从验签后的 producer
+record 构造 Chat part；它不能根据 Agent text、progress、缺失事件或本地 timeout 补写状态、failure 或 Artifact ref。
+public、Session 与 durable projection 共享同一组闭合 failure code/retry class，边界 adapter 只能安全删减 message，不能
+扩展 taxonomy。
 
 #### 7.4 ArtifactVersion finalization and purge
 
@@ -641,6 +649,11 @@ Media workload mTLS和原binding，不得换Session/Run/message/part。过期eve
 suppressed receipt，不通过刷新复活。Credit projection pump只能用`RefreshCreditCostProjectionAccess`刷新cost handle，并
 重放同一cost event；两个audience不能互换。
 
+所有五类 projection effect command 都把 `command_kind` 写入 durable receipt，并有各自闭合的 accepted-result message。
+direct response 与 `RecoverProjectionCommand` 必须复用同一个 result message type，因此 reservation/target、lineage、fresh
+credential envelope 与 rotation generation 在两条路径上逐字段等价；rejected/outcome-unknown receipt 禁止携带 result，
+wrong receipt/result arm 由 protobuf CEL fail-closed 拒绝。恢复永不重放旧 bearer bytes。
+
 Session projection 关系至少包含：
 
 ```text
@@ -693,6 +706,11 @@ Root 是跨仓 contract 单源和 transport registry authority。目标 contract
 | Platform Credit -> Session | durable authenticated event | independent `CreditCostProjectionEvent` owner revisions with exact cost projection handle |
 | Platform Media -> Model Gateway | new `model-image-effect@v1` Connect | create、`AttachNextAttemptAuthorization`、recover/get by command、request cancel、get evidence |
 | Platform Artifact -> Web BFF | public OpenAPI | get/list artifact/version、mint preview/download/export authorization |
+
+Artifact byte delivery 是流式 data plane：caller 必须提供 `AbortSignal` 与 1..30000ms deadline；HTTP 只接受一个 bounded
+`bytes=start-end` 或 suffix range，最大 8MiB，成功分别返回 200/206，206 必须有 `Content-Range`，所有成功响应声明
+`Accept-Ranges: bytes`，malformed/oversized/unsatisfiable range 返回 416 与 `Content-Range: bytes */length`。BFF 必须用
+backpressure 转发，不能把 full body、base64 或 object-store URL 放入 JSON。
 
 所有Media read-only Recover/Get request只接受command ref、caller workload/access handle和可选safe field mask/cursor；不接受
 caller fingerprint、owner keyed digest或原始input。Provider根据自己的journal验证caller/command binding并返回typed safe

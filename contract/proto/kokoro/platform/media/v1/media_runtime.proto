@@ -4,51 +4,15 @@ package kokoro.platform.media.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/platform/media/v1/media_canonical.proto";
 
-// MediaRuntimeService is the private GA product-tool boundary. It owns no GA
-// graph semantics and exposes only opaque, owner-validated Media authority.
+// Private GA product-tool boundary. Media owns execution; GA supplies the same
+// canonical product input Studio fingerprints and consumes only owner views.
 service MediaRuntimeService {
   rpc CreateAgentImageOperation(CreateAgentImageOperationRequest) returns (CreateAgentImageOperationResponse) {}
   rpc CancelAgentMediaOperation(CancelAgentMediaOperationRequest) returns (CancelAgentMediaOperationResponse) {}
   rpc RecoverMediaOperationByCommand(RecoverMediaOperationByCommandRequest) returns (RecoverMediaOperationByCommandResponse) {}
   rpc GetAgentMediaOperation(GetAgentMediaOperationRequest) returns (GetAgentMediaOperationResponse) {}
-}
-
-enum ImageAspectRatio {
-  IMAGE_ASPECT_RATIO_UNSPECIFIED = 0;
-  IMAGE_ASPECT_RATIO_SQUARE = 1;
-  IMAGE_ASPECT_RATIO_LANDSCAPE = 2;
-  IMAGE_ASPECT_RATIO_PORTRAIT = 3;
-}
-
-enum ImageOutputFormat {
-  IMAGE_OUTPUT_FORMAT_UNSPECIFIED = 0;
-  IMAGE_OUTPUT_FORMAT_PNG = 1;
-  IMAGE_OUTPUT_FORMAT_JPEG = 2;
-  IMAGE_OUTPUT_FORMAT_WEBP = 3;
-}
-
-message ImageCreateRequest {
-  string prompt_intent = 1 [(buf.validate.field).string = {
-    min_bytes: 1
-    max_bytes: 32768
-  }];
-  ImageAspectRatio aspect_ratio = 2 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  uint32 candidate_count = 3 [(buf.validate.field).uint32 = {
-    gte: 1
-    lte: 4
-  }];
-  string model_option_ref = 4 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  ImageOutputFormat output_format = 5 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
 }
 
 message CreateAgentImageOperationRequest {
@@ -63,16 +27,18 @@ message CreateAgentImageOperationRequest {
   string stable_output_slot_ref = 3 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
   }];
   string agent_media_command_ref = 4 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
   }];
   string caller_request_fingerprint = 5 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  ImageCreateRequest image_request = 6 [(buf.validate.field).required = true];
+  CanonicalMediaOperationInputV1 canonical_input = 6 [(buf.validate.field).required = true];
 }
 
 enum MediaOperationState {
@@ -111,6 +77,11 @@ enum MediaCandidateState {
 }
 
 message AgentMediaCandidateView {
+  option (buf.validate.message).cel = {
+    id: "media_runtime.candidate_artifact_only_when_ready"
+    message: "only a ready candidate may expose an artifact handle"
+    expression: "has(this.artifact_version_handle) == (this.state == 5)"
+  };
   string candidate_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -127,6 +98,16 @@ message AgentMediaCandidateView {
 }
 
 message AgentMediaOperationView {
+  option (buf.validate.message).cel = {
+    id: "media_runtime.outcome_only_on_terminal"
+    message: "nonterminal views have no outcome; terminal views have a closed outcome"
+    expression: "(this.state >= 8 && this.outcome_class in [1, 2]) || (this.state < 8 && this.outcome_class == 0)"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_runtime.cost_projection_pair"
+    message: "cost projection ref and version are an atomic pair"
+    expression: "has(this.cost_projection_ref) == has(this.cost_projection_owner_version)"
+  };
   string media_operation_handle = 1 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192
@@ -140,10 +121,7 @@ message AgentMediaOperationView {
     defined_only: true
     not_in: 0
   }];
-  MediaOperationOutcomeClass outcome_class = 5 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
+  MediaOperationOutcomeClass outcome_class = 5 [(buf.validate.field).enum = {defined_only: true}];
   uint32 safe_progress_bps = 6 [(buf.validate.field).uint32.lte = 10000];
   repeated AgentMediaCandidateView candidates = 7 [(buf.validate.field).repeated.max_items = 4];
   optional string cost_projection_ref = 8 [(buf.validate.field).string = {
@@ -166,12 +144,11 @@ enum MediaRuntimeErrorCode {
   MEDIA_RUNTIME_ERROR_CODE_OUTCOME_UNKNOWN = 8;
 }
 
-enum MediaCommandReceiptKind {
-  MEDIA_COMMAND_RECEIPT_KIND_UNSPECIFIED = 0;
-  MEDIA_COMMAND_RECEIPT_KIND_CREATE_COMMITTED = 1;
-  MEDIA_COMMAND_RECEIPT_KIND_CANCEL_INTENT_COMMITTED = 2;
-  MEDIA_COMMAND_RECEIPT_KIND_REJECTED = 3;
-  MEDIA_COMMAND_RECEIPT_KIND_OUTCOME_UNKNOWN = 4;
+enum MediaCommandRecoveryAction {
+  MEDIA_COMMAND_RECOVERY_ACTION_UNSPECIFIED = 0;
+  MEDIA_COMMAND_RECOVERY_ACTION_GET_OPERATION = 1;
+  MEDIA_COMMAND_RECOVERY_ACTION_RECOVER_COMMAND = 2;
+  MEDIA_COMMAND_RECOVERY_ACTION_CONTACT_SUPPORT = 3;
 }
 
 message MediaRuntimeError {
@@ -182,24 +159,115 @@ message MediaRuntimeError {
   string safe_message = 2 [(buf.validate.field).string.max_len = 512];
 }
 
-// A cancel receipt commits only owner intent. Candidate and provider outcomes
-// remain authoritative owner facts and are never inferred from this receipt.
-message MediaCommandReceipt {
+message SubmitMediaCommandAccepted {
   string media_command_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  MediaCommandReceiptKind kind = 2 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
+  string caller_request_fingerprint = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
-  optional string operation_ref = 3 [(buf.validate.field).string = {
+  string operation_ref = 3 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
   uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
   google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
-  optional MediaRuntimeError error = 6;
+  MediaCommandRecoveryAction recovery_action = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message SubmitMediaCommandRejected {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string caller_request_fingerprint = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  MediaRuntimeError error = 3 [(buf.validate.field).required = true];
+  uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+}
+
+message SubmitMediaCommandOutcomeUnknown {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string caller_request_fingerprint = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  MediaRuntimeError error = 3 [(buf.validate.field).required = true];
+  uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+  MediaCommandRecoveryAction recovery_action = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message CancelMediaCommandAccepted {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 receipt_version = 3 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 4 [(buf.validate.field).required = true];
+  MediaCommandRecoveryAction recovery_action = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message CancelMediaCommandRejected {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  MediaRuntimeError error = 2 [(buf.validate.field).required = true];
+  uint64 receipt_version = 3 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 4 [(buf.validate.field).required = true];
+}
+
+message CancelMediaCommandOutcomeUnknown {
+  string media_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string operation_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  MediaRuntimeError error = 3 [(buf.validate.field).required = true];
+  uint64 receipt_version = 4 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+  MediaCommandRecoveryAction recovery_action = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+// Closed command result: retry policy is carried by the accepted/unknown arm.
+message MediaCommandReceipt {
+  oneof outcome {
+    option (buf.validate.oneof).required = true;
+    SubmitMediaCommandAccepted submit_accepted = 1;
+    SubmitMediaCommandRejected submit_rejected = 2;
+    SubmitMediaCommandOutcomeUnknown submit_outcome_unknown = 3;
+    CancelMediaCommandAccepted cancel_accepted = 4;
+    CancelMediaCommandRejected cancel_rejected = 5;
+    CancelMediaCommandOutcomeUnknown cancel_outcome_unknown = 6;
+  }
 }
 
 message CreateAgentImageOperationResponse {
@@ -221,10 +289,6 @@ message CancelAgentMediaOperationRequest {
     max_len: 256
   }];
   uint64 expected_operation_version = 4 [(buf.validate.field).uint64.gt = 0];
-  string caller_request_fingerprint = 5 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
 }
 
 message CancelAgentMediaOperationResponse {
@@ -232,8 +296,6 @@ message CancelAgentMediaOperationResponse {
   optional AgentMediaOperationView operation = 2;
 }
 
-// Recovery is a journal lookup. Input, caller fingerprint and owner persistence
-// digest are deliberately absent from this wire shape.
 message RecoverMediaOperationByCommandRequest {
   string media_access_handle = 1 [(buf.validate.field).string = {
     min_len: 32

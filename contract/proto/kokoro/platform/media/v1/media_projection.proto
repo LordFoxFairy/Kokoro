@@ -4,14 +4,18 @@ package kokoro.platform.media.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/projection_integrity.proto";
 
-// MediaProjectionBindingCommittedRecord is immutable Media-owner evidence and
-// must be source sequence one. Rotating delivery capabilities are not signed.
 message MediaProjectionBindingCommittedRecord {
   option (buf.validate.message).cel = {
     id: "media_projection.activation_predecessor_absent"
     message: "source sequence one must not carry a predecessor"
     expression: "this.source_sequence == 1u && !has(this.predecessor_event_ref) && !has(this.predecessor_event_digest)"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_projection.activation_digest_alias"
+    message: "event digest is the chain-facing alias of the canonical record digest"
+    expression: "this.event_digest == this.record_digest"
   };
   string activation_event_ref = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -38,56 +42,153 @@ message MediaProjectionBindingCommittedRecord {
     pattern: "^[0-9a-f]{64}$"
   }];
   uint64 producer_generation = 7 [(buf.validate.field).uint64.gt = 0];
-  string owner_signature = 8 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
-  }];
-  google.protobuf.Timestamp committed_at = 9 [(buf.validate.field).required = true];
-  uint64 source_sequence = 10 [(buf.validate.field).uint64.const = 1];
-  optional string predecessor_event_ref = 11 [(buf.validate.field).string = {
+  string definition_ref = 8 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  optional string predecessor_event_digest = 12 [(buf.validate.field).string = {
+  string definition_revision_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  google.protobuf.Timestamp committed_at = 10 [(buf.validate.field).required = true];
+  uint64 source_sequence = 11 [(buf.validate.field).uint64.const = 1];
+  optional string predecessor_event_ref = 12 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string predecessor_event_digest = 13 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string event_digest = 13 [(buf.validate.field).string = {
+  string event_digest = 14 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
+  string record_digest = 15 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  kokoro.common.v1.ProjectionSignature signature = 16 [(buf.validate.field).required = true];
 }
 
 enum MediaProjectionOperationState {
   MEDIA_PROJECTION_OPERATION_STATE_UNSPECIFIED = 0;
-  MEDIA_PROJECTION_OPERATION_STATE_QUEUED = 1;
-  MEDIA_PROJECTION_OPERATION_STATE_ACTIVE = 2;
-  MEDIA_PROJECTION_OPERATION_STATE_FINALIZING = 3;
-  MEDIA_PROJECTION_OPERATION_STATE_CANCEL_REQUESTED = 4;
-  MEDIA_PROJECTION_OPERATION_STATE_RECONCILING = 5;
-  MEDIA_PROJECTION_OPERATION_STATE_COMPLETED = 6;
-  MEDIA_PROJECTION_OPERATION_STATE_PARTIAL = 7;
-  MEDIA_PROJECTION_OPERATION_STATE_FAILED = 8;
-  MEDIA_PROJECTION_OPERATION_STATE_CANCELED = 9;
+  MEDIA_PROJECTION_OPERATION_STATE_ADMISSION_PENDING = 1;
+  MEDIA_PROJECTION_OPERATION_STATE_AUTHORIZED = 2;
+  MEDIA_PROJECTION_OPERATION_STATE_QUEUED = 3;
+  MEDIA_PROJECTION_OPERATION_STATE_ACTIVE = 4;
+  MEDIA_PROJECTION_OPERATION_STATE_FINALIZING = 5;
+  MEDIA_PROJECTION_OPERATION_STATE_CANCEL_REQUESTED = 6;
+  MEDIA_PROJECTION_OPERATION_STATE_RECONCILING = 7;
+  MEDIA_PROJECTION_OPERATION_STATE_COMPLETED = 8;
+  MEDIA_PROJECTION_OPERATION_STATE_PARTIAL = 9;
+  MEDIA_PROJECTION_OPERATION_STATE_FAILED = 10;
+  MEDIA_PROJECTION_OPERATION_STATE_CANCELED = 11;
 }
 
-message MediaOperationProjectionChanged {
-  MediaProjectionOperationState state = 1 [(buf.validate.field).enum = {
+enum MediaProjectionFailureCode {
+  MEDIA_PROJECTION_FAILURE_CODE_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_FAILURE_CODE_INPUT_REJECTED = 1;
+  MEDIA_PROJECTION_FAILURE_CODE_POLICY_REJECTED = 2;
+  MEDIA_PROJECTION_FAILURE_CODE_CREDIT_REJECTED = 3;
+  MEDIA_PROJECTION_FAILURE_CODE_GENERATION_FAILED = 4;
+  MEDIA_PROJECTION_FAILURE_CODE_VALIDATION_FAILED = 5;
+  MEDIA_PROJECTION_FAILURE_CODE_TEMPORARILY_UNAVAILABLE = 6;
+  MEDIA_PROJECTION_FAILURE_CODE_OUTCOME_UNKNOWN = 7;
+  MEDIA_PROJECTION_FAILURE_CODE_ARTIFACT_RESTRICTED = 8;
+  MEDIA_PROJECTION_FAILURE_CODE_ARTIFACT_UNAVAILABLE = 9;
+}
+
+enum MediaProjectionRetryClass {
+  MEDIA_PROJECTION_RETRY_CLASS_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_RETRY_CLASS_NEVER = 1;
+  MEDIA_PROJECTION_RETRY_CLASS_AFTER_DELAY = 2;
+  MEDIA_PROJECTION_RETRY_CLASS_AFTER_USER_ACTION = 3;
+  MEDIA_PROJECTION_RETRY_CLASS_RECONCILE_RECEIPT = 4;
+}
+
+message MediaProjectionSafeFailure {
+  MediaProjectionFailureCode code = 1 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
-  uint32 safe_progress_bps = 2 [(buf.validate.field).uint32.lte = 10000];
+  MediaProjectionRetryClass retry_class = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string safe_message = 3 [(buf.validate.field).string.max_len = 512];
+}
+
+enum MediaProjectionTerminalOutcomeClass {
+  MEDIA_PROJECTION_TERMINAL_OUTCOME_CLASS_UNSPECIFIED = 0;
+  MEDIA_PROJECTION_TERMINAL_OUTCOME_CLASS_CANONICAL = 1;
+  MEDIA_PROJECTION_TERMINAL_OUTCOME_CLASS_IRRECONCILABLE = 2;
+}
+
+message MediaOperationNonterminalFact {}
+
+message MediaOperationTerminalFact {
+  MediaProjectionTerminalOutcomeClass outcome_class = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message MediaOperationFailedFact {
+  MediaProjectionTerminalOutcomeClass outcome_class = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  MediaProjectionSafeFailure failure = 2 [(buf.validate.field).required = true];
+}
+
+message MediaOperationProjectionChanged {
+  uint32 safe_progress_bps = 1 [(buf.validate.field).uint32.lte = 10000];
+  oneof operation_state {
+    option (buf.validate.oneof).required = true;
+    MediaOperationNonterminalFact admission_pending = 2;
+    MediaOperationNonterminalFact authorized = 3;
+    MediaOperationNonterminalFact queued = 4;
+    MediaOperationNonterminalFact active = 5;
+    MediaOperationNonterminalFact finalizing = 6;
+    MediaOperationNonterminalFact cancel_requested = 7;
+    MediaOperationNonterminalFact reconciling = 8;
+    MediaOperationTerminalFact completed = 9;
+    MediaOperationTerminalFact partial = 10;
+    MediaOperationFailedFact failed = 11;
+    MediaOperationTerminalFact canceled = 12;
+  }
 }
 
 enum MediaProjectionCandidateState {
   MEDIA_PROJECTION_CANDIDATE_STATE_UNSPECIFIED = 0;
-  MEDIA_PROJECTION_CANDIDATE_STATE_PRODUCING = 1;
-  MEDIA_PROJECTION_CANDIDATE_STATE_VALIDATING = 2;
-  MEDIA_PROJECTION_CANDIDATE_STATE_READY = 3;
-  MEDIA_PROJECTION_CANDIDATE_STATE_RESTRICTED = 4;
-  MEDIA_PROJECTION_CANDIDATE_STATE_FAILED = 5;
-  MEDIA_PROJECTION_CANDIDATE_STATE_UNKNOWN = 6;
-  MEDIA_PROJECTION_CANDIDATE_STATE_CANCELED = 7;
+  MEDIA_PROJECTION_CANDIDATE_STATE_ALLOCATED = 1;
+  MEDIA_PROJECTION_CANDIDATE_STATE_PRODUCING = 2;
+  MEDIA_PROJECTION_CANDIDATE_STATE_OUTPUT_RECEIVED = 3;
+  MEDIA_PROJECTION_CANDIDATE_STATE_VALIDATING = 4;
+  MEDIA_PROJECTION_CANDIDATE_STATE_READY = 5;
+  MEDIA_PROJECTION_CANDIDATE_STATE_RESTRICTED = 6;
+  MEDIA_PROJECTION_CANDIDATE_STATE_FAILED = 7;
+  MEDIA_PROJECTION_CANDIDATE_STATE_UNKNOWN = 8;
+  MEDIA_PROJECTION_CANDIDATE_STATE_CANCEL_REQUESTED = 9;
+  MEDIA_PROJECTION_CANDIDATE_STATE_CANCELED = 10;
+}
+
+message MediaCandidateNonterminalFact {}
+
+message MediaCandidateReadyFact {
+  string artifact_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string artifact_version_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+message MediaCandidateFailureFact {
+  MediaProjectionSafeFailure failure = 1 [(buf.validate.field).required = true];
 }
 
 message MediaCandidateProjectionChanged {
@@ -95,14 +196,61 @@ message MediaCandidateProjectionChanged {
     min_len: 1
     max_len: 256
   }];
-  uint64 candidate_owner_version = 2 [(buf.validate.field).uint64.gt = 0];
-  MediaProjectionCandidateState state = 3 [(buf.validate.field).enum = {
+  uint32 ordinal = 2 [(buf.validate.field).uint32.lte = 3];
+  uint64 candidate_owner_version = 3 [(buf.validate.field).uint64.gt = 0];
+  oneof candidate_state {
+    option (buf.validate.oneof).required = true;
+    MediaCandidateNonterminalFact allocated = 4;
+    MediaCandidateNonterminalFact producing = 5;
+    MediaCandidateNonterminalFact output_received = 6;
+    MediaCandidateNonterminalFact validating = 7;
+    MediaCandidateReadyFact ready = 8;
+    MediaCandidateFailureFact restricted = 9;
+    MediaCandidateFailureFact failed = 10;
+    MediaCandidateNonterminalFact unknown = 11;
+    MediaCandidateNonterminalFact cancel_requested = 12;
+    MediaCandidateNonterminalFact canceled = 13;
+  }
+}
+
+enum MediaArtifactAvailability {
+  MEDIA_ARTIFACT_AVAILABILITY_UNSPECIFIED = 0;
+  MEDIA_ARTIFACT_AVAILABILITY_PROCESSING = 1;
+  MEDIA_ARTIFACT_AVAILABILITY_READY = 2;
+  MEDIA_ARTIFACT_AVAILABILITY_RESTRICTED = 3;
+  MEDIA_ARTIFACT_AVAILABILITY_UNAVAILABLE = 4;
+  MEDIA_ARTIFACT_AVAILABILITY_DELETED = 5;
+}
+
+enum MediaArtifactClass {
+  MEDIA_ARTIFACT_CLASS_UNSPECIFIED = 0;
+  MEDIA_ARTIFACT_CLASS_IMAGE = 1;
+}
+
+enum MediaArtifactImageFormat {
+  MEDIA_ARTIFACT_IMAGE_FORMAT_UNSPECIFIED = 0;
+  MEDIA_ARTIFACT_IMAGE_FORMAT_PNG = 1;
+  MEDIA_ARTIFACT_IMAGE_FORMAT_JPEG = 2;
+  MEDIA_ARTIFACT_IMAGE_FORMAT_WEBP = 3;
+}
+
+message MediaArtifactImageDisplay {
+  MediaArtifactImageFormat format = 1 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
+  uint32 width = 2 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 100000
+  }];
+  uint32 height = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 100000
+  }];
+  uint64 byte_size = 4 [(buf.validate.field).uint64.gt = 0];
 }
 
-message MediaArtifactProjectionLinked {
+message MediaArtifactProjectionChanged {
   string candidate_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -116,15 +264,47 @@ message MediaArtifactProjectionLinked {
     max_len: 256
   }];
   uint64 artifact_owner_version = 4 [(buf.validate.field).uint64.gt = 0];
+  MediaArtifactClass media_class = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  oneof artifact_state {
+    option (buf.validate.oneof).required = true;
+    MediaArtifactProcessingFact processing = 6;
+    MediaArtifactReadyFact ready = 7;
+    MediaArtifactFailureFact restricted = 8;
+    MediaArtifactFailureFact unavailable = 9;
+    MediaArtifactDeletedFact deleted = 10;
+  }
 }
 
-// Immutable signed chain record shared by live delivery and owner replay.
-// Media carries only the Credit-owned association ref/version, never cost facts.
+message MediaArtifactProcessingFact {}
+
+message MediaArtifactReadyFact {
+  MediaArtifactImageDisplay image_display = 1 [(buf.validate.field).required = true];
+}
+
+message MediaArtifactFailureFact {
+  MediaProjectionSafeFailure failure = 1 [(buf.validate.field).required = true];
+}
+
+message MediaArtifactDeletedFact {}
+
 message MediaProjectionEventRecord {
   option (buf.validate.message).cel = {
     id: "media_projection.event_predecessor_required"
     message: "source sequence two and above must carry a complete predecessor"
     expression: "this.source_sequence >= 2u && has(this.predecessor_event_ref) && has(this.predecessor_event_digest)"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_projection.event_digest_alias"
+    message: "event digest is the chain-facing alias of the canonical record digest"
+    expression: "this.event_digest == this.record_digest"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_projection.cost_projection_pair"
+    message: "cost projection ref and owner version are an atomic Credit-owned association"
+    expression: "has(this.cost_projection_ref) == has(this.cost_projection_owner_version)"
   };
   string event_ref = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -153,7 +333,7 @@ message MediaProjectionEventRecord {
     option (buf.validate.oneof).required = true;
     MediaOperationProjectionChanged operation_changed = 9;
     MediaCandidateProjectionChanged candidate_changed = 10;
-    MediaArtifactProjectionLinked artifact_linked = 11;
+    MediaArtifactProjectionChanged artifact_changed = 11;
   }
   google.protobuf.Timestamp recorded_at = 12 [(buf.validate.field).required = true];
   uint64 source_sequence = 13 [(buf.validate.field).uint64.gte = 2];
@@ -165,8 +345,9 @@ message MediaProjectionEventRecord {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string owner_signature = 16 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
+  string record_digest = 16 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
+  kokoro.common.v1.ProjectionSignature signature = 17 [(buf.validate.field).required = true];
 }

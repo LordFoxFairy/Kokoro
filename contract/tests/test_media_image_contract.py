@@ -47,6 +47,9 @@ def test_agent_media_runtime_is_opaque_recoverable_and_closed() -> None:
         assert field in create
     for forbidden in ("site_id", "account_ref", "provider", "owner_keyed", "owner_digest"):
         assert forbidden not in create
+    assert 'import "kokoro/platform/media/v1/media_canonical.proto";' in source
+    assert "message ImageCreateRequest" not in source
+    assert "CanonicalMediaOperationInputV1 canonical_input" in create
 
     recover = _message_body(source, "RecoverMediaOperationByCommandRequest")
     assert "media_access_handle" in recover
@@ -59,8 +62,9 @@ def test_agent_media_runtime_is_opaque_recoverable_and_closed() -> None:
     assert "MEDIA_OPERATION_OUTCOME_CLASS_IRRECONCILABLE" in source
     assert "enum MediaRuntimeErrorCode" in source
     assert "MEDIA_RUNTIME_ERROR_CODE_IDEMPOTENCY_CONFLICT" in source
-    assert "enum MediaCommandReceiptKind" in source
-    assert "MEDIA_COMMAND_RECEIPT_KIND_CANCEL_INTENT_COMMITTED" in source
+    receipt = _message_body(source, "MediaCommandReceipt")
+    assert "oneof outcome" in receipt
+    assert "cancel_accepted" in receipt
     assert "provider_canceled" not in source.lower()
     assert re.search(r"\bGeneration\b|\bJob\b", source) is None
 
@@ -127,6 +131,7 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
         "GetMediaProjectionBinding",
         "RefreshCreditCostProjectionAccess",
         "GetCreditCostProjectionBinding",
+        "RecoverProjectionCommand",
     ]
     binding = _message_body(source, "MediaProjectionBinding")
     bound = _message_body(source, "BoundMediaProjectionTarget")
@@ -158,7 +163,8 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
     assert "media_projection_handle" not in activation
     assert "owner_recovery_handle" not in activation
     assert re.search(r"command_commit_receipt_digest\s*=\s*6\b", activation)
-    assert re.search(r"event_digest\s*=\s*13\b", activation)
+    assert "record_digest" in activation
+    assert "ProjectionSignature signature" in activation
     activation_delivery = _message_body(source, "MediaProjectionBindingCommittedDeliveryEnvelope")
     assert "pending_media_projection_handle" in activation_delivery
     assert "owner_recovery_handle" in activation_delivery
@@ -170,7 +176,7 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
     assert "owner_recovery_handle" not in media_event
     assert "cost_projection_ref" in media_event
     assert "cost_projection_owner_version" in media_event
-    for field in ("source_sequence", "predecessor_event_ref", "predecessor_event_digest", "owner_signature"):
+    for field in ("source_sequence", "predecessor_event_ref", "predecessor_event_digest", "record_digest", "signature"):
         assert field in media_event
     for forbidden in ("cost_state", "amount_micros", "currency", "estimated_cost"):
         assert forbidden not in media_event
@@ -186,10 +192,11 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
     assert "cost_projection_ref" in cost_event
     assert "owner_version" in cost_event
     assert "producer_generation" in cost_event
-    for field in ("source_sequence", "predecessor_event_ref", "predecessor_event_digest", "owner_signature"):
+    for field in ("source_sequence", "predecessor_event_ref", "predecessor_event_digest", "record_digest", "signature"):
         assert field in cost_event
-    assert "cost_state" in cost_event
-    assert "amount_micros" in cost_event
+    assert "oneof projection" in cost_event
+    assert "CreditCostFinal final" in cost_event
+    assert "amount_micros" not in cost_event
     cost_delivery = _message_body(source, "CreditCostProjectionDeliveryEnvelope")
     assert "cost_projection_handle" in cost_delivery
     assert "owner_recovery_handle" in cost_delivery
@@ -197,12 +204,18 @@ def test_session_projection_activates_first_and_keeps_credit_owner_facts_separat
 
     media_refresh = _message_body(source, "RefreshMediaProjectionAccessResponse")
     credit_refresh = _message_body(source, "RefreshCreditCostProjectionAccessResponse")
-    assert "media_projection_refresh_grant" in media_refresh
-    assert "credit_cost_projection_refresh_grant" in credit_refresh
+    assert "ProjectionCommandResolution resolution" in media_refresh
+    assert "ProjectionCommandResolution resolution" in credit_refresh
+    assert "MediaProjectionAccessCredentialEnvelope media_access" in _message_body(
+        source, "RefreshMediaProjectionAccessAcceptedResult"
+    )
+    assert "CreditCostProjectionAccessCredentialEnvelope credit_access" in _message_body(
+        source, "RefreshCreditProjectionAccessAcceptedResult"
+    )
     assert "media_projection_refresh_grant" in _message_body(source, "RefreshMediaProjectionAccessRequest")
     assert "credit_cost_projection_refresh_grant" in _message_body(source, "RefreshCreditCostProjectionAccessRequest")
     for response in (media_refresh, credit_refresh):
-        for immutable in ("event_ref", "event_digest", "owner_signature", "source_sequence"):
+        for immutable in ("event_ref", "event_digest", "signature", "source_sequence"):
             assert immutable not in response
 
 
@@ -280,7 +293,7 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
     assert "limit" in media_pull
     assert "lte: 256" in media_pull
     media_head = _message_body(media, "MediaProjectionHead")
-    for field in ("producer_generation", "high_watermark", "head_event_ref", "head_event_digest", "owner_signature"):
+    for field in ("producer_generation", "high_watermark", "head_event_ref", "head_event_digest", "head_digest", "signature"):
         assert field in media_head
     assert "CreditCostProjectionEvent" not in media
     media_response = _message_body(media, "PullProjectionEventsResponse")
@@ -299,7 +312,7 @@ def test_projection_recovery_has_separate_authenticated_owner_chains() -> None:
     assert "limit" in credit_pull
     assert "lte: 256" in credit_pull
     credit_head = _message_body(credit, "CreditCostProjectionHead")
-    for field in ("producer_generation", "high_watermark", "head_event_ref", "head_event_digest", "owner_signature"):
+    for field in ("producer_generation", "high_watermark", "head_event_ref", "head_event_digest", "head_digest", "signature"):
         assert field in credit_head
     assert "MediaProjectionEvent" not in credit
     credit_response = _message_body(credit, "PullProjectionEventsResponse")

@@ -258,7 +258,7 @@ message RunFailedEvidenceV1 {
 
 // canonical_payload is the deterministic protobuf serialization of exactly
 // this message. Safe summaries and previews are already redacted for display.
-message DurableOutputCanonicalPayloadV1 {
+message DurableOutputPayloadV1 {
   oneof payload {
     option (buf.validate.oneof).required = true;
 
@@ -269,7 +269,7 @@ message DurableOutputCanonicalPayloadV1 {
     ToolFinishedOutputV1 tool_finished = 5;
     PlanProgressOutputV1 plan_progress = 6;
     SubagentProgressOutputV1 subagent_progress = 7;
-    ArtifactReferenceOutputV1 artifact_reference = 8;
+    MediaOperationReferenceOutputV1 media_operation_reference = 8;
     NoticeOutputV1 notice = 9;
     ErrorOutputV1 error = 10;
   }
@@ -364,21 +364,21 @@ message SubagentProgressOutputV1 {
   optional string safe_summary = 3 [(buf.validate.field).string.max_bytes = 4096];
 }
 
-message ArtifactReferenceOutputV1 {
-  string artifact_ref = 1 [(buf.validate.field).string = {
+// Narrative pointer only. Agent does not own Media/Artifact display state;
+// Session joins this stable slot to the signed Media owner projection.
+message MediaOperationReferenceOutputV1 {
+  string stable_output_slot_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  // Immutable version identity; artifact_ref alone may denote a mutable logical artifact.
-  string artifact_version_ref = 2 [(buf.validate.field).string = {
+  string agent_media_command_ref = 2 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  optional string content_type = 3 [(buf.validate.field).string = {
+  string operation_ref = 3 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  optional bytes safe_metadata_json = 4 [(buf.validate.field).bytes.max_len = 16384];
 }
 
 enum NoticeSeverityV1 {

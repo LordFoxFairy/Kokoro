@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package kokoro.common.v1;
+
+import "buf/validate/validate.proto";
+
+enum ProjectionSignatureAlgorithm {
+  PROJECTION_SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+  PROJECTION_SIGNATURE_ALGORITHM_ED25519 = 1;
+}
+
+// Publicly verifiable signature. key_revision selects an immutable published
+// Ed25519 public key; it is not a secret or a rotating delivery credential.
+message ProjectionSignature {
+  ProjectionSignatureAlgorithm algorithm = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string key_revision = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
+  }];
+  bytes signature = 3 [(buf.validate.field).bytes.len = 64];
+}

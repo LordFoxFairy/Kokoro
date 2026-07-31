@@ -4,22 +4,51 @@ package kokoro.platform.credit.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/projection_integrity.proto";
 
-enum CreditCostProjectionState {
-  CREDIT_COST_PROJECTION_STATE_UNSPECIFIED = 0;
-  CREDIT_COST_PROJECTION_STATE_PENDING = 1;
-  CREDIT_COST_PROJECTION_STATE_ESTIMATED = 2;
-  CREDIT_COST_PROJECTION_STATE_FINAL = 3;
-  CREDIT_COST_PROJECTION_STATE_CORRECTED = 4;
-  CREDIT_COST_PROJECTION_STATE_UNAVAILABLE = 5;
+message CreditAmount {
+  string credit_unit = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,63}$"
+  }];
+  string amount = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 40
+    pattern: "^(0|[1-9][0-9]{0,39})$"
+  }];
 }
 
-// Immutable Credit-owned signed chain record. It contains no Media-owned state.
+message CreditCostPending {}
+message CreditCostEstimated {
+  CreditAmount amount = 1 [(buf.validate.field).required = true];
+}
+message CreditCostFinal {
+  CreditAmount amount = 1 [(buf.validate.field).required = true];
+}
+message CreditCostCorrected {
+  CreditAmount amount = 1 [(buf.validate.field).required = true];
+  uint64 corrects_owner_version = 2 [(buf.validate.field).uint64.gt = 0];
+}
+message CreditCostUnavailable {
+  string safe_reason = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+}
+
+// Immutable Credit-owned signed chain record. The digest is SHA-256 over the
+// deterministic protobuf record with integrity/self fields excluded by spec.
 message CreditCostProjectionEventRecord {
   option (buf.validate.message).cel = {
     id: "credit_cost_projection.predecessor_by_sequence"
     message: "sequence one has no predecessor and later records require a complete predecessor"
     expression: "(this.source_sequence == 1u && !has(this.predecessor_event_ref) && !has(this.predecessor_event_digest)) || (this.source_sequence > 1u && has(this.predecessor_event_ref) && has(this.predecessor_event_digest))"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit_cost_projection.event_digest_alias"
+    message: "event digest is the chain-facing alias of the canonical record digest"
+    expression: "this.event_digest == this.record_digest"
   };
   string event_ref = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -42,32 +71,28 @@ message CreditCostProjectionEventRecord {
     max_len: 256
   }];
   uint64 owner_version = 6 [(buf.validate.field).uint64.gt = 0];
-  CreditCostProjectionState cost_state = 7 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  optional string amount_micros = 8 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 40
-    pattern: "^[0-9]+$"
-  }];
-  optional string currency_code = 9 [(buf.validate.field).string = {
-    len: 3
-    pattern: "^[A-Z]{3}$"
-  }];
-  google.protobuf.Timestamp recorded_at = 10 [(buf.validate.field).required = true];
-  uint64 producer_generation = 11 [(buf.validate.field).uint64.gt = 0];
-  uint64 source_sequence = 12 [(buf.validate.field).uint64.gt = 0];
-  optional string predecessor_event_ref = 13 [(buf.validate.field).string = {
+  oneof projection {
+    option (buf.validate.oneof).required = true;
+    CreditCostPending pending = 7;
+    CreditCostEstimated estimated = 8;
+    CreditCostFinal final = 9;
+    CreditCostCorrected corrected = 10;
+    CreditCostUnavailable unavailable = 11;
+  }
+  google.protobuf.Timestamp recorded_at = 12 [(buf.validate.field).required = true];
+  uint64 producer_generation = 13 [(buf.validate.field).uint64.gt = 0];
+  uint64 source_sequence = 14 [(buf.validate.field).uint64.gt = 0];
+  optional string predecessor_event_ref = 15 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  optional string predecessor_event_digest = 14 [(buf.validate.field).string = {
+  optional string predecessor_event_digest = 16 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string owner_signature = 15 [(buf.validate.field).string = {
-    min_len: 32
-    max_len: 8192
+  string record_digest = 17 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
   }];
+  kokoro.common.v1.ProjectionSignature signature = 18 [(buf.validate.field).required = true];
 }

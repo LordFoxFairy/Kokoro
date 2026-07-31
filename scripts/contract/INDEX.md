@@ -16,10 +16,10 @@ contract source, and that each operation is frozen to exactly one transport.
 
 This gate reads declared contracts only. It does not prove wire behaviour, authorization, deadline enforcement,
 receipt durability, or that a provider actually implements a registered operation. It does prove the narrower
-structural facts that a protobuf `command-receipt` ref is a direct field of the RPC response and that a
+structural facts that a protobuf `command-receipt` ref is reachable through the RPC response descriptor and that a
 `reconcile_receipt` command/state receipt names a non-effect recovery operation in the same boundary.
 For protobuf, that recovery request must carry either command-id/digest identity or a dedicated transaction/proof pair,
-and its response must directly carry the same fully-qualified receipt type. For OpenAPI state reads, the recovery
+and its response must reach the same fully-qualified receipt type. For OpenAPI state reads, the recovery
 operation must be a real GET with a declared 200 response. A same-named type from another protobuf package is rejected.
 
 ## Public boundary
@@ -37,6 +37,25 @@ registry parity gate and the Wave 1 surface gate consume this one reader, so a s
 cannot silently omit an operation or an operation-level `security: []` override.
 The pinned Redocly CLI independently runs its OpenAPI 3.1 `spec` ruleset in CI; custom ownership/security checks
 complement that validator and never replace structural validation.
+Protobuf inventory, request/response fields, nested receipt reachability, namespace-axis isolation, and the allowed
+`RetryClass` set come from descriptor sets built by the pinned Buf binary. Comments, formatting, or same-named types
+in another package therefore cannot satisfy a registry claim.
+
+Media caller fingerprints are produced only by the Root-owned TypeScript/Python deterministic-protobuf generators.
+One descriptor-backed manifest drives both pure-language runtimes; their shared corpus includes hostile object keys,
+Unicode scalar and UTF-8 byte-boundary vectors. Projection record and head integrity is independently checked by
+`contract/validate-projection-integrity.mjs`, which applies strict resource budgets, canonical descriptor decoding,
+the full pinned Protovalidate rule set, SHA-256 recomputation, and Ed25519 verification. The public corpus is rebuilt
+reproducibly by `contract/generate-projection-integrity-corpus.mjs` from semantic fixtures and a test-only seed.
+
+`check-wave1-surface.mjs` freezes the complete 53-operation Site BFF set, including the 16 image-first
+Media/Artifact operations. Ordinary POST effects require contract version, idempotency and CSRF headers. The two
+ephemeral credential issuers—Session access and exact Artifact-version delivery authorization—are explicit
+exceptions: they require contract version plus CSRF and reject both command identity and idempotency headers, because
+response loss must create a new independently revocable grant instead of replaying bearer material.
+Its privileged protobuf service/method/field checks use the same Buf descriptors as the registry gate. Forbidden
+public identity axes and legacy/payment routes are traversed from parsed OpenAPI keys and values, so YAML quoting and
+flow mappings cannot hide them while comments remain non-contractual.
 
 `check-boundary-coverage.mjs` is the companion source-to-registry gate. It scans the two internal runtime
 consumers (Session and Agent), reduces Session's Platform service dependencies and Agent's Hub/LiteLLM
@@ -102,9 +121,10 @@ failure owner, and how each operation binds its Site. Wire shapes stay owned by 
 
 ## Runtime and security
 
-Read-only and deterministic, no new dependencies and no network: the Node gates use the standard library
-only; OpenAPI parsing and the Python gates use PyYAML, which the root workspace already pins. Source paths must
-stay repository-relative and are rejected if they escape the repository.
+Read-only and deterministic, with no runtime network: protobuf gates use Root-pinned Buf and
+`@bufbuild/protobuf`; projection validation additionally uses the exact pinned `@bufbuild/protovalidate` runtime.
+OpenAPI parsing and the Python gates use PyYAML, which the root workspace already pins. Source paths must stay
+repository-relative and are rejected if they escape the repository.
 
 ## Idempotency, failure, and recovery
 
@@ -117,7 +137,7 @@ Register a new boundary in the same change that introduces it, and keep it in st
 matrix according to lifecycle: `active` must appear with real runtime evidence, while `contract-only` must remain
 absent until provider and official consumer exist. Declare `sourceStatus: "machine-readable"` only with a real contract source behind it; a boundary
 with no source in this repository must say `declared-only` and be counted, never claim coverage it does not
-have. Allowed retry classes are derived from `kokoro.common.v1.RetryClass`; never hardcode that list here.
+have. Allowed retry classes are derived structurally from the `kokoro.common.v1.RetryClass` descriptor; never hardcode that list here.
 New privileged effects use `kokoro.common.v2.CommandIdentityV2` and `CommandReceiptV2`: generated digest helpers
 bind exact typed effect bytes to canonical scope, Site, actor and resource sets. Admin Command v2 additionally binds
 operator generation, assurance/factor classes, authentication/step-up instants, and the operator attestation digest
@@ -151,7 +171,7 @@ deliberately absent from the compatibility matrix. The matrix drives the runtime
 unimplemented protocol there would assert a capability that does not exist. Registering it as `active`
 before a provider ships fails.
 
-The `request-field` proof is per request message for proto sources. For spec YAML it depends on how the
+The `request-field` proof recursively walks the exact RPC request descriptor for proto sources. For spec YAML it depends on how the
 source declares operations: when their ids derive from object names the proof is per operation, resolved
 against that operation's own request object. Only a block-mapping section such as `endpoints`, which
 declares no fields of its own, still falls back to a file-wide match — weaker evidence, so those operations
@@ -195,8 +215,10 @@ authorization errors, and Web must consume the same classifications when asserti
 domain-code projection. This
 keeps Connect error details executable across the provider/consumer split instead of duplicating literals.
 
-Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`
-and `node scripts/contract/check-boundary-coverage.mjs`,
+Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
+`node scripts/contract/check-boundary-coverage.mjs`, and `node scripts/contract/check-wave1-surface.mjs`,
+then `node contract/generate-projection-integrity-corpus.mjs --check` and
+`node contract/validate-projection-integrity.mjs --validate-corpus`,
 `pnpm --dir contract run openapi:lint`,
 then `uv run --locked python -m pytest scripts/contract/test_check_admin_openapi.py
 scripts/contract/test_check_admin_browser_schemas.py

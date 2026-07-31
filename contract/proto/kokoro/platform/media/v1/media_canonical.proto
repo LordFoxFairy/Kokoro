@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package kokoro.platform.media.v1;
+
+import "buf/validate/validate.proto";
+
+// CanonicalImageAspectRatio is intentionally independent from provider dimensions.
+enum CanonicalImageAspectRatio {
+  CANONICAL_IMAGE_ASPECT_RATIO_UNSPECIFIED = 0;
+  CANONICAL_IMAGE_ASPECT_RATIO_SQUARE_1_1 = 1;
+  CANONICAL_IMAGE_ASPECT_RATIO_LANDSCAPE_4_3 = 2;
+  CANONICAL_IMAGE_ASPECT_RATIO_LANDSCAPE_16_9 = 3;
+  CANONICAL_IMAGE_ASPECT_RATIO_PORTRAIT_3_4 = 4;
+  CANONICAL_IMAGE_ASPECT_RATIO_PORTRAIT_9_16 = 5;
+}
+
+enum CanonicalImageOutputFormat {
+  CANONICAL_IMAGE_OUTPUT_FORMAT_UNSPECIFIED = 0;
+  CANONICAL_IMAGE_OUTPUT_FORMAT_PNG = 1;
+  CANONICAL_IMAGE_OUTPUT_FORMAT_JPEG = 2;
+  CANONICAL_IMAGE_OUTPUT_FORMAT_WEBP = 3;
+}
+
+message ImageTextToImageSpecV1 {
+  string prompt_intent = 1 [(buf.validate.field).string = {
+    min_bytes: 1
+    max_bytes: 32768
+  }];
+  CanonicalImageAspectRatio aspect_ratio = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint32 candidate_count = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 4
+  }];
+  string model_option_revision_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
+  }];
+  CanonicalImageOutputFormat output_format = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+// CanonicalMediaOperationInputV1 is the only browser fingerprint payload for v1.
+// Ownership, Site and Platform persistence digests are deliberately absent.
+message CanonicalMediaOperationInputV1 {
+  uint32 contract_major = 1 [(buf.validate.field).uint32.const = 1];
+  string definition_revision_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+    pattern: "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,255}$"
+  }];
+  oneof spec {
+    option (buf.validate.oneof).required = true;
+    ImageTextToImageSpecV1 image_text_to_image = 3;
+  }
+}
