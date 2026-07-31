@@ -14,6 +14,9 @@ APP_PROJECT="${2:-kokoro-app}"
   exit 1
 }
 
+# This pure preflight must run before manager/Docker can create or change infrastructure.
+node scripts/infra/validate-site-release-image.mjs --env-file "$ENV_FILE"
+
 # A single-host bring-up may intentionally use one protected master env file. Production promotion
 # should override each variable with a least-privilege per-process file; Compose already has those
 # boundaries and Kubernetes requires them.

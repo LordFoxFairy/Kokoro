@@ -40,7 +40,9 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
    immutable `registry/repository@sha256:<64-hex-digest>` reference. The canonical image shape is
    `kokoro-web/packages/site-scaffold/templates/site/Dockerfile`; Root does not build it from the Web
    monorepo. The variable is required: `apps/reference-site` is a non-production fixture and is never a
-   deployment fallback.
+   deployment fallback. Registry hostnames and repository paths must be lowercase; a canonical numeric
+   registry port from `1` through `65535` is allowed. Tags, fixture names, whitespace, uppercase or
+   non-SHA-256/short digests are rejected.
 5. Set `KOKORO_*_ENV_FILE` overrides to process-specific protected files for production. The helper
    script deliberately defaults them to the master env only for bounded single-host bring-up.
 6. On a fresh database, prepare a mode-`0600` Admin authority document owned by the account running
@@ -55,15 +57,18 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
 bash deploy/provision.sh deploy/.env.prod kokoro-app
 ```
 
-The script performs five phases: ensure canonical infrastructure, validate/build artifacts, run
+Before any phase, the script runs a side-effect-free Site image preflight against the release env. It
+then performs five phases: ensure canonical infrastructure, validate/build artifacts, run
 `platform-migrator`, optionally install and seal the initial Admin governors, then start independent
-runtime processes. Authority bootstrap is fresh-install control-plane setup, not business seeding.
+runtime processes. Compose retains its own missing-or-empty interpolation guard as a second gate.
+Authority bootstrap is fresh-install control-plane setup, not business seeding.
 Initial Site/release/model/credit-program/offer/card-batch creation belongs to typed control-plane APIs;
 there is no direct SQL or retired package seed escape hatch.
 
 For manual operation:
 
 ```bash
+node scripts/infra/validate-site-release-image.mjs --env-file deploy/.env.prod
 docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml config
 docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml run --rm --no-deps platform-migrator
 docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml up -d
@@ -73,6 +78,7 @@ docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.y
 
 ```bash
 node --test scripts/infra/*.test.mjs
+node scripts/infra/validate-site-release-image.mjs --env-file deploy/.env.prod
 docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml config --quiet
 docker compose --env-file deploy/.env.prod -p kokoro-app -f docker-compose.app.yml ps
 ```

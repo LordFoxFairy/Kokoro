@@ -187,8 +187,8 @@ test("Root builds only real backend Dockerfiles and consumes Site as an independ
   assert(site);
   assert.match(
     site,
-    /image:\s*\$\{KOKORO_SITE_IMAGE:\?[^}\n]*@sha256[^}\n]*\}/u,
-    "Compose must fail before deployment when an immutable independent Site image is absent",
+    /image:\s*\$\{KOKORO_SITE_IMAGE:\?[^}\n]*required[^}\n]*\}/u,
+    "Compose must retain a direct missing-or-empty Site image guard",
   );
   assert.doesNotMatch(site, /kokoro-reference-site|KOKORO_SITE_IMAGE:-/u);
   assert.doesNotMatch(releaseEnvironment, /^KOKORO_SITE_IMAGE=/mu);
@@ -197,6 +197,7 @@ test("Root builds only real backend Dockerfiles and consumes Site as an independ
     /^# KOKORO_SITE_IMAGE=[^\s]+@sha256:<64-lowercase-hex>$/mu,
     "the release template must document the required digest-pinned Site image without supplying a fallback",
   );
+  await access(resolve(root, "scripts/infra/validate-site-release-image.mjs"));
   assert.doesNotMatch(site, /build:/u);
   await access(resolve(root, "kokoro-web/packages/site-scaffold/templates/site/Dockerfile"));
   assert.match(
