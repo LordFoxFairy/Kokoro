@@ -9,6 +9,8 @@ import "kokoro/platform/media/v1/media_projection.proto";
 
 // SessionMediaProjectionService is the Session-owned target authority. Media
 // and Credit receive separate audience-bound handles and cannot exchange them.
+// Every method authorizes the caller role/audience from verified SPIFFE server
+// context according to the Root registry; the request carries no caller claim.
 service SessionMediaProjectionService {
   rpc IssueMediaProjectionReservation(IssueMediaProjectionReservationRequest) returns (IssueMediaProjectionReservationResponse) {}
   rpc BindMediaProjectionTarget(BindMediaProjectionTargetRequest) returns (BindMediaProjectionTargetResponse) {}
@@ -22,6 +24,9 @@ service SessionMediaProjectionService {
 }
 
 message IssueMediaProjectionReservationRequest {
+  // This is the exact opaque handle Session placed in PrepareRunEffect after
+  // committing the launch/Run/message and freezing its current owner epochs.
+  // Platform Admission forwards it unchanged and never mints or interprets it.
   string session_projection_authorization_handle = 1 [(buf.validate.field).string = {
     min_len: 32
     max_len: 8192

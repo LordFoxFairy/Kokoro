@@ -612,19 +612,23 @@ Agent `create_image` 返回 operation/artifact opaque handles 后，Agent durabl
 投影目标不能靠`operation_ref`在Session全库猜测。Session是target authority，并提供独立
 `session-media-projection@v1` private Connect service：
 
-1. Admission在准备Run时向Session取得一个短期、单Run、限额的opaque `media_projection_reservation_handle`，放入
-   RunContextManifest；它绑定Site、session、Run、assistant message、subject generation、authorization/projection epoch、
-   allowed producer audience和最大slot数，但GA看不到这些claims；
-2. GA创建stable `agent_media_command_ref`和durable output/part slot ref后，把reservation handle和opaque slot ref交给
+1. Session owner authority只有在launch、proposed Run和trigger message都已提交后，才按当前subject/membership/
+   authorization/projection epochs签发短期opaque `session_projection_authorization_handle`。Session把它作为required字段放入
+   `PrepareRunEffect`，其admission digest和`VerifyPrepareOwner`共同绑定exact committed owner facts；
+2. Platform Admission不解析、不签发、不日志化该handle，只把它原样转发给Session
+   `IssueMediaProjectionReservation`。Session再次校验当前epochs后签发单Run、限额的opaque
+   `media_projection_reservation_handle`，并由Admission只封入GA audience的encrypted run material；authorization handle绝不进入
+   public OpenAPI、`SafeAdmissionSnapshot`、`PreparedRunAuthorization`或浏览器响应，GA也看不到其中claims；
+3. GA创建stable `agent_media_command_ref`和durable output/part slot ref后，把reservation handle和opaque slot ref交给
    `CreateAgentImageOperation`；Media runtime调用Session `BindMediaProjectionTarget`；
-3. Session验证Run/message/slot尚可绑定、command和Agent output fence一致后，原子预留exact `part_id`并创建
+4. Session验证Run/message/slot尚可绑定、command和Agent output fence一致后，原子预留exact `part_id`并创建
    `media_projection_binding(state=pending)`，签发target-specific
    `media_projection_handle`，绑定operation、command、session、Run、message、part、producer generation和owner event
    watermark；同时签发同target、audience=`platform.credit.cost-projection`的独立`cost_projection_handle`。Media只保存前者；
    Credit owner在创建Hold/allocation的同一Platform transaction中保存后者及digest，Media不能使用或刷新它；
-4. Platform UoW同时写owner-signed `MediaCommandCommitReceipt`和唯一`MediaProjectionBindingCommitted` outbox event，receipt
+5. Platform UoW同时写owner-signed `MediaCommandCommitReceipt`和唯一`MediaProjectionBindingCommitted` outbox event，receipt
    覆盖command/operation/input/allocation/Gateway binding digest、Session binding ref和producer generation；
-5. Session收到的首个事件必须是该commit event。它验证owner signature/digest、pending binding、exact target/command/
+6. Session收到的首个事件必须是该commit event。它验证owner signature/digest、pending binding、exact target/command/
    operation和producer fence，在一个Session transaction中keep-first activation event、CAS `pending->active`并写初始
    operation projection；part仍需Agent durable output建立link后才可见。普通status/candidate/artifact event只对active binding生效；Cost handle与Media handle在同一
    activation transaction变为active。Direct Studio不申请Session handle。
@@ -634,8 +638,9 @@ effect；随后Platform单事务持久化binding digest、command/operation/allo
 没有command commit receipt，永远不能active并按短TTL进入`expired`；Session bind失败则Platform transaction不开始。禁止在持有Platform DB
 transaction时调用Session RPC，也禁止在Platform commit后用“稍后补binding”接受Agent operation。
 
-activation delivery/response丢失时，outbox重投同event，或Media用
-`RecoverMediaProjectionActivation(binding_ref, command_commit_receipt_ref)`触发同一验证/transaction；same receipt/digest
+`MediaProjectionBindingCommitted`的首次投递与所有重试都调用既有
+`RecoverMediaProjectionActivation(committed_delivery)`；名字保留`Recover`是canonical 9-method hard cut的一部分，并不代表它只用于
+修复路径。activation delivery/response丢失时，outbox以同一方法重投同event/envelope；same receipt/digest
 返回同active receipt。暂时性乱序保持pending并进入activation DLQ；signature、command、target、digest或fence冲突把binding
 终结为`rejected`。`expired/rejected/revoked` binding永不改回active。若Platform command确已commit，Session只能通过
 `CreateReplacementMediaProjectionBinding`，凭exact command commit receipt和Session-issued recovery grant为**同一**
@@ -648,6 +653,27 @@ Media workload mTLS和原binding，不得换Session/Run/message/part。过期eve
 `projection_access_expired` DLQ且不apply，refresh后重放**同一event_ref/digest**；revoked binding进入content-free
 suppressed receipt，不通过刷新复活。Credit projection pump只能用`RefreshCreditCostProjectionAccess`刷新cost handle，并
 重放同一cost event；两个audience不能互换。
+
+上述9个target/control方法保持在canonical `SessionMediaProjectionService`。activation因其pending->active专用事务和
+`MediaProjectionActivationReceipt(binding_version/outcome)`继续使用该service的`RecoverMediaProjectionActivation`；不能被generic
+ingest receipt替代。普通projection的真实投递入口是独立`SessionMediaProjectionIngestService`：Media outbox pump只对
+source sequence >= 2调用`ApplyMediaProjectionEvent`，Credit
+outbox pump从其独立cost chain的source sequence 1起调用`ApplyCreditCostProjectionEvent`。durable-event record仍由各Platform owner持有并作为重放事实；Connect只负责把
+owner-signed immutable record和轮换delivery envelope送进Session的durable inbox。Session提交后返回闭合
+`ProjectionIngestReceipt(applied|replayed|pending_gap|rejected|suppressed)`：`pending_gap`表示future record已持久化等待前序，
+`rejected`表示永久integrity/fence冲突，`suppressed`是revoked/expired/terminal target的content-free结果。receipt同时带闭合
+recovery action：applied/replayed/suppressed=`none`，pending_gap=`recover_missing_predecessor`并带exact next sequence；rejected只允许
+safe `record_integrity_conflict + contact_support`或`owner_fence_conflict + reconcile_owner`，不返回内部原因，也不伪装成可自动重试。
+未取得receipt的temporary Connect失败按registry `same_identity`重投同event，不需要在durable receipt中虚构retry状态。生产者只在取得该receipt
+后确认本次outbox delivery，response丢失时以同event ref/digest重投。
+
+caller identity不出现在任何request message。Session mTLS interceptor从已认证SPIFFE peer建立immutable trusted context，再按
+Root registry中**方法级闭合**的`role + audience`映射授权：Admission只能issue reservation；Media只能bind/recover activation/
+replacement/refresh/read Media与Apply Media event；Credit只能refresh/read Cost与Apply Credit event；
+`RecoverProjectionCommand`虽在方法级允许三种role，handler仍必须把trusted context的role/audience写入command journal并与
+journaled `command_kind`逐项匹配：Admission只能恢复Issue，Media只能恢复Bind/Replacement/Media refresh，Credit只能恢复Credit
+refresh；activation使用自己的receipt，不进入generic command recovery。未知SPIFFE、
+role/audience不匹配或尝试以header/request字段自报身份都在进入handler前fail closed。
 
 所有五类 projection effect command 都把 `command_kind` 写入 durable receipt，并有各自闭合的 accepted-result message。
 direct response 与 `RecoverProjectionCommand` 必须复用同一个 result message type，因此 reservation/target、lineage、fresh
@@ -699,11 +725,13 @@ Root 是跨仓 contract 单源和 transport registry authority。目标 contract
 |---|---|---|
 | Site BFF -> Platform Media public | OpenAPI 3.1 | list definitions/options、quote、`SubmitStudioImageOperation`、get/list operation、cancel intent、get command receipt |
 | GA -> Platform Media runtime | ConnectRPC | `CreateAgentImageOperation`、`CancelAgentMediaOperation`、`RecoverMediaOperationByCommand`、`GetAgentMediaOperation`、bounded wait/watch |
-| Platform Admission -> Session target authority | `session-media-projection@v1` Connect | `IssueMediaProjectionReservation` for exact Run/message scope |
+| Session owner -> Platform Admission | existing Admission Connect | required opaque `session_projection_authorization_handle` in `PrepareRunEffect`; Platform only forwards, never exposes it in safe/public/Prepared surfaces |
+| Platform Admission -> Session target authority | `session-media-projection@v1` Connect + authenticated SPIFFE context | `IssueMediaProjectionReservation` for exact committed Run/message scope |
 | Platform Media -> Session target authority | same service, caller-scoped operations | bind pending、recover activation、create exact replacement、refresh active、get binding |
 | Platform Credit -> Session target authority | same service, separate audience | `RefreshCreditCostProjectionAccess`、`GetCreditCostProjectionBinding` |
-| Platform Media -> Session | durable authenticated event | first owner-signed command-commit activation；then operation/candidate/artifact refs with active handle；no cost amount/state |
-| Platform Credit -> Session | durable authenticated event | independent `CreditCostProjectionEvent` owner revisions with exact cost projection handle |
+| Platform Media -> Session activation | Media-owned durable event + existing `RecoverMediaProjectionActivation` Connect delivery | first owner-signed command-commit activation；首次与重试同一方法、同一专用activation receipt |
+| Platform Media -> Session projection | Media-owned durable event + `SessionMediaProjectionIngestService.ApplyMediaProjectionEvent` Connect delivery | source sequence >= 2 operation/candidate/artifact refs with active handle；no cost amount/state |
+| Platform Credit -> Session | Credit-owned durable event + `SessionMediaProjectionIngestService.ApplyCreditCostProjectionEvent` Connect delivery | independent `CreditCostProjectionEvent` owner revisions with exact cost projection handle |
 | Platform Media -> Model Gateway | new `model-image-effect@v1` Connect | create、`AttachNextAttemptAuthorization`、recover/get by command、request cancel、get evidence |
 | Platform Artifact -> Web BFF | public OpenAPI | get/list artifact/version、mint preview/download/export authorization |
 

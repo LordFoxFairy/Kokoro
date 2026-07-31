@@ -1820,6 +1820,7 @@ def test_platform_admission_v1_surface_remains_frozen() -> None:
         "trigger_message_id",
         "trigger_message_content",
         "model_option_revision_ref",
+        "session_projection_authorization_handle",
     ):
         assert required in prepare
     for owner_fact in (

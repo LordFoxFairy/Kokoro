@@ -70,7 +70,9 @@ const BOUNDARY_KEYS = [
   "version",
 ];
 const OPERATION_KEYS = ["effect", "id", "receipt", "retryClass", "scope", "siteBinding", "transport"];
+const OPERATION_TRUSTED_CALLER_KEYS = [...OPERATION_KEYS, "trustedCallers"].sort();
 const PARTY_KEYS = ["boundary", "repository"];
+const TRUSTED_CALLER_KEYS = ["audience", "role"];
 const RECEIPT_KEYS = ["kind", "ref"];
 const RECEIPT_RECOVERY_KEYS = ["kind", "recoveryOperation", "ref"];
 const SOURCE_KEYS = ["kind", "path", "select"];
@@ -591,7 +593,7 @@ function validateShape(registry, retryClasses, errors) {
     const transports = new Set(boundary.transports);
     const seenOperations = new Set();
     for (const operation of boundary.operations) {
-      if (!exactKeys(operation, OPERATION_KEYS)) {
+      if (!exactKeys(operation, OPERATION_KEYS) && !exactKeys(operation, OPERATION_TRUSTED_CALLER_KEYS)) {
         errors.push(`boundary_registry_shape: operation keys: ${label}: ${String(operation?.id)}`);
         continue;
       }
@@ -603,6 +605,30 @@ function validateShape(registry, retryClasses, errors) {
       seenOperations.add(operation.id);
       if (typeof operation.effect !== "boolean") {
         errors.push(`boundary_registry_shape: operation effect: ${name}`);
+      }
+      if (Object.hasOwn(operation, "trustedCallers")) {
+        if (!Array.isArray(operation.trustedCallers) || operation.trustedCallers.length < 1 || operation.trustedCallers.length > 8) {
+          errors.push(`boundary_registry_shape: operation trustedCallers: ${name}`);
+        } else {
+          const seenTrustedCallers = new Set();
+          for (const trustedCaller of operation.trustedCallers) {
+            if (
+              !exactKeys(trustedCaller, TRUSTED_CALLER_KEYS) ||
+              typeof trustedCaller.role !== "string" ||
+              !/^[a-z0-9][a-z0-9-]{0,127}$/u.test(trustedCaller.role) ||
+              typeof trustedCaller.audience !== "string" ||
+              !/^[a-z0-9][a-z0-9.-]{0,127}$/u.test(trustedCaller.audience)
+            ) {
+              errors.push(`boundary_registry_shape: operation trusted caller: ${name}`);
+              continue;
+            }
+            const callerKey = `${trustedCaller.role}\0${trustedCaller.audience}`;
+            if (seenTrustedCallers.has(callerKey)) {
+              errors.push(`boundary_registry_trusted_caller_duplicate: ${name}`);
+            }
+            seenTrustedCallers.add(callerKey);
+          }
+        }
       }
       if (!SCOPES.includes(operation.scope)) {
         errors.push(`boundary_registry_shape: operation scope: ${name}: ${String(operation.scope)}`);
@@ -1082,6 +1108,49 @@ function checkProtoIsolation(root, boundary, source, namespaceScoped, unproven, 
   }
 }
 
+// A trusted caller is established by the mTLS/SPIFFE interceptor and injected as
+// immutable server context. An operation with a closed caller declaration must
+// never accept an equivalent self-asserted identity field from protobuf input.
+const SELF_ASSERTED_CALLER_FIELDS = [
+  "caller_role",
+  "callerRole",
+  "caller_audience",
+  "callerAudience",
+  "spiffe_id",
+  "spiffeId",
+  "spiffe_uri",
+  "spiffeUri",
+];
+
+function checkTrustedCallerBindings(root, registry, errors) {
+  for (const boundary of registry.boundaries) {
+    for (const source of boundary.sources ?? []) {
+      if (source.kind !== "proto") continue;
+      let methods;
+      try {
+        methods = protoServiceMethods(protoRegistry(root, source.path), source.select.service);
+      } catch (error) {
+        errors.push(`${error.message} (${boundary.id}: ${source.path})`);
+        continue;
+      }
+      const requestByMethod = new Map(methods.map((method) => [method.name, method.request]));
+      for (const operation of boundary.operations ?? []) {
+        if (!Array.isArray(operation.trustedCallers)) continue;
+        const request = requestByMethod.get(operation.id);
+        if (!request) continue;
+        const fields = protoRequestFieldNames(request);
+        for (const field of SELF_ASSERTED_CALLER_FIELDS) {
+          if (fields.has(field)) {
+            errors.push(
+              `boundary_registry_trusted_caller_wire_assertion: ${boundary.id}@v${boundary.version}/${operation.id}: ${field}`,
+            );
+          }
+        }
+      }
+    }
+  }
+}
+
 // The published schema must stay pinned to the same enums this gate enforces.
 function checkSchemaParity(schema, retryClasses, errors) {
   const definitions = schema?.$defs;
@@ -1126,6 +1195,7 @@ export function checkBoundaryRegistry(options) {
   checkCompatibilityMatrix(registry, matrix, errors);
   checkArchitectureBoundaries(registry, roots, errors);
   checkIsolationAxes(options.root, registry, errors);
+  checkTrustedCallerBindings(options.root, registry, errors);
 
   let operations = 0;
   let headerBound = 0;

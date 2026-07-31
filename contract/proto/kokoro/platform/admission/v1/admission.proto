@@ -236,6 +236,15 @@ message PrepareRunEffect {
     min_len: 1
     max_bytes: 524288
   }];
+  // Session's owner authority issues this opaque capability only after the
+  // launch, proposed Run and trigger message are durably committed and binds
+  // current subject/membership/authorization/projection epochs. Admission may
+  // only forward it to IssueMediaProjectionReservation; it must not inspect,
+  // persist in a public projection, or copy it into PreparedRunAuthorization.
+  string session_projection_authorization_handle = 14 [(buf.validate.field).string = {
+    min_len: 32
+    max_len: 8192
+  }];
 }
 
 message PrepareRunRequest {

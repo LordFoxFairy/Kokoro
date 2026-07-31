@@ -115,8 +115,11 @@ local Route Handler tree, and `kokoro-web/apps/admin/lib/{admin-gateway,schemas}
 
 ## Data ownership and events
 
-The registry owns boundary inventory: owner, callers, audience, protocol, deadline, retry class, receipt,
-failure owner, and how each operation binds its Site. Wire shapes stay owned by `contract/proto/` and
+The registry owns boundary inventory: owner, repository-level consumers, boundary audience, protocol, deadline,
+retry class, receipt, failure owner, and how each operation binds its Site. Privileged operations may additionally
+freeze a closed method-level `trustedCallers` list of role/audience pairs. The provider must derive that pair from
+authenticated SPIFFE server context; the checker rejects protobuf request fields that try to self-assert caller role,
+caller audience, or SPIFFE identity. Wire shapes stay owned by `contract/proto/` and
 `contract/spec/`; this directory never becomes a second authority for them.
 
 ## Runtime and security

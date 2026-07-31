@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package kokoro.session.media.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/session/media/v1/media_projection.proto";
+
+// SessionMediaProjectionIngestService is the authenticated delivery entry for
+// Platform-owned projection facts after activation. BindingCommitted delivery
+// remains on RecoverMediaProjectionActivation and its dedicated activation
+// receipt. The durable event records remain the owner truth; this Connect
+// service admits Media's post-activation seq>=2 records and Credit's independent
+// seq>=1 cost chain into Session's durable inbox, then advances the Session-owned
+// read model. Caller role and audience come from the verified SPIFFE transport
+// context and are never accepted on this wire.
+service SessionMediaProjectionIngestService {
+  rpc ApplyMediaProjectionEvent(ApplyMediaProjectionEventRequest) returns (ApplyMediaProjectionEventResponse) {}
+  rpc ApplyCreditCostProjectionEvent(ApplyCreditCostProjectionEventRequest) returns (ApplyCreditCostProjectionEventResponse) {}
+}
+
+message ApplyMediaProjectionEventRequest {
+  MediaProjectionDeliveryEnvelope delivery = 1 [(buf.validate.field).required = true];
+}
+
+message ApplyCreditCostProjectionEventRequest {
+  CreditCostProjectionDeliveryEnvelope delivery = 1 [(buf.validate.field).required = true];
+}
+
+enum ProjectionIngestOutcome {
+  PROJECTION_INGEST_OUTCOME_UNSPECIFIED = 0;
+  PROJECTION_INGEST_OUTCOME_APPLIED = 1;
+  PROJECTION_INGEST_OUTCOME_REPLAYED = 2;
+  PROJECTION_INGEST_OUTCOME_PENDING_GAP = 3;
+  PROJECTION_INGEST_OUTCOME_REJECTED = 4;
+  PROJECTION_INGEST_OUTCOME_SUPPRESSED = 5;
+}
+
+enum ProjectionIngestRecoveryAction {
+  PROJECTION_INGEST_RECOVERY_ACTION_UNSPECIFIED = 0;
+  PROJECTION_INGEST_RECOVERY_ACTION_NONE = 1;
+  PROJECTION_INGEST_RECOVERY_ACTION_RECOVER_MISSING_PREDECESSOR = 2;
+  PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER = 3;
+  PROJECTION_INGEST_RECOVERY_ACTION_CONTACT_SUPPORT = 4;
+}
+
+enum ProjectionIngestRejectionCode {
+  PROJECTION_INGEST_REJECTION_CODE_UNSPECIFIED = 0;
+  PROJECTION_INGEST_REJECTION_CODE_RECORD_INTEGRITY_CONFLICT = 1;
+  PROJECTION_INGEST_REJECTION_CODE_OWNER_FENCE_CONFLICT = 2;
+}
+
+// The receipt acknowledges one immutable owner record. applied and replayed
+// advance or confirm the same digest; pending_gap means the record is durably
+// held behind its missing predecessor; rejected is a permanent integrity or
+// fence failure; suppressed is a content-free terminal target decision.
+message ProjectionIngestReceipt {
+  option (buf.validate.message).cel = {
+    id: "projection_ingest.outcome_recovery_contract"
+    message: "ingest outcome, recovery action, missing sequence and safe rejection code must form one closed result"
+    expression: "(((this.outcome == kokoro.session.media.v1.ProjectionIngestOutcome.PROJECTION_INGEST_OUTCOME_APPLIED || this.outcome == kokoro.session.media.v1.ProjectionIngestOutcome.PROJECTION_INGEST_OUTCOME_REPLAYED || this.outcome == kokoro.session.media.v1.ProjectionIngestOutcome.PROJECTION_INGEST_OUTCOME_SUPPRESSED) && this.recovery_action == kokoro.session.media.v1.ProjectionIngestRecoveryAction.PROJECTION_INGEST_RECOVERY_ACTION_NONE && !has(this.expected_next_sequence) && !has(this.rejection_code)) || (this.outcome == kokoro.session.media.v1.ProjectionIngestOutcome.PROJECTION_INGEST_OUTCOME_PENDING_GAP && this.recovery_action == kokoro.session.media.v1.ProjectionIngestRecoveryAction.PROJECTION_INGEST_RECOVERY_ACTION_RECOVER_MISSING_PREDECESSOR && has(this.expected_next_sequence) && !has(this.rejection_code)) || (this.outcome == kokoro.session.media.v1.ProjectionIngestOutcome.PROJECTION_INGEST_OUTCOME_REJECTED && !has(this.expected_next_sequence) && ((this.rejection_code == kokoro.session.media.v1.ProjectionIngestRejectionCode.PROJECTION_INGEST_REJECTION_CODE_RECORD_INTEGRITY_CONFLICT && this.recovery_action == kokoro.session.media.v1.ProjectionIngestRecoveryAction.PROJECTION_INGEST_RECOVERY_ACTION_CONTACT_SUPPORT) || (this.rejection_code == kokoro.session.media.v1.ProjectionIngestRejectionCode.PROJECTION_INGEST_REJECTION_CODE_OWNER_FENCE_CONFLICT && this.recovery_action == kokoro.session.media.v1.ProjectionIngestRecoveryAction.PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER))))"
+  };
+  string event_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string record_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string binding_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 source_sequence = 4 [(buf.validate.field).uint64.gt = 0];
+  ProjectionIngestOutcome outcome = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 accepted_high_watermark = 6;
+  optional uint64 expected_next_sequence = 7 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+  ProjectionIngestRecoveryAction recovery_action = 9 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional ProjectionIngestRejectionCode rejection_code = 10 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+
+message ApplyMediaProjectionEventResponse {
+  ProjectionIngestReceipt receipt = 1 [(buf.validate.field).required = true];
+}
+
+message ApplyCreditCostProjectionEventResponse {
+  ProjectionIngestReceipt receipt = 1 [(buf.validate.field).required = true];
+}

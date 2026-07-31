@@ -86,16 +86,30 @@ sequence with bounded typed payloads. Terminal completed/failed evidence commits
 digest chain. Output sequence numbers never share or advance lifecycle `durable_seq`. It remains `contract-only`
 until a live mTLS provider/consumer compatibility probe exists.
 
-ADR-015's image-first foundation publishes five isolated Protobuf bundles without claiming a runtime:
+ADR-015's image-first foundation publishes six isolated Protobuf bundles without claiming a runtime:
 `platform-media-runtime@v1` (GA to Platform Media), `model-image-effect@v1` (Platform Media to Model Gateway),
 and `session-media-projection@v1` (Session-owned reservation, pending binding, activation recovery, replacement,
-and separate Media/Credit access), plus separate Media-owner and Credit-owner projection recovery bundles.
+and separate Media/Credit access), `session-media-projection-ingest@v1` (the authenticated Connect delivery entry),
+plus separate Media-owner and Credit-owner projection recovery bundles.
 Durable `MediaProjectionBindingCommitted` must activate a pending binding
 before ordinary Media projection events; Media carries only the Credit-owned cost projection ref/version, while
-Credit publishes amount/state through its own audience-bound event. All five registered Media/Image/Session event
-families (seven registry boundaries including the two durable event planes) remain `contract-only` and absent from runtime compatibility until real providers and official consumers
+Credit publishes amount/state through its own audience-bound event. All six generated Media/Image/Session contract
+families (eight registry boundaries including the two durable event planes) remain `contract-only` and absent from runtime compatibility until real providers and official consumers
 ship. Recovery requests use command ref plus opaque access only; owner HMACs, original inputs, Provider payloads,
 and top-level Generation/Job identities are not part of these contracts.
+
+`PrepareRunEffect.session_projection_authorization_handle` is a required Session-owner-issued capability bound to
+the committed launch/Run/message and current owner epochs. Platform Admission may only forward it into
+`IssueMediaProjectionReservation`; it is forbidden from public OpenAPI, safe admission snapshots and prepared
+authorization responses. Projection control and ingest methods declare closed caller role/audience pairs in the Root
+registry. Runtime authorization derives those pairs from authenticated SPIFFE server context, never from request fields.
+Durable Media/Credit records remain the owner truth. BindingCommitted first delivery and retries both use the canonical
+`RecoverMediaProjectionActivation` method and its dedicated activation receipt; only Media sequence >= 2 and Credit's
+independent sequence >= 1 cost records use the ingest Connect service, which returns a typed durable receipt with exactly
+`applied|replayed|pending_gap|rejected|suppressed` outcomes. CEL also closes the recovery decision: gaps recover the
+exact missing predecessor, integrity rejection contacts support, owner-fence rejection reconciles the owner, and all
+successful/replayed/suppressed receipts require no action. A temporary missing response retries the same immutable event
+under registry policy rather than fabricating a receipt outcome.
 
 Projection event identity is split from delivery capability: immutable Ed25519 owner-signed records carry source sequence,
 predecessor ref/digest and content; short-TTL Session target handles and owner recovery handles live only in rotating

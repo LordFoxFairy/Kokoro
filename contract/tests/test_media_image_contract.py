@@ -330,6 +330,7 @@ def test_media_boundaries_are_contract_only_and_have_no_runtime_claim() -> None:
         "platform-media-runtime": ("kokoro-platform", ["kokoro-agent"]),
         "model-image-effect": ("kokoro-platform", ["kokoro-platform"]),
         "session-media-projection": ("kokoro-session", ["kokoro-platform"]),
+        "session-media-projection-ingest": ("kokoro-session", ["kokoro-platform"]),
         "media-session-projection-events": ("kokoro-platform", ["kokoro-session"]),
         "credit-session-cost-projection-events": ("kokoro-platform", ["kokoro-session"]),
         "platform-media-projection-recovery": ("kokoro-platform", ["kokoro-session"]),
@@ -364,6 +365,8 @@ def test_media_boundaries_are_contract_only_and_have_no_runtime_claim() -> None:
     assert ("kokoro-platform", "model-image-effect", "consumer", "contract-only") in roles
     assert ("kokoro-session", "session-media-projection", "provider", "contract-only") in roles
     assert ("kokoro-platform", "session-media-projection", "consumer", "contract-only") in roles
+    assert ("kokoro-session", "session-media-projection-ingest", "provider", "contract-only") in roles
+    assert ("kokoro-platform", "session-media-projection-ingest", "consumer", "contract-only") in roles
     assert ("kokoro-platform", "media-session-projection-events", "provider", "contract-only") in roles
     assert ("kokoro-session", "media-session-projection-events", "consumer", "contract-only") in roles
     assert ("kokoro-platform", "credit-session-cost-projection-events", "provider", "contract-only") in roles

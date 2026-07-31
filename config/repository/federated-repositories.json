@@ -120,6 +120,12 @@
           "lifecycle": "contract-only"
         },
         {
+          "id": "session-media-projection-ingest",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
+        },
+        {
           "id": "media-session-projection-events",
           "version": 1,
           "role": "provider",
@@ -196,6 +202,12 @@
         },
         {
           "id": "session-media-projection",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
+        },
+        {
+          "id": "session-media-projection-ingest",
           "version": 1,
           "role": "provider",
           "lifecycle": "contract-only"

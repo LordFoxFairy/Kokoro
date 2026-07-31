@@ -245,6 +245,21 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: null,
   }),
+  "session-media-projection-ingest@v1": Object.freeze({
+    schema: "kokoro.session.media.v1.SessionMediaProjectionIngestService",
+    version: 1,
+    inputs: Object.freeze([
+      "proto/kokoro/session/media/v1/media_projection_ingest.proto",
+    ]),
+    sources: Object.freeze([
+      "kokoro/platform/credit/v1/cost_projection.proto",
+      "kokoro/platform/media/v1/media_projection.proto",
+      "kokoro/session/media/v1/media_projection.proto",
+      "kokoro/session/media/v1/media_projection_ingest.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-media-projection-recovery@v1": Object.freeze({
     schema: "kokoro.platform.media.v1.MediaProjectionRecoveryService",
     version: 1,

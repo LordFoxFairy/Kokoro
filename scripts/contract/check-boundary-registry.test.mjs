@@ -517,6 +517,47 @@ function protoBoundary(overrides = {}) {
   };
 }
 
+test("accepts a closed method-level trusted caller declaration", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].trustedCallers = [
+    { role: "platform-admission", audience: "session.media-projection.reservation" },
+  ];
+  const root = await makeFixture({ boundaries: [boundary] });
+
+  const result = run(root);
+
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test("rejects duplicate trusted caller role and audience pairs", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].trustedCallers = [
+    { role: "platform-media", audience: "session.media-projection.media" },
+    { role: "platform-media", audience: "session.media-projection.media" },
+  ];
+
+  await expectFailure(
+    { boundaries: [boundary] },
+    "boundary_registry_trusted_caller_duplicate: fixture-proto@v1/DoThing",
+  );
+});
+
+test("rejects self-asserted trusted caller identity on the protobuf wire", async () => {
+  const boundary = protoBoundary();
+  boundary.operations[0].trustedCallers = [
+    { role: "platform-media", audience: "session.media-projection.media" },
+  ];
+  const source = SERVICE_PROTO.replace(
+    "string payload = 2;",
+    "string payload = 2;\n  string caller_role = 3;",
+  );
+
+  await expectFailure(
+    { boundaries: [boundary], files: { "contract/proto/fixture.proto": source } },
+    "boundary_registry_trusted_caller_wire_assertion: fixture-proto@v1/DoThing: caller_role",
+  );
+});
+
 test("rejects a protobuf command receipt ref that is absent from the RPC response", async () => {
   const boundary = protoBoundary();
   boundary.operations[0].receipt.ref = "kokoro.common.v2.CommandReceiptV2";

@@ -336,6 +336,7 @@ test("privileged and public contracts track only current provider and official c
     "platform-media-runtime@v1",
     "model-image-effect@v1",
     "session-media-projection@v1",
+    "session-media-projection-ingest@v1",
     "platform-media-projection-recovery@v1",
     "platform-credit-cost-projection-recovery@v1",
   ]);

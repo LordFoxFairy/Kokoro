@@ -55,21 +55,42 @@
       "id": "session-media-projection",
       "lifecycle": "contract-only",
       "operations": [
-        {"effect": true, "id": "IssueMediaProjectionReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "BindMediaProjectionTarget", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "RecoverMediaProjectionActivation", "receipt": {"kind": "state-read", "ref": "kokoro.session.media.v1.MediaProjectionActivationReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "CreateReplacementMediaProjectionBinding", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "RefreshMediaProjectionAccess", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetMediaProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": true, "id": "RefreshCreditCostProjectionAccess", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": false, "id": "GetCreditCostProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"},
-        {"effect": false, "id": "RecoverProjectionCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc"}
+        {"effect": true, "id": "IssueMediaProjectionReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-admission", "audience": "session.media-projection.reservation"}]},
+        {"effect": true, "id": "BindMediaProjectionTarget", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": true, "id": "RecoverMediaProjectionActivation", "receipt": {"kind": "state-read", "ref": "kokoro.session.media.v1.MediaProjectionActivationReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": true, "id": "CreateReplacementMediaProjectionBinding", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": true, "id": "RefreshMediaProjectionAccess", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": false, "id": "GetMediaProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": true, "id": "RefreshCreditCostProjectionAccess", "receipt": {"kind": "command-receipt", "recoveryOperation": "RecoverProjectionCommand", "ref": "kokoro.session.media.v1.ProjectionCommandReceipt"}, "retryClass": "reconcile_receipt", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-credit", "audience": "session.media-projection.credit"}]},
+        {"effect": false, "id": "GetCreditCostProjectionBinding", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-credit", "audience": "session.media-projection.credit"}]},
+        {"effect": false, "id": "RecoverProjectionCommand", "receipt": null, "retryClass": "after_delay", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-admission", "audience": "session.media-projection.reservation"}, {"role": "platform-media", "audience": "session.media-projection.media"}, {"role": "platform-credit", "audience": "session.media-projection.credit"}]}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.session", "repository": "kokoro-session"},
       "scope": "site",
       "sourceStatus": "machine-readable",
       "sources": [{"kind": "proto", "path": "contract/proto/kokoro/session/media/v1/media_projection.proto", "select": {"service": "SessionMediaProjectionService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
+      "version": 1
+    },
+    {
+      "audience": "platform-media-and-credit-projection-pumps",
+      "consumers": [{"boundary": "service.platform", "repository": "kokoro-platform"}],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-session",
+      "id": "session-media-projection-ingest",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "ApplyMediaProjectionEvent", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-media", "audience": "session.media-projection.media"}]},
+        {"effect": true, "id": "ApplyCreditCostProjectionEvent", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "connect-rpc", "trustedCallers": [{"role": "platform-credit", "audience": "session.media-projection.credit"}]}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.session", "repository": "kokoro-session"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/session/media/v1/media_projection_ingest.proto", "select": {"service": "SessionMediaProjectionIngestService"}}],
       "transportSource": null,
       "transports": ["connect-rpc"],
       "trustPlane": "internal-control",
@@ -84,9 +105,9 @@
       "lifecycle": "contract-only",
       "operations": [
         {"effect": true, "id": "MediaProjectionBindingCommitted", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.MediaProjectionActivationReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
-        {"effect": true, "id": "MediaOperationProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
-        {"effect": true, "id": "MediaCandidateProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
-        {"effect": true, "id": "MediaArtifactProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
+        {"effect": true, "id": "MediaOperationProjectionChanged", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
+        {"effect": true, "id": "MediaCandidateProjectionChanged", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"},
+        {"effect": true, "id": "MediaArtifactProjectionChanged", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
       ],
       "protocol": "durable-event",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
@@ -106,7 +127,7 @@
       "id": "credit-session-cost-projection-events",
       "lifecycle": "contract-only",
       "operations": [
-        {"effect": true, "id": "CreditCostProjectionChanged", "receipt": {"kind": "durable-event", "ref": "event_ref"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
+        {"effect": true, "id": "CreditCostProjectionChanged", "receipt": {"kind": "durable-event", "ref": "kokoro.session.media.v1.ProjectionIngestReceipt"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "capability-binding", "transport": "durable-event"}
       ],
       "protocol": "durable-event",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
@@ -257,7 +278,13 @@
           "retryClass": "after_delay",
           "scope": "site",
           "siteBinding": "request-field",
-          "transport": "connect-rpc"
+          "transport": "connect-rpc",
+          "trustedCallers": [
+            {
+              "role": "platform-admission",
+              "audience": "session.admission-owner"
+            }
+          ]
         },
         {
           "effect": false,
@@ -266,7 +293,13 @@
           "retryClass": "after_delay",
           "scope": "site",
           "siteBinding": "request-field",
-          "transport": "connect-rpc"
+          "transport": "connect-rpc",
+          "trustedCallers": [
+            {
+              "role": "platform-admission",
+              "audience": "session.admission-owner"
+            }
+          ]
         }
       ],
       "protocol": "connect-rpc",

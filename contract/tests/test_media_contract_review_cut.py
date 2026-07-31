@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import importlib.util
+import re
 import subprocess
 from pathlib import Path
 
@@ -13,6 +14,12 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def _read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
+
+
+def _message(source: str, name: str) -> str:
+    match = re.search(rf"message {name} \{{(?P<body>.*?)\n\}}", source, re.DOTALL)
+    assert match is not None, name
+    return match.group("body")
 
 
 def test_canonicalizers_take_one_immutable_data_descriptor_snapshot() -> None:
@@ -36,6 +43,229 @@ def test_projection_failure_state_and_terminal_taxonomies_are_closed() -> None:
     assert "oneof artifact_state" in durable
     assert "MEDIA_PROJECTION_TERMINAL_OUTCOME_CLASS_CANONICAL" in durable
     assert "enum MediaProjectionFailureCode" in session
+
+
+def test_admission_carries_only_the_session_owner_issued_projection_authorization() -> None:
+    admission = _read("contract/proto/kokoro/platform/admission/v1/admission.proto")
+    prepare = _message(admission, "PrepareRunEffect")
+    assert "string session_projection_authorization_handle" in prepare
+    assert "min_len: 32" in prepare
+    assert "max_len: 8192" in prepare
+
+    for browser_safe_message in ("SafeAdmissionSnapshot", "PreparedRunAuthorization"):
+        assert "session_projection_authorization_handle" not in _message(
+            admission, browser_safe_message
+        )
+    assert "session_projection_authorization_handle" not in _read(
+        "contract/openapi/platform-public-v1.yaml"
+    )
+
+
+def test_projection_ingest_is_a_separate_typed_connect_delivery_entry() -> None:
+    source = _read(
+        "contract/proto/kokoro/session/media/v1/media_projection_ingest.proto"
+    )
+    service = re.search(
+        r"service SessionMediaProjectionIngestService \{(.*?)\n\}", source, re.DOTALL
+    )
+    assert service is not None
+    methods = re.findall(r"rpc (\w+)\(", service.group(1))
+    assert methods == [
+        "ApplyMediaProjectionEvent",
+        "ApplyCreditCostProjectionEvent",
+    ]
+
+    media_request = _message(source, "ApplyMediaProjectionEventRequest")
+    assert "MediaProjectionDeliveryEnvelope delivery" in media_request
+    assert "oneof delivery" not in media_request
+    assert "MediaProjectionBindingCommittedDeliveryEnvelope" not in media_request
+    assert "caller_role" not in media_request
+    assert "caller_audience" not in media_request
+    assert "spiffe" not in media_request.lower()
+
+    credit_request = _message(source, "ApplyCreditCostProjectionEventRequest")
+    assert "CreditCostProjectionDeliveryEnvelope delivery" in credit_request
+    assert "caller_role" not in credit_request
+    assert "caller_audience" not in credit_request
+    assert "spiffe" not in credit_request.lower()
+
+    receipt = _message(source, "ProjectionIngestReceipt")
+    for field in (
+        "event_ref",
+        "record_digest",
+        "binding_ref",
+        "source_sequence",
+        "outcome",
+        "recovery_action",
+        "accepted_high_watermark",
+        "recorded_at",
+    ):
+        assert field in receipt
+    for outcome in (
+        "PROJECTION_INGEST_OUTCOME_APPLIED",
+        "PROJECTION_INGEST_OUTCOME_REPLAYED",
+        "PROJECTION_INGEST_OUTCOME_PENDING_GAP",
+        "PROJECTION_INGEST_OUTCOME_REJECTED",
+        "PROJECTION_INGEST_OUTCOME_SUPPRESSED",
+    ):
+        assert outcome in source
+    for action in (
+        "PROJECTION_INGEST_RECOVERY_ACTION_NONE",
+        "PROJECTION_INGEST_RECOVERY_ACTION_RECOVER_MISSING_PREDECESSOR",
+        "PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER",
+        "PROJECTION_INGEST_RECOVERY_ACTION_CONTACT_SUPPORT",
+    ):
+        assert action in source
+    for rejection in (
+        "PROJECTION_INGEST_REJECTION_CODE_RECORD_INTEGRITY_CONFLICT",
+        "PROJECTION_INGEST_REJECTION_CODE_OWNER_FENCE_CONFLICT",
+    ):
+        assert rejection in source
+    assert "projection_ingest.outcome_recovery_contract" in source
+
+
+def test_projection_ingest_outcome_and_recovery_contract_executes() -> None:
+    runner = r'''
+import {execFileSync} from "node:child_process";
+import {createFileRegistry,fromBinary,fromJson} from "@bufbuild/protobuf";
+import {FileDescriptorSetSchema} from "@bufbuild/protobuf/wkt";
+import {createValidator} from "@bufbuild/protovalidate";
+const registry=createFileRegistry(fromBinary(FileDescriptorSetSchema,execFileSync("./node_modules/.bin/buf",["build","proto","--as-file-descriptor-set","-o","-"],{encoding:"buffer"})));
+const descriptor=registry.getMessage("kokoro.session.media.v1.ProjectionIngestReceipt");
+const validator=createValidator({registry,failFast:false});
+const base={eventRef:"event-1",recordDigest:"a".repeat(64),bindingRef:"binding-1",sourceSequence:"2",acceptedHighWatermark:"1",recordedAt:"1970-01-01T00:00:00Z"};
+function validate(value){return validator.validate(descriptor,fromJson(descriptor,{...base,...value})).kind;}
+const observed={
+  applied:validate({outcome:"PROJECTION_INGEST_OUTCOME_APPLIED",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_NONE",acceptedHighWatermark:"2"}),
+  gap:validate({outcome:"PROJECTION_INGEST_OUTCOME_PENDING_GAP",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_RECOVER_MISSING_PREDECESSOR",expectedNextSequence:"2"}),
+  integrity:validate({outcome:"PROJECTION_INGEST_OUTCOME_REJECTED",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_CONTACT_SUPPORT",rejectionCode:"PROJECTION_INGEST_REJECTION_CODE_RECORD_INTEGRITY_CONFLICT"}),
+  fence:validate({outcome:"PROJECTION_INGEST_OUTCOME_REJECTED",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER",rejectionCode:"PROJECTION_INGEST_REJECTION_CODE_OWNER_FENCE_CONFLICT"}),
+  missingGap:validate({outcome:"PROJECTION_INGEST_OUTCOME_PENDING_GAP",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_RECOVER_MISSING_PREDECESSOR"}),
+  wrongApplied:validate({outcome:"PROJECTION_INGEST_OUTCOME_APPLIED",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER"}),
+  wrongRejected:validate({outcome:"PROJECTION_INGEST_OUTCOME_REJECTED",recoveryAction:"PROJECTION_INGEST_RECOVERY_ACTION_RECONCILE_OWNER",rejectionCode:"PROJECTION_INGEST_REJECTION_CODE_RECORD_INTEGRITY_CONFLICT"}),
+};
+process.stdout.write(JSON.stringify(observed));
+'''
+    result = subprocess.run(
+        ["node", "--input-type=module", "-"],
+        cwd=ROOT / "contract",
+        input=runner,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {
+        "applied": "valid",
+        "gap": "valid",
+        "integrity": "valid",
+        "fence": "valid",
+        "missingGap": "invalid",
+        "wrongApplied": "invalid",
+        "wrongRejected": "invalid",
+    }
+
+
+def test_projection_boundaries_freeze_method_level_trusted_callers() -> None:
+    registry = json.loads(_read("contract/registry/boundaries.yaml"))
+    boundaries = {boundary["id"]: boundary for boundary in registry["boundaries"]}
+
+    def callers(boundary: str, operation: str) -> list[dict[str, str]]:
+        item = next(
+            candidate
+            for candidate in boundaries[boundary]["operations"]
+            if candidate["id"] == operation
+        )
+        return item["trustedCallers"]
+
+    admission = [
+        {
+            "role": "platform-admission",
+            "audience": "session.media-projection.reservation",
+        }
+    ]
+    media = [
+        {
+            "role": "platform-media",
+            "audience": "session.media-projection.media",
+        }
+    ]
+    credit = [
+        {
+            "role": "platform-credit",
+            "audience": "session.media-projection.credit",
+        }
+    ]
+
+    assert callers("session-media-projection", "IssueMediaProjectionReservation") == admission
+    for operation in (
+        "BindMediaProjectionTarget",
+        "RecoverMediaProjectionActivation",
+        "CreateReplacementMediaProjectionBinding",
+        "RefreshMediaProjectionAccess",
+        "GetMediaProjectionBinding",
+    ):
+        assert callers("session-media-projection", operation) == media
+    for operation in (
+        "RefreshCreditCostProjectionAccess",
+        "GetCreditCostProjectionBinding",
+    ):
+        assert callers("session-media-projection", operation) == credit
+    assert callers("session-media-projection", "RecoverProjectionCommand") == [
+        *admission,
+        *media,
+        *credit,
+    ]
+    assert callers("session-media-projection-ingest", "ApplyMediaProjectionEvent") == media
+    assert callers(
+        "session-media-projection-ingest", "ApplyCreditCostProjectionEvent"
+    ) == credit
+    for operation in ("VerifyPrepareOwner", "VerifyFinalizeOwner"):
+        assert callers("session-admission-owner", operation) == [
+            {
+                "role": "platform-admission",
+                "audience": "session.admission-owner",
+            }
+        ]
+
+    media_events = boundaries["media-session-projection-events"]["operations"]
+    activation = next(
+        item
+        for item in media_events
+        if item["id"] == "MediaProjectionBindingCommitted"
+    )
+    assert activation["receipt"]["ref"] == (
+        "kokoro.session.media.v1.MediaProjectionActivationReceipt"
+    )
+
+
+def test_projection_ingest_federation_and_generation_stay_contract_only() -> None:
+    manifest = json.loads(_read("config/repository/federated-repositories.json"))
+    repositories = {repository["id"]: repository for repository in manifest["repositories"]}
+
+    def protocol(repository: str) -> dict[str, object]:
+        return next(
+            item
+            for item in repositories[repository]["protocols"]
+            if item["id"] == "session-media-projection-ingest"
+        )
+
+    assert protocol("kokoro-platform") == {
+        "id": "session-media-projection-ingest",
+        "version": 1,
+        "role": "consumer",
+        "lifecycle": "contract-only",
+    }
+    assert protocol("kokoro-session") == {
+        "id": "session-media-projection-ingest",
+        "version": 1,
+        "role": "provider",
+        "lifecycle": "contract-only",
+    }
+    generator = _read("contract/generate.mjs")
+    assert '"session-media-projection-ingest@v1"' in generator
+    generated_gate = _read("scripts/repository/check-generated-contracts.mjs")
+    assert '"session-media-projection-ingest@v1"' in generated_gate
 
 
 def test_browser_media_parts_preserve_the_signed_producer_union() -> None:

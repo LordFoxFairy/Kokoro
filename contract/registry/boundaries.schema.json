@@ -180,6 +180,15 @@
           "description": "Must appear in the owning boundary's transports list. One operation, one transport, forever.",
           "minLength": 1,
           "type": "string"
+        },
+        "trustedCallers": {
+          "description": "Closed method-level caller role and target audience pairs. The server derives the pair from authenticated SPIFFE transport context; these values never come from request fields.",
+          "items": {
+            "$ref": "#/$defs/trustedCaller"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
         }
       },
       "required": [
@@ -198,6 +207,24 @@
           }
         }
       },
+      "type": "object"
+    },
+    "trustedCaller": {
+      "additionalProperties": false,
+      "properties": {
+        "audience": {
+          "pattern": "^[a-z0-9][a-z0-9.-]{0,127}$",
+          "type": "string"
+        },
+        "role": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,127}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "audience"
+      ],
       "type": "object"
     },
     "party": {
