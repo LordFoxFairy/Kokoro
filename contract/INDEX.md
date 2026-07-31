@@ -167,7 +167,10 @@ surface. Its 17 operations cover explicit settings, bounded list/detail/history,
 priority, immediate logical forget/reset, asynchronous import/export, and command recovery. Site, subject, space, and
 namespace scope are derived from authenticated workload/user context and never accepted from the browser. Category is
 limited to `profile | preference | fact` and never acts as a hidden scope selector. Project Memory remains feature-off
-until its distinct membership/operation policy and public intent are frozen. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
+until its distinct membership/operation policy and public intent are frozen. Entry pages carry an owner-issued
+`snapshotRef + spaceVersion`; continuations are bound to that pair and fail stale after any public projection mutation.
+Succeeded commands and detail reads expose the committed/observed owner version, allowing Web to replace unbounded
+per-entry anti-revival state with one monotonic scope fence. Import references an Asset-owned quarantined version while Platform resolves its owner facts; export exposes
 only a non-bearer Artifact authorization request ref that still requires current Site/user reauthorization. Past-chat
 search, Temporary Chat, selection, ContextAssembly/ContextActivity, automatic learning, and GA runtime are absent until their owning phases
 are promoted.

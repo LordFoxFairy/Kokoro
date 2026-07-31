@@ -265,6 +265,7 @@ Project instructions 无法解析时 admission fail closed。
 ### Data requirements
 
 - revision/provenance/selection/search/assembly receipts append-only；current head 以 CAS 推进。
+- public list/detail/command 投影共享单调 `spaceVersion`；分页 `snapshotRef` 与 scope/filter/order/version 绑定，owner 版本变化后旧 cursor 必须 stale reject，Web 只保留有界的 scope version fence。
 - content 加密 at rest；key revision/audience/associated-data digest 显式；plaintext/query 不进入日志、metric、trace、receipt safe payload。
 - logical revoke 同步生效，physical purge 异步且有 cutoff/watermark；content-free tombstone 不能含稳定公共 content hash。
 - prelaunch 旧实验数据不迁移为产品记忆；M2 hard-cut 后 Agent 旧 free-form memory store 不进入生产 composition。

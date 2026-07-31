@@ -83,6 +83,7 @@ MEMORY_OBJECT_SCHEMAS = {
     "MemoryExportInput",
     "MemoryImportInput",
     "MemorySourceSummary",
+    "MemoryOwnerSnapshot",
     "MemoryEntryActiveView",
     "MemoryEntryRevokedView",
     "MemoryEntryPurgedView",
@@ -252,6 +253,23 @@ def test_memory_requests_are_closed_bounded_and_have_no_caller_scope() -> None:
         "type": "string",
         "const": "user",
     }
+
+    owner_snapshot = schemas["MemoryOwnerSnapshot"]
+    assert owner_snapshot["additionalProperties"] is False
+    assert owner_snapshot["required"] == ["snapshotRef", "spaceVersion"]
+    assert schemas["MemoryEntryPage"]["required"] == ["items", "pageInfo", "ownerSnapshot"]
+    assert schemas["MemoryEntryPage"]["properties"]["ownerSnapshot"] == {
+        "$ref": "#/components/schemas/MemoryOwnerSnapshot"
+    }
+    assert schemas["MemoryEntryPage"][
+        "x-kokoro-continuation-requires-same-owner-snapshot"
+    ] is True
+    assert schemas["MemoryEntryPage"]["x-kokoro-stale-owner-snapshot-rejected"] is True
+    assert schemas["MemoryEntryResponse"]["required"] == ["entry", "observedSpaceVersion"]
+    succeeded = schemas["MemoryCommandSucceededResponse"]
+    assert succeeded["required"] == ["state", "command", "result", "committedSpaceVersion"]
+    assert "committedSpaceVersion" not in schemas["MemoryCommandPendingResponse"]["properties"]
+    assert "committedSpaceVersion" not in schemas["MemoryCommandRejectedResponse"]["properties"]
 
     import_input = schemas["MemoryImportInput"]
     assert import_input["x-kokoro-referenced-manifest-max-utf8-bytes"] == 65536

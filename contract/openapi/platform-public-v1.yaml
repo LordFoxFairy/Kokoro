@@ -6103,6 +6103,9 @@ components:
           format: date-time
       required: [entryRef, state, purgeReceiptRef, purgedAt]
     MemoryEntryView:
+      description: >-
+        Current owner projection of one stable entry identity. An entryRef is never reused after
+        logical revocation or physical purge.
       discriminator:
         propertyName: state
         mapping:
@@ -6113,9 +6116,33 @@ components:
         - $ref: '#/components/schemas/MemoryEntryActiveView'
         - $ref: '#/components/schemas/MemoryEntryRevokedView'
         - $ref: '#/components/schemas/MemoryEntryPurgedView'
+    MemoryOwnerSnapshot:
+      type: object
+      additionalProperties: false
+      description: >-
+        Opaque owner-issued list snapshot. snapshotRef is bound to the authenticated personal
+        Memory space, normalized filters, ordering, spaceVersion, and a bounded expiry. Every
+        mutation that can change a public entry's content/current revision, priority, active
+        membership, revocation or reset state advances spaceVersion. A continuation cursor is
+        valid only while the owner remains at this exact version.
+      properties:
+        snapshotRef:
+          type: string
+          minLength: 3
+          maxLength: 256
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,255}$'
+        spaceVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [snapshotRef, spaceVersion]
     MemoryEntryPage:
       type: object
       additionalProperties: false
+      x-kokoro-continuation-requires-same-owner-snapshot: true
+      x-kokoro-stale-owner-snapshot-rejected: true
+      description: >-
+        The first page creates ownerSnapshot. Every continuation returns the identical snapshotRef
+        and spaceVersion. If the owner version changed, the cursor is rejected instead of serving
+        an old snapshot; callers restart from a new first page.
       properties:
         items:
           type: array
@@ -6124,14 +6151,19 @@ components:
             $ref: '#/components/schemas/MemoryEntryActiveView'
         pageInfo:
           $ref: '#/components/schemas/PageInfo'
-      required: [items, pageInfo]
+        ownerSnapshot:
+          $ref: '#/components/schemas/MemoryOwnerSnapshot'
+      required: [items, pageInfo, ownerSnapshot]
     MemoryEntryResponse:
       type: object
       additionalProperties: false
       properties:
         entry:
           $ref: '#/components/schemas/MemoryEntryView'
-      required: [entry]
+        observedSpaceVersion:
+          description: Owner space version at which this current entry projection was authorized.
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [entry, observedSpaceVersion]
     MemoryRevisionAvailableView:
       type: object
       additionalProperties: false
@@ -6503,6 +6535,9 @@ components:
     MemoryCommandSucceededResponse:
       type: object
       additionalProperties: false
+      description: >-
+        A recovered succeeded response repeats the original committedSpaceVersion. Pending and
+        rejected outcomes never fabricate a committed owner version.
       properties:
         state:
           type: string
@@ -6511,7 +6546,12 @@ components:
           $ref: '#/components/schemas/MemoryCommandCursor'
         result:
           $ref: '#/components/schemas/MemoryCommandResult'
-      required: [state, command, result]
+        committedSpaceVersion:
+          description: >-
+            Monotonic owner version committed by this command, or the current observed version for
+            a succeeded command that does not change the entry/list projection.
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [state, command, result, committedSpaceVersion]
     MemoryCommandRejection:
       type: object
       additionalProperties: false

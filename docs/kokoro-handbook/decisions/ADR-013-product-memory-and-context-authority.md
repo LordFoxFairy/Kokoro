@@ -864,7 +864,11 @@ Contract maxima protect every caller even when a Site configures smaller budgets
 - proposal/query UTF-8 input: 32 KiB/8 KiB; one canonical Memory payload: 16 KiB;
 - at most 32 provenance sources and 20 returned entries per selection/search;
 - at most 4,096 injected Memory tokens per Run by default, with a lower product/Agent profile limit;
-- public list/search pages at most 100 entries with opaque, scope-bound cursors;
+- public list/search pages at most 100 entries with opaque, scope/filter/version-bound cursors. A
+  first page issues `snapshotRef + spaceVersion`; continuation is valid only at that exact owner
+  version and fails stale after entry content/head, priority, active membership, forget or reset
+  changes. Succeeded commands return their committed version and detail reads return their observed
+  version, so clients need one monotonic scope fence rather than an unbounded tombstone set;
 - imports are streamed, content-count/byte limited and asynchronous above the public request budget;
 - every remote/model/index operation has an `AbortSignal`, deadline, bounded retries and a global plus
   Site/space concurrency limit. Worker leases and provider semaphores provide backpressure.
