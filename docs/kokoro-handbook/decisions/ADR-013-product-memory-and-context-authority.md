@@ -481,6 +481,24 @@ same Session inherits immutable conversation context up to its fork point but pe
 selection for its new Run; it records the parent manifest/snapshot lineage rather than copying
 mutable Memory rows. A branch of a temporary Session remains temporary.
 
+Initial context is deliberately split into two bounded sets rather than treating every retained fact
+as either an unconditional prompt block or a tool-only vector result:
+
+1. **Pinned profile set.** A very small, separately budgeted set of active user-pinned or
+   policy-qualified stable facts is selected automatically. The owner, not GA, decides eligibility;
+   sensitive, contested, expired, project-inapplicable and low-confidence inferred facts are
+   excluded. The exact revisions remain read-only to GA for the Run and are never represented as a
+   mutable Agent-owned profile blob.
+2. **Turn-relevant set.** Admission performs policy-first retrieval using the current command/task
+   query and selects only the cited facts that pass relevance, validity and token budgets. This gives
+   normal chat personalization without requiring the model to remember that a search tool exists.
+
+Both sets are carried by the same immutable `MemorySelectionSnapshot`, but record their selection
+class independently so Web can explain whether an item was pinned or retrieved. Explicit managed,
+user and Project instructions remain `ProjectContextRevision` material and are not smuggled into the
+pinned Memory set. GA scratchpads, plans, summaries and tool-local notes remain bounded working
+context; they do not become product Memory merely because they survive a checkpoint.
+
 Additional on-demand Memory and past-chat searches are external reads with durable semantics, not
 journal-exempt “pure” tools. Every request is keyed by:
 
@@ -1049,6 +1067,8 @@ rebuilt from revisions and provenance.
 - [Manus context engineering](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
 - [Manus Branch](https://manus.im/blog/manus-branch)
 - [LangMem](https://github.com/langchain-ai/langmem)
+- [LangGraph memory concepts](https://docs.langchain.com/oss/python/concepts/memory)
 - [Mem0](https://github.com/mem0ai/mem0)
 - [Graphiti](https://github.com/getzep/graphiti)
 - [Letta](https://github.com/letta-ai/letta)
+- [Letta context hierarchy](https://docs.letta.com/guides/core-concepts/memory/context-hierarchy)
