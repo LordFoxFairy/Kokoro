@@ -55,6 +55,13 @@ objects:
       - {name: review_tools, type: array:string_nonempty}
       - {name: subagent_create, type: enum:subagent_create}
       - {name: filesystem, type: enum:filesystem_perm}
+  # Platform Admission seals run-bound Media authority into the request. Both
+  # values are opaque to Session and GA: they carry no Site, subject, credit,
+  # provider, or storage facts and are never exposed to model-editable input.
+  - name: MediaRuntimeGrant
+    fields:
+      - {name: media_access_handle, type: reference}
+      - {name: media_projection_reservation_handle, type: reference}
   # wire 只传 names + 已解析上下文；一切定义（prompt/subagent/MCP server）归 agent 侧资产/配置。
   - name: RuntimeConfig
     fields:
@@ -75,6 +82,10 @@ objects:
       - {name: subagents, type: array:string_nonempty}
       - {name: backend, type: enum:backend}
       - {name: permissions, type: object:Permissions}
+      # Optional because chat-only Site releases do not expose Media. When
+      # present the pair is atomic: GA cannot receive Media authority without
+      # an exact Session projection reservation for the same run.
+      - {name: media, type: object:MediaRuntimeGrant, optional: true}
   # 会话连续性由 thread checkpoint 承担；组织/用户维度等真实 auth 落地再进契约（拒绝投机字段）。
   - name: RuntimeContext
     fields:

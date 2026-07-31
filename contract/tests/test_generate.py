@@ -391,6 +391,10 @@ def test_run_request_shape() -> None:
     assert 'Field(discriminator="mode")' in control_py
     assert "parent_anchor: Reference" in control_py
     assert "parent_digest: Sha256Str" in control_py
+    assert "class MediaRuntimeGrant(StrictModel):" in control_py
+    assert "media_access_handle: Reference" in control_py
+    assert "media_projection_reservation_handle: Reference" in control_py
+    assert "media: MediaRuntimeGrant | None = None" in control_py
 
     control_init = _find("kokoro-agent/src/kokoro_agent/contract/__init__.py")
     assert "ExecutionContextIntentRoot" in control_init
@@ -407,6 +411,11 @@ def test_run_request_shape() -> None:
         "value.trim() === value)"
     ) in control_ts
     assert "parent_digest: z.string().regex(/^[0-9a-f]{64}$/u)" in control_ts
+    assert "export const mediaRuntimeGrantSchema = z" in control_ts
+    assert ".object({" in control_ts
+    assert "media_access_handle: z.string().min(1).max(256)" in control_ts
+    assert "media_projection_reservation_handle: z.string().min(1).max(256)" in control_ts
+    assert "media: mediaRuntimeGrantSchema.optional()" in control_ts
 
     namespace: dict[str, object] = {}
     exec(control_py, namespace)
@@ -418,6 +427,46 @@ def test_run_request_shape() -> None:
     for anchor in (" ctx", "ctx ", "x" * 257, "ctx\n"):
         with pytest.raises(Exception):
             arm(mode="continue", parent_anchor=anchor, parent_digest=digest)
+
+    runtime = namespace["RuntimeConfig"]
+    runtime.model_rebuild(_types_namespace=namespace)
+    base_runtime = {
+        "agent_catalog_ref": "agent-catalog:sha256:" + "a" * 64,
+        "agent_type": "general",
+        "model": {
+            "provider": "litellm",
+            "name": "chat",
+            "authorization_handle": "model-authorization:sha256:" + "b" * 64,
+        },
+        "tools": [],
+        "skills": [],
+        "mcp_servers": [],
+        "subagents": [],
+        "backend": "state",
+        "permissions": {
+            "approval_tools": [],
+            "review_tools": [],
+            "subagent_create": "deny",
+            "filesystem": "read_only",
+        },
+    }
+    runtime.model_validate(base_runtime)
+    runtime.model_validate({
+        **base_runtime,
+        "media": {
+            "media_access_handle": "media-access:opaque",
+            "media_projection_reservation_handle": "projection-reservation:opaque",
+        },
+    })
+    for invalid_handle in (" value", "value ", "x" * 257, "value\n"):
+        with pytest.raises(Exception):
+            runtime.model_validate({
+                **base_runtime,
+                "media": {
+                    "media_access_handle": invalid_handle,
+                    "media_projection_reservation_handle": "projection-reservation:opaque",
+                },
+            })
 
 
 def test_session_client_and_session_share_outbound_bytes() -> None:
