@@ -59,6 +59,10 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 - Site Web BFF→Platform 普通产品 API 使用 OpenAPI；Admin/Admission 等 privileged control plane 使用 Connect。
 - 同一个远程 operation 只有一个权威 transport contract；不得同时维护 OpenAPI/Connect 双写入口。
 - Root `contract/proto/` 是新 internal RPC 单源，生成镜像提交进 provider/consumer 子仓；禁止手改生成物。
+- Root `platform-public@v1` 已冻结 Product Memory M0.1 的显式 settings/CRUD/history/restore/priority/
+  forget/reset/import/export/recovery 契约，但仍为 `contract-only`。浏览器不提交 Site、subject、Project、
+  space、namespace 或 digest scope；past-chat、Temporary Chat、selection、ContextUse、自动学习和 GA runtime
+  不属于这一契约阶段。
 - 外部参考项目路径、分支名、逐字文案和代码只允许出现在 `tmp/` 中间产物。
 
 ## 子仓说明

@@ -824,6 +824,275 @@ paths:
           $ref: '#/components/responses/ArtifactDeliveryRevocationResponse'
         default:
           $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/settings:
+    get:
+      operationId: getMemorySettings
+      description: >-
+        Returns the effective saved-memory controls for the caller context derived from the
+        authenticated Site workload, user session, and current product context.
+      parameters:
+        - $ref: '#/components/parameters/ContractVersion'
+      security: &memoryUserSecurity
+        - ProductWorkload: []
+          UserSession: []
+      responses:
+        '200':
+          $ref: '#/components/responses/MemorySettingsResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      operationId: updateMemorySettings
+      description: Updates only the currently available saved-memory-use axis.
+      parameters: &memoryMutationParameters
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemorySettingsUpdateRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries:
+    get:
+      operationId: listMemoryEntries
+      description: Lists a bounded page of explicit active entries in the authenticated caller context.
+      parameters:
+        - $ref: '#/components/parameters/MemoryCategoryFilter'
+        - $ref: '#/components/parameters/MemorySourceFilter'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryEntryPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      operationId: rememberMemoryEntry
+      description: Creates an explicit saved entry in the server-derived current Memory space.
+      parameters: *memoryMutationParameters
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryRememberRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}:
+    get:
+      operationId: getMemoryEntry
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryEntryResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}/history:
+    get:
+      operationId: listMemoryEntryHistory
+      description: Returns immutable content revisions or content-free purged revision headers.
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/PageCursor'
+        - $ref: '#/components/parameters/PageLimit'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryEntryHistoryPageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}:correct:
+    post:
+      operationId: correctMemoryEntry
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryCorrectRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}/history/{revisionRef}:restore:
+    post:
+      operationId: restoreMemoryEntryRevision
+      description: Validates an eligible historical payload and appends a new current revision.
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/MemoryRevisionRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryRestoreRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}:prioritize:
+    post:
+      operationId: prioritizeMemoryEntry
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryPriorityRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}:deprioritize:
+    post:
+      operationId: deprioritizeMemoryEntry
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryPriorityRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/entries/{entryRef}:forget:
+    post:
+      operationId: forgetMemoryEntry
+      description: Logically revokes the entry immediately and starts verifiable physical purge.
+      parameters:
+        - $ref: '#/components/parameters/MemoryEntryRef'
+        - $ref: '#/components/parameters/ContractVersion'
+        - $ref: '#/components/parameters/CommandIdentity'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/CsrfToken'
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryForgetRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory:reset:
+    post:
+      operationId: resetMemorySpace
+      description: Logically revokes the server-derived current space and starts verifiable purge.
+      parameters: *memoryMutationParameters
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryResetRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/exports:
+    post:
+      operationId: requestMemoryExport
+      description: Starts an asynchronous, versioned Memory export owned by the current caller context.
+      parameters: *memoryMutationParameters
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryExportRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/exports/{exportRef}:
+    get:
+      operationId: getMemoryExport
+      parameters:
+        - $ref: '#/components/parameters/MemoryExportRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryExportResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/imports:
+    post:
+      operationId: requestMemoryImport
+      description: >-
+        Starts asynchronous validation from an Asset-owned quarantined version. Platform resolves
+        its owner digest and quarantine state; the caller cannot submit either value.
+      parameters: *memoryMutationParameters
+      security: *memoryUserSecurity
+      requestBody:
+        $ref: '#/components/requestBodies/MemoryImportRequest'
+      responses:
+        '202':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/imports/{importRef}:
+    get:
+      operationId: getMemoryImport
+      parameters:
+        - $ref: '#/components/parameters/MemoryImportRef'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryImportResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+  /v1/memory/commands/{commandId}:
+    get:
+      operationId: recoverMemoryCommand
+      description: Recovers the exact durable result of an ambiguous Memory mutation.
+      parameters:
+        - $ref: '#/components/parameters/MemoryCommandId'
+        - $ref: '#/components/parameters/ContractVersion'
+      security: *memoryUserSecurity
+      responses:
+        '200':
+          $ref: '#/components/responses/MemoryCommandResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
   /v1/artifact-delivery-authorizations/{authorizationRef}/content:
     get:
       operationId: redeemArtifactDeliveryAuthorization
@@ -1143,6 +1412,59 @@ components:
         minLength: 3
         maxLength: 128
         pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryEntryRef:
+      name: entryRef
+      in: path
+      required: true
+      schema: &memoryEntryRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryRevisionRef:
+      name: revisionRef
+      in: path
+      required: true
+      schema: &memoryRevisionRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryExportRef:
+      name: exportRef
+      in: path
+      required: true
+      schema: &memoryExportRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryImportRef:
+      name: importRef
+      in: path
+      required: true
+      schema: &memoryImportRefSchema
+        type: string
+        minLength: 3
+        maxLength: 128
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryCommandId:
+      name: commandId
+      in: path
+      required: true
+      schema: *commandIdSchema
+    MemoryCategoryFilter:
+      name: category
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/MemoryCategory'
+    MemorySourceFilter:
+      name: source
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/MemorySourceKind'
     ArtifactByteRange:
       name: Range
       in: header
@@ -1359,6 +1681,60 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ArtifactDeliveryRevocationInput'
+    MemorySettingsUpdateRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemorySettingsUpdateInput'
+    MemoryRememberRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryRememberInput'
+    MemoryCorrectRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryCorrectInput'
+    MemoryRestoreRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryRestoreInput'
+    MemoryPriorityRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryPriorityInput'
+    MemoryForgetRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryForgetInput'
+    MemoryResetRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryResetInput'
+    MemoryExportRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryExportInput'
+    MemoryImportRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryImportInput'
   responses:
     ProductContextExchangeResponse:
       description: A Site-release-bound product context.
@@ -1783,6 +2159,55 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ArtifactDeliveryRevocationResponse'
+    MemorySettingsResponse:
+      description: Effective caller-scoped settings with unavailable successor axes marked explicitly.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemorySettings'
+    MemoryEntryPageResponse:
+      description: A bounded caller-scoped page of explicit Memory entries.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryEntryPage'
+    MemoryEntryResponse:
+      description: One current entry projection or a content-free revoked/purged projection.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryEntryResponse'
+    MemoryEntryHistoryPageResponse:
+      description: A bounded immutable revision page; purged payloads never reappear.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryEntryHistoryPage'
+    MemoryCommandResponse:
+      description: Durable Memory command state recoverable by the original command identity.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryCommandResponse'
+    MemoryExportResponse:
+      description: Current asynchronous export status with at most one non-bearer Artifact authorization request.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryExportResponse'
+    MemoryImportResponse:
+      description: Current asynchronous quarantine, validation, and apply status.
+      headers: *ownerProjectionResponseHeaders
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MemoryImportResponse'
     ErrorResponse:
       description: Stable, non-disclosing Platform error.
       headers:
@@ -5384,6 +5809,751 @@ components:
         receipt:
           $ref: '#/components/schemas/ArtifactDeliveryRevocationReceipt'
       required: [receipt]
+    MemorySettingsAxis:
+      type: object
+      additionalProperties: false
+      properties:
+        requested:
+          type: boolean
+        effective:
+          type: boolean
+        availability:
+          type: string
+          const: available
+        policyReason:
+          type: [string, 'null']
+          maxLength: 256
+      required: [requested, effective, availability, policyReason]
+    MemorySettings:
+      type: object
+      additionalProperties: false
+      properties:
+        revision:
+          $ref: '#/components/schemas/PositiveUint64String'
+        savedMemoryUse:
+          $ref: '#/components/schemas/MemorySettingsAxis'
+        pastChatReference:
+          type: object
+          additionalProperties: false
+          properties:
+            requested:
+              type: boolean
+              const: false
+            effective:
+              type: boolean
+              const: false
+            availability:
+              type: string
+              const: unavailable_until_session_m1a
+            policyReason:
+              type: [string, 'null']
+              maxLength: 256
+          required: [requested, effective, availability, policyReason]
+        automaticLearning:
+          type: object
+          additionalProperties: false
+          properties:
+            requested:
+              type: boolean
+              const: false
+            effective:
+              type: boolean
+              const: false
+            availability:
+              type: string
+              const: unavailable_until_memory_m3
+            policyReason:
+              type: [string, 'null']
+              maxLength: 256
+          required: [requested, effective, availability, policyReason]
+        observedAt:
+          type: string
+          format: date-time
+      required:
+        - revision
+        - savedMemoryUse
+        - pastChatReference
+        - automaticLearning
+        - observedAt
+    MemorySettingsUpdateInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        expectedRevision:
+          $ref: '#/components/schemas/PositiveUint64String'
+        savedMemoryUseRequested:
+          type: boolean
+      required: [expectedRevision, savedMemoryUseRequested]
+    MemoryCategory:
+      type: string
+      enum: [profile, preference, fact, project_fact]
+    MemorySourceKind:
+      type: string
+      enum: [explicit, import]
+    MemoryRememberInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        category:
+          $ref: '#/components/schemas/MemoryCategory'
+        content:
+          type: string
+          minLength: 1
+          maxLength: 16384
+          x-kokoro-max-utf8-bytes: 16384
+        validFrom:
+          type: [string, 'null']
+          format: date-time
+        validTo:
+          type: [string, 'null']
+          format: date-time
+      required: [category, content, validFrom, validTo]
+    MemoryCorrectInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        content:
+          type: string
+          minLength: 1
+          maxLength: 16384
+          x-kokoro-max-utf8-bytes: 16384
+        validFrom:
+          type: [string, 'null']
+          format: date-time
+        validTo:
+          type: [string, 'null']
+          format: date-time
+      required: [expectedRevision, content, validFrom, validTo]
+    MemoryRestoreInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        expectedRevision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+      required: [expectedRevision]
+    MemoryPriorityInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        expectedEntryVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+      required: [expectedEntryVersion]
+    MemoryForgetInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        expectedEntryVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        acknowledgeIrreversiblePurge:
+          type: boolean
+          const: true
+      required: [expectedEntryVersion, acknowledgeIrreversiblePurge]
+    MemoryResetInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        acknowledgeIrreversiblePurge:
+          type: boolean
+          const: true
+      required: [acknowledgeIrreversiblePurge]
+    MemoryExportInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      properties:
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        includeHistory:
+          type: boolean
+      required: [format, includeHistory]
+    MemoryImportInput:
+      type: object
+      additionalProperties: false
+      x-kokoro-max-json-utf8-bytes: 65536
+      x-kokoro-referenced-manifest-max-utf8-bytes: 65536
+      description: >-
+        References one currently authorized, quarantined Asset version. Platform obtains the
+        authoritative content identity and quarantine facts directly from Asset; neither is caller input.
+      properties:
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        conflictPolicy:
+          type: string
+          const: quarantine
+      required: [assetRef, assetVersionRef, format, conflictPolicy]
+    MemorySourceSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        sourceKind:
+          $ref: '#/components/schemas/MemorySourceKind'
+        safeLabel:
+          type: string
+          minLength: 1
+          maxLength: 160
+        state:
+          type: string
+          enum: [current, restricted, unavailable]
+      required: [sourceKind, safeLabel, state]
+    MemoryEntryActiveView:
+      type: object
+      additionalProperties: false
+      properties:
+        entryRef: *memoryEntryRefSchema
+        state:
+          type: string
+          const: active
+        scopeKind:
+          type: string
+          enum: [user, project]
+        category:
+          $ref: '#/components/schemas/MemoryCategory'
+        source:
+          $ref: '#/components/schemas/MemorySourceSummary'
+        content:
+          type: string
+          minLength: 1
+          maxLength: 16384
+          x-kokoro-max-utf8-bytes: 16384
+        revision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        currentRevisionRef: *memoryRevisionRefSchema
+        entryVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        prioritized:
+          type: boolean
+        validFrom:
+          type: [string, 'null']
+          format: date-time
+        validTo:
+          type: [string, 'null']
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - entryRef
+        - state
+        - scopeKind
+        - category
+        - source
+        - content
+        - revision
+        - currentRevisionRef
+        - entryVersion
+        - prioritized
+        - validFrom
+        - validTo
+        - createdAt
+        - updatedAt
+    MemoryEntryRevokedView:
+      type: object
+      additionalProperties: false
+      properties:
+        entryRef: *memoryEntryRefSchema
+        state:
+          type: string
+          const: revoked_purge_pending
+        purgeReceiptRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        revokedAt:
+          type: string
+          format: date-time
+      required: [entryRef, state, purgeReceiptRef, revokedAt]
+    MemoryEntryPurgedView:
+      type: object
+      additionalProperties: false
+      properties:
+        entryRef: *memoryEntryRefSchema
+        state:
+          type: string
+          const: purged
+        purgeReceiptRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        purgedAt:
+          type: string
+          format: date-time
+      required: [entryRef, state, purgeReceiptRef, purgedAt]
+    MemoryEntryView:
+      discriminator:
+        propertyName: state
+        mapping:
+          active: '#/components/schemas/MemoryEntryActiveView'
+          revoked_purge_pending: '#/components/schemas/MemoryEntryRevokedView'
+          purged: '#/components/schemas/MemoryEntryPurgedView'
+      oneOf:
+        - $ref: '#/components/schemas/MemoryEntryActiveView'
+        - $ref: '#/components/schemas/MemoryEntryRevokedView'
+        - $ref: '#/components/schemas/MemoryEntryPurgedView'
+    MemoryEntryPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/MemoryEntryActiveView'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [items, pageInfo]
+    MemoryEntryResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        entry:
+          $ref: '#/components/schemas/MemoryEntryView'
+      required: [entry]
+    MemoryRevisionAvailableView:
+      type: object
+      additionalProperties: false
+      properties:
+        revisionRef: *memoryRevisionRefSchema
+        revision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        state:
+          type: string
+          const: available
+        reason:
+          type: string
+          enum: [explicit, corrected, imported, restored]
+        content:
+          type: string
+          minLength: 1
+          maxLength: 16384
+          x-kokoro-max-utf8-bytes: 16384
+        supersedesRevisionRef:
+          $ref: '#/components/schemas/MemoryNullableRevisionRef'
+        validFrom:
+          type: [string, 'null']
+          format: date-time
+        validTo:
+          type: [string, 'null']
+          format: date-time
+        recordedAt:
+          type: string
+          format: date-time
+        restorable:
+          type: boolean
+      required:
+        - revisionRef
+        - revision
+        - state
+        - reason
+        - content
+        - supersedesRevisionRef
+        - validFrom
+        - validTo
+        - recordedAt
+        - restorable
+    MemoryNullableRevisionRef:
+      type: [string, 'null']
+      minLength: 3
+      maxLength: 128
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+    MemoryRevisionPurgedView:
+      type: object
+      additionalProperties: false
+      properties:
+        revisionRef: *memoryRevisionRefSchema
+        revision:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        state:
+          type: string
+          const: purged
+        reason:
+          type: string
+          enum: [explicit, corrected, imported, restored]
+        recordedAt:
+          type: string
+          format: date-time
+        restorable:
+          type: boolean
+          const: false
+      required: [revisionRef, revision, state, reason, recordedAt, restorable]
+    MemoryRevisionView:
+      discriminator:
+        propertyName: state
+        mapping:
+          available: '#/components/schemas/MemoryRevisionAvailableView'
+          purged: '#/components/schemas/MemoryRevisionPurgedView'
+      oneOf:
+        - $ref: '#/components/schemas/MemoryRevisionAvailableView'
+        - $ref: '#/components/schemas/MemoryRevisionPurgedView'
+    MemoryEntryHistoryPage:
+      type: object
+      additionalProperties: false
+      x-kokoro-immutable-history: true
+      description: >-
+        Revisions are append-only. Restoring an available payload always appends a new current
+        revision; it never mutates an existing revision or rewinds the current head.
+      properties:
+        entryRef: *memoryEntryRefSchema
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/MemoryRevisionView'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfo'
+      required: [entryRef, items, pageInfo]
+    MemoryPurgeState:
+      type: string
+      enum: [revoked_purge_pending, purged]
+    MemoryArtifactDownloadRequest:
+      type: object
+      additionalProperties: false
+      description: >-
+        Non-bearer Artifact authorization request identity. It is safe to repeat in status and command
+        recovery, grants no byte access, and must be exchanged under the current Site workload and user
+        session for a fresh short-lived Artifact delivery authorization.
+      properties:
+        artifactRef: *artifactRefSchema
+        artifactVersionRef: *artifactVersionRefSchema
+        deliveryRequestRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+        purpose:
+          type: string
+          const: export
+      required: [artifactRef, artifactVersionRef, deliveryRequestRef, purpose]
+    MemoryExportState:
+      type: string
+      enum: [queued, running, ready, failed, expired, purged]
+    MemoryExportStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        exportRef: *memoryExportRefSchema
+        state:
+          $ref: '#/components/schemas/MemoryExportState'
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: [string, 'null']
+          format: date-time
+        artifactDownloadRequest:
+          oneOf:
+            - $ref: '#/components/schemas/MemoryArtifactDownloadRequest'
+            - type: 'null'
+        failureCode:
+          type: [string, 'null']
+          enum: [null, policy_rejected, source_unavailable, temporarily_unavailable]
+      required:
+        - exportRef
+        - state
+        - format
+        - requestedAt
+        - updatedAt
+        - expiresAt
+        - artifactDownloadRequest
+        - failureCode
+    MemoryExportResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        export:
+          $ref: '#/components/schemas/MemoryExportStatus'
+      required: [export]
+    MemoryImportState:
+      type: string
+      enum: [queued, validating, quarantined, applying, completed, rejected, failed]
+    MemoryImportStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        importRef: *memoryImportRefSchema
+        state:
+          $ref: '#/components/schemas/MemoryImportState'
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        acceptedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        rejectedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        safeStatusCode:
+          type: [string, 'null']
+          enum: [null, awaiting_review, invalid_manifest, policy_rejected, temporarily_unavailable]
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - importRef
+        - state
+        - assetRef
+        - assetVersionRef
+        - format
+        - acceptedEntryCount
+        - rejectedEntryCount
+        - safeStatusCode
+        - requestedAt
+        - updatedAt
+    MemoryImportResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        import:
+          $ref: '#/components/schemas/MemoryImportStatus'
+      required: [import]
+    MemoryCommandKind:
+      type: string
+      enum:
+        - updateMemorySettings
+        - rememberMemoryEntry
+        - correctMemoryEntry
+        - restoreMemoryEntryRevision
+        - prioritizeMemoryEntry
+        - deprioritizeMemoryEntry
+        - forgetMemoryEntry
+        - resetMemorySpace
+        - requestMemoryExport
+        - requestMemoryImport
+    MemoryCommandCursor:
+      type: object
+      additionalProperties: false
+      properties:
+        commandId: *commandIdSchema
+        commandKind:
+          $ref: '#/components/schemas/MemoryCommandKind'
+        receiptRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        receivedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [commandId, commandKind, receiptRef, receivedAt, updatedAt]
+    MemoryEntryCommandResult:
+      type: object
+      additionalProperties: false
+      properties:
+        resultKind:
+          type: string
+          const: entry
+        entry:
+          $ref: '#/components/schemas/MemoryEntryView'
+      required: [resultKind, entry]
+    MemoryRestoreCommandResult:
+      type: object
+      additionalProperties: false
+      description: A restore appends a successor and never mutates the referenced historical revision.
+      properties:
+        resultKind:
+          type: string
+          const: restored
+        restoredFromRevisionRef: *memoryRevisionRefSchema
+        newRevisionRef: *memoryRevisionRefSchema
+        newRevision:
+          type: integer
+          minimum: 2
+          maximum: 2147483647
+        entry:
+          $ref: '#/components/schemas/MemoryEntryActiveView'
+      required:
+        - resultKind
+        - restoredFromRevisionRef
+        - newRevisionRef
+        - newRevision
+        - entry
+    MemoryPurgeCommandResult:
+      type: object
+      additionalProperties: false
+      properties:
+        resultKind:
+          type: string
+          const: purge
+        purgeScope:
+          type: string
+          enum: [entry, space]
+        entryRef:
+          type: [string, 'null']
+          minLength: 3
+          maxLength: 128
+          pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$'
+        purgeState:
+          $ref: '#/components/schemas/MemoryPurgeState'
+        purgeReceiptRef:
+          type: string
+          minLength: 3
+          maxLength: 128
+        effectiveAt:
+          type: string
+          format: date-time
+      required:
+        - resultKind
+        - purgeScope
+        - entryRef
+        - purgeState
+        - purgeReceiptRef
+        - effectiveAt
+    MemorySettingsCommandResult:
+      type: object
+      additionalProperties: false
+      properties:
+        resultKind:
+          type: string
+          const: settings
+        settings:
+          $ref: '#/components/schemas/MemorySettings'
+      required: [resultKind, settings]
+    MemoryExportCommandResult:
+      type: object
+      additionalProperties: false
+      properties:
+        resultKind:
+          type: string
+          const: export
+        export:
+          $ref: '#/components/schemas/MemoryExportStatus'
+      required: [resultKind, export]
+    MemoryImportCommandResult:
+      type: object
+      additionalProperties: false
+      properties:
+        resultKind:
+          type: string
+          const: import
+        import:
+          $ref: '#/components/schemas/MemoryImportStatus'
+      required: [resultKind, import]
+    MemoryCommandResult:
+      discriminator:
+        propertyName: resultKind
+        mapping:
+          entry: '#/components/schemas/MemoryEntryCommandResult'
+          restored: '#/components/schemas/MemoryRestoreCommandResult'
+          purge: '#/components/schemas/MemoryPurgeCommandResult'
+          settings: '#/components/schemas/MemorySettingsCommandResult'
+          export: '#/components/schemas/MemoryExportCommandResult'
+          import: '#/components/schemas/MemoryImportCommandResult'
+      oneOf:
+        - $ref: '#/components/schemas/MemoryEntryCommandResult'
+        - $ref: '#/components/schemas/MemoryRestoreCommandResult'
+        - $ref: '#/components/schemas/MemoryPurgeCommandResult'
+        - $ref: '#/components/schemas/MemorySettingsCommandResult'
+        - $ref: '#/components/schemas/MemoryExportCommandResult'
+        - $ref: '#/components/schemas/MemoryImportCommandResult'
+    MemoryCommandPendingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          enum: [accepted, executing, outcome_unknown]
+        command:
+          $ref: '#/components/schemas/MemoryCommandCursor'
+        retryAfter:
+          type: string
+          format: date-time
+      required: [state, command, retryAfter]
+    MemoryCommandSucceededResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          const: succeeded
+        command:
+          $ref: '#/components/schemas/MemoryCommandCursor'
+        result:
+          $ref: '#/components/schemas/MemoryCommandResult'
+      required: [state, command, result]
+    MemoryCommandRejection:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          enum:
+            - input_rejected
+            - version_conflict
+            - policy_rejected
+            - not_restorable
+            - unavailable
+        retryClass:
+          type: string
+          enum: [never, after_delay, after_user_action]
+        retryAfter:
+          type: [string, 'null']
+          format: date-time
+      required: [code, retryClass, retryAfter]
+    MemoryCommandRejectedResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        state:
+          type: string
+          const: rejected
+        command:
+          $ref: '#/components/schemas/MemoryCommandCursor'
+        rejection:
+          $ref: '#/components/schemas/MemoryCommandRejection'
+      required: [state, command, rejection]
+    MemoryCommandResponse:
+      discriminator:
+        propertyName: state
+        mapping:
+          accepted: '#/components/schemas/MemoryCommandPendingResponse'
+          executing: '#/components/schemas/MemoryCommandPendingResponse'
+          outcome_unknown: '#/components/schemas/MemoryCommandPendingResponse'
+          succeeded: '#/components/schemas/MemoryCommandSucceededResponse'
+          rejected: '#/components/schemas/MemoryCommandRejectedResponse'
+      oneOf:
+        - $ref: '#/components/schemas/MemoryCommandPendingResponse'
+        - $ref: '#/components/schemas/MemoryCommandSucceededResponse'
+        - $ref: '#/components/schemas/MemoryCommandRejectedResponse'
     ErrorCode:
       type: string
       enum:
@@ -5424,6 +6594,17 @@ components:
         - ARTIFACT_DELIVERY_AUTHORIZATION_REJECTED
         - ARTIFACT_TEMPORARILY_UNAVAILABLE
         - ARTIFACT_RANGE_NOT_SATISFIABLE
+        - MEMORY_INPUT_REJECTED
+        - MEMORY_SETTINGS_UNAVAILABLE
+        - MEMORY_ENTRY_NOT_FOUND
+        - MEMORY_VERSION_CONFLICT
+        - MEMORY_POLICY_REJECTED
+        - MEMORY_NOT_RESTORABLE
+        - MEMORY_PURGE_PENDING
+        - MEMORY_IMPORT_REJECTED
+        - MEMORY_EXPORT_UNAVAILABLE
+        - MEMORY_COMMAND_CONFLICT
+        - MEMORY_TEMPORARILY_UNAVAILABLE
     ErrorResponse:
       type: object
       additionalProperties: false
