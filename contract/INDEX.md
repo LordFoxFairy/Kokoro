@@ -91,6 +91,9 @@ ADR-015's image-first foundation publishes six isolated Protobuf bundles without
 and `session-media-projection@v1` (Session-owned reservation, pending binding, activation recovery, replacement,
 and separate Media/Credit access), `session-media-projection-ingest@v1` (the authenticated Connect delivery entry),
 plus separate Media-owner and Credit-owner projection recovery bundles.
+The image-effect `ACCEPTED` state means only that Gateway durably committed the command, Attempt authorization and
+dispatch outbox. Provider `SUBMITTED` is a later owner observation; queue acceptance, lease ownership and transport send
+never imply it.
 Durable `MediaProjectionBindingCommitted` must activate a pending binding
 before ordinary Media projection events; Media carries only the Credit-owned cost projection ref/version, while
 Credit publishes amount/state through its own audience-bound event. All six generated Media/Image/Session contract

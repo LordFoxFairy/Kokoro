@@ -131,6 +131,9 @@ def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() ->
     assert "caller_command_ref" in recover
     for forbidden in ("request_digest", "effect_budget_commit", "input_revision"):
         assert forbidden not in recover
+    assert "IMAGE_EFFECT_STATE_ACCEPTED" in source
+    assert "accepted by the Gateway owner" in source
+    assert "does not mean that Provider I/O was submitted" in source
     assert "IMAGE_EFFECT_STATE_SUBMISSION_UNKNOWN" in source
     assert "IMAGE_EFFECT_STATE_OUTCOME_UNKNOWN" in source
     assert "IMAGE_EFFECT_RECEIPT_KIND_DEFINITELY_NOT_SUBMITTED" in source

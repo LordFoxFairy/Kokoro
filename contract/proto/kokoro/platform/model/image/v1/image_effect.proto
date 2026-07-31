@@ -92,6 +92,10 @@ message CreateImageEffectRequest {
 
 enum ImageEffectState {
   IMAGE_EFFECT_STATE_UNSPECIFIED = 0;
+  // ACCEPTED means the command journal, Attempt authorization and dispatch
+  // outbox were accepted by the Gateway owner. It does not mean that Provider I/O was submitted.
+  // The non-contiguous value preserves every already-published state number.
+  IMAGE_EFFECT_STATE_ACCEPTED = 10;
   IMAGE_EFFECT_STATE_DEFINITELY_NOT_SUBMITTED = 1;
   IMAGE_EFFECT_STATE_SUBMITTED = 2;
   IMAGE_EFFECT_STATE_SUBMISSION_UNKNOWN = 3;
