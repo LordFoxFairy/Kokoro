@@ -43,6 +43,20 @@ must match the filenames. Peer registries and certificates must use the service 
 the manifests. Session's Service deliberately exposes browser `3900` and owner authority `3901`; Agent
 evidence is a separate mTLS Service on `8443`.
 
+## Health and readiness probes
+
+Session browser port `3900` exposes the kubelet health endpoints `/healthz` and `/readyz` without using
+the authenticated browser API. `/healthz` reports process liveness only and is used for startup and
+liveness probes. `/readyz` reports aggregated dependency readiness and is used only for readiness, so
+an unavailable database, projection, authorization, evidence, attachment, admission, dispatch, control,
+or conversation-context dependency removes the Pod from Service endpoints without restarting it.
+
+Standalone secure Connect workloads keep TCP readiness because kubelet cannot present their workload
+mTLS identity. TCP reachability is not semantic readiness; production overlays should replace it with a
+mesh or dedicated authenticated probe when that evidence is required. Session owner authority `3901`
+shares the browser container and therefore the browser's aggregate Pod readiness instead of exposing an
+unauthenticated Connect health route.
+
 ## Images and Site isolation
 
 Replace the four local image names in a release overlay with verified digests: `kokoro-platform`,
@@ -61,9 +75,7 @@ kubectl -n kokoro get deploy,service,pod
 
 Apply the migration Job before admitting traffic, then perform the one-time Admin authority step on a
 fresh install. Business configuration then goes through typed control-plane APIs; it is not a
-Kubernetes Job. Secure Connect services use TCP readiness in this base
-because kubelet cannot present the workload mTLS identity; production overlays should replace it with a
-mesh or dedicated authenticated readiness probe.
+Kubernetes Job.
 
 The Kind overlay uses `ReadWriteOnce` only because every Pod is scheduled on one node. Cloud deployments
 must provide RWX storage or move workspace/package storage to S3. Stopping or rolling workloads never

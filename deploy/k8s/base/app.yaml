@@ -29,7 +29,22 @@ spec:
           ports:
             - { name: browser, containerPort: 3900 }
             - { name: owner-authority, containerPort: 3901 }
-          readinessProbe: { tcpSocket: { port: browser }, initialDelaySeconds: 5, periodSeconds: 10 }
+          startupProbe:
+            httpGet: { path: /healthz, port: browser }
+            timeoutSeconds: 2
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /readyz, port: browser }
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3
+            successThreshold: 1
+          livenessProbe:
+            httpGet: { path: /healthz, port: browser }
+            timeoutSeconds: 2
+            periodSeconds: 10
+            failureThreshold: 3
           volumeMounts:
             - { name: workspace, mountPath: /data/workspace }
             - { name: storage, mountPath: /app/storage.yaml, subPath: storage.yaml }
