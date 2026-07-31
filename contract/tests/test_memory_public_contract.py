@@ -95,7 +95,11 @@ MEMORY_OBJECT_SCHEMAS = {
     "MemoryArtifactDownloadRequest",
     "MemoryExportStatus",
     "MemoryExportResponse",
-    "MemoryImportStatus",
+    "MemoryImportActiveStatus",
+    "MemoryImportQuarantinedStatus",
+    "MemoryImportCompletedStatus",
+    "MemoryImportRejectedStatus",
+    "MemoryImportFailedStatus",
     "MemoryImportResponse",
     "MemoryCommandCursor",
     "MemoryEntryCommandResult",
@@ -351,13 +355,7 @@ def test_memory_history_restore_purge_and_async_jobs_are_explicit() -> None:
         "purged": [],
     }
     import_status = schemas["MemoryImportStatus"]
-    assert {"statusVersion", "resultingSpaceVersion"}.issubset(import_status["required"])
-    assert import_status["properties"]["statusVersion"] == {
-        "$ref": "#/components/schemas/PositiveUint64String"
-    }
     assert import_status["x-kokoro-monotonic-status-version"] is True
-    assert import_status["x-kokoro-completed-requires-resulting-space-version"] is True
-    assert import_status["x-kokoro-non-completed-requires-null-resulting-space-version"] is True
     assert import_status["x-kokoro-allowed-state-transitions"] == {
         "queued": ["validating", "rejected", "failed"],
         "validating": ["quarantined", "applying", "rejected", "failed"],
@@ -367,10 +365,56 @@ def test_memory_history_restore_purge_and_async_jobs_are_explicit() -> None:
         "rejected": [],
         "failed": [],
     }
-    assert import_status["properties"]["resultingSpaceVersion"]["oneOf"] == [
-        {"$ref": "#/components/schemas/PositiveUint64String"},
-        {"type": "null"},
+    assert import_status["discriminator"] == {
+        "propertyName": "state",
+        "mapping": {
+            "queued": "#/components/schemas/MemoryImportActiveStatus",
+            "validating": "#/components/schemas/MemoryImportActiveStatus",
+            "applying": "#/components/schemas/MemoryImportActiveStatus",
+            "quarantined": "#/components/schemas/MemoryImportQuarantinedStatus",
+            "completed": "#/components/schemas/MemoryImportCompletedStatus",
+            "rejected": "#/components/schemas/MemoryImportRejectedStatus",
+            "failed": "#/components/schemas/MemoryImportFailedStatus",
+        },
+    }
+    assert import_status["oneOf"] == [
+        {"$ref": "#/components/schemas/MemoryImportActiveStatus"},
+        {"$ref": "#/components/schemas/MemoryImportQuarantinedStatus"},
+        {"$ref": "#/components/schemas/MemoryImportCompletedStatus"},
+        {"$ref": "#/components/schemas/MemoryImportRejectedStatus"},
+        {"$ref": "#/components/schemas/MemoryImportFailedStatus"},
     ]
+    import_variants = [
+        schemas[name]
+        for name in (
+            "MemoryImportActiveStatus",
+            "MemoryImportQuarantinedStatus",
+            "MemoryImportCompletedStatus",
+            "MemoryImportRejectedStatus",
+            "MemoryImportFailedStatus",
+        )
+    ]
+    for variant in import_variants:
+        assert {"statusVersion", "resultingSpaceVersion"}.issubset(variant["required"])
+        assert variant["properties"]["statusVersion"] == {
+            "$ref": "#/components/schemas/PositiveUint64String"
+        }
+    completed = schemas["MemoryImportCompletedStatus"]
+    assert completed["properties"]["state"] == {"type": "string", "const": "completed"}
+    assert completed["properties"]["resultingSpaceVersion"] == {
+        "description": (
+            "Exact owner space version committed by the apply transaction, including a zero-entry "
+            "completion."
+        ),
+        "$ref": "#/components/schemas/PositiveUint64String",
+    }
+    for name in (
+        "MemoryImportActiveStatus",
+        "MemoryImportQuarantinedStatus",
+        "MemoryImportRejectedStatus",
+        "MemoryImportFailedStatus",
+    ):
+        assert schemas[name]["properties"]["resultingSpaceVersion"] == {"type": "null"}
     export_wire = yaml.safe_dump(schemas["MemoryExportStatus"]).lower()
     assert "artifactdownloadrequest" in export_wire
     assert set(schemas["MemoryArtifactDownloadRequest"]["properties"]) == {

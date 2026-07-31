@@ -6356,11 +6356,23 @@ components:
       type: string
       enum: [queued, validating, quarantined, applying, completed, rejected, failed]
     MemoryImportStatus:
-      type: object
-      additionalProperties: false
+      discriminator:
+        propertyName: state
+        mapping:
+          queued: '#/components/schemas/MemoryImportActiveStatus'
+          validating: '#/components/schemas/MemoryImportActiveStatus'
+          applying: '#/components/schemas/MemoryImportActiveStatus'
+          quarantined: '#/components/schemas/MemoryImportQuarantinedStatus'
+          completed: '#/components/schemas/MemoryImportCompletedStatus'
+          rejected: '#/components/schemas/MemoryImportRejectedStatus'
+          failed: '#/components/schemas/MemoryImportFailedStatus'
+      oneOf:
+        - $ref: '#/components/schemas/MemoryImportActiveStatus'
+        - $ref: '#/components/schemas/MemoryImportQuarantinedStatus'
+        - $ref: '#/components/schemas/MemoryImportCompletedStatus'
+        - $ref: '#/components/schemas/MemoryImportRejectedStatus'
+        - $ref: '#/components/schemas/MemoryImportFailedStatus'
       x-kokoro-monotonic-status-version: true
-      x-kokoro-completed-requires-resulting-space-version: true
-      x-kokoro-non-completed-requires-null-resulting-space-version: true
       x-kokoro-allowed-state-transitions:
         queued: [validating, rejected, failed]
         validating: [quarantined, applying, rejected, failed]
@@ -6375,12 +6387,16 @@ components:
         a replay at the same version is byte-equivalent. State transitions are restricted to the
         declared directed graph. completed is terminal and carries the exact resultingSpaceVersion
         committed by the apply transaction; every other state carries null.
+    MemoryImportActiveStatus:
+      type: object
+      additionalProperties: false
       properties:
         importRef: *memoryImportRefSchema
         statusVersion:
           $ref: '#/components/schemas/PositiveUint64String'
         state:
-          $ref: '#/components/schemas/MemoryImportState'
+          type: string
+          enum: [queued, validating, applying]
         assetRef: *assetRefSchema
         assetVersionRef: *assetVersionRefSchema
         format:
@@ -6395,8 +6411,100 @@ components:
           minimum: 0
           maximum: 100000
         safeStatusCode:
-          type: [string, 'null']
-          enum: [null, awaiting_review, invalid_manifest, policy_rejected, temporarily_unavailable]
+          type: 'null'
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resultingSpaceVersion:
+          type: 'null'
+      required:
+        - importRef
+        - statusVersion
+        - state
+        - assetRef
+        - assetVersionRef
+        - format
+        - acceptedEntryCount
+        - rejectedEntryCount
+        - safeStatusCode
+        - requestedAt
+        - updatedAt
+        - resultingSpaceVersion
+    MemoryImportQuarantinedStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        importRef: *memoryImportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        state:
+          type: string
+          const: quarantined
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        acceptedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        rejectedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        safeStatusCode:
+          type: string
+          const: awaiting_review
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resultingSpaceVersion:
+          type: 'null'
+      required:
+        - importRef
+        - statusVersion
+        - state
+        - assetRef
+        - assetVersionRef
+        - format
+        - acceptedEntryCount
+        - rejectedEntryCount
+        - safeStatusCode
+        - requestedAt
+        - updatedAt
+        - resultingSpaceVersion
+    MemoryImportCompletedStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        importRef: *memoryImportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        state:
+          type: string
+          const: completed
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        acceptedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        rejectedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        safeStatusCode:
+          type: 'null'
         requestedAt:
           type: string
           format: date-time
@@ -6405,11 +6513,103 @@ components:
           format: date-time
         resultingSpaceVersion:
           description: >-
-            Exact owner space version committed by a completed import, including a zero-entry
-            completion. Null for every non-completed state.
-          oneOf:
-            - $ref: '#/components/schemas/PositiveUint64String'
-            - type: 'null'
+            Exact owner space version committed by the apply transaction, including a zero-entry
+            completion.
+          $ref: '#/components/schemas/PositiveUint64String'
+      required:
+        - importRef
+        - statusVersion
+        - state
+        - assetRef
+        - assetVersionRef
+        - format
+        - acceptedEntryCount
+        - rejectedEntryCount
+        - safeStatusCode
+        - requestedAt
+        - updatedAt
+        - resultingSpaceVersion
+    MemoryImportRejectedStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        importRef: *memoryImportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        state:
+          type: string
+          const: rejected
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        acceptedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        rejectedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        safeStatusCode:
+          type: string
+          enum: [invalid_manifest, policy_rejected]
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resultingSpaceVersion:
+          type: 'null'
+      required:
+        - importRef
+        - statusVersion
+        - state
+        - assetRef
+        - assetVersionRef
+        - format
+        - acceptedEntryCount
+        - rejectedEntryCount
+        - safeStatusCode
+        - requestedAt
+        - updatedAt
+        - resultingSpaceVersion
+    MemoryImportFailedStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        importRef: *memoryImportRefSchema
+        statusVersion:
+          $ref: '#/components/schemas/PositiveUint64String'
+        state:
+          type: string
+          const: failed
+        assetRef: *assetRefSchema
+        assetVersionRef: *assetVersionRefSchema
+        format:
+          type: string
+          const: kokoro_memory_export_v1
+        acceptedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        rejectedEntryCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+        safeStatusCode:
+          type: string
+          const: temporarily_unavailable
+        requestedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resultingSpaceVersion:
+          type: 'null'
       required:
         - importRef
         - statusVersion
