@@ -417,6 +417,12 @@
           "retryClass": "after_delay",
           "scope": "site",
           "siteBinding": "request-field",
+          "trustedCallers": [
+            {
+              "audience": "session.dispatch-owner-evidence",
+              "role": "platform-admission"
+            }
+          ],
           "transport": "connect-rpc"
         }
       ],

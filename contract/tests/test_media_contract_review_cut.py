@@ -227,6 +227,14 @@ def test_projection_boundaries_freeze_method_level_trusted_callers() -> None:
                 "audience": "session.admission-owner",
             }
         ]
+    assert callers(
+        "session-dispatch-owner-evidence", "GetDispatchOwnerEvidence"
+    ) == [
+        {
+            "role": "platform-admission",
+            "audience": "session.dispatch-owner-evidence",
+        }
+    ]
 
     media_events = boundaries["media-session-projection-events"]["operations"]
     activation = next(
