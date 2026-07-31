@@ -21,7 +21,7 @@ Infra does not own business Site/tenant/workspace identity, child service deploy
 
 ## Callers and dependencies
 
-The Session probe gate specifically pins the Pod-only plain-HTTP listener on `3902`, unchanged browser mTLS on `3900`, absence of `3902` from the Service, and reuse of the aggregate Browser readiness closure.
+The Root-owned Session probe gate pins Kubernetes wiring: the Pod-only plain-HTTP listener on `3902`, unchanged browser and owner-authority service ports, and absence of `3902` from the Service. Session owns the listener implementation and verifies its route allowlist, browser mTLS, and reuse of aggregate Browser readiness. Cross-repository compatibility evidence is collected only after the Session pin is promoted; Root tests must not inspect an unpromoted submodule worktree.
 
 Root verification and operators call these commands. The four child repositories remain independent and cannot bypass this lifecycle during Root integration.
 

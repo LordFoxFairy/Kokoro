@@ -74,27 +74,6 @@ test("Session probes use a dedicated Pod-only listener and preserve browser mTLS
   assert.doesNotMatch(sessionService, /\bprobe\b|3902/u);
 });
 
-test("probe implementation is health-only while the browser listener remains mutual TLS", async () => {
-  const [probeSource, browserSource, mainSource] = await Promise.all([
-    readFile(resolve(root, "kokoro-session/src/browser/probe-server.ts"), "utf8"),
-    readFile(resolve(root, "kokoro-session/src/browser/server.ts"), "utf8"),
-    readFile(resolve(root, "kokoro-session/src/main.ts"), "utf8"),
-  ]);
-
-  assert.match(probeSource, /createServer/u);
-  assert.match(probeSource, /pathname === "\/healthz"/u);
-  assert.match(probeSource, /pathname === "\/readyz"/u);
-  assert.match(probeSource, /status:\s*"not_found"/u);
-  assert.match(probeSource, /status:\s*"method_not_allowed"/u);
-  assert.doesNotMatch(probeSource, /browser\/routes|owner-authority|\/sessions|\/v3\//u);
-
-  assert.match(mainSource, /ready:\s*\(\) => production\.runtime\.ready\(\)/u);
-  assert.match(browserSource, /requestCert:\s*true/u);
-  assert.match(browserSource, /rejectUnauthorized:\s*true/u);
-  assert.match(browserSource, /minVersion:\s*"TLSv1\.3"/u);
-  assert.match(browserSource, /maxVersion:\s*"TLSv1\.3"/u);
-});
-
 test("secure Connect probes remain TCP and documentation distinguishes both probe contracts", async () => {
   const [app, readme] = await Promise.all([
     readFile(resolve(root, "deploy/k8s/base/app.yaml"), "utf8"),
