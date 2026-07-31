@@ -7,9 +7,3 @@ plugins:
     opt:
       - target=ts
       - import_extension=js
-  - local: protoc-gen-es
-    out: ../kokoro-web/apps/admin/lib/generated/contracts
-    include_imports: true
-    opt:
-      - target=ts
-      - import_extension=js

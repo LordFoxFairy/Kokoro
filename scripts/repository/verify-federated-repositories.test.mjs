@@ -11,7 +11,6 @@ import {
   remoteTagTargetsPin,
   validateCompatibility,
 } from "./verify-federated-repositories.mjs";
-import { contractMetadata } from "../../contract/generate.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ids = ["kokoro-agent", "kokoro-platform", "kokoro-session", "kokoro-web"];
@@ -217,7 +216,7 @@ test("runtime compatibility schema is closed and every contract has required cov
   assert.throws(() => validateCompatibility(parsed, excessiveTimeout), /compatibility_runtime_timeout/u);
 });
 
-test("Admin runtime evidence covers only the live Auth v1 provider", async () => {
+test("retired Admin Auth v1 is absent from active compatibility declarations", async () => {
   const currentManifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
   );
@@ -226,29 +225,12 @@ test("Admin runtime evidence covers only the live Auth v1 provider", async () =>
   );
   assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
 
-  const expectedDigest = (await contractMetadata()).artifactDigestSha256;
-  assert.deepEqual(
-    currentMatrix.contracts.find(({ id }) => id === "platform-admin-auth"),
-    {
-      id: "platform-admin-auth",
-      version: 1,
-      artifactDigest: expectedDigest,
-      providers: ["kokoro-platform"],
-      consumers: ["kokoro-web"],
-    },
-  );
+  assert.equal(currentMatrix.contracts.find(({ id }) => id === "platform-admin-auth"), undefined);
   assert.equal(currentMatrix.contracts.find(({ id }) => id === "platform-admin-command"), undefined);
-  assert.deepEqual(
-    currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "platform-admin-auth-connect"),
-    {
-      id: "platform-admin-auth-connect",
-      commandId: "node-platform-admin-auth-connect-v1",
-      required: true,
-      participants: ["kokoro-platform", "kokoro-web"],
-      protocols: [{ id: "platform-admin-auth", version: 1 }],
-      timeoutSeconds: 180,
-    },
-  );
+  assert.equal(currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "platform-admin-auth-connect"), undefined);
+  for (const repository of currentManifest.repositories) {
+    assert.equal(repository.protocols.some(({ id }) => id === "platform-admin-auth"), false);
+  }
 });
 
 test("Hub Connect runtime is promoted only for the Platform provider and Agent consumer", async () => {

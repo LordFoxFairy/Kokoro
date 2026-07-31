@@ -95,7 +95,7 @@ npm run lint
 一个子仓两个独立部署的 Next.js app + 共享包（架构地图见 `kokoro-web/INDEX.md`）：
 
 - `apps/user`（`@kokoro/web-user`）：用户面工作台。消费 session HTTP/SSE，走 web BFF 不直连 DB。Next16/React19/antd6。
-- `apps/admin`（`@kokoro/admin-web`）：运营后台。NextAuth/Auth.js 通过 server-only generated Connect client 调用 Platform Admin；Web 不持有 Platform DB 凭据、Prisma schema 或 Prisma client。Next16/React19/antd6。
+- `apps/admin`（`@kokoro/admin-web`）：运营后台。server-only authority session 通过 Platform-owned OIDC 和生成的 Connect clients 调用 Platform 控制面；Web 不持有 Platform DB 凭据、Prisma schema 或 Prisma client。Next16/React19/antd6。
 - `packages/*`：`@kokoro/tsconfig`（共享 TS 基线）、`@kokoro/i18n`（i18n 引擎）。
 
 **两 app 当前已统一 Next 16.2.6 / React 19.2.4 / antd 6.5.0 / Vitest 4.1.x**。pnpm 仍使用
@@ -118,7 +118,7 @@ pnpm --filter @kokoro/web-user build
 
 平台域父仓。管理 site/user/model/credit/payment/litellm/admin 等平台模块和部署/验证约束。
 
-`kokoro-platform-admin` 是 Admin Auth 数据和 effect 的唯一 owner。特权 Admin Web 通过 Root Proto/Buf 生成的 `AdminAuthService` ConnectRPC 调用它；command receipt 持久化明确的 `SHA256_PROTOBUF_V1` 算法与摘要，RPC metrics/security audit 由 Platform Kit 统一拦截器提供。
+`kokoro-platform-admin` 仍是 legacy Admin Auth 数据和 effect 的唯一 owner，并保留 Root Proto/Buf 生成的 `AdminAuthService` provider；当前 Admin Web 不再消费该 legacy surface，而是通过生成的 Admin Identity/Query/Commerce/Credit、Site Provisioning 与 Model Control clients 调用 Platform 控制面。Admin Auth command receipt 仍持久化明确的 `SHA256_PROTOBUF_V1` 算法与摘要，RPC metrics/security audit 由 Platform Kit 统一拦截器提供。
 
 其中 **kokoro-hub**（`@kokoro/hub`，端口 4251）是能力中台模块：skill/MCP 注册管理写面（上传/审核/版本/启停/配额/运营位），与 agent 装配热路径**读写分离同库**（hub 写 Mongo+S3，agent 直读，每 run 不跨 hub RPC）。边界见 `docs/kokoro-handbook/technical/22-capability-hub.md` 与 `docs/kokoro-handbook/modules/kokoro-hub.md`；运营台见 `docs/kokoro-handbook/technical/23-platform-ops-console.md`。
 

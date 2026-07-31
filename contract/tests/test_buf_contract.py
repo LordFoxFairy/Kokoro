@@ -58,13 +58,12 @@ def test_buf_policy_is_standard_and_file_strict() -> None:
     assert config["breaking"]["use"] == ["FILE"]
 
 
-def test_generation_targets_only_committed_child_mirrors() -> None:
+def test_default_generation_targets_only_the_current_admin_auth_provider() -> None:
     config = yaml.safe_load((CONTRACT / "buf.gen.yaml").read_text())
     outputs = [plugin["out"] for plugin in config["plugins"]]
 
     assert outputs == [
         "../kokoro-platform/kokoro-platform-admin/src/generated/contracts",
-        "../kokoro-web/apps/admin/lib/generated/contracts",
     ]
     assert all(plugin["local"] == "protoc-gen-es" for plugin in config["plugins"])
     assert all(

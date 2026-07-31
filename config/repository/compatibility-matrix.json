@@ -71,17 +71,6 @@
    "consumers": [
     "kokoro-agent"
    ]
-  },
-  {
-   "id": "platform-admin-auth",
-   "version": 1,
-   "artifactDigest": "b1910b839161af1e65ec36edc004efd7379334786e1950d816e7a15140d14bde",
-   "providers": [
-    "kokoro-platform"
-   ],
-   "consumers": [
-    "kokoro-web"
-   ]
   }
  ],
  "requiredGates": [
@@ -186,23 +175,7 @@
      }
     ],
     "timeoutSeconds": 180
-      },
-      {
-    "id": "platform-admin-auth-connect",
-    "commandId": "node-platform-admin-auth-connect-v1",
-    "required": true,
-    "participants": [
-     "kokoro-platform",
-     "kokoro-web"
-    ],
-    "protocols": [
-     {
-      "id": "platform-admin-auth",
-      "version": 1
-     }
-    ],
-    "timeoutSeconds": 180
-   }
+      }
   ]
  }
 }

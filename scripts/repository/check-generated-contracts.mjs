@@ -14,7 +14,41 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     id: "platform-admin-auth@v1",
     mirrors: Object.freeze([
       "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
-      "kokoro-web/apps/admin/lib/generated/contracts",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-admin-identity@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-admin-identity",
+      "kokoro-web/apps/admin/lib/generated/admin-identity",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-admin-query@v2",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-admin-query-v2",
+      "kokoro-web/apps/admin/lib/generated/admin-query-v2",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-admin-commerce@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-admin-commerce",
+      "kokoro-web/apps/admin/lib/generated/admin-commerce",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-admin-credit@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-admin-credit",
+      "kokoro-web/apps/admin/lib/generated/admin-credit",
+    ]),
+  }),
+  Object.freeze({
+    id: "platform-site-provisioning@v1",
+    mirrors: Object.freeze([
+      "kokoro-platform/src/interfaces/connect/generated-site-provisioning",
+      "kokoro-web/apps/admin/lib/generated/site-provisioning",
     ]),
   }),
   Object.freeze({
@@ -39,10 +73,10 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
   Object.freeze({
-    id: "platform-session-authorization@v1",
+    id: "platform-session-authorization@v2",
     mirrors: Object.freeze([
-      "kokoro-platform/src/interfaces/connect/generated-authorization",
-      "kokoro-session/src/platform/authorization-generated",
+      "kokoro-platform/src/interfaces/connect/generated-authorization-v2",
+      "kokoro-session/src/platform/authorization-v2-generated",
     ]),
   }),
   Object.freeze({
@@ -50,6 +84,13 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     mirrors: Object.freeze([
       "kokoro-session/src/platform/evidence-generated",
       "kokoro-platform/src/interfaces/connect/generated-session-evidence",
+    ]),
+  }),
+  Object.freeze({
+    id: "session-admission-owner@v1",
+    mirrors: Object.freeze([
+      "kokoro-session/src/platform/admission-owner-generated",
+      "kokoro-platform/src/interfaces/connect/generated-session-admission-owner",
     ]),
   }),
   Object.freeze({
@@ -63,9 +104,10 @@ export const GENERATED_BOUNDARIES = Object.freeze([
 // Contract-only bundles are generated in isolation in CI, but have no live subrepository mirrors
 // until provider, consumer, and compatibility evidence authorize promotion.
 export const CONTRACT_ONLY_GENERATED_BOUNDARIES = Object.freeze([
-  "platform-session-authorization@v2",
+  "platform-admin-command@v2",
+  "platform-site-lifecycle@v1",
+  "platform-session-authorization@v1",
   "agent-execution-evidence@v1",
-  "session-admission-owner@v1",
   "platform-media-runtime@v1",
   "model-image-effect@v1",
   "session-media-projection@v1",

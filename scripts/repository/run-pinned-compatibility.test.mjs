@@ -213,7 +213,7 @@ test("code-owned scenario commands point at existing root adapters", async () =>
   const source = await readFile(new URL("./run-pinned-compatibility.mjs", import.meta.url), "utf8");
   assert.doesNotMatch(source, /scripts\/compatibility\/session-agent-durable\.py/u);
   assert.match(source, /scripts\/compatibility\/session_agent_durable\.py/u);
-  assert.match(source, /scripts\/compatibility\/admin-auth-connect\.mjs/u);
+  assert.doesNotMatch(source, /scripts\/compatibility\/admin-auth-connect\.mjs/u);
   assert.match(source, /scripts\/compatibility\/hub-runtime\.mjs/u);
 });
 

@@ -8,17 +8,14 @@
 
 > platform 运营台是"网关声明式代理 + operator 身份 + 三维 RBAC + maker-checker 审批 + DB 审计"五件套：admin 网关只按各模块 manifest 声明的路由做白名单代理，不硬编码业务页面；危险变更走双人审批，全部动作落库审计；operator 身份与终端用户身份两套并行、互不复用。扩张=模块加一份 manifest，网关零改代码。
 
-## 1. operator 身份与双认证
+## 1. operator 身份与认证
 
-运营者身份有两个入口，与终端用户签发链（见 [21](21-platform-mainchain-closure.md) §2）完全分离：
+运营者身份与终端用户签发链（见 [21](21-platform-mainchain-closure.md) §2）完全分离。当前 Admin Web 使用 Platform-owned OIDC：
 
-- **admin 网关侧**（`kokoro-platform-admin`）：三种认证模式，缺省 `oidc`。
-  - `oidc`：标准 OIDC 登录换 operator 身份。
-  - `proxy`：反向代理注入 `x-kokoro-operator` + 校验 `x-kokoro-proxy-secret`，用于前置网关已鉴权的部署。
-  - `dev`：本地开发直通。
-- **admin-web BFF 侧**（`kokoro-admin-web`）：NextAuth Nodemailer magic-link；`signIn` 仅放行 active 运营账号。
+- **Admin Web BFF 侧**（`kokoro-web/apps/admin`）：通过生成的 `AdminIdentityService` 完成 OIDC flow；验证 Platform 签名后加密的 authority delivery，再建立短期 HttpOnly authority session。magic-link 与 email authority 已不受支持。
+- **legacy admin 网关侧**（`kokoro-platform-admin`）：仍实现 `oidc`、`proxy` 和 `dev` 三种认证模式，但当前没有官方 Admin Web consumer；其生成的 `AdminAuthService` provider 也不在 active compatibility matrix 中。
 
-两套 operator 认证是运营者接入网关的不同形态，与终端用户的 magic-link 签发无任何复用关系。
+浏览器不能提供或扩大 workload、环境、区域、Site scope 或权限；Platform 是 operator authority 的最终 owner。
 
 ## 2. 三维 RBAC
 

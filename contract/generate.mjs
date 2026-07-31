@@ -13,7 +13,6 @@ const contractRoot = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(contractRoot, "..");
 const defaultMirrors = [
   resolve(repositoryRoot, "kokoro-platform/kokoro-platform-admin/src/generated/contracts"),
-  resolve(repositoryRoot, "kokoro-web/apps/admin/lib/generated/contracts"),
 ];
 
 const DEFAULT_BOUNDARY = "platform-admin-auth@v1";

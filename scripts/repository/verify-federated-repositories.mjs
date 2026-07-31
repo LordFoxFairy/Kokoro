@@ -33,7 +33,6 @@ const SCENARIO_COMMANDS = new Map([
   ["session-agent-durable-localfake", "python-session-agent-durable-v1"],
   ["agent-model-gateway-localfake", "python-agent-model-gateway-v1"],
   ["hub-runtime", "node-hub-runtime-v1"],
-  ["platform-admin-auth-connect", "node-platform-admin-auth-connect-v1"],
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const ARTIFACT_DIGEST_PATTERN = /^[0-9a-f]{64}$/u;
@@ -173,9 +172,6 @@ export function validateCompatibility(manifest, matrix) {
     const digestValid = !Object.hasOwn(contract, "artifactDigest") || ARTIFACT_DIGEST_PATTERN.test(contract.artifactDigest);
     if (!keysValid || !digestValid || typeof contract.id !== "string" || !Number.isInteger(contract.version) || !nonEmptyStrings(contract.providers) || !nonEmptyStrings(contract.consumers)) {
       throw new RepositoryError("compatibility_contract");
-    }
-    if (contract.id === "platform-admin-auth" && !Object.hasOwn(contract, "artifactDigest")) {
-      throw new RepositoryError("compatibility_contract", contract.id);
     }
     if (contracts.has(contract.id)) throw new RepositoryError("compatibility_duplicate", contract.id);
     contracts.set(contract.id, contract);

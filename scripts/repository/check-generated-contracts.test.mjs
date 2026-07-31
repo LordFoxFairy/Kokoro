@@ -235,13 +235,47 @@ test("checker forwards an explicit isolated boundary and output through pnpm", (
   );
 });
 
-test("privileged and public contracts have independent provider/consumer mirrors", () => {
+test("privileged and public contracts track only current provider and official consumer mirrors", () => {
   assert.deepEqual(generatedChecker.GENERATED_BOUNDARIES, [
     {
       id: "platform-admin-auth@v1",
       mirrors: [
         "kokoro-platform/kokoro-platform-admin/src/generated/contracts",
-        "kokoro-web/apps/admin/lib/generated/contracts",
+      ],
+    },
+    {
+      id: "platform-admin-identity@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-admin-identity",
+        "kokoro-web/apps/admin/lib/generated/admin-identity",
+      ],
+    },
+    {
+      id: "platform-admin-query@v2",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-admin-query-v2",
+        "kokoro-web/apps/admin/lib/generated/admin-query-v2",
+      ],
+    },
+    {
+      id: "platform-admin-commerce@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-admin-commerce",
+        "kokoro-web/apps/admin/lib/generated/admin-commerce",
+      ],
+    },
+    {
+      id: "platform-admin-credit@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-admin-credit",
+        "kokoro-web/apps/admin/lib/generated/admin-credit",
+      ],
+    },
+    {
+      id: "platform-site-provisioning@v1",
+      mirrors: [
+        "kokoro-platform/src/interfaces/connect/generated-site-provisioning",
+        "kokoro-web/apps/admin/lib/generated/site-provisioning",
       ],
     },
     {
@@ -266,10 +300,10 @@ test("privileged and public contracts have independent provider/consumer mirrors
       ],
     },
     {
-      id: "platform-session-authorization@v1",
+      id: "platform-session-authorization@v2",
       mirrors: [
-        "kokoro-platform/src/interfaces/connect/generated-authorization",
-        "kokoro-session/src/platform/authorization-generated",
+        "kokoro-platform/src/interfaces/connect/generated-authorization-v2",
+        "kokoro-session/src/platform/authorization-v2-generated",
       ],
     },
     {
@@ -277,6 +311,13 @@ test("privileged and public contracts have independent provider/consumer mirrors
       mirrors: [
         "kokoro-session/src/platform/evidence-generated",
         "kokoro-platform/src/interfaces/connect/generated-session-evidence",
+      ],
+    },
+    {
+      id: "session-admission-owner@v1",
+      mirrors: [
+        "kokoro-session/src/platform/admission-owner-generated",
+        "kokoro-platform/src/interfaces/connect/generated-session-admission-owner",
       ],
     },
     {
@@ -288,9 +329,10 @@ test("privileged and public contracts have independent provider/consumer mirrors
     },
   ]);
   assert.deepEqual(generatedChecker.CONTRACT_ONLY_GENERATED_BOUNDARIES, [
-    "platform-session-authorization@v2",
+    "platform-admin-command@v2",
+    "platform-site-lifecycle@v1",
+    "platform-session-authorization@v1",
     "agent-execution-evidence@v1",
-    "session-admission-owner@v1",
     "platform-media-runtime@v1",
     "model-image-effect@v1",
     "session-media-projection@v1",

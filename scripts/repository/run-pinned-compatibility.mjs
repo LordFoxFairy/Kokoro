@@ -27,7 +27,6 @@ const COMMANDS = new Map([
   ["python-session-agent-durable-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/session_agent_durable.py"]],
   ["python-agent-model-gateway-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/agent_model_gateway.py"]],
   ["node-hub-runtime-v1", [process.execPath, "scripts/compatibility/hub-runtime.mjs"]],
-  ["node-platform-admin-auth-connect-v1", [process.execPath, "scripts/compatibility/admin-auth-connect.mjs"]],
 ]);
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const SAFE_REASON = /^[a-z][a-z0-9_]{1,63}$/u;
