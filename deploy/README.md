@@ -36,9 +36,11 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
    site-release/
    ```
 
-4. Promote a generated Site project's verified standalone image as `KOKORO_SITE_IMAGE`. The canonical
-   image shape is `kokoro-web/packages/site-scaffold/templates/site/Dockerfile`; Root does not build it
-   from the Web monorepo.
+4. Promote a generated Site project's verified standalone image as `KOKORO_SITE_IMAGE`, using its
+   immutable `registry/repository@sha256:<64-hex-digest>` reference. The canonical image shape is
+   `kokoro-web/packages/site-scaffold/templates/site/Dockerfile`; Root does not build it from the Web
+   monorepo. The variable is required: `apps/reference-site` is a non-production fixture and is never a
+   deployment fallback.
 5. Set `KOKORO_*_ENV_FILE` overrides to process-specific protected files for production. The helper
    script deliberately defaults them to the master env only for bounded single-host bring-up.
 6. On a fresh database, prepare a mode-`0600` Admin authority document owned by the account running

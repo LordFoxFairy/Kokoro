@@ -285,7 +285,7 @@ services:
       - ${KOKORO_SECRETS_DIR:-./deploy/secrets}/agent-worker:/run/secrets/kokoro:ro
 
   kokoro-site-release:
-    image: ${KOKORO_SITE_IMAGE:-kokoro-reference-site:latest}
+    image: ${KOKORO_SITE_IMAGE:?KOKORO_SITE_IMAGE is required - use an independent Site release image pinned by @sha256 digest}
     env_file:
       - path: ${KOKORO_SITE_ENV_FILE:-./deploy/env/site-release.env}
         required: false

@@ -42,7 +42,12 @@ Add environment-neutral deployment composition here. Keep service-specific build
 ## Current gotchas
 
 These files are not production certification evidence; Wave 9 still requires canary, rollback, on-call, and disaster-recovery proof.
+`KOKORO_SITE_IMAGE` has no default and must identify the digest-pinned artifact promoted by one generated Site project. The Web
+reference Site remains a non-production fixture and cannot satisfy this release input.
 
 ## Verification
 
-Run `node --test scripts/infra/*.test.mjs`, then render without applying: `docker compose --env-file deploy/.env.example -f docker-compose.app.yml config` and `kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/overlays/kind`. Never render real secret values into logs or committed receipts.
+Run `node --test scripts/infra/*.test.mjs`, then render without applying after providing an explicit `KOKORO_SITE_IMAGE` in a local
+release env: `docker compose --env-file deploy/.env.prod -f docker-compose.app.yml config` and
+`kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/k8s/overlays/kind`. Never render real secret values into logs or
+committed receipts.

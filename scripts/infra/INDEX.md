@@ -17,7 +17,7 @@ Infra does not own business Site/tenant/workspace identity, child service deploy
 
 ## Public boundary
 
-`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports/records/checks sanitized Docker identity, and `scope.mjs` leases test partitions. `compose-production-assembly.test.mjs` and `production-assembly.test.mjs` prove that Root deployment manifests use real child entrypoints, ports, Dockerfiles, and independent process boundaries. PostgreSQL is the canonical relational authority for the latest Platform and Session design. MySQL is available only through the explicit `mysql-compat` profile to preserve a local legacy container/volume; it is not selected by default Platform or full lifecycle operations.
+`manager.mjs` is the lifecycle entrypoint, `inventory.mjs` reports/records/checks sanitized Docker identity, and `scope.mjs` leases test partitions. `compose-production-assembly.test.mjs` and `production-assembly.test.mjs` prove that Root deployment manifests use real child entrypoints, ports, Dockerfiles, and independent process boundaries. They also reject a default/reference Site image: production composition requires the digest-pinned image promoted by one independent Site project. PostgreSQL is the canonical relational authority for the latest Platform and Session design. MySQL is available only through the explicit `mysql-compat` profile to preserve a local legacy container/volume; it is not selected by default Platform or full lifecycle operations.
 
 ## Callers and dependencies
 

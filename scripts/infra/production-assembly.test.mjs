@@ -166,7 +166,10 @@ test("production manifests contain the independent runtime processes and their r
 });
 
 test("Root builds only real backend Dockerfiles and consumes Site as an independent release image", async () => {
-  const compose = await readFile(resolve(root, "docker-compose.app.yml"), "utf8");
+  const [compose, releaseEnvironment] = await Promise.all([
+    readFile(resolve(root, "docker-compose.app.yml"), "utf8"),
+    readFile(resolve(root, "deploy/.env.example"), "utf8"),
+  ]);
   const buildTargets = [
     { context: "kokoro-platform", dockerfile: "deploy/docker/Dockerfile" },
     { context: "kokoro-session", dockerfile: "Dockerfile" },
@@ -182,7 +185,18 @@ test("Root builds only real backend Dockerfiles and consumes Site as an independ
 
   const site = composeService(compose, "kokoro-site-release");
   assert(site);
-  assert.match(site, /image:\s*\$\{KOKORO_SITE_IMAGE/u);
+  assert.match(
+    site,
+    /image:\s*\$\{KOKORO_SITE_IMAGE:\?[^}\n]*@sha256[^}\n]*\}/u,
+    "Compose must fail before deployment when an immutable independent Site image is absent",
+  );
+  assert.doesNotMatch(site, /kokoro-reference-site|KOKORO_SITE_IMAGE:-/u);
+  assert.doesNotMatch(releaseEnvironment, /^KOKORO_SITE_IMAGE=/mu);
+  assert.match(
+    releaseEnvironment,
+    /^# KOKORO_SITE_IMAGE=[^\s]+@sha256:<64-lowercase-hex>$/mu,
+    "the release template must document the required digest-pinned Site image without supplying a fallback",
+  );
   assert.doesNotMatch(site, /build:/u);
   await access(resolve(root, "kokoro-web/packages/site-scaffold/templates/site/Dockerfile"));
   assert.match(
