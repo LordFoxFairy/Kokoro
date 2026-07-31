@@ -16,19 +16,20 @@ repositoryTopology: federated-submodules-v1
 
 ## 必读
 
-1. [**架构梳理（当前事实，先读这份）**](reports/2026-07-27-kokoro-architecture-survey.md)
+1. [**Kokoro 联邦产品平台总架构（当前唯一总入口）**](kokoro-handbook/technical/24-federated-product-platform-architecture.md)
 2. [Codebase Map](CODEBASE_MAP.md)
 3. [docs 总入口](README.md)
 4. [Kokoro 总手册](kokoro-handbook/README.md)
-5. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
 
 ## 当前目标架构评审主线
 
 以下文档描述尚未实现、正在书面复审的 clean-rewrite 目标。它们优先于旧过程稿，但在批准并迁入 handbook
-前不得写成当前代码事实：
+前不得写成当前代码事实。它们早于 ADR-013/ADR-015 与 technical/24；出现通用 `Job`、顶层 `Generation`、
+Session/Agent 业务 owner、MySQL 或单体仓库等冲突时，以已接受 ADR 与 technical/24 为准，不能为了保留旧 PRD 术语
+恢复已否决架构：
 
-1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
-2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)
+1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)（历史需求全集；owner/Job/Generation 以新 ADR 为准）
+2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)（历史执行分波；不得直接派工）
 3. [Wave 0 Federated Repository/Contract/Infra Foundation v2.0](superpowers/specs/2026-07-25-wave-0-repository-contract-foundation-design.md)
 4. [产品需求治理、Launch Profile 与 PRD Registry](superpowers/specs/2026-07-25-product-requirements-governance-and-prd-registry-design.md)
 5. [Model Control、Model Gateway 与 LiteLLM 目标架构](superpowers/specs/2026-07-25-model-control-gateway-litellm-architecture-design.md)
@@ -47,7 +48,7 @@ repositoryTopology: federated-submodules-v1
 18. [PRD-04 Checkout、Subscription 与 Billing](superpowers/specs/2026-07-25-prd-04-checkout-subscription-and-billing.md)
 19. [PRD-05 Chat Conversation、Run 与 Interaction](superpowers/specs/2026-07-25-prd-05-chat-conversation-run-and-interaction.md)
 20. [PRD-06 Asset Intake 与 Attachment Safety](superpowers/specs/2026-07-25-prd-06-asset-intake-and-attachment-safety.md)
-21. [PRD-07 Studio Common、Job 与 Cost UX](superpowers/specs/2026-07-25-prd-07-studio-common-job-and-cost-ux.md)
+21. [PRD-07 Studio Common、Job 与 Cost UX](superpowers/specs/2026-07-25-prd-07-studio-common-job-and-cost-ux.md)（产品旅程参考；`Job` 技术模型已由 ADR-015 的 MediaOperation 取代）
 22. [PRD-08I Image Studio](superpowers/specs/2026-07-25-prd-08i-image-studio.md)
 23. [PRD-08M Music Studio](superpowers/specs/2026-07-25-prd-08m-music-studio.md)
 24. [PRD-08V Video Studio](superpowers/specs/2026-07-25-prd-08v-video-studio.md)
@@ -79,15 +80,18 @@ repositoryTopology: federated-submodules-v1
 3. [Contract Foundation and Admin Auth Connect Pilot Implementation Plan](superpowers/plans/2026-07-27-contract-foundation-admin-auth-pilot-implementation-plan.md)
 4. [Contract Foundation / Admin Auth Pilot Verification](reports/2026-07-27-contract-foundation-admin-auth-pilot-verification.md)
 5. [**Wave 0 收敛证据（federated baseline + 最终收口）**](reports/evidence/wave-0/federated-repository-baseline.md)
+6. [ADR-013 Product Memory 与 Context Authority](kokoro-handbook/decisions/ADR-013-product-memory-and-context-authority.md)
+7. [ADR-015 Media Operation 与 Artifact Authority](kokoro-handbook/decisions/ADR-015-media-operation-and-artifact-authority.md)
+8. [ADR-016 Web Release Composition](kokoro-handbook/decisions/ADR-016-web-release-composition.md)
 
 ## 当前技术主线
 
-1. [V1 最终技术方案（定稿）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+1. [联邦产品平台总架构（当前事实源）](kokoro-handbook/technical/24-federated-product-platform-architecture.md)
 2. [Platform × 主链闭环（正式册,P1-P5 已落地事实）](kokoro-handbook/technical/21-platform-mainchain-closure.md)
 3. [跨仓闭环与遗留对齐总设计（待评审纲领,Wave 0-6）](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
 4. [能力中台正式册](kokoro-handbook/technical/22-capability-hub.md)（历史入口:specs/2026-07-11-capability-hub-and-polish.md）
 5. [WP-0 落地与审核交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md)
-6. 扩展附录（查细节才读，冲突以 20 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
+6. 扩展附录（查细节才读，冲突以 technical/24 与已接受 ADR 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 7. 历史派工单（已过期，不作架构事实）：[2026-07-07 runtime buildout](handoffs/2026-07-07-runtime-buildout-next-handoff.md)、[2026-07-07 capability buildout](handoffs/2026-07-07-capability-buildout-handoff.md)
 
 ## 稳定架构入口
@@ -99,7 +103,10 @@ repositoryTopology: federated-submodules-v1
 
 历史过程稿（只用于考古，不是当前事实）：
 
+- [2026-07-27 架构梳理](reports/2026-07-27-kokoro-architecture-survey.md)（历史代码快照）
 - [2026-07-05 V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)
+- [2026-07-10 V1 技术方案](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)（只描述当时的三仓
+  Agent/Session/Web 运行时，已被 federated Platform、PostgreSQL owner、SiteRelease 和当前产品架构取代）
 
 ## 默认不读
 

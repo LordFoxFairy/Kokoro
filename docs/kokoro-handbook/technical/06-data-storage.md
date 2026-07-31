@@ -1,5 +1,8 @@
 # 数据存储技术方案
 
+> 已取代的存储草案。当前 Platform 与 Session 分别使用独立 PostgreSQL authority，Agent checkpoint/ledger 与 Hub
+> 使用各自 MongoDB 逻辑权限，Redis 只做 transport/lease，S3/MinIO 保存 bytes。以 ADR-012 与 technical/24 为准。
+
 ## 总原则
 
 ```text

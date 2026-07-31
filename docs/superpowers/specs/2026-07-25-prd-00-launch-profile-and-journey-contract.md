@@ -1,9 +1,10 @@
 ---
 artifact: product-requirements-document
 prdId: PRD-00
-version: "1.0"
+version: "1.1"
 created: 2026-07-25
-status: internal-review-active
+status: approved
+approved: 2026-07-31
 scope: launch-profile-enabled-surface-journey-state-metric-certification-contract
 accountableProductRole: Platform Product Lead
 mandatoryCosigners: [Site Fleet, SRE, Security, Release, Product Operations, QA]
@@ -11,7 +12,8 @@ engineeringOwner: team:site-platform-engineering
 qaOwner: team:release-quality
 supportOperationsOwner: team:site-fleet-operations
 namedOwnerAssignmentStatus: assigned-team-responsibility-ids
-implementationAuthorized: false
+implementationAuthorized: true
+implementationAuthorizationScope: core-redeem-chat-and-web-release-composition-foundation
 ---
 
 # PRD-00：Launch Profile 与 Journey Contract
@@ -26,11 +28,15 @@ Kokoro 支持一个后端服务多个独立 Site，每个 Site 又可以只开�
 
 ### 1.2 Solution Summary
 
-建立版本化 `LaunchProductProfile`、`EnabledSurfaceInventory`、`CanonicalJourneyCatalog`、
+建立版本化 `LaunchProductProfile`、`SurfaceInventoryRevision`、`CanonicalJourneyCatalog`、
 `CapabilityQualificationAttestation`与`ReleaseCertificationInstance`产品合同。SiteRelease只能引用已发布Profile；
 compile时展开所有Surface、Journey、
 route、API、Admin command、Model/Agent/Capability assignment 和 evidence。未知、缺 owner、缺恢复、缺证据、
 证据过期或只隐藏 UI 的条目全部 fail closed。
+
+Product/Surface 定义统一来自 Platform Product Catalog 的 immutable `ProductSurfaceCatalogRevision`；Site 模块只拥有某个
+Site 的 Profile/Inventory/Release 选择。Web 的物理裁剪由 ADR-016 的 WebBuildIntent → CompiledWebManifest → real artifact
+链完成，不能由 Product Profile 直接携带代码路径或 package。
 
 ### 1.3 Target Users
 
@@ -57,7 +63,8 @@ route、API、Admin command、Model/Agent/Capability assignment 和 evidence。�
 
 1. 一个 SiteRelease 的产品承诺可机器编译、审查、测试和回滚。
 2. 每个 enabled Surface 都有完整 Journey/State/Recovery/Metric/Support/Operations 证据。
-3. 每个 disabled Surface 在四层关闭，并以负向测试证明。
+3. 每个 disabled Surface 在 artifact、release/bootstrap、BFF/API、owner/effect authorization、new-dispatch credential
+   五层关闭，并以负向测试证明；共享 worker 不因单 Site 关闭而停机。
 4. Core、if-enabled、advanced 和 transformation-final 的认证范围互不混淆。
 5. 新 Site 通过独立 Profile 组合后端能力，不在共享代码添加 Site 特判。
 
@@ -82,6 +89,22 @@ route、API、Admin command、Model/Agent/Capability assignment 和 evidence。�
 
 ## 3. Product Objects
 
+### 3.0 ProductSurfaceCatalogRevision
+
+Platform Product Catalog 发布完整、不可变的目录 revision。每个 SurfaceDefinition 至少包含：
+
+```text
+surfaceRef / surfaceRevision / productRef
+kind / dependencySurfaceRefs
+requiredJourneyRevisionRefs
+publicOperationFamilyRefs / adminCommandFamilyRefs
+requiredModelRoleRefs / capabilityRequirementRefs
+retirementPolicyRef / supportRequirementRef
+```
+
+这些是业务 requirement，不包含 pathname、React package、BFF handler、template、npm spec 或其他 Web 物理映射；后者只由
+WebCompositionRegistryRevision 拥有。Surface definition 发布后不可变；目录 retire 只阻止新 Profile 引用。
+
 ### 3.1 LaunchProductProfile
 
 ```text
@@ -90,9 +113,9 @@ revision
 name
 targetSiteKind
 status = draft | validating | ready | published | retired
-enabledSurfaceInventoryRef
-disabledSurfaceInventoryRef
-requiredJourneyRevisionRefs
+productSurfaceCatalogRevisionRef
+surfaceInventoryRevisionRef
+compiledJourneyClosureDigest
 assortment/model/agent/capability policy refs
 authMethodPolicyRevisionRef
 salesPolicyRevisionRef
@@ -108,25 +131,26 @@ createdBy/reviewedBy/publishedAt
 规则：
 
 - 发布后不可变；变更创建 revision。
-- `retired` 只阻止新 SiteRelease 引用，不改写已启动 Run/Job/交易。
+- `retired` 只阻止新 SiteRelease 引用，不改写已启动 Run、MediaOperation、domain workflow 或交易。
 - Profile 不能直接引用 secret、Provider credential、用户或 BillingAccount。
 - Site 可以引用同一 Profile revision，但其 SiteRelease 仍绑定独立 app、domain、assortment 和 assignments。
+- `compiledJourneyClosureDigest` 由 Product Catalog compiler 对 core-always journeys 与所有 enabled Surface 的
+  `requiredJourneyRevisionRefs` 求确定性依赖闭包后产生；Product Owner 不能手工增加、删除或覆盖 Journey refs。
 
-Ownership 固定为：Platform `site` 模块拥有 Profile/Inventory revision、publish lifecycle 和 SiteRelease binding；
-Admin 只是 façade。Journey/State/Recovery/Metric schema 与稳定 IDs 来自根 product contract bundle，经 codegen/
-digest 发布；Platform 保存不可变 compiled bundle ref，不维护第二份可自由编辑的 schema。Certification/Evidence
-由 Release pipeline 产生，Site 模块只引用 signed result，不伪造测试事实。
+Ownership 固定为：Platform Product Catalog 拥有 Product/Surface definition 与 CanonicalJourney catalog revision；
+Platform `site` 模块拥有 Profile/SurfaceInventory revision、publish lifecycle 和 SiteRelease binding；Admin 只是 façade。
+Root 只拥有 Journey/State/Recovery/Metric 的 schema、canonicalization 与 compatibility gate，不拥有业务 IDs 或
+published catalog。Certification/Evidence 由 Release pipeline 产生，Site 模块只引用 signed result，不伪造测试事实。
 
 ### 3.2 Surface Inventory Entry
 
 ```text
-surfaceId / surfaceRevision
-state = enabled | disabled
-routeRefs / bootstrapCapabilityRefs
-apiCommandRefs / adminCommandRefs
-modelAgentCapabilityAssignmentRefs
-journeyRevisionRefs
-productPrdRevisionRefs / architectureSpecRevisionRefs
+surfaceRef / surfaceRevision
+catalogRevisionRef
+disposition = enabled | disabled
+siteModelAgentCapabilityAssignmentRefs
+sitePolicy/assortment/entitlementRequirementRefs
+qualificationScopeRefs
 testReportRefs / runbookRefs / dashboardAlertRefs
 supportCaseKindRefs / contentPolicyRefs
 capabilityQualificationAttestationRefs
@@ -135,8 +159,16 @@ acceptedRiskRefs with owner/expiry
 
 `capabilityQualificationAttestationRefs`必须由accountable owners签名，在具体Release之前存在并绑定PRD/spec/contract/
 test/runbook revision与适用范围；它不能是自由布尔值，也不能引用尚未生成的Release certificate。`enabled`条目缺任一
-mandatory ref时compile失败；`disabled`条目必须提供四层关闭
+mandatory ref时compile失败；`disabled`条目必须提供五层关闭
 证据，不能只省略 enabled entry。
+
+`SurfaceInventoryRevision` 必须是所引用 `ProductSurfaceCatalogRevision` 的 exact、互斥、完整分区：catalog 中每个
+Surface 必须且只能出现一次，状态只能是 `enabled|disabled`；unknown、duplicate、missing 都使 publish/compile 失败。
+Product Owner 只选择 enabled 集合，compiler 从 catalog 全集确定性推导 disabled 集合。新增 Surface 必须产生新的 catalog
+revision，旧 Profile 不会在未评审时自动获得或遗漏它。
+
+五层关闭证据由 compiler、owner negative inventory 和 release certification 根据完整分区生成；运营员不能上传一个
+自由布尔值把 disabled 宣称为已关闭。
 
 Profile command family 固定为 `CreateProfileDraft`、`ValidateProfileCandidate`、`PublishProfileRevision`、
 `RetireProfileRevision` 和 `BindProfileToSiteReleaseCandidate`；没有直接 `ActivateProfile`，上线只通过
@@ -165,7 +197,8 @@ Profile candidate compile只消费有效`CapabilityQualificationAttestation`；c
 certificationId
 profileId/revision
 siteReleaseCandidateRef
-enabledSurfaceInventoryDigest
+productSurfaceCatalogDigest
+surfaceInventoryRevisionRef/digest
 source/contract/lock/image/config digests
 appliedGateRefs / skippedGateRefs with scope reason
 evidenceBundleRef
@@ -217,6 +250,10 @@ Qualification只证明能力在声明范围内合格，不单独授权任何Site
 | Routine/Connector/Plugin user surfaces | no create/install/connect mutation；internal required capability remains governed |
 | Handoff/AgentTeam/Wide Research/Application Runtime | no assignment/Manifest edge/route/Admin publish |
 
+本表只是 Reference Profile 的产品摘要，不是关闭证据。最终 disabled 集合必须由 exact Catalog/SurfaceInventory 的完整分区
+推导，并由 Web compiler、各 owner negative inventory 与 ReleaseCertification 共同产生五层机器证据；自然语言行不能
+单独授权发布。
+
 ### 4.3 User Promise
 
 用户可以注册、兑换 Code、看到权益/积分、完成可靠 Chat、上传安全附件、恢复断线、管理对话和最小作品、
@@ -229,13 +266,14 @@ Qualification只证明能力在声明范围内合格，不单独授权任何Site
 - FR-001：Product Owner 从已发布 Surface/PRD/assignment revision 组合 draft，不允许自由 JSON。
 - FR-002：编辑器显示依赖图、新增/删除 Journey、用户承诺差异、成本/风险/Support 影响。
 - FR-003：任何 Surface enable 自动引入 mandatory Journey，不允许手工取消 core dependency。
-- FR-004：disable 提示历史数据、active Run/Job、Artifact 可见性与 deep-link 兼容影响。
+- FR-004：disable 提示历史数据、active Run/MediaOperation/domain workflow、Artifact 可见性与 deep-link 兼容影响。
 - FR-005：production publish 使用 expectedVersion、reason、step-up 和 maker-checker。
 
 ### 5.2 Compile and Validate
 
 - FR-010：schema、引用、scope、dependency、role completeness、Site compatibility 全量校验。
-- FR-011：枚举 route、bootstrap、API、Admin、assignment，发现未登记入口即失败。
+- FR-011：Product Catalog 枚举业务 operation/assignment requirement，Web registry/compiler 枚举 route/bootstrap/BFF；
+  certification 比对两边闭包，发现未登记入口、缺物理实现或多余实现即失败。
 - FR-012：每个 enabled Journey 必须解析 Product PRD、architecture Spec、acceptance scenarios 和有效 evidence。
 - FR-013：accepted risk 必须绑定 profile/surface/release、owner、expiry 和 compensating control；过期失败。
 - FR-014：ContentPolicy、locale/a11y、SupportTier、metric target 缺失失败。
@@ -267,7 +305,7 @@ Qualification只证明能力在声明范围内合格，不单独授权任何Site
 - FR-031：同一 Site 的 AuthSession 可以跨兼容 Release 继续有效；旧 tab 的静态资源和请求仍绑定其可信
   deployment/release context，并在 compatibility/drain window 内使用原 Release。过窗要求刷新，不静默换
   Journey semantics。浏览器提交的 release id 永远不是授权依据。
-- FR-032：已启动 Run/Job/transaction 使用冻结 Manifest/Operation/Quote，不因 Profile rollback 重跑。
+- FR-032：已启动 Run/MediaOperation/domain workflow/transaction 使用冻结 Manifest/Operation/Quote，不因 Profile rollback 重跑。
 - FR-033：rollback 前重新校验当前 kill switch、secret revocation、schema/contract 和安全 policy。
 - FR-034：新增 Surface 使用 delta Certification；删除 Surface 明确历史数据/deep link/notification/support 行为。
 
@@ -287,7 +325,8 @@ certification validity、drift 和 rollback target。Profile publish 与 Release
 ### 6.3 End User
 
 - 导航和空状态只能承诺 enabled Surface。
-- 历史 deep link 指向 disabled Surface 时显示稳定说明和允许的历史访问/导出/Support 动作，不返回神秘 404。
+- 历史 deep link 指向 disabled Surface 时由 base shell 的通用、静态 `RetiredSurface/Gone` resolver 显示稳定说明与允许的
+  Library/Data Rights/Support 动作；它不重新打包已禁用产品的 route、facade 或代码。
 - Profile 切换不跨 Site 合并账户、套餐、积分或历史。
 - 用户不看到 internal Wave、Profile ID 或 Provider deployment；Support 可用安全 correlation refs 定位。
 
@@ -301,7 +340,7 @@ certification validity、drift 和 rollback target。Profile publish 与 Release
 | evidence 在 approval 后、activate 前过期 | ActivationAttempt recheck fail |
 | candidate 认证后发生 critical kill switch | 阻止 activate；已 active 受实时 deny 覆盖 |
 | enable Studio 但没有认证 generation adapter | assignment/compile fail |
-| disable Studio 时有 running Job | Job 按冻结 OperationSpec 完成；历史 Artifact policy 明示 |
+| disable Studio 时有 running MediaOperation | 禁止该 Site/新 Release 的 assignment、credential 与 dispatch；已接受的 operation 按冻结旧 Release/OperationSpec 完成或 drain；共享 worker 继续服务其他 Site/旧 operation |
 | disable Chat 时存在旧 deep link | 按 retention policy read/export 或受控 gone page，不开放新 Run |
 | Profile rollback 与新交易并发 | active pointer/Release snapshot 决定；不改写已提交事实 |
 | Site A Profile 被 Site B deployment 声明 | DeploymentBinding/SiteContext 校验拒绝 |
@@ -358,9 +397,9 @@ And the result does not mark the Transformation Program complete
 
 ```gherkin
 Given a new Profile revision disables a previously enabled Studio
-And a Job from the old Release is running
+And a MediaOperation from the old Release is running
 When the new Release activates
-Then the Job completes against its frozen OperationSpec
+Then the MediaOperation completes against its frozen OperationSpec
 And historical Artifact access follows the published retirement policy
 And new Studio route and submission are denied
 ```
@@ -381,7 +420,7 @@ And neither Site reveals the other Site's account, entitlement, data or enabled 
 ### AC-007 — Disabled auth method fail closed
 
 ```gherkin
-Given a Profile enables password and TOTP but marks OAuth, Magic Link, Passkey and enterprise SSO disabled or not_enableable
+Given a Profile enables password and TOTP but marks OAuth, Magic Link, Passkey and enterprise SSO disabled
 When a browser, stale client or operator invokes any disabled method initiation, callback, link, unlink or configuration command
 Then the request is denied before provider or secret access
 And no AuthTransaction, User, Credential, FederatedIdentity or AuthSession is created or changed
@@ -425,5 +464,7 @@ activation/rollback、disabled route attempt、evidence expiry、accepted risk e
 4. Wave 7：完成 Site Fleet/Profile editor、OperatorCommandMatrix 和 Support/Operations UAT。
 5. Wave 8/9：生成 `core-redeem-chat` CertificationInstance；高级能力随后用 delta instance。
 
-PRD-00 产品验收只有在 Product、Architecture、QA、Security、SRE、Support 对各自门签署后完成。本文批准
-不授权实现；第一个实施计划仍是 Wave 0，且受 Umbrella 用户复审和 LicenseRef attestation 约束。
+PRD-00 产品验收只有在 Product、Architecture、QA、Security、SRE、Support 对各自门签署后完成。用户已授权
+`core-redeem-chat` 与 ADR-016 基础架构进入实现；该授权允许编写 contracts、Product Catalog、SurfaceInventory、Web
+composition/build control 和 SiteRelease 集成，不等于任何 Surface 获得 activation 或 launch certification。Payment
+provider 与 advanced surfaces 继续 feature-off，Agent 核心语义变更仍需单独对齐。

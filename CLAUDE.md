@@ -405,6 +405,9 @@ Kokoro 的 `kokoro-agent`、`kokoro-platform`、`kokoro-session`、`kokoro-web` 
 ### 当前活跃规则
 
 - 当前主线白名单由 `docs/CURRENT.md` 维护；新增或切换主线时同步更新。
+- 当前整体 owner、协议、产品装配、数据与上线状态的唯一总入口是
+  `docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md`；`technical/15` 与 `technical/20`
+  仅作历史考古，不得据此恢复 V2 仓库命名、MySQL、Platform 零新增或旧 Generation/Job 架构。
 - 给并行 worker 派活时必须注入 `docs/CODEBASE_MAP.md` 和任务相关 spec/plan/handoff。
 - 文档冲突时，优先级为：当前用户指令 > 本文件 > `docs/kokoro-handbook/` > `docs/CURRENT.md` / `docs/README.md` / `docs/CODEBASE_MAP.md` > 当前 spec/plan/handoff > 历史产品/原型/研究材料。
 - GA / kokoro-agent 只消费不透明 `namespace` 作为运行时隔离键。不得在 GA 侧把 `namespace` 改写为 `user:<ownerId>`，也不得把 `ownerId` / `userId` / `workspaceId` 作为第二身份轴传入 GA；这些身份语义由上游 web/session/platform 解析后映射到 namespace。

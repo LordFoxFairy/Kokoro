@@ -1,5 +1,8 @@
 # 部署
 
+> 历史部署草案。当前四子仓独立 release/deploy、Platform deployable inventory、默认四项 Infra 与 Root BOM/rollback
+> 规则以 technical/24、CODEBASE_MAP 和实际 manifests 为准；本文旧 MySQL/三仓拓扑不得指导上线。
+
 本文定义全系统的服务清单、基础设施、本地 Compose、Kubernetes 多副本形态、环境变量和多 Pod 红线。运行时三仓内部架构见 [03-agent-architecture](03-agent-architecture.md)、[04-session-architecture](04-session-architecture.md)、[05-web-architecture](05-web-architecture.md)；平台子仓约定见 [02-platform-architecture](02-platform-architecture.md)。
 
 ## 部署目标

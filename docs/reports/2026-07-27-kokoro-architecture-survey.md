@@ -2,9 +2,12 @@
 artifact: architecture-survey
 version: "1.0"
 created: 2026-07-27
-status: current-fact
+status: superseded-snapshot
 scope: repository-topology-process-roles-boundary-protocols-isolation-governance
 ---
+
+> 本报告是 2026-07-27 的只读代码快照，协议与上线状态已被
+> `docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md` 取代，不再是当前事实入口。
 
 # Kokoro 架构梳理（当前事实）
 

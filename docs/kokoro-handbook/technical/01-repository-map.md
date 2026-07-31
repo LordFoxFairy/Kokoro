@@ -1,5 +1,8 @@
 # 仓库地图
 
+> 历史局部说明。当前四子仓拓扑、Platform 模块化核心、存储与跨仓协议以 `24-federated-product-platform-architecture.md`
+> 和 `docs/CODEBASE_MAP.md` 为准；本文残留的 MySQL/旧子仓描述不得指导实现。
+
 repositoryTopology: federated-submodules-v1
 
 ## 主仓 Kokoro

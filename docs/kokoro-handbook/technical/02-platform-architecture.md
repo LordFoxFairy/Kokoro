@@ -1,5 +1,8 @@
 # 平台架构
 
+> 历史局部说明。当前 Platform 是一个独立子仓内的模块化核心，可产出多个 deployable composition；不再是本文描述的
+> 多业务子仓管理仓，也不再使用 MySQL。以 technical/24 与 ADR-012 为准。
+
 本文定义 `kokoro-platform` 子仓集合的架构、内部约定和红线。平台是业务核心域（site/user/model/credit/payment）的集合，不是运行时三仓。运行时执行链路见 [03-agent-architecture](03-agent-architecture.md)、[04-session-architecture](04-session-architecture.md)、[05-web-architecture](05-web-architecture.md)。
 
 ## 定位

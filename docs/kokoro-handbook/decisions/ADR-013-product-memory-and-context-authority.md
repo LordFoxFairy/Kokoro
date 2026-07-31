@@ -51,8 +51,8 @@ Kokoro has additional constraints:
 - four top-level repositories remain independently released and communicate only through versioned
   HTTP, ConnectRPC, or SSE contracts;
 - GA consumes an opaque `namespace` and must not learn Site/account internals;
-- Platform is one repository and bounded context, but selected processes may be independently
-  deployed from the same artifact;
+- Platform is one repository/module-based core containing multiple bounded contexts; selected
+  compositions may be independently deployed from the same versioned source artifact;
 - no separate vector database or new top-level repository is justified before the existing
   PostgreSQL deployment is exhausted;
 - memory must never become an authorization, payment, policy, or hidden-prompt bypass.

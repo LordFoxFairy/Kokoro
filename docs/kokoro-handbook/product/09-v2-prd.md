@@ -1,5 +1,8 @@
 # V2 PRD（下一版本产品需求）
 
+> 历史产品切片（2026-07-05），不再表示新的 Root、Session、仓库或产品代际。当前产品范围、owner、命名与上线标准
+> 以 `../technical/24-federated-product-platform-architecture.md`、当前 PRD-00…18 与已接受 ADR 为准。
+
 - 状态：思考定稿，待用户裁决（2026-07-05）
 - 姊妹篇：`technical/15-v2-technical-plan.md`（技术切片与里程碑）
 - 上游：00-product-shape / 01-general-chat / 06-skill-hub-and-mcp-hub

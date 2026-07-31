@@ -1,5 +1,8 @@
 # 安全和权限
 
+> 历史安全草案。当前 Site/workload/actor/namespace 隔离、PostgreSQL RLS/OID、mTLS audience 与发布供应链规则以
+> technical/24、ADR-012/013/015/016 及 Root contracts 为准；本文旧 MySQL/内部 token 描述不得指导实现。
+
 本文定义安全边界、权限模型、风控、审计、数据泄漏 checklist、删除保留和迁移安全。链路可观测性见 [10-observability](10-observability.md)，平台架构见 [02-platform-architecture](02-platform-architecture.md)。
 
 ## 安全边界

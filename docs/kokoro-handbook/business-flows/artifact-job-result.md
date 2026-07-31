@@ -1,5 +1,8 @@
 # Artifact Job Result 链路
 
+> 历史产品链路草案。当前技术 owner 与名词以 ADR-015 和 technical/24 为准：Artifact 拥有不可变产物身份、版本、
+> lineage 与 delivery；生成执行归具体 `MediaOperation`，不存在通用 Job aggregate。
+
 ## 目标
 
 管理生成产物的完整生命周期：创建（draft）-> 编辑 -> 发布（public URL 绑 canonical host）-> 查询（按 siteId + workspace 过滤）-> 删除（保留 usage/ledger 审计）-> 导出。全程 site scoped，公开产物绑定所属站点的 SEO。

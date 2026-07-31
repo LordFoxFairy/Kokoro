@@ -1,5 +1,7 @@
 # 系统总览
 
+> 历史导航页。当前整体事实以 `24-federated-product-platform-architecture.md` 与已接受 ADR 为准。
+
 ## 当前主线评审入口
 
 当前 runtime / capability / namespace / auth / sandbox / artifact 主线先读：
@@ -8,7 +10,7 @@
 20-kokoro-v1-technical-plan.md   （V1 定稿事实源）
 ```
 
-详细字段、时序、工作包与评审全记录附录（查细节才读，冲突以 20 为准）：
+详细字段、时序、工作包与评审全记录附录（查细节才读，冲突以 technical/24 与已接受 ADR 为准）：
 
 ```text
 19-current-runtime-capability-review-plan.md   （已被 20 取代，保留为扩展附录）

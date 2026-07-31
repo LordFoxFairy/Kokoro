@@ -546,8 +546,8 @@ Image effect不是现有Chat/LLM invocation boundary的“多传几个字段”�
 - `ReadImageEffectOutput`：Artifact以exact evidence与source capability进行bounded server stream读取，不暴露底层位置。
 
 该boundary拥有独立caller identity、mTLS audience、deadline、retry/receipt/failure owner、Buf source、registry entry和
-真实Media consumer compatibility scenario。不得声称它沿用当前Agent->Model Gateway chat HTTP boundary，也不得让GA直接
-消费image-effect service；两者共享Gateway内部的Provider control primitives，不共享wire operation。
+真实Media consumer compatibility scenario。不得声称它沿用当前 Agent→Model Gateway 的 chat ConnectRPC operations，也
+不得让 GA 直接消费 image-effect service；两者共享 Gateway 内部的 Provider control primitives，不共享 wire operation。
 
 Media application service在operation transaction中预分配`model_invocation_command_ref`。worker调用Gateway时提交exact
 Definition role、ModelOption authorization、`OperationInputRevision` digest、DerivedInput grants、ordered candidate/output

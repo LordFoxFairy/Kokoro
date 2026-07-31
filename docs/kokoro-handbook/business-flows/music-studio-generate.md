@@ -1,5 +1,8 @@
 # Music Studio Generate 链路
 
+> 历史产品链路草案。当前技术 owner 与名词以 ADR-015 和 technical/24 为准：用户可见长任务是 Platform Media 的
+> `MediaOperation`，不存在通用 Job owner；Provider 原生 job 只允许作为 Gateway 内部 effect ref。
+
 ## 目标
 
 跑一次长耗时音乐生成 job：排队 -> 预估冻结积分 -> 解析模型 -> 调 provider（Suno）-> 异步轮询/webhook -> 成功落产物并按实际用量结算；失败则释放冻结。全程 site scoped、幂等、不超扣。

@@ -1,5 +1,9 @@
 # 22. 能力中台 kokoro-hub 与内部通信定案
 
+> 历史实现册。当前 Hub owner/consumer/transport 以 `24-federated-product-platform-architecture.md` 和 Root boundary
+> registry 为准：Hub 属于 Platform，只有 Agent 是 runtime consumer，跨仓使用 ConnectRPC/mTLS；本文中的 tRPC、
+> Session consumer、Agent 直读 Hub 数据库或旧 commit 绿灯结论均已失效。
+
 状态：正式册（HUB-1/2/3/4 代码已提交；HUB 链经 HUB-CONSIST 收口（hub 9710400/session dfd1280/agent 2e30fe0/gate 560d70c，e2e 全绿）；跨仓运行证据已补齐（ROUND4-EVIDENCE 证据①AGENT-MCP E2E-33 铁证 d4cf07e、证据②WEB-3 浏览器实走）；仅 HUB-4 灰度未做）
 收编自：`docs/superpowers/specs/2026-07-11-capability-hub-and-polish.md` §1-§3（该文已转历史入口；§4 web 打磨不属本册）
 上级：[20-kokoro-v1-technical-plan](20-kokoro-v1-technical-plan.md)、[21-platform-mainchain-closure](21-platform-mainchain-closure.md)

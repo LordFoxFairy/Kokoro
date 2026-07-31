@@ -1,6 +1,8 @@
-# Kokoro V1 最终技术方案（定稿）
+# Kokoro V1 技术方案（历史基线）
 
-状态：正式方案，**取代 `19` 作为 V1 事实源**；`19` 降级为扩展附录（背景、风险细节、P2 蓝图）。
+状态：历史基线。本文只记录 2026-07-10 的 Agent/Session/Web 阶段，不再是当前架构事实源。当前总架构见
+[`24-federated-product-platform-architecture.md`](24-federated-product-platform-architecture.md)。本文中的
+`Platform V1 零新增`、存储、通信、能力归属和实施状态不得用于当前实现。
 日期：2026-07-10
 范围：kokoro-web / kokoro-session / kokoro-agent；platform V1 零新增。
 

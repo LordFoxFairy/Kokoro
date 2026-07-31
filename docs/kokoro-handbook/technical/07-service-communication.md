@@ -1,5 +1,8 @@
 # 服务通信技术方案
 
+> 历史通信草案。当前跨仓 operation 只采用 Root registry 指定的 OpenAPI HTTP/SSE、ConnectRPC/mTLS 或 durable
+> request/event transport；不得从本文恢复 tRPC 跨仓、共享 TypeScript 类型图或任意内部 HTTP。
+
 ## 通信类型
 
 ```text

@@ -2,7 +2,7 @@
 
 repositoryTopology: federated-submodules-v1
 
-状态：2026-07-30
+状态：2026-07-31
 用途：给主控会话、code agent 和并行 worker 的最小上下文地图。
 
 ## 仓库边界
@@ -17,8 +17,8 @@ repositoryTopology: federated-submodules-v1
 
 跨子仓运行时边界必须远程协议化：Browser/Site Web 普通产品面使用 OpenAPI HTTP/JSON，Web→Session 使用
 HTTP/SSE；privileged/control plane 使用 ConnectRPC/Protobuf；Session→Platform 只使用 Root 声明的 Connect owner
-边界；Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 使用 HTTP，Agent→Hub runtime
-使用 ConnectRPC。不得跨仓导入
+边界；Session→Agent 使用 durable async request/event transport；Agent→Model Gateway 与 Agent→Hub runtime 都使用
+ConnectRPC/mTLS。只有 Platform Model Gateway→LiteLLM/provider adapter 使用 OpenAI-compatible HTTP。不得跨仓导入
 兄弟仓源码、共享进程内对象或跨服务直写数据库。生成 contract mirror 由消费仓提交和验证，不形成运行时
 文件系统依赖。
 
@@ -46,6 +46,9 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 
 ## 当前稳定规则
 
+- 整体 owner、协议、产品装配、数据与上线状态的事实源是
+  `docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md`。
+- 不存在 Root V2/Session V2；`v2` 只能用于明确的 protocol/schema family。
 - `siteId` 是平台业务隔离边界。
 - `namespace` 是 GA（kokoro-agent runtime）唯一隔离键。
 - GA（kokoro-agent runtime）只消费 `namespace`，不消费 `userId` / `ownerId` / `workspaceId`。
@@ -56,6 +59,8 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
 - session 不执行 agent。
 - agent 不面向浏览器，不写 session messages，不扣积分。
 - Platform 同 bounded context 使用本地 application interface/UoW，禁止 self-RPC。
+- Product/Surface 业务定义只能来自 Platform Product Catalog 的 immutable published revision；Site、Commerce、Model、
+  Memory 与 WebBuildIntent 引用同一 catalog，不维护各自字符串名单。Web 只拥有物理 composition registry。
 - Site Web BFF→Platform 普通产品 API 使用 OpenAPI；Admin/Admission 等 privileged control plane 使用 Connect。
 - 同一个远程 operation 只有一个权威 transport contract；不得同时维护 OpenAPI/Connect 双写入口。
 - Root `contract/proto/` 是新 internal RPC 单源，生成镜像提交进 provider/consumer 子仓；禁止手改生成物。
@@ -63,6 +68,12 @@ Kokoro/                 根仓: docs, handbook, cross-repo contract, submodule p
   forget/reset/import/export/recovery 契约，但仍为 `contract-only`。浏览器不提交 Site、subject、Project、
   space、namespace 或 digest scope；past-chat、Temporary Chat、selection、ContextUse、自动学习和 GA runtime
   不属于这一契约阶段。
+- Product Memory 当前仍 dormant：没有权威 per-Site activation projection、production classifier 和 keyring
+  composition 前，不挂 public route、不发 runtime credential、不宣告 readiness。
+- Web 当前只有 Memory 的试验性物理裁剪；Chat/Account/Media/Site BFF 仍大部分 always-included。目标由
+  ADR-016 的 `WebBuildIntent -> CompiledWebManifest -> artifact/provenance -> SiteRelease` 单向链替换，不能继续
+  扩散 `if (enabled)` 特判。
+- 不建立顶层 Generation 或通用 Job owner；图片/音乐/视频业务执行归 Platform Media，队列任务归各自 domain。
 - 外部参考项目路径、分支名、逐字文案和代码只允许出现在 `tmp/` 中间产物。
 
 ## 子仓说明
@@ -107,6 +118,9 @@ Site 项目工厂、一个独立 Admin app、一个非生产 reference fixture �
   Connect clients 调用 Platform 控制面；Web 不持有 Platform DB 凭据、Prisma schema 或 Prisma client。
 - `packages/*`：brand-neutral Chat/Account/Media 产品、Site BFF/runtime/client、共享 TS 基线与 i18n。
 
+现有 Site scaffold 的 `enabledProductIds`/Memory 特判不是最终通用装配方案。新增产品前必须先落 ADR-016 的静态
+WebCompositionUnit registry/compiler 与真实 artifact inspection，不能再增加一套产品专用 template token。
+
 正式 Next.js surfaces 当前统一为 **Next 16.2.12 / React 19.2.8**，Web TypeScript 统一为 5.9.3。pnpm 仍使用
 `node-linker=isolated` 保护依赖边界；各子仓继续独立拥有自己的 lockfile 和工具链。
 正式文档入口：`kokoro-web/README.md`、`kokoro-web/INDEX.md`。
@@ -134,6 +148,9 @@ pnpm run build:admin
 运行面由独立 Platform Hub provider 暴露 Root 生成的 Connect contract，Agent 只作为远程 consumer 解析装配并流式
 获取已发布 Skill artifact。Agent 不跨仓直读 Hub Mongo/S3，Session 也不是 Hub runtime consumer。边界见
 `docs/kokoro-handbook/technical/22-capability-hub.md` 与 `docs/kokoro-handbook/modules/kokoro-hub.md`。
+
+Platform Product Memory 的 personal owner data plane 已进入候选代码，但仍是 feature-off。代码存在不等于产品可用；
+SiteRelease activation、public composition、purge/import/export worker 和跨仓发布证据须分别完成。
 
 正式文档入口：`kokoro-platform/README.md`、`kokoro-platform/docs/README.md`。
 

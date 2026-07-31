@@ -28,7 +28,8 @@ docs/superpowers/plans/
 如果文档之间冲突：
 
 ```text
-docs/kokoro-handbook/        正式技术方案和已确认长期规则优先级最高
+docs/kokoro-handbook/technical/24 + accepted ADR  当前整体架构与决策
+docs/kokoro-handbook/        其他正式技术方案和长期规则
 docs/CURRENT.md              当前活跃白名单
 docs/superpowers/specs/      草案/过程方案，正式后应迁入 handbook
 docs/handoffs/               短期派工
@@ -42,3 +43,6 @@ GA 只认 opaque namespace。
 namespace 不拼 user:/team: 前缀。
 GA 不接收 userId / ownerId / workspaceId 第二身份轴。
 ```
+
+`technical/15-v2-technical-plan.md` 与 `technical/20-kokoro-v1-technical-plan.md` 只作历史考古。不得据此创建
+Root V2/Session V2、恢复 MySQL/Platform 零新增，或恢复顶层 Generation/通用 Job owner。

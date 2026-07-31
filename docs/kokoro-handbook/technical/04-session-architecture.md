@@ -1,5 +1,8 @@
 # Session 架构
 
+> 历史局部说明。当前 Session 的 PostgreSQL owner、HTTP/SSE、durable Agent transport 与 Platform Connect 边界以
+> technical/24、ADR-012 和实际 contract registry 为准；本文旧 MySQL/Mongo/V1 描述不得作为当前事实。
+
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。
 三仓通用聊天链路见：
