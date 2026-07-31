@@ -311,6 +311,16 @@ message MediaCommandReceipt {
 }
 
 message CreateAgentImageOperationResponse {
+  option (buf.validate.message).cel = {
+    id: "media_runtime.create_response_submit_only"
+    message: "create image returns only submit command receipt arms"
+    expression: "has(this.receipt.submit_accepted) || has(this.receipt.submit_rejected) || has(this.receipt.submit_outcome_unknown)"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_runtime.create_response_operation_matches_accepted"
+    message: "an optional create operation view belongs to the accepted receipt"
+    expression: "!has(this.operation) || (has(this.receipt.submit_accepted) && this.operation.operation_ref == this.receipt.submit_accepted.operation_ref)"
+  };
   MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
   optional AgentMediaOperationView operation = 2;
 }
@@ -332,6 +342,16 @@ message CancelAgentMediaOperationRequest {
 }
 
 message CancelAgentMediaOperationResponse {
+  option (buf.validate.message).cel = {
+    id: "media_runtime.cancel_response_cancel_only"
+    message: "cancel returns only cancel command receipt arms"
+    expression: "has(this.receipt.cancel_accepted) || has(this.receipt.cancel_rejected) || has(this.receipt.cancel_outcome_unknown)"
+  };
+  option (buf.validate.message).cel = {
+    id: "media_runtime.cancel_response_operation_matches_receipt"
+    message: "an optional cancel operation view belongs to its accepted or unknown receipt"
+    expression: "!has(this.operation) || (has(this.receipt.cancel_accepted) && this.operation.operation_ref == this.receipt.cancel_accepted.operation_ref) || (has(this.receipt.cancel_outcome_unknown) && this.operation.operation_ref == this.receipt.cancel_outcome_unknown.operation_ref)"
+  };
   MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
   optional AgentMediaOperationView operation = 2;
 }
@@ -348,6 +368,11 @@ message RecoverMediaOperationByCommandRequest {
 }
 
 message RecoverMediaOperationByCommandResponse {
+  option (buf.validate.message).cel = {
+    id: "media_runtime.recover_response_operation_matches_receipt"
+    message: "an optional recovered operation view belongs to an operation-bearing receipt"
+    expression: "!has(this.operation) || (has(this.receipt.submit_accepted) && this.operation.operation_ref == this.receipt.submit_accepted.operation_ref) || (has(this.receipt.cancel_accepted) && this.operation.operation_ref == this.receipt.cancel_accepted.operation_ref) || (has(this.receipt.cancel_outcome_unknown) && this.operation.operation_ref == this.receipt.cancel_outcome_unknown.operation_ref)"
+  };
   MediaCommandReceipt receipt = 1 [(buf.validate.field).required = true];
   optional AgentMediaOperationView operation = 2;
 }

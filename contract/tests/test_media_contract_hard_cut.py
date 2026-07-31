@@ -181,6 +181,15 @@ def test_ga_runtime_keeps_product_revisions_platform_owned_and_closed_receipts()
     assert "caller_request_fingerprint" in _message(source, "SubmitMediaCommandAccepted")
     assert "caller_request_fingerprint" not in _message(source, "CancelMediaCommandAccepted")
 
+    create_response = _message(source, "CreateAgentImageOperationResponse")
+    assert "media_runtime.create_response_submit_only" in create_response
+    assert "media_runtime.create_response_operation_matches_accepted" in create_response
+    cancel_response = _message(source, "CancelAgentMediaOperationResponse")
+    assert "media_runtime.cancel_response_cancel_only" in cancel_response
+    assert "media_runtime.cancel_response_operation_matches_receipt" in cancel_response
+    recover_response = _message(source, "RecoverMediaOperationByCommandResponse")
+    assert "media_runtime.recover_response_operation_matches_receipt" in recover_response
+
 
 def test_public_owner_states_and_artifact_display_are_closed_unions() -> None:
     schemas = _openapi()["components"]["schemas"]
