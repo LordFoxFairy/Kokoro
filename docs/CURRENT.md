@@ -2,8 +2,17 @@
 
 repositoryTopology: federated-submodules-v1
 
-状态：2026-07-27
+状态：2026-07-31
 用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
+
+## 命名不变量
+
+- 不存在 `Root V2`、`Session V2`、第二套 Root 或第二套 Session。Root 仍是契约、Infra、兼容性、BOM 与
+  gitlink pin authority；Session 仍是现有 `kokoro-session`。
+- `v2` 只用于一个明确的 wire protocol、schema 或 operation family（例如 `interaction.v2`），不得用作仓库、
+  服务或产品代际名称。
+- `kokoro-handbook/technical/15-v2-technical-plan.md` 是 2026-07-05 的历史过程稿，已由当前 V1 技术方案、
+  federated repository 决策和后续 ADR 取代，不得作为实现入口。
 
 ## 必读
 
@@ -85,9 +94,12 @@ repositoryTopology: federated-submodules-v1
 
 - [仓库地图](kokoro-handbook/technical/01-repository-map.md)
 - [Agent / Session / Web V1 运行时](kokoro-handbook/technical/11-agent-session-web-v1-runtime.md)
-- [V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)
 - [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
 - [Skill Hub 与 MCP Hub 产品手册](kokoro-handbook/product/06-skill-hub-and-mcp-hub.md)
+
+历史过程稿（只用于考古，不是当前事实）：
+
+- [2026-07-05 V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)
 
 ## 默认不读
 

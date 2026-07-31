@@ -1,6 +1,10 @@
-# V2 技术方案（下一版本）
+# V2 技术方案（历史过程稿）
 
-- 状态：定案待用户裁决（2026-07-05）
+- 状态：已被后续方案取代，仅供考古（2026-07-05 原稿）
+- 命名说明：这里的 `V2` 不是 `Root V2`、`Session V2`、新仓库或新服务。当前实现事实以
+  `docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、`technical/20-kokoro-v1-technical-plan.md` 与后续 ADR 为准。
+- 禁止执行：不得从本文恢复旧 Skills/资产、身份、Session 或 runtime 路径；协议版本必须使用明确名称，
+  例如 `interaction.v2`。
 - 触发：用户五问——修当前问题 / agent 链路闭环 / 整体链路错误 / assets 缺架构思想 / 新方案+新 PRD
 - 姊妹篇：`product/09-v2-prd.md`（产品切片）；审计明细见本文 §1
 - 落地更新（2026-07）：**G1 鉴权 / G2 失败码 / G4 i18n 已落地**。失败呈现（§1.2③）已修为按码讲人话；web 静态 i18n（中/英，`kokoro-web/src/i18n`）已上线；身份签发+验签链与登录闸已落地，浏览器密封 cookie 形态见 [AUTH-P0](../../superpowers/specs/2026-07-12-wave1-auth-p0.md)（**已落地**，user e4068d6/6260da5/8c26740：web BFF httpOnly cookie + magic-link + nonce 防 CSRF + 日志脱敏）。以下正文维持 2026-07-05 原文。
