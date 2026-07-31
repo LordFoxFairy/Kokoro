@@ -41,8 +41,11 @@ Only the Site port is public by default; operator ports bind to `127.0.0.1` for 
    `kokoro-web/packages/site-scaffold/templates/site/Dockerfile`; Root does not build it from the Web
    monorepo. The variable is required: `apps/reference-site` is a non-production fixture and is never a
    deployment fallback. Registry hostnames and repository paths must be lowercase; a canonical numeric
-   registry port from `1` through `65535` is allowed. Tags, fixture names, whitespace, uppercase or
-   non-SHA-256/short digests are rejected.
+   registry port from `1` through `65535` is allowed. Tags, the known `reference-site` repository
+   naming, whitespace, uppercase or non-SHA-256/short digests are rejected. This syntax gate cannot
+   identify a fixture pushed under another repository name or prove artifact provenance. C1 release
+   qualification remains incomplete until a later promotion gate verifies a digest-bound Site release
+   manifest or attestation.
 5. Set `KOKORO_*_ENV_FILE` overrides to process-specific protected files for production. The helper
    script deliberately defaults them to the master env only for bounded single-host bring-up.
 6. On a fresh database, prepare a mode-`0600` Admin authority document owned by the account running

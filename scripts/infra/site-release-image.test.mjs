@@ -20,7 +20,7 @@ test("accepts canonical digest-pinned Site images, including private registry po
   }
 });
 
-test("rejects non-canonical, mutable, fixture, and ambiguous Site image references", () => {
+test("rejects non-canonical, mutable, and ambiguous Site image references", () => {
   const invalidReferences = [
     undefined,
     "",
@@ -28,8 +28,6 @@ test("rejects non-canonical, mutable, fixture, and ambiguous Site image referenc
     "product-site:latest",
     "registry.example/kokoro/product-site:latest",
     `product-site@sha256:${digest}`,
-    `registry.example/kokoro/reference-site@sha256:${digest}`,
-    `registry.example/apps/reference-site@sha256:${digest}`,
     `registry.example/kokoro/Product-site@sha256:${digest}`,
     `Registry.example/kokoro/product-site@sha256:${digest}`,
     `registry.example/kokoro/product-site@sha256:${"A".repeat(64)}`,
@@ -48,8 +46,21 @@ test("rejects non-canonical, mutable, fixture, and ambiguous Site image referenc
   for (const reference of invalidReferences) {
     assert.throws(
       () => validateSiteReleaseImageReference(reference),
-      /site_release_image_(?:missing|invalid|forbidden_fixture)/u,
+      /site_release_image_(?:missing|invalid)/u,
       String(reference),
+    );
+  }
+});
+
+test("rejects the known reference-site repository naming without claiming artifact provenance", () => {
+  for (const reference of [
+    `registry.example/kokoro/reference-site@sha256:${digest}`,
+    `registry.example/apps/kokoro-reference-site@sha256:${digest}`,
+  ]) {
+    assert.throws(
+      () => validateSiteReleaseImageReference(reference),
+      (error) => error?.code === "site_release_image_forbidden_known_fixture_name",
+      reference,
     );
   }
 });

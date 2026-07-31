@@ -1,6 +1,7 @@
 const REPOSITORY_COMPONENT = /^[a-z0-9]+(?:(?:[._]|__|-+)[a-z0-9]+)*$/u;
 const REGISTRY_LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/u;
 const DIGEST = /^[0-9a-f]{64}$/u;
+const KNOWN_REFERENCE_FIXTURE_NAME = "reference-site";
 
 class SiteReleaseImageError extends Error {
   constructor(code) {
@@ -58,8 +59,8 @@ export function validateSiteReleaseImageReference(reference) {
   if (!repositoryComponents.every((component) => REPOSITORY_COMPONENT.test(component))) {
     reject("site_release_image_invalid");
   }
-  if (repositoryComponents.some((component) => component.includes("reference-site"))) {
-    reject("site_release_image_forbidden_fixture");
+  if (repositoryComponents.some((component) => component.includes(KNOWN_REFERENCE_FIXTURE_NAME))) {
+    reject("site_release_image_forbidden_known_fixture_name");
   }
   return reference;
 }

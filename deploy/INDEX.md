@@ -42,10 +42,12 @@ Add environment-neutral deployment composition here. Keep service-specific build
 ## Current gotchas
 
 These files are not production certification evidence; Wave 9 still requires canary, rollback, on-call, and disaster-recovery proof.
-`KOKORO_SITE_IMAGE` has no default and must identify the digest-pinned artifact promoted by one generated Site project. Before any
-infra mutation, `provision.sh` runs `scripts/infra/validate-site-release-image.mjs`; it accepts canonical lowercase
-`registry[:port]/repository@sha256:<64 lowercase hex>` references and rejects tags and the Web reference fixture. Compose's `:?`
-interpolation remains a second missing-or-empty guard for direct Compose callers.
+`KOKORO_SITE_IMAGE` has no default. Before any infra mutation, `provision.sh` runs
+`scripts/infra/validate-site-release-image.mjs`; it accepts canonical lowercase
+`registry[:port]/repository@sha256:<64 lowercase hex>` references, rejects tags and rejects the known `reference-site` repository
+naming. It cannot identify a renamed fixture or prove artifact provenance. C1 release qualification remains incomplete until a later
+promotion gate verifies a digest-bound Site release manifest or attestation. Compose's `:?` interpolation remains a second
+missing-or-empty guard for direct Compose callers.
 
 ## Verification
 
