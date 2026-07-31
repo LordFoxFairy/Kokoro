@@ -1636,10 +1636,12 @@ function modelImageEffectDigestSource() {
   return `
 import {
   AttachNextAttemptAuthorizationEffectSchema,
+  CanonicalImageEffectCommandReceiptV1Schema,
   CreateImageEffectEffectSchema,
   IssueImageEffectOutputAccessEffectSchema,
   RequestCancelImageEffectEffectSchema,
   type AttachNextAttemptAuthorizationEffect,
+  type CanonicalImageEffectCommandReceiptV1,
   type CreateImageEffectEffect,
   type IssueImageEffectOutputAccessEffect,
   type RequestCancelImageEffectEffect,
@@ -1655,6 +1657,22 @@ export type VerifiedModelImageEffectCommandAxes = Readonly<{
   authorizationGeneration: bigint;
   securityEpoch: bigint;
 }>;
+
+export function imageEffectCommandReceiptDigest(
+  record: CanonicalImageEffectCommandReceiptV1,
+): string {
+  const hash = createHash("sha256");
+  hash.update(CanonicalImageEffectCommandReceiptV1Schema.typeName, "utf8");
+  hash.update(Uint8Array.of(0));
+  hash.update(toBinary(CanonicalImageEffectCommandReceiptV1Schema, record, { writeUnknownFields: false }));
+  return hash.digest("hex");
+}
+
+export function imageEffectCommandReceiptRef(
+  record: CanonicalImageEffectCommandReceiptV1,
+): string {
+  return "image-effect-receipt:sha256:" + imageEffectCommandReceiptDigest(record);
+}
 
 function modelImageEffectDigest(
   method: string,

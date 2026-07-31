@@ -143,6 +143,14 @@ def test_image_effect_has_preallocated_identity_and_safe_attempt_attachment() ->
     assert "IMAGE_EFFECT_STATE_OUTCOME_UNKNOWN" in source
     assert "IMAGE_EFFECT_RECEIPT_KIND_DEFINITELY_NOT_SUBMITTED" in source
     assert "IMAGE_EFFECT_ERROR_CODE_IDEMPOTENCY_CONFLICT" in source
+    receipt = _message_body(source, "ImageEffectCommandReceipt")
+    assert "receipt_ref" in receipt
+    assert "receipt_digest" in receipt
+    assert "request_digest" in receipt
+    assert "message CanonicalImageEffectCommandReceiptV1" in source
+    view = _message_body(source, "ImageEffectView")
+    assert "canonical_outcome_evidence_digest" in view
+    assert "usage_evidence_digest" in view
     assert "message CreateImageEffectEffect" in source
     assert "message RequestCancelImageEffectEffect" in source
     assert "message AttachNextAttemptAuthorizationEffect" in source
@@ -191,6 +199,8 @@ def test_image_effect_uses_generated_known_field_command_digests() -> None:
         "requestCancelImageEffectRequestDigest",
         "attachNextAttemptAuthorizationRequestDigest",
         "issueImageEffectOutputAccessRequestDigest",
+        "imageEffectCommandReceiptDigest",
+        "imageEffectCommandReceiptRef",
     ):
         assert f"export function {helper}(" in generator
     assert '"model-image-effect": modelImageEffectDigestSource' in generator

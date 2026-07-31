@@ -212,7 +212,42 @@ message ImageEffectError {
   string safe_message = 2 [(buf.validate.field).string.max_len = 512];
 }
 
+// Digest preimage for an owner receipt. The generated Root helper hashes the
+// deterministic known-field bytes with the message type name and a NUL separator.
+// receipt_ref and receipt_digest are deliberately absent to avoid self-reference.
+message CanonicalImageEffectCommandReceiptV1 {
+  string caller_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string request_digest = 2 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  ImageEffectReceiptKind kind = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional string logical_invocation_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional string attempt_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  optional uint32 attempt_ordinal = 6 [(buf.validate.field).uint32.gt = 0];
+  uint64 receipt_version = 7 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+  optional ImageEffectError error = 9;
+}
+
 message ImageEffectCommandReceipt {
+  option (buf.validate.message).cel = {
+    id: "model_image_effect.receipt_error_shape"
+    message: "only rejected and outcome-unknown receipts carry a safe error"
+    expression: "(this.kind == kokoro.platform.model.image.v1.ImageEffectReceiptKind.IMAGE_EFFECT_RECEIPT_KIND_REJECTED || this.kind == kokoro.platform.model.image.v1.ImageEffectReceiptKind.IMAGE_EFFECT_RECEIPT_KIND_OUTCOME_UNKNOWN) == has(this.error)"
+  };
   string caller_command_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -233,9 +268,23 @@ message ImageEffectCommandReceipt {
   uint64 receipt_version = 6 [(buf.validate.field).uint64.gt = 0];
   google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
   optional ImageEffectError error = 8;
+  string receipt_ref = 9 [(buf.validate.field).string = {pattern: "^image-effect-receipt:sha256:[0-9a-f]{64}$"}];
+  string receipt_digest = 10 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string request_digest = 11 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 message ImageEffectView {
+  option (buf.validate.message).cel = {
+    id: "model_image_effect.view_evidence_pairs"
+    message: "outcome and usage evidence references always carry their exact digests"
+    expression: "has(this.canonical_outcome_evidence_ref) == has(this.canonical_outcome_evidence_digest) && has(this.usage_evidence_ref) == has(this.usage_evidence_digest)"
+  };
   string logical_invocation_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -259,6 +308,14 @@ message ImageEffectView {
     max_len: 256
   }];
   google.protobuf.Timestamp observed_at = 8 [(buf.validate.field).required = true];
+  optional string canonical_outcome_evidence_digest = 9 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  optional string usage_evidence_digest = 10 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
 }
 
 message CreateImageEffectResponse {
