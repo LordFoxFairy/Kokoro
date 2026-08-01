@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTO = ROOT / "proto/kokoro/agent/presentation/v1/agent_presentation.proto"
+GENERATOR = ROOT / "generate.mjs"
 
 
 def _body(source: str, kind: str, name: str) -> str:
@@ -29,6 +30,9 @@ def test_agent_presentation_boundary_is_durable_contiguous_and_recoverable() -> 
         "record_digest",
         "envelope_digest",
         "candidate_digest",
+        "PresentationCandidateRecordDigestPayload",
+        "PresentationSnapshotHeadDigestPayload",
+        "acknowledged_head_record_digest",
         "expected_acknowledged_through",
         "expected_status_revision",
         "idempotency_ref",
@@ -69,3 +73,16 @@ def test_raw_agent_envelopes_remain_internal_and_never_become_web_contracts() ->
     assert "bytes envelope_bytes" in source
     assert "internal-control" in source.lower()
     assert "browser" not in _body(source, "service", "AgentPresentationService").lower()
+
+
+def test_ack_and_quarantine_share_one_root_generated_command_digest() -> None:
+    source = GENERATOR.read_text()
+    assert 'commandEnvelopeDigest: "agent-presentation"' in source
+    assert "sealAcknowledgeCandidateAdmissionsEffect" in source
+    assert "acknowledgeCandidateAdmissionsRequestDigest" in source
+    assert "sealQuarantineCandidateAdmissionEffect" in source
+    assert "quarantineCandidateAdmissionRequestDigest" in source
+    assert "presentationProducerFenceDigest" in source
+    assert "presentationCanonicalCandidateDigest" in source
+    assert "presentationCandidateRecordDigest" in source
+    assert "presentationSnapshotHeadDigest" in source

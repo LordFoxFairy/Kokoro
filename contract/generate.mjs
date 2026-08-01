@@ -26,7 +26,7 @@ const BOUNDARIES = Object.freeze({
       "kokoro/agent/presentation/v1/agent_presentation.proto",
     ]),
     helper: null,
-    commandEnvelopeDigest: null,
+    commandEnvelopeDigest: "agent-presentation",
   }),
   "platform-admin-auth@v1": Object.freeze({
     schema: "kokoro.platform.admin.v1.AdminAuthService",
@@ -2260,6 +2260,211 @@ export function attachNextAttemptAuthorizationRequestDigest(
 `;
 }
 
+function agentPresentationDigestSource() {
+  return `
+import {
+  AcknowledgeCandidateAdmissionsEffectSchema,
+  PresentationCandidateRecordDigestPayloadSchema,
+  PresentationProducerFenceDigestPayloadSchema,
+  PresentationRecordChainGenesisDigestPayloadSchema,
+  PresentationSnapshotHeadDigestPayloadSchema,
+  QuarantineCandidateAdmissionEffectSchema,
+  type AcknowledgeCandidateAdmissionsEffect,
+  type PresentationCandidateRecord,
+  type PresentationProducerFence,
+  type QuarantineCandidateAdmissionEffect,
+} from "./kokoro/agent/presentation/v1/agent_presentation_pb.js";
+
+export type VerifiedAgentPresentationCommandAxes = Readonly<{
+  workloadIdentityRef: string;
+  audience: "agent.presentation.v1";
+  environment: string;
+  region: string;
+  securityEpochs: readonly Readonly<{ axis: string; value: bigint }>[];
+}>;
+
+const ZERO_EFFECT_DIGEST = "sha256:" + "0".repeat(64);
+
+function typedPresentationDigest<T extends DescMessage>(schema: T, value: MessageShape<T>): string {
+  const hash = createHash("sha256");
+  hash.update(schema.typeName, "utf8");
+  hash.update(Uint8Array.of(0));
+  hash.update(toBinary(schema, value, { writeUnknownFields: false }));
+  return "sha256:" + hash.digest("hex");
+}
+
+export function presentationEnvelopeDigest(envelopeBytes: Uint8Array): string {
+  return "sha256:" + createHash("sha256").update(envelopeBytes).digest("hex");
+}
+
+export function presentationCanonicalCandidateDigest(canonicalEnvelopeJsonUtf8: Uint8Array): string {
+  return "sha256:" + createHash("sha256").update(canonicalEnvelopeJsonUtf8).digest("hex");
+}
+
+export function presentationProducerFenceDigest(
+  producerInstanceRef: string,
+  producerGeneration: bigint,
+): string {
+  return typedPresentationDigest(PresentationProducerFenceDigestPayloadSchema, create(
+    PresentationProducerFenceDigestPayloadSchema,
+    { producerInstanceRef, producerGeneration },
+  ));
+}
+
+export function presentationRecordChainGenesisDigest(
+  runId: string,
+  producer: PresentationProducerFence,
+): string {
+  return typedPresentationDigest(PresentationRecordChainGenesisDigestPayloadSchema, create(
+    PresentationRecordChainGenesisDigestPayloadSchema,
+    { runId, producer },
+  ));
+}
+
+export function presentationCandidateRecordDigest(
+  runId: string,
+  record: PresentationCandidateRecord,
+): string {
+  return typedPresentationDigest(PresentationCandidateRecordDigestPayloadSchema, create(
+    PresentationCandidateRecordDigestPayloadSchema,
+    {
+      runId,
+      presentationRef: record.presentationRef,
+      previousPresentationSeq: record.previousPresentationSeq,
+      presentationSeq: record.presentationSeq,
+      envelopeDigest: record.envelopeDigest,
+      candidateRef: record.candidateRef,
+      candidateDigest: record.candidateDigest,
+      recordedAt: record.recordedAt,
+      producer: record.producer,
+      previousRecordDigest: record.previousRecordDigest,
+    },
+  ));
+}
+
+export function presentationSnapshotHeadDigest(
+  runId: string,
+  producer: PresentationProducerFence,
+  snapshotThroughPresentationSeq: bigint,
+  snapshotHeadRecordDigest?: string,
+): string {
+  return typedPresentationDigest(PresentationSnapshotHeadDigestPayloadSchema, create(
+    PresentationSnapshotHeadDigestPayloadSchema,
+    {
+      runId,
+      producer,
+      snapshotThroughPresentationSeq,
+      ...(snapshotHeadRecordDigest === undefined ? {} : { snapshotHeadRecordDigest }),
+    },
+  ));
+}
+
+function presentationEffectDigest(domain: string, typeName: string, bytes: Uint8Array): string {
+  const hash = createHash("sha256");
+  for (const value of [new TextEncoder().encode(domain), new TextEncoder().encode(typeName), bytes]) {
+    const length = new Uint8Array(8);
+    new DataView(length.buffer).setBigUint64(0, BigInt(value.byteLength), false);
+    hash.update(length);
+    hash.update(value);
+  }
+  return "sha256:" + hash.digest("hex");
+}
+
+export function sealAcknowledgeCandidateAdmissionsEffect(
+  effect: AcknowledgeCandidateAdmissionsEffect,
+): AcknowledgeCandidateAdmissionsEffect {
+  const zeroed = create(AcknowledgeCandidateAdmissionsEffectSchema, {
+    ...effect,
+    effectDigest: ZERO_EFFECT_DIGEST,
+  });
+  return create(AcknowledgeCandidateAdmissionsEffectSchema, {
+    ...zeroed,
+    effectDigest: presentationEffectDigest(
+      zeroed.effectDigestDomain,
+      AcknowledgeCandidateAdmissionsEffectSchema.typeName,
+      toBinary(AcknowledgeCandidateAdmissionsEffectSchema, zeroed, { writeUnknownFields: false }),
+    ),
+  });
+}
+
+export function sealQuarantineCandidateAdmissionEffect(
+  effect: QuarantineCandidateAdmissionEffect,
+): QuarantineCandidateAdmissionEffect {
+  const zeroed = create(QuarantineCandidateAdmissionEffectSchema, {
+    ...effect,
+    effectDigest: ZERO_EFFECT_DIGEST,
+  });
+  return create(QuarantineCandidateAdmissionEffectSchema, {
+    ...zeroed,
+    effectDigest: presentationEffectDigest(
+      zeroed.effectDigestDomain,
+      QuarantineCandidateAdmissionEffectSchema.typeName,
+      toBinary(QuarantineCandidateAdmissionEffectSchema, zeroed, { writeUnknownFields: false }),
+    ),
+  });
+}
+
+function presentationRequestDigest(
+  operation: string,
+  effect: TypedPayload,
+  targetRefs: readonly string[],
+  verified: VerifiedAgentPresentationCommandAxes,
+): string {
+  return commandEnvelopeV2Digest({
+    contractVersion: "agent-presentation@v1",
+    operation,
+    trust: {
+      workloadIdentityRef: requiredAxis("verified.workloadIdentityRef", verified.workloadIdentityRef),
+      audience: assertAxisMatch("audience", verified.audience, "agent.presentation.v1"),
+      environment: requiredAxis("verified.environment", verified.environment),
+      region: requiredAxis("verified.region", verified.region),
+      securityEpochs: verified.securityEpochs,
+    },
+    targetRefs,
+    effect,
+  });
+}
+
+export function acknowledgeCandidateAdmissionsRequestDigest(
+  effect: AcknowledgeCandidateAdmissionsEffect,
+  verified: VerifiedAgentPresentationCommandAxes,
+): string {
+  const sealed = sealAcknowledgeCandidateAdmissionsEffect(effect);
+  assertSha256Match("effectDigest", effect.effectDigest.slice(7), sealed.effectDigest.slice(7));
+  return presentationRequestDigest(
+    "kokoro.agent.presentation.v1.AgentPresentationService/AcknowledgeCandidateAdmissions",
+    {
+      typeName: AcknowledgeCandidateAdmissionsEffectSchema.typeName,
+      bytes: toBinary(AcknowledgeCandidateAdmissionsEffectSchema, effect, { writeUnknownFields: false }),
+    },
+    [effect.runId, ...effect.receipts.flatMap((receipt) => [
+      receipt.presentationRef,
+      receipt.candidateRef,
+      receipt.sessionAdmissionReceiptRef,
+    ])],
+    verified,
+  );
+}
+
+export function quarantineCandidateAdmissionRequestDigest(
+  effect: QuarantineCandidateAdmissionEffect,
+  verified: VerifiedAgentPresentationCommandAxes,
+): string {
+  const sealed = sealQuarantineCandidateAdmissionEffect(effect);
+  assertSha256Match("effectDigest", effect.effectDigest.slice(7), sealed.effectDigest.slice(7));
+  return presentationRequestDigest(
+    "kokoro.agent.presentation.v1.AgentPresentationService/QuarantineCandidateAdmission",
+    {
+      typeName: QuarantineCandidateAdmissionEffectSchema.typeName,
+      bytes: toBinary(QuarantineCandidateAdmissionEffectSchema, effect, { writeUnknownFields: false }),
+    },
+    [effect.runId, effect.presentationRef, effect.candidateRef],
+    verified,
+  );
+}
+`;
+}
+
 function commandEnvelopeDigestSource(kind) {
   const wrappers = {
     identity: identityCommandDigestSource,
@@ -2276,10 +2481,11 @@ function commandEnvelopeDigestSource(kind) {
     "media-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
     "credit-cost-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
     "model-image-effect": modelImageEffectDigestSource,
+    "agent-presentation": agentPresentationDigestSource,
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
-  const boundarySelectivePrimitives = kind === "site-evidence-admission" || kind === "model-image-effect" ||
+  const boundarySelectivePrimitives = kind === "agent-presentation" || kind === "site-evidence-admission" || kind === "model-image-effect" ||
     kind === "media-projection-recovery" || kind === "credit-cost-projection-recovery";
   return commandEnvelopeDigestCoreSource(boundarySelectivePrimitives) + wrapper();
 }

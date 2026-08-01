@@ -25,6 +25,60 @@ message PresentationProducerFence {
   string producer_fence_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
 }
 
+// Digest payloads are wire-authoritative canonical inputs. Their SHA-256 is
+// SHA256(UTF8(type_name) || NUL || deterministic known-field protobuf bytes)
+// and is rendered as "sha256:<lowercase hex>". Unknown fields are rejected.
+message PresentationProducerFenceDigestPayload {
+  string producer_instance_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 producer_generation = 2 [(buf.validate.field).uint64.gt = 0];
+}
+
+message PresentationRecordChainGenesisDigestPayload {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+}
+
+message PresentationCandidateRecordDigestPayload {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string presentation_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 previous_presentation_seq = 3;
+  uint64 presentation_seq = 4 [(buf.validate.field).uint64.gt = 0];
+  string envelope_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string candidate_ref = 6 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
+  // SHA-256 of the RFC 8785/JCS canonical candidate envelope JSON.
+  string candidate_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+  PresentationProducerFence producer = 9 [(buf.validate.field).required = true];
+  string previous_record_digest = 10 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message PresentationSnapshotHeadDigestPayload {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.snapshot_head_pair"
+    message: "only a non-empty snapshot names a head record digest"
+    expression: "(this.snapshot_through_presentation_seq == 0u) == !has(this.snapshot_head_record_digest)"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 snapshot_through_presentation_seq = 3;
+  optional string snapshot_head_record_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
 enum PresentationRejectionClass {
   PRESENTATION_REJECTION_CLASS_UNSPECIFIED = 0;
   PRESENTATION_REJECTION_CLASS_PERMANENT = 1;
@@ -116,6 +170,11 @@ message PresentationDeliveryStatus {
     message: "a quarantine, when present, is exactly the first unacknowledged sequence"
     expression: "!has(this.quarantine) || this.quarantine.presentation_seq == this.acknowledged_through_presentation_seq + 1u"
   };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.status_ack_head_pair"
+    message: "only a non-zero acknowledged watermark names its immutable head record"
+    expression: "(this.acknowledged_through_presentation_seq == 0u) == !has(this.acknowledged_head_record_digest)"
+  };
   string run_id = 1 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
@@ -127,6 +186,7 @@ message PresentationDeliveryStatus {
   optional kokoro.common.v2.CommandIdentityV2 last_command = 6;
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
   string status_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string acknowledged_head_record_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
 }
 
 message PullCandidateBatchesRequest {
