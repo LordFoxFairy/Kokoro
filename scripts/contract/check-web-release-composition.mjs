@@ -125,30 +125,37 @@ activation-first-pointer-must-be-null sha256:0752cf0b97721035abc167fdcd7e19c20e8
 const FROZEN_BLOCKED_ACTIVATION_SCENARIOS = new Map([
   ["candidate-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_candidate_epoch_invalid",
+    digest: "sha256:e33189cb87a96053b815b6b050d881a14274ddd347b852b1affc4f40065fb5a3",
     identity: { candidateState: "revoked", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["certification-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_certification_revoked",
+    digest: "sha256:04a1e0ae8d952742801d63c11ad581a8ba28b7da0a6842f4670202b19473da36",
     identity: { candidateState: "active", certificationState: "revoked", certificationRevocationEpoch: "1", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
+    digest: "sha256:a0d2d4cc9786c836565f291550f13ca6524aa0b91f2e61e634f73aeef3f83cef",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "revoked", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-suspended-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
+    digest: "sha256:e6553498edf707dc57c2d526dab71906f66dd0700191ca4f67031a04132f805d",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "suspended", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["producer-registry-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_registry_epoch_invalid",
+    digest: "sha256:cfa5e6f75960277c0839afb618f8adf86064187a93e5fd6f100eb405a4189697",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "5", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["trust-policy-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_policy_epoch_invalid",
+    digest: "sha256:653f4a9efe55ff52074efc1249fd58b90c96720912ba5c6e7144efd5c359984e",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "10", expiredAtRead: false },
   }],
   ["certification-expired-between-authority-reads", {
     expectedCode: "web_release_activation_certification_expired",
+    digest: "sha256:12186b9464496c0b3d6a44aa6b40a0303a88daed3bcdf80052f6cf3a4f726263",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: true },
   }],
 ]);
@@ -432,6 +439,7 @@ function validateBlockedActivationScenarioCoverage(blockedScenarios) {
   for (const blocked of blockedScenarios) {
     const frozen = FROZEN_BLOCKED_ACTIVATION_SCENARIOS.get(blocked.id);
     if (blocked.expectedCode !== frozen.expectedCode ||
+        digest({ expectedCode: blocked.expectedCode, snapshot: blocked.snapshot }) !== frozen.digest ||
         canonicalize(blockedActivationSemanticIdentity(blocked.snapshot)) !== canonicalize(frozen.identity)) {
       fail("web_release_activation_scenario_invalid", blocked.id);
     }
@@ -1461,12 +1469,12 @@ export async function validateRepository(options = {}) {
     validateDocument(item.contractId, item.document, bundle.validators);
     semanticValidate(item.contractId, item.document, related);
   }
-  validateActivationEligibilityScenarios(corpus.activationEligibilityScenarios, casesById, bundle.validators, related);
   for (const vector of corpus.canonicalVectors) {
     const item = casesById.get(vector.caseId);
     if (item === undefined || digest(item.document) !== vector.expectedDigest) fail("web_release_canonical_vector_invalid", vector.id);
   }
   validateDsseVectors(corpus, casesById, bundle.envelopeValidators, trustAnchors);
+  validateActivationEligibilityScenarios(corpus.activationEligibilityScenarios, casesById, bundle.validators, related);
   for (const negative of corpus.negativeCases) {
     const base = casesById.get(negative.baseCaseId);
     if (base === undefined) fail("web_release_corpus_shape_invalid", negative.id);

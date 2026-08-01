@@ -1027,6 +1027,17 @@ test("the public repository gate freezes blocked activation ids and revoked vers
       blocked[suspendedIndex] = structuredClone(revoked);
       blocked[suspendedIndex].id = "key-suspended-between-authority-reads";
     },
+    (blocked) => {
+      blocked[0].snapshot.snapshotRef = "activation-authority.snapshot.changed-identity";
+    },
+    (blocked) => {
+      blocked[0].snapshot.revision = "999";
+    },
+    (blocked) => {
+      const snapshot = blocked[0].snapshot;
+      snapshot.ownerReadReceipts.reverse();
+      snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+    },
   ];
   for (const [index, attack] of attacks.entries()) {
     const corpus = structuredClone(source);
@@ -1039,6 +1050,25 @@ test("the public repository gate freezes blocked activation ids and revoked vers
       "web_release_activation_scenario_invalid",
     );
   }
+});
+
+test("blocked activation exact identities remain independent of set and JCS object-key order", async () => {
+  const corpus = JSON.parse(
+    await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"),
+  );
+  const blocked = corpus.activationEligibilityScenarios[0].blockedImmediateBeforePointerCasReads;
+  blocked.reverse();
+  for (const [index, scenario] of blocked.entries()) {
+    blocked[index] = {
+      snapshot: Object.fromEntries(Object.entries(scenario.snapshot).reverse()),
+      id: scenario.id,
+      expectedCode: scenario.expectedCode,
+    };
+  }
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-blocked-jcs-order-"));
+  const corpusPath = join(temporary, "corpus.json");
+  await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+  await assert.doesNotReject(() => validateRepository({ root: repositoryRoot, corpus: corpusPath }));
 });
 
 test("breaking comparison loads the real seven-contract predecessor before reporting schema drift", async () => {
