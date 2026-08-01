@@ -150,12 +150,18 @@ def test_credit_owner_has_typed_reconciliation_exit() -> None:
         "ConfirmUsageAndSettle",
         "RetryCreditCommit",
         "ApplyBalancedJournalCorrection",
-        "QuarantineCreditTransaction",
+        "QuarantineCreditAuthority",
     ):
         assert variant in resolution
     result = _body(source, "message", "CreditReconciliationExecutionResult")
-    for field in ("before", "after", "journal_transaction_ref", "journal_transaction_digest"):
+    for field in ("before", "after"):
         assert field in result
+    assert "CreditAuthoritySnapshot" in result
+    journal = _body(source, "message", "CreditJournalAuthoritySnapshot")
+    for field in ("journal_transaction_ref", "journal_transaction_digest"):
+        assert field in journal
+    assert "CreditTransactionSnapshot" not in source
+    assert "platform_transaction_ref" not in source
 
 
 def test_fulfillment_primary_fact_has_one_immutable_version() -> None:

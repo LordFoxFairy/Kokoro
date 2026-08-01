@@ -6,10 +6,10 @@ import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
-import "kokoro/platform/credit/v1/credit_application.proto";
 import "kokoro/platform/credit/v1/credit_catalog.proto";
 
-// AdminCreditService is the typed, read-only operator view over Credit authority facts.
+// AdminCreditService is the typed Credit-owner control and read plane. Admin authenticates
+// operators and invokes these workflows; it never owns Credit facts or database permissions.
 service AdminCreditService {
   rpc PublishCreditProgramRevision(PublishCreditProgramRevisionRequest) returns (PublishCreditProgramRevisionResponse) {}
   rpc ListCreditProgramRevisions(ListCreditProgramRevisionsRequest) returns (ListCreditProgramRevisionsResponse) {}
@@ -763,7 +763,7 @@ message ApplyBalancedJournalCorrection {
   string finance_evidence_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
 }
 
-message QuarantineCreditTransaction {
+message QuarantineCreditAuthority {
   string case_ref = 1 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
@@ -778,7 +778,78 @@ message CreditReconciliationResolution {
     ConfirmUsageAndSettle confirm_usage_and_settle = 2;
     RetryCreditCommit retry_credit_commit = 3;
     ApplyBalancedJournalCorrection apply_balanced_journal_correction = 4;
-    QuarantineCreditTransaction quarantine_credit_transaction = 5;
+    QuarantineCreditAuthority quarantine_credit_authority = 5;
+  }
+}
+
+enum CreditAuthorizationSegmentState {
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_UNSPECIFIED = 0;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_RESERVED = 1;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_COMMITTED = 2;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_RATING_PENDING = 3;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_SETTLED = 4;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_RELEASED = 5;
+  CREDIT_AUTHORIZATION_SEGMENT_STATE_RECONCILIATION_REQUIRED = 6;
+}
+
+message CreditExecutionAuthorityTarget {
+  string execution_root_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string credit_hold_ref = 2 [(buf.validate.field).string.uuid = true];
+  uint64 expected_hold_fence_epoch = 3 [(buf.validate.field).uint64.gt = 0];
+  string authorization_segment_ref = 4 [(buf.validate.field).string.uuid = true];
+  uint64 expected_segment_version = 5 [(buf.validate.field).uint64.gt = 0];
+  string authority_snapshot_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CreditJournalAuthorityTarget {
+  string journal_transaction_ref = 1 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 2 [(buf.validate.field).string.uuid = true];
+  string authority_snapshot_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CreditReconciliationTarget {
+  oneof target {
+    option (buf.validate.oneof).required = true;
+    CreditExecutionAuthorityTarget execution_authority = 1;
+    CreditJournalAuthorityTarget journal_authority = 2;
+  }
+}
+
+message CreditExecutionAuthoritySnapshot {
+  string execution_root_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string credit_hold_ref = 2 [(buf.validate.field).string.uuid = true];
+  CreditHoldState hold_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 hold_fence_epoch = 4 [(buf.validate.field).uint64.gt = 0];
+  string authorization_segment_ref = 5 [(buf.validate.field).string.uuid = true];
+  CreditAuthorizationSegmentState segment_state = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 segment_version = 7 [(buf.validate.field).uint64.gt = 0];
+  string authority_snapshot_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CreditJournalAuthoritySnapshot {
+  string journal_transaction_ref = 1 [(buf.validate.field).string.uuid = true];
+  string credit_account_ref = 2 [(buf.validate.field).string.uuid = true];
+  string journal_transaction_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string authority_snapshot_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CreditAuthoritySnapshot {
+  oneof authority {
+    option (buf.validate.oneof).required = true;
+    CreditExecutionAuthoritySnapshot execution_authority = 1;
+    CreditJournalAuthoritySnapshot journal_authority = 2;
   }
 }
 
@@ -800,11 +871,8 @@ message CreditReconciliationApprovalRequestFact {
     min_len: 1
     max_len: 64
   }];
-  string transaction_ref = 6 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  uint64 expected_transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
+  CreditReconciliationTarget target = 6 [(buf.validate.field).required = true];
+  string target_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   string typed_effect_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   string maker_actor_ref = 9 [(buf.validate.field).string = {
     min_len: 1
@@ -877,20 +945,16 @@ message CreditReconciliationApprovalView {
 }
 
 message RequestCreditReconciliationResolutionEffect {
-  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+  CreditReconciliationTarget target = 1 [(buf.validate.field).required = true];
+  string target_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  CreditReconciliationResolution resolution = 3 [(buf.validate.field).required = true];
+  string evidence_ref = 4 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
   }];
-  uint64 expected_version = 2 [(buf.validate.field).uint64.gt = 0];
-  CreditTransactionState expected_state = 3 [(buf.validate.field).enum.const = 5];
-  CreditReconciliationResolution resolution = 4 [(buf.validate.field).required = true];
-  string evidence_ref = 5 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  string evidence_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
-  string command_digest = 7 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
-  string reason = 8 [(buf.validate.field).string = {
+  string evidence_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string command_digest = 6 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 7 [(buf.validate.field).string = {
     min_len: 3
     max_len: 512
   }];
@@ -934,8 +998,8 @@ message DecideCreditReconciliationResolutionResponse {
 message CreditReconciliationExecutionResult {
   option (buf.validate.message).cel = {
     id: "credit.reconciliation.result_shape"
-    message: "applied financial transitions carry before, after and balanced Journal evidence"
-    expression: "((this.state in [3, 6]) && has(this.before) && has(this.after) && has(this.adopted_resolution) && this.before.platform_transaction_ref == this.after.platform_transaction_ref && this.after.version == this.before.version + 1u && !has(this.outcome_unknown)) || (this.state == 5 && !has(this.after) && has(this.outcome_unknown)) || (this.state in [1, 2, 4] && !has(this.after) && !has(this.outcome_unknown))"
+    message: "applied Credit-owner transitions carry typed before and after authority snapshots"
+    expression: "((this.state in [3, 6]) && has(this.before) && has(this.after) && has(this.adopted_resolution) && !has(this.outcome_unknown)) || (this.state == 5 && !has(this.after) && has(this.outcome_unknown)) || (this.state in [1, 2, 4] && !has(this.after) && !has(this.outcome_unknown))"
   };
   string resolution_ref = 1 [(buf.validate.field).string = {
     min_len: 3
@@ -946,8 +1010,8 @@ message CreditReconciliationExecutionResult {
     defined_only: true
     not_in: 0
   }];
-  optional CreditTransactionSnapshot before = 4;
-  optional CreditTransactionSnapshot after = 5;
+  optional CreditAuthoritySnapshot before = 4;
+  optional CreditAuthoritySnapshot after = 5;
   optional string journal_transaction_ref = 6 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
@@ -966,7 +1030,7 @@ message CreditReconciliationExecutionResult {
   google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
   optional CreditReconciliationResolution adopted_resolution = 13;
   optional CreditReconciliationOutcomeUnknown outcome_unknown = 14;
-  optional CreditTransactionState final_transaction_state = 15 [(buf.validate.field).enum = {
+  optional CreditAuthorizationSegmentState final_segment_state = 15 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
@@ -977,11 +1041,8 @@ message CreditReconciliationOutcomeUnknown {
     min_len: 3
     max_len: 256
   }];
-  string transaction_ref = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  uint64 expected_transaction_version = 3 [(buf.validate.field).uint64.gt = 0];
+  CreditReconciliationTarget target = 2 [(buf.validate.field).required = true];
+  string target_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   string uncertain_execution_ref = 4 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256

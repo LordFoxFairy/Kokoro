@@ -94,111 +94,12 @@ def test_fulfillment_records_one_committed_fact_and_separate_correction_facts() 
     assert "this.original.platform_transaction_ref != this.replacement.platform_transaction_ref" in replacement
 
 
-def test_credit_application_binds_every_transition_to_one_opaque_cas_identity() -> None:
-    source = _proto("kokoro/platform/credit/v1/credit_application.proto")
-
-    assert _enum_members(source, "CreditTransactionState") == [
-        "CREDIT_TRANSACTION_STATE_UNSPECIFIED",
-        "CREDIT_TRANSACTION_STATE_RESERVED",
-        "CREDIT_TRANSACTION_STATE_COMMITTED",
-        "CREDIT_TRANSACTION_STATE_SETTLED",
-        "CREDIT_TRANSACTION_STATE_RELEASED",
-        "CREDIT_TRANSACTION_STATE_RECONCILIATION_REQUIRED",
-    ]
-    for operation in (
-        "ReserveCredit",
-        "CommitCreditReservation",
-        "SettleCreditReservation",
-        "ReleaseCreditReservation",
-        "ReconcileCreditReservation",
-    ):
-        request = _message_body(source, f"{operation}Request")
-        effect = _message_body(source, f"{operation}Effect")
-        response = _message_body(source, f"{operation}Response")
-        assert "kokoro.common.v2.CommandIdentityV2 command = 1" in request
-        assert "string namespace = 2" in request
-        assert f"{operation}Effect effect = 3" in request
-        assert "this.command.request_digest == this.effect.command_digest" in request
-        assert "string platform_transaction_ref = 1" in effect
-        assert "uint64 expected_version = 2" in effect
-        assert "string command_digest = 3" in effect
-        assert "kokoro.common.v2.CommandReceiptV2 receipt = 1" in response
-        assert "optional CreditTransactionSnapshot transaction = 2" in response
-        assert "COMMAND_RECEIPT_STATE_V2_ACCEPTED" not in response
-        assert "COMMAND_RECEIPT_STATE_V2_COMMITTED" in response
-        assert "COMMAND_RECEIPT_STATE_V2_REJECTED" in response
-        assert "COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN" in response
-        assert "!has(this.transaction)" in response
-
-    expected_states = {
-        "ReserveCreditResponse": "CREDIT_TRANSACTION_STATE_RESERVED",
-        "CommitCreditReservationResponse": "CREDIT_TRANSACTION_STATE_COMMITTED",
-        "SettleCreditReservationResponse": "CREDIT_TRANSACTION_STATE_SETTLED",
-        "ReleaseCreditReservationResponse": "CREDIT_TRANSACTION_STATE_RELEASED",
-        "ReconcileCreditReservationResponse": "CREDIT_TRANSACTION_STATE_RECONCILIATION_REQUIRED",
-    }
-    for response, state in expected_states.items():
-        assert state in _message_body(source, response)
-
-    lookup = _message_body(source, "GetCreditCommandReceiptRequest")
-    for field in ("namespace", "command_id", "idempotency_key", "digest_algorithm", "request_digest"):
-        assert field in lookup
-    assert "site_id" not in source
-    assert "user_id" not in source
-    assert "amount" not in source.lower()
-    assert "unit" not in source.lower()
-    recovery = _message_body(source, "GetCreditCommandReceiptResponse")
-    assert "COMMAND_RECEIPT_STATE_V2_ACCEPTED" not in recovery
-    for state in expected_states.values():
-        assert state in recovery
-
-    reserve = _message_body(source, "ReserveCreditEffect")
-    assert "(buf.validate.field).uint64.const = 0" in reserve
-    for transition in (
-        "CommitCreditReservationEffect",
-        "SettleCreditReservationEffect",
-        "ReleaseCreditReservationEffect",
-        "ReconcileCreditReservationEffect",
-    ):
-        assert "(buf.validate.field).uint64.gt = 0" in _message_body(source, transition)
-    reconcile = _message_body(source, "ReconcileCreditReservationEffect")
-    assert "bool effect_outcome_unknown" in reconcile
-    assert "(buf.validate.field).bool.const = true" in reconcile
-    assert "string effect_outcome_evidence_ref" in reconcile
-    assert "string effect_outcome_evidence_digest" in reconcile
-
-
-def test_registry_freezes_owner_consumer_recovery_and_namespace_scope() -> None:
+def test_agent_never_owns_or_calls_a_credit_lifecycle() -> None:
     registry = json.loads((CONTRACT / "registry/boundaries.yaml").read_text())
-    boundaries = {item["id"]: item for item in registry["boundaries"]}
-    credit = boundaries["platform-credit-application"]
-
-    assert credit["provider"] == {"boundary": "service.platform", "repository": "kokoro-platform"}
-    assert credit["consumers"] == [{"boundary": "service.agent", "repository": "kokoro-agent"}]
-    assert credit["lifecycle"] == "contract-only"
-    assert credit["scope"] == "namespace"
-    assert credit["trustPlane"] == "internal-control"
-    assert credit["sources"] == [
-        {
-            "kind": "proto",
-            "path": "contract/proto/kokoro/platform/credit/v1/credit_application.proto",
-            "select": {"service": "CreditApplicationService"},
-        }
+    assert not (CONTRACT / "proto/kokoro/platform/credit/v1/credit_application.proto").exists()
+    assert "platform-credit-application" not in {item["id"] for item in registry["boundaries"]}
+    agent_consumed = [
+        item for item in registry["boundaries"]
+        if any(consumer.get("repository") == "kokoro-agent" for consumer in item.get("consumers", []))
     ]
-    assert [operation["id"] for operation in credit["operations"]] == [
-        "ReserveCredit",
-        "CommitCreditReservation",
-        "SettleCreditReservation",
-        "ReleaseCreditReservation",
-        "ReconcileCreditReservation",
-        "GetCreditCommandReceipt",
-    ]
-    for operation in credit["operations"][:5]:
-        assert operation["retryClass"] == "reconcile_receipt"
-        assert operation["receipt"] == {
-            "kind": "command-receipt",
-            "recoveryOperation": "GetCreditCommandReceipt",
-            "ref": "kokoro.common.v2.CommandReceiptV2",
-        }
-        assert operation["scope"] == "namespace"
-        assert operation["siteBinding"] == "not-applicable"
+    assert all("credit" not in item["id"] for item in agent_consumed)

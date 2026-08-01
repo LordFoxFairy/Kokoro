@@ -105,17 +105,6 @@ const BOUNDARIES = Object.freeze({
     helper: null,
     commandEnvelopeDigest: "admin-credit",
   }),
-  "platform-credit-application@v1": Object.freeze({
-    schema: "kokoro.platform.credit.v1.CreditApplicationService",
-    version: 1,
-    inputs: Object.freeze(["proto/kokoro/platform/credit/v1/credit_application.proto"]),
-    sources: Object.freeze([
-      "kokoro/common/v2/command_envelope.proto",
-      "kokoro/platform/credit/v1/credit_application.proto",
-    ]),
-    helper: null,
-    commandEnvelopeDigest: "credit-application",
-  }),
   "platform-site-lifecycle@v1": Object.freeze({
     schema: "kokoro.platform.site.v1.SiteLifecycleService",
     version: 1,
@@ -1562,61 +1551,12 @@ export function verifyPublishCreditProgramRevisionCommand(context: CreditGlobalC
 }
 export function verifyRequestCreditReconciliationResolutionCommand(context: CreditSiteCommandContext, effect: RequestCreditReconciliationResolutionEffect, verified: VerifiedAuthenticatedAdminAxes): string {
   if (context.operator === undefined) throw new Error("credit_site_authority_missing");
-  return verifyCreditAdminEnvelope("kokoro.platform.credit.v1.AdminCreditService/RequestCreditReconciliationResolution", context.operator, {typeName: RequestCreditReconciliationResolutionEffectSchema.typeName, bytes: toBinary(RequestCreditReconciliationResolutionEffectSchema, effect, {writeUnknownFields: false})}, [context.siteId, effect.platformTransactionRef], verified);
+  return verifyCreditAdminEnvelope("kokoro.platform.credit.v1.AdminCreditService/RequestCreditReconciliationResolution", context.operator, {typeName: RequestCreditReconciliationResolutionEffectSchema.typeName, bytes: toBinary(RequestCreditReconciliationResolutionEffectSchema, effect, {writeUnknownFields: false})}, [context.siteId, effect.targetDigest], verified);
 }
 export function verifyCreditReconciliationDecisionCommand(context: CreditSiteCommandContext, effect: CreditReconciliationDecisionEffect, verified: VerifiedAuthenticatedAdminAxes): string {
   if (context.operator === undefined) throw new Error("credit_site_authority_missing");
   return verifyCreditAdminEnvelope("kokoro.platform.credit.v1.AdminCreditService/DecideCreditReconciliationResolution", context.operator, {typeName: CreditReconciliationDecisionEffectSchema.typeName, bytes: toBinary(CreditReconciliationDecisionEffectSchema, effect, {writeUnknownFields: false})}, [context.siteId, effect.approvalRef], verified);
 }
-`;
-}
-
-function creditApplicationDigestSource() {
-  return `
-import {
-  ReserveCreditEffectSchema,
-  CommitCreditReservationEffectSchema,
-  SettleCreditReservationEffectSchema,
-  ReleaseCreditReservationEffectSchema,
-  ReconcileCreditReservationEffectSchema,
-  type ReserveCreditEffect,
-  type CommitCreditReservationEffect,
-  type SettleCreditReservationEffect,
-  type ReleaseCreditReservationEffect,
-  type ReconcileCreditReservationEffect,
-} from "./kokoro/platform/credit/v1/credit_application_pb.js";
-
-export type VerifiedCreditApplicationAxes = Readonly<{
-  workloadIdentityRef: string;
-  audience: string;
-  environment: string;
-  region: string;
-  siteRef: string;
-}>;
-function verifyCreditApplicationEnvelope(operation: string, command: CommandIdentityV2 | undefined, namespace: string, effect: TypedPayload, transactionRef: string, verified: VerifiedCreditApplicationAxes): string {
-  if (command === undefined) throw new Error("command_envelope_command_identity_missing");
-  const recomputed = commandEnvelopeV2Digest({
-    contractVersion: "platform-credit-application@v1",
-    operation,
-    trust: {
-      workloadIdentityRef: requiredAxis("verified.workloadIdentityRef", verified.workloadIdentityRef),
-      audience: requiredAxis("verified.audience", verified.audience),
-      environment: requiredAxis("verified.environment", verified.environment),
-      region: requiredAxis("verified.region", verified.region),
-      siteRef: requiredAxis("verified.siteRef", verified.siteRef),
-      securityEpochs: [],
-    },
-    targetRefs: [namespace, transactionRef],
-    effect,
-  });
-  if (recomputed !== command.requestDigest) throw new Error("command_envelope_request_digest_mismatch");
-  return recomputed;
-}
-export const verifyReserveCreditCommand = (command: CommandIdentityV2 | undefined, namespace: string, effect: ReserveCreditEffect, verified: VerifiedCreditApplicationAxes) => verifyCreditApplicationEnvelope("kokoro.platform.credit.v1.CreditApplicationService/ReserveCredit", command, namespace, {typeName: ReserveCreditEffectSchema.typeName, bytes: toBinary(ReserveCreditEffectSchema, effect, {writeUnknownFields: false})}, effect.platformTransactionRef, verified);
-export const verifyCommitCreditReservationCommand = (command: CommandIdentityV2 | undefined, namespace: string, effect: CommitCreditReservationEffect, verified: VerifiedCreditApplicationAxes) => verifyCreditApplicationEnvelope("kokoro.platform.credit.v1.CreditApplicationService/CommitCreditReservation", command, namespace, {typeName: CommitCreditReservationEffectSchema.typeName, bytes: toBinary(CommitCreditReservationEffectSchema, effect, {writeUnknownFields: false})}, effect.platformTransactionRef, verified);
-export const verifySettleCreditReservationCommand = (command: CommandIdentityV2 | undefined, namespace: string, effect: SettleCreditReservationEffect, verified: VerifiedCreditApplicationAxes) => verifyCreditApplicationEnvelope("kokoro.platform.credit.v1.CreditApplicationService/SettleCreditReservation", command, namespace, {typeName: SettleCreditReservationEffectSchema.typeName, bytes: toBinary(SettleCreditReservationEffectSchema, effect, {writeUnknownFields: false})}, effect.platformTransactionRef, verified);
-export const verifyReleaseCreditReservationCommand = (command: CommandIdentityV2 | undefined, namespace: string, effect: ReleaseCreditReservationEffect, verified: VerifiedCreditApplicationAxes) => verifyCreditApplicationEnvelope("kokoro.platform.credit.v1.CreditApplicationService/ReleaseCreditReservation", command, namespace, {typeName: ReleaseCreditReservationEffectSchema.typeName, bytes: toBinary(ReleaseCreditReservationEffectSchema, effect, {writeUnknownFields: false})}, effect.platformTransactionRef, verified);
-export const verifyReconcileCreditReservationCommand = (command: CommandIdentityV2 | undefined, namespace: string, effect: ReconcileCreditReservationEffect, verified: VerifiedCreditApplicationAxes) => verifyCreditApplicationEnvelope("kokoro.platform.credit.v1.CreditApplicationService/ReconcileCreditReservation", command, namespace, {typeName: ReconcileCreditReservationEffectSchema.typeName, bytes: toBinary(ReconcileCreditReservationEffectSchema, effect, {writeUnknownFields: false})}, effect.platformTransactionRef, verified);
 `;
 }
 
@@ -2499,7 +2439,6 @@ function commandEnvelopeDigestSource(kind) {
     "site-evidence-admission": siteEvidenceAdmissionDigestSource,
     "admin-commerce": () => adminCommerceDigestSourceV2() + adminCommerceDigestSourceV2Remainder(),
     "admin-credit": adminCreditDigestSource,
-    "credit-application": creditApplicationDigestSource,
     "model-control": modelControlDigestSource,
     "media-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
     "credit-cost-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
