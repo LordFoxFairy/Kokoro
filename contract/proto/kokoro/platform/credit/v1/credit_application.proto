@@ -1,0 +1,293 @@
+syntax = "proto3";
+
+package kokoro.platform.credit.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+
+// CreditApplicationService is the only Agent-facing credit mutation boundary.
+// The transaction reference is opaque: Credit resolves every owned business
+// fact and never accepts those facts from the caller.
+service CreditApplicationService {
+  rpc ReserveCredit(ReserveCreditRequest) returns (ReserveCreditResponse) {}
+  rpc CommitCreditReservation(CommitCreditReservationRequest) returns (CommitCreditReservationResponse) {}
+  rpc SettleCreditReservation(SettleCreditReservationRequest) returns (SettleCreditReservationResponse) {}
+  rpc ReleaseCreditReservation(ReleaseCreditReservationRequest) returns (ReleaseCreditReservationResponse) {}
+  rpc GetCreditCommandReceipt(GetCreditCommandReceiptRequest) returns (GetCreditCommandReceiptResponse) {}
+}
+
+enum CreditTransactionState {
+  CREDIT_TRANSACTION_STATE_UNSPECIFIED = 0;
+  CREDIT_TRANSACTION_STATE_RESERVED = 1;
+  CREDIT_TRANSACTION_STATE_COMMITTED = 2;
+  CREDIT_TRANSACTION_STATE_SETTLED = 3;
+  CREDIT_TRANSACTION_STATE_RELEASED = 4;
+  CREDIT_TRANSACTION_STATE_RECONCILIATION_REQUIRED = 5;
+}
+
+enum CreditReleaseReason {
+  CREDIT_RELEASE_REASON_UNSPECIFIED = 0;
+  CREDIT_RELEASE_REASON_BEFORE_EFFECT = 1;
+  CREDIT_RELEASE_REASON_EFFECT_FAILED_WITHOUT_USAGE = 2;
+  CREDIT_RELEASE_REASON_EXECUTION_ABANDONED = 3;
+  CREDIT_RELEASE_REASON_RECONCILED_WITHOUT_USAGE = 4;
+}
+
+message CreditTransactionSnapshot {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CreditTransactionState state = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 version = 3 [(buf.validate.field).uint64.gt = 0];
+  string state_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 5 [(buf.validate.field).required = true];
+}
+
+message ReserveCreditEffect {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_version = 2;
+  string command_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string reservation_authorization_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string reservation_authorization_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message ReserveCreditRequest {
+  option (buf.validate.message).cel = {
+    id: "credit_application.reserve_digest_bound"
+    message: "the command identity must bind the complete reserve effect"
+    expression: "this.command.request_digest == this.effect.command_digest"
+  };
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string namespace = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ReserveCreditEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message ReserveCreditResponse {
+  option (buf.validate.message).cel = {
+    id: "credit_application.reserve_receipt_operation"
+    message: "the receipt belongs to the reserve operation"
+    expression: "this.receipt.operation == 'ReserveCredit'"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit_application.reserve_closed_outcome"
+    message: "a committed reserve returns only a reserved snapshot; failed outcomes return none"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.transaction) && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_RESERVED) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.transaction))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CreditTransactionSnapshot transaction = 2;
+}
+
+message CommitCreditReservationEffect {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_version = 2;
+  string command_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string execution_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_evidence_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string execution_evidence_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message CommitCreditReservationRequest {
+  option (buf.validate.message).cel = {
+    id: "credit_application.commit_digest_bound"
+    message: "the command identity must bind the complete commit effect"
+    expression: "this.command.request_digest == this.effect.command_digest"
+  };
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string namespace = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  CommitCreditReservationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message CommitCreditReservationResponse {
+  option (buf.validate.message).cel = {
+    id: "credit_application.commit_receipt_operation"
+    message: "the receipt belongs to the commit operation"
+    expression: "this.receipt.operation == 'CommitCreditReservation'"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit_application.commit_closed_outcome"
+    message: "a committed transition returns only a committed snapshot; failed outcomes return none"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.transaction) && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_COMMITTED) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.transaction))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CreditTransactionSnapshot transaction = 2;
+}
+
+message SettleCreditReservationEffect {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_version = 2;
+  string command_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string execution_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string settlement_evidence_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string settlement_evidence_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message SettleCreditReservationRequest {
+  option (buf.validate.message).cel = {
+    id: "credit_application.settle_digest_bound"
+    message: "the command identity must bind the complete settle effect"
+    expression: "this.command.request_digest == this.effect.command_digest"
+  };
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string namespace = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  SettleCreditReservationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message SettleCreditReservationResponse {
+  option (buf.validate.message).cel = {
+    id: "credit_application.settle_receipt_operation"
+    message: "the receipt belongs to the settle operation"
+    expression: "this.receipt.operation == 'SettleCreditReservation'"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit_application.settle_closed_outcome"
+    message: "a committed settle returns only a settled snapshot; failed outcomes return none"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.transaction) && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_SETTLED) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.transaction))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CreditTransactionSnapshot transaction = 2;
+}
+
+message ReleaseCreditReservationEffect {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 expected_version = 2;
+  string command_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  CreditReleaseReason reason = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string release_evidence_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string release_evidence_digest = 6 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message ReleaseCreditReservationRequest {
+  option (buf.validate.message).cel = {
+    id: "credit_application.release_digest_bound"
+    message: "the command identity must bind the complete release effect"
+    expression: "this.command.request_digest == this.effect.command_digest"
+  };
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string namespace = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  ReleaseCreditReservationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message ReleaseCreditReservationResponse {
+  option (buf.validate.message).cel = {
+    id: "credit_application.release_receipt_operation"
+    message: "the receipt belongs to the release operation"
+    expression: "this.receipt.operation == 'ReleaseCreditReservation'"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit_application.release_closed_outcome"
+    message: "a committed release returns only a released snapshot; failed outcomes return none"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.transaction) && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_RELEASED) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.transaction))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CreditTransactionSnapshot transaction = 2;
+}
+
+message GetCreditCommandReceiptRequest {
+  string namespace = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string command_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message GetCreditCommandReceiptResponse {
+  option (buf.validate.message).cel = {
+    id: "credit_application.receipt_closed_outcome"
+    message: "a committed command carries its exact transition snapshot; failed outcomes carry none"
+    expression: "(this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && has(this.transaction) && ((this.receipt.operation == 'ReserveCredit' && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_RESERVED) || (this.receipt.operation == 'CommitCreditReservation' && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_COMMITTED) || (this.receipt.operation == 'SettleCreditReservation' && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_SETTLED) || (this.receipt.operation == 'ReleaseCreditReservation' && this.transaction.state == kokoro.platform.credit.v1.CreditTransactionState.CREDIT_TRANSACTION_STATE_RELEASED))) || ((this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_REJECTED || this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_OUTCOME_UNKNOWN) && !has(this.transaction))"
+  };
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CreditTransactionSnapshot transaction = 2;
+}

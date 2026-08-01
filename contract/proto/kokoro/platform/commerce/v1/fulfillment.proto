@@ -1,0 +1,192 @@
+syntax = "proto3";
+
+package kokoro.platform.commerce.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+// The acquisition kind selects an adapter only. Every adapter freezes the same
+// owner-safe identity below before Commerce can commit fulfillment.
+enum FulfillmentAcquisitionSourceKind {
+  FULFILLMENT_ACQUISITION_SOURCE_KIND_UNSPECIFIED = 0;
+  FULFILLMENT_ACQUISITION_SOURCE_KIND_REDEMPTION = 1;
+  FULFILLMENT_ACQUISITION_SOURCE_KIND_FUTURE_PAYMENT_RESERVED = 2;
+  FULFILLMENT_ACQUISITION_SOURCE_KIND_ADMIN_GRANT = 3;
+  FULFILLMENT_ACQUISITION_SOURCE_KIND_PROGRAM_WINDOW = 4;
+}
+
+// Fulfillment has no mutable "pending" aggregate. A missing transaction is the
+// uncommitted state; corrections are separate immutable facts.
+enum FulfillmentTransactionState {
+  FULFILLMENT_TRANSACTION_STATE_UNSPECIFIED = 0;
+  FULFILLMENT_TRANSACTION_STATE_COMMITTED = 1;
+}
+
+enum CommittedFulfillmentOutputKind {
+  COMMITTED_FULFILLMENT_OUTPUT_KIND_UNSPECIFIED = 0;
+  COMMITTED_FULFILLMENT_OUTPUT_KIND_SUBSCRIPTION_TERM = 1;
+  COMMITTED_FULFILLMENT_OUTPUT_KIND_ENTITLEMENT_GRANT = 2;
+  COMMITTED_FULFILLMENT_OUTPUT_KIND_CREDIT_GRANT = 3;
+}
+
+enum FulfillmentReversalReason {
+  FULFILLMENT_REVERSAL_REASON_UNSPECIFIED = 0;
+  FULFILLMENT_REVERSAL_REASON_SOURCE_REVERSED = 1;
+  FULFILLMENT_REVERSAL_REASON_DUPLICATE = 2;
+  FULFILLMENT_REVERSAL_REASON_OPERATOR_CORRECTION = 3;
+}
+
+enum FulfillmentReconciliationKind {
+  FULFILLMENT_RECONCILIATION_KIND_UNSPECIFIED = 0;
+  FULFILLMENT_RECONCILIATION_KIND_SOURCE_OUTCOME_UNKNOWN = 1;
+  FULFILLMENT_RECONCILIATION_KIND_OUTPUT_OUTCOME_UNKNOWN = 2;
+  FULFILLMENT_RECONCILIATION_KIND_DIGEST_MISMATCH = 3;
+  FULFILLMENT_RECONCILIATION_KIND_VERSION_CONFLICT = 4;
+}
+
+message FrozenAcquisitionSnapshot {
+  FulfillmentAcquisitionSourceKind source_kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string source_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 source_version = 3 [(buf.validate.field).uint64.gt = 0];
+  string source_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp acquired_at = 5 [(buf.validate.field).required = true];
+}
+
+message FrozenFulfillmentProgramSnapshot {
+  string fulfillment_program_revision_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fulfillment_program_revision = 2 [(buf.validate.field).uint64.gt = 0];
+  string fulfillment_program_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+// An output is an immutable receipt anchor owned by its target capability. It
+// never embeds another owner's mutable aggregate.
+message FulfillmentOutputCommitment {
+  CommittedFulfillmentOutputKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string output_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 output_version = 3 [(buf.validate.field).uint64.gt = 0];
+  string output_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message FulfillmentTransactionFact {
+  option (buf.validate.message).cel = {
+    id: "fulfillment.committed_fact_only"
+    message: "a persisted fulfillment transaction is always committed"
+    expression: "this.state == kokoro.platform.commerce.v1.FulfillmentTransactionState.FULFILLMENT_TRANSACTION_STATE_COMMITTED"
+  };
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string site_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FrozenAcquisitionSnapshot acquisition = 3 [(buf.validate.field).required = true];
+  FrozenFulfillmentProgramSnapshot program = 4 [(buf.validate.field).required = true];
+  repeated FulfillmentOutputCommitment outputs = 5 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+  }];
+  FulfillmentTransactionState state = 6 [(buf.validate.field).enum.const = 1];
+  uint64 transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
+  string transaction_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp committed_at = 9 [(buf.validate.field).required = true];
+}
+
+message FulfillmentReversalFact {
+  string original_platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string reversal_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FulfillmentReversalReason reason = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 fact_version = 4 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+}
+
+message FulfillmentReplacementFact {
+  string original_platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string replacement_platform_transaction_ref = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string replacement_reason_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fact_version = 4 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
+}
+
+message FulfillmentReconciliationFact {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FulfillmentReconciliationKind kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string evidence_digest = 4 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string resolution_ref = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fact_version = 6 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 7 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+}
