@@ -1,0 +1,190 @@
+{
+  "schema": "kokoro.trusted-web-release-producers.v1",
+  "authority": "root.contract",
+  "revision": "1",
+  "currentEpochs": [
+    {
+      "environment": "production",
+      "producerRegistryEpoch": "4",
+      "trustPolicyEpoch": "9"
+    }
+  ],
+  "producers": [
+    {
+      "keyId": "key.web-build-intent.3",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAMSQdvfQup+ffsffKQKlc+KWEkkKgcGPByGrIIF9Z96U=",
+      "publicKeyFingerprint": "sha256:03a566bdf0148f73bea4a8ab8cd808f7a67f7cf010747f7a5d5daa86ec121899",
+      "producerIdentityRef": "platform.site-signer",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.web-build-intent.1",
+        "digest": "sha256:d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.web-build-intent.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.release-certification.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEArleMYSBgw8CqyP+XEmNlRTWNEY+9tDbWvEYUbmCd/6g=",
+      "publicKeyFingerprint": "sha256:47096d5819c9c1d27a8a42b93aa132082afd1b931e830abb985154ccdc357228",
+      "producerIdentityRef": "producer.release-quality",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.release-certification.1",
+        "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.site-release.activation.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.release-certification.obsolete.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAOb/4IbrcDbMrF1PmlCArxh1OmO8qwxgFyyJYx1GkrBk=",
+      "publicKeyFingerprint": "sha256:87ed0c7f4292b609091b1053daab5e5c3785fe5f6aba689b285683439f8e48d5",
+      "producerIdentityRef": "producer.release-quality",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.release-certification.1",
+        "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.site-release.activation.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.release-revocation.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAbJ+q7UkHCXltT0I1EvC3+DDkUU5b6iEXTaX70blQ37E=",
+      "publicKeyFingerprint": "sha256:d7479d3e8c5b09b294258c7ec41ef8719f53e560dc2e4e95e99a971956f806d3",
+      "producerIdentityRef": "producer.release-security",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.release-certification.1",
+        "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.site-release.activation.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.web-artifact-attestor.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAo5Maxc4q2s4HULQ3wBr0Qk8ebCgLiFpOjiZektZ9KDg=",
+      "publicKeyFingerprint": "sha256:5047bc0d097771ea803e73e0baf310668e578c00e4b092932db4045b80cd60f0",
+      "producerIdentityRef": "https://workloads.kokoro.dev/site-web-attestor/v1",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.web-artifact-provenance.1",
+        "digest": "sha256:d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9d9"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.web-artifact-provenance.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.platform-site-live-read.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAylMO6yJ3u72Gff5WsN7HBovQCGDOlT81xeoTvmsnxo0=",
+      "publicKeyFingerprint": "sha256:922403e24165a59f796dee973a606a4cb683f164a05809dabe1124750aff8302",
+      "producerIdentityRef": "producer.platform-site-live-read",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.owner-live-read.1",
+        "digest": "sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.owner-live-read-receipt.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.release-certification-live-read.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAGr+mToPuOUerIr5wjivmaN9kBRw1kLDXXtuGNliLLpY=",
+      "publicKeyFingerprint": "sha256:3c2a55662bb59e70b222dfc0b0fbd01d63eab5a6adc905e3d3e7ffa402c7c0e9",
+      "producerIdentityRef": "producer.release-certification-live-read",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.owner-live-read.1",
+        "digest": "sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.owner-live-read-receipt.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    },
+    {
+      "keyId": "key.root-trust-live-read.1",
+      "keyVersion": "1",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAxezpRKMUiJ1eXWp7TseeC0DTPgtSCX9SMjan5tlywI8=",
+      "publicKeyFingerprint": "sha256:bb67e291c1f6a1b47c560baa525b9be3b1ea922cd86fc75919376a1fa7d4e5c7",
+      "producerIdentityRef": "producer.root-trust-live-read",
+      "producerRegistry": {
+        "ref": "trusted-producer-registry.production.1",
+        "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+      },
+      "producerRegistryEpoch": "4",
+      "trustPolicy": {
+        "ref": "trust-policy.owner-live-read.1",
+        "digest": "sha256:dbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdbdb"
+      },
+      "trustPolicyEpoch": "9",
+      "signatureAudience": "kokoro.owner-live-read-receipt.v1",
+      "environment": "production",
+      "keyValidFrom": "2026-07-01T00:00:00.000Z",
+      "keyValidUntil": "2026-08-02T00:00:00.000Z",
+      "keyStatus": "active"
+    }
+  ]
+}

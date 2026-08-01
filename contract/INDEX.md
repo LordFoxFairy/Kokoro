@@ -66,7 +66,14 @@ while package URIs retain the package URL identity and include the unique compos
 `PublishSiteReleaseEffect` is a latest-only Admin command: callers provide only `site_release_candidate_ref`,
 `expected_candidate_version`, and `reason`; Platform generates the immutable SiteRelease and all authority-bound facts.
 The `platform-site-provisioning@v1` boundary remains `contract-only` until Platform and Web regenerate their mirrors from
-this Root source and submit provider/consumer compatibility evidence.
+this Root source, hard-cut the still-live legacy Platform handler, and submit provider/consumer compatibility evidence.
+Root contract publication does not claim that runtime migration is complete.
+
+DSSE verification resolves SPKI only from `contract/registry/trusted-web-release-producers.yaml`, never from corpus vectors.
+The signed tuple binds key id/version/fingerprint, producer registry and trust-policy current epochs, audience, environment,
+validity and active status. Activation snapshots persist six independently signed owner live-read receipts—Candidate,
+Certification, ProducerRegistry, TrustPolicy, signing-key status and active pointer—plus the exact attempt digest, expected
+pointer generation and CAS precondition.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use

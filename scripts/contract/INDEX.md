@@ -38,8 +38,10 @@ closure and SLSA/in-toto provenance binding through global, role-specific depend
 are encoded into their dependency URI identities; duplicate package name/version identities and any URI collision fail closed. Canonical vectors must
 cover every positive case exactly once; DSSE vectors must cover exactly the registry rows whose signature profile requires DSSE.
 The corpus also freezes persisted, digest-bound activation authority snapshots at attempt start and immediately before
-pointer CAS, plus eligibility evidence that references both distinct reads. Candidate revocation, certification
-revocation/key invalidation, or expiry between snapshots fails closed before CAS.
+pointer CAS, plus eligibility evidence that references both distinct reads. Every snapshot binds six owner-signed current
+head receipts and the exact active-pointer CAS precondition. Candidate/certification revocation, key revoke/suspend,
+ProducerRegistry or TrustPolicy epoch drift, or expiry between snapshots fails closed before CAS. DSSE test vectors carry
+only payload/signature facts; trusted public keys and current epochs come exclusively from Root's producer registry.
 It explicitly keeps Product Catalog and
 Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas
 are immutable under `--breaking-against`; the predecessor may contain its own valid subset, while the candidate must

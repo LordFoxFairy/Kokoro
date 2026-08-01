@@ -224,6 +224,9 @@ authorization epoch、Certification revocation epoch、签名 key 状态与 `val
 之间发生撤销、key 失效或证书过期，CAS 必须 fail closed。两个不同 phase 的 authority read 必须分别持久化为
 `ActivationAuthoritySnapshot`，`ActivationEligibilityEvidence` 以 exact JCS digest 引用两者，并冻结完整 active
 producer registry、trust policy、key version/fingerprint/validity/audience/environment tuple；内存态检查结果不能替代证据。
+每次 read 必须绑定 Candidate、Certification、ProducerRegistry、TrustPolicy、key status、active pointer 六个 owner-signed
+head receipt，并携带同一 attempt digest、expected pointer generation 与 CAS precondition。时序严格为 Certification 生成不晚于
+Release 发布，Release 发布不晚于 begin read，begin < pre-CAS read <= evidence evaluation，evaluation 早于证书与 key expiry。
 
 ## 4. Reference Profile：`core-redeem-chat@1`
 

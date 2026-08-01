@@ -199,7 +199,7 @@ Product Catalog，不能据此宣称完整发布快照已经实现。
 
 Root 的 latest-only `PublishSiteReleaseEffect` 已硬切为仅接受 Candidate ref、expected version 与 reason；SiteRelease ref、
 digest、Certification 与其他发布事实必须由 Platform 生成。`platform-site-provisioning@v1` 在 Platform/Web 重新生成 mirror
-并提交兼容性证据前保持 `contract-only`。
+、hard-cut 仍 live 的旧 Platform handler 并提交兼容性证据前保持 `contract-only`；Root 合同本身不构成 runtime closure。
 
 目标 `SiteRelease` 冻结 Web artifact、品牌/法务 digest、Product/Surface catalog revision、产品装配、Site config、
 assortment、model/agent/capability assignment、sales policy 和 contract compatibility。它是 Platform 的发布事实，不是
@@ -211,6 +211,10 @@ Web 项目的可编辑配置文件。
 必须阻止 CAS。两个 snapshot 与 eligibility evidence 都是持久化合同，使用 exact JCS material digest，并冻结完整 active
 producer registry/policy/key trust tuple。外部流量切换和数据库指针不是伪原子事务。回滚是对旧的
 不可变 Release 发起新的 ActivationAttempt，而不是覆盖文件或破坏性逆迁移。
+
+DSSE verifier 的 SPKI 与 current producer/policy epochs 只来自 Root trust-anchor registry，corpus vector 不能提供公钥。
+每次 authority read 必须持久化六个 owner-signed live head receipt，并把 expected active-pointer generation 与 CAS
+precondition 绑定到同一 ActivationAttempt digest。
 
 ### 6.2 Web Release Composition（target）
 

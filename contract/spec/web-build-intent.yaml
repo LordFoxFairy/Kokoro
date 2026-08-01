@@ -17,7 +17,7 @@
     "siteConfig": {"$ref": "#/$defs/digestRef"}, "legalPolicy": {"$ref": "#/$defs/digestRef"},
     "salesPolicy": {"$ref": "#/$defs/digestRef"}, "capabilityAssignment": {"$ref": "#/$defs/digestRef"},
     "issuedAt": {"$ref": "#/$defs/timestamp"}, "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"},
-    "issuer": {"type": "object", "additionalProperties": false, "required": ["issuerRef", "signingKeyId"], "properties": {"issuerRef": {"$ref": "#/$defs/ref"}, "signingKeyId": {"$ref": "#/$defs/ref"}}}
+    "issuer": {"type": "object", "additionalProperties": false, "required": ["issuerRef", "producerRegistry", "producerRegistryEpoch", "trustPolicy", "trustPolicyEpoch", "signingKeyId", "keyVersion", "publicKeyFingerprint", "keyStatus", "keyValidFrom", "keyValidUntil", "signatureAudience", "environment"], "properties": {"issuerRef": {"$ref": "#/$defs/ref"}, "producerRegistry": {"$ref": "#/$defs/digestRef"}, "producerRegistryEpoch": {"$ref": "#/$defs/decimal"}, "trustPolicy": {"$ref": "#/$defs/digestRef"}, "trustPolicyEpoch": {"$ref": "#/$defs/decimal"}, "signingKeyId": {"$ref": "#/$defs/ref"}, "keyVersion": {"$ref": "#/$defs/decimal"}, "publicKeyFingerprint": {"$ref": "#/$defs/digest"}, "keyStatus": {"const": "active"}, "keyValidFrom": {"$ref": "#/$defs/timestamp"}, "keyValidUntil": {"$ref": "#/$defs/timestamp"}, "signatureAudience": {"const": "kokoro.web-build-intent.v1"}, "environment": {"enum": ["development", "preview", "staging", "production"]}}}
   },
   "$defs": {
     "ref": {"type": "string", "minLength": 3, "maxLength": 200, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},

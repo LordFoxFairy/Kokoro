@@ -41,39 +41,102 @@ function resignVector(corpus, caseId, privateKey) {
   vector.signatureBase64 = sign(null, pae, privateKey).toString("base64");
 }
 
-function refreshSigningIdentities(corpus) {
+function documentSigner(contractCase) {
+  if (contractCase.contractId === "web-build-intent.v1") return contractCase.document.issuer;
+  if (contractCase.contractId === "web-artifact-provenance-profile.v1") return contractCase.document.predicate.runDetails.builder;
+  return contractCase.document.producer;
+}
+
+function refreshSigningIdentities(corpus, anchors) {
   const privateKeys = new Map();
-  for (const vector of corpus.dsseVectors) {
+  for (const anchor of anchors.producers) {
     const { publicKey, privateKey } = generateKeyPairSync("ed25519");
     const publicDer = publicKey.export({ format: "der", type: "spki" });
-    vector.publicKeySpkiDerBase64 = publicDer.toString("base64");
-    privateKeys.set(vector.caseId, privateKey);
+    anchor.publicKeySpkiDerBase64 = publicDer.toString("base64");
+    anchor.publicKeyFingerprint = `sha256:${createHash("sha256").update(publicDer).digest("hex")}`;
+    privateKeys.set(anchor.keyId, privateKey);
+  }
+  for (const vector of corpus.dsseVectors) {
     const contractCase = corpus.positiveCases.find(({ id }) => id === vector.caseId);
-    if (["release-certification-instance.v1", "release-certification-revocation.v1"].includes(contractCase.contractId)) {
-      contractCase.document.producer.publicKeyFingerprint = `sha256:${createHash("sha256").update(publicDer).digest("hex")}`;
-    }
+    const anchor = anchors.producers.find(({ keyId }) => keyId === vector.keyId);
+    documentSigner(contractCase).publicKeyFingerprint = anchor.publicKeyFingerprint;
   }
   return privateKeys;
 }
 
 function authorityMaterial(snapshot) {
   return {
-    activationAttemptRef: snapshot.activationAttemptRef, phase: snapshot.phase, siteRelease: snapshot.siteRelease,
-    candidate: snapshot.candidate, certification: snapshot.certification, trust: snapshot.trust, readAt: snapshot.readAt,
+    activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, siteRelease: snapshot.siteRelease,
+    candidate: snapshot.candidate, certification: snapshot.certification, trust: snapshot.trust,
+    expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration, activePointer: snapshot.activePointer,
+    ownerReadReceipts: snapshot.ownerReadReceipts, readAt: snapshot.readAt,
   };
 }
 
 function eligibilityMaterial(evidence) {
   return {
-    activationAttemptRef: evidence.activationAttemptRef, siteRelease: evidence.siteRelease,
+    activationAttempt: evidence.activationAttempt, siteRelease: evidence.siteRelease,
     beginAuthoritySnapshot: evidence.beginAuthoritySnapshot,
     immediateBeforePointerCasAuthoritySnapshot: evidence.immediateBeforePointerCasAuthoritySnapshot,
+    expectedActivePointerGeneration: evidence.expectedActivePointerGeneration,
+    casPreconditionDigest: evidence.casPreconditionDigest,
     decision: evidence.decision, evaluatedAt: evidence.evaluatedAt,
   };
 }
 
-function refreshCoherentChain(corpus) {
-  const privateKeys = refreshSigningIdentities(corpus);
+function receiptMaterial(receipt) {
+  const { signature, ...material } = receipt;
+  return material;
+}
+
+function receiptResult(snapshot, kind) {
+  if (kind === "candidate") return snapshot.candidate;
+  if (kind === "certification") return snapshot.certification;
+  if (kind === "producer-registry") return { producerRegistry: snapshot.trust.producerRegistry, producerRegistryEpoch: snapshot.trust.producerRegistryEpoch };
+  if (kind === "trust-policy") return { trustPolicy: snapshot.trust.trustPolicy, trustPolicyEpoch: snapshot.trust.trustPolicyEpoch };
+  if (kind === "key-status") return { keyId: snapshot.trust.keyId, keyVersion: snapshot.trust.keyVersion, publicKeyFingerprint: snapshot.trust.publicKeyFingerprint, keyStatus: snapshot.trust.keyStatus, keyValidFrom: snapshot.trust.keyValidFrom, keyValidUntil: snapshot.trust.keyValidUntil };
+  return snapshot.activePointer;
+}
+
+function refreshReceipts(snapshot, suffix, anchors, privateKeys) {
+  for (const receipt of snapshot.ownerReadReceipts) {
+    const anchor = anchors.producers.find(({ keyId }) => keyId === receipt.provider.keyId);
+    const { publicKeySpkiDerBase64, ...provider } = anchor;
+    receipt.provider = structuredClone(provider);
+    receipt.observedAt = snapshot.readAt;
+    receipt.readReceiptRef = `read-receipt.${receipt.aggregateKind.replaceAll("-", ".")}.${suffix}.1`;
+    receipt.revision = receipt.aggregateKind === "candidate" ? snapshot.candidate.authorizationEpoch
+      : receipt.aggregateKind === "certification" ? snapshot.certification.revocationEpoch
+        : receipt.aggregateKind === "producer-registry" ? snapshot.trust.producerRegistryEpoch
+          : receipt.aggregateKind === "trust-policy" ? snapshot.trust.trustPolicyEpoch
+            : receipt.aggregateKind === "key-status" ? snapshot.trust.keyVersion : snapshot.activePointer.currentGeneration;
+    receipt.resultDigest = canonicalDigest(receiptResult(snapshot, receipt.aggregateKind));
+    receipt.headDigest = canonicalDigest({ aggregateRef: receipt.aggregateRef, revision: receipt.revision, resultDigest: receipt.resultDigest });
+    receipt.queryDigest = canonicalDigest({ activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, aggregateKind: receipt.aggregateKind, aggregateRef: receipt.aggregateRef, expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration });
+    const payload = canonicalBytes(receiptMaterial(receipt));
+    receipt.signature = { payloadType: "application/vnd.kokoro.owner-live-read-receipt.v1+json", keyId: provider.keyId, signatureBase64: sign(null, dssePae("application/vnd.kokoro.owner-live-read-receipt.v1+json", payload), privateKeys.get(provider.keyId)).toString("base64") };
+  }
+  snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+}
+
+function refreshBlockedSnapshots(corpus, beforeCasSnapshot, anchors, privateKeys) {
+  for (const [index, blocked] of corpus.activationEligibilityScenarios[0].blockedImmediateBeforePointerCasReads.entries()) {
+    const snapshot = structuredClone(beforeCasSnapshot);
+    snapshot.snapshotRef = blocked.snapshot.snapshotRef;
+    if (blocked.id.startsWith("candidate-revoked")) snapshot.candidate.state = "revoked";
+    else if (blocked.id.startsWith("certification-revoked")) { snapshot.certification.state = "revoked"; snapshot.certification.revocationEpoch = "1"; }
+    else if (blocked.id.startsWith("key-revoked")) snapshot.trust.keyStatus = "revoked";
+    else if (blocked.id.startsWith("key-suspended")) snapshot.trust.keyStatus = "suspended";
+    else if (blocked.id.startsWith("producer-registry")) snapshot.trust.producerRegistryEpoch = "5";
+    else if (blocked.id.startsWith("trust-policy")) snapshot.trust.trustPolicyEpoch = "10";
+    else snapshot.readAt = snapshot.certification.validUntil;
+    refreshReceipts(snapshot, `blocked.${index + 1}`, anchors, privateKeys);
+    blocked.snapshot = snapshot;
+  }
+}
+
+function refreshCoherentChain(corpus, anchors) {
+  const privateKeys = refreshSigningIdentities(corpus, anchors);
   const documents = new Map(corpus.positiveCases.map(({ contractId, document }) => [contractId, document]));
   const cases = new Map(corpus.positiveCases.map(({ id, document }) => [id, document]));
   const catalog = documents.get("product-surface-catalog.v1");
@@ -163,8 +226,9 @@ function refreshCoherentChain(corpus) {
     snapshot.certification.revocationEpoch = siteRelease.certificationRevocationEpoch;
     snapshot.certification.validUntil = certification.validUntil;
     snapshot.trust = structuredClone(certification.producer);
-    snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+    refreshReceipts(snapshot, snapshot.phase === "activation-begin" ? "begin" : "before-cas", anchors, privateKeys);
   }
+  refreshBlockedSnapshots(corpus, beforeCasSnapshot, anchors, privateKeys);
   activationEvidence.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
   activationEvidence.beginAuthoritySnapshot = { ref: beginSnapshot.snapshotRef, digest: canonicalDigest(beginSnapshot) };
   activationEvidence.immediateBeforePointerCasAuthoritySnapshot = { ref: beforeCasSnapshot.snapshotRef, digest: canonicalDigest(beforeCasSnapshot) };
@@ -174,18 +238,25 @@ function refreshCoherentChain(corpus) {
     const document = corpus.positiveCases.find(({ id }) => id === vector.caseId).document;
     vector.expectedDigest = canonicalDigest(document);
   }
-  for (const vector of corpus.dsseVectors) resignVector(corpus, vector.caseId, privateKeys.get(vector.caseId));
+  for (const vector of corpus.dsseVectors) resignVector(corpus, vector.caseId, privateKeys.get(vector.keyId));
 }
 
 async function coherentCorpusAttack(mutate, expectedCode) {
   const source = await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8");
+  const anchorSource = await readFile(resolve(repositoryRoot, "contract/registry/trusted-web-release-producers.yaml"), "utf8");
   const corpus = JSON.parse(source);
+  const anchors = JSON.parse(anchorSource);
   mutate(corpus);
-  refreshCoherentChain(corpus);
+  refreshCoherentChain(corpus, anchors);
   const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-coherent-"));
-  const corpusPath = join(temporary, "corpus.json");
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await mkdir(join(temporary, "contract/corpus"), { recursive: true });
+  const corpusPath = join(temporary, "contract/corpus/web-release-composition-v1.json");
   await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
-  await expectCode(() => validateRepository({ root: repositoryRoot, corpus: corpusPath }), expectedCode);
+  await writeFile(join(temporary, "contract/registry/trusted-web-release-producers.yaml"), `${JSON.stringify(anchors, null, 2)}\n`);
+  await expectCode(() => validateRepository({ root: temporary }), expectedCode);
 }
 
 async function expectCode(action, code) {
@@ -237,14 +308,64 @@ test("persisted activation authority and eligibility contracts freeze exact JCS 
   const snapshot = await readSchema("activation-authority-snapshot");
   const evidence = await readSchema("activation-eligibility-evidence");
 
-  for (const field of ["activationAttemptRef", "phase", "siteRelease", "candidate", "certification", "trust", "readAt", "authorityMaterialDigest"]) {
+  for (const field of ["activationAttempt", "phase", "siteRelease", "candidate", "certification", "trust", "expectedActivePointerGeneration", "activePointer", "ownerReadReceipts", "readAt", "authorityMaterialDigest"]) {
     assert.ok(snapshot.required.includes(field));
   }
-  for (const field of ["activationAttemptRef", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "decision", "evaluatedAt", "eligibilityMaterialDigest"]) {
+  for (const field of ["activationAttempt", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "expectedActivePointerGeneration", "casPreconditionDigest", "decision", "evaluatedAt", "eligibilityMaterialDigest"]) {
     assert.ok(evidence.required.includes(field));
   }
   assert.deepEqual(snapshot.properties.phase.enum, ["activation-begin", "immediate-before-pointer-cas"]);
-  assert.equal(snapshot.$defs.trustTuple.properties.keyStatus.const, "active");
+  assert.equal(snapshot.$defs.trustTuple.properties.keyStatus.$ref, "#/$defs/observedState");
+  assert.deepEqual(snapshot.$defs.observedState.enum, ["active", "revoked", "suspended"]);
+});
+
+test("Root trust anchors, not DSSE vectors, resolve every signing public key", async () => {
+  const anchors = JSON.parse(await readFile(resolve(repositoryRoot, "contract/registry/trusted-web-release-producers.yaml"), "utf8"));
+  const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  assert.equal(anchors.schema, "kokoro.trusted-web-release-producers.v1");
+  assert.equal(anchors.authority, "root.contract");
+  assert.ok(anchors.producers.length >= corpus.dsseVectors.length);
+  for (const producer of anchors.producers) {
+    for (const field of ["keyId", "keyVersion", "publicKeySpkiDerBase64", "publicKeyFingerprint", "producerIdentityRef", "producerRegistry", "producerRegistryEpoch", "trustPolicy", "trustPolicyEpoch", "signatureAudience", "environment", "keyValidFrom", "keyValidUntil", "keyStatus"]) {
+      assert.ok(field in producer, `${producer.keyId}:${field}`);
+    }
+  }
+  for (const vector of corpus.dsseVectors) assert.equal("publicKeySpkiDerBase64" in vector, false);
+});
+
+test("DSSE verification rejects vector-carried keys and non-current Root trust epochs", async () => {
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-trust-"));
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/corpus"), join(temporary, "contract/corpus"), { recursive: true });
+  const corpusPath = join(temporary, "contract/corpus/web-release-composition-v1.json");
+  const corpus = JSON.parse(await readFile(corpusPath, "utf8"));
+  corpus.dsseVectors[0].publicKeySpkiDerBase64 = "MCowBQYDK2VwAyEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+  await expectCode(() => validateRepository({ root: temporary }), "web_release_dsse_vector_invalid");
+
+  await writeFile(corpusPath, await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  const anchorsPath = join(temporary, "contract/registry/trusted-web-release-producers.yaml");
+  const anchors = JSON.parse(await readFile(anchorsPath, "utf8"));
+  anchors.currentEpochs[0].producerRegistryEpoch = "5";
+  await writeFile(anchorsPath, `${JSON.stringify(anchors, null, 2)}\n`);
+  await expectCode(() => validateRepository({ root: temporary }), "web_release_trust_registry_invalid");
+});
+
+test("activation snapshots bind six owner-signed live heads and an exact pointer CAS precondition", async () => {
+  const readSchema = async (name) => JSON.parse(await readFile(resolve(repositoryRoot, `contract/spec/${name}.yaml`), "utf8"));
+  const snapshot = await readSchema("activation-authority-snapshot");
+  const evidence = await readSchema("activation-eligibility-evidence");
+  for (const field of ["activationAttempt", "expectedActivePointerGeneration", "ownerReadReceipts"]) assert.ok(snapshot.required.includes(field));
+  assert.deepEqual(snapshot.$defs.ownerReadReceipt.properties.aggregateKind.enum, [
+    "candidate", "certification", "producer-registry", "trust-policy", "key-status", "active-pointer",
+  ]);
+  for (const field of ["aggregateRef", "revision", "headEventRef", "headDigest", "queryDigest", "resultDigest", "readReceiptRef", "observedAt", "provider", "signature"]) {
+    assert.ok(snapshot.$defs.ownerReadReceipt.required.includes(field));
+  }
+  assert.deepEqual(snapshot.$defs.observedState.enum, ["active", "revoked", "suspended"]);
+  for (const field of ["activationAttempt", "expectedActivePointerGeneration", "casPreconditionDigest"]) assert.ok(evidence.required.includes(field));
 });
 
 test("certification and revocation carry the complete active trust tuple and signed authority facts", async () => {
@@ -332,10 +453,25 @@ test("activation eligibility independently revalidates persisted begin and immed
     cases.get("site-release-alpha"),
     cases.get("certification-site-alpha"),
   ));
-  assert.deepEqual(scenario.blockedImmediateBeforePointerCasReads.map(({ expectedCode }) => expectedCode), [
+  assert.deepEqual(new Set(scenario.blockedImmediateBeforePointerCasReads.map(({ expectedCode }) => expectedCode)), new Set([
+    "web_release_activation_candidate_epoch_invalid",
     "web_release_activation_certification_revoked",
+    "web_release_activation_key_invalid",
+    "web_release_activation_registry_epoch_invalid",
+    "web_release_activation_policy_epoch_invalid",
     "web_release_activation_certification_expired",
-  ]);
+  ]));
+});
+
+test("Profile recursively closes required products and requires each journey entry surface", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const catalog = corpus.positiveCases.find(({ id }) => id === "catalog-published").document;
+    catalog.products.find(({ productRef }) => productRef === "product.chat").requiredProductRefs = ["product.memory"];
+  }, "web_release_profile_surface_invalid");
+  await coherentCorpusAttack((corpus) => {
+    const catalog = corpus.positiveCases.find(({ id }) => id === "catalog-published").document;
+    catalog.canonicalJourneys.find(({ journeyRef }) => journeyRef === "journey.chat").entrySurfaceRef = "surface.memory";
+  }, "web_release_profile_journey_invalid");
 });
 
 test("BFF same-origin and downstream operation identities are globally disjoint across groups", async () => {

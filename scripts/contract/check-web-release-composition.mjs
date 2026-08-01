@@ -10,6 +10,7 @@ import Ajv2020 from "../../contract/node_modules/ajv/dist/2020.js";
 
 const DEFAULT_REGISTRY = "contract/registry/web-release-composition.yaml";
 const DEFAULT_CORPUS = "contract/corpus/web-release-composition-v1.json";
+const DEFAULT_TRUST_ANCHORS = "contract/registry/trusted-web-release-producers.yaml";
 const CONTRACT_IDS = [
   "activation-authority-snapshot.v1",
   "activation-eligibility-evidence.v1",
@@ -334,6 +335,18 @@ function validateProfile(profile, catalog) {
     if (surface === undefined || surface.requiredSurfaceRefs.some((required) => !enabled.has(required))) fail("web_release_profile_surface_invalid", surfaceRef);
   }
   const products = new Map(catalog.products.map((product) => [product.productRef, product]));
+  const requiredProducts = new Set([...enabled].map((surfaceRef) => surfaces.get(surfaceRef).productRef));
+  const visitProduct = (productRef) => {
+    const product = products.get(productRef);
+    if (product === undefined || product.surfaceRefs.some((surfaceRef) => !enabled.has(surfaceRef))) fail("web_release_profile_surface_invalid", productRef);
+    for (const requiredProductRef of product.requiredProductRefs) {
+      if (!requiredProducts.has(requiredProductRef)) {
+        requiredProducts.add(requiredProductRef);
+        visitProduct(requiredProductRef);
+      }
+    }
+  };
+  for (const productRef of [...requiredProducts]) visitProduct(productRef);
   const journeyRefs = new Set();
   for (const surfaceRef of enabled) {
     const surface = surfaces.get(surfaceRef);
@@ -343,7 +356,7 @@ function validateProfile(profile, catalog) {
   const journeys = new Map(catalog.canonicalJourneys.map((journey) => [journey.journeyRef, journey]));
   const visitJourney = (journeyRef) => {
     const journey = journeys.get(journeyRef);
-    if (journey === undefined || journey.requiredSurfaceRefs.some((surfaceRef) => !enabled.has(surfaceRef))) fail("web_release_profile_journey_invalid", journeyRef);
+    if (journey === undefined || !enabled.has(journey.entrySurfaceRef) || journey.requiredSurfaceRefs.some((surfaceRef) => !enabled.has(surfaceRef))) fail("web_release_profile_journey_invalid", journeyRef);
     for (const requiredJourneyRef of journey.requiredJourneyRefs) {
       if (!journeyRefs.has(requiredJourneyRef)) {
         journeyRefs.add(requiredJourneyRef);
@@ -686,25 +699,123 @@ function validateCertification(certification, related) {
 
 function authorityMaterial(snapshot) {
   return {
-    activationAttemptRef: snapshot.activationAttemptRef,
+    activationAttempt: snapshot.activationAttempt,
     phase: snapshot.phase,
     siteRelease: snapshot.siteRelease,
     candidate: snapshot.candidate,
     certification: snapshot.certification,
     trust: snapshot.trust,
+    expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration,
+    activePointer: snapshot.activePointer,
+    ownerReadReceipts: snapshot.ownerReadReceipts,
     readAt: snapshot.readAt,
   };
 }
 
 function eligibilityMaterial(evidence) {
   return {
-    activationAttemptRef: evidence.activationAttemptRef,
+    activationAttempt: evidence.activationAttempt,
     siteRelease: evidence.siteRelease,
     beginAuthoritySnapshot: evidence.beginAuthoritySnapshot,
     immediateBeforePointerCasAuthoritySnapshot: evidence.immediateBeforePointerCasAuthoritySnapshot,
+    expectedActivePointerGeneration: evidence.expectedActivePointerGeneration,
+    casPreconditionDigest: evidence.casPreconditionDigest,
     decision: evidence.decision,
     evaluatedAt: evidence.evaluatedAt,
   };
+}
+
+const ACTIVATION_RECEIPT_KINDS = ["candidate", "certification", "producer-registry", "trust-policy", "key-status", "active-pointer"];
+
+function anchorFacts(anchor) {
+  return {
+    producerRegistry: anchor.producerRegistry, producerRegistryEpoch: anchor.producerRegistryEpoch,
+    trustPolicy: anchor.trustPolicy, trustPolicyEpoch: anchor.trustPolicyEpoch, keyId: anchor.keyId,
+    keyVersion: anchor.keyVersion, publicKeyFingerprint: anchor.publicKeyFingerprint, keyStatus: anchor.keyStatus,
+    keyValidFrom: anchor.keyValidFrom, keyValidUntil: anchor.keyValidUntil,
+    signatureAudience: anchor.signatureAudience, environment: anchor.environment,
+  };
+}
+
+function resolveTrustedProducer(tuple, trustAnchors, signedAt, code) {
+  const anchor = trustAnchors?.producers.get(`${tuple.keyId}@${tuple.keyVersion}`);
+  if (anchor === undefined || tuple.producerIdentityRef !== anchor.producerIdentityRef ||
+      canonicalize({
+        producerRegistry: tuple.producerRegistry, producerRegistryEpoch: tuple.producerRegistryEpoch,
+        trustPolicy: tuple.trustPolicy, trustPolicyEpoch: tuple.trustPolicyEpoch, keyId: tuple.keyId,
+        keyVersion: tuple.keyVersion, publicKeyFingerprint: tuple.publicKeyFingerprint, keyStatus: tuple.keyStatus,
+        keyValidFrom: tuple.keyValidFrom, keyValidUntil: tuple.keyValidUntil,
+        signatureAudience: tuple.signatureAudience, environment: tuple.environment,
+      }) !== canonicalize(anchorFacts(anchor)) || signedAt < anchor.keyValidFrom || signedAt >= anchor.keyValidUntil) {
+    fail(code, `${tuple.keyId}@${tuple.keyVersion}`);
+  }
+  return anchor;
+}
+
+function activePointerCasMaterial(snapshot) {
+  return {
+    activationAttempt: snapshot.activationAttempt,
+    pointerRef: snapshot.activePointer.pointerRef,
+    currentReleaseRef: snapshot.activePointer.currentReleaseRef,
+    currentGeneration: snapshot.activePointer.currentGeneration,
+    expectedGeneration: snapshot.activePointer.expectedGeneration,
+  };
+}
+
+function receiptResult(snapshot, kind) {
+  if (kind === "candidate") return snapshot.candidate;
+  if (kind === "certification") return snapshot.certification;
+  if (kind === "producer-registry") return { producerRegistry: snapshot.trust.producerRegistry, producerRegistryEpoch: snapshot.trust.producerRegistryEpoch };
+  if (kind === "trust-policy") return { trustPolicy: snapshot.trust.trustPolicy, trustPolicyEpoch: snapshot.trust.trustPolicyEpoch };
+  if (kind === "key-status") return {
+    keyId: snapshot.trust.keyId, keyVersion: snapshot.trust.keyVersion,
+    publicKeyFingerprint: snapshot.trust.publicKeyFingerprint, keyStatus: snapshot.trust.keyStatus,
+    keyValidFrom: snapshot.trust.keyValidFrom, keyValidUntil: snapshot.trust.keyValidUntil,
+  };
+  return snapshot.activePointer;
+}
+
+function expectedReceiptIdentity(snapshot, kind) {
+  if (kind === "candidate") return [snapshot.candidate.siteReleaseCandidate.ref, snapshot.candidate.authorizationEpoch];
+  if (kind === "certification") return [snapshot.certification.releaseCertification.ref, snapshot.certification.revocationEpoch];
+  if (kind === "producer-registry") return [snapshot.trust.producerRegistry.ref, snapshot.trust.producerRegistryEpoch];
+  if (kind === "trust-policy") return [snapshot.trust.trustPolicy.ref, snapshot.trust.trustPolicyEpoch];
+  if (kind === "key-status") return [snapshot.trust.keyId, snapshot.trust.keyVersion];
+  return [snapshot.activePointer.pointerRef, snapshot.activePointer.currentGeneration];
+}
+
+function validateOwnerReadReceipts(snapshot, trustAnchors) {
+  if (!Array.isArray(snapshot.ownerReadReceipts) || snapshot.ownerReadReceipts.length !== ACTIVATION_RECEIPT_KINDS.length) {
+    fail("web_release_activation_live_read_receipt_invalid");
+  }
+  const byKind = new Map(snapshot.ownerReadReceipts.map((receipt) => [receipt.aggregateKind, receipt]));
+  if (byKind.size !== ACTIVATION_RECEIPT_KINDS.length ||
+      canonicalSet(byKind.keys()) !== canonicalSet(ACTIVATION_RECEIPT_KINDS)) fail("web_release_activation_live_read_receipt_invalid");
+  unique(snapshot.ownerReadReceipts.map(({ readReceiptRef }) => readReceiptRef), "web_release_activation_live_read_receipt_invalid");
+  unique(snapshot.ownerReadReceipts.map(({ headEventRef }) => headEventRef), "web_release_activation_live_read_receipt_invalid");
+  for (const kind of ACTIVATION_RECEIPT_KINDS) {
+    const receipt = byKind.get(kind);
+    const [aggregateRef, revision] = expectedReceiptIdentity(snapshot, kind);
+    const resultDigest = digest(receiptResult(snapshot, kind));
+    const queryDigest = digest({
+      activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, aggregateKind: kind,
+      aggregateRef, expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration,
+    });
+    if (receipt.aggregateRef !== aggregateRef || receipt.revision !== revision || receipt.observedAt !== snapshot.readAt ||
+        receipt.resultDigest !== resultDigest || receipt.queryDigest !== queryDigest ||
+        receipt.headDigest !== digest({ aggregateRef, revision, resultDigest }) ||
+        receipt.signature.keyId !== receipt.provider.keyId ||
+        receipt.signature.payloadType !== "application/vnd.kokoro.owner-live-read-receipt.v1+json") {
+      fail("web_release_activation_live_read_receipt_invalid", kind);
+    }
+    const anchor = resolveTrustedProducer(receipt.provider, trustAnchors, receipt.observedAt, "web_release_activation_live_read_trust_invalid");
+    const { signature, ...material } = receipt;
+    const payload = canonicalBytes(material);
+    const signed = verifySignature(null, dssePae(signature.payloadType, payload), anchor.key,
+      Buffer.from(signature.signatureBase64, "base64"));
+    if (!signed) fail("web_release_activation_live_read_signature_invalid", kind);
+  }
+  return byKind;
 }
 
 function validateActivationAuthoritySnapshot(snapshot, related) {
@@ -712,48 +823,75 @@ function validateActivationAuthoritySnapshot(snapshot, related) {
   const expectedRelease = { ref: related.release.siteReleaseRef, digest: digest(related.release) };
   if (!sameDigestRef(snapshot.siteRelease, expectedRelease) || !sameDigestRef(snapshot.candidate.siteReleaseCandidate, related.release.siteReleaseCandidate) ||
       !sameDigestRef(snapshot.certification.releaseCertification, related.release.releaseCertification)) fail("web_release_activation_authority_reference_invalid");
+  if (snapshot.expectedActivePointerGeneration !== snapshot.activePointer.expectedGeneration ||
+      snapshot.activePointer.currentGeneration !== snapshot.activePointer.expectedGeneration ||
+      snapshot.activePointer.casPreconditionDigest !== digest(activePointerCasMaterial(snapshot))) {
+    fail("web_release_activation_pointer_cas_invalid");
+  }
+  validateOwnerReadReceipts(snapshot, related.trustAnchors);
 }
 
-export function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, certification) {
+export function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, certification, trustAnchors) {
   if (begin.phase !== "activation-begin" || beforeCas.phase !== "immediate-before-pointer-cas") fail("web_release_activation_phase_invalid");
-  if (begin.activationAttemptRef !== evidence.activationAttemptRef || beforeCas.activationAttemptRef !== evidence.activationAttemptRef ||
+  if (!sameDigestRef(begin.activationAttempt, evidence.activationAttempt) || !sameDigestRef(beforeCas.activationAttempt, evidence.activationAttempt) ||
       begin.snapshotRef === beforeCas.snapshotRef || digest(begin) === digest(beforeCas) || begin.readAt >= beforeCas.readAt ||
       beforeCas.readAt > evidence.evaluatedAt) fail("web_release_activation_snapshot_pair_invalid");
   const releaseRef = { ref: release.siteReleaseRef, digest: digest(release) };
   if (!sameDigestRef(evidence.siteRelease, releaseRef) || !sameDigestRef(begin.siteRelease, releaseRef) || !sameDigestRef(beforeCas.siteRelease, releaseRef) ||
       !sameDigestRef(evidence.beginAuthoritySnapshot, { ref: begin.snapshotRef, digest: digest(begin) }) ||
       !sameDigestRef(evidence.immediateBeforePointerCasAuthoritySnapshot, { ref: beforeCas.snapshotRef, digest: digest(beforeCas) })) fail("web_release_activation_authority_reference_invalid");
+  if (begin.expectedActivePointerGeneration !== beforeCas.expectedActivePointerGeneration ||
+      evidence.expectedActivePointerGeneration !== beforeCas.expectedActivePointerGeneration ||
+      begin.activePointer.casPreconditionDigest !== beforeCas.activePointer.casPreconditionDigest ||
+      evidence.casPreconditionDigest !== beforeCas.activePointer.casPreconditionDigest) fail("web_release_activation_pointer_cas_invalid");
+  const beginReceipts = new Map(begin.ownerReadReceipts.map((receipt) => [receipt.aggregateKind, receipt]));
+  const beforeReceipts = new Map(beforeCas.ownerReadReceipts.map((receipt) => [receipt.aggregateKind, receipt]));
+  for (const kind of ACTIVATION_RECEIPT_KINDS) {
+    const first = beginReceipts.get(kind); const second = beforeReceipts.get(kind);
+    if (first === undefined || second === undefined || first.readReceiptRef === second.readReceiptRef ||
+        first.observedAt >= second.observedAt) fail("web_release_activation_snapshot_pair_invalid", kind);
+  }
+  if (certification.generatedAt > release.publishedAt || release.publishedAt > begin.readAt ||
+      beforeCas.readAt > evidence.evaluatedAt) fail("web_release_activation_time_order_invalid");
   for (const snapshot of [begin, beforeCas]) {
-    if (snapshot.candidate.state !== "authorized" || snapshot.candidate.authorizationEpoch !== release.candidateAuthorizationEpoch ||
+    if (snapshot.candidate.state !== "active" || snapshot.candidate.authorizationEpoch !== release.candidateAuthorizationEpoch ||
         !sameDigestRef(snapshot.candidate.siteReleaseCandidate, release.siteReleaseCandidate)) fail("web_release_activation_candidate_epoch_invalid");
-    if (snapshot.certification.state !== "passed" || snapshot.certification.revocationEpoch !== release.certificationRevocationEpoch ||
+    if (snapshot.certification.state !== "active" || snapshot.certification.revocationEpoch !== release.certificationRevocationEpoch ||
         !sameDigestRef(snapshot.certification.releaseCertification, release.releaseCertification)) fail("web_release_activation_certification_revoked");
     if (snapshot.certification.validUntil !== certification.validUntil || snapshot.readAt >= certification.validUntil) fail("web_release_activation_certification_expired");
-    if (canonicalize(snapshot.trust) !== canonicalize(certification.producer) || snapshot.trust.keyStatus !== "active" ||
-        snapshot.trust.environment !== release.environment || snapshot.readAt < snapshot.trust.keyValidFrom || snapshot.readAt >= snapshot.trust.keyValidUntil) fail("web_release_activation_key_invalid");
+    if (!sameDigestRef(snapshot.trust.producerRegistry, certification.producer.producerRegistry) ||
+        snapshot.trust.producerRegistryEpoch !== certification.producer.producerRegistryEpoch) fail("web_release_activation_registry_epoch_invalid");
+    if (!sameDigestRef(snapshot.trust.trustPolicy, certification.producer.trustPolicy) ||
+        snapshot.trust.trustPolicyEpoch !== certification.producer.trustPolicyEpoch) fail("web_release_activation_policy_epoch_invalid");
+    const stableTrust = ["producerIdentityRef", "keyId", "keyVersion", "publicKeyFingerprint", "signatureAudience", "environment"];
+    if (stableTrust.some((field) => snapshot.trust[field] !== certification.producer[field]) ||
+        snapshot.trust.keyStatus !== "active" || snapshot.readAt < snapshot.trust.keyValidFrom ||
+        snapshot.readAt >= snapshot.trust.keyValidUntil) fail("web_release_activation_key_invalid");
+    if (trustAnchors !== undefined) resolveTrustedProducer(snapshot.trust, trustAnchors, snapshot.readAt, "web_release_activation_key_invalid");
   }
 }
 
 function validateActivationEligibilityEvidence(evidence, related) {
   if (evidence.eligibilityMaterialDigest !== digest(eligibilityMaterial(evidence))) fail("web_release_activation_eligibility_material_invalid");
-  assertActivationEvidenceEligible(evidence, related.activationBeginSnapshot, related.activationBeforeCasSnapshot, related.release, related.certification);
+  assertActivationEvidenceEligible(evidence, related.activationBeginSnapshot, related.activationBeforeCasSnapshot,
+    related.release, related.certification, related.trustAnchors);
 }
 
 function validateActivationEligibilityScenarios(scenarios, casesById, validators, related) {
   if (!Array.isArray(scenarios) || scenarios.length !== 1) fail("web_release_activation_scenario_invalid");
   const scenario = scenarios[0];
   exactKeys(scenario, ["beginSnapshotCaseId", "blockedImmediateBeforePointerCasReads", "evidenceCaseId", "id", "immediateBeforePointerCasSnapshotCaseId"], "web_release_activation_scenario_invalid");
-  if (scenario.id !== "dual-authority-revalidation-before-pointer-cas" || !Array.isArray(scenario.blockedImmediateBeforePointerCasReads) || scenario.blockedImmediateBeforePointerCasReads.length !== 2 ||
+  if (scenario.id !== "dual-authority-revalidation-before-pointer-cas" || !Array.isArray(scenario.blockedImmediateBeforePointerCasReads) || scenario.blockedImmediateBeforePointerCasReads.length !== 7 ||
       casesById.get(scenario.beginSnapshotCaseId)?.document !== related.activationBeginSnapshot ||
       casesById.get(scenario.immediateBeforePointerCasSnapshotCaseId)?.document !== related.activationBeforeCasSnapshot ||
       casesById.get(scenario.evidenceCaseId)?.document !== related.activationEvidence) fail("web_release_activation_scenario_invalid");
-  const expectedCodes = ["web_release_activation_certification_revoked", "web_release_activation_certification_expired"];
-  for (const [index, blocked] of scenario.blockedImmediateBeforePointerCasReads.entries()) {
-    exactKeys(blocked, ["expectedCode", "id", "mutations"], "web_release_activation_scenario_invalid");
-    if (blocked.expectedCode !== expectedCodes[index] || !Array.isArray(blocked.mutations) || blocked.mutations.length === 0) fail("web_release_activation_scenario_invalid");
-    let snapshot = structuredClone(related.activationBeforeCasSnapshot);
-    for (const mutation of blocked.mutations) snapshot = mutate(snapshot, mutation);
-    snapshot.authorityMaterialDigest = digest(authorityMaterial(snapshot));
+  const expectedCodes = new Set(["web_release_activation_candidate_epoch_invalid", "web_release_activation_certification_revoked",
+    "web_release_activation_key_invalid", "web_release_activation_registry_epoch_invalid",
+    "web_release_activation_policy_epoch_invalid", "web_release_activation_certification_expired"]);
+  for (const blocked of scenario.blockedImmediateBeforePointerCasReads) {
+    exactKeys(blocked, ["expectedCode", "id", "snapshot"], "web_release_activation_scenario_invalid");
+    if (!expectedCodes.has(blocked.expectedCode)) fail("web_release_activation_scenario_invalid");
+    const snapshot = structuredClone(blocked.snapshot);
     validateDocument("activation-authority-snapshot.v1", snapshot, validators);
     validateActivationAuthoritySnapshot(snapshot, related);
     const candidateEvidence = structuredClone(related.activationEvidence);
@@ -762,7 +900,8 @@ function validateActivationEligibilityScenarios(scenarios, casesById, validators
     candidateEvidence.eligibilityMaterialDigest = digest(eligibilityMaterial(candidateEvidence));
     let code = null;
     try {
-      assertActivationEvidenceEligible(candidateEvidence, related.activationBeginSnapshot, snapshot, related.release, related.certification);
+      assertActivationEvidenceEligible(candidateEvidence, related.activationBeginSnapshot, snapshot,
+        related.release, related.certification, related.trustAnchors);
     } catch (error) {
       if (!(error instanceof WebReleaseContractError)) throw error;
       code = error.code;
@@ -852,8 +991,82 @@ function dssePae(payloadType, payload) {
   return Buffer.concat([Buffer.from(`DSSEv1 ${type.length} `), type, Buffer.from(` ${payload.length} `), payload]);
 }
 
-function validateDsseVectors(corpus, casesById, envelopeValidators) {
+function validateTrustAnchors(anchors) {
+  validateIJson(anchors);
+  exactKeys(anchors, ["authority", "currentEpochs", "producers", "revision", "schema"], "web_release_trust_registry_invalid");
+  if (anchors.schema !== "kokoro.trusted-web-release-producers.v1" || anchors.authority !== "root.contract" ||
+      anchors.revision !== "1" || !Array.isArray(anchors.currentEpochs) || !Array.isArray(anchors.producers) ||
+      anchors.currentEpochs.length === 0 || anchors.producers.length === 0) fail("web_release_trust_registry_invalid");
+  const epochs = new Map();
+  for (const current of anchors.currentEpochs) {
+    exactKeys(current, ["environment", "producerRegistryEpoch", "trustPolicyEpoch"], "web_release_trust_registry_invalid");
+    if (epochs.has(current.environment) || !/^(?:0|[1-9][0-9]*)$/u.test(current.producerRegistryEpoch) ||
+        !/^(?:0|[1-9][0-9]*)$/u.test(current.trustPolicyEpoch)) fail("web_release_trust_registry_invalid");
+    epochs.set(current.environment, current);
+  }
+  const producers = new Map();
+  const expectedFields = ["environment", "keyId", "keyStatus", "keyValidFrom", "keyValidUntil", "keyVersion",
+    "producerIdentityRef", "producerRegistry", "producerRegistryEpoch", "publicKeyFingerprint", "publicKeySpkiDerBase64",
+    "signatureAudience", "trustPolicy", "trustPolicyEpoch"];
+  for (const producer of anchors.producers) {
+    exactKeys(producer, expectedFields, "web_release_trust_registry_invalid");
+    const identity = `${producer.keyId}@${producer.keyVersion}`;
+    const current = epochs.get(producer.environment);
+    if (producers.has(identity) || current === undefined || producer.keyStatus !== "active" ||
+        producer.producerRegistryEpoch !== current.producerRegistryEpoch || producer.trustPolicyEpoch !== current.trustPolicyEpoch ||
+        producer.keyValidFrom >= producer.keyValidUntil || typeof producer.producerIdentityRef !== "string" ||
+        producer.producerIdentityRef.length < 3 || producer.producerIdentityRef.length > 512) {
+      fail("web_release_trust_registry_invalid", identity);
+    }
+    let der;
+    let key;
+    try {
+      der = Buffer.from(producer.publicKeySpkiDerBase64, "base64");
+      key = createPublicKey({ key: der, format: "der", type: "spki" });
+    } catch { fail("web_release_trust_registry_invalid", identity); }
+    const fingerprint = `sha256:${createHash("sha256").update(der).digest("hex")}`;
+    if (producer.publicKeyFingerprint !== fingerprint) fail("web_release_trust_registry_invalid", identity);
+    producers.set(identity, Object.freeze({ ...producer, key }));
+  }
+  return Object.freeze({ epochs, producers });
+}
+
+function dsseSigner(document, contractId) {
+  if (contractId === "web-build-intent.v1") {
+    return { signedAt: document.issuedAt, identity: document.issuer.issuerRef, facts: {
+      producerRegistry: document.issuer.producerRegistry, producerRegistryEpoch: document.issuer.producerRegistryEpoch,
+      trustPolicy: document.issuer.trustPolicy, trustPolicyEpoch: document.issuer.trustPolicyEpoch,
+      keyId: document.issuer.signingKeyId, keyVersion: document.issuer.keyVersion,
+      publicKeyFingerprint: document.issuer.publicKeyFingerprint, keyStatus: document.issuer.keyStatus,
+      keyValidFrom: document.issuer.keyValidFrom, keyValidUntil: document.issuer.keyValidUntil,
+      signatureAudience: document.issuer.signatureAudience, environment: document.issuer.environment,
+    } };
+  }
+  if (contractId === "web-artifact-provenance-profile.v1") {
+    const builder = document.predicate.runDetails.builder;
+    return { signedAt: document.predicate.runDetails.metadata.finishedOn, identity: builder.id, facts: {
+      producerRegistry: builder.producerRegistry, producerRegistryEpoch: builder.producerRegistryEpoch,
+      trustPolicy: builder.trustPolicy, trustPolicyEpoch: builder.trustPolicyEpoch,
+      keyId: builder.kokoro_signingKeyId, keyVersion: builder.keyVersion,
+      publicKeyFingerprint: builder.publicKeyFingerprint, keyStatus: builder.keyStatus,
+      keyValidFrom: builder.keyValidFrom, keyValidUntil: builder.keyValidUntil,
+      signatureAudience: builder.signatureAudience, environment: builder.environment,
+    } };
+  }
+  const producer = document.producer;
+  return { signedAt: contractId === "release-certification-revocation.v1" ? document.revokedAt : document.generatedAt,
+    identity: producer.producerIdentityRef, facts: {
+      producerRegistry: producer.producerRegistry, producerRegistryEpoch: producer.producerRegistryEpoch,
+      trustPolicy: producer.trustPolicy, trustPolicyEpoch: producer.trustPolicyEpoch,
+      keyId: producer.keyId, keyVersion: producer.keyVersion, publicKeyFingerprint: producer.publicKeyFingerprint,
+      keyStatus: producer.keyStatus, keyValidFrom: producer.keyValidFrom, keyValidUntil: producer.keyValidUntil,
+      signatureAudience: producer.signatureAudience, environment: producer.environment,
+    } };
+}
+
+function validateDsseVectors(corpus, casesById, envelopeValidators, trustAnchors) {
   for (const vector of corpus.dsseVectors) {
+    exactKeys(vector, ["caseId", "expectedPaeSha256", "id", "keyId", "payloadType", "signatureBase64"], "web_release_dsse_vector_invalid");
     const contractCase = casesById.get(vector.caseId);
     if (contractCase === undefined) fail("web_release_dsse_coverage_invalid", vector.caseId);
     const document = contractCase.document;
@@ -867,17 +1080,22 @@ function validateDsseVectors(corpus, casesById, envelopeValidators) {
         ? document.producer.keyId
         : document.predicate.runDetails.builder.kokoro_signingKeyId;
     if (vector.keyId !== expectedKeyId) fail("web_release_dsse_keyid_mismatch", vector.id);
+    const signer = dsseSigner(document, contractCase.contractId);
+    const anchor = trustAnchors.producers.get(`${vector.keyId}@${signer.facts.keyVersion}`);
+    if (anchor === undefined || signer.identity !== anchor.producerIdentityRef) fail("web_release_dsse_trust_anchor_missing", vector.id);
+    const anchoredFacts = {
+      producerRegistry: anchor.producerRegistry, producerRegistryEpoch: anchor.producerRegistryEpoch,
+      trustPolicy: anchor.trustPolicy, trustPolicyEpoch: anchor.trustPolicyEpoch, keyId: anchor.keyId,
+      keyVersion: anchor.keyVersion, publicKeyFingerprint: anchor.publicKeyFingerprint, keyStatus: anchor.keyStatus,
+      keyValidFrom: anchor.keyValidFrom, keyValidUntil: anchor.keyValidUntil,
+      signatureAudience: anchor.signatureAudience, environment: anchor.environment,
+    };
+    if (canonicalize(signer.facts) !== canonicalize(anchoredFacts) || signer.signedAt < anchor.keyValidFrom ||
+        signer.signedAt >= anchor.keyValidUntil) fail("web_release_dsse_trust_anchor_invalid", vector.id);
     const pae = dssePae(vector.payloadType, payload);
     const actual = createHash("sha256").update(pae).digest("hex");
     if (actual !== vector.expectedPaeSha256) fail("web_release_dsse_vector_invalid", vector.id);
-    let key;
-    try { key = createPublicKey({ key: Buffer.from(vector.publicKeySpkiDerBase64, "base64"), format: "der", type: "spki" }); }
-    catch { fail("web_release_dsse_vector_invalid", vector.id); }
-    if (["release-certification-instance.v1", "release-certification-revocation.v1"].includes(contractCase.contractId)) {
-      const fingerprint = `sha256:${createHash("sha256").update(Buffer.from(vector.publicKeySpkiDerBase64, "base64")).digest("hex")}`;
-      if (document.producer.publicKeyFingerprint !== fingerprint) fail("web_release_dsse_key_fingerprint_mismatch", vector.id);
-    }
-    if (!verifySignature(null, pae, key, Buffer.from(vector.signatureBase64, "base64"))) fail("web_release_dsse_vector_invalid", vector.id);
+    if (!verifySignature(null, pae, anchor.key, Buffer.from(vector.signatureBase64, "base64"))) fail("web_release_dsse_vector_invalid", vector.id);
   }
 }
 
@@ -977,6 +1195,7 @@ export async function validateRepository(options = {}) {
   const registryPath = resolve(root, options.registry ?? DEFAULT_REGISTRY);
   const corpusPath = isAbsolute(options.corpus ?? "") ? options.corpus : resolve(root, options.corpus ?? DEFAULT_CORPUS);
   const bundle = loadBundle(root, registryPath);
+  const trustAnchors = validateTrustAnchors(readJson(resolve(root, DEFAULT_TRUST_ANCHORS), "web_release_trust_registry_read_failed"));
   const corpus = readJson(corpusPath, "web_release_corpus_read_failed");
   validateIJson(corpus);
   exactKeys(corpus, ["activationEligibilityScenarios", "canonicalProfile", "canonicalVectors", "dsseVectors", "negativeCases", "positiveCases", "schema"], "web_release_corpus_shape_invalid");
@@ -1002,6 +1221,7 @@ export async function validateRepository(options = {}) {
     activationBeginSnapshot: casesById.get("activation-authority-begin")?.document,
     activationBeforeCasSnapshot: casesById.get("activation-authority-before-cas")?.document,
     activationEvidence: casesById.get("activation-eligibility-alpha")?.document,
+    trustAnchors,
   };
   if (Object.values(related).some((document) => document === undefined)) fail("web_release_corpus_shape_invalid", "related chain");
   for (const item of corpus.positiveCases) {
@@ -1013,7 +1233,7 @@ export async function validateRepository(options = {}) {
     const item = casesById.get(vector.caseId);
     if (item === undefined || digest(item.document) !== vector.expectedDigest) fail("web_release_canonical_vector_invalid", vector.id);
   }
-  validateDsseVectors(corpus, casesById, bundle.envelopeValidators);
+  validateDsseVectors(corpus, casesById, bundle.envelopeValidators, trustAnchors);
   for (const negative of corpus.negativeCases) {
     const base = casesById.get(negative.baseCaseId);
     if (base === undefined) fail("web_release_corpus_shape_invalid", negative.id);

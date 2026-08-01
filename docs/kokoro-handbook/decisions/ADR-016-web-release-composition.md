@@ -354,7 +354,13 @@ schema、policy 和 certification。每个 ActivationAttempt 在开始时和 act
 snapshot，重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与 `validUntil`；两次之间
 的撤销或过期必须阻止 CAS。两次读分别持久化为 `ActivationAuthoritySnapshot`，并由
 `ActivationEligibilityEvidence` 以 exact JCS digest 引用；内含完整 active producer registry/policy/key trust tuple，不能用
-进程内布尔值代替。它不重新运行旧 compiler，也不覆盖当前 artifact。
+进程内布尔值代替。每个 snapshot 还绑定 Candidate、Certification、ProducerRegistry、TrustPolicy、key status 与 active
+pointer 六个 owner-signed live-read receipt，以及同一 ActivationAttempt digest、expected pointer generation 与 CAS
+precondition。它不重新运行旧 compiler，也不覆盖当前 artifact。
+
+DSSE vector 不是信任根且不得携带公钥；verifier 只从 Root 的 `trusted-web-release-producers` registry 解析与 signed tuple
+完全匹配、current epoch 且 active 的 key。Root hard-cut 仍是 `contract-only`：旧 Platform handler 在 consumer migration
+完成前仍 live，本 ADR 不把合同完成虚称为运行时闭环。
 
 ### 11. 目录
 

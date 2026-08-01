@@ -3,12 +3,13 @@
   "$id": "https://contracts.kokoro.dev/activation-eligibility-evidence/v1",
   "title": "Kokoro Persisted Activation Eligibility Evidence v1",
   "type": "object", "additionalProperties": false,
-  "required": ["contract", "schemaRevision", "evidenceRef", "revision", "activationAttemptRef", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "decision", "evaluatedAt", "eligibilityMaterialDigest"],
+  "required": ["contract", "schemaRevision", "evidenceRef", "revision", "activationAttempt", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "expectedActivePointerGeneration", "casPreconditionDigest", "decision", "evaluatedAt", "eligibilityMaterialDigest"],
   "properties": {
     "contract": {"const": "kokoro.activation-eligibility-evidence.v1"}, "schemaRevision": {"const": "1"},
     "evidenceRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"},
-    "activationAttemptRef": {"$ref": "#/$defs/ref"}, "siteRelease": {"$ref": "#/$defs/digestRef"},
+    "activationAttempt": {"$ref": "#/$defs/digestRef"}, "siteRelease": {"$ref": "#/$defs/digestRef"},
     "beginAuthoritySnapshot": {"$ref": "#/$defs/digestRef"}, "immediateBeforePointerCasAuthoritySnapshot": {"$ref": "#/$defs/digestRef"},
+    "expectedActivePointerGeneration": {"$ref": "#/$defs/decimal"}, "casPreconditionDigest": {"$ref": "#/$defs/digest"},
     "decision": {"const": "eligible"}, "evaluatedAt": {"$ref": "#/$defs/timestamp"},
     "eligibilityMaterialDigest": {"$ref": "#/$defs/digest"}
   },
