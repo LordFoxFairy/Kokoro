@@ -144,9 +144,24 @@ message PullCandidateBatchesRequest {
 }
 message PullCandidateBatchesResponse {
   option (buf.validate.message).cel = {
-    id: "agent_presentation.page_shape"
-    message: "page bounds, first record and continuation are consistent"
-    expression: "this.records.size() == 0 ? (!this.has_more && !has(this.next_after_presentation_seq)) : (this.records[0].previous_presentation_seq == this.page_after_presentation_seq && this.records[this.records.size() - 1].presentation_seq <= this.snapshot_through_presentation_seq && (this.has_more == has(this.next_after_presentation_seq)) && (!has(this.next_after_presentation_seq) || this.next_after_presentation_seq == this.records[this.records.size() - 1].presentation_seq))"
+    id: "agent_presentation.page_bounds"
+    message: "the page cursor never exceeds the frozen snapshot and an empty page is exactly its end"
+    expression: "this.page_after_presentation_seq <= this.snapshot_through_presentation_seq && (this.records.size() == 0) == (this.page_after_presentation_seq == this.snapshot_through_presentation_seq)"
+  };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_chain"
+    message: "records are in canonical contiguous sequence and record-digest order"
+    expression: "this.records.size() == 0 || (this.records[0].previous_presentation_seq == this.page_after_presentation_seq && this.records.all(r, this.records.filter(n, n.presentation_seq == r.presentation_seq).size() == 1) && this.records.filter(r, r.presentation_seq != this.records[0].presentation_seq).map(r, r.previous_presentation_seq) == this.records.filter(r, r.presentation_seq != this.records[this.records.size() - 1].presentation_seq).map(r, r.presentation_seq) && this.records.filter(r, r.presentation_seq != this.records[0].presentation_seq).map(r, r.previous_record_digest) == this.records.filter(r, r.presentation_seq != this.records[this.records.size() - 1].presentation_seq).map(r, r.record_digest))"
+  };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_identity"
+    message: "response, delivery status and every record bind the same run and producer fence"
+    expression: "this.run_id == this.delivery_status.run_id && this.producer == this.delivery_status.producer && this.records.all(r, r.producer == this.producer)"
+  };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_continuation"
+    message: "continuation exists exactly while the frozen snapshot has a remaining record"
+    expression: "this.records.size() == 0 ? (!this.has_more && !has(this.next_after_presentation_seq)) : (this.records[this.records.size() - 1].presentation_seq <= this.snapshot_through_presentation_seq && this.has_more == (this.records[this.records.size() - 1].presentation_seq < this.snapshot_through_presentation_seq) && has(this.next_after_presentation_seq) == this.has_more && (!has(this.next_after_presentation_seq) || this.next_after_presentation_seq == this.records[this.records.size() - 1].presentation_seq))"
   };
   string run_id = 1 [(buf.validate.field).string = {
     min_len: 3
@@ -174,6 +189,8 @@ message CandidateAdmissionReceipt {
     min_len: 3
     max_len: 256
   }];
+  // Together with presentation_seq, the complete immutable Agent record identity
+  // below MUST be resolved against the stored presentation record before ACK.
   string record_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   string candidate_ref = 5 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
   string candidate_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
@@ -185,9 +202,9 @@ message CandidateAdmissionReceipt {
 }
 message AcknowledgeCandidateAdmissionsEffect {
   option (buf.validate.message).cel = {
-    id: "agent_presentation.ack_first"
-    message: "the first receipt starts at the current contiguous watermark"
-    expression: "this.receipts[0].previous_presentation_seq == this.expected_acknowledged_through"
+    id: "agent_presentation.ack_chain"
+    message: "receipts form one canonical contiguous chain from the current watermark"
+    expression: "this.receipts[0].previous_presentation_seq == this.expected_acknowledged_through && this.receipts.all(r, this.receipts.filter(n, n.presentation_seq == r.presentation_seq).size() == 1 && this.receipts.filter(n, n.presentation_ref == r.presentation_ref).size() == 1 && this.receipts.filter(n, n.record_digest == r.record_digest).size() == 1) && this.receipts.filter(r, r.presentation_seq != this.receipts[0].presentation_seq).map(r, r.previous_presentation_seq) == this.receipts.filter(r, r.presentation_seq != this.receipts[this.receipts.size() - 1].presentation_seq).map(r, r.presentation_seq)"
   };
   string run_id = 1 [(buf.validate.field).string = {
     min_len: 3
