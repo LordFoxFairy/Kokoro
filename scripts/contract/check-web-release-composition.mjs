@@ -45,6 +45,21 @@ const CONTRACT_OWNERS = new Map([
   ["compiled-web-manifest.v1", ["web.release-composition", "kokoro-web", "provenance-bound"]],
   ["web-artifact-provenance-profile.v1", ["web.release-composition", "kokoro-web", "dsse-in-toto-slsa-provenance-v1"]],
 ]);
+const TRUST_ROLE_CAPABILITIES = new Map([
+  ["web-build-intent-signer", { contracts: ["web-build-intent.v1"], payloads: ["application/vnd.kokoro.web-build-intent.v1+json"], receipts: [] }],
+  ["release-certification-instance-signer", { contracts: ["release-certification-instance.v1"], payloads: ["application/vnd.kokoro.release-certification-instance.v1+json"], receipts: [] }],
+  ["release-certification-revocation-signer", { contracts: ["release-certification-revocation.v1"], payloads: ["application/vnd.kokoro.release-certification-revocation.v1+json"], receipts: [] }],
+  ["web-artifact-provenance-attestor", { contracts: ["web-artifact-provenance-profile.v1"], payloads: ["application/vnd.in-toto+json"], receipts: [] }],
+  ["platform-site-authority-reader", { contracts: [], payloads: ["application/vnd.kokoro.owner-live-read-receipt.v1+json"], receipts: ["candidate", "active-pointer"] }],
+  ["release-certification-authority-reader", { contracts: [], payloads: ["application/vnd.kokoro.owner-live-read-receipt.v1+json"], receipts: ["certification"] }],
+  ["root-trust-authority-reader", { contracts: [], payloads: ["application/vnd.kokoro.owner-live-read-receipt.v1+json"], receipts: ["producer-registry", "trust-policy", "key-status"] }],
+]);
+const DSSE_CONTRACT_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
+  .flatMap(([role, capability]) => capability.contracts.map((contractId) => [contractId, role])));
+const RECEIPT_KIND_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
+  .flatMap(([role, capability]) => capability.receipts.map((kind) => [kind, role])));
+const ACTIVATION_FRESHNESS_LEASE_MILLISECONDS = 5_000;
+const ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS = 120_000;
 const SECRET_FRAGMENT = /(?:^|_)(?:api_?key|credential|password|private|secret|token)(?:_|$)/iu;
 
 export class WebReleaseContractError extends Error {
@@ -700,7 +715,12 @@ function validateCertification(certification, related) {
 function authorityMaterial(snapshot) {
   return {
     activationAttempt: snapshot.activationAttempt,
+    activationCommand: snapshot.activationCommand,
+    casCommandRef: snapshot.casCommandRef,
+    casFence: snapshot.casFence,
     phase: snapshot.phase,
+    siteRef: snapshot.siteRef,
+    environment: snapshot.environment,
     siteRelease: snapshot.siteRelease,
     candidate: snapshot.candidate,
     certification: snapshot.certification,
@@ -715,11 +735,15 @@ function authorityMaterial(snapshot) {
 function eligibilityMaterial(evidence) {
   return {
     activationAttempt: evidence.activationAttempt,
+    activationCommand: evidence.activationCommand,
+    casCommandRef: evidence.casCommandRef,
+    casFence: evidence.casFence,
     siteRelease: evidence.siteRelease,
     beginAuthoritySnapshot: evidence.beginAuthoritySnapshot,
     immediateBeforePointerCasAuthoritySnapshot: evidence.immediateBeforePointerCasAuthoritySnapshot,
     expectedActivePointerGeneration: evidence.expectedActivePointerGeneration,
     casPreconditionDigest: evidence.casPreconditionDigest,
+    freshnessLease: evidence.freshnessLease,
     decision: evidence.decision,
     evaluatedAt: evidence.evaluatedAt,
   };
@@ -755,6 +779,12 @@ function resolveTrustedProducer(tuple, trustAnchors, signedAt, code) {
 function activePointerCasMaterial(snapshot) {
   return {
     activationAttempt: snapshot.activationAttempt,
+    activationCommand: snapshot.activationCommand,
+    casCommandRef: snapshot.casCommandRef,
+    casFence: snapshot.casFence,
+    siteRef: snapshot.siteRef,
+    environment: snapshot.environment,
+    state: snapshot.activePointer.state,
     pointerRef: snapshot.activePointer.pointerRef,
     currentReleaseRef: snapshot.activePointer.currentReleaseRef,
     currentGeneration: snapshot.activePointer.currentGeneration,
@@ -799,16 +829,22 @@ function validateOwnerReadReceipts(snapshot, trustAnchors) {
     const resultDigest = digest(receiptResult(snapshot, kind));
     const queryDigest = digest({
       activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, aggregateKind: kind,
-      aggregateRef, expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration,
+      aggregateRef, siteRef: snapshot.siteRef, environment: snapshot.environment,
+      activationCommand: snapshot.activationCommand, casCommandRef: snapshot.casCommandRef, casFence: snapshot.casFence,
+      expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration,
     });
     if (receipt.aggregateRef !== aggregateRef || receipt.revision !== revision || receipt.observedAt !== snapshot.readAt ||
         receipt.resultDigest !== resultDigest || receipt.queryDigest !== queryDigest ||
-        receipt.headDigest !== digest({ aggregateRef, revision, resultDigest }) ||
+        receipt.headDigest !== digest({ aggregateRef, revision, headEventRef: receipt.headEventRef, ownerEventDigest: receipt.ownerEventDigest, resultDigest }) ||
         receipt.signature.keyId !== receipt.provider.keyId ||
         receipt.signature.payloadType !== "application/vnd.kokoro.owner-live-read-receipt.v1+json") {
       fail("web_release_activation_live_read_receipt_invalid", kind);
     }
     const anchor = resolveTrustedProducer(receipt.provider, trustAnchors, receipt.observedAt, "web_release_activation_live_read_trust_invalid");
+    if (anchor.environment !== snapshot.environment || anchor.producerRole !== RECEIPT_KIND_ROLES.get(kind) ||
+        !anchor.allowedReceiptAggregateKinds.includes(kind) || !anchor.allowedPayloadTypes.includes(receipt.signature.payloadType)) {
+      fail("web_release_activation_receipt_capability_invalid", kind);
+    }
     const { signature, ...material } = receipt;
     const payload = canonicalBytes(material);
     const signed = verifySignature(null, dssePae(signature.payloadType, payload), anchor.key,
@@ -821,17 +857,44 @@ function validateOwnerReadReceipts(snapshot, trustAnchors) {
 function validateActivationAuthoritySnapshot(snapshot, related) {
   if (snapshot.authorityMaterialDigest !== digest(authorityMaterial(snapshot))) fail("web_release_activation_authority_material_invalid");
   const expectedRelease = { ref: related.release.siteReleaseRef, digest: digest(related.release) };
+  if (snapshot.siteRef !== related.release.siteRef || snapshot.environment !== related.release.environment) {
+    fail("web_release_activation_context_invalid");
+  }
   if (!sameDigestRef(snapshot.siteRelease, expectedRelease) || !sameDigestRef(snapshot.candidate.siteReleaseCandidate, related.release.siteReleaseCandidate) ||
       !sameDigestRef(snapshot.certification.releaseCertification, related.release.releaseCertification)) fail("web_release_activation_authority_reference_invalid");
   if (snapshot.expectedActivePointerGeneration !== snapshot.activePointer.expectedGeneration ||
       snapshot.activePointer.currentGeneration !== snapshot.activePointer.expectedGeneration ||
+      (snapshot.activePointer.state === "first-activation" && (snapshot.activePointer.currentReleaseRef !== null || snapshot.activePointer.currentGeneration !== "0")) ||
+      (snapshot.activePointer.state === "existing" && snapshot.activePointer.currentReleaseRef === null) ||
       snapshot.activePointer.casPreconditionDigest !== digest(activePointerCasMaterial(snapshot))) {
     fail("web_release_activation_pointer_cas_invalid");
   }
   validateOwnerReadReceipts(snapshot, related.trustAnchors);
 }
 
-export function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, certification, trustAnchors) {
+function assertActivationFreshness(evidence, begin, beforeCas, certification) {
+  const serverReceipt = beforeCas.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "active-pointer");
+  const issuedAt = Date.parse(evidence.freshnessLease.issuedAt);
+  const notAfter = Date.parse(evidence.freshnessLease.notAfter);
+  const evaluatedAt = Date.parse(evidence.evaluatedAt);
+  const beginReadAt = Date.parse(begin.readAt);
+  const beforeCasReadAt = Date.parse(beforeCas.readAt);
+  if (![issuedAt, notAfter, evaluatedAt, beginReadAt, beforeCasReadAt].every(Number.isFinite)) {
+    fail("web_release_activation_freshness_invalid");
+  }
+  const expectedNotAfter = new Date(issuedAt + ACTIVATION_FRESHNESS_LEASE_MILLISECONDS).toISOString();
+  if (serverReceipt === undefined || evidence.freshnessLease.serverTimeReceiptRef !== serverReceipt.readReceiptRef ||
+      evidence.freshnessLease.issuedAt !== serverReceipt.observedAt || evidence.freshnessLease.notAfter !== expectedNotAfter ||
+      evidence.freshnessLease.maxSnapshotAgeMilliseconds !== String(ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS) ||
+      evaluatedAt < issuedAt || evaluatedAt >= notAfter ||
+      evaluatedAt - beginReadAt > ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS ||
+      evaluatedAt - beforeCasReadAt > ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS ||
+      evidence.evaluatedAt >= certification.validUntil || evidence.evaluatedAt >= beforeCas.trust.keyValidUntil) {
+    fail("web_release_activation_freshness_invalid");
+  }
+}
+
+function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, certification, trustAnchors) {
   if (begin.phase !== "activation-begin" || beforeCas.phase !== "immediate-before-pointer-cas") fail("web_release_activation_phase_invalid");
   if (!sameDigestRef(begin.activationAttempt, evidence.activationAttempt) || !sameDigestRef(beforeCas.activationAttempt, evidence.activationAttempt) ||
       begin.snapshotRef === beforeCas.snapshotRef || digest(begin) === digest(beforeCas) || begin.readAt >= beforeCas.readAt ||
@@ -840,6 +903,11 @@ export function assertActivationEvidenceEligible(evidence, begin, beforeCas, rel
   if (!sameDigestRef(evidence.siteRelease, releaseRef) || !sameDigestRef(begin.siteRelease, releaseRef) || !sameDigestRef(beforeCas.siteRelease, releaseRef) ||
       !sameDigestRef(evidence.beginAuthoritySnapshot, { ref: begin.snapshotRef, digest: digest(begin) }) ||
       !sameDigestRef(evidence.immediateBeforePointerCasAuthoritySnapshot, { ref: beforeCas.snapshotRef, digest: digest(beforeCas) })) fail("web_release_activation_authority_reference_invalid");
+  if (!sameDigestRef(begin.activationCommand, evidence.activationCommand) || !sameDigestRef(beforeCas.activationCommand, evidence.activationCommand) ||
+      begin.casCommandRef !== evidence.casCommandRef || beforeCas.casCommandRef !== evidence.casCommandRef ||
+      canonicalize(begin.casFence) !== canonicalize(evidence.casFence) || canonicalize(beforeCas.casFence) !== canonicalize(evidence.casFence)) {
+    fail("web_release_activation_pointer_cas_invalid");
+  }
   if (begin.expectedActivePointerGeneration !== beforeCas.expectedActivePointerGeneration ||
       evidence.expectedActivePointerGeneration !== beforeCas.expectedActivePointerGeneration ||
       begin.activePointer.casPreconditionDigest !== beforeCas.activePointer.casPreconditionDigest ||
@@ -869,6 +937,7 @@ export function assertActivationEvidenceEligible(evidence, begin, beforeCas, rel
         snapshot.readAt >= snapshot.trust.keyValidUntil) fail("web_release_activation_key_invalid");
     if (trustAnchors !== undefined) resolveTrustedProducer(snapshot.trust, trustAnchors, snapshot.readAt, "web_release_activation_key_invalid");
   }
+  assertActivationFreshness(evidence, begin, beforeCas, certification);
 }
 
 function validateActivationEligibilityEvidence(evidence, related) {
@@ -897,6 +966,10 @@ function validateActivationEligibilityScenarios(scenarios, casesById, validators
     const candidateEvidence = structuredClone(related.activationEvidence);
     candidateEvidence.immediateBeforePointerCasAuthoritySnapshot = { ref: snapshot.snapshotRef, digest: digest(snapshot) };
     if (candidateEvidence.evaluatedAt < snapshot.readAt) candidateEvidence.evaluatedAt = snapshot.readAt;
+    const serverReceipt = snapshot.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "active-pointer");
+    candidateEvidence.freshnessLease.serverTimeReceiptRef = serverReceipt.readReceiptRef;
+    candidateEvidence.freshnessLease.issuedAt = serverReceipt.observedAt;
+    candidateEvidence.freshnessLease.notAfter = new Date(Date.parse(serverReceipt.observedAt) + ACTIVATION_FRESHNESS_LEASE_MILLISECONDS).toISOString();
     candidateEvidence.eligibilityMaterialDigest = digest(eligibilityMaterial(candidateEvidence));
     let code = null;
     try {
@@ -1005,14 +1078,21 @@ function validateTrustAnchors(anchors) {
     epochs.set(current.environment, current);
   }
   const producers = new Map();
-  const expectedFields = ["environment", "keyId", "keyStatus", "keyValidFrom", "keyValidUntil", "keyVersion",
-    "producerIdentityRef", "producerRegistry", "producerRegistryEpoch", "publicKeyFingerprint", "publicKeySpkiDerBase64",
-    "signatureAudience", "trustPolicy", "trustPolicyEpoch"];
+  const expectedFields = ["allowedContractIds", "allowedPayloadTypes", "allowedReceiptAggregateKinds", "environment",
+    "keyId", "keyStatus", "keyType", "keyValidFrom", "keyValidUntil", "keyVersion", "producerIdentityRef", "producerRegistry",
+    "producerRegistryEpoch", "producerRole", "publicKeyFingerprint", "publicKeySpkiDerBase64", "signatureAudience", "trustPolicy", "trustPolicyEpoch"];
   for (const producer of anchors.producers) {
     exactKeys(producer, expectedFields, "web_release_trust_registry_invalid");
     const identity = `${producer.keyId}@${producer.keyVersion}`;
     const current = epochs.get(producer.environment);
+    const capability = TRUST_ROLE_CAPABILITIES.get(producer.producerRole);
     if (producers.has(identity) || current === undefined || producer.keyStatus !== "active" ||
+        producer.keyType !== "ed25519" || capability === undefined ||
+        !Array.isArray(producer.allowedContractIds) || !Array.isArray(producer.allowedPayloadTypes) ||
+        !Array.isArray(producer.allowedReceiptAggregateKinds) ||
+        canonicalSet(producer.allowedContractIds) !== canonicalSet(capability?.contracts ?? []) ||
+        canonicalSet(producer.allowedPayloadTypes) !== canonicalSet(capability?.payloads ?? []) ||
+        canonicalSet(producer.allowedReceiptAggregateKinds) !== canonicalSet(capability?.receipts ?? []) ||
         producer.producerRegistryEpoch !== current.producerRegistryEpoch || producer.trustPolicyEpoch !== current.trustPolicyEpoch ||
         producer.keyValidFrom >= producer.keyValidUntil || typeof producer.producerIdentityRef !== "string" ||
         producer.producerIdentityRef.length < 3 || producer.producerIdentityRef.length > 512) {
@@ -1025,8 +1105,12 @@ function validateTrustAnchors(anchors) {
       key = createPublicKey({ key: der, format: "der", type: "spki" });
     } catch { fail("web_release_trust_registry_invalid", identity); }
     const fingerprint = `sha256:${createHash("sha256").update(der).digest("hex")}`;
-    if (producer.publicKeyFingerprint !== fingerprint) fail("web_release_trust_registry_invalid", identity);
+    if (producer.publicKeyFingerprint !== fingerprint || key.asymmetricKeyType !== "ed25519") fail("web_release_trust_registry_invalid", identity);
     producers.set(identity, Object.freeze({ ...producer, key }));
+  }
+  for (const [kind, role] of RECEIPT_KIND_ROLES) {
+    const owners = [...producers.values()].filter((producer) => producer.allowedReceiptAggregateKinds.includes(kind));
+    if (owners.length !== 1 || owners[0].producerRole !== role) fail("web_release_trust_registry_invalid", kind);
   }
   return Object.freeze({ epochs, producers });
 }
@@ -1083,6 +1167,9 @@ function validateDsseVectors(corpus, casesById, envelopeValidators, trustAnchors
     const signer = dsseSigner(document, contractCase.contractId);
     const anchor = trustAnchors.producers.get(`${vector.keyId}@${signer.facts.keyVersion}`);
     if (anchor === undefined || signer.identity !== anchor.producerIdentityRef) fail("web_release_dsse_trust_anchor_missing", vector.id);
+    if (anchor.producerRole !== DSSE_CONTRACT_ROLES.get(contractCase.contractId) ||
+        !anchor.allowedContractIds.includes(contractCase.contractId) || !anchor.allowedPayloadTypes.includes(vector.payloadType) ||
+        anchor.allowedReceiptAggregateKinds.length !== 0) fail("web_release_dsse_capability_invalid", vector.id);
     const anchoredFacts = {
       producerRegistry: anchor.producerRegistry, producerRegistryEpoch: anchor.producerRegistryEpoch,
       trustPolicy: anchor.trustPolicy, trustPolicyEpoch: anchor.trustPolicyEpoch, keyId: anchor.keyId,
@@ -1199,7 +1286,7 @@ export async function validateRepository(options = {}) {
   const corpus = readJson(corpusPath, "web_release_corpus_read_failed");
   validateIJson(corpus);
   exactKeys(corpus, ["activationEligibilityScenarios", "canonicalProfile", "canonicalVectors", "dsseVectors", "negativeCases", "positiveCases", "schema"], "web_release_corpus_shape_invalid");
-  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 17 || corpus.negativeCases.length !== 58 || corpus.canonicalVectors.length !== 17 || corpus.dsseVectors.length !== 5) fail("web_release_corpus_shape_invalid");
+  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 17 || corpus.negativeCases.length !== 59 || corpus.canonicalVectors.length !== 17 || corpus.dsseVectors.length !== 5) fail("web_release_corpus_shape_invalid");
   const casesById = new Map(corpus.positiveCases.map((item) => [item.id, item]));
   if (casesById.size !== corpus.positiveCases.length || new Set(corpus.positiveCases.map(({ contractId }) => contractId)).size !== 15) fail("web_release_corpus_shape_invalid");
   unique(corpus.canonicalVectors.map(({ id }) => id), "web_release_canonical_coverage_invalid");

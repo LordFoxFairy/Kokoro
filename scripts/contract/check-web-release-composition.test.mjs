@@ -66,7 +66,9 @@ function refreshSigningIdentities(corpus, anchors) {
 
 function authorityMaterial(snapshot) {
   return {
-    activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, siteRelease: snapshot.siteRelease,
+    activationAttempt: snapshot.activationAttempt, activationCommand: snapshot.activationCommand,
+    casCommandRef: snapshot.casCommandRef, casFence: snapshot.casFence,
+    phase: snapshot.phase, siteRef: snapshot.siteRef, environment: snapshot.environment, siteRelease: snapshot.siteRelease,
     candidate: snapshot.candidate, certification: snapshot.certification, trust: snapshot.trust,
     expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration, activePointer: snapshot.activePointer,
     ownerReadReceipts: snapshot.ownerReadReceipts, readAt: snapshot.readAt,
@@ -75,12 +77,24 @@ function authorityMaterial(snapshot) {
 
 function eligibilityMaterial(evidence) {
   return {
-    activationAttempt: evidence.activationAttempt, siteRelease: evidence.siteRelease,
+    activationAttempt: evidence.activationAttempt, activationCommand: evidence.activationCommand,
+    casCommandRef: evidence.casCommandRef, casFence: evidence.casFence, siteRelease: evidence.siteRelease,
     beginAuthoritySnapshot: evidence.beginAuthoritySnapshot,
     immediateBeforePointerCasAuthoritySnapshot: evidence.immediateBeforePointerCasAuthoritySnapshot,
     expectedActivePointerGeneration: evidence.expectedActivePointerGeneration,
     casPreconditionDigest: evidence.casPreconditionDigest,
+    freshnessLease: evidence.freshnessLease,
     decision: evidence.decision, evaluatedAt: evidence.evaluatedAt,
+  };
+}
+
+function activePointerCasMaterial(snapshot) {
+  return {
+    activationAttempt: snapshot.activationAttempt, activationCommand: snapshot.activationCommand,
+    casCommandRef: snapshot.casCommandRef, casFence: snapshot.casFence,
+    siteRef: snapshot.siteRef, environment: snapshot.environment, state: snapshot.activePointer.state,
+    pointerRef: snapshot.activePointer.pointerRef, currentReleaseRef: snapshot.activePointer.currentReleaseRef,
+    currentGeneration: snapshot.activePointer.currentGeneration, expectedGeneration: snapshot.activePointer.expectedGeneration,
   };
 }
 
@@ -99,9 +113,13 @@ function receiptResult(snapshot, kind) {
 }
 
 function refreshReceipts(snapshot, suffix, anchors, privateKeys) {
+  snapshot.activePointer.casPreconditionDigest = canonicalDigest(activePointerCasMaterial(snapshot));
   for (const receipt of snapshot.ownerReadReceipts) {
     const anchor = anchors.producers.find(({ keyId }) => keyId === receipt.provider.keyId);
-    const { publicKeySpkiDerBase64, ...provider } = anchor;
+    const {
+      publicKeySpkiDerBase64, keyType, producerRole, allowedContractIds, allowedPayloadTypes,
+      allowedReceiptAggregateKinds, ...provider
+    } = anchor;
     receipt.provider = structuredClone(provider);
     receipt.observedAt = snapshot.readAt;
     receipt.readReceiptRef = `read-receipt.${receipt.aggregateKind.replaceAll("-", ".")}.${suffix}.1`;
@@ -111,8 +129,9 @@ function refreshReceipts(snapshot, suffix, anchors, privateKeys) {
           : receipt.aggregateKind === "trust-policy" ? snapshot.trust.trustPolicyEpoch
             : receipt.aggregateKind === "key-status" ? snapshot.trust.keyVersion : snapshot.activePointer.currentGeneration;
     receipt.resultDigest = canonicalDigest(receiptResult(snapshot, receipt.aggregateKind));
-    receipt.headDigest = canonicalDigest({ aggregateRef: receipt.aggregateRef, revision: receipt.revision, resultDigest: receipt.resultDigest });
-    receipt.queryDigest = canonicalDigest({ activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, aggregateKind: receipt.aggregateKind, aggregateRef: receipt.aggregateRef, expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration });
+    receipt.ownerEventDigest = canonicalDigest({ aggregateKind: receipt.aggregateKind, aggregateRef: receipt.aggregateRef, revision: receipt.revision, headEventRef: receipt.headEventRef, resultDigest: receipt.resultDigest });
+    receipt.headDigest = canonicalDigest({ aggregateRef: receipt.aggregateRef, revision: receipt.revision, headEventRef: receipt.headEventRef, ownerEventDigest: receipt.ownerEventDigest, resultDigest: receipt.resultDigest });
+    receipt.queryDigest = canonicalDigest({ activationAttempt: snapshot.activationAttempt, phase: snapshot.phase, aggregateKind: receipt.aggregateKind, aggregateRef: receipt.aggregateRef, siteRef: snapshot.siteRef, environment: snapshot.environment, activationCommand: snapshot.activationCommand, casCommandRef: snapshot.casCommandRef, casFence: snapshot.casFence, expectedActivePointerGeneration: snapshot.expectedActivePointerGeneration });
     const payload = canonicalBytes(receiptMaterial(receipt));
     receipt.signature = { payloadType: "application/vnd.kokoro.owner-live-read-receipt.v1+json", keyId: provider.keyId, signatureBase64: sign(null, dssePae("application/vnd.kokoro.owner-live-read-receipt.v1+json", payload), privateKeys.get(provider.keyId)).toString("base64") };
   }
@@ -220,6 +239,8 @@ function refreshCoherentChain(corpus, anchors) {
 
   for (const snapshot of [beginSnapshot, beforeCasSnapshot]) {
     snapshot.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
+    snapshot.siteRef ??= siteRelease.siteRef;
+    snapshot.environment ??= siteRelease.environment;
     snapshot.candidate.siteReleaseCandidate = structuredClone(siteRelease.siteReleaseCandidate);
     snapshot.candidate.authorizationEpoch = siteRelease.candidateAuthorizationEpoch;
     snapshot.certification.releaseCertification = structuredClone(siteRelease.releaseCertification);
@@ -230,8 +251,19 @@ function refreshCoherentChain(corpus, anchors) {
   }
   refreshBlockedSnapshots(corpus, beforeCasSnapshot, anchors, privateKeys);
   activationEvidence.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
+  activationEvidence.activationCommand ??= structuredClone(beforeCasSnapshot.activationCommand);
+  activationEvidence.casCommandRef ??= beforeCasSnapshot.casCommandRef;
+  activationEvidence.casFence ??= structuredClone(beforeCasSnapshot.casFence);
   activationEvidence.beginAuthoritySnapshot = { ref: beginSnapshot.snapshotRef, digest: canonicalDigest(beginSnapshot) };
   activationEvidence.immediateBeforePointerCasAuthoritySnapshot = { ref: beforeCasSnapshot.snapshotRef, digest: canonicalDigest(beforeCasSnapshot) };
+  activationEvidence.expectedActivePointerGeneration = beforeCasSnapshot.expectedActivePointerGeneration;
+  activationEvidence.casPreconditionDigest = beforeCasSnapshot.activePointer.casPreconditionDigest;
+  const serverReceipt = beforeCasSnapshot.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "active-pointer");
+  if (activationEvidence.freshnessLease !== undefined) {
+    activationEvidence.freshnessLease.serverTimeReceiptRef = serverReceipt.readReceiptRef;
+    activationEvidence.freshnessLease.issuedAt = serverReceipt.observedAt;
+    activationEvidence.freshnessLease.notAfter = new Date(Date.parse(serverReceipt.observedAt) + 5_000).toISOString();
+  }
   activationEvidence.eligibilityMaterialDigest = canonicalDigest(eligibilityMaterial(activationEvidence));
 
   for (const vector of corpus.canonicalVectors) {
@@ -297,7 +329,7 @@ test("checked-in registry, release authority schemas, and golden corpus close th
   assert.deepEqual(result, {
     contracts: 15,
     positiveCases: 17,
-    negativeCases: 58,
+    negativeCases: 59,
     canonicalVectors: 17,
     dsseVectors: 5,
   });
@@ -308,10 +340,10 @@ test("persisted activation authority and eligibility contracts freeze exact JCS 
   const snapshot = await readSchema("activation-authority-snapshot");
   const evidence = await readSchema("activation-eligibility-evidence");
 
-  for (const field of ["activationAttempt", "phase", "siteRelease", "candidate", "certification", "trust", "expectedActivePointerGeneration", "activePointer", "ownerReadReceipts", "readAt", "authorityMaterialDigest"]) {
+  for (const field of ["activationAttempt", "activationCommand", "casCommandRef", "casFence", "phase", "siteRef", "environment", "siteRelease", "candidate", "certification", "trust", "expectedActivePointerGeneration", "activePointer", "ownerReadReceipts", "readAt", "authorityMaterialDigest"]) {
     assert.ok(snapshot.required.includes(field));
   }
-  for (const field of ["activationAttempt", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "expectedActivePointerGeneration", "casPreconditionDigest", "decision", "evaluatedAt", "eligibilityMaterialDigest"]) {
+  for (const field of ["activationAttempt", "activationCommand", "casCommandRef", "casFence", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "expectedActivePointerGeneration", "casPreconditionDigest", "freshnessLease", "decision", "evaluatedAt", "eligibilityMaterialDigest"]) {
     assert.ok(evidence.required.includes(field));
   }
   assert.deepEqual(snapshot.properties.phase.enum, ["activation-begin", "immediate-before-pointer-cas"]);
@@ -326,11 +358,28 @@ test("Root trust anchors, not DSSE vectors, resolve every signing public key", a
   assert.equal(anchors.authority, "root.contract");
   assert.ok(anchors.producers.length >= corpus.dsseVectors.length);
   for (const producer of anchors.producers) {
-    for (const field of ["keyId", "keyVersion", "publicKeySpkiDerBase64", "publicKeyFingerprint", "producerIdentityRef", "producerRegistry", "producerRegistryEpoch", "trustPolicy", "trustPolicyEpoch", "signatureAudience", "environment", "keyValidFrom", "keyValidUntil", "keyStatus"]) {
+    for (const field of ["keyId", "keyVersion", "keyType", "publicKeySpkiDerBase64", "publicKeyFingerprint", "producerIdentityRef", "producerRole", "producerRegistry", "producerRegistryEpoch", "trustPolicy", "trustPolicyEpoch", "signatureAudience", "environment", "keyValidFrom", "keyValidUntil", "keyStatus", "allowedContractIds", "allowedPayloadTypes", "allowedReceiptAggregateKinds"]) {
       assert.ok(field in producer, `${producer.keyId}:${field}`);
     }
+    assert.equal(producer.keyType, "ed25519");
+    assert.ok(producer.allowedContractIds.length + producer.allowedReceiptAggregateKinds.length > 0);
   }
   for (const vector of corpus.dsseVectors) assert.equal("publicKeySpkiDerBase64" in vector, false);
+});
+
+test("Root trust capabilities separate certification, revocation, and owner-read authorities", async () => {
+  const anchors = JSON.parse(await readFile(resolve(repositoryRoot, "contract/registry/trusted-web-release-producers.yaml"), "utf8"));
+  const byKey = new Map(anchors.producers.map((producer) => [producer.keyId, producer]));
+  const certification = byKey.get("key.release-certification.1");
+  const revocation = byKey.get("key.release-revocation.1");
+  assert.notEqual(certification.producerRole, revocation.producerRole);
+  assert.deepEqual(certification.allowedContractIds, ["release-certification-instance.v1"]);
+  assert.deepEqual(revocation.allowedContractIds, ["release-certification-revocation.v1"]);
+  assert.deepEqual(certification.allowedReceiptAggregateKinds, []);
+  assert.deepEqual(revocation.allowedReceiptAggregateKinds, []);
+  assert.deepEqual(byKey.get("key.platform-site-live-read.1").allowedReceiptAggregateKinds.sort(), ["active-pointer", "candidate"]);
+  assert.deepEqual(byKey.get("key.release-certification-live-read.1").allowedReceiptAggregateKinds, ["certification"]);
+  assert.deepEqual(byKey.get("key.root-trust-live-read.1").allowedReceiptAggregateKinds.sort(), ["key-status", "producer-registry", "trust-policy"]);
 });
 
 test("DSSE verification rejects vector-carried keys and non-current Root trust epochs", async () => {
@@ -353,19 +402,37 @@ test("DSSE verification rejects vector-carried keys and non-current Root trust e
   await expectCode(() => validateRepository({ root: temporary }), "web_release_trust_registry_invalid");
 });
 
+test("Root trust registry rejects a non-Ed25519 public key before signature verification", async () => {
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-key-type-"));
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/corpus"), join(temporary, "contract/corpus"), { recursive: true });
+  const anchorsPath = join(temporary, "contract/registry/trusted-web-release-producers.yaml");
+  const anchors = JSON.parse(await readFile(anchorsPath, "utf8"));
+  const { publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  const publicDer = publicKey.export({ format: "der", type: "spki" });
+  anchors.producers[0].publicKeySpkiDerBase64 = publicDer.toString("base64");
+  anchors.producers[0].publicKeyFingerprint = `sha256:${createHash("sha256").update(publicDer).digest("hex")}`;
+  await writeFile(anchorsPath, `${JSON.stringify(anchors, null, 2)}\n`);
+  await expectCode(() => validateRepository({ root: temporary }), "web_release_trust_registry_invalid");
+});
+
 test("activation snapshots bind six owner-signed live heads and an exact pointer CAS precondition", async () => {
   const readSchema = async (name) => JSON.parse(await readFile(resolve(repositoryRoot, `contract/spec/${name}.yaml`), "utf8"));
   const snapshot = await readSchema("activation-authority-snapshot");
   const evidence = await readSchema("activation-eligibility-evidence");
-  for (const field of ["activationAttempt", "expectedActivePointerGeneration", "ownerReadReceipts"]) assert.ok(snapshot.required.includes(field));
+  for (const field of ["activationAttempt", "siteRef", "environment", "expectedActivePointerGeneration", "ownerReadReceipts"]) assert.ok(snapshot.required.includes(field));
   assert.deepEqual(snapshot.$defs.ownerReadReceipt.properties.aggregateKind.enum, [
     "candidate", "certification", "producer-registry", "trust-policy", "key-status", "active-pointer",
   ]);
-  for (const field of ["aggregateRef", "revision", "headEventRef", "headDigest", "queryDigest", "resultDigest", "readReceiptRef", "observedAt", "provider", "signature"]) {
+  for (const field of ["aggregateRef", "revision", "headEventRef", "ownerEventDigest", "headDigest", "queryDigest", "resultDigest", "readReceiptRef", "observedAt", "provider", "signature"]) {
     assert.ok(snapshot.$defs.ownerReadReceipt.required.includes(field));
   }
+  assert.ok(snapshot.$defs.activePointer.required.includes("state"));
+  assert.ok(snapshot.$defs.activePointer.oneOf.some((branch) => branch.properties.currentReleaseRef.type === "null"));
   assert.deepEqual(snapshot.$defs.observedState.enum, ["active", "revoked", "suspended"]);
-  for (const field of ["activationAttempt", "expectedActivePointerGeneration", "casPreconditionDigest"]) assert.ok(evidence.required.includes(field));
+  for (const field of ["activationAttempt", "activationCommand", "casCommandRef", "casFence", "freshnessLease", "expectedActivePointerGeneration", "casPreconditionDigest"]) assert.ok(evidence.required.includes(field));
 });
 
 test("certification and revocation carry the complete active trust tuple and signed authority facts", async () => {
@@ -442,17 +509,10 @@ test("compiled manifest distinguishes BFF authority, opaque model roles, and exa
 
 test("activation eligibility independently revalidates persisted begin and immediate-before-CAS authority snapshots", async () => {
   const contractGate = await import("./check-web-release-composition.mjs");
-  assert.equal(typeof contractGate.assertActivationEvidenceEligible, "function");
+  assert.equal("assertActivationEvidenceEligible" in contractGate, false);
   const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
-  const cases = new Map(corpus.positiveCases.map(({ id, document }) => [id, document]));
   const scenario = corpus.activationEligibilityScenarios[0];
-  assert.doesNotThrow(() => contractGate.assertActivationEvidenceEligible(
-    cases.get(scenario.evidenceCaseId),
-    cases.get(scenario.beginSnapshotCaseId),
-    cases.get(scenario.immediateBeforePointerCasSnapshotCaseId),
-    cases.get("site-release-alpha"),
-    cases.get("certification-site-alpha"),
-  ));
+  await assert.doesNotReject(() => validateRepository({ root: repositoryRoot }));
   assert.deepEqual(new Set(scenario.blockedImmediateBeforePointerCasReads.map(({ expectedCode }) => expectedCode)), new Set([
     "web_release_activation_candidate_epoch_invalid",
     "web_release_activation_certification_revoked",
@@ -461,6 +521,69 @@ test("activation eligibility independently revalidates persisted begin and immed
     "web_release_activation_policy_epoch_invalid",
     "web_release_activation_certification_expired",
   ]));
+});
+
+test("the public repository gate cannot bypass snapshot schema, material, head binding, or Root-anchored signatures", async () => {
+  const source = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  for (const [id, mutate, expectedCode] of [
+    ["schema", (snapshot) => { delete snapshot.siteRef; }, "web_release_positive_schema_invalid"],
+    ["material", (snapshot) => { snapshot.authorityMaterialDigest = `sha256:${"0".repeat(64)}`; }, "web_release_activation_authority_material_invalid"],
+    ["head", (snapshot) => { snapshot.ownerReadReceipts[0].ownerEventDigest = `sha256:${"1".repeat(64)}`; }, "web_release_activation_live_read_receipt_invalid"],
+    ["provider-environment", (snapshot) => { snapshot.ownerReadReceipts[0].provider.environment = "staging"; }, "web_release_activation_live_read_trust_invalid"],
+    ["signature", (snapshot) => {
+      const signature = snapshot.ownerReadReceipts[0].signature.signatureBase64;
+      snapshot.ownerReadReceipts[0].signature.signatureBase64 = `${signature[0] === "A" ? "B" : "A"}${signature.slice(1)}`;
+    }, "web_release_activation_live_read_signature_invalid"],
+  ]) {
+    const corpus = structuredClone(source);
+    const snapshot = corpus.positiveCases.find(({ id: caseId }) => caseId === "activation-authority-begin").document;
+    mutate(snapshot);
+    if (["head", "provider-environment", "signature"].includes(id)) snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+    const temporary = await mkdtemp(join(tmpdir(), `kokoro-web-release-self-contained-${id}-`));
+    const corpusPath = join(temporary, "corpus.json");
+    await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+    await expectCode(() => validateRepository({ root: repositoryRoot, corpus: corpusPath }), expectedCode);
+  }
+});
+
+test("checked-in corpus covers a valid first activation and rejects its non-null pointer variant", async () => {
+  const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  const begin = corpus.positiveCases.find(({ id }) => id === "activation-authority-begin").document;
+  assert.equal(begin.activePointer.state, "first-activation");
+  assert.equal(begin.activePointer.currentReleaseRef, null);
+  assert.equal(begin.activePointer.currentGeneration, "0");
+  assert.equal(begin.expectedActivePointerGeneration, "0");
+  assert.ok(corpus.negativeCases.some(({ id }) => id === "activation-first-pointer-must-be-null"));
+});
+
+test("DSSE contract capability prevents a certification key from signing a revocation", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const certification = corpus.positiveCases.find(({ id }) => id === "certification-site-alpha").document;
+    const revocation = corpus.positiveCases.find(({ id }) => id === "revocation-obsolete-certification").document;
+    revocation.producer = structuredClone(certification.producer);
+    corpus.dsseVectors.find(({ caseId }) => caseId === "revocation-obsolete-certification").keyId = certification.producer.keyId;
+  }, "web_release_dsse_capability_invalid");
+});
+
+test("owner receipt capability prevents a certification reader from claiming the candidate head", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const snapshot = corpus.positiveCases.find(({ id }) => id === "activation-authority-begin").document;
+    snapshot.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "candidate").provider.keyId = "key.release-certification-live-read.1";
+  }, "web_release_activation_receipt_capability_invalid");
+});
+
+test("receipt queries and providers are bound to the release site and environment", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const snapshot = corpus.positiveCases.find(({ id }) => id === "activation-authority-begin").document;
+    snapshot.siteRef = "site.other";
+    snapshot.environment = "staging";
+  }, "web_release_activation_context_invalid");
+});
+
+test("self-reported far-future evaluatedAt cannot bypass a server freshness lease", async () => {
+  await coherentCorpusAttack((corpus) => {
+    corpus.positiveCases.find(({ id }) => id === "activation-eligibility-alpha").document.evaluatedAt = "2099-01-01T00:00:00.000Z";
+  }, "web_release_activation_freshness_invalid");
 });
 
 test("Profile recursively closes required products and requires each journey entry surface", async () => {

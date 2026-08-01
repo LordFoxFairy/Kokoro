@@ -65,15 +65,23 @@ while package URIs retain the package URL identity and include the unique compos
 
 `PublishSiteReleaseEffect` is a latest-only Admin command: callers provide only `site_release_candidate_ref`,
 `expected_candidate_version`, and `reason`; Platform generates the immutable SiteRelease and all authority-bound facts.
-The `platform-site-provisioning@v1` boundary remains `contract-only` until Platform and Web regenerate their mirrors from
-this Root source, hard-cut the still-live legacy Platform handler, and submit provider/consumer compatibility evidence.
-Root contract publication does not claim that runtime migration is complete.
+The `platform-site-provisioning@v1` boundary remains `contract-only`. The old Platform publish handler is now fail-closed,
+but Candidate Authority remains dormant until Platform and Web regenerate their mirrors from this Root source and submit
+provider/consumer compatibility evidence. Root contract publication does not claim that runtime migration is complete.
 
 DSSE verification resolves SPKI only from `contract/registry/trusted-web-release-producers.yaml`, never from corpus vectors.
-The signed tuple binds key id/version/fingerprint, producer registry and trust-policy current epochs, audience, environment,
+Every Ed25519 trust anchor declares an exact producer role plus allowed contract ids, payload types and owner-receipt aggregate
+kinds; certification-instance and revocation authority are intentionally disjoint even when their audience is identical. The
+signed tuple binds key id/version/fingerprint, producer registry and trust-policy current epochs, audience, environment,
 validity and active status. Activation snapshots persist six independently signed owner live-read receipts—Candidate,
-Certification, ProducerRegistry, TrustPolicy, signing-key status and active pointer—plus the exact attempt digest, expected
-pointer generation and CAS precondition.
+Certification, ProducerRegistry, TrustPolicy, signing-key status and active pointer—plus Site/environment, activation and CAS
+command refs, nonce/fence, expected pointer generation and the exact CAS precondition. A first activation is represented
+explicitly with a null current release and generation zero.
+
+Eligibility time is bounded by the signed immediate-before-CAS active-pointer receipt: its server-issued time derives a fixed
+five-second freshness lease, and both snapshots must be no more than 120 seconds old. Persisted evidence is audit material,
+not a reusable authorization token. The runtime active-pointer CAS transaction must re-read the authoritative database rows
+and revalidate them against database `now` inside that same transaction before swapping the pointer.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use

@@ -356,11 +356,19 @@ snapshot，重验 Candidate authorization epoch、Certification revocation epoch
 `ActivationEligibilityEvidence` 以 exact JCS digest 引用；内含完整 active producer registry/policy/key trust tuple，不能用
 进程内布尔值代替。每个 snapshot 还绑定 Candidate、Certification、ProducerRegistry、TrustPolicy、key status 与 active
 pointer 六个 owner-signed live-read receipt，以及同一 ActivationAttempt digest、expected pointer generation 与 CAS
-precondition。它不重新运行旧 compiler，也不覆盖当前 artifact。
+precondition。首次激活使用显式 `first-activation` 状态、`currentReleaseRef=null` 与 generation `0`，这些事实同样进入
+CAS material。snapshot 的 receipt query 绑定 Site/environment、activation/CAS command、nonce/fence；owner head digest
+同时绑定 head event ref 与 owner event digest。它不重新运行旧 compiler，也不覆盖当前 artifact。
 
 DSSE vector 不是信任根且不得携带公钥；verifier 只从 Root 的 `trusted-web-release-producers` registry 解析与 signed tuple
-完全匹配、current epoch 且 active 的 key。Root hard-cut 仍是 `contract-only`：旧 Platform handler 在 consumer migration
-完成前仍 live，本 ADR 不把合同完成虚称为运行时闭环。
+完全匹配、current epoch 且 active 的 Ed25519 key，并强制 contract id、payload type、producer role 与 receipt aggregate
+capability。Certification Instance signer 与 Revocation signer 即使 audience 相同也不能互换。
+
+`evaluatedAt` 不能自行声明 freshness：紧前 active-pointer owner receipt 的 server-issued time 派生固定 5 秒 lease，两份
+snapshot 还必须处于 120 秒 age bound 内，并早于 certification/key expiry。持久化 evidence 只用于审计，不是可复用
+授权；真实 runtime active-pointer CAS transaction 必须在同一数据库事务内重新读取 authority rows，并以数据库 `now`
+再次验证后才能交换 pointer。Root hard-cut 仍是 `contract-only`：旧 Platform handler 已 fail-closed，但 Candidate
+Authority 仍 dormant，须等待 consumer migration 与 provider/consumer compatibility evidence；本 ADR 不把合同完成虚称为运行时闭环。
 
 ### 11. 目录
 
