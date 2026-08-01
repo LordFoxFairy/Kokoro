@@ -686,6 +686,17 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
   return refs;
 }
 
+function validateM0RunBindingStates(runBindings, code) {
+  for (const binding of runBindings) {
+    const validState = (
+      (binding.state === "open" && binding.terminalDisposition === null) ||
+      (binding.state === "finished" && binding.terminalDisposition === "success") ||
+      (binding.state === "error" && binding.terminalDisposition === "error")
+    );
+    if (!validState) fail(code, binding.bindingRef);
+  }
+}
+
 function validateSnapshotBindingAuthority(snapshot, contracts) {
   const runBindings = snapshot.runBindings;
   const messageBindings = snapshot.messageBindings;
@@ -704,14 +715,7 @@ function validateSnapshotBindingAuthority(snapshot, contracts) {
   if (new Set(runBindings.map(({ presentationThreadId }) => presentationThreadId)).size !== 1) {
     fail("agui_snapshot_thread_scope_invalid");
   }
-  for (const binding of runBindings) {
-    const validState = (
-      (binding.state === "open" && binding.terminalDisposition === null) ||
-      (binding.state === "finished" && binding.terminalDisposition === "success") ||
-      (binding.state === "error" && binding.terminalDisposition === "error")
-    );
-    if (!validState) fail("agui_snapshot_terminal_state_invalid", binding.bindingRef);
-  }
+  validateM0RunBindingStates(runBindings, "agui_snapshot_terminal_state_invalid");
 }
 
 function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, identities) {
@@ -852,6 +856,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   registerGlobalIdentity(identities.cursorClaims, cursorClaimIdentity(snapshotClaims), "agui_global_cursor_claim_identity_duplicate");
 
   const runRefs = validateRunBindings(caseInput.runBindings, validateRunBinding, caseInput.snapshot, identities);
+  validateM0RunBindingStates(caseInput.runBindings, "agui_run_terminal_state_invalid");
   const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot, identities);
   if (!validateSnapshotAuthoritySchema(snapshotAuthority)) {
     fail("agui_snapshot_authority_schema_invalid", validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");

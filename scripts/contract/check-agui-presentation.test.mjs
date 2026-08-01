@@ -164,10 +164,10 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 10,
+    negativeCases: 11,
     durableFrames: 41,
     mappingsCovered: 22,
-    agentCandidates: 32,
+    agentCandidates: 33,
     agentSourceFixtures: 15,
     agentCandidateEnvelopeCases: 14,
     agentCandidateProjectionCases: 1,
@@ -487,6 +487,37 @@ test("freezes snapshot lastRecordedAt as the durable head time watermark", async
   missingNonzeroHead.snapshot.durableSeq = "1";
   missingNonzeroHead.snapshot.lastRecordedAt = null;
   assert.throws(() => validateConformanceCase(missingNonzeroHead), /agui_snapshot_time_watermark_invalid/u);
+});
+
+test("keeps every M0 conformance run on Session-producible terminal states", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  for (const contractCase of corpus.positiveCases) {
+    for (const binding of contractCase.runBindings) {
+      assert.ok(
+        (binding.state === "open" && binding.terminalDisposition === null) ||
+        (binding.state === "finished" && binding.terminalDisposition === "success") ||
+        (binding.state === "error" && binding.terminalDisposition === "error"),
+        `${contractCase.id}:${binding.bindingRef}`,
+      );
+    }
+  }
+
+  const illegal = clone(corpus.positiveCases[0]);
+  illegal.runBindings[0].terminalDisposition = "interrupted";
+  assert.throws(() => validateConformanceCase(illegal), /agui_run_terminal_state_invalid/u);
+  assert.deepEqual(
+    corpus.negativeCases.find(({ id }) => id === "m0-interrupted-main-run"),
+    {
+      id: "m0-interrupted-main-run",
+      baseCaseId: "resume-with-safe-typed-presentation",
+      mutation: {
+        operation: "set",
+        path: "runBindings.0.terminalDisposition",
+        value: "interrupted",
+      },
+      expectedCode: "agui_run_terminal_state_invalid",
+    },
+  );
 });
 
 test("rejects snapshot watermarks before binding evidence and next-event time regression", async () => {

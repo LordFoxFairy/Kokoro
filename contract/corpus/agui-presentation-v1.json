@@ -55,7 +55,7 @@
             "parentPresentationRunId": null
           },
           "state": "finished",
-          "terminalDisposition": "interrupted",
+          "terminalDisposition": "success",
           "openedBySourceEventId": "agent.event.run.01.000",
           "terminalSourceEventId": "source.21",
           "openedAt": "2026-08-01T12:00:01.000Z",
@@ -3301,6 +3301,16 @@
         "value": "secret-value"
       },
       "expectedCode": "agui_tool_secret_forbidden"
+    },
+    {
+      "id": "m0-interrupted-main-run",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "runBindings.0.terminalDisposition",
+        "value": "interrupted"
+      },
+      "expectedCode": "agui_run_terminal_state_invalid"
     }
   ],
   "snapshotAuthorityCases": [

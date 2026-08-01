@@ -148,6 +148,13 @@ if (!Array.isArray(agentCandidateProfile.allowedActivityTypes) || agentCandidate
 }
 const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
 if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
+const resumedBaseBinding = authorityBase.runBindings.find(
+  ({ bindingRef }) => bindingRef === "run-binding.01.segment.0",
+);
+if (resumedBaseBinding === undefined || resumedBaseBinding.state !== "finished") {
+  throw new Error("resume-with-safe-typed-presentation terminal base binding is required");
+}
+resumedBaseBinding.terminalDisposition = "success";
 const activityTemplates = agentCandidateProfile.allowedActivityTypes.map((activityType) => {
   const frame = authorityBase.frames.find(
     ({ data }) => data.event.type === "ACTIVITY_SNAPSHOT" && data.event.activityType === activityType,
@@ -434,6 +441,19 @@ corpus.snapshotAuthorityNegativeCases = [
     baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
     mutation: { operation: "m0-interrupted-terminal" },
     expectedCode: "agui_snapshot_terminal_state_invalid",
+  },
+];
+corpus.negativeCases = [
+  ...corpus.negativeCases.filter(({ id }) => id !== "m0-interrupted-main-run"),
+  {
+    id: "m0-interrupted-main-run",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "runBindings.0.terminalDisposition",
+      value: "interrupted",
+    },
+    expectedCode: "agui_run_terminal_state_invalid",
   },
 ];
 const generatedText = `${JSON.stringify(corpus, null, 2)}\n`;
