@@ -982,6 +982,65 @@ test("canonical and DSSE vectors uniquely and exactly cover their contract cases
   }
 });
 
+test("the public repository gate freezes every negative vector id and exact mutation identity", async () => {
+  const source = JSON.parse(
+    await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"),
+  );
+  const attacks = [
+    (corpus) => {
+      const pointerCase = structuredClone(
+        corpus.negativeCases.find(({ id }) => id === "activation-first-pointer-must-be-null"),
+      );
+      const duplicate = structuredClone(corpus.negativeCases[0]);
+      corpus.negativeCases = [pointerCase, ...Array.from({ length: 58 }, () => structuredClone(duplicate))];
+    },
+    (corpus) => {
+      const originalId = corpus.negativeCases[0].id;
+      corpus.negativeCases[0] = structuredClone(corpus.negativeCases[1]);
+      corpus.negativeCases[0].id = originalId;
+    },
+  ];
+  for (const [index, attack] of attacks.entries()) {
+    const corpus = structuredClone(source);
+    attack(corpus);
+    const temporary = await mkdtemp(join(tmpdir(), `kokoro-web-release-negative-identity-${index}-`));
+    const corpusPath = join(temporary, "corpus.json");
+    await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+    await expectCode(
+      () => validateRepository({ root: repositoryRoot, corpus: corpusPath }),
+      "web_release_negative_coverage_invalid",
+    );
+  }
+});
+
+test("the public repository gate freezes blocked activation ids and revoked versus suspended semantics", async () => {
+  const source = JSON.parse(
+    await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"),
+  );
+  const attacks = [
+    (blocked) => {
+      blocked[blocked.length - 1] = structuredClone(blocked[0]);
+    },
+    (blocked) => {
+      const revoked = blocked.find(({ id }) => id === "key-revoked-between-authority-reads");
+      const suspendedIndex = blocked.findIndex(({ id }) => id === "key-suspended-between-authority-reads");
+      blocked[suspendedIndex] = structuredClone(revoked);
+      blocked[suspendedIndex].id = "key-suspended-between-authority-reads";
+    },
+  ];
+  for (const [index, attack] of attacks.entries()) {
+    const corpus = structuredClone(source);
+    attack(corpus.activationEligibilityScenarios[0].blockedImmediateBeforePointerCasReads);
+    const temporary = await mkdtemp(join(tmpdir(), `kokoro-web-release-blocked-identity-${index}-`));
+    const corpusPath = join(temporary, "corpus.json");
+    await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+    await expectCode(
+      () => validateRepository({ root: repositoryRoot, corpus: corpusPath }),
+      "web_release_activation_scenario_invalid",
+    );
+  }
+});
+
 test("breaking comparison loads the real seven-contract predecessor before reporting schema drift", async () => {
   await assert.rejects(
     () => execFileAsync(process.execPath, [

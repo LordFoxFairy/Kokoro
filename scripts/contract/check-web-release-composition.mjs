@@ -61,6 +61,97 @@ const RECEIPT_KIND_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
 const ACTIVATION_FRESHNESS_LEASE_MILLISECONDS = 5_000;
 const ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS = 120_000;
 const SECRET_FRAGMENT = /(?:^|_)(?:api_?key|credential|password|private|secret|token)(?:_|$)/iu;
+const FROZEN_NEGATIVE_CASE_DIGESTS = new Map(`
+catalog-unknown-field sha256:ae9ae9cd8e89067cd28d8e93cacc538f9ecfc991c5fc774029175094490fb762
+catalog-duplicate-surface sha256:b3d55aa4fe6e4910ac615033bfa2e1af484a19b892b759f58ac5c4065048531d
+catalog-dangling-journey sha256:b89219959dd3f08fafde4c5ba5d37ba1e0f4ad15a7de2d6826fbcc6203d70339
+inventory-overlap sha256:cca05b1dbc9b43fd1df58437dceeaf79d6b5dd693068cfb634296542a4c34319
+inventory-incomplete sha256:2c007e7f80e8ba01c28d0e76a5e529170129e417c08de7ca7f4369e4377b13c0
+inventory-unknown sha256:609173e12cc5285858d5a8af1b4afb26fd4f27dc5dc5318e0e3d646c08cacf9e
+material-secret-key sha256:48ed5a3b5e8aaa8a25bdada389b9788dbe724e68150c25c5059ea2742762e759
+material-unscanned sha256:2b467071b2dd79d6c3c54a06aaf35b54d2ecf7a399e922865a9666d187553c82
+toolchain-tagged-artifact sha256:0bc28fe7388d6487c227f0b9021bde51ce38b8217ab2faada828f45ce48ac954
+toolchain-network-url sha256:acbb35f7cff1a436f9a42a78add78277952afe9a8f5bf4911b395c436a6af228
+intent-selects-unit sha256:09a4a481d86a787bb8962a27bfddc5fcce0e0bcd0f272a8d60c86df430cc109a
+intent-expires sha256:03a0085e357ddfe0bafffddb97204e3fd9a4b2883668cbcb3f73b64676ae441f
+intent-self-digest sha256:12635e451a8964d80e9a24f6a8cf8ee382becab968cf06599c8d0ab5433f2e51
+manifest-unit-cycle sha256:f51500801927b6b284ee574e3d1dace66f9370843e59bf723e5f75f524b5d8ec
+manifest-route-conflict sha256:818cc7cc194cbb8ecfd9813857e668cdbfca0eeac155283966a8d93961b76be8
+manifest-disabled-surface sha256:e8c103579452eb94b2786775a3356f32fb8c35450ebe4a6f3907d21faf466dbd
+manifest-orphan-package sha256:cb2045c7ab0addd03270d03ade40b8fc8c62984b979b3280a8a094f6e0b9c32e
+provenance-toolchain-mismatch sha256:1756dd4fbc516afeaf6a8e9f819f2e09ef974cd1fcb3f4954c64a7bcf576ded2
+catalog-duplicate-owner sha256:f7c4e77dc4ece591a20d03b89f7d91dbc8270a90a1a16968476dd13b5060363c
+catalog-surface-cycle sha256:8b5f0536f1859121374c68d2956afa5e2973f62c74e491d55c9f574a71637483
+material-duplicate-config-key sha256:a98c632277c02da04cd85c1a3defb543a1bef89f0aa7ee3758971041f6ac6cb7
+material-origin-mismatch sha256:d016452d924e0b897e382f91d243c7b98327975d1805f44c518d503a8342edf9
+registry-duplicate-unit sha256:6baf8c7eb41db717660377d1b3d48611f46fcf85534781cc091df9a80e371f81
+registry-unit-cycle sha256:275836151168d374d08881858d471b5d69516543e8d0fe873df697c9c854cb8f
+registry-dangling-package sha256:7ec5f97b1bc4e1063908d89bf4f9e8ab9cd659af1b4083d2c5efb06ccc58e8d4
+registry-route-conflict sha256:a65ac52ba3ad146623d431caa6b1052e9b90aa4553cf02de8ebbe9cd752c316a
+manifest-measured-tool-mismatch sha256:25ec36fac85f9e99ff55ec2cdb6af22f537b56057e9acfd4f30ac4c056e4b9e4
+manifest-missing-bff-closure sha256:0de511f70b6a088d64e0f3fadd904a3b622743d9cbcf3d27984d456883f00ae9
+provenance-site-mismatch sha256:21adc01a06e9d52ff8fdf27d0813409bbbf3ed91e0c9b5d9f6bb7075fb1a75e3
+provenance-dependency-role-mismatch sha256:4bcfd849415e5bafbf4866d81117c982987bb7882d6111819692c4047ea2b547
+profile-inventory-cycle sha256:792cb9f18d34cee514bc0416c7663e411c3d165ababec5bde492e52ebd23c9bd
+profile-unknown-surface sha256:f1150dd04c6bfb3eb8ae13a3e02269ac2d702236b249a14e967016116bf4bbfe
+profile-incomplete-journey sha256:d79a923fb069829b53591e9fc0b6e4057a94f00411acd698aa1a1f51449cb85d
+candidate-inventory-cycle sha256:78a4003566b2dc79bc493b8373488d7cfe775f5cf6bbab85f9b3de9dc665d176
+candidate-profile-mismatch sha256:c10f048d1e17b3e8b5517c60129947aed51ed1676a1cad16e002578ba2f1ac47
+candidate-model-role-missing sha256:469b5a3f01f62c5b4694b5e03cac518ea9585b1b63e9dfdfc0d8e895156fa0aa
+inventory-candidate-mismatch sha256:ffaaf530e45d996db90a33619ae5198ecc021111b782159e3c065e6a2328c3fc
+inventory-profile-mismatch sha256:f08d06454a951794072c2f030585137e80077b395ecfbac33c63ed5a58473e03
+registry-bff-authority-overlap sha256:a0ecf61a9667b4d03751b9332adcf463cbfbfe63b0465c2ceb24e9ddc61c1d85
+intent-model-inventory-mismatch sha256:728460eb27c58c3044140756cc7429928b49c3c7f804c76faea73a819da2a055
+manifest-bff-family-missing sha256:3a87e55cf229faff3ac0388ca7591b02b854e554b13e5854fd021b2ec59b625b
+provenance-artifact-mismatch sha256:3c4747939e52bcf3900235552d3af0c60f07ebe89a879e9feb88da5bfdc1ad44
+certification-expired-before-generation sha256:0868b89f12a84185538fccaef7f8fc7de45754137ca4aa1f2f7c63a3ef1b6780
+certification-candidate-epoch-mismatch sha256:e3203f28ac0d31551fd1298d6343236d42e515af677ceb6880738398149e1d79
+site-release-bootstrap-mismatch sha256:856779c9bc1abf7cbded12f7e57d0750f1ff5c80bbc340b367590f71017d5fb8
+catalog-surface-scope-missing sha256:a2583ec4bc91b4d4acfa6d08dccc2aa18c1f1dfa972dbbf468a4e72aa2d19c6f
+catalog-journey-cycle sha256:a53ae73987af16699c08823eeff47f7c4e03fb664d66b1c2b24c191476942edc
+profile-missing-core-surface sha256:c0d6b2bda37877b5c206d4a976c12b0d0641d22c930646524b2dad6f9517aa92
+registry-cross-group-bff-overlap sha256:e5428a1182ec86e85d67ee34b51c4270a5116e537bff585152fafe6f200b8d7b
+manifest-cross-group-bff-overlap sha256:f385951d5aafdcecff02fe493a38498f2abc0e33e065e7a8cc0735a0860e6134
+provenance-final-certification-cycle sha256:9c320b782af8e5ffa8564552602e33f3f8f100d94684914553fe4cd1e9d7456a
+certification-inactive-key sha256:19b1f59b6da167cacd67fc3c18ae6ee7c68bfb4028a4982d133a0c63effc555b
+certification-invalid-key-window sha256:47fa9f5a543e52fc821c6e04437e2144aca8c796057b60309e9ec8b8c37a0bce
+revocation-certification-mismatch sha256:78cb27ffd21c2aab4ac92e46a88b52bb972dd36d85ce8e3b4f4b0b7f45039c0e
+revocation-nonmonotonic-epoch sha256:05ed56a557820d9a27dbe4c2bc44759b2d13c2dde993910ecc5f228a27e3fda8
+activation-authority-material-mismatch sha256:18f3d60fa5bd55812a16069d1b8f2d0472c7931a0c9a0891987deba7570729bc
+activation-eligibility-material-mismatch sha256:127b849f5481e028a4dddf75a53e643b7a98524a3c7234166bf7a7dd709d963d
+site-release-before-certification sha256:e2f371c928b322577c73063938e19ce849a5fdfecba15814bae2a8580d159c66
+activation-first-pointer-must-be-null sha256:0752cf0b97721035abc167fdcd7e19c20e884222217631739b7911d0ab995fb5
+`.trim().split("\n").map((row) => row.split(" ")));
+const FROZEN_BLOCKED_ACTIVATION_SCENARIOS = new Map([
+  ["candidate-revoked-between-authority-reads", {
+    expectedCode: "web_release_activation_candidate_epoch_invalid",
+    identity: { candidateState: "revoked", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
+  }],
+  ["certification-revoked-between-authority-reads", {
+    expectedCode: "web_release_activation_certification_revoked",
+    identity: { candidateState: "active", certificationState: "revoked", certificationRevocationEpoch: "1", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
+  }],
+  ["key-revoked-between-authority-reads", {
+    expectedCode: "web_release_activation_key_invalid",
+    identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "revoked", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
+  }],
+  ["key-suspended-between-authority-reads", {
+    expectedCode: "web_release_activation_key_invalid",
+    identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "suspended", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
+  }],
+  ["producer-registry-epoch-between-authority-reads", {
+    expectedCode: "web_release_activation_registry_epoch_invalid",
+    identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "5", trustPolicyEpoch: "9", expiredAtRead: false },
+  }],
+  ["trust-policy-epoch-between-authority-reads", {
+    expectedCode: "web_release_activation_policy_epoch_invalid",
+    identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "10", expiredAtRead: false },
+  }],
+  ["certification-expired-between-authority-reads", {
+    expectedCode: "web_release_activation_certification_expired",
+    identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: true },
+  }],
+]);
 
 export class WebReleaseContractError extends Error {
   constructor(code, detail = "") {
@@ -290,6 +381,61 @@ function assertDag(nodes, dependencyField, invalidCode, cycleCode) {
 
 function canonicalSet(values) {
   return canonicalize([...values].sort());
+}
+
+function validateNegativeCaseCoverage(negativeCases) {
+  if (!Array.isArray(negativeCases) || negativeCases.length !== FROZEN_NEGATIVE_CASE_DIGESTS.size) {
+    fail("web_release_negative_coverage_invalid");
+  }
+  for (const negative of negativeCases) {
+    exactKeys(negative, ["baseCaseId", "expectedCode", "id", "mutation"], "web_release_negative_coverage_invalid");
+  }
+  const ids = unique(negativeCases.map(({ id }) => id), "web_release_negative_coverage_invalid");
+  if (canonicalSet(ids) !== canonicalSet(FROZEN_NEGATIVE_CASE_DIGESTS.keys())) {
+    fail("web_release_negative_coverage_invalid");
+  }
+  for (const negative of negativeCases) {
+    const material = {
+      baseCaseId: negative.baseCaseId,
+      mutation: negative.mutation,
+      expectedCode: negative.expectedCode,
+    };
+    if (digest(material) !== FROZEN_NEGATIVE_CASE_DIGESTS.get(negative.id)) {
+      fail("web_release_negative_coverage_invalid", negative.id);
+    }
+  }
+}
+
+function blockedActivationSemanticIdentity(snapshot) {
+  return {
+    candidateState: snapshot.candidate.state,
+    certificationState: snapshot.certification.state,
+    certificationRevocationEpoch: snapshot.certification.revocationEpoch,
+    keyStatus: snapshot.trust.keyStatus,
+    producerRegistryEpoch: snapshot.trust.producerRegistryEpoch,
+    trustPolicyEpoch: snapshot.trust.trustPolicyEpoch,
+    expiredAtRead: snapshot.readAt === snapshot.certification.validUntil,
+  };
+}
+
+function validateBlockedActivationScenarioCoverage(blockedScenarios) {
+  if (!Array.isArray(blockedScenarios) || blockedScenarios.length !== FROZEN_BLOCKED_ACTIVATION_SCENARIOS.size) {
+    fail("web_release_activation_scenario_invalid");
+  }
+  for (const blocked of blockedScenarios) {
+    exactKeys(blocked, ["expectedCode", "id", "snapshot"], "web_release_activation_scenario_invalid");
+  }
+  const ids = unique(blockedScenarios.map(({ id }) => id), "web_release_activation_scenario_invalid");
+  if (canonicalSet(ids) !== canonicalSet(FROZEN_BLOCKED_ACTIVATION_SCENARIOS.keys())) {
+    fail("web_release_activation_scenario_invalid");
+  }
+  for (const blocked of blockedScenarios) {
+    const frozen = FROZEN_BLOCKED_ACTIVATION_SCENARIOS.get(blocked.id);
+    if (blocked.expectedCode !== frozen.expectedCode ||
+        canonicalize(blockedActivationSemanticIdentity(blocked.snapshot)) !== canonicalize(frozen.identity)) {
+      fail("web_release_activation_scenario_invalid", blocked.id);
+    }
+  }
 }
 
 function canonicalRows(values, key) {
@@ -953,16 +1099,12 @@ function validateActivationEligibilityScenarios(scenarios, casesById, validators
   if (!Array.isArray(scenarios) || scenarios.length !== 1) fail("web_release_activation_scenario_invalid");
   const scenario = scenarios[0];
   exactKeys(scenario, ["beginSnapshotCaseId", "blockedImmediateBeforePointerCasReads", "evidenceCaseId", "id", "immediateBeforePointerCasSnapshotCaseId"], "web_release_activation_scenario_invalid");
-  if (scenario.id !== "dual-authority-revalidation-before-pointer-cas" || !Array.isArray(scenario.blockedImmediateBeforePointerCasReads) || scenario.blockedImmediateBeforePointerCasReads.length !== 7 ||
+  if (scenario.id !== "dual-authority-revalidation-before-pointer-cas" ||
       casesById.get(scenario.beginSnapshotCaseId)?.document !== related.activationBeginSnapshot ||
       casesById.get(scenario.immediateBeforePointerCasSnapshotCaseId)?.document !== related.activationBeforeCasSnapshot ||
       casesById.get(scenario.evidenceCaseId)?.document !== related.activationEvidence) fail("web_release_activation_scenario_invalid");
-  const expectedCodes = new Set(["web_release_activation_candidate_epoch_invalid", "web_release_activation_certification_revoked",
-    "web_release_activation_key_invalid", "web_release_activation_registry_epoch_invalid",
-    "web_release_activation_policy_epoch_invalid", "web_release_activation_certification_expired"]);
+  validateBlockedActivationScenarioCoverage(scenario.blockedImmediateBeforePointerCasReads);
   for (const blocked of scenario.blockedImmediateBeforePointerCasReads) {
-    exactKeys(blocked, ["expectedCode", "id", "snapshot"], "web_release_activation_scenario_invalid");
-    if (!expectedCodes.has(blocked.expectedCode)) fail("web_release_activation_scenario_invalid");
     const snapshot = structuredClone(blocked.snapshot);
     validateDocument("activation-authority-snapshot.v1", snapshot, validators);
     validateActivationAuthoritySnapshot(snapshot, related);
@@ -1289,7 +1431,8 @@ export async function validateRepository(options = {}) {
   const corpus = readJson(corpusPath, "web_release_corpus_read_failed");
   validateIJson(corpus);
   exactKeys(corpus, ["activationEligibilityScenarios", "canonicalProfile", "canonicalVectors", "dsseVectors", "negativeCases", "positiveCases", "schema"], "web_release_corpus_shape_invalid");
-  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 17 || corpus.negativeCases.length !== 59 || corpus.canonicalVectors.length !== 17 || corpus.dsseVectors.length !== 5) fail("web_release_corpus_shape_invalid");
+  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 17 || corpus.negativeCases.length !== FROZEN_NEGATIVE_CASE_DIGESTS.size || corpus.canonicalVectors.length !== 17 || corpus.dsseVectors.length !== 5) fail("web_release_corpus_shape_invalid");
+  validateNegativeCaseCoverage(corpus.negativeCases);
   const casesById = new Map(corpus.positiveCases.map((item) => [item.id, item]));
   if (casesById.size !== corpus.positiveCases.length || new Set(corpus.positiveCases.map(({ contractId }) => contractId)).size !== 15) fail("web_release_corpus_shape_invalid");
   unique(corpus.canonicalVectors.map(({ id }) => id), "web_release_canonical_coverage_invalid");
