@@ -539,60 +539,34 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
     commerce = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
 
     assert _service_methods(commerce, "AdminCommerceService") == [
-        "PublishCreditProgramRevision",
-        "ListCreditProgramRevisions",
-        "GetCreditProgramRevision",
-        "PublishEntitlementTemplateRevision",
-        "ListEntitlementTemplateRevisions",
-        "GetEntitlementTemplateRevision",
-        "PublishOffer",
-        "ListOffers",
-        "GetOffer",
-        "PublishRedemptionProgram",
-        "ListRedemptionPrograms",
-        "GetRedemptionProgram",
-        "IssueCodeBatch",
+        "PublishPlanRevision", "ListPlanRevisions", "GetPlanRevision",
+        "PublishOfferRevision", "ListOfferRevisions", "GetOfferRevision",
+        "PublishFulfillmentProgramRevision", "ListFulfillmentProgramRevisions",
+        "GetFulfillmentProgramRevision", "PublishRedemptionProgramRevision",
+        "ListRedemptionProgramRevisions", "GetRedemptionProgramRevision",
+        "PublishSiteCommerceAssignment", "ListSiteCommerceAssignments",
+        "GetSiteCommerceAssignment", "RequestCodeBatchIssuance",
+        "ApproveCodeBatchIssuance", "ClaimCodeBatchDelivery",
         "ListCodeBatches",
         "GetCodeBatch",
-        "ApproveCodeBatch",
         "ActivateCodeBatch",
-        "AbandonCodeBatch",
         "SuspendCodeBatch",
+        "ResumeCodeBatch",
         "RevokeCodeBatch",
+        "RequestSourceReversal", "ApproveSourceReversal",
+        "RequestCodeReplacement", "ApproveCodeReplacement",
+        "ListSourceCorrections", "GetSourceCorrection",
+        "ListCommerceReconciliations", "GetCommerceReconciliation",
+        "ResolveCommerceReconciliation", "GetCommerceCommandReceipt",
     ]
     assert "AuthenticatedOperatorCommandContext context" in commerce
     assert "AuthenticatedOperatorQueryContext context" in commerce
-    assert "repeated string raw_codes" in _message_body(commerce, "IssueCodeBatchResponse")
-    for message in ("CodeBatchSummary", "GetCodeBatchResponse", "CodeExportReceipt"):
-        assert "raw_codes" not in _message_body(commerce, message)
-    assert "safe_fingerprints" not in _message_body(commerce, "CodeBatchSummary")
-    assert "CodeBatchApprovalState approval_state" in _message_body(commerce, "CodeBatchSummary")
-    credit = _message_body(commerce, "PublishCreditProgramRevisionEffect")
-    for field in (
-        "string credit_program_revision_ref",
-        "string program_ref",
-        "uint64 revision",
-        "CreditBucketClass ux_bucket_class",
-        "string unit",
-        "string amount",
-        "int32 burn_priority",
-        "CreditScopePolicy scope_policy",
-        "string liability_merchant_account_ref",
-        "oneof window_policy",
-        "PermanentCreditWindowPolicy permanent_window",
-        "RecurringCreditWindowPolicy recurring_window",
-    ):
-        assert field in credit
-    entitlement = _message_body(commerce, "PublishEntitlementTemplateRevisionEffect")
-    for field in (
-        "string entitlement_template_revision_ref",
-        "string template_ref",
-        "uint64 revision",
-        "string capability_key",
-        "string safe_label",
-        "optional uint64 expires_after_seconds",
-    ):
-        assert field in entitlement
+    assert "raw_codes" not in commerce
+    assert "EncryptedCodeDelivery" not in _message_body(commerce, "RequestCodeBatchIssuanceResponse")
+    assert "EncryptedCodeDelivery" not in _message_body(commerce, "ApproveCodeBatchIssuanceResponse")
+    assert "optional EncryptedCodeDelivery delivery" in _message_body(commerce, "ClaimCodeBatchDeliveryResponse")
+    for foreign_owner in ("CreditProgram", "EntitlementTemplate"):
+        assert foreign_owner not in commerce
     assert "google.protobuf.Struct" not in commerce
     assert "rpc Route" not in commerce
     assert "string action" not in commerce
@@ -2533,68 +2507,25 @@ def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -
         source,
         re.DOTALL,
     )
-    assert len(cursor_rules) == 10
+    assert len(cursor_rules) == 16
     assert all("max_len: 1024" in rule for rule in cursor_rules)
-
-    postgres_bigint_fields = {
-        "RecurringCreditWindowPolicy": ("expires_after_seconds",),
-        "PublishCreditProgramRevisionEffect": ("revision",),
-        "CreditProgramRevisionSummary": ("revision",),
-        "PublishEntitlementTemplateRevisionEffect": ("revision", "expires_after_seconds"),
-        "EntitlementTemplateRevisionSummary": ("revision", "expires_after_seconds"),
-        "PlanVersionDraft": ("revision", "term_seconds"),
-        "PublishOfferEffect": ("product_revision", "fulfillment_program_revision"),
-        "OfferSummary": ("revision",),
-        "PublishRedemptionProgramEffect": ("revision",),
-        "RedemptionProgramSummary": ("revision",),
-    }
-    for message, fields in postgres_bigint_fields.items():
-        body = _message_body(source, message)
-        for field in fields:
-            declaration = re.search(
-                rf"(?:optional )?uint64 {field} = \d+ "
-                r"\[\(buf\.validate\.field\)\.uint64 = \{(?P<constraints>.*?)\}\];",
-                body,
-                re.DOTALL,
-            )
-            assert declaration is not None, f"{message}.{field} must use an explicit uint64 constraint block"
-            assert "lte: 9223372036854775807" in declaration.group("constraints"), (
-                f"{message}.{field} must fit PostgreSQL BIGINT"
-            )
-
-    for response in (
-        "ListCreditProgramRevisionsResponse",
-        "ListEntitlementTemplateRevisionsResponse",
-        "ListOffersResponse",
-        "ListRedemptionProgramsResponse",
-        "ListCodeBatchesResponse",
+    for message in (
+        "CommerceRevisionTarget", "ClaimCodeBatchDeliveryEffect",
+        "CodeBatchView", "SealedCodeDeliveryReceipt",
     ):
-        body = _message_body(source, response)
-        assert "google.protobuf.Timestamp observed_at = 3 [(buf.validate.field).required = true];" in body
+        assert "lte: 9223372036854775807" in _message_body(source, message)
 
-def test_admin_commerce_credit_window_and_safe_label_are_executable_contracts() -> None:
+
+def test_admin_commerce_fulfillment_lines_and_delivery_are_executable_contracts() -> None:
     source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
 
-    assert "enum CreditRolloverPolicy" in source
-    assert "CREDIT_ROLLOVER_POLICY_NONE = 1;" in source
-    assert "message PermanentCreditWindowPolicy" in source
-    assert "message RecurringCreditWindowPolicy" in source
-    assert 'pattern: "^(?:UTC|[A-Za-z][A-Za-z0-9._+-]*(?:/[A-Za-z][A-Za-z0-9._+-]*)+)$"' in source
-    assert 'pattern: "^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"' in source
-    assert "string daily_local_time = 2" in source
-    assert "bool subscription_term_start = 3" in source
-    assert source.count("oneof window_policy") == 2
-    assert source.count("credit_program.window_policy_matches_bucket") == 2
-    assert source.count("credit_program.anchor_matches_bucket") == 2
-    assert source.count("rollover_policy") >= 2
-    assert "NFC-normalized" in source
-    assert "bidi formatting controls" in source
-    safe_label_pattern = (
-        r'pattern: "^[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]'
-        r'(?:[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]*'
-        r'[^\\p{Zs}\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}])?$"'
-    )
-    assert source.count(safe_label_pattern) == 5
+    program = _message_body(source, "PublishFulfillmentProgramRevisionEffect")
+    assert "commerce.fulfillment_program.line_identity_unique" in program
+    assert "repeated FulfillmentProgramOutputLine output_lines" in program
+    claim = _message_body(source, "ClaimCodeBatchDeliveryResponse")
+    assert "commerce.code_delivery.one_time" in claim
+    assert "(!this.replayed && has(this.delivery))" in claim
+    assert "(this.replayed && !has(this.delivery))" in claim
 
 
 def test_model_gateway_publishes_one_resumable_server_stream() -> None:

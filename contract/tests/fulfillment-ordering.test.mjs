@@ -12,7 +12,7 @@ const descriptorBytes = execFileSync("./node_modules/.bin/buf", [
   "--as-file-descriptor-set",
   "-o",
   "-",
-], { cwd: new URL("..", import.meta.url), encoding: "buffer" });
+], { cwd: new URL("..", import.meta.url), encoding: "buffer", maxBuffer: 8 * 1024 * 1024 });
 const registry = createFileRegistry(fromBinary(FileDescriptorSetSchema, descriptorBytes));
 const descriptor = registry.getMessage("kokoro.platform.commerce.v1.CanonicalFulfillmentTransactionV1");
 const validator = createValidator({ registry });
