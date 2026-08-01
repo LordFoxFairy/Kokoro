@@ -19,6 +19,7 @@ const contracts = Object.freeze({
   agentCandidateEnvelopeSchema: "contract/spec/agent-agui-candidate-envelope-v1.yaml",
   projectionPayloadSchema: "contract/spec/session-agui-projection-payload-v1.yaml",
   presentationRowSchema: "contract/spec/session-agui-presentation-row-v1.yaml",
+  bindingAuthorityDeltaSchema: "contract/spec/presentation-binding-authority-delta-v1.yaml",
   runBindingSchema: "contract/spec/presentation-run-binding-v1.yaml",
   messageBindingSchema: "contract/spec/presentation-message-binding-v1.yaml",
   streamSchema: "contract/spec/session-agui-stream-v1.yaml",
@@ -50,16 +51,33 @@ function candidateRefFor(envelope) {
   return `agui_candidate:sha256:${createHash("sha256").update(material, "utf8").digest("hex")}`;
 }
 
+function runRouteFor(contractCase, bindingRef) {
+  const route = contractCase.sessionPrivateRouteFixtures?.runs?.find(
+    (candidate) => candidate.presentationRunBindingRef === bindingRef,
+  );
+  if (route === undefined) throw new Error(`private run route missing: ${bindingRef}`);
+  return route;
+}
+
+function messageRouteFor(contractCase, bindingRef) {
+  const route = contractCase.sessionPrivateRouteFixtures?.messages?.find(
+    (candidate) => candidate.presentationMessageBindingRef === bindingRef,
+  );
+  if (route === undefined) throw new Error(`private message route missing: ${bindingRef}`);
+  return route;
+}
+
 function candidateEnvelopeFromFrame(contractCase, frame, candidateSource) {
   const runBinding = contractCase.runBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef);
   if (runBinding === undefined) throw new Error(`candidate run binding missing: ${frame.data.source.sourceEventId}`);
+  const runRoute = runRouteFor(contractCase, runBinding.bindingRef);
   const messageBinding = frame.data.presentationMessageBindingRef === undefined
     ? undefined
     : contractCase.messageBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationMessageBindingRef);
   const event = structuredClone(frame.data.event);
   if (event.type === "RUN_STARTED" || event.type === "RUN_FINISHED") {
     event.threadId = candidateSource.route.internalThreadRef;
-    event.runId = runBinding.internalRunRef;
+    event.runId = runRoute.internalRunRef;
   }
   if (event.type === "RUN_STARTED") delete event.parentRunId;
   if (event.type === "RUN_FINISHED") event.outcome = { type: "success" };
@@ -80,9 +98,11 @@ function candidateEnvelopeFromFrame(contractCase, frame, candidateSource) {
 function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRef) {
   const runBinding = contractCase.runBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef);
   if (runBinding === undefined) throw new Error(`Agent source run binding missing: ${frame.data.source.sourceEventId}`);
+  const runRoute = runRouteFor(contractCase, runBinding.bindingRef);
   const messageBinding = frame.data.presentationMessageBindingRef === undefined
     ? undefined
     : contractCase.messageBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationMessageBindingRef);
+  const messageRoute = messageBinding === undefined ? undefined : messageRouteFor(contractCase, messageBinding.bindingRef);
   return {
     baseCaseId: contractCase.id,
     source: {
@@ -90,9 +110,9 @@ function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRe
       sourceOrdinal,
       recordedAt: frame.data.source.recordedAt,
       route: {
-        internalRunRef: runBinding.internalRunRef,
+        internalRunRef: runRoute.internalRunRef,
         internalThreadRef,
-        ...(messageBinding === undefined ? {} : { internalMessageRef: messageBinding.internalMessageRef }),
+        ...(messageRoute === undefined ? {} : { internalMessageRef: messageRoute.internalMessageRef }),
       },
     },
   };
@@ -115,6 +135,50 @@ function issueCursor({ sessionId, streamEpoch, durableSeq }) {
   const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()]);
   const tag = cipher.getAuthTag();
   return ["v1", keyRevision, iv.toString("base64url"), encrypted.toString("base64url"), tag.toString("base64url")].join(".");
+}
+
+function openRunBinding(binding) {
+  return {
+    ...structuredClone(binding),
+    state: "open",
+    terminalDisposition: null,
+    terminalSourceEventId: null,
+    terminalAt: null,
+  };
+}
+
+function openMessageBinding(binding) {
+  return {
+    ...structuredClone(binding),
+    state: "open",
+    endedBySourceEventId: null,
+    endedAt: null,
+  };
+}
+
+function bindingAuthorityDeltaForFrame(contractCase, frame) {
+  const event = frame.data.event;
+  if (["RUN_STARTED", "RUN_FINISHED", "RUN_ERROR"].includes(event.type)) {
+    const binding = contractCase.runBindings.find(
+      ({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef,
+    );
+    if (binding === undefined) throw new Error(`run binding missing: ${frame.data.source.sourceEventId}`);
+    return {
+      kind: "run.replace",
+      binding: event.type === "RUN_STARTED" ? openRunBinding(binding) : structuredClone(binding),
+    };
+  }
+  if (["TEXT_MESSAGE_START", "TEXT_MESSAGE_END"].includes(event.type)) {
+    const binding = contractCase.messageBindings.find(
+      ({ bindingRef }) => bindingRef === frame.data.presentationMessageBindingRef,
+    );
+    if (binding === undefined) throw new Error(`message binding missing: ${frame.data.source.sourceEventId}`);
+    return {
+      kind: "message.replace",
+      binding: event.type === "TEXT_MESSAGE_START" ? openMessageBinding(binding) : structuredClone(binding),
+    };
+  }
+  return { kind: "none" };
 }
 
 function parseArguments(argv) {
@@ -148,6 +212,26 @@ if (!Array.isArray(agentCandidateProfile.allowedActivityTypes) || agentCandidate
 }
 const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
 if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
+for (const contractCase of corpus.positiveCases) {
+  if (contractCase.sessionPrivateRouteFixtures === undefined) {
+    contractCase.sessionPrivateRouteFixtures = {
+      runs: contractCase.runBindings.map((binding) => ({
+        presentationRunBindingRef: binding.bindingRef,
+        internalRunRef: binding.internalRunRef,
+        parentInternalRunRef: binding.parentLineage.parentInternalRunRef,
+      })),
+      messages: contractCase.messageBindings.map((binding) => ({
+        presentationMessageBindingRef: binding.bindingRef,
+        internalMessageRef: binding.internalMessageRef,
+      })),
+    };
+  }
+  for (const binding of contractCase.runBindings) {
+    delete binding.internalRunRef;
+    delete binding.parentLineage.parentInternalRunRef;
+  }
+  for (const binding of contractCase.messageBindings) delete binding.internalMessageRef;
+}
 const resumedBaseBinding = authorityBase.runBindings.find(
   ({ bindingRef }) => bindingRef === "run-binding.01.segment.0",
 );
@@ -180,21 +264,20 @@ const recordedAt = (sequence) => `2026-08-01T13:00:${String(sequence).padStart(2
 parentCase.runBindings = [
   {
     bindingRef: successRunBindingRef, profileRevision, sessionId: "session.error",
-    internalRunRef: successInternalRunRef, presentationThreadId: "thread.session.error",
+    presentationThreadId: "thread.session.error",
     presentationRunId: successPresentationRunId, segmentOrdinal: 0,
     resumeOfPresentationRunId: null,
-    parentLineage: { parentInternalRunRef: null, parentPresentationRunId: null },
+    parentLineage: { parentPresentationRunId: null },
     state: "finished", terminalDisposition: "success",
     openedBySourceEventId: "agent.event.run.success.000", terminalSourceEventId: "agent.event.run.success.012",
     openedAt: recordedAt(1), terminalAt: recordedAt(13),
   },
   {
     bindingRef: errorRunBindingRef, profileRevision, sessionId: "session.error",
-    internalRunRef: errorInternalRunRef, presentationThreadId: "thread.session.error",
+    presentationThreadId: "thread.session.error",
     presentationRunId: errorPresentationRunId, segmentOrdinal: 0,
     resumeOfPresentationRunId: null,
     parentLineage: {
-      parentInternalRunRef: successInternalRunRef,
       parentPresentationRunId: successPresentationRunId,
     },
     state: "error", terminalDisposition: "error",
@@ -207,7 +290,6 @@ parentCase.messageBindings = [
     bindingRef: successMessageBindingRef,
     profileRevision,
     sessionId: "session.error",
-    internalMessageRef: successInternalMessageRef,
     presentationRunBindingRef: successRunBindingRef,
     presentationMessageId: successPresentationMessageId,
     resumeSegmentOrdinal: 0,
@@ -218,9 +300,29 @@ parentCase.messageBindings = [
     endedAt: recordedAt(12),
   },
 ];
+parentCase.sessionPrivateRouteFixtures = {
+  runs: [
+    {
+      presentationRunBindingRef: successRunBindingRef,
+      internalRunRef: successInternalRunRef,
+      parentInternalRunRef: null,
+    },
+    {
+      presentationRunBindingRef: errorRunBindingRef,
+      internalRunRef: errorInternalRunRef,
+      parentInternalRunRef: successInternalRunRef,
+    },
+  ],
+  messages: [
+    {
+      presentationMessageBindingRef: successMessageBindingRef,
+      internalMessageRef: successInternalMessageRef,
+    },
+  ],
+};
 const source = (sourceEventId, sourceKind, durableSeq, recordedAt) => ({
   sourceEventId, sourceKind, sessionId: "session.error", streamEpoch: "9", durableSeq,
-  projectionVersion: Number(durableSeq), schemaRevision: 1, recordedAt,
+  projectionVersion: durableSeq, schemaRevision: 1, recordedAt,
 });
 const runFrame = (event, data) => ({ kind: "durable", id: "derived-by-generator", event: event.type, data: {
   profileRevision,
@@ -315,6 +417,8 @@ for (const contractCase of corpus.positiveCases) {
   contractCase.request.lastEventId = snapshotCursor;
   contractCase.request.queryCursor = snapshotCursor;
   for (const frame of contractCase.frames) {
+    frame.data.source.projectionVersion = String(frame.data.source.projectionVersion);
+    frame.data.bindingAuthorityDelta = bindingAuthorityDeltaForFrame(contractCase, frame);
     frame.id = issueCursor(frame.data.source);
   }
   contractCase.durableRows = contractCase.frames.map((frame) => ({
@@ -325,6 +429,20 @@ for (const contractCase of corpus.positiveCases) {
     projectionPayload: structuredClone(frame.data),
     projectionPayloadDigest: digest(frame.data),
   }));
+  const lastFrame = contractCase.frames.at(-1);
+  contractCase.expectedFinalSnapshot = {
+    authority: "session-browser-v3-http-snapshot",
+    hydrate: true,
+    repair: true,
+    profileRevision,
+    sessionId: contractCase.snapshot.sessionId,
+    streamEpoch: contractCase.snapshot.streamEpoch,
+    durableSeq: lastFrame.data.source.durableSeq,
+    lastRecordedAt: lastFrame.data.source.recordedAt,
+    cursor: lastFrame.id,
+    runBindings: structuredClone(contractCase.runBindings),
+    messageBindings: structuredClone(contractCase.messageBindings),
+  };
   contractCase.controlFrame.data.lastDurableCursor = contractCase.frames.at(-1).id;
 }
 const parentHead = parentCase.frames.at(-1);
@@ -444,7 +562,110 @@ corpus.snapshotAuthorityNegativeCases = [
   },
 ];
 corpus.negativeCases = [
-  ...corpus.negativeCases.filter(({ id }) => id !== "m0-interrupted-main-run"),
+  ...corpus.negativeCases.filter(({ id }) => (
+    id !== "m0-interrupted-main-run" &&
+    !id.startsWith("binding-delta-") &&
+    !id.startsWith("browser-private-")
+  )),
+  {
+    id: "binding-delta-wrong-kind",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta",
+      value: {
+        kind: "message.replace",
+        binding: openMessageBinding(authorityBase.messageBindings[0]),
+      },
+    },
+    expectedCode: "agui_binding_delta_kind_invalid",
+  },
+  {
+    id: "binding-delta-wrong-ref",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding.bindingRef",
+      value: "run-binding.attack",
+    },
+    expectedCode: "agui_binding_delta_ref_conflict",
+  },
+  {
+    id: "binding-delta-wrong-source",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding.openedBySourceEventId",
+      value: "source.attack",
+    },
+    expectedCode: "agui_binding_delta_source_conflict",
+  },
+  {
+    id: "binding-delta-wrong-time",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding.openedAt",
+      value: "2026-08-01T12:00:00.000Z",
+    },
+    expectedCode: "agui_binding_delta_time_conflict",
+  },
+  {
+    id: "binding-delta-wrong-state",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding",
+      value: {
+        ...openRunBinding(authorityBase.runBindings[0]),
+        state: "finished",
+        terminalDisposition: "success",
+        terminalSourceEventId: authorityBase.frames[0].data.source.sourceEventId,
+        terminalAt: authorityBase.frames[0].data.source.recordedAt,
+      },
+    },
+    expectedCode: "agui_binding_delta_state_conflict",
+  },
+  {
+    id: "binding-delta-future-binding",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding",
+      value: structuredClone(authorityBase.runBindings[0]),
+    },
+    expectedCode: "agui_binding_delta_future_evidence",
+  },
+  {
+    id: "browser-private-run-route-smuggling",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding.internalRunRef",
+      value: "internal.run.smuggled",
+    },
+    expectedCode: "agui_browser_internal_route_forbidden",
+  },
+  {
+    id: "browser-private-message-route-smuggling",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.1.data.bindingAuthorityDelta.binding.internalMessageRef",
+      value: "internal.message.smuggled",
+    },
+    expectedCode: "agui_browser_internal_route_forbidden",
+  },
+  {
+    id: "browser-private-parent-route-smuggling",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.bindingAuthorityDelta.binding.parentLineage.parentInternalRunRef",
+      value: "internal.run.parent.smuggled",
+    },
+    expectedCode: "agui_browser_internal_route_forbidden",
+  },
   {
     id: "m0-interrupted-main-run",
     baseCaseId: authorityBase.id,

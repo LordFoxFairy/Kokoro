@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/session-agui-presentation-row.v1.schema.json",
   "title": "Kokoro Session durable AG-UI presentation row v1",
-  "description": "The persisted Session-owned row stores the complete closed projection payload and its JCS SHA-256. It can replay one exact durable SSE frame after restart without consulting another payload store.",
+  "description": "The persisted Session-owned row stores the complete closed projection payload, including its owner-authored binding authority delta, and the payload's JCS SHA-256. It can replay one exact durable SSE frame after restart without consulting another payload store.",
   "type": "object",
   "additionalProperties": false,
   "required": ["rowRef", "profileRevision", "cursorProfileRevision", "source", "projectionPayload", "projectionPayloadDigest"],
@@ -16,7 +16,7 @@
       "properties": {
         "sourceEventId": {"$ref": "#/$defs/id"}, "sourceKind": {"$ref": "#/$defs/id"},
         "sessionId": {"$ref": "#/$defs/id"}, "streamEpoch": {"$ref": "#/$defs/positiveUint64"},
-        "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"type": "integer", "minimum": 1},
+        "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"$ref": "#/$defs/positiveUint64"},
         "schemaRevision": {"const": 1}, "recordedAt": {"$ref": "#/$defs/dateTime"}
       }
     },

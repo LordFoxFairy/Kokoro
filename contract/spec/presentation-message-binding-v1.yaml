@@ -2,10 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json",
   "title": "Kokoro presentation message binding v1",
+  "description": "A complete browser-safe Session-owned presentation message binding. Agent/internal message refs are forbidden from this wire schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "bindingRef", "profileRevision", "sessionId", "internalMessageRef", "presentationRunBindingRef",
+    "bindingRef", "profileRevision", "sessionId", "presentationRunBindingRef",
     "presentationMessageId", "resumeSegmentOrdinal", "state", "openedBySourceEventId", "endedBySourceEventId",
     "openedAt", "endedAt"
   ],
@@ -13,7 +14,6 @@
     "bindingRef": {"$ref": "#/$defs/id"},
     "profileRevision": {"const": "kokoro-agui-presentation.v1"},
     "sessionId": {"$ref": "#/$defs/id"},
-    "internalMessageRef": {"$ref": "#/$defs/id"},
     "presentationRunBindingRef": {"$ref": "#/$defs/id"},
     "presentationMessageId": {"$ref": "#/$defs/id"},
     "resumeSegmentOrdinal": {"type": "integer", "minimum": 0, "maximum": 65535},

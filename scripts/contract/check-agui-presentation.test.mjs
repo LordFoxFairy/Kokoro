@@ -37,6 +37,7 @@ const fixtureFiles = [
   "contract/spec/kokoro-agui-presentation-event-v1.yaml",
   "contract/spec/agent-agui-event-candidate-v1.yaml",
   "contract/spec/agent-agui-candidate-envelope-v1.yaml",
+  "contract/spec/presentation-binding-authority-delta-v1.yaml",
   "contract/spec/presentation-message-binding-v1.yaml",
   "contract/spec/presentation-run-binding-v1.yaml",
   "contract/spec/session-agui-projection-payload-v1.yaml",
@@ -109,14 +110,22 @@ function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
   const replacements = new Map();
   if (base.snapshot.sessionId !== sessionId) replacements.set(base.snapshot.sessionId, sessionId);
   for (const binding of base.runBindings) {
-    for (const field of ["bindingRef", "internalRunRef", "presentationThreadId", "presentationRunId", "openedBySourceEventId", "terminalSourceEventId"]) {
+    for (const field of ["bindingRef", "presentationThreadId", "presentationRunId", "openedBySourceEventId", "terminalSourceEventId"]) {
       if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
     }
   }
   for (const binding of base.messageBindings) {
-    for (const field of ["bindingRef", "internalMessageRef", "presentationMessageId", "openedBySourceEventId", "endedBySourceEventId"]) {
+    for (const field of ["bindingRef", "presentationMessageId", "openedBySourceEventId", "endedBySourceEventId"]) {
       if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
     }
+  }
+  for (const route of base.sessionPrivateRouteFixtures.runs) {
+    for (const field of ["internalRunRef", "parentInternalRunRef"]) {
+      if (route[field] !== null) replacements.set(route[field], `${route[field]}.${suffix}`);
+    }
+  }
+  for (const route of base.sessionPrivateRouteFixtures.messages) {
+    replacements.set(route.internalMessageRef, `${route.internalMessageRef}.${suffix}`);
   }
   for (const frame of base.frames) replacements.set(frame.data.source.sourceEventId, `${frame.data.source.sourceEventId}.${suffix}`);
   for (const row of base.durableRows) replacements.set(row.rowRef, `${row.rowRef}.${suffix}`);
@@ -145,6 +154,9 @@ function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
   candidate.controlFrame.data.sessionId = sessionId;
   candidate.controlFrame.data.streamEpoch = streamEpoch;
   candidate.controlFrame.data.lastDurableCursor = candidate.frames.at(-1).id;
+  candidate.expectedFinalSnapshot.sessionId = sessionId;
+  candidate.expectedFinalSnapshot.streamEpoch = streamEpoch;
+  candidate.expectedFinalSnapshot.cursor = candidate.frames.at(-1).id;
   return candidate;
 }
 
@@ -164,8 +176,9 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 11,
+    negativeCases: 20,
     durableFrames: 41,
+    bindingReplacementDeltas: 14,
     mappingsCovered: 22,
     agentCandidates: 33,
     agentSourceFixtures: 15,
@@ -174,6 +187,155 @@ test("validates the pinned upstream profile and complete presentation corpus", a
     snapshotAuthorityCases: 1,
     snapshotAuthorityNegativeCases: 6,
   });
+});
+
+test("requires one closed full-replacement binding authority delta in every durable payload", async () => {
+  const payloadSchema = await readJson("contract/spec/session-agui-projection-payload-v1.yaml");
+  const deltaSchema = await readJson("contract/spec/presentation-binding-authority-delta-v1.yaml");
+  assert.ok(payloadSchema.required.includes("bindingAuthorityDelta"));
+  assert.deepEqual(
+    deltaSchema.oneOf.map(({ $ref }) => $ref),
+    ["#/$defs/none", "#/$defs/runReplace", "#/$defs/messageReplace"],
+  );
+  assert.deepEqual(
+    [deltaSchema.$defs.none, deltaSchema.$defs.runReplace, deltaSchema.$defs.messageReplace]
+      .map(({ properties }) => properties.kind.const),
+    ["none", "run.replace", "message.replace"],
+  );
+  assert.equal(deltaSchema.$defs.runReplace.properties.binding.$ref, "https://contracts.kokoro.invalid/presentation-run-binding.v1.schema.json");
+  assert.equal(deltaSchema.$defs.messageReplace.properties.binding.$ref, "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json");
+});
+
+test("keeps Agent internal route topology out of browser binding snapshots and deltas", async () => {
+  const runSchema = await readJson("contract/spec/presentation-run-binding-v1.yaml");
+  const messageSchema = await readJson("contract/spec/presentation-message-binding-v1.yaml");
+  assert.equal(Object.hasOwn(runSchema.properties, "internalRunRef"), false);
+  assert.equal(Object.hasOwn(runSchema.properties.parentLineage.properties, "parentInternalRunRef"), false);
+  assert.equal(Object.hasOwn(messageSchema.properties, "internalMessageRef"), false);
+
+  const containsInternalKey = (value) => {
+    if (Array.isArray(value)) return value.some(containsInternalKey);
+    if (value === null || typeof value !== "object") return false;
+    return Object.entries(value).some(
+      ([key, child]) => /^(?:internal|parentInternal)/u.test(key) || containsInternalKey(child),
+    );
+  };
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  for (const contractCase of corpus.positiveCases) {
+    assert.equal(containsInternalKey(contractCase.expectedFinalSnapshot), false, contractCase.id);
+    for (const frame of contractCase.frames) {
+      assert.equal(containsInternalKey(frame.data), false, `${contractCase.id}:${frame.data.source.durableSeq}`);
+    }
+    assert.ok(contractCase.sessionPrivateRouteFixtures.runs.length > 0, contractCase.id);
+  }
+
+  for (const [field, value] of [
+    ["internalRunRef", "internal.run.leaked"],
+    ["internalMessageRef", "internal.message.leaked"],
+    ["parentInternalRunRef", "internal.run.parent.leaked"],
+  ]) {
+    const candidate = clone(corpus.positiveCases[0]);
+    const frame = field === "internalMessageRef" ? candidate.frames[1] : candidate.frames[0];
+    if (field === "parentInternalRunRef") frame.data.bindingAuthorityDelta.binding.parentLineage[field] = value;
+    else frame.data.bindingAuthorityDelta.binding[field] = value;
+    assert.throws(() => validateConformanceCase(candidate), /agui_browser_internal_route_forbidden/u, field);
+  }
+});
+
+test("uses decimal positive-uint64 projection revisions on every Session-owned source envelope", async () => {
+  const payloadSchema = await readJson("contract/spec/session-agui-projection-payload-v1.yaml");
+  const rowSchema = await readJson("contract/spec/session-agui-presentation-row-v1.yaml");
+  assert.deepEqual(payloadSchema.properties.source.properties.projectionVersion, { $ref: "#/$defs/positiveUint64" });
+  assert.deepEqual(rowSchema.properties.source.properties.projectionVersion, { $ref: "#/$defs/positiveUint64" });
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  for (const contractCase of corpus.positiveCases) {
+    for (const frame of contractCase.frames) {
+      assert.match(frame.data.source.projectionVersion, /^[1-9][0-9]{0,19}$/u);
+    }
+  }
+
+  for (const illegal of [1, "0", "01", "18446744073709551616"]) {
+    const candidate = clone(corpus.positiveCases[0]);
+    candidate.frames[0].data.source.projectionVersion = illegal;
+    assert.throws(
+      () => validateConformanceCase(candidate),
+      (error) => error instanceof AguiPresentationContractError && error.code === "agui_projection_version_invalid",
+      String(illegal),
+    );
+  }
+});
+
+test("freezes binding authority delta policy per source mapping and rebuilds from an empty snapshot", async () => {
+  const registry = await readJson("contract/registry/agui-presentation-mapping-v1.yaml");
+  const expectedKind = (entry) => {
+    if (["RUN_STARTED", "RUN_FINISHED", "RUN_ERROR"].includes(entry.eventType)) return "run.replace";
+    if (["TEXT_MESSAGE_START", "TEXT_MESSAGE_END"].includes(entry.eventType)) return "message.replace";
+    return "none";
+  };
+  for (const entry of registry.mappings) {
+    assert.equal(entry.bindingAuthorityDeltaKind, expectedKind(entry), entry.sourceKind);
+  }
+  assert.deepEqual(registry.projectionPolicy.bindingAuthorityDelta, {
+    cardinality: "exactly-one-required",
+    atomicity: "same-projection-payload-and-durable-row",
+    mutation: "complete-replacement-only",
+    patch: "forbidden",
+  });
+  assert.deepEqual(registry.projectionPolicy.sourceProjectionVersion, {
+    wire: "positive-uint64-decimal-string",
+    semantic: "session-projection-revision",
+    javascriptNumber: "forbidden",
+  });
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  for (const contractCase of corpus.positiveCases) {
+    assert.equal(contractCase.snapshot.durableSeq, "0", contractCase.id);
+    const runBindings = new Map();
+    const messageBindings = new Map();
+    for (const frame of contractCase.frames) {
+      const delta = frame.data.bindingAuthorityDelta;
+      assert.ok(delta, `${contractCase.id}:${frame.data.source.durableSeq}`);
+      if (delta.kind === "run.replace") runBindings.set(delta.binding.bindingRef, delta.binding);
+      if (delta.kind === "message.replace") messageBindings.set(delta.binding.bindingRef, delta.binding);
+    }
+    assert.deepEqual([...runBindings.values()], contractCase.expectedFinalSnapshot.runBindings, contractCase.id);
+    assert.deepEqual([...messageBindings.values()], contractCase.expectedFinalSnapshot.messageBindings, contractCase.id);
+    assert.equal(contractCase.expectedFinalSnapshot.durableSeq, contractCase.frames.at(-1).data.source.durableSeq);
+    assert.equal(contractCase.expectedFinalSnapshot.lastRecordedAt, contractCase.frames.at(-1).data.source.recordedAt);
+    assert.equal(contractCase.expectedFinalSnapshot.cursor, contractCase.frames.at(-1).id);
+  }
+});
+
+test("freezes independent binding delta attacks for kind, ref, source, time, state and future evidence", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  assert.deepEqual(
+    corpus.negativeCases
+      .filter(({ id }) => id.startsWith("binding-delta-"))
+      .map(({ id, expectedCode }) => [id, expectedCode]),
+    [
+      ["binding-delta-wrong-kind", "agui_binding_delta_kind_invalid"],
+      ["binding-delta-wrong-ref", "agui_binding_delta_ref_conflict"],
+      ["binding-delta-wrong-source", "agui_binding_delta_source_conflict"],
+      ["binding-delta-wrong-time", "agui_binding_delta_time_conflict"],
+      ["binding-delta-wrong-state", "agui_binding_delta_state_conflict"],
+      ["binding-delta-future-binding", "agui_binding_delta_future_evidence"],
+    ],
+  );
+});
+
+test("freezes browser attacks that smuggle Session-private routes through binding replacements", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  assert.deepEqual(
+    corpus.negativeCases
+      .filter(({ id }) => id.startsWith("browser-private-"))
+      .map(({ id, expectedCode }) => [id, expectedCode]),
+    [
+      ["browser-private-run-route-smuggling", "agui_browser_internal_route_forbidden"],
+      ["browser-private-message-route-smuggling", "agui_browser_internal_route_forbidden"],
+      ["browser-private-parent-route-smuggling", "agui_browser_internal_route_forbidden"],
+    ],
+  );
 });
 
 test("checks deterministic corpus generation without writing and reports byte drift", async () => {
@@ -611,7 +773,6 @@ test("does not trust expected attack labels: terminal runs, ended messages and l
 
   const confused = clone(base);
   confused.runBindings[1].parentLineage.parentPresentationRunId = confused.runBindings[0].presentationRunId;
-  confused.runBindings[1].parentLineage.parentInternalRunRef = confused.runBindings[0].internalRunRef;
   assert.throws(() => validateConformanceCase(confused), /agui_resume_parent_confused/u);
 });
 
@@ -672,12 +833,38 @@ test("full repository gate rejects a frame payload change whose persisted row di
   await assert.rejects(validateRepository({ root }), /agui_presentation_row_payload_mismatch/u);
 });
 
-test("full repository gate resolves a non-null parent as one real same-Session internal/presentation pair", async () => {
+test("full repository gate forbids private route fields even when injected into a binding replacement", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  corpus.positiveCases[0].frames[0].data.bindingAuthorityDelta.binding.internalRunRef = "internal.run.tampered";
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_browser_internal_route_forbidden/u);
+});
+
+test("full repository gate includes browser-safe binding replacement bytes in the persisted row digest", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  corpus.positiveCases[0].frames[0].data.bindingAuthorityDelta.binding.presentationThreadId = "thread.tampered";
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_presentation_row_payload_mismatch/u);
+});
+
+test("full repository gate resolves a non-null parent through browser-safe presentation lineage", async () => {
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
   corpus.positiveCases[0].runBindings[0].parentLineage.parentPresentationRunId = "presentation.run.missing";
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
   await assert.rejects(validateRepository({ root }), /agui_parent_lineage_pair_invalid/u);
+});
+
+test("full repository gate checks matching Agent parent topology only in Session-private route fixtures", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const contractCase = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
+  const childRoute = contractCase.sessionPrivateRouteFixtures.runs.find(({ parentInternalRunRef }) => parentInternalRunRef !== null);
+  childRoute.parentInternalRunRef = "internal.run.attacker";
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_private_parent_route_conflict/u);
 });
 
 test("full repository gate cannot be pointed at a permissive branded replacement schema", async () => {
@@ -756,12 +943,16 @@ test("full repository gate rejects every cross-case durable and binding semantic
     {
       code: "agui_global_internal_run_segment_duplicate",
       sameSession: true,
-      mutate(third, base) { third.runBindings[0].internalRunRef = base.runBindings[0].internalRunRef; },
+      mutate(third, base) {
+        third.sessionPrivateRouteFixtures.runs[0].internalRunRef = base.sessionPrivateRouteFixtures.runs[0].internalRunRef;
+      },
     },
     {
       code: "agui_global_internal_message_segment_duplicate",
       sameSession: true,
-      mutate(third, base) { third.messageBindings[0].internalMessageRef = base.messageBindings[0].internalMessageRef; },
+      mutate(third, base) {
+        third.sessionPrivateRouteFixtures.messages[0].internalMessageRef = base.sessionPrivateRouteFixtures.messages[0].internalMessageRef;
+      },
     },
     {
       code: "agui_global_source_event_id_duplicate",

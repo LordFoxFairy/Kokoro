@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/session-agui-projection-payload.v1.schema.json",
   "title": "Kokoro Session AG-UI projection payload v1",
-  "description": "The complete closed payload projected from one persisted presentation row into one SSE data frame.",
+  "description": "The complete closed payload projected from one persisted presentation row into one SSE data frame. Its required Session-authored binding authority delta is part of the same digested row and is always a complete replacement or an explicit none decision, never a patch.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["profileRevision", "source", "event"],
+  "required": ["profileRevision", "source", "bindingAuthorityDelta", "event"],
   "properties": {
     "profileRevision": {"const": "kokoro-agui-presentation.v1"},
     "source": {
@@ -14,12 +14,13 @@
       "properties": {
         "sourceEventId": {"$ref": "#/$defs/id"}, "sourceKind": {"$ref": "#/$defs/id"},
         "sessionId": {"$ref": "#/$defs/id"}, "streamEpoch": {"$ref": "#/$defs/positiveUint64"},
-        "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"type": "integer", "minimum": 1},
+        "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"$ref": "#/$defs/positiveUint64"},
         "schemaRevision": {"const": 1}, "recordedAt": {"$ref": "#/$defs/dateTime"}
       }
     },
     "presentationRunBindingRef": {"$ref": "#/$defs/id"},
     "presentationMessageBindingRef": {"$ref": "#/$defs/id"},
+    "bindingAuthorityDelta": {"$ref": "https://contracts.kokoro.invalid/presentation-binding-authority-delta.v1.schema.json"},
     "event": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json"}
   },
   "$defs": {

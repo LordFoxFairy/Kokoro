@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.invalid/presentation-binding-authority-delta.v1.schema.json",
+  "title": "Kokoro presentation binding authority delta v1",
+  "description": "Exactly one Session-authored binding authority decision carried atomically by each durable presentation payload. Replace arms contain the complete owner binding; patches and partial bindings are forbidden.",
+  "oneOf": [
+    {"$ref": "#/$defs/none"},
+    {"$ref": "#/$defs/runReplace"},
+    {"$ref": "#/$defs/messageReplace"}
+  ],
+  "$defs": {
+    "none": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"const": "none"}
+      }
+    },
+    "runReplace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "binding"],
+      "properties": {
+        "kind": {"const": "run.replace"},
+        "binding": {"$ref": "https://contracts.kokoro.invalid/presentation-run-binding.v1.schema.json"}
+      }
+    },
+    "messageReplace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "binding"],
+      "properties": {
+        "kind": {"const": "message.replace"},
+        "binding": {"$ref": "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json"}
+      }
+    }
+  }
+}

@@ -124,6 +124,18 @@ The public AES-GCM key is conformance-fixture material only, never a runtime key
 and frame cursor into closed Session/epoch/sequence/profile claims, rejects both byte and semantic identity reuse
 across positive cases, binds all run/message/source/row identities to their Session, verifies real parent lineage,
 and requires the persisted complete projection payload plus its JCS SHA-256 to equal the emitted frame exactly.
+Each payload has one required closed `bindingAuthorityDelta`; the checker applies complete Run/message replacements in
+durable order, refuses patches, and independently reconstructs the declared final HTTP snapshot from a sequence-zero empty
+authority. Mapping policy requires Run replacements only for Run start/terminal rows, message replacements only for text
+start/end rows, and explicit `none` for content, activity, and all v1 CUSTOM rows. Six checked-in attacks cover wrong delta
+kind, binding ref, source, time, state, and future terminal evidence. Row/payload equality and the JCS digest therefore cover
+the delta rather than authenticating only the official event. Session source `projectionVersion` is validated independently
+as a positive uint64 decimal string across frame, row source, and row payload; no JavaScript safe-integer ceiling is part of
+the protocol.
+Public Run/message replacements are presentation-only and reject `internalRunRef`, `internalMessageRef`, and
+`parentInternalRunRef` recursively. The corpus's `sessionPrivateRouteFixtures` model the Session-private lookup table used
+to resolve Agent routing before projection; the checker validates its complete coverage, resume identity, and parent mapping
+separately. Three checked-in attacks prove that Run, message, and parent private refs cannot be smuggled into browser deltas.
 Snapshot cases additionally prove the Session durable-head `lastRecordedAt` rule, canonical UTC-millisecond representation,
 binding-time lower bound, and canonical next-event non-regression. A checked-in six-vector attack corpus also rejects a zero
 head carrying bindings, evidence cardinality beyond the head, noncanonical binding time, multiple presentation threads,

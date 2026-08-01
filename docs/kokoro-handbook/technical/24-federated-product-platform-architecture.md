@@ -438,6 +438,20 @@ Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事�
 唯一性仍由 Session 数据库保证。官方 stock client transport 会丢失或无法表达
 Kokoro 必需的 SSE `id/event`、`Last-Event-ID`、opaque durable cursor、HTTP snapshot repair 和 non-durable draining 语义，
 因此被明确禁用；未来 Session/Web adapter 必须保留这些字段并提交真实 provider/consumer compatibility evidence。
+为让真实的 sequence-zero 空 snapshot 能无猜测地前进，每个 durable projection payload 必须在同一 Session-owned、
+JCS-digested row 内携带一个 closed `bindingAuthorityDelta`。它只能是显式 `none`、完整 Run binding replacement 或
+完整 message binding replacement，禁止 patch：Run start/finish/error 分别写 open/terminal 完整 Run binding，text
+start/end 分别写 open/ended 完整 message binding；content、activity 与全部 v1 CUSTOM 明确为 `none`。这里的
+CUSTOM owner projection 不等于 transport binding authority，v1 不根据名称猜状态变化。delta 的 ref、Session/profile、
+source event、recorded time、event identity 与 terminal state 必须和同一 row 精确一致，未来 binding evidence 直接
+fail closed；Web 按 durable 顺序应用这些完整替换后必须重建出 Session 的最终 HTTP snapshot。Session source envelope
+Run/message binding 是浏览器安全的完整 presentation replacement，不携带 `internalRunRef`、`internalMessageRef` 或
+`parentInternalRunRef`。这些 Agent 路由只存在于 Session 私有映射权威中，并在投影前解析；不得进入 snapshot、delta、
+持久化 projection payload 或 SSE。Root corpus 的 `sessionPrivateRouteFixtures` 仅用于独立验证该私有映射的覆盖、resume
+恒等与父子拓扑，不属于浏览器 wire；Run、message、parent 三类内部引用走私均有固定负向语料。
+中的 `projectionVersion` 使用 positive uint64 十进制字符串，与 `durableSeq` 采用相同 wire 数值策略；即便当前 owner
+从同一计数器派生，它的语义仍是 projection revision，消费者不得把它当 cursor 或转成 JavaScript `number`，也不得
+因 safe-integer 上限提前耗尽 projection revision。
 Root 的本地 promotion gate 在安装 Agent 精确 lock 后，会用官方 Python event model 与 Agent builder 重建 registry 声明的
 全部 event arm 和 activity discriminator，并与 TypeScript gate 的 Root corpus 逐对象精确比较；registry 漏项、重复替代、
 语义 role 漂移都会失败。这证明双 SDK/双实现 parity，但在 Agent gitlink、manifest、兼容性证据与 BOM 原子提升前仍不进入 CI，

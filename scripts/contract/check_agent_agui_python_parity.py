@@ -33,6 +33,7 @@ from kokoro_agent.presentation import (
 
 AGUI_REPOSITORY = "https://github.com/ag-ui-protocol/ag-ui"
 AGUI_PYTHON_SUBDIRECTORY = "sdks/python"
+UINT64_MAXIMUM = (1 << 64) - 1
 
 _CANDIDATE_PROFILE_KEYS = frozenset(
     {
@@ -282,11 +283,92 @@ def _verify_python_pins(root: Path) -> None:
         _fail("agent_agui_python_pin_invalid", "Root and Agent upstream pins differ")
 
 
+def _validate_session_projection_versions(corpus: Mapping[str, Any]) -> None:
+    positive_cases = _sequence(
+        corpus.get("positiveCases"),
+        code="agent_agui_session_projection_version_invalid",
+        detail="positiveCases missing",
+    )
+    for case_index, case in enumerate(positive_cases):
+        case_mapping = _mapping(
+            case,
+            code="agent_agui_session_projection_version_invalid",
+            detail=f"positiveCases[{case_index}] must be an object",
+        )
+        frames = _sequence(
+            case_mapping.get("frames"),
+            code="agent_agui_session_projection_version_invalid",
+            detail=f"positiveCases[{case_index}].frames missing",
+        )
+        rows = _sequence(
+            case_mapping.get("durableRows"),
+            code="agent_agui_session_projection_version_invalid",
+            detail=f"positiveCases[{case_index}].durableRows missing",
+        )
+        if len(frames) != len(rows):
+            _fail(
+                "agent_agui_session_projection_version_invalid",
+                f"positiveCases[{case_index}] frame/row cardinality differs",
+            )
+        for frame_index, (frame, row) in enumerate(zip(frames, rows, strict=True)):
+            frame_source = _mapping(
+                _mapping(
+                    _mapping(
+                        frame,
+                        code="agent_agui_session_projection_version_invalid",
+                        detail=f"frame {frame_index} invalid",
+                    ).get("data"),
+                    code="agent_agui_session_projection_version_invalid",
+                    detail=f"frame {frame_index} data invalid",
+                ).get("source"),
+                code="agent_agui_session_projection_version_invalid",
+                detail=f"frame {frame_index} source invalid",
+            )
+            row_mapping = _mapping(
+                row,
+                code="agent_agui_session_projection_version_invalid",
+                detail=f"row {frame_index} invalid",
+            )
+            row_source = _mapping(
+                row_mapping.get("source"),
+                code="agent_agui_session_projection_version_invalid",
+                detail=f"row {frame_index} source invalid",
+            )
+            payload_source = _mapping(
+                _mapping(
+                    row_mapping.get("projectionPayload"),
+                    code="agent_agui_session_projection_version_invalid",
+                    detail=f"row {frame_index} payload invalid",
+                ).get("source"),
+                code="agent_agui_session_projection_version_invalid",
+                detail=f"row {frame_index} payload source invalid",
+            )
+            versions = [
+                frame_source.get("projectionVersion"),
+                row_source.get("projectionVersion"),
+                payload_source.get("projectionVersion"),
+            ]
+            if any(
+                not isinstance(version, str)
+                or not version.isascii()
+                or not version.isdecimal()
+                or version.startswith("0")
+                or len(version) > 20
+                or int(version) > UINT64_MAXIMUM
+                for version in versions
+            ) or len(set(versions)) != 1:
+                _fail(
+                    "agent_agui_session_projection_version_invalid",
+                    f"positiveCases[{case_index}] frame {frame_index}",
+                )
+
+
 def validate_corpus(
     corpus: Mapping[str, Any], candidate_profile: Mapping[str, Any]
 ) -> int:
     """Rebuild and compare all canonical Agent candidate envelopes."""
 
+    _validate_session_projection_versions(corpus)
     declared = _declared_coverage(candidate_profile)
     fixtures = _sequence(
         corpus.get("agentSourceFixtures"),

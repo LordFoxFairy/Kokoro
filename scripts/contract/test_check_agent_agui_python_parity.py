@@ -101,6 +101,21 @@ def test_rejects_root_candidate_digest_drift() -> None:
         validate_corpus(corpus, _profile())
 
 
+@pytest.mark.parametrize("projection_version", [1, "01", "18446744073709551616"])
+def test_rejects_non_uint64_session_projection_revision(
+    projection_version: object,
+) -> None:
+    corpus = copy.deepcopy(_corpus())
+    corpus["positiveCases"][0]["frames"][0]["data"]["source"][
+        "projectionVersion"
+    ] = projection_version
+    with pytest.raises(
+        AgentAguiPythonParityError,
+        match="agent_agui_session_projection_version_invalid",
+    ):
+        validate_corpus(corpus, _profile())
+
+
 def test_rejects_missing_or_duplicate_candidate_coverage() -> None:
     corpus = copy.deepcopy(_corpus())
     corpus["agentCandidateEnvelopeCases"].append(

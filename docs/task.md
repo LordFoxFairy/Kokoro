@@ -113,9 +113,18 @@ Commit chain：`2e8c742` → `95d5241` → `7c05e70` → `ddff038` → `fd08fe4`
 
 只在 `kokoro-session` 建立 dormant provider 基础：exact official dependency、strict normalized source port、run/message segment state machine、完整 row payload/digest、PostgreSQL append/CAS/RLS repository 与真实验证。不得直接让 Agent 输出 browser protocol，不改变现有 active Browser v3 stream；完成独立终审后再接 current Session owner facts。
 
+Root prelaunch contract 已要求每个 durable payload 原子携带完整 `bindingAuthorityDelta`，并把 Session source
+`projectionVersion` 收紧为 positive uint64 十进制字符串。Session 子仓仍须同步生成镜像、持久化与
+admission/projector。公开 binding 已完成浏览器安全硬切：Agent 的 internal run/message/parent 路由只能留在 Session
+私有映射权威，snapshot、delta、persisted payload 与 SSE 全部禁止携带；三类走私攻击和私有父子映射冲突均 fail closed。
+Root 合同通过不代表 provider 已激活。
+
 ### Web AG-UI consumer M0
 
 只在 `kokoro-web` 建立 dormant strict decoder/adapter：保留自有 bounded SSE parser、验证 outer profile/source/cursor 与 official event，再映射到现有 `useExternalStoreRuntime` owner reducer。不得使用 stock `@ag-ui/client` 或 `useAgUiRuntime`，不得在 Session provider/compatibility evidence 完成前切 active controller。
+
+Web 必须只应用 Session owner-authored 的完整 binding replacement，从真实 sequence-zero 空 snapshot 逐帧建立
+binding authority；不得预载未来 binding、按 CUSTOM 名称推断、发逐事件修复请求或自行拼 patch。
 
 ### Platform Candidate Authority implementation audit
 

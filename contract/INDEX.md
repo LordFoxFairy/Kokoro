@@ -54,7 +54,7 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-The strict AG-UI family is thirteen machine-readable Root sources:
+The strict AG-UI family is fourteen machine-readable Root sources:
 [`agui-upstream-profile.yaml`](registry/agui-upstream-profile.yaml),
 [`agui-agent-candidate-profile-v1.yaml`](registry/agui-agent-candidate-profile-v1.yaml),
 [`agui-presentation-mapping-v1.yaml`](registry/agui-presentation-mapping-v1.yaml),
@@ -63,6 +63,7 @@ The strict AG-UI family is thirteen machine-readable Root sources:
 [`agent-agui-candidate-envelope-v1.yaml`](spec/agent-agui-candidate-envelope-v1.yaml),
 [`presentation-run-binding-v1.yaml`](spec/presentation-run-binding-v1.yaml),
 [`presentation-message-binding-v1.yaml`](spec/presentation-message-binding-v1.yaml),
+[`presentation-binding-authority-delta-v1.yaml`](spec/presentation-binding-authority-delta-v1.yaml),
 [`session-agui-projection-payload-v1.yaml`](spec/session-agui-projection-payload-v1.yaml),
 [`session-agui-presentation-row-v1.yaml`](spec/session-agui-presentation-row-v1.yaml),
 [`session-agui-stream-v1.yaml`](spec/session-agui-stream-v1.yaml),
@@ -92,7 +93,22 @@ a nonzero head requires canonical UTC millisecond time no earlier than every inc
 cannot regress behind it. A zero head cannot retain bindings, binding evidence cannot exceed the durable head, every binding
 time is canonical UTC milliseconds, one snapshot has one presentation thread, parent lineage is acyclic, and M0 terminal
 bindings are only `finished/success` or `error/error`. Binding source IDs seed only binding evidence; Session storage remains
-the full source-ID uniqueness authority. Rendering libraries remain adapters only and do not own the wire contract.
+the full source-ID uniqueness authority. Every durable payload additionally carries exactly one closed
+`bindingAuthorityDelta`: explicit `none`, a complete Run binding replacement, or a complete message binding replacement.
+Run start/terminal rows require the Run arm; text start/end rows require the message arm; content, activity, and every v1
+CUSTOM row require `none`. This is transport-binding authority, not a patch and not the similarly named CUSTOM owner
+projection. The delta is inside the same persisted, JCS-digested payload as its source and event, so Web can rebuild a final
+Session snapshot frame-by-frame from a real sequence-zero empty snapshot without preloading future bindings or inferring
+owner facts. Source/event/ref/time and open/terminal state must agree exactly; future binding evidence fails closed.
+Both presentation binding schemas are browser-safe complete replacements: `internalRunRef`, `internalMessageRef`,
+`parentInternalRunRef`, and any other Agent route topology are forbidden in snapshots, deltas, persisted projection
+payloads, and SSE. Session resolves those refs through its private route authority before projection. The conformance
+corpus carries `sessionPrivateRouteFixtures` only to validate that private mapping independently; those fixtures are not
+part of the browser wire. Checked-in smuggling attacks cover Run, message, and parent internal refs.
+Session-owned `projectionVersion` is a positive uint64 decimal string in both payload and row source envelopes. It remains a
+Session projection revision even where the current owner derives it from the same counter as `durableSeq`; consumers cannot
+parse it as a JavaScript number or substitute it for cursor semantics. Rendering libraries remain adapters only and do not
+own the wire contract.
 
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
 isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/

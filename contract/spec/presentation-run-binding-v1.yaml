@@ -2,10 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/presentation-run-binding.v1.schema.json",
   "title": "Kokoro presentation run binding v1",
+  "description": "A complete browser-safe Session-owned presentation Run binding. Agent/internal route refs and private parent topology are forbidden from this wire schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "bindingRef", "profileRevision", "sessionId", "internalRunRef", "presentationThreadId",
+    "bindingRef", "profileRevision", "sessionId", "presentationThreadId",
     "presentationRunId", "segmentOrdinal", "resumeOfPresentationRunId", "parentLineage", "state",
     "terminalDisposition", "openedBySourceEventId", "terminalSourceEventId", "openedAt", "terminalAt"
   ],
@@ -13,22 +14,16 @@
     "bindingRef": {"$ref": "#/$defs/id"},
     "profileRevision": {"const": "kokoro-agui-presentation.v1"},
     "sessionId": {"$ref": "#/$defs/id"},
-    "internalRunRef": {"$ref": "#/$defs/id"},
     "presentationThreadId": {"$ref": "#/$defs/id"},
     "presentationRunId": {"$ref": "#/$defs/id"},
     "segmentOrdinal": {"type": "integer", "minimum": 0, "maximum": 65535},
     "resumeOfPresentationRunId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
     "parentLineage": {
       "type": "object", "additionalProperties": false,
-      "required": ["parentInternalRunRef", "parentPresentationRunId"],
+      "required": ["parentPresentationRunId"],
       "properties": {
-        "parentInternalRunRef": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
         "parentPresentationRunId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}
-      },
-      "oneOf": [
-        {"properties": {"parentInternalRunRef": {"type": "null"}, "parentPresentationRunId": {"type": "null"}}},
-        {"properties": {"parentInternalRunRef": {"$ref": "#/$defs/id"}, "parentPresentationRunId": {"$ref": "#/$defs/id"}}}
-      ]
+      }
     },
     "state": {"enum": ["open", "finished", "error"]},
     "terminalDisposition": {"oneOf": [{"enum": ["success", "interrupted", "error", "canceled"]}, {"type": "null"}]},
