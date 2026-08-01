@@ -17,11 +17,15 @@ def test_agent_presentation_boundary_is_durable_contiguous_and_recoverable() -> 
     source = PROTO.read_text()
     service = _body(source, "service", "AgentPresentationService")
     assert re.findall(r"rpc (\w+)\(", service) == [
+        "CheckActive",
         "PullCandidateBatches",
         "AcknowledgeCandidateAdmissions",
         "QuarantineCandidateAdmission",
         "GetDeliveryStatus",
     ]
+    readiness = _body(source, "message", "CheckActiveResponse")
+    assert "contract_revision" in readiness
+    assert "execution-evidence listener must never be used as a proxy signal" in source
     for token in (
         "producer_generation",
         "producer_fence_digest",

@@ -8,6 +8,7 @@
       "id": "agent-presentation",
       "lifecycle": "contract-only",
       "operations": [
+        {"effect": false, "id": "CheckActive", "receipt": null, "retryClass": "after_delay", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
         {"effect": false, "id": "PullCandidateBatches", "receipt": null, "retryClass": "same_identity", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
         {"effect": true, "id": "AcknowledgeCandidateAdmissions", "receipt": {"kind": "state-read", "recoveryOperation": "GetDeliveryStatus", "ref": "kokoro.agent.presentation.v1.PresentationDeliveryStatus"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
         {"effect": true, "id": "QuarantineCandidateAdmission", "receipt": {"kind": "state-read", "recoveryOperation": "GetDeliveryStatus", "ref": "kokoro.agent.presentation.v1.PresentationDeliveryStatus"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},

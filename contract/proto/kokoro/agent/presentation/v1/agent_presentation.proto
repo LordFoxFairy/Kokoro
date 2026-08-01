@@ -10,10 +10,22 @@ import "kokoro/common/v2/command_envelope.proto";
 // session-presentation-consumer role may call it; no browser or Web workload is
 // a consumer, and pulls never authorize Agent garbage collection.
 service AgentPresentationService {
+  rpc CheckActive(CheckActiveRequest) returns (CheckActiveResponse) {}
   rpc PullCandidateBatches(PullCandidateBatchesRequest) returns (PullCandidateBatchesResponse) {}
   rpc AcknowledgeCandidateAdmissions(AcknowledgeCandidateAdmissionsRequest) returns (AcknowledgeCandidateAdmissionsResponse) {}
   rpc QuarantineCandidateAdmission(QuarantineCandidateAdmissionRequest) returns (QuarantineCandidateAdmissionResponse) {}
   rpc GetDeliveryStatus(GetDeliveryStatusRequest) returns (GetDeliveryStatusResponse) {}
+}
+
+// Readiness belongs to this service and its durable presentation store. A
+// healthy execution-evidence listener must never be used as a proxy signal.
+message CheckActiveRequest {}
+
+message CheckActiveResponse {
+  string contract_revision = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
 }
 
 message PresentationProducerFence {
