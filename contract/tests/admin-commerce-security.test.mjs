@@ -110,6 +110,130 @@ test("code batch delivery budget closes unary transport capacity", () => {
   }).kind, "invalid");
 });
 
+test("immutable Commerce revisions are contiguous and ordered collections are canonical", () => {
+  const planType = "kokoro.platform.commerce.v1.PublishPlanRevisionEffect";
+  const plan = {
+    target: transaction,
+    expectedVersion: 0n,
+    commandDigest: digest,
+    definition: {
+      planKey: "plan.standard",
+      acquisitionKind: 2,
+      termAction: 1,
+      termSeconds: 0n,
+      displayLabel: "Standard",
+    },
+    reason: "publish standard plan",
+  };
+  assert.equal(validate(planType, plan).kind, "valid");
+  assert.equal(validate(planType, {
+    ...plan,
+    target: { ...transaction, targetRevision: 2n },
+  }).kind, "invalid");
+  assert.equal(validate(planType, {
+    ...plan,
+    definition: { ...plan.definition, termSeconds: 1n },
+  }).kind, "invalid");
+
+  const fulfillmentType = "kokoro.platform.commerce.v1.PublishFulfillmentProgramRevisionEffect";
+  const line = (outputLineId, outputOrdinal) => ({
+    outputLineId,
+    outputOrdinal,
+    occurrenceCount: 1,
+    kind: 3,
+    ownerRevision: transaction,
+  });
+  const fulfillment = {
+    target: transaction,
+    expectedVersion: 0n,
+    commandDigest: digest,
+    outputLines: [line("credit.primary", 1), line("credit.bonus", 2)],
+    reason: "publish fulfillment program",
+  };
+  assert.equal(validate(fulfillmentType, fulfillment).kind, "valid");
+  assert.equal(validate(fulfillmentType, {
+    ...fulfillment,
+    outputLines: [line("credit.primary", 1), line("credit.bonus", 3)],
+  }).kind, "invalid");
+
+  const assignmentType = "kokoro.platform.commerce.v1.PublishSiteCommerceAssignmentEffect";
+  const assignment = {
+    target: transaction,
+    expectedVersion: 0n,
+    commandDigest: digest,
+    offerRevisions: [transaction],
+    redemptionProgramRevisions: [],
+    reason: "publish Site commerce assignment",
+  };
+  assert.equal(validate(assignmentType, assignment).kind, "valid");
+  assert.equal(validate(assignmentType, {
+    ...assignment,
+    offerRevisions: [transaction, { ...transaction, targetRevision: 2n }],
+  }).kind, "invalid");
+});
+
+test("correction and reconciliation views cannot express mismatched kinds or terminal shape", () => {
+  const original = {
+    platformTransactionRef: "fulfillment-1",
+    transactionVersion: 1n,
+    transactionDigest: digest,
+  };
+  const correctionType = "kokoro.platform.commerce.v1.SourceCorrectionView";
+  const correction = {
+    siteId: "site-1",
+    correction: transaction,
+    kind: 1,
+    state: 1,
+    original,
+    updatedAt: timestamp,
+  };
+  assert.equal(validate(correctionType, correction).kind, "valid");
+  assert.equal(validate(correctionType, { ...correction, replacementBatch: transaction }).kind, "invalid");
+  assert.equal(validate(correctionType, { ...correction, kind: 2 }).kind, "invalid");
+  assert.equal(validate(correctionType, {
+    ...correction,
+    kind: 2,
+    replacementBatch: transaction,
+  }).kind, "valid");
+
+  const reconciliationType = "kokoro.platform.commerce.v1.CommerceReconciliationView";
+  const reconciliation = {
+    siteId: "site-1",
+    reconciliation: transaction,
+    original,
+    state: 1,
+    updatedAt: timestamp,
+  };
+  assert.equal(validate(reconciliationType, reconciliation).kind, "valid");
+  assert.equal(validate(reconciliationType, { ...reconciliation, resolution: 1 }).kind, "invalid");
+  assert.equal(validate(reconciliationType, {
+    ...reconciliation,
+    state: 2,
+    resolution: 1,
+  }).kind, "valid");
+});
+
+test("claimed delivery response binds the nested batch authority", () => {
+  const type = "kokoro.platform.commerce.v1.ClaimCodeBatchDeliveryResponse";
+  const base = {
+    receipt,
+    batch,
+    deliveryState: 3,
+    deliveryVersion: 2n,
+    replayed: false,
+    delivery,
+  };
+  assert.equal(validate(type, base).kind, "valid");
+  assert.equal(validate(type, {
+    ...base,
+    batch: { ...batch, deliveryVersion: 3n },
+  }).kind, "invalid");
+  assert.equal(validate(type, {
+    ...base,
+    batch: { ...batch, deliveryState: 2 },
+  }).kind, "invalid");
+});
+
 test("every commerce mutation response has a compilable closed-state validator", () => {
   const mutationResponses = [
     "PublishPlanRevisionResponse",

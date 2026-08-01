@@ -159,6 +159,11 @@ enum CommerceReconciliationResolution {
 }
 
 message PlanRevisionDefinition {
+  option (buf.validate.message).cel = {
+    id: "commerce.plan.term_shape"
+    message: "NONE has no term duration and every term mutation has a positive duration"
+    expression: "(this.term_action == 1 && this.term_seconds == 0u) || (this.term_action in [2, 3, 4] && this.term_seconds > 0u)"
+  };
   string plan_key = 1 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9._-]{1,127}$"}];
   PlanAcquisitionKind acquisition_kind = 2 [(buf.validate.field).enum = {
     defined_only: true
@@ -257,6 +262,11 @@ message SiteCommerceAssignmentView {
 }
 
 message PublishPlanRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_plan.contiguous_revision"
+    message: "the immutable target revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -271,6 +281,11 @@ message PublishPlanRevisionEffect {
 }
 
 message PublishOfferRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_offer.contiguous_revision"
+    message: "the immutable target revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -293,6 +308,16 @@ message PublishFulfillmentProgramRevisionEffect {
     message: "output line ids and ordinals are unique"
     expression: "this.output_lines.all(o, this.output_lines.filter(n, n.output_line_id == o.output_line_id).size() == 1 && this.output_lines.filter(n, n.output_ordinal == o.output_ordinal).size() == 1)"
   };
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment_program.contiguous_ordinals"
+    message: "output ordinals must cover the exact contiguous range one through N"
+    expression: "this.output_lines.all(o, o.output_ordinal <= uint(this.output_lines.size()))"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_fulfillment.contiguous_revision"
+    message: "the immutable target revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -310,6 +335,11 @@ message PublishFulfillmentProgramRevisionEffect {
 }
 
 message PublishRedemptionProgramRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_redemption.contiguous_revision"
+    message: "the immutable target revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -328,6 +358,21 @@ message PublishRedemptionProgramRevisionEffect {
 }
 
 message PublishSiteCommerceAssignmentEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_assignment.contiguous_revision"
+    message: "the immutable target revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_assignment.unique_offers"
+    message: "an offer aggregate may appear at most once in one Site assignment"
+    expression: "this.offer_revisions.all(o, this.offer_revisions.filter(n, n.target_ref == o.target_ref).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.publish_assignment.unique_redemption_programs"
+    message: "a redemption program aggregate may appear at most once in one Site assignment"
+    expression: "this.redemption_program_revisions.all(o, this.redemption_program_revisions.filter(n, n.target_ref == o.target_ref).size() == 1)"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -748,6 +793,11 @@ message CodeBatchView {
 }
 
 message RequestCodeBatchIssuanceEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.request_code_batch.contiguous_revision"
+    message: "a new batch starts at revision one"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.const = 0];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -792,6 +842,11 @@ message RequestCodeBatchIssuanceResponse {
 }
 
 message ApproveCodeBatchIssuanceEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.approve_code_batch.contiguous_revision"
+    message: "the approved batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -840,6 +895,11 @@ message ApproveCodeBatchIssuanceResponse {
 }
 
 message ClaimCodeBatchDeliveryEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.claim_code_delivery.contiguous_revision"
+    message: "the claimed batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u && this.expected_delivery_version == this.expected_version"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -883,7 +943,7 @@ message ClaimCodeBatchDeliveryResponse {
   option (buf.validate.message).cel = {
     id: "commerce.code_delivery.one_time"
     message: "only the first committed claim returns ciphertext"
-    expression: "this.receipt.operation == 'ClaimCodeBatchDelivery' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.batch.state == kokoro.platform.commerce.v1.CodeBatchState.CODE_BATCH_STATE_APPROVED && this.delivery_state == kokoro.platform.commerce.v1.CodeDeliveryState.CODE_DELIVERY_STATE_CLAIMED && ((!this.replayed && has(this.delivery)) || (this.replayed && !has(this.delivery)))"
+    expression: "this.receipt.operation == 'ClaimCodeBatchDelivery' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.batch.state == kokoro.platform.commerce.v1.CodeBatchState.CODE_BATCH_STATE_APPROVED && this.delivery_state == kokoro.platform.commerce.v1.CodeDeliveryState.CODE_DELIVERY_STATE_CLAIMED && this.batch.delivery_state == this.delivery_state && this.batch.delivery_version == this.delivery_version && ((!this.replayed && has(this.delivery)) || (this.replayed && !has(this.delivery)))"
   };
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   CodeBatchView batch = 2 [(buf.validate.field).required = true];
@@ -897,6 +957,11 @@ message ClaimCodeBatchDeliveryResponse {
 }
 
 message ActivateCodeBatchEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.activate_code_batch.contiguous_revision"
+    message: "the activated batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -921,6 +986,11 @@ message ActivateCodeBatchEffect {
   }];
 }
 message SuspendCodeBatchEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.suspend_code_batch.contiguous_revision"
+    message: "the suspended batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -945,6 +1015,11 @@ message SuspendCodeBatchEffect {
   }];
 }
 message ResumeCodeBatchEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.resume_code_batch.contiguous_revision"
+    message: "the resumed batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -969,6 +1044,11 @@ message ResumeCodeBatchEffect {
   }];
 }
 message RevokeCodeBatchEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.revoke_code_batch.contiguous_revision"
+    message: "the revoked batch revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -1117,6 +1197,11 @@ message GetCodeBatchResponse {
 }
 
 message SourceCorrectionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.source_correction.kind_shape"
+    message: "only code replacements carry a replacement batch"
+    expression: "(this.kind == 1 && !has(this.replacement_batch)) || (this.kind == 2 && has(this.replacement_batch))"
+  };
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
@@ -1136,6 +1221,11 @@ message SourceCorrectionView {
 }
 
 message RequestSourceReversalEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.request_reversal.contiguous_revision"
+    message: "a new reversal starts at revision one"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.const = 0];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -1157,6 +1247,11 @@ message RequestSourceReversalEffect {
   }];
 }
 message ApproveSourceReversalEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.approve_reversal.contiguous_revision"
+    message: "the approved reversal revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -1181,6 +1276,11 @@ message ApproveSourceReversalEffect {
   }];
 }
 message RequestCodeReplacementEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.request_replacement.contiguous_revision"
+    message: "a new replacement starts at revision one"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64.const = 0];
   string command_digest = 3 [(buf.validate.field).string = {
@@ -1207,6 +1307,11 @@ message RequestCodeReplacementEffect {
   }];
 }
 message ApproveCodeReplacementEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.approve_replacement.contiguous_revision"
+    message: "the approved replacement revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
@@ -1287,7 +1392,7 @@ message RequestSourceReversalResponse {
   option (buf.validate.message).cel = {
     id: "commerce.request_source_reversal.closed_response"
     message: "receipt operation and committed result state must match"
-    expression: "this.receipt.operation == 'RequestSourceReversal' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_REQUESTED"
+    expression: "this.receipt.operation == 'RequestSourceReversal' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.kind == kokoro.platform.commerce.v1.SourceCorrectionKind.SOURCE_CORRECTION_KIND_REVERSAL && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_REQUESTED"
   };
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   SourceCorrectionView correction = 2 [(buf.validate.field).required = true];
@@ -1296,7 +1401,7 @@ message ApproveSourceReversalResponse {
   option (buf.validate.message).cel = {
     id: "commerce.approve_source_reversal.closed_response"
     message: "receipt operation and committed result state must match"
-    expression: "this.receipt.operation == 'ApproveSourceReversal' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_APPROVED"
+    expression: "this.receipt.operation == 'ApproveSourceReversal' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.kind == kokoro.platform.commerce.v1.SourceCorrectionKind.SOURCE_CORRECTION_KIND_REVERSAL && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_APPROVED"
   };
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   SourceCorrectionView correction = 2 [(buf.validate.field).required = true];
@@ -1305,7 +1410,7 @@ message RequestCodeReplacementResponse {
   option (buf.validate.message).cel = {
     id: "commerce.request_code_replacement.closed_response"
     message: "receipt operation and committed result state must match"
-    expression: "this.receipt.operation == 'RequestCodeReplacement' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_REQUESTED"
+    expression: "this.receipt.operation == 'RequestCodeReplacement' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.kind == kokoro.platform.commerce.v1.SourceCorrectionKind.SOURCE_CORRECTION_KIND_CODE_REPLACEMENT && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_REQUESTED"
   };
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   SourceCorrectionView correction = 2 [(buf.validate.field).required = true];
@@ -1314,7 +1419,7 @@ message ApproveCodeReplacementResponse {
   option (buf.validate.message).cel = {
     id: "commerce.approve_code_replacement.closed_response"
     message: "receipt operation and committed result state must match"
-    expression: "this.receipt.operation == 'ApproveCodeReplacement' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_APPROVED && this.delivery_receipt.state == kokoro.platform.commerce.v1.CodeDeliveryState.CODE_DELIVERY_STATE_AVAILABLE"
+    expression: "this.receipt.operation == 'ApproveCodeReplacement' && this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.correction.kind == kokoro.platform.commerce.v1.SourceCorrectionKind.SOURCE_CORRECTION_KIND_CODE_REPLACEMENT && this.correction.state == kokoro.platform.commerce.v1.SourceCorrectionState.SOURCE_CORRECTION_STATE_APPROVED && this.delivery_receipt.state == kokoro.platform.commerce.v1.CodeDeliveryState.CODE_DELIVERY_STATE_AVAILABLE"
   };
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   SourceCorrectionView correction = 2 [(buf.validate.field).required = true];
@@ -1355,6 +1460,11 @@ message GetSourceCorrectionResponse {
 }
 
 message CommerceReconciliationView {
+  option (buf.validate.message).cel = {
+    id: "commerce.reconciliation.state_shape"
+    message: "open reconciliations have no resolution and resolved reconciliations have one"
+    expression: "(this.state == 1 && !has(this.resolution)) || (this.state == 2 && has(this.resolution))"
+  };
   string site_id = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 128
@@ -1372,6 +1482,11 @@ message CommerceReconciliationView {
   google.protobuf.Timestamp updated_at = 6 [(buf.validate.field).required = true];
 }
 message ResolveCommerceReconciliationEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.resolve_reconciliation.contiguous_revision"
+    message: "the resolved reconciliation revision must be the exact CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   uint64 expected_version = 2 [(buf.validate.field).uint64 = {
     gt: 0
