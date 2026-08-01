@@ -21,6 +21,53 @@ enum CreditProgramBucketClass {
   CREDIT_PROGRAM_BUCKET_CLASS_PERMANENT = 3;
 }
 
+enum CreditProgramRolloverPolicy {
+  CREDIT_PROGRAM_ROLLOVER_POLICY_UNSPECIFIED = 0;
+  // Launch programs never carry an expired daily/period balance into the next window.
+  CREDIT_PROGRAM_ROLLOVER_POLICY_NONE = 1;
+}
+
+message CreditProgramScopePolicy {
+  uint32 policy_version = 1 [(buf.validate.field).uint32.const = 1];
+  repeated string surface_refs = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+    unique: true
+    items: {string: {pattern: "^[a-z0-9][a-z0-9._:-]{0,255}$"}}
+  }];
+  repeated string capability_keys = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 64
+    unique: true
+    items: {string: {pattern: "^[a-z0-9][a-z0-9._:-]{0,255}$"}}
+  }];
+  repeated string agent_refs = 4 [(buf.validate.field).repeated = {
+    max_items: 64
+    unique: true
+    items: {string: {min_len: 1 max_len: 256}}
+  }];
+  bool allow_unattributed_agent = 5;
+}
+
+message DailyCreditWindow {
+  // IANA time-zone name; Credit validates it against the runtime tz database before publication.
+  string calendar_zone = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  uint32 reset_second_of_day = 2 [(buf.validate.field).uint32.lt = 86400];
+  CreditProgramRolloverPolicy rollover = 3 [(buf.validate.field).enum.const = 1];
+}
+
+message SubscriptionPeriodCreditWindow {
+  // The exact start/end instants come from the committed Commerce SubscriptionTerm owner fact.
+  CreditProgramRolloverPolicy rollover = 1 [(buf.validate.field).enum.const = 1];
+}
+
+message PermanentCreditWindow {
+  optional google.protobuf.Duration expires_after = 1;
+}
+
 message CreditGlobalCommandContext {
   option (buf.validate.message).cel = {
     id: "credit.global_command.scope"
@@ -49,12 +96,36 @@ message CreditProgramRevisionIntent {
   uint64 revision = 2 [(buf.validate.field).uint64.gt = 0];
 }
 message CreditProgramGrantRule {
+  option (buf.validate.message).cel = {
+    id: "credit.program.bucket_window"
+    message: "the typed window policy must match the bucket class"
+    expression: "(this.bucket == 1 && has(this.daily)) || (this.bucket == 2 && has(this.subscription_period)) || (this.bucket == 3 && has(this.permanent))"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit.program.scope_agent"
+    message: "a scoped rule either allows unattributed agents or names at least one agent"
+    expression: "this.scope.allow_unattributed_agent || this.scope.agent_refs.size() > 0"
+  };
   CreditProgramBucketClass bucket = 1 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
   uint64 amount_minor = 2 [(buf.validate.field).uint64.gt = 0];
-  optional google.protobuf.Duration expires_after = 3;
+  uint32 burn_priority = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000
+  }];
+  string liability_merchant_account_ref = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  CreditProgramScopePolicy scope = 5 [(buf.validate.field).required = true];
+  oneof window {
+    option (buf.validate.oneof).required = true;
+    DailyCreditWindow daily = 6;
+    SubscriptionPeriodCreditWindow subscription_period = 7;
+    PermanentCreditWindow permanent = 8;
+  }
 }
 message CreditProgramDefinition {
   option (buf.validate.message).cel = {
@@ -62,20 +133,28 @@ message CreditProgramDefinition {
     message: "a Credit Program has at most one rule for each bucket"
     expression: "this.grants.all(x, this.grants.filter(y, y.bucket == x.bucket).size() == 1)"
   };
-  repeated CreditProgramGrantRule grants = 1 [(buf.validate.field).repeated = {
+  option (buf.validate.message).cel = {
+    id: "credit.program.complete_consumption_order"
+    message: "consumption order is an exact permutation of the published bucket rules"
+    expression: "this.consumption_order.size() == this.grants.size() && this.consumption_order.all(b, this.grants.exists(g, g.bucket == b))"
+  };
+  string unit = 1 [(buf.validate.field).string = {
+    pattern: "^[a-z][a-z0-9._-]{0,63}$"
+  }];
+  repeated CreditProgramGrantRule grants = 2 [(buf.validate.field).repeated = {
     min_items: 1
     max_items: 3
   }];
-  uint64 maximum_account_balance_minor = 2 [(buf.validate.field).uint64.gt = 0];
-  google.protobuf.Duration reservation_ttl = 3 [(buf.validate.field).required = true];
-  google.protobuf.Duration reconciliation_grace = 4 [(buf.validate.field).required = true];
-  repeated CreditProgramBucketClass consumption_order = 5 [(buf.validate.field).repeated = {
+  uint64 maximum_account_balance_minor = 3 [(buf.validate.field).uint64.gt = 0];
+  google.protobuf.Duration reservation_ttl = 4 [(buf.validate.field).required = true];
+  google.protobuf.Duration reconciliation_grace = 5 [(buf.validate.field).required = true];
+  repeated CreditProgramBucketClass consumption_order = 6 [(buf.validate.field).repeated = {
     min_items: 1
     max_items: 3
     unique: true
   }];
-  bool allow_negative_balance = 6 [(buf.validate.field).bool.const = false];
-  string accounting_policy_ref = 7 [(buf.validate.field).string = {
+  bool allow_negative_balance = 7 [(buf.validate.field).bool.const = false];
+  string accounting_policy_ref = 8 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
   }];
