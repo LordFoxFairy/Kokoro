@@ -91,11 +91,21 @@ message FulfillmentOutputCommitment {
   }];
 }
 
-message FulfillmentTransactionFact {
+message CanonicalFulfillmentTransactionV1 {
   option (buf.validate.message).cel = {
     id: "fulfillment.committed_fact_only"
     message: "a persisted fulfillment transaction is always committed"
     expression: "this.state == kokoro.platform.commerce.v1.FulfillmentTransactionState.FULFILLMENT_TRANSACTION_STATE_COMMITTED"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_refs_unique"
+    message: "each committed output reference appears exactly once"
+    expression: "this.outputs.all(o, this.outputs.filter(n, n.output_ref == o.output_ref).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_identities_unique"
+    message: "each committed output identity tuple appears exactly once"
+    expression: "this.outputs.all(o, this.outputs.filter(n, n.kind == o.kind && n.output_ref == o.output_ref && n.output_version == o.output_version && n.output_digest == o.output_digest).size() == 1)"
   };
   string platform_transaction_ref = 1 [(buf.validate.field).string = {
     min_len: 1
@@ -113,80 +123,104 @@ message FulfillmentTransactionFact {
   }];
   FulfillmentTransactionState state = 6 [(buf.validate.field).enum.const = 1];
   uint64 transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
-  string transaction_digest = 8 [(buf.validate.field).string = {
+  google.protobuf.Timestamp committed_at = 8 [(buf.validate.field).required = true];
+}
+
+message FulfillmentTransactionFact {
+  CanonicalFulfillmentTransactionV1 transaction = 1 [(buf.validate.field).required = true];
+  // Lowercase SHA-256 of UTF8("kokoro.platform.commerce.v1.CanonicalFulfillmentTransactionV1"),
+  // one NUL byte, then deterministic known-field protobuf bytes of transaction with unknown fields
+  // discarded. This binds every frozen source, program, output, state, version and timestamp field.
+  string transaction_digest = 2 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  google.protobuf.Timestamp committed_at = 9 [(buf.validate.field).required = true];
 }
 
-message FulfillmentReversalFact {
-  string original_platform_transaction_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  string reversal_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  FulfillmentReversalReason reason = 3 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  uint64 fact_version = 4 [(buf.validate.field).uint64.gt = 0];
-  string fact_digest = 5 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-}
-
-message FulfillmentReplacementFact {
-  string original_platform_transaction_ref = 1 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  string replacement_platform_transaction_ref = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  string replacement_reason_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  uint64 fact_version = 4 [(buf.validate.field).uint64.gt = 0];
-  string fact_digest = 5 [(buf.validate.field).string = {
-    len: 64
-    pattern: "^[0-9a-f]{64}$"
-  }];
-  google.protobuf.Timestamp recorded_at = 6 [(buf.validate.field).required = true];
-}
-
-message FulfillmentReconciliationFact {
+message FulfillmentTransactionIdentity {
   string platform_transaction_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  FulfillmentReconciliationKind kind = 2 [(buf.validate.field).enum = {
+  uint64 transaction_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string transaction_digest = 3 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+}
+
+message FulfillmentReversalFact {
+  string site_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FulfillmentTransactionIdentity original = 2 [(buf.validate.field).required = true];
+  string reversal_ref = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FulfillmentReversalReason reason = 4 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
-  string evidence_ref = 3 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 256
-  }];
-  string evidence_digest = 4 [(buf.validate.field).string = {
+  uint64 fact_version = 5 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 6 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  string resolution_ref = 5 [(buf.validate.field).string = {
+  google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
+}
+
+message FulfillmentReplacementFact {
+  option (buf.validate.message).cel = {
+    id: "fulfillment.replacement_is_distinct"
+    message: "a replacement must name a different transaction"
+    expression: "this.original.platform_transaction_ref != this.replacement.platform_transaction_ref"
+  };
+  string site_ref = 1 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  uint64 fact_version = 6 [(buf.validate.field).uint64.gt = 0];
-  string fact_digest = 7 [(buf.validate.field).string = {
+  FulfillmentTransactionIdentity original = 2 [(buf.validate.field).required = true];
+  FulfillmentTransactionIdentity replacement = 3 [(buf.validate.field).required = true];
+  string replacement_reason_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fact_version = 5 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 6 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
-  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp recorded_at = 7 [(buf.validate.field).required = true];
+}
+
+message FulfillmentReconciliationFact {
+  string site_ref = 1 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  FulfillmentTransactionIdentity original = 2 [(buf.validate.field).required = true];
+  FulfillmentReconciliationKind kind = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string evidence_ref = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  string evidence_digest = 5 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  string resolution_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 256
+  }];
+  uint64 fact_version = 7 [(buf.validate.field).uint64.gt = 0];
+  string fact_digest = 8 [(buf.validate.field).string = {
+    len: 64
+    pattern: "^[0-9a-f]{64}$"
+  }];
+  google.protobuf.Timestamp recorded_at = 9 [(buf.validate.field).required = true];
 }

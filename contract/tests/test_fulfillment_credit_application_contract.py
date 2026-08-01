@@ -42,14 +42,26 @@ def test_fulfillment_records_one_committed_fact_and_separate_correction_facts() 
     for source_owned_detail in ("code", "amount", "currency", "invoice", "charge"):
         assert source_owned_detail not in acquisition.lower()
 
+    canonical = _message_body(source, "CanonicalFulfillmentTransactionV1")
+    assert "string site_ref" in canonical
+    assert "namespace" not in canonical
+    assert "FrozenAcquisitionSnapshot acquisition" in canonical
+    assert "FrozenFulfillmentProgramSnapshot program" in canonical
+    assert "FULFILLMENT_TRANSACTION_STATE_COMMITTED" in canonical
+    assert "this.outputs.filter(n, n.output_ref == o.output_ref).size() == 1" in canonical
+    assert "n.kind == o.kind" in canonical
+    assert "n.output_version == o.output_version" in canonical
+    assert "n.output_digest == o.output_digest" in canonical
+
     transaction = _message_body(source, "FulfillmentTransactionFact")
-    assert "string site_ref = 2" in transaction
-    assert "namespace" not in transaction
-    assert "FrozenAcquisitionSnapshot acquisition" in transaction
-    assert "FrozenFulfillmentProgramSnapshot program" in transaction
-    assert "FULFILLMENT_TRANSACTION_STATE_COMMITTED" in transaction
-    assert "reversal" not in transaction.lower()
-    assert "replacement" not in transaction.lower()
+    assert "CanonicalFulfillmentTransactionV1 transaction" in transaction
+    assert "string transaction_digest" in transaction
+    assert "SHA-256" in source
+    assert "deterministic known-field protobuf bytes" in source
+
+    identity = _message_body(source, "FulfillmentTransactionIdentity")
+    for field in ("platform_transaction_ref", "transaction_version", "transaction_digest"):
+        assert field in identity
 
     for fact in (
         "FulfillmentReversalFact",
@@ -57,9 +69,14 @@ def test_fulfillment_records_one_committed_fact_and_separate_correction_facts() 
         "FulfillmentReconciliationFact",
     ):
         body = _message_body(source, fact)
+        assert "string site_ref = 1" in body
+        assert "FulfillmentTransactionIdentity original" in body
         assert "uint64 fact_version" in body
         assert "string fact_digest" in body
         assert "google.protobuf.Timestamp recorded_at" in body
+    replacement = _message_body(source, "FulfillmentReplacementFact")
+    assert "FulfillmentTransactionIdentity replacement" in replacement
+    assert "this.original.platform_transaction_ref != this.replacement.platform_transaction_ref" in replacement
 
 
 def test_credit_application_binds_every_transition_to_one_opaque_cas_identity() -> None:
@@ -78,6 +95,7 @@ def test_credit_application_binds_every_transition_to_one_opaque_cas_identity() 
         "CommitCreditReservation",
         "SettleCreditReservation",
         "ReleaseCreditReservation",
+        "ReconcileCreditReservation",
     ):
         request = _message_body(source, f"{operation}Request")
         effect = _message_body(source, f"{operation}Effect")
@@ -102,6 +120,7 @@ def test_credit_application_binds_every_transition_to_one_opaque_cas_identity() 
         "CommitCreditReservationResponse": "CREDIT_TRANSACTION_STATE_COMMITTED",
         "SettleCreditReservationResponse": "CREDIT_TRANSACTION_STATE_SETTLED",
         "ReleaseCreditReservationResponse": "CREDIT_TRANSACTION_STATE_RELEASED",
+        "ReconcileCreditReservationResponse": "CREDIT_TRANSACTION_STATE_RECONCILIATION_REQUIRED",
     }
     for response, state in expected_states.items():
         assert state in _message_body(source, response)
@@ -117,6 +136,21 @@ def test_credit_application_binds_every_transition_to_one_opaque_cas_identity() 
     assert "COMMAND_RECEIPT_STATE_V2_ACCEPTED" not in recovery
     for state in expected_states.values():
         assert state in recovery
+
+    reserve = _message_body(source, "ReserveCreditEffect")
+    assert "(buf.validate.field).uint64.const = 0" in reserve
+    for transition in (
+        "CommitCreditReservationEffect",
+        "SettleCreditReservationEffect",
+        "ReleaseCreditReservationEffect",
+        "ReconcileCreditReservationEffect",
+    ):
+        assert "(buf.validate.field).uint64.gt = 0" in _message_body(source, transition)
+    reconcile = _message_body(source, "ReconcileCreditReservationEffect")
+    assert "bool effect_outcome_unknown" in reconcile
+    assert "(buf.validate.field).bool.const = true" in reconcile
+    assert "string effect_outcome_evidence_ref" in reconcile
+    assert "string effect_outcome_evidence_digest" in reconcile
 
 
 def test_registry_freezes_owner_consumer_recovery_and_namespace_scope() -> None:
@@ -136,7 +170,15 @@ def test_registry_freezes_owner_consumer_recovery_and_namespace_scope() -> None:
             "select": {"service": "CreditApplicationService"},
         }
     ]
-    for operation in credit["operations"][:4]:
+    assert [operation["id"] for operation in credit["operations"]] == [
+        "ReserveCredit",
+        "CommitCreditReservation",
+        "SettleCreditReservation",
+        "ReleaseCreditReservation",
+        "ReconcileCreditReservation",
+        "GetCreditCommandReceipt",
+    ]
+    for operation in credit["operations"][:5]:
         assert operation["retryClass"] == "reconcile_receipt"
         assert operation["receipt"] == {
             "kind": "command-receipt",

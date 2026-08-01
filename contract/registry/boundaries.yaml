@@ -12,6 +12,7 @@
         {"effect": true, "id": "CommitCreditReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetCreditCommandReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": true, "id": "SettleCreditReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetCreditCommandReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": true, "id": "ReleaseCreditReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetCreditCommandReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": true, "id": "ReconcileCreditReservation", "receipt": {"kind": "command-receipt", "recoveryOperation": "GetCreditCommandReceipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc"},
         {"effect": false, "id": "GetCreditCommandReceipt", "receipt": null, "retryClass": "after_delay", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
