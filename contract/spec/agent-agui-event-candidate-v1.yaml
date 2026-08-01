@@ -7,17 +7,10 @@
     {"$ref": "#/$defs/runStartedWithoutParent"},
     {"$ref": "#/$defs/runFinishedSuccess"},
     {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/runError"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/textStart"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/textContent"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/textEnd"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySafeSummary"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityToolPreview"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityHitl"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityPlan"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySubagent"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityMedia"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityNotice"},
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityError"}
+    {"$ref": "#/$defs/textStart"},
+    {"$ref": "#/$defs/textContent"},
+    {"$ref": "#/$defs/textEnd"},
+    {"$ref": "#/$defs/activityCandidate"}
   ],
   "$defs": {
     "runStartedWithoutParent": {
@@ -47,6 +40,57 @@
           "properties": {"type": {"const": "success"}}
         }
       }
+    },
+    "textStart": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "role"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_START"},
+        "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
+        "messageId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"},
+        "role": {"const": "assistant"}
+      }
+    },
+    "textContent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "delta"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_CONTENT"},
+        "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
+        "messageId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"},
+        "delta": {"type": "string", "minLength": 1, "maxLength": 16384}
+      }
+    },
+    "textEnd": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_END"},
+        "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
+        "messageId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"}
+      }
+    },
+    "activityCandidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"},
+        "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
+        "messageId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"},
+        "activityType": {"enum": ["kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1", "kokoro.subagent.v1", "kokoro.media.v1", "kokoro.notice.v1", "kokoro.error.v1"]},
+        "content": {"type": "object"},
+        "replace": {"const": true}
+      },
+      "allOf": [
+        {"if": {"properties": {"activityType": {"const": "kokoro.safe-summary.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySafeSummary/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.tool-preview.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityToolPreview/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.hitl.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityHitl/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.plan.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityPlan/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.subagent.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySubagent/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.media.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityMedia/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.notice.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityNotice/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.error.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityError/properties/content"}}}}
+      ]
     }
   }
 }

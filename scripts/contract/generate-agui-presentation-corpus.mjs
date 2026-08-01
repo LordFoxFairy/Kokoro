@@ -12,6 +12,9 @@ const key = createHash("sha256").update("kokoro-agui-presentation-public-conform
 const publicSourceFixtureHmacKey = createHash("sha256")
   .update("kokoro-agui-public-source-fixture-test-only-v1", "utf8")
   .digest();
+const presentationIdentityFixtureHmacKey = createHash("sha256")
+  .update("kokoro-agui-presentation-identity-fixture-test-only-v1", "utf8")
+  .digest();
 const aad = Buffer.from(`kokoro.session.browser.cursor.v1\u0000${keyRevision}`, "utf8");
 const uint64Maximum = "18446744073709551615";
 const contracts = Object.freeze({
@@ -133,6 +136,79 @@ function publicSourceEventIdFor(contractCase, frame) {
     .update(fixtureMaterial, "utf8")
     .digest("hex");
   return `presentation.event:${opaqueFixture}`;
+}
+
+function presentationIdentityFor(kind, caseId, ordinal) {
+  const fixtureMaterial = [
+    "kokoro.agui.presentation-identity-fixture.v1",
+    kind,
+    caseId,
+    String(ordinal),
+  ].join("\u0000");
+  const opaqueFixture = createHmac("sha256", presentationIdentityFixtureHmacKey)
+    .update(fixtureMaterial, "utf8")
+    .digest("hex");
+  return `presentation.${kind}:${opaqueFixture}`;
+}
+
+function replaceIdentityStrings(value, replacements) {
+  if (typeof value === "string") return replacements.get(value) ?? value;
+  if (Array.isArray(value)) return value.map((entry) => replaceIdentityStrings(entry, replacements));
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [key, replaceIdentityStrings(child, replacements)]),
+  );
+}
+
+function collectNamedIdentityValues(value, names, output) {
+  if (Array.isArray(value)) {
+    for (const entry of value) collectNamedIdentityValues(entry, names, output);
+    return;
+  }
+  if (value === null || typeof value !== "object") return;
+  for (const [key, child] of Object.entries(value)) {
+    if (names.has(key) && typeof child === "string" && !output.includes(child)) output.push(child);
+    collectNamedIdentityValues(child, names, output);
+  }
+}
+
+function opaquifyPresentationIdentities(contractCase) {
+  const replacements = new Map();
+  const threadOrdinals = new Map();
+  for (const [index, binding] of contractCase.runBindings.entries()) {
+    replacements.set(binding.bindingRef, presentationIdentityFor("run-binding", contractCase.id, index));
+    if (!threadOrdinals.has(binding.presentationThreadId)) {
+      threadOrdinals.set(binding.presentationThreadId, threadOrdinals.size);
+    }
+    replacements.set(
+      binding.presentationThreadId,
+      presentationIdentityFor("thread", contractCase.id, threadOrdinals.get(binding.presentationThreadId)),
+    );
+    replacements.set(binding.presentationRunId, presentationIdentityFor("run", contractCase.id, index));
+  }
+  for (const [index, binding] of contractCase.messageBindings.entries()) {
+    replacements.set(binding.bindingRef, presentationIdentityFor("message-binding", contractCase.id, index));
+    replacements.set(binding.presentationMessageId, presentationIdentityFor("message", contractCase.id, index));
+  }
+  const additionalRunIds = [];
+  collectNamedIdentityValues(contractCase.frames, new Set(["presentationRunId"]), additionalRunIds);
+  for (const value of additionalRunIds) {
+    if (!replacements.has(value)) replacements.set(value, presentationIdentityFor("run", contractCase.id, replacements.size));
+  }
+  const additionalMessageIds = [];
+  collectNamedIdentityValues(
+    contractCase.frames,
+    new Set(["presentationMessageId", "parentPresentationMessageId"]),
+    additionalMessageIds,
+  );
+  for (const [index, value] of additionalMessageIds.entries()) {
+    if (!replacements.has(value)) {
+      replacements.set(value, presentationIdentityFor("message", contractCase.id, contractCase.messageBindings.length + index));
+    }
+  }
+  const replaced = replaceIdentityStrings(contractCase, replacements);
+  for (const key of Object.keys(contractCase)) delete contractCase[key];
+  Object.assign(contractCase, replaced);
 }
 
 function replaceSourceEvidence(bindings, sourceIds, fields) {
@@ -265,7 +341,7 @@ for (const contractCase of corpus.positiveCases) {
   for (const binding of contractCase.messageBindings) delete binding.internalMessageRef;
 }
 const resumedBaseBinding = authorityBase.runBindings.find(
-  ({ bindingRef }) => bindingRef === "run-binding.01.segment.0",
+  ({ segmentOrdinal }) => segmentOrdinal === 0,
 );
 if (resumedBaseBinding === undefined || resumedBaseBinding.state !== "finished") {
   throw new Error("resume-with-safe-typed-presentation terminal base binding is required");
@@ -438,6 +514,7 @@ corpus.agentSourceFixtures = [
   )),
 ];
 for (const contractCase of corpus.positiveCases) {
+  opaquifyPresentationIdentities(contractCase);
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;
   delete contractCase.snapshot.runBindings;
   delete contractCase.snapshot.messageBindings;
@@ -510,7 +587,9 @@ for (const contractCase of corpus.positiveCases) {
   contractCase.controlFrame.data.lastDurableCursor = contractCase.frames.at(-1).id;
 }
 const parentHead = parentCase.frames.at(-1);
-const successRunFinishedFrame = successFrames.at(-1);
+const projectedSuccessFrames = parentCase.frames.slice(0, successFrames.length);
+const projectedErrorFrames = parentCase.frames.slice(successFrames.length);
+const successRunFinishedFrame = projectedSuccessFrames.at(-1);
 if (parentHead === undefined || successRunFinishedFrame?.data.event.type !== "RUN_FINISHED") {
   throw new Error("complete Agent candidate corpus frames are required");
 }
@@ -551,7 +630,7 @@ const envelopeCaseId = (frame) => {
   throw new Error(`unsupported success candidate envelope: ${event.type}`);
 };
 corpus.agentCandidateEnvelopeCases = [
-  ...successFrames.slice(0, -1).map((frame) => ({
+  ...projectedSuccessFrames.slice(0, -1).map((frame) => ({
     id: envelopeCaseId(frame),
     baseCaseId: parentCase.id,
     sourceEventId: frame.data.source.sourceEventId,
@@ -560,14 +639,14 @@ corpus.agentCandidateEnvelopeCases = [
   {
     id: "agent-error-run-start-envelope",
     baseCaseId: parentCase.id,
-    sourceEventId: errorFrames[0].data.source.sourceEventId,
-    candidateEnvelope: candidateEnvelopeFor(parentCase, errorFrames[0]),
+    sourceEventId: projectedErrorFrames[0].data.source.sourceEventId,
+    candidateEnvelope: candidateEnvelopeFor(parentCase, projectedErrorFrames[0]),
   },
   {
     id: "agent-run-error-envelope",
     baseCaseId: parentCase.id,
-    sourceEventId: errorFrames[1].data.source.sourceEventId,
-    candidateEnvelope: candidateEnvelopeFor(parentCase, errorFrames[1]),
+    sourceEventId: projectedErrorFrames[1].data.source.sourceEventId,
+    candidateEnvelope: candidateEnvelopeFor(parentCase, projectedErrorFrames[1]),
   },
 ];
 corpus.snapshotAuthorityCases = [
@@ -655,7 +734,7 @@ corpus.negativeCases = [
     mutation: {
       operation: "set",
       path: "frames.0.data.bindingAuthorityDelta.binding.bindingRef",
-      value: "run-binding.attack",
+      value: `presentation.run-binding:${"0".repeat(64)}`,
     },
     expectedCode: "agui_binding_delta_ref_conflict",
   },
@@ -772,7 +851,7 @@ corpus.negativeCases = [
       operation: "set",
       path: `frames.${authorityBase.frames.findIndex(({ data }) => data.event.name === "kokoro.run.replace.v1")}.data.event.value`,
       value: {
-        presentationRunId: "presentation.run.01.segment.0",
+        presentationRunId: authorityBase.runBindings.at(-1).presentationRunId,
         state: "waiting",
         projectionVersion: 4,
       },
@@ -800,6 +879,14 @@ corpus.negativeCases = [
     expectedCode: "agui_run_terminal_state_invalid",
   },
 ];
+const terminalRevival = corpus.negativeCases.find(({ id }) => id === "terminal-run-revival");
+if (terminalRevival !== undefined) terminalRevival.mutation.runBindingRef = authorityBase.runBindings[0].bindingRef;
+const endedMessageReopen = corpus.negativeCases.find(({ id }) => id === "ended-message-reopen");
+if (endedMessageReopen !== undefined) endedMessageReopen.mutation.messageBindingRef = authorityBase.messageBindings[0].bindingRef;
+const resumeParentConfusion = corpus.negativeCases.find(({ id }) => id === "resume-parent-lineage-confusion");
+if (resumeParentConfusion !== undefined) {
+  resumeParentConfusion.mutation.value = authorityBase.runBindings[0].presentationRunId;
+}
 const generatedText = `${JSON.stringify(corpus, null, 2)}\n`;
 if (options.check) {
   if (generatedText !== sourceText) {

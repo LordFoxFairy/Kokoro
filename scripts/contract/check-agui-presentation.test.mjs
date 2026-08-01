@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import test from "node:test";
 import { promisify } from "node:util";
+import Ajv2020 from "../../contract/node_modules/ajv/dist/2020.js";
 
 import {
   AguiPresentationContractError,
@@ -64,6 +65,95 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function compileSchemaFragment(fragment) {
+  const ajv = new Ajv2020({ strict: true });
+  return ajv.compile({ $schema: "https://json-schema.org/draft/2020-12/schema", ...fragment });
+}
+
+test("public uint64 schemas independently reject values above the wire maximum", async () => {
+  for (const schemaPath of [
+    "contract/spec/session-agui-projection-payload-v1.yaml",
+    "contract/spec/session-agui-presentation-row-v1.yaml",
+    "contract/spec/kokoro-agui-presentation-event-v1.yaml",
+  ]) {
+    const schema = await readJson(schemaPath);
+    const validate = compileSchemaFragment(schema.$defs.positiveUint64);
+    assert.equal(validate("18446744073709551615"), true, schemaPath);
+    assert.equal(validate("18446744073709551616"), false, schemaPath);
+    assert.equal(validate("99999999999999999999"), false, schemaPath);
+    assert.equal(validate("0"), false, schemaPath);
+    assert.equal(validate("01"), false, schemaPath);
+    assert.equal(validate(1), false, schemaPath);
+  }
+});
+
+test("presentation run and message identities are branded opaque Session allocations", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const patterns = {
+    runBinding: /^presentation\.run-binding:[0-9a-f]{64}$/u,
+    thread: /^presentation\.thread:[0-9a-f]{64}$/u,
+    run: /^presentation\.run:[0-9a-f]{64}$/u,
+    messageBinding: /^presentation\.message-binding:[0-9a-f]{64}$/u,
+    message: /^presentation\.message:[0-9a-f]{64}$/u,
+  };
+  for (const contractCase of corpus.positiveCases) {
+    const privateRefs = [
+      ...contractCase.sessionPrivateRouteFixtures.runs.flatMap((route) => [route.internalRunRef, route.parentInternalRunRef].filter(Boolean)),
+      ...contractCase.sessionPrivateRouteFixtures.messages.map((route) => route.internalMessageRef),
+    ];
+    for (const binding of contractCase.runBindings) {
+      assert.match(binding.bindingRef, patterns.runBinding, contractCase.id);
+      assert.match(binding.presentationThreadId, patterns.thread, contractCase.id);
+      assert.match(binding.presentationRunId, patterns.run, contractCase.id);
+      for (const privateRef of privateRefs) {
+        assert.equal(binding.bindingRef.includes(privateRef), false, contractCase.id);
+        assert.equal(binding.presentationThreadId.includes(privateRef), false, contractCase.id);
+        assert.equal(binding.presentationRunId.includes(privateRef), false, contractCase.id);
+      }
+    }
+    for (const binding of contractCase.messageBindings) {
+      assert.match(binding.bindingRef, patterns.messageBinding, contractCase.id);
+      assert.match(binding.presentationRunBindingRef, patterns.runBinding, contractCase.id);
+      assert.match(binding.presentationMessageId, patterns.message, contractCase.id);
+      for (const privateRef of privateRefs) {
+        assert.equal(binding.bindingRef.includes(privateRef), false, contractCase.id);
+        assert.equal(binding.presentationMessageId.includes(privateRef), false, contractCase.id);
+      }
+    }
+  }
+});
+
+test("rejects clear, private-equal and private-substring presentation identities", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
+  assert.ok(base);
+  const attacks = [
+    {
+      code: "agui_public_presentation_identity_invalid",
+      mutate(candidate) { candidate.runBindings[0].presentationRunId = "presentation.run:session.error:0"; },
+    },
+    {
+      code: "agui_private_presentation_identity_equal",
+      mutate(candidate) { candidate.sessionPrivateRouteFixtures.runs[0].internalRunRef = candidate.runBindings[0].presentationRunId; },
+    },
+    {
+      code: "agui_private_presentation_identity_leak",
+      mutate(candidate) {
+        candidate.sessionPrivateRouteFixtures.messages[0].internalMessageRef = candidate.messageBindings[0].presentationMessageId.slice(-16);
+      },
+    },
+  ];
+  for (const attack of attacks) {
+    const candidate = clone(base);
+    attack.mutate(candidate);
+    assert.throws(
+      () => validateConformanceCase(candidate),
+      (error) => error instanceof AguiPresentationContractError && error.code === attack.code,
+      attack.code,
+    );
+  }
+});
+
 function provenanceForPublicSource(contractCase, publicSourceEventId) {
   return contractCase.sessionPrivateRouteFixtures.provenance.find(
     (provenance) => provenance.publicSourceEventId === publicSourceEventId,
@@ -112,17 +202,23 @@ function transformStrings(value, replacements) {
   return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, transformStrings(child, replacements)]));
 }
 
+function distinctOpaqueFixture(value, suffix) {
+  const brand = value.slice(0, value.indexOf(":"));
+  const opaque = createHash("sha256").update(`${value}\u0000${suffix}`, "utf8").digest("hex");
+  return `${brand}:${opaque}`;
+}
+
 function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
   const replacements = new Map();
   if (base.snapshot.sessionId !== sessionId) replacements.set(base.snapshot.sessionId, sessionId);
   for (const binding of base.runBindings) {
     for (const field of ["bindingRef", "presentationThreadId", "presentationRunId", "openedBySourceEventId", "terminalSourceEventId"]) {
-      if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
+      if (binding[field] !== null) replacements.set(binding[field], distinctOpaqueFixture(binding[field], suffix));
     }
   }
   for (const binding of base.messageBindings) {
     for (const field of ["bindingRef", "presentationMessageId", "openedBySourceEventId", "endedBySourceEventId"]) {
-      if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
+      if (binding[field] !== null) replacements.set(binding[field], distinctOpaqueFixture(binding[field], suffix));
     }
   }
   for (const route of base.sessionPrivateRouteFixtures.runs) {
@@ -422,6 +518,15 @@ test("freezes binding authority delta policy per source mapping and rebuilds fro
     conformanceFixtureGenerator: "root-test-only-not-runtime",
     agentSourceEventRefEquality: "forbidden",
     agentSourceEventRefExposure: "private-provenance-only",
+    webDerivation: "forbidden",
+  });
+  assert.deepEqual(registry.projectionPolicy.presentationIdentity, {
+    wire: "type-branded-256-bit-opaque-ref",
+    runtimeAssignment: "session-owner-assigned",
+    runtimeDerivationContract: "none",
+    conformanceFixtureGenerator: "root-test-only-not-runtime",
+    privateRefEquality: "forbidden",
+    privateRefSubstring: "forbidden",
     webDerivation: "forbidden",
   });
   assert.deepEqual(registry.projectionPolicy.customRunOwnerVersion, {
@@ -772,7 +877,7 @@ test("forbids Agent RUN_STARTED parentRunId until Session binding authority deri
   assert.equal(Object.hasOwn(derived.candidateEnvelope.event, "parentRunId"), false);
   const base = checkedIn.positiveCases.find(({ id }) => id === derived.baseCaseId);
   const projectedFrame = base.frames.find(({ data }) => data.source.sourceEventId === derived.sourceEventId);
-  assert.equal(projectedFrame.data.event.parentRunId, "presentation.run.error.parent.segment.0");
+  assert.equal(projectedFrame.data.event.parentRunId, base.runBindings[0].presentationRunId);
 
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
@@ -921,13 +1026,13 @@ test("does not trust expected attack labels: terminal runs, ended messages and l
 
   const revival = applyCorpusMutation(clone(base), {
     operation: "terminal-revival",
-    runBindingRef: "run-binding.01.segment.0",
+    runBindingRef: base.runBindings[0].bindingRef,
   });
   assert.throws(() => validateConformanceCase(revival), /agui_terminal_run_revived/u);
 
   const reopened = applyCorpusMutation(clone(base), {
     operation: "reopen-message",
-    messageBindingRef: "message-binding.01.segment.0",
+    messageBindingRef: base.messageBindings[0].bindingRef,
   });
   assert.throws(() => validateConformanceCase(reopened), /agui_message_reopened/u);
 
@@ -1004,7 +1109,7 @@ test("full repository gate forbids private route fields even when injected into 
 test("full repository gate includes browser-safe binding replacement bytes in the persisted row digest", async () => {
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
-  corpus.positiveCases[0].frames[0].data.bindingAuthorityDelta.binding.presentationThreadId = "thread.tampered";
+  corpus.positiveCases[0].frames[0].data.bindingAuthorityDelta.binding.presentationThreadId = `presentation.thread:${"0".repeat(64)}`;
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
   await assert.rejects(validateRepository({ root }), /agui_presentation_row_payload_mismatch/u);
 });
@@ -1012,7 +1117,7 @@ test("full repository gate includes browser-safe binding replacement bytes in th
 test("full repository gate resolves a non-null parent through browser-safe presentation lineage", async () => {
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
-  corpus.positiveCases[0].runBindings[0].parentLineage.parentPresentationRunId = "presentation.run.missing";
+  corpus.positiveCases[0].runBindings[0].parentLineage.parentPresentationRunId = `presentation.run:${"0".repeat(64)}`;
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
   await assert.rejects(validateRepository({ root }), /agui_parent_lineage_pair_invalid/u);
 });

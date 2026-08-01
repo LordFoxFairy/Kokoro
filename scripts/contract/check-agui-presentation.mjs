@@ -46,15 +46,15 @@ const CONTRACT_PATHS = Object.freeze({
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
-  mapping: "a745192779c78fb4abaa2cd1bb8118d167b3e907bc5cf1153337dc4fca32d24f",
-  eventSchema: "e9873b1fabdc180aeee782e61243285321ec20c0f37670ea7a79d95f9a62b8d9",
-  agentCandidateSchema: "b203876638e975bd3899bef09b8afdf8f183a6f9cd7939d67ddf8f7d90ac3731",
+  mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
+  eventSchema: "cbd015a0e2b354dd9bf5b45488cda04c9392a66bf907223ef1cec344849a8067",
+  agentCandidateSchema: "85baea2c0d02fd96f562f66c17f519aee501b444da289ba7bde54dfec2ee82ef",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
-  projectionPayloadSchema: "12a93a3b799601b2743dbfa96bd6c1833bd7a837914f481dc5a4d940d9c6de16",
-  presentationRowSchema: "bc2286f915ed7f0c5281fb6210c3ce7fd9dac0d397cff849edb01a106cfc430f",
+  projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
+  presentationRowSchema: "9216fcfaca063b8c7576209e7108757749a655bbd7d538b9a8acb684356e72fa",
   bindingAuthorityDeltaSchema: "9fd30b734e2aa5f52be50eb1442eaf16843de8baa8098fcc996bc5e057f9dd2d",
-  runBindingSchema: "d507453e4e5458720476c61c9b013c8f2ec1d3f25a516b41f245e083c60615e6",
-  messageBindingSchema: "2a8a00e9f94da0b3792428a9dcfbead6e6e1ea9057f273792965c0f8714d261f",
+  runBindingSchema: "4d2ac9baca89f389d62ccf8d08b7890d4cdddf1a055996c6347058bc9e4c4c8d",
+  messageBindingSchema: "0b2f3b9ba68c78fc58182539e2d33673e7af4a5e9ba5ed1bc2c48b0edb69dd6c",
   streamSchema: "ce51651ab17c080838547ec74c73a86574b9134aed351c7f27d92d1709441333",
   snapshotAuthoritySchema: "6c2ee288041cf29ea4dccd318c58bbaa4d19e1577de0acaf00aae076479e39e8",
 });
@@ -369,16 +369,24 @@ function validateAgentCandidateSchemaContract(schema) {
     schema.$id !== "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json"
   ) fail("agui_agent_candidate_schema_identity_invalid");
   const presentationSchemaId = "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json";
-  const definitions = [
-    null, null, "runError", "textStart", "textContent", "textEnd", "activitySafeSummary",
-    "activityToolPreview", "activityHitl", "activityPlan", "activitySubagent", "activityMedia", "activityNotice", "activityError",
-  ];
   exactArray(
     schema.oneOf,
-    definitions.map((definition, index) => ({ $ref: definition === null ? (index === 0 ? "#/$defs/runStartedWithoutParent" : "#/$defs/runFinishedSuccess") : `${presentationSchemaId}#/$defs/${definition}` })),
+    [
+      { $ref: "#/$defs/runStartedWithoutParent" },
+      { $ref: "#/$defs/runFinishedSuccess" },
+      { $ref: "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/runError" },
+      { $ref: "#/$defs/textStart" },
+      { $ref: "#/$defs/textContent" },
+      { $ref: "#/$defs/textEnd" },
+      { $ref: "#/$defs/activityCandidate" },
+    ],
     "agui_agent_candidate_schema_refs_invalid",
   );
-  exactKeys(schema.$defs, ["runStartedWithoutParent", "runFinishedSuccess"], "agui_agent_candidate_schema_defs_invalid");
+  exactKeys(
+    schema.$defs,
+    ["runStartedWithoutParent", "runFinishedSuccess", "textStart", "textContent", "textEnd", "activityCandidate"],
+    "agui_agent_candidate_schema_defs_invalid",
+  );
   const started = schema.$defs.runStartedWithoutParent;
   exactKeys(started, ["type", "additionalProperties", "required", "properties"], "agui_agent_candidate_run_started_shape_invalid");
   exactArray(started.required, ["type", "timestamp", "threadId", "runId"], "agui_agent_candidate_run_started_shape_invalid");
@@ -394,6 +402,19 @@ function validateAgentCandidateSchemaContract(schema) {
     success.properties?.outcome?.properties?.type?.const !== "success" || success.properties.outcome.additionalProperties !== false ||
     Object.hasOwn(success.properties, "result")
   ) fail("agui_agent_candidate_run_finished_shape_invalid");
+  for (const name of ["textStart", "textContent", "textEnd"]) {
+    const definition = schema.$defs[name];
+    if (
+      definition?.type !== "object" || definition.additionalProperties !== false ||
+      definition.properties?.messageId?.$ref !== `${presentationSchemaId}#/$defs/id`
+    ) fail("agui_agent_candidate_schema_defs_invalid", name);
+  }
+  const activity = schema.$defs.activityCandidate;
+  if (
+    activity?.type !== "object" || activity.additionalProperties !== false ||
+    activity.properties?.messageId?.$ref !== `${presentationSchemaId}#/$defs/id` ||
+    activity.properties?.activityType?.enum?.length !== 8 || activity.allOf?.length !== 8
+  ) fail("agui_agent_candidate_schema_defs_invalid", "activityCandidate");
 }
 
 function validateMappingRegistry(mapping) {
@@ -428,7 +449,7 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy,
     [
       "durableRowToFrameCardinality", "dropDurableRows", "fanOutDurableRows", "bindingAuthorityDelta",
-      "sourceProjectionVersion", "publicSourceEventIdentity", "customRunOwnerVersion",
+      "sourceProjectionVersion", "publicSourceEventIdentity", "presentationIdentity", "customRunOwnerVersion",
       "agentCandidateSourceProfile", "agentRawPassthrough", "providerPayloadPassthrough",
     ],
     "agui_projection_policy_invalid",
@@ -448,6 +469,14 @@ function validateMappingRegistry(mapping) {
     [
       "wire", "runtimeAssignment", "runtimeDerivationContract", "conformanceFixtureGenerator",
       "agentSourceEventRefEquality", "agentSourceEventRefExposure", "webDerivation",
+    ],
+    "agui_projection_policy_invalid",
+  );
+  exactKeys(
+    mapping.projectionPolicy.presentationIdentity,
+    [
+      "wire", "runtimeAssignment", "runtimeDerivationContract", "conformanceFixtureGenerator",
+      "privateRefEquality", "privateRefSubstring", "webDerivation",
     ],
     "agui_projection_policy_invalid",
   );
@@ -474,6 +503,13 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefEquality !== "forbidden" ||
     mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefExposure !== "private-provenance-only" ||
     mapping.projectionPolicy.publicSourceEventIdentity.webDerivation !== "forbidden" ||
+    mapping.projectionPolicy.presentationIdentity.wire !== "type-branded-256-bit-opaque-ref" ||
+    mapping.projectionPolicy.presentationIdentity.runtimeAssignment !== "session-owner-assigned" ||
+    mapping.projectionPolicy.presentationIdentity.runtimeDerivationContract !== "none" ||
+    mapping.projectionPolicy.presentationIdentity.conformanceFixtureGenerator !== "root-test-only-not-runtime" ||
+    mapping.projectionPolicy.presentationIdentity.privateRefEquality !== "forbidden" ||
+    mapping.projectionPolicy.presentationIdentity.privateRefSubstring !== "forbidden" ||
+    mapping.projectionPolicy.presentationIdentity.webDerivation !== "forbidden" ||
     mapping.projectionPolicy.customRunOwnerVersion.wire !== "positive-uint64-decimal-string" ||
     mapping.projectionPolicy.customRunOwnerVersion.semantic !== "run-owner-version" ||
     mapping.projectionPolicy.customRunOwnerVersion.legacyProjectionVersion !== "forbidden" ||
@@ -715,11 +751,34 @@ function validateEventPreSchema(event, mapping) {
   if (extra !== undefined) fail("agui_event_extra_forbidden", extra);
 }
 
+const OPAQUE_PRESENTATION_IDENTITY = Object.freeze({
+  runBindingRef: /^presentation\.run-binding:[0-9a-f]{64}$/u,
+  threadId: /^presentation\.thread:[0-9a-f]{64}$/u,
+  runId: /^presentation\.run:[0-9a-f]{64}$/u,
+  messageBindingRef: /^presentation\.message-binding:[0-9a-f]{64}$/u,
+  messageId: /^presentation\.message:[0-9a-f]{64}$/u,
+});
+
+function validateOpaquePresentationIdentity(value, pattern) {
+  if (typeof value !== "string" || !pattern.test(value)) {
+    fail("agui_public_presentation_identity_invalid");
+  }
+}
+
 function validateRunBindings(bindings, validateSchema, snapshot, identities) {
   if (!Array.isArray(bindings) || bindings.length === 0 || bindings.length > 256) fail("agui_run_bindings_invalid");
   const refs = new Map();
   const presentationIds = new Map();
   for (const binding of bindings) {
+    validateOpaquePresentationIdentity(binding.bindingRef, OPAQUE_PRESENTATION_IDENTITY.runBindingRef);
+    validateOpaquePresentationIdentity(binding.presentationThreadId, OPAQUE_PRESENTATION_IDENTITY.threadId);
+    validateOpaquePresentationIdentity(binding.presentationRunId, OPAQUE_PRESENTATION_IDENTITY.runId);
+    if (binding.resumeOfPresentationRunId !== null) {
+      validateOpaquePresentationIdentity(binding.resumeOfPresentationRunId, OPAQUE_PRESENTATION_IDENTITY.runId);
+    }
+    if (binding.parentLineage?.parentPresentationRunId !== null) {
+      validateOpaquePresentationIdentity(binding.parentLineage?.parentPresentationRunId, OPAQUE_PRESENTATION_IDENTITY.runId);
+    }
     if (!validateSchema(binding)) fail("agui_run_binding_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
     validatePublicSourceEventId(binding.openedBySourceEventId);
     if (binding.terminalSourceEventId !== null) validatePublicSourceEventId(binding.terminalSourceEventId);
@@ -802,6 +861,9 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, id
   const refs = new Map();
   const ids = new Set();
   for (const binding of bindings) {
+    validateOpaquePresentationIdentity(binding.bindingRef, OPAQUE_PRESENTATION_IDENTITY.messageBindingRef);
+    validateOpaquePresentationIdentity(binding.presentationRunBindingRef, OPAQUE_PRESENTATION_IDENTITY.runBindingRef);
+    validateOpaquePresentationIdentity(binding.presentationMessageId, OPAQUE_PRESENTATION_IDENTITY.messageId);
     if (!validateSchema(binding)) fail("agui_message_binding_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
     validatePublicSourceEventId(binding.openedBySourceEventId);
     if (binding.endedBySourceEventId !== null) validatePublicSourceEventId(binding.endedBySourceEventId);
@@ -824,6 +886,13 @@ function validatePrivateRouteId(value, code) {
   }
 }
 
+function validatePrivateRefSeparation(privateRef, publicRefs) {
+  for (const publicRef of publicRefs) {
+    if (privateRef === publicRef) fail("agui_private_presentation_identity_equal", privateRef);
+    if (publicRef.includes(privateRef)) fail("agui_private_presentation_identity_leak", privateRef);
+  }
+}
+
 function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs, identities) {
   const fixtures = contractCase.sessionPrivateRouteFixtures;
   exactKeys(fixtures, ["runs", "messages", "provenance"], "agui_private_route_fixture_shape_invalid");
@@ -841,6 +910,12 @@ function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs,
     validatePrivateRouteId(route.internalRunRef, "agui_private_run_route_shape_invalid");
     if (route.parentInternalRunRef !== null) {
       validatePrivateRouteId(route.parentInternalRunRef, "agui_private_run_route_shape_invalid");
+    }
+    const binding = runRefs.get(route.presentationRunBindingRef);
+    if (binding !== undefined) {
+      const publicRefs = [binding.bindingRef, binding.presentationThreadId, binding.presentationRunId];
+      validatePrivateRefSeparation(route.internalRunRef, publicRefs);
+      if (route.parentInternalRunRef !== null) validatePrivateRefSeparation(route.parentInternalRunRef, publicRefs);
     }
     if (!runRefs.has(route.presentationRunBindingRef) || runRoutes.has(route.presentationRunBindingRef)) {
       fail("agui_private_route_fixture_coverage_invalid", route.presentationRunBindingRef);
@@ -885,6 +960,13 @@ function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs,
       "agui_private_message_route_shape_invalid",
     );
     validatePrivateRouteId(route.internalMessageRef, "agui_private_message_route_shape_invalid");
+    const binding = messageRefs.get(route.presentationMessageBindingRef);
+    if (binding !== undefined) {
+      validatePrivateRefSeparation(
+        route.internalMessageRef,
+        [binding.bindingRef, binding.presentationRunBindingRef, binding.presentationMessageId],
+      );
+    }
     if (!messageRefs.has(route.presentationMessageBindingRef) || messageRoutes.has(route.presentationMessageBindingRef)) {
       fail("agui_private_route_fixture_coverage_invalid", route.presentationMessageBindingRef);
     }
@@ -1778,7 +1860,7 @@ function applySnapshotAuthorityMutation(authorityCase, mutation) {
     return authorityCase;
   }
   if (mutation?.operation === "multiple-presentation-thread") {
-    snapshot.runBindings[1].presentationThreadId = "thread.session.other";
+    snapshot.runBindings[1].presentationThreadId = `presentation.thread:${"0".repeat(64)}`;
     return authorityCase;
   }
   if (mutation?.operation === "parent-lineage-cycle") {

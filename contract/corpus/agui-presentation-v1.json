@@ -43,11 +43,11 @@
       },
       "runBindings": [
         {
-          "bindingRef": "run-binding.01.segment.0",
+          "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationThreadId": "thread.session.01",
-          "presentationRunId": "presentation.run.01.segment.0",
+          "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+          "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
           "segmentOrdinal": 0,
           "resumeOfPresentationRunId": null,
           "parentLineage": {
@@ -61,13 +61,13 @@
           "terminalAt": "2026-08-01T12:00:21.000Z"
         },
         {
-          "bindingRef": "run-binding.01.segment.1",
+          "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationThreadId": "thread.session.01",
-          "presentationRunId": "presentation.run.01.segment.1",
+          "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+          "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
           "segmentOrdinal": 1,
-          "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+          "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
           "parentLineage": {
             "parentPresentationRunId": null
           },
@@ -81,11 +81,11 @@
       ],
       "messageBindings": [
         {
-          "bindingRef": "message-binding.01.segment.0",
+          "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationRunBindingRef": "run-binding.01.segment.0",
-          "presentationMessageId": "presentation.message.01.segment.0",
+          "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+          "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
           "resumeSegmentOrdinal": 0,
           "state": "ended",
           "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -94,11 +94,11 @@
           "endedAt": "2026-08-01T12:00:20.000Z"
         },
         {
-          "bindingRef": "message-binding.01.segment.1",
+          "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationRunBindingRef": "run-binding.01.segment.1",
-          "presentationMessageId": "presentation.message.01.segment.1",
+          "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+          "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
           "resumeSegmentOrdinal": 1,
           "state": "ended",
           "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -134,21 +134,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:01.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785585601000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.0"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.0",
+                "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -163,7 +163,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:2240fede2b48b51c9042c06ee99a0527b2f544e9a9d5dfb2bfd2f6b14822f2da"
+          "projectionPayloadDigest": "sha256:6a227ff7a11cc49ba8d0998d3fd49cfee4b7268b8d430e0de3162d2859610de1"
         },
         {
           "rowRef": "presentation-row.presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -191,22 +191,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:02.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "timestamp": 1785585602000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "role": "assistant"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.0",
+                "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.0",
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -216,7 +216,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:a9d9bbc5a27fdd9052003b853b97203d20ef4c3e90171003975047fca138ca4c"
+          "projectionPayloadDigest": "sha256:b90668f52655c185d841aad501906cdcf013ed713f448bc6fa5aeceb641526fa"
         },
         {
           "rowRef": "presentation-row.presentation.event:9aafa7b0dfb6283145ad4d7383baf49bcc475c2b000ef0e9eb7c148973fbf8b9",
@@ -244,19 +244,19 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:03.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "timestamp": 1785585603000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "delta": "I can help with that."
             },
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:9b0eb8aea67225c8ad970d8349ffebff84f29512eccc99e4c5ec9c9efc0b3a98"
+          "projectionPayloadDigest": "sha256:0180cc2283e009a4a603057520218283932000272a311f0a473f9b1f9a057fba"
         },
         {
           "rowRef": "presentation-row.presentation.event:3c8ad72605b6cb1d9ad2ad4ff312945d70a1ce81bf75f276722e58c99ffb8af6",
@@ -284,12 +284,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:04.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585604000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.safe-summary.v1",
               "content": {
                 "partRef": "part.summary.01",
@@ -302,7 +302,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:cd70ca0d7616fcec0f228269dae814e4ad6109f5497c0eb57ee503a1f5b0d0a7"
+          "projectionPayloadDigest": "sha256:6074e57309d1bb741fc2daab8cd9b6f87c21de6fba27139015515922f59a2628"
         },
         {
           "rowRef": "presentation-row.presentation.event:47c99fdf2a064f8698707a68aa074e66ec12ce3c2fb1ddd881be9474e9cd940c",
@@ -330,12 +330,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:05.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585605000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.tool-preview.v1",
               "content": {
                 "toolCallRef": "tool-call.01",
@@ -352,7 +352,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:da7957239daf8e3d54bf85ae5f67bbf99aec45e898ef073ad001e0c07c275fd3"
+          "projectionPayloadDigest": "sha256:dbdd0d057dd0157b3e0a336a0caab53fa1a067f016208fbf76957b28d7c6f58e"
         },
         {
           "rowRef": "presentation-row.presentation.event:8b978e884444589ec8527cb7fe5b4ff1be38b624baea3890cbd4210c6af589a1",
@@ -380,12 +380,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:06.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585606000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.hitl.v1",
               "content": {
                 "ownerRef": "decision.01",
@@ -406,7 +406,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:c0bd884a2ac2abb6f2d4cf2a4f11cab50010e83237a6e932ed4a27fbcb9dde15"
+          "projectionPayloadDigest": "sha256:2fd042b9e87278635877de08abec53a979d03fe2782009b9b49a69e43c917616"
         },
         {
           "rowRef": "presentation-row.presentation.event:89e8452faec99bc24fedba74a4a4cac0716d58b5c1e97dd24dffc85ffd6f0d68",
@@ -434,12 +434,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:07.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585607000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.plan.v1",
               "content": {
                 "planRef": "plan.01",
@@ -464,7 +464,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:75ea3cfab51cf32ec1772cc96f11c8cfd7aa31e8ccd9c029e7153f0c80265043"
+          "projectionPayloadDigest": "sha256:1b35154dd2046290e3f330205d17e74a7014d5b528cb0ad8a17fdd97cd3d92a3"
         },
         {
           "rowRef": "presentation-row.presentation.event:c69b705a27a27d79df5ff4c0467bfb4953b0e388237c56095b2907db30f5fedc",
@@ -492,12 +492,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:08.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585608000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.subagent.v1",
               "content": {
                 "subagentRef": "subagent.01",
@@ -510,7 +510,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:2cf683e0df9fc1826a9a6624cbb212c04290f14b2fd9b77569ab922c838b9393"
+          "projectionPayloadDigest": "sha256:bfbfb0bdfdfa15cce230bd39891e344b69e5366b1d7e31fe1e8ff9961b4eb22a"
         },
         {
           "rowRef": "presentation-row.presentation.event:e271c07382d334c906a25031a1be7f1156aed8fd2b24d8ac974a7fd281eef9e8",
@@ -538,12 +538,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:09.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585609000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.media.v1",
               "content": {
                 "operationRef": "media-operation.01",
@@ -557,7 +557,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:2d95ca709b99a6be393f2b82ff995a2c674f68bbbc044cbf1cfdaac1e51a3a6f"
+          "projectionPayloadDigest": "sha256:7b392e77f27f1d8a56c9835e0c699014b0465ec6d8ec7aa2df78b1b070bf00f1"
         },
         {
           "rowRef": "presentation-row.presentation.event:b0b32596419031ec4e221fa1d5e30e96ea62c5ed203daac4b12376a41070b210",
@@ -585,12 +585,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:10.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585610000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.artifact.v1",
               "content": {
                 "artifactRef": "artifact.01",
@@ -605,7 +605,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:2d71306ec5b02254da206fd3eb12614826d0b8939d021a6da80894a2c939f397"
+          "projectionPayloadDigest": "sha256:3bcff9680cc26e70866288bcd7bd4ffc12a07b65135a429a2792da82c2033d3a"
         },
         {
           "rowRef": "presentation-row.presentation.event:16556fcf98ea8da0599c0e3f8afc30693d6546936bcbd75cd99ece0b95c39366",
@@ -633,12 +633,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:11.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585611000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.cost.v1",
               "content": {
                 "costProjectionRef": "cost.01",
@@ -653,7 +653,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:294a78b88e7a1bb4f667a73efffd4d9a2184735738acdfd1b240920dafb6610f"
+          "projectionPayloadDigest": "sha256:50485966c56fd15c09319baf2ad4d7f3a66c91e8aa7e72fda23923f469ca2544"
         },
         {
           "rowRef": "presentation-row.presentation.event:177b04a8079acb540949d14a296d981a6a22c371d53d42c7fa5c7aee282ba5f1",
@@ -681,12 +681,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:12.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585612000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.notice.v1",
               "content": {
                 "noticeRef": "notice.01",
@@ -701,7 +701,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:11de4b855d515df8666a2815d6666fbffc9948c400a7e56a32e6c72b21959806"
+          "projectionPayloadDigest": "sha256:96ecb3a8a815d1229efe05656c9d3e769163cdfa391eff3d27480779158d4838"
         },
         {
           "rowRef": "presentation-row.presentation.event:4621052434369abda80f5a036ce38aecfe3a42248f384ebef29bd18db701a3b7",
@@ -729,12 +729,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:13.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585613000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.error.v1",
               "content": {
                 "errorRef": "error.01",
@@ -749,7 +749,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:0f09102b5aad7cf40ed0f98609e0f53cef6dd0e47f120cfd1c3156f5a9681acb"
+          "projectionPayloadDigest": "sha256:0704175145e6d8481bf5e39a64430a0c17f8520c374f238f6f811fb1a4e321a9"
         },
         {
           "rowRef": "presentation-row.presentation.event:034f11a76c17294a5ef1d1e968f4517a8d81f7d8368249aaf736ed9d5d05d66a",
@@ -829,7 +829,7 @@
               "name": "kokoro.branch.replace.v1",
               "value": {
                 "branchId": "branch.01",
-                "rootMessageId": "message.user.01",
+                "rootMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "leafMessageId": "internal.message.assistant.01",
                 "version": 2
               }
@@ -838,7 +838,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:15ee585e1176a158a8910c2d9c7cff8cfacdadca8125d90905e21049b9161471"
+          "projectionPayloadDigest": "sha256:56a1e899e878f00f6e0a4bb73cb4b6fd4128d308e093de4f5f0df3a026317fd8"
         },
         {
           "rowRef": "presentation-row.presentation.event:c42b4331e408d043dca0eb2a090df27b25f9e58673613642f7c3ecbb1c83317e",
@@ -866,17 +866,17 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:16.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585616000,
               "name": "kokoro.message.replace.v1",
               "value": {
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "role": "assistant",
                 "lifecycle": "streaming",
-                "parentPresentationMessageId": "message.user.01",
+                "parentPresentationMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "ordinal": 1,
                 "version": 3
               }
@@ -885,7 +885,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:7f840f0d5e14d89d5205ed88c9b23bef0aaecea9ad23035552f54ef291d87085"
+          "projectionPayloadDigest": "sha256:c866a5b630e6eeb65dcb30081ea6220a72eb4f55469bc66e86cd4022ee61fc0e"
         },
         {
           "rowRef": "presentation-row.presentation.event:dc018bacaacfa6aadc85df4e1972a690309ef3d9a2f240fc9cc1a3a7eaaad8f9",
@@ -913,13 +913,13 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:17.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585617000,
               "name": "kokoro.run.replace.v1",
               "value": {
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "state": "waiting",
                 "ownerVersion": "18446744073709551615"
               }
@@ -928,7 +928,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:2e8b63bbd0d8867140e8b590396b38caa1e049e168430c0afd26e238746cbfa6"
+          "projectionPayloadDigest": "sha256:bfe209eb993d682bab493eaf75669eb36da4f4b0f12bb3861222aa0c403602d0"
         },
         {
           "rowRef": "presentation-row.presentation.event:ab89a28a91a4dbc5a6b8fe2c7b4dcb1ed97a507a5345289b5f34d93c04b45703",
@@ -956,7 +956,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:18.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585618000,
@@ -976,7 +976,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:8386c320fee85b7e65d0b05a98c753b8575922167c630b44ca19301296523f66"
+          "projectionPayloadDigest": "sha256:43ada1a7e901eb7ed9ab7953d834250459f9f92922096e4b951df7f50144ed53"
         },
         {
           "rowRef": "presentation-row.presentation.event:ac271828201fc1f8955dd9be48e7ab95cf27d576fd8d059019eb0b410bdd9b78",
@@ -1004,7 +1004,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:19.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585619000,
@@ -1021,7 +1021,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:236508954a1634550f967ed27975c5c736aec55a65b9f8f2d0fb70fde2f7e589"
+          "projectionPayloadDigest": "sha256:caef95c67c0418ce5d8356936a910c083a27d2eb1e95fe03b0058c98ba33f93d"
         },
         {
           "rowRef": "presentation-row.presentation.event:e35749958642fa7597b294bc473bb05a5433c2b5370db898185d34beb1fdc1b5",
@@ -1049,21 +1049,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:20.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785585620000,
-              "messageId": "presentation.message.01.segment.0"
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.0",
+                "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.0",
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -1073,7 +1073,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:81d12cbffa346da5d3717c4742ad6d74886b92bfa1ed26164ee2bc8316e68848"
+          "projectionPayloadDigest": "sha256:df17ef7e34e4b6a1362b0a6b9a307055470bcaf53ecdaed9d092e7fff7477463"
         },
         {
           "rowRef": "presentation-row.presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
@@ -1101,21 +1101,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:21.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "RUN_FINISHED",
               "timestamp": 1785585621000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.0"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.0",
+                "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -1130,7 +1130,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:8ab77e0770f62623c78b712d11fe65da5600aa1cea23e6503ae7c5b05698a8f9"
+          "projectionPayloadDigest": "sha256:4ec1db47b18155e2a3edc78f3dfb1d4c544598ba05da80c5e187d4f77521dd1f"
         },
         {
           "rowRef": "presentation-row.presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
@@ -1158,23 +1158,23 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:22.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785585622000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.1"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.1",
+                "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.1",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
                 "segmentOrdinal": 1,
-                "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+                "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "parentLineage": {
                   "parentPresentationRunId": null
                 },
@@ -1187,7 +1187,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:c764fc6466d6b78c4396fe5ca867a48379f4386f1f80bd89d7162b09f1915391"
+          "projectionPayloadDigest": "sha256:7283d85a5a45a82f0703ea78de2357e17bf6f4d97c0647e3402dfaf5597750b5"
         },
         {
           "rowRef": "presentation-row.presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -1215,22 +1215,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:23.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "timestamp": 1785585623000,
-              "messageId": "presentation.message.01.segment.1",
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
               "role": "assistant"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.1",
+                "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.1",
-                "presentationMessageId": "presentation.message.01.segment.1",
+                "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+                "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
                 "resumeSegmentOrdinal": 1,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -1240,7 +1240,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:48434042b19a7a5324a939d6fb8c5c2ed5738b208f351e30ca5a76911b778291"
+          "projectionPayloadDigest": "sha256:9e3c05a0f6633bf9bf002455180888d587f15e74cedbac6ea0f0b6aa2d1338c3"
         },
         {
           "rowRef": "presentation-row.presentation.event:20cb48ad76a466d5982a6aa1ea4342f6f63a21884959948a222249f82f17ad8a",
@@ -1268,19 +1268,19 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:24.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "timestamp": 1785585624000,
-              "messageId": "presentation.message.01.segment.1",
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
               "delta": "Resumed safely."
             },
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:43cecf70d65e77d64bad93789a652607f58613e50487178e3b4271de5f760785"
+          "projectionPayloadDigest": "sha256:b0147b8b16981e86bccb97f6e129bdb39971721c44ddaa2bd16be1cf5e8680a3"
         },
         {
           "rowRef": "presentation-row.presentation.event:f8243e2181a45db9088caa53873160aac331db708a36146ab1973ace5cf9a595",
@@ -1308,21 +1308,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:25.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785585625000,
-              "messageId": "presentation.message.01.segment.1"
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.1",
+                "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.1",
-                "presentationMessageId": "presentation.message.01.segment.1",
+                "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+                "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
                 "resumeSegmentOrdinal": 1,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -1332,7 +1332,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:20245e4a93af733a2fa4793f0168a083200abf8d326fcf20ff2c5b95335c5c5f"
+          "projectionPayloadDigest": "sha256:4f530565a5a0a71e0cc0d861a0e06ee248a0c2694bc02d6eb63c58739f12f08f"
         },
         {
           "rowRef": "presentation-row.presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
@@ -1360,23 +1360,23 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:26.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "event": {
               "type": "RUN_FINISHED",
               "timestamp": 1785585626000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.1"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.1",
+                "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.1",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
                 "segmentOrdinal": 1,
-                "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+                "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "parentLineage": {
                   "parentPresentationRunId": null
                 },
@@ -1389,7 +1389,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:7f73cee8619ad028d70dcc5c0890bcd4b3fd519ea92bc33fe713f9533fbdf58a"
+          "projectionPayloadDigest": "sha256:f011466053ef98fa3bcbea114cefcd5cdbb431166c2be55131515bc232a1e4f2"
         }
       ],
       "frames": [
@@ -1409,21 +1409,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:01.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785585601000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.0"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.0",
+                "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -1455,22 +1455,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:02.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "timestamp": 1785585602000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "role": "assistant"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.0",
+                "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.0",
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -1497,12 +1497,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:03.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "timestamp": 1785585603000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "delta": "I can help with that."
             },
             "bindingAuthorityDelta": {
@@ -1526,12 +1526,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:04.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585604000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.safe-summary.v1",
               "content": {
                 "partRef": "part.summary.01",
@@ -1561,12 +1561,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:05.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585605000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.tool-preview.v1",
               "content": {
                 "toolCallRef": "tool-call.01",
@@ -1600,12 +1600,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:06.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585606000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.hitl.v1",
               "content": {
                 "ownerRef": "decision.01",
@@ -1643,12 +1643,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:07.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585607000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.plan.v1",
               "content": {
                 "planRef": "plan.01",
@@ -1690,12 +1690,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:08.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585608000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.subagent.v1",
               "content": {
                 "subagentRef": "subagent.01",
@@ -1725,12 +1725,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:09.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585609000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.media.v1",
               "content": {
                 "operationRef": "media-operation.01",
@@ -1761,12 +1761,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:10.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585610000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.artifact.v1",
               "content": {
                 "artifactRef": "artifact.01",
@@ -1798,12 +1798,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:11.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585611000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.cost.v1",
               "content": {
                 "costProjectionRef": "cost.01",
@@ -1835,12 +1835,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:12.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585612000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.notice.v1",
               "content": {
                 "noticeRef": "notice.01",
@@ -1872,12 +1872,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:13.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785585613000,
-              "messageId": "presentation.message.01.segment.0",
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
               "activityType": "kokoro.error.v1",
               "content": {
                 "errorRef": "error.01",
@@ -1950,7 +1950,7 @@
               "name": "kokoro.branch.replace.v1",
               "value": {
                 "branchId": "branch.01",
-                "rootMessageId": "message.user.01",
+                "rootMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "leafMessageId": "internal.message.assistant.01",
                 "version": 2
               }
@@ -1976,17 +1976,17 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:16.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585616000,
               "name": "kokoro.message.replace.v1",
               "value": {
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "role": "assistant",
                 "lifecycle": "streaming",
-                "parentPresentationMessageId": "message.user.01",
+                "parentPresentationMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "ordinal": 1,
                 "version": 3
               }
@@ -2012,13 +2012,13 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:17.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585617000,
               "name": "kokoro.run.replace.v1",
               "value": {
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "state": "waiting",
                 "ownerVersion": "18446744073709551615"
               }
@@ -2044,7 +2044,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:18.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585618000,
@@ -2081,7 +2081,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:19.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "CUSTOM",
               "timestamp": 1785585619000,
@@ -2115,21 +2115,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:20.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785585620000,
-              "messageId": "presentation.message.01.segment.0"
+              "messageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.0",
+                "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.0",
-                "presentationMessageId": "presentation.message.01.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+                "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -2156,21 +2156,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:21.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "event": {
               "type": "RUN_FINISHED",
               "timestamp": 1785585621000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.0"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.0",
+                "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.0",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -2202,23 +2202,23 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:22.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785585622000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.1"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.1",
+                "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.1",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
                 "segmentOrdinal": 1,
-                "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+                "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "parentLineage": {
                   "parentPresentationRunId": null
                 },
@@ -2248,22 +2248,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:23.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "timestamp": 1785585623000,
-              "messageId": "presentation.message.01.segment.1",
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
               "role": "assistant"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.1",
+                "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.1",
-                "presentationMessageId": "presentation.message.01.segment.1",
+                "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+                "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
                 "resumeSegmentOrdinal": 1,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -2290,12 +2290,12 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:24.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "timestamp": 1785585624000,
-              "messageId": "presentation.message.01.segment.1",
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
               "delta": "Resumed safely."
             },
             "bindingAuthorityDelta": {
@@ -2319,21 +2319,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:25.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785585625000,
-              "messageId": "presentation.message.01.segment.1"
+              "messageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013"
             },
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.01.segment.1",
+                "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationRunBindingRef": "run-binding.01.segment.1",
-                "presentationMessageId": "presentation.message.01.segment.1",
+                "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+                "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
                 "resumeSegmentOrdinal": 1,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -2360,23 +2360,23 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T12:00:26.000Z"
             },
-            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "event": {
               "type": "RUN_FINISHED",
               "timestamp": 1785585626000,
-              "threadId": "thread.session.01",
-              "runId": "presentation.run.01.segment.1"
+              "threadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+              "runId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.01.segment.1",
+                "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.01",
-                "presentationThreadId": "thread.session.01",
-                "presentationRunId": "presentation.run.01.segment.1",
+                "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+                "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
                 "segmentOrdinal": 1,
-                "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+                "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
                 "parentLineage": {
                   "parentPresentationRunId": null
                 },
@@ -2417,11 +2417,11 @@
         "cursor": "v1.agui-conformance-2026-08.qyjFu0ovHvQ0qVec.nTkwT-YrgDNplzVor10wr5M2HWPu1mKRxH5_wddQu3ZiPmljatP0mRPykTfeEJrSB7prXJ0mQTB7YG1qfszYtbVNNdUVMTOXmn_SI7m-xUZeXFv54bfXOrceS7xxKfzs15PzNtEXXRfgoUJ3WjznqZQuyRzRSzdz7P30__TRoYf5PbywXEkRDTPwE1C6qLxauJ7WZBiibIo7GN_kA7uZTp1jjwO2034XGXQdruC_eWpsVjKyKtnJk0TDulVoDQ.AqbheYMeqIE-fwjnAAHxAw",
         "runBindings": [
           {
-            "bindingRef": "run-binding.01.segment.0",
+            "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.01",
-            "presentationThreadId": "thread.session.01",
-            "presentationRunId": "presentation.run.01.segment.0",
+            "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+            "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
             "segmentOrdinal": 0,
             "resumeOfPresentationRunId": null,
             "parentLineage": {
@@ -2435,13 +2435,13 @@
             "terminalAt": "2026-08-01T12:00:21.000Z"
           },
           {
-            "bindingRef": "run-binding.01.segment.1",
+            "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.01",
-            "presentationThreadId": "thread.session.01",
-            "presentationRunId": "presentation.run.01.segment.1",
+            "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+            "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
             "segmentOrdinal": 1,
-            "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+            "resumeOfPresentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
             "parentLineage": {
               "parentPresentationRunId": null
             },
@@ -2455,11 +2455,11 @@
         ],
         "messageBindings": [
           {
-            "bindingRef": "message-binding.01.segment.0",
+            "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.01",
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageId": "presentation.message.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
             "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -2468,11 +2468,11 @@
             "endedAt": "2026-08-01T12:00:20.000Z"
           },
           {
-            "bindingRef": "message-binding.01.segment.1",
+            "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.01",
-            "presentationRunBindingRef": "run-binding.01.segment.1",
-            "presentationMessageId": "presentation.message.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
+            "presentationMessageId": "presentation.message:b9b00e0e1fb2919aeaf679fc0ce3c64633d5c01e5dd96abb4d5dcfb4816f2013",
             "resumeSegmentOrdinal": 1,
             "state": "ended",
             "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -2485,23 +2485,23 @@
       "sessionPrivateRouteFixtures": {
         "runs": [
           {
-            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
             "internalRunRef": "internal.run.01",
             "parentInternalRunRef": null
           },
           {
-            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationRunBindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
             "internalRunRef": "internal.run.01",
             "parentInternalRunRef": null
           }
         ],
         "messages": [
           {
-            "presentationMessageBindingRef": "message-binding.01.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "internalMessageRef": "internal.message.assistant.01"
           },
           {
-            "presentationMessageBindingRef": "message-binding.01.segment.1",
+            "presentationMessageBindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
             "internalMessageRef": "internal.message.assistant.01"
           }
         ],
@@ -2534,11 +2534,11 @@
       },
       "runBindings": [
         {
-          "bindingRef": "run-binding.error.parent.segment.0",
+          "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.error",
-          "presentationThreadId": "thread.session.error",
-          "presentationRunId": "presentation.run.error.parent.segment.0",
+          "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+          "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
           "segmentOrdinal": 0,
           "resumeOfPresentationRunId": null,
           "parentLineage": {
@@ -2552,15 +2552,15 @@
           "terminalAt": "2026-08-01T13:00:13.000Z"
         },
         {
-          "bindingRef": "run-binding.error.segment.0",
+          "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.error",
-          "presentationThreadId": "thread.session.error",
-          "presentationRunId": "presentation.run.error.segment.0",
+          "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+          "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
           "segmentOrdinal": 0,
           "resumeOfPresentationRunId": null,
           "parentLineage": {
-            "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+            "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
           },
           "state": "error",
           "terminalDisposition": "error",
@@ -2572,11 +2572,11 @@
       ],
       "messageBindings": [
         {
-          "bindingRef": "message-binding.error.parent.segment.0",
+          "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.error",
-          "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-          "presentationMessageId": "presentation.message.error.parent.segment.0",
+          "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+          "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
           "resumeSegmentOrdinal": 0,
           "state": "ended",
           "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -2612,21 +2612,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:01.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "RUN_STARTED",
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.parent.segment.0",
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
               "timestamp": 1785589201000
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.parent.segment.0",
+                "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.parent.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -2641,7 +2641,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:8f97d3b48d8033750ce9916c1adf7e290c3326520684284a69fe563aa35d59e3"
+          "projectionPayloadDigest": "sha256:6a71ac9ff558410b089b264a4bb48e6945d23cb8a5206a82671f90c2a5a25a64"
         },
         {
           "rowRef": "presentation-row.presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -2669,22 +2669,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:02.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "role": "assistant",
               "timestamp": 1785589202000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.error.parent.segment.0",
+                "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-                "presentationMessageId": "presentation.message.error.parent.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+                "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -2694,7 +2694,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:e46103c5ee84b2d93078638372f91204eeabd10307e03638d9da4aa71bd1095a"
+          "projectionPayloadDigest": "sha256:73e2484b54bfc49923f28f448ccbb7a8c9fbfe7ae1520a0ec6866921dee6d653"
         },
         {
           "rowRef": "presentation-row.presentation.event:807cd4fdef687b4a5a3c2ce9219feecde31564d1fe457efea58bc5e19cd84f91",
@@ -2722,19 +2722,19 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:03.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "delta": "I can help with that.",
               "timestamp": 1785589203000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:b7a50eeab1ded447efb43bee55f16a38d0536523fa27882bad3913e0444a49e2"
+          "projectionPayloadDigest": "sha256:9702c2809670b745212954aba28470ed2b58ad291ca655c0eedcd193140c576f"
         },
         {
           "rowRef": "presentation-row.presentation.event:e7536dfcb9dbf1cdd50f0fc94f835736e796c82fc0cbfeb39b3cabca30c772e5",
@@ -2762,11 +2762,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:04.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589204000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.safe-summary.v1",
               "content": {
                 "partRef": "part.summary.01",
@@ -2775,12 +2775,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:d1d45c1b003a54d767b7fcb6f831e4429afceef5168ad0ff7e7c0b4a471a8a6b"
+          "projectionPayloadDigest": "sha256:fae7f38de179557c33b92a035ea46f8cb9560a7e572862998ee4fd023c3f12ce"
         },
         {
           "rowRef": "presentation-row.presentation.event:79faac49b67fbc5a4accebbd3cc1b01078013d5a5f79547350e3b601838c7313",
@@ -2808,11 +2808,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:05.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589205000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.tool-preview.v1",
               "content": {
                 "toolCallRef": "tool-call.01",
@@ -2825,12 +2825,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:c51e5f236e7fe2fb91cc3072899c77808455d89970e0173acad63aba9aaffaea"
+          "projectionPayloadDigest": "sha256:818d3cee4d24d12e414b0f60c4a36db063c19a77677890909fd18779d0b0573d"
         },
         {
           "rowRef": "presentation-row.presentation.event:8ed1ee522da870e3147914eaeab86371da16264b8ec727fa33af4d1c67fb4a98",
@@ -2858,11 +2858,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:06.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589206000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.hitl.v1",
               "content": {
                 "ownerRef": "decision.01",
@@ -2879,12 +2879,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:def783bfe654c546399e1ebf0c697957add39989870700b60aaf68104e7974e2"
+          "projectionPayloadDigest": "sha256:eeb0927e57deecc1d55d05c96b6568604e90d53932525f3500e4ed500eb6206b"
         },
         {
           "rowRef": "presentation-row.presentation.event:af72b2a38d31282ddcec65bf348932729d201439b6741368da704919bf470a5e",
@@ -2912,11 +2912,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:07.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589207000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.plan.v1",
               "content": {
                 "planRef": "plan.01",
@@ -2937,12 +2937,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:95f5e6aee263674a2bde2cb658d653d6c8819f48d374ae1b57271ba53e4014a4"
+          "projectionPayloadDigest": "sha256:5bfbc4ca7ca4455c120a0ec5686000b97412a2f8f9bbdd2db69bca10860dafda"
         },
         {
           "rowRef": "presentation-row.presentation.event:fe29fc244b2c968d3de6741b0ff8fee0ae5c17748a53a8326fca826a14626513",
@@ -2970,11 +2970,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:08.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589208000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.subagent.v1",
               "content": {
                 "subagentRef": "subagent.01",
@@ -2983,12 +2983,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:8590bd5d2ce731ca7e41e48ae360d265730b810c35a10a950b6ca86b92c92e16"
+          "projectionPayloadDigest": "sha256:dcd2df9e6c72264e4e32fedd7a7f697ee5b993b088c6e2cefe8ba783e2d41e40"
         },
         {
           "rowRef": "presentation-row.presentation.event:a0466c45c5e41bc778e2c42b5d356bdb59670fe0069092cde7385402e8a73d15",
@@ -3016,11 +3016,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:09.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589209000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.media.v1",
               "content": {
                 "operationRef": "media-operation.01",
@@ -3030,12 +3030,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:6bd456a5baf66bfd8f4ac2d2b2ad722d8576942573844e0a01e3b11f3703420e"
+          "projectionPayloadDigest": "sha256:6aba56cc43ce65972f153363e4f640a01f990844d1e183a159a6dddce7044f19"
         },
         {
           "rowRef": "presentation-row.presentation.event:97a2f08ff38a05195e3eba23eadf54e8901a3be2fdd26bb56b4d0ab516f8bb39",
@@ -3063,11 +3063,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:10.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589210000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.notice.v1",
               "content": {
                 "noticeRef": "notice.01",
@@ -3078,12 +3078,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:ed72b5d9e2b96ffa82b9d69b7c6f39e813d63f41c89156e2ee078a158e996984"
+          "projectionPayloadDigest": "sha256:a9273066925733945ee4982f02ea0f993ea88796d51ac29b865d1e09c7b16cb6"
         },
         {
           "rowRef": "presentation-row.presentation.event:74e1ef3f690b94a26d5aabdd4c1f1b59e0af76e3010aaf85313c7d338a891fcc",
@@ -3111,11 +3111,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:11.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589211000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.error.v1",
               "content": {
                 "errorRef": "error.01",
@@ -3126,12 +3126,12 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:32dde0ed636f6aca7dd25dbfe7bd161016f5e5600f8199f3dcef96fd3d026acd"
+          "projectionPayloadDigest": "sha256:8bd1db95161ba2fe6dbe8a768a8c4f0b4e08ee39a074f01dcebc7f10c56fc1bc"
         },
         {
           "rowRef": "presentation-row.presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
@@ -3159,21 +3159,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:12.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785589212000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.error.parent.segment.0",
+                "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-                "presentationMessageId": "presentation.message.error.parent.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+                "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -3183,7 +3183,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:3fe9135f3af5b269bc84894a7a07b6273d2277180e0126f629417ab3a8c6167a"
+          "projectionPayloadDigest": "sha256:b20e4f476ae6922c9e4fe6ee9470556aac1d87f08a2c977d53506910abad7d9f"
         },
         {
           "rowRef": "presentation-row.presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
@@ -3211,21 +3211,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:13.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "RUN_FINISHED",
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.parent.segment.0",
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
               "timestamp": 1785589213000
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.parent.segment.0",
+                "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.parent.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -3240,7 +3240,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:d7cf198c78cfc072bce1cb5e120d6b3f77b1ddeea29d27c91f20f9f976832f53"
+          "projectionPayloadDigest": "sha256:0eeb99feb0b6ca7a8c2fb88da2bad3ac5f36cd57090fe1b95952248ba9776db3"
         },
         {
           "rowRef": "presentation-row.presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
@@ -3268,26 +3268,26 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:14.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785589214000,
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.segment.0",
-              "parentRunId": "presentation.run.error.parent.segment.0"
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
+              "parentRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.segment.0",
+                "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
-                  "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+                  "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
                 },
                 "state": "open",
                 "terminalDisposition": null,
@@ -3298,7 +3298,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:48b23b697543f7c07fd22d23a08ee66ce78b99d36deff7e434575a6fdc9b29d5"
+          "projectionPayloadDigest": "sha256:de1aaf7fc0a5108577045e80e481f972b8c7a18864f7ed756159e526db39de46"
         },
         {
           "rowRef": "presentation-row.presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
@@ -3326,7 +3326,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:15.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "event": {
               "type": "RUN_ERROR",
               "timestamp": 1785589215000,
@@ -3336,15 +3336,15 @@
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.segment.0",
+                "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
-                  "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+                  "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
                 },
                 "state": "error",
                 "terminalDisposition": "error",
@@ -3355,7 +3355,7 @@
               }
             }
           },
-          "projectionPayloadDigest": "sha256:87f9cad316de6a18e4f7cb4b2b66411173536e1883e3535e37058ed70f7ad091"
+          "projectionPayloadDigest": "sha256:aef83b9ecf21b85c1bb756caea71c8dc459ed48fcf7b39658a0b6314aca91ffc"
         }
       ],
       "frames": [
@@ -3375,21 +3375,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:01.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "RUN_STARTED",
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.parent.segment.0",
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
               "timestamp": 1785589201000
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.parent.segment.0",
+                "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.parent.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -3421,22 +3421,22 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:02.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_START",
               "role": "assistant",
               "timestamp": 1785589202000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.error.parent.segment.0",
+                "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-                "presentationMessageId": "presentation.message.error.parent.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+                "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -3463,14 +3463,14 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:03.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_CONTENT",
               "delta": "I can help with that.",
               "timestamp": 1785589203000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3492,11 +3492,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:04.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589204000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.safe-summary.v1",
               "content": {
                 "partRef": "part.summary.01",
@@ -3505,7 +3505,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3527,11 +3527,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:05.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589205000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.tool-preview.v1",
               "content": {
                 "toolCallRef": "tool-call.01",
@@ -3544,7 +3544,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3566,11 +3566,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:06.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589206000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.hitl.v1",
               "content": {
                 "ownerRef": "decision.01",
@@ -3587,7 +3587,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3609,11 +3609,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:07.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589207000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.plan.v1",
               "content": {
                 "planRef": "plan.01",
@@ -3634,7 +3634,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3656,11 +3656,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:08.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589208000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.subagent.v1",
               "content": {
                 "subagentRef": "subagent.01",
@@ -3669,7 +3669,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3691,11 +3691,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:09.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589209000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.media.v1",
               "content": {
                 "operationRef": "media-operation.01",
@@ -3705,7 +3705,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3727,11 +3727,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:10.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589210000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.notice.v1",
               "content": {
                 "noticeRef": "notice.01",
@@ -3742,7 +3742,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3764,11 +3764,11 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:11.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "ACTIVITY_SNAPSHOT",
               "timestamp": 1785589211000,
-              "messageId": "presentation.message.error.parent.segment.0",
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
               "activityType": "kokoro.error.v1",
               "content": {
                 "errorRef": "error.01",
@@ -3779,7 +3779,7 @@
               },
               "replace": true
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "none"
             }
@@ -3801,21 +3801,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:12.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "TEXT_MESSAGE_END",
               "timestamp": 1785589212000,
-              "messageId": "presentation.message.error.parent.segment.0"
+              "messageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c"
             },
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "bindingAuthorityDelta": {
               "kind": "message.replace",
               "binding": {
-                "bindingRef": "message-binding.error.parent.segment.0",
+                "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-                "presentationMessageId": "presentation.message.error.parent.segment.0",
+                "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+                "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -3842,21 +3842,21 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:13.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "event": {
               "type": "RUN_FINISHED",
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.parent.segment.0",
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
               "timestamp": 1785589213000
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.parent.segment.0",
+                "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.parent.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
@@ -3888,26 +3888,26 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:14.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "event": {
               "type": "RUN_STARTED",
               "timestamp": 1785589214000,
-              "threadId": "thread.session.error",
-              "runId": "presentation.run.error.segment.0",
-              "parentRunId": "presentation.run.error.parent.segment.0"
+              "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+              "runId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
+              "parentRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
             },
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.segment.0",
+                "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
-                  "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+                  "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
                 },
                 "state": "open",
                 "terminalDisposition": null,
@@ -3935,7 +3935,7 @@
               "schemaRevision": 1,
               "recordedAt": "2026-08-01T13:00:15.000Z"
             },
-            "presentationRunBindingRef": "run-binding.error.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "event": {
               "type": "RUN_ERROR",
               "timestamp": 1785589215000,
@@ -3945,15 +3945,15 @@
             "bindingAuthorityDelta": {
               "kind": "run.replace",
               "binding": {
-                "bindingRef": "run-binding.error.segment.0",
+                "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
                 "profileRevision": "kokoro-agui-presentation.v1",
                 "sessionId": "session.error",
-                "presentationThreadId": "thread.session.error",
-                "presentationRunId": "presentation.run.error.segment.0",
+                "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+                "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
                 "segmentOrdinal": 0,
                 "resumeOfPresentationRunId": null,
                 "parentLineage": {
-                  "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+                  "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
                 },
                 "state": "error",
                 "terminalDisposition": "error",
@@ -3991,11 +3991,11 @@
         "cursor": "v1.agui-conformance-2026-08.PsgZVWeeYbKuVaMS.9q8ndW654quyvEK1h71slYNgPc_s5XShUqJ8knl829tNC9MSkyljxNfeCHR9svlZygPbpNzWWxRIWurz2p2bo7NEkajHMJHerj1FacXPCDVaNZsrhlyDIeAOGpprCJnb9gS8-yHsxzqwFkAl7VZyc4v6Ix5JCE1csylHA7onO5Gk8Xhu-KKsvraANiYCmgDB1oDSkrgHkqRtXHTIKbDSxAc9qv-Y_8NgpbPXoFaEAHbwgWSWSwN_0wY4ZI0CRqrH._CDLi9x7Dbb4ya70bo0sUw",
         "runBindings": [
           {
-            "bindingRef": "run-binding.error.parent.segment.0",
+            "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationThreadId": "thread.session.error",
-            "presentationRunId": "presentation.run.error.parent.segment.0",
+            "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+            "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
             "segmentOrdinal": 0,
             "resumeOfPresentationRunId": null,
             "parentLineage": {
@@ -4009,15 +4009,15 @@
             "terminalAt": "2026-08-01T13:00:13.000Z"
           },
           {
-            "bindingRef": "run-binding.error.segment.0",
+            "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationThreadId": "thread.session.error",
-            "presentationRunId": "presentation.run.error.segment.0",
+            "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+            "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
             "segmentOrdinal": 0,
             "resumeOfPresentationRunId": null,
             "parentLineage": {
-              "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+              "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
             },
             "state": "error",
             "terminalDisposition": "error",
@@ -4029,11 +4029,11 @@
         ],
         "messageBindings": [
           {
-            "bindingRef": "message-binding.error.parent.segment.0",
+            "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-            "presentationMessageId": "presentation.message.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+            "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
             "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -4046,19 +4046,19 @@
       "sessionPrivateRouteFixtures": {
         "runs": [
           {
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "internalRunRef": "internal.run.error.parent",
             "parentInternalRunRef": null
           },
           {
-            "presentationRunBindingRef": "run-binding.error.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "internalRunRef": "internal.run.error",
             "parentInternalRunRef": "internal.run.error.parent"
           }
         ],
         "messages": [
           {
-            "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
+            "presentationMessageBindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "internalMessageRef": "internal.message.error.parent.assistant.01"
           }
         ],
@@ -4202,7 +4202,7 @@
       "baseCaseId": "resume-with-safe-typed-presentation",
       "mutation": {
         "operation": "terminal-revival",
-        "runBindingRef": "run-binding.01.segment.0"
+        "runBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060"
       },
       "expectedCode": "agui_terminal_run_revived"
     },
@@ -4212,7 +4212,7 @@
       "mutation": {
         "operation": "set",
         "path": "runBindings.1.parentLineage.parentPresentationRunId",
-        "value": "presentation.run.01.segment.0"
+        "value": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571"
       },
       "expectedCode": "agui_resume_parent_confused"
     },
@@ -4221,7 +4221,7 @@
       "baseCaseId": "resume-with-safe-typed-presentation",
       "mutation": {
         "operation": "reopen-message",
-        "messageBindingRef": "message-binding.01.segment.0"
+        "messageBindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6"
       },
       "expectedCode": "agui_message_reopened"
     },
@@ -4254,11 +4254,11 @@
         "value": {
           "kind": "message.replace",
           "binding": {
-            "bindingRef": "message-binding.01.segment.0",
+            "bindingRef": "presentation.message-binding:82f421f5612339d314a52e981b993e7e54466292afaaa5719306ba603da004c6",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.01",
-            "presentationRunBindingRef": "run-binding.01.segment.0",
-            "presentationMessageId": "presentation.message.01.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
+            "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
             "resumeSegmentOrdinal": 0,
             "state": "open",
             "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -4276,7 +4276,7 @@
       "mutation": {
         "operation": "set",
         "path": "frames.0.data.bindingAuthorityDelta.binding.bindingRef",
-        "value": "run-binding.attack"
+        "value": "presentation.run-binding:0000000000000000000000000000000000000000000000000000000000000000"
       },
       "expectedCode": "agui_binding_delta_ref_conflict"
     },
@@ -4307,11 +4307,11 @@
         "operation": "set",
         "path": "frames.0.data.bindingAuthorityDelta.binding",
         "value": {
-          "bindingRef": "run-binding.01.segment.0",
+          "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationThreadId": "thread.session.01",
-          "presentationRunId": "presentation.run.01.segment.0",
+          "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+          "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
           "segmentOrdinal": 0,
           "resumeOfPresentationRunId": null,
           "parentLineage": {
@@ -4334,11 +4334,11 @@
         "operation": "set",
         "path": "frames.0.data.bindingAuthorityDelta.binding",
         "value": {
-          "bindingRef": "run-binding.01.segment.0",
+          "bindingRef": "presentation.run-binding:3f4fb42917b31aa6d9c18c43c16afa1980f55c42af219ebe2816468778466060",
           "profileRevision": "kokoro-agui-presentation.v1",
           "sessionId": "session.01",
-          "presentationThreadId": "thread.session.01",
-          "presentationRunId": "presentation.run.01.segment.0",
+          "presentationThreadId": "presentation.thread:a8d8f4cdd8abf8740394a7b90676b145f516ce1a3b03491308891ec3ed082906",
+          "presentationRunId": "presentation.run:e9eca586381e48c8ace44af3dbe0f1dcd296387a4c712316e646b0ab7f73c571",
           "segmentOrdinal": 0,
           "resumeOfPresentationRunId": null,
           "parentLineage": {
@@ -4421,7 +4421,7 @@
         "operation": "set",
         "path": "frames.16.data.event.value",
         "value": {
-          "presentationRunId": "presentation.run.01.segment.0",
+          "presentationRunId": "presentation.run:d63754ff90a9e72f675cf5785342a2c4677fedb9741e8799b329b899b172f70f",
           "state": "waiting",
           "projectionVersion": 4
         }
@@ -4465,11 +4465,11 @@
         "cursor": "v1.agui-conformance-2026-08.PsgZVWeeYbKuVaMS.9q8ndW654quyvEK1h71slYNgPc_s5XShUqJ8knl829tNC9MSkyljxNfeCHR9svlZygPbpNzWWxRIWurz2p2bo7NEkajHMJHerj1FacXPCDVaNZsrhlyDIeAOGpprCJnb9gS8-yHsxzqwFkAl7VZyc4v6Ix5JCE1csylHA7onO5Gk8Xhu-KKsvraANiYCmgDB1oDSkrgHkqRtXHTIKbDSxAc9qv-Y_8NgpbPXoFaEAHbwgWSWSwN_0wY4ZI0CRqrH._CDLi9x7Dbb4ya70bo0sUw",
         "runBindings": [
           {
-            "bindingRef": "run-binding.error.parent.segment.0",
+            "bindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationThreadId": "thread.session.error",
-            "presentationRunId": "presentation.run.error.parent.segment.0",
+            "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+            "presentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
             "segmentOrdinal": 0,
             "resumeOfPresentationRunId": null,
             "parentLineage": {
@@ -4483,15 +4483,15 @@
             "terminalAt": "2026-08-01T13:00:13.000Z"
           },
           {
-            "bindingRef": "run-binding.error.segment.0",
+            "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationThreadId": "thread.session.error",
-            "presentationRunId": "presentation.run.error.segment.0",
+            "presentationThreadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+            "presentationRunId": "presentation.run:a17f06963cde0825930e4a614057f52fc74890ac2c0040e86ba2b017588ffb04",
             "segmentOrdinal": 0,
             "resumeOfPresentationRunId": null,
             "parentLineage": {
-              "parentPresentationRunId": "presentation.run.error.parent.segment.0"
+              "parentPresentationRunId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031"
             },
             "state": "error",
             "terminalDisposition": "error",
@@ -4503,11 +4503,11 @@
         ],
         "messageBindings": [
           {
-            "bindingRef": "message-binding.error.parent.segment.0",
+            "bindingRef": "presentation.message-binding:450dc83ea67c48f61b4004233e96048c383652a33867fbedd7d003d6300421a9",
             "profileRevision": "kokoro-agui-presentation.v1",
             "sessionId": "session.error",
-            "presentationRunBindingRef": "run-binding.error.parent.segment.0",
-            "presentationMessageId": "presentation.message.error.parent.segment.0",
+            "presentationRunBindingRef": "presentation.run-binding:88ff1484cb94028b7bb0f9e3c15303250e58be5171910cd36afd50a483adc65a",
+            "presentationMessageId": "presentation.message:45421845d4697d2edc49657a92adde652bdfd5877309fa4865442a12686f331c",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
             "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -4550,8 +4550,8 @@
       },
       "expectedPresentationEvent": {
         "type": "RUN_FINISHED",
-        "threadId": "thread.session.error",
-        "runId": "presentation.run.error.parent.segment.0",
+        "threadId": "presentation.thread:be053196d3649d32be480aaa3b4add249d33f4afa2ab5db2d17c4ba4fd0e160d",
+        "runId": "presentation.run:69e6509194b0d5742847c5b76cfda19e0def26386d4f805cf35fc3d19a8c5031",
         "timestamp": 1785589213000
       }
     }
