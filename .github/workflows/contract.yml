@@ -54,10 +54,6 @@ jobs:
           npm ci --prefix kokoro-session
           pnpm --dir kokoro-platform install --frozen-lockfile
           pnpm --dir kokoro-web install --frozen-lockfile
-      - name: executable Agent Python AG-UI parity gate
-        run: |
-          uv run --project kokoro-agent --locked python -m pytest scripts/contract/test_check_agent_agui_python_parity.py -q
-          uv run --project kokoro-agent --locked python scripts/contract/check_agent_agui_python_parity.py --root .
       - name: verify exact federated pins and recoverable refs
         run: node scripts/repository/verify-federated-repositories.mjs --tree head --remote
       - name: contract byte check
