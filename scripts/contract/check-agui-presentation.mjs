@@ -336,6 +336,36 @@ function issueCursor({ sessionId, streamEpoch, durableSeq }) {
   return ["v1", CURSOR_KEY_REVISION, iv.toString("base64url"), ciphertext.toString("base64url"), cipher.getAuthTag().toString("base64url")].join(".");
 }
 
+function createSemanticIdentityRegistries() {
+  return {
+    cursorIds: new Set(),
+    cursorClaims: new Set(),
+    sourceEventIds: new Set(),
+    rowRefs: new Set(),
+    runBindingRefs: new Set(),
+    presentationRunIds: new Set(),
+    internalRunSegments: new Set(),
+    messageBindingRefs: new Set(),
+    presentationMessageIds: new Set(),
+    internalMessageSegments: new Set(),
+  };
+}
+
+function registerGlobalIdentity(registry, identity, code) {
+  if (registry.has(identity)) fail(code, identity);
+  registry.add(identity);
+}
+
+function cursorClaimIdentity(claims) {
+  return canonical([
+    claims.sessionId,
+    claims.streamEpoch,
+    claims.durableSeq,
+    claims.profileRevision,
+    claims.cursorProfileRevision,
+  ]);
+}
+
 function findKey(value, pattern) {
   if (Array.isArray(value)) return value.some((entry) => findKey(entry, pattern));
   if (value === null || typeof value !== "object") return false;
@@ -354,7 +384,7 @@ function validateEventPreSchema(event, mapping) {
   if (extra !== undefined) fail("agui_event_extra_forbidden", extra);
 }
 
-function validateRunBindings(bindings, validateSchema, snapshot) {
+function validateRunBindings(bindings, validateSchema, snapshot, identities) {
   if (!Array.isArray(bindings) || bindings.length === 0 || bindings.length > 256) fail("agui_run_bindings_invalid");
   const refs = new Map();
   const presentationIds = new Map();
@@ -366,6 +396,13 @@ function validateRunBindings(bindings, validateSchema, snapshot) {
     if (!validateSchema(binding)) fail("agui_run_binding_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
     if (binding.sessionId !== snapshot.sessionId || binding.profileRevision !== snapshot.profileRevision) fail("agui_run_binding_scope_conflict", binding.bindingRef);
     if (refs.has(binding.bindingRef) || presentationIds.has(binding.presentationRunId)) fail("agui_run_binding_duplicate");
+    registerGlobalIdentity(identities.runBindingRefs, binding.bindingRef, "agui_global_run_binding_ref_duplicate");
+    registerGlobalIdentity(identities.presentationRunIds, binding.presentationRunId, "agui_global_presentation_run_id_duplicate");
+    registerGlobalIdentity(
+      identities.internalRunSegments,
+      canonical([binding.sessionId, binding.internalRunRef, binding.segmentOrdinal]),
+      "agui_global_internal_run_segment_duplicate",
+    );
     refs.set(binding.bindingRef, binding);
     presentationIds.set(binding.presentationRunId, binding);
     const group = groups.get(binding.internalRunRef) ?? [];
@@ -399,7 +436,7 @@ function validateRunBindings(bindings, validateSchema, snapshot) {
   return refs;
 }
 
-function validateMessageBindings(bindings, validateSchema, runRefs, snapshot) {
+function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, identities) {
   if (!Array.isArray(bindings) || bindings.length > 512) fail("agui_message_bindings_invalid");
   const refs = new Map();
   const ids = new Set();
@@ -413,6 +450,13 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot) {
     const segmentKey = `${binding.internalMessageRef}\u0000${binding.resumeSegmentOrdinal}`;
     if (internalSegments.has(segmentKey)) fail("agui_message_segment_duplicate", binding.bindingRef);
     internalSegments.add(segmentKey);
+    registerGlobalIdentity(identities.messageBindingRefs, binding.bindingRef, "agui_global_message_binding_ref_duplicate");
+    registerGlobalIdentity(identities.presentationMessageIds, binding.presentationMessageId, "agui_global_presentation_message_id_duplicate");
+    registerGlobalIdentity(
+      identities.internalMessageSegments,
+      canonical([binding.sessionId, binding.internalMessageRef, binding.resumeSegmentOrdinal]),
+      "agui_global_internal_message_segment_duplicate",
+    );
     if ([...refs.values()].some((other) => other.internalMessageRef === binding.internalMessageRef && other.presentationMessageId === binding.presentationMessageId)) fail("agui_message_resume_id_reused", binding.bindingRef);
     if (Date.parse(binding.openedAt) > Date.parse(binding.endedAt ?? binding.openedAt)) fail("agui_message_binding_time_invalid", binding.bindingRef);
     refs.set(binding.bindingRef, binding);
@@ -497,7 +541,7 @@ function validateStreamState(frames, runRefs, messageRefs) {
   }
 }
 
-function validateConformanceCaseWithContracts(caseInput, contracts, globalCursorIds) {
+function validateConformanceCaseWithContracts(caseInput, contracts, identities) {
   const { mapping, validateEvent, validateProjectionPayload, validatePresentationRow, validateRunBinding, validateMessageBinding, validateStream } = contracts;
   if (caseInput?.snapshot?.authority !== "session-browser-v3-http-snapshot" || caseInput.snapshot.hydrate !== true || caseInput.snapshot.repair !== true) fail("agui_snapshot_authority_invalid");
   if (caseInput.snapshot.profileRevision !== PROFILE_REVISION) fail("agui_snapshot_profile_invalid");
@@ -517,14 +561,15 @@ function validateConformanceCaseWithContracts(caseInput, contracts, globalCursor
     profileRevision: caseInput.snapshot.profileRevision,
     cursorProfileRevision: caseInput.grantBinding.cursorProfileRevision,
   });
-  if (globalCursorIds.has(caseInput.snapshot.cursor)) fail("agui_stream_identity_duplicate", "snapshot-cursor");
-  globalCursorIds.add(caseInput.snapshot.cursor);
+  registerGlobalIdentity(identities.cursorIds, caseInput.snapshot.cursor, "agui_global_cursor_identity_duplicate");
+  registerGlobalIdentity(identities.cursorClaims, cursorClaimIdentity(snapshotClaims), "agui_global_cursor_claim_identity_duplicate");
 
-  const runRefs = validateRunBindings(caseInput.runBindings, validateRunBinding, caseInput.snapshot);
-  const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot);
+  const runRefs = validateRunBindings(caseInput.runBindings, validateRunBinding, caseInput.snapshot, identities);
+  const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot, identities);
   if (!Array.isArray(caseInput.frames) || !Array.isArray(caseInput.durableRows) || caseInput.frames.length !== caseInput.durableRows.length || caseInput.frames.length === 0) fail("agui_durable_frame_cardinality_invalid");
   const sourceIds = new Set();
   const rowRefs = new Set();
+  const localCursorIds = new Set([caseInput.snapshot.cursor]);
   let expectedSeq = uint64(caseInput.snapshot.durableSeq, "agui_snapshot_cursor_invalid") + 1n;
   uint64(caseInput.snapshot.streamEpoch, "agui_snapshot_cursor_invalid");
   let previousRecordedAt = Date.parse(caseInput.snapshot.recordedAt ?? "1970-01-01T00:00:00.000Z");
@@ -541,7 +586,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, globalCursor
     const recordedAt = Date.parse(source.recordedAt);
     if (!Number.isFinite(recordedAt) || recordedAt !== event.timestamp || recordedAt < previousRecordedAt) fail("agui_event_time_invalid", source.sourceEventId);
     previousRecordedAt = recordedAt;
-    if (globalCursorIds.has(frame.id) || sourceIds.has(source.sourceEventId)) fail("agui_stream_identity_duplicate", source.sourceEventId);
+    if (localCursorIds.has(frame.id) || sourceIds.has(source.sourceEventId)) fail("agui_stream_identity_duplicate", source.sourceEventId);
     const cursorClaims = decodeCursor(frame.id, mapping.limits.maximumCursorBytes);
     assertCursorScope(cursorClaims, {
       sessionId: source.sessionId,
@@ -550,7 +595,14 @@ function validateConformanceCaseWithContracts(caseInput, contracts, globalCursor
       profileRevision: frame.data.profileRevision,
       cursorProfileRevision: caseInput.grantBinding.cursorProfileRevision,
     });
-    globalCursorIds.add(frame.id);
+    registerGlobalIdentity(identities.cursorIds, frame.id, "agui_global_cursor_identity_duplicate");
+    registerGlobalIdentity(identities.cursorClaims, cursorClaimIdentity(cursorClaims), "agui_global_cursor_claim_identity_duplicate");
+    registerGlobalIdentity(
+      identities.sourceEventIds,
+      canonical([source.sessionId, source.sourceEventId]),
+      "agui_global_source_event_id_duplicate",
+    );
+    localCursorIds.add(frame.id);
     sourceIds.add(source.sourceEventId);
 
     const row = caseInput.durableRows[index];
@@ -561,6 +613,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, globalCursor
       canonical(row.source) !== canonical(source) || canonical(row.projectionPayload) !== canonical(frame.data) ||
       projectionDigest(row.projectionPayload) !== row.projectionPayloadDigest
     ) fail("agui_presentation_row_payload_mismatch", source.sourceEventId);
+    registerGlobalIdentity(identities.rowRefs, row.rowRef, "agui_global_row_ref_duplicate");
     rowRefs.add(row.rowRef);
 
     const mappingEntry = mappingFor(mapping, source.sourceKind);
@@ -588,7 +641,7 @@ export function validateConformanceCase(caseInput, { root = repositoryRoot } = {
   const contracts = loadContracts(root);
   validateProfile(contracts.profile);
   validateMappingRegistry(contracts.mapping);
-  return validateConformanceCaseWithContracts(caseInput, contracts, new Set());
+  return validateConformanceCaseWithContracts(caseInput, contracts, createSemanticIdentityRegistries());
 }
 
 function setAtPath(value, path, replacement) {
@@ -666,12 +719,12 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   if (!Array.isArray(corpus.positiveCases) || corpus.positiveCases.length < 2 || !Array.isArray(corpus.negativeCases) || corpus.negativeCases.length < 10) fail("agui_corpus_shape_invalid");
   const caseIds = new Set();
   const covered = new Set();
-  const globalCursorIds = new Set();
+  const identities = createSemanticIdentityRegistries();
   let durableFrames = 0;
   for (const contractCase of corpus.positiveCases) {
     if (caseIds.has(contractCase.id)) fail("agui_corpus_case_duplicate", contractCase.id);
     caseIds.add(contractCase.id);
-    const result = validateConformanceCaseWithContracts(contractCase, contracts, globalCursorIds);
+    const result = validateConformanceCaseWithContracts(contractCase, contracts, identities);
     durableFrames += result.durableFrames;
     for (const sourceKind of result.sourceKinds) covered.add(sourceKind);
   }
@@ -685,7 +738,7 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
     const candidate = applyCorpusMutation(structuredClone(base), attack.mutation);
     let observed;
     try {
-      validateConformanceCaseWithContracts(candidate, contracts, new Set());
+      validateConformanceCaseWithContracts(candidate, contracts, createSemanticIdentityRegistries());
     } catch (error) {
       if (error instanceof AguiPresentationContractError) observed = error.code;
       else throw error;

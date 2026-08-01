@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
+import { createCipheriv, createHash, randomBytes } from "node:crypto";
 import { cp, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
@@ -16,6 +17,11 @@ import {
 const repositoryRoot = resolve(import.meta.dirname, "../..");
 const execFileAsync = promisify(execFile);
 const corpusGenerator = resolve(import.meta.dirname, "generate-agui-presentation-corpus.mjs");
+const cursorKeyRevision = "agui-conformance-2026-08";
+const cursorProfileRevision = "opaque-session-cursor-v1";
+const profileRevision = "kokoro-agui-presentation.v1";
+const cursorKey = createHash("sha256").update("kokoro-agui-presentation-public-conformance-key-v1", "utf8").digest();
+const cursorAad = Buffer.from(`kokoro.session.browser.cursor.v1\u0000${cursorKeyRevision}`, "utf8");
 
 async function readJson(path) {
   return JSON.parse(await readFile(resolve(repositoryRoot, path), "utf8"));
@@ -51,6 +57,87 @@ async function writeJson(root, relative, value) {
 
 function clone(value) {
   return structuredClone(value);
+}
+
+function canonical(value) {
+  if (value === null || typeof value === "boolean" || typeof value === "number" || typeof value === "string") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  return `{${Object.keys(value).sort().map((name) => `${JSON.stringify(name)}:${canonical(value[name])}`).join(",")}}`;
+}
+
+function projectionDigest(value) {
+  return `sha256:${createHash("sha256").update(canonical(value), "utf8").digest("hex")}`;
+}
+
+function issueRandomCursor({ sessionId, streamEpoch, durableSeq }) {
+  const claims = { version: 1, kind: "stream", sessionId, streamEpoch, durableSeq, profileRevision, cursorProfileRevision };
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", cursorKey, iv);
+  cipher.setAAD(cursorAad);
+  const ciphertext = Buffer.concat([cipher.update(Buffer.from(canonical(claims), "utf8")), cipher.final()]);
+  return ["v1", cursorKeyRevision, iv.toString("base64url"), ciphertext.toString("base64url"), cipher.getAuthTag().toString("base64url")].join(".");
+}
+
+function transformStrings(value, replacements) {
+  if (typeof value === "string") return replacements.get(value) ?? value;
+  if (Array.isArray(value)) return value.map((entry) => transformStrings(entry, replacements));
+  if (value === null || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, transformStrings(child, replacements)]));
+}
+
+function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
+  const replacements = new Map();
+  if (base.snapshot.sessionId !== sessionId) replacements.set(base.snapshot.sessionId, sessionId);
+  for (const binding of base.runBindings) {
+    for (const field of ["bindingRef", "internalRunRef", "presentationThreadId", "presentationRunId", "openedBySourceEventId", "terminalSourceEventId"]) {
+      if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
+    }
+  }
+  for (const binding of base.messageBindings) {
+    for (const field of ["bindingRef", "internalMessageRef", "presentationMessageId", "openedBySourceEventId", "endedBySourceEventId"]) {
+      if (binding[field] !== null) replacements.set(binding[field], `${binding[field]}.${suffix}`);
+    }
+  }
+  for (const frame of base.frames) replacements.set(frame.data.source.sourceEventId, `${frame.data.source.sourceEventId}.${suffix}`);
+  for (const row of base.durableRows) replacements.set(row.rowRef, `${row.rowRef}.${suffix}`);
+
+  const candidate = transformStrings(clone(base), replacements);
+  candidate.id = `${base.id}.${suffix}`;
+  candidate.snapshot.sessionId = sessionId;
+  candidate.snapshot.streamEpoch = streamEpoch;
+  candidate.grantBinding.sessionId = sessionId;
+  for (const frame of candidate.frames) {
+    frame.data.source.sessionId = sessionId;
+    frame.data.source.streamEpoch = streamEpoch;
+    frame.id = issueRandomCursor(frame.data.source);
+  }
+  candidate.snapshot.cursor = issueRandomCursor({ sessionId, streamEpoch, durableSeq: candidate.snapshot.durableSeq });
+  candidate.request.lastEventId = candidate.snapshot.cursor;
+  candidate.request.queryCursor = candidate.snapshot.cursor;
+  candidate.durableRows = candidate.frames.map((frame, index) => ({
+    rowRef: candidate.durableRows[index].rowRef,
+    profileRevision,
+    cursorProfileRevision,
+    source: clone(frame.data.source),
+    projectionPayload: clone(frame.data),
+    projectionPayloadDigest: projectionDigest(frame.data),
+  }));
+  candidate.controlFrame.data.sessionId = sessionId;
+  candidate.controlFrame.data.streamEpoch = streamEpoch;
+  candidate.controlFrame.data.lastDurableCursor = candidate.frames.at(-1).id;
+  return candidate;
+}
+
+function resignCaseCursors(contractCase) {
+  contractCase.snapshot.cursor = issueRandomCursor({
+    sessionId: contractCase.snapshot.sessionId,
+    streamEpoch: contractCase.snapshot.streamEpoch,
+    durableSeq: contractCase.snapshot.durableSeq,
+  });
+  contractCase.request.lastEventId = contractCase.snapshot.cursor;
+  contractCase.request.queryCursor = contractCase.snapshot.cursor;
+  for (const frame of contractCase.frames) frame.id = issueRandomCursor(frame.data.source);
+  contractCase.controlFrame.data.lastDurableCursor = contractCase.frames.at(-1).id;
 }
 
 test("validates the pinned upstream profile and complete presentation corpus", async () => {
@@ -222,4 +309,102 @@ test("full repository gate rejects package and lock source drift from the exact 
   packageJson.devDependencies["@ag-ui/core"] = "0.0.58";
   await writeJson(root, "contract/package.json", packageJson);
   await assert.rejects(validateRepository({ root }), /agui_core_dependency_drift/u);
+});
+
+test("full repository gate rejects an exact copied positive case by global cursor identity", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const copied = clone(corpus.positiveCases[0]);
+  copied.id = `${copied.id}.copied`;
+  corpus.positiveCases.push(copied);
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_global_cursor_identity_duplicate/u);
+});
+
+test("full repository gate rejects randomized cursor encodings of already-used closed claims", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const copied = clone(corpus.positiveCases[0]);
+  copied.id = `${copied.id}.resigned`;
+  resignCaseCursors(copied);
+  corpus.positiveCases.push(copied);
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_global_cursor_claim_identity_duplicate/u);
+});
+
+test("full repository gate accepts a coherent third Session with fresh semantic identities", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  corpus.positiveCases.push(distinctPositiveCase(corpus.positiveCases[0], {
+    suffix: "legal-third",
+    sessionId: "session.legal.third",
+    streamEpoch: "41",
+  }));
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  const result = await validateRepository({ root });
+  assert.equal(result.positiveCases, 3);
+  assert.equal(result.durableFrames, 56);
+});
+
+test("full repository gate rejects every cross-case durable and binding semantic identity collision", async () => {
+  const attacks = [
+    {
+      code: "agui_global_row_ref_duplicate",
+      mutate(third, base) { third.durableRows[0].rowRef = base.durableRows[0].rowRef; },
+    },
+    {
+      code: "agui_global_run_binding_ref_duplicate",
+      mutate(third, base) { third.runBindings[0].bindingRef = base.runBindings[0].bindingRef; },
+    },
+    {
+      code: "agui_global_presentation_run_id_duplicate",
+      mutate(third, base) { third.runBindings[0].presentationRunId = base.runBindings[0].presentationRunId; },
+    },
+    {
+      code: "agui_global_message_binding_ref_duplicate",
+      mutate(third, base) { third.messageBindings[0].bindingRef = base.messageBindings[0].bindingRef; },
+    },
+    {
+      code: "agui_global_presentation_message_id_duplicate",
+      mutate(third, base) { third.messageBindings[0].presentationMessageId = base.messageBindings[0].presentationMessageId; },
+    },
+    {
+      code: "agui_global_internal_run_segment_duplicate",
+      sameSession: true,
+      mutate(third, base) { third.runBindings[0].internalRunRef = base.runBindings[0].internalRunRef; },
+    },
+    {
+      code: "agui_global_internal_message_segment_duplicate",
+      sameSession: true,
+      mutate(third, base) { third.messageBindings[0].internalMessageRef = base.messageBindings[0].internalMessageRef; },
+    },
+    {
+      code: "agui_global_source_event_id_duplicate",
+      sameSession: true,
+      mutate(third, base) {
+        third.frames[0].data.source.sourceEventId = base.frames[0].data.source.sourceEventId;
+        third.durableRows[0].source = clone(third.frames[0].data.source);
+        third.durableRows[0].projectionPayload = clone(third.frames[0].data);
+        third.durableRows[0].projectionPayloadDigest = projectionDigest(third.frames[0].data);
+      },
+    },
+  ];
+  for (const attack of attacks) {
+    const root = await repositoryFixture();
+    const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+    const base = corpus.positiveCases[0];
+    const third = distinctPositiveCase(base, {
+      suffix: `attack-${attack.code}`,
+      sessionId: attack.sameSession === true ? base.snapshot.sessionId : `session.${attack.code}`,
+      streamEpoch: attack.sameSession === true ? "42" : base.snapshot.streamEpoch,
+    });
+    attack.mutate(third, base);
+    corpus.positiveCases.push(third);
+    await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+    await assert.rejects(
+      validateRepository({ root }),
+      (error) => error instanceof AguiPresentationContractError && error.code === attack.code,
+      attack.code,
+    );
+  }
 });
