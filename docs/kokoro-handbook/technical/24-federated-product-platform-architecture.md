@@ -413,10 +413,21 @@ Agent graph/checkpoint/terminal/handoff 语义保持稳定；业务能力通过�
 capability port 注入，而不是在 GA 中复制业务 owner。
 
 Root 已冻结一个 strict AG-UI presentation profile，但它当前仍是 `contract-only`，不能据此宣称 Chat runtime 已迁移。
-Session 是 durable presentation row、snapshot、repair 和 SSE projection 的唯一 owner；Web 最终只消费其严格 typed
-presentation subset，Agent 不参与 AG-UI，Python `ag-ui-protocol` 也不进入该浏览器 wire path。Root 使用精确固定的
-`@ag-ui/core@0.0.57` `EventType`/`EventSchemas` 证明上游类型兼容，再以更小的 closed schema 禁止 raw provider payload、
-native tool wire events、reasoning/thinking/state/delta 和未知 custom 事件。官方 stock client transport 会丢失或无法表达
+Session 是 durable presentation row、snapshot、repair、cursor 和 SSE projection 的唯一 owner；Web 最终只消费其严格 typed
+presentation subset。Agent 只承担内部 event-candidate producer 角色，不是浏览器 endpoint、durable projection owner 或
+cursor owner，也不得 raw passthrough。Root 把 Python `ag-ui-protocol@0.1.19` 的 Git repository、`sdks/python` subdirectory
+与 commit 精确固定到 TypeScript `@ag-ui/core@0.0.57` 的同一 upstream commit；这只是未来 Agent adapter 的依赖与角色
+合同，不代表 runtime 已实现。Agent candidate 比浏览器 subset 更窄：只允许 safe RUN、TEXT 和已登记 ACTIVITY，禁止
+`CUSTOM`、Artifact/Cost owner activity、native tool wire、raw/provider payload、reasoning/thinking/state/delta。Session 接收
+candidate 后仍须验证 closed envelope 的 Agent source/route refs、uint64 ordinal、canonical recorded time、JCS event digest
+和 domain-separated candidate ref，再结合 owner facts 规范化、持久化并生成浏览器 presentation；envelope 不携带
+Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`RUN_FINISHED` candidate 必须显式声明 success；Session
+验证后剥离 outcome，并通过 presentation binding 将内部 route refs 映射成浏览器 run/thread/message refs。
+
+Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事件 schema，再应用 Kokoro closed schema。HTTP snapshot
+携带 Session 权威 durable-head `lastRecordedAt`：`durableSeq=0` 时必须为 null，非零时必须是 canonical UTC 毫秒时间且不早于
+全部 snapshot binding 时间，后续事件不得倒退。Snapshot 的 binding source IDs 只用于播种 binding evidence；完整历史
+source-event 唯一性仍由 Session 数据库保证。官方 stock client transport 会丢失或无法表达
 Kokoro 必需的 SSE `id/event`、`Last-Event-ID`、opaque durable cursor、HTTP snapshot repair 和 non-durable draining 语义，
 因此被明确禁用；未来 Session/Web adapter 必须保留这些字段并提交真实 provider/consumer compatibility evidence。
 

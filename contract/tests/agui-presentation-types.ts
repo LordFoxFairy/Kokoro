@@ -55,3 +55,16 @@ const presentationEvents = [
 ] satisfies readonly AGUIEvent[];
 
 void presentationEvents;
+
+// Agent candidate RUN_FINISHED is intentionally narrower than the browser
+// presentation variant: upstream success outcome is required at Agent ingress
+// and Session strips it only after validation and binding projection.
+const agentRunFinishedCandidate = {
+  type: EventType.RUN_FINISHED,
+  timestamp: 9,
+  threadId: "internal.thread.1",
+  runId: "internal.run.1",
+  outcome: { type: "success" },
+} satisfies AGUIEvent;
+
+void agentRunFinishedCandidate;

@@ -20,7 +20,7 @@ This directory does not implement providers, consumers, retries, authentication 
 `proto/`, `openapi/`, `spec/`, `buf.yaml`, `buf.gen.yaml`, `generate.mjs`, `generate.py`,
 `generate-public-openapi.mjs`, both Media canonical generators, the canonical and projection-integrity
 golden corpora, the Web Release Composition JSON Schema/registry/corpus family, the semantic projection corpus
-generator, the strict AG-UI presentation profile/schema/registry/corpus family, the descriptor/Protovalidate integrity validator, and the
+generator, the strict AG-UI role/candidate/presentation profile/schema/registry/corpus family, the descriptor/Protovalidate integrity validator, and the
 generation/check commands documented in [`README.md`](README.md) form the public boundary.
 
 ## Callers and dependencies
@@ -54,22 +54,37 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-The strict AG-UI presentation family is nine machine-readable Root sources:
+The strict AG-UI family is thirteen machine-readable Root sources:
 [`agui-upstream-profile.yaml`](registry/agui-upstream-profile.yaml),
+[`agui-agent-candidate-profile-v1.yaml`](registry/agui-agent-candidate-profile-v1.yaml),
 [`agui-presentation-mapping-v1.yaml`](registry/agui-presentation-mapping-v1.yaml),
 [`kokoro-agui-presentation-event-v1.yaml`](spec/kokoro-agui-presentation-event-v1.yaml),
+[`agent-agui-event-candidate-v1.yaml`](spec/agent-agui-event-candidate-v1.yaml),
+[`agent-agui-candidate-envelope-v1.yaml`](spec/agent-agui-candidate-envelope-v1.yaml),
 [`presentation-run-binding-v1.yaml`](spec/presentation-run-binding-v1.yaml),
 [`presentation-message-binding-v1.yaml`](spec/presentation-message-binding-v1.yaml),
 [`session-agui-projection-payload-v1.yaml`](spec/session-agui-projection-payload-v1.yaml),
 [`session-agui-presentation-row-v1.yaml`](spec/session-agui-presentation-row-v1.yaml),
-[`session-agui-stream-v1.yaml`](spec/session-agui-stream-v1.yaml), and
+[`session-agui-stream-v1.yaml`](spec/session-agui-stream-v1.yaml),
+[`session-agui-snapshot-authority-v1.yaml`](spec/session-agui-snapshot-authority-v1.yaml), and
 [`agui-presentation-v1.json`](corpus/agui-presentation-v1.json).
-It is `contract-only`: Session is the sole durable projection owner; Agent is not a participant, the pinned Python
-`ag-ui-protocol` SDK is not a participant, and no runtime compatibility is claimed. The exact
-`@ag-ui/core@0.0.57` `EventType`/`EventSchemas` family is the official TypeScript schema authority. Kokoro then applies
-a stricter closed presentation subset. The stock `@ag-ui/client` transport is forbidden because it cannot preserve
+It is `contract-only`: Agent is the internal event-candidate producer, Session is the candidate consumer and sole durable
+projection/cursor owner, and Web is the strict presentation consumer. Agent is never a browser endpoint and raw passthrough is
+forbidden. The Python SDK source is frozen to `ag-ui-protocol@0.1.19` from `sdks/python` at the same upstream commit as exact
+`@ag-ui/core@0.0.57`; this records the future adapter dependency but claims no Agent runtime implementation or compatibility
+evidence. The Agent candidate event schema reuses the closed presentation field definitions while further forbidding `CUSTOM`,
+Artifact/Cost owner activities, native tool events, raw/provider payloads and reasoning/state families. Its closed envelope
+carries no Site/user/Session/cursor/SSE axes: it binds Agent source/route refs, canonical time and uint64 ordinal to the typed
+event's JCS digest and a domain-separated, recomputable candidate ref. `RUN_FINISHED` requires explicit success outcome; Session
+validates and strips that outcome while resolving internal route refs through presentation bindings, so the browser schema does
+not expand. The exact TypeScript
+`EventType`/`EventSchemas` family remains the executable upstream vocabulary/schema authority. The stock `@ag-ui/client` transport is forbidden because it cannot preserve
 Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapshot repair, and non-durable draining
-semantics. Rendering libraries remain adapters only and do not own the wire contract.
+semantics. The closed snapshot authority envelope requires both typed run/message binding arrays and the Session-owned
+`lastRecordedAt` durable-head watermark: sequence zero requires null;
+a nonzero head requires canonical UTC millisecond time no earlier than every included binding timestamp, and the next event
+cannot regress behind it. Binding source IDs seed only binding evidence; Session storage remains the full source-ID uniqueness
+authority. Rendering libraries remain adapters only and do not own the wire contract.
 
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
 isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/

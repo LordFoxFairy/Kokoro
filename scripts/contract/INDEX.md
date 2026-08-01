@@ -91,11 +91,16 @@ covered by the Admin/OpenAPI and Session browser gates rather than being silentl
 
 `check-agui-presentation.mjs` is the public, read-only strict AG-UI presentation gate;
 `check-agui-presentation.test.mjs` defines its fail-closed public behaviour. It loads only the fixed reviewed Root
-profile, mapping, schemas, and corpus—callers cannot inject validators or alternate branded paths—and imports the
+role profile, Agent candidate profile, mapping, schemas, and corpus—callers cannot inject validators or alternate branded paths—and imports the
 official `EventType` and `EventSchemas` from exact `@ag-ui/core@0.0.57`. The contract package and lock must retain
 that exact version and integrity. Every positive event must satisfy both the official schema and Kokoro's smaller
 closed vocabulary; forbidden raw, provider, native-tool, reasoning/thinking, state/delta, and unknown-custom
-families never become presentation data merely because upstream accepts them.
+families never become presentation data merely because upstream accepts them. The Agent candidate gate is narrower again:
+it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Artifact/Cost owner activities, and verifies each admitted
+sample through the official `EventSchemas`. The envelope gate recomputes RFC 8785/JCS event bytes, rejects invalid Unicode scalar
+strings and unsafe/non-finite numbers, verifies the event digest and domain-separated candidate ref, and binds route refs and
+canonical recorded time back to the event. All event/content keys remain closed by schema, so Unicode object-key ordering cannot
+be injected through a dynamic map. It records no Agent runtime activation.
 
 `generate-agui-presentation-corpus.mjs` deterministically derives the public conformance cursors and persisted
 projection rows. Its default mode rewrites the checked-in corpus; `--check` is non-mutating and compares exact bytes.
@@ -103,6 +108,9 @@ The public AES-GCM key is conformance-fixture material only, never a runtime key
 and frame cursor into closed Session/epoch/sequence/profile claims, rejects both byte and semantic identity reuse
 across positive cases, binds all run/message/source/row identities to their Session, verifies real parent lineage,
 and requires the persisted complete projection payload plus its JCS SHA-256 to equal the emitted frame exactly.
+Snapshot cases additionally prove the Session durable-head `lastRecordedAt` rule, canonical UTC-millisecond representation,
+binding-time lower bound, and next-event non-regression. They do not pretend the browser snapshot contains Session's complete
+historical source-ID ledger.
 It proves an offline `contract-only` Session projection profile; it does not prove a Session/Web runtime adapter,
 deployment, authorization, or compatibility scenario.
 
@@ -167,7 +175,7 @@ caller audience, or SPIFFE identity. Wire shapes stay owned by `contract/proto/`
 
 Read-only and deterministic, with no runtime network: protobuf gates use Root-pinned Buf and
 `@bufbuild/protobuf`; projection validation additionally uses the exact pinned `@bufbuild/protovalidate` runtime,
-while strict AG-UI validation uses the exact pinned `@ag-ui/core` runtime only as the official schema participant.
+while strict AG-UI validation uses the exact pinned `@ag-ui/core` runtime only as the official schema authority.
 
 The two Platform projection-recovery boundaries keep `GetProjectionHead` and `PullProjectionEvents` pure reads and register
 `RefreshProjectionRecoveryAccess` as a `same_identity` command-receipt effect. Media and Credit use separate typed effects

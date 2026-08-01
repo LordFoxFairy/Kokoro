@@ -11,22 +11,25 @@
       "package": "@ag-ui/core",
       "version": "0.0.57",
       "integrity": "sha512-gho1OWjNE6E3Rl7ZEZ1wr2CEpUHjLFU0FqzCZZk439TicLu+BfLCMkMokB07bMGlRmbJ60hM6LW60iOVauCx+Q==",
-      "participant": true
+      "schemaAuthority": true
     },
     "client": {
       "package": "@ag-ui/client",
       "version": "0.0.57",
       "integrity": "sha512-Xap2alG9Z0/j5kb3x4D7oTpe2sw1dfrC9rgJJr2NZu5vKcm8dzIPNd31mF2B4zS3BKqYIu245yxKPhEtT30MHw==",
-      "participant": false,
+      "transportRole": "forbidden",
       "reason": "Kokoro transport must preserve SSE id, event, Last-Event-ID and durable cursor semantics."
     }
   },
   "python": {
     "package": "ag-ui-protocol",
-    "sourceSubdirectory": "sdks/python",
     "versionAtCommit": "0.1.19",
-    "participant": false,
-    "reason": "Agent is not a browser presentation endpoint; Session owns the AG-UI projection."
+    "source": {
+      "kind": "git",
+      "repository": "https://github.com/ag-ui-protocol/ag-ui",
+      "subdirectory": "sdks/python",
+      "commit": "54f13419055b4d0f442c71e1efab18b310982ce1"
+    }
   },
   "rendering": {
     "assistantUi": {
@@ -36,12 +39,37 @@
       "role": "rendering-adapter-only"
     }
   },
-  "ownership": {
-    "durableTruth": "kokoro-session",
-    "projectionOwner": "kokoro-session",
-    "sameOriginProxy": "kokoro-web-site-bff",
-    "browserConsumer": "kokoro-web-chat-surface",
-    "agentParticipant": false
+  "roles": {
+    "agent": {
+      "repository": "kokoro-agent",
+      "internalEventCandidateProducer": true,
+      "internalEventCandidateConsumer": false,
+      "strictPresentationConsumer": false,
+      "browserEndpoint": false,
+      "durableProjectionOwner": false,
+      "cursorOwner": false,
+      "rawPassthrough": false
+    },
+    "session": {
+      "repository": "kokoro-session",
+      "internalEventCandidateProducer": false,
+      "internalEventCandidateConsumer": true,
+      "strictPresentationConsumer": false,
+      "browserEndpoint": true,
+      "durableProjectionOwner": true,
+      "cursorOwner": true,
+      "rawPassthrough": false
+    },
+    "web": {
+      "repository": "kokoro-web",
+      "internalEventCandidateProducer": false,
+      "internalEventCandidateConsumer": false,
+      "strictPresentationConsumer": true,
+      "browserEndpoint": false,
+      "durableProjectionOwner": false,
+      "cursorOwner": false,
+      "rawPassthrough": false
+    }
   },
   "cursorConformance": {
     "format": "aes-256-gcm-closed-claims-v1",

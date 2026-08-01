@@ -3,13 +3,17 @@
   "profileRevision": "kokoro-agui-presentation.v1",
   "contracts": {
     "profile": "contract/registry/agui-upstream-profile.yaml",
+    "agentCandidateProfile": "contract/registry/agui-agent-candidate-profile-v1.yaml",
     "mapping": "contract/registry/agui-presentation-mapping-v1.yaml",
     "eventSchema": "contract/spec/kokoro-agui-presentation-event-v1.yaml",
+    "agentCandidateSchema": "contract/spec/agent-agui-event-candidate-v1.yaml",
+    "agentCandidateEnvelopeSchema": "contract/spec/agent-agui-candidate-envelope-v1.yaml",
     "projectionPayloadSchema": "contract/spec/session-agui-projection-payload-v1.yaml",
     "presentationRowSchema": "contract/spec/session-agui-presentation-row-v1.yaml",
     "runBindingSchema": "contract/spec/presentation-run-binding-v1.yaml",
     "messageBindingSchema": "contract/spec/presentation-message-binding-v1.yaml",
-    "streamSchema": "contract/spec/session-agui-stream-v1.yaml"
+    "streamSchema": "contract/spec/session-agui-stream-v1.yaml",
+    "snapshotAuthoritySchema": "contract/spec/session-agui-snapshot-authority-v1.yaml"
   },
   "positiveCases": [
     {
@@ -22,7 +26,8 @@
         "sessionId": "session.01",
         "streamEpoch": "41",
         "durableSeq": "0",
-        "cursor": "v1.agui-conformance-2026-08.gIhWAc5xzn3dkqHG.ZTVylnDI17GKavJGZJKxVMYmEouXBtsy217JRb0kEYL2Ju81GhViFMfoVYxwStLtlM43qg5tvGZqV7-jl-XLeSmiYvgyG-fSmqG7QxTohhTuQQJq7cOgzXMOMR95W0E2nXi2RCplEfu8Vp5XBpteQjMpKA3Km5NS_ajeIgIVF7Objv70FhAT5cuv-P_KDPtwk00KaoIGPnLqCR2Nxu0xLPNdyJOf4TaKHuVDBAp14suJY83fF7rHnBhNpv0b.qZqba07SDhSFdfHwvo0i0Q"
+        "cursor": "v1.agui-conformance-2026-08.gIhWAc5xzn3dkqHG.ZTVylnDI17GKavJGZJKxVMYmEouXBtsy217JRb0kEYL2Ju81GhViFMfoVYxwStLtlM43qg5tvGZqV7-jl-XLeSmiYvgyG-fSmqG7QxTohhTuQQJq7cOgzXMOMR95W0E2nXi2RCplEfu8Vp5XBpteQjMpKA3Km5NS_ajeIgIVF7Objv70FhAT5cuv-P_KDPtwk00KaoIGPnLqCR2Nxu0xLPNdyJOf4TaKHuVDBAp14suJY83fF7rHnBhNpv0b.qZqba07SDhSFdfHwvo0i0Q",
+        "lastRecordedAt": null
       },
       "request": {
         "lastEventId": "v1.agui-conformance-2026-08.gIhWAc5xzn3dkqHG.ZTVylnDI17GKavJGZJKxVMYmEouXBtsy217JRb0kEYL2Ju81GhViFMfoVYxwStLtlM43qg5tvGZqV7-jl-XLeSmiYvgyG-fSmqG7QxTohhTuQQJq7cOgzXMOMR95W0E2nXi2RCplEfu8Vp5XBpteQjMpKA3Km5NS_ajeIgIVF7Objv70FhAT5cuv-P_KDPtwk00KaoIGPnLqCR2Nxu0xLPNdyJOf4TaKHuVDBAp14suJY83fF7rHnBhNpv0b.qZqba07SDhSFdfHwvo0i0Q",
@@ -2012,7 +2017,8 @@
         "sessionId": "session.error",
         "streamEpoch": "9",
         "durableSeq": "0",
-        "cursor": "v1.agui-conformance-2026-08.O8-thqeUwJqGLX_y.xfu4MIxHH0q7uRyOJK71_z8ohyMYUaYUdKC66EnmrPC4N94qPCwslTyY6Auy8Bc86IaGLX0-LY-_GhWCTLxztmtyYHoxlnQVsifjwUB2VOXxYRxFuZy4ho-strSQUJjetUC0WdM9yNowTyOKhnglshKPh2HJrPgBhggMkzJEiE3GBGDSJUgk8jkuMGbfp-nADhlgINiQV7k1uDaHBQ0M7wkqZDINAYIUe7V7CqynTpjwJyvsctq5xAe8yWmJ1gs.SJi0RLQ5J7_QMtMrIuOE0w"
+        "cursor": "v1.agui-conformance-2026-08.O8-thqeUwJqGLX_y.xfu4MIxHH0q7uRyOJK71_z8ohyMYUaYUdKC66EnmrPC4N94qPCwslTyY6Auy8Bc86IaGLX0-LY-_GhWCTLxztmtyYHoxlnQVsifjwUB2VOXxYRxFuZy4ho-strSQUJjetUC0WdM9yNowTyOKhnglshKPh2HJrPgBhggMkzJEiE3GBGDSJUgk8jkuMGbfp-nADhlgINiQV7k1uDaHBQ0M7wkqZDINAYIUe7V7CqynTpjwJyvsctq5xAe8yWmJ1gs.SJi0RLQ5J7_QMtMrIuOE0w",
+        "lastRecordedAt": null
       },
       "request": {
         "lastEventId": "v1.agui-conformance-2026-08.O8-thqeUwJqGLX_y.xfu4MIxHH0q7uRyOJK71_z8ohyMYUaYUdKC66EnmrPC4N94qPCwslTyY6Auy8Bc86IaGLX0-LY-_GhWCTLxztmtyYHoxlnQVsifjwUB2VOXxYRxFuZy4ho-strSQUJjetUC0WdM9yNowTyOKhnglshKPh2HJrPgBhggMkzJEiE3GBGDSJUgk8jkuMGbfp-nADhlgINiQV7k1uDaHBQ0M7wkqZDINAYIUe7V7CqynTpjwJyvsctq5xAe8yWmJ1gs.SJi0RLQ5J7_QMtMrIuOE0w",
@@ -2435,6 +2441,242 @@
         "value": "secret-value"
       },
       "expectedCode": "agui_tool_secret_forbidden"
+    }
+  ],
+  "snapshotAuthorityCases": [
+    {
+      "id": "nonzero-head-after-binding-evidence",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "snapshot": {
+        "authority": "session-browser-v3-http-snapshot",
+        "hydrate": true,
+        "repair": true,
+        "profileRevision": "kokoro-agui-presentation.v1",
+        "sessionId": "session.01",
+        "streamEpoch": "41",
+        "durableSeq": "26",
+        "lastRecordedAt": "2026-08-01T12:00:26.000Z",
+        "cursor": "v1.agui-conformance-2026-08.qyjFu0ovHvQ0qVec.nTkwT-YrgDNplzVor10wr5M2HWPu1mKRxH5_wddQu3ZiPmljatP0mRPykTfeEJrSB7prXJ0mQTB7YG1qfszYtbVNNdUVMTOXmn_SI7m-xUZeXFv54bfXOrceS7xxKfzs15PzNtEXXRfgoUJ3WjznqZQuyRzRSzdz7P30__TRoYf5PbywXEkRDTPwE1C6qLxauJ7WZBiibIo7GN_kA7uZTp1jjwO2034XGXQdruC_eWpsVjKyKtnJk0TDulVoDQ.AqbheYMeqIE-fwjnAAHxAw",
+        "runBindings": [
+          {
+            "bindingRef": "run-binding.01.segment.0",
+            "profileRevision": "kokoro-agui-presentation.v1",
+            "sessionId": "session.01",
+            "internalRunRef": "internal.run.01",
+            "presentationThreadId": "thread.session.01",
+            "presentationRunId": "presentation.run.01.segment.0",
+            "segmentOrdinal": 0,
+            "resumeOfPresentationRunId": null,
+            "parentLineage": {
+              "parentInternalRunRef": null,
+              "parentPresentationRunId": null
+            },
+            "state": "finished",
+            "terminalDisposition": "interrupted",
+            "openedBySourceEventId": "source.01",
+            "terminalSourceEventId": "source.21",
+            "openedAt": "2026-08-01T12:00:01.000Z",
+            "terminalAt": "2026-08-01T12:00:21.000Z"
+          },
+          {
+            "bindingRef": "run-binding.01.segment.1",
+            "profileRevision": "kokoro-agui-presentation.v1",
+            "sessionId": "session.01",
+            "internalRunRef": "internal.run.01",
+            "presentationThreadId": "thread.session.01",
+            "presentationRunId": "presentation.run.01.segment.1",
+            "segmentOrdinal": 1,
+            "resumeOfPresentationRunId": "presentation.run.01.segment.0",
+            "parentLineage": {
+              "parentInternalRunRef": null,
+              "parentPresentationRunId": null
+            },
+            "state": "finished",
+            "terminalDisposition": "success",
+            "openedBySourceEventId": "source.22",
+            "terminalSourceEventId": "source.26",
+            "openedAt": "2026-08-01T12:00:22.000Z",
+            "terminalAt": "2026-08-01T12:00:26.000Z"
+          }
+        ],
+        "messageBindings": [
+          {
+            "bindingRef": "message-binding.01.segment.0",
+            "profileRevision": "kokoro-agui-presentation.v1",
+            "sessionId": "session.01",
+            "internalMessageRef": "internal.message.assistant.01",
+            "presentationRunBindingRef": "run-binding.01.segment.0",
+            "presentationMessageId": "presentation.message.01.segment.0",
+            "resumeSegmentOrdinal": 0,
+            "state": "ended",
+            "openedBySourceEventId": "source.02",
+            "endedBySourceEventId": "source.20",
+            "openedAt": "2026-08-01T12:00:02.000Z",
+            "endedAt": "2026-08-01T12:00:20.000Z"
+          },
+          {
+            "bindingRef": "message-binding.01.segment.1",
+            "profileRevision": "kokoro-agui-presentation.v1",
+            "sessionId": "session.01",
+            "internalMessageRef": "internal.message.assistant.01",
+            "presentationRunBindingRef": "run-binding.01.segment.1",
+            "presentationMessageId": "presentation.message.01.segment.1",
+            "resumeSegmentOrdinal": 1,
+            "state": "ended",
+            "openedBySourceEventId": "source.23",
+            "endedBySourceEventId": "source.25",
+            "openedAt": "2026-08-01T12:00:23.000Z",
+            "endedAt": "2026-08-01T12:00:25.000Z"
+          }
+        ]
+      },
+      "nextEventRecordedAt": "2026-08-01T12:00:27.000Z"
+    }
+  ],
+  "agentCandidateProjectionCases": [
+    {
+      "id": "agent-success-outcome-to-browser-run-finished",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "sourceEventId": "source.26",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "source.26",
+          "sourceOrdinal": "26",
+          "recordedAt": "2026-08-01T12:00:26.000Z",
+          "route": {
+            "internalRunRef": "internal.run.01",
+            "internalThreadRef": "internal.thread.session.01"
+          }
+        },
+        "eventDigest": "sha256:b749a006f8011204e5c047b619b9f0c90923c993c5e8ad7d622f48a6404c5b6b",
+        "event": {
+          "type": "RUN_FINISHED",
+          "timestamp": 1785585626000,
+          "threadId": "internal.thread.session.01",
+          "runId": "internal.run.01",
+          "outcome": {
+            "type": "success"
+          }
+        },
+        "candidateRef": "agui_candidate:sha256:a987dfb3a6eafd53fb31c3038ee9ad9ade4df41143d52020c4624915c2a8b9e4"
+      },
+      "expectedPresentationEvent": {
+        "type": "RUN_FINISHED",
+        "timestamp": 1785585626000,
+        "threadId": "thread.session.01",
+        "runId": "presentation.run.01.segment.1"
+      }
+    }
+  ],
+  "agentCandidateEnvelopeCases": [
+    {
+      "id": "agent-run-start-envelope",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "sourceEventId": "source.22",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "source.22",
+          "sourceOrdinal": "22",
+          "recordedAt": "2026-08-01T12:00:22.000Z",
+          "route": {
+            "internalRunRef": "internal.run.01",
+            "internalThreadRef": "internal.thread.session.01"
+          }
+        },
+        "eventDigest": "sha256:07b05e041312e08d322547c56804beab0c03504961fcf2fc744644328431f907",
+        "event": {
+          "type": "RUN_STARTED",
+          "timestamp": 1785585622000,
+          "threadId": "internal.thread.session.01",
+          "runId": "internal.run.01"
+        },
+        "candidateRef": "agui_candidate:sha256:5089bb9e48777f5989a99e686d267dacdea14d1451c4dc5bb0ba488d8bfd57c2"
+      }
+    },
+    {
+      "id": "agent-run-error-envelope",
+      "baseCaseId": "safe-run-error",
+      "sourceEventId": "error-source.04",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "error-source.04",
+          "sourceOrdinal": "4",
+          "recordedAt": "2026-08-01T13:00:04.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error",
+            "internalThreadRef": "internal.thread.session.error"
+          }
+        },
+        "eventDigest": "sha256:50989042d72f4efa237b4ab292a7a622e202474ec8035e54f644c41c1d7d62d9",
+        "event": {
+          "type": "RUN_ERROR",
+          "timestamp": 1785589204000,
+          "message": "The run could not be completed.",
+          "code": "RUN_FAILED"
+        },
+        "candidateRef": "agui_candidate:sha256:b3835ade9d84de5cbd6a2613984c6e0f4e4b6cd8cd1cbede17cb62c6641b5352"
+      }
+    },
+    {
+      "id": "agent-text-envelope",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "sourceEventId": "source.03",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "source.03",
+          "sourceOrdinal": "3",
+          "recordedAt": "2026-08-01T12:00:03.000Z",
+          "route": {
+            "internalRunRef": "internal.run.01",
+            "internalThreadRef": "internal.thread.session.01",
+            "internalMessageRef": "internal.message.assistant.01"
+          }
+        },
+        "eventDigest": "sha256:9d2615f3cf3a9ae3f44a9213a67e44b1228fef40b87e37904ccb3a998a8c37a4",
+        "event": {
+          "type": "TEXT_MESSAGE_CONTENT",
+          "timestamp": 1785585603000,
+          "messageId": "internal.message.assistant.01",
+          "delta": "I can help with that."
+        },
+        "candidateRef": "agui_candidate:sha256:357090964bfd67a877a741d5bbdc5dbbbcfc55890f7de491700f936011d8c63c"
+      }
+    },
+    {
+      "id": "agent-activity-envelope",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "sourceEventId": "source.04",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "source.04",
+          "sourceOrdinal": "4",
+          "recordedAt": "2026-08-01T12:00:04.000Z",
+          "route": {
+            "internalRunRef": "internal.run.01",
+            "internalThreadRef": "internal.thread.session.01",
+            "internalMessageRef": "internal.message.assistant.01"
+          }
+        },
+        "eventDigest": "sha256:22010cbc37c83f15f942acda603127d5cb60a4bdaee324d98666a0f862abcac3",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785585604000,
+          "messageId": "internal.message.assistant.01",
+          "activityType": "kokoro.safe-summary.v1",
+          "content": {
+            "partRef": "part.summary.01",
+            "summary": "Compared safe alternatives.",
+            "status": "complete"
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:25b01f9399dc2bdbe948032f6c9ff0bd4f59e89c5516a3965d1e9dd59f12911a"
+      }
     }
   ]
 }

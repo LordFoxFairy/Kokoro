@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.invalid/session-agui-snapshot-authority.v1.schema.json",
+  "title": "Kokoro Session AG-UI snapshot authority v1",
+  "description": "The closed transport authority for a Session HTTP snapshot. lastRecordedAt is the Session-owned durable-head time watermark; binding source identifiers are evidence only and do not claim the complete historical source-id ledger.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["authority", "hydrate", "repair", "profileRevision", "sessionId", "streamEpoch", "durableSeq", "lastRecordedAt", "cursor", "runBindings", "messageBindings"],
+  "properties": {
+    "authority": {"const": "session-browser-v3-http-snapshot"},
+    "hydrate": {"const": true},
+    "repair": {"const": true},
+    "profileRevision": {"const": "kokoro-agui-presentation.v1"},
+    "sessionId": {"$ref": "#/$defs/id"},
+    "streamEpoch": {"$ref": "#/$defs/positiveUint64"},
+    "durableSeq": {"$ref": "#/$defs/uint64"},
+    "lastRecordedAt": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/canonicalUtcMs"}
+      ]
+    },
+    "cursor": {"$ref": "#/$defs/cursor"},
+    "runBindings": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "https://contracts.kokoro.invalid/presentation-run-binding.v1.schema.json"}
+    },
+    "messageBindings": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {"$ref": "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"durableSeq": {"const": "0"}}, "required": ["durableSeq"]},
+      "then": {"properties": {"lastRecordedAt": {"type": "null"}}},
+      "else": {"properties": {"lastRecordedAt": {"$ref": "#/$defs/canonicalUtcMs"}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "uint64": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$"},
+    "positiveUint64": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
+    "canonicalUtcMs": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
+    "cursor": {"type": "string", "minLength": 16, "maxLength": 2048, "pattern": "^(?=.*[A-Za-z._~-])[A-Za-z0-9._~-]+$"}
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json",
+  "title": "Kokoro Agent AG-UI candidate envelope v1",
+  "description": "A contract-only Agent-to-Session candidate envelope. The nested event is the single closed event schema; the checker recomputes its JCS digest, candidate identity and event/route binding. Site, user, Session cursor and SSE fields are forbidden by the closed shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profileRevision", "candidateRef", "source", "eventDigest", "event"],
+  "properties": {
+    "profileRevision": {"const": "kokoro-agent-agui-candidate.v1"},
+    "candidateRef": {"type": "string", "pattern": "^agui_candidate:sha256:[0-9a-f]{64}$"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceEventRef", "sourceOrdinal", "recordedAt", "route"],
+      "properties": {
+        "sourceEventRef": {"$ref": "#/$defs/id"},
+        "sourceOrdinal": {"$ref": "#/$defs/uint64"},
+        "recordedAt": {"$ref": "#/$defs/canonicalUtcMs"},
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["internalRunRef", "internalThreadRef"],
+          "properties": {
+            "internalRunRef": {"$ref": "#/$defs/id"},
+            "internalThreadRef": {"$ref": "#/$defs/id"},
+            "internalMessageRef": {"$ref": "#/$defs/id"}
+          }
+        }
+      }
+    },
+    "eventDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "event": {"$ref": "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json"}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "uint64": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$"},
+    "canonicalUtcMs": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"}
+  }
+}

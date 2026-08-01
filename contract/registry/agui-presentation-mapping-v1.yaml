@@ -55,8 +55,9 @@
     "durableRowToFrameCardinality": "exactly-one",
     "dropDurableRows": false,
     "fanOutDurableRows": false,
-    "agentRawEventParticipant": false,
-    "providerPayloadParticipant": false
+    "agentCandidateSourceProfile": "kokoro-agent-agui-candidate.v1",
+    "agentRawPassthrough": false,
+    "providerPayloadPassthrough": false
   },
   "transportPolicy": {
     "protocol": "sse",
@@ -76,7 +77,9 @@
     "repairAuthority": "session-browser-v3-http-snapshot",
     "streamHydration": "forbidden",
     "messagesSnapshotEvent": "forbidden",
-    "stateSnapshotEvent": "forbidden"
+    "stateSnapshotEvent": "forbidden",
+    "timeWatermarkField": "lastRecordedAt",
+    "timeWatermarkAuthority": "session-durable-head"
   },
   "limits": {
     "maximumFrameBytes": 131072,

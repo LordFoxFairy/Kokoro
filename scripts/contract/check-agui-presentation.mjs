@@ -18,6 +18,9 @@ const CURSOR_PROFILE_REVISION = "opaque-session-cursor-v1";
 const SESSION_CONTRACT_REVISION = "session-agui-stream.v1";
 const AGUI_CORE_VERSION = "0.0.57";
 const AGUI_CORE_INTEGRITY = "sha512-gho1OWjNE6E3Rl7ZEZ1wr2CEpUHjLFU0FqzCZZk439TicLu+BfLCMkMokB07bMGlRmbJ60hM6LW60iOVauCx+Q==";
+const AGUI_UPSTREAM_REPOSITORY = "https://github.com/ag-ui-protocol/ag-ui";
+const AGUI_UPSTREAM_COMMIT = "54f13419055b4d0f442c71e1efab18b310982ce1";
+const AGENT_CANDIDATE_PROFILE_REVISION = "kokoro-agent-agui-candidate.v1";
 const CURSOR_KEY_REVISION = "agui-conformance-2026-08";
 const CURSOR_KEY = createHash("sha256").update("kokoro-agui-presentation-public-conformance-key-v1", "utf8").digest();
 const CURSOR_AAD = Buffer.from(`kokoro.session.browser.cursor.v1\u0000${CURSOR_KEY_REVISION}`, "utf8");
@@ -25,25 +28,33 @@ const UINT64_MAXIMUM = 18_446_744_073_709_551_615n;
 
 const CONTRACT_PATHS = Object.freeze({
   profile: "contract/registry/agui-upstream-profile.yaml",
+  agentCandidateProfile: "contract/registry/agui-agent-candidate-profile-v1.yaml",
   mapping: "contract/registry/agui-presentation-mapping-v1.yaml",
   eventSchema: "contract/spec/kokoro-agui-presentation-event-v1.yaml",
+  agentCandidateSchema: "contract/spec/agent-agui-event-candidate-v1.yaml",
+  agentCandidateEnvelopeSchema: "contract/spec/agent-agui-candidate-envelope-v1.yaml",
   projectionPayloadSchema: "contract/spec/session-agui-projection-payload-v1.yaml",
   presentationRowSchema: "contract/spec/session-agui-presentation-row-v1.yaml",
   runBindingSchema: "contract/spec/presentation-run-binding-v1.yaml",
   messageBindingSchema: "contract/spec/presentation-message-binding-v1.yaml",
   streamSchema: "contract/spec/session-agui-stream-v1.yaml",
+  snapshotAuthoritySchema: "contract/spec/session-agui-snapshot-authority-v1.yaml",
 });
 
 // These are the reviewed contract sources, not caller-selected schemas carrying a familiar $id.
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
-  profile: "26ff2098fbd80592ae41819415975038f4dd9cd31befab96fa90df693130d5cb",
-  mapping: "19c6ad2deb2068de3c64f505045bc0eb055096bc87143f004a77216784a93bc7",
+  profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
+  agentCandidateProfile: "1696a8321b3b5031c69cd72a967d4ce38b340a3a32d70913b34f051f225f3685",
+  mapping: "e59bae70cba232356820224c72ab037eada6376f9a5a39740ab8cf3f169ad9f9",
   eventSchema: "9f14ead7f4668b9e39a725c8cb0c23332e5f63be00d43ba3e6619fd372e9acd7",
+  agentCandidateSchema: "85a5c462d74a13344812d8fb62ff4e609ccaac5048694f9de751c88a391d57fb",
+  agentCandidateEnvelopeSchema: "7258ea7bf904dd78db64031df165a6670769ecdfae0caec72fe547f4b1ebd593",
   projectionPayloadSchema: "2595298c0d39dd077a21cb4048fea2226dff901429e9ba9ace9fb2067c376795",
   presentationRowSchema: "7c9feda5595dcfb79e32a9fe6795060d69306fd47b1a34c7601a375fca376888",
   runBindingSchema: "dd5318258dbf8a33065e533b62b84ed08440c25af358235663a8d40b26ef5063",
   messageBindingSchema: "d4817d5ae5010393d60f1597576bbc08355c0edfb268ea72014ffea49964e9a7",
   streamSchema: "ce51651ab17c080838547ec74c73a86574b9134aed351c7f27d92d1709441333",
+  snapshotAuthoritySchema: "6c2ee288041cf29ea4dccd318c58bbaa4d19e1577de0acaf00aae076479e39e8",
 });
 
 const OFFICIAL_EVENT_TYPES = Object.freeze(Object.values(EventType));
@@ -56,6 +67,29 @@ const ALLOWED_EVENT_TYPES = Object.freeze([
   EventType.TEXT_MESSAGE_END,
   EventType.ACTIVITY_SNAPSHOT,
   EventType.CUSTOM,
+]);
+const AGENT_CANDIDATE_EVENT_TYPES = Object.freeze([
+  EventType.RUN_STARTED,
+  EventType.RUN_FINISHED,
+  EventType.RUN_ERROR,
+  EventType.TEXT_MESSAGE_START,
+  EventType.TEXT_MESSAGE_CONTENT,
+  EventType.TEXT_MESSAGE_END,
+  EventType.ACTIVITY_SNAPSHOT,
+]);
+const AGENT_CANDIDATE_ACTIVITY_TYPES = Object.freeze([
+  "kokoro.safe-summary.v1",
+  "kokoro.tool-preview.v1",
+  "kokoro.hitl.v1",
+  "kokoro.plan.v1",
+  "kokoro.subagent.v1",
+  "kokoro.media.v1",
+  "kokoro.notice.v1",
+  "kokoro.error.v1",
+]);
+const AGENT_ROLE_KEYS = Object.freeze([
+  "repository", "internalEventCandidateProducer", "internalEventCandidateConsumer", "strictPresentationConsumer",
+  "browserEndpoint", "durableProjectionOwner", "cursorOwner", "rawPassthrough",
 ]);
 const EVENT_FIELDS = new Map([
   [EventType.RUN_STARTED, ["type", "timestamp", "threadId", "runId", "parentRunId"]],
@@ -97,13 +131,36 @@ function exactArray(actual, expected, code) {
   if (!Array.isArray(actual) || JSON.stringify(actual) !== JSON.stringify(expected)) fail(code);
 }
 
+function assertUnicodeScalarString(value) {
+  for (let index = 0; index < value.length; index += 1) {
+    const codeUnit = value.charCodeAt(index);
+    if (codeUnit >= 0xd800 && codeUnit <= 0xdbff) {
+      const next = value.charCodeAt(index + 1);
+      if (!(next >= 0xdc00 && next <= 0xdfff)) fail("agui_canonical_unicode_invalid");
+      index += 1;
+    } else if (codeUnit >= 0xdc00 && codeUnit <= 0xdfff) {
+      fail("agui_canonical_unicode_invalid");
+    }
+  }
+}
+
 function canonical(value) {
-  if (value === null || typeof value === "boolean" || typeof value === "number" || typeof value === "string") {
+  if (typeof value === "string") {
+    assertUnicodeScalarString(value);
+    return JSON.stringify(value);
+  }
+  if (typeof value === "number" && (!Number.isFinite(value) || (Number.isInteger(value) && !Number.isSafeInteger(value)))) {
+    fail("agui_canonical_number_invalid");
+  }
+  if (value === null || typeof value === "boolean" || typeof value === "number") {
     return JSON.stringify(value);
   }
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
   if (typeof value !== "object") fail("agui_canonical_value_invalid");
-  return `{${Object.keys(value).sort().map((name) => `${JSON.stringify(name)}:${canonical(value[name])}`).join(",")}}`;
+  return `{${Object.keys(value).sort().map((name) => {
+    assertUnicodeScalarString(name);
+    return `${JSON.stringify(name)}:${canonical(value[name])}`;
+  }).join(",")}}`;
 }
 
 function sha256Bytes(value) {
@@ -167,17 +224,26 @@ function loadContracts(root = repositoryRoot) {
   const ajv = new Ajv2020({ allErrors: true, strict: true, validateFormats: false });
   try {
     ajv.addSchema(sources.eventSchema);
+    ajv.addSchema(sources.agentCandidateSchema);
+    ajv.addSchema(sources.agentCandidateEnvelopeSchema);
     ajv.addSchema(sources.projectionPayloadSchema);
     ajv.addSchema(sources.presentationRowSchema);
+    ajv.addSchema(sources.runBindingSchema);
+    ajv.addSchema(sources.messageBindingSchema);
     return Object.freeze({
       profile: sources.profile,
+      agentCandidateProfile: sources.agentCandidateProfile,
+      agentCandidateSchema: sources.agentCandidateSchema,
       mapping: sources.mapping,
       validateEvent: ajv.getSchema(sources.eventSchema.$id),
+      validateAgentCandidate: ajv.getSchema(sources.agentCandidateSchema.$id),
+      validateAgentCandidateEnvelope: ajv.getSchema(sources.agentCandidateEnvelopeSchema.$id),
       validateProjectionPayload: ajv.getSchema(sources.projectionPayloadSchema.$id),
       validatePresentationRow: ajv.getSchema(sources.presentationRowSchema.$id),
-      validateRunBinding: ajv.compile(sources.runBindingSchema),
-      validateMessageBinding: ajv.compile(sources.messageBindingSchema),
+      validateRunBinding: ajv.getSchema(sources.runBindingSchema.$id),
+      validateMessageBinding: ajv.getSchema(sources.messageBindingSchema.$id),
       validateStream: ajv.compile(sources.streamSchema),
+      validateSnapshotAuthoritySchema: ajv.compile(sources.snapshotAuthoritySchema),
     });
   } catch (error) {
     fail("agui_schema_compile_invalid", error instanceof Error ? error.message : "unknown");
@@ -185,17 +251,30 @@ function loadContracts(root = repositoryRoot) {
 }
 
 function validateProfile(profile) {
-  exactKeys(profile, ["profileId", "profileRevision", "lifecycle", "upstream", "typescript", "python", "rendering", "ownership", "cursorConformance", "upgradePolicy"], "agui_profile_shape_invalid");
+  exactKeys(profile, ["profileId", "profileRevision", "lifecycle", "upstream", "typescript", "python", "rendering", "roles", "cursorConformance", "upgradePolicy"], "agui_profile_shape_invalid");
   if (profile.profileId !== "kokoro.agui.presentation-profile.v1" || profile.profileRevision !== PROFILE_REVISION || profile.lifecycle !== "contract-only") fail("agui_profile_identity_invalid");
-  if (profile.upstream?.repository !== "https://github.com/ag-ui-protocol/ag-ui" || profile.upstream?.commit !== "54f13419055b4d0f442c71e1efab18b310982ce1") fail("agui_upstream_pin_invalid");
+  if (profile.upstream?.repository !== AGUI_UPSTREAM_REPOSITORY || profile.upstream?.commit !== AGUI_UPSTREAM_COMMIT) fail("agui_upstream_pin_invalid");
   if (
     profile.typescript?.core?.package !== "@ag-ui/core" || profile.typescript.core.version !== AGUI_CORE_VERSION ||
-    profile.typescript.core.integrity !== AGUI_CORE_INTEGRITY || profile.typescript.core.participant !== true
+    profile.typescript.core.integrity !== AGUI_CORE_INTEGRITY || profile.typescript.core.schemaAuthority !== true
   ) fail("agui_core_pin_invalid");
-  if (profile.typescript?.client?.package !== "@ag-ui/client" || profile.typescript.client.version !== "0.0.57" || profile.typescript.client.participant !== false) fail("agui_client_participation_invalid");
-  if (profile.python?.package !== "ag-ui-protocol" || profile.python.versionAtCommit !== "0.1.19" || profile.python.participant !== false) fail("agui_python_participation_invalid");
+  if (profile.typescript?.client?.package !== "@ag-ui/client" || profile.typescript.client.version !== "0.0.57" || profile.typescript.client.transportRole !== "forbidden") fail("agui_client_role_invalid");
+  if (
+    profile.python?.package !== "ag-ui-protocol" || profile.python.versionAtCommit !== "0.1.19" ||
+    profile.python.source?.kind !== "git" || profile.python.source.repository !== AGUI_UPSTREAM_REPOSITORY ||
+    profile.python.source.subdirectory !== "sdks/python" || profile.python.source.commit !== AGUI_UPSTREAM_COMMIT
+  ) fail("agui_python_source_invalid");
   if (profile.rendering?.assistantUi?.package !== "@assistant-ui/react" || profile.rendering.assistantUi.version !== "0.14.28" || profile.rendering.assistantUi.role !== "rendering-adapter-only") fail("agui_rendering_pin_invalid");
-  if (profile.ownership?.durableTruth !== "kokoro-session" || profile.ownership.projectionOwner !== "kokoro-session" || profile.ownership.agentParticipant !== false) fail("agui_owner_invalid");
+  const expectedRoles = {
+    agent: ["kokoro-agent", true, false, false, false, false, false, false],
+    session: ["kokoro-session", false, true, false, true, true, true, false],
+    web: ["kokoro-web", false, false, true, false, false, false, false],
+  };
+  exactKeys(profile.roles, Object.keys(expectedRoles), "agui_roles_shape_invalid");
+  for (const [name, expected] of Object.entries(expectedRoles)) {
+    exactKeys(profile.roles[name], AGENT_ROLE_KEYS, "agui_role_shape_invalid");
+    if (canonical(AGENT_ROLE_KEYS.map((key) => profile.roles[name][key])) !== canonical(expected)) fail("agui_role_invalid", name);
+  }
   exactKeys(profile.cursorConformance, ["format", "keyRevision", "aad", "claims", "keyMaterialPolicy"], "agui_cursor_profile_invalid");
   if (
     profile.cursorConformance.format !== "aes-256-gcm-closed-claims-v1" ||
@@ -205,6 +284,95 @@ function validateProfile(profile) {
   ) fail("agui_cursor_profile_invalid");
   exactArray(profile.cursorConformance.claims, CURSOR_CLAIM_KEYS, "agui_cursor_profile_invalid");
   if (!Object.values(profile.upgradePolicy ?? {}).every((value) => value === true)) fail("agui_upgrade_policy_invalid");
+}
+
+function validateAgentCandidateProfile(profile) {
+  exactKeys(
+    profile,
+    ["profileId", "profileRevision", "lifecycle", "eventSchema", "envelopeSchema", "producer", "consumer", "allowedEventTypes", "allowedActivityTypes", "forbiddenEventTypes", "forbiddenEventFamilies", "forbiddenOwnerActivityTypes", "forbiddenFields", "terminalPolicy", "projectionPolicy", "identityPolicy", "eventScopePolicy", "activation"],
+    "agui_agent_candidate_profile_shape_invalid",
+  );
+  if (
+    profile.profileId !== "kokoro.agui.agent-event-candidate-profile.v1" ||
+    profile.profileRevision !== AGENT_CANDIDATE_PROFILE_REVISION || profile.lifecycle !== "contract-only" ||
+    profile.eventSchema !== "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json" ||
+    profile.envelopeSchema !== "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json" ||
+    profile.producer !== "kokoro-agent" || profile.consumer !== "kokoro-session"
+  ) fail("agui_agent_candidate_profile_identity_invalid");
+  exactArray(profile.allowedEventTypes, AGENT_CANDIDATE_EVENT_TYPES, "agui_agent_candidate_events_invalid");
+  exactArray(profile.allowedActivityTypes, AGENT_CANDIDATE_ACTIVITY_TYPES, "agui_agent_candidate_activities_invalid");
+  const forbiddenExpected = OFFICIAL_EVENT_TYPES.filter((type) => !AGENT_CANDIDATE_EVENT_TYPES.includes(type));
+  if (new Set(profile.forbiddenEventTypes).size !== forbiddenExpected.length || forbiddenExpected.some((type) => !profile.forbiddenEventTypes.includes(type))) {
+    fail("agui_agent_candidate_forbidden_events_incomplete");
+  }
+  for (const family of ["raw", "state", "messages", "delta", "native-tool", "reasoning", "thinking", "step", "chunk", "custom"]) {
+    if (!profile.forbiddenEventFamilies.includes(family)) fail("agui_agent_candidate_forbidden_family_missing", family);
+  }
+  exactArray(profile.forbiddenOwnerActivityTypes, ["kokoro.artifact.v1", "kokoro.cost.v1"], "agui_agent_candidate_owner_activity_invalid");
+  for (const field of ["rawEvent", "raw_event", "providerEvent", "provider_event", "messages", "input", "result", "extra"]) {
+    if (!profile.forbiddenFields.includes(field)) fail("agui_agent_candidate_forbidden_field_missing", field);
+  }
+  exactKeys(profile.terminalPolicy, ["runFinished", "runError", "canceledOrInterrupted"], "agui_agent_candidate_terminal_policy_invalid");
+  if (
+    profile.terminalPolicy.runFinished !== "success-only" || profile.terminalPolicy.runError !== "failure-only" ||
+    profile.terminalPolicy.canceledOrInterrupted !== "session-owned-projection"
+  ) fail("agui_agent_candidate_terminal_policy_invalid");
+  exactKeys(profile.projectionPolicy, ["sessionAdmission", "runFinishedOutcome", "routeProjection", "ownerActivitySynthesis"], "agui_agent_candidate_projection_policy_invalid");
+  if (
+    profile.projectionPolicy.sessionAdmission !== "validate-before-durable-projection" ||
+    profile.projectionPolicy.runFinishedOutcome !== "strip-after-success-validation" ||
+    profile.projectionPolicy.routeProjection !== "resolve-through-session-presentation-binding" ||
+    profile.projectionPolicy.ownerActivitySynthesis !== "session-owner-facts-only"
+  ) fail("agui_agent_candidate_projection_policy_invalid");
+  exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
+  if (
+    profile.identityPolicy.candidateRefDomain !== "agui_candidate:sha256" ||
+    profile.identityPolicy.sourceEventRef !== "agent-owner-stable-ref" ||
+    profile.identityPolicy.sourceOrdinal !== "uint64-decimal-string-monotonic-per-run" ||
+    profile.identityPolicy.recordedAt !== "canonical-utc-ms-equals-event-timestamp" ||
+    profile.identityPolicy.eventDigest !== "sha256-rfc8785-jcs-event"
+  ) fail("agui_agent_candidate_identity_policy_invalid");
+  exactArray(
+    profile.identityPolicy.candidateRefMaterial,
+    ["profileRevision", "internalRunRef", "internalThreadRef", "internalMessageRef-or-empty", "sourceEventRef", "sourceOrdinal-decimal", "recordedAt", "eventDigest"],
+    "agui_agent_candidate_identity_policy_invalid",
+  );
+  exactArray(profile.identityPolicy.forbiddenAxes, ["siteId", "userId", "sessionId", "cursor", "sseId", "sseEvent"], "agui_agent_candidate_identity_policy_invalid");
+  exactKeys(profile.eventScopePolicy, ["runStartedAndFinished", "runError", "textAndActivity"], "agui_agent_candidate_scope_policy_invalid");
+  if (
+    profile.eventScopePolicy.runStartedAndFinished !== "threadId=internalThreadRef-and-runId=internalRunRef" ||
+    profile.eventScopePolicy.runError !== "outer-internalRunRef-and-internalThreadRef" ||
+    profile.eventScopePolicy.textAndActivity !== "messageId=internalMessageRef"
+  ) fail("agui_agent_candidate_scope_policy_invalid");
+  exactKeys(profile.activation, ["runtimeImplemented", "compatibilityEvidence", "browserTransport"], "agui_agent_candidate_activation_invalid");
+  if (Object.values(profile.activation).some((value) => value !== false)) fail("agui_agent_candidate_activation_invalid");
+}
+
+function validateAgentCandidateSchemaContract(schema) {
+  exactKeys(schema, ["$schema", "$id", "title", "description", "oneOf", "$defs"], "agui_agent_candidate_schema_shape_invalid");
+  if (
+    schema.$schema !== "https://json-schema.org/draft/2020-12/schema" ||
+    schema.$id !== "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json"
+  ) fail("agui_agent_candidate_schema_identity_invalid");
+  const presentationSchemaId = "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json";
+  const definitions = [
+    "runStarted", null, "runError", "textStart", "textContent", "textEnd", "activitySafeSummary",
+    "activityToolPreview", "activityHitl", "activityPlan", "activitySubagent", "activityMedia", "activityNotice", "activityError",
+  ];
+  exactArray(
+    schema.oneOf,
+    definitions.map((definition) => ({ $ref: definition === null ? "#/$defs/runFinishedSuccess" : `${presentationSchemaId}#/$defs/${definition}` })),
+    "agui_agent_candidate_schema_refs_invalid",
+  );
+  exactKeys(schema.$defs, ["runFinishedSuccess"], "agui_agent_candidate_schema_defs_invalid");
+  const success = schema.$defs.runFinishedSuccess;
+  exactKeys(success, ["type", "additionalProperties", "required", "properties"], "agui_agent_candidate_run_finished_shape_invalid");
+  exactArray(success.required, ["type", "timestamp", "threadId", "runId", "outcome"], "agui_agent_candidate_run_finished_shape_invalid");
+  if (
+    success.type !== "object" || success.additionalProperties !== false || success.properties?.type?.const !== EventType.RUN_FINISHED ||
+    success.properties?.outcome?.properties?.type?.const !== "success" || success.properties.outcome.additionalProperties !== false ||
+    Object.hasOwn(success.properties, "result")
+  ) fail("agui_agent_candidate_run_finished_shape_invalid");
 }
 
 function validateMappingRegistry(mapping) {
@@ -227,7 +395,11 @@ function validateMappingRegistry(mapping) {
     if (entry.eventType === EventType.CUSTOM && !mapping.allowedCustomNames.includes(entry.discriminator)) fail("agui_mapping_custom_unknown", entry.sourceKind);
     if (![EventType.ACTIVITY_SNAPSHOT, EventType.CUSTOM].includes(entry.eventType) && entry.discriminator !== undefined) fail("agui_mapping_discriminator_invalid", entry.sourceKind);
   }
-  if (mapping.projectionPolicy?.durableRowToFrameCardinality !== "exactly-one" || mapping.projectionPolicy.dropDurableRows !== false || mapping.projectionPolicy.fanOutDurableRows !== false || mapping.projectionPolicy.agentRawEventParticipant !== false || mapping.projectionPolicy.providerPayloadParticipant !== false) fail("agui_projection_policy_invalid");
+  if (
+    mapping.projectionPolicy?.durableRowToFrameCardinality !== "exactly-one" || mapping.projectionPolicy.dropDurableRows !== false ||
+    mapping.projectionPolicy.fanOutDurableRows !== false || mapping.projectionPolicy.agentCandidateSourceProfile !== AGENT_CANDIDATE_PROFILE_REVISION ||
+    mapping.projectionPolicy.agentRawPassthrough !== false || mapping.projectionPolicy.providerPayloadPassthrough !== false
+  ) fail("agui_projection_policy_invalid");
   if (
     mapping.transportPolicy?.sseId !== "opaque-session-cursor" || mapping.transportPolicy.sseEvent !== "exact-inner-event-type" ||
     mapping.transportPolicy.resumeHeader !== "Last-Event-ID" || mapping.transportPolicy.drainingDurability !== "non-durable" ||
@@ -235,7 +407,11 @@ function validateMappingRegistry(mapping) {
   ) fail("agui_transport_policy_invalid");
   exactArray(mapping.transportPolicy.cursorBindingFields, ["sessionId", "streamEpoch", "durableSeq", "profileRevision", "cursorProfileRevision"], "agui_cursor_binding_policy_invalid");
   exactArray(mapping.transportPolicy.grantBindingFields, ["sessionId", "sessionContractRevision", "presentationProfileRevision", "cursorProfileRevision"], "agui_grant_binding_policy_invalid");
-  if (mapping.snapshotPolicy?.hydrateAuthority !== "session-browser-v3-http-snapshot" || mapping.snapshotPolicy.repairAuthority !== "session-browser-v3-http-snapshot" || mapping.snapshotPolicy.streamHydration !== "forbidden") fail("agui_snapshot_policy_invalid");
+  if (
+    mapping.snapshotPolicy?.hydrateAuthority !== "session-browser-v3-http-snapshot" || mapping.snapshotPolicy.repairAuthority !== "session-browser-v3-http-snapshot" ||
+    mapping.snapshotPolicy.streamHydration !== "forbidden" || mapping.snapshotPolicy.timeWatermarkField !== "lastRecordedAt" ||
+    mapping.snapshotPolicy.timeWatermarkAuthority !== "session-durable-head"
+  ) fail("agui_snapshot_policy_invalid");
   for (const [key, lower, upper] of [
     ["maximumFrameBytes", 1024, 262144], ["maximumEventBytes", 1024, 131072], ["maximumJsonDepth", 4, 32],
     ["maximumJsonNodes", 128, 16384], ["maximumObjectKeys", 8, 128], ["maximumArrayItems", 8, 512],
@@ -364,6 +540,47 @@ function cursorClaimIdentity(claims) {
     claims.profileRevision,
     claims.cursorProfileRevision,
   ]);
+}
+
+function parseCanonicalUtcMs(value) {
+  if (typeof value !== "string" || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/u.test(value)) {
+    fail("agui_snapshot_time_watermark_invalid");
+  }
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) fail("agui_snapshot_time_watermark_invalid");
+  return parsed;
+}
+
+function bindingTimestampWatermark(runBindings, messageBindings) {
+  let watermark = Number.NEGATIVE_INFINITY;
+  for (const binding of [...runBindings, ...messageBindings]) {
+    for (const field of ["openedAt", "terminalAt", "endedAt"]) {
+      if (binding?.[field] === null || binding?.[field] === undefined) continue;
+      const parsed = Date.parse(binding[field]);
+      if (!Number.isFinite(parsed)) fail("agui_snapshot_binding_time_invalid", binding.bindingRef ?? "unknown");
+      watermark = Math.max(watermark, parsed);
+    }
+  }
+  return watermark;
+}
+
+function validateSnapshotTimeAuthority(snapshot, validateSchema, runBindings = [], messageBindings = [], nextEventRecordedAt = undefined) {
+  if (snapshot?.authority !== "session-browser-v3-http-snapshot" || snapshot.hydrate !== true || snapshot.repair !== true) {
+    fail("agui_snapshot_authority_invalid");
+  }
+  if (snapshot.profileRevision !== PROFILE_REVISION) fail("agui_snapshot_profile_invalid");
+  const durableSeq = uint64(snapshot?.durableSeq, "agui_snapshot_cursor_invalid");
+  if ((durableSeq === 0n && snapshot?.lastRecordedAt !== null) || (durableSeq > 0n && snapshot?.lastRecordedAt === null)) {
+    fail("agui_snapshot_time_watermark_invalid");
+  }
+  const watermark = durableSeq === 0n ? Number.NEGATIVE_INFINITY : parseCanonicalUtcMs(snapshot.lastRecordedAt);
+  const outerAuthority = { ...snapshot, runBindings: [], messageBindings: [] };
+  if (!validateSchema(outerAuthority)) fail("agui_snapshot_authority_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
+  if (durableSeq > 0n && watermark < bindingTimestampWatermark(runBindings, messageBindings)) {
+    fail("agui_snapshot_time_watermark_before_binding");
+  }
+  if (nextEventRecordedAt !== undefined && Date.parse(nextEventRecordedAt) < watermark) fail("agui_event_time_invalid", "snapshot-watermark");
+  return watermark;
 }
 
 function findKey(value, pattern) {
@@ -542,9 +759,7 @@ function validateStreamState(frames, runRefs, messageRefs) {
 }
 
 function validateConformanceCaseWithContracts(caseInput, contracts, identities) {
-  const { mapping, validateEvent, validateProjectionPayload, validatePresentationRow, validateRunBinding, validateMessageBinding, validateStream } = contracts;
-  if (caseInput?.snapshot?.authority !== "session-browser-v3-http-snapshot" || caseInput.snapshot.hydrate !== true || caseInput.snapshot.repair !== true) fail("agui_snapshot_authority_invalid");
-  if (caseInput.snapshot.profileRevision !== PROFILE_REVISION) fail("agui_snapshot_profile_invalid");
+  const { mapping, validateEvent, validateProjectionPayload, validatePresentationRow, validateRunBinding, validateMessageBinding, validateStream, validateSnapshotAuthoritySchema } = contracts;
   if (caseInput.request?.lastEventId !== caseInput.snapshot.cursor || caseInput.request?.queryCursor !== caseInput.snapshot.cursor || caseInput.request?.cursorProfile !== CURSOR_PROFILE_REVISION) fail("agui_resume_cursor_invalid");
   if (
     caseInput.grantBinding?.sessionId !== caseInput.snapshot.sessionId ||
@@ -552,7 +767,18 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     caseInput.grantBinding?.presentationProfileRevision !== PROFILE_REVISION ||
     caseInput.grantBinding?.cursorProfileRevision !== CURSOR_PROFILE_REVISION
   ) fail("agui_grant_profile_binding_invalid");
+  const snapshotAuthority = {
+    ...caseInput.snapshot,
+    runBindings: caseInput.runBindings,
+    messageBindings: caseInput.messageBindings,
+  };
 
+  const previousRecordedAtAuthority = validateSnapshotTimeAuthority(
+    snapshotAuthority,
+    validateSnapshotAuthoritySchema,
+    snapshotAuthority.runBindings,
+    snapshotAuthority.messageBindings,
+  );
   const snapshotClaims = decodeCursor(caseInput.snapshot.cursor, mapping.limits.maximumCursorBytes);
   assertCursorScope(snapshotClaims, {
     sessionId: caseInput.snapshot.sessionId,
@@ -566,13 +792,16 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
 
   const runRefs = validateRunBindings(caseInput.runBindings, validateRunBinding, caseInput.snapshot, identities);
   const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot, identities);
+  if (!validateSnapshotAuthoritySchema(snapshotAuthority)) {
+    fail("agui_snapshot_authority_schema_invalid", validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
+  }
   if (!Array.isArray(caseInput.frames) || !Array.isArray(caseInput.durableRows) || caseInput.frames.length !== caseInput.durableRows.length || caseInput.frames.length === 0) fail("agui_durable_frame_cardinality_invalid");
   const sourceIds = new Set();
   const rowRefs = new Set();
   const localCursorIds = new Set([caseInput.snapshot.cursor]);
   let expectedSeq = uint64(caseInput.snapshot.durableSeq, "agui_snapshot_cursor_invalid") + 1n;
   uint64(caseInput.snapshot.streamEpoch, "agui_snapshot_cursor_invalid");
-  let previousRecordedAt = Date.parse(caseInput.snapshot.recordedAt ?? "1970-01-01T00:00:00.000Z");
+  let previousRecordedAt = previousRecordedAtAuthority;
   for (let index = 0; index < caseInput.frames.length; index += 1) {
     const frame = caseInput.frames[index];
     const event = frame?.data?.event;
@@ -707,6 +936,214 @@ export function applyCorpusMutation(candidate, mutation) {
   fail("agui_corpus_mutation_invalid");
 }
 
+function validateAgentCandidateCoverage(corpus, contracts) {
+  const { agentCandidateProfile, validateAgentCandidate } = contracts;
+  validateAgentCandidateProfile(agentCandidateProfile);
+  const coveredEvents = new Set();
+  const coveredActivities = new Set();
+  let candidates = 0;
+  for (const contractCase of corpus.positiveCases) {
+    const runBindings = new Map(contractCase.runBindings.map((binding) => [binding.bindingRef, binding]));
+    for (const frame of contractCase.frames) {
+      const { event } = frame.data;
+      if (event.type === EventType.RUN_FINISHED) {
+        if (validateAgentCandidate(event)) fail("agui_agent_candidate_success_outcome_missing");
+        const binding = runBindings.get(frame.data.presentationRunBindingRef);
+        if (binding?.terminalDisposition !== "success") continue;
+        const candidate = { ...event, outcome: { type: "success" } };
+        if (!validateAgentCandidate(candidate) || !EventSchemas.safeParse(candidate).success) {
+          fail("agui_agent_candidate_success_outcome_invalid");
+        }
+        coveredEvents.add(event.type);
+        candidates += 1;
+        continue;
+      }
+      const allowed = agentCandidateProfile.allowedEventTypes.includes(event.type) && (
+        event.type !== EventType.ACTIVITY_SNAPSHOT || agentCandidateProfile.allowedActivityTypes.includes(event.activityType)
+      );
+      const accepted = validateAgentCandidate(event);
+      if (allowed !== accepted) fail("agui_agent_candidate_schema_profile_drift", event.type);
+      if (!allowed) continue;
+      if (!EventSchemas.safeParse(event).success) fail("agui_agent_candidate_official_schema_invalid", event.type);
+      coveredEvents.add(event.type);
+      if (event.type === EventType.ACTIVITY_SNAPSHOT) coveredActivities.add(event.activityType);
+      candidates += 1;
+    }
+  }
+  if (coveredEvents.size !== AGENT_CANDIDATE_EVENT_TYPES.length || AGENT_CANDIDATE_EVENT_TYPES.some((type) => !coveredEvents.has(type))) {
+    fail("agui_agent_candidate_event_coverage_missing");
+  }
+  if (coveredActivities.size !== AGENT_CANDIDATE_ACTIVITY_TYPES.length || AGENT_CANDIDATE_ACTIVITY_TYPES.some((type) => !coveredActivities.has(type))) {
+    fail("agui_agent_candidate_activity_coverage_missing");
+  }
+  return candidates;
+}
+
+function candidateRefForEnvelope(envelope) {
+  const route = envelope.source.route;
+  const material = [
+    envelope.profileRevision,
+    route.internalRunRef,
+    route.internalThreadRef,
+    route.internalMessageRef ?? "",
+    envelope.source.sourceEventRef,
+    envelope.source.sourceOrdinal,
+    envelope.source.recordedAt,
+    envelope.eventDigest,
+  ].join("\u0000");
+  return `agui_candidate:sha256:${sha256Bytes(Buffer.from(material, "utf8"))}`;
+}
+
+function validateAgentCandidateEnvelope(envelope, contracts) {
+  if (!contracts.validateAgentCandidateEnvelope(envelope)) {
+    fail("agui_agent_candidate_envelope_schema_invalid", contracts.validateAgentCandidateEnvelope.errors?.[0]?.instancePath ?? "");
+  }
+  uint64(envelope.source.sourceOrdinal, "agui_agent_candidate_source_ordinal_invalid");
+  const recordedAt = parseCanonicalUtcMs(envelope.source.recordedAt);
+  if (recordedAt !== envelope.event.timestamp) fail("agui_agent_candidate_recorded_at_invalid");
+  if (!contracts.validateAgentCandidate(envelope.event) || !EventSchemas.safeParse(envelope.event).success) {
+    fail("agui_agent_candidate_event_invalid", envelope.event.type);
+  }
+  if (Buffer.byteLength(canonical(envelope.event), "utf8") > 65_536) fail("agui_agent_candidate_event_limit_exceeded");
+  if (projectionDigest(envelope.event) !== envelope.eventDigest) fail("agui_agent_candidate_event_digest_invalid");
+  if (candidateRefForEnvelope(envelope) !== envelope.candidateRef) fail("agui_agent_candidate_ref_invalid");
+
+  const route = envelope.source.route;
+  if ([EventType.RUN_STARTED, EventType.RUN_FINISHED].includes(envelope.event.type)) {
+    if (Object.hasOwn(route, "internalMessageRef") || envelope.event.threadId !== route.internalThreadRef || envelope.event.runId !== route.internalRunRef) {
+      fail("agui_agent_candidate_run_route_invalid");
+    }
+  } else if (envelope.event.type === EventType.RUN_ERROR) {
+    if (Object.hasOwn(route, "internalMessageRef")) fail("agui_agent_candidate_run_route_invalid");
+  } else {
+    if (!Object.hasOwn(route, "internalMessageRef") || envelope.event.messageId !== route.internalMessageRef) {
+      fail("agui_agent_candidate_message_route_invalid");
+    }
+  }
+  if (envelope.event.type === EventType.RUN_FINISHED && canonical(envelope.event.outcome) !== canonical({ type: "success" })) {
+    fail("agui_agent_candidate_success_outcome_invalid");
+  }
+  return envelope.event;
+}
+
+function validateAgentCandidateEnvelopeCorpus(corpus, contracts) {
+  if (!Array.isArray(corpus.agentCandidateEnvelopeCases) || corpus.agentCandidateEnvelopeCases.length < 4) {
+    fail("agui_agent_candidate_envelope_corpus_missing");
+  }
+  const caseIds = new Set();
+  const routeFamilies = new Set();
+  for (const envelopeCase of corpus.agentCandidateEnvelopeCases) {
+    exactKeys(envelopeCase, ["id", "baseCaseId", "sourceEventId", "candidateEnvelope"], "agui_agent_candidate_envelope_case_shape_invalid");
+    if (caseIds.has(envelopeCase.id)) fail("agui_agent_candidate_envelope_case_duplicate", envelopeCase.id);
+    caseIds.add(envelopeCase.id);
+    const base = corpus.positiveCases.find(({ id }) => id === envelopeCase.baseCaseId);
+    const frame = base?.frames.find(({ data }) => data.source.sourceEventId === envelopeCase.sourceEventId);
+    const runBinding = base?.runBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationRunBindingRef);
+    const messageBinding = base?.messageBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationMessageBindingRef);
+    if (frame === undefined || runBinding === undefined) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
+    const candidateEvent = validateAgentCandidateEnvelope(envelopeCase.candidateEnvelope, contracts);
+    const { source } = envelopeCase.candidateEnvelope;
+    if (
+      source.sourceEventRef !== frame.data.source.sourceEventId || source.sourceOrdinal !== frame.data.source.durableSeq ||
+      source.recordedAt !== frame.data.source.recordedAt || source.route.internalRunRef !== runBinding.internalRunRef
+    ) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
+    if (messageBinding === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageBinding.internalMessageRef) {
+      fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
+    }
+    const projected = structuredClone(candidateEvent);
+    if ([EventType.RUN_STARTED, EventType.RUN_FINISHED].includes(projected.type)) {
+      projected.threadId = runBinding.presentationThreadId;
+      projected.runId = runBinding.presentationRunId;
+    }
+    if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END, EventType.ACTIVITY_SNAPSHOT].includes(projected.type)) {
+      projected.messageId = messageBinding.presentationMessageId;
+    }
+    if (projected.type === EventType.RUN_FINISHED) delete projected.outcome;
+    if (canonical(projected) !== canonical(frame.data.event)) fail("agui_agent_candidate_envelope_projection_invalid", envelopeCase.id);
+    if (candidateEvent.type === EventType.RUN_STARTED) routeFamilies.add("run-start");
+    else if (candidateEvent.type === EventType.RUN_ERROR) routeFamilies.add("run-error");
+    else if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END].includes(candidateEvent.type)) routeFamilies.add("message-text");
+    else if (candidateEvent.type === EventType.ACTIVITY_SNAPSHOT) routeFamilies.add("message-activity");
+  }
+  for (const family of ["run-start", "run-error", "message-text", "message-activity"]) {
+    if (!routeFamilies.has(family)) fail("agui_agent_candidate_envelope_route_coverage_missing", family);
+  }
+  return corpus.agentCandidateEnvelopeCases.length;
+}
+
+function validateAgentCandidateProjectionCorpus(corpus, contracts) {
+  if (!Array.isArray(corpus.agentCandidateProjectionCases) || corpus.agentCandidateProjectionCases.length < 1) {
+    fail("agui_agent_candidate_projection_corpus_missing");
+  }
+  const caseIds = new Set();
+  for (const projectionCase of corpus.agentCandidateProjectionCases) {
+    exactKeys(projectionCase, ["id", "baseCaseId", "sourceEventId", "candidateEnvelope", "expectedPresentationEvent"], "agui_agent_candidate_projection_case_shape_invalid");
+    if (caseIds.has(projectionCase.id)) fail("agui_agent_candidate_projection_case_duplicate", projectionCase.id);
+    caseIds.add(projectionCase.id);
+    const base = corpus.positiveCases.find(({ id }) => id === projectionCase.baseCaseId);
+    const frame = base?.frames.find(({ data }) => data.source.sourceEventId === projectionCase.sourceEventId);
+    const binding = base?.runBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationRunBindingRef);
+    if (frame?.data.event.type !== EventType.RUN_FINISHED || binding?.terminalDisposition !== "success") {
+      fail("agui_agent_candidate_projection_source_invalid", projectionCase.id);
+    }
+    const candidateEvent = validateAgentCandidateEnvelope(projectionCase.candidateEnvelope, contracts);
+    if (
+      projectionCase.candidateEnvelope.source.sourceEventRef !== projectionCase.sourceEventId ||
+      projectionCase.candidateEnvelope.source.recordedAt !== frame.data.source.recordedAt ||
+      projectionCase.candidateEnvelope.source.route.internalRunRef !== binding.internalRunRef ||
+      Object.hasOwn(candidateEvent, "result")
+    ) {
+      fail("agui_agent_candidate_projection_candidate_invalid", projectionCase.id);
+    }
+    const { outcome, ...projectedCandidate } = candidateEvent;
+    void outcome;
+    const projected = {
+      ...projectedCandidate,
+      threadId: binding.presentationThreadId,
+      runId: binding.presentationRunId,
+    };
+    if (canonical(projected) !== canonical(projectionCase.expectedPresentationEvent) || canonical(projected) !== canonical(frame.data.event)) {
+      fail("agui_agent_candidate_projection_strip_invalid", projectionCase.id);
+    }
+    if (!contracts.validateEvent(projected) || !EventSchemas.safeParse(projected).success) {
+      fail("agui_agent_candidate_projection_presentation_invalid", projectionCase.id);
+    }
+  }
+  return corpus.agentCandidateProjectionCases.length;
+}
+
+function validateSnapshotAuthorityCorpus(corpus, contracts) {
+  if (!Array.isArray(corpus.snapshotAuthorityCases) || corpus.snapshotAuthorityCases.length < 1) fail("agui_snapshot_authority_corpus_missing");
+  const caseIds = new Set();
+  for (const authorityCase of corpus.snapshotAuthorityCases) {
+    exactKeys(authorityCase, ["id", "baseCaseId", "snapshot", "nextEventRecordedAt"], "agui_snapshot_authority_case_shape_invalid");
+    if (caseIds.has(authorityCase.id)) fail("agui_snapshot_authority_case_duplicate", authorityCase.id);
+    caseIds.add(authorityCase.id);
+    const base = corpus.positiveCases.find(({ id }) => id === authorityCase.baseCaseId);
+    if (base === undefined || authorityCase.snapshot.sessionId !== base.snapshot.sessionId) fail("agui_snapshot_authority_case_base_invalid", authorityCase.id);
+    const watermark = validateSnapshotTimeAuthority(
+      authorityCase.snapshot,
+      contracts.validateSnapshotAuthoritySchema,
+      authorityCase.snapshot.runBindings,
+      authorityCase.snapshot.messageBindings,
+      authorityCase.nextEventRecordedAt,
+    );
+    if (!contracts.validateSnapshotAuthoritySchema(authorityCase.snapshot)) {
+      fail("agui_snapshot_authority_schema_invalid", contracts.validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
+    }
+    if (watermark === Number.NEGATIVE_INFINITY) fail("agui_snapshot_authority_case_nonzero_required", authorityCase.id);
+    const claims = decodeCursor(authorityCase.snapshot.cursor, contracts.mapping.limits.maximumCursorBytes);
+    assertCursorScope(claims, {
+      sessionId: authorityCase.snapshot.sessionId,
+      streamEpoch: authorityCase.snapshot.streamEpoch,
+      durableSeq: authorityCase.snapshot.durableSeq,
+      profileRevision: authorityCase.snapshot.profileRevision,
+      cursorProfileRevision: CURSOR_PROFILE_REVISION,
+    });
+  }
+  return corpus.snapshotAuthorityCases.length;
+}
+
 export async function validateRepository({ root = repositoryRoot } = {}) {
   validateOfficialDependency(root);
   const corpus = JSON.parse(await readFile(safePath(root, CORPUS_PATH), "utf8"));
@@ -715,6 +1152,8 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   if (canonical(corpus.contracts) !== canonical(CONTRACT_PATHS)) fail("agui_contract_paths_invalid");
   const contracts = loadContracts(root);
   validateProfile(contracts.profile);
+  validateAgentCandidateProfile(contracts.agentCandidateProfile);
+  validateAgentCandidateSchemaContract(contracts.agentCandidateSchema);
   validateMappingRegistry(contracts.mapping);
   if (!Array.isArray(corpus.positiveCases) || corpus.positiveCases.length < 2 || !Array.isArray(corpus.negativeCases) || corpus.negativeCases.length < 10) fail("agui_corpus_shape_invalid");
   const caseIds = new Set();
@@ -730,6 +1169,10 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   }
   const expectedMappings = new Set(contracts.mapping.mappings.map(({ sourceKind }) => sourceKind));
   if (covered.size !== expectedMappings.size || [...expectedMappings].some((sourceKind) => !covered.has(sourceKind))) fail("agui_mapping_corpus_coverage_missing");
+  const agentCandidates = validateAgentCandidateCoverage(corpus, contracts);
+  const agentCandidateEnvelopeCases = validateAgentCandidateEnvelopeCorpus(corpus, contracts);
+  const agentCandidateProjectionCases = validateAgentCandidateProjectionCorpus(corpus, contracts);
+  const snapshotAuthorityCases = validateSnapshotAuthorityCorpus(corpus, contracts);
   const negativeIds = new Set();
   for (const attack of corpus.negativeCases) {
     if (negativeIds.has(attack.id) || !caseIds.has(attack.baseCaseId)) fail("agui_negative_case_invalid", attack.id);
@@ -745,7 +1188,16 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
     }
     if (observed !== attack.expectedCode) fail("agui_negative_case_expectation_invalid", `${attack.id}:${observed ?? "accepted"}`);
   }
-  return { positiveCases: corpus.positiveCases.length, negativeCases: corpus.negativeCases.length, durableFrames, mappingsCovered: covered.size };
+  return {
+    positiveCases: corpus.positiveCases.length,
+    negativeCases: corpus.negativeCases.length,
+    durableFrames,
+    mappingsCovered: covered.size,
+    agentCandidates,
+    agentCandidateEnvelopeCases,
+    agentCandidateProjectionCases,
+    snapshotAuthorityCases,
+  };
 }
 
 async function main(argv) {
@@ -755,7 +1207,7 @@ async function main(argv) {
     root = resolve(argv[1]);
   }
   const result = await validateRepository({ root });
-  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings\n`);
+  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases\n`);
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
