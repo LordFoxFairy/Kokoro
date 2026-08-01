@@ -2265,12 +2265,14 @@ function agentPresentationDigestSource() {
 import {
   AcknowledgeCandidateAdmissionsEffectSchema,
   PresentationCandidateRecordDigestPayloadSchema,
+  PresentationDeliveryStatusDigestPayloadSchema,
   PresentationProducerFenceDigestPayloadSchema,
   PresentationRecordChainGenesisDigestPayloadSchema,
   PresentationSnapshotHeadDigestPayloadSchema,
   QuarantineCandidateAdmissionEffectSchema,
   type AcknowledgeCandidateAdmissionsEffect,
   type PresentationCandidateRecord,
+  type PresentationDeliveryStatus,
   type PresentationProducerFence,
   type QuarantineCandidateAdmissionEffect,
 } from "./kokoro/agent/presentation/v1/agent_presentation_pb.js";
@@ -2355,6 +2357,27 @@ export function presentationSnapshotHeadDigest(
       producer,
       snapshotThroughPresentationSeq,
       ...(snapshotHeadRecordDigest === undefined ? {} : { snapshotHeadRecordDigest }),
+    },
+  ));
+}
+
+export function presentationDeliveryStatusDigest(
+  status: PresentationDeliveryStatus,
+): string {
+  return typedPresentationDigest(PresentationDeliveryStatusDigestPayloadSchema, create(
+    PresentationDeliveryStatusDigestPayloadSchema,
+    {
+      runId: status.runId,
+      producer: status.producer,
+      acknowledgedThroughPresentationSeq: status.acknowledgedThroughPresentationSeq,
+      statusRevision: status.statusRevision,
+      ...(status.quarantine === undefined ? {} : { quarantine: status.quarantine }),
+      ...(status.lastCommand === undefined ? {} : { lastCommand: status.lastCommand }),
+      updatedAt: status.updatedAt,
+      ...(status.acknowledgedHeadRecordDigest === undefined
+        ? {}
+        : { acknowledgedHeadRecordDigest: status.acknowledgedHeadRecordDigest }),
+      ...(status.terminalSeal === undefined ? {} : { terminalSeal: status.terminalSeal }),
     },
   ));
 }

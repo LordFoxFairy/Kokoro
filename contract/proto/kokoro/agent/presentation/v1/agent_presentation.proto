@@ -17,6 +17,9 @@ service AgentPresentationService {
 }
 
 message PresentationProducerFence {
+  // Immutable identity of the run's durable external stream. Execution-owner
+  // reclaim/failover MUST NOT rotate this pair: evidence, output and
+  // presentation lanes all use the same instance/generation.
   string producer_instance_ref = 1 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
@@ -77,6 +80,56 @@ message PresentationSnapshotHeadDigestPayload {
   PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
   uint64 snapshot_through_presentation_seq = 3;
   optional string snapshot_head_record_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+enum PresentationTerminalDisposition {
+  PRESENTATION_TERMINAL_DISPOSITION_UNSPECIFIED = 0;
+  PRESENTATION_TERMINAL_DISPOSITION_COMPLETED = 1;
+  PRESENTATION_TERMINAL_DISPOSITION_FAILED = 2;
+  PRESENTATION_TERMINAL_DISPOSITION_CANCELED = 3;
+}
+
+message PresentationTerminalSeal {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.terminal_seal_head_pair"
+    message: "only a non-empty terminal stream names a sealed head record"
+    expression: "(this.sealed_through_presentation_seq == 0u) == !has(this.sealed_head_record_digest)"
+  };
+  uint64 sealed_through_presentation_seq = 1;
+  optional string sealed_head_record_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string terminal_evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string terminal_evidence_payload_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  PresentationTerminalDisposition terminal_disposition = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp sealed_at = 6 [(buf.validate.field).required = true];
+}
+
+// Canonical input for status_digest. Session MUST recompute this digest and
+// cross-check terminal_evidence_ref/payload_digest against its independently
+// admitted terminal execution evidence before treating a run as terminal.
+message PresentationDeliveryStatusDigestPayload {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.status_digest_ack_head_pair"
+    message: "only a non-zero acknowledged watermark names its immutable head record"
+    expression: "(this.acknowledged_through_presentation_seq == 0u) == !has(this.acknowledged_head_record_digest)"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 acknowledged_through_presentation_seq = 3;
+  uint64 status_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  optional PresentationQuarantineStatus quarantine = 5;
+  optional kokoro.common.v2.CommandIdentityV2 last_command = 6;
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
+  optional string acknowledged_head_record_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional PresentationTerminalSeal terminal_seal = 9;
 }
 
 enum PresentationRejectionClass {
@@ -171,6 +224,11 @@ message PresentationDeliveryStatus {
     expression: "!has(this.quarantine) || this.quarantine.presentation_seq == this.acknowledged_through_presentation_seq + 1u"
   };
   option (buf.validate.message).cel = {
+    id: "agent_presentation.status_terminal_bounds"
+    message: "acknowledgement and quarantine never advance beyond an immutable terminal seal"
+    expression: "!has(this.terminal_seal) || (this.acknowledged_through_presentation_seq <= this.terminal_seal.sealed_through_presentation_seq && (!has(this.quarantine) || this.quarantine.presentation_seq <= this.terminal_seal.sealed_through_presentation_seq))"
+  };
+  option (buf.validate.message).cel = {
     id: "agent_presentation.status_ack_head_pair"
     message: "only a non-zero acknowledged watermark names its immutable head record"
     expression: "(this.acknowledged_through_presentation_seq == 0u) == !has(this.acknowledged_head_record_digest)"
@@ -187,6 +245,9 @@ message PresentationDeliveryStatus {
   google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
   string status_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   optional string acknowledged_head_record_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  // Write-once terminal fact. Once present, providers may advance ACK and
+  // status_revision but MUST preserve every terminal_seal field exactly.
+  optional PresentationTerminalSeal terminal_seal = 10;
 }
 
 message PullCandidateBatchesRequest {
@@ -207,6 +268,16 @@ message PullCandidateBatchesResponse {
     id: "agent_presentation.page_bounds"
     message: "the page cursor never exceeds the frozen snapshot and an empty page is exactly its end"
     expression: "this.page_after_presentation_seq <= this.snapshot_through_presentation_seq && (this.records.size() == 0) == (this.page_after_presentation_seq == this.snapshot_through_presentation_seq)"
+  };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_snapshot_head_pair"
+    message: "only a non-empty frozen snapshot names its immutable head record"
+    expression: "(this.snapshot_through_presentation_seq == 0u) == !has(this.snapshot_head_record_digest)"
+  };
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_terminal_seal"
+    message: "a terminal response freezes the exact sealed sequence and record head"
+    expression: "!has(this.delivery_status.terminal_seal) || (this.snapshot_through_presentation_seq == this.delivery_status.terminal_seal.sealed_through_presentation_seq && has(this.snapshot_head_record_digest) == has(this.delivery_status.terminal_seal.sealed_head_record_digest) && (!has(this.snapshot_head_record_digest) || this.snapshot_head_record_digest == this.delivery_status.terminal_seal.sealed_head_record_digest))"
   };
   option (buf.validate.message).cel = {
     id: "agent_presentation.page_chain"
@@ -235,6 +306,7 @@ message PullCandidateBatchesResponse {
   bool has_more = 7;
   PresentationDeliveryStatus delivery_status = 8 [(buf.validate.field).required = true];
   string snapshot_head_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string snapshot_head_record_digest = 10 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
 }
 
 message CandidateAdmissionReceipt {

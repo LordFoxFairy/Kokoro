@@ -55,3 +55,31 @@ test("cross-language presentation integrity golden vector is stable", () => {
     corpus.canonicalCandidateDigest,
   );
 });
+
+test("delivery status digest binds the immutable stream, terminal evidence, and sealed head", () => {
+  const producer = {
+    producerInstanceRef: corpus.producer.producerInstanceRef,
+    producerGeneration: BigInt(corpus.producer.producerGeneration),
+    producerFenceDigest: corpus.producer.producerFenceDigest,
+  };
+  const sealSchema = descriptor("PresentationTerminalSeal");
+  const payloadSchema = descriptor("PresentationDeliveryStatusDigestPayload");
+  const seal = create(sealSchema, {
+    sealedThroughPresentationSeq: BigInt(corpus.terminalStatus.sealedThroughPresentationSeq),
+    sealedHeadRecordDigest: corpus.terminalStatus.sealedHeadRecordDigest,
+    terminalEvidenceRef: corpus.terminalStatus.terminalEvidenceRef,
+    terminalEvidencePayloadDigest: corpus.terminalStatus.terminalEvidencePayloadDigest,
+    terminalDisposition: 1,
+    sealedAt: { seconds: 1785589201n, nanos: 0 },
+  });
+  const payload = create(payloadSchema, {
+    runId: corpus.runId,
+    producer,
+    acknowledgedThroughPresentationSeq: 2n,
+    acknowledgedHeadRecordDigest: corpus.terminalStatus.sealedHeadRecordDigest,
+    statusRevision: 3n,
+    updatedAt: { seconds: 1785589201n, nanos: 0 },
+    terminalSeal: seal,
+  });
+  assert.equal(typedDigest(payloadSchema, payload), corpus.terminalStatus.statusDigest);
+});

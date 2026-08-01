@@ -32,6 +32,12 @@ def test_agent_presentation_boundary_is_durable_contiguous_and_recoverable() -> 
         "candidate_digest",
         "PresentationCandidateRecordDigestPayload",
         "PresentationSnapshotHeadDigestPayload",
+        "PresentationDeliveryStatusDigestPayload",
+        "PresentationTerminalSeal",
+        "sealed_through_presentation_seq",
+        "sealed_head_record_digest",
+        "terminal_evidence_ref",
+        "terminal_evidence_payload_digest",
         "acknowledged_head_record_digest",
         "expected_acknowledged_through",
         "expected_status_revision",
@@ -86,3 +92,18 @@ def test_ack_and_quarantine_share_one_root_generated_command_digest() -> None:
     assert "presentationCanonicalCandidateDigest" in source
     assert "presentationCandidateRecordDigest" in source
     assert "presentationSnapshotHeadDigest" in source
+    assert "presentationDeliveryStatusDigest" in source
+
+
+def test_terminal_seal_closes_the_exact_immutable_presentation_stream() -> None:
+    source = PROTO.read_text()
+    status = _body(source, "message", "PresentationDeliveryStatus")
+    page = _body(source, "message", "PullCandidateBatchesResponse")
+    seal = _body(source, "message", "PresentationTerminalSeal")
+    assert "optional PresentationTerminalSeal terminal_seal" in status
+    assert "sealed_through_presentation_seq" in seal
+    assert "sealed_head_record_digest" in seal
+    assert "terminal_evidence_ref" in seal
+    assert "terminal_evidence_payload_digest" in seal
+    assert "terminal_seal.sealed_through_presentation_seq" in page
+    assert "terminal_seal.sealed_head_record_digest" in page
