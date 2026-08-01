@@ -46,15 +46,15 @@ const CONTRACT_PATHS = Object.freeze({
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
-  mapping: "65b81dd7f6bcec44317ebdf41d3c94cd28df897bccc4878e470146d6d62c0eb9",
-  eventSchema: "9f14ead7f4668b9e39a725c8cb0c23332e5f63be00d43ba3e6619fd372e9acd7",
+  mapping: "59ff197cc52c0cbcacaec38aff0f5ae0dd12b241dc6df658f47c33b6e66d6888",
+  eventSchema: "e9873b1fabdc180aeee782e61243285321ec20c0f37670ea7a79d95f9a62b8d9",
   agentCandidateSchema: "b203876638e975bd3899bef09b8afdf8f183a6f9cd7939d67ddf8f7d90ac3731",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
-  projectionPayloadSchema: "26edaa8b7d3fba6f632524d26c94e6cc2735133c2368d667d60dfa5a9e629a71",
-  presentationRowSchema: "cae2936febb22bb767f786ead6c3329c5b189be097dca579215a272af7ec75da",
+  projectionPayloadSchema: "12a93a3b799601b2743dbfa96bd6c1833bd7a837914f481dc5a4d940d9c6de16",
+  presentationRowSchema: "bc2286f915ed7f0c5281fb6210c3ce7fd9dac0d397cff849edb01a106cfc430f",
   bindingAuthorityDeltaSchema: "9fd30b734e2aa5f52be50eb1442eaf16843de8baa8098fcc996bc5e057f9dd2d",
-  runBindingSchema: "5535efe0a625030c886a597eb51fbcd3731cec262714761c6f7bffe29368b4b1",
-  messageBindingSchema: "d7e540f8b885487e3e2642bfdcb4a1a838ad35edf7b6e264d8c01eed99eda5f9",
+  runBindingSchema: "d507453e4e5458720476c61c9b013c8f2ec1d3f25a516b41f245e083c60615e6",
+  messageBindingSchema: "2a8a00e9f94da0b3792428a9dcfbead6e6e1ea9057f273792965c0f8714d261f",
   streamSchema: "ce51651ab17c080838547ec74c73a86574b9134aed351c7f27d92d1709441333",
   snapshotAuthoritySchema: "6c2ee288041cf29ea4dccd318c58bbaa4d19e1577de0acaf00aae076479e39e8",
 });
@@ -115,6 +115,7 @@ const BINDING_DELTA_KIND_BY_EVENT = Object.freeze(new Map([
 ]));
 const COT_KEY = /^(?:chain[_-]?of[_-]?thought|cot|private[_-]?reasoning|hidden[_-]?reasoning|reasoning[_-]?(?:content|trace|tokens))$/iu;
 const TOOL_SECRET_KEY = /^(?:api[_-]?key|authorization|credential|headers?|password|private[_-]?key|provider[_-]?url|raw[_-]?(?:input|output|result)|secret|token|args|arguments|input)$/iu;
+const PUBLIC_SOURCE_EVENT_ID = /^presentation\.event:[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
 
 export class AguiPresentationContractError extends Error {
   constructor(code, detail = "") {
@@ -427,7 +428,8 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy,
     [
       "durableRowToFrameCardinality", "dropDurableRows", "fanOutDurableRows", "bindingAuthorityDelta",
-      "sourceProjectionVersion", "agentCandidateSourceProfile", "agentRawPassthrough", "providerPayloadPassthrough",
+      "sourceProjectionVersion", "publicSourceEventIdentity", "customRunOwnerVersion",
+      "agentCandidateSourceProfile", "agentRawPassthrough", "providerPayloadPassthrough",
     ],
     "agui_projection_policy_invalid",
   );
@@ -441,6 +443,16 @@ function validateMappingRegistry(mapping) {
     ["wire", "semantic", "javascriptNumber"],
     "agui_projection_policy_invalid",
   );
+  exactKeys(
+    mapping.projectionPolicy.publicSourceEventIdentity,
+    ["wire", "agentSourceEventRefEquality", "agentSourceEventRefExposure", "webDerivation"],
+    "agui_projection_policy_invalid",
+  );
+  exactKeys(
+    mapping.projectionPolicy.customRunOwnerVersion,
+    ["wire", "semantic", "legacyProjectionVersion", "javascriptNumber"],
+    "agui_projection_policy_invalid",
+  );
   if (
     mapping.projectionPolicy?.durableRowToFrameCardinality !== "exactly-one" || mapping.projectionPolicy.dropDurableRows !== false ||
     mapping.projectionPolicy.fanOutDurableRows !== false || mapping.projectionPolicy.agentCandidateSourceProfile !== AGENT_CANDIDATE_PROFILE_REVISION ||
@@ -451,7 +463,15 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy.bindingAuthorityDelta.patch !== "forbidden" ||
     mapping.projectionPolicy.sourceProjectionVersion.wire !== "positive-uint64-decimal-string" ||
     mapping.projectionPolicy.sourceProjectionVersion.semantic !== "session-projection-revision" ||
-    mapping.projectionPolicy.sourceProjectionVersion.javascriptNumber !== "forbidden"
+    mapping.projectionPolicy.sourceProjectionVersion.javascriptNumber !== "forbidden" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.wire !== "presentation.event:-branded-session-owned-opaque-ref" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefEquality !== "forbidden" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefExposure !== "private-provenance-only" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.webDerivation !== "forbidden" ||
+    mapping.projectionPolicy.customRunOwnerVersion.wire !== "positive-uint64-decimal-string" ||
+    mapping.projectionPolicy.customRunOwnerVersion.semantic !== "run-owner-version" ||
+    mapping.projectionPolicy.customRunOwnerVersion.legacyProjectionVersion !== "forbidden" ||
+    mapping.projectionPolicy.customRunOwnerVersion.javascriptNumber !== "forbidden"
   ) fail("agui_projection_policy_invalid");
   if (
     mapping.transportPolicy?.sseId !== "opaque-session-cursor" || mapping.transportPolicy.sseEvent !== "exact-inner-event-type" ||
@@ -500,6 +520,15 @@ function uint64(value, code) {
   const parsed = BigInt(value);
   if (parsed > UINT64_MAXIMUM) fail(code, value);
   return parsed;
+}
+
+function validatePublicSourceEventId(value) {
+  if (
+    typeof value !== "string" || value.length > 128 || !PUBLIC_SOURCE_EVENT_ID.test(value) ||
+    value.includes("agent.event")
+  ) {
+    fail("agui_public_source_event_id_invalid", String(value));
+  }
 }
 
 function decodeBase64Url(value) {
@@ -662,6 +691,14 @@ function validateEventPreSchema(event, mapping) {
   if (findKey(event, COT_KEY)) fail("agui_cot_forbidden");
   if (!mapping.allowedEventTypes.includes(event.type)) fail("agui_event_type_forbidden", event.type);
   if (event.type === EventType.CUSTOM && !mapping.allowedCustomNames.includes(event.name)) fail("agui_unknown_custom", String(event.name));
+  if (event.type === EventType.CUSTOM && event.name === "kokoro.run.replace.v1") {
+    const value = event.value;
+    if (
+      value === null || typeof value !== "object" || Array.isArray(value) ||
+      Object.hasOwn(value, "projectionVersion") || !Object.hasOwn(value, "ownerVersion") ||
+      uint64(value.ownerVersion, "agui_custom_run_owner_version_invalid") === 0n
+    ) fail("agui_custom_run_owner_version_invalid");
+  }
   if (event.type === EventType.ACTIVITY_SNAPSHOT && !mapping.allowedActivityTypes.includes(event.activityType)) fail("agui_unknown_activity", String(event.activityType));
   if (event.type === EventType.ACTIVITY_SNAPSHOT && event.activityType === "kokoro.tool-preview.v1" && findKey(event.content, TOOL_SECRET_KEY)) fail("agui_tool_secret_forbidden");
   const extra = Object.keys(event).find((key) => !(EVENT_FIELDS.get(event.type) ?? []).includes(key));
@@ -775,7 +812,7 @@ function validatePrivateRouteId(value, code) {
 
 function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs, identities) {
   const fixtures = contractCase.sessionPrivateRouteFixtures;
-  exactKeys(fixtures, ["runs", "messages"], "agui_private_route_fixture_shape_invalid");
+  exactKeys(fixtures, ["runs", "messages", "provenance"], "agui_private_route_fixture_shape_invalid");
   if (
     !Array.isArray(fixtures.runs) || fixtures.runs.length !== runRefs.size ||
     !Array.isArray(fixtures.messages) || fixtures.messages.length !== messageRefs.size
@@ -847,7 +884,38 @@ function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs,
       "agui_global_internal_message_segment_duplicate",
     );
   }
-  return { runRoutes, messageRoutes };
+  if (!Array.isArray(fixtures.provenance)) fail("agui_private_provenance_coverage_invalid", contractCase.id);
+  const publicSourceEventIds = new Set(contractCase.frames.map(({ data }) => data.source.sourceEventId));
+  const agentSourceEventRefs = new Set();
+  const mappedPublicSourceEventIds = new Set();
+  for (const provenance of fixtures.provenance) {
+    exactKeys(
+      provenance,
+      ["sessionId", "agentSourceEventRef", "publicSourceEventId"],
+      "agui_private_provenance_shape_invalid",
+    );
+    validatePrivateRouteId(provenance.agentSourceEventRef, "agui_private_provenance_shape_invalid");
+    if (provenance.agentSourceEventRef === provenance.publicSourceEventId) {
+      fail("agui_private_provenance_identity_equal", provenance.agentSourceEventRef);
+    }
+    if (provenance.publicSourceEventId.includes(provenance.agentSourceEventRef)) {
+      fail("agui_private_provenance_identity_leak", provenance.agentSourceEventRef);
+    }
+    if (provenance.sessionId !== contractCase.snapshot.sessionId) {
+      fail("agui_private_provenance_scope_conflict", provenance.agentSourceEventRef);
+    }
+    validatePublicSourceEventId(provenance.publicSourceEventId);
+    if (
+      agentSourceEventRefs.has(provenance.agentSourceEventRef) ||
+      mappedPublicSourceEventIds.has(provenance.publicSourceEventId)
+    ) fail("agui_private_provenance_duplicate", provenance.agentSourceEventRef);
+    if (!publicSourceEventIds.has(provenance.publicSourceEventId)) {
+      fail("agui_private_provenance_coverage_invalid", provenance.publicSourceEventId);
+    }
+    agentSourceEventRefs.add(provenance.agentSourceEventRef);
+    mappedPublicSourceEventIds.add(provenance.publicSourceEventId);
+  }
+  return { runRoutes, messageRoutes, provenance: fixtures.provenance };
 }
 
 function browserInternalKey(value) {
@@ -1141,6 +1209,8 @@ function validateStreamState(frames, runRefs, messageRefs) {
 
 function validateConformanceCaseWithContracts(caseInput, contracts, identities) {
   const { mapping, validateEvent, validateProjectionPayload, validatePresentationRow, validateRunBinding, validateMessageBinding, validateStream, validateSnapshotAuthoritySchema } = contracts;
+  if (!Array.isArray(caseInput.frames) || !Array.isArray(caseInput.durableRows) || caseInput.frames.length !== caseInput.durableRows.length || caseInput.frames.length === 0) fail("agui_durable_frame_cardinality_invalid");
+  for (const frame of caseInput.frames) validatePublicSourceEventId(frame?.data?.source?.sourceEventId);
   if (caseInput.request?.lastEventId !== caseInput.snapshot.cursor || caseInput.request?.queryCursor !== caseInput.snapshot.cursor || caseInput.request?.cursorProfile !== CURSOR_PROFILE_REVISION) fail("agui_resume_cursor_invalid");
   if (
     caseInput.grantBinding?.sessionId !== caseInput.snapshot.sessionId ||
@@ -1179,7 +1249,6 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   if (!validateSnapshotAuthoritySchema(snapshotAuthority)) {
     fail("agui_snapshot_authority_schema_invalid", validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
   }
-  if (!Array.isArray(caseInput.frames) || !Array.isArray(caseInput.durableRows) || caseInput.frames.length !== caseInput.durableRows.length || caseInput.frames.length === 0) fail("agui_durable_frame_cardinality_invalid");
   const bindingAuthority = {
     runRefs: new Map(snapshotAuthority.runBindings.map((binding) => [binding.bindingRef, structuredClone(binding)])),
     messageRefs: new Map(snapshotAuthority.messageBindings.map((binding) => [binding.bindingRef, structuredClone(binding)])),
@@ -1197,6 +1266,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     if (browserInternalKey(frame.data)) fail("agui_browser_internal_route_forbidden", frame.data.source?.sourceEventId ?? "unknown");
     if (frame.event !== event.type) fail("agui_sse_event_type_mismatch", String(frame.event));
     const source = frame.data.source;
+    validatePublicSourceEventId(source.sourceEventId);
     if (uint64(source.durableSeq, "agui_cursor_gap") !== expectedSeq) fail("agui_cursor_gap", source.durableSeq);
     expectedSeq += 1n;
     uint64(source.streamEpoch, "agui_stream_epoch_invalid");
@@ -1317,14 +1387,14 @@ export function applyCorpusMutation(candidate, mutation) {
   if (mutation?.operation === "terminal-revival") {
     const frame = candidate.frames.find((entry) => entry.event === EventType.RUN_STARTED && entry.data.presentationRunBindingRef === mutation.runBindingRef);
     if (frame === undefined) fail("agui_corpus_mutation_invalid", "terminal-revival");
-    appendAttackFrame(candidate, frame, { sourceEventId: "attack.source.terminal-revival", sourceKind: "presentation.run.started", recordedAt: "2026-08-01T12:00:27.000Z" });
+  appendAttackFrame(candidate, frame, { sourceEventId: "presentation.event:attack.terminal-revival", sourceKind: "presentation.run.started", recordedAt: "2026-08-01T12:00:27.000Z" });
     refreshDerivedConformanceData(candidate);
     return candidate;
   }
   if (mutation?.operation === "reopen-message") {
     const frame = candidate.frames.find((entry) => entry.event === EventType.TEXT_MESSAGE_CONTENT && entry.data.presentationMessageBindingRef === mutation.messageBindingRef);
     if (frame === undefined) fail("agui_corpus_mutation_invalid", "reopen-message");
-    appendAttackFrame(candidate, frame, { sourceEventId: "attack.source.message-reopen", sourceKind: "presentation.message.text.content", recordedAt: "2026-08-01T12:00:27.000Z" });
+  appendAttackFrame(candidate, frame, { sourceEventId: "presentation.event:attack.message-reopen", sourceKind: "presentation.message.text.content", recordedAt: "2026-08-01T12:00:27.000Z" });
     refreshDerivedConformanceData(candidate);
     return candidate;
   }
@@ -1404,12 +1474,28 @@ function privateMessageRouteFor(contractCase, bindingRef) {
   );
 }
 
+function privateProvenanceFor(contractCase, agentSourceEventRef) {
+  return contractCase?.sessionPrivateRouteFixtures?.provenance?.find(
+    (provenance) => provenance.agentSourceEventRef === agentSourceEventRef,
+  );
+}
+
 function validateAgentSourceFixtures(corpus) {
   if (!Array.isArray(corpus.agentSourceFixtures) || corpus.agentSourceFixtures.length < 6) {
     fail("agui_agent_candidate_source_fixtures_missing");
   }
   const byRef = new Map();
   const byRun = new Map();
+  const provenanceByAgentRef = new Map();
+  for (const contractCase of corpus.positiveCases) {
+    for (const provenance of contractCase.sessionPrivateRouteFixtures.provenance) {
+      if (provenanceByAgentRef.has(provenance.agentSourceEventRef)) {
+        fail("agui_private_provenance_duplicate", provenance.agentSourceEventRef);
+      }
+      provenanceByAgentRef.set(provenance.agentSourceEventRef, { contractCase, provenance });
+    }
+  }
+  const usedProvenanceRefs = new Set();
   for (const fixture of corpus.agentSourceFixtures) {
     exactKeys(fixture, ["baseCaseId", "source"], "agui_agent_candidate_source_fixture_shape_invalid");
     const { source } = fixture;
@@ -1425,7 +1511,14 @@ function validateAgentSourceFixtures(corpus) {
     const ordinal = uint64(source.sourceOrdinal, "agui_agent_candidate_source_ordinal_invalid");
     const recordedAt = parseCanonicalUtcMs(source.recordedAt, "agui_agent_candidate_recorded_at_invalid");
     const base = corpus.positiveCases.find(({ id }) => id === fixture.baseCaseId);
-    const frame = base?.frames.find(({ data }) => data.source.sourceEventId === source.sourceEventRef);
+    const provenanceEntry = provenanceByAgentRef.get(source.sourceEventRef);
+    const provenance = provenanceEntry?.provenance;
+    if (
+      base === undefined || provenanceEntry === undefined || provenance === undefined ||
+      provenanceEntry.contractCase !== base || provenance.sessionId !== base.snapshot.sessionId ||
+      provenance.agentSourceEventRef === provenance.publicSourceEventId
+    ) fail("agui_private_provenance_coverage_invalid", source.sourceEventRef);
+    const frame = base?.frames.find(({ data }) => data.source.sourceEventId === provenance.publicSourceEventId);
     const runBinding = base?.runBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationRunBindingRef);
     const messageBinding = base?.messageBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationMessageBindingRef);
     const runRoute = privateRunRouteFor(base, runBinding?.bindingRef);
@@ -1455,11 +1548,14 @@ function validateAgentSourceFixtures(corpus) {
     }
     group.entries.push({ ordinal, recordedAt });
     byRef.set(source.sourceEventRef, fixture);
+    usedProvenanceRefs.add(source.sourceEventRef);
   }
+  if (usedProvenanceRefs.size !== provenanceByAgentRef.size) fail("agui_private_provenance_coverage_invalid");
   const agentOrdinals = corpus.agentSourceFixtures.map(({ source }) => source.sourceOrdinal);
   const sessionSequences = corpus.agentSourceFixtures.map(({ baseCaseId, source }) => {
     const base = corpus.positiveCases.find(({ id }) => id === baseCaseId);
-    return base.frames.find(({ data }) => data.source.sourceEventId === source.sourceEventRef).data.source.durableSeq;
+    const provenance = privateProvenanceFor(base, source.sourceEventRef);
+    return base.frames.find(({ data }) => data.source.sourceEventId === provenance.publicSourceEventId).data.source.durableSeq;
   });
   if (canonical(agentOrdinals) === canonical(sessionSequences)) fail("agui_agent_candidate_source_ordinal_series_coupled");
   return byRef;
@@ -1516,6 +1612,7 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
     if (frame === undefined || runBinding === undefined || runRoute === undefined) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
     const candidateEvent = validateAgentCandidateEnvelope(envelopeCase.candidateEnvelope, contracts);
     const { source } = envelopeCase.candidateEnvelope;
+    const provenance = privateProvenanceFor(base, source.sourceEventRef);
     const fixture = sourceFixtures.get(source.sourceEventRef);
     if (fixture === undefined || fixture.baseCaseId !== envelopeCase.baseCaseId || canonical(fixture.source) !== canonical(source)) {
       fail("agui_agent_candidate_source_fixture_mismatch", envelopeCase.id);
@@ -1525,7 +1622,8 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
       fail("agui_agent_candidate_thread_authority_invalid", source.route.internalRunRef);
     }
     if (
-      source.sourceEventRef !== frame.data.source.sourceEventId ||
+      provenance?.publicSourceEventId !== frame.data.source.sourceEventId ||
+      provenance?.sessionId !== base.snapshot.sessionId ||
       source.recordedAt !== frame.data.source.recordedAt || source.route.internalRunRef !== runRoute.internalRunRef
     ) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
     if (messageRoute === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageRoute.internalMessageRef) {
@@ -1572,13 +1670,15 @@ function validateAgentCandidateProjectionCorpus(corpus, contracts, sourceFixture
       fail("agui_agent_candidate_projection_source_invalid", projectionCase.id);
     }
     const candidateEvent = validateAgentCandidateEnvelope(projectionCase.candidateEnvelope, contracts);
+    const provenance = privateProvenanceFor(base, projectionCase.candidateEnvelope.source.sourceEventRef);
     const fixture = sourceFixtures.get(projectionCase.candidateEnvelope.source.sourceEventRef);
     if (fixture === undefined || fixture.baseCaseId !== projectionCase.baseCaseId || canonical(fixture.source) !== canonical(projectionCase.candidateEnvelope.source)) {
       fail("agui_agent_candidate_source_fixture_mismatch", projectionCase.id);
     }
     usedSourceRefs.add(projectionCase.candidateEnvelope.source.sourceEventRef);
     if (
-      projectionCase.candidateEnvelope.source.sourceEventRef !== projectionCase.sourceEventId ||
+      provenance?.publicSourceEventId !== projectionCase.sourceEventId ||
+      provenance?.sessionId !== base.snapshot.sessionId ||
       projectionCase.candidateEnvelope.source.recordedAt !== frame.data.source.recordedAt ||
       projectionCase.candidateEnvelope.source.route.internalRunRef !== runRoute.internalRunRef ||
       Object.hasOwn(candidateEvent, "result")

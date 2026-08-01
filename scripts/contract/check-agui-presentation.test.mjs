@@ -64,6 +64,12 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function provenanceForPublicSource(contractCase, publicSourceEventId) {
+  return contractCase.sessionPrivateRouteFixtures.provenance.find(
+    (provenance) => provenance.publicSourceEventId === publicSourceEventId,
+  );
+}
+
 function canonical(value) {
   if (value === null || typeof value === "boolean" || typeof value === "number" || typeof value === "string") return JSON.stringify(value);
   if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
@@ -176,7 +182,7 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 20,
+    negativeCases: 24,
     durableFrames: 41,
     bindingReplacementDeltas: 14,
     mappingsCovered: 22,
@@ -242,6 +248,76 @@ test("keeps Agent internal route topology out of browser binding snapshots and d
   }
 });
 
+test("keeps Agent source provenance private and assigns independent Session presentation event identities", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const agentFixturesByCase = new Map();
+  for (const fixture of corpus.agentSourceFixtures) {
+    const fixtures = agentFixturesByCase.get(fixture.baseCaseId) ?? [];
+    fixtures.push(fixture);
+    agentFixturesByCase.set(fixture.baseCaseId, fixtures);
+  }
+  for (const contractCase of corpus.positiveCases) {
+    const publicIds = contractCase.frames.map(({ data }) => data.source.sourceEventId);
+    assert.ok(publicIds.every((sourceEventId) => /^presentation\.event:/u.test(sourceEventId)), contractCase.id);
+    const provenance = contractCase.sessionPrivateRouteFixtures.provenance;
+    const agentFixtures = agentFixturesByCase.get(contractCase.id) ?? [];
+    assert.equal(provenance.length, agentFixtures.length, contractCase.id);
+    assert.deepEqual(
+      provenance.map(({ agentSourceEventRef }) => agentSourceEventRef).sort(),
+      agentFixtures.map(({ source }) => source.sourceEventRef).sort(),
+      contractCase.id,
+    );
+    assert.equal(new Set(provenance.map(({ agentSourceEventRef }) => agentSourceEventRef)).size, provenance.length);
+    assert.equal(new Set(provenance.map(({ publicSourceEventId }) => publicSourceEventId)).size, provenance.length);
+    for (const mapping of provenance) {
+      assert.deepEqual(Object.keys(mapping).sort(), ["agentSourceEventRef", "publicSourceEventId", "sessionId"]);
+      assert.equal(mapping.sessionId, contractCase.snapshot.sessionId);
+      assert.ok(publicIds.includes(mapping.publicSourceEventId));
+      assert.notEqual(mapping.agentSourceEventRef, mapping.publicSourceEventId);
+    }
+  }
+});
+
+test("rejects leaked, equal, duplicate and cross-Session private source provenance", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
+
+  const leaked = clone(base);
+  leaked.frames[0].data.source.sourceEventId = "presentation.event:agent.event.run.leaked";
+  assert.throws(() => validateConformanceCase(leaked), /agui_public_source_event_id_invalid/u);
+
+  const equal = clone(base);
+  equal.sessionPrivateRouteFixtures.provenance[0].publicSourceEventId =
+    equal.sessionPrivateRouteFixtures.provenance[0].agentSourceEventRef;
+  assert.throws(() => validateConformanceCase(equal), /agui_private_provenance_identity_equal/u);
+
+  const embedded = clone(base);
+  embedded.sessionPrivateRouteFixtures.provenance[0].publicSourceEventId =
+    `presentation.event:${embedded.sessionPrivateRouteFixtures.provenance[0].agentSourceEventRef}`;
+  assert.throws(() => validateConformanceCase(embedded), /agui_private_provenance_identity_leak/u);
+
+  for (const field of ["agentSourceEventRef", "publicSourceEventId"]) {
+    const duplicate = clone(base);
+    duplicate.sessionPrivateRouteFixtures.provenance[1][field] =
+      duplicate.sessionPrivateRouteFixtures.provenance[0][field];
+    assert.throws(() => validateConformanceCase(duplicate), /agui_private_provenance_duplicate/u, field);
+  }
+
+  const crossSession = clone(base);
+  crossSession.sessionPrivateRouteFixtures.provenance[0].sessionId = "session.attacker";
+  assert.throws(() => validateConformanceCase(crossSession), /agui_private_provenance_scope_conflict/u);
+
+});
+
+test("full repository gate requires one private provenance mapping for every Agent source fixture", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const contractCase = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
+  contractCase.sessionPrivateRouteFixtures.provenance.pop();
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_private_provenance_coverage_invalid/u);
+});
+
 test("uses decimal positive-uint64 projection revisions on every Session-owned source envelope", async () => {
   const payloadSchema = await readJson("contract/spec/session-agui-projection-payload-v1.yaml");
   const rowSchema = await readJson("contract/spec/session-agui-presentation-row-v1.yaml");
@@ -266,6 +342,38 @@ test("uses decimal positive-uint64 projection revisions on every Session-owned s
   }
 });
 
+test("uses ownerVersion uint64 strings for the Kokoro Run owner CUSTOM value and removes the old field", async () => {
+  const schema = await readJson("contract/spec/kokoro-agui-presentation-event-v1.yaml");
+  const customRunValue = schema.$defs.customRun.properties.value;
+  assert.deepEqual(customRunValue.required, ["presentationRunId", "state", "ownerVersion"]);
+  assert.deepEqual(customRunValue.properties.ownerVersion, { $ref: "#/$defs/positiveUint64" });
+  assert.equal(Object.hasOwn(customRunValue.properties, "projectionVersion"), false);
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const runOwnerEvents = corpus.positiveCases.flatMap(({ frames }) => (
+    frames.map(({ data }) => data.event).filter(({ name }) => name === "kokoro.run.replace.v1")
+  ));
+  assert.equal(runOwnerEvents.length, 1);
+  assert.equal(runOwnerEvents[0].value.ownerVersion, "18446744073709551615");
+  assert.equal(Object.hasOwn(runOwnerEvents[0].value, "projectionVersion"), false);
+  assert.ok(BigInt(runOwnerEvents[0].value.ownerVersion) > BigInt(Number.MAX_SAFE_INTEGER));
+});
+
+test("freezes public source leakage and Run owner version attacks", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  assert.deepEqual(
+    corpus.negativeCases
+      .filter(({ id }) => id.startsWith("public-source-") || id.startsWith("custom-run-owner-"))
+      .map(({ id, expectedCode }) => [id, expectedCode]),
+    [
+      ["public-source-agent-prefix-leak", "agui_public_source_event_id_invalid"],
+      ["public-source-private-ref-equality", "agui_private_provenance_identity_equal"],
+      ["custom-run-owner-old-projection-version", "agui_custom_run_owner_version_invalid"],
+      ["custom-run-owner-version-overflow", "agui_custom_run_owner_version_invalid"],
+    ],
+  );
+});
+
 test("freezes binding authority delta policy per source mapping and rebuilds from an empty snapshot", async () => {
   const registry = await readJson("contract/registry/agui-presentation-mapping-v1.yaml");
   const expectedKind = (entry) => {
@@ -285,6 +393,18 @@ test("freezes binding authority delta policy per source mapping and rebuilds fro
   assert.deepEqual(registry.projectionPolicy.sourceProjectionVersion, {
     wire: "positive-uint64-decimal-string",
     semantic: "session-projection-revision",
+    javascriptNumber: "forbidden",
+  });
+  assert.deepEqual(registry.projectionPolicy.publicSourceEventIdentity, {
+    wire: "presentation.event:-branded-session-owned-opaque-ref",
+    agentSourceEventRefEquality: "forbidden",
+    agentSourceEventRefExposure: "private-provenance-only",
+    webDerivation: "forbidden",
+  });
+  assert.deepEqual(registry.projectionPolicy.customRunOwnerVersion, {
+    wire: "positive-uint64-decimal-string",
+    semantic: "run-owner-version",
+    legacyProjectionVersion: "forbidden",
     javascriptNumber: "forbidden",
   });
 
@@ -442,8 +562,13 @@ test("requires one canonical Agent envelope for every declared text event arm", 
     ({ candidateEnvelope }) => candidateEnvelope.event.type === "TEXT_MESSAGE_START",
   );
   const [removed] = corpus.agentCandidateEnvelopeCases.splice(removedIndex, 1);
+  const base = corpus.positiveCases.find(({ id }) => id === removed.baseCaseId);
+  const provenance = provenanceForPublicSource(base, removed.sourceEventId);
   corpus.agentSourceFixtures = corpus.agentSourceFixtures.filter(
-    ({ source }) => source.sourceEventRef !== removed.sourceEventId,
+    ({ source }) => source.sourceEventRef !== provenance.agentSourceEventRef,
+  );
+  base.sessionPrivateRouteFixtures.provenance = base.sessionPrivateRouteFixtures.provenance.filter(
+    ({ agentSourceEventRef }) => agentSourceEventRef !== provenance.agentSourceEventRef,
   );
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
 
@@ -457,8 +582,13 @@ test("requires one canonical Agent envelope for every declared activity discrimi
     ({ candidateEnvelope }) => candidateEnvelope.event.activityType === "kokoro.hitl.v1",
   );
   const [removed] = corpus.agentCandidateEnvelopeCases.splice(removedIndex, 1);
+  const base = corpus.positiveCases.find(({ id }) => id === removed.baseCaseId);
+  const provenance = provenanceForPublicSource(base, removed.sourceEventId);
   corpus.agentSourceFixtures = corpus.agentSourceFixtures.filter(
-    ({ source }) => source.sourceEventRef !== removed.sourceEventId,
+    ({ source }) => source.sourceEventRef !== provenance.agentSourceEventRef,
+  );
+  base.sessionPrivateRouteFixtures.provenance = base.sessionPrivateRouteFixtures.provenance.filter(
+    ({ agentSourceEventRef }) => agentSourceEventRef !== provenance.agentSourceEventRef,
   );
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
 
@@ -475,7 +605,10 @@ test("keeps Agent source identity and ordinal authority independent from Session
     assert.match(fixture.source.sourceEventRef, /^agent\.event\./u);
     const base = baseById.get(fixture.baseCaseId);
     assert.match(fixture.source.route.internalThreadRef, /^agent\.thread:[A-Za-z0-9][A-Za-z0-9._:-]*$/u);
-    const frame = base.frames.find(({ data }) => data.source.sourceEventId === fixture.source.sourceEventRef);
+    const provenance = base.sessionPrivateRouteFixtures.provenance.find(
+      ({ agentSourceEventRef }) => agentSourceEventRef === fixture.source.sourceEventRef,
+    );
+    const frame = base.frames.find(({ data }) => data.source.sourceEventId === provenance.publicSourceEventId);
     assert.ok(frame, fixture.source.sourceEventRef);
     agentOrdinals.push(fixture.source.sourceOrdinal);
     sessionSequences.push(frame.data.source.durableSeq);
@@ -496,7 +629,9 @@ test("binds every same-run candidate to the zero-ordinal RUN_STARTED thread auth
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
   const envelopeCase = corpus.agentCandidateEnvelopeCases.find(({ id }) => id === "agent-run-error-envelope");
-  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === envelopeCase.sourceEventId);
+  const base = corpus.positiveCases.find(({ id }) => id === envelopeCase.baseCaseId);
+  const provenance = provenanceForPublicSource(base, envelopeCase.sourceEventId);
+  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === provenance.agentSourceEventRef);
   fixture.source.route.internalThreadRef = "agent.thread:attacker";
   envelopeCase.candidateEnvelope.source.route.internalThreadRef = "agent.thread:attacker";
   resignCandidateEnvelope(envelopeCase.candidateEnvelope);
@@ -508,7 +643,9 @@ test("rejects a Session-shaped ref at the Agent owner-thread boundary", async ()
   const root = await repositoryFixture();
   const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
   const envelopeCase = corpus.agentCandidateEnvelopeCases.find(({ id }) => id === "agent-run-start-envelope");
-  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === envelopeCase.sourceEventId);
+  const base = corpus.positiveCases.find(({ id }) => id === envelopeCase.baseCaseId);
+  const provenance = provenanceForPublicSource(base, envelopeCase.sourceEventId);
+  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === provenance.agentSourceEventRef);
   fixture.source.route.internalThreadRef = "thread.session.01";
   envelopeCase.candidateEnvelope.source.route.internalThreadRef = "thread.session.01";
   envelopeCase.candidateEnvelope.event.threadId = "thread.session.01";

@@ -66,6 +66,18 @@
       "semantic": "session-projection-revision",
       "javascriptNumber": "forbidden"
     },
+    "publicSourceEventIdentity": {
+      "wire": "presentation.event:-branded-session-owned-opaque-ref",
+      "agentSourceEventRefEquality": "forbidden",
+      "agentSourceEventRefExposure": "private-provenance-only",
+      "webDerivation": "forbidden"
+    },
+    "customRunOwnerVersion": {
+      "wire": "positive-uint64-decimal-string",
+      "semantic": "run-owner-version",
+      "legacyProjectionVersion": "forbidden",
+      "javascriptNumber": "forbidden"
+    },
     "agentCandidateSourceProfile": "kokoro-agent-agui-candidate.v1",
     "agentRawPassthrough": false,
     "providerPayloadPassthrough": false

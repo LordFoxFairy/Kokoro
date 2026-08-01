@@ -29,6 +29,7 @@
   ],
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "positiveUint64": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
     "shortText": {"type": "string", "minLength": 1, "maxLength": 1024},
     "safeText": {"type": "string", "maxLength": 16384},
     "timestamp": {"type": "integer", "minimum": 0, "maximum": 8640000000000000},
@@ -247,8 +248,8 @@
     "customRun": {
       "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
       "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.run.replace.v1"},
-        "value": {"type": "object", "additionalProperties": false, "required": ["presentationRunId", "state", "projectionVersion"], "properties": {
-          "presentationRunId": {"$ref": "#/$defs/id"}, "state": {"enum": ["starting", "running", "waiting", "canceling", "finished", "error"]}, "projectionVersion": {"type": "integer", "minimum": 1}
+        "value": {"type": "object", "additionalProperties": false, "required": ["presentationRunId", "state", "ownerVersion"], "properties": {
+          "presentationRunId": {"$ref": "#/$defs/id"}, "state": {"enum": ["starting", "running", "waiting", "canceling", "finished", "error"]}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"}
         }}
       }
     },

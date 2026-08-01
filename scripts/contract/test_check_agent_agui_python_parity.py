@@ -116,6 +116,35 @@ def test_rejects_non_uint64_session_projection_revision(
         validate_corpus(corpus, _profile())
 
 
+@pytest.mark.parametrize(
+    "owner_value",
+    [
+        {"projectionVersion": 4},
+        {"ownerVersion": "18446744073709551616"},
+    ],
+)
+def test_rejects_legacy_or_overflow_run_owner_version(
+    owner_value: dict[str, object],
+) -> None:
+    corpus = copy.deepcopy(_corpus())
+    event = next(
+        frame["data"]["event"]
+        for case in corpus["positiveCases"]
+        for frame in case["frames"]
+        if frame["data"]["event"].get("name") == "kokoro.run.replace.v1"
+    )
+    event["value"] = {
+        "presentationRunId": event["value"]["presentationRunId"],
+        "state": event["value"]["state"],
+        **owner_value,
+    }
+    with pytest.raises(
+        AgentAguiPythonParityError,
+        match="agent_agui_run_owner_version_invalid",
+    ):
+        validate_corpus(corpus, _profile())
+
+
 def test_rejects_missing_or_duplicate_candidate_coverage() -> None:
     corpus = copy.deepcopy(_corpus())
     corpus["agentCandidateEnvelopeCases"].append(

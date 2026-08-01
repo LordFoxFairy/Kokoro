@@ -424,7 +424,9 @@ candidate 后仍须验证 closed envelope 的 Agent source/route refs、uint64 o
 Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`RUN_FINISHED` candidate 必须显式声明 success；Session
 验证后剥离 outcome，并通过 presentation binding 将内部 route refs 映射成浏览器 run/thread/message refs。Agent
 `sourceOrdinal` 是每个 internal run 从零开始、按 owner log 严格递增的独立 uint64 序列，与 Session `durableSeq` 没有
-相等关系；Session 可把 Agent `sourceEventRef` 保存为 provenance，但 durable sequence 必须自行分配。合同 corpus 的
+相等关系；Session 只把 Agent `sourceEventRef` 保存于私有 provenance，并为浏览器分配独立、opaque、
+`presentation.event:` 品牌化的公开 `sourceEventId`。二者相等、公开泄露、重复映射、覆盖缺失与跨 Session 映射均
+fail closed；Web 只把公开 ID 当 opaque 数据消费，不能获得或实现 identity 派生算法。合同 corpus 的
 `agentSourceFixtures` 按每个 run 的 owner-log 顺序排列并验证这一点。`internalThreadRef` 使用
 `agent.thread:<opaque-id>` 品牌化 owner ref，由 ordinal-zero `RUN_STARTED` 为该 run 建立权威，后续 candidate 必须完全一致；
 它不从 Session identity 派生。v1 candidate `RUN_STARTED` 禁止 `parentRunId`，浏览器
@@ -444,14 +446,16 @@ JCS-digested row 内携带一个 closed `bindingAuthorityDelta`。它只能是�
 start/end 分别写 open/ended 完整 message binding；content、activity 与全部 v1 CUSTOM 明确为 `none`。这里的
 CUSTOM owner projection 不等于 transport binding authority，v1 不根据名称猜状态变化。delta 的 ref、Session/profile、
 source event、recorded time、event identity 与 terminal state 必须和同一 row 精确一致，未来 binding evidence 直接
-fail closed；Web 按 durable 顺序应用这些完整替换后必须重建出 Session 的最终 HTTP snapshot。Session source envelope
-Run/message binding 是浏览器安全的完整 presentation replacement，不携带 `internalRunRef`、`internalMessageRef` 或
+fail closed；Web 按 durable 顺序应用这些完整替换后必须重建出 Session 的最终 HTTP snapshot。Run/message binding
+是浏览器安全的完整 presentation replacement，不携带 `internalRunRef`、`internalMessageRef` 或
 `parentInternalRunRef`。这些 Agent 路由只存在于 Session 私有映射权威中，并在投影前解析；不得进入 snapshot、delta、
 持久化 projection payload 或 SSE。Root corpus 的 `sessionPrivateRouteFixtures` 仅用于独立验证该私有映射的覆盖、resume
 恒等与父子拓扑，不属于浏览器 wire；Run、message、parent 三类内部引用走私均有固定负向语料。
-中的 `projectionVersion` 使用 positive uint64 十进制字符串，与 `durableSeq` 采用相同 wire 数值策略；即便当前 owner
+Session source envelope 中的 `projectionVersion` 使用 positive uint64 十进制字符串，与 `durableSeq` 采用相同 wire 数值策略；即便当前 owner
 从同一计数器派生，它的语义仍是 projection revision，消费者不得把它当 cursor 或转成 JavaScript `number`，也不得
-因 safe-integer 上限提前耗尽 projection revision。
+因 safe-integer 上限提前耗尽 projection revision。另一个独立轴是 Kokoro CUSTOM `kokoro.run.replace.v1.value.ownerVersion`：
+它代表 Run owner version，同样使用 positive uint64 十进制字符串，旧 integer `projectionVersion` 字段被禁止；合同使用
+`18446744073709551615` 证明完整 uint64 范围并对 overflow fail closed。官方 AG-UI 字段未被改写。
 Root 的本地 promotion gate 在安装 Agent 精确 lock 后，会用官方 Python event model 与 Agent builder 重建 registry 声明的
 全部 event arm 和 activity discriminator，并与 TypeScript gate 的 Root corpus 逐对象精确比较；registry 漏项、重复替代、
 语义 role 漂移都会失败。这证明双 SDK/双实现 parity，但在 Agent gitlink、manifest、兼容性证据与 BOM 原子提升前仍不进入 CI，

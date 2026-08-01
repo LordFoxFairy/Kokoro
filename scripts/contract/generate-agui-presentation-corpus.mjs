@@ -10,6 +10,7 @@ const cursorProfileRevision = "opaque-session-cursor-v1";
 const keyRevision = "agui-conformance-2026-08";
 const key = createHash("sha256").update("kokoro-agui-presentation-public-conformance-key-v1", "utf8").digest();
 const aad = Buffer.from(`kokoro.session.browser.cursor.v1\u0000${keyRevision}`, "utf8");
+const uint64Maximum = "18446744073709551615";
 const contracts = Object.freeze({
   profile: "contract/registry/agui-upstream-profile.yaml",
   agentCandidateProfile: "contract/registry/agui-agent-candidate-profile-v1.yaml",
@@ -118,6 +119,21 @@ function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRe
   };
 }
 
+function publicSourceEventIdFor(contractCase, frame) {
+  return `presentation.event:${contractCase.snapshot.sessionId}:${frame.data.source.streamEpoch}:${frame.data.source.durableSeq}`;
+}
+
+function replaceSourceEvidence(bindings, sourceIds, fields) {
+  for (const binding of bindings) {
+    for (const field of fields) {
+      if (binding[field] === null) continue;
+      const replacement = sourceIds.get(binding[field]);
+      if (replacement === undefined) throw new Error(`binding source evidence missing: ${binding[field]}`);
+      binding[field] = replacement;
+    }
+  }
+}
+
 function issueCursor({ sessionId, streamEpoch, durableSeq }) {
   const claims = {
     version: 1,
@@ -224,7 +240,11 @@ for (const contractCase of corpus.positiveCases) {
         presentationMessageBindingRef: binding.bindingRef,
         internalMessageRef: binding.internalMessageRef,
       })),
+      provenance: [],
     };
+  }
+  if (contractCase.sessionPrivateRouteFixtures.provenance === undefined) {
+    contractCase.sessionPrivateRouteFixtures.provenance = [];
   }
   for (const binding of contractCase.runBindings) {
     delete binding.internalRunRef;
@@ -319,6 +339,7 @@ parentCase.sessionPrivateRouteFixtures = {
       internalMessageRef: successInternalMessageRef,
     },
   ],
+  provenance: [],
 };
 const source = (sourceEventId, sourceKind, durableSeq, recordedAt) => ({
   sourceEventId, sourceKind, sessionId: "session.error", streamEpoch: "9", durableSeq,
@@ -416,11 +437,42 @@ for (const contractCase of corpus.positiveCases) {
   contractCase.snapshot.cursor = snapshotCursor;
   contractCase.request.lastEventId = snapshotCursor;
   contractCase.request.queryCursor = snapshotCursor;
+  const publicSourceIds = new Map(
+    contractCase.frames.map((frame) => [frame.data.source.sourceEventId, publicSourceEventIdFor(contractCase, frame)]),
+  );
+  replaceSourceEvidence(
+    contractCase.runBindings,
+    publicSourceIds,
+    ["openedBySourceEventId", "terminalSourceEventId"],
+  );
+  replaceSourceEvidence(
+    contractCase.messageBindings,
+    publicSourceIds,
+    ["openedBySourceEventId", "endedBySourceEventId"],
+  );
   for (const frame of contractCase.frames) {
+    frame.data.source.sourceEventId = publicSourceIds.get(frame.data.source.sourceEventId);
     frame.data.source.projectionVersion = String(frame.data.source.projectionVersion);
+    if (frame.data.event.name === "kokoro.run.replace.v1") {
+      frame.data.event.value.ownerVersion = uint64Maximum;
+      delete frame.data.event.value.projectionVersion;
+    }
     frame.data.bindingAuthorityDelta = bindingAuthorityDeltaForFrame(contractCase, frame);
     frame.id = issueCursor(frame.data.source);
   }
+  contractCase.sessionPrivateRouteFixtures.provenance = corpus.agentSourceFixtures
+    .filter(({ baseCaseId }) => baseCaseId === contractCase.id)
+    .map(({ source: agentSource }) => {
+      const publicSourceEventId = publicSourceIds.get(agentSource.sourceEventRef);
+      if (publicSourceEventId === undefined) {
+        throw new Error(`Agent private provenance target missing: ${agentSource.sourceEventRef}`);
+      }
+      return {
+        sessionId: contractCase.snapshot.sessionId,
+        agentSourceEventRef: agentSource.sourceEventRef,
+        publicSourceEventId,
+      };
+    });
   contractCase.durableRows = contractCase.frames.map((frame) => ({
     rowRef: `presentation-row.${frame.data.source.sourceEventId}`,
     profileRevision: frame.data.profileRevision,
@@ -452,7 +504,10 @@ if (parentHead === undefined || successRunFinishedFrame?.data.event.type !== "RU
 }
 const sourceFixtureByRef = new Map(corpus.agentSourceFixtures.map((fixture) => [fixture.source.sourceEventRef, fixture]));
 const candidateEnvelopeFor = (contractCase, frame) => {
-  const fixture = sourceFixtureByRef.get(frame.data.source.sourceEventId);
+  const provenance = contractCase.sessionPrivateRouteFixtures.provenance.find(
+    ({ publicSourceEventId }) => publicSourceEventId === frame.data.source.sourceEventId,
+  );
+  const fixture = provenance === undefined ? undefined : sourceFixtureByRef.get(provenance.agentSourceEventRef);
   if (fixture === undefined || fixture.baseCaseId !== contractCase.id) {
     throw new Error(`Agent source fixture missing: ${frame.data.source.sourceEventId}`);
   }
@@ -565,7 +620,9 @@ corpus.negativeCases = [
   ...corpus.negativeCases.filter(({ id }) => (
     id !== "m0-interrupted-main-run" &&
     !id.startsWith("binding-delta-") &&
-    !id.startsWith("browser-private-")
+    !id.startsWith("browser-private-") &&
+    !id.startsWith("public-source-") &&
+    !id.startsWith("custom-run-owner-")
   )),
   {
     id: "binding-delta-wrong-kind",
@@ -596,7 +653,7 @@ corpus.negativeCases = [
     mutation: {
       operation: "set",
       path: "frames.0.data.bindingAuthorityDelta.binding.openedBySourceEventId",
-      value: "source.attack",
+      value: "presentation.event:attack",
     },
     expectedCode: "agui_binding_delta_source_conflict",
   },
@@ -665,6 +722,50 @@ corpus.negativeCases = [
       value: "internal.run.parent.smuggled",
     },
     expectedCode: "agui_browser_internal_route_forbidden",
+  },
+  {
+    id: "public-source-agent-prefix-leak",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.source.sourceEventId",
+      value: "presentation.event:agent.event.run.leaked",
+    },
+    expectedCode: "agui_public_source_event_id_invalid",
+  },
+  {
+    id: "public-source-private-ref-equality",
+    baseCaseId: parentCase.id,
+    mutation: {
+      operation: "set",
+      path: "sessionPrivateRouteFixtures.provenance.0.publicSourceEventId",
+      value: parentCase.sessionPrivateRouteFixtures.provenance[0].agentSourceEventRef,
+    },
+    expectedCode: "agui_private_provenance_identity_equal",
+  },
+  {
+    id: "custom-run-owner-old-projection-version",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: `frames.${authorityBase.frames.findIndex(({ data }) => data.event.name === "kokoro.run.replace.v1")}.data.event.value`,
+      value: {
+        presentationRunId: "presentation.run.01.segment.0",
+        state: "waiting",
+        projectionVersion: 4,
+      },
+    },
+    expectedCode: "agui_custom_run_owner_version_invalid",
+  },
+  {
+    id: "custom-run-owner-version-overflow",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: `frames.${authorityBase.frames.findIndex(({ data }) => data.event.name === "kokoro.run.replace.v1")}.data.event.value.ownerVersion`,
+      value: "18446744073709551616",
+    },
+    expectedCode: "agui_custom_run_owner_version_invalid",
   },
   {
     id: "m0-interrupted-main-run",

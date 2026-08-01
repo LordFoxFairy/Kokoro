@@ -80,8 +80,10 @@ event's JCS digest and a domain-separated, recomputable candidate ref. `RUN_FINI
 validates and strips that outcome while resolving internal route refs through presentation bindings, so the browser schema does
 not expand. Agent `sourceOrdinal` is an independent uint64 owner sequence: each run starts at zero and increases strictly in
 owner-log order; it has no equality relationship with Session `durableSeq`. The corpus lists `agentSourceFixtures` in that
-per-run owner-log order, and Session persists the Agent `sourceEventRef` only as provenance while assigning its own durable
-sequence. `internalThreadRef` is an `agent.thread:<opaque-id>` branded owner ref; ordinal-zero `RUN_STARTED` establishes it
+per-run owner-log order. Session keeps Agent `sourceEventRef` only in private provenance and assigns a distinct, opaque,
+`presentation.event:`-branded public `sourceEventId`; equality, exposure, duplicate mapping, missing coverage, and
+cross-Session mapping all fail closed. Web consumes the public ID as opaque data and never derives it from Agent identity.
+`internalThreadRef` is an `agent.thread:<opaque-id>` branded owner ref; ordinal-zero `RUN_STARTED` establishes it
 for the internal run and all later candidates must retain it. It is never derived from Session identity. Candidate
 `RUN_STARTED` forbids `parentRunId`; Session alone derives the browser parent run ID from its authoritative
 run binding. The exact TypeScript
@@ -107,7 +109,10 @@ corpus carries `sessionPrivateRouteFixtures` only to validate that private mappi
 part of the browser wire. Checked-in smuggling attacks cover Run, message, and parent internal refs.
 Session-owned `projectionVersion` is a positive uint64 decimal string in both payload and row source envelopes. It remains a
 Session projection revision even where the current owner derives it from the same counter as `durableSeq`; consumers cannot
-parse it as a JavaScript number or substitute it for cursor semantics. Rendering libraries remain adapters only and do not
+parse it as a JavaScript number or substitute it for cursor semantics. Separately, the Kokoro-owned
+`kokoro.run.replace.v1.value.ownerVersion` is a positive uint64 decimal string; the misleading integer
+`projectionVersion` field is forbidden. The corpus carries `18446744073709551615` to prove the full uint64 wire range.
+Rendering libraries remain adapters only and do not
 own the wire contract.
 
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,

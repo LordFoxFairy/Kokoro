@@ -27,8 +27,8 @@
     },
     "state": {"enum": ["open", "finished", "error"]},
     "terminalDisposition": {"oneOf": [{"enum": ["success", "interrupted", "error", "canceled"]}, {"type": "null"}]},
-    "openedBySourceEventId": {"$ref": "#/$defs/id"},
-    "terminalSourceEventId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+    "openedBySourceEventId": {"$ref": "#/$defs/publicSourceEventId"},
+    "terminalSourceEventId": {"oneOf": [{"$ref": "#/$defs/publicSourceEventId"}, {"type": "null"}]},
     "openedAt": {"$ref": "#/$defs/dateTime"},
     "terminalAt": {"oneOf": [{"$ref": "#/$defs/dateTime"}, {"type": "null"}]}
   },
@@ -48,13 +48,14 @@
       "else": {
         "properties": {
           "terminalDisposition": {"enum": ["success", "interrupted", "error", "canceled"]},
-          "terminalSourceEventId": {"$ref": "#/$defs/id"}, "terminalAt": {"$ref": "#/$defs/dateTime"}
+          "terminalSourceEventId": {"$ref": "#/$defs/publicSourceEventId"}, "terminalAt": {"$ref": "#/$defs/dateTime"}
         }
       }
     }
   ],
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "publicSourceEventId": {"type": "string", "minLength": 20, "maxLength": 128, "pattern": "^presentation\\.event:(?![A-Za-z0-9._:-]*agent\\.event)[A-Za-z0-9][A-Za-z0-9._:-]*$"},
     "dateTime": {"type": "string", "minLength": 20, "maxLength": 35, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$"}
   }
 }

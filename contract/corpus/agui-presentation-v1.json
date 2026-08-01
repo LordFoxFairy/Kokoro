@@ -55,8 +55,8 @@
           },
           "state": "finished",
           "terminalDisposition": "success",
-          "openedBySourceEventId": "agent.event.run.01.000",
-          "terminalSourceEventId": "source.21",
+          "openedBySourceEventId": "presentation.event:session.01:41:1",
+          "terminalSourceEventId": "presentation.event:session.01:41:21",
           "openedAt": "2026-08-01T12:00:01.000Z",
           "terminalAt": "2026-08-01T12:00:21.000Z"
         },
@@ -73,8 +73,8 @@
           },
           "state": "finished",
           "terminalDisposition": "success",
-          "openedBySourceEventId": "source.22",
-          "terminalSourceEventId": "agent.event.run.01.025",
+          "openedBySourceEventId": "presentation.event:session.01:41:22",
+          "terminalSourceEventId": "presentation.event:session.01:41:26",
           "openedAt": "2026-08-01T12:00:22.000Z",
           "terminalAt": "2026-08-01T12:00:26.000Z"
         }
@@ -88,8 +88,8 @@
           "presentationMessageId": "presentation.message.01.segment.0",
           "resumeSegmentOrdinal": 0,
           "state": "ended",
-          "openedBySourceEventId": "source.02",
-          "endedBySourceEventId": "source.20",
+          "openedBySourceEventId": "presentation.event:session.01:41:2",
+          "endedBySourceEventId": "presentation.event:session.01:41:20",
           "openedAt": "2026-08-01T12:00:02.000Z",
           "endedAt": "2026-08-01T12:00:20.000Z"
         },
@@ -101,19 +101,19 @@
           "presentationMessageId": "presentation.message.01.segment.1",
           "resumeSegmentOrdinal": 1,
           "state": "ended",
-          "openedBySourceEventId": "source.23",
-          "endedBySourceEventId": "source.25",
+          "openedBySourceEventId": "presentation.event:session.01:41:23",
+          "endedBySourceEventId": "presentation.event:session.01:41:25",
           "openedAt": "2026-08-01T12:00:23.000Z",
           "endedAt": "2026-08-01T12:00:25.000Z"
         }
       ],
       "durableRows": [
         {
-          "rowRef": "presentation-row.agent.event.run.01.000",
+          "rowRef": "presentation-row.presentation.event:session.01:41:1",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.01.000",
+            "sourceEventId": "presentation.event:session.01:41:1",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -125,7 +125,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.000",
+              "sourceEventId": "presentation.event:session.01:41:1",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -156,21 +156,21 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.01.000",
+                "openedBySourceEventId": "presentation.event:session.01:41:1",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:01.000Z",
                 "terminalAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:3ca0eae346f4e6581744819fc9193af93c4ac7685b7bccbf50eac58d5d97a28b"
+          "projectionPayloadDigest": "sha256:719e8761cd54dba10966555d92e43b04d26e8f7c5b9f5b30682dc20b8cc63bbd"
         },
         {
-          "rowRef": "presentation-row.source.02",
+          "rowRef": "presentation-row.presentation.event:session.01:41:2",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.02",
+            "sourceEventId": "presentation.event:session.01:41:2",
             "sourceKind": "presentation.message.text.started",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -182,7 +182,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.02",
+              "sourceEventId": "presentation.event:session.01:41:2",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -209,21 +209,21 @@
                 "presentationMessageId": "presentation.message.01.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
-                "openedBySourceEventId": "source.02",
+                "openedBySourceEventId": "presentation.event:session.01:41:2",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:02.000Z",
                 "endedAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:d895c01804126d2854178bf74f696f862614f63551c6afa3cc6cf1ed8a1ee07c"
+          "projectionPayloadDigest": "sha256:c8dad4e9e167fec23acce5907fe4f2897e1581964f77cae61a230adcf99dda1e"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.01.002",
+          "rowRef": "presentation-row.presentation.event:session.01:41:3",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.01.002",
+            "sourceEventId": "presentation.event:session.01:41:3",
             "sourceKind": "presentation.message.text.content",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -235,7 +235,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.002",
+              "sourceEventId": "presentation.event:session.01:41:3",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -256,14 +256,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:d9e45bd941f1249f3ebe44228a3d895cb05b9ea24e765d5453b4d814f88b1727"
+          "projectionPayloadDigest": "sha256:3d1139efbcbcb7da02a7d933e0f78e3ed899a4487423894021f65e1c6f55b91a"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.01.003",
+          "rowRef": "presentation-row.presentation.event:session.01:41:4",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.01.003",
+            "sourceEventId": "presentation.event:session.01:41:4",
             "sourceKind": "presentation.activity.safe-summary",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -275,7 +275,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.003",
+              "sourceEventId": "presentation.event:session.01:41:4",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -302,14 +302,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:ac2f03d3dd3a4294972fc02f83e0bc73823328e2f6dd5211a88075a22ea8803a"
+          "projectionPayloadDigest": "sha256:88b2ca556472f5bc0c8ddeabaa1978ba9eaa8230e2a3f9ecbf9ced8dd53598a7"
         },
         {
-          "rowRef": "presentation-row.source.05",
+          "rowRef": "presentation-row.presentation.event:session.01:41:5",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.05",
+            "sourceEventId": "presentation.event:session.01:41:5",
             "sourceKind": "presentation.activity.tool-preview",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -321,7 +321,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.05",
+              "sourceEventId": "presentation.event:session.01:41:5",
               "sourceKind": "presentation.activity.tool-preview",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -352,14 +352,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:98550129ad1b54abd5d39b89079e9e9d852bbc6ffa7cb7118f8da3ea79d30ac7"
+          "projectionPayloadDigest": "sha256:40a17f5897b23a6e2894191b5a04c6c7d4be4c7f1c13cfd3be24dffa507c6e5c"
         },
         {
-          "rowRef": "presentation-row.source.06",
+          "rowRef": "presentation-row.presentation.event:session.01:41:6",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.06",
+            "sourceEventId": "presentation.event:session.01:41:6",
             "sourceKind": "presentation.activity.hitl",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -371,7 +371,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.06",
+              "sourceEventId": "presentation.event:session.01:41:6",
               "sourceKind": "presentation.activity.hitl",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -406,14 +406,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:764153bbaf4bd293422d29b128546fd8df274f880b141c9809e6be1ccbc0df76"
+          "projectionPayloadDigest": "sha256:a63a6b493947d16ef893b026846c333cd01258a1bf9d82a7e573cb56035c1838"
         },
         {
-          "rowRef": "presentation-row.source.07",
+          "rowRef": "presentation-row.presentation.event:session.01:41:7",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.07",
+            "sourceEventId": "presentation.event:session.01:41:7",
             "sourceKind": "presentation.activity.plan",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -425,7 +425,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.07",
+              "sourceEventId": "presentation.event:session.01:41:7",
               "sourceKind": "presentation.activity.plan",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -464,14 +464,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:1d8953f56991a0ee4a4afb67430edf893801ae53c28d20bd62b41af64cff3412"
+          "projectionPayloadDigest": "sha256:010f2c6c94c7cb98b85bb94ae60c66504cd7e020f73740973319841fdfc9b47f"
         },
         {
-          "rowRef": "presentation-row.source.08",
+          "rowRef": "presentation-row.presentation.event:session.01:41:8",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.08",
+            "sourceEventId": "presentation.event:session.01:41:8",
             "sourceKind": "presentation.activity.subagent",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -483,7 +483,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.08",
+              "sourceEventId": "presentation.event:session.01:41:8",
               "sourceKind": "presentation.activity.subagent",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -510,14 +510,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:a6fab7238a88cb5098023adedf66f83f7daeb871e32f64edfe2ed1c4d97f334b"
+          "projectionPayloadDigest": "sha256:c45b4c2f5840ce6b2f4f93f71a2e6e4e09bddb314657aa42f4bb792ce28a4873"
         },
         {
-          "rowRef": "presentation-row.source.09",
+          "rowRef": "presentation-row.presentation.event:session.01:41:9",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.09",
+            "sourceEventId": "presentation.event:session.01:41:9",
             "sourceKind": "presentation.activity.media",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -529,7 +529,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.09",
+              "sourceEventId": "presentation.event:session.01:41:9",
               "sourceKind": "presentation.activity.media",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -557,14 +557,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:8600c6b267b1aee3657d48e26127ec51dffb34a68caddc5f82c14b1bf421faba"
+          "projectionPayloadDigest": "sha256:602ed8c52a6d696dcb3184e8cd37760cd7300a9ce000450a8848cd6df21488af"
         },
         {
-          "rowRef": "presentation-row.source.10",
+          "rowRef": "presentation-row.presentation.event:session.01:41:10",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.10",
+            "sourceEventId": "presentation.event:session.01:41:10",
             "sourceKind": "presentation.activity.artifact",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -576,7 +576,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.10",
+              "sourceEventId": "presentation.event:session.01:41:10",
               "sourceKind": "presentation.activity.artifact",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -605,14 +605,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:faed7e73aee7a97794d319f8454426edf179be992b3e3d200dfbcf23148c1892"
+          "projectionPayloadDigest": "sha256:4524b1cf90ca625cf12c0ee3130bb3e1eb6872cc18d01ea358f551c6094234a0"
         },
         {
-          "rowRef": "presentation-row.source.11",
+          "rowRef": "presentation-row.presentation.event:session.01:41:11",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.11",
+            "sourceEventId": "presentation.event:session.01:41:11",
             "sourceKind": "presentation.activity.cost",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -624,7 +624,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.11",
+              "sourceEventId": "presentation.event:session.01:41:11",
               "sourceKind": "presentation.activity.cost",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -653,14 +653,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:e44953590a76250e0e164d37c113dc2b8305d8722a8317b67897f8eae2c3b7d6"
+          "projectionPayloadDigest": "sha256:ac645bd6fce1c9079ed9329bf6aeb74b2a177947d3cebba7736c3b9ff0476111"
         },
         {
-          "rowRef": "presentation-row.source.12",
+          "rowRef": "presentation-row.presentation.event:session.01:41:12",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.12",
+            "sourceEventId": "presentation.event:session.01:41:12",
             "sourceKind": "presentation.activity.notice",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -672,7 +672,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.12",
+              "sourceEventId": "presentation.event:session.01:41:12",
               "sourceKind": "presentation.activity.notice",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -701,14 +701,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:cda5b5e9eaaaacf19ac8d4064c0cfddb69fadf0bda8d0890d35c7cbc072660da"
+          "projectionPayloadDigest": "sha256:88ba0c6dea2f0a27a819d9b79694913163399123892c51a78b94f441060182eb"
         },
         {
-          "rowRef": "presentation-row.source.13",
+          "rowRef": "presentation-row.presentation.event:session.01:41:13",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.13",
+            "sourceEventId": "presentation.event:session.01:41:13",
             "sourceKind": "presentation.activity.error",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -720,7 +720,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.13",
+              "sourceEventId": "presentation.event:session.01:41:13",
               "sourceKind": "presentation.activity.error",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -749,14 +749,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:ddc84a2798f608cf7bc4ed0cf513dd628351134d87a31695b46f5f6ac0eefcb6"
+          "projectionPayloadDigest": "sha256:dadc3023097aa8f0187b4d0efbc89cc3d3d0223f67c6703ec0559fa747267df7"
         },
         {
-          "rowRef": "presentation-row.source.14",
+          "rowRef": "presentation-row.presentation.event:session.01:41:14",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.14",
+            "sourceEventId": "presentation.event:session.01:41:14",
             "sourceKind": "presentation.custom.session",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -768,7 +768,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.14",
+              "sourceEventId": "presentation.event:session.01:41:14",
               "sourceKind": "presentation.custom.session",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -795,14 +795,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:9b59d7172a30706b7e51d963111c4b13f2908f42f175dc3cc53b832f741c25f5"
+          "projectionPayloadDigest": "sha256:6972f169158073fa9bcd27af5693f1f52a023084240d72c1cdab9eed70398f8d"
         },
         {
-          "rowRef": "presentation-row.source.15",
+          "rowRef": "presentation-row.presentation.event:session.01:41:15",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.15",
+            "sourceEventId": "presentation.event:session.01:41:15",
             "sourceKind": "presentation.custom.branch",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -814,7 +814,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.15",
+              "sourceEventId": "presentation.event:session.01:41:15",
               "sourceKind": "presentation.custom.branch",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -838,14 +838,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:daa0ef447c7d317880de78f6841544b2705c759a3e196ff045bed52dc9d769f6"
+          "projectionPayloadDigest": "sha256:15331fc2d149ed91e011b57be0069e99bb147c2e28f2807c8af580a4c0593b84"
         },
         {
-          "rowRef": "presentation-row.source.16",
+          "rowRef": "presentation-row.presentation.event:session.01:41:16",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.16",
+            "sourceEventId": "presentation.event:session.01:41:16",
             "sourceKind": "presentation.custom.message",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -857,7 +857,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.16",
+              "sourceEventId": "presentation.event:session.01:41:16",
               "sourceKind": "presentation.custom.message",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -885,14 +885,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:baec5a4bf6c71c7a92faf341e3cff7fed5fdfa662526608c1cc81adedebf5789"
+          "projectionPayloadDigest": "sha256:44718625ce6c6865173983b2b40806775463872a74ea6cd267db3c0497b011ca"
         },
         {
-          "rowRef": "presentation-row.source.17",
+          "rowRef": "presentation-row.presentation.event:session.01:41:17",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.17",
+            "sourceEventId": "presentation.event:session.01:41:17",
             "sourceKind": "presentation.custom.run",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -904,7 +904,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.17",
+              "sourceEventId": "presentation.event:session.01:41:17",
               "sourceKind": "presentation.custom.run",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -921,21 +921,21 @@
               "value": {
                 "presentationRunId": "presentation.run.01.segment.0",
                 "state": "waiting",
-                "projectionVersion": 4
+                "ownerVersion": "18446744073709551615"
               }
             },
             "bindingAuthorityDelta": {
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:8fb0f785fee848bffd5ad2fd05853059360551c7f402dd2ee70cfa27d527d728"
+          "projectionPayloadDigest": "sha256:fbe5cccecf46755b9b34c7874148c6a22a6c7f95c88815d54df981b63a8e1de1"
         },
         {
-          "rowRef": "presentation-row.source.18",
+          "rowRef": "presentation-row.presentation.event:session.01:41:18",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.18",
+            "sourceEventId": "presentation.event:session.01:41:18",
             "sourceKind": "presentation.custom.control",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -947,7 +947,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.18",
+              "sourceEventId": "presentation.event:session.01:41:18",
               "sourceKind": "presentation.custom.control",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -976,14 +976,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:aebba12b453c89ef44e5f593e80abdfdfb9c761db88106d6b1900f99310d0a29"
+          "projectionPayloadDigest": "sha256:eaea3b2adaecb489f0783154a4eae402be2b8f29e6756e378d8eab2f0d1b8d09"
         },
         {
-          "rowRef": "presentation-row.source.19",
+          "rowRef": "presentation-row.presentation.event:session.01:41:19",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.19",
+            "sourceEventId": "presentation.event:session.01:41:19",
             "sourceKind": "presentation.custom.receipt",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -995,7 +995,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.19",
+              "sourceEventId": "presentation.event:session.01:41:19",
               "sourceKind": "presentation.custom.receipt",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1021,14 +1021,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:cf97107c8fb89e627d60587b4bef1bf088323e9cc84006cee03f7d4f1bb43f9d"
+          "projectionPayloadDigest": "sha256:f37d882e0630426f12f2ac866ac81d423e3041d26a408439a7fb7ee880d56883"
         },
         {
-          "rowRef": "presentation-row.source.20",
+          "rowRef": "presentation-row.presentation.event:session.01:41:20",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.20",
+            "sourceEventId": "presentation.event:session.01:41:20",
             "sourceKind": "presentation.message.text.ended",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1040,7 +1040,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.20",
+              "sourceEventId": "presentation.event:session.01:41:20",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1066,21 +1066,21 @@
                 "presentationMessageId": "presentation.message.01.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
-                "openedBySourceEventId": "source.02",
-                "endedBySourceEventId": "source.20",
+                "openedBySourceEventId": "presentation.event:session.01:41:2",
+                "endedBySourceEventId": "presentation.event:session.01:41:20",
                 "openedAt": "2026-08-01T12:00:02.000Z",
                 "endedAt": "2026-08-01T12:00:20.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:353716cf4db9acfa0f72b5d4ba8e4d1fcacbb18093bcc46f8e4a1bb4116da982"
+          "projectionPayloadDigest": "sha256:c71151512a7d44bdc09ac7321a05944b7e86b5fcc40852c0c55b64f9175e6ad4"
         },
         {
-          "rowRef": "presentation-row.source.21",
+          "rowRef": "presentation-row.presentation.event:session.01:41:21",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.21",
+            "sourceEventId": "presentation.event:session.01:41:21",
             "sourceKind": "presentation.run.finished",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1092,7 +1092,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.21",
+              "sourceEventId": "presentation.event:session.01:41:21",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1123,21 +1123,21 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "agent.event.run.01.000",
-                "terminalSourceEventId": "source.21",
+                "openedBySourceEventId": "presentation.event:session.01:41:1",
+                "terminalSourceEventId": "presentation.event:session.01:41:21",
                 "openedAt": "2026-08-01T12:00:01.000Z",
                 "terminalAt": "2026-08-01T12:00:21.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:9c8b635d472030d1e856815008cb3d3e3dfd5dfc47327b161cc3f71d61a24349"
+          "projectionPayloadDigest": "sha256:2596aea7b6f81b6b917aeddcbfbe9c75a2a02a5cbafff02c891857847a25b96b"
         },
         {
-          "rowRef": "presentation-row.source.22",
+          "rowRef": "presentation-row.presentation.event:session.01:41:22",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.22",
+            "sourceEventId": "presentation.event:session.01:41:22",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1149,7 +1149,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.22",
+              "sourceEventId": "presentation.event:session.01:41:22",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1180,21 +1180,21 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "source.22",
+                "openedBySourceEventId": "presentation.event:session.01:41:22",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:22.000Z",
                 "terminalAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:162a245dee508597979a27f142196cbf7ca23d0583080ce3775b3133ef59bfab"
+          "projectionPayloadDigest": "sha256:0c3546fee9b029b97e5a7e2ffc5de4185773b3a640d87e2c3de4059ad6cd603d"
         },
         {
-          "rowRef": "presentation-row.source.23",
+          "rowRef": "presentation-row.presentation.event:session.01:41:23",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.23",
+            "sourceEventId": "presentation.event:session.01:41:23",
             "sourceKind": "presentation.message.text.started",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1206,7 +1206,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.23",
+              "sourceEventId": "presentation.event:session.01:41:23",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1233,21 +1233,21 @@
                 "presentationMessageId": "presentation.message.01.segment.1",
                 "resumeSegmentOrdinal": 1,
                 "state": "open",
-                "openedBySourceEventId": "source.23",
+                "openedBySourceEventId": "presentation.event:session.01:41:23",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:23.000Z",
                 "endedAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:c5baea3c7a28f4701a2486a5361881383b77f02117fccad08a4e0ffdd749a930"
+          "projectionPayloadDigest": "sha256:d9b1b1657970a71e5e96a4cb81d1bd131a69090d764c304f5d7ffd48fa2c57f9"
         },
         {
-          "rowRef": "presentation-row.source.24",
+          "rowRef": "presentation-row.presentation.event:session.01:41:24",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.24",
+            "sourceEventId": "presentation.event:session.01:41:24",
             "sourceKind": "presentation.message.text.content",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1259,7 +1259,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.24",
+              "sourceEventId": "presentation.event:session.01:41:24",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1280,14 +1280,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:628b2c5d5e2ba8cf9f797d44eb48f8dd5d5b2d5e0a0ac9a1def6035780d2671e"
+          "projectionPayloadDigest": "sha256:7ee7e1408816f2828a344f8a800610e34b8db033e8bbe4f592b85233f9fca0d0"
         },
         {
-          "rowRef": "presentation-row.source.25",
+          "rowRef": "presentation-row.presentation.event:session.01:41:25",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.25",
+            "sourceEventId": "presentation.event:session.01:41:25",
             "sourceKind": "presentation.message.text.ended",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1299,7 +1299,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.25",
+              "sourceEventId": "presentation.event:session.01:41:25",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1325,21 +1325,21 @@
                 "presentationMessageId": "presentation.message.01.segment.1",
                 "resumeSegmentOrdinal": 1,
                 "state": "ended",
-                "openedBySourceEventId": "source.23",
-                "endedBySourceEventId": "source.25",
+                "openedBySourceEventId": "presentation.event:session.01:41:23",
+                "endedBySourceEventId": "presentation.event:session.01:41:25",
                 "openedAt": "2026-08-01T12:00:23.000Z",
                 "endedAt": "2026-08-01T12:00:25.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:68a689d8b9ea1a2cb28909fd276e00f266e1443d43a3a98d5fcbeddf76030ee6"
+          "projectionPayloadDigest": "sha256:2e8cfc83da17942bcc1c8330487ce21c5a493ca43280ede85a82307542c96707"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.01.025",
+          "rowRef": "presentation-row.presentation.event:session.01:41:26",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.01.025",
+            "sourceEventId": "presentation.event:session.01:41:26",
             "sourceKind": "presentation.run.finished",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1351,7 +1351,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.025",
+              "sourceEventId": "presentation.event:session.01:41:26",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1382,14 +1382,14 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "source.22",
-                "terminalSourceEventId": "agent.event.run.01.025",
+                "openedBySourceEventId": "presentation.event:session.01:41:22",
+                "terminalSourceEventId": "presentation.event:session.01:41:26",
                 "openedAt": "2026-08-01T12:00:22.000Z",
                 "terminalAt": "2026-08-01T12:00:26.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:7d3dff277e51a3f19e39c032c190ca350e3b3fb7023dfb1673d30a81867195cc"
+          "projectionPayloadDigest": "sha256:c6263b8f5588bddd82a80928a94b28a26edaff6e0d25bb6175fcee8174f93991"
         }
       ],
       "frames": [
@@ -1400,7 +1400,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.000",
+              "sourceEventId": "presentation.event:session.01:41:1",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1431,7 +1431,7 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.01.000",
+                "openedBySourceEventId": "presentation.event:session.01:41:1",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:01.000Z",
                 "terminalAt": null
@@ -1446,7 +1446,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.02",
+              "sourceEventId": "presentation.event:session.01:41:2",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1473,7 +1473,7 @@
                 "presentationMessageId": "presentation.message.01.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
-                "openedBySourceEventId": "source.02",
+                "openedBySourceEventId": "presentation.event:session.01:41:2",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:02.000Z",
                 "endedAt": null
@@ -1488,7 +1488,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.002",
+              "sourceEventId": "presentation.event:session.01:41:3",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1517,7 +1517,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.003",
+              "sourceEventId": "presentation.event:session.01:41:4",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1552,7 +1552,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.05",
+              "sourceEventId": "presentation.event:session.01:41:5",
               "sourceKind": "presentation.activity.tool-preview",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1591,7 +1591,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.06",
+              "sourceEventId": "presentation.event:session.01:41:6",
               "sourceKind": "presentation.activity.hitl",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1634,7 +1634,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.07",
+              "sourceEventId": "presentation.event:session.01:41:7",
               "sourceKind": "presentation.activity.plan",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1681,7 +1681,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.08",
+              "sourceEventId": "presentation.event:session.01:41:8",
               "sourceKind": "presentation.activity.subagent",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1716,7 +1716,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.09",
+              "sourceEventId": "presentation.event:session.01:41:9",
               "sourceKind": "presentation.activity.media",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1752,7 +1752,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.10",
+              "sourceEventId": "presentation.event:session.01:41:10",
               "sourceKind": "presentation.activity.artifact",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1789,7 +1789,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.11",
+              "sourceEventId": "presentation.event:session.01:41:11",
               "sourceKind": "presentation.activity.cost",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1826,7 +1826,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.12",
+              "sourceEventId": "presentation.event:session.01:41:12",
               "sourceKind": "presentation.activity.notice",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1863,7 +1863,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.13",
+              "sourceEventId": "presentation.event:session.01:41:13",
               "sourceKind": "presentation.activity.error",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1900,7 +1900,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.14",
+              "sourceEventId": "presentation.event:session.01:41:14",
               "sourceKind": "presentation.custom.session",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1935,7 +1935,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.15",
+              "sourceEventId": "presentation.event:session.01:41:15",
               "sourceKind": "presentation.custom.branch",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1967,7 +1967,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.16",
+              "sourceEventId": "presentation.event:session.01:41:16",
               "sourceKind": "presentation.custom.message",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2003,7 +2003,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.17",
+              "sourceEventId": "presentation.event:session.01:41:17",
               "sourceKind": "presentation.custom.run",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2020,7 +2020,7 @@
               "value": {
                 "presentationRunId": "presentation.run.01.segment.0",
                 "state": "waiting",
-                "projectionVersion": 4
+                "ownerVersion": "18446744073709551615"
               }
             },
             "bindingAuthorityDelta": {
@@ -2035,7 +2035,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.18",
+              "sourceEventId": "presentation.event:session.01:41:18",
               "sourceKind": "presentation.custom.control",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2072,7 +2072,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.19",
+              "sourceEventId": "presentation.event:session.01:41:19",
               "sourceKind": "presentation.custom.receipt",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2106,7 +2106,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.20",
+              "sourceEventId": "presentation.event:session.01:41:20",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2132,8 +2132,8 @@
                 "presentationMessageId": "presentation.message.01.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
-                "openedBySourceEventId": "source.02",
-                "endedBySourceEventId": "source.20",
+                "openedBySourceEventId": "presentation.event:session.01:41:2",
+                "endedBySourceEventId": "presentation.event:session.01:41:20",
                 "openedAt": "2026-08-01T12:00:02.000Z",
                 "endedAt": "2026-08-01T12:00:20.000Z"
               }
@@ -2147,7 +2147,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.21",
+              "sourceEventId": "presentation.event:session.01:41:21",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2178,8 +2178,8 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "agent.event.run.01.000",
-                "terminalSourceEventId": "source.21",
+                "openedBySourceEventId": "presentation.event:session.01:41:1",
+                "terminalSourceEventId": "presentation.event:session.01:41:21",
                 "openedAt": "2026-08-01T12:00:01.000Z",
                 "terminalAt": "2026-08-01T12:00:21.000Z"
               }
@@ -2193,7 +2193,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.22",
+              "sourceEventId": "presentation.event:session.01:41:22",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2224,7 +2224,7 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "source.22",
+                "openedBySourceEventId": "presentation.event:session.01:41:22",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:22.000Z",
                 "terminalAt": null
@@ -2239,7 +2239,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.23",
+              "sourceEventId": "presentation.event:session.01:41:23",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2266,7 +2266,7 @@
                 "presentationMessageId": "presentation.message.01.segment.1",
                 "resumeSegmentOrdinal": 1,
                 "state": "open",
-                "openedBySourceEventId": "source.23",
+                "openedBySourceEventId": "presentation.event:session.01:41:23",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:23.000Z",
                 "endedAt": null
@@ -2281,7 +2281,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.24",
+              "sourceEventId": "presentation.event:session.01:41:24",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2310,7 +2310,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.25",
+              "sourceEventId": "presentation.event:session.01:41:25",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2336,8 +2336,8 @@
                 "presentationMessageId": "presentation.message.01.segment.1",
                 "resumeSegmentOrdinal": 1,
                 "state": "ended",
-                "openedBySourceEventId": "source.23",
-                "endedBySourceEventId": "source.25",
+                "openedBySourceEventId": "presentation.event:session.01:41:23",
+                "endedBySourceEventId": "presentation.event:session.01:41:25",
                 "openedAt": "2026-08-01T12:00:23.000Z",
                 "endedAt": "2026-08-01T12:00:25.000Z"
               }
@@ -2351,7 +2351,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.01.025",
+              "sourceEventId": "presentation.event:session.01:41:26",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2382,8 +2382,8 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "source.22",
-                "terminalSourceEventId": "agent.event.run.01.025",
+                "openedBySourceEventId": "presentation.event:session.01:41:22",
+                "terminalSourceEventId": "presentation.event:session.01:41:26",
                 "openedAt": "2026-08-01T12:00:22.000Z",
                 "terminalAt": "2026-08-01T12:00:26.000Z"
               }
@@ -2429,8 +2429,8 @@
             },
             "state": "finished",
             "terminalDisposition": "success",
-            "openedBySourceEventId": "agent.event.run.01.000",
-            "terminalSourceEventId": "source.21",
+            "openedBySourceEventId": "presentation.event:session.01:41:1",
+            "terminalSourceEventId": "presentation.event:session.01:41:21",
             "openedAt": "2026-08-01T12:00:01.000Z",
             "terminalAt": "2026-08-01T12:00:21.000Z"
           },
@@ -2447,8 +2447,8 @@
             },
             "state": "finished",
             "terminalDisposition": "success",
-            "openedBySourceEventId": "source.22",
-            "terminalSourceEventId": "agent.event.run.01.025",
+            "openedBySourceEventId": "presentation.event:session.01:41:22",
+            "terminalSourceEventId": "presentation.event:session.01:41:26",
             "openedAt": "2026-08-01T12:00:22.000Z",
             "terminalAt": "2026-08-01T12:00:26.000Z"
           }
@@ -2462,8 +2462,8 @@
             "presentationMessageId": "presentation.message.01.segment.0",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
-            "openedBySourceEventId": "source.02",
-            "endedBySourceEventId": "source.20",
+            "openedBySourceEventId": "presentation.event:session.01:41:2",
+            "endedBySourceEventId": "presentation.event:session.01:41:20",
             "openedAt": "2026-08-01T12:00:02.000Z",
             "endedAt": "2026-08-01T12:00:20.000Z"
           },
@@ -2475,8 +2475,8 @@
             "presentationMessageId": "presentation.message.01.segment.1",
             "resumeSegmentOrdinal": 1,
             "state": "ended",
-            "openedBySourceEventId": "source.23",
-            "endedBySourceEventId": "source.25",
+            "openedBySourceEventId": "presentation.event:session.01:41:23",
+            "endedBySourceEventId": "presentation.event:session.01:41:25",
             "openedAt": "2026-08-01T12:00:23.000Z",
             "endedAt": "2026-08-01T12:00:25.000Z"
           }
@@ -2504,7 +2504,8 @@
             "presentationMessageBindingRef": "message-binding.01.segment.1",
             "internalMessageRef": "internal.message.assistant.01"
           }
-        ]
+        ],
+        "provenance": []
       }
     },
     {
@@ -2545,8 +2546,8 @@
           },
           "state": "finished",
           "terminalDisposition": "success",
-          "openedBySourceEventId": "agent.event.run.success.000",
-          "terminalSourceEventId": "agent.event.run.success.012",
+          "openedBySourceEventId": "presentation.event:session.error:9:1",
+          "terminalSourceEventId": "presentation.event:session.error:9:13",
           "openedAt": "2026-08-01T13:00:01.000Z",
           "terminalAt": "2026-08-01T13:00:13.000Z"
         },
@@ -2563,8 +2564,8 @@
           },
           "state": "error",
           "terminalDisposition": "error",
-          "openedBySourceEventId": "agent.event.run.error.000",
-          "terminalSourceEventId": "agent.event.run.error.001",
+          "openedBySourceEventId": "presentation.event:session.error:9:14",
+          "terminalSourceEventId": "presentation.event:session.error:9:15",
           "openedAt": "2026-08-01T13:00:14.000Z",
           "terminalAt": "2026-08-01T13:00:15.000Z"
         }
@@ -2578,19 +2579,19 @@
           "presentationMessageId": "presentation.message.error.parent.segment.0",
           "resumeSegmentOrdinal": 0,
           "state": "ended",
-          "openedBySourceEventId": "agent.event.run.success.001",
-          "endedBySourceEventId": "agent.event.run.success.011",
+          "openedBySourceEventId": "presentation.event:session.error:9:2",
+          "endedBySourceEventId": "presentation.event:session.error:9:12",
           "openedAt": "2026-08-01T13:00:02.000Z",
           "endedAt": "2026-08-01T13:00:12.000Z"
         }
       ],
       "durableRows": [
         {
-          "rowRef": "presentation-row.agent.event.run.success.000",
+          "rowRef": "presentation-row.presentation.event:session.error:9:1",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.000",
+            "sourceEventId": "presentation.event:session.error:9:1",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2602,7 +2603,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.000",
+              "sourceEventId": "presentation.event:session.error:9:1",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2633,21 +2634,21 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.success.000",
+                "openedBySourceEventId": "presentation.event:session.error:9:1",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:01.000Z",
                 "terminalAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:94b001116414ee8eb4f7b1a347fae12ba15b45fd57ae7eda03beacfb47a4b2d3"
+          "projectionPayloadDigest": "sha256:3e1bd588fefb8733228eb6a89f589dbf1cf8d1c93b7f75f81e881f4f39725bc0"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.001",
+          "rowRef": "presentation-row.presentation.event:session.error:9:2",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.001",
+            "sourceEventId": "presentation.event:session.error:9:2",
             "sourceKind": "presentation.message.text.started",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2659,7 +2660,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.001",
+              "sourceEventId": "presentation.event:session.error:9:2",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2686,21 +2687,21 @@
                 "presentationMessageId": "presentation.message.error.parent.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
-                "openedBySourceEventId": "agent.event.run.success.001",
+                "openedBySourceEventId": "presentation.event:session.error:9:2",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T13:00:02.000Z",
                 "endedAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:9f332c33e39f013654d75a485636a7924fca4daf4500d33942f2f02d72103d08"
+          "projectionPayloadDigest": "sha256:275fcded81bdfaf5c85e6554ed1d50881ced37a62954249861eb556e09c2850d"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.002",
+          "rowRef": "presentation-row.presentation.event:session.error:9:3",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.002",
+            "sourceEventId": "presentation.event:session.error:9:3",
             "sourceKind": "presentation.message.text.content",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2712,7 +2713,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.002",
+              "sourceEventId": "presentation.event:session.error:9:3",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2733,14 +2734,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:ade7dbe787bf402a81207dcf200f82f6d5963e4560b84ecf6a245f0e07c06922"
+          "projectionPayloadDigest": "sha256:abdd25421df97e3822779a254578cc4b243cd14b176e458c25f29aa43b138dd5"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.003",
+          "rowRef": "presentation-row.presentation.event:session.error:9:4",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.003",
+            "sourceEventId": "presentation.event:session.error:9:4",
             "sourceKind": "presentation.activity.safe-summary",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2752,7 +2753,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.003",
+              "sourceEventId": "presentation.event:session.error:9:4",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2779,14 +2780,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:d010e9ecb4150f2cc913a38148005d6756bac401cf0753ed7eaf37c7f4331025"
+          "projectionPayloadDigest": "sha256:f768f3130750957164c18d14c7e7c6d51d32eba875c9069e7e6abd3f7a164327"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.004",
+          "rowRef": "presentation-row.presentation.event:session.error:9:5",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.004",
+            "sourceEventId": "presentation.event:session.error:9:5",
             "sourceKind": "presentation.activity.tool-preview",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2798,7 +2799,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.004",
+              "sourceEventId": "presentation.event:session.error:9:5",
               "sourceKind": "presentation.activity.tool-preview",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2829,14 +2830,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:ce6db20ffc774c1294d65c415deb8f877984bf18f9ae73548d17b8a8c6848f30"
+          "projectionPayloadDigest": "sha256:e23212bead3146910c4120b057a3e6d5d2d1ed540db2e3ce0f66a2a379546754"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.005",
+          "rowRef": "presentation-row.presentation.event:session.error:9:6",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.005",
+            "sourceEventId": "presentation.event:session.error:9:6",
             "sourceKind": "presentation.activity.hitl",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2848,7 +2849,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.005",
+              "sourceEventId": "presentation.event:session.error:9:6",
               "sourceKind": "presentation.activity.hitl",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2883,14 +2884,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:38e0cf14c6b0bf3da1e05df9b8fa4a3b7e6b0615dcf634d616ed24a3f5671a01"
+          "projectionPayloadDigest": "sha256:b90d72faab7d5e5107e69c1689fc66e774d87f453d9f939b0415b9c581c5bf0b"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.006",
+          "rowRef": "presentation-row.presentation.event:session.error:9:7",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.006",
+            "sourceEventId": "presentation.event:session.error:9:7",
             "sourceKind": "presentation.activity.plan",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2902,7 +2903,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.006",
+              "sourceEventId": "presentation.event:session.error:9:7",
               "sourceKind": "presentation.activity.plan",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2941,14 +2942,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:fbf4e1c9836666ac98a4e7e6c25af713444488e5292e98c8a637cc3b194f6e1e"
+          "projectionPayloadDigest": "sha256:d10bb1243b244e8420b4474d89a1a2066c8f92378568bb116d4470c72c7e9c4a"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.007",
+          "rowRef": "presentation-row.presentation.event:session.error:9:8",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.007",
+            "sourceEventId": "presentation.event:session.error:9:8",
             "sourceKind": "presentation.activity.subagent",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2960,7 +2961,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.007",
+              "sourceEventId": "presentation.event:session.error:9:8",
               "sourceKind": "presentation.activity.subagent",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2987,14 +2988,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:48bbbc529a43e34b0c2499377d5581e69c1a8088ec12ac8bbefa91530a2cc446"
+          "projectionPayloadDigest": "sha256:baa602e9a85213cc8b53f648a0f17b666446cdfab44763cf1fcde6378447c8f0"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.008",
+          "rowRef": "presentation-row.presentation.event:session.error:9:9",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.008",
+            "sourceEventId": "presentation.event:session.error:9:9",
             "sourceKind": "presentation.activity.media",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3006,7 +3007,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.008",
+              "sourceEventId": "presentation.event:session.error:9:9",
               "sourceKind": "presentation.activity.media",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3034,14 +3035,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:bd9e16c718285d55f052873eafb308fa83debe7a6a8dac6a48890009b1a7b3ab"
+          "projectionPayloadDigest": "sha256:35e40e74e999d613165e72b548f6bee82f56fb0a4928cae19c2f2b925e328c8e"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.009",
+          "rowRef": "presentation-row.presentation.event:session.error:9:10",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.009",
+            "sourceEventId": "presentation.event:session.error:9:10",
             "sourceKind": "presentation.activity.notice",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3053,7 +3054,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.009",
+              "sourceEventId": "presentation.event:session.error:9:10",
               "sourceKind": "presentation.activity.notice",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3082,14 +3083,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:c8e7e245eed0ec9400ab0cdb2dbfec0abbbe306773d57d408b9712e71745cf72"
+          "projectionPayloadDigest": "sha256:dd5b67b8faed37e8fa6a29002eb1e3f5f6b228e70fb15e852eb36c75dde5fbbe"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.010",
+          "rowRef": "presentation-row.presentation.event:session.error:9:11",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.010",
+            "sourceEventId": "presentation.event:session.error:9:11",
             "sourceKind": "presentation.activity.error",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3101,7 +3102,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.010",
+              "sourceEventId": "presentation.event:session.error:9:11",
               "sourceKind": "presentation.activity.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3130,14 +3131,14 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:dd2ffc2dcf36450fbe96019719cb50f32d5a8d3df7730dbe06b5825228a5da5a"
+          "projectionPayloadDigest": "sha256:4d249b4698967eb7f83b56b0664e178186f409c9747a7d0fcfb9c28160068760"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.011",
+          "rowRef": "presentation-row.presentation.event:session.error:9:12",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.011",
+            "sourceEventId": "presentation.event:session.error:9:12",
             "sourceKind": "presentation.message.text.ended",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3149,7 +3150,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.011",
+              "sourceEventId": "presentation.event:session.error:9:12",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3175,21 +3176,21 @@
                 "presentationMessageId": "presentation.message.error.parent.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
-                "openedBySourceEventId": "agent.event.run.success.001",
-                "endedBySourceEventId": "agent.event.run.success.011",
+                "openedBySourceEventId": "presentation.event:session.error:9:2",
+                "endedBySourceEventId": "presentation.event:session.error:9:12",
                 "openedAt": "2026-08-01T13:00:02.000Z",
                 "endedAt": "2026-08-01T13:00:12.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:3599ef2469cbe294f76a022a2cea5311d8e4fc348f4bf8f66f03e885eff7b4dc"
+          "projectionPayloadDigest": "sha256:2050291b93d748e0c7c2bb4bcb2dee410031d716c9daf1e23e80553c47a75206"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.success.012",
+          "rowRef": "presentation-row.presentation.event:session.error:9:13",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.success.012",
+            "sourceEventId": "presentation.event:session.error:9:13",
             "sourceKind": "presentation.run.finished",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3201,7 +3202,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.012",
+              "sourceEventId": "presentation.event:session.error:9:13",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3232,21 +3233,21 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "agent.event.run.success.000",
-                "terminalSourceEventId": "agent.event.run.success.012",
+                "openedBySourceEventId": "presentation.event:session.error:9:1",
+                "terminalSourceEventId": "presentation.event:session.error:9:13",
                 "openedAt": "2026-08-01T13:00:01.000Z",
                 "terminalAt": "2026-08-01T13:00:13.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:1ba26508da8d3592cb7aac6d5dcb4108ffc5ae35083146ba18be2cef921d6ac8"
+          "projectionPayloadDigest": "sha256:f91b79fe4bc8e3b8d7375590010e9602f3019494efdd534584d290754264b03d"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.error.000",
+          "rowRef": "presentation-row.presentation.event:session.error:9:14",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.error.000",
+            "sourceEventId": "presentation.event:session.error:9:14",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3258,7 +3259,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.error.000",
+              "sourceEventId": "presentation.event:session.error:9:14",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3290,21 +3291,21 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.error.000",
+                "openedBySourceEventId": "presentation.event:session.error:9:14",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:14.000Z",
                 "terminalAt": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:06127ced9711a45adc8082595a3bf5ed51b11ed2a3e041c619438211509244ba"
+          "projectionPayloadDigest": "sha256:fc0509496298fb9b5d5bd1eec0393e74f4d71f637c72c565530504260cdfbef2"
         },
         {
-          "rowRef": "presentation-row.agent.event.run.error.001",
+          "rowRef": "presentation-row.presentation.event:session.error:9:15",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "agent.event.run.error.001",
+            "sourceEventId": "presentation.event:session.error:9:15",
             "sourceKind": "presentation.run.error",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -3316,7 +3317,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.error.001",
+              "sourceEventId": "presentation.event:session.error:9:15",
               "sourceKind": "presentation.run.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3347,14 +3348,14 @@
                 },
                 "state": "error",
                 "terminalDisposition": "error",
-                "openedBySourceEventId": "agent.event.run.error.000",
-                "terminalSourceEventId": "agent.event.run.error.001",
+                "openedBySourceEventId": "presentation.event:session.error:9:14",
+                "terminalSourceEventId": "presentation.event:session.error:9:15",
                 "openedAt": "2026-08-01T13:00:14.000Z",
                 "terminalAt": "2026-08-01T13:00:15.000Z"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:32ca20a4dbc99144c9402b117fa788097a1f9ee3f1186d7e981cba27f0303202"
+          "projectionPayloadDigest": "sha256:d39bc7d367b09c32776942c19c248e1e25e7defcd500443a758217be1eb058a9"
         }
       ],
       "frames": [
@@ -3365,7 +3366,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.000",
+              "sourceEventId": "presentation.event:session.error:9:1",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3396,7 +3397,7 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.success.000",
+                "openedBySourceEventId": "presentation.event:session.error:9:1",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:01.000Z",
                 "terminalAt": null
@@ -3411,7 +3412,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.001",
+              "sourceEventId": "presentation.event:session.error:9:2",
               "sourceKind": "presentation.message.text.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3438,7 +3439,7 @@
                 "presentationMessageId": "presentation.message.error.parent.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "open",
-                "openedBySourceEventId": "agent.event.run.success.001",
+                "openedBySourceEventId": "presentation.event:session.error:9:2",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T13:00:02.000Z",
                 "endedAt": null
@@ -3453,7 +3454,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.002",
+              "sourceEventId": "presentation.event:session.error:9:3",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3482,7 +3483,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.003",
+              "sourceEventId": "presentation.event:session.error:9:4",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3517,7 +3518,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.004",
+              "sourceEventId": "presentation.event:session.error:9:5",
               "sourceKind": "presentation.activity.tool-preview",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3556,7 +3557,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.005",
+              "sourceEventId": "presentation.event:session.error:9:6",
               "sourceKind": "presentation.activity.hitl",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3599,7 +3600,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.006",
+              "sourceEventId": "presentation.event:session.error:9:7",
               "sourceKind": "presentation.activity.plan",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3646,7 +3647,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.007",
+              "sourceEventId": "presentation.event:session.error:9:8",
               "sourceKind": "presentation.activity.subagent",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3681,7 +3682,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.008",
+              "sourceEventId": "presentation.event:session.error:9:9",
               "sourceKind": "presentation.activity.media",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3717,7 +3718,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.009",
+              "sourceEventId": "presentation.event:session.error:9:10",
               "sourceKind": "presentation.activity.notice",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3754,7 +3755,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.010",
+              "sourceEventId": "presentation.event:session.error:9:11",
               "sourceKind": "presentation.activity.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3791,7 +3792,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.011",
+              "sourceEventId": "presentation.event:session.error:9:12",
               "sourceKind": "presentation.message.text.ended",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3817,8 +3818,8 @@
                 "presentationMessageId": "presentation.message.error.parent.segment.0",
                 "resumeSegmentOrdinal": 0,
                 "state": "ended",
-                "openedBySourceEventId": "agent.event.run.success.001",
-                "endedBySourceEventId": "agent.event.run.success.011",
+                "openedBySourceEventId": "presentation.event:session.error:9:2",
+                "endedBySourceEventId": "presentation.event:session.error:9:12",
                 "openedAt": "2026-08-01T13:00:02.000Z",
                 "endedAt": "2026-08-01T13:00:12.000Z"
               }
@@ -3832,7 +3833,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.success.012",
+              "sourceEventId": "presentation.event:session.error:9:13",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3863,8 +3864,8 @@
                 },
                 "state": "finished",
                 "terminalDisposition": "success",
-                "openedBySourceEventId": "agent.event.run.success.000",
-                "terminalSourceEventId": "agent.event.run.success.012",
+                "openedBySourceEventId": "presentation.event:session.error:9:1",
+                "terminalSourceEventId": "presentation.event:session.error:9:13",
                 "openedAt": "2026-08-01T13:00:01.000Z",
                 "terminalAt": "2026-08-01T13:00:13.000Z"
               }
@@ -3878,7 +3879,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.error.000",
+              "sourceEventId": "presentation.event:session.error:9:14",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3910,7 +3911,7 @@
                 },
                 "state": "open",
                 "terminalDisposition": null,
-                "openedBySourceEventId": "agent.event.run.error.000",
+                "openedBySourceEventId": "presentation.event:session.error:9:14",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:14.000Z",
                 "terminalAt": null
@@ -3925,7 +3926,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "agent.event.run.error.001",
+              "sourceEventId": "presentation.event:session.error:9:15",
               "sourceKind": "presentation.run.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -3956,8 +3957,8 @@
                 },
                 "state": "error",
                 "terminalDisposition": "error",
-                "openedBySourceEventId": "agent.event.run.error.000",
-                "terminalSourceEventId": "agent.event.run.error.001",
+                "openedBySourceEventId": "presentation.event:session.error:9:14",
+                "terminalSourceEventId": "presentation.event:session.error:9:15",
                 "openedAt": "2026-08-01T13:00:14.000Z",
                 "terminalAt": "2026-08-01T13:00:15.000Z"
               }
@@ -4002,8 +4003,8 @@
             },
             "state": "finished",
             "terminalDisposition": "success",
-            "openedBySourceEventId": "agent.event.run.success.000",
-            "terminalSourceEventId": "agent.event.run.success.012",
+            "openedBySourceEventId": "presentation.event:session.error:9:1",
+            "terminalSourceEventId": "presentation.event:session.error:9:13",
             "openedAt": "2026-08-01T13:00:01.000Z",
             "terminalAt": "2026-08-01T13:00:13.000Z"
           },
@@ -4020,8 +4021,8 @@
             },
             "state": "error",
             "terminalDisposition": "error",
-            "openedBySourceEventId": "agent.event.run.error.000",
-            "terminalSourceEventId": "agent.event.run.error.001",
+            "openedBySourceEventId": "presentation.event:session.error:9:14",
+            "terminalSourceEventId": "presentation.event:session.error:9:15",
             "openedAt": "2026-08-01T13:00:14.000Z",
             "terminalAt": "2026-08-01T13:00:15.000Z"
           }
@@ -4035,8 +4036,8 @@
             "presentationMessageId": "presentation.message.error.parent.segment.0",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
-            "openedBySourceEventId": "agent.event.run.success.001",
-            "endedBySourceEventId": "agent.event.run.success.011",
+            "openedBySourceEventId": "presentation.event:session.error:9:2",
+            "endedBySourceEventId": "presentation.event:session.error:9:12",
             "openedAt": "2026-08-01T13:00:02.000Z",
             "endedAt": "2026-08-01T13:00:12.000Z"
           }
@@ -4059,6 +4060,83 @@
           {
             "presentationMessageBindingRef": "message-binding.error.parent.segment.0",
             "internalMessageRef": "internal.message.error.parent.assistant.01"
+          }
+        ],
+        "provenance": [
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.000",
+            "publicSourceEventId": "presentation.event:session.error:9:1"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.001",
+            "publicSourceEventId": "presentation.event:session.error:9:2"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.002",
+            "publicSourceEventId": "presentation.event:session.error:9:3"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.003",
+            "publicSourceEventId": "presentation.event:session.error:9:4"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.004",
+            "publicSourceEventId": "presentation.event:session.error:9:5"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.005",
+            "publicSourceEventId": "presentation.event:session.error:9:6"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.006",
+            "publicSourceEventId": "presentation.event:session.error:9:7"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.007",
+            "publicSourceEventId": "presentation.event:session.error:9:8"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.008",
+            "publicSourceEventId": "presentation.event:session.error:9:9"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.009",
+            "publicSourceEventId": "presentation.event:session.error:9:10"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.010",
+            "publicSourceEventId": "presentation.event:session.error:9:11"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.011",
+            "publicSourceEventId": "presentation.event:session.error:9:12"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.success.012",
+            "publicSourceEventId": "presentation.event:session.error:9:13"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.error.000",
+            "publicSourceEventId": "presentation.event:session.error:9:14"
+          },
+          {
+            "sessionId": "session.error",
+            "agentSourceEventRef": "agent.event.run.error.001",
+            "publicSourceEventId": "presentation.event:session.error:9:15"
           }
         ]
       }
@@ -4183,7 +4261,7 @@
             "presentationMessageId": "presentation.message.01.segment.0",
             "resumeSegmentOrdinal": 0,
             "state": "open",
-            "openedBySourceEventId": "source.02",
+            "openedBySourceEventId": "presentation.event:session.01:41:2",
             "endedBySourceEventId": null,
             "openedAt": "2026-08-01T12:00:02.000Z",
             "endedAt": null
@@ -4208,7 +4286,7 @@
       "mutation": {
         "operation": "set",
         "path": "frames.0.data.bindingAuthorityDelta.binding.openedBySourceEventId",
-        "value": "source.attack"
+        "value": "presentation.event:attack"
       },
       "expectedCode": "agui_binding_delta_source_conflict"
     },
@@ -4241,8 +4319,8 @@
           },
           "state": "finished",
           "terminalDisposition": "success",
-          "openedBySourceEventId": "agent.event.run.01.000",
-          "terminalSourceEventId": "agent.event.run.01.000",
+          "openedBySourceEventId": "presentation.event:session.01:41:1",
+          "terminalSourceEventId": "presentation.event:session.01:41:1",
           "openedAt": "2026-08-01T12:00:01.000Z",
           "terminalAt": "2026-08-01T12:00:01.000Z"
         }
@@ -4268,8 +4346,8 @@
           },
           "state": "finished",
           "terminalDisposition": "success",
-          "openedBySourceEventId": "agent.event.run.01.000",
-          "terminalSourceEventId": "source.21",
+          "openedBySourceEventId": "presentation.event:session.01:41:1",
+          "terminalSourceEventId": "presentation.event:session.01:41:21",
           "openedAt": "2026-08-01T12:00:01.000Z",
           "terminalAt": "2026-08-01T12:00:21.000Z"
         }
@@ -4305,6 +4383,50 @@
         "value": "internal.run.parent.smuggled"
       },
       "expectedCode": "agui_browser_internal_route_forbidden"
+    },
+    {
+      "id": "public-source-agent-prefix-leak",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "frames.0.data.source.sourceEventId",
+        "value": "presentation.event:agent.event.run.leaked"
+      },
+      "expectedCode": "agui_public_source_event_id_invalid"
+    },
+    {
+      "id": "public-source-private-ref-equality",
+      "baseCaseId": "safe-run-error",
+      "mutation": {
+        "operation": "set",
+        "path": "sessionPrivateRouteFixtures.provenance.0.publicSourceEventId",
+        "value": "agent.event.run.success.000"
+      },
+      "expectedCode": "agui_private_provenance_identity_equal"
+    },
+    {
+      "id": "custom-run-owner-old-projection-version",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "frames.16.data.event.value",
+        "value": {
+          "presentationRunId": "presentation.run.01.segment.0",
+          "state": "waiting",
+          "projectionVersion": 4
+        }
+      },
+      "expectedCode": "agui_custom_run_owner_version_invalid"
+    },
+    {
+      "id": "custom-run-owner-version-overflow",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "frames.16.data.event.value.ownerVersion",
+        "value": "18446744073709551616"
+      },
+      "expectedCode": "agui_custom_run_owner_version_invalid"
     },
     {
       "id": "m0-interrupted-main-run",
@@ -4345,8 +4467,8 @@
             },
             "state": "finished",
             "terminalDisposition": "success",
-            "openedBySourceEventId": "agent.event.run.success.000",
-            "terminalSourceEventId": "agent.event.run.success.012",
+            "openedBySourceEventId": "presentation.event:session.error:9:1",
+            "terminalSourceEventId": "presentation.event:session.error:9:13",
             "openedAt": "2026-08-01T13:00:01.000Z",
             "terminalAt": "2026-08-01T13:00:13.000Z"
           },
@@ -4363,8 +4485,8 @@
             },
             "state": "error",
             "terminalDisposition": "error",
-            "openedBySourceEventId": "agent.event.run.error.000",
-            "terminalSourceEventId": "agent.event.run.error.001",
+            "openedBySourceEventId": "presentation.event:session.error:9:14",
+            "terminalSourceEventId": "presentation.event:session.error:9:15",
             "openedAt": "2026-08-01T13:00:14.000Z",
             "terminalAt": "2026-08-01T13:00:15.000Z"
           }
@@ -4378,8 +4500,8 @@
             "presentationMessageId": "presentation.message.error.parent.segment.0",
             "resumeSegmentOrdinal": 0,
             "state": "ended",
-            "openedBySourceEventId": "agent.event.run.success.001",
-            "endedBySourceEventId": "agent.event.run.success.011",
+            "openedBySourceEventId": "presentation.event:session.error:9:2",
+            "endedBySourceEventId": "presentation.event:session.error:9:12",
             "openedAt": "2026-08-01T13:00:02.000Z",
             "endedAt": "2026-08-01T13:00:12.000Z"
           }
@@ -4392,7 +4514,7 @@
     {
       "id": "agent-success-outcome-to-browser-run-finished",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.012",
+      "sourceEventId": "presentation.event:session.error:9:13",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4428,7 +4550,7 @@
     {
       "id": "agent-run-start-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.000",
+      "sourceEventId": "presentation.event:session.error:9:1",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4453,7 +4575,7 @@
     {
       "id": "agent-text-start-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.001",
+      "sourceEventId": "presentation.event:session.error:9:2",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4479,7 +4601,7 @@
     {
       "id": "agent-text-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.002",
+      "sourceEventId": "presentation.event:session.error:9:3",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4505,7 +4627,7 @@
     {
       "id": "agent-activity-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.003",
+      "sourceEventId": "presentation.event:session.error:9:4",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4537,7 +4659,7 @@
     {
       "id": "agent-activity-tool-preview-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.004",
+      "sourceEventId": "presentation.event:session.error:9:5",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4573,7 +4695,7 @@
     {
       "id": "agent-activity-hitl-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.005",
+      "sourceEventId": "presentation.event:session.error:9:6",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4613,7 +4735,7 @@
     {
       "id": "agent-activity-plan-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.006",
+      "sourceEventId": "presentation.event:session.error:9:7",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4657,7 +4779,7 @@
     {
       "id": "agent-activity-subagent-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.007",
+      "sourceEventId": "presentation.event:session.error:9:8",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4689,7 +4811,7 @@
     {
       "id": "agent-activity-media-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.008",
+      "sourceEventId": "presentation.event:session.error:9:9",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4722,7 +4844,7 @@
     {
       "id": "agent-activity-notice-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.009",
+      "sourceEventId": "presentation.event:session.error:9:10",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4756,7 +4878,7 @@
     {
       "id": "agent-activity-error-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.010",
+      "sourceEventId": "presentation.event:session.error:9:11",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4790,7 +4912,7 @@
     {
       "id": "agent-text-end-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.success.011",
+      "sourceEventId": "presentation.event:session.error:9:12",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4815,7 +4937,7 @@
     {
       "id": "agent-error-run-start-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.error.000",
+      "sourceEventId": "presentation.event:session.error:9:14",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
@@ -4840,7 +4962,7 @@
     {
       "id": "agent-run-error-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "agent.event.run.error.001",
+      "sourceEventId": "presentation.event:session.error:9:15",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {

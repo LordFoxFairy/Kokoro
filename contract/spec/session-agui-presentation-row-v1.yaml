@@ -14,7 +14,7 @@
       "type": "object", "additionalProperties": false,
       "required": ["sourceEventId", "sourceKind", "sessionId", "streamEpoch", "durableSeq", "projectionVersion", "schemaRevision", "recordedAt"],
       "properties": {
-        "sourceEventId": {"$ref": "#/$defs/id"}, "sourceKind": {"$ref": "#/$defs/id"},
+        "sourceEventId": {"$ref": "#/$defs/publicSourceEventId"}, "sourceKind": {"$ref": "#/$defs/id"},
         "sessionId": {"$ref": "#/$defs/id"}, "streamEpoch": {"$ref": "#/$defs/positiveUint64"},
         "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"$ref": "#/$defs/positiveUint64"},
         "schemaRevision": {"const": 1}, "recordedAt": {"$ref": "#/$defs/dateTime"}
@@ -25,6 +25,7 @@
   },
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "publicSourceEventId": {"type": "string", "minLength": 20, "maxLength": 128, "pattern": "^presentation\\.event:(?![A-Za-z0-9._:-]*agent\\.event)[A-Za-z0-9][A-Za-z0-9._:-]*$"},
     "positiveUint64": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
     "dateTime": {"type": "string", "minLength": 20, "maxLength": 35, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$"}
   }

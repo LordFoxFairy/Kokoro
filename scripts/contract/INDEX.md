@@ -132,6 +132,11 @@ kind, binding ref, source, time, state, and future terminal evidence. Row/payloa
 the delta rather than authenticating only the official event. Session source `projectionVersion` is validated independently
 as a positive uint64 decimal string across frame, row source, and row payload; no JavaScript safe-integer ceiling is part of
 the protocol.
+Public source identities are independently Session-owned, opaque `presentation.event:` refs. Agent `sourceEventRef` appears
+only in candidate envelopes and `sessionPrivateRouteFixtures.provenance`; the gate proves one-to-one mapping, distinct values,
+same-Session scope, global private-ref uniqueness, and complete bidirectional coverage. Web receives no derivation algorithm.
+The Kokoro CUSTOM `kokoro.run.replace.v1` uses `value.ownerVersion` as a positive uint64 decimal string and rejects the old
+integer `projectionVersion`; checked-in maximum-uint64 and overflow vectors prevent JavaScript-number narrowing.
 Public Run/message replacements are presentation-only and reject `internalRunRef`, `internalMessageRef`, and
 `parentInternalRunRef` recursively. The corpus's `sessionPrivateRouteFixtures` model the Session-private lookup table used
 to resolve Agent routing before projection; the checker validates its complete coverage, resume identity, and parent mapping

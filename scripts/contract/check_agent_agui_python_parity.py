@@ -363,12 +363,70 @@ def _validate_session_projection_versions(corpus: Mapping[str, Any]) -> None:
                 )
 
 
+def _validate_run_owner_versions(corpus: Mapping[str, Any]) -> None:
+    positive_cases = _sequence(
+        corpus.get("positiveCases"),
+        code="agent_agui_run_owner_version_invalid",
+        detail="positiveCases missing",
+    )
+    observed = 0
+    for case in positive_cases:
+        case_mapping = _mapping(
+            case,
+            code="agent_agui_run_owner_version_invalid",
+            detail="positive case invalid",
+        )
+        for frame in _sequence(
+            case_mapping.get("frames"),
+            code="agent_agui_run_owner_version_invalid",
+            detail="frames missing",
+        ):
+            event = _mapping(
+                _mapping(
+                    _mapping(
+                        frame,
+                        code="agent_agui_run_owner_version_invalid",
+                        detail="frame invalid",
+                    ).get("data"),
+                    code="agent_agui_run_owner_version_invalid",
+                    detail="frame data invalid",
+                ).get("event"),
+                code="agent_agui_run_owner_version_invalid",
+                detail="event invalid",
+            )
+            if event.get("name") != "kokoro.run.replace.v1":
+                continue
+            observed += 1
+            value = _mapping(
+                event.get("value"),
+                code="agent_agui_run_owner_version_invalid",
+                detail="Run owner value invalid",
+            )
+            owner_version = value.get("ownerVersion")
+            if (
+                set(value) != {"presentationRunId", "state", "ownerVersion"}
+                or not isinstance(owner_version, str)
+                or not owner_version.isascii()
+                or not owner_version.isdecimal()
+                or owner_version.startswith("0")
+                or len(owner_version) > 20
+                or int(owner_version) > UINT64_MAXIMUM
+            ):
+                _fail(
+                    "agent_agui_run_owner_version_invalid",
+                    "Run ownerVersion must be a positive uint64 decimal string",
+                )
+    if observed == 0:
+        _fail("agent_agui_run_owner_version_invalid", "Run owner event missing")
+
+
 def validate_corpus(
     corpus: Mapping[str, Any], candidate_profile: Mapping[str, Any]
 ) -> int:
     """Rebuild and compare all canonical Agent candidate envelopes."""
 
     _validate_session_projection_versions(corpus)
+    _validate_run_owner_versions(corpus)
     declared = _declared_coverage(candidate_profile)
     fixtures = _sequence(
         corpus.get("agentSourceFixtures"),
