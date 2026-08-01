@@ -561,7 +561,8 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
         "RequestCommerceReconciliationResolution",
         "DecideCommerceReconciliationResolution",
         "ListCommerceReconciliations", "GetCommerceReconciliation",
-        "GetCommerceApproval", "GetCommerceExecution", "GetCommerceCommandReceipt",
+        "GetCommerceApproval", "GetCommerceExecution",
+        "GetGlobalCommerceCommandReceipt", "GetSiteCommerceCommandReceipt",
     ]
     assert "message CommerceGlobalCommandContext" in commerce
     assert "message CommerceGlobalQueryContext" in commerce
@@ -582,8 +583,13 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
 
 def test_admin_credit_has_safe_reads_and_a_typed_reconciliation_exit() -> None:
     credit = _proto("kokoro/platform/credit/v1/admin_credit.proto")
+    credit_catalog = _proto("kokoro/platform/credit/v1/credit_catalog.proto")
 
     assert _service_methods(credit, "AdminCreditService") == [
+        "PublishCreditProgramRevision",
+        "ListCreditProgramRevisions",
+        "GetCreditProgramRevision",
+        "GetCreditGlobalCommandReceipt",
         "GetSiteCreditSummary",
         "ListCreditAccounts",
         "GetCreditAccount",
@@ -598,7 +604,9 @@ def test_admin_credit_has_safe_reads_and_a_typed_reconciliation_exit() -> None:
         "DecideCreditReconciliationResolution",
         "GetCreditReconciliationResolution",
     ]
-    assert "AuthenticatedOperatorQueryContext context" in credit
+    assert "CreditSiteQueryContext authority" in credit
+    assert "CreditSiteCommandContext authority" in credit
+    assert "CreditProgramRevisionView" in credit_catalog
     assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
     assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_DATABASE_OBSERVATION" in credit
     assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_TRANSACTION_SNAPSHOT" not in credit

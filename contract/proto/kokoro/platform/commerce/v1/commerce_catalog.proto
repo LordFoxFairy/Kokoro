@@ -6,6 +6,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/credit/v1/credit_catalog.proto";
 import "kokoro/platform/publication/v1/publication_common.proto";
 
 enum CatalogCandidateExposure {
@@ -52,7 +53,7 @@ message EntitlementTemplateRevisionBinding {
   CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
 }
 message CreditProgramRevisionBinding {
-  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  kokoro.platform.credit.v1.CreditProgramRevisionTarget revision = 1 [(buf.validate.field).required = true];
 }
 
 enum PlanAcquisitionKind {
@@ -418,4 +419,22 @@ message GetFulfillmentProgramRevisionResponse {
 }
 message GetRedemptionProgramRevisionResponse {
   RedemptionProgramRevisionView revision = 1 [(buf.validate.field).required = true];
+}
+
+message GetGlobalCommerceCommandReceiptRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  kokoro.common.v2.CommandIdentityV2 original_command = 2 [(buf.validate.field).required = true];
+}
+message GlobalCommerceCommandRecovery {
+  oneof recovered {
+    option (buf.validate.oneof).required = true;
+    PlanRevisionView plan_revision = 1;
+    OfferRevisionView offer_revision = 2;
+    FulfillmentProgramRevisionView fulfillment_program_revision = 3;
+    RedemptionProgramRevisionView redemption_program_revision = 4;
+  }
+}
+message GetGlobalCommerceCommandReceiptResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional GlobalCommerceCommandRecovery recovery = 2;
 }

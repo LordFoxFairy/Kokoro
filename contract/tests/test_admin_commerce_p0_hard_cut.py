@@ -26,17 +26,16 @@ def test_approval_authority_is_server_owned_and_decisions_are_reference_only() -
     source = _commerce_source()
 
     assert "CommerceApprovalAnchor" not in source
-    authority = _body(source, "message", "CommerceApprovalAuthorityView")
+    authority = _body(source, "message", "CommerceApprovalRequestFact")
     for field in (
         "site_id",
         "operation",
-        "effect_digest",
-        "target_ref",
-        "expected_target_version",
-        "requested_by_actor_ref",
+        "typed_effect_digest",
+        "targets",
+        "maker_actor_ref",
         "authority_epochs_digest",
         "expires_at",
-        "consumed_at",
+        "request_command",
     ):
         assert field in authority
     decision = _body(source, "message", "CommerceApprovalDecisionEffect")
@@ -111,11 +110,14 @@ def test_secret_delivery_is_resumable_and_activation_requires_disposal_evidence(
     assert "disposal_receipt.artifact_ref == this.delivered_session.artifact.artifact_ref" in source
 
 
-def test_all_mutation_effect_digests_bind_to_authenticated_command_identity() -> None:
+def test_all_mutation_effects_have_a_generated_provider_verifier() -> None:
     source = _commerce_source()
+    generator = (CONTRACT / "generate.mjs").read_text()
 
-    assert source.count("request_digest == this.effect.command_digest") == 12
-    assert 'pattern: "^[0-9a-f]{64}$"' in source
+    assert "command_envelope_request_digest_mismatch" in generator
+    assert "verifyPublishPlanRevisionCommand" in generator
+    assert "verifyRequestCodeBatchIssuanceCommand" in generator
+    assert "verifyReadCodeDeliveryRangeCommand" in generator
     assert "message CommerceGlobalCommandContext" in source
     assert "global catalog mutation requires exact Global or BreakGlass authority" in source
 

@@ -51,5 +51,6 @@ service AdminCommerceService {
 
   rpc GetCommerceApproval(GetCommerceApprovalRequest) returns (GetCommerceApprovalResponse) {}
   rpc GetCommerceExecution(GetCommerceExecutionRequest) returns (GetCommerceExecutionResponse) {}
-  rpc GetCommerceCommandReceipt(GetCommerceCommandReceiptRequest) returns (GetCommerceCommandReceiptResponse) {}
+  rpc GetGlobalCommerceCommandReceipt(GetGlobalCommerceCommandReceiptRequest) returns (GetGlobalCommerceCommandReceiptResponse) {}
+  rpc GetSiteCommerceCommandReceipt(GetSiteCommerceCommandReceiptRequest) returns (GetSiteCommerceCommandReceiptResponse) {}
 }

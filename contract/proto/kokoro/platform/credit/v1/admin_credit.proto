@@ -7,9 +7,14 @@ import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
 import "kokoro/platform/credit/v1/credit_application.proto";
+import "kokoro/platform/credit/v1/credit_catalog.proto";
 
 // AdminCreditService is the typed, read-only operator view over Credit authority facts.
 service AdminCreditService {
+  rpc PublishCreditProgramRevision(PublishCreditProgramRevisionRequest) returns (PublishCreditProgramRevisionResponse) {}
+  rpc ListCreditProgramRevisions(ListCreditProgramRevisionsRequest) returns (ListCreditProgramRevisionsResponse) {}
+  rpc GetCreditProgramRevision(GetCreditProgramRevisionRequest) returns (GetCreditProgramRevisionResponse) {}
+  rpc GetCreditGlobalCommandReceipt(GetCreditGlobalCommandReceiptRequest) returns (GetCreditGlobalCommandReceiptResponse) {}
   rpc GetSiteCreditSummary(GetSiteCreditSummaryRequest) returns (GetSiteCreditSummaryResponse) {}
   rpc ListCreditAccounts(ListCreditAccountsRequest) returns (ListCreditAccountsResponse) {}
   rpc GetCreditAccount(GetCreditAccountRequest) returns (GetCreditAccountResponse) {}
@@ -23,6 +28,36 @@ service AdminCreditService {
   rpc RequestCreditReconciliationResolution(RequestCreditReconciliationResolutionRequest) returns (RequestCreditReconciliationResolutionResponse) {}
   rpc DecideCreditReconciliationResolution(DecideCreditReconciliationResolutionRequest) returns (DecideCreditReconciliationResolutionResponse) {}
   rpc GetCreditReconciliationResolution(GetCreditReconciliationResolutionRequest) returns (GetCreditReconciliationResolutionResponse) {}
+}
+
+message CreditSiteQueryContext {
+  option (buf.validate.message).cel = {
+    id: "credit.site_query.scope"
+    message: "middleware-attested scope, environment and region authorize the exact Site"
+    expression: "(has(this.operator.scope.site) && this.operator.scope.site.site_ids.exists(s, s == this.site_id) && this.operator.environment == this.operator.scope.site.environment && this.operator.region == this.operator.scope.site.region) || (has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  // Constructed only by verified operator middleware; never decoded from an
+  // untrusted caller body by the Credit application handler.
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext operator = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+}
+
+message CreditSiteCommandContext {
+  option (buf.validate.message).cel = {
+    id: "credit.site_command.scope"
+    message: "middleware-attested scope, environment and region authorize the exact Site"
+    expression: "(has(this.operator.scope.site) && this.operator.scope.site.site_ids.exists(s, s == this.site_id) && this.operator.environment == this.operator.scope.site.environment && this.operator.region == this.operator.scope.site.region) || (has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  // Middleware-attested output. The command provider recomputes the complete
+  // typed Effect envelope before any Credit UoW is opened.
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext operator = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
 }
 
 enum CreditReadFreshness {
@@ -384,22 +419,14 @@ message RatedUsageSourceAllocationSummary {
 }
 
 message GetSiteCreditSummaryRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
 }
 message GetSiteCreditSummaryResponse {
   SiteCreditSummary summary = 1 [(buf.validate.field).required = true];
 }
 
 message ListCreditAccountsRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   optional string billing_account_ref = 3 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
@@ -408,7 +435,10 @@ message ListCreditAccountsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 5 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 5 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
 }
 message ListCreditAccountsResponse {
   repeated CreditAccountSummary accounts = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -421,11 +451,7 @@ message ListCreditAccountsResponse {
 }
 
 message GetCreditAccountRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
 }
 message GetCreditAccountResponse {
@@ -438,11 +464,7 @@ message ListCreditGrantsRequest {
     message: "source_type and source_ref must be provided together"
     expression: "has(this.source_type) == has(this.source_ref)"
   };
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
   optional string source_ref = 4 [(buf.validate.field).string = {
     min_len: 1
@@ -456,7 +478,10 @@ message ListCreditGrantsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 7 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
   optional CreditGrantSourceType source_type = 8 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
@@ -479,11 +504,7 @@ message ListCreditHoldsRequest {
     message: "source_type and source_ref must be provided together"
     expression: "has(this.source_type) == has(this.source_ref)"
   };
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
   optional string source_ref = 4 [(buf.validate.field).string = {
     min_len: 1
@@ -497,7 +518,10 @@ message ListCreditHoldsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 7 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 7 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
   optional CreditGrantSourceType source_type = 8 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
@@ -515,11 +539,7 @@ message ListCreditHoldsResponse {
 }
 
 message ListCreditHoldAllocationsRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   oneof trace {
     option (buf.validate.oneof).required = true;
     string credit_hold_ref = 3 [(buf.validate.field).string.uuid = true];
@@ -529,7 +549,10 @@ message ListCreditHoldAllocationsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 6 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 6 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
 }
 message ListCreditHoldAllocationsResponse {
   repeated CreditHoldAllocationSummary allocations = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -547,11 +570,7 @@ message ListCreditJournalTransactionsRequest {
     message: "source_type and source_ref must be provided together"
     expression: "has(this.source_type) == has(this.source_ref)"
   };
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
   optional string credit_grant_id = 4 [(buf.validate.field).string.uuid = true];
   optional string credit_hold_ref = 5 [(buf.validate.field).string.uuid = true];
@@ -567,7 +586,10 @@ message ListCreditJournalTransactionsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 9 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
   optional CreditGrantSourceType source_type = 10 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
@@ -584,17 +606,16 @@ message ListCreditJournalTransactionsResponse {
 }
 
 message ListCreditJournalEntriesRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   string journal_transaction_ref = 3 [(buf.validate.field).string.uuid = true];
   optional string page_token = 4 [(buf.validate.field).string = {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 5 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 5 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
 }
 message ListCreditJournalEntriesResponse {
   repeated CreditJournalEntrySummary entries = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -612,11 +633,7 @@ message ListRatedUsageRequest {
     message: "source_type and source_ref must be provided together"
     expression: "has(this.source_type) == has(this.source_ref)"
   };
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   optional string credit_account_ref = 3 [(buf.validate.field).string.uuid = true];
   optional string credit_hold_ref = 4 [(buf.validate.field).string.uuid = true];
   optional string source_ref = 5 [(buf.validate.field).string = {
@@ -635,7 +652,10 @@ message ListRatedUsageRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 9 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 9 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
   optional CreditGrantSourceType source_type = 10 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
@@ -653,11 +673,7 @@ message ListRatedUsageResponse {
 }
 
 message ListRatedUsageSourceAllocationsRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
   oneof trace {
     option (buf.validate.oneof).required = true;
     string rated_usage_ref = 3 [(buf.validate.field).string.uuid = true];
@@ -667,7 +683,10 @@ message ListRatedUsageSourceAllocationsRequest {
     min_len: 1
     max_len: 512
   }];
-  uint32 page_size = 6 [(buf.validate.field).uint32.lte = 200];
+  uint32 page_size = 6 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
 }
 message ListRatedUsageSourceAllocationsResponse {
   repeated RatedUsageSourceAllocationSummary allocations = 1 [(buf.validate.field).repeated.max_items = 200];
@@ -687,14 +706,19 @@ enum CreditReconciliationDecision {
 
 enum CreditReconciliationExecutionState {
   CREDIT_RECONCILIATION_EXECUTION_STATE_UNSPECIFIED = 0;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_PENDING_APPROVAL = 1;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_QUEUED = 2;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLYING = 3;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLIED = 4;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_REJECTED = 5;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_FAILED = 6;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_OUTCOME_UNKNOWN = 7;
-  CREDIT_RECONCILIATION_EXECUTION_STATE_QUARANTINED = 8;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_QUEUED = 1;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLYING = 2;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLIED = 3;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_FAILED = 4;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_OUTCOME_UNKNOWN = 5;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_QUARANTINED = 6;
+}
+enum CreditReconciliationApprovalState {
+  CREDIT_RECONCILIATION_APPROVAL_STATE_UNSPECIFIED = 0;
+  CREDIT_RECONCILIATION_APPROVAL_STATE_PENDING = 1;
+  CREDIT_RECONCILIATION_APPROVAL_STATE_AUTHORIZED = 2;
+  CREDIT_RECONCILIATION_APPROVAL_STATE_REJECTED = 3;
+  CREDIT_RECONCILIATION_APPROVAL_STATE_EXPIRED = 4;
 }
 
 message ConfirmNoUsageAndRelease {
@@ -758,34 +782,98 @@ message CreditReconciliationResolution {
   }
 }
 
-// Server-owned frozen maker authority. Decision requests carry only its ref and
-// CAS version; actor, Site, effect and epochs are never trusted from the caller.
+message CreditReconciliationApprovalRequestFact {
+  string request_fact_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 request_fact_version = 2 [(buf.validate.field).uint64.const = 1];
+  string site_id = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string environment = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string region = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 64
+  }];
+  string transaction_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
+  string typed_effect_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string maker_actor_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v2.CommandIdentityV2 request_command = 10 [(buf.validate.field).required = true];
+  string authority_epochs_digest = 11 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp requested_at = 12 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp expires_at = 13 [(buf.validate.field).required = true];
+  string request_fact_digest = 14 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message CreditReconciliationApprovalDecisionFact {
+  string decision_fact_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 decision_fact_version = 2 [(buf.validate.field).uint64.const = 1];
+  string request_fact_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string request_fact_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  CreditReconciliationDecision decision = 5 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string checker_actor_ref = 6 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  kokoro.common.v2.CommandIdentityV2 decision_command = 7 [(buf.validate.field).required = true];
+  google.protobuf.Timestamp decided_at = 8 [(buf.validate.field).required = true];
+  string decision_fact_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message CreditReconciliationExecutionIntentFact {
+  string execution_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 execution_version = 2 [(buf.validate.field).uint64.const = 1];
+  string request_fact_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string decision_fact_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp enqueued_at = 5 [(buf.validate.field).required = true];
+  string intent_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
 message CreditReconciliationApprovalView {
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation_approval.lifecycle"
+    message: "approve and enqueue are one atomic persisted transition"
+    expression: "(this.state == 1 && !has(this.decision) && !has(this.execution_intent)) || (this.state == 2 && has(this.decision) && this.decision.decision == 1 && has(this.execution_intent)) || (this.state == 3 && has(this.decision) && this.decision.decision == 2 && !has(this.execution_intent)) || (this.state == 4 && !has(this.execution_intent))"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation_approval.four_eyes"
+    message: "maker and checker must be different actors"
+    expression: "!has(this.decision) || this.request.maker_actor_ref != this.decision.checker_actor_ref"
+  };
   string approval_ref = 1 [(buf.validate.field).string = {
     min_len: 3
     max_len: 256
   }];
   uint64 approval_version = 2 [(buf.validate.field).uint64.gt = 0];
-  string site_id = 3 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
-  string transaction_ref = 4 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  uint64 expected_transaction_version = 5 [(buf.validate.field).uint64.gt = 0];
-  string effect_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
-  string requested_by_actor_ref = 7 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string authority_epochs_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
-  CreditReconciliationExecutionState state = 9 [(buf.validate.field).enum = {
+  CreditReconciliationApprovalState state = 3 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
-  google.protobuf.Timestamp expires_at = 10 [(buf.validate.field).required = true];
+  CreditReconciliationApprovalRequestFact request = 4 [(buf.validate.field).required = true];
+  optional CreditReconciliationApprovalDecisionFact decision = 5;
+  optional CreditReconciliationExecutionIntentFact execution_intent = 6;
 }
 
 message RequestCreditReconciliationResolutionEffect {
@@ -812,18 +900,9 @@ message RequestCreditReconciliationResolutionRequest {
   option (buf.validate.message).cel = {
     id: "credit.reconciliation.command_digest"
     message: "effect digest must be the authenticated command digest"
-    expression: "this.context.command.request_digest == this.effect.command_digest"
+    expression: "this.authority.operator.command.request_digest == this.effect.command_digest"
   };
-  option (buf.validate.message).cel = {
-    id: "credit.reconciliation.site_scope"
-    message: "operator scope, environment and region must authorize the exact Site"
-    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
-  };
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
+  CreditSiteCommandContext authority = 1 [(buf.validate.field).required = true];
   RequestCreditReconciliationResolutionEffect effect = 3 [(buf.validate.field).required = true];
 }
 message RequestCreditReconciliationResolutionResponse {
@@ -843,28 +922,20 @@ message CreditReconciliationDecisionEffect {
   }];
 }
 message DecideCreditReconciliationResolutionRequest {
-  option (buf.validate.message).cel = {
-    id: "credit.reconciliation_decision.site_scope"
-    message: "operator scope, environment and region must authorize the exact Site"
-    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
-  };
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
+  CreditSiteCommandContext authority = 1 [(buf.validate.field).required = true];
   CreditReconciliationDecisionEffect decision = 3 [(buf.validate.field).required = true];
 }
 message DecideCreditReconciliationResolutionResponse {
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   CreditReconciliationApprovalView approval = 2 [(buf.validate.field).required = true];
+  optional CreditReconciliationExecutionResult execution = 3;
 }
 
 message CreditReconciliationExecutionResult {
   option (buf.validate.message).cel = {
     id: "credit.reconciliation.result_shape"
     message: "applied financial transitions carry before, after and balanced Journal evidence"
-    expression: "(this.state == 4 && has(this.before) && has(this.after) && has(this.journal_transaction_ref) && has(this.journal_transaction_digest)) || (this.state in [2, 3, 5, 6, 7, 8] && !has(this.after))"
+    expression: "((this.state in [3, 6]) && has(this.before) && has(this.after) && has(this.adopted_resolution) && this.before.platform_transaction_ref == this.after.platform_transaction_ref && this.after.version == this.before.version + 1u && !has(this.outcome_unknown)) || (this.state == 5 && !has(this.after) && has(this.outcome_unknown)) || (this.state in [1, 2, 4] && !has(this.after) && !has(this.outcome_unknown))"
   };
   string resolution_ref = 1 [(buf.validate.field).string = {
     min_len: 3
@@ -893,39 +964,44 @@ message CreditReconciliationExecutionResult {
   }];
   string executor_attestation_digest = 11 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
   google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
-}
-
-message GetCreditReconciliationResolutionRequest {
-  option (buf.validate.message).cel = {
-    id: "credit.reconciliation_get.site_scope"
-    message: "operator scope, environment and region must authorize the exact Site"
-    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
-  };
-  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
-  string resolution_ref = 3 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  string command_id = 4 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 128
-  }];
-  string idempotency_key = 5 [(buf.validate.field).string = {
-    min_len: 1
-    max_len: 191
-  }];
-  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 6 [(buf.validate.field).enum = {
+  optional CreditReconciliationResolution adopted_resolution = 13;
+  optional CreditReconciliationOutcomeUnknown outcome_unknown = 14;
+  optional CreditTransactionState final_transaction_state = 15 [(buf.validate.field).enum = {
     defined_only: true
     not_in: 0
   }];
-  string request_digest = 7 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+}
+
+message CreditReconciliationOutcomeUnknown {
+  string secondary_case_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string transaction_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_transaction_version = 3 [(buf.validate.field).uint64.gt = 0];
+  string uncertain_execution_ref = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string uncertainty_evidence_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message GetCreditReconciliationResolutionRequest {
+  CreditSiteQueryContext authority = 1 [(buf.validate.field).required = true];
+  oneof lookup {
+    option (buf.validate.oneof).required = true;
+    kokoro.common.v2.CommandIdentityV2 original_command = 2;
+    string approval_ref = 3 [(buf.validate.field).string = {
+      min_len: 3
+      max_len: 256
+    }];
+  }
 }
 message GetCreditReconciliationResolutionResponse {
-  CreditReconciliationApprovalView approval = 1 [(buf.validate.field).required = true];
+  optional CreditReconciliationApprovalView approval = 1;
   optional CreditReconciliationExecutionResult execution = 2;
   kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
 }
