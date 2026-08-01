@@ -80,12 +80,25 @@ message FulfillmentOutputCommitment {
     defined_only: true
     not_in: 0
   }];
-  string output_ref = 2 [(buf.validate.field).string = {
+  string output_line_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+    pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"
+  }];
+  uint32 output_ordinal = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 32
+  }];
+  uint32 occurrence = 4 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 65535
+  }];
+  string output_ref = 5 [(buf.validate.field).string = {
     min_len: 1
     max_len: 256
   }];
-  uint64 output_version = 3 [(buf.validate.field).uint64.gt = 0];
-  string output_digest = 4 [(buf.validate.field).string = {
+  uint64 output_version = 6 [(buf.validate.field).uint64.gt = 0];
+  string output_digest = 7 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"
   }];
@@ -101,6 +114,31 @@ message CanonicalFulfillmentTransactionV1 {
     id: "fulfillment.output_refs_unique"
     message: "each committed output reference appears exactly once"
     expression: "this.outputs.all(o, this.outputs.filter(n, n.output_ref == o.output_ref).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_line_occurrences_unique"
+    message: "each program output line occurrence appears exactly once"
+    expression: "this.outputs.all(o, this.outputs.filter(n, n.output_line_id == o.output_line_id && n.occurrence == o.occurrence).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_line_to_ordinal_stable"
+    message: "one program output line id maps to exactly one ordinal"
+    expression: "this.outputs.all(o, this.outputs.filter(n, n.output_line_id == o.output_line_id).all(n, n.output_ordinal == o.output_ordinal))"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_ordinal_to_line_stable"
+    message: "one program output ordinal maps to exactly one line id"
+    expression: "this.outputs.all(o, this.outputs.filter(n, n.output_ordinal == o.output_ordinal).all(n, n.output_line_id == o.output_line_id))"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.output_occurrences_contiguous"
+    message: "occurrences for each program output line are contiguous from one"
+    expression: "this.outputs.all(o, o.occurrence <= uint(this.outputs.filter(n, n.output_line_id == o.output_line_id).size()))"
+  };
+  option (buf.validate.message).cel = {
+    id: "fulfillment.outputs_canonical_order"
+    message: "outputs are in strictly increasing ordinal and occurrence order without line drift"
+    expression: "(this.outputs.size() <= 1 || (((this.outputs[0].output_ordinal < this.outputs[1].output_ordinal) || (this.outputs[0].output_ordinal == this.outputs[1].output_ordinal && this.outputs[0].occurrence < this.outputs[1].occurrence)) && (this.outputs[0].output_ordinal != this.outputs[1].output_ordinal || this.outputs[0].output_line_id == this.outputs[1].output_line_id))) && (this.outputs.size() <= 2 || (((this.outputs[1].output_ordinal < this.outputs[2].output_ordinal) || (this.outputs[1].output_ordinal == this.outputs[2].output_ordinal && this.outputs[1].occurrence < this.outputs[2].occurrence)) && (this.outputs[1].output_ordinal != this.outputs[2].output_ordinal || this.outputs[1].output_line_id == this.outputs[2].output_line_id))) && (this.outputs.size() <= 3 || (((this.outputs[2].output_ordinal < this.outputs[3].output_ordinal) || (this.outputs[2].output_ordinal == this.outputs[3].output_ordinal && this.outputs[2].occurrence < this.outputs[3].occurrence)) && (this.outputs[2].output_ordinal != this.outputs[3].output_ordinal || this.outputs[2].output_line_id == this.outputs[3].output_line_id))) && (this.outputs.size() <= 4 || (((this.outputs[3].output_ordinal < this.outputs[4].output_ordinal) || (this.outputs[3].output_ordinal == this.outputs[4].output_ordinal && this.outputs[3].occurrence < this.outputs[4].occurrence)) && (this.outputs[3].output_ordinal != this.outputs[4].output_ordinal || this.outputs[3].output_line_id == this.outputs[4].output_line_id))) && (this.outputs.size() <= 5 || (((this.outputs[4].output_ordinal < this.outputs[5].output_ordinal) || (this.outputs[4].output_ordinal == this.outputs[5].output_ordinal && this.outputs[4].occurrence < this.outputs[5].occurrence)) && (this.outputs[4].output_ordinal != this.outputs[5].output_ordinal || this.outputs[4].output_line_id == this.outputs[5].output_line_id))) && (this.outputs.size() <= 6 || (((this.outputs[5].output_ordinal < this.outputs[6].output_ordinal) || (this.outputs[5].output_ordinal == this.outputs[6].output_ordinal && this.outputs[5].occurrence < this.outputs[6].occurrence)) && (this.outputs[5].output_ordinal != this.outputs[6].output_ordinal || this.outputs[5].output_line_id == this.outputs[6].output_line_id))) && (this.outputs.size() <= 7 || (((this.outputs[6].output_ordinal < this.outputs[7].output_ordinal) || (this.outputs[6].output_ordinal == this.outputs[7].output_ordinal && this.outputs[6].occurrence < this.outputs[7].occurrence)) && (this.outputs[6].output_ordinal != this.outputs[7].output_ordinal || this.outputs[6].output_line_id == this.outputs[7].output_line_id))) && (this.outputs.size() <= 8 || (((this.outputs[7].output_ordinal < this.outputs[8].output_ordinal) || (this.outputs[7].output_ordinal == this.outputs[8].output_ordinal && this.outputs[7].occurrence < this.outputs[8].occurrence)) && (this.outputs[7].output_ordinal != this.outputs[8].output_ordinal || this.outputs[7].output_line_id == this.outputs[8].output_line_id))) && (this.outputs.size() <= 9 || (((this.outputs[8].output_ordinal < this.outputs[9].output_ordinal) || (this.outputs[8].output_ordinal == this.outputs[9].output_ordinal && this.outputs[8].occurrence < this.outputs[9].occurrence)) && (this.outputs[8].output_ordinal != this.outputs[9].output_ordinal || this.outputs[8].output_line_id == this.outputs[9].output_line_id))) && (this.outputs.size() <= 10 || (((this.outputs[9].output_ordinal < this.outputs[10].output_ordinal) || (this.outputs[9].output_ordinal == this.outputs[10].output_ordinal && this.outputs[9].occurrence < this.outputs[10].occurrence)) && (this.outputs[9].output_ordinal != this.outputs[10].output_ordinal || this.outputs[9].output_line_id == this.outputs[10].output_line_id))) && (this.outputs.size() <= 11 || (((this.outputs[10].output_ordinal < this.outputs[11].output_ordinal) || (this.outputs[10].output_ordinal == this.outputs[11].output_ordinal && this.outputs[10].occurrence < this.outputs[11].occurrence)) && (this.outputs[10].output_ordinal != this.outputs[11].output_ordinal || this.outputs[10].output_line_id == this.outputs[11].output_line_id))) && (this.outputs.size() <= 12 || (((this.outputs[11].output_ordinal < this.outputs[12].output_ordinal) || (this.outputs[11].output_ordinal == this.outputs[12].output_ordinal && this.outputs[11].occurrence < this.outputs[12].occurrence)) && (this.outputs[11].output_ordinal != this.outputs[12].output_ordinal || this.outputs[11].output_line_id == this.outputs[12].output_line_id))) && (this.outputs.size() <= 13 || (((this.outputs[12].output_ordinal < this.outputs[13].output_ordinal) || (this.outputs[12].output_ordinal == this.outputs[13].output_ordinal && this.outputs[12].occurrence < this.outputs[13].occurrence)) && (this.outputs[12].output_ordinal != this.outputs[13].output_ordinal || this.outputs[12].output_line_id == this.outputs[13].output_line_id))) && (this.outputs.size() <= 14 || (((this.outputs[13].output_ordinal < this.outputs[14].output_ordinal) || (this.outputs[13].output_ordinal == this.outputs[14].output_ordinal && this.outputs[13].occurrence < this.outputs[14].occurrence)) && (this.outputs[13].output_ordinal != this.outputs[14].output_ordinal || this.outputs[13].output_line_id == this.outputs[14].output_line_id))) && (this.outputs.size() <= 15 || (((this.outputs[14].output_ordinal < this.outputs[15].output_ordinal) || (this.outputs[14].output_ordinal == this.outputs[15].output_ordinal && this.outputs[14].occurrence < this.outputs[15].occurrence)) && (this.outputs[14].output_ordinal != this.outputs[15].output_ordinal || this.outputs[14].output_line_id == this.outputs[15].output_line_id))) && (this.outputs.size() <= 16 || (((this.outputs[15].output_ordinal < this.outputs[16].output_ordinal) || (this.outputs[15].output_ordinal == this.outputs[16].output_ordinal && this.outputs[15].occurrence < this.outputs[16].occurrence)) && (this.outputs[15].output_ordinal != this.outputs[16].output_ordinal || this.outputs[15].output_line_id == this.outputs[16].output_line_id))) && (this.outputs.size() <= 17 || (((this.outputs[16].output_ordinal < this.outputs[17].output_ordinal) || (this.outputs[16].output_ordinal == this.outputs[17].output_ordinal && this.outputs[16].occurrence < this.outputs[17].occurrence)) && (this.outputs[16].output_ordinal != this.outputs[17].output_ordinal || this.outputs[16].output_line_id == this.outputs[17].output_line_id))) && (this.outputs.size() <= 18 || (((this.outputs[17].output_ordinal < this.outputs[18].output_ordinal) || (this.outputs[17].output_ordinal == this.outputs[18].output_ordinal && this.outputs[17].occurrence < this.outputs[18].occurrence)) && (this.outputs[17].output_ordinal != this.outputs[18].output_ordinal || this.outputs[17].output_line_id == this.outputs[18].output_line_id))) && (this.outputs.size() <= 19 || (((this.outputs[18].output_ordinal < this.outputs[19].output_ordinal) || (this.outputs[18].output_ordinal == this.outputs[19].output_ordinal && this.outputs[18].occurrence < this.outputs[19].occurrence)) && (this.outputs[18].output_ordinal != this.outputs[19].output_ordinal || this.outputs[18].output_line_id == this.outputs[19].output_line_id))) && (this.outputs.size() <= 20 || (((this.outputs[19].output_ordinal < this.outputs[20].output_ordinal) || (this.outputs[19].output_ordinal == this.outputs[20].output_ordinal && this.outputs[19].occurrence < this.outputs[20].occurrence)) && (this.outputs[19].output_ordinal != this.outputs[20].output_ordinal || this.outputs[19].output_line_id == this.outputs[20].output_line_id))) && (this.outputs.size() <= 21 || (((this.outputs[20].output_ordinal < this.outputs[21].output_ordinal) || (this.outputs[20].output_ordinal == this.outputs[21].output_ordinal && this.outputs[20].occurrence < this.outputs[21].occurrence)) && (this.outputs[20].output_ordinal != this.outputs[21].output_ordinal || this.outputs[20].output_line_id == this.outputs[21].output_line_id))) && (this.outputs.size() <= 22 || (((this.outputs[21].output_ordinal < this.outputs[22].output_ordinal) || (this.outputs[21].output_ordinal == this.outputs[22].output_ordinal && this.outputs[21].occurrence < this.outputs[22].occurrence)) && (this.outputs[21].output_ordinal != this.outputs[22].output_ordinal || this.outputs[21].output_line_id == this.outputs[22].output_line_id))) && (this.outputs.size() <= 23 || (((this.outputs[22].output_ordinal < this.outputs[23].output_ordinal) || (this.outputs[22].output_ordinal == this.outputs[23].output_ordinal && this.outputs[22].occurrence < this.outputs[23].occurrence)) && (this.outputs[22].output_ordinal != this.outputs[23].output_ordinal || this.outputs[22].output_line_id == this.outputs[23].output_line_id))) && (this.outputs.size() <= 24 || (((this.outputs[23].output_ordinal < this.outputs[24].output_ordinal) || (this.outputs[23].output_ordinal == this.outputs[24].output_ordinal && this.outputs[23].occurrence < this.outputs[24].occurrence)) && (this.outputs[23].output_ordinal != this.outputs[24].output_ordinal || this.outputs[23].output_line_id == this.outputs[24].output_line_id))) && (this.outputs.size() <= 25 || (((this.outputs[24].output_ordinal < this.outputs[25].output_ordinal) || (this.outputs[24].output_ordinal == this.outputs[25].output_ordinal && this.outputs[24].occurrence < this.outputs[25].occurrence)) && (this.outputs[24].output_ordinal != this.outputs[25].output_ordinal || this.outputs[24].output_line_id == this.outputs[25].output_line_id))) && (this.outputs.size() <= 26 || (((this.outputs[25].output_ordinal < this.outputs[26].output_ordinal) || (this.outputs[25].output_ordinal == this.outputs[26].output_ordinal && this.outputs[25].occurrence < this.outputs[26].occurrence)) && (this.outputs[25].output_ordinal != this.outputs[26].output_ordinal || this.outputs[25].output_line_id == this.outputs[26].output_line_id))) && (this.outputs.size() <= 27 || (((this.outputs[26].output_ordinal < this.outputs[27].output_ordinal) || (this.outputs[26].output_ordinal == this.outputs[27].output_ordinal && this.outputs[26].occurrence < this.outputs[27].occurrence)) && (this.outputs[26].output_ordinal != this.outputs[27].output_ordinal || this.outputs[26].output_line_id == this.outputs[27].output_line_id))) && (this.outputs.size() <= 28 || (((this.outputs[27].output_ordinal < this.outputs[28].output_ordinal) || (this.outputs[27].output_ordinal == this.outputs[28].output_ordinal && this.outputs[27].occurrence < this.outputs[28].occurrence)) && (this.outputs[27].output_ordinal != this.outputs[28].output_ordinal || this.outputs[27].output_line_id == this.outputs[28].output_line_id))) && (this.outputs.size() <= 29 || (((this.outputs[28].output_ordinal < this.outputs[29].output_ordinal) || (this.outputs[28].output_ordinal == this.outputs[29].output_ordinal && this.outputs[28].occurrence < this.outputs[29].occurrence)) && (this.outputs[28].output_ordinal != this.outputs[29].output_ordinal || this.outputs[28].output_line_id == this.outputs[29].output_line_id))) && (this.outputs.size() <= 30 || (((this.outputs[29].output_ordinal < this.outputs[30].output_ordinal) || (this.outputs[29].output_ordinal == this.outputs[30].output_ordinal && this.outputs[29].occurrence < this.outputs[30].occurrence)) && (this.outputs[29].output_ordinal != this.outputs[30].output_ordinal || this.outputs[29].output_line_id == this.outputs[30].output_line_id))) && (this.outputs.size() <= 31 || (((this.outputs[30].output_ordinal < this.outputs[31].output_ordinal) || (this.outputs[30].output_ordinal == this.outputs[31].output_ordinal && this.outputs[30].occurrence < this.outputs[31].occurrence)) && (this.outputs[30].output_ordinal != this.outputs[31].output_ordinal || this.outputs[30].output_line_id == this.outputs[31].output_line_id)))"
   };
   option (buf.validate.message).cel = {
     id: "fulfillment.output_identities_unique"
@@ -119,7 +157,7 @@ message CanonicalFulfillmentTransactionV1 {
   FrozenFulfillmentProgramSnapshot program = 4 [(buf.validate.field).required = true];
   repeated FulfillmentOutputCommitment outputs = 5 [(buf.validate.field).repeated = {
     min_items: 1
-    max_items: 64
+    max_items: 32
   }];
   FulfillmentTransactionState state = 6 [(buf.validate.field).enum.const = 1];
   uint64 transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
@@ -130,7 +168,8 @@ message FulfillmentTransactionFact {
   CanonicalFulfillmentTransactionV1 transaction = 1 [(buf.validate.field).required = true];
   // Lowercase SHA-256 of UTF8("kokoro.platform.commerce.v1.CanonicalFulfillmentTransactionV1"),
   // one NUL byte, then deterministic known-field protobuf bytes of transaction with unknown fields
-  // discarded. This binds every frozen source, program, output, state, version and timestamp field.
+  // discarded. The producer MUST construct outputs in strictly increasing (output_ordinal, occurrence) order
+  // before hashing and persistence. This binds every frozen source, program, output, state, version and timestamp field.
   string transaction_digest = 2 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"

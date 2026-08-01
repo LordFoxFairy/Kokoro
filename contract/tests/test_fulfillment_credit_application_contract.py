@@ -49,15 +49,30 @@ def test_fulfillment_records_one_committed_fact_and_separate_correction_facts() 
     assert "FrozenFulfillmentProgramSnapshot program" in canonical
     assert "FULFILLMENT_TRANSACTION_STATE_COMMITTED" in canonical
     assert "this.outputs.filter(n, n.output_ref == o.output_ref).size() == 1" in canonical
+    assert "n.output_line_id == o.output_line_id && n.occurrence == o.occurrence" in canonical
+    assert "n.output_line_id == o.output_line_id).all(n, n.output_ordinal == o.output_ordinal)" in canonical
+    assert "n.output_ordinal == o.output_ordinal).all(n, n.output_line_id == o.output_line_id)" in canonical
+    assert "o.occurrence <= uint(this.outputs.filter(n, n.output_line_id == o.output_line_id).size())" in canonical
     assert "n.kind == o.kind" in canonical
     assert "n.output_version == o.output_version" in canonical
     assert "n.output_digest == o.output_digest" in canonical
+    assert "this.outputs[0].output_ordinal < this.outputs[1].output_ordinal" in canonical
+    assert "this.outputs[30].output_ordinal < this.outputs[31].output_ordinal" in canonical
+    assert "this.outputs[0].output_line_id == this.outputs[1].output_line_id" in canonical
+
+    output = _message_body(source, "FulfillmentOutputCommitment")
+    for field in ("output_line_id", "output_ordinal", "occurrence"):
+        assert field in output
+    assert 'pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"' in output
+    assert "lte: 32" in output
+    assert "lte: 65535" in output
 
     transaction = _message_body(source, "FulfillmentTransactionFact")
     assert "CanonicalFulfillmentTransactionV1 transaction" in transaction
     assert "string transaction_digest" in transaction
     assert "SHA-256" in source
     assert "deterministic known-field protobuf bytes" in source
+    assert "outputs in strictly increasing (output_ordinal, occurrence) order" in source
 
     identity = _message_body(source, "FulfillmentTransactionIdentity")
     for field in ("platform_transaction_ref", "transaction_version", "transaction_digest"):
