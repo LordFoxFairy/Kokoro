@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json",
+  "title": "Kokoro strict AG-UI presentation event v1",
+  "description": "A fail-closed subset of the pinned AG-UI EventType vocabulary. The upstream passthrough schema is never the Kokoro trust boundary.",
+  "oneOf": [
+    {"$ref": "#/$defs/runStarted"},
+    {"$ref": "#/$defs/runFinished"},
+    {"$ref": "#/$defs/runError"},
+    {"$ref": "#/$defs/textStart"},
+    {"$ref": "#/$defs/textContent"},
+    {"$ref": "#/$defs/textEnd"},
+    {"$ref": "#/$defs/activitySafeSummary"},
+    {"$ref": "#/$defs/activityToolPreview"},
+    {"$ref": "#/$defs/activityHitl"},
+    {"$ref": "#/$defs/activityPlan"},
+    {"$ref": "#/$defs/activitySubagent"},
+    {"$ref": "#/$defs/activityMedia"},
+    {"$ref": "#/$defs/activityArtifact"},
+    {"$ref": "#/$defs/activityCost"},
+    {"$ref": "#/$defs/activityNotice"},
+    {"$ref": "#/$defs/activityError"},
+    {"$ref": "#/$defs/customSession"},
+    {"$ref": "#/$defs/customBranch"},
+    {"$ref": "#/$defs/customMessage"},
+    {"$ref": "#/$defs/customRun"},
+    {"$ref": "#/$defs/customControl"},
+    {"$ref": "#/$defs/customReceipt"}
+  ],
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "shortText": {"type": "string", "minLength": 1, "maxLength": 1024},
+    "safeText": {"type": "string", "maxLength": 16384},
+    "timestamp": {"type": "integer", "minimum": 0, "maximum": 8640000000000000},
+    "dateTime": {"type": "string", "minLength": 20, "maxLength": 35, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$"},
+    "runStarted": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "threadId", "runId"],
+      "properties": {
+        "type": {"const": "RUN_STARTED"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "threadId": {"$ref": "#/$defs/id"}, "runId": {"$ref": "#/$defs/id"},
+        "parentRunId": {"$ref": "#/$defs/id"}
+      }
+    },
+    "runFinished": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "threadId", "runId"],
+      "properties": {
+        "type": {"const": "RUN_FINISHED"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "threadId": {"$ref": "#/$defs/id"}, "runId": {"$ref": "#/$defs/id"}
+      }
+    },
+    "runError": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "message", "code"],
+      "properties": {
+        "type": {"const": "RUN_ERROR"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "message": {"$ref": "#/$defs/safeText"}, "code": {"$ref": "#/$defs/id"}
+      }
+    },
+    "textStart": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "role"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_START"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "messageId": {"$ref": "#/$defs/id"}, "role": {"const": "assistant"}
+      }
+    },
+    "textContent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "delta"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_CONTENT"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "messageId": {"$ref": "#/$defs/id"}, "delta": {"type": "string", "minLength": 1, "maxLength": 16384}
+      }
+    },
+    "textEnd": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId"],
+      "properties": {
+        "type": {"const": "TEXT_MESSAGE_END"}, "timestamp": {"$ref": "#/$defs/timestamp"},
+        "messageId": {"$ref": "#/$defs/id"}
+      }
+    },
+    "activityBase": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"]
+    },
+    "activitySafeSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.safe-summary.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["partRef", "summary", "status"], "properties": {
+          "partRef": {"$ref": "#/$defs/id"}, "summary": {"$ref": "#/$defs/safeText"},
+          "status": {"enum": ["streaming", "complete", "partial", "failed", "canceled"]}
+        }}
+      }
+    },
+    "activityToolPreview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.tool-preview.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["toolCallRef", "label", "status"], "properties": {
+          "toolCallRef": {"$ref": "#/$defs/id"}, "label": {"$ref": "#/$defs/shortText"},
+          "status": {"enum": ["pending", "running", "awaiting-user", "completed", "failed", "canceled"]},
+          "summary": {"$ref": "#/$defs/safeText"}, "resultPreview": {"$ref": "#/$defs/safeText"},
+          "isError": {"type": "boolean"}, "truncated": {"type": "boolean"}
+        }}
+      }
+    },
+    "activityHitl": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.hitl.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["ownerRef", "expectedVersion", "kind", "title", "description", "allowedActions", "status"], "properties": {
+          "ownerRef": {"$ref": "#/$defs/id"}, "expectedVersion": {"type": "integer", "minimum": 1},
+          "kind": {"enum": ["approval", "interaction"]}, "title": {"$ref": "#/$defs/shortText"},
+          "description": {"$ref": "#/$defs/safeText"}, "allowedActions": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+          "status": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]},
+          "deadline": {"$ref": "#/$defs/dateTime"}, "receiptRef": {"$ref": "#/$defs/id"}
+        }}
+      }
+    },
+    "planStep": {
+      "type": "object", "additionalProperties": false, "required": ["stepRef", "label", "status"],
+      "properties": {"stepRef": {"$ref": "#/$defs/id"}, "label": {"$ref": "#/$defs/shortText"}, "status": {"enum": ["pending", "in-progress", "completed", "failed", "canceled"]}}
+    },
+    "activityPlan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.plan.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["planRef", "summary", "status", "steps"], "properties": {
+          "planRef": {"$ref": "#/$defs/id"}, "summary": {"$ref": "#/$defs/safeText"},
+          "status": {"enum": ["proposed", "active", "completed", "failed", "canceled"]},
+          "steps": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/planStep"}}
+        }}
+      }
+    },
+    "activitySubagent": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.subagent.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["subagentRef", "status"], "properties": {
+          "subagentRef": {"$ref": "#/$defs/id"}, "status": {"enum": ["pending", "running", "completed", "failed", "canceled"]}, "summary": {"$ref": "#/$defs/safeText"}
+        }}
+      }
+    },
+    "activityMedia": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.media.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["operationRef", "state", "progressBps"], "properties": {
+          "operationRef": {"$ref": "#/$defs/id"}, "state": {"enum": ["pending", "queued", "active", "finalizing", "completed", "partial", "failed", "canceled", "unknown"]},
+          "progressBps": {"type": "integer", "minimum": 0, "maximum": 10000}, "summary": {"$ref": "#/$defs/safeText"}
+        }}
+      }
+    },
+    "activityArtifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.artifact.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["artifactRef", "artifactVersionRef", "availability", "mediaClass"], "properties": {
+          "artifactRef": {"$ref": "#/$defs/id"}, "artifactVersionRef": {"$ref": "#/$defs/id"},
+          "availability": {"enum": ["processing", "ready", "restricted", "unavailable", "deleted"]},
+          "mediaClass": {"enum": ["image", "audio", "video", "document", "other"]}, "title": {"$ref": "#/$defs/shortText"}
+        }}
+      }
+    },
+    "activityCost": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.cost.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["costProjectionRef", "state", "freshness"], "properties": {
+          "costProjectionRef": {"$ref": "#/$defs/id"}, "state": {"enum": ["pending", "estimated", "final", "corrected", "unavailable"]},
+          "displayAmount": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"}, "unit": {"$ref": "#/$defs/id"}, "freshness": {"$ref": "#/$defs/dateTime"}
+        }}
+      }
+    },
+    "activityNotice": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.notice.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["noticeRef", "code", "message", "severity"], "properties": {
+          "noticeRef": {"$ref": "#/$defs/id"}, "code": {"$ref": "#/$defs/id"}, "message": {"$ref": "#/$defs/safeText"}, "severity": {"enum": ["info", "warning"]},
+          "retryClass": {"enum": ["never", "after-delay", "after-user-action", "reconcile-receipt"]}
+        }}
+      }
+    },
+    "activityError": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "timestamp", "messageId", "activityType", "content", "replace"],
+      "properties": {
+        "type": {"const": "ACTIVITY_SNAPSHOT"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "messageId": {"$ref": "#/$defs/id"},
+        "activityType": {"const": "kokoro.error.v1"}, "replace": {"const": true},
+        "content": {"type": "object", "additionalProperties": false, "required": ["errorRef", "code", "message", "retryClass"], "properties": {
+          "errorRef": {"$ref": "#/$defs/id"}, "code": {"$ref": "#/$defs/id"}, "message": {"$ref": "#/$defs/safeText"},
+          "retryClass": {"enum": ["never", "after-delay", "after-user-action", "reconcile-receipt"]}, "supportCorrelationRef": {"$ref": "#/$defs/id"}
+        }}
+      }
+    },
+    "customSession": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.session.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["sessionId", "title", "lifecycle", "contextPolicy", "activeBranchId", "version"], "properties": {
+          "sessionId": {"$ref": "#/$defs/id"}, "title": {"$ref": "#/$defs/shortText"}, "lifecycle": {"enum": ["active", "archived", "deleted"]},
+          "contextPolicy": {"enum": ["standard", "temporary"]}, "activeBranchId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}, "version": {"type": "integer", "minimum": 1}
+        }}
+      }
+    },
+    "customBranch": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.branch.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["branchId", "rootMessageId", "leafMessageId", "version"], "properties": {
+          "branchId": {"$ref": "#/$defs/id"}, "parentBranchId": {"$ref": "#/$defs/id"}, "rootMessageId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
+          "leafMessageId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}, "version": {"type": "integer", "minimum": 1}
+        }}
+      }
+    },
+    "customMessage": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.message.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["presentationMessageId", "role", "lifecycle", "parentPresentationMessageId", "ordinal", "version"], "properties": {
+          "presentationMessageId": {"$ref": "#/$defs/id"}, "role": {"enum": ["user", "assistant", "system"]},
+          "lifecycle": {"enum": ["created", "streaming", "completed", "partial", "failed", "canceled"]},
+          "parentPresentationMessageId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}, "ordinal": {"type": "integer", "minimum": 0}, "version": {"type": "integer", "minimum": 1}
+        }}
+      }
+    },
+    "customRun": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.run.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["presentationRunId", "state", "projectionVersion"], "properties": {
+          "presentationRunId": {"$ref": "#/$defs/id"}, "state": {"enum": ["starting", "running", "waiting", "canceling", "finished", "error"]}, "projectionVersion": {"type": "integer", "minimum": 1}
+        }}
+      }
+    },
+    "customControl": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.control.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["controlRef", "kind", "state", "expectedVersion", "allowedActions"], "properties": {
+          "controlRef": {"$ref": "#/$defs/id"}, "kind": {"enum": ["approval", "interaction", "plan", "cancellation"]},
+          "state": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]}, "expectedVersion": {"type": "integer", "minimum": 1},
+          "allowedActions": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+        }}
+      }
+    },
+    "customReceipt": {
+      "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
+      "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.receipt.replace.v1"},
+        "value": {"type": "object", "additionalProperties": false, "required": ["receiptRef", "commandId", "operation", "state", "version"], "properties": {
+          "receiptRef": {"$ref": "#/$defs/id"}, "commandId": {"$ref": "#/$defs/id"}, "operation": {"$ref": "#/$defs/id"},
+          "state": {"enum": ["pending", "accepted", "committed", "rejected", "unknown"]}, "version": {"type": "integer", "minimum": 1}
+        }}
+      }
+    }
+  }
+}

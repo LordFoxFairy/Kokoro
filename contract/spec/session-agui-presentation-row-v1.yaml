@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.invalid/session-agui-presentation-row.v1.schema.json",
+  "title": "Kokoro Session durable AG-UI presentation row v1",
+  "description": "The persisted Session-owned presentation row. One accepted row becomes exactly one durable SSE frame; cursor material remains transport-issued and scope bound.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profileRevision", "source", "event"],
+  "properties": {
+    "profileRevision": {"const": "kokoro-agui-presentation.v1"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceEventId", "sourceKind", "sessionId", "streamEpoch", "durableSeq", "projectionVersion", "schemaRevision", "recordedAt"],
+      "properties": {
+        "sourceEventId": {"$ref": "#/$defs/id"}, "sourceKind": {"$ref": "#/$defs/id"},
+        "sessionId": {"$ref": "#/$defs/id"}, "streamEpoch": {"$ref": "#/$defs/positiveUint64"},
+        "durableSeq": {"$ref": "#/$defs/positiveUint64"}, "projectionVersion": {"type": "integer", "minimum": 1},
+        "schemaRevision": {"const": 1}, "recordedAt": {"$ref": "#/$defs/dateTime"}
+      }
+    },
+    "presentationRunBindingRef": {"$ref": "#/$defs/id"},
+    "presentationMessageBindingRef": {"$ref": "#/$defs/id"},
+    "event": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json"}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "positiveUint64": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
+    "dateTime": {"type": "string", "minLength": 20, "maxLength": 35, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$"}
+  }
+}
