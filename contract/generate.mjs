@@ -17,6 +17,17 @@ const defaultMirrors = [
 
 const DEFAULT_BOUNDARY = "platform-admin-auth@v1";
 const BOUNDARIES = Object.freeze({
+  "agent-presentation@v1": Object.freeze({
+    schema: "kokoro.agent.presentation.v1.AgentPresentationService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/agent/presentation/v1/agent_presentation.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/agent/presentation/v1/agent_presentation.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: null,
+  }),
   "platform-admin-auth@v1": Object.freeze({
     schema: "kokoro.platform.admin.v1.AdminAuthService",
     version: 1,

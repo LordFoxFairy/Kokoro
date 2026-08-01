@@ -1,0 +1,271 @@
+syntax = "proto3";
+
+package kokoro.agent.presentation.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+
+// Internal-control ConnectRPC boundary. Only the mTLS-authenticated
+// session-presentation-consumer role may call it; no browser or Web workload is
+// a consumer, and pulls never authorize Agent garbage collection.
+service AgentPresentationService {
+  rpc PullCandidateBatches(PullCandidateBatchesRequest) returns (PullCandidateBatchesResponse) {}
+  rpc AcknowledgeCandidateAdmissions(AcknowledgeCandidateAdmissionsRequest) returns (AcknowledgeCandidateAdmissionsResponse) {}
+  rpc QuarantineCandidateAdmission(QuarantineCandidateAdmissionRequest) returns (QuarantineCandidateAdmissionResponse) {}
+  rpc GetDeliveryStatus(GetDeliveryStatusRequest) returns (GetDeliveryStatusResponse) {}
+}
+
+message PresentationProducerFence {
+  string producer_instance_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 producer_generation = 2 [(buf.validate.field).uint64.gt = 0];
+  string producer_fence_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+enum PresentationRejectionClass {
+  PRESENTATION_REJECTION_CLASS_UNSPECIFIED = 0;
+  PRESENTATION_REJECTION_CLASS_PERMANENT = 1;
+}
+enum PresentationTransientErrorKind {
+  PRESENTATION_TRANSIENT_ERROR_KIND_UNSPECIFIED = 0;
+  PRESENTATION_TRANSIENT_ERROR_KIND_UNAVAILABLE = 1;
+  PRESENTATION_TRANSIENT_ERROR_KIND_DEADLINE_EXCEEDED = 2;
+  PRESENTATION_TRANSIENT_ERROR_KIND_CONCURRENT_UPDATE = 3;
+  PRESENTATION_TRANSIENT_ERROR_KIND_SNAPSHOT_NOT_READY = 4;
+}
+enum PresentationPermanentErrorKind {
+  PRESENTATION_PERMANENT_ERROR_KIND_UNSPECIFIED = 0;
+  PRESENTATION_PERMANENT_ERROR_KIND_UNAUTHENTICATED_CONSUMER = 1;
+  PRESENTATION_PERMANENT_ERROR_KIND_PRODUCER_FENCED = 2;
+  PRESENTATION_PERMANENT_ERROR_KIND_SNAPSHOT_MISMATCH = 3;
+  PRESENTATION_PERMANENT_ERROR_KIND_SEQUENCE_GAP = 4;
+  PRESENTATION_PERMANENT_ERROR_KIND_IDEMPOTENCY_CONFLICT = 5;
+  PRESENTATION_PERMANENT_ERROR_KIND_QUARANTINED_GAP = 6;
+}
+message PresentationTransientErrorDetail {
+  PresentationTransientErrorKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool retryable = 2 [(buf.validate.field).bool.const = true];
+  optional uint32 retry_after_milliseconds = 3 [(buf.validate.field).uint32 = {
+    gte: 10
+    lte: 60000
+  }];
+  string correlation_ref = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message PresentationPermanentErrorDetail {
+  PresentationPermanentErrorKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool retryable = 2 [(buf.validate.field).bool.const = false];
+  string correlation_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+
+message PresentationCandidateRecord {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.record_contiguous"
+    message: "each record advances exactly one presentation sequence"
+    expression: "this.presentation_seq == this.previous_presentation_seq + 1u"
+  };
+  string presentation_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 previous_presentation_seq = 2;
+  uint64 presentation_seq = 3 [(buf.validate.field).uint64.gt = 0];
+  bytes envelope_bytes = 4 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 1048576
+  }];
+  string envelope_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string candidate_ref = 6 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
+  string candidate_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp recorded_at = 8 [(buf.validate.field).required = true];
+  PresentationProducerFence producer = 9 [(buf.validate.field).required = true];
+  string previous_record_digest = 10 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string record_digest = 11 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message PresentationQuarantineStatus {
+  uint64 presentation_seq = 1 [(buf.validate.field).uint64.gt = 0];
+  string presentation_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string candidate_ref = 3 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
+  PresentationRejectionClass rejection_class = 4 [(buf.validate.field).enum.const = 1];
+  string reason_code = 5 [(buf.validate.field).string = {pattern: "^[A-Z][A-Z0-9_]{2,127}$"}];
+  string session_rejection_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp quarantined_at = 7 [(buf.validate.field).required = true];
+}
+
+message PresentationDeliveryStatus {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.status_first_gap"
+    message: "a quarantine, when present, is exactly the first unacknowledged sequence"
+    expression: "!has(this.quarantine) || this.quarantine.presentation_seq == this.acknowledged_through_presentation_seq + 1u"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 acknowledged_through_presentation_seq = 3;
+  uint64 status_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  optional PresentationQuarantineStatus quarantine = 5;
+  optional kokoro.common.v2.CommandIdentityV2 last_command = 6;
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
+  string status_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message PullCandidateBatchesRequest {
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 after_presentation_seq = 3;
+  uint32 page_size = 4 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 128
+  }];
+  optional uint64 snapshot_through_presentation_seq = 5 [(buf.validate.field).uint64.gt = 0];
+}
+message PullCandidateBatchesResponse {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.page_shape"
+    message: "page bounds, first record and continuation are consistent"
+    expression: "this.records.size() == 0 ? (!this.has_more && !has(this.next_after_presentation_seq)) : (this.records[0].previous_presentation_seq == this.page_after_presentation_seq && this.records[this.records.size() - 1].presentation_seq <= this.snapshot_through_presentation_seq && (this.has_more == has(this.next_after_presentation_seq)) && (!has(this.next_after_presentation_seq) || this.next_after_presentation_seq == this.records[this.records.size() - 1].presentation_seq))"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 page_after_presentation_seq = 3;
+  uint64 snapshot_through_presentation_seq = 4;
+  repeated PresentationCandidateRecord records = 5 [(buf.validate.field).repeated.max_items = 128];
+  optional uint64 next_after_presentation_seq = 6 [(buf.validate.field).uint64.gt = 0];
+  bool has_more = 7;
+  PresentationDeliveryStatus delivery_status = 8 [(buf.validate.field).required = true];
+  string snapshot_head_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CandidateAdmissionReceipt {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.receipt_contiguous"
+    message: "each receipt advances exactly one sequence"
+    expression: "this.presentation_seq == this.previous_presentation_seq + 1u"
+  };
+  uint64 previous_presentation_seq = 1;
+  uint64 presentation_seq = 2 [(buf.validate.field).uint64.gt = 0];
+  string presentation_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string record_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string candidate_ref = 5 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
+  string candidate_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string session_admission_receipt_ref = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string session_effect_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message AcknowledgeCandidateAdmissionsEffect {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.ack_first"
+    message: "the first receipt starts at the current contiguous watermark"
+    expression: "this.receipts[0].previous_presentation_seq == this.expected_acknowledged_through"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 expected_acknowledged_through = 3;
+  uint64 expected_status_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string idempotency_ref = 5 [(buf.validate.field).string = {
+    min_len: 8
+    max_len: 256
+  }];
+  repeated CandidateAdmissionReceipt receipts = 6 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+  }];
+  string effect_digest_domain = 7 [(buf.validate.field).string.const = "kokoro.agent.presentation.ack.v1"];
+  string effect_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message AcknowledgeCandidateAdmissionsRequest {
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  AcknowledgeCandidateAdmissionsEffect effect = 2 [(buf.validate.field).required = true];
+}
+message AcknowledgeCandidateAdmissionsResponse {
+  PresentationDeliveryStatus status = 1 [(buf.validate.field).required = true];
+}
+
+message QuarantineCandidateAdmissionEffect {
+  option (buf.validate.message).cel = {
+    id: "agent_presentation.quarantine_first_gap"
+    message: "only the first unacknowledged candidate may be quarantined"
+    expression: "this.presentation_seq == this.expected_acknowledged_through + 1u"
+  };
+  string run_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  PresentationProducerFence producer = 2 [(buf.validate.field).required = true];
+  uint64 expected_acknowledged_through = 3;
+  uint64 expected_status_revision = 4 [(buf.validate.field).uint64.gt = 0];
+  string idempotency_ref = 5 [(buf.validate.field).string = {
+    min_len: 8
+    max_len: 256
+  }];
+  uint64 presentation_seq = 6 [(buf.validate.field).uint64.gt = 0];
+  string presentation_ref = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string record_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string candidate_ref = 9 [(buf.validate.field).string = {pattern: "^agui_candidate:sha256:[0-9a-f]{64}$"}];
+  string candidate_digest = 10 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  PresentationRejectionClass rejection_class = 11 [(buf.validate.field).enum.const = 1];
+  string reason_code = 12 [(buf.validate.field).string = {pattern: "^[A-Z][A-Z0-9_]{2,127}$"}];
+  string session_rejection_digest = 13 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  // Quarantine does not advance expected_acknowledged_through; it freezes this first gap.
+  string effect_digest_domain = 14 [(buf.validate.field).string.const = "kokoro.agent.presentation.quarantine.v1"];
+  string effect_digest = 15 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message QuarantineCandidateAdmissionRequest {
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  QuarantineCandidateAdmissionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message QuarantineCandidateAdmissionResponse {
+  PresentationDeliveryStatus status = 1 [(buf.validate.field).required = true];
+}
+
+message GetDeliveryStatusRequest {
+  PresentationProducerFence producer = 1 [(buf.validate.field).required = true];
+  oneof lookup {
+    option (buf.validate.oneof).required = true;
+    string run_id = 2 [(buf.validate.field).string = {
+      min_len: 3
+      max_len: 256
+    }];
+    kokoro.common.v2.CommandIdentityV2 original_command = 3;
+  }
+}
+message GetDeliveryStatusResponse {
+  PresentationDeliveryStatus status = 1 [(buf.validate.field).required = true];
+}

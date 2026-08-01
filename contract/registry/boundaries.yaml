@@ -1,6 +1,29 @@
 {
   "boundaries": [
     {
+      "audience": "session-presentation-consumer",
+      "consumers": [{"boundary": "service.session", "repository": "kokoro-session"}],
+      "deadlineMs": 5000,
+      "failureOwner": "kokoro-agent",
+      "id": "agent-presentation",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": false, "id": "PullCandidateBatches", "receipt": null, "retryClass": "same_identity", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
+        {"effect": true, "id": "AcknowledgeCandidateAdmissions", "receipt": {"kind": "state-read", "recoveryOperation": "GetDeliveryStatus", "ref": "kokoro.agent.presentation.v1.PresentationDeliveryStatus"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
+        {"effect": true, "id": "QuarantineCandidateAdmission", "receipt": {"kind": "state-read", "recoveryOperation": "GetDeliveryStatus", "ref": "kokoro.agent.presentation.v1.PresentationDeliveryStatus"}, "retryClass": "reconcile_receipt", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]},
+        {"effect": false, "id": "GetDeliveryStatus", "receipt": null, "retryClass": "after_delay", "scope": "namespace", "siteBinding": "not-applicable", "transport": "connect-rpc", "trustedCallers": [{"role": "session-presentation-consumer", "audience": "agent.presentation.v1"}]}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.agent", "repository": "kokoro-agent"},
+      "scope": "namespace",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/agent/presentation/v1/agent_presentation.proto", "select": {"service": "AgentPresentationService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "mtls-internal-control",
+      "version": 1
+    },
+    {
       "audience": "agent-runtime-workload",
       "consumers": [{"boundary": "service.agent", "repository": "kokoro-agent"}],
       "deadlineMs": 5000,
