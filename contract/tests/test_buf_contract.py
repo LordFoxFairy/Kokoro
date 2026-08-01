@@ -607,6 +607,11 @@ def test_admin_credit_has_safe_reads_and_a_typed_reconciliation_exit() -> None:
     assert "CreditSiteQueryContext authority" in credit
     assert "CreditSiteCommandContext authority" in credit
     assert "CreditProgramRevisionView" in credit_catalog
+    assert "maximum_program_balance_per_account_minor" in credit_catalog
+    assert "maximum_account_balance_minor" not in credit_catalog
+    assert "consumption_order" not in credit_catalog
+    assert "bucket rank (daily, period, permanent)" in credit_catalog
+    assert "effective expiry (NULLS LAST)" in credit_catalog
     assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
     assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_DATABASE_OBSERVATION" in credit
     assert "CREDIT_READ_FRESHNESS_AUTHORITATIVE_TRANSACTION_SNAPSHOT" not in credit

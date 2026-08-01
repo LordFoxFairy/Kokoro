@@ -133,11 +133,6 @@ message CreditProgramDefinition {
     message: "a Credit Program has at most one rule for each bucket"
     expression: "this.grants.all(x, this.grants.filter(y, y.bucket == x.bucket).size() == 1)"
   };
-  option (buf.validate.message).cel = {
-    id: "credit.program.complete_consumption_order"
-    message: "consumption order is an exact permutation of the published bucket rules"
-    expression: "this.consumption_order.size() == this.grants.size() && this.consumption_order.all(b, this.grants.exists(g, g.bucket == b))"
-  };
   string unit = 1 [(buf.validate.field).string = {
     pattern: "^[a-z][a-z0-9._-]{0,63}$"
   }];
@@ -145,14 +140,16 @@ message CreditProgramDefinition {
     min_items: 1
     max_items: 3
   }];
-  uint64 maximum_account_balance_minor = 3 [(buf.validate.field).uint64.gt = 0];
+  // Maximum outstanding balance from this program_ref on one Credit account,
+  // aggregated across every published revision. This is deliberately not a
+  // cross-program account ceiling; CreditAccountPolicy owns that separate rule.
+  uint64 maximum_program_balance_per_account_minor = 3 [(buf.validate.field).uint64.gt = 0];
   google.protobuf.Duration reservation_ttl = 4 [(buf.validate.field).required = true];
   google.protobuf.Duration reconciliation_grace = 5 [(buf.validate.field).required = true];
-  repeated CreditProgramBucketClass consumption_order = 6 [(buf.validate.field).repeated = {
-    min_items: 1
-    max_items: 3
-    unique: true
-  }];
+  // Burn order is Credit-owned and global across every Program:
+  // bucket rank (daily, period, permanent), effective expiry (NULLS LAST),
+  // burn_priority, acquired_at, grant_ref. A Program cannot publish a
+  // conflicting local permutation.
   bool allow_negative_balance = 7 [(buf.validate.field).bool.const = false];
   string accounting_policy_ref = 8 [(buf.validate.field).string = {
     min_len: 3
