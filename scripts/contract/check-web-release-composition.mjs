@@ -862,10 +862,13 @@ function validateActivationAuthoritySnapshot(snapshot, related) {
   }
   if (!sameDigestRef(snapshot.siteRelease, expectedRelease) || !sameDigestRef(snapshot.candidate.siteReleaseCandidate, related.release.siteReleaseCandidate) ||
       !sameDigestRef(snapshot.certification.releaseCertification, related.release.releaseCertification)) fail("web_release_activation_authority_reference_invalid");
+  const firstActivation = snapshot.activePointer.state === "first-activation" && snapshot.activePointer.currentReleaseRef === null &&
+    snapshot.activePointer.currentGeneration === "0" && snapshot.activePointer.expectedGeneration === "0";
+  const existingActivation = snapshot.activePointer.state === "existing" && snapshot.activePointer.currentReleaseRef !== null &&
+    /^[1-9][0-9]*$/u.test(snapshot.activePointer.currentGeneration) && /^[1-9][0-9]*$/u.test(snapshot.activePointer.expectedGeneration);
   if (snapshot.expectedActivePointerGeneration !== snapshot.activePointer.expectedGeneration ||
       snapshot.activePointer.currentGeneration !== snapshot.activePointer.expectedGeneration ||
-      (snapshot.activePointer.state === "first-activation" && (snapshot.activePointer.currentReleaseRef !== null || snapshot.activePointer.currentGeneration !== "0")) ||
-      (snapshot.activePointer.state === "existing" && snapshot.activePointer.currentReleaseRef === null) ||
+      (!firstActivation && !existingActivation) ||
       snapshot.activePointer.casPreconditionDigest !== digest(activePointerCasMaterial(snapshot))) {
     fail("web_release_activation_pointer_cas_invalid");
   }

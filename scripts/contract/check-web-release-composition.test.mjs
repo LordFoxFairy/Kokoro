@@ -8,6 +8,8 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import test from "node:test";
 
+import Ajv2020 from "../../contract/node_modules/ajv/dist/2020.js";
+
 import {
   WebReleaseContractError,
   assertFrozenV1Compatible,
@@ -546,7 +548,7 @@ test("the public repository gate cannot bypass snapshot schema, material, head b
   }
 });
 
-test("checked-in corpus covers a valid first activation and rejects its non-null pointer variant", async () => {
+test("active pointer state, release ref, and generations form a closed activation-state partition", async () => {
   const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
   const begin = corpus.positiveCases.find(({ id }) => id === "activation-authority-begin").document;
   assert.equal(begin.activePointer.state, "first-activation");
@@ -554,6 +556,43 @@ test("checked-in corpus covers a valid first activation and rejects its non-null
   assert.equal(begin.activePointer.currentGeneration, "0");
   assert.equal(begin.expectedActivePointerGeneration, "0");
   assert.ok(corpus.negativeCases.some(({ id }) => id === "activation-first-pointer-must-be-null"));
+
+  const schema = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/activation-authority-snapshot.yaml"), "utf8"));
+  const pointerValidator = new Ajv2020({ allErrors: true, strict: true, validateFormats: false })
+    .compile({ $ref: "#/$defs/activePointer", $defs: schema.$defs });
+  const firstActivation = structuredClone(begin.activePointer);
+  const existing = { ...structuredClone(firstActivation), state: "existing", currentReleaseRef: "site-release.previous.9", currentGeneration: "1", expectedGeneration: "1" };
+  assert.equal(pointerValidator(firstActivation), true);
+  assert.equal(pointerValidator(existing), true);
+
+  const invalidPointers = [
+    { id: "first-with-release", pointer: { ...firstActivation, currentReleaseRef: "site-release.previous.9" }, snapshotExpected: "0" },
+    { id: "first-current-positive", pointer: { ...firstActivation, currentGeneration: "1", expectedGeneration: "1" }, snapshotExpected: "1" },
+    { id: "first-generation-mismatch", pointer: { ...firstActivation, expectedGeneration: "1" }, snapshotExpected: "1" },
+    { id: "existing-with-null", pointer: { ...existing, currentReleaseRef: null }, snapshotExpected: "1" },
+    { id: "existing-generation-zero", pointer: { ...existing, currentGeneration: "0", expectedGeneration: "0" }, snapshotExpected: "0" },
+    { id: "existing-generation-mismatch", pointer: { ...existing, expectedGeneration: "0" }, snapshotExpected: "0" },
+  ];
+  for (const { id, pointer } of invalidPointers) assert.equal(pointerValidator(pointer), false, id);
+
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-pointer-partition-"));
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  const relaxed = structuredClone(schema);
+  delete relaxed.$defs.activePointer.oneOf;
+  await writeFile(join(temporary, "contract/spec/activation-authority-snapshot.yaml"), `${JSON.stringify(relaxed, null, 2)}\n`);
+  for (const { id, pointer, snapshotExpected } of invalidPointers) {
+    const candidate = structuredClone(corpus);
+    const snapshot = candidate.positiveCases.find(({ id: caseId }) => caseId === "activation-authority-begin").document;
+    snapshot.activePointer = pointer;
+    snapshot.expectedActivePointerGeneration = snapshotExpected;
+    snapshot.activePointer.casPreconditionDigest = canonicalDigest(activePointerCasMaterial(snapshot));
+    snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+    const corpusPath = join(temporary, `${id}.json`);
+    await writeFile(corpusPath, `${JSON.stringify(candidate, null, 2)}\n`);
+    await expectCode(() => validateRepository({ root: temporary, corpus: corpusPath }), "web_release_activation_pointer_cas_invalid");
+  }
 });
 
 test("DSSE contract capability prevents a certification key from signing a revocation", async () => {
