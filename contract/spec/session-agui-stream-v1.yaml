@@ -19,7 +19,7 @@
       "required": ["kind", "id", "event", "data"],
       "properties": {
         "kind": {"const": "durable"}, "id": {"$ref": "#/$defs/cursor"}, "event": {"$ref": "#/$defs/eventType"},
-        "data": {"$ref": "https://contracts.kokoro.invalid/session-agui-presentation-row.v1.schema.json"}
+        "data": {"$ref": "https://contracts.kokoro.invalid/session-agui-projection-payload.v1.schema.json"}
       }
     },
     "drainingData": {

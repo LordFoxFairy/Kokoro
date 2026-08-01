@@ -219,8 +219,8 @@
     "customSession": {
       "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
       "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.session.replace.v1"},
-        "value": {"type": "object", "additionalProperties": false, "required": ["sessionId", "title", "lifecycle", "contextPolicy", "activeBranchId", "version"], "properties": {
-          "sessionId": {"$ref": "#/$defs/id"}, "title": {"$ref": "#/$defs/shortText"}, "lifecycle": {"enum": ["active", "archived", "deleted"]},
+        "value": {"type": "object", "additionalProperties": false, "required": ["sessionId", "profileRevision", "title", "lifecycle", "contextPolicy", "activeBranchId", "version"], "properties": {
+          "sessionId": {"$ref": "#/$defs/id"}, "profileRevision": {"const": "kokoro-agui-presentation.v1"}, "title": {"$ref": "#/$defs/shortText"}, "lifecycle": {"enum": ["active", "archived", "deleted"]},
           "contextPolicy": {"enum": ["standard", "temporary"]}, "activeBranchId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}, "version": {"type": "integer", "minimum": 1}
         }}
       }

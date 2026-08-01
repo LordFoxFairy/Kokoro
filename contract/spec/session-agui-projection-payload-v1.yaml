@@ -1,15 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.kokoro.invalid/session-agui-presentation-row.v1.schema.json",
-  "title": "Kokoro Session durable AG-UI presentation row v1",
-  "description": "The persisted Session-owned row stores the complete closed projection payload and its JCS SHA-256. It can replay one exact durable SSE frame after restart without consulting another payload store.",
+  "$id": "https://contracts.kokoro.invalid/session-agui-projection-payload.v1.schema.json",
+  "title": "Kokoro Session AG-UI projection payload v1",
+  "description": "The complete closed payload projected from one persisted presentation row into one SSE data frame.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["rowRef", "profileRevision", "cursorProfileRevision", "source", "projectionPayload", "projectionPayloadDigest"],
+  "required": ["profileRevision", "source", "event"],
   "properties": {
-    "rowRef": {"$ref": "#/$defs/id"},
     "profileRevision": {"const": "kokoro-agui-presentation.v1"},
-    "cursorProfileRevision": {"const": "opaque-session-cursor-v1"},
     "source": {
       "type": "object", "additionalProperties": false,
       "required": ["sourceEventId", "sourceKind", "sessionId", "streamEpoch", "durableSeq", "projectionVersion", "schemaRevision", "recordedAt"],
@@ -20,8 +18,9 @@
         "schemaRevision": {"const": 1}, "recordedAt": {"$ref": "#/$defs/dateTime"}
       }
     },
-    "projectionPayload": {"$ref": "https://contracts.kokoro.invalid/session-agui-projection-payload.v1.schema.json"},
-    "projectionPayloadDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+    "presentationRunBindingRef": {"$ref": "#/$defs/id"},
+    "presentationMessageBindingRef": {"$ref": "#/$defs/id"},
+    "event": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json"}
   },
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},

@@ -24,7 +24,11 @@
       "properties": {
         "parentInternalRunRef": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
         "parentPresentationRunId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}
-      }
+      },
+      "oneOf": [
+        {"properties": {"parentInternalRunRef": {"type": "null"}, "parentPresentationRunId": {"type": "null"}}},
+        {"properties": {"parentInternalRunRef": {"$ref": "#/$defs/id"}, "parentPresentationRunId": {"$ref": "#/$defs/id"}}}
+      ]
     },
     "state": {"enum": ["open", "finished", "error"]},
     "terminalDisposition": {"oneOf": [{"enum": ["success", "interrupted", "error", "canceled"]}, {"type": "null"}]},
