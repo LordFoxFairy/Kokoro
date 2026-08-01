@@ -6,6 +6,7 @@ import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/publication/v1/publication_common.proto";
 
 // SiteLifecycleService exposes only Site owner operations implemented by the
 // production Platform control plane. Domain effects never pass through the
@@ -16,14 +17,9 @@ service SiteLifecycleService {
 }
 
 message ActivationFacts {
-  string candidate_release_ref = 1 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
-  optional string expected_active_release_ref = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
+  reserved 1, 2;
+  reserved "candidate_release_ref", "expected_active_release_ref";
+
   string audience = 3 [(buf.validate.field).string = {
     min_len: 3
     max_len: 128
@@ -36,6 +32,55 @@ message ActivationFacts {
     min_len: 3
     max_len: 512
   }];
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 6 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding target_release = 7 [(buf.validate.field).required = true];
+  ActivePointerCasPrecondition active_pointer = 8 [(buf.validate.field).required = true];
+}
+
+message ActivationCasFence {
+  string cas_command_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 fence = 2 [(buf.validate.field).uint64 = {gte: 1}];
+  string nonce_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string token_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message FirstActivationPointer {
+  string pointer_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+
+message ExistingActivePointer {
+  string pointer_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string current_release_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 current_generation = 3 [(buf.validate.field).uint64 = {gte: 1}];
+}
+
+message ActivePointerCasPrecondition {
+  oneof current {
+    option (buf.validate.oneof).required = true;
+    FirstActivationPointer first_activation = 1;
+    ExistingActivePointer existing = 2;
+  }
+  uint64 expected_generation = 3;
+  string cas_precondition_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  ActivationCasFence fence = 5 [(buf.validate.field).required = true];
+}
+
+message ActivationEligibilityEvidenceRefs {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding begin_authority_snapshot = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding immediate_before_pointer_cas_authority_snapshot = 2 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding eligibility_evidence = 3 [(buf.validate.field).required = true];
 }
 
 message RequestActivationApprovalEffect {
@@ -119,4 +164,6 @@ message ApproveAndActivateResponse {
   }];
   bool replayed = 3;
   kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
+  optional uint64 committed_active_pointer_generation = 5;
+  ActivationEligibilityEvidenceRefs activation_evidence = 6;
 }

@@ -544,6 +544,10 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         "platform-admin-commerce@v1",
         "platform-admin-credit@v1",
         "platform-site-lifecycle@v1",
+        "platform-site-provisioning@v1",
+        "platform-product-catalog-publication@v1",
+        "platform-site-publication@v1",
+        "platform-site-evidence-admission@v1",
         "platform-admission@v1",
         "platform-session-authorization@v2",
         "session-dispatch-owner-evidence@v1",
@@ -553,6 +557,41 @@ def test_node_generator_declares_boundary_scoped_bundles() -> None:
         assert boundary in generator
     assert "await protoFiles(protoRoot)" not in generator
     assert 'schemaId: "kokoro.platform.admin.v1.AdminAuthService"' not in generator
+
+
+def test_site_evidence_admission_digest_binds_attested_workload_not_operator_session() -> None:
+    with tempfile.TemporaryDirectory() as directory:
+        result = subprocess.run(
+            [
+                "node",
+                str(CONTRACT / "generate.mjs"),
+                "--boundary",
+                "platform-site-evidence-admission@v1",
+                "--output",
+                directory,
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        source = (Path(directory) / "command-envelope-digest.ts").read_text()
+    assert "VerifiedReleaseEvidenceWorkloadAxes" in source
+    assert "recordReleaseEvidenceRequestDigest" in source
+    for axis in (
+        "workloadIdentityRef",
+        "producerIdentityRef",
+        "producerRegistrationRevision",
+        "producerRegistrationDigest",
+        "producerRole",
+        "workloadAttestationRevision",
+        "workloadAttestationDigest",
+    ):
+        assert axis in source
+    assert "release_evidence_producer_role_invalid" in source
+    assert "AuthenticatedOperatorCommandContext" not in source
+    assert "operatorSessionRef" not in source
 
 
 def test_admin_commerce_digest_covers_catalog_primitive_publications() -> None:
@@ -1021,10 +1060,17 @@ import {
   SecurityEpochsSchema,
   SiteScopeSchema,
 } from "./bundle/kokoro/platform/admin/v2/admin_shared_pb.js";
-import {
-  ActivationFactsSchema,
-  RequestActivationApprovalEffectSchema,
-} from "./bundle/kokoro/platform/site/v1/site_lifecycle_pb.js";
+    import {
+      ActivationFactsSchema,
+      ActivationCasFenceSchema,
+      ActivePointerCasPreconditionSchema,
+      FirstActivationPointerSchema,
+      RequestActivationApprovalEffectSchema,
+    } from "./bundle/kokoro/platform/site/v1/site_lifecycle_pb.js";
+    import {
+      CandidateAuthorityBindingSchema,
+      ImmutableContractRevisionBindingSchema,
+    } from "./bundle/kokoro/platform/publication/v1/publication_common_pb.js";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 
 const command = create(CommandIdentityV2Schema, {
@@ -1055,13 +1101,37 @@ const context = create(AuthenticatedOperatorCommandContextSchema, {
   }),
 });
 const makeEffect = (reason: string) => create(RequestActivationApprovalEffectSchema, {
-  approvalRef: "approval:1",
-  activation: create(ActivationFactsSchema, {
-    candidateReleaseRef: "release:7",
-    audience: "kokoro-session",
-    sessionContractRevision: "session-v7",
-    reason,
-  }),
+      approvalRef: "approval:1",
+      activation: create(ActivationFactsSchema, {
+        audience: "kokoro-session",
+        sessionContractRevision: "session-v7",
+        reason,
+        candidate: create(CandidateAuthorityBindingSchema, {
+          candidateRef: "candidate:7",
+          candidateVersion: 7n,
+          candidateAuthorizationEpoch: 3n,
+          candidateDigest: "a".repeat(64),
+        }),
+        targetRelease: create(ImmutableContractRevisionBindingSchema, {
+          ref: "release:7",
+          revision: 7n,
+          digest: "b".repeat(64),
+        }),
+        activePointer: create(ActivePointerCasPreconditionSchema, {
+          current: {
+            case: "firstActivation",
+            value: create(FirstActivationPointerSchema, { pointerRef: "active-pointer:site:alpha" }),
+          },
+          expectedGeneration: 0n,
+          casPreconditionDigest: "c".repeat(64),
+          fence: create(ActivationCasFenceSchema, {
+            casCommandRef: "cas:command:1",
+            fence: 1n,
+            nonceDigest: "d".repeat(64),
+            tokenDigest: "e".repeat(64),
+          }),
+        }),
+      }),
 });
 const verified = {
   workloadIdentityRef: "workload:web-admin",

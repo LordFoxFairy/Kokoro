@@ -68,7 +68,7 @@ jobs:
           pnpm --dir contract run buf:lint
           node scripts/repository/check-generated-contracts.mjs
           if git ls-tree -r --name-only origin/main -- contract/proto | grep -q '\.proto$'; then
-            pnpm --dir contract exec buf breaking --against '../.git#branch=origin/main,subdir=contract'
+            node scripts/contract/check-prelaunch-protobuf-breaking.mjs --against '../.git#branch=origin/main,subdir=contract'
           else
             echo 'Buf breaking baseline bootstrap: origin/main has no contract/proto files yet.'
           fi

@@ -71,7 +71,7 @@ test("generated command digest helpers tolerate boundary-selective shared primit
 });
 
 test("site release publication digest binds only the latest candidate publication command", () => {
-  const source = commandEnvelopeDigestSource("site-provisioning");
+  const source = commandEnvelopeDigestSource("site-publication");
   assert.match(source, /effect\.siteReleaseCandidateRef/u);
   for (const legacy of ["effect.releaseRef", "effect.launchProfileRef", "effect.modelOptionCatalogRef", "effect.agentCatalogRef"]) {
     assert.doesNotMatch(source, new RegExp(legacy.replace(".", "\\."), "u"));
@@ -346,6 +346,9 @@ test("privileged and public contracts track only current provider and official c
     "platform-admin-command@v2",
     "platform-site-lifecycle@v1",
     "platform-site-provisioning@v1",
+    "platform-product-catalog-publication@v1",
+    "platform-site-publication@v1",
+    "platform-site-evidence-admission@v1",
     "platform-session-authorization@v1",
     "agent-execution-evidence@v1",
     "platform-media-runtime@v1",
@@ -438,6 +441,7 @@ test("federated contract CI runs the pinned Buf and generated-mirror gates", asy
   assert.match(workflow, /pnpm --dir contract install --frozen-lockfile/u);
   assert.match(workflow, /pnpm --dir contract run buf:format:check/u);
   assert.match(workflow, /pnpm --dir contract run buf:lint/u);
+  assert.match(workflow, /node scripts\/contract\/check-prelaunch-protobuf-breaking\.mjs --against/u);
   assert.match(workflow, /pnpm --dir contract run openapi:lint/u);
   assert.match(workflow, /git -C kokoro-platform diff --exit-code -- src\/interfaces\/http\/generated\/platform-public/u);
   assert.match(workflow, /status --porcelain --untracked-files=all -- src\/interfaces\/http\/generated\/platform-public/u);

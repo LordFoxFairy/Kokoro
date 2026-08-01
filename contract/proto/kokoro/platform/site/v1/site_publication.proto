@@ -1,0 +1,281 @@
+syntax = "proto3";
+
+package kokoro.platform.site.v1;
+
+import "buf/validate/validate.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/publication/v1/publication_common.proto";
+
+// SitePublicationService owns Site-specific immutable publication records. It
+// consumes Product Catalog/Profile revisions but cannot publish or edit them.
+// Activation and active-pointer CAS remain on SiteLifecycleService.
+service SitePublicationService {
+  rpc AuthorizeSiteReleaseCandidate(AuthorizeSiteReleaseCandidateRequest) returns (AuthorizeSiteReleaseCandidateResponse) {}
+  rpc PublishSurfaceInventory(PublishSurfaceInventoryRequest) returns (PublishSurfaceInventoryResponse) {}
+  rpc PublishWebBuildMaterialBundle(PublishWebBuildMaterialBundleRequest) returns (PublishWebBuildMaterialBundleResponse) {}
+  rpc IssueWebBuildIntent(IssueWebBuildIntentRequest) returns (IssueWebBuildIntentResponse) {}
+  rpc PublishReleaseCertification(PublishReleaseCertificationRequest) returns (PublishReleaseCertificationResponse) {}
+  rpc PublishSiteRelease(PublishSiteReleaseRequest) returns (PublishSiteReleaseResponse) {}
+}
+
+// SiteEvidenceAdmissionService is the sole machine ingress. The authenticated
+// controller/attestor workload may submit immutable evidence references, but
+// cannot authorize a candidate, issue an intent, certify, publish a release,
+// or activate a pointer. Platform must compare every context axis with the
+// authenticated transport identity and verify the referenced DSSE/provenance,
+// registered producer, and artifact digest before committing a receipt.
+service SiteEvidenceAdmissionService {
+  rpc RecordReleaseEvidence(RecordReleaseEvidenceRequest) returns (RecordReleaseEvidenceResponse) {}
+}
+
+message AuthorizeSiteReleaseCandidateEffect {
+  string candidate_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_candidate_version = 2 [(buf.validate.field).uint64 = {gte: 1}];
+  uint64 candidate_authorization_epoch = 3 [(buf.validate.field).uint64 = {gte: 1}];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding launch_product_profile = 4 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding product_surface_catalog = 5 [(buf.validate.field).required = true];
+  string business_bindings_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string reason = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message AuthorizeSiteReleaseCandidateRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  AuthorizeSiteReleaseCandidateEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message AuthorizeSiteReleaseCandidateResponse {
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message PublishSurfaceInventoryEffect {
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding surface_inventory = 2 [(buf.validate.field).required = true];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message PublishSurfaceInventoryRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  PublishSurfaceInventoryEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishSurfaceInventoryResponse {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding surface_inventory = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message PublishWebBuildMaterialBundleEffect {
+  // The operator approves publication of an already scanned immutable bundle;
+  // the operator does not author its bytes and Platform must verify the digest.
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_build_material_bundle = 2 [(buf.validate.field).required = true];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message PublishWebBuildMaterialBundleRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  PublishWebBuildMaterialBundleEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishWebBuildMaterialBundleResponse {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_build_material_bundle = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message IssueWebBuildIntentEffect {
+  // This human command authorizes Platform Site to issue the exact signed
+  // intent. The operator never supplies signing material or a build credential.
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_build_intent = 2 [(buf.validate.field).required = true];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message IssueWebBuildIntentRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  IssueWebBuildIntentEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message IssueWebBuildIntentResponse {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_build_intent = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message RecordReleaseEvidenceEffect {
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding compiled_web_manifest = 2 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_artifact_provenance = 3 [(buf.validate.field).required = true];
+  string web_artifact_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding artifact_inspection_evidence = 5 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding journey_evidence = 6 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding security_evidence = 7 [(buf.validate.field).required = true];
+  string reason = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+enum ReleaseEvidenceProducerRole {
+  RELEASE_EVIDENCE_PRODUCER_ROLE_UNSPECIFIED = 0;
+  RELEASE_EVIDENCE_PRODUCER_ROLE_WEB_ARTIFACT_PROVENANCE_ATTESTOR = 1;
+}
+
+message AttestedReleaseEvidenceContext {
+  option (buf.validate.message).cel = {
+    id: "site_evidence_admission.fixed_audience"
+    message: "release evidence admission requires its dedicated audience"
+    expression: "this.audience == 'kokoro.site-release-evidence-admission.v1'"
+  };
+  kokoro.common.v2.CommandIdentityV2 command = 1 [(buf.validate.field).required = true];
+  string workload_identity_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string audience = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string environment = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 64
+  }];
+  string region = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 64
+  }];
+  string producer_identity_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding producer_registration = 7 [(buf.validate.field).required = true];
+  ReleaseEvidenceProducerRole producer_role = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  // This is a signed, immutable attestation of the transport workload, not an
+  // operator session, operator assurance, factor, or managed-device claim.
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding workload_attestation = 9 [(buf.validate.field).required = true];
+}
+
+message RecordReleaseEvidenceRequest {
+  AttestedReleaseEvidenceContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  RecordReleaseEvidenceEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message RecordReleaseEvidenceResponse {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding release_evidence = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message PublishReleaseCertificationEffect {
+  // The operator references certification already signed by the independent
+  // release-certification producer. Platform verifies its DSSE trust tuple;
+  // operator identity never becomes certification producer identity.
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding release_certification = 2 [(buf.validate.field).required = true];
+  uint64 expected_certification_revocation_epoch = 3;
+  string reason = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message PublishReleaseCertificationRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  PublishReleaseCertificationEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message PublishReleaseCertificationResponse {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding release_certification = 1 [(buf.validate.field).required = true];
+  bool replayed = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+message PublishSiteReleaseEffect {
+  reserved 1 to 15;
+  reserved "release_ref", "web_artifact_digest", "release_manifest_digest", "certification_digest", "launch_profile_ref", "site_config_revision_ref", "legal_revision_ref", "feature_policy_revision", "model_option_catalog_ref", "agent_catalog_ref", "identity_issuer_label", "identity_auth_strength_policy_revision", "enabled_surface_ids", "locale_policy", "certification";
+
+  string site_release_candidate_ref = 16 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_candidate_version = 17 [(buf.validate.field).uint64 = {gte: 1}];
+  string reason = 18 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message PublishSiteReleaseRequest {
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  PublishSiteReleaseEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+enum PublishedSiteReleaseState {
+  PUBLISHED_SITE_RELEASE_STATE_UNSPECIFIED = 0;
+  PUBLISHED_SITE_RELEASE_STATE_READY = 1;
+}
+
+message PublishSiteReleaseResponse {
+  reserved 2;
+  reserved "release_ref";
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  PublishedSiteReleaseState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  bool replayed = 4;
+  kokoro.common.v2.CommandReceiptV2 receipt = 5 [(buf.validate.field).required = true];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding site_release = 6 [(buf.validate.field).required = true];
+}

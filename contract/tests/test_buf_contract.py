@@ -2292,22 +2292,33 @@ def test_wave1_query_and_lifecycle_outputs_reject_empty_sentinels() -> None:
             assert re.search(r"optional string .*page_token.*?min_len: 1", body, re.DOTALL)
 
     activate = _message_body(lifecycle, "ActivationFacts")
-    assert "optional string expected_active_release_ref" in activate
-    assert re.search(r"expected_active_release_ref.*?min_len: [1-9]", activate, re.DOTALL)
+    assert "ActivePointerCasPrecondition active_pointer" in activate
+    assert "ImmutableContractRevisionBinding target_release" in activate
     assert re.search(r"string reason.*?min_len: 3", activate, re.DOTALL)
 
 
 def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     lifecycle = _proto("kokoro/platform/site/v1/site_lifecycle.proto")
     facts = _message_body(lifecycle, "ActivationFacts")
-    for field in (
-        "candidate_release_ref",
-        "expected_active_release_ref",
-        "audience",
-        "session_contract_revision",
-        "reason",
-    ):
+    for field in ("candidate", "target_release", "active_pointer", "audience", "session_contract_revision", "reason"):
         assert field in facts
+    assert not re.search(r"\b(?:optional\s+)?string\s+candidate_release_ref\b", facts)
+    assert not re.search(r"\b(?:optional\s+)?string\s+expected_active_release_ref\b", facts)
+    assert 'reserved "candidate_release_ref", "expected_active_release_ref"' in facts
+    publication_common = _proto("kokoro/platform/publication/v1/publication_common.proto")
+    candidate = _message_body(publication_common, "CandidateAuthorityBinding")
+    for field in ("candidate_ref", "candidate_version", "candidate_authorization_epoch"):
+        assert field in candidate
+    pointer = _message_body(lifecycle, "ActivePointerCasPrecondition")
+    for field in ("expected_generation", "cas_precondition_digest", "fence"):
+        assert field in pointer
+    evidence = _message_body(lifecycle, "ActivationEligibilityEvidenceRefs")
+    for field in (
+        "begin_authority_snapshot",
+        "immediate_before_pointer_cas_authority_snapshot",
+        "eligibility_evidence",
+    ):
+        assert field in evidence
     for message in ("RequestActivationApprovalEffect", "ApproveAndActivateEffect"):
         body = _message_body(lifecycle, message)
         assert "string approval_ref" in body
@@ -2318,7 +2329,7 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
 
 
 def test_site_release_publication_accepts_only_candidate_command_identity() -> None:
-    provisioning = _proto("kokoro/platform/site/v1/site_provisioning.proto")
+    provisioning = _proto("kokoro/platform/site/v1/site_publication.proto")
     effect = _message_body(provisioning, "PublishSiteReleaseEffect")
     assert "string site_release_candidate_ref = 16" in effect
     assert "uint64 expected_candidate_version = 17" in effect
@@ -2332,6 +2343,123 @@ def test_site_release_publication_accepts_only_candidate_command_identity() -> N
     for legacy_type in ("SiteReleaseCertificationProof", "SiteLocalePolicy"):
         assert legacy_type not in provisioning
     assert "reserved 1 to 15;" in effect
+
+
+def test_site_publication_authority_has_typed_contract_document_operations() -> None:
+    provisioning = _proto("kokoro/platform/site/v1/site_provisioning.proto")
+    catalog = _proto("kokoro/platform/product/v1/product_catalog_publication.proto")
+    publication = _proto("kokoro/platform/site/v1/site_publication.proto")
+    assert _service_methods(provisioning, "SiteProvisioningService") == ["RegisterSite"]
+    assert _service_methods(catalog, "ProductCatalogPublicationService") == [
+        "PublishProductSurfaceCatalog",
+        "PublishLaunchProductProfile",
+    ]
+    assert _service_methods(publication, "SitePublicationService") == [
+        "AuthorizeSiteReleaseCandidate",
+        "PublishSurfaceInventory",
+        "PublishWebBuildMaterialBundle",
+        "IssueWebBuildIntent",
+        "PublishReleaseCertification",
+        "PublishSiteRelease",
+    ]
+    assert _service_methods(publication, "SiteEvidenceAdmissionService") == [
+        "RecordReleaseEvidence",
+    ]
+    expected_effects = {
+        "AuthorizeSiteReleaseCandidateEffect": (
+            "candidate_ref", "expected_candidate_version", "candidate_authorization_epoch",
+        ),
+        "PublishSurfaceInventoryEffect": ("candidate", "surface_inventory"),
+        "PublishWebBuildMaterialBundleEffect": ("candidate", "web_build_material_bundle"),
+        "IssueWebBuildIntentEffect": ("candidate", "web_build_intent"),
+        "RecordReleaseEvidenceEffect": (
+            "candidate", "compiled_web_manifest", "web_artifact_provenance",
+        ),
+        "PublishReleaseCertificationEffect": ("candidate", "release_certification"),
+    }
+    for message, fields in expected_effects.items():
+        body = _message_body(publication, message)
+        for field in fields:
+            assert field in body
+        assert "bytes payload" not in body
+        assert "string operation" not in body
+    evidence_request = _message_body(publication, "RecordReleaseEvidenceRequest")
+    assert "AttestedReleaseEvidenceContext context" in evidence_request
+    assert "AuthenticatedOperatorCommandContext context" not in evidence_request
+    workload_context = _message_body(publication, "AttestedReleaseEvidenceContext")
+    for field in (
+        "command", "workload_identity_ref", "audience", "environment", "region",
+        "producer_identity_ref", "producer_registration", "producer_role", "workload_attestation",
+    ):
+        assert field in workload_context
+    assert "kokoro.site-release-evidence-admission.v1" in workload_context
+    assert "operator_session" not in workload_context
+    assert "assurance_level" not in workload_context
+    assert "factor_classes" not in workload_context
+    assert "managed_device" not in workload_context
+    for operation in (
+        "AuthorizeSiteReleaseCandidateRequest", "PublishWebBuildMaterialBundleRequest",
+        "IssueWebBuildIntentRequest", "PublishReleaseCertificationRequest", "PublishSiteReleaseRequest",
+    ):
+        assert "AuthenticatedOperatorCommandContext context" in _message_body(publication, operation)
+    for message, fields in {
+        "PublishProductSurfaceCatalogEffect": ("catalog_revision",),
+        "PublishLaunchProductProfileEffect": ("profile_revision", "product_surface_catalog"),
+    }.items():
+        body = _message_body(catalog, message)
+        for field in fields:
+            assert field in body
+        assert "bytes payload" not in body
+        assert "string operation" not in body
+
+    registry = json.loads((CONTRACT / "registry/boundaries.yaml").read_text())
+    by_id = {item["id"]: item for item in registry["boundaries"]}
+    assert by_id["platform-site-provisioning"]["lifecycle"] == "contract-only"
+    assert [operation["id"] for operation in by_id["platform-site-provisioning"]["operations"]] == ["RegisterSite"]
+    assert [operation["id"] for operation in by_id["platform-product-catalog-publication"]["operations"]] == [
+        "PublishProductSurfaceCatalog", "PublishLaunchProductProfile",
+    ]
+    assert [operation["id"] for operation in by_id["platform-site-publication"]["operations"]] == [
+        "AuthorizeSiteReleaseCandidate",
+        "PublishSurfaceInventory",
+        "PublishWebBuildMaterialBundle",
+        "IssueWebBuildIntent",
+        "PublishReleaseCertification",
+        "PublishSiteRelease",
+    ]
+    assert [operation["id"] for operation in by_id["platform-site-evidence-admission"]["operations"]] == [
+        "RecordReleaseEvidence",
+    ]
+    assert by_id["platform-site-evidence-admission"]["audience"] == "kokoro.site-release-evidence-admission.v1"
+    assert by_id["platform-site-evidence-admission"]["trustPlane"] == "internal-control"
+    assert by_id["platform-site-evidence-admission"]["consumers"] == [
+        {"boundary": "web.release-attestor", "repository": "kokoro-web"},
+    ]
+    architecture = json.loads((CONTRACT.parent / "config/architecture/index-roots.yaml").read_text())
+    architecture_by_id = {item["id"]: item for item in architecture["roots"]}
+    release_attestor = architecture_by_id["web.release-attestor"]
+    assert release_attestor["kind"] == "boundary"
+    assert release_attestor["boundary"] == "web.release-attestor"
+    assert release_attestor["path"].startswith("kokoro-web/")
+    assert release_attestor["id"] not in {"web.user", "web.admin"}
+    federation = json.loads((CONTRACT.parent / "config/repository/federated-repositories.json").read_text())
+    protocol_roles = {
+        (repository["id"], protocol["id"], protocol["role"], protocol["lifecycle"])
+        for repository in federation["repositories"]
+        for protocol in repository["protocols"]
+    }
+    assert (
+        "kokoro-platform", "platform-site-evidence-admission", "provider", "contract-only",
+    ) in protocol_roles
+    assert (
+        "kokoro-web", "platform-site-evidence-admission", "consumer", "contract-only",
+    ) in protocol_roles
+    compatibility = json.loads((CONTRACT.parent / "config/repository/compatibility-matrix.json").read_text())
+    assert "platform-site-evidence-admission" not in {
+        contract["id"] for contract in compatibility["contracts"]
+    }
+    assert by_id["platform-product-catalog-publication"]["provider"] == by_id["platform-site-publication"]["provider"]
+    assert by_id["platform-product-catalog-publication"]["id"] != by_id["platform-site-publication"]["id"]
 
 
 def test_site_release_publication_compatibility_corpus_freezes_latest_only_shape() -> None:

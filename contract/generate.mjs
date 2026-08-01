@@ -101,6 +101,7 @@ const BOUNDARIES = Object.freeze({
       "kokoro/common/v1/error.proto",
       "kokoro/common/v2/command_envelope.proto",
       "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/publication/v1/publication_common.proto",
       "kokoro/platform/site/v1/site_lifecycle.proto",
     ]),
     helper: null,
@@ -118,6 +119,48 @@ const BOUNDARIES = Object.freeze({
     ]),
     helper: null,
     commandEnvelopeDigest: "site-provisioning",
+  }),
+  "platform-product-catalog-publication@v1": Object.freeze({
+    schema: "kokoro.platform.product.v1.ProductCatalogPublicationService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/product/v1/product_catalog_publication.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/publication/v1/publication_common.proto",
+      "kokoro/platform/product/v1/product_catalog_publication.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "product-catalog-publication",
+  }),
+  "platform-site-publication@v1": Object.freeze({
+    schema: "kokoro.platform.site.v1.SitePublicationService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/site/v1/site_publication.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/publication/v1/publication_common.proto",
+      "kokoro/platform/site/v1/site_publication.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "site-publication",
+  }),
+  "platform-site-evidence-admission@v1": Object.freeze({
+    schema: "kokoro.platform.site.v1.SiteEvidenceAdmissionService",
+    version: 1,
+    inputs: Object.freeze(["proto/kokoro/platform/site/v1/site_publication.proto"]),
+    sources: Object.freeze([
+      "kokoro/common/v1/error.proto",
+      "kokoro/common/v2/command_envelope.proto",
+      "kokoro/platform/admin/v2/admin_shared.proto",
+      "kokoro/platform/publication/v1/publication_common.proto",
+      "kokoro/platform/site/v1/site_publication.proto",
+    ]),
+    helper: null,
+    commandEnvelopeDigest: "site-evidence-admission",
   }),
   "platform-model-control@v1": Object.freeze({
     schema: "kokoro.platform.model.v1.ModelControlService",
@@ -1319,11 +1362,15 @@ export function requestActivationApprovalRequestDigest(
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
   if (effect.activation === undefined) throw new Error("site_activation_facts_required");
+  if (effect.activation.candidate === undefined || effect.activation.targetRelease === undefined ||
+      effect.activation.activePointer === undefined || effect.activation.activePointer.fence === undefined ||
+      effect.activation.activePointer.current.case === undefined) throw new Error("site_activation_authority_required");
   return siteDigest(
     "kokoro.platform.site.v1.SiteLifecycleService/RequestActivationApproval", context,
     { typeName: RequestActivationApprovalEffectSchema.typeName, bytes: toBinary(RequestActivationApprovalEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.approvalRef, effect.activation.candidateReleaseRef,
-      ...(effect.activation.expectedActiveReleaseRef === undefined ? [] : [effect.activation.expectedActiveReleaseRef])],
+    [siteId, effect.approvalRef, effect.activation.candidate.candidateRef,
+      effect.activation.targetRelease.ref, effect.activation.activePointer.current.value.pointerRef,
+      effect.activation.activePointer.fence.casCommandRef],
     verified,
   );
 }
@@ -1334,12 +1381,16 @@ export function approveAndActivateRequestDigest(
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
   if (effect.activation === undefined) throw new Error("site_activation_facts_required");
+  if (effect.activation.candidate === undefined || effect.activation.targetRelease === undefined ||
+      effect.activation.activePointer === undefined || effect.activation.activePointer.fence === undefined ||
+      effect.activation.activePointer.current.case === undefined) throw new Error("site_activation_authority_required");
   return siteDigest(
     "kokoro.platform.site.v1.SiteLifecycleService/ApproveAndActivate", context,
     { typeName: ApproveAndActivateEffectSchema.typeName, bytes: toBinary(ApproveAndActivateEffectSchema, effect, { writeUnknownFields: false }) },
     [siteId, effect.approvalRef, effect.activationAttemptRef,
-      effect.activation.candidateReleaseRef,
-      ...(effect.activation.expectedActiveReleaseRef === undefined ? [] : [effect.activation.expectedActiveReleaseRef])],
+      effect.activation.candidate.candidateRef, effect.activation.targetRelease.ref,
+      effect.activation.activePointer.current.value.pointerRef,
+      effect.activation.activePointer.fence.casCommandRef],
     verified,
   );
 }
@@ -1471,9 +1522,7 @@ export const revokeCodeBatchRequestDigest = (context: AuthenticatedOperatorComma
 function siteProvisioningDigestSource() {
   return `${authenticatedCommandDigestSource()}
 import {
-  PublishSiteReleaseEffectSchema,
   RegisterSiteEffectSchema,
-  type PublishSiteReleaseEffect,
   type RegisterSiteEffect,
 } from "./kokoro/platform/site/v1/site_provisioning_pb.js";
 
@@ -1493,21 +1542,197 @@ export function registerSiteRequestDigest(
     verified,
   );
 }
+`;
+}
 
-export function publishSiteReleaseRequestDigest(
-  context: AuthenticatedOperatorCommandContext,
-  siteId: string,
-  effect: PublishSiteReleaseEffect,
+function productCatalogPublicationDigestSource() {
+  return `${authenticatedCommandDigestSource()}
+import {
+  PublishLaunchProductProfileEffectSchema,
+  PublishProductSurfaceCatalogEffectSchema,
+  type PublishLaunchProductProfileEffect,
+  type PublishProductSurfaceCatalogEffect,
+} from "./kokoro/platform/product/v1/product_catalog_publication_pb.js";
+
+function productCatalogPublicationDigest(
+  method: string, context: AuthenticatedOperatorCommandContext, effect: TypedPayload,
+  targetRefs: readonly string[], verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  return authenticatedEnvelope(
+    "platform-product-catalog-publication@v1",
+    \`kokoro.platform.product.v1.ProductCatalogPublicationService/\${method}\`,
+    context, effect, targetRefs, verified,
+  );
+}
+
+export function publishProductSurfaceCatalogRequestDigest(
+  context: AuthenticatedOperatorCommandContext, effect: PublishProductSurfaceCatalogEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  if (effect.catalogRevision === undefined) throw new Error("product_catalog_revision_required");
+  return productCatalogPublicationDigest("PublishProductSurfaceCatalog", context,
+    { typeName: PublishProductSurfaceCatalogEffectSchema.typeName, bytes: toBinary(PublishProductSurfaceCatalogEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.catalogRevision.ref], verified);
+}
+
+export function publishLaunchProductProfileRequestDigest(
+  context: AuthenticatedOperatorCommandContext, effect: PublishLaunchProductProfileEffect,
+  verified: VerifiedAuthenticatedAdminAxes,
+): string {
+  if (effect.profileRevision === undefined || effect.productSurfaceCatalog === undefined) throw new Error("launch_profile_owner_bindings_required");
+  return productCatalogPublicationDigest("PublishLaunchProductProfile", context,
+    { typeName: PublishLaunchProductProfileEffectSchema.typeName, bytes: toBinary(PublishLaunchProductProfileEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.profileRevision.ref, effect.productSurfaceCatalog.ref], verified);
+}
+`;
+}
+
+function sitePublicationDigestSource() {
+  return `${authenticatedCommandDigestSource()}
+import {
+  AuthorizeSiteReleaseCandidateEffectSchema,
+  IssueWebBuildIntentEffectSchema,
+  PublishReleaseCertificationEffectSchema,
+  PublishSiteReleaseEffectSchema,
+  PublishSurfaceInventoryEffectSchema,
+  PublishWebBuildMaterialBundleEffectSchema,
+  type AuthorizeSiteReleaseCandidateEffect,
+  type IssueWebBuildIntentEffect,
+  type PublishReleaseCertificationEffect,
+  type PublishSiteReleaseEffect,
+  type PublishSurfaceInventoryEffect,
+  type PublishWebBuildMaterialBundleEffect,
+} from "./kokoro/platform/site/v1/site_publication_pb.js";
+
+function sitePublicationDigest(
+  method: string, context: AuthenticatedOperatorCommandContext, siteId: string,
+  effect: TypedPayload, targetRefs: readonly string[],
   verified: VerifiedAuthenticatedAdminAxes,
 ): string {
   return authenticatedEnvelope(
-    "platform-site-provisioning@v1",
-    "kokoro.platform.site.v1.SiteProvisioningService/PublishSiteRelease",
-    context,
-    { typeName: PublishSiteReleaseEffectSchema.typeName, bytes: toBinary(PublishSiteReleaseEffectSchema, effect, { writeUnknownFields: false }) },
-    [siteId, effect.siteReleaseCandidateRef],
-    verified,
+    "platform-site-publication@v1", \`kokoro.platform.site.v1.SitePublicationService/\${method}\`,
+    context, effect, [siteId, ...targetRefs], verified,
   );
+}
+
+export function authorizeSiteReleaseCandidateRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: AuthorizeSiteReleaseCandidateEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.launchProductProfile === undefined || effect.productSurfaceCatalog === undefined) throw new Error("site_candidate_owner_bindings_required");
+  return sitePublicationDigest("AuthorizeSiteReleaseCandidate", context, siteId,
+    { typeName: AuthorizeSiteReleaseCandidateEffectSchema.typeName, bytes: toBinary(AuthorizeSiteReleaseCandidateEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidateRef, effect.launchProductProfile.ref, effect.productSurfaceCatalog.ref], verified);
+}
+
+export function publishSurfaceInventoryRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishSurfaceInventoryEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined || effect.surfaceInventory === undefined) throw new Error("surface_inventory_owner_bindings_required");
+  return sitePublicationDigest("PublishSurfaceInventory", context, siteId,
+    { typeName: PublishSurfaceInventoryEffectSchema.typeName, bytes: toBinary(PublishSurfaceInventoryEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidate.candidateRef, effect.surfaceInventory.ref], verified);
+}
+
+export function publishWebBuildMaterialBundleRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishWebBuildMaterialBundleEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined || effect.webBuildMaterialBundle === undefined) throw new Error("web_build_material_owner_bindings_required");
+  return sitePublicationDigest("PublishWebBuildMaterialBundle", context, siteId,
+    { typeName: PublishWebBuildMaterialBundleEffectSchema.typeName, bytes: toBinary(PublishWebBuildMaterialBundleEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidate.candidateRef, effect.webBuildMaterialBundle.ref], verified);
+}
+
+export function issueWebBuildIntentRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: IssueWebBuildIntentEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined || effect.webBuildIntent === undefined) throw new Error("web_build_intent_owner_bindings_required");
+  return sitePublicationDigest("IssueWebBuildIntent", context, siteId,
+    { typeName: IssueWebBuildIntentEffectSchema.typeName, bytes: toBinary(IssueWebBuildIntentEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidate.candidateRef, effect.webBuildIntent.ref], verified);
+}
+
+export function publishReleaseCertificationRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishReleaseCertificationEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined || effect.releaseCertification === undefined) throw new Error("release_certification_owner_bindings_required");
+  return sitePublicationDigest("PublishReleaseCertification", context, siteId,
+    { typeName: PublishReleaseCertificationEffectSchema.typeName, bytes: toBinary(PublishReleaseCertificationEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidate.candidateRef, effect.releaseCertification.ref], verified);
+}
+
+export function publishSiteReleaseRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishSiteReleaseEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  return sitePublicationDigest("PublishSiteRelease", context, siteId,
+    { typeName: PublishSiteReleaseEffectSchema.typeName, bytes: toBinary(PublishSiteReleaseEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.siteReleaseCandidateRef], verified);
+}
+`;
+}
+
+function siteEvidenceAdmissionDigestSource() {
+  return `
+import {
+  RecordReleaseEvidenceEffectSchema,
+  ReleaseEvidenceProducerRole,
+  type AttestedReleaseEvidenceContext,
+  type RecordReleaseEvidenceEffect,
+} from "./kokoro/platform/site/v1/site_publication_pb.js";
+
+export type VerifiedReleaseEvidenceWorkloadAxes = Readonly<{
+  workloadIdentityRef: string;
+  audience: "kokoro.site-release-evidence-admission.v1";
+  environment: string;
+  region: string;
+  siteId: string;
+  producerIdentityRef: string;
+  producerRegistrationRef: string;
+  producerRegistrationRevision: bigint;
+  producerRegistrationDigest: string;
+  producerRole: ReleaseEvidenceProducerRole.WEB_ARTIFACT_PROVENANCE_ATTESTOR;
+  workloadAttestationRef: string;
+  workloadAttestationRevision: bigint;
+  workloadAttestationDigest: string;
+}>;
+
+export function recordReleaseEvidenceRequestDigest(
+  context: AttestedReleaseEvidenceContext,
+  siteId: string,
+  effect: RecordReleaseEvidenceEffect,
+  verified: VerifiedReleaseEvidenceWorkloadAxes,
+): string {
+  if (context.command === undefined || context.producerRegistration === undefined || context.workloadAttestation === undefined) throw new Error("release_evidence_workload_context_required");
+  if (effect.candidate === undefined || effect.compiledWebManifest === undefined || effect.webArtifactProvenance === undefined || effect.artifactInspectionEvidence === undefined || effect.journeyEvidence === undefined || effect.securityEvidence === undefined) throw new Error("release_evidence_owner_bindings_required");
+  const audience = assertAxisMatch("audience", context.audience, verified.audience);
+  if (audience !== "kokoro.site-release-evidence-admission.v1") throw new Error("release_evidence_audience_invalid");
+  const producerRegistration = context.producerRegistration;
+  assertAxisMatch("producerRegistrationRef", producerRegistration.ref, verified.producerRegistrationRef);
+  assertUint64Match("producerRegistrationRevision", producerRegistration.revision, verified.producerRegistrationRevision);
+  assertSha256Match("producerRegistrationDigest", producerRegistration.digest, verified.producerRegistrationDigest);
+  if (context.producerRole !== ReleaseEvidenceProducerRole.WEB_ARTIFACT_PROVENANCE_ATTESTOR || context.producerRole !== verified.producerRole) throw new Error("release_evidence_producer_role_invalid");
+  const workloadAttestation = context.workloadAttestation;
+  assertAxisMatch("workloadAttestationRef", workloadAttestation.ref, verified.workloadAttestationRef);
+  assertUint64Match("workloadAttestationRevision", workloadAttestation.revision, verified.workloadAttestationRevision);
+  assertSha256Match("workloadAttestationDigest", workloadAttestation.digest, verified.workloadAttestationDigest);
+  return commandEnvelopeV2Digest({
+    contractVersion: "platform-site-evidence-admission@v1",
+    operation: "kokoro.platform.site.v1.SiteEvidenceAdmissionService/RecordReleaseEvidence",
+    trust: {
+      workloadIdentityRef: assertAxisMatch("workloadIdentityRef", context.workloadIdentityRef, verified.workloadIdentityRef),
+      audience,
+      environment: assertAxisMatch("environment", context.environment, verified.environment),
+      region: assertAxisMatch("region", context.region, verified.region),
+      siteRef: requiredAxis("siteId", verified.siteId),
+      securityEpochs: [
+        { axis: "producer-registration", value: producerRegistration.revision },
+        { axis: "workload-attestation", value: workloadAttestation.revision },
+      ],
+    },
+    targetRefs: [
+      assertAxisMatch("siteId", siteId, verified.siteId),
+      assertAxisMatch("producerIdentityRef", context.producerIdentityRef, verified.producerIdentityRef),
+      producerRegistration.ref,
+      workloadAttestation.ref,
+      effect.candidate.candidateRef,
+      effect.compiledWebManifest.ref,
+      effect.webArtifactProvenance.ref,
+      effect.artifactInspectionEvidence.ref,
+      effect.journeyEvidence.ref,
+      effect.securityEvidence.ref,
+    ],
+    effect: {
+      typeName: RecordReleaseEvidenceEffectSchema.typeName,
+      bytes: toBinary(RecordReleaseEvidenceEffectSchema, effect, { writeUnknownFields: false }),
+    },
+  });
 }
 `;
 }
@@ -1779,6 +2004,9 @@ function commandEnvelopeDigestSource(kind) {
     "admin-command": adminCommandDigestSource,
     "site-lifecycle": siteLifecycleDigestSource,
     "site-provisioning": siteProvisioningDigestSource,
+    "product-catalog-publication": productCatalogPublicationDigestSource,
+    "site-publication": sitePublicationDigestSource,
+    "site-evidence-admission": siteEvidenceAdmissionDigestSource,
     "admin-commerce": adminCommerceDigestSource,
     "model-control": modelControlDigestSource,
     "media-projection-recovery": () => mediaProjectionRecoveryDigestSource(kind),
@@ -1787,7 +2015,7 @@ function commandEnvelopeDigestSource(kind) {
   };
   const wrapper = wrappers[kind];
   if (wrapper === undefined) throw new Error("command_envelope_digest_boundary_unknown");
-  const boundarySelectivePrimitives = kind === "model-image-effect" ||
+  const boundarySelectivePrimitives = kind === "site-evidence-admission" || kind === "model-image-effect" ||
     kind === "media-projection-recovery" || kind === "credit-cost-projection-recovery";
   return commandEnvelopeDigestCoreSource(boundarySelectivePrimitives) + wrapper();
 }

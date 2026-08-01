@@ -6,12 +6,11 @@ import "buf/validate/validate.proto";
 import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
 
-// SiteProvisioningService is the typed fresh-deployment ingress for creating a Site
-// authority and publishing immutable SiteRelease facts. It is deliberately separate
-// from lifecycle promotion and does not expose a generic action proxy.
+// SiteProvisioningService creates the Site deployment authority only. Product
+// Catalog publication, immutable Site publication, and lifecycle activation
+// have separate owner-aligned services.
 service SiteProvisioningService {
   rpc RegisterSite(RegisterSiteRequest) returns (RegisterSiteResponse) {}
-  rpc PublishSiteRelease(PublishSiteReleaseRequest) returns (PublishSiteReleaseResponse) {}
 }
 
 message RegisterSiteEffect {
@@ -60,55 +59,4 @@ message RegisterSiteResponse {
   }];
   bool replayed = 3;
   kokoro.common.v2.CommandReceiptV2 receipt = 4 [(buf.validate.field).required = true];
-}
-
-message PublishSiteReleaseEffect {
-  reserved 1 to 15;
-  reserved "release_ref", "web_artifact_digest", "release_manifest_digest",
-    "certification_digest", "launch_profile_ref", "site_config_revision_ref",
-    "legal_revision_ref", "feature_policy_revision", "model_option_catalog_ref",
-    "agent_catalog_ref", "identity_issuer_label",
-    "identity_auth_strength_policy_revision", "enabled_surface_ids", "locale_policy",
-    "certification";
-
-  string site_release_candidate_ref = 16 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  uint64 expected_candidate_version = 17 [(buf.validate.field).uint64 = {gte: 1}];
-  string reason = 18 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 512
-  }];
-}
-
-message PublishSiteReleaseRequest {
-  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
-  string site_id = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
-  PublishSiteReleaseEffect effect = 3 [(buf.validate.field).required = true];
-}
-
-enum PublishedSiteReleaseState {
-  PUBLISHED_SITE_RELEASE_STATE_UNSPECIFIED = 0;
-  PUBLISHED_SITE_RELEASE_STATE_READY = 1;
-}
-
-message PublishSiteReleaseResponse {
-  string site_id = 1 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 128
-  }];
-  string release_ref = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
-  PublishedSiteReleaseState state = 3 [(buf.validate.field).enum = {
-    defined_only: true
-    not_in: 0
-  }];
-  bool replayed = 4;
-  kokoro.common.v2.CommandReceiptV2 receipt = 5 [(buf.validate.field).required = true];
 }

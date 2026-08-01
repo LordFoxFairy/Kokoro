@@ -45,7 +45,14 @@ only payload/signature facts; trusted public keys and current epochs come exclus
 It explicitly keeps Product Catalog and
 Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas
 are immutable under `--breaking-against`; the predecessor may contain its own valid subset, while the candidate must
-contain the complete current set. A semantic change requires a new major contract id.
+contain the complete current set. The one unpublished R0a owner-closure hard cut is executable only through the exact
+predecessor/candidate digests in `contract/registry/prelaunch-schema-hard-cuts.yaml`; the registry rows themselves and any
+unlisted or follow-up drift still fail closed.
+
+`check-prelaunch-protobuf-breaking.mjs` wraps the pinned Buf breaking gate for the matching unpublished protobuf cut. It
+validates the exact contract-only exception registry, candidate source bytes and Git baseline bytes before excluding the three
+recorded Site files. Once the candidate is the baseline it passes no exclusions to Buf, so the waiver cannot become permanent.
+It does not prove or claim Product Catalog, Site Publication, Provisioning, or Lifecycle runtime providers.
 
 OpenAPI descriptors are different: they are full YAML 1.2 documents and may legitimately use anchors, flow
 mappings, merge keys, and quoted scalars. `openapi-reader.mjs` invokes the root-lock-pinned PyYAML reader in

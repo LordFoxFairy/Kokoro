@@ -190,6 +190,14 @@ test("writes a canonical BOM that binds the promotion commit, pins and recoverab
       bom.repositories.some(({ protocols }) => protocols.some(({ id }) => id === "platform-media-runtime")),
       false,
     );
+    assert.equal(
+      bom.repositories.some(({ protocols }) => protocols.some(({ id }) => id === "platform-site-evidence-admission")),
+      false,
+    );
+    assert.equal(
+      bom.contracts.some(({ id }) => id === "platform-site-evidence-admission"),
+      false,
+    );
     assert.deepEqual(bom.contracts.find(({ id }) => id === "hub-runtime"), {
       consumers: ["kokoro-agent"],
       id: "hub-runtime",

@@ -111,7 +111,10 @@ webBuildToolchainRevisionRef / webBuildToolchainDigest
 contract floor / opaque modelRoleRef requirements
 distinct modelInventory and modelCatalog refs/digests
 webBuildMaterialBundleRef / webBuildMaterialBundleDigest
-site config / legal / sales / capability assignment refs or digests
+site config / legal / sales / assortment / Memory owner refs + revisions + digests
+direct Auth/Identity issuer + authentication/authorization policy owner revisions
+Commerce Offer + EntitlementTemplate + CreditProgram revision closure + digest
+Hub CapabilityAssignment + CapabilityCatalog + AgentCatalog revision closure + digest
 issuedAt / candidateAuthorizationEpoch
 signingKeyId / signature
 ```
@@ -129,6 +132,17 @@ WebBuildIntent 本身不是 bearer credential，因此不设置会破坏 clean-c
 SiteRelease、Commerce Plan/Offer/Entitlement、ModelOption、Memory policy 和 WebBuildIntent 都必须引用同一份 published
 catalog revision，不能继续分别接受“格式合法即可”的 surface 字符串。Root 只发布 catalog schema、canonicalization 和
 breaking gate，不拥有或在线编辑 catalog 业务记录。
+
+Catalog/Profile publication 与 Site publication 是两个 owner boundary。前者不能接受 Candidate、build 或 evidence effect；
+后者只能消费 exact Catalog/Profile revision，不能发布或编辑它们。Root 为两者发布 typed `contract-only` RPC schema，不代表
+Platform 已实现 provider。Site provisioning 只负责 `RegisterSite`，不能再承载发布 authority。
+
+构建 controller/attestor 不使用 operator context。它只通过独立 Evidence Admission boundary 提交 immutable evidence refs；
+context 绑定 registered workload identity、固定 audience/attestor producer role、Site/environment/region、producer identity、
+registration revision/digest 与 immutable workload-attestation revision/digest。Platform 必须验证 authenticated transport axes、
+DSSE/provenance、producer registration 和 artifact digest。
+operator command 只能批准或引用已验证的 Material/Intent/Certification 事实，不能 author evidence、artifact bytes、签名密钥
+或 producer identity；machine workload 也不能 author Candidate、Certification、SiteRelease 或 active pointer。
 
 ### 3.1 构建物料是签名内容，不是任意路径
 
@@ -360,6 +374,11 @@ precondition。首次激活使用显式 `first-activation` 状态、`currentRele
 CAS material。snapshot 的 receipt query 绑定 Site/environment、activation/CAS command、nonce/fence；owner head digest
 同时绑定 head event ref 与 owner event digest。它不重新运行旧 compiler，也不覆盖当前 artifact。
 
+SiteRelease 与 active pointer 是两个 aggregate：SiteRelease 发布后不可变，pointer 单独推进 generation。Lifecycle approval
+material 必须携带 typed Candidate ref/version/authorization epoch/digest、immutable target release ref/revision/digest、pointer
+first/existing state、expected generation、CAS fence/precondition digest 和三份 eligibility evidence refs。protobuf 中旧的
+`candidate_release_ref` 与 `expected_active_release_ref` 被 reserved，不提供兼容字段。
+
 DSSE vector 不是信任根且不得携带公钥；verifier 只从 Root 的 `trusted-web-release-producers` registry 解析与 signed tuple
 完全匹配、current epoch 且 active 的 Ed25519 key，并强制 contract id、payload type、producer role 与 receipt aggregate
 capability。Certification Instance signer 与 Revocation signer 即使 audience 相同也不能互换。
@@ -445,7 +464,8 @@ artifact inspection。
 ## 实施顺序
 
 1. Root 发布 Product/Surface、SurfaceInventory、BuildIntent、MaterialBundle、BuildToolchain、CompiledManifest 与 provenance
-   profile 的 v1 schema、canonicalization、corpus 与 architecture gate；
+   profile 的 v1 schema、canonicalization、corpus 与 architecture gate；以一次性 pre-launch hard cut 冻结 exact owner-revision
+   closure、typed publication RPC 与 Lifecycle pointer/CAS，不新增 V2 或 compatibility adapter；
 2. Platform Product Catalog 建立唯一 published catalog revision，Site/Commerce/Model 迁到同一 ref；
 3. Web 在 shadow mode 建立 registry/compiler，先完全重现 reference Site 的当前输出；
 4. 用 base shell + Memory unit 替换 `memoryEnabled` token fragments；

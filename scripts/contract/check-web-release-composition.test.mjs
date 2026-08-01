@@ -331,7 +331,7 @@ test("checked-in registry, release authority schemas, and golden corpus close th
   assert.deepEqual(result, {
     contracts: 15,
     positiveCases: 17,
-    negativeCases: 59,
+    negativeCases: 66,
     canonicalVectors: 17,
     dsseVectors: 5,
   });
@@ -482,6 +482,56 @@ test("profile candidate inventory release chain is single-direction and activati
   assert.ok(release.required.includes("releaseCertification"));
   assert.ok(release.required.includes("webArtifactDigest"));
   assert.equal("enabledSurfaceRefs" in release.properties, false);
+});
+
+test("Candidate and SiteRelease freeze explicit Memory, Identity, Commerce, and Hub owner closures", async () => {
+  const readSchema = async (name) => JSON.parse(await readFile(resolve(repositoryRoot, `contract/spec/${name}.yaml`), "utf8"));
+  const candidate = await readSchema("site-release-candidate");
+  const release = await readSchema("site-release");
+  for (const schema of [candidate, release]) {
+    const bindings = schema.$defs.businessBindings;
+    for (const field of ["memoryPolicy", "authIdentityClosure", "commerceClosure", "hubClosure"]) {
+      assert.ok(bindings.required.includes(field));
+    }
+    assert.deepEqual(schema.$defs.ownerRevisionBinding.required, ["ref", "revision", "digest"]);
+    assert.ok(schema.$defs.authIdentityClosure.required.includes("identityIssuer"));
+    assert.ok(schema.$defs.authIdentityClosure.required.includes("authenticationPolicy"));
+    assert.ok(schema.$defs.authIdentityClosure.required.includes("authorizationPolicy"));
+    assert.ok(schema.$defs.commerceClosure.required.includes("offerRevisions"));
+    assert.ok(schema.$defs.commerceClosure.required.includes("entitlementTemplateRevisions"));
+    assert.ok(schema.$defs.commerceClosure.required.includes("creditProgramRevisions"));
+    assert.ok(schema.$defs.hubClosure.required.includes("capabilityAssignment"));
+    assert.ok(schema.$defs.hubClosure.required.includes("capabilityCatalog"));
+    assert.ok(schema.$defs.hubClosure.required.includes("agentCatalog"));
+  }
+});
+
+test("owner closure omissions and digest drift are frozen as negative corpus coverage", async () => {
+  const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  const ids = new Set(corpus.negativeCases.map(({ id }) => id));
+  for (const id of [
+    "candidate-memory-owner-binding-missing",
+    "candidate-auth-identity-binding-missing",
+    "candidate-commerce-credit-program-missing",
+    "candidate-commerce-closure-digest-mismatch",
+    "candidate-hub-catalog-binding-missing",
+    "site-release-owner-closure-mismatch",
+  ]) assert.ok(ids.has(id), id);
+});
+
+test("provenance admission freezes the registered attestor producer role", async () => {
+  const corpus = JSON.parse(await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8"));
+  const mismatch = corpus.negativeCases.find(({ id }) => id === "provenance-producer-role-mismatch");
+  assert.deepEqual(mismatch, {
+    id: "provenance-producer-role-mismatch",
+    baseCaseId: "provenance-site-alpha",
+    mutation: {
+      op: "replace",
+      path: "/predicate/runDetails/builder/kokoro_signingKeyId",
+      value: "key.release-certification.1",
+    },
+    expectedCode: "web_release_provenance_producer_role_invalid",
+  });
 });
 
 test("compiled manifest distinguishes BFF authority, opaque model roles, and exact bootstrap bindings", async () => {
@@ -763,6 +813,47 @@ test("v1 breaking gate freezes schema semantics and existing registry ownership"
     () => assertFrozenV1Compatible({ registry, schemas }, { registry, schemas: changedSchemas }),
     (error) => error instanceof WebReleaseContractError && error.code === "web_release_v1_schema_breaking",
   );
+
+  const hardCutContractId = "site-release-candidate.v1";
+  const hardCutBaselineSchemas = new Map(schemas);
+  const predecessor = structuredClone(schemas.get(hardCutContractId));
+  predecessor.title = "Unpublished predecessor";
+  hardCutBaselineSchemas.set(hardCutContractId, predecessor);
+  const exactHardCut = {
+    cuts: [{
+      contractId: hardCutContractId,
+      baselineSchemaDigest: canonicalDigest(predecessor),
+      candidateSchemaDigest: canonicalDigest(schemas.get(hardCutContractId)),
+    }],
+  };
+  assert.doesNotThrow(() => assertFrozenV1Compatible(
+    { registry, schemas: hardCutBaselineSchemas },
+    { registry, schemas, schemaHardCuts: exactHardCut },
+  ));
+  const driftedSchemas = new Map(schemas);
+  const drifted = structuredClone(schemas.get(hardCutContractId));
+  drifted.title = "Unlisted follow-up drift";
+  driftedSchemas.set(hardCutContractId, drifted);
+  assert.throws(
+    () => assertFrozenV1Compatible(
+      { registry, schemas: hardCutBaselineSchemas },
+      { registry, schemas: driftedSchemas, schemaHardCuts: exactHardCut },
+    ),
+    (error) => error instanceof WebReleaseContractError && error.code === "web_release_v1_schema_breaking",
+  );
+});
+
+test("the checked-in pre-launch exception registry is exact and contract-only", async () => {
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-hard-cut-registry-"));
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/corpus"), join(temporary, "contract/corpus"), { recursive: true });
+  const hardCutsPath = join(temporary, "contract/registry/prelaunch-schema-hard-cuts.yaml");
+  const hardCuts = JSON.parse(await readFile(hardCutsPath, "utf8"));
+  hardCuts.cuts[0].reason = "mutable waiver";
+  await writeFile(hardCutsPath, `${JSON.stringify(hardCuts, null, 2)}\n`);
+  await expectCode(() => validateRepository({ root: temporary }), "web_release_hard_cut_registry_invalid");
 });
 
 test("coherent manifest cannot substitute a measured tool for the pre-frozen toolchain role", async () => {
@@ -992,7 +1083,7 @@ test("the public repository gate freezes every negative vector id and exact muta
         corpus.negativeCases.find(({ id }) => id === "activation-first-pointer-must-be-null"),
       );
       const duplicate = structuredClone(corpus.negativeCases[0]);
-      corpus.negativeCases = [pointerCase, ...Array.from({ length: 58 }, () => structuredClone(duplicate))];
+      corpus.negativeCases = [pointerCase, ...Array.from({ length: 65 }, () => structuredClone(duplicate))];
     },
     (corpus) => {
       const originalId = corpus.negativeCases[0].id;

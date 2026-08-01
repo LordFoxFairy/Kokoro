@@ -71,20 +71,46 @@ a stricter closed presentation subset. The stock `@ag-ui/client` transport is fo
 Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapshot repair, and non-durable draining
 semantics. Rendering libraries remain adapters only and do not own the wire contract.
 
-The fifteen Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
-new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform
-Product Catalog owns Product/Surface/Journey business records, Platform Site owns inventory/material/intent, and Web
+The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
+isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/
+Intent/Certification/Release publication, attested-workload Evidence admission, and Site activation; every new boundary remains `contract-only` and therefore claims no
+runtime provider. Root owns schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform Product
+Catalog owns Product/Surface/Journey/Profile business records, Platform Site owns Candidate/inventory/material/intent/evidence,
+and Web
 Release Composition owns toolchain/composition-registry/compiled-manifest/provenance publication. Payloads never contain their own digest
 or signature. Callers carry the digest when referencing another immutable payload; DSSE signatures and the final OCI
 artifact digest live outside the signed/canonical payload, preventing a digest cycle. Provenance dependencies use
 global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs: tool URIs include the measured role and repository ref,
 while package URIs retain the package URL identity and include the unique composition package ref.
 
-`PublishSiteReleaseEffect` is a latest-only Admin command: callers provide only `site_release_candidate_ref`,
-`expected_candidate_version`, and `reason`; Platform generates the immutable SiteRelease and all authority-bound facts.
-The `platform-site-provisioning@v1` boundary remains `contract-only`. The old Platform publish handler is now fail-closed,
-but Candidate Authority remains dormant until Platform and Web regenerate their mirrors from this Root source and submit
-provider/consumer compatibility evidence. Root contract publication does not claim that runtime migration is complete.
+`PublishSiteReleaseEffect` is a latest-only Site Publication command: callers provide only
+`site_release_candidate_ref`, `expected_candidate_version`, and `reason`; the future Platform owner must generate the immutable
+SiteRelease and all authority-bound facts. `platform-site-provisioning@v1` now contains only `RegisterSite`; it is not a
+publication owner. `platform-product-catalog-publication@v1`, `platform-site-publication@v1`, and
+`platform-site-lifecycle@v1` are separate `contract-only` boundaries. Product Catalog/Profile publication cannot accept Site
+candidate or evidence effects, Site Publication cannot publish Product Catalog/Profile or activate a pointer, and Lifecycle
+cannot author publication records. Root contract publication does not claim any of those runtime providers exist.
+
+`platform-site-evidence-admission@v1` is a fourth, machine-only boundary. `RecordReleaseEvidence` binds command identity,
+registered workload identity, fixed attestor producer role, Site/environment/region, exact producer-registration revision/digest,
+and immutable workload-attestation revision/digest. The
+controller/attestor may submit only immutable evidence refs; the future Platform provider must verify transport identity,
+DSSE/provenance, producer registration and artifact digest. It cannot reinterpret a CI workload as an operator or allow it to
+authorize Candidate/Intent, publish Certification/Release, or activate a pointer. Operator commands that reference Material,
+Intent or Certification likewise approve or reference already verified immutable facts; the operator never authors artifact
+bytes, signing material, provenance, or certification identity.
+The federated manifest records only the planned `kokoro-platform` provider and `kokoro-web` release-attestor consumer roles at
+`contract-only` lifecycle. Those declarations do not create a provider implementation, generated runtime mirror, admitted
+producer deployment, or compatibility evidence.
+
+The frozen corpus includes `provenance-producer-role-mismatch`: substituting a certification key for the registered Web artifact
+provenance attestor fails before evidence can be admitted.
+
+Candidate, WebBuildIntent and SiteRelease freeze one identical `businessBindings` closure. Site/Legal/Sales/Assortment/Memory
+bindings carry explicit owner revision plus canonical digest; Auth/Identity binds issuer, authentication policy and
+authorization policy directly; Commerce closes exact Offer, EntitlementTemplate and CreditProgram revisions; Hub closes exact
+CapabilityAssignment, CapabilityCatalog and AgentCatalog revisions. Each subgraph also carries a closure digest, so a ref-only,
+latest-read or LaunchProfile-hidden dependency cannot pass the corpus gate.
 
 DSSE verification resolves SPKI only from `contract/registry/trusted-web-release-producers.yaml`, never from corpus vectors.
 Every Ed25519 trust anchor declares an exact producer role plus allowed contract ids, payload types and owner-receipt aggregate
@@ -94,6 +120,17 @@ validity and active status. Activation snapshots persist six independently signe
 Certification, ProducerRegistry, TrustPolicy, signing-key status and active pointer—plus Site/environment, activation and CAS
 command refs, nonce/fence, expected pointer generation and the exact CAS precondition. A first activation is represented
 explicitly with a null current release and generation zero.
+
+Lifecycle approval material uses `CandidateAuthorityBinding` (candidate ref, immutable version, authorization epoch and digest),
+an immutable target SiteRelease revision binding, and a typed active-pointer precondition with generation, CAS command/fence and
+precondition digest. The legacy `candidate_release_ref` and `expected_active_release_ref` fields are reserved and have no wire
+field. Successful activation may return the committed pointer generation plus exact begin/before-CAS/eligibility evidence refs;
+SiteRelease itself is never mutated into an active-state record.
+
+Because these v1 contracts were unpublished, R0a is an explicit one-time hard cut rather than a compatibility adapter or V2.
+[`prelaunch-schema-hard-cuts.yaml`](registry/prelaunch-schema-hard-cuts.yaml) and
+[`prelaunch-protobuf-hard-cuts.yaml`](registry/prelaunch-protobuf-hard-cuts.yaml) freeze exact predecessor/candidate digests.
+Their executable gates allow only this recorded transition; any later source/schema drift returns to ordinary full breaking checks.
 
 Eligibility time is bounded by the signed immediate-before-CAS active-pointer receipt: its server-issued time derives a fixed
 five-second freshness lease, and both snapshots must be no more than 120 seconds old. Persisted evidence is audit material,
@@ -237,6 +274,8 @@ Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract 
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
 `node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
 `pnpm --dir contract run web-release:check`; CI compares the current fifteen-contract candidate with the predecessor's
-own valid contract set and then freezes every predecessor v1 registry row and schema. Validate the strict AG-UI family
+own valid contract set and then freezes every predecessor v1 registry row and schema, except the exact one-time R0a transitions
+recorded above. Protobuf CI uses `scripts/contract/check-prelaunch-protobuf-breaking.mjs`, which applies the recorded exclusions
+only against the exact unpublished predecessor and performs full Buf breaking once that cut is the baseline. Validate the strict AG-UI family
 with `pnpm --dir contract agui:check`, `pnpm --dir contract agui:typecheck`, and
 `pnpm --dir contract agui:test`.

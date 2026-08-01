@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "registryId": "kokoro.prelaunch-protobuf-hard-cuts.v1",
+  "authority": "root.contract",
+  "lifecycle": "contract-only",
+  "cuts": [
+    {
+      "id": "site-lifecycle-activation-authority-r0a",
+      "sourcePath": "proto/kokoro/platform/site/v1/site_lifecycle.proto",
+      "baselineSourceDigest": "sha256:879f599f1d8a3737f0da7ab3c84d6f9c9c3420ff0b8f2f4b254502e2811c345e",
+      "candidateSourceDigest": "sha256:47be4c0c11bb00db3ad883194c9740db16c45a6f17d2c3939e41672158894f81",
+      "reason": "Pre-launch R0a hard cut: replace ambiguous release strings with typed candidate/version/epoch, active-pointer generation/CAS, and eligibility evidence references."
+    },
+    {
+      "id": "site-provisioning-responsibility-cut-r0a",
+      "sourcePath": "proto/kokoro/platform/site/v1/site_provisioning.proto",
+      "baselineSourceDigest": "sha256:bbfa026b107cf4d2307e4af2b1c426171128f2097a4a6aa373d343af3d244c2e",
+      "candidateSourceDigest": "sha256:3c2a9876b814d8e65c0ebf44747749f38cf401d1a394d35b50bd01de34f2b177",
+      "reason": "Pre-launch R0a hard cut: keep platform-site-provisioning at registration only and move immutable publication commands to the Site publication authority."
+    },
+    {
+      "id": "site-publication-authority-r0a",
+      "sourcePath": "proto/kokoro/platform/site/v1/site_publication.proto",
+      "baselineSourceDigest": "absent",
+      "candidateSourceDigest": "sha256:7950624409ec3e37f07226fc7a88f46aeb0b3a285f2c45f535a6b0838e832ffa",
+      "reason": "Pre-launch R0a hard cut: introduce typed operator publication and separate attested-workload evidence admission operations."
+    }
+  ]
+}

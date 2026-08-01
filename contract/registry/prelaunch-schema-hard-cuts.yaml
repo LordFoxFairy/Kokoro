@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "registryId": "kokoro.prelaunch-schema-hard-cuts.v1",
+  "authority": "root.contract",
+  "lifecycle": "contract-only",
+  "cuts": [
+    {
+      "id": "site-release-candidate-owner-closures-r0a",
+      "contractId": "site-release-candidate.v1",
+      "baselineSchemaDigest": "sha256:9026d3c02774dc4d865df7bb20c5fef25b4144ab66c3824445802a33a6ae0bdc",
+      "candidateSchemaDigest": "sha256:4304e32e0a0e689e236568e2a10236f3657b024817983ef2705a2834264dba57",
+      "reason": "Pre-launch R0a hard cut: freeze explicit Memory, Auth/Identity, Commerce, and Hub owner revisions in the immutable candidate."
+    },
+    {
+      "id": "site-release-owner-closures-r0a",
+      "contractId": "site-release.v1",
+      "baselineSchemaDigest": "sha256:0faa14ebf83e22e04a0d9539934ac18090db2acb2f6a8186b93c8ea9c3cc9de1",
+      "candidateSchemaDigest": "sha256:b8a1e6b8b9a62bd68e6f1f07740fcf3a32bcc5dc87a0b0e7b7b40f4bab112b61",
+      "reason": "Pre-launch R0a hard cut: copy the complete owner-revision closure into immutable SiteRelease publication material."
+    },
+    {
+      "id": "web-build-intent-owner-closures-r0a",
+      "contractId": "web-build-intent.v1",
+      "baselineSchemaDigest": "sha256:aa986b922c5f84fd039c0e6c64804b92a455a807c97694a09e3a3b2041a3188e",
+      "candidateSchemaDigest": "sha256:19cc2bb728ccc6f6e60344c7a92a94f24af981ea72daa0769e4abb316b5f7fea",
+      "reason": "Pre-launch R0a hard cut: bind WebBuildIntent to the same exact candidate owner-revision closure."
+    }
+  ]
+}

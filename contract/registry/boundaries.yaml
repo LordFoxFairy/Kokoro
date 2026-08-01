@@ -1096,8 +1096,7 @@
       "id": "platform-site-provisioning",
       "lifecycle": "contract-only",
       "operations": [
-        {"effect": true, "id": "RegisterSite", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "platform", "siteBinding": "request-field", "transport": "connect-rpc"},
-        {"effect": true, "id": "PublishSiteRelease", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+        {"effect": true, "id": "RegisterSite", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "platform", "siteBinding": "request-field", "transport": "connect-rpc"}
       ],
       "protocol": "connect-rpc",
       "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
@@ -1107,6 +1106,72 @@
       "transportSource": null,
       "transports": ["connect-rpc"],
       "trustPlane": "privileged-control",
+      "version": 1
+    },
+    {
+      "audience": "operator",
+      "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-product-catalog-publication",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "PublishProductSurfaceCatalog", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishLaunchProductProfile", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "platform", "siteBinding": "not-applicable", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "platform",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/product/v1/product_catalog_publication.proto", "select": {"service": "ProductCatalogPublicationService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "privileged-control",
+      "version": 1
+    },
+    {
+      "audience": "operator",
+      "consumers": [{"boundary": "web.admin", "repository": "kokoro-web"}],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-site-publication",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "AuthorizeSiteReleaseCandidate", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishSurfaceInventory", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishWebBuildMaterialBundle", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "IssueWebBuildIntent", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishReleaseCertification", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "PublishSiteRelease", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/site/v1/site_publication.proto", "select": {"service": "SitePublicationService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "privileged-control",
+      "version": 1
+    },
+    {
+      "audience": "kokoro.site-release-evidence-admission.v1",
+      "consumers": [{"boundary": "web.release-attestor", "repository": "kokoro-web"}],
+      "deadlineMs": null,
+      "failureOwner": "kokoro-platform",
+      "id": "platform-site-evidence-admission",
+      "lifecycle": "contract-only",
+      "operations": [
+        {"effect": true, "id": "RecordReleaseEvidence", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"}
+      ],
+      "protocol": "connect-rpc",
+      "provider": {"boundary": "service.platform", "repository": "kokoro-platform"},
+      "scope": "site",
+      "sourceStatus": "machine-readable",
+      "sources": [{"kind": "proto", "path": "contract/proto/kokoro/platform/site/v1/site_publication.proto", "select": {"service": "SiteEvidenceAdmissionService"}}],
+      "transportSource": null,
+      "transports": ["connect-rpc"],
+      "trustPlane": "internal-control",
       "version": 1
     },
     {

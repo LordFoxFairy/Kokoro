@@ -11,6 +11,7 @@ import Ajv2020 from "../../contract/node_modules/ajv/dist/2020.js";
 const DEFAULT_REGISTRY = "contract/registry/web-release-composition.yaml";
 const DEFAULT_CORPUS = "contract/corpus/web-release-composition-v1.json";
 const DEFAULT_TRUST_ANCHORS = "contract/registry/trusted-web-release-producers.yaml";
+const DEFAULT_PRELAUNCH_SCHEMA_HARD_CUTS = "contract/registry/prelaunch-schema-hard-cuts.yaml";
 const CONTRACT_IDS = [
   "activation-authority-snapshot.v1",
   "activation-eligibility-evidence.v1",
@@ -58,6 +59,11 @@ const DSSE_CONTRACT_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
   .flatMap(([role, capability]) => capability.contracts.map((contractId) => [contractId, role])));
 const RECEIPT_KIND_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
   .flatMap(([role, capability]) => capability.receipts.map((kind) => [kind, role])));
+const FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS = new Map([
+  ["site-release-candidate-owner-closures-r0a", "sha256:6581bd5f4ab02f89e5c20995f8ec0fa2b894868bb7e7689c2ed2ddb6c38255c7"],
+  ["site-release-owner-closures-r0a", "sha256:8083df52d9e54ccc786dfb7f57a1e4d40b0065c1357c18826c2ce15d8b618492"],
+  ["web-build-intent-owner-closures-r0a", "sha256:16b2df6ff34c5148888b3d97c2e3a0629673b188d0e65e48917bad2711be3116"],
+]);
 const ACTIVATION_FRESHNESS_LEASE_MILLISECONDS = 5_000;
 const ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS = 120_000;
 const SECRET_FRAGMENT = /(?:^|_)(?:api_?key|credential|password|private|secret|token)(?:_|$)/iu;
@@ -121,41 +127,48 @@ activation-authority-material-mismatch sha256:18f3d60fa5bd55812a16069d1b8f2d0472
 activation-eligibility-material-mismatch sha256:127b849f5481e028a4dddf75a53e643b7a98524a3c7234166bf7a7dd709d963d
 site-release-before-certification sha256:e2f371c928b322577c73063938e19ce849a5fdfecba15814bae2a8580d159c66
 activation-first-pointer-must-be-null sha256:0752cf0b97721035abc167fdcd7e19c20e884222217631739b7911d0ab995fb5
+candidate-memory-owner-binding-missing sha256:fec22d253bf8d116add031dcdc76162207ca659bbd8802cec82e69a0bc3a7467
+candidate-auth-identity-binding-missing sha256:a1e5b7cc4388d7530d1e5c0ea6dc1fea915ae9c0134af3daee2a8a60246f04a9
+candidate-commerce-credit-program-missing sha256:2da1fbb193d5719ea319d758069d6014b9e43fdfd7578aa945c566a0f7089c46
+candidate-commerce-closure-digest-mismatch sha256:a22e330cadb6ad61b9233ffa845480dc16973bd487e616a3921cde60d0cc559a
+candidate-hub-catalog-binding-missing sha256:43ea318617c4a1219c307cebba1bf6c828387f0f1ec956b83d233a689a4056dc
+site-release-owner-closure-mismatch sha256:c0d67000c269eda4d9f354a1872f448fb0a1e7b299465b8ac1cd04e662692d44
+provenance-producer-role-mismatch sha256:32ffb75d23af4ac83f33a09821c7b4f7309e8d3583e76ad03da92de4d4df95c6
 `.trim().split("\n").map((row) => row.split(" ")));
 const FROZEN_BLOCKED_ACTIVATION_SCENARIOS = new Map([
   ["candidate-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_candidate_epoch_invalid",
-    digest: "sha256:e33189cb87a96053b815b6b050d881a14274ddd347b852b1affc4f40065fb5a3",
+    digest: "sha256:499286b3f3909426ed47a35990087ea5b0a0a79c947919d4dc06e41adf843e3f",
     identity: { candidateState: "revoked", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["certification-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_certification_revoked",
-    digest: "sha256:04a1e0ae8d952742801d63c11ad581a8ba28b7da0a6842f4670202b19473da36",
+    digest: "sha256:9bced9f178ba51a2377db789daa2f9638e7a1801bcadd7697195edd4a65d3aa2",
     identity: { candidateState: "active", certificationState: "revoked", certificationRevocationEpoch: "1", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:a0d2d4cc9786c836565f291550f13ca6524aa0b91f2e61e634f73aeef3f83cef",
+    digest: "sha256:eae4042fd52dba9e12fcb7734c12e888de90cda0941b165cb041942f08d9a7e0",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "revoked", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-suspended-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:e6553498edf707dc57c2d526dab71906f66dd0700191ca4f67031a04132f805d",
+    digest: "sha256:96245763f0ac350dc72a7890b3f40e6935506e1e438f2e3b1cc247f2bb63d16b",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "suspended", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["producer-registry-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_registry_epoch_invalid",
-    digest: "sha256:cfa5e6f75960277c0839afb618f8adf86064187a93e5fd6f100eb405a4189697",
+    digest: "sha256:07eaefbd507d8b5b9b265edb28cb92a44b3a648e7531b1aa89b8461687b62e28",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "5", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["trust-policy-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_policy_epoch_invalid",
-    digest: "sha256:653f4a9efe55ff52074efc1249fd58b90c96720912ba5c6e7144efd5c359984e",
+    digest: "sha256:e29955b244b52b49a982232a0f3455cf8d72f9ee6f42fbc5b96eb7a24e546d92",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "10", expiredAtRead: false },
   }],
   ["certification-expired-between-authority-reads", {
     expectedCode: "web_release_activation_certification_expired",
-    digest: "sha256:12186b9464496c0b3d6a44aa6b40a0303a88daed3bcdf80052f6cf3a4f726263",
+    digest: "sha256:6321550b67f8d0dc4711e436933ba77f092458d21199f22ba9459f46fa813769",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: true },
   }],
 ]);
@@ -454,6 +467,49 @@ function canonicalRows(values, key) {
   }));
 }
 
+function ownerRevisionKey(binding) {
+  return `${binding.ref}@${binding.revision}`;
+}
+
+function validateBusinessOwnerBindings(bindings) {
+  const auth = bindings.authIdentityClosure;
+  const commerce = bindings.commerceClosure;
+  const hub = bindings.hubClosure;
+  const authMaterial = {
+    identityIssuer: auth.identityIssuer,
+    authenticationPolicy: auth.authenticationPolicy,
+    authorizationPolicy: auth.authorizationPolicy,
+  };
+  if (auth.closureDigest !== digest(authMaterial)) fail("web_release_candidate_owner_closure_invalid", "auth-identity");
+
+  for (const [kind, revisions] of [
+    ["offer", commerce.offerRevisions],
+    ["entitlement-template", commerce.entitlementTemplateRevisions],
+    ["credit-program", commerce.creditProgramRevisions],
+  ]) unique(revisions.map(ownerRevisionKey), "web_release_candidate_owner_closure_invalid", kind);
+  const commerceMaterial = {
+    offerRevisions: [...commerce.offerRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
+    entitlementTemplateRevisions: [...commerce.entitlementTemplateRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
+    creditProgramRevisions: [...commerce.creditProgramRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
+  };
+  if (commerce.closureDigest !== digest(commerceMaterial)) fail("web_release_candidate_owner_closure_invalid", "commerce");
+
+  const hubMaterial = {
+    capabilityAssignment: hub.capabilityAssignment,
+    capabilityCatalog: hub.capabilityCatalog,
+    agentCatalog: hub.agentCatalog,
+  };
+  if (hub.closureDigest !== digest(hubMaterial)) fail("web_release_candidate_owner_closure_invalid", "hub");
+
+  const allOwnerBindings = [
+    bindings.siteConfig, bindings.legalPolicy, bindings.salesPolicy, bindings.assortmentPolicy,
+    bindings.memoryPolicy, ...Object.values(authMaterial),
+    ...commerce.offerRevisions, ...commerce.entitlementTemplateRevisions, ...commerce.creditProgramRevisions,
+    ...Object.values(hubMaterial),
+  ];
+  unique(allOwnerBindings.map(ownerRevisionKey), "web_release_candidate_owner_closure_invalid");
+}
+
 function validateCatalog(catalog) {
   const products = unique(catalog.products.map(({ productRef }) => productRef), "web_release_catalog_duplicate_ref");
   const surfaces = unique(catalog.surfaces.map(({ surfaceRef }) => surfaceRef), "web_release_catalog_duplicate_ref");
@@ -552,6 +608,7 @@ function validateCandidate(candidate, related) {
   }
   const bindings = candidate.businessBindings;
   if (bindings.webBuildMaterialBundle.ref !== related.material.bundleRef || bindings.webBuildMaterialBundle.digest !== digest(related.material)) fail("web_release_candidate_reference_invalid", "material");
+  validateBusinessOwnerBindings(bindings);
 }
 
 function validateInventory(inventory, related) {
@@ -673,8 +730,7 @@ function validateIntent(intent, related) {
       related.candidate.candidateAuthorizationEpoch !== intent.candidateAuthorizationEpoch || related.candidate.environment !== intent.environment) fail("web_release_intent_context_invalid");
   unique(intent.modelRequirements.map(({ modelRoleRef }) => modelRoleRef), "web_release_intent_reference_invalid");
   if (canonicalRows(intent.modelRequirements, ({ modelRoleRef }) => modelRoleRef) !== canonicalRows(related.candidate.modelRequirements, ({ modelRoleRef }) => modelRoleRef)) fail("web_release_intent_reference_invalid", "model requirements");
-  const bindingPairs = [[intent.webBuildMaterialBundle, "webBuildMaterialBundle"], [intent.siteConfig, "siteConfig"], [intent.legalPolicy, "legalPolicy"], [intent.salesPolicy, "salesPolicy"], [intent.capabilityAssignment, "capabilityAssignment"]];
-  for (const [actual, key] of bindingPairs) if (canonicalize(actual) !== canonicalize(related.candidate.businessBindings[key])) fail("web_release_intent_reference_invalid", key);
+  if (canonicalize(intent.businessBindings) !== canonicalize(related.candidate.businessBindings)) fail("web_release_intent_reference_invalid", "businessBindings");
 }
 
 function registryProjection(registry, inventory, intent) {
@@ -803,6 +859,10 @@ function validateManifest(manifest, related) {
 }
 
 function validateProvenance(provenance, related) {
+  const builder = provenance.predicate.runDetails.builder;
+  const producer = related.trustAnchors.producers.get(`${builder.kokoro_signingKeyId}@${builder.keyVersion}`);
+  if (producer === undefined || producer.producerRole !== "web-artifact-provenance-attestor" ||
+      producer.producerIdentityRef !== builder.id) fail("web_release_provenance_producer_role_invalid");
   const parameters = provenance.predicate.buildDefinition.externalParameters;
   if (parameters.intentRef !== related.intent.intentRef || parameters.buildIntentDigest !== digest(related.intent) ||
       parameters.compiledWebManifestRef !== related.manifest.manifestRef || parameters.compiledWebManifestDigest !== digest(related.manifest) ||
@@ -1362,6 +1422,25 @@ function validateRegistry(registry, { requireCurrentSet = true } = {}) {
   }
 }
 
+function validatePrelaunchSchemaHardCuts(registryDocument, contractRegistry, schemas) {
+  exactKeys(registryDocument, ["authority", "cuts", "lifecycle", "registryId", "schemaVersion"], "web_release_hard_cut_registry_invalid");
+  if (registryDocument.schemaVersion !== 1 || registryDocument.registryId !== "kokoro.prelaunch-schema-hard-cuts.v1" ||
+      registryDocument.authority !== "root.contract" || registryDocument.lifecycle !== "contract-only" || !Array.isArray(registryDocument.cuts)) {
+    fail("web_release_hard_cut_registry_invalid");
+  }
+  const ids = unique(registryDocument.cuts.map(({ id }) => id), "web_release_hard_cut_registry_invalid");
+  if (canonicalSet(ids) !== canonicalSet(FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.keys())) fail("web_release_hard_cut_registry_invalid");
+  const rows = new Map(contractRegistry.contracts.map((entry) => [entry.id, entry]));
+  for (const cut of registryDocument.cuts) {
+    exactKeys(cut, ["baselineSchemaDigest", "candidateSchemaDigest", "contractId", "id", "reason"], "web_release_hard_cut_registry_invalid");
+    if (digest(cut) !== FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.get(cut.id)) fail("web_release_hard_cut_registry_invalid", cut.id);
+    const row = rows.get(cut.contractId);
+    const schema = schemas.get(cut.contractId);
+    if (row?.lifecycle !== "contract-only" || schema === undefined || digest(schema) !== cut.candidateSchemaDigest ||
+        cut.baselineSchemaDigest === cut.candidateSchemaDigest) fail("web_release_hard_cut_registry_invalid", cut.id);
+  }
+}
+
 function validateDocument(contractId, document, validators) {
   validateIJson(document);
   const validator = validators.get(contractId);
@@ -1404,7 +1483,9 @@ function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY), regist
     }
     catch (error) { fail("web_release_schema_compile_invalid", `${entry.id}: ${error.message}`); }
   }
-  return { registry, schemas, validators, envelopeValidators };
+  const schemaHardCuts = readJson(resolve(root, DEFAULT_PRELAUNCH_SCHEMA_HARD_CUTS), "web_release_hard_cut_registry_invalid");
+  validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas);
+  return { registry, schemas, validators, envelopeValidators, schemaHardCuts };
 }
 
 function loadGitBundle(root, revision, registryOptions = {}) {
@@ -1427,7 +1508,14 @@ function loadGitBundle(root, revision, registryOptions = {}) {
   for (const entry of registry.contracts) {
     schemas.set(entry.id, parseJsonSource(show(entry.schemaPath), "web_release_breaking_baseline_invalid", `${revision}:${entry.schemaPath}`));
   }
-  return { registry, schemas };
+  let schemaHardCuts = null;
+  try {
+    schemaHardCuts = parseJsonSource(show(DEFAULT_PRELAUNCH_SCHEMA_HARD_CUTS), "web_release_breaking_baseline_invalid", `${revision}:${DEFAULT_PRELAUNCH_SCHEMA_HARD_CUTS}`);
+  } catch (error) {
+    if (!(error instanceof WebReleaseContractError) || error.code !== "web_release_breaking_baseline_invalid") throw error;
+  }
+  if (schemaHardCuts !== null) validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas);
+  return { registry, schemas, schemaHardCuts };
 }
 
 export async function validateRepository(options = {}) {
@@ -1495,11 +1583,18 @@ export async function validateRepository(options = {}) {
 export function assertFrozenV1Compatible(baseline, candidate) {
   const baselineRows = new Map(baseline.registry.contracts.map((entry) => [entry.id, entry]));
   const candidateRows = new Map(candidate.registry.contracts.map((entry) => [entry.id, entry]));
+  const hardCuts = new Map((candidate.schemaHardCuts?.cuts ?? []).map((cut) => [cut.contractId, cut]));
   for (const [id, row] of baselineRows) {
     const next = candidateRows.get(id);
     if (next === undefined || canonicalize(row) !== canonicalize(next)) fail("web_release_v1_registry_breaking", id);
     const oldSchema = baseline.schemas.get(id); const newSchema = candidate.schemas.get(id);
-    if (oldSchema === undefined || newSchema === undefined || canonicalize(oldSchema) !== canonicalize(newSchema)) fail("web_release_v1_schema_breaking", id);
+    if (oldSchema === undefined || newSchema === undefined) fail("web_release_v1_schema_breaking", id);
+    if (canonicalize(oldSchema) !== canonicalize(newSchema)) {
+      const cut = hardCuts.get(id);
+      if (cut === undefined || digest(oldSchema) !== cut.baselineSchemaDigest || digest(newSchema) !== cut.candidateSchemaDigest) {
+        fail("web_release_v1_schema_breaking", id);
+      }
+    }
   }
 }
 

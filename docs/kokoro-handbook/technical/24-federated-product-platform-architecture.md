@@ -178,7 +178,7 @@ linking，不在数据库中默认共享账号。
 ```text
 ProductSurfaceCatalogRevision（Platform Product Catalog）
   -> LaunchProductProfile（exact Catalog + enabled Surface/Journey closure；不引用 Inventory）
-  -> SiteReleaseCandidate（Site/environment + business/model bindings + authorization epoch）
+  -> SiteReleaseCandidate（Site/environment + exact owner-revision closure + business/model bindings + authorization epoch）
   -> complete SurfaceInventoryRevision（exact Candidate/Profile/Catalog partition；Platform Site compiler）
   -> Plan/Offer/Entitlement refs（Platform Commerce）
   -> ModelOption requirements（Platform Model Control）
@@ -191,23 +191,39 @@ Catalog revision 使用 `draft -> validating -> published -> retired`；publishe
 Root 只定义 schema、canonicalization 与 breaking gate。当前代码尚未建立该统一目录，因此这是首要架构迁移而不是已实现
 事实。
 
-### 6.1 SiteRelease 的当前基线与目标快照
+### 6.1 SiteRelease 的 Root 合同基线与目标 runtime
 
-当前 `PublishedSiteRelease` 已有 Web artifact/manifest/certification digest、launch profile、Site config、legal、feature、
-model/agent catalog、surface string 与 locale policy 等有限字段；其中 surface 仍只是格式校验后的字符串，尚未绑定统一
-Product Catalog，不能据此宣称完整发布快照已经实现。
+Root 已硬切 unpublished v1 schema：Candidate、WebBuildIntent 与最终 immutable `SiteRelease` 携带同一份 exact
+owner-revision closure。Site config、Legal、Sales、Assortment 与 Memory policy 都绑定 owner ref/revision/digest；Auth/Identity
+直接绑定 issuer、authentication policy 与 authorization policy，不藏进 LaunchProfile；Commerce 显式关闭 Offer、
+EntitlementTemplate、CreditProgram revisions；Hub 同时绑定 CapabilityAssignment、CapabilityCatalog 与 AgentCatalog。各闭包
+都有 canonical digest，缺项、latest-only ref 或跨文档漂移均由 corpus fail closed。
 
-Root 的 latest-only `PublishSiteReleaseEffect` 已硬切为仅接受 Candidate ref、expected version 与 reason；SiteRelease ref、
-digest、Certification 与其他发布事实必须由 Platform 生成。旧 Platform publish handler 已经 fail closed，不再接受或伪造
-旧请求；但 `platform-site-provisioning@v1` 在 Platform/Web 从 Root 重新生成 provider/consumer mirror 并提交真实兼容性证据
-前仍保持 `contract-only`。旧 handler 的关闭和 Root 合同发布都不构成新 runtime closure。
+控制 RPC 按 owner 拆开：Product Catalog boundary 只发布 Catalog/Profile；operator Site Publication boundary 只批准 Candidate、
+Inventory、Material、Intent、Certification 与 immutable SiteRelease；machine Evidence Admission 只接收已签名 immutable evidence；Site Lifecycle 只负责 approval、ActivationAttempt
+和 active-pointer CAS。`platform-site-provisioning@v1` 只保留 `RegisterSite`，不再是假发布 authority。以上四个新增/硬切
+boundary 全部为 `contract-only`。联邦清单只登记未来的 `kokoro-platform` provider 与独立
+`web.release-attestor` consumer 角色；这不代表 Platform provider implementation、Web generated runtime mirror、
+admitted producer deployment 或 runtime migration 已存在。
 
-目标 `SiteRelease` 冻结 Web artifact、品牌/法务 digest、Product/Surface catalog revision、产品装配、Site config、
-assortment、model/agent/capability assignment、sales policy 和 contract compatibility。它是 Platform 的发布事实，不是
-Web 项目的可编辑配置文件。
+Evidence Admission 的 workload context 绑定 command、registered workload、固定 audience/attestor producer role、
+Site/environment/region、producer identity、producer-registration revision/digest 与 immutable workload-attestation
+revision/digest。Platform 必须对照 authenticated transport axes，并重新验证 DSSE/provenance、
+producer registration 与 artifact digest；CI/build/attestor workload 不能冒充 operator，也不能签发 Intent、Certification 或
+SiteRelease。operator 对 Material/Intent/Certification 的 command 只批准或引用已验证不可变事实，不提供 artifact bytes、
+credential、签名密钥或 producer identity。
+
+`PublishSiteReleaseEffect` 只接受 Candidate ref、expected version 与 reason，未来 Site owner 生成 SiteRelease ref/digest 及所有
+authority-bound facts。SiteRelease 不是可变的 current/candidate row；active pointer 是独立 generation aggregate。Lifecycle
+approval 冻结 typed Candidate ref/version/authorization epoch/digest、target SiteRelease ref/revision/digest、expected pointer
+generation、CAS command/fence/precondition digest，以及 begin/before-CAS/eligibility evidence refs。旧的
+`candidate_release_ref` / `expected_active_release_ref` 只保留为 protobuf reserved name，不再是字段。
+
+这是 unpublished R0a 的一次性 hard cut，不新增 Root V2、不提供 compatibility adapter。schema/protobuf exception registry 固定
+exact predecessor/candidate digest；基线推进后门禁恢复完整 breaking compare，不能成为长期豁免。
 
 每个候选 Release 经过 compile、preview、contract/schema 校验、业务旅程验证和 certification 后才能激活。
-激活使用可恢复 `ActivationAttempt` 与 active-pointer CAS；开始时和 CAS 紧前必须分别读取新的 authority snapshot，
+激活使用可恢复 `ActivationAttempt` 与独立 active-pointer generation/CAS；开始时和 CAS 紧前必须分别读取新的 authority snapshot，
 重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与证书 expiry，第二次撤销/过期
 必须阻止 CAS。两个 snapshot 与 eligibility evidence 都是持久化合同，使用 exact JCS material digest，并冻结完整 active
 producer registry/policy/key trust tuple。外部流量切换和数据库指针不是伪原子事务。回滚是对旧的

@@ -148,6 +148,12 @@
           "version": 1,
           "role": "provider",
           "lifecycle": "contract-only"
+        },
+        {
+          "id": "platform-site-evidence-admission",
+          "version": 1,
+          "role": "provider",
+          "lifecycle": "contract-only"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round17-release-2026-07-28-platform"
@@ -266,6 +272,12 @@
           "version": 1,
           "role": "consumer",
           "lifecycle": "active"
+        },
+        {
+          "id": "platform-site-evidence-admission",
+          "version": 1,
+          "role": "consumer",
+          "lifecycle": "contract-only"
         }
       ],
       "recoverableRef": "refs/tags/kokoro-wave0-round18-admin-openapi-2026-07-28-web"

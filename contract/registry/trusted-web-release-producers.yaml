@@ -22,8 +22,8 @@
         "application/vnd.kokoro.web-build-intent.v1+json"
       ],
       "allowedReceiptAggregateKinds": [],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAFSEAQNQxgywC47P0y9oYEOufNQFaSU222+p0tTzmu3k=",
-      "publicKeyFingerprint": "sha256:47a34236d64d0ee5c24f2857cd9f2e735f407c2c6acccf5e72090549f646722f",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAGL7q9CbDPSuireM6RNhs4E3tbTTP620j9FCIDC0fSiI=",
+      "publicKeyFingerprint": "sha256:989d6b1e1b129f75dd41358eb6033b1fec6158735266cfa3cbde6be93892ee8b",
       "producerIdentityRef": "platform.site-signer",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -53,8 +53,8 @@
         "application/vnd.kokoro.release-certification-instance.v1+json"
       ],
       "allowedReceiptAggregateKinds": [],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEArU1qEfYfm6TOaI/OqT1HuLreiFgHAxeb9ZyDAEdm+eI=",
-      "publicKeyFingerprint": "sha256:111069c1127ae850449a995844ee35c76e470ae7cc1ca7f1c7c63b8fcb755437",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAJ0eoQXjcxZTVu9l6vLXO7DOeFE/ARsrxMw+fkTPZ1CE=",
+      "publicKeyFingerprint": "sha256:a80aef28bc9b4f132ad2de63520acde8ef1c8796f80559d444e36e77bf92ad89",
       "producerIdentityRef": "producer.release-quality",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -84,8 +84,8 @@
         "application/vnd.kokoro.release-certification-instance.v1+json"
       ],
       "allowedReceiptAggregateKinds": [],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEANBL6In0Btxr+8aTJPmt5mtoMJneO8sMgSOPTl/KxKFA=",
-      "publicKeyFingerprint": "sha256:2f56e6a7f3c26477e31ecb920dbaaadbfd71f1ae2f71bc1b6b32dd1919681ff5",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAlPL/wjEMCRMNAotQikhMI0QcZQPKPqJImtALqR60VBo=",
+      "publicKeyFingerprint": "sha256:65ec2cf3fcc2e84d20ff493ce4158858e8ac4592f0b378c66a5ccac887d93cf6",
       "producerIdentityRef": "producer.release-quality",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -115,8 +115,8 @@
         "application/vnd.kokoro.release-certification-revocation.v1+json"
       ],
       "allowedReceiptAggregateKinds": [],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAv0osVwAuk8xgLjYS+9VoqaaUZFrgFs6+TDzvmqaWuUI=",
-      "publicKeyFingerprint": "sha256:a3e83c91565138cbb8cf7ee549bae5e274b91cf842db74edefe7e5bf53ff539a",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAwmLIdkVsJToHPV9l79FuIb/xxAK/JURH2K3h3dYNOKA=",
+      "publicKeyFingerprint": "sha256:b504bb7cf17526ca3d1542fb92e1899acb7af55e1a141e88ef29cb181e7ac3ae",
       "producerIdentityRef": "producer.release-security",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -146,8 +146,8 @@
         "application/vnd.in-toto+json"
       ],
       "allowedReceiptAggregateKinds": [],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAgFPuQG2GRZxw4q8VrLbCbthGWscGpPKHWfaR4nqc1m8=",
-      "publicKeyFingerprint": "sha256:a16a40c1813b1d9c7a1ad0104ae61ebaf1eab291110c54775c92dba866513458",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEASmTgdeofqF9AtURApqcNv1YwfgM4dKiRhfJpataMjLs=",
+      "publicKeyFingerprint": "sha256:2ddeb5a14b439a41c67e95ddcfbc857b0a4a2ebb27a691f57ae1cd1467f6d5fe",
       "producerIdentityRef": "https://workloads.kokoro.dev/site-web-attestor/v1",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -178,8 +178,8 @@
         "candidate",
         "active-pointer"
       ],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA1SxnrXY/kXIE4OfZFzbcwWgKWREQJttPiY+skPGk1DM=",
-      "publicKeyFingerprint": "sha256:c6c929e2bbb9853aaaf224dccef838561d87c68186c061eea08bfba256d4b969",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAncZxPvH3QHb7fmH5Ga3iP1f4qJqxjUPyxH8TbKlxlA8=",
+      "publicKeyFingerprint": "sha256:8deb13acb83e5f638b57feb1d9929f3bff3a5a37bab930425cc1f4af030055f4",
       "producerIdentityRef": "producer.platform-site-live-read",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -209,8 +209,8 @@
       "allowedReceiptAggregateKinds": [
         "certification"
       ],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA+o5u09yB5z2RZM9MvDg2jXTcYUB8rBCx84oP1Wy0mMA=",
-      "publicKeyFingerprint": "sha256:6482c3bcc3aee8df636cb5055facaa837696d6a1763495c6645c7ed7e07d8370",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEABPkbRVxf98BLQuCYn7/OGbkWPXEvKThWsZVQhK9J1/w=",
+      "publicKeyFingerprint": "sha256:b36fbde770e0b83bb8a28d9fca4737529def2287cf9fa95b082b40ec942a37e3",
       "producerIdentityRef": "producer.release-certification-live-read",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",
@@ -242,8 +242,8 @@
         "trust-policy",
         "key-status"
       ],
-      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAKbQ/AIHsFsgq79o328ECO/0cOBC5d/xwJlv4v04/Pp8=",
-      "publicKeyFingerprint": "sha256:ec94718f2233345500fb52c38d05df004232f6743f9b0b3080cc28653d86a064",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEApupP52AtzNPW2MFfmsSbUWjqDrKCix4OPM5+JXWjdX4=",
+      "publicKeyFingerprint": "sha256:f4de36bff71db294a78d58334dba71175a26ef05f96fc6b99dd1dabcc82b882d",
       "producerIdentityRef": "producer.root-trust-live-read",
       "producerRegistry": {
         "ref": "trusted-producer-registry.production.1",

@@ -1045,6 +1045,33 @@
       ]
     },
     {
+      "id": "web.release-attestor",
+      "path": "kokoro-web/packages/site-scaffold",
+      "kind": "boundary",
+      "index": "docs/kokoro-handbook/architecture/web-release-attestor-contract-only.md",
+      "owners": [
+        "@LordFoxFairy"
+      ],
+      "boundary": "web.release-attestor",
+      "language": "typescript-build-control",
+      "signals": [
+        "kokoro-web/packages/site-scaffold/package.json",
+        "contract/proto/kokoro/platform/site/v1/site_publication.proto"
+      ],
+      "dependencies": {
+        "allow": []
+      },
+      "verification": [
+        {
+          "cwd": ".",
+          "argv": [
+            "node",
+            "scripts/contract/check-boundary-registry.mjs"
+          ]
+        }
+      ]
+    },
+    {
       "id": "web.user",
       "path": "kokoro-web/apps/user",
       "kind": "boundary",

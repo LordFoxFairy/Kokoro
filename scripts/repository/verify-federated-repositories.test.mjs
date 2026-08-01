@@ -233,6 +233,42 @@ test("retired Admin Auth v1 is absent from active compatibility declarations", a
   }
 });
 
+test("Site evidence admission declares only the Platform provider and Web release-attestor consumer", async () => {
+  const currentManifest = parseManifest(
+    await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
+  );
+  const currentMatrix = JSON.parse(
+    await readFile(resolve(root, "config/repository/compatibility-matrix.json"), "utf8"),
+  );
+  assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
+
+  const roles = currentManifest.repositories.flatMap(({ id: repository, protocols }) =>
+    protocols
+      .filter(({ id }) => id === "platform-site-evidence-admission")
+      .map(({ id, role, version, lifecycle }) => ({ repository, id, role, version, lifecycle })),
+  );
+  assert.deepEqual(roles, [
+    {
+      repository: "kokoro-platform",
+      id: "platform-site-evidence-admission",
+      role: "provider",
+      version: 1,
+      lifecycle: "contract-only",
+    },
+    {
+      repository: "kokoro-web",
+      id: "platform-site-evidence-admission",
+      role: "consumer",
+      version: 1,
+      lifecycle: "contract-only",
+    },
+  ]);
+  assert.equal(
+    currentMatrix.contracts.some(({ id }) => id === "platform-site-evidence-admission"),
+    false,
+  );
+});
+
 test("Hub Connect runtime is promoted only for the Platform provider and Agent consumer", async () => {
   const currentManifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
