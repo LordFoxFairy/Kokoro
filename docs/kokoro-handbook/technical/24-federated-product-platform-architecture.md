@@ -425,7 +425,9 @@ Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`
 验证后剥离 outcome，并通过 presentation binding 将内部 route refs 映射成浏览器 run/thread/message refs。Agent
 `sourceOrdinal` 是每个 internal run 从零开始、按 owner log 严格递增的独立 uint64 序列，与 Session `durableSeq` 没有
 相等关系；Session 可把 Agent `sourceEventRef` 保存为 provenance，但 durable sequence 必须自行分配。合同 corpus 的
-`agentSourceFixtures` 按每个 run 的 owner-log 顺序排列并验证这一点。v1 candidate `RUN_STARTED` 禁止 `parentRunId`，浏览器
+`agentSourceFixtures` 按每个 run 的 owner-log 顺序排列并验证这一点。`internalThreadRef` 使用
+`agent.thread:<opaque-id>` 品牌化 owner ref，由 ordinal-zero `RUN_STARTED` 为该 run 建立权威，后续 candidate 必须完全一致；
+它不从 Session identity 派生。v1 candidate `RUN_STARTED` 禁止 `parentRunId`，浏览器
 所见 parent run 只能由 Session 的 run-binding authority 派生，Agent 不能注入 presentation lineage。
 
 Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事件 schema，再应用 Kokoro closed schema。HTTP snapshot
@@ -434,6 +436,8 @@ Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事�
 source-event 唯一性仍由 Session 数据库保证。官方 stock client transport 会丢失或无法表达
 Kokoro 必需的 SSE `id/event`、`Last-Event-ID`、opaque durable cursor、HTTP snapshot repair 和 non-durable draining 语义，
 因此被明确禁用；未来 Session/Web adapter 必须保留这些字段并提交真实 provider/consumer compatibility evidence。
+Root CI 在安装 Agent 精确 lock 后，还会用官方 Python event class 与 Agent builder 重建全部 canonical candidate envelope，
+并与 TypeScript gate 的 Root corpus 逐对象精确比较；这证明双 SDK/双实现 parity，但仍不等于 runtime activation。
 
 ### 9.2 Temporary Chat 与长期记忆
 

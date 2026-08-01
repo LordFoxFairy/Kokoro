@@ -242,6 +242,8 @@ test("freezes the Agent event-candidate profile below the browser presentation s
   assert.equal(candidate.terminalPolicy.runFinished, "success-only");
   assert.equal(candidate.identityPolicy.sourceOrdinal, "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero");
   assert.equal(candidate.identityPolicy.sourceFixtureOrder, "owner-log-order-within-internalRunRef");
+  assert.equal(candidate.identityPolicy.internalThreadRef, "agent.thread:-branded-opaque-owner-ref-established-by-zero-run-start");
+  assert.equal(candidate.eventScopePolicy.runError, "outer-route-matches-zero-run-start-thread-authority");
   assert.equal(candidate.eventScopePolicy.runStartedAndFinished, "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId");
   assert.equal(candidate.activation.runtimeImplemented, false);
   assert.equal(candidate.envelopeSchema, "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json");
@@ -274,20 +276,47 @@ test("keeps Agent source identity and ordinal authority independent from Session
   for (const fixture of corpus.agentSourceFixtures) {
     assert.match(fixture.source.sourceEventRef, /^agent\.event\./u);
     const base = baseById.get(fixture.baseCaseId);
+    assert.match(fixture.source.route.internalThreadRef, /^agent\.thread:[A-Za-z0-9][A-Za-z0-9._:-]*$/u);
     const frame = base.frames.find(({ data }) => data.source.sourceEventId === fixture.source.sourceEventRef);
     assert.ok(frame, fixture.source.sourceEventRef);
     agentOrdinals.push(fixture.source.sourceOrdinal);
     sessionSequences.push(frame.data.source.durableSeq);
     const run = fixture.source.route.internalRunRef;
-    const entries = byRun.get(run) ?? [];
-    entries.push(BigInt(fixture.source.sourceOrdinal));
-    byRun.set(run, entries);
+    const group = byRun.get(run) ?? { threadRef: fixture.source.route.internalThreadRef, ordinals: [] };
+    assert.equal(fixture.source.route.internalThreadRef, group.threadRef);
+    group.ordinals.push(BigInt(fixture.source.sourceOrdinal));
+    byRun.set(run, group);
   }
   assert.notDeepEqual(agentOrdinals, sessionSequences);
-  for (const ordinals of byRun.values()) {
+  for (const { ordinals } of byRun.values()) {
     assert.equal(ordinals[0], 0n);
     for (let index = 1; index < ordinals.length; index += 1) assert.ok(ordinals[index] > ordinals[index - 1]);
   }
+});
+
+test("binds every same-run candidate to the zero-ordinal RUN_STARTED thread authority", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const envelopeCase = corpus.agentCandidateEnvelopeCases.find(({ id }) => id === "agent-run-error-envelope");
+  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === envelopeCase.sourceEventId);
+  fixture.source.route.internalThreadRef = "agent.thread:attacker";
+  envelopeCase.candidateEnvelope.source.route.internalThreadRef = "agent.thread:attacker";
+  resignCandidateEnvelope(envelopeCase.candidateEnvelope);
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_agent_candidate_thread_authority_invalid/u);
+});
+
+test("rejects a Session-shaped ref at the Agent owner-thread boundary", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const envelopeCase = corpus.agentCandidateEnvelopeCases.find(({ id }) => id === "agent-run-start-envelope");
+  const fixture = corpus.agentSourceFixtures.find(({ source }) => source.sourceEventRef === envelopeCase.sourceEventId);
+  fixture.source.route.internalThreadRef = "thread.session.01";
+  envelopeCase.candidateEnvelope.source.route.internalThreadRef = "thread.session.01";
+  envelopeCase.candidateEnvelope.event.threadId = "thread.session.01";
+  resignCandidateEnvelope(envelopeCase.candidateEnvelope);
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_agent_candidate_thread_authority_invalid/u);
 });
 
 test("rejects duplicate, nonzero-starting and non-increasing Agent source fixtures", async () => {

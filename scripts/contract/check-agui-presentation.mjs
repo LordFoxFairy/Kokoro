@@ -44,11 +44,11 @@ const CONTRACT_PATHS = Object.freeze({
 // These are the reviewed contract sources, not caller-selected schemas carrying a familiar $id.
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
-  agentCandidateProfile: "444797405003ff355bb851fd28347253d33da14592cf1921d3070e43094a0f66",
+  agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
   mapping: "e59bae70cba232356820224c72ab037eada6376f9a5a39740ab8cf3f169ad9f9",
   eventSchema: "9f14ead7f4668b9e39a725c8cb0c23332e5f63be00d43ba3e6619fd372e9acd7",
   agentCandidateSchema: "b203876638e975bd3899bef09b8afdf8f183a6f9cd7939d67ddf8f7d90ac3731",
-  agentCandidateEnvelopeSchema: "7258ea7bf904dd78db64031df165a6670769ecdfae0caec72fe547f4b1ebd593",
+  agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "2595298c0d39dd077a21cb4048fea2226dff901429e9ba9ace9fb2067c376795",
   presentationRowSchema: "7c9feda5595dcfb79e32a9fe6795060d69306fd47b1a34c7601a375fca376888",
   runBindingSchema: "dd5318258dbf8a33065e533b62b84ed08440c25af358235663a8d40b26ef5063",
@@ -324,12 +324,13 @@ function validateAgentCandidateProfile(profile) {
     profile.projectionPolicy.routeProjection !== "resolve-through-session-presentation-binding" ||
     profile.projectionPolicy.ownerActivitySynthesis !== "session-owner-facts-only"
   ) fail("agui_agent_candidate_projection_policy_invalid");
-  exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "sourceFixtureOrder", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
+  exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "sourceFixtureOrder", "internalThreadRef", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
   if (
     profile.identityPolicy.candidateRefDomain !== "agui_candidate:sha256" ||
     profile.identityPolicy.sourceEventRef !== "agent-owner-stable-ref" ||
     profile.identityPolicy.sourceOrdinal !== "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero" ||
     profile.identityPolicy.sourceFixtureOrder !== "owner-log-order-within-internalRunRef" ||
+    profile.identityPolicy.internalThreadRef !== "agent.thread:-branded-opaque-owner-ref-established-by-zero-run-start" ||
     profile.identityPolicy.recordedAt !== "canonical-utc-ms-equals-event-timestamp" ||
     profile.identityPolicy.eventDigest !== "sha256-rfc8785-jcs-event"
   ) fail("agui_agent_candidate_identity_policy_invalid");
@@ -342,7 +343,7 @@ function validateAgentCandidateProfile(profile) {
   exactKeys(profile.eventScopePolicy, ["runStartedAndFinished", "runError", "textAndActivity"], "agui_agent_candidate_scope_policy_invalid");
   if (
     profile.eventScopePolicy.runStartedAndFinished !== "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId" ||
-    profile.eventScopePolicy.runError !== "outer-internalRunRef-and-internalThreadRef" ||
+    profile.eventScopePolicy.runError !== "outer-route-matches-zero-run-start-thread-authority" ||
     profile.eventScopePolicy.textAndActivity !== "messageId=internalMessageRef"
   ) fail("agui_agent_candidate_scope_policy_invalid");
   exactKeys(profile.activation, ["runtimeImplemented", "compatibilityEvidence", "browserTransport"], "agui_agent_candidate_activation_invalid");
@@ -1038,14 +1039,23 @@ function validateAgentSourceFixtures(corpus) {
     if (messageBinding === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageBinding.internalMessageRef) {
       fail("agui_agent_candidate_source_fixture_projection_invalid", source.sourceEventRef);
     }
-    const group = byRun.get(source.route.internalRunRef) ?? [];
-    if (group.length === 0 && ordinal !== 0n) fail("agui_agent_candidate_source_ordinal_start_invalid", source.route.internalRunRef);
-    const previous = group.at(-1);
+    let group = byRun.get(source.route.internalRunRef);
+    if (group === undefined) {
+      if (ordinal !== 0n) fail("agui_agent_candidate_source_ordinal_start_invalid", source.route.internalRunRef);
+      if (frame.data.event.type !== EventType.RUN_STARTED) fail("agui_agent_candidate_thread_authority_invalid", source.route.internalRunRef);
+      if (!source.route.internalThreadRef.startsWith("agent.thread:")) {
+        fail("agui_agent_candidate_thread_authority_invalid", source.route.internalRunRef);
+      }
+      group = { internalThreadRef: source.route.internalThreadRef, entries: [] };
+      byRun.set(source.route.internalRunRef, group);
+    } else if (source.route.internalThreadRef !== group.internalThreadRef) {
+      fail("agui_agent_candidate_thread_authority_invalid", source.route.internalRunRef);
+    }
+    const previous = group.entries.at(-1);
     if (previous !== undefined && (ordinal <= previous.ordinal || recordedAt < previous.recordedAt)) {
       fail("agui_agent_candidate_source_ordinal_not_increasing", source.route.internalRunRef);
     }
-    group.push({ ordinal, recordedAt });
-    byRun.set(source.route.internalRunRef, group);
+    group.entries.push({ ordinal, recordedAt });
     byRef.set(source.sourceEventRef, fixture);
   }
   const agentOrdinals = corpus.agentSourceFixtures.map(({ source }) => source.sourceOrdinal);
@@ -1111,6 +1121,9 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
       fail("agui_agent_candidate_source_fixture_mismatch", envelopeCase.id);
     }
     usedSourceRefs.add(source.sourceEventRef);
+    if (source.sourceOrdinal === "0" && candidateEvent.type !== EventType.RUN_STARTED) {
+      fail("agui_agent_candidate_thread_authority_invalid", source.route.internalRunRef);
+    }
     if (
       source.sourceEventRef !== frame.data.source.sourceEventId ||
       source.recordedAt !== frame.data.source.recordedAt || source.route.internalRunRef !== runBinding.internalRunRef

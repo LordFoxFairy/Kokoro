@@ -48,13 +48,14 @@
     "sourceEventRef": "agent-owner-stable-ref",
     "sourceOrdinal": "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero",
     "sourceFixtureOrder": "owner-log-order-within-internalRunRef",
+    "internalThreadRef": "agent.thread:-branded-opaque-owner-ref-established-by-zero-run-start",
     "recordedAt": "canonical-utc-ms-equals-event-timestamp",
     "eventDigest": "sha256-rfc8785-jcs-event",
     "forbiddenAxes": ["siteId", "userId", "sessionId", "cursor", "sseId", "sseEvent"]
   },
   "eventScopePolicy": {
     "runStartedAndFinished": "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId",
-    "runError": "outer-internalRunRef-and-internalThreadRef",
+    "runError": "outer-route-matches-zero-run-start-thread-authority",
     "textAndActivity": "messageId=internalMessageRef"
   },
   "activation": {

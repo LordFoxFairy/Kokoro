@@ -90,7 +90,7 @@ function replaceProjectionSourceRef(contractCase, previousRef, sourceEventRef) {
   return frame;
 }
 
-function agentSourceFixture(contractCase, frame, sourceOrdinal) {
+function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRef) {
   const runBinding = contractCase.runBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef);
   if (runBinding === undefined) throw new Error(`Agent source run binding missing: ${frame.data.source.sourceEventId}`);
   const messageBinding = frame.data.presentationMessageBindingRef === undefined
@@ -104,7 +104,7 @@ function agentSourceFixture(contractCase, frame, sourceOrdinal) {
       recordedAt: frame.data.source.recordedAt,
       route: {
         internalRunRef: runBinding.internalRunRef,
-        internalThreadRef: `internal.thread.${contractCase.snapshot.sessionId}`,
+        internalThreadRef,
         ...(messageBinding === undefined ? {} : { internalMessageRef: messageBinding.internalMessageRef }),
       },
     },
@@ -211,16 +211,16 @@ parentCase.frames = [
 const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
 if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
 const agentSourcePlans = [
-  { contractCase: authorityBase, previousRef: "source.01", sourceEventRef: "agent.event.run.01.000", sourceOrdinal: "0" },
-  { contractCase: authorityBase, previousRef: "source.03", sourceEventRef: "agent.event.run.01.002", sourceOrdinal: "2" },
-  { contractCase: authorityBase, previousRef: "source.04", sourceEventRef: "agent.event.run.01.003", sourceOrdinal: "3" },
-  { contractCase: authorityBase, previousRef: "source.26", sourceEventRef: "agent.event.run.01.025", sourceOrdinal: "25" },
-  { contractCase: parentCase, previousRef: "error-source.03", sourceEventRef: "agent.event.run.error.000", sourceOrdinal: "0" },
-  { contractCase: parentCase, previousRef: "error-source.04", sourceEventRef: "agent.event.run.error.001", sourceOrdinal: "1" },
+  { contractCase: authorityBase, previousRef: "source.01", sourceEventRef: "agent.event.run.01.000", sourceOrdinal: "0", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
+  { contractCase: authorityBase, previousRef: "source.03", sourceEventRef: "agent.event.run.01.002", sourceOrdinal: "2", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
+  { contractCase: authorityBase, previousRef: "source.04", sourceEventRef: "agent.event.run.01.003", sourceOrdinal: "3", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
+  { contractCase: authorityBase, previousRef: "source.26", sourceEventRef: "agent.event.run.01.025", sourceOrdinal: "25", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
+  { contractCase: parentCase, previousRef: "error-source.03", sourceEventRef: "agent.event.run.error.000", sourceOrdinal: "0", internalThreadRef: "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D" },
+  { contractCase: parentCase, previousRef: "error-source.04", sourceEventRef: "agent.event.run.error.001", sourceOrdinal: "1", internalThreadRef: "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D" },
 ];
-corpus.agentSourceFixtures = agentSourcePlans.map(({ contractCase, previousRef, sourceEventRef, sourceOrdinal }) => {
+corpus.agentSourceFixtures = agentSourcePlans.map(({ contractCase, previousRef, sourceEventRef, sourceOrdinal, internalThreadRef }) => {
   const frame = replaceProjectionSourceRef(contractCase, previousRef, sourceEventRef);
-  return agentSourceFixture(contractCase, frame, sourceOrdinal);
+  return agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRef);
 });
 for (const contractCase of corpus.positiveCases) {
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;

@@ -2546,20 +2546,20 @@
           "recordedAt": "2026-08-01T12:00:26.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
-            "internalThreadRef": "internal.thread.session.01"
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C"
           }
         },
-        "eventDigest": "sha256:b749a006f8011204e5c047b619b9f0c90923c993c5e8ad7d622f48a6404c5b6b",
+        "eventDigest": "sha256:408832b3ecd39ac46930e7eb4cf0d9ef7fe4795f063782be42befeb88f611e05",
         "event": {
           "type": "RUN_FINISHED",
           "timestamp": 1785585626000,
-          "threadId": "internal.thread.session.01",
+          "threadId": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
           "runId": "internal.run.01",
           "outcome": {
             "type": "success"
           }
         },
-        "candidateRef": "agui_candidate:sha256:0fd0ecdec26dbc3aee8fd4b8d691e7618bc1d893a812e63ebacdce799f254979"
+        "candidateRef": "agui_candidate:sha256:e1dca521ee5e19e0c09c14af1365e8b29bbd4216c764fabd64adcd95fa96b782"
       },
       "expectedPresentationEvent": {
         "type": "RUN_FINISHED",
@@ -2582,17 +2582,17 @@
           "recordedAt": "2026-08-01T12:00:01.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
-            "internalThreadRef": "internal.thread.session.01"
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C"
           }
         },
-        "eventDigest": "sha256:002cd24512b3f903141e2608c2e12242dc8d68a74b3b2fe3c6f1ac28f21d88cd",
+        "eventDigest": "sha256:8f05a14b9b37bf03c6a9988299a9357853569d2bb6c2723de83fa0d45cf1dd1f",
         "event": {
           "type": "RUN_STARTED",
           "timestamp": 1785585601000,
-          "threadId": "internal.thread.session.01",
+          "threadId": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
           "runId": "internal.run.01"
         },
-        "candidateRef": "agui_candidate:sha256:5f9d43fbab0a3dcc8cb27141a216a7fefcfdeb4c64bc3dc74c60c89671fe5a6f"
+        "candidateRef": "agui_candidate:sha256:d31111790185efc51c64b6cda34b13ab985f3f79ab11bb94d0ac35ba16ae1a0a"
       }
     },
     {
@@ -2607,17 +2607,17 @@
           "recordedAt": "2026-08-01T13:00:03.000Z",
           "route": {
             "internalRunRef": "internal.run.error",
-            "internalThreadRef": "internal.thread.session.error"
+            "internalThreadRef": "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D"
           }
         },
-        "eventDigest": "sha256:6d4ffdbf5037dcb2766b7c309ca5054724c1d4590e2dd08debae34ed52bd3912",
+        "eventDigest": "sha256:2cae01a744484ec57f5fd5749c93f89f9c1ed6320579194816b45c911d5f3bea",
         "event": {
           "type": "RUN_STARTED",
           "timestamp": 1785589203000,
-          "threadId": "internal.thread.session.error",
+          "threadId": "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D",
           "runId": "internal.run.error"
         },
-        "candidateRef": "agui_candidate:sha256:64c0bb933accc27e5f0c7213da40e5868324e881016230781310a63339359bce"
+        "candidateRef": "agui_candidate:sha256:e2b16b3233de76da7c68148966456afa67f372073e2134ad37306aae31993df7"
       }
     },
     {
@@ -2632,7 +2632,7 @@
           "recordedAt": "2026-08-01T13:00:04.000Z",
           "route": {
             "internalRunRef": "internal.run.error",
-            "internalThreadRef": "internal.thread.session.error"
+            "internalThreadRef": "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D"
           }
         },
         "eventDigest": "sha256:50989042d72f4efa237b4ab292a7a622e202474ec8035e54f644c41c1d7d62d9",
@@ -2642,7 +2642,7 @@
           "message": "The run could not be completed.",
           "code": "RUN_FAILED"
         },
-        "candidateRef": "agui_candidate:sha256:11d7a393e276c55a10d2b2ca19a2fe36652470b65f50e1a6c20412a21b7a6ac1"
+        "candidateRef": "agui_candidate:sha256:bb7ae8cf9c3f705266df7d8132cad970435c1d4b6b3959c57c396e213b5c1c7d"
       }
     },
     {
@@ -2657,7 +2657,7 @@
           "recordedAt": "2026-08-01T12:00:03.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
-            "internalThreadRef": "internal.thread.session.01",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
             "internalMessageRef": "internal.message.assistant.01"
           }
         },
@@ -2668,7 +2668,7 @@
           "messageId": "internal.message.assistant.01",
           "delta": "I can help with that."
         },
-        "candidateRef": "agui_candidate:sha256:4334e0834f670e013aeba22f3c58604e94ca137aba72efc99beef3e258afa345"
+        "candidateRef": "agui_candidate:sha256:2913cddf9b1aefe00ecb3019a6417f7f5c5f0daba16a12e409c6acfdbdbf4985"
       }
     },
     {
@@ -2683,7 +2683,7 @@
           "recordedAt": "2026-08-01T12:00:04.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
-            "internalThreadRef": "internal.thread.session.01",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
             "internalMessageRef": "internal.message.assistant.01"
           }
         },
@@ -2700,7 +2700,7 @@
           },
           "replace": true
         },
-        "candidateRef": "agui_candidate:sha256:d36bf3e0ddc2c396a9a63f3dd632a40217e641704ef6148f5dcca995bc99c5cd"
+        "candidateRef": "agui_candidate:sha256:5bba692fadc4fa6cc981e2d5451243eced6d8aaf8d6d967b6507de2a22d1c1ad"
       }
     }
   ],
@@ -2713,7 +2713,7 @@
         "recordedAt": "2026-08-01T12:00:01.000Z",
         "route": {
           "internalRunRef": "internal.run.01",
-          "internalThreadRef": "internal.thread.session.01"
+          "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C"
         }
       }
     },
@@ -2725,7 +2725,7 @@
         "recordedAt": "2026-08-01T12:00:03.000Z",
         "route": {
           "internalRunRef": "internal.run.01",
-          "internalThreadRef": "internal.thread.session.01",
+          "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
           "internalMessageRef": "internal.message.assistant.01"
         }
       }
@@ -2738,7 +2738,7 @@
         "recordedAt": "2026-08-01T12:00:04.000Z",
         "route": {
           "internalRunRef": "internal.run.01",
-          "internalThreadRef": "internal.thread.session.01",
+          "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
           "internalMessageRef": "internal.message.assistant.01"
         }
       }
@@ -2751,7 +2751,7 @@
         "recordedAt": "2026-08-01T12:00:26.000Z",
         "route": {
           "internalRunRef": "internal.run.01",
-          "internalThreadRef": "internal.thread.session.01"
+          "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C"
         }
       }
     },
@@ -2763,7 +2763,7 @@
         "recordedAt": "2026-08-01T13:00:03.000Z",
         "route": {
           "internalRunRef": "internal.run.error",
-          "internalThreadRef": "internal.thread.session.error"
+          "internalThreadRef": "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D"
         }
       }
     },
@@ -2775,7 +2775,7 @@
         "recordedAt": "2026-08-01T13:00:04.000Z",
         "route": {
           "internalRunRef": "internal.run.error",
-          "internalThreadRef": "internal.thread.session.error"
+          "internalThreadRef": "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D"
         }
       }
     }
