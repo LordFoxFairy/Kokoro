@@ -193,6 +193,18 @@ def test_wave3_browser_contract_is_complete_and_cursor_only() -> None:
     assert fields["messages"].get("optional") is not True
     assert fields["branches"].get("optional") is not True
     assert fields["snapshot_watermark"]["type"] == "object:SnapshotWatermark"
+    assert fields["presentation_authority"] == {
+        "name": "presentation_authority",
+        "type": "record",
+    }
+    watermark = next(obj for obj in http["objects"] if obj["name"] == "SnapshotWatermark")
+    watermark_fields = {field["name"] for field in watermark["fields"]}
+    assert watermark_fields == {"snapshot_revision_ref", "projection_version"}
+    run_view = next(obj for obj in http["objects"] if obj["name"] == "RunView")
+    assert "last_durable_cursor" not in {field["name"] for field in run_view["fields"]}
+    stream = http["endpoints"]["stream"]
+    assert stream["stream_profile"] == "kokoro-session-agui-stream.v1"
+    assert stream["cursor_authority"] == "presentation_authority"
     session_metadata = next(
         obj for obj in http["objects"] if obj["name"] == "SessionMetadata"
     )

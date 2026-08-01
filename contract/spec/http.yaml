@@ -1,5 +1,6 @@
-# Breaking Wave 3 browser contract. Session snapshot is the complete projection;
-# SSE is a bounded delta stream resumed only by an opaque cursor.
+# Breaking browser contract. Session snapshot hydrates the base read model and
+# carries the independent AG-UI presentation authority; SSE is the single
+# admitted AG-UI delta stream and resumes only from that authority's cursor.
 schema_id: kokoro.session.browser.v3
 schema_version: 3
 last_event_id_header: last-event-id
@@ -467,7 +468,6 @@ objects:
       - {name: execution_status, type: enum:execution_status}
       - {name: cost_status, type: enum:cost_status}
       - {name: terminal_outcome, type: string_nonempty, optional: true}
-      - {name: last_durable_cursor, type: string_nonempty}
       - {name: projection_version, type: positive_int}
   - name: ControlProjection
     fields:
@@ -503,10 +503,8 @@ objects:
       - {name: effort, type: effort, optional: true}
   - name: SnapshotWatermark
     fields:
-      - {name: cursor, type: string_nonempty}
-      - {name: stream_epoch, type: string_nonempty}
-      # Decimal uint64 string avoids JS number truncation while preserving exact ordering.
-      - {name: durable_seq, type: uint64_string}
+      # Base read-model revision only. It is never accepted by the AG-UI SSE endpoint.
+      - {name: snapshot_revision_ref, type: string_nonempty}
       - {name: projection_version, type: positive_int}
   - name: SessionSnapshot
     fields:
@@ -520,6 +518,10 @@ objects:
       - {name: capability_display, type: object:CapabilityDisplaySnapshot, optional: true}
       - {name: model_history, type: array:object:ModelDisplaySnapshot}
       - {name: snapshot_watermark, type: object:SnapshotWatermark}
+      # Strictly parsed against contract/spec/session-agui-snapshot-authority-v1.yaml
+      # by both Session and Web. `record` keeps this generator byte-identical while
+      # the dedicated closed-schema decoder owns the complete binding invariants.
+      - {name: presentation_authority, type: record}
       - {name: next_page_cursor, type: string_nonempty, optional: true}
   - name: SessionListItem
     fields:
@@ -747,7 +749,7 @@ endpoints:
   create_session: {method: POST, path_fn: sessionsPath, path_template: "/v1/sessions", params: [], status: 201, request_object: CreateSessionRequest, response_object: SessionCommandResponse}
   list_sessions: {method: GET, path_fn: sessionsPath, path_template: "/v1/sessions", params: [], status: 200, query_object: ListSessionsQuery, response_object: SessionList}
   snapshot: {method: GET, path_fn: snapshotPath, path_template: "/v1/sessions/{session_id}/snapshot", params: [session_id], status: 200, query_object: SnapshotQuery, response_object: SessionSnapshot}
-  stream: {method: GET, path_fn: eventsPath, path_template: "/v1/sessions/{session_id}/events", params: [session_id], status: 200, query_object: StreamQuery, protocol: sse}
+  stream: {method: GET, path_fn: eventsPath, path_template: "/v1/sessions/{session_id}/events", params: [session_id], status: 200, query_object: StreamQuery, protocol: sse, stream_profile: kokoro-session-agui-stream.v1, cursor_authority: presentation_authority}
   submit_message: {method: POST, path_fn: messagesPath, path_template: "/v1/sessions/{session_id}/messages", params: [session_id], status: 202, request_object: SubmitMessageRequest, response_object: SessionCommandResponse}
   edit_message: {method: POST, path_fn: editMessagePath, path_template: "/v1/sessions/{session_id}/messages/{message_id}:edit", params: [session_id, message_id], status: 202, request_object: EditMessageRequest, response_object: SessionCommandResponse}
   regenerate_message: {method: POST, path_fn: regenerateMessagePath, path_template: "/v1/sessions/{session_id}/messages/{message_id}:regenerate", params: [session_id, message_id], status: 202, request_object: RegenerateMessageRequest, response_object: SessionCommandResponse}
