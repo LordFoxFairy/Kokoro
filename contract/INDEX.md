@@ -89,8 +89,10 @@ Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapsh
 semantics. The closed snapshot authority envelope requires both typed run/message binding arrays and the Session-owned
 `lastRecordedAt` durable-head watermark: sequence zero requires null;
 a nonzero head requires canonical UTC millisecond time no earlier than every included binding timestamp, and the next event
-cannot regress behind it. Binding source IDs seed only binding evidence; Session storage remains the full source-ID uniqueness
-authority. Rendering libraries remain adapters only and do not own the wire contract.
+cannot regress behind it. A zero head cannot retain bindings, binding evidence cannot exceed the durable head, every binding
+time is canonical UTC milliseconds, one snapshot has one presentation thread, parent lineage is acyclic, and M0 terminal
+bindings are only `finished/success` or `error/error`. Binding source IDs seed only binding evidence; Session storage remains
+the full source-ID uniqueness authority. Rendering libraries remain adapters only and do not own the wire contract.
 
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
 isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/
@@ -300,8 +302,8 @@ recorded above. Protobuf CI uses `scripts/contract/check-prelaunch-protobuf-brea
 only against the exact unpublished predecessor and performs full Buf breaking once that cut is the baseline. Validate the strict AG-UI family
 with `pnpm --dir contract agui:check`, `pnpm --dir contract agui:typecheck`, and
 `pnpm --dir contract agui:test`. The local promotion gate
-`scripts/contract/check_agent_agui_python_parity.py` currently rebuilds the checked-in seed envelopes through the official
-Python events and Agent builder while proving the Python and TypeScript pins share one upstream commit. It remains outside
-CI until every allowed event/activity arm and the reviewed Agent gitlink, manifest, compatibility evidence, and BOM are
-promoted atomically. This compatibility-time import is not runtime filesystem coupling and does not activate the dormant
-adapter.
+`scripts/contract/check_agent_agui_python_parity.py` rebuilds every registry-declared event arm and every activity
+discriminator through the official Python event models and Agent builder, requires exact object equality, and proves the
+Python and TypeScript pins share one upstream commit. Registry additions, omissions, duplicate substitutions and semantic
+role drift fail closed. It remains outside CI until the reviewed Agent gitlink, manifest, compatibility evidence, and BOM are
+promoted atomically. This compatibility-time import is not runtime filesystem coupling and does not activate the dormant adapter.

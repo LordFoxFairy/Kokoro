@@ -165,13 +165,14 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   assert.deepEqual(result, {
     positiveCases: 2,
     negativeCases: 10,
-    durableFrames: 30,
+    durableFrames: 41,
     mappingsCovered: 22,
-    agentCandidates: 21,
-    agentSourceFixtures: 6,
-    agentCandidateEnvelopeCases: 5,
+    agentCandidates: 32,
+    agentSourceFixtures: 15,
+    agentCandidateEnvelopeCases: 14,
     agentCandidateProjectionCases: 1,
     snapshotAuthorityCases: 1,
+    snapshotAuthorityNegativeCases: 6,
   });
 });
 
@@ -252,11 +253,16 @@ test("freezes the Agent event-candidate profile below the browser presentation s
 test("freezes a closed Agent candidate envelope without browser or business identity axes", async () => {
   const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
   assert.ok(Array.isArray(corpus.agentCandidateProjectionCases));
-  assert.equal(corpus.agentSourceFixtures.length, 6);
-  assert.equal(corpus.agentCandidateEnvelopeCases.length, 5);
+  assert.equal(corpus.agentSourceFixtures.length, 15);
+  assert.equal(corpus.agentCandidateEnvelopeCases.length, 14);
   assert.deepEqual(
     corpus.agentCandidateEnvelopeCases.map(({ candidateEnvelope }) => candidateEnvelope.event.type),
-    ["RUN_STARTED", "RUN_STARTED", "RUN_ERROR", "TEXT_MESSAGE_CONTENT", "ACTIVITY_SNAPSHOT"],
+    [
+      "RUN_STARTED", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT",
+      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
+      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
+      "TEXT_MESSAGE_END", "RUN_STARTED", "RUN_ERROR",
+    ],
   );
   const envelope = corpus.agentCandidateProjectionCases[0].candidateEnvelope;
   assert.equal(envelope.profileRevision, "kokoro-agent-agui-candidate.v1");
@@ -265,6 +271,36 @@ test("freezes a closed Agent candidate envelope without browser or business iden
   for (const forbidden of ["siteId", "userId", "sessionId", "cursor", "sseId", "result"]) {
     assert.equal(Object.hasOwn(envelope, forbidden), false, forbidden);
   }
+});
+
+test("requires one canonical Agent envelope for every declared text event arm", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const removedIndex = corpus.agentCandidateEnvelopeCases.findIndex(
+    ({ candidateEnvelope }) => candidateEnvelope.event.type === "TEXT_MESSAGE_START",
+  );
+  const [removed] = corpus.agentCandidateEnvelopeCases.splice(removedIndex, 1);
+  corpus.agentSourceFixtures = corpus.agentSourceFixtures.filter(
+    ({ source }) => source.sourceEventRef !== removed.sourceEventId,
+  );
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+
+  await assert.rejects(validateRepository({ root }), /agui_agent_candidate_semantic_coverage_invalid/u);
+});
+
+test("requires one canonical Agent envelope for every declared activity discriminator", async () => {
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const removedIndex = corpus.agentCandidateEnvelopeCases.findIndex(
+    ({ candidateEnvelope }) => candidateEnvelope.event.activityType === "kokoro.hitl.v1",
+  );
+  const [removed] = corpus.agentCandidateEnvelopeCases.splice(removedIndex, 1);
+  corpus.agentSourceFixtures = corpus.agentSourceFixtures.filter(
+    ({ source }) => source.sourceEventRef !== removed.sourceEventId,
+  );
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+
+  await assert.rejects(validateRepository({ root }), /agui_agent_candidate_activity_coverage_invalid/u);
 });
 
 test("keeps Agent source identity and ordinal authority independent from Session durable sequence", async () => {
@@ -435,8 +471,13 @@ test("freezes snapshot lastRecordedAt as the durable head time watermark", async
   assert.equal(snapshotSchema.properties.runBindings.maxItems, 256);
   assert.equal(snapshotSchema.properties.messageBindings.maxItems, 512);
   assert.ok(Array.isArray(corpus.snapshotAuthorityCases));
-  assert.equal(corpus.snapshotAuthorityCases[0].snapshot.lastRecordedAt, "2026-08-01T12:00:26.000Z");
-  assert.equal(corpus.snapshotAuthorityCases[0].nextEventRecordedAt, "2026-08-01T12:00:27.000Z");
+  assert.equal(corpus.snapshotAuthorityCases[0].baseCaseId, "safe-run-error");
+  assert.deepEqual(
+    corpus.snapshotAuthorityCases[0].snapshot.runBindings.map(({ state, terminalDisposition }) => [state, terminalDisposition]),
+    [["finished", "success"], ["error", "error"]],
+  );
+  assert.equal(corpus.snapshotAuthorityCases[0].snapshot.lastRecordedAt, "2026-08-01T13:00:15.000Z");
+  assert.equal(corpus.snapshotAuthorityCases[0].nextEventRecordedAt, "2026-08-01T13:00:16.000Z");
 
   const illegalZeroHead = clone(corpus.positiveCases[0]);
   illegalZeroHead.snapshot.lastRecordedAt = "2026-08-01T12:00:00.000Z";
@@ -477,6 +518,21 @@ test("rejects snapshot watermarks before binding evidence and next-event time re
     await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
     await assert.rejects(validateRepository({ root }), code);
   }
+});
+
+test("freezes shared snapshot authority attacks with stable fail-closed codes", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  assert.deepEqual(
+    corpus.snapshotAuthorityNegativeCases.map(({ id, expectedCode }) => [id, expectedCode]),
+    [
+      ["zero-head-retains-bindings", "agui_snapshot_zero_head_bindings_invalid"],
+      ["binding-evidence-exceeds-head", "agui_snapshot_binding_evidence_exceeds_head"],
+      ["noncanonical-binding-time", "agui_snapshot_binding_time_invalid"],
+      ["multiple-presentation-thread", "agui_snapshot_thread_scope_invalid"],
+      ["parent-lineage-cycle", "agui_parent_lineage_cycle"],
+      ["m0-interrupted-terminal", "agui_snapshot_terminal_state_invalid"],
+    ],
+  );
 });
 
 test("freezes a closed first-phase event, activity and custom vocabulary", async () => {
@@ -641,7 +697,7 @@ test("full repository gate accepts a coherent third Session with fresh semantic 
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
   const result = await validateRepository({ root });
   assert.equal(result.positiveCases, 3);
-  assert.equal(result.durableFrames, 56);
+  assert.equal(result.durableFrames, 67);
 });
 
 test("full repository gate rejects every cross-case durable and binding semantic identity collision", async () => {

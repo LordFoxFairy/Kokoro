@@ -111,10 +111,11 @@ It records no Agent runtime activation.
 
 `check_agent_agui_python_parity.py` is the opposite-direction executable promotion gate. It verifies Root, Agent
 pyproject/lock, installed `ag-ui-protocol`, and TypeScript/Python profile pins resolve to the same upstream commit; then it
-reconstructs the checked-in seed candidate envelopes from official Python event classes and Agent's public builder and
-requires byte-material-equivalent JSON objects. Full registry-derived coverage of every allowed event and activity arm is
-required before this gate is activated in CI together with the reviewed Agent gitlink/manifest/BOM promotion. Its test
-module freezes pin, digest, duplicate and source-coverage failures. This is build-time cross-repository evidence only:
+reconstructs all registry-declared candidate event arms and activity discriminators from official Python event models and
+Agent's public builder and requires exact JSON-object equality. Coverage is derived from the registry rather than a static
+sample count, so registry additions, removed arms, duplicate substitutions, activity omissions and semantic role drift fail
+closed. The gate is activated in CI only together with the reviewed Agent gitlink/manifest/BOM promotion. Its test module
+freezes pin, digest, duplicate, registry drift, activity and source-coverage failures. This is build-time cross-repository evidence only:
 Agent never reads Root files at runtime and the dormant adapter is still not wired into execution or browser transport.
 
 `generate-agui-presentation-corpus.mjs` deterministically derives the public conformance cursors and persisted
@@ -124,8 +125,10 @@ and frame cursor into closed Session/epoch/sequence/profile claims, rejects both
 across positive cases, binds all run/message/source/row identities to their Session, verifies real parent lineage,
 and requires the persisted complete projection payload plus its JCS SHA-256 to equal the emitted frame exactly.
 Snapshot cases additionally prove the Session durable-head `lastRecordedAt` rule, canonical UTC-millisecond representation,
-binding-time lower bound, and canonical next-event non-regression. They do not pretend the browser snapshot contains Session's complete
-historical source-ID ledger.
+binding-time lower bound, and canonical next-event non-regression. A checked-in six-vector attack corpus also rejects a zero
+head carrying bindings, evidence cardinality beyond the head, noncanonical binding time, multiple presentation threads,
+cyclic parent lineage, and M0 interrupted/canceled terminal state. It does not pretend the browser snapshot contains Session's
+complete historical source-ID ledger.
 It proves an offline `contract-only` Session projection profile; it does not prove a Session/Web runtime adapter,
 deployment, authorization, or compatibility scenario.
 

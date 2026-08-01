@@ -432,12 +432,16 @@ Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`
 
 Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事件 schema，再应用 Kokoro closed schema。HTTP snapshot
 携带 Session 权威 durable-head `lastRecordedAt`：`durableSeq=0` 时必须为 null，非零时必须是 canonical UTC 毫秒时间且不早于
-全部 snapshot binding 时间，后续事件不得倒退。Snapshot 的 binding source IDs 只用于播种 binding evidence；完整历史
-source-event 唯一性仍由 Session 数据库保证。官方 stock client transport 会丢失或无法表达
+全部 snapshot binding 时间，后续事件不得倒退。零 head 不得携带 binding，binding evidence 数量不得超过 durable head；
+全部 binding 时间必须 canonical、同一 snapshot 只能有一个 presentation thread、parent lineage 必须无环，M0 terminal 只允许
+`finished/success` 或 `error/error`。Snapshot 的 binding source IDs 只用于播种 binding evidence；完整历史 source-event
+唯一性仍由 Session 数据库保证。官方 stock client transport 会丢失或无法表达
 Kokoro 必需的 SSE `id/event`、`Last-Event-ID`、opaque durable cursor、HTTP snapshot repair 和 non-durable draining 语义，
 因此被明确禁用；未来 Session/Web adapter 必须保留这些字段并提交真实 provider/consumer compatibility evidence。
-Root CI 在安装 Agent 精确 lock 后，还会用官方 Python event class 与 Agent builder 重建全部 canonical candidate envelope，
-并与 TypeScript gate 的 Root corpus 逐对象精确比较；这证明双 SDK/双实现 parity，但仍不等于 runtime activation。
+Root 的本地 promotion gate 在安装 Agent 精确 lock 后，会用官方 Python event model 与 Agent builder 重建 registry 声明的
+全部 event arm 和 activity discriminator，并与 TypeScript gate 的 Root corpus 逐对象精确比较；registry 漏项、重复替代、
+语义 role 漂移都会失败。这证明双 SDK/双实现 parity，但在 Agent gitlink、manifest、兼容性证据与 BOM 原子提升前仍不进入 CI，
+也不等于 runtime activation。
 
 ### 9.2 Temporary Chat 与长期记忆
 

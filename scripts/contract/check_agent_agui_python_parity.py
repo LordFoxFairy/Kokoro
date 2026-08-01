@@ -7,7 +7,9 @@ import argparse
 import importlib.metadata
 import json
 import tomllib
+from collections import Counter
 from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NoReturn, cast
 
@@ -31,7 +33,29 @@ from kokoro_agent.presentation import (
 
 AGUI_REPOSITORY = "https://github.com/ag-ui-protocol/ag-ui"
 AGUI_PYTHON_SUBDIRECTORY = "sdks/python"
-EXPECTED_CANDIDATE_COUNT = 6
+
+_CANDIDATE_PROFILE_KEYS = frozenset(
+    {
+        "profileId",
+        "profileRevision",
+        "lifecycle",
+        "eventSchema",
+        "envelopeSchema",
+        "producer",
+        "consumer",
+        "allowedEventTypes",
+        "allowedActivityTypes",
+        "forbiddenEventTypes",
+        "forbiddenEventFamilies",
+        "forbiddenOwnerActivityTypes",
+        "forbiddenFields",
+        "terminalPolicy",
+        "projectionPolicy",
+        "identityPolicy",
+        "eventScopePolicy",
+        "activation",
+    }
+)
 
 _EVENT_MODELS: Mapping[str, type[BaseEvent]] = {
     "ACTIVITY_SNAPSHOT": ActivitySnapshotEvent,
@@ -62,6 +86,68 @@ def _sequence(value: object, *, code: str, detail: str) -> list[Any]:
     if not isinstance(value, list):
         _fail(code, detail)
     return cast(list[Any], value)
+
+
+def _unique_strings(value: object, *, detail: str) -> tuple[str, ...]:
+    values = _sequence(
+        value,
+        code="agent_agui_python_profile_invalid",
+        detail=detail,
+    )
+    if (
+        not values
+        or any(not isinstance(item, str) or item == "" for item in values)
+        or len(values) != len(set(values))
+    ):
+        _fail("agent_agui_python_profile_invalid", detail)
+    return tuple(cast(list[str], values))
+
+
+@dataclass(frozen=True)
+class _DeclaredCoverage:
+    event_types: tuple[str, ...]
+    activity_types: tuple[str, ...]
+
+
+def _declared_coverage(profile: Mapping[str, Any]) -> _DeclaredCoverage:
+    if set(profile) != _CANDIDATE_PROFILE_KEYS:
+        _fail("agent_agui_python_profile_invalid", "candidate profile shape differs")
+    activation = _mapping(
+        profile.get("activation"),
+        code="agent_agui_python_profile_invalid",
+        detail="candidate activation policy missing",
+    )
+    if (
+        profile.get("profileId") != "kokoro.agui.agent-event-candidate-profile.v1"
+        or profile.get("profileRevision") != "kokoro-agent-agui-candidate.v1"
+        or profile.get("lifecycle") != "contract-only"
+        or profile.get("producer") != "kokoro-agent"
+        or profile.get("consumer") != "kokoro-session"
+        or activation
+        != {
+            "runtimeImplemented": False,
+            "compatibilityEvidence": False,
+            "browserTransport": False,
+        }
+    ):
+        _fail("agent_agui_python_profile_invalid", "candidate profile identity differs")
+    event_types = _unique_strings(
+        profile.get("allowedEventTypes"),
+        detail="allowedEventTypes must be a unique non-empty string list",
+    )
+    activity_types = _unique_strings(
+        profile.get("allowedActivityTypes"),
+        detail="allowedActivityTypes must be a unique non-empty string list",
+    )
+    if "ACTIVITY_SNAPSHOT" not in event_types:
+        _fail(
+            "agent_agui_python_profile_invalid",
+            "activity declarations require ACTIVITY_SNAPSHOT",
+        )
+    return _DeclaredCoverage(
+        event_types=event_types,
+        activity_types=activity_types,
+    )
 
 
 def _load_json(path: Path) -> Mapping[str, Any]:
@@ -196,9 +282,12 @@ def _verify_python_pins(root: Path) -> None:
         _fail("agent_agui_python_pin_invalid", "Root and Agent upstream pins differ")
 
 
-def validate_corpus(corpus: Mapping[str, Any]) -> int:
+def validate_corpus(
+    corpus: Mapping[str, Any], candidate_profile: Mapping[str, Any]
+) -> int:
     """Rebuild and compare all canonical Agent candidate envelopes."""
 
+    declared = _declared_coverage(candidate_profile)
     fixtures = _sequence(
         corpus.get("agentSourceFixtures"),
         code="agent_agui_python_source_coverage_invalid",
@@ -243,7 +332,13 @@ def validate_corpus(corpus: Mapping[str, Any]) -> int:
         )
 
     candidate_refs: set[str] = set()
+    case_ids: set[str] = set()
     used_source_refs: set[str] = set()
+    event_counts: Counter[str] = Counter()
+    activity_counts: Counter[str] = Counter()
+    started_run_counts: Counter[str] = Counter()
+    success_run_counts: Counter[str] = Counter()
+    error_run_counts: Counter[str] = Counter()
     for case in cases:
         case_mapping = _mapping(
             case,
@@ -251,6 +346,12 @@ def validate_corpus(corpus: Mapping[str, Any]) -> int:
             detail="candidate case must be an object",
         )
         case_id = case_mapping.get("id")
+        if not isinstance(case_id, str) or case_id == "" or case_id in case_ids:
+            _fail(
+                "agent_agui_python_candidate_duplicate",
+                "candidate case ids must be unique non-empty strings",
+            )
+        case_ids.add(case_id)
         envelope = _mapping(
             case_mapping.get("candidateEnvelope"),
             code="agent_agui_python_envelope_invalid",
@@ -293,12 +394,43 @@ def validate_corpus(corpus: Mapping[str, Any]) -> int:
             detail=f"{case_id}: event missing",
         )
         event_type = event_document.get("type")
-        event_model = _EVENT_MODELS.get(event_type) if isinstance(event_type, str) else None
+        if not isinstance(event_type, str):
+            _fail(
+                "agent_agui_python_envelope_invalid",
+                f"{case_id}: official event type missing",
+            )
+        event_model = _EVENT_MODELS.get(event_type)
         if event_model is None:
             _fail(
                 "agent_agui_python_envelope_invalid",
                 f"{case_id}: unsupported official event type",
             )
+        event_counts[event_type] += 1
+        route = _mapping(
+            source_document.get("route"),
+            code="agent_agui_python_envelope_invalid",
+            detail=f"{case_id}: source route missing",
+        )
+        run_ref = route.get("internalRunRef")
+        if not isinstance(run_ref, str):
+            _fail(
+                "agent_agui_python_envelope_invalid",
+                f"{case_id}: internal run ref missing",
+            )
+        if event_type == "RUN_STARTED":
+            started_run_counts[run_ref] += 1
+        elif event_type == "RUN_FINISHED":
+            success_run_counts[run_ref] += 1
+        elif event_type == "RUN_ERROR":
+            error_run_counts[run_ref] += 1
+        elif event_type == "ACTIVITY_SNAPSHOT":
+            activity_type = event_document.get("activityType")
+            if not isinstance(activity_type, str):
+                _fail(
+                    "agent_agui_python_activity_coverage_invalid",
+                    f"{case_id}: activityType missing",
+                )
+            activity_counts[activity_type] += 1
         try:
             official_event = event_model.model_validate(event_document)
             source = AgentAguiCandidateSource.model_validate(source_document)
@@ -317,10 +449,43 @@ def validate_corpus(corpus: Mapping[str, Any]) -> int:
                 f"{case_id}: Python rebuild differs from Root envelope",
             )
 
-    if len(cases) != EXPECTED_CANDIDATE_COUNT:
+    if set(event_counts) != set(declared.event_types):
         _fail(
             "agent_agui_python_candidate_coverage_invalid",
-            f"expected {EXPECTED_CANDIDATE_COUNT} candidates, found {len(cases)}",
+            "observed event arms differ from allowedEventTypes",
+        )
+    for event_type in declared.event_types:
+        if event_type in {"RUN_STARTED", "ACTIVITY_SNAPSHOT"}:
+            continue
+        if event_counts[event_type] != 1:
+            _fail(
+                "agent_agui_python_candidate_coverage_invalid",
+                f"{event_type} must have exactly one canonical envelope",
+            )
+    if (
+        set(activity_counts) != set(declared.activity_types)
+        or any(count != 1 for count in activity_counts.values())
+        or event_counts["ACTIVITY_SNAPSHOT"] != len(declared.activity_types)
+    ):
+        _fail(
+            "agent_agui_python_activity_coverage_invalid",
+            "observed activity arms differ from allowedActivityTypes",
+        )
+    if (
+        sum(success_run_counts.values()) != 1
+        or sum(error_run_counts.values()) != 1
+        or set(success_run_counts) & set(error_run_counts)
+        or started_run_counts
+        != Counter(
+            {
+                next(iter(success_run_counts)): 1,
+                next(iter(error_run_counts)): 1,
+            }
+        )
+    ):
+        _fail(
+            "agent_agui_python_candidate_coverage_invalid",
+            "success and error terminal runs each require one ordinal-zero start authority",
         )
     if used_source_refs != set(fixture_sources):
         _fail(
@@ -334,12 +499,17 @@ def validate_repository(root: Path) -> int:
     resolved_root = root.resolve()
     _verify_python_pins(resolved_root)
     corpus = _load_json(resolved_root / "contract/corpus/agui-presentation-v1.json")
-    return validate_corpus(corpus)
+    candidate_profile = _load_json(
+        resolved_root / "contract/registry/agui-agent-candidate-profile-v1.yaml"
+    )
+    return validate_corpus(corpus, candidate_profile)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[2]
+    )
     args = parser.parse_args()
     count = validate_repository(args.root)
     print(

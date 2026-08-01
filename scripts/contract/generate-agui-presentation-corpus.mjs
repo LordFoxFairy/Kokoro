@@ -77,19 +77,6 @@ function candidateEnvelopeFromFrame(contractCase, frame, candidateSource) {
   return envelope;
 }
 
-function replaceProjectionSourceRef(contractCase, previousRef, sourceEventRef) {
-  const frame = contractCase.frames.find(({ data }) => data.source.sourceEventId === previousRef)
-    ?? contractCase.frames.find(({ data }) => data.source.sourceEventId === sourceEventRef);
-  if (frame === undefined) throw new Error(`Agent source projection frame missing: ${previousRef}`);
-  frame.data.source.sourceEventId = sourceEventRef;
-  for (const binding of [...contractCase.runBindings, ...contractCase.messageBindings]) {
-    for (const field of ["openedBySourceEventId", "terminalSourceEventId", "endedBySourceEventId"]) {
-      if (binding[field] === previousRef) binding[field] = sourceEventRef;
-    }
-  }
-  return frame;
-}
-
 function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRef) {
   const runBinding = contractCase.runBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef);
   if (runBinding === undefined) throw new Error(`Agent source run binding missing: ${frame.data.source.sourceEventId}`);
@@ -153,31 +140,75 @@ const corpusPath = resolve(options.root, "contract/corpus/agui-presentation-v1.j
 const sourceText = await readFile(corpusPath, "utf8");
 const corpus = JSON.parse(sourceText);
 corpus.contracts = contracts;
+const agentCandidateProfile = JSON.parse(
+  await readFile(resolve(options.root, contracts.agentCandidateProfile), "utf8"),
+);
+if (!Array.isArray(agentCandidateProfile.allowedActivityTypes) || agentCandidateProfile.allowedActivityTypes.length === 0) {
+  throw new Error("Agent candidate profile activities are required");
+}
+const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
+if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
+const activityTemplates = agentCandidateProfile.allowedActivityTypes.map((activityType) => {
+  const frame = authorityBase.frames.find(
+    ({ data }) => data.event.type === "ACTIVITY_SNAPSHOT" && data.event.activityType === activityType,
+  );
+  if (frame === undefined) throw new Error(`Agent activity template missing: ${activityType}`);
+  return {
+    event: structuredClone(frame.data.event),
+    sourceKind: frame.data.source.sourceKind,
+  };
+});
 const parentCase = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
 if (parentCase === undefined) throw new Error("safe-run-error corpus case is required");
+const successRunBindingRef = "run-binding.error.parent.segment.0";
+const successInternalRunRef = "internal.run.error.parent";
+const successPresentationRunId = "presentation.run.error.parent.segment.0";
+const successMessageBindingRef = "message-binding.error.parent.segment.0";
+const successInternalMessageRef = "internal.message.error.parent.assistant.01";
+const successPresentationMessageId = "presentation.message.error.parent.segment.0";
+const errorRunBindingRef = "run-binding.error.segment.0";
+const errorInternalRunRef = "internal.run.error";
+const errorPresentationRunId = "presentation.run.error.segment.0";
+const recordedAt = (sequence) => `2026-08-01T13:00:${String(sequence).padStart(2, "0")}.000Z`;
 parentCase.runBindings = [
   {
-    bindingRef: "run-binding.error.parent.segment.0", profileRevision, sessionId: "session.error",
-    internalRunRef: "internal.run.error.parent", presentationThreadId: "thread.session.error",
-    presentationRunId: "presentation.run.error.parent.segment.0", segmentOrdinal: 0,
+    bindingRef: successRunBindingRef, profileRevision, sessionId: "session.error",
+    internalRunRef: successInternalRunRef, presentationThreadId: "thread.session.error",
+    presentationRunId: successPresentationRunId, segmentOrdinal: 0,
     resumeOfPresentationRunId: null,
     parentLineage: { parentInternalRunRef: null, parentPresentationRunId: null },
     state: "finished", terminalDisposition: "success",
-    openedBySourceEventId: "error-parent-source.01", terminalSourceEventId: "error-parent-source.02",
-    openedAt: "2026-08-01T13:00:01.000Z", terminalAt: "2026-08-01T13:00:02.000Z",
+    openedBySourceEventId: "agent.event.run.success.000", terminalSourceEventId: "agent.event.run.success.012",
+    openedAt: recordedAt(1), terminalAt: recordedAt(13),
   },
   {
-    bindingRef: "run-binding.error.segment.0", profileRevision, sessionId: "session.error",
-    internalRunRef: "internal.run.error", presentationThreadId: "thread.session.error",
-    presentationRunId: "presentation.run.error.segment.0", segmentOrdinal: 0,
+    bindingRef: errorRunBindingRef, profileRevision, sessionId: "session.error",
+    internalRunRef: errorInternalRunRef, presentationThreadId: "thread.session.error",
+    presentationRunId: errorPresentationRunId, segmentOrdinal: 0,
     resumeOfPresentationRunId: null,
     parentLineage: {
-      parentInternalRunRef: "internal.run.error.parent",
-      parentPresentationRunId: "presentation.run.error.parent.segment.0",
+      parentInternalRunRef: successInternalRunRef,
+      parentPresentationRunId: successPresentationRunId,
     },
     state: "error", terminalDisposition: "error",
-    openedBySourceEventId: "error-source.03", terminalSourceEventId: "error-source.04",
-    openedAt: "2026-08-01T13:00:03.000Z", terminalAt: "2026-08-01T13:00:04.000Z",
+    openedBySourceEventId: "agent.event.run.error.000", terminalSourceEventId: "agent.event.run.error.001",
+    openedAt: recordedAt(14), terminalAt: recordedAt(15),
+  },
+];
+parentCase.messageBindings = [
+  {
+    bindingRef: successMessageBindingRef,
+    profileRevision,
+    sessionId: "session.error",
+    internalMessageRef: successInternalMessageRef,
+    presentationRunBindingRef: successRunBindingRef,
+    presentationMessageId: successPresentationMessageId,
+    resumeSegmentOrdinal: 0,
+    state: "ended",
+    openedBySourceEventId: "agent.event.run.success.001",
+    endedBySourceEventId: "agent.event.run.success.011",
+    openedAt: recordedAt(2),
+    endedAt: recordedAt(12),
   },
 ];
 const source = (sourceEventId, sourceKind, durableSeq, recordedAt) => ({
@@ -190,38 +221,80 @@ const runFrame = (event, data) => ({ kind: "durable", id: "derived-by-generator"
   presentationRunBindingRef: data.bindingRef,
   event,
 } });
-parentCase.frames = [
-  runFrame(
-    { type: "RUN_STARTED", timestamp: Date.parse("2026-08-01T13:00:01.000Z"), threadId: "thread.session.error", runId: "presentation.run.error.parent.segment.0" },
-    { bindingRef: "run-binding.error.parent.segment.0", source: source("error-parent-source.01", "presentation.run.started", "1", "2026-08-01T13:00:01.000Z") },
+const messageFrame = (event, data) => {
+  const frame = runFrame(event, data);
+  frame.data.presentationMessageBindingRef = successMessageBindingRef;
+  return frame;
+};
+const successFrame = (event, sourceKind, sourceOrdinal, messageScoped = false) => {
+  const durableSequence = sourceOrdinal + 1;
+  const timestamp = recordedAt(durableSequence);
+  const candidateEvent = structuredClone(event);
+  candidateEvent.timestamp = Date.parse(timestamp);
+  if (messageScoped) candidateEvent.messageId = successPresentationMessageId;
+  const data = {
+    bindingRef: successRunBindingRef,
+    source: source(
+      `agent.event.run.success.${String(sourceOrdinal).padStart(3, "0")}`,
+      sourceKind,
+      String(durableSequence),
+      timestamp,
+    ),
+  };
+  return messageScoped ? messageFrame(candidateEvent, data) : runFrame(candidateEvent, data);
+};
+const successFrames = [
+  successFrame(
+    { type: "RUN_STARTED", threadId: "thread.session.error", runId: successPresentationRunId },
+    "presentation.run.started", 0,
   ),
-  runFrame(
-    { type: "RUN_FINISHED", timestamp: Date.parse("2026-08-01T13:00:02.000Z"), threadId: "thread.session.error", runId: "presentation.run.error.parent.segment.0" },
-    { bindingRef: "run-binding.error.parent.segment.0", source: source("error-parent-source.02", "presentation.run.finished", "2", "2026-08-01T13:00:02.000Z") },
+  successFrame(
+    { type: "TEXT_MESSAGE_START", role: "assistant" },
+    "presentation.message.text.started", 1, true,
   ),
-  runFrame(
-    { type: "RUN_STARTED", timestamp: Date.parse("2026-08-01T13:00:03.000Z"), threadId: "thread.session.error", runId: "presentation.run.error.segment.0", parentRunId: "presentation.run.error.parent.segment.0" },
-    { bindingRef: "run-binding.error.segment.0", source: source("error-source.03", "presentation.run.started", "3", "2026-08-01T13:00:03.000Z") },
+  successFrame(
+    { type: "TEXT_MESSAGE_CONTENT", delta: "I can help with that." },
+    "presentation.message.text.content", 2, true,
   ),
-  runFrame(
-    { type: "RUN_ERROR", timestamp: Date.parse("2026-08-01T13:00:04.000Z"), message: "The run could not be completed.", code: "RUN_FAILED" },
-    { bindingRef: "run-binding.error.segment.0", source: source("error-source.04", "presentation.run.error", "4", "2026-08-01T13:00:04.000Z") },
+  ...activityTemplates.map(({ event, sourceKind }, index) => successFrame(event, sourceKind, index + 3, true)),
+  successFrame(
+    { type: "TEXT_MESSAGE_END" },
+    "presentation.message.text.ended", 11, true,
+  ),
+  successFrame(
+    { type: "RUN_FINISHED", threadId: "thread.session.error", runId: successPresentationRunId },
+    "presentation.run.finished", 12,
   ),
 ];
-const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
-if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
-const agentSourcePlans = [
-  { contractCase: authorityBase, previousRef: "source.01", sourceEventRef: "agent.event.run.01.000", sourceOrdinal: "0", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
-  { contractCase: authorityBase, previousRef: "source.03", sourceEventRef: "agent.event.run.01.002", sourceOrdinal: "2", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
-  { contractCase: authorityBase, previousRef: "source.04", sourceEventRef: "agent.event.run.01.003", sourceOrdinal: "3", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
-  { contractCase: authorityBase, previousRef: "source.26", sourceEventRef: "agent.event.run.01.025", sourceOrdinal: "25", internalThreadRef: "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C" },
-  { contractCase: parentCase, previousRef: "error-source.03", sourceEventRef: "agent.event.run.error.000", sourceOrdinal: "0", internalThreadRef: "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D" },
-  { contractCase: parentCase, previousRef: "error-source.04", sourceEventRef: "agent.event.run.error.001", sourceOrdinal: "1", internalThreadRef: "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D" },
+const errorStartedAt = recordedAt(14);
+const errorTerminalAt = recordedAt(15);
+const errorFrames = [
+  runFrame(
+    {
+      type: "RUN_STARTED", timestamp: Date.parse(errorStartedAt), threadId: "thread.session.error",
+      runId: errorPresentationRunId, parentRunId: successPresentationRunId,
+    },
+    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.000", "presentation.run.started", "14", errorStartedAt) },
+  ),
+  runFrame(
+    {
+      type: "RUN_ERROR", timestamp: Date.parse(errorTerminalAt),
+      message: "The run could not be completed.", code: "RUN_FAILED",
+    },
+    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.001", "presentation.run.error", "15", errorTerminalAt) },
+  ),
 ];
-corpus.agentSourceFixtures = agentSourcePlans.map(({ contractCase, previousRef, sourceEventRef, sourceOrdinal, internalThreadRef }) => {
-  const frame = replaceProjectionSourceRef(contractCase, previousRef, sourceEventRef);
-  return agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRef);
-});
+parentCase.frames = [...successFrames, ...errorFrames];
+const successAgentThreadRef = "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C";
+const errorAgentThreadRef = "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D";
+corpus.agentSourceFixtures = [
+  ...successFrames.map((frame, sourceOrdinal) => (
+    agentSourceFixture(parentCase, frame, String(sourceOrdinal), successAgentThreadRef)
+  )),
+  ...errorFrames.map((frame, sourceOrdinal) => (
+    agentSourceFixture(parentCase, frame, String(sourceOrdinal), errorAgentThreadRef)
+  )),
+];
 for (const contractCase of corpus.positiveCases) {
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;
   delete contractCase.snapshot.runBindings;
@@ -247,15 +320,11 @@ for (const contractCase of corpus.positiveCases) {
   }));
   contractCase.controlFrame.data.lastDurableCursor = contractCase.frames.at(-1).id;
 }
-const authorityHead = authorityBase.frames.at(-1);
-const successRunFinishedFrame = authorityBase.frames.find((frame) => {
-  if (frame.data.event.type !== "RUN_FINISHED") return false;
-  const binding = authorityBase.runBindings.find(({ bindingRef }) => bindingRef === frame.data.presentationRunBindingRef);
-  return binding?.terminalDisposition === "success";
-});
-if (successRunFinishedFrame === undefined) throw new Error("success RUN_FINISHED corpus frame is required");
-const successRunBinding = authorityBase.runBindings.find(({ bindingRef }) => bindingRef === successRunFinishedFrame.data.presentationRunBindingRef);
-if (successRunBinding === undefined) throw new Error("success RUN_FINISHED binding is required");
+const parentHead = parentCase.frames.at(-1);
+const successRunFinishedFrame = successFrames.at(-1);
+if (parentHead === undefined || successRunFinishedFrame?.data.event.type !== "RUN_FINISHED") {
+  throw new Error("complete Agent candidate corpus frames are required");
+}
 const sourceFixtureByRef = new Map(corpus.agentSourceFixtures.map((fixture) => [fixture.source.sourceEventRef, fixture]));
 const candidateEnvelopeFor = (contractCase, frame) => {
   const fixture = sourceFixtureByRef.get(frame.data.source.sourceEventId);
@@ -264,49 +333,107 @@ const candidateEnvelopeFor = (contractCase, frame) => {
   }
   return candidateEnvelopeFromFrame(contractCase, frame, fixture.source);
 };
-const successCandidateEnvelope = candidateEnvelopeFor(authorityBase, successRunFinishedFrame);
+const successCandidateEnvelope = candidateEnvelopeFor(parentCase, successRunFinishedFrame);
 corpus.agentCandidateProjectionCases = [
   {
     id: "agent-success-outcome-to-browser-run-finished",
-    baseCaseId: authorityBase.id,
+    baseCaseId: parentCase.id,
     sourceEventId: successRunFinishedFrame.data.source.sourceEventId,
     candidateEnvelope: successCandidateEnvelope,
     expectedPresentationEvent: structuredClone(successRunFinishedFrame.data.event),
   },
 ];
-const runStartedFrame = authorityBase.frames.find((frame) => frame.data.source.sourceEventId === "agent.event.run.01.000");
-const textFrame = authorityBase.frames.find((frame) => frame.data.source.sourceEventId === "agent.event.run.01.002");
-const activityFrame = authorityBase.frames.find((frame) => frame.data.source.sourceEventId === "agent.event.run.01.003");
-const runErrorStartedFrame = parentCase.frames.find((frame) => frame.data.source.sourceEventId === "agent.event.run.error.000");
-const runErrorFrame = parentCase.frames.find((frame) => frame.data.source.sourceEventId === "agent.event.run.error.001");
-if (runStartedFrame === undefined || textFrame === undefined || activityFrame === undefined || runErrorStartedFrame === undefined || runErrorFrame === undefined) {
-  throw new Error("Agent candidate route-family corpus frames are required");
-}
+const envelopeCaseId = (frame) => {
+  const event = frame.data.event;
+  if (event.type === "RUN_STARTED") return "agent-run-start-envelope";
+  if (event.type === "TEXT_MESSAGE_START") return "agent-text-start-envelope";
+  if (event.type === "TEXT_MESSAGE_CONTENT") return "agent-text-envelope";
+  if (event.type === "TEXT_MESSAGE_END") return "agent-text-end-envelope";
+  if (event.type === "ACTIVITY_SNAPSHOT" && event.activityType === "kokoro.safe-summary.v1") {
+    return "agent-activity-envelope";
+  }
+  if (event.type === "ACTIVITY_SNAPSHOT") {
+    const activityName = event.activityType.replace(/^kokoro\./u, "").replace(/\.v1$/u, "");
+    return `agent-activity-${activityName}-envelope`;
+  }
+  throw new Error(`unsupported success candidate envelope: ${event.type}`);
+};
 corpus.agentCandidateEnvelopeCases = [
-  { id: "agent-run-start-envelope", baseCaseId: authorityBase.id, sourceEventId: runStartedFrame.data.source.sourceEventId, candidateEnvelope: candidateEnvelopeFor(authorityBase, runStartedFrame) },
-  { id: "agent-error-run-start-envelope", baseCaseId: parentCase.id, sourceEventId: runErrorStartedFrame.data.source.sourceEventId, candidateEnvelope: candidateEnvelopeFor(parentCase, runErrorStartedFrame) },
-  { id: "agent-run-error-envelope", baseCaseId: parentCase.id, sourceEventId: runErrorFrame.data.source.sourceEventId, candidateEnvelope: candidateEnvelopeFor(parentCase, runErrorFrame) },
-  { id: "agent-text-envelope", baseCaseId: authorityBase.id, sourceEventId: textFrame.data.source.sourceEventId, candidateEnvelope: candidateEnvelopeFor(authorityBase, textFrame) },
-  { id: "agent-activity-envelope", baseCaseId: authorityBase.id, sourceEventId: activityFrame.data.source.sourceEventId, candidateEnvelope: candidateEnvelopeFor(authorityBase, activityFrame) },
+  ...successFrames.slice(0, -1).map((frame) => ({
+    id: envelopeCaseId(frame),
+    baseCaseId: parentCase.id,
+    sourceEventId: frame.data.source.sourceEventId,
+    candidateEnvelope: candidateEnvelopeFor(parentCase, frame),
+  })),
+  {
+    id: "agent-error-run-start-envelope",
+    baseCaseId: parentCase.id,
+    sourceEventId: errorFrames[0].data.source.sourceEventId,
+    candidateEnvelope: candidateEnvelopeFor(parentCase, errorFrames[0]),
+  },
+  {
+    id: "agent-run-error-envelope",
+    baseCaseId: parentCase.id,
+    sourceEventId: errorFrames[1].data.source.sourceEventId,
+    candidateEnvelope: candidateEnvelopeFor(parentCase, errorFrames[1]),
+  },
 ];
 corpus.snapshotAuthorityCases = [
   {
     id: "nonzero-head-after-binding-evidence",
-    baseCaseId: authorityBase.id,
+    baseCaseId: parentCase.id,
     snapshot: {
       authority: "session-browser-v3-http-snapshot",
       hydrate: true,
       repair: true,
       profileRevision,
-      sessionId: authorityBase.snapshot.sessionId,
-      streamEpoch: authorityBase.snapshot.streamEpoch,
-      durableSeq: authorityHead.data.source.durableSeq,
-      lastRecordedAt: authorityHead.data.source.recordedAt,
-      cursor: authorityHead.id,
-      runBindings: structuredClone(authorityBase.runBindings),
-      messageBindings: structuredClone(authorityBase.messageBindings),
+      sessionId: parentCase.snapshot.sessionId,
+      streamEpoch: parentCase.snapshot.streamEpoch,
+      durableSeq: parentHead.data.source.durableSeq,
+      lastRecordedAt: parentHead.data.source.recordedAt,
+      cursor: parentHead.id,
+      runBindings: structuredClone(parentCase.runBindings),
+      messageBindings: structuredClone(parentCase.messageBindings),
     },
-    nextEventRecordedAt: "2026-08-01T12:00:27.000Z",
+    nextEventRecordedAt: recordedAt(16),
+  },
+];
+corpus.snapshotAuthorityNegativeCases = [
+  {
+    id: "zero-head-retains-bindings",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "zero-head-retains-bindings" },
+    expectedCode: "agui_snapshot_zero_head_bindings_invalid",
+  },
+  {
+    id: "binding-evidence-exceeds-head",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "binding-evidence-exceeds-head" },
+    expectedCode: "agui_snapshot_binding_evidence_exceeds_head",
+  },
+  {
+    id: "noncanonical-binding-time",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "noncanonical-binding-time" },
+    expectedCode: "agui_snapshot_binding_time_invalid",
+  },
+  {
+    id: "multiple-presentation-thread",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "multiple-presentation-thread" },
+    expectedCode: "agui_snapshot_thread_scope_invalid",
+  },
+  {
+    id: "parent-lineage-cycle",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "parent-lineage-cycle" },
+    expectedCode: "agui_parent_lineage_cycle",
+  },
+  {
+    id: "m0-interrupted-terminal",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "m0-interrupted-terminal" },
+    expectedCode: "agui_snapshot_terminal_state_invalid",
   },
 ];
 const generatedText = `${JSON.stringify(corpus, null, 2)}\n`;

@@ -565,12 +565,24 @@ function bindingTimestampWatermark(runBindings, messageBindings) {
   for (const binding of [...runBindings, ...messageBindings]) {
     for (const field of ["openedAt", "terminalAt", "endedAt"]) {
       if (binding?.[field] === null || binding?.[field] === undefined) continue;
-      const parsed = Date.parse(binding[field]);
-      if (!Number.isFinite(parsed)) fail("agui_snapshot_binding_time_invalid", binding.bindingRef ?? "unknown");
+      const parsed = parseCanonicalUtcMs(binding[field], "agui_snapshot_binding_time_invalid");
       watermark = Math.max(watermark, parsed);
     }
   }
   return watermark;
+}
+
+function snapshotBindingEvidenceCount(runBindings, messageBindings) {
+  const evidence = new Set();
+  for (const binding of runBindings) {
+    evidence.add(binding.openedBySourceEventId);
+    if (binding.terminalSourceEventId !== null) evidence.add(binding.terminalSourceEventId);
+  }
+  for (const binding of messageBindings) {
+    evidence.add(binding.openedBySourceEventId);
+    if (binding.endedBySourceEventId !== null) evidence.add(binding.endedBySourceEventId);
+  }
+  return BigInt(evidence.size);
 }
 
 function validateSnapshotTimeAuthority(snapshot, validateSchema, runBindings = [], messageBindings = [], nextEventRecordedAt = undefined) {
@@ -649,6 +661,16 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
       parent.internalRunRef === binding.internalRunRef
     ) fail("agui_parent_lineage_pair_invalid", binding.bindingRef);
   }
+  for (const binding of refs.values()) {
+    const visited = new Set([binding.presentationRunId]);
+    let current = binding;
+    while (current.parentLineage.parentPresentationRunId !== null) {
+      const parentId = current.parentLineage.parentPresentationRunId;
+      if (visited.has(parentId)) fail("agui_parent_lineage_cycle", binding.bindingRef);
+      visited.add(parentId);
+      current = presentationIds.get(parentId);
+    }
+  }
   for (const group of groups.values()) {
     group.sort((left, right) => left.segmentOrdinal - right.segmentOrdinal);
     for (let index = 0; index < group.length; index += 1) {
@@ -662,6 +684,34 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
     }
   }
   return refs;
+}
+
+function validateSnapshotBindingAuthority(snapshot, contracts) {
+  const runBindings = snapshot.runBindings;
+  const messageBindings = snapshot.messageBindings;
+  const durableSeq = uint64(snapshot.durableSeq, "agui_snapshot_cursor_invalid");
+  if (durableSeq === 0n && (runBindings.length !== 0 || messageBindings.length !== 0)) {
+    fail("agui_snapshot_zero_head_bindings_invalid");
+  }
+  if (snapshotBindingEvidenceCount(runBindings, messageBindings) > durableSeq) {
+    fail("agui_snapshot_binding_evidence_exceeds_head");
+  }
+  bindingTimestampWatermark(runBindings, messageBindings);
+  if (runBindings.length === 0) return;
+  const identities = createSemanticIdentityRegistries();
+  const runRefs = validateRunBindings(runBindings, contracts.validateRunBinding, snapshot, identities);
+  validateMessageBindings(messageBindings, contracts.validateMessageBinding, runRefs, snapshot, identities);
+  if (new Set(runBindings.map(({ presentationThreadId }) => presentationThreadId)).size !== 1) {
+    fail("agui_snapshot_thread_scope_invalid");
+  }
+  for (const binding of runBindings) {
+    const validState = (
+      (binding.state === "open" && binding.terminalDisposition === null) ||
+      (binding.state === "finished" && binding.terminalDisposition === "success") ||
+      (binding.state === "error" && binding.terminalDisposition === "error")
+    );
+    if (!validState) fail("agui_snapshot_terminal_state_invalid", binding.bindingRef);
+  }
 }
 
 function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, identities) {
@@ -780,8 +830,8 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   ) fail("agui_grant_profile_binding_invalid");
   const snapshotAuthority = {
     ...caseInput.snapshot,
-    runBindings: caseInput.runBindings,
-    messageBindings: caseInput.messageBindings,
+    runBindings: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.runBindings,
+    messageBindings: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.messageBindings,
   };
 
   const previousRecordedAtAuthority = validateSnapshotTimeAuthority(
@@ -1201,36 +1251,148 @@ function validateAgentCandidateProjectionCorpus(corpus, contracts, sourceFixture
   return corpus.agentCandidateProjectionCases.length;
 }
 
+function incrementCount(counts, key) {
+  counts.set(key, (counts.get(key) ?? 0) + 1);
+}
+
+function validateAgentCandidateSemanticCoverage(corpus, profile) {
+  const cases = [...corpus.agentCandidateEnvelopeCases, ...corpus.agentCandidateProjectionCases];
+  const eventCounts = new Map();
+  const activityCounts = new Map();
+  const startedRunCounts = new Map();
+  const successRunCounts = new Map();
+  const errorRunCounts = new Map();
+  for (const candidateCase of cases) {
+    const { event, source } = candidateCase.candidateEnvelope;
+    incrementCount(eventCounts, event.type);
+    if (event.type === EventType.ACTIVITY_SNAPSHOT) incrementCount(activityCounts, event.activityType);
+    if (event.type === EventType.RUN_STARTED) incrementCount(startedRunCounts, source.route.internalRunRef);
+    if (event.type === EventType.RUN_FINISHED) incrementCount(successRunCounts, source.route.internalRunRef);
+    if (event.type === EventType.RUN_ERROR) incrementCount(errorRunCounts, source.route.internalRunRef);
+  }
+  const observedEvents = [...eventCounts.keys()];
+  if (
+    observedEvents.length !== profile.allowedEventTypes.length ||
+    observedEvents.some((eventType) => !profile.allowedEventTypes.includes(eventType))
+  ) fail("agui_agent_candidate_semantic_coverage_invalid", "event-set");
+  for (const eventType of profile.allowedEventTypes) {
+    if ([EventType.RUN_STARTED, EventType.ACTIVITY_SNAPSHOT].includes(eventType)) continue;
+    if (eventCounts.get(eventType) !== 1) fail("agui_agent_candidate_semantic_coverage_invalid", eventType);
+  }
+  const observedActivities = [...activityCounts.keys()];
+  if (
+    eventCounts.get(EventType.ACTIVITY_SNAPSHOT) !== profile.allowedActivityTypes.length ||
+    observedActivities.length !== profile.allowedActivityTypes.length ||
+    observedActivities.some((activityType) => !profile.allowedActivityTypes.includes(activityType)) ||
+    observedActivities.some((activityType) => activityCounts.get(activityType) !== 1)
+  ) fail("agui_agent_candidate_activity_coverage_invalid");
+  if (successRunCounts.size !== 1 || errorRunCounts.size !== 1) {
+    fail("agui_agent_candidate_semantic_coverage_invalid", "terminal-runs");
+  }
+  const successRunRef = successRunCounts.keys().next().value;
+  const errorRunRef = errorRunCounts.keys().next().value;
+  if (
+    successRunRef === errorRunRef || successRunCounts.get(successRunRef) !== 1 || errorRunCounts.get(errorRunRef) !== 1 ||
+    startedRunCounts.size !== 2 || startedRunCounts.get(successRunRef) !== 1 || startedRunCounts.get(errorRunRef) !== 1
+  ) fail("agui_agent_candidate_semantic_coverage_invalid", "run-start-authority");
+}
+
+function applySnapshotAuthorityMutation(authorityCase, mutation) {
+  const snapshot = authorityCase.snapshot;
+  if (mutation?.operation === "zero-head-retains-bindings") {
+    snapshot.durableSeq = "0";
+    snapshot.lastRecordedAt = null;
+    return authorityCase;
+  }
+  if (mutation?.operation === "binding-evidence-exceeds-head") {
+    snapshot.durableSeq = "1";
+    return authorityCase;
+  }
+  if (mutation?.operation === "noncanonical-binding-time") {
+    snapshot.runBindings[0].openedAt = "2026-08-01T13:00:01Z";
+    return authorityCase;
+  }
+  if (mutation?.operation === "multiple-presentation-thread") {
+    snapshot.runBindings[1].presentationThreadId = "thread.session.other";
+    return authorityCase;
+  }
+  if (mutation?.operation === "parent-lineage-cycle") {
+    snapshot.runBindings[0].parentLineage = {
+      parentInternalRunRef: snapshot.runBindings[1].internalRunRef,
+      parentPresentationRunId: snapshot.runBindings[1].presentationRunId,
+    };
+    return authorityCase;
+  }
+  if (mutation?.operation === "m0-interrupted-terminal") {
+    snapshot.runBindings[0].terminalDisposition = "interrupted";
+    return authorityCase;
+  }
+  fail("agui_snapshot_authority_mutation_invalid");
+}
+
+function validateSnapshotAuthorityCase(authorityCase, corpus, contracts) {
+  exactKeys(authorityCase, ["id", "baseCaseId", "snapshot", "nextEventRecordedAt"], "agui_snapshot_authority_case_shape_invalid");
+  const base = corpus.positiveCases.find(({ id }) => id === authorityCase.baseCaseId);
+  if (base === undefined || authorityCase.snapshot.sessionId !== base.snapshot.sessionId) {
+    fail("agui_snapshot_authority_case_base_invalid", authorityCase.id);
+  }
+  const watermark = validateSnapshotTimeAuthority(
+    authorityCase.snapshot,
+    contracts.validateSnapshotAuthoritySchema,
+    authorityCase.snapshot.runBindings,
+    authorityCase.snapshot.messageBindings,
+    authorityCase.nextEventRecordedAt,
+  );
+  if (!contracts.validateSnapshotAuthoritySchema(authorityCase.snapshot)) {
+    fail("agui_snapshot_authority_schema_invalid", contracts.validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
+  }
+  validateSnapshotBindingAuthority(authorityCase.snapshot, contracts);
+  if (watermark === Number.NEGATIVE_INFINITY) fail("agui_snapshot_authority_case_nonzero_required", authorityCase.id);
+  const claims = decodeCursor(authorityCase.snapshot.cursor, contracts.mapping.limits.maximumCursorBytes);
+  assertCursorScope(claims, {
+    sessionId: authorityCase.snapshot.sessionId,
+    streamEpoch: authorityCase.snapshot.streamEpoch,
+    durableSeq: authorityCase.snapshot.durableSeq,
+    profileRevision: authorityCase.snapshot.profileRevision,
+    cursorProfileRevision: CURSOR_PROFILE_REVISION,
+  });
+}
+
 function validateSnapshotAuthorityCorpus(corpus, contracts) {
   if (!Array.isArray(corpus.snapshotAuthorityCases) || corpus.snapshotAuthorityCases.length < 1) fail("agui_snapshot_authority_corpus_missing");
   const caseIds = new Set();
   for (const authorityCase of corpus.snapshotAuthorityCases) {
-    exactKeys(authorityCase, ["id", "baseCaseId", "snapshot", "nextEventRecordedAt"], "agui_snapshot_authority_case_shape_invalid");
     if (caseIds.has(authorityCase.id)) fail("agui_snapshot_authority_case_duplicate", authorityCase.id);
     caseIds.add(authorityCase.id);
-    const base = corpus.positiveCases.find(({ id }) => id === authorityCase.baseCaseId);
-    if (base === undefined || authorityCase.snapshot.sessionId !== base.snapshot.sessionId) fail("agui_snapshot_authority_case_base_invalid", authorityCase.id);
-    const watermark = validateSnapshotTimeAuthority(
-      authorityCase.snapshot,
-      contracts.validateSnapshotAuthoritySchema,
-      authorityCase.snapshot.runBindings,
-      authorityCase.snapshot.messageBindings,
-      authorityCase.nextEventRecordedAt,
-    );
-    if (!contracts.validateSnapshotAuthoritySchema(authorityCase.snapshot)) {
-      fail("agui_snapshot_authority_schema_invalid", contracts.validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
-    }
-    if (watermark === Number.NEGATIVE_INFINITY) fail("agui_snapshot_authority_case_nonzero_required", authorityCase.id);
-    const claims = decodeCursor(authorityCase.snapshot.cursor, contracts.mapping.limits.maximumCursorBytes);
-    assertCursorScope(claims, {
-      sessionId: authorityCase.snapshot.sessionId,
-      streamEpoch: authorityCase.snapshot.streamEpoch,
-      durableSeq: authorityCase.snapshot.durableSeq,
-      profileRevision: authorityCase.snapshot.profileRevision,
-      cursorProfileRevision: CURSOR_PROFILE_REVISION,
-    });
+    validateSnapshotAuthorityCase(authorityCase, corpus, contracts);
   }
-  return corpus.snapshotAuthorityCases.length;
+  if (!Array.isArray(corpus.snapshotAuthorityNegativeCases) || corpus.snapshotAuthorityNegativeCases.length < 1) {
+    fail("agui_snapshot_authority_negative_corpus_missing");
+  }
+  const negativeIds = new Set();
+  for (const attack of corpus.snapshotAuthorityNegativeCases) {
+    exactKeys(attack, ["id", "baseAuthorityCaseId", "mutation", "expectedCode"], "agui_snapshot_authority_negative_case_shape_invalid");
+    exactKeys(attack.mutation, ["operation"], "agui_snapshot_authority_negative_case_shape_invalid");
+    if (negativeIds.has(attack.id)) fail("agui_snapshot_authority_negative_case_duplicate", attack.id);
+    negativeIds.add(attack.id);
+    const base = corpus.snapshotAuthorityCases.find(({ id }) => id === attack.baseAuthorityCaseId);
+    if (base === undefined) fail("agui_snapshot_authority_negative_case_base_invalid", attack.id);
+    const candidate = applySnapshotAuthorityMutation(structuredClone(base), attack.mutation);
+    let observed;
+    try {
+      validateSnapshotAuthorityCase(candidate, corpus, contracts);
+    } catch (error) {
+      if (error instanceof AguiPresentationContractError) observed = error.code;
+      else throw error;
+    }
+    if (observed !== attack.expectedCode) {
+      fail("agui_snapshot_authority_negative_case_expectation_invalid", `${attack.id}:${observed ?? "accepted"}`);
+    }
+  }
+  return {
+    positive: corpus.snapshotAuthorityCases.length,
+    negative: corpus.snapshotAuthorityNegativeCases.length,
+  };
 }
 
 export async function validateRepository({ root = repositoryRoot } = {}) {
@@ -1263,10 +1425,11 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   const usedAgentSourceRefs = new Set();
   const agentCandidateEnvelopeCases = validateAgentCandidateEnvelopeCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
   const agentCandidateProjectionCases = validateAgentCandidateProjectionCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
+  validateAgentCandidateSemanticCoverage(corpus, contracts.agentCandidateProfile);
   if (usedAgentSourceRefs.size !== agentSourceFixtures.size || [...agentSourceFixtures.keys()].some((sourceRef) => !usedAgentSourceRefs.has(sourceRef))) {
     fail("agui_agent_candidate_source_fixture_unused");
   }
-  const snapshotAuthorityCases = validateSnapshotAuthorityCorpus(corpus, contracts);
+  const snapshotAuthority = validateSnapshotAuthorityCorpus(corpus, contracts);
   const negativeIds = new Set();
   for (const attack of corpus.negativeCases) {
     if (negativeIds.has(attack.id) || !caseIds.has(attack.baseCaseId)) fail("agui_negative_case_invalid", attack.id);
@@ -1291,7 +1454,8 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
     agentSourceFixtures: agentSourceFixtures.size,
     agentCandidateEnvelopeCases,
     agentCandidateProjectionCases,
-    snapshotAuthorityCases,
+    snapshotAuthorityCases: snapshotAuthority.positive,
+    snapshotAuthorityNegativeCases: snapshotAuthority.negative,
   };
 }
 
@@ -1302,7 +1466,7 @@ async function main(argv) {
     root = resolve(argv[1]);
   }
   const result = await validateRepository({ root });
-  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentSourceFixtures} Agent source fixtures, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases\n`);
+  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentSourceFixtures} Agent source fixtures, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases, ${result.snapshotAuthorityNegativeCases} snapshot authority attacks\n`);
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
