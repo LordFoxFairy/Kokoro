@@ -77,7 +77,11 @@ Artifact/Cost owner activities, native tool events, raw/provider payloads and re
 carries no Site/user/Session/cursor/SSE axes: it binds Agent source/route refs, canonical time and uint64 ordinal to the typed
 event's JCS digest and a domain-separated, recomputable candidate ref. `RUN_FINISHED` requires explicit success outcome; Session
 validates and strips that outcome while resolving internal route refs through presentation bindings, so the browser schema does
-not expand. The exact TypeScript
+not expand. Agent `sourceOrdinal` is an independent uint64 owner sequence: each run starts at zero and increases strictly in
+owner-log order; it has no equality relationship with Session `durableSeq`. The corpus lists `agentSourceFixtures` in that
+per-run owner-log order, and Session persists the Agent `sourceEventRef` only as provenance while assigning its own durable
+sequence. Candidate `RUN_STARTED` forbids `parentRunId`; Session alone derives the browser parent run ID from its authoritative
+run binding. The exact TypeScript
 `EventType`/`EventSchemas` family remains the executable upstream vocabulary/schema authority. The stock `@ag-ui/client` transport is forbidden because it cannot preserve
 Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapshot repair, and non-durable draining
 semantics. The closed snapshot authority envelope requires both typed run/message binding arrays and the Session-owned

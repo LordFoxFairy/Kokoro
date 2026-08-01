@@ -56,7 +56,7 @@
           },
           "state": "finished",
           "terminalDisposition": "interrupted",
-          "openedBySourceEventId": "source.01",
+          "openedBySourceEventId": "agent.event.run.01.000",
           "terminalSourceEventId": "source.21",
           "openedAt": "2026-08-01T12:00:01.000Z",
           "terminalAt": "2026-08-01T12:00:21.000Z"
@@ -77,7 +77,7 @@
           "state": "finished",
           "terminalDisposition": "success",
           "openedBySourceEventId": "source.22",
-          "terminalSourceEventId": "source.26",
+          "terminalSourceEventId": "agent.event.run.01.025",
           "openedAt": "2026-08-01T12:00:22.000Z",
           "terminalAt": "2026-08-01T12:00:26.000Z"
         }
@@ -114,11 +114,11 @@
       ],
       "durableRows": [
         {
-          "rowRef": "presentation-row.source.01",
+          "rowRef": "presentation-row.agent.event.run.01.000",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.01",
+            "sourceEventId": "agent.event.run.01.000",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -130,7 +130,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.01",
+              "sourceEventId": "agent.event.run.01.000",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -147,7 +147,7 @@
               "runId": "presentation.run.01.segment.0"
             }
           },
-          "projectionPayloadDigest": "sha256:9ae120b48d25a5237b55080f55b696c8f5bc56e5fba2a53683ca0931663fcecd"
+          "projectionPayloadDigest": "sha256:380bdfcdc9d5f96a5e90d07b813f0c73a1e8d5e3fc890ec8d43860b294706dcb"
         },
         {
           "rowRef": "presentation-row.source.02",
@@ -187,11 +187,11 @@
           "projectionPayloadDigest": "sha256:1f0e071ff56209a118b9a4f7c5554185b880fc29df7b74712356870fd093c41b"
         },
         {
-          "rowRef": "presentation-row.source.03",
+          "rowRef": "presentation-row.agent.event.run.01.002",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.03",
+            "sourceEventId": "agent.event.run.01.002",
             "sourceKind": "presentation.message.text.content",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -203,7 +203,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.03",
+              "sourceEventId": "agent.event.run.01.002",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -221,14 +221,14 @@
               "delta": "I can help with that."
             }
           },
-          "projectionPayloadDigest": "sha256:f9bb15cd9f56301024f27e89e220b9af061a1315d894729c81e88f907a964ab9"
+          "projectionPayloadDigest": "sha256:9c7aad0f02f6dee1c13fd68e1507bf667583c579e5bed88538e834da6e365098"
         },
         {
-          "rowRef": "presentation-row.source.04",
+          "rowRef": "presentation-row.agent.event.run.01.003",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.04",
+            "sourceEventId": "agent.event.run.01.003",
             "sourceKind": "presentation.activity.safe-summary",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -240,7 +240,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.04",
+              "sourceEventId": "agent.event.run.01.003",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -264,7 +264,7 @@
               "replace": true
             }
           },
-          "projectionPayloadDigest": "sha256:dd06893cb66a10e57a10cd8da913006ed35369a9f2d008cbf8dd228fde05f18f"
+          "projectionPayloadDigest": "sha256:15f7715ebd0e1d1810865ccd42b745bb5fa37bbbe6ffbb97b3e8f2e4bcde30db"
         },
         {
           "rowRef": "presentation-row.source.05",
@@ -1159,11 +1159,11 @@
           "projectionPayloadDigest": "sha256:88602159c7638395e3e37531baeff6f17c8ce154437097803900a005edde0781"
         },
         {
-          "rowRef": "presentation-row.source.26",
+          "rowRef": "presentation-row.agent.event.run.01.025",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "source.26",
+            "sourceEventId": "agent.event.run.01.025",
             "sourceKind": "presentation.run.finished",
             "sessionId": "session.01",
             "streamEpoch": "41",
@@ -1175,7 +1175,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.26",
+              "sourceEventId": "agent.event.run.01.025",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1192,7 +1192,7 @@
               "runId": "presentation.run.01.segment.1"
             }
           },
-          "projectionPayloadDigest": "sha256:f6a80e524d0f4d58fb89943e8c1c239ae077427637307069816e8ad3e9a678f1"
+          "projectionPayloadDigest": "sha256:5b95946c0f8400571f5e8a943bfc83d48c771a79316c9b74ecd42cac4e0e159c"
         }
       ],
       "frames": [
@@ -1203,7 +1203,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.01",
+              "sourceEventId": "agent.event.run.01.000",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1254,7 +1254,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.03",
+              "sourceEventId": "agent.event.run.01.002",
               "sourceKind": "presentation.message.text.content",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1280,7 +1280,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.04",
+              "sourceEventId": "agent.event.run.01.003",
               "sourceKind": "presentation.activity.safe-summary",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -1973,7 +1973,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "source.26",
+              "sourceEventId": "agent.event.run.01.025",
               "sourceKind": "presentation.run.finished",
               "sessionId": "session.01",
               "streamEpoch": "41",
@@ -2067,8 +2067,8 @@
           },
           "state": "error",
           "terminalDisposition": "error",
-          "openedBySourceEventId": "error-source.03",
-          "terminalSourceEventId": "error-source.04",
+          "openedBySourceEventId": "agent.event.run.error.000",
+          "terminalSourceEventId": "agent.event.run.error.001",
           "openedAt": "2026-08-01T13:00:03.000Z",
           "terminalAt": "2026-08-01T13:00:04.000Z"
         }
@@ -2148,11 +2148,11 @@
           "projectionPayloadDigest": "sha256:96c6e0bf037f009eb48bae5eb7b53150262d92a60d3bc9d2692ec6058bd1db76"
         },
         {
-          "rowRef": "presentation-row.error-source.03",
+          "rowRef": "presentation-row.agent.event.run.error.000",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "error-source.03",
+            "sourceEventId": "agent.event.run.error.000",
             "sourceKind": "presentation.run.started",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2164,7 +2164,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "error-source.03",
+              "sourceEventId": "agent.event.run.error.000",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2182,14 +2182,14 @@
               "parentRunId": "presentation.run.error.parent.segment.0"
             }
           },
-          "projectionPayloadDigest": "sha256:d5d5d9992ab7326c7eb3f8930757eabc66e65c580a3210045e890e4fe86e495c"
+          "projectionPayloadDigest": "sha256:ca5672263fade0c6dbdc7527f10cc8800aaa25dc13549924f988c7e78211b3fa"
         },
         {
-          "rowRef": "presentation-row.error-source.04",
+          "rowRef": "presentation-row.agent.event.run.error.001",
           "profileRevision": "kokoro-agui-presentation.v1",
           "cursorProfileRevision": "opaque-session-cursor-v1",
           "source": {
-            "sourceEventId": "error-source.04",
+            "sourceEventId": "agent.event.run.error.001",
             "sourceKind": "presentation.run.error",
             "sessionId": "session.error",
             "streamEpoch": "9",
@@ -2201,7 +2201,7 @@
           "projectionPayload": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "error-source.04",
+              "sourceEventId": "agent.event.run.error.001",
               "sourceKind": "presentation.run.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2218,7 +2218,7 @@
               "code": "RUN_FAILED"
             }
           },
-          "projectionPayloadDigest": "sha256:d51d1bb9d1f28e7b41dbf4ded672a28bbe240fb433cf8d8125b85e6d3f575092"
+          "projectionPayloadDigest": "sha256:c781f6bd76ad75eee3878afd6d6a29a34775801db14a6537139fa9efcf1f1363"
         }
       ],
       "frames": [
@@ -2279,7 +2279,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "error-source.03",
+              "sourceEventId": "agent.event.run.error.000",
               "sourceKind": "presentation.run.started",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2305,7 +2305,7 @@
           "data": {
             "profileRevision": "kokoro-agui-presentation.v1",
             "source": {
-              "sourceEventId": "error-source.04",
+              "sourceEventId": "agent.event.run.error.001",
               "sourceKind": "presentation.run.error",
               "sessionId": "session.error",
               "streamEpoch": "9",
@@ -2473,7 +2473,7 @@
             },
             "state": "finished",
             "terminalDisposition": "interrupted",
-            "openedBySourceEventId": "source.01",
+            "openedBySourceEventId": "agent.event.run.01.000",
             "terminalSourceEventId": "source.21",
             "openedAt": "2026-08-01T12:00:01.000Z",
             "terminalAt": "2026-08-01T12:00:21.000Z"
@@ -2494,7 +2494,7 @@
             "state": "finished",
             "terminalDisposition": "success",
             "openedBySourceEventId": "source.22",
-            "terminalSourceEventId": "source.26",
+            "terminalSourceEventId": "agent.event.run.01.025",
             "openedAt": "2026-08-01T12:00:22.000Z",
             "terminalAt": "2026-08-01T12:00:26.000Z"
           }
@@ -2537,12 +2537,12 @@
     {
       "id": "agent-success-outcome-to-browser-run-finished",
       "baseCaseId": "resume-with-safe-typed-presentation",
-      "sourceEventId": "source.26",
+      "sourceEventId": "agent.event.run.01.025",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
-          "sourceEventRef": "source.26",
-          "sourceOrdinal": "26",
+          "sourceEventRef": "agent.event.run.01.025",
+          "sourceOrdinal": "25",
           "recordedAt": "2026-08-01T12:00:26.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
@@ -2559,7 +2559,7 @@
             "type": "success"
           }
         },
-        "candidateRef": "agui_candidate:sha256:a987dfb3a6eafd53fb31c3038ee9ad9ade4df41143d52020c4624915c2a8b9e4"
+        "candidateRef": "agui_candidate:sha256:0fd0ecdec26dbc3aee8fd4b8d691e7618bc1d893a812e63ebacdce799f254979"
       },
       "expectedPresentationEvent": {
         "type": "RUN_FINISHED",
@@ -2573,37 +2573,62 @@
     {
       "id": "agent-run-start-envelope",
       "baseCaseId": "resume-with-safe-typed-presentation",
-      "sourceEventId": "source.22",
+      "sourceEventId": "agent.event.run.01.000",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
-          "sourceEventRef": "source.22",
-          "sourceOrdinal": "22",
-          "recordedAt": "2026-08-01T12:00:22.000Z",
+          "sourceEventRef": "agent.event.run.01.000",
+          "sourceOrdinal": "0",
+          "recordedAt": "2026-08-01T12:00:01.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
             "internalThreadRef": "internal.thread.session.01"
           }
         },
-        "eventDigest": "sha256:07b05e041312e08d322547c56804beab0c03504961fcf2fc744644328431f907",
+        "eventDigest": "sha256:002cd24512b3f903141e2608c2e12242dc8d68a74b3b2fe3c6f1ac28f21d88cd",
         "event": {
           "type": "RUN_STARTED",
-          "timestamp": 1785585622000,
+          "timestamp": 1785585601000,
           "threadId": "internal.thread.session.01",
           "runId": "internal.run.01"
         },
-        "candidateRef": "agui_candidate:sha256:5089bb9e48777f5989a99e686d267dacdea14d1451c4dc5bb0ba488d8bfd57c2"
+        "candidateRef": "agui_candidate:sha256:5f9d43fbab0a3dcc8cb27141a216a7fefcfdeb4c64bc3dc74c60c89671fe5a6f"
+      }
+    },
+    {
+      "id": "agent-error-run-start-envelope",
+      "baseCaseId": "safe-run-error",
+      "sourceEventId": "agent.event.run.error.000",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.error.000",
+          "sourceOrdinal": "0",
+          "recordedAt": "2026-08-01T13:00:03.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error",
+            "internalThreadRef": "internal.thread.session.error"
+          }
+        },
+        "eventDigest": "sha256:6d4ffdbf5037dcb2766b7c309ca5054724c1d4590e2dd08debae34ed52bd3912",
+        "event": {
+          "type": "RUN_STARTED",
+          "timestamp": 1785589203000,
+          "threadId": "internal.thread.session.error",
+          "runId": "internal.run.error"
+        },
+        "candidateRef": "agui_candidate:sha256:64c0bb933accc27e5f0c7213da40e5868324e881016230781310a63339359bce"
       }
     },
     {
       "id": "agent-run-error-envelope",
       "baseCaseId": "safe-run-error",
-      "sourceEventId": "error-source.04",
+      "sourceEventId": "agent.event.run.error.001",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
-          "sourceEventRef": "error-source.04",
-          "sourceOrdinal": "4",
+          "sourceEventRef": "agent.event.run.error.001",
+          "sourceOrdinal": "1",
           "recordedAt": "2026-08-01T13:00:04.000Z",
           "route": {
             "internalRunRef": "internal.run.error",
@@ -2617,18 +2642,18 @@
           "message": "The run could not be completed.",
           "code": "RUN_FAILED"
         },
-        "candidateRef": "agui_candidate:sha256:b3835ade9d84de5cbd6a2613984c6e0f4e4b6cd8cd1cbede17cb62c6641b5352"
+        "candidateRef": "agui_candidate:sha256:11d7a393e276c55a10d2b2ca19a2fe36652470b65f50e1a6c20412a21b7a6ac1"
       }
     },
     {
       "id": "agent-text-envelope",
       "baseCaseId": "resume-with-safe-typed-presentation",
-      "sourceEventId": "source.03",
+      "sourceEventId": "agent.event.run.01.002",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
-          "sourceEventRef": "source.03",
-          "sourceOrdinal": "3",
+          "sourceEventRef": "agent.event.run.01.002",
+          "sourceOrdinal": "2",
           "recordedAt": "2026-08-01T12:00:03.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
@@ -2643,18 +2668,18 @@
           "messageId": "internal.message.assistant.01",
           "delta": "I can help with that."
         },
-        "candidateRef": "agui_candidate:sha256:357090964bfd67a877a741d5bbdc5dbbbcfc55890f7de491700f936011d8c63c"
+        "candidateRef": "agui_candidate:sha256:4334e0834f670e013aeba22f3c58604e94ca137aba72efc99beef3e258afa345"
       }
     },
     {
       "id": "agent-activity-envelope",
       "baseCaseId": "resume-with-safe-typed-presentation",
-      "sourceEventId": "source.04",
+      "sourceEventId": "agent.event.run.01.003",
       "candidateEnvelope": {
         "profileRevision": "kokoro-agent-agui-candidate.v1",
         "source": {
-          "sourceEventRef": "source.04",
-          "sourceOrdinal": "4",
+          "sourceEventRef": "agent.event.run.01.003",
+          "sourceOrdinal": "3",
           "recordedAt": "2026-08-01T12:00:04.000Z",
           "route": {
             "internalRunRef": "internal.run.01",
@@ -2675,7 +2700,83 @@
           },
           "replace": true
         },
-        "candidateRef": "agui_candidate:sha256:25b01f9399dc2bdbe948032f6c9ff0bd4f59e89c5516a3965d1e9dd59f12911a"
+        "candidateRef": "agui_candidate:sha256:d36bf3e0ddc2c396a9a63f3dd632a40217e641704ef6148f5dcca995bc99c5cd"
+      }
+    }
+  ],
+  "agentSourceFixtures": [
+    {
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "source": {
+        "sourceEventRef": "agent.event.run.01.000",
+        "sourceOrdinal": "0",
+        "recordedAt": "2026-08-01T12:00:01.000Z",
+        "route": {
+          "internalRunRef": "internal.run.01",
+          "internalThreadRef": "internal.thread.session.01"
+        }
+      }
+    },
+    {
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "source": {
+        "sourceEventRef": "agent.event.run.01.002",
+        "sourceOrdinal": "2",
+        "recordedAt": "2026-08-01T12:00:03.000Z",
+        "route": {
+          "internalRunRef": "internal.run.01",
+          "internalThreadRef": "internal.thread.session.01",
+          "internalMessageRef": "internal.message.assistant.01"
+        }
+      }
+    },
+    {
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "source": {
+        "sourceEventRef": "agent.event.run.01.003",
+        "sourceOrdinal": "3",
+        "recordedAt": "2026-08-01T12:00:04.000Z",
+        "route": {
+          "internalRunRef": "internal.run.01",
+          "internalThreadRef": "internal.thread.session.01",
+          "internalMessageRef": "internal.message.assistant.01"
+        }
+      }
+    },
+    {
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "source": {
+        "sourceEventRef": "agent.event.run.01.025",
+        "sourceOrdinal": "25",
+        "recordedAt": "2026-08-01T12:00:26.000Z",
+        "route": {
+          "internalRunRef": "internal.run.01",
+          "internalThreadRef": "internal.thread.session.01"
+        }
+      }
+    },
+    {
+      "baseCaseId": "safe-run-error",
+      "source": {
+        "sourceEventRef": "agent.event.run.error.000",
+        "sourceOrdinal": "0",
+        "recordedAt": "2026-08-01T13:00:03.000Z",
+        "route": {
+          "internalRunRef": "internal.run.error",
+          "internalThreadRef": "internal.thread.session.error"
+        }
+      }
+    },
+    {
+      "baseCaseId": "safe-run-error",
+      "source": {
+        "sourceEventRef": "agent.event.run.error.001",
+        "sourceOrdinal": "1",
+        "recordedAt": "2026-08-01T13:00:04.000Z",
+        "route": {
+          "internalRunRef": "internal.run.error",
+          "internalThreadRef": "internal.thread.session.error"
+        }
       }
     }
   ]

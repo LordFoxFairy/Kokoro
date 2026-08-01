@@ -44,10 +44,10 @@ const CONTRACT_PATHS = Object.freeze({
 // These are the reviewed contract sources, not caller-selected schemas carrying a familiar $id.
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
-  agentCandidateProfile: "1696a8321b3b5031c69cd72a967d4ce38b340a3a32d70913b34f051f225f3685",
+  agentCandidateProfile: "444797405003ff355bb851fd28347253d33da14592cf1921d3070e43094a0f66",
   mapping: "e59bae70cba232356820224c72ab037eada6376f9a5a39740ab8cf3f169ad9f9",
   eventSchema: "9f14ead7f4668b9e39a725c8cb0c23332e5f63be00d43ba3e6619fd372e9acd7",
-  agentCandidateSchema: "85a5c462d74a13344812d8fb62ff4e609ccaac5048694f9de751c88a391d57fb",
+  agentCandidateSchema: "b203876638e975bd3899bef09b8afdf8f183a6f9cd7939d67ddf8f7d90ac3731",
   agentCandidateEnvelopeSchema: "7258ea7bf904dd78db64031df165a6670769ecdfae0caec72fe547f4b1ebd593",
   projectionPayloadSchema: "2595298c0d39dd077a21cb4048fea2226dff901429e9ba9ace9fb2067c376795",
   presentationRowSchema: "7c9feda5595dcfb79e32a9fe6795060d69306fd47b1a34c7601a375fca376888",
@@ -324,11 +324,12 @@ function validateAgentCandidateProfile(profile) {
     profile.projectionPolicy.routeProjection !== "resolve-through-session-presentation-binding" ||
     profile.projectionPolicy.ownerActivitySynthesis !== "session-owner-facts-only"
   ) fail("agui_agent_candidate_projection_policy_invalid");
-  exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
+  exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "sourceFixtureOrder", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
   if (
     profile.identityPolicy.candidateRefDomain !== "agui_candidate:sha256" ||
     profile.identityPolicy.sourceEventRef !== "agent-owner-stable-ref" ||
-    profile.identityPolicy.sourceOrdinal !== "uint64-decimal-string-monotonic-per-run" ||
+    profile.identityPolicy.sourceOrdinal !== "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero" ||
+    profile.identityPolicy.sourceFixtureOrder !== "owner-log-order-within-internalRunRef" ||
     profile.identityPolicy.recordedAt !== "canonical-utc-ms-equals-event-timestamp" ||
     profile.identityPolicy.eventDigest !== "sha256-rfc8785-jcs-event"
   ) fail("agui_agent_candidate_identity_policy_invalid");
@@ -340,7 +341,7 @@ function validateAgentCandidateProfile(profile) {
   exactArray(profile.identityPolicy.forbiddenAxes, ["siteId", "userId", "sessionId", "cursor", "sseId", "sseEvent"], "agui_agent_candidate_identity_policy_invalid");
   exactKeys(profile.eventScopePolicy, ["runStartedAndFinished", "runError", "textAndActivity"], "agui_agent_candidate_scope_policy_invalid");
   if (
-    profile.eventScopePolicy.runStartedAndFinished !== "threadId=internalThreadRef-and-runId=internalRunRef" ||
+    profile.eventScopePolicy.runStartedAndFinished !== "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId" ||
     profile.eventScopePolicy.runError !== "outer-internalRunRef-and-internalThreadRef" ||
     profile.eventScopePolicy.textAndActivity !== "messageId=internalMessageRef"
   ) fail("agui_agent_candidate_scope_policy_invalid");
@@ -356,15 +357,22 @@ function validateAgentCandidateSchemaContract(schema) {
   ) fail("agui_agent_candidate_schema_identity_invalid");
   const presentationSchemaId = "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json";
   const definitions = [
-    "runStarted", null, "runError", "textStart", "textContent", "textEnd", "activitySafeSummary",
+    null, null, "runError", "textStart", "textContent", "textEnd", "activitySafeSummary",
     "activityToolPreview", "activityHitl", "activityPlan", "activitySubagent", "activityMedia", "activityNotice", "activityError",
   ];
   exactArray(
     schema.oneOf,
-    definitions.map((definition) => ({ $ref: definition === null ? "#/$defs/runFinishedSuccess" : `${presentationSchemaId}#/$defs/${definition}` })),
+    definitions.map((definition, index) => ({ $ref: definition === null ? (index === 0 ? "#/$defs/runStartedWithoutParent" : "#/$defs/runFinishedSuccess") : `${presentationSchemaId}#/$defs/${definition}` })),
     "agui_agent_candidate_schema_refs_invalid",
   );
-  exactKeys(schema.$defs, ["runFinishedSuccess"], "agui_agent_candidate_schema_defs_invalid");
+  exactKeys(schema.$defs, ["runStartedWithoutParent", "runFinishedSuccess"], "agui_agent_candidate_schema_defs_invalid");
+  const started = schema.$defs.runStartedWithoutParent;
+  exactKeys(started, ["type", "additionalProperties", "required", "properties"], "agui_agent_candidate_run_started_shape_invalid");
+  exactArray(started.required, ["type", "timestamp", "threadId", "runId"], "agui_agent_candidate_run_started_shape_invalid");
+  if (
+    started.type !== "object" || started.additionalProperties !== false || started.properties?.type?.const !== EventType.RUN_STARTED ||
+    Object.hasOwn(started.properties, "parentRunId")
+  ) fail("agui_agent_candidate_run_started_shape_invalid");
   const success = schema.$defs.runFinishedSuccess;
   exactKeys(success, ["type", "additionalProperties", "required", "properties"], "agui_agent_candidate_run_finished_shape_invalid");
   exactArray(success.required, ["type", "timestamp", "threadId", "runId", "outcome"], "agui_agent_candidate_run_finished_shape_invalid");
@@ -542,12 +550,12 @@ function cursorClaimIdentity(claims) {
   ]);
 }
 
-function parseCanonicalUtcMs(value) {
+function parseCanonicalUtcMs(value, code = "agui_snapshot_time_watermark_invalid") {
   if (typeof value !== "string" || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/u.test(value)) {
-    fail("agui_snapshot_time_watermark_invalid");
+    fail(code);
   }
   const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) fail("agui_snapshot_time_watermark_invalid");
+  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) fail(code);
   return parsed;
 }
 
@@ -579,7 +587,9 @@ function validateSnapshotTimeAuthority(snapshot, validateSchema, runBindings = [
   if (durableSeq > 0n && watermark < bindingTimestampWatermark(runBindings, messageBindings)) {
     fail("agui_snapshot_time_watermark_before_binding");
   }
-  if (nextEventRecordedAt !== undefined && Date.parse(nextEventRecordedAt) < watermark) fail("agui_event_time_invalid", "snapshot-watermark");
+  if (nextEventRecordedAt !== undefined && parseCanonicalUtcMs(nextEventRecordedAt, "agui_event_time_invalid") < watermark) {
+    fail("agui_event_time_invalid", "snapshot-watermark");
+  }
   return watermark;
 }
 
@@ -958,13 +968,16 @@ function validateAgentCandidateCoverage(corpus, contracts) {
         candidates += 1;
         continue;
       }
+      const candidateEvent = event.type === EventType.RUN_STARTED
+        ? Object.fromEntries(Object.entries(event).filter(([key]) => key !== "parentRunId"))
+        : event;
       const allowed = agentCandidateProfile.allowedEventTypes.includes(event.type) && (
         event.type !== EventType.ACTIVITY_SNAPSHOT || agentCandidateProfile.allowedActivityTypes.includes(event.activityType)
       );
-      const accepted = validateAgentCandidate(event);
+      const accepted = validateAgentCandidate(candidateEvent);
       if (allowed !== accepted) fail("agui_agent_candidate_schema_profile_drift", event.type);
       if (!allowed) continue;
-      if (!EventSchemas.safeParse(event).success) fail("agui_agent_candidate_official_schema_invalid", event.type);
+      if (!EventSchemas.safeParse(candidateEvent).success) fail("agui_agent_candidate_official_schema_invalid", event.type);
       coveredEvents.add(event.type);
       if (event.type === EventType.ACTIVITY_SNAPSHOT) coveredActivities.add(event.activityType);
       candidates += 1;
@@ -992,6 +1005,56 @@ function candidateRefForEnvelope(envelope) {
     envelope.eventDigest,
   ].join("\u0000");
   return `agui_candidate:sha256:${sha256Bytes(Buffer.from(material, "utf8"))}`;
+}
+
+function validateAgentSourceFixtures(corpus) {
+  if (!Array.isArray(corpus.agentSourceFixtures) || corpus.agentSourceFixtures.length < 6) {
+    fail("agui_agent_candidate_source_fixtures_missing");
+  }
+  const byRef = new Map();
+  const byRun = new Map();
+  for (const fixture of corpus.agentSourceFixtures) {
+    exactKeys(fixture, ["baseCaseId", "source"], "agui_agent_candidate_source_fixture_shape_invalid");
+    const { source } = fixture;
+    exactKeys(source, ["sourceEventRef", "sourceOrdinal", "recordedAt", "route"], "agui_agent_candidate_source_fixture_shape_invalid");
+    exactKeys(
+      source.route,
+      Object.hasOwn(source.route, "internalMessageRef")
+        ? ["internalRunRef", "internalThreadRef", "internalMessageRef"]
+        : ["internalRunRef", "internalThreadRef"],
+      "agui_agent_candidate_source_fixture_shape_invalid",
+    );
+    if (byRef.has(source.sourceEventRef)) fail("agui_agent_candidate_source_ref_duplicate", source.sourceEventRef);
+    const ordinal = uint64(source.sourceOrdinal, "agui_agent_candidate_source_ordinal_invalid");
+    const recordedAt = parseCanonicalUtcMs(source.recordedAt, "agui_agent_candidate_recorded_at_invalid");
+    const base = corpus.positiveCases.find(({ id }) => id === fixture.baseCaseId);
+    const frame = base?.frames.find(({ data }) => data.source.sourceEventId === source.sourceEventRef);
+    const runBinding = base?.runBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationRunBindingRef);
+    const messageBinding = base?.messageBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationMessageBindingRef);
+    if (
+      frame === undefined || runBinding === undefined || frame.data.source.recordedAt !== source.recordedAt ||
+      source.route.internalRunRef !== runBinding.internalRunRef
+    ) fail("agui_agent_candidate_source_fixture_projection_invalid", source.sourceEventRef);
+    if (messageBinding === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageBinding.internalMessageRef) {
+      fail("agui_agent_candidate_source_fixture_projection_invalid", source.sourceEventRef);
+    }
+    const group = byRun.get(source.route.internalRunRef) ?? [];
+    if (group.length === 0 && ordinal !== 0n) fail("agui_agent_candidate_source_ordinal_start_invalid", source.route.internalRunRef);
+    const previous = group.at(-1);
+    if (previous !== undefined && (ordinal <= previous.ordinal || recordedAt < previous.recordedAt)) {
+      fail("agui_agent_candidate_source_ordinal_not_increasing", source.route.internalRunRef);
+    }
+    group.push({ ordinal, recordedAt });
+    byRun.set(source.route.internalRunRef, group);
+    byRef.set(source.sourceEventRef, fixture);
+  }
+  const agentOrdinals = corpus.agentSourceFixtures.map(({ source }) => source.sourceOrdinal);
+  const sessionSequences = corpus.agentSourceFixtures.map(({ baseCaseId, source }) => {
+    const base = corpus.positiveCases.find(({ id }) => id === baseCaseId);
+    return base.frames.find(({ data }) => data.source.sourceEventId === source.sourceEventRef).data.source.durableSeq;
+  });
+  if (canonical(agentOrdinals) === canonical(sessionSequences)) fail("agui_agent_candidate_source_ordinal_series_coupled");
+  return byRef;
 }
 
 function validateAgentCandidateEnvelope(envelope, contracts) {
@@ -1026,8 +1089,8 @@ function validateAgentCandidateEnvelope(envelope, contracts) {
   return envelope.event;
 }
 
-function validateAgentCandidateEnvelopeCorpus(corpus, contracts) {
-  if (!Array.isArray(corpus.agentCandidateEnvelopeCases) || corpus.agentCandidateEnvelopeCases.length < 4) {
+function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures, usedSourceRefs) {
+  if (!Array.isArray(corpus.agentCandidateEnvelopeCases) || corpus.agentCandidateEnvelopeCases.length < 5) {
     fail("agui_agent_candidate_envelope_corpus_missing");
   }
   const caseIds = new Set();
@@ -1043,8 +1106,13 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts) {
     if (frame === undefined || runBinding === undefined) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
     const candidateEvent = validateAgentCandidateEnvelope(envelopeCase.candidateEnvelope, contracts);
     const { source } = envelopeCase.candidateEnvelope;
+    const fixture = sourceFixtures.get(source.sourceEventRef);
+    if (fixture === undefined || fixture.baseCaseId !== envelopeCase.baseCaseId || canonical(fixture.source) !== canonical(source)) {
+      fail("agui_agent_candidate_source_fixture_mismatch", envelopeCase.id);
+    }
+    usedSourceRefs.add(source.sourceEventRef);
     if (
-      source.sourceEventRef !== frame.data.source.sourceEventId || source.sourceOrdinal !== frame.data.source.durableSeq ||
+      source.sourceEventRef !== frame.data.source.sourceEventId ||
       source.recordedAt !== frame.data.source.recordedAt || source.route.internalRunRef !== runBinding.internalRunRef
     ) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
     if (messageBinding === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageBinding.internalMessageRef) {
@@ -1054,6 +1122,9 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts) {
     if ([EventType.RUN_STARTED, EventType.RUN_FINISHED].includes(projected.type)) {
       projected.threadId = runBinding.presentationThreadId;
       projected.runId = runBinding.presentationRunId;
+    }
+    if (projected.type === EventType.RUN_STARTED && runBinding.parentLineage.parentPresentationRunId !== null) {
+      projected.parentRunId = runBinding.parentLineage.parentPresentationRunId;
     }
     if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END, EventType.ACTIVITY_SNAPSHOT].includes(projected.type)) {
       projected.messageId = messageBinding.presentationMessageId;
@@ -1071,7 +1142,7 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts) {
   return corpus.agentCandidateEnvelopeCases.length;
 }
 
-function validateAgentCandidateProjectionCorpus(corpus, contracts) {
+function validateAgentCandidateProjectionCorpus(corpus, contracts, sourceFixtures, usedSourceRefs) {
   if (!Array.isArray(corpus.agentCandidateProjectionCases) || corpus.agentCandidateProjectionCases.length < 1) {
     fail("agui_agent_candidate_projection_corpus_missing");
   }
@@ -1087,6 +1158,11 @@ function validateAgentCandidateProjectionCorpus(corpus, contracts) {
       fail("agui_agent_candidate_projection_source_invalid", projectionCase.id);
     }
     const candidateEvent = validateAgentCandidateEnvelope(projectionCase.candidateEnvelope, contracts);
+    const fixture = sourceFixtures.get(projectionCase.candidateEnvelope.source.sourceEventRef);
+    if (fixture === undefined || fixture.baseCaseId !== projectionCase.baseCaseId || canonical(fixture.source) !== canonical(projectionCase.candidateEnvelope.source)) {
+      fail("agui_agent_candidate_source_fixture_mismatch", projectionCase.id);
+    }
+    usedSourceRefs.add(projectionCase.candidateEnvelope.source.sourceEventRef);
     if (
       projectionCase.candidateEnvelope.source.sourceEventRef !== projectionCase.sourceEventId ||
       projectionCase.candidateEnvelope.source.recordedAt !== frame.data.source.recordedAt ||
@@ -1170,8 +1246,13 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   const expectedMappings = new Set(contracts.mapping.mappings.map(({ sourceKind }) => sourceKind));
   if (covered.size !== expectedMappings.size || [...expectedMappings].some((sourceKind) => !covered.has(sourceKind))) fail("agui_mapping_corpus_coverage_missing");
   const agentCandidates = validateAgentCandidateCoverage(corpus, contracts);
-  const agentCandidateEnvelopeCases = validateAgentCandidateEnvelopeCorpus(corpus, contracts);
-  const agentCandidateProjectionCases = validateAgentCandidateProjectionCorpus(corpus, contracts);
+  const agentSourceFixtures = validateAgentSourceFixtures(corpus);
+  const usedAgentSourceRefs = new Set();
+  const agentCandidateEnvelopeCases = validateAgentCandidateEnvelopeCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
+  const agentCandidateProjectionCases = validateAgentCandidateProjectionCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
+  if (usedAgentSourceRefs.size !== agentSourceFixtures.size || [...agentSourceFixtures.keys()].some((sourceRef) => !usedAgentSourceRefs.has(sourceRef))) {
+    fail("agui_agent_candidate_source_fixture_unused");
+  }
   const snapshotAuthorityCases = validateSnapshotAuthorityCorpus(corpus, contracts);
   const negativeIds = new Set();
   for (const attack of corpus.negativeCases) {
@@ -1194,6 +1275,7 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
     durableFrames,
     mappingsCovered: covered.size,
     agentCandidates,
+    agentSourceFixtures: agentSourceFixtures.size,
     agentCandidateEnvelopeCases,
     agentCandidateProjectionCases,
     snapshotAuthorityCases,
@@ -1207,7 +1289,7 @@ async function main(argv) {
     root = resolve(argv[1]);
   }
   const result = await validateRepository({ root });
-  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases\n`);
+  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentSourceFixtures} Agent source fixtures, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases\n`);
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {

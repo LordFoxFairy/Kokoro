@@ -46,13 +46,14 @@
       "sourceOrdinal-decimal", "recordedAt", "eventDigest"
     ],
     "sourceEventRef": "agent-owner-stable-ref",
-    "sourceOrdinal": "uint64-decimal-string-monotonic-per-run",
+    "sourceOrdinal": "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero",
+    "sourceFixtureOrder": "owner-log-order-within-internalRunRef",
     "recordedAt": "canonical-utc-ms-equals-event-timestamp",
     "eventDigest": "sha256-rfc8785-jcs-event",
     "forbiddenAxes": ["siteId", "userId", "sessionId", "cursor", "sseId", "sseEvent"]
   },
   "eventScopePolicy": {
-    "runStartedAndFinished": "threadId=internalThreadRef-and-runId=internalRunRef",
+    "runStartedAndFinished": "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId",
     "runError": "outer-internalRunRef-and-internalThreadRef",
     "textAndActivity": "messageId=internalMessageRef"
   },

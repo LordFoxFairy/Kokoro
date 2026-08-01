@@ -168,7 +168,8 @@ test("validates the pinned upstream profile and complete presentation corpus", a
     durableFrames: 30,
     mappingsCovered: 22,
     agentCandidates: 21,
-    agentCandidateEnvelopeCases: 4,
+    agentSourceFixtures: 6,
+    agentCandidateEnvelopeCases: 5,
     agentCandidateProjectionCases: 1,
     snapshotAuthorityCases: 1,
   });
@@ -239,6 +240,9 @@ test("freezes the Agent event-candidate profile below the browser presentation s
   assert.deepEqual(candidate.forbiddenOwnerActivityTypes, ["kokoro.artifact.v1", "kokoro.cost.v1"]);
   for (const field of ["rawEvent", "input", "result", "extra"]) assert.ok(candidate.forbiddenFields.includes(field));
   assert.equal(candidate.terminalPolicy.runFinished, "success-only");
+  assert.equal(candidate.identityPolicy.sourceOrdinal, "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero");
+  assert.equal(candidate.identityPolicy.sourceFixtureOrder, "owner-log-order-within-internalRunRef");
+  assert.equal(candidate.eventScopePolicy.runStartedAndFinished, "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId");
   assert.equal(candidate.activation.runtimeImplemented, false);
   assert.equal(candidate.envelopeSchema, "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json");
 });
@@ -246,10 +250,11 @@ test("freezes the Agent event-candidate profile below the browser presentation s
 test("freezes a closed Agent candidate envelope without browser or business identity axes", async () => {
   const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
   assert.ok(Array.isArray(corpus.agentCandidateProjectionCases));
-  assert.equal(corpus.agentCandidateEnvelopeCases.length, 4);
+  assert.equal(corpus.agentSourceFixtures.length, 6);
+  assert.equal(corpus.agentCandidateEnvelopeCases.length, 5);
   assert.deepEqual(
     corpus.agentCandidateEnvelopeCases.map(({ candidateEnvelope }) => candidateEnvelope.event.type),
-    ["RUN_STARTED", "RUN_ERROR", "TEXT_MESSAGE_CONTENT", "ACTIVITY_SNAPSHOT"],
+    ["RUN_STARTED", "RUN_STARTED", "RUN_ERROR", "TEXT_MESSAGE_CONTENT", "ACTIVITY_SNAPSHOT"],
   );
   const envelope = corpus.agentCandidateProjectionCases[0].candidateEnvelope;
   assert.equal(envelope.profileRevision, "kokoro-agent-agui-candidate.v1");
@@ -257,6 +262,54 @@ test("freezes a closed Agent candidate envelope without browser or business iden
   assert.match(envelope.eventDigest, /^sha256:[0-9a-f]{64}$/u);
   for (const forbidden of ["siteId", "userId", "sessionId", "cursor", "sseId", "result"]) {
     assert.equal(Object.hasOwn(envelope, forbidden), false, forbidden);
+  }
+});
+
+test("keeps Agent source identity and ordinal authority independent from Session durable sequence", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const baseById = new Map(corpus.positiveCases.map((entry) => [entry.id, entry]));
+  const byRun = new Map();
+  const agentOrdinals = [];
+  const sessionSequences = [];
+  for (const fixture of corpus.agentSourceFixtures) {
+    assert.match(fixture.source.sourceEventRef, /^agent\.event\./u);
+    const base = baseById.get(fixture.baseCaseId);
+    const frame = base.frames.find(({ data }) => data.source.sourceEventId === fixture.source.sourceEventRef);
+    assert.ok(frame, fixture.source.sourceEventRef);
+    agentOrdinals.push(fixture.source.sourceOrdinal);
+    sessionSequences.push(frame.data.source.durableSeq);
+    const run = fixture.source.route.internalRunRef;
+    const entries = byRun.get(run) ?? [];
+    entries.push(BigInt(fixture.source.sourceOrdinal));
+    byRun.set(run, entries);
+  }
+  assert.notDeepEqual(agentOrdinals, sessionSequences);
+  for (const ordinals of byRun.values()) {
+    assert.equal(ordinals[0], 0n);
+    for (let index = 1; index < ordinals.length; index += 1) assert.ok(ordinals[index] > ordinals[index - 1]);
+  }
+});
+
+test("rejects duplicate, nonzero-starting and non-increasing Agent source fixtures", async () => {
+  for (const [mutate, code] of [
+    [
+      (fixtures) => { fixtures[0].source.sourceOrdinal = "1"; },
+      /agui_agent_candidate_source_ordinal_start_invalid/u,
+    ],
+    [
+      (fixtures) => { fixtures[1].source.sourceOrdinal = fixtures[0].source.sourceOrdinal; },
+      /agui_agent_candidate_source_ordinal_not_increasing/u,
+    ],
+    [
+      (fixtures) => { fixtures[1].source.sourceEventRef = fixtures[0].source.sourceEventRef; },
+      /agui_agent_candidate_source_ref_duplicate/u,
+    ],
+  ]) {
+    const root = await repositoryFixture();
+    const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+    mutate(corpus.agentSourceFixtures);
+    await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+    await assert.rejects(validateRepository({ root }), code);
   }
 });
 
@@ -326,6 +379,23 @@ test("recomputes Agent candidate digest, identity, time and route semantics fail
   }
 });
 
+test("forbids Agent RUN_STARTED parentRunId until Session binding authority derives it", async () => {
+  const checkedIn = await readJson("contract/corpus/agui-presentation-v1.json");
+  const derived = checkedIn.agentCandidateEnvelopeCases.find(({ id }) => id === "agent-error-run-start-envelope");
+  assert.equal(Object.hasOwn(derived.candidateEnvelope.event, "parentRunId"), false);
+  const base = checkedIn.positiveCases.find(({ id }) => id === derived.baseCaseId);
+  const projectedFrame = base.frames.find(({ data }) => data.source.sourceEventId === derived.sourceEventId);
+  assert.equal(projectedFrame.data.event.parentRunId, "presentation.run.error.parent.segment.0");
+
+  const root = await repositoryFixture();
+  const corpus = JSON.parse(await readFile(resolve(root, "contract/corpus/agui-presentation-v1.json"), "utf8"));
+  const envelope = corpus.agentCandidateEnvelopeCases.find(({ candidateEnvelope }) => candidateEnvelope.event.type === "RUN_STARTED").candidateEnvelope;
+  envelope.event.parentRunId = "internal.run.untrusted-parent";
+  resignCandidateEnvelope(envelope);
+  await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
+  await assert.rejects(validateRepository({ root }), /agui_agent_candidate_envelope_schema_invalid/u);
+});
+
 test("freezes snapshot lastRecordedAt as the durable head time watermark", async () => {
   const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
   assert.equal(corpus.positiveCases[0].snapshot.durableSeq, "0");
@@ -357,6 +427,14 @@ test("rejects snapshot watermarks before binding evidence and next-event time re
     ],
     [
       (authorityCase) => { authorityCase.nextEventRecordedAt = "2026-08-01T12:00:25.000Z"; },
+      /agui_event_time_invalid/u,
+    ],
+    [
+      (authorityCase) => { authorityCase.nextEventRecordedAt = "not-a-date"; },
+      /agui_event_time_invalid/u,
+    ],
+    [
+      (authorityCase) => { authorityCase.nextEventRecordedAt = "2026-08-01T12:00:27.000+00:00"; },
       /agui_event_time_invalid/u,
     ],
     [

@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json",
   "title": "Kokoro Agent AG-UI event candidate v1",
-  "description": "A contract-only internal candidate emitted by Agent and admitted by Session. Every branch reuses the stricter browser presentation field schema; CUSTOM, owner Artifact/Cost activities, raw payloads and native tool/reasoning/state families have no representation.",
+  "description": "A contract-only internal candidate emitted by Agent and admitted by Session. Every branch reuses the stricter browser presentation field schema except RUN_STARTED, whose closed candidate arm forbids parentRunId so Session alone derives browser lineage from binding authority. CUSTOM, owner Artifact/Cost activities, raw payloads and native tool/reasoning/state families have no representation.",
   "oneOf": [
-    {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/runStarted"},
+    {"$ref": "#/$defs/runStartedWithoutParent"},
     {"$ref": "#/$defs/runFinishedSuccess"},
     {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/runError"},
     {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/textStart"},
@@ -20,6 +20,17 @@
     {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityError"}
   ],
   "$defs": {
+    "runStartedWithoutParent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "timestamp", "threadId", "runId"],
+      "properties": {
+        "type": {"const": "RUN_STARTED"},
+        "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
+        "threadId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"},
+        "runId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"}
+      }
+    },
     "runFinishedSuccess": {
       "type": "object",
       "additionalProperties": false,

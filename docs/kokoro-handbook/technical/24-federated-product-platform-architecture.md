@@ -422,7 +422,11 @@ cursor owner，也不得 raw passthrough。Root 把 Python `ag-ui-protocol@0.1.1
 candidate 后仍须验证 closed envelope 的 Agent source/route refs、uint64 ordinal、canonical recorded time、JCS event digest
 和 domain-separated candidate ref，再结合 owner facts 规范化、持久化并生成浏览器 presentation；envelope 不携带
 Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`RUN_FINISHED` candidate 必须显式声明 success；Session
-验证后剥离 outcome，并通过 presentation binding 将内部 route refs 映射成浏览器 run/thread/message refs。
+验证后剥离 outcome，并通过 presentation binding 将内部 route refs 映射成浏览器 run/thread/message refs。Agent
+`sourceOrdinal` 是每个 internal run 从零开始、按 owner log 严格递增的独立 uint64 序列，与 Session `durableSeq` 没有
+相等关系；Session 可把 Agent `sourceEventRef` 保存为 provenance，但 durable sequence 必须自行分配。合同 corpus 的
+`agentSourceFixtures` 按每个 run 的 owner-log 顺序排列并验证这一点。v1 candidate `RUN_STARTED` 禁止 `parentRunId`，浏览器
+所见 parent run 只能由 Session 的 run-binding authority 派生，Agent 不能注入 presentation lineage。
 
 Root 使用精确固定的 `EventType`/`EventSchemas` 验证上游词汇与事件 schema，再应用 Kokoro closed schema。HTTP snapshot
 携带 Session 权威 durable-head `lastRecordedAt`：`durableSeq=0` 时必须为 null，非零时必须是 canonical UTC 毫秒时间且不早于

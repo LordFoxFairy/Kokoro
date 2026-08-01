@@ -100,7 +100,11 @@ it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Artifact/
 sample through the official `EventSchemas`. The envelope gate recomputes RFC 8785/JCS event bytes, rejects invalid Unicode scalar
 strings and unsafe/non-finite numbers, verifies the event digest and domain-separated candidate ref, and binds route refs and
 canonical recorded time back to the event. All event/content keys remain closed by schema, so Unicode object-key ordering cannot
-be injected through a dynamic map. It records no Agent runtime activation.
+be injected through a dynamic map. Its independent Agent source fixtures are ordered as the owner log within each internal run:
+the first ordinal is zero, later ordinals strictly increase, source refs are unique, and the fixture vector is deliberately not
+the Session durable-sequence vector. Session may persist the Agent source ref as provenance but owns and assigns `durableSeq`.
+Agent `RUN_STARTED` cannot carry `parentRunId`; projection derives that browser field only from Session's run-binding authority.
+It records no Agent runtime activation.
 
 `generate-agui-presentation-corpus.mjs` deterministically derives the public conformance cursors and persisted
 projection rows. Its default mode rewrites the checked-in corpus; `--check` is non-mutating and compares exact bytes.
@@ -109,7 +113,7 @@ and frame cursor into closed Session/epoch/sequence/profile claims, rejects both
 across positive cases, binds all run/message/source/row identities to their Session, verifies real parent lineage,
 and requires the persisted complete projection payload plus its JCS SHA-256 to equal the emitted frame exactly.
 Snapshot cases additionally prove the Session durable-head `lastRecordedAt` rule, canonical UTC-millisecond representation,
-binding-time lower bound, and next-event non-regression. They do not pretend the browser snapshot contains Session's complete
+binding-time lower bound, and canonical next-event non-regression. They do not pretend the browser snapshot contains Session's complete
 historical source-ID ledger.
 It proves an offline `contract-only` Session projection profile; it does not prove a Session/Web runtime adapter,
 deployment, authorization, or compatibility scenario.
