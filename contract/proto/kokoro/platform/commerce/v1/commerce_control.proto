@@ -1,0 +1,919 @@
+syntax = "proto3";
+
+package kokoro.platform.commerce.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/commerce/v1/commerce_catalog.proto";
+import "kokoro/platform/commerce/v1/fulfillment.proto";
+
+message CommerceSiteCommandContext {
+  option (buf.validate.message).cel = {
+    id: "commerce.site_command.scope"
+    message: "operator scope, environment and region must authorize the exact Site"
+    expression: "(has(this.operator.scope.site) && this.operator.scope.site.site_ids.exists(s, s == this.site_id) && this.operator.environment == this.operator.scope.site.environment && this.operator.region == this.operator.scope.site.region) || (has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext operator = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+}
+message CommerceSiteQueryContext {
+  option (buf.validate.message).cel = {
+    id: "commerce.site_query.scope"
+    message: "operator scope, environment and region must authorize the exact Site"
+    expression: "(has(this.operator.scope.site) && this.operator.scope.site.site_ids.exists(s, s == this.site_id) && this.operator.environment == this.operator.scope.site.environment && this.operator.region == this.operator.scope.site.region) || (has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext operator = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+}
+
+enum CommerceApprovalDecision {
+  COMMERCE_APPROVAL_DECISION_UNSPECIFIED = 0;
+  COMMERCE_APPROVAL_DECISION_APPROVE = 1;
+  COMMERCE_APPROVAL_DECISION_REJECT = 2;
+}
+enum CommerceApprovalState {
+  COMMERCE_APPROVAL_STATE_UNSPECIFIED = 0;
+  COMMERCE_APPROVAL_STATE_PENDING = 1;
+  COMMERCE_APPROVAL_STATE_APPROVED = 2;
+  COMMERCE_APPROVAL_STATE_REJECTED = 3;
+  COMMERCE_APPROVAL_STATE_CONSUMED = 4;
+  COMMERCE_APPROVAL_STATE_EXPIRED = 5;
+}
+enum CommerceExecutionState {
+  COMMERCE_EXECUTION_STATE_UNSPECIFIED = 0;
+  COMMERCE_EXECUTION_STATE_QUEUED = 1;
+  COMMERCE_EXECUTION_STATE_APPLYING = 2;
+  COMMERCE_EXECUTION_STATE_APPLIED = 3;
+  COMMERCE_EXECUTION_STATE_FAILED = 4;
+  COMMERCE_EXECUTION_STATE_OUTCOME_UNKNOWN = 5;
+}
+
+// Returned by Platform after it has persisted the frozen authority aggregate.
+// It is never accepted as command authority from a caller.
+message CommerceApprovalAuthorityView {
+  option (buf.validate.message).cel = {
+    id: "commerce.approval.lifecycle"
+    message: "only a consumed approval carries consumed_at and execution_ref"
+    expression: "(this.state == 4 && has(this.consumed_at) && has(this.execution_ref)) || (this.state != 4 && !has(this.consumed_at) && !has(this.execution_ref))"
+  };
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 approval_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CommerceApprovalState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string site_id = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string operation = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string effect_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string target_ref = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_target_version = 8 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string requested_by_actor_ref = 9 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string request_command_ref = 10 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string request_command_digest = 11 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string authority_epochs_digest = 12 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp expires_at = 13 [(buf.validate.field).required = true];
+  optional google.protobuf.Timestamp consumed_at = 14;
+  optional string execution_ref = 15 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+
+// The checker supplies only a reference, CAS version and decision. Platform
+// resolves and consumes all maker/effect/target/epoch authority server-side.
+message CommerceApprovalDecisionEffect {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_approval_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CommerceApprovalDecision decision = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+message CommerceExecutionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.execution.outcome"
+    message: "applied carries result digest; unknown carries a reconciliation case"
+    expression: "(this.state == 3 && has(this.result_digest) && !has(this.reconciliation_ref)) || (this.state == 5 && !has(this.result_digest) && has(this.reconciliation_ref)) || (this.state in [1, 2, 4] && !has(this.result_digest))"
+  };
+  string execution_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 execution_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CommerceExecutionState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string site_id = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string operation = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string approval_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string effect_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string executor_workload_ref = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string executor_attestation_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string result_digest = 10 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string reconciliation_ref = 11 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
+}
+
+message SiteCommerceAssignmentCandidate {
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  repeated CommerceRevisionTarget offer_revisions = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+  }];
+  repeated CommerceRevisionTarget redemption_program_revisions = 3 [(buf.validate.field).repeated.max_items = 128];
+}
+message SiteCommerceAssignmentView {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  SiteCommerceAssignmentCandidate assignment = 2 [(buf.validate.field).required = true];
+  CommerceExecutionState state = 3 [(buf.validate.field).enum.const = 3];
+  string activation_eligibility_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp applied_at = 5 [(buf.validate.field).required = true];
+}
+message RequestSiteCommerceAssignmentPromotionEffect {
+  SiteCommerceAssignmentCandidate candidate = 1 [(buf.validate.field).required = true];
+  uint64 expected_active_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  string eligibility_evidence_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message RequestSiteCommerceAssignmentPromotionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.site_assignment.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  RequestSiteCommerceAssignmentPromotionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message RequestSiteCommerceAssignmentPromotionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+}
+message DecideSiteCommerceAssignmentPromotionRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  CommerceApprovalDecisionEffect decision = 2 [(buf.validate.field).required = true];
+}
+message DecideSiteCommerceAssignmentPromotionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 3;
+}
+
+enum CodeBatchState {
+  CODE_BATCH_STATE_UNSPECIFIED = 0;
+  CODE_BATCH_STATE_REQUESTED = 1;
+  CODE_BATCH_STATE_GENERATION_QUEUED = 2;
+  CODE_BATCH_STATE_GENERATING = 3;
+  CODE_BATCH_STATE_DELIVERABLE = 4;
+  CODE_BATCH_STATE_ACTIVE = 5;
+  CODE_BATCH_STATE_SUSPENDED = 6;
+  CODE_BATCH_STATE_REVOKED = 7;
+  CODE_BATCH_STATE_EXPIRED = 8;
+  CODE_BATCH_STATE_COMPROMISED = 9;
+  CODE_BATCH_STATE_FAILED = 10;
+  CODE_BATCH_STATE_OUTCOME_UNKNOWN = 11;
+}
+enum CodeDeliveryState {
+  CODE_DELIVERY_STATE_UNSPECIFIED = 0;
+  CODE_DELIVERY_STATE_AVAILABLE = 1;
+  CODE_DELIVERY_STATE_CLAIMED = 2;
+  CODE_DELIVERY_STATE_STREAMING = 3;
+  CODE_DELIVERY_STATE_DELIVERED = 4;
+  CODE_DELIVERY_STATE_UNKNOWN = 5;
+  CODE_DELIVERY_STATE_EXPIRED = 6;
+  CODE_DELIVERY_STATE_DISPOSED = 7;
+}
+enum CodeCipherSuite {
+  CODE_CIPHER_SUITE_UNSPECIFIED = 0;
+  CODE_CIPHER_SUITE_X25519_XCHACHA20_POLY1305_V1 = 1;
+  CODE_CIPHER_SUITE_KMS_ENVELOPE_AES_256_GCM_V1 = 2;
+}
+message CodeBatchSpecification {
+  CommerceRevisionTarget redemption_program_revision = 1 [(buf.validate.field).required = true];
+  uint32 code_count = 2 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000000
+  }];
+  uint32 code_length = 3 [(buf.validate.field).uint32 = {
+    gte: 20
+    lte: 128
+  }];
+  string format_version = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 64
+  }];
+  string alphabet_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  uint32 minimum_entropy_bits = 6 [(buf.validate.field).uint32 = {
+    gte: 128
+    lte: 512
+  }];
+  string delivery_recipient_ref = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string recipient_key_revision_ref = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string recipient_key_fingerprint = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message EncryptedCodeArtifact {
+  string artifact_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 artifact_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string artifact_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string etag = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 encrypted_size = 5 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 536870912
+  }];
+  string encrypted_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string inventory_root = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  CodeCipherSuite cipher_suite = 8 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string recipient_key_fingerprint = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string wrapped_data_key_ref = 10 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string generator_workload_ref = 11 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string generator_attestation_digest = 12 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp expires_at = 13 [(buf.validate.field).required = true];
+}
+message DeliveryRangeLease {
+  uint64 start_offset = 1;
+  uint64 end_offset_exclusive = 2 [(buf.validate.field).uint64.gt = 0];
+  string range_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp expires_at = 4 [(buf.validate.field).required = true];
+}
+message SecretDeliverySessionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.delivery.offset"
+    message: "delivery offset and active lease must stay within the encrypted artifact"
+    expression: "this.next_offset <= this.artifact.encrypted_size && (!has(this.active_range) || (this.active_range.start_offset == this.next_offset && this.active_range.end_offset_exclusive > this.active_range.start_offset && this.active_range.end_offset_exclusive <= this.artifact.encrypted_size))"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.delivery.lifecycle"
+    message: "only a completely acknowledged artifact is delivered"
+    expression: "(this.state == 4 && this.next_offset == this.artifact.encrypted_size && has(this.final_recipient_ack_digest) && !has(this.active_range)) || (this.state != 4 && !has(this.final_recipient_ack_digest))"
+  };
+  string session_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 session_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string session_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string site_id = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string batch_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  EncryptedCodeArtifact artifact = 6 [(buf.validate.field).required = true];
+  CodeDeliveryState state = 7 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string recipient_actor_ref = 8 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string recipient_proof_digest = 9 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  uint64 next_offset = 10;
+  optional DeliveryRangeLease active_range = 11;
+  optional string final_recipient_ack_digest = 12 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp expires_at = 13 [(buf.validate.field).required = true];
+}
+message SecretDeliveryDisposalReceipt {
+  string disposal_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string artifact_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string artifact_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  bool data_key_destroyed = 4 [(buf.validate.field).bool.const = true];
+  bool all_object_versions_deleted = 5 [(buf.validate.field).bool.const = true];
+  string disposal_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp disposed_at = 7 [(buf.validate.field).required = true];
+}
+message CodeBatchActivationEvidence {
+  option (buf.validate.message).cel = {
+    id: "commerce.activation.delivery"
+    message: "activation requires a fully delivered and acknowledged session"
+    expression: "this.delivered_session.state == 4 && this.delivered_session.next_offset == this.delivered_session.artifact.encrypted_size && has(this.delivered_session.final_recipient_ack_digest) && !has(this.delivered_session.active_range)"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.activation.disposal"
+    message: "activation disposal must prove destruction of the delivered artifact"
+    expression: "this.disposal_receipt.artifact_ref == this.delivered_session.artifact.artifact_ref && this.disposal_receipt.artifact_digest == this.delivered_session.artifact.encrypted_digest"
+  };
+  SecretDeliverySessionView delivered_session = 1 [(buf.validate.field).required = true];
+  SecretDeliveryDisposalReceipt disposal_receipt = 2 [(buf.validate.field).required = true];
+  string export_commitment_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string activation_evidence_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message CodeBatchView {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  CommerceRevisionTarget batch = 2 [(buf.validate.field).required = true];
+  CommerceRevisionTarget redemption_program_revision = 3 [(buf.validate.field).required = true];
+  uint32 code_count = 4 [(buf.validate.field).uint32.gt = 0];
+  string inventory_root = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  CodeBatchState state = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional EncryptedCodeArtifact artifact = 7;
+  optional string reconciliation_ref = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  google.protobuf.Timestamp updated_at = 9 [(buf.validate.field).required = true];
+}
+
+message RequestCodeBatchIssuanceEffect {
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.const = 0];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  CodeBatchSpecification specification = 4 [(buf.validate.field).required = true];
+  string reason = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message RequestCodeBatchIssuanceRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.batch_issue.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  RequestCodeBatchIssuanceEffect effect = 2 [(buf.validate.field).required = true];
+}
+message RequestCodeBatchIssuanceResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+}
+message DecideCodeBatchIssuanceRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  CommerceApprovalDecisionEffect decision = 2 [(buf.validate.field).required = true];
+}
+message DecideCodeBatchIssuanceResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 3;
+}
+
+enum CodeBatchTransitionAction {
+  CODE_BATCH_TRANSITION_ACTION_UNSPECIFIED = 0;
+  CODE_BATCH_TRANSITION_ACTION_ACTIVATE = 1;
+  CODE_BATCH_TRANSITION_ACTION_RESUME = 2;
+  CODE_BATCH_TRANSITION_ACTION_REVOKE = 3;
+}
+message RequestCodeBatchTransitionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.batch_transition.shape"
+    message: "activation alone carries delivery and disposal evidence"
+    expression: "(this.action == 1 && has(this.activation_evidence) && this.expected_state == 4) || (this.action == 2 && !has(this.activation_evidence) && this.expected_state == 6) || (this.action == 3 && !has(this.activation_evidence) && this.expected_state in [1, 2, 3, 4, 5, 6, 9, 11])"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CodeBatchState expected_state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CodeBatchTransitionAction action = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional CodeBatchActivationEvidence activation_evidence = 5;
+  string command_digest = 6 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 7 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message ActivateCodeBatchExecution {
+  CodeBatchActivationEvidence activation_evidence = 1 [(buf.validate.field).required = true];
+  CodeBatchView batch = 2 [(buf.validate.field).required = true];
+}
+message RequestCodeBatchTransitionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.batch_transition.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  RequestCodeBatchTransitionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message RequestCodeBatchTransitionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+}
+message DecideCodeBatchTransitionRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  CommerceApprovalDecisionEffect decision = 2 [(buf.validate.field).required = true];
+}
+message DecideCodeBatchTransitionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 3;
+}
+message EmergencySuspendCodeBatchEffect {
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CodeBatchState expected_state = 3 [(buf.validate.field).enum.const = 5];
+  string command_digest = 4 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string incident_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string reason = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message EmergencySuspendCodeBatchRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.emergency_suspend.breakglass"
+    message: "emergency suspension requires phishing-resistant breakglass"
+    expression: "has(this.context.operator.scope.breakglass) && this.context.operator.assurance_level == 3 && has(this.context.operator.step_up_at)"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.emergency_suspend.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  EmergencySuspendCodeBatchEffect effect = 2 [(buf.validate.field).required = true];
+}
+message EmergencySuspendCodeBatchResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CodeBatchView batch = 2 [(buf.validate.field).required = true];
+}
+
+message BeginCodeBatchDeliveryEffect {
+  string batch_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_batch_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string recipient_nonce_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string recipient_proof_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string command_digest = 5 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+}
+message BeginCodeBatchDeliveryRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.delivery_begin.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  BeginCodeBatchDeliveryEffect effect = 2 [(buf.validate.field).required = true];
+}
+message BeginCodeBatchDeliveryResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  SecretDeliverySessionView session = 2 [(buf.validate.field).required = true];
+}
+message ReadCodeDeliveryRangeRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  string session_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_session_version = 3 [(buf.validate.field).uint64.gt = 0];
+  uint64 start_offset = 4;
+  uint32 maximum_bytes = 5 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 262144
+  }];
+  string expected_etag = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message ReadCodeDeliveryRangeResponse {
+  SecretDeliverySessionView session = 1 [(buf.validate.field).required = true];
+  bytes encrypted_chunk = 2 [(buf.validate.field).bytes = {
+    min_len: 1
+    max_len: 262144
+  }];
+  DeliveryRangeLease range = 3 [(buf.validate.field).required = true];
+}
+message AcknowledgeCodeDeliveryRangeEffect {
+  string session_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_session_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string range_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  uint64 next_offset = 4 [(buf.validate.field).uint64.gt = 0];
+  optional string final_recipient_ack_digest = 5 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string command_digest = 6 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+}
+message AcknowledgeCodeDeliveryRangeRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.delivery_ack.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  AcknowledgeCodeDeliveryRangeEffect effect = 2 [(buf.validate.field).required = true];
+}
+message AcknowledgeCodeDeliveryRangeResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  SecretDeliverySessionView session = 2 [(buf.validate.field).required = true];
+  optional SecretDeliveryDisposalReceipt disposal_receipt = 3;
+}
+message GetCodeDeliverySessionRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string session_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetCodeDeliverySessionResponse {
+  SecretDeliverySessionView session = 1 [(buf.validate.field).required = true];
+  optional SecretDeliveryDisposalReceipt disposal_receipt = 2;
+}
+
+enum SourceCorrectionKind {
+  SOURCE_CORRECTION_KIND_UNSPECIFIED = 0;
+  SOURCE_CORRECTION_KIND_REVERSAL = 1;
+  SOURCE_CORRECTION_KIND_REPLACEMENT = 2;
+}
+message SourceReversalCorrection {
+  FulfillmentTransactionIdentity original = 1 [(buf.validate.field).required = true];
+}
+message SourceReplacementCorrection {
+  FulfillmentTransactionIdentity original = 1 [(buf.validate.field).required = true];
+  FulfillmentTransactionIdentity replacement = 2 [(buf.validate.field).required = true];
+}
+message SourceCorrectionIntent {
+  oneof correction {
+    option (buf.validate.oneof).required = true;
+    SourceReversalCorrection reversal = 1;
+    SourceReplacementCorrection replacement = 2;
+  }
+}
+message SourceCorrectionView {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  CommerceRevisionTarget correction = 2 [(buf.validate.field).required = true];
+  SourceCorrectionKind kind = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CommerceExecutionState state = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  SourceCorrectionIntent intention = 5 [(buf.validate.field).required = true];
+  optional string reconciliation_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
+}
+message SourceCorrectionExecutionResult {
+  oneof result {
+    option (buf.validate.oneof).required = true;
+    FulfillmentReversalFact reversal = 1;
+    FulfillmentReplacementFact replacement = 2;
+  }
+  string result_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message RequestSourceCorrectionEffect {
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.const = 0];
+  SourceCorrectionIntent correction = 3 [(buf.validate.field).required = true];
+  string command_digest = 4 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  string evidence_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message RequestSourceCorrectionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.source_correction.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  RequestSourceCorrectionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message RequestSourceCorrectionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  SourceCorrectionView correction = 3 [(buf.validate.field).required = true];
+}
+message DecideSourceCorrectionRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  CommerceApprovalDecisionEffect decision = 2 [(buf.validate.field).required = true];
+}
+message DecideSourceCorrectionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 3;
+}
+
+enum CommerceReconciliationResolutionKind {
+  COMMERCE_RECONCILIATION_RESOLUTION_KIND_UNSPECIFIED = 0;
+  COMMERCE_RECONCILIATION_RESOLUTION_KIND_CONFIRM_COMMITTED = 1;
+  COMMERCE_RECONCILIATION_RESOLUTION_KIND_CONFIRM_NOT_COMMITTED = 2;
+  COMMERCE_RECONCILIATION_RESOLUTION_KIND_REPLACE = 3;
+}
+message ConfirmCommittedReconciliationResolution {
+  FulfillmentTransactionIdentity committed = 1 [(buf.validate.field).required = true];
+}
+message ConfirmNotCommittedReconciliationResolution {
+  string absence_evidence_digest = 1 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message ReplaceReconciliationResolution {
+  FulfillmentTransactionIdentity replacement = 1 [(buf.validate.field).required = true];
+}
+message CommerceReconciliationResolution {
+  oneof resolution {
+    option (buf.validate.oneof).required = true;
+    ConfirmCommittedReconciliationResolution confirm_committed = 1;
+    ConfirmNotCommittedReconciliationResolution confirm_not_committed = 2;
+    ReplaceReconciliationResolution replace = 3;
+  }
+}
+message CommerceReconciliationView {
+  string site_id = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  CommerceRevisionTarget reconciliation = 2 [(buf.validate.field).required = true];
+  FulfillmentTransactionIdentity original = 3 [(buf.validate.field).required = true];
+  CommerceExecutionState state = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional CommerceReconciliationResolution resolution = 5;
+  optional string resolution_fact_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp updated_at = 7 [(buf.validate.field).required = true];
+}
+message RequestCommerceReconciliationResolutionEffect {
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CommerceExecutionState expected_state = 3 [(buf.validate.field).enum.const = 5];
+  CommerceReconciliationResolution resolution = 4 [(buf.validate.field).required = true];
+  string command_digest = 5 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+  string evidence_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message RequestCommerceReconciliationResolutionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.reconciliation.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  RequestCommerceReconciliationResolutionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message RequestCommerceReconciliationResolutionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+}
+message DecideCommerceReconciliationResolutionRequest {
+  CommerceSiteCommandContext context = 1 [(buf.validate.field).required = true];
+  CommerceApprovalDecisionEffect decision = 2 [(buf.validate.field).required = true];
+}
+message DecideCommerceReconciliationResolutionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CommerceApprovalAuthorityView approval = 2 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 3;
+}
+
+message CodeBatchFilter {
+  repeated CodeBatchState states = 1 [(buf.validate.field).repeated = {
+    max_items: 16
+    unique: true
+  }];
+  optional string redemption_program_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  optional google.protobuf.Timestamp updated_after = 3;
+}
+message SourceCorrectionFilter {
+  repeated SourceCorrectionKind kinds = 1 [(buf.validate.field).repeated = {
+    max_items: 8
+    unique: true
+  }];
+  repeated CommerceExecutionState states = 2 [(buf.validate.field).repeated = {
+    max_items: 8
+    unique: true
+  }];
+  optional string transaction_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message ReconciliationFilter {
+  repeated CommerceExecutionState states = 1 [(buf.validate.field).repeated = {
+    max_items: 8
+    unique: true
+  }];
+  optional string transaction_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message ListSiteCommerceAssignmentsRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  CommercePageRequest page = 2 [(buf.validate.field).required = true];
+}
+message ListSiteCommerceAssignmentsResponse {
+  repeated SiteCommerceAssignmentView assignments = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message GetSiteCommerceAssignmentRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
+message GetSiteCommerceAssignmentResponse {
+  SiteCommerceAssignmentView assignment = 1 [(buf.validate.field).required = true];
+}
+message ListCodeBatchesRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  CodeBatchFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListCodeBatchesResponse {
+  repeated CodeBatchView batches = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message GetCodeBatchRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string batch_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetCodeBatchResponse {
+  CodeBatchView batch = 1 [(buf.validate.field).required = true];
+  optional CommerceExecutionView execution = 2;
+}
+message ListSourceCorrectionsRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  SourceCorrectionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListSourceCorrectionsResponse {
+  repeated SourceCorrectionView corrections = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message GetSourceCorrectionRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string correction_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetSourceCorrectionResponse {
+  SourceCorrectionView correction = 1 [(buf.validate.field).required = true];
+  optional SourceCorrectionExecutionResult result = 2;
+}
+message ListCommerceReconciliationsRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  ReconciliationFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListCommerceReconciliationsResponse {
+  repeated CommerceReconciliationView reconciliations = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message GetCommerceReconciliationRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string reconciliation_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetCommerceReconciliationResponse {
+  CommerceReconciliationView reconciliation = 1 [(buf.validate.field).required = true];
+}
+message GetCommerceApprovalRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string approval_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetCommerceApprovalResponse {
+  CommerceApprovalAuthorityView approval = 1 [(buf.validate.field).required = true];
+}
+message GetCommerceExecutionRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string execution_ref = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+}
+message GetCommerceExecutionResponse {
+  CommerceExecutionView execution = 1 [(buf.validate.field).required = true];
+}
+message GetCommerceCommandReceiptRequest {
+  CommerceSiteQueryContext context = 1 [(buf.validate.field).required = true];
+  string command_id = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 3 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 5 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+}
+message GetCommerceCommandReceiptResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  optional CommerceApprovalAuthorityView approval = 2;
+  optional CommerceExecutionView execution = 3;
+}

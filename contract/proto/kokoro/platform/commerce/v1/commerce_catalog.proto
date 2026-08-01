@@ -1,0 +1,421 @@
+syntax = "proto3";
+
+package kokoro.platform.commerce.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
+import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/publication/v1/publication_common.proto";
+
+enum CatalogCandidateExposure {
+  CATALOG_CANDIDATE_EXPOSURE_UNSPECIFIED = 0;
+  // A published candidate is immutable but cannot affect a Site until an
+  // approved Site assignment is executed and later selected by SiteRelease.
+  CATALOG_CANDIDATE_EXPOSURE_INERT = 1;
+}
+
+message CommerceGlobalCommandContext {
+  option (buf.validate.message).cel = {
+    id: "commerce.global_command.scope"
+    message: "global catalog mutation requires exact Global or BreakGlass authority"
+    expression: "(has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext operator = 1 [(buf.validate.field).required = true];
+}
+
+message CommerceGlobalQueryContext {
+  option (buf.validate.message).cel = {
+    id: "commerce.global_query.scope"
+    message: "global catalog query requires exact Global or BreakGlass authority"
+    expression: "(has(this.operator.scope.global) && this.operator.environment == this.operator.scope.global.environment && this.operator.region == this.operator.scope.global.region) || (has(this.operator.scope.breakglass) && this.operator.environment == this.operator.scope.breakglass.environment && this.operator.region == this.operator.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext operator = 1 [(buf.validate.field).required = true];
+}
+
+message CommerceRevisionTarget {
+  string target_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 target_revision = 2 [(buf.validate.field).uint64 = {
+    gt: 0
+    lte: 9223372036854775807
+  }];
+  string target_digest = 3 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message SubscriptionTermPolicyRevisionBinding {
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+}
+message EntitlementTemplateRevisionBinding {
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+}
+message CreditProgramRevisionBinding {
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+}
+
+enum PlanAcquisitionKind {
+  PLAN_ACQUISITION_KIND_UNSPECIFIED = 0;
+  PLAN_ACQUISITION_KIND_FREE = 1;
+  PLAN_ACQUISITION_KIND_REDEMPTION = 2;
+  PLAN_ACQUISITION_KIND_SUBSCRIPTION = 3;
+}
+enum PlanTermAction {
+  PLAN_TERM_ACTION_UNSPECIFIED = 0;
+  PLAN_TERM_ACTION_NONE = 1;
+  PLAN_TERM_ACTION_START = 2;
+  PLAN_TERM_ACTION_EXTEND_FROM_MAX = 3;
+  PLAN_TERM_ACTION_REJECT_IF_ACTIVE = 4;
+}
+enum FulfillmentProgramOutputKind {
+  FULFILLMENT_PROGRAM_OUTPUT_KIND_UNSPECIFIED = 0;
+  FULFILLMENT_PROGRAM_OUTPUT_KIND_SUBSCRIPTION_TERM = 1;
+  FULFILLMENT_PROGRAM_OUTPUT_KIND_ENTITLEMENT_GRANT = 2;
+  FULFILLMENT_PROGRAM_OUTPUT_KIND_CREDIT_GRANT = 3;
+}
+
+message PlanRevisionDefinition {
+  option (buf.validate.message).cel = {
+    id: "commerce.plan.term_shape"
+    message: "NONE has no duration and term mutations have a positive duration"
+    expression: "(this.term_action == 1 && this.term_seconds == 0u) || (this.term_action in [2, 3, 4] && this.term_seconds > 0u)"
+  };
+  string plan_key = 1 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9._-]{1,127}$"}];
+  PlanAcquisitionKind acquisition_kind = 2 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  PlanTermAction term_action = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  uint64 term_seconds = 4 [(buf.validate.field).uint64.lte = 315576000];
+  string display_label = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+}
+
+message FulfillmentProgramOutputLine {
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment_output.owner_matches_kind"
+    message: "the typed owner binding must match the output kind"
+    expression: "(this.kind == 1 && has(this.subscription_term_policy)) || (this.kind == 2 && has(this.entitlement_template)) || (this.kind == 3 && has(this.credit_program))"
+  };
+  string output_line_id = 1 [(buf.validate.field).string = {pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"}];
+  uint32 output_ordinal = 2 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 32
+  }];
+  uint32 occurrence_count = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 32
+  }];
+  FulfillmentProgramOutputKind kind = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  oneof owner {
+    option (buf.validate.oneof).required = true;
+    SubscriptionTermPolicyRevisionBinding subscription_term_policy = 5;
+    EntitlementTemplateRevisionBinding entitlement_template = 6;
+    CreditProgramRevisionBinding credit_program = 7;
+  }
+}
+
+message PlanRevisionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.plan.inert"
+    message: "published catalog candidates are inert"
+    expression: "this.exposure == kokoro.platform.commerce.v1.CatalogCandidateExposure.CATALOG_CANDIDATE_EXPOSURE_INERT"
+  };
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  PlanRevisionDefinition definition = 2 [(buf.validate.field).required = true];
+  CatalogCandidateExposure exposure = 3 [(buf.validate.field).enum.const = 1];
+  google.protobuf.Timestamp published_at = 4 [(buf.validate.field).required = true];
+}
+message OfferRevisionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer.inert"
+    message: "published catalog candidates are inert"
+    expression: "this.exposure == kokoro.platform.commerce.v1.CatalogCandidateExposure.CATALOG_CANDIDATE_EXPOSURE_INERT"
+  };
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  string offer_key = 2 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9._-]{1,127}$"}];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding product_catalog_revision = 3 [(buf.validate.field).required = true];
+  CommerceRevisionTarget plan_revision = 4 [(buf.validate.field).required = true];
+  CommerceRevisionTarget fulfillment_program_revision = 5 [(buf.validate.field).required = true];
+  CatalogCandidateExposure exposure = 6 [(buf.validate.field).enum.const = 1];
+  google.protobuf.Timestamp published_at = 7 [(buf.validate.field).required = true];
+}
+message FulfillmentProgramRevisionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.inert"
+    message: "published catalog candidates are inert"
+    expression: "this.exposure == kokoro.platform.commerce.v1.CatalogCandidateExposure.CATALOG_CANDIDATE_EXPOSURE_INERT"
+  };
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  repeated FulfillmentProgramOutputLine output_lines = 2 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 32
+  }];
+  CatalogCandidateExposure exposure = 3 [(buf.validate.field).enum.const = 1];
+  google.protobuf.Timestamp published_at = 4 [(buf.validate.field).required = true];
+}
+message RedemptionProgramRevisionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.redemption.inert"
+    message: "published catalog candidates are inert"
+    expression: "this.exposure == kokoro.platform.commerce.v1.CatalogCandidateExposure.CATALOG_CANDIDATE_EXPOSURE_INERT"
+  };
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget offer_revision = 2 [(buf.validate.field).required = true];
+  uint32 maximum_redemptions_per_subject = 3 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000
+  }];
+  CatalogCandidateExposure exposure = 4 [(buf.validate.field).enum.const = 1];
+  google.protobuf.Timestamp published_at = 5 [(buf.validate.field).required = true];
+}
+
+message CommercePageRequest {
+  uint32 page_size = 1 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 200
+  }];
+  optional string page_token = 2 [(buf.validate.field).string = {
+    min_len: 16
+    max_len: 2048
+  }];
+  optional string snapshot_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  optional string snapshot_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+message CommercePageInfo {
+  string snapshot_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string snapshot_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string next_page_token = 3 [(buf.validate.field).string = {
+    min_len: 16
+    max_len: 2048
+  }];
+}
+
+message CatalogRevisionFilter {
+  optional string aggregate_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  optional google.protobuf.Timestamp published_after = 2;
+  optional google.protobuf.Timestamp published_before = 3;
+}
+
+message PublishPlanRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.plan.next"
+    message: "revision must be the CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  PlanRevisionDefinition definition = 4 [(buf.validate.field).required = true];
+  string reason = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message PublishOfferRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer.next"
+    message: "revision must be the CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string offer_key = 4 [(buf.validate.field).string = {pattern: "^[a-z][a-z0-9._-]{1,127}$"}];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding product_catalog_revision = 5 [(buf.validate.field).required = true];
+  CommerceRevisionTarget plan_revision = 6 [(buf.validate.field).required = true];
+  CommerceRevisionTarget fulfillment_program_revision = 7 [(buf.validate.field).required = true];
+  string reason = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message PublishFulfillmentProgramRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.next"
+    message: "revision must be the CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.unique_lines"
+    message: "line ids and ordinals are unique"
+    expression: "this.output_lines.all(o, this.output_lines.filter(n, n.output_line_id == o.output_line_id).size() == 1 && this.output_lines.filter(n, n.output_ordinal == o.output_ordinal).size() == 1)"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.contiguous"
+    message: "ordinals are contiguous"
+    expression: "this.output_lines.all(o, o.output_ordinal <= uint(this.output_lines.size()))"
+  };
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.cardinality"
+    message: "total occurrence_count must fit one committed transaction"
+    expression: "(this.output_lines.size() > 0 ? this.output_lines[0].occurrence_count : 0u) + (this.output_lines.size() > 1 ? this.output_lines[1].occurrence_count : 0u) + (this.output_lines.size() > 2 ? this.output_lines[2].occurrence_count : 0u) + (this.output_lines.size() > 3 ? this.output_lines[3].occurrence_count : 0u) + (this.output_lines.size() > 4 ? this.output_lines[4].occurrence_count : 0u) + (this.output_lines.size() > 5 ? this.output_lines[5].occurrence_count : 0u) + (this.output_lines.size() > 6 ? this.output_lines[6].occurrence_count : 0u) + (this.output_lines.size() > 7 ? this.output_lines[7].occurrence_count : 0u) + (this.output_lines.size() > 8 ? this.output_lines[8].occurrence_count : 0u) + (this.output_lines.size() > 9 ? this.output_lines[9].occurrence_count : 0u) + (this.output_lines.size() > 10 ? this.output_lines[10].occurrence_count : 0u) + (this.output_lines.size() > 11 ? this.output_lines[11].occurrence_count : 0u) + (this.output_lines.size() > 12 ? this.output_lines[12].occurrence_count : 0u) + (this.output_lines.size() > 13 ? this.output_lines[13].occurrence_count : 0u) + (this.output_lines.size() > 14 ? this.output_lines[14].occurrence_count : 0u) + (this.output_lines.size() > 15 ? this.output_lines[15].occurrence_count : 0u) + (this.output_lines.size() > 16 ? this.output_lines[16].occurrence_count : 0u) + (this.output_lines.size() > 17 ? this.output_lines[17].occurrence_count : 0u) + (this.output_lines.size() > 18 ? this.output_lines[18].occurrence_count : 0u) + (this.output_lines.size() > 19 ? this.output_lines[19].occurrence_count : 0u) + (this.output_lines.size() > 20 ? this.output_lines[20].occurrence_count : 0u) + (this.output_lines.size() > 21 ? this.output_lines[21].occurrence_count : 0u) + (this.output_lines.size() > 22 ? this.output_lines[22].occurrence_count : 0u) + (this.output_lines.size() > 23 ? this.output_lines[23].occurrence_count : 0u) + (this.output_lines.size() > 24 ? this.output_lines[24].occurrence_count : 0u) + (this.output_lines.size() > 25 ? this.output_lines[25].occurrence_count : 0u) + (this.output_lines.size() > 26 ? this.output_lines[26].occurrence_count : 0u) + (this.output_lines.size() > 27 ? this.output_lines[27].occurrence_count : 0u) + (this.output_lines.size() > 28 ? this.output_lines[28].occurrence_count : 0u) + (this.output_lines.size() > 29 ? this.output_lines[29].occurrence_count : 0u) + (this.output_lines.size() > 30 ? this.output_lines[30].occurrence_count : 0u) + (this.output_lines.size() > 31 ? this.output_lines[31].occurrence_count : 0u) <= 32u"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  repeated FulfillmentProgramOutputLine output_lines = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 32
+  }];
+  string reason = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+message PublishRedemptionProgramRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.redemption.next"
+    message: "revision must be the CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  CommerceRevisionTarget offer_revision = 4 [(buf.validate.field).required = true];
+  uint32 maximum_redemptions_per_subject = 5 [(buf.validate.field).uint32 = {
+    gte: 1
+    lte: 1000
+  }];
+  string reason = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message PublishPlanRevisionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.plan.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
+  PublishPlanRevisionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message PublishOfferRevisionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
+  PublishOfferRevisionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message PublishFulfillmentProgramRevisionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.fulfillment.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
+  PublishFulfillmentProgramRevisionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message PublishRedemptionProgramRevisionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.redemption.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
+  PublishRedemptionProgramRevisionEffect effect = 2 [(buf.validate.field).required = true];
+}
+message PublishPlanRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  PlanRevisionView revision = 2 [(buf.validate.field).required = true];
+}
+message PublishOfferRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  OfferRevisionView revision = 2 [(buf.validate.field).required = true];
+}
+message PublishFulfillmentProgramRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  FulfillmentProgramRevisionView revision = 2 [(buf.validate.field).required = true];
+}
+message PublishRedemptionProgramRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  RedemptionProgramRevisionView revision = 2 [(buf.validate.field).required = true];
+}
+
+message ListPlanRevisionsRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListOfferRevisionsRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListFulfillmentProgramRevisionsRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListRedemptionProgramRevisionsRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListPlanRevisionsResponse {
+  repeated PlanRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message ListOfferRevisionsResponse {
+  repeated OfferRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message ListFulfillmentProgramRevisionsResponse {
+  repeated FulfillmentProgramRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+message ListRedemptionProgramRevisionsResponse {
+  repeated RedemptionProgramRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
+
+message GetPlanRevisionRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
+message GetOfferRevisionRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
+message GetFulfillmentProgramRevisionRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
+message GetRedemptionProgramRevisionRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
+message GetPlanRevisionResponse {
+  PlanRevisionView revision = 1 [(buf.validate.field).required = true];
+}
+message GetOfferRevisionResponse {
+  OfferRevisionView revision = 1 [(buf.validate.field).required = true];
+}
+message GetFulfillmentProgramRevisionResponse {
+  FulfillmentProgramRevisionView revision = 1 [(buf.validate.field).required = true];
+}
+message GetRedemptionProgramRevisionResponse {
+  RedemptionProgramRevisionView revision = 1 [(buf.validate.field).required = true];
+}

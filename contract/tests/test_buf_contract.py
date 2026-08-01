@@ -536,43 +536,51 @@ def test_wave1_privileged_services_have_exact_closed_surfaces() -> None:
 
 
 def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_secrets() -> None:
-    commerce = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+    service = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+    commerce = "\n".join((
+        service,
+        _proto("kokoro/platform/commerce/v1/commerce_catalog.proto"),
+        _proto("kokoro/platform/commerce/v1/commerce_control.proto"),
+    ))
 
-    assert _service_methods(commerce, "AdminCommerceService") == [
+    assert _service_methods(service, "AdminCommerceService") == [
         "PublishPlanRevision", "ListPlanRevisions", "GetPlanRevision",
         "PublishOfferRevision", "ListOfferRevisions", "GetOfferRevision",
         "PublishFulfillmentProgramRevision", "ListFulfillmentProgramRevisions",
         "GetFulfillmentProgramRevision", "PublishRedemptionProgramRevision",
         "ListRedemptionProgramRevisions", "GetRedemptionProgramRevision",
-        "PublishSiteCommerceAssignment", "ListSiteCommerceAssignments",
-        "GetSiteCommerceAssignment", "RequestCodeBatchIssuance",
-        "ApproveCodeBatchIssuance", "ClaimCodeBatchDelivery",
-        "ListCodeBatches",
-        "GetCodeBatch",
-        "ActivateCodeBatch",
-        "SuspendCodeBatch",
-        "ResumeCodeBatch",
-        "RevokeCodeBatch",
-        "RequestSourceReversal", "ApproveSourceReversal",
-        "RequestCodeReplacement", "ApproveCodeReplacement",
+        "RequestSiteCommerceAssignmentPromotion", "DecideSiteCommerceAssignmentPromotion",
+        "ListSiteCommerceAssignments", "GetSiteCommerceAssignment",
+        "RequestCodeBatchIssuance", "DecideCodeBatchIssuance",
+        "RequestCodeBatchTransition", "DecideCodeBatchTransition",
+        "EmergencySuspendCodeBatch", "BeginCodeBatchDelivery",
+        "ReadCodeDeliveryRange", "AcknowledgeCodeDeliveryRange",
+        "GetCodeDeliverySession", "ListCodeBatches", "GetCodeBatch",
+        "RequestSourceCorrection", "DecideSourceCorrection",
         "ListSourceCorrections", "GetSourceCorrection",
+        "RequestCommerceReconciliationResolution",
+        "DecideCommerceReconciliationResolution",
         "ListCommerceReconciliations", "GetCommerceReconciliation",
-        "ResolveCommerceReconciliation", "GetCommerceCommandReceipt",
+        "GetCommerceApproval", "GetCommerceExecution", "GetCommerceCommandReceipt",
     ]
-    assert "AuthenticatedOperatorCommandContext context" in commerce
-    assert "AuthenticatedOperatorQueryContext context" in commerce
+    assert "message CommerceGlobalCommandContext" in commerce
+    assert "message CommerceGlobalQueryContext" in commerce
+    assert "message CommerceSiteCommandContext" in commerce
+    assert "message CommerceSiteQueryContext" in commerce
+    assert "AuthenticatedOperatorCommandContext operator" in commerce
+    assert "AuthenticatedOperatorQueryContext operator" in commerce
     assert "raw_codes" not in commerce
-    assert "EncryptedCodeDelivery" not in _message_body(commerce, "RequestCodeBatchIssuanceResponse")
-    assert "EncryptedCodeDelivery" not in _message_body(commerce, "ApproveCodeBatchIssuanceResponse")
-    assert "optional EncryptedCodeDelivery delivery" in _message_body(commerce, "ClaimCodeBatchDeliveryResponse")
-    for foreign_owner in ("CreditProgram", "EntitlementTemplate"):
-        assert foreign_owner not in commerce
+    assert "EncryptedCodeDelivery" not in commerce
+    assert "bytes ciphertext" not in commerce
+    assert "CommerceApprovalAnchor" not in commerce
+    assert "CreditProgramRevisionBinding" in commerce
+    assert "EntitlementTemplateRevisionBinding" in commerce
     assert "google.protobuf.Struct" not in commerce
     assert "rpc Route" not in commerce
     assert "string action" not in commerce
 
 
-def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields() -> None:
+def test_admin_credit_has_safe_reads_and_a_typed_reconciliation_exit() -> None:
     credit = _proto("kokoro/platform/credit/v1/admin_credit.proto")
 
     assert _service_methods(credit, "AdminCreditService") == [
@@ -586,6 +594,9 @@ def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields()
         "ListCreditJournalEntries",
         "ListRatedUsage",
         "ListRatedUsageSourceAllocations",
+        "RequestCreditReconciliationResolution",
+        "DecideCreditReconciliationResolution",
+        "GetCreditReconciliationResolution",
     ]
     assert "AuthenticatedOperatorQueryContext context" in credit
     assert "CreditReadFreshness freshness" in _message_body(credit, "SiteCreditSummary")
@@ -653,7 +664,9 @@ def test_admin_credit_is_a_dedicated_typed_read_plane_with_safe_decimal_fields()
     assert "evidence_payload" not in credit
     assert "rating_snapshot" not in credit
     assert "liability_merchant_account_ref" not in credit
-    assert "CommandReceipt" not in credit
+    assert "CommandReceiptV2 receipt" in _message_body(
+        credit, "RequestCreditReconciliationResolutionResponse"
+    )
 
 
 def test_wave1_commands_freeze_identity_axes_scope_and_receipts() -> None:
@@ -2500,32 +2513,40 @@ def test_site_publication_r0b_checklists_cover_every_contract_only_boundary() ->
 
 
 def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -> None:
-    source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+    source = "\n".join((
+        _proto("kokoro/platform/commerce/v1/commerce_catalog.proto"),
+        _proto("kokoro/platform/commerce/v1/commerce_control.proto"),
+    ))
 
     cursor_rules = re.findall(
         r"optional string (?:next_)?page_token = \d+ \[\(buf\.validate\.field\)\.string = \{(.*?)\}\];",
         source,
         re.DOTALL,
     )
-    assert len(cursor_rules) == 16
-    assert all("max_len: 1024" in rule for rule in cursor_rules)
-    for message in (
-        "CommerceRevisionTarget", "ClaimCodeBatchDeliveryEffect",
-        "CodeBatchView", "SealedCodeDeliveryReceipt",
-    ):
-        assert "lte: 9223372036854775807" in _message_body(source, message)
+    assert len(cursor_rules) == 2
+    assert all("max_len: 2048" in rule for rule in cursor_rules)
+    page = _message_body(source, "CommercePageRequest")
+    assert "gte: 1" in page
+    assert "max_len: 2048" in page
+    assert "snapshot_digest" in page
 
 
 def test_admin_commerce_fulfillment_lines_and_delivery_are_executable_contracts() -> None:
-    source = _proto("kokoro/platform/commerce/v1/admin_commerce.proto")
+    source = "\n".join((
+        _proto("kokoro/platform/commerce/v1/commerce_catalog.proto"),
+        _proto("kokoro/platform/commerce/v1/commerce_control.proto"),
+    ))
 
     program = _message_body(source, "PublishFulfillmentProgramRevisionEffect")
-    assert "commerce.fulfillment_program.line_identity_unique" in program
+    assert "commerce.fulfillment.unique_lines" in program
     assert "repeated FulfillmentProgramOutputLine output_lines" in program
-    claim = _message_body(source, "ClaimCodeBatchDeliveryResponse")
-    assert "commerce.code_delivery.one_time" in claim
-    assert "(!this.replayed && has(this.delivery))" in claim
-    assert "(this.replayed && !has(this.delivery))" in claim
+    assert "commerce.fulfillment.cardinality" in program
+    session = _message_body(source, "SecretDeliverySessionView")
+    assert "next_offset" in session
+    assert "active_range" in session
+    activation = _message_body(source, "CodeBatchActivationEvidence")
+    assert "delivered_session" in activation
+    assert "disposal_receipt" in activation
 
 
 def test_model_gateway_publishes_one_resumable_server_stream() -> None:

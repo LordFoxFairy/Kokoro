@@ -160,7 +160,7 @@ message CanonicalFulfillmentTransactionV1 {
     max_items: 32
   }];
   FulfillmentTransactionState state = 6 [(buf.validate.field).enum.const = 1];
-  uint64 transaction_version = 7 [(buf.validate.field).uint64.gt = 0];
+  uint64 transaction_version = 7 [(buf.validate.field).uint64.const = 1];
   google.protobuf.Timestamp committed_at = 8 [(buf.validate.field).required = true];
 }
 
@@ -181,7 +181,7 @@ message FulfillmentTransactionIdentity {
     min_len: 1
     max_len: 256
   }];
-  uint64 transaction_version = 2 [(buf.validate.field).uint64.gt = 0];
+  uint64 transaction_version = 2 [(buf.validate.field).uint64.const = 1];
   string transaction_digest = 3 [(buf.validate.field).string = {
     len: 64
     pattern: "^[0-9a-f]{64}$"

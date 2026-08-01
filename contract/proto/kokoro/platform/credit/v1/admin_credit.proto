@@ -4,7 +4,9 @@ package kokoro.platform.credit.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
+import "kokoro/common/v2/command_envelope.proto";
 import "kokoro/platform/admin/v2/admin_shared.proto";
+import "kokoro/platform/credit/v1/credit_application.proto";
 
 // AdminCreditService is the typed, read-only operator view over Credit authority facts.
 service AdminCreditService {
@@ -18,6 +20,9 @@ service AdminCreditService {
   rpc ListCreditJournalEntries(ListCreditJournalEntriesRequest) returns (ListCreditJournalEntriesResponse) {}
   rpc ListRatedUsage(ListRatedUsageRequest) returns (ListRatedUsageResponse) {}
   rpc ListRatedUsageSourceAllocations(ListRatedUsageSourceAllocationsRequest) returns (ListRatedUsageSourceAllocationsResponse) {}
+  rpc RequestCreditReconciliationResolution(RequestCreditReconciliationResolutionRequest) returns (RequestCreditReconciliationResolutionResponse) {}
+  rpc DecideCreditReconciliationResolution(DecideCreditReconciliationResolutionRequest) returns (DecideCreditReconciliationResolutionResponse) {}
+  rpc GetCreditReconciliationResolution(GetCreditReconciliationResolutionRequest) returns (GetCreditReconciliationResolutionResponse) {}
 }
 
 enum CreditReadFreshness {
@@ -672,4 +677,255 @@ message ListRatedUsageSourceAllocationsResponse {
   }];
   google.protobuf.Timestamp membership_watermark = 3 [(buf.validate.field).required = true];
   google.protobuf.Timestamp observed_at = 4 [(buf.validate.field).required = true];
+}
+
+enum CreditReconciliationDecision {
+  CREDIT_RECONCILIATION_DECISION_UNSPECIFIED = 0;
+  CREDIT_RECONCILIATION_DECISION_APPROVE = 1;
+  CREDIT_RECONCILIATION_DECISION_REJECT = 2;
+}
+
+enum CreditReconciliationExecutionState {
+  CREDIT_RECONCILIATION_EXECUTION_STATE_UNSPECIFIED = 0;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_PENDING_APPROVAL = 1;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_QUEUED = 2;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLYING = 3;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_APPLIED = 4;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_REJECTED = 5;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_FAILED = 6;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_OUTCOME_UNKNOWN = 7;
+  CREDIT_RECONCILIATION_EXECUTION_STATE_QUARANTINED = 8;
+}
+
+message ConfirmNoUsageAndRelease {
+  string absence_evidence_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string absence_evidence_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message ConfirmUsageAndSettle {
+  string rated_usage_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string rated_usage_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string settlement_evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string settlement_evidence_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message RetryCreditCommit {
+  string execution_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string execution_evidence_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message ApplyBalancedJournalCorrection {
+  string correction_plan_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string balanced_entries_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string finance_evidence_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string finance_evidence_digest = 4 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message QuarantineCreditTransaction {
+  string case_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string quarantine_policy_digest = 2 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+}
+
+message CreditReconciliationResolution {
+  oneof resolution {
+    option (buf.validate.oneof).required = true;
+    ConfirmNoUsageAndRelease confirm_no_usage_and_release = 1;
+    ConfirmUsageAndSettle confirm_usage_and_settle = 2;
+    RetryCreditCommit retry_credit_commit = 3;
+    ApplyBalancedJournalCorrection apply_balanced_journal_correction = 4;
+    QuarantineCreditTransaction quarantine_credit_transaction = 5;
+  }
+}
+
+// Server-owned frozen maker authority. Decision requests carry only its ref and
+// CAS version; actor, Site, effect and epochs are never trusted from the caller.
+message CreditReconciliationApprovalView {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 approval_version = 2 [(buf.validate.field).uint64.gt = 0];
+  string site_id = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string transaction_ref = 4 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_transaction_version = 5 [(buf.validate.field).uint64.gt = 0];
+  string effect_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string requested_by_actor_ref = 7 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string authority_epochs_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  CreditReconciliationExecutionState state = 9 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  google.protobuf.Timestamp expires_at = 10 [(buf.validate.field).required = true];
+}
+
+message RequestCreditReconciliationResolutionEffect {
+  string platform_transaction_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CreditTransactionState expected_state = 3 [(buf.validate.field).enum.const = 5];
+  CreditReconciliationResolution resolution = 4 [(buf.validate.field).required = true];
+  string evidence_ref = 5 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string evidence_digest = 6 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string command_digest = 7 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  string reason = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message RequestCreditReconciliationResolutionRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.command.request_digest == this.effect.command_digest"
+  };
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation.site_scope"
+    message: "operator scope, environment and region must authorize the exact Site"
+    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  RequestCreditReconciliationResolutionEffect effect = 3 [(buf.validate.field).required = true];
+}
+message RequestCreditReconciliationResolutionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CreditReconciliationApprovalView approval = 2 [(buf.validate.field).required = true];
+}
+
+message CreditReconciliationDecisionEffect {
+  string approval_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 expected_approval_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CreditReconciliationDecision decision = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+}
+message DecideCreditReconciliationResolutionRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation_decision.site_scope"
+    message: "operator scope, environment and region must authorize the exact Site"
+    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  CreditReconciliationDecisionEffect decision = 3 [(buf.validate.field).required = true];
+}
+message DecideCreditReconciliationResolutionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  CreditReconciliationApprovalView approval = 2 [(buf.validate.field).required = true];
+}
+
+message CreditReconciliationExecutionResult {
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation.result_shape"
+    message: "applied financial transitions carry before, after and balanced Journal evidence"
+    expression: "(this.state == 4 && has(this.before) && has(this.after) && has(this.journal_transaction_ref) && has(this.journal_transaction_digest)) || (this.state in [2, 3, 5, 6, 7, 8] && !has(this.after))"
+  };
+  string resolution_ref = 1 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  uint64 resolution_version = 2 [(buf.validate.field).uint64.gt = 0];
+  CreditReconciliationExecutionState state = 3 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  optional CreditTransactionSnapshot before = 4;
+  optional CreditTransactionSnapshot after = 5;
+  optional string journal_transaction_ref = 6 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  optional string journal_transaction_digest = 7 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  string evidence_digest = 8 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  optional string reconciliation_case_ref = 9 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string executor_workload_ref = 10 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string executor_attestation_digest = 11 [(buf.validate.field).string = {pattern: "^sha256:[0-9a-f]{64}$"}];
+  google.protobuf.Timestamp updated_at = 12 [(buf.validate.field).required = true];
+}
+
+message GetCreditReconciliationResolutionRequest {
+  option (buf.validate.message).cel = {
+    id: "credit.reconciliation_get.site_scope"
+    message: "operator scope, environment and region must authorize the exact Site"
+    expression: "(has(this.context.scope.site) && this.context.scope.site.site_ids.exists(s, s == this.site_id) && this.context.environment == this.context.scope.site.environment && this.context.region == this.context.scope.site.region) || (has(this.context.scope.global) && this.context.environment == this.context.scope.global.environment && this.context.region == this.context.scope.global.region) || (has(this.context.scope.breakglass) && this.context.environment == this.context.scope.breakglass.environment && this.context.region == this.context.scope.breakglass.region)"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorQueryContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  string resolution_ref = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 256
+  }];
+  string command_id = 4 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 128
+  }];
+  string idempotency_key = 5 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 191
+  }];
+  kokoro.common.v2.CommandDigestAlgorithmV2 digest_algorithm = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  string request_digest = 7 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+}
+message GetCreditReconciliationResolutionResponse {
+  CreditReconciliationApprovalView approval = 1 [(buf.validate.field).required = true];
+  optional CreditReconciliationExecutionResult execution = 2;
+  kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
 }
