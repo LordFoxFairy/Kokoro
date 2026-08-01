@@ -154,6 +154,63 @@ test("rejects clear, private-equal and private-substring presentation identities
   }
 });
 
+test("CUSTOM branch message refs use the public opaque message identity schema", async () => {
+  const schema = await readJson("contract/spec/kokoro-agui-presentation-event-v1.yaml");
+  const branchValue = schema.$defs.customBranch.properties.value;
+  assert.deepEqual(branchValue.properties.rootMessageId.oneOf[0], { $ref: "#/$defs/presentationMessageId" });
+  assert.deepEqual(branchValue.properties.leafMessageId.oneOf[0], { $ref: "#/$defs/presentationMessageId" });
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const branchEvents = corpus.positiveCases.flatMap(({ frames }) => (
+    frames.map(({ data }) => data.event).filter(({ name }) => name === "kokoro.branch.replace.v1")
+  ));
+  assert.ok(branchEvents.length > 0);
+  for (const event of branchEvents) {
+    for (const ref of [event.value.rootMessageId, event.value.leafMessageId].filter(Boolean)) {
+      assert.match(ref, /^presentation\.message:[0-9a-f]{64}$/u);
+    }
+  }
+});
+
+test("walks every CUSTOM public message ref and rejects private equality, substring and readable internals", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases[0];
+  const branchIndex = base.frames.findIndex(({ data }) => data.event.name === "kokoro.branch.replace.v1");
+  assert.notEqual(branchIndex, -1);
+  const refreshRow = (candidate) => {
+    candidate.durableRows[branchIndex].projectionPayload = clone(candidate.frames[branchIndex].data);
+    candidate.durableRows[branchIndex].projectionPayloadDigest = projectionDigest(candidate.frames[branchIndex].data);
+  };
+  const attacks = [
+    {
+      code: "agui_private_presentation_identity_equal",
+      mutate(candidate) {
+        candidate.frames[branchIndex].data.event.value.leafMessageId = candidate.sessionPrivateRouteFixtures.messages[0].internalMessageRef;
+      },
+    },
+    {
+      code: "agui_private_presentation_identity_leak",
+      mutate(candidate) {
+        candidate.sessionPrivateRouteFixtures.messages[0].internalMessageRef = candidate.frames[branchIndex].data.event.value.rootMessageId.slice(-16);
+      },
+    },
+    {
+      code: "agui_public_presentation_identity_invalid",
+      mutate(candidate) { candidate.frames[branchIndex].data.event.value.leafMessageId = "internal.message.readable"; },
+    },
+  ];
+  for (const attack of attacks) {
+    const candidate = clone(base);
+    attack.mutate(candidate);
+    refreshRow(candidate);
+    assert.throws(
+      () => validateConformanceCase(candidate),
+      (error) => error instanceof AguiPresentationContractError && error.code === attack.code,
+      attack.code,
+    );
+  }
+});
+
 function provenanceForPublicSource(contractCase, publicSourceEventId) {
   return contractCase.sessionPrivateRouteFixtures.provenance.find(
     (provenance) => provenance.publicSourceEventId === publicSourceEventId,

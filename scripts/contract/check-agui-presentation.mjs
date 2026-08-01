@@ -47,7 +47,7 @@ const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
   mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
-  eventSchema: "cbd015a0e2b354dd9bf5b45488cda04c9392a66bf907223ef1cec344849a8067",
+  eventSchema: "3e570872286243a2f481928ed7d1c3dab09eec29b71c093cc6955c2d915aee08",
   agentCandidateSchema: "85baea2c0d02fd96f562f66c17f519aee501b444da289ba7bde54dfec2ee82ef",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
@@ -893,6 +893,32 @@ function validatePrivateRefSeparation(privateRef, publicRefs) {
   }
 }
 
+function publicMessageRefsForEvent(event) {
+  if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END, EventType.ACTIVITY_SNAPSHOT].includes(event.type)) {
+    return [event.messageId];
+  }
+  if (event.type !== EventType.CUSTOM) return [];
+  if (event.name === "kokoro.branch.replace.v1") {
+    return [event.value.rootMessageId, event.value.leafMessageId].filter((value) => value !== null);
+  }
+  if (event.name === "kokoro.message.replace.v1") {
+    return [event.value.presentationMessageId, event.value.parentPresentationMessageId].filter((value) => value !== null);
+  }
+  return [];
+}
+
+function validateEventPublicMessageIdentities(event, privateMessageRefs) {
+  for (const publicRef of publicMessageRefsForEvent(event)) {
+    for (const privateRef of privateMessageRefs) {
+      if (publicRef === privateRef) fail("agui_private_presentation_identity_equal", privateRef);
+      if (typeof publicRef === "string" && publicRef.includes(privateRef)) {
+        fail("agui_private_presentation_identity_leak", privateRef);
+      }
+    }
+    validateOpaquePresentationIdentity(publicRef, OPAQUE_PRESENTATION_IDENTITY.messageId);
+  }
+}
+
 function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs, identities) {
   const fixtures = contractCase.sessionPrivateRouteFixtures;
   exactKeys(fixtures, ["runs", "messages", "provenance"], "agui_private_route_fixture_shape_invalid");
@@ -1341,6 +1367,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   validateM0RunBindingStates(caseInput.runBindings, "agui_run_terminal_state_invalid");
   const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot, identities);
   validateSessionPrivateRouteFixtures(caseInput, runRefs, messageRefs, identities);
+  const privateMessageRefs = caseInput.sessionPrivateRouteFixtures.messages.map(({ internalMessageRef }) => internalMessageRef);
   if (browserInternalKey(caseInput.expectedFinalSnapshot)) fail("agui_browser_internal_route_forbidden", caseInput.id);
   if (!validateSnapshotAuthoritySchema(snapshotAuthority)) {
     fail("agui_snapshot_authority_schema_invalid", validateSnapshotAuthoritySchema.errors?.[0]?.instancePath ?? "");
@@ -1359,6 +1386,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     const frame = caseInput.frames[index];
     const event = frame?.data?.event;
     validateEventPreSchema(event, mapping);
+    validateEventPublicMessageIdentities(event, privateMessageRefs);
     if (browserInternalKey(frame.data)) fail("agui_browser_internal_route_forbidden", frame.data.source?.sourceEventId ?? "unknown");
     if (frame.event !== event.type) fail("agui_sse_event_type_mismatch", String(frame.event));
     const source = frame.data.source;

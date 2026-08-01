@@ -172,6 +172,15 @@ function collectNamedIdentityValues(value, names, output) {
   }
 }
 
+function customPublicMessageFields(event) {
+  if (event?.type !== "CUSTOM") return [];
+  if (event.name === "kokoro.branch.replace.v1") return ["rootMessageId", "leafMessageId"];
+  if (event.name === "kokoro.message.replace.v1") {
+    return ["presentationMessageId", "parentPresentationMessageId"];
+  }
+  return [];
+}
+
 function opaquifyPresentationIdentities(contractCase) {
   const replacements = new Map();
   const threadOrdinals = new Map();
@@ -195,18 +204,28 @@ function opaquifyPresentationIdentities(contractCase) {
   for (const value of additionalRunIds) {
     if (!replacements.has(value)) replacements.set(value, presentationIdentityFor("run", contractCase.id, replacements.size));
   }
-  const additionalMessageIds = [];
-  collectNamedIdentityValues(
-    contractCase.frames,
-    new Set(["presentationMessageId", "parentPresentationMessageId"]),
-    additionalMessageIds,
-  );
-  for (const [index, value] of additionalMessageIds.entries()) {
-    if (!replacements.has(value)) {
-      replacements.set(value, presentationIdentityFor("message", contractCase.id, contractCase.messageBindings.length + index));
+  const customMessageReplacements = new Map();
+  let customMessageOrdinal = contractCase.messageBindings.length;
+  for (const frame of contractCase.frames) {
+    const event = frame.data.event;
+    for (const field of customPublicMessageFields(event)) {
+      const value = event.value[field];
+      if (value === null || customMessageReplacements.has(value)) continue;
+      customMessageReplacements.set(
+        value,
+        replacements.get(value) ?? presentationIdentityFor("message", contractCase.id, customMessageOrdinal++),
+      );
     }
   }
   const replaced = replaceIdentityStrings(contractCase, replacements);
+  for (const [index, frame] of contractCase.frames.entries()) {
+    const event = frame.data.event;
+    for (const field of customPublicMessageFields(event)) {
+      if (event.value[field] !== null) {
+        replaced.frames[index].data.event.value[field] = customMessageReplacements.get(event.value[field]);
+      }
+    }
+  }
   for (const key of Object.keys(contractCase)) delete contractCase[key];
   Object.assign(contractCase, replaced);
 }

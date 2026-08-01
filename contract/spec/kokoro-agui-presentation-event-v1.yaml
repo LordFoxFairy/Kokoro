@@ -247,8 +247,8 @@
       "type": "object", "additionalProperties": false, "required": ["type", "timestamp", "name", "value"],
       "properties": {"type": {"const": "CUSTOM"}, "timestamp": {"$ref": "#/$defs/timestamp"}, "name": {"const": "kokoro.branch.replace.v1"},
         "value": {"type": "object", "additionalProperties": false, "required": ["branchId", "rootMessageId", "leafMessageId", "version"], "properties": {
-          "branchId": {"$ref": "#/$defs/id"}, "parentBranchId": {"$ref": "#/$defs/id"}, "rootMessageId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]},
-          "leafMessageId": {"oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]}, "version": {"type": "integer", "minimum": 1}
+          "branchId": {"$ref": "#/$defs/id"}, "parentBranchId": {"$ref": "#/$defs/id"}, "rootMessageId": {"oneOf": [{"$ref": "#/$defs/presentationMessageId"}, {"type": "null"}]},
+          "leafMessageId": {"oneOf": [{"$ref": "#/$defs/presentationMessageId"}, {"type": "null"}]}, "version": {"type": "integer", "minimum": 1}
         }}
       }
     },

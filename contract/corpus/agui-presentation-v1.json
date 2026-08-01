@@ -829,8 +829,8 @@
               "name": "kokoro.branch.replace.v1",
               "value": {
                 "branchId": "branch.01",
-                "rootMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
-                "leafMessageId": "internal.message.assistant.01",
+                "rootMessageId": "presentation.message:5b24a035ade612f10598c62c5c9c939d1b6ceee36d392ef0ec399fb9de4104c7",
+                "leafMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "version": 2
               }
             },
@@ -838,7 +838,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:56a1e899e878f00f6e0a4bb73cb4b6fd4128d308e093de4f5f0df3a026317fd8"
+          "projectionPayloadDigest": "sha256:8c272eec0f5aee78e565df742946dd73304b32e514770f972ada7c7be89f115c"
         },
         {
           "rowRef": "presentation-row.presentation.event:c42b4331e408d043dca0eb2a090df27b25f9e58673613642f7c3ecbb1c83317e",
@@ -876,7 +876,7 @@
                 "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "role": "assistant",
                 "lifecycle": "streaming",
-                "parentPresentationMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
+                "parentPresentationMessageId": "presentation.message:5b24a035ade612f10598c62c5c9c939d1b6ceee36d392ef0ec399fb9de4104c7",
                 "ordinal": 1,
                 "version": 3
               }
@@ -885,7 +885,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:c866a5b630e6eeb65dcb30081ea6220a72eb4f55469bc66e86cd4022ee61fc0e"
+          "projectionPayloadDigest": "sha256:459841faebabfe3e4dd595decfb79fd22b0ad5e0015bebb58d089a50a02b6026"
         },
         {
           "rowRef": "presentation-row.presentation.event:dc018bacaacfa6aadc85df4e1972a690309ef3d9a2f240fc9cc1a3a7eaaad8f9",
@@ -1950,8 +1950,8 @@
               "name": "kokoro.branch.replace.v1",
               "value": {
                 "branchId": "branch.01",
-                "rootMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
-                "leafMessageId": "internal.message.assistant.01",
+                "rootMessageId": "presentation.message:5b24a035ade612f10598c62c5c9c939d1b6ceee36d392ef0ec399fb9de4104c7",
+                "leafMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
                 "version": 2
               }
             },
@@ -1986,7 +1986,7 @@
                 "presentationMessageId": "presentation.message:ad5247c84829ebea77710ad92161f9fd7a765bf022f47524ce6760c721cfb607",
                 "role": "assistant",
                 "lifecycle": "streaming",
-                "parentPresentationMessageId": "presentation.message:9553b4f6cc627530aa10f750c887ebe4090cca3af09954ee6ad1b2f0358c17ac",
+                "parentPresentationMessageId": "presentation.message:5b24a035ade612f10598c62c5c9c939d1b6ceee36d392ef0ec399fb9de4104c7",
                 "ordinal": 1,
                 "version": 3
               }
