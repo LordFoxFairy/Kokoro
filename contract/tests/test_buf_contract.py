@@ -546,6 +546,7 @@ def test_admin_commerce_has_an_exact_typed_surface_and_never_exposes_persisted_s
     assert _service_methods(service, "AdminCommerceService") == [
         "PublishPlanRevision", "ListPlanRevisions", "GetPlanRevision",
         "PublishOfferRevision", "ListOfferRevisions", "GetOfferRevision",
+        "PublishOfferPriceRevision", "ListOfferPriceRevisions", "GetOfferPriceRevision",
         "PublishFulfillmentProgramRevision", "ListFulfillmentProgramRevisions",
         "GetFulfillmentProgramRevision", "PublishRedemptionProgramRevision",
         "ListRedemptionProgramRevisions", "GetRedemptionProgramRevision",

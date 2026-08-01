@@ -16,6 +16,9 @@ service AdminCommerceService {
   rpc PublishOfferRevision(PublishOfferRevisionRequest) returns (PublishOfferRevisionResponse) {}
   rpc ListOfferRevisions(ListOfferRevisionsRequest) returns (ListOfferRevisionsResponse) {}
   rpc GetOfferRevision(GetOfferRevisionRequest) returns (GetOfferRevisionResponse) {}
+  rpc PublishOfferPriceRevision(PublishOfferPriceRevisionRequest) returns (PublishOfferPriceRevisionResponse) {}
+  rpc ListOfferPriceRevisions(ListOfferPriceRevisionsRequest) returns (ListOfferPriceRevisionsResponse) {}
+  rpc GetOfferPriceRevision(GetOfferPriceRevisionRequest) returns (GetOfferPriceRevisionResponse) {}
   rpc PublishFulfillmentProgramRevision(PublishFulfillmentProgramRevisionRequest) returns (PublishFulfillmentProgramRevisionResponse) {}
   rpc ListFulfillmentProgramRevisions(ListFulfillmentProgramRevisionsRequest) returns (ListFulfillmentProgramRevisionsResponse) {}
   rpc GetFulfillmentProgramRevision(GetFulfillmentProgramRevisionRequest) returns (GetFulfillmentProgramRevisionResponse) {}

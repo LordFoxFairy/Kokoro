@@ -1473,11 +1473,13 @@ function adminCommerceDigestSourceV2() {
 import {
   PublishPlanRevisionEffectSchema,
   PublishOfferRevisionEffectSchema,
+  PublishOfferPriceRevisionEffectSchema,
   PublishFulfillmentProgramRevisionEffectSchema,
   PublishRedemptionProgramRevisionEffectSchema,
   type CommerceGlobalCommandContext,
   type PublishPlanRevisionEffect,
   type PublishOfferRevisionEffect,
+  type PublishOfferPriceRevisionEffect,
   type PublishFulfillmentProgramRevisionEffect,
   type PublishRedemptionProgramRevisionEffect,
 } from "./kokoro/platform/commerce/v1/commerce_catalog_pb.js";
@@ -1579,6 +1581,7 @@ function siteEffect<T extends DescMessage>(operation: string, context: CommerceS
 
 export const verifyPublishPlanRevisionCommand = (c: CommerceGlobalCommandContext, e: PublishPlanRevisionEffect, v: VerifiedAuthenticatedAdminAxes) => globalEffect("kokoro.platform.commerce.v1.AdminCommerceService/PublishPlanRevision", c, PublishPlanRevisionEffectSchema, e, [e.target?.targetRef ?? ""], v);
 export const verifyPublishOfferRevisionCommand = (c: CommerceGlobalCommandContext, e: PublishOfferRevisionEffect, v: VerifiedAuthenticatedAdminAxes) => globalEffect("kokoro.platform.commerce.v1.AdminCommerceService/PublishOfferRevision", c, PublishOfferRevisionEffectSchema, e, [e.target?.targetRef ?? ""], v);
+export const verifyPublishOfferPriceRevisionCommand = (c: CommerceGlobalCommandContext, e: PublishOfferPriceRevisionEffect, v: VerifiedAuthenticatedAdminAxes) => globalEffect("kokoro.platform.commerce.v1.AdminCommerceService/PublishOfferPriceRevision", c, PublishOfferPriceRevisionEffectSchema, e, [e.target?.targetRef ?? "", e.offerRevision?.targetRef ?? ""], v);
 export const verifyPublishFulfillmentProgramRevisionCommand = (c: CommerceGlobalCommandContext, e: PublishFulfillmentProgramRevisionEffect, v: VerifiedAuthenticatedAdminAxes) => globalEffect("kokoro.platform.commerce.v1.AdminCommerceService/PublishFulfillmentProgramRevision", c, PublishFulfillmentProgramRevisionEffectSchema, e, [e.target?.targetRef ?? ""], v);
 export const verifyPublishRedemptionProgramRevisionCommand = (c: CommerceGlobalCommandContext, e: PublishRedemptionProgramRevisionEffect, v: VerifiedAuthenticatedAdminAxes) => globalEffect("kokoro.platform.commerce.v1.AdminCommerceService/PublishRedemptionProgramRevision", c, PublishRedemptionProgramRevisionEffectSchema, e, [e.target?.targetRef ?? ""], v);
 export const verifyRequestSiteCommerceAssignmentPromotionCommand = (c: CommerceSiteCommandContext, e: RequestSiteCommerceAssignmentPromotionEffect, v: VerifiedAuthenticatedAdminAxes) => siteEffect("kokoro.platform.commerce.v1.AdminCommerceService/RequestSiteCommerceAssignmentPromotion", c, RequestSiteCommerceAssignmentPromotionEffectSchema, e, [e.candidate?.target?.targetRef ?? ""], v);

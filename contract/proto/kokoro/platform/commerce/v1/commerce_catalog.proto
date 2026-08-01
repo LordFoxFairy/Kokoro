@@ -76,6 +76,46 @@ enum FulfillmentProgramOutputKind {
   FULFILLMENT_PROGRAM_OUTPUT_KIND_CREDIT_GRANT = 3;
 }
 
+message CommerceMoney {
+  string currency = 1 [(buf.validate.field).string = {pattern: "^[A-Z]{3}$"}];
+  int64 amount_minor = 2 [(buf.validate.field).int64.gte = 0];
+}
+
+enum CommerceTaxMode {
+  COMMERCE_TAX_MODE_UNSPECIFIED = 0;
+  COMMERCE_TAX_MODE_NOT_APPLICABLE = 1;
+  COMMERCE_TAX_MODE_INCLUSIVE = 2;
+  COMMERCE_TAX_MODE_EXCLUSIVE = 3;
+}
+
+enum CommerceBillingCadenceKind {
+  COMMERCE_BILLING_CADENCE_KIND_UNSPECIFIED = 0;
+  COMMERCE_BILLING_CADENCE_KIND_ONE_TIME = 1;
+  COMMERCE_BILLING_CADENCE_KIND_RECURRING = 2;
+}
+
+enum CommerceBillingInterval {
+  COMMERCE_BILLING_INTERVAL_UNSPECIFIED = 0;
+  COMMERCE_BILLING_INTERVAL_DAY = 1;
+  COMMERCE_BILLING_INTERVAL_WEEK = 2;
+  COMMERCE_BILLING_INTERVAL_MONTH = 3;
+  COMMERCE_BILLING_INTERVAL_YEAR = 4;
+}
+
+message CommerceBillingCadence {
+  option (buf.validate.message).cel = {
+    id: "commerce.billing_cadence.shape"
+    message: "one-time prices have no interval and recurring prices have a bounded interval"
+    expression: "(this.kind == 1 && this.interval == 0 && this.interval_count == 0u) || (this.kind == 2 && this.interval != 0 && this.interval_count > 0u)"
+  };
+  CommerceBillingCadenceKind kind = 1 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CommerceBillingInterval interval = 2 [(buf.validate.field).enum.defined_only = true];
+  uint32 interval_count = 3 [(buf.validate.field).uint32.lte = 3650];
+}
+
 message PlanRevisionDefinition {
   option (buf.validate.message).cel = {
     id: "commerce.plan.term_shape"
@@ -147,6 +187,23 @@ message OfferRevisionView {
   kokoro.platform.publication.v1.ImmutableContractRevisionBinding product_catalog_revision = 3 [(buf.validate.field).required = true];
   CommerceRevisionTarget plan_revision = 4 [(buf.validate.field).required = true];
   CommerceRevisionTarget fulfillment_program_revision = 5 [(buf.validate.field).required = true];
+  CatalogCandidateExposure exposure = 6 [(buf.validate.field).enum.const = 1];
+  google.protobuf.Timestamp published_at = 7 [(buf.validate.field).required = true];
+}
+message OfferPriceRevisionView {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer_price.inert"
+    message: "published price candidates are inert until frozen by a Site release"
+    expression: "this.exposure == kokoro.platform.commerce.v1.CatalogCandidateExposure.CATALOG_CANDIDATE_EXPOSURE_INERT"
+  };
+  CommerceRevisionTarget revision = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget offer_revision = 2 [(buf.validate.field).required = true];
+  CommerceMoney money = 3 [(buf.validate.field).required = true];
+  CommerceTaxMode tax_mode = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CommerceBillingCadence billing_cadence = 5 [(buf.validate.field).required = true];
   CatalogCandidateExposure exposure = 6 [(buf.validate.field).enum.const = 1];
   google.protobuf.Timestamp published_at = 7 [(buf.validate.field).required = true];
 }
@@ -249,6 +306,27 @@ message PublishOfferRevisionEffect {
     max_len: 512
   }];
 }
+message PublishOfferPriceRevisionEffect {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer_price.next"
+    message: "revision must be the CAS successor"
+    expression: "this.target.target_revision == this.expected_version + 1u"
+  };
+  CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
+  uint64 expected_version = 2 [(buf.validate.field).uint64.lte = 9223372036854775807];
+  string command_digest = 3 [(buf.validate.field).string = {pattern: "^[0-9a-f]{64}$"}];
+  CommerceRevisionTarget offer_revision = 4 [(buf.validate.field).required = true];
+  CommerceMoney money = 5 [(buf.validate.field).required = true];
+  CommerceTaxMode tax_mode = 6 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: 0
+  }];
+  CommerceBillingCadence billing_cadence = 7 [(buf.validate.field).required = true];
+  string reason = 8 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
 message PublishFulfillmentProgramRevisionEffect {
   option (buf.validate.message).cel = {
     id: "commerce.fulfillment.next"
@@ -320,6 +398,15 @@ message PublishOfferRevisionRequest {
   CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
   PublishOfferRevisionEffect effect = 2 [(buf.validate.field).required = true];
 }
+message PublishOfferPriceRevisionRequest {
+  option (buf.validate.message).cel = {
+    id: "commerce.offer_price.command_digest"
+    message: "effect digest must be the authenticated command digest"
+    expression: "this.context.operator.command.request_digest == this.effect.command_digest"
+  };
+  CommerceGlobalCommandContext context = 1 [(buf.validate.field).required = true];
+  PublishOfferPriceRevisionEffect effect = 2 [(buf.validate.field).required = true];
+}
 message PublishFulfillmentProgramRevisionRequest {
   option (buf.validate.message).cel = {
     id: "commerce.fulfillment.command_digest"
@@ -346,6 +433,10 @@ message PublishOfferRevisionResponse {
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   OfferRevisionView revision = 2 [(buf.validate.field).required = true];
 }
+message PublishOfferPriceRevisionResponse {
+  kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
+  OfferPriceRevisionView revision = 2 [(buf.validate.field).required = true];
+}
 message PublishFulfillmentProgramRevisionResponse {
   kokoro.common.v2.CommandReceiptV2 receipt = 1 [(buf.validate.field).required = true];
   FulfillmentProgramRevisionView revision = 2 [(buf.validate.field).required = true];
@@ -361,6 +452,11 @@ message ListPlanRevisionsRequest {
   CommercePageRequest page = 3 [(buf.validate.field).required = true];
 }
 message ListOfferRevisionsRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
+  CommercePageRequest page = 3 [(buf.validate.field).required = true];
+}
+message ListOfferPriceRevisionsRequest {
   CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
   CatalogRevisionFilter filter = 2 [(buf.validate.field).required = true];
   CommercePageRequest page = 3 [(buf.validate.field).required = true];
@@ -383,6 +479,10 @@ message ListOfferRevisionsResponse {
   repeated OfferRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
   CommercePageInfo page = 2 [(buf.validate.field).required = true];
 }
+message ListOfferPriceRevisionsResponse {
+  repeated OfferPriceRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
+  CommercePageInfo page = 2 [(buf.validate.field).required = true];
+}
 message ListFulfillmentProgramRevisionsResponse {
   repeated FulfillmentProgramRevisionView revisions = 1 [(buf.validate.field).repeated.max_items = 200];
   CommercePageInfo page = 2 [(buf.validate.field).required = true];
@@ -400,6 +500,10 @@ message GetOfferRevisionRequest {
   CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
   CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
 }
+message GetOfferPriceRevisionRequest {
+  CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
+  CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
+}
 message GetFulfillmentProgramRevisionRequest {
   CommerceGlobalQueryContext context = 1 [(buf.validate.field).required = true];
   CommerceRevisionTarget target = 2 [(buf.validate.field).required = true];
@@ -413,6 +517,9 @@ message GetPlanRevisionResponse {
 }
 message GetOfferRevisionResponse {
   OfferRevisionView revision = 1 [(buf.validate.field).required = true];
+}
+message GetOfferPriceRevisionResponse {
+  OfferPriceRevisionView revision = 1 [(buf.validate.field).required = true];
 }
 message GetFulfillmentProgramRevisionResponse {
   FulfillmentProgramRevisionView revision = 1 [(buf.validate.field).required = true];
@@ -430,8 +537,9 @@ message GlobalCommerceCommandRecovery {
     option (buf.validate.oneof).required = true;
     PlanRevisionView plan_revision = 1;
     OfferRevisionView offer_revision = 2;
-    FulfillmentProgramRevisionView fulfillment_program_revision = 3;
-    RedemptionProgramRevisionView redemption_program_revision = 4;
+    OfferPriceRevisionView offer_price_revision = 3;
+    FulfillmentProgramRevisionView fulfillment_program_revision = 4;
+    RedemptionProgramRevisionView redemption_program_revision = 5;
   }
 }
 message GetGlobalCommerceCommandReceiptResponse {

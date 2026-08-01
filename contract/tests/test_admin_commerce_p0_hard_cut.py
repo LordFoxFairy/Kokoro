@@ -52,6 +52,7 @@ def test_only_inert_catalog_publication_is_synchronous() -> None:
     for view in (
         "PlanRevisionView",
         "OfferRevisionView",
+        "OfferPriceRevisionView",
         "FulfillmentProgramRevisionView",
         "RedemptionProgramRevisionView",
     ):
@@ -73,6 +74,23 @@ def test_only_inert_catalog_publication_is_synchronous() -> None:
     ):
         assert f"rpc {method}(" in service
     assert "Execute" not in service
+
+
+def test_offer_price_is_an_immutable_money_and_cadence_authority() -> None:
+    source = _commerce_source()
+    money = _body(source, "message", "CommerceMoney")
+    assert 'pattern: "^[A-Z]{3}$"' in money
+    assert "int64 amount_minor" in money
+    assert ".int64.gte = 0" in money
+    cadence = _body(source, "message", "CommerceBillingCadence")
+    assert "one-time prices have no interval" in cadence
+    assert "this.kind == 2" in cadence
+    price = _body(source, "message", "OfferPriceRevisionView")
+    for field in ("offer_revision", "money", "tax_mode", "billing_cadence"):
+        assert field in price
+    publish = _body(source, "message", "PublishOfferPriceRevisionEffect")
+    assert "this.target.target_revision == this.expected_version + 1u" in publish
+    assert "CommerceRevisionTarget offer_revision" in publish
 
 
 def test_fulfillment_output_owner_is_typed_and_total_cardinality_is_bounded() -> None:
