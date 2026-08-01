@@ -299,7 +299,9 @@ own valid contract set and then freezes every predecessor v1 registry row and sc
 recorded above. Protobuf CI uses `scripts/contract/check-prelaunch-protobuf-breaking.mjs`, which applies the recorded exclusions
 only against the exact unpublished predecessor and performs full Buf breaking once that cut is the baseline. Validate the strict AG-UI family
 with `pnpm --dir contract agui:check`, `pnpm --dir contract agui:typecheck`, and
-`pnpm --dir contract agui:test`. After installing the exact Agent lock, CI additionally runs
-`scripts/contract/check_agent_agui_python_parity.py`; it rebuilds all six Root envelopes through the official Python
-events and Agent builder while proving the Python and TypeScript pins share one upstream commit. This compatibility-time
-import is not runtime filesystem coupling and does not activate the dormant adapter.
+`pnpm --dir contract agui:test`. The local promotion gate
+`scripts/contract/check_agent_agui_python_parity.py` currently rebuilds the checked-in seed envelopes through the official
+Python events and Agent builder while proving the Python and TypeScript pins share one upstream commit. It remains outside
+CI until every allowed event/activity arm and the reviewed Agent gitlink, manifest, compatibility evidence, and BOM are
+promoted atomically. This compatibility-time import is not runtime filesystem coupling and does not activate the dormant
+adapter.

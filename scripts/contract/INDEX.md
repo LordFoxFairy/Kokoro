@@ -109,12 +109,13 @@ Session-shaped string content with a branded type plus an explicit authority rel
 `parentRunId`; projection derives that browser field only from Session's run-binding authority.
 It records no Agent runtime activation.
 
-`check_agent_agui_python_parity.py` is the opposite-direction executable parity gate, run only after CI installs the
-exact pinned Agent lock. It verifies Root, Agent pyproject/lock, installed `ag-ui-protocol`, and TypeScript/Python profile
-pins resolve to the same upstream commit; then it reconstructs all six Root canonical candidate envelopes from official
-Python event classes and Agent's public builder and requires byte-material-equivalent JSON objects. Its test module freezes
-pin, digest, duplicate and source-coverage failures. This is build-time cross-repository evidence only: Agent never reads
-Root files at runtime and the dormant adapter is still not wired into execution or browser transport.
+`check_agent_agui_python_parity.py` is the opposite-direction executable promotion gate. It verifies Root, Agent
+pyproject/lock, installed `ag-ui-protocol`, and TypeScript/Python profile pins resolve to the same upstream commit; then it
+reconstructs the checked-in seed candidate envelopes from official Python event classes and Agent's public builder and
+requires byte-material-equivalent JSON objects. Full registry-derived coverage of every allowed event and activity arm is
+required before this gate is activated in CI together with the reviewed Agent gitlink/manifest/BOM promotion. Its test
+module freezes pin, digest, duplicate and source-coverage failures. This is build-time cross-repository evidence only:
+Agent never reads Root files at runtime and the dormant adapter is still not wired into execution or browser transport.
 
 `generate-agui-presentation-corpus.mjs` deterministically derives the public conformance cursors and persisted
 projection rows. Its default mode rewrites the checked-in corpus; `--check` is non-mutating and compares exact bytes.
