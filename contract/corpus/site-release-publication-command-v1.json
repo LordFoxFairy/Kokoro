@@ -1,14 +1,15 @@
 {
   "schema": "kokoro.site-release-publication-command.corpus.v1",
-  "boundary": "platform-site-provisioning@v1",
-  "service": "kokoro.platform.site.v1.SiteProvisioningService",
+  "boundary": "platform-site-publication@v1",
+  "service": "kokoro.platform.site.v1.SitePublicationService",
   "operation": "PublishSiteRelease",
   "acceptedEffectFields": [
-    "site_release_candidate_ref",
-    "expected_candidate_version",
+    "candidate",
     "reason"
   ],
   "forbiddenLegacyEffectFields": [
+    "site_release_candidate_ref",
+    "expected_candidate_version",
     "release_ref",
     "web_artifact_digest",
     "release_manifest_digest",
@@ -26,8 +27,12 @@
     "certification"
   ],
   "positiveEffect": {
-    "site_release_candidate_ref": "site-release-candidate.alpha.7",
-    "expected_candidate_version": "7",
+    "candidate": {
+      "candidate_ref": "site-release-candidate.alpha.7",
+      "candidate_version": "7",
+      "candidate_authorization_epoch": "3",
+      "candidate_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
     "reason": "publish certified candidate"
   },
   "reservedFieldNumbers": "1-15",

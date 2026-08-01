@@ -72,7 +72,9 @@ test("generated command digest helpers tolerate boundary-selective shared primit
 
 test("site release publication digest binds only the latest candidate publication command", () => {
   const source = commandEnvelopeDigestSource("site-publication");
-  assert.match(source, /effect\.siteReleaseCandidateRef/u);
+  assert.match(source, /effect\.candidate\.candidateRef/u);
+  assert.match(source, /site_release_candidate_binding_required/u);
+  assert.doesNotMatch(source, /effect\.siteReleaseCandidateRef/u);
   for (const legacy of ["effect.releaseRef", "effect.launchProfileRef", "effect.modelOptionCatalogRef", "effect.agentCatalogRef"]) {
     assert.doesNotMatch(source, new RegExp(legacy.replace(".", "\\."), "u"));
   }

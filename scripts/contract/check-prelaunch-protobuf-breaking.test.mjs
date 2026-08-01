@@ -63,3 +63,16 @@ test("the one-time exception rejects registry edits and candidate source drift",
     );
   });
 });
+
+test("a post-R0a additive change runs full Buf breaking without freezing candidate bytes", async () => {
+  await withCurrentContract(async (root) => {
+    const publicationPath = resolve(root, "contract/proto/kokoro/platform/site/v1/site_publication.proto");
+    await writeFile(publicationPath, `${await readFile(publicationPath, "utf8")}\nmessage PostR0aAdditiveMarker {}\n`);
+    execFileSync("git", ["add", "contract"], { cwd: root });
+    execFileSync("git", ["commit", "-qm", "additive post-r0a contract"], { cwd: root });
+    assert.deepEqual(
+      breakingArguments({ root, against: "../.git#branch=HEAD^,subdir=contract" }),
+      ["breaking", "--against", "../.git#branch=HEAD^,subdir=contract"],
+    );
+  });
+});

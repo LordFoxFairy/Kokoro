@@ -82,13 +82,15 @@ export function breakingArguments({ root, against }) {
   const revision = baselineRevision(against);
   let predecessorCount = 0;
   let currentCount = 0;
+  const candidateSources = [];
   for (const cut of registry.cuts) {
     const repositoryPath = `contract/${cut.sourcePath}`;
     const candidateBytes = readFileSync(resolve(root, repositoryPath));
     const headBytes = gitSource(root, "HEAD", repositoryPath);
-    if (sourceDigest(candidateBytes) !== cut.candidateSourceDigest || headBytes === null || sourceDigest(headBytes) !== cut.candidateSourceDigest) {
+    if (headBytes === null || sourceDigest(candidateBytes) !== sourceDigest(headBytes)) {
       fail("prelaunch_protobuf_hard_cut_candidate_invalid", cut.id);
     }
+    candidateSources.push({ cut, candidateDigest: sourceDigest(candidateBytes) });
     const baselineBytes = gitSource(root, revision, repositoryPath);
     const actualBaselineDigest = baselineBytes === null ? "absent" : sourceDigest(baselineBytes);
     if (actualBaselineDigest === cut.baselineSourceDigest) predecessorCount += 1;
@@ -98,7 +100,10 @@ export function breakingArguments({ root, against }) {
   if (predecessorCount !== 0 && currentCount !== 0) fail("prelaunch_protobuf_hard_cut_baseline_invalid", "mixed baseline");
   const args = ["breaking", "--against", against];
   if (predecessorCount === registry.cuts.length) {
-    for (const cut of registry.cuts) args.push("--exclude-path", cut.sourcePath);
+    for (const { cut, candidateDigest } of candidateSources) {
+      if (candidateDigest !== cut.candidateSourceDigest) fail("prelaunch_protobuf_hard_cut_candidate_invalid", cut.id);
+      args.push("--exclude-path", cut.sourcePath);
+    }
   }
   return args;
 }

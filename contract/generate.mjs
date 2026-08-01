@@ -791,6 +791,21 @@ function assertUint64Match(label: string, declared: bigint, verified: bigint): b
   return canonicalDeclared;
 }
 
+function requiredUint64AllowZero(label: string, value: unknown): bigint {
+  if (typeof value !== "bigint" || value < 0n || value > 18446744073709551615n) {
+    throw new Error("command_envelope_uint64_invalid:" + label);
+  }
+  return value;
+}
+
+function assertUint64AllowZeroMatch(label: string, declared: bigint, verified: bigint): bigint {
+  const canonicalDeclared = requiredUint64AllowZero(label, declared);
+  if (canonicalDeclared !== requiredUint64AllowZero("verified." + label, verified)) {
+    throw new Error("command_envelope_axis_mismatch:" + label);
+  }
+  return canonicalDeclared;
+}
+
 function requiredAssurance(label: string, value: OperatorAssuranceLevel): OperatorAssuranceLevel {
   if (
     value !== OperatorAssuranceLevel.PASSWORD &&
@@ -839,6 +854,11 @@ function assertInstantMatch(
     canonicalDeclared?.nanos !== canonicalVerified?.nanos
   ) throw new Error("command_envelope_axis_mismatch:" + label);
   return canonicalDeclared;
+}
+
+function compareInstants(left: CanonicalInstant, right: CanonicalInstant): number {
+  if (left.seconds !== right.seconds) return left.seconds < right.seconds ? -1 : 1;
+  return left.nanos < right.nanos ? -1 : left.nanos > right.nanos ? 1 : 0;
 }
 
 function compare(left: string, right: string): number {
@@ -1651,9 +1671,10 @@ export function publishReleaseCertificationRequestDigest(context: AuthenticatedO
 }
 
 export function publishSiteReleaseRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishSiteReleaseEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined) throw new Error("site_release_candidate_binding_required");
   return sitePublicationDigest("PublishSiteRelease", context, siteId,
     { typeName: PublishSiteReleaseEffectSchema.typeName, bytes: toBinary(PublishSiteReleaseEffectSchema, effect, { writeUnknownFields: false }) },
-    [effect.siteReleaseCandidateRef], verified);
+    [effect.candidate.candidateRef], verified);
 }
 `;
 }
@@ -1663,6 +1684,7 @@ function siteEvidenceAdmissionDigestSource() {
 import {
   RecordReleaseEvidenceEffectSchema,
   ReleaseEvidenceProducerRole,
+  WorkloadAuthorizationState,
   type AttestedReleaseEvidenceContext,
   type RecordReleaseEvidenceEffect,
 } from "./kokoro/platform/site/v1/site_publication_pb.js";
@@ -1681,6 +1703,15 @@ export type VerifiedReleaseEvidenceWorkloadAxes = Readonly<{
   workloadAttestationRef: string;
   workloadAttestationRevision: bigint;
   workloadAttestationDigest: string;
+  workloadAuthorizationEpoch: bigint;
+  workloadRevocationEpoch: bigint;
+  workloadAuthorizationState: WorkloadAuthorizationState.ACTIVE;
+  workloadAuthorizationLiveReadRef: string;
+  workloadAuthorizationLiveReadRevision: bigint;
+  workloadAuthorizationLiveReadDigest: string;
+  workloadAuthorizationObservedAt: CanonicalInstant;
+  workloadAuthorizationValidUntil: CanonicalInstant;
+  authoritativeNow: CanonicalInstant;
 }>;
 
 export function recordReleaseEvidenceRequestDigest(
@@ -1689,7 +1720,7 @@ export function recordReleaseEvidenceRequestDigest(
   effect: RecordReleaseEvidenceEffect,
   verified: VerifiedReleaseEvidenceWorkloadAxes,
 ): string {
-  if (context.command === undefined || context.producerRegistration === undefined || context.workloadAttestation === undefined) throw new Error("release_evidence_workload_context_required");
+  if (context.command === undefined || context.producerRegistration === undefined || context.workloadAttestation === undefined || context.workloadAuthorizationLiveRead === undefined) throw new Error("release_evidence_workload_context_required");
   if (effect.candidate === undefined || effect.compiledWebManifest === undefined || effect.webArtifactProvenance === undefined || effect.artifactInspectionEvidence === undefined || effect.journeyEvidence === undefined || effect.securityEvidence === undefined) throw new Error("release_evidence_owner_bindings_required");
   const audience = assertAxisMatch("audience", context.audience, verified.audience);
   if (audience !== "kokoro.site-release-evidence-admission.v1") throw new Error("release_evidence_audience_invalid");
@@ -1702,6 +1733,27 @@ export function recordReleaseEvidenceRequestDigest(
   assertAxisMatch("workloadAttestationRef", workloadAttestation.ref, verified.workloadAttestationRef);
   assertUint64Match("workloadAttestationRevision", workloadAttestation.revision, verified.workloadAttestationRevision);
   assertSha256Match("workloadAttestationDigest", workloadAttestation.digest, verified.workloadAttestationDigest);
+  const workloadAuthorizationEpoch = assertUint64Match("workloadAuthorizationEpoch", context.workloadAuthorizationEpoch, verified.workloadAuthorizationEpoch);
+  const workloadRevocationEpoch = assertUint64AllowZeroMatch("workloadRevocationEpoch", context.workloadRevocationEpoch, verified.workloadRevocationEpoch);
+  if (
+    context.workloadAuthorizationState !== WorkloadAuthorizationState.ACTIVE ||
+    context.workloadAuthorizationState !== verified.workloadAuthorizationState ||
+    workloadRevocationEpoch !== 0n
+  ) throw new Error("release_evidence_workload_authorization_inactive");
+  const workloadAuthorizationLiveRead = context.workloadAuthorizationLiveRead;
+  assertAxisMatch("workloadAuthorizationLiveReadRef", workloadAuthorizationLiveRead.ref, verified.workloadAuthorizationLiveReadRef);
+  assertUint64Match("workloadAuthorizationLiveReadRevision", workloadAuthorizationLiveRead.revision, verified.workloadAuthorizationLiveReadRevision);
+  assertSha256Match("workloadAuthorizationLiveReadDigest", workloadAuthorizationLiveRead.digest, verified.workloadAuthorizationLiveReadDigest);
+  const workloadAuthorizationObservedAt = assertInstantMatch("workloadAuthorizationObservedAt", context.workloadAuthorizationObservedAt, verified.workloadAuthorizationObservedAt, true);
+  const workloadAuthorizationValidUntil = assertInstantMatch("workloadAuthorizationValidUntil", context.workloadAuthorizationValidUntil, verified.workloadAuthorizationValidUntil, true);
+  const authoritativeNow = optionalInstant("verified.authoritativeNow", verified.authoritativeNow);
+  if (
+    workloadAuthorizationObservedAt === undefined ||
+    workloadAuthorizationValidUntil === undefined ||
+    authoritativeNow === undefined ||
+    compareInstants(authoritativeNow, workloadAuthorizationObservedAt) < 0 ||
+    compareInstants(authoritativeNow, workloadAuthorizationValidUntil) >= 0
+  ) throw new Error("release_evidence_workload_authorization_stale");
   return commandEnvelopeV2Digest({
     contractVersion: "platform-site-evidence-admission@v1",
     operation: "kokoro.platform.site.v1.SiteEvidenceAdmissionService/RecordReleaseEvidence",
@@ -1712,8 +1764,8 @@ export function recordReleaseEvidenceRequestDigest(
       region: assertAxisMatch("region", context.region, verified.region),
       siteRef: requiredAxis("siteId", verified.siteId),
       securityEpochs: [
-        { axis: "producer-registration", value: producerRegistration.revision },
-        { axis: "workload-attestation", value: workloadAttestation.revision },
+        { axis: "workload-authorization", value: workloadAuthorizationEpoch },
+        { axis: "workload-revocation", value: workloadRevocationEpoch },
       ],
     },
     targetRefs: [
@@ -1721,6 +1773,7 @@ export function recordReleaseEvidenceRequestDigest(
       assertAxisMatch("producerIdentityRef", context.producerIdentityRef, verified.producerIdentityRef),
       producerRegistration.ref,
       workloadAttestation.ref,
+      workloadAuthorizationLiveRead.ref,
       effect.candidate.candidateRef,
       effect.compiledWebManifest.ref,
       effect.webArtifactProvenance.ref,

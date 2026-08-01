@@ -83,8 +83,8 @@ artifact digest live outside the signed/canonical payload, preventing a digest c
 global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs: tool URIs include the measured role and repository ref,
 while package URIs retain the package URL identity and include the unique composition package ref.
 
-`PublishSiteReleaseEffect` is a latest-only Site Publication command: callers provide only
-`site_release_candidate_ref`, `expected_candidate_version`, and `reason`; the future Platform owner must generate the immutable
+`PublishSiteReleaseEffect` is a latest-only Site Publication command: callers provide only a complete Candidate
+ref/version/authorization-epoch/digest binding and `reason`; the future Platform owner must generate the immutable
 SiteRelease and all authority-bound facts. `platform-site-provisioning@v1` now contains only `RegisterSite`; it is not a
 publication owner. `platform-product-catalog-publication@v1`, `platform-site-publication@v1`, and
 `platform-site-lifecycle@v1` are separate `contract-only` boundaries. Product Catalog/Profile publication cannot accept Site

@@ -2312,6 +2312,11 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     pointer = _message_body(lifecycle, "ActivePointerCasPrecondition")
     for field in ("expected_generation", "cas_precondition_digest", "fence"):
         assert field in pointer
+    assert "has(this.first_activation) && this.expected_generation == 0u" in pointer
+    assert "has(this.existing) && this.expected_generation == this.existing.current_generation" in pointer
+    assert "this.existing.current_generation >= 1u" in pointer
+    existing = _message_body(lifecycle, "ExistingActivePointer")
+    assert "ImmutableContractRevisionBinding current_release" in existing
     evidence = _message_body(lifecycle, "ActivationEligibilityEvidenceRefs")
     for field in (
         "begin_authority_snapshot",
@@ -2326,14 +2331,20 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     assert "string activation_attempt_ref" in _message_body(
         lifecycle, "ApproveAndActivateEffect"
     )
+    response = _message_body(lifecycle, "ApproveAndActivateResponse")
+    assert "SITE_ACTIVATION_STATE_SUCCEEDED || this.replayed" in response
+    assert "has(this.committed_active_pointer_generation)" in response
+    assert "this.committed_active_pointer_generation > 0u" in response
+    assert "has(this.activation_evidence)" in response
 
 
 def test_site_release_publication_accepts_only_candidate_command_identity() -> None:
     provisioning = _proto("kokoro/platform/site/v1/site_publication.proto")
     effect = _message_body(provisioning, "PublishSiteReleaseEffect")
-    assert "string site_release_candidate_ref = 16" in effect
-    assert "uint64 expected_candidate_version = 17" in effect
+    assert "CandidateAuthorityBinding candidate = 16" in effect
     assert "string reason = 18" in effect
+    assert "reserved 17;" in effect
+    assert 'reserved "site_release_candidate_ref", "expected_candidate_version"' in effect
     for legacy in (
         "release_ref", "web_artifact_digest", "release_manifest_digest",
         "certification_digest", "launch_profile_ref", "model_option_catalog_ref",
@@ -2390,9 +2401,15 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
     for field in (
         "command", "workload_identity_ref", "audience", "environment", "region",
         "producer_identity_ref", "producer_registration", "producer_role", "workload_attestation",
+        "workload_authorization_epoch", "workload_revocation_epoch", "workload_authorization_state",
+        "workload_authorization_live_read", "workload_authorization_observed_at",
+        "workload_authorization_valid_until",
     ):
         assert field in workload_context
     assert "kokoro.site-release-evidence-admission.v1" in workload_context
+    assert "WORKLOAD_AUTHORIZATION_STATE_ACTIVE" in publication
+    assert "this.workload_revocation_epoch == 0" in workload_context
+    assert "this.workload_authorization_observed_at < this.workload_authorization_valid_until" in workload_context
     assert "operator_session" not in workload_context
     assert "assurance_level" not in workload_context
     assert "factor_classes" not in workload_context
@@ -2467,12 +2484,45 @@ def test_site_release_publication_compatibility_corpus_freezes_latest_only_shape
     assert path.exists()
     corpus = json.loads(path.read_text())
     assert corpus["schema"] == "kokoro.site-release-publication-command.corpus.v1"
-    assert corpus["acceptedEffectFields"] == [
-        "site_release_candidate_ref", "expected_candidate_version", "reason"
-    ]
-    assert set(corpus["forbiddenLegacyEffectFields"]) >= {
-        "enabled_surface_ids", "model_option_catalog_ref", "release_manifest_digest"
+    assert corpus["boundary"] == "platform-site-publication@v1"
+    assert corpus["service"] == "kokoro.platform.site.v1.SitePublicationService"
+    assert corpus["operation"] == "PublishSiteRelease"
+    assert corpus["acceptedEffectFields"] == ["candidate", "reason"]
+    assert corpus["positiveEffect"]["candidate"] == {
+        "candidate_ref": "site-release-candidate.alpha.7",
+        "candidate_version": "7",
+        "candidate_authorization_epoch": "3",
+        "candidate_digest": "a" * 64,
     }
+    assert set(corpus["forbiddenLegacyEffectFields"]) >= {
+        "site_release_candidate_ref", "expected_candidate_version", "enabled_surface_ids",
+        "model_option_catalog_ref", "release_manifest_digest",
+    }
+
+    registry = json.loads((CONTRACT / "registry/boundaries.yaml").read_text())
+    boundary = next(item for item in registry["boundaries"] if item["id"] == corpus["boundary"].removesuffix("@v1"))
+    assert boundary["sources"] == [{
+        "kind": "proto",
+        "path": "contract/proto/kokoro/platform/site/v1/site_publication.proto",
+        "select": {"service": "SitePublicationService"},
+    }]
+    assert corpus["operation"] in {item["id"] for item in boundary["operations"]}
+
+
+def test_site_publication_r0b_checklists_cover_every_contract_only_boundary() -> None:
+    handbook = (CONTRACT.parent / "docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md").read_text()
+    for boundary in (
+        "platform-product-catalog-publication@v1",
+        "platform-site-publication@v1",
+        "platform-site-evidence-admission@v1",
+        "platform-site-lifecycle@v1",
+    ):
+        assert f"#### `{boundary}`" in handbook
+    for item in (
+        "runtime/provider", "persistence", "authorization", "CAS", "live evidence",
+        "generated mirror", "compatibility promotion",
+    ):
+        assert item in handbook
 
 
 def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -> None:

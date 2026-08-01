@@ -59,14 +59,16 @@ message ExistingActivePointer {
     min_len: 3
     max_len: 256
   }];
-  string current_release_ref = 2 [(buf.validate.field).string = {
-    min_len: 3
-    max_len: 256
-  }];
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding current_release = 2 [(buf.validate.field).required = true];
   uint64 current_generation = 3 [(buf.validate.field).uint64 = {gte: 1}];
 }
 
 message ActivePointerCasPrecondition {
+  option (buf.validate.message).cel = {
+    id: "site_lifecycle.active_pointer_generation"
+    message: "first activation requires generation zero; an existing pointer requires its current positive generation"
+    expression: "(has(this.first_activation) && this.expected_generation == 0u) || (has(this.existing) && this.expected_generation == this.existing.current_generation && this.existing.current_generation >= 1u)"
+  };
   oneof current {
     option (buf.validate.oneof).required = true;
     FirstActivationPointer first_activation = 1;
@@ -154,6 +156,11 @@ enum SiteActivationState {
 }
 
 message ApproveAndActivateResponse {
+  option (buf.validate.message).cel = {
+    id: "site_lifecycle.committed_activation_evidence"
+    message: "a successful or replayed activation must return the committed generation and immutable eligibility evidence"
+    expression: "!(this.state == kokoro.platform.site.v1.SiteActivationState.SITE_ACTIVATION_STATE_SUCCEEDED || this.replayed) || (has(this.committed_active_pointer_generation) && this.committed_active_pointer_generation > 0u && has(this.activation_evidence))"
+  };
   string activation_attempt_ref = 1 [(buf.validate.field).string = {
     min_len: 3
     max_len: 128

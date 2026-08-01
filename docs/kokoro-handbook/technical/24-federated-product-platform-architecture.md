@@ -213,7 +213,7 @@ producer registration 与 artifact digest；CI/build/attestor workload 不能冒
 SiteRelease。operator 对 Material/Intent/Certification 的 command 只批准或引用已验证不可变事实，不提供 artifact bytes、
 credential、签名密钥或 producer identity。
 
-`PublishSiteReleaseEffect` 只接受 Candidate ref、expected version 与 reason，未来 Site owner 生成 SiteRelease ref/digest 及所有
+`PublishSiteReleaseEffect` 只接受完整 Candidate ref/version/authorization epoch/digest binding 与 reason，未来 Site owner 生成 SiteRelease ref/digest 及所有
 authority-bound facts。SiteRelease 不是可变的 current/candidate row；active pointer 是独立 generation aggregate。Lifecycle
 approval 冻结 typed Candidate ref/version/authorization epoch/digest、target SiteRelease ref/revision/digest、expected pointer
 generation、CAS command/fence/precondition digest，以及 begin/before-CAS/eligibility evidence refs。旧的
@@ -221,6 +221,48 @@ generation、CAS command/fence/precondition digest，以及 begin/before-CAS/eli
 
 这是 unpublished R0a 的一次性 hard cut，不新增 Root V2、不提供 compatibility adapter。schema/protobuf exception registry 固定
 exact predecessor/candidate digest；基线推进后门禁恢复完整 breaking compare，不能成为长期豁免。
+
+R0b 进入 runtime 前，四个 `contract-only` boundary 必须分别完成以下 promotion checklist；任何一项都不能由 Root 合同声明替代。
+
+#### `platform-product-catalog-publication@v1`
+
+- runtime/provider：登记并部署唯一的 `kokoro-platform` Product Catalog/Profile provider。
+- persistence：持久化 immutable Catalog/Profile revisions 与发布审计记录。
+- authorization：只允许 Product Catalog owner 的 operator/admin command authority。
+- CAS：此 boundary 不拥有 active-pointer CAS；测试必须证明无法调用 Site Lifecycle CAS。
+- live evidence：保留 Profile 发布所读取 Catalog head 的 owner evidence。
+- generated mirror：生成并验证 provider/consumer runtime mirrors。
+- compatibility promotion：完整兼容性证据通过后才可从 `contract-only` 提升。
+
+#### `platform-site-publication@v1`
+
+- runtime/provider：登记并部署唯一的 `kokoro-platform` Site publication provider。
+- persistence：持久化 Candidate、Inventory、Material、Intent、Certification 与 immutable SiteRelease revisions。
+- authorization：operator approval 与 machine evidence 权限分离，并逐命令 fail closed。
+- CAS：此 boundary 不切换 active pointer；验证其无法越权执行 Lifecycle CAS。
+- live evidence：发布时重读 Candidate authorization 与 Certification/revocation authority。
+- generated mirror：生成 Platform provider 与 Web release consumer mirrors。
+- compatibility promotion：运行 schema/protobuf/corpus compatibility promotion 后解除 `contract-only`。
+
+#### `platform-site-evidence-admission@v1`
+
+- runtime/provider：登记 admission provider 与独立 `web.release-attestor` workload producer。
+- persistence：持久化 immutable evidence revision、producer registration 与 admission receipt。
+- authorization：以 server-verified workload authorization/revocation epochs、固定 audience 和 producer role 授权。
+- CAS：不拥有发布或 pointer CAS；权限测试必须证明机器 caller 无法调用 operator/Lifecycle command。
+- live evidence：在 authoritative `now` 内重读 workload authorization、revocation、producer/key policy 与 artifact digest。
+- generated mirror：生成 attestor consumer 与 admission provider mirrors。
+- compatibility promotion：以真实 admitted producer 的端到端证据完成 promotion。
+
+#### `platform-site-lifecycle@v1`
+
+- runtime/provider：登记并部署唯一的 Site Lifecycle/active-pointer provider。
+- persistence：持久化 ActivationAttempt、双 authority snapshot、eligibility evidence 与 committed generation。
+- authorization：只接受完整 Candidate/Release/CAS/evidence binding 的 operator approval。
+- CAS：同一数据库事务按 authoritative `now` 重读 authority rows 并执行 generation compare-and-swap。
+- live evidence：begin 与 immediate-before-CAS 两次 owner-signed reads 均须新鲜且不可复用。
+- generated mirror：生成 Lifecycle provider/consumer mirrors 并验证 typed receipts。
+- compatibility promotion：以并发、撤销、过期、replay 与 rollback 证据完成 promotion。
 
 每个候选 Release 经过 compile、preview、contract/schema 校验、业务旅程验证和 certification 后才能激活。
 激活使用可恢复 `ActivationAttempt` 与独立 active-pointer generation/CAS；开始时和 CAS 紧前必须分别读取新的 authority snapshot，

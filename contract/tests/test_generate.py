@@ -587,9 +587,22 @@ def test_site_evidence_admission_digest_binds_attested_workload_not_operator_ses
         "producerRole",
         "workloadAttestationRevision",
         "workloadAttestationDigest",
+        "workloadAuthorizationEpoch",
+        "workloadRevocationEpoch",
+        "workloadAuthorizationState",
+        "workloadAuthorizationLiveReadRevision",
+        "workloadAuthorizationObservedAt",
+        "workloadAuthorizationValidUntil",
+        "authoritativeNow",
     ):
         assert axis in source
     assert "release_evidence_producer_role_invalid" in source
+    assert "release_evidence_workload_authorization_inactive" in source
+    assert "release_evidence_workload_authorization_stale" in source
+    assert '{ axis: "workload-authorization", value: workloadAuthorizationEpoch }' in source
+    assert '{ axis: "workload-revocation", value: workloadRevocationEpoch }' in source
+    assert '{ axis: "producer-registration", value: producerRegistration.revision }' not in source
+    assert '{ axis: "workload-attestation", value: workloadAttestation.revision }' not in source
     assert "AuthenticatedOperatorCommandContext" not in source
     assert "operatorSessionRef" not in source
 
