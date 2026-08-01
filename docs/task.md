@@ -119,6 +119,8 @@ admission/projector。公开 binding 已完成浏览器安全硬切：Agent 的 
 私有映射权威，snapshot、delta、persisted payload 与 SSE 全部禁止携带；三类走私攻击和私有父子映射冲突均 fail closed。
 Agent `sourceEventRef` 同样只留在 candidate/private provenance；Session 公开 `sourceEventId` 使用独立 opaque
 `presentation.event:` identity，二者相等、泄露、重复、跨 Session 与覆盖缺失均拒绝，Web 不负责派生。
+Root generator 的 domain-separated HMAC 仅用于 deterministic test fixture，不进入 runtime contract/frame；旧
+`sessionId:epoch:seq` 明文组合已禁止，runtime 仍只要求 Session owner-assigned opaque ref。
 `kokoro.run.replace.v1.value` 已硬切为 positive uint64 string `ownerVersion`，旧 integer `projectionVersion` 禁止。
 Root 合同通过不代表 provider 已激活。
 

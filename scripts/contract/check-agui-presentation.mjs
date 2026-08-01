@@ -46,7 +46,7 @@ const CONTRACT_PATHS = Object.freeze({
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
-  mapping: "59ff197cc52c0cbcacaec38aff0f5ae0dd12b241dc6df658f47c33b6e66d6888",
+  mapping: "a745192779c78fb4abaa2cd1bb8118d167b3e907bc5cf1153337dc4fca32d24f",
   eventSchema: "e9873b1fabdc180aeee782e61243285321ec20c0f37670ea7a79d95f9a62b8d9",
   agentCandidateSchema: "b203876638e975bd3899bef09b8afdf8f183a6f9cd7939d67ddf8f7d90ac3731",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
@@ -445,7 +445,10 @@ function validateMappingRegistry(mapping) {
   );
   exactKeys(
     mapping.projectionPolicy.publicSourceEventIdentity,
-    ["wire", "agentSourceEventRefEquality", "agentSourceEventRefExposure", "webDerivation"],
+    [
+      "wire", "runtimeAssignment", "runtimeDerivationContract", "conformanceFixtureGenerator",
+      "agentSourceEventRefEquality", "agentSourceEventRefExposure", "webDerivation",
+    ],
     "agui_projection_policy_invalid",
   );
   exactKeys(
@@ -465,6 +468,9 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy.sourceProjectionVersion.semantic !== "session-projection-revision" ||
     mapping.projectionPolicy.sourceProjectionVersion.javascriptNumber !== "forbidden" ||
     mapping.projectionPolicy.publicSourceEventIdentity.wire !== "presentation.event:-branded-session-owned-opaque-ref" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.runtimeAssignment !== "session-owner-assigned" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.runtimeDerivationContract !== "none" ||
+    mapping.projectionPolicy.publicSourceEventIdentity.conformanceFixtureGenerator !== "root-test-only-not-runtime" ||
     mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefEquality !== "forbidden" ||
     mapping.projectionPolicy.publicSourceEventIdentity.agentSourceEventRefExposure !== "private-provenance-only" ||
     mapping.projectionPolicy.publicSourceEventIdentity.webDerivation !== "forbidden" ||
@@ -522,13 +528,17 @@ function uint64(value, code) {
   return parsed;
 }
 
-function validatePublicSourceEventId(value) {
+function validatePublicSourceEventId(value, source = undefined) {
   if (
     typeof value !== "string" || value.length > 128 || !PUBLIC_SOURCE_EVENT_ID.test(value) ||
     value.includes("agent.event")
   ) {
     fail("agui_public_source_event_id_invalid", String(value));
   }
+  const cleartextAxes = source === undefined
+    ? /^presentation\.event:[A-Za-z0-9._-]+:[0-9]+:[0-9]+$/u.test(value)
+    : value.includes(`${source.sessionId}:${source.streamEpoch}:${source.durableSeq}`);
+  if (cleartextAxes) fail("agui_public_source_event_axes_exposed", value);
 }
 
 function decodeBase64Url(value) {
@@ -711,6 +721,8 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
   const presentationIds = new Map();
   for (const binding of bindings) {
     if (!validateSchema(binding)) fail("agui_run_binding_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
+    validatePublicSourceEventId(binding.openedBySourceEventId);
+    if (binding.terminalSourceEventId !== null) validatePublicSourceEventId(binding.terminalSourceEventId);
     if (binding.sessionId !== snapshot.sessionId || binding.profileRevision !== snapshot.profileRevision) fail("agui_run_binding_scope_conflict", binding.bindingRef);
     if (refs.has(binding.bindingRef) || presentationIds.has(binding.presentationRunId)) fail("agui_run_binding_duplicate");
     registerGlobalIdentity(identities.runBindingRefs, binding.bindingRef, "agui_global_run_binding_ref_duplicate");
@@ -791,6 +803,8 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, id
   const ids = new Set();
   for (const binding of bindings) {
     if (!validateSchema(binding)) fail("agui_message_binding_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
+    validatePublicSourceEventId(binding.openedBySourceEventId);
+    if (binding.endedBySourceEventId !== null) validatePublicSourceEventId(binding.endedBySourceEventId);
     if (binding.sessionId !== snapshot.sessionId || binding.profileRevision !== snapshot.profileRevision) fail("agui_message_binding_scope_conflict", binding.bindingRef);
     if (refs.has(binding.bindingRef) || ids.has(binding.presentationMessageId)) fail("agui_message_binding_duplicate");
     const run = runRefs.get(binding.presentationRunBindingRef);
@@ -1210,7 +1224,7 @@ function validateStreamState(frames, runRefs, messageRefs) {
 function validateConformanceCaseWithContracts(caseInput, contracts, identities) {
   const { mapping, validateEvent, validateProjectionPayload, validatePresentationRow, validateRunBinding, validateMessageBinding, validateStream, validateSnapshotAuthoritySchema } = contracts;
   if (!Array.isArray(caseInput.frames) || !Array.isArray(caseInput.durableRows) || caseInput.frames.length !== caseInput.durableRows.length || caseInput.frames.length === 0) fail("agui_durable_frame_cardinality_invalid");
-  for (const frame of caseInput.frames) validatePublicSourceEventId(frame?.data?.source?.sourceEventId);
+  for (const frame of caseInput.frames) validatePublicSourceEventId(frame?.data?.source?.sourceEventId, frame?.data?.source);
   if (caseInput.request?.lastEventId !== caseInput.snapshot.cursor || caseInput.request?.queryCursor !== caseInput.snapshot.cursor || caseInput.request?.cursorProfile !== CURSOR_PROFILE_REVISION) fail("agui_resume_cursor_invalid");
   if (
     caseInput.grantBinding?.sessionId !== caseInput.snapshot.sessionId ||
@@ -1266,7 +1280,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     if (browserInternalKey(frame.data)) fail("agui_browser_internal_route_forbidden", frame.data.source?.sourceEventId ?? "unknown");
     if (frame.event !== event.type) fail("agui_sse_event_type_mismatch", String(frame.event));
     const source = frame.data.source;
-    validatePublicSourceEventId(source.sourceEventId);
+    validatePublicSourceEventId(source.sourceEventId, source);
     if (uint64(source.durableSeq, "agui_cursor_gap") !== expectedSeq) fail("agui_cursor_gap", source.durableSeq);
     expectedSeq += 1n;
     uint64(source.streamEpoch, "agui_stream_epoch_invalid");

@@ -68,6 +68,9 @@
     },
     "publicSourceEventIdentity": {
       "wire": "presentation.event:-branded-session-owned-opaque-ref",
+      "runtimeAssignment": "session-owner-assigned",
+      "runtimeDerivationContract": "none",
+      "conformanceFixtureGenerator": "root-test-only-not-runtime",
       "agentSourceEventRefEquality": "forbidden",
       "agentSourceEventRefExposure": "private-provenance-only",
       "webDerivation": "forbidden"

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { createCipheriv, createHash } from "node:crypto";
+import { createCipheriv, createHash, createHmac } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -9,6 +9,9 @@ const profileRevision = "kokoro-agui-presentation.v1";
 const cursorProfileRevision = "opaque-session-cursor-v1";
 const keyRevision = "agui-conformance-2026-08";
 const key = createHash("sha256").update("kokoro-agui-presentation-public-conformance-key-v1", "utf8").digest();
+const publicSourceFixtureHmacKey = createHash("sha256")
+  .update("kokoro-agui-public-source-fixture-test-only-v1", "utf8")
+  .digest();
 const aad = Buffer.from(`kokoro.session.browser.cursor.v1\u0000${keyRevision}`, "utf8");
 const uint64Maximum = "18446744073709551615";
 const contracts = Object.freeze({
@@ -120,7 +123,16 @@ function agentSourceFixture(contractCase, frame, sourceOrdinal, internalThreadRe
 }
 
 function publicSourceEventIdFor(contractCase, frame) {
-  return `presentation.event:${contractCase.snapshot.sessionId}:${frame.data.source.streamEpoch}:${frame.data.source.durableSeq}`;
+  const fixtureMaterial = [
+    "kokoro.agui.public-source-event-fixture.v1",
+    contractCase.snapshot.sessionId,
+    frame.data.source.streamEpoch,
+    frame.data.source.durableSeq,
+  ].join("\u0000");
+  const opaqueFixture = createHmac("sha256", publicSourceFixtureHmacKey)
+    .update(fixtureMaterial, "utf8")
+    .digest("hex");
+  return `presentation.event:${opaqueFixture}`;
 }
 
 function replaceSourceEvidence(bindings, sourceIds, fields) {
@@ -742,6 +754,16 @@ corpus.negativeCases = [
       value: parentCase.sessionPrivateRouteFixtures.provenance[0].agentSourceEventRef,
     },
     expectedCode: "agui_private_provenance_identity_equal",
+  },
+  {
+    id: "public-source-cleartext-axes",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "frames.0.data.source.sourceEventId",
+      value: `presentation.event:${authorityBase.frames[0].data.source.sessionId}:${authorityBase.frames[0].data.source.streamEpoch}:${authorityBase.frames[0].data.source.durableSeq}`,
+    },
+    expectedCode: "agui_public_source_event_axes_exposed",
   },
   {
     id: "custom-run-owner-old-projection-version",

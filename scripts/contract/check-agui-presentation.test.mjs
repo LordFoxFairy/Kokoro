@@ -133,7 +133,12 @@ function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
   for (const route of base.sessionPrivateRouteFixtures.messages) {
     replacements.set(route.internalMessageRef, `${route.internalMessageRef}.${suffix}`);
   }
-  for (const frame of base.frames) replacements.set(frame.data.source.sourceEventId, `${frame.data.source.sourceEventId}.${suffix}`);
+  for (const frame of base.frames) {
+    const distinctSourceId = createHash("sha256")
+      .update(`${frame.data.source.sourceEventId}\u0000${suffix}`, "utf8")
+      .digest("hex");
+    replacements.set(frame.data.source.sourceEventId, `presentation.event:${distinctSourceId}`);
+  }
   for (const row of base.durableRows) replacements.set(row.rowRef, `${row.rowRef}.${suffix}`);
 
   const candidate = transformStrings(clone(base), replacements);
@@ -182,7 +187,7 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 24,
+    negativeCases: 25,
     durableFrames: 41,
     bindingReplacementDeltas: 14,
     mappingsCovered: 22,
@@ -259,6 +264,14 @@ test("keeps Agent source provenance private and assigns independent Session pres
   for (const contractCase of corpus.positiveCases) {
     const publicIds = contractCase.frames.map(({ data }) => data.source.sourceEventId);
     assert.ok(publicIds.every((sourceEventId) => /^presentation\.event:/u.test(sourceEventId)), contractCase.id);
+    for (const frame of contractCase.frames) {
+      const { source } = frame.data;
+      assert.equal(
+        source.sourceEventId.includes(`${source.sessionId}:${source.streamEpoch}:${source.durableSeq}`),
+        false,
+        source.sourceEventId,
+      );
+    }
     const provenance = contractCase.sessionPrivateRouteFixtures.provenance;
     const agentFixtures = agentFixturesByCase.get(contractCase.id) ?? [];
     assert.equal(provenance.length, agentFixtures.length, contractCase.id);
@@ -285,6 +298,12 @@ test("rejects leaked, equal, duplicate and cross-Session private source provenan
   const leaked = clone(base);
   leaked.frames[0].data.source.sourceEventId = "presentation.event:agent.event.run.leaked";
   assert.throws(() => validateConformanceCase(leaked), /agui_public_source_event_id_invalid/u);
+
+  const cleartextAxes = clone(base);
+  const cleartextSource = cleartextAxes.frames[0].data.source;
+  cleartextSource.sourceEventId =
+    `presentation.event:${cleartextSource.sessionId}:${cleartextSource.streamEpoch}:${cleartextSource.durableSeq}`;
+  assert.throws(() => validateConformanceCase(cleartextAxes), /agui_public_source_event_axes_exposed/u);
 
   const equal = clone(base);
   equal.sessionPrivateRouteFixtures.provenance[0].publicSourceEventId =
@@ -368,6 +387,7 @@ test("freezes public source leakage and Run owner version attacks", async () => 
     [
       ["public-source-agent-prefix-leak", "agui_public_source_event_id_invalid"],
       ["public-source-private-ref-equality", "agui_private_provenance_identity_equal"],
+      ["public-source-cleartext-axes", "agui_public_source_event_axes_exposed"],
       ["custom-run-owner-old-projection-version", "agui_custom_run_owner_version_invalid"],
       ["custom-run-owner-version-overflow", "agui_custom_run_owner_version_invalid"],
     ],
@@ -397,6 +417,9 @@ test("freezes binding authority delta policy per source mapping and rebuilds fro
   });
   assert.deepEqual(registry.projectionPolicy.publicSourceEventIdentity, {
     wire: "presentation.event:-branded-session-owned-opaque-ref",
+    runtimeAssignment: "session-owner-assigned",
+    runtimeDerivationContract: "none",
+    conformanceFixtureGenerator: "root-test-only-not-runtime",
     agentSourceEventRefEquality: "forbidden",
     agentSourceEventRefExposure: "private-provenance-only",
     webDerivation: "forbidden",
@@ -1116,7 +1139,11 @@ test("full repository gate rejects every cross-case durable and binding semantic
     await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
     await assert.rejects(
       validateRepository({ root }),
-      (error) => error instanceof AguiPresentationContractError && error.code === attack.code,
+      (error) => {
+        assert.ok(error instanceof AguiPresentationContractError);
+        assert.equal(error.code, attack.code, `${attack.code}:${error.code}`);
+        return true;
+      },
       attack.code,
     );
   }

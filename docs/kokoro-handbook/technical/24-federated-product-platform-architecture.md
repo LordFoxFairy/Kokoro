@@ -426,7 +426,10 @@ Site/user/Session cursor/SSE 轴，Agent 也不能直接发送浏览器 wire。`
 `sourceOrdinal` 是每个 internal run 从零开始、按 owner log 严格递增的独立 uint64 序列，与 Session `durableSeq` 没有
 相等关系；Session 只把 Agent `sourceEventRef` 保存于私有 provenance，并为浏览器分配独立、opaque、
 `presentation.event:` 品牌化的公开 `sourceEventId`。二者相等、公开泄露、重复映射、覆盖缺失与跨 Session 映射均
-fail closed；Web 只把公开 ID 当 opaque 数据消费，不能获得或实现 identity 派生算法。合同 corpus 的
+fail closed；Web 只把公开 ID 当 opaque 数据消费，不能获得或实现 identity 派生算法。合同 corpus 的稳定 ID 由
+Root generator 内部 domain-separated test-only HMAC 生成，但 key 与算法都不进入 public contract/frame，
+也不构成 Session runtime 算法；runtime 只要求 Session owner-assigned opaque ref。旧的
+`${sessionId}:${streamEpoch}:${durableSeq}` 明文拼接即便套上公开前缀也会 fail closed。合同 corpus 的
 `agentSourceFixtures` 按每个 run 的 owner-log 顺序排列并验证这一点。`internalThreadRef` 使用
 `agent.thread:<opaque-id>` 品牌化 owner ref，由 ordinal-zero `RUN_STARTED` 为该 run 建立权威，后续 candidate 必须完全一致；
 它不从 Session identity 派生。v1 candidate `RUN_STARTED` 禁止 `parentRunId`，浏览器
