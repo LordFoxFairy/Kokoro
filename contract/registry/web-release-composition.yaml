@@ -41,7 +41,7 @@
       "id": "launch-product-profile.v1",
       "schemaId": "https://contracts.kokoro.dev/launch-product-profile/v1",
       "schemaPath": "contract/spec/launch-product-profile.yaml",
-      "businessOwner": "platform.site",
+      "businessOwner": "platform.product-catalog",
       "publisherRepository": "kokoro-platform",
       "consumers": ["kokoro-platform", "kokoro-web"],
       "lifecycle": "contract-only",

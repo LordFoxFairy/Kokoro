@@ -5,25 +5,90 @@
   "lifecycle": "contract-only",
   "cuts": [
     {
-      "id": "site-release-candidate-owner-closures-r0a",
+      "id": "activation-authority-snapshot-revision-bindings-r0a",
+      "contractId": "activation-authority-snapshot.v1",
+      "baselineSchemaDigest": "sha256:ed725463418cd5645fc206567470cee8f259a992a387957cc6fd62c3dd9517e1",
+      "candidateSchemaDigest": "sha256:1e410bd8730aad4029aeb451f5c9b335c6718ce20430b0f7913b2980d28f8044",
+      "reason": "Pre-launch R0a hard cut: freeze typed activation, release, and candidate authority revision bindings."
+    },
+    {
+      "id": "activation-eligibility-evidence-revision-bindings-r0a",
+      "contractId": "activation-eligibility-evidence.v1",
+      "baselineSchemaDigest": "sha256:ea08ca1ec1e4d869dddafd4c20f17451aec8456a90d7c5e86dc16625e4d0af8e",
+      "candidateSchemaDigest": "sha256:2c2f1e2ed203b2e5e1dbdd2f2d0852cc0aa24b657bbeee100baafca813452213",
+      "reason": "Pre-launch R0a hard cut: freeze typed activation evidence and snapshot revision bindings."
+    },
+    {
+      "id": "compiled-web-manifest-revision-bindings-r0a",
+      "contractId": "compiled-web-manifest.v1",
+      "baselineSchemaDigest": "sha256:d6f82f513394b653546cb578a674ba11e4eb7d3b2bc20cc1c19f1b41ba0f8c8d",
+      "candidateSchemaDigest": "sha256:ab88542db53f7680b48c5da1fba4a8fceee8673c1918263a32423d64265ea29d",
+      "reason": "Pre-launch R0a hard cut: freeze the manifest to exact intent, candidate, catalog, inventory, registry, and toolchain revisions."
+    },
+    {
+      "id": "launch-product-profile-revision-bindings-r0a",
+      "contractId": "launch-product-profile.v1",
+      "baselineSchemaDigest": "sha256:edb6de928c0c84f3ed1c0722763619d56657945ba1b65c4852cd68a656d09d65",
+      "candidateSchemaDigest": "sha256:9150ebe17132733dc501e32c61e02e55249bb45f036aeafd03b13e7ff853e3f6",
+      "reason": "Pre-launch R0a hard cut: bind the Profile to an exact published Product Surface Catalog revision."
+    },
+    {
+      "id": "release-certification-instance-revision-bindings-r0a",
+      "contractId": "release-certification-instance.v1",
+      "baselineSchemaDigest": "sha256:fa929a93ddc4eaabdf472146405d49d9165a1d0ef243c55e74f50e952b7c11e3",
+      "candidateSchemaDigest": "sha256:8a946fe2c6185ccdc0c57644fb1db2dc226ccf7777f37b88d9384085d67a20b4",
+      "reason": "Pre-launch R0a hard cut: freeze certification to exact candidate authority and immutable evidence revisions."
+    },
+    {
+      "id": "release-certification-revocation-revision-bindings-r0a",
+      "contractId": "release-certification-revocation.v1",
+      "baselineSchemaDigest": "sha256:c2326fc3a404f8240740457d14daca68b87e2132b0c84a69bb6faccdcd1ae3b9",
+      "candidateSchemaDigest": "sha256:9e7c468c0a0d7dae768555476f31b20e9b0fac6055c29f4910463efd037add3d",
+      "reason": "Pre-launch R0a hard cut: freeze revocation to the exact certification revision and candidate authority."
+    },
+    {
+      "id": "site-release-candidate-revision-bindings-r0a",
       "contractId": "site-release-candidate.v1",
-      "baselineSchemaDigest": "sha256:9026d3c02774dc4d865df7bb20c5fef25b4144ab66c3824445802a33a6ae0bdc",
-      "candidateSchemaDigest": "sha256:4304e32e0a0e689e236568e2a10236f3657b024817983ef2705a2834264dba57",
-      "reason": "Pre-launch R0a hard cut: freeze explicit Memory, Auth/Identity, Commerce, and Hub owner revisions in the immutable candidate."
+      "baselineSchemaDigest": "sha256:4304e32e0a0e689e236568e2a10236f3657b024817983ef2705a2834264dba57",
+      "candidateSchemaDigest": "sha256:e404537f38036b6c76c99aa30a1cc4f29a2b99ee2125d727db1fbaf0a8e88361",
+      "reason": "Pre-launch R0a hard cut: freeze exact Profile, Catalog, Material, and business owner revisions in the candidate."
     },
     {
-      "id": "site-release-owner-closures-r0a",
+      "id": "site-release-revision-bindings-r0a",
       "contractId": "site-release.v1",
-      "baselineSchemaDigest": "sha256:0faa14ebf83e22e04a0d9539934ac18090db2acb2f6a8186b93c8ea9c3cc9de1",
-      "candidateSchemaDigest": "sha256:b8a1e6b8b9a62bd68e6f1f07740fcf3a32bcc5dc87a0b0e7b7b40f4bab112b61",
-      "reason": "Pre-launch R0a hard cut: copy the complete owner-revision closure into immutable SiteRelease publication material."
+      "baselineSchemaDigest": "sha256:b8a1e6b8b9a62bd68e6f1f07740fcf3a32bcc5dc87a0b0e7b7b40f4bab112b61",
+      "candidateSchemaDigest": "sha256:5e0974ff36f6d28b52180bbed86745d7c688b72a8e799a80ab82994536098c42",
+      "reason": "Pre-launch R0a hard cut: freeze the immutable SiteRelease to the complete typed authority and evidence revision chain."
     },
     {
-      "id": "web-build-intent-owner-closures-r0a",
+      "id": "surface-inventory-revision-bindings-r0a",
+      "contractId": "surface-inventory.v1",
+      "baselineSchemaDigest": "sha256:5587ac41aaba351687ec4cc26915c96b3d6d1e8afeba0e6af8dfc78538d195af",
+      "candidateSchemaDigest": "sha256:0aaa2b2c9b5a60f66d8cd52bea850469353e6c600e563a16998c98aa693ea64f",
+      "reason": "Pre-launch R0a hard cut: bind inventory compilation to exact candidate, Profile, and Catalog revisions."
+    },
+    {
+      "id": "web-artifact-provenance-revision-bindings-r0a",
+      "contractId": "web-artifact-provenance-profile.v1",
+      "baselineSchemaDigest": "sha256:8fce80611641615bc53c84c1319edf50c34d5ccb5e94d08b5bc25344010bb87f",
+      "candidateSchemaDigest": "sha256:3c674b90299b9debd87306cea989cb74ab3ee4920853c1b22d462234066a32f2",
+      "reason": "Pre-launch R0a hard cut: bind provenance parameters to exact intent, manifest, candidate, and toolchain revisions."
+    },
+    {
+      "id": "web-build-intent-revision-bindings-r0a",
       "contractId": "web-build-intent.v1",
-      "baselineSchemaDigest": "sha256:aa986b922c5f84fd039c0e6c64804b92a455a807c97694a09e3a3b2041a3188e",
-      "candidateSchemaDigest": "sha256:19cc2bb728ccc6f6e60344c7a92a94f24af981ea72daa0769e4abb316b5f7fea",
-      "reason": "Pre-launch R0a hard cut: bind WebBuildIntent to the same exact candidate owner-revision closure."
+      "baselineSchemaDigest": "sha256:19cc2bb728ccc6f6e60344c7a92a94f24af981ea72daa0769e4abb316b5f7fea",
+      "candidateSchemaDigest": "sha256:73dc457bebeb18bebe5e86ebab3641b0c1c9b1c6917a24b2eeffabacdc2fc1d6",
+      "reason": "Pre-launch R0a hard cut: bind WebBuildIntent to the exact candidate authority and immutable input revisions."
+    }
+  ],
+  "registryCuts": [
+    {
+      "id": "launch-product-profile-owner-r0a",
+      "contractId": "launch-product-profile.v1",
+      "baselineRegistryEntryDigest": "sha256:72e9a94ff1147b90093cefce0c7cfea3aebfe1b2f5f342e9994cc2a08b48424d",
+      "candidateRegistryEntryDigest": "sha256:8311f1c36af5bd7977fe1b3a59613f4cd6182206c8553021b2c2ab7556936374",
+      "reason": "Pre-launch R0a hard cut: Product Catalog owns immutable Launch Profile publication; Site publication only consumes it."
     }
   ]
 }

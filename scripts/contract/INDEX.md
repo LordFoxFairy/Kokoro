@@ -46,8 +46,10 @@ It explicitly keeps Product Catalog and
 Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas
 are immutable under `--breaking-against`; the predecessor may contain its own valid subset, while the candidate must
 contain the complete current set. The one unpublished R0a owner-closure hard cut is executable only through the exact
-predecessor/candidate digests in `contract/registry/prelaunch-schema-hard-cuts.yaml`; the registry rows themselves and any
-unlisted or follow-up drift still fail closed.
+predecessor/candidate digests in `contract/registry/prelaunch-schema-hard-cuts.yaml`: eleven schema rows and the single Launch
+Profile owner registry row are frozen independently. Every unlisted or follow-up schema or registry-row drift still fails closed.
+`contract/generate-web-release-composition-corpus.mjs` derives test-only Ed25519 keys from fixed domain-separated seeds, rebuilds
+the complete signed corpus and trusted-producer registry, and fails `--check` unless both checked-in files match byte for byte.
 
 `check-prelaunch-protobuf-breaking.mjs` wraps the pinned Buf breaking gate for the matching unpublished protobuf cut. It
 validates the exact contract-only exception registry, candidate source bytes and Git baseline bytes before excluding the three
@@ -135,6 +137,9 @@ the protocol.
 Public source identities are independently Session-owned, opaque `presentation.event:` refs. Agent `sourceEventRef` appears
 only in candidate envelopes and `sessionPrivateRouteFixtures.provenance`; the gate proves one-to-one mapping, distinct values,
 same-Session scope, global private-ref uniqueness, and complete bidirectional coverage. Web receives no derivation algorithm.
+For deterministic corpus bytes only, the Root generator uses a domain-separated test-only HMAC. That fixture key and
+algorithm are generator implementation details, never serialized, and do not define how Session assigns runtime IDs. The
+checker rejects the former cleartext `sessionId:streamEpoch:durableSeq` composition even behind the public brand.
 The Kokoro CUSTOM `kokoro.run.replace.v1` uses `value.ownerVersion` as a positive uint64 decimal string and rejects the old
 integer `projectionVersion`; checked-in maximum-uint64 and overflow vectors prevent JavaScript-number narrowing.
 Public Run/message replacements are presentation-only and reject `internalRunRef`, `internalMessageRef`, and
@@ -310,6 +315,7 @@ keeps Connect error details executable across the provider/consumer split instea
 Run `node --test scripts/contract/*.test.mjs` followed by `node scripts/contract/check-boundary-registry.mjs`,
 `node scripts/contract/check-boundary-coverage.mjs`, `node scripts/contract/check-web-release-composition.mjs`,
 and `node scripts/contract/check-wave1-surface.mjs`,
+then `node contract/generate-web-release-composition-corpus.mjs --check`,
 then `node contract/generate-projection-integrity-corpus.mjs --check` and
 `node contract/validate-projection-integrity.mjs --validate-corpus`,
 `pnpm --dir contract run openapi:lint`,

@@ -2,27 +2,212 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.dev/activation-eligibility-evidence/v1",
   "title": "Kokoro Persisted Activation Eligibility Evidence v1",
-  "type": "object", "additionalProperties": false,
-  "required": ["contract", "schemaRevision", "evidenceRef", "revision", "activationAttempt", "activationCommand", "casCommandRef", "casFence", "siteRelease", "beginAuthoritySnapshot", "immediateBeforePointerCasAuthoritySnapshot", "expectedActivePointerGeneration", "casPreconditionDigest", "freshnessLease", "decision", "evaluatedAt", "eligibilityMaterialDigest"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "schemaRevision",
+    "evidenceRef",
+    "revision",
+    "activationAttempt",
+    "activationCommand",
+    "casCommandRef",
+    "casFence",
+    "siteRelease",
+    "beginAuthoritySnapshot",
+    "immediateBeforePointerCasAuthoritySnapshot",
+    "expectedActivePointerGeneration",
+    "casPreconditionDigest",
+    "freshnessLease",
+    "decision",
+    "evaluatedAt",
+    "eligibilityMaterialDigest"
+  ],
   "properties": {
-    "contract": {"const": "kokoro.activation-eligibility-evidence.v1"}, "schemaRevision": {"const": "1"},
-    "evidenceRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"},
-    "activationAttempt": {"$ref": "#/$defs/digestRef"}, "activationCommand": {"$ref": "#/$defs/digestRef"},
-    "casCommandRef": {"$ref": "#/$defs/ref"}, "casFence": {"$ref": "#/$defs/casFence"},
-    "siteRelease": {"$ref": "#/$defs/digestRef"},
-    "beginAuthoritySnapshot": {"$ref": "#/$defs/digestRef"}, "immediateBeforePointerCasAuthoritySnapshot": {"$ref": "#/$defs/digestRef"},
-    "expectedActivePointerGeneration": {"$ref": "#/$defs/decimal"}, "casPreconditionDigest": {"$ref": "#/$defs/digest"},
-    "freshnessLease": {"$ref": "#/$defs/freshnessLease"},
-    "decision": {"const": "eligible"}, "evaluatedAt": {"$ref": "#/$defs/timestamp"},
-    "eligibilityMaterialDigest": {"$ref": "#/$defs/digest"}
+    "contract": {
+      "const": "kokoro.activation-eligibility-evidence.v1"
+    },
+    "schemaRevision": {
+      "const": "1"
+    },
+    "evidenceRef": {
+      "$ref": "#/$defs/ref"
+    },
+    "revision": {
+      "$ref": "#/$defs/decimal"
+    },
+    "activationAttempt": {
+      "$ref": "#/$defs/revisionBinding"
+    },
+    "activationCommand": {
+      "$ref": "#/$defs/revisionBinding"
+    },
+    "casCommandRef": {
+      "$ref": "#/$defs/ref"
+    },
+    "casFence": {
+      "$ref": "#/$defs/casFence"
+    },
+    "siteRelease": {
+      "$ref": "#/$defs/revisionBinding"
+    },
+    "beginAuthoritySnapshot": {
+      "$ref": "#/$defs/revisionBinding"
+    },
+    "immediateBeforePointerCasAuthoritySnapshot": {
+      "$ref": "#/$defs/revisionBinding"
+    },
+    "expectedActivePointerGeneration": {
+      "$ref": "#/$defs/decimal"
+    },
+    "casPreconditionDigest": {
+      "$ref": "#/$defs/digest"
+    },
+    "freshnessLease": {
+      "$ref": "#/$defs/freshnessLease"
+    },
+    "decision": {
+      "const": "eligible"
+    },
+    "evaluatedAt": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "eligibilityMaterialDigest": {
+      "$ref": "#/$defs/digest"
+    }
   },
   "$defs": {
-    "ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},
-    "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39},
-    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
-    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
-    "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
-    "casFence": {"type": "object", "additionalProperties": false, "required": ["fence", "nonceDigest", "tokenDigest"], "properties": {"fence": {"$ref": "#/$defs/decimal"}, "nonceDigest": {"$ref": "#/$defs/digest"}, "tokenDigest": {"$ref": "#/$defs/digest"}}},
-    "freshnessLease": {"type": "object", "additionalProperties": false, "required": ["leaseRef", "serverTimeReceiptRef", "issuedAt", "notAfter", "maxSnapshotAgeMilliseconds"], "properties": {"leaseRef": {"$ref": "#/$defs/ref"}, "serverTimeReceiptRef": {"$ref": "#/$defs/ref"}, "issuedAt": {"$ref": "#/$defs/timestamp"}, "notAfter": {"$ref": "#/$defs/timestamp"}, "maxSnapshotAgeMilliseconds": {"const": "120000"}}}
+    "ref": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 240,
+      "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"
+    },
+    "decimal": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)$",
+      "maxLength": 39
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"
+    },
+    "digestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "digest"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "casFence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fence",
+        "nonceDigest",
+        "tokenDigest"
+      ],
+      "properties": {
+        "fence": {
+          "$ref": "#/$defs/decimal"
+        },
+        "nonceDigest": {
+          "$ref": "#/$defs/digest"
+        },
+        "tokenDigest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "freshnessLease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leaseRef",
+        "serverTimeReceiptRef",
+        "issuedAt",
+        "notAfter",
+        "maxSnapshotAgeMilliseconds"
+      ],
+      "properties": {
+        "leaseRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "serverTimeReceiptRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "issuedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "notAfter": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "maxSnapshotAgeMilliseconds": {
+          "const": "120000"
+        }
+      }
+    },
+    "positiveDecimal": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$",
+      "maxLength": 39
+    },
+    "revisionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "revision",
+        "digest"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "revision": {
+          "$ref": "#/$defs/positiveDecimal"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "candidateAuthorityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "version",
+        "authorizationEpoch",
+        "digest"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "version": {
+          "$ref": "#/$defs/positiveDecimal"
+        },
+        "authorizationEpoch": {
+          "$ref": "#/$defs/positiveDecimal"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    }
   }
 }

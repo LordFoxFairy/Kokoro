@@ -29,6 +29,23 @@ function canonicalDigest(value) {
   return `sha256:${createHash("sha256").update(canonicalBytes(value)).digest("hex")}`;
 }
 
+function revisionBinding(document, refField) {
+  return { ref: document[refField], revision: document.revision, digest: canonicalDigest(document) };
+}
+
+function candidateAuthorityBinding(candidate) {
+  return {
+    ref: candidate.candidateRef,
+    version: candidate.revision,
+    authorizationEpoch: candidate.candidateAuthorizationEpoch,
+    digest: canonicalDigest(candidate),
+  };
+}
+
+function ensureRevisionBinding(reference, revision = "1") {
+  return { ref: reference.ref, revision, digest: reference.digest };
+}
+
 function dssePae(payloadType, payload) {
   const type = Buffer.from(payloadType, "utf8");
   return Buffer.concat([Buffer.from(`DSSEv1 ${type.length} `), type, Buffer.from(` ${payload.length} `), payload]);
@@ -125,7 +142,7 @@ function refreshReceipts(snapshot, suffix, anchors, privateKeys) {
     receipt.provider = structuredClone(provider);
     receipt.observedAt = snapshot.readAt;
     receipt.readReceiptRef = `read-receipt.${receipt.aggregateKind.replaceAll("-", ".")}.${suffix}.1`;
-    receipt.revision = receipt.aggregateKind === "candidate" ? snapshot.candidate.authorizationEpoch
+    receipt.revision = receipt.aggregateKind === "candidate" ? snapshot.candidate.siteReleaseCandidate.authorizationEpoch
       : receipt.aggregateKind === "certification" ? snapshot.certification.revocationEpoch
         : receipt.aggregateKind === "producer-registry" ? snapshot.trust.producerRegistryEpoch
           : receipt.aggregateKind === "trust-policy" ? snapshot.trust.trustPolicyEpoch
@@ -178,22 +195,28 @@ function refreshCoherentChain(corpus, anchors) {
   const beforeCasSnapshot = cases.get("activation-authority-before-cas");
   const activationEvidence = cases.get("activation-eligibility-alpha");
 
-  profile.productSurfaceCatalog.digest = canonicalDigest(catalog);
+  profile.productSurfaceCatalog = revisionBinding(catalog, "catalogRevisionRef");
   profile.journeyClosure.digest = canonicalDigest(profile.journeyClosure.journeys);
-  candidate.launchProductProfile.digest = canonicalDigest(profile);
-  candidate.productSurfaceCatalog.digest = canonicalDigest(catalog);
-  candidate.businessBindings.webBuildMaterialBundle.digest = canonicalDigest(material);
-  inventory.siteReleaseCandidate.digest = canonicalDigest(candidate);
-  inventory.launchProductProfile.digest = canonicalDigest(profile);
-  inventory.productSurfaceCatalog.digest = canonicalDigest(catalog);
-  intent.siteReleaseCandidate.digest = canonicalDigest(candidate);
-  intent.launchProductProfile.digest = canonicalDigest(profile);
-  intent.productSurfaceCatalog.digest = canonicalDigest(catalog);
-  intent.surfaceInventory.digest = canonicalDigest(inventory);
-  intent.webBuildMaterialBundle.digest = canonicalDigest(material);
-  intent.webBuildToolchain.digest = canonicalDigest(toolchain);
-  intent.webCompositionRegistry.digest = canonicalDigest(registry);
-  manifest.buildIntentDigest = canonicalDigest(intent);
+  candidate.launchProductProfile = revisionBinding(profile, "profileRevisionRef");
+  candidate.productSurfaceCatalog = revisionBinding(catalog, "catalogRevisionRef");
+  candidate.businessBindings.webBuildMaterialBundle = revisionBinding(material, "bundleRef");
+  inventory.siteReleaseCandidate = candidateAuthorityBinding(candidate);
+  inventory.launchProductProfile = revisionBinding(profile, "profileRevisionRef");
+  inventory.productSurfaceCatalog = revisionBinding(catalog, "catalogRevisionRef");
+  intent.revision ??= "1";
+  intent.siteReleaseCandidate = candidateAuthorityBinding(candidate);
+  intent.launchProductProfile = revisionBinding(profile, "profileRevisionRef");
+  intent.productSurfaceCatalog = revisionBinding(catalog, "catalogRevisionRef");
+  intent.surfaceInventory = revisionBinding(inventory, "inventoryRevisionRef");
+  intent.webBuildMaterialBundle = revisionBinding(material, "bundleRef");
+  intent.webBuildToolchain = revisionBinding(toolchain, "toolchainRevisionRef");
+  intent.webCompositionRegistry = revisionBinding(registry, "registryRevisionRef");
+  intent.businessBindings.webBuildMaterialBundle = structuredClone(intent.webBuildMaterialBundle);
+  delete intent.candidateAuthorizationEpoch;
+  manifest.revision ??= "1";
+  manifest.webBuildIntent = revisionBinding(intent, "intentRef");
+  delete manifest.intentRef;
+  delete manifest.buildIntentDigest;
   manifest.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
   manifest.catalog = structuredClone(intent.productSurfaceCatalog);
   manifest.surfaceInventory = structuredClone(intent.surfaceInventory);
@@ -201,9 +224,12 @@ function refreshCoherentChain(corpus, anchors) {
   manifest.toolchain = structuredClone(intent.webBuildToolchain);
 
   const parameters = provenance.predicate.buildDefinition.externalParameters;
-  parameters.buildIntentDigest = canonicalDigest(intent);
-  parameters.compiledWebManifestDigest = canonicalDigest(manifest);
-  parameters.toolchain.digest = canonicalDigest(toolchain);
+  provenance.revision ??= "1";
+  parameters.webBuildIntent = revisionBinding(intent, "intentRef");
+  parameters.compiledWebManifest = revisionBinding(manifest, "manifestRef");
+  parameters.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
+  parameters.toolchain = revisionBinding(toolchain, "toolchainRevisionRef");
+  for (const property of ["intentRef", "buildIntentDigest", "compiledWebManifestRef", "compiledWebManifestDigest", "releaseCandidateRef", "candidateAuthorizationEpoch"]) delete parameters[property];
   const materialDependency = provenance.predicate.buildDefinition.resolvedDependencies.find(
     ({ uri }) => uri === `kokoro:material-bundle/${intent.webBuildMaterialBundle.ref}`,
   );
@@ -213,24 +239,30 @@ function refreshCoherentChain(corpus, anchors) {
   certification.launchProductProfile = structuredClone(intent.launchProductProfile);
   certification.productSurfaceCatalog = structuredClone(intent.productSurfaceCatalog);
   certification.surfaceInventory = structuredClone(intent.surfaceInventory);
-  certification.webBuildIntent = { ref: intent.intentRef, digest: canonicalDigest(intent) };
-  certification.compiledWebManifest = { ref: manifest.manifestRef, digest: canonicalDigest(manifest) };
-  certification.webArtifactProvenance = { ref: provenance.provenanceRef, digest: canonicalDigest(provenance) };
+  certification.webBuildIntent = revisionBinding(intent, "intentRef");
+  certification.compiledWebManifest = revisionBinding(manifest, "manifestRef");
+  certification.webArtifactProvenance = revisionBinding(provenance, "provenanceRef");
+  certification.evidenceBundle = ensureRevisionBinding(certification.evidenceBundle);
+  delete certification.candidateAuthorizationEpoch;
   for (const field of ["siteReleaseCandidate", "launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webBuildIntent", "compiledWebManifest", "webArtifactProvenance"]) {
     revokedCertification[field] = structuredClone(certification[field]);
   }
-  revocation.releaseCertification = { ref: revokedCertification.certificationRef, digest: canonicalDigest(revokedCertification) };
+  revokedCertification.evidenceBundle = ensureRevisionBinding(revokedCertification.evidenceBundle);
+  delete revokedCertification.candidateAuthorizationEpoch;
+  revocation.releaseCertification = revisionBinding(revokedCertification, "certificationRef");
   revocation.siteReleaseCandidate = structuredClone(revokedCertification.siteReleaseCandidate);
+  delete revocation.candidateAuthorizationEpoch;
 
   siteRelease.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
   siteRelease.launchProductProfile = structuredClone(intent.launchProductProfile);
   siteRelease.productSurfaceCatalog = structuredClone(intent.productSurfaceCatalog);
   siteRelease.surfaceInventory = structuredClone(intent.surfaceInventory);
-  siteRelease.webBuildIntent = { ref: intent.intentRef, digest: canonicalDigest(intent) };
-  siteRelease.compiledWebManifest = { ref: manifest.manifestRef, digest: canonicalDigest(manifest) };
-  siteRelease.webArtifactProvenance = { ref: provenance.provenanceRef, digest: canonicalDigest(provenance) };
-  siteRelease.releaseCertification = { ref: certification.certificationRef, digest: canonicalDigest(certification) };
+  siteRelease.webBuildIntent = revisionBinding(intent, "intentRef");
+  siteRelease.compiledWebManifest = revisionBinding(manifest, "manifestRef");
+  siteRelease.webArtifactProvenance = revisionBinding(provenance, "provenanceRef");
+  siteRelease.releaseCertification = revisionBinding(certification, "certificationRef");
   siteRelease.businessBindings = structuredClone(candidate.businessBindings);
+  delete siteRelease.candidateAuthorizationEpoch;
   siteRelease.bootstrapBindings = {
     compiledWebManifest: structuredClone(siteRelease.compiledWebManifest),
     productSurfaceCatalog: structuredClone(siteRelease.productSurfaceCatalog),
@@ -240,11 +272,13 @@ function refreshCoherentChain(corpus, anchors) {
   };
 
   for (const snapshot of [beginSnapshot, beforeCasSnapshot]) {
-    snapshot.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
+    snapshot.activationAttempt = ensureRevisionBinding(snapshot.activationAttempt);
+    snapshot.activationCommand = ensureRevisionBinding(snapshot.activationCommand);
+    snapshot.siteRelease = revisionBinding(siteRelease, "siteReleaseRef");
     snapshot.siteRef ??= siteRelease.siteRef;
     snapshot.environment ??= siteRelease.environment;
     snapshot.candidate.siteReleaseCandidate = structuredClone(siteRelease.siteReleaseCandidate);
-    snapshot.candidate.authorizationEpoch = siteRelease.candidateAuthorizationEpoch;
+    delete snapshot.candidate.authorizationEpoch;
     snapshot.certification.releaseCertification = structuredClone(siteRelease.releaseCertification);
     snapshot.certification.revocationEpoch = siteRelease.certificationRevocationEpoch;
     snapshot.certification.validUntil = certification.validUntil;
@@ -252,12 +286,14 @@ function refreshCoherentChain(corpus, anchors) {
     refreshReceipts(snapshot, snapshot.phase === "activation-begin" ? "begin" : "before-cas", anchors, privateKeys);
   }
   refreshBlockedSnapshots(corpus, beforeCasSnapshot, anchors, privateKeys);
-  activationEvidence.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
+  activationEvidence.activationAttempt = ensureRevisionBinding(activationEvidence.activationAttempt);
+  activationEvidence.siteRelease = revisionBinding(siteRelease, "siteReleaseRef");
   activationEvidence.activationCommand ??= structuredClone(beforeCasSnapshot.activationCommand);
+  activationEvidence.activationCommand = ensureRevisionBinding(activationEvidence.activationCommand);
   activationEvidence.casCommandRef ??= beforeCasSnapshot.casCommandRef;
   activationEvidence.casFence ??= structuredClone(beforeCasSnapshot.casFence);
-  activationEvidence.beginAuthoritySnapshot = { ref: beginSnapshot.snapshotRef, digest: canonicalDigest(beginSnapshot) };
-  activationEvidence.immediateBeforePointerCasAuthoritySnapshot = { ref: beforeCasSnapshot.snapshotRef, digest: canonicalDigest(beforeCasSnapshot) };
+  activationEvidence.beginAuthoritySnapshot = revisionBinding(beginSnapshot, "snapshotRef");
+  activationEvidence.immediateBeforePointerCasAuthoritySnapshot = revisionBinding(beforeCasSnapshot, "snapshotRef");
   activationEvidence.expectedActivePointerGeneration = beforeCasSnapshot.expectedActivePointerGeneration;
   activationEvidence.casPreconditionDigest = beforeCasSnapshot.activePointer.casPreconditionDigest;
   const serverReceipt = beforeCasSnapshot.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "active-pointer");
@@ -331,7 +367,7 @@ test("checked-in registry, release authority schemas, and golden corpus close th
   assert.deepEqual(result, {
     contracts: 15,
     positiveCases: 17,
-    negativeCases: 66,
+    negativeCases: 71,
     canonicalVectors: 17,
     dsseVectors: 5,
   });
@@ -452,9 +488,16 @@ test("certification and revocation carry the complete active trust tuple and sig
 
 test("catalog and Profile schemas expose mandatory scope and recursive journey closure", async () => {
   const catalog = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/product-surface-catalog.yaml"), "utf8"));
+  const registry = JSON.parse(await readFile(resolve(repositoryRoot, "contract/registry/web-release-composition.yaml"), "utf8"));
+  const hardCuts = JSON.parse(await readFile(resolve(repositoryRoot, "contract/registry/prelaunch-schema-hard-cuts.yaml"), "utf8"));
   assert.ok(catalog.$defs.surface.required.includes("scopeClass"));
   assert.deepEqual(catalog.$defs.surface.properties.scopeClass.enum, ["core-always", "profile-selectable"]);
   assert.ok(catalog.$defs.journey.required.includes("requiredJourneyRefs"));
+  assert.equal(registry.contracts.find(({ id }) => id === "launch-product-profile.v1").businessOwner, "platform.product-catalog");
+  assert.deepEqual(
+    hardCuts.registryCuts.map(({ id, contractId }) => ({ id, contractId })),
+    [{ id: "launch-product-profile-owner-r0a", contractId: "launch-product-profile.v1" }],
+  );
 });
 
 test("profile candidate inventory release chain is single-direction and activation-derived", async () => {
@@ -476,12 +519,55 @@ test("profile candidate inventory release chain is single-direction and activati
   for (const field of ["siteRef", "siteReleaseCandidate", "launchProductProfile", "productSurfaceCatalog", "enabledSurfaceRefs", "disabledSurfaceRefs"]) {
     assert.ok(inventory.required.includes(field));
   }
-  assert.ok(certification.required.includes("candidateAuthorizationEpoch"));
+  assert.equal(certification.properties.siteReleaseCandidate.$ref, "#/$defs/candidateAuthorityBinding");
+  assert.equal(certification.required.includes("candidateAuthorizationEpoch"), false);
   assert.ok(certification.required.includes("validUntil"));
   assert.ok(revocation.required.includes("releaseCertification"));
   assert.ok(release.required.includes("releaseCertification"));
   assert.ok(release.required.includes("webArtifactDigest"));
   assert.equal("enabledSurfaceRefs" in release.properties, false);
+});
+
+test("signed release chain uses complete candidate and immutable revision bindings", async () => {
+  const readSchema = async (name) => JSON.parse(await readFile(resolve(repositoryRoot, `contract/spec/${name}.yaml`), "utf8"));
+  const schemas = new Map(await Promise.all([
+    "launch-product-profile", "site-release-candidate", "surface-inventory", "web-build-intent",
+    "compiled-web-manifest", "web-artifact-provenance-profile", "release-certification-instance",
+    "release-certification-revocation", "site-release", "activation-authority-snapshot",
+    "activation-eligibility-evidence",
+  ].map(async (name) => [name, await readSchema(name)])));
+
+  for (const name of [
+    "surface-inventory", "web-build-intent", "compiled-web-manifest",
+    "release-certification-instance", "release-certification-revocation", "site-release",
+  ]) {
+    const schema = schemas.get(name);
+    assert.deepEqual(schema.$defs.candidateAuthorityBinding.required, ["ref", "version", "authorizationEpoch", "digest"], name);
+    assert.equal(schema.properties.siteReleaseCandidate.$ref, "#/$defs/candidateAuthorityBinding", name);
+    assert.equal(schema.required.includes("candidateAuthorizationEpoch"), false, name);
+  }
+
+  const revisionReferences = new Map([
+    ["launch-product-profile", ["productSurfaceCatalog"]],
+    ["site-release-candidate", ["launchProductProfile", "productSurfaceCatalog"]],
+    ["surface-inventory", ["launchProductProfile", "productSurfaceCatalog"]],
+    ["web-build-intent", ["launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webCompositionRegistry", "webBuildToolchain", "webBuildMaterialBundle"]],
+    ["compiled-web-manifest", ["webBuildIntent", "registry", "catalog", "surfaceInventory", "toolchain"]],
+    ["release-certification-instance", ["launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webBuildIntent", "compiledWebManifest", "webArtifactProvenance", "evidenceBundle"]],
+    ["release-certification-revocation", ["releaseCertification"]],
+    ["site-release", ["launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webBuildIntent", "compiledWebManifest", "webArtifactProvenance", "releaseCertification"]],
+  ]);
+  for (const [name, fields] of revisionReferences) {
+    const schema = schemas.get(name);
+    assert.deepEqual(schema.$defs.revisionBinding.required, ["ref", "revision", "digest"], name);
+    for (const field of fields) assert.equal(schema.properties[field].$ref, "#/$defs/revisionBinding", `${name}.${field}`);
+  }
+
+  const provenance = schemas.get("web-artifact-provenance-profile").$defs.externalParameters;
+  assert.equal(provenance.properties.siteReleaseCandidate.$ref, "#/$defs/candidateAuthorityBinding");
+  for (const field of ["webBuildIntent", "compiledWebManifest", "toolchain"]) {
+    assert.equal(provenance.properties[field].$ref, "#/$defs/revisionBinding", `provenance.${field}`);
+  }
 });
 
 test("Candidate and SiteRelease freeze explicit Memory, Identity, Commerce, and Hub owner closures", async () => {
@@ -516,7 +602,20 @@ test("owner closure omissions and digest drift are frozen as negative corpus cov
     "candidate-commerce-closure-digest-mismatch",
     "candidate-hub-catalog-binding-missing",
     "site-release-owner-closure-mismatch",
+    "intent-candidate-version-missing",
+    "certification-candidate-digest-missing",
+    "site-release-candidate-epoch-missing",
+    "site-release-certification-revision-missing",
+    "provenance-intent-revision-missing",
   ]) assert.ok(ids.has(id), id);
+});
+
+test("web release corpus and trust anchors are byte-for-byte reproducible", async () => {
+  const { stdout } = await execFileAsync(process.execPath, [
+    resolve(repositoryRoot, "contract/generate-web-release-composition-corpus.mjs"),
+    "--check",
+  ], { cwd: repositoryRoot });
+  assert.match(stdout, /^web_release_composition_corpus_ok:/u);
 });
 
 test("provenance admission freezes the registered attestor producer role", async () => {
@@ -625,13 +724,6 @@ test("active pointer state, release ref, and generations form a closed activatio
   ];
   for (const { id, pointer } of invalidPointers) assert.equal(pointerValidator(pointer), false, id);
 
-  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-pointer-partition-"));
-  await mkdir(join(temporary, "contract"), { recursive: true });
-  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
-  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
-  const relaxed = structuredClone(schema);
-  delete relaxed.$defs.activePointer.oneOf;
-  await writeFile(join(temporary, "contract/spec/activation-authority-snapshot.yaml"), `${JSON.stringify(relaxed, null, 2)}\n`);
   for (const { id, pointer, snapshotExpected } of invalidPointers) {
     const candidate = structuredClone(corpus);
     const snapshot = candidate.positiveCases.find(({ id: caseId }) => caseId === "activation-authority-begin").document;
@@ -639,9 +731,10 @@ test("active pointer state, release ref, and generations form a closed activatio
     snapshot.expectedActivePointerGeneration = snapshotExpected;
     snapshot.activePointer.casPreconditionDigest = canonicalDigest(activePointerCasMaterial(snapshot));
     snapshot.authorityMaterialDigest = canonicalDigest(authorityMaterial(snapshot));
+    const temporary = await mkdtemp(join(tmpdir(), `kokoro-web-release-pointer-partition-${id}-`));
     const corpusPath = join(temporary, `${id}.json`);
     await writeFile(corpusPath, `${JSON.stringify(candidate, null, 2)}\n`);
-    await expectCode(() => validateRepository({ root: temporary, corpus: corpusPath }), "web_release_activation_pointer_cas_invalid");
+    await expectCode(() => validateRepository({ root: repositoryRoot, corpus: corpusPath }), "web_release_positive_schema_invalid");
   }
 });
 
@@ -863,14 +956,12 @@ test("coherent manifest cannot substitute a measured tool for the pre-frozen too
   }, "web_release_manifest_toolchain_mismatch");
 });
 
-test("coherent provenance cannot change signed Site, candidate, or authorization epoch", async () => {
+test("coherent provenance cannot change signed Site context", async () => {
   await coherentCorpusAttack((corpus) => {
     const parameters = corpus.positiveCases.find(
       ({ contractId }) => contractId === "web-artifact-provenance-profile.v1",
     ).document.predicate.buildDefinition.externalParameters;
     parameters.siteRef = "site.evil";
-    parameters.releaseCandidateRef = "release-candidate.evil.1";
-    parameters.candidateAuthorizationEpoch = "999";
   }, "web_release_provenance_context_mismatch");
 });
 
@@ -1083,7 +1174,7 @@ test("the public repository gate freezes every negative vector id and exact muta
         corpus.negativeCases.find(({ id }) => id === "activation-first-pointer-must-be-null"),
       );
       const duplicate = structuredClone(corpus.negativeCases[0]);
-      corpus.negativeCases = [pointerCase, ...Array.from({ length: 65 }, () => structuredClone(duplicate))];
+      corpus.negativeCases = [pointerCase, ...Array.from({ length: 70 }, () => structuredClone(duplicate))];
     },
     (corpus) => {
       const originalId = corpus.negativeCases[0].id;
@@ -1163,12 +1254,41 @@ test("blocked activation exact identities remain independent of set and JCS obje
 });
 
 test("breaking comparison loads the real seven-contract predecessor before reporting schema drift", async () => {
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-seven-contract-baseline-"));
+  const baselineRevision = "97f9c1e";
+  const showBaseline = async (path) => (await execFileAsync(
+    "git",
+    ["show", `${baselineRevision}:${path}`],
+    { cwd: repositoryRoot },
+  )).stdout;
+  const baselineRegistryPath = "contract/registry/web-release-composition.yaml";
+  const baselineRegistrySource = await showBaseline(baselineRegistryPath);
+  const baselineRegistry = JSON.parse(baselineRegistrySource);
+  await mkdir(join(temporary, "contract/registry"), { recursive: true });
+  await writeFile(join(temporary, baselineRegistryPath), baselineRegistrySource);
+  for (const entry of baselineRegistry.contracts) {
+    const schemaPath = join(temporary, entry.schemaPath);
+    await mkdir(dirname(schemaPath), { recursive: true });
+    await writeFile(schemaPath, await showBaseline(entry.schemaPath));
+  }
+  const git = (...args) => execFileAsync("git", args, { cwd: temporary });
+  await git("init", "-q");
+  await git("config", "user.name", "Kokoro Contract Test");
+  await git("config", "user.email", "contract-test@kokoro.invalid");
+  await git("add", "contract");
+  await git("commit", "-qm", "seven-contract baseline");
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/corpus"), join(temporary, "contract/corpus"), { recursive: true });
+  await git("add", "contract");
+  await git("commit", "-qm", "current contract candidate");
+
   await assert.rejects(
     () => execFileAsync(process.execPath, [
       resolve(repositoryRoot, "scripts/contract/check-web-release-composition.mjs"),
-      "--root", repositoryRoot,
-      "--breaking-against", "97f9c1e",
-    ], { cwd: repositoryRoot }),
+      "--root", temporary,
+      "--breaking-against", "HEAD^",
+    ], { cwd: temporary }),
     ({ stderr }) => stderr.includes("web_release_v1_schema_breaking") || stderr.includes("web_release_registry_contract_set_invalid"),
   );
 });

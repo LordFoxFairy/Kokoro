@@ -16,7 +16,7 @@
     "agui:check": "pnpm agui:corpus:check && node ../scripts/contract/check-agui-presentation.mjs --root ..",
     "agui:test": "node --test ../scripts/contract/check-agui-presentation.test.mjs",
     "agui:typecheck": "tsc -p tests/tsconfig.agui-presentation.json --noEmit",
-    "web-release:check": "node ../scripts/contract/check-web-release-composition.mjs --root .."
+    "web-release:check": "node generate-web-release-composition-corpus.mjs --check --root .. && node ../scripts/contract/check-web-release-composition.mjs --root .."
   },
   "devDependencies": {
     "@ag-ui/core": "0.0.57",

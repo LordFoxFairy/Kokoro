@@ -32,7 +32,7 @@ const CONTRACT_IDS = [
 const CONTRACT_OWNERS = new Map([
   ["activation-authority-snapshot.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
   ["activation-eligibility-evidence.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
-  ["launch-product-profile.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
+  ["launch-product-profile.v1", ["platform.product-catalog", "kokoro-platform", "digest-bound-reference"]],
   ["product-surface-catalog.v1", ["platform.product-catalog", "kokoro-platform", "none"]],
   ["release-certification-instance.v1", ["release.certification", "kokoro-platform", "dsse-release-certification-instance-v1"]],
   ["release-certification-revocation.v1", ["release.certification", "kokoro-platform", "dsse-release-certification-revocation-v1"]],
@@ -60,9 +60,23 @@ const DSSE_CONTRACT_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
 const RECEIPT_KIND_ROLES = new Map([...TRUST_ROLE_CAPABILITIES]
   .flatMap(([role, capability]) => capability.receipts.map((kind) => [kind, role])));
 const FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS = new Map([
-  ["site-release-candidate-owner-closures-r0a", "sha256:6581bd5f4ab02f89e5c20995f8ec0fa2b894868bb7e7689c2ed2ddb6c38255c7"],
-  ["site-release-owner-closures-r0a", "sha256:8083df52d9e54ccc786dfb7f57a1e4d40b0065c1357c18826c2ce15d8b618492"],
-  ["web-build-intent-owner-closures-r0a", "sha256:16b2df6ff34c5148888b3d97c2e3a0629673b188d0e65e48917bad2711be3116"],
+  ["activation-authority-snapshot-revision-bindings-r0a", "sha256:36a20d6d9420017f03f515d6187dee91b7a7ff3a3a79b1a902d6b3db4f0541d6"],
+  ["activation-eligibility-evidence-revision-bindings-r0a", "sha256:ad4228c970066fa4f6f61ab081a8656c06c1b3ef3275e70d081203cdeb0a311f"],
+  ["compiled-web-manifest-revision-bindings-r0a", "sha256:83750f808b4c5ed3d125467eb970d72e60a37597be48d01caf15ec1ca43e5eb3"],
+  ["launch-product-profile-revision-bindings-r0a", "sha256:d410a69bac78041c4d554a9a4beb26b9e5059580e235b691a75c8763340ede3c"],
+  ["release-certification-instance-revision-bindings-r0a", "sha256:67bc4a6d7b6009c049ad8c5a8aed048dba213207caed3aa30cd8b56c8669ea00"],
+  ["release-certification-revocation-revision-bindings-r0a", "sha256:36a6a50563c192b0f389b4c9e4e42c7ebe9a72264708d7cddf59114c2d503017"],
+  ["site-release-candidate-revision-bindings-r0a", "sha256:783a4f5392cccd83a4c3927e9e5ec5948e9b923610819e265c402f5ab2592324"],
+  ["site-release-revision-bindings-r0a", "sha256:98cea71c59f724d1803029f1d71f043e0577fe7191d3f934516136de1f793212"],
+  ["surface-inventory-revision-bindings-r0a", "sha256:6d362e2e3d871716c85c5f5726b3334acec1fcb9fcd42a8725208386f20dbd21"],
+  ["web-artifact-provenance-revision-bindings-r0a", "sha256:e7d242e9ec8969c764d9a391c4292fcb315984437eb36d264b8c95d28ef822c7"],
+  ["web-build-intent-revision-bindings-r0a", "sha256:2cff8d42f38a89ab297f0a369d329cfa2b737de52717dd1f151bea853a70b5cb"],
+]);
+const FROZEN_PRELAUNCH_REGISTRY_HARD_CUT_DIGESTS = new Map([
+  ["launch-product-profile-owner-r0a", "sha256:7c6040b59cc1ff17755dbf935aad7dbdb3eec356c98f1a14c7b7af495e667789"],
+]);
+const FROZEN_PRELAUNCH_REGISTRY_BASELINE_ENTRY_DIGESTS = new Map([
+  ["launch-product-profile.v1", "sha256:72e9a94ff1147b90093cefce0c7cfea3aebfe1b2f5f342e9994cc2a08b48424d"],
 ]);
 const ACTIVATION_FRESHNESS_LEASE_MILLISECONDS = 5_000;
 const ACTIVATION_MAX_SNAPSHOT_AGE_MILLISECONDS = 120_000;
@@ -111,7 +125,12 @@ intent-model-inventory-mismatch sha256:728460eb27c58c3044140756cc7429928b49c3c7f
 manifest-bff-family-missing sha256:3a87e55cf229faff3ac0388ca7591b02b854e554b13e5854fd021b2ec59b625b
 provenance-artifact-mismatch sha256:3c4747939e52bcf3900235552d3af0c60f07ebe89a879e9feb88da5bfdc1ad44
 certification-expired-before-generation sha256:0868b89f12a84185538fccaef7f8fc7de45754137ca4aa1f2f7c63a3ef1b6780
-certification-candidate-epoch-mismatch sha256:e3203f28ac0d31551fd1298d6343236d42e515af677ceb6880738398149e1d79
+certification-candidate-digest-missing sha256:466cfd54e1fd9ee8b78d693b1113c248f3403349243d356ff6aec4c255abf534
+certification-candidate-epoch-mismatch sha256:7db7980908bf2277b7febecf450cc4bcbd9a586dafac04d61b978049f1548ee6
+intent-candidate-version-missing sha256:e9e56959dddf741cee14b926f437f0a4d2fd73e8fbe8577a86a378aae990d3d0
+provenance-intent-revision-missing sha256:cb02b816cfb0a492632326754eea8c70d67a08809f7bd875e214d06381ef4a1b
+site-release-candidate-epoch-missing sha256:33c15d9961c14ff86aa4e244bd2360f86980af82bd81839f3b899c7b1d72c258
+site-release-certification-revision-missing sha256:5b6a8d706f5ddf1d303952fc4788b3b7bc7ae70c27bd694a56c25fe5b3ecdd3e
 site-release-bootstrap-mismatch sha256:856779c9bc1abf7cbded12f7e57d0750f1ff5c80bbc340b367590f71017d5fb8
 catalog-surface-scope-missing sha256:a2583ec4bc91b4d4acfa6d08dccc2aa18c1f1dfa972dbbf468a4e72aa2d19c6f
 catalog-journey-cycle sha256:a53ae73987af16699c08823eeff47f7c4e03fb664d66b1c2b24c191476942edc
@@ -138,37 +157,37 @@ provenance-producer-role-mismatch sha256:32ffb75d23af4ac83f33a09821c7b4f7309e8d3
 const FROZEN_BLOCKED_ACTIVATION_SCENARIOS = new Map([
   ["candidate-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_candidate_epoch_invalid",
-    digest: "sha256:499286b3f3909426ed47a35990087ea5b0a0a79c947919d4dc06e41adf843e3f",
+    digest: "sha256:651c8d42e14091ef7a0ef3f55e0f187750b51c11b2dcfdd3f92f427b6859b439",
     identity: { candidateState: "revoked", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["certification-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_certification_revoked",
-    digest: "sha256:9bced9f178ba51a2377db789daa2f9638e7a1801bcadd7697195edd4a65d3aa2",
+    digest: "sha256:8c5302f6645f097318b8c79e67d5d6e68a356ab590221a50f03bd638738d43b9",
     identity: { candidateState: "active", certificationState: "revoked", certificationRevocationEpoch: "1", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:eae4042fd52dba9e12fcb7734c12e888de90cda0941b165cb041942f08d9a7e0",
+    digest: "sha256:e364f0f7386cc2e9d4f716ae0081b9a8bf9ab558474832b2ffe21c51eb615567",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "revoked", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-suspended-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:96245763f0ac350dc72a7890b3f40e6935506e1e438f2e3b1cc247f2bb63d16b",
+    digest: "sha256:fe8879e545b4a25395bf465387fd1a82c4dd65108c2793744081f6eb254c9308",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "suspended", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["producer-registry-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_registry_epoch_invalid",
-    digest: "sha256:07eaefbd507d8b5b9b265edb28cb92a44b3a648e7531b1aa89b8461687b62e28",
+    digest: "sha256:06cfd6b381cdd3233f10f90961ddbb43d87829f4f944431a1f203303f2417ef8",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "5", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["trust-policy-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_policy_epoch_invalid",
-    digest: "sha256:e29955b244b52b49a982232a0f3455cf8d72f9ee6f42fbc5b96eb7a24e546d92",
+    digest: "sha256:93e5b1b0e6607238b7bcfd3fcc8dcbe7d5f5806e8324fc36e2c6366ce7d30edf",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "10", expiredAtRead: false },
   }],
   ["certification-expired-between-authority-reads", {
     expectedCode: "web_release_activation_certification_expired",
-    digest: "sha256:6321550b67f8d0dc4711e436933ba77f092458d21199f22ba9459f46fa813769",
+    digest: "sha256:9b3a34615461ca88a41a3b7fd0502e7d901c20568830810935c4ca6ed0f2db09",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: true },
   }],
 ]);
@@ -543,12 +562,23 @@ function validateCatalog(catalog) {
   assertDag(new Map(catalog.canonicalJourneys.map((item) => [item.journeyRef, item])), "requiredJourneyRefs", "web_release_catalog_reference_invalid", "web_release_catalog_cycle");
 }
 
-function digestReference(reference, document, refField, code) {
-  if (reference.ref !== document[refField] || reference.digest !== digest(document)) fail(code, refField);
+function revisionReference(reference, document, refField, code) {
+  const expected = { ref: document[refField], revision: document.revision, digest: digest(document) };
+  if (canonicalize(reference) !== canonicalize(expected)) fail(code, refField);
+}
+
+function candidateReference(reference, candidate, code) {
+  const expected = {
+    ref: candidate.candidateRef,
+    version: candidate.revision,
+    authorizationEpoch: candidate.candidateAuthorizationEpoch,
+    digest: digest(candidate),
+  };
+  if (canonicalize(reference) !== canonicalize(expected)) fail(code, "candidateRef");
 }
 
 function validateProfile(profile, catalog) {
-  digestReference(profile.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_profile_reference_invalid");
+  revisionReference(profile.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_profile_reference_invalid");
   if (catalog.state !== "published") fail("web_release_profile_reference_invalid", "unpublished catalog");
   const surfaces = new Map(catalog.surfaces.map((surface) => [surface.surfaceRef, surface]));
   const enabled = unique(profile.enabledSurfaceRefs, "web_release_profile_surface_invalid");
@@ -596,8 +626,8 @@ function validateProfile(profile, catalog) {
 }
 
 function validateCandidate(candidate, related) {
-  digestReference(candidate.launchProductProfile, related.profile, "profileRevisionRef", "web_release_candidate_reference_invalid");
-  digestReference(candidate.productSurfaceCatalog, related.catalog, "catalogRevisionRef", "web_release_candidate_reference_invalid");
+  revisionReference(candidate.launchProductProfile, related.profile, "profileRevisionRef", "web_release_candidate_reference_invalid");
+  revisionReference(candidate.productSurfaceCatalog, related.catalog, "catalogRevisionRef", "web_release_candidate_reference_invalid");
   if (candidate.launchProductProfile.digest !== digest(related.profile) || related.profile.productSurfaceCatalog.digest !== candidate.productSurfaceCatalog.digest) fail("web_release_candidate_reference_invalid");
   unique(candidate.modelRequirements.map(({ modelRoleRef }) => modelRoleRef), "web_release_candidate_model_invalid");
   const enabled = new Set(related.profile.enabledSurfaceRefs);
@@ -607,15 +637,15 @@ function validateCandidate(candidate, related) {
     if (requirement.modelInventory.ref === requirement.modelCatalog.ref || requirement.modelInventory.digest === requirement.modelCatalog.digest) fail("web_release_candidate_model_invalid", requirement.modelRoleRef);
   }
   const bindings = candidate.businessBindings;
-  if (bindings.webBuildMaterialBundle.ref !== related.material.bundleRef || bindings.webBuildMaterialBundle.digest !== digest(related.material)) fail("web_release_candidate_reference_invalid", "material");
+  revisionReference(bindings.webBuildMaterialBundle, related.material, "bundleRef", "web_release_candidate_reference_invalid");
   validateBusinessOwnerBindings(bindings);
 }
 
 function validateInventory(inventory, related) {
   const { catalog, profile, candidate } = related;
-  digestReference(inventory.siteReleaseCandidate, candidate, "candidateRef", "web_release_inventory_candidate_invalid");
-  digestReference(inventory.launchProductProfile, profile, "profileRevisionRef", "web_release_inventory_profile_invalid");
-  digestReference(inventory.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_inventory_catalog_invalid");
+  candidateReference(inventory.siteReleaseCandidate, candidate, "web_release_inventory_candidate_invalid");
+  revisionReference(inventory.launchProductProfile, profile, "profileRevisionRef", "web_release_inventory_profile_invalid");
+  revisionReference(inventory.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_inventory_catalog_invalid");
   if (inventory.siteRef !== candidate.siteRef) fail("web_release_inventory_candidate_invalid", "site");
   const enabled = unique(inventory.enabledSurfaceRefs, "web_release_inventory_partition_invalid");
   const disabled = unique(inventory.disabledSurfaceRefs, "web_release_inventory_partition_invalid");
@@ -712,8 +742,8 @@ function validateCompositionRegistry(registry, catalog) {
 }
 
 function validateIntent(intent, related) {
+  candidateReference(intent.siteReleaseCandidate, related.candidate, "web_release_intent_reference_invalid");
   const pairs = [
-    [intent.siteReleaseCandidate, related.candidate, "candidateRef"],
     [intent.launchProductProfile, related.profile, "profileRevisionRef"],
     [intent.productSurfaceCatalog, related.catalog, "catalogRevisionRef"],
     [intent.surfaceInventory, related.inventory, "inventoryRevisionRef"],
@@ -722,12 +752,12 @@ function validateIntent(intent, related) {
     [intent.webCompositionRegistry, related.registry, "registryRevisionRef"],
   ];
   for (const [reference, document, refField] of pairs) {
-    if (reference.ref !== document[refField] || reference.digest !== digest(document)) fail("web_release_intent_reference_invalid", refField);
+    revisionReference(reference, document, refField, "web_release_intent_reference_invalid");
   }
   if (related.catalog.state !== "published" || related.toolchain.state !== "published" || related.registry.state !== "published") fail("web_release_intent_unpublished_input");
   if (related.inventory.siteRef !== intent.siteRef || related.material.siteRef !== intent.siteRef || related.candidate.siteRef !== intent.siteRef ||
-      related.inventory.siteReleaseCandidate.ref !== intent.siteReleaseCandidate.ref || related.inventory.launchProductProfile.ref !== intent.launchProductProfile.ref ||
-      related.candidate.candidateAuthorizationEpoch !== intent.candidateAuthorizationEpoch || related.candidate.environment !== intent.environment) fail("web_release_intent_context_invalid");
+      canonicalize(related.inventory.siteReleaseCandidate) !== canonicalize(intent.siteReleaseCandidate) || related.inventory.launchProductProfile.ref !== intent.launchProductProfile.ref ||
+      related.candidate.environment !== intent.environment) fail("web_release_intent_context_invalid");
   unique(intent.modelRequirements.map(({ modelRoleRef }) => modelRoleRef), "web_release_intent_reference_invalid");
   if (canonicalRows(intent.modelRequirements, ({ modelRoleRef }) => modelRoleRef) !== canonicalRows(related.candidate.modelRequirements, ({ modelRoleRef }) => modelRoleRef)) fail("web_release_intent_reference_invalid", "model requirements");
   if (canonicalize(intent.businessBindings) !== canonicalize(related.candidate.businessBindings)) fail("web_release_intent_reference_invalid", "businessBindings");
@@ -783,12 +813,13 @@ function registryProjection(registry, inventory, intent) {
 
 function validateManifest(manifest, related) {
   const { inventory, intent, registry, toolchain } = related;
-  if (manifest.intentRef !== intent.intentRef || manifest.buildIntentDigest !== digest(intent) || canonicalize(manifest.siteReleaseCandidate) !== canonicalize(intent.siteReleaseCandidate)) fail("web_release_manifest_reference_invalid", "intent");
-  if (manifest.catalog.ref !== intent.productSurfaceCatalog.ref || manifest.catalog.digest !== intent.productSurfaceCatalog.digest ||
-      manifest.surfaceInventory.ref !== intent.surfaceInventory.ref || manifest.surfaceInventory.digest !== intent.surfaceInventory.digest ||
-      manifest.registry.ref !== registry.registryRevisionRef || manifest.registry.digest !== digest(registry) ||
-      manifest.registry.ref !== intent.webCompositionRegistry.ref || manifest.registry.digest !== intent.webCompositionRegistry.digest ||
-      manifest.toolchain.ref !== intent.webBuildToolchain.ref || manifest.toolchain.digest !== intent.webBuildToolchain.digest) fail("web_release_manifest_reference_invalid", "owner revision");
+  if (!sameDigestRef(manifest.webBuildIntent, { ref: intent.intentRef, revision: intent.revision, digest: digest(intent) }) ||
+      !sameDigestRef(manifest.siteReleaseCandidate, intent.siteReleaseCandidate)) fail("web_release_manifest_reference_invalid", "intent");
+  if (!sameDigestRef(manifest.catalog, intent.productSurfaceCatalog) ||
+      !sameDigestRef(manifest.surfaceInventory, intent.surfaceInventory) ||
+      !sameDigestRef(manifest.registry, { ref: registry.registryRevisionRef, revision: registry.revision, digest: digest(registry) }) ||
+      !sameDigestRef(manifest.registry, intent.webCompositionRegistry) ||
+      !sameDigestRef(manifest.toolchain, intent.webBuildToolchain)) fail("web_release_manifest_reference_invalid", "owner revision");
   const units = new Map(manifest.units.map((unit) => [unit.unitRef, unit]));
   if (units.size !== manifest.units.length) fail("web_release_manifest_reference_invalid", "duplicate unit");
   const packages = new Map(manifest.packages.map((item) => [item.packageRef, item]));
@@ -864,11 +895,24 @@ function validateProvenance(provenance, related) {
   if (producer === undefined || producer.producerRole !== "web-artifact-provenance-attestor" ||
       producer.producerIdentityRef !== builder.id) fail("web_release_provenance_producer_role_invalid");
   const parameters = provenance.predicate.buildDefinition.externalParameters;
-  if (parameters.intentRef !== related.intent.intentRef || parameters.buildIntentDigest !== digest(related.intent) ||
-      parameters.compiledWebManifestRef !== related.manifest.manifestRef || parameters.compiledWebManifestDigest !== digest(related.manifest) ||
-      parameters.toolchain.ref !== related.toolchain.toolchainRevisionRef || parameters.toolchain.digest !== digest(related.toolchain)) fail("web_release_provenance_reference_invalid");
-  if (parameters.siteRef !== related.intent.siteRef || parameters.releaseCandidateRef !== related.intent.siteReleaseCandidate.ref ||
-      parameters.releaseCandidateRef !== related.manifest.siteReleaseCandidate.ref || parameters.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch) fail("web_release_provenance_context_mismatch");
+  if (!sameDigestRef(parameters.webBuildIntent, {
+    ref: related.intent.intentRef,
+    revision: related.intent.revision,
+    digest: digest(related.intent),
+  }) || !sameDigestRef(parameters.compiledWebManifest, {
+    ref: related.manifest.manifestRef,
+    revision: related.manifest.revision,
+    digest: digest(related.manifest),
+  }) || !sameDigestRef(parameters.toolchain, {
+    ref: related.toolchain.toolchainRevisionRef,
+    revision: related.toolchain.revision,
+    digest: digest(related.toolchain),
+  })) fail("web_release_provenance_reference_invalid");
+  if (parameters.siteRef !== related.intent.siteRef ||
+      !sameDigestRef(parameters.siteReleaseCandidate, related.intent.siteReleaseCandidate) ||
+      !sameDigestRef(parameters.siteReleaseCandidate, related.manifest.siteReleaseCandidate)) {
+    fail("web_release_provenance_context_mismatch");
+  }
   const artifactDigest = provenance.predicate.runDetails.webArtifactDigest;
   if (artifactDigest !== `sha256:${provenance.subject[0].digest.sha256}`) fail("web_release_provenance_artifact_invalid");
   const dependencies = new Map(provenance.predicate.buildDefinition.resolvedDependencies.map(({ uri, digest: value }) => [uri, value.sha256]));
@@ -908,17 +952,18 @@ function sameDigestRef(left, right) {
 
 function validateCertification(certification, related) {
   const pairs = [
-    [certification.siteReleaseCandidate, related.intent.siteReleaseCandidate],
     [certification.launchProductProfile, related.intent.launchProductProfile],
     [certification.productSurfaceCatalog, related.intent.productSurfaceCatalog],
     [certification.surfaceInventory, related.intent.surfaceInventory],
-    [certification.webBuildIntent, { ref: related.intent.intentRef, digest: digest(related.intent) }],
-    [certification.compiledWebManifest, { ref: related.manifest.manifestRef, digest: digest(related.manifest) }],
-    [certification.webArtifactProvenance, { ref: related.provenance.provenanceRef, digest: digest(related.provenance) }],
+    [certification.webBuildIntent, { ref: related.intent.intentRef, revision: related.intent.revision, digest: digest(related.intent) }],
+    [certification.compiledWebManifest, { ref: related.manifest.manifestRef, revision: related.manifest.revision, digest: digest(related.manifest) }],
+    [certification.webArtifactProvenance, { ref: related.provenance.provenanceRef, revision: related.provenance.revision, digest: digest(related.provenance) }],
   ];
   if (pairs.some(([left, right]) => !sameDigestRef(left, right))) fail("web_release_certification_reference_invalid");
   if (certification.siteRef !== related.intent.siteRef || certification.environment !== related.intent.environment ||
-      certification.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch) fail("web_release_certification_context_invalid");
+      !sameDigestRef(certification.siteReleaseCandidate, related.intent.siteReleaseCandidate)) {
+    fail("web_release_certification_context_invalid");
+  }
   const producer = certification.producer;
   if (certification.certificationRevocationEpoch !== "0" || certification.generatedAt >= certification.validUntil ||
       producer.environment !== certification.environment || producer.keyStatus !== "active" ||
@@ -1020,7 +1065,7 @@ function receiptResult(snapshot, kind) {
 }
 
 function expectedReceiptIdentity(snapshot, kind) {
-  if (kind === "candidate") return [snapshot.candidate.siteReleaseCandidate.ref, snapshot.candidate.authorizationEpoch];
+  if (kind === "candidate") return [snapshot.candidate.siteReleaseCandidate.ref, snapshot.candidate.siteReleaseCandidate.authorizationEpoch];
   if (kind === "certification") return [snapshot.certification.releaseCertification.ref, snapshot.certification.revocationEpoch];
   if (kind === "producer-registry") return [snapshot.trust.producerRegistry.ref, snapshot.trust.producerRegistryEpoch];
   if (kind === "trust-policy") return [snapshot.trust.trustPolicy.ref, snapshot.trust.trustPolicyEpoch];
@@ -1070,7 +1115,7 @@ function validateOwnerReadReceipts(snapshot, trustAnchors) {
 
 function validateActivationAuthoritySnapshot(snapshot, related) {
   if (snapshot.authorityMaterialDigest !== digest(authorityMaterial(snapshot))) fail("web_release_activation_authority_material_invalid");
-  const expectedRelease = { ref: related.release.siteReleaseRef, digest: digest(related.release) };
+  const expectedRelease = { ref: related.release.siteReleaseRef, revision: related.release.revision, digest: digest(related.release) };
   if (snapshot.siteRef !== related.release.siteRef || snapshot.environment !== related.release.environment) {
     fail("web_release_activation_context_invalid");
   }
@@ -1116,10 +1161,10 @@ function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, c
   if (!sameDigestRef(begin.activationAttempt, evidence.activationAttempt) || !sameDigestRef(beforeCas.activationAttempt, evidence.activationAttempt) ||
       begin.snapshotRef === beforeCas.snapshotRef || digest(begin) === digest(beforeCas) || begin.readAt >= beforeCas.readAt ||
       beforeCas.readAt > evidence.evaluatedAt) fail("web_release_activation_snapshot_pair_invalid");
-  const releaseRef = { ref: release.siteReleaseRef, digest: digest(release) };
+  const releaseRef = { ref: release.siteReleaseRef, revision: release.revision, digest: digest(release) };
   if (!sameDigestRef(evidence.siteRelease, releaseRef) || !sameDigestRef(begin.siteRelease, releaseRef) || !sameDigestRef(beforeCas.siteRelease, releaseRef) ||
-      !sameDigestRef(evidence.beginAuthoritySnapshot, { ref: begin.snapshotRef, digest: digest(begin) }) ||
-      !sameDigestRef(evidence.immediateBeforePointerCasAuthoritySnapshot, { ref: beforeCas.snapshotRef, digest: digest(beforeCas) })) fail("web_release_activation_authority_reference_invalid");
+      !sameDigestRef(evidence.beginAuthoritySnapshot, { ref: begin.snapshotRef, revision: begin.revision, digest: digest(begin) }) ||
+      !sameDigestRef(evidence.immediateBeforePointerCasAuthoritySnapshot, { ref: beforeCas.snapshotRef, revision: beforeCas.revision, digest: digest(beforeCas) })) fail("web_release_activation_authority_reference_invalid");
   if (!sameDigestRef(begin.activationCommand, evidence.activationCommand) || !sameDigestRef(beforeCas.activationCommand, evidence.activationCommand) ||
       begin.casCommandRef !== evidence.casCommandRef || beforeCas.casCommandRef !== evidence.casCommandRef ||
       canonicalize(begin.casFence) !== canonicalize(evidence.casFence) || canonicalize(beforeCas.casFence) !== canonicalize(evidence.casFence)) {
@@ -1139,7 +1184,8 @@ function assertActivationEvidenceEligible(evidence, begin, beforeCas, release, c
   if (certification.generatedAt > release.publishedAt || release.publishedAt > begin.readAt ||
       beforeCas.readAt > evidence.evaluatedAt) fail("web_release_activation_time_order_invalid");
   for (const snapshot of [begin, beforeCas]) {
-    if (snapshot.candidate.state !== "active" || snapshot.candidate.authorizationEpoch !== release.candidateAuthorizationEpoch ||
+    if (snapshot.candidate.state !== "active" ||
+        snapshot.candidate.siteReleaseCandidate.authorizationEpoch !== release.siteReleaseCandidate.authorizationEpoch ||
         !sameDigestRef(snapshot.candidate.siteReleaseCandidate, release.siteReleaseCandidate)) fail("web_release_activation_candidate_epoch_invalid");
     if (snapshot.certification.state !== "active" || snapshot.certification.revocationEpoch !== release.certificationRevocationEpoch ||
         !sameDigestRef(snapshot.certification.releaseCertification, release.releaseCertification)) fail("web_release_activation_certification_revoked");
@@ -1177,7 +1223,11 @@ function validateActivationEligibilityScenarios(scenarios, casesById, validators
     validateDocument("activation-authority-snapshot.v1", snapshot, validators);
     validateActivationAuthoritySnapshot(snapshot, related);
     const candidateEvidence = structuredClone(related.activationEvidence);
-    candidateEvidence.immediateBeforePointerCasAuthoritySnapshot = { ref: snapshot.snapshotRef, digest: digest(snapshot) };
+    candidateEvidence.immediateBeforePointerCasAuthoritySnapshot = {
+      ref: snapshot.snapshotRef,
+      revision: snapshot.revision,
+      digest: digest(snapshot),
+    };
     if (candidateEvidence.evaluatedAt < snapshot.readAt) candidateEvidence.evaluatedAt = snapshot.readAt;
     const serverReceipt = snapshot.ownerReadReceipts.find(({ aggregateKind }) => aggregateKind === "active-pointer");
     candidateEvidence.freshnessLease.serverTimeReceiptRef = serverReceipt.readReceiptRef;
@@ -1198,8 +1248,11 @@ function validateActivationEligibilityScenarios(scenarios, casesById, validators
 
 function validateRevocation(revocation, related) {
   const certification = related.revokedCertification;
-  if (!sameDigestRef(revocation.releaseCertification, { ref: certification.certificationRef, digest: digest(certification) }) ||
-      !sameDigestRef(revocation.siteReleaseCandidate, certification.siteReleaseCandidate) || revocation.candidateAuthorizationEpoch !== certification.candidateAuthorizationEpoch ||
+  if (!sameDigestRef(revocation.releaseCertification, {
+    ref: certification.certificationRef,
+    revision: certification.revision,
+    digest: digest(certification),
+  }) || !sameDigestRef(revocation.siteReleaseCandidate, certification.siteReleaseCandidate) ||
       revocation.environment !== certification.environment || revocation.siteRef !== certification.siteRef) fail("web_release_certification_revocation_reference_invalid");
   if (BigInt(revocation.certificationRevocationEpoch) <= BigInt(certification.certificationRevocationEpoch) || revocation.revokedAt < certification.generatedAt) fail("web_release_certification_revocation_epoch_invalid");
   const producer = revocation.producer;
@@ -1210,14 +1263,14 @@ function validateSiteRelease(release, related) {
   const expected = [
     [release.siteReleaseCandidate, related.intent.siteReleaseCandidate], [release.launchProductProfile, related.intent.launchProductProfile],
     [release.productSurfaceCatalog, related.intent.productSurfaceCatalog], [release.surfaceInventory, related.intent.surfaceInventory],
-    [release.webBuildIntent, { ref: related.intent.intentRef, digest: digest(related.intent) }],
-    [release.compiledWebManifest, { ref: related.manifest.manifestRef, digest: digest(related.manifest) }],
+    [release.webBuildIntent, { ref: related.intent.intentRef, revision: related.intent.revision, digest: digest(related.intent) }],
+    [release.compiledWebManifest, { ref: related.manifest.manifestRef, revision: related.manifest.revision, digest: digest(related.manifest) }],
     [release.webArtifactProvenance, related.certification.webArtifactProvenance],
-    [release.releaseCertification, { ref: related.certification.certificationRef, digest: digest(related.certification) }],
+    [release.releaseCertification, { ref: related.certification.certificationRef, revision: related.certification.revision, digest: digest(related.certification) }],
   ];
   if (expected.some(([left, right]) => !sameDigestRef(left, right))) fail("web_release_site_release_reference_invalid");
   if (release.siteRef !== related.intent.siteRef || release.environment !== related.intent.environment ||
-      release.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch || release.certificationRevocationEpoch !== "0") fail("web_release_site_release_context_invalid");
+      release.certificationRevocationEpoch !== "0") fail("web_release_site_release_context_invalid");
   if (release.webArtifactDigest !== related.certification.webArtifactDigest || release.publishedAt < related.certification.generatedAt || release.publishedAt >= related.certification.validUntil) fail("web_release_site_release_certification_invalid");
   if (related.revocation.releaseCertification.ref === release.releaseCertification.ref && related.revocation.releaseCertification.digest === release.releaseCertification.digest) fail("web_release_site_release_revoked");
   if (canonicalize(release.businessBindings) !== canonicalize(related.candidate.businessBindings)) fail("web_release_site_release_reference_invalid", "business bindings");
@@ -1418,26 +1471,57 @@ function validateRegistry(registry, { requireCurrentSet = true } = {}) {
     exactKeys(entry, ["businessOwner", "consumers", "id", "lifecycle", "publisherRepository", "schemaId", "schemaPath", "signatureProfile"], "web_release_registry_entry_invalid");
     if (entry.lifecycle !== "contract-only" || !entry.schemaPath.startsWith("contract/spec/") || !entry.schemaPath.endsWith(".yaml")) fail("web_release_registry_entry_invalid", entry.id);
     const expected = CONTRACT_OWNERS.get(entry.id);
-    if (expected === undefined || entry.businessOwner !== expected[0] || entry.publisherRepository !== expected[1] || entry.signatureProfile !== expected[2]) fail("web_release_registry_owner_invalid", entry.id);
+    const exactHistoricalRegistryCut = !requireCurrentSet &&
+      digest(entry) === FROZEN_PRELAUNCH_REGISTRY_BASELINE_ENTRY_DIGESTS.get(entry.id);
+    if (expected === undefined || (!exactHistoricalRegistryCut && entry.businessOwner !== expected[0]) ||
+        entry.publisherRepository !== expected[1] || entry.signatureProfile !== expected[2]) {
+      fail("web_release_registry_owner_invalid", entry.id);
+    }
   }
 }
 
-function validatePrelaunchSchemaHardCuts(registryDocument, contractRegistry, schemas) {
-  exactKeys(registryDocument, ["authority", "cuts", "lifecycle", "registryId", "schemaVersion"], "web_release_hard_cut_registry_invalid");
+function validatePrelaunchSchemaHardCuts(registryDocument, contractRegistry, schemas, { requireCurrentSet = true } = {}) {
+  const registryCuts = registryDocument.registryCuts ?? [];
+  exactKeys(registryDocument, requireCurrentSet
+    ? ["authority", "cuts", "lifecycle", "registryCuts", "registryId", "schemaVersion"]
+    : ["authority", "cuts", "lifecycle", ...(registryDocument.registryCuts === undefined ? [] : ["registryCuts"]), "registryId", "schemaVersion"],
+  "web_release_hard_cut_registry_invalid");
   if (registryDocument.schemaVersion !== 1 || registryDocument.registryId !== "kokoro.prelaunch-schema-hard-cuts.v1" ||
-      registryDocument.authority !== "root.contract" || registryDocument.lifecycle !== "contract-only" || !Array.isArray(registryDocument.cuts)) {
+      registryDocument.authority !== "root.contract" || registryDocument.lifecycle !== "contract-only" ||
+      !Array.isArray(registryDocument.cuts) || !Array.isArray(registryCuts)) {
     fail("web_release_hard_cut_registry_invalid");
   }
   const ids = unique(registryDocument.cuts.map(({ id }) => id), "web_release_hard_cut_registry_invalid");
-  if (canonicalSet(ids) !== canonicalSet(FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.keys())) fail("web_release_hard_cut_registry_invalid");
+  const registryIds = unique(registryCuts.map(({ id }) => id), "web_release_hard_cut_registry_invalid");
+  unique(registryDocument.cuts.map(({ contractId }) => contractId), "web_release_hard_cut_registry_invalid");
+  unique(registryCuts.map(({ contractId }) => contractId), "web_release_hard_cut_registry_invalid");
+  if (requireCurrentSet && (canonicalSet(ids) !== canonicalSet(FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.keys()) ||
+      canonicalSet(registryIds) !== canonicalSet(FROZEN_PRELAUNCH_REGISTRY_HARD_CUT_DIGESTS.keys()))) {
+    fail("web_release_hard_cut_registry_invalid");
+  }
   const rows = new Map(contractRegistry.contracts.map((entry) => [entry.id, entry]));
   for (const cut of registryDocument.cuts) {
     exactKeys(cut, ["baselineSchemaDigest", "candidateSchemaDigest", "contractId", "id", "reason"], "web_release_hard_cut_registry_invalid");
-    if (digest(cut) !== FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.get(cut.id)) fail("web_release_hard_cut_registry_invalid", cut.id);
+    if (requireCurrentSet && digest(cut) !== FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS.get(cut.id)) {
+      fail("web_release_hard_cut_registry_invalid", cut.id);
+    }
     const row = rows.get(cut.contractId);
     const schema = schemas.get(cut.contractId);
-    if (row?.lifecycle !== "contract-only" || schema === undefined || digest(schema) !== cut.candidateSchemaDigest ||
+    if (row?.lifecycle !== "contract-only" || schema === undefined ||
+        (requireCurrentSet && digest(schema) !== cut.candidateSchemaDigest) ||
         cut.baselineSchemaDigest === cut.candidateSchemaDigest) fail("web_release_hard_cut_registry_invalid", cut.id);
+  }
+  for (const cut of registryCuts) {
+    exactKeys(cut, ["baselineRegistryEntryDigest", "candidateRegistryEntryDigest", "contractId", "id", "reason"], "web_release_hard_cut_registry_invalid");
+    if (requireCurrentSet && digest(cut) !== FROZEN_PRELAUNCH_REGISTRY_HARD_CUT_DIGESTS.get(cut.id)) {
+      fail("web_release_hard_cut_registry_invalid", cut.id);
+    }
+    const row = rows.get(cut.contractId);
+    if (row?.lifecycle !== "contract-only" ||
+        (requireCurrentSet && digest(row) !== cut.candidateRegistryEntryDigest) ||
+        cut.baselineRegistryEntryDigest === cut.candidateRegistryEntryDigest) {
+      fail("web_release_hard_cut_registry_invalid", cut.id);
+    }
   }
 }
 
@@ -1484,7 +1568,7 @@ function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY), regist
     catch (error) { fail("web_release_schema_compile_invalid", `${entry.id}: ${error.message}`); }
   }
   const schemaHardCuts = readJson(resolve(root, DEFAULT_PRELAUNCH_SCHEMA_HARD_CUTS), "web_release_hard_cut_registry_invalid");
-  validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas);
+  validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas, registryOptions);
   return { registry, schemas, validators, envelopeValidators, schemaHardCuts };
 }
 
@@ -1514,7 +1598,7 @@ function loadGitBundle(root, revision, registryOptions = {}) {
   } catch (error) {
     if (!(error instanceof WebReleaseContractError) || error.code !== "web_release_breaking_baseline_invalid") throw error;
   }
-  if (schemaHardCuts !== null) validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas);
+  if (schemaHardCuts !== null) validatePrelaunchSchemaHardCuts(schemaHardCuts, registry, schemas, registryOptions);
   return { registry, schemas, schemaHardCuts };
 }
 
@@ -1584,9 +1668,17 @@ export function assertFrozenV1Compatible(baseline, candidate) {
   const baselineRows = new Map(baseline.registry.contracts.map((entry) => [entry.id, entry]));
   const candidateRows = new Map(candidate.registry.contracts.map((entry) => [entry.id, entry]));
   const hardCuts = new Map((candidate.schemaHardCuts?.cuts ?? []).map((cut) => [cut.contractId, cut]));
+  const registryHardCuts = new Map((candidate.schemaHardCuts?.registryCuts ?? []).map((cut) => [cut.contractId, cut]));
   for (const [id, row] of baselineRows) {
     const next = candidateRows.get(id);
-    if (next === undefined || canonicalize(row) !== canonicalize(next)) fail("web_release_v1_registry_breaking", id);
+    if (next === undefined) fail("web_release_v1_registry_breaking", id);
+    if (canonicalize(row) !== canonicalize(next)) {
+      const cut = registryHardCuts.get(id);
+      if (cut === undefined || digest(row) !== cut.baselineRegistryEntryDigest ||
+          digest(next) !== cut.candidateRegistryEntryDigest) {
+        fail("web_release_v1_registry_breaking", id);
+      }
+    }
     const oldSchema = baseline.schemas.get(id); const newSchema = candidate.schemas.get(id);
     if (oldSchema === undefined || newSchema === undefined) fail("web_release_v1_schema_breaking", id);
     if (canonicalize(oldSchema) !== canonicalize(newSchema)) {

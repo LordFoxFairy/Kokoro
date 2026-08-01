@@ -83,6 +83,8 @@ owner-log order; it has no equality relationship with Session `durableSeq`. The 
 per-run owner-log order. Session keeps Agent `sourceEventRef` only in private provenance and assigns a distinct, opaque,
 `presentation.event:`-branded public `sourceEventId`; equality, exposure, duplicate mapping, missing coverage, and
 cross-Session mapping all fail closed. Web consumes the public ID as opaque data and never derives it from Agent identity.
+The deterministic HMAC used by the Root corpus generator is test-fixture machinery only: its key and derivation are not a
+runtime contract, never enter frames, and must not be copied by Session or Web. Runtime IDs are Session-owner-assigned.
 `internalThreadRef` is an `agent.thread:<opaque-id>` branded owner ref; ordinal-zero `RUN_STARTED` establishes it
 for the internal run and all later candidates must retain it. It is never derived from Session identity. Candidate
 `RUN_STARTED` forbids `parentRunId`; Session alone derives the browser parent run ID from its authoritative
@@ -126,6 +128,9 @@ or signature. Callers carry the digest when referencing another immutable payloa
 artifact digest live outside the signed/canonical payload, preventing a digest cycle. Provenance dependencies use
 global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs: tool URIs include the measured role and repository ref,
 while package URIs retain the package URL identity and include the unique composition package ref.
+Every immutable cross-document edge carries an exact ref/revision/digest binding. Candidate-authorized edges use the
+stronger `CandidateAuthorityBinding`, which also freezes the authorization epoch; a ref/digest pair or a detached epoch
+cannot satisfy the release chain.
 
 `PublishSiteReleaseEffect` is a latest-only Site Publication command: callers provide only a complete Candidate
 ref/version/authorization-epoch/digest binding and `reason`; the future Platform owner must generate the immutable
@@ -174,7 +179,8 @@ SiteRelease itself is never mutated into an active-state record.
 Because these v1 contracts were unpublished, R0a is an explicit one-time hard cut rather than a compatibility adapter or V2.
 [`prelaunch-schema-hard-cuts.yaml`](registry/prelaunch-schema-hard-cuts.yaml) and
 [`prelaunch-protobuf-hard-cuts.yaml`](registry/prelaunch-protobuf-hard-cuts.yaml) freeze exact predecessor/candidate digests.
-Their executable gates allow only this recorded transition; any later source/schema drift returns to ordinary full breaking checks.
+The Web Release cut records all eleven changed schema rows plus the single Launch Profile owner registry row. Their executable
+gates allow only these recorded transitions; any later source, schema, or owner-row drift returns to ordinary full breaking checks.
 
 Eligibility time is bounded by the signed immediate-before-CAS active-pointer receipt: its server-issued time derives a fixed
 five-second freshness lease, and both snapshots must be no more than 120 seconds old. Persisted evidence is audit material,
@@ -317,7 +323,9 @@ Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract 
 `pnpm --dir contract run openapi:generate:public`, `node contract/generate-projection-integrity-corpus.mjs --check`,
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
 `node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
-`pnpm --dir contract run web-release:check`; CI compares the current fifteen-contract candidate with the predecessor's
+`pnpm --dir contract run web-release:check`; that command first proves the corpus and trusted-producer registry are the exact
+bytes produced by `node contract/generate-web-release-composition-corpus.mjs --check`, then validates the contract family. CI
+compares the current fifteen-contract candidate with the predecessor's
 own valid contract set and then freezes every predecessor v1 registry row and schema, except the exact one-time R0a transitions
 recorded above. Protobuf CI uses `scripts/contract/check-prelaunch-protobuf-breaking.mjs`, which applies the recorded exclusions
 only against the exact unpublished predecessor and performs full Buf breaking once that cut is the baseline. Validate the strict AG-UI family
