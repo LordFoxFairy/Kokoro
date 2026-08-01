@@ -1,43 +1,38 @@
 # Kokoro 当前任务状态
 
-> 主 Agent 维护；Subagent 只读。最后更新：2026-07-31。
-> 本文件只保存当前 campaign、事实、阻塞与下一步。历史过程从 Git 记录或 dated handoff 查询，不在这里累积。
+> 主 Agent 维护；Subagent 只读。最后更新：2026-08-02。
+> 本文件只保存当前 campaign、已验证事实、阻塞与下一步；历史过程以 Git 和 dated handoff 为准。
 
 ## 1. 当前目标
 
-在不改变 GA graph/checkpoint/terminal/handoff 核心语义的前提下，把 Root、Platform、Session、Web 与 Agent 的整体
-架构和真实代码收敛为可发布的 redeem-first 多 Site AI 产品平台：
+把 Root、Platform、Session、Web 与 Agent 收敛为可发布的 redeem-first 多 Site AI 产品平台：
 
 - 每个 Site 是独立 Web 项目、品牌、账户、artifact、部署和回滚单元；
-- 共享 Platform/Session/Agent 后端，但所有业务请求按可信 Site/workload/actor 隔离；
-- 卡密与未来支付统一进入 Fulfillment，再签发 SubscriptionTerms/EntitlementGrant/CreditGrant；
-- 一个全局模型目录，产品通过 ModelOption 与 SiteRelease 自由组合；
-- Chat 与专业 Studio 共享 Media/Artifact/Credit spine，但保持不同产品体验；
-- Saved Memory、conversation history/search 与 Agent runtime context 保持三个 owner；
-- 四个 `kokoro-*` 永久是独立子仓，Root 只做 contract/Infra/compatibility/BOM/pin authority。
+- Platform、Session、Agent 后端复用，但所有请求由受信 Site/workload/actor 上下文隔离；
+- 卡密与未来支付统一进入 Fulfillment，再签发 SubscriptionTerms、EntitlementGrant 与 CreditGrant；
+- 全局 Model Catalog 只维护一份底层模型，产品通过 ModelOption 与 SiteRelease 组合 Chat、Image、Music、Video 的模型路由；
+- General Chat 与 Studio 共享 Platform Media、Artifact、Credit spine，但保持独立产品体验；
+- Saved Memory、conversation history/search 与 Agent runtime context 分属三个 owner；
+- 四个 `kokoro-*` 永久保持独立仓库、CI、artifact、deploy 与 release；Root 只拥有 contract、Infra、compatibility、BOM 与 pin promotion。
 
-整体事实源：
+当前事实源：
 
 1. `docs/CURRENT.md`
 2. `docs/CODEBASE_MAP.md`
 3. `docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md`
-4. 与任务直接相关的 accepted ADR
-
-`technical/15` 与 `technical/20` 是历史稿，不得恢复 Root V2、Session V2、MySQL、Platform 零新增或旧
-Generation/Job 架构。
+4. `docs/kokoro-handbook/decisions/ADR-016-web-release-composition.md`
+5. 本文件列出的已终审 commit
 
 ## 2. 不变量
 
-- 不存在 Root V2、Session V2 或第二套根/会话系统；`v2` 只用于明确 protocol/schema family。
-- 不创建顶层 Generation 服务、通用 Job 服务或新 `kokoro-generation` 子仓。
-- 图片/音乐/视频归 Platform Media；Artifact 独立拥有产物；Agent 只通过窄工具调用。
-- Platform 同 bounded context 使用本地 application interface + `PlatformUnitOfWork`，禁止 self-RPC。
-- 跨仓只走 HTTP/SSE/Connect/durable transport，不导入兄弟仓源码、不共享进程对象、不跨库写表。
-- Session 不是 Hub runtime consumer；Agent 是 Hub runtime consumer。
-- GA 只消费 opaque non-empty `namespace`，不得新增 Site/User/Owner/Workspace 第二身份轴。
-- 每个外部 Site 一个独立 Web 项目；共享账户未来通过标准 OAuth/OIDC linking，不默认跨站共享。
-- Payment feature-off；当前 launch 只要求 card-code redemption 与同一 Fulfillment/Credit 链。
-- 默认本地 Infra 只保留 PostgreSQL、MongoDB、Redis、MinIO 四个容器；不得常驻测试/业务容器。
+- 不存在 Root V2、Session V2 或第二套根/会话系统；`v2` 只表示特定 protocol/schema family。
+- 不创建顶层 Generation、通用 Job 或 `kokoro-generation` 子仓。图片/音乐/视频归 Platform Media；Artifact 独立拥有产物。
+- Agent 只处理 Agent 业务和窄工具端口；不得未经用户确认修改 graph、checkpoint、terminal、handoff 核心语义。
+- Platform 同 bounded context 使用本地 application interface 与 Unit of Work，禁止 self-RPC；跨仓只走 HTTP/SSE/Connect/durable transport。
+- 每个外部 Site 是独立 Web 项目；共享账户只通过标准 OAuth/OIDC linking，不默认跨站共享。
+- Payment feature-off；当前 launch 只要求 card-code redemption 复用未来支付的 Fulfillment/Credit 链。
+- 浏览器展示协议由 Session 投影；AG-UI 不替代 durable evidence、branch、HITL、billing、checkpoint 或 owner receipt。
+- 默认本地 Infra 只保留 PostgreSQL、MongoDB、Redis、MinIO；不得常驻测试或业务容器。
 
 ## 3. 当前工作树
 
@@ -49,10 +44,17 @@ Canonical worktree：
 
 Root branch：`feat/lordfoxfairy/wave-0-foundation`。
 
-四个子仓当前都超前于 Root 已提交 gitlink；在独立 CI、跨仓兼容、真实基础设施和 rollback evidence 完成前，不做
-原子 pin promotion、不打 BOM tag。
+当前候选：
 
-Web 中以下是既有未提交生成物/本地制品，必须保留，不能由无关任务提交：
+| Repository | Candidate | 状态 |
+|---|---:|---|
+| Root contract baseline | `b2d0916` | strict AG-UI governance 已提交；本任务状态文档单独前移，不提升 gitlinks |
+| Agent | `4ea5df6` | 本 campaign 未改核心语义 |
+| Platform | `534be3a` | old Site publication handler fail closed；Candidate Authority 未实现 |
+| Session | `8c22f85` | Browser v3 基线；AG-UI runtime M0 正在实现 |
+| Web | `a8fb515` | owner/terminal projection 已终审；保留既有 generated/dist dirt |
+
+Web 既有未提交本地制品必须保留，不能由无关任务提交：
 
 ```text
 packages/session-client/src/generated/control.ts
@@ -60,122 +62,102 @@ packages/site-app-kit/dist/
 packages/site-scaffold/dist/
 ```
 
-## 4. 已收敛事实
+## 4. 已独立终审 PASS
 
-### Agent
+### Root SiteRelease publication authority
 
-- 当前候选 HEAD：`4ea5df6`。
-- Tool catalog supervisor ingress、delivery/web-fetch hardening 已完成。
-- 旧的 Agent 直连 Mongo Saved Memory 工具已从生产移除。
-- Agent 全量验证此前为 115/115，ruff 与 pyright 通过。
-- 本 campaign 不修改 Agent 核心 graph/checkpoint/terminal/handoff。
+Commit chain：`a52ccc3` → `d918080` → `f90069a` → `11a98db`。
 
-### Web Saved Memory
+- Root trust anchors 独立于 corpus，签名算法固定 Ed25519，certification、revocation 与六类 owner-read receipt 权限分离；
+- begin 与 immediate-before-CAS 两份 authority snapshot 绑定 Site/environment、六个 owner live head、时效 lease 与 active-pointer CAS；
+- first activation 与 existing activation 的 release ref/current/expected generation 构成封闭状态分区；
+- 59 个负向向量和 7 个 blocked activation snapshot 均由 checker 内独立 JCS digest 冻结，不能复制凑数或同错误码替换；
+- 终审 P0/P1/P2 为 0；50/50 主测试、13/13 pointer/signature 专项和 package gate 通过。
 
-- Saved Memory 基线 commit：`23afbb4`；Web 当前候选 HEAD：`4923b4c`。
-- owner snapshot、space-version floor、scope remount、async request generation、cursor recovery 和
-  import/export state projection 已完成独立复审。
-- Memory 52/52；Site BFF 60/60；typecheck/lint/diff-check 通过；未启动 Docker。
-- 该切片只是 dormant Web consumer，不能证明 Platform Memory 已可对外发布。
+这只证明 Root contract/publication authority。Platform Candidate Authority 与 active-pointer runtime 仍未实现，不能宣称 SiteRelease 已上线。
 
-### Session context policy
+### Root strict AG-UI presentation profile
 
-- `standard|temporary` 已进入 Session create contract、receipt/digest/snapshot/list/event，并在创建后不可变。
-- branch/edit/regenerate/fork/activate 继承 Session policy；普通列表排除 temporary，精确授权 snapshot 仍可读。
-- Session M0 当前候选 `b2954ba` 已通过独立终审：真实 migrator、FORCE RLS、不可变 trigger、普通列表抑制与精确
-  授权读取成立；全量 469/469，真实 PostgreSQL verifier 通过。
-- 这只完成 Session-local policy，不是完整 Temporary Chat。policy 尚未进入 Platform Admission/source suppression；Web
-  的创建入口、badge 与临时本地恢复策略正在实现，因此全链继续 NO-PASS。
+Commit chain：`18555c7` → `43c73b2` → `1d108bd` → `b2d0916`。
 
-### Root architecture
+- exact `@ag-ui/core@0.0.57`、npm integrity、TypeScript compatibility 与官方 `EventSchemas/EventType` 进入可执行门禁；
+- 第一阶段只允许 RUN、TEXT、ACTIVITY_SNAPSHOT 与注册 CUSTOM；RAW、state/messages snapshot、native tool、reasoning/thinking/step/chunk 族全部 fail closed；
+- Session 是 durable projection owner；Agent/Python 与 stock `@ag-ui/client` 不参与 browser transport；
+- 每个 persisted row 保存完整 closed projection payload 与 JCS digest，并一对一生成保留 SSE `id/event` 的 frame；
+- run resume 与 parent lineage 分离；TEXT END 后不得重开旧 presentation message id；resume 创建新 segment id；
+- cursor decoded claims、source、row、run/message binding 与 segment identity 在 Session scope 内全局去重；
+- deterministic corpus、checker、typecheck、18/18 对抗测试与 Root CI 接线终审 P0/P1/P2 为 0。
 
-- `docs/kokoro-handbook/technical/24-federated-product-platform-architecture.md`、ADR-016 与 PRD-00 v1.1 已通过四轮独立
-  架构终审；Product/Surface 唯一 owner、完整 SurfaceInventory、Web material/toolchain、五阶段 build supply chain、
-  JCS/DSSE/OCI/SLSA、旧事实源与真实 activation 状态均已收敛。
-- 旧 `technical/20` 已降级为历史基线；handbook README、CURRENT、CLAUDE 路由正在同步。
-- Root boundary registry 的精确 provider matching 已修复；Hub runtime 真实 consumer 只有 Agent，不是 Session。
+该 profile 仍为 `contract-only`。Session provider、Web consumer、兼容性场景与 release evidence 完成前不得激活。
 
-### Web Temporary Chat
+### Web Chat owner/terminal projection
 
-- 当前候选 commit：`4923b4c`；Web 创建时显式提交 `standard|temporary` 并核对 receipt/snapshot owner fact。
-- Temporary UI、持续 badge、普通 rail/search 抑制、draft/command/upload recovery 禁止与 scope remount 已实现；Web 全仓
-  typecheck/lint/599 tests/production build 由实现 agent 验证，正在独立终审。
-- 这仍只是 Web M1 + Session M0。Platform Admission、Saved Memory/past-chat/source/retention 抑制未完成前，完整
-  Temporary Chat 继续 NO-PASS。
+Commit chain：`2e8c742` → `95d5241` → `7c05e70` → `ddff038` → `fd08fe4` → `a8fb515`。
+
+- Run/Launch 双向绑定、pending half 私有、terminal non-revival 与 command selector authority 已收口；
+- live message 导致的 branch authority stale 只能由完整 owner snapshot 修复，合法 branch switch 不会无限 repair；
+- Session/Branch owner 使用 version + semantic fingerprint；同版本只能幂等，高版本不能改写 immutable identity；
+- branch root write-once，Session updatedAt 单调；非法新 Session snapshot 不会清除旧 scope；
+- terminal Run/Launch pair 在 snapshot/live 两条路径均不可重绑，authority ledger 有 4096 上限并超限 fail closed；
+- 最终终审 P0/P1/P2 为 0；chat-surface 53/53、chat-app 62/62、typecheck/lint 通过。
+
+### 其他稳定基线
+
+- Agent tool catalog ingress、delivery 25 MiB/TOCTOU 与 web-fetch private/CGNAT 防护已完成；本轮不改 Agent 核心语义。
+- Session Browser v3 已具备 scope-bound encrypted cursor、Last-Event-ID 冲突检查、durable +1、snapshot repair、bounded SSE、revocation 与 draining。
+- Platform identity/authz/model/hub/artifact/admin kernel 与 card-code/Fulfillment 基础较强；公开激活与完整 worker/recovery 仍按下节处理。
 
 ## 5. 正在进行
 
-### Platform Saved Memory owner data plane
+### Session AG-UI runtime M0
 
-当前候选 commit：`0679e85`。独立 spec review 已 NO-PASS，正在修复；继续 dormant。
+只在 `kokoro-session` 建立 dormant provider 基础：exact official dependency、strict normalized source port、run/message segment state machine、完整 row payload/digest、PostgreSQL append/CAS/RLS repository 与真实验证。不得直接让 Agent 输出 browser protocol，不改变现有 active Browser v3 stream；完成独立终审后再接 current Session owner facts。
 
-目标：完成 M0 personal owner data plane，但继续 dormant。
+### Web AG-UI consumer M0
 
-必须满足：
+只在 `kokoro-web` 建立 dormant strict decoder/adapter：保留自有 bounded SSE parser、验证 outer profile/source/cursor 与 official event，再映射到现有 `useExternalStoreRuntime` owner reducer。不得使用 stock `@ag-ui/client` 或 `useAgUiRuntime`，不得在 Session provider/compatibility evidence 完成前切 active controller。
 
-- remember/correct/forget/reset 只由 `MemoryAuthorityService` 产生 transition；
-- SQL 只负责真实 workload/OID/RLS、owner facts、锁、CAS、receipt 和已验证 transition 的持久化；
-- forget 只撤销目标 entry，reset 才推进整个 space generation；
-- list/detail/history/restore 全部数据库侧防止忘记/重置后的 plaintext 复活；
-- public command fingerprint 使用注入的 keyed provider + key revision；
-- prepare receipt、expected state digest 与 commit CAS 绑定，不能绕过 domain service；
-- 没有权威 per-Site Memory activation projection、production classifier 或 keyring 时 fail closed；
-- 使用现有 PostgreSQL 的唯一临时 DB 验证并删除，不新建容器。
+### Platform Candidate Authority implementation audit
 
-已确认的阻断包括：prepare/commit 可伪造 transition、JSONB `null` 与时间格式不兼容、成功 command replay 被前置
-read/KMS/classifier 破坏、revoked/purged detail 只存在于 fake、真实 PostgreSQL ACL/routine/隔离证据缺失、decoder 非
-closed shape。上述问题全部修复并复审前，不得把该 commit 纳入候选 pin。
+正在按真实代码梳理 ProductCatalog、SurfaceInventory、WebBuildIntent、MaterialBundle、Candidate、Certification、SiteRelease、active-pointer CAS 与六个 owner live receipt 的实现 DAG。Platform `534be3a` 的旧 publish handler 已明确 `Unimplemented`；当前不得恢复旧 handler 或用 self-RPC 拼装。
 
-### Web Release Composition
+## 6. 尚未闭环的产品能力
 
-当前 scaffold 只有 `SiteProductId = "memory"`，存在 `memoryEnabled` 特判，而 Chat/Account/Media 总是打包后再
-`notFound()`。这不适合大量独立套皮 Site。
+- Platform ProductCatalog/SurfaceInventory/SiteRelease Candidate Authority 与真实 activation/rollback；
+- Commerce、Model、Hub、Auth、Memory 对 exact active SiteRelease revision 的运行时绑定；
+- card-code redeem → Fulfillment → Subscription/Entitlement/CreditGrant，以及 daily/periodic/permanent bucket 的 hold/settle/release/reconcile/expiry workers；
+- Image-first Media 的 Gateway/Trust/Credit/Artifact/worker 全链，随后复用到 Music/Video；
+- Saved Memory activation、classifier、keyring、retention/import/export/purge/Data Rights；
+- conversation search、workspace/project、notification、support 与完整 telemetry；
+- 标准 Admin operator product的全量 control plane，而非直接写业务数据库；
+- 两个独立 Site 的浏览器 E2E、故障恢复、clean clone、BOM、rollback rehearsal。
 
-目标：Platform release candidate 签发 `WebBuildIntent`，Web 从受信、版本化、封闭的 `WebCompositionUnit` 目录编译
-`CompiledWebManifest`，再构建独立 Site artifact；最终 SiteRelease 绑定 intent、compiled-manifest digest、artifact digest
-与业务 revisions。Web unit 只拥有 package/route/nav/BFF/bootstrap 等物理映射，不拥有 Product、Entitlement、Policy 或
-Journey。未启用 surface 在 artifact 和 Platform authorization 中都物理缺席。不得引入任意动态代码、shell、URL/npm
-spec 或 `if (productEnabled)` 扩散。
+所以当前整体仍不是 launch-ready；已 PASS 的是关键 owner/contract/Web projection 基础，不是全部 Platform 模块。
 
-## 6. 后续顺序
+## 7. 下一步顺序
 
-1. 修复 Platform Memory Task 5 的全部独立审查 blocker，再走 spec、code-quality、主控真实 PG 与全仓复验。
-2. 完成 Web Temporary Chat M1 独立终审；Session context-policy M0 已终审通过，不再重复做 migration 工作。
-3. Root 先发布 ProductSurfaceCatalog、SurfaceInventory、WebBuildIntent、MaterialBundle、BuildToolchain、CompiledManifest
-   与 provenance profile contracts/corpus；不得先写一个自有字符串表的 Web compiler。
-4. Platform Product Catalog 发布唯一 catalog revision；Site 的单一 SurfaceInventory、Commerce、Model 与 Memory
-   全部迁到同一 ref/digest。
-5. Web 在 shadow mode 发布 WebCompositionRegistryRevision/compiler，由完整 SurfaceInventory 派生 units，删除 Memory
-   特判与 always-included 产品。
-6. 建立 controller → trusted compiler → credential-free build sandbox → separate inspector sandbox → attestor 的构建
-   控制面、release material/package/OCI provenance 和真实 Next artifact inspection。
-7. Platform Site owner 完成 WebBuildIntent/MaterialBundle、candidate evidence、SiteRelease、ProductContext、activation/
-   drain/rollback 集成，并以两个完全独立 Site 验证。
-8. Session/Platform Admission 完成 Temporary Chat retention/source/search/Saved Memory 抑制；再实现可解释 conversation
-   search。任何 Agent MemoryPort 变更先与用户对齐。
-9. Platform 增加权威 SiteRelease Memory activation projection；完成 purge/import/export worker 与 Data Rights 后才挂
-   public route。
-10. 审计并收口 ModelOption、LiteLLM adapter、Redeem/Fulfillment/Credit 三 bucket 与 payment-off negative inventory。
-11. 完成 Media image vertical 的真实 Gateway/Trust/Credit/Artifact/worker 链，再复用到 Music/Video。
-12. 建立 Workspace/Project、Trust、Notification、Support、Data Rights 的最小 core-launch bounded contexts 与旅程。
-13. 对 Web/Session 超大 controller/composition 文件按责任拆分，建立 Root toolchain BOM；Session 是否迁 pnpm 单独决策。
-14. 四仓完整 CI、真实 Infra、两个独立 Site 浏览器 E2E、安全/故障/恢复、clean clone、BOM、rollback rehearsal。
+1. 完成 Session/Web AG-UI M0，双独立复审后建立真实 Session provider → Web consumer compatibility scenario。
+2. 设计并实施 Session presentation projector 对现有 owner facts/Agent durable-output consumer 的接线；每个 frame 必须先持久化，禁止临时 fan-out。
+3. 实现 Platform Product/Surface/SiteRelease Candidate Authority 与 active-pointer CAS，再将旧 handler 的 fail-closed 替换为新 authority。
+4. 把 Commerce、Model、Hub、Auth、Memory 全部绑定同一 active release ref/digest，完成两个独立 Site 的启用/禁用验证。
+5. 闭环 card-code/Fulfillment/Credit 三 bucket，再做 Image Media vertical；Music/Video 只复用已验证 spine。
+6. 激活 Saved Memory 与 Data Rights；任何 Agent MemoryPort 或核心 graph/handoff 改动先通知用户。
+7. 四仓独立 CI、跨仓 runtime compatibility、真实 Infra、clean clone、原子 pin promotion、BOM 与 rollback rehearsal。
 
-## 7. 当前阻塞
+## 8. 当前阻塞
 
-- Root GitHub Actions 缺少用户侧 `KOKORO_SUBMODULE_TOKEN`（对四个私有子仓只读 Contents）。不代用户签发凭据；
-  Root remote CI 未绿前不创建 BOM tag。
-- Payment provider 凭据不在当前 launch scope；保持 feature-off，不用 fake payment 替代真实集成。
-- 任何需要改变 Agent 核心 graph/checkpoint/terminal/handoff 或正式加入 MemoryPort 的工作，必须先与用户对齐。
+- Root GitHub Actions 缺用户侧 `KOKORO_SUBMODULE_TOKEN`，不能代用户签发；Root remote CI 未绿前不创建 BOM tag。
+- Payment provider 凭据不在当前 launch scope；保持 feature-off，不以 fake payment 冒充真实集成。
+- Node 本地主控为 22，仓库声明 Node >=24；实现 agent 已使用 Node 24 复验关键 Web 门禁，Root CI 也固定 Node 24。
 
-## 8. 完成定义
+## 9. 完成定义
 
-“整体 OK”不是测试数量或文档数量。必须同时满足：
+“整体 OK”必须同时满足：
 
-- owner、边界、状态机和失败恢复正确；
+- owner、边界、状态机、失败恢复与不可逆终态正确；
 - Site/Subject/workload/namespace 隔离无 fail-open；
-- 启用产品业务旅程完整，未启用产品五层关闭；
-- 真实 PostgreSQL/MongoDB/Redis/MinIO 与跨仓协议证据通过；
-- Web 浏览器行为、Admin 运维、可观测、数据权利、维护与回滚可用；
-- 子仓独立发布 + Root 原子组合经过 clean clone 和 rollback rehearsal；
-- 文档、contracts、generated clients、deployment inventory 与代码事实一致。
+- 启用产品旅程完整，未启用产品在构建、路由、授权、模型与计费五层都关闭；
+- PostgreSQL/MongoDB/Redis/MinIO 与跨仓协议有真实运行证据；
+- Web 浏览器行为、Admin 运维、可观测、数据权利、维护和回滚可用；
+- 四个子仓独立发布，Root 原子组合经过 clean clone 与 rollback rehearsal；
+- 文档、contract、generated client、deployment inventory、BOM 与代码事实完全一致。
