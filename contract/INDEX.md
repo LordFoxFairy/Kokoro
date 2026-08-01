@@ -20,7 +20,7 @@ This directory does not implement providers, consumers, retries, authentication 
 `proto/`, `openapi/`, `spec/`, `buf.yaml`, `buf.gen.yaml`, `generate.mjs`, `generate.py`,
 `generate-public-openapi.mjs`, both Media canonical generators, the canonical and projection-integrity
 golden corpora, the Web Release Composition JSON Schema/registry/corpus family, the semantic projection corpus
-generator, the descriptor/Protovalidate integrity validator, and the
+generator, the strict AG-UI presentation profile/schema/registry/corpus family, the descriptor/Protovalidate integrity validator, and the
 generation/check commands documented in [`README.md`](README.md) form the public boundary.
 
 ## Callers and dependencies
@@ -53,6 +53,23 @@ safe projections of the five Model Control effects, never generic Admin resource
 Add a schema only with a real producer and consumer. Never create runtime filesystem coupling from a child to this directory.
 
 ## Current gotchas
+
+The strict AG-UI presentation family is nine machine-readable Root sources:
+[`agui-upstream-profile.yaml`](registry/agui-upstream-profile.yaml),
+[`agui-presentation-mapping-v1.yaml`](registry/agui-presentation-mapping-v1.yaml),
+[`kokoro-agui-presentation-event-v1.yaml`](spec/kokoro-agui-presentation-event-v1.yaml),
+[`presentation-run-binding-v1.yaml`](spec/presentation-run-binding-v1.yaml),
+[`presentation-message-binding-v1.yaml`](spec/presentation-message-binding-v1.yaml),
+[`session-agui-projection-payload-v1.yaml`](spec/session-agui-projection-payload-v1.yaml),
+[`session-agui-presentation-row-v1.yaml`](spec/session-agui-presentation-row-v1.yaml),
+[`session-agui-stream-v1.yaml`](spec/session-agui-stream-v1.yaml), and
+[`agui-presentation-v1.json`](corpus/agui-presentation-v1.json).
+It is `contract-only`: Session is the sole durable projection owner; Agent is not a participant, the pinned Python
+`ag-ui-protocol` SDK is not a participant, and no runtime compatibility is claimed. The exact
+`@ag-ui/core@0.0.57` `EventType`/`EventSchemas` family is the official TypeScript schema authority. Kokoro then applies
+a stricter closed presentation subset. The stock `@ag-ui/client` transport is forbidden because it cannot preserve
+Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapshot repair, and non-durable draining
+semantics. Rendering libraries remain adapters only and do not own the wire contract.
 
 The fifteen Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
 new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform
@@ -220,4 +237,6 @@ Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract 
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
 `node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
 `pnpm --dir contract run web-release:check`; CI compares the current fifteen-contract candidate with the predecessor's
-own valid contract set and then freezes every predecessor v1 registry row and schema.
+own valid contract set and then freezes every predecessor v1 registry row and schema. Validate the strict AG-UI family
+with `pnpm --dir contract agui:check`, `pnpm --dir contract agui:typecheck`, and
+`pnpm --dir contract agui:test`.

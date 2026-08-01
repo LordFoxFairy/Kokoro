@@ -198,8 +198,9 @@ model/agent catalog、surface string 与 locale policy 等有限字段；其中 
 Product Catalog，不能据此宣称完整发布快照已经实现。
 
 Root 的 latest-only `PublishSiteReleaseEffect` 已硬切为仅接受 Candidate ref、expected version 与 reason；SiteRelease ref、
-digest、Certification 与其他发布事实必须由 Platform 生成。`platform-site-provisioning@v1` 在 Platform/Web 重新生成 mirror
-、hard-cut 仍 live 的旧 Platform handler 并提交兼容性证据前保持 `contract-only`；Root 合同本身不构成 runtime closure。
+digest、Certification 与其他发布事实必须由 Platform 生成。旧 Platform publish handler 已经 fail closed，不再接受或伪造
+旧请求；但 `platform-site-provisioning@v1` 在 Platform/Web 从 Root 重新生成 provider/consumer mirror 并提交真实兼容性证据
+前仍保持 `contract-only`。旧 handler 的关闭和 Root 合同发布都不构成新 runtime closure。
 
 目标 `SiteRelease` 冻结 Web artifact、品牌/法务 digest、Product/Surface catalog revision、产品装配、Site config、
 assortment、model/agent/capability assignment、sales policy 和 contract compatibility。它是 Platform 的发布事实，不是
@@ -352,6 +353,14 @@ Web 创建 standard/temporary Session
 Session 不自行解析、拥有或冻结 Platform owner facts，不执行 Agent；Agent 不写 Session message，Web 不直连 Agent。
 Agent graph/checkpoint/terminal/handoff 语义保持稳定；业务能力通过预先审核的 agent preset、Skill/MCP 和窄 Platform
 capability port 注入，而不是在 GA 中复制业务 owner。
+
+Root 已冻结一个 strict AG-UI presentation profile，但它当前仍是 `contract-only`，不能据此宣称 Chat runtime 已迁移。
+Session 是 durable presentation row、snapshot、repair 和 SSE projection 的唯一 owner；Web 最终只消费其严格 typed
+presentation subset，Agent 不参与 AG-UI，Python `ag-ui-protocol` 也不进入该浏览器 wire path。Root 使用精确固定的
+`@ag-ui/core@0.0.57` `EventType`/`EventSchemas` 证明上游类型兼容，再以更小的 closed schema 禁止 raw provider payload、
+native tool wire events、reasoning/thinking/state/delta 和未知 custom 事件。官方 stock client transport 会丢失或无法表达
+Kokoro 必需的 SSE `id/event`、`Last-Event-ID`、opaque durable cursor、HTTP snapshot repair 和 non-durable draining 语义，
+因此被明确禁用；未来 Session/Web adapter 必须保留这些字段并提交真实 provider/consumer compatibility evidence。
 
 ### 9.2 Temporary Chat 与长期记忆
 

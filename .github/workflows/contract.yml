@@ -43,6 +43,11 @@ jobs:
         run: |
           uv sync --locked
           pnpm --dir contract install --frozen-lockfile
+      - name: strict AG-UI presentation contract gate
+        run: |
+          pnpm --dir contract agui:check
+          pnpm --dir contract agui:typecheck
+          pnpm --dir contract agui:test
       - name: install exact child locks for compatibility execution
         run: |
           uv sync --project kokoro-agent --locked
