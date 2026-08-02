@@ -2,11 +2,12 @@
 artifact: architecture-design
 version: "1.0"
 created: 2026-08-02
-status: draft
+status: internally-approved
 scope: codebase-taxonomy-presentation-boundary-generated-contract-layout
-implementationAuthorized: false
+implementationAuthorized: true
 gaRuntimeSemanticChangeAuthorized: false
-reviewedBy: []
+reviewedBy:
+  - human:LordFoxFairy
 supersedesNamingSectionsOf:
   - 2026-07-25-platform-web-session-target-architecture-design.md
 ---
@@ -223,6 +224,52 @@ Revision fields are assigned per schema:
 
 No persisted object carries all revision axes merely for convenience.
 
+### 4.2 Canonical records, wire bytes and digests
+
+Every digest input uses I-JSON plus RFC 8785/JCS. Duplicate keys, non-finite
+numbers, unsafe JSON integers, non-NFC strings and unknown fields fail before
+hashing. The exact `StreamRecord` digest payload is the closed object:
+
+```text
+contractRevision, schemaVersion,
+siteId, sessionId, streamEpoch, durableSeq, projectionRevision,
+publicSourceEventId, eventKind, eventData, bindingUpdate, recordedAt
+```
+
+`recordDigest = sha256(UTF8("kokoro.presentation.stream-record.v1\\0") ||
+JCS(payload))`. The lowercase `sha256:<hex>` result determines
+`recordRef = presentation.record:sha256:<hex>`; neither `recordRef` nor
+`recordDigest` is included in its own preimage.
+
+An `AgUiFrame` is the immutable AG-UI **data unit**, not the complete SSE
+frame. Its logical fields are `wireProfileRevision`, `eventName`,
+`frameData` and `streamRecordDigest`. `eventName` must equal the validated
+`frameData.event.type`. The adapter computes
+`dataUtf8 = UTF8(JCS(frameData))` and:
+
+```text
+frameDigest = sha256(
+  UTF8("kokoro.presentation.ag-ui-frame.v1\\0") ||
+  UTF8(wireProfileRevision) || NUL ||
+  UTF8(eventName) || NUL ||
+  UTF8(streamRecordDigest) || NUL ||
+  dataUtf8
+)
+```
+
+PostgreSQL persists `event_name TEXT`, exact `data_utf8 BYTEA`,
+`wire_profile_revision`, `stream_record_digest` and `frame_digest`; it does
+not persist a second `jsonb` copy that could canonicalize differently. The
+logical `frameData` is recovered only by strict UTF-8 parse and schema
+validation of those bytes.
+
+The HTTP adapter issues the grant-bound opaque cursor at read time and serializes
+`id: <cursor>`, `event: <eventName>` and the exact persisted `dataUtf8`.
+Cursor claims and SSE line formatting are never stored in
+`presentation_wire_frame` and never enter `frameDigest`. Replay therefore
+preserves immutable event/data bytes while each authorized read receives the
+correct cursor grant.
+
 ## 5. 系统上下文与依赖方向
 
 ```mermaid
@@ -282,12 +329,14 @@ contract/
     presentation.proto
   spec/presentation/
     submission-v1.yaml
+    ag-ui-submission-event-v1.yaml
     domain-event-v1.yaml
     stream-record-v1.yaml
     binding-v1.yaml
     binding-update-v1.yaml
     owner-state-v1.yaml
     snapshot-v1.yaml
+    stream-v1.yaml
     ag-ui-frame-v1.yaml
   registry/presentation/
     ag-ui-version-lock.yaml
@@ -437,8 +486,29 @@ packages/chat-app/
 run.started | run.finished | run.failed
 message.started | message.delta | message.finished
 owner.replaced
+session.replaced | branch.replaced | message.replaced | run.replaced
+control.replaced | receipt.replaced
 control.draining
 ```
+
+The mapping is closed and lossless:
+
+| Validated Presentation event              | `ChatUpdate.kind`         |
+| ----------------------------------------- | ------------------------- |
+| AG-UI run/text lifecycle                  | matching run/message kind |
+| `ACTIVITY_SNAPSHOT` with an Owner binding | `owner.replaced`          |
+| `CUSTOM kokoro.session.replace.v1`        | `session.replaced`        |
+| `CUSTOM kokoro.branch.replace.v1`         | `branch.replaced`         |
+| `CUSTOM kokoro.message.replace.v1`        | `message.replaced`        |
+| `CUSTOM kokoro.run.replace.v1`            | `run.replaced`            |
+| `CUSTOM kokoro.control.replace.v1`        | `control.replaced`        |
+| `CUSTOM kokoro.receipt.replace.v1`        | `receipt.replaced`        |
+
+`owner.replaced` is restricted to versioned Activity owner state. Session,
+Branch, Message and Run replacements are aggregate projections；Control and
+Receipt keep their explicit kinds even though their binding update may carry an
+Owner version. No mapping collapses these six payload shapes into a generic
+Owner payload.
 
 `session-client/adapters/ag-ui` 是 Web 仓唯一 AG-UI decoder owner。它验证 wire
 frame，并输出 `DecodedPresentationFrame`；该类型由
@@ -457,6 +527,14 @@ discriminant。`@ag-ui/core` 只能被 `session-client/adapters/ag-ui`
 Session 和 Web 的 generated `PresentationEvent` 均来自同一个 Root schema/source
 digest；Root compatibility corpus 要求 server AG-UI encoder 与 Web decoder
 round-trip 到相同 canonical domain event，防止两端各自解释 wire vocabulary。
+
+The cross-package compatibility runner lives only at
+`kokoro-web/scripts/compatibility/presentation/`. It imports the public
+`session-client` decoder and `chat-projection` adapter, is excluded from all
+package exports and browser bundles, and never becomes an AG-UI subpath of
+`chat-projection`. The runner does not decode independently or import
+`@ag-ui/core` directly；it replays the Root corpus through the one production
+decoder/mapping chain.
 
 ### 6.5 Platform
 
@@ -484,6 +562,16 @@ hard cut 为 `admin-command`。deployable 继续叫
 `platform-admin`，它是组合 access/query/command
 providers 的运行角色，不是第四个 domain。
 
+The split removes both existing reverse dependencies. Request authentication
+and the `VerifiedAdminOperatorContextResolver` port move to
+`admin-access/application`；`admin-command` consumes that port, while
+`admin-access` never imports `admin-command`. Canonical JSON mechanics move
+to `shared/integrity/canonical-json.ts`, but each bounded context retains its
+own domain separator and digest payload. `admin-query` may read command
+receipts only through the narrow
+`admin-command/application/admin-command-receipt-view.ts` port；it never
+imports the command repository or handler.
+
 `src/process` 按 entrypoint/composition/host/security 移动。泛化
 `createPlatformAdmissionProcess` 改为按真实职责命名的
 `createConnectServiceHost`。`src/workflows/commerce` 中只依赖 Commerce
@@ -496,9 +584,26 @@ README、workspace、build、image 和 deployable inventory 定义为 retired so
 archive，本方案将其从 active tree **删除**，不移动到仓内
 `archive/`。删除前的 gate 只验证它确实不在 workspace、lock importer、TypeScript
 build、test、Docker context、runtime selector、CI 和 release
-artifact 中；任一 active edge 出现都先迁移到 root Platform
-owner，再删除目录。Root CODEBASE_MAP 同步删除其 active-owner 描述。Git
-history 是唯一历史恢复入口。
+artifact 中。P0 explicitly retires rather than migrates its unpublished
+`kokoro.platform.admin.v1.AdminAuthService` and standalone MySQL data plane:
+`GetOperator*` is superseded by
+`kokoro.platform.admin.v2.AdminQueryService`；operator
+login/token/session/auth-event behavior is superseded by the PostgreSQL-backed
+`kokoro.platform.identity.v1.AdminIdentityService` OIDC and session receipt
+flow；command recovery is superseded by
+`kokoro.platform.admin.v2.AdminCommandService.GetReceipt`.
+
+Therefore the closed cut deletes
+`contract/proto/kokoro/platform/admin/v1/admin_auth.proto`, its
+`platform-admin-auth@v1` boundary/generator entries and all generated mirrors
+together with the retired directory. No MySQL row is migrated and no active
+owner changes. The pre-delete gate must prove the legacy boundary has no
+official consumer, compatibility-matrix row, deployable endpoint, workspace or
+release edge. Discovery of a live caller, configured endpoint, non-empty
+non-development database, external receipt or production credential stops the
+deletion and requires a separate owner-migration design. Root CODEBASE_MAP and
+the ops handbook remove the contradictory active-owner wording. Git history is
+the only source recovery path.
 
 ### 6.6 Generated provenance contract
 
@@ -537,6 +642,32 @@ path + manifest digest and rejects unlisted generated roots. Python
 package-derived protobuf outputs are covered by an Agent-root provenance
 manifest even though their physical path follows the protobuf package rather
 than `src/generated/proto`.
+
+Generation is repository-atomic, never boundary-destructive. R1 replaces the
+current one-boundary `clean: true` behavior with:
+
+```text
+node contract/generate.mjs \
+  --consumer <kokoro-agent|kokoro-session|kokoro-web|kokoro-platform> \
+  --source-root <clean-checkout-of-R1> \
+  --output-repository <independent-child-checkout>
+```
+
+The consumer compilation manifest lists **all** active Proto, schema, corpus and
+helper boundaries for that repository. The command generates their complete
+package-derived tree into one temporary directory, de-duplicates common Proto
+packages, generates every non-Presentation output already owned by the
+consumer, validates import closure and provenance, then atomically replaces
+the repository's generated root once. Cleanup is allowed only inside that
+temporary tree before validation；one boundary invocation may never erase
+another boundary. Web performs the same single workspace transaction and emits
+per-package manifests plus the Web-root index.
+
+`--check` runs the same complete compilation into a temporary tree and compares
+path set + bytes + manifest digest without writing. Child generation must use a
+clean checkout of exact `R1`, never the Root controller's dirty working tree.
+This is how unrelated generated control/media/credit outputs and the existing
+Media runtime-grant additions survive the Presentation hard cut.
 
 ## 7. 命名规则
 
@@ -609,12 +740,14 @@ lease 等语义不得为了变短而删除。
 | Before                                          | After                                                                 |
 | ----------------------------------------------- | --------------------------------------------------------------------- |
 | `agent-agui-candidate-envelope-v1`              | `presentation-submission-v1`                                          |
-| `agent-agui-event-candidate-v1`                 | `agent-presentation-event-v1`                                         |
+| `agent-agui-event-candidate-v1`                 | `presentation/ag-ui-submission-event-v1`                              |
 | `kokoro-agui-presentation-event-v1`             | split: `presentation-domain-event-v1` + `presentation-ag-ui-frame-v1` |
 | `session-agui-projection-payload-v1`            | `presentation-ag-ui-frame-v1`                                         |
 | `session-agui-presentation-row-v1`              | `presentation-stream-record-v1`                                       |
 | `session-agui-owner-projection-row-v1`          | `presentation-owner-state-v1`                                         |
 | `session-agui-snapshot-authority-v1`            | `presentation-snapshot-v1`                                            |
+| `session-agui-stream-v1`                        | `presentation/stream-v1`                                              |
+| `presentation-{run,message,owner}-binding-v1`   | merged into `presentation/binding-v1`                                 |
 | `presentation-binding-authority-delta-v1`       | `presentation-binding-update-v1`                                      |
 | `profileRevision`                               | `contractRevision` 或 wire-only `wireProfileRevision`                 |
 | `schemaRevision`                                | `schemaVersion`                                                       |
@@ -631,25 +764,69 @@ and its `schemaVersion`. AG-UI adapter frame carries `wireProfileRevision`,
 `frameData`, `frameDigest` and the exact `streamRecordDigest`. Cursor revision
 only enters cursor claims；these axes are not copied into every row.
 
+`contract/spec/presentation/ag-ui-submission-event-v1.yaml` is the only
+authoritative schema for the nested Agent-produced AG-UI event accepted inside
+`submission-v1.yaml`. It replaces the old candidate-event schema and is
+wire-specific；it is not a second domain event. The Session admission adapter
+decodes it into the separately authoritative
+`contract/spec/presentation/domain-event-v1.yaml`. Both source files, their
+generated validators, the mapping registry and every corpus vector are covered
+by the same Presentation provenance closure. No independent
+`agent-presentation-event-v1` contract ID exists.
+
+`presentation/stream-v1.yaml` owns snapshot/SSE stream metadata, frozen replay
+head and opaque cursor claims. It references `ag-ui-frame-v1` as its current
+payload profile but does not duplicate that schema. The old
+`agent-presentation-integrity-v1.json` and `agui-presentation-v1.json` merge
+into one `contract/corpus/presentation-v1.json` with independently digested
+`deliveryIntegrity`, `submissionAdmission`, `domainTransition`,
+`agUiMaterialization` and `webProjection` sections. Merging the file does
+not merge the semantic stages or their digest domains.
+
 ### 8.2 Proto
 
 Proto package 保持 `kokoro.agent.presentation.v1`，在 package 内删除冗余
 `Presentation` 前缀：
 
-| Before                                  | After                         |
-| --------------------------------------- | ----------------------------- |
-| `AgentPresentationService`              | `PresentationService`         |
-| `PresentationProducerFence`             | `ProducerFence`               |
-| `PresentationCandidateRecord`           | `DeliveryRecord`              |
-| `PresentationDeliveryStatus`            | `DeliveryStatus`              |
-| `PullCandidateBatches`                  | `PullRecords`                 |
-| `CandidateAdmissionReceipt`             | `AdmissionReceipt`            |
-| `AcknowledgeCandidateAdmissions`        | `AcknowledgeAdmissions`       |
-| `QuarantineCandidateAdmission`          | `QuarantineSubmission`        |
-| `presentation_ref` / `presentation_seq` | `record_ref` / `delivery_seq` |
+| Before                                        | After                             |
+| --------------------------------------------- | --------------------------------- |
+| `AgentPresentationService`                    | `PresentationService`             |
+| `PresentationProducerFence`                   | `ProducerFence`                   |
+| `PresentationProducerFenceDigestPayload`      | `ProducerFenceDigestPayload`      |
+| `PresentationRecordChainGenesisDigestPayload` | `RecordChainGenesisDigestPayload` |
+| `PresentationCandidateRecordDigestPayload`    | `DeliveryRecordDigestPayload`     |
+| `PresentationSnapshotHeadDigestPayload`       | `DeliveryHeadDigestPayload`       |
+| `PresentationTerminalDisposition`             | `TerminalDisposition`             |
+| `PresentationTerminalSeal`                    | `TerminalSeal`                    |
+| `PresentationDeliveryStatusDigestPayload`     | `DeliveryStatusDigestPayload`     |
+| `PresentationRejectionClass`                  | `RejectionClass`                  |
+| `PresentationTransientErrorKind` / `Detail`   | `TransientErrorKind` / `Detail`   |
+| `PresentationPermanentErrorKind` / `Detail`   | `PermanentErrorKind` / `Detail`   |
+| `PresentationCandidateRecord`                 | `DeliveryRecord`                  |
+| `PresentationQuarantineStatus`                | `QuarantineStatus`                |
+| `PresentationDeliveryStatus`                  | `DeliveryStatus`                  |
+| `PullCandidateBatches`                        | `PullRecords`                     |
+| `PullCandidateBatchesRequest/Response`        | `PullRecordsRequest/Response`     |
+| `CandidateAdmissionReceipt`                   | `AdmissionReceipt`                |
+| `AcknowledgeCandidateAdmissions`              | `AcknowledgeAdmissions`           |
+| matching acknowledge Effect/Request/Response  | `AcknowledgeAdmissions*`          |
+| `QuarantineCandidateAdmission`                | `QuarantineSubmission`            |
+| matching quarantine Effect/Request/Response   | `QuarantineSubmission*`           |
+| `presentation_ref` / `presentation_seq`       | `record_ref` / `delivery_seq`     |
 
 RPC full name 仍包含 package + service +
 method，因此较短 message/method 不损失跨仓诊断上下文。
+
+This table is exhaustive for declarations in the pre-cut file.
+`CheckActiveRequest/Response` and `GetDeliveryStatusRequest/Response` are the
+only declarations that retain their names. Every field family is also closed:
+`previous_presentation_seq` -> `previous_delivery_seq`；all
+`after/page_after/next_after/snapshot_through/sealed_through/acknowledged_through_*presentation_seq`
+forms use `delivery_seq`；all `candidate_*` fields use `submission_*`.
+Existing field numbers and compatible wire types are preserved. Removed names
+and any genuinely removed numbers are reserved. The single-use descriptor
+manifest enumerates this exact declaration/field set and rejects any additional
+symbol delta.
 
 ### 8.3 Agent closed ledger
 
@@ -676,7 +853,9 @@ method，因此较短 message/method 不损失跨仓诊断上下文。
 | `build_agui_candidate`                   | `build_submission`                      |
 | `CandidateProtocolError`                 | adapter-local `SubmissionProtocolError` |
 | `PresentationProjectionState`            | `PresentationState`                     |
-| `PresentationCandidateBatch` / `Record`  | `DeliveryPage` / `DeliveryRecord`       |
+| `PresentationCandidateBatch`             | `SubmissionBatch`                       |
+| `PresentationCandidatePage`              | `DeliveryPage`                          |
+| `PresentationCandidateRecord`            | `DeliveryRecord`                        |
 | `PresentationCandidateReader` / `Writer` | `DeliveryReader` / `DeliveryWriter`     |
 | `AgentPresentationService`               | `PresentationDeliveryService`           |
 | `AgentPresentationConnectService`        | `PresentationConnectService`            |
@@ -689,6 +868,33 @@ implementation, `AgentAgui|AGUI_CANDIDATE|agui_candidate|`
 `PresentationCandidate|presentation_seq` may remain only in a compatibility
 fixture explicitly listed by the Root compatibility manifest; production source
 and public exports have an empty allowlist.
+
+Agent's durable Mongo presentation lane is part of the hard cut, not an
+unversioned implementation detail. The candidate declares
+`kokoro.agent.presentation.store-baseline.v1` in
+`presentation/store_baseline.py`; a canonical manifest generated from that
+declaration freezes collection names, validators and index definitions:
+
+| Before                                 | After                                          |
+| -------------------------------------- | ---------------------------------------------- |
+| `agent_presentation_candidate`         | `agent_presentation_delivery_record`           |
+| `agent_presentation_source_batch`      | `agent_presentation_source_commit`             |
+| `agent_presentation_state`             | `agent_presentation_planner_state`             |
+| `agent_presentation_delivery`          | `agent_presentation_delivery_state`            |
+| `agent_presentation_admission_command` | `agent_presentation_admission_command_receipt` |
+
+The baseline digest covers every JSON validator and named unique/non-unique
+index, including run + `delivery_seq`, run + `record_ref`, source-event
+deduplication, planner revision, delivery status revision and admission command
+idempotency. Agent startup may create or verify only the candidate baseline；it
+must never rename, copy or reinterpret an old collection. P4 owns the explicit
+development reset. Before reset it inventories the five old collections,
+document counts, unacknowledged heads, quarantine state and terminal seals
+without payload contents. Any unknown database, non-development deployment,
+external receipt, or non-disposable unacknowledged head stops the reset. A
+confirmed disposable database drops only the five exact old collection names
+and initializes the candidate indexes；it never deletes the Mongo volume or
+unrelated Agent collections.
 
 ### 8.4 Session API
 
@@ -770,12 +976,12 @@ authentication/authorization, not business command admission.
 
 `src/process` is completely eliminated by this closed classification:
 
-| Target                 | Complete source class                                                                                                                                                                                                                                                                                                                                      |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `runtime/entrypoints`  | `admin.ts`, `admin-worker.ts`, `admission.ts`, `api.ts`, `artifact-data-plane.ts`, `asset-data-plane.ts`, `asset-worker.ts`, `authorization-maintenance.ts`, `authorization.ts`, `commerce-worker.ts`, `identity-worker.ts`, `media-worker.ts`, `model-gateway.ts`, `model-image-worker.ts`, `site-worker.ts`, `worker.ts`, `admin-authority-bootstrap.ts` |
-| `runtime/compositions` | every `*-composition.ts`, `*-owner.ts`, `*-database.ts`                                                                                                                                                                                                                                                                                                    |
-| `runtime/hosts`        | `worker-health-server.ts`, `worker-process-host.ts`, `worker-deployment-contract.ts`, `platform-api-runtime-contract.ts`                                                                                                                                                                                                                                   |
-| `runtime/security`     | `secret-files.ts`, `memory-content-protection.ts`                                                                                                                                                                                                                                                                                                          |
+| Target                 | Complete source class                                                                                                                                                                                                                                                                                                                         |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runtime/entrypoints`  | `admin.ts`, `admin-worker.ts`, `admission.ts`, `api.ts`, `artifact-data-plane.ts`, `asset-data-plane.ts`, `asset-worker.ts`, `authorization-maintenance.ts`, `authorization.ts`, `commerce-worker.ts`, `identity-worker.ts`, `media-worker.ts`, `model-gateway.ts`, `model-image-worker.ts`, `site-worker.ts`, `admin-authority-bootstrap.ts` |
+| `runtime/compositions` | every `*-composition.ts`, `*-owner.ts`, `*-database.ts`                                                                                                                                                                                                                                                                                       |
+| `runtime/hosts`        | `worker.ts` -> `worker-runtime.ts`, `worker-health-server.ts`, `worker-process-host.ts`, `worker-deployment-contract.ts`, `platform-api-runtime-contract.ts`, extracted `connect-service-host.ts`                                                                                                                                             |
+| `runtime/security`     | `secret-files.ts`, `memory-content-protection.ts`                                                                                                                                                                                                                                                                                             |
 
 If a file matches two classes, the explicit host/security list wins, then
 entrypoint, then composition. No file may remain in `src/process`. Deployable
@@ -794,11 +1000,18 @@ Other Platform moves are closed:
 - boundary digest/metadata helpers ->
   `src/generated/contracts/<boundary-id>/{digest,metadata}.ts`；
 - JSON Schema validators -> `src/generated/schema/<contract-family>/**`；
-- delete retired `kokoro-platform-admin/**` after the active-edge negative gate
-  passes；
+- delete retired `kokoro-platform-admin/**`,
+  `contract/proto/kokoro/platform/admin/v1/admin_auth.proto`,
+  `platform-admin-auth@v1` boundary/generator entries and every generated
+  Admin Auth v1 mirror after the active-edge negative gate passes；the
+  replacement matrix is exactly
+  `AdminQueryService.{GetOperator,ListOperators}`,
+  `AdminIdentityService.{BeginOperatorLogin,ExchangeOidcSession,GetOperatorSessionDelivery,BeginStepUp,CompleteStepUp,SignOut}`
+  and `AdminCommandService.GetReceipt`；
 - `modules/admin-control`, `modules/admin`, `src/process`,
   `src/workflows/commerce`, `interfaces/connect/generated*` and
-  `kokoro-platform-admin` must all be absent after the hard cut.
+  `kokoro-platform-admin`, plus Root `admin/v1` Admin Auth sources and
+  registry entries, must all be absent after the hard cut.
 
 ## 9. 数据与契约切换
 
@@ -807,11 +1020,18 @@ Other Platform moves are closed:
 1. 修改 Root contract source 与 registry。
 2. 重新生成 Proto/Schema/corpus/digest/provenance。
 3. 更新 Agent provider 和 Session/Web consumers。
-4. 重写 Session presentation 初始 migrations、runtime grants、RLS
+4. 生成并验证 Agent
+   `kokoro.agent.presentation.store-baseline.v1`，只读盘点旧 Mongo
+   collections、未 ACK head、quarantine 与 terminal seal；确认 disposable
+   后仅重建 §8.3 的五个 Presentation collections/indexes。
+5. 重写 Session presentation 初始 migrations、runtime grants、RLS
    tests 和 Prisma mappings。
-5. 删除旧 migration 中的 `agui_*` object；不新增 rename migration。
-6. 重建仅用于开发/验证的 Session PostgreSQL database。
-7. 运行 real PostgreSQL
+6. 删除旧 migration 中的 `agui_*` object；不新增 rename migration。
+7. 删除已证明无 active edge 的 legacy Admin Auth v1 source/contract；不读取、
+   复制或迁移 retired MySQL archive data。
+8. 重建仅用于开发/验证的 Agent Mongo、Session PostgreSQL 和受影响
+   Platform PostgreSQL database baseline。
+9. 运行 real MongoDB 与 PostgreSQL
    concurrency、RLS、rollback、replay、privacy 和 compatibility verifier。
 
 任何可疑非开发数据、外部 receipt 或生产连接出现时必须停止 destructive
@@ -938,6 +1158,19 @@ chain 可以并行，但只在共同 Root promotion gate 汇合。
 | P4 Runtime proof           | P3                            | quiesce old dev roles, establish reset safety, rebuild candidate DB baseline, run clean-clone compatibility/E2E/rollback | signed evidence bound to `R2` and exact child SHAs                                                                        |
 | P5 Promotion               | P4                            | push `R2`, pass remote Root CI, then create Root BOM tag                                                                 | immutable remote commits/tags and release manifest                                                                        |
 
+`P0` additionally requires three exact, remote-recoverable refs before R1
+implementation starts:
+
+- Root approved-spec tag `kokoro-presentation-spec-2026-08-02` -> the final
+  approved spec commit；
+- Root pre-cut tag `kokoro-presentation-precut-root-2026-08-02` ->
+  `b7bba1fb843e475ac353820a35d7a86154e42b37`；
+- Agent pre-cut tag `kokoro-presentation-precut-agent-2026-08-02` ->
+  `d3939dab673224318d4ddd2304b8831b917b7ef4` in the Agent repository。
+
+The P0 receipt records `git ls-remote` proof for all three refs. A local-only
+tag, floating branch name or unreachable SHA is insufficient.
+
 `R1` is immutable once any child provenance references it. Fixing Root contract
 after P2 starts creates `R1b` and invalidates all affected child candidates.
 `R2` must be committed locally before clean recursive clone verification; failed
@@ -949,10 +1182,12 @@ force-moved tag.
 P3 writes a typed Root manifest containing `specCommit`, `specDigest`,
 `contractCommit`, `contractDescriptorDigest`, the four child repository SHAs and
 recoverable tag names, generated provenance digests, Session/Platform database
-baseline revisions, compatibility corpus digest and required verification
-commands. Every child CI receipt and P4 evidence repeats the manifest digest. A
-SHA mismatch, dirty child worktree, unpublished child commit, or provenance
-source other than `R1` prevents `R2` creation.
+baseline revisions, Agent Mongo Presentation store baseline revision/digest,
+the legacy Admin Auth v1 retirement evidence digest, compatibility corpus
+digest and required verification commands. Every child CI receipt and P4
+evidence repeats the manifest digest. A SHA mismatch, dirty child worktree,
+unpublished child commit, provenance source other than `R1`, an unlisted Agent
+collection/index, or any active Admin Auth v1 edge prevents `R2` creation.
 
 ### 11.3 Quiesce, cutover and rollback
 
@@ -961,12 +1196,15 @@ because producer and consumer contracts are mutually incompatible. P4 performs:
 
 1. stop/drain old Agent, Session, Web and Platform candidate-facing roles；
 2. verify only default PostgreSQL/MongoDB/Redis/MinIO Infra remains；
-3. identify database name/role/baseline and prove it is disposable prelaunch
-   development state；
+3. identify Agent Mongo database + Presentation collection baseline and every
+   affected PostgreSQL database name/role/baseline；prove each is disposable
+   prelaunch development state；
 4. create a recoverable schema/volume inventory receipt without printing
-   secrets；
-5. rebuild Session and affected Platform development databases at candidate
-   baseline；
+   secrets or Mongo payloads；the receipt includes old Presentation collection
+   counts, unacknowledged head count, quarantine/terminal counts and the legacy
+   Admin Auth active-edge result；
+5. rebuild the five exact Agent Presentation collections/indexes, Session
+   database and affected Platform development databases at candidate baseline；
 6. start the exact `R2` child set and run compatibility/E2E；
 7. stop it, restore the previous Root BOM's declared database baseline, start
    previous pins and run rollback smoke；
@@ -974,10 +1212,13 @@ because producer and consumer contracts are mutually incompatible. P4 performs:
    forward smoke。
 
 Rollback never points old code at the new hard-cut database and never writes
-candidate facts into the old baseline. Because data is explicitly disposable,
-rollback is baseline reconstruction rather than data migration. Discovery of
-unknown user, financial, external receipt or shared-environment facts stops
-reset and requires a separate migration decision. No volume deletion is implied.
+candidate facts into the old baseline. The previous Agent pin receives its old
+five-collection Mongo baseline；the candidate pin receives only the new
+five-collection baseline. Because data is explicitly disposable, rollback is
+baseline reconstruction rather than data migration. Discovery of unknown user,
+financial, external receipt, non-disposable Agent delivery head or
+shared-environment facts stops reset and requires a separate migration
+decision. No volume deletion is implied.
 
 ### 11.4 Parallel ownership
 
@@ -1004,6 +1245,9 @@ and creates `R2`. Worker exit status alone is never promotion evidence.
 - full pytest、Ruff、Pyright。
 - presentation parity tests 使用官方 pinned Python event models。
 - delivery chain/fence/ack/quarantine/replay/terminal seal tests。
+- isolated real MongoDB baseline/index, append/pull/ACK/quarantine/terminal,
+  old-name rejection and forward/rollback reconstruction tests；startup rejects
+  a manifest/index mismatch and never auto-migrates old records。
 - `agent-core-freeze-v1` protected-file、normalized-AST 与 frozen-corpus
   gates 全部通过。
 - `git diff --name-only d3939dab673224318d4ddd2304b8831b917b7ef4...candidate`
@@ -1048,6 +1292,11 @@ and creates `R2`. Worker exit status alone is never promotion evidence.
 - runtime entrypoint/composition/host ownership tests。
 - active-edge gate 证明 retired `kokoro-platform-admin`
   可删除，删除后 production image/workspace/lock/CI parity 保持通过。
+- Root/Platform negative scan proves
+  `kokoro.platform.admin.v1.AdminAuthService`,
+  `platform-admin-auth@v1`, its generated mirrors and legacy MySQL package are
+  absent；replacement Admin Identity/Query/Command provider compatibility and
+  PostgreSQL owner tests remain green。
 - negative scan 证明 §8.7 所列全部旧 Platform paths 为空。
 
 ### 12.6 Root promotion
@@ -1058,11 +1307,13 @@ and creates `R2`. Worker exit status alone is never promotion evidence.
   ordinary breaking 和 mirror parity。
 - 四仓 generated provenance 均绑定 exact `R1`，candidate handoff
   manifest 均绑定 exact `R2` child SHAs。
+- manifest and P4 receipts bind the exact Agent Mongo Presentation baseline
+  digest and prove legacy Admin Auth v1 has no active edge。
 - Agent provider -> Session -> Web consumer compatibility matrix。
 - two-Site isolation与独立 Site Web build/deploy evidence。
 - only default PostgreSQL/MongoDB/Redis/MinIO Infra。
-- 按 manifest 的 database baseline 先 rollback 到上一组 Root
-  pins，再重建 candidate baseline 并前滚。
+- 按 manifest 的 Agent Mongo + Session/Platform PostgreSQL database baseline
+  先 rollback 到上一组 Root pins，再重建 candidate baseline 并前滚。
 - Root CI 成功后才创建 BOM/release tag。
 
 ## 13. 风险与缓解
@@ -1135,6 +1386,13 @@ An adversarial closure pass additionally rejected a rename-only database design:
 §6.3 and §8.6 now split protocol-neutral StreamRecord from exact persisted
 WireFrame, preventing AG-UI coupling from being hidden behind renamed tables.
 
+The post-approval independent pass found three further blockers. §6.1/§8.1 now
+define the previously ambiguous nested event exclusively as
+`ag-ui-submission-event-v1`；§8.3/§9/§11/§12 bring Agent Mongo delivery state
+into baseline, reset, rollback and real-store evidence；§6.5/§8.7/§12.5 make
+legacy Admin Auth v1 an explicit no-consumer retirement with a closed
+replacement matrix and fail-closed discovery gate.
+
 ## 16. 完成定义
 
 本方案只有在以下条件全部成立时完成：
@@ -1151,5 +1409,8 @@ WireFrame, preventing AG-UI coupling from being hidden behind renamed tables.
    rehearsal 和 BOM promotion 通过。
 8. handbook、CODEBASE_MAP、INDEX、runbook、deployable manifest 与实现一致。
 9. Agent protected-file/AST/frozen-corpus evidence 证明没有未授权核心语义变化。
+10. Agent Mongo Presentation baseline can forward/rollback without mixing old
+    and new records, and legacy Admin Auth v1 source/contract/data-plane has no
+    active edge before deletion。
 
 通过单元测试或完成目录移动都不足以宣称完成；必须以跨仓运行证据和 Root 原子 pins 证明整条链路。
