@@ -50,15 +50,15 @@
       "id": "site-release-candidate-revision-bindings-r0a",
       "contractId": "site-release-candidate.v1",
       "baselineSchemaDigest": "sha256:4304e32e0a0e689e236568e2a10236f3657b024817983ef2705a2834264dba57",
-      "candidateSchemaDigest": "sha256:e404537f38036b6c76c99aa30a1cc4f29a2b99ee2125d727db1fbaf0a8e88361",
-      "reason": "Pre-launch R0a hard cut: freeze exact Profile, Catalog, Material, and business owner revisions in the candidate."
+      "candidateSchemaDigest": "sha256:ebacfc36f60011a76ccbca16b2e8d1e83bac21c473d14db6421ba1bec7f583be",
+      "reason": "Pre-launch R0a hard cut: freeze exact Profile, Catalog, Material, business owner, and OfferPriceRevision authorities in the candidate."
     },
     {
       "id": "site-release-revision-bindings-r0a",
       "contractId": "site-release.v1",
       "baselineSchemaDigest": "sha256:b8a1e6b8b9a62bd68e6f1f07740fcf3a32bcc5dc87a0b0e7b7b40f4bab112b61",
-      "candidateSchemaDigest": "sha256:5e0974ff36f6d28b52180bbed86745d7c688b72a8e799a80ab82994536098c42",
-      "reason": "Pre-launch R0a hard cut: freeze the immutable SiteRelease to the complete typed authority and evidence revision chain."
+      "candidateSchemaDigest": "sha256:17aef86cc362258e5537fcd4d5d9e1a0fc5030afcec75cc71ee057870f0a5738",
+      "reason": "Pre-launch R0a hard cut: freeze the immutable SiteRelease to the complete typed authority, evidence, and OfferPriceRevision chain."
     },
     {
       "id": "surface-inventory-revision-bindings-r0a",
@@ -78,8 +78,8 @@
       "id": "web-build-intent-revision-bindings-r0a",
       "contractId": "web-build-intent.v1",
       "baselineSchemaDigest": "sha256:19cc2bb728ccc6f6e60344c7a92a94f24af981ea72daa0769e4abb316b5f7fea",
-      "candidateSchemaDigest": "sha256:73dc457bebeb18bebe5e86ebab3641b0c1c9b1c6917a24b2eeffabacdc2fc1d6",
-      "reason": "Pre-launch R0a hard cut: bind WebBuildIntent to the exact candidate authority and immutable input revisions."
+      "candidateSchemaDigest": "sha256:4b594f788aa052d641362b6ffbf230e610e42b781bf3bb91adeb339792c4786a",
+      "reason": "Pre-launch R0a hard cut: bind WebBuildIntent to the exact candidate authority, OfferPriceRevision closure, and immutable input revisions."
     }
   ],
   "registryCuts": [

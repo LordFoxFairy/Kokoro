@@ -584,6 +584,7 @@ test("Candidate and SiteRelease freeze explicit Memory, Identity, Commerce, and 
     assert.ok(schema.$defs.authIdentityClosure.required.includes("authenticationPolicy"));
     assert.ok(schema.$defs.authIdentityClosure.required.includes("authorizationPolicy"));
     assert.ok(schema.$defs.commerceClosure.required.includes("offerRevisions"));
+    assert.ok(schema.$defs.commerceClosure.required.includes("offerPriceRevisions"));
     assert.ok(schema.$defs.commerceClosure.required.includes("entitlementTemplateRevisions"));
     assert.ok(schema.$defs.commerceClosure.required.includes("creditProgramRevisions"));
     assert.ok(schema.$defs.hubClosure.required.includes("capabilityAssignment"));

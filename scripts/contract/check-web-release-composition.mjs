@@ -66,11 +66,11 @@ const FROZEN_PRELAUNCH_SCHEMA_HARD_CUT_DIGESTS = new Map([
   ["launch-product-profile-revision-bindings-r0a", "sha256:d410a69bac78041c4d554a9a4beb26b9e5059580e235b691a75c8763340ede3c"],
   ["release-certification-instance-revision-bindings-r0a", "sha256:67bc4a6d7b6009c049ad8c5a8aed048dba213207caed3aa30cd8b56c8669ea00"],
   ["release-certification-revocation-revision-bindings-r0a", "sha256:36a6a50563c192b0f389b4c9e4e42c7ebe9a72264708d7cddf59114c2d503017"],
-  ["site-release-candidate-revision-bindings-r0a", "sha256:783a4f5392cccd83a4c3927e9e5ec5948e9b923610819e265c402f5ab2592324"],
-  ["site-release-revision-bindings-r0a", "sha256:98cea71c59f724d1803029f1d71f043e0577fe7191d3f934516136de1f793212"],
+  ["site-release-candidate-revision-bindings-r0a", "sha256:bf384ea393aa31038bb41cde3005344ef87f84ef017715b61edd6af38b1ee726"],
+  ["site-release-revision-bindings-r0a", "sha256:aca0b52c72ac57358d05efa25853d64e469d62bf4c57b44390a0a3e881a72156"],
   ["surface-inventory-revision-bindings-r0a", "sha256:6d362e2e3d871716c85c5f5726b3334acec1fcb9fcd42a8725208386f20dbd21"],
   ["web-artifact-provenance-revision-bindings-r0a", "sha256:e7d242e9ec8969c764d9a391c4292fcb315984437eb36d264b8c95d28ef822c7"],
-  ["web-build-intent-revision-bindings-r0a", "sha256:2cff8d42f38a89ab297f0a369d329cfa2b737de52717dd1f151bea853a70b5cb"],
+  ["web-build-intent-revision-bindings-r0a", "sha256:189c511caf89baa00033099464e312f53a7e5502bf9539c44f1bf2f6f1bb7a7e"],
 ]);
 const FROZEN_PRELAUNCH_REGISTRY_HARD_CUT_DIGESTS = new Map([
   ["launch-product-profile-owner-r0a", "sha256:7c6040b59cc1ff17755dbf935aad7dbdb3eec356c98f1a14c7b7af495e667789"],
@@ -157,37 +157,37 @@ provenance-producer-role-mismatch sha256:32ffb75d23af4ac83f33a09821c7b4f7309e8d3
 const FROZEN_BLOCKED_ACTIVATION_SCENARIOS = new Map([
   ["candidate-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_candidate_epoch_invalid",
-    digest: "sha256:651c8d42e14091ef7a0ef3f55e0f187750b51c11b2dcfdd3f92f427b6859b439",
+    digest: "sha256:096b5d5c328b72a7a27679dfa945083f468f1ffa7efcf7928c13ae6b13006294",
     identity: { candidateState: "revoked", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["certification-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_certification_revoked",
-    digest: "sha256:8c5302f6645f097318b8c79e67d5d6e68a356ab590221a50f03bd638738d43b9",
+    digest: "sha256:6a97c0ceeae176a94073a4a843daf13953c99a92511047a8b01e87ed0467202f",
     identity: { candidateState: "active", certificationState: "revoked", certificationRevocationEpoch: "1", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-revoked-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:e364f0f7386cc2e9d4f716ae0081b9a8bf9ab558474832b2ffe21c51eb615567",
+    digest: "sha256:18958b6142fdaa3332484869c5ba810a442ff7ae61f4d582a81e7f77a6737ff4",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "revoked", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["key-suspended-between-authority-reads", {
     expectedCode: "web_release_activation_key_invalid",
-    digest: "sha256:fe8879e545b4a25395bf465387fd1a82c4dd65108c2793744081f6eb254c9308",
+    digest: "sha256:311914dcec847313d8bfdeec6f813e2ac0fb539e2ccc5e41f537ad8a3fd0ebfa",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "suspended", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["producer-registry-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_registry_epoch_invalid",
-    digest: "sha256:06cfd6b381cdd3233f10f90961ddbb43d87829f4f944431a1f203303f2417ef8",
+    digest: "sha256:d4dd330355745d536ce20820d94c628cc2e75104e3c55508c83d3a26bb1091c9",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "5", trustPolicyEpoch: "9", expiredAtRead: false },
   }],
   ["trust-policy-epoch-between-authority-reads", {
     expectedCode: "web_release_activation_policy_epoch_invalid",
-    digest: "sha256:93e5b1b0e6607238b7bcfd3fcc8dcbe7d5f5806e8324fc36e2c6366ce7d30edf",
+    digest: "sha256:9892284eebebedc8dacfd3326e39691801c610685e9f99a99b0210a1e018af80",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "10", expiredAtRead: false },
   }],
   ["certification-expired-between-authority-reads", {
     expectedCode: "web_release_activation_certification_expired",
-    digest: "sha256:9b3a34615461ca88a41a3b7fd0502e7d901c20568830810935c4ca6ed0f2db09",
+    digest: "sha256:c2784c8ab81513908bd717fbe406d62f4b53709529a755c2c883ee23aa806d49",
     identity: { candidateState: "active", certificationState: "active", certificationRevocationEpoch: "0", keyStatus: "active", producerRegistryEpoch: "4", trustPolicyEpoch: "9", expiredAtRead: true },
   }],
 ]);
@@ -503,11 +503,13 @@ function validateBusinessOwnerBindings(bindings) {
 
   for (const [kind, revisions] of [
     ["offer", commerce.offerRevisions],
+    ["offer-price", commerce.offerPriceRevisions],
     ["entitlement-template", commerce.entitlementTemplateRevisions],
     ["credit-program", commerce.creditProgramRevisions],
   ]) unique(revisions.map(ownerRevisionKey), "web_release_candidate_owner_closure_invalid", kind);
   const commerceMaterial = {
     offerRevisions: [...commerce.offerRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
+    offerPriceRevisions: [...commerce.offerPriceRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
     entitlementTemplateRevisions: [...commerce.entitlementTemplateRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
     creditProgramRevisions: [...commerce.creditProgramRevisions].sort((left, right) => ownerRevisionKey(left).localeCompare(ownerRevisionKey(right))),
   };
@@ -523,7 +525,8 @@ function validateBusinessOwnerBindings(bindings) {
   const allOwnerBindings = [
     bindings.siteConfig, bindings.legalPolicy, bindings.salesPolicy, bindings.assortmentPolicy,
     bindings.memoryPolicy, ...Object.values(authMaterial),
-    ...commerce.offerRevisions, ...commerce.entitlementTemplateRevisions, ...commerce.creditProgramRevisions,
+    ...commerce.offerRevisions, ...commerce.offerPriceRevisions,
+    ...commerce.entitlementTemplateRevisions, ...commerce.creditProgramRevisions,
     ...Object.values(hubMaterial),
   ];
   unique(allOwnerBindings.map(ownerRevisionKey), "web_release_candidate_owner_closure_invalid");
