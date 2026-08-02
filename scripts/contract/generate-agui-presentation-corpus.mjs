@@ -29,6 +29,8 @@ const contracts = Object.freeze({
   bindingAuthorityDeltaSchema: "contract/spec/presentation-binding-authority-delta-v1.yaml",
   runBindingSchema: "contract/spec/presentation-run-binding-v1.yaml",
   messageBindingSchema: "contract/spec/presentation-message-binding-v1.yaml",
+  ownerBindingSchema: "contract/spec/presentation-owner-binding-v1.yaml",
+  ownerProjectionRowSchema: "contract/spec/session-agui-owner-projection-row-v1.yaml",
   streamSchema: "contract/spec/session-agui-stream-v1.yaml",
   snapshotAuthoritySchema: "contract/spec/session-agui-snapshot-authority-v1.yaml",
 });
@@ -88,8 +90,14 @@ function candidateEnvelopeFromFrame(contractCase, frame, candidateSource) {
   }
   if (event.type === "RUN_STARTED") delete event.parentRunId;
   if (event.type === "RUN_FINISHED") event.outcome = { type: "success" };
-  if (["TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END", "ACTIVITY_SNAPSHOT"].includes(event.type)) {
+  if (["TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END"].includes(event.type)) {
     if (messageBinding === undefined) throw new Error(`candidate message binding missing: ${frame.data.source.sourceEventId}`);
+    event.messageId = candidateSource.route.internalMessageRef;
+  }
+  if (event.type === "ACTIVITY_SNAPSHOT") {
+    if (candidateSource.route.internalMessageRef === undefined) {
+      throw new Error(`candidate activity route missing: ${frame.data.source.sourceEventId}`);
+    }
     event.messageId = candidateSource.route.internalMessageRef;
   }
   const envelope = {
@@ -441,6 +449,125 @@ function openMessageBinding(binding) {
   };
 }
 
+function ownerIdentityForEvent(event) {
+  if (event.type === "ACTIVITY_SNAPSHOT") {
+    const content = event.content;
+    switch (event.activityType) {
+      case "kokoro.safe-summary.v1": return { kind: "safe-summary", partRef: content.partRef };
+      case "kokoro.tool-preview.v1": return { kind: "tool", toolCallRef: content.toolCallRef };
+      case "kokoro.hitl.v1": return {
+        kind: "hitl", ownerRef: content.ownerRef, decisionGroupRef: content.decisionGroupRef,
+        controlRef: content.controlRef,
+      };
+      case "kokoro.plan.v1": return { kind: "plan", planRef: content.planRef };
+      case "kokoro.subagent.v1": return { kind: "subagent", subagentRef: content.subagentRef };
+      case "kokoro.media.v1": return {
+        kind: "media", mediaOperationRef: content.mediaOperationRef, definitionRef: content.definitionRef,
+        definitionRevisionRef: content.definitionRevisionRef,
+        modelOptionRevisionRef: content.modelOptionRevisionRef ?? null,
+      };
+      case "kokoro.artifact.v1": return {
+        kind: "artifact", artifactRef: content.artifactRef, artifactVersionRef: content.artifactVersionRef,
+      };
+      case "kokoro.cost.v1": return {
+        kind: "cost", mediaOperationRef: content.mediaOperationRef, costProjectionRef: content.costProjectionRef,
+      };
+      case "kokoro.notice.v1": return { kind: "notice", noticeRef: content.noticeRef };
+      case "kokoro.error.v1": return { kind: "error", errorRef: content.errorRef };
+      default: throw new Error(`unsupported owner activity: ${event.activityType}`);
+    }
+  }
+  if (event.type === "CUSTOM" && event.name === "kokoro.control.replace.v1") {
+    return {
+      kind: "control", controlRef: event.value.controlRef, ownerRef: event.value.ownerRef,
+      decisionGroupRef: event.value.decisionGroupRef,
+    };
+  }
+  if (event.type === "CUSTOM" && event.name === "kokoro.receipt.replace.v1") {
+    return {
+      kind: "receipt", receiptRef: event.value.receiptRef, controlRef: event.value.controlRef,
+      ownerRef: event.value.ownerRef, decisionGroupRef: event.value.decisionGroupRef,
+    };
+  }
+  return undefined;
+}
+
+function bindOwnerPresentationAuthority(contractCase) {
+  const bindingByIdentity = new Map();
+  const bindingByRef = new Map();
+  const latestRowByBindingRef = new Map();
+  let nextBindingOrdinal = 0;
+  let nextOwnerMessageOrdinal = 0;
+  for (const frame of contractCase.frames) {
+    const ownerIdentity = ownerIdentityForEvent(frame.data.event);
+    if (ownerIdentity === undefined) continue;
+    const identityKey = canonical(ownerIdentity);
+    let binding = bindingByIdentity.get(identityKey);
+    if (binding === undefined) {
+      const isActivity = frame.data.event.type === "ACTIVITY_SNAPSHOT";
+      let targetOwnerBindingRef = null;
+      let controlOwnerBindingRef = null;
+      if (ownerIdentity.kind === "control" || ownerIdentity.kind === "receipt") {
+        const target = [...bindingByIdentity.values()].find((candidate) => (
+          candidate.ownerIdentity.kind === "hitl" &&
+          candidate.ownerIdentity.ownerRef === ownerIdentity.ownerRef &&
+          candidate.ownerIdentity.decisionGroupRef === ownerIdentity.decisionGroupRef &&
+          candidate.ownerIdentity.controlRef === ownerIdentity.controlRef
+        ));
+        if (target === undefined) throw new Error(`owner target binding missing: ${identityKey}`);
+        targetOwnerBindingRef = target.bindingRef;
+      }
+      if (ownerIdentity.kind === "receipt") {
+        const control = [...bindingByIdentity.values()].find((candidate) => (
+          candidate.ownerIdentity.kind === "control" &&
+          candidate.ownerIdentity.controlRef === ownerIdentity.controlRef &&
+          candidate.ownerIdentity.ownerRef === ownerIdentity.ownerRef &&
+          candidate.ownerIdentity.decisionGroupRef === ownerIdentity.decisionGroupRef
+        ));
+        if (control === undefined) throw new Error(`owner control binding missing: ${identityKey}`);
+        controlOwnerBindingRef = control.bindingRef;
+      }
+      if (isActivity) {
+        frame.data.event.messageId = presentationIdentityFor(
+          "message", `${contractCase.id}.owner`, nextOwnerMessageOrdinal++,
+        );
+      }
+      const containerBindingRef = isActivity && frame.data.event.activityType === "kokoro.media.v1"
+        ? frame.data.presentationMessageBindingRef ?? null
+        : null;
+      if (isActivity && containerBindingRef === null) delete frame.data.presentationMessageBindingRef;
+      binding = {
+        profileRevision,
+        schemaRevision: 1,
+        bindingRef: presentationIdentityFor("owner-binding", contractCase.id, nextBindingOrdinal++),
+        sessionId: contractCase.snapshot.sessionId,
+        presentationRunBindingRef: frame.data.presentationRunBindingRef,
+        presentationMessageBindingRef: containerBindingRef,
+        presentationOwnerMessageId: isActivity ? frame.data.event.messageId : null,
+        ownerIdentity,
+        targetOwnerBindingRef,
+        controlOwnerBindingRef,
+        boundBySourceEventId: frame.data.source.sourceEventId,
+        boundAt: frame.data.source.recordedAt,
+      };
+      bindingByIdentity.set(identityKey, binding);
+      bindingByRef.set(binding.bindingRef, binding);
+    }
+    frame.data.presentationOwnerBindingRef = binding.bindingRef;
+    latestRowByBindingRef.set(binding.bindingRef, {
+      profileRevision,
+      schemaRevision: 1,
+      presentationOwnerBindingRef: binding.bindingRef,
+      sourceEventId: frame.data.source.sourceEventId,
+      projectionVersion: frame.data.source.projectionVersion,
+      recordedAt: frame.data.source.recordedAt,
+      event: structuredClone(frame.data.event),
+    });
+  }
+  contractCase.ownerBindings = [...bindingByRef.values()];
+  contractCase.ownerProjectionRows = [...latestRowByBindingRef.values()];
+}
+
 function bindingAuthorityDeltaForFrame(contractCase, frame) {
   const event = frame.data.event;
   if (["RUN_STARTED", "RUN_FINISHED", "RUN_ERROR"].includes(event.type)) {
@@ -462,6 +589,16 @@ function bindingAuthorityDeltaForFrame(contractCase, frame) {
       kind: "message.replace",
       binding: event.type === "TEXT_MESSAGE_START" ? openMessageBinding(binding) : structuredClone(binding),
     };
+  }
+  if (
+    event.type === "ACTIVITY_SNAPSHOT" ||
+    (event.type === "CUSTOM" && ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(event.name))
+  ) {
+    const binding = contractCase.ownerBindings.find(
+      ({ bindingRef }) => bindingRef === frame.data.presentationOwnerBindingRef,
+    );
+    if (binding === undefined) throw new Error(`owner binding missing: ${frame.data.source.sourceEventId}`);
+    return { kind: "owner.replace", binding: structuredClone(binding) };
   }
   return { kind: "none" };
 }
@@ -590,9 +727,9 @@ parentCase.messageBindings = [
     presentationMessageId: successPresentationMessageId,
     resumeSegmentOrdinal: 0,
     state: "ended",
-    openedBySourceEventId: "agent.event.run.success.001",
+    openedBySourceEventId: "agent.event.run.success.002",
     endedBySourceEventId: `agent.event.run.success.${String(successTextEndOrdinal).padStart(3, "0")}`,
-    openedAt: recordedAt(2),
+    openedAt: recordedAt(3),
     endedAt: recordedAt(successTextEndOrdinal + 1),
   },
 ];
@@ -655,14 +792,18 @@ const successFrames = [
     "presentation.run.started", 0,
   ),
   successFrame(
+    activityTemplates[0].event,
+    activityTemplates[0].sourceKind, 1, true,
+  ),
+  successFrame(
     { type: "TEXT_MESSAGE_START", role: "assistant" },
-    "presentation.message.text.started", 1, true,
+    "presentation.message.text.started", 2, true,
   ),
   successFrame(
     { type: "TEXT_MESSAGE_CONTENT", delta: "I can help with that." },
-    "presentation.message.text.content", 2, true,
+    "presentation.message.text.content", 3, true,
   ),
-  ...activityTemplates.map(({ event, sourceKind }, index) => successFrame(event, sourceKind, index + 3, true)),
+  ...activityTemplates.slice(1).map(({ event, sourceKind }, index) => successFrame(event, sourceKind, index + 4, true)),
   successFrame(
     { type: "TEXT_MESSAGE_END" },
     "presentation.message.text.ended", successTextEndOrdinal, true,
@@ -694,9 +835,13 @@ parentCase.frames = [...successFrames, ...errorFrames];
 const successAgentThreadRef = "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C";
 const errorAgentThreadRef = "agent.thread:01JZ6Y7B4N8C2P5S0U3W6X9Y1D";
 corpus.agentSourceFixtures = [
-  ...successFrames.map((frame, sourceOrdinal) => (
-    agentSourceFixture(parentCase, frame, String(sourceOrdinal), successAgentThreadRef)
-  )),
+  ...successFrames.map((frame, sourceOrdinal) => {
+    const fixture = agentSourceFixture(parentCase, frame, String(sourceOrdinal), successAgentThreadRef);
+    if (frame.data.event.type === "ACTIVITY_SNAPSHOT") {
+      fixture.source.route.internalMessageRef = `agent.activity-message:${String(sourceOrdinal).padStart(3, "0")}`;
+    }
+    return fixture;
+  }),
   ...errorFrames.map((frame, sourceOrdinal) => (
     agentSourceFixture(parentCase, frame, String(sourceOrdinal), errorAgentThreadRef)
   )),
@@ -708,6 +853,8 @@ for (const contractCase of corpus.positiveCases) {
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;
   delete contractCase.snapshot.runBindings;
   delete contractCase.snapshot.messageBindings;
+  delete contractCase.snapshot.ownerBindings;
+  delete contractCase.snapshot.ownerProjectionRows;
   const snapshotCursor = issueCursor({
     sessionId: contractCase.snapshot.sessionId,
     streamEpoch: contractCase.snapshot.streamEpoch,
@@ -736,6 +883,19 @@ for (const contractCase of corpus.positiveCases) {
       frame.data.event.value.ownerVersion = uint64Maximum;
       delete frame.data.event.value.projectionVersion;
     }
+  }
+  if (contractCase.id === "resume-with-safe-typed-presentation") {
+    const mediaFrame = contractCase.frames.find(
+      ({ data }) => data.event.type === "ACTIVITY_SNAPSHOT" && data.event.activityType === "kokoro.media.v1",
+    );
+    const messageBinding = contractCase.messageBindings[0];
+    if (mediaFrame === undefined || messageBinding === undefined) {
+      throw new Error("media Activity container authority fixture is required");
+    }
+    mediaFrame.data.presentationMessageBindingRef = messageBinding.bindingRef;
+  }
+  bindOwnerPresentationAuthority(contractCase);
+  for (const frame of contractCase.frames) {
     frame.data.bindingAuthorityDelta = bindingAuthorityDeltaForFrame(contractCase, frame);
     frame.id = issueCursor(frame.data.source);
   }
@@ -773,6 +933,8 @@ for (const contractCase of corpus.positiveCases) {
     cursor: lastFrame.id,
     runBindings: structuredClone(contractCase.runBindings),
     messageBindings: structuredClone(contractCase.messageBindings),
+    ownerBindings: structuredClone(contractCase.ownerBindings),
+    ownerProjectionRows: structuredClone(contractCase.ownerProjectionRows),
   };
   contractCase.controlFrame.data.lastDurableCursor = contractCase.frames.at(-1).id;
 }
@@ -855,11 +1017,35 @@ corpus.snapshotAuthorityCases = [
       cursor: parentHead.id,
       runBindings: structuredClone(parentCase.runBindings),
       messageBindings: structuredClone(parentCase.messageBindings),
+      ownerBindings: structuredClone(parentCase.ownerBindings),
+      ownerProjectionRows: structuredClone(parentCase.ownerProjectionRows),
     },
     nextEventRecordedAt: recordedAt(errorRunTerminalDurableSequence + 1),
+    nextOwnerProjectionRow: (() => {
+      const row = structuredClone(parentCase.ownerProjectionRows.find(
+        ({ event }) => event.type === "ACTIVITY_SNAPSHOT" && event.activityType === "kokoro.notice.v1",
+      ));
+      if (row === undefined) throw new Error("nonzero owner replacement fixture is required");
+      row.sourceEventId = publicSourceEventIdFor(parentCase, {
+        data: { source: { streamEpoch: parentCase.snapshot.streamEpoch, durableSeq: String(errorRunTerminalDurableSequence + 1) } },
+      });
+      row.projectionVersion = String(errorRunTerminalDurableSequence + 1);
+      row.recordedAt = recordedAt(errorRunTerminalDurableSequence + 1);
+      row.event.timestamp = Date.parse(row.recordedAt);
+      row.event.content.ownerVersion = "2";
+      row.event.content.message = "The preview remains available.";
+      row.event.content.updatedAt = row.recordedAt;
+      return row;
+    })(),
   },
 ];
 corpus.snapshotAuthorityNegativeCases = [
+  {
+    id: "snapshot-terminal-owner-revival",
+    baseAuthorityCaseId: "nonzero-head-after-binding-evidence",
+    mutation: { operation: "snapshot-terminal-owner-revival" },
+    expectedCode: "agui_owner_terminal_regression",
+  },
   {
     id: "zero-head-retains-bindings",
     baseAuthorityCaseId: "nonzero-head-after-binding-evidence",

@@ -40,9 +40,11 @@ const fixtureFiles = [
   "contract/spec/agent-agui-candidate-envelope-v1.yaml",
   "contract/spec/presentation-binding-authority-delta-v1.yaml",
   "contract/spec/presentation-message-binding-v1.yaml",
+  "contract/spec/presentation-owner-binding-v1.yaml",
   "contract/spec/presentation-run-binding-v1.yaml",
   "contract/spec/session-agui-projection-payload-v1.yaml",
   "contract/spec/session-agui-presentation-row-v1.yaml",
+  "contract/spec/session-agui-owner-projection-row-v1.yaml",
   "contract/spec/session-agui-stream-v1.yaml",
   "contract/spec/session-agui-snapshot-authority-v1.yaml",
 ];
@@ -74,6 +76,8 @@ test("public uint64 schemas independently reject values above the wire maximum",
   for (const schemaPath of [
     "contract/spec/session-agui-projection-payload-v1.yaml",
     "contract/spec/session-agui-presentation-row-v1.yaml",
+    "contract/spec/session-agui-owner-projection-row-v1.yaml",
+    "contract/spec/session-agui-snapshot-authority-v1.yaml",
     "contract/spec/kokoro-agui-presentation-event-v1.yaml",
   ]) {
     const schema = await readJson(schemaPath);
@@ -120,6 +124,236 @@ test("presentation run and message identities are branded opaque Session allocat
         assert.equal(binding.presentationMessageId.includes(privateRef), false, contractCase.id);
       }
     }
+  }
+});
+
+test("gives every owner row an explicit immutable binding without requiring a TEXT container", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  let sawContainerlessActivity = false;
+  let sawContainerActivity = false;
+  for (const contractCase of corpus.positiveCases) {
+    const ownerByRef = new Map(contractCase.ownerBindings.map((binding) => [binding.bindingRef, binding]));
+    assert.equal(contractCase.ownerProjectionRows.length, contractCase.ownerBindings.length, contractCase.id);
+    for (const frame of contractCase.frames) {
+      const event = frame.data.event;
+      const isOwnerEvent = event.type === "ACTIVITY_SNAPSHOT" ||
+        (event.type === "CUSTOM" && ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(event.name));
+      if (!isOwnerEvent) continue;
+      const binding = ownerByRef.get(frame.data.presentationOwnerBindingRef);
+      assert.ok(binding, frame.data.source.sourceKind);
+      assert.equal(frame.data.bindingAuthorityDelta.kind, "owner.replace", frame.data.source.sourceKind);
+      assert.deepEqual(frame.data.bindingAuthorityDelta.binding, binding, frame.data.source.sourceKind);
+      if (event.type === "ACTIVITY_SNAPSHOT") {
+        if (binding.presentationMessageBindingRef === null) {
+          sawContainerlessActivity = true;
+          assert.equal(Object.hasOwn(frame.data, "presentationMessageBindingRef"), false, frame.data.source.sourceKind);
+        } else {
+          sawContainerActivity = true;
+          assert.equal(frame.data.presentationMessageBindingRef, binding.presentationMessageBindingRef, frame.data.source.sourceKind);
+          const messageBinding = contractCase.messageBindings.find(
+            ({ bindingRef }) => bindingRef === binding.presentationMessageBindingRef,
+          );
+          assert.ok(messageBinding, frame.data.source.sourceKind);
+          assert.notEqual(event.messageId, messageBinding.presentationMessageId, frame.data.source.sourceKind);
+        }
+        assert.equal(binding.presentationOwnerMessageId, event.messageId, frame.data.source.sourceKind);
+        assert.equal(
+          contractCase.messageBindings.some(({ presentationMessageId }) => presentationMessageId === event.messageId),
+          false,
+          frame.data.source.sourceKind,
+        );
+      }
+    }
+    const hitl = contractCase.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "hitl");
+    const control = contractCase.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "control");
+    const receipt = contractCase.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "receipt");
+    if (control !== undefined || receipt !== undefined) {
+      assert.ok(hitl);
+      assert.equal(control.targetOwnerBindingRef, hitl.bindingRef);
+      assert.equal(receipt.targetOwnerBindingRef, hitl.bindingRef);
+      assert.equal(receipt.controlOwnerBindingRef, control.bindingRef);
+    }
+  }
+  assert.equal(sawContainerlessActivity, true);
+  assert.equal(sawContainerActivity, true);
+
+  const independent = corpus.positiveCases.find(({ id }) => id === "safe-run-error");
+  assert.ok(independent);
+  const activityIndex = independent.frames.findIndex(({ data }) => data.event.type === "ACTIVITY_SNAPSHOT");
+  const textIndex = independent.frames.findIndex(({ data }) => data.event.type === "TEXT_MESSAGE_START");
+  assert.ok(activityIndex > 0 && activityIndex < textIndex);
+  const activityFrame = independent.frames[activityIndex];
+  const fixture = corpus.agentSourceFixtures.find(
+    ({ baseCaseId, source }) => baseCaseId === independent.id &&
+      source.sourceEventRef === independent.sessionPrivateRouteFixtures.provenance.find(
+        ({ publicSourceEventId }) => publicSourceEventId === activityFrame.data.source.sourceEventId,
+      )?.agentSourceEventRef,
+  );
+  assert.match(fixture?.source.route.internalMessageRef ?? "", /^agent\.activity-message:/u);
+  assert.equal(
+    independent.sessionPrivateRouteFixtures.messages.some(
+      ({ internalMessageRef }) => internalMessageRef === fixture.source.route.internalMessageRef,
+    ),
+    false,
+  );
+});
+
+test("uses one owner reducer for idempotency, version monotonicity and terminal non-revival", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
+  assert.ok(base);
+
+  const idempotent = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ sourceFrame, nextEvent }) => {
+    nextEvent.content = clone(sourceFrame.data.event.content);
+  });
+  assert.doesNotThrow(() => validateConformanceCase(idempotent));
+
+  const regression = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ sourceFrame, nextEvent }) => {
+    sourceFrame.data.event.content.ownerVersion = "2";
+    nextEvent.content.ownerVersion = "1";
+  });
+  assert.throws(() => validateConformanceCase(regression), /agui_owner_version_regression/u);
+
+  const sameVersionConflict = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ nextEvent, targetFrame }) => {
+    nextEvent.content.summary = "Same version, different owner state.";
+    nextEvent.content.updatedAt = targetFrame.data.source.recordedAt;
+  });
+  assert.throws(() => validateConformanceCase(sameVersionConflict), /agui_owner_version_conflict/u);
+
+  const terminalRevival = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ nextEvent, targetFrame }) => {
+    nextEvent.content.ownerVersion = "2";
+    nextEvent.content.status = "streaming";
+    nextEvent.content.updatedAt = targetFrame.data.source.recordedAt;
+  });
+  assert.throws(() => validateConformanceCase(terminalRevival), /agui_owner_terminal_regression/u);
+
+  const updatedAtRegression = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ nextEvent }) => {
+    nextEvent.content.ownerVersion = "2";
+    nextEvent.content.updatedAt = "2026-08-01T12:00:03.000Z";
+  });
+  assert.throws(() => validateConformanceCase(updatedAtRegression), /agui_owner_updated_at_regression/u);
+
+  const updatedAtFuture = repeatSafeSummaryOwnerAtNoticeFrame(base, ({ nextEvent }) => {
+    nextEvent.content.ownerVersion = "2";
+    nextEvent.content.updatedAt = "2099-08-01T12:00:00.000Z";
+  });
+  assert.throws(() => validateConformanceCase(updatedAtFuture), /agui_owner_updated_at_future/u);
+});
+
+test("keeps media candidates append-only and freezes nested versions, terminal states and cost ancestry", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
+  assert.ok(base);
+  const repeatMedia = (mutate) => repeatActivityOwnerAtFrame(
+    base, "kokoro.media.v1", "kokoro.notice.v1", ({ nextEvent, targetFrame, ...rest }) => {
+      nextEvent.content.ownerVersion = "2";
+      nextEvent.content.updatedAt = targetFrame.data.source.recordedAt;
+      mutate({ nextEvent, targetFrame, ...rest });
+    },
+  );
+  const newCandidate = {
+    candidateRef: "media-candidate.02", ordinal: 1, ownerVersion: "1", state: "allocated",
+  };
+
+  const append = repeatMedia(({ nextEvent }) => {
+    nextEvent.content.candidates[0].ownerVersion = "2";
+    nextEvent.content.candidates.push(clone(newCandidate));
+  });
+  assert.doesNotThrow(() => validateConformanceCase(append));
+
+  const deletion = repeatMedia(({ nextEvent }) => { nextEvent.content.candidates = []; });
+  assert.throws(() => validateConformanceCase(deletion), /agui_media_candidate_identity_conflict/u);
+
+  const insertionBefore = repeatMedia(({ nextEvent }) => {
+    nextEvent.content.candidates[0].ownerVersion = "2";
+    nextEvent.content.candidates[0].ordinal = 1;
+    nextEvent.content.candidates.unshift({ ...clone(newCandidate), ordinal: 0 });
+  });
+  assert.throws(() => validateConformanceCase(insertionBefore), /agui_media_candidate_identity_conflict/u);
+
+  const versionRegression = repeatMedia(({ sourceFrame }) => {
+    sourceFrame.data.event.content.candidates[0].ownerVersion = "2";
+  });
+  assert.throws(() => validateConformanceCase(versionRegression), /agui_media_candidate_version_regression/u);
+
+  const sameVersionConflict = repeatMedia(({ nextEvent }) => {
+    nextEvent.content.candidates[0].state = "validating";
+  });
+  assert.throws(() => validateConformanceCase(sameVersionConflict), /agui_media_candidate_version_conflict/u);
+
+  const terminalRevival = repeatMedia(({ sourceFrame, nextEvent }) => {
+    Object.assign(sourceFrame.data.event.content.candidates[0], {
+      state: "ready", artifactRef: "artifact.media.01", artifactVersionRef: "artifact-version.media.01",
+    });
+    Object.assign(nextEvent.content.candidates[0], { ownerVersion: "2", state: "producing" });
+    delete nextEvent.content.candidates[0].artifactRef;
+    delete nextEvent.content.candidates[0].artifactVersionRef;
+  });
+  assert.throws(() => validateConformanceCase(terminalRevival), /agui_media_candidate_terminal_regression/u);
+
+  const costAncestry = repeatActivityOwnerAtFrame(
+    base, "kokoro.cost.v1", "kokoro.notice.v1", ({ nextEvent, targetFrame }) => {
+      nextEvent.content.ownerVersion = "3";
+      nextEvent.content.state = "corrected";
+      nextEvent.content.correctsOwnerVersion = "2";
+      nextEvent.content.updatedAt = targetFrame.data.source.recordedAt;
+    },
+  );
+  assert.throws(() => validateConformanceCase(costAncestry), /agui_cost_correction_ancestry_conflict/u);
+});
+
+test("rejects owner identity collisions and cross-Run Control ancestry before projection", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
+  assert.ok(base);
+
+  const collision = clone(base);
+  const activity = collision.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "tool");
+  activity.presentationOwnerMessageId = collision.messageBindings[0].presentationMessageId;
+  assert.throws(() => validateConformanceCase(collision), /agui_presentation_owner_text_message_id_collision/u);
+
+  const crossRun = clone(base);
+  const hitl = crossRun.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "hitl");
+  const control = crossRun.ownerBindings.find(({ ownerIdentity }) => ownerIdentity.kind === "control");
+  const otherRun = crossRun.runBindings.find(({ bindingRef }) => bindingRef !== hitl.presentationRunBindingRef);
+  assert.ok(hitl && control && otherRun);
+  control.presentationRunBindingRef = otherRun.bindingRef;
+  assert.throws(() => validateConformanceCase(crossRun), /agui_owner_target_binding_invalid/u);
+});
+
+test("forbids owner authority refs on RUN, TEXT and ordinary CUSTOM payloads", async () => {
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const base = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
+  assert.ok(base);
+  const predicates = [
+    ({ type }) => type === "RUN_STARTED",
+    ({ type }) => type === "TEXT_MESSAGE_CONTENT",
+    ({ type, name }) => type === "CUSTOM" && name === "kokoro.session.replace.v1",
+  ];
+  for (const predicate of predicates) {
+    const candidate = clone(base);
+    const index = candidate.frames.findIndex(({ data }) => predicate(data.event));
+    assert.notEqual(index, -1);
+    candidate.frames[index].data.presentationOwnerBindingRef = candidate.ownerBindings[0].bindingRef;
+    candidate.durableRows[index].projectionPayload = clone(candidate.frames[index].data);
+    candidate.durableRows[index].projectionPayloadDigest = projectionDigest(candidate.frames[index].data);
+    assert.throws(
+      () => validateConformanceCase(candidate),
+      /agui_presentation_row_schema_invalid|agui_projection_payload_schema_invalid|agui_frame_owner_binding_forbidden/u,
+    );
+  }
+
+  for (const name of ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"]) {
+    const candidate = clone(base);
+    const index = candidate.frames.findIndex(({ data }) => data.event.name === name);
+    assert.notEqual(index, -1);
+    candidate.frames[index].data.presentationMessageBindingRef = candidate.messageBindings[0].bindingRef;
+    candidate.durableRows[index].projectionPayload = clone(candidate.frames[index].data);
+    candidate.durableRows[index].projectionPayloadDigest = projectionDigest(candidate.frames[index].data);
+    assert.throws(
+      () => validateConformanceCase(candidate),
+      /agui_presentation_row_schema_invalid|agui_projection_payload_schema_invalid|agui_frame_owner_message_binding_forbidden/u,
+    );
   }
 });
 
@@ -227,6 +461,56 @@ function projectionDigest(value) {
   return `sha256:${createHash("sha256").update(canonical(value), "utf8").digest("hex")}`;
 }
 
+function repeatActivityOwnerAtFrame(base, activityType, targetActivityType, mutate) {
+  const candidate = clone(base);
+  const sourceIndex = candidate.frames.findIndex(({ data }) => data.event.activityType === activityType);
+  const targetIndex = candidate.frames.findIndex(({ data }) => data.event.activityType === targetActivityType);
+  assert.notEqual(sourceIndex, -1);
+  assert.notEqual(targetIndex, -1);
+  const sourceFrame = candidate.frames[sourceIndex];
+  const targetFrame = candidate.frames[targetIndex];
+  const bindingRef = sourceFrame.data.presentationOwnerBindingRef;
+  const removedBindingRef = targetFrame.data.presentationOwnerBindingRef;
+  const nextEvent = clone(sourceFrame.data.event);
+  nextEvent.timestamp = targetFrame.data.event.timestamp;
+  mutate({ candidate, sourceFrame, targetFrame, nextEvent });
+  targetFrame.data.source.sourceKind = sourceFrame.data.source.sourceKind;
+  targetFrame.data.event = nextEvent;
+  targetFrame.data.presentationOwnerBindingRef = bindingRef;
+  if (sourceFrame.data.presentationMessageBindingRef === undefined) {
+    delete targetFrame.data.presentationMessageBindingRef;
+  } else {
+    targetFrame.data.presentationMessageBindingRef = sourceFrame.data.presentationMessageBindingRef;
+  }
+  targetFrame.data.bindingAuthorityDelta = clone(sourceFrame.data.bindingAuthorityDelta);
+  candidate.ownerBindings = candidate.ownerBindings.filter(({ bindingRef: value }) => value !== removedBindingRef);
+  candidate.ownerProjectionRows = candidate.ownerProjectionRows.filter(
+    ({ presentationOwnerBindingRef }) => presentationOwnerBindingRef !== removedBindingRef,
+  );
+  const finalRow = candidate.ownerProjectionRows.find(
+    ({ presentationOwnerBindingRef }) => presentationOwnerBindingRef === bindingRef,
+  );
+  finalRow.sourceEventId = targetFrame.data.source.sourceEventId;
+  finalRow.projectionVersion = targetFrame.data.source.projectionVersion;
+  finalRow.recordedAt = targetFrame.data.source.recordedAt;
+  finalRow.event = clone(nextEvent);
+  candidate.expectedFinalSnapshot.ownerBindings = clone(candidate.ownerBindings);
+  candidate.expectedFinalSnapshot.ownerProjectionRows = clone(candidate.ownerProjectionRows);
+  candidate.durableRows = candidate.frames.map((frame, index) => ({
+    rowRef: candidate.durableRows[index].rowRef,
+    profileRevision,
+    cursorProfileRevision,
+    source: clone(frame.data.source),
+    projectionPayload: clone(frame.data),
+    projectionPayloadDigest: projectionDigest(frame.data),
+  }));
+  return candidate;
+}
+
+function repeatSafeSummaryOwnerAtNoticeFrame(base, mutate) {
+  return repeatActivityOwnerAtFrame(base, "kokoro.safe-summary.v1", "kokoro.notice.v1", mutate);
+}
+
 function resignCandidateEnvelope(envelope) {
   envelope.eventDigest = projectionDigest(envelope.event);
   const route = envelope.source.route;
@@ -275,6 +559,11 @@ function distinctPositiveCase(base, { suffix, sessionId, streamEpoch }) {
   }
   for (const binding of base.messageBindings) {
     for (const field of ["bindingRef", "presentationMessageId", "openedBySourceEventId", "endedBySourceEventId"]) {
+      if (binding[field] !== null) replacements.set(binding[field], distinctOpaqueFixture(binding[field], suffix));
+    }
+  }
+  for (const binding of base.ownerBindings) {
+    for (const field of ["bindingRef", "presentationOwnerMessageId", "boundBySourceEventId"]) {
       if (binding[field] !== null) replacements.set(binding[field], distinctOpaqueFixture(binding[field], suffix));
     }
   }
@@ -342,14 +631,14 @@ test("validates the pinned upstream profile and complete presentation corpus", a
     positiveCases: 2,
     negativeCases: 31,
     durableFrames: 40,
-    bindingReplacementDeltas: 14,
+    bindingReplacementDeltas: 33,
     mappingsCovered: 22,
     agentCandidates: 31,
     agentSourceFixtures: 14,
     agentCandidateEnvelopeCases: 13,
     agentCandidateProjectionCases: 1,
     snapshotAuthorityCases: 1,
-    snapshotAuthorityNegativeCases: 6,
+    snapshotAuthorityNegativeCases: 7,
   });
 });
 
@@ -359,15 +648,16 @@ test("requires one closed full-replacement binding authority delta in every dura
   assert.ok(payloadSchema.required.includes("bindingAuthorityDelta"));
   assert.deepEqual(
     deltaSchema.oneOf.map(({ $ref }) => $ref),
-    ["#/$defs/none", "#/$defs/runReplace", "#/$defs/messageReplace"],
+    ["#/$defs/none", "#/$defs/runReplace", "#/$defs/messageReplace", "#/$defs/ownerReplace"],
   );
   assert.deepEqual(
-    [deltaSchema.$defs.none, deltaSchema.$defs.runReplace, deltaSchema.$defs.messageReplace]
+    [deltaSchema.$defs.none, deltaSchema.$defs.runReplace, deltaSchema.$defs.messageReplace, deltaSchema.$defs.ownerReplace]
       .map(({ properties }) => properties.kind.const),
-    ["none", "run.replace", "message.replace"],
+    ["none", "run.replace", "message.replace", "owner.replace"],
   );
   assert.equal(deltaSchema.$defs.runReplace.properties.binding.$ref, "https://contracts.kokoro.invalid/presentation-run-binding.v1.schema.json");
   assert.equal(deltaSchema.$defs.messageReplace.properties.binding.$ref, "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json");
+  assert.equal(deltaSchema.$defs.ownerReplace.properties.binding.$ref, "https://contracts.kokoro.invalid/presentation-owner-binding.v1.schema.json");
 });
 
 test("keeps Agent internal route topology out of browser binding snapshots and deltas", async () => {
@@ -594,6 +884,8 @@ test("freezes binding authority delta policy per source mapping and rebuilds fro
   const expectedKind = (entry) => {
     if (["RUN_STARTED", "RUN_FINISHED", "RUN_ERROR"].includes(entry.eventType)) return "run.replace";
     if (["TEXT_MESSAGE_START", "TEXT_MESSAGE_END"].includes(entry.eventType)) return "message.replace";
+    if (entry.eventType === "ACTIVITY_SNAPSHOT") return "owner.replace";
+    if (["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(entry.discriminator)) return "owner.replace";
     return "none";
   };
   for (const entry of registry.mappings) {
@@ -843,9 +1135,9 @@ test("freezes a closed Agent candidate envelope without browser or business iden
   assert.deepEqual(
     corpus.agentCandidateEnvelopeCases.map(({ candidateEnvelope }) => candidateEnvelope.event.type),
     [
-      "RUN_STARTED", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT",
+      "RUN_STARTED", "ACTIVITY_SNAPSHOT", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT",
       "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
-      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
+      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
       "TEXT_MESSAGE_END", "RUN_STARTED", "RUN_ERROR",
     ],
   );
@@ -1158,6 +1450,7 @@ test("freezes shared snapshot authority attacks with stable fail-closed codes", 
   assert.deepEqual(
     corpus.snapshotAuthorityNegativeCases.map(({ id, expectedCode }) => [id, expectedCode]),
     [
+      ["snapshot-terminal-owner-revival", "agui_owner_terminal_regression"],
       ["zero-head-retains-bindings", "agui_snapshot_zero_head_bindings_invalid"],
       ["binding-evidence-exceeds-head", "agui_snapshot_binding_evidence_exceeds_head"],
       ["noncanonical-binding-time", "agui_snapshot_binding_time_invalid"],

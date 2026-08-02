@@ -98,7 +98,7 @@ official `EventType` and `EventSchemas` from exact `@ag-ui/core@0.0.57`. The con
 that exact version and integrity. Every positive event must satisfy both the official schema and Kokoro's smaller
 closed vocabulary; forbidden raw, provider, native-tool, reasoning/thinking, state/delta, and unknown-custom
 families never become presentation data merely because upstream accepts them. The Agent candidate gate is narrower again:
-it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Artifact/Cost owner activities, and verifies each admitted
+it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Media/Artifact/Cost owner activities, and verifies each admitted
 sample through the official `EventSchemas`. The envelope gate recomputes RFC 8785/JCS event bytes, rejects invalid Unicode scalar
 strings and unsafe/non-finite numbers, verifies the event digest and domain-separated candidate ref, and binds route refs and
 canonical recorded time back to the event. All event/content keys remain closed by schema, so Unicode object-key ordering cannot
@@ -126,10 +126,11 @@ The public AES-GCM key is conformance-fixture material only, never a runtime key
 and frame cursor into closed Session/epoch/sequence/profile claims, rejects both byte and semantic identity reuse
 across positive cases, binds all run/message/source/row identities to their Session, verifies real parent lineage,
 and requires the persisted complete projection payload plus its JCS SHA-256 to equal the emitted frame exactly.
-Each payload has one required closed `bindingAuthorityDelta`; the checker applies complete Run/message replacements in
+Each payload has one required closed `bindingAuthorityDelta`; the checker applies complete Run/message/owner replacements in
 durable order, refuses patches, and independently reconstructs the declared final HTTP snapshot from a sequence-zero empty
 authority. Mapping policy requires Run replacements only for Run start/terminal rows, message replacements only for text
-start/end rows, and explicit `none` for content, activity, and all v1 CUSTOM rows. Six checked-in attacks cover wrong delta
+start/end rows, owner replacements for Activity and Control/Receipt rows, and explicit `none` for remaining rows. Owner
+Activity identities are independent from TEXT messages; Control and Receipt carry explicit target/control links. Six checked-in attacks cover wrong delta
 kind, binding ref, source, time, state, and future terminal evidence. Row/payload equality and the JCS digest therefore cover
 the delta rather than authenticating only the official event. Session source `projectionVersion` is validated independently
 as a positive uint64 decimal string across frame, row source, and row payload; no JavaScript safe-integer ceiling is part of

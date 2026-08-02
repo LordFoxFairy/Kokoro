@@ -54,7 +54,7 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-The strict AG-UI family is fourteen machine-readable Root sources:
+The strict AG-UI family is sixteen machine-readable Root sources:
 [`agui-upstream-profile.yaml`](registry/agui-upstream-profile.yaml),
 [`agui-agent-candidate-profile-v1.yaml`](registry/agui-agent-candidate-profile-v1.yaml),
 [`agui-presentation-mapping-v1.yaml`](registry/agui-presentation-mapping-v1.yaml),
@@ -63,9 +63,11 @@ The strict AG-UI family is fourteen machine-readable Root sources:
 [`agent-agui-candidate-envelope-v1.yaml`](spec/agent-agui-candidate-envelope-v1.yaml),
 [`presentation-run-binding-v1.yaml`](spec/presentation-run-binding-v1.yaml),
 [`presentation-message-binding-v1.yaml`](spec/presentation-message-binding-v1.yaml),
+[`presentation-owner-binding-v1.yaml`](spec/presentation-owner-binding-v1.yaml),
 [`presentation-binding-authority-delta-v1.yaml`](spec/presentation-binding-authority-delta-v1.yaml),
 [`session-agui-projection-payload-v1.yaml`](spec/session-agui-projection-payload-v1.yaml),
 [`session-agui-presentation-row-v1.yaml`](spec/session-agui-presentation-row-v1.yaml),
+[`session-agui-owner-projection-row-v1.yaml`](spec/session-agui-owner-projection-row-v1.yaml),
 [`session-agui-stream-v1.yaml`](spec/session-agui-stream-v1.yaml),
 [`session-agui-snapshot-authority-v1.yaml`](spec/session-agui-snapshot-authority-v1.yaml), and
 [`agui-presentation-v1.json`](corpus/agui-presentation-v1.json).
@@ -74,7 +76,7 @@ projection/cursor owner, and Web is the strict presentation consumer. Agent is n
 forbidden. The Python SDK source is frozen to `ag-ui-protocol@0.1.19` from `sdks/python` at the same upstream commit as exact
 `@ag-ui/core@0.0.57`; this records the future adapter dependency but claims no Agent runtime implementation or compatibility
 evidence. The Agent candidate event schema reuses the closed presentation field definitions while further forbidding `CUSTOM`,
-Artifact/Cost owner activities, native tool events, raw/provider payloads and reasoning/state families. Its closed envelope
+Media/Artifact/Cost owner activities, native tool events, raw/provider payloads and reasoning/state families. Its closed envelope
 carries no Site/user/Session/cursor/SSE axes: it binds Agent source/route refs, canonical time and uint64 ordinal to the typed
 event's JCS digest and a domain-separated, recomputable candidate ref. `RUN_FINISHED` requires explicit success outcome; Session
 validates and strips that outcome while resolving internal route refs through presentation bindings, so the browser schema does
@@ -91,20 +93,21 @@ for the internal run and all later candidates must retain it. It is never derive
 run binding. The exact TypeScript
 `EventType`/`EventSchemas` family remains the executable upstream vocabulary/schema authority. The stock `@ag-ui/client` transport is forbidden because it cannot preserve
 Kokoro's exact SSE `id`, `event`, `Last-Event-ID`, opaque durable cursor, snapshot repair, and non-durable draining
-semantics. The closed snapshot authority envelope requires both typed run/message binding arrays and the Session-owned
+semantics. The closed snapshot authority envelope requires typed run/message/owner binding arrays, the latest complete
+owner projection row per owner binding, and the Session-owned
 `lastRecordedAt` durable-head watermark: sequence zero requires null;
 a nonzero head requires canonical UTC millisecond time no earlier than every included binding timestamp, and the next event
 cannot regress behind it. A zero head cannot retain bindings, binding evidence cannot exceed the durable head, every binding
 time is canonical UTC milliseconds, one snapshot has one presentation thread, parent lineage is acyclic, and M0 terminal
 bindings are only `finished/success` or `error/error`. Binding source IDs seed only binding evidence; Session storage remains
 the full source-ID uniqueness authority. Every durable payload additionally carries exactly one closed
-`bindingAuthorityDelta`: explicit `none`, a complete Run binding replacement, or a complete message binding replacement.
-Run start/terminal rows require the Run arm; text start/end rows require the message arm; content, activity, and every v1
-CUSTOM row require `none`. This is transport-binding authority, not a patch and not the similarly named CUSTOM owner
-projection. The delta is inside the same persisted, JCS-digested payload as its source and event, so Web can rebuild a final
+`bindingAuthorityDelta`: explicit `none`, or a complete Run, message, or owner binding replacement.
+Run start/terminal rows require the Run arm; text start/end rows require the message arm; every Activity and Control/Receipt
+CUSTOM row requires the owner arm; other content and CUSTOM rows require `none`. Owner bindings are immutable placement
+authority, not owner-state patches. The delta is inside the same persisted, JCS-digested payload as its source and event, so Web can rebuild a final
 Session snapshot frame-by-frame from a real sequence-zero empty snapshot without preloading future bindings or inferring
 owner facts. Source/event/ref/time and open/terminal state must agree exactly; future binding evidence fails closed.
-Both presentation binding schemas are browser-safe complete replacements: `internalRunRef`, `internalMessageRef`,
+All presentation binding schemas are browser-safe complete replacements: `internalRunRef`, `internalMessageRef`,
 `parentInternalRunRef`, and any other Agent route topology are forbidden in snapshots, deltas, persisted projection
 payloads, and SSE. Session resolves those refs through its private route authority before projection. The conformance
 corpus carries `sessionPrivateRouteFixtures` only to validate that private mapping independently; those fixtures are not
@@ -130,7 +133,9 @@ facts, and Session alone synthesizes their browser presentation rows. Image, aud
 variants are closed and typed. HITL, control, and receipt replacements bind the same `ownerRef`, `decisionGroupRef`, and
 `controlRef`; integer `expectedVersion`/`version` aliases are removed in favor of uint64 owner versions. This gives Web
 one version-aware transition path for snapshot and live data and prevents generic activity cards from bypassing terminal
-or identity invariants.
+or identity invariants. Activity message IDs are Session-assigned presentation identities distinct from TEXT messages and
+do not require a text message binding. Control and Receipt owners are Run-scoped; their target and control ancestry is
+carried as explicit owner-binding references, so neither Session nor Web may infer placement from an active message or Run.
 
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
 isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/

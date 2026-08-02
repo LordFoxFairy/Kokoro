@@ -38,6 +38,8 @@ const CONTRACT_PATHS = Object.freeze({
   bindingAuthorityDeltaSchema: "contract/spec/presentation-binding-authority-delta-v1.yaml",
   runBindingSchema: "contract/spec/presentation-run-binding-v1.yaml",
   messageBindingSchema: "contract/spec/presentation-message-binding-v1.yaml",
+  ownerBindingSchema: "contract/spec/presentation-owner-binding-v1.yaml",
+  ownerProjectionRowSchema: "contract/spec/session-agui-owner-projection-row-v1.yaml",
   streamSchema: "contract/spec/session-agui-stream-v1.yaml",
   snapshotAuthoritySchema: "contract/spec/session-agui-snapshot-authority-v1.yaml",
 });
@@ -46,17 +48,19 @@ const CONTRACT_PATHS = Object.freeze({
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "51bed4a35ca703cf49d429b965b485cc7c0004d9267c7c5bec5adb9c322f3134",
-  mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
+  mapping: "8e3f14b227fc0d0f873825a0aae85211586084e0620b54ef88685b640e95c818",
   eventSchema: "21449983578a76e5a77e5893304a822ad001a997303fd5eab6e6edec80d43fec",
   agentCandidateSchema: "bdc359752f7619b1ba90a65b0daa316066bf1887b5c28b24042b5521897b8fd7",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
-  projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
+  projectionPayloadSchema: "56ce58caa5ab0fceda870e3e0fb31ed283898755df8822af189ed5dce57c6ef6",
   presentationRowSchema: "9216fcfaca063b8c7576209e7108757749a655bbd7d538b9a8acb684356e72fa",
-  bindingAuthorityDeltaSchema: "9fd30b734e2aa5f52be50eb1442eaf16843de8baa8098fcc996bc5e057f9dd2d",
+  bindingAuthorityDeltaSchema: "df61ff36f09195f9e9ed9764c8de27f5c59a717bee495a834316cae0988772ac",
   runBindingSchema: "54d50fd4179147e5b421d5ce6c957dce8d36be68906ba19bebd6372eea4136fe",
   messageBindingSchema: "56a2b5728f6ac880eb44648f30b0a05a09cf58ae713bc4f111a02928211dd1a5",
+  ownerBindingSchema: "43d6434304ea1ce483b0a8d4f87f2916135eeb3bd07ab0a7ec7e7dd04315a2c6",
+  ownerProjectionRowSchema: "8a1adee9b84356945edf1ecfe93c257945ea2ce6f1439d669750d2ef01edee80",
   streamSchema: "ce51651ab17c080838547ec74c73a86574b9134aed351c7f27d92d1709441333",
-  snapshotAuthoritySchema: "6c2ee288041cf29ea4dccd318c58bbaa4d19e1577de0acaf00aae076479e39e8",
+  snapshotAuthoritySchema: "104c50d6c409827857bbf1264a53984bc16c30cbfa2cd9ee8e3c407c13ca3922",
 });
 
 const OFFICIAL_EVENT_TYPES = Object.freeze(Object.values(EventType));
@@ -112,6 +116,17 @@ const BINDING_DELTA_KIND_BY_EVENT = Object.freeze(new Map([
   [EventType.TEXT_MESSAGE_START, "message.replace"],
   [EventType.TEXT_MESSAGE_END, "message.replace"],
 ]));
+const OWNER_DELTA_CUSTOM_NAMES = Object.freeze(new Set([
+  "kokoro.control.replace.v1", "kokoro.receipt.replace.v1",
+]));
+const OWNER_MESSAGE_ENDED_RUN_OPEN = Object.freeze([
+  "safe-summary", "tool", "hitl", "plan", "subagent", "media", "artifact", "cost", "notice", "error",
+]);
+const OWNER_TERMINAL_MAY_CREATE = Object.freeze(["media", "artifact", "cost", "notice", "error"]);
+const OWNER_TERMINAL_MAY_CONVERGE = Object.freeze(["media", "artifact", "cost", "notice", "error", "receipt"]);
+const OWNER_TERMINAL_MAY_NOT_CREATE = Object.freeze(["safe-summary", "tool", "hitl", "control", "plan", "subagent"]);
+const OWNER_TERMINAL_MAY_CREATE_SET = new Set(OWNER_TERMINAL_MAY_CREATE);
+const OWNER_TERMINAL_MAY_CONVERGE_SET = new Set(OWNER_TERMINAL_MAY_CONVERGE);
 const COT_KEY = /^(?:chain[_-]?of[_-]?thought|cot|private[_-]?reasoning|hidden[_-]?reasoning|reasoning[_-]?(?:content|trace|tokens))$/iu;
 const TOOL_SECRET_KEY = /^(?:api[_-]?key|authorization|credential|headers?|password|private[_-]?key|provider[_-]?url|raw[_-]?(?:input|output|result)|secret|token|args|arguments|input)$/iu;
 const PUBLIC_SOURCE_EVENT_ID = /^presentation\.event:[A-Za-z0-9][A-Za-z0-9._:-]*$/u;
@@ -235,6 +250,8 @@ function loadContracts(root = repositoryRoot) {
     ajv.addSchema(sources.eventSchema);
     ajv.addSchema(sources.runBindingSchema);
     ajv.addSchema(sources.messageBindingSchema);
+    ajv.addSchema(sources.ownerBindingSchema);
+    ajv.addSchema(sources.ownerProjectionRowSchema);
     ajv.addSchema(sources.bindingAuthorityDeltaSchema);
     ajv.addSchema(sources.agentCandidateSchema);
     ajv.addSchema(sources.agentCandidateEnvelopeSchema);
@@ -253,6 +270,8 @@ function loadContracts(root = repositoryRoot) {
       validateBindingAuthorityDelta: ajv.getSchema(sources.bindingAuthorityDeltaSchema.$id),
       validateRunBinding: ajv.getSchema(sources.runBindingSchema.$id),
       validateMessageBinding: ajv.getSchema(sources.messageBindingSchema.$id),
+      validateOwnerBinding: ajv.getSchema(sources.ownerBindingSchema.$id),
+      validateOwnerProjectionRow: ajv.getSchema(sources.ownerProjectionRowSchema.$id),
       validateStream: ajv.compile(sources.streamSchema),
       validateSnapshotAuthoritySchema: ajv.compile(sources.snapshotAuthoritySchema),
     });
@@ -442,7 +461,10 @@ function validateMappingRegistry(mapping) {
     if (entry.eventType === EventType.ACTIVITY_SNAPSHOT && !mapping.allowedActivityTypes.includes(entry.discriminator)) fail("agui_mapping_activity_unknown", entry.sourceKind);
     if (entry.eventType === EventType.CUSTOM && !mapping.allowedCustomNames.includes(entry.discriminator)) fail("agui_mapping_custom_unknown", entry.sourceKind);
     if (![EventType.ACTIVITY_SNAPSHOT, EventType.CUSTOM].includes(entry.eventType) && entry.discriminator !== undefined) fail("agui_mapping_discriminator_invalid", entry.sourceKind);
-    const requiredDeltaKind = BINDING_DELTA_KIND_BY_EVENT.get(entry.eventType) ?? "none";
+    const requiredDeltaKind = entry.eventType === EventType.ACTIVITY_SNAPSHOT ||
+      (entry.eventType === EventType.CUSTOM && OWNER_DELTA_CUSTOM_NAMES.has(entry.discriminator))
+      ? "owner.replace"
+      : BINDING_DELTA_KIND_BY_EVENT.get(entry.eventType) ?? "none";
     if (entry.bindingAuthorityDeltaKind !== requiredDeltaKind) fail("agui_mapping_binding_delta_policy_invalid", entry.sourceKind);
   }
   exactKeys(
@@ -450,8 +472,28 @@ function validateMappingRegistry(mapping) {
     [
       "durableRowToFrameCardinality", "dropDurableRows", "fanOutDurableRows", "bindingAuthorityDelta",
       "sourceProjectionVersion", "publicSourceEventIdentity", "presentationIdentity", "customRunOwnerVersion",
-      "agentCandidateSourceProfile", "agentRawPassthrough", "providerPayloadPassthrough",
+      "ownerProjection", "agentCandidateSourceProfile", "agentRawPassthrough", "providerPayloadPassthrough",
     ],
+    "agui_projection_policy_invalid",
+  );
+  exactArray(
+    mapping.projectionPolicy.ownerProjection.lateTerminal.messageEndedRunOpen,
+    OWNER_MESSAGE_ENDED_RUN_OPEN,
+    "agui_projection_policy_invalid",
+  );
+  exactArray(
+    mapping.projectionPolicy.ownerProjection.lateTerminal.terminalRunMayCreate,
+    OWNER_TERMINAL_MAY_CREATE,
+    "agui_projection_policy_invalid",
+  );
+  exactArray(
+    mapping.projectionPolicy.ownerProjection.lateTerminal.terminalRunMayConvergeExisting,
+    OWNER_TERMINAL_MAY_CONVERGE,
+    "agui_projection_policy_invalid",
+  );
+  exactArray(
+    mapping.projectionPolicy.ownerProjection.lateTerminal.terminalRunMayNotCreate,
+    OWNER_TERMINAL_MAY_NOT_CREATE,
     "agui_projection_policy_invalid",
   );
   exactKeys(
@@ -485,6 +527,19 @@ function validateMappingRegistry(mapping) {
     ["wire", "semantic", "legacyProjectionVersion", "javascriptNumber"],
     "agui_projection_policy_invalid",
   );
+  exactKeys(
+    mapping.projectionPolicy.ownerProjection,
+    ["binding", "snapshotReducer", "snapshotCursorSequencing", "javascriptOwnerVersion", "lateTerminal"],
+    "agui_projection_policy_invalid",
+  );
+  exactKeys(
+    mapping.projectionPolicy.ownerProjection.lateTerminal,
+    [
+      "messageEndedRunOpen", "terminalRunMayCreate", "terminalRunReceiptRequiresExistingControl",
+      "terminalRunMayConvergeExisting", "terminalRunMayNotCreate", "textOrRunReopen",
+    ],
+    "agui_projection_policy_invalid",
+  );
   if (
     mapping.projectionPolicy?.durableRowToFrameCardinality !== "exactly-one" || mapping.projectionPolicy.dropDurableRows !== false ||
     mapping.projectionPolicy.fanOutDurableRows !== false || mapping.projectionPolicy.agentCandidateSourceProfile !== AGENT_CANDIDATE_PROFILE_REVISION ||
@@ -513,7 +568,13 @@ function validateMappingRegistry(mapping) {
     mapping.projectionPolicy.customRunOwnerVersion.wire !== "positive-uint64-decimal-string" ||
     mapping.projectionPolicy.customRunOwnerVersion.semantic !== "run-owner-version" ||
     mapping.projectionPolicy.customRunOwnerVersion.legacyProjectionVersion !== "forbidden" ||
-    mapping.projectionPolicy.customRunOwnerVersion.javascriptNumber !== "forbidden"
+    mapping.projectionPolicy.customRunOwnerVersion.javascriptNumber !== "forbidden" ||
+    mapping.projectionPolicy.ownerProjection.binding !== "complete-immutable-owner-replacement-on-every-owner-row" ||
+    mapping.projectionPolicy.ownerProjection.snapshotReducer !== "same-owner-identity-version-terminal-reducer-as-live" ||
+    mapping.projectionPolicy.ownerProjection.snapshotCursorSequencing !== "forbidden" ||
+    mapping.projectionPolicy.ownerProjection.javascriptOwnerVersion !== "forbidden" ||
+    mapping.projectionPolicy.ownerProjection.lateTerminal.textOrRunReopen !== "forbidden" ||
+    mapping.projectionPolicy.ownerProjection.lateTerminal.terminalRunReceiptRequiresExistingControl !== true
   ) fail("agui_projection_policy_invalid");
   if (
     mapping.transportPolicy?.sseId !== "opaque-session-cursor" || mapping.transportPolicy.sseEvent !== "exact-inner-event-type" ||
@@ -527,6 +588,13 @@ function validateMappingRegistry(mapping) {
     mapping.snapshotPolicy.streamHydration !== "forbidden" || mapping.snapshotPolicy.timeWatermarkField !== "lastRecordedAt" ||
     mapping.snapshotPolicy.timeWatermarkAuthority !== "session-durable-head"
   ) fail("agui_snapshot_policy_invalid");
+  for (const [key, expected] of [
+    ["ownerBindingsMaximum", 2048], ["ownerProjectionRowsMaximum", 2048],
+    ["ownerProjectionCanonicalBytesMaximum", 16777216], ["ownerBindingsPerMessageMaximum", 64],
+    ["controlReceiptBindingsPerRunMaximum", 256], ["ownerLinkDepthMaximum", 2],
+  ]) {
+    if (mapping.snapshotPolicy?.[key] !== expected) fail("agui_snapshot_policy_invalid", key);
+  }
   for (const [key, lower, upper] of [
     ["maximumFrameBytes", 1024, 262144], ["maximumEventBytes", 1024, 131072], ["maximumJsonDepth", 4, 32],
     ["maximumJsonNodes", 128, 16384], ["maximumObjectKeys", 8, 128], ["maximumArrayItems", 8, 512],
@@ -651,6 +719,8 @@ function createSemanticIdentityRegistries() {
     internalRunSegments: new Set(),
     messageBindingRefs: new Set(),
     presentationMessageIds: new Set(),
+    ownerBindingRefs: new Set(),
+    presentationOwnerMessageIds: new Set(),
     internalMessageSegments: new Set(),
   };
 }
@@ -679,7 +749,7 @@ function parseCanonicalUtcMs(value, code = "agui_snapshot_time_watermark_invalid
   return parsed;
 }
 
-function bindingTimestampWatermark(runBindings, messageBindings) {
+function bindingTimestampWatermark(runBindings, messageBindings, ownerBindings = [], ownerProjectionRows = []) {
   let watermark = Number.NEGATIVE_INFINITY;
   for (const binding of [...runBindings, ...messageBindings]) {
     for (const field of ["openedAt", "terminalAt", "endedAt"]) {
@@ -688,10 +758,16 @@ function bindingTimestampWatermark(runBindings, messageBindings) {
       watermark = Math.max(watermark, parsed);
     }
   }
+  for (const binding of ownerBindings) {
+    watermark = Math.max(watermark, parseCanonicalUtcMs(binding.boundAt, "agui_snapshot_binding_time_invalid"));
+  }
+  for (const row of ownerProjectionRows) {
+    watermark = Math.max(watermark, parseCanonicalUtcMs(row.recordedAt, "agui_owner_projection_time_invalid"));
+  }
   return watermark;
 }
 
-function snapshotBindingEvidenceCount(runBindings, messageBindings) {
+function snapshotBindingEvidenceCount(runBindings, messageBindings, ownerBindings = [], ownerProjectionRows = []) {
   const evidence = new Set();
   for (const binding of runBindings) {
     evidence.add(binding.openedBySourceEventId);
@@ -701,10 +777,20 @@ function snapshotBindingEvidenceCount(runBindings, messageBindings) {
     evidence.add(binding.openedBySourceEventId);
     if (binding.endedBySourceEventId !== null) evidence.add(binding.endedBySourceEventId);
   }
+  for (const binding of ownerBindings) evidence.add(binding.boundBySourceEventId);
+  for (const row of ownerProjectionRows) evidence.add(row.sourceEventId);
   return BigInt(evidence.size);
 }
 
-function validateSnapshotTimeAuthority(snapshot, validateSchema, runBindings = [], messageBindings = [], nextEventRecordedAt = undefined) {
+function validateSnapshotTimeAuthority(
+  snapshot,
+  validateSchema,
+  runBindings = [],
+  messageBindings = [],
+  ownerBindings = [],
+  ownerProjectionRows = [],
+  nextEventRecordedAt = undefined,
+) {
   if (snapshot?.authority !== "session-browser-v3-http-snapshot" || snapshot.hydrate !== true || snapshot.repair !== true) {
     fail("agui_snapshot_authority_invalid");
   }
@@ -714,9 +800,14 @@ function validateSnapshotTimeAuthority(snapshot, validateSchema, runBindings = [
     fail("agui_snapshot_time_watermark_invalid");
   }
   const watermark = durableSeq === 0n ? Number.NEGATIVE_INFINITY : parseCanonicalUtcMs(snapshot.lastRecordedAt);
-  const outerAuthority = { ...snapshot, runBindings: [], messageBindings: [] };
+  const outerAuthority = {
+    ...snapshot, runBindings: [], messageBindings: [], ownerBindings: [], ownerProjectionRows: [],
+  };
   if (!validateSchema(outerAuthority)) fail("agui_snapshot_authority_schema_invalid", validateSchema.errors?.[0]?.instancePath ?? "");
-  if (durableSeq > 0n && watermark < bindingTimestampWatermark(runBindings, messageBindings)) {
+  if (
+    durableSeq > 0n &&
+    watermark < bindingTimestampWatermark(runBindings, messageBindings, ownerBindings, ownerProjectionRows)
+  ) {
     fail("agui_snapshot_time_watermark_before_binding");
   }
   if (nextEventRecordedAt !== undefined && parseCanonicalUtcMs(nextEventRecordedAt, "agui_event_time_invalid") < watermark) {
@@ -752,6 +843,14 @@ function validateEventPreSchema(event, mapping) {
 }
 
 function validateOwnerPresentationEvent(event) {
+  if (
+    event.type === EventType.CUSTOM &&
+    ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(event.name)
+  ) {
+    const updatedAt = parseCanonicalUtcMs(event.value.updatedAt, "agui_owner_updated_at_invalid");
+    if (updatedAt > event.timestamp) fail("agui_owner_updated_at_future");
+    return;
+  }
   if (event.type !== EventType.ACTIVITY_SNAPSHOT) return;
   const ownerVersion = uint64(event.content.ownerVersion, "agui_owner_version_invalid");
   if (ownerVersion === 0n) fail("agui_owner_version_invalid");
@@ -797,6 +896,8 @@ const OPAQUE_PRESENTATION_IDENTITY = Object.freeze({
   runId: /^presentation\.run:[0-9a-f]{64}$/u,
   messageBindingRef: /^presentation\.message-binding:[0-9a-f]{64}$/u,
   messageId: /^presentation\.message:[0-9a-f]{64}$/u,
+  ownerBindingRef: /^presentation\.owner-binding:[0-9a-f]{64}$/u,
+  ownerMessageId: /^presentation\.message:[0-9a-f]{64}$/u,
 });
 
 function validateOpaquePresentationIdentity(value, pattern) {
@@ -892,19 +993,27 @@ function validateM0RunBindingStates(runBindings, code) {
 function validateSnapshotBindingAuthority(snapshot, contracts) {
   const runBindings = snapshot.runBindings;
   const messageBindings = snapshot.messageBindings;
+  const ownerBindings = snapshot.ownerBindings;
+  const ownerProjectionRows = snapshot.ownerProjectionRows;
   const durableSeq = uint64(snapshot.durableSeq, "agui_snapshot_cursor_invalid");
-  if (durableSeq === 0n && (runBindings.length !== 0 || messageBindings.length !== 0)) {
+  if (
+    durableSeq === 0n &&
+    (runBindings.length !== 0 || messageBindings.length !== 0 || ownerBindings.length !== 0 || ownerProjectionRows.length !== 0)
+  ) {
     fail("agui_snapshot_zero_head_bindings_invalid");
   }
-  if (snapshotBindingEvidenceCount(runBindings, messageBindings) > durableSeq) {
+  if (snapshotBindingEvidenceCount(runBindings, messageBindings, ownerBindings, ownerProjectionRows) > durableSeq) {
     fail("agui_snapshot_binding_evidence_exceeds_head");
   }
-  bindingTimestampWatermark(runBindings, messageBindings);
-  if (runBindings.length === 0) return;
+  bindingTimestampWatermark(runBindings, messageBindings, ownerBindings, ownerProjectionRows);
   const identities = createSemanticIdentityRegistries();
-  const runRefs = validateRunBindings(runBindings, contracts.validateRunBinding, snapshot, identities);
-  validateMessageBindings(messageBindings, contracts.validateMessageBinding, runRefs, snapshot, identities);
-  if (new Set(runBindings.map(({ presentationThreadId }) => presentationThreadId)).size !== 1) {
+  const runRefs = runBindings.length === 0
+    ? new Map()
+    : validateRunBindings(runBindings, contracts.validateRunBinding, snapshot, identities);
+  const messageRefs = validateMessageBindings(messageBindings, contracts.validateMessageBinding, runRefs, snapshot, identities);
+  const ownerRefs = validateOwnerBindings(ownerBindings, contracts, runRefs, messageRefs, snapshot, identities);
+  validateOwnerProjectionRows(ownerProjectionRows, contracts, ownerRefs, snapshot);
+  if (runBindings.length > 0 && new Set(runBindings.map(({ presentationThreadId }) => presentationThreadId)).size !== 1) {
     fail("agui_snapshot_thread_scope_invalid");
   }
   validateM0RunBindingStates(runBindings, "agui_snapshot_terminal_state_invalid");
@@ -947,6 +1056,258 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, id
   return refs;
 }
 
+function ownerIdentityForEvent(event) {
+  if (event.type === EventType.ACTIVITY_SNAPSHOT) {
+    const content = event.content;
+    const identities = {
+      "kokoro.safe-summary.v1": () => ({ kind: "safe-summary", partRef: content.partRef }),
+      "kokoro.tool-preview.v1": () => ({ kind: "tool", toolCallRef: content.toolCallRef }),
+      "kokoro.hitl.v1": () => ({
+        kind: "hitl", ownerRef: content.ownerRef, decisionGroupRef: content.decisionGroupRef,
+        controlRef: content.controlRef,
+      }),
+      "kokoro.plan.v1": () => ({ kind: "plan", planRef: content.planRef }),
+      "kokoro.subagent.v1": () => ({ kind: "subagent", subagentRef: content.subagentRef }),
+      "kokoro.media.v1": () => ({
+        kind: "media", mediaOperationRef: content.mediaOperationRef, definitionRef: content.definitionRef,
+        definitionRevisionRef: content.definitionRevisionRef,
+        modelOptionRevisionRef: content.modelOptionRevisionRef ?? null,
+      }),
+      "kokoro.artifact.v1": () => ({
+        kind: "artifact", artifactRef: content.artifactRef, artifactVersionRef: content.artifactVersionRef,
+      }),
+      "kokoro.cost.v1": () => ({
+        kind: "cost", mediaOperationRef: content.mediaOperationRef, costProjectionRef: content.costProjectionRef,
+      }),
+      "kokoro.notice.v1": () => ({ kind: "notice", noticeRef: content.noticeRef }),
+      "kokoro.error.v1": () => ({ kind: "error", errorRef: content.errorRef }),
+    };
+    const createIdentity = identities[event.activityType];
+    if (createIdentity === undefined) fail("agui_owner_identity_unknown", event.activityType);
+    return createIdentity();
+  }
+  if (event.type === EventType.CUSTOM && event.name === "kokoro.control.replace.v1") {
+    return {
+      kind: "control", controlRef: event.value.controlRef, ownerRef: event.value.ownerRef,
+      decisionGroupRef: event.value.decisionGroupRef,
+    };
+  }
+  if (event.type === EventType.CUSTOM && event.name === "kokoro.receipt.replace.v1") {
+    return {
+      kind: "receipt", receiptRef: event.value.receiptRef, controlRef: event.value.controlRef,
+      ownerRef: event.value.ownerRef, decisionGroupRef: event.value.decisionGroupRef,
+    };
+  }
+  return undefined;
+}
+
+function ownerVersionForEvent(event) {
+  const value = event.type === EventType.ACTIVITY_SNAPSHOT ? event.content.ownerVersion : event.value.ownerVersion;
+  const parsed = uint64(value, "agui_owner_version_invalid");
+  if (parsed === 0n) fail("agui_owner_version_invalid");
+  return parsed;
+}
+
+function ownerUpdatedAtForEvent(event) {
+  return event.type === EventType.ACTIVITY_SNAPSHOT ? event.content.updatedAt : event.value.updatedAt;
+}
+
+function ownerStateFingerprint(event) {
+  const state = structuredClone(event);
+  delete state.timestamp;
+  return canonical(state);
+}
+
+function ownerTerminalState(event) {
+  if (event.type === EventType.CUSTOM && event.name === "kokoro.control.replace.v1") {
+    return event.value.state === "pending" ? undefined : event.value.state;
+  }
+  if (event.type === EventType.CUSTOM && event.name === "kokoro.receipt.replace.v1") {
+    return ["committed", "rejected"].includes(event.value.state) ? event.value.state : undefined;
+  }
+  if (event.type !== EventType.ACTIVITY_SNAPSHOT) return undefined;
+  const content = event.content;
+  switch (event.activityType) {
+    case "kokoro.safe-summary.v1": return content.status === "streaming" ? undefined : content.status;
+    case "kokoro.tool-preview.v1": return ["completed", "failed", "canceled"].includes(content.status) ? content.status : undefined;
+    case "kokoro.hitl.v1": return content.status === "pending" ? undefined : content.status;
+    case "kokoro.plan.v1": return ["completed", "failed", "canceled"].includes(content.status) ? content.status : undefined;
+    case "kokoro.subagent.v1": return ["completed", "failed", "canceled"].includes(content.status) ? content.status : undefined;
+    case "kokoro.media.v1": return ["completed", "partial", "failed", "canceled"].includes(content.state) ? content.state : undefined;
+    case "kokoro.artifact.v1": return content.availability === "deleted" ? "deleted" : undefined;
+    case "kokoro.notice.v1":
+    case "kokoro.error.v1": return "terminal";
+    case "kokoro.cost.v1": return undefined;
+    default: fail("agui_owner_identity_unknown", event.activityType);
+  }
+}
+
+function validateNestedOwnerTransition(current, next) {
+  if (
+    current.event.type === EventType.ACTIVITY_SNAPSHOT &&
+    next.event.type === EventType.ACTIVITY_SNAPSHOT &&
+    current.event.activityType === "kokoro.media.v1" && next.event.activityType === "kokoro.media.v1"
+  ) {
+    const currentCandidates = current.event.content.candidates;
+    const nextCandidates = next.event.content.candidates;
+    if (currentCandidates.length > nextCandidates.length) fail("agui_media_candidate_identity_conflict");
+    for (let index = 0; index < currentCandidates.length; index += 1) {
+      const candidate = currentCandidates[index];
+      const updated = nextCandidates[index];
+      if (
+        updated === undefined || updated.candidateRef !== candidate.candidateRef || updated.ordinal !== candidate.ordinal
+      ) fail("agui_media_candidate_identity_conflict");
+      const currentVersion = uint64(candidate.ownerVersion, "agui_media_candidate_version_invalid");
+      const nextVersion = uint64(updated.ownerVersion, "agui_media_candidate_version_invalid");
+      if (nextVersion < currentVersion) fail("agui_media_candidate_version_regression", candidate.candidateRef);
+      if (nextVersion === currentVersion && canonical(candidate) !== canonical(updated)) {
+        fail("agui_media_candidate_version_conflict", candidate.candidateRef);
+      }
+      if (
+        ["ready", "restricted", "failed", "canceled"].includes(candidate.state) &&
+        updated.state !== candidate.state
+      ) fail("agui_media_candidate_terminal_regression", candidate.candidateRef);
+    }
+  }
+  if (
+    current.event.type === EventType.ACTIVITY_SNAPSHOT &&
+    next.event.type === EventType.ACTIVITY_SNAPSHOT &&
+    current.event.activityType === "kokoro.cost.v1" && next.event.activityType === "kokoro.cost.v1" &&
+    next.event.content.state === "corrected" &&
+    next.event.content.correctsOwnerVersion !== current.event.content.ownerVersion
+  ) fail("agui_cost_correction_ancestry_conflict");
+}
+
+function reduceOwnerProjectionRow(current, next) {
+  ownerVersionForEvent(next.event);
+  parseCanonicalUtcMs(ownerUpdatedAtForEvent(next.event), "agui_owner_updated_at_invalid");
+  if (current === undefined) return structuredClone(next);
+  if (
+    current.presentationOwnerBindingRef !== next.presentationOwnerBindingRef ||
+    canonical(ownerIdentityForEvent(current.event)) !== canonical(ownerIdentityForEvent(next.event))
+  ) fail("agui_owner_projection_identity_conflict", next.presentationOwnerBindingRef);
+  const currentVersion = ownerVersionForEvent(current.event);
+  const nextVersion = ownerVersionForEvent(next.event);
+  if (nextVersion < currentVersion) fail("agui_owner_version_regression", next.presentationOwnerBindingRef);
+  if (nextVersion === currentVersion && ownerStateFingerprint(current.event) !== ownerStateFingerprint(next.event)) {
+    fail("agui_owner_version_conflict", next.presentationOwnerBindingRef);
+  }
+  if (
+    Date.parse(ownerUpdatedAtForEvent(next.event)) < Date.parse(ownerUpdatedAtForEvent(current.event))
+  ) fail("agui_owner_updated_at_regression", next.presentationOwnerBindingRef);
+  validateNestedOwnerTransition(current, next);
+  const terminal = ownerTerminalState(current.event);
+  if (terminal !== undefined && ownerTerminalState(next.event) !== terminal) {
+    fail("agui_owner_terminal_regression", next.presentationOwnerBindingRef);
+  }
+  return structuredClone(next);
+}
+
+function validateOwnerBindings(bindings, contracts, runRefs, messageRefs, snapshot, identities) {
+  if (!Array.isArray(bindings) || bindings.length > 2048) fail("agui_owner_bindings_invalid");
+  const refs = new Map();
+  const identityKeys = new Set();
+  const perMessage = new Map();
+  const controlReceiptPerRun = new Map();
+  for (const binding of bindings) {
+    validateOpaquePresentationIdentity(binding.bindingRef, OPAQUE_PRESENTATION_IDENTITY.ownerBindingRef);
+    if (!contracts.validateOwnerBinding(binding)) {
+      fail("agui_owner_binding_schema_invalid", contracts.validateOwnerBinding.errors?.[0]?.instancePath ?? "");
+    }
+    validatePublicSourceEventId(binding.boundBySourceEventId);
+    parseCanonicalUtcMs(binding.boundAt, "agui_snapshot_binding_time_invalid");
+    if (binding.sessionId !== snapshot.sessionId || binding.profileRevision !== snapshot.profileRevision) {
+      fail("agui_owner_binding_scope_conflict", binding.bindingRef);
+    }
+    const run = runRefs.get(binding.presentationRunBindingRef);
+    if (run === undefined) fail("agui_owner_run_binding_invalid", binding.bindingRef);
+    if (binding.presentationMessageBindingRef !== null) {
+      const message = messageRefs.get(binding.presentationMessageBindingRef);
+      if (message === undefined || message.presentationRunBindingRef !== binding.presentationRunBindingRef) {
+        fail("agui_owner_message_binding_invalid", binding.bindingRef);
+      }
+      perMessage.set(binding.presentationMessageBindingRef, (perMessage.get(binding.presentationMessageBindingRef) ?? 0) + 1);
+      if (perMessage.get(binding.presentationMessageBindingRef) > 64) fail("agui_owner_bindings_per_message_exceeded");
+    }
+    if (binding.presentationOwnerMessageId !== null) {
+      validateOpaquePresentationIdentity(binding.presentationOwnerMessageId, OPAQUE_PRESENTATION_IDENTITY.ownerMessageId);
+      if (identities.presentationMessageIds.has(binding.presentationOwnerMessageId)) {
+        fail("agui_presentation_owner_text_message_id_collision", binding.presentationOwnerMessageId);
+      }
+      registerGlobalIdentity(
+        identities.presentationOwnerMessageIds,
+        binding.presentationOwnerMessageId,
+        "agui_global_presentation_owner_message_id_duplicate",
+      );
+    }
+    const identityKey = canonical(binding.ownerIdentity);
+    if (refs.has(binding.bindingRef) || identityKeys.has(identityKey)) fail("agui_owner_binding_duplicate");
+    identityKeys.add(identityKey);
+    refs.set(binding.bindingRef, binding);
+    registerGlobalIdentity(identities.ownerBindingRefs, binding.bindingRef, "agui_global_owner_binding_ref_duplicate");
+    if (["control", "receipt"].includes(binding.ownerIdentity.kind)) {
+      const count = (controlReceiptPerRun.get(binding.presentationRunBindingRef) ?? 0) + 1;
+      controlReceiptPerRun.set(binding.presentationRunBindingRef, count);
+      if (count > 256) fail("agui_control_receipt_bindings_per_run_exceeded");
+    }
+  }
+  for (const binding of refs.values()) {
+    if (binding.ownerIdentity.kind === "control" || binding.ownerIdentity.kind === "receipt") {
+      const target = refs.get(binding.targetOwnerBindingRef);
+      if (
+        target?.ownerIdentity.kind !== "hitl" ||
+        target.presentationRunBindingRef !== binding.presentationRunBindingRef ||
+        target.ownerIdentity.ownerRef !== binding.ownerIdentity.ownerRef ||
+        target.ownerIdentity.decisionGroupRef !== binding.ownerIdentity.decisionGroupRef ||
+        target.ownerIdentity.controlRef !== binding.ownerIdentity.controlRef
+      ) fail("agui_owner_target_binding_invalid", binding.bindingRef);
+    }
+    if (binding.ownerIdentity.kind === "receipt") {
+      const control = refs.get(binding.controlOwnerBindingRef);
+      if (
+        control?.ownerIdentity.kind !== "control" ||
+        control.presentationRunBindingRef !== binding.presentationRunBindingRef ||
+        control.ownerIdentity.controlRef !== binding.ownerIdentity.controlRef ||
+        control.targetOwnerBindingRef !== binding.targetOwnerBindingRef
+      ) fail("agui_owner_control_binding_invalid", binding.bindingRef);
+    }
+  }
+  return refs;
+}
+
+function validateOwnerProjectionRows(rows, contracts, ownerRefs, snapshot) {
+  if (!Array.isArray(rows) || rows.length !== ownerRefs.size || rows.length > 2048) {
+    fail("agui_owner_projection_rows_invalid");
+  }
+  if (Buffer.byteLength(canonical(rows), "utf8") > 16_777_216) fail("agui_owner_projection_rows_size_exceeded");
+  const refs = new Map();
+  const watermark = snapshot.lastRecordedAt === null ? Number.NEGATIVE_INFINITY : Date.parse(snapshot.lastRecordedAt);
+  for (const row of rows) {
+    if (!contracts.validateOwnerProjectionRow(row)) {
+      fail("agui_owner_projection_row_schema_invalid", contracts.validateOwnerProjectionRow.errors?.[0]?.instancePath ?? "");
+    }
+    const binding = ownerRefs.get(row.presentationOwnerBindingRef);
+    if (binding === undefined || refs.has(row.presentationOwnerBindingRef)) fail("agui_owner_projection_binding_invalid");
+    validatePublicSourceEventId(row.sourceEventId);
+    const recordedAt = parseCanonicalUtcMs(row.recordedAt, "agui_owner_projection_time_invalid");
+    if (recordedAt > watermark || recordedAt < Date.parse(binding.boundAt)) fail("agui_owner_projection_time_invalid");
+    ownerVersionForEvent(row.event);
+    validateOwnerPresentationEvent(row.event);
+    if (canonical(ownerIdentityForEvent(row.event)) !== canonical(binding.ownerIdentity)) {
+      fail("agui_owner_projection_identity_conflict", binding.bindingRef);
+    }
+    if (
+      row.event.type === EventType.ACTIVITY_SNAPSHOT &&
+      row.event.messageId !== binding.presentationOwnerMessageId
+    ) fail("agui_owner_projection_message_conflict", binding.bindingRef);
+    refs.set(
+      row.presentationOwnerBindingRef,
+      reduceOwnerProjectionRow(refs.get(row.presentationOwnerBindingRef), row),
+    );
+  }
+  return refs;
+}
+
 function validatePrivateRouteId(value, code) {
   if (typeof value !== "string" || value.length > 128 || !/^[A-Za-z0-9][A-Za-z0-9._:-]*$/u.test(value)) {
     fail(code);
@@ -982,7 +1343,12 @@ function validateEventPublicMessageIdentities(event, privateMessageRefs) {
         fail("agui_private_presentation_identity_leak", privateRef);
       }
     }
-    validateOpaquePresentationIdentity(publicRef, OPAQUE_PRESENTATION_IDENTITY.messageId);
+    validateOpaquePresentationIdentity(
+      publicRef,
+      event.type === EventType.ACTIVITY_SNAPSHOT
+        ? OPAQUE_PRESENTATION_IDENTITY.ownerMessageId
+        : OPAQUE_PRESENTATION_IDENTITY.messageId,
+    );
   }
 }
 
@@ -1267,6 +1633,87 @@ function assertMessageEndDelta(frame, binding, messageRefs) {
   messageRefs.set(binding.bindingRef, structuredClone(binding));
 }
 
+function assertOwnerReplaceDelta(frame, binding, authority, contracts) {
+  const { event, source } = frame.data;
+  if (!contracts.validateOwnerBinding(binding)) {
+    fail("agui_owner_binding_schema_invalid", contracts.validateOwnerBinding.errors?.[0]?.instancePath ?? "");
+  }
+  if (
+    binding.bindingRef !== frame.data.presentationOwnerBindingRef ||
+    binding.presentationRunBindingRef !== frame.data.presentationRunBindingRef ||
+    binding.sessionId !== source.sessionId || binding.profileRevision !== frame.data.profileRevision
+  ) fail("agui_owner_binding_scope_conflict", binding.bindingRef);
+  const run = authority.runRefs.get(binding.presentationRunBindingRef);
+  if (run === undefined) fail("agui_owner_run_binding_invalid", binding.bindingRef);
+  if (binding.presentationMessageBindingRef !== null) {
+    const message = authority.messageRefs.get(binding.presentationMessageBindingRef);
+    if (message === undefined || message.presentationRunBindingRef !== binding.presentationRunBindingRef) {
+      fail("agui_owner_message_binding_invalid", binding.bindingRef);
+    }
+  }
+  const eventIdentity = ownerIdentityForEvent(event);
+  if (eventIdentity === undefined || canonical(eventIdentity) !== canonical(binding.ownerIdentity)) {
+    fail("agui_owner_projection_identity_conflict", binding.bindingRef);
+  }
+  if (event.type === EventType.ACTIVITY_SNAPSHOT) {
+    if (
+      event.messageId !== binding.presentationOwnerMessageId ||
+      (frame.data.presentationMessageBindingRef ?? null) !== binding.presentationMessageBindingRef
+    ) fail("agui_owner_projection_message_conflict", binding.bindingRef);
+  } else if (frame.data.presentationMessageBindingRef !== undefined) {
+    fail("agui_owner_message_binding_invalid", binding.bindingRef);
+  }
+  const existing = authority.ownerRefs.get(binding.bindingRef);
+  if (existing === undefined) {
+    if (binding.boundBySourceEventId !== source.sourceEventId) fail("agui_binding_delta_source_conflict", binding.bindingRef);
+    assertBindingDeltaTime(binding.boundAt, source.recordedAt);
+  } else if (canonical(existing) !== canonical(binding)) {
+    fail("agui_owner_binding_immutable_conflict", binding.bindingRef);
+  }
+  if (binding.targetOwnerBindingRef !== null) {
+    const target = authority.ownerRefs.get(binding.targetOwnerBindingRef);
+    if (
+      target?.ownerIdentity.kind !== "hitl" ||
+      target.presentationRunBindingRef !== binding.presentationRunBindingRef
+    ) fail("agui_owner_target_binding_invalid", binding.bindingRef);
+  }
+  if (binding.controlOwnerBindingRef !== null) {
+    const control = authority.ownerRefs.get(binding.controlOwnerBindingRef);
+    if (
+      control?.ownerIdentity.kind !== "control" ||
+      control.presentationRunBindingRef !== binding.presentationRunBindingRef
+    ) fail("agui_owner_control_binding_invalid", binding.bindingRef);
+  }
+  const ownerKind = binding.ownerIdentity.kind;
+  if (run.state !== "open") {
+    if (existing === undefined && ownerKind === "receipt") {
+      if (authority.ownerRefs.get(binding.controlOwnerBindingRef)?.ownerIdentity.kind !== "control") {
+        fail("agui_terminal_owner_create_forbidden", binding.bindingRef);
+      }
+    } else if (existing === undefined && !OWNER_TERMINAL_MAY_CREATE_SET.has(ownerKind)) {
+      fail("agui_terminal_owner_create_forbidden", binding.bindingRef);
+    }
+    if (existing !== undefined && !OWNER_TERMINAL_MAY_CONVERGE_SET.has(ownerKind)) {
+      fail("agui_terminal_owner_convergence_forbidden", binding.bindingRef);
+    }
+  }
+  ownerVersionForEvent(event);
+  authority.ownerRefs.set(binding.bindingRef, structuredClone(binding));
+  const nextRow = {
+    profileRevision: PROFILE_REVISION,
+    schemaRevision: 1,
+    presentationOwnerBindingRef: binding.bindingRef,
+    sourceEventId: source.sourceEventId,
+    projectionVersion: source.projectionVersion,
+    recordedAt: source.recordedAt,
+    event: structuredClone(event),
+  };
+  authority.ownerRows.set(
+    binding.bindingRef,
+    reduceOwnerProjectionRow(authority.ownerRows.get(binding.bindingRef), nextRow),
+  );
+}
+
 function applyBindingAuthorityDelta(frame, mappingEntry, authority, contracts) {
   const delta = frame.data.bindingAuthorityDelta;
   if (!contracts.validateBindingAuthorityDelta(delta)) {
@@ -1286,6 +1733,10 @@ function applyBindingAuthorityDelta(frame, mappingEntry, authority, contracts) {
       return;
     }
     assertRunTerminalDelta(frame, delta.binding, authority.runRefs);
+    return;
+  }
+  if (delta.kind === "owner.replace") {
+    assertOwnerReplaceDelta(frame, delta.binding, authority, contracts);
     return;
   }
   if (!contracts.validateMessageBinding(delta.binding)) fail("agui_message_binding_schema_invalid");
@@ -1310,6 +1761,8 @@ function validateRebuiltFinalSnapshot(caseInput, authority, contracts) {
     cursor: lastFrame.id,
     runBindings: [...authority.runRefs.values()],
     messageBindings: [...authority.messageRefs.values()],
+    ownerBindings: [...authority.ownerRefs.values()],
+    ownerProjectionRows: [...authority.ownerRows.values()],
   };
   if (canonical(rebuilt) !== canonical(caseInput.expectedFinalSnapshot)) {
     fail("agui_binding_delta_snapshot_rebuild_mismatch", caseInput.id);
@@ -1322,26 +1775,48 @@ function validateRebuiltFinalSnapshot(caseInput, authority, contracts) {
     contracts.validateSnapshotAuthoritySchema,
     rebuilt.runBindings,
     rebuilt.messageBindings,
+    rebuilt.ownerBindings,
+    rebuilt.ownerProjectionRows,
   );
   validateSnapshotBindingAuthority(rebuilt, contracts);
 }
 
-function validateBindingForFrame(frame, runRefs, messageRefs, snapshot) {
+function validateBindingForFrame(frame, runRefs, messageRefs, ownerRefs, snapshot) {
   const event = frame.data.event;
   const runRef = frame.data.presentationRunBindingRef;
   const messageRef = frame.data.presentationMessageBindingRef;
+  const isOwnerEvent = event.type === EventType.ACTIVITY_SNAPSHOT ||
+    (event.type === EventType.CUSTOM && OWNER_DELTA_CUSTOM_NAMES.has(event.name));
+  if (!isOwnerEvent && frame.data.presentationOwnerBindingRef !== undefined) {
+    fail("agui_frame_owner_binding_forbidden", frame.data.source.sourceEventId);
+  }
+  if (
+    event.type === EventType.CUSTOM && OWNER_DELTA_CUSTOM_NAMES.has(event.name) && messageRef !== undefined
+  ) fail("agui_frame_owner_message_binding_forbidden", frame.data.source.sourceEventId);
   if ([EventType.RUN_STARTED, EventType.RUN_FINISHED, EventType.RUN_ERROR].includes(event.type)) {
     if (!runRefs.has(runRef) || messageRef !== undefined) fail("agui_frame_run_binding_invalid", frame.data.source.sourceEventId);
   }
-  if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END, EventType.ACTIVITY_SNAPSHOT].includes(event.type)) {
+  if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END].includes(event.type)) {
     const message = messageRefs.get(messageRef);
     const run = runRefs.get(runRef);
     if (message === undefined || run === undefined || message.presentationRunBindingRef !== runRef || message.presentationMessageId !== event.messageId) fail("agui_frame_message_binding_invalid", frame.data.source.sourceEventId);
+  }
+  if (event.type === EventType.ACTIVITY_SNAPSHOT) {
+    const owner = ownerRefs.get(frame.data.presentationOwnerBindingRef);
+    const run = runRefs.get(runRef);
+    if (
+      owner === undefined || run === undefined || owner.presentationRunBindingRef !== runRef ||
+      owner.presentationOwnerMessageId !== event.messageId ||
+      owner.presentationMessageBindingRef !== (messageRef ?? null)
+    ) fail("agui_frame_owner_binding_invalid", frame.data.source.sourceEventId);
   }
   if (event.type === EventType.CUSTOM) {
     if (event.name === "kokoro.session.replace.v1" && (event.value.sessionId !== snapshot.sessionId || event.value.profileRevision !== snapshot.profileRevision)) fail("agui_custom_session_scope_conflict");
     if (event.name === "kokoro.message.replace.v1" && (!messageRefs.has(messageRef) || !runRefs.has(runRef))) fail("agui_frame_message_binding_invalid");
     if (["kokoro.run.replace.v1", "kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(event.name) && !runRefs.has(runRef)) fail("agui_frame_run_binding_invalid");
+    if (["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"].includes(event.name) && !ownerRefs.has(frame.data.presentationOwnerBindingRef)) {
+      fail("agui_frame_owner_binding_invalid", frame.data.source.sourceEventId);
+    }
   }
 }
 
@@ -1371,7 +1846,10 @@ function validateStreamState(frames, runRefs, messageRefs) {
       continue;
     }
     const referencedRun = runRefs.get(frame.data.presentationRunBindingRef);
-    if (referencedRun !== undefined && runState.get(referencedRun.presentationRunId) === "terminal") fail("agui_terminal_run_revived", referencedRun.presentationRunId);
+    if (
+      referencedRun !== undefined && runState.get(referencedRun.presentationRunId) === "terminal" &&
+      ownerIdentityForEvent(event) === undefined
+    ) fail("agui_terminal_run_revived", referencedRun.presentationRunId);
     if (event.type === EventType.RUN_STARTED) {
       const binding = runRefs.get(frame.data.presentationRunBindingRef);
       if (runState.has(binding.presentationRunId)) fail("agui_terminal_run_revived", binding.presentationRunId);
@@ -1413,6 +1891,8 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     ...caseInput.snapshot,
     runBindings: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.runBindings,
     messageBindings: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.messageBindings,
+    ownerBindings: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.ownerBindings,
+    ownerProjectionRows: caseInput.snapshot.durableSeq === "0" ? [] : caseInput.ownerProjectionRows,
   };
 
   const previousRecordedAtAuthority = validateSnapshotTimeAuthority(
@@ -1420,6 +1900,8 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     validateSnapshotAuthoritySchema,
     snapshotAuthority.runBindings,
     snapshotAuthority.messageBindings,
+    snapshotAuthority.ownerBindings,
+    snapshotAuthority.ownerProjectionRows,
   );
   const snapshotClaims = decodeCursor(caseInput.snapshot.cursor, mapping.limits.maximumCursorBytes);
   assertCursorScope(snapshotClaims, {
@@ -1435,6 +1917,8 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   const runRefs = validateRunBindings(caseInput.runBindings, validateRunBinding, caseInput.snapshot, identities);
   validateM0RunBindingStates(caseInput.runBindings, "agui_run_terminal_state_invalid");
   const messageRefs = validateMessageBindings(caseInput.messageBindings, validateMessageBinding, runRefs, caseInput.snapshot, identities);
+  const ownerRefs = validateOwnerBindings(caseInput.ownerBindings, contracts, runRefs, messageRefs, caseInput.snapshot, identities);
+  validateOwnerProjectionRows(caseInput.ownerProjectionRows, contracts, ownerRefs, caseInput.expectedFinalSnapshot);
   validateSessionPrivateRouteFixtures(caseInput, runRefs, messageRefs, identities);
   const privateMessageRefs = caseInput.sessionPrivateRouteFixtures.messages.map(({ internalMessageRef }) => internalMessageRef);
   if (browserInternalKey(caseInput.expectedFinalSnapshot)) fail("agui_browser_internal_route_forbidden", caseInput.id);
@@ -1444,6 +1928,8 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
   const bindingAuthority = {
     runRefs: new Map(snapshotAuthority.runBindings.map((binding) => [binding.bindingRef, structuredClone(binding)])),
     messageRefs: new Map(snapshotAuthority.messageBindings.map((binding) => [binding.bindingRef, structuredClone(binding)])),
+    ownerRefs: new Map(snapshotAuthority.ownerBindings.map((binding) => [binding.bindingRef, structuredClone(binding)])),
+    ownerRows: new Map(snapshotAuthority.ownerProjectionRows.map((row) => [row.presentationOwnerBindingRef, structuredClone(row)])),
   };
   const sourceIds = new Set();
   const rowRefs = new Set();
@@ -1511,7 +1997,13 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     validateOwnerPresentationEvent(event);
     if (!EventSchemas.safeParse(event).success) fail("agui_official_event_schema_invalid", event.type);
     if (!validateStream(frame)) fail("agui_stream_schema_invalid", validateStream.errors?.[0]?.instancePath ?? "");
-    validateBindingForFrame(frame, bindingAuthority.runRefs, bindingAuthority.messageRefs, caseInput.snapshot);
+    validateBindingForFrame(
+      frame,
+      bindingAuthority.runRefs,
+      bindingAuthority.messageRefs,
+      bindingAuthority.ownerRefs,
+      caseInput.snapshot,
+    );
   }
   validateStreamState(caseInput.frames, runRefs, messageRefs);
   validateRebuiltFinalSnapshot(caseInput, bindingAuthority, contracts);
@@ -1721,7 +2213,14 @@ function validateAgentSourceFixtures(corpus) {
       frame === undefined || runBinding === undefined || runRoute === undefined ||
       frame.data.source.recordedAt !== source.recordedAt || source.route.internalRunRef !== runRoute.internalRunRef
     ) fail("agui_agent_candidate_source_fixture_projection_invalid", source.sourceEventRef);
-    if (messageRoute === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageRoute.internalMessageRef) {
+    const activityWithoutContainer = frame.data.event.type === EventType.ACTIVITY_SNAPSHOT && messageRoute === undefined;
+    if (
+      activityWithoutContainer
+        ? !Object.hasOwn(source.route, "internalMessageRef")
+        : messageRoute === undefined
+          ? Object.hasOwn(source.route, "internalMessageRef")
+          : source.route.internalMessageRef !== messageRoute.internalMessageRef
+    ) {
       fail("agui_agent_candidate_source_fixture_projection_invalid", source.sourceEventRef);
     }
     let group = byRun.get(source.route.internalRunRef);
@@ -1801,6 +2300,7 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
     const frame = base?.frames.find(({ data }) => data.source.sourceEventId === envelopeCase.sourceEventId);
     const runBinding = base?.runBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationRunBindingRef);
     const messageBinding = base?.messageBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationMessageBindingRef);
+    const ownerBinding = base?.ownerBindings.find(({ bindingRef }) => bindingRef === frame?.data.presentationOwnerBindingRef);
     const runRoute = privateRunRouteFor(base, runBinding?.bindingRef);
     const messageRoute = messageBinding === undefined ? undefined : privateMessageRouteFor(base, messageBinding.bindingRef);
     if (frame === undefined || runBinding === undefined || runRoute === undefined) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
@@ -1820,7 +2320,14 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
       provenance?.sessionId !== base.snapshot.sessionId ||
       source.recordedAt !== frame.data.source.recordedAt || source.route.internalRunRef !== runRoute.internalRunRef
     ) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
-    if (messageRoute === undefined ? Object.hasOwn(source.route, "internalMessageRef") : source.route.internalMessageRef !== messageRoute.internalMessageRef) {
+    const activityWithoutContainer = candidateEvent.type === EventType.ACTIVITY_SNAPSHOT && messageRoute === undefined;
+    if (
+      activityWithoutContainer
+        ? !Object.hasOwn(source.route, "internalMessageRef")
+        : messageRoute === undefined
+          ? Object.hasOwn(source.route, "internalMessageRef")
+          : source.route.internalMessageRef !== messageRoute.internalMessageRef
+    ) {
       fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
     }
     const projected = structuredClone(candidateEvent);
@@ -1831,8 +2338,12 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
     if (projected.type === EventType.RUN_STARTED && runBinding.parentLineage.parentPresentationRunId !== null) {
       projected.parentRunId = runBinding.parentLineage.parentPresentationRunId;
     }
-    if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END, EventType.ACTIVITY_SNAPSHOT].includes(projected.type)) {
+    if ([EventType.TEXT_MESSAGE_START, EventType.TEXT_MESSAGE_CONTENT, EventType.TEXT_MESSAGE_END].includes(projected.type)) {
       projected.messageId = messageBinding.presentationMessageId;
+    }
+    if (projected.type === EventType.ACTIVITY_SNAPSHOT) {
+      if (ownerBinding === undefined) fail("agui_agent_candidate_envelope_source_invalid", envelopeCase.id);
+      projected.messageId = ownerBinding.presentationOwnerMessageId;
     }
     if (projected.type === EventType.RUN_FINISHED) delete projected.outcome;
     if (canonical(projected) !== canonical(frame.data.event)) fail("agui_agent_candidate_envelope_projection_invalid", envelopeCase.id);
@@ -1944,6 +2455,23 @@ function validateAgentCandidateSemanticCoverage(corpus, profile) {
 
 function applySnapshotAuthorityMutation(authorityCase, mutation) {
   const snapshot = authorityCase.snapshot;
+  if (mutation?.operation === "snapshot-terminal-owner-revival") {
+    const current = snapshot.ownerProjectionRows.find(
+      ({ event }) => event.type === EventType.ACTIVITY_SNAPSHOT && event.activityType === "kokoro.safe-summary.v1",
+    );
+    if (current === undefined) fail("agui_snapshot_authority_mutation_invalid");
+    authorityCase.nextOwnerProjectionRow = structuredClone(current);
+    authorityCase.nextOwnerProjectionRow.sourceEventId = `presentation.event:${"f".repeat(64)}`;
+    authorityCase.nextOwnerProjectionRow.projectionVersion = String(
+      uint64(snapshot.durableSeq, "agui_snapshot_cursor_invalid") + 1n,
+    );
+    authorityCase.nextOwnerProjectionRow.recordedAt = authorityCase.nextEventRecordedAt;
+    authorityCase.nextOwnerProjectionRow.event.timestamp = Date.parse(authorityCase.nextEventRecordedAt);
+    authorityCase.nextOwnerProjectionRow.event.content.ownerVersion = "2";
+    authorityCase.nextOwnerProjectionRow.event.content.status = "streaming";
+    authorityCase.nextOwnerProjectionRow.event.content.updatedAt = authorityCase.nextEventRecordedAt;
+    return authorityCase;
+  }
   if (mutation?.operation === "zero-head-retains-bindings") {
     snapshot.durableSeq = "0";
     snapshot.lastRecordedAt = null;
@@ -1976,7 +2504,11 @@ function applySnapshotAuthorityMutation(authorityCase, mutation) {
 }
 
 function validateSnapshotAuthorityCase(authorityCase, corpus, contracts) {
-  exactKeys(authorityCase, ["id", "baseCaseId", "snapshot", "nextEventRecordedAt"], "agui_snapshot_authority_case_shape_invalid");
+  exactKeys(
+    authorityCase,
+    ["id", "baseCaseId", "snapshot", "nextEventRecordedAt", "nextOwnerProjectionRow"],
+    "agui_snapshot_authority_case_shape_invalid",
+  );
   const base = corpus.positiveCases.find(({ id }) => id === authorityCase.baseCaseId);
   if (base === undefined || authorityCase.snapshot.sessionId !== base.snapshot.sessionId) {
     fail("agui_snapshot_authority_case_base_invalid", authorityCase.id);
@@ -1986,6 +2518,8 @@ function validateSnapshotAuthorityCase(authorityCase, corpus, contracts) {
     contracts.validateSnapshotAuthoritySchema,
     authorityCase.snapshot.runBindings,
     authorityCase.snapshot.messageBindings,
+    authorityCase.snapshot.ownerBindings,
+    authorityCase.snapshot.ownerProjectionRows,
     authorityCase.nextEventRecordedAt,
   );
   if (!contracts.validateSnapshotAuthoritySchema(authorityCase.snapshot)) {
@@ -1993,6 +2527,28 @@ function validateSnapshotAuthorityCase(authorityCase, corpus, contracts) {
   }
   validateSnapshotBindingAuthority(authorityCase.snapshot, contracts);
   if (watermark === Number.NEGATIVE_INFINITY) fail("agui_snapshot_authority_case_nonzero_required", authorityCase.id);
+  const next = authorityCase.nextOwnerProjectionRow;
+  if (!contracts.validateOwnerProjectionRow(next)) {
+    fail("agui_owner_projection_row_schema_invalid", contracts.validateOwnerProjectionRow.errors?.[0]?.instancePath ?? "");
+  }
+  validatePublicSourceEventId(next.sourceEventId);
+  validateOwnerPresentationEvent(next.event);
+  if (
+    next.recordedAt !== authorityCase.nextEventRecordedAt || next.event.timestamp !== Date.parse(next.recordedAt) ||
+    Date.parse(next.recordedAt) <= watermark
+  ) fail("agui_owner_projection_time_invalid");
+  const binding = authorityCase.snapshot.ownerBindings.find(
+    ({ bindingRef }) => bindingRef === next.presentationOwnerBindingRef,
+  );
+  const current = authorityCase.snapshot.ownerProjectionRows.find(
+    ({ presentationOwnerBindingRef }) => presentationOwnerBindingRef === next.presentationOwnerBindingRef,
+  );
+  if (
+    binding === undefined || current === undefined ||
+    canonical(ownerIdentityForEvent(next.event)) !== canonical(binding.ownerIdentity) ||
+    (next.event.type === EventType.ACTIVITY_SNAPSHOT && next.event.messageId !== binding.presentationOwnerMessageId)
+  ) fail("agui_owner_projection_identity_conflict", next.presentationOwnerBindingRef);
+  reduceOwnerProjectionRow(current, next);
   const claims = decodeCursor(authorityCase.snapshot.cursor, contracts.mapping.limits.maximumCursorBytes);
   assertCursorScope(claims, {
     sessionId: authorityCase.snapshot.sessionId,

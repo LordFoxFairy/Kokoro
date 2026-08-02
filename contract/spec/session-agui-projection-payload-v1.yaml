@@ -20,13 +20,91 @@
     },
     "presentationRunBindingRef": {"$ref": "#/$defs/runBindingRef"},
     "presentationMessageBindingRef": {"$ref": "#/$defs/messageBindingRef"},
+    "presentationOwnerBindingRef": {"$ref": "#/$defs/ownerBindingRef"},
     "bindingAuthorityDelta": {"$ref": "https://contracts.kokoro.invalid/presentation-binding-authority-delta.v1.schema.json"},
     "event": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json"}
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "type": "object", "properties": {"type": {"const": "ACTIVITY_SNAPSHOT"}}, "required": ["type"]
+          }
+        },
+        "required": ["event"]
+      },
+      "then": {
+        "required": ["presentationRunBindingRef", "presentationOwnerBindingRef"],
+        "properties": {
+          "presentationRunBindingRef": {"$ref": "#/$defs/runBindingRef"},
+          "presentationOwnerBindingRef": {"$ref": "#/$defs/ownerBindingRef"},
+          "bindingAuthorityDelta": {
+            "$ref": "https://contracts.kokoro.invalid/presentation-binding-authority-delta.v1.schema.json#/$defs/ownerReplace"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "type": "object",
+            "properties": {
+              "type": {"const": "CUSTOM"},
+              "name": {"enum": ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"]}
+            },
+            "required": ["type", "name"]
+          }
+        },
+        "required": ["event"]
+      },
+      "then": {
+        "required": ["presentationRunBindingRef", "presentationOwnerBindingRef"],
+        "properties": {
+          "presentationRunBindingRef": {"$ref": "#/$defs/runBindingRef"},
+          "presentationMessageBindingRef": false,
+          "presentationOwnerBindingRef": {"$ref": "#/$defs/ownerBindingRef"},
+          "bindingAuthorityDelta": {
+            "$ref": "https://contracts.kokoro.invalid/presentation-binding-authority-delta.v1.schema.json#/$defs/ownerReplace"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "properties": {
+              "event": {
+                "type": "object", "properties": {"type": {"const": "ACTIVITY_SNAPSHOT"}}, "required": ["type"]
+              }
+            },
+            "required": ["event"]
+          },
+          {
+            "properties": {
+              "event": {
+                "type": "object",
+                "properties": {
+                  "type": {"const": "CUSTOM"},
+                  "name": {"enum": ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"]}
+                },
+                "required": ["type", "name"]
+              }
+            },
+            "required": ["event"]
+          }
+        ]
+      },
+      "else": {"properties": {"presentationOwnerBindingRef": false}}
+    }
+  ],
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
     "runBindingRef": {"type": "string", "pattern": "^presentation\\.run-binding:[0-9a-f]{64}$"},
     "messageBindingRef": {"type": "string", "pattern": "^presentation\\.message-binding:[0-9a-f]{64}$"},
+    "ownerBindingRef": {"type": "string", "pattern": "^presentation\\.owner-binding:[0-9a-f]{64}$"},
     "publicSourceEventId": {"type": "string", "minLength": 20, "maxLength": 128, "pattern": "^presentation\\.event:(?![A-Za-z0-9._:-]*agent\\.event)[A-Za-z0-9][A-Za-z0-9._:-]*$"},
     "positiveUint64": {
       "type": "string", "minLength": 1, "maxLength": 20,

@@ -34,22 +34,22 @@
     {"sourceKind": "presentation.message.text.started", "eventType": "TEXT_MESSAGE_START", "bindingAuthorityDeltaKind": "message.replace"},
     {"sourceKind": "presentation.message.text.content", "eventType": "TEXT_MESSAGE_CONTENT", "bindingAuthorityDeltaKind": "none"},
     {"sourceKind": "presentation.message.text.ended", "eventType": "TEXT_MESSAGE_END", "bindingAuthorityDeltaKind": "message.replace"},
-    {"sourceKind": "presentation.activity.safe-summary", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.safe-summary.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.tool-preview", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.tool-preview.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.hitl", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.hitl.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.plan", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.plan.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.subagent", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.subagent.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.media", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.media.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.artifact", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.artifact.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.cost", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.cost.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.notice", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.notice.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.activity.error", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.error.v1", "bindingAuthorityDeltaKind": "none"},
+    {"sourceKind": "presentation.activity.safe-summary", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.safe-summary.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.tool-preview", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.tool-preview.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.hitl", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.hitl.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.plan", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.plan.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.subagent", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.subagent.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.media", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.media.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.artifact", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.artifact.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.cost", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.cost.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.notice", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.notice.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.activity.error", "eventType": "ACTIVITY_SNAPSHOT", "discriminator": "kokoro.error.v1", "bindingAuthorityDeltaKind": "owner.replace"},
     {"sourceKind": "presentation.custom.session", "eventType": "CUSTOM", "discriminator": "kokoro.session.replace.v1", "bindingAuthorityDeltaKind": "none"},
     {"sourceKind": "presentation.custom.branch", "eventType": "CUSTOM", "discriminator": "kokoro.branch.replace.v1", "bindingAuthorityDeltaKind": "none"},
     {"sourceKind": "presentation.custom.message", "eventType": "CUSTOM", "discriminator": "kokoro.message.replace.v1", "bindingAuthorityDeltaKind": "none"},
     {"sourceKind": "presentation.custom.run", "eventType": "CUSTOM", "discriminator": "kokoro.run.replace.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.custom.control", "eventType": "CUSTOM", "discriminator": "kokoro.control.replace.v1", "bindingAuthorityDeltaKind": "none"},
-    {"sourceKind": "presentation.custom.receipt", "eventType": "CUSTOM", "discriminator": "kokoro.receipt.replace.v1", "bindingAuthorityDeltaKind": "none"}
+    {"sourceKind": "presentation.custom.control", "eventType": "CUSTOM", "discriminator": "kokoro.control.replace.v1", "bindingAuthorityDeltaKind": "owner.replace"},
+    {"sourceKind": "presentation.custom.receipt", "eventType": "CUSTOM", "discriminator": "kokoro.receipt.replace.v1", "bindingAuthorityDeltaKind": "owner.replace"}
   ],
   "projectionPolicy": {
     "durableRowToFrameCardinality": "exactly-one",
@@ -60,6 +60,24 @@
       "atomicity": "same-projection-payload-and-durable-row",
       "mutation": "complete-replacement-only",
       "patch": "forbidden"
+    },
+    "ownerProjection": {
+      "binding": "complete-immutable-owner-replacement-on-every-owner-row",
+      "snapshotReducer": "same-owner-identity-version-terminal-reducer-as-live",
+      "snapshotCursorSequencing": "forbidden",
+      "javascriptOwnerVersion": "forbidden",
+      "lateTerminal": {
+        "messageEndedRunOpen": [
+          "safe-summary", "tool", "hitl", "plan", "subagent", "media", "artifact", "cost", "notice", "error"
+        ],
+        "terminalRunMayCreate": ["media", "artifact", "cost", "notice", "error"],
+        "terminalRunReceiptRequiresExistingControl": true,
+        "terminalRunMayConvergeExisting": [
+          "media", "artifact", "cost", "notice", "error", "receipt"
+        ],
+        "terminalRunMayNotCreate": ["safe-summary", "tool", "hitl", "control", "plan", "subagent"],
+        "textOrRunReopen": "forbidden"
+      }
     },
     "sourceProjectionVersion": {
       "wire": "positive-uint64-decimal-string",
@@ -114,7 +132,13 @@
     "messagesSnapshotEvent": "forbidden",
     "stateSnapshotEvent": "forbidden",
     "timeWatermarkField": "lastRecordedAt",
-    "timeWatermarkAuthority": "session-durable-head"
+    "timeWatermarkAuthority": "session-durable-head",
+    "ownerBindingsMaximum": 2048,
+    "ownerProjectionRowsMaximum": 2048,
+    "ownerProjectionCanonicalBytesMaximum": 16777216,
+    "ownerBindingsPerMessageMaximum": 64,
+    "controlReceiptBindingsPerRunMaximum": 256,
+    "ownerLinkDepthMaximum": 2
   },
   "limits": {
     "maximumFrameBytes": 131072,

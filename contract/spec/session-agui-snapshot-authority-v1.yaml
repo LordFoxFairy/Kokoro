@@ -5,7 +5,7 @@
   "description": "The closed transport authority for a Session HTTP snapshot. lastRecordedAt is the Session-owned durable-head time watermark; binding source identifiers are evidence only and do not claim the complete historical source-id ledger.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["authority", "hydrate", "repair", "profileRevision", "sessionId", "streamEpoch", "durableSeq", "lastRecordedAt", "cursor", "runBindings", "messageBindings"],
+  "required": ["authority", "hydrate", "repair", "profileRevision", "sessionId", "streamEpoch", "durableSeq", "lastRecordedAt", "cursor", "runBindings", "messageBindings", "ownerBindings", "ownerProjectionRows"],
   "properties": {
     "authority": {"const": "session-browser-v3-http-snapshot"},
     "hydrate": {"const": true},
@@ -30,6 +30,16 @@
       "type": "array",
       "maxItems": 512,
       "items": {"$ref": "https://contracts.kokoro.invalid/presentation-message-binding.v1.schema.json"}
+    },
+    "ownerBindings": {
+      "type": "array",
+      "maxItems": 2048,
+      "items": {"$ref": "https://contracts.kokoro.invalid/presentation-owner-binding.v1.schema.json"}
+    },
+    "ownerProjectionRows": {
+      "type": "array",
+      "maxItems": 2048,
+      "items": {"$ref": "https://contracts.kokoro.invalid/session-agui-owner-projection-row.v1.schema.json"}
     }
   },
   "allOf": [
@@ -41,8 +51,27 @@
   ],
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
-    "uint64": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$"},
-    "positiveUint64": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
+    "uint64": {
+      "oneOf": [
+        {"const": "0"},
+        {"$ref": "#/$defs/positiveUint64"}
+      ]
+    },
+    "positiveUint64": {
+      "type": "string", "minLength": 1, "maxLength": 20,
+      "oneOf": [
+        {"pattern": "^[1-9][0-9]{0,18}$"}, {"pattern": "^1[0-7][0-9]{18}$"},
+        {"pattern": "^18[0-3][0-9]{17}$"}, {"pattern": "^184[0-3][0-9]{16}$"},
+        {"pattern": "^1844[0-5][0-9]{15}$"}, {"pattern": "^18446[0-6][0-9]{14}$"},
+        {"pattern": "^184467[0-3][0-9]{13}$"}, {"pattern": "^1844674[0-3][0-9]{12}$"},
+        {"pattern": "^184467440[0-6][0-9]{10}$"}, {"pattern": "^1844674407[0-2][0-9]{9}$"},
+        {"pattern": "^18446744073[0-6][0-9]{8}$"}, {"pattern": "^1844674407370[0-8][0-9]{6}$"},
+        {"pattern": "^18446744073709[0-4][0-9]{5}$"}, {"pattern": "^184467440737095[0-4][0-9]{4}$"},
+        {"pattern": "^18446744073709550[0-9]{3}$"}, {"pattern": "^18446744073709551[0-5][0-9]{2}$"},
+        {"pattern": "^1844674407370955160[0-9]$"}, {"pattern": "^1844674407370955161[0-4]$"},
+        {"const": "18446744073709551615"}
+      ]
+    },
     "canonicalUtcMs": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
     "cursor": {"type": "string", "minLength": 16, "maxLength": 2048, "pattern": "^(?=.*[A-Za-z._~-])[A-Za-z0-9._~-]+$"}
   }
