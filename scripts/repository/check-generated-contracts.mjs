@@ -45,13 +45,6 @@ export const GENERATED_BOUNDARIES = Object.freeze([
     ]),
   }),
   Object.freeze({
-    id: "platform-site-provisioning@v1",
-    mirrors: Object.freeze([
-      "kokoro-platform/src/interfaces/connect/generated-site-provisioning",
-      "kokoro-web/apps/admin/lib/generated/site-provisioning",
-    ]),
-  }),
-  Object.freeze({
     id: "platform-admission@v1",
     mirrors: Object.freeze([
       "kokoro-platform/src/interfaces/connect/generated",
@@ -106,6 +99,7 @@ export const GENERATED_BOUNDARIES = Object.freeze([
 export const CONTRACT_ONLY_GENERATED_BOUNDARIES = Object.freeze([
   "platform-admin-command@v2",
   "platform-site-lifecycle@v1",
+  "platform-site-provisioning@v1",
   "platform-session-authorization@v1",
   "agent-execution-evidence@v1",
   "platform-media-runtime@v1",

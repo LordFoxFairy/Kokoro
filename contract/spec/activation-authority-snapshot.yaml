@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.dev/activation-authority-snapshot/v1",
+  "title": "Kokoro Persisted Activation Authority Snapshot v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["contract", "schemaRevision", "snapshotRef", "revision", "activationAttemptRef", "phase", "siteRelease", "candidate", "certification", "trust", "readAt", "authorityMaterialDigest"],
+  "properties": {
+    "contract": {"const": "kokoro.activation-authority-snapshot.v1"}, "schemaRevision": {"const": "1"},
+    "snapshotRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"},
+    "activationAttemptRef": {"$ref": "#/$defs/ref"}, "phase": {"enum": ["activation-begin", "immediate-before-pointer-cas"]},
+    "siteRelease": {"$ref": "#/$defs/digestRef"}, "candidate": {"$ref": "#/$defs/candidateAuthority"},
+    "certification": {"$ref": "#/$defs/certificationAuthority"}, "trust": {"$ref": "#/$defs/trustTuple"},
+    "readAt": {"$ref": "#/$defs/timestamp"}, "authorityMaterialDigest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},
+    "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39},
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
+    "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "candidateAuthority": {"type": "object", "additionalProperties": false, "required": ["siteReleaseCandidate", "state", "authorizationEpoch"], "properties": {"siteReleaseCandidate": {"$ref": "#/$defs/digestRef"}, "state": {"enum": ["authorized", "revoked"]}, "authorizationEpoch": {"$ref": "#/$defs/decimal"}}},
+    "certificationAuthority": {"type": "object", "additionalProperties": false, "required": ["releaseCertification", "state", "revocationEpoch", "validUntil"], "properties": {"releaseCertification": {"$ref": "#/$defs/digestRef"}, "state": {"enum": ["passed", "revoked"]}, "revocationEpoch": {"$ref": "#/$defs/decimal"}, "validUntil": {"$ref": "#/$defs/timestamp"}}},
+    "trustTuple": {"type": "object", "additionalProperties": false, "required": ["producerRegistry", "producerRegistryEpoch", "producerIdentityRef", "trustPolicy", "trustPolicyEpoch", "keyId", "keyVersion", "publicKeyFingerprint", "keyStatus", "keyValidFrom", "keyValidUntil", "signatureAudience", "environment"], "properties": {"producerRegistry": {"$ref": "#/$defs/digestRef"}, "producerRegistryEpoch": {"$ref": "#/$defs/decimal"}, "producerIdentityRef": {"$ref": "#/$defs/ref"}, "trustPolicy": {"$ref": "#/$defs/digestRef"}, "trustPolicyEpoch": {"$ref": "#/$defs/decimal"}, "keyId": {"$ref": "#/$defs/ref"}, "keyVersion": {"$ref": "#/$defs/decimal"}, "publicKeyFingerprint": {"$ref": "#/$defs/digest"}, "keyStatus": {"const": "active"}, "keyValidFrom": {"$ref": "#/$defs/timestamp"}, "keyValidUntil": {"$ref": "#/$defs/timestamp"}, "signatureAudience": {"const": "kokoro.site-release.activation.v1"}, "environment": {"enum": ["development", "preview", "staging", "production"]}}}
+  }
+}

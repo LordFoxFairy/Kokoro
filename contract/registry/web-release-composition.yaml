@@ -135,7 +135,7 @@
       "publisherRepository": "kokoro-platform",
       "consumers": ["kokoro-platform"],
       "lifecycle": "contract-only",
-      "signatureProfile": "digest-bound-reference"
+      "signatureProfile": "dsse-release-certification-revocation-v1"
     },
     {
       "id": "site-release.v1",
@@ -144,6 +144,26 @@
       "businessOwner": "platform.site",
       "publisherRepository": "kokoro-platform",
       "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "activation-authority-snapshot.v1",
+      "schemaId": "https://contracts.kokoro.dev/activation-authority-snapshot/v1",
+      "schemaPath": "contract/spec/activation-authority-snapshot.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "activation-eligibility-evidence.v1",
+      "schemaId": "https://contracts.kokoro.dev/activation-eligibility-evidence/v1",
+      "schemaPath": "contract/spec/activation-eligibility-evidence.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform"],
       "lifecycle": "contract-only",
       "signatureProfile": "digest-bound-reference"
     }

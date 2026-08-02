@@ -3,11 +3,12 @@
   "$id": "https://contracts.kokoro.dev/release-certification-revocation/v1",
   "title": "Kokoro Release Certification Revocation v1",
   "type": "object", "additionalProperties": false,
-  "required": ["contract", "schemaRevision", "revocationRef", "revision", "releaseCertification", "siteReleaseCandidate", "candidateAuthorizationEpoch", "reason", "revokedAt", "producer"],
+  "required": ["contract", "schemaRevision", "revocationRef", "revision", "releaseCertification", "siteReleaseCandidate", "candidateAuthorizationEpoch", "certificationRevocationEpoch", "environment", "siteRef", "reason", "revokedAt", "producer"],
   "properties": {
     "contract": {"const": "kokoro.release-certification-revocation.v1"}, "schemaRevision": {"const": "1"},
     "revocationRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"}, "releaseCertification": {"$ref": "#/$defs/digestRef"},
-    "siteReleaseCandidate": {"$ref": "#/$defs/digestRef"}, "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"},
+    "siteReleaseCandidate": {"$ref": "#/$defs/digestRef"}, "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"}, "certificationRevocationEpoch": {"$ref": "#/$defs/decimal"},
+    "environment": {"enum": ["development", "preview", "staging", "production"]}, "siteRef": {"$ref": "#/$defs/ref"},
     "reason": {"enum": ["evidence-revoked", "key-revoked", "policy-invalidated", "security-incident", "candidate-revoked"]},
     "revokedAt": {"$ref": "#/$defs/timestamp"}, "producer": {"$ref": "#/$defs/producer"}
   },
@@ -16,6 +17,7 @@
     "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
     "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
     "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
-    "producer": {"type": "object", "additionalProperties": false, "required": ["producerIdentityRef", "trustPolicyRevisionRef", "signingKeyId", "keyVersion", "signatureAudience"], "properties": {"producerIdentityRef": {"$ref": "#/$defs/ref"}, "trustPolicyRevisionRef": {"$ref": "#/$defs/ref"}, "signingKeyId": {"$ref": "#/$defs/ref"}, "keyVersion": {"$ref": "#/$defs/decimal"}, "signatureAudience": {"const": "kokoro.site-release.activation.v1"}}}
+    "producer": {"type": "object", "additionalProperties": false, "required": ["producerRegistry", "producerRegistryEpoch", "producerIdentityRef", "trustPolicy", "trustPolicyEpoch", "keyId", "keyVersion", "publicKeyFingerprint", "keyStatus", "keyValidFrom", "keyValidUntil", "signatureAudience", "environment"], "properties": {"producerRegistry": {"$ref": "#/$defs/digestRef"}, "producerRegistryEpoch": {"$ref": "#/$defs/decimal"}, "producerIdentityRef": {"$ref": "#/$defs/ref"}, "trustPolicy": {"$ref": "#/$defs/digestRef"}, "trustPolicyEpoch": {"$ref": "#/$defs/decimal"}, "keyId": {"$ref": "#/$defs/ref"}, "keyVersion": {"$ref": "#/$defs/decimal"}, "publicKeyFingerprint": {"$ref": "#/$defs/digest"}, "keyStatus": {"const": "active"}, "keyValidFrom": {"$ref": "#/$defs/timestamp"}, "keyValidUntil": {"$ref": "#/$defs/timestamp"}, "signatureAudience": {"const": "kokoro.site-release.activation.v1"}, "environment": {"enum": ["development", "preview", "staging", "production"]}}},
+    "dsseEnvelope": {"type": "object", "additionalProperties": false, "required": ["payloadType", "payload", "signatures"], "properties": {"payloadType": {"const": "application/vnd.kokoro.release-certification-revocation.v1+json"}, "payload": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$", "maxLength": 2796204}, "signatures": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["keyid", "sig"], "properties": {"keyid": {"$ref": "#/$defs/ref"}, "sig": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$", "maxLength": 16384}}}}}}
   }
 }

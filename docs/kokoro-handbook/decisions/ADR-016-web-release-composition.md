@@ -352,7 +352,9 @@ digest-bound ModelInventory 与 ModelCatalog：
 Rollback 创建新的 ActivationAttempt 指向旧 immutable SiteRelease，并重新验证当前 secret revocation、contract floor、
 schema、policy 和 certification。每个 ActivationAttempt 在开始时和 active-pointer CAS 紧前都必须重新读取 authority
 snapshot，重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与 `validUntil`；两次之间
-的撤销或过期必须阻止 CAS。它不重新运行旧 compiler，也不覆盖当前 artifact。
+的撤销或过期必须阻止 CAS。两次读分别持久化为 `ActivationAuthoritySnapshot`，并由
+`ActivationEligibilityEvidence` 以 exact JCS digest 引用；内含完整 active producer registry/policy/key trust tuple，不能用
+进程内布尔值代替。它不重新运行旧 compiler，也不覆盖当前 artifact。
 
 ### 11. 目录
 
@@ -370,6 +372,8 @@ Root
   contract/spec/release-certification-instance.yaml
   contract/spec/release-certification-revocation.yaml
   contract/spec/site-release.yaml
+  contract/spec/activation-authority-snapshot.yaml
+  contract/spec/activation-eligibility-evidence.yaml
   contract/corpus/web-release-composition-v1.json
 
 kokoro-web/packages/release-composition

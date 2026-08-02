@@ -54,7 +54,7 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-The eight Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
+The fifteen Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
 new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform
 Product Catalog owns Product/Surface/Journey business records, Platform Site owns inventory/material/intent, and Web
 Release Composition owns toolchain/composition-registry/compiled-manifest/provenance publication. Payloads never contain their own digest
@@ -62,6 +62,11 @@ or signature. Callers carry the digest when referencing another immutable payloa
 artifact digest live outside the signed/canonical payload, preventing a digest cycle. Provenance dependencies use
 global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs: tool URIs include the measured role and repository ref,
 while package URIs retain the package URL identity and include the unique composition package ref.
+
+`PublishSiteReleaseEffect` is a latest-only Admin command: callers provide only `site_release_candidate_ref`,
+`expected_candidate_version`, and `reason`; Platform generates the immutable SiteRelease and all authority-bound facts.
+The `platform-site-provisioning@v1` boundary remains `contract-only` until Platform and Web regenerate their mirrors from
+this Root source and submit provider/consumer compatibility evidence.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
@@ -199,5 +204,5 @@ Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract 
 `pnpm --dir contract run openapi:generate:public`, `node contract/generate-projection-integrity-corpus.mjs --check`,
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
 `node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
-`pnpm --dir contract run web-release:check`; CI compares the current eight-contract candidate with the predecessor's
+`pnpm --dir contract run web-release:check`; CI compares the current fifteen-contract candidate with the predecessor's
 own valid contract set and then freezes every predecessor v1 registry row and schema.

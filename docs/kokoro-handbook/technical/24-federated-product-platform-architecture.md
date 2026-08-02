@@ -197,6 +197,10 @@ Root 只定义 schema、canonicalization 与 breaking gate。当前代码尚未�
 model/agent catalog、surface string 与 locale policy 等有限字段；其中 surface 仍只是格式校验后的字符串，尚未绑定统一
 Product Catalog，不能据此宣称完整发布快照已经实现。
 
+Root 的 latest-only `PublishSiteReleaseEffect` 已硬切为仅接受 Candidate ref、expected version 与 reason；SiteRelease ref、
+digest、Certification 与其他发布事实必须由 Platform 生成。`platform-site-provisioning@v1` 在 Platform/Web 重新生成 mirror
+并提交兼容性证据前保持 `contract-only`。
+
 目标 `SiteRelease` 冻结 Web artifact、品牌/法务 digest、Product/Surface catalog revision、产品装配、Site config、
 assortment、model/agent/capability assignment、sales policy 和 contract compatibility。它是 Platform 的发布事实，不是
 Web 项目的可编辑配置文件。
@@ -204,7 +208,8 @@ Web 项目的可编辑配置文件。
 每个候选 Release 经过 compile、preview、contract/schema 校验、业务旅程验证和 certification 后才能激活。
 激活使用可恢复 `ActivationAttempt` 与 active-pointer CAS；开始时和 CAS 紧前必须分别读取新的 authority snapshot，
 重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与证书 expiry，第二次撤销/过期
-必须阻止 CAS。外部流量切换和数据库指针不是伪原子事务。回滚是对旧的
+必须阻止 CAS。两个 snapshot 与 eligibility evidence 都是持久化合同，使用 exact JCS material digest，并冻结完整 active
+producer registry/policy/key trust tuple。外部流量切换和数据库指针不是伪原子事务。回滚是对旧的
 不可变 Release 发起新的 ActivationAttempt，而不是覆盖文件或破坏性逆迁移。
 
 ### 6.2 Web Release Composition（target）

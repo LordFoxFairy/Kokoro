@@ -221,7 +221,9 @@ Qualification只证明能力在声明范围内合格，不单独授权任何Site
 
 ActivationAttempt 必须在开始时和 active-pointer CAS 紧前各自读取并验证新的 authority snapshot；两次都重验 Candidate
 authorization epoch、Certification revocation epoch、签名 key 状态与 `validUntil`。第一次通过不授权跳过第二次；若在两次
-之间发生撤销、key 失效或证书过期，CAS 必须 fail closed。
+之间发生撤销、key 失效或证书过期，CAS 必须 fail closed。两个不同 phase 的 authority read 必须分别持久化为
+`ActivationAuthoritySnapshot`，`ActivationEligibilityEvidence` 以 exact JCS digest 引用两者，并冻结完整 active
+producer registry、trust policy、key version/fingerprint/validity/audience/environment tuple；内存态检查结果不能替代证据。
 
 ## 4. Reference Profile：`core-redeem-chat@1`
 

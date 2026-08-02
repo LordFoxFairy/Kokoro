@@ -70,6 +70,14 @@ test("generated command digest helpers tolerate boundary-selective shared primit
   assert.doesNotMatch(fullyUsedSource, /eslint-disable @typescript-eslint\/no-unused-vars/u);
 });
 
+test("site release publication digest binds only the latest candidate publication command", () => {
+  const source = commandEnvelopeDigestSource("site-provisioning");
+  assert.match(source, /effect\.siteReleaseCandidateRef/u);
+  for (const legacy of ["effect.releaseRef", "effect.launchProfileRef", "effect.modelOptionCatalogRef", "effect.agentCatalogRef"]) {
+    assert.doesNotMatch(source, new RegExp(legacy.replace(".", "\\."), "u"));
+  }
+});
+
 async function sourceDigest(directory, sourcePaths) {
   const hash = createHash("sha256");
   for (const sourcePath of sourcePaths) {
@@ -285,13 +293,6 @@ test("privileged and public contracts track only current provider and official c
       ],
     },
     {
-      id: "platform-site-provisioning@v1",
-      mirrors: [
-        "kokoro-platform/src/interfaces/connect/generated-site-provisioning",
-        "kokoro-web/apps/admin/lib/generated/site-provisioning",
-      ],
-    },
-    {
       id: "platform-admission@v1",
       mirrors: [
         "kokoro-platform/src/interfaces/connect/generated",
@@ -344,6 +345,7 @@ test("privileged and public contracts track only current provider and official c
   assert.deepEqual(generatedChecker.CONTRACT_ONLY_GENERATED_BOUNDARIES, [
     "platform-admin-command@v2",
     "platform-site-lifecycle@v1",
+    "platform-site-provisioning@v1",
     "platform-session-authorization@v1",
     "agent-execution-evidence@v1",
     "platform-media-runtime@v1",

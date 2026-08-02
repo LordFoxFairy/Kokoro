@@ -2317,18 +2317,34 @@ def test_site_lifecycle_activation_approval_preserves_owner_facts() -> None:
     )
 
 
-def test_site_release_certification_signature_matches_the_ed25519_authority() -> None:
+def test_site_release_publication_accepts_only_candidate_command_identity() -> None:
     provisioning = _proto("kokoro/platform/site/v1/site_provisioning.proto")
-    proof = _message_body(provisioning, "SiteReleaseCertificationProof")
+    effect = _message_body(provisioning, "PublishSiteReleaseEffect")
+    assert "string site_release_candidate_ref = 16" in effect
+    assert "uint64 expected_candidate_version = 17" in effect
+    assert "string reason = 18" in effect
+    for legacy in (
+        "release_ref", "web_artifact_digest", "release_manifest_digest",
+        "certification_digest", "launch_profile_ref", "model_option_catalog_ref",
+        "enabled_surface_ids",
+    ):
+        assert not re.search(rf"\b{legacy}\s*=", effect)
+    for legacy_type in ("SiteReleaseCertificationProof", "SiteLocalePolicy"):
+        assert legacy_type not in provisioning
+    assert "reserved 1 to 15;" in effect
 
-    signature = re.search(
-        r"bytes signature = 4 \[\(buf\.validate\.field\)\.bytes = "
-        r"\{(?P<constraints>.*?)\}\];",
-        proof,
-        re.DOTALL,
-    )
-    assert signature is not None
-    assert signature.group("constraints").strip() == "len: 64"
+
+def test_site_release_publication_compatibility_corpus_freezes_latest_only_shape() -> None:
+    path = CONTRACT / "corpus" / "site-release-publication-command-v1.json"
+    assert path.exists()
+    corpus = json.loads(path.read_text())
+    assert corpus["schema"] == "kokoro.site-release-publication-command.corpus.v1"
+    assert corpus["acceptedEffectFields"] == [
+        "site_release_candidate_ref", "expected_candidate_version", "reason"
+    ]
+    assert set(corpus["forbiddenLegacyEffectFields"]) >= {
+        "enabled_surface_ids", "model_option_catalog_ref", "release_manifest_digest"
+    }
 
 
 def test_admin_commerce_cursor_and_integer_limits_match_the_provider_storage() -> None:

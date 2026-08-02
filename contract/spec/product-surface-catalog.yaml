@@ -38,19 +38,19 @@
     },
     "surface": {
       "type": "object", "additionalProperties": false,
-      "required": ["surfaceRef", "productRef", "revision", "requiredSurfaceRefs", "canonicalJourneyRefs", "operationFamilyRefs", "requiredModelRoleRefs"],
+      "required": ["surfaceRef", "productRef", "revision", "scopeClass", "requiredSurfaceRefs", "canonicalJourneyRefs", "operationFamilyRefs", "requiredModelRoleRefs"],
       "properties": {
-        "surfaceRef": {"$ref": "#/$defs/ref"}, "productRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"},
+        "surfaceRef": {"$ref": "#/$defs/ref"}, "productRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"}, "scopeClass": {"enum": ["core-always", "profile-selectable"]},
         "requiredSurfaceRefs": {"$ref": "#/$defs/refSet"}, "canonicalJourneyRefs": {"$ref": "#/$defs/refSet"},
         "operationFamilyRefs": {"$ref": "#/$defs/refSet"}, "requiredModelRoleRefs": {"$ref": "#/$defs/refSet"}
       }
     },
     "journey": {
       "type": "object", "additionalProperties": false,
-      "required": ["journeyRef", "revision", "entrySurfaceRef", "requiredSurfaceRefs", "operationFamilyRefs"],
+      "required": ["journeyRef", "revision", "entrySurfaceRef", "requiredSurfaceRefs", "requiredJourneyRefs", "operationFamilyRefs"],
       "properties": {
         "journeyRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"}, "entrySurfaceRef": {"$ref": "#/$defs/ref"},
-        "requiredSurfaceRefs": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/ref"}},
+        "requiredSurfaceRefs": {"type": "array", "minItems": 1, "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/ref"}}, "requiredJourneyRefs": {"$ref": "#/$defs/refSet"},
         "operationFamilyRefs": {"$ref": "#/$defs/refSet"}
       }
     }

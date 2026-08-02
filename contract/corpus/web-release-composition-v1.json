@@ -12,13 +12,37 @@
   "activationEligibilityScenarios": [
     {
       "id": "dual-authority-revalidation-before-pointer-cas",
-      "releaseCaseId": "site-release-alpha",
-      "certificationCaseId": "certification-site-alpha",
-      "checks": [
-        {"phase": "activation-begin", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:41:00.000Z", "authoritySnapshotDigest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1", "expectedCode": null},
-        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:42:00.000Z", "authoritySnapshotDigest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2", "expectedCode": null},
-        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "1", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:42:01.000Z", "authoritySnapshotDigest": "sha256:d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3", "expectedCode": "web_release_activation_certification_revoked"},
-        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-08-01T12:35:00.000Z", "authoritySnapshotDigest": "sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4", "expectedCode": "web_release_activation_certification_expired"}
+      "beginSnapshotCaseId": "activation-authority-begin",
+      "immediateBeforePointerCasSnapshotCaseId": "activation-authority-before-cas",
+      "evidenceCaseId": "activation-eligibility-alpha",
+      "blockedImmediateBeforePointerCasReads": [
+        {
+          "id": "revocation-between-authority-reads",
+          "mutations": [
+            {
+              "op": "replace",
+              "path": "/certification/state",
+              "value": "revoked"
+            },
+            {
+              "op": "replace",
+              "path": "/certification/revocationEpoch",
+              "value": "1"
+            }
+          ],
+          "expectedCode": "web_release_activation_certification_revoked"
+        },
+        {
+          "id": "expiry-between-authority-reads",
+          "mutations": [
+            {
+              "op": "replace",
+              "path": "/readAt",
+              "value": "2026-08-01T12:35:00.000Z"
+            }
+          ],
+          "expectedCode": "web_release_activation_certification_expired"
+        }
       ]
     }
   ],
@@ -33,18 +57,101 @@
         "revision": "1",
         "state": "published",
         "products": [
-          {"productRef": "product.chat", "revision": "1", "surfaceRefs": ["surface.chat"], "requiredProductRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"]},
-          {"productRef": "product.memory", "revision": "1", "surfaceRefs": ["surface.memory"], "requiredProductRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"]}
+          {
+            "productRef": "product.chat",
+            "revision": "1",
+            "surfaceRefs": [
+              "surface.chat"
+            ],
+            "requiredProductRefs": [],
+            "canonicalJourneyRefs": [
+              "journey.chat"
+            ],
+            "operationFamilyRefs": [
+              "operation.chat"
+            ]
+          },
+          {
+            "productRef": "product.memory",
+            "revision": "1",
+            "surfaceRefs": [
+              "surface.memory"
+            ],
+            "requiredProductRefs": [],
+            "canonicalJourneyRefs": [
+              "journey.memory"
+            ],
+            "operationFamilyRefs": [
+              "operation.memory"
+            ]
+          }
         ],
         "surfaces": [
-          {"surfaceRef": "surface.chat", "productRef": "product.chat", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"], "requiredModelRoleRefs": ["model-role.chat-assistant"]},
-          {"surfaceRef": "surface.memory", "productRef": "product.memory", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"], "requiredModelRoleRefs": ["model-role.memory-assistant"]}
+          {
+            "surfaceRef": "surface.chat",
+            "productRef": "product.chat",
+            "revision": "1",
+            "scopeClass": "core-always",
+            "requiredSurfaceRefs": [],
+            "canonicalJourneyRefs": [
+              "journey.chat"
+            ],
+            "operationFamilyRefs": [
+              "operation.chat"
+            ],
+            "requiredModelRoleRefs": [
+              "model-role.chat-assistant"
+            ]
+          },
+          {
+            "surfaceRef": "surface.memory",
+            "productRef": "product.memory",
+            "revision": "1",
+            "scopeClass": "profile-selectable",
+            "requiredSurfaceRefs": [],
+            "canonicalJourneyRefs": [
+              "journey.memory"
+            ],
+            "operationFamilyRefs": [
+              "operation.memory"
+            ],
+            "requiredModelRoleRefs": [
+              "model-role.memory-assistant"
+            ]
+          }
         ],
         "canonicalJourneys": [
-          {"journeyRef": "journey.chat", "revision": "1", "entrySurfaceRef": "surface.chat", "requiredSurfaceRefs": ["surface.chat"], "operationFamilyRefs": ["operation.chat"]},
-          {"journeyRef": "journey.memory", "revision": "1", "entrySurfaceRef": "surface.memory", "requiredSurfaceRefs": ["surface.memory"], "operationFamilyRefs": ["operation.memory"]}
+          {
+            "journeyRef": "journey.chat",
+            "revision": "1",
+            "entrySurfaceRef": "surface.chat",
+            "requiredSurfaceRefs": [
+              "surface.chat"
+            ],
+            "requiredJourneyRefs": [],
+            "operationFamilyRefs": [
+              "operation.chat"
+            ]
+          },
+          {
+            "journeyRef": "journey.memory",
+            "revision": "1",
+            "entrySurfaceRef": "surface.memory",
+            "requiredSurfaceRefs": [
+              "surface.memory"
+            ],
+            "requiredJourneyRefs": [
+              "journey.chat"
+            ],
+            "operationFamilyRefs": [
+              "operation.memory"
+            ]
+          }
         ],
-        "operationFamilyRefs": ["operation.chat", "operation.memory"],
+        "operationFamilyRefs": [
+          "operation.chat",
+          "operation.memory"
+        ],
         "publishedAt": "2026-07-31T12:00:00.000Z"
       }
     },
@@ -52,32 +159,116 @@
       "id": "profile-chat-only",
       "contractId": "launch-product-profile.v1",
       "document": {
-        "contract": "kokoro.launch-product-profile.v1", "schemaRevision": "1", "profileRevisionRef": "launch-profile.redeem-first.1", "revision": "1", "state": "published", "targetSiteKindRef": "site-kind.consumer-ai",
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "enabledSurfaceRefs": ["surface.chat"],
-        "journeyClosure": {"journeys": [{"journeyRef": "journey.chat", "revision": "1"}], "digest": "sha256:fab9948c0870997302f16e59d6e73735be720632c565c35bd54a67c7508c1c29"},
-        "shellRequirementRefs": ["shell.health", "shell.identity"],
-        "policies": {"assortmentPolicyRef": "policy.assortment.redeem-first.1", "modelPolicyRef": "policy.model.chat.1", "agentPolicyRef": "policy.agent.general.1", "capabilityPolicyRef": "policy.capability.chat.1", "authMethodPolicyRevisionRef": "policy.auth.password.1", "salesPolicyRevisionRef": "sales-policy.redeem-first.1", "contentPolicyProfileRef": "policy.content.core.1", "localeAccessibilityBaselineRef": "policy.locale-accessibility.core.1", "metricTargetRevisionRef": "metric-target.core.1", "supportTierRevisionRef": "support-tier.core.1", "operatorCommandMatrixRevisionRef": "operator-matrix.core.1", "certificationPolicyRef": "certification-policy.core.1"},
-        "reviewApprovalRefs": ["approval.product.1", "approval.release.1"], "publishedAt": "2026-07-31T12:02:00.000Z"
+        "contract": "kokoro.launch-product-profile.v1",
+        "schemaRevision": "1",
+        "profileRevisionRef": "launch-profile.redeem-first.1",
+        "revision": "1",
+        "state": "published",
+        "targetSiteKindRef": "site-kind.consumer-ai",
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "enabledSurfaceRefs": [
+          "surface.chat"
+        ],
+        "journeyClosure": {
+          "journeys": [
+            {
+              "journeyRef": "journey.chat",
+              "revision": "1"
+            }
+          ],
+          "digest": "sha256:fab9948c0870997302f16e59d6e73735be720632c565c35bd54a67c7508c1c29"
+        },
+        "shellRequirementRefs": [
+          "shell.health",
+          "shell.identity"
+        ],
+        "policies": {
+          "assortmentPolicyRef": "policy.assortment.redeem-first.1",
+          "modelPolicyRef": "policy.model.chat.1",
+          "agentPolicyRef": "policy.agent.general.1",
+          "capabilityPolicyRef": "policy.capability.chat.1",
+          "authMethodPolicyRevisionRef": "policy.auth.password.1",
+          "salesPolicyRevisionRef": "sales-policy.redeem-first.1",
+          "contentPolicyProfileRef": "policy.content.core.1",
+          "localeAccessibilityBaselineRef": "policy.locale-accessibility.core.1",
+          "metricTargetRevisionRef": "metric-target.core.1",
+          "supportTierRevisionRef": "support-tier.core.1",
+          "operatorCommandMatrixRevisionRef": "operator-matrix.core.1",
+          "certificationPolicyRef": "certification-policy.core.1"
+        },
+        "reviewApprovalRefs": [
+          "approval.product.1",
+          "approval.release.1"
+        ],
+        "publishedAt": "2026-07-31T12:02:00.000Z"
       }
     },
     {
       "id": "candidate-site-alpha",
       "contractId": "site-release-candidate.v1",
       "document": {
-        "contract": "kokoro.site-release-candidate.v1", "schemaRevision": "1", "candidateRef": "release-candidate.alpha.1", "revision": "1", "state": "authorized", "siteRef": "site.alpha", "environment": "production", "candidateAuthorizationEpoch": "7",
-        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "businessBindings": {
-          "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
-          "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
-          "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"},
-          "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
-          "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"},
-          "assortmentPolicy": {"ref": "assortment-policy.alpha.1", "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"},
-          "agentCatalog": {"ref": "agent-catalog.alpha.1", "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"}
+        "contract": "kokoro.site-release-candidate.v1",
+        "schemaRevision": "1",
+        "candidateRef": "release-candidate.alpha.1",
+        "revision": "1",
+        "state": "authorized",
+        "siteRef": "site.alpha",
+        "environment": "production",
+        "candidateAuthorizationEpoch": "7",
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
         },
-        "modelRequirements": [{"modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "businessBindings": {
+          "webBuildMaterialBundle": {
+            "ref": "material-bundle.site-alpha.1",
+            "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"
+          },
+          "siteConfig": {
+            "ref": "site-config.alpha.4",
+            "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          },
+          "legalPolicy": {
+            "ref": "legal-policy.alpha.2",
+            "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"
+          },
+          "salesPolicy": {
+            "ref": "sales-policy.alpha.5",
+            "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"
+          },
+          "capabilityAssignment": {
+            "ref": "capability-assignment.alpha.2",
+            "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"
+          },
+          "assortmentPolicy": {
+            "ref": "assortment-policy.alpha.1",
+            "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+          },
+          "agentCatalog": {
+            "ref": "agent-catalog.alpha.1",
+            "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"
+          }
+        },
+        "modelRequirements": [
+          {
+            "modelRoleRef": "model-role.chat-assistant",
+            "modelInventory": {
+              "ref": "model-inventory.global.4",
+              "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"
+            },
+            "modelCatalog": {
+              "ref": "model-catalog.chat.3",
+              "digest": "sha256:abababababababababababababababababababababababababababababababab"
+            }
+          }
+        ],
         "createdAt": "2026-07-31T12:04:00.000Z"
       }
     },
@@ -85,69 +276,323 @@
       "id": "inventory-chat-only",
       "contractId": "surface-inventory.v1",
       "document": {
-        "contract": "kokoro.surface-inventory.v1", "schemaRevision": "1", "inventoryRevisionRef": "inventory.site-alpha.1", "revision": "1",
-        "siteRef": "site.alpha", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"},
-        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "compilerRevisionRef": "surface-inventory-compiler.platform-site.1", "enabledSurfaceRefs": ["surface.chat"], "disabledSurfaceRefs": ["surface.memory"], "shellRequirementRefs": ["shell.identity", "shell.health"], "generatedAt": "2026-07-31T12:05:00.000Z"
+        "contract": "kokoro.surface-inventory.v1",
+        "schemaRevision": "1",
+        "inventoryRevisionRef": "inventory.site-alpha.1",
+        "revision": "1",
+        "siteRef": "site.alpha",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+        },
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "compilerRevisionRef": "surface-inventory-compiler.platform-site.1",
+        "enabledSurfaceRefs": [
+          "surface.chat"
+        ],
+        "disabledSurfaceRefs": [
+          "surface.memory"
+        ],
+        "shellRequirementRefs": [
+          "shell.identity",
+          "shell.health"
+        ],
+        "generatedAt": "2026-07-31T12:05:00.000Z"
       }
     },
     {
       "id": "material-site-alpha",
       "contractId": "web-build-material-bundle.v1",
       "document": {
-        "contract": "kokoro.web-build-material-bundle.v1", "schemaRevision": "1", "bundleRef": "material-bundle.site-alpha.1", "revision": "1", "siteRef": "site.alpha",
-        "brand": {"displayName": "Kokoro Alpha", "tokens": [{"tokenRef": "brand.color.primary", "kind": "color", "value": "#6f5ef9"}], "logos": [], "icons": [], "publicFonts": []},
-        "domainPolicy": {"canonicalHost": "alpha.example.com", "canonicalHttpsOrigin": "https://alpha.example.com", "wwwPolicy": "absent"},
-        "localePolicy": {"defaultLocale": "en-US", "translations": [{"locale": "en-US", "catalog": {"materialRef": "release-material.translation-en-us.1", "mediaType": "application/json", "sizeBytes": "2048", "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "scanEvidenceRef": "scan.translation-en-us.1"}}]},
-        "legal": {"documents": [{"documentRef": "legal.privacy.1", "kind": "privacy", "revision": "1", "content": {"materialRef": "release-material.privacy.1", "mediaType": "text/markdown", "sizeBytes": "4096", "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "scanEvidenceRef": "scan.privacy.1"}}], "consentPresentationRef": "presentation.consent.1", "cookiePresentationRef": "presentation.cookie.1"},
-        "seo": {"title": "Kokoro Alpha", "description": "A focused AI chat experience.", "robotsPolicy": "index-follow", "sitemapPolicy": "generated-enabled-surfaces", "socialCards": []},
-        "publicRuntimeConfig": [{"key": "PUBLIC_SUPPORT_LABEL", "kind": "text", "value": "Support"}]
+        "contract": "kokoro.web-build-material-bundle.v1",
+        "schemaRevision": "1",
+        "bundleRef": "material-bundle.site-alpha.1",
+        "revision": "1",
+        "siteRef": "site.alpha",
+        "brand": {
+          "displayName": "Kokoro Alpha",
+          "tokens": [
+            {
+              "tokenRef": "brand.color.primary",
+              "kind": "color",
+              "value": "#6f5ef9"
+            }
+          ],
+          "logos": [],
+          "icons": [],
+          "publicFonts": []
+        },
+        "domainPolicy": {
+          "canonicalHost": "alpha.example.com",
+          "canonicalHttpsOrigin": "https://alpha.example.com",
+          "wwwPolicy": "absent"
+        },
+        "localePolicy": {
+          "defaultLocale": "en-US",
+          "translations": [
+            {
+              "locale": "en-US",
+              "catalog": {
+                "materialRef": "release-material.translation-en-us.1",
+                "mediaType": "application/json",
+                "sizeBytes": "2048",
+                "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "scanEvidenceRef": "scan.translation-en-us.1"
+              }
+            }
+          ]
+        },
+        "legal": {
+          "documents": [
+            {
+              "documentRef": "legal.privacy.1",
+              "kind": "privacy",
+              "revision": "1",
+              "content": {
+                "materialRef": "release-material.privacy.1",
+                "mediaType": "text/markdown",
+                "sizeBytes": "4096",
+                "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "scanEvidenceRef": "scan.privacy.1"
+              }
+            }
+          ],
+          "consentPresentationRef": "presentation.consent.1",
+          "cookiePresentationRef": "presentation.cookie.1"
+        },
+        "seo": {
+          "title": "Kokoro Alpha",
+          "description": "A focused AI chat experience.",
+          "robotsPolicy": "index-follow",
+          "sitemapPolicy": "generated-enabled-surfaces",
+          "socialCards": []
+        },
+        "publicRuntimeConfig": [
+          {
+            "key": "PUBLIC_SUPPORT_LABEL",
+            "kind": "text",
+            "value": "Support"
+          }
+        ]
       }
     },
     {
       "id": "toolchain-published",
       "contractId": "web-build-toolchain.v1",
       "document": {
-        "contract": "kokoro.web-build-toolchain.v1", "schemaRevision": "1", "toolchainRevisionRef": "web-toolchain.next16.1", "revision": "1", "state": "published",
-        "baseSource": {"repositoryRef": "repository.kokoro-web", "commitDigest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "treeDigest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
-        "baseTemplate": {"ref": "template.site-base.1", "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
-        "compilerRevisionRef": "web-compiler.next16.1", "compilerArtifact": {"repositoryRef": "oci.kokoro.web-composition-compiler", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
-        "inspectorRevisionRef": "web-inspector.next16.1", "inspectorArtifact": {"repositoryRef": "oci.kokoro.web-artifact-inspector", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
-        "buildSandboxImage": {"repositoryRef": "oci.kokoro.web-build-sandbox", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
-        "inspectionSandboxImage": {"repositoryRef": "oci.kokoro.web-inspection-sandbox", "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"},
-        "versions": {"node": "24.5.0", "pnpm": "11.2.2", "next": "16.2.12", "typescript": "5.9.3"},
+        "contract": "kokoro.web-build-toolchain.v1",
+        "schemaRevision": "1",
+        "toolchainRevisionRef": "web-toolchain.next16.1",
+        "revision": "1",
+        "state": "published",
+        "baseSource": {
+          "repositoryRef": "repository.kokoro-web",
+          "commitDigest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "treeDigest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        },
+        "baseTemplate": {
+          "ref": "template.site-base.1",
+          "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        },
+        "compilerRevisionRef": "web-compiler.next16.1",
+        "compilerArtifact": {
+          "repositoryRef": "oci.kokoro.web-composition-compiler",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "inspectorRevisionRef": "web-inspector.next16.1",
+        "inspectorArtifact": {
+          "repositoryRef": "oci.kokoro.web-artifact-inspector",
+          "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "buildSandboxImage": {
+          "repositoryRef": "oci.kokoro.web-build-sandbox",
+          "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "inspectionSandboxImage": {
+          "repositoryRef": "oci.kokoro.web-inspection-sandbox",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        "versions": {
+          "node": "24.5.0",
+          "pnpm": "11.2.2",
+          "next": "16.2.12",
+          "typescript": "5.9.3"
+        },
         "toolchainBomDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
-        "lockfilePolicy": {"packageManager": "pnpm", "lockfileVersion": "9.0", "frozen": true, "ignoreLifecycleScripts": true, "network": "controller-materialized-only"},
-        "installPolicyRef": "policy.install.offline.1", "reproducibilityPolicyRef": "policy.reproducible-build.1", "publishedAt": "2026-07-31T12:10:00.000Z"
+        "lockfilePolicy": {
+          "packageManager": "pnpm",
+          "lockfileVersion": "9.0",
+          "frozen": true,
+          "ignoreLifecycleScripts": true,
+          "network": "controller-materialized-only"
+        },
+        "installPolicyRef": "policy.install.offline.1",
+        "reproducibilityPolicyRef": "policy.reproducible-build.1",
+        "publishedAt": "2026-07-31T12:10:00.000Z"
       }
     },
     {
       "id": "registry-published",
       "contractId": "web-composition-registry.v1",
       "document": {
-        "contract": "kokoro.web-composition-registry.v1", "schemaRevision": "1", "registryRevisionRef": "web-registry.core.1", "revision": "1", "state": "published",
+        "contract": "kokoro.web-composition-registry.v1",
+        "schemaRevision": "1",
+        "registryRevisionRef": "web-registry.core.1",
+        "revision": "1",
+        "state": "published",
         "units": [
           {
-            "unitRef": "web.dependency.trust", "revision": "1", "kind": "dependency", "providesSurfaceRefs": [], "providesShellRequirementRefs": [], "requiresUnitRefs": [], "packageRefs": ["package.site-bff"],
-            "routes": [], "navigation": [], "bffOperationGroups": [], "bootstrapRequirements": ["bootstrap.session-contract"], "modelCatalogRequirements": []
+            "unitRef": "web.dependency.trust",
+            "revision": "1",
+            "kind": "dependency",
+            "providesSurfaceRefs": [],
+            "providesShellRequirementRefs": [],
+            "requiresUnitRefs": [],
+            "packageRefs": [
+              "package.site-bff"
+            ],
+            "routes": [],
+            "navigation": [],
+            "bffOperationGroups": [],
+            "bootstrapRequirements": [
+              "bootstrap.session-contract"
+            ],
+            "modelCatalogRequirements": []
           },
           {
-            "unitRef": "web.shell.base", "revision": "1", "kind": "shell", "providesSurfaceRefs": [], "providesShellRequirementRefs": ["shell.health", "shell.identity"], "requiresUnitRefs": ["web.dependency.trust"], "packageRefs": ["package.web-shell"],
-            "routes": [{"routeRef": "route.home", "pathname": "/", "kind": "page", "methods": ["GET"], "runtime": "nodejs"}], "navigation": [], "bffOperationGroups": [], "bootstrapRequirements": ["bootstrap.product-context"], "modelCatalogRequirements": []
+            "unitRef": "web.shell.base",
+            "revision": "1",
+            "kind": "shell",
+            "providesSurfaceRefs": [],
+            "providesShellRequirementRefs": [
+              "shell.health",
+              "shell.identity"
+            ],
+            "requiresUnitRefs": [
+              "web.dependency.trust"
+            ],
+            "packageRefs": [
+              "package.web-shell"
+            ],
+            "routes": [
+              {
+                "routeRef": "route.home",
+                "pathname": "/",
+                "kind": "page",
+                "methods": [
+                  "GET"
+                ],
+                "runtime": "nodejs"
+              }
+            ],
+            "navigation": [],
+            "bffOperationGroups": [],
+            "bootstrapRequirements": [
+              "bootstrap.product-context"
+            ],
+            "modelCatalogRequirements": []
           },
           {
-            "unitRef": "web.surface.chat", "revision": "1", "kind": "surface", "providesSurfaceRefs": ["surface.chat"], "providesShellRequirementRefs": [], "requiresUnitRefs": ["web.shell.base"], "packageRefs": ["package.chat-product"],
-            "routes": [{"routeRef": "route.chat", "pathname": "/chat", "kind": "page", "methods": ["GET"], "runtime": "nodejs"}, {"routeRef": "route.api-session", "pathname": "/api/session", "kind": "route-handler", "methods": ["GET", "POST"], "runtime": "nodejs"}],
-            "navigation": [{"navigationRef": "navigation.chat", "routeRef": "route.chat", "order": "10"}],
-            "bffOperationGroups": [{"groupRef": "bff.session", "operationFamilyRef": "operation.chat", "sameOriginHandlerOperationIds": ["siteCreateSession", "siteGetSessionSnapshot"], "downstreamOperationIds": ["createSession", "getSessionSnapshot"]}],
-            "bootstrapRequirements": [], "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "modelRoleRef": "model-role.chat-assistant"}]
+            "unitRef": "web.surface.chat",
+            "revision": "1",
+            "kind": "surface",
+            "providesSurfaceRefs": [
+              "surface.chat"
+            ],
+            "providesShellRequirementRefs": [],
+            "requiresUnitRefs": [
+              "web.shell.base"
+            ],
+            "packageRefs": [
+              "package.chat-product"
+            ],
+            "routes": [
+              {
+                "routeRef": "route.chat",
+                "pathname": "/chat",
+                "kind": "page",
+                "methods": [
+                  "GET"
+                ],
+                "runtime": "nodejs"
+              },
+              {
+                "routeRef": "route.api-session",
+                "pathname": "/api/session",
+                "kind": "route-handler",
+                "methods": [
+                  "GET",
+                  "POST"
+                ],
+                "runtime": "nodejs"
+              }
+            ],
+            "navigation": [
+              {
+                "navigationRef": "navigation.chat",
+                "routeRef": "route.chat",
+                "order": "10"
+              }
+            ],
+            "bffOperationGroups": [
+              {
+                "groupRef": "bff.session",
+                "operationFamilyRef": "operation.chat",
+                "sameOriginHandlerOperationIds": [
+                  "siteCreateSession",
+                  "siteGetSessionSnapshot"
+                ],
+                "downstreamOperationIds": [
+                  "createSession",
+                  "getSessionSnapshot"
+                ]
+              },
+              {
+                "groupRef": "bff.session-list",
+                "operationFamilyRef": "operation.chat",
+                "sameOriginHandlerOperationIds": [
+                  "siteListSessions"
+                ],
+                "downstreamOperationIds": [
+                  "listSessions"
+                ]
+              }
+            ],
+            "bootstrapRequirements": [],
+            "modelCatalogRequirements": [
+              {
+                "surfaceRef": "surface.chat",
+                "modelRoleRef": "model-role.chat-assistant"
+              }
+            ]
           }
         ],
         "packages": [
-          {"packageRef": "package.web-shell", "name": "@kokoro/site-shell", "version": "1.0.0", "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"},
-          {"packageRef": "package.site-bff", "name": "@kokoro/site-bff", "version": "1.0.0", "digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"},
-          {"packageRef": "package.chat-product", "name": "@kokoro/chat-product", "version": "1.0.0", "digest": "sha256:b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}
+          {
+            "packageRef": "package.web-shell",
+            "name": "@kokoro/site-shell",
+            "version": "1.0.0",
+            "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"
+          },
+          {
+            "packageRef": "package.site-bff",
+            "name": "@kokoro/site-bff",
+            "version": "1.0.0",
+            "digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+          },
+          {
+            "packageRef": "package.chat-product",
+            "name": "@kokoro/chat-product",
+            "version": "1.0.0",
+            "digest": "sha256:b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"
+          }
         ],
         "publishedAt": "2026-07-31T12:15:00.000Z"
       }
@@ -156,86 +601,452 @@
       "id": "intent-site-alpha",
       "contractId": "web-build-intent.v1",
       "document": {
-        "contract": "kokoro.web-build-intent.v1", "schemaRevision": "1", "intentRef": "web-build-intent.alpha.1", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "siteRef": "site.alpha",
-        "environment": "production", "audience": "kokoro.web-release-composition.build.v1", "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"}, "shellRequirementRefs": ["shell.health", "shell.identity"],
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
-        "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
-        "webBuildToolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
-        "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
-        "contractFloor": [{"contractRef": "contract.platform-public", "minimumMajor": "1"}, {"contractRef": "contract.session-http", "minimumMajor": "1"}],
-        "modelRequirements": [{"modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
-        "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
-        "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"},
-        "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
-        "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"},
-        "issuedAt": "2026-07-31T12:20:00.000Z", "candidateAuthorizationEpoch": "7", "issuer": {"issuerRef": "platform.site-signer", "signingKeyId": "key.web-build-intent.3"}
+        "contract": "kokoro.web-build-intent.v1",
+        "schemaRevision": "1",
+        "intentRef": "web-build-intent.alpha.1",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "siteRef": "site.alpha",
+        "environment": "production",
+        "audience": "kokoro.web-release-composition.build.v1",
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+        },
+        "shellRequirementRefs": [
+          "shell.health",
+          "shell.identity"
+        ],
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "surfaceInventory": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+        },
+        "webCompositionRegistry": {
+          "ref": "web-registry.core.1",
+          "digest": "sha256:cf72a1af04dcb8d747848c697dc9f72d96e3ffcf157cf1647177f9cfad63d425"
+        },
+        "webBuildToolchain": {
+          "ref": "web-toolchain.next16.1",
+          "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"
+        },
+        "webBuildMaterialBundle": {
+          "ref": "material-bundle.site-alpha.1",
+          "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"
+        },
+        "contractFloor": [
+          {
+            "contractRef": "contract.platform-public",
+            "minimumMajor": "1"
+          },
+          {
+            "contractRef": "contract.session-http",
+            "minimumMajor": "1"
+          }
+        ],
+        "modelRequirements": [
+          {
+            "modelRoleRef": "model-role.chat-assistant",
+            "modelInventory": {
+              "ref": "model-inventory.global.4",
+              "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"
+            },
+            "modelCatalog": {
+              "ref": "model-catalog.chat.3",
+              "digest": "sha256:abababababababababababababababababababababababababababababababab"
+            }
+          }
+        ],
+        "siteConfig": {
+          "ref": "site-config.alpha.4",
+          "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        },
+        "legalPolicy": {
+          "ref": "legal-policy.alpha.2",
+          "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"
+        },
+        "salesPolicy": {
+          "ref": "sales-policy.alpha.5",
+          "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"
+        },
+        "capabilityAssignment": {
+          "ref": "capability-assignment.alpha.2",
+          "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"
+        },
+        "issuedAt": "2026-07-31T12:20:00.000Z",
+        "candidateAuthorizationEpoch": "7",
+        "issuer": {
+          "issuerRef": "platform.site-signer",
+          "signingKeyId": "key.web-build-intent.3"
+        }
       }
     },
     {
       "id": "manifest-chat-only",
       "contractId": "compiled-web-manifest.v1",
       "document": {
-        "contract": "kokoro.compiled-web-manifest.v1", "schemaRevision": "1", "manifestRef": "compiled-web-manifest.alpha.1", "intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "compilerRevisionRef": "web-compiler.next16.1",
-        "registry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
-        "catalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
-        "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
+        "contract": "kokoro.compiled-web-manifest.v1",
+        "schemaRevision": "1",
+        "manifestRef": "compiled-web-manifest.alpha.1",
+        "intentRef": "web-build-intent.alpha.1",
+        "buildIntentDigest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "compilerRevisionRef": "web-compiler.next16.1",
+        "registry": {
+          "ref": "web-registry.core.1",
+          "digest": "sha256:cf72a1af04dcb8d747848c697dc9f72d96e3ffcf157cf1647177f9cfad63d425"
+        },
+        "catalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "surfaceInventory": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+        },
+        "toolchain": {
+          "ref": "web-toolchain.next16.1",
+          "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"
+        },
         "measuredToolArtifacts": [
-          {"role": "compiler", "repositoryRef": "oci.kokoro.web-composition-compiler", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
-          {"role": "inspector", "repositoryRef": "oci.kokoro.web-artifact-inspector", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"},
-          {"role": "build-sandbox", "repositoryRef": "oci.kokoro.web-build-sandbox", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"},
-          {"role": "inspection-sandbox", "repositoryRef": "oci.kokoro.web-inspection-sandbox", "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"}
+          {
+            "role": "compiler",
+            "repositoryRef": "oci.kokoro.web-composition-compiler",
+            "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          {
+            "role": "inspector",
+            "repositoryRef": "oci.kokoro.web-artifact-inspector",
+            "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+          },
+          {
+            "role": "build-sandbox",
+            "repositoryRef": "oci.kokoro.web-build-sandbox",
+            "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+          },
+          {
+            "role": "inspection-sandbox",
+            "repositoryRef": "oci.kokoro.web-inspection-sandbox",
+            "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+          }
         ],
         "units": [
-          {"unitRef": "web.shell.base", "revision": "1", "kind": "shell", "providesSurfaceRefs": [], "providesShellRequirementRefs": ["shell.health", "shell.identity"], "requiresUnitRefs": ["web.dependency.trust"], "packageRefs": ["package.web-shell"]},
-          {"unitRef": "web.dependency.trust", "revision": "1", "kind": "dependency", "providesSurfaceRefs": [], "providesShellRequirementRefs": [], "requiresUnitRefs": [], "packageRefs": ["package.site-bff"]},
-          {"unitRef": "web.surface.chat", "revision": "1", "kind": "surface", "providesSurfaceRefs": ["surface.chat"], "providesShellRequirementRefs": [], "requiresUnitRefs": ["web.shell.base"], "packageRefs": ["package.chat-product"]}
+          {
+            "unitRef": "web.shell.base",
+            "revision": "1",
+            "kind": "shell",
+            "providesSurfaceRefs": [],
+            "providesShellRequirementRefs": [
+              "shell.health",
+              "shell.identity"
+            ],
+            "requiresUnitRefs": [
+              "web.dependency.trust"
+            ],
+            "packageRefs": [
+              "package.web-shell"
+            ]
+          },
+          {
+            "unitRef": "web.dependency.trust",
+            "revision": "1",
+            "kind": "dependency",
+            "providesSurfaceRefs": [],
+            "providesShellRequirementRefs": [],
+            "requiresUnitRefs": [],
+            "packageRefs": [
+              "package.site-bff"
+            ]
+          },
+          {
+            "unitRef": "web.surface.chat",
+            "revision": "1",
+            "kind": "surface",
+            "providesSurfaceRefs": [
+              "surface.chat"
+            ],
+            "providesShellRequirementRefs": [],
+            "requiresUnitRefs": [
+              "web.shell.base"
+            ],
+            "packageRefs": [
+              "package.chat-product"
+            ]
+          }
         ],
         "packages": [
-          {"packageRef": "package.web-shell", "name": "@kokoro/site-shell", "version": "1.0.0", "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1", "unitRefs": ["web.shell.base"]},
-          {"packageRef": "package.site-bff", "name": "@kokoro/site-bff", "version": "1.0.0", "digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2", "unitRefs": ["web.dependency.trust"]},
-          {"packageRef": "package.chat-product", "name": "@kokoro/chat-product", "version": "1.0.0", "digest": "sha256:b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3", "unitRefs": ["web.surface.chat"]}
+          {
+            "packageRef": "package.web-shell",
+            "name": "@kokoro/site-shell",
+            "version": "1.0.0",
+            "digest": "sha256:b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1",
+            "unitRefs": [
+              "web.shell.base"
+            ]
+          },
+          {
+            "packageRef": "package.site-bff",
+            "name": "@kokoro/site-bff",
+            "version": "1.0.0",
+            "digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+            "unitRefs": [
+              "web.dependency.trust"
+            ]
+          },
+          {
+            "packageRef": "package.chat-product",
+            "name": "@kokoro/chat-product",
+            "version": "1.0.0",
+            "digest": "sha256:b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3",
+            "unitRefs": [
+              "web.surface.chat"
+            ]
+          }
         ],
         "routes": [
-          {"routeRef": "route.home", "unitRef": "web.shell.base", "pathname": "/", "kind": "page", "methods": ["GET"], "runtime": "nodejs"},
-          {"routeRef": "route.chat", "unitRef": "web.surface.chat", "pathname": "/chat", "kind": "page", "methods": ["GET"], "runtime": "nodejs"},
-          {"routeRef": "route.api-session", "unitRef": "web.surface.chat", "pathname": "/api/session", "kind": "route-handler", "methods": ["GET", "POST"], "runtime": "nodejs"}
+          {
+            "routeRef": "route.home",
+            "unitRef": "web.shell.base",
+            "pathname": "/",
+            "kind": "page",
+            "methods": [
+              "GET"
+            ],
+            "runtime": "nodejs"
+          },
+          {
+            "routeRef": "route.chat",
+            "unitRef": "web.surface.chat",
+            "pathname": "/chat",
+            "kind": "page",
+            "methods": [
+              "GET"
+            ],
+            "runtime": "nodejs"
+          },
+          {
+            "routeRef": "route.api-session",
+            "unitRef": "web.surface.chat",
+            "pathname": "/api/session",
+            "kind": "route-handler",
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "runtime": "nodejs"
+          }
         ],
-        "navigation": [{"navigationRef": "navigation.chat", "unitRef": "web.surface.chat", "routeRef": "route.chat", "order": "10"}],
-        "bffOperationGroups": [{"groupRef": "bff.session", "unitRef": "web.surface.chat", "operationFamilyRef": "operation.chat", "sameOriginHandlerOperationIds": ["siteCreateSession", "siteGetSessionSnapshot"], "downstreamOperationIds": ["createSession", "getSessionSnapshot"]}],
-        "bootstrapRequirements": ["bootstrap.product-context", "bootstrap.session-contract"], "advertisedSurfaceRefs": ["surface.chat"],
-        "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
-        "compiledSourceClosureDigest": "sha256:b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4", "lockfileDigest": "sha256:b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
+        "navigation": [
+          {
+            "navigationRef": "navigation.chat",
+            "unitRef": "web.surface.chat",
+            "routeRef": "route.chat",
+            "order": "10"
+          }
+        ],
+        "bffOperationGroups": [
+          {
+            "groupRef": "bff.session",
+            "unitRef": "web.surface.chat",
+            "operationFamilyRef": "operation.chat",
+            "sameOriginHandlerOperationIds": [
+              "siteCreateSession",
+              "siteGetSessionSnapshot"
+            ],
+            "downstreamOperationIds": [
+              "createSession",
+              "getSessionSnapshot"
+            ]
+          },
+          {
+            "groupRef": "bff.session-list",
+            "unitRef": "web.surface.chat",
+            "operationFamilyRef": "operation.chat",
+            "sameOriginHandlerOperationIds": [
+              "siteListSessions"
+            ],
+            "downstreamOperationIds": [
+              "listSessions"
+            ]
+          }
+        ],
+        "bootstrapRequirements": [
+          "bootstrap.product-context",
+          "bootstrap.session-contract"
+        ],
+        "advertisedSurfaceRefs": [
+          "surface.chat"
+        ],
+        "modelCatalogRequirements": [
+          {
+            "surfaceRef": "surface.chat",
+            "modelRoleRef": "model-role.chat-assistant",
+            "modelInventory": {
+              "ref": "model-inventory.global.4",
+              "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"
+            },
+            "modelCatalog": {
+              "ref": "model-catalog.chat.3",
+              "digest": "sha256:abababababababababababababababababababababababababababababababab"
+            }
+          }
+        ],
+        "compiledSourceClosureDigest": "sha256:b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4",
+        "lockfileDigest": "sha256:b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
       }
     },
     {
       "id": "provenance-site-alpha",
       "contractId": "web-artifact-provenance-profile.v1",
       "document": {
-        "_type": "https://in-toto.io/Statement/v1", "provenanceRef": "web-artifact-provenance.alpha.1",
-        "subject": [{"name": "registry.kokoro.dev/sites/alpha-web", "digest": {"sha256": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0"}}],
+        "_type": "https://in-toto.io/Statement/v1",
+        "provenanceRef": "web-artifact-provenance.alpha.1",
+        "subject": [
+          {
+            "name": "registry.kokoro.dev/sites/alpha-web",
+            "digest": {
+              "sha256": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0"
+            }
+          }
+        ],
         "predicateType": "https://slsa.dev/provenance/v1",
         "predicate": {
           "buildDefinition": {
             "buildType": "https://contracts.kokoro.dev/build-types/site-web/v1",
-            "externalParameters": {"intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274", "compiledWebManifestRef": "compiled-web-manifest.alpha.1", "compiledWebManifestDigest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha", "candidateAuthorizationEpoch": "7", "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
+            "externalParameters": {
+              "intentRef": "web-build-intent.alpha.1",
+              "buildIntentDigest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f",
+              "compiledWebManifestRef": "compiled-web-manifest.alpha.1",
+              "compiledWebManifestDigest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab",
+              "releaseCandidateRef": "release-candidate.alpha.1",
+              "siteRef": "site.alpha",
+              "candidateAuthorizationEpoch": "7",
+              "toolchain": {
+                "ref": "web-toolchain.next16.1",
+                "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"
+              }
+            },
             "resolvedDependencies": [
-              {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#commit", "digest": {"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}},
-              {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#tree", "digest": {"sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}},
-              {"uri": "kokoro:template/template.site-base.1", "digest": {"sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}},
-              {"uri": "kokoro:material-bundle/material-bundle.site-alpha.1", "digest": {"sha256": "3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}},
-              {"uri": "oci://registry.kokoro.dev/compiler/oci.kokoro.web-composition-compiler", "digest": {"sha256": "1111111111111111111111111111111111111111111111111111111111111111"}},
-              {"uri": "oci://registry.kokoro.dev/inspector/oci.kokoro.web-artifact-inspector", "digest": {"sha256": "2222222222222222222222222222222222222222222222222222222222222222"}},
-              {"uri": "oci://registry.kokoro.dev/build-sandbox/oci.kokoro.web-build-sandbox", "digest": {"sha256": "3333333333333333333333333333333333333333333333333333333333333333"}},
-              {"uri": "oci://registry.kokoro.dev/inspection-sandbox/oci.kokoro.web-inspection-sandbox", "digest": {"sha256": "4444444444444444444444444444444444444444444444444444444444444444"}},
-              {"uri": "pkg:npm/%40kokoro/site-shell@1.0.0?kokoro_package_ref=package.web-shell", "digest": {"sha256": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"}},
-              {"uri": "pkg:npm/%40kokoro/site-bff@1.0.0?kokoro_package_ref=package.site-bff", "digest": {"sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"}},
-              {"uri": "pkg:npm/%40kokoro/chat-product@1.0.0?kokoro_package_ref=package.chat-product", "digest": {"sha256": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}},
-              {"uri": "kokoro:lockfile/compiled-web-manifest.alpha.1", "digest": {"sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"}}
+              {
+                "uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#commit",
+                "digest": {
+                  "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+                }
+              },
+              {
+                "uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#tree",
+                "digest": {
+                  "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                }
+              },
+              {
+                "uri": "kokoro:template/template.site-base.1",
+                "digest": {
+                  "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+                }
+              },
+              {
+                "uri": "kokoro:material-bundle/material-bundle.site-alpha.1",
+                "digest": {
+                  "sha256": "3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"
+                }
+              },
+              {
+                "uri": "oci://registry.kokoro.dev/compiler/oci.kokoro.web-composition-compiler",
+                "digest": {
+                  "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+                }
+              },
+              {
+                "uri": "oci://registry.kokoro.dev/inspector/oci.kokoro.web-artifact-inspector",
+                "digest": {
+                  "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+                }
+              },
+              {
+                "uri": "oci://registry.kokoro.dev/build-sandbox/oci.kokoro.web-build-sandbox",
+                "digest": {
+                  "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+                }
+              },
+              {
+                "uri": "oci://registry.kokoro.dev/inspection-sandbox/oci.kokoro.web-inspection-sandbox",
+                "digest": {
+                  "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+                }
+              },
+              {
+                "uri": "pkg:npm/%40kokoro/site-shell@1.0.0?kokoro_package_ref=package.web-shell",
+                "digest": {
+                  "sha256": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"
+                }
+              },
+              {
+                "uri": "pkg:npm/%40kokoro/site-bff@1.0.0?kokoro_package_ref=package.site-bff",
+                "digest": {
+                  "sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+                }
+              },
+              {
+                "uri": "pkg:npm/%40kokoro/chat-product@1.0.0?kokoro_package_ref=package.chat-product",
+                "digest": {
+                  "sha256": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"
+                }
+              },
+              {
+                "uri": "kokoro:lockfile/compiled-web-manifest.alpha.1",
+                "digest": {
+                  "sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
+                }
+              }
             ]
           },
-          "runDetails": {"builder": {"id": "https://workloads.kokoro.dev/site-web-attestor/v1", "kokoro_signingKeyId": "key.web-artifact-attestor.1"}, "metadata": {"invocationId": "invocation.alpha.1", "startedOn": "2026-07-31T12:30:00.000Z", "finishedOn": "2026-07-31T12:32:00.000Z"}, "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0", "byproducts": [{"name": "inspection-report", "digest": {"sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"}}, {"name": "sbom", "digest": {"sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"}}, {"name": "vulnerability-scan", "digest": {"sha256": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"}}, {"name": "certification", "digest": {"sha256": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"}}]}
+          "runDetails": {
+            "builder": {
+              "id": "https://workloads.kokoro.dev/site-web-attestor/v1",
+              "kokoro_signingKeyId": "key.web-artifact-attestor.1"
+            },
+            "metadata": {
+              "invocationId": "invocation.alpha.1",
+              "startedOn": "2026-07-31T12:30:00.000Z",
+              "finishedOn": "2026-07-31T12:32:00.000Z"
+            },
+            "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+            "byproducts": [
+              {
+                "name": "inspection-report",
+                "digest": {
+                  "sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"
+                }
+              },
+              {
+                "name": "sbom",
+                "digest": {
+                  "sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+                }
+              },
+              {
+                "name": "vulnerability-scan",
+                "digest": {
+                  "sha256": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"
+                }
+              },
+              {
+                "name": "pre-certification-evidence",
+                "digest": {
+                  "sha256": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"
+                }
+              }
+            ]
+          }
         }
       }
     },
@@ -243,116 +1054,1157 @@
       "id": "certification-site-alpha",
       "contractId": "release-certification-instance.v1",
       "document": {
-        "contract": "kokoro.release-certification-instance.v1", "schemaRevision": "1", "certificationRef": "release-certification.alpha.1", "revision": "1", "decision": "passed", "environment": "production", "siteRef": "site.alpha",
-        "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "candidateAuthorizationEpoch": "7",
-        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
-        "webBuildIntent": {"ref": "web-build-intent.alpha.1", "digest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
-        "compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"},
-        "webArtifactProvenance": {"ref": "web-artifact-provenance.alpha.1", "digest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
+        "contract": "kokoro.release-certification-instance.v1",
+        "schemaRevision": "1",
+        "certificationRef": "release-certification.alpha.1",
+        "revision": "1",
+        "decision": "passed",
+        "environment": "production",
+        "siteRef": "site.alpha",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "candidateAuthorizationEpoch": "7",
+        "certificationRevocationEpoch": "0",
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+        },
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "surfaceInventory": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+        },
+        "webBuildIntent": {
+          "ref": "web-build-intent.alpha.1",
+          "digest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f"
+        },
+        "compiledWebManifest": {
+          "ref": "compiled-web-manifest.alpha.1",
+          "digest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab"
+        },
+        "webArtifactProvenance": {
+          "ref": "web-artifact-provenance.alpha.1",
+          "digest": "sha256:5ae050ae1296e677726c9d4a947d047ba8d33b977c48308a500fef86c4148a24"
+        },
         "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
-        "evidenceBundle": {"ref": "release-evidence.alpha.1", "digest": "sha256:c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6"}, "certificationPolicyRef": "certification-policy.core.1",
-        "generatedAt": "2026-07-31T12:35:00.000Z", "validUntil": "2026-08-01T12:35:00.000Z",
-        "producer": {"trustedProducerRegistry": {"ref": "trusted-producer-registry.production.1", "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"}, "producerIdentityRef": "producer.release-quality", "trustPolicyRevisionRef": "trust-policy.release-certification.1", "signingKeyId": "key.release-certification.1", "keyVersion": "1", "signatureAudience": "kokoro.site-release.activation.v1"}
+        "evidenceBundle": {
+          "ref": "release-evidence.alpha.1",
+          "digest": "sha256:c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6"
+        },
+        "certificationPolicyRef": "certification-policy.core.1",
+        "generatedAt": "2026-07-31T12:35:00.000Z",
+        "validUntil": "2026-08-01T12:35:00.000Z",
+        "producer": {
+          "producerRegistry": {
+            "ref": "trusted-producer-registry.production.1",
+            "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+          },
+          "producerRegistryEpoch": "4",
+          "producerIdentityRef": "producer.release-quality",
+          "trustPolicy": {
+            "ref": "trust-policy.release-certification.1",
+            "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+          },
+          "trustPolicyEpoch": "9",
+          "keyId": "key.release-certification.1",
+          "keyVersion": "1",
+          "publicKeyFingerprint": "sha256:721eb84dd58736a60018b9435ff4186797f89ade6d2d149b31071b85308471f0",
+          "keyStatus": "active",
+          "keyValidFrom": "2026-07-01T00:00:00.000Z",
+          "keyValidUntil": "2026-08-02T00:00:00.000Z",
+          "signatureAudience": "kokoro.site-release.activation.v1",
+          "environment": "production"
+        }
+      }
+    },
+    {
+      "id": "certification-obsolete",
+      "contractId": "release-certification-instance.v1",
+      "document": {
+        "contract": "kokoro.release-certification-instance.v1",
+        "schemaRevision": "1",
+        "certificationRef": "release-certification.obsolete.1",
+        "revision": "1",
+        "decision": "passed",
+        "environment": "production",
+        "siteRef": "site.alpha",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "candidateAuthorizationEpoch": "7",
+        "certificationRevocationEpoch": "0",
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+        },
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "surfaceInventory": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+        },
+        "webBuildIntent": {
+          "ref": "web-build-intent.alpha.1",
+          "digest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f"
+        },
+        "compiledWebManifest": {
+          "ref": "compiled-web-manifest.alpha.1",
+          "digest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab"
+        },
+        "webArtifactProvenance": {
+          "ref": "web-artifact-provenance.alpha.1",
+          "digest": "sha256:5ae050ae1296e677726c9d4a947d047ba8d33b977c48308a500fef86c4148a24"
+        },
+        "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+        "evidenceBundle": {
+          "ref": "release-evidence.obsolete.1",
+          "digest": "sha256:d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6d6"
+        },
+        "certificationPolicyRef": "certification-policy.core.1",
+        "generatedAt": "2026-07-31T12:33:00.000Z",
+        "validUntil": "2026-08-01T12:33:00.000Z",
+        "producer": {
+          "producerRegistry": {
+            "ref": "trusted-producer-registry.production.1",
+            "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+          },
+          "producerRegistryEpoch": "4",
+          "producerIdentityRef": "producer.release-quality",
+          "trustPolicy": {
+            "ref": "trust-policy.release-certification.1",
+            "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+          },
+          "trustPolicyEpoch": "9",
+          "keyId": "key.release-certification.obsolete.1",
+          "keyVersion": "1",
+          "publicKeyFingerprint": "sha256:84f2565a6351f95d50d8ada96607e647c74dfccbb370bc0f68629ca1ae644a78",
+          "keyStatus": "active",
+          "keyValidFrom": "2026-07-01T00:00:00.000Z",
+          "keyValidUntil": "2026-08-02T00:00:00.000Z",
+          "signatureAudience": "kokoro.site-release.activation.v1",
+          "environment": "production"
+        }
       }
     },
     {
       "id": "revocation-obsolete-certification",
       "contractId": "release-certification-revocation.v1",
       "document": {
-        "contract": "kokoro.release-certification-revocation.v1", "schemaRevision": "1", "revocationRef": "certification-revocation.obsolete.1", "revision": "1",
-        "releaseCertification": {"ref": "release-certification.obsolete.1", "digest": "sha256:c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8"},
-        "siteReleaseCandidate": {"ref": "release-candidate.obsolete.1", "digest": "sha256:c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9"}, "candidateAuthorizationEpoch": "2",
-        "reason": "key-revoked", "revokedAt": "2026-07-31T12:36:00.000Z",
-        "producer": {"producerIdentityRef": "producer.release-security", "trustPolicyRevisionRef": "trust-policy.release-certification.1", "signingKeyId": "key.release-revocation.1", "keyVersion": "1", "signatureAudience": "kokoro.site-release.activation.v1"}
+        "contract": "kokoro.release-certification-revocation.v1",
+        "schemaRevision": "1",
+        "revocationRef": "certification-revocation.obsolete.1",
+        "revision": "1",
+        "releaseCertification": {
+          "ref": "release-certification.obsolete.1",
+          "digest": "sha256:c22feb01d6a6576cc2c88c29c79696965bf8a746ddbffe38772ac1369b952746"
+        },
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+        },
+        "candidateAuthorizationEpoch": "7",
+        "certificationRevocationEpoch": "1",
+        "environment": "production",
+        "siteRef": "site.alpha",
+        "reason": "key-revoked",
+        "revokedAt": "2026-07-31T12:36:00.000Z",
+        "producer": {
+          "producerRegistry": {
+            "ref": "trusted-producer-registry.production.1",
+            "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+          },
+          "producerRegistryEpoch": "4",
+          "producerIdentityRef": "producer.release-security",
+          "trustPolicy": {
+            "ref": "trust-policy.release-certification.1",
+            "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+          },
+          "trustPolicyEpoch": "9",
+          "keyId": "key.release-revocation.1",
+          "keyVersion": "1",
+          "publicKeyFingerprint": "sha256:bf29c6e8734b7776cd03929a576e87745f4b6b2be037e8f169ef4b5797701261",
+          "keyStatus": "active",
+          "keyValidFrom": "2026-07-01T00:00:00.000Z",
+          "keyValidUntil": "2026-08-02T00:00:00.000Z",
+          "signatureAudience": "kokoro.site-release.activation.v1",
+          "environment": "production"
+        }
       }
     },
     {
       "id": "site-release-alpha",
       "contractId": "site-release.v1",
       "document": {
-        "contract": "kokoro.site-release.v1", "schemaRevision": "1", "siteReleaseRef": "site-release.alpha.1", "revision": "1", "state": "published", "siteRef": "site.alpha", "environment": "production",
-        "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "candidateAuthorizationEpoch": "7",
-        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"}, "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"}, "webBuildIntent": {"ref": "web-build-intent.alpha.1", "digest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
-        "compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"}, "webArtifactProvenance": {"ref": "web-artifact-provenance.alpha.1", "digest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
-        "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0", "releaseCertification": {"ref": "release-certification.alpha.1", "digest": "sha256:f7807a7fe7737c1595b5a32f8c64bea6283d1fcf8eab1d0ca1ef40b1e2238d25"}, "certificationRevocationEpoch": "0",
-        "businessBindings": {
-          "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}, "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
-          "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"}, "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
-          "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"}, "assortmentPolicy": {"ref": "assortment-policy.alpha.1", "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"}, "agentCatalog": {"ref": "agent-catalog.alpha.1", "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"}
+        "contract": "kokoro.site-release.v1",
+        "schemaRevision": "1",
+        "siteReleaseRef": "site-release.alpha.1",
+        "revision": "1",
+        "state": "published",
+        "siteRef": "site.alpha",
+        "environment": "production",
+        "siteReleaseCandidate": {
+          "ref": "release-candidate.alpha.1",
+          "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
         },
-        "bootstrapBindings": {"compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"}, "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"}, "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"}, "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"}, "webBuildToolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
-        "contractFloor": [{"contractRef": "contract.platform-public", "minimumMajor": "1"}, {"contractRef": "contract.session-http", "minimumMajor": "1"}], "publishedAt": "2026-07-31T12:40:00.000Z"
+        "candidateAuthorizationEpoch": "7",
+        "launchProductProfile": {
+          "ref": "launch-profile.redeem-first.1",
+          "digest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+        },
+        "productSurfaceCatalog": {
+          "ref": "catalog.core.1",
+          "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+        },
+        "surfaceInventory": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+        },
+        "webBuildIntent": {
+          "ref": "web-build-intent.alpha.1",
+          "digest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f"
+        },
+        "compiledWebManifest": {
+          "ref": "compiled-web-manifest.alpha.1",
+          "digest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab"
+        },
+        "webArtifactProvenance": {
+          "ref": "web-artifact-provenance.alpha.1",
+          "digest": "sha256:5ae050ae1296e677726c9d4a947d047ba8d33b977c48308a500fef86c4148a24"
+        },
+        "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+        "releaseCertification": {
+          "ref": "release-certification.alpha.1",
+          "digest": "sha256:c26b46ffa7f76b6049abf6c81e63ced0b9ff745ad8206e4af76d86a5efe0bce4"
+        },
+        "certificationRevocationEpoch": "0",
+        "businessBindings": {
+          "webBuildMaterialBundle": {
+            "ref": "material-bundle.site-alpha.1",
+            "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"
+          },
+          "siteConfig": {
+            "ref": "site-config.alpha.4",
+            "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+          },
+          "legalPolicy": {
+            "ref": "legal-policy.alpha.2",
+            "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"
+          },
+          "salesPolicy": {
+            "ref": "sales-policy.alpha.5",
+            "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"
+          },
+          "capabilityAssignment": {
+            "ref": "capability-assignment.alpha.2",
+            "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"
+          },
+          "assortmentPolicy": {
+            "ref": "assortment-policy.alpha.1",
+            "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+          },
+          "agentCatalog": {
+            "ref": "agent-catalog.alpha.1",
+            "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"
+          }
+        },
+        "bootstrapBindings": {
+          "compiledWebManifest": {
+            "ref": "compiled-web-manifest.alpha.1",
+            "digest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab"
+          },
+          "productSurfaceCatalog": {
+            "ref": "catalog.core.1",
+            "digest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+          },
+          "surfaceInventory": {
+            "ref": "inventory.site-alpha.1",
+            "digest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+          },
+          "webCompositionRegistry": {
+            "ref": "web-registry.core.1",
+            "digest": "sha256:cf72a1af04dcb8d747848c697dc9f72d96e3ffcf157cf1647177f9cfad63d425"
+          },
+          "webBuildToolchain": {
+            "ref": "web-toolchain.next16.1",
+            "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"
+          }
+        },
+        "contractFloor": [
+          {
+            "contractRef": "contract.platform-public",
+            "minimumMajor": "1"
+          },
+          {
+            "contractRef": "contract.session-http",
+            "minimumMajor": "1"
+          }
+        ],
+        "publishedAt": "2026-07-31T12:40:00.000Z"
+      }
+    },
+    {
+      "id": "activation-authority-begin",
+      "contractId": "activation-authority-snapshot.v1",
+      "document": {
+        "contract": "kokoro.activation-authority-snapshot.v1",
+        "schemaRevision": "1",
+        "snapshotRef": "activation-snapshot.alpha.begin.1",
+        "revision": "1",
+        "activationAttemptRef": "activation-attempt.alpha.1",
+        "phase": "activation-begin",
+        "siteRelease": {
+          "ref": "site-release.alpha.1",
+          "digest": "sha256:ecd64544b538c32ec00410f8cec0e15a28c665b91a316ea20dff22965b930588"
+        },
+        "candidate": {
+          "siteReleaseCandidate": {
+            "ref": "release-candidate.alpha.1",
+            "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+          },
+          "state": "authorized",
+          "authorizationEpoch": "7"
+        },
+        "certification": {
+          "releaseCertification": {
+            "ref": "release-certification.alpha.1",
+            "digest": "sha256:c26b46ffa7f76b6049abf6c81e63ced0b9ff745ad8206e4af76d86a5efe0bce4"
+          },
+          "state": "passed",
+          "revocationEpoch": "0",
+          "validUntil": "2026-08-01T12:35:00.000Z"
+        },
+        "trust": {
+          "producerRegistry": {
+            "ref": "trusted-producer-registry.production.1",
+            "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+          },
+          "producerRegistryEpoch": "4",
+          "producerIdentityRef": "producer.release-quality",
+          "trustPolicy": {
+            "ref": "trust-policy.release-certification.1",
+            "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+          },
+          "trustPolicyEpoch": "9",
+          "keyId": "key.release-certification.1",
+          "keyVersion": "1",
+          "publicKeyFingerprint": "sha256:721eb84dd58736a60018b9435ff4186797f89ade6d2d149b31071b85308471f0",
+          "keyStatus": "active",
+          "keyValidFrom": "2026-07-01T00:00:00.000Z",
+          "keyValidUntil": "2026-08-02T00:00:00.000Z",
+          "signatureAudience": "kokoro.site-release.activation.v1",
+          "environment": "production"
+        },
+        "readAt": "2026-07-31T12:41:00.000Z",
+        "authorityMaterialDigest": "sha256:c7b41e2ea09cb9689234ee414260a746b349f2625afb5e71b5c1979931b2e10a"
+      }
+    },
+    {
+      "id": "activation-authority-before-cas",
+      "contractId": "activation-authority-snapshot.v1",
+      "document": {
+        "contract": "kokoro.activation-authority-snapshot.v1",
+        "schemaRevision": "1",
+        "snapshotRef": "activation-snapshot.alpha.before-cas.1",
+        "revision": "1",
+        "activationAttemptRef": "activation-attempt.alpha.1",
+        "phase": "immediate-before-pointer-cas",
+        "siteRelease": {
+          "ref": "site-release.alpha.1",
+          "digest": "sha256:ecd64544b538c32ec00410f8cec0e15a28c665b91a316ea20dff22965b930588"
+        },
+        "candidate": {
+          "siteReleaseCandidate": {
+            "ref": "release-candidate.alpha.1",
+            "digest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+          },
+          "state": "authorized",
+          "authorizationEpoch": "7"
+        },
+        "certification": {
+          "releaseCertification": {
+            "ref": "release-certification.alpha.1",
+            "digest": "sha256:c26b46ffa7f76b6049abf6c81e63ced0b9ff745ad8206e4af76d86a5efe0bce4"
+          },
+          "state": "passed",
+          "revocationEpoch": "0",
+          "validUntil": "2026-08-01T12:35:00.000Z"
+        },
+        "trust": {
+          "producerRegistry": {
+            "ref": "trusted-producer-registry.production.1",
+            "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"
+          },
+          "producerRegistryEpoch": "4",
+          "producerIdentityRef": "producer.release-quality",
+          "trustPolicy": {
+            "ref": "trust-policy.release-certification.1",
+            "digest": "sha256:dadadadadadadadadadadadadadadadadadadadadadadadadadadadadadadada"
+          },
+          "trustPolicyEpoch": "9",
+          "keyId": "key.release-certification.1",
+          "keyVersion": "1",
+          "publicKeyFingerprint": "sha256:721eb84dd58736a60018b9435ff4186797f89ade6d2d149b31071b85308471f0",
+          "keyStatus": "active",
+          "keyValidFrom": "2026-07-01T00:00:00.000Z",
+          "keyValidUntil": "2026-08-02T00:00:00.000Z",
+          "signatureAudience": "kokoro.site-release.activation.v1",
+          "environment": "production"
+        },
+        "readAt": "2026-07-31T12:42:00.000Z",
+        "authorityMaterialDigest": "sha256:51a33b5c56625a62b5cdf6ad4399ab2ad1a6a71e8f8c430d8b81f4ad3cd85821"
+      }
+    },
+    {
+      "id": "activation-eligibility-alpha",
+      "contractId": "activation-eligibility-evidence.v1",
+      "document": {
+        "contract": "kokoro.activation-eligibility-evidence.v1",
+        "schemaRevision": "1",
+        "evidenceRef": "activation-evidence.alpha.1",
+        "revision": "1",
+        "activationAttemptRef": "activation-attempt.alpha.1",
+        "siteRelease": {
+          "ref": "site-release.alpha.1",
+          "digest": "sha256:ecd64544b538c32ec00410f8cec0e15a28c665b91a316ea20dff22965b930588"
+        },
+        "beginAuthoritySnapshot": {
+          "ref": "activation-snapshot.alpha.begin.1",
+          "digest": "sha256:297ce59fa09fa2ad1be99cb9617f20701ae8e81e331284e508d70d1ac7761bc1"
+        },
+        "immediateBeforePointerCasAuthoritySnapshot": {
+          "ref": "activation-snapshot.alpha.before-cas.1",
+          "digest": "sha256:b7c3c343a209d787cd41062f0982417df7854385500a7b852f999aa2ed69b2ce"
+        },
+        "decision": "eligible",
+        "evaluatedAt": "2026-07-31T12:42:00.001Z",
+        "eligibilityMaterialDigest": "sha256:37460556b3d513f117c23e68f1cc0c59af54116f32be1cfe7a69969656dd23fb"
       }
     }
   ],
   "canonicalVectors": [
-    {"id": "jcs-catalog", "caseId": "catalog-published", "expectedDigest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
-    {"id": "jcs-profile", "caseId": "profile-chat-only", "expectedDigest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
-    {"id": "jcs-candidate", "caseId": "candidate-site-alpha", "expectedDigest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"},
-    {"id": "jcs-inventory", "caseId": "inventory-chat-only", "expectedDigest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
-    {"id": "jcs-material", "caseId": "material-site-alpha", "expectedDigest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
-    {"id": "jcs-toolchain", "caseId": "toolchain-published", "expectedDigest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
-    {"id": "jcs-registry", "caseId": "registry-published", "expectedDigest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
-    {"id": "jcs-intent", "caseId": "intent-site-alpha", "expectedDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
-    {"id": "jcs-manifest", "caseId": "manifest-chat-only", "expectedDigest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"},
-    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
-    {"id": "jcs-certification", "caseId": "certification-site-alpha", "expectedDigest": "sha256:f7807a7fe7737c1595b5a32f8c64bea6283d1fcf8eab1d0ca1ef40b1e2238d25"},
-    {"id": "jcs-revocation", "caseId": "revocation-obsolete-certification", "expectedDigest": "sha256:b7cf90dca287206f79fa1216c2c2c9ed72b0dfd3748b67d0972db99d0aa15cd2"},
-    {"id": "jcs-site-release", "caseId": "site-release-alpha", "expectedDigest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}
+    {
+      "id": "jcs-catalog",
+      "caseId": "catalog-published",
+      "expectedDigest": "sha256:86d0c1d350c31d66364f3cb3e183544c798266acba8b8f4aec31cda1c17c0179"
+    },
+    {
+      "id": "jcs-profile",
+      "caseId": "profile-chat-only",
+      "expectedDigest": "sha256:a94a4135a811060d0a02b3a7a0ac60b483cdccaa1e34806a767e624d52e9995d"
+    },
+    {
+      "id": "jcs-candidate",
+      "caseId": "candidate-site-alpha",
+      "expectedDigest": "sha256:b597eeaad29f429bc68a6aecfe85f4b667881a4ff8fd0c4c80240b6c42444e5f"
+    },
+    {
+      "id": "jcs-inventory",
+      "caseId": "inventory-chat-only",
+      "expectedDigest": "sha256:dbff616ba9ace69d63ce39bca86dc74242f04f7473c0599014713365bd5f40ee"
+    },
+    {
+      "id": "jcs-material",
+      "caseId": "material-site-alpha",
+      "expectedDigest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"
+    },
+    {
+      "id": "jcs-toolchain",
+      "caseId": "toolchain-published",
+      "expectedDigest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"
+    },
+    {
+      "id": "jcs-registry",
+      "caseId": "registry-published",
+      "expectedDigest": "sha256:cf72a1af04dcb8d747848c697dc9f72d96e3ffcf157cf1647177f9cfad63d425"
+    },
+    {
+      "id": "jcs-intent",
+      "caseId": "intent-site-alpha",
+      "expectedDigest": "sha256:35453e724553b19784fcdceb117a4e598efe45b6130d992331c946cc649ecc9f"
+    },
+    {
+      "id": "jcs-manifest",
+      "caseId": "manifest-chat-only",
+      "expectedDigest": "sha256:5e27d6cb1f66c0b120208ef0f30660ac835a95fad66b1ea342354a800d056dab"
+    },
+    {
+      "id": "jcs-provenance",
+      "caseId": "provenance-site-alpha",
+      "expectedDigest": "sha256:5ae050ae1296e677726c9d4a947d047ba8d33b977c48308a500fef86c4148a24"
+    },
+    {
+      "id": "jcs-certification",
+      "caseId": "certification-site-alpha",
+      "expectedDigest": "sha256:c26b46ffa7f76b6049abf6c81e63ced0b9ff745ad8206e4af76d86a5efe0bce4"
+    },
+    {
+      "id": "jcs-certification-obsolete",
+      "caseId": "certification-obsolete",
+      "expectedDigest": "sha256:c22feb01d6a6576cc2c88c29c79696965bf8a746ddbffe38772ac1369b952746"
+    },
+    {
+      "id": "jcs-revocation",
+      "caseId": "revocation-obsolete-certification",
+      "expectedDigest": "sha256:9b87ff8c0e8b3a6b07afbd5c587c48e61c0377c5b5fe96c16c9a7ab87c14db5d"
+    },
+    {
+      "id": "jcs-site-release",
+      "caseId": "site-release-alpha",
+      "expectedDigest": "sha256:ecd64544b538c32ec00410f8cec0e15a28c665b91a316ea20dff22965b930588"
+    },
+    {
+      "id": "jcs-activation-authority-begin",
+      "caseId": "activation-authority-begin",
+      "expectedDigest": "sha256:297ce59fa09fa2ad1be99cb9617f20701ae8e81e331284e508d70d1ac7761bc1"
+    },
+    {
+      "id": "jcs-activation-authority-before-cas",
+      "caseId": "activation-authority-before-cas",
+      "expectedDigest": "sha256:b7c3c343a209d787cd41062f0982417df7854385500a7b852f999aa2ed69b2ce"
+    },
+    {
+      "id": "jcs-activation-eligibility",
+      "caseId": "activation-eligibility-alpha",
+      "expectedDigest": "sha256:6c9e491b31fbcbcc00efa18c15893bda64b156a9dc5be5702cb82c3d289c671c"
+    }
   ],
   "dsseVectors": [
-    {"id": "dsse-intent-site-alpha", "caseId": "intent-site-alpha", "keyId": "key.web-build-intent.3", "payloadType": "application/vnd.kokoro.web-build-intent.v1+json", "expectedPaeSha256": "8fbe52fd78ab4ca70486a7069798ae7657c53cb9ee941cfb4a59e7ee40e6929e", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA1wdPBh21DWEf/ygQaBzGQ6vdTALoVRxA6H1mM5Bwpbg=", "signatureBase64": "dGbHdVuCNjUc52pJ4Rm78mknu9bRig9U85RW2lsDEtKUe7Tb2ioVEFa4BKLODTcuOWtuz6bvj7JaCxGQslqNAA=="},
-    {"id": "dsse-certification-site-alpha", "caseId": "certification-site-alpha", "keyId": "key.release-certification.1", "payloadType": "application/vnd.kokoro.release-certification-instance.v1+json", "expectedPaeSha256": "7dbe7a6ec6b4c41e791fe1f4e1472c482b9b502844cc6b1f2c670d1b4ece46e1", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAqSApGS0yGjZxcafTZCu5pR4wHvov6BKlMf9U9KdBXwQ=", "signatureBase64": "zagj431QljoilxsEqlVvVytnpY26zal6kqTsqA2c+75aCY6VFLn21j6wKtYySrhuZFExpTAVq7SgdxGmDxE4Aw=="},
-    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "cd45de34efe8a35f1a39708c35f088c676fcd5d6c03281effcc2f2edfd3bd167", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEADMaHlIFwf1pmvn8mKQLrsUMrg3wyBWeo+1hu/+g97WE=", "signatureBase64": "Khh9SbvaJiREAeHzHU5PMmEzO12VqGpYtJUQHgn29YnU30iZgTSWlsjlIKUL35hyKxFOMrjbCTOq7plR2EqJAg=="}
+    {
+      "id": "dsse-intent-site-alpha",
+      "caseId": "intent-site-alpha",
+      "keyId": "key.web-build-intent.3",
+      "payloadType": "application/vnd.kokoro.web-build-intent.v1+json",
+      "expectedPaeSha256": "eac28fe91ec1ce09fdf6ac5ad65aaf45f57b935c7b8d1f7c9ea841c28770d52d",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAy672DZ+9BULjxWAkpDV6MIE6HkxURQx1QzsRHqHiMck=",
+      "signatureBase64": "XXiEbcx+6DuFXa+4llxqKq2y41BfJU5AN72BkYO/qBH6G1NTHNmHrJTL5vnBwJizItOOjrTDFEFOnfGSujL3CA=="
+    },
+    {
+      "id": "dsse-certification-site-alpha",
+      "caseId": "certification-site-alpha",
+      "keyId": "key.release-certification.1",
+      "payloadType": "application/vnd.kokoro.release-certification-instance.v1+json",
+      "expectedPaeSha256": "b49c52bcc1a533bfc7897746a0d747bda2e6f625f6e07ad96a8eb4847c946cfe",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA0vrJpxpqb1nKS9ohlmd4/sWbovfhokqkTJgJ8wYPEdI=",
+      "signatureBase64": "DFLFaT6Y6eimGUSxPG/yXAgWRPizHJ52490pCkwqA2zfaPaYtnaU5qiDnG3aMAr18GoLXaK2QrY6kA7+Bc1DAA=="
+    },
+    {
+      "id": "dsse-certification-obsolete",
+      "caseId": "certification-obsolete",
+      "keyId": "key.release-certification.obsolete.1",
+      "payloadType": "application/vnd.kokoro.release-certification-instance.v1+json",
+      "expectedPaeSha256": "9599a8b9a61708abe080e2af08b0366a86f77fe90fbb4e85570694f43e4e99bf",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAqZZJG+vjIs/4RGm8XtpcfoqhmuYNXRy3wiSmhkxxv6s=",
+      "signatureBase64": "kKMv0xdVpN+jFitCeFQKkFhDga7hgJd0hwi9Y20w6o3ahykOXG2Ca+tNqQm87EQTT+xHj2aB34ntEqYPKAhZAQ=="
+    },
+    {
+      "id": "dsse-revocation-obsolete",
+      "caseId": "revocation-obsolete-certification",
+      "keyId": "key.release-revocation.1",
+      "payloadType": "application/vnd.kokoro.release-certification-revocation.v1+json",
+      "expectedPaeSha256": "d44d9bcbe6561e8255dd43ed9d284b958e9e0cf37e04c0fc41d7ef84f68a91ca",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEATlLJRsF7uGodcCtaz3d7xg1uUdDEZaDNH3PiBjym4KQ=",
+      "signatureBase64": "ZIOTyZBbPh+iZ3RAeJpEKwFm5LbCg/RXVYeDOkA0uzoKVBU+9/FA0wLOOkkfHZzeWe3JFmXeHSP6yEyaRO4VDA=="
+    },
+    {
+      "id": "dsse-provenance-site-alpha",
+      "caseId": "provenance-site-alpha",
+      "keyId": "key.web-artifact-attestor.1",
+      "payloadType": "application/vnd.in-toto+json",
+      "expectedPaeSha256": "ab801a4eab661ed0634c09e68a187c1bde7ac77a3f33f65a087b32323426c99b",
+      "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAaSuxCKZLiKpBvMgR841slqshyuw/1LXhlMHqFAmwNoU=",
+      "signatureBase64": "hRlJ4RvLWMW/5Y8vAf8K69MXfWiEI7NyLRSfKyXHJV6fZgONWSIy7fAzKfzfvovEJ0jPBRgY5aWHr45zWzaTAg=="
+    }
   ],
   "negativeCases": [
-    {"id": "catalog-unknown-field", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/unexpected", "value": true}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "catalog-duplicate-surface", "baseCaseId": "catalog-published", "mutation": {"op": "copy", "path": "/surfaces/0", "target": "/surfaces/-"}, "expectedCode": "web_release_catalog_duplicate_ref"},
-    {"id": "catalog-dangling-journey", "baseCaseId": "catalog-published", "mutation": {"op": "replace", "path": "/canonicalJourneys/0/entrySurfaceRef", "value": "surface.absent"}, "expectedCode": "web_release_catalog_reference_invalid"},
-    {"id": "inventory-overlap", "baseCaseId": "inventory-chat-only", "mutation": {"op": "add", "path": "/disabledSurfaceRefs/-", "value": "surface.chat"}, "expectedCode": "web_release_inventory_partition_invalid"},
-    {"id": "inventory-incomplete", "baseCaseId": "inventory-chat-only", "mutation": {"op": "remove", "path": "/disabledSurfaceRefs/0"}, "expectedCode": "web_release_inventory_partition_invalid"},
-    {"id": "inventory-unknown", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/enabledSurfaceRefs/0", "value": "surface.absent"}, "expectedCode": "web_release_inventory_partition_invalid"},
-    {"id": "material-secret-key", "baseCaseId": "material-site-alpha", "mutation": {"op": "replace", "path": "/publicRuntimeConfig/0/key", "value": "PUBLIC_API_SECRET"}, "expectedCode": "web_release_material_secret_invalid"},
-    {"id": "material-unscanned", "baseCaseId": "material-site-alpha", "mutation": {"op": "remove", "path": "/legal/documents/0/content/scanEvidenceRef"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "toolchain-tagged-artifact", "baseCaseId": "toolchain-published", "mutation": {"op": "add", "path": "/compilerArtifact/tag", "value": "latest"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "toolchain-network-url", "baseCaseId": "toolchain-published", "mutation": {"op": "replace", "path": "/baseSource/repositoryRef", "value": "https://github.com/example/repo"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "intent-selects-unit", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/unitRefs", "value": ["web.surface.chat"]}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "intent-expires", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/expiresAt", "value": "2026-07-31T13:20:00.000Z"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "intent-self-digest", "baseCaseId": "intent-site-alpha", "mutation": {"op": "add", "path": "/buildIntentDigest", "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "manifest-unit-cycle", "baseCaseId": "manifest-chat-only", "mutation": {"op": "add", "path": "/units/1/requiresUnitRefs/-", "value": "web.surface.chat"}, "expectedCode": "web_release_manifest_cycle"},
-    {"id": "manifest-route-conflict", "baseCaseId": "manifest-chat-only", "mutation": {"op": "copy", "path": "/routes/1", "target": "/routes/-"}, "expectedCode": "web_release_manifest_route_conflict"},
-    {"id": "manifest-disabled-surface", "baseCaseId": "manifest-chat-only", "mutation": {"op": "add", "path": "/advertisedSurfaceRefs/-", "value": "surface.memory"}, "expectedCode": "web_release_manifest_surface_leak"},
-    {"id": "manifest-orphan-package", "baseCaseId": "manifest-chat-only", "mutation": {"op": "replace", "path": "/packages/0/unitRefs/0", "value": "web.surface.absent"}, "expectedCode": "web_release_manifest_reference_invalid"},
-    {"id": "provenance-toolchain-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/externalParameters/toolchain/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_provenance_reference_invalid"},
-    {"id": "catalog-duplicate-owner", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/products/1/surfaceRefs/-", "value": "surface.chat"}, "expectedCode": "web_release_catalog_ownership_invalid"},
-    {"id": "catalog-surface-cycle", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/surfaces/0/requiredSurfaceRefs/-", "value": "surface.chat"}, "expectedCode": "web_release_catalog_cycle"},
-    {"id": "material-duplicate-config-key", "baseCaseId": "material-site-alpha", "mutation": {"op": "copy", "path": "/publicRuntimeConfig/0", "target": "/publicRuntimeConfig/-"}, "expectedCode": "web_release_material_identity_invalid"},
-    {"id": "material-origin-mismatch", "baseCaseId": "material-site-alpha", "mutation": {"op": "replace", "path": "/domainPolicy/canonicalHttpsOrigin", "value": "https://other.example.com"}, "expectedCode": "web_release_material_origin_invalid"},
-    {"id": "registry-duplicate-unit", "baseCaseId": "registry-published", "mutation": {"op": "copy", "path": "/units/0", "target": "/units/-"}, "expectedCode": "web_release_composition_registry_identity_invalid"},
-    {"id": "registry-unit-cycle", "baseCaseId": "registry-published", "mutation": {"op": "add", "path": "/units/0/requiresUnitRefs/-", "value": "web.surface.chat"}, "expectedCode": "web_release_composition_registry_cycle"},
-    {"id": "registry-dangling-package", "baseCaseId": "registry-published", "mutation": {"op": "replace", "path": "/units/0/packageRefs/0", "value": "package.absent"}, "expectedCode": "web_release_composition_registry_reference_invalid"},
-    {"id": "registry-route-conflict", "baseCaseId": "registry-published", "mutation": {"op": "copy", "path": "/units/2/routes/0", "target": "/units/2/routes/-"}, "expectedCode": "web_release_composition_registry_route_conflict"},
-    {"id": "manifest-measured-tool-mismatch", "baseCaseId": "manifest-chat-only", "mutation": {"op": "replace", "path": "/measuredToolArtifacts/0/digest", "value": "sha256:9999999999999999999999999999999999999999999999999999999999999999"}, "expectedCode": "web_release_manifest_toolchain_mismatch"},
-    {"id": "manifest-missing-bff-closure", "baseCaseId": "manifest-chat-only", "mutation": {"op": "remove", "path": "/bffOperationGroups/0"}, "expectedCode": "web_release_manifest_registry_projection_invalid"},
-    {"id": "provenance-site-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/externalParameters/siteRef", "value": "site.evil"}, "expectedCode": "web_release_provenance_context_mismatch"},
-    {"id": "provenance-dependency-role-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/resolvedDependencies/4/digest/sha256", "value": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}, "expectedCode": "web_release_provenance_dependency_mismatch"},
-    {"id": "profile-inventory-cycle", "baseCaseId": "profile-chat-only", "mutation": {"op": "add", "path": "/surfaceInventory", "value": {"ref": "inventory.site-alpha.1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "profile-unknown-surface", "baseCaseId": "profile-chat-only", "mutation": {"op": "replace", "path": "/enabledSurfaceRefs/0", "value": "surface.absent"}, "expectedCode": "web_release_profile_surface_invalid"},
-    {"id": "profile-incomplete-journey", "baseCaseId": "profile-chat-only", "mutation": {"op": "replace", "path": "/journeyClosure/journeys/0/journeyRef", "value": "journey.memory"}, "expectedCode": "web_release_profile_journey_invalid"},
-    {"id": "candidate-inventory-cycle", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "add", "path": "/surfaceInventory", "value": {"ref": "inventory.site-alpha.1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "candidate-profile-mismatch", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "replace", "path": "/launchProductProfile/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_candidate_reference_invalid"},
-    {"id": "candidate-model-role-missing", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "remove", "path": "/modelRequirements/0"}, "expectedCode": "web_release_candidate_model_invalid"},
-    {"id": "inventory-candidate-mismatch", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/siteReleaseCandidate/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_inventory_candidate_invalid"},
-    {"id": "inventory-profile-mismatch", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/shellRequirementRefs/0", "value": "shell.other"}, "expectedCode": "web_release_inventory_profile_invalid"},
-    {"id": "registry-bff-authority-overlap", "baseCaseId": "registry-published", "mutation": {"op": "replace", "path": "/units/2/bffOperationGroups/0/sameOriginHandlerOperationIds/0", "value": "createSession"}, "expectedCode": "web_release_composition_registry_identity_invalid"},
-    {"id": "intent-model-inventory-mismatch", "baseCaseId": "intent-site-alpha", "mutation": {"op": "replace", "path": "/modelRequirements/0/modelInventory/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_intent_reference_invalid"},
-    {"id": "manifest-bff-family-missing", "baseCaseId": "manifest-chat-only", "mutation": {"op": "remove", "path": "/bffOperationGroups/0/operationFamilyRef"}, "expectedCode": "web_release_positive_schema_invalid"},
-    {"id": "provenance-artifact-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/runDetails/webArtifactDigest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_provenance_artifact_invalid"},
-    {"id": "certification-expired-before-generation", "baseCaseId": "certification-site-alpha", "mutation": {"op": "replace", "path": "/validUntil", "value": "2026-07-31T12:34:00.000Z"}, "expectedCode": "web_release_certification_validity_invalid"},
-    {"id": "certification-candidate-epoch-mismatch", "baseCaseId": "certification-site-alpha", "mutation": {"op": "replace", "path": "/candidateAuthorizationEpoch", "value": "8"}, "expectedCode": "web_release_certification_context_invalid"},
-    {"id": "site-release-bootstrap-mismatch", "baseCaseId": "site-release-alpha", "mutation": {"op": "replace", "path": "/bootstrapBindings/surfaceInventory/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_site_release_bootstrap_invalid"}
+    {
+      "id": "catalog-unknown-field",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "add",
+        "path": "/unexpected",
+        "value": true
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "catalog-duplicate-surface",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "copy",
+        "path": "/surfaces/0",
+        "target": "/surfaces/-"
+      },
+      "expectedCode": "web_release_catalog_duplicate_ref"
+    },
+    {
+      "id": "catalog-dangling-journey",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "replace",
+        "path": "/canonicalJourneys/0/entrySurfaceRef",
+        "value": "surface.absent"
+      },
+      "expectedCode": "web_release_catalog_reference_invalid"
+    },
+    {
+      "id": "inventory-overlap",
+      "baseCaseId": "inventory-chat-only",
+      "mutation": {
+        "op": "add",
+        "path": "/disabledSurfaceRefs/-",
+        "value": "surface.chat"
+      },
+      "expectedCode": "web_release_inventory_partition_invalid"
+    },
+    {
+      "id": "inventory-incomplete",
+      "baseCaseId": "inventory-chat-only",
+      "mutation": {
+        "op": "remove",
+        "path": "/disabledSurfaceRefs/0"
+      },
+      "expectedCode": "web_release_inventory_partition_invalid"
+    },
+    {
+      "id": "inventory-unknown",
+      "baseCaseId": "inventory-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/enabledSurfaceRefs/0",
+        "value": "surface.absent"
+      },
+      "expectedCode": "web_release_inventory_partition_invalid"
+    },
+    {
+      "id": "material-secret-key",
+      "baseCaseId": "material-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/publicRuntimeConfig/0/key",
+        "value": "PUBLIC_API_SECRET"
+      },
+      "expectedCode": "web_release_material_secret_invalid"
+    },
+    {
+      "id": "material-unscanned",
+      "baseCaseId": "material-site-alpha",
+      "mutation": {
+        "op": "remove",
+        "path": "/legal/documents/0/content/scanEvidenceRef"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "toolchain-tagged-artifact",
+      "baseCaseId": "toolchain-published",
+      "mutation": {
+        "op": "add",
+        "path": "/compilerArtifact/tag",
+        "value": "latest"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "toolchain-network-url",
+      "baseCaseId": "toolchain-published",
+      "mutation": {
+        "op": "replace",
+        "path": "/baseSource/repositoryRef",
+        "value": "https://github.com/example/repo"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "intent-selects-unit",
+      "baseCaseId": "intent-site-alpha",
+      "mutation": {
+        "op": "add",
+        "path": "/unitRefs",
+        "value": [
+          "web.surface.chat"
+        ]
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "intent-expires",
+      "baseCaseId": "intent-site-alpha",
+      "mutation": {
+        "op": "add",
+        "path": "/expiresAt",
+        "value": "2026-07-31T13:20:00.000Z"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "intent-self-digest",
+      "baseCaseId": "intent-site-alpha",
+      "mutation": {
+        "op": "add",
+        "path": "/buildIntentDigest",
+        "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "manifest-unit-cycle",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "add",
+        "path": "/units/1/requiresUnitRefs/-",
+        "value": "web.surface.chat"
+      },
+      "expectedCode": "web_release_manifest_cycle"
+    },
+    {
+      "id": "manifest-route-conflict",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "copy",
+        "path": "/routes/1",
+        "target": "/routes/-"
+      },
+      "expectedCode": "web_release_manifest_route_conflict"
+    },
+    {
+      "id": "manifest-disabled-surface",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "add",
+        "path": "/advertisedSurfaceRefs/-",
+        "value": "surface.memory"
+      },
+      "expectedCode": "web_release_manifest_surface_leak"
+    },
+    {
+      "id": "manifest-orphan-package",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/packages/0/unitRefs/0",
+        "value": "web.surface.absent"
+      },
+      "expectedCode": "web_release_manifest_reference_invalid"
+    },
+    {
+      "id": "provenance-toolchain-mismatch",
+      "baseCaseId": "provenance-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/predicate/buildDefinition/externalParameters/toolchain/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_provenance_reference_invalid"
+    },
+    {
+      "id": "catalog-duplicate-owner",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "add",
+        "path": "/products/1/surfaceRefs/-",
+        "value": "surface.chat"
+      },
+      "expectedCode": "web_release_catalog_ownership_invalid"
+    },
+    {
+      "id": "catalog-surface-cycle",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "add",
+        "path": "/surfaces/0/requiredSurfaceRefs/-",
+        "value": "surface.chat"
+      },
+      "expectedCode": "web_release_catalog_cycle"
+    },
+    {
+      "id": "material-duplicate-config-key",
+      "baseCaseId": "material-site-alpha",
+      "mutation": {
+        "op": "copy",
+        "path": "/publicRuntimeConfig/0",
+        "target": "/publicRuntimeConfig/-"
+      },
+      "expectedCode": "web_release_material_identity_invalid"
+    },
+    {
+      "id": "material-origin-mismatch",
+      "baseCaseId": "material-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/domainPolicy/canonicalHttpsOrigin",
+        "value": "https://other.example.com"
+      },
+      "expectedCode": "web_release_material_origin_invalid"
+    },
+    {
+      "id": "registry-duplicate-unit",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "copy",
+        "path": "/units/0",
+        "target": "/units/-"
+      },
+      "expectedCode": "web_release_composition_registry_identity_invalid"
+    },
+    {
+      "id": "registry-unit-cycle",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "add",
+        "path": "/units/0/requiresUnitRefs/-",
+        "value": "web.surface.chat"
+      },
+      "expectedCode": "web_release_composition_registry_cycle"
+    },
+    {
+      "id": "registry-dangling-package",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "replace",
+        "path": "/units/0/packageRefs/0",
+        "value": "package.absent"
+      },
+      "expectedCode": "web_release_composition_registry_reference_invalid"
+    },
+    {
+      "id": "registry-route-conflict",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "copy",
+        "path": "/units/2/routes/0",
+        "target": "/units/2/routes/-"
+      },
+      "expectedCode": "web_release_composition_registry_route_conflict"
+    },
+    {
+      "id": "manifest-measured-tool-mismatch",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/measuredToolArtifacts/0/digest",
+        "value": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+      },
+      "expectedCode": "web_release_manifest_toolchain_mismatch"
+    },
+    {
+      "id": "manifest-missing-bff-closure",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "remove",
+        "path": "/bffOperationGroups/0"
+      },
+      "expectedCode": "web_release_manifest_registry_projection_invalid"
+    },
+    {
+      "id": "provenance-site-mismatch",
+      "baseCaseId": "provenance-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/predicate/buildDefinition/externalParameters/siteRef",
+        "value": "site.evil"
+      },
+      "expectedCode": "web_release_provenance_context_mismatch"
+    },
+    {
+      "id": "provenance-dependency-role-mismatch",
+      "baseCaseId": "provenance-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/predicate/buildDefinition/resolvedDependencies/4/digest/sha256",
+        "value": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"
+      },
+      "expectedCode": "web_release_provenance_dependency_mismatch"
+    },
+    {
+      "id": "profile-inventory-cycle",
+      "baseCaseId": "profile-chat-only",
+      "mutation": {
+        "op": "add",
+        "path": "/surfaceInventory",
+        "value": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "profile-unknown-surface",
+      "baseCaseId": "profile-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/enabledSurfaceRefs/0",
+        "value": "surface.absent"
+      },
+      "expectedCode": "web_release_profile_surface_invalid"
+    },
+    {
+      "id": "profile-incomplete-journey",
+      "baseCaseId": "profile-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/journeyClosure/journeys/0/journeyRef",
+        "value": "journey.memory"
+      },
+      "expectedCode": "web_release_profile_journey_invalid"
+    },
+    {
+      "id": "candidate-inventory-cycle",
+      "baseCaseId": "candidate-site-alpha",
+      "mutation": {
+        "op": "add",
+        "path": "/surfaceInventory",
+        "value": {
+          "ref": "inventory.site-alpha.1",
+          "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "candidate-profile-mismatch",
+      "baseCaseId": "candidate-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/launchProductProfile/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_candidate_reference_invalid"
+    },
+    {
+      "id": "candidate-model-role-missing",
+      "baseCaseId": "candidate-site-alpha",
+      "mutation": {
+        "op": "remove",
+        "path": "/modelRequirements/0"
+      },
+      "expectedCode": "web_release_candidate_model_invalid"
+    },
+    {
+      "id": "inventory-candidate-mismatch",
+      "baseCaseId": "inventory-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/siteReleaseCandidate/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_inventory_candidate_invalid"
+    },
+    {
+      "id": "inventory-profile-mismatch",
+      "baseCaseId": "inventory-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/shellRequirementRefs/0",
+        "value": "shell.other"
+      },
+      "expectedCode": "web_release_inventory_profile_invalid"
+    },
+    {
+      "id": "registry-bff-authority-overlap",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "replace",
+        "path": "/units/2/bffOperationGroups/0/sameOriginHandlerOperationIds/0",
+        "value": "createSession"
+      },
+      "expectedCode": "web_release_composition_registry_identity_invalid"
+    },
+    {
+      "id": "intent-model-inventory-mismatch",
+      "baseCaseId": "intent-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/modelRequirements/0/modelInventory/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_intent_reference_invalid"
+    },
+    {
+      "id": "manifest-bff-family-missing",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "remove",
+        "path": "/bffOperationGroups/0/operationFamilyRef"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "provenance-artifact-mismatch",
+      "baseCaseId": "provenance-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/predicate/runDetails/webArtifactDigest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_provenance_artifact_invalid"
+    },
+    {
+      "id": "certification-expired-before-generation",
+      "baseCaseId": "certification-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/validUntil",
+        "value": "2026-07-31T12:34:00.000Z"
+      },
+      "expectedCode": "web_release_certification_validity_invalid"
+    },
+    {
+      "id": "certification-candidate-epoch-mismatch",
+      "baseCaseId": "certification-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/candidateAuthorizationEpoch",
+        "value": "8"
+      },
+      "expectedCode": "web_release_certification_context_invalid"
+    },
+    {
+      "id": "site-release-bootstrap-mismatch",
+      "baseCaseId": "site-release-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/bootstrapBindings/surfaceInventory/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_site_release_bootstrap_invalid"
+    },
+    {
+      "id": "catalog-surface-scope-missing",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "remove",
+        "path": "/surfaces/0/scopeClass"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "catalog-journey-cycle",
+      "baseCaseId": "catalog-published",
+      "mutation": {
+        "op": "add",
+        "path": "/canonicalJourneys/0/requiredJourneyRefs/-",
+        "value": "journey.memory"
+      },
+      "expectedCode": "web_release_catalog_cycle"
+    },
+    {
+      "id": "profile-missing-core-surface",
+      "baseCaseId": "profile-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/enabledSurfaceRefs/0",
+        "value": "surface.memory"
+      },
+      "expectedCode": "web_release_profile_surface_invalid"
+    },
+    {
+      "id": "registry-cross-group-bff-overlap",
+      "baseCaseId": "registry-published",
+      "mutation": {
+        "op": "replace",
+        "path": "/units/2/bffOperationGroups/1/sameOriginHandlerOperationIds/0",
+        "value": "createSession"
+      },
+      "expectedCode": "web_release_composition_registry_identity_invalid"
+    },
+    {
+      "id": "manifest-cross-group-bff-overlap",
+      "baseCaseId": "manifest-chat-only",
+      "mutation": {
+        "op": "replace",
+        "path": "/bffOperationGroups/1/sameOriginHandlerOperationIds/0",
+        "value": "createSession"
+      },
+      "expectedCode": "web_release_manifest_bff_conflict"
+    },
+    {
+      "id": "provenance-final-certification-cycle",
+      "baseCaseId": "provenance-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/predicate/runDetails/byproducts/3/name",
+        "value": "certification"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "certification-inactive-key",
+      "baseCaseId": "certification-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/producer/keyStatus",
+        "value": "revoked"
+      },
+      "expectedCode": "web_release_positive_schema_invalid"
+    },
+    {
+      "id": "certification-invalid-key-window",
+      "baseCaseId": "certification-site-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/producer/keyValidUntil",
+        "value": "2026-08-01T12:34:59.999Z"
+      },
+      "expectedCode": "web_release_certification_validity_invalid"
+    },
+    {
+      "id": "revocation-certification-mismatch",
+      "baseCaseId": "revocation-obsolete-certification",
+      "mutation": {
+        "op": "replace",
+        "path": "/releaseCertification/digest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_certification_revocation_reference_invalid"
+    },
+    {
+      "id": "revocation-nonmonotonic-epoch",
+      "baseCaseId": "revocation-obsolete-certification",
+      "mutation": {
+        "op": "replace",
+        "path": "/certificationRevocationEpoch",
+        "value": "0"
+      },
+      "expectedCode": "web_release_certification_revocation_epoch_invalid"
+    },
+    {
+      "id": "activation-authority-material-mismatch",
+      "baseCaseId": "activation-authority-begin",
+      "mutation": {
+        "op": "replace",
+        "path": "/authorityMaterialDigest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_activation_authority_material_invalid"
+    },
+    {
+      "id": "activation-eligibility-material-mismatch",
+      "baseCaseId": "activation-eligibility-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/eligibilityMaterialDigest",
+        "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "expectedCode": "web_release_activation_eligibility_material_invalid"
+    },
+    {
+      "id": "site-release-before-certification",
+      "baseCaseId": "site-release-alpha",
+      "mutation": {
+        "op": "replace",
+        "path": "/publishedAt",
+        "value": "2026-07-31T12:34:59.999Z"
+      },
+      "expectedCode": "web_release_site_release_certification_invalid"
+    }
   ]
 }
