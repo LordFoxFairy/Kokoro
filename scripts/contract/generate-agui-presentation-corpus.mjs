@@ -205,7 +205,7 @@ function normalizeOwnerPresentationFacts(contractCase) {
           kind: existing.kind,
           title: existing.title,
           description: existing.description,
-          allowedActions: existing.allowedActions,
+          allowedActions: canonicalControlActions(existing.kind, existing.allowedActions),
           status: existing.status,
           ...(existing.riskSummary === undefined ? {} : { riskSummary: existing.riskSummary }),
           ...(existing.inputSchemaRef === undefined ? {} : { inputSchemaRef: existing.inputSchemaRef }),
@@ -282,7 +282,7 @@ function normalizeOwnerPresentationFacts(contractCase) {
         kind: event.value.kind,
         state: event.value.state,
         ownerVersion: event.value.ownerVersion ?? String(event.value.expectedVersion ?? 1),
-        allowedActions: event.value.allowedActions,
+        allowedActions: canonicalControlActions(event.value.kind, event.value.allowedActions),
         updatedAt,
       };
     }
@@ -300,6 +300,17 @@ function normalizeOwnerPresentationFacts(contractCase) {
       };
     }
   }
+}
+
+function canonicalControlActions(kind, actions) {
+  if (kind === "cancellation") return [];
+  const values = Array.isArray(actions) ? actions : [];
+  if (kind === "plan") {
+    return [...new Set(values.map((value) => value === "approve" ? "accept" : value))]
+      .filter((value) => value === "accept" || value === "reject");
+  }
+  return [...new Set(values.map((value) => value === "accept" ? "approve" : value))]
+    .filter((value) => ["approve", "reject", "edit", "respond"].includes(value));
 }
 
 function replaceIdentityStrings(value, replacements) {
@@ -893,6 +904,7 @@ corpus.negativeCases = [
     !id.startsWith("browser-private-") &&
     !id.startsWith("public-source-") &&
     !id.startsWith("custom-run-owner-") &&
+    !id.endsWith("-plan-vocabulary-confusion") &&
     !id.startsWith("session-binding-")
   )),
   {
@@ -1079,6 +1091,26 @@ corpus.negativeCases = [
       value: "18446744073709551616",
     },
     expectedCode: "agui_custom_run_owner_version_invalid",
+  },
+  {
+    id: "hitl-approval-plan-vocabulary-confusion",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: `frames.${authorityBase.frames.findIndex(({ data }) => data.event.activityType === "kokoro.hitl.v1")}.data.event.content.allowedActions`,
+      value: ["accept", "reject"],
+    },
+    expectedCode: "agui_presentation_row_schema_invalid",
+  },
+  {
+    id: "control-approval-plan-vocabulary-confusion",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: `frames.${authorityBase.frames.findIndex(({ data }) => data.event.name === "kokoro.control.replace.v1")}.data.event.value.allowedActions`,
+      value: ["accept", "reject"],
+    },
+    expectedCode: "agui_presentation_row_schema_invalid",
   },
   {
     id: "m0-interrupted-main-run",

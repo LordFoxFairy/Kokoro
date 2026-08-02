@@ -29,6 +29,8 @@
   ],
   "$defs": {
     "id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "actionDecision": {"enum": ["approve", "reject", "edit", "respond"]},
+    "planDecision": {"enum": ["accept", "reject"]},
     "presentationThreadId": {"type": "string", "pattern": "^presentation\\.thread:[0-9a-f]{64}$"},
     "presentationRunId": {"type": "string", "pattern": "^presentation\\.run:[0-9a-f]{64}$"},
     "presentationMessageId": {"type": "string", "pattern": "^presentation\\.message:[0-9a-f]{64}$"},
@@ -224,7 +226,7 @@
           "controlRef": {"$ref": "#/$defs/id"}, "kind": {"enum": ["approval", "interaction"]},
           "title": {"$ref": "#/$defs/shortText"}, "description": {"$ref": "#/$defs/safeText"},
           "riskSummary": {"$ref": "#/$defs/safeText"}, "inputSchemaRef": {"$ref": "#/$defs/id"},
-          "allowedActions": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+          "allowedActions": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/actionDecision"}},
           "status": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]},
           "deadline": {"$ref": "#/$defs/dateTime"}, "receiptRef": {"$ref": "#/$defs/id"},
           "updatedAt": {"$ref": "#/$defs/dateTime"}
@@ -450,9 +452,22 @@
           "kind": {"enum": ["approval", "interaction", "plan", "cancellation"]},
           "state": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]},
           "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
-          "allowedActions": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+          "allowedActions": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"enum": ["approve", "reject", "edit", "respond", "accept"]}},
           "updatedAt": {"$ref": "#/$defs/dateTime"}
-        }}
+        }, "allOf": [
+          {
+            "if": {"properties": {"kind": {"enum": ["approval", "interaction"]}}, "required": ["kind"]},
+            "then": {"properties": {"allowedActions": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/actionDecision"}}}}
+          },
+          {
+            "if": {"properties": {"kind": {"const": "plan"}}, "required": ["kind"]},
+            "then": {"properties": {"allowedActions": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/planDecision"}}}}
+          },
+          {
+            "if": {"properties": {"kind": {"const": "cancellation"}}, "required": ["kind"]},
+            "then": {"properties": {"allowedActions": {"type": "array", "maxItems": 0}}}
+          }
+        ]}
       }
     },
     "customReceipt": {

@@ -47,7 +47,7 @@ const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "51bed4a35ca703cf49d429b965b485cc7c0004d9267c7c5bec5adb9c322f3134",
   mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
-  eventSchema: "51db7b20e76482450b6787cc814fc99b383852e0a2b0308b0e8d79eab102766b",
+  eventSchema: "21449983578a76e5a77e5893304a822ad001a997303fd5eab6e6edec80d43fec",
   agentCandidateSchema: "bdc359752f7619b1ba90a65b0daa316066bf1887b5c28b24042b5521897b8fd7",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",

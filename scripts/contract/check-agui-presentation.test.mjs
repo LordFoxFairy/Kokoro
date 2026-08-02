@@ -340,7 +340,7 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 29,
+    negativeCases: 31,
     durableFrames: 40,
     bindingReplacementDeltas: 14,
     mappingsCovered: 22,

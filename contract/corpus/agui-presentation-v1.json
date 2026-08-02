@@ -412,7 +412,7 @@
                 "title": "Approve action",
                 "description": "Review the safe action summary.",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "status": "pending",
@@ -425,7 +425,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:6b27494d04c7e7eb7aec5172fa97400c873ca9c8c0a2e1f664e52eae89efc36e"
+          "projectionPayloadDigest": "sha256:8f04d5cc0b005a1f9ba14c150365cdbe2e0e0a696e5e402d6b4423de3707931e"
         },
         {
           "rowRef": "presentation-row.presentation.event:89e8452faec99bc24fedba74a4a4cac0716d58b5c1e97dd24dffc85ffd6f0d68",
@@ -1021,7 +1021,7 @@
                 "state": "pending",
                 "ownerVersion": "1",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "updatedAt": "2026-08-01T12:00:18.000Z"
@@ -1031,7 +1031,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:5d204224a52564567ab3cff0c9c7a3d6570b4cbc90da34848db9b4b05baed36a"
+          "projectionPayloadDigest": "sha256:de86a758f9111a282cecc19f32c80bb6b9099063ffc605f45f701b3fe714f4d6"
         },
         {
           "rowRef": "presentation-row.presentation.event:ac271828201fc1f8955dd9be48e7ab95cf27d576fd8d059019eb0b410bdd9b78",
@@ -1694,7 +1694,7 @@
                 "title": "Approve action",
                 "description": "Review the safe action summary.",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "status": "pending",
@@ -2171,7 +2171,7 @@
                 "state": "pending",
                 "ownerVersion": "1",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "updatedAt": "2026-08-01T12:00:18.000Z"
@@ -3023,7 +3023,7 @@
                 "title": "Approve action",
                 "description": "Review the safe action summary.",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "status": "pending",
@@ -3037,7 +3037,7 @@
               "kind": "none"
             }
           },
-          "projectionPayloadDigest": "sha256:91b602fd871c08060ba43092874eb2b7f241216e1fc0a543866ccb180b7b9705"
+          "projectionPayloadDigest": "sha256:0965c1694bb6523f65fcc4b4ecbce2e5bab607f8c8e7faf4f8de7af21f804682"
         },
         {
           "rowRef": "presentation-row.presentation.event:af72b2a38d31282ddcec65bf348932729d201439b6741368da704919bf470a5e",
@@ -3710,7 +3710,7 @@
                 "title": "Approve action",
                 "description": "Review the safe action summary.",
                 "allowedActions": [
-                  "accept",
+                  "approve",
                   "reject"
                 ],
                 "status": "pending",
@@ -4591,6 +4591,32 @@
       "expectedCode": "agui_custom_run_owner_version_invalid"
     },
     {
+      "id": "hitl-approval-plan-vocabulary-confusion",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "frames.5.data.event.content.allowedActions",
+        "value": [
+          "accept",
+          "reject"
+        ]
+      },
+      "expectedCode": "agui_presentation_row_schema_invalid"
+    },
+    {
+      "id": "control-approval-plan-vocabulary-confusion",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "frames.17.data.event.value.allowedActions",
+        "value": [
+          "accept",
+          "reject"
+        ]
+      },
+      "expectedCode": "agui_presentation_row_schema_invalid"
+    },
+    {
       "id": "m0-interrupted-main-run",
       "baseCaseId": "resume-with-safe-typed-presentation",
       "mutation": {
@@ -4878,7 +4904,7 @@
             "internalMessageRef": "internal.message.error.parent.assistant.01"
           }
         },
-        "eventDigest": "sha256:f0131559f850931e209f98b8197b22b3fcbe403076d6108a86197ccde5f443c6",
+        "eventDigest": "sha256:430cac3e1ce4d71fcbf8935c378941978d2114057c8802c06ff52736ad7de112",
         "event": {
           "type": "ACTIVITY_SNAPSHOT",
           "timestamp": 1785589206000,
@@ -4896,7 +4922,7 @@
             "title": "Approve action",
             "description": "Review the safe action summary.",
             "allowedActions": [
-              "accept",
+              "approve",
               "reject"
             ],
             "status": "pending",
@@ -4905,7 +4931,7 @@
           },
           "replace": true
         },
-        "candidateRef": "agui_candidate:sha256:d11e8a405247a952c0ac97e7685062abe7c8d8ded7a64cc2873eea445a43d977"
+        "candidateRef": "agui_candidate:sha256:4b78db68d55b0cc754a057b18915ecfe54c4c0bccbd2bee8fc9a4557c7daf846"
       }
     },
     {
