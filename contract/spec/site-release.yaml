@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.dev/site-release/v1",
+  "title": "Kokoro Immutable Site Release v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["contract", "schemaRevision", "siteReleaseRef", "revision", "state", "siteRef", "environment", "siteReleaseCandidate", "candidateAuthorizationEpoch", "launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webBuildIntent", "compiledWebManifest", "webArtifactProvenance", "webArtifactDigest", "releaseCertification", "certificationRevocationEpoch", "businessBindings", "bootstrapBindings", "contractFloor", "publishedAt"],
+  "properties": {
+    "contract": {"const": "kokoro.site-release.v1"}, "schemaRevision": {"const": "1"}, "siteReleaseRef": {"$ref": "#/$defs/ref"},
+    "revision": {"$ref": "#/$defs/decimal"}, "state": {"const": "published"}, "siteRef": {"$ref": "#/$defs/ref"},
+    "environment": {"enum": ["development", "preview", "staging", "production"]}, "siteReleaseCandidate": {"$ref": "#/$defs/digestRef"},
+    "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"}, "launchProductProfile": {"$ref": "#/$defs/digestRef"},
+    "productSurfaceCatalog": {"$ref": "#/$defs/digestRef"}, "surfaceInventory": {"$ref": "#/$defs/digestRef"},
+    "webBuildIntent": {"$ref": "#/$defs/digestRef"}, "compiledWebManifest": {"$ref": "#/$defs/digestRef"}, "webArtifactProvenance": {"$ref": "#/$defs/digestRef"},
+    "webArtifactDigest": {"$ref": "#/$defs/digest"}, "releaseCertification": {"$ref": "#/$defs/digestRef"},
+    "certificationRevocationEpoch": {"$ref": "#/$defs/decimal"}, "businessBindings": {"$ref": "#/$defs/businessBindings"},
+    "bootstrapBindings": {"$ref": "#/$defs/bootstrapBindings"}, "contractFloor": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"$ref": "#/$defs/contractFloor"}},
+    "publishedAt": {"$ref": "#/$defs/timestamp"}
+  },
+  "$defs": {
+    "ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},
+    "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
+    "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "businessBindings": {"type": "object", "additionalProperties": false, "required": ["webBuildMaterialBundle", "siteConfig", "legalPolicy", "salesPolicy", "capabilityAssignment", "assortmentPolicy", "agentCatalog"], "properties": {"webBuildMaterialBundle": {"$ref": "#/$defs/digestRef"}, "siteConfig": {"$ref": "#/$defs/digestRef"}, "legalPolicy": {"$ref": "#/$defs/digestRef"}, "salesPolicy": {"$ref": "#/$defs/digestRef"}, "capabilityAssignment": {"$ref": "#/$defs/digestRef"}, "assortmentPolicy": {"$ref": "#/$defs/digestRef"}, "agentCatalog": {"$ref": "#/$defs/digestRef"}}},
+    "bootstrapBindings": {"type": "object", "additionalProperties": false, "required": ["compiledWebManifest", "productSurfaceCatalog", "surfaceInventory", "webCompositionRegistry", "webBuildToolchain"], "properties": {"compiledWebManifest": {"$ref": "#/$defs/digestRef"}, "productSurfaceCatalog": {"$ref": "#/$defs/digestRef"}, "surfaceInventory": {"$ref": "#/$defs/digestRef"}, "webCompositionRegistry": {"$ref": "#/$defs/digestRef"}, "webBuildToolchain": {"$ref": "#/$defs/digestRef"}}},
+    "contractFloor": {"type": "object", "additionalProperties": false, "required": ["contractRef", "minimumMajor"], "properties": {"contractRef": {"$ref": "#/$defs/ref"}, "minimumMajor": {"$ref": "#/$defs/decimal"}}},
+    "activationEligibilityCheck": {"type": "object", "additionalProperties": false, "required": ["phase", "siteRelease", "candidateAuthorizationEpoch", "certificationRevocationEpoch", "certificationSigningKeyId", "evaluatedAt", "authoritySnapshotDigest"], "properties": {"phase": {"enum": ["activation-begin", "immediate-before-pointer-cas"]}, "siteRelease": {"$ref": "#/$defs/digestRef"}, "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"}, "certificationRevocationEpoch": {"$ref": "#/$defs/decimal"}, "certificationSigningKeyId": {"$ref": "#/$defs/ref"}, "evaluatedAt": {"$ref": "#/$defs/timestamp"}, "authoritySnapshotDigest": {"$ref": "#/$defs/digest"}}}
+  }
+}

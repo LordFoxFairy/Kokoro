@@ -11,7 +11,12 @@ import Ajv2020 from "../../contract/node_modules/ajv/dist/2020.js";
 const DEFAULT_REGISTRY = "contract/registry/web-release-composition.yaml";
 const DEFAULT_CORPUS = "contract/corpus/web-release-composition-v1.json";
 const CONTRACT_IDS = [
+  "launch-product-profile.v1",
   "product-surface-catalog.v1",
+  "release-certification-instance.v1",
+  "release-certification-revocation.v1",
+  "site-release-candidate.v1",
+  "site-release.v1",
   "surface-inventory.v1",
   "web-artifact-provenance-profile.v1",
   "web-build-intent.v1",
@@ -21,7 +26,12 @@ const CONTRACT_IDS = [
   "compiled-web-manifest.v1",
 ].sort();
 const CONTRACT_OWNERS = new Map([
+  ["launch-product-profile.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
   ["product-surface-catalog.v1", ["platform.product-catalog", "kokoro-platform", "none"]],
+  ["release-certification-instance.v1", ["release.certification", "kokoro-platform", "dsse-release-certification-instance-v1"]],
+  ["release-certification-revocation.v1", ["release.certification", "kokoro-platform", "digest-bound-reference"]],
+  ["site-release-candidate.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
+  ["site-release.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
   ["surface-inventory.v1", ["platform.site", "kokoro-platform", "none"]],
   ["web-build-material-bundle.v1", ["platform.site", "kokoro-platform", "digest-bound-reference"]],
   ["web-build-toolchain.v1", ["web.release-composition", "kokoro-web", "digest-bound-reference"]],
@@ -302,14 +312,60 @@ function validateCatalog(catalog) {
   assertDag(new Map(catalog.surfaces.map((item) => [item.surfaceRef, item])), "requiredSurfaceRefs", "web_release_catalog_reference_invalid", "web_release_catalog_cycle");
 }
 
-function validateInventory(inventory, catalog) {
-  if (inventory.catalog.ref !== catalog.catalogRevisionRef || inventory.catalog.digest !== digest(catalog)) fail("web_release_inventory_catalog_invalid");
+function digestReference(reference, document, refField, code) {
+  if (reference.ref !== document[refField] || reference.digest !== digest(document)) fail(code, refField);
+}
+
+function validateProfile(profile, catalog) {
+  digestReference(profile.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_profile_reference_invalid");
+  if (catalog.state !== "published") fail("web_release_profile_reference_invalid", "unpublished catalog");
+  const surfaces = new Map(catalog.surfaces.map((surface) => [surface.surfaceRef, surface]));
+  const enabled = unique(profile.enabledSurfaceRefs, "web_release_profile_surface_invalid");
+  for (const surfaceRef of enabled) {
+    const surface = surfaces.get(surfaceRef);
+    if (surface === undefined || surface.requiredSurfaceRefs.some((required) => !enabled.has(required))) fail("web_release_profile_surface_invalid", surfaceRef);
+  }
+  const products = new Map(catalog.products.map((product) => [product.productRef, product]));
+  const journeyRefs = new Set();
+  for (const surfaceRef of enabled) {
+    const surface = surfaces.get(surfaceRef);
+    for (const journeyRef of surface.canonicalJourneyRefs) journeyRefs.add(journeyRef);
+    for (const journeyRef of products.get(surface.productRef).canonicalJourneyRefs) journeyRefs.add(journeyRef);
+  }
+  const journeys = new Map(catalog.canonicalJourneys.map((journey) => [journey.journeyRef, journey]));
+  const expected = [...journeyRefs].sort().map((journeyRef) => ({ journeyRef, revision: journeys.get(journeyRef).revision }));
+  unique(profile.journeyClosure.journeys.map(({ journeyRef }) => journeyRef), "web_release_profile_journey_invalid");
+  if (canonicalRows(profile.journeyClosure.journeys, ({ journeyRef }) => journeyRef) !== canonicalize(expected) || profile.journeyClosure.digest !== digest(expected)) fail("web_release_profile_journey_invalid");
+}
+
+function validateCandidate(candidate, related) {
+  digestReference(candidate.launchProductProfile, related.profile, "profileRevisionRef", "web_release_candidate_reference_invalid");
+  digestReference(candidate.productSurfaceCatalog, related.catalog, "catalogRevisionRef", "web_release_candidate_reference_invalid");
+  if (candidate.launchProductProfile.digest !== digest(related.profile) || related.profile.productSurfaceCatalog.digest !== candidate.productSurfaceCatalog.digest) fail("web_release_candidate_reference_invalid");
+  unique(candidate.modelRequirements.map(({ modelRoleRef }) => modelRoleRef), "web_release_candidate_model_invalid");
+  const enabled = new Set(related.profile.enabledSurfaceRefs);
+  const expectedRoles = new Set(related.catalog.surfaces.filter(({ surfaceRef }) => enabled.has(surfaceRef)).flatMap(({ requiredModelRoleRefs }) => requiredModelRoleRefs));
+  if (canonicalSet(expectedRoles) !== canonicalSet(candidate.modelRequirements.map(({ modelRoleRef }) => modelRoleRef))) fail("web_release_candidate_model_invalid", "role coverage");
+  for (const requirement of candidate.modelRequirements) {
+    if (requirement.modelInventory.ref === requirement.modelCatalog.ref || requirement.modelInventory.digest === requirement.modelCatalog.digest) fail("web_release_candidate_model_invalid", requirement.modelRoleRef);
+  }
+  const bindings = candidate.businessBindings;
+  if (bindings.webBuildMaterialBundle.ref !== related.material.bundleRef || bindings.webBuildMaterialBundle.digest !== digest(related.material)) fail("web_release_candidate_reference_invalid", "material");
+}
+
+function validateInventory(inventory, related) {
+  const { catalog, profile, candidate } = related;
+  digestReference(inventory.siteReleaseCandidate, candidate, "candidateRef", "web_release_inventory_candidate_invalid");
+  digestReference(inventory.launchProductProfile, profile, "profileRevisionRef", "web_release_inventory_profile_invalid");
+  digestReference(inventory.productSurfaceCatalog, catalog, "catalogRevisionRef", "web_release_inventory_catalog_invalid");
+  if (inventory.siteRef !== candidate.siteRef) fail("web_release_inventory_candidate_invalid", "site");
   const enabled = unique(inventory.enabledSurfaceRefs, "web_release_inventory_partition_invalid");
   const disabled = unique(inventory.disabledSurfaceRefs, "web_release_inventory_partition_invalid");
   if ([...enabled].some((ref) => disabled.has(ref))) fail("web_release_inventory_partition_invalid");
   const partition = [...enabled, ...disabled].sort();
   const expected = catalog.surfaces.map(({ surfaceRef }) => surfaceRef).sort();
   if (canonicalize(partition) !== canonicalize(expected)) fail("web_release_inventory_partition_invalid");
+  if (canonicalSet(enabled) !== canonicalSet(profile.enabledSurfaceRefs) || canonicalSet(inventory.shellRequirementRefs) !== canonicalSet(profile.shellRequirementRefs)) fail("web_release_inventory_profile_invalid");
 }
 
 function validateMaterial(material) {
@@ -346,7 +402,8 @@ function validateCompositionRegistry(registry, catalog) {
   const pathnames = [];
   const navigationRefs = [];
   const bffGroupRefs = [];
-  const bffOperations = [];
+  const sameOriginOperations = [];
+  const downstreamOperations = [];
   const modelRequirements = [];
   const usedPackages = new Set();
   for (const unit of registry.units) {
@@ -372,12 +429,14 @@ function validateCompositionRegistry(registry, catalog) {
     }
     for (const group of unit.bffOperationGroups) {
       bffGroupRefs.push(group.groupRef);
-      bffOperations.push(...group.operationIds);
+      sameOriginOperations.push(...group.sameOriginHandlerOperationIds);
+      downstreamOperations.push(...group.downstreamOperationIds);
+      if (group.sameOriginHandlerOperationIds.some((operationId) => group.downstreamOperationIds.includes(operationId))) fail("web_release_composition_registry_identity_invalid", group.groupRef);
       if (!catalog.operationFamilyRefs.includes(group.operationFamilyRef)) fail("web_release_composition_registry_reference_invalid", group.operationFamilyRef);
     }
     for (const requirement of unit.modelCatalogRequirements) {
       if (!unit.providesSurfaceRefs.includes(requirement.surfaceRef)) fail("web_release_composition_registry_reference_invalid", requirement.surfaceRef);
-      modelRequirements.push(`${requirement.surfaceRef}\0${requirement.role}`);
+      modelRequirements.push(`${requirement.surfaceRef}\0${requirement.modelRoleRef}`);
     }
   }
   unique(surfaceProviders, "web_release_composition_registry_identity_invalid");
@@ -386,7 +445,8 @@ function validateCompositionRegistry(registry, catalog) {
   unique(pathnames, "web_release_composition_registry_route_conflict");
   unique(navigationRefs, "web_release_composition_registry_identity_invalid");
   unique(bffGroupRefs, "web_release_composition_registry_identity_invalid");
-  unique(bffOperations, "web_release_composition_registry_identity_invalid");
+  unique(sameOriginOperations, "web_release_composition_registry_identity_invalid");
+  unique(downstreamOperations, "web_release_composition_registry_identity_invalid");
   unique(modelRequirements, "web_release_composition_registry_identity_invalid");
   if ([...packages.keys()].some((ref) => !usedPackages.has(ref))) fail("web_release_composition_registry_reference_invalid", "orphan package");
   assertDag(units, "requiresUnitRefs", "web_release_composition_registry_reference_invalid", "web_release_composition_registry_cycle");
@@ -394,6 +454,8 @@ function validateCompositionRegistry(registry, catalog) {
 
 function validateIntent(intent, related) {
   const pairs = [
+    [intent.siteReleaseCandidate, related.candidate, "candidateRef"],
+    [intent.launchProductProfile, related.profile, "profileRevisionRef"],
     [intent.productSurfaceCatalog, related.catalog, "catalogRevisionRef"],
     [intent.surfaceInventory, related.inventory, "inventoryRevisionRef"],
     [intent.webBuildMaterialBundle, related.material, "bundleRef"],
@@ -404,8 +466,13 @@ function validateIntent(intent, related) {
     if (reference.ref !== document[refField] || reference.digest !== digest(document)) fail("web_release_intent_reference_invalid", refField);
   }
   if (related.catalog.state !== "published" || related.toolchain.state !== "published" || related.registry.state !== "published") fail("web_release_intent_unpublished_input");
-  if (related.inventory.siteRef !== intent.siteRef || related.material.siteRef !== intent.siteRef || related.inventory.releaseCandidateRef !== intent.releaseCandidateRef || related.inventory.launchProfileRevisionRef !== intent.launchProfileRevisionRef) fail("web_release_intent_context_invalid");
-  unique(intent.requiredModelCatalogs.map(({ role }) => role), "web_release_intent_reference_invalid");
+  if (related.inventory.siteRef !== intent.siteRef || related.material.siteRef !== intent.siteRef || related.candidate.siteRef !== intent.siteRef ||
+      related.inventory.siteReleaseCandidate.ref !== intent.siteReleaseCandidate.ref || related.inventory.launchProductProfile.ref !== intent.launchProductProfile.ref ||
+      related.candidate.candidateAuthorizationEpoch !== intent.candidateAuthorizationEpoch || related.candidate.environment !== intent.environment) fail("web_release_intent_context_invalid");
+  unique(intent.modelRequirements.map(({ modelRoleRef }) => modelRoleRef), "web_release_intent_reference_invalid");
+  if (canonicalRows(intent.modelRequirements, ({ modelRoleRef }) => modelRoleRef) !== canonicalRows(related.candidate.modelRequirements, ({ modelRoleRef }) => modelRoleRef)) fail("web_release_intent_reference_invalid", "model requirements");
+  const bindingPairs = [[intent.webBuildMaterialBundle, "webBuildMaterialBundle"], [intent.siteConfig, "siteConfig"], [intent.legalPolicy, "legalPolicy"], [intent.salesPolicy, "salesPolicy"], [intent.capabilityAssignment, "capabilityAssignment"]];
+  for (const [actual, key] of bindingPairs) if (canonicalize(actual) !== canonicalize(related.candidate.businessBindings[key])) fail("web_release_intent_reference_invalid", key);
 }
 
 function registryProjection(registry, inventory, intent) {
@@ -445,20 +512,20 @@ function registryProjection(registry, inventory, intent) {
   }));
   const routes = selectedUnits.flatMap((unit) => unit.routes.map((route) => ({ ...route, unitRef: unit.unitRef })));
   const navigation = selectedUnits.flatMap((unit) => unit.navigation.map((item) => ({ ...item, unitRef: unit.unitRef })));
-  const bffOperationGroups = selectedUnits.flatMap((unit) => unit.bffOperationGroups.map(({ operationFamilyRef: _operationFamilyRef, ...group }) => ({ ...group, unitRef: unit.unitRef })));
+  const bffOperationGroups = selectedUnits.flatMap((unit) => unit.bffOperationGroups.map((group) => ({ ...group, unitRef: unit.unitRef })));
   const bootstrapRequirements = [...new Set(selectedUnits.flatMap(({ bootstrapRequirements }) => bootstrapRequirements))].sort();
-  const catalogsByRole = new Map(intent.requiredModelCatalogs.map(({ role, catalog }) => [role, catalog]));
+  const modelsByRole = new Map(intent.modelRequirements.map((requirement) => [requirement.modelRoleRef, requirement]));
   const modelCatalogRequirements = selectedUnits.flatMap((unit) => unit.modelCatalogRequirements.map((requirement) => {
-    const catalog = catalogsByRole.get(requirement.role);
-    if (catalog === undefined) fail("web_release_manifest_registry_projection_invalid", requirement.role);
-    return { ...requirement, catalog };
+    const model = modelsByRole.get(requirement.modelRoleRef);
+    if (model === undefined) fail("web_release_manifest_registry_projection_invalid", requirement.modelRoleRef);
+    return { ...requirement, modelInventory: model.modelInventory, modelCatalog: model.modelCatalog };
   }));
   return { projectedUnits, projectedPackages, routes, navigation, bffOperationGroups, bootstrapRequirements, modelCatalogRequirements };
 }
 
 function validateManifest(manifest, related) {
   const { inventory, intent, registry, toolchain } = related;
-  if (manifest.intentRef !== intent.intentRef || manifest.buildIntentDigest !== digest(intent) || manifest.releaseCandidateRef !== intent.releaseCandidateRef) fail("web_release_manifest_reference_invalid", "intent");
+  if (manifest.intentRef !== intent.intentRef || manifest.buildIntentDigest !== digest(intent) || canonicalize(manifest.siteReleaseCandidate) !== canonicalize(intent.siteReleaseCandidate)) fail("web_release_manifest_reference_invalid", "intent");
   if (manifest.catalog.ref !== intent.productSurfaceCatalog.ref || manifest.catalog.digest !== intent.productSurfaceCatalog.digest ||
       manifest.surfaceInventory.ref !== intent.surfaceInventory.ref || manifest.surfaceInventory.digest !== intent.surfaceInventory.digest ||
       manifest.registry.ref !== registry.registryRevisionRef || manifest.registry.digest !== digest(registry) ||
@@ -487,12 +554,16 @@ function validateManifest(manifest, related) {
   for (const item of manifest.navigation) if (!units.has(item.unitRef) || !routeRefs.has(item.routeRef)) fail("web_release_manifest_reference_invalid", item.navigationRef);
   unique(manifest.navigation.map(({ navigationRef }) => navigationRef), "web_release_manifest_reference_invalid");
   unique(manifest.bffOperationGroups.map(({ groupRef }) => groupRef), "web_release_manifest_bff_conflict");
-  const bffOperations = [];
+  const sameOriginOperations = [];
+  const downstreamOperations = [];
   for (const group of manifest.bffOperationGroups) {
     if (!units.has(group.unitRef)) fail("web_release_manifest_reference_invalid", group.groupRef);
-    bffOperations.push(...group.operationIds);
+    sameOriginOperations.push(...group.sameOriginHandlerOperationIds);
+    downstreamOperations.push(...group.downstreamOperationIds);
+    if (group.sameOriginHandlerOperationIds.some((operationId) => group.downstreamOperationIds.includes(operationId))) fail("web_release_manifest_bff_conflict", group.groupRef);
   }
-  unique(bffOperations, "web_release_manifest_bff_conflict");
+  unique(sameOriginOperations, "web_release_manifest_bff_conflict");
+  unique(downstreamOperations, "web_release_manifest_bff_conflict");
   const expectedSurfaces = [...inventory.enabledSurfaceRefs].sort();
   const advertised = [...manifest.advertisedSurfaceRefs].sort();
   const provided = manifest.units.flatMap(({ providesSurfaceRefs }) => providesSurfaceRefs).sort();
@@ -520,7 +591,7 @@ function validateManifest(manifest, related) {
     [manifest.routes, projection.routes, ({ routeRef }) => routeRef],
     [manifest.navigation, projection.navigation, ({ navigationRef }) => navigationRef],
     [manifest.bffOperationGroups, projection.bffOperationGroups, ({ groupRef }) => groupRef],
-    [manifest.modelCatalogRequirements, projection.modelCatalogRequirements, ({ surfaceRef, role }) => `${surfaceRef}\0${role}`],
+    [manifest.modelCatalogRequirements, projection.modelCatalogRequirements, ({ surfaceRef, modelRoleRef }) => `${surfaceRef}\0${modelRoleRef}`],
   ];
   for (const [actual, expected, key] of comparisons) {
     if (canonicalRows(actual, key) !== canonicalRows(expected, key)) fail("web_release_manifest_registry_projection_invalid");
@@ -533,8 +604,10 @@ function validateProvenance(provenance, related) {
   if (parameters.intentRef !== related.intent.intentRef || parameters.buildIntentDigest !== digest(related.intent) ||
       parameters.compiledWebManifestRef !== related.manifest.manifestRef || parameters.compiledWebManifestDigest !== digest(related.manifest) ||
       parameters.toolchain.ref !== related.toolchain.toolchainRevisionRef || parameters.toolchain.digest !== digest(related.toolchain)) fail("web_release_provenance_reference_invalid");
-  if (parameters.siteRef !== related.intent.siteRef || parameters.releaseCandidateRef !== related.intent.releaseCandidateRef ||
-      parameters.releaseCandidateRef !== related.manifest.releaseCandidateRef || parameters.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch) fail("web_release_provenance_context_mismatch");
+  if (parameters.siteRef !== related.intent.siteRef || parameters.releaseCandidateRef !== related.intent.siteReleaseCandidate.ref ||
+      parameters.releaseCandidateRef !== related.manifest.siteReleaseCandidate.ref || parameters.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch) fail("web_release_provenance_context_mismatch");
+  const artifactDigest = provenance.predicate.runDetails.webArtifactDigest;
+  if (artifactDigest !== `sha256:${provenance.subject[0].digest.sha256}`) fail("web_release_provenance_artifact_invalid");
   const dependencies = new Map(provenance.predicate.buildDefinition.resolvedDependencies.map(({ uri, digest: value }) => [uri, value.sha256]));
   if (dependencies.size !== provenance.predicate.buildDefinition.resolvedDependencies.length) fail("web_release_provenance_reference_invalid", "duplicate dependency");
   const unprefixed = (value) => value.slice("sha256:".length);
@@ -564,6 +637,91 @@ function validateProvenance(provenance, related) {
   }
   const byproducts = unique(provenance.predicate.runDetails.byproducts.map(({ name }) => name), "web_release_provenance_reference_invalid");
   for (const required of ["certification", "inspection-report", "sbom", "vulnerability-scan"]) if (!byproducts.has(required)) fail("web_release_provenance_reference_invalid", required);
+}
+
+function sameDigestRef(left, right) {
+  return canonicalize(left) === canonicalize(right);
+}
+
+function validateCertification(certification, related) {
+  const pairs = [
+    [certification.siteReleaseCandidate, related.intent.siteReleaseCandidate],
+    [certification.launchProductProfile, related.intent.launchProductProfile],
+    [certification.productSurfaceCatalog, related.intent.productSurfaceCatalog],
+    [certification.surfaceInventory, related.intent.surfaceInventory],
+    [certification.webBuildIntent, { ref: related.intent.intentRef, digest: digest(related.intent) }],
+    [certification.compiledWebManifest, { ref: related.manifest.manifestRef, digest: digest(related.manifest) }],
+    [certification.webArtifactProvenance, { ref: related.provenance.provenanceRef, digest: digest(related.provenance) }],
+  ];
+  if (pairs.some(([left, right]) => !sameDigestRef(left, right))) fail("web_release_certification_reference_invalid");
+  if (certification.siteRef !== related.intent.siteRef || certification.environment !== related.intent.environment ||
+      certification.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch) fail("web_release_certification_context_invalid");
+  if (certification.generatedAt >= certification.validUntil || certification.webArtifactDigest !== related.provenance.predicate.runDetails.webArtifactDigest) fail("web_release_certification_validity_invalid");
+}
+
+export function assertActivationEligible(release, certification, current) {
+  if (!["activation-begin", "immediate-before-pointer-cas"].includes(current.phase)) fail("web_release_activation_phase_invalid");
+  if (current.candidateAuthorizationEpoch !== release.candidateAuthorizationEpoch) fail("web_release_activation_candidate_epoch_invalid");
+  if (current.certificationRevocationEpoch !== release.certificationRevocationEpoch) fail("web_release_activation_certification_revoked");
+  if (current.certificationSigningKeyId !== certification.producer.signingKeyId) fail("web_release_activation_key_invalid");
+  if (current.evaluatedAt >= certification.validUntil) fail("web_release_activation_certification_expired");
+}
+
+function validateActivationEligibilityScenarios(scenarios, casesById) {
+  if (!Array.isArray(scenarios) || scenarios.length !== 1) fail("web_release_activation_scenario_invalid");
+  const scenario = scenarios[0];
+  exactKeys(scenario, ["certificationCaseId", "checks", "id", "releaseCaseId"], "web_release_activation_scenario_invalid");
+  if (scenario.id !== "dual-authority-revalidation-before-pointer-cas" || !Array.isArray(scenario.checks) || scenario.checks.length !== 4) fail("web_release_activation_scenario_invalid");
+  const releaseCase = casesById.get(scenario.releaseCaseId);
+  const certificationCase = casesById.get(scenario.certificationCaseId);
+  if (releaseCase?.contractId !== "site-release.v1" || certificationCase?.contractId !== "release-certification-instance.v1") fail("web_release_activation_scenario_invalid");
+  const expectedPhases = ["activation-begin", "immediate-before-pointer-cas", "immediate-before-pointer-cas", "immediate-before-pointer-cas"];
+  const expectedCodes = [null, null, "web_release_activation_certification_revoked", "web_release_activation_certification_expired"];
+  const snapshotDigests = new Set();
+  let previousEvaluatedAt = "";
+  for (const [index, check] of scenario.checks.entries()) {
+    exactKeys(check, ["authoritySnapshotDigest", "candidateAuthorizationEpoch", "certificationRevocationEpoch", "certificationSigningKeyId", "evaluatedAt", "expectedCode", "phase", "siteRelease"], "web_release_activation_scenario_invalid");
+    if (check.phase !== expectedPhases[index] || check.expectedCode !== expectedCodes[index] ||
+        !sameDigestRef(check.siteRelease, { ref: releaseCase.document.siteReleaseRef, digest: digest(releaseCase.document) }) ||
+        !/^sha256:[0-9a-f]{64}$/u.test(check.authoritySnapshotDigest) || snapshotDigests.has(check.authoritySnapshotDigest) ||
+        (previousEvaluatedAt !== "" && check.evaluatedAt <= previousEvaluatedAt)) fail("web_release_activation_scenario_invalid");
+    snapshotDigests.add(check.authoritySnapshotDigest);
+    previousEvaluatedAt = check.evaluatedAt;
+    let code = null;
+    try {
+      assertActivationEligible(releaseCase.document, certificationCase.document, check);
+    } catch (error) {
+      if (!(error instanceof WebReleaseContractError)) throw error;
+      code = error.code;
+    }
+    if (code !== check.expectedCode) fail("web_release_activation_scenario_invalid", `${scenario.id}:${index}:${code ?? "accepted"}`);
+  }
+}
+
+function validateRevocation(revocation) {
+  if (revocation.releaseCertification.ref === revocation.revocationRef) fail("web_release_certification_revocation_invalid", "self reference");
+}
+
+function validateSiteRelease(release, related) {
+  const expected = [
+    [release.siteReleaseCandidate, related.intent.siteReleaseCandidate], [release.launchProductProfile, related.intent.launchProductProfile],
+    [release.productSurfaceCatalog, related.intent.productSurfaceCatalog], [release.surfaceInventory, related.intent.surfaceInventory],
+    [release.webBuildIntent, { ref: related.intent.intentRef, digest: digest(related.intent) }],
+    [release.compiledWebManifest, { ref: related.manifest.manifestRef, digest: digest(related.manifest) }],
+    [release.webArtifactProvenance, related.certification.webArtifactProvenance],
+    [release.releaseCertification, { ref: related.certification.certificationRef, digest: digest(related.certification) }],
+  ];
+  if (expected.some(([left, right]) => !sameDigestRef(left, right))) fail("web_release_site_release_reference_invalid");
+  if (release.siteRef !== related.intent.siteRef || release.environment !== related.intent.environment ||
+      release.candidateAuthorizationEpoch !== related.intent.candidateAuthorizationEpoch || release.certificationRevocationEpoch !== "0") fail("web_release_site_release_context_invalid");
+  if (release.webArtifactDigest !== related.certification.webArtifactDigest || release.publishedAt >= related.certification.validUntil) fail("web_release_site_release_certification_invalid");
+  if (related.revocation.releaseCertification.ref === release.releaseCertification.ref && related.revocation.releaseCertification.digest === release.releaseCertification.digest) fail("web_release_site_release_revoked");
+  if (canonicalize(release.businessBindings) !== canonicalize(related.candidate.businessBindings)) fail("web_release_site_release_reference_invalid", "business bindings");
+  const bootstrap = release.bootstrapBindings;
+  if (!sameDigestRef(bootstrap.compiledWebManifest, release.compiledWebManifest) || !sameDigestRef(bootstrap.productSurfaceCatalog, release.productSurfaceCatalog) ||
+      !sameDigestRef(bootstrap.surfaceInventory, release.surfaceInventory) || !sameDigestRef(bootstrap.webCompositionRegistry, related.intent.webCompositionRegistry) ||
+      !sameDigestRef(bootstrap.webBuildToolchain, related.intent.webBuildToolchain)) fail("web_release_site_release_bootstrap_invalid");
+  if (canonicalRows(release.contractFloor, ({ contractRef }) => contractRef) !== canonicalRows(related.intent.contractFloor, ({ contractRef }) => contractRef)) fail("web_release_site_release_reference_invalid", "contract floor");
 }
 
 function pointerSegments(path) {
@@ -625,7 +783,9 @@ function validateDsseVectors(corpus, casesById, envelopeValidators) {
     if (envelopeValidator === undefined || !envelopeValidator(envelope)) fail("web_release_dsse_envelope_invalid", `${vector.id}: ${JSON.stringify(envelopeValidator?.errors ?? [])}`);
     const expectedKeyId = contractCase.contractId === "web-build-intent.v1"
       ? document.issuer.signingKeyId
-      : document.predicate.runDetails.builder.kokoro_signingKeyId;
+      : contractCase.contractId === "release-certification-instance.v1"
+        ? document.producer.signingKeyId
+        : document.predicate.runDetails.builder.kokoro_signingKeyId;
     if (vector.keyId !== expectedKeyId) fail("web_release_dsse_keyid_mismatch", vector.id);
     const pae = dssePae(vector.payloadType, payload);
     const actual = createHash("sha256").update(pae).digest("hex");
@@ -668,12 +828,17 @@ function validateDocument(contractId, document, validators) {
 
 function semanticValidate(contractId, document, related) {
   if (contractId === "product-surface-catalog.v1") validateCatalog(document);
-  else if (contractId === "surface-inventory.v1") validateInventory(document, related.catalog);
+  else if (contractId === "launch-product-profile.v1") validateProfile(document, related.catalog);
+  else if (contractId === "site-release-candidate.v1") validateCandidate(document, related);
+  else if (contractId === "surface-inventory.v1") validateInventory(document, related);
   else if (contractId === "web-build-material-bundle.v1") validateMaterial(document);
   else if (contractId === "web-composition-registry.v1") validateCompositionRegistry(document, related.catalog);
   else if (contractId === "web-build-intent.v1") validateIntent(document, related);
   else if (contractId === "compiled-web-manifest.v1") validateManifest(document, related);
   else if (contractId === "web-artifact-provenance-profile.v1") validateProvenance(document, related);
+  else if (contractId === "release-certification-instance.v1") validateCertification(document, related);
+  else if (contractId === "release-certification-revocation.v1") validateRevocation(document);
+  else if (contractId === "site-release.v1") validateSiteRelease(document, related);
 }
 
 function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY), registryOptions = {}) {
@@ -728,10 +893,10 @@ export async function validateRepository(options = {}) {
   const bundle = loadBundle(root, registryPath);
   const corpus = readJson(corpusPath, "web_release_corpus_read_failed");
   validateIJson(corpus);
-  exactKeys(corpus, ["canonicalProfile", "canonicalVectors", "dsseVectors", "negativeCases", "positiveCases", "schema"], "web_release_corpus_shape_invalid");
-  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 8 || corpus.negativeCases.length !== 30 || corpus.canonicalVectors.length !== 8 || corpus.dsseVectors.length !== 2) fail("web_release_corpus_shape_invalid");
+  exactKeys(corpus, ["activationEligibilityScenarios", "canonicalProfile", "canonicalVectors", "dsseVectors", "negativeCases", "positiveCases", "schema"], "web_release_corpus_shape_invalid");
+  if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 13 || corpus.negativeCases.length !== 45 || corpus.canonicalVectors.length !== 13 || corpus.dsseVectors.length !== 3) fail("web_release_corpus_shape_invalid");
   const casesById = new Map(corpus.positiveCases.map((item) => [item.id, item]));
-  if (casesById.size !== corpus.positiveCases.length || new Set(corpus.positiveCases.map(({ contractId }) => contractId)).size !== 8) fail("web_release_corpus_shape_invalid");
+  if (casesById.size !== corpus.positiveCases.length || new Set(corpus.positiveCases.map(({ contractId }) => contractId)).size !== 13) fail("web_release_corpus_shape_invalid");
   unique(corpus.canonicalVectors.map(({ id }) => id), "web_release_canonical_coverage_invalid");
   const canonicalCaseIds = unique(corpus.canonicalVectors.map(({ caseId }) => caseId), "web_release_canonical_coverage_invalid");
   if (canonicalSet(canonicalCaseIds) !== canonicalSet(casesById.keys())) fail("web_release_canonical_coverage_invalid");
@@ -743,14 +908,17 @@ export async function validateRepository(options = {}) {
   if (requiredDsseCaseIds.includes(undefined) || canonicalSet(dsseCaseIds) !== canonicalSet(requiredDsseCaseIds)) fail("web_release_dsse_coverage_invalid");
   const byContract = new Map(corpus.positiveCases.map((item) => [item.contractId, item.document]));
   const related = {
-    catalog: byContract.get("product-surface-catalog.v1"), inventory: byContract.get("surface-inventory.v1"),
+    catalog: byContract.get("product-surface-catalog.v1"), profile: byContract.get("launch-product-profile.v1"), candidate: byContract.get("site-release-candidate.v1"), inventory: byContract.get("surface-inventory.v1"),
     material: byContract.get("web-build-material-bundle.v1"), toolchain: byContract.get("web-build-toolchain.v1"),
     registry: byContract.get("web-composition-registry.v1"), intent: byContract.get("web-build-intent.v1"), manifest: byContract.get("compiled-web-manifest.v1"),
+    provenance: byContract.get("web-artifact-provenance-profile.v1"), certification: byContract.get("release-certification-instance.v1"),
+    revocation: byContract.get("release-certification-revocation.v1"), release: byContract.get("site-release.v1"),
   };
   for (const item of corpus.positiveCases) {
     validateDocument(item.contractId, item.document, bundle.validators);
     semanticValidate(item.contractId, item.document, related);
   }
+  validateActivationEligibilityScenarios(corpus.activationEligibilityScenarios, casesById);
   for (const vector of corpus.canonicalVectors) {
     const item = casesById.get(vector.caseId);
     if (item === undefined || digest(item.document) !== vector.expectedDigest) fail("web_release_canonical_vector_invalid", vector.id);

@@ -46,6 +46,8 @@ function resignVector(corpus, caseId) {
 function refreshCoherentChain(corpus) {
   const documents = new Map(corpus.positiveCases.map(({ contractId, document }) => [contractId, document]));
   const catalog = documents.get("product-surface-catalog.v1");
+  const profile = documents.get("launch-product-profile.v1");
+  const candidate = documents.get("site-release-candidate.v1");
   const inventory = documents.get("surface-inventory.v1");
   const material = documents.get("web-build-material-bundle.v1");
   const toolchain = documents.get("web-build-toolchain.v1");
@@ -53,14 +55,26 @@ function refreshCoherentChain(corpus) {
   const intent = documents.get("web-build-intent.v1");
   const manifest = documents.get("compiled-web-manifest.v1");
   const provenance = documents.get("web-artifact-provenance-profile.v1");
+  const certification = documents.get("release-certification-instance.v1");
+  const siteRelease = documents.get("site-release.v1");
 
-  inventory.catalog.digest = canonicalDigest(catalog);
+  profile.productSurfaceCatalog.digest = canonicalDigest(catalog);
+  profile.journeyClosure.digest = canonicalDigest(profile.journeyClosure.journeys);
+  candidate.launchProductProfile.digest = canonicalDigest(profile);
+  candidate.productSurfaceCatalog.digest = canonicalDigest(catalog);
+  candidate.businessBindings.webBuildMaterialBundle.digest = canonicalDigest(material);
+  inventory.siteReleaseCandidate.digest = canonicalDigest(candidate);
+  inventory.launchProductProfile.digest = canonicalDigest(profile);
+  inventory.productSurfaceCatalog.digest = canonicalDigest(catalog);
+  intent.siteReleaseCandidate.digest = canonicalDigest(candidate);
+  intent.launchProductProfile.digest = canonicalDigest(profile);
   intent.productSurfaceCatalog.digest = canonicalDigest(catalog);
   intent.surfaceInventory.digest = canonicalDigest(inventory);
   intent.webBuildMaterialBundle.digest = canonicalDigest(material);
   intent.webBuildToolchain.digest = canonicalDigest(toolchain);
   intent.webCompositionRegistry.digest = canonicalDigest(registry);
   manifest.buildIntentDigest = canonicalDigest(intent);
+  manifest.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
   manifest.catalog = structuredClone(intent.productSurfaceCatalog);
   manifest.surfaceInventory = structuredClone(intent.surfaceInventory);
   manifest.registry = structuredClone(intent.webCompositionRegistry);
@@ -75,11 +89,43 @@ function refreshCoherentChain(corpus) {
   );
   if (materialDependency !== undefined) materialDependency.digest.sha256 = canonicalDigest(material).slice("sha256:".length);
 
+  certification.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
+  certification.launchProductProfile = structuredClone(intent.launchProductProfile);
+  certification.productSurfaceCatalog = structuredClone(intent.productSurfaceCatalog);
+  certification.surfaceInventory = structuredClone(intent.surfaceInventory);
+  certification.webBuildIntent = { ref: intent.intentRef, digest: canonicalDigest(intent) };
+  certification.compiledWebManifest = { ref: manifest.manifestRef, digest: canonicalDigest(manifest) };
+  certification.webArtifactProvenance = { ref: provenance.provenanceRef, digest: canonicalDigest(provenance) };
+
+  siteRelease.siteReleaseCandidate = structuredClone(intent.siteReleaseCandidate);
+  siteRelease.launchProductProfile = structuredClone(intent.launchProductProfile);
+  siteRelease.productSurfaceCatalog = structuredClone(intent.productSurfaceCatalog);
+  siteRelease.surfaceInventory = structuredClone(intent.surfaceInventory);
+  siteRelease.webBuildIntent = { ref: intent.intentRef, digest: canonicalDigest(intent) };
+  siteRelease.compiledWebManifest = { ref: manifest.manifestRef, digest: canonicalDigest(manifest) };
+  siteRelease.webArtifactProvenance = { ref: provenance.provenanceRef, digest: canonicalDigest(provenance) };
+  siteRelease.releaseCertification = { ref: certification.certificationRef, digest: canonicalDigest(certification) };
+  siteRelease.businessBindings = structuredClone(candidate.businessBindings);
+  siteRelease.bootstrapBindings = {
+    compiledWebManifest: structuredClone(siteRelease.compiledWebManifest),
+    productSurfaceCatalog: structuredClone(siteRelease.productSurfaceCatalog),
+    surfaceInventory: structuredClone(siteRelease.surfaceInventory),
+    webCompositionRegistry: structuredClone(intent.webCompositionRegistry),
+    webBuildToolchain: structuredClone(intent.webBuildToolchain),
+  };
+
+  for (const scenario of corpus.activationEligibilityScenarios) {
+    for (const check of scenario.checks) {
+      check.siteRelease = { ref: siteRelease.siteReleaseRef, digest: canonicalDigest(siteRelease) };
+    }
+  }
+
   for (const vector of corpus.canonicalVectors) {
     const document = corpus.positiveCases.find(({ id }) => id === vector.caseId).document;
     vector.expectedDigest = canonicalDigest(document);
   }
   resignVector(corpus, "intent-site-alpha");
+  resignVector(corpus, "certification-site-alpha");
   resignVector(corpus, "provenance-site-alpha");
 }
 
@@ -127,15 +173,99 @@ test("I-JSON profile rejects non-NFC text, lone surrogates, and unsafe numbers",
   }
 });
 
-test("checked-in registry, eight schemas, and golden corpus close the release chain", async () => {
+test("checked-in registry, release authority schemas, and golden corpus close the release chain", async () => {
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
-    contracts: 8,
-    positiveCases: 8,
-    negativeCases: 30,
-    canonicalVectors: 8,
-    dsseVectors: 2,
+    contracts: 13,
+    positiveCases: 13,
+    negativeCases: 45,
+    canonicalVectors: 13,
+    dsseVectors: 3,
   });
+});
+
+test("profile candidate inventory release chain is single-direction and activation-derived", async () => {
+  const readSchema = async (name) => JSON.parse(await readFile(resolve(repositoryRoot, `contract/spec/${name}.yaml`), "utf8"));
+  const profile = await readSchema("launch-product-profile");
+  const candidate = await readSchema("site-release-candidate");
+  const inventory = await readSchema("surface-inventory");
+  const certification = await readSchema("release-certification-instance");
+  const revocation = await readSchema("release-certification-revocation");
+  const release = await readSchema("site-release");
+
+  assert.equal("surfaceInventoryRevisionRef" in profile.properties, false);
+  assert.equal("surfaceInventory" in profile.properties, false);
+  assert.equal("surfaceInventory" in candidate.properties, false);
+  assert.ok(profile.required.includes("enabledSurfaceRefs"));
+  assert.ok(profile.required.includes("productSurfaceCatalog"));
+  assert.ok(candidate.required.includes("launchProductProfile"));
+  assert.ok(candidate.required.includes("productSurfaceCatalog"));
+  for (const field of ["siteRef", "siteReleaseCandidate", "launchProductProfile", "productSurfaceCatalog", "enabledSurfaceRefs", "disabledSurfaceRefs"]) {
+    assert.ok(inventory.required.includes(field));
+  }
+  assert.ok(certification.required.includes("candidateAuthorizationEpoch"));
+  assert.ok(certification.required.includes("validUntil"));
+  assert.ok(revocation.required.includes("releaseCertification"));
+  assert.ok(release.required.includes("releaseCertification"));
+  assert.ok(release.required.includes("webArtifactDigest"));
+  assert.equal("enabledSurfaceRefs" in release.properties, false);
+});
+
+test("compiled manifest distinguishes BFF authority, opaque model roles, and exact bootstrap bindings", async () => {
+  const registry = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/web-composition-registry.yaml"), "utf8"));
+  const intent = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/web-build-intent.yaml"), "utf8"));
+  const manifest = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/compiled-web-manifest.yaml"), "utf8"));
+  const release = JSON.parse(await readFile(resolve(repositoryRoot, "contract/spec/site-release.yaml"), "utf8"));
+  const registryBff = registry.$defs.bffGroup;
+  const manifestBff = manifest.$defs.bffGroup;
+  for (const schema of [registryBff, manifestBff]) {
+    assert.ok(schema.required.includes("operationFamilyRef"));
+    assert.ok(schema.required.includes("sameOriginHandlerOperationIds"));
+    assert.ok(schema.required.includes("downstreamOperationIds"));
+    assert.equal("operationIds" in schema.properties, false);
+  }
+  assert.ok(intent.required.includes("modelRequirements"));
+  assert.equal("requiredModelCatalogs" in intent.properties, false);
+  assert.ok(intent.$defs.modelRequirement.required.includes("modelRoleRef"));
+  assert.ok(intent.$defs.modelRequirement.required.includes("modelInventory"));
+  assert.ok(intent.$defs.modelRequirement.required.includes("modelCatalog"));
+  assert.equal("enum" in intent.$defs.modelRequirement.properties.modelRoleRef, false);
+  assert.ok(release.required.includes("bootstrapBindings"));
+  for (const field of ["compiledWebManifest", "productSurfaceCatalog", "surfaceInventory", "webCompositionRegistry", "webBuildToolchain"]) {
+    assert.ok(release.$defs.bootstrapBindings.required.includes(field));
+  }
+});
+
+test("activation eligibility independently revalidates begin and immediate-before-CAS authority snapshots", async () => {
+  const contractGate = await import("./check-web-release-composition.mjs");
+  assert.equal(typeof contractGate.assertActivationEligible, "function");
+  const release = {
+    siteReleaseRef: "site-release.alpha.1",
+    candidateAuthorizationEpoch: "7",
+    certificationRevocationEpoch: "0",
+  };
+  const certification = { producer: { signingKeyId: "key.release-certification.1" }, validUntil: "2026-08-01T13:00:00.000Z" };
+  const current = {
+    phase: "activation-begin",
+    candidateAuthorizationEpoch: "7",
+    certificationRevocationEpoch: "0",
+    certificationSigningKeyId: "key.release-certification.1",
+    evaluatedAt: "2026-08-01T12:59:59.000Z",
+  };
+  assert.doesNotThrow(() => contractGate.assertActivationEligible(release, certification, current));
+  const beforeCas = { ...current, phase: "immediate-before-pointer-cas", evaluatedAt: "2026-08-01T12:59:59.500Z" };
+  assert.doesNotThrow(() => contractGate.assertActivationEligible(release, certification, beforeCas));
+  for (const [field, value, code] of [
+    ["candidateAuthorizationEpoch", "8", "web_release_activation_candidate_epoch_invalid"],
+    ["certificationRevocationEpoch", "1", "web_release_activation_certification_revoked"],
+    ["certificationSigningKeyId", "key.release-certification.revoked", "web_release_activation_key_invalid"],
+    ["evaluatedAt", certification.validUntil, "web_release_activation_certification_expired"],
+  ]) {
+    assert.throws(
+      () => contractGate.assertActivationEligible(release, certification, { ...beforeCas, [field]: value }),
+      (error) => error instanceof WebReleaseContractError && error.code === code,
+    );
+  }
 });
 
 test("semantic validation rejects an inventory that is not an exact catalog partition", async () => {
@@ -197,7 +327,7 @@ test("manifest proves shell closure and rejects duplicate BFF authority", async 
   const corpusPath = resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json");
   const corpus = JSON.parse(await readFile(corpusPath, "utf8"));
   const manifestCase = corpus.positiveCases.find(({ contractId }) => contractId === "compiled-web-manifest.v1");
-  manifestCase.document.bffOperationGroups.push({groupRef: "bff.duplicate", unitRef: "web.surface.chat", operationIds: ["createSession"]});
+  manifestCase.document.bffOperationGroups.push({groupRef: "bff.duplicate", unitRef: "web.surface.chat", operationFamilyRef: "operation.chat", sameOriginHandlerOperationIds: ["siteCreateSession"], downstreamOperationIds: ["createSession"]});
   const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-manifest-"));
   const tamperedPath = join(temporary, "corpus.json");
   await writeFile(tamperedPath, `${JSON.stringify(corpus, null, 2)}\n`);
@@ -358,7 +488,7 @@ test("coherent material rejects duplicate public config identities and a non-can
   }, "web_release_material_origin_invalid");
 });
 
-test("coherent catalog enforces exact surface ownership, dependency DAGs, and published build input", async () => {
+test("coherent catalog enforces exact surface ownership, dependency DAGs, and published Profile input", async () => {
   await coherentCorpusAttack((corpus) => {
     const catalog = corpus.positiveCases.find(({ contractId }) => contractId === "product-surface-catalog.v1").document;
     catalog.products.find(({ productRef }) => productRef === "product.memory").surfaceRefs.push("surface.chat");
@@ -374,7 +504,7 @@ test("coherent catalog enforces exact surface ownership, dependency DAGs, and pu
     const catalog = corpus.positiveCases.find(({ contractId }) => contractId === "product-surface-catalog.v1").document;
     catalog.state = "draft";
     catalog.publishedAt = null;
-  }, "web_release_intent_unpublished_input");
+  }, "web_release_profile_reference_invalid");
 });
 
 test("DSSE key ids bind the intent issuer and provenance attestor identities", async () => {
@@ -386,7 +516,9 @@ test("DSSE key ids bind the intent issuer and provenance attestor identities", a
     const document = cases.get(vector.caseId);
     const expected = vector.caseId === "intent-site-alpha"
       ? document.issuer.signingKeyId
-      : document.predicate.runDetails.builder.kokoro_signingKeyId;
+      : vector.caseId === "certification-site-alpha"
+        ? document.producer.signingKeyId
+        : document.predicate.runDetails.builder.kokoro_signingKeyId;
     assert.equal(vector.keyId, expected);
   }
 
@@ -471,11 +603,11 @@ test("breaking comparison loads the real seven-contract predecessor before repor
       "--root", repositoryRoot,
       "--breaking-against", "97f9c1e",
     ], { cwd: repositoryRoot }),
-    ({ stderr }) => stderr.includes("web_release_v1_schema_breaking"),
+    ({ stderr }) => stderr.includes("web_release_v1_schema_breaking") || stderr.includes("web_release_registry_contract_set_invalid"),
   );
 });
 
-test("breaking comparison accepts a seven-contract baseline when the eighth contract is purely additive", async () => {
+test("breaking comparison accepts a twelve-contract baseline when the thirteenth contract is purely additive", async () => {
   const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-additive-baseline-"));
   await mkdir(join(temporary, "contract"), { recursive: true });
   await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
@@ -501,7 +633,7 @@ test("breaking comparison accepts a seven-contract baseline when the eighth cont
     "--root", temporary,
     "--breaking-against", "HEAD^",
   ], { cwd: temporary });
-  assert.match(stdout, /^web_release_contracts_ok:8 contracts,/u);
+  assert.match(stdout, /^web_release_contracts_ok:13 contracts,/u);
 });
 
 test("breaking comparison reads the candidate from HEAD instead of a spoofed worktree", async () => {

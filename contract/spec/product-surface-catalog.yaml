@@ -38,11 +38,11 @@
     },
     "surface": {
       "type": "object", "additionalProperties": false,
-      "required": ["surfaceRef", "productRef", "revision", "requiredSurfaceRefs", "canonicalJourneyRefs", "operationFamilyRefs"],
+      "required": ["surfaceRef", "productRef", "revision", "requiredSurfaceRefs", "canonicalJourneyRefs", "operationFamilyRefs", "requiredModelRoleRefs"],
       "properties": {
         "surfaceRef": {"$ref": "#/$defs/ref"}, "productRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"},
         "requiredSurfaceRefs": {"$ref": "#/$defs/refSet"}, "canonicalJourneyRefs": {"$ref": "#/$defs/refSet"},
-        "operationFamilyRefs": {"$ref": "#/$defs/refSet"}
+        "operationFamilyRefs": {"$ref": "#/$defs/refSet"}, "requiredModelRoleRefs": {"$ref": "#/$defs/refSet"}
       }
     },
     "journey": {

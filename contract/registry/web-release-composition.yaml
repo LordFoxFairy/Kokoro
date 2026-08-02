@@ -38,6 +38,26 @@
       "signatureProfile": "none"
     },
     {
+      "id": "launch-product-profile.v1",
+      "schemaId": "https://contracts.kokoro.dev/launch-product-profile/v1",
+      "schemaPath": "contract/spec/launch-product-profile.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "site-release-candidate.v1",
+      "schemaId": "https://contracts.kokoro.dev/site-release-candidate/v1",
+      "schemaPath": "contract/spec/site-release-candidate.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
       "id": "web-build-material-bundle.v1",
       "schemaId": "https://contracts.kokoro.dev/web-build-material-bundle/v1",
       "schemaPath": "contract/spec/web-build-material-bundle.yaml",
@@ -96,6 +116,36 @@
       "consumers": ["kokoro-platform"],
       "lifecycle": "contract-only",
       "signatureProfile": "dsse-in-toto-slsa-provenance-v1"
+    },
+    {
+      "id": "release-certification-instance.v1",
+      "schemaId": "https://contracts.kokoro.dev/release-certification-instance/v1",
+      "schemaPath": "contract/spec/release-certification-instance.yaml",
+      "businessOwner": "release.certification",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "dsse-release-certification-instance-v1"
+    },
+    {
+      "id": "release-certification-revocation.v1",
+      "schemaId": "https://contracts.kokoro.dev/release-certification-revocation/v1",
+      "schemaPath": "contract/spec/release-certification-revocation.yaml",
+      "businessOwner": "release.certification",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
+    },
+    {
+      "id": "site-release.v1",
+      "schemaId": "https://contracts.kokoro.dev/site-release/v1",
+      "schemaPath": "contract/spec/site-release.yaml",
+      "businessOwner": "platform.site",
+      "publisherRepository": "kokoro-platform",
+      "consumers": ["kokoro-platform", "kokoro-web"],
+      "lifecycle": "contract-only",
+      "signatureProfile": "digest-bound-reference"
     }
   ]
 }

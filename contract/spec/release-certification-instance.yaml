@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.kokoro.dev/release-certification-instance/v1",
+  "title": "Kokoro Release Certification Instance v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["contract", "schemaRevision", "certificationRef", "revision", "decision", "environment", "siteRef", "siteReleaseCandidate", "candidateAuthorizationEpoch", "launchProductProfile", "productSurfaceCatalog", "surfaceInventory", "webBuildIntent", "compiledWebManifest", "webArtifactProvenance", "webArtifactDigest", "evidenceBundle", "certificationPolicyRef", "generatedAt", "validUntil", "producer"],
+  "properties": {
+    "contract": {"const": "kokoro.release-certification-instance.v1"}, "schemaRevision": {"const": "1"},
+    "certificationRef": {"$ref": "#/$defs/ref"}, "revision": {"$ref": "#/$defs/decimal"}, "decision": {"const": "passed"},
+    "environment": {"enum": ["development", "preview", "staging", "production"]}, "siteRef": {"$ref": "#/$defs/ref"},
+    "siteReleaseCandidate": {"$ref": "#/$defs/digestRef"}, "candidateAuthorizationEpoch": {"$ref": "#/$defs/decimal"},
+    "launchProductProfile": {"$ref": "#/$defs/digestRef"}, "productSurfaceCatalog": {"$ref": "#/$defs/digestRef"}, "surfaceInventory": {"$ref": "#/$defs/digestRef"},
+    "webBuildIntent": {"$ref": "#/$defs/digestRef"}, "compiledWebManifest": {"$ref": "#/$defs/digestRef"}, "webArtifactProvenance": {"$ref": "#/$defs/digestRef"},
+    "webArtifactDigest": {"$ref": "#/$defs/digest"}, "evidenceBundle": {"$ref": "#/$defs/digestRef"}, "certificationPolicyRef": {"$ref": "#/$defs/ref"},
+    "generatedAt": {"$ref": "#/$defs/timestamp"}, "validUntil": {"$ref": "#/$defs/timestamp"}, "producer": {"$ref": "#/$defs/producer"}
+  },
+  "$defs": {
+    "ref": {"type": "string", "minLength": 3, "maxLength": 240, "pattern": "^[a-z][a-z0-9]*(?:[._/-][a-z0-9]+)+$"},
+    "decimal": {"type": "string", "pattern": "^(?:0|[1-9][0-9]*)$", "maxLength": 39}, "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]\\.[0-9]{3}Z$"},
+    "digestRef": {"type": "object", "additionalProperties": false, "required": ["ref", "digest"], "properties": {"ref": {"$ref": "#/$defs/ref"}, "digest": {"$ref": "#/$defs/digest"}}},
+    "producer": {"type": "object", "additionalProperties": false, "required": ["trustedProducerRegistry", "producerIdentityRef", "trustPolicyRevisionRef", "signingKeyId", "keyVersion", "signatureAudience"], "properties": {"trustedProducerRegistry": {"$ref": "#/$defs/digestRef"}, "producerIdentityRef": {"$ref": "#/$defs/ref"}, "trustPolicyRevisionRef": {"$ref": "#/$defs/ref"}, "signingKeyId": {"$ref": "#/$defs/ref"}, "keyVersion": {"$ref": "#/$defs/decimal"}, "signatureAudience": {"const": "kokoro.site-release.activation.v1"}}},
+    "dsseEnvelope": {"type": "object", "additionalProperties": false, "required": ["payloadType", "payload", "signatures"], "properties": {"payloadType": {"const": "application/vnd.kokoro.release-certification-instance.v1+json"}, "payload": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$", "maxLength": 2796204}, "signatures": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["keyid", "sig"], "properties": {"keyid": {"$ref": "#/$defs/ref"}, "sig": {"type": "string", "pattern": "^[A-Za-z0-9+/]+={0,2}$", "maxLength": 16384}}}}}}
+  }
+}

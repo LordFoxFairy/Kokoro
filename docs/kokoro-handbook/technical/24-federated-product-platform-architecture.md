@@ -177,7 +177,9 @@ linking，不在数据库中默认共享账号。
 
 ```text
 ProductSurfaceCatalogRevision（Platform Product Catalog）
-  -> LaunchProductProfile / complete SurfaceInventoryRevision（Platform Site）
+  -> LaunchProductProfile（exact Catalog + enabled Surface/Journey closure；不引用 Inventory）
+  -> SiteReleaseCandidate（Site/environment + business/model bindings + authorization epoch）
+  -> complete SurfaceInventoryRevision（exact Candidate/Profile/Catalog partition；Platform Site compiler）
   -> Plan/Offer/Entitlement refs（Platform Commerce）
   -> ModelOption requirements（Platform Model Control）
   -> WebBuildIntent exact SurfaceInventory revision（Platform Site）
@@ -200,7 +202,9 @@ assortment、model/agent/capability assignment、sales policy 和 contract compa
 Web 项目的可编辑配置文件。
 
 每个候选 Release 经过 compile、preview、contract/schema 校验、业务旅程验证和 certification 后才能激活。
-激活使用可恢复 `ActivationAttempt` 与 active-pointer CAS；外部流量切换和数据库指针不是伪原子事务。回滚是对旧的
+激活使用可恢复 `ActivationAttempt` 与 active-pointer CAS；开始时和 CAS 紧前必须分别读取新的 authority snapshot，
+重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与证书 expiry，第二次撤销/过期
+必须阻止 CAS。外部流量切换和数据库指针不是伪原子事务。回滚是对旧的
 不可变 Release 发起新的 ActivationAttempt，而不是覆盖文件或破坏性逆迁移。
 
 ### 6.2 Web Release Composition（target）
@@ -216,8 +220,8 @@ SiteRelease 的业务 owner：
 compositionId / definitionRevision / kind = shell | surface | dependency
 package artifacts + digests
 routes and navigation contributions
-BFF public operation allowlist
-bootstrap and model-catalog requirements
+BFF same-origin/downstream operation authority
+bootstrap and opaque model-role requirements
 dependencies on other composition units
 ```
 
@@ -227,16 +231,20 @@ Package 不等于 Product，也不等于 composition unit。一个 surface unit 
 正确生命周期不存在循环依赖：
 
 ```text
-Platform release candidate
-  -> Platform 签发 WebBuildIntent（candidate + exact catalog/inventory/business refs；不选择 Web unit）
+published Catalog -> Profile -> authorized SiteReleaseCandidate -> compiled complete SurfaceInventory
+  -> Platform 签发 WebBuildIntent（exact candidate/profile/catalog/inventory/business/model refs；不选择 Web unit）
   -> Web compiler 从受信 registry 将完整 SurfaceInventory 派生为 WebCompositionUnit closure
-  -> CompiledWebManifest（物理 route/package/BFF/bootstrap closure + digest）
+  -> CompiledWebManifest（物理 route/package/BFF authority/bootstrap/model closure + digest）
   -> build Site web artifact（独立 artifact digest）
   -> provenance / scan / preview / journey evidence / certification
   -> Platform 发布最终 immutable SiteRelease
-     （绑定 WebBuildIntent、CompiledWebManifest digest、artifact digest 与 business refs）
+     （绑定完整 authority chain、WebBuildIntent、CompiledWebManifest、artifact、certification 与 bootstrap digests）
   -> deployment / ActivationAttempt
 ```
+
+BFF authority 明确拆成同源 handler operation IDs 与 downstream operation IDs；两组在 registry 与 manifest 中各自唯一、
+互不重叠。Model requirement 使用 opaque `modelRoleRef`，Candidate/Intent/Manifest 只携带 distinct ModelInventory 与
+ModelCatalog digest bindings，不复制 provider 目录。
 
 Compiler 输出 `CompiledWebManifest`，不能把它谎称为 Web artifact。产品定义不能携带任意代码路径、shell 命令、动态 npm
 spec 或外部 URL。编译必须对 unknown composition、依赖环、route/nav 冲突、BFF operation 越界、缺 package artifact、

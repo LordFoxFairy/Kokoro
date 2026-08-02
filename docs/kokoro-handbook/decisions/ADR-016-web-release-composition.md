@@ -62,7 +62,10 @@ plugin 或万能动态配置又会允许不受信代码、任意 npm spec、rout
 
 ```mermaid
 flowchart TD
-  C["Platform release candidate"] --> I["signed WebBuildIntent"]
+  C["published ProductSurfaceCatalog"] --> P["published LaunchProductProfile"]
+  P --> RC["authorized SiteReleaseCandidate"]
+  RC --> SI["compiled complete SurfaceInventory"]
+  SI --> I["signed WebBuildIntent"]
   I --> W["WebCompositionCompiler"]
   W --> M["CompiledWebManifest"]
   M --> B["build independent Site artifact"]
@@ -98,14 +101,15 @@ release candidate 已冻结业务 revisions 后签发：
 
 ```text
 contract/version
-intentRef / releaseCandidateRef / siteRef / environment / audience
-launchProfileRevisionRef
-shellRequirementRefs
-productSurfaceCatalogRevisionRef / productSurfaceCatalogDigest
-surfaceInventoryRevisionRef / surfaceInventoryDigest
+intentRef / siteRef / environment / audience
+siteReleaseCandidateRef / digest / candidateAuthorizationEpoch
+launchProductProfileRef / digest
+productSurfaceCatalogRef / digest
+surfaceInventoryRef / digest
 webCompositionRegistryRevisionRef / webCompositionRegistryDigest
 webBuildToolchainRevisionRef / webBuildToolchainDigest
-contract floor / required model catalog refs
+contract floor / opaque modelRoleRef requirements
+distinct modelInventory and modelCatalog refs/digests
 webBuildMaterialBundleRef / webBuildMaterialBundleDigest
 site config / legal / sales / capability assignment refs or digests
 issuedAt / candidateAuthorizationEpoch
@@ -181,9 +185,9 @@ interface WebCompositionUnitDefinition {
   readonly packageRefs: readonly PackageArtifactRef[]
   readonly routes: readonly RouteContribution[]
   readonly navigation: readonly NavigationContribution[]
-  readonly bffOperationGroupRefs: readonly string[]
+  readonly bffOperationGroups: readonly BffOperationAuthority[]
   readonly bootstrapRequirements: readonly string[]
-  readonly modelCatalogRequirements: readonly ModelCatalogRequirement[]
+  readonly modelRequirements: readonly ModelRoleRequirement[]
 }
 
 const WEB_COMPOSITION_REGISTRY = {
@@ -237,10 +241,10 @@ exact unit refs/revisions and dependency graph
 package names/versions/digests
 page/API routes and HTTP methods
 navigation contributions
-BFF operation groups and exact operation IDs
+BFF operation family refs, same-origin handler IDs, and downstream operation IDs
 bootstrap requirements and advertised surfaces
-model catalog requirements
-source composition digest / lockfile digest
+opaque model role requirements with distinct inventory/catalog bindings
+compiled source closure digest / lockfile digest
 toolchain revision/digest + actual measured tool artifact digests
 compiledWebManifestDigest
 ```
@@ -329,11 +333,12 @@ allowlist 与运行期 release/product gate 限制。
 
 ### 9. Model requirement 只引用，不复制模型目录
 
-Web unit 声明浏览器体验需要的 published ModelOption catalog：
+Web unit 只声明浏览器体验需要的 opaque `modelRoleRef`；Platform 在 Candidate 中把每个 role 绑定到 distinct、
+digest-bound ModelInventory 与 ModelCatalog：
 
 - Chat：assistant catalog 与 default role；
 - Image/Music/Video：generation catalog；有对话式提示编排时额外声明 assistant orchestration catalog；
-- compiler 只验证 WebBuildIntent 提供的 exact catalog ref/digest 满足 requirement；
+- compiler 只验证 WebBuildIntent 提供的 exact inventory/catalog ref/digest 满足 role requirement；
 - Platform Model Control 继续拥有完整 route、provider binding、fallback、availability 与 Site policy。
 
 页面不能用“存在 image surface”推断所有模型都可用，也不能读取 provider list/secret。
@@ -345,19 +350,26 @@ Web unit 声明浏览器体验需要的 published ModelOption catalog：
 权限。
 
 Rollback 创建新的 ActivationAttempt 指向旧 immutable SiteRelease，并重新验证当前 secret revocation、contract floor、
-schema、policy 和 certification。它不重新运行旧 compiler，也不覆盖当前 artifact。
+schema、policy 和 certification。每个 ActivationAttempt 在开始时和 active-pointer CAS 紧前都必须重新读取 authority
+snapshot，重验 Candidate authorization epoch、Certification revocation epoch、签名 key status 与 `validUntil`；两次之间
+的撤销或过期必须阻止 CAS。它不重新运行旧 compiler，也不覆盖当前 artifact。
 
 ### 11. 目录
 
 ```text
 Root
   contract/spec/product-surface-catalog.yaml
+  contract/spec/launch-product-profile.yaml
+  contract/spec/site-release-candidate.yaml
   contract/spec/surface-inventory.yaml
   contract/spec/web-build-intent.yaml
   contract/spec/web-build-material-bundle.yaml
   contract/spec/web-build-toolchain.yaml
   contract/spec/compiled-web-manifest.yaml
   contract/spec/web-artifact-provenance-profile.yaml
+  contract/spec/release-certification-instance.yaml
+  contract/spec/release-certification-revocation.yaml
+  contract/spec/site-release.yaml
   contract/corpus/web-release-composition-v1.json
 
 kokoro-web/packages/release-composition

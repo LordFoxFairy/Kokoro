@@ -113,9 +113,10 @@ revision
 name
 targetSiteKind
 status = draft | validating | ready | published | retired
-productSurfaceCatalogRevisionRef
-surfaceInventoryRevisionRef
-compiledJourneyClosureDigest
+productSurfaceCatalogRevisionRef / digest
+enabledSurfaceRefs
+journeyClosure refs / digest
+shellRequirementRefs
 assortment/model/agent/capability policy refs
 authMethodPolicyRevisionRef
 salesPolicyRevisionRef
@@ -134,7 +135,9 @@ createdBy/reviewedBy/publishedAt
 - `retired` 只阻止新 SiteRelease 引用，不改写已启动 Run、MediaOperation、domain workflow 或交易。
 - Profile 不能直接引用 secret、Provider credential、用户或 BillingAccount。
 - Site 可以引用同一 Profile revision，但其 SiteRelease 仍绑定独立 app、domain、assortment 和 assignments。
-- `compiledJourneyClosureDigest` 由 Product Catalog compiler 对 core-always journeys 与所有 enabled Surface 的
+- Profile 只选择业务 Surface 并绑定 published ProductSurfaceCatalog；它不得引用 SurfaceInventory，避免
+  `Profile -> Inventory -> Candidate -> Profile` 环。
+- `journeyClosure.digest` 由 Product Catalog compiler 对 core-always journeys 与所有 enabled Surface 的
   `requiredJourneyRevisionRefs` 求确定性依赖闭包后产生；Product Owner 不能手工增加、删除或覆盖 Journey refs。
 
 Ownership 固定为：Platform Product Catalog 拥有 Product/Surface definition 与 CanonicalJourney catalog revision；
@@ -142,30 +145,31 @@ Platform `site` 模块拥有 Profile/SurfaceInventory revision、publish lifecyc
 Root 只拥有 Journey/State/Recovery/Metric 的 schema、canonicalization 与 compatibility gate，不拥有业务 IDs 或
 published catalog。Certification/Evidence 由 Release pipeline 产生，Site 模块只引用 signed result，不伪造测试事实。
 
-### 3.2 Surface Inventory Entry
+#### 3.1.1 SiteReleaseCandidate
+
+`SiteReleaseCandidate` 在 Profile 发布后由 Platform Site owner 授权，绑定 exact Profile、ProductSurfaceCatalog、Site、
+environment、`candidateAuthorizationEpoch`、全部 business bindings，以及 enabled Surface 所需的 opaque `modelRoleRef` 到
+distinct ModelInventory/ModelCatalog digest refs。Candidate 不引用 SurfaceInventory；compiler 只在 Candidate 冻结后生成
+Inventory，因此 authority 链保持单向。
+
+### 3.2 Surface Inventory Revision
 
 ```text
-surfaceRef / surfaceRevision
-catalogRevisionRef
-disposition = enabled | disabled
-siteModelAgentCapabilityAssignmentRefs
-sitePolicy/assortment/entitlementRequirementRefs
-qualificationScopeRefs
-testReportRefs / runbookRefs / dashboardAlertRefs
-supportCaseKindRefs / contentPolicyRefs
-capabilityQualificationAttestationRefs
-acceptedRiskRefs with owner/expiry
+inventoryRevisionRef / revision
+siteRef
+siteReleaseCandidateRef / digest
+launchProductProfileRef / digest
+productSurfaceCatalogRef / digest
+compilerRevisionRef
+enabledSurfaceRefs / disabledSurfaceRefs
+shellRequirementRefs
+generatedAt
 ```
-
-`capabilityQualificationAttestationRefs`必须由accountable owners签名，在具体Release之前存在并绑定PRD/spec/contract/
-test/runbook revision与适用范围；它不能是自由布尔值，也不能引用尚未生成的Release certificate。`enabled`条目缺任一
-mandatory ref时compile失败；`disabled`条目必须提供五层关闭
-证据，不能只省略 enabled entry。
 
 `SurfaceInventoryRevision` 必须是所引用 `ProductSurfaceCatalogRevision` 的 exact、互斥、完整分区：catalog 中每个
 Surface 必须且只能出现一次，状态只能是 `enabled|disabled`；unknown、duplicate、missing 都使 publish/compile 失败。
-Product Owner 只选择 enabled 集合，compiler 从 catalog 全集确定性推导 disabled 集合。新增 Surface 必须产生新的 catalog
-revision，旧 Profile 不会在未评审时自动获得或遗漏它。
+Profile 只选择 enabled 集合，compiler 在 exact Candidate/Profile/Catalog digest 上从 catalog 全集确定性推导 disabled
+集合。新增 Surface 必须产生新的 catalog revision，旧 Profile 不会在未评审时自动获得或遗漏它。
 
 五层关闭证据由 compiler、owner negative inventory 和 release certification 根据完整分区生成；运营员不能上传一个
 自由布尔值把 disabled 宣称为已关闭。
@@ -214,6 +218,10 @@ Certification，最终以 transformation-final instance 收口。
 
 Release activation必须持有匹配全部compiled inventory、source、contract、lock、image与config digest的有效instance。
 Qualification只证明能力在声明范围内合格，不单独授权任何SiteRelease上线。
+
+ActivationAttempt 必须在开始时和 active-pointer CAS 紧前各自读取并验证新的 authority snapshot；两次都重验 Candidate
+authorization epoch、Certification revocation epoch、签名 key 状态与 `validUntil`。第一次通过不授权跳过第二次；若在两次
+之间发生撤销、key 失效或证书过期，CAS 必须 fail closed。
 
 ## 4. Reference Profile：`core-redeem-chat@1`
 

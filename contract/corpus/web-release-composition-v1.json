@@ -9,6 +9,19 @@
     "digestAlgorithm": "sha256",
     "selfDigest": "forbidden"
   },
+  "activationEligibilityScenarios": [
+    {
+      "id": "dual-authority-revalidation-before-pointer-cas",
+      "releaseCaseId": "site-release-alpha",
+      "certificationCaseId": "certification-site-alpha",
+      "checks": [
+        {"phase": "activation-begin", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:41:00.000Z", "authoritySnapshotDigest": "sha256:d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1", "expectedCode": null},
+        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:42:00.000Z", "authoritySnapshotDigest": "sha256:d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2", "expectedCode": null},
+        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "1", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-07-31T12:42:01.000Z", "authoritySnapshotDigest": "sha256:d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3", "expectedCode": "web_release_activation_certification_revoked"},
+        {"phase": "immediate-before-pointer-cas", "siteRelease": {"ref": "site-release.alpha.1", "digest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}, "candidateAuthorizationEpoch": "7", "certificationRevocationEpoch": "0", "certificationSigningKeyId": "key.release-certification.1", "evaluatedAt": "2026-08-01T12:35:00.000Z", "authoritySnapshotDigest": "sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4", "expectedCode": "web_release_activation_certification_expired"}
+      ]
+    }
+  ],
   "positiveCases": [
     {
       "id": "catalog-published",
@@ -24,8 +37,8 @@
           {"productRef": "product.memory", "revision": "1", "surfaceRefs": ["surface.memory"], "requiredProductRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"]}
         ],
         "surfaces": [
-          {"surfaceRef": "surface.chat", "productRef": "product.chat", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"]},
-          {"surfaceRef": "surface.memory", "productRef": "product.memory", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"]}
+          {"surfaceRef": "surface.chat", "productRef": "product.chat", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.chat"], "operationFamilyRefs": ["operation.chat"], "requiredModelRoleRefs": ["model-role.chat-assistant"]},
+          {"surfaceRef": "surface.memory", "productRef": "product.memory", "revision": "1", "requiredSurfaceRefs": [], "canonicalJourneyRefs": ["journey.memory"], "operationFamilyRefs": ["operation.memory"], "requiredModelRoleRefs": ["model-role.memory-assistant"]}
         ],
         "canonicalJourneys": [
           {"journeyRef": "journey.chat", "revision": "1", "entrySurfaceRef": "surface.chat", "requiredSurfaceRefs": ["surface.chat"], "operationFamilyRefs": ["operation.chat"]},
@@ -36,13 +49,47 @@
       }
     },
     {
+      "id": "profile-chat-only",
+      "contractId": "launch-product-profile.v1",
+      "document": {
+        "contract": "kokoro.launch-product-profile.v1", "schemaRevision": "1", "profileRevisionRef": "launch-profile.redeem-first.1", "revision": "1", "state": "published", "targetSiteKindRef": "site-kind.consumer-ai",
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "enabledSurfaceRefs": ["surface.chat"],
+        "journeyClosure": {"journeys": [{"journeyRef": "journey.chat", "revision": "1"}], "digest": "sha256:fab9948c0870997302f16e59d6e73735be720632c565c35bd54a67c7508c1c29"},
+        "shellRequirementRefs": ["shell.health", "shell.identity"],
+        "policies": {"assortmentPolicyRef": "policy.assortment.redeem-first.1", "modelPolicyRef": "policy.model.chat.1", "agentPolicyRef": "policy.agent.general.1", "capabilityPolicyRef": "policy.capability.chat.1", "authMethodPolicyRevisionRef": "policy.auth.password.1", "salesPolicyRevisionRef": "sales-policy.redeem-first.1", "contentPolicyProfileRef": "policy.content.core.1", "localeAccessibilityBaselineRef": "policy.locale-accessibility.core.1", "metricTargetRevisionRef": "metric-target.core.1", "supportTierRevisionRef": "support-tier.core.1", "operatorCommandMatrixRevisionRef": "operator-matrix.core.1", "certificationPolicyRef": "certification-policy.core.1"},
+        "reviewApprovalRefs": ["approval.product.1", "approval.release.1"], "publishedAt": "2026-07-31T12:02:00.000Z"
+      }
+    },
+    {
+      "id": "candidate-site-alpha",
+      "contractId": "site-release-candidate.v1",
+      "document": {
+        "contract": "kokoro.site-release-candidate.v1", "schemaRevision": "1", "candidateRef": "release-candidate.alpha.1", "revision": "1", "state": "authorized", "siteRef": "site.alpha", "environment": "production", "candidateAuthorizationEpoch": "7",
+        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "businessBindings": {
+          "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
+          "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
+          "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"},
+          "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
+          "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"},
+          "assortmentPolicy": {"ref": "assortment-policy.alpha.1", "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"},
+          "agentCatalog": {"ref": "agent-catalog.alpha.1", "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"}
+        },
+        "modelRequirements": [{"modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "createdAt": "2026-07-31T12:04:00.000Z"
+      }
+    },
+    {
       "id": "inventory-chat-only",
       "contractId": "surface-inventory.v1",
       "document": {
         "contract": "kokoro.surface-inventory.v1", "schemaRevision": "1", "inventoryRevisionRef": "inventory.site-alpha.1", "revision": "1",
-        "siteRef": "site.alpha", "releaseCandidateRef": "release-candidate.alpha.1", "launchProfileRevisionRef": "launch-profile.redeem-first.1",
-        "catalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
-        "enabledSurfaceRefs": ["surface.chat"], "disabledSurfaceRefs": ["surface.memory"], "shellRequirementRefs": ["shell.identity", "shell.health"]
+        "siteRef": "site.alpha", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"},
+        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "compilerRevisionRef": "surface-inventory-compiler.platform-site.1", "enabledSurfaceRefs": ["surface.chat"], "disabledSurfaceRefs": ["surface.memory"], "shellRequirementRefs": ["shell.identity", "shell.health"], "generatedAt": "2026-07-31T12:05:00.000Z"
       }
     },
     {
@@ -93,8 +140,8 @@
             "unitRef": "web.surface.chat", "revision": "1", "kind": "surface", "providesSurfaceRefs": ["surface.chat"], "providesShellRequirementRefs": [], "requiresUnitRefs": ["web.shell.base"], "packageRefs": ["package.chat-product"],
             "routes": [{"routeRef": "route.chat", "pathname": "/chat", "kind": "page", "methods": ["GET"], "runtime": "nodejs"}, {"routeRef": "route.api-session", "pathname": "/api/session", "kind": "route-handler", "methods": ["GET", "POST"], "runtime": "nodejs"}],
             "navigation": [{"navigationRef": "navigation.chat", "routeRef": "route.chat", "order": "10"}],
-            "bffOperationGroups": [{"groupRef": "bff.session", "operationFamilyRef": "operation.chat", "operationIds": ["createSession", "getSessionSnapshot"]}],
-            "bootstrapRequirements": [], "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "role": "assistant"}]
+            "bffOperationGroups": [{"groupRef": "bff.session", "operationFamilyRef": "operation.chat", "sameOriginHandlerOperationIds": ["siteCreateSession", "siteGetSessionSnapshot"], "downstreamOperationIds": ["createSession", "getSessionSnapshot"]}],
+            "bootstrapRequirements": [], "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "modelRoleRef": "model-role.chat-assistant"}]
           }
         ],
         "packages": [
@@ -109,15 +156,15 @@
       "id": "intent-site-alpha",
       "contractId": "web-build-intent.v1",
       "document": {
-        "contract": "kokoro.web-build-intent.v1", "schemaRevision": "1", "intentRef": "web-build-intent.alpha.1", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha",
-        "environment": "production", "audience": "kokoro.web-release-composition.build.v1", "launchProfileRevisionRef": "launch-profile.redeem-first.1", "shellRequirementRefs": ["shell.health", "shell.identity"],
-        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
-        "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:6a7cd43dc9dce21d404c74fdf698520cb43f08aceaa120a1822544dbc8a0c8ac"},
+        "contract": "kokoro.web-build-intent.v1", "schemaRevision": "1", "intentRef": "web-build-intent.alpha.1", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "siteRef": "site.alpha",
+        "environment": "production", "audience": "kokoro.web-release-composition.build.v1", "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"}, "shellRequirementRefs": ["shell.health", "shell.identity"],
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
+        "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
         "webBuildToolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
         "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
         "contractFloor": [{"contractRef": "contract.platform-public", "minimumMajor": "1"}, {"contractRef": "contract.session-http", "minimumMajor": "1"}],
-        "requiredModelCatalogs": [{"role": "assistant", "catalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "modelRequirements": [{"modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
         "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
         "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"},
         "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
@@ -129,10 +176,10 @@
       "id": "manifest-chat-only",
       "contractId": "compiled-web-manifest.v1",
       "document": {
-        "contract": "kokoro.compiled-web-manifest.v1", "schemaRevision": "1", "manifestRef": "compiled-web-manifest.alpha.1", "intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:3858c6cc59703c19f9957958a83c9959f6fc0d538d17b313cf3d3f4a9e6b0506", "releaseCandidateRef": "release-candidate.alpha.1", "compilerRevisionRef": "web-compiler.next16.1",
-        "registry": {"ref": "web-registry.core.1", "digest": "sha256:6a7cd43dc9dce21d404c74fdf698520cb43f08aceaa120a1822544dbc8a0c8ac"},
-        "catalog": {"ref": "catalog.core.1", "digest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
-        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
+        "contract": "kokoro.compiled-web-manifest.v1", "schemaRevision": "1", "manifestRef": "compiled-web-manifest.alpha.1", "intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274", "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "compilerRevisionRef": "web-compiler.next16.1",
+        "registry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
+        "catalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
         "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
         "measuredToolArtifacts": [
           {"role": "compiler", "repositoryRef": "oci.kokoro.web-composition-compiler", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"},
@@ -156,23 +203,23 @@
           {"routeRef": "route.api-session", "unitRef": "web.surface.chat", "pathname": "/api/session", "kind": "route-handler", "methods": ["GET", "POST"], "runtime": "nodejs"}
         ],
         "navigation": [{"navigationRef": "navigation.chat", "unitRef": "web.surface.chat", "routeRef": "route.chat", "order": "10"}],
-        "bffOperationGroups": [{"groupRef": "bff.session", "unitRef": "web.surface.chat", "operationIds": ["createSession", "getSessionSnapshot"]}],
+        "bffOperationGroups": [{"groupRef": "bff.session", "unitRef": "web.surface.chat", "operationFamilyRef": "operation.chat", "sameOriginHandlerOperationIds": ["siteCreateSession", "siteGetSessionSnapshot"], "downstreamOperationIds": ["createSession", "getSessionSnapshot"]}],
         "bootstrapRequirements": ["bootstrap.product-context", "bootstrap.session-contract"], "advertisedSurfaceRefs": ["surface.chat"],
-        "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "role": "assistant", "catalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
-        "sourceCompositionDigest": "sha256:b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4", "lockfileDigest": "sha256:b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
+        "modelCatalogRequirements": [{"surfaceRef": "surface.chat", "modelRoleRef": "model-role.chat-assistant", "modelInventory": {"ref": "model-inventory.global.4", "digest": "sha256:acacacacacacacacacacacacacacacacacacacacacacacacacacacacacacacac"}, "modelCatalog": {"ref": "model-catalog.chat.3", "digest": "sha256:abababababababababababababababababababababababababababababababab"}}],
+        "compiledSourceClosureDigest": "sha256:b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b4", "lockfileDigest": "sha256:b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"
       }
     },
     {
       "id": "provenance-site-alpha",
       "contractId": "web-artifact-provenance-profile.v1",
       "document": {
-        "_type": "https://in-toto.io/Statement/v1",
+        "_type": "https://in-toto.io/Statement/v1", "provenanceRef": "web-artifact-provenance.alpha.1",
         "subject": [{"name": "registry.kokoro.dev/sites/alpha-web", "digest": {"sha256": "c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0"}}],
         "predicateType": "https://slsa.dev/provenance/v1",
         "predicate": {
           "buildDefinition": {
             "buildType": "https://contracts.kokoro.dev/build-types/site-web/v1",
-            "externalParameters": {"intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:3858c6cc59703c19f9957958a83c9959f6fc0d538d17b313cf3d3f4a9e6b0506", "compiledWebManifestRef": "compiled-web-manifest.alpha.1", "compiledWebManifestDigest": "sha256:3522a6cb8d2d1ac96173ed2b8b0ffb9c7fc6b636cea8f3bd877022544af92a8c", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha", "candidateAuthorizationEpoch": "7", "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
+            "externalParameters": {"intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274", "compiledWebManifestRef": "compiled-web-manifest.alpha.1", "compiledWebManifestDigest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha", "candidateAuthorizationEpoch": "7", "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
             "resolvedDependencies": [
               {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#commit", "digest": {"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}},
               {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#tree", "digest": {"sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}},
@@ -188,24 +235,78 @@
               {"uri": "kokoro:lockfile/compiled-web-manifest.alpha.1", "digest": {"sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"}}
             ]
           },
-          "runDetails": {"builder": {"id": "https://workloads.kokoro.dev/site-web-attestor/v1", "kokoro_signingKeyId": "key.web-artifact-attestor.1"}, "metadata": {"invocationId": "invocation.alpha.1", "startedOn": "2026-07-31T12:30:00.000Z", "finishedOn": "2026-07-31T12:32:00.000Z"}, "byproducts": [{"name": "inspection-report", "digest": {"sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"}}, {"name": "sbom", "digest": {"sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"}}, {"name": "vulnerability-scan", "digest": {"sha256": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"}}, {"name": "certification", "digest": {"sha256": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"}}]}
+          "runDetails": {"builder": {"id": "https://workloads.kokoro.dev/site-web-attestor/v1", "kokoro_signingKeyId": "key.web-artifact-attestor.1"}, "metadata": {"invocationId": "invocation.alpha.1", "startedOn": "2026-07-31T12:30:00.000Z", "finishedOn": "2026-07-31T12:32:00.000Z"}, "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0", "byproducts": [{"name": "inspection-report", "digest": {"sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"}}, {"name": "sbom", "digest": {"sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"}}, {"name": "vulnerability-scan", "digest": {"sha256": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"}}, {"name": "certification", "digest": {"sha256": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"}}]}
         }
+      }
+    },
+    {
+      "id": "certification-site-alpha",
+      "contractId": "release-certification-instance.v1",
+      "document": {
+        "contract": "kokoro.release-certification-instance.v1", "schemaRevision": "1", "certificationRef": "release-certification.alpha.1", "revision": "1", "decision": "passed", "environment": "production", "siteRef": "site.alpha",
+        "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "candidateAuthorizationEpoch": "7",
+        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
+        "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
+        "webBuildIntent": {"ref": "web-build-intent.alpha.1", "digest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
+        "compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"},
+        "webArtifactProvenance": {"ref": "web-artifact-provenance.alpha.1", "digest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
+        "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0",
+        "evidenceBundle": {"ref": "release-evidence.alpha.1", "digest": "sha256:c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6"}, "certificationPolicyRef": "certification-policy.core.1",
+        "generatedAt": "2026-07-31T12:35:00.000Z", "validUntil": "2026-08-01T12:35:00.000Z",
+        "producer": {"trustedProducerRegistry": {"ref": "trusted-producer-registry.production.1", "digest": "sha256:c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7c7"}, "producerIdentityRef": "producer.release-quality", "trustPolicyRevisionRef": "trust-policy.release-certification.1", "signingKeyId": "key.release-certification.1", "keyVersion": "1", "signatureAudience": "kokoro.site-release.activation.v1"}
+      }
+    },
+    {
+      "id": "revocation-obsolete-certification",
+      "contractId": "release-certification-revocation.v1",
+      "document": {
+        "contract": "kokoro.release-certification-revocation.v1", "schemaRevision": "1", "revocationRef": "certification-revocation.obsolete.1", "revision": "1",
+        "releaseCertification": {"ref": "release-certification.obsolete.1", "digest": "sha256:c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8"},
+        "siteReleaseCandidate": {"ref": "release-candidate.obsolete.1", "digest": "sha256:c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9"}, "candidateAuthorizationEpoch": "2",
+        "reason": "key-revoked", "revokedAt": "2026-07-31T12:36:00.000Z",
+        "producer": {"producerIdentityRef": "producer.release-security", "trustPolicyRevisionRef": "trust-policy.release-certification.1", "signingKeyId": "key.release-revocation.1", "keyVersion": "1", "signatureAudience": "kokoro.site-release.activation.v1"}
+      }
+    },
+    {
+      "id": "site-release-alpha",
+      "contractId": "site-release.v1",
+      "document": {
+        "contract": "kokoro.site-release.v1", "schemaRevision": "1", "siteReleaseRef": "site-release.alpha.1", "revision": "1", "state": "published", "siteRef": "site.alpha", "environment": "production",
+        "siteReleaseCandidate": {"ref": "release-candidate.alpha.1", "digest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"}, "candidateAuthorizationEpoch": "7",
+        "launchProductProfile": {"ref": "launch-profile.redeem-first.1", "digest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"}, "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+        "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"}, "webBuildIntent": {"ref": "web-build-intent.alpha.1", "digest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
+        "compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"}, "webArtifactProvenance": {"ref": "web-artifact-provenance.alpha.1", "digest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
+        "webArtifactDigest": "sha256:c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0", "releaseCertification": {"ref": "release-certification.alpha.1", "digest": "sha256:f7807a7fe7737c1595b5a32f8c64bea6283d1fcf8eab1d0ca1ef40b1e2238d25"}, "certificationRevocationEpoch": "0",
+        "businessBindings": {
+          "webBuildMaterialBundle": {"ref": "material-bundle.site-alpha.1", "digest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}, "siteConfig": {"ref": "site-config.alpha.4", "digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"},
+          "legalPolicy": {"ref": "legal-policy.alpha.2", "digest": "sha256:a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2"}, "salesPolicy": {"ref": "sales-policy.alpha.5", "digest": "sha256:a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3"},
+          "capabilityAssignment": {"ref": "capability-assignment.alpha.2", "digest": "sha256:a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4"}, "assortmentPolicy": {"ref": "assortment-policy.alpha.1", "digest": "sha256:a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"}, "agentCatalog": {"ref": "agent-catalog.alpha.1", "digest": "sha256:a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6"}
+        },
+        "bootstrapBindings": {"compiledWebManifest": {"ref": "compiled-web-manifest.alpha.1", "digest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"}, "productSurfaceCatalog": {"ref": "catalog.core.1", "digest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"}, "surfaceInventory": {"ref": "inventory.site-alpha.1", "digest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"}, "webCompositionRegistry": {"ref": "web-registry.core.1", "digest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"}, "webBuildToolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
+        "contractFloor": [{"contractRef": "contract.platform-public", "minimumMajor": "1"}, {"contractRef": "contract.session-http", "minimumMajor": "1"}], "publishedAt": "2026-07-31T12:40:00.000Z"
       }
     }
   ],
   "canonicalVectors": [
-    {"id": "jcs-catalog", "caseId": "catalog-published", "expectedDigest": "sha256:c2bc3686237f3bee4cda78bf7af69e83087af4bed8bd877c2b90ed47bf7b2468"},
-    {"id": "jcs-inventory", "caseId": "inventory-chat-only", "expectedDigest": "sha256:6dc57421e056b01a2c4d0a588c98e87bfef63712bf1a01f2f9a6c883c5e2030c"},
+    {"id": "jcs-catalog", "caseId": "catalog-published", "expectedDigest": "sha256:7ba8ed5542c9cb283c6273a233543f83d2f2cdfbc0a385e4f63a47fe71697a11"},
+    {"id": "jcs-profile", "caseId": "profile-chat-only", "expectedDigest": "sha256:0430ed2e2c707eb9ec3b3833ddd42d69764e8384cb406eae4a94af7367369094"},
+    {"id": "jcs-candidate", "caseId": "candidate-site-alpha", "expectedDigest": "sha256:2194171c6154ae0b47aa8e5686879a62aa7b13d86aaced3ec6f7724629a1fa81"},
+    {"id": "jcs-inventory", "caseId": "inventory-chat-only", "expectedDigest": "sha256:78e99bdc122aeb45bccc70be4af9e7bd8b97197f046652db751d6a97d3e5a9e9"},
     {"id": "jcs-material", "caseId": "material-site-alpha", "expectedDigest": "sha256:3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"},
     {"id": "jcs-toolchain", "caseId": "toolchain-published", "expectedDigest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"},
-    {"id": "jcs-registry", "caseId": "registry-published", "expectedDigest": "sha256:6a7cd43dc9dce21d404c74fdf698520cb43f08aceaa120a1822544dbc8a0c8ac"},
-    {"id": "jcs-intent", "caseId": "intent-site-alpha", "expectedDigest": "sha256:3858c6cc59703c19f9957958a83c9959f6fc0d538d17b313cf3d3f4a9e6b0506"},
-    {"id": "jcs-manifest", "caseId": "manifest-chat-only", "expectedDigest": "sha256:3522a6cb8d2d1ac96173ed2b8b0ffb9c7fc6b636cea8f3bd877022544af92a8c"},
-    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:ab46571b0797a59a5cc7d31ed06da7a4f3d483531e7346f75f7032fefa361d9c"}
+    {"id": "jcs-registry", "caseId": "registry-published", "expectedDigest": "sha256:83e17ad2ec57a81eff281d906b957541d3be2e191218c500078a65e4467ad93d"},
+    {"id": "jcs-intent", "caseId": "intent-site-alpha", "expectedDigest": "sha256:bd0c0eff591f80b6d05bc7da598fdbc351b342a755d3bb3a5f94937441b90274"},
+    {"id": "jcs-manifest", "caseId": "manifest-chat-only", "expectedDigest": "sha256:bd8bfb38a32c04559a285a3ce96cdd98207b94dfe94a0ea4b9b5ba1a2c47c0bc"},
+    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:ca71f2aaf3de75eaa7e38129a71bddf941b06b37c908ae091d7eab1e1ffd3da2"},
+    {"id": "jcs-certification", "caseId": "certification-site-alpha", "expectedDigest": "sha256:f7807a7fe7737c1595b5a32f8c64bea6283d1fcf8eab1d0ca1ef40b1e2238d25"},
+    {"id": "jcs-revocation", "caseId": "revocation-obsolete-certification", "expectedDigest": "sha256:b7cf90dca287206f79fa1216c2c2c9ed72b0dfd3748b67d0972db99d0aa15cd2"},
+    {"id": "jcs-site-release", "caseId": "site-release-alpha", "expectedDigest": "sha256:2e0e6be5d88e9fde3ed71666ebad6a8f6a6f35633899f1bfe48170f9e4c47490"}
   ],
   "dsseVectors": [
-    {"id": "dsse-intent-site-alpha", "caseId": "intent-site-alpha", "keyId": "key.web-build-intent.3", "payloadType": "application/vnd.kokoro.web-build-intent.v1+json", "expectedPaeSha256": "ba0144fcb6c0ceb9a2e95a5036a5f0c52837b3f623469a51fb7a8928aa64d185", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAlLg/mnvBV61PnIxY3KOKTgB6Oer8gURWmpaG98SvOaY=", "signatureBase64": "gOWmDDmPlUpgK4Aljuw1klTKUqr5iRGysk3ZQrG9JS7DcI5G5z0HefcIzmJX7GLn6px/xUtoV/U345N8Xn05DQ=="},
-    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "3480e6f9a34696c24767b87d840f1d30b3e0ddb46632e8a5162d2e93d30e8894", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAaoWu6727Cm0SF2ISaNL0T4gJlGVYaqLUnRqZnSCJNng=", "signatureBase64": "7V0AsejL/Jw2WqKA5aDo784Ah+JuKBUg35gIQslevoFyvPNC7nRPJzjtnnVXDIExlSFES8nGI21pDf9ZkMLvCQ=="}
+    {"id": "dsse-intent-site-alpha", "caseId": "intent-site-alpha", "keyId": "key.web-build-intent.3", "payloadType": "application/vnd.kokoro.web-build-intent.v1+json", "expectedPaeSha256": "8fbe52fd78ab4ca70486a7069798ae7657c53cb9ee941cfb4a59e7ee40e6929e", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEA1wdPBh21DWEf/ygQaBzGQ6vdTALoVRxA6H1mM5Bwpbg=", "signatureBase64": "dGbHdVuCNjUc52pJ4Rm78mknu9bRig9U85RW2lsDEtKUe7Tb2ioVEFa4BKLODTcuOWtuz6bvj7JaCxGQslqNAA=="},
+    {"id": "dsse-certification-site-alpha", "caseId": "certification-site-alpha", "keyId": "key.release-certification.1", "payloadType": "application/vnd.kokoro.release-certification-instance.v1+json", "expectedPaeSha256": "7dbe7a6ec6b4c41e791fe1f4e1472c482b9b502844cc6b1f2c670d1b4ece46e1", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAqSApGS0yGjZxcafTZCu5pR4wHvov6BKlMf9U9KdBXwQ=", "signatureBase64": "zagj431QljoilxsEqlVvVytnpY26zal6kqTsqA2c+75aCY6VFLn21j6wKtYySrhuZFExpTAVq7SgdxGmDxE4Aw=="},
+    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "cd45de34efe8a35f1a39708c35f088c676fcd5d6c03281effcc2f2edfd3bd167", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEADMaHlIFwf1pmvn8mKQLrsUMrg3wyBWeo+1hu/+g97WE=", "signatureBase64": "Khh9SbvaJiREAeHzHU5PMmEzO12VqGpYtJUQHgn29YnU30iZgTSWlsjlIKUL35hyKxFOMrjbCTOq7plR2EqJAg=="}
   ],
   "negativeCases": [
     {"id": "catalog-unknown-field", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/unexpected", "value": true}, "expectedCode": "web_release_positive_schema_invalid"},
@@ -237,6 +338,21 @@
     {"id": "manifest-measured-tool-mismatch", "baseCaseId": "manifest-chat-only", "mutation": {"op": "replace", "path": "/measuredToolArtifacts/0/digest", "value": "sha256:9999999999999999999999999999999999999999999999999999999999999999"}, "expectedCode": "web_release_manifest_toolchain_mismatch"},
     {"id": "manifest-missing-bff-closure", "baseCaseId": "manifest-chat-only", "mutation": {"op": "remove", "path": "/bffOperationGroups/0"}, "expectedCode": "web_release_manifest_registry_projection_invalid"},
     {"id": "provenance-site-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/externalParameters/siteRef", "value": "site.evil"}, "expectedCode": "web_release_provenance_context_mismatch"},
-    {"id": "provenance-dependency-role-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/resolvedDependencies/4/digest/sha256", "value": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}, "expectedCode": "web_release_provenance_dependency_mismatch"}
+    {"id": "provenance-dependency-role-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/buildDefinition/resolvedDependencies/4/digest/sha256", "value": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}, "expectedCode": "web_release_provenance_dependency_mismatch"},
+    {"id": "profile-inventory-cycle", "baseCaseId": "profile-chat-only", "mutation": {"op": "add", "path": "/surfaceInventory", "value": {"ref": "inventory.site-alpha.1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "profile-unknown-surface", "baseCaseId": "profile-chat-only", "mutation": {"op": "replace", "path": "/enabledSurfaceRefs/0", "value": "surface.absent"}, "expectedCode": "web_release_profile_surface_invalid"},
+    {"id": "profile-incomplete-journey", "baseCaseId": "profile-chat-only", "mutation": {"op": "replace", "path": "/journeyClosure/journeys/0/journeyRef", "value": "journey.memory"}, "expectedCode": "web_release_profile_journey_invalid"},
+    {"id": "candidate-inventory-cycle", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "add", "path": "/surfaceInventory", "value": {"ref": "inventory.site-alpha.1", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "candidate-profile-mismatch", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "replace", "path": "/launchProductProfile/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_candidate_reference_invalid"},
+    {"id": "candidate-model-role-missing", "baseCaseId": "candidate-site-alpha", "mutation": {"op": "remove", "path": "/modelRequirements/0"}, "expectedCode": "web_release_candidate_model_invalid"},
+    {"id": "inventory-candidate-mismatch", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/siteReleaseCandidate/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_inventory_candidate_invalid"},
+    {"id": "inventory-profile-mismatch", "baseCaseId": "inventory-chat-only", "mutation": {"op": "replace", "path": "/shellRequirementRefs/0", "value": "shell.other"}, "expectedCode": "web_release_inventory_profile_invalid"},
+    {"id": "registry-bff-authority-overlap", "baseCaseId": "registry-published", "mutation": {"op": "replace", "path": "/units/2/bffOperationGroups/0/sameOriginHandlerOperationIds/0", "value": "createSession"}, "expectedCode": "web_release_composition_registry_identity_invalid"},
+    {"id": "intent-model-inventory-mismatch", "baseCaseId": "intent-site-alpha", "mutation": {"op": "replace", "path": "/modelRequirements/0/modelInventory/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_intent_reference_invalid"},
+    {"id": "manifest-bff-family-missing", "baseCaseId": "manifest-chat-only", "mutation": {"op": "remove", "path": "/bffOperationGroups/0/operationFamilyRef"}, "expectedCode": "web_release_positive_schema_invalid"},
+    {"id": "provenance-artifact-mismatch", "baseCaseId": "provenance-site-alpha", "mutation": {"op": "replace", "path": "/predicate/runDetails/webArtifactDigest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_provenance_artifact_invalid"},
+    {"id": "certification-expired-before-generation", "baseCaseId": "certification-site-alpha", "mutation": {"op": "replace", "path": "/validUntil", "value": "2026-07-31T12:34:00.000Z"}, "expectedCode": "web_release_certification_validity_invalid"},
+    {"id": "certification-candidate-epoch-mismatch", "baseCaseId": "certification-site-alpha", "mutation": {"op": "replace", "path": "/candidateAuthorizationEpoch", "value": "8"}, "expectedCode": "web_release_certification_context_invalid"},
+    {"id": "site-release-bootstrap-mismatch", "baseCaseId": "site-release-alpha", "mutation": {"op": "replace", "path": "/bootstrapBindings/surfaceInventory/digest", "value": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}, "expectedCode": "web_release_site_release_bootstrap_invalid"}
   ]
 }
