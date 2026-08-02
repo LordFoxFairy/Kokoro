@@ -2368,6 +2368,7 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
     ]
     assert _service_methods(publication, "SitePublicationService") == [
         "AuthorizeSiteReleaseCandidate",
+        "RevokeSiteReleaseCandidate",
         "PublishSurfaceInventory",
         "PublishWebBuildMaterialBundle",
         "IssueWebBuildIntent",
@@ -2381,9 +2382,12 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
         "AuthorizeSiteReleaseCandidateEffect": (
             "candidate_ref", "expected_candidate_version", "candidate_authorization_epoch",
         ),
+        "RevokeSiteReleaseCandidateEffect": ("candidate", "expected_authorization_epoch"),
         "PublishSurfaceInventoryEffect": ("candidate", "surface_inventory"),
         "PublishWebBuildMaterialBundleEffect": ("candidate", "web_build_material_bundle"),
-        "IssueWebBuildIntentEffect": ("candidate", "web_build_intent"),
+        "IssueWebBuildIntentEffect": (
+            "candidate", "expected_surface_inventory", "expected_web_build_material_bundle",
+        ),
         "RecordReleaseEvidenceEffect": (
             "candidate", "compiled_web_manifest", "web_artifact_provenance",
         ),
@@ -2395,6 +2399,43 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
             assert field in body
         assert "bytes payload" not in body
         assert "string operation" not in body
+    intent_effect = _message_body(publication, "IssueWebBuildIntentEffect")
+    assert "web_build_intent =" not in intent_effect
+    assert "issued_at =" not in intent_effect
+    revoke_response = _message_body(publication, "RevokeSiteReleaseCandidateResponse")
+    assert "SiteReleaseCandidateAuthorizationState state" in revoke_response
+    assert "previous_authorization_epoch" in revoke_response
+    assert "authorization_epoch" in revoke_response
+    assert "CommandReceiptV2 receipt" in revoke_response
+    assert "SITE_RELEASE_CANDIDATE_AUTHORIZATION_STATE_REVOKED" in publication
+    revoke_effect = _message_body(publication, "RevokeSiteReleaseCandidateEffect")
+    assert "candidate.candidate_authorization_epoch == this.expected_authorization_epoch" in revoke_effect
+    revoke_request = _message_body(publication, "RevokeSiteReleaseCandidateRequest")
+    assert "has(this.context.step_up_at)" in revoke_request
+    assert "this.site_id in this.context.scope.site.site_ids" in revoke_request
+    assert "this.authorization_epoch == this.previous_authorization_epoch + 1u" in revoke_response
+    assert "COMMAND_RECEIPT_STATE_V2_COMMITTED" in revoke_response
+    assert "SitePublicationService/RevokeSiteReleaseCandidate" in revoke_response
+    for invariant in (
+        "one transaction-local compare-and-swap",
+        "current AUTHORIZED state",
+        "same command identity and request digest",
+        "without advancing the epoch again",
+        "cross-Site/binding mismatch",
+        "REVOKED is permanent",
+        "AuthorizeSiteReleaseCandidate cannot",
+        "revive it",
+        "requires a new Candidate",
+    ):
+        assert invariant in publication
+    generator = (CONTRACT / "generate.mjs").read_text()
+    assert "revokeSiteReleaseCandidateRequestDigest" in generator
+    assert 'sitePublicationDigest("RevokeSiteReleaseCandidate"' in generator
+    issue_digest = generator[generator.index("export function issueWebBuildIntentRequestDigest"):]
+    issue_digest = issue_digest[:issue_digest.index("export function publishReleaseCertificationRequestDigest")]
+    assert "effect.webBuildIntent" not in issue_digest
+    assert "effect.expectedSurfaceInventory?.ref" in issue_digest
+    assert "effect.expectedWebBuildMaterialBundle?.ref" in issue_digest
     evidence_request = _message_body(publication, "RecordReleaseEvidenceRequest")
     assert "AttestedReleaseEvidenceContext context" in evidence_request
     assert "AuthenticatedOperatorCommandContext context" not in evidence_request
@@ -2416,7 +2457,7 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
     assert "factor_classes" not in workload_context
     assert "managed_device" not in workload_context
     for operation in (
-        "AuthorizeSiteReleaseCandidateRequest", "PublishWebBuildMaterialBundleRequest",
+        "AuthorizeSiteReleaseCandidateRequest", "RevokeSiteReleaseCandidateRequest", "PublishWebBuildMaterialBundleRequest",
         "IssueWebBuildIntentRequest", "PublishReleaseCertificationRequest", "PublishSiteReleaseRequest",
     ):
         assert "AuthenticatedOperatorCommandContext context" in _message_body(publication, operation)
@@ -2439,6 +2480,7 @@ def test_site_publication_authority_has_typed_contract_document_operations() -> 
     ]
     assert [operation["id"] for operation in by_id["platform-site-publication"]["operations"]] == [
         "AuthorizeSiteReleaseCandidate",
+        "RevokeSiteReleaseCandidate",
         "PublishSurfaceInventory",
         "PublishWebBuildMaterialBundle",
         "IssueWebBuildIntent",

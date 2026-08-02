@@ -1768,12 +1768,14 @@ import {
   PublishSiteReleaseEffectSchema,
   PublishSurfaceInventoryEffectSchema,
   PublishWebBuildMaterialBundleEffectSchema,
+  RevokeSiteReleaseCandidateEffectSchema,
   type AuthorizeSiteReleaseCandidateEffect,
   type IssueWebBuildIntentEffect,
   type PublishReleaseCertificationEffect,
   type PublishSiteReleaseEffect,
   type PublishSurfaceInventoryEffect,
   type PublishWebBuildMaterialBundleEffect,
+  type RevokeSiteReleaseCandidateEffect,
 } from "./kokoro/platform/site/v1/site_publication_pb.js";
 
 function sitePublicationDigest(
@@ -1794,6 +1796,13 @@ export function authorizeSiteReleaseCandidateRequestDigest(context: Authenticate
     [effect.candidateRef, effect.launchProductProfile.ref, effect.productSurfaceCatalog.ref], verified);
 }
 
+export function revokeSiteReleaseCandidateRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: RevokeSiteReleaseCandidateEffect, verified: VerifiedAuthenticatedAdminAxes): string {
+  if (effect.candidate === undefined) throw new Error("site_candidate_binding_required");
+  return sitePublicationDigest("RevokeSiteReleaseCandidate", context, siteId,
+    { typeName: RevokeSiteReleaseCandidateEffectSchema.typeName, bytes: toBinary(RevokeSiteReleaseCandidateEffectSchema, effect, { writeUnknownFields: false }) },
+    [effect.candidate.candidateRef], verified);
+}
+
 export function publishSurfaceInventoryRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishSurfaceInventoryEffect, verified: VerifiedAuthenticatedAdminAxes): string {
   if (effect.candidate === undefined || effect.surfaceInventory === undefined) throw new Error("surface_inventory_owner_bindings_required");
   return sitePublicationDigest("PublishSurfaceInventory", context, siteId,
@@ -1809,10 +1818,15 @@ export function publishWebBuildMaterialBundleRequestDigest(context: Authenticate
 }
 
 export function issueWebBuildIntentRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: IssueWebBuildIntentEffect, verified: VerifiedAuthenticatedAdminAxes): string {
-  if (effect.candidate === undefined || effect.webBuildIntent === undefined) throw new Error("web_build_intent_owner_bindings_required");
+  if (effect.candidate === undefined) throw new Error("web_build_intent_candidate_binding_required");
   return sitePublicationDigest("IssueWebBuildIntent", context, siteId,
     { typeName: IssueWebBuildIntentEffectSchema.typeName, bytes: toBinary(IssueWebBuildIntentEffectSchema, effect, { writeUnknownFields: false }) },
-    [effect.candidate.candidateRef, effect.webBuildIntent.ref], verified);
+    [
+      effect.candidate.candidateRef,
+      ...[effect.expectedSurfaceInventory?.ref, effect.expectedWebBuildMaterialBundle?.ref].filter(
+        (ref): ref is string => ref !== undefined,
+      ),
+    ], verified);
 }
 
 export function publishReleaseCertificationRequestDigest(context: AuthenticatedOperatorCommandContext, siteId: string, effect: PublishReleaseCertificationEffect, verified: VerifiedAuthenticatedAdminAxes): string {

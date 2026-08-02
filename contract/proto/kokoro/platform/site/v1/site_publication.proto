@@ -13,6 +13,17 @@ import "kokoro/platform/publication/v1/publication_common.proto";
 // Activation and active-pointer CAS remain on SiteLifecycleService.
 service SitePublicationService {
   rpc AuthorizeSiteReleaseCandidate(AuthorizeSiteReleaseCandidateRequest) returns (AuthorizeSiteReleaseCandidateResponse) {}
+  // The provider MUST execute this as one transaction-local compare-and-swap
+  // over (site_id, candidate_ref). A first execution verifies the complete
+  // Candidate binding, current AUTHORIZED state, and current epoch equal to the
+  // expectation before persisting REVOKED, epoch + 1, and the COMMITTED receipt.
+  // Only the same command identity and request digest may return that persisted
+  // result with replayed=true, without advancing the epoch again. A different
+  // command, stale epoch, cross-Site/binding mismatch, or already-revoked
+  // Candidate is a conflict, never a replay. REVOKED is permanent for the exact
+  // Candidate identity/version/digest; AuthorizeSiteReleaseCandidate cannot
+  // revive it, and a later publication attempt requires a new Candidate.
+  rpc RevokeSiteReleaseCandidate(RevokeSiteReleaseCandidateRequest) returns (RevokeSiteReleaseCandidateResponse) {}
   rpc PublishSurfaceInventory(PublishSurfaceInventoryRequest) returns (PublishSurfaceInventoryResponse) {}
   rpc PublishWebBuildMaterialBundle(PublishWebBuildMaterialBundleRequest) returns (PublishWebBuildMaterialBundleResponse) {}
   rpc IssueWebBuildIntent(IssueWebBuildIntentRequest) returns (IssueWebBuildIntentResponse) {}
@@ -59,6 +70,78 @@ message AuthorizeSiteReleaseCandidateResponse {
   kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
   bool replayed = 2;
   kokoro.common.v2.CommandReceiptV2 receipt = 3 [(buf.validate.field).required = true];
+}
+
+enum SiteReleaseCandidateAuthorizationState {
+  SITE_RELEASE_CANDIDATE_AUTHORIZATION_STATE_UNSPECIFIED = 0;
+  SITE_RELEASE_CANDIDATE_AUTHORIZATION_STATE_AUTHORIZED = 1;
+  SITE_RELEASE_CANDIDATE_AUTHORIZATION_STATE_REVOKED = 2;
+}
+
+message RevokeSiteReleaseCandidateEffect {
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.expected_epoch_matches_binding"
+    message: "candidate binding epoch must equal the expected authorization epoch"
+    expression: "this.candidate.candidate_authorization_epoch == this.expected_authorization_epoch"
+  };
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  uint64 expected_authorization_epoch = 2 [(buf.validate.field).uint64 = {
+    gte: 1
+    lt: 18446744073709551615
+  }];
+  string reason = 3 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 512
+  }];
+}
+
+message RevokeSiteReleaseCandidateRequest {
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.step_up_required"
+    message: "candidate revocation requires a step-up-authenticated operator context"
+    expression: "has(this.context.step_up_at)"
+  };
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.site_scope_required"
+    message: "candidate revocation must be bound to an explicit operator Site scope"
+    expression: "has(this.context.scope.site) && this.site_id in this.context.scope.site.site_ids"
+  };
+  kokoro.platform.admin.v2.AuthenticatedOperatorCommandContext context = 1 [(buf.validate.field).required = true];
+  string site_id = 2 [(buf.validate.field).string = {
+    min_len: 3
+    max_len: 128
+  }];
+  RevokeSiteReleaseCandidateEffect effect = 3 [(buf.validate.field).required = true];
+}
+
+message RevokeSiteReleaseCandidateResponse {
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.revoked_terminal"
+    message: "a successful candidate revocation response is always terminal revoked"
+    expression: "this.state == kokoro.platform.site.v1.SiteReleaseCandidateAuthorizationState.SITE_RELEASE_CANDIDATE_AUTHORIZATION_STATE_REVOKED"
+  };
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.epoch_advanced_once"
+    message: "candidate revocation advances the authorization epoch exactly once"
+    expression: "this.authorization_epoch == this.previous_authorization_epoch + 1u && this.candidate.candidate_authorization_epoch == this.authorization_epoch"
+  };
+  option (buf.validate.message).cel = {
+    id: "site_release_candidate_revoke.committed_receipt"
+    message: "candidate revocation success requires the exact committed operation receipt"
+    expression: "this.receipt.state == kokoro.common.v2.CommandReceiptStateV2.COMMAND_RECEIPT_STATE_V2_COMMITTED && this.receipt.operation == 'kokoro.platform.site.v1.SitePublicationService/RevokeSiteReleaseCandidate'"
+  };
+  kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
+  uint64 previous_authorization_epoch = 2 [(buf.validate.field).uint64 = {
+    gte: 1
+    lt: 18446744073709551615
+  }];
+  uint64 authorization_epoch = 3 [(buf.validate.field).uint64 = {gte: 2}];
+  SiteReleaseCandidateAuthorizationState state = 4 [(buf.validate.field).enum = {
+    defined_only: true
+    not_in: [0]
+  }];
+  bool replayed = 5;
+  kokoro.common.v2.CommandReceiptV2 receipt = 6 [(buf.validate.field).required = true];
 }
 
 message PublishSurfaceInventoryEffect {
@@ -112,11 +195,15 @@ message PublishWebBuildMaterialBundleResponse {
 }
 
 message IssueWebBuildIntentEffect {
-  // This human command authorizes Platform Site to issue the exact signed
-  // intent. The operator never supplies signing material or a build credential.
+  // The caller authorizes issuance and may assert already-published inputs,
+  // but never authors the Platform-issued ref, revision, digest, issuer heads,
+  // issued_at, signing material, or build credentials. Platform deterministically
+  // creates the intent from command identity plus the exact candidate authority
+  // and returns the resulting immutable binding.
   kokoro.platform.publication.v1.CandidateAuthorityBinding candidate = 1 [(buf.validate.field).required = true];
-  kokoro.platform.publication.v1.ImmutableContractRevisionBinding web_build_intent = 2 [(buf.validate.field).required = true];
-  string reason = 3 [(buf.validate.field).string = {
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding expected_surface_inventory = 2;
+  kokoro.platform.publication.v1.ImmutableContractRevisionBinding expected_web_build_material_bundle = 3;
+  string reason = 4 [(buf.validate.field).string = {
     min_len: 3
     max_len: 512
   }];

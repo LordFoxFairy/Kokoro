@@ -154,7 +154,12 @@ cannot satisfy the release chain.
 
 `PublishSiteReleaseEffect` is a latest-only Site Publication command: callers provide only a complete Candidate
 ref/version/authorization-epoch/digest binding and `reason`; the future Platform owner must generate the immutable
-SiteRelease and all authority-bound facts. `platform-site-provisioning@v1` now contains only `RegisterSite`; it is not a
+SiteRelease and all authority-bound facts. `IssueWebBuildIntent` follows the same owner rule: callers provide the exact
+Candidate plus optional already-published Inventory/Material optimistic assertions, while Platform creates and returns the
+Intent ref/revision/digest using its live issuer heads and issued time. `RevokeSiteReleaseCandidate` is a Site-scoped,
+step-up command whose Candidate binding epoch must equal the CAS expectation; a committed response advances that epoch once
+and is terminal `REVOKED`. Replays return the same receipt and epoch result; reactivation is forbidden, so another release
+requires a new Candidate version/ref. `platform-site-provisioning@v1` now contains only `RegisterSite`; it is not a
 publication owner. `platform-product-catalog-publication@v1`, `platform-site-publication@v1`, and
 `platform-site-lifecycle@v1` are separate `contract-only` boundaries. Product Catalog/Profile publication cannot accept Site
 candidate or evidence effects, Site Publication cannot publish Product Catalog/Profile or activate a pointer, and Lifecycle

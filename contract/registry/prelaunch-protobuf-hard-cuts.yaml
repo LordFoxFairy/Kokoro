@@ -8,7 +8,7 @@
       "id": "site-lifecycle-activation-authority-r0a",
       "sourcePath": "proto/kokoro/platform/site/v1/site_lifecycle.proto",
       "baselineSourceDigest": "sha256:879f599f1d8a3737f0da7ab3c84d6f9c9c3420ff0b8f2f4b254502e2811c345e",
-      "candidateSourceDigest": "sha256:47be4c0c11bb00db3ad883194c9740db16c45a6f17d2c3939e41672158894f81",
+      "candidateSourceDigest": "sha256:c08935b7a22f012bb55aaf7ab62d6586e5ebf7a001fa05d470be5e9124c97dc7",
       "reason": "Pre-launch R0a hard cut: replace ambiguous release strings with typed candidate/version/epoch, active-pointer generation/CAS, and eligibility evidence references."
     },
     {
@@ -22,8 +22,8 @@
       "id": "site-publication-authority-r0a",
       "sourcePath": "proto/kokoro/platform/site/v1/site_publication.proto",
       "baselineSourceDigest": "absent",
-      "candidateSourceDigest": "sha256:7950624409ec3e37f07226fc7a88f46aeb0b3a285f2c45f535a6b0838e832ffa",
-      "reason": "Pre-launch R0a hard cut: introduce typed operator publication and separate attested-workload evidence admission operations."
+      "candidateSourceDigest": "sha256:59e0b18ea8304ae9f6bff0c73524c5e87abac714b526d3c22008c67a8a299fba",
+      "reason": "Pre-launch R0a hard cut: introduce typed operator publication, Platform-issued build intents, terminal Candidate revoke CAS, and separate attested-workload evidence admission operations."
     }
   ]
 }

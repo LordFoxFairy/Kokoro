@@ -1191,6 +1191,7 @@
       "lifecycle": "contract-only",
       "operations": [
         {"effect": true, "id": "AuthorizeSiteReleaseCandidate", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
+        {"effect": true, "id": "RevokeSiteReleaseCandidate", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": true, "id": "PublishSurfaceInventory", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": true, "id": "PublishWebBuildMaterialBundle", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
         {"effect": true, "id": "IssueWebBuildIntent", "receipt": {"kind": "command-receipt", "ref": "kokoro.common.v2.CommandReceiptV2"}, "retryClass": "same_identity", "scope": "site", "siteBinding": "request-field", "transport": "connect-rpc"},
