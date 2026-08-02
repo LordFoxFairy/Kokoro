@@ -142,6 +142,27 @@
       "version": 1
      }
     ],
+   "timeoutSeconds": 300
+   },
+   {
+    "id": "agent-session-web-agui",
+    "commandId": "node-agent-session-web-agui-v1",
+    "required": true,
+    "participants": [
+     "kokoro-agent",
+     "kokoro-session",
+     "kokoro-web"
+    ],
+    "protocols": [
+     {
+      "id": "session-agent-execution",
+      "version": 1
+     },
+     {
+      "id": "session-browser",
+      "version": 1
+     }
+    ],
     "timeoutSeconds": 300
    },
       {

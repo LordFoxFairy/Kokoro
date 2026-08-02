@@ -22,6 +22,7 @@ Scenarios do not replace child tests, mutate product data, or inspect private se
 | `web-session-http-sse.mjs` | Session | Web | Host-bound Site resolution + authenticated HTTP snapshot + resumable SSE |
 | `session-platform-internal-rpc.mjs` | Platform | Session | Legacy Platform runtime characterization |
 | `session_agent_durable.py` | Agent | Session | Durable command/fact transport |
+| `agent-session-web-agui.mjs` | Agent + Session | Web | Official AG-UI candidates → durable projection/replay → public UI authority |
 | `agent_model_gateway.py` | Platform | Agent | Model gateway HTTP |
 | `hub-runtime.mjs` | Platform Hub | Agent | Signed execution assembly resolve + streamed Skill artifact over ConnectRPC |
 
@@ -30,6 +31,14 @@ database, uploads a Skill through the official Admin API, and freezes the signed
 Platform projection handler. It then invokes Agent's production Hub client to resolve the exact execution
 assembly and stream the referenced artifact, verifies the artifact digest, and proves a Platform identity
 cannot call the Agent-only runtime. Root never seeds a private Hub collection.
+
+The AG-UI scenario composes three child-owned compatibility CLIs. Agent creates the official RUN/TEXT/success
+terminal fixture only through its production candidate adapter, Session owns database setup plus durable
+admission/paged replay, and Web consumes frames through its public decoder and live reducer before comparing the
+result with Session's final snapshot. Root binds the three exact manifest pins and the `6aa0f14` AG-UI contract
+authority, passes bounded files, and verifies public receipts; it never imports child packages or seeds a child
+table. Activity/Control/Receipt owner projection is deliberately not claimed by this scenario until the child
+compatibility surfaces can produce those facts through their production typed adapters.
 
 The Web/Session scenario's closed local HTTP fixture exposes only the production-shaped
 `/site-context/resolve` and `/hub/runtime/resolve` reads. Web runs with strict Host resolution and no development

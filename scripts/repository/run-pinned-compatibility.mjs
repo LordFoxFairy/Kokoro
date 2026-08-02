@@ -25,6 +25,7 @@ const COMMANDS = new Map([
   ["node-web-session-http-sse-v1", [process.execPath, "scripts/compatibility/web-session-http-sse.mjs"]],
   ["node-session-platform-internal-rpc-v1", [process.execPath, "scripts/compatibility/session-platform-internal-rpc.mjs"]],
   ["python-session-agent-durable-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/session_agent_durable.py"]],
+  ["node-agent-session-web-agui-v1", [process.execPath, "scripts/compatibility/agent-session-web-agui.mjs"]],
   ["python-agent-model-gateway-v1", ["uv", "run", "--locked", "python", "scripts/compatibility/agent_model_gateway.py"]],
   ["node-hub-runtime-v1", [process.execPath, "scripts/compatibility/hub-runtime.mjs"]],
 ]);
@@ -106,11 +107,12 @@ function safeChildEnvironment(environment) {
   );
 }
 
-function scenarioEnvironment(environment, scopeFile, scenarioId) {
+function scenarioEnvironment(environment, scopeFile, scenarioId, participantPins) {
   return {
     ...safeChildEnvironment(environment),
     KOKORO_COMPAT_SCOPE_FILE: scopeFile,
     KOKORO_COMPAT_SCENARIO_ID: scenarioId,
+    KOKORO_COMPAT_PARTICIPANT_PINS: JSON.stringify(participantPins),
   };
 }
 
@@ -576,7 +578,12 @@ async function runCompatibility(options, overrides = {}, control = {}) {
           await dependencies.runScenario(scenario, {
             ...context,
             scopeFile,
-            environment: scenarioEnvironment(context.environment, scopeFile, scenario.id),
+            environment: scenarioEnvironment(
+              context.environment,
+              scopeFile,
+              scenario.id,
+              Object.fromEntries(scenario.participants.map((id) => [id, manifestPins[id]])),
+            ),
           }),
           scenario.id,
         );

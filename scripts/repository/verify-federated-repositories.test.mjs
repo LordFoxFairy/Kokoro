@@ -304,6 +304,44 @@ test("Hub Connect runtime is promoted only for the Platform provider and Agent c
   assert.equal(protocols["kokoro-session"].some(({ id }) => id === "hub-runtime"), false);
 });
 
+test("federated AG-UI runtime composes the existing Agent-to-Session and Session-to-Web authorities", async () => {
+  const currentManifest = parseManifest(
+    await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),
+  );
+  const currentMatrix = JSON.parse(
+    await readFile(resolve(root, "config/repository/compatibility-matrix.json"), "utf8"),
+  );
+  assert.doesNotThrow(() => validateCompatibility(currentManifest, currentMatrix));
+
+  assert.deepEqual(currentMatrix.runtimeGate.scenarios.find(({ id }) => id === "agent-session-web-agui"), {
+    id: "agent-session-web-agui",
+    commandId: "node-agent-session-web-agui-v1",
+    required: true,
+    participants: ["kokoro-agent", "kokoro-session", "kokoro-web"],
+    protocols: [
+      { id: "session-agent-execution", version: 1 },
+      { id: "session-browser", version: 1 },
+    ],
+    timeoutSeconds: 300,
+  });
+
+  const protocols = Object.fromEntries(
+    currentManifest.repositories.map(({ id, protocols: declared }) => [id, declared]),
+  );
+  assert.deepEqual(protocols["kokoro-agent"].find(({ id }) => id === "session-agent-execution"), {
+    id: "session-agent-execution", version: 1, role: "provider", lifecycle: "active",
+  });
+  assert.deepEqual(protocols["kokoro-session"].find(({ id }) => id === "session-agent-execution"), {
+    id: "session-agent-execution", version: 1, role: "consumer", lifecycle: "active",
+  });
+  assert.deepEqual(protocols["kokoro-session"].find(({ id }) => id === "session-browser"), {
+    id: "session-browser", version: 1, role: "provider", lifecycle: "active",
+  });
+  assert.deepEqual(protocols["kokoro-web"].find(({ id }) => id === "session-browser"), {
+    id: "session-browser", version: 1, role: "consumer", lifecycle: "active",
+  });
+});
+
 test("Web publishes the Site project factory rather than the retired shared user app", async () => {
   const manifest = parseManifest(
     await readFile(resolve(root, "config/repository/federated-repositories.json"), "utf8"),

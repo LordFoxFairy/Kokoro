@@ -31,6 +31,7 @@ const SCENARIO_COMMANDS = new Map([
   ["web-session-http-sse", "node-web-session-http-sse-v1"],
   ["session-platform-internal-rpc", "node-session-platform-internal-rpc-v1"],
   ["session-agent-durable-localfake", "python-session-agent-durable-v1"],
+  ["agent-session-web-agui", "node-agent-session-web-agui-v1"],
   ["agent-model-gateway-localfake", "python-agent-model-gateway-v1"],
   ["hub-runtime", "node-hub-runtime-v1"],
 ]);

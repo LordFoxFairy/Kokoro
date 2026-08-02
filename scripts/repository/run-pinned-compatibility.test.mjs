@@ -173,7 +173,7 @@ test("PostgreSQL-only runner ignores Infra env-file and omits MySQL scope author
     provisionScope: async (scopeOptions) => { scopeCalls.provision.push(scopeOptions); },
     cleanupScope: async (scopeOptions) => { scopeCalls.cleanup.push(scopeOptions); },
     runScenario: async (scenario, context) => {
-      scenarioEnvironments.push(context.environment);
+      scenarioEnvironments.push({ scenario, environment: context.environment });
       return {
         schemaVersion: 1,
         scenarioId: scenario.id,
@@ -199,8 +199,14 @@ test("PostgreSQL-only runner ignores Infra env-file and omits MySQL scope author
     assert.ok([...scopeCalls.provision, ...scopeCalls.cleanup].every(
       (scopeOptions) => !Object.hasOwn(scopeOptions, "mysqlRootPassword"),
     ));
-    assert.ok(scenarioEnvironments.every((environment) =>
+    assert.ok(scenarioEnvironments.every(({ environment }) =>
       Object.keys(environment).every((key) => key.toLowerCase() !== "mysql_root_password")));
+    for (const { scenario, environment } of scenarioEnvironments) {
+      assert.deepEqual(
+        JSON.parse(environment.KOKORO_COMPAT_PARTICIPANT_PINS),
+        Object.fromEntries(scenario.participants.map((id) => [id, pins[id]])),
+      );
+    }
     const serializedEvidence = await readFile(item.evidencePath, "utf8");
     assert.equal(serializedEvidence.includes(legacySecret), false);
     assert.equal(serializedEvidence.includes(options.infraEnvFile), false);
