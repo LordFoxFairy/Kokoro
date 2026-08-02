@@ -10,6 +10,8 @@ import tempfile
 from copy import deepcopy
 from pathlib import Path
 
+import yaml
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT = ROOT / "contract"
@@ -17,6 +19,22 @@ EVIDENCE = CONTRACT / "proto/kokoro/agent/execution/v2/agent_execution_evidence.
 CONTROL = CONTRACT / "proto/kokoro/agent/control/v2/session_agent_control.proto"
 CONTROL_SPEC = CONTRACT / "spec/session-agent-control-v2.yaml"
 CORPUS = CONTRACT / "corpus/interaction-identity-v2.json"
+
+
+def test_browser_hitl_versions_preserve_the_full_uint64_wire_domain() -> None:
+    """JS clients must never narrow durable owner revisions to IEEE-754 numbers."""
+    spec = yaml.safe_load((CONTRACT / "spec/http.yaml").read_text())
+    objects = {item["name"]: item for item in spec["objects"]}
+
+    expected = {
+        "ActionDecisionCommandResult": "owner_version",
+        "PlanDecisionCommandResult": "plan_version",
+        "ActionDecisionRequest": "expected_owner_version",
+        "PlanDecisionRequest": "expected_plan_version",
+    }
+    for object_name, field_name in expected.items():
+        fields = {field["name"]: field for field in objects[object_name]["fields"]}
+        assert fields[field_name]["type"] == "uint64_string"
 
 
 def _message_body(source: str, message: str) -> str:

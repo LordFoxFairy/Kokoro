@@ -106,7 +106,7 @@ objects:
       - {name: decision_id, type: string_nonempty}
       - {name: owner_kind, type: enum:action_owner_kind}
       - {name: owner_ref, type: string_nonempty}
-      - {name: owner_version, type: positive_int}
+      - {name: owner_version, type: uint64_string}
       - {name: control_status, type: enum:control_status}
   - name: PlanDecisionCommandResult
     fields:
@@ -114,7 +114,7 @@ objects:
       - {name: run_id, type: string_nonempty}
       - {name: decision_id, type: string_nonempty}
       - {name: plan_proposal_ref, type: string_nonempty}
-      - {name: plan_version, type: positive_int}
+      - {name: plan_version, type: uint64_string}
       - {name: control_status, type: enum:control_status}
   - name: SessionMutationCommandResult
     fields:
@@ -683,7 +683,7 @@ objects:
       - {name: owner_kind, type: enum:action_owner_kind}
       - {name: owner_ref, type: opaque_ref}
       - {name: decision_group_ref, type: opaque_ref}
-      - {name: expected_owner_version, type: positive_int}
+      - {name: expected_owner_version, type: uint64_string}
       - {name: decision, type: object:ActionDecision}
   - name: AcceptPlanDecision
     fields: []
@@ -702,7 +702,7 @@ objects:
       - {name: expected_session_version, type: positive_int}
       - {name: expected_run_projection_version, type: positive_int}
       - {name: plan_proposal_ref, type: opaque_ref}
-      - {name: expected_plan_version, type: positive_int}
+      - {name: expected_plan_version, type: uint64_string}
       - {name: decision, type: object:PlanDecision}
   - name: UpdateSessionRequest
     fields:
