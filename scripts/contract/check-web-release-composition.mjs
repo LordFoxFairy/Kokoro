@@ -338,6 +338,7 @@ function validateCompositionRegistry(registry, catalog) {
   if (units.size !== registry.units.length) fail("web_release_composition_registry_identity_invalid", "unit");
   const packages = new Map(registry.packages.map((item) => [item.packageRef, item]));
   if (packages.size !== registry.packages.length) fail("web_release_composition_registry_identity_invalid", "package");
+  unique(registry.packages.map(({ name, version }) => `${name}\0${version}`), "web_release_composition_registry_identity_invalid");
   const knownSurfaces = new Set(catalog.surfaces.map(({ surfaceRef }) => surfaceRef));
   const surfaceProviders = [];
   const shellProviders = [];
@@ -538,20 +539,25 @@ function validateProvenance(provenance, related) {
   if (dependencies.size !== provenance.predicate.buildDefinition.resolvedDependencies.length) fail("web_release_provenance_reference_invalid", "duplicate dependency");
   const unprefixed = (value) => value.slice("sha256:".length);
   const sourceUri = (role) => `git+https://source.kokoro.dev/repositories/${encodeURIComponent(related.toolchain.baseSource.repositoryRef)}#${role}`;
-  const ociUri = ({ repositoryRef }) => `oci://registry.kokoro.dev/${encodeURIComponent(repositoryRef)}`;
-  const packageUri = ({ name, version }) => `pkg:npm/${encodeURIComponent(name).replaceAll("%2F", "/")}@${version}`;
-  const expectedDependencies = new Map([
+  const ociUri = (role, { repositoryRef }) => `oci://registry.kokoro.dev/${role}/${encodeURIComponent(repositoryRef)}`;
+  const packageUri = ({ packageRef, name, version }) =>
+    `pkg:npm/${encodeURIComponent(name).replaceAll("%2F", "/")}@${version}?kokoro_package_ref=${encodeURIComponent(packageRef)}`;
+  const expectedDependencyRows = [
     [sourceUri("commit"), unprefixed(related.toolchain.baseSource.commitDigest)],
     [sourceUri("tree"), unprefixed(related.toolchain.baseSource.treeDigest)],
     [`kokoro:template/${related.toolchain.baseTemplate.ref}`, unprefixed(related.toolchain.baseTemplate.digest)],
     [`kokoro:material-bundle/${related.intent.webBuildMaterialBundle.ref}`, unprefixed(related.intent.webBuildMaterialBundle.digest)],
-    [ociUri(related.toolchain.compilerArtifact), unprefixed(related.toolchain.compilerArtifact.digest)],
-    [ociUri(related.toolchain.inspectorArtifact), unprefixed(related.toolchain.inspectorArtifact.digest)],
-    [ociUri(related.toolchain.buildSandboxImage), unprefixed(related.toolchain.buildSandboxImage.digest)],
-    [ociUri(related.toolchain.inspectionSandboxImage), unprefixed(related.toolchain.inspectionSandboxImage.digest)],
+    [ociUri("compiler", related.toolchain.compilerArtifact), unprefixed(related.toolchain.compilerArtifact.digest)],
+    [ociUri("inspector", related.toolchain.inspectorArtifact), unprefixed(related.toolchain.inspectorArtifact.digest)],
+    [ociUri("build-sandbox", related.toolchain.buildSandboxImage), unprefixed(related.toolchain.buildSandboxImage.digest)],
+    [ociUri("inspection-sandbox", related.toolchain.inspectionSandboxImage), unprefixed(related.toolchain.inspectionSandboxImage.digest)],
     [`kokoro:lockfile/${related.manifest.manifestRef}`, unprefixed(related.manifest.lockfileDigest)],
     ...related.manifest.packages.map((item) => [packageUri(item), unprefixed(item.digest)]),
-  ]);
+  ];
+  if (new Set(expectedDependencyRows.map(([uri]) => uri)).size !== expectedDependencyRows.length) {
+    fail("web_release_provenance_reference_invalid", "expected dependency URI collision");
+  }
+  const expectedDependencies = new Map(expectedDependencyRows);
   if (dependencies.size !== expectedDependencies.size) fail("web_release_provenance_reference_invalid", "dependency set");
   for (const [uri, expectedDigest] of expectedDependencies) {
     if (dependencies.get(uri) !== expectedDigest) fail("web_release_provenance_dependency_mismatch", uri);

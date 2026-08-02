@@ -34,7 +34,8 @@ mandates, without adding a YAML parser dependency.
 JSON Schema 2020-12 documents with strict AJV, then verifies the closed owner registry, I-JSON/NFC input profile,
 RFC 8785 JCS SHA-256 vectors, DSSE PAE/Ed25519 vectors, exact Catalog-to-Inventory partition, owner digest chain,
 exact composition-registry projection, measured tool role/ref/digest bindings, compiled unit/package/route/BFF/model
-closure and SLSA/in-toto provenance binding through global, role-specific dependency URIs. Canonical vectors must
+closure and SLSA/in-toto provenance binding through global, role-specific dependency URIs. Tool roles and package refs
+are encoded into their dependency URI identities; duplicate package name/version identities and any URI collision fail closed. Canonical vectors must
 cover every positive case exactly once; DSSE vectors must cover exactly the registry rows whose signature profile requires DSSE.
 It explicitly keeps Product Catalog and
 Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas

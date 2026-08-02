@@ -273,10 +273,55 @@ test("coherent provenance binds every resolved dependency URI to its exact diges
     const dependencies = corpus.positiveCases.find(
       ({ contractId }) => contractId === "web-artifact-provenance-profile.v1",
     ).document.predicate.buildDefinition.resolvedDependencies;
-    const compiler = dependencies.find(({ uri }) => uri === "oci://registry.kokoro.dev/oci.kokoro.web-composition-compiler");
-    const packageArtifact = dependencies.find(({ uri }) => uri === "pkg:npm/%40kokoro/chat-product@1.0.0");
+    const compiler = dependencies.find(({ uri }) => uri === "oci://registry.kokoro.dev/compiler/oci.kokoro.web-composition-compiler");
+    const packageArtifact = dependencies.find(({ uri }) => uri === "pkg:npm/%40kokoro/chat-product@1.0.0?kokoro_package_ref=package.chat-product");
     [compiler.digest.sha256, packageArtifact.digest.sha256] = [packageArtifact.digest.sha256, compiler.digest.sha256];
   }, "web_release_provenance_dependency_mismatch");
+});
+
+test("coherent provenance rejects collisions between distinct measured tool roles", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const documents = new Map(corpus.positiveCases.map(({ contractId, document }) => [contractId, document]));
+    const toolchain = documents.get("web-build-toolchain.v1");
+    const manifest = documents.get("compiled-web-manifest.v1");
+    const provenance = documents.get("web-artifact-provenance-profile.v1");
+    toolchain.inspectorArtifact.repositoryRef = toolchain.compilerArtifact.repositoryRef;
+    manifest.measuredToolArtifacts.find(({ role }) => role === "inspector").repositoryRef = toolchain.compilerArtifact.repositoryRef;
+
+    const dependencies = provenance.predicate.buildDefinition.resolvedDependencies;
+    const compiler = dependencies.find(({ uri }) => uri.includes("web-composition-compiler"));
+    const inspector = dependencies.find(({ uri }) => uri.includes("web-artifact-inspector"));
+    inspector.uri = compiler.uri;
+    dependencies.splice(dependencies.indexOf(compiler), 1);
+  }, "web_release_provenance_reference_invalid");
+});
+
+test("coherent provenance rejects duplicate package name and version identities", async () => {
+  await coherentCorpusAttack((corpus) => {
+    const documents = new Map(corpus.positiveCases.map(({ contractId, document }) => [contractId, document]));
+    const registry = documents.get("web-composition-registry.v1");
+    const manifest = documents.get("compiled-web-manifest.v1");
+    const provenance = documents.get("web-artifact-provenance-profile.v1");
+    const aliasDigest = `sha256:${"b6".repeat(32)}`;
+    registry.packages.push({
+      packageRef: "package.chat-product-alias",
+      name: "@kokoro/chat-product",
+      version: "1.0.0",
+      digest: aliasDigest,
+    });
+    registry.units.find(({ unitRef }) => unitRef === "web.surface.chat").packageRefs.push("package.chat-product-alias");
+    manifest.packages.push({
+      packageRef: "package.chat-product-alias",
+      name: "@kokoro/chat-product",
+      version: "1.0.0",
+      digest: aliasDigest,
+      unitRefs: ["web.surface.chat"],
+    });
+    manifest.units.find(({ unitRef }) => unitRef === "web.surface.chat").packageRefs.push("package.chat-product-alias");
+    provenance.predicate.buildDefinition.resolvedDependencies.find(
+      ({ uri }) => uri.includes("chat-product@1.0.0"),
+    ).digest.sha256 = aliasDigest.slice("sha256:".length);
+  }, "web_release_composition_registry_identity_invalid");
 });
 
 test("coherent manifest must be the exact registry projection with no missing BFF or model closure", async () => {

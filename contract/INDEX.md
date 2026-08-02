@@ -60,7 +60,8 @@ Product Catalog owns Product/Surface/Journey business records, Platform Site own
 Release Composition owns toolchain/composition-registry/compiled-manifest/provenance publication. Payloads never contain their own digest
 or signature. Callers carry the digest when referencing another immutable payload; DSSE signatures and the final OCI
 artifact digest live outside the signed/canonical payload, preventing a digest cycle. Provenance dependencies use
-global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs and bind each URI to its exact owner digest role.
+global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs: tool URIs include the measured role and repository ref,
+while package URIs retain the package URL identity and include the unique composition package ref.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
