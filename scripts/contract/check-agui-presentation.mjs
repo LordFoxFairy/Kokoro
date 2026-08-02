@@ -45,10 +45,10 @@ const CONTRACT_PATHS = Object.freeze({
 // These are the reviewed contract sources, not caller-selected schemas carrying a familiar $id.
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
-  agentCandidateProfile: "55097c5ab3aa8700be601074f0d8dc78871cdbbf9250af6a311c341f55570743",
+  agentCandidateProfile: "51bed4a35ca703cf49d429b965b485cc7c0004d9267c7c5bec5adb9c322f3134",
   mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
-  eventSchema: "3e570872286243a2f481928ed7d1c3dab09eec29b71c093cc6955c2d915aee08",
-  agentCandidateSchema: "85baea2c0d02fd96f562f66c17f519aee501b444da289ba7bde54dfec2ee82ef",
+  eventSchema: "074a8ff8244d73e7ad4d5795e65f2df0cf5d99db7e4e6beabd58e267343f67b2",
+  agentCandidateSchema: "bdc359752f7619b1ba90a65b0daa316066bf1887b5c28b24042b5521897b8fd7",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
   presentationRowSchema: "9216fcfaca063b8c7576209e7108757749a655bbd7d538b9a8acb684356e72fa",
@@ -85,7 +85,6 @@ const AGENT_CANDIDATE_ACTIVITY_TYPES = Object.freeze([
   "kokoro.hitl.v1",
   "kokoro.plan.v1",
   "kokoro.subagent.v1",
-  "kokoro.media.v1",
   "kokoro.notice.v1",
   "kokoro.error.v1",
 ]);
@@ -320,7 +319,7 @@ function validateAgentCandidateProfile(profile) {
   for (const family of ["raw", "state", "messages", "delta", "native-tool", "reasoning", "thinking", "step", "chunk", "custom"]) {
     if (!profile.forbiddenEventFamilies.includes(family)) fail("agui_agent_candidate_forbidden_family_missing", family);
   }
-  exactArray(profile.forbiddenOwnerActivityTypes, ["kokoro.artifact.v1", "kokoro.cost.v1"], "agui_agent_candidate_owner_activity_invalid");
+  exactArray(profile.forbiddenOwnerActivityTypes, ["kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1"], "agui_agent_candidate_owner_activity_invalid");
   for (const field of ["rawEvent", "raw_event", "providerEvent", "provider_event", "messages", "input", "result", "extra"]) {
     if (!profile.forbiddenFields.includes(field)) fail("agui_agent_candidate_forbidden_field_missing", field);
   }
@@ -413,7 +412,8 @@ function validateAgentCandidateSchemaContract(schema) {
   if (
     activity?.type !== "object" || activity.additionalProperties !== false ||
     activity.properties?.messageId?.$ref !== `${presentationSchemaId}#/$defs/id` ||
-    activity.properties?.activityType?.enum?.length !== 8 || activity.allOf?.length !== 8
+    activity.properties?.activityType?.enum?.length !== AGENT_CANDIDATE_ACTIVITY_TYPES.length ||
+    activity.allOf?.length !== AGENT_CANDIDATE_ACTIVITY_TYPES.length
   ) fail("agui_agent_candidate_schema_defs_invalid", "activityCandidate");
 }
 

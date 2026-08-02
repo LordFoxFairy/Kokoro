@@ -122,6 +122,16 @@ parse it as a JavaScript number or substitute it for cursor semantics. Separatel
 Rendering libraries remain adapters only and do not
 own the wire contract.
 
+Every `ACTIVITY_SNAPSHOT` is a complete owner replacement with a positive uint64 `ownerVersion` and canonical
+`updatedAt`; projection sequence is never substituted for domain owner version. Media, Artifact, and Cost carry the
+same closed identities, candidate/output evidence, display metadata, amount/freshness, terminal outcome, and safe-failure
+facts used by snapshot hydration. Agent is forbidden from producing these three owner activities: Platform owns the
+facts, and Session alone synthesizes their browser presentation rows. Image, audio, video, and document Artifact display
+variants are closed and typed. HITL, control, and receipt replacements bind the same `ownerRef`, `decisionGroupRef`, and
+`controlRef`; integer `expectedVersion`/`version` aliases are removed in favor of uint64 owner versions. This gives Web
+one version-aware transition path for snapshot and live data and prevents generic activity cards from bypassing terminal
+or identity invariants.
+
 The fifteen Web Release Composition v1 documents are offline publication contracts. Root additionally publishes typed,
 isolated control-plane shapes for Product Catalog/Profile publication, operator-approved Site Candidate/Inventory/Material/
 Intent/Certification/Release publication, attested-workload Evidence admission, and Site activation; every new boundary remains `contract-only` and therefore claims no

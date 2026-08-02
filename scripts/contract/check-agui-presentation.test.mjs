@@ -341,12 +341,12 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   assert.deepEqual(result, {
     positiveCases: 2,
     negativeCases: 29,
-    durableFrames: 41,
+    durableFrames: 40,
     bindingReplacementDeltas: 14,
     mappingsCovered: 22,
-    agentCandidates: 33,
-    agentSourceFixtures: 15,
-    agentCandidateEnvelopeCases: 14,
+    agentCandidates: 31,
+    agentSourceFixtures: 14,
+    agentCandidateEnvelopeCases: 13,
     agentCandidateProjectionCases: 1,
     snapshotAuthorityCases: 1,
     snapshotAuthorityNegativeCases: 6,
@@ -744,10 +744,10 @@ test("freezes the Agent event-candidate profile below the browser presentation s
   ]);
   assert.deepEqual(candidate.allowedActivityTypes, [
     "kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1",
-    "kokoro.subagent.v1", "kokoro.media.v1", "kokoro.notice.v1", "kokoro.error.v1",
+    "kokoro.subagent.v1", "kokoro.notice.v1", "kokoro.error.v1",
   ]);
   assert.ok(candidate.forbiddenEventTypes.includes("CUSTOM"));
-  assert.deepEqual(candidate.forbiddenOwnerActivityTypes, ["kokoro.artifact.v1", "kokoro.cost.v1"]);
+  assert.deepEqual(candidate.forbiddenOwnerActivityTypes, ["kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1"]);
   for (const field of ["rawEvent", "input", "result", "extra"]) assert.ok(candidate.forbiddenFields.includes(field));
   assert.equal(candidate.terminalPolicy.runFinished, "success-only");
   assert.equal(candidate.identityPolicy.sourceOrdinal, "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero");
@@ -759,17 +759,64 @@ test("freezes the Agent event-candidate profile below the browser presentation s
   assert.equal(candidate.envelopeSchema, "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json");
 });
 
+test("projects complete versioned owner snapshots and keeps Platform media ownership out of Agent", async () => {
+  const schema = await readJson("contract/spec/kokoro-agui-presentation-event-v1.yaml");
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  const events = corpus.positiveCases.flatMap(({ frames }) => frames.map(({ data }) => data.event));
+  const activities = events.filter(({ type }) => type === "ACTIVITY_SNAPSHOT");
+  assert.ok(activities.length > 0);
+  for (const activity of activities) {
+    assert.match(activity.content.ownerVersion, /^[1-9][0-9]{0,19}$/u, activity.activityType);
+    assert.match(activity.content.updatedAt, /Z$/u, activity.activityType);
+  }
+
+  const media = activities.find(({ activityType }) => activityType === "kokoro.media.v1").content;
+  assert.deepEqual(
+    schema.$defs.activityMedia.properties.content.required,
+    ["mediaOperationRef", "definitionRef", "definitionRevisionRef", "ownerVersion", "state", "progressBps", "candidates", "updatedAt"],
+  );
+  assert.ok(media.candidates.length > 0);
+  assert.equal(Object.hasOwn(media, "operationRef"), false);
+
+  const artifact = activities.find(({ activityType }) => activityType === "kokoro.artifact.v1").content;
+  assert.equal(artifact.display.kind, artifact.mediaClass);
+  const cost = activities.find(({ activityType }) => activityType === "kokoro.cost.v1").content;
+  assert.equal(cost.mediaOperationRef, media.mediaOperationRef);
+  assert.match(cost.amount.amount, /^(0|[1-9][0-9]{0,39})$/u);
+
+  const hitl = activities.find(({ activityType }) => activityType === "kokoro.hitl.v1").content;
+  const control = events.find(({ name }) => name === "kokoro.control.replace.v1").value;
+  const receipt = events.find(({ name }) => name === "kokoro.receipt.replace.v1").value;
+  assert.equal(hitl.controlRef, control.controlRef);
+  assert.equal(hitl.ownerRef, control.ownerRef);
+  assert.equal(hitl.decisionGroupRef, control.decisionGroupRef);
+  assert.equal(receipt.controlRef, control.controlRef);
+  assert.equal(receipt.ownerRef, control.ownerRef);
+  assert.equal(receipt.decisionGroupRef, control.decisionGroupRef);
+  assert.equal(Object.hasOwn(hitl, "expectedVersion"), false);
+  assert.equal(Object.hasOwn(control, "expectedVersion"), false);
+  assert.equal(Object.hasOwn(receipt, "version"), false);
+
+  const candidateActivities = corpus.agentCandidateEnvelopeCases
+    .map(({ candidateEnvelope }) => candidateEnvelope.event)
+    .filter(({ type }) => type === "ACTIVITY_SNAPSHOT")
+    .map(({ activityType }) => activityType);
+  assert.equal(candidateActivities.includes("kokoro.media.v1"), false);
+  assert.equal(candidateActivities.includes("kokoro.artifact.v1"), false);
+  assert.equal(candidateActivities.includes("kokoro.cost.v1"), false);
+});
+
 test("freezes a closed Agent candidate envelope without browser or business identity axes", async () => {
   const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
   assert.ok(Array.isArray(corpus.agentCandidateProjectionCases));
-  assert.equal(corpus.agentSourceFixtures.length, 15);
-  assert.equal(corpus.agentCandidateEnvelopeCases.length, 14);
+  assert.equal(corpus.agentSourceFixtures.length, 14);
+  assert.equal(corpus.agentCandidateEnvelopeCases.length, 13);
   assert.deepEqual(
     corpus.agentCandidateEnvelopeCases.map(({ candidateEnvelope }) => candidateEnvelope.event.type),
     [
       "RUN_STARTED", "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT",
       "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
-      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
+      "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT", "ACTIVITY_SNAPSHOT",
       "TEXT_MESSAGE_END", "RUN_STARTED", "RUN_ERROR",
     ],
   );
@@ -1002,8 +1049,8 @@ test("freezes snapshot lastRecordedAt as the durable head time watermark", async
     corpus.snapshotAuthorityCases[0].snapshot.runBindings.map(({ state, terminalDisposition }) => [state, terminalDisposition]),
     [["finished", "success"], ["error", "error"]],
   );
-  assert.equal(corpus.snapshotAuthorityCases[0].snapshot.lastRecordedAt, "2026-08-01T13:00:15.000Z");
-  assert.equal(corpus.snapshotAuthorityCases[0].nextEventRecordedAt, "2026-08-01T13:00:16.000Z");
+  assert.equal(corpus.snapshotAuthorityCases[0].snapshot.lastRecordedAt, "2026-08-01T13:00:14.000Z");
+  assert.equal(corpus.snapshotAuthorityCases[0].nextEventRecordedAt, "2026-08-01T13:00:15.000Z");
 
   const illegalZeroHead = clone(corpus.positiveCases[0]);
   illegalZeroHead.snapshot.lastRecordedAt = "2026-08-01T12:00:00.000Z";
@@ -1279,7 +1326,7 @@ test("full repository gate accepts a coherent third Session with fresh semantic 
   await writeJson(root, "contract/corpus/agui-presentation-v1.json", corpus);
   const result = await validateRepository({ root });
   assert.equal(result.positiveCases, 3);
-  assert.equal(result.durableFrames, 67);
+  assert.equal(result.durableFrames, 66);
 });
 
 test("full repository gate rejects every cross-case durable and binding semantic identity collision", async () => {

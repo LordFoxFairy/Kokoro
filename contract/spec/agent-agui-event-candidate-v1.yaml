@@ -77,7 +77,7 @@
         "type": {"const": "ACTIVITY_SNAPSHOT"},
         "timestamp": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/timestamp"},
         "messageId": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/id"},
-        "activityType": {"enum": ["kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1", "kokoro.subagent.v1", "kokoro.media.v1", "kokoro.notice.v1", "kokoro.error.v1"]},
+        "activityType": {"enum": ["kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1", "kokoro.subagent.v1", "kokoro.notice.v1", "kokoro.error.v1"]},
         "content": {"type": "object"},
         "replace": {"const": true}
       },
@@ -87,7 +87,6 @@
         {"if": {"properties": {"activityType": {"const": "kokoro.hitl.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityHitl/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.plan.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityPlan/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.subagent.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySubagent/properties/content"}}}},
-        {"if": {"properties": {"activityType": {"const": "kokoro.media.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityMedia/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.notice.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityNotice/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.error.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityError/properties/content"}}}}
       ]

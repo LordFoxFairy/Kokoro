@@ -189,6 +189,119 @@ function bindSessionPublicIdentities(contractCase) {
   }
 }
 
+function normalizeOwnerPresentationFacts(contractCase) {
+  for (const frame of contractCase.frames) {
+    const event = frame.data.event;
+    const updatedAt = new Date(event.timestamp).toISOString();
+    if (event.type === "ACTIVITY_SNAPSHOT") {
+      const existing = event.content;
+      if (event.activityType === "kokoro.hitl.v1") {
+        event.content = {
+          ownerRef: existing.ownerRef,
+          ownerVersion: existing.ownerVersion ?? "1",
+          decisionGroupRef: existing.decisionGroupRef ?? "decision-group.01",
+          requiredOwnerRefs: existing.requiredOwnerRefs ?? [existing.ownerRef],
+          controlRef: existing.controlRef ?? "control.01",
+          kind: existing.kind,
+          title: existing.title,
+          description: existing.description,
+          allowedActions: existing.allowedActions,
+          status: existing.status,
+          ...(existing.riskSummary === undefined ? {} : { riskSummary: existing.riskSummary }),
+          ...(existing.inputSchemaRef === undefined ? {} : { inputSchemaRef: existing.inputSchemaRef }),
+          ...(existing.deadline === undefined ? {} : { deadline: existing.deadline }),
+          ...(existing.receiptRef === undefined ? {} : { receiptRef: existing.receiptRef }),
+          updatedAt,
+        };
+      } else if (event.activityType === "kokoro.media.v1") {
+        event.content = {
+          mediaOperationRef: existing.mediaOperationRef ?? existing.operationRef,
+          definitionRef: existing.definitionRef ?? "media-definition.image.generate",
+          definitionRevisionRef: existing.definitionRevisionRef ?? "media-definition-revision.image.generate.01",
+          ownerVersion: existing.ownerVersion ?? "1",
+          state: existing.state === "pending" ? "admission-pending" : existing.state,
+          progressBps: existing.progressBps,
+          candidates: existing.candidates ?? [{
+            candidateRef: "media-candidate.01",
+            ordinal: 0,
+            ownerVersion: "1",
+            state: "producing",
+          }],
+          ...(existing.costProjection === undefined ? {} : { costProjection: existing.costProjection }),
+          ...(existing.outcomeClass === undefined ? {} : { outcomeClass: existing.outcomeClass }),
+          ...(existing.safeFailure === undefined ? {} : { safeFailure: existing.safeFailure }),
+          updatedAt,
+        };
+      } else if (event.activityType === "kokoro.artifact.v1") {
+        event.content = {
+          artifactRef: existing.artifactRef,
+          artifactVersionRef: existing.artifactVersionRef,
+          ownerVersion: existing.ownerVersion ?? "1",
+          availability: existing.availability,
+          mediaClass: existing.mediaClass,
+          ...(existing.availability === "ready" ? {
+            display: existing.display ?? {
+              kind: "image", format: "png", width: 1024, height: 1024, byteSize: "1048576",
+            },
+          } : {}),
+          ...(existing.safeFailure === undefined ? {} : { safeFailure: existing.safeFailure }),
+          ...(existing.title === undefined ? {} : { title: existing.title }),
+          updatedAt,
+        };
+      } else if (event.activityType === "kokoro.cost.v1") {
+        const existingAmount = existing.amount?.amount ?? existing.displayAmount;
+        event.content = {
+          mediaOperationRef: existing.mediaOperationRef ?? "media-operation.01",
+          costProjectionRef: existing.costProjectionRef,
+          ownerVersion: existing.ownerVersion ?? "1",
+          state: existing.state,
+          freshness: ["current", "stale", "rebuilding", "unavailable"].includes(existing.freshness)
+            ? existing.freshness
+            : "current",
+          ...(existing.state === "estimated" || existing.state === "final" || existing.state === "corrected"
+            ? { amount: {
+              creditUnit: existing.amount?.creditUnit ?? existing.unit ?? "credit",
+              amount: typeof existingAmount === "string" && /^(0|[1-9][0-9]{0,39})$/u.test(existingAmount)
+                ? existingAmount
+                : "12",
+            } }
+            : {}),
+          ...(existing.correctsOwnerVersion === undefined ? {} : { correctsOwnerVersion: existing.correctsOwnerVersion }),
+          ...(existing.safeReason === undefined ? {} : { safeReason: existing.safeReason }),
+          updatedAt,
+        };
+      } else {
+        event.content = { ...existing, ownerVersion: existing.ownerVersion ?? "1", updatedAt };
+      }
+    }
+    if (event.type === "CUSTOM" && event.name === "kokoro.control.replace.v1") {
+      event.value = {
+        controlRef: event.value.controlRef,
+        ownerRef: event.value.ownerRef ?? "decision.01",
+        decisionGroupRef: event.value.decisionGroupRef ?? "decision-group.01",
+        kind: event.value.kind,
+        state: event.value.state,
+        ownerVersion: event.value.ownerVersion ?? String(event.value.expectedVersion ?? 1),
+        allowedActions: event.value.allowedActions,
+        updatedAt,
+      };
+    }
+    if (event.type === "CUSTOM" && event.name === "kokoro.receipt.replace.v1") {
+      event.value = {
+        receiptRef: event.value.receiptRef,
+        controlRef: event.value.controlRef ?? "control.01",
+        ownerRef: event.value.ownerRef ?? "decision.01",
+        decisionGroupRef: event.value.decisionGroupRef ?? "decision-group.01",
+        commandId: event.value.commandId,
+        operation: event.value.operation,
+        state: event.value.state,
+        ownerVersion: event.value.ownerVersion ?? String(event.value.version ?? 1),
+        updatedAt,
+      };
+    }
+  }
+}
+
 function replaceIdentityStrings(value, replacements) {
   if (typeof value === "string") return replacements.get(value) ?? value;
   if (Array.isArray(value)) return value.map((entry) => replaceIdentityStrings(entry, replacements));
@@ -397,6 +510,7 @@ for (const contractCase of corpus.positiveCases) {
   }
   for (const binding of contractCase.messageBindings) delete binding.internalMessageRef;
   bindSessionPublicIdentities(contractCase);
+  normalizeOwnerPresentationFacts(contractCase);
 }
 const resumedBaseBinding = authorityBase.runBindings.find(
   ({ segmentOrdinal }) => segmentOrdinal === 0,
@@ -427,6 +541,10 @@ const errorRunBindingRef = "run-binding.error.segment.0";
 const errorInternalRunRef = "internal.run.error";
 const errorPresentationRunId = "presentation.run.error.segment.0";
 const recordedAt = (sequence) => `2026-08-01T13:00:${String(sequence).padStart(2, "0")}.000Z`;
+const successTextEndOrdinal = activityTemplates.length + 3;
+const successRunFinishedOrdinal = successTextEndOrdinal + 1;
+const errorRunStartedDurableSequence = successRunFinishedOrdinal + 2;
+const errorRunTerminalDurableSequence = errorRunStartedDurableSequence + 1;
 parentCase.runBindings = [
   {
     bindingRef: successRunBindingRef, profileRevision, sessionId: "session.error",
@@ -435,8 +553,9 @@ parentCase.runBindings = [
     resumeOfPresentationRunId: null,
     parentLineage: { parentPresentationRunId: null },
     state: "finished", terminalDisposition: "success",
-    openedBySourceEventId: "agent.event.run.success.000", terminalSourceEventId: "agent.event.run.success.012",
-    openedAt: recordedAt(1), terminalAt: recordedAt(13),
+    openedBySourceEventId: "agent.event.run.success.000",
+    terminalSourceEventId: `agent.event.run.success.${String(successRunFinishedOrdinal).padStart(3, "0")}`,
+    openedAt: recordedAt(1), terminalAt: recordedAt(successRunFinishedOrdinal + 1),
   },
   {
     bindingRef: errorRunBindingRef, profileRevision, sessionId: "session.error",
@@ -448,7 +567,7 @@ parentCase.runBindings = [
     },
     state: "error", terminalDisposition: "error",
     openedBySourceEventId: "agent.event.run.error.000", terminalSourceEventId: "agent.event.run.error.001",
-    openedAt: recordedAt(14), terminalAt: recordedAt(15),
+    openedAt: recordedAt(errorRunStartedDurableSequence), terminalAt: recordedAt(errorRunTerminalDurableSequence),
   },
 ];
 parentCase.messageBindings = [
@@ -461,9 +580,9 @@ parentCase.messageBindings = [
     resumeSegmentOrdinal: 0,
     state: "ended",
     openedBySourceEventId: "agent.event.run.success.001",
-    endedBySourceEventId: "agent.event.run.success.011",
+    endedBySourceEventId: `agent.event.run.success.${String(successTextEndOrdinal).padStart(3, "0")}`,
     openedAt: recordedAt(2),
-    endedAt: recordedAt(12),
+    endedAt: recordedAt(successTextEndOrdinal + 1),
   },
 ];
 parentCase.sessionPrivateRouteFixtures = {
@@ -535,29 +654,29 @@ const successFrames = [
   ...activityTemplates.map(({ event, sourceKind }, index) => successFrame(event, sourceKind, index + 3, true)),
   successFrame(
     { type: "TEXT_MESSAGE_END" },
-    "presentation.message.text.ended", 11, true,
+    "presentation.message.text.ended", successTextEndOrdinal, true,
   ),
   successFrame(
     { type: "RUN_FINISHED", threadId: "thread.session.error", runId: successPresentationRunId },
-    "presentation.run.finished", 12,
+    "presentation.run.finished", successRunFinishedOrdinal,
   ),
 ];
-const errorStartedAt = recordedAt(14);
-const errorTerminalAt = recordedAt(15);
+const errorStartedAt = recordedAt(errorRunStartedDurableSequence);
+const errorTerminalAt = recordedAt(errorRunTerminalDurableSequence);
 const errorFrames = [
   runFrame(
     {
       type: "RUN_STARTED", timestamp: Date.parse(errorStartedAt), threadId: "thread.session.error",
       runId: errorPresentationRunId, parentRunId: successPresentationRunId,
     },
-    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.000", "presentation.run.started", "14", errorStartedAt) },
+    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.000", "presentation.run.started", String(errorRunStartedDurableSequence), errorStartedAt) },
   ),
   runFrame(
     {
       type: "RUN_ERROR", timestamp: Date.parse(errorTerminalAt),
       message: "The run could not be completed.", code: "RUN_FAILED",
     },
-    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.001", "presentation.run.error", "15", errorTerminalAt) },
+    { bindingRef: errorRunBindingRef, source: source("agent.event.run.error.001", "presentation.run.error", String(errorRunTerminalDurableSequence), errorTerminalAt) },
   ),
 ];
 parentCase.frames = [...successFrames, ...errorFrames];
@@ -573,6 +692,7 @@ corpus.agentSourceFixtures = [
 ];
 for (const contractCase of corpus.positiveCases) {
   bindSessionPublicIdentities(contractCase);
+  normalizeOwnerPresentationFacts(contractCase);
   opaquifyPresentationIdentities(contractCase);
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;
   delete contractCase.snapshot.runBindings;
@@ -725,7 +845,7 @@ corpus.snapshotAuthorityCases = [
       runBindings: structuredClone(parentCase.runBindings),
       messageBindings: structuredClone(parentCase.messageBindings),
     },
-    nextEventRecordedAt: recordedAt(16),
+    nextEventRecordedAt: recordedAt(errorRunTerminalDurableSequence + 1),
   },
 ];
 corpus.snapshotAuthorityNegativeCases = [
