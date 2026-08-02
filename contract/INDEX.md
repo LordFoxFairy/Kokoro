@@ -109,6 +109,11 @@ Both presentation binding schemas are browser-safe complete replacements: `inter
 payloads, and SSE. Session resolves those refs through its private route authority before projection. The conformance
 corpus carries `sessionPrivateRouteFixtures` only to validate that private mapping independently; those fixtures are not
 part of the browser wire. Checked-in smuggling attacks cover Run, message, and parent internal refs.
+Run bindings carry a required nullable `sessionRunId`: root/resume segments bind to the exact browser-safe Session Run,
+while DeepAgents child Runs must carry null. Message bindings likewise carry an exact nullable pair of
+`sessionMessageId` and `sessionTextPartId`. Null is an authoritative no-binding decision, never permission for Web to
+guess from the active command. Resume segments must preserve the same Session Run binding, and private Agent route refs
+must remain unequal to every Session public identity.
 Session-owned `projectionVersion` is a positive uint64 decimal string in both payload and row source envelopes. It remains a
 Session projection revision even where the current owner derives it from the same counter as `durableSeq`; consumers cannot
 parse it as a JavaScript number or substitute it for cursor semantics. Separately, the Kokoro-owned

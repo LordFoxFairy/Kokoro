@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": [
     "bindingRef", "profileRevision", "sessionId", "presentationThreadId",
-    "presentationRunId", "segmentOrdinal", "resumeOfPresentationRunId", "parentLineage", "state",
+    "presentationRunId", "sessionRunId", "segmentOrdinal", "resumeOfPresentationRunId", "parentLineage", "state",
     "terminalDisposition", "openedBySourceEventId", "terminalSourceEventId", "openedAt", "terminalAt"
   ],
   "properties": {
@@ -16,6 +16,10 @@
     "sessionId": {"$ref": "#/$defs/id"},
     "presentationThreadId": {"$ref": "#/$defs/presentationThreadId"},
     "presentationRunId": {"$ref": "#/$defs/presentationRunId"},
+    "sessionRunId": {
+      "description": "The browser-safe Session command Run identity when this presentation Run is attached to one. Null is an explicit no-binding decision for DeepAgents child/subagent Runs; consumers must never infer a Session Run from UI activity.",
+      "oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]
+    },
     "segmentOrdinal": {"type": "integer", "minimum": 0, "maximum": 65535},
     "resumeOfPresentationRunId": {"oneOf": [{"$ref": "#/$defs/presentationRunId"}, {"type": "null"}]},
     "parentLineage": {

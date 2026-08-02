@@ -151,6 +151,44 @@ function presentationIdentityFor(kind, caseId, ordinal) {
   return `presentation.${kind}:${opaqueFixture}`;
 }
 
+function sessionPublicIdentityFor(kind, caseId, ordinal) {
+  const fixtureMaterial = [
+    "kokoro.agui.session-public-identity-fixture.v1",
+    kind,
+    caseId,
+    String(ordinal),
+  ].join("\u0000");
+  const opaqueFixture = createHmac("sha256", presentationIdentityFixtureHmacKey)
+    .update(fixtureMaterial, "utf8")
+    .digest("hex");
+  return `session.${kind}:${opaqueFixture}`;
+}
+
+function bindSessionPublicIdentities(contractCase) {
+  const runByPresentationId = new Map();
+  for (const [index, binding] of contractCase.runBindings.entries()) {
+    const resumed = binding.resumeOfPresentationRunId === null
+      ? undefined
+      : runByPresentationId.get(binding.resumeOfPresentationRunId);
+    const ownsSessionRun = binding.parentLineage.parentPresentationRunId === null;
+    binding.sessionRunId = ownsSessionRun
+      ? resumed?.sessionRunId ?? sessionPublicIdentityFor("run", contractCase.id, index)
+      : null;
+    runByPresentationId.set(binding.presentationRunId, binding);
+  }
+  const runByBindingRef = new Map(contractCase.runBindings.map((binding) => [binding.bindingRef, binding]));
+  for (const [index, binding] of contractCase.messageBindings.entries()) {
+    const run = runByBindingRef.get(binding.presentationRunBindingRef);
+    const materialized = run?.sessionRunId !== null && run?.sessionRunId !== undefined;
+    binding.sessionMessageId = materialized
+      ? sessionPublicIdentityFor("message", contractCase.id, index)
+      : null;
+    binding.sessionTextPartId = materialized
+      ? sessionPublicIdentityFor("part", contractCase.id, index)
+      : null;
+  }
+}
+
 function replaceIdentityStrings(value, replacements) {
   if (typeof value === "string") return replacements.get(value) ?? value;
   if (Array.isArray(value)) return value.map((entry) => replaceIdentityStrings(entry, replacements));
@@ -358,6 +396,7 @@ for (const contractCase of corpus.positiveCases) {
     delete binding.parentLineage.parentInternalRunRef;
   }
   for (const binding of contractCase.messageBindings) delete binding.internalMessageRef;
+  bindSessionPublicIdentities(contractCase);
 }
 const resumedBaseBinding = authorityBase.runBindings.find(
   ({ segmentOrdinal }) => segmentOrdinal === 0,
@@ -533,6 +572,7 @@ corpus.agentSourceFixtures = [
   )),
 ];
 for (const contractCase of corpus.positiveCases) {
+  bindSessionPublicIdentities(contractCase);
   opaquifyPresentationIdentities(contractCase);
   contractCase.snapshot.lastRecordedAt = contractCase.snapshot.durableSeq === "0" ? null : contractCase.snapshot.lastRecordedAt;
   delete contractCase.snapshot.runBindings;
@@ -732,8 +772,41 @@ corpus.negativeCases = [
     !id.startsWith("binding-delta-") &&
     !id.startsWith("browser-private-") &&
     !id.startsWith("public-source-") &&
-    !id.startsWith("custom-run-owner-")
+    !id.startsWith("custom-run-owner-") &&
+    !id.startsWith("session-binding-")
   )),
+  {
+    id: "session-binding-root-run-missing",
+    baseCaseId: parentCase.id,
+    mutation: { operation: "set", path: "runBindings.0.sessionRunId", value: null },
+    expectedCode: "agui_session_run_binding_missing",
+  },
+  {
+    id: "session-binding-resume-run-conflict",
+    baseCaseId: authorityBase.id,
+    mutation: {
+      operation: "set",
+      path: "runBindings.1.sessionRunId",
+      value: sessionPublicIdentityFor("run", "attack", 1),
+    },
+    expectedCode: "agui_resume_session_run_conflict",
+  },
+  {
+    id: "session-binding-message-run-conflict",
+    baseCaseId: authorityBase.id,
+    mutation: { operation: "set", path: "messageBindings.0.sessionMessageId", value: null },
+    expectedCode: "agui_message_binding_schema_invalid",
+  },
+  {
+    id: "session-binding-private-run-equality",
+    baseCaseId: parentCase.id,
+    mutation: {
+      operation: "set",
+      path: "runBindings.0.sessionRunId",
+      value: parentCase.sessionPrivateRouteFixtures.runs[0].internalRunRef,
+    },
+    expectedCode: "agui_private_presentation_identity_equal",
+  },
   {
     id: "binding-delta-wrong-kind",
     baseCaseId: authorityBase.id,

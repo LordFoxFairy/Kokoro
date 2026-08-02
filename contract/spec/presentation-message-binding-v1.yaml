@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": [
     "bindingRef", "profileRevision", "sessionId", "presentationRunBindingRef",
-    "presentationMessageId", "resumeSegmentOrdinal", "state", "openedBySourceEventId", "endedBySourceEventId",
+    "presentationMessageId", "sessionMessageId", "sessionTextPartId", "resumeSegmentOrdinal", "state", "openedBySourceEventId", "endedBySourceEventId",
     "openedAt", "endedAt"
   ],
   "properties": {
@@ -16,6 +16,14 @@
     "sessionId": {"$ref": "#/$defs/id"},
     "presentationRunBindingRef": {"$ref": "#/$defs/runBindingRef"},
     "presentationMessageId": {"$ref": "#/$defs/presentationMessageId"},
+    "sessionMessageId": {
+      "description": "The browser-safe Session message identity when Session has materialized this presentation message. Null is explicit and forbids consumer-side identity guessing.",
+      "oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]
+    },
+    "sessionTextPartId": {
+      "description": "The browser-safe Session text part identity paired with sessionMessageId. Null exactly when sessionMessageId is null.",
+      "oneOf": [{"$ref": "#/$defs/id"}, {"type": "null"}]
+    },
     "resumeSegmentOrdinal": {"type": "integer", "minimum": 0, "maximum": 65535},
     "state": {"enum": ["open", "ended"]},
     "openedBySourceEventId": {"$ref": "#/$defs/publicSourceEventId"},
@@ -24,6 +32,11 @@
     "endedAt": {"oneOf": [{"$ref": "#/$defs/dateTime"}, {"type": "null"}]}
   },
   "allOf": [
+    {
+      "if": {"properties": {"sessionMessageId": {"type": "null"}}, "required": ["sessionMessageId"]},
+      "then": {"properties": {"sessionTextPartId": {"type": "null"}}},
+      "else": {"properties": {"sessionTextPartId": {"$ref": "#/$defs/id"}}}
+    },
     {
       "if": {"properties": {"state": {"const": "open"}}, "required": ["state"]},
       "then": {"properties": {"endedBySourceEventId": {"type": "null"}, "endedAt": {"type": "null"}}},

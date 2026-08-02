@@ -53,8 +53,8 @@ const CONTRACT_SOURCE_SHA256 = Object.freeze({
   projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
   presentationRowSchema: "9216fcfaca063b8c7576209e7108757749a655bbd7d538b9a8acb684356e72fa",
   bindingAuthorityDeltaSchema: "9fd30b734e2aa5f52be50eb1442eaf16843de8baa8098fcc996bc5e057f9dd2d",
-  runBindingSchema: "4d2ac9baca89f389d62ccf8d08b7890d4cdddf1a055996c6347058bc9e4c4c8d",
-  messageBindingSchema: "0b2f3b9ba68c78fc58182539e2d33673e7af4a5e9ba5ed1bc2c48b0edb69dd6c",
+  runBindingSchema: "54d50fd4179147e5b421d5ce6c957dce8d36be68906ba19bebd6372eea4136fe",
+  messageBindingSchema: "56a2b5728f6ac880eb44648f30b0a05a09cf58ae713bc4f111a02928211dd1a5",
   streamSchema: "ce51651ab17c080838547ec74c73a86574b9134aed351c7f27d92d1709441333",
   snapshotAuthoritySchema: "6c2ee288041cf29ea4dccd318c58bbaa4d19e1577de0acaf00aae076479e39e8",
 });
@@ -769,6 +769,7 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
   if (!Array.isArray(bindings) || bindings.length === 0 || bindings.length > 256) fail("agui_run_bindings_invalid");
   const refs = new Map();
   const presentationIds = new Map();
+  const sessionRunOwners = new Map();
   for (const binding of bindings) {
     validateOpaquePresentationIdentity(binding.bindingRef, OPAQUE_PRESENTATION_IDENTITY.runBindingRef);
     validateOpaquePresentationIdentity(binding.presentationThreadId, OPAQUE_PRESENTATION_IDENTITY.threadId);
@@ -788,6 +789,10 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
     registerGlobalIdentity(identities.presentationRunIds, binding.presentationRunId, "agui_global_presentation_run_id_duplicate");
     refs.set(binding.bindingRef, binding);
     presentationIds.set(binding.presentationRunId, binding);
+    if (binding.sessionRunId !== null && binding.segmentOrdinal === 0) {
+      if (sessionRunOwners.has(binding.sessionRunId)) fail("agui_session_run_binding_duplicate", binding.sessionRunId);
+      sessionRunOwners.set(binding.sessionRunId, binding.bindingRef);
+    }
     if (Date.parse(binding.openedAt) > Date.parse(binding.terminalAt ?? binding.openedAt)) fail("agui_run_binding_time_invalid", binding.bindingRef);
   }
   for (const binding of refs.values()) {
@@ -819,6 +824,15 @@ function validateRunBindings(bindings, validateSchema, snapshot, identities) {
     if (canonical(binding.parentLineage) !== canonical(previous.parentLineage)) fail("agui_resume_parent_confused", binding.bindingRef);
     if (binding.presentationThreadId !== previous.presentationThreadId || binding.sessionId !== previous.sessionId) {
       fail("agui_resume_scope_conflict", binding.bindingRef);
+    }
+    if (binding.sessionRunId !== previous.sessionRunId) fail("agui_resume_session_run_conflict", binding.bindingRef);
+  }
+  for (const binding of refs.values()) {
+    if (binding.parentLineage.parentPresentationRunId === null && binding.sessionRunId === null) {
+      fail("agui_session_run_binding_missing", binding.bindingRef);
+    }
+    if (binding.parentLineage.parentPresentationRunId !== null && binding.sessionRunId !== null) {
+      fail("agui_child_session_run_binding_forbidden", binding.bindingRef);
     }
   }
   return refs;
@@ -860,6 +874,8 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, id
   if (!Array.isArray(bindings) || bindings.length > 512) fail("agui_message_bindings_invalid");
   const refs = new Map();
   const ids = new Set();
+  const sessionMessageIds = new Set();
+  const sessionTextPartIds = new Set();
   for (const binding of bindings) {
     validateOpaquePresentationIdentity(binding.bindingRef, OPAQUE_PRESENTATION_IDENTITY.messageBindingRef);
     validateOpaquePresentationIdentity(binding.presentationRunBindingRef, OPAQUE_PRESENTATION_IDENTITY.runBindingRef);
@@ -871,6 +887,17 @@ function validateMessageBindings(bindings, validateSchema, runRefs, snapshot, id
     if (refs.has(binding.bindingRef) || ids.has(binding.presentationMessageId)) fail("agui_message_binding_duplicate");
     const run = runRefs.get(binding.presentationRunBindingRef);
     if (run === undefined || run.sessionId !== binding.sessionId || run.segmentOrdinal !== binding.resumeSegmentOrdinal) fail("agui_message_run_binding_invalid", binding.bindingRef);
+    const materialized = binding.sessionMessageId !== null;
+    if (materialized !== (binding.sessionTextPartId !== null)) fail("agui_session_message_binding_partial", binding.bindingRef);
+    if (materialized !== (run.sessionRunId !== null)) fail("agui_session_message_run_binding_conflict", binding.bindingRef);
+    if (binding.sessionMessageId !== null) {
+      if (sessionMessageIds.has(binding.sessionMessageId)) fail("agui_session_message_binding_duplicate", binding.sessionMessageId);
+      sessionMessageIds.add(binding.sessionMessageId);
+    }
+    if (binding.sessionTextPartId !== null) {
+      if (sessionTextPartIds.has(binding.sessionTextPartId)) fail("agui_session_text_part_binding_duplicate", binding.sessionTextPartId);
+      sessionTextPartIds.add(binding.sessionTextPartId);
+    }
     registerGlobalIdentity(identities.messageBindingRefs, binding.bindingRef, "agui_global_message_binding_ref_duplicate");
     registerGlobalIdentity(identities.presentationMessageIds, binding.presentationMessageId, "agui_global_presentation_message_id_duplicate");
     if (Date.parse(binding.openedAt) > Date.parse(binding.endedAt ?? binding.openedAt)) fail("agui_message_binding_time_invalid", binding.bindingRef);
@@ -939,7 +966,8 @@ function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs,
     }
     const binding = runRefs.get(route.presentationRunBindingRef);
     if (binding !== undefined) {
-      const publicRefs = [binding.bindingRef, binding.presentationThreadId, binding.presentationRunId];
+      const publicRefs = [binding.bindingRef, binding.presentationThreadId, binding.presentationRunId, binding.sessionRunId]
+        .filter((value) => value !== null);
       validatePrivateRefSeparation(route.internalRunRef, publicRefs);
       if (route.parentInternalRunRef !== null) validatePrivateRefSeparation(route.parentInternalRunRef, publicRefs);
     }
@@ -990,7 +1018,8 @@ function validateSessionPrivateRouteFixtures(contractCase, runRefs, messageRefs,
     if (binding !== undefined) {
       validatePrivateRefSeparation(
         route.internalMessageRef,
-        [binding.bindingRef, binding.presentationRunBindingRef, binding.presentationMessageId],
+        [binding.bindingRef, binding.presentationRunBindingRef, binding.presentationMessageId, binding.sessionMessageId, binding.sessionTextPartId]
+          .filter((value) => value !== null),
       );
     }
     if (!messageRefs.has(route.presentationMessageBindingRef) || messageRoutes.has(route.presentationMessageBindingRef)) {
@@ -1895,6 +1924,7 @@ function applySnapshotAuthorityMutation(authorityCase, mutation) {
     snapshot.runBindings[0].parentLineage = {
       parentPresentationRunId: snapshot.runBindings[1].presentationRunId,
     };
+    snapshot.runBindings[0].sessionRunId = null;
     return authorityCase;
   }
   if (mutation?.operation === "m0-interrupted-terminal") {

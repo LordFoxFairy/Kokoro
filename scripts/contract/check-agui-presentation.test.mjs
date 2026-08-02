@@ -340,7 +340,7 @@ test("validates the pinned upstream profile and complete presentation corpus", a
   const result = await validateRepository({ root: repositoryRoot });
   assert.deepEqual(result, {
     positiveCases: 2,
-    negativeCases: 25,
+    negativeCases: 29,
     durableFrames: 41,
     bindingReplacementDeltas: 14,
     mappingsCovered: 22,
@@ -404,6 +404,48 @@ test("keeps Agent internal route topology out of browser binding snapshots and d
     else frame.data.bindingAuthorityDelta.binding[field] = value;
     assert.throws(() => validateConformanceCase(candidate), /agui_browser_internal_route_forbidden/u, field);
   }
+});
+
+test("binds presentation identities only through explicit Session public identities", async () => {
+  const runSchema = await readJson("contract/spec/presentation-run-binding-v1.yaml");
+  const messageSchema = await readJson("contract/spec/presentation-message-binding-v1.yaml");
+  assert.ok(runSchema.required.includes("sessionRunId"));
+  assert.ok(messageSchema.required.includes("sessionMessageId"));
+  assert.ok(messageSchema.required.includes("sessionTextPartId"));
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  for (const contractCase of corpus.positiveCases) {
+    const runs = new Map(contractCase.runBindings.map((binding) => [binding.bindingRef, binding]));
+    for (const binding of contractCase.runBindings) {
+      assert.equal(
+        binding.sessionRunId === null,
+        binding.parentLineage.parentPresentationRunId !== null,
+        binding.bindingRef,
+      );
+      if (binding.segmentOrdinal > 0) {
+        const previous = contractCase.runBindings.find(
+          ({ presentationRunId }) => presentationRunId === binding.resumeOfPresentationRunId,
+        );
+        assert.equal(binding.sessionRunId, previous?.sessionRunId, binding.bindingRef);
+      }
+    }
+    for (const binding of contractCase.messageBindings) {
+      const run = runs.get(binding.presentationRunBindingRef);
+      assert.equal(binding.sessionMessageId === null, run?.sessionRunId === null, binding.bindingRef);
+      assert.equal(binding.sessionMessageId === null, binding.sessionTextPartId === null, binding.bindingRef);
+    }
+  }
+  assert.deepEqual(
+    corpus.negativeCases
+      .filter(({ id }) => id.startsWith("session-binding-"))
+      .map(({ id, expectedCode }) => [id, expectedCode]),
+    [
+      ["session-binding-root-run-missing", "agui_session_run_binding_missing"],
+      ["session-binding-resume-run-conflict", "agui_resume_session_run_conflict"],
+      ["session-binding-message-run-conflict", "agui_message_binding_schema_invalid"],
+      ["session-binding-private-run-equality", "agui_private_presentation_identity_equal"],
+    ],
+  );
 });
 
 test("keeps Agent source provenance private and assigns independent Session presentation event identities", async () => {

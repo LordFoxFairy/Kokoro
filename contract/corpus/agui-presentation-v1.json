@@ -58,7 +58,8 @@
           "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
           "terminalSourceEventId": "presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
           "openedAt": "2026-08-01T12:00:01.000Z",
-          "terminalAt": "2026-08-01T12:00:21.000Z"
+          "terminalAt": "2026-08-01T12:00:21.000Z",
+          "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
         },
         {
           "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
@@ -76,7 +77,8 @@
           "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
           "terminalSourceEventId": "presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
           "openedAt": "2026-08-01T12:00:22.000Z",
-          "terminalAt": "2026-08-01T12:00:26.000Z"
+          "terminalAt": "2026-08-01T12:00:26.000Z",
+          "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
         }
       ],
       "messageBindings": [
@@ -91,7 +93,9 @@
           "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
           "endedBySourceEventId": "presentation.event:e35749958642fa7597b294bc473bb05a5433c2b5370db898185d34beb1fdc1b5",
           "openedAt": "2026-08-01T12:00:02.000Z",
-          "endedAt": "2026-08-01T12:00:20.000Z"
+          "endedAt": "2026-08-01T12:00:20.000Z",
+          "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+          "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
         },
         {
           "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
@@ -104,7 +108,9 @@
           "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
           "endedBySourceEventId": "presentation.event:f8243e2181a45db9088caa53873160aac331db708a36146ab1973ace5cf9a595",
           "openedAt": "2026-08-01T12:00:23.000Z",
-          "endedAt": "2026-08-01T12:00:25.000Z"
+          "endedAt": "2026-08-01T12:00:25.000Z",
+          "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+          "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
         }
       ],
       "durableRows": [
@@ -159,11 +165,12 @@
                 "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:01.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:6a227ff7a11cc49ba8d0998d3fd49cfee4b7268b8d430e0de3162d2859610de1"
+          "projectionPayloadDigest": "sha256:c2e271bed95e4fcf209de89bf828a0e8ba16f3e7136c97710b44be0ece3e457a"
         },
         {
           "rowRef": "presentation-row.presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
@@ -212,11 +219,13 @@
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:02.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+                "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:b90668f52655c185d841aad501906cdcf013ed713f448bc6fa5aeceb641526fa"
+          "projectionPayloadDigest": "sha256:ed21e48d329b705dab655e02571fd5938d66a261d27ecc8d46a3f7a7505f2c53"
         },
         {
           "rowRef": "presentation-row.presentation.event:9aafa7b0dfb6283145ad4d7383baf49bcc475c2b000ef0e9eb7c148973fbf8b9",
@@ -1069,11 +1078,13 @@
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
                 "endedBySourceEventId": "presentation.event:e35749958642fa7597b294bc473bb05a5433c2b5370db898185d34beb1fdc1b5",
                 "openedAt": "2026-08-01T12:00:02.000Z",
-                "endedAt": "2026-08-01T12:00:20.000Z"
+                "endedAt": "2026-08-01T12:00:20.000Z",
+                "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+                "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:df17ef7e34e4b6a1362b0a6b9a307055470bcaf53ecdaed9d092e7fff7477463"
+          "projectionPayloadDigest": "sha256:f694ca6345962046b9d72bb63b6103ce25dd7cdd5e9eb4ecce7ae710e502643e"
         },
         {
           "rowRef": "presentation-row.presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
@@ -1126,11 +1137,12 @@
                 "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
                 "terminalSourceEventId": "presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
                 "openedAt": "2026-08-01T12:00:01.000Z",
-                "terminalAt": "2026-08-01T12:00:21.000Z"
+                "terminalAt": "2026-08-01T12:00:21.000Z",
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:4ec1db47b18155e2a3edc78f3dfb1d4c544598ba05da80c5e187d4f77521dd1f"
+          "projectionPayloadDigest": "sha256:36720e119136a098bc9b22a6e80e564181fad8f3d532e1d5e54a3cc9688e6d6e"
         },
         {
           "rowRef": "presentation-row.presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
@@ -1183,11 +1195,12 @@
                 "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:22.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:7283d85a5a45a82f0703ea78de2357e17bf6f4d97c0647e3402dfaf5597750b5"
+          "projectionPayloadDigest": "sha256:2da06b73c1604f7e3534a6d3fbfda650995b94d215b1c823a6b462e5f4cdd88a"
         },
         {
           "rowRef": "presentation-row.presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
@@ -1236,11 +1249,13 @@
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:23.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+                "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:9e3c05a0f6633bf9bf002455180888d587f15e74cedbac6ea0f0b6aa2d1338c3"
+          "projectionPayloadDigest": "sha256:c15a6d78d3181a84d13e47e419b8bb25796590d54a44798395e69ca8640f7f06"
         },
         {
           "rowRef": "presentation-row.presentation.event:20cb48ad76a466d5982a6aa1ea4342f6f63a21884959948a222249f82f17ad8a",
@@ -1328,11 +1343,13 @@
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
                 "endedBySourceEventId": "presentation.event:f8243e2181a45db9088caa53873160aac331db708a36146ab1973ace5cf9a595",
                 "openedAt": "2026-08-01T12:00:23.000Z",
-                "endedAt": "2026-08-01T12:00:25.000Z"
+                "endedAt": "2026-08-01T12:00:25.000Z",
+                "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+                "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:4f530565a5a0a71e0cc0d861a0e06ee248a0c2694bc02d6eb63c58739f12f08f"
+          "projectionPayloadDigest": "sha256:135e8ec3ab330a123b0438cb14097aa215af0ac821b36d46446eb5bee55389b3"
         },
         {
           "rowRef": "presentation-row.presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
@@ -1385,11 +1402,12 @@
                 "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
                 "terminalSourceEventId": "presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
                 "openedAt": "2026-08-01T12:00:22.000Z",
-                "terminalAt": "2026-08-01T12:00:26.000Z"
+                "terminalAt": "2026-08-01T12:00:26.000Z",
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:f011466053ef98fa3bcbea114cefcd5cdbb431166c2be55131515bc232a1e4f2"
+          "projectionPayloadDigest": "sha256:3584961d9aae6b957d5ac27052010753f58db8ced4288bc12d85992a7647426a"
         }
       ],
       "frames": [
@@ -1434,7 +1452,8 @@
                 "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:01.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           }
@@ -1476,7 +1495,9 @@
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:02.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+                "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
               }
             }
           }
@@ -2135,7 +2156,9 @@
                 "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
                 "endedBySourceEventId": "presentation.event:e35749958642fa7597b294bc473bb05a5433c2b5370db898185d34beb1fdc1b5",
                 "openedAt": "2026-08-01T12:00:02.000Z",
-                "endedAt": "2026-08-01T12:00:20.000Z"
+                "endedAt": "2026-08-01T12:00:20.000Z",
+                "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+                "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
               }
             }
           }
@@ -2181,7 +2204,8 @@
                 "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
                 "terminalSourceEventId": "presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
                 "openedAt": "2026-08-01T12:00:01.000Z",
-                "terminalAt": "2026-08-01T12:00:21.000Z"
+                "terminalAt": "2026-08-01T12:00:21.000Z",
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           }
@@ -2227,7 +2251,8 @@
                 "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T12:00:22.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           }
@@ -2269,7 +2294,9 @@
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T12:00:23.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+                "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
               }
             }
           }
@@ -2339,7 +2366,9 @@
                 "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
                 "endedBySourceEventId": "presentation.event:f8243e2181a45db9088caa53873160aac331db708a36146ab1973ace5cf9a595",
                 "openedAt": "2026-08-01T12:00:23.000Z",
-                "endedAt": "2026-08-01T12:00:25.000Z"
+                "endedAt": "2026-08-01T12:00:25.000Z",
+                "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+                "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
               }
             }
           }
@@ -2385,7 +2414,8 @@
                 "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
                 "terminalSourceEventId": "presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
                 "openedAt": "2026-08-01T12:00:22.000Z",
-                "terminalAt": "2026-08-01T12:00:26.000Z"
+                "terminalAt": "2026-08-01T12:00:26.000Z",
+                "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
               }
             }
           }
@@ -2432,7 +2462,8 @@
             "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
             "terminalSourceEventId": "presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
             "openedAt": "2026-08-01T12:00:01.000Z",
-            "terminalAt": "2026-08-01T12:00:21.000Z"
+            "terminalAt": "2026-08-01T12:00:21.000Z",
+            "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
           },
           {
             "bindingRef": "presentation.run-binding:443dd66992b82b54de93863960736c8e63e8ee622e3b083f3d3005d263ff1eb3",
@@ -2450,7 +2481,8 @@
             "openedBySourceEventId": "presentation.event:9502828f409c426fd322675fa5c484ff17e54e92be8a7ffa2a3b0629aaf2b122",
             "terminalSourceEventId": "presentation.event:ad6a6bb8be08ce77e463e666737336c095f59f80c6644f2ec4857b4ac9e0e514",
             "openedAt": "2026-08-01T12:00:22.000Z",
-            "terminalAt": "2026-08-01T12:00:26.000Z"
+            "terminalAt": "2026-08-01T12:00:26.000Z",
+            "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
           }
         ],
         "messageBindings": [
@@ -2465,7 +2497,9 @@
             "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
             "endedBySourceEventId": "presentation.event:e35749958642fa7597b294bc473bb05a5433c2b5370db898185d34beb1fdc1b5",
             "openedAt": "2026-08-01T12:00:02.000Z",
-            "endedAt": "2026-08-01T12:00:20.000Z"
+            "endedAt": "2026-08-01T12:00:20.000Z",
+            "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+            "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
           },
           {
             "bindingRef": "presentation.message-binding:5dc63c366543fb45a8cccc17f9fcafaa964e6e2ed6bafc056fa29deddf7364e7",
@@ -2478,7 +2512,9 @@
             "openedBySourceEventId": "presentation.event:a38bfce925a50f9a3f469e9af19dbe0c06da0763523de9d88d9aaaa1e2f7af52",
             "endedBySourceEventId": "presentation.event:f8243e2181a45db9088caa53873160aac331db708a36146ab1973ace5cf9a595",
             "openedAt": "2026-08-01T12:00:23.000Z",
-            "endedAt": "2026-08-01T12:00:25.000Z"
+            "endedAt": "2026-08-01T12:00:25.000Z",
+            "sessionMessageId": "session.message:7c66ae9f7eada086dc1f78ec34fa6245061b2c9d1383fb06f23ffa3e9f60871e",
+            "sessionTextPartId": "session.part:3e1322f09b0e58b516d77635be7f10a97edd2db97a0f7c9dccb6c9bb2844661a"
           }
         ]
       },
@@ -2549,7 +2585,8 @@
           "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
           "terminalSourceEventId": "presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
           "openedAt": "2026-08-01T13:00:01.000Z",
-          "terminalAt": "2026-08-01T13:00:13.000Z"
+          "terminalAt": "2026-08-01T13:00:13.000Z",
+          "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
         },
         {
           "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
@@ -2567,7 +2604,8 @@
           "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
           "terminalSourceEventId": "presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
           "openedAt": "2026-08-01T13:00:14.000Z",
-          "terminalAt": "2026-08-01T13:00:15.000Z"
+          "terminalAt": "2026-08-01T13:00:15.000Z",
+          "sessionRunId": null
         }
       ],
       "messageBindings": [
@@ -2582,7 +2620,9 @@
           "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
           "endedBySourceEventId": "presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
           "openedAt": "2026-08-01T13:00:02.000Z",
-          "endedAt": "2026-08-01T13:00:12.000Z"
+          "endedAt": "2026-08-01T13:00:12.000Z",
+          "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+          "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
         }
       ],
       "durableRows": [
@@ -2637,11 +2677,12 @@
                 "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:01.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:6a71ac9ff558410b089b264a4bb48e6945d23cb8a5206a82671f90c2a5a25a64"
+          "projectionPayloadDigest": "sha256:083addbf4edbea3a1b3f10399c338730fa8f959952139dab96b7213a56a48f80"
         },
         {
           "rowRef": "presentation-row.presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
@@ -2690,11 +2731,13 @@
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T13:00:02.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+                "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:73e2484b54bfc49923f28f448ccbb7a8c9fbfe7ae1520a0ec6866921dee6d653"
+          "projectionPayloadDigest": "sha256:b603585aafd95046c101f9aee6e959f516845e8499feac5cb0dbcb919de7646d"
         },
         {
           "rowRef": "presentation-row.presentation.event:807cd4fdef687b4a5a3c2ce9219feecde31564d1fe457efea58bc5e19cd84f91",
@@ -3179,11 +3222,13 @@
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
                 "endedBySourceEventId": "presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
                 "openedAt": "2026-08-01T13:00:02.000Z",
-                "endedAt": "2026-08-01T13:00:12.000Z"
+                "endedAt": "2026-08-01T13:00:12.000Z",
+                "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+                "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:b20e4f476ae6922c9e4fe6ee9470556aac1d87f08a2c977d53506910abad7d9f"
+          "projectionPayloadDigest": "sha256:9b50d1ff598249aeba5129e4815f0c66cb88b40ea34827d74bf1e705b3694e52"
         },
         {
           "rowRef": "presentation-row.presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
@@ -3236,11 +3281,12 @@
                 "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
                 "terminalSourceEventId": "presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
                 "openedAt": "2026-08-01T13:00:01.000Z",
-                "terminalAt": "2026-08-01T13:00:13.000Z"
+                "terminalAt": "2026-08-01T13:00:13.000Z",
+                "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
               }
             }
           },
-          "projectionPayloadDigest": "sha256:0eeb99feb0b6ca7a8c2fb88da2bad3ac5f36cd57090fe1b95952248ba9776db3"
+          "projectionPayloadDigest": "sha256:7cf88b34668b0135a901e3e23551597208a002dac32930ae00241b173122a2ee"
         },
         {
           "rowRef": "presentation-row.presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
@@ -3294,11 +3340,12 @@
                 "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:14.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:de1aaf7fc0a5108577045e80e481f972b8c7a18864f7ed756159e526db39de46"
+          "projectionPayloadDigest": "sha256:30404d898981e523043966e882bf99957a2423905dde668cbdc9a01c538247f6"
         },
         {
           "rowRef": "presentation-row.presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
@@ -3351,11 +3398,12 @@
                 "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
                 "terminalSourceEventId": "presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
                 "openedAt": "2026-08-01T13:00:14.000Z",
-                "terminalAt": "2026-08-01T13:00:15.000Z"
+                "terminalAt": "2026-08-01T13:00:15.000Z",
+                "sessionRunId": null
               }
             }
           },
-          "projectionPayloadDigest": "sha256:aef83b9ecf21b85c1bb756caea71c8dc459ed48fcf7b39658a0b6314aca91ffc"
+          "projectionPayloadDigest": "sha256:df769249ab24a9ab6fba14d1317a38e654aaf0792b936c9bf5b4ef20b2cd5879"
         }
       ],
       "frames": [
@@ -3400,7 +3448,8 @@
                 "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:01.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
               }
             }
           }
@@ -3442,7 +3491,9 @@
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
                 "endedBySourceEventId": null,
                 "openedAt": "2026-08-01T13:00:02.000Z",
-                "endedAt": null
+                "endedAt": null,
+                "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+                "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
               }
             }
           }
@@ -3821,7 +3872,9 @@
                 "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
                 "endedBySourceEventId": "presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
                 "openedAt": "2026-08-01T13:00:02.000Z",
-                "endedAt": "2026-08-01T13:00:12.000Z"
+                "endedAt": "2026-08-01T13:00:12.000Z",
+                "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+                "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
               }
             }
           }
@@ -3867,7 +3920,8 @@
                 "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
                 "terminalSourceEventId": "presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
                 "openedAt": "2026-08-01T13:00:01.000Z",
-                "terminalAt": "2026-08-01T13:00:13.000Z"
+                "terminalAt": "2026-08-01T13:00:13.000Z",
+                "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
               }
             }
           }
@@ -3914,7 +3968,8 @@
                 "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
                 "terminalSourceEventId": null,
                 "openedAt": "2026-08-01T13:00:14.000Z",
-                "terminalAt": null
+                "terminalAt": null,
+                "sessionRunId": null
               }
             }
           }
@@ -3960,7 +4015,8 @@
                 "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
                 "terminalSourceEventId": "presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
                 "openedAt": "2026-08-01T13:00:14.000Z",
-                "terminalAt": "2026-08-01T13:00:15.000Z"
+                "terminalAt": "2026-08-01T13:00:15.000Z",
+                "sessionRunId": null
               }
             }
           }
@@ -4006,7 +4062,8 @@
             "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
             "terminalSourceEventId": "presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
             "openedAt": "2026-08-01T13:00:01.000Z",
-            "terminalAt": "2026-08-01T13:00:13.000Z"
+            "terminalAt": "2026-08-01T13:00:13.000Z",
+            "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
           },
           {
             "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
@@ -4024,7 +4081,8 @@
             "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
             "terminalSourceEventId": "presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
             "openedAt": "2026-08-01T13:00:14.000Z",
-            "terminalAt": "2026-08-01T13:00:15.000Z"
+            "terminalAt": "2026-08-01T13:00:15.000Z",
+            "sessionRunId": null
           }
         ],
         "messageBindings": [
@@ -4039,7 +4097,9 @@
             "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
             "endedBySourceEventId": "presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
             "openedAt": "2026-08-01T13:00:02.000Z",
-            "endedAt": "2026-08-01T13:00:12.000Z"
+            "endedAt": "2026-08-01T13:00:12.000Z",
+            "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+            "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
           }
         ]
       },
@@ -4246,6 +4306,46 @@
       "expectedCode": "agui_tool_secret_forbidden"
     },
     {
+      "id": "session-binding-root-run-missing",
+      "baseCaseId": "safe-run-error",
+      "mutation": {
+        "operation": "set",
+        "path": "runBindings.0.sessionRunId",
+        "value": null
+      },
+      "expectedCode": "agui_session_run_binding_missing"
+    },
+    {
+      "id": "session-binding-resume-run-conflict",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "runBindings.1.sessionRunId",
+        "value": "session.run:5a8c982b87ea0fa1d0feef42675f208aa2ba27fb88f2908c50f66c369c456a81"
+      },
+      "expectedCode": "agui_resume_session_run_conflict"
+    },
+    {
+      "id": "session-binding-message-run-conflict",
+      "baseCaseId": "resume-with-safe-typed-presentation",
+      "mutation": {
+        "operation": "set",
+        "path": "messageBindings.0.sessionMessageId",
+        "value": null
+      },
+      "expectedCode": "agui_message_binding_schema_invalid"
+    },
+    {
+      "id": "session-binding-private-run-equality",
+      "baseCaseId": "safe-run-error",
+      "mutation": {
+        "operation": "set",
+        "path": "runBindings.0.sessionRunId",
+        "value": "internal.run.error.parent"
+      },
+      "expectedCode": "agui_private_presentation_identity_equal"
+    },
+    {
       "id": "binding-delta-wrong-kind",
       "baseCaseId": "resume-with-safe-typed-presentation",
       "mutation": {
@@ -4264,7 +4364,9 @@
             "openedBySourceEventId": "presentation.event:5953ab64f1bb39dd102dcbfa327020981acc1ab02b8b3276fe2d3379c81f6099",
             "endedBySourceEventId": null,
             "openedAt": "2026-08-01T12:00:02.000Z",
-            "endedAt": null
+            "endedAt": null,
+            "sessionMessageId": "session.message:668f6803945685495b193b418b35f7d07112ed2645e3f2acf507d1d0018766a1",
+            "sessionTextPartId": "session.part:754569eb17f1f62d39af1384977eb8c9ac380a3b1e24b04bdef9c90128d64805"
           }
         }
       },
@@ -4322,7 +4424,8 @@
           "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
           "terminalSourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
           "openedAt": "2026-08-01T12:00:01.000Z",
-          "terminalAt": "2026-08-01T12:00:01.000Z"
+          "terminalAt": "2026-08-01T12:00:01.000Z",
+          "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
         }
       },
       "expectedCode": "agui_binding_delta_state_conflict"
@@ -4349,7 +4452,8 @@
           "openedBySourceEventId": "presentation.event:b4e3c24394aa7f63f6a98aa985fd9f0e100f4da60a46527a033cd273cf3a6c85",
           "terminalSourceEventId": "presentation.event:1d096172022ded397309581b77cbceb99f0e7f3512da4df7d7772bceb76baa79",
           "openedAt": "2026-08-01T12:00:01.000Z",
-          "terminalAt": "2026-08-01T12:00:21.000Z"
+          "terminalAt": "2026-08-01T12:00:21.000Z",
+          "sessionRunId": "session.run:c4a979f91627ef83cdb9ef7bec2f93b295655168a3fb8bb008e1cf93675c3155"
         }
       },
       "expectedCode": "agui_binding_delta_future_evidence"
@@ -4480,7 +4584,8 @@
             "openedBySourceEventId": "presentation.event:368440b76b55745e09bd715e2840597a1b662ea461bc847512f7aa670e742661",
             "terminalSourceEventId": "presentation.event:ff52b57e71d1e1c37d26c97b8e3015ca81cc73dd568143ab459f44d641f591d0",
             "openedAt": "2026-08-01T13:00:01.000Z",
-            "terminalAt": "2026-08-01T13:00:13.000Z"
+            "terminalAt": "2026-08-01T13:00:13.000Z",
+            "sessionRunId": "session.run:a71ebe8e4a44230afadaea134bf6f5c8b0ce45d8768189c59e06b4d94cd4afac"
           },
           {
             "bindingRef": "presentation.run-binding:900464b5110e10e94aa4e0a1bc80d11405d15dfb3bd85315b18e91c40a24a63f",
@@ -4498,7 +4603,8 @@
             "openedBySourceEventId": "presentation.event:03a07e5589957cbd31d012ca603ae2527f9d0d92028b48d713dc126bd0824054",
             "terminalSourceEventId": "presentation.event:bc674da818c37a7eba20f70cdb50efe246b38090a05c75aadc6a87f992c98bfa",
             "openedAt": "2026-08-01T13:00:14.000Z",
-            "terminalAt": "2026-08-01T13:00:15.000Z"
+            "terminalAt": "2026-08-01T13:00:15.000Z",
+            "sessionRunId": null
           }
         ],
         "messageBindings": [
@@ -4513,7 +4619,9 @@
             "openedBySourceEventId": "presentation.event:db92ebc40720e9722dfbd354e88798cb63492dfed07580b16434a5acec3e43b6",
             "endedBySourceEventId": "presentation.event:4ab3b4662cac1527734d27dcbbff5968b8bac97bc676a80b77ab73e21cca743a",
             "openedAt": "2026-08-01T13:00:02.000Z",
-            "endedAt": "2026-08-01T13:00:12.000Z"
+            "endedAt": "2026-08-01T13:00:12.000Z",
+            "sessionMessageId": "session.message:c8821908c95f7b1b6d228f84ab9cebf396f1b495d2342c87fb1f61fddaeb4918",
+            "sessionTextPartId": "session.part:6b9170f8bfade9e562b696135ba21881320dd2dc6990eb6c3857cdb47bf72ff1"
           }
         ]
       },
