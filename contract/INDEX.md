@@ -59,7 +59,8 @@ new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatib
 Product Catalog owns Product/Surface/Journey business records, Platform Site owns inventory/material/intent, and Web
 Release Composition owns toolchain/composition-registry/compiled-manifest/provenance publication. Payloads never contain their own digest
 or signature. Callers carry the digest when referencing another immutable payload; DSSE signatures and the final OCI
-artifact digest live outside the signed/canonical payload, preventing a digest cycle.
+artifact digest live outside the signed/canonical payload, preventing a digest cycle. Provenance dependencies use
+global `git+https:`, `oci:`, `pkg:`, or `kokoro:` URIs and bind each URI to its exact owner digest role.
 
 Protobuf sources are authoritative for privileged Connect boundaries; OpenAPI is authoritative for browser/Site public HTTP;
 older YAML schemas remain authoritative only for the legacy boundaries that still consume them. Legacy TypeScript mirrors use
@@ -197,5 +198,5 @@ Run `uv run --locked python contract/generate.py --check`, `pnpm --dir contract 
 `pnpm --dir contract run openapi:generate:public`, `node contract/generate-projection-integrity-corpus.mjs --check`,
 `node contract/validate-projection-integrity.mjs --validate-corpus`, and
 `node scripts/repository/check-generated-contracts.mjs`. Validate the Web release family with
-`pnpm --dir contract run web-release:check`; once a baseline exists, CI also runs the immutable-v1 check against
-`origin/main`.
+`pnpm --dir contract run web-release:check`; CI compares the current eight-contract candidate with the predecessor's
+own valid contract set and then freezes every predecessor v1 registry row and schema.

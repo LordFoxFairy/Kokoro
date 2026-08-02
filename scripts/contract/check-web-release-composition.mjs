@@ -537,17 +537,20 @@ function validateProvenance(provenance, related) {
   const dependencies = new Map(provenance.predicate.buildDefinition.resolvedDependencies.map(({ uri, digest: value }) => [uri, value.sha256]));
   if (dependencies.size !== provenance.predicate.buildDefinition.resolvedDependencies.length) fail("web_release_provenance_reference_invalid", "duplicate dependency");
   const unprefixed = (value) => value.slice("sha256:".length);
+  const sourceUri = (role) => `git+https://source.kokoro.dev/repositories/${encodeURIComponent(related.toolchain.baseSource.repositoryRef)}#${role}`;
+  const ociUri = ({ repositoryRef }) => `oci://registry.kokoro.dev/${encodeURIComponent(repositoryRef)}`;
+  const packageUri = ({ name, version }) => `pkg:npm/${encodeURIComponent(name).replaceAll("%2F", "/")}@${version}`;
   const expectedDependencies = new Map([
-    [`git.${related.toolchain.baseSource.repositoryRef}.commit`, unprefixed(related.toolchain.baseSource.commitDigest)],
-    [`git.${related.toolchain.baseSource.repositoryRef}.tree`, unprefixed(related.toolchain.baseSource.treeDigest)],
-    [related.toolchain.baseTemplate.ref, unprefixed(related.toolchain.baseTemplate.digest)],
-    [related.intent.webBuildMaterialBundle.ref, unprefixed(related.intent.webBuildMaterialBundle.digest)],
-    [related.toolchain.compilerArtifact.repositoryRef, unprefixed(related.toolchain.compilerArtifact.digest)],
-    [related.toolchain.inspectorArtifact.repositoryRef, unprefixed(related.toolchain.inspectorArtifact.digest)],
-    [related.toolchain.buildSandboxImage.repositoryRef, unprefixed(related.toolchain.buildSandboxImage.digest)],
-    [related.toolchain.inspectionSandboxImage.repositoryRef, unprefixed(related.toolchain.inspectionSandboxImage.digest)],
-    [`lockfile.${related.manifest.manifestRef}`, unprefixed(related.manifest.lockfileDigest)],
-    ...related.manifest.packages.map(({ packageRef, digest: value }) => [packageRef, unprefixed(value)]),
+    [sourceUri("commit"), unprefixed(related.toolchain.baseSource.commitDigest)],
+    [sourceUri("tree"), unprefixed(related.toolchain.baseSource.treeDigest)],
+    [`kokoro:template/${related.toolchain.baseTemplate.ref}`, unprefixed(related.toolchain.baseTemplate.digest)],
+    [`kokoro:material-bundle/${related.intent.webBuildMaterialBundle.ref}`, unprefixed(related.intent.webBuildMaterialBundle.digest)],
+    [ociUri(related.toolchain.compilerArtifact), unprefixed(related.toolchain.compilerArtifact.digest)],
+    [ociUri(related.toolchain.inspectorArtifact), unprefixed(related.toolchain.inspectorArtifact.digest)],
+    [ociUri(related.toolchain.buildSandboxImage), unprefixed(related.toolchain.buildSandboxImage.digest)],
+    [ociUri(related.toolchain.inspectionSandboxImage), unprefixed(related.toolchain.inspectionSandboxImage.digest)],
+    [`kokoro:lockfile/${related.manifest.manifestRef}`, unprefixed(related.manifest.lockfileDigest)],
+    ...related.manifest.packages.map((item) => [packageUri(item), unprefixed(item.digest)]),
   ]);
   if (dependencies.size !== expectedDependencies.size) fail("web_release_provenance_reference_invalid", "dependency set");
   for (const [uri, expectedDigest] of expectedDependencies) {
@@ -632,15 +635,17 @@ function schemaAjv() {
   return new Ajv2020({ allErrors: true, strict: true, validateFormats: false });
 }
 
-function validateRegistry(registry) {
+function validateRegistry(registry, { requireCurrentSet = true } = {}) {
   exactKeys(registry, ["breakingPolicy", "canonicalProfile", "contracts", "registryId", "schemaAuthority", "schemaVersion"], "web_release_registry_shape_invalid");
   if (registry.schemaVersion !== 1 || registry.registryId !== "kokoro.web-release-composition-contracts.v1" || registry.schemaAuthority !== "root.contract") fail("web_release_registry_shape_invalid");
   exactKeys(registry.canonicalProfile, ["canonicalization", "digestAlgorithm", "digestEncoding", "integerEncoding", "jsonProfile", "selfDigest", "timestampEncoding", "unknownFields"], "web_release_registry_shape_invalid");
   if (registry.canonicalProfile.jsonProfile !== "I-JSON-NFC-KOKORO-V1" || registry.canonicalProfile.canonicalization !== "RFC8785-JCS" || registry.canonicalProfile.digestAlgorithm !== "sha256" || registry.canonicalProfile.digestEncoding !== "sha256-lowercase-hex" || registry.canonicalProfile.integerEncoding !== "canonical-decimal-string" || registry.canonicalProfile.timestampEncoding !== "utc-rfc3339-millisecond" || registry.canonicalProfile.unknownFields !== "reject" || registry.canonicalProfile.selfDigest !== "forbidden") fail("web_release_registry_shape_invalid");
   exactKeys(registry.breakingPolicy, ["policy", "rule"], "web_release_registry_shape_invalid");
   if (registry.breakingPolicy.policy !== "immutable-major-schema") fail("web_release_registry_shape_invalid");
-  const ids = registry.contracts.map(({ id }) => id).sort();
-  if (canonicalize(ids) !== canonicalize(CONTRACT_IDS)) fail("web_release_registry_contract_set_invalid");
+  if (!Array.isArray(registry.contracts) || registry.contracts.length === 0 || registry.contracts.length > CONTRACT_IDS.length) fail("web_release_registry_contract_set_invalid");
+  const ids = registry.contracts.map(({ id }) => id);
+  unique(ids, "web_release_registry_contract_set_invalid");
+  if (requireCurrentSet && canonicalSet(ids) !== canonicalSet(CONTRACT_IDS)) fail("web_release_registry_contract_set_invalid");
   for (const entry of registry.contracts) {
     exactKeys(entry, ["businessOwner", "consumers", "id", "lifecycle", "publisherRepository", "schemaId", "schemaPath", "signatureProfile"], "web_release_registry_entry_invalid");
     if (entry.lifecycle !== "contract-only" || !entry.schemaPath.startsWith("contract/spec/") || !entry.schemaPath.endsWith(".yaml")) fail("web_release_registry_entry_invalid", entry.id);
@@ -665,9 +670,9 @@ function semanticValidate(contractId, document, related) {
   else if (contractId === "web-artifact-provenance-profile.v1") validateProvenance(document, related);
 }
 
-function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY)) {
+function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY), registryOptions = {}) {
   const registry = readJson(registryPath, "web_release_registry_read_failed");
-  validateRegistry(registry);
+  validateRegistry(registry, registryOptions);
   const schemas = new Map();
   const ajv = schemaAjv();
   const validators = new Map();
@@ -687,7 +692,7 @@ function loadBundle(root, registryPath = resolve(root, DEFAULT_REGISTRY)) {
   return { registry, schemas, validators, envelopeValidators };
 }
 
-function loadGitBundle(root, revision) {
+function loadGitBundle(root, revision, registryOptions = {}) {
   const show = (path) => {
     try {
       return execFileSync("git", ["show", `${revision}:${path}`], {
@@ -702,7 +707,7 @@ function loadGitBundle(root, revision) {
     }
   };
   const registry = parseJsonSource(show(DEFAULT_REGISTRY), "web_release_breaking_baseline_invalid", `${revision}:${DEFAULT_REGISTRY}`);
-  validateRegistry(registry);
+  validateRegistry(registry, registryOptions);
   const schemas = new Map();
   for (const entry of registry.contracts) {
     schemas.set(entry.id, parseJsonSource(show(entry.schemaPath), "web_release_breaking_baseline_invalid", `${revision}:${entry.schemaPath}`));
@@ -721,6 +726,15 @@ export async function validateRepository(options = {}) {
   if (corpus.schema !== "kokoro.web-release-composition.corpus.v1" || corpus.positiveCases.length !== 8 || corpus.negativeCases.length !== 30 || corpus.canonicalVectors.length !== 8 || corpus.dsseVectors.length !== 2) fail("web_release_corpus_shape_invalid");
   const casesById = new Map(corpus.positiveCases.map((item) => [item.id, item]));
   if (casesById.size !== corpus.positiveCases.length || new Set(corpus.positiveCases.map(({ contractId }) => contractId)).size !== 8) fail("web_release_corpus_shape_invalid");
+  unique(corpus.canonicalVectors.map(({ id }) => id), "web_release_canonical_coverage_invalid");
+  const canonicalCaseIds = unique(corpus.canonicalVectors.map(({ caseId }) => caseId), "web_release_canonical_coverage_invalid");
+  if (canonicalSet(canonicalCaseIds) !== canonicalSet(casesById.keys())) fail("web_release_canonical_coverage_invalid");
+  unique(corpus.dsseVectors.map(({ id }) => id), "web_release_dsse_coverage_invalid");
+  const dsseCaseIds = unique(corpus.dsseVectors.map(({ caseId }) => caseId), "web_release_dsse_coverage_invalid");
+  const requiredDsseCaseIds = bundle.registry.contracts
+    .filter(({ signatureProfile }) => signatureProfile.startsWith("dsse-"))
+    .map(({ id }) => corpus.positiveCases.find(({ contractId }) => contractId === id)?.id);
+  if (requiredDsseCaseIds.includes(undefined) || canonicalSet(dsseCaseIds) !== canonicalSet(requiredDsseCaseIds)) fail("web_release_dsse_coverage_invalid");
   const byContract = new Map(corpus.positiveCases.map((item) => [item.contractId, item.document]));
   const related = {
     catalog: byContract.get("product-surface-catalog.v1"), inventory: byContract.get("surface-inventory.v1"),
@@ -781,11 +795,11 @@ async function main() {
   if (options.baselineRoot !== null) {
     const baselineRoot = resolve(options.baselineRoot);
     const candidateRoot = resolve(options.root);
-    assertFrozenV1Compatible(loadBundle(baselineRoot), loadBundle(candidateRoot));
+    assertFrozenV1Compatible(loadBundle(baselineRoot, undefined, { requireCurrentSet: false }), loadBundle(candidateRoot));
   }
   if (options.breakingAgainst !== null) {
     const root = resolve(options.root);
-    assertFrozenV1Compatible(loadGitBundle(root, options.breakingAgainst), loadGitBundle(root, "HEAD"));
+    assertFrozenV1Compatible(loadGitBundle(root, options.breakingAgainst, { requireCurrentSet: false }), loadGitBundle(root, "HEAD"));
   }
   process.stdout.write(`web_release_contracts_ok:${result.contracts} contracts, ${result.positiveCases}+${result.negativeCases} corpus, ${result.canonicalVectors} canonical, ${result.dsseVectors} dsse\n`);
 }

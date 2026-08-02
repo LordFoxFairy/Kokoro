@@ -34,9 +34,12 @@ mandates, without adding a YAML parser dependency.
 JSON Schema 2020-12 documents with strict AJV, then verifies the closed owner registry, I-JSON/NFC input profile,
 RFC 8785 JCS SHA-256 vectors, DSSE PAE/Ed25519 vectors, exact Catalog-to-Inventory partition, owner digest chain,
 exact composition-registry projection, measured tool role/ref/digest bindings, compiled unit/package/route/BFF/model
-closure and SLSA/in-toto provenance binding. It explicitly keeps Product Catalog and
+closure and SLSA/in-toto provenance binding through global, role-specific dependency URIs. Canonical vectors must
+cover every positive case exactly once; DSSE vectors must cover exactly the registry rows whose signature profile requires DSSE.
+It explicitly keeps Product Catalog and
 Site business ownership out of Root and keeps unit selection out of Platform. Existing v1 registry rows and schemas
-are immutable under `--breaking-against`; a semantic change requires a new major contract id.
+are immutable under `--breaking-against`; the predecessor may contain its own valid subset, while the candidate must
+contain the complete current set. A semantic change requires a new major contract id.
 
 OpenAPI descriptors are different: they are full YAML 1.2 documents and may legitimately use anchors, flow
 mappings, merge keys, and quoted scalars. `openapi-reader.mjs` invokes the root-lock-pinned PyYAML reader in

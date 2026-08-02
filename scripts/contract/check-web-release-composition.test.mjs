@@ -71,7 +71,7 @@ function refreshCoherentChain(corpus) {
   parameters.compiledWebManifestDigest = canonicalDigest(manifest);
   parameters.toolchain.digest = canonicalDigest(toolchain);
   const materialDependency = provenance.predicate.buildDefinition.resolvedDependencies.find(
-    ({ uri }) => uri === intent.webBuildMaterialBundle.ref,
+    ({ uri }) => uri === `kokoro:material-bundle/${intent.webBuildMaterialBundle.ref}`,
   );
   if (materialDependency !== undefined) materialDependency.digest.sha256 = canonicalDigest(material).slice("sha256:".length);
 
@@ -213,7 +213,7 @@ test("provenance resolved dependencies cannot omit signed release material", asy
   const provenanceCase = corpus.positiveCases.find(({ contractId }) => contractId === "web-artifact-provenance-profile.v1");
   const intentCase = corpus.positiveCases.find(({ contractId }) => contractId === "web-build-intent.v1");
   provenanceCase.document.predicate.buildDefinition.resolvedDependencies = provenanceCase.document.predicate.buildDefinition.resolvedDependencies.filter(
-    ({ uri }) => uri !== intentCase.document.webBuildMaterialBundle.ref,
+    ({ uri }) => uri !== `kokoro:material-bundle/${intentCase.document.webBuildMaterialBundle.ref}`,
   );
   const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-provenance-"));
   const tamperedPath = join(temporary, "corpus.json");
@@ -273,8 +273,8 @@ test("coherent provenance binds every resolved dependency URI to its exact diges
     const dependencies = corpus.positiveCases.find(
       ({ contractId }) => contractId === "web-artifact-provenance-profile.v1",
     ).document.predicate.buildDefinition.resolvedDependencies;
-    const compiler = dependencies.find(({ uri }) => uri === "oci.kokoro.web-composition-compiler");
-    const packageArtifact = dependencies.find(({ uri }) => uri === "package.chat-product");
+    const compiler = dependencies.find(({ uri }) => uri === "oci://registry.kokoro.dev/oci.kokoro.web-composition-compiler");
+    const packageArtifact = dependencies.find(({ uri }) => uri === "pkg:npm/%40kokoro/chat-product@1.0.0");
     [compiler.digest.sha256, packageArtifact.digest.sha256] = [packageArtifact.digest.sha256, compiler.digest.sha256];
   }, "web_release_provenance_dependency_mismatch");
 });
@@ -366,6 +366,97 @@ test("SLSA v1 byproducts use ResourceDescriptor digest maps", async () => {
     assert.deepEqual(Object.keys(byproduct.digest), ["sha256"]);
     assert.match(byproduct.digest.sha256, /^[0-9a-f]{64}$/u);
   }
+});
+
+test("SLSA resources require global dependency URIs and strict byproduct descriptors", async () => {
+  const source = await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8");
+  const corpus = JSON.parse(source);
+  const provenance = corpus.positiveCases.find(
+    ({ contractId }) => contractId === "web-artifact-provenance-profile.v1",
+  ).document;
+  for (const dependency of provenance.predicate.buildDefinition.resolvedDependencies) {
+    assert.doesNotThrow(() => new URL(dependency.uri));
+    assert.match(dependency.uri, /^[a-z][a-z0-9+.-]*:/u);
+  }
+
+  provenance.predicate.buildDefinition.resolvedDependencies[0].uri = "package.chat-product";
+  const dependencyTemporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-relative-dependency-"));
+  const dependencyCorpusPath = join(dependencyTemporary, "corpus.json");
+  await writeFile(dependencyCorpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+  await expectCode(
+    () => validateRepository({ root: repositoryRoot, corpus: dependencyCorpusPath }),
+    "web_release_positive_schema_invalid",
+  );
+
+  const byproductCorpus = JSON.parse(source);
+  const byproduct = byproductCorpus.positiveCases.find(
+    ({ contractId }) => contractId === "web-artifact-provenance-profile.v1",
+  ).document.predicate.runDetails.byproducts[0];
+  byproduct.digest = `sha256:${"c".repeat(64)}`;
+  const byproductTemporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-byproduct-shape-"));
+  const byproductCorpusPath = join(byproductTemporary, "corpus.json");
+  await writeFile(byproductCorpusPath, `${JSON.stringify(byproductCorpus, null, 2)}\n`);
+  await expectCode(
+    () => validateRepository({ root: repositoryRoot, corpus: byproductCorpusPath }),
+    "web_release_positive_schema_invalid",
+  );
+});
+
+test("canonical and DSSE vectors uniquely and exactly cover their contract cases", async () => {
+  const source = await readFile(resolve(repositoryRoot, "contract/corpus/web-release-composition-v1.json"), "utf8");
+  for (const [mutate, expectedCode] of [
+    [(corpus) => { corpus.canonicalVectors[1].id = corpus.canonicalVectors[0].id; }, "web_release_canonical_coverage_invalid"],
+    [(corpus) => { corpus.canonicalVectors[1].caseId = corpus.canonicalVectors[0].caseId; }, "web_release_canonical_coverage_invalid"],
+    [(corpus) => { corpus.dsseVectors[1].id = corpus.dsseVectors[0].id; }, "web_release_dsse_coverage_invalid"],
+    [(corpus) => { corpus.dsseVectors[1].caseId = corpus.dsseVectors[0].caseId; }, "web_release_dsse_coverage_invalid"],
+  ]) {
+    const corpus = JSON.parse(source);
+    mutate(corpus);
+    const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-vector-coverage-"));
+    const corpusPath = join(temporary, "corpus.json");
+    await writeFile(corpusPath, `${JSON.stringify(corpus, null, 2)}\n`);
+    await expectCode(() => validateRepository({ root: repositoryRoot, corpus: corpusPath }), expectedCode);
+  }
+});
+
+test("breaking comparison loads the real seven-contract predecessor before reporting schema drift", async () => {
+  await assert.rejects(
+    () => execFileAsync(process.execPath, [
+      resolve(repositoryRoot, "scripts/contract/check-web-release-composition.mjs"),
+      "--root", repositoryRoot,
+      "--breaking-against", "97f9c1e",
+    ], { cwd: repositoryRoot }),
+    ({ stderr }) => stderr.includes("web_release_v1_schema_breaking"),
+  );
+});
+
+test("breaking comparison accepts a seven-contract baseline when the eighth contract is purely additive", async () => {
+  const temporary = await mkdtemp(join(tmpdir(), "kokoro-web-release-additive-baseline-"));
+  await mkdir(join(temporary, "contract"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/registry"), join(temporary, "contract/registry"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/spec"), join(temporary, "contract/spec"), { recursive: true });
+  await cp(resolve(repositoryRoot, "contract/corpus"), join(temporary, "contract/corpus"), { recursive: true });
+  const registryPath = join(temporary, "contract/registry/web-release-composition.yaml");
+  const candidateRegistry = await readFile(registryPath, "utf8");
+  const baselineRegistry = JSON.parse(candidateRegistry);
+  baselineRegistry.contracts = baselineRegistry.contracts.filter(({ id }) => id !== "web-composition-registry.v1");
+  await writeFile(registryPath, `${JSON.stringify(baselineRegistry, null, 2)}\n`);
+  const git = (...args) => execFileAsync("git", args, { cwd: temporary });
+  await git("init", "-q");
+  await git("config", "user.name", "Kokoro Contract Test");
+  await git("config", "user.email", "contract-test@kokoro.invalid");
+  await git("add", "contract");
+  await git("commit", "-qm", "seven-contract baseline");
+  await writeFile(registryPath, candidateRegistry);
+  await git("add", "contract/registry/web-release-composition.yaml");
+  await git("commit", "-qm", "add composition registry contract");
+
+  const { stdout } = await execFileAsync(process.execPath, [
+    resolve(repositoryRoot, "scripts/contract/check-web-release-composition.mjs"),
+    "--root", temporary,
+    "--breaking-against", "HEAD^",
+  ], { cwd: temporary });
+  assert.match(stdout, /^web_release_contracts_ok:8 contracts,/u);
 });
 
 test("breaking comparison reads the candidate from HEAD instead of a spoofed worktree", async () => {

@@ -174,18 +174,18 @@
             "buildType": "https://contracts.kokoro.dev/build-types/site-web/v1",
             "externalParameters": {"intentRef": "web-build-intent.alpha.1", "buildIntentDigest": "sha256:3858c6cc59703c19f9957958a83c9959f6fc0d538d17b313cf3d3f4a9e6b0506", "compiledWebManifestRef": "compiled-web-manifest.alpha.1", "compiledWebManifestDigest": "sha256:3522a6cb8d2d1ac96173ed2b8b0ffb9c7fc6b636cea8f3bd877022544af92a8c", "releaseCandidateRef": "release-candidate.alpha.1", "siteRef": "site.alpha", "candidateAuthorizationEpoch": "7", "toolchain": {"ref": "web-toolchain.next16.1", "digest": "sha256:9d62f714a9f741f64d9a4df2f0d58c756365fff845722d6cf988920dfd7149ad"}},
             "resolvedDependencies": [
-              {"uri": "git.repository.kokoro-web.commit", "digest": {"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}},
-              {"uri": "git.repository.kokoro-web.tree", "digest": {"sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}},
-              {"uri": "template.site-base.1", "digest": {"sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}},
-              {"uri": "material-bundle.site-alpha.1", "digest": {"sha256": "3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}},
-              {"uri": "oci.kokoro.web-composition-compiler", "digest": {"sha256": "1111111111111111111111111111111111111111111111111111111111111111"}},
-              {"uri": "oci.kokoro.web-artifact-inspector", "digest": {"sha256": "2222222222222222222222222222222222222222222222222222222222222222"}},
-              {"uri": "oci.kokoro.web-build-sandbox", "digest": {"sha256": "3333333333333333333333333333333333333333333333333333333333333333"}},
-              {"uri": "oci.kokoro.web-inspection-sandbox", "digest": {"sha256": "4444444444444444444444444444444444444444444444444444444444444444"}},
-              {"uri": "package.web-shell", "digest": {"sha256": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"}},
-              {"uri": "package.site-bff", "digest": {"sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"}},
-              {"uri": "package.chat-product", "digest": {"sha256": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}},
-              {"uri": "lockfile.compiled-web-manifest.alpha.1", "digest": {"sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"}}
+              {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#commit", "digest": {"sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}},
+              {"uri": "git+https://source.kokoro.dev/repositories/repository.kokoro-web#tree", "digest": {"sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}},
+              {"uri": "kokoro:template/template.site-base.1", "digest": {"sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"}},
+              {"uri": "kokoro:material-bundle/material-bundle.site-alpha.1", "digest": {"sha256": "3c8bf914143f840e0bcdda38b49b77460be80d7df546e86ff8791351324b2c2d"}},
+              {"uri": "oci://registry.kokoro.dev/oci.kokoro.web-composition-compiler", "digest": {"sha256": "1111111111111111111111111111111111111111111111111111111111111111"}},
+              {"uri": "oci://registry.kokoro.dev/oci.kokoro.web-artifact-inspector", "digest": {"sha256": "2222222222222222222222222222222222222222222222222222222222222222"}},
+              {"uri": "oci://registry.kokoro.dev/oci.kokoro.web-build-sandbox", "digest": {"sha256": "3333333333333333333333333333333333333333333333333333333333333333"}},
+              {"uri": "oci://registry.kokoro.dev/oci.kokoro.web-inspection-sandbox", "digest": {"sha256": "4444444444444444444444444444444444444444444444444444444444444444"}},
+              {"uri": "pkg:npm/%40kokoro/site-shell@1.0.0", "digest": {"sha256": "b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1"}},
+              {"uri": "pkg:npm/%40kokoro/site-bff@1.0.0", "digest": {"sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"}},
+              {"uri": "pkg:npm/%40kokoro/chat-product@1.0.0", "digest": {"sha256": "b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"}},
+              {"uri": "kokoro:lockfile/compiled-web-manifest.alpha.1", "digest": {"sha256": "b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5"}}
             ]
           },
           "runDetails": {"builder": {"id": "https://workloads.kokoro.dev/site-web-attestor/v1", "kokoro_signingKeyId": "key.web-artifact-attestor.1"}, "metadata": {"invocationId": "invocation.alpha.1", "startedOn": "2026-07-31T12:30:00.000Z", "finishedOn": "2026-07-31T12:32:00.000Z"}, "byproducts": [{"name": "inspection-report", "digest": {"sha256": "c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2"}}, {"name": "sbom", "digest": {"sha256": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"}}, {"name": "vulnerability-scan", "digest": {"sha256": "c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4c4"}}, {"name": "certification", "digest": {"sha256": "c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5c5"}}]}
@@ -201,11 +201,11 @@
     {"id": "jcs-registry", "caseId": "registry-published", "expectedDigest": "sha256:6a7cd43dc9dce21d404c74fdf698520cb43f08aceaa120a1822544dbc8a0c8ac"},
     {"id": "jcs-intent", "caseId": "intent-site-alpha", "expectedDigest": "sha256:3858c6cc59703c19f9957958a83c9959f6fc0d538d17b313cf3d3f4a9e6b0506"},
     {"id": "jcs-manifest", "caseId": "manifest-chat-only", "expectedDigest": "sha256:3522a6cb8d2d1ac96173ed2b8b0ffb9c7fc6b636cea8f3bd877022544af92a8c"},
-    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:23c35fb11fbae11ec4e9602699f6e944cd205f68e40d8ade9fc4994db0f9dd84"}
+    {"id": "jcs-provenance", "caseId": "provenance-site-alpha", "expectedDigest": "sha256:652090d4ddd2594e92f71ee7e23e61f7798d4bb0b075f29a05109ad275370457"}
   ],
   "dsseVectors": [
     {"id": "dsse-intent-site-alpha", "caseId": "intent-site-alpha", "keyId": "key.web-build-intent.3", "payloadType": "application/vnd.kokoro.web-build-intent.v1+json", "expectedPaeSha256": "ba0144fcb6c0ceb9a2e95a5036a5f0c52837b3f623469a51fb7a8928aa64d185", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAlLg/mnvBV61PnIxY3KOKTgB6Oer8gURWmpaG98SvOaY=", "signatureBase64": "gOWmDDmPlUpgK4Aljuw1klTKUqr5iRGysk3ZQrG9JS7DcI5G5z0HefcIzmJX7GLn6px/xUtoV/U345N8Xn05DQ=="},
-    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "8008563bdf49c78bcea04a550dabc66e868ac0d23b19721a4cb292ee30e8ed3b", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAvWKX+V7wkD3jO4h96I2fH144iMl+TanLDDSlz0WCYHw=", "signatureBase64": "ccPZLm7WyBDz7ZIZxIFBatutcRVSU9FDIbKqqH7BGwopXwrQ5fG0ynyLW5WZqUtzq49DR3lhkY1OJiRfTGouAA=="}
+    {"id": "dsse-provenance-site-alpha", "caseId": "provenance-site-alpha", "keyId": "key.web-artifact-attestor.1", "payloadType": "application/vnd.in-toto+json", "expectedPaeSha256": "488c7d1c44cc4f0ccdb7f28ed1b2e793a5bdcdfe64dcb7997e64b18b5454202c", "publicKeySpkiDerBase64": "MCowBQYDK2VwAyEAYrXv0bzn2Yj703euM9PhSIvOjsp7yVoYAINv1r711zE=", "signatureBase64": "xSq6Y7NGRQgfAX4Bs1oFipnn/HQo60zjhFYU0WoO5S74Y0hYVK6ckVYZhE73dxrPEApaxYxknO2PihzKLRNnAA=="}
   ],
   "negativeCases": [
     {"id": "catalog-unknown-field", "baseCaseId": "catalog-published", "mutation": {"op": "add", "path": "/unexpected", "value": true}, "expectedCode": "web_release_positive_schema_invalid"},
