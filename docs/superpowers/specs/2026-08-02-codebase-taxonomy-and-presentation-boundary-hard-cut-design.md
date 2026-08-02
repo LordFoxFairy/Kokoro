@@ -395,6 +395,13 @@ frame，Snapshot/repair 从 domain
 state 构建。这样 profile 变化不会重写历史 domain facts，而 exact
 replay 也不依赖重新编码得到相同 bytes 的假设。
 
+`PresentationEvent` 的 runtime schema 与 static type 均由 Root
+`presentation-domain-event-v1`
+生成；Session/Web 不手写第二套 union。`presentation/domain/event.ts`
+只通过 generated public barrel type-import 该 contract，并定义 domain transition
+helpers。AG-UI adapter 在调用 domain 前执行 runtime
+validation，domain 不接收 unknown wire payload。
+
 ### 6.4 Web
 
 ```text
@@ -446,6 +453,10 @@ discriminant。`@ag-ui/core` 只能被 `session-client/adapters/ag-ui`
 整个 package 都不得依赖它。assistant-ui 的适配器明确命名为
 `createAssistantUiChatAdapter` / `useAssistantUiChatRuntime`，不再使用泛化
 `KokoroExternalStore`。
+
+Session 和 Web 的 generated `PresentationEvent` 均来自同一个 Root schema/source
+digest；Root compatibility corpus 要求 server AG-UI encoder 与 Web decoder
+round-trip 到相同 canonical domain event，防止两端各自解释 wire vocabulary。
 
 ### 6.5 Platform
 
@@ -518,6 +529,14 @@ Root generator 先产生临时目录，再原子替换目标 generated
 tree。子仓 verifier 只根据 committed provenance 和 output 重算；Root mirror
 verifier 还会 checkout `sourceRootCommit`、重跑 exact generator
 argv，并要求 byte-for-byte 相同。任何生成物均不得手改。
+
+Session/Platform each use one repository compilation-unit manifest. In the Web
+workspace, every package that publishes generated exports owns its own
+`src/generated/provenance.json`；a Web-root provenance index lists package
+path + manifest digest and rejects unlisted generated roots. Python
+package-derived protobuf outputs are covered by an Agent-root provenance
+manifest even though their physical path follows the protobuf package rather
+than `src/generated/proto`.
 
 ## 7. 命名规则
 
@@ -864,6 +883,11 @@ ordering. Baseline and candidate must produce identical canonical outputs and
 digest. Any required delta outside this allowlist or corpus is an Agent core
 semantic change and stops implementation for user alignment.
 
+P1 defines the freeze-mirror generator and output digest；P2 materializes and
+commits the provenance-bound mirror into Agent test fixtures. Agent CI therefore
+remains independently cloneable and never reads the sibling Root filesystem.
+Root integration separately proves the mirror bytes and digest equal `R1`.
+
 ### 10.2 Intentional Proto breaking rebaseline
 
 The Presentation contract is unpublished prelaunch V1, so the hard cut keeps
@@ -884,13 +908,15 @@ containing:
 - `singleUse: true`。
 
 The breaking gate runs ordinary `buf breaking` against the baseline descriptor
-and requires its diagnostics to match the manifest exactly; an extra or missing
-diagnostic fails. It then validates the candidate descriptor digest and writes
-the new committed `contract/baseline/presentation-v1.binpb`. A second ordinary
-`buf breaking` against that candidate baseline must pass. After the Root
-contract candidate is accepted, CI rejects reuse or modification of the
-single-use reset manifest, and all future changes compare against the new
-baseline normally.
+and requires a non-zero result. It does not parse human diagnostic text. A
+deterministic descriptor-set diff verifier compares removed/renamed symbols,
+field numbers, wire types, reserved declarations and service methods against the
+reset manifest; any extra or missing descriptor change fails. It then validates
+the candidate descriptor digest and writes the new committed
+`contract/baseline/presentation-v1.binpb`. A second ordinary `buf breaking`
+against that candidate baseline must pass. After the Root contract candidate is
+accepted, CI rejects reuse or modification of the single-use reset manifest, and
+all future changes compare against the new baseline normally.
 
 ## 11. 实施顺序
 
@@ -1085,7 +1111,31 @@ path 已表达 owner，重复前缀制造当前长名问题。只在跨包冲突
 会破坏四仓独立 clone/build/release，并诱发跨仓源码依赖。Root 只拥有 source
 contract；每个 consumer 本地提交生成物。拒绝。
 
-## 15. 完成定义
+## 15. Spec review closure
+
+The first independent spec review returned six blocking issues. They are closed
+as follows:
+
+| Review issue                                                               | Normative closure                                                                                       |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| missing Agent/Platform ledgers and unresolved archive choice               | §8.3/§8.7 define closed paths/symbols；§6.5 requires deletion of retired archive                        |
+| non-enforceable cross-repo order and invalid clean-clone/rollback sequence | §11.1-§11.4 define `R1`, child SHAs/tags, `R2`, quiesce, baseline reconstruction and promotion evidence |
+| Agent no-core-change claim not machine-verifiable                          | §10.1 fixes baseline SHA, path/AST gates and frozen behavior corpus                                     |
+| intentional V1 break conflicts with ordinary Buf gate                      | §10.2 defines single-use descriptor-diff rebaseline followed by ordinary breaking gate                  |
+| sequence/revision behavior unspecified                                     | §4.1 defines scope, initial value, advance, replay, collision, gap, fence/epoch and terminal rules      |
+| generated provenance undefined                                             | §6.6 defines the manifest schema, deterministic closure and independent verifier behavior               |
+
+The reviewer recommendation to define one AG-UI -> ChatUpdate owner is closed in
+§6.4: session-client alone decodes AG-UI to PresentationEvent；chat-projection
+alone maps PresentationEvent to ChatUpdate. The Platform taxonomy is an
+independent child plan, not mixed into one Presentation implementation plan,
+while Root retains one promotion gate.
+
+An adversarial closure pass additionally rejected a rename-only database design:
+§6.3 and §8.6 now split protocol-neutral StreamRecord from exact persisted
+WireFrame, preventing AG-UI coupling from being hidden behind renamed tables.
+
+## 16. 完成定义
 
 本方案只有在以下条件全部成立时完成：
 
