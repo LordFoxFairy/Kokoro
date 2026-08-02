@@ -283,7 +283,7 @@ message SiteCommerceAssignmentCandidate {
   option (buf.validate.message).cel = {
     id: "commerce.assignment.unique_targets"
     message: "an assignment cannot bind the same immutable target twice"
-    expression: "this.offer_revisions.all(x, this.offer_revisions.filter(y, y.target_ref == x.target_ref).size() == 1) && this.redemption_program_revisions.all(x, this.redemption_program_revisions.filter(y, y.target_ref == x.target_ref).size() == 1)"
+    expression: "this.offer_revisions.all(x, this.offer_revisions.filter(y, y.target_ref == x.target_ref).size() == 1) && this.offer_price_revisions.all(x, this.offer_price_revisions.filter(y, y.target_ref == x.target_ref).size() == 1) && this.redemption_program_revisions.all(x, this.redemption_program_revisions.filter(y, y.target_ref == x.target_ref).size() == 1)"
   };
   CommerceRevisionTarget target = 1 [(buf.validate.field).required = true];
   repeated CommerceRevisionTarget offer_revisions = 2 [(buf.validate.field).repeated = {
@@ -291,6 +291,12 @@ message SiteCommerceAssignmentCandidate {
     max_items: 128
   }];
   repeated CommerceRevisionTarget redemption_program_revisions = 3 [(buf.validate.field).repeated.max_items = 128];
+  // Price is a separate immutable authority. A Site cannot expose an offer
+  // whose exact price revision was not approved in the same assignment.
+  repeated CommerceRevisionTarget offer_price_revisions = 4 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 128
+  }];
 }
 message SiteAssignmentExecutionResult {
   optional SiteCommerceAssignmentView previous = 1;

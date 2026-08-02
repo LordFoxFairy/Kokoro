@@ -91,6 +91,9 @@ def test_offer_price_is_an_immutable_money_and_cadence_authority() -> None:
     publish = _body(source, "message", "PublishOfferPriceRevisionEffect")
     assert "this.target.target_revision == this.expected_version + 1u" in publish
     assert "CommerceRevisionTarget offer_revision" in publish
+    assignment = _body(source, "message", "SiteCommerceAssignmentCandidate")
+    assert "repeated CommerceRevisionTarget offer_price_revisions" in assignment
+    assert "this.offer_price_revisions.all" in assignment
 
 
 def test_fulfillment_output_owner_is_typed_and_total_cardinality_is_bounded() -> None:
