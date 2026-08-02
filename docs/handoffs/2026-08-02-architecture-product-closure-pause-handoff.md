@@ -24,8 +24,8 @@ remote  origin/feat/lordfoxfairy/wave-0-foundation 指向同一 commit
 
 1. `docs/CODEBASE_MAP.md`
 2. `docs/task.md`，但注意其中 candidate 表已落后，不能当实时 commit 事实源
-3. `docs/superpowers/specs/2026-08-02-commerce-credit-authority-hard-cut-design.md`
-4. `docs/superpowers/plans/2026-08-02-commerce-credit-authority-hard-cut.md`
+3. `kokoro-platform/docs/superpowers/specs/2026-08-02-commerce-credit-authority-hard-cut-design.md`
+4. `kokoro-platform/docs/superpowers/plans/2026-08-02-commerce-credit-authority-hard-cut.md`
 5. 本交接
 
 ## 2. 用户最终目标与不可破坏边界
