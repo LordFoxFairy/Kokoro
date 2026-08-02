@@ -35,11 +35,20 @@ def _profile() -> dict[str, Any]:
     )
 
 
+def _authority() -> dict[str, Any]:
+    return json.loads(
+        (ROOT / "contract/registry/agui-activity-authority-v1.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+
 def _repository_fixture(
     tmp_path: Path,
     *,
     corpus: dict[str, Any] | None = None,
     profile: dict[str, Any] | None = None,
+    authority: dict[str, Any] | None = None,
 ) -> Path:
     fixture_root = tmp_path / "repository"
     for relative in (
@@ -56,6 +65,10 @@ def _repository_fixture(
     candidate_profile_path.parent.mkdir(parents=True, exist_ok=True)
     candidate_profile_path.write_text(
         json.dumps(profile or _profile()), encoding="utf-8"
+    )
+    authority_path = fixture_root / "contract/registry/agui-activity-authority-v1.yaml"
+    authority_path.write_text(
+        json.dumps(authority or _authority()), encoding="utf-8"
     )
     corpus_path = fixture_root / "contract/corpus/agui-presentation-v1.json"
     corpus_path.parent.mkdir(parents=True, exist_ok=True)
@@ -98,7 +111,7 @@ def test_rejects_root_candidate_digest_drift() -> None:
     with pytest.raises(
         AgentAguiPythonParityError, match="agent_agui_python_envelope_invalid"
     ):
-        validate_corpus(corpus, _profile())
+        validate_corpus(corpus, _profile(), _authority())
 
 
 @pytest.mark.parametrize("projection_version", [1, "01", "18446744073709551616"])
@@ -113,7 +126,7 @@ def test_rejects_non_uint64_session_projection_revision(
         AgentAguiPythonParityError,
         match="agent_agui_session_projection_version_invalid",
     ):
-        validate_corpus(corpus, _profile())
+        validate_corpus(corpus, _profile(), _authority())
 
 
 @pytest.mark.parametrize(
@@ -142,7 +155,7 @@ def test_rejects_legacy_or_overflow_run_owner_version(
         AgentAguiPythonParityError,
         match="agent_agui_run_owner_version_invalid",
     ):
-        validate_corpus(corpus, _profile())
+        validate_corpus(corpus, _profile(), _authority())
 
 
 def test_rejects_missing_or_duplicate_candidate_coverage() -> None:
@@ -153,7 +166,7 @@ def test_rejects_missing_or_duplicate_candidate_coverage() -> None:
     with pytest.raises(
         AgentAguiPythonParityError, match="agent_agui_python_candidate_duplicate"
     ):
-        validate_corpus(corpus, _profile())
+        validate_corpus(corpus, _profile(), _authority())
 
 
 def test_registry_added_event_arm_requires_a_canonical_python_envelope(
@@ -217,9 +230,12 @@ def test_missing_activity_cannot_hide_behind_duplicate_discriminator(
 
 
 def test_observed_activity_not_declared_by_registry_is_rejected(tmp_path: Path) -> None:
-    profile = _profile()
-    profile["allowedActivityTypes"].remove("kokoro.error.v1")
-    fixture_root = _repository_fixture(tmp_path, profile=profile)
+    authority = _authority()
+    authority["activities"] = [
+        row for row in authority["activities"]
+        if row["activityType"] != "kokoro.error.v1"
+    ]
+    fixture_root = _repository_fixture(tmp_path, authority=authority)
 
     with pytest.raises(
         AgentAguiPythonParityError,

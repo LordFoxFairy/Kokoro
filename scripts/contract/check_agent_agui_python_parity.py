@@ -45,10 +45,9 @@ _CANDIDATE_PROFILE_KEYS = frozenset(
         "producer",
         "consumer",
         "allowedEventTypes",
-        "allowedActivityTypes",
+        "activityAuthority",
         "forbiddenEventTypes",
         "forbiddenEventFamilies",
-        "forbiddenOwnerActivityTypes",
         "forbiddenFields",
         "terminalPolicy",
         "projectionPolicy",
@@ -110,7 +109,9 @@ class _DeclaredCoverage:
     activity_types: tuple[str, ...]
 
 
-def _declared_coverage(profile: Mapping[str, Any]) -> _DeclaredCoverage:
+def _declared_coverage(
+    profile: Mapping[str, Any], activity_authority: Mapping[str, Any]
+) -> _DeclaredCoverage:
     if set(profile) != _CANDIDATE_PROFILE_KEYS:
         _fail("agent_agui_python_profile_invalid", "candidate profile shape differs")
     activation = _mapping(
@@ -124,6 +125,7 @@ def _declared_coverage(profile: Mapping[str, Any]) -> _DeclaredCoverage:
         or profile.get("lifecycle") != "contract-only"
         or profile.get("producer") != "kokoro-agent"
         or profile.get("consumer") != "kokoro-session"
+        or profile.get("activityAuthority") != "kokoro.agui.activity-authority.v1"
         or activation
         != {
             "runtimeImplemented": False,
@@ -136,10 +138,31 @@ def _declared_coverage(profile: Mapping[str, Any]) -> _DeclaredCoverage:
         profile.get("allowedEventTypes"),
         detail="allowedEventTypes must be a unique non-empty string list",
     )
-    activity_types = _unique_strings(
-        profile.get("allowedActivityTypes"),
-        detail="allowedActivityTypes must be a unique non-empty string list",
+    if (
+        activity_authority.get("registryId") != profile.get("activityAuthority")
+        or activity_authority.get("profileRevision")
+        != "kokoro-agui-presentation.v1"
+    ):
+        _fail("agent_agui_python_profile_invalid", "Activity authority identity differs")
+    activities = _sequence(
+        activity_authority.get("activities"),
+        code="agent_agui_python_profile_invalid",
+        detail="Activity authority rows missing",
     )
+    activity_types = tuple(
+        row["activityType"]
+        for item in activities
+        if (
+            (row := _mapping(
+                item,
+                code="agent_agui_python_profile_invalid",
+                detail="Activity authority row must be an object",
+            )).get("candidateSource")
+            == "kokoro-agent"
+        )
+    )
+    if not activity_types or len(activity_types) != len(set(activity_types)):
+        _fail("agent_agui_python_profile_invalid", "Agent Activity authority invalid")
     if "ACTIVITY_SNAPSHOT" not in event_types:
         _fail(
             "agent_agui_python_profile_invalid",
@@ -421,13 +444,14 @@ def _validate_run_owner_versions(corpus: Mapping[str, Any]) -> None:
 
 
 def validate_corpus(
-    corpus: Mapping[str, Any], candidate_profile: Mapping[str, Any]
+    corpus: Mapping[str, Any], candidate_profile: Mapping[str, Any],
+    activity_authority: Mapping[str, Any]
 ) -> int:
     """Rebuild and compare all canonical Agent candidate envelopes."""
 
     _validate_session_projection_versions(corpus)
     _validate_run_owner_versions(corpus)
-    declared = _declared_coverage(candidate_profile)
+    declared = _declared_coverage(candidate_profile, activity_authority)
     fixtures = _sequence(
         corpus.get("agentSourceFixtures"),
         code="agent_agui_python_source_coverage_invalid",
@@ -609,7 +633,7 @@ def validate_corpus(
     ):
         _fail(
             "agent_agui_python_activity_coverage_invalid",
-            "observed activity arms differ from allowedActivityTypes",
+            "observed activity arms differ from Activity authority",
         )
     if (
         sum(success_run_counts.values()) != 1
@@ -642,7 +666,10 @@ def validate_repository(root: Path) -> int:
     candidate_profile = _load_json(
         resolved_root / "contract/registry/agui-agent-candidate-profile-v1.yaml"
     )
-    return validate_corpus(corpus, candidate_profile)
+    activity_authority = _load_json(
+        resolved_root / "contract/registry/agui-activity-authority-v1.yaml"
+    )
+    return validate_corpus(corpus, candidate_profile, activity_authority)
 
 
 def main() -> int:

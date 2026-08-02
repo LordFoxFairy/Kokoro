@@ -1,0 +1,30 @@
+{
+  "registryId": "kokoro.agui.activity-authority.v1",
+  "profileRevision": "kokoro-agui-presentation.v1",
+  "lifecycle": "contract-only",
+  "outerEventAuthority": "official-ag-ui",
+  "payloadSchema": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json",
+  "identityPolicy": {
+    "ownerIdentity": "immutable-from-first-accepted-replacement",
+    "ownerVersion": "positive-uint64-decimal-string",
+    "updatedAt": "canonical-utc-milliseconds",
+    "activityMessageIdentity": "independent-owner-message-not-derived-from-text",
+    "textContainer": "optional"
+  },
+  "activities": [
+    {"activityType": "kokoro.safe-summary.v1", "payloadDefinition": "activitySafeSummary", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.tool-preview.v1", "payloadDefinition": "activityToolPreview", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.hitl.v1", "payloadDefinition": "activityHitl", "candidateSource": "kokoro-agent", "candidateStatePolicy": "pending-proposal-only", "forbiddenCandidateFields": ["receiptRef"], "terminalOwnerStateSource": "kokoro-session", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.plan.v1", "payloadDefinition": "activityPlan", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.subagent.v1", "payloadDefinition": "activitySubagent", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.notice.v1", "payloadDefinition": "activityNotice", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.error.v1", "payloadDefinition": "activityError", "candidateSource": "kokoro-agent", "candidateStatePolicy": "full-owner-replacement", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-agent", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.media.v1", "payloadDefinition": "activityMedia", "candidateSource": null, "candidateStatePolicy": "forbidden", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-platform", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.artifact.v1", "payloadDefinition": "activityArtifact", "candidateSource": null, "candidateStatePolicy": "forbidden", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-platform", "projectionOwner": "kokoro-session"},
+    {"activityType": "kokoro.cost.v1", "payloadDefinition": "activityCost", "candidateSource": null, "candidateStatePolicy": "forbidden", "forbiddenCandidateFields": [], "terminalOwnerStateSource": "kokoro-platform", "projectionOwner": "kokoro-session"}
+  ],
+  "sessionOwnerCustomEvents": [
+    {"name": "kokoro.control.replace.v1", "payloadDefinition": "customControl", "ownerStateSource": "kokoro-session", "projectionOwner": "kokoro-session"},
+    {"name": "kokoro.receipt.replace.v1", "payloadDefinition": "customReceipt", "ownerStateSource": "kokoro-session", "projectionOwner": "kokoro-session"}
+  ]
+}

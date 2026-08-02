@@ -29,6 +29,7 @@ const UINT64_MAXIMUM = 18_446_744_073_709_551_615n;
 const CONTRACT_PATHS = Object.freeze({
   profile: "contract/registry/agui-upstream-profile.yaml",
   agentCandidateProfile: "contract/registry/agui-agent-candidate-profile-v1.yaml",
+  activityAuthority: "contract/registry/agui-activity-authority-v1.yaml",
   mapping: "contract/registry/agui-presentation-mapping-v1.yaml",
   eventSchema: "contract/spec/kokoro-agui-presentation-event-v1.yaml",
   agentCandidateSchema: "contract/spec/agent-agui-event-candidate-v1.yaml",
@@ -47,10 +48,11 @@ const CONTRACT_PATHS = Object.freeze({
 // These are the reviewed contract sources, not caller-selected schemas carrying a familiar $id.
 const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
-  agentCandidateProfile: "51bed4a35ca703cf49d429b965b485cc7c0004d9267c7c5bec5adb9c322f3134",
+  agentCandidateProfile: "1a515b4c227f30c552699db1e7ac4cadd196077918e8dd83c917283fb8e5a735",
+  activityAuthority: "359c23cb2a8b384b261cd59550dc10695c29948e39a14d210b9487108573b8ec",
   mapping: "8e3f14b227fc0d0f873825a0aae85211586084e0620b54ef88685b640e95c818",
-  eventSchema: "21449983578a76e5a77e5893304a822ad001a997303fd5eab6e6edec80d43fec",
-  agentCandidateSchema: "bdc359752f7619b1ba90a65b0daa316066bf1887b5c28b24042b5521897b8fd7",
+  eventSchema: "b8ffd673f428e73304a8a224db8edce3ca26d74fb8c2f40ec82a540c70c27095",
+  agentCandidateSchema: "6a0668591737c79ec974c070556c2211ec89e2105b682dcde2c32f9952b745f4",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "56ce58caa5ab0fceda870e3e0fb31ed283898755df8822af189ed5dce57c6ef6",
   presentationRowSchema: "9216fcfaca063b8c7576209e7108757749a655bbd7d538b9a8acb684356e72fa",
@@ -91,6 +93,21 @@ const AGENT_CANDIDATE_ACTIVITY_TYPES = Object.freeze([
   "kokoro.subagent.v1",
   "kokoro.notice.v1",
   "kokoro.error.v1",
+]);
+const PLATFORM_OWNER_ACTIVITY_TYPES = Object.freeze([
+  "kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1",
+]);
+const ACTIVITY_DEFINITIONS = Object.freeze([
+  ["kokoro.safe-summary.v1", "activitySafeSummary", "kokoro-agent"],
+  ["kokoro.tool-preview.v1", "activityToolPreview", "kokoro-agent"],
+  ["kokoro.hitl.v1", "activityHitl", "kokoro-agent"],
+  ["kokoro.plan.v1", "activityPlan", "kokoro-agent"],
+  ["kokoro.subagent.v1", "activitySubagent", "kokoro-agent"],
+  ["kokoro.notice.v1", "activityNotice", "kokoro-agent"],
+  ["kokoro.error.v1", "activityError", "kokoro-agent"],
+  ["kokoro.media.v1", "activityMedia", "kokoro-platform"],
+  ["kokoro.artifact.v1", "activityArtifact", "kokoro-platform"],
+  ["kokoro.cost.v1", "activityCost", "kokoro-platform"],
 ]);
 const AGENT_ROLE_KEYS = Object.freeze([
   "repository", "internalEventCandidateProducer", "internalEventCandidateConsumer", "strictPresentationConsumer",
@@ -260,6 +277,8 @@ function loadContracts(root = repositoryRoot) {
     return Object.freeze({
       profile: sources.profile,
       agentCandidateProfile: sources.agentCandidateProfile,
+      activityAuthority: sources.activityAuthority,
+      eventSchema: sources.eventSchema,
       agentCandidateSchema: sources.agentCandidateSchema,
       mapping: sources.mapping,
       validateEvent: ajv.getSchema(sources.eventSchema.$id),
@@ -319,7 +338,7 @@ function validateProfile(profile) {
 function validateAgentCandidateProfile(profile) {
   exactKeys(
     profile,
-    ["profileId", "profileRevision", "lifecycle", "eventSchema", "envelopeSchema", "producer", "consumer", "allowedEventTypes", "allowedActivityTypes", "forbiddenEventTypes", "forbiddenEventFamilies", "forbiddenOwnerActivityTypes", "forbiddenFields", "terminalPolicy", "projectionPolicy", "identityPolicy", "eventScopePolicy", "activation"],
+    ["profileId", "profileRevision", "lifecycle", "eventSchema", "envelopeSchema", "producer", "consumer", "allowedEventTypes", "activityAuthority", "forbiddenEventTypes", "forbiddenEventFamilies", "forbiddenFields", "terminalPolicy", "projectionPolicy", "identityPolicy", "eventScopePolicy", "activation"],
     "agui_agent_candidate_profile_shape_invalid",
   );
   if (
@@ -330,7 +349,7 @@ function validateAgentCandidateProfile(profile) {
     profile.producer !== "kokoro-agent" || profile.consumer !== "kokoro-session"
   ) fail("agui_agent_candidate_profile_identity_invalid");
   exactArray(profile.allowedEventTypes, AGENT_CANDIDATE_EVENT_TYPES, "agui_agent_candidate_events_invalid");
-  exactArray(profile.allowedActivityTypes, AGENT_CANDIDATE_ACTIVITY_TYPES, "agui_agent_candidate_activities_invalid");
+  if (profile.activityAuthority !== "kokoro.agui.activity-authority.v1") fail("agui_agent_candidate_activity_authority_invalid");
   const forbiddenExpected = OFFICIAL_EVENT_TYPES.filter((type) => !AGENT_CANDIDATE_EVENT_TYPES.includes(type));
   if (new Set(profile.forbiddenEventTypes).size !== forbiddenExpected.length || forbiddenExpected.some((type) => !profile.forbiddenEventTypes.includes(type))) {
     fail("agui_agent_candidate_forbidden_events_incomplete");
@@ -338,7 +357,6 @@ function validateAgentCandidateProfile(profile) {
   for (const family of ["raw", "state", "messages", "delta", "native-tool", "reasoning", "thinking", "step", "chunk", "custom"]) {
     if (!profile.forbiddenEventFamilies.includes(family)) fail("agui_agent_candidate_forbidden_family_missing", family);
   }
-  exactArray(profile.forbiddenOwnerActivityTypes, ["kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1"], "agui_agent_candidate_owner_activity_invalid");
   for (const field of ["rawEvent", "raw_event", "providerEvent", "provider_event", "messages", "input", "result", "extra"]) {
     if (!profile.forbiddenFields.includes(field)) fail("agui_agent_candidate_forbidden_field_missing", field);
   }
@@ -347,12 +365,12 @@ function validateAgentCandidateProfile(profile) {
     profile.terminalPolicy.runFinished !== "success-only" || profile.terminalPolicy.runError !== "failure-only" ||
     profile.terminalPolicy.canceledOrInterrupted !== "session-owned-projection"
   ) fail("agui_agent_candidate_terminal_policy_invalid");
-  exactKeys(profile.projectionPolicy, ["sessionAdmission", "runFinishedOutcome", "routeProjection", "ownerActivitySynthesis"], "agui_agent_candidate_projection_policy_invalid");
+  exactKeys(profile.projectionPolicy, ["sessionAdmission", "runFinishedOutcome", "routeProjection", "ownerActivityProjection"], "agui_agent_candidate_projection_policy_invalid");
   if (
     profile.projectionPolicy.sessionAdmission !== "validate-before-durable-projection" ||
     profile.projectionPolicy.runFinishedOutcome !== "strip-after-success-validation" ||
     profile.projectionPolicy.routeProjection !== "resolve-through-session-presentation-binding" ||
-    profile.projectionPolicy.ownerActivitySynthesis !== "session-owner-facts-only"
+    profile.projectionPolicy.ownerActivityProjection !== "session-projects-admitted-owner-facts-without-content-synthesis"
   ) fail("agui_agent_candidate_projection_policy_invalid");
   exactKeys(profile.identityPolicy, ["candidateRefDomain", "candidateRefMaterial", "sourceEventRef", "sourceOrdinal", "sourceFixtureOrder", "internalThreadRef", "recordedAt", "eventDigest", "forbiddenAxes"], "agui_agent_candidate_identity_policy_invalid");
   if (
@@ -378,6 +396,108 @@ function validateAgentCandidateProfile(profile) {
   ) fail("agui_agent_candidate_scope_policy_invalid");
   exactKeys(profile.activation, ["runtimeImplemented", "compatibilityEvidence", "browserTransport"], "agui_agent_candidate_activation_invalid");
   if (Object.values(profile.activation).some((value) => value !== false)) fail("agui_agent_candidate_activation_invalid");
+}
+
+function validateActivityAuthority(authority, eventSchema, candidateSchema) {
+  exactKeys(
+    authority,
+    ["registryId", "profileRevision", "lifecycle", "outerEventAuthority", "payloadSchema", "identityPolicy", "activities", "sessionOwnerCustomEvents"],
+    "agui_activity_authority_shape_invalid",
+  );
+  if (
+    authority.registryId !== "kokoro.agui.activity-authority.v1" || authority.profileRevision !== PROFILE_REVISION ||
+    authority.lifecycle !== "contract-only" || authority.outerEventAuthority !== "official-ag-ui" ||
+    authority.payloadSchema !== eventSchema.$id
+  ) fail("agui_activity_authority_identity_invalid");
+  exactKeys(
+    authority.identityPolicy,
+    ["ownerIdentity", "ownerVersion", "updatedAt", "activityMessageIdentity", "textContainer"],
+    "agui_activity_authority_identity_policy_invalid",
+  );
+  if (
+    authority.identityPolicy.ownerIdentity !== "immutable-from-first-accepted-replacement" ||
+    authority.identityPolicy.ownerVersion !== "positive-uint64-decimal-string" ||
+    authority.identityPolicy.updatedAt !== "canonical-utc-milliseconds" ||
+    authority.identityPolicy.activityMessageIdentity !== "independent-owner-message-not-derived-from-text" ||
+    authority.identityPolicy.textContainer !== "optional"
+  ) fail("agui_activity_authority_identity_policy_invalid");
+  if (!Array.isArray(authority.activities) || authority.activities.length !== ACTIVITY_DEFINITIONS.length) {
+    fail("agui_activity_authority_activities_invalid");
+  }
+  for (const [index, [activityType, payloadDefinition, ownerStateSource]] of ACTIVITY_DEFINITIONS.entries()) {
+    const row = authority.activities[index];
+    exactKeys(row, ["activityType", "payloadDefinition", "candidateSource", "candidateStatePolicy", "forbiddenCandidateFields", "terminalOwnerStateSource", "projectionOwner"], "agui_activity_authority_row_invalid");
+    const candidateSource = ownerStateSource === "kokoro-agent" ? "kokoro-agent" : null;
+    const candidateStatePolicy = activityType === "kokoro.hitl.v1"
+      ? "pending-proposal-only"
+      : candidateSource === null ? "forbidden" : "full-owner-replacement";
+    const terminalOwnerStateSource = activityType === "kokoro.hitl.v1" ? "kokoro-session" : ownerStateSource;
+    const forbiddenCandidateFields = activityType === "kokoro.hitl.v1" ? ["receiptRef"] : [];
+    if (
+      row.activityType !== activityType || row.payloadDefinition !== payloadDefinition || row.candidateSource !== candidateSource ||
+      row.candidateStatePolicy !== candidateStatePolicy || canonical(row.forbiddenCandidateFields) !== canonical(forbiddenCandidateFields) ||
+      row.terminalOwnerStateSource !== terminalOwnerStateSource || row.projectionOwner !== "kokoro-session" ||
+      eventSchema.$defs?.[payloadDefinition]?.properties?.activityType?.const !== activityType
+    ) fail("agui_activity_authority_row_invalid", activityType);
+    const content = eventSchema.$defs[payloadDefinition]?.properties?.content;
+    if (
+      content?.additionalProperties !== false || !content.required?.includes("ownerVersion") || !content.required?.includes("updatedAt") ||
+      content.properties?.ownerVersion?.$ref !== "#/$defs/positiveUint64" || content.properties?.updatedAt?.$ref !== "#/$defs/canonicalUtcMs"
+    ) fail("agui_activity_authority_payload_invalid", activityType);
+  }
+  const agentRows = authority.activities.filter(({ candidateSource }) => candidateSource === "kokoro-agent");
+  exactArray(agentRows.map(({ activityType }) => activityType), AGENT_CANDIDATE_ACTIVITY_TYPES, "agui_activity_authority_agent_set_invalid");
+  exactArray(
+    authority.activities.filter(({ terminalOwnerStateSource }) => terminalOwnerStateSource === "kokoro-platform").map(({ activityType }) => activityType),
+    PLATFORM_OWNER_ACTIVITY_TYPES,
+    "agui_activity_authority_platform_set_invalid",
+  );
+  exactArray(candidateSchema.$defs.activityCandidate.properties.activityType.enum, AGENT_CANDIDATE_ACTIVITY_TYPES, "agui_activity_authority_candidate_schema_invalid");
+  for (const [index, row] of agentRows.entries()) {
+    const branch = candidateSchema.$defs.activityCandidate.allOf[index];
+    const contentRule = branch?.then?.properties?.content;
+    const expectedPayloadRef = `${eventSchema.$id}#/$defs/${row.payloadDefinition}/properties/content`;
+    const actualPayloadRef = row.activityType === "kokoro.hitl.v1" ? contentRule?.allOf?.[0]?.$ref : contentRule?.$ref;
+    if (
+      branch?.if?.properties?.activityType?.const !== row.activityType ||
+      actualPayloadRef !== expectedPayloadRef
+    ) fail("agui_activity_authority_candidate_schema_invalid", row.activityType);
+    if (row.activityType === "kokoro.hitl.v1") {
+      const policy = contentRule?.allOf?.[1];
+      if (
+        policy?.type !== "object" || policy?.properties?.status?.const !== "pending" || policy?.not?.type !== "object" ||
+        canonical(Object.keys(policy.not.properties ?? {})) !== canonical(["receiptRef"]) ||
+        canonical(policy.not.required) !== canonical(["receiptRef"])
+      ) {
+        fail("agui_activity_authority_hitl_candidate_policy_invalid");
+      }
+    }
+  }
+  exactArray(
+    authority.sessionOwnerCustomEvents.map(({ name }) => name),
+    ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"],
+    "agui_activity_authority_custom_set_invalid",
+  );
+  for (const [index, payloadDefinition] of ["customControl", "customReceipt"].entries()) {
+    const row = authority.sessionOwnerCustomEvents[index];
+    exactKeys(row, ["name", "payloadDefinition", "ownerStateSource", "projectionOwner"], "agui_activity_authority_custom_row_invalid");
+    if (
+      row.payloadDefinition !== payloadDefinition || row.ownerStateSource !== "kokoro-session" || row.projectionOwner !== "kokoro-session" ||
+      eventSchema.$defs?.[payloadDefinition]?.properties?.name?.const !== row.name
+    ) fail("agui_activity_authority_custom_row_invalid", row.name);
+  }
+  const hitl = eventSchema.$defs.activityHitl.properties.content;
+  for (const field of ["ownerRef", "decisionGroupRef", "requiredOwnerRefs", "controlRef", "ownerVersion", "updatedAt"]) {
+    if (!hitl.required.includes(field)) fail("agui_activity_authority_hitl_invalid", field);
+  }
+  if (Object.hasOwn(hitl.properties, "expectedVersion")) fail("agui_activity_authority_hitl_invalid", "expectedVersion");
+  if (
+    eventSchema.$defs.canonicalUtcMs?.minLength !== 24 || eventSchema.$defs.canonicalUtcMs?.maxLength !== 24 ||
+    eventSchema.$defs.canonicalUtcMs?.pattern !== "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+  ) fail("agui_activity_authority_time_format_invalid");
+  if (eventSchema.$defs.timestamp?.minimum !== 0 || eventSchema.$defs.timestamp?.maximum !== 253_402_300_799_999) {
+    fail("agui_activity_authority_timestamp_range_invalid");
+  }
 }
 
 function validateAgentCandidateSchemaContract(schema) {
@@ -2088,8 +2208,11 @@ export function applyCorpusMutation(candidate, mutation) {
 }
 
 function validateAgentCandidateCoverage(corpus, contracts) {
-  const { agentCandidateProfile, validateAgentCandidate } = contracts;
+  const { agentCandidateProfile, activityAuthority, validateAgentCandidate } = contracts;
   validateAgentCandidateProfile(agentCandidateProfile);
+  const allowedActivityTypes = activityAuthority.activities
+    .filter(({ candidateSource }) => candidateSource === "kokoro-agent")
+    .map(({ activityType }) => activityType);
   const coveredEvents = new Set();
   const coveredActivities = new Set();
   let candidates = 0;
@@ -2113,7 +2236,7 @@ function validateAgentCandidateCoverage(corpus, contracts) {
         ? Object.fromEntries(Object.entries(event).filter(([key]) => key !== "parentRunId"))
         : event;
       const allowed = agentCandidateProfile.allowedEventTypes.includes(event.type) && (
-        event.type !== EventType.ACTIVITY_SNAPSHOT || agentCandidateProfile.allowedActivityTypes.includes(event.activityType)
+        event.type !== EventType.ACTIVITY_SNAPSHOT || allowedActivityTypes.includes(event.activityType)
       );
       const accepted = validateAgentCandidate(candidateEvent);
       if (allowed !== accepted) fail("agui_agent_candidate_schema_profile_drift", event.type);
@@ -2358,6 +2481,29 @@ function validateAgentCandidateEnvelopeCorpus(corpus, contracts, sourceFixtures,
   return corpus.agentCandidateEnvelopeCases.length;
 }
 
+function validateAgentCandidateNegativeCorpus(corpus, contracts) {
+  if (!Array.isArray(corpus.agentCandidateNegativeCases) || corpus.agentCandidateNegativeCases.length < 5) {
+    fail("agui_agent_candidate_negative_corpus_missing");
+  }
+  const caseIds = new Set();
+  for (const negativeCase of corpus.agentCandidateNegativeCases) {
+    exactKeys(negativeCase, ["id", "candidateEnvelope", "expectedCode"], "agui_agent_candidate_negative_case_shape_invalid");
+    if (caseIds.has(negativeCase.id)) fail("agui_agent_candidate_negative_case_duplicate", negativeCase.id);
+    caseIds.add(negativeCase.id);
+    let observed;
+    try {
+      validateAgentCandidateEnvelope(negativeCase.candidateEnvelope, contracts);
+    } catch (error) {
+      if (error instanceof AguiPresentationContractError) observed = error.code;
+      else throw error;
+    }
+    if (observed !== negativeCase.expectedCode) {
+      fail("agui_agent_candidate_negative_case_expectation_invalid", `${negativeCase.id}:${observed ?? "accepted"}`);
+    }
+  }
+  return corpus.agentCandidateNegativeCases.length;
+}
+
 function validateAgentCandidateProjectionCorpus(corpus, contracts, sourceFixtures, usedSourceRefs) {
   if (!Array.isArray(corpus.agentCandidateProjectionCases) || corpus.agentCandidateProjectionCases.length < 1) {
     fail("agui_agent_candidate_projection_corpus_missing");
@@ -2411,7 +2557,7 @@ function incrementCount(counts, key) {
   counts.set(key, (counts.get(key) ?? 0) + 1);
 }
 
-function validateAgentCandidateSemanticCoverage(corpus, profile) {
+function validateAgentCandidateSemanticCoverage(corpus, profile, activityAuthority) {
   const cases = [...corpus.agentCandidateEnvelopeCases, ...corpus.agentCandidateProjectionCases];
   const eventCounts = new Map();
   const activityCounts = new Map();
@@ -2436,10 +2582,13 @@ function validateAgentCandidateSemanticCoverage(corpus, profile) {
     if (eventCounts.get(eventType) !== 1) fail("agui_agent_candidate_semantic_coverage_invalid", eventType);
   }
   const observedActivities = [...activityCounts.keys()];
+  const allowedActivityTypes = activityAuthority.activities
+    .filter(({ candidateSource }) => candidateSource === "kokoro-agent")
+    .map(({ activityType }) => activityType);
   if (
-    eventCounts.get(EventType.ACTIVITY_SNAPSHOT) !== profile.allowedActivityTypes.length ||
-    observedActivities.length !== profile.allowedActivityTypes.length ||
-    observedActivities.some((activityType) => !profile.allowedActivityTypes.includes(activityType)) ||
+    eventCounts.get(EventType.ACTIVITY_SNAPSHOT) !== allowedActivityTypes.length ||
+    observedActivities.length !== allowedActivityTypes.length ||
+    observedActivities.some((activityType) => !allowedActivityTypes.includes(activityType)) ||
     observedActivities.some((activityType) => activityCounts.get(activityType) !== 1)
   ) fail("agui_agent_candidate_activity_coverage_invalid");
   if (successRunCounts.size !== 1 || errorRunCounts.size !== 1) {
@@ -2606,6 +2755,7 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   validateProfile(contracts.profile);
   validateAgentCandidateProfile(contracts.agentCandidateProfile);
   validateAgentCandidateSchemaContract(contracts.agentCandidateSchema);
+  validateActivityAuthority(contracts.activityAuthority, contracts.eventSchema, contracts.agentCandidateSchema);
   validateMappingRegistry(contracts.mapping);
   if (!Array.isArray(corpus.positiveCases) || corpus.positiveCases.length < 2 || !Array.isArray(corpus.negativeCases) || corpus.negativeCases.length < 10) fail("agui_corpus_shape_invalid");
   const caseIds = new Set();
@@ -2628,7 +2778,8 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
   const usedAgentSourceRefs = new Set();
   const agentCandidateEnvelopeCases = validateAgentCandidateEnvelopeCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
   const agentCandidateProjectionCases = validateAgentCandidateProjectionCorpus(corpus, contracts, agentSourceFixtures, usedAgentSourceRefs);
-  validateAgentCandidateSemanticCoverage(corpus, contracts.agentCandidateProfile);
+  const agentCandidateNegativeCases = validateAgentCandidateNegativeCorpus(corpus, contracts);
+  validateAgentCandidateSemanticCoverage(corpus, contracts.agentCandidateProfile, contracts.activityAuthority);
   if (usedAgentSourceRefs.size !== agentSourceFixtures.size || [...agentSourceFixtures.keys()].some((sourceRef) => !usedAgentSourceRefs.has(sourceRef))) {
     fail("agui_agent_candidate_source_fixture_unused");
   }
@@ -2658,6 +2809,7 @@ export async function validateRepository({ root = repositoryRoot } = {}) {
     agentSourceFixtures: agentSourceFixtures.size,
     agentCandidateEnvelopeCases,
     agentCandidateProjectionCases,
+    agentCandidateNegativeCases,
     snapshotAuthorityCases: snapshotAuthority.positive,
     snapshotAuthorityNegativeCases: snapshotAuthority.negative,
   };
@@ -2670,7 +2822,7 @@ async function main(argv) {
     root = resolve(argv[1]);
   }
   const result = await validateRepository({ root });
-  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.bindingReplacementDeltas} binding replacements, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentSourceFixtures} Agent source fixtures, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.snapshotAuthorityCases} snapshot authority cases, ${result.snapshotAuthorityNegativeCases} snapshot authority attacks\n`);
+  process.stdout.write(`agui_presentation_ok: ${result.positiveCases} positive, ${result.negativeCases} negative, ${result.durableFrames} durable frames, ${result.bindingReplacementDeltas} binding replacements, ${result.mappingsCovered} closed mappings, ${result.agentCandidates} Agent candidate events, ${result.agentSourceFixtures} Agent source fixtures, ${result.agentCandidateEnvelopeCases} Agent envelopes, ${result.agentCandidateProjectionCases} Agent projection cases, ${result.agentCandidateNegativeCases} Agent candidate attacks, ${result.snapshotAuthorityCases} snapshot authority cases, ${result.snapshotAuthorityNegativeCases} snapshot authority attacks\n`);
 }
 
 if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {

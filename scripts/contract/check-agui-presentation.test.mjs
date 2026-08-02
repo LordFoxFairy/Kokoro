@@ -32,6 +32,7 @@ const fixtureFiles = [
   "contract/package.json",
   "contract/pnpm-lock.yaml",
   "contract/corpus/agui-presentation-v1.json",
+  "contract/registry/agui-activity-authority-v1.yaml",
   "contract/registry/agui-agent-candidate-profile-v1.yaml",
   "contract/registry/agui-presentation-mapping-v1.yaml",
   "contract/registry/agui-upstream-profile.yaml",
@@ -637,6 +638,7 @@ test("validates the pinned upstream profile and complete presentation corpus", a
     agentSourceFixtures: 14,
     agentCandidateEnvelopeCases: 13,
     agentCandidateProjectionCases: 1,
+    agentCandidateNegativeCases: 5,
     snapshotAuthorityCases: 1,
     snapshotAuthorityNegativeCases: 7,
   });
@@ -1034,12 +1036,8 @@ test("freezes the Agent event-candidate profile below the browser presentation s
     "TEXT_MESSAGE_START", "TEXT_MESSAGE_CONTENT", "TEXT_MESSAGE_END",
     "ACTIVITY_SNAPSHOT",
   ]);
-  assert.deepEqual(candidate.allowedActivityTypes, [
-    "kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1",
-    "kokoro.subagent.v1", "kokoro.notice.v1", "kokoro.error.v1",
-  ]);
+  assert.equal(candidate.activityAuthority, "kokoro.agui.activity-authority.v1");
   assert.ok(candidate.forbiddenEventTypes.includes("CUSTOM"));
-  assert.deepEqual(candidate.forbiddenOwnerActivityTypes, ["kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1"]);
   for (const field of ["rawEvent", "input", "result", "extra"]) assert.ok(candidate.forbiddenFields.includes(field));
   assert.equal(candidate.terminalPolicy.runFinished, "success-only");
   assert.equal(candidate.identityPolicy.sourceOrdinal, "uint64-decimal-string-strictly-increasing-per-run-starts-at-zero");
@@ -1049,6 +1047,54 @@ test("freezes the Agent event-candidate profile below the browser presentation s
   assert.equal(candidate.eventScopePolicy.runStartedAndFinished, "threadId=internalThreadRef-and-runId=internalRunRef-and-no-parentRunId");
   assert.equal(candidate.activation.runtimeImplemented, false);
   assert.equal(candidate.envelopeSchema, "https://contracts.kokoro.invalid/agent-agui-candidate-envelope.v1.schema.json");
+});
+
+test("uses one closed Activity authority for Agent candidates and owner adapters", async () => {
+  const authority = await readJson("contract/registry/agui-activity-authority-v1.yaml");
+  assert.deepEqual(Object.keys(authority), [
+    "registryId", "profileRevision", "lifecycle", "outerEventAuthority", "payloadSchema",
+    "identityPolicy", "activities", "sessionOwnerCustomEvents",
+  ]);
+  assert.equal(authority.outerEventAuthority, "official-ag-ui");
+  assert.equal(authority.payloadSchema, "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json");
+  assert.deepEqual(
+    authority.activities.filter(({ candidateSource }) => candidateSource === "kokoro-agent").map(({ activityType }) => activityType),
+    [
+      "kokoro.safe-summary.v1", "kokoro.tool-preview.v1", "kokoro.hitl.v1", "kokoro.plan.v1",
+      "kokoro.subagent.v1", "kokoro.notice.v1", "kokoro.error.v1",
+    ],
+  );
+  assert.deepEqual(
+    authority.activities.filter(({ terminalOwnerStateSource }) => terminalOwnerStateSource === "kokoro-platform").map(({ activityType }) => activityType),
+    ["kokoro.media.v1", "kokoro.artifact.v1", "kokoro.cost.v1"],
+  );
+  assert.deepEqual(
+    authority.sessionOwnerCustomEvents.map(({ name }) => name),
+    ["kokoro.control.replace.v1", "kokoro.receipt.replace.v1"],
+  );
+  assert.equal(authority.identityPolicy.ownerIdentity, "immutable-from-first-accepted-replacement");
+  assert.equal(authority.identityPolicy.ownerVersion, "positive-uint64-decimal-string");
+  assert.equal(authority.identityPolicy.updatedAt, "canonical-utc-milliseconds");
+  assert.equal(authority.identityPolicy.activityMessageIdentity, "independent-owner-message-not-derived-from-text");
+  assert.equal(authority.identityPolicy.textContainer, "optional");
+  const hitl = authority.activities.find(({ activityType }) => activityType === "kokoro.hitl.v1");
+  assert.equal(hitl.candidateStatePolicy, "pending-proposal-only");
+  assert.deepEqual(hitl.forbiddenCandidateFields, ["receiptRef"]);
+  assert.equal(hitl.terminalOwnerStateSource, "kokoro-session");
+
+  const candidate = await readJson("contract/registry/agui-agent-candidate-profile-v1.yaml");
+  assert.equal(candidate.activityAuthority, "kokoro.agui.activity-authority.v1");
+  assert.equal(Object.hasOwn(candidate, "allowedActivityTypes"), false);
+  assert.equal(Object.hasOwn(candidate, "forbiddenOwnerActivityTypes"), false);
+
+  const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
+  assert.deepEqual(
+    corpus.agentCandidateNegativeCases.map(({ id }) => id),
+    [
+      "agent-hitl-terminal-spoof", "agent-hitl-receipt-spoof", "agent-hitl-legacy-version-shape",
+      "agent-activity-noncanonical-updated-at", "agent-platform-owner-activity-spoof",
+    ],
+  );
 });
 
 test("projects complete versioned owner snapshots and keeps Platform media ownership out of Agent", async () => {

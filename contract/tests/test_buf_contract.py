@@ -20,6 +20,7 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
     assert package["private"] is True
     assert package["packageManager"] == "pnpm@11.2.2"
     assert package["devDependencies"] == {
+        "@ag-ui/core": "0.0.57",
         "@bufbuild/buf": "1.72.0",
         "@bufbuild/protobuf": "2.13.0",
         "@bufbuild/protoc-gen-es": "2.13.0",
@@ -30,23 +31,28 @@ def test_buf_contract_toolchain_is_exact_and_local() -> None:
         "typescript": "5.9.3",
     }
     assert package["scripts"] == {
+        "agui:check": "pnpm agui:corpus:check && node ../scripts/contract/check-agui-presentation.mjs --root ..",
+        "agui:corpus:check": "node ../scripts/contract/generate-agui-presentation-corpus.mjs --check --root ..",
+        "agui:test": "node --test ../scripts/contract/check-agui-presentation.test.mjs",
+        "agui:typecheck": "tsc -p tests/tsconfig.agui-presentation.json --noEmit",
         "buf:breaking": "buf breaking",
         "buf:format": "buf format -w",
         "buf:format:check": "buf format --diff --exit-code",
         "buf:generate": "node generate.mjs",
         "buf:lint": "buf lint",
-            "openapi:lint": (
-                "redocly lint --extends=spec openapi/platform-public-v1.yaml "
-                "openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml"
-            ),
-            "openapi:generate:asset-data-plane": (
-                "node generate-public-openapi.mjs --schema asset-data-plane-v1"
-            ),
-            "openapi:generate:public": "node generate-public-openapi.mjs",
-            "web-release:check": (
-                "node ../scripts/contract/check-web-release-composition.mjs --root .."
-            ),
-        }
+        "openapi:lint": (
+            "redocly lint --extends=spec openapi/platform-public-v1.yaml "
+            "openapi/asset-data-plane-v1.yaml openapi/admin-web-v1.yaml"
+        ),
+        "openapi:generate:asset-data-plane": (
+            "node generate-public-openapi.mjs --schema asset-data-plane-v1"
+        ),
+        "openapi:generate:public": "node generate-public-openapi.mjs",
+        "web-release:check": (
+            "node generate-web-release-composition-corpus.mjs --check --root .. "
+            "&& node ../scripts/contract/check-web-release-composition.mjs --root .."
+        ),
+    }
     assert "pnpm" not in package
     workspace = yaml.safe_load((CONTRACT / "pnpm-workspace.yaml").read_text())
     assert workspace["allowBuilds"] == {"@bufbuild/buf": True}

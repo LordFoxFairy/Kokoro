@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.kokoro.invalid/agent-agui-event-candidate.v1.schema.json",
   "title": "Kokoro Agent AG-UI event candidate v1",
-  "description": "A contract-only internal candidate emitted by Agent and admitted by Session. Every branch reuses the stricter browser presentation field schema except RUN_STARTED, whose closed candidate arm forbids parentRunId so Session alone derives browser lineage from binding authority. CUSTOM, owner Artifact/Cost activities, raw payloads and native tool/reasoning/state families have no representation.",
+  "description": "A contract-only internal candidate emitted by Agent and admitted by Session. Every branch reuses the stricter browser presentation field schema except RUN_STARTED, whose closed candidate arm forbids parentRunId so Session alone derives browser lineage from binding authority. HITL is a pending proposal without receipt authority. CUSTOM, Platform-owned Media/Artifact/Cost activities, raw payloads and native tool/reasoning/state families have no representation.",
   "oneOf": [
     {"$ref": "#/$defs/runStartedWithoutParent"},
     {"$ref": "#/$defs/runFinishedSuccess"},
@@ -84,7 +84,10 @@
       "allOf": [
         {"if": {"properties": {"activityType": {"const": "kokoro.safe-summary.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySafeSummary/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.tool-preview.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityToolPreview/properties/content"}}}},
-        {"if": {"properties": {"activityType": {"const": "kokoro.hitl.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityHitl/properties/content"}}}},
+        {"if": {"properties": {"activityType": {"const": "kokoro.hitl.v1"}}}, "then": {"properties": {"content": {"allOf": [
+          {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityHitl/properties/content"},
+          {"type": "object", "properties": {"status": {"const": "pending"}}, "not": {"type": "object", "properties": {"receiptRef": {}}, "required": ["receiptRef"]}}
+        ]}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.plan.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityPlan/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.subagent.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activitySubagent/properties/content"}}}},
         {"if": {"properties": {"activityType": {"const": "kokoro.notice.v1"}}}, "then": {"properties": {"content": {"$ref": "https://contracts.kokoro.invalid/kokoro-agui-presentation-event.v1.schema.json#/$defs/activityNotice/properties/content"}}}},

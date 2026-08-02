@@ -4,6 +4,7 @@
   "contracts": {
     "profile": "contract/registry/agui-upstream-profile.yaml",
     "agentCandidateProfile": "contract/registry/agui-agent-candidate-profile-v1.yaml",
+    "activityAuthority": "contract/registry/agui-activity-authority-v1.yaml",
     "mapping": "contract/registry/agui-presentation-mapping-v1.yaml",
     "eventSchema": "contract/spec/kokoro-agui-presentation-event-v1.yaml",
     "agentCandidateSchema": "contract/spec/agent-agui-event-candidate-v1.yaml",
@@ -8129,6 +8130,234 @@
         "operation": "m0-interrupted-terminal"
       },
       "expectedCode": "agui_snapshot_terminal_state_invalid"
+    }
+  ],
+  "agentCandidateNegativeCases": [
+    {
+      "id": "agent-hitl-terminal-spoof",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.success.005",
+          "sourceOrdinal": "5",
+          "recordedAt": "2026-08-01T13:00:06.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error.parent",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
+            "internalMessageRef": "agent.activity-message:005"
+          }
+        },
+        "eventDigest": "sha256:9693e197395a41ea2365e9072745c12375b1f88fbfda62ec0b8fbf711fc945e2",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785589206000,
+          "messageId": "agent.activity-message:005",
+          "activityType": "kokoro.hitl.v1",
+          "content": {
+            "ownerRef": "decision.01",
+            "ownerVersion": "1",
+            "decisionGroupRef": "decision-group.01",
+            "requiredOwnerRefs": [
+              "decision.01"
+            ],
+            "controlRef": "control.01",
+            "kind": "approval",
+            "title": "Approve action",
+            "description": "Review the safe action summary.",
+            "allowedActions": [
+              "approve",
+              "reject"
+            ],
+            "status": "accepted",
+            "deadline": "2026-08-01T12:10:00.000Z",
+            "updatedAt": "2026-08-01T13:00:06.000Z"
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:925a54a4fcb30953ad8359546d58b39e73760f169ec6a9b1affd4b7ecacb0fd6"
+      },
+      "expectedCode": "agui_agent_candidate_envelope_schema_invalid"
+    },
+    {
+      "id": "agent-hitl-receipt-spoof",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.success.005",
+          "sourceOrdinal": "5",
+          "recordedAt": "2026-08-01T13:00:06.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error.parent",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
+            "internalMessageRef": "agent.activity-message:005"
+          }
+        },
+        "eventDigest": "sha256:17a181741fc1e7804554e26dd1b89d635299bb3c2447133049f75e989dcb0350",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785589206000,
+          "messageId": "agent.activity-message:005",
+          "activityType": "kokoro.hitl.v1",
+          "content": {
+            "ownerRef": "decision.01",
+            "ownerVersion": "1",
+            "decisionGroupRef": "decision-group.01",
+            "requiredOwnerRefs": [
+              "decision.01"
+            ],
+            "controlRef": "control.01",
+            "kind": "approval",
+            "title": "Approve action",
+            "description": "Review the safe action summary.",
+            "allowedActions": [
+              "approve",
+              "reject"
+            ],
+            "status": "pending",
+            "deadline": "2026-08-01T12:10:00.000Z",
+            "updatedAt": "2026-08-01T13:00:06.000Z",
+            "receiptRef": "receipt.spoof"
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:0e847b7b2092c28e418a048f0878bf403b0066696749acd97ff3a5a1832a76df"
+      },
+      "expectedCode": "agui_agent_candidate_envelope_schema_invalid"
+    },
+    {
+      "id": "agent-hitl-legacy-version-shape",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.success.005",
+          "sourceOrdinal": "5",
+          "recordedAt": "2026-08-01T13:00:06.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error.parent",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
+            "internalMessageRef": "agent.activity-message:005"
+          }
+        },
+        "eventDigest": "sha256:3abcb252a485923d91648bbd61bdf60e1c054a35cc892fe7c334de579c53aaab",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785589206000,
+          "messageId": "agent.activity-message:005",
+          "activityType": "kokoro.hitl.v1",
+          "content": {
+            "ownerRef": "decision.01",
+            "decisionGroupRef": "decision-group.01",
+            "requiredOwnerRefs": [
+              "decision.01"
+            ],
+            "controlRef": "control.01",
+            "kind": "approval",
+            "title": "Approve action",
+            "description": "Review the safe action summary.",
+            "allowedActions": [
+              "approve",
+              "reject"
+            ],
+            "status": "pending",
+            "deadline": "2026-08-01T12:10:00.000Z",
+            "updatedAt": "2026-08-01T13:00:06.000Z",
+            "expectedVersion": 1
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:7ac568d3c5ea168bdaf914f72430ac5b6c85ebe291ade784efa1c09c36f2297e"
+      },
+      "expectedCode": "agui_agent_candidate_envelope_schema_invalid"
+    },
+    {
+      "id": "agent-activity-noncanonical-updated-at",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.success.005",
+          "sourceOrdinal": "5",
+          "recordedAt": "2026-08-01T13:00:06.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error.parent",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
+            "internalMessageRef": "agent.activity-message:005"
+          }
+        },
+        "eventDigest": "sha256:759a75c22c2e0134798819be733f28a2ce55ab178153b8a8018915763fdb93e8",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785589206000,
+          "messageId": "agent.activity-message:005",
+          "activityType": "kokoro.hitl.v1",
+          "content": {
+            "ownerRef": "decision.01",
+            "ownerVersion": "1",
+            "decisionGroupRef": "decision-group.01",
+            "requiredOwnerRefs": [
+              "decision.01"
+            ],
+            "controlRef": "control.01",
+            "kind": "approval",
+            "title": "Approve action",
+            "description": "Review the safe action summary.",
+            "allowedActions": [
+              "approve",
+              "reject"
+            ],
+            "status": "pending",
+            "deadline": "2026-08-01T12:10:00.000Z",
+            "updatedAt": "2026-08-01T09:00:00-04:00"
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:8a5c2e88fcf2cda7c8380aef5c7201d2a6811016fb3a6124d73f7453f546cd02"
+      },
+      "expectedCode": "agui_agent_candidate_envelope_schema_invalid"
+    },
+    {
+      "id": "agent-platform-owner-activity-spoof",
+      "candidateEnvelope": {
+        "profileRevision": "kokoro-agent-agui-candidate.v1",
+        "source": {
+          "sourceEventRef": "agent.event.run.success.005",
+          "sourceOrdinal": "5",
+          "recordedAt": "2026-08-01T13:00:06.000Z",
+          "route": {
+            "internalRunRef": "internal.run.error.parent",
+            "internalThreadRef": "agent.thread:01JZ6Y6K8M5A3Q2R7T9V4W1X0C",
+            "internalMessageRef": "agent.activity-message:005"
+          }
+        },
+        "eventDigest": "sha256:df0a22fbdb05bd4480b3a8194146cb02318e13ae6a5c12d191975817a8cd9282",
+        "event": {
+          "type": "ACTIVITY_SNAPSHOT",
+          "timestamp": 1785589206000,
+          "messageId": "agent.activity-message:005",
+          "activityType": "kokoro.media.v1",
+          "content": {
+            "ownerRef": "decision.01",
+            "ownerVersion": "1",
+            "decisionGroupRef": "decision-group.01",
+            "requiredOwnerRefs": [
+              "decision.01"
+            ],
+            "controlRef": "control.01",
+            "kind": "approval",
+            "title": "Approve action",
+            "description": "Review the safe action summary.",
+            "allowedActions": [
+              "approve",
+              "reject"
+            ],
+            "status": "pending",
+            "deadline": "2026-08-01T12:10:00.000Z",
+            "updatedAt": "2026-08-01T13:00:06.000Z"
+          },
+          "replace": true
+        },
+        "candidateRef": "agui_candidate:sha256:02c918fc4b6109876434f4f318d3676cf41f48b9e8a664bb63f6e7b91475863c"
+      },
+      "expectedCode": "agui_agent_candidate_envelope_schema_invalid"
     }
   ]
 }

@@ -93,16 +93,20 @@ covered by the Admin/OpenAPI and Session browser gates rather than being silentl
 
 `check-agui-presentation.mjs` is the public, read-only strict AG-UI presentation gate;
 `check-agui-presentation.test.mjs` defines its fail-closed public behaviour. It loads only the fixed reviewed Root
-role profile, Agent candidate profile, mapping, schemas, and corpus—callers cannot inject validators or alternate branded paths—and imports the
+role profile, Agent candidate profile, single Activity authority registry, mapping, schemas, and corpus—callers cannot inject validators or alternate branded paths—and imports the
 official `EventType` and `EventSchemas` from exact `@ag-ui/core@0.0.57`. The contract package and lock must retain
 that exact version and integrity. Every positive event must satisfy both the official schema and Kokoro's smaller
 closed vocabulary; forbidden raw, provider, native-tool, reasoning/thinking, state/delta, and unknown-custom
 families never become presentation data merely because upstream accepts them. The Agent candidate gate is narrower again:
-it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Media/Artifact/Cost owner activities, and verifies each admitted
+it admits safe RUN/TEXT/ACTIVITY candidates only, rejects `CUSTOM` and Platform-owned Media/Artifact/Cost activities, and verifies each admitted
 sample through the official `EventSchemas`. The envelope gate recomputes RFC 8785/JCS event bytes, rejects invalid Unicode scalar
 strings and unsafe/non-finite numbers, verifies the event digest and domain-separated candidate ref, and binds route refs and
 canonical recorded time back to the event. All event/content keys remain closed by schema, so Unicode object-key ordering cannot
 be injected through a dynamic map. Its independent Agent source fixtures are ordered as the owner log within each internal run:
+Root's Activity registry is the sole producer/owner policy source: Agent may propose only pending HITL without a receipt,
+while Session alone owns terminal HITL, Control, Receipt, public placement and projection; Platform owns Media, Artifact and Cost.
+Every owner payload uses immutable identity, positive uint64-string versions and canonical UTC-millisecond time. Activity has an
+independent owner-message identity and does not require a TEXT container.
 the first ordinal is zero, later ordinals strictly increase, source refs are unique, and the fixture vector is deliberately not
 the Session durable-sequence vector. Session may persist the Agent source ref as provenance but owns and assigns `durableSeq`.
 Agent `internalThreadRef` is a closed `agent.thread:<opaque-id>` owner ref: ordinal-zero `RUN_STARTED` establishes

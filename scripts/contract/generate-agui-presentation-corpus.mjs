@@ -20,6 +20,7 @@ const uint64Maximum = "18446744073709551615";
 const contracts = Object.freeze({
   profile: "contract/registry/agui-upstream-profile.yaml",
   agentCandidateProfile: "contract/registry/agui-agent-candidate-profile-v1.yaml",
+  activityAuthority: "contract/registry/agui-activity-authority-v1.yaml",
   mapping: "contract/registry/agui-presentation-mapping-v1.yaml",
   eventSchema: "contract/spec/kokoro-agui-presentation-event-v1.yaml",
   agentCandidateSchema: "contract/spec/agent-agui-event-candidate-v1.yaml",
@@ -629,9 +630,16 @@ corpus.contracts = contracts;
 const agentCandidateProfile = JSON.parse(
   await readFile(resolve(options.root, contracts.agentCandidateProfile), "utf8"),
 );
-if (!Array.isArray(agentCandidateProfile.allowedActivityTypes) || agentCandidateProfile.allowedActivityTypes.length === 0) {
-  throw new Error("Agent candidate profile activities are required");
+const activityAuthority = JSON.parse(
+  await readFile(resolve(options.root, contracts.activityAuthority), "utf8"),
+);
+if (agentCandidateProfile.activityAuthority !== activityAuthority.registryId) {
+  throw new Error("Agent candidate Activity authority mismatch");
 }
+const agentActivityTypes = activityAuthority.activities
+  .filter(({ candidateSource }) => candidateSource === "kokoro-agent")
+  .map(({ activityType }) => activityType);
+if (agentActivityTypes.length === 0) throw new Error("Agent candidate Activity authority is required");
 const authorityBase = corpus.positiveCases.find(({ id }) => id === "resume-with-safe-typed-presentation");
 if (authorityBase === undefined) throw new Error("resume-with-safe-typed-presentation corpus case is required");
 for (const contractCase of corpus.positiveCases) {
@@ -667,7 +675,7 @@ if (resumedBaseBinding === undefined || resumedBaseBinding.state !== "finished")
   throw new Error("resume-with-safe-typed-presentation terminal base binding is required");
 }
 resumedBaseBinding.terminalDisposition = "success";
-const activityTemplates = agentCandidateProfile.allowedActivityTypes.map((activityType) => {
+const activityTemplates = agentActivityTypes.map((activityType) => {
   const frame = authorityBase.frames.find(
     ({ data }) => data.event.type === "ACTIVITY_SNAPSHOT" && data.event.activityType === activityType,
   );
@@ -1000,6 +1008,31 @@ corpus.agentCandidateEnvelopeCases = [
     sourceEventId: projectedErrorFrames[1].data.source.sourceEventId,
     candidateEnvelope: candidateEnvelopeFor(parentCase, projectedErrorFrames[1]),
   },
+];
+const canonicalHitlEnvelope = corpus.agentCandidateEnvelopeCases.find(
+  ({ candidateEnvelope }) => candidateEnvelope.event.type === "ACTIVITY_SNAPSHOT" && candidateEnvelope.event.activityType === "kokoro.hitl.v1",
+)?.candidateEnvelope;
+if (canonicalHitlEnvelope === undefined) throw new Error("canonical Agent HITL candidate is required");
+const rejectedCandidate = (id, mutate) => {
+  const candidateEnvelope = structuredClone(canonicalHitlEnvelope);
+  mutate(candidateEnvelope.event);
+  candidateEnvelope.eventDigest = digest(candidateEnvelope.event);
+  candidateEnvelope.candidateRef = candidateRefFor(candidateEnvelope);
+  return { id, candidateEnvelope, expectedCode: "agui_agent_candidate_envelope_schema_invalid" };
+};
+corpus.agentCandidateNegativeCases = [
+  rejectedCandidate("agent-hitl-terminal-spoof", (event) => { event.content.status = "accepted"; }),
+  rejectedCandidate("agent-hitl-receipt-spoof", (event) => { event.content.receiptRef = "receipt.spoof"; }),
+  rejectedCandidate("agent-hitl-legacy-version-shape", (event) => {
+    event.content.expectedVersion = 1;
+    delete event.content.ownerVersion;
+  }),
+  rejectedCandidate("agent-activity-noncanonical-updated-at", (event) => {
+    event.content.updatedAt = "2026-08-01T09:00:00-04:00";
+  }),
+  rejectedCandidate("agent-platform-owner-activity-spoof", (event) => {
+    event.activityType = "kokoro.media.v1";
+  }),
 ];
 corpus.snapshotAuthorityCases = [
   {

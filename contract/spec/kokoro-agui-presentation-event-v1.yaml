@@ -51,8 +51,8 @@
     },
     "shortText": {"type": "string", "minLength": 1, "maxLength": 1024},
     "safeText": {"type": "string", "maxLength": 16384},
-    "timestamp": {"type": "integer", "minimum": 0, "maximum": 8640000000000000},
-    "dateTime": {"type": "string", "minLength": 20, "maxLength": 35, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$"},
+    "timestamp": {"type": "integer", "minimum": 0, "maximum": 253402300799999},
+    "canonicalUtcMs": {"type": "string", "minLength": 24, "maxLength": 24, "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"},
     "creditDecimal": {"type": "string", "minLength": 1, "maxLength": 40, "pattern": "^(0|[1-9][0-9]{0,39})$"},
     "mediaFailure": {
       "type": "object", "additionalProperties": false,
@@ -195,7 +195,7 @@
           "partRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
           "summary": {"$ref": "#/$defs/safeText"},
           "status": {"enum": ["streaming", "complete", "partial", "failed", "canceled"]},
-          "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -209,7 +209,7 @@
           "toolCallRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"}, "label": {"$ref": "#/$defs/shortText"},
           "status": {"enum": ["pending", "running", "awaiting-user", "completed", "failed", "canceled"]},
           "summary": {"$ref": "#/$defs/safeText"}, "resultPreview": {"$ref": "#/$defs/safeText"},
-          "isError": {"type": "boolean"}, "truncated": {"type": "boolean"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "isError": {"type": "boolean"}, "truncated": {"type": "boolean"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -228,8 +228,8 @@
           "riskSummary": {"$ref": "#/$defs/safeText"}, "inputSchemaRef": {"$ref": "#/$defs/id"},
           "allowedActions": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"$ref": "#/$defs/actionDecision"}},
           "status": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]},
-          "deadline": {"$ref": "#/$defs/dateTime"}, "receiptRef": {"$ref": "#/$defs/id"},
-          "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "deadline": {"$ref": "#/$defs/canonicalUtcMs"}, "receiptRef": {"$ref": "#/$defs/id"},
+          "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -247,7 +247,7 @@
           "planRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"}, "summary": {"$ref": "#/$defs/safeText"},
           "status": {"enum": ["proposed", "active", "completed", "failed", "canceled"]},
           "steps": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/planStep"}},
-          "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -260,7 +260,7 @@
         "content": {"type": "object", "additionalProperties": false, "required": ["subagentRef", "ownerVersion", "status", "updatedAt"], "properties": {
           "subagentRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
           "status": {"enum": ["pending", "running", "completed", "failed", "canceled"]},
-          "summary": {"$ref": "#/$defs/safeText"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "summary": {"$ref": "#/$defs/safeText"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -282,7 +282,7 @@
             "candidates": {"type": "array", "maxItems": 4, "items": {"$ref": "#/$defs/mediaCandidate"}},
             "costProjection": {"$ref": "#/$defs/costProjectionLink"},
             "outcomeClass": {"enum": ["canonical", "irreconcilable"]},
-            "safeFailure": {"$ref": "#/$defs/mediaFailure"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+            "safeFailure": {"$ref": "#/$defs/mediaFailure"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
           },
           "allOf": [
             {
@@ -314,7 +314,7 @@
             "availability": {"enum": ["processing", "ready", "restricted", "unavailable", "deleted"]},
             "mediaClass": {"enum": ["image", "audio", "video", "document"]},
             "display": {"$ref": "#/$defs/artifactDisplay"}, "safeFailure": {"$ref": "#/$defs/mediaFailure"},
-            "title": {"$ref": "#/$defs/shortText"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+            "title": {"$ref": "#/$defs/shortText"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
           },
           "allOf": [
             {
@@ -354,7 +354,7 @@
               "properties": {"creditUnit": {"$ref": "#/$defs/id"}, "amount": {"$ref": "#/$defs/creditDecimal"}}
             },
             "correctsOwnerVersion": {"$ref": "#/$defs/positiveUint64"},
-            "safeReason": {"$ref": "#/$defs/safeText"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+            "safeReason": {"$ref": "#/$defs/safeText"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
           },
           "allOf": [
             {
@@ -389,7 +389,7 @@
           "noticeRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
           "code": {"$ref": "#/$defs/id"}, "message": {"$ref": "#/$defs/safeText"}, "severity": {"enum": ["info", "warning"]},
           "retryClass": {"enum": ["never", "after-delay", "after-user-action", "reconcile-receipt"]},
-          "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -403,7 +403,7 @@
           "errorRef": {"$ref": "#/$defs/id"}, "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
           "code": {"$ref": "#/$defs/id"}, "message": {"$ref": "#/$defs/safeText"},
           "retryClass": {"enum": ["never", "after-delay", "after-user-action", "reconcile-receipt"]},
-          "supportCorrelationRef": {"$ref": "#/$defs/id"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "supportCorrelationRef": {"$ref": "#/$defs/id"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     },
@@ -453,7 +453,7 @@
           "state": {"enum": ["pending", "accepted", "rejected", "expired", "canceled"]},
           "ownerVersion": {"$ref": "#/$defs/positiveUint64"},
           "allowedActions": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"enum": ["approve", "reject", "edit", "respond", "accept"]}},
-          "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }, "allOf": [
           {
             "if": {"properties": {"kind": {"enum": ["approval", "interaction"]}}, "required": ["kind"]},
@@ -478,7 +478,7 @@
           "ownerRef": {"$ref": "#/$defs/id"}, "decisionGroupRef": {"$ref": "#/$defs/id"},
           "commandId": {"$ref": "#/$defs/id"}, "operation": {"$ref": "#/$defs/id"},
           "state": {"enum": ["pending", "accepted", "committed", "rejected", "unknown"]},
-          "ownerVersion": {"$ref": "#/$defs/positiveUint64"}, "updatedAt": {"$ref": "#/$defs/dateTime"}
+          "ownerVersion": {"$ref": "#/$defs/positiveUint64"}, "updatedAt": {"$ref": "#/$defs/canonicalUtcMs"}
         }}
       }
     }
