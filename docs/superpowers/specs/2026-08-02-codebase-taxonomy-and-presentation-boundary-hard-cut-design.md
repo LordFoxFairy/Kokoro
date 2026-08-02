@@ -204,12 +204,14 @@ under their original grant. Neither axis is inferred from timestamps.
 
 Submission deduplication identity is
 `(runId, producer fence, deliverySeq, submissionRef, submissionDigest, recordDigest)`.
-Presentation deduplication identity is
-`(siteId, sessionId, streamEpoch, publicSourceEventId, durableSeq, frameDigest)`.
-Any partial match with a different digest is an identity collision, not an
-idempotent replay. A browser cursor names an already committed durable head; it
-never authorizes a write or repairs a server-side gap. Gap repair always starts
-from an authoritative HTTP Snapshot and a frozen replay head.
+Presentation domain deduplication identity is
+`(siteId, sessionId, streamEpoch, publicSourceEventId, durableSeq, streamRecordDigest)`；wire
+materialization identity adds `(wireProfileRevision, frameDigest)` and must bind
+that exact domain record. Any partial match with a different digest is an
+identity collision, not an idempotent replay. A browser cursor names an already
+committed durable head; it never authorizes a write or repairs a server-side
+gap. Gap repair always starts from an authoritative HTTP Snapshot and a frozen
+replay head.
 
 Revision fields are assigned per schema:
 
@@ -239,9 +241,10 @@ flowchart LR
     GA --> Delivery
     Delivery -->|"ConnectRPC delivery records"| Admission
     Admission --> Core
-    Core --> Store
+    Core -->|"domain record/state"| Store
     Core --> Agui
-    Agui --> Http
+    Agui -->|"exact wire frame"| Store
+    Store --> Http
     Http --> Client
     Client --> Chat
     Chat --> UI
@@ -252,9 +255,9 @@ flowchart LR
 ```text
 Agent core events -> Agent presentation planner -> AG-UI submission encoder -> delivery
 Connect client -> submission decoder -> Session admission -> Presentation domain
-Presentation application -> ports <- PostgreSQL infrastructure
-Presentation domain -> AG-UI encoder -> HTTP/SSE interface
-Web AG-UI decoder -> ChatUpdate -> ChatProjection -> assistant-ui adapter
+Presentation application -> StreamRecord + state -> ports <- PostgreSQL infrastructure
+Presentation StreamRecord -> AG-UI encoder -> persisted wire frame -> HTTP/SSE interface
+Web AG-UI decoder -> PresentationEvent -> ChatUpdate -> ChatProjection -> assistant-ui adapter
 ```
 
 禁止边：
@@ -279,12 +282,13 @@ contract/
     presentation.proto
   spec/presentation/
     submission-v1.yaml
-    event-v1.yaml
+    domain-event-v1.yaml
     stream-record-v1.yaml
     binding-v1.yaml
     binding-update-v1.yaml
     owner-state-v1.yaml
     snapshot-v1.yaml
+    ag-ui-frame-v1.yaml
   registry/presentation/
     ag-ui-version-lock.yaml
     submission-policy-v1.yaml
@@ -328,6 +332,7 @@ src/presentation/
   INDEX.md
   index.ts
   domain/
+    event.ts
     stream.ts
     binding.ts
     owner-state.ts
@@ -375,6 +380,20 @@ tree；package/version 已在路径中表达，不再创建
 `generated-admin-v2`、`evidence-v2-generated` 等多个平行生成根。Connect
 client/provider 是 handwritten interface adapter，方向由
 `interfaces/connect/clients|providers` 表达，生成 message 不复制方向性命名。
+
+Admission 将 AG-UI Submission 解码成 protocol-neutral
+`PresentationEvent`。Application projector 只处理该 domain event，生成 immutable
+`StreamRecord`、BindingUpdate 和 OwnerState；随后 AG-UI encoder 生成 exact
+`AgUiFrame`。同一个 PostgreSQL transaction 原子写入 domain record、wire
+frame、binding/owner state、submission inbox 和 admission receipt。
+
+`StreamRecord` 不包含官方 AG-UI event literal 或
+`wireProfileRevision`；`AgUiFrame` 通过
+`(siteId, sessionId, streamEpoch, durableSeq, streamRecordDigest)`
+外键绑定 exact domain record。Browser replay 读取已持久化 wire
+frame，Snapshot/repair 从 domain
+state 构建。这样 profile 变化不会重写历史 domain facts，而 exact
+replay 也不依赖重新编码得到相同 bytes 的假设。
 
 ### 6.4 Web
 
@@ -568,29 +587,30 @@ lease 等语义不得为了变短而删除。
 
 ### 8.1 Contract 与字段
 
-| Before                                          | After                                                 |
-| ----------------------------------------------- | ----------------------------------------------------- |
-| `agent-agui-candidate-envelope-v1`              | `presentation-submission-v1`                          |
-| `agent-agui-event-candidate-v1`                 | `agent-presentation-event-v1`                         |
-| `kokoro-agui-presentation-event-v1`             | `presentation-event-v1`                               |
-| `session-agui-projection-payload-v1`            | `presentation-frame-v1`                               |
-| `session-agui-presentation-row-v1`              | `presentation-stream-record-v1`                       |
-| `session-agui-owner-projection-row-v1`          | `presentation-owner-state-v1`                         |
-| `session-agui-snapshot-authority-v1`            | `presentation-snapshot-v1`                            |
-| `presentation-binding-authority-delta-v1`       | `presentation-binding-update-v1`                      |
-| `profileRevision`                               | `contractRevision` 或 wire-only `wireProfileRevision` |
-| `schemaRevision`                                | `schemaVersion`                                       |
-| `cursorProfileRevision`                         | `cursorRevision`                                      |
-| `candidateRef` / `candidateDigest`              | `submissionRef` / `submissionDigest`                  |
-| `bindingAuthorityDelta`                         | `bindingUpdate`                                       |
-| `projectionPayload` / `projectionPayloadDigest` | `frameData` / `frameDigest`                           |
-| `projectionVersion`                             | `projectionRevision`                                  |
-| `ownerProjectionRows`                           | `ownerStates`                                         |
-| `agui_candidate:sha256:`                        | `presentation.submission:sha256:`                     |
+| Before                                          | After                                                                 |
+| ----------------------------------------------- | --------------------------------------------------------------------- |
+| `agent-agui-candidate-envelope-v1`              | `presentation-submission-v1`                                          |
+| `agent-agui-event-candidate-v1`                 | `agent-presentation-event-v1`                                         |
+| `kokoro-agui-presentation-event-v1`             | split: `presentation-domain-event-v1` + `presentation-ag-ui-frame-v1` |
+| `session-agui-projection-payload-v1`            | `presentation-ag-ui-frame-v1`                                         |
+| `session-agui-presentation-row-v1`              | `presentation-stream-record-v1`                                       |
+| `session-agui-owner-projection-row-v1`          | `presentation-owner-state-v1`                                         |
+| `session-agui-snapshot-authority-v1`            | `presentation-snapshot-v1`                                            |
+| `presentation-binding-authority-delta-v1`       | `presentation-binding-update-v1`                                      |
+| `profileRevision`                               | `contractRevision` 或 wire-only `wireProfileRevision`                 |
+| `schemaRevision`                                | `schemaVersion`                                                       |
+| `cursorProfileRevision`                         | `cursorRevision`                                                      |
+| `candidateRef` / `candidateDigest`              | `submissionRef` / `submissionDigest`                                  |
+| `bindingAuthorityDelta`                         | `bindingUpdate`                                                       |
+| `projectionPayload` / `projectionPayloadDigest` | wire-only `frameData` / `frameDigest`                                 |
+| `projectionVersion`                             | `projectionRevision`                                                  |
+| `ownerProjectionRows`                           | `ownerStates`                                                         |
+| `agui_candidate:sha256:`                        | `presentation.submission:sha256:`                                     |
 
-Domain record 只携带 `contractRevision` 与自身 `schemaVersion`。AG-UI adapter
-frame 才携带 `wireProfileRevision`；cursor revision 只进入 cursor
-claims，不在每张 domain row 重复。
+Domain `StreamRecord` carries `eventData`, `recordDigest`, `contractRevision`
+and its `schemaVersion`. AG-UI adapter frame carries `wireProfileRevision`,
+`frameData`, `frameDigest` and the exact `streamRecordDigest`. Cursor revision
+only enters cursor claims；these axes are not copied into every row.
 
 ### 8.2 Proto
 
@@ -685,22 +705,29 @@ and public exports have an empty allowlist.
 
 ### 8.6 PostgreSQL
 
-| Before                                      | After                            |
-| ------------------------------------------- | -------------------------------- |
-| `agui_presentation_stream`                  | `presentation_stream`            |
-| `agui_presentation_run_binding`             | `presentation_run_binding`       |
-| `agui_presentation_message_binding`         | `presentation_message_binding`   |
-| `agui_presentation_owner_binding`           | `presentation_owner_binding`     |
-| `agui_presentation_owner_projection`        | `presentation_owner_state`       |
-| `agui_presentation_row`                     | `presentation_stream_record`     |
-| `agui_presentation_private_owner_reference` | `presentation_identity_map`      |
-| `agui_agent_candidate_inbox`                | `presentation_submission_inbox`  |
-| `agui_agent_candidate_cursor`               | `presentation_delivery_cursor`   |
-| `agui_agent_candidate_receipt`              | `presentation_admission_receipt` |
+| Before                                      | After                                                           |
+| ------------------------------------------- | --------------------------------------------------------------- |
+| `agui_presentation_stream`                  | `presentation_stream`                                           |
+| `agui_presentation_run_binding`             | `presentation_run_binding`                                      |
+| `agui_presentation_message_binding`         | `presentation_message_binding`                                  |
+| `agui_presentation_owner_binding`           | `presentation_owner_binding`                                    |
+| `agui_presentation_owner_projection`        | `presentation_owner_state`                                      |
+| `agui_presentation_row`                     | split: `presentation_stream_record` + `presentation_wire_frame` |
+| `agui_presentation_private_owner_reference` | `presentation_identity_map`                                     |
+| `agui_agent_candidate_inbox`                | `presentation_submission_inbox`                                 |
+| `agui_agent_candidate_cursor`               | `presentation_delivery_cursor`                                  |
+| `agui_agent_candidate_receipt`              | `presentation_admission_receipt`                                |
+
+`presentation_stream_record` stores the protocol-neutral event and canonical
+`record_digest`. `presentation_wire_frame` stores `wire_profile_revision`, exact
+encoded frame JSON/bytes and `frame_digest`, with a composite FK to the exact
+stream record and the same durable sequence. One stream record has exactly one
+active V1 wire frame; adding a future wire profile requires a separately
+reviewed uniqueness/versioning rule, not a nullable protocol column spread
+across domain tables.
 
 Trigger、policy、constraint、grant 和 RLS
-GUC 同步使用 domain 名。`wire_profile_revision` 可以作为 record 中明确的 wire
-compatibility 字段，但表名、role 和 RLS purpose 不使用协议品牌。
+GUC 同步使用 domain 名。表名、role 和 RLS purpose 不使用协议品牌。
 
 ### 8.7 Platform closed ledger
 
@@ -876,14 +903,14 @@ chain 可以并行，但只在共同 Root promotion gate 汇合。
 
 ### 11.1 Promotion state machine
 
-| Phase                      | Entry                         | Work                                                                                                                     | Required exit evidence                                                                                |
-| -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| P0 Design freeze           | internal spec review approved | freeze exact spec commit/digest and ledgers                                                                              | approved spec, no unresolved choice                                                                   |
-| P1 Root contract candidate | P0                            | Root contract/schema/registry/generator/provenance and breaking reset                                                    | immutable Root contract commit `R1`; Root contract tests pass                                         |
-| P2 Child candidates        | P1                            | Agent, Session, Web and Platform implement in parallel against exact `R1`                                                | candidate commits `A1/S1/W1/P1`, each clean, pushed, independently green and carrying `R1` provenance |
-| P3 Integration commit      | P2                            | create candidate manifest; update all four gitlinks, handbook/index/runbook and DB baseline IDs                          | local Root commit `R2` that reproduces the complete candidate with recursive clone                    |
-| P4 Runtime proof           | P3                            | quiesce old dev roles, establish reset safety, rebuild candidate DB baseline, run clean-clone compatibility/E2E/rollback | signed evidence bound to `R2` and exact child SHAs                                                    |
-| P5 Promotion               | P4                            | push `R2`, pass remote Root CI, create child recoverable tags then Root BOM tag                                          | immutable remote commits/tags and release manifest                                                    |
+| Phase                      | Entry                         | Work                                                                                                                     | Required exit evidence                                                                                                    |
+| -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| P0 Design freeze           | internal spec review approved | freeze exact spec commit/digest and ledgers                                                                              | approved spec, no unresolved choice                                                                                       |
+| P1 Root contract candidate | P0                            | Root contract/schema/registry/generator/provenance and breaking reset                                                    | immutable Root contract commit `R1`, pushed to candidate branch; Root contract tests pass                                 |
+| P2 Child candidates        | P1                            | Agent, Session, Web and Platform implement in parallel against exact `R1`                                                | candidate commits `A1/S1/W1/P1`, each clean, pushed, independently green, recoverably tagged and carrying `R1` provenance |
+| P3 Integration commit      | P2                            | create candidate manifest; update all four gitlinks, handbook/index/runbook and DB baseline IDs                          | local Root commit `R2` that reproduces the complete candidate with recursive clone                                        |
+| P4 Runtime proof           | P3                            | quiesce old dev roles, establish reset safety, rebuild candidate DB baseline, run clean-clone compatibility/E2E/rollback | signed evidence bound to `R2` and exact child SHAs                                                                        |
+| P5 Promotion               | P4                            | push `R2`, pass remote Root CI, then create Root BOM tag                                                                 | immutable remote commits/tags and release manifest                                                                        |
 
 `R1` is immutable once any child provenance references it. Fixing Root contract
 after P2 starts creates `R1b` and invalidates all affected child candidates.
@@ -894,12 +921,12 @@ force-moved tag.
 ### 11.2 Candidate handoff manifest
 
 P3 writes a typed Root manifest containing `specCommit`, `specDigest`,
-`contractCommit`, `contractDescriptorDigest`, the four child repository SHAs,
-generated provenance digests, Session/Platform database baseline revisions,
-compatibility corpus digest and required verification commands. Every child CI
-receipt and P4 evidence repeats the manifest digest. A SHA mismatch, dirty child
-worktree, unpublished child commit, or provenance source other than `R1`
-prevents `R2` creation.
+`contractCommit`, `contractDescriptorDigest`, the four child repository SHAs and
+recoverable tag names, generated provenance digests, Session/Platform database
+baseline revisions, compatibility corpus digest and required verification
+commands. Every child CI receipt and P4 evidence repeats the manifest digest. A
+SHA mismatch, dirty child worktree, unpublished child commit, or provenance
+source other than `R1` prevents `R2` creation.
 
 ### 11.3 Quiesce, cutover and rollback
 
@@ -963,6 +990,10 @@ and creates `R2`. Worker exit status alone is never promotion evidence.
   admission/replay/RLS/concurrency/rollback/privacy/collision/malformed tests。
 - Agent submission -> admission -> stream record -> snapshot/SSE exact
   compatibility。
+- official AG-UI Submission -> PresentationEvent -> StreamRecord -> persisted
+  AgUiFrame -> Web PresentationEvent round-trip preserves every domain field,
+  exact frame digest and source/binding identity；malformed or lossy mapping
+  fails closed。
 - sequence-zero、paged replay、gap repair、terminal non-revival、HITL owner
   chain。
 - `eventOrdinal`、`deliverySeq`、`durableSeq`、`projectionRevision`、`ownerVersion`
