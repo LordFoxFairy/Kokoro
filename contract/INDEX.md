@@ -54,10 +54,10 @@ Add a schema only with a real producer and consumer. Never create runtime filesy
 
 ## Current gotchas
 
-The seven Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
+The eight Web Release Composition v1 contracts are offline publication contracts, not a runtime boundary and not a
 new service. Root owns their schema, I-JSON/RFC 8785 canonical profile, compatibility freeze and corpus; Platform
 Product Catalog owns Product/Surface/Journey business records, Platform Site owns inventory/material/intent, and Web
-Release Composition owns toolchain/compiled-manifest/provenance publication. Payloads never contain their own digest
+Release Composition owns toolchain/composition-registry/compiled-manifest/provenance publication. Payloads never contain their own digest
 or signature. Callers carry the digest when referencing another immutable payload; DSSE signatures and the final OCI
 artifact digest live outside the signed/canonical payload, preventing a digest cycle.
 
