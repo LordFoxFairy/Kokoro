@@ -4,7 +4,7 @@ version: "1.0"
 created: 2026-08-02
 status: draft
 scope: codebase-taxonomy-presentation-boundary-generated-contract-layout
-implementationAuthorized: true
+implementationAuthorized: false
 gaRuntimeSemanticChangeAuthorized: false
 reviewedBy: []
 supersedesNamingSectionsOf:
@@ -32,8 +32,10 @@ cut，纠正当前把 AG-UI 协议名、运行角色、持久化实现和业务 
 4. **Authority 只表示真实决策权或安全权威。** 普通值和窄协作者分别使用
    `Snapshot`、`Update`、`Resolver`、`Allocator`、`Issuer`、`Policy`。
 5. **Generated code 使用一种可预测布局。**
-   每个子仓本地提交生成物，保持独立构建；不再使用
-   `generated-*`、`*-generated`、泛化 `generated/` 三种互斥语法。
+   每个子仓本地提交生成物，保持独立构建；TypeScript compilation unit 统一为
+   `src/generated/{proto,schema,contracts}`，Python
+   protobuf 保持 package-derived output，不再混用 `generated-*`、`*-generated`
+   和邻接 `*.generated.*`。
 6. **Platform 的 Admin、runtime 和 workflow 命名同步校正。**
    认证访问、查询、命令是三个职责；可执行入口、composition、host 和安全加载不再混在
    `src/process`。
@@ -45,8 +47,9 @@ cut，纠正当前把 AG-UI 协议名、运行角色、持久化实现和业务 
    graph、checkpoint、namespace、handoff、terminal、control
    semantics 均保持不变。
 
-推荐结构采用务实的 hexagonal/ports-and-adapters：稳定 domain/application 不依赖 AG-UI、Connect、PostgreSQL、
-Next.js 或 assistant-ui；边界技术只出现在 interfaces/infrastructure/adapters。
+推荐结构采用务实的 hexagonal/ports-and-adapters。稳定 domain/application 不依赖 AG-UI、Connect、PostgreSQL。
+
+Next.js、assistant-ui 等边界技术只出现在 interfaces/infrastructure/adapters。
 
 ## 2. 背景与当前问题
 
@@ -180,6 +183,43 @@ context，表示同一次 MediaOperation 的多个输出候选。`Activity` 只�
 wire event 和 Web 展示 activity 概念。`Runtime` 只用于真正拥有 process
 lifetime、start/stop、资源和 concurrency 的组件，不用于普通 application
 service 或 transaction wrapper。
+
+### 4.1 Sequence、revision 与幂等语义
+
+以下语义是 hard cut 后的规范，不是命名建议：
+
+| Axis                 | Scope                                               | Initial/advance                                                             | Replay and failure rules                                                                                                                   |
+| -------------------- | --------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `eventOrdinal`       | one Agent internal run and immutable producer fence | first submission is `0`; every submission advances exactly one              | same ordinal + same submission digest is replay; different digest is collision; gap is permanent rejection                                 |
+| `deliverySeq`        | `(runId, producerInstanceRef, producerGeneration)`  | first record is `1`; `deliverySeq = eventOrdinal + 1`; contiguous uint64    | pull freezes a head; ACK advances only a contiguous prefix; quarantine is exactly first unacknowledged record; terminal seal is write-once |
+| `durableSeq`         | `(siteId, sessionId, streamEpoch)`                  | empty head is `0`; first record is `1`; every committed record advances one | same source identity + same frame digest is replay; mismatch is collision; gap rolls back the entire admission transaction                 |
+| `projectionRevision` | same Presentation stream epoch                      | empty projection is `0`; each accepted StreamRecord advances one            | semantically independent from `durableSeq` even when values currently match; overflow fails closed; new epoch resets to `0`                |
+| `ownerVersion`       | one immutable `presentationOwnerBindingRef`         | first version is positive; later versions are non-decreasing and may skip   | same version requires identical canonical owner state; lower version conflicts; terminal owner cannot revive                               |
+
+`producerGeneration` is part of the producer fence and never silently resets a
+run stream. A different generation without the exact execution-owner reclaim
+evidence is fenced. `streamEpoch` is Session-issued; a new epoch creates a new
+empty Presentation stream while prior epochs remain immutable and replayable
+under their original grant. Neither axis is inferred from timestamps.
+
+Submission deduplication identity is
+`(runId, producer fence, deliverySeq, submissionRef, submissionDigest, recordDigest)`.
+Presentation deduplication identity is
+`(siteId, sessionId, streamEpoch, publicSourceEventId, durableSeq, frameDigest)`.
+Any partial match with a different digest is an identity collision, not an
+idempotent replay. A browser cursor names an already committed durable head; it
+never authorizes a write or repairs a server-side gap. Gap repair always starts
+from an authoritative HTTP Snapshot and a frozen replay head.
+
+Revision fields are assigned per schema:
+
+- domain StreamRecord and Snapshot: `contractRevision` + `schemaVersion`；
+- AG-UI encoded event/frame: `wireProfileRevision`；
+- opaque cursor claims only: `cursorRevision`；
+- owner state only: `ownerVersion`；
+- materialized Presentation state only: `projectionRevision`。
+
+No persisted object carries all revision axes merely for convenience.
 
 ## 5. 系统上下文与依赖方向
 
@@ -340,7 +380,9 @@ client/provider 是 handwritten interface adapter，方向由
 
 ```text
 packages/session-client/src/
-  presentation.ts
+  presentation/
+    model.ts
+    source.ts
   adapters/ag-ui/
     decoder.ts
     schemas.ts
@@ -355,7 +397,7 @@ packages/chat-projection/
   src/application/
     store.ts
   src/adapters/
-    ag-ui.ts
+    session-presentation.ts
     assistant-ui.ts
 
 packages/chat-app/
@@ -372,9 +414,17 @@ owner.replaced
 control.draining
 ```
 
+`session-client/adapters/ag-ui` 是 Web 仓唯一 AG-UI decoder owner。它验证 wire
+frame，并输出 `DecodedPresentationFrame`；该类型由
+`session-client/presentation/model.ts` 定义，不 re-export 官方 AG-UI 类型。
+`chat-projection/adapters/session-presentation` 再把已验证的 Presentation
+event 映射成一个 `ChatUpdate`。因此 AG-UI -> Presentation 与 Presentation ->
+Chat 各有一个明确 owner，不存在两套 decoder 或两套 event mapping。
+
 `agui.activity`、`agui.text`、`agui.lifecycle` 不得进入 Chat domain
-discriminant。`@ag-ui/core` 只能被 `session-client/adapters/ag-ui` 与
-`chat-projection/adapters/ag-ui` 导入。assistant-ui 的适配器明确命名为
+discriminant。`@ag-ui/core` 只能被 `session-client/adapters/ag-ui`
+导入，`chat-projection`
+整个 package 都不得依赖它。assistant-ui 的适配器明确命名为
 `createAssistantUiChatAdapter` / `useAssistantUiChatRuntime`，不再使用泛化
 `KokoroExternalStore`。
 
@@ -411,10 +461,44 @@ owner 的 command authorization 与 lock order 移回
 `modules/commerce/application`；只有跨 owner journey 才允许进入
 `src/orchestration`。
 
-历史 `kokoro-platform-admin` 目录在完成 source/manifest/import/CI owner
-scan 后从 active tree 移除或迁入明确的 `archive/`
-外部历史位置；它不得继续在当前 CODEBASE_MAP 中被描述成 active
-owner。Git 历史已经提供恢复能力。
+`kokoro-platform-admin` 已被 Platform
+README、workspace、build、image 和 deployable inventory 定义为 retired source
+archive，本方案将其从 active tree **删除**，不移动到仓内
+`archive/`。删除前的 gate 只验证它确实不在 workspace、lock importer、TypeScript
+build、test、Docker context、runtime selector、CI 和 release
+artifact 中；任一 active edge 出现都先迁移到 root Platform
+owner，再删除目录。Root CODEBASE_MAP 同步删除其 active-owner 描述。Git
+history 是唯一历史恢复入口。
+
+### 6.6 Generated provenance contract
+
+Root 新增 `contract/spec/generated-artifact-provenance-v1.yaml`。每个子仓的
+`src/generated/provenance.json` 必须由该 schema 验证，并包含：
+
+```text
+contractRevision: kokoro.generated-artifact-provenance.v1
+boundaryId: registry 中的稳定 boundary ID
+consumerRepository: kokoro-agent | kokoro-session | kokoro-web | kokoro-platform
+sourceRootCommit: 40-char Root commit
+sourceFiles[]: { path, sha256 }
+generator: { name, version, lockDigest, argv[] }
+toolchain: { language, runtimeVersion, packageManagerVersion? }
+outputs[]: { path, sha256 }
+manifestDigest: sha256 of canonical manifest without manifestDigest
+```
+
+所有 path 是相对仓库根的 NFC/UTF-8 POSIX path，按 bytewise
+ascending 排序且唯一；digest 使用 lowercase
+`sha256:<hex>`。manifest 不含 wall-clock timestamp、absolute
+path、hostname 或随机值。`argv` 是规范化参数数组，不是可执行shell
+string。`outputs` 必须覆盖 generated
+root 下除 provenance 自身外的完整文件闭包；未登记文件、缺失文件、digest 不符、source
+commit 不存在、generator lock 不符均 fail closed。
+
+Root generator 先产生临时目录，再原子替换目标 generated
+tree。子仓 verifier 只根据 committed provenance 和 output 重算；Root mirror
+verifier 还会 checkout `sourceRootCommit`、重跑 exact generator
+argv，并要求 byte-for-byte 相同。任何生成物均不得手改。
 
 ## 7. 命名规则
 
@@ -528,7 +612,46 @@ Proto package 保持 `kokoro.agent.presentation.v1`，在 package 内删除冗�
 RPC full name 仍包含 package + service +
 method，因此较短 message/method 不损失跨仓诊断上下文。
 
-### 8.3 Session API
+### 8.3 Agent closed ledger
+
+| Before                                                                      | After                                                        |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `contract/.../agent_presentation.proto`                                     | `contract/.../presentation.proto`                            |
+| generated `agent_presentation_pb2.py` / `_connect.py`                       | generated `presentation_pb2.py` / `_connect.py`              |
+| `presentation/candidate.py`                                                 | submission models in `presentation/model.py`                 |
+| `presentation/profile.py` + `presentation/adapter.py`                       | `presentation/adapters/ag_ui.py`                             |
+| planner/state portion of `presentation/runtime.py`                          | `presentation/planner.py`                                    |
+| delivery/read/ACK/quarantine portion of `presentation/runtime.py`           | `presentation/delivery.py`                                   |
+| `presentation/provider.py`                                                  | `presentation/adapters/connect.py`                           |
+| `presentation/integrity.py`                                                 | same path, renamed Delivery symbols                          |
+| presentation-owned declarations in `storage/ledger.py` / `storage/mongo.py` | same storage paths, renamed Submission/Delivery symbols only |
+| presentation imports in `worker/supervisor.py`                              | new presentation composition imports only                    |
+| `test_agui_presentation_candidate.py`                                       | `test_presentation_submission.py`                            |
+| `test_agui_production_presentation.py`                                      | `test_presentation_planner.py`                               |
+| `test_agui_compatibility_candidate_provider.py`                             | `test_ag_ui_compatibility_provider.py`                       |
+
+| Before                                   | After                                   |
+| ---------------------------------------- | --------------------------------------- |
+| `AgentAguiEventCandidate`                | `PresentationSubmission`                |
+| `AgentAguiCandidateRoute` / `Source`     | `SubmissionRoute` / `SubmissionSource`  |
+| `build_agui_candidate`                   | `build_submission`                      |
+| `CandidateProtocolError`                 | adapter-local `SubmissionProtocolError` |
+| `PresentationProjectionState`            | `PresentationState`                     |
+| `PresentationCandidateBatch` / `Record`  | `DeliveryPage` / `DeliveryRecord`       |
+| `PresentationCandidateReader` / `Writer` | `DeliveryReader` / `DeliveryWriter`     |
+| `AgentPresentationService`               | `PresentationDeliveryService`           |
+| `AgentPresentationConnectService`        | `PresentationConnectService`            |
+
+Agent hard cut scan roots are `src/kokoro_agent/presentation`, generated
+`src/kokoro/agent/presentation/v1`,
+`src/kokoro_agent/storage/{ledger,mongo}.py`,
+`src/kokoro_agent/worker/supervisor.py` and the listed tests. After
+implementation, `AgentAgui|AGUI_CANDIDATE|agui_candidate|`
+`PresentationCandidate|presentation_seq` may remain only in a compatibility
+fixture explicitly listed by the Root compatibility manifest; production source
+and public exports have an empty allowlist.
+
+### 8.4 Session API
 
 | Before                                    | After                                             |
 | ----------------------------------------- | ------------------------------------------------- |
@@ -547,18 +670,20 @@ method，因此较短 message/method 不损失跨仓诊断上下文。
 | `createPostgresAgentAguiCandidateRuntime` | `createPostgresPresentationAdmission`             |
 | `createPostgresAguiPresentationReader`    | `createPostgresPresentationReader`                |
 
-### 8.4 Web API
+### 8.5 Web API
 
-| Before                             | After                          |
-| ---------------------------------- | ------------------------------ |
-| `@kokoro/chat-surface`             | `@kokoro/chat-projection`      |
-| `ChatAguiPresentationMutation`     | `ChatUpdate`                   |
-| `AguiProjectionPort`               | adapter-local `ChatUpdateSink` |
-| `createAguiProjectionAdapter`      | `createAgUiChatAdapter`        |
-| `createKokoroExternalStoreAdapter` | `createAssistantUiChatAdapter` |
-| `useKokoroExternalStoreRuntime`    | `useAssistantUiChatRuntime`    |
+| Before                                             | After                                              |
+| -------------------------------------------------- | -------------------------------------------------- |
+| `@kokoro/chat-surface`                             | `@kokoro/chat-projection`                          |
+| `ChatAguiPresentationMutation`                     | `ChatUpdate`                                       |
+| `AguiProjectionPort`                               | adapter-local `ChatUpdateSink`                     |
+| decoder half of `createAguiProjectionAdapter`      | session-client `createAgUiFrameDecoder`            |
+| Chat mapping half of `createAguiProjectionAdapter` | chat-projection `createSessionPresentationAdapter` |
+| `AguiPresentationSource`                           | `PresentationSource`                               |
+| `createKokoroExternalStoreAdapter`                 | `createAssistantUiChatAdapter`                     |
+| `useKokoroExternalStoreRuntime`                    | `useAssistantUiChatRuntime`                        |
 
-### 8.5 PostgreSQL
+### 8.6 PostgreSQL
 
 | Before                                      | After                            |
 | ------------------------------------------- | -------------------------------- |
@@ -576,6 +701,58 @@ method，因此较短 message/method 不损失跨仓诊断上下文。
 Trigger、policy、constraint、grant 和 RLS
 GUC 同步使用 domain 名。`wire_profile_revision` 可以作为 record 中明确的 wire
 compatibility 字段，但表名、role 和 RLS purpose 不使用协议品牌。
+
+### 8.7 Platform closed ledger
+
+Admin source mapping is exhaustive:
+
+| Before                                                                               | After                                                           |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `modules/admin/application/services/admin-oidc-service.ts`                           | `modules/admin-access/application/admin-oidc-service.ts`        |
+| `modules/admin/domain/admin-authorization.ts`                                        | `modules/admin-access/domain/admin-authorization.ts`            |
+| `modules/admin/infrastructure/{jose,oidc}/**`                                        | `modules/admin-access/infrastructure/{jose,oidc}/**`            |
+| Admin OIDC/operator/session/authenticator/security Postgres files                    | same relative layers under `modules/admin-access`               |
+| `admin-identity-service.ts` + shared Connect error policy                            | `modules/admin-access/interfaces/connect/**`                    |
+| `admin-query-reader.ts`, `control-command-receipt-reader.ts`, `admin-page-cursor.ts` | `modules/admin-query/{infrastructure,domain}/**`                |
+| `admin-query-service.ts`                                                             | `modules/admin-query/interfaces/connect/admin-query-service.ts` |
+| entire `modules/admin-control/**`                                                    | same relative tree under `modules/admin-command/**`             |
+
+`admin-query` may read Admin Command receipts only through a narrow
+`AdminCommandReceiptView` port exported by `admin-command/application`; it
+cannot import the command repository. `admin-access` owns request
+authentication/authorization, not business command admission.
+
+`src/process` is completely eliminated by this closed classification:
+
+| Target                 | Complete source class                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `runtime/entrypoints`  | `admin.ts`, `admin-worker.ts`, `admission.ts`, `api.ts`, `artifact-data-plane.ts`, `asset-data-plane.ts`, `asset-worker.ts`, `authorization-maintenance.ts`, `authorization.ts`, `commerce-worker.ts`, `identity-worker.ts`, `media-worker.ts`, `model-gateway.ts`, `model-image-worker.ts`, `site-worker.ts`, `worker.ts`, `admin-authority-bootstrap.ts` |
+| `runtime/compositions` | every `*-composition.ts`, `*-owner.ts`, `*-database.ts`                                                                                                                                                                                                                                                                                                    |
+| `runtime/hosts`        | `worker-health-server.ts`, `worker-process-host.ts`, `worker-deployment-contract.ts`, `platform-api-runtime-contract.ts`                                                                                                                                                                                                                                   |
+| `runtime/security`     | `secret-files.ts`, `memory-content-protection.ts`                                                                                                                                                                                                                                                                                                          |
+
+If a file matches two classes, the explicit host/security list wins, then
+entrypoint, then composition. No file may remain in `src/process`. Deployable
+manifests, Docker verifier, runtime selector, runbooks and architecture tests
+must reference the new paths.
+
+Other Platform moves are closed:
+
+- `workflows/commerce/authorize-command.ts` ->
+  `modules/commerce/application/command-authorization.ts`；
+- `workflows/commerce/lock-order.ts` ->
+  `modules/commerce/application/command-lock-order.ts`；
+- delete `workflows/commerce/INDEX.md` and `src/workflows` when empty；
+- all `interfaces/connect/generated*` protobuf output -> one
+  `src/generated/proto/kokoro/**` tree；
+- boundary digest/metadata helpers ->
+  `src/generated/contracts/<boundary-id>/{digest,metadata}.ts`；
+- JSON Schema validators -> `src/generated/schema/<contract-family>/**`；
+- delete retired `kokoro-platform-admin/**` after the active-edge negative gate
+  passes；
+- `modules/admin-control`, `modules/admin`, `src/process`,
+  `src/workflows/commerce`, `interfaces/connect/generated*` and
+  `kokoro-platform-admin` must all be absent after the hard cut.
 
 ## 9. 数据与契约切换
 
@@ -622,30 +799,140 @@ cut，不能混用旧 producer/new consumer 或 new producer/old consumer。
 10. public barrel 只导出该边界稳定 API，不导出 Postgres transaction、generated
     internals 或 compatibility fixtures。
 
+### 10.1 Agent core freeze gate
+
+Agent semantic baseline is commit `d3939dab673224318d4ddd2304b8831b917b7ef4`.
+Root adds `contract/registry/presentation/agent-core-freeze-v1.yaml` with:
+
+- `baselineAgentCommit`；
+- exact allowed changed paths；
+- SHA-256 of every protected file；
+- symbol-level normalized Python AST digests for partially allowed files；
+- frozen behavior corpus digest；
+- approved spec commit/digest。
+
+Allowed production paths are closed to:
+
+```text
+src/kokoro_agent/presentation/**
+src/kokoro/agent/presentation/v1/**
+src/kokoro_agent/storage/ledger.py
+src/kokoro_agent/storage/mongo.py
+src/kokoro_agent/worker/supervisor.py
+```
+
+Tests, INDEX/docs and generated provenance may change alongside them. Every
+other Agent production file must be byte-identical to the baseline. In
+`storage/{ledger,mongo}.py`, the verifier permits only AST nodes belonging to
+Presentation Submission/Delivery storage symbols; all other
+module/class/function AST digests remain identical. In `worker/supervisor.py`,
+it normalizes only old/new presentation import paths and constructor
+identifiers, then requires the full remaining AST digest to match.
+
+Root adds `contract/corpus/agent-core-freeze-v1.json`, generated at the baseline
+and replayed by the candidate. It freezes graph node and edge identity,
+checkpoint key/namespace behavior, opaque namespace input, handoff routes,
+terminal dispositions, control/HITL decisions and representative raw-event
+ordering. Baseline and candidate must produce identical canonical outputs and
+digest. Any required delta outside this allowlist or corpus is an Agent core
+semantic change and stops implementation for user alignment.
+
+### 10.2 Intentional Proto breaking rebaseline
+
+The Presentation contract is unpublished prelaunch V1, so the hard cut keeps
+package `kokoro.agent.presentation.v1`; it does not invent a repository or
+service “V2”. The one intentional breaking reset is explicit rather than hidden
+from Buf.
+
+Root adds `contract/registry/breaking-resets/presentation-v1-hard-cut.yaml`
+containing:
+
+- baseline Root commit `b7bba1fb843e475ac353820a35d7a86154e42b37`；
+- approved spec commit and document SHA-256；
+- exact changed Proto files；
+- every removed/renamed fully-qualified service, method, message, enum and
+  field；
+- preserved field numbers and reserved removed numbers/names where applicable；
+- expected pre-cut and post-cut descriptor digests；
+- `singleUse: true`。
+
+The breaking gate runs ordinary `buf breaking` against the baseline descriptor
+and requires its diagnostics to match the manifest exactly; an extra or missing
+diagnostic fails. It then validates the candidate descriptor digest and writes
+the new committed `contract/baseline/presentation-v1.binpb`. A second ordinary
+`buf breaking` against that candidate baseline must pass. After the Root
+contract candidate is accepted, CI rejects reuse or modification of the
+single-use reset manifest, and all future changes compare against the new
+baseline normally.
+
 ## 11. 实施顺序
 
-本 hard cut 必须按 contract producer/consumer
-DAG 执行，但各仓可在独立 branch 并行准备：
+这是一个 umbrella architecture
+decision，不使用一份巨型实现 plan。`writing-plans`
+必须产生六份可独立执行的 child plan：Root contract/provenance、Agent
+presentation、Session presentation、Web chat projection、Platform taxonomy、Root
+integration/promotion。Platform track 与 Presentation main
+chain 可以并行，但只在共同 Root promotion gate 汇合。
 
-1. Root：冻结 vocabulary、contract IDs、Proto names、registry、generator output
-   contract。
-2. Agent：实现新 Submission/Delivery contract 和 presentation module
-   split；证明 GA core 未改。
-3. Session：先建立 domain/application/ports，再移动 AG-UI/Postgres/Connect；重写 baseline 与 public
-   API。
-4. Web：session-client adapter hard cut、chat-projection package
-   rename、ChatUpdate reducer、assistant-ui adapter。
-5. Platform：Admin/access/query/command、runtime/process、Commerce
-   workflow 和 generated tree taxonomy hard cut。
-6. 各子仓独立 tests/type/lint/build 与 recoverable tag。
-7. Root：生成物 parity、Agent->Session->Web compatibility、two-Site
-   isolation、real PostgreSQL、clean recursive clone。
-8. 原子更新四个 gitlink、BOM candidate、handbook/CODEBASE_MAP/INDEX 与 release
-   evidence。
+### 11.1 Promotion state machine
 
-禁止在 Root contract 未冻结时由多个 worker 同时手改同一 generated
-output。并行 worker 按 Root、Agent、Session、Web、Platform 独立 repository/file
-tree 切分；主控负责 contract ledger 和最终集成验证。
+| Phase                      | Entry                         | Work                                                                                                                     | Required exit evidence                                                                                |
+| -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| P0 Design freeze           | internal spec review approved | freeze exact spec commit/digest and ledgers                                                                              | approved spec, no unresolved choice                                                                   |
+| P1 Root contract candidate | P0                            | Root contract/schema/registry/generator/provenance and breaking reset                                                    | immutable Root contract commit `R1`; Root contract tests pass                                         |
+| P2 Child candidates        | P1                            | Agent, Session, Web and Platform implement in parallel against exact `R1`                                                | candidate commits `A1/S1/W1/P1`, each clean, pushed, independently green and carrying `R1` provenance |
+| P3 Integration commit      | P2                            | create candidate manifest; update all four gitlinks, handbook/index/runbook and DB baseline IDs                          | local Root commit `R2` that reproduces the complete candidate with recursive clone                    |
+| P4 Runtime proof           | P3                            | quiesce old dev roles, establish reset safety, rebuild candidate DB baseline, run clean-clone compatibility/E2E/rollback | signed evidence bound to `R2` and exact child SHAs                                                    |
+| P5 Promotion               | P4                            | push `R2`, pass remote Root CI, create child recoverable tags then Root BOM tag                                          | immutable remote commits/tags and release manifest                                                    |
+
+`R1` is immutable once any child provenance references it. Fixing Root contract
+after P2 starts creates `R1b` and invalidates all affected child candidates.
+`R2` must be committed locally before clean recursive clone verification; failed
+P4 evidence produces a new integration commit, never an amended/pushed commit or
+force-moved tag.
+
+### 11.2 Candidate handoff manifest
+
+P3 writes a typed Root manifest containing `specCommit`, `specDigest`,
+`contractCommit`, `contractDescriptorDigest`, the four child repository SHAs,
+generated provenance digests, Session/Platform database baseline revisions,
+compatibility corpus digest and required verification commands. Every child CI
+receipt and P4 evidence repeats the manifest digest. A SHA mismatch, dirty child
+worktree, unpublished child commit, or provenance source other than `R1`
+prevents `R2` creation.
+
+### 11.3 Quiesce, cutover and rollback
+
+No production traffic exists, but mixed old/new local roles remain prohibited
+because producer and consumer contracts are mutually incompatible. P4 performs:
+
+1. stop/drain old Agent, Session, Web and Platform candidate-facing roles；
+2. verify only default PostgreSQL/MongoDB/Redis/MinIO Infra remains；
+3. identify database name/role/baseline and prove it is disposable prelaunch
+   development state；
+4. create a recoverable schema/volume inventory receipt without printing
+   secrets；
+5. rebuild Session and affected Platform development databases at candidate
+   baseline；
+6. start the exact `R2` child set and run compatibility/E2E；
+7. stop it, restore the previous Root BOM's declared database baseline, start
+   previous pins and run rollback smoke；
+8. stop previous roles, rebuild candidate baseline, restart `R2` and rerun
+   forward smoke。
+
+Rollback never points old code at the new hard-cut database and never writes
+candidate facts into the old baseline. Because data is explicitly disposable,
+rollback is baseline reconstruction rather than data migration. Discovery of
+unknown user, financial, external receipt or shared-environment facts stops
+reset and requires a separate migration decision. No volume deletion is implied.
+
+### 11.4 Parallel ownership
+
+Workers are split by Root, Agent, Session, Web and Platform repositories/file
+trees. Root contract source and generator output have one writer until `R1`;
+child workers never hand-edit generated files. The main agent owns the contract
+ledger, reviews every child diff, reruns verification in the canonical worktree
+and creates `R2`. Worker exit status alone is never promotion evidence.
 
 ## 12. 验证与验收
 
@@ -664,7 +951,10 @@ tree 切分；主控负责 contract ledger 和最终集成验证。
 - full pytest、Ruff、Pyright。
 - presentation parity tests 使用官方 pinned Python event models。
 - delivery chain/fence/ack/quarantine/replay/terminal seal tests。
-- diff audit 证明 graph/checkpoint/handoff/terminal/namespace core 无语义改动。
+- `agent-core-freeze-v1` protected-file、normalized-AST 与 frozen-corpus
+  gates 全部通过。
+- `git diff --name-only d3939dab673224318d4ddd2304b8831b917b7ef4...candidate`
+  只包含 closed allowlist。
 
 ### 12.3 Session
 
@@ -675,6 +965,9 @@ tree 切分；主控负责 contract ledger 和最终集成验证。
   compatibility。
 - sequence-zero、paged replay、gap repair、terminal non-revival、HITL owner
   chain。
+- `eventOrdinal`、`deliverySeq`、`durableSeq`、`projectionRevision`、`ownerVersion`
+  的 scope、initial、replay、collision、gap、overflow、epoch/fence 和 terminal
+  invariants 各有正负测试。
 - architecture import gates。
 
 ### 12.4 Web
@@ -683,6 +976,8 @@ tree 切分；主控负责 contract ledger 和最终集成验证。
   session-client、chat-projection、chat-app、reference-site。
 - AG-UI decoder negative corpus 与 Session provider exact compatibility。
 - ChatProjection reducer 不依赖 AG-UI types。
+- `@ag-ui/core` import scan 只允许 `session-client/adapters/ag-ui`；AG-UI ->
+  Presentation -> ChatUpdate 只有一条 mapping chain。
 - assistant-ui adapter reconnect、duplicate frame、gap/repair、draining、HITL
   control tests。
 - browser bundle inspection 证明 server/generated privileged code 不泄漏。
@@ -694,15 +989,23 @@ tree 切分；主控负责 contract ledger 和最终集成验证。
 - Admin access/query/command provider compatibility。
 - generated tree provenance 与 no-duplicate common message identity。
 - runtime entrypoint/composition/host ownership tests。
+- active-edge gate 证明 retired `kokoro-platform-admin`
+  可删除，删除后 production image/workspace/lock/CI parity 保持通过。
+- negative scan 证明 §8.7 所列全部旧 Platform paths 为空。
 
 ### 12.6 Root promotion
 
-- `git submodule update --init --recursive` clean clone。
-- contract generate/diff、Buf lint/breaking、mirror parity。
+- 从本地 integration commit `R2` 执行 `git submodule update --init --recursive`
+  clean clone。
+- contract generate/diff、Buf lint、single-use breaking reset、post-reset
+  ordinary breaking 和 mirror parity。
+- 四仓 generated provenance 均绑定 exact `R1`，candidate handoff
+  manifest 均绑定 exact `R2` child SHAs。
 - Agent provider -> Session -> Web consumer compatibility matrix。
 - two-Site isolation与独立 Site Web build/deploy evidence。
 - only default PostgreSQL/MongoDB/Redis/MinIO Infra。
-- rollback 到上一组 Root pins 后再前滚到 candidate pins。
+- 按 manifest 的 database baseline 先 rollback 到上一组 Root
+  pins，再重建 candidate baseline 并前滚。
 - Root CI 成功后才创建 BOM/release tag。
 
 ## 13. 风险与缓解
@@ -757,12 +1060,15 @@ contract；每个 consumer 本地提交生成物。拒绝。
 
 1. Root、Agent、Session、Web、Platform 的 hard-cut ledger 全部落地。
 2. 旧目录、符号、schema ID、database object 和 generated layout 全部消失。
-3. domain/application import gates 通过。
-4. 四个子仓独立验证和远端 CI 通过。
-5. real PostgreSQL 与跨仓 provider/consumer compatibility 通过。
-6. Root clean recursive clone、two-Site E2E、rollback rehearsal 和 BOM
-   promotion 通过。
-7. handbook、CODEBASE_MAP、INDEX、runbook、deployable manifest 与实现一致。
-8. Agent core diff audit 证明没有未授权语义变化。
+3. 六份 child plan 各自完成，candidate handoff manifest 关闭每一个 before/after
+   inventory item。
+4. domain/application import gates、generated provenance、single-use Buf
+   rebaseline 与 Agent core freeze 通过。
+5. 四个子仓独立验证和远端 CI 通过。
+6. real PostgreSQL 与跨仓 provider/consumer compatibility 通过。
+7. Root clean recursive clone、two-Site E2E、database-baseline rollback
+   rehearsal 和 BOM promotion 通过。
+8. handbook、CODEBASE_MAP、INDEX、runbook、deployable manifest 与实现一致。
+9. Agent protected-file/AST/frozen-corpus evidence 证明没有未授权核心语义变化。
 
 通过单元测试或完成目录移动都不足以宣称完成；必须以跨仓运行证据和 Root 原子 pins 证明整条链路。
