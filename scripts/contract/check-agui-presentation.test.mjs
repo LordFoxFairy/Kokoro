@@ -804,6 +804,35 @@ test("projects complete versioned owner snapshots and keeps Platform media owner
   assert.equal(candidateActivities.includes("kokoro.media.v1"), false);
   assert.equal(candidateActivities.includes("kokoro.artifact.v1"), false);
   assert.equal(candidateActivities.includes("kokoro.cost.v1"), false);
+
+  const base = corpus.positiveCases[0];
+  const frameIndex = (activityType) => base.frames.findIndex(
+    ({ data }) => data.event.type === "ACTIVITY_SNAPSHOT" && data.event.activityType === activityType,
+  );
+  const noncanonicalCandidate = applyCorpusMutation(clone(base), {
+    operation: "set",
+    path: `frames.${frameIndex("kokoro.media.v1")}.data.event.content.candidates.0.ordinal`,
+    value: 1,
+  });
+  assert.throws(() => validateConformanceCase(noncanonicalCandidate), /agui_media_candidate_identity_invalid/u);
+
+  const detachedHitlOwner = applyCorpusMutation(clone(base), {
+    operation: "set",
+    path: `frames.${frameIndex("kokoro.hitl.v1")}.data.event.content.requiredOwnerRefs`,
+    value: ["decision.other"],
+  });
+  assert.throws(() => validateConformanceCase(detachedHitlOwner), /agui_hitl_owner_group_invalid/u);
+
+  const invalidCorrection = clone(base);
+  const costIndex = frameIndex("kokoro.cost.v1");
+  invalidCorrection.frames[costIndex].data.event.content.state = "corrected";
+  invalidCorrection.frames[costIndex].data.event.content.correctsOwnerVersion = "1";
+  applyCorpusMutation(invalidCorrection, {
+    operation: "set",
+    path: `frames.${costIndex}.data.event.content.amount.amount`,
+    value: invalidCorrection.frames[costIndex].data.event.content.amount.amount,
+  });
+  assert.throws(() => validateConformanceCase(invalidCorrection), /agui_cost_correction_version_invalid/u);
 });
 
 test("freezes a closed Agent candidate envelope without browser or business identity axes", async () => {

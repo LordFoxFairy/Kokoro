@@ -47,7 +47,7 @@ const CONTRACT_SOURCE_SHA256 = Object.freeze({
   profile: "9692d77ff42726598b8547c63250556232d8fcd76c0faf19e6e37079a4f0ddd5",
   agentCandidateProfile: "51bed4a35ca703cf49d429b965b485cc7c0004d9267c7c5bec5adb9c322f3134",
   mapping: "f6fa0d63eda3f057f6f15add2cf91c5f632c595d5036bcf0c714ff2d777e4c45",
-  eventSchema: "074a8ff8244d73e7ad4d5795e65f2df0cf5d99db7e4e6beabd58e267343f67b2",
+  eventSchema: "51db7b20e76482450b6787cc814fc99b383852e0a2b0308b0e8d79eab102766b",
   agentCandidateSchema: "bdc359752f7619b1ba90a65b0daa316066bf1887b5c28b24042b5521897b8fd7",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "37875e7c62acd72b9598fe1f40df95d01de571f60f571c174d81b4f334417440",
@@ -749,6 +749,46 @@ function validateEventPreSchema(event, mapping) {
   if (event.type === EventType.ACTIVITY_SNAPSHOT && event.activityType === "kokoro.tool-preview.v1" && findKey(event.content, TOOL_SECRET_KEY)) fail("agui_tool_secret_forbidden");
   const extra = Object.keys(event).find((key) => !(EVENT_FIELDS.get(event.type) ?? []).includes(key));
   if (extra !== undefined) fail("agui_event_extra_forbidden", extra);
+}
+
+function validateOwnerPresentationEvent(event) {
+  if (event.type !== EventType.ACTIVITY_SNAPSHOT) return;
+  const ownerVersion = uint64(event.content.ownerVersion, "agui_owner_version_invalid");
+  if (ownerVersion === 0n) fail("agui_owner_version_invalid");
+  const updatedAt = parseCanonicalUtcMs(event.content.updatedAt, "agui_owner_updated_at_invalid");
+  if (updatedAt > event.timestamp) fail("agui_owner_updated_at_future");
+  if (event.activityType === "kokoro.hitl.v1") {
+    if (!event.content.requiredOwnerRefs.includes(event.content.ownerRef)) {
+      fail("agui_hitl_owner_group_invalid", event.content.ownerRef);
+    }
+    return;
+  }
+  if (event.activityType === "kokoro.media.v1") {
+    const candidateRefs = new Set();
+    for (const [ordinal, candidate] of event.content.candidates.entries()) {
+      if (candidate.ordinal !== ordinal || candidateRefs.has(candidate.candidateRef)) {
+        fail("agui_media_candidate_identity_invalid", candidate.candidateRef);
+      }
+      candidateRefs.add(candidate.candidateRef);
+      if (uint64(candidate.ownerVersion, "agui_media_candidate_version_invalid") === 0n) {
+        fail("agui_media_candidate_version_invalid", candidate.candidateRef);
+      }
+    }
+    if (
+      event.content.costProjection !== undefined &&
+      uint64(event.content.costProjection.ownerVersion, "agui_cost_link_version_invalid") === 0n
+    ) fail("agui_cost_link_version_invalid");
+    return;
+  }
+  if (event.activityType === "kokoro.artifact.v1" && event.content.availability === "ready") {
+    if (event.content.display.kind !== event.content.mediaClass) fail("agui_artifact_display_class_invalid");
+    return;
+  }
+  if (event.activityType === "kokoro.cost.v1" && event.content.state === "corrected") {
+    if (uint64(event.content.correctsOwnerVersion, "agui_cost_correction_version_invalid") >= ownerVersion) {
+      fail("agui_cost_correction_version_invalid");
+    }
+  }
 }
 
 const OPAQUE_PRESENTATION_IDENTITY = Object.freeze({
@@ -1468,6 +1508,7 @@ function validateConformanceCaseWithContracts(caseInput, contracts, identities) 
     enforceLimits(event, mapping.limits, mapping.limits.maximumEventBytes, "agui_event_limit_exceeded");
     enforceLimits(frame, mapping.limits, mapping.limits.maximumFrameBytes, "agui_frame_limit_exceeded");
     if (!validateEvent(event)) fail("agui_event_schema_invalid", validateEvent.errors?.[0]?.instancePath ?? "");
+    validateOwnerPresentationEvent(event);
     if (!EventSchemas.safeParse(event).success) fail("agui_official_event_schema_invalid", event.type);
     if (!validateStream(frame)) fail("agui_stream_schema_invalid", validateStream.errors?.[0]?.instancePath ?? "");
     validateBindingForFrame(frame, bindingAuthority.runRefs, bindingAuthority.messageRefs, caseInput.snapshot);

@@ -324,7 +324,11 @@
               "if": {"properties": {"availability": {"enum": ["restricted", "unavailable"]}}, "required": ["availability"]},
               "then": {"required": ["safeFailure"], "properties": {"safeFailure": {"$ref": "#/$defs/mediaFailure"}}},
               "else": {"properties": {"safeFailure": false}}
-            }
+            },
+            {"if": {"properties": {"availability": {"const": "ready"}, "mediaClass": {"const": "image"}}, "required": ["availability", "mediaClass"]}, "then": {"properties": {"display": {"type": "object", "properties": {"kind": {"const": "image"}}}}}},
+            {"if": {"properties": {"availability": {"const": "ready"}, "mediaClass": {"const": "audio"}}, "required": ["availability", "mediaClass"]}, "then": {"properties": {"display": {"type": "object", "properties": {"kind": {"const": "audio"}}}}}},
+            {"if": {"properties": {"availability": {"const": "ready"}, "mediaClass": {"const": "video"}}, "required": ["availability", "mediaClass"]}, "then": {"properties": {"display": {"type": "object", "properties": {"kind": {"const": "video"}}}}}},
+            {"if": {"properties": {"availability": {"const": "ready"}, "mediaClass": {"const": "document"}}, "required": ["availability", "mediaClass"]}, "then": {"properties": {"display": {"type": "object", "properties": {"kind": {"const": "document"}}}}}}
           ]
         }
       }
