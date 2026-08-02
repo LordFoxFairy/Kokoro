@@ -35,7 +35,7 @@ test("the shipped Wave 1 surface is closed and internally consistent", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 53 public operations, 4 privileged services, 1 active command boundary\n",
+    "wave1_surface_ok: 70 public operations, 4 privileged services, 1 active command boundary\n",
   );
 });
 
@@ -45,7 +45,7 @@ test("the live command checks the Wave 1 surface from the current working direct
   assert.equal(result.status, 0, result.stderr);
   assert.equal(
     result.stdout,
-    "wave1_surface_ok: 53 public operations, 4 privileged services, 1 active command boundary\n",
+    "wave1_surface_ok: 70 public operations, 4 privileged services, 1 active command boundary\n",
   );
 });
 

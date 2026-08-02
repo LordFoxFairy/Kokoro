@@ -1099,6 +1099,13 @@ test("uses one closed Activity authority for Agent candidates and owner adapters
 
 test("projects complete versioned owner snapshots and keeps Platform media ownership out of Agent", async () => {
   const schema = await readJson("contract/spec/kokoro-agui-presentation-event-v1.yaml");
+  assert.equal(
+    schema.$defs.canonicalUtcMs.pattern,
+    "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$",
+  );
+  const canonicalUtcMs = new RegExp(schema.$defs.canonicalUtcMs.pattern, "u");
+  assert.equal(canonicalUtcMs.test("0000-01-01T00:00:00.000Z"), false);
+  assert.equal(canonicalUtcMs.test("0001-01-01T00:00:00.000Z"), true);
   const corpus = await readJson("contract/corpus/agui-presentation-v1.json");
   const events = corpus.positiveCases.flatMap(({ frames }) => frames.map(({ data }) => data.event));
   const activities = events.filter(({ type }) => type === "ACTIVITY_SNAPSHOT");

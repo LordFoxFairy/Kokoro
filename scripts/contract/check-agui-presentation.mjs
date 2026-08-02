@@ -51,7 +51,7 @@ const CONTRACT_SOURCE_SHA256 = Object.freeze({
   agentCandidateProfile: "1a515b4c227f30c552699db1e7ac4cadd196077918e8dd83c917283fb8e5a735",
   activityAuthority: "359c23cb2a8b384b261cd59550dc10695c29948e39a14d210b9487108573b8ec",
   mapping: "8e3f14b227fc0d0f873825a0aae85211586084e0620b54ef88685b640e95c818",
-  eventSchema: "b8ffd673f428e73304a8a224db8edce3ca26d74fb8c2f40ec82a540c70c27095",
+  eventSchema: "4877e01e56f40cd04b14da1cdac3c4169249aa3cc61a045586a42c5bb5007be0",
   agentCandidateSchema: "6a0668591737c79ec974c070556c2211ec89e2105b682dcde2c32f9952b745f4",
   agentCandidateEnvelopeSchema: "87562d25f01a19cb21717b6d0a7f9bc5cf1bd3e45c413d7eae7270231ea123f0",
   projectionPayloadSchema: "56ce58caa5ab0fceda870e3e0fb31ed283898755df8822af189ed5dce57c6ef6",
@@ -493,7 +493,7 @@ function validateActivityAuthority(authority, eventSchema, candidateSchema) {
   if (Object.hasOwn(hitl.properties, "expectedVersion")) fail("agui_activity_authority_hitl_invalid", "expectedVersion");
   if (
     eventSchema.$defs.canonicalUtcMs?.minLength !== 24 || eventSchema.$defs.canonicalUtcMs?.maxLength !== 24 ||
-    eventSchema.$defs.canonicalUtcMs?.pattern !== "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    eventSchema.$defs.canonicalUtcMs?.pattern !== "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
   ) fail("agui_activity_authority_time_format_invalid");
   if (eventSchema.$defs.timestamp?.minimum !== 0 || eventSchema.$defs.timestamp?.maximum !== 253_402_300_799_999) {
     fail("agui_activity_authority_timestamp_range_invalid");
@@ -861,7 +861,7 @@ function cursorClaimIdentity(claims) {
 }
 
 function parseCanonicalUtcMs(value, code = "agui_snapshot_time_watermark_invalid") {
-  if (typeof value !== "string" || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/u.test(value)) {
+  if (typeof value !== "string" || !/^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/u.test(value)) {
     fail(code);
   }
   const parsed = Date.parse(value);
