@@ -74,6 +74,7 @@ enum FulfillmentProgramOutputKind {
   FULFILLMENT_PROGRAM_OUTPUT_KIND_SUBSCRIPTION_TERM = 1;
   FULFILLMENT_PROGRAM_OUTPUT_KIND_ENTITLEMENT_GRANT = 2;
   FULFILLMENT_PROGRAM_OUTPUT_KIND_CREDIT_GRANT = 3;
+  FULFILLMENT_PROGRAM_OUTPUT_KIND_CREDIT_PROGRAM_ENROLLMENT = 4;
 }
 
 message CommerceMoney {
@@ -142,7 +143,7 @@ message FulfillmentProgramOutputLine {
   option (buf.validate.message).cel = {
     id: "commerce.fulfillment_output.owner_matches_kind"
     message: "the typed owner binding must match the output kind"
-    expression: "(this.kind == 1 && has(this.subscription_term_policy)) || (this.kind == 2 && has(this.entitlement_template)) || (this.kind == 3 && has(this.credit_program))"
+    expression: "(this.kind == 1 && has(this.subscription_term_policy)) || (this.kind == 2 && has(this.entitlement_template)) || ((this.kind == 3 || this.kind == 4) && has(this.credit_program))"
   };
   string output_line_id = 1 [(buf.validate.field).string = {pattern: "^[a-z0-9][a-z0-9._:-]{0,127}$"}];
   uint32 output_ordinal = 2 [(buf.validate.field).uint32 = {

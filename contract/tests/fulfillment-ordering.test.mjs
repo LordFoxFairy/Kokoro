@@ -15,6 +15,7 @@ const descriptorBytes = execFileSync("./node_modules/.bin/buf", [
 ], { cwd: new URL("..", import.meta.url), encoding: "buffer", maxBuffer: 8 * 1024 * 1024 });
 const registry = createFileRegistry(fromBinary(FileDescriptorSetSchema, descriptorBytes));
 const descriptor = registry.getMessage("kokoro.platform.commerce.v1.CanonicalFulfillmentTransactionV1");
+const outputLineDescriptor = registry.getMessage("kokoro.platform.commerce.v1.FulfillmentProgramOutputLine");
 const validator = createValidator({ registry });
 const digest = "a".repeat(64);
 const timestamp = { seconds: 1n, nanos: 0 };
@@ -84,4 +85,34 @@ test("enforces the canonical order through the thirty-two item bound", () => {
   assert.equal(validate(tailInversion).kind, "invalid");
   assert.equal(validate([output("line-33", 33, 1, "output-33")]).kind, "invalid");
   assert.equal(validate([output("line-1", 1, 65536, "output-overflow")]).kind, "invalid");
+});
+
+test("models recurring credit as an enrollment while permanent credit remains a direct grant", () => {
+  const creditProgram = {
+    revision: {
+      programRef: "credit-program:daily-chat",
+      revision: 1n,
+      revisionDigest: `sha256:${digest}`,
+    },
+  };
+  const recurring = create(outputLineDescriptor, {
+    outputLineId: "daily-chat-enrollment",
+    outputOrdinal: 1,
+    occurrenceCount: 1,
+    kind: 4,
+    owner: { case: "creditProgram", value: creditProgram },
+  });
+  assert.equal(validator.validate(outputLineDescriptor, recurring).kind, "valid");
+
+  const wrongOwner = create(outputLineDescriptor, {
+    outputLineId: "daily-chat-enrollment",
+    outputOrdinal: 1,
+    occurrenceCount: 1,
+    kind: 4,
+    owner: {
+      case: "entitlementTemplate",
+      value: { revision: { targetRef: "entitlement:chat", targetRevision: 1n, targetDigest: `sha256:${digest}` } },
+    },
+  });
+  assert.equal(validator.validate(outputLineDescriptor, wrongOwner).kind, "invalid");
 });
