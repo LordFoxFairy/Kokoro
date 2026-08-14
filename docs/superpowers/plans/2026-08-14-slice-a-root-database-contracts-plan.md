@@ -32,7 +32,7 @@ This ordering keeps one contract source while avoiding a false requirement that 
 ### Milestone 1: Lock the Slice A manifest and SQL segment order
 
 **Files:**
-- Modify existing barrier toolchain locks: `pyproject.toml`, `uv.lock`, `package.json`, `pnpm-lock.yaml`
+- Create the isolated database toolchain: `database/pyproject.toml`, `database/uv.lock`, `database/package.json`, `database/pnpm-lock.yaml`, `database/pnpm-workspace.yaml`, `database/.gitignore`
 - Create: `database/slices/slice-a.json`
 - Create: `database/schema/00-foundation.sql`
 - Create: `database/tests/test_slice_a_manifest.py`
@@ -43,20 +43,20 @@ This ordering keeps one contract source while avoiding a false requirement that 
 - Consumes: canonical data model §0.2.
 - Produces: `compose_baseline(root: Path, slice_name: str) -> bytes` and the exact table allowlist.
 
-**JIT cut requirement 1 — Extend the already-frozen contract toolchain for database work**
+**JIT cut requirement 1 — Create an isolated database toolchain without changing the frozen contract toolchain**
 
-The prerequisite contract barrier already owns Python `>=3.11,<3.14`, `pytest==8.4.2`, `grpcio-tools==1.76.0`, `protobuf==6.33.6`, `PyYAML==6.0.3`, Buf `1.72.0`, Protobuf-ES `2.14.0` and Redocly `2.46.1`. Do not recreate or overwrite its breaking image, manifest, Proto/OpenAPI or legacy-source deletion. Extend the Python lock only with `psycopg[binary]==3.3.4` and `langgraph-checkpoint-postgres==3.1.0`; add `prisma@6.19.3` as an exact Root `devDependency` in `package.json`/`pnpm-lock.yaml`. No dependency uses a range and Prisma is never placed in the uv lock.
+The prerequisite contract barrier owns the Root Python/Node locks and they remain byte-unchanged. Database work uses its own exact project under `database/`: Python `>=3.11,<3.14`, `pytest==8.4.2`, `psycopg[binary]==3.3.4`, `langgraph-checkpoint-postgres==3.1.0`, plus database-local `prisma@6.19.3`. No dependency uses a range. Child repositories still never run migrations.
 
 ```bash
-uv lock
-uv sync --frozen
-pnpm install --frozen-lockfile
+uv lock --project database --check
+uv sync --project database --frozen
+pnpm --dir database install --frozen-lockfile
 uv run --frozen python contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml
-uv run --frozen pytest --version
-pnpm exec prisma --version
+uv run --isolated --project database --frozen pytest --version
+pnpm --dir database exec prisma --version
 ```
 
-Commit the extended locks with the Slice A SQL manifest; child repositories still never run migration commands.
+Commit the isolated database locks with the Slice A SQL manifest; the Root contract locks remain unchanged.
 
 **JIT cut requirement 2 — Write the failing manifest test**
 
@@ -84,7 +84,7 @@ def test_slice_a_manifest_is_exact() -> None:
 **JIT cut requirement 3 — Run the test and observe RED**
 
 ```bash
-uv run --frozen pytest database/tests/test_slice_a_manifest.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_slice_a_manifest.py -q
 ```
 
 Expected: failure because `database/slices/slice-a.json` is absent.
@@ -124,8 +124,11 @@ The CLI requires exactly one mode, `--write` or `--check`, and accepts the ortho
 **JIT cut requirement 6 — Run GREEN and commit**
 
 ```bash
-uv run --frozen pytest database/tests/test_slice_a_manifest.py -q
-git add pyproject.toml uv.lock package.json pnpm-lock.yaml database/slices database/schema/00-foundation.sql database/tests/test_slice_a_manifest.py scripts/database
+uv run --isolated --project database --frozen pytest database/tests/test_slice_a_manifest.py -q
+git add database/.gitignore database/pyproject.toml database/uv.lock \
+  database/package.json database/pnpm-lock.yaml database/pnpm-workspace.yaml \
+  database/slices database/schema/00-foundation.sql \
+  database/tests/test_slice_a_manifest.py scripts/database
 git commit -m "test(database): lock Slice A manifest"
 ```
 
@@ -158,7 +161,7 @@ Implement these tests with real SQL and row-count assertions:
 **JIT cut requirement 2 — Run RED**
 
 ```bash
-uv run --frozen pytest database/tests/test_site_iam_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_site_iam_pg18.py -q
 ```
 
 Expected: missing table failures.
@@ -180,7 +183,7 @@ UNIQUE (role_id, organization_id);
 **JIT cut requirement 4 — Run GREEN and commit**
 
 ```bash
-uv run --frozen pytest database/tests/test_slice_a_manifest.py database/tests/test_site_iam_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_slice_a_manifest.py database/tests/test_site_iam_pg18.py -q
 git add database/schema/10-site.sql database/schema/20-iam.sql database/tests
 git commit -m "feat(database): add Site and IAM owner schema"
 ```
@@ -211,7 +214,7 @@ Implement these tests with committed PostgreSQL facts:
 **JIT cut requirement 2 — Run RED**
 
 ```bash
-uv run --frozen pytest database/tests/test_chat_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_chat_pg18.py -q
 ```
 
 Expected: every case fails with `UndefinedTable` for the first referenced `chat_*` relation.
@@ -235,7 +238,7 @@ UNIQUE (conversation_id, event_id);
 **JIT cut requirement 4 — Run GREEN and commit**
 
 ```bash
-uv run --frozen pytest database/tests/test_chat_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_chat_pg18.py -q
 git add database/schema/30-chat.sql database/tests/test_chat_pg18.py
 git commit -m "feat(database): add Chat owner schema"
 ```
@@ -249,7 +252,7 @@ git commit -m "feat(database): add Chat owner schema"
 - Create: `database/schema/60-model.sql`
 - Create: `database/schema/99-cross-capability-relations.sql`
 - Create: `database/vendor/langgraph-checkpoint-postgres-3.1.0.sql`
-- Create: `database/tests/test_agent_control_pg18.py`
+- Create: `database/tests/test_agent_control_native_pg18.py`
 - Create: `scripts/database/run_in_fresh_pg18.py`, `database/tests/test_fresh_pg18_runner.py`
 
 **Interfaces:**
@@ -277,7 +280,7 @@ Implement these tests against live PG18:
 **JIT cut requirement 3 — Run RED**
 
 ```bash
-uv run --frozen pytest database/tests/test_agent_control_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_agent_control_native_pg18.py -q
 ```
 
 Expected: missing `agent_*`, `capability_*`, `model_*` and official checkpointer relations.
@@ -287,11 +290,11 @@ Expected: missing `agent_*`, `capability_*`, `model_*` and official checkpointer
 Implement the exact Slice A columns and constraints from canonical data model §0.2. `agent_run` owns launch idempotency and the admission state machine; `agent_execution_manifest` is immutable and required before `queued`; `capability_runtime_snapshot` is the organization/namespace empty-header fact; Model current/routing pointers use same-model composite keys plus a deferred published-state trigger. Then run:
 
 ```bash
-uv run --frozen pytest database/tests/test_agent_control_pg18.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_agent_control_native_pg18.py -q
 git add database/schema/40-agent.sql database/schema/45-langgraph-checkpointer.sql \
   database/schema/50-capability.sql database/schema/60-model.sql \
   database/schema/99-cross-capability-relations.sql database/vendor \
-  database/tests/test_agent_control_pg18.py
+  database/tests/test_agent_control_native_pg18.py
 git commit -m "feat(database): add Agent control schema"
 ```
 
@@ -301,11 +304,11 @@ The `agent_execution_manifest` Slice A shape includes `usage_mode`, `usage_polic
 
 ```bash
 test -z "$(git status --short)"
-uv run --frozen python scripts/database/compose_baseline.py --write --require-clean
+uv run --project database --frozen python scripts/database/compose_baseline.py --write --require-clean
 git add database/baseline/kokoro.sql database/baseline/manifest.json
 git commit -m "build(database): compose Slice A baseline"
-uv run --frozen python scripts/database/compose_baseline.py --check --require-clean
-uv run --frozen pytest database/tests -q
+uv run --project database --frozen python scripts/database/compose_baseline.py --check --require-clean
+uv run --isolated --project database --frozen pytest database/tests -q
 ```
 
 **JIT cut requirement 6 — Add the isolated lane database runner**
@@ -315,7 +318,7 @@ uv run --frozen pytest database/tests -q
 `test_fresh_pg18_runner.py` starts two runners concurrently with labels `chat` and `agent`, writes a marker table in each child command, proves neither database sees the other's marker, then forces one child command to exit 7 and proves both containers/volumes were removed. Run and commit:
 
 ```bash
-uv run --frozen pytest database/tests/test_fresh_pg18_runner.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_fresh_pg18_runner.py -q
 git add scripts/database/run_in_fresh_pg18.py database/tests/test_fresh_pg18_runner.py
 git commit -m "test(database): isolate capability lane databases"
 ```
@@ -379,13 +382,13 @@ No migration block or custom generator output is emitted. Each standalone reposi
 **JIT cut requirement 3 — Validate generated schemas**
 
 ```bash
-uv run --frozen python scripts/database/run_in_fresh_pg18.py --label root-catalog --cwd "$PWD" -- \
-  uv run --frozen python scripts/database/capture_catalog.py --write
-uv run --frozen python scripts/database/render_owner_prisma.py --write
+uv run --project database --frozen python scripts/database/run_in_fresh_pg18.py --label root-catalog --cwd "$PWD" -- \
+  uv run --project database --frozen python scripts/database/capture_catalog.py --write
+uv run --project database --frozen python scripts/database/render_owner_prisma.py --write
 for owner in site iam chat capability model; do
-  uv run --frozen python scripts/database/render_owner_prisma.py --install "$owner" "/tmp/kokoro-$owner-slice-a"
+  uv run --project database --frozen python scripts/database/render_owner_prisma.py --install "$owner" "/tmp/kokoro-$owner-slice-a"
 done
-uv run --frozen pytest database/tests/test_owner_inventory.py -q
+uv run --isolated --project database --frozen pytest database/tests/test_owner_inventory.py -q
 for schema in database/prisma/*.prisma; do
   DATABASE_URL_KOKORO_APP=postgresql://kokoro_app:kokoro@127.0.0.1:1/kokoro \
     pnpm exec prisma validate --schema "$schema"
@@ -421,21 +424,22 @@ Expected: all pass against the existing barrier commit. Consumer generation for 
 **JIT cut requirement 1 — Rebuild twice and compare bytes**
 
 ```bash
-uv run --frozen python scripts/database/compose_baseline.py --write
+uv run --project database --frozen python scripts/database/compose_baseline.py --write
 cp database/baseline/kokoro.sql /tmp/kokoro-a.sql
-uv run --frozen python scripts/database/compose_baseline.py --write
+uv run --project database --frozen python scripts/database/compose_baseline.py --write
 cmp /tmp/kokoro-a.sql database/baseline/kokoro.sql
 ```
 
 **JIT cut requirement 2 — Run complete source gates**
 
 ```bash
-uv run --frozen pytest database/tests contract/tests -q
+uv run --isolated --project database --frozen pytest database/tests -q
+uv run --frozen pytest contract/tests scripts/contract/tests -q
 pnpm exec buf format --diff --exit-code contract/proto
 pnpm exec buf lint contract
 pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb
 pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml
-uv run --frozen python scripts/database/compose_baseline.py --check
+uv run --project database --frozen python scripts/database/compose_baseline.py --check
 ROOT_CURRENT="$(git rev-parse --show-toplevel)"
 ROOT_CONTRACT_COMMIT="$(git log -1 --format=%H -- contract)"
 CONTRACT_WORKTREE_PARENT="$(mktemp -d /tmp/kokoro-contract-source.XXXXXX)"

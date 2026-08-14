@@ -194,11 +194,13 @@ def test_composition_rejects_non_manifest_segment_sets(
         compose_baseline(tmp_path)
 
 
-def test_root_manifest_refuses_incomplete_baseline_composition() -> None:
-    from scripts.database.compose_baseline import ManifestError, compose_baseline
+def test_root_manifest_composes_the_complete_slice_a_segment_set() -> None:
+    from scripts.database.compose_baseline import compose_baseline
 
-    with pytest.raises(ManifestError, match="missing"):
-        compose_baseline(ROOT)
+    baseline = compose_baseline(ROOT)
+    for segment in EXPECTED_SEGMENTS:
+        assert f"-- source: database/schema/{segment}.sql\n".encode() in baseline
+    assert baseline.count(b"-- source: database/schema/") == len(EXPECTED_SEGMENTS)
 
 
 @pytest.mark.parametrize("dirty_kind", ["tracked", "untracked"])
