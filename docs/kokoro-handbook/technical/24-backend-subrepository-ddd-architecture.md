@@ -79,15 +79,20 @@ domain/<module>/
 ### IAM
 
 ```text
-Site / Identity / Organization / Authentication / Authorization / Audit
+Identity / Organization / Authentication / Authorization / Audit
 ```
 
 详细规则见 [kokoro-iam](../modules/kokoro-iam.md)。
 
-Site 表示产品站点/Realm，不等于 Organization tenant，也不等于可选 Project。当前只有
-Site、SiteDomain 和登录前 Host 解析，并且所有 Principal/Organization 都受 Site 约束，故作为
-IAM 内部模块。只有未来形成独立的站点 Fleet、发布、品牌和域名运营团队与生命周期时，才重新
-评估拆仓。
+Site 表示产品站点/Realm，不等于 Organization tenant，也不等于可选 Project。一个 Web
+代码库可以部署多个套皮/套壳实例；每个实例用服务端 `KOKORO_SITE_ID` 选择 Site，并把该
+SiteContext 注入登录和后续 BFF 请求。IAM 不替 Web 选择 Site，只验证 `site_site` 存在、active，
+并把 Site 固化到 Principal、Organization、AuthSession 和 JWT 安全链。浏览器提交的 `site_id`
+不构成权威。
+
+首发没有独立 Site 服务、端口或 `ResolveSiteByHost` RPC。`site_site` 保留为 PostgreSQL FK 和
+生命周期真相；动态 `site_domain`、一套 Web runtime 服务多个 Site、Fleet/品牌发布形成真实
+独立能力时再评估 Site runtime。
 
 ### Chat
 

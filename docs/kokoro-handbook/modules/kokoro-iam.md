@@ -7,7 +7,6 @@
 `kokoro-iam` 是一个安全上下文，统一拥有：
 
 ```text
-Site
 Identity
 Organization
 Authentication
@@ -18,7 +17,8 @@ Audit
 它不拥有 Conversation、Agent Run、Model Catalog、Capability、Entitlement 或 Payment。
 
 Site 是产品站点/Realm；Organization 是 Site 内的租户/安全空间；Project 是后续可选业务
-分组。这三个概念不同，但 Site 当前规模小且与登录和租户约束强耦合，因此不单独拆仓。
+分组。这三个概念不同。每个 Web 套皮/套壳部署通过服务端 env 选择 Site，IAM 不负责选择，
+只验证并固化 Site 安全上下文，因此不建立独立 Site 子仓库或运行服务。
 
 ## 2. Slice A 表所有权
 
@@ -40,10 +40,6 @@ Root 是这些表的 DDL authority；IAM 是唯一 runtime writer。
 kokoro-iam/
 ├── src/
 │   ├── domain/
-│   │   ├── site/
-│   │   │   ├── entities/
-│   │   │   ├── value-objects/
-│   │   │   └── repositories/
 │   │   ├── identity/
 │   │   │   ├── entities/
 │   │   │   ├── value-objects/
@@ -72,9 +68,6 @@ kokoro-iam/
 │   │       ├── events/
 │   │       └── repositories/
 │   ├── application/
-│   │   ├── site/
-│   │   │   ├── commands/
-│   │   │   └── queries/
 │   │   ├── authentication/
 │   │   │   ├── commands/
 │   │   │   └── queries/
@@ -138,10 +131,6 @@ claim CommandReceipt
 Slice A 只公开：
 
 ```text
-SiteService
-  ResolveSiteByHost
-  GetSite
-
 IamAuthenticationService
   RequestMagicLink
   ConsumeMagicLink
@@ -156,10 +145,28 @@ HTTP
   GET /.well-known/jwks.json
 ```
 
-Web 可以调用 Site 和 Authentication；Chat 只能调用 Authorization；JWKS 是公开密钥材料。Caller
+Web 调用 Authentication 时注入其服务端 env 绑定的 SiteContext；Chat 只能调用
+Authorization；JWKS 是公开密钥材料。Caller
 身份在解码业务 payload 前验证。
 
-## 6. 迁移原则
+## 6. Web SiteContext
+
+同一份 Web 代码和镜像可以多次部署：
+
+```text
+Web Shell A: KOKORO_SITE_ID=site-a + A 品牌配置
+Web Shell B: KOKORO_SITE_ID=site-b + B 品牌配置
+Web Shell C: KOKORO_SITE_ID=site-c + C 品牌配置
+```
+
+`KOKORO_SITE_ID` 是 Web/BFF 服务端运行时配置，不依赖浏览器 request body。Site ID 不是
+秘密，可以进入页面 SiteContext，但 IAM 必须以受信 Web 调用和数据库中的 active Site 记录
+重新验证，不能让浏览器切换为其他 Site。
+
+`site_site` 保存 FK 根、状态和必要元数据；Web 的皮肤、文案和静态品牌配置可以由各套壳部署
+管理。动态域名目录和一套 Web runtime 服务多个 Site 不属于首发。
+
+## 7. 迁移原则
 
 | 旧能力 | 裁决 |
 |---|---|
@@ -176,7 +183,7 @@ Web 可以调用 Site 和 Authentication；Chat 只能调用 Authorization；JWK
 
 禁止在 parity 前删除成熟行为，也禁止通过缩小 tsconfig/test/lint 范围绕过旧代码。
 
-## 7. 完成门禁
+## 8. 完成门禁
 
 - 登录到 personal Organization 的真实 PostgreSQL 事务通过；
 - Refresh/Logout/GetSession/Authorize 真实闭环；

@@ -12,8 +12,9 @@
 
 ## 决策
 
-1. 一个业务子仓库对应一个明确业务能力区和唯一数据写入者；只有两个表、与登录安全链
-   强耦合的 Site 不单独制造子仓库，而是作为 IAM 内部模块。
+1. 一个业务子仓库对应一个明确业务能力区和唯一数据写入者。Site 不单独制造子仓库：每个
+   Web 套壳部署通过服务端 env 选择自己的 `site_id`，IAM 只验证 Site 和安全绑定；动态
+   Site/Domain 运营能力出现前不建立独立 Site runtime。
 2. 每个业务子仓库内部统一使用 `domain / application / infrastructure / interfaces`
    四层依赖模型。
 3. 复杂子仓库先按业务模块划分；`entities / value-objects / services /
