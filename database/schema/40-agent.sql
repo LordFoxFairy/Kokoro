@@ -79,6 +79,9 @@ CREATE TABLE agent_control_inbox (
   agent_run_id uuid NOT NULL,
   command_id uuid NOT NULL,
   request_digest bytea NOT NULL,
+  command_schema_version integer NOT NULL,
+  command_payload jsonb NOT NULL,
+  interrupt_fingerprint bytea,
   status text NOT NULL,
   applied_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -87,6 +90,15 @@ CREATE TABLE agent_control_inbox (
     FOREIGN KEY (agent_run_id) REFERENCES agent_run(agent_run_id) ON DELETE RESTRICT,
   CONSTRAINT agent_control_inbox_status_ck
     CHECK (status IN ('pending','applied','rejected','failed')),
+  CONSTRAINT agent_control_inbox_command_schema_version_ck
+    CHECK (command_schema_version > 0),
+  CONSTRAINT agent_control_inbox_command_payload_ck CHECK (
+    jsonb_typeof(command_payload) = 'object'
+    AND octet_length(command_payload::text) <= 65536
+  ),
+  CONSTRAINT agent_control_inbox_interrupt_fingerprint_ck CHECK (
+    interrupt_fingerprint IS NULL OR octet_length(interrupt_fingerprint) = 32
+  ),
   CONSTRAINT agent_control_inbox_applied_at_ck CHECK (
     (status = 'applied' AND applied_at IS NOT NULL)
     OR (status <> 'applied' AND applied_at IS NULL)
@@ -626,6 +638,7 @@ FOR EACH ROW EXECUTE FUNCTION agent_validate_run_usage_line_mutation();
 
 CREATE FUNCTION agent_reject_control_claim_update()
 RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE run_state text;
 BEGIN
   IF TG_OP = 'DELETE' THEN
     RAISE EXCEPTION 'agent control receipt cannot be deleted'
@@ -636,12 +649,23 @@ BEGIN
       RAISE EXCEPTION 'agent control receipt must start pending'
         USING ERRCODE='23514', CONSTRAINT='agent_control_inbox_claim_first_ck';
     END IF;
+    SELECT state INTO run_state
+    FROM agent_run
+    WHERE agent_run_id = NEW.agent_run_id
+    FOR SHARE;
+    IF run_state IN ('completed','failed','cancelled','admission_failed') THEN
+      RAISE EXCEPTION 'terminal agent run cannot claim a new control command'
+        USING ERRCODE='23514', CONSTRAINT='agent_control_inbox_terminal_run_ck';
+    END IF;
     RETURN NEW;
   END IF;
   IF NEW.control_id IS DISTINCT FROM OLD.control_id
     OR NEW.agent_run_id IS DISTINCT FROM OLD.agent_run_id
     OR NEW.command_id IS DISTINCT FROM OLD.command_id
     OR NEW.request_digest IS DISTINCT FROM OLD.request_digest
+    OR NEW.command_schema_version IS DISTINCT FROM OLD.command_schema_version
+    OR NEW.command_payload IS DISTINCT FROM OLD.command_payload
+    OR NEW.interrupt_fingerprint IS DISTINCT FROM OLD.interrupt_fingerprint
     OR NEW.created_at IS DISTINCT FROM OLD.created_at
   THEN
     RAISE EXCEPTION 'agent control claim is immutable'

@@ -5,6 +5,8 @@ import asyncio
 import hashlib
 import json
 import os
+import threading
+import time
 from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -367,8 +369,9 @@ def test_control_command_uniqueness_preserves_the_first_claim(database_url: str)
         connection.execute(
             """
             INSERT INTO agent_control_inbox(
-              control_id,agent_run_id,command_id,request_digest,status
-            ) VALUES (%s,%s,%s,decode('aa','hex'),'pending')
+              control_id,agent_run_id,command_id,request_digest,
+              command_schema_version,command_payload,status
+            ) VALUES (%s,%s,%s,decode('aa','hex'),1,'{"control_kind":"cancel"}','pending')
             """,
             (str(uuid4()), RUN_ID, command_id),
         )
@@ -377,8 +380,9 @@ def test_control_command_uniqueness_preserves_the_first_claim(database_url: str)
             connection.execute(
                 """
                 INSERT INTO agent_control_inbox(
-                  control_id,agent_run_id,command_id,request_digest,status
-                ) VALUES (%s,%s,%s,decode('bb','hex'),'pending')
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,status
+                ) VALUES (%s,%s,%s,decode('bb','hex'),1,'{"control_kind":"cancel"}','pending')
                 """,
                 (str(uuid4()), RUN_ID, command_id),
             )
@@ -392,6 +396,106 @@ def test_control_command_uniqueness_preserves_the_first_claim(database_url: str)
             (RUN_ID, command_id),
         ).fetchone()
         assert row == ("aa", "pending")
+
+
+def test_control_claim_persists_an_immutable_canonical_command_body(
+    database_url: str,
+) -> None:
+    command_id = str(uuid4())
+    control_id = str(uuid4())
+    canonical_body = {
+        "control_kind": "decide",
+        "decisions": [
+            {"target_id": "tool-1", "kind": "approve", "payload": {}}
+        ],
+    }
+    with psycopg.connect(database_url) as connection:
+        _insert_run(connection)
+        connection.execute(
+            """
+            INSERT INTO agent_control_inbox(
+              control_id,agent_run_id,command_id,request_digest,
+              command_schema_version,command_payload,interrupt_fingerprint,status
+            ) VALUES (%s,%s,%s,decode('aa','hex'),1,%s,
+                      decode(repeat('bb',32),'hex'),'pending')
+            """,
+            (control_id, RUN_ID, command_id, json.dumps(canonical_body)),
+        )
+        stored = connection.execute(
+            """
+            SELECT command_schema_version,command_payload,
+                   encode(interrupt_fingerprint,'hex')
+            FROM agent_control_inbox WHERE control_id=%s
+            """,
+            (control_id,),
+        ).fetchone()
+        assert stored == (1, canonical_body, "bb" * 32)
+
+    with psycopg.connect(database_url) as connection:
+        with pytest.raises(errors.CheckViolation):
+            connection.execute(
+                """
+                UPDATE agent_control_inbox
+                SET command_payload='{"control_kind":"cancel"}'::jsonb
+                WHERE control_id=%s
+                """,
+                (control_id,),
+            )
+
+    for mutation in (
+        "command_schema_version=2",
+        "command_payload='{}'::jsonb",
+        "interrupt_fingerprint=NULL",
+    ):
+        with psycopg.connect(database_url) as connection:
+            with pytest.raises(errors.CheckViolation):
+                connection.execute(
+                    f"UPDATE agent_control_inbox SET {mutation} WHERE control_id=%s",
+                    (control_id,),
+                )
+
+
+@pytest.mark.parametrize(
+    ("schema_version", "payload"),
+    [(0, {}), (1, []), (1, {"body": "x" * 65537})],
+)
+def test_control_claim_rejects_an_invalid_or_unbounded_command_body(
+    database_url: str,
+    schema_version: int,
+    payload: object,
+) -> None:
+    with psycopg.connect(database_url) as connection:
+        _insert_run(connection)
+        with pytest.raises(errors.CheckViolation):
+            connection.execute(
+                """
+                INSERT INTO agent_control_inbox(
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,status
+                ) VALUES (%s,%s,%s,decode('aa','hex'),%s,%s,'pending')
+                """,
+                (str(uuid4()), RUN_ID, str(uuid4()), schema_version, json.dumps(payload)),
+            )
+
+
+@pytest.mark.parametrize("fingerprint_size", [0, 31, 33])
+def test_control_claim_rejects_a_non_sha256_interrupt_fingerprint(
+    database_url: str,
+    fingerprint_size: int,
+) -> None:
+    with psycopg.connect(database_url) as connection:
+        _insert_run(connection)
+        with pytest.raises(errors.CheckViolation):
+            connection.execute(
+                """
+                INSERT INTO agent_control_inbox(
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,interrupt_fingerprint,status
+                ) VALUES (%s,%s,%s,decode('aa','hex'),1,
+                          '{"control_kind":"decide"}',%s,'pending')
+                """,
+                (str(uuid4()), RUN_ID, str(uuid4()), b"x" * fingerprint_size),
+            )
 
 
 def test_event_sequence_is_run_global_and_epoch_fenced(database_url: str) -> None:
@@ -966,8 +1070,9 @@ def test_control_terminal_receipt_cannot_revert_or_be_deleted(database_url: str)
         connection.execute(
             """
             INSERT INTO agent_control_inbox(
-              control_id,agent_run_id,command_id,request_digest,status
-            ) VALUES (%s,%s,%s,decode('aa','hex'),'pending')
+              control_id,agent_run_id,command_id,request_digest,
+              command_schema_version,command_payload,status
+            ) VALUES (%s,%s,%s,decode('aa','hex'),1,'{"control_kind":"cancel"}','pending')
             """,
             (control_id, RUN_ID, command_id),
         )
@@ -993,11 +1098,89 @@ def test_control_terminal_receipt_cannot_revert_or_be_deleted(database_url: str)
             connection.execute(
                 """
                 INSERT INTO agent_control_inbox(
-                  control_id,agent_run_id,command_id,request_digest,status
-                ) VALUES (%s,%s,%s,decode('bb','hex'),'pending')
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,status
+                ) VALUES (%s,%s,%s,decode('bb','hex'),1,'{"control_kind":"cancel"}','pending')
                 """,
                 (str(uuid4()), RUN_ID, command_id),
             )
+
+
+@pytest.mark.parametrize("terminal_state", ["completed", "failed", "cancelled", "admission_failed"])
+def test_terminal_run_rejects_a_new_control_claim(
+    database_url: str,
+    terminal_state: str,
+) -> None:
+    with psycopg.connect(database_url) as connection:
+        _insert_run(connection, state=terminal_state)
+        with pytest.raises(errors.CheckViolation):
+            connection.execute(
+                """
+                INSERT INTO agent_control_inbox(
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,status
+                ) VALUES (%s,%s,%s,decode('aa','hex'),1,
+                          '{"control_kind":"cancel"}','pending')
+                """,
+                (str(uuid4()), RUN_ID, str(uuid4())),
+            )
+
+
+def test_terminal_transition_serializes_before_a_concurrent_control_claim(
+    database_url: str,
+) -> None:
+    with psycopg.connect(database_url) as connection:
+        _insert_run(connection)
+        connection.commit()
+
+    terminal_row_locked = threading.Event()
+    release_terminal = threading.Event()
+
+    def terminalize() -> None:
+        with psycopg.connect(database_url) as connection:
+            connection.execute(
+                "UPDATE agent_run SET state='admission_failed' WHERE agent_run_id=%s",
+                (RUN_ID,),
+            )
+            terminal_row_locked.set()
+            assert release_terminal.wait(timeout=5)
+            connection.commit()
+
+    def claim_control() -> str:
+        assert terminal_row_locked.wait(timeout=5)
+        with psycopg.connect(database_url) as connection:
+            try:
+                connection.execute(
+                    """
+                    INSERT INTO agent_control_inbox(
+                      control_id,agent_run_id,command_id,request_digest,
+                      command_schema_version,command_payload,status
+                    ) VALUES (%s,%s,%s,decode('aa','hex'),1,
+                              '{"control_kind":"cancel"}','pending')
+                    """,
+                    (str(uuid4()), RUN_ID, str(uuid4())),
+                )
+                connection.commit()
+                return "committed"
+            except errors.CheckViolation:
+                connection.rollback()
+                return "terminal-rejected"
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        terminal_future = pool.submit(terminalize)
+        claim_future = pool.submit(claim_control)
+        assert terminal_row_locked.wait(timeout=5)
+        time.sleep(0.05)
+        assert not claim_future.done()
+        release_terminal.set()
+        terminal_future.result(timeout=5)
+        assert claim_future.result(timeout=5) == "terminal-rejected"
+
+    with psycopg.connect(database_url) as connection:
+        assert connection.execute(
+            "SELECT count(*) FROM agent_control_inbox WHERE agent_run_id=%s",
+            (RUN_ID,),
+        ).fetchone()[0] == 0
 
 
 def test_control_status_and_applied_at_must_match(database_url: str) -> None:
@@ -1007,8 +1190,10 @@ def test_control_status_and_applied_at_must_match(database_url: str) -> None:
             connection.execute(
                 """
                 INSERT INTO agent_control_inbox(
-                  control_id,agent_run_id,command_id,request_digest,status,applied_at
-                ) VALUES (%s,%s,%s,decode('aa','hex'),'pending',now())
+                  control_id,agent_run_id,command_id,request_digest,
+                  command_schema_version,command_payload,status,applied_at
+                ) VALUES (%s,%s,%s,decode('aa','hex'),1,
+                          '{"control_kind":"cancel"}','pending',now())
                 """,
                 (str(uuid4()), RUN_ID, str(uuid4())),
             )

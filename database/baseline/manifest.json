@@ -1,5 +1,5 @@
 {
-  "baselineSha256": "b65e7c8c36bc8ec05cca8a1a040deff28a9a9cb1b8a25f71886d989bac8c02dd",
+  "baselineSha256": "e601568b64ee899b78a6b686b49ce24022efd76a8304297cea7a59904646fb21",
   "schema": "kokoro",
   "segments": [
     {
@@ -25,7 +25,7 @@
     {
       "name": "40-agent",
       "path": "database/schema/40-agent.sql",
-      "sha256": "2efc60bbb44e3776b9bdd839c6b0e7d4c6aebbe0d44bd798b9d419325c575467"
+      "sha256": "6b6d74b66b2ca412c7db6469b56777795469d3f33bfc1e43109993dfb3afed78"
     },
     {
       "name": "45-langgraph-checkpointer",
