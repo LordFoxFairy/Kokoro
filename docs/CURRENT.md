@@ -1,6 +1,6 @@
 # 当前活跃文档白名单
 
-状态：2026-07-25
+状态：2026-08-14
 用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
 
 ## 必读
@@ -14,6 +14,14 @@
 
 以下文档描述尚未实现、正在书面复审的 clean-rewrite 目标。它们优先于旧过程稿，但在批准并迁入 handbook
 前不得写成当前代码事实：
+
+当前已经迁入 handbook 的后端目标架构：
+
+1. [后端子仓库与 DDD 架构规范](kokoro-handbook/technical/24-backend-subrepository-ddd-architecture.md)
+2. [ADR-012：后端子仓库与 DDD 分层规范](kokoro-handbook/decisions/ADR-012-backend-subrepository-ddd-layers.md)
+3. [kokoro-iam 目标模块](kokoro-handbook/modules/kokoro-iam.md)
+
+以下仍为过程方案：
 
 1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
 2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)

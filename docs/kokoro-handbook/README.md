@@ -23,6 +23,17 @@
   相关模块、链路、运维文档描述目标设计，落地以各子仓为准。
 ```
 
+## 当前后端目标架构（2026-08-14）
+
+后端 SQL-first 子仓库重构已经开始，正式目标见：
+
+- [后端子仓库与 DDD 架构规范](technical/24-backend-subrepository-ddd-architecture.md)
+- [ADR-012：后端子仓库与 DDD 分层规范](decisions/ADR-012-backend-subrepository-ddd-layers.md)
+- [kokoro-iam](modules/kokoro-iam.md)
+
+上述文件描述目标架构；旧 V1 文档继续描述尚未完成迁移的当前运行时。目标架构对正在实施的
+子仓库边界、PostgreSQL、RPC 和目录规则优先，不能再从旧 Platform/MySQL 约束反推新实现。
+
 ## V1 运行时主链路（已建）
 
 ```text
@@ -48,11 +59,11 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 4. siteId 是平台业务隔离边界；namespace 是 GA/runtime 唯一隔离键。
 5. 同邮箱跨站默认不同用户。
 6. 不新增 kokoro-contracts。
-7. 不使用 ports 目录命名。
-8. 核心管理和账务数据用 MySQL。
+7. 旧 V1 runtime 不使用 ports 目录；新 DDD 子仓允许明确的 Application ports，以 24 为准。
+8. 旧 V1 核心管理和账务数据使用 MySQL；SQL-first 目标使用 Root PostgreSQL baseline。
 9. 产物、job result、创作内容、非结构化上下文用 Mongo。
 10. Redis 只做 live stream、短期队列、广播、限流辅助，不作长期真源。
-11. 当前不引入 PostgreSQL。
+11. 旧 V1 当前运行时不引入 PostgreSQL；SQL-first 目标和迁移门禁以 24 为准。
 12. agent 不能直接扣积分（只能 credit.quote/hold/commit/release）。
 13. payment 不能直接写 credit ledger。
 14. model 不能决定最终价格。
@@ -104,13 +115,15 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（签发链/计费链/编排/E2E-40，P1-P5 已落地事实）
 - [22-capability-hub](technical/22-capability-hub.md)（kokoro-hub 边界与 tRPC 不换定案；HUB-1/2/3/4 代码已落地，HUB 链经 HUB-CONSIST 收口（hub 9710400/session dfd1280/agent 2e30fe0）；仅 HUB-4 灰度未做）
 - [23-platform-ops-console](technical/23-platform-ops-console.md)（运营台现状：三维 RBAC / maker-checker / DB 审计 / manifest 代理 / internal-secret 现状）
+- [24-backend-subrepository-ddd-architecture](technical/24-backend-subrepository-ddd-architecture.md)（SQL-first 后端子仓库与 DDD 正式目标）
 
 ### 模块 modules/
 
 - [kokoro-platform](modules/kokoro-platform.md)
 - [kokoro-hub](modules/kokoro-hub.md)
-- [kokoro-site](modules/kokoro-site.md)
-- [kokoro-user](modules/kokoro-user.md)
+- [kokoro-site](modules/kokoro-site.md)（迁移前独立模块记录；目标并入 IAM）
+- [kokoro-user](modules/kokoro-user.md)（迁移前模块记录；目标由 IAM 取代）
+- [kokoro-iam](modules/kokoro-iam.md)（目标子仓，实施中）
 - [kokoro-model](modules/kokoro-model.md)
 - [kokoro-credit](modules/kokoro-credit.md)
 - [kokoro-payment](modules/kokoro-payment.md)
@@ -153,6 +166,7 @@ Redis           队列、实时流、短期 live fanout、分布式锁和短租�
 - [ADR-006 agent sandbox runtime](decisions/ADR-006-agent-sandbox-runtime.md)
 - [ADR-007 kokoro-platform 子模块](decisions/ADR-007-kokoro-platform-submodule.md)
 - [ADR-008 Agent / Session / Web 标准运行时边界](decisions/ADR-008-agent-session-web-standard-runtime.md)
+- [ADR-012 后端子仓库与 DDD 分层规范](decisions/ADR-012-backend-subrepository-ddd-layers.md)
 
 ## 旧文档处理
 
