@@ -81,7 +81,9 @@
         "kokoro/common/v1/common.proto",
         "kokoro/site/v1/site.proto",
         "kokoro/iam/v1/authentication.proto",
-        "kokoro/chat/v1/chat.proto"
+        "kokoro/chat/v1/chat.proto",
+        "kokoro/agent/v1/agent_events.proto",
+        "kokoro/agent/v1/agent_runtime.proto"
       ]
     }
   }

@@ -95,6 +95,39 @@ class SliceAManifestAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(ManifestError,'consumer closure drift'):
             validate(candidate)
 
+    def test_projection_nack_semantics_are_frozen(self) -> None:
+        nack = self.manifest["rules"]["projectionNack"]
+        self.assertEqual(nack["requestFields"], ["rejected_seq", "rejection_code"])
+        self.assertEqual(nack["presence"], "both-absent-positive-or-both-present-nack")
+        self.assertEqual(nack["rejectedSeq"], {"minimum": 1, "relation": "projected_seq + 1"})
+        self.assertEqual(
+            nack["rejectionCode"],
+            {"encoding": "UTF-8", "nonblank": True, "maxBytes": 128},
+        )
+        self.assertEqual(
+            nack["zeroWatermarkEpoch"],
+            "rejected event epoch when projected_seq == 0 and no positive event exists",
+        )
+        self.assertEqual(
+            nack["responseFields"],
+            ["stored_rejected_seq", "stored_rejection_code"],
+        )
+        self.assertIn("absent/mismatched echo retains quarantine", nack["compatibility"])
+        self.assertEqual(
+            nack["errorDetail"],
+            {
+                "requestId": "echo validated nonblank request_id on every error",
+                "message": {"maxBytes": 512, "internal": "redacted"},
+                "staleFenceCurrentGeneration": "required",
+            },
+        )
+
+    def test_projection_nack_rule_drift_fails(self) -> None:
+        candidate = copy.deepcopy(self.manifest)
+        candidate["rules"]["projectionNack"]["rejectionCode"]["maxBytes"] = 129
+        with self.assertRaisesRegex(ManifestError, "projection NACK contract drift"):
+            validate(candidate)
+
     def test_caller_map_drift_fails(self) -> None:
         candidate=copy.deepcopy(self.manifest)
         candidate['consumerCallerMap']['agent'].remove('ModelCatalogService')

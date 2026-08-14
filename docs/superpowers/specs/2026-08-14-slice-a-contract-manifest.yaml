@@ -176,7 +176,81 @@
       "semantics": "When the browser omits limit, the Web BFF sends PageRequest.limit=50; explicit values remain bounded to 1..100."
     },
     "capabilitySliceASelectors": "requested_selectors must be empty; any nonempty selector is deterministic AGENT_ADMISSION_REJECTED, never silently discarded into the empty snapshot",
-    "browserIdempotency": "For pre-auth RequestMagicLink, BFF derives UUIDv5 command_id from resolved site_id + operation_id + bounded opaque Idempotency-Key. For authenticated Conversation mutations it derives UUIDv5 from organization_id + operation_id + key. In both cases BFF computes canonical request_digest and rejects browser digest."
+    "browserIdempotency": "For pre-auth RequestMagicLink, BFF derives UUIDv5 command_id from resolved site_id + operation_id + bounded opaque Idempotency-Key. For authenticated Conversation mutations it derives UUIDv5 from organization_id + operation_id + key. In both cases BFF computes canonical request_digest and rejects browser digest.",
+    "projectionNack": {
+      "requestFields": [
+        "rejected_seq",
+        "rejection_code"
+      ],
+      "responseFields": [
+        "stored_rejected_seq",
+        "stored_rejection_code"
+      ],
+      "presence": "both-absent-positive-or-both-present-nack",
+      "rejectedSeq": {
+        "minimum": 1,
+        "relation": "projected_seq + 1"
+      },
+      "rejectionCode": {
+        "encoding": "UTF-8",
+        "nonblank": true,
+        "maxBytes": 128
+      },
+      "watermarkSemantics": "projected_seq remains the last successfully persisted positive watermark; epoch belongs to that watermark except for the explicit zero-watermark rule; rejected event lookup is run-global by agent_run_id plus rejected_seq and validates stored epoch",
+      "zeroWatermarkEpoch": "rejected event epoch when projected_seq == 0 and no positive event exists",
+      "durableEcho": "first or exact-replay NACK returns both stored fields exactly equal to immutable rejection evidence; different seq/code conflicts",
+      "compatibility": "old server ignores request fields 6-7 and sees only last-good watermark; old response omits fields 3-4; absent/mismatched echo retains quarantine and exact retry",
+      "errorMapping": {
+        "invalidShape": {
+          "grpc": "INVALID_ARGUMENT",
+          "code": "ERROR_CODE_INVALID_ARGUMENT",
+          "retryable": false
+        },
+        "runMissing": {
+          "grpc": "NOT_FOUND",
+          "code": "ERROR_CODE_NOT_FOUND",
+          "retryable": false
+        },
+        "bearerInvalid": {
+          "grpc": "UNAUTHENTICATED",
+          "code": "ERROR_CODE_UNAUTHENTICATED",
+          "retryable": false
+        },
+        "eventUnavailable": {
+          "grpc": "FAILED_PRECONDITION",
+          "code": "ERROR_CODE_PRECONDITION_FAILED",
+          "retryable": true
+        },
+        "dependencyUnavailable": {
+          "grpc": "UNAVAILABLE",
+          "code": "ERROR_CODE_DEPENDENCY_UNAVAILABLE",
+          "retryable": true
+        },
+        "staleFence": {
+          "grpc": "ABORTED",
+          "code": "ERROR_CODE_STALE_GENERATION",
+          "retryable": true
+        },
+        "firstRejectionConflict": {
+          "grpc": "ALREADY_EXISTS",
+          "code": "ERROR_CODE_CONFLICT",
+          "retryable": false
+        },
+        "internal": {
+          "grpc": "INTERNAL",
+          "code": "ERROR_CODE_INTERNAL",
+          "retryable": false
+        }
+      },
+      "errorDetail": {
+        "requestId": "echo validated nonblank request_id on every error",
+        "message": {
+          "maxBytes": 512,
+          "internal": "redacted"
+        },
+        "staleFenceCurrentGeneration": "required"
+      }
+    }
   },
   "protobuf": {
     "files": [
@@ -3122,6 +3196,18 @@
             "name": "projected_seq",
             "type": "uint64",
             "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "rejected_seq",
+            "type": "uint64",
+            "label": "optional"
+          },
+          {
+            "number": 7,
+            "name": "rejection_code",
+            "type": "string",
+            "label": "optional"
           }
         ]
       },
@@ -3140,6 +3226,18 @@
             "name": "stored_projected_seq",
             "type": "uint64",
             "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "stored_rejected_seq",
+            "type": "uint64",
+            "label": "optional"
+          },
+          {
+            "number": 4,
+            "name": "stored_rejection_code",
+            "type": "string",
+            "label": "optional"
           }
         ]
       },
@@ -5824,7 +5922,9 @@
       "kokoro/common/v1/common.proto",
       "kokoro/site/v1/site.proto",
       "kokoro/iam/v1/authentication.proto",
-      "kokoro/chat/v1/chat.proto"
+      "kokoro/chat/v1/chat.proto",
+      "kokoro/agent/v1/agent_events.proto",
+      "kokoro/agent/v1/agent_runtime.proto"
     ]
   },
   "consumerCallerMap": {

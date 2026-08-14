@@ -19,7 +19,7 @@ EXPECTED_AGENT_KINDS = [
     "subagent.thinking.delta","subagent.text.delta","subagent.text.completed","subagent.tool.invoked",
     "subagent.tool.returned","delivery.created","run.control.receipt","run.completed","run.failed",
 ]
-EXPECTED_NORMALIZED_MANIFEST_SHA256 = "fd8258bf38fc1f7f1246a99b6e55db2d10261f1b0d388279e6860a6d83479791"
+EXPECTED_NORMALIZED_MANIFEST_SHA256 = "5204633227823de228c483623aa657aeb0d7e02b1daeeb4a5673e88160ea92af"
 EXPECTED_ACCESS_JWT = {
     "header": {"alg": "RS256", "typ": "JWT", "kid": "nonempty active JWKS key id"},
     "claims": {
@@ -31,6 +31,32 @@ EXPECTED_ACCESS_JWT = {
     "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Site/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims.",
 }
 EXPECTED_STREAM_AUTHORIZATION_EXPIRY = "Chat closes StreamConversationEvents no later than access JWT exp + 30-second clock skew and emits zero frames after that deadline. Web refreshes the sealed IAM session and reconnects from the last committed seq; membership revocation exposure is therefore bounded by the 900-second JWT TTL plus skew."
+EXPECTED_PROJECTION_NACK = {
+    "requestFields": ["rejected_seq", "rejection_code"],
+    "responseFields": ["stored_rejected_seq", "stored_rejection_code"],
+    "presence": "both-absent-positive-or-both-present-nack",
+    "rejectedSeq": {"minimum": 1, "relation": "projected_seq + 1"},
+    "rejectionCode": {"encoding": "UTF-8", "nonblank": True, "maxBytes": 128},
+    "watermarkSemantics": "projected_seq remains the last successfully persisted positive watermark; epoch belongs to that watermark except for the explicit zero-watermark rule; rejected event lookup is run-global by agent_run_id plus rejected_seq and validates stored epoch",
+    "zeroWatermarkEpoch": "rejected event epoch when projected_seq == 0 and no positive event exists",
+    "durableEcho": "first or exact-replay NACK returns both stored fields exactly equal to immutable rejection evidence; different seq/code conflicts",
+    "compatibility": "old server ignores request fields 6-7 and sees only last-good watermark; old response omits fields 3-4; absent/mismatched echo retains quarantine and exact retry",
+    "errorMapping": {
+        "invalidShape": {"grpc": "INVALID_ARGUMENT", "code": "ERROR_CODE_INVALID_ARGUMENT", "retryable": False},
+        "runMissing": {"grpc": "NOT_FOUND", "code": "ERROR_CODE_NOT_FOUND", "retryable": False},
+        "bearerInvalid": {"grpc": "UNAUTHENTICATED", "code": "ERROR_CODE_UNAUTHENTICATED", "retryable": False},
+        "eventUnavailable": {"grpc": "FAILED_PRECONDITION", "code": "ERROR_CODE_PRECONDITION_FAILED", "retryable": True},
+        "dependencyUnavailable": {"grpc": "UNAVAILABLE", "code": "ERROR_CODE_DEPENDENCY_UNAVAILABLE", "retryable": True},
+        "staleFence": {"grpc": "ABORTED", "code": "ERROR_CODE_STALE_GENERATION", "retryable": True},
+        "firstRejectionConflict": {"grpc": "ALREADY_EXISTS", "code": "ERROR_CODE_CONFLICT", "retryable": False},
+        "internal": {"grpc": "INTERNAL", "code": "ERROR_CODE_INTERNAL", "retryable": False},
+    },
+    "errorDetail": {
+        "requestId": "echo validated nonblank request_id on every error",
+        "message": {"maxBytes": 512, "internal": "redacted"},
+        "staleFenceCurrentGeneration": "required",
+    },
+}
 EXPECTED_BROWSER_JSON_MAPPING = {
     "uint64": "JSON safe nonnegative integer, reject values above 9007199254740991 before browser response",
     "enum": "lower_snake string with the type prefix removed",
@@ -96,6 +122,45 @@ def load_manifest(path: Path) -> dict[str, Any]:
         raise ManifestError(f"manifest unreadable: {exc}") from exc
     require(isinstance(data, dict), "manifest root must be object")
     return data
+
+def validate_projection_nack_values(
+    *, projected_seq: int, rejected_seq: int | None, rejection_code: str | None
+) -> None:
+    """Validate the scalar/presence portion of the frozen AckProjection request."""
+    pair_absent = rejected_seq is None and rejection_code is None
+    pair_present = rejected_seq is not None and rejection_code is not None
+    require(pair_absent or pair_present, "projection NACK fields must be both absent or present")
+    if pair_absent:
+        return
+    require(
+        isinstance(projected_seq, int) and not isinstance(projected_seq, bool) and projected_seq >= 0,
+        "projected_seq must be a nonnegative integer",
+    )
+    require(
+        isinstance(rejected_seq, int) and not isinstance(rejected_seq, bool)
+        and rejected_seq > 0 and rejected_seq == projected_seq + 1,
+        "rejected_seq must be the positive next run-global sequence",
+    )
+    require(
+        isinstance(rejection_code, str) and bool(rejection_code.strip())
+        and len(rejection_code.encode("utf-8")) <= 128,
+        "rejection_code must be nonblank UTF-8 bounded to 128 bytes",
+    )
+
+def projection_nack_echo_matches(
+    *,
+    requested_seq: int,
+    requested_code: str,
+    stored_seq: int | None,
+    stored_code: str | None,
+) -> bool:
+    """Return whether a response is the exact presence-aware durable NACK echo."""
+    return (
+        stored_seq is not None
+        and stored_code is not None
+        and stored_seq == requested_seq
+        and stored_code == requested_code
+    )
 
 def duplicates(values: list[Any]) -> list[Any]:
     return sorted(value for value, count in Counter(values).items() if count > 1)
@@ -223,6 +288,8 @@ def validate(manifest: dict[str, Any]) -> None:
         if caller:
             for service_name in caller_map[caller]:
                 seeds.add(declaration_file[next(name for name in declaration_file if name.endswith(f".{service_name}"))])
+        if consumer == "root-e2e":
+            seeds.add("kokoro/agent/v1/agent_runtime.proto")
         expected=set(seeds); pending=list(seeds)
         while pending:
             current=pending.pop()
@@ -232,7 +299,7 @@ def validate(manifest: dict[str, Any]) -> None:
                 expected.add(imported); pending.append(imported)
         require(set(closure)==expected, f"consumer closure drift for {consumer}")
     forbidden=("kokoro/agent/","kokoro/model/","kokoro/capability/")
-    for consumer in ("kokoro-web","root-e2e"):
+    for consumer in ("kokoro-web",):
         require(not any(path.startswith(forbidden) for path in closures[consumer]), f"private owner proto in {consumer}")
 
     events=manifest.get("agentEvents",{}).get("variants",[])
@@ -292,6 +359,29 @@ def validate(manifest: dict[str, Any]) -> None:
     for message in agent_messages:
         tenant={field["name"] for field in message["fields"]}&{"site_id","organization_id"}
         require(not tenant or message["name"]=="LaunchRunRequest", f"tenant axis leaked into {message['name']}")
+    ack_request=next(message for message in agent_messages if message["name"]=="AckProjectionRequest")
+    require(
+        ack_request["fields"] == [
+            {"number":1,"name":"request_id","type":"string","label":"required"},
+            {"number":2,"name":"agent_run_id","type":"string","label":"required"},
+            {"number":3,"name":"consumer_key","type":"string","label":"required"},
+            {"number":4,"name":"epoch","type":"uint64","label":"required"},
+            {"number":5,"name":"projected_seq","type":"uint64","label":"required"},
+            {"number":6,"name":"rejected_seq","type":"uint64","label":"optional"},
+            {"number":7,"name":"rejection_code","type":"string","label":"optional"},
+        ],
+        "AckProjection request wire drift",
+    )
+    ack_response=next(message for message in agent_messages if message["name"]=="AckProjectionResponse")
+    require(
+        ack_response["fields"] == [
+            {"number":1,"name":"stored_epoch","type":"uint64","label":"required"},
+            {"number":2,"name":"stored_projected_seq","type":"uint64","label":"required"},
+            {"number":3,"name":"stored_rejected_seq","type":"uint64","label":"optional"},
+            {"number":4,"name":"stored_rejection_code","type":"string","label":"optional"},
+        ],
+        "AckProjection response wire drift",
+    )
 
     sse=manifest.get("sse",{})
     require(len(sse.get("browserEvents",[]))==21, "expected 21 browser event kinds")
@@ -304,6 +394,7 @@ def validate(manifest: dict[str, Any]) -> None:
     rules=manifest.get("rules",{})
     require("globally monotonic" in rules.get("agentEventSequence","") and "never resets seq" in rules.get("agentEventSequence",""), "Agent event cursor semantics missing")
     require(rules.get("projectionConsumers",{}).get("sliceA")==["chat"], "projection consumer allowlist drift")
+    require(rules.get("projectionNack")==EXPECTED_PROJECTION_NACK, "projection NACK contract drift")
     arms=rules.get("controlDecisionPayloadSchemasByKind",{})
     require(set(arms)=={"approve","edit","reject","respond","submit"}, "control decision arms incomplete")
     require(all(arm.get("additionalProperties") is False for arm in arms.values()), "control decision arm must be strict")

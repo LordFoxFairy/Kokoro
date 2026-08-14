@@ -87,11 +87,15 @@ message AckProjectionRequest {
   string consumer_key = 3;
   uint64 epoch = 4;
   uint64 projected_seq = 5;
+  optional uint64 rejected_seq = 6;
+  optional string rejection_code = 7;
 }
 
 message AckProjectionResponse {
   uint64 stored_epoch = 1;
   uint64 stored_projected_seq = 2;
+  optional uint64 stored_rejected_seq = 3;
+  optional string stored_rejection_code = 4;
 }
 
 service AgentRuntimeService {

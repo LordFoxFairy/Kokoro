@@ -105,3 +105,33 @@ def test_descriptor_exactly_matches_machine_authority(tmp_path: Path) -> None:
                 assert actual_method.output_type == expected_method["output"]
                 assert actual_method.server_streaming is expected_method.get("serverStreaming", False)
                 assert actual_method.client_streaming is False
+
+
+def test_ack_projection_additive_nack_fields_preserve_frozen_wire(tmp_path: Path) -> None:
+    descriptor = _descriptor(tmp_path)
+    runtime = next(
+        file for file in descriptor.file
+        if file.name == "kokoro/agent/v1/agent_runtime.proto"
+    )
+    messages = {message.name: message for message in runtime.message_type}
+    request = messages["AckProjectionRequest"]
+    response = messages["AckProjectionResponse"]
+    assert [(field.number, field.name, field.type, field.proto3_optional) for field in request.field] == [
+        (1, "request_id", descriptor_pb2.FieldDescriptorProto.TYPE_STRING, False),
+        (2, "agent_run_id", descriptor_pb2.FieldDescriptorProto.TYPE_STRING, False),
+        (3, "consumer_key", descriptor_pb2.FieldDescriptorProto.TYPE_STRING, False),
+        (4, "epoch", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, False),
+        (5, "projected_seq", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, False),
+        (6, "rejected_seq", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, True),
+        (7, "rejection_code", descriptor_pb2.FieldDescriptorProto.TYPE_STRING, True),
+    ]
+    assert [(field.number, field.name, field.type, field.proto3_optional) for field in response.field] == [
+        (1, "stored_epoch", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, False),
+        (2, "stored_projected_seq", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, False),
+        (3, "stored_rejected_seq", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64, True),
+        (4, "stored_rejection_code", descriptor_pb2.FieldDescriptorProto.TYPE_STRING, True),
+    ]
+    service = next(service for service in runtime.service if service.name == "AgentRuntimeService")
+    method = next(method for method in service.method if method.name == "AckProjection")
+    assert method.input_type == ".kokoro.agent.v1.AckProjectionRequest"
+    assert method.output_type == ".kokoro.agent.v1.AckProjectionResponse"

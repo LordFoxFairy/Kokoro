@@ -72,6 +72,26 @@ def test_consumer_registry_is_exact_machine_closure() -> None:
         assert CONSUMERS["consumers"][name]["protoFiles"] == closure
 
 
+def test_projection_nack_runtime_proto_reaches_only_real_consumers() -> None:
+    runtime = "kokoro/agent/v1/agent_runtime.proto"
+    events = "kokoro/agent/v1/agent_events.proto"
+    closures = MANIFEST["consumerFileClosure"]
+    assert {name for name, files in closures.items() if runtime in files} == {
+        "kokoro-agent", "kokoro-chat", "root-e2e",
+    }
+    assert {name for name, files in closures.items() if events in files} == {
+        "kokoro-agent", "kokoro-chat", "root-e2e",
+    }
+    assert closures["kokoro-site"] == [
+        "kokoro/common/v1/common.proto",
+        "kokoro/site/v1/site.proto",
+    ]
+    assert MANIFEST["consumerCallerMap"]["chat"] == [
+        "IamAuthorizationService", "AgentRuntimeService",
+    ]
+    assert "site" not in MANIFEST["consumerCallerMap"]
+
+
 def test_python_generation_is_deterministic_provenanced_and_checkable(
     committed_source: tuple[Path, str], tmp_path: Path
 ) -> None:
@@ -107,7 +127,9 @@ def test_python_generation_is_deterministic_provenanced_and_checkable(
         "contract/openapi/slice-a-web-v1.yaml", "contract/generate.py",
         *(f"contract/proto/{item['path']}" for item in MANIFEST["protobuf"]["files"]),
     }
-    assert not any(part in {"agent", "model", "capability"} for path in first_output.rglob("*") for part in path.parts)
+    assert (first_output / "kokoro/agent/v1/agent_runtime_pb2.py").is_file()
+    assert (first_output / "kokoro/agent/v1/agent_events_pb2.py").is_file()
+    assert not any(part in {"model", "capability"} for path in first_output.rglob("*") for part in path.parts)
     assert all(
         path.read_text().startswith("# GENERATED — DO NOT EDIT. Source Root commit:")
         for path in first_output.rglob("*.py")
@@ -115,6 +137,17 @@ def test_python_generation_is_deterministic_provenanced_and_checkable(
     sys.path.insert(0, str(first))
     try:
         importlib.import_module("scripts.e2e.generated.kokoro.chat.v1.chat_pb2_grpc")
+        runtime = importlib.import_module("scripts.e2e.generated.kokoro.agent.v1.agent_runtime_pb2")
+        request = runtime.AckProjectionRequest(
+            request_id="r", agent_run_id="u", consumer_key="chat", epoch=1,
+            projected_seq=5, rejected_seq=6, rejection_code="PROTO_DECODE",
+        )
+        assert request.HasField("rejected_seq")
+        response = runtime.AckProjectionResponse(
+            stored_epoch=1, stored_projected_seq=5,
+            stored_rejected_seq=6, stored_rejection_code="PROTO_DECODE",
+        )
+        assert response.HasField("stored_rejected_seq")
     finally:
         sys.path.remove(str(first))
     generate_consumer(
