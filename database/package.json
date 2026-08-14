@@ -1,0 +1,11 @@
+{
+  "name": "kokoro-database-tooling",
+  "private": true,
+  "packageManager": "pnpm@11.2.2",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "devDependencies": {
+    "prisma": "6.19.3"
+  }
+}

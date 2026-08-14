@@ -1,0 +1,13 @@
+[project]
+name = "kokoro-database-tooling"
+version = "0.0.0"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "langgraph-checkpoint-postgres==3.1.0",
+  "psycopg[binary]==3.3.4",
+]
+
+[dependency-groups]
+dev = [
+  "pytest==8.4.2",
+]
