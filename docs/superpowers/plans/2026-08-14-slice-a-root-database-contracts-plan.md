@@ -23,7 +23,7 @@
 The reviewed contract barrier roadmap is the only shared barrier. After its clean contract-source commit and separate Root E2E descendant-output commit:
 
 - Milestones 1–4 build the owner SQL segments in the Root database lane while Chat/Agent/owner lanes port domain tests against the already-frozen descriptors.
-- Milestone 5 waits for the committed composed baseline. Consumer generation is already owned by the completed contract barrier/output cuts and is not rerun here; final `--check --all` verifies already-materialized Root and child outputs only.
+- Milestone 5 waits for the committed composed baseline. Consumer generation is already owned by the completed contract barrier/output cuts and is not rerun here; final checks verify each runtime consumer explicitly, while contract tests retain the frozen registry verbatim. The master roadmap's structured retirement boundary governs its compatibility exception.
 
 This ordering keeps one contract source while avoiding a false requirement that all SQL implementation finish before child domain/RPC work begins.
 
@@ -156,7 +156,8 @@ Implement these tests with real SQL and row-count assertions:
 - Race two transactions creating a personal organization for the same `(site_id, principal_id)`; exactly one commits and the loser reads the winner.
 - Claim one IAM command receipt twice with the same digest and once with a different digest; same digest returns the stored result, drift raises conflict and creates no second effect.
 
-`pg18` starts `postgres:18`, applies composed SQL and fails loudly if Docker or PostgreSQL is unavailable.
+`pg18` locates local PostgreSQL 18 binaries, initializes an isolated temporary cluster, applies the requested
+segment prefix and fails loudly before setup if the binaries are missing or not version 18.
 
 **JIT cut requirement 2 — Run RED**
 
@@ -253,7 +254,7 @@ git commit -m "feat(database): add Chat owner schema"
 - Create: `database/schema/99-cross-capability-relations.sql`
 - Create: `database/vendor/langgraph-checkpoint-postgres-3.1.0.sql`
 - Create: `database/tests/test_agent_control_native_pg18.py`
-- Create: `scripts/database/run_in_fresh_pg18.py`, `database/tests/test_fresh_pg18_runner.py`
+- Create: `scripts/database/run_in_fresh_pg18_native.py`, `database/tests/test_fresh_pg18_native_runner.py`
 
 **Interfaces:**
 - Produces: two-stage Agent admission schema, empty snapshot header, published-only Model routing and the official checkpointer DDL.
@@ -313,13 +314,23 @@ uv run --isolated --project database --frozen pytest database/tests -q
 
 **JIT cut requirement 6 — Add the isolated lane database runner**
 
-`run_in_fresh_pg18.py` accepts `--label`, `--cwd`, optional `--baseline` (default `database/baseline/kokoro.sql`) and a command after `--`. It creates a unique `postgres:18` container name from the sanitized label, PID and random suffix; publishes 5432 to a dynamically assigned loopback port; waits with psycopg; creates database `kokoro` plus login/owner `kokoro_app`; applies the committed baseline once as `kokoro_app`; then runs the child command with both `DATABASE_URL_KOKORO_APP` and `KOKORO_TEST_DATABASE_URL` set to that unique URL. A `finally` block removes the container and volume on command success, failure, SIGINT or SIGTERM. It never reuses `127.0.0.1:5432` and `--require-clean` rejects a dirty or uncommitted baseline.
+`run_in_fresh_pg18_native.py` accepts `--label`, `--cwd`, optional `--baseline` (default
+`database/baseline/kokoro.sql`) and a command after `--`. It locates `pg_config`, `initdb` and `pg_ctl`, rejects
+anything other than PostgreSQL 18, creates a unique temporary parent and a not-yet-existing data-directory child,
+initializes a local cluster and binds it to a dynamically reserved loopback port and private Unix-socket directory.
+It creates database `kokoro` plus login/owner `kokoro_app`, applies the committed baseline once as `kokoro_app`,
+then runs the child command with both `DATABASE_URL_KOKORO_APP` and `KOKORO_TEST_DATABASE_URL` set to that unique
+URL. A signal-aware `finally` block stops the exact postmaster with `pg_ctl`, verifies its PID and sockets are gone,
+and removes the temporary parent on command success, failure, SIGINT or SIGTERM. It never reuses
+`127.0.0.1:5432`, and `--require-clean` rejects a dirty or uncommitted baseline.
 
-`test_fresh_pg18_runner.py` starts two runners concurrently with labels `chat` and `agent`, writes a marker table in each child command, proves neither database sees the other's marker, then forces one child command to exit 7 and proves both containers/volumes were removed. Run and commit:
+`test_fresh_pg18_native_runner.py` starts two native clusters concurrently with labels `chat` and `agent`, writes
+a marker table in each child command, proves neither database sees the other's marker, then forces one child command
+to exit 7 and proves both postmasters, socket directories and temporary parents were removed. Run and commit:
 
 ```bash
-uv run --isolated --project database --frozen pytest database/tests/test_fresh_pg18_runner.py -q
-git add scripts/database/run_in_fresh_pg18.py database/tests/test_fresh_pg18_runner.py
+uv run --isolated --project database --frozen pytest database/tests/test_fresh_pg18_native_runner.py -q
+git add scripts/database/run_in_fresh_pg18_native.py database/tests/test_fresh_pg18_native_runner.py
 git commit -m "test(database): isolate capability lane databases"
 ```
 
@@ -331,14 +342,14 @@ git commit -m "test(database): isolate capability lane databases"
 - Create: `scripts/database/capture_catalog.py`
 - Create: `scripts/database/render_owner_prisma.py`
 - Create: `database/tests/test_owner_inventory.py`
-- Create generated artifacts: `database/prisma/{site,iam,chat,capability,model}.prisma`
+- Create generated artifacts: `database/prisma/{iam,chat,capability,model}.prisma`; the IAM schema contains both `site_*` and `iam_*` tables.
 
 **Interfaces:**
 - Produces: `capture_catalog(conn) -> Catalog`, `render_owner_schema(catalog, owner) -> str`, and `install_owner_schema(owner, repo) -> Path`. The CLI reads exactly `DATABASE_URL_KOKORO_APP`; it never assumes localhost or starts an implicit shared server.
 
 **JIT cut requirement 1 — Write a failing exact-coverage test**
 
-The Root source test must apply the baseline and assert every manifest table appears exactly once in `owner-inventory.json`, every FK target exists, every owner prefix matches and no Slice B/C model is rendered. It also asserts every one of the 50 owner tables has exactly one checked writer entry, singular gateway, authorized-command inventory and syntactically valid planned behavior-test path. It does not require child files that are created only in later lanes; the final promotion gate resolves and executes those paths against the seven reviewed child commits.
+The Root source test must apply the baseline and assert every manifest table appears exactly once in `owner-inventory.json`, every FK target exists, every owner prefix matches and no Slice B/C model is rendered. The explicit ownership map assigns both `site_*` and `iam_*` to `kokoro-iam`, and the runtime child allowlist is exactly IAM, Model, Capability, Chat, Agent and Web. It also asserts every one of the 50 owner tables has exactly one checked writer entry, singular gateway, authorized-command inventory and syntactically valid planned behavior-test path. It does not require child files that are created only in later lanes; the final promotion gate resolves and executes those paths against the six reviewed child commits.
 
 Each `writer-inventory.json` row has this exact shape:
 
@@ -364,7 +375,7 @@ Each `writer-inventory.json` row has this exact shape:
 
 **JIT cut requirement 2 — Implement catalog capture and rendering**
 
-Render only scalar fields for cross-owner FKs; render same-owner relations only when they do not create a Prisma relation cycle. `install_owner_schema` copies the exact rendered bytes into the candidate repository and records the Root SQL/catalog digest in a sibling manifest. Every schema uses:
+Render only scalar fields for cross-owner FKs; render same-owner relations only when they do not create a Prisma relation cycle. `install_owner_schema` copies the exact rendered bytes into the candidate repository and records the Root SQL/catalog digest in a sibling manifest. The IAM artifact is a single owner schema over both the Site FK roots and IAM tables. Every schema uses:
 
 ```prisma
 generator client {
@@ -382,10 +393,10 @@ No migration block or custom generator output is emitted. Each standalone reposi
 **JIT cut requirement 3 — Validate generated schemas**
 
 ```bash
-uv run --project database --frozen python scripts/database/run_in_fresh_pg18.py --label root-catalog --cwd "$PWD" -- \
+uv run --project database --frozen python scripts/database/run_in_fresh_pg18_native.py --label root-catalog --cwd "$PWD" -- \
   uv run --project database --frozen python scripts/database/capture_catalog.py --write
 uv run --project database --frozen python scripts/database/render_owner_prisma.py --write
-for owner in site iam chat capability model; do
+for owner in iam chat capability model; do
   uv run --project database --frozen python scripts/database/render_owner_prisma.py --install "$owner" "/tmp/kokoro-$owner-slice-a"
 done
 uv run --isolated --project database --frozen pytest database/tests/test_owner_inventory.py -q
@@ -404,7 +415,7 @@ git commit -m "build(database): generate owner Prisma schemas"
 
 ### Milestone 6: Consume the completed contract barrier without regeneration
 
-The prerequisite `2026-08-14-slice-a-contract-manifest-barrier-roadmap.md` has already produced the reviewed machine manifest, nine Proto files, exact OpenAPI, first immutable Buf breaking image, consumer allowlist and deterministic generator in one clean Root contract-source commit. This SQL roadmap must not recreate, reformat, overwrite or delete any of those authority files. Its only contract gate is:
+The prerequisite `2026-08-14-slice-a-contract-manifest-barrier-roadmap.md` has already produced the reviewed machine manifest, nine Proto files, exact OpenAPI, first immutable Buf breaking image, consumer allowlist and deterministic generator in one clean Root contract-source commit. This SQL roadmap must not recreate, reformat, overwrite or delete any of those authority files. The master roadmap's structured retirement boundary is the only explanation of the frozen compatibility exception. This roadmap's contract gate is:
 
 ```bash
 uv run --frozen python contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml
@@ -447,10 +458,38 @@ CONTRACT_WORKTREE="$CONTRACT_WORKTREE_PARENT/root"
 git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
 trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true; rm -rf "$CONTRACT_WORKTREE_PARENT"' EXIT
 (cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
-cat >/tmp/kokoro-slice-a-consumer-map.json <<JSON
-{"kokoro-site":"/tmp/kokoro-site-slice-a","kokoro-iam":"/tmp/kokoro-iam-slice-a","kokoro-chat":"/tmp/kokoro-chat-slice-a","kokoro-agent":"/tmp/kokoro-agent-slice-a","kokoro-capability":"/tmp/kokoro-capability-slice-a","kokoro-model":"/tmp/kokoro-model-slice-a","kokoro-web":"/tmp/kokoro-web-slice-a","root-e2e":"$ROOT_CURRENT"}
+RUNTIME_CONSUMER_MAP=/tmp/kokoro-slice-a-runtime-consumer-map.json
+cat >"$RUNTIME_CONSUMER_MAP" <<JSON
+{"iam":"/tmp/kokoro-iam-slice-a","chat":"/tmp/kokoro-chat-slice-a","agent":"/tmp/kokoro-agent-slice-a","capability":"/tmp/kokoro-capability-slice-a","model":"/tmp/kokoro-model-slice-a","web":"/tmp/kokoro-web-slice-a","root-e2e":"$ROOT_CURRENT"}
 JSON
-(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --all --repo-map /tmp/kokoro-slice-a-consumer-map.json --check)
+# This is the fail-closed runtime allowlist. The frozen registry remains checked by the contract suite;
+# the compatibility-only consumer documented in the master retirement boundary is deliberately absent here.
+python3 - "$RUNTIME_CONSUMER_MAP" <<'PY'
+from pathlib import Path
+import json
+import sys
+
+RUNTIME_CONSUMERS = {"iam", "chat", "agent", "capability", "model", "web", "root-e2e"}
+consumer_map = json.loads(Path(sys.argv[1]).read_text())
+assert set(consumer_map) == RUNTIME_CONSUMERS, (set(consumer_map), RUNTIME_CONSUMERS)
+assert "site" not in consumer_map
+assert all(isinstance(path, str) and path for path in consumer_map.values())
+PY
+while IFS=$'\t' read -r consumer repo; do
+  (cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py \
+    --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" \
+    --consumer "$consumer" --repo "$repo" --check)
+done < <(python3 - "$RUNTIME_CONSUMER_MAP" <<'PY'
+from pathlib import Path
+import json
+import sys
+
+consumer_map = json.loads(Path(sys.argv[1]).read_text())
+for key in ("iam", "chat", "agent", "capability", "model", "web", "root-e2e"):
+    consumer = key if key == "root-e2e" else f"kokoro-{key}"
+    print(f"{consumer}\t{consumer_map[key]}")
+PY
+)
 git worktree remove --force "$CONTRACT_WORKTREE"
 rm -rf "$CONTRACT_WORKTREE_PARENT"
 trap - EXIT

@@ -2,7 +2,7 @@
 
 > **Document type:** Reviewed phase roadmap, not direct `executing-plans` input. Before a lane starts, its next milestone MUST be expanded into a separately reviewed JIT implementation cut with exact files, actual RED test/code, self-contained commands and one precise commit; workers never invent omitted code from this roadmap.
 
-**Goal:** Deliver the backend chain first—Site resolution → IAM login/AuthZ → Conversation → message → existing GA/LiteLLM → complete owner snapshot + watermark-tail SSE/HITL—with PostgreSQL as the only business truth; attach the existing Web only after that service chain passes without a browser.
+**Goal:** Deliver the backend chain first—server-bound SiteContext → IAM login/AuthZ → Conversation → message → existing GA/LiteLLM → complete owner snapshot + watermark-tail SSE/HITL—with PostgreSQL as the only business truth; attach the existing Web only after that service chain passes without a browser.
 
 **Architecture:** Root owns Protobuf/OpenAPI, the exact 50-table Slice A SQL baseline, the four pinned LangGraph checkpointer tables, owner inventory, generation and cross-repo E2E. Capability repositories own their transactions and write only their own table prefixes. Existing GA execution and Web reducer/state machine stay intact; only persistence, admission, RPC and hydration adapters change.
 
@@ -32,7 +32,7 @@
 | [`Contract barrier roadmap`](2026-08-14-slice-a-contract-manifest-barrier-roadmap.md) | Root toolchain, machine manifest, Proto/OpenAPI and consumer generation | Expanded through separately reviewed executable cuts |
 | [`Authority-validation executable cut`](2026-08-14-slice-a-contract-authority-validation-implementation-plan.md) | Root installed machine manifest and fail-closed validator | Execute first; does not yet release consumers |
 | [`Root database and contracts`](2026-08-14-slice-a-root-database-contracts-plan.md) | Root `contract/`, `database/`, Root generation/tests | First source commit; all consumers generate from its exact commit |
-| [`Site/IAM/Model/Capability`](2026-08-14-slice-a-site-iam-model-capability-plan.md) | New `kokoro-site`, `kokoro-iam`, `kokoro-model`, `kokoro-capability` candidate repositories | Root SQL/Proto source commit |
+| [`IAM/Model/Capability and Web SiteContext`](2026-08-14-slice-a-site-iam-model-capability-plan.md) | New `kokoro-iam`, `kokoro-model`, `kokoro-capability` candidate repositories; Web-owned SiteContext rule | Root SQL/Proto source commit |
 | [`Chat PostgreSQL hard cut`](2026-08-14-slice-a-chat-postgres-plan.md) | New `kokoro-chat` candidate derived from `kokoro-session` | Root SQL/Proto + IAM/Agent contracts |
 | [`Agent PostgreSQL and gRPC admission`](2026-08-14-slice-a-agent-postgres-grpc-plan.md) | Existing `kokoro-agent` | Root SQL/Proto + Capability/Model endpoints |
 | [`Backend E2E, Web adapter and atomic promotion`](2026-08-14-slice-a-web-e2e-promotion-plan.md) | Root backend composition first; `kokoro-web` and Root promotion second | All backend candidate commits |
@@ -54,17 +54,13 @@ message PrincipalContext {
 
 IAM signs/validates browser sessions and returns this context. Chat receives it through a verified Connect interceptor. Agent admission receives only `(site_id, organization_id)` plus the opaque Conversation namespace needed to resolve Model and Capability; the GA execution core and frozen run payload receive none of the Principal/RBAC context.
 
-### Exact Slice A service inventory
+### Exact Slice A runtime service inventory
 
 All request/response field numbers, enum values, errors, browser operations and SSE frames are frozen in
 the machine authority [`../specs/2026-08-14-slice-a-contract-manifest.yaml`](../specs/2026-08-14-slice-a-contract-manifest.yaml); the adjacent
 [`Markdown summary`](../specs/2026-08-14-slice-a-contract-manifest.md) is for review. The inventory below is the service-level summary, not a second source.
 
 ```proto
-service SiteService {
-  rpc ResolveSiteByHost(ResolveSiteByHostRequest) returns (ResolveSiteByHostResponse);
-}
-
 service IamAuthenticationService {
   rpc RequestMagicLink(RequestMagicLinkRequest) returns (RequestMagicLinkResponse);
   rpc ConsumeMagicLink(ConsumeMagicLinkRequest) returns (ConsumeMagicLinkResponse);
@@ -86,7 +82,17 @@ service ModelCatalogService {
 }
 ```
 
-IAM also exposes exact HTTP `GET /.well-known/jwks.json`; it is public key material, not another business API. The Web BFF resolves request Host through `SiteService` before requesting a magic link. No Site admin, Hub, Billing, Storage or provider-invocation method is exposed in Slice A.
+IAM also exposes exact HTTP `GET /.well-known/jwks.json`; it is public key material, not another business API. The Web BFF resolves request Host against its server-side allowlisted SiteContext binding before requesting a magic link; IAM revalidates that `site_id` against the active PostgreSQL Site/Organization/AuthSession chain. No standalone Site deployment surface, Hub, Billing, Storage or provider-invocation method is exposed in Slice A.
+
+<!-- slice-a-site-contract-retirement:start -->
+### Frozen Site contract retirement boundary
+
+The frozen contract source still contains `contract/proto/kokoro/site/v1/site.proto`, consumer key
+`kokoro-site` and `SiteService.ResolveSiteByHost`. These are compatibility artifacts only: Slice A does not
+materialize them as a runtime repository, process, listener, endpoint, candidate or Root gitlink. Web production
+code does not construct the generated client. Removal requires a separate reviewed contract-retirement cut that
+updates the manifest, generator, consumer closure, breaking image and every generated output atomically.
+<!-- slice-a-site-contract-retirement:end -->
 
 ### Runtime endpoints and minimal workload identity
 
@@ -94,7 +100,6 @@ The Slice A fixture and release inventory use one stable internal registry:
 
 | Process | Internal listener |
 |---|---|
-| Site | `http://site:7201` |
 | IAM | `http://iam:7202` |
 | Model | `http://model:7203` |
 | Capability | `http://capability:7204` |
@@ -105,7 +110,7 @@ The Slice A fixture and release inventory use one stable internal registry:
 
 TS services expose exact `GET /healthz` and `GET /readyz` on their service listener; Agent exposes standard gRPC health on 7206. Slice A does not add a second business listener.
 
-Workload authentication is deliberately small and explicit: Root mounts three random secret files, one each for Web, Chat and Agent. Generated clients send `authorization: Bearer <file-content>`; servers compare the expected caller token in constant time before decoding a business request. The exact method map is Web → Site, IAM Authentication and Chat; Chat → IAM Authorization and Agent; Agent → Model and Capability; IAM JWKS is public. A token valid for one caller is rejected on every other method, including Chat token on IAM Authentication and Web token on IAM Authorization. Chat additionally verifies the IAM-signed user access JWT against IAM JWKS and derives `PrincipalContext` from it—identity fields in request bodies are ignored/rejected. Root E2E uses the Web workload token plus a real IAM-issued user token. No token value appears in SQL, browser storage, image, logs or Git.
+Workload authentication is deliberately small and explicit: Root mounts three random secret files, one each for Web, Chat and Agent. Generated clients send `authorization: Bearer <file-content>`; servers compare the expected caller token in constant time before decoding a business request. The exact method map is Web → IAM Authentication and Chat; Chat → IAM Authorization and Agent; Agent → Model and Capability; IAM JWKS is public. A token valid for one caller is rejected on every other method, including Chat token on IAM Authentication and Web token on IAM Authorization. Chat additionally verifies the IAM-signed user access JWT against IAM JWKS and derives `PrincipalContext` from it—identity fields in request bodies are ignored/rejected. Root E2E uses the Web workload token plus a real IAM-issued user token. No token value appears in SQL, browser storage, image, logs or Git.
 
 The stable permission catalog is exactly:
 
@@ -168,7 +173,7 @@ Chat reads this response in one repeatable-read transaction. Web hydrates the ex
 
 ## Backend-first delivery order
 
-The first acceptance milestone is a **browser-independent backend closure**. It calls the real Site, IAM, Chat, Agent, Capability and Model service endpoints, exercises the existing GA/LiteLLM path, persists and replays HITL, restarts Chat and Agent, and reconstructs the complete conversation from PostgreSQL. Web work is not allowed to hide or block a backend failure; it starts only after that gate is green.
+The first acceptance milestone is a **browser-independent backend closure**. The test harness selects the same reviewed SiteContext fixture that Web/BFF will bind server-side, then calls the real IAM, Chat, Agent, Capability and Model service endpoints, exercises the existing GA/LiteLLM path, persists and replays HITL, restarts Chat and Agent, and reconstructs the complete conversation from PostgreSQL. Web work is not allowed to hide or block a backend failure; it starts only after that gate is green.
 
 With four active implementation lanes, the aggressive target is backend closure in 4–6 active development days (P80: 8). Rebinding the already mature Web BFF/reducer is a later 0.5–1 day adapter step. A 2–3 day run is an integration spike only, never completion evidence.
 
@@ -180,7 +185,7 @@ flowchart LR
   S --> P["Seed capability repositories"]
   M --> D["Root SQL baseline"]
   M --> R["Root Proto/OpenAPI source"]
-  R --> I["Site / IAM / Model / empty Capability"]
+  R --> I["IAM / Model / empty Capability"]
   R --> C["Chat domain + RPC"]
   R --> A["Agent admission + gRPC"]
   D --> I
@@ -201,11 +206,11 @@ flowchart LR
 Maximum concurrency is four active lanes:
 
 1. Root database/contracts.
-2. Site/IAM/Model/Capability candidates.
+2. IAM/Model/Capability candidates.
 3. Chat candidate.
 4. Agent candidate.
 
-The manifest and exact RPC/message shape are the only short shared barrier. Root then continues SQL/catalog work while the other three lanes port domain tests and implement contract-facing code. Their PostgreSQL integration steps wait for the committed baseline, not their entire repository implementation. The backend E2E begins as soon as Site/IAM/Model/Capability, Chat and Agent candidates are frozen. Web begins only after the backend E2E is green. Atomic promotion begins only after the backend and browser gates are both green and all child commits are frozen and clean.
+The manifest and exact RPC/message shape are the only short shared barrier. Root then continues SQL/catalog work while the other three lanes port domain tests and implement contract-facing code. Their PostgreSQL integration steps wait for the committed baseline, not their entire repository implementation. The backend E2E begins as soon as IAM/Model/Capability, Chat and Agent candidates are frozen. Web begins only after the backend E2E is green. Atomic promotion begins only after the backend and browser gates are both green and all child commits are frozen and clean.
 
 Storage, Entitlement/Commerce/Payment and full Skill/MCP are separate capability lanes, not hidden modules inside Slice A services. Their reviewed target tables remain in the canonical model and may start whenever a lane becomes free, but none may change the 50+4 Slice A baseline or delay its first backend closure. This is scheduling isolation, not architectural coupling.
 
@@ -277,7 +282,7 @@ git commit -m "docs: define SQL-first capability architecture"
 ### Milestone 2: Prepare clean candidate repositories without changing Root pins
 
 **Files:**
-- Create candidate Git repositories outside the Root checkout: `kokoro-iam`, `kokoro-site`, `kokoro-chat`, `kokoro-model`, `kokoro-capability`.
+- Create candidate Git repositories outside the Root checkout: `kokoro-iam`, `kokoro-chat`, `kokoro-model`, `kokoro-capability`.
 - Do not modify: `.gitmodules`, Root submodule pins, production compose/Kubernetes/BOM.
 
 **Interfaces:**
@@ -301,20 +306,19 @@ rm -rf /tmp/kokoro-slice-a-seeds
 mkdir -p /tmp/kokoro-slice-a-seeds
 
 git -C kokoro-platform subtree split --prefix=kokoro-user -b slice-a-iam-seed
-git -C kokoro-platform subtree split --prefix=kokoro-site -b slice-a-site-seed
 git -C kokoro-platform subtree split --prefix=kokoro-model -b slice-a-model-seed
 git -C kokoro-platform subtree split --prefix=kokoro-hub -b slice-a-capability-seed
 git -C kokoro-session branch slice-a-chat-seed HEAD
 ```
 
-Expected: five local seed branches resolve to commits.
+Expected: four local seed branches resolve to commits.
 
 **JIT cut requirement 3 — Create or verify private target repositories and push seeds**
 
 ```bash
 gh auth status
 gh auth setup-git
-for repo in kokoro-iam kokoro-site kokoro-model kokoro-capability kokoro-chat; do
+for repo in kokoro-iam kokoro-model kokoro-capability kokoro-chat; do
   if gh repo view "LordFoxFairy/$repo" --json owner,visibility,defaultBranchRef >/tmp/"$repo".json 2>/dev/null; then
     test "$(jq -r .owner.login /tmp/"$repo".json)" = "LordFoxFairy"
     test "$(jq -r .visibility /tmp/"$repo".json)" = "PRIVATE"
@@ -325,7 +329,6 @@ for repo in kokoro-iam kokoro-site kokoro-model kokoro-capability kokoro-chat; d
 done
 
 git -C kokoro-platform push https://github.com/LordFoxFairy/kokoro-iam.git slice-a-iam-seed:main
-git -C kokoro-platform push https://github.com/LordFoxFairy/kokoro-site.git slice-a-site-seed:main
 git -C kokoro-platform push https://github.com/LordFoxFairy/kokoro-model.git slice-a-model-seed:main
 git -C kokoro-platform push https://github.com/LordFoxFairy/kokoro-capability.git slice-a-capability-seed:main
 git -C kokoro-session push https://github.com/LordFoxFairy/kokoro-chat.git slice-a-chat-seed:main
@@ -336,7 +339,7 @@ After each push, fetch `refs/heads/main`, compare it with the exact local seed c
 **JIT cut requirement 4 — Clone independent candidate worktrees**
 
 ```bash
-for repo in kokoro-iam kokoro-site kokoro-model kokoro-capability kokoro-chat; do
+for repo in kokoro-iam kokoro-model kokoro-capability kokoro-chat; do
   rm -rf "/tmp/$repo-slice-a"
   git clone "https://github.com/LordFoxFairy/$repo.git" "/tmp/$repo-slice-a"
 done
@@ -348,7 +351,7 @@ git -C kokoro-web worktree add -b codex/slice-a-web /tmp/kokoro-web-slice-a f393
 (cd /tmp/kokoro-web-slice-a && pnpm install --frozen-lockfile)
 ```
 
-Expected: seven clean independent Git roots. Implementation plans use these roots until final promotion; canonical Root submodule checkouts remain untouched.
+Expected: six clean independent Git roots: four new repositories plus the Agent and Web worktrees. Implementation plans use these roots until final promotion; canonical Root submodule checkouts remain untouched.
 
 ### Milestone 3: Execute the four implementation lanes
 
@@ -356,23 +359,23 @@ Expected: seven clean independent Git roots. Implementation plans use these root
 
 **Interfaces:**
 - Consumes: frozen Root source commit and clean candidate repositories.
-- Produces: frozen commits for Root source, Site, IAM, Model, Capability, Chat and Agent, followed by Web only after the backend closure gate.
+- Produces: frozen commits for Root source, IAM, Model, Capability, Chat and Agent, followed by Web only after the backend closure gate.
 
 **JIT cut requirement 1 — Execute the authority cut, then complete the reviewed contract barrier**
 
 Execute `2026-08-14-slice-a-contract-authority-validation-implementation-plan.md` first. Then expand the renderer and consumer-generation milestones in `2026-08-14-slice-a-contract-manifest-barrier-roadmap.md` into separately reviewed executable cuts. Only after Proto/OpenAPI, first breaking image, generation and full contract gates form the clean contract-source commit may consumers generate or the child backend lanes start. Continue the Root database roadmap's SQL milestones after that barrier while the three child lanes begin domain/contract work. Record separately the exact Root contract-source commit and the later exact baseline/catalog commit; generated provenance always references the contract-source commit.
 
-**JIT cut requirement 2 — Generate Root E2E and every child consumer from that exact Root commit**
+**JIT cut requirement 2 — Generate Root E2E and every runtime child consumer from that exact Root commit**
 
-First create the barrier roadmap's separate Root descendant-output commit for `root-e2e`; it stages only declared `scripts/e2e/generated/**` outputs and provenance, while retaining the earlier contract-source SHA as `sourceRootCommit`. Every child write generation runs from a detached exact contract-source worktree with that source commit's own frozen locks, while `--repo` points at the explicit clean candidate child path. This allows Root SQL lock expansion and child materialization to proceed in parallel without making the later Root HEAD a substitute generator toolchain. Every generated manifest must contain the same contract-source commit and source-tree digest. Backend E2E and any `--check --all` gate start only after the Root E2E output commit exists.
+First create the barrier roadmap's separate Root descendant-output commit for `root-e2e`; it stages only declared `scripts/e2e/generated/**` outputs and provenance, while retaining the earlier contract-source SHA as `sourceRootCommit`. Every child write generation runs from a detached exact contract-source worktree with that source commit's own frozen locks, while `--repo` points at the explicit clean candidate child path. In this execution plan, “child” means exactly IAM, Model, Capability, Chat, Agent and Web; the structured retirement boundary above governs the compatibility exception. This allows Root SQL lock expansion and child materialization to proceed in parallel without making the later Root HEAD a substitute generator toolchain. Every generated manifest must contain the same contract-source commit and source-tree digest. Backend E2E and runtime per-consumer checks start only after the Root E2E output commit exists.
 
-**JIT cut requirement 3 — Run Site/IAM/Model/Capability, Chat and Agent plans in parallel**
+**JIT cut requirement 3 — Run IAM/Model/Capability, Chat and Agent plans in parallel**
 
 Each lane begins from its seed commit, writes only its candidate repository and requests independent review before commit promotion.
 
 **JIT cut requirement 4 — Run the browser-independent backend E2E after child APIs freeze**
 
-Use the backend profile from `2026-08-14-slice-a-web-e2e-promotion-plan.md`. Do not start User Web. The gate must prove Site resolution, magic-link request/consume, personal organization and permission bootstrap, Conversation creation, Submit, Agent admission, deterministic LiteLLM, event projection, HITL control, process restart, retention, stale-cursor recovery and complete snapshot readback through service APIs.
+Use the backend profile from `2026-08-14-slice-a-web-e2e-promotion-plan.md`. Do not start User Web. The gate must load the reviewed server-side SiteContext fixture, prove IAM rejects an absent/inactive Site, then prove magic-link request/consume, personal organization and permission bootstrap, Conversation creation, Submit, Agent admission, deterministic LiteLLM, event projection, HITL control, process restart, retention, stale-cursor recovery and complete snapshot readback through service APIs.
 
 **JIT cut requirement 5 — Run the Web adapter tasks only after the backend gate is green**
 
@@ -395,7 +398,7 @@ Expected catalog digest and owner inventory must match byte-for-byte.
 Expected chain:
 
 ```text
-ResolveSite → Request/ConsumeMagicLink → Authorize
+BindSiteContext(Host/env) → Request/ConsumeMagicLink → Authorize
 → CreateConversation → SubmitMessage
 → Agent admission → existing LiteLLM/local deterministic fixture
 → Chat projection → complete snapshot + SSE tail → HITL decision through Chat RPC

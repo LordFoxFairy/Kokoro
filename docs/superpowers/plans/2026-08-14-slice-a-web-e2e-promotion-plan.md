@@ -2,95 +2,150 @@
 
 > **Document type:** Reviewed phase roadmap, not direct `executing-plans` input. Before a lane starts, its next milestone MUST be expanded into a separately reviewed JIT implementation cut with exact files, actual RED test/code, self-contained commands and one precise commit; workers never invent omitted code from this roadmap.
 
-**Goal:** Prove the complete SQL-backed Site → IAM → Chat → Agent → HITL → restart/replay backend chain without a browser, then connect the mature User Web through thin generated adapters and atomically promote the reviewed repositories.
+**Goal:** Prove the complete SQL-backed SiteContext → IAM → Chat → Agent → HITL → restart/replay backend chain without a browser, then connect the mature User Web through thin generated adapters and atomically promote the reviewed repositories.
 
-**Architecture:** Root first composes PostgreSQL, Redis, LiteLLM, Site, IAM, Model, Capability, Chat and Agent and drives them through generated service clients; User Web is absent from this backend acceptance gate. After that gate passes, browser traffic remains same-origin HTTP/SSE through the User BFF, which uses generated owner clients and preserves the existing reducer/machine. Root owns repeatable PG18 E2E, exact candidate pins and the final release inventory. `kokoro-platform` remains pinned but dormant as the Slice B/C migration source; `kokoro-session` is replaced by `kokoro-chat` only after both backend and browser gates pass.
+**Architecture:** Root first runs native local PostgreSQL, Redis, LiteLLM, IAM, Model, Capability, Chat and Agent and drives them through generated service clients; User Web is absent from this backend acceptance gate. The backend harness selects the same allowlisted Host → SiteContext fixture that Web/BFF later loads from server environment, while IAM independently validates the selected active Site/Organization/session facts in PostgreSQL. After that gate passes, browser traffic remains same-origin HTTP/SSE through the User BFF, which uses generated owner clients and preserves the existing reducer/machine. Root owns repeatable PG18 E2E, exact candidate pins and the final release inventory. `kokoro-platform` remains pinned but dormant as the Slice B/C migration source; `kokoro-session` is replaced by `kokoro-chat` only after both backend and browser gates pass.
 
-**Tech Stack:** PostgreSQL 18, Redis, LiteLLM, Docker Compose, Python 3.11 gRPC/HTTP E2E clients, Next.js User app, TypeScript, generated Connect clients, Zod, Vitest and Playwright.
+**Tech Stack:** Native PostgreSQL 18, Redis, LiteLLM, Python 3.11 process orchestration and gRPC/HTTP E2E clients, repository-local pnpm/uv dev entries, Next.js User app, TypeScript, generated Connect clients, Zod, Vitest and Playwright.
 
 ## Global Constraints
 
 - Root composition/E2E changes stay in the Root worktree until the final atomic commit. Web changes work only in `/tmp/kokoro-web-slice-a`, created from `kokoro-web@f3936befb7ae4c219273ae9b7f4efb97cb6a1425`, and the exact frozen Root contract commit. Do not edit the canonical Web submodule checkout.
 - Preserve existing Web reducer, machine, SSE reconnect, idempotency, HITL, sealed session envelope and mobile UI. Change adapters, not state semantics.
 - Browser never receives IAM, Chat or Agent service credentials and never calls service RPC directly.
-- Web's server-only clients use the mounted Web workload token to call Site 7201, IAM 7202 and Chat 7205; the BFF also forwards only the IAM access JWT recovered from its sealed httpOnly envelope.
+- Web's server-only clients use the mounted Web workload token to call IAM 7202 and Chat 7205; the BFF also forwards only the IAM access JWT recovered from its sealed httpOnly envelope.
+- Web/BFF normalizes the request Host and resolves it only through `KOKORO_SITE_CONTEXTS_JSON`, a server-only exact-host map whose values include the Site ID and shell-owned brand/skin configuration. Unknown or ambiguous Hosts fail closed. Browser-supplied `site_id` and untrusted forwarding headers never select SiteContext.
+- The exact runtime child allowlist is IAM, Model, Capability, Chat, Agent and Web. Frozen compatibility-artifact retirement is defined only by the structured retirement boundary in the master roadmap.
 - Snapshot hydration must include complete messages/parts, active run, active interaction and watermark; bounded stream retention must not erase conversation history.
 - No `kokoro-platform` API, Hub, Mongo, MySQL, Storage, Entitlement or Payment process participates in Slice A E2E.
 - The backend service E2E must pass before any Web adapter task begins. Root pin/release changes are one final commit after all candidate repositories are clean, reviewed and reproducible from exact commits.
 
 ---
 
-### Milestone 1: Add the Root backend-only Slice A integration composition
+### Milestone 1: Add the Root native local-dev Slice A orchestration
 
 **Files:**
-- Modify: `docker-compose.infra.yml`, `docker-compose.app.yml`
-- Create: `docker-compose.ci.yml`
-- Create: `config/litellm/slice-a.yaml`, `config/litellm/slice-a-ci.yaml`
-- Create: `scripts/slice_a/up.py`, `wait_ready.py`, `seed.py`, `create_secrets.py`, `create_fixture_dir.py`, `cleanup.py`, `promote.py`, `validate_compose.py`, `__init__.py`
+- Create: `scripts/slice_a/native.py`, `wait_ready.py`, `seed.py`, `create_secrets.py`, `create_fixture_dir.py`, `cleanup.py`, `promote.py`, `__init__.py`
 - Create: `scripts/fixtures/openai_slice_a.py`, `scripts/tests/test_openai_slice_a_fixture.py`
-- Create: `scripts/tests/test_slice_a_compose.py`
-- Modify: `deploy/.env.example`, `scripts/INDEX.md`, `deploy/README.md`
+- Create: `scripts/tests/test_slice_a_native.py`
+- Modify: `scripts/INDEX.md`, `scripts/verify-all.py`
 
 **Interfaces:**
-- Consumes: clean Site, IAM, Model, Capability, Chat and Agent candidate commits plus committed Root baseline/contracts.
-- Produces: a browser-independent backend profile and an optional `web` profile used only after Task 2 passes.
+- Consumes: clean IAM, Model, Capability, Chat and Agent candidate commits, their native `pnpm dev`/`uv run` entries, committed Root baseline/contracts and the reviewed SiteContext fixture.
+- Produces: a browser-independent native backend lifecycle and an optional `--with-web` lifecycle used only after Milestone 2 passes.
 
-**JIT cut requirement 1 — Write a failing composition inventory test**
+**JIT cut requirement 1 — Write a failing native process-inventory test**
 
-Parse the fully rendered Compose model and assert the unprofiled backend service set plus explicit optional profiles:
+`test_slice_a_native.py` starts the orchestrator with a temporary state directory and asserts this exact
+backend process set:
 
 ```python
-BACKEND_SERVICES = {
-    "postgres", "redis", "database-init", "litellm",
-    "site", "iam", "model", "capability", "chat", "agent",
+BACKEND_PROCESSES = {
+    "postgres", "redis", "model-fixture", "litellm",
+    "iam", "model", "capability", "chat", "agent",
 }
-CI_PROFILE_SERVICES = {"model-fixture"}
-WEB_PROFILE_SERVICES = {"user-web"}
+OPTIONAL_WEB_PROCESS = "user-web"
 ```
 
-Assert `model-fixture` has `profiles: ["ci"]`, `user-web` has `profiles: ["web"]`, unprofiled production shape is `BACKEND_SERVICES`, CI is `BACKEND_SERVICES | CI_PROFILE_SERVICES`, and browser CI is all three sets. Assert no active service image, environment or dependency contains Platform, Session, MySQL or Mongo. `database-init` is the only service that reads `database/baseline/kokoro.sql`, exits successfully before applications start, and is never a long-running process. The promotion fixture rejects branch names, missing remote commit objects and tree-digest mismatches.
+The test must prove:
 
-The same RED test creates a temporary secret directory and asserts `create_secrets.py` writes the exact controlled manifest: `web.workload-token`, `chat.workload-token`, `agent.workload-token`, `iam.refresh-derivation-key`, `web.session-key`, `litellm.api-key` as independent random 32-byte/64-lowercase-hex files mode `0600`; plus `iam.jwt-private.pem` mode `0600` and its matching `iam.jwt-public.pem` mode `0644`. Re-running with a symlink, wrong mode, mismatched keypair or unexpected ninth file fails closed. `cleanup.py` removes only the explicitly supplied generated directory and refuses `/`, an empty path or a directory without its generated marker.
+- PostgreSQL 18 is initialized in a fresh local data directory and receives only the committed Root baseline;
+- every owner is launched from its explicit candidate path through its repository-native development entry;
+- `user-web` is absent from the backend gate and appears only with `--with-web`;
+- no Platform, Session, MySQL or Mongo process, URL or environment variable is present;
+- the state file records exact PID, process-start identity, argv, cwd, port and readiness endpoint for every child;
+- shutdown terminates only the recorded process groups, waits for exit and proves every owned port is returned;
+- stale PID reuse, an occupied port, a pre-existing state directory or a failed readiness check fails loudly;
+- promotion input rejects branch names, missing remote commit objects and tree-digest mismatches.
 
-User Web receives `web.session-key` only through `KOKORO_WEB_SESSION_KEY_FILE`; its adapter reads the file once, uses the bytes for the existing session envelope and derives the magic-state HKDF subkey. Slice A production config removes the direct `KOKORO_WEB_SESSION_SECRET` value path so there is one name and one mounted authority.
+The same RED test creates a temporary secret directory and asserts `create_secrets.py` writes the exact
+controlled manifest: `web.workload-token`, `chat.workload-token`, `agent.workload-token`,
+`iam.refresh-derivation-key`, `web.session-key`, `litellm.api-key` as independent random
+32-byte/64-lowercase-hex files mode `0600`; plus `iam.jwt-private.pem` mode `0600` and its matching
+`iam.jwt-public.pem` mode `0644`. Re-running with a symlink, wrong mode, mismatched keypair or unexpected
+ninth file fails closed. `cleanup.py` removes only an explicitly supplied marked state/secret/fixture directory
+and refuses `/`, an empty path or a directory without its generated marker.
 
-`create_fixture_dir.py` creates a separately marked mode-0700 directory with one empty `magic-links/` child. Compose bind-mounts only that child into IAM in `KOKORO_RUNTIME_MODE=fixture`; no other service may write it. Tests reject enabling the fixture mailer outside the `ci` profile and accept only an already-created, empty, caller-owned, mode-0700 non-symlink directory; it atomically adds its marker and `magic-links/`, and rejects non-empty/already-marked/symlink/wrong-owner/wrong-mode paths.
+User Web receives `web.session-key` only through `KOKORO_WEB_SESSION_KEY_FILE`; its adapter reads the file
+once, uses the bytes for the existing session envelope and derives the magic-state HKDF subkey. The production
+config removes the direct `KOKORO_WEB_SESSION_SECRET` value path so there is one name and one file authority.
 
-**JIT cut requirement 2 — Define the minimal backend composition**
+`create_fixture_dir.py` creates a separately marked mode-0700 directory with one empty `magic-links/` child.
+Only IAM receives write access while `KOKORO_RUNTIME_MODE=fixture`; no other process may write it. Tests accept
+only an already-created, empty, caller-owned, non-symlink directory and reject non-empty/already-marked/wrong-
+owner/wrong-mode paths.
 
-- PostgreSQL 18, Redis and the existing LiteLLM-compatible gateway are the only production-shaped Slice A infrastructure. Repeatable CI also starts the Root-owned `model-fixture` test service; it is never emitted in the production release profile. The gateway mounts Root-owned `config/litellm/slice-a.yaml`; it never mounts a dormant Platform file.
-- Site, IAM, Model, Capability, Chat and Agent are independent processes. User Web is optional profile `web` and is not started by the backend gate.
-- Root applies `database/baseline/kokoro.sql` before any application starts.
-- Before Compose, `create_secrets.py --dir "$KOKORO_SLICE_A_SECRET_DIR"` creates the controlled manifest. Compose declares files as read-only secrets and mounts only the minimum set: Web gets web workload + session key; Site gets web workload; IAM gets web/chat workload + refresh/JWT keys; Chat gets web/chat workload; Agent gets chat/agent workload + LiteLLM key; Model/Capability get agent workload; LiteLLM gets its key. No secret value is placed in environment values or image layers.
-- Agent calls real LiteLLM on 4000 using its mounted gateway key. Base `slice-a.yaml` is the release configuration and requires an operator-supplied upstream model/base URL/provider credential file; startup fails if they are absent, so the unprofiled release never silently points at a fixture. `docker-compose.ci.yml` replaces it with `slice-a-ci.yaml`, which maps only model `slice-a-fixture` to OpenAI-compatible `http://model-fixture:4010/v1`. `model-fixture` remains `profiles: ["ci"]` and is absent from rendered production release config.
-- `docker-compose.ci.yml` overrides the same IAM service with `KOKORO_RUNTIME_MODE=fixture` and a read/write bind of only the generated `magic-links/` directory; the base/unprofiled IAM service has no fixture env or mount. Its `FixtureFileMagicLinkMailer`: it writes `${request_id}.json.tmp`, fsyncs, atomically renames to `${request_id}.json` mode `0600`, and the bounded JSON is exactly `{requestId,normalizedEmail,token,expiresAt}`. Root E2E polls the caller-known request ID, validates email/expiry, reads the token once and deletes the file. Production startup rejects this adapter and requires the real mailer.
-- Health/readiness proves each process's DB/RPC dependencies without impersonating a user.
-- Every candidate build context is parameterized, for example `${KOKORO_SITE_CONTEXT:-./kokoro-site}`. Before promotion E2E supplies `/tmp/kokoro-*-slice-a`; after promotion defaults resolve to Root gitlinks.
+**JIT cut requirement 2 — Implement the native lifecycle**
 
-`openai_slice_a.py` is a test-only OpenAI Chat Completions server. For the first request containing user text `slice-a-hitl`, its streaming response contains exactly one `request_human` tool call with stable ID `call_slice_a_approval`, JSON arguments `{"kind":"approval","prompt":"Approve Slice A?"}`, `finish_reason="tool_calls"` and usage `{prompt_tokens:11, completion_tokens:7, total_tokens:18}`. When the request history contains that tool result, it streams `Slice A approved.` with usage `{prompt_tokens:19, completion_tokens:4, total_tokens:23}`. Any other model/prompt returns 400. The fixture test sends both requests directly, then through real LiteLLM, and asserts identical tool-call/content/usage facts reach the Agent-compatible OpenAI client.
+- `native.py start --fresh` locates the local PostgreSQL 18 binaries, initializes an isolated cluster/database,
+  starts local Redis and the deterministic OpenAI fixture, then starts LiteLLM and each owner through its native
+  dev command. Missing binaries or a version other than PostgreSQL 18 fail before any child starts.
+- The exact repository commands are IAM/Model/Capability `pnpm dev`, Chat `npm run dev`, Agent
+  `uv run kokoro-agent-local --dev`, and—with `--with-web` only—User Web's workspace-local `pnpm dev`.
+  The orchestrator does not replace these commands with built artifacts, in-process adapters or test doubles.
+- Root applies `database/baseline/kokoro.sql` before owner readiness. `seed.py` provisions the bounded local Site
+  fixture and invokes owner bootstrap entrypoints; application services never become schema migration writers.
+- Candidate roots are explicit parameters (`--iam /tmp/kokoro-iam-slice-a`, etc.); there is no implicit sibling
+  checkout or branch lookup.
+- Secrets are read from the controlled file manifest and passed only to the minimum process. No value appears in
+  argv, logs, evidence JSON or Git.
+- Agent calls real local LiteLLM on 4000 with the mounted key. The deterministic fixture maps only
+  `slice-a-fixture`; production provider configuration is outside this test lifecycle and may not silently fall
+  back to the fixture.
+- IAM receives the fixture delivery directory only in the test lifecycle. Its atomic file semantics remain the
+  owner repository's responsibility; Root reads the caller-known request file once and deletes it.
+- Health/readiness proves each process's database/RPC dependencies without impersonating a user.
+- `native.py restart agent|chat` stops the recorded process group, proves the port is free, starts the exact same
+  candidate command and waits for readiness. This is the required recovery path, not an in-process adapter swap.
 
-**JIT cut requirement 3 — Verify the backend profile without committing the atomic cut**
+`openai_slice_a.py` is a test-only OpenAI Chat Completions server. For the first request containing user text
+`slice-a-hitl`, its streaming response contains exactly one `request_human` tool call with stable ID
+`call_slice_a_approval`, JSON arguments `{"kind":"approval","prompt":"Approve Slice A?"}`,
+`finish_reason="tool_calls"` and usage `{prompt_tokens:11, completion_tokens:7, total_tokens:18}`. When the
+request history contains that tool result, it streams `Slice A approved.` with usage
+`{prompt_tokens:19, completion_tokens:4, total_tokens:23}`. Any other model/prompt returns 400. The fixture test
+sends both requests directly, then through real local LiteLLM, and asserts identical tool-call/content/usage facts
+reach the Agent-compatible OpenAI client.
+
+**JIT cut requirement 3 — Run the native lifecycle gate**
 
 ```bash
-uv run --frozen pytest scripts/tests/test_slice_a_compose.py scripts/tests/test_openai_slice_a_fixture.py -q
-export KOKORO_SITE_CONTEXT=/tmp/kokoro-site-slice-a
-export KOKORO_IAM_CONTEXT=/tmp/kokoro-iam-slice-a
-export KOKORO_MODEL_CONTEXT=/tmp/kokoro-model-slice-a
-export KOKORO_CAPABILITY_CONTEXT=/tmp/kokoro-capability-slice-a
-export KOKORO_CHAT_CONTEXT=/tmp/kokoro-chat-slice-a
-export KOKORO_AGENT_CONTEXT=/tmp/kokoro-agent-slice-a
+set -euo pipefail
+uv run --frozen pytest scripts/tests/test_slice_a_native.py scripts/tests/test_openai_slice_a_fixture.py -q
 export KOKORO_SLICE_A_SECRET_DIR="$(mktemp -d /tmp/kokoro-slice-a-secrets.XXXXXX)"
 export KOKORO_SLICE_A_FIXTURE_DIR="$(mktemp -d /tmp/kokoro-slice-a-fixtures.XXXXXX)"
-trap 'uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR"; uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR"' EXIT
+STATE_PARENT="$(mktemp -d /tmp/kokoro-slice-a-state-parent.XXXXXX)"
+STATE_DIR="$STATE_PARENT/state"
+export KOKORO_SLICE_A_STATE_DIR="$STATE_DIR"
+cleanup_native() {
+  if test -e "$STATE_DIR"; then
+    uv run --frozen python scripts/slice_a/native.py stop --state-dir "$STATE_DIR" || true
+    uv run --frozen python scripts/slice_a/cleanup.py --dir "$STATE_DIR" || true
+  fi
+  test ! -e "$KOKORO_SLICE_A_SECRET_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
+  test ! -e "$KOKORO_SLICE_A_FIXTURE_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
+  rm -rf -- "$STATE_PARENT"
+}
+trap cleanup_native EXIT INT TERM
 uv run --frozen python scripts/slice_a/create_secrets.py --dir "$KOKORO_SLICE_A_SECRET_DIR"
 uv run --frozen python scripts/slice_a/create_fixture_dir.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR"
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml config >/tmp/kokoro-slice-a-production-compose.yaml
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci config >/tmp/kokoro-slice-a-ci-compose.yaml
-uv run --frozen python scripts/slice_a/validate_compose.py --production /tmp/kokoro-slice-a-production-compose.yaml --ci /tmp/kokoro-slice-a-ci-compose.yaml
-git diff --check -- docker-compose.infra.yml docker-compose.app.yml docker-compose.ci.yml config/litellm deploy scripts/slice_a scripts/fixtures scripts/tests
+uv run --frozen python scripts/slice_a/native.py start --fresh \
+  --state-dir "$KOKORO_SLICE_A_STATE_DIR" \
+  --secret-dir "$KOKORO_SLICE_A_SECRET_DIR" \
+  --fixture-dir "$KOKORO_SLICE_A_FIXTURE_DIR" \
+  --iam /tmp/kokoro-iam-slice-a \
+  --model /tmp/kokoro-model-slice-a \
+  --capability /tmp/kokoro-capability-slice-a \
+  --chat /tmp/kokoro-chat-slice-a \
+  --agent /tmp/kokoro-agent-slice-a
+uv run --frozen python scripts/slice_a/wait_ready.py --state-dir "$KOKORO_SLICE_A_STATE_DIR"
+cleanup_native
+trap - EXIT INT TERM
+git diff --check -- scripts/slice_a scripts/fixtures scripts/tests scripts/verify-all.py scripts/INDEX.md
 ```
 
-These Root files are part of the final pin/runtime atomic cut and remain uncommitted until Task 9. Do not create an intermediate commit whose default build contexts do not yet exist.
+These Root files remain uncommitted until atomic promotion. Any native lifecycle RED blocks backend freeze; no
+packaging work may substitute for this gate.
 
 ### Milestone 2: Prove the real backend chain and restart invariants
 
@@ -100,16 +155,16 @@ These Root files are part of the final pin/runtime atomic cut and remain uncommi
 - Modify: `scripts/verify-all.py`
 
 **Interfaces:**
-- Consumes: the Task 1 backend profile and exact generated Site/IAM/Chat clients; downstream Agent/Capability/Model behavior is observed only through Chat product APIs.
+- Consumes: the Task 1 backend profile, reviewed Host → SiteContext fixture and exact generated IAM/Chat clients; downstream Agent/Capability/Model behavior is observed only through Chat product APIs.
 - Produces: the first release-blocking Slice A milestone, independent of Browser and Web code.
 
 **JIT cut requirement 1 — Write RED backend assertions before orchestration**
 
-The pytest fixture must call real product service endpoints and fail if any owner is replaced by an in-process fake. It authenticates as the Web workload only and reaches downstream Agent/Capability/Model exclusively through Chat; it never loads Chat/Agent workload secrets or calls their private RPCs directly. Wrong-token private-boundary checks live in each owner repository and the Compose security suite. It performs exactly:
+The pytest fixture must call real product service endpoints and fail if any owner is replaced by an in-process fake. It authenticates as the Web workload only and reaches downstream Agent/Capability/Model exclusively through Chat; it never loads Chat/Agent workload secrets or calls their private RPCs directly. Wrong-token private-boundary checks live in each owner repository and the native process security suite. It performs exactly:
 
-1. Apply the committed Root baseline to a fresh PostgreSQL 18 database, then invoke the Site and Model images' owner-only versioned bootstrap commands. Assert exact replay succeeds, drift fails, and Root E2E performs no direct business-table INSERT.
-2. Call `SiteService.ResolveSiteByHost`.
-3. Call IAM `RequestMagicLink`, read the local fixture mailer's token, then `ConsumeMagicLink`; assert Principal, personal Organization, owner Membership, role bindings and all five Slice A permissions.
+1. Apply the committed Root baseline to a fresh PostgreSQL 18 database, provision the bounded local Site fixture (`site_site` plus its exact host binding) and invoke Model's owner-only versioned bootstrap command. Assert exact replay succeeds, drift fails, and no runtime service other than IAM accesses Site rows.
+2. Resolve the normalized test Host through the same server-only SiteContext fixture format used by Web/BFF; assert an unknown Host fails and the selected `site_id` matches the provisioned active Site.
+3. Call IAM `RequestMagicLink` with that trusted Web workload/SiteContext, read the local fixture mailer's token, then `ConsumeMagicLink`; assert Principal, personal Organization, owner Membership, role bindings and all five Slice A permissions. Suspend the Site and assert IAM rejects the same binding before restoring it.
 4. Call Chat `CreateConversation`, then authorize and `SubmitMessage` with caller-generated command IDs.
 5. Observe Agent claim, empty Capability snapshot resolution, Model selection and the existing deterministic LiteLLM/GA execution path.
 6. Read Chat snapshot and SSE tail; assert user/assistant messages, run view and a deterministic HITL request.
@@ -140,39 +195,48 @@ The generated Python clients were committed by the Root contract plan as a desce
 **JIT cut requirement 3 — Run twice from fresh state with no Web process**
 
 ```bash
-export KOKORO_SITE_CONTEXT=/tmp/kokoro-site-slice-a
-export KOKORO_IAM_CONTEXT=/tmp/kokoro-iam-slice-a
-export KOKORO_MODEL_CONTEXT=/tmp/kokoro-model-slice-a
-export KOKORO_CAPABILITY_CONTEXT=/tmp/kokoro-capability-slice-a
-export KOKORO_CHAT_CONTEXT=/tmp/kokoro-chat-slice-a
-export KOKORO_AGENT_CONTEXT=/tmp/kokoro-agent-slice-a
-export KOKORO_SLICE_A_SECRET_DIR="$(mktemp -d /tmp/kokoro-slice-a-secrets.XXXXXX)"
-export KOKORO_SLICE_A_FIXTURE_DIR="$(mktemp -d /tmp/kokoro-slice-a-fixtures.XXXXXX)"
-cleanup_slice_a() {
-  docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci down -v --remove-orphans || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
-}
-trap cleanup_slice_a EXIT
-uv run --frozen python scripts/slice_a/create_secrets.py --dir "$KOKORO_SLICE_A_SECRET_DIR"
-uv run --frozen python scripts/slice_a/create_fixture_dir.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR"
-
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci down -v --remove-orphans
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci up -d --build
-KOKORO_SLICE_A_EVIDENCE_PATH=/tmp/kokoro-slice-a-first.json \
-  uv run --frozen pytest scripts/e2e/test_slice_a_backend.py -q
-
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci down -v --remove-orphans
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci up -d --build
-KOKORO_SLICE_A_EVIDENCE_PATH=/tmp/kokoro-slice-a-second.json \
-  uv run --frozen pytest scripts/e2e/test_slice_a_backend.py -q
+run_backend_once() (
+  set -euo pipefail
+  label="$1"
+  STATE_PARENT="$(mktemp -d "/tmp/kokoro-slice-a-${label}-state-parent.XXXXXX")"
+  STATE_DIR="$STATE_PARENT/state"
+  secret_dir="$(mktemp -d "/tmp/kokoro-slice-a-${label}-secrets.XXXXXX")"
+  fixture_dir="$(mktemp -d "/tmp/kokoro-slice-a-${label}-fixtures.XXXXXX")"
+  cleanup_native() {
+    if test -e "$STATE_DIR"; then
+      uv run --frozen python scripts/slice_a/native.py stop --state-dir "$STATE_DIR" || true
+      uv run --frozen python scripts/slice_a/cleanup.py --dir "$STATE_DIR" || true
+    fi
+    test ! -e "$secret_dir" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$secret_dir" || true
+    test ! -e "$fixture_dir" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$fixture_dir" || true
+    rm -rf -- "$STATE_PARENT"
+  }
+  trap cleanup_native EXIT INT TERM
+  uv run --frozen python scripts/slice_a/create_secrets.py --dir "$secret_dir"
+  uv run --frozen python scripts/slice_a/create_fixture_dir.py --dir "$fixture_dir"
+  uv run --frozen python scripts/slice_a/native.py start --fresh \
+    --state-dir "$STATE_DIR" --secret-dir "$secret_dir" --fixture-dir "$fixture_dir" \
+    --iam /tmp/kokoro-iam-slice-a --model /tmp/kokoro-model-slice-a \
+    --capability /tmp/kokoro-capability-slice-a --chat /tmp/kokoro-chat-slice-a \
+    --agent /tmp/kokoro-agent-slice-a
+  KOKORO_SLICE_A_STATE_DIR="$STATE_DIR" \
+  KOKORO_SLICE_A_EVIDENCE_PATH="/tmp/kokoro-slice-a-${label}.json" \
+    uv run --frozen pytest scripts/e2e/test_slice_a_backend.py -q
+  uv run --frozen python scripts/slice_a/native.py assert-no-process --state-dir "$STATE_DIR" --name user-web
+  cleanup_native
+  trap - EXIT INT TERM
+)
+run_backend_once first
+run_backend_once second
 uv run --frozen python scripts/e2e/slice_a_backend.py compare-evidence \
   /tmp/kokoro-slice-a-first.json /tmp/kokoro-slice-a-second.json
-cleanup_slice_a
-trap - EXIT
 ```
 
-Each `down -v` removes the PostgreSQL volume; on each `up`, `database-init` applies the committed baseline to a newly created database before owners start. Assert no `user-web` container exists. The two fresh runs must produce the same baseline digest, PostgreSQL catalog inventory and seed result: exactly 50 owner tables plus four checkpointer tables and no unexpected business uniqueness.
+Each `start --fresh` initializes a distinct local PostgreSQL 18 cluster, applies the committed baseline and
+starts fresh repository-native processes. The two runs must produce the same baseline digest, PostgreSQL catalog
+inventory and seed result: exactly 50 owner tables plus four checkpointer tables and no unexpected business
+uniqueness. Both runs exercise real OS-process Agent and Chat restarts through `native.py restart`; no process or
+port may remain after cleanup.
 
 **JIT cut requirement 4 — Freeze the backend milestone**
 
@@ -186,8 +250,8 @@ Any backend RED stops execution here. Do not begin Task 3 and do not use a Web m
 ### Milestone 3: Generate IAM and Chat clients for the User BFF
 
 **Files:**
-- Create: `kokoro-web/apps/user/src/generated/site/**`, `iam/**`, `chat/**`, `http/**`
-- Create: `kokoro-web/apps/user/src/lib/server/site-client.ts`, `iam-client.ts`, `chat-client.ts`, `service-identity.ts`
+- Create: `kokoro-web/apps/user/src/generated/iam/**`, `chat/**`, `http/**`
+- Create: `kokoro-web/apps/user/src/lib/server/site-context.ts`, `iam-client.ts`, `chat-client.ts`, `service-identity.ts`
 - Modify in `/tmp/kokoro-web-slice-a`: `apps/user/package.json`, `pnpm-lock.yaml`, `apps/user/src/lib/server/INDEX.md`
 - Test: `kokoro-web/apps/user/src/lib/server/__tests__/service-clients.test.ts`
 
@@ -224,7 +288,6 @@ Do not hand-edit generated files or import the clients into browser components.
 
 ```ts
 export interface UserBackendClients {
-  site: SiteServiceClient
   iam: IamAuthenticationServiceClient
   chatCommands: ChatCommandServiceClient
   chatQueries: ChatQueryServiceClient
@@ -233,7 +296,7 @@ export interface UserBackendClients {
 export function createUserBackendClients(env: NodeJS.ProcessEnv): UserBackendClients
 ```
 
-Read service endpoints and credentials only from server environment. Reject browser bundles that import the factory through an architecture test.
+Read service endpoints and credentials only from server environment. `site-context.ts` validates `KOKORO_SITE_CONTEXTS_JSON` at startup, canonicalizes each exact Host once and returns a frozen SiteContext without network I/O. Reject browser bundles that import either factory through an architecture test. Production imports are limited to the exact IAM/Chat generated surface.
 
 **JIT cut requirement 4 — Verify and commit in `kokoro-web`**
 
@@ -251,7 +314,7 @@ git -C /tmp/kokoro-web-slice-a commit -m "chore(web): consume Slice A IAM and Ch
 - Test: `kokoro-web/apps/user/src/lib/server/__tests__/iam-auth.test.ts`
 
 **Interfaces:**
-- Consumes Site/IAM generated clients.
+- Consumes Web's server-side SiteContext binding and IAM generated clients.
 - Produces the existing sealed browser auth session containing only IAM identity/session context; it does not create a Project or Conversation during login.
 
 **JIT cut requirement 1 — Write RED tests**
@@ -259,11 +322,12 @@ git -C /tmp/kokoro-web-slice-a commit -m "chore(web): consume Slice A IAM and Ch
 - Mock IAM login returning access/refresh tokens; assert the BFF response and browser storage omit both while the httpOnly sealed cookie decrypts to them server-side.
 - Rotate once, replay the old refresh token and assert the envelope is cleared plus IAM's family-replay error is preserved.
 - Complete login and assert the envelope contains principal/Site/organization/auth-session context, while Chat receives zero calls.
+- Configure two exact Host bindings with different Site IDs/skins; assert each Host selects only its own frozen SiteContext, unknown/duplicate/case-conflicting Hosts fail closed, and a browser `site_id` cannot override selection.
 - Send forged principal/Site/organization headers and assert the BFF forwards only values recovered from the envelope.
 
 **JIT cut requirement 2 — Replace only the backend adapter**
 
-Keep the current httpOnly AES-GCM envelope and Origin/CSRF fences. Replace `AuthConfig` legacy `userBaseUrl/sessionBaseUrl/siteId/hubBaseUrl/paymentBaseUrl` with exact Site/IAM/Chat endpoints plus workload credential. `site.ts` resolves Host through the generated Site Connect client before `RequestMagicLink`; there is no parallel Site HTTP client.
+Keep the current httpOnly AES-GCM envelope and Origin/CSRF fences. Replace `AuthConfig` legacy `userBaseUrl/sessionBaseUrl/siteId/hubBaseUrl/paymentBaseUrl` with exact IAM/Chat endpoints, workload credential and the validated server-only Host → SiteContext binding. `site.ts` normalizes the request Host and resolves it locally from that immutable allowlist before `RequestMagicLink`; there is no external resolution adapter or browser-controlled fallback.
 
 Map IAM `RequestMagicLink/ConsumeMagicLink/RefreshSession/Logout/GetSession` into the existing routes and envelope. The Slice A envelope contains exactly `principalId`, `siteId`, `organizationId`, `authSessionId`, `accessToken`, and `refreshToken`. It contains no Project, Conversation or Agent namespace; those are Chat-owned results created only when the user starts a conversation. Remove old User/Team namespace semantics.
 
@@ -388,37 +452,44 @@ Add a Chromium-only config whose `baseURL` comes from `KOKORO_WEB_BASE_URL`. CI 
 
 Before browser orchestration, close the two known monorepo lint gates instead of hiding them with a User-only filter: replace Admin's legacy `FlatCompat` bridge with the same ESLint 9 flat imports used by the User app, and give `@kokoro/i18n` its own flat config plus exact local `eslint@9.39.1`, `@eslint/js@9.39.1` and `typescript-eslint@8.62.0` dev dependencies. `pnpm -r lint` must exit zero; no ignore blanket or disabled type-aware rule is added.
 
-The test repeats the already-green backend chain through the real browser: Host-based Site resolve, magic-link login, sealed auth session, Conversation creation, Submit, snapshot-first render, SSE tail, HITL decision, Agent restart/replay, Chat restart/readback and stale-cursor snapshot recovery. It also asserts browser storage and network responses never contain IAM/Chat/Agent workload credentials or refresh tokens. Owner calls are not mocked.
+The test repeats the already-green backend chain through the real browser: server-bound Host → SiteContext selection, magic-link login, sealed auth session, Conversation creation, Submit, snapshot-first render, SSE tail, HITL decision, Agent restart/replay, Chat restart/readback and stale-cursor snapshot recovery. It also asserts browser storage and network responses never contain IAM/Chat/Agent workload credentials or refresh tokens. Owner calls are not mocked.
 
-**JIT cut requirement 2 — Start a fresh backend plus the optional Web profile**
+**JIT cut requirement 2 — Start a fresh native backend plus User Web**
 
 ```bash
-export KOKORO_SITE_CONTEXT=/tmp/kokoro-site-slice-a
-export KOKORO_IAM_CONTEXT=/tmp/kokoro-iam-slice-a
-export KOKORO_MODEL_CONTEXT=/tmp/kokoro-model-slice-a
-export KOKORO_CAPABILITY_CONTEXT=/tmp/kokoro-capability-slice-a
-export KOKORO_CHAT_CONTEXT=/tmp/kokoro-chat-slice-a
-export KOKORO_AGENT_CONTEXT=/tmp/kokoro-agent-slice-a
-export KOKORO_WEB_CONTEXT=/tmp/kokoro-web-slice-a
-export KOKORO_SLICE_A_SECRET_DIR="$(mktemp -d /tmp/kokoro-slice-a-secrets.XXXXXX)"
+set -euo pipefail
+export KOKORO_SLICE_A_SECRET_DIR="$(mktemp -d /tmp/kokoro-slice-a-browser-secrets.XXXXXX)"
 export KOKORO_SLICE_A_FIXTURE_DIR="$(mktemp -d /tmp/kokoro-slice-a-browser-fixtures.XXXXXX)"
-cleanup_slice_a_browser() {
-  docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci --profile web down -v --remove-orphans || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
+STATE_PARENT="$(mktemp -d /tmp/kokoro-slice-a-browser-state-parent.XXXXXX)"
+STATE_DIR="$STATE_PARENT/state"
+export KOKORO_SLICE_A_STATE_DIR="$STATE_DIR"
+cleanup_native() {
+  if test -e "$STATE_DIR"; then
+    uv run --frozen python scripts/slice_a/native.py stop --state-dir "$STATE_DIR" || true
+    uv run --frozen python scripts/slice_a/cleanup.py --dir "$STATE_DIR" || true
+  fi
+  test ! -e "$KOKORO_SLICE_A_SECRET_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
+  test ! -e "$KOKORO_SLICE_A_FIXTURE_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
+  rm -rf -- "$STATE_PARENT"
 }
-trap cleanup_slice_a_browser EXIT
+trap cleanup_native EXIT INT TERM
 uv run --frozen python scripts/slice_a/create_secrets.py --dir "$KOKORO_SLICE_A_SECRET_DIR"
 uv run --frozen python scripts/slice_a/create_fixture_dir.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR"
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci --profile web up -d --build
-# Re-run the backend product assertions against this fresh database before the browser assertion.
+uv run --frozen python scripts/slice_a/native.py start --fresh --with-web \
+  --state-dir "$KOKORO_SLICE_A_STATE_DIR" \
+  --secret-dir "$KOKORO_SLICE_A_SECRET_DIR" \
+  --fixture-dir "$KOKORO_SLICE_A_FIXTURE_DIR" \
+  --iam /tmp/kokoro-iam-slice-a --model /tmp/kokoro-model-slice-a \
+  --capability /tmp/kokoro-capability-slice-a --chat /tmp/kokoro-chat-slice-a \
+  --agent /tmp/kokoro-agent-slice-a --web /tmp/kokoro-web-slice-a
+# Re-run backend assertions against this fresh database/process lifetime before browser assertions.
 KOKORO_SLICE_A_EVIDENCE_PATH=/tmp/kokoro-slice-a-browser-backend.json \
   uv run --frozen pytest scripts/e2e/test_slice_a_backend.py -q
 uv run --frozen pytest scripts/e2e/test_slice_a_product.py -q
 (cd /tmp/kokoro-web-slice-a && pnpm exec playwright install chromium)
 (cd /tmp/kokoro-web-slice-a && pnpm exec playwright test tests/e2e/slice-a-chat.spec.ts)
-cleanup_slice_a_browser
-trap - EXIT
+cleanup_native
+trap - EXIT INT TERM
 ```
 
 **JIT cut requirement 3 — Commit the Web test; retain Root orchestration for atomic promotion**
@@ -442,22 +513,21 @@ Root E2E scripts depend on the new gitlinks and release composition, so they rem
 # Root
 uv run --frozen python scripts/verify-all.py --slice-a --candidate-manifest docs/reports/2026-08-14-slice-a-candidates.json
 
-# Site/IAM/Model/Capability
+# IAM/Model/Capability
 ROOT_SOURCE=/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro
-for repo in site iam model capability; do
+for repo in iam model capability; do
   (cd "/tmp/kokoro-$repo-slice-a" && \
     DATABASE_URL_KOKORO_APP=postgresql://kokoro_app:kokoro@127.0.0.1:1/kokoro pnpm prisma:validate && \
     DATABASE_URL_KOKORO_APP=postgresql://kokoro_app:kokoro@127.0.0.1:1/kokoro pnpm db:generate && \
-    pnpm test && pnpm typecheck && pnpm build && pnpm lint && docker build -t "kokoro-$repo:slice-a" .)
-  (cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18.py \
+    pnpm test && pnpm typecheck && pnpm build && pnpm lint)
+  (cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18_native.py \
     --label "$repo-review" --cwd "/tmp/kokoro-$repo-slice-a" -- pnpm test:integration)
 done
 
 # Chat
 (cd /tmp/kokoro-chat-slice-a && \
-  npm run check:no-bun && npm test && npm run typecheck && npm run build && npm run lint && \
-  docker build -t kokoro-chat:slice-a .)
-(cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18.py \
+  npm run check:no-bun && npm test && npm run typecheck && npm run build && npm run lint)
+(cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18_native.py \
   --label chat-review --cwd /tmp/kokoro-chat-slice-a -- npm run test:integration)
 
 # Web
@@ -465,7 +535,7 @@ done
   pnpm -r test && pnpm -r typecheck && pnpm -r lint && pnpm --filter @kokoro/web-user build)
 
 # Agent
-(cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18.py \
+(cd "$ROOT_SOURCE" && uv run --frozen python scripts/database/run_in_fresh_pg18_native.py \
   --label agent-review --cwd /tmp/kokoro-agent-slice-a -- uv run pytest -q)
 (cd /tmp/kokoro-agent-slice-a && \
   uv run ruff check . && uv run pyright && uv lock --check --no-config)
@@ -477,10 +547,10 @@ Review SQL tenant constraints, owner writer boundaries, RPC exposure, browser id
 
 **JIT cut requirement 3 — Push reviewed clean HEADs and record exact commits/trees**
 
-The JSON is machine-readable input to `scripts/slice_a/promote.py`; it contains exactly Site, IAM, Model, Capability, Chat, Agent and Web. Each entry records repository URL, the post-review commit and clean-tree digest. It contains no branch name as promotion authority.
+The JSON is machine-readable input to `scripts/slice_a/promote.py`; it contains exactly IAM, Model, Capability, Chat, Agent and Web. Each entry records repository URL, the post-review commit and clean-tree digest. It contains no branch name as promotion authority.
 
 ```bash
-for repo in site iam model capability chat agent web; do
+for repo in iam model capability chat agent web; do
   git -C "/tmp/kokoro-$repo-slice-a" status --porcelain --untracked-files=all | grep . && exit 1 || true
   git -C "/tmp/kokoro-$repo-slice-a" push origin HEAD:refs/heads/codex/slice-a
 done
@@ -498,12 +568,10 @@ git commit -m "docs: record Slice A verification evidence"
 ### Milestone 9: Atomically promote repositories, pins and release inventory
 
 **Files:**
-- Modify: `.gitmodules`, `.github/workflows/contract.yml`, `docker-compose.infra.yml`, `docker-compose.app.yml`
-- Add: `docker-compose.ci.yml`, `config/litellm/slice-a.yaml`, `config/litellm/slice-a-ci.yaml`
-- Modify: `deploy/.env.example`, `deploy/README.md`, `scripts/INDEX.md`, `scripts/verify-all.py`, `docs/CODEBASE_MAP.md`, `docs/CURRENT.md`, `docs/task.md`
-- Add: `scripts/slice_a/**`, `scripts/e2e/**`, `scripts/fixtures/openai_slice_a.py`, `scripts/tests/test_openai_slice_a_fixture.py`, `scripts/tests/test_slice_a_compose.py`
+- Modify: `.gitmodules`, `.github/workflows/contract.yml`, `scripts/INDEX.md`, `scripts/verify-all.py`, `docs/CODEBASE_MAP.md`, `docs/CURRENT.md`, `docs/task.md`
+- Add: `scripts/slice_a/**`, `scripts/e2e/**`, `scripts/fixtures/openai_slice_a.py`, `scripts/tests/test_openai_slice_a_fixture.py`, `scripts/tests/test_slice_a_native.py`
 - Delete only after replacement: Root `kokoro-session` gitlink
-- Add gitlinks: `kokoro-site`, `kokoro-iam`, `kokoro-chat`, `kokoro-model`, `kokoro-capability`
+- Add gitlinks: `kokoro-iam`, `kokoro-chat`, `kokoro-model`, `kokoro-capability`
 - Preserve gitlinks: `kokoro-platform`, `kokoro-agent`, `kokoro-web`
 
 **JIT cut requirement 1 — Verify all remote candidate commits exist and are immutable**
@@ -518,14 +586,14 @@ The command fetches every URL into a temporary bare repository, verifies the exa
 
 **JIT cut requirement 2 — Update the Root candidate graph in one commit**
 
-`kokoro-platform` stays pinned as a non-deployed Slice B/C migration source. `kokoro-session` is removed only when `kokoro-chat` at the verified commit is present. The release inventory starts only the Slice A capability processes.
+`kokoro-platform` stays pinned as a non-deployed Slice B/C migration source. `kokoro-session` is removed only when `kokoro-chat` at the verified commit is present. The committed native runtime inventory starts only the Slice A capability processes.
 
 ```bash
 uv run --frozen python scripts/slice_a/promote.py --manifest docs/reports/2026-08-14-slice-a-candidates.json --write
 git submodule status
 ```
 
-`promote.py` is the only step that adds the five new gitlinks, advances Agent/Web, edits `.gitmodules`, deinitializes/removes `kokoro-session` and checks out exact commits. It refuses to touch `kokoro-platform`.
+`promote.py` is the only step that adds the four new gitlinks, advances Agent/Web, edits `.gitmodules`, deinitializes/removes `kokoro-session` and checks out exact commits. It refuses to touch `kokoro-platform` and rejects any candidate outside the exact six-entry manifest.
 
 **JIT cut requirement 3 — Lock CI and release provenance to the promoted gitlinks**
 
@@ -549,10 +617,20 @@ CONTRACT_WORKTREE="$RUNNER_TEMP/kokoro-contract-source"
 git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
 trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true' EXIT
 (cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
-cat >"$RUNNER_TEMP/kokoro-consumer-map.json" <<JSON
-{"kokoro-site":"$ROOT_CURRENT/kokoro-site","kokoro-iam":"$ROOT_CURRENT/kokoro-iam","kokoro-chat":"$ROOT_CURRENT/kokoro-chat","kokoro-agent":"$ROOT_CURRENT/kokoro-agent","kokoro-capability":"$ROOT_CURRENT/kokoro-capability","kokoro-model":"$ROOT_CURRENT/kokoro-model","kokoro-web":"$ROOT_CURRENT/kokoro-web","root-e2e":"$ROOT_CURRENT"}
-JSON
-(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --all --repo-map "$RUNNER_TEMP/kokoro-consumer-map.json" --check)
+for consumer_repo in \
+  "kokoro-iam:$ROOT_CURRENT/kokoro-iam" \
+  "kokoro-chat:$ROOT_CURRENT/kokoro-chat" \
+  "kokoro-agent:$ROOT_CURRENT/kokoro-agent" \
+  "kokoro-capability:$ROOT_CURRENT/kokoro-capability" \
+  "kokoro-model:$ROOT_CURRENT/kokoro-model" \
+  "kokoro-web:$ROOT_CURRENT/kokoro-web" \
+  "root-e2e:$ROOT_CURRENT"; do
+  consumer="${consumer_repo%%:*}"
+  repo="${consumer_repo#*:}"
+  (cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py \
+    --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" \
+    --consumer "$consumer" --repo "$repo" --check)
+done
 ```
 
 Do not hand-edit commit hashes or output digests, and do not run the frozen generator with the later candidate Root's expanded database locks.
@@ -560,11 +638,10 @@ Do not hand-edit commit hashes or output digests, and do not run the frozen gene
 **JIT cut requirement 4 — Stage the exact atomic tree and create a detached candidate commit**
 
 ```bash
-git add .gitmodules .github/workflows/contract.yml docker-compose.infra.yml docker-compose.app.yml docker-compose.ci.yml \
-  config/litellm/slice-a.yaml config/litellm/slice-a-ci.yaml deploy/.env.example deploy/README.md scripts/INDEX.md scripts/verify-all.py scripts/slice_a scripts/e2e \
-  scripts/fixtures/openai_slice_a.py scripts/tests/test_openai_slice_a_fixture.py scripts/tests/test_slice_a_compose.py \
+git add .gitmodules .github/workflows/contract.yml scripts/INDEX.md scripts/verify-all.py scripts/slice_a scripts/e2e \
+  scripts/fixtures/openai_slice_a.py scripts/tests/test_openai_slice_a_fixture.py scripts/tests/test_slice_a_native.py \
   docs/reports/2026-08-14-slice-a-candidates.json docs/CODEBASE_MAP.md docs/CURRENT.md docs/task.md \
-  kokoro-site kokoro-iam kokoro-chat kokoro-model kokoro-capability kokoro-agent kokoro-web kokoro-platform
+  kokoro-iam kokoro-chat kokoro-model kokoro-capability kokoro-agent kokoro-web kokoro-platform
 git add -u -- kokoro-session
 test -z "$(git ls-files --stage -- kokoro-session)"
 test -n "$(git ls-files --stage -- kokoro-chat)"
@@ -588,28 +665,40 @@ The synthetic commit proves the exact staged tree without moving the branch or c
 **JIT cut requirement 5 — Re-run fresh E2E from the detached candidate**
 
 ```bash
+set -euo pipefail
 cd /tmp/kokoro-slice-a-release
 uv sync --frozen
 pnpm install --frozen-lockfile
 uv run --frozen python scripts/verify-all.py
 export KOKORO_SLICE_A_SECRET_DIR="$(mktemp -d /tmp/kokoro-slice-a-release-secrets.XXXXXX)"
 export KOKORO_SLICE_A_FIXTURE_DIR="$(mktemp -d /tmp/kokoro-slice-a-release-fixtures.XXXXXX)"
-cleanup_release() {
-  docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci --profile web down -v --remove-orphans || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
-  uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
+STATE_PARENT="$(mktemp -d /tmp/kokoro-slice-a-release-state-parent.XXXXXX)"
+STATE_DIR="$STATE_PARENT/state"
+export KOKORO_SLICE_A_STATE_DIR="$STATE_DIR"
+cleanup_native() {
+  if test -e "$STATE_DIR"; then
+    uv run --frozen python scripts/slice_a/native.py stop --state-dir "$STATE_DIR" || true
+    uv run --frozen python scripts/slice_a/cleanup.py --dir "$STATE_DIR" || true
+  fi
+  test ! -e "$KOKORO_SLICE_A_SECRET_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_SECRET_DIR" || true
+  test ! -e "$KOKORO_SLICE_A_FIXTURE_DIR" || uv run --frozen python scripts/slice_a/cleanup.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR" || true
+  rm -rf -- "$STATE_PARENT"
 }
-trap cleanup_release EXIT
+trap cleanup_native EXIT INT TERM
 uv run --frozen python scripts/slice_a/create_secrets.py --dir "$KOKORO_SLICE_A_SECRET_DIR"
 uv run --frozen python scripts/slice_a/create_fixture_dir.py --dir "$KOKORO_SLICE_A_FIXTURE_DIR"
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci up -d --build
+uv run --frozen python scripts/slice_a/native.py start --fresh --with-web \
+  --state-dir "$KOKORO_SLICE_A_STATE_DIR" \
+  --secret-dir "$KOKORO_SLICE_A_SECRET_DIR" \
+  --fixture-dir "$KOKORO_SLICE_A_FIXTURE_DIR" \
+  --iam kokoro-iam --model kokoro-model --capability kokoro-capability \
+  --chat kokoro-chat --agent kokoro-agent --web kokoro-web
 uv run --frozen pytest scripts/e2e/test_slice_a_backend.py -q
-docker compose -f docker-compose.infra.yml -f docker-compose.app.yml -f docker-compose.ci.yml --profile ci --profile web up -d --build
 uv run --frozen pytest scripts/e2e/test_slice_a_product.py -q
 (cd kokoro-web && pnpm exec playwright install chromium && pnpm exec playwright test tests/e2e/slice-a-chat.spec.ts)
 git status --porcelain --untracked-files=all | grep . && exit 1 || true
-cleanup_release
-trap - EXIT
+cleanup_native
+trap - EXIT INT TERM
 cd -
 git worktree remove /tmp/kokoro-slice-a-release
 ```
@@ -627,11 +716,37 @@ git commit -m "feat: promote SQL-backed Slice A capability graph"
 rm -f "$(git rev-parse --git-dir)/kokoro-slice-a.tree" "$(git rev-parse --git-dir)/kokoro-slice-a.candidate"
 ```
 
+<!-- slice-a-container-delivery:start -->
+### Milestone 10: Deferred container and Compose delivery
+
+This milestone starts only after the native backend/browser closure and atomic Root pin promotion are green.
+It is not a prerequisite for the current candidate freeze, backend acceptance or promotion commit.
+
+**Deferred files:**
+
+- Owner-repository `Dockerfile` files.
+- Root `docker-compose.infra.yml`, `docker-compose.app.yml`, `docker-compose.ci.yml`.
+- Root `config/litellm/slice-a.yaml`, `config/litellm/slice-a-ci.yaml` and deployment documentation.
+- Container/Compose validation and image-security tests.
+
+**Deferred acceptance:**
+
+1. Preserve the exact already-promoted commits and native runtime process inventory.
+2. Build every final image as non-root, with generated clients/native engines present and no test fixture or
+   plaintext secret in layers.
+3. Render production, CI and optional Web Compose profiles; reject Platform, Session, MySQL, Mongo and any
+   runtime outside the exact Slice A inventory.
+4. Apply the Root baseline through a one-shot database initializer, mount the controlled secret/fixture files
+   with least privilege and call every real readiness/RPC endpoint.
+5. Re-run the same backend, HITL, Agent/Chat restart, retention and browser assertions against the packaged
+   graph. Packaging parity is additive evidence and never replaces the native gate.
+<!-- slice-a-container-delivery:end -->
+
 ## Completion Criteria
 
 - User Web uses IAM and Chat generated clients while preserving sealed auth and reducer/machine behavior.
 - Conversation content survives bounded event retention through complete snapshot + watermark-tail hydration.
-- Fresh PG18 Site → IAM → Chat → Agent → HITL → restart/replay passes first without Web, then through the browser adapter.
+- Fresh PG18 SiteContext → IAM → Chat → Agent → HITL → restart/replay passes first without Web, then through the browser adapter.
 - `kokoro-platform`, Mongo and MySQL are not runtime dependencies for Slice A.
 - Root promotion is reproducible from exact remote commits in a detached clean checkout.
 - `kokoro-platform` remains available only as the dormant migration source for Slice B/C until those capabilities move.
