@@ -170,8 +170,27 @@ Payment 只维护支付事实；权益是否生效由 Entitlement 决定。
 3. fresh PostgreSQL integration；
 4. RPC caller/contract tests；
 5. architecture dependency tests；
-6. Docker runtime smoke；
+6. 本地 `dev` 入口和真实本地进程 smoke；
 7. 生成代码 provenance/check；
 8. 旧入口仅在行为替代证据通过后删除；
 9. 不通过缩小配置范围制造假绿；
 10. 能在自己的 Git 根独立开发、验证和部署。
+
+## 7. 当前开发与测试方式
+
+当前阶段先完成本地开发闭环，不以 Docker 为前提：
+
+```text
+local PostgreSQL
+-> IAM dev
+-> Model / Capability dev
+-> Agent dev
+-> Chat dev
+-> Web dev（后接）
+```
+
+- TypeScript 子仓提供自己的 `pnpm dev`；Python Agent 保留现有 `uv run` 开发入口。
+- 每个进程从本地 `.env.local` 或显式环境变量读取 endpoint、数据库 URL 和测试凭据。
+- 单元测试后直接运行本地 PostgreSQL integration 和真实 RPC interoperability。
+- 后端闭环先用测试客户端验证，不等待 Web，也不等待容器镜像。
+- Dockerfile、Compose、镜像安全和容器网络在本地闭环稳定后单独设计和验收。

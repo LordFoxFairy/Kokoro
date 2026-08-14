@@ -95,7 +95,7 @@ kokoro-iam/
 │   ├── integration/postgres/
 │   ├── contract/rpc/
 │   └── architecture/
-└── Dockerfile
+└── package.json
 ```
 
 目录按真实文件渐进创建；不创建空 `services/events` 目录。`entities/value-objects` 只位于
@@ -192,5 +192,7 @@ Web Shell C: KOKORO_SITE_ID=site-c + C 品牌配置
 - 重启和丢响应恢复通过；
 - 全部 active source 进入 test/typecheck/lint/build；
 - 旧 MySQL/HTTP/Admin authority zero-call；
-- fresh PostgreSQL、Docker、RPC interoperability 通过；
+- fresh/local PostgreSQL、本地 `pnpm dev`、RPC interoperability 通过；
 - 只有一个入口和一套权威领域模型。
+
+Dockerfile 和 Compose 不属于当前 IAM 业务闭环门禁；本地进程闭环稳定后再进入交付阶段。
