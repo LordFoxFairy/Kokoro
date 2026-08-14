@@ -1,0 +1,53 @@
+{
+  "baselineSha256": "b65e7c8c36bc8ec05cca8a1a040deff28a9a9cb1b8a25f71886d989bac8c02dd",
+  "schema": "kokoro",
+  "segments": [
+    {
+      "name": "00-foundation",
+      "path": "database/schema/00-foundation.sql",
+      "sha256": "fef216ee782ba041970425a2866862be6b4aabe450d0db00cba0fd3c563dfade"
+    },
+    {
+      "name": "10-site",
+      "path": "database/schema/10-site.sql",
+      "sha256": "ff6dcd674fdc9cfc1a39ba44ef09cb86c99ccb028e70cca7536afd2eb6605d4e"
+    },
+    {
+      "name": "20-iam",
+      "path": "database/schema/20-iam.sql",
+      "sha256": "a1cfd6ebbd71c49581a3a6a3f74f010f200ee1a162240fc6e374ea5a6d8f1fda"
+    },
+    {
+      "name": "30-chat",
+      "path": "database/schema/30-chat.sql",
+      "sha256": "d312a11600458cd9a0bb49327c287b6f966fd714efc91324f06d73e3ebc3cc16"
+    },
+    {
+      "name": "40-agent",
+      "path": "database/schema/40-agent.sql",
+      "sha256": "2efc60bbb44e3776b9bdd839c6b0e7d4c6aebbe0d44bd798b9d419325c575467"
+    },
+    {
+      "name": "45-langgraph-checkpointer",
+      "path": "database/schema/45-langgraph-checkpointer.sql",
+      "sha256": "1921ae91738c40a9cbb6f4c993a49190552d7145a762a2f425230e833a630a6a"
+    },
+    {
+      "name": "50-capability",
+      "path": "database/schema/50-capability.sql",
+      "sha256": "d04e810a0248c28e91806d87171b0b825c9586a59149166b844da1f9d209846f"
+    },
+    {
+      "name": "60-model",
+      "path": "database/schema/60-model.sql",
+      "sha256": "9be94a3691aa6527b048a8336682d1ad5d822bf02c1380e3ffd5087d76fabb9c"
+    },
+    {
+      "name": "99-cross-capability-relations",
+      "path": "database/schema/99-cross-capability-relations.sql",
+      "sha256": "20db03a7c653b52b52a7b3778432254dfacd931021d6e86739cc255fdd0343e5"
+    }
+  ],
+  "slice": "slice-a",
+  "version": 1
+}
