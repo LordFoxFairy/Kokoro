@@ -28,6 +28,7 @@ REGISTERED_SOURCE_PATHS = (
     "contract/slice-a-contract-manifest.yaml",
     "contract/validate_slice_a_manifest.py",
     "contract/consumers.yaml",
+    "contract/buf.gen.yaml",
     "contract/proto",
     "contract/openapi/slice-a-web-v1.yaml",
     "contract/generate.py",
@@ -40,6 +41,7 @@ RUNTIME_SOURCE_FILES = (
     "pyproject.toml",
     "uv.lock",
     "contract/validate_slice_a_manifest.py",
+    "contract/buf.gen.yaml",
     "contract/generate.py",
 )
 EXPECTED_CONSUMER_POLICY = {
@@ -155,6 +157,7 @@ def _registered_source_hashes(source_root: Path, commit: str, manifest: dict[str
         *RUNTIME_SOURCE_FILES,
         "contract/slice-a-contract-manifest.yaml",
         "contract/consumers.yaml",
+        "contract/buf.gen.yaml",
         "contract/openapi/slice-a-web-v1.yaml",
         *(f"contract/proto/{item['path']}" for item in manifest["protobuf"]["files"]),
     ]
@@ -239,7 +242,7 @@ def _generate_language(language: str, materialized: Path, output: Path, proto_fi
             f"-I{proto_root}",
             f"--plugin=protoc-gen-es={plugin}",
             f"--es_out={output}",
-            "--es_opt=target=ts",
+            "--es_opt=target=ts,import_extension=js",
             *proto_files,
         ]
     else:

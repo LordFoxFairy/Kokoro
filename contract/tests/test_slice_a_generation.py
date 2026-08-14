@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).parents[2]
 sys.path.insert(0, str(ROOT))
@@ -17,6 +18,17 @@ from contract.generate import GenerationError, generate_consumer, main
 
 MANIFEST = json.loads((ROOT / "contract/slice-a-contract-manifest.yaml").read_text())
 CONSUMERS = json.loads((ROOT / "contract/consumers.yaml").read_text())
+
+
+def test_buf_es_generation_is_node_esm_exact() -> None:
+    assert yaml.safe_load((ROOT / "contract/buf.gen.yaml").read_text()) == {
+        "version": "v2",
+        "plugins": [{
+            "local": "protoc-gen-es",
+            "out": "gen/es",
+            "opt": ["target=ts", "import_extension=js"],
+        }],
+    }
 
 
 def _git(root: Path, *args: str) -> str:
@@ -37,6 +49,7 @@ def committed_source(tmp_path: Path) -> tuple[Path, str]:
         "contract/slice-a-contract-manifest.yaml",
         "contract/validate_slice_a_manifest.py",
         "contract/consumers.yaml",
+        "contract/buf.gen.yaml",
         "contract/openapi/slice-a-web-v1.yaml",
         "contract/generate.py",
     ):
@@ -90,6 +103,7 @@ def test_python_generation_is_deterministic_provenanced_and_checkable(
         ".node-version", "package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml",
         "pyproject.toml", "uv.lock", "contract/slice-a-contract-manifest.yaml",
         "contract/validate_slice_a_manifest.py", "contract/consumers.yaml",
+        "contract/buf.gen.yaml",
         "contract/openapi/slice-a-web-v1.yaml", "contract/generate.py",
         *(f"contract/proto/{item['path']}" for item in MANIFEST["protobuf"]["files"]),
     }
@@ -124,6 +138,22 @@ def test_typescript_web_generation_contains_only_public_closure(
     assert (output / "http/slice-a-web-v1.yaml").is_file()
     assert list(output.rglob("*_pb.ts"))
     assert not any(part in {"agent", "model", "capability"} for path in output.rglob("*") for part in path.parts)
+
+
+def test_typescript_generation_uses_node_esm_relative_imports(
+    committed_source: tuple[Path, str], tmp_path: Path
+) -> None:
+    source, commit = committed_source
+    repo = tmp_path / "iam"; repo.mkdir()
+    generate_consumer(source_root=source, source_commit=commit, consumer="kokoro-iam", repo=repo, check=False)
+    generated = repo / "src/generated/proto"
+    relative_imports: list[str] = []
+    for path in generated.rglob("*.ts"):
+        for line in path.read_text().splitlines():
+            if ' from "./' in line or ' from "../' in line:
+                relative_imports.append(line)
+                assert line.endswith('.js";'), f"Node ESM import lacks .js extension: {path}: {line}"
+    assert relative_imports, "fixture must exercise at least one cross-file relative import"
 
 
 def test_generation_rejects_unknown_consumer_and_dirty_source(

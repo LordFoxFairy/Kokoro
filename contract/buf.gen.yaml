@@ -4,3 +4,4 @@ plugins:
     out: gen/es
     opt:
       - target=ts
+      - import_extension=js
