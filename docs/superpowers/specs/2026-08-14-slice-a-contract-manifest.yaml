@@ -1,0 +1,5849 @@
+{
+  "artifact": "slice-a-contract-manifest",
+  "version": 1,
+  "status": "review-candidate",
+  "authority": "machine",
+  "rules": {
+    "fieldLabels": [
+      "required",
+      "optional",
+      "repeated"
+    ],
+    "agentEventSequence": "AgentEvent.seq starts at 1 and is globally monotonic for the entire agent_run; lease epoch is fence evidence only and never resets seq. Emit from a stale epoch is rejected. ReadRunEvidence.after_seq and AckProjection.projected_seq use this global cursor; Ack stores projected_epoch and rejects stale epoch or seq regression.",
+    "projectionConsumers": {
+      "sliceA": [
+        "chat"
+      ],
+      "semantics": "AckProjection is authenticated as Chat and consumer_key must equal chat. Empty or unknown values fail INVALID_ARGUMENT before any agent_projection_ack row is read or written; future consumers require a manifest allowlist revision."
+    },
+    "uuid": "canonical lowercase string",
+    "digest": "64 lowercase hex sha256",
+    "timestamp": "google.protobuf.Timestamp / RFC3339",
+    "rpcMetadata": [
+      "authorization: Bearer <workload-token>",
+      "x-kokoro-request-id"
+    ],
+    "userRpcMetadata": "x-kokoro-user-authorization: Bearer <iam-access-jwt>",
+    "accessJwt": {
+      "header": {
+        "alg": "RS256",
+        "typ": "JWT",
+        "kid": "nonempty active JWKS key id"
+      },
+      "claims": {
+        "iss": "kokoro-iam",
+        "aud": "kokoro-user-backend",
+        "sub": "canonical principal UUID",
+        "site_id": "canonical Site UUID",
+        "organization_id": "canonical Organization UUID",
+        "auth_session_id": "canonical IAM auth-session UUID",
+        "iat": "NumericDate",
+        "exp": "NumericDate"
+      },
+      "nbf": "absent",
+      "maxTtlSeconds": 900,
+      "clockSkewSeconds": 30,
+      "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Site/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims."
+    },
+    "streamAuthorizationExpiry": "Chat closes StreamConversationEvents no later than access JWT exp + 30-second clock skew and emits zero frames after that deadline. Web refreshes the sealed IAM session and reconnects from the last committed seq; membership revocation exposure is therefore bounded by the 900-second JWT TTL plus skew.",
+    "cookieSecurity": "Secure is mandatory outside the exact loopback fixture runtime; fixture may omit Secure only on http://127.0.0.1 and tests reject any non-loopback exception",
+    "sessionCookiePolicy": {
+      "maxAgeSeconds": 2592000,
+      "semantics": "kokoro_session Max-Age = max(0, min(refresh_expires_at - now, 2592000)); exact cap is 30 days and has no second runtime configuration key."
+    },
+    "errorTransport": "grpc status plus serialized kokoro.common.v1.ErrorDetail in kokoro-error-bin",
+    "controlDecisionPayloadSchemasByKind": {
+      "approve": {
+        "additionalProperties": false,
+        "required": [],
+        "properties": [
+          {
+            "name": "args",
+            "type": "json-object",
+            "optional": true,
+            "maxBytes": 65536
+          }
+        ]
+      },
+      "edit": {
+        "additionalProperties": false,
+        "required": [
+          "args"
+        ],
+        "properties": [
+          {
+            "name": "args",
+            "type": "json-object",
+            "maxBytes": 65536
+          }
+        ]
+      },
+      "reject": {
+        "additionalProperties": false,
+        "required": [],
+        "properties": [
+          {
+            "name": "reason",
+            "type": "string",
+            "optional": true,
+            "maxLength": 4096
+          }
+        ]
+      },
+      "respond": {
+        "additionalProperties": false,
+        "required": [
+          "response"
+        ],
+        "properties": [
+          {
+            "name": "response",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 65536
+          }
+        ]
+      },
+      "submit": {
+        "additionalProperties": false,
+        "required": [
+          "value"
+        ],
+        "properties": [
+          {
+            "name": "value",
+            "type": "json-object",
+            "maxBytes": 65536
+          }
+        ]
+      }
+    },
+    "controlDecisionValidation": "Chat validates the discriminated payload, canonicalizes payload_json bytes and Agent validates the same schema again before resume",
+    "magicLinkRedirect": "Browser sends no redirect URI. BFF constructs HTTPS canonical active Site host + fixed /api/auth/callback; IAM revalidates active Site domain and exact callback path",
+    "magicLinkNonceDerivation": "BFF derives state_key=HKDF-SHA256(contents of KOKORO_WEB_SESSION_KEY_FILE (mounted web.session-key), info=UTF8(kokoro.magic-state.v1)), then nonce=base64url(HMAC-SHA256(state_key, UUID_BYTES(site_id) || UUID_BYTES(command_id))); retry with the same Idempotency-Key derives the same 32-byte nonce even if the first response is lost",
+    "magicLinkNonceBinding": "BFF hashes kokoro_auth_nonce and sends nonce_digest on both RequestMagicLink and ConsumeMagicLink; IAM stores and constant-time compares it before single consume",
+    "authCommandIdentity": {
+      "consumeMagicLink": {
+        "commandId": "UUIDv5(site_id, UTF8(consume-magic-link\n) || ASCII_HEX(SHA256(token)))",
+        "requestDigest": "SHA256(canonical_json({site_id, token_digest, nonce_digest}))"
+      },
+      "refreshSession": {
+        "commandId": "unpredictable UUID refresh_command_id sealed in the Web envelope and reused until a response is delivered",
+        "requestDigest": "SHA256(canonical_json({site_id, auth_session_id, old_refresh_token_digest}))",
+        "rotation": "after a delivered success, Web seals a fresh random refresh_command_id with the successor token; old token with missing/different command id triggers family revoke"
+      },
+      "logout": {
+        "commandId": "UUIDv5(auth_session_id, UTF8(logout))",
+        "requestDigest": "SHA256(canonical_json({auth_session_id, refresh_token_digest}))"
+      }
+    },
+    "authReceiptRecovery": "Refresh tokens are deterministically derived from the IAM refresh-derivation key, auth_session_id and family_generation; SQL stores only SHA-256. Same command+digest rereads the same session and re-derives the identical successor refresh token; access JWT may be freshly signed for that session. Plaintext tokens never appear in SQL/logs; digest drift conflicts.",
+    "submitDefaults": {
+      "requested_model_label": "default",
+      "requested_agent_key": "general",
+      "semantics": "Chat resolves omitted values before persistence and launch digest; Chat rejects invalid syntax, while syntactically valid unknown model/preset is deterministically rejected by Agent admission and converged by Chat"
+    },
+    "firstConversationTitle": {
+      "algorithm": "After validating nonempty content, title = Array.from(content).slice(0, 80).join(\"\"): first 80 Unicode code points, no trimming and no fallback.",
+      "idempotency": "CreateConversation and SubmitMessage use distinct stable bounded opaque browser keys; each retry reuses its original key and canonical digest."
+    },
+    "snapshotMaterialization": {
+      "session.created": "chat_conversation owner fact; no MessagePart",
+      "run.created": "chat_run_launch plus synthesized/projected RunView; no MessagePart",
+      "message.user": "user Message plus TEXT MessagePart with the exact browser payload",
+      "message.delta": "append assistant TEXT MessagePart payload in producer-seq order",
+      "message.completed": "update assistant Message/part terminal status",
+      "thinking.delta": "append THINKING MessagePart payload in producer-seq order",
+      "tool.invoked": "upsert TOOL_CALL MessagePart by tool_call_id",
+      "tool.output.delta": "append TOOL_RESULT MessagePart payload by tool_call_id",
+      "tool.awaiting_approval": "persist complete chat_interaction payload and mark the matching TOOL_CALL pending",
+      "tool.returned": "finalize TOOL_RESULT MessagePart and matching TOOL_CALL status",
+      "delivery.created": "append DELIVERY MessagePart containing the exact browser payload",
+      "todo.updated": "replace the run-scoped TODO MessagePart with the exact ordered browser payload",
+      "subagent.started": "upsert SUBAGENT MessagePart by subagent_id",
+      "subagent.finished": "finalize SUBAGENT MessagePart by subagent_id",
+      "subagent.thinking.delta": "append thinking content to SUBAGENT MessagePart by subagent_id",
+      "subagent.text.delta": "append text content to SUBAGENT MessagePart by subagent_id",
+      "subagent.text.completed": "finalize subagent text in SUBAGENT MessagePart by subagent_id",
+      "subagent.tool.invoked": "upsert nested tool fact in SUBAGENT MessagePart by subagent_id/tool_call_id",
+      "subagent.tool.returned": "finalize nested tool fact in SUBAGENT MessagePart by subagent_id/tool_call_id",
+      "run.completed": "finalize chat_run_view and assistant Message; no new MessagePart",
+      "run.failed": "finalize chat_run_view and assistant Message with failure; no new MessagePart",
+      "retentionRule": "A stream row is deletable only after its mapped owner facts commit and snapshot watermark is at least that seq. Unknown or not-yet-materialized kinds are retained, never silently dropped."
+    },
+    "paginationDefaults": {
+      "listConversationsLimit": 50,
+      "semantics": "When the browser omits limit, the Web BFF sends PageRequest.limit=50; explicit values remain bounded to 1..100."
+    },
+    "capabilitySliceASelectors": "requested_selectors must be empty; any nonempty selector is deterministic AGENT_ADMISSION_REJECTED, never silently discarded into the empty snapshot",
+    "browserIdempotency": "For pre-auth RequestMagicLink, BFF derives UUIDv5 command_id from resolved site_id + operation_id + bounded opaque Idempotency-Key. For authenticated Conversation mutations it derives UUIDv5 from organization_id + operation_id + key. In both cases BFF computes canonical request_digest and rejects browser digest."
+  },
+  "protobuf": {
+    "files": [
+      {
+        "path": "kokoro/common/v1/common.proto",
+        "package": "kokoro.common.v1",
+        "imports": [],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "ErrorCode"
+          },
+          {
+            "kind": "enum",
+            "name": "DecisionKind"
+          },
+          {
+            "kind": "enum",
+            "name": "ControlStatus"
+          },
+          {
+            "kind": "message",
+            "name": "PrincipalContext"
+          },
+          {
+            "kind": "message",
+            "name": "CommandIdentity"
+          },
+          {
+            "kind": "message",
+            "name": "PageRequest"
+          },
+          {
+            "kind": "message",
+            "name": "PageResult"
+          },
+          {
+            "kind": "message",
+            "name": "ErrorDetail"
+          },
+          {
+            "kind": "message",
+            "name": "ControlDecision"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/site/v1/site.proto",
+        "package": "kokoro.site.v1",
+        "imports": [],
+        "declarations": [
+          {
+            "kind": "message",
+            "name": "ResolveSiteByHostRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ResolveSiteByHostResponse"
+          },
+          {
+            "kind": "service",
+            "name": "SiteService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/iam/v1/authentication.proto",
+        "package": "kokoro.iam.v1",
+        "imports": [
+          "google/protobuf/timestamp.proto",
+          "kokoro/common/v1/common.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "message",
+            "name": "RequestMagicLinkRequest"
+          },
+          {
+            "kind": "message",
+            "name": "RequestMagicLinkResponse"
+          },
+          {
+            "kind": "message",
+            "name": "ConsumeMagicLinkRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ConsumeMagicLinkResponse"
+          },
+          {
+            "kind": "message",
+            "name": "RefreshSessionRequest"
+          },
+          {
+            "kind": "message",
+            "name": "RefreshSessionResponse"
+          },
+          {
+            "kind": "message",
+            "name": "LogoutRequest"
+          },
+          {
+            "kind": "message",
+            "name": "LogoutResponse"
+          },
+          {
+            "kind": "message",
+            "name": "GetSessionRequest"
+          },
+          {
+            "kind": "message",
+            "name": "GetSessionResponse"
+          },
+          {
+            "kind": "service",
+            "name": "IamAuthenticationService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/iam/v1/authorization.proto",
+        "package": "kokoro.iam.v1",
+        "imports": [
+          "kokoro/common/v1/common.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "message",
+            "name": "AuthorizeRequest"
+          },
+          {
+            "kind": "message",
+            "name": "AuthorizeResponse"
+          },
+          {
+            "kind": "service",
+            "name": "IamAuthorizationService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/capability/v1/capability_runtime.proto",
+        "package": "kokoro.capability.v1",
+        "imports": [
+          "kokoro/common/v1/common.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "CapabilityKind"
+          },
+          {
+            "kind": "message",
+            "name": "CapabilitySnapshotItem"
+          },
+          {
+            "kind": "message",
+            "name": "ResolveRuntimeSnapshotRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ResolveRuntimeSnapshotResponse"
+          },
+          {
+            "kind": "service",
+            "name": "CapabilityRuntimeService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/model/v1/model_catalog.proto",
+        "package": "kokoro.model.v1",
+        "imports": [],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "ModelTransport"
+          },
+          {
+            "kind": "message",
+            "name": "ResolveModelRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ResolveModelResponse"
+          },
+          {
+            "kind": "service",
+            "name": "ModelCatalogService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/chat/v1/chat.proto",
+        "package": "kokoro.chat.v1",
+        "imports": [
+          "google/protobuf/timestamp.proto",
+          "kokoro/common/v1/common.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "ConversationState"
+          },
+          {
+            "kind": "enum",
+            "name": "MessageRole"
+          },
+          {
+            "kind": "enum",
+            "name": "MessageStatus"
+          },
+          {
+            "kind": "enum",
+            "name": "MessagePartKind"
+          },
+          {
+            "kind": "enum",
+            "name": "MessagePartStatus"
+          },
+          {
+            "kind": "enum",
+            "name": "InteractionStatus"
+          },
+          {
+            "kind": "enum",
+            "name": "RunViewState"
+          },
+          {
+            "kind": "enum",
+            "name": "RunViewTerminalKind"
+          },
+          {
+            "kind": "enum",
+            "name": "ProjectedInteractionKind"
+          },
+          {
+            "kind": "message",
+            "name": "Conversation"
+          },
+          {
+            "kind": "message",
+            "name": "ConversationSummary"
+          },
+          {
+            "kind": "message",
+            "name": "MessagePart"
+          },
+          {
+            "kind": "message",
+            "name": "Message"
+          },
+          {
+            "kind": "message",
+            "name": "RunView"
+          },
+          {
+            "kind": "message",
+            "name": "Interaction"
+          },
+          {
+            "kind": "message",
+            "name": "CreateConversationRequest"
+          },
+          {
+            "kind": "message",
+            "name": "CreateConversationResponse"
+          },
+          {
+            "kind": "message",
+            "name": "SubmitMessageRequest"
+          },
+          {
+            "kind": "message",
+            "name": "SubmitMessageResponse"
+          },
+          {
+            "kind": "message",
+            "name": "DecideInteractionRequest"
+          },
+          {
+            "kind": "message",
+            "name": "DecideInteractionResponse"
+          },
+          {
+            "kind": "message",
+            "name": "ReadConversationSnapshotRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ReadConversationSnapshotResponse"
+          },
+          {
+            "kind": "message",
+            "name": "ListConversationsRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ListConversationsResponse"
+          },
+          {
+            "kind": "message",
+            "name": "BrowserSessionEvent"
+          },
+          {
+            "kind": "message",
+            "name": "StreamConversationEventsRequest"
+          },
+          {
+            "kind": "message",
+            "name": "StreamConversationEventsResponse"
+          },
+          {
+            "kind": "service",
+            "name": "ChatCommandService"
+          },
+          {
+            "kind": "service",
+            "name": "ChatQueryService"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/agent/v1/agent_events.proto",
+        "package": "kokoro.agent.v1",
+        "imports": [
+          "google/protobuf/timestamp.proto",
+          "kokoro/common/v1/common.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "InteractionKind"
+          },
+          {
+            "kind": "enum",
+            "name": "TodoStatus"
+          },
+          {
+            "kind": "enum",
+            "name": "SubagentSource"
+          },
+          {
+            "kind": "enum",
+            "name": "RunCompletionStatus"
+          },
+          {
+            "kind": "enum",
+            "name": "RunFailureCode"
+          },
+          {
+            "kind": "message",
+            "name": "RunUsage"
+          },
+          {
+            "kind": "message",
+            "name": "RunStarted"
+          },
+          {
+            "kind": "message",
+            "name": "ThinkingDelta"
+          },
+          {
+            "kind": "message",
+            "name": "MessageDelta"
+          },
+          {
+            "kind": "message",
+            "name": "MessageCompleted"
+          },
+          {
+            "kind": "message",
+            "name": "ToolInvoked"
+          },
+          {
+            "kind": "message",
+            "name": "ToolOutputDelta"
+          },
+          {
+            "kind": "message",
+            "name": "ToolAwaitingApproval"
+          },
+          {
+            "kind": "message",
+            "name": "ToolReturned"
+          },
+          {
+            "kind": "message",
+            "name": "Todo"
+          },
+          {
+            "kind": "message",
+            "name": "TodoUpdated"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentStarted"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentFinished"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentThinkingDelta"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentTextDelta"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentTextCompleted"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentToolInvoked"
+          },
+          {
+            "kind": "message",
+            "name": "SubagentToolReturned"
+          },
+          {
+            "kind": "message",
+            "name": "DeliveryCreated"
+          },
+          {
+            "kind": "message",
+            "name": "RunControlReceipt"
+          },
+          {
+            "kind": "message",
+            "name": "RunCompleted"
+          },
+          {
+            "kind": "message",
+            "name": "RunFailed"
+          },
+          {
+            "kind": "message",
+            "name": "AgentEvent"
+          }
+        ]
+      },
+      {
+        "path": "kokoro/agent/v1/agent_runtime.proto",
+        "package": "kokoro.agent.v1",
+        "imports": [
+          "kokoro/common/v1/common.proto",
+          "kokoro/agent/v1/agent_events.proto"
+        ],
+        "declarations": [
+          {
+            "kind": "enum",
+            "name": "RunState"
+          },
+          {
+            "kind": "enum",
+            "name": "ControlKind"
+          },
+          {
+            "kind": "message",
+            "name": "LaunchRunRequest"
+          },
+          {
+            "kind": "message",
+            "name": "LaunchRunResponse"
+          },
+          {
+            "kind": "message",
+            "name": "ApplyControlRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ApplyControlResponse"
+          },
+          {
+            "kind": "message",
+            "name": "ReadRunEvidenceRequest"
+          },
+          {
+            "kind": "message",
+            "name": "ReadRunEvidenceResponse"
+          },
+          {
+            "kind": "message",
+            "name": "AckProjectionRequest"
+          },
+          {
+            "kind": "message",
+            "name": "AckProjectionResponse"
+          },
+          {
+            "kind": "service",
+            "name": "AgentRuntimeService"
+          }
+        ]
+      }
+    ],
+    "enums": [
+      {
+        "package": "kokoro.common.v1",
+        "name": "ErrorCode",
+        "values": [
+          {
+            "name": "ERROR_CODE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "ERROR_CODE_INVALID_ARGUMENT",
+            "number": 1
+          },
+          {
+            "name": "ERROR_CODE_UNAUTHENTICATED",
+            "number": 2
+          },
+          {
+            "name": "ERROR_CODE_PERMISSION_DENIED",
+            "number": 3
+          },
+          {
+            "name": "ERROR_CODE_NOT_FOUND",
+            "number": 4
+          },
+          {
+            "name": "ERROR_CODE_COMMAND_DIGEST_MISMATCH",
+            "number": 5
+          },
+          {
+            "name": "ERROR_CODE_CONFLICT",
+            "number": 6
+          },
+          {
+            "name": "ERROR_CODE_PRECONDITION_FAILED",
+            "number": 7
+          },
+          {
+            "name": "ERROR_CODE_STALE_GENERATION",
+            "number": 8
+          },
+          {
+            "name": "ERROR_CODE_SNAPSHOT_REQUIRED",
+            "number": 9
+          },
+          {
+            "name": "ERROR_CODE_DEPENDENCY_UNAVAILABLE",
+            "number": 10
+          },
+          {
+            "name": "ERROR_CODE_RATE_LIMITED",
+            "number": 11
+          },
+          {
+            "name": "ERROR_CODE_INTERNAL",
+            "number": 12
+          },
+          {
+            "name": "ERROR_CODE_MAGIC_LINK_INVALID",
+            "number": 20
+          },
+          {
+            "name": "ERROR_CODE_MAGIC_LINK_EXPIRED",
+            "number": 21
+          },
+          {
+            "name": "ERROR_CODE_MAGIC_LINK_CONSUMED",
+            "number": 22
+          },
+          {
+            "name": "ERROR_CODE_AUTH_SESSION_REPLAYED",
+            "number": 23
+          },
+          {
+            "name": "ERROR_CODE_AUTH_SESSION_REVOKED",
+            "number": 24
+          },
+          {
+            "name": "ERROR_CODE_CONVERSATION_RUN_ACTIVE",
+            "number": 30
+          },
+          {
+            "name": "ERROR_CODE_CONVERSATION_SCOPE_MISMATCH",
+            "number": 31
+          },
+          {
+            "name": "ERROR_CODE_INTERACTION_NOT_PENDING",
+            "number": 32
+          },
+          {
+            "name": "ERROR_CODE_AGENT_ADMISSION_REJECTED",
+            "number": 40
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "DecisionKind",
+        "values": [
+          {
+            "name": "DECISION_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "DECISION_KIND_APPROVE",
+            "number": 1
+          },
+          {
+            "name": "DECISION_KIND_EDIT",
+            "number": 2
+          },
+          {
+            "name": "DECISION_KIND_REJECT",
+            "number": 3
+          },
+          {
+            "name": "DECISION_KIND_RESPOND",
+            "number": 4
+          },
+          {
+            "name": "DECISION_KIND_SUBMIT",
+            "number": 5
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "ControlStatus",
+        "values": [
+          {
+            "name": "CONTROL_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "CONTROL_STATUS_PENDING",
+            "number": 1
+          },
+          {
+            "name": "CONTROL_STATUS_PERSISTED",
+            "number": 2
+          },
+          {
+            "name": "CONTROL_STATUS_APPLIED",
+            "number": 3
+          },
+          {
+            "name": "CONTROL_STATUS_FAILED",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.capability.v1",
+        "name": "CapabilityKind",
+        "values": [
+          {
+            "name": "CAPABILITY_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "CAPABILITY_KIND_SKILL",
+            "number": 1
+          },
+          {
+            "name": "CAPABILITY_KIND_MCP",
+            "number": 2
+          }
+        ]
+      },
+      {
+        "package": "kokoro.model.v1",
+        "name": "ModelTransport",
+        "values": [
+          {
+            "name": "MODEL_TRANSPORT_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "MODEL_TRANSPORT_LITELLM",
+            "number": 1
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ConversationState",
+        "values": [
+          {
+            "name": "CONVERSATION_STATE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "CONVERSATION_STATE_ACTIVE",
+            "number": 1
+          },
+          {
+            "name": "CONVERSATION_STATE_ARCHIVED",
+            "number": 2
+          },
+          {
+            "name": "CONVERSATION_STATE_TRASHED",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "MessageRole",
+        "values": [
+          {
+            "name": "MESSAGE_ROLE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "MESSAGE_ROLE_USER",
+            "number": 1
+          },
+          {
+            "name": "MESSAGE_ROLE_ASSISTANT",
+            "number": 2
+          },
+          {
+            "name": "MESSAGE_ROLE_SYSTEM",
+            "number": 3
+          },
+          {
+            "name": "MESSAGE_ROLE_TOOL",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "MessageStatus",
+        "values": [
+          {
+            "name": "MESSAGE_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "MESSAGE_STATUS_PENDING",
+            "number": 1
+          },
+          {
+            "name": "MESSAGE_STATUS_STREAMING",
+            "number": 2
+          },
+          {
+            "name": "MESSAGE_STATUS_COMPLETED",
+            "number": 3
+          },
+          {
+            "name": "MESSAGE_STATUS_FAILED",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "MessagePartKind",
+        "values": [
+          {
+            "name": "MESSAGE_PART_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "MESSAGE_PART_KIND_TEXT",
+            "number": 1
+          },
+          {
+            "name": "MESSAGE_PART_KIND_TOOL_CALL",
+            "number": 2
+          },
+          {
+            "name": "MESSAGE_PART_KIND_TOOL_RESULT",
+            "number": 3
+          },
+          {
+            "name": "MESSAGE_PART_KIND_STATUS",
+            "number": 4
+          },
+          {
+            "name": "MESSAGE_PART_KIND_THINKING",
+            "number": 5
+          },
+          {
+            "name": "MESSAGE_PART_KIND_TODO",
+            "number": 6
+          },
+          {
+            "name": "MESSAGE_PART_KIND_SUBAGENT",
+            "number": 7
+          },
+          {
+            "name": "MESSAGE_PART_KIND_DELIVERY",
+            "number": 8
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "MessagePartStatus",
+        "values": [
+          {
+            "name": "MESSAGE_PART_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "MESSAGE_PART_STATUS_PENDING",
+            "number": 1
+          },
+          {
+            "name": "MESSAGE_PART_STATUS_COMPLETE",
+            "number": 2
+          },
+          {
+            "name": "MESSAGE_PART_STATUS_FAILED",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunState",
+        "values": [
+          {
+            "name": "RUN_STATE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "RUN_STATE_PREPARING",
+            "number": 1
+          },
+          {
+            "name": "RUN_STATE_QUEUED",
+            "number": 2
+          },
+          {
+            "name": "RUN_STATE_RUNNING",
+            "number": 3
+          },
+          {
+            "name": "RUN_STATE_AWAITING_INPUT",
+            "number": 4
+          },
+          {
+            "name": "RUN_STATE_COMPLETED",
+            "number": 5
+          },
+          {
+            "name": "RUN_STATE_CANCELLED",
+            "number": 6
+          },
+          {
+            "name": "RUN_STATE_FAILED",
+            "number": 7
+          },
+          {
+            "name": "RUN_STATE_ADMISSION_FAILED",
+            "number": 8
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "InteractionKind",
+        "values": [
+          {
+            "name": "INTERACTION_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "INTERACTION_KIND_APPROVAL",
+            "number": 1
+          },
+          {
+            "name": "INTERACTION_KIND_QUESTION",
+            "number": 2
+          },
+          {
+            "name": "INTERACTION_KIND_REVIEW",
+            "number": 3
+          },
+          {
+            "name": "INTERACTION_KIND_INPUT",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "InteractionStatus",
+        "values": [
+          {
+            "name": "INTERACTION_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "INTERACTION_STATUS_PENDING",
+            "number": 1
+          },
+          {
+            "name": "INTERACTION_STATUS_RESOLVED",
+            "number": 2
+          },
+          {
+            "name": "INTERACTION_STATUS_CANCELLED",
+            "number": 3
+          },
+          {
+            "name": "INTERACTION_STATUS_EXPIRED",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "RunViewState",
+        "values": [
+          {
+            "name": "RUN_VIEW_STATE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "RUN_VIEW_STATE_PREPARING",
+            "number": 1
+          },
+          {
+            "name": "RUN_VIEW_STATE_QUEUED",
+            "number": 2
+          },
+          {
+            "name": "RUN_VIEW_STATE_RUNNING",
+            "number": 3
+          },
+          {
+            "name": "RUN_VIEW_STATE_AWAITING_INPUT",
+            "number": 4
+          },
+          {
+            "name": "RUN_VIEW_STATE_COMPLETED",
+            "number": 5
+          },
+          {
+            "name": "RUN_VIEW_STATE_CANCELLED",
+            "number": 6
+          },
+          {
+            "name": "RUN_VIEW_STATE_FAILED",
+            "number": 7
+          },
+          {
+            "name": "RUN_VIEW_STATE_ADMISSION_FAILED",
+            "number": 8
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "RunViewTerminalKind",
+        "values": [
+          {
+            "name": "RUN_VIEW_TERMINAL_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "RUN_VIEW_TERMINAL_KIND_COMPLETED",
+            "number": 1
+          },
+          {
+            "name": "RUN_VIEW_TERMINAL_KIND_CANCELLED",
+            "number": 2
+          },
+          {
+            "name": "RUN_VIEW_TERMINAL_KIND_FAILED",
+            "number": 3
+          },
+          {
+            "name": "RUN_VIEW_TERMINAL_KIND_ADMISSION_FAILED",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ProjectedInteractionKind",
+        "values": [
+          {
+            "name": "PROJECTED_INTERACTION_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "PROJECTED_INTERACTION_KIND_APPROVAL",
+            "number": 1
+          },
+          {
+            "name": "PROJECTED_INTERACTION_KIND_QUESTION",
+            "number": 2
+          },
+          {
+            "name": "PROJECTED_INTERACTION_KIND_REVIEW",
+            "number": 3
+          },
+          {
+            "name": "PROJECTED_INTERACTION_KIND_INPUT",
+            "number": 4
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ControlKind",
+        "values": [
+          {
+            "name": "CONTROL_KIND_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "CONTROL_KIND_DECIDE",
+            "number": 1
+          },
+          {
+            "name": "CONTROL_KIND_CANCEL",
+            "number": 2
+          },
+          {
+            "name": "CONTROL_KIND_STEER",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "TodoStatus",
+        "values": [
+          {
+            "name": "TODO_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "TODO_STATUS_PENDING",
+            "number": 1
+          },
+          {
+            "name": "TODO_STATUS_IN_PROGRESS",
+            "number": 2
+          },
+          {
+            "name": "TODO_STATUS_COMPLETED",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentSource",
+        "values": [
+          {
+            "name": "SUBAGENT_SOURCE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "SUBAGENT_SOURCE_BUILT_IN",
+            "number": 1
+          },
+          {
+            "name": "SUBAGENT_SOURCE_CONFIG_CUSTOM",
+            "number": 2
+          },
+          {
+            "name": "SUBAGENT_SOURCE_RUNTIME_CUSTOM",
+            "number": 3
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunCompletionStatus",
+        "values": [
+          {
+            "name": "RUN_COMPLETION_STATUS_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "RUN_COMPLETION_STATUS_COMPLETED",
+            "number": 1
+          },
+          {
+            "name": "RUN_COMPLETION_STATUS_CANCELLED",
+            "number": 2
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunFailureCode",
+        "values": [
+          {
+            "name": "RUN_FAILURE_CODE_UNSPECIFIED",
+            "number": 0
+          },
+          {
+            "name": "RUN_FAILURE_CODE_TOKEN_BUDGET_EXCEEDED",
+            "number": 1
+          },
+          {
+            "name": "RUN_FAILURE_CODE_RECURSION_LIMIT_EXCEEDED",
+            "number": 2
+          },
+          {
+            "name": "RUN_FAILURE_CODE_ASSEMBLY_FAILED",
+            "number": 3
+          },
+          {
+            "name": "RUN_FAILURE_CODE_ENQUEUE_FAILED",
+            "number": 4
+          },
+          {
+            "name": "RUN_FAILURE_CODE_DISPATCH_EXHAUSTED",
+            "number": 5
+          },
+          {
+            "name": "RUN_FAILURE_CODE_CONTRACT_INCOMPATIBLE",
+            "number": 6
+          },
+          {
+            "name": "RUN_FAILURE_CODE_INTERNAL_ERROR",
+            "number": 7
+          },
+          {
+            "name": "RUN_FAILURE_CODE_AGENT_ADMISSION_REJECTED",
+            "number": 8
+          }
+        ]
+      }
+    ],
+    "messages": [
+      {
+        "package": "kokoro.common.v1",
+        "name": "PrincipalContext",
+        "fields": [
+          {
+            "number": 1,
+            "name": "principal_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "permission_keys",
+            "type": "string",
+            "label": "repeated"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "CommandIdentity",
+        "fields": [
+          {
+            "number": 1,
+            "name": "command_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "request_digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "PageRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "limit",
+            "type": "uint32",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "cursor",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "PageResult",
+        "fields": [
+          {
+            "number": 1,
+            "name": "next_cursor",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "ErrorDetail",
+        "fields": [
+          {
+            "number": 1,
+            "name": "code",
+            "type": ".kokoro.common.v1.ErrorCode",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "message",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "retryable",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "current_generation",
+            "type": "uint64",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.common.v1",
+        "name": "ControlDecision",
+        "fields": [
+          {
+            "number": 1,
+            "name": "kind",
+            "type": ".kokoro.common.v1.DecisionKind",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "target_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "payload_json",
+            "type": "bytes",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.site.v1",
+        "name": "ResolveSiteByHostRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "host",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.site.v1",
+        "name": "ResolveSiteByHostResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "key",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "canonical_host",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "default_locale",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "timezone",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "RequestMagicLinkRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "email",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "redirect_uri",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "nonce_digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "RequestMagicLinkResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "magic_link_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "delivery_ref",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "ConsumeMagicLinkRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "token",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "nonce_digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "ConsumeMagicLinkResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "principal",
+            "type": ".kokoro.common.v1.PrincipalContext",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "auth_session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "access_token",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "access_expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "refresh_token",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "refresh_expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "RefreshSessionRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "refresh_token",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "RefreshSessionResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "principal",
+            "type": ".kokoro.common.v1.PrincipalContext",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "auth_session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "access_token",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "access_expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "refresh_token",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "refresh_expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "LogoutRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "refresh_token",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "LogoutResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "auth_session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "revoked",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "GetSessionRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "GetSessionResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "principal",
+            "type": ".kokoro.common.v1.PrincipalContext",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "auth_session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "access_expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "AuthorizeRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "permission_key",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "AuthorizeResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "allowed",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "principal",
+            "type": ".kokoro.common.v1.PrincipalContext",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "membership_generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "reason_code",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.capability.v1",
+        "name": "CapabilitySnapshotItem",
+        "fields": [
+          {
+            "number": 1,
+            "name": "kind",
+            "type": ".kokoro.capability.v1.CapabilityKind",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "qualified_name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "revision",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "content_digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.capability.v1",
+        "name": "ResolveRuntimeSnapshotRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "agent_namespace",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "requested_selectors",
+            "type": "string",
+            "label": "repeated"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.capability.v1",
+        "name": "ResolveRuntimeSnapshotResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "snapshot_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "scope_key",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "digest",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "items",
+            "type": ".kokoro.capability.v1.CapabilitySnapshotItem",
+            "label": "repeated"
+          },
+          {
+            "number": 6,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.model.v1",
+        "name": "ResolveModelRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "label",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.model.v1",
+        "name": "ResolveModelResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "model_revision_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "provider_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "provider_model_name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "transport",
+            "type": ".kokoro.model.v1.ModelTransport",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "routing_policy_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "routing_policy_generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "Conversation",
+        "fields": [
+          {
+            "number": 1,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "title",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "agent_namespace",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "state",
+            "type": ".kokoro.chat.v1.ConversationState",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "created_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 9,
+            "name": "updated_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ConversationSummary",
+        "fields": [
+          {
+            "number": 1,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "title",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "state",
+            "type": ".kokoro.chat.v1.ConversationState",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "updated_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "MessagePart",
+        "fields": [
+          {
+            "number": 1,
+            "name": "part_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "ordinal",
+            "type": "uint32",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "kind",
+            "type": ".kokoro.chat.v1.MessagePartKind",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "schema_version",
+            "type": "uint32",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "payload_json",
+            "type": "bytes",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "status",
+            "type": ".kokoro.chat.v1.MessagePartStatus",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "Message",
+        "fields": [
+          {
+            "number": 1,
+            "name": "message_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "parent_message_id",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 4,
+            "name": "role",
+            "type": ".kokoro.chat.v1.MessageRole",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "status",
+            "type": ".kokoro.chat.v1.MessageStatus",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "ordinal",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "parts",
+            "type": ".kokoro.chat.v1.MessagePart",
+            "label": "repeated"
+          },
+          {
+            "number": 9,
+            "name": "created_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 10,
+            "name": "updated_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "RunView",
+        "fields": [
+          {
+            "number": 1,
+            "name": "launch_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 3,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "epoch",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "state",
+            "type": ".kokoro.chat.v1.RunViewState",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "received_seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "projected_seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "terminal_kind",
+            "type": ".kokoro.chat.v1.RunViewTerminalKind",
+            "label": "optional"
+          },
+          {
+            "number": 9,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "Interaction",
+        "fields": [
+          {
+            "number": 1,
+            "name": "interaction_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "kind",
+            "type": ".kokoro.chat.v1.ProjectedInteractionKind",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "action_digest",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "schema_version",
+            "type": "uint32",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "status",
+            "type": ".kokoro.chat.v1.InteractionStatus",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "payload_json",
+            "type": "bytes",
+            "label": "required"
+          },
+          {
+            "number": 9,
+            "name": "expires_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "optional"
+          },
+          {
+            "number": 10,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "CreateConversationRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "title",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "CreateConversationResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_namespace",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "watermark",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "SubmitMessageRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "content",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "requested_model_label",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 6,
+            "name": "requested_agent_key",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "SubmitMessageResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "launch_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "user_message_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "assistant_message_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "conversation_generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "watermark",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "DecideInteractionRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "interaction_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "expected_generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "decisions",
+            "type": ".kokoro.common.v1.ControlDecision",
+            "label": "repeated"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "DecideInteractionResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "control_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "interaction_generation",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "control_status",
+            "type": ".kokoro.common.v1.ControlStatus",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "watermark",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ReadConversationSnapshotRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ReadConversationSnapshotResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "conversation",
+            "type": ".kokoro.chat.v1.Conversation",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "messages",
+            "type": ".kokoro.chat.v1.Message",
+            "label": "repeated"
+          },
+          {
+            "number": 3,
+            "name": "active_run",
+            "type": ".kokoro.chat.v1.RunView",
+            "label": "optional"
+          },
+          {
+            "number": 4,
+            "name": "pending_interactions",
+            "type": ".kokoro.chat.v1.Interaction",
+            "label": "repeated"
+          },
+          {
+            "number": 5,
+            "name": "watermark",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ListConversationsRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "page",
+            "type": ".kokoro.common.v1.PageRequest",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ListConversationsResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "conversations",
+            "type": ".kokoro.chat.v1.ConversationSummary",
+            "label": "repeated"
+          },
+          {
+            "number": 2,
+            "name": "page",
+            "type": ".kokoro.common.v1.PageResult",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "BrowserSessionEvent",
+        "fields": [
+          {
+            "number": 1,
+            "name": "event_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "timestamp",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "kind",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "payload_json",
+            "type": "bytes",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "StreamConversationEventsRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "conversation_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "after_seq",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "StreamConversationEventsResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "event",
+            "type": ".kokoro.chat.v1.BrowserSessionEvent",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunUsage",
+        "fields": [
+          {
+            "number": 1,
+            "name": "input_tokens",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "output_tokens",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "total_tokens",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "model_revision_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "digest",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "LaunchRunRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "launch_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "launch_request_digest",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "message_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "content",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "namespace",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "session_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "thread_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 9,
+            "name": "site_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 10,
+            "name": "organization_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 11,
+            "name": "requested_agent_preset_key",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 12,
+            "name": "requested_model_label",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 13,
+            "name": "requested_capability_selectors",
+            "type": "string",
+            "label": "repeated"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "LaunchRunResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "state",
+            "type": ".kokoro.agent.v1.RunState",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "manifest_digest",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 4,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ApplyControlRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "command",
+            "type": ".kokoro.common.v1.CommandIdentity",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "control_kind",
+            "type": ".kokoro.agent.v1.ControlKind",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "decisions",
+            "type": ".kokoro.common.v1.ControlDecision",
+            "label": "repeated"
+          },
+          {
+            "number": 6,
+            "name": "message_id",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 7,
+            "name": "content",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ApplyControlResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "receipt_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "status",
+            "type": ".kokoro.common.v1.ControlStatus",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "replayed",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ReadRunEvidenceRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "after_seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "limit",
+            "type": "uint32",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ReadRunEvidenceResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "state",
+            "type": ".kokoro.agent.v1.RunState",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "epoch",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "events",
+            "type": ".kokoro.agent.v1.AgentEvent",
+            "label": "repeated"
+          },
+          {
+            "number": 5,
+            "name": "next_seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "terminal",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "usage",
+            "type": ".kokoro.agent.v1.RunUsage",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "AckProjectionRequest",
+        "fields": [
+          {
+            "number": 1,
+            "name": "request_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "consumer_key",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "epoch",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "projected_seq",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "AckProjectionResponse",
+        "fields": [
+          {
+            "number": 1,
+            "name": "stored_epoch",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "stored_projected_seq",
+            "type": "uint64",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunStarted",
+        "fields": []
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ThinkingDelta",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "delta",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "MessageDelta",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "delta",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "MessageCompleted",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "content",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ToolInvoked",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "args_json",
+            "type": "bytes",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ToolOutputDelta",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "delta",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ToolAwaitingApproval",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "args_json",
+            "type": "bytes",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "description",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "allowed_decisions",
+            "type": ".kokoro.common.v1.DecisionKind",
+            "label": "repeated"
+          },
+          {
+            "number": 7,
+            "name": "interaction_kind",
+            "type": ".kokoro.agent.v1.InteractionKind",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "risk_json",
+            "type": "bytes",
+            "label": "optional"
+          },
+          {
+            "number": 9,
+            "name": "editable",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 10,
+            "name": "input_schema_json",
+            "type": "bytes",
+            "label": "optional"
+          },
+          {
+            "number": 11,
+            "name": "pending_tool_ids",
+            "type": "string",
+            "label": "repeated"
+          },
+          {
+            "number": 12,
+            "name": "result",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "ToolReturned",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "result",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "is_error",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "truncated",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "rejected",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 8,
+            "name": "reject_reason",
+            "type": "string",
+            "label": "optional"
+          },
+          {
+            "number": 9,
+            "name": "responded",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 10,
+            "name": "summary_json",
+            "type": "bytes",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "Todo",
+        "fields": [
+          {
+            "number": 1,
+            "name": "content",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "status",
+            "type": ".kokoro.agent.v1.TodoStatus",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "TodoUpdated",
+        "fields": [
+          {
+            "number": 1,
+            "name": "todos",
+            "type": ".kokoro.agent.v1.Todo",
+            "label": "repeated"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentStarted",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "description",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "subagent_type",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "source",
+            "type": ".kokoro.agent.v1.SubagentSource",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentFinished",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "subagent_type",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "source",
+            "type": ".kokoro.agent.v1.SubagentSource",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "failed",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "error",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentThinkingDelta",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "delta",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentTextDelta",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "text",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentTextCompleted",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "text",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentToolInvoked",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "args_json",
+            "type": "bytes",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "SubagentToolReturned",
+        "fields": [
+          {
+            "number": 1,
+            "name": "segment_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "subagent_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "tool_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "name",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "result",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "is_error",
+            "type": "bool",
+            "label": "required"
+          },
+          {
+            "number": 7,
+            "name": "truncated",
+            "type": "bool",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "DeliveryCreated",
+        "fields": [
+          {
+            "number": 1,
+            "name": "path",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "title",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "mime",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "size",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "content_hash",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 6,
+            "name": "note",
+            "type": "string",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunControlReceipt",
+        "fields": [
+          {
+            "number": 1,
+            "name": "command_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "status",
+            "type": ".kokoro.common.v1.ControlStatus",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunCompleted",
+        "fields": [
+          {
+            "number": 1,
+            "name": "status",
+            "type": ".kokoro.agent.v1.RunCompletionStatus",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "usage",
+            "type": ".kokoro.agent.v1.RunUsage",
+            "label": "optional"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "RunFailed",
+        "fields": [
+          {
+            "number": 1,
+            "name": "code",
+            "type": ".kokoro.agent.v1.RunFailureCode",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "error_kind",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "message",
+            "type": "string",
+            "label": "required"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "AgentEvent",
+        "fields": [
+          {
+            "number": 1,
+            "name": "event_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 2,
+            "name": "agent_run_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
+            "name": "epoch",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 4,
+            "name": "seq",
+            "type": "uint64",
+            "label": "required"
+          },
+          {
+            "number": 5,
+            "name": "occurred_at",
+            "type": ".google.protobuf.Timestamp",
+            "label": "required"
+          },
+          {
+            "number": 20,
+            "name": "run_started",
+            "type": ".kokoro.agent.v1.RunStarted",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 21,
+            "name": "thinking_delta",
+            "type": ".kokoro.agent.v1.ThinkingDelta",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 22,
+            "name": "message_delta",
+            "type": ".kokoro.agent.v1.MessageDelta",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 23,
+            "name": "message_completed",
+            "type": ".kokoro.agent.v1.MessageCompleted",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 24,
+            "name": "tool_invoked",
+            "type": ".kokoro.agent.v1.ToolInvoked",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 25,
+            "name": "tool_output_delta",
+            "type": ".kokoro.agent.v1.ToolOutputDelta",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 26,
+            "name": "tool_awaiting_approval",
+            "type": ".kokoro.agent.v1.ToolAwaitingApproval",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 27,
+            "name": "tool_returned",
+            "type": ".kokoro.agent.v1.ToolReturned",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 28,
+            "name": "todo_updated",
+            "type": ".kokoro.agent.v1.TodoUpdated",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 29,
+            "name": "subagent_started",
+            "type": ".kokoro.agent.v1.SubagentStarted",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 30,
+            "name": "subagent_finished",
+            "type": ".kokoro.agent.v1.SubagentFinished",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 31,
+            "name": "subagent_thinking_delta",
+            "type": ".kokoro.agent.v1.SubagentThinkingDelta",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 32,
+            "name": "subagent_text_delta",
+            "type": ".kokoro.agent.v1.SubagentTextDelta",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 33,
+            "name": "subagent_text_completed",
+            "type": ".kokoro.agent.v1.SubagentTextCompleted",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 34,
+            "name": "subagent_tool_invoked",
+            "type": ".kokoro.agent.v1.SubagentToolInvoked",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 35,
+            "name": "subagent_tool_returned",
+            "type": ".kokoro.agent.v1.SubagentToolReturned",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 36,
+            "name": "delivery_created",
+            "type": ".kokoro.agent.v1.DeliveryCreated",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 37,
+            "name": "run_control_receipt",
+            "type": ".kokoro.agent.v1.RunControlReceipt",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 38,
+            "name": "run_completed",
+            "type": ".kokoro.agent.v1.RunCompleted",
+            "label": "required",
+            "oneof": "payload"
+          },
+          {
+            "number": 39,
+            "name": "run_failed",
+            "type": ".kokoro.agent.v1.RunFailed",
+            "label": "required",
+            "oneof": "payload"
+          }
+        ]
+      }
+    ],
+    "services": [
+      {
+        "package": "kokoro.site.v1",
+        "name": "SiteService",
+        "methods": [
+          {
+            "name": "ResolveSiteByHost",
+            "input": ".kokoro.site.v1.ResolveSiteByHostRequest",
+            "output": ".kokoro.site.v1.ResolveSiteByHostResponse",
+            "caller": "web"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "IamAuthenticationService",
+        "methods": [
+          {
+            "name": "RequestMagicLink",
+            "input": ".kokoro.iam.v1.RequestMagicLinkRequest",
+            "output": ".kokoro.iam.v1.RequestMagicLinkResponse",
+            "caller": "web"
+          },
+          {
+            "name": "ConsumeMagicLink",
+            "input": ".kokoro.iam.v1.ConsumeMagicLinkRequest",
+            "output": ".kokoro.iam.v1.ConsumeMagicLinkResponse",
+            "caller": "web"
+          },
+          {
+            "name": "RefreshSession",
+            "input": ".kokoro.iam.v1.RefreshSessionRequest",
+            "output": ".kokoro.iam.v1.RefreshSessionResponse",
+            "caller": "web"
+          },
+          {
+            "name": "Logout",
+            "input": ".kokoro.iam.v1.LogoutRequest",
+            "output": ".kokoro.iam.v1.LogoutResponse",
+            "caller": "web"
+          },
+          {
+            "name": "GetSession",
+            "input": ".kokoro.iam.v1.GetSessionRequest",
+            "output": ".kokoro.iam.v1.GetSessionResponse",
+            "caller": "web"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.iam.v1",
+        "name": "IamAuthorizationService",
+        "methods": [
+          {
+            "name": "Authorize",
+            "input": ".kokoro.iam.v1.AuthorizeRequest",
+            "output": ".kokoro.iam.v1.AuthorizeResponse",
+            "caller": "chat"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.capability.v1",
+        "name": "CapabilityRuntimeService",
+        "methods": [
+          {
+            "name": "ResolveRuntimeSnapshot",
+            "input": ".kokoro.capability.v1.ResolveRuntimeSnapshotRequest",
+            "output": ".kokoro.capability.v1.ResolveRuntimeSnapshotResponse",
+            "caller": "agent"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.model.v1",
+        "name": "ModelCatalogService",
+        "methods": [
+          {
+            "name": "ResolveModel",
+            "input": ".kokoro.model.v1.ResolveModelRequest",
+            "output": ".kokoro.model.v1.ResolveModelResponse",
+            "caller": "agent"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ChatCommandService",
+        "methods": [
+          {
+            "name": "CreateConversation",
+            "input": ".kokoro.chat.v1.CreateConversationRequest",
+            "output": ".kokoro.chat.v1.CreateConversationResponse",
+            "caller": "web"
+          },
+          {
+            "name": "SubmitMessage",
+            "input": ".kokoro.chat.v1.SubmitMessageRequest",
+            "output": ".kokoro.chat.v1.SubmitMessageResponse",
+            "caller": "web"
+          },
+          {
+            "name": "DecideInteraction",
+            "input": ".kokoro.chat.v1.DecideInteractionRequest",
+            "output": ".kokoro.chat.v1.DecideInteractionResponse",
+            "caller": "web"
+          }
+        ]
+      },
+      {
+        "package": "kokoro.chat.v1",
+        "name": "ChatQueryService",
+        "methods": [
+          {
+            "name": "ReadConversationSnapshot",
+            "input": ".kokoro.chat.v1.ReadConversationSnapshotRequest",
+            "output": ".kokoro.chat.v1.ReadConversationSnapshotResponse",
+            "caller": "web"
+          },
+          {
+            "name": "ListConversations",
+            "input": ".kokoro.chat.v1.ListConversationsRequest",
+            "output": ".kokoro.chat.v1.ListConversationsResponse",
+            "caller": "web"
+          },
+          {
+            "name": "StreamConversationEvents",
+            "input": ".kokoro.chat.v1.StreamConversationEventsRequest",
+            "output": ".kokoro.chat.v1.StreamConversationEventsResponse",
+            "caller": "web",
+            "serverStreaming": true
+          }
+        ]
+      },
+      {
+        "package": "kokoro.agent.v1",
+        "name": "AgentRuntimeService",
+        "methods": [
+          {
+            "name": "LaunchRun",
+            "input": ".kokoro.agent.v1.LaunchRunRequest",
+            "output": ".kokoro.agent.v1.LaunchRunResponse",
+            "caller": "chat"
+          },
+          {
+            "name": "ApplyControl",
+            "input": ".kokoro.agent.v1.ApplyControlRequest",
+            "output": ".kokoro.agent.v1.ApplyControlResponse",
+            "caller": "chat"
+          },
+          {
+            "name": "ReadRunEvidence",
+            "input": ".kokoro.agent.v1.ReadRunEvidenceRequest",
+            "output": ".kokoro.agent.v1.ReadRunEvidenceResponse",
+            "caller": "chat"
+          },
+          {
+            "name": "AckProjection",
+            "input": ".kokoro.agent.v1.AckProjectionRequest",
+            "output": ".kokoro.agent.v1.AckProjectionResponse",
+            "caller": "chat"
+          }
+        ]
+      }
+    ]
+  },
+  "agentEvents": {
+    "envelope": ".kokoro.agent.v1.AgentEvent",
+    "variants": [
+      {
+        "fieldNumber": 20,
+        "fieldName": "run_started",
+        "message": ".kokoro.agent.v1.RunStarted",
+        "internalKind": "run.started"
+      },
+      {
+        "fieldNumber": 21,
+        "fieldName": "thinking_delta",
+        "message": ".kokoro.agent.v1.ThinkingDelta",
+        "internalKind": "thinking.delta"
+      },
+      {
+        "fieldNumber": 22,
+        "fieldName": "message_delta",
+        "message": ".kokoro.agent.v1.MessageDelta",
+        "internalKind": "message.delta"
+      },
+      {
+        "fieldNumber": 23,
+        "fieldName": "message_completed",
+        "message": ".kokoro.agent.v1.MessageCompleted",
+        "internalKind": "message.completed"
+      },
+      {
+        "fieldNumber": 24,
+        "fieldName": "tool_invoked",
+        "message": ".kokoro.agent.v1.ToolInvoked",
+        "internalKind": "tool.invoked"
+      },
+      {
+        "fieldNumber": 25,
+        "fieldName": "tool_output_delta",
+        "message": ".kokoro.agent.v1.ToolOutputDelta",
+        "internalKind": "tool.output.delta"
+      },
+      {
+        "fieldNumber": 26,
+        "fieldName": "tool_awaiting_approval",
+        "message": ".kokoro.agent.v1.ToolAwaitingApproval",
+        "internalKind": "tool.awaiting_approval"
+      },
+      {
+        "fieldNumber": 27,
+        "fieldName": "tool_returned",
+        "message": ".kokoro.agent.v1.ToolReturned",
+        "internalKind": "tool.returned"
+      },
+      {
+        "fieldNumber": 28,
+        "fieldName": "todo_updated",
+        "message": ".kokoro.agent.v1.TodoUpdated",
+        "internalKind": "todo.updated"
+      },
+      {
+        "fieldNumber": 29,
+        "fieldName": "subagent_started",
+        "message": ".kokoro.agent.v1.SubagentStarted",
+        "internalKind": "subagent.started"
+      },
+      {
+        "fieldNumber": 30,
+        "fieldName": "subagent_finished",
+        "message": ".kokoro.agent.v1.SubagentFinished",
+        "internalKind": "subagent.finished"
+      },
+      {
+        "fieldNumber": 31,
+        "fieldName": "subagent_thinking_delta",
+        "message": ".kokoro.agent.v1.SubagentThinkingDelta",
+        "internalKind": "subagent.thinking.delta"
+      },
+      {
+        "fieldNumber": 32,
+        "fieldName": "subagent_text_delta",
+        "message": ".kokoro.agent.v1.SubagentTextDelta",
+        "internalKind": "subagent.text.delta"
+      },
+      {
+        "fieldNumber": 33,
+        "fieldName": "subagent_text_completed",
+        "message": ".kokoro.agent.v1.SubagentTextCompleted",
+        "internalKind": "subagent.text.completed"
+      },
+      {
+        "fieldNumber": 34,
+        "fieldName": "subagent_tool_invoked",
+        "message": ".kokoro.agent.v1.SubagentToolInvoked",
+        "internalKind": "subagent.tool.invoked"
+      },
+      {
+        "fieldNumber": 35,
+        "fieldName": "subagent_tool_returned",
+        "message": ".kokoro.agent.v1.SubagentToolReturned",
+        "internalKind": "subagent.tool.returned"
+      },
+      {
+        "fieldNumber": 36,
+        "fieldName": "delivery_created",
+        "message": ".kokoro.agent.v1.DeliveryCreated",
+        "internalKind": "delivery.created"
+      },
+      {
+        "fieldNumber": 37,
+        "fieldName": "run_control_receipt",
+        "message": ".kokoro.agent.v1.RunControlReceipt",
+        "internalKind": "run.control.receipt"
+      },
+      {
+        "fieldNumber": 38,
+        "fieldName": "run_completed",
+        "message": ".kokoro.agent.v1.RunCompleted",
+        "internalKind": "run.completed"
+      },
+      {
+        "fieldNumber": 39,
+        "fieldName": "run_failed",
+        "message": ".kokoro.agent.v1.RunFailed",
+        "internalKind": "run.failed"
+      }
+    ]
+  },
+  "http": {
+    "openapiVersion": "3.1.0",
+    "operations": [
+      {
+        "operationId": "requestMagicLink",
+        "method": "post",
+        "path": "/api/auth/magic-link/request",
+        "successStatus": 202,
+        "successHeaders": {
+          "Set-Cookie": "kokoro_auth_nonce=<derived>; Path=/api/auth; Max-Age=900; HttpOnly; Secure; SameSite=Lax"
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^[!-~]+$"
+            }
+          }
+        ],
+        "requestBodySchema": "RequestMagicLinkHttpRequest",
+        "responseSchema": "RequestMagicLinkHttpResponse",
+        "requiresIdempotencyKey": true,
+        "errorStatuses": [
+          400,
+          403,
+          429,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "consumeMagicLink",
+        "method": "get",
+        "path": "/api/auth/callback",
+        "successStatus": 303,
+        "successHeaders": {
+          "Location": "/",
+          "Set-Cookie": [
+            "kokoro_session=<sealed>; Path=/; Max-Age=min(refresh_expires_at-now,2592000); HttpOnly; Secure; SameSite=Lax",
+            "kokoro_auth_nonce=; Path=/api/auth; Max-Age=0; HttpOnly; Secure; SameSite=Lax"
+          ],
+          "Referrer-Policy": "no-referrer"
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "kokoro_auth_nonce",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "Empty",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [],
+        "alternateResponses": {
+          "iamFailure": {
+            "status": 303,
+            "headers": {
+              "Location": "/?auth=link_unavailable",
+              "Set-Cookie": "kokoro_auth_nonce=; Path=/api/auth; Max-Age=0; HttpOnly; Secure; SameSite=Lax",
+              "Referrer-Policy": "no-referrer"
+            },
+            "body": null
+          }
+        }
+      },
+      {
+        "operationId": "logout",
+        "method": "post",
+        "path": "/api/auth/logout",
+        "successStatus": 204,
+        "successHeaders": {
+          "Set-Cookie": "kokoro_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax"
+        },
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "Empty",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [
+          403
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "getSessionState",
+        "method": "get",
+        "path": "/api/auth/session-state",
+        "successStatus": 200,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "SessionStateHttpResponse",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "createConversation",
+        "method": "post",
+        "path": "/api/session/conversations",
+        "successStatus": 201,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^[!-~]+$"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": "CreateConversationHttpRequest",
+        "responseSchema": "kokoro.chat.v1.CreateConversationResponse",
+        "requiresIdempotencyKey": true,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          409,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "listConversations",
+        "method": "get",
+        "path": "/api/session/conversations",
+        "successStatus": 200,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "kokoro.chat.v1.ListConversationsResponse",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "readConversationSnapshot",
+        "method": "get",
+        "path": "/api/session/conversations/{conversation_id}",
+        "successStatus": 200,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "kokoro.chat.v1.ReadConversationSnapshotResponse",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          404,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "submitMessage",
+        "method": "post",
+        "path": "/api/session/conversations/{conversation_id}/messages",
+        "successStatus": 202,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^[!-~]+$"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": "SubmitMessageHttpRequest",
+        "responseSchema": "kokoro.chat.v1.SubmitMessageResponse",
+        "requiresIdempotencyKey": true,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          404,
+          409,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "decideInteraction",
+        "method": "post",
+        "path": "/api/session/conversations/{conversation_id}/interactions/{interaction_id}/decisions",
+        "successStatus": 202,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "interaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128,
+              "pattern": "^[!-~]+$"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": "DecideInteractionHttpRequest",
+        "responseSchema": "kokoro.chat.v1.DecideInteractionResponse",
+        "requiresIdempotencyKey": true,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          404,
+          409,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      },
+      {
+        "operationId": "streamConversationEvents",
+        "method": "get",
+        "path": "/api/session/conversations/{conversation_id}/events",
+        "successStatus": 200,
+        "successHeaders": {},
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "after_seq",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "Last-Event-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kokoro_session",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBodySchema": null,
+        "responseSchema": "text/event-stream",
+        "requiresIdempotencyKey": false,
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          404,
+          409,
+          503,
+          500
+        ],
+        "alternateResponses": {}
+      }
+    ],
+    "errorBody": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "error"
+      ],
+      "properties": [
+        {
+          "name": "error",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "request_id",
+            "message",
+            "retryable"
+          ],
+          "properties": [
+            {
+              "name": "code",
+              "type": "string",
+              "enumSource": "kokoro.common.v1.ErrorCode lower_snake without ERROR_CODE_ prefix"
+            },
+            {
+              "name": "request_id",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "name": "retryable",
+              "type": "boolean"
+            },
+            {
+              "name": "current_generation",
+              "type": "string",
+              "pattern": "^[0-9]+$",
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    "errorStatusByCode": {
+      "invalid_argument": 400,
+      "unauthenticated": 401,
+      "permission_denied": 403,
+      "not_found": 404,
+      "command_digest_mismatch": 409,
+      "conflict": 409,
+      "precondition_failed": 409,
+      "stale_generation": 409,
+      "snapshot_required": 409,
+      "dependency_unavailable": 503,
+      "rate_limited": 429,
+      "internal": 500,
+      "magic_link_invalid": 400,
+      "magic_link_expired": 410,
+      "magic_link_consumed": 409,
+      "auth_session_replayed": 401,
+      "auth_session_revoked": 401,
+      "conversation_run_active": 409,
+      "conversation_scope_mismatch": 403,
+      "interaction_not_pending": 409,
+      "agent_admission_rejected": 409
+    },
+    "browserJsonMapping": {
+      "uint64": "JSON safe nonnegative integer, reject values above 9007199254740991 before browser response",
+      "enum": "lower_snake string with the type prefix removed",
+      "bytesPayloadJson": "BFF decodes canonical UTF-8 JSON bytes, validates the declared strict payload schema and returns JSON object/value; never base64 in browser DTO",
+      "timestamp": "RFC3339 UTC string",
+      "uuid": "canonical lowercase UUID string",
+      "optional": "property omitted when absent, never invented default"
+    },
+    "jwks": {
+      "method": "get",
+      "path": "/.well-known/jwks.json",
+      "status": 200,
+      "caller": "public"
+    },
+    "schemas": [
+      {
+        "name": "Empty",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [],
+        "properties": []
+      },
+      {
+        "name": "RequestMagicLinkHttpRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "email"
+        ],
+        "properties": [
+          {
+            "name": "email",
+            "type": "string",
+            "format": "email"
+          }
+        ]
+      },
+      {
+        "name": "RequestMagicLinkHttpResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request_id",
+          "magic_link_id",
+          "expires_at"
+        ],
+        "properties": [
+          {
+            "name": "request_id",
+            "type": "string"
+          },
+          {
+            "name": "magic_link_id",
+            "type": "string",
+            "format": "uuid"
+          },
+          {
+            "name": "expires_at",
+            "type": "string",
+            "format": "date-time"
+          }
+        ]
+      },
+      {
+        "name": "SessionStateHttpResponse",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authenticated"
+        ],
+        "properties": [
+          {
+            "name": "authenticated",
+            "type": "boolean"
+          },
+          {
+            "name": "principal_id",
+            "type": "string",
+            "format": "uuid",
+            "optional": true
+          },
+          {
+            "name": "site_id",
+            "type": "string",
+            "format": "uuid",
+            "optional": true
+          },
+          {
+            "name": "organization_id",
+            "type": "string",
+            "format": "uuid",
+            "optional": true
+          },
+          {
+            "name": "auth_session_id",
+            "type": "string",
+            "format": "uuid",
+            "optional": true
+          },
+          {
+            "name": "expires_at",
+            "type": "string",
+            "format": "date-time",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "CreateConversationHttpRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": [
+          {
+            "name": "title",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        ]
+      },
+      {
+        "name": "SubmitMessageHttpRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "content"
+        ],
+        "properties": [
+          {
+            "name": "content",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200000
+          },
+          {
+            "name": "requested_model_label",
+            "type": "string",
+            "optional": true
+          },
+          {
+            "name": "requested_agent_key",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "ControlDecisionHttp",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "target_id",
+          "payload"
+        ],
+        "properties": [
+          {
+            "name": "kind",
+            "type": "string",
+            "enum": [
+              "approve",
+              "edit",
+              "reject",
+              "respond",
+              "submit"
+            ]
+          },
+          {
+            "name": "target_id",
+            "type": "string",
+            "minLength": 1
+          },
+          {
+            "name": "payload",
+            "type": "object"
+          }
+        ]
+      },
+      {
+        "name": "DecideInteractionHttpRequest",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_generation",
+          "decisions"
+        ],
+        "properties": [
+          {
+            "name": "expected_generation",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          {
+            "name": "decisions",
+            "type": "array",
+            "minItems": 1,
+            "uniqueBy": "target_id",
+            "items": "ControlDecisionHttp"
+          }
+        ]
+      }
+    ]
+  },
+  "sse": {
+    "operationId": "streamConversationEvents",
+    "id": "decimal seq",
+    "eventLine": "not required and not authoritative",
+    "dataFields": [
+      {
+        "name": "event_id",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "seq",
+        "type": "javascript-safe-nonnegative-integer",
+        "required": true
+      },
+      {
+        "name": "session_id",
+        "type": "string",
+        "required": true,
+        "mapsFrom": "conversation_id"
+      },
+      {
+        "name": "run_id",
+        "type": "string",
+        "required": true,
+        "mapsFrom": "chat_run_launch.launch_id"
+      },
+      {
+        "name": "timestamp",
+        "type": "rfc3339-string",
+        "required": true
+      },
+      {
+        "name": "kind",
+        "type": "existing-web-session-event-kind",
+        "required": true
+      },
+      {
+        "name": "payload",
+        "type": "existing-web-kind-discriminated-payload",
+        "required": true
+      }
+    ],
+    "cursorRules": [
+      "after_seq and Last-Event-ID must match when both present",
+      "emit only committed seq greater than cursor in ascending order",
+      "stale cursor returns 409 SNAPSHOT_REQUIRED before SSE headers",
+      "heartbeat comments carry no sequence"
+    ],
+    "typeDefinitions": {
+      "json-object": {
+        "type": "object"
+      },
+      "json-value": {
+        "oneOf": [
+          "null",
+          "boolean",
+          "number",
+          "string",
+          "array",
+          "object"
+        ]
+      },
+      "decision-string-array": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "edit",
+            "reject",
+            "respond",
+            "submit"
+          ]
+        }
+      },
+      "interaction-kind-string": {
+        "type": "string",
+        "enum": [
+          "tool_approval",
+          "ask_user_question",
+          "result_review",
+          "input"
+        ]
+      },
+      "risk-object": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "level",
+          "source",
+          "reason"
+        ],
+        "properties": [
+          {
+            "name": "level",
+            "type": "string"
+          },
+          {
+            "name": "source",
+            "type": "string"
+          },
+          {
+            "name": "reason",
+            "type": "string"
+          }
+        ]
+      },
+      "unique-string-array": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uniqueItems": true
+      },
+      "todo-array": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "content",
+            "status"
+          ],
+          "properties": [
+            {
+              "name": "content",
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "name": "status",
+              "type": "string",
+              "enum": [
+                "pending",
+                "in_progress",
+                "completed"
+              ]
+            }
+          ]
+        }
+      },
+      "subagent-source-string": {
+        "type": "string",
+        "enum": [
+          "built-in",
+          "config-custom",
+          "runtime-custom"
+        ]
+      },
+      "completed-or-cancelled": {
+        "type": "string",
+        "enum": [
+          "completed",
+          "cancelled"
+        ]
+      },
+      "nullable-token-usage": {
+        "oneOf": [
+          "null",
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "input_tokens",
+              "output_tokens"
+            ],
+            "properties": [
+              {
+                "name": "input_tokens",
+                "type": "safe-integer"
+              },
+              {
+                "name": "output_tokens",
+                "type": "safe-integer"
+              }
+            ]
+          }
+        ]
+      },
+      "run-failure-code-string": {
+        "type": "string",
+        "enum": [
+          "token_budget_exceeded",
+          "recursion_limit_exceeded",
+          "assembly_failed",
+          "enqueue_failed",
+          "dispatch_exhausted",
+          "contract_incompatible",
+          "internal_error",
+          "agent_admission_rejected"
+        ]
+      },
+      "safe-nonnegative-integer": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    },
+    "projectionMappings": {
+      "interactionKind": {
+        "INTERACTION_KIND_APPROVAL": "tool_approval",
+        "INTERACTION_KIND_QUESTION": "ask_user_question",
+        "INTERACTION_KIND_REVIEW": "result_review",
+        "INTERACTION_KIND_INPUT": "input"
+      },
+      "subagentSource": {
+        "SUBAGENT_SOURCE_BUILT_IN": "built-in",
+        "SUBAGENT_SOURCE_CONFIG_CUSTOM": "config-custom",
+        "SUBAGENT_SOURCE_RUNTIME_CUSTOM": "runtime-custom"
+      },
+      "runUsage": "Agent RunUsage projects only input_tokens and output_tokens into the strict browser token_usage object; absent usage maps null/omitted as declared",
+      "browserRunId": "all owner and Agent events map chat_run_launch.launch_id to browser run_id"
+    },
+    "browserEvents": [
+      {
+        "kind": "session.created",
+        "payload": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "owner_id",
+            "type": "string",
+            "required": true,
+            "mapsFrom": "chat_conversation.organization_id"
+          }
+        ]
+      },
+      {
+        "kind": "run.created",
+        "payload": [
+          {
+            "name": "run_id",
+            "type": "string",
+            "required": true,
+            "mapsFrom": "chat_run_launch.launch_id"
+          }
+        ]
+      },
+      {
+        "kind": "message.user",
+        "payload": [
+          {
+            "name": "message_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "message.delta",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "delta",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "message.completed",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "thinking.delta",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "delta",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "tool.invoked",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "args",
+            "type": "json-object",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "tool.output.delta",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "delta",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "tool.awaiting_approval",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "args",
+            "type": "json-object",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "allowed_decisions",
+            "type": "decision-string-array",
+            "required": true
+          },
+          {
+            "name": "kind",
+            "type": "interaction-kind-string",
+            "required": true
+          },
+          {
+            "name": "risk",
+            "type": "risk-object",
+            "required": false
+          },
+          {
+            "name": "editable",
+            "type": "boolean",
+            "required": true
+          },
+          {
+            "name": "input_schema",
+            "type": "json-object",
+            "required": false
+          },
+          {
+            "name": "pending_tool_ids",
+            "type": "unique-string-array",
+            "required": true
+          },
+          {
+            "name": "result",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "interaction_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interaction_generation",
+            "type": "safe-nonnegative-integer",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "tool.returned",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "result",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "is_error",
+            "type": "boolean",
+            "required": true
+          },
+          {
+            "name": "truncated",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "rejected",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "reject_reason",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "responded",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "summary",
+            "type": "json-object",
+            "required": false
+          }
+        ]
+      },
+      {
+        "kind": "delivery.created",
+        "payload": [
+          {
+            "name": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "mime",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "size",
+            "type": "safe-nonnegative-integer",
+            "required": true
+          },
+          {
+            "name": "content_hash",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "kind": "todo.updated",
+        "payload": [
+          {
+            "name": "todos",
+            "type": "todo-array",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.started",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "source",
+            "type": "subagent-source-string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.finished",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_type",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "source",
+            "type": "subagent-source-string",
+            "required": true
+          },
+          {
+            "name": "failed",
+            "type": "boolean",
+            "required": false
+          },
+          {
+            "name": "error",
+            "type": "string",
+            "required": false
+          }
+        ]
+      },
+      {
+        "kind": "subagent.thinking.delta",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "delta",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.text.delta",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.text.completed",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.tool.invoked",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "args",
+            "type": "json-object",
+            "required": true
+          }
+        ]
+      },
+      {
+        "kind": "subagent.tool.returned",
+        "payload": [
+          {
+            "name": "segment_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "subagent_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "tool_id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "result",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "is_error",
+            "type": "boolean",
+            "required": true
+          },
+          {
+            "name": "truncated",
+            "type": "boolean",
+            "required": false
+          }
+        ]
+      },
+      {
+        "kind": "run.completed",
+        "payload": [
+          {
+            "name": "status",
+            "type": "completed-or-cancelled",
+            "required": true
+          },
+          {
+            "name": "token_usage",
+            "type": "nullable-token-usage",
+            "required": false
+          }
+        ]
+      },
+      {
+        "kind": "run.failed",
+        "payload": [
+          {
+            "name": "code",
+            "type": "run-failure-code-string",
+            "required": true
+          },
+          {
+            "name": "error_kind",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    ],
+    "browserPayloadExtensions": {
+      "tool.awaiting_approval": {
+        "required": [
+          "interaction_id",
+          "interaction_generation"
+        ],
+        "semantics": "one Chat interaction represents the complete pause frame; a single decision command carries the exact unique decision target set"
+      }
+    },
+    "admissionFailure": {
+      "kind": "run.failed",
+      "code": "agent_admission_rejected",
+      "owner": "chat",
+      "browserRunId": "launch_id",
+      "convergence": "same transaction updates launch and assistant to failed, removes active_run, appends one synthetic terminal event; replay is exact"
+    }
+  },
+  "consumerFileClosure": {
+    "kokoro-site": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/site/v1/site.proto"
+    ],
+    "kokoro-iam": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/iam/v1/authentication.proto",
+      "kokoro/iam/v1/authorization.proto"
+    ],
+    "kokoro-model": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/model/v1/model_catalog.proto"
+    ],
+    "kokoro-capability": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/capability/v1/capability_runtime.proto"
+    ],
+    "kokoro-chat": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/chat/v1/chat.proto",
+      "kokoro/iam/v1/authorization.proto",
+      "kokoro/agent/v1/agent_events.proto",
+      "kokoro/agent/v1/agent_runtime.proto"
+    ],
+    "kokoro-agent": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/agent/v1/agent_events.proto",
+      "kokoro/agent/v1/agent_runtime.proto",
+      "kokoro/capability/v1/capability_runtime.proto",
+      "kokoro/model/v1/model_catalog.proto"
+    ],
+    "kokoro-web": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/site/v1/site.proto",
+      "kokoro/iam/v1/authentication.proto",
+      "kokoro/chat/v1/chat.proto"
+    ],
+    "root-e2e": [
+      "kokoro/common/v1/common.proto",
+      "kokoro/site/v1/site.proto",
+      "kokoro/iam/v1/authentication.proto",
+      "kokoro/chat/v1/chat.proto"
+    ]
+  },
+  "consumerCallerMap": {
+    "web": [
+      "SiteService",
+      "IamAuthenticationService",
+      "ChatCommandService",
+      "ChatQueryService"
+    ],
+    "chat": [
+      "IamAuthorizationService",
+      "AgentRuntimeService"
+    ],
+    "agent": [
+      "ModelCatalogService",
+      "CapabilityRuntimeService"
+    ],
+    "public": [
+      "GET /.well-known/jwks.json"
+    ]
+  }
+}
