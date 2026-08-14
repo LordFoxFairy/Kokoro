@@ -2,7 +2,7 @@
 artifact: contract-manifest
 version: "1.0"
 created: 2026-08-14
-status: proposed-for-review
+status: reviewed-frozen
 scope: kokoro-slice-a
 ---
 
