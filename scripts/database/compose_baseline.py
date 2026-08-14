@@ -88,7 +88,7 @@ def compose_baseline(root: Path, slice_name: str = "slice-a") -> bytes:
             f"-- sha256: {digest}\n"
         ).encode("ascii")
         chunks.append(header + source)
-    return b"\n".join(chunks) + b"\n"
+    return b"\n".join(chunks)
 
 
 def _output_manifest(

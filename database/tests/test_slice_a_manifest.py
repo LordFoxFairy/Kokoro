@@ -157,7 +157,7 @@ def test_composition_is_deterministic_and_normalizes_source_bytes(
     assert first == second
     assert b"\r" not in first
     cursor = 0
-    for segment in EXPECTED_SEGMENTS:
+    for index, segment in enumerate(EXPECTED_SEGMENTS):
         source = sources[segment]
         digest = hashlib.sha256(source).hexdigest().encode()
         header = (
@@ -169,7 +169,9 @@ def test_composition_is_deterministic_and_normalizes_source_bytes(
         )
         expected = header + source
         assert first[cursor : cursor + len(expected)] == expected
-        cursor += len(expected) + 1
+        cursor += len(expected)
+        if index < len(EXPECTED_SEGMENTS) - 1:
+            cursor += 1
     assert cursor == len(first)
 
 
@@ -201,6 +203,8 @@ def test_root_manifest_composes_the_complete_slice_a_segment_set() -> None:
     for segment in EXPECTED_SEGMENTS:
         assert f"-- source: database/schema/{segment}.sql\n".encode() in baseline
     assert baseline.count(b"-- source: database/schema/") == len(EXPECTED_SEGMENTS)
+    assert baseline.endswith(b"\n")
+    assert not baseline.endswith(b"\n\n")
 
 
 @pytest.mark.parametrize("dirty_kind", ["tracked", "untracked"])

@@ -305,7 +305,7 @@ The `agent_execution_manifest` Slice A shape includes `usage_mode`, `usage_polic
 ```bash
 test -z "$(git status --short)"
 uv run --project database --frozen python scripts/database/compose_baseline.py --write --require-clean
-git add database/baseline/kokoro.sql database/baseline/manifest.json
+git add -f database/baseline/kokoro.sql database/baseline/manifest.json
 git commit -m "build(database): compose Slice A baseline"
 uv run --project database --frozen python scripts/database/compose_baseline.py --check --require-clean
 uv run --isolated --project database --frozen pytest database/tests -q
