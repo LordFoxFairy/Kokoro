@@ -1,996 +1,439 @@
 #!/usr/bin/env python3
-"""Deterministic codegen: contract/spec/*.yaml -> the three repos' contract/ mirrors."""
-
 from __future__ import annotations
 
+import argparse
+import hashlib
+import importlib.metadata
+import json
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
+from typing import Any
 
-import yaml
-
-HERE = Path(__file__).resolve().parent
-ROOT = HERE.parent
-SPEC = HERE / "spec"
-
-AGENT = ROOT / "kokoro-agent/src/kokoro_agent/contract"
-SESSION = ROOT / "kokoro-session/src/contract"
-WEB = ROOT / "kokoro-web/apps/user/src/contract"
-HUB = ROOT / "kokoro-platform/kokoro-hub/src/contract"
-
-EVENTS_SRC = "contract/spec/events.yaml"
-CONTROL_SRC = "contract/spec/control.yaml"
-STREAMS_SRC = "contract/spec/streams.yaml"
-HTTP_SRC = "contract/spec/http.yaml"
+sys.path.insert(0, str(Path(__file__).parents[1]))
+from contract.validate_slice_a_manifest import validate as validate_manifest
 
 
-def load(name: str) -> dict:
-    return yaml.safe_load((SPEC / name).read_text())
-
-
-def py_header(src: str) -> str:
-    return (
-        f"# GENERATED — DO NOT EDIT. Source: {src}\n"
-        "# Regenerate: python3 contract/generate.py\n"
-    )
-
-
-def ts_header(src: str) -> str:
-    return (
-        f"// GENERATED — DO NOT EDIT. Source: {src}\n"
-        "// Regenerate: python3 contract/generate.py\n"
-    )
-
-
-def pascal(name: str) -> str:
-    return "".join(p.capitalize() for p in _split(name))
-
-
-def camel(name: str) -> str:
-    parts = _split(name)
-    head = parts[0][:1].lower() + parts[0][1:]
-    return head + "".join(p.capitalize() for p in parts[1:])
-
-
-def _split(name: str) -> list[str]:
-    out: list[str] = []
-    for part in name.replace(".", "_").split("_"):
-        out.append(part)
-    return out
-
-
-def enum_lit(values: list[str]) -> str:
-    return ", ".join(f'"{v}"' for v in values)
-
-
-# --------------------------------------------------------------------------- #
-# abstract type system: scalar | enum:<n> | array:<inner> | object:<Name>
-# --------------------------------------------------------------------------- #
-
-_ZOD_SCALAR = {
-    "string_nonempty": "z.string().min(1)",
-    "string": "z.string()",
-    "boolean": "z.boolean()",
-    "int": "z.number().int()",
-    "record": "z.record(z.unknown())",
-    "string_map": "z.record(z.string())",
-    "unknown": "z.unknown()",
-    "literal_true": "z.literal(true)",
-}
-_PY_SCALAR = {
-    "string_nonempty": "NonEmptyStr",
-    "string": "str",
-    "boolean": "bool",
-    "int": "int",
-    "record": "dict[str, JsonValue]",
-    "string_map": "dict[str, str]",
-    "unknown": "JsonValue",
+ROOT = Path(__file__).parents[1]
+REGISTERED_SOURCE_PATHS = (
+    ".node-version",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "pyproject.toml",
+    "uv.lock",
+    "contract/slice-a-contract-manifest.yaml",
+    "contract/validate_slice_a_manifest.py",
+    "contract/consumers.yaml",
+    "contract/proto",
+    "contract/openapi/slice-a-web-v1.yaml",
+    "contract/generate.py",
+)
+RUNTIME_SOURCE_FILES = (
+    ".node-version",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "pyproject.toml",
+    "uv.lock",
+    "contract/validate_slice_a_manifest.py",
+    "contract/generate.py",
+)
+EXPECTED_CONSUMER_POLICY = {
+    "kokoro-site": ("typescript", "src/generated/proto", False),
+    "kokoro-iam": ("typescript", "src/generated/proto", False),
+    "kokoro-model": ("typescript", "src/generated/proto", False),
+    "kokoro-capability": ("typescript", "src/generated/proto", False),
+    "kokoro-chat": ("typescript", "src/generated/proto", False),
+    "kokoro-agent": ("python", "src/kokoro_agent/generated", False),
+    "kokoro-web": ("typescript", "apps/user/src/generated/proto", True),
+    "root-e2e": ("python", "scripts/e2e/generated", False),
 }
 
 
-def zod_type(t: str, enums: dict) -> str:
-    if t in _ZOD_SCALAR:
-        return _ZOD_SCALAR[t]
-    if t.startswith("enum:"):
-        return f"z.enum([{enum_lit(enums[t[5:]])}])"
-    if t.startswith("array:"):
-        return f"z.array({zod_type(t[6:], enums)})"
-    if t.startswith("object:"):
-        return f"{camel(t[7:])}Schema"
-    raise ValueError(f"unmapped zod type {t!r}")
+class GenerationError(RuntimeError):
+    pass
 
 
-def enum_alias(name: str) -> str:
-    # allowed_decisions reuses resume_decision but reads clearer as AllowedDecision.
-    return "AllowedDecision" if name == "resume_decision" else pascal(name)
+def _run(command: list[str], *, cwd: Path, capture: bool = False) -> str:
+    completed = subprocess.run(command, cwd=cwd, check=False, text=True, capture_output=capture)
+    if completed.returncode:
+        detail = (completed.stderr or completed.stdout or "command failed").strip()
+        raise GenerationError(f"generator command failed: {' '.join(command)}: {detail}")
+    return completed.stdout.strip() if capture else ""
 
 
-def py_type(t: str, aliases: dict[str, str]) -> str:
-    if t in _PY_SCALAR:
-        return _PY_SCALAR[t]
-    if t.startswith("enum:"):
-        return aliases[t[5:]]
-    if t.startswith("array:"):
-        return f"list[{py_type(t[6:], aliases)}]"
-    if t.startswith("object:"):
-        return t[7:]
-    raise ValueError(f"unmapped python type {t!r}")
+def _git(root: Path, *args: str) -> str:
+    return _run(["git", *args], cwd=root, capture=True)
 
 
-def enum_names_in(types: list[str]) -> list[str]:
-    seen: list[str] = []
-    for t in types:
-        inner = t
-        while inner.startswith("array:"):
-            inner = inner[6:]
-        if inner.startswith("enum:"):
-            name = inner[5:]
-            if name not in seen:
-                seen.append(name)
-    return seen
+def _read_commit_file(root: Path, commit: str, relative: str) -> bytes:
+    completed = subprocess.run(
+        ["git", "show", f"{commit}:{relative}"],
+        cwd=root,
+        check=False,
+        capture_output=True,
+    )
+    if completed.returncode:
+        raise GenerationError(f"registered source missing at {commit}: {relative}")
+    return completed.stdout
 
 
-# --------------------------------------------------------------------------- #
-# field emission
-# --------------------------------------------------------------------------- #
+def _load_json_bytes(data: bytes, name: str) -> dict[str, Any]:
+    try:
+        value = json.loads(data)
+    except json.JSONDecodeError as exc:
+        raise GenerationError(f"invalid JSON-compatible YAML: {name}: {exc}") from exc
+    if not isinstance(value, dict):
+        raise GenerationError(f"source root must be object: {name}")
+    return value
 
 
-def py_field(f: dict, aliases: dict[str, str]) -> str:
-    base = py_type(f["type"], aliases)
-    if f.get("optional") or f.get("nullable"):
-        base = f"{base} | None"
-    suffix = " = None" if f.get("optional") else ""
-    return f"    {f['name']}: {base}{suffix}"
-
-
-def ts_field(f: dict, enums: dict) -> str:
-    z = zod_type(f["type"], enums)
-    if f.get("nullable"):
-        z += ".nullable()"
-    if f.get("optional"):
-        z += ".optional()"
-    return f"{f['name']}: {z}"
-
-
-# --------------------------------------------------------------------------- #
-# object emission
-# --------------------------------------------------------------------------- #
-
-
-def py_object(obj: dict, aliases: dict[str, str]) -> list[str]:
-    L = [f"class {obj['name']}(StrictModel):"]
-    fields = obj.get("fields") or []
-    if not fields:
-        L.append("    pass")
-        return L
-    L += [py_field(f, aliases) for f in fields]
-    return L
-
-
-def ts_object(obj: dict, enums: dict, *, export: bool) -> list[str]:
-    const = f"{camel(obj['name'])}Schema"
-    kw = "export const" if export else "const"
-    fields = obj.get("fields") or []
-    if not fields:
-        L = [f"{kw} {const} = z.object({{}}).strict()"]
-    else:
-        L = [f"{kw} {const} = z", "  .object({"]
-        L += [f"    {ts_field(f, enums)}," for f in fields]
-        L += ["  })", "  .strict()"]
-    if export:
-        L.append(f"export type {obj['name']} = z.infer<typeof {const}>")
-    return L
-
-
-# --------------------------------------------------------------------------- #
-# events: payload field resolution
-# --------------------------------------------------------------------------- #
-
-
-def event_field_type(spec: dict, field: str) -> str:
-    return spec["field_types"].get(field, "string_nonempty")
-
-
-def event_payload_fields(spec: dict, payload: list[str]) -> list[dict]:
-    optional = set(spec.get("payload_optional") or [])
-    nullable = set(spec.get("payload_nullable") or [])
-    fields: list[dict] = []
-    for entry in payload:
-        # 尾缀 `?` = 仅该 kind 局部可选（payload_optional 是全局按字段名生效，二者互补）。
-        local_optional = entry.endswith("?")
-        name = entry[:-1] if local_optional else entry
-        fields.append(
-            {
-                "name": name,
-                "type": event_field_type(spec, name),
-                "optional": local_optional or name in optional,
-                "nullable": name in nullable,
-            }
+def _verify_source(source_root: Path, source_commit: str) -> tuple[str, str]:
+    source_root = source_root.resolve()
+    git_top_level = Path(_git(source_root, "rev-parse", "--show-toplevel")).resolve()
+    if source_root != git_top_level:
+        raise GenerationError(
+            f"source root must be the Git top-level: expected {git_top_level}, got {source_root}"
         )
-    return fields
-
-
-def events_enum_aliases(spec: dict) -> dict[str, str]:
-    types = [f["type"] for obj in spec["objects"] for f in obj["fields"]]
-    for entry in spec["raw_kinds"]:
-        types += [event_field_type(spec, f) for f in (entry.get("payload") or [])]
-    return {name: enum_alias(name) for name in enum_names_in(types)}
-
-
-# --------------------------------------------------------------------------- #
-# agent/contract/events.py
-# --------------------------------------------------------------------------- #
-
-_PY_PREAMBLE = [
-    "from typing import Annotated, Literal, Union",
-    "",
-    "from pydantic import BaseModel, ConfigDict, Field, JsonValue, StringConstraints, TypeAdapter",
-    "",
-    "NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]",
-]
-
-
-def emit_events_py(spec: dict) -> str:
-    enums = spec["enums"]
-    notes = spec.get("notes", {})
-    aliases = events_enum_aliases(spec)
-
-    L = [py_header(EVENTS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += _PY_PREAMBLE
-    L.append("NonNegInt = Annotated[int, Field(ge=0)]")
-    L.append("")
-    for name, alias in aliases.items():
-        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
-    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
-
-    for obj in spec["objects"]:
-        L += ["", ""] + py_object(obj, aliases)
-
-    for entry in spec["raw_kinds"]:
-        kind = entry["kind"]
-        fields = event_payload_fields(spec, entry.get("payload") or [])
-        L += ["", "", f"class {pascal(kind)}Payload(StrictModel):"]
-        if not fields:
-            L.append("    pass")
-            continue
-        for f in fields:
-            note = notes.get(f"{kind}.{f['name']}")
-            if note:
-                L.append(f"    # {note}")
-            L.append(py_field(f, aliases))
-
-    for entry in spec["raw_kinds"]:
-        name = pascal(entry["kind"])
-        L += [
-            "",
-            "",
-            f"class {name}(StrictModel):",
-            f'    kind: Literal["{entry["kind"]}"]',
-            "    run_id: NonEmptyStr",
-            "    index: NonNegInt",
-            "    timestamp: int",
-            "    # R4 durable 身份位:critical 帧必带(per-run 连续 seq 从 1 起),live 帧缺席。",
-            "    durable_seq: Annotated[int, Field(ge=1)] | None = None",
-            "    event_id: NonEmptyStr | None = None",
-            f"    payload: {name}Payload",
-        ]
-
-    names = [pascal(e["kind"]) for e in spec["raw_kinds"]]
-    L += ["", "", "AgentEvent = Annotated[", "    Union["]
-    L += [f"        {n}," for n in names]
-    L += ["    ],", '    Field(discriminator="kind"),', "]", ""]
-    L.append("agent_event_adapter: TypeAdapter[AgentEvent] = TypeAdapter(AgentEvent)")
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# agent/contract/control.py
-# --------------------------------------------------------------------------- #
-
-
-def control_enum_aliases(spec: dict) -> dict[str, str]:
-    types = [f["type"] for obj in spec["objects"] for f in obj["fields"]]
-    for msg in spec["messages"]:
-        types += [f["type"] for f in msg["fields"] if f["type"] != "decision_message_list"]
-    return {name: enum_alias(name) for name in enum_names_in(types)}
-
-
-def emit_control_py(spec: dict) -> str:
-    enums = spec["enums"]
-    aliases = control_enum_aliases(spec)
-
-    L = [py_header(CONTROL_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += _PY_PREAMBLE
-    L.append("")
-    for name, alias in aliases.items():
-        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
-    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
-
-    for obj in spec["objects"]:
-        L += ["", ""] + py_object(obj, aliases)
-
-    arm_names = []
-    for arm in spec["resume_decisions"]:
-        cls = f"{arm['type'].capitalize()}Decision"
-        arm_names.append(cls)
-        L += ["", "", f"class {cls}(StrictModel):", f'    type: Literal["{arm["type"]}"]']
-        L += [py_field(f, aliases) for f in arm["fields"]]
-
-    L += ["", "", "ResumeDecision = Annotated[", "    Union[" + ", ".join(arm_names) + "],", '    Field(discriminator="type"),', "]"]
-
-    msg_names = []
-    for msg in spec["messages"]:
-        cls = pascal(msg["kind"])
-        msg_names.append(cls)
-        L += ["", "", f"class {cls}(StrictModel):", f'    kind: Literal["{msg["kind"]}"]']
-        for f in msg["fields"]:
-            if f["type"] == "decision_message_list":
-                L.append(f"    {f['name']}: Annotated[list[ResumeDecision], Field(min_length=1)]")
-            else:
-                L.append(py_field(f, aliases))
-
-    L += ["", "", "InboundMessage = Annotated[", "    Union[" + ", ".join(msg_names) + "],", '    Field(discriminator="kind"),', "]", ""]
-    L.append("inbound_adapter: TypeAdapter[InboundMessage] = TypeAdapter(InboundMessage)")
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# agent/contract/streams.py
-# --------------------------------------------------------------------------- #
-
-
-def emit_streams_py(spec: dict) -> str:
-    s = spec["streams"]
-    L = [py_header(STREAMS_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += [
-        f'{s["requests"]["const"]} = "{s["requests"]["name"]}"',
-        f'CONSUMER_GROUP = "{spec["consumer_group"]}"',
-        f'REQUESTS_MAXLEN = {s["requests"]["maxlen"]}',
-        f'RUN_EVENTS_MAXLEN = {s["run_events"]["maxlen"]}',
-        f'RUN_CONTROL_MAXLEN = {s["run_control"]["maxlen"]}',
-        f'LIVE_MAXLEN = {s["live"]["maxlen"]}',
-        f'BLOCK_MS = {spec["block_ms"]}',
-        "",
-        "",
-        "def run_events_stream(run_id: str) -> str:",
-        f'    return f"{s["run_events"]["template"]}"',
-        "",
-        "",
-        "def run_control_stream(run_id: str) -> str:",
-        f'    return f"{s["run_control"]["template"]}"',
-        "",
-        "",
-        "def live_stream(session_id: str) -> str:",
-        f'    return f"{s["live"]["template"]}"',
-        "",
-        "",
-        "def event_id(run_id: str, index: int) -> str:",
-        '    return f"{run_id}:{index}"',
-        "",
-        "",
-        "def lease_key(run_id: str) -> str:",
-        f'    return f"{spec["lease_key_template"]}"',
-    ]
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# TS events: shared payload consts + discriminated envelope union
-# --------------------------------------------------------------------------- #
-
-
-def _ts_payload_const(spec: dict, kind: str, fields: list[dict]) -> tuple[str, list[str]]:
-    enums = spec["enums"]
-    notes = spec.get("notes", {})
-    const = f"{camel(kind)}Payload"
-    if not fields:
-        return const, [f"const {const} = z.object({{}}).strict()"]
-    L = [f"const {const} = z", "  .object({"]
-    for f in fields:
-        note = notes.get(f"{kind}.{f['name']}")
-        if note:
-            L.append(f"    // {note}")
-        L.append(f"    {ts_field(f, enums)},")
-    L += ["  })", "  .strict()"]
-    return const, L
-
-
-def _ts_events_file(spec: dict, *, kinds: list[str], payloads: dict[str, list[dict]], export_const: str, envelope: list[str]) -> list[str]:
-    enums = spec["enums"]
-    L: list[str] = []
-    for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=False)
-        L.append("")
-    consts: dict[str, str] = {}
-    for kind in kinds:
-        const, defn = _ts_payload_const(spec, kind, payloads[kind])
-        consts[kind] = const
-        L += defn
-        L.append("")
-    L.append("const envelope = z")
-    L.append("  .object({")
-    L += [f"    {line}" for line in envelope]
-    L += ["  })", "  .strict()", ""]
-    L.append(f'export const {export_const} = z.discriminatedUnion("kind", [')
-    for kind in kinds:
-        L.append(f'  envelope.extend({{ kind: z.literal("{kind}"), payload: {consts[kind]} }}),')
-    L.append("])")
-    return L
-
-
-def emit_wire_events_ts(spec: dict) -> str:
-    kinds = [e["kind"] for e in spec["raw_kinds"]]
-    payloads = {e["kind"]: event_payload_fields(spec, e.get("payload") or []) for e in spec["raw_kinds"]}
-    envelope = [
-        "run_id: z.string().min(1),",
-        "index: z.number().int().nonnegative(),",
-        "timestamp: z.number().int(),",
-        "// R4 durable 身份位:critical 帧必带(per-run 连续 seq 从 1 起),live 帧缺席。",
-        "durable_seq: z.number().int().min(1).optional(),",
-        "event_id: z.string().min(1).optional(),",
-    ]
-    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
-    L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="wireEventSchema", envelope=envelope)
-    L += [
-        "",
-        "export type WireEvent = z.infer<typeof wireEventSchema>",
-        'export type WireEventKind = WireEvent["kind"]',
-        "",
-        "export function parseWireEvent(input: unknown): WireEvent {",
-        "  return wireEventSchema.parse(input)",
-        "}",
-    ]
-    return "\n".join(L) + "\n"
-
-
-def _browser_payloads(spec: dict) -> dict[str, list[dict]]:
-    by_kind = {e["kind"]: e.get("payload") or [] for e in spec["raw_kinds"]}
-    by_kind.update({e["kind"]: e.get("payload") or [] for e in spec["synthetic_kinds"]})
-    return {k: event_payload_fields(spec, by_kind[k]) for k in spec["browser_order"]}
-
-
-def emit_session_events_ts(spec: dict) -> str:
-    kinds = list(spec["browser_order"])
-    payloads = _browser_payloads(spec)
-    envelope = [
-        "event_id: z.string().min(1),",
-        "seq: z.number().int().nonnegative(),",
-        "session_id: z.string().min(1),",
-        "run_id: z.string().min(1),",
-        "timestamp: z.string().min(1),",
-    ]
-    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
-    L += _ts_events_file(spec, kinds=kinds, payloads=payloads, export_const="sessionEventSchema", envelope=envelope)
-    L += [
-        "",
-        "export type SessionEvent = z.infer<typeof sessionEventSchema>",
-        'export type SessionEventKind = SessionEvent["kind"]',
-        "",
-        "export function parseSessionEvent(input: unknown): SessionEvent {",
-        "  return sessionEventSchema.parse(input)",
-        "}",
-    ]
-    return "\n".join(L) + "\n"
-
-
-def emit_event_names_ts(spec: dict) -> str:
-    L = [ts_header(EVENTS_SRC).rstrip("\n"), "", "export const SESSION_EVENT_NAMES = ["]
-    for kind in spec["browser_order"]:
-        L.append(f'  "{kind}",')
-    L += ["] as const", "", "export type SessionEventName = (typeof SESSION_EVENT_NAMES)[number]"]
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# session + web /contract/control.ts  (byte-identical)
-# --------------------------------------------------------------------------- #
-
-
-def emit_control_ts(spec: dict) -> str:
-    enums = spec["enums"]
-    L = [ts_header(CONTROL_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
-
-    for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=True)
-        L.append("")
-
-    # Backend 便捷别名：RuntimeConfig.backend 的字面量联合（消费方按后端分派，如 namespace 解析）。
-    L.append('export type Backend = RuntimeConfig["backend"]')
-    L.append("")
-
-    arm_consts = []
-    for arm in spec["resume_decisions"]:
-        const = f"{arm['type']}DecisionSchema"
-        arm_consts.append(const)
-        parts = [f'type: z.literal("{arm["type"]}")']
-        parts += [ts_field(f, enums) for f in arm["fields"]]
-        L.append(f"const {const} = z.object({{ {', '.join(parts)} }}).strict()")
-    L.append('export const resumeDecisionSchema = z.discriminatedUnion("type", [')
-    L += [f"  {c}," for c in arm_consts]
-    L += [
-        "])",
-        "export type ResumeDecision = z.infer<typeof resumeDecisionSchema>",
-        'export type ResumeDecisionType = ResumeDecision["type"]',
-        "",
-    ]
-
-    for msg in spec["messages"]:
-        const = f"{camel(msg['kind'])}Schema"
-        L.append(f"export const {const} = z")
-        L.append("  .object({")
-        L.append(f'    kind: z.literal("{msg["kind"]}"),')
-        for f in msg["fields"]:
-            if f["type"] == "decision_message_list":
-                L.append(f"    {f['name']}: z.array(resumeDecisionSchema).min(1),")
-            else:
-                L.append(f"    {ts_field(f, enums)},")
-        L += ["  })", "  .strict()"]
-        L.append(f"export type {pascal(msg['kind'])} = z.infer<typeof {const}>")
-        L.append("")
-
-    L.append('export const inboundMessageSchema = z.discriminatedUnion("kind", [')
-    L += [f"  {camel(m['kind'])}Schema," for m in spec["messages"]]
-    L += ["])", "export type InboundMessage = z.infer<typeof inboundMessageSchema>"]
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# session/contract/streams.ts
-# --------------------------------------------------------------------------- #
-
-
-def _ts_template(tmpl: str, params: list[str]) -> str:
-    out = tmpl
-    for p in params:
-        out = out.replace("{" + p + "}", "${" + camel(p) + "}")
-    return out
-
-
-def emit_streams_ts(spec: dict) -> str:
-    s = spec["streams"]
-    L = [ts_header(STREAMS_SRC).rstrip("\n"), ""]
-    L += [
-        f'export const {s["requests"]["const"]} = "{s["requests"]["name"]}"',
-        f'export const CONSUMER_GROUP = "{spec["consumer_group"]}"',
-        f'export const REQUESTS_MAXLEN = {s["requests"]["maxlen"]}',
-        f'export const RUN_EVENTS_MAXLEN = {s["run_events"]["maxlen"]}',
-        f'export const RUN_CONTROL_MAXLEN = {s["run_control"]["maxlen"]}',
-        f'export const LIVE_MAXLEN = {s["live"]["maxlen"]}',
-        f'export const BLOCK_MS = {spec["block_ms"]}',
-        "",
-        "export function runEventsStream(runId: string): string {",
-        f'  return `{_ts_template(s["run_events"]["template"], ["run_id"])}`',
-        "}",
-        "",
-        "export function runControlStream(runId: string): string {",
-        f'  return `{_ts_template(s["run_control"]["template"], ["run_id"])}`',
-        "}",
-        "",
-        "export function liveStream(sessionId: string): string {",
-        f'  return `{_ts_template(s["live"]["template"], ["session_id"])}`',
-        "}",
-        "",
-        "export function eventId(runId: string, index: number): string {",
-        "  return `${runId}:${index}`",
-        "}",
-        "",
-        "export function leaseKey(runId: string): string {",
-        f'  return `{_ts_template(spec["lease_key_template"], ["run_id"])}`',
-        "}",
-    ]
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# session + web /contract/http.ts  (byte-identical)
-# --------------------------------------------------------------------------- #
-
-
-def emit_http_ts(spec: dict) -> str:
-    enums = spec["enums"]
-    ep = spec["endpoints"]
-    L = [ts_header(HTTP_SRC).rstrip("\n"), "", 'import { z } from "zod"']
-    L.append('import { resumeDecisionSchema } from "./control"')
-    L.append("")
-
-    for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=True)
-        L.append("")
-
-    snap = ep["snapshot"]
-    L.append(
-        f"export function parseSessionSnapshot(input: unknown): {snap['response_object']} {{"
+    commit = _git(source_root, "rev-parse", "--verify", f"{source_commit}^{{commit}}")
+    tree = _git(source_root, "rev-parse", f"{commit}^{{tree}}")
+    dirty = _git(source_root, "status", "--porcelain", "--", *REGISTERED_SOURCE_PATHS)
+    if dirty:
+        raise GenerationError(f"registered contract source is dirty: {dirty.splitlines()[0]}")
+    drift = subprocess.run(
+        ["git", "diff", "--quiet", commit, "HEAD", "--", *REGISTERED_SOURCE_PATHS],
+        cwd=source_root,
+        check=False,
     )
-    L.append(f"  return {snap['response_const']}.parse(input)")
-    L.append("}")
-    L.append("")
-
-    start = ep["create_message"]
-    L.append(f"export const {start['body_const']} = z")
-    L.append("  .object({")
-    L += [f"    {ts_field(f, enums)}," for f in start["body"]]
-    L += ["  })", "  .strict()"]
-    L.append(f"export type MessageCreateParams = z.infer<typeof {start['body_const']}>")
-    L.append("")
-    L.append(f"export const {start['receipt_const']} = z")
-    L.append("  .object({")
-    L += [f"    {ts_field(f, enums)}," for f in start["receipt"]]
-    L += ["  })", "  .strict()"]
-    L.append(f"export type MessageCreateReceipt = z.infer<typeof {start['receipt_const']}>")
-    L.append("")
-
-    ctrl = ep["run_control"]
-    L.append(f'export const {ctrl["body_const"]} = z.discriminatedUnion("kind", [')
-    L.append(
-        '  z.object({ kind: z.literal("run.cancel"), decision_id: z.string().min(1) }).strict(),'
-    )
-    L.append(
-        '  z.object({ kind: z.literal("run.resume"), decision_id: z.string().min(1), '
-        "decisions: z.array(resumeDecisionSchema).min(1) }).strict(),"
-    )
-    L.append("])")
-    L.append(f"export type RunControlBody = z.infer<typeof {ctrl['body_const']}>")
-    L.append("")
-    receipt = ", ".join(ts_field(f, enums) for f in ctrl["receipt"])
-    L.append(f"export const {ctrl['receipt_const']} = z.object({{ {receipt} }}).strict()")
-    L.append(f"export type RunControlReceipt = z.infer<typeof {ctrl['receipt_const']}>")
-    L.append("")
-
-    ren = ep["rename_session"]
-    ren_body = ", ".join(ts_field(f, enums) for f in ren["body"])
-    L.append(f"export const {ren['body_const']} = z.object({{ {ren_body} }}).strict()")
-    L.append(f"export type RenameSessionBody = z.infer<typeof {ren['body_const']}>")
-    ren_rcpt = ", ".join(ts_field(f, enums) for f in ren["receipt"])
-    L.append(f"export const {ren['receipt_const']} = z.object({{ {ren_rcpt} }}).strict()")
-    L.append(f"export type RenameSessionReceipt = z.infer<typeof {ren['receipt_const']}>")
-    L.append("")
-
-    shr = ep["share_create"]
-    shr_fields = ", ".join(ts_field(f, enums) for f in shr["receipt"])
-    L.append(f"export const {shr['receipt_const']} = z.object({{ {shr_fields} }}).strict()")
-    L.append(f"export type ShareReceipt = z.infer<typeof {shr['receipt_const']}>")
-    L.append("")
-
-    rcpt = ep["control_receipt"]
-    rcpt_fields = ", ".join(ts_field(f, enums) for f in rcpt["receipt"])
-    L.append(f"export const {rcpt['receipt_const']} = z.object({{ {rcpt_fields} }}).strict()")
-    L.append(f"export type ControlReceiptView = z.infer<typeof {rcpt['receipt_const']}>")
-    L.append("")
-
-    dele = ep["delete_session"]
-    dele_receipt = ", ".join(ts_field(f, enums) for f in dele["receipt"])
-    L.append(f"export const {dele['receipt_const']} = z.object({{ {dele_receipt} }}).strict()")
-    L.append(f"export type DeleteSessionReceipt = z.infer<typeof {dele['receipt_const']}>")
-    L.append("")
-
-    err = ", ".join(ts_field(f, enums) for f in spec["error"])
-    L.append(f"export const {spec['error_const']} = z.object({{ {err} }}).strict()")
-    L.append(f"export type ErrorResponse = z.infer<typeof {spec['error_const']}>")
-    L.append(f'export const SESSION_RUN_ACTIVE = "{spec["error_conflict_code"]}"')
-    L.append(f'export const LAST_EVENT_ID_HEADER = "{spec["last_event_id_header"]}"')
-    L.append("")
-
-    for key in (
-        "create_message",
-        "snapshot",
-        "stream",
-        "file",
-        "delivery_content",
-        "run_control",
-        "control_receipt",
-        "list_sessions",
-        "billing_summary",
-        "billing_ledger",
-        "billing_by_model",
-        "model_candidates",
-        "agent_candidates",
-        "list_artifacts",
-        "artifact_content",
-        "share_create",
-        "shared_snapshot",
-        "rename_session",
-    ):
-        e = ep[key]
-        sig = ", ".join(f"{camel(p)}: string" for p in e["params"])
-        body = _ts_template(e["path_template"], e["params"])
-        L.append(f"export function {e['path_fn']}({sig}): string {{")
-        L.append(f"  return `{body}`")
-        L.append("}")
-    return "\n".join(L) + "\n"
+    if drift.returncode not in {0, 1}:
+        raise GenerationError("failed to compare registered source with the requested commit")
+    if drift.returncode == 1:
+        raise GenerationError("checked-out registered source differs from requested source commit")
+    return commit, tree
 
 
-# --------------------------------------------------------------------------- #
-# agent/contract/__init__.py
-# --------------------------------------------------------------------------- #
+def _materialize_sources(source_root: Path, commit: str, target: Path, proto_files: list[str], include_openapi: bool) -> tuple[bytes, bytes]:
+    manifest_bytes = _read_commit_file(source_root, commit, "contract/slice-a-contract-manifest.yaml")
+    consumers_bytes = _read_commit_file(source_root, commit, "contract/consumers.yaml")
+    for relative in proto_files:
+        destination = target / "proto" / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(_read_commit_file(source_root, commit, f"contract/proto/{relative}"))
+    if include_openapi:
+        destination = target / "openapi/slice-a-web-v1.yaml"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(_read_commit_file(source_root, commit, "contract/openapi/slice-a-web-v1.yaml"))
+    return manifest_bytes, consumers_bytes
 
 
-def emit_init_py(events: dict, control: dict, streams: dict) -> str:
-    events_names = [
-        "AgentEvent",
-        "agent_event_adapter",
-        *events_enum_aliases(events).values(),
-        *(o["name"] for o in events["objects"]),
-        *(pascal(e["kind"]) for e in events["raw_kinds"]),
-        *(f"{pascal(e['kind'])}Payload" for e in events["raw_kinds"]),
+def _validate_registry(consumers: dict[str, Any], manifest: dict[str, Any]) -> None:
+    if consumers.get("version") != 1 or set(consumers) != {"version", "consumers"}:
+        raise GenerationError("consumer registry version or shape drift")
+    entries = consumers.get("consumers")
+    if not isinstance(entries, dict) or set(entries) != set(EXPECTED_CONSUMER_POLICY):
+        raise GenerationError("consumer registry inventory drift")
+    if set(entries) != set(manifest.get("consumerFileClosure", {})):
+        raise GenerationError("consumer registry differs from machine authority")
+    for name, policy in EXPECTED_CONSUMER_POLICY.items():
+        entry = entries[name]
+        if not isinstance(entry, dict) or set(entry) != {"language", "output", "includeOpenApi", "protoFiles"}:
+            raise GenerationError(f"consumer registry shape drift: {name}")
+        if (entry["language"], entry["output"], entry["includeOpenApi"]) != policy:
+            raise GenerationError(f"consumer runtime policy drift: {name}")
+        if entry["protoFiles"] != manifest["consumerFileClosure"][name]:
+            raise GenerationError(f"consumer closure differs from machine authority: {name}")
+        if any(Path(path).is_absolute() or ".." in Path(path).parts for path in entry["protoFiles"]):
+            raise GenerationError(f"unsafe proto path in consumer closure: {name}")
+
+
+def _registered_source_hashes(source_root: Path, commit: str, manifest: dict[str, Any]) -> dict[str, str]:
+    files = [
+        *RUNTIME_SOURCE_FILES,
+        "contract/slice-a-contract-manifest.yaml",
+        "contract/consumers.yaml",
+        "contract/openapi/slice-a-web-v1.yaml",
+        *(f"contract/proto/{item['path']}" for item in manifest["protobuf"]["files"]),
     ]
-    control_names = [
-        "InboundMessage",
-        "inbound_adapter",
-        "ResumeDecision",
-        *control_enum_aliases(control).values(),
-        *(o["name"] for o in control["objects"]),
-        *(f"{a['type'].capitalize()}Decision" for a in control["resume_decisions"]),
-        *(pascal(m["kind"]) for m in control["messages"]),
-    ]
-    s = streams["streams"]
-    streams_names = [
-        s["requests"]["const"],
-        "CONSUMER_GROUP",
-        "REQUESTS_MAXLEN",
-        "RUN_EVENTS_MAXLEN",
-        "RUN_CONTROL_MAXLEN",
-        "LIVE_MAXLEN",
-        "BLOCK_MS",
-        "run_events_stream",
-        "run_control_stream",
-        "live_stream",
-        "event_id",
-        "lease_key",
-    ]
-
-    def block(module: str, names: list[str]) -> list[str]:
-        out = [f"from kokoro_agent.contract.{module} import ("]
-        out += [f"    {n}," for n in names]
-        out.append(")")
-        return out
-
-    L = [py_header("contract/spec/*.yaml").rstrip("\n"), "from __future__ import annotations", ""]
-    L += block("events", events_names)
-    L += block("control", control_names)
-    L += block("streams", streams_names)
-    L.append("")
-    L.append("__all__ = [")
-    L += [f'    "{n}",' for n in (*events_names, *control_names, *streams_names)]
-    L.append("]")
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# contract/README.md
-# --------------------------------------------------------------------------- #
-
-
-def emit_readme(events: dict, control: dict, streams: dict, http: dict) -> str:
-    optional = set(events.get("payload_optional") or [])
-    payload_by_kind = {e["kind"]: e.get("payload") or [] for e in events["raw_kinds"]}
-    payload_by_kind.update({e["kind"]: e.get("payload") or [] for e in events["synthetic_kinds"]})
-
-    L = [
-        "<!-- GENERATED — DO NOT EDIT. Source: contract/spec/*.yaml -->",
-        "<!-- Regenerate: python3 contract/generate.py -->",
-        "",
-        "# Kokoro wire contract",
-        "",
-        "One vocabulary (snake_case fields + dot-kind) travels agent -> session -> web.",
-        "`spec/` is the only truth; `generate.py` renders every mirror and this doc;",
-        "`check.py` gates drift. Never hand-edit a generated file.",
-        "",
-        "## Envelopes",
-        "",
-        "- agent -> session (raw): `{ kind, run_id, index, timestamp, payload }` — `index` per-run monotonic;",
-        "  critical frames additionally carry `durable_seq`/`event_id` (R4, absent on live frames).",
-        "- session -> web (browser): `{ kind, event_id, seq, session_id, run_id, timestamp, payload }`",
-        "  — `event_id = f(run_id, index)`; `seq` per-session monotonic (store-assigned). run.started is",
-        "  replaced by the synthetic session.created + run.created; internal-only raw kinds never project.",
-        "",
-        f"## Raw events (agent -> session, {len(events['raw_kinds'])})",
-        "",
-        "| kind | payload |",
-        "| --- | --- |",
-    ]
-    for entry in events["raw_kinds"]:
-        fields = entry.get("payload") or []
-        rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"
-        L.append(f"| `{entry['kind']}` | {rendered} |")
-
-    L += [
-        "",
-        f"## Browser events (session -> web, {len(events['browser_order'])})",
-        "",
-        "| kind | payload |",
-        "| --- | --- |",
-    ]
-    for kind in events["browser_order"]:
-        fields = payload_by_kind[kind]
-        rendered = ", ".join(f"{f}?" if f in optional else f for f in fields) or "(none)"
-        L.append(f"| `{kind}` | {rendered} |")
-
-    L += ["", "## Control plane (session -> agent)", "", "| message | fields |", "| --- | --- |"]
-    for msg in control["messages"]:
-        names = ", ".join(f["name"] for f in msg["fields"])
-        L.append(f"| `{msg['kind']}` | {names} |")
-    L += ["", "ResumeDecision (discriminated on `type`):", ""]
-    for arm in control["resume_decisions"]:
-        fields = ", ".join(f"{f['name']}?" if f.get("optional") else f["name"] for f in arm["fields"])
-        L.append(f"- `{arm['type']}`: {fields}")
-
-    L += ["", "## Streams", "", "| stream | owner | reader | maxlen |", "| --- | --- | --- | --- |"]
-    for node in streams["streams"].values():
-        name = node.get("name") or node.get("template")
-        L.append(f"| `{name}` | {node['owner']} | {node['reader']} | {node['maxlen']} |")
-    L += [
-        "",
-        f"Consumer group `{streams['consumer_group']}`; BLOCK {streams['block_ms']}ms; "
-        f"`event_id = {streams['event_id_format']}`; lease `{streams['lease_key_template']}`.",
-        "",
-        "## HTTP (session)",
-        "",
-        "| method | path |",
-        "| --- | --- |",
-    ]
-    for e in http["endpoints"].values():
-        L.append(f"| {e['method']} | `{e['path_template']}` |")
-    L += [
-        "",
-        "POST messages -> 202 `{ run_id, user_message_id, assistant_message_id }`; a non-matching",
-        f"idempotency_key against an active run returns 409 `{http['error_conflict_code']}`.",
-        "GET /sessions/:id returns the snapshot; SSE resumes from `Last-Event-ID` = last `seq`.",
-    ]
-    return "\n".join(L) + "\n"
-
-
-# --------------------------------------------------------------------------- #
-# driver
-# --------------------------------------------------------------------------- #
-
-
-# --------------------------------------------------------------------------- #
-# storage read-models: cross-language Mongo document shapes (agent .py + session .ts)
-# --------------------------------------------------------------------------- #
-
-STORAGE_SRC = "contract/spec/storage.yaml"
-
-
-def storage_enum_aliases(spec: dict) -> dict[str, str]:
-    return {name: enum_alias(name) for name in spec.get("enums", {})}
-
-
-def _storage_collections(spec: dict) -> list[tuple[str, dict]]:
-    return sorted((spec.get("collections") or {}).items())
-
-
-def emit_storage_py(spec: dict) -> str:
-    enums = spec.get("enums", {})
-    aliases = storage_enum_aliases(spec)
-    L = [py_header(STORAGE_SRC).rstrip("\n"), "from __future__ import annotations", ""]
-    L += [
-        "from typing import Annotated, Literal",
-        "",
-        "from pydantic import BaseModel, BeforeValidator, ConfigDict, StringConstraints, TypeAdapter",
-        "",
-        "NonEmptyStr = Annotated[str, StringConstraints(min_length=1)]",
-        "",
-        "",
-        "def _int_from_bson_number(value: object) -> object:",
-        "    # BSON 数字模型:JS 写者(hub TS/mongosh)的整数落库为 double;整值 float 视为 int,其余交 strict 报错。",
-        "    if isinstance(value, float) and value.is_integer():",
-        "        return int(value)",
-        "    return value",
-        "",
-        "",
-        "# 存储文档专用 int:跨语言写者容忍(仅此镜像;wire JSON 面仍纯 strict int)。",
-        "BsonInt = Annotated[int, BeforeValidator(_int_from_bson_number)]",
-    ]
-    L.append("")
-    for name, alias in aliases.items():
-        L.append(f"{alias} = Literal[{enum_lit(enums[name])}]")
-    L += ["", "", "class StrictModel(BaseModel):", '    model_config = ConfigDict(strict=True, extra="forbid")']
-    for obj in spec["objects"]:
-        body = py_object(obj, aliases)
-        body = [line.replace(": int |", ": BsonInt |").replace(": int", ": BsonInt")
-                if line.startswith("    ") else line for line in body]
-        L += ["", ""] + body
-    L += ["", ""]
-    for coll, meta in _storage_collections(spec):
-        L.append(f'{coll.upper()}_COLLECTION = "{coll}"')
-        unique = ", ".join(f'"{k}"' for k in meta["unique"])
-        L.append(f"{coll.upper()}_UNIQUE: tuple[str, ...] = ({unique},)")
-    # 显式适配器：文档从 Mongo 读出后一次洗净。
-    L.append("")
-    for coll, meta in _storage_collections(spec):
-        doc = meta["doc"]
-        L.append(f"{coll}_doc_adapter: TypeAdapter[{doc}] = TypeAdapter({doc})")
-    template = spec.get("workspace_key_template")
-    if template:
-        L += [
-            "",
-            "",
-            f'WORKSPACE_KEY_TEMPLATE = "{template}"',
-            "",
-            "",
-            "def workspace_key(namespace: str, session_id: str) -> str:",
-            '    """会话工作区键（本地目录名 / S3 归档前缀）：单源模板，双语言同构，禁手拼。"""',
-            "    return WORKSPACE_KEY_TEMPLATE.format(namespace=namespace, session_id=session_id)",
-        ]
-    return "\n".join(L) + "\n"
-
-
-def emit_storage_ts(spec: dict) -> str:
-    enums = spec.get("enums", {})
-    L = [ts_header(STORAGE_SRC).rstrip("\n"), "", 'import { z } from "zod"', ""]
-    for obj in spec["objects"]:
-        L += ts_object(obj, enums, export=True)
-        L.append("")
-    for coll, meta in _storage_collections(spec):
-        L.append(f'export const {coll.upper()}_COLLECTION = "{coll}"')
-    template = spec.get("workspace_key_template")
-    if template:
-        ts_expr = template.replace("{namespace}", "${namespace}").replace("{session_id}", "${sessionId}")
-        L += [
-            "",
-            f'export const WORKSPACE_KEY_TEMPLATE = "{template}"',
-            "",
-            "// 会话工作区键（本地目录名 / S3 归档前缀）：单源模板，双语言同构，禁手拼。",
-            "export function workspaceKey(namespace: string, sessionId: string): string {",
-            f"  return `{ts_expr}`",
-            "}",
-        ]
-    return "\n".join(L) + "\n"
-
-
-def build() -> dict[Path, str]:
-    events = load("events.yaml")
-    control = load("control.yaml")
-    streams = load("streams.yaml")
-    http = load("http.yaml")
-    storage = load("storage.yaml")
-
-    session_events = emit_session_events_ts(events)
-    control_ts = emit_control_ts(control)
-    http_ts = emit_http_ts(http)
-
     return {
-        HERE / "README.md": emit_readme(events, control, streams, http),
-        AGENT / "__init__.py": emit_init_py(events, control, streams),
-        AGENT / "events.py": emit_events_py(events),
-        AGENT / "control.py": emit_control_py(control),
-        AGENT / "streams.py": emit_streams_py(streams),
-        SESSION / "wire-events.ts": emit_wire_events_ts(events),
-        SESSION / "session-events.ts": session_events,
-        SESSION / "control.ts": control_ts,
-        SESSION / "streams.ts": emit_streams_ts(streams),
-        SESSION / "http.ts": http_ts,
-        AGENT / "storage.py": emit_storage_py(storage),
-        SESSION / "storage.ts": emit_storage_ts(storage),
-        HUB / "storage.ts": emit_storage_ts(storage),
-        WEB / "session-events.ts": session_events,
-        WEB / "control.ts": control_ts,
-        WEB / "http.ts": http_ts,
-        WEB / "event-names.ts": emit_event_names_ts(events),
+        relative: hashlib.sha256(_read_commit_file(source_root, commit, relative)).hexdigest()
+        for relative in files
     }
 
 
-def main(argv: list[str]) -> int:
-    outputs = build()
-    check = "--check" in argv
-    drift = False
-    for path, content in outputs.items():
-        rel = path.relative_to(ROOT)
+def _verify_runtime_sources(source_root: Path, commit: str) -> None:
+    validator_path = Path(validate_manifest.__code__.co_filename).resolve()
+    running = {
+        **{relative: (ROOT / relative).read_bytes() for relative in RUNTIME_SOURCE_FILES},
+        "contract/validate_slice_a_manifest.py": validator_path.read_bytes(),
+    }
+    for relative, actual in running.items():
+        if actual != _read_commit_file(source_root, commit, relative):
+            raise GenerationError(f"running contract tool differs from requested source commit: {relative}")
+
+
+def _tool_versions() -> dict[str, str]:
+    protobuf = importlib.metadata.version("protobuf")
+    grpc_tools = importlib.metadata.version("grpcio-tools")
+    plugin = ROOT / "node_modules/.bin/protoc-gen-es"
+    if not plugin.is_file():
+        raise GenerationError(f"local protoc-gen-es missing: {plugin}")
+    plugin_version = _run([str(plugin), "--version"], cwd=ROOT, capture=True).removeprefix("protoc-gen-es v")
+    actual = {"protobuf": protobuf, "grpcio-tools": grpc_tools, "protoc-gen-es": plugin_version}
+    expected = {"protobuf": "6.33.6", "grpcio-tools": "1.76.0", "protoc-gen-es": "2.14.0"}
+    if actual != expected:
+        raise GenerationError(f"contract tool version drift: expected {expected}, got {actual}")
+    return actual
+
+
+def _prepend_generated_header(path: Path, source_commit: str, manifest_sha: str) -> None:
+    if path.suffix not in {".py", ".ts"}:
+        return
+    marker = "#" if path.suffix == ".py" else "//"
+    header = (
+        f"{marker} GENERATED — DO NOT EDIT. Source Root commit: {source_commit}\n"
+        f"{marker} Manifest SHA-256: {manifest_sha}\n"
+    ).encode()
+    path.write_bytes(header + path.read_bytes())
+
+
+def _ensure_python_packages(output: Path) -> None:
+    directories = {path.parent for path in output.rglob("*.py")}
+    for directory in sorted(directories):
+        current = directory
+        while current != output.parent and output in (current, *current.parents):
+            directories.add(current)
+            if current == output:
+                break
+            current = current.parent
+    for directory in sorted(directories):
+        init = directory / "__init__.py"
+        if not init.exists():
+            init.write_text("")
+
+
+def _generate_language(language: str, materialized: Path, output: Path, proto_files: list[str]) -> None:
+    output.mkdir(parents=True, exist_ok=True)
+    proto_root = materialized / "proto"
+    if language == "python":
+        command = [
+            sys.executable,
+            "-m",
+            "grpc_tools.protoc",
+            f"-I{proto_root}",
+            f"--python_out={output}",
+            f"--grpc_python_out={output}",
+            *proto_files,
+        ]
+    elif language == "typescript":
+        plugin = ROOT / "node_modules/.bin/protoc-gen-es"
+        if not plugin.is_file():
+            raise GenerationError(f"local protoc-gen-es missing: {plugin}")
+        command = [
+            sys.executable,
+            "-m",
+            "grpc_tools.protoc",
+            f"-I{proto_root}",
+            f"--plugin=protoc-gen-es={plugin}",
+            f"--es_out={output}",
+            "--es_opt=target=ts",
+            *proto_files,
+        ]
+    else:
+        raise GenerationError(f"unsupported consumer language: {language}")
+    _run(command, cwd=proto_root)
+
+
+def _rewrite_python_imports(output: Path) -> None:
+    for path in output.rglob("*.py"):
+        lines = []
+        for line in path.read_text().splitlines(keepends=True):
+            if line.startswith("from kokoro."):
+                line = "from ..." + line.removeprefix("from kokoro.")
+            lines.append(line)
+        path.write_text("".join(lines))
+
+
+def _hash_outputs(output: Path) -> dict[str, str]:
+    return {
+        path.relative_to(output).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(output.rglob("*"))
+        if path.is_file() and path.name != "provenance.json"
+    }
+
+
+def _generated_files(root: Path) -> dict[str, bytes]:
+    files: dict[str, bytes] = {}
+    for path in root.rglob("*"):
+        if path.is_symlink():
+            raise GenerationError(f"symlink in generated output: {path}")
+        if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc":
+            files[path.relative_to(root).as_posix()] = path.read_bytes()
+    return files
+
+
+def _atomic_replace(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=f".{destination.name}.replace-", dir=destination.parent) as temporary:
+        backup = Path(temporary) / "previous"
+        if destination.exists():
+            os.replace(destination, backup)
+        try:
+            os.replace(source, destination)
+        except BaseException:
+            if backup.exists():
+                os.replace(backup, destination)
+            raise
+
+
+def _require_safe_output(repo: Path, output_relative: Path) -> Path:
+    if not repo.is_dir() or repo.is_symlink():
+        raise GenerationError(f"consumer repository must be a real directory: {repo}")
+    if output_relative in {Path(""), Path(".")} or output_relative.is_absolute() or ".." in output_relative.parts:
+        raise GenerationError(f"unsafe consumer output: {output_relative}")
+    current = repo
+    for part in output_relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise GenerationError(f"consumer output traverses symlink: {current}")
+    if current.exists() and not current.is_dir():
+        raise GenerationError(f"consumer output is not a directory: {current}")
+    return current
+
+
+def generate_consumer(
+    *,
+    source_root: Path,
+    source_commit: str,
+    consumer: str,
+    repo: Path,
+    check: bool,
+) -> dict[str, Any]:
+    commit, tree = _verify_source(source_root, source_commit)
+    _verify_runtime_sources(source_root, commit)
+    committed_generator = _read_commit_file(source_root, commit, "contract/generate.py")
+    manifest_bytes = _read_commit_file(source_root, commit, "contract/slice-a-contract-manifest.yaml")
+    consumers_bytes = _read_commit_file(source_root, commit, "contract/consumers.yaml")
+    manifest = _load_json_bytes(manifest_bytes, "contract/slice-a-contract-manifest.yaml")
+    validate_manifest(manifest)
+    consumers = _load_json_bytes(consumers_bytes, "contract/consumers.yaml")
+    _validate_registry(consumers, manifest)
+    registered_source_hashes = _registered_source_hashes(source_root, commit, manifest)
+    entries = consumers.get("consumers", {})
+    if consumer not in entries:
+        raise GenerationError(f"unknown consumer: {consumer}")
+    entry = entries[consumer]
+    output_relative = Path(entry["output"])
+    repo = repo.absolute()
+    destination = _require_safe_output(repo, output_relative)
+    temporary_parent = None
+    if not check:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        temporary_parent = destination.parent
+    with tempfile.TemporaryDirectory(prefix=f".kokoro-contract-{consumer}-", dir=temporary_parent) as temporary:
+        work = Path(temporary)
+        materialized = work / "source"
+        generated = work / "generated"
+        manifest_bytes, committed_consumers = _materialize_sources(
+            source_root,
+            commit,
+            materialized,
+            list(entry["protoFiles"]),
+            bool(entry["includeOpenApi"]),
+        )
+        if committed_consumers != consumers_bytes:
+            raise GenerationError("consumer registry source drift")
+        manifest_sha = hashlib.sha256(manifest_bytes).hexdigest()
+        tools = _tool_versions()
+        _generate_language(entry["language"], materialized, generated, list(entry["protoFiles"]))
+        if entry["language"] == "python":
+            _rewrite_python_imports(generated)
+            _ensure_python_packages(generated)
+        for path in generated.rglob("*"):
+            if path.is_file():
+                _prepend_generated_header(path, commit, manifest_sha)
+        if entry["includeOpenApi"]:
+            http = generated / "http/slice-a-web-v1.yaml"
+            http.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(materialized / "openapi/slice-a-web-v1.yaml", http)
+        provenance = {
+            "consumer": consumer,
+            "sourceRootCommit": commit,
+            "sourceRootTree": tree,
+            "manifestSha256": manifest_sha,
+            "language": entry["language"],
+            "protoFiles": entry["protoFiles"],
+            "outputs": _hash_outputs(generated),
+            "tools": tools,
+            "generatorSha256": hashlib.sha256(committed_generator).hexdigest(),
+            "registeredSourceSha256": registered_source_hashes,
+        }
+        (generated / "provenance.json").write_text(json.dumps(provenance, indent=2, sort_keys=True) + "\n")
         if check:
-            current = path.read_text() if path.exists() else ""
-            if current != content:
-                print(f"DRIFT: {rel}")
-                drift = True
+            expected = _generated_files(generated)
+            actual = _generated_files(destination) if destination.is_dir() else {}
+            if expected != actual:
+                raise GenerationError(f"consumer output drift: {consumer}: {output_relative}")
         else:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content)
-            print(f"wrote {rel}")
-    if check and drift:
-        print("\nRun `python3 contract/generate.py` and commit the regenerated mirrors.")
-        return 1
-    if check:
-        print(f"OK — {len(outputs)} mirror(s) match contract/spec/")
+            staged = work / "staged-output"
+            os.replace(generated, staged)
+            _atomic_replace(staged, destination)
+    return provenance
+
+
+def _parse_repo_map(path: Path) -> dict[str, Path]:
+    value = _load_json_bytes(path.read_bytes(), str(path))
+    return {name: Path(repo) for name, repo in value.items()}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--source-commit", required=True)
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--consumer")
+    selection.add_argument("--all", action="store_true")
+    parser.add_argument("--repo", type=Path)
+    parser.add_argument("--repo-map", type=Path)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args(argv)
+    if args.consumer:
+        if args.repo is None or args.repo_map is not None:
+            parser.error("--consumer requires --repo and forbids --repo-map")
+        generate_consumer(
+            source_root=args.source_root,
+            source_commit=args.source_commit,
+            consumer=args.consumer,
+            repo=args.repo,
+            check=args.check,
+        )
+        print(f"consumer_generated:{args.consumer}")
+    else:
+        if args.repo_map is None or args.repo is not None:
+            parser.error("--all requires --repo-map and forbids --repo")
+        if not args.check:
+            parser.error("--all is check-only; generate consumers individually to avoid cross-repository partial writes")
+        repo_map = _parse_repo_map(args.repo_map)
+        if set(repo_map) != set(EXPECTED_CONSUMER_POLICY):
+            raise GenerationError("--all repo-map must contain every declared consumer exactly once")
+        for consumer, repo in sorted(repo_map.items()):
+            generate_consumer(
+                source_root=args.source_root,
+                source_commit=args.source_commit,
+                consumer=consumer,
+                repo=repo,
+                check=args.check,
+            )
+        print(f"consumers_generated:{len(repo_map)}")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    try:
+        raise SystemExit(main())
+    except GenerationError as exc:
+        print(str(exc), file=sys.stderr)
+        raise SystemExit(1) from exc

@@ -6,7 +6,7 @@
 
 **Architecture:** The reviewed YAML is the only design input. A small Root renderer produces `.proto` and OpenAPI source from it, then Buf/Redocly and independent descriptor tests prove the rendered artifacts. Generation reads a committed Root tree, emits only the manifest-declared consumer file closure and records output hashes. This cut freezes shared protocol before the independent backend lanes start; it does not create SQL tables or business services.
 
-**Tech Stack:** Python 3.11, uv, PyYAML 6.0.3, grpcio-tools 1.83.0, protobuf 6.33.6, Node.js 22+, pnpm, Buf 1.72.0, Protobuf-ES 2.14.0, Redocly CLI 2.46.1, pytest.
+**Tech Stack:** Python 3.11, uv, PyYAML 6.0.3, grpcio-tools 1.76.0, protobuf 6.33.6, Node.js 22+, pnpm, Buf 1.72.0, Protobuf-ES 2.14.0, Redocly CLI 2.46.1, pytest. `grpcio-tools` stays at 1.76.0 because 1.83.0 requires Protobuf 7 and conflicts with the preserved 6.33.6 runtime ABI.
 
 **Reviewed inputs:**
 - `docs/superpowers/specs/2026-08-14-slice-a-contract-manifest.yaml`
@@ -52,7 +52,7 @@ def test_contract_toolchain_is_exactly_pinned() -> None:
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert project["project"]["requires-python"] == ">=3.11,<3.14"
     assert project["project"]["dependencies"] == [
-        "grpcio-tools==1.83.0",
+        "grpcio-tools==1.76.0",
         "protobuf==6.33.6",
         "PyYAML==6.0.3",
     ]
@@ -317,6 +317,7 @@ Expected: GREEN. Later tasks never overwrite this file.
 - Create: `contract/tests/test_slice_a_generation.py`
 - Modify: `contract/tests/test_generate.py`
 - Modify: `contract/README.md`
+- Modify: `README.md`
 
 **Step 1: Write generation RED tests**
 
@@ -369,6 +370,8 @@ Expected: GREEN.
 
 **Files:** all Task 1–6 files only.
 
+- Modify: `.github/workflows/contract.yml` so this intermediate source commit runs only the frozen Root contract gate; cross-repository generated-output checks remain deferred until reviewed consumer SHAs exist.
+
 **Step 1: Run fresh frozen gates**
 
 ```bash
@@ -395,9 +398,13 @@ Freeze the worktree. Reviewer checks machine manifest parity, Protobuf scoping/i
 
 ```bash
 cd /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro
-git add -- package.json pnpm-lock.yaml pyproject.toml uv.lock .node-version \
-  contract scripts/contract scripts/INDEX.md
-git diff --cached --name-only | grep -Ev '^(package.json|pnpm-lock.yaml|pyproject.toml|uv.lock|\.node-version|contract/|scripts/contract/|scripts/INDEX.md$)' && exit 1 || true
+git add -- README.md package.json pnpm-lock.yaml pnpm-workspace.yaml pyproject.toml uv.lock .node-version \
+  .github/workflows/contract.yml contract scripts/contract scripts/INDEX.md \
+  docs/superpowers/plans/2026-08-14-slice-a-contract-manifest-barrier-roadmap.md \
+  docs/superpowers/plans/2026-08-14-slice-a-root-database-contracts-plan.md \
+  docs/superpowers/plans/2026-08-14-slice-a-web-e2e-promotion-plan.md \
+  docs/superpowers/plans/2026-08-14-sql-backed-chat-slice-a-master-plan.md
+git diff --cached --name-only | grep -Ev '^(README\.md|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|pyproject.toml|uv.lock|\.node-version|\.github/workflows/contract\.yml|contract/.*|scripts/contract/.*|scripts/INDEX.md|docs/superpowers/plans/2026-08-14-slice-a-contract-manifest-barrier-roadmap\.md|docs/superpowers/plans/2026-08-14-slice-a-root-database-contracts-plan\.md|docs/superpowers/plans/2026-08-14-slice-a-web-e2e-promotion-plan\.md|docs/superpowers/plans/2026-08-14-sql-backed-chat-slice-a-master-plan\.md)$' && exit 1 || true
 git diff --cached --check
 git commit -m "feat(contract): freeze Slice A service contracts"
 test -z "$(git status --short --untracked-files=no)"
@@ -426,4 +433,4 @@ uv run --frozen python contract/generate.py \
   --consumer root-e2e --repo . --check
 ```
 
-Freeze and independently review exact output hashes/provenance, stage only the declared `root-e2e` output closure, and commit `chore(contract): generate Slice A Root E2E client`. The generated provenance must name the Milestone 7 contract-source SHA; the new output commit is never substituted as source provenance. Child consumer generation can proceed in parallel from the same source SHA. Root database and backend E2E gates may use `--check` only after this output commit exists.
+Freeze and independently review exact output hashes/provenance, stage only the declared `root-e2e` output closure, and commit `chore(contract): generate Slice A Root E2E client`. The generated provenance must name the Milestone 7 contract-source SHA; the new output commit is never substituted as source provenance. Every child write generation runs from a detached exact contract-source worktree with that commit's frozen pnpm/uv locks, while `--repo` points at the candidate child, so Root database lock expansion can proceed in parallel without changing provenance. Root database and backend E2E gates may use `--check` only after the Root E2E output commit exists.

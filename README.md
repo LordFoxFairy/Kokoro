@@ -14,7 +14,7 @@
 ```
 kokoro-agent ──redis run-events──▶ kokoro-session ──Mongo history + SSE──▶ kokoro-web
  (Python worker)                    (TS SSE/replay 桥)                     (Next.js UI)
- 产 13-kind 原始执行事件             归一化成 AGUI 信封 + 去重 + 持久回放       严格解析 → reducer → 渲染
+ 产 20-kind 原始执行事件             归一化成浏览器信封 + 去重 + 持久回放       严格解析 → reducer → 渲染
  thread_id + segment_id              SSE id 用 Last-Event-ID 续订             eventId 去重，seq 仅作 UI 交错序
 ```
 
@@ -26,13 +26,14 @@ kokoro-agent ──redis run-events──▶ kokoro-session ──Mongo history 
 
 ## 跨仓契约（单源生成）
 
-13-kind 事件契约的**单一真理来源**是 [`contract/events.yaml`](contract/events.yaml)。
+Slice A 的**单一机器真源**是 [`contract/slice-a-contract-manifest.yaml`](contract/slice-a-contract-manifest.yaml)。Root 从它确定性生成九份 Protobuf、Web BFF OpenAPI，并按 [`contract/consumers.yaml`](contract/consumers.yaml) 为每个子仓生成最小 Connect/gRPC closure。
 
-- `python3 contract/generate.py` —— 从 yaml 生成 6 个镜像（agent pydantic / session zod×2 / web zod + render union）。**镜像文件带 `DO NOT EDIT` 头，改契约改 yaml 再重生成。**
-- `python3 contract/generate.py --check` —— CI 门禁：yaml 改了忘重生成即非零退出。
-- `python3 contract/verify.py` —— 名集漂移门禁（与 --check 互补）。
+- `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check` —— 校验 Proto/OpenAPI 与机器真源逐字节一致。
+- `pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb` —— Protobuf lint/breaking 门禁。
+- `pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` —— 浏览器 HTTP/SSE contract 门禁。
+- `uv run python contract/generate.py --source-root ROOT --source-commit SHA --consumer NAME --repo PATH --check` —— 从指定 clean Root commit 校验一个 consumer；无隐式当前目录或浮动 source。
 
-详见 [契约 codegen 设计](docs/superpowers/specs/2026-06-14-contract-codegen-design.md)。
+旧 `contract/spec/*.yaml` 已在事件/control payload parity 证明后硬删除，不再形成第二权威。
 
 ## 本地起栈（开发）
 
@@ -62,7 +63,7 @@ npm run dev
 | agent | `cd kokoro-agent && uv run pytest && uv run pyright && uv run ruff check src tests` |
 | session | `cd kokoro-session && npm test && npm run typecheck && npm run lint` |
 | web | `cd kokoro-web && npm test && npm run typecheck && npm run lint && npm run build` |
-| 契约 | `python3 contract/verify.py && python3 contract/generate.py --check` |
+| 契约 | `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check && pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb && pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` |
 | SSE 回环 e2e | `scripts/sse-loopback-gate.sh`（需 redis + session + 假模型 worker） |
 
 CI：四仓各有 `.github/workflows`（agent/session/web 各自门禁 + root 跨仓契约）。

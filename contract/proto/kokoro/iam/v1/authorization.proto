@@ -1,0 +1,24 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.iam.v1;
+
+import "kokoro/common/v1/common.proto";
+
+message AuthorizeRequest {
+  string request_id = 1;
+  string site_id = 2;
+  string organization_id = 3;
+  string permission_key = 4;
+}
+
+message AuthorizeResponse {
+  bool allowed = 1;
+  kokoro.common.v1.PrincipalContext principal = 2;
+  uint64 membership_generation = 3;
+  string reason_code = 4;
+}
+
+service IamAuthorizationService {
+  rpc Authorize(kokoro.iam.v1.AuthorizeRequest) returns (kokoro.iam.v1.AuthorizeResponse);
+}

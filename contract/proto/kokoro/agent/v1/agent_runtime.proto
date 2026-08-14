@@ -1,0 +1,102 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.agent.v1;
+
+import "kokoro/agent/v1/agent_events.proto";
+import "kokoro/common/v1/common.proto";
+
+enum RunState {
+  RUN_STATE_UNSPECIFIED = 0;
+  RUN_STATE_PREPARING = 1;
+  RUN_STATE_QUEUED = 2;
+  RUN_STATE_RUNNING = 3;
+  RUN_STATE_AWAITING_INPUT = 4;
+  RUN_STATE_COMPLETED = 5;
+  RUN_STATE_CANCELLED = 6;
+  RUN_STATE_FAILED = 7;
+  RUN_STATE_ADMISSION_FAILED = 8;
+}
+
+enum ControlKind {
+  CONTROL_KIND_UNSPECIFIED = 0;
+  CONTROL_KIND_DECIDE = 1;
+  CONTROL_KIND_CANCEL = 2;
+  CONTROL_KIND_STEER = 3;
+}
+
+message LaunchRunRequest {
+  string request_id = 1;
+  string launch_id = 2;
+  string launch_request_digest = 3;
+  string message_id = 4;
+  string content = 5;
+  string namespace = 6;
+  string session_id = 7;
+  string thread_id = 8;
+  string site_id = 9;
+  string organization_id = 10;
+  string requested_agent_preset_key = 11;
+  string requested_model_label = 12;
+  repeated string requested_capability_selectors = 13;
+}
+
+message LaunchRunResponse {
+  string agent_run_id = 1;
+  kokoro.agent.v1.RunState state = 2;
+  optional string manifest_digest = 3;
+  bool replayed = 4;
+}
+
+message ApplyControlRequest {
+  string request_id = 1;
+  string agent_run_id = 2;
+  kokoro.common.v1.CommandIdentity command = 3;
+  kokoro.agent.v1.ControlKind control_kind = 4;
+  repeated kokoro.common.v1.ControlDecision decisions = 5;
+  optional string message_id = 6;
+  optional string content = 7;
+}
+
+message ApplyControlResponse {
+  string receipt_id = 1;
+  kokoro.common.v1.ControlStatus status = 2;
+  bool replayed = 3;
+}
+
+message ReadRunEvidenceRequest {
+  string request_id = 1;
+  string agent_run_id = 2;
+  uint64 after_seq = 3;
+  uint32 limit = 4;
+}
+
+message ReadRunEvidenceResponse {
+  string agent_run_id = 1;
+  kokoro.agent.v1.RunState state = 2;
+  uint64 epoch = 3;
+  repeated kokoro.agent.v1.AgentEvent events = 4;
+  uint64 next_seq = 5;
+  bool terminal = 6;
+  optional kokoro.agent.v1.RunUsage usage = 7;
+}
+
+message AckProjectionRequest {
+  string request_id = 1;
+  string agent_run_id = 2;
+  string consumer_key = 3;
+  uint64 epoch = 4;
+  uint64 projected_seq = 5;
+}
+
+message AckProjectionResponse {
+  uint64 stored_epoch = 1;
+  uint64 stored_projected_seq = 2;
+}
+
+service AgentRuntimeService {
+  rpc LaunchRun(kokoro.agent.v1.LaunchRunRequest) returns (kokoro.agent.v1.LaunchRunResponse);
+  rpc ApplyControl(kokoro.agent.v1.ApplyControlRequest) returns (kokoro.agent.v1.ApplyControlResponse);
+  rpc ReadRunEvidence(kokoro.agent.v1.ReadRunEvidenceRequest) returns (kokoro.agent.v1.ReadRunEvidenceResponse);
+  rpc AckProjection(kokoro.agent.v1.AckProjectionRequest) returns (kokoro.agent.v1.AckProjectionResponse);
+}

@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "consumers": {
+    "kokoro-site": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/site/v1/site.proto"
+      ]
+    },
+    "kokoro-iam": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/iam/v1/authentication.proto",
+        "kokoro/iam/v1/authorization.proto"
+      ]
+    },
+    "kokoro-model": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/model/v1/model_catalog.proto"
+      ]
+    },
+    "kokoro-capability": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/capability/v1/capability_runtime.proto"
+      ]
+    },
+    "kokoro-chat": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/chat/v1/chat.proto",
+        "kokoro/iam/v1/authorization.proto",
+        "kokoro/agent/v1/agent_events.proto",
+        "kokoro/agent/v1/agent_runtime.proto"
+      ]
+    },
+    "kokoro-agent": {
+      "language": "python",
+      "output": "src/kokoro_agent/generated",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/agent/v1/agent_events.proto",
+        "kokoro/agent/v1/agent_runtime.proto",
+        "kokoro/capability/v1/capability_runtime.proto",
+        "kokoro/model/v1/model_catalog.proto"
+      ]
+    },
+    "kokoro-web": {
+      "language": "typescript",
+      "output": "apps/user/src/generated/proto",
+      "includeOpenApi": true,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/site/v1/site.proto",
+        "kokoro/iam/v1/authentication.proto",
+        "kokoro/chat/v1/chat.proto"
+      ]
+    },
+    "root-e2e": {
+      "language": "python",
+      "output": "scripts/e2e/generated",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/site/v1/site.proto",
+        "kokoro/iam/v1/authentication.proto",
+        "kokoro/chat/v1/chat.proto"
+      ]
+    }
+  }
+}

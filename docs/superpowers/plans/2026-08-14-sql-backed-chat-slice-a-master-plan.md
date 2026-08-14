@@ -364,7 +364,7 @@ Execute `2026-08-14-slice-a-contract-authority-validation-implementation-plan.md
 
 **JIT cut requirement 2 — Generate Root E2E and every child consumer from that exact Root commit**
 
-First create the barrier roadmap's separate Root descendant-output commit for `root-e2e`; it stages only declared `scripts/e2e/generated/**` outputs and provenance, while retaining the earlier contract-source SHA as `sourceRootCommit`. In parallel, use the same Root generator with explicit clean child repository paths. Every generated manifest must contain the same contract-source commit and source-tree digest. Backend E2E and any `--check --all` gate start only after the Root E2E output commit exists.
+First create the barrier roadmap's separate Root descendant-output commit for `root-e2e`; it stages only declared `scripts/e2e/generated/**` outputs and provenance, while retaining the earlier contract-source SHA as `sourceRootCommit`. Every child write generation runs from a detached exact contract-source worktree with that source commit's own frozen locks, while `--repo` points at the explicit clean candidate child path. This allows Root SQL lock expansion and child materialization to proceed in parallel without making the later Root HEAD a substitute generator toolchain. Every generated manifest must contain the same contract-source commit and source-tree digest. Backend E2E and any `--check --all` gate start only after the Root E2E output commit exists.
 
 **JIT cut requirement 3 — Run Site/IAM/Model/Capability, Chat and Agent plans in parallel**
 

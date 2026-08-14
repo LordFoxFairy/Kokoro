@@ -1,0 +1,19 @@
+{
+  "name": "kokoro-root-contract-tooling",
+  "private": true,
+  "packageManager": "pnpm@11.2.2",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "contract:format": "buf format --diff --exit-code contract",
+    "contract:lint": "buf lint contract",
+    "contract:render": "uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --write",
+    "contract:check": "uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "1.72.0",
+    "@bufbuild/protoc-gen-es": "2.14.0",
+    "@redocly/cli": "2.46.1"
+  }
+}

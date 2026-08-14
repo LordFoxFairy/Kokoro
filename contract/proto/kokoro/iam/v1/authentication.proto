@@ -1,0 +1,87 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.iam.v1;
+
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/common.proto";
+
+message RequestMagicLinkRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string site_id = 3;
+  string email = 4;
+  string redirect_uri = 5;
+  string nonce_digest = 6;
+}
+
+message RequestMagicLinkResponse {
+  string magic_link_id = 1;
+  google.protobuf.Timestamp expires_at = 2;
+  string delivery_ref = 3;
+  bool replayed = 4;
+}
+
+message ConsumeMagicLinkRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string site_id = 3;
+  string token = 4;
+  string nonce_digest = 5;
+}
+
+message ConsumeMagicLinkResponse {
+  kokoro.common.v1.PrincipalContext principal = 1;
+  string auth_session_id = 2;
+  string access_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+  string refresh_token = 5;
+  google.protobuf.Timestamp refresh_expires_at = 6;
+  bool replayed = 7;
+}
+
+message RefreshSessionRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string refresh_token = 3;
+}
+
+message RefreshSessionResponse {
+  kokoro.common.v1.PrincipalContext principal = 1;
+  string auth_session_id = 2;
+  string access_token = 3;
+  google.protobuf.Timestamp access_expires_at = 4;
+  string refresh_token = 5;
+  google.protobuf.Timestamp refresh_expires_at = 6;
+  bool replayed = 7;
+}
+
+message LogoutRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string refresh_token = 3;
+}
+
+message LogoutResponse {
+  string auth_session_id = 1;
+  bool revoked = 2;
+  bool replayed = 3;
+}
+
+message GetSessionRequest {
+  string request_id = 1;
+}
+
+message GetSessionResponse {
+  kokoro.common.v1.PrincipalContext principal = 1;
+  string auth_session_id = 2;
+  google.protobuf.Timestamp access_expires_at = 3;
+}
+
+service IamAuthenticationService {
+  rpc RequestMagicLink(kokoro.iam.v1.RequestMagicLinkRequest) returns (kokoro.iam.v1.RequestMagicLinkResponse);
+  rpc ConsumeMagicLink(kokoro.iam.v1.ConsumeMagicLinkRequest) returns (kokoro.iam.v1.ConsumeMagicLinkResponse);
+  rpc RefreshSession(kokoro.iam.v1.RefreshSessionRequest) returns (kokoro.iam.v1.RefreshSessionResponse);
+  rpc Logout(kokoro.iam.v1.LogoutRequest) returns (kokoro.iam.v1.LogoutResponse);
+  rpc GetSession(kokoro.iam.v1.GetSessionRequest) returns (kokoro.iam.v1.GetSessionResponse);
+}

@@ -45,7 +45,7 @@ This ordering keeps one contract source while avoiding a false requirement that 
 
 **JIT cut requirement 1 — Extend the already-frozen contract toolchain for database work**
 
-The prerequisite contract barrier already owns Python `>=3.11,<3.14`, `pytest==8.4.2`, `grpcio-tools==1.83.0`, `protobuf==6.33.6`, `PyYAML==6.0.3`, Buf `1.72.0`, Protobuf-ES `2.14.0` and Redocly `2.46.1`. Do not recreate or overwrite its breaking image, manifest, Proto/OpenAPI or legacy-source deletion. Extend the Python lock only with `psycopg[binary]==3.3.4` and `langgraph-checkpoint-postgres==3.1.0`; add `prisma@6.19.3` as an exact Root `devDependency` in `package.json`/`pnpm-lock.yaml`. No dependency uses a range and Prisma is never placed in the uv lock.
+The prerequisite contract barrier already owns Python `>=3.11,<3.14`, `pytest==8.4.2`, `grpcio-tools==1.76.0`, `protobuf==6.33.6`, `PyYAML==6.0.3`, Buf `1.72.0`, Protobuf-ES `2.14.0` and Redocly `2.46.1`. Do not recreate or overwrite its breaking image, manifest, Proto/OpenAPI or legacy-source deletion. Extend the Python lock only with `psycopg[binary]==3.3.4` and `langgraph-checkpoint-postgres==3.1.0`; add `prisma@6.19.3` as an exact Root `devDependency` in `package.json`/`pnpm-lock.yaml`. No dependency uses a range and Prisma is never placed in the uv lock.
 
 ```bash
 uv lock
@@ -436,11 +436,20 @@ pnpm exec buf lint contract
 pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb
 pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml
 uv run --frozen python scripts/database/compose_baseline.py --check
+ROOT_CURRENT="$(git rev-parse --show-toplevel)"
 ROOT_CONTRACT_COMMIT="$(git log -1 --format=%H -- contract)"
-cat >/tmp/kokoro-slice-a-consumer-map.json <<'JSON'
-{"kokoro-site":"/tmp/kokoro-site-slice-a","kokoro-iam":"/tmp/kokoro-iam-slice-a","kokoro-chat":"/tmp/kokoro-chat-slice-a","kokoro-agent":"/tmp/kokoro-agent-slice-a","kokoro-capability":"/tmp/kokoro-capability-slice-a","kokoro-model":"/tmp/kokoro-model-slice-a","kokoro-web":"/tmp/kokoro-web-slice-a","root-e2e":"."}
+CONTRACT_WORKTREE_PARENT="$(mktemp -d /tmp/kokoro-contract-source.XXXXXX)"
+CONTRACT_WORKTREE="$CONTRACT_WORKTREE_PARENT/root"
+git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
+trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true; rm -rf "$CONTRACT_WORKTREE_PARENT"' EXIT
+(cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
+cat >/tmp/kokoro-slice-a-consumer-map.json <<JSON
+{"kokoro-site":"/tmp/kokoro-site-slice-a","kokoro-iam":"/tmp/kokoro-iam-slice-a","kokoro-chat":"/tmp/kokoro-chat-slice-a","kokoro-agent":"/tmp/kokoro-agent-slice-a","kokoro-capability":"/tmp/kokoro-capability-slice-a","kokoro-model":"/tmp/kokoro-model-slice-a","kokoro-web":"/tmp/kokoro-web-slice-a","root-e2e":"$ROOT_CURRENT"}
 JSON
-uv run --frozen python contract/generate.py --source-root "$(git rev-parse --show-toplevel)" --source-commit "$ROOT_CONTRACT_COMMIT" --all --repo-map /tmp/kokoro-slice-a-consumer-map.json --check
+(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --all --repo-map /tmp/kokoro-slice-a-consumer-map.json --check)
+git worktree remove --force "$CONTRACT_WORKTREE"
+rm -rf "$CONTRACT_WORKTREE_PARENT"
+trap - EXIT
 git diff --check
 ```
 

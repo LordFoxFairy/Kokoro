@@ -1,0 +1,40 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.capability.v1;
+
+import "kokoro/common/v1/common.proto";
+
+enum CapabilityKind {
+  CAPABILITY_KIND_UNSPECIFIED = 0;
+  CAPABILITY_KIND_SKILL = 1;
+  CAPABILITY_KIND_MCP = 2;
+}
+
+message CapabilitySnapshotItem {
+  kokoro.capability.v1.CapabilityKind kind = 1;
+  string qualified_name = 2;
+  uint64 revision = 3;
+  string content_digest = 4;
+}
+
+message ResolveRuntimeSnapshotRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string organization_id = 3;
+  string agent_namespace = 4;
+  repeated string requested_selectors = 5;
+}
+
+message ResolveRuntimeSnapshotResponse {
+  string snapshot_id = 1;
+  string organization_id = 2;
+  string scope_key = 3;
+  string digest = 4;
+  repeated kokoro.capability.v1.CapabilitySnapshotItem items = 5;
+  bool replayed = 6;
+}
+
+service CapabilityRuntimeService {
+  rpc ResolveRuntimeSnapshot(kokoro.capability.v1.ResolveRuntimeSnapshotRequest) returns (kokoro.capability.v1.ResolveRuntimeSnapshotResponse);
+}

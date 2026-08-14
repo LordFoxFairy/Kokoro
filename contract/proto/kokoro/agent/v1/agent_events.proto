@@ -1,0 +1,233 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.agent.v1;
+
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/common.proto";
+
+enum InteractionKind {
+  INTERACTION_KIND_UNSPECIFIED = 0;
+  INTERACTION_KIND_APPROVAL = 1;
+  INTERACTION_KIND_QUESTION = 2;
+  INTERACTION_KIND_REVIEW = 3;
+  INTERACTION_KIND_INPUT = 4;
+}
+
+enum TodoStatus {
+  TODO_STATUS_UNSPECIFIED = 0;
+  TODO_STATUS_PENDING = 1;
+  TODO_STATUS_IN_PROGRESS = 2;
+  TODO_STATUS_COMPLETED = 3;
+}
+
+enum SubagentSource {
+  SUBAGENT_SOURCE_UNSPECIFIED = 0;
+  SUBAGENT_SOURCE_BUILT_IN = 1;
+  SUBAGENT_SOURCE_CONFIG_CUSTOM = 2;
+  SUBAGENT_SOURCE_RUNTIME_CUSTOM = 3;
+}
+
+enum RunCompletionStatus {
+  RUN_COMPLETION_STATUS_UNSPECIFIED = 0;
+  RUN_COMPLETION_STATUS_COMPLETED = 1;
+  RUN_COMPLETION_STATUS_CANCELLED = 2;
+}
+
+enum RunFailureCode {
+  RUN_FAILURE_CODE_UNSPECIFIED = 0;
+  RUN_FAILURE_CODE_TOKEN_BUDGET_EXCEEDED = 1;
+  RUN_FAILURE_CODE_RECURSION_LIMIT_EXCEEDED = 2;
+  RUN_FAILURE_CODE_ASSEMBLY_FAILED = 3;
+  RUN_FAILURE_CODE_ENQUEUE_FAILED = 4;
+  RUN_FAILURE_CODE_DISPATCH_EXHAUSTED = 5;
+  RUN_FAILURE_CODE_CONTRACT_INCOMPATIBLE = 6;
+  RUN_FAILURE_CODE_INTERNAL_ERROR = 7;
+  RUN_FAILURE_CODE_AGENT_ADMISSION_REJECTED = 8;
+}
+
+message RunUsage {
+  uint64 input_tokens = 1;
+  uint64 output_tokens = 2;
+  uint64 total_tokens = 3;
+  string model_revision_id = 4;
+  string digest = 5;
+}
+
+message RunStarted {}
+
+message ThinkingDelta {
+  string segment_id = 1;
+  string delta = 2;
+}
+
+message MessageDelta {
+  string segment_id = 1;
+  string delta = 2;
+}
+
+message MessageCompleted {
+  string segment_id = 1;
+  string content = 2;
+}
+
+message ToolInvoked {
+  string segment_id = 1;
+  string tool_id = 2;
+  string name = 3;
+  bytes args_json = 4;
+}
+
+message ToolOutputDelta {
+  string segment_id = 1;
+  string tool_id = 2;
+  string name = 3;
+  string delta = 4;
+}
+
+message ToolAwaitingApproval {
+  string segment_id = 1;
+  string tool_id = 2;
+  string name = 3;
+  bytes args_json = 4;
+  string description = 5;
+  repeated kokoro.common.v1.DecisionKind allowed_decisions = 6;
+  kokoro.agent.v1.InteractionKind interaction_kind = 7;
+  optional bytes risk_json = 8;
+  bool editable = 9;
+  optional bytes input_schema_json = 10;
+  repeated string pending_tool_ids = 11;
+  optional string result = 12;
+}
+
+message ToolReturned {
+  string segment_id = 1;
+  string tool_id = 2;
+  string name = 3;
+  string result = 4;
+  bool is_error = 5;
+  bool truncated = 6;
+  bool rejected = 7;
+  optional string reject_reason = 8;
+  bool responded = 9;
+  optional bytes summary_json = 10;
+}
+
+message Todo {
+  string content = 1;
+  kokoro.agent.v1.TodoStatus status = 2;
+}
+
+message TodoUpdated {
+  repeated kokoro.agent.v1.Todo todos = 1;
+}
+
+message SubagentStarted {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string name = 3;
+  string description = 4;
+  string subagent_type = 5;
+  kokoro.agent.v1.SubagentSource source = 6;
+}
+
+message SubagentFinished {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string name = 3;
+  string subagent_type = 4;
+  kokoro.agent.v1.SubagentSource source = 5;
+  bool failed = 6;
+  optional string error = 7;
+}
+
+message SubagentThinkingDelta {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string delta = 3;
+}
+
+message SubagentTextDelta {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string text = 3;
+}
+
+message SubagentTextCompleted {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string text = 3;
+}
+
+message SubagentToolInvoked {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string tool_id = 3;
+  string name = 4;
+  bytes args_json = 5;
+}
+
+message SubagentToolReturned {
+  string segment_id = 1;
+  string subagent_id = 2;
+  string tool_id = 3;
+  string name = 4;
+  string result = 5;
+  bool is_error = 6;
+  bool truncated = 7;
+}
+
+message DeliveryCreated {
+  string path = 1;
+  string title = 2;
+  string mime = 3;
+  uint64 size = 4;
+  string content_hash = 5;
+  optional string note = 6;
+}
+
+message RunControlReceipt {
+  string command_id = 1;
+  kokoro.common.v1.ControlStatus status = 2;
+}
+
+message RunCompleted {
+  kokoro.agent.v1.RunCompletionStatus status = 1;
+  optional kokoro.agent.v1.RunUsage usage = 2;
+}
+
+message RunFailed {
+  kokoro.agent.v1.RunFailureCode code = 1;
+  string error_kind = 2;
+  string message = 3;
+}
+
+message AgentEvent {
+  string event_id = 1;
+  string agent_run_id = 2;
+  uint64 epoch = 3;
+  uint64 seq = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+  oneof payload {
+    kokoro.agent.v1.RunStarted run_started = 20;
+    kokoro.agent.v1.ThinkingDelta thinking_delta = 21;
+    kokoro.agent.v1.MessageDelta message_delta = 22;
+    kokoro.agent.v1.MessageCompleted message_completed = 23;
+    kokoro.agent.v1.ToolInvoked tool_invoked = 24;
+    kokoro.agent.v1.ToolOutputDelta tool_output_delta = 25;
+    kokoro.agent.v1.ToolAwaitingApproval tool_awaiting_approval = 26;
+    kokoro.agent.v1.ToolReturned tool_returned = 27;
+    kokoro.agent.v1.TodoUpdated todo_updated = 28;
+    kokoro.agent.v1.SubagentStarted subagent_started = 29;
+    kokoro.agent.v1.SubagentFinished subagent_finished = 30;
+    kokoro.agent.v1.SubagentThinkingDelta subagent_thinking_delta = 31;
+    kokoro.agent.v1.SubagentTextDelta subagent_text_delta = 32;
+    kokoro.agent.v1.SubagentTextCompleted subagent_text_completed = 33;
+    kokoro.agent.v1.SubagentToolInvoked subagent_tool_invoked = 34;
+    kokoro.agent.v1.SubagentToolReturned subagent_tool_returned = 35;
+    kokoro.agent.v1.DeliveryCreated delivery_created = 36;
+    kokoro.agent.v1.RunControlReceipt run_control_receipt = 37;
+    kokoro.agent.v1.RunCompleted run_completed = 38;
+    kokoro.agent.v1.RunFailed run_failed = 39;
+  }
+}

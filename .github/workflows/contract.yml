@@ -1,40 +1,38 @@
 name: Contract
 
-# 跨仓契约门禁:contract/spec/ 是单源,check.py 重生成 14 镜像并字节比对(agent/session/web)。
-# 四仓独立(非 submodule),故 CI 把三仓 checkout 进相对路径再跑门禁。
-
+# This commit verifies Root-owned source only. Cross-repository generated
+# consumers are promoted and checked after their independently reviewed SHAs
+# exist; CI never substitutes mutable sibling branches for those candidates.
 on:
   push:
   pull_request:
 
 jobs:
-  verify:
+  source:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
         with:
-          repository: LordFoxFairy/kokoro-agent
-          ref: main
-          path: kokoro-agent
-          # 若 sibling 仓为私有,需配置一个有读权限的 PAT secret 并在此传 token:。
-      - uses: actions/checkout@v4
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
         with:
-          repository: LordFoxFairy/kokoro-session
-          ref: main
-          path: kokoro-session
-      - uses: actions/checkout@v4
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@v4
         with:
-          repository: LordFoxFairy/kokoro-web
-          ref: main
-          path: kokoro-web
+          version: 11.2.2
+          run_install: false
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
-      - run: pip install pyyaml pytest
-      # 字节级漂移门禁：spec 改了但镜像忘重生成 → 非零退出。
-      - name: contract check (byte diff)
-        run: python3 contract/check.py
-      # 生成器 golden 自检：确定性输出 + 镜像新鲜度 + 词汇不变量。
-      - name: generator golden tests
-        run: python3 -m pytest contract/tests -q
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: pnpm install --frozen-lockfile
+      - run: uv sync --frozen --group dev
+      - run: cmp docs/superpowers/specs/2026-08-14-slice-a-contract-manifest.yaml contract/slice-a-contract-manifest.yaml
+      - run: uv run --frozen python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check
+      - run: pnpm exec buf format --diff --exit-code contract/proto
+      - run: pnpm exec buf lint contract
+      - run: pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb
+      - run: pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml
+      - run: uv run --frozen pytest contract/tests scripts/contract/tests -q

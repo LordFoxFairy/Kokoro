@@ -121,9 +121,18 @@ The pytest fixture must call real product service endpoints and fail if any owne
 **JIT cut requirement 2 — Verify the committed Root-owned test clients and provenance**
 
 ```bash
-ROOT_CONTRACT_COMMIT="$(uv run --frozen python -c 'import json; print(json.load(open("scripts/e2e/generated/provenance.json"))["sourceRootCommit"])')"
+ROOT_CURRENT="$(git rev-parse --show-toplevel)"
+ROOT_CONTRACT_COMMIT="$(python3 -c 'import json; print(json.load(open("scripts/e2e/generated/provenance.json"))["sourceRootCommit"])')"
 test "$ROOT_CONTRACT_COMMIT" = "$(git log -1 --format=%H -- contract)"
-uv run --frozen python contract/generate.py --source-root "$(git rev-parse --show-toplevel)" --source-commit "$ROOT_CONTRACT_COMMIT" --consumer root-e2e --repo . --check
+CONTRACT_WORKTREE_PARENT="$(mktemp -d /tmp/kokoro-contract-source.XXXXXX)"
+CONTRACT_WORKTREE="$CONTRACT_WORKTREE_PARENT/root"
+git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
+trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true; rm -rf "$CONTRACT_WORKTREE_PARENT"' EXIT
+(cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
+(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --consumer root-e2e --repo "$ROOT_CURRENT" --check)
+git worktree remove --force "$CONTRACT_WORKTREE"
+rm -rf "$CONTRACT_WORKTREE_PARENT"
+trap - EXIT
 ```
 
 The generated Python clients were committed by the Root contract plan as a descendant output commit and are test harness code only; services still use their own generated consumers. The provenance file must pin the same Root contract commit and source digest used by every child.
@@ -185,9 +194,17 @@ Any backend RED stops execution here. Do not begin Task 3 and do not use a Web m
 **JIT cut requirement 1 — Verify the Root-generated consumer closure, then write the failing server-client test**
 
 ```bash
-ROOT_CONTRACT_COMMIT="$(uv run --frozen python -c 'import json; print(json.load(open("scripts/e2e/generated/provenance.json"))["sourceRootCommit"])')"
+ROOT_CONTRACT_COMMIT="$(python3 -c 'import json; print(json.load(open("scripts/e2e/generated/provenance.json"))["sourceRootCommit"])')"
 test "$ROOT_CONTRACT_COMMIT" = "$(git log -1 --format=%H -- contract)"
-uv run --frozen python contract/generate.py --source-root "$(git rev-parse --show-toplevel)" --source-commit "$ROOT_CONTRACT_COMMIT" --consumer kokoro-web --repo /tmp/kokoro-web-slice-a --check
+CONTRACT_WORKTREE_PARENT="$(mktemp -d /tmp/kokoro-contract-source.XXXXXX)"
+CONTRACT_WORKTREE="$CONTRACT_WORKTREE_PARENT/root"
+git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
+trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true; rm -rf "$CONTRACT_WORKTREE_PARENT"' EXIT
+(cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
+(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --consumer kokoro-web --repo /tmp/kokoro-web-slice-a --check)
+git worktree remove --force "$CONTRACT_WORKTREE"
+rm -rf "$CONTRACT_WORKTREE_PARENT"
+trap - EXIT
 ```
 
 Expected: generation check is green because the Root lane produced the candidate outputs. Then add `service-clients.test.ts`; it must fail because the server-only client factory is absent.
@@ -512,7 +529,33 @@ git submodule status
 
 **JIT cut requirement 3 — Lock CI and release provenance to the promoted gitlinks**
 
-Replace the floating sibling-`main` checkouts in `.github/workflows/contract.yml` with the Root gitlinks/exact commits. Run consumer checks from the clean candidate Root commit whose registered contract sources are byte-identical to the frozen source commit. Do not hand-edit commit hashes or output digests.
+Extend the source-only `.github/workflows/contract.yml` with checks against the promoted Root gitlinks/exact commits. Its checkout step must fetch the Root history containing the frozen source commit and materialize each promoted output target at the recorded gitlink SHA (private repositories use the dedicated read-only token):
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+    submodules: recursive
+    token: ${{ secrets.KOKORO_SUBMODULE_TOKEN }}
+```
+
+CI reads `sourceRootCommit` from committed Root E2E provenance, proves it is the latest commit that changed `contract/`, installs that commit's own frozen toolchain in a detached worktree, and executes that commit's generator; the candidate Root and promoted gitlinks are output targets only. The workflow uses this exact check shape:
+
+```bash
+ROOT_CURRENT="$GITHUB_WORKSPACE"
+ROOT_CONTRACT_COMMIT="$(python3 -c 'import json; print(json.load(open("scripts/e2e/generated/provenance.json"))["sourceRootCommit"])')"
+test "$ROOT_CONTRACT_COMMIT" = "$(git log -1 --format=%H -- contract)"
+CONTRACT_WORKTREE="$RUNNER_TEMP/kokoro-contract-source"
+git worktree add --detach "$CONTRACT_WORKTREE" "$ROOT_CONTRACT_COMMIT"
+trap 'git worktree remove --force "$CONTRACT_WORKTREE" 2>/dev/null || true' EXIT
+(cd "$CONTRACT_WORKTREE" && pnpm install --frozen-lockfile && uv sync --frozen --group dev)
+cat >"$RUNNER_TEMP/kokoro-consumer-map.json" <<JSON
+{"kokoro-site":"$ROOT_CURRENT/kokoro-site","kokoro-iam":"$ROOT_CURRENT/kokoro-iam","kokoro-chat":"$ROOT_CURRENT/kokoro-chat","kokoro-agent":"$ROOT_CURRENT/kokoro-agent","kokoro-capability":"$ROOT_CURRENT/kokoro-capability","kokoro-model":"$ROOT_CURRENT/kokoro-model","kokoro-web":"$ROOT_CURRENT/kokoro-web","root-e2e":"$ROOT_CURRENT"}
+JSON
+(cd "$CONTRACT_WORKTREE" && uv run --frozen python contract/generate.py --source-root "$CONTRACT_WORKTREE" --source-commit "$ROOT_CONTRACT_COMMIT" --all --repo-map "$RUNNER_TEMP/kokoro-consumer-map.json" --check)
+```
+
+Do not hand-edit commit hashes or output digests, and do not run the frozen generator with the later candidate Root's expanded database locks.
 
 **JIT cut requirement 4 — Stage the exact atomic tree and create a detached candidate commit**
 

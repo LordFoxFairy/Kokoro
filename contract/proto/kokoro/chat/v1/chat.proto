@@ -1,0 +1,256 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.chat.v1;
+
+import "google/protobuf/timestamp.proto";
+import "kokoro/common/v1/common.proto";
+
+enum ConversationState {
+  CONVERSATION_STATE_UNSPECIFIED = 0;
+  CONVERSATION_STATE_ACTIVE = 1;
+  CONVERSATION_STATE_ARCHIVED = 2;
+  CONVERSATION_STATE_TRASHED = 3;
+}
+
+enum MessageRole {
+  MESSAGE_ROLE_UNSPECIFIED = 0;
+  MESSAGE_ROLE_USER = 1;
+  MESSAGE_ROLE_ASSISTANT = 2;
+  MESSAGE_ROLE_SYSTEM = 3;
+  MESSAGE_ROLE_TOOL = 4;
+}
+
+enum MessageStatus {
+  MESSAGE_STATUS_UNSPECIFIED = 0;
+  MESSAGE_STATUS_PENDING = 1;
+  MESSAGE_STATUS_STREAMING = 2;
+  MESSAGE_STATUS_COMPLETED = 3;
+  MESSAGE_STATUS_FAILED = 4;
+}
+
+enum MessagePartKind {
+  MESSAGE_PART_KIND_UNSPECIFIED = 0;
+  MESSAGE_PART_KIND_TEXT = 1;
+  MESSAGE_PART_KIND_TOOL_CALL = 2;
+  MESSAGE_PART_KIND_TOOL_RESULT = 3;
+  MESSAGE_PART_KIND_STATUS = 4;
+  MESSAGE_PART_KIND_THINKING = 5;
+  MESSAGE_PART_KIND_TODO = 6;
+  MESSAGE_PART_KIND_SUBAGENT = 7;
+  MESSAGE_PART_KIND_DELIVERY = 8;
+}
+
+enum MessagePartStatus {
+  MESSAGE_PART_STATUS_UNSPECIFIED = 0;
+  MESSAGE_PART_STATUS_PENDING = 1;
+  MESSAGE_PART_STATUS_COMPLETE = 2;
+  MESSAGE_PART_STATUS_FAILED = 3;
+}
+
+enum InteractionStatus {
+  INTERACTION_STATUS_UNSPECIFIED = 0;
+  INTERACTION_STATUS_PENDING = 1;
+  INTERACTION_STATUS_RESOLVED = 2;
+  INTERACTION_STATUS_CANCELLED = 3;
+  INTERACTION_STATUS_EXPIRED = 4;
+}
+
+enum RunViewState {
+  RUN_VIEW_STATE_UNSPECIFIED = 0;
+  RUN_VIEW_STATE_PREPARING = 1;
+  RUN_VIEW_STATE_QUEUED = 2;
+  RUN_VIEW_STATE_RUNNING = 3;
+  RUN_VIEW_STATE_AWAITING_INPUT = 4;
+  RUN_VIEW_STATE_COMPLETED = 5;
+  RUN_VIEW_STATE_CANCELLED = 6;
+  RUN_VIEW_STATE_FAILED = 7;
+  RUN_VIEW_STATE_ADMISSION_FAILED = 8;
+}
+
+enum RunViewTerminalKind {
+  RUN_VIEW_TERMINAL_KIND_UNSPECIFIED = 0;
+  RUN_VIEW_TERMINAL_KIND_COMPLETED = 1;
+  RUN_VIEW_TERMINAL_KIND_CANCELLED = 2;
+  RUN_VIEW_TERMINAL_KIND_FAILED = 3;
+  RUN_VIEW_TERMINAL_KIND_ADMISSION_FAILED = 4;
+}
+
+enum ProjectedInteractionKind {
+  PROJECTED_INTERACTION_KIND_UNSPECIFIED = 0;
+  PROJECTED_INTERACTION_KIND_APPROVAL = 1;
+  PROJECTED_INTERACTION_KIND_QUESTION = 2;
+  PROJECTED_INTERACTION_KIND_REVIEW = 3;
+  PROJECTED_INTERACTION_KIND_INPUT = 4;
+}
+
+message Conversation {
+  string conversation_id = 1;
+  string organization_id = 2;
+  string site_id = 3;
+  string title = 4;
+  string agent_namespace = 5;
+  kokoro.chat.v1.ConversationState state = 6;
+  uint64 generation = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message ConversationSummary {
+  string conversation_id = 1;
+  string title = 2;
+  kokoro.chat.v1.ConversationState state = 3;
+  uint64 generation = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message MessagePart {
+  string part_id = 1;
+  uint32 ordinal = 2;
+  kokoro.chat.v1.MessagePartKind kind = 3;
+  uint32 schema_version = 4;
+  bytes payload_json = 5;
+  kokoro.chat.v1.MessagePartStatus status = 6;
+}
+
+message Message {
+  string message_id = 1;
+  string conversation_id = 2;
+  optional string parent_message_id = 3;
+  kokoro.chat.v1.MessageRole role = 4;
+  kokoro.chat.v1.MessageStatus status = 5;
+  uint64 ordinal = 6;
+  uint64 generation = 7;
+  repeated kokoro.chat.v1.MessagePart parts = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message RunView {
+  string launch_id = 1;
+  optional string agent_run_id = 2;
+  string conversation_id = 3;
+  uint64 epoch = 4;
+  kokoro.chat.v1.RunViewState state = 5;
+  uint64 received_seq = 6;
+  uint64 projected_seq = 7;
+  optional kokoro.chat.v1.RunViewTerminalKind terminal_kind = 8;
+  uint64 generation = 9;
+}
+
+message Interaction {
+  string interaction_id = 1;
+  string agent_run_id = 2;
+  string conversation_id = 3;
+  kokoro.chat.v1.ProjectedInteractionKind kind = 4;
+  string action_digest = 5;
+  uint32 schema_version = 6;
+  kokoro.chat.v1.InteractionStatus status = 7;
+  bytes payload_json = 8;
+  optional google.protobuf.Timestamp expires_at = 9;
+  uint64 generation = 10;
+}
+
+message CreateConversationRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string title = 3;
+}
+
+message CreateConversationResponse {
+  string conversation_id = 1;
+  string agent_namespace = 2;
+  uint64 generation = 3;
+  uint64 watermark = 4;
+  bool replayed = 5;
+}
+
+message SubmitMessageRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string conversation_id = 3;
+  string content = 4;
+  optional string requested_model_label = 5;
+  optional string requested_agent_key = 6;
+}
+
+message SubmitMessageResponse {
+  string launch_id = 1;
+  string user_message_id = 2;
+  string assistant_message_id = 3;
+  uint64 conversation_generation = 4;
+  uint64 watermark = 5;
+  bool replayed = 6;
+}
+
+message DecideInteractionRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string conversation_id = 3;
+  string interaction_id = 4;
+  uint64 expected_generation = 5;
+  repeated kokoro.common.v1.ControlDecision decisions = 6;
+}
+
+message DecideInteractionResponse {
+  string control_id = 1;
+  uint64 interaction_generation = 2;
+  kokoro.common.v1.ControlStatus control_status = 3;
+  uint64 watermark = 4;
+  bool replayed = 5;
+}
+
+message ReadConversationSnapshotRequest {
+  string request_id = 1;
+  string conversation_id = 2;
+}
+
+message ReadConversationSnapshotResponse {
+  kokoro.chat.v1.Conversation conversation = 1;
+  repeated kokoro.chat.v1.Message messages = 2;
+  optional kokoro.chat.v1.RunView active_run = 3;
+  repeated kokoro.chat.v1.Interaction pending_interactions = 4;
+  uint64 watermark = 5;
+}
+
+message ListConversationsRequest {
+  string request_id = 1;
+  kokoro.common.v1.PageRequest page = 2;
+}
+
+message ListConversationsResponse {
+  repeated kokoro.chat.v1.ConversationSummary conversations = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+message BrowserSessionEvent {
+  string event_id = 1;
+  uint64 seq = 2;
+  string session_id = 3;
+  string run_id = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  string kind = 6;
+  bytes payload_json = 7;
+}
+
+message StreamConversationEventsRequest {
+  string request_id = 1;
+  string conversation_id = 2;
+  uint64 after_seq = 3;
+}
+
+message StreamConversationEventsResponse {
+  kokoro.chat.v1.BrowserSessionEvent event = 1;
+}
+
+service ChatCommandService {
+  rpc CreateConversation(kokoro.chat.v1.CreateConversationRequest) returns (kokoro.chat.v1.CreateConversationResponse);
+  rpc SubmitMessage(kokoro.chat.v1.SubmitMessageRequest) returns (kokoro.chat.v1.SubmitMessageResponse);
+  rpc DecideInteraction(kokoro.chat.v1.DecideInteractionRequest) returns (kokoro.chat.v1.DecideInteractionResponse);
+}
+
+service ChatQueryService {
+  rpc ReadConversationSnapshot(kokoro.chat.v1.ReadConversationSnapshotRequest) returns (kokoro.chat.v1.ReadConversationSnapshotResponse);
+  rpc ListConversations(kokoro.chat.v1.ListConversationsRequest) returns (kokoro.chat.v1.ListConversationsResponse);
+  rpc StreamConversationEvents(kokoro.chat.v1.StreamConversationEventsRequest) returns (stream kokoro.chat.v1.StreamConversationEventsResponse);
+}

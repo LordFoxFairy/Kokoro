@@ -1,0 +1,2621 @@
+{
+  "source": "deleted contract/spec/events.yaml + control.yaml at df63bfa parent",
+  "rawEvents": [
+    {
+      "kind": "run.started",
+      "legacyFields": [],
+      "authorityFields": []
+    },
+    {
+      "kind": "thinking.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "delta",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "message.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "delta",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "message.completed",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "content",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "content",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "tool.invoked",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "args_json",
+          "type": "bytes",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "tool.output.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "delta",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "tool.awaiting_approval",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "description",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "allowed_decisions",
+          "abstractType": "array:enum:resume_decision",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "abstractType": "enum:awaiting_kind",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "risk",
+          "abstractType": "object:Risk",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "editable",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "input_schema",
+          "abstractType": "record",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "pending_tool_ids",
+          "abstractType": "array:string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "args_json",
+          "type": "bytes",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "description",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "allowed_decisions",
+          "type": ".kokoro.common.v1.DecisionKind",
+          "label": "repeated"
+        },
+        {
+          "number": 7,
+          "name": "interaction_kind",
+          "type": ".kokoro.agent.v1.InteractionKind",
+          "label": "required"
+        },
+        {
+          "number": 8,
+          "name": "risk_json",
+          "type": "bytes",
+          "label": "optional"
+        },
+        {
+          "number": 9,
+          "name": "editable",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 10,
+          "name": "input_schema_json",
+          "type": "bytes",
+          "label": "optional"
+        },
+        {
+          "number": 11,
+          "name": "pending_tool_ids",
+          "type": "string",
+          "label": "repeated"
+        },
+        {
+          "number": 12,
+          "name": "result",
+          "type": "string",
+          "label": "optional"
+        }
+      ]
+    },
+    {
+      "kind": "tool.returned",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "is_error",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "truncated",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "rejected",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "reject_reason",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "responded",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "summary",
+          "abstractType": "record",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "result",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "is_error",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "truncated",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 7,
+          "name": "rejected",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 8,
+          "name": "reject_reason",
+          "type": "string",
+          "label": "optional"
+        },
+        {
+          "number": 9,
+          "name": "responded",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 10,
+          "name": "summary_json",
+          "type": "bytes",
+          "label": "optional"
+        }
+      ]
+    },
+    {
+      "kind": "todo.updated",
+      "legacyFields": [
+        {
+          "name": "todos",
+          "abstractType": "array:object:Todo",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "todos",
+          "type": ".kokoro.agent.v1.Todo",
+          "label": "repeated"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.started",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "description",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_type",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "source",
+          "abstractType": "enum:subagent_source",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "description",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "subagent_type",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "source",
+          "type": ".kokoro.agent.v1.SubagentSource",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.finished",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_type",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "source",
+          "abstractType": "enum:subagent_source",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "failed",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "error",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "subagent_type",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "source",
+          "type": ".kokoro.agent.v1.SubagentSource",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "failed",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 7,
+          "name": "error",
+          "type": "string",
+          "label": "optional"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.thinking.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "delta",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.text.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "text",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "text",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.text.completed",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "text",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "text",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.tool.invoked",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "args_json",
+          "type": "bytes",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "subagent.tool.returned",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "is_error",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "truncated",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "segment_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "subagent_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "tool_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "name",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "result",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "is_error",
+          "type": "bool",
+          "label": "required"
+        },
+        {
+          "number": 7,
+          "name": "truncated",
+          "type": "bool",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "delivery.created",
+      "legacyFields": [
+        {
+          "name": "path",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "title",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "mime",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "size",
+          "abstractType": "int",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "content_hash",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "note",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "path",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "title",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "mime",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 4,
+          "name": "size",
+          "type": "uint64",
+          "label": "required"
+        },
+        {
+          "number": 5,
+          "name": "content_hash",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 6,
+          "name": "note",
+          "type": "string",
+          "label": "optional"
+        }
+      ]
+    },
+    {
+      "kind": "run.control.receipt",
+      "legacyFields": [
+        {
+          "name": "decision_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "control_status",
+          "abstractType": "enum:control_receipt_status",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "command_id",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "status",
+          "type": ".kokoro.common.v1.ControlStatus",
+          "label": "required"
+        }
+      ]
+    },
+    {
+      "kind": "run.completed",
+      "legacyFields": [
+        {
+          "name": "status",
+          "abstractType": "enum:run_completed_status",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "token_usage",
+          "abstractType": "object:TokenUsage",
+          "optional": true,
+          "nullable": true
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "status",
+          "type": ".kokoro.agent.v1.RunCompletionStatus",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "usage",
+          "type": ".kokoro.agent.v1.RunUsage",
+          "label": "optional"
+        }
+      ]
+    },
+    {
+      "kind": "run.failed",
+      "legacyFields": [
+        {
+          "name": "code",
+          "abstractType": "enum:run_error_code",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "error_kind",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "message",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "number": 1,
+          "name": "code",
+          "type": ".kokoro.agent.v1.RunFailureCode",
+          "label": "required"
+        },
+        {
+          "number": 2,
+          "name": "error_kind",
+          "type": "string",
+          "label": "required"
+        },
+        {
+          "number": 3,
+          "name": "message",
+          "type": "string",
+          "label": "required"
+        }
+      ]
+    }
+  ],
+  "browserEvents": [
+    {
+      "kind": "session.created",
+      "legacyFields": [
+        {
+          "name": "title",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "owner_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "owner_id",
+          "type": "string",
+          "required": true,
+          "mapsFrom": "chat_conversation.organization_id"
+        }
+      ]
+    },
+    {
+      "kind": "run.created",
+      "legacyFields": [
+        {
+          "name": "run_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "run_id",
+          "type": "string",
+          "required": true,
+          "mapsFrom": "chat_run_launch.launch_id"
+        }
+      ]
+    },
+    {
+      "kind": "message.user",
+      "legacyFields": [
+        {
+          "name": "message_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "content",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "message_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "message.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "delta",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "message.completed",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "content",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "thinking.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "delta",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "tool.invoked",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "args",
+          "type": "json-object",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "tool.output.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "delta",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "tool.awaiting_approval",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "description",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "allowed_decisions",
+          "abstractType": "array:enum:resume_decision",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "kind",
+          "abstractType": "enum:awaiting_kind",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "risk",
+          "abstractType": "object:Risk",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "editable",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "input_schema",
+          "abstractType": "record",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "pending_tool_ids",
+          "abstractType": "array:string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "args",
+          "type": "json-object",
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "allowed_decisions",
+          "type": "decision-string-array",
+          "required": true
+        },
+        {
+          "name": "kind",
+          "type": "interaction-kind-string",
+          "required": true
+        },
+        {
+          "name": "risk",
+          "type": "risk-object",
+          "required": false
+        },
+        {
+          "name": "editable",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "input_schema",
+          "type": "json-object",
+          "required": false
+        },
+        {
+          "name": "pending_tool_ids",
+          "type": "unique-string-array",
+          "required": true
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "interaction_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "interaction_generation",
+          "type": "safe-nonnegative-integer",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "tool.returned",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "is_error",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "truncated",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "rejected",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "reject_reason",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "responded",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "summary",
+          "abstractType": "record",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "is_error",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "truncated",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "rejected",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "reject_reason",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "responded",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "summary",
+          "type": "json-object",
+          "required": false
+        }
+      ]
+    },
+    {
+      "kind": "delivery.created",
+      "legacyFields": [
+        {
+          "name": "path",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "title",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "mime",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "size",
+          "abstractType": "int",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "content_hash",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "note",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "path",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "mime",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "safe-nonnegative-integer",
+          "required": true
+        },
+        {
+          "name": "content_hash",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "note",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "kind": "todo.updated",
+      "legacyFields": [
+        {
+          "name": "todos",
+          "abstractType": "array:object:Todo",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "todos",
+          "type": "todo-array",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.started",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "description",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_type",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "source",
+          "abstractType": "enum:subagent_source",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_type",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "source",
+          "type": "subagent-source-string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.finished",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_type",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "source",
+          "abstractType": "enum:subagent_source",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "failed",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        },
+        {
+          "name": "error",
+          "abstractType": "string",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_type",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "source",
+          "type": "subagent-source-string",
+          "required": true
+        },
+        {
+          "name": "failed",
+          "type": "boolean",
+          "required": false
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "kind": "subagent.thinking.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "delta",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "delta",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.text.delta",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "text",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.text.completed",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "text",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.tool.invoked",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "args",
+          "abstractType": "record",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "args",
+          "type": "json-object",
+          "required": true
+        }
+      ]
+    },
+    {
+      "kind": "subagent.tool.returned",
+      "legacyFields": [
+        {
+          "name": "segment_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "subagent_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "tool_id",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "name",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "result",
+          "abstractType": "string",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "is_error",
+          "abstractType": "boolean",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "truncated",
+          "abstractType": "boolean",
+          "optional": true,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "segment_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subagent_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "tool_id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "result",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "is_error",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "truncated",
+          "type": "boolean",
+          "required": false
+        }
+      ]
+    },
+    {
+      "kind": "run.completed",
+      "legacyFields": [
+        {
+          "name": "status",
+          "abstractType": "enum:run_completed_status",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "token_usage",
+          "abstractType": "object:TokenUsage",
+          "optional": true,
+          "nullable": true
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "status",
+          "type": "completed-or-cancelled",
+          "required": true
+        },
+        {
+          "name": "token_usage",
+          "type": "nullable-token-usage",
+          "required": false
+        }
+      ]
+    },
+    {
+      "kind": "run.failed",
+      "legacyFields": [
+        {
+          "name": "code",
+          "abstractType": "enum:run_error_code",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "error_kind",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        },
+        {
+          "name": "message",
+          "abstractType": "string_nonempty",
+          "optional": false,
+          "nullable": false
+        }
+      ],
+      "authorityFields": [
+        {
+          "name": "code",
+          "type": "run-failure-code-string",
+          "required": true
+        },
+        {
+          "name": "error_kind",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "control": {
+    "legacyMessages": [
+      {
+        "kind": "run.request",
+        "fields": [
+          {
+            "name": "run_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "thread_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "input",
+            "type": "object:RunInput"
+          },
+          {
+            "name": "runtime",
+            "type": "object:RuntimeConfig"
+          },
+          {
+            "name": "context",
+            "type": "object:RuntimeContext"
+          },
+          {
+            "name": "trace",
+            "type": "record",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "kind": "run.resume",
+        "fields": [
+          {
+            "name": "run_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "thread_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "decision_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "decisions",
+            "type": "decision_message_list"
+          }
+        ]
+      },
+      {
+        "kind": "run.cancel",
+        "fields": [
+          {
+            "name": "run_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "thread_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "decision_id",
+            "type": "string_nonempty"
+          }
+        ]
+      },
+      {
+        "kind": "run.steer",
+        "fields": [
+          {
+            "name": "run_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "thread_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "message_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "content",
+            "type": "string_nonempty"
+          }
+        ]
+      }
+    ],
+    "legacyDecisionArms": [
+      {
+        "type": "approve",
+        "fields": [
+          {
+            "name": "tool_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "args",
+            "type": "record",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "type": "edit",
+        "fields": [
+          {
+            "name": "tool_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "args",
+            "type": "record"
+          }
+        ]
+      },
+      {
+        "type": "reject",
+        "fields": [
+          {
+            "name": "tool_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "reason",
+            "type": "string",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "type": "respond",
+        "fields": [
+          {
+            "name": "tool_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "response",
+            "type": "string_nonempty"
+          }
+        ]
+      },
+      {
+        "type": "submit",
+        "fields": [
+          {
+            "name": "request_id",
+            "type": "string_nonempty"
+          },
+          {
+            "name": "value",
+            "type": "record"
+          }
+        ]
+      }
+    ],
+    "authorityDecisionPayloadSchemasByKind": {
+      "approve": {
+        "additionalProperties": false,
+        "required": [],
+        "properties": [
+          {
+            "name": "args",
+            "type": "json-object",
+            "optional": true,
+            "maxBytes": 65536
+          }
+        ]
+      },
+      "edit": {
+        "additionalProperties": false,
+        "required": [
+          "args"
+        ],
+        "properties": [
+          {
+            "name": "args",
+            "type": "json-object",
+            "maxBytes": 65536
+          }
+        ]
+      },
+      "reject": {
+        "additionalProperties": false,
+        "required": [],
+        "properties": [
+          {
+            "name": "reason",
+            "type": "string",
+            "optional": true,
+            "maxLength": 4096
+          }
+        ]
+      },
+      "respond": {
+        "additionalProperties": false,
+        "required": [
+          "response"
+        ],
+        "properties": [
+          {
+            "name": "response",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 65536
+          }
+        ]
+      },
+      "submit": {
+        "additionalProperties": false,
+        "required": [
+          "value"
+        ],
+        "properties": [
+          {
+            "name": "value",
+            "type": "json-object",
+            "maxBytes": 65536
+          }
+        ]
+      }
+    },
+    "authorityLaunchRunFields": [
+      {
+        "number": 1,
+        "name": "request_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 2,
+        "name": "launch_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 3,
+        "name": "launch_request_digest",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 4,
+        "name": "message_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 5,
+        "name": "content",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 6,
+        "name": "namespace",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 7,
+        "name": "session_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 8,
+        "name": "thread_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 9,
+        "name": "site_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 10,
+        "name": "organization_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 11,
+        "name": "requested_agent_preset_key",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 12,
+        "name": "requested_model_label",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 13,
+        "name": "requested_capability_selectors",
+        "type": "string",
+        "label": "repeated"
+      }
+    ],
+    "authorityApplyControlFields": [
+      {
+        "number": 1,
+        "name": "request_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 2,
+        "name": "agent_run_id",
+        "type": "string",
+        "label": "required"
+      },
+      {
+        "number": 3,
+        "name": "command",
+        "type": ".kokoro.common.v1.CommandIdentity",
+        "label": "required"
+      },
+      {
+        "number": 4,
+        "name": "control_kind",
+        "type": ".kokoro.agent.v1.ControlKind",
+        "label": "required"
+      },
+      {
+        "number": 5,
+        "name": "decisions",
+        "type": ".kokoro.common.v1.ControlDecision",
+        "label": "repeated"
+      },
+      {
+        "number": 6,
+        "name": "message_id",
+        "type": "string",
+        "label": "optional"
+      },
+      {
+        "number": 7,
+        "name": "content",
+        "type": "string",
+        "label": "optional"
+      }
+    ]
+  }
+}
