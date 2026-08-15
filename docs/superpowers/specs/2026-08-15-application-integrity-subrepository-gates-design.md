@@ -92,6 +92,7 @@ Append-only fact、ledger、receipt、outbox/inbox、运行证据、checkpoint�
 5. 每个 provider 仓拥有自己的完整 Proto package、Buf baseline、server 生成配置和兼容测试；使用 Google 标准 wire types，禁止另建集中业务协议仓。每个 consumer 仓固定 provider descriptor commit/digest，拥有生成 client 和真实 pair 测试。
 6. 报告字段与证据要求由本文档化，各仓在本仓保存自己的 report schema、validator、catalog、evidence 和 CI；禁止另建集中 quality/test repository。Root 只比较各仓声明的报告格式 revision/hash 和验收摘要。
 7. “独立 Git”必须同时满足独立 object database、独立 remote、独立 CI、独立版本以及可单独 clone/build/test；从 `kokoro-platform` 或 `kokoro-session` 建立的 branch/worktree 只算提取 candidate，不算独立仓。Root 最终只用 gitlink 固定独立 remote commit，禁止路径复制、同仓 branch 或未提交目录冒充子仓。
+8. 每个子仓自己维护本仓未提交的 `.env`、无密钥 `.env.example`、`config/environment.schema.json`、启动边界校验以及本仓 GitHub variables/secrets；任何子仓必须可在独立 clone 中仅凭本仓配置完成 build/test/run。Root 顶层未提交 `.env` 是本地 operator 配置总账，使用按仓命名的键供 Root bootstrap 管理，不是任何服务的运行时配置源。bootstrap 使用显式映射把每个总账键写入所属子仓自己的 ignored `.env` 或 GitHub repo secret，写前校验目标 ignore/schema，secret 文件权限固定为 owner-only；禁止整份环境透传、跨仓变量注入、子仓读取父目录 `.env`、日志输出 secret value 或把总账内容写入测试证据。
 
 ## 6. Clean replace 与 Proto 首次冻结
 
