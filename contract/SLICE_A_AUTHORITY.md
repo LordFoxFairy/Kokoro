@@ -1,6 +1,6 @@
 ## Slice A machine authority
 
-`slice-a-contract-manifest.yaml` is a byte-for-byte installed copy of the reviewed Root design authority. The additive projection-NACK revision preserves the existing `AckProjection` method and positive wire while adding presence-aware request fields 6–7 and exact durable response echoes 3–4. Run:
+`slice-a-contract-manifest.yaml` is a byte-for-byte installed copy of the reviewed Root design authority. The additive projection-NACK revision preserves the existing `AckProjection` method and positive wire while adding presence-aware request fields 6–7 and exact durable response echoes 3–4. The Root E2E consumer explicitly includes both IAM authentication and authorization so the native product-chain proof calls Refresh, Authorize and Logout through generated gRPC code; this test-only closure does not broaden the browser-facing Web consumer. Run:
 
     python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml
 

@@ -92,6 +92,31 @@ def test_projection_nack_runtime_proto_reaches_only_real_consumers() -> None:
     assert "site" not in MANIFEST["consumerCallerMap"]
 
 
+def test_root_e2e_generation_declares_full_iam_lifecycle_closure(
+    committed_source: tuple[Path, str], tmp_path: Path
+) -> None:
+    authorization = "kokoro/iam/v1/authorization.proto"
+    assert authorization in MANIFEST["consumerFileClosure"]["root-e2e"]
+    assert authorization in CONSUMERS["consumers"]["root-e2e"]["protoFiles"]
+    authorization_file = next(
+        item for item in MANIFEST["protobuf"]["files"] if item["path"] == authorization
+    )
+    assert {
+        declaration["name"]
+        for declaration in authorization_file["declarations"]
+        if declaration["kind"] == "service"
+    } == {"IamAuthorizationService"}
+    source, commit = committed_source
+    repo = tmp_path / "root-e2e"
+    repo.mkdir()
+    generate_consumer(
+        source_root=source, source_commit=commit, consumer="root-e2e", repo=repo, check=False
+    )
+    generated = repo / "scripts/e2e/generated/kokoro/iam/v1/authorization_pb2_grpc.py"
+    assert generated.is_file()
+    assert "class IamAuthorizationServiceStub" in generated.read_text()
+
+
 def test_python_generation_is_deterministic_provenanced_and_checkable(
     committed_source: tuple[Path, str], tmp_path: Path
 ) -> None:

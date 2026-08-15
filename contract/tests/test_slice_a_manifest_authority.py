@@ -95,6 +95,14 @@ class SliceAManifestAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(ManifestError,'consumer closure drift'):
             validate(candidate)
 
+    def test_root_e2e_missing_authorization_closure_fails(self) -> None:
+        candidate=copy.deepcopy(self.manifest)
+        authorization='kokoro/iam/v1/authorization.proto'
+        if authorization in candidate['consumerFileClosure']['root-e2e']:
+            candidate['consumerFileClosure']['root-e2e'].remove(authorization)
+        with self.assertRaisesRegex(ManifestError,'root-e2e authorization closure drift'):
+            validate(candidate)
+
     def test_projection_nack_semantics_are_frozen(self) -> None:
         nack = self.manifest["rules"]["projectionNack"]
         self.assertEqual(nack["requestFields"], ["rejected_seq", "rejection_code"])

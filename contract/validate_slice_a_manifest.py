@@ -19,7 +19,7 @@ EXPECTED_AGENT_KINDS = [
     "subagent.thinking.delta","subagent.text.delta","subagent.text.completed","subagent.tool.invoked",
     "subagent.tool.returned","delivery.created","run.control.receipt","run.completed","run.failed",
 ]
-EXPECTED_NORMALIZED_MANIFEST_SHA256 = "5204633227823de228c483623aa657aeb0d7e02b1daeeb4a5673e88160ea92af"
+EXPECTED_NORMALIZED_MANIFEST_SHA256 = "87c33b3c5b41a8f30f0f48bdf8c84aacda4f09d4b73e89020b221a9f0cf2cc89"
 EXPECTED_ACCESS_JWT = {
     "header": {"alg": "RS256", "typ": "JWT", "kid": "nonempty active JWKS key id"},
     "claims": {
@@ -289,7 +289,9 @@ def validate(manifest: dict[str, Any]) -> None:
             for service_name in caller_map[caller]:
                 seeds.add(declaration_file[next(name for name in declaration_file if name.endswith(f".{service_name}"))])
         if consumer == "root-e2e":
-            seeds.add("kokoro/agent/v1/agent_runtime.proto")
+            authorization_path="kokoro/iam/v1/authorization.proto"
+            require(authorization_path in closure, "root-e2e authorization closure drift")
+            seeds.update({authorization_path,"kokoro/agent/v1/agent_runtime.proto"})
         expected=set(seeds); pending=list(seeds)
         while pending:
             current=pending.pop()

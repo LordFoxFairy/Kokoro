@@ -18,3 +18,5 @@ pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml
 ```
 
 `contract/generate.py` reads only a caller-supplied clean Root commit and emits one declared consumer closure. Child repositories never modify Root Proto/OpenAPI or generated files by hand. Browser traffic remains Web BFF HTTP/SSE; service-to-service calls use generated Connect/gRPC contracts.
+
+`root-e2e` is a test-harness consumer rather than a browser boundary. Its declared closure includes IAM authentication and authorization for the complete Refresh → Authorize → Logout lifecycle, while `kokoro-web` remains restricted to the browser-facing public closure.
