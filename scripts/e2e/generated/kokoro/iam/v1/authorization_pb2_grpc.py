@@ -5,7 +5,7 @@
 import grpc
 import warnings
 
-from ...site.v1 import site_pb2 as kokoro_dot_site_dot_v1_dot_site__pb2
+from ...iam.v1 import authorization_pb2 as kokoro_dot_iam_dot_v1_dot_authorization__pb2
 
 GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
@@ -20,14 +20,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in kokoro/site/v1/site_pb2_grpc.py depends on'
+        + ' but the generated code in kokoro/iam/v1/authorization_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class SiteServiceStub(object):
+class IamAuthorizationServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -36,43 +36,43 @@ class SiteServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ResolveSiteByHost = channel.unary_unary(
-                '/kokoro.site.v1.SiteService/ResolveSiteByHost',
-                request_serializer=kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostRequest.SerializeToString,
-                response_deserializer=kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostResponse.FromString,
+        self.Authorize = channel.unary_unary(
+                '/kokoro.iam.v1.IamAuthorizationService/Authorize',
+                request_serializer=kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeRequest.SerializeToString,
+                response_deserializer=kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeResponse.FromString,
                 _registered_method=True)
 
 
-class SiteServiceServicer(object):
+class IamAuthorizationServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def ResolveSiteByHost(self, request, context):
+    def Authorize(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_SiteServiceServicer_to_server(servicer, server):
+def add_IamAuthorizationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ResolveSiteByHost': grpc.unary_unary_rpc_method_handler(
-                    servicer.ResolveSiteByHost,
-                    request_deserializer=kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostRequest.FromString,
-                    response_serializer=kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostResponse.SerializeToString,
+            'Authorize': grpc.unary_unary_rpc_method_handler(
+                    servicer.Authorize,
+                    request_deserializer=kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeRequest.FromString,
+                    response_serializer=kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'kokoro.site.v1.SiteService', rpc_method_handlers)
+            'kokoro.iam.v1.IamAuthorizationService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('kokoro.site.v1.SiteService', rpc_method_handlers)
+    server.add_registered_method_handlers('kokoro.iam.v1.IamAuthorizationService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class SiteService(object):
+class IamAuthorizationService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def ResolveSiteByHost(request,
+    def Authorize(request,
             target,
             options=(),
             channel_credentials=None,
@@ -85,9 +85,9 @@ class SiteService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/kokoro.site.v1.SiteService/ResolveSiteByHost',
-            kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostRequest.SerializeToString,
-            kokoro_dot_site_dot_v1_dot_site__pb2.ResolveSiteByHostResponse.FromString,
+            '/kokoro.iam.v1.IamAuthorizationService/Authorize',
+            kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeRequest.SerializeToString,
+            kokoro_dot_iam_dot_v1_dot_authorization__pb2.AuthorizeResponse.FromString,
             options,
             channel_credentials,
             insecure,
