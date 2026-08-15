@@ -14,7 +14,10 @@ ALTER TABLE agent_run_usage_line
   REFERENCES model_revision(model_revision_id) ON DELETE RESTRICT;
 
 CREATE FUNCTION agent_validate_manifest_targets()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE target_published_at timestamptz;
 DECLARE target_transport text;
 BEGIN

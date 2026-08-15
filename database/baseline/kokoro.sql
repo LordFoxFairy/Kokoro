@@ -48,7 +48,7 @@ CREATE UNIQUE INDEX site_domain_one_active_primary_uidx
   WHERE is_primary AND status = 'active';
 
 -- source: database/schema/20-iam.sql
--- sha256: a1cfd6ebbd71c49581a3a6a3f74f010f200ee1a162240fc6e374ea5a6d8f1fda
+-- sha256: 4085fa1f786bdd8356e9b2865442b6588f536d77dbc1e9983d8eb3c0b9e6efb6
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE iam_principal (
@@ -386,6 +386,8 @@ CREATE TABLE iam_security_event (
 CREATE FUNCTION iam_check_principal_scope()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 DECLARE
   principal iam_principal%ROWTYPE;
@@ -409,6 +411,8 @@ $$;
 CREATE FUNCTION iam_reject_principal_identity_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope IS DISTINCT FROM OLD.principal_scope
@@ -451,6 +455,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_principal_scope();
 CREATE FUNCTION iam_check_auth_session_organization()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope = 'control_plane' THEN
@@ -488,6 +494,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_auth_session_organization();
 CREATE FUNCTION iam_check_membership_live_auth_sessions()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 DECLARE
   membership iam_membership%ROWTYPE;
@@ -531,6 +539,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_membership_live_auth_sessions();
 CREATE FUNCTION iam_reject_command_receipt_claim_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.command_id IS DISTINCT FROM OLD.command_id
@@ -553,6 +563,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_command_receipt_claim_update();
 CREATE FUNCTION iam_reject_auth_session_identity_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope IS DISTINCT FROM OLD.principal_scope
@@ -579,6 +591,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_identity_update();
 CREATE FUNCTION iam_reject_auth_session_rotation_unlink()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF OLD.rotated_to IS NOT NULL
@@ -599,6 +613,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_rotation_unlink();
 CREATE FUNCTION iam_reject_auth_session_generation_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.family_generation IS DISTINCT FROM OLD.family_generation THEN
@@ -617,6 +633,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_generation_update();
 CREATE FUNCTION iam_check_auth_session_rotation()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.rotated_to IS NOT NULL AND NOT EXISTS (
@@ -660,7 +678,7 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION iam_check_auth_session_rotation();
 
 -- source: database/schema/30-chat.sql
--- sha256: d312a11600458cd9a0bb49327c287b6f966fd714efc91324f06d73e3ebc3cc16
+-- sha256: a80ac4138ea5eab741e105488aa235eb2d99225167161c5e26837aada98e443e
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE chat_conversation (
@@ -962,7 +980,10 @@ CREATE TABLE chat_stream_event (
 );
 
 CREATE FUNCTION chat_reject_command_receipt_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.site_id IS DISTINCT FROM OLD.site_id
     OR NEW.organization_id IS DISTINCT FROM OLD.organization_id
@@ -984,7 +1005,10 @@ ON chat_command_receipt
 FOR EACH ROW EXECUTE FUNCTION chat_reject_command_receipt_claim_update();
 
 CREATE FUNCTION chat_reject_conversation_identity_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.organization_id IS DISTINCT FROM OLD.organization_id
     OR NEW.site_id IS DISTINCT FROM OLD.site_id
@@ -1004,7 +1028,10 @@ ON chat_conversation
 FOR EACH ROW EXECUTE FUNCTION chat_reject_conversation_identity_update();
 
 CREATE FUNCTION chat_reject_message_identity_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.conversation_id IS DISTINCT FROM OLD.conversation_id
     OR NEW.parent_message_id IS DISTINCT FROM OLD.parent_message_id
@@ -1024,7 +1051,10 @@ ON chat_message
 FOR EACH ROW EXECUTE FUNCTION chat_reject_message_identity_update();
 
 CREATE FUNCTION chat_reject_stream_seq_regression()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.next_stream_seq < OLD.next_stream_seq THEN
     RAISE EXCEPTION 'conversation stream sequence cannot regress'
@@ -1039,7 +1069,10 @@ BEFORE UPDATE OF next_stream_seq ON chat_conversation
 FOR EACH ROW EXECUTE FUNCTION chat_reject_stream_seq_regression();
 
 CREATE FUNCTION chat_reject_accepted_launch_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF (
     (OLD.state = 'accepted' AND NEW.state NOT IN ('accepted','completed'))
@@ -1067,7 +1100,10 @@ ON chat_run_launch
 FOR EACH ROW EXECUTE FUNCTION chat_reject_accepted_launch_update();
 
 CREATE FUNCTION chat_reject_projection_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.producer IS DISTINCT FROM OLD.producer
     OR NEW.agent_run_id IS DISTINCT FROM OLD.agent_run_id
@@ -1091,7 +1127,10 @@ ON chat_projection_inbox
 FOR EACH ROW EXECUTE FUNCTION chat_reject_projection_claim_update();
 
 CREATE FUNCTION chat_reject_interaction_payload_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.agent_run_id IS DISTINCT FROM OLD.agent_run_id
     OR NEW.conversation_id IS DISTINCT FROM OLD.conversation_id
@@ -1113,7 +1152,10 @@ ON chat_interaction
 FOR EACH ROW EXECUTE FUNCTION chat_reject_interaction_payload_update();
 
 CREATE FUNCTION chat_reject_interaction_resurrection()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF OLD.status IN ('resolved','cancelled','expired')
     AND NEW.status IS DISTINCT FROM OLD.status
@@ -1130,7 +1172,10 @@ BEFORE UPDATE OF status ON chat_interaction
 FOR EACH ROW EXECUTE FUNCTION chat_reject_interaction_resurrection();
 
 CREATE FUNCTION chat_check_control_interaction_requirement()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE
   receipt_kind text;
 BEGIN
@@ -1154,7 +1199,7 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION chat_check_control_interaction_requirement();
 
 -- source: database/schema/40-agent.sql
--- sha256: a57bbf87618655b32ba7b3c0cfcacd57964e8f158337e03a7b1d1efcb0e86529
+-- sha256: 0aae75be89b474440f2fbb520709652650a9a2d8468207ad1a894e4a32ef9f15
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE agent_run (
@@ -1556,7 +1601,10 @@ COMMENT ON TABLE agent_dispatch_outbox IS
   'Dispatcher publication claims use attempt as the CAS generation and next_attempt_at as the finite network-I/O lease deadline. attempt advances before I/O; success CASes the same attempt to dispatched_at; exhaustion records DLQ evidence and terminal failure in one transaction.';
 
 CREATE FUNCTION agent_validate_run_manifest_state()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.state IN ('queued','running','awaiting_input','completed','failed','cancelled')
     AND NEW.execution_manifest_id IS NULL
@@ -1574,7 +1622,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_run_manifest_state();
 
 CREATE FUNCTION agent_reject_run_identity_or_terminal_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE lease_generation bigint;
 DECLARE lease_deadline timestamptz;
 DECLARE terminal_states CONSTANT text[] := ARRAY[
@@ -1751,7 +1802,10 @@ ON agent_run
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_identity_or_terminal_update();
 
 CREATE FUNCTION agent_reject_run_delete()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   RAISE EXCEPTION 'agent run launch identity and replay evidence cannot be deleted'
     USING ERRCODE='23514', CONSTRAINT='agent_run_identity_delete_ck';
@@ -1763,7 +1817,10 @@ BEFORE DELETE ON agent_run
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_delete();
 
 CREATE FUNCTION agent_validate_event_cursor_allocation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.next_event_seq IS DISTINCT FROM OLD.next_event_seq AND NOT EXISTS (
     SELECT 1 FROM agent_event_outbox
@@ -1784,7 +1841,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_cursor_allocation();
 
 CREATE FUNCTION agent_validate_terminal_run_completion()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE terminal_event_count integer;
 DECLARE usage_count integer;
 DECLARE lease_count integer;
@@ -1872,7 +1932,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_run_completion();
 
 CREATE FUNCTION agent_reject_terminal_run_lease_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_id uuid;
 BEGIN
@@ -1899,7 +1962,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_run_lease
 FOR EACH ROW EXECUTE FUNCTION agent_reject_terminal_run_lease_mutation();
 
 CREATE FUNCTION agent_reject_manifest_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 BEGIN
   IF TG_OP = 'INSERT' THEN
@@ -1921,7 +1987,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_execution_manifest
 FOR EACH ROW EXECUTE FUNCTION agent_reject_manifest_update();
 
 CREATE FUNCTION agent_validate_event_epoch()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE current_epoch bigint;
 DECLARE current_next_event_seq bigint;
 DECLARE current_state text;
@@ -1969,7 +2038,10 @@ BEFORE INSERT ON agent_event_outbox
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_epoch();
 
 CREATE FUNCTION agent_validate_terminal_event_completion()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_terminal_at timestamptz;
 BEGIN
@@ -1997,7 +2069,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_event_completion();
 
 CREATE FUNCTION agent_validate_event_evidence_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE safe_watermark bigint;
 DECLARE rejection_fence bigint;
 BEGIN
@@ -2124,7 +2199,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_event_outbox
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_evidence_mutation();
 
 CREATE FUNCTION agent_reject_projection_ack_regression()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE current_epoch bigint;
 DECLARE current_next_event_seq bigint;
 DECLARE is_first_rejection boolean;
@@ -2264,7 +2342,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_projection_ack
 FOR EACH ROW EXECUTE FUNCTION agent_reject_projection_ack_regression();
 
 CREATE FUNCTION agent_validate_tool_effect_transition()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_epoch bigint;
 DECLARE lease_generation bigint;
@@ -2382,7 +2463,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_tool_effect
 FOR EACH ROW EXECUTE FUNCTION agent_validate_tool_effect_transition();
 
 CREATE FUNCTION agent_validate_terminal_run_usage()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_terminal_at timestamptz;
 DECLARE run_input bigint;
@@ -2456,7 +2540,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_run_usage();
 
 CREATE FUNCTION agent_reject_run_usage_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   RAISE EXCEPTION 'finalized run usage is immutable'
     USING ERRCODE='23514', CONSTRAINT='agent_run_usage_immutable_ck';
@@ -2468,7 +2555,10 @@ BEFORE UPDATE OR DELETE ON agent_run_usage
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_usage_mutation();
 
 CREATE FUNCTION agent_validate_run_usage_line_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE usage_finalized_at timestamptz;
 BEGIN
   IF TG_OP <> 'INSERT' THEN
@@ -2492,7 +2582,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_run_usage_line
 FOR EACH ROW EXECUTE FUNCTION agent_validate_run_usage_line_mutation();
 
 CREATE FUNCTION agent_validate_dispatch_dlq_transition()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF TG_OP = 'DELETE' THEN
     RAISE EXCEPTION 'dispatch DLQ evidence cannot be deleted'
@@ -2575,7 +2668,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_dispatch_dlq
 FOR EACH ROW EXECUTE FUNCTION agent_validate_dispatch_dlq_transition();
 
 CREATE FUNCTION agent_reject_control_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 BEGIN
   IF TG_OP = 'DELETE' THEN
@@ -2688,7 +2784,7 @@ INSERT INTO checkpoint_migrations(v)
 VALUES (0),(1),(2),(3),(4),(5),(6),(7),(8),(9);
 
 -- source: database/schema/50-capability.sql
--- sha256: d04e810a0248c28e91806d87171b0b825c9586a59149166b844da1f9d209846f
+-- sha256: 2adc248d3c3e2f79e5c23db0dbc0b345b99f64fc8695937a80efe6249cfbde42
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE capability_runtime_snapshot (
@@ -2729,7 +2825,10 @@ CREATE TABLE capability_command_receipt (
 );
 
 CREATE FUNCTION capability_reject_snapshot_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW IS NOT DISTINCT FROM OLD THEN
     RETURN NEW;
@@ -2744,7 +2843,10 @@ BEFORE UPDATE OR DELETE ON capability_runtime_snapshot
 FOR EACH ROW EXECUTE FUNCTION capability_reject_snapshot_update();
 
 CREATE FUNCTION capability_reject_receipt_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.command_id IS DISTINCT FROM OLD.command_id
     OR NEW.command_kind IS DISTINCT FROM OLD.command_kind
@@ -2762,7 +2864,7 @@ BEFORE UPDATE OF command_id, command_kind, request_digest ON capability_command_
 FOR EACH ROW EXECUTE FUNCTION capability_reject_receipt_claim_update();
 
 -- source: database/schema/60-model.sql
--- sha256: 9be94a3691aa6527b048a8336682d1ad5d822bf02c1380e3ffd5087d76fabb9c
+-- sha256: bafda2bad1a2b334a1b30cd1ef408d4b19b518157e29099f1ad8ea382dd9e1b5
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE model_provider (
@@ -2859,7 +2961,10 @@ CREATE TABLE model_provider_health_state (
 );
 
 CREATE FUNCTION model_validate_current_revision()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE revision_published_at timestamptz;
 DECLARE revision_transport text;
 BEGIN
@@ -2884,7 +2989,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_current_revision();
 
 CREATE FUNCTION model_validate_routing_target()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE revision_published_at timestamptz;
 DECLARE revision_transport text;
 BEGIN
@@ -2909,7 +3017,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_routing_target();
 
 CREATE FUNCTION model_validate_revision_routes()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM model_routing_policy
@@ -2929,7 +3040,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_revision_routes();
 
 CREATE FUNCTION model_reject_published_revision_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF OLD.published_at IS NOT NULL AND (TG_OP = 'DELETE' OR
     NEW.model_id IS DISTINCT FROM OLD.model_id
@@ -2953,7 +3067,7 @@ BEFORE UPDATE OR DELETE ON model_revision
 FOR EACH ROW EXECUTE FUNCTION model_reject_published_revision_update();
 
 -- source: database/schema/99-cross-capability-relations.sql
--- sha256: 20db03a7c653b52b52a7b3778432254dfacd931021d6e86739cc255fdd0343e5
+-- sha256: d6f62b5f62ce3d03ab9b928772ce0fc133d59cbada136fbd60dba89f20761902
 SET search_path TO kokoro, pg_catalog;
 
 ALTER TABLE agent_execution_manifest
@@ -2970,7 +3084,10 @@ ALTER TABLE agent_run_usage_line
   REFERENCES model_revision(model_revision_id) ON DELETE RESTRICT;
 
 CREATE FUNCTION agent_validate_manifest_targets()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE target_published_at timestamptz;
 DECLARE target_transport text;
 BEGIN

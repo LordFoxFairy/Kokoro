@@ -38,7 +38,10 @@ CREATE TABLE capability_command_receipt (
 );
 
 CREATE FUNCTION capability_reject_snapshot_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW IS NOT DISTINCT FROM OLD THEN
     RETURN NEW;
@@ -53,7 +56,10 @@ BEFORE UPDATE OR DELETE ON capability_runtime_snapshot
 FOR EACH ROW EXECUTE FUNCTION capability_reject_snapshot_update();
 
 CREATE FUNCTION capability_reject_receipt_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.command_id IS DISTINCT FROM OLD.command_id
     OR NEW.command_kind IS DISTINCT FROM OLD.command_kind

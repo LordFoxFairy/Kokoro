@@ -1,5 +1,5 @@
 {
-  "baselineSha256": "ee7cf6417aec3d165f335e33a6d1a88dbcc65dfd740b46df974ea2267edabd0d",
+  "baselineSha256": "8677fe75c6b116495e67651a25481fc5c8dc98bd993968457fed9fb6f3f56e62",
   "schema": "kokoro",
   "segments": [
     {
@@ -15,17 +15,17 @@
     {
       "name": "20-iam",
       "path": "database/schema/20-iam.sql",
-      "sha256": "a1cfd6ebbd71c49581a3a6a3f74f010f200ee1a162240fc6e374ea5a6d8f1fda"
+      "sha256": "4085fa1f786bdd8356e9b2865442b6588f536d77dbc1e9983d8eb3c0b9e6efb6"
     },
     {
       "name": "30-chat",
       "path": "database/schema/30-chat.sql",
-      "sha256": "d312a11600458cd9a0bb49327c287b6f966fd714efc91324f06d73e3ebc3cc16"
+      "sha256": "a80ac4138ea5eab741e105488aa235eb2d99225167161c5e26837aada98e443e"
     },
     {
       "name": "40-agent",
       "path": "database/schema/40-agent.sql",
-      "sha256": "a57bbf87618655b32ba7b3c0cfcacd57964e8f158337e03a7b1d1efcb0e86529"
+      "sha256": "0aae75be89b474440f2fbb520709652650a9a2d8468207ad1a894e4a32ef9f15"
     },
     {
       "name": "45-langgraph-checkpointer",
@@ -35,17 +35,17 @@
     {
       "name": "50-capability",
       "path": "database/schema/50-capability.sql",
-      "sha256": "d04e810a0248c28e91806d87171b0b825c9586a59149166b844da1f9d209846f"
+      "sha256": "2adc248d3c3e2f79e5c23db0dbc0b345b99f64fc8695937a80efe6249cfbde42"
     },
     {
       "name": "60-model",
       "path": "database/schema/60-model.sql",
-      "sha256": "9be94a3691aa6527b048a8336682d1ad5d822bf02c1380e3ffd5087d76fabb9c"
+      "sha256": "bafda2bad1a2b334a1b30cd1ef408d4b19b518157e29099f1ad8ea382dd9e1b5"
     },
     {
       "name": "99-cross-capability-relations",
       "path": "database/schema/99-cross-capability-relations.sql",
-      "sha256": "20db03a7c653b52b52a7b3778432254dfacd931021d6e86739cc255fdd0343e5"
+      "sha256": "d6f62b5f62ce3d03ab9b928772ce0fc133d59cbada136fbd60dba89f20761902"
     }
   ],
   "slice": "slice-a",

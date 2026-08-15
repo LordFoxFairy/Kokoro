@@ -335,6 +335,8 @@ CREATE TABLE iam_security_event (
 CREATE FUNCTION iam_check_principal_scope()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 DECLARE
   principal iam_principal%ROWTYPE;
@@ -358,6 +360,8 @@ $$;
 CREATE FUNCTION iam_reject_principal_identity_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope IS DISTINCT FROM OLD.principal_scope
@@ -400,6 +404,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_principal_scope();
 CREATE FUNCTION iam_check_auth_session_organization()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope = 'control_plane' THEN
@@ -437,6 +443,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_auth_session_organization();
 CREATE FUNCTION iam_check_membership_live_auth_sessions()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 DECLARE
   membership iam_membership%ROWTYPE;
@@ -480,6 +488,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_check_membership_live_auth_sessions();
 CREATE FUNCTION iam_reject_command_receipt_claim_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.command_id IS DISTINCT FROM OLD.command_id
@@ -502,6 +512,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_command_receipt_claim_update();
 CREATE FUNCTION iam_reject_auth_session_identity_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.principal_scope IS DISTINCT FROM OLD.principal_scope
@@ -528,6 +540,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_identity_update();
 CREATE FUNCTION iam_reject_auth_session_rotation_unlink()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF OLD.rotated_to IS NOT NULL
@@ -548,6 +562,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_rotation_unlink();
 CREATE FUNCTION iam_reject_auth_session_generation_update()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.family_generation IS DISTINCT FROM OLD.family_generation THEN
@@ -566,6 +582,8 @@ FOR EACH ROW EXECUTE FUNCTION iam_reject_auth_session_generation_update();
 CREATE FUNCTION iam_check_auth_session_rotation()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
 AS $$
 BEGIN
   IF NEW.rotated_to IS NOT NULL AND NOT EXISTS (

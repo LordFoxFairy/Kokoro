@@ -399,7 +399,10 @@ COMMENT ON TABLE agent_dispatch_outbox IS
   'Dispatcher publication claims use attempt as the CAS generation and next_attempt_at as the finite network-I/O lease deadline. attempt advances before I/O; success CASes the same attempt to dispatched_at; exhaustion records DLQ evidence and terminal failure in one transaction.';
 
 CREATE FUNCTION agent_validate_run_manifest_state()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.state IN ('queued','running','awaiting_input','completed','failed','cancelled')
     AND NEW.execution_manifest_id IS NULL
@@ -417,7 +420,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_run_manifest_state();
 
 CREATE FUNCTION agent_reject_run_identity_or_terminal_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE lease_generation bigint;
 DECLARE lease_deadline timestamptz;
 DECLARE terminal_states CONSTANT text[] := ARRAY[
@@ -594,7 +600,10 @@ ON agent_run
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_identity_or_terminal_update();
 
 CREATE FUNCTION agent_reject_run_delete()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   RAISE EXCEPTION 'agent run launch identity and replay evidence cannot be deleted'
     USING ERRCODE='23514', CONSTRAINT='agent_run_identity_delete_ck';
@@ -606,7 +615,10 @@ BEFORE DELETE ON agent_run
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_delete();
 
 CREATE FUNCTION agent_validate_event_cursor_allocation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.next_event_seq IS DISTINCT FROM OLD.next_event_seq AND NOT EXISTS (
     SELECT 1 FROM agent_event_outbox
@@ -627,7 +639,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_cursor_allocation();
 
 CREATE FUNCTION agent_validate_terminal_run_completion()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE terminal_event_count integer;
 DECLARE usage_count integer;
 DECLARE lease_count integer;
@@ -715,7 +730,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_run_completion();
 
 CREATE FUNCTION agent_reject_terminal_run_lease_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_id uuid;
 BEGIN
@@ -742,7 +760,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_run_lease
 FOR EACH ROW EXECUTE FUNCTION agent_reject_terminal_run_lease_mutation();
 
 CREATE FUNCTION agent_reject_manifest_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 BEGIN
   IF TG_OP = 'INSERT' THEN
@@ -764,7 +785,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_execution_manifest
 FOR EACH ROW EXECUTE FUNCTION agent_reject_manifest_update();
 
 CREATE FUNCTION agent_validate_event_epoch()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE current_epoch bigint;
 DECLARE current_next_event_seq bigint;
 DECLARE current_state text;
@@ -812,7 +836,10 @@ BEFORE INSERT ON agent_event_outbox
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_epoch();
 
 CREATE FUNCTION agent_validate_terminal_event_completion()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_terminal_at timestamptz;
 BEGIN
@@ -840,7 +867,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_event_completion();
 
 CREATE FUNCTION agent_validate_event_evidence_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE safe_watermark bigint;
 DECLARE rejection_fence bigint;
 BEGIN
@@ -967,7 +997,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_event_outbox
 FOR EACH ROW EXECUTE FUNCTION agent_validate_event_evidence_mutation();
 
 CREATE FUNCTION agent_reject_projection_ack_regression()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE current_epoch bigint;
 DECLARE current_next_event_seq bigint;
 DECLARE is_first_rejection boolean;
@@ -1107,7 +1140,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_projection_ack
 FOR EACH ROW EXECUTE FUNCTION agent_reject_projection_ack_regression();
 
 CREATE FUNCTION agent_validate_tool_effect_transition()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_epoch bigint;
 DECLARE lease_generation bigint;
@@ -1225,7 +1261,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_tool_effect
 FOR EACH ROW EXECUTE FUNCTION agent_validate_tool_effect_transition();
 
 CREATE FUNCTION agent_validate_terminal_run_usage()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 DECLARE run_terminal_at timestamptz;
 DECLARE run_input bigint;
@@ -1299,7 +1338,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION agent_validate_terminal_run_usage();
 
 CREATE FUNCTION agent_reject_run_usage_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   RAISE EXCEPTION 'finalized run usage is immutable'
     USING ERRCODE='23514', CONSTRAINT='agent_run_usage_immutable_ck';
@@ -1311,7 +1353,10 @@ BEFORE UPDATE OR DELETE ON agent_run_usage
 FOR EACH ROW EXECUTE FUNCTION agent_reject_run_usage_mutation();
 
 CREATE FUNCTION agent_validate_run_usage_line_mutation()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE usage_finalized_at timestamptz;
 BEGIN
   IF TG_OP <> 'INSERT' THEN
@@ -1335,7 +1380,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_run_usage_line
 FOR EACH ROW EXECUTE FUNCTION agent_validate_run_usage_line_mutation();
 
 CREATE FUNCTION agent_validate_dispatch_dlq_transition()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF TG_OP = 'DELETE' THEN
     RAISE EXCEPTION 'dispatch DLQ evidence cannot be deleted'
@@ -1418,7 +1466,10 @@ BEFORE INSERT OR UPDATE OR DELETE ON agent_dispatch_dlq
 FOR EACH ROW EXECUTE FUNCTION agent_validate_dispatch_dlq_transition();
 
 CREATE FUNCTION agent_reject_control_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE run_state text;
 BEGIN
   IF TG_OP = 'DELETE' THEN

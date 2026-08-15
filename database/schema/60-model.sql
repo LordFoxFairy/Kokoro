@@ -94,7 +94,10 @@ CREATE TABLE model_provider_health_state (
 );
 
 CREATE FUNCTION model_validate_current_revision()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE revision_published_at timestamptz;
 DECLARE revision_transport text;
 BEGIN
@@ -119,7 +122,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_current_revision();
 
 CREATE FUNCTION model_validate_routing_target()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE revision_published_at timestamptz;
 DECLARE revision_transport text;
 BEGIN
@@ -144,7 +150,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_routing_target();
 
 CREATE FUNCTION model_validate_revision_routes()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM model_routing_policy
@@ -164,7 +173,10 @@ DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW EXECUTE FUNCTION model_validate_revision_routes();
 
 CREATE FUNCTION model_reject_published_revision_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF OLD.published_at IS NOT NULL AND (TG_OP = 'DELETE' OR
     NEW.model_id IS DISTINCT FROM OLD.model_id

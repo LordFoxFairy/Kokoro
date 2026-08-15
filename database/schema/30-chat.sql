@@ -299,7 +299,10 @@ CREATE TABLE chat_stream_event (
 );
 
 CREATE FUNCTION chat_reject_command_receipt_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.site_id IS DISTINCT FROM OLD.site_id
     OR NEW.organization_id IS DISTINCT FROM OLD.organization_id
@@ -321,7 +324,10 @@ ON chat_command_receipt
 FOR EACH ROW EXECUTE FUNCTION chat_reject_command_receipt_claim_update();
 
 CREATE FUNCTION chat_reject_conversation_identity_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.organization_id IS DISTINCT FROM OLD.organization_id
     OR NEW.site_id IS DISTINCT FROM OLD.site_id
@@ -341,7 +347,10 @@ ON chat_conversation
 FOR EACH ROW EXECUTE FUNCTION chat_reject_conversation_identity_update();
 
 CREATE FUNCTION chat_reject_message_identity_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.conversation_id IS DISTINCT FROM OLD.conversation_id
     OR NEW.parent_message_id IS DISTINCT FROM OLD.parent_message_id
@@ -361,7 +370,10 @@ ON chat_message
 FOR EACH ROW EXECUTE FUNCTION chat_reject_message_identity_update();
 
 CREATE FUNCTION chat_reject_stream_seq_regression()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.next_stream_seq < OLD.next_stream_seq THEN
     RAISE EXCEPTION 'conversation stream sequence cannot regress'
@@ -376,7 +388,10 @@ BEFORE UPDATE OF next_stream_seq ON chat_conversation
 FOR EACH ROW EXECUTE FUNCTION chat_reject_stream_seq_regression();
 
 CREATE FUNCTION chat_reject_accepted_launch_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF (
     (OLD.state = 'accepted' AND NEW.state NOT IN ('accepted','completed'))
@@ -404,7 +419,10 @@ ON chat_run_launch
 FOR EACH ROW EXECUTE FUNCTION chat_reject_accepted_launch_update();
 
 CREATE FUNCTION chat_reject_projection_claim_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.producer IS DISTINCT FROM OLD.producer
     OR NEW.agent_run_id IS DISTINCT FROM OLD.agent_run_id
@@ -428,7 +446,10 @@ ON chat_projection_inbox
 FOR EACH ROW EXECUTE FUNCTION chat_reject_projection_claim_update();
 
 CREATE FUNCTION chat_reject_interaction_payload_update()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF NEW.agent_run_id IS DISTINCT FROM OLD.agent_run_id
     OR NEW.conversation_id IS DISTINCT FROM OLD.conversation_id
@@ -450,7 +471,10 @@ ON chat_interaction
 FOR EACH ROW EXECUTE FUNCTION chat_reject_interaction_payload_update();
 
 CREATE FUNCTION chat_reject_interaction_resurrection()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 BEGIN
   IF OLD.status IN ('resolved','cancelled','expired')
     AND NEW.status IS DISTINCT FROM OLD.status
@@ -467,7 +491,10 @@ BEFORE UPDATE OF status ON chat_interaction
 FOR EACH ROW EXECUTE FUNCTION chat_reject_interaction_resurrection();
 
 CREATE FUNCTION chat_check_control_interaction_requirement()
-RETURNS trigger LANGUAGE plpgsql AS $$
+RETURNS trigger LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = pg_catalog, kokoro, pg_temp
+AS $$
 DECLARE
   receipt_kind text;
 BEGIN
