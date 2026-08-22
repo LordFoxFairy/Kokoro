@@ -2,19 +2,18 @@
 
 ## Request
 
-`GET /system/runtime-manifest?site_id=SITE_ID&product_id=PRODUCT_ID&locale=LOCALE`
+`GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE`
 
 Required server-to-server context:
 
 ```text
-x-kokoro-tenant-id: TENANT_ID   # supplied by IAM SiteBinding resolution
-x-kokoro-site-id: SITE_ID       # must equal query site_id
+x-kokoro-tenant-id: TENANT_ID   # supplied by IAM tenant/domain resolution
 x-kokoro-actor-id: ACTOR_ID     # optional for public configuration reads
 x-kokoro-request-id: REQUEST_ID
 ```
 
 The system resolves the request host through IAM's server-to-server
-`GET /internal/iam/site-binding?site_id=SITE_ID&host=HOST` contract using the
+`GET /internal/iam/tenant-binding?host=HOST` contract using the
 backend workload token. A local header or browser value never establishes a
 tenant binding.
 
@@ -27,7 +26,6 @@ context and query is rejected before MySQL or Redis reads.
 {
   "data": {
     "tenantId": "TENANT_ID",
-    "siteId": "SITE_ID",
     "productId": "PRODUCT_ID",
     "locale": "en-US",
     "navigation": [],
@@ -43,5 +41,5 @@ context and query is rejected before MySQL or Redis reads.
 ```
 
 MySQL owns release/config facts. Redis caches only the assembled manifest and every key includes
-`tenant_id`, `site_id`, product and locale. Redis failure is fail closed; there is no process-memory
+`tenant_id`, product and locale. Redis failure is fail closed; there is no process-memory
 fallback. The system service never becomes an owner of payment, credit, model or capability facts.

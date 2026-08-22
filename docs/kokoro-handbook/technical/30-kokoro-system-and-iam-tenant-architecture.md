@@ -1,5 +1,9 @@
 # Kokoro System 与 IAM Tenant 架构技术方案
 
+> 本文已由 `31-kokoro-tenant-system-architecture-v2.md` supersede。当前以 `tenant_id` 为唯一隔离键；本文中将 `site_id` 作为独立隔离轴的表述不再执行。
+
+> **已被当前方案 supersede：** 请以 [31-kokoro-tenant-system-architecture-v2.md](31-kokoro-tenant-system-architecture-v2.md) 为准。当前只使用 `tenant_id` 作为隔离键，不执行本文中 `site_id`/`tenant_id` 双键方案。
+
 状态：目标技术方案，2026-08-22。
 
 ## 1. 决策

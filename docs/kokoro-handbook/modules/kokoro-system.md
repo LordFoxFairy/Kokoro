@@ -1,5 +1,7 @@
 # kokoro-system：通用业务能力与产品配置控制面
 
+> **命名约束：** 当前系统使用 `tenant_id` 作为唯一身份/数据隔离键；`site` 仅表示产品/品牌/域名语义，不再建立并行的 `site_id` 隔离轴。详细方案以 [Tenant、System 与 User Web 架构 v2](../technical/31-kokoro-tenant-system-architecture-v2.md) 为准。
+
 状态：研发基线已落地，2026-08-22；业务 module 按增量实现。
 
 ## 定位
@@ -46,8 +48,8 @@ React 组件和 Web 页面 -> kokoro-web-user / kokoro-web-admin
 
 ## Site / Tenant 边界
 
-`tenant_id` 是 IAM 的身份、授权和数据隔离键；`site_id` 是域名/产品入口和配置作用域，两者不混用。
-Site 不需要复制全套业务服务，system 不创建第二套 Tenant 事实。
+`tenant_id` 是 IAM 的唯一身份、授权和数据隔离键；当前不建立独立的 `site_id` 隔离轴。
+域名、品牌和产品入口通过 Tenant/domain 与 product 配置表达，system 不创建第二套 Tenant 事实。
 
 ```text
 kokoro-iam

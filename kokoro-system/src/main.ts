@@ -1,9 +1,9 @@
 import { createSystemRuntime } from "./bootstrap.js";
 import { loadEnv } from "./config/env.js";
 import { createHttpServer } from "./interfaces/http/server.js";
-import { IamSiteBindingClient } from "./infrastructure/iam/site-binding-client.js";
+import { IamTenantBindingClient } from "./infrastructure/iam/tenant-binding-client.js";
 const env = loadEnv();
-const binding = new IamSiteBindingClient(env.iamBaseUrl, env.iamBackendToken);
+const binding = new IamTenantBindingClient(env.iamBaseUrl, env.iamBackendToken);
 const runtime = await createSystemRuntime({ databaseUrl: env.databaseUrl, redisUrl: env.redisUrl, redisNamespace: env.redisNamespace, binding });
 const server = createHttpServer(runtime.service, async () => { await runtime.pool.ping(); await runtime.redis.assertReady(); return true; });
 server.listen(env.port, env.host, () => process.stdout.write(`kokoro-system listening on http://${env.host}:${env.port}\n`));

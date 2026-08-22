@@ -7,6 +7,6 @@ export interface ManifestCache {
   set(key: string, value: RuntimeManifest, ttlSeconds: number): Promise<void>;
   assertReady(): Promise<void>;
 }
-export interface SiteBindingVerifier {
-  verify(input: Readonly<{ context: TenantRequestContext; requestedSiteId: string; host: string }>): Promise<void>;
+export interface TenantBindingVerifier {
+  verify(input: Readonly<{ context: TenantRequestContext; host: string }>): Promise<void>;
 }
