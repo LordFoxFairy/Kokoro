@@ -1,6 +1,8 @@
 # kokoro-system 与 kokoro-iam 改造实施计划 v2
 
-状态：当前执行计划，2026-08-22。
+状态：执行中；Tenant/System 基础切片已落地，兼容 API 的全链路验收继续进行，2026-08-22。
+
+当前已完成：IAM TenantDomain/tenant-binding、AuthAdapter tenant scope、Session/JWT tenant claim、组织/授权关键路径 tenant 过滤；System tenant-scoped Runtime Manifest、MySQL/Redis cache contract 和 SQL policy。
 
 > 本文是给 IAM/System agent 的执行入口；`tenant_id` 是唯一隔离键。旧计划中将 `site_id` 与 `tenant_id` 并列的步骤不再执行。
 
