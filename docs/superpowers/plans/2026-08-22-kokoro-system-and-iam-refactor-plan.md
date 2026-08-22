@@ -1,5 +1,7 @@
 # kokoro-system 与 kokoro-iam 改造实施计划
 
+> **已被当前计划 supersede：** 请以 `2026-08-22-kokoro-system-iam-refactor-plan-v2.md` 为准；当前唯一隔离键是 `tenant_id`。
+
 状态：阶段 0-2 已完成；阶段 3-4 仍需接入业务服务和 User Web。执行对象为 IAM/System agent。Admin Web 不在本计划范围内。
 
 ## 目标

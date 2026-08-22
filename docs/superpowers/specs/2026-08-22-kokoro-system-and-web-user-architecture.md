@@ -10,6 +10,8 @@ reviewGate: iam-tenant-contract-required
 
 # kokoro-system、Tenant 隔离与 kokoro-web-user 技术方案
 
+> **已被当前方案 supersede：** 请以 `docs/kokoro-handbook/technical/31-kokoro-tenant-system-architecture-v2.md` 和 `docs/superpowers/plans/2026-08-22-kokoro-system-iam-refactor-plan-v2.md` 为准；当前唯一隔离键是 `tenant_id`。
+
 ## 1. 决策摘要
 
 Kokoro 采用四种边界：
