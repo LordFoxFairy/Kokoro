@@ -1,6 +1,6 @@
 # kokoro-system 与 kokoro-iam 改造实施计划
 
-状态：待执行；执行对象为 IAM/System agent。Admin Web 不在本计划范围内。
+状态：阶段 0-2 已完成；阶段 3-4 仍需接入业务服务和 User Web。执行对象为 IAM/System agent。Admin Web 不在本计划范围内。
 
 ## 目标
 
@@ -34,7 +34,7 @@ table owner inventory
 site_id/namespace 两者语义不混用
 ```
 
-## 阶段 1：IAM Tenant 基础
+## 阶段 1：IAM Tenant 基础（已完成基础闭环）
 
 ### 实现
 
@@ -56,7 +56,7 @@ Tenant A membership 访问 Tenant B organization 失败
 旧 Tenant session 不能切换 Site
 ```
 
-## 阶段 2：kokoro-system 独立子仓库
+## 阶段 2：kokoro-system 独立子仓库（已完成 Runtime Manifest 垂直切片）
 
 ### 实现 module
 
