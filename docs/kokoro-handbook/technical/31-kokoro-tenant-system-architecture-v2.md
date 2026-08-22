@@ -127,10 +127,10 @@ Browser
 ## 6. Runtime Manifest
 
 ```http
-GET /system/runtime-manifest?tenant_key=TENANT_KEY&product_id=PRODUCT_ID&locale=LOCALE
+GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE
 ```
 
-服务端根据可信上下文解析真正的 `tenant_id`。Manifest 包含：
+服务端根据可信请求上下文获得真正的 `tenant_id`；`tenant_key` 不作为浏览器可提交的授权参数。Manifest 包含：
 
 ```text
 navigation

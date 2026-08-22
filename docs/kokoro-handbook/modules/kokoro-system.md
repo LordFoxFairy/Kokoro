@@ -27,7 +27,7 @@ Configuration version / release pointer
 Admin resource manifests
 ```
 
-这些对象可以按 `site_id`、`product_id`、`app_key`、`surface` 或 `global` 作用域配置。
+这些对象可以按 `tenant_id`、`product_id`、`app_key`、`surface` 或 `global` 作用域配置；`site` 只保留为品牌、域名和产品入口语义，不是独立隔离键。
 
 ## 不拥有
 
@@ -53,10 +53,10 @@ React 组件和 Web 页面 -> kokoro-web-user / kokoro-web-admin
 
 ```text
 kokoro-iam
-  负责 tenant/site identity、用户、组织、登录、成员关系、权限和 SiteBinding。
+  负责 tenant/domain identity、用户、组织、登录、成员关系、权限和 TenantBinding。
 
 kokoro-system
-  负责按 site/product 编排菜单、i18n、主题、产品入口和通用配置。
+  负责按 tenant/product 编排菜单、i18n、主题、产品入口和通用配置。
 ```
 
 Tenant 是 IAM 的身份与授权隔离边界；同一邮箱在不同 Tenant 下是不同身份上下文：
@@ -65,7 +65,7 @@ Tenant 是 IAM 的身份与授权隔离边界；同一邮箱在不同 Tenant 下
 (tenant-a, email@example.com) != (tenant-b, email@example.com)
 ```
 
-IAM 的唯一性约束和认证会话必须带 `site_id`；system 的配置读取使用 `site_id`/`product_id` 或明确的 global scope。SiteBinding 的最终 owner 是 IAM，system 只消费已校验的 binding。
+IAM 的唯一性约束和认证会话必须带 `tenant_id`；system 的配置读取使用 `tenant_id`/`product_id` 或明确的 global scope。TenantBinding 的最终 owner 是 IAM，system 只消费已校验的 binding。
 
 ## 目录
 
@@ -98,7 +98,7 @@ kokoro-system/
 ## 运行时契约
 
 ```http
-GET /system/runtime-manifest?site_id=SITE_ID&product_key=PRODUCT_KEY&locale=LOCALE
+GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE
 ```
 
 返回带版本的 `SystemRuntimeManifest`：
@@ -114,7 +114,7 @@ safe domain references
 configVersion / releaseId / digest
 ```
 
-浏览器不直接选择 `site_id`。Web BFF 从受信部署配置或 Host 解析得到 SiteBinding，system 和 IAM 都重新校验。
+浏览器不直接选择 `tenant_id`。Web BFF 从受信 Host 解析得到 TenantBinding，并通过受信内部请求上下文传入；System 重新向 IAM 校验 Host 与 `tenant_id` 的绑定。
 
 ## 仓库拆分规则
 

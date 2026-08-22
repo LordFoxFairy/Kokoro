@@ -2,7 +2,7 @@
 
 ## Request
 
-`GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE`
+`GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE&surface_id=SURFACE_ID`
 
 Required server-to-server context:
 
@@ -11,6 +11,8 @@ x-kokoro-tenant-id: TENANT_ID   # supplied by IAM tenant/domain resolution
 x-kokoro-actor-id: ACTOR_ID     # optional for public configuration reads
 x-kokoro-request-id: REQUEST_ID
 ```
+
+`surface_id` is optional and only selects a configuration override; it is not an identity or authorization boundary.
 
 The system resolves the request host through IAM's server-to-server
 `GET /internal/iam/tenant-binding?host=HOST` contract using the
