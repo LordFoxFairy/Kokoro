@@ -1,8 +1,8 @@
 # kokoro-system 与 kokoro-iam 改造实施计划 v2
 
-状态：执行中；Tenant/System 基础切片已落地，兼容 API 的全链路验收继续进行，2026-08-22。
+状态：研发闭环已完成；Tenant/System 基础切片、兼容 API tenant 审计和跨租户验证已落地，2026-08-22。
 
-当前已完成：IAM TenantDomain/tenant-binding、AuthAdapter tenant scope、Session/JWT tenant claim、组织/授权关键路径 tenant 过滤；System tenant-scoped Runtime Manifest、MySQL/Redis cache contract 和 SQL policy。
+当前已完成：IAM TenantDomain/tenant-binding、AuthAdapter tenant scope、Session/JWT tenant claim、组织/授权/旧 Site API/Administration 关键路径 tenant 过滤，生产 bootstrap 显式注入 Redis；System tenant-scoped Runtime Manifest、locale/surface scope precedence、MySQL/Redis cache contract 和 SQL policy。
 
 > 本文是给 IAM/System agent 的执行入口；`tenant_id` 是唯一隔离键。旧计划中将 `site_id` 与 `tenant_id` 并列的步骤不再执行。
 
@@ -96,6 +96,16 @@ Payment/Credit/Model/Hub/Session 不共享 System 私有表
 GA 只收到 opaque namespace
 ```
 
-## 6. 拆仓规则
+## 6. 本轮研发验证证据
+
+```text
+kokoro-iam: 60 files / 211 tests passed
+kokoro-iam: typecheck、lint、build passed
+kokoro-iam: fresh MySQL 8.4 schema passed；foreignKeyCount=0、businessTriggerCount=0
+kokoro-system: 3 files / 5 tests passed
+kokoro-system: typecheck、lint、build passed
+```
+
+## 7. 拆仓规则
 
 通用业务能力新增到既有仓库 module；领域事实新增到现有 owner。新建 repository 必须有独立数据 owner、SLO、故障域、扩缩容或发布节奏证据。
