@@ -11,8 +11,10 @@
 实现状态：`kokoro-model` 已作为独立子仓库运行，V1 以 MySQL 为结构化事实源、Redis 为必需运行时依赖。
 MySQL 权威 DDL 为 `database/schema/60-model.mysql.sql`；旧 PostgreSQL DDL 仅保留在历史基线，不得进入 V1 runtime。
 
-现有 LiteLLM/model 配置的幂等初始数据见 `database/schema/70-model.init.mysql.sql`；它只写
-model/provider/revision/label 的目录元数据与 `env:*` secret reference，不写真实凭据，也不伪造 tenant policy。
+标准 Model 目录的幂等初始快照见 `database/schema/70-model.init.mysql.sql`；它来自 OpenRouter 公共
+Models API，当前包含 395 个标准模型 ID，并写入 model/provider/revision/label 的完整 metadata 与
+`env:*` secret reference，不写真实凭据，也不伪造 tenant policy。快照模型默认 disabled，部署对应
+LiteLLM route 后再显式启用。
 
 API/RPC 字段、错误码、管理入口、生命周期和契约生成规则见子仓库 [`kokoro-model/docs/API_CONTRACT.md`](../../../kokoro-model/docs/API_CONTRACT.md)。
 
