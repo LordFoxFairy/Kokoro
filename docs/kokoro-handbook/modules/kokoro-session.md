@@ -5,9 +5,8 @@
 不作为当前实现、CI、Docker 或部署依据。当前 Chat 契约见
 [`kokoro/docs/integration/chat-bff-contract-v1.md`](../../../kokoro/docs/integration/chat-bff-contract-v1.md)。
 
-本页是根仓对 `kokoro-session` 的模块级说明；实现细节放在子仓
-[`kokoro-session/docs/session/technical-plan.md`](../../../kokoro-session/docs/session/technical-plan.md)，
-跨仓 wire 契约只认根仓 [`contract/`](../../../contract/README.md)。
+本页是根仓对 `kokoro-session` 的模块级说明；实现细节保留在 Root 外的归档副本，
+跨仓 wire 契约只认根仓 [`contract/`](../../../contract/README.md)，不再从当前工作区链接已归档子仓路径。
 
 ## 定位
 

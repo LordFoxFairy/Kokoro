@@ -1,6 +1,6 @@
 # Billing 成熟方案对标与复用决策
 
-状态：方案依据，2026-08-22。
+状态：历史方案研究，已按 [ADR-028](../decisions/ADR-028-postgresql-redis-runtime-baseline.md) 和 `kokoro-billing` 当前契约更新存储基线（2026-09-01）。本文的旧 MySQL 基础设施描述仅供考古。
 
 ## 1. 对标结论
 
@@ -65,19 +65,19 @@ Provider webhook 和 usage event 都先按外部 event id 唯一落库，再异�
 ### 2.4 Redis 只做同步加速
 
 LiteLLM 的多实例 budget sync 说明 Redis 适合做窗口内快速同步，但其公开 issue 也暴露了 counter
-重建、索引和 stale cache 风险。Kokoro 使用 Redis 做 fast-path/lease/rate coordination；MySQL 的
+重建、索引和 stale cache 风险。Kokoro 使用 Redis 做 fast-path/lease/rate coordination；PostgreSQL 的
 credit ledger、grant allocation、usage event 和 idempotency record 才是最终事实。
 
 ## 3. 为什么不直接部署 OpenMeter/Lago
 
-当前 Kokoro 的基础设施约束是 MySQL + Redis，且需要接入现有 IAM/Site/Model/Agent/Session contract。
+当前 Kokoro 的基础设施约束是 PostgreSQL + Redis，且需要接入当前 IAM/System/Model/Agent/BFF contract。
 OpenMeter 的公开架构是 PostgreSQL、ClickHouse、Kafka；Lago 的成熟部署也围绕 PostgreSQL、ClickHouse
 和异步 billing pipeline。直接引入会增加第三套数据事实和基础设施，而不是减少自研复杂度。
 
 因此当前决策是：
 
 1. 采用它们已经验证的 domain model、事件语义、credit-grant/entitlement API 形状；
-2. 继续使用 Kokoro 的 Node.js 22 + TypeScript + MySQL 8.4 + Redis 7 技术底座；
+2. 继续使用 Kokoro 的 Node.js 22 + TypeScript + PostgreSQL + Redis 技术底座；
 3. 把 LiteLLM 作为 provider cost adapter；
 4. 将来达到高吞吐时，再把 usage event sink 替换为 OpenMeter/ClickHouse，而不改变 Billing command
    contract 和 credit ledger contract。
@@ -87,9 +87,9 @@ OpenMeter 的公开架构是 PostgreSQL、ClickHouse、Kafka；Lago 的成熟部
 这里不预设一个脱离业务的拍脑袋 QPS 阈值，而使用可观测信号触发架构演进：
 
 - usage event 写入开始持续争用 Billing transaction pool，影响 checkout/hold/settle P99；
-- usage 原始事件保留和分析查询开始与 MySQL 账务查询争用 IO；
+- usage 原始事件保留和分析查询开始与 PostgreSQL 账务查询争用 IO；
 - 需要按分钟级窗口做大规模聚合、重算或多维分析，而不是单账户账务结算；
-- usage ingestion 需要独立水平扩展、回放和削峰，且不能扩大 MySQL 账务事务边界。
+- usage ingestion 需要独立水平扩展、回放和削峰，且不能扩大 PostgreSQL 账务事务边界。
 
 触发后只替换 `UsageEvent` 的 ingestion/aggregation adapter：采用 CloudEvents-compatible envelope、独立
 事件 sink 和聚合存储；`CreditGrant`、`HoldAllocation`、`CreditJournal`、command receipt 以及 Billing
@@ -100,7 +100,7 @@ OpenMeter 的公开架构是 PostgreSQL、ClickHouse、Kafka；Lago 的成熟部
 
 - **仓库层**：一个 `kokoro-billing` 子仓库，统一版本、CI、migration、contract 与运行手册。
 - **领域层**：Payment 与 Entitlement/Credit 两个 bounded context，各自 repository、表前缀、transaction matrix。
-- **数据层**：MySQL 8.4 + Redis；不引入 PostgreSQL/ClickHouse/Kafka 作为当前首发强依赖。
+- **数据层**：PostgreSQL + Redis；不引入 ClickHouse/Kafka 作为当前首发强依赖。
 - **模型层**：用 `CreditGrant + HoldAllocation + CreditJournal` 替换单一 mutable balance authority。
 - **支付层**：保留 ProviderFact/Settlement/Reversal 的 append-only evidence，Payment 不直接写 Credit。
 - **计量层**：LiteLLM/Model 负责 provider cost normalization，Billing 负责 authorization/settlement。

@@ -2,6 +2,8 @@
 
 > 迁移期历史父仓，不是最终业务运行时。最终目录、owner 和边界以 [后端最终架构](../technical/27-final-backend-architecture.md) 与 [Root 设计卡](../technical/backend-design/00-root.md) 为准；本文件仅保留历史实现背景。
 
+> **已归档（2026-09-01）**：`kokoro-platform` 已退出当前仓库拓扑，Root 只保留本文作为历史记录；不得据此恢复父仓、平台子模块或新的运行时入口。
+
 ## 定位
 
 kokoro-platform 不是业务服务，而是平台子仓集合的管理仓库。它负责统一注册、部署样例、质量门禁和文档；具体业务权威落在各子仓。

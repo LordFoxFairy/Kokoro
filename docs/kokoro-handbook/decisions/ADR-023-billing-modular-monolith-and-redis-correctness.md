@@ -15,10 +15,10 @@ Payment、Entitlement/Credit、套餐与兑换需要共享清晰的业务边界�
 Credit sweeper、migration job。Payment 与 Entitlement/Credit 分别拥有自己的表和 application ports，不共享万能 repository。
 
 PostgreSQL 是 payment、fulfillment、credit grant、hold、allocation、journal、receipt 和 outbox 的最终事实源。
-所有关键 mutation 在一个 MySQL transaction 中完成，使用唯一约束、行锁、状态机和 append-only facts 保证正确性。
+所有关键 mutation 在一个 PostgreSQL transaction 中完成，使用唯一约束、行锁、状态机和 append-only facts 保证正确性。
 
 Redis 只用于 idempotency hint、短 lease、缓存、限流和 worker coordination。Redis 命中可以快速返回已知结果，Redis miss、
-eviction、重启或短暂不可用都不能改变 MySQL 事务语义。
+eviction、重启或短暂不可用都不能改变 PostgreSQL 事务语义。
 
 ## Alternatives
 
@@ -30,5 +30,5 @@ eviction、重启或短暂不可用都不能改变 MySQL 事务语义。
 
 - 代码边界通过 import rules、ports、表 owner 和 contract tests 强化，而不是依赖仓库数量制造边界。
 - 未来满足数据库 owner、团队 ownership、吞吐/隔离或发布生命周期独立等条件时，可从模块化单体拆出 service/repo。
-- Redis 故障时允许性能、缓存和限流降级；关键 mutation 必须回到 MySQL，不能静默成功。
+- Redis 故障时允许性能、缓存和限流降级；关键 mutation 必须回到 PostgreSQL，不能静默成功。
 - 仍需持续验证 transaction lock order、deadlock retry、outbox lease 和 reconcile；这不是用 Redis lock 可以替代的。

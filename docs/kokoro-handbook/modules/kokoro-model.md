@@ -8,10 +8,10 @@
 投影的唯一业务 owner。它回答“给定受信 `tenant_id` 和 label，当前可以解析到哪些已发布模型、
 按什么稳定顺序选择、使用哪个 transport”，不执行生成，也不负责扣费。
 
-实现状态：`kokoro-model` 已作为独立子仓库运行，V1 以 MySQL 为结构化事实源、Redis 为必需运行时依赖。
-MySQL 权威 DDL 为 `database/schema/60-model.mysql.sql`；旧 PostgreSQL DDL 仅保留在历史基线，不得进入 V1 runtime。
+实现状态：`kokoro-model` 已作为独立子仓库运行，V1 以 PostgreSQL 为结构化事实源、Redis 为运行时依赖。
+PostgreSQL 权威 DDL 为 `database/60-model.postgresql.sql`；旧 MySQL DDL 已退出当前 runtime。
 
-标准 Model 目录的幂等初始快照见 `database/schema/70-model.init.mysql.sql`；它来自 OpenRouter 公共
+标准 Model 目录的幂等初始快照见 `database/70-model.init.postgresql.sql`；它来自 OpenRouter 公共
 Models API，当前包含 395 个标准模型 ID，并写入 model/provider/revision/label 的完整 metadata 与
 `env:*` secret reference，不写真实凭据，也不伪造 tenant policy。快照模型默认 disabled，部署对应
 LiteLLM route 后再显式启用。
@@ -35,7 +35,7 @@ model_provider_health_state Provider 健康状态投影。
 ```text
 Tenant / Identity / 权限     kokoro-iam 及 IAM/System owner。
 Provider 网关运行时          LiteLLM 或其它 provider adapter/runtime。
-用户余额、价格、扣费          kokoro-credit / kokoro-payment。
+用户余额、价格、扣费          kokoro-billing。
 Agent 执行、prompt、产物       kokoro-agent / kokoro-storage。
 ```
 
@@ -63,7 +63,7 @@ src/
 ├── health/                          provider health projection/worker
 ├── adapters/                        LiteLLM/provider adapter
 ├── interfaces/{http,rpc,admin}/
-├── infrastructure/mysql/
+├── infrastructure/postgresql/
 ├── generated/                       Root contract 生成物
 ├── config/
 └── main.ts
@@ -106,7 +106,7 @@ Model 对 IAM 只消费 受信 tenant context/authorization 输入，不 import 
 
 ## 当前实现与迁移映射
 
-| 当前 MySQL repository | 目标 MySQL + Redis 事实 | 迁移说明 |
+| 当前 repository | PostgreSQL + Redis 事实 | 迁移说明 |
 |---|---|---|
 | `ProviderAccount` | `model_provider` | 保留 provider/key/status/secretRef；明文 secret 不迁移 |
 | `ModelBinding` | `model_definition` + `model_revision` | 每次发布形成 Revision；旧 transport 值需显式映射 |
@@ -137,5 +137,5 @@ architecture  越界 import、跨表写入、旧入口回流。
 smoke         唯一生产入口和 Resolve 公开调用面。
 ```
 
-完成条件是目标目录真实存在、MySQL owner 清单一致、契约生成检查通过、唯一 runtime
+完成条件是目标目录真实存在、PostgreSQL owner 清单一致、契约生成检查通过、唯一 runtime
 writer 已切换，且旧入口已删除或具备明确兼容期限和回滚方案。

@@ -1,5 +1,7 @@
 # 测试清单
 
+> **历史验证清单（2026-09-01）**：本文保留旧三仓 Session/Mongo 测试矩阵。当前正式门禁以 [`docs/test-cases.md`](../../test-cases.md)、`docs/REPOSITORY_STATUS.md` 和各独立仓库自己的 CI 为准；不要按本文恢复已归档仓库或 Mongo 依赖。
+
 ## 范围
 
 本文定义 Kokoro 的分层测试策略、各仓门禁命令，以及必须覆盖的反例矩阵和 e2e gate。目标：合并前可证明主链路不坏、计费不超扣、站点不串站。

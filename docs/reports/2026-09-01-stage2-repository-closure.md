@@ -2,7 +2,7 @@
 
 日期：2026-09-01
 范围：Root `Kokoro`、三个阶段 1 运行仓和七个阶段 2 业务仓。
-状态：本地拓扑、边界和契约基线已收口；正在完成各独立仓库的提交、推送与最终门禁记录。
+状态：本地拓扑、边界、契约、提交和 GitHub main 已收口；Docker/真实基础设施 smoke 仍作为部署前独立证据记录。
 
 ## 1. 最终仓库拓扑
 
@@ -40,6 +40,21 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 | `kokoro-capability` | `LordFoxFairy/kokoro-capability` | Skill 与 MCP Connector 控制面 |
 | `kokoro-storage` | `LordFoxFairy/kokoro-storage` | Upload、Asset、Artifact 元数据与对象引用 |
 | `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | Go 调度、lease、retry、misfire、pause/resume |
+
+本轮 main 提交（均已 push）：
+
+| 仓库 | main SHA |
+|---|---|
+| `kokoro` | `8f227db` |
+| `kokoro-bff` | `876dfba` |
+| `kokoro-agent` | `4091fb2` |
+| `kokoro-iam` | `0595f4d` |
+| `kokoro-system` | `64bca8a` |
+| `kokoro-model` | `0f3dbf6` |
+| `kokoro-billing` | `b2b3363` |
+| `kokoro-capability` | `204805c` |
+| `kokoro-storage` | `13c39c3` |
+| `kokoro-scheduler` | `3ad5a54` |
 
 ## 2. 归属裁决
 
@@ -95,20 +110,21 @@ Root 机器索引：
 - `python3 scripts/goal2/mock_cross_repository_closure.py`：BFF→七个 owner、Billing→Scheduler、Capability→Storage 闭环通过。
 - `python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml`：通过。
 - `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check`：通过。
-- Web `pnpm check`：最终门禁需在本轮全部修改后再次执行；Skills GitHub handoff 单文件 68 tests 已通过。
+- Web `pnpm check`：通过（113 files、1127 tests、production build）；补充 jsdom/Radix Event 构造器对齐，消除跨文件 FocusScope 延迟错误。
 - BFF `pnpm check`：通过。
 - IAM `pnpm verify`：通过；当前为 contract-first baseline，未实现端点按 API contract 分批推进。
 - System：lint、typecheck、test、build 通过。
-- Model：`pnpm verify:release` 通过项已记录，最终 release 复核待收口。
+- Model：`pnpm verify:release` 通过（architecture 1、unit 125）；verify release 已包含 `prisma generate`，standalone checkout 不依赖本地残留生成目录。
 - Billing：`pnpm verify` 通过；真实数据库集成测试按环境条件执行/跳过并单独记录。
 - Capability：`npm run verify` 通过。
 - Storage：`npm run verify` 通过。
 - Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
+- Root contract consumers：9 个消费者生成与 `--check` 均通过，生成物 provenance 指向 Root `afd367d`。
 
 ## 6. 待收口证据
 
-1. 在所有独立仓 review 现有工作树后分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致。
-2. Root 提交 gitlink、contract、文档、归档删除和验证脚本变更，再验证 Root `main` 与 GitHub 一致。
-3. 对全部 Dockerfile 执行本地构建或记录基础镜像网络失败；生产镜像只从 tag workflow 发布。
-4. 查询 GHCR package visibility；当前 GitHub CLI token 对 package read scope 的能力需单独记录，不能把 workflow `packages: write` 等同于包的 public visibility。
-5. 更新本报告的提交 SHA、Docker 结果、完整测试报告和剩余外部环境条件。
+1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致。
+2. 已完成：Root 提交拓扑、contract、文档和 Agent gitlink；Root follow-up commit 为 `afd367d`，需在本轮最后再提交生成物与报告。
+3. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
+4. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
+5. 最后一轮收口：提交 Root 生成 consumer/report、清理构建产物、复跑 Root gate，并确认所有工作树 clean。
