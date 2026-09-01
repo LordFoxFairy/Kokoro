@@ -30,6 +30,7 @@ ACTIVE = {
     "kokoro-storage": "https://github.com/LordFoxFairy/kokoro-storage.git",
     "kokoro-scheduler": "https://github.com/LordFoxFairy/kokoro-scheduler.git",
 }
+EXPECTED_ACTIVE_PATHS = frozenset(ACTIVE)
 FORBIDDEN_CODE_MARKERS = ("kokoro-session", "kokoro-gateway", "kokoro-platform", "kokoro-credit")
 FORBIDDEN_STORAGE_MARKERS = ("mysql", "mongodb", "pymongo", "motor")
 # Historical migration/audit docs may mention retired systems.  The active
@@ -82,6 +83,7 @@ def scan_active_code(path: Path) -> list[str]:
                 and ".venv" not in item.parts
                 and "dist" not in item.parts
                 and ".next" not in item.parts
+                and item.suffix.lower() not in {".md", ".rst", ".txt"}
             )
     for file in candidates:
         try:
@@ -106,6 +108,13 @@ def main() -> int:
         "archived_root_paths_absent": [],
     }
 
+    if EXPECTED_ACTIVE_PATHS != {
+        "kokoro", "kokoro-bff", "kokoro-agent", "kokoro-iam", "kokoro-system",
+        "kokoro-model", "kokoro-billing", "kokoro-capability", "kokoro-storage",
+        "kokoro-scheduler",
+    }:
+        errors.append("active repository path index does not contain exactly the current ten repositories")
+
     for name, expected_remote in ACTIVE.items():
         path = ROOT / name
         if not path.is_dir():
@@ -116,6 +125,8 @@ def main() -> int:
         except RuntimeError as exc:
             errors.append(f"not an independent git repository: {name}: {exc}")
             continue
+        if top != path.resolve():
+            errors.append(f"active repository path is not its independent Git root: {name}: {top}")
         try:
             actual_remote = run("git", "remote", "get-url", "origin", cwd=path)
         except RuntimeError:
@@ -144,18 +155,28 @@ def main() -> int:
         if name in gitmodules:
             errors.append(f"archived repository remains in .gitmodules: {name}")
 
-    phase1 = (ROOT / "deploy/docker-compose.phase1.yml").read_text(encoding="utf-8")
-    if "mysql" in phase1.lower() or "mongo" in phase1.lower():
-        errors.append("Phase 1 compose still contains MySQL/Mongo")
-    if "kokoro-session" in phase1 or "kokoro-gateway" in phase1:
-        errors.append("Phase 1 compose still references archived runtime")
+    phase1_path = ROOT / "deploy/docker-compose.phase1.yml"
+    try:
+        phase1 = phase1_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"cannot read Phase 1 compose: {exc}")
+    else:
+        if "mysql" in phase1.lower() or "mongo" in phase1.lower():
+            errors.append("Phase 1 compose still contains MySQL/Mongo")
+        if "kokoro-session" in phase1 or "kokoro-gateway" in phase1:
+            errors.append("Phase 1 compose still references archived runtime")
 
-    manifest = json.loads((ROOT / "contract/goal2-repository-contract-manifest.json").read_text(encoding="utf-8"))
-    if set(manifest.get("repositories", {})) != {
-        "kokoro-iam", "kokoro-system", "kokoro-model", "kokoro-billing",
-        "kokoro-capability", "kokoro-storage", "kokoro-scheduler",
-    }:
-        errors.append("Goal 2 manifest does not contain exactly seven owners")
+    manifest_path = ROOT / "contract/goal2-repository-contract-manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"cannot read Goal 2 manifest: {exc}")
+    else:
+        if set(manifest.get("repositories", {})) != {
+            "kokoro-iam", "kokoro-system", "kokoro-model", "kokoro-billing",
+            "kokoro-capability", "kokoro-storage", "kokoro-scheduler",
+        }:
+            errors.append("Goal 2 manifest does not contain exactly seven owners")
 
     if errors:
         evidence["status"] = "FAIL"
