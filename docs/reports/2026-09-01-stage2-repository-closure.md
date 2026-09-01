@@ -45,13 +45,13 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 
 | 仓库 | main SHA |
 |---|---|
-| `kokoro` | `8f227db` |
+| `kokoro` | `4080377` |
 | `kokoro-bff` | `876dfba` |
 | `kokoro-agent` | `4091fb2` |
-| `kokoro-iam` | `0595f4d` |
-| `kokoro-system` | `64bca8a` |
+| `kokoro-iam` | `b662fce` |
+| `kokoro-system` | `2c4635f` |
 | `kokoro-model` | `0f3dbf6` |
-| `kokoro-billing` | `b2b3363` |
+| `kokoro-billing` | `f2a947a` |
 | `kokoro-capability` | `204805c` |
 | `kokoro-storage` | `13c39c3` |
 | `kokoro-scheduler` | `3ad5a54` |
@@ -120,11 +120,12 @@ Root 机器索引：
 - Storage：`npm run verify` 通过。
 - Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
 - Root contract consumers：9 个消费者生成与 `--check` 均通过，生成物 provenance 指向 Root `afd367d`。
+- GitHub main CI：10 个正式仓库最新 main 提交均为 success；Web、System、Billing 以及各业务仓的生产构建步骤均已在 GitHub runner 通过。
 
 ## 6. 证据备注与下一阶段
 
-1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致。
+1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程。
 2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；Root generator baseline 为 `afd367d`，closure evidence commit 为 `69c1b0d`。
 3. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
 4. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
-5. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean。
+5. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。
