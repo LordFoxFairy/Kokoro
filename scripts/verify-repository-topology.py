@@ -136,6 +136,9 @@ def main(argv: list[str] | None = None) -> int:
         except RuntimeError as exc:
             errors.append(f"not an independent git repository: {name}: {exc}")
             continue
+        if args.allow_missing_active_checkouts and top == ROOT.resolve():
+            evidence["active"][name] = {"path": str(path), "checkout": "not_loaded"}  # type: ignore[index]
+            continue
         if top != path.resolve():
             errors.append(f"active repository path is not its independent Git root: {name}: {top}")
         try:
