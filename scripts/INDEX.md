@@ -34,6 +34,8 @@ Protobuf source must already be Buf-canonical; `--check` intentionally fails on 
 
 - `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` builds the independent `kokoro-bff` child repository, starts its real HTTP process in deterministic mock mode, and exercises the current Web-facing Business API v1 across auth, projects, GitHub skills, MCP, scheduler, Agent setup, billing, Chat/SSE, sharing and deletion.
 - The Stage 2 E2E runner is intentionally transport-only: Root does not import BFF source, copy its store, or share its database. It proves the current cross-repository boundary over loopback HTTP; child repositories remain responsible for their own unit, integration, type, build and CI gates.
+- `uv run --frozen python scripts/e2e/run_stage2_owner_health.py` uses disposable PostgreSQL + Redis, starts Web, BFF live, Agent, Scheduler and the six HTTP owners, verifies health/readiness, then cleans up temporary processes, containers and object files while saving `docs/reports/2026-09-01-stage2-owner-health.json`.
+- The owner health runner is orchestration only: it starts each independent checkout with that repository's own command and adapter configuration. Root does not copy service source or share business tables; Model is checked through its existing HTTP endpoint.
 
 ## Archived historical fixtures
 

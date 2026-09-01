@@ -71,6 +71,9 @@ Root 本地 HEAD 为 `0a8f8eb511d4ebf442db9729ee8dc650ea8a0ba4`，remote 为
    环境注入；本地 fixture 不证明生产依赖或生产凭据可用。
 3. IAM shutdown contract test 仍需显式 listener lifecycle 环境；Docker/真实基础设施 smoke
    仍是部署前独立证据，不把环境阻塞记为通过。
+4. 新增的 owner health smoke 已验证一次性 PostgreSQL + Redis 下 Web、BFF live、Agent、Scheduler、
+   IAM、System、Model、Billing、Capability、Storage 的进程/健康链路；它不等同于业务 API 全量 live
+   联调。BFF 的 live path adapter 与 Agent HTTP ingress 仍按各自 v1 contract 分批接线。
 
 ## Verification record
 
@@ -86,5 +89,8 @@ submodule 识别，以及本报告；另外 `kokoro-scheduler` 补充了 `.env.e
 - Web `pnpm check`：113 个测试文件、1127 个测试、生产构建通过；
 - Stage 2 BFF mock E2E：43/43 HTTP 用例通过，证据文件为
   `docs/reports/2026-09-01-stage2-bff-mock-e2e.json`；
+- Stage 2 owner health：15/15 health/readiness/root checks 与 9/9 local processes 通过，证据文件为
+  `docs/reports/2026-09-01-stage2-owner-health.json`；脚本已在 finally 中删除临时 PostgreSQL/Redis
+  容器和本地对象目录。
 - Root GitHub Contract run `33570902863`（commit `0a8f8eb`）通过；Capability、Storage、Scheduler
   最新独立 CI 也在各自 `main` 提交上通过。Redocly 的 4 个既有 warning 不改变退出码，未修改契约文件。

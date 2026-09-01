@@ -1,0 +1,151 @@
+{
+  "mode": "disposable-owner-health",
+  "checks": [
+    {
+      "name": "iam_health",
+      "url": "http://127.0.0.1:4211/healthz",
+      "status": 200,
+      "body": "{\"ok\":true,\"service\":\"kokoro-iam\"}",
+      "ok": true
+    },
+    {
+      "name": "iam_ready",
+      "url": "http://127.0.0.1:4211/readyz",
+      "status": 200,
+      "body": "{\"ready\":true,\"service\":\"kokoro-iam\",\"contract_version\":\"v1\"}",
+      "ok": true
+    },
+    {
+      "name": "system_health",
+      "url": "http://127.0.0.1:4240/healthz",
+      "status": 200,
+      "body": "{\"status\":\"ok\",\"service\":\"kokoro-system\"}",
+      "ok": true
+    },
+    {
+      "name": "system_ready",
+      "url": "http://127.0.0.1:4240/readyz",
+      "status": 200,
+      "body": "{\"status\":\"ready\",\"service\":\"kokoro-system\"}",
+      "ok": true
+    },
+    {
+      "name": "billing_health",
+      "url": "http://127.0.0.1:4245/healthz",
+      "status": 200,
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ok\"},\"meta\":{\"request_id\":\"e1c118d6-aa3d-48be-9580-fbb469446095\"}}",
+      "ok": true
+    },
+    {
+      "name": "billing_ready",
+      "url": "http://127.0.0.1:4245/readyz",
+      "status": 200,
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ready\",\"dependencies\":{\"postgres\":\"ok\",\"redis\":\"ok\"}},\"meta\":{\"request_id\":\"072d4cf4-1b93-4cb2-8315-fe804227a233\"}}",
+      "ok": true
+    },
+    {
+      "name": "storage_health",
+      "url": "http://127.0.0.1:8085/healthz",
+      "status": 200,
+      "body": "{\"status\":\"ok\"}",
+      "ok": true
+    },
+    {
+      "name": "storage_ready",
+      "url": "http://127.0.0.1:8085/readyz",
+      "status": 200,
+      "body": "{\"status\":\"ready\"}",
+      "ok": true
+    },
+    {
+      "name": "capability_health",
+      "url": "http://127.0.0.1:8086/healthz",
+      "status": 200,
+      "body": "{\"status\":\"ok\"}",
+      "ok": true
+    },
+    {
+      "name": "capability_ready",
+      "url": "http://127.0.0.1:8086/readyz",
+      "status": 200,
+      "body": "{\"status\":\"ready\"}",
+      "ok": true
+    },
+    {
+      "name": "model_health",
+      "url": "http://127.0.0.1:4221/healthz",
+      "status": 200,
+      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ok\"},\"requestId\":\"req-a\"}",
+      "ok": true
+    },
+    {
+      "name": "model_ready",
+      "url": "http://127.0.0.1:4221/readyz",
+      "status": 200,
+      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ready\",\"dependencies\":{\"postgresql\":\"ok\",\"redis\":\"ok\"}},\"requestId\":\"req-c\"}",
+      "ok": true
+    },
+    {
+      "name": "bff_live_ready",
+      "url": "http://127.0.0.1:4300/readyz",
+      "status": 200,
+      "body": "{\"status\":\"ok\",\"service\":\"kokoro-bff\",\"mode\":\"live\"}",
+      "ok": true
+    },
+    {
+      "name": "web_root",
+      "url": "http://127.0.0.1:3000/",
+      "status": 200,
+      "body": "<!DOCTYPE html><html lang=\"zh-CN\" class=\"h-full antialiased\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_app_globals_0p2ml0n.css\" data-precedence=\"next_static/chunks/src_app_globals_0p2ml0n.css\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_0wn.5pn._.css\" data-precedence=\"next_stati",
+      "ok": true
+    }
+  ],
+  "processes": [
+    {
+      "name": "iam",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "system",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "billing",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "storage",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "capability",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "bff-live",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "web",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "agent",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "scheduler",
+      "running": true,
+      "exit_code": null
+    }
+  ],
+  "status": "PASS"
+}
