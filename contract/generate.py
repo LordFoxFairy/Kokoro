@@ -209,7 +209,10 @@ def _normalize_generated_text(path: Path) -> None:
     if path.suffix not in {".py", ".ts"}:
         return
     text = path.read_text(encoding="utf-8")
-    normalized = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+    lines = [line.rstrip() for line in text.splitlines()]
+    while lines and not lines[-1]:
+        lines.pop()
+    normalized = "\n".join(lines) + "\n"
     path.write_text(normalized, encoding="utf-8")
 
 
