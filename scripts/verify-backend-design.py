@@ -212,8 +212,10 @@ def main(argv: list[str] | None = None):
     check_source(errors, allow_missing=args.manifest_only)
     check_public_shapes(errors)
     markers(errors, AGENT_CARD, REQUIRED_AGENT_CARD_SECTIONS)
-    markers(errors, AGENT_PACKAGE / "docs/agent/architecture.md",
-            ("DeepAgents 是执行底座", "AgentFactory", "Feature", "create_deep_agent", "langgraph-swarm"))
+    architecture_doc = AGENT_PACKAGE / "docs/agent/architecture.md"
+    if architecture_doc.is_file() or not args.manifest_only:
+        markers(errors, architecture_doc,
+                ("DeepAgents 是执行底座", "AgentFactory", "Feature", "create_deep_agent", "langgraph-swarm"))
     if AGENT_PACKAGE.joinpath("docs/agent/technical-plan.md").is_file():
         markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md",
                 ("严格以 DeepAgents 为 Agent runtime", "create_deep_agent", "AgentFactory", "DeepAgents 是唯一 Agent loop"))
