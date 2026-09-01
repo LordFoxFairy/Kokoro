@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -99,7 +100,14 @@ def scan_active_code(path: Path) -> list[str]:
     return hits
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--allow-missing-active-checkouts",
+        action="store_true",
+        help="validate Root-owned topology without requiring private sibling checkouts",
+    )
+    args = parser.parse_args(argv)
     errors: list[str] = []
     evidence: dict[str, object] = {
         "status": "PASS",
@@ -118,6 +126,9 @@ def main() -> int:
     for name, expected_remote in ACTIVE.items():
         path = ROOT / name
         if not path.is_dir():
+            if args.allow_missing_active_checkouts:
+                evidence["active"][name] = {"path": str(path), "checkout": "not_loaded"}  # type: ignore[index]
+                continue
             errors.append(f"missing active repository directory: {name}")
             continue
         try:

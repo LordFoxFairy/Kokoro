@@ -39,11 +39,13 @@ Root 本地 HEAD 为 `47713e15393eaa460d02c03276c0ea73a9842e90`，remote 为
 ## Machine gates and test thresholds
 
 - Root architecture: `python3 scripts/verify-backend-design.py` 必须返回 0。
-- Root topology: `python3 scripts/verify-repository-topology.py` 必须检查当前十个 direct Git
-  repository paths、origin remote、active boundary、6 个 archived paths、Phase 1 storage
-  boundary 和 Goal 2 manifest，并返回 0。
-- Goal 2 closure: `python3 scripts/goal2/mock_cross_repository_closure.py` 必须检查七个 owner
-  的 API/技术/BFF/验收/风险文档、Root wire 文件、request ID、幂等和 cursor 标记，并返回 0。
+- Root topology: 本地完整 checkout 使用 `python3 scripts/verify-repository-topology.py`，必须检查当前十个
+  direct Git repository paths、origin remote、active boundary、6 个 archived paths、Phase 1 storage
+  boundary 和 Goal 2 manifest，并返回 0。Root CI 使用 `--allow-missing-active-checkouts`，因为七个 owner
+  仓库当前是私有 GitHub 仓库，各自 CI 负责自身源码门禁。
+- Goal 2 closure: 本地完整 checkout 使用 `python3 scripts/goal2/mock_cross_repository_closure.py`，必须检查七个
+  owner 的 API/技术/BFF/验收/风险文档、Root wire 文件、request ID、幂等和 cursor 标记；Root CI 使用
+  `--manifest-only` 检查七仓注册表与 Root wire 文件，避免通过未授权的私有仓克隆掩盖或阻塞契约门禁。
 - Root contract: manifest parity、renderer `--check`、Buf format/lint/breaking、Redocly lint，
   以及 `uv run --frozen pytest contract/tests scripts/contract/tests -q` 必须通过。
 - Hygiene: `git diff --check` 必须通过。各 active repository 的实现、测试、构建和 Docker/CI

@@ -1,8 +1,8 @@
 name: Contract
 
-# Root-owned contract checks remain authoritative. The architecture, topology,
-# and Goal 2 mock gates read ephemeral independent main checkouts; no child
-# source is vendored or committed to Root.
+# Root-owned contract checks remain authoritative. Private sibling repositories
+# run their own CI; this workflow validates Root topology and the Goal 2
+# manifest without vendoring or cloning sibling source.
 on:
   push:
   pull_request:
@@ -14,8 +14,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: prepare independent repository checkouts
-        run: bash deploy/clone-active-repositories.sh
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
@@ -34,9 +32,9 @@ jobs:
       - name: architecture gate
         run: python3 scripts/verify-backend-design.py
       - name: repository topology gate
-        run: python3 scripts/verify-repository-topology.py
+        run: python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts
       - name: Goal 2 closure gate
-        run: python3 scripts/goal2/mock_cross_repository_closure.py
+        run: python3 scripts/goal2/mock_cross_repository_closure.py --manifest-only
       - run: cmp docs/superpowers/specs/2026-08-14-slice-a-contract-manifest.yaml contract/slice-a-contract-manifest.yaml
       - run: uv run --frozen python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check
       - run: pnpm exec buf format --diff --exit-code contract/proto

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import sys
+import argparse
 from pathlib import Path
 
 
@@ -33,7 +34,14 @@ class GateError(RuntimeError):
     """A deterministic fixture assertion that should produce a machine failure."""
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--manifest-only",
+        action="store_true",
+        help="validate Root manifest and wire files without private owner checkouts",
+    )
+    args = parser.parse_args(argv)
     evidence: dict[str, object] = {"status": "PASS", "mode": "mock-fixture", "repositories": {}}
     try:
         manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
@@ -44,6 +52,15 @@ def main() -> int:
 
         for name, repository in REPOSITORIES.items():
             if not repository.is_dir():
+                if args.manifest_only:
+                    entry = manifest["repositories"].get(name)
+                    if not isinstance(entry, dict):
+                        raise GateError(f"missing Goal 2 manifest entry: {name}")
+                    for relative in entry.get("root_wire", []):
+                        if not isinstance(relative, str) or not (ROOT / relative).is_file():
+                            raise GateError(f"missing root wire file for {name}: {relative}")
+                    evidence["repositories"][name] = {"owner_checkout": "not_loaded", "root_wire": entry.get("root_wire", [])}  # type: ignore[index]
+                    continue
                 raise GateError(f"missing repository: {name}: {repository}")
             if repository.resolve().parent != ROOT.resolve():
                 raise GateError(f"repository path is not a direct Root child: {name}: {repository}")
