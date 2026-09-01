@@ -121,10 +121,10 @@ Root 机器索引：
 - Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
 - Root contract consumers：9 个消费者生成与 `--check` 均通过，生成物 provenance 指向 Root `afd367d`。
 
-## 6. 待收口证据
+## 6. 证据备注与下一阶段
 
 1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致。
-2. 已完成：Root 提交拓扑、contract、文档和 Agent gitlink；Root follow-up commit 为 `afd367d`，需在本轮最后再提交生成物与报告。
+2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；Root generator baseline 为 `afd367d`，closure evidence commit 为 `69c1b0d`。
 3. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
 4. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
-5. 最后一轮收口：提交 Root 生成 consumer/report、清理构建产物、复跑 Root gate，并确认所有工作树 clean。
+5. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean。
