@@ -2,6 +2,7 @@
 """Verify the current backend design against the DeepAgents-first boundary."""
 from __future__ import annotations
 import ast
+import argparse
 import json
 import re
 import sys
@@ -131,9 +132,11 @@ def check_manifest(errors):
     elif any("snapshot" in item or "version" in item for item in capability.get("owns", ())):
         errors.append("Capability must own logical paths/CRUD, not runtime snapshots or versions")
 
-def check_source(errors):
+def check_source(errors, allow_missing=False):
     files = py_files()
     if not files:
+        if allow_missing and not AGENT_SRC.exists():
+            return
         errors.append("kokoro-agent source tree is empty")
         return
     for expected in EXPECTED_SOURCE_PATHS:
@@ -196,17 +199,27 @@ def check_public_shapes(errors):
             if forbidden:
                 errors.append(f"{path.relative_to(ROOT)}:{node.name} exposes runtime fields {sorted(forbidden)}")
 
-def main():
+def main(argv: list[str] | None = None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--manifest-only",
+        action="store_true",
+        help="validate Root-owned design artifacts when the private Agent checkout is not loaded",
+    )
+    args = parser.parse_args(argv)
     errors = []
     check_manifest(errors)
-    check_source(errors)
+    check_source(errors, allow_missing=args.manifest_only)
     check_public_shapes(errors)
     markers(errors, AGENT_CARD, REQUIRED_AGENT_CARD_SECTIONS)
     markers(errors, AGENT_PACKAGE / "docs/agent/architecture.md",
             ("DeepAgents 是执行底座", "AgentFactory", "Feature", "create_deep_agent", "langgraph-swarm"))
-    markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md",
-            ("严格以 DeepAgents 为 Agent runtime", "create_deep_agent", "AgentFactory", "DeepAgents 是唯一 Agent loop"))
-    markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md", REQUIRED_AGENT_PACKAGE_SECTIONS)
+    if AGENT_PACKAGE.joinpath("docs/agent/technical-plan.md").is_file():
+        markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md",
+                ("严格以 DeepAgents 为 Agent runtime", "create_deep_agent", "AgentFactory", "DeepAgents 是唯一 Agent loop"))
+        markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md", REQUIRED_AGENT_PACKAGE_SECTIONS)
+    elif not args.manifest_only:
+        markers(errors, AGENT_PACKAGE / "docs/agent/technical-plan.md", REQUIRED_AGENT_PACKAGE_SECTIONS)
     for path in CURRENT_DOCS:
         links(errors, path)
         if not path.is_file():

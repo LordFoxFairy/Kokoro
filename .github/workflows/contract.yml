@@ -30,7 +30,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: uv sync --frozen --group dev
       - name: architecture gate
-        run: python3 scripts/verify-backend-design.py
+        run: python3 scripts/verify-backend-design.py --manifest-only
       - name: repository topology gate
         run: python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts
       - name: Goal 2 closure gate
