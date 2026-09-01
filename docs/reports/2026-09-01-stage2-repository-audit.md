@@ -2,27 +2,27 @@
 
 日期：2026-09-01
 范围：Root `Kokoro`、10 个 active repository、6 个 archived repository。
-状态：本地拓扑与 Goal 2 mock closure 可验证；Root contract 与 architecture gate 已接入 CI。
+状态：本地拓扑、Goal 2 mock closure、Root contract 与 architecture gate 已验证；Root GitHub Contract CI 已通过。
 
 ## Active repositories
 
 以下记录来自本地 `HEAD`、`origin` 和 `origin/main`；10 个仓库的 `origin/main` 与本地
-`HEAD` 一致。`kokoro-model` 保留用户已有的两个 generated 文件本地修改，未在本轮写入。
+`HEAD` 一致，所有工作树 clean。
 
 | 本地路径 | GitHub remote | 当前 HEAD | 本地状态 | GitHub 状态 |
 |---|---|---|---|---|
-| `kokoro` | `LordFoxFairy/kokoro-app` | `4080377cf13ee3a1e6164547b47cf39d5951dfb9` | clean | active / main |
+| `kokoro` | `LordFoxFairy/kokoro-app` | `018ad870f5af23e0bdced9c28a1f0c2e9f25e1ae` | clean | active / main |
 | `kokoro-bff` | `LordFoxFairy/kokoro-bff` | `876dfba1c012cbfe41efe1b120468d797cf026b9` | clean | active / main |
 | `kokoro-agent` | `LordFoxFairy/kokoro-agent` | `4091fb2f41d9076696eddb2dc4623e30ebaab131` | clean | active / main |
 | `kokoro-iam` | `LordFoxFairy/kokoro-iam` | `b662fce3b95e5d3d778f7c940ac94466fd44c5e3` | clean | active / main |
 | `kokoro-system` | `LordFoxFairy/kokoro-system` | `2c4635f74666a06482973b40bbd534874673308a` | clean | active / main |
 | `kokoro-model` | `LordFoxFairy/kokoro-model` | `aa8c395b9537af4138eaa8008e5b95299d6a0384` | dirty: 2 generated files | active / main |
 | `kokoro-billing` | `LordFoxFairy/kokoro-billing` | `f2a947a7a7b78af6fea5e4de56ccab24cf0b8875` | clean | active / main |
-| `kokoro-capability` | `LordFoxFairy/kokoro-capability` | `204805c92b062396d90200cf5eee2388da1aa11c` | clean | active / main |
-| `kokoro-storage` | `LordFoxFairy/kokoro-storage` | `13c39c3cd97a167eaa86b91cabc88f36d27032a1` | clean | active / main |
-| `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | `3ad5a54ec0b7580830673748a3c5086f70a8590d` | clean | active / main |
+| `kokoro-capability` | `LordFoxFairy/kokoro-capability` | `dd2d0718911b211812dbcf61f7c838c95f7f1f0d` | clean | active / main |
+| `kokoro-storage` | `LordFoxFairy/kokoro-storage` | `cebeb7a9465e9e87d09b2a2956f97d49db1c5e87` | clean | active / main |
+| `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | `5bd04209493c0b70134562bedb500a3833a1dd2f` | clean | active / main |
 
-Root 本地 HEAD 为 `47713e15393eaa460d02c03276c0ea73a9842e90`，remote 为
+Root 本地 HEAD 为 `0a8f8eb511d4ebf442db9729ee8dc650ea8a0ba4`，remote 为
 `https://github.com/LordFoxFairy/Kokoro.git`，审计开始时 `origin/main` 一致，工作区 clean。
 
 ## Archived repositories
@@ -35,6 +35,18 @@ Root 本地 HEAD 为 `47713e15393eaa460d02c03276c0ea73a9842e90`，remote 为
 | `kokoro-web` | `LordFoxFairy/kokoro-web` archived；不在 Root |
 | `kokoro-credit` | 无正式 remote；历史副本在 Root 外；Credit 归 Billing |
 | `kokoro-site-kokoro` | 无正式 remote；历史/占位目录不在 Root |
+
+## 本轮清理结果
+
+- Root 工作区不再包含 `kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web`、
+  `kokoro-credit` 或 `kokoro-site-kokoro`；旧 GitHub 仓库 `kokoro-session`、`kokoro-gateway`、
+  `kokoro-platform`、`kokoro-web` 已 archived。
+- 旧 Root database、Native Slice A、旧部署/验证入口保留在 Root 外的
+  `Kokoro-archive-2026-09-01/`；归档副本已移除 node_modules、dist、`.next` 和测试缓存，只保留考古所需源文件与提交历史。
+- 本机 Docker 只保留当前 Model 的 PostgreSQL 16 + Redis 7 容器和对应服务；已移除旧 MySQL/Mongo/PG18/Redis
+  容器、卷、网络、旧 Gateway/Chat 镜像及已完成的迁移容器。
+- 10 个 active 仓库均为独立 Git root，`origin/main` 与本地 HEAD 一致；Root 只把 `kokoro-agent` 作为
+  gitlink，其余子仓库保持同目录独立 checkout，避免跨仓源码和数据库耦合。
 
 ## Machine gates and test thresholds
 
@@ -62,10 +74,17 @@ Root 本地 HEAD 为 `47713e15393eaa460d02c03276c0ea73a9842e90`，remote 为
 
 ## Verification record
 
-本报告对应的 Root 变更仅限 `.github/workflows/contract.yml`、
-`scripts/verify-repository-topology.py`、`scripts/goal2/mock_cross_repository_closure.py`
-和本文件；未修改历史报告或任何子仓源码，未记录任何 secret。
+本报告对应的 Root 变更包含 Contract CI 的私有仓 manifest-only 运行模式、拓扑门禁的未初始化
+submodule 识别，以及本报告；另外 `kokoro-scheduler` 补充了 `.env.example`。未记录任何 secret。
 
-本轮 Root 验证结果：architecture、topology、mock closure 均返回 0；Root 相关 pytest 为
-`84 passed`；manifest、renderer、Buf format/lint/breaking、Redocly 和 `git diff --check`
-均通过。Redocly 报告 4 个既有 warning，但命令返回 0，未修改契约文件。
+本轮验证结果：
+
+- architecture、完整 checkout topology、CI manifest-only topology、完整 checkout mock closure、CI
+  manifest-only closure 均返回 0；
+- Root contract pytest `83 passed`；稳定契约源提交 `afd367db387e11172150e64b8c5278918c47cd24` 的
+  9 个 consumer `--check` 通过；
+- Web `pnpm check`：113 个测试文件、1127 个测试、生产构建通过；
+- Stage 2 BFF mock E2E：43/43 HTTP 用例通过，证据文件为
+  `docs/reports/2026-09-01-stage2-bff-mock-e2e.json`；
+- Root GitHub Contract run `33570902863`（commit `0a8f8eb`）通过；Capability、Storage、Scheduler
+  最新独立 CI 也在各自 `main` 提交上通过。Redocly 的 4 个既有 warning 不改变退出码，未修改契约文件。
