@@ -11,10 +11,13 @@ python3 scripts/goal2/mock_cross_repository_closure.py
 python3 scripts/verify-backend-design.py
 python3 scripts/verify-repository-topology.py
 uv run pytest scripts/tests/test_repository_topology.py -q
+uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json
 KOKORO_ENV_FILE="$PWD/deploy/.env.phase1.example" docker compose --env-file deploy/.env.phase1.example -f deploy/docker-compose.phase1.yml config
 ```
 
-当前三仓质量门禁和容器入口见 [`../README.md`](../README.md) 与 [`../deploy/README.md`](../deploy/README.md)。
+当前三仓质量门禁和容器入口见 [`../README.md`](../README.md) 与 [`../deploy/README.md`](../deploy/README.md)。当前 BFF mock E2E 由
+`scripts/e2e/run_stage2_bff_mock.py` 直接启动 `kokoro-bff` 的生产编译入口，覆盖 43 个可审计 HTTP 用例；旧 Native
+Slice A 进程栈已移至 Root 外的历史归档，不再作为当前验收入口。
 阶段 1 只使用 PostgreSQL + Redis；正式业务仓库由各自仓库维护并经 Root contract 接入。
 
 ## 当前正式仓库门禁

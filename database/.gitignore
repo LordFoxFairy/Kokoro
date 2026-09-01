@@ -1,8 +1,0 @@
-/.venv/
-/node_modules/
-/.pytest_cache/
-/.ruff_cache/
-/.mypy_cache/
-**/__pycache__/
-/baseline/kokoro.sql
-/baseline/manifest.json

@@ -6,7 +6,7 @@
 
 ## 1. 最终仓库拓扑
 
-Root 只承载跨仓契约、文档、部署入口、数据库 fixture 和验证工具，不承载任一子仓的业务实现。
+Root 只承载跨仓契约、文档、部署入口和验证工具，不承载任一子仓的业务实现或数据库 schema。
 
 ```text
 kokoro-app (Web)
@@ -108,6 +108,7 @@ Root 机器索引：
 
 - `python3 scripts/verify-repository-topology.py`：10 个 active repo、6 个 archived repo 均符合本地拓扑；边界扫描通过。
 - `python3 scripts/goal2/mock_cross_repository_closure.py`：BFF→七个 owner、Billing→Scheduler、Capability→Storage 闭环通过。
+- `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json`：通过真实 `kokoro-bff` 生产编译进程运行 43 个 HTTP 用例，覆盖 auth、projects、skills/GitHub import、MCP、scheduler、Agent setup、library、billing、Chat/SSE/share/delete、幂等和错误边界；逐用例证据见 [`2026-09-01-stage2-bff-mock-e2e.json`](2026-09-01-stage2-bff-mock-e2e.json)。
 - `python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml`：通过。
 - `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check`：通过。
 - Web `pnpm check`：通过（113 files、1127 tests、production build）；补充 jsdom/Radix Event 构造器对齐，消除跨文件 FocusScope 延迟错误。
@@ -126,6 +127,8 @@ Root 机器索引：
 
 1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程。
 2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；Root generator baseline 为 `afd367d`，closure evidence commit 为 `69c1b0d`。
-3. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
-4. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
-5. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。
+3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 移出：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；完整文件保存在 Root 外 `Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` 与 `phase1-root-database/`。
+4. 当前 E2E 证据改由 Root 的 Stage 2 BFF mock runner 产生；它只启动子仓生产编译产物并通过 HTTP 验证，不共享业务数据库或复制源码。
+5. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
+6. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
+7. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。

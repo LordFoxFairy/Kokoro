@@ -34,6 +34,7 @@ Slice A 的**单一机器真源**是 [`contract/slice-a-contract-manifest.yaml`]
 - `pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb` —— Protobuf lint/breaking 门禁。
 - `pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` —— 浏览器 HTTP/SSE contract 门禁。
 - `uv run python contract/generate.py --source-root ROOT --source-commit SHA --consumer NAME --repo PATH --check` —— 从指定 clean Root commit 校验一个 consumer；无隐式当前目录或浮动 source。
+- `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` —— 启动真实 BFF 子仓进程，以 mock 数据闭环验证当前 Web-facing Business API v1。
 
 旧 `contract/spec/*.yaml` 已在事件/control payload parity 证明后硬删除，不再形成第二权威。
 
@@ -75,6 +76,7 @@ contract 接入，不从 Root Compose 拼接业务实现。
 | web | `cd kokoro && pnpm check` |
 | 契约 | `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check && pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb && pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` |
 | Chat mock smoke | `KOKORO_WEB_URL=http://127.0.0.1:3000 KOKORO_DOMAIN=dev.kokoro.localhost pnpm --dir kokoro smoke:first-site` |
+| Stage 2 BFF HTTP E2E | `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` |
 
 CI：正式仓库各自维护 `.github/workflows`；普通 push/PR 只做质量检查，`v*.*.*` tag 才触发 GHCR 生产镜像发布。
 

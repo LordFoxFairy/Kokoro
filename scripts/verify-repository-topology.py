@@ -42,6 +42,16 @@ RUNTIME_FILES = (
     "docker-compose.local.yml",
     ".env.example",
 )
+ARCHIVED_ROOT_PATHS = (
+    "database",
+    "scripts/database",
+    "scripts/e2e/run_slice_a_native.py",
+    "scripts/fixtures/openai_slice_a.py",
+    "scripts/slice_a",
+    "scripts/tests/test_openai_slice_a_fixture.py",
+    "scripts/tests/test_slice_a_backend_runner.py",
+    "scripts/tests/test_slice_a_native.py",
+)
 
 
 def run(*args: str, cwd: Path = ROOT) -> str:
@@ -89,7 +99,12 @@ def scan_active_code(path: Path) -> list[str]:
 
 def main() -> int:
     errors: list[str] = []
-    evidence: dict[str, object] = {"status": "PASS", "active": {}, "archived_absent": []}
+    evidence: dict[str, object] = {
+        "status": "PASS",
+        "active": {},
+        "archived_absent": [],
+        "archived_root_paths_absent": [],
+    }
 
     for name, expected_remote in ACTIVE.items():
         path = ROOT / name
@@ -117,6 +132,12 @@ def main() -> int:
             errors.append(f"archived repository still present in Root: {name}")
         else:
             evidence["archived_absent"].append(name)  # type: ignore[union-attr]
+
+    for relative in ARCHIVED_ROOT_PATHS:
+        if (ROOT / relative).exists():
+            errors.append(f"retired Root path still present: {relative}")
+        else:
+            evidence["archived_root_paths_absent"].append(relative)  # type: ignore[union-attr]
 
     gitmodules = (ROOT / ".gitmodules").read_text(encoding="utf-8") if (ROOT / ".gitmodules").exists() else ""
     for name in ARCHIVED:

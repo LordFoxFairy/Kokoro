@@ -30,16 +30,10 @@ Add rendering behavior only when the machine manifest first defines it and a mut
 
 Protobuf source must already be Buf-canonical; `--check` intentionally fails on formatting drift. The first breaking image is immutable and is never regenerated in place.
 
-## Native Slice A backend gate
+## Current Stage 2 HTTP closure
 
-- `uv run --frozen python scripts/e2e/run_slice_a_native.py` creates private secrets and fixture roots, boots a fresh native PostgreSQL 18 cluster, native Redis, the five pinned backend candidates, LiteLLM and the deterministic OpenAI-compatible fixture, then exercises login → Chat → Agent/HITL → restart recovery → session lifecycle.
-- `uv run --frozen python scripts/e2e/run_slice_a_native.py --compare-evidence RUN1.json RUN2.json` validates both release-evidence schemas and compares the exact catalog, baseline, seed, Model bootstrap and retention watermark/tail facts from two fresh runs.
-- `uv run --frozen pytest scripts/tests/test_slice_a_native.py scripts/tests/test_openai_slice_a_fixture.py scripts/tests/test_slice_a_backend_runner.py -q` covers the local lifecycle, fixture wire protocol, digest parity, guarded cleanup and bounded runner behavior without Docker.
-- `scripts/slice_a/native.py` is the owned process supervisor. `create_secrets.py`, `create_fixture_dir.py`, `seed.py`, `wait_ready.py`, `guardian.py` and `cleanup.py` are deliberately narrow lifecycle helpers; none owns business state.
-
-The gate accepts only exact clean candidate commit/tree pairs, a byte-identical committed generated-client closure and a committed Root SQL baseline. Site is a Web fixture context and SQL seed, not a runtime process; an exact-candidate source assertion rejects `site_site` access outside IAM runtime source. Site/Model deployment seed may use the provisioning owner before runtime; login, RBAC, Chat and Agent state must cross their generated service contracts. Child runtime database URLs carry no `search_path` override, and the gate never installs IAM permissions through SQL. The product gate does use the provisioning owner to suspend/restore the local Site and expire local stream rows so it can prove IAM suspension and production `SNAPSHOT_REQUIRED` → snapshot watermark → contiguous new-tail recovery.
-
-Every child is launched in a dedicated recorded session/process group behind a pre-exec persistence gate. Supervisor, guardian and outer runner cleanup use high-precision process identities, drain every owned group, verify every owned port and redact captured diagnostics before a PASS or evidence file can be emitted.
+- `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` builds the independent `kokoro-bff` child repository, starts its real HTTP process in deterministic mock mode, and exercises the current Web-facing Business API v1 across auth, projects, GitHub skills, MCP, scheduler, Agent setup, billing, Chat/SSE, sharing and deletion.
+- The Stage 2 E2E runner is intentionally transport-only: Root does not import BFF source, copy its store, or share its database. It proves the current cross-repository boundary over loopback HTTP; child repositories remain responsible for their own unit, integration, type, build and CI gates.
 
 ## Archived historical fixtures
 
@@ -49,6 +43,9 @@ provisioning and storage templates, plus `closure-up.py`, `e2e-v21-gate.py`, `ch
 `trace-verify.py`, `real-model-verify.py`, `verify-all.py`, `generate-model-openrouter-init.py` and their
 `procutil.py` helper. They depend on the retired MySQL/Mongo/Session/Platform topology and must not be used
 as current contract, Phase 1, or cross-repository validation.
+
+The former native Slice A runner and its PostgreSQL/Redis/LiteLLM/Session-era process supervisor were removed from the active Root because they targeted the retired integrated topology. The complete source and tests are preserved outside the checkout at
+`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` for historical review only. They must not be used as Stage 2 acceptance evidence.
 
 `ops/langfuse/docker-compose.yml` and `ops/langfuse/.env.local.example` remain archived historical fixtures
 for an optional external observability stack; they are not Root deployment dependencies and do not restore the

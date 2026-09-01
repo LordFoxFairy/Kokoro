@@ -1,0 +1,312 @@
+{
+  "cases": [
+    {
+      "detail": "health probe",
+      "expected_status": 200,
+      "id": "BFF-001",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "mock readiness",
+      "expected_status": 200,
+      "id": "BFF-002",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "business route rejects missing internal credential",
+      "expected_status": 403,
+      "id": "BFF-003",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "detail": "authenticated project projection",
+      "expected_status": 200,
+      "id": "BFF-004",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "idempotent project create replay",
+      "expected_status": 200,
+      "id": "BFF-005",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "replay returns the same receipt",
+      "expected_status": 200,
+      "id": "BFF-006",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "payload drift is rejected",
+      "expected_status": 409,
+      "id": "BFF-007",
+      "passed": true,
+      "status": 409
+    },
+    {
+      "detail": "mutations require an idempotency key",
+      "expected_status": 400,
+      "id": "BFF-008",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "detail": "project instruction update",
+      "expected_status": 200,
+      "id": "BFF-009",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "instruction update replay",
+      "expected_status": 200,
+      "id": "BFF-010",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "revision history projection",
+      "expected_status": 200,
+      "id": "BFF-011",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "GitHub skill preview does not require mutation replay",
+      "expected_status": 200,
+      "id": "BFF-012",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "GitHub skill import",
+      "expected_status": 200,
+      "id": "BFF-013",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "GitHub skill import replay",
+      "expected_status": 200,
+      "id": "BFF-014",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "/v1/skills/catalog projection",
+      "expected_status": 200,
+      "id": "BFF-015",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "/v1/skills/pool projection",
+      "expected_status": 200,
+      "id": "BFF-016",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "/v1/skills/quota projection",
+      "expected_status": 200,
+      "id": "BFF-017",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "skill disable",
+      "expected_status": 200,
+      "id": "BFF-018",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "skill enable",
+      "expected_status": 200,
+      "id": "BFF-019",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "MCP registration",
+      "expected_status": 200,
+      "id": "BFF-020",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "MCP list",
+      "expected_status": 200,
+      "id": "BFF-021",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "MCP disable",
+      "expected_status": 200,
+      "id": "BFF-022",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "scheduled task create",
+      "expected_status": 200,
+      "id": "BFF-023",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "scheduled task update",
+      "expected_status": 200,
+      "id": "BFF-024",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "scheduled task retry",
+      "expected_status": 200,
+      "id": "BFF-025",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Agent connection projection",
+      "expected_status": 200,
+      "id": "BFF-026",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Agent platform validation",
+      "expected_status": 400,
+      "id": "BFF-027",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "detail": "library projection",
+      "expected_status": 200,
+      "id": "BFF-028",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "billing plans projection",
+      "expected_status": 200,
+      "id": "BFF-029",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "billing checkout projection",
+      "expected_status": 200,
+      "id": "BFF-030",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat session list",
+      "expected_status": 200,
+      "id": "BFF-031",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat session detail",
+      "expected_status": 200,
+      "id": "BFF-032",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat message submit",
+      "expected_status": 200,
+      "id": "BFF-033",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat message idempotency replay",
+      "expected_status": 200,
+      "id": "BFF-034",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat SSE content type",
+      "expected_status": 200,
+      "id": "BFF-035",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat SSE event stream",
+      "expected_status": 200,
+      "id": "BFF-036",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat share creation",
+      "expected_status": 200,
+      "id": "BFF-037",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "shared session read",
+      "expected_status": 200,
+      "id": "BFF-038",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat title update",
+      "expected_status": 200,
+      "id": "BFF-039",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat run control",
+      "expected_status": 200,
+      "id": "BFF-040",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat share revocation",
+      "expected_status": 200,
+      "id": "BFF-041",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "Chat session deletion",
+      "expected_status": 200,
+      "id": "BFF-042",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "detail": "deleted Chat session is no longer readable",
+      "expected_status": 404,
+      "id": "BFF-043",
+      "passed": true,
+      "status": 404
+    }
+  ],
+  "contract": "Kokoro Business API v1",
+  "domain": "dev.kokoro.localhost",
+  "failed": 0,
+  "mode": "mock",
+  "passed": 43,
+  "status": "PASS",
+  "suite": "kokoro-stage2-bff-mock-e2e"
+}

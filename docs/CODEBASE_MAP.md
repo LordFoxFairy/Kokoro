@@ -7,10 +7,10 @@
 Root 不是业务运行时。它只保存：
 
 - [`contract/`](../contract/)：跨仓 HTTP/OpenAPI/Protobuf wire authority、生成和兼容性门禁；
-- [`database/`](../database/)：Root 级 Slice-A/集成 fixture 与 schema 验证，不代替业务仓 owner schema；
+- Root 不保留业务数据库 schema；PostgreSQL/Redis migrations 由各正式业务仓和 `kokoro-agent` 各自拥有；旧集成 SQL fixture 已移到 Root 外历史归档；
 - [`deploy/`](../deploy/)：Phase 1 三仓本地/生产入口和历史迁移夹具；
 - [`docs/`](./)：跨仓架构、API 索引、ADR、验收与报告；
-- [`scripts/`](../scripts/)：契约生成、数据库 fixture、E2E/smoke 和治理工具。
+- [`scripts/`](../scripts/)：契约生成、当前 BFF HTTP E2E/smoke 和治理工具。
 
 Root 不应加入 Web、BFF、Agent 或 Goal 2 业务实现源码。
 
@@ -50,4 +50,5 @@ Goal 2 的机器索引是 [`../contract/goal2-repository-contract-manifest.json`
 2. 变更单个子仓时只在该子仓内部闭环，不把另一个仓的源码复制进来；
 3. 跨仓变更先更新 Root contract，再由各 consumer 在自己的仓内同步；
 4. 普通 push/PR 只跑 CI；`v*.*.*` tag 才发布 GHCR 镜像；
-5. 完成前在 Root 重新跑 contract/architecture/E2E 验证，不能只引用子代理结果。
+5. 当前跨仓 E2E 入口是 `scripts/e2e/run_stage2_bff_mock.py`，只通过 loopback HTTP 启动并验证 BFF，不复制子仓源码；
+6. 完成前在 Root 重新跑 contract/architecture/E2E 验证，不能只引用子代理结果。
