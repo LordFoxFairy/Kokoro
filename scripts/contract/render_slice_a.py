@@ -232,7 +232,7 @@ def _openapi_document(manifest: dict[str, Any]) -> dict[str, Any]:
         for kind, items in (("enum", proto["enums"]), ("message", proto["messages"]))
         for item in items
     }
-    web_files = set(manifest["consumerFileClosure"]["kokoro-web"])
+    web_files = set(manifest["consumerFileClosure"]["kokoro"])
     web_declarations = {
         f"{assignment['kind']}:{files[path]['package']}.{assignment['name']}"
         for path in web_files
@@ -376,13 +376,40 @@ def render_openapi(manifest: dict[str, Any], output_path: Path) -> Path:
     return output_path
 
 
+def _excluded_proto_paths(manifest_path: Path, expected_root: Path) -> set[str]:
+    """Return proto paths excluded from the Slice-A module by its Buf config."""
+    buf_config = manifest_path.parent / "buf.yaml"
+    if not buf_config.is_file():
+        return set()
+    config = yaml.safe_load(buf_config.read_text(encoding="utf-8")) or {}
+    root = manifest_path.parent.resolve()
+    expected_root = expected_root.resolve()
+    excluded: set[str] = set()
+    for module in config.get("modules", []):
+        if not isinstance(module, dict):
+            continue
+        for raw_path in module.get("excludes", []):
+            excluded_path = (root / str(raw_path)).resolve()
+            try:
+                relative = excluded_path.relative_to(expected_root).as_posix()
+            except ValueError:
+                continue
+            excluded.add(relative.rstrip("/") + "/")
+    return excluded
+
+
 def check_tree(manifest_path: Path, expected_root: Path, expected_openapi: Path) -> None:
     manifest = load_manifest(manifest_path)
     expected_paths = {item["path"] for item in manifest["protobuf"]["files"]}
+    excluded_paths = _excluded_proto_paths(manifest_path, expected_root)
     actual_paths = {
         path.relative_to(expected_root).as_posix()
         for path in expected_root.rglob("*.proto")
         if path.is_file()
+        and not any(
+            path.relative_to(expected_root).as_posix().startswith(prefix)
+            for prefix in excluded_paths
+        )
     } if expected_root.is_dir() else set()
     if actual_paths != expected_paths:
         raise ManifestError(f"rendered Proto file inventory drift: {sorted(actual_paths ^ expected_paths)}")

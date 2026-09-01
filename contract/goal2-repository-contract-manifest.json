@@ -1,0 +1,96 @@
+{
+  "artifact": "goal2-repository-contract-manifest",
+  "version": 1,
+  "status": "reviewed",
+  "authority": "root-index-plus-owner-contract",
+  "rules": {
+    "database": "PostgreSQL is the durable fact store; Redis is cache/coordination/lease only",
+    "objectStore": "Storage object bytes use the S3-compatible ObjectStore adapter",
+    "requestId": "Every transport and error carries request_id or the documented request-id metadata",
+    "idempotency": "Every state-changing command has Idempotency-Key or CommandIdentity and durable receipt semantics",
+    "pagination": "Every list surface uses an opaque cursor, or explicitly documents that v1 has no list surface",
+    "tenant": "Tenant and actor identity come from IAM-derived trusted service context, never from an unverified browser field",
+    "contractSync": "Root protobuf/OpenAPI is the cross-repository wire authority; owner API_CONTRACT documents local HTTP/config projections"
+  },
+  "repositories": {
+    "kokoro-iam": {
+      "path": "kokoro-iam",
+      "owner": ["users", "organizations", "tenants", "authentication", "authorization", "roles", "permissions", "oauth", "passkeys", "audit", "execution_identity"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/TECHNICAL_DESIGN.md",
+      "bff_integration": "docs/integration/bff-iam.md",
+      "acceptance": "docs/ACCEPTANCE.md",
+      "risk_register": "docs/RISKS.md",
+      "owner_wire": ["contract/proto/kokoro/iam/v1/*.proto"],
+      "root_wire": ["contract/proto/kokoro/common/v1/common.proto", "contract/proto/kokoro/iam/v1/authentication.proto", "contract/proto/kokoro/iam/v1/authorization.proto"]
+    },
+    "kokoro-system": {
+      "path": "kokoro-system",
+      "owner": ["sites", "workspaces", "runtime_manifest", "system_config", "site_policy"],
+      "api_contract": "docs/api-contract.md",
+      "technical_design": "docs/technical-plan.md",
+      "bff_integration": "docs/bff-integration.md",
+      "acceptance": "docs/acceptance.md",
+      "risk_register": "docs/risk-register.md",
+      "owner_wire": [],
+      "root_wire": ["contract/proto/kokoro/site/v1/site.proto"]
+    },
+    "kokoro-model": {
+      "path": "kokoro-model",
+      "owner": ["model_catalog", "provider", "availability", "model_capabilities", "tenant_model_policy"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/TECHNICAL_DESIGN.md",
+      "bff_integration": "docs/BFF_INTEGRATION.md",
+      "acceptance": "docs/ACCEPTANCE.md",
+      "risk_register": "docs/RISKS.md",
+      "owner_wire": ["contract/proto/kokoro/model/v1/model_catalog.proto"],
+      "root_wire": ["contract/proto/kokoro/common/v1/common.proto", "contract/proto/kokoro/model/v1/model_catalog.proto"]
+    },
+    "kokoro-billing": {
+      "path": "kokoro-billing",
+      "owner": ["payment", "subscription", "checkout", "refund", "credit", "ledger"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/TECHNICAL_DESIGN.md",
+      "bff_integration": "docs/BFF_INTEGRATION.md",
+      "acceptance": "docs/ACCEPTANCE.md",
+      "risk_register": "docs/RISKS.md",
+      "owner_wire": ["contract/openapi/v1/openapi.yaml"],
+      "root_wire": []
+    },
+    "kokoro-capability": {
+      "path": "kokoro-capability",
+      "owner": ["skills", "mcp_connector", "mcp_provider", "mcp_server", "mcp_connection", "mcp_authorization", "installation", "versions", "permissions"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/TECHNICAL_DESIGN.md",
+      "bff_integration": "docs/BFF_INTEGRATION.md",
+      "acceptance": "docs/ACCEPTANCE.md",
+      "risk_register": "docs/RISKS.md",
+      "owner_wire": ["contract/proto/kokoro/capability/v1/capability_runtime.proto"],
+      "root_wire": ["contract/proto/kokoro/common/v1/common.proto", "contract/proto/kokoro/capability/v1/capability_runtime.proto", "contract/proto/kokoro/storage/v1/storage.proto"]
+    },
+    "kokoro-storage": {
+      "path": "kokoro-storage",
+      "owner": ["files", "uploads", "assets", "artifacts", "object_storage", "downloads", "lifecycle"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/TECHNICAL_DESIGN.md",
+      "bff_integration": "docs/BFF_INTEGRATION.md",
+      "acceptance": "docs/ACCEPTANCE.md",
+      "risk_register": "docs/RISKS.md",
+      "owner_wire": ["contract/proto/kokoro/storage/v1/storage.proto"],
+      "root_wire": ["contract/proto/kokoro/common/v1/common.proto", "contract/proto/kokoro/storage/v1/storage.proto"]
+    },
+    "kokoro-scheduler": {
+      "path": "kokoro-scheduler",
+      "owner": ["schedule_job", "trigger", "lease", "concurrency", "retry", "backoff", "pause_resume", "misfire", "execution_receipt"],
+      "api_contract": "docs/API_CONTRACT.md",
+      "technical_design": "docs/technical-architecture.md",
+      "bff_integration": "docs/bff-integration.md",
+      "acceptance": "docs/acceptance.md",
+      "risk_register": "docs/risk-register.md",
+      "owner_wire": [],
+      "root_wire": [],
+      "contract_mode": "configuration_and_internal_command",
+      "implementation_language": "go"
+    }
+  }
+}

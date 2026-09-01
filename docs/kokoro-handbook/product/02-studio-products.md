@@ -1,8 +1,11 @@
 # Studio 产品手册
 
+状态：当前 Feature-first 产品定义，2026-08-22。产品入口与 GA/Studio owner 边界以
+[37 App、Feature 与 Studio 架构](../technical/37-product-experience-agent-studio-architecture.md) 为准。
+
 ## 定位
 
-Studio 是 Kokoro 的专业创作工作台。它不是 General Chat 的子页面，而是与 General Chat 同级的产品入口。
+Studio 是 Kokoro 统一入口中的专业 App surface。它不是 General Chat 的子页面；两者复用 Feature、Agent、Capability 与 Session 基建，但提供不同的任务界面。
 
 ## Studio 的共同结构
 
@@ -17,6 +20,9 @@ Prompt / Parameters 用户意图和专业参数。
 Timeline / History  操作历史和任务状态。
 Export              下载、发布、分享或转到其它工具。
 ```
+
+> 统一入口、App/Feature、GA Agent 组合、Job、Artifact 与计费的统一模型见
+> [37 Kokoro 统一入口、App 与 Agent 产品架构](../technical/37-product-experience-agent-studio-architecture.md)。
 
 ## Studio 与 General Chat 的区别
 
@@ -37,28 +43,32 @@ Studio 不是一组聊天提示词。它给专业用户提供：
 入口来自三类：
 
 ```text
-独立站点
-  music.example.com 直接进入 Music Studio。
+独立域名 / 深链接
+  music.example.com 预选 Music App 后进入 Music Studio。
 
-主站应用入口
+Kokoro App launcher
   zeze.work/apps/music。
 
 General Chat 升级
-  对话中生成的 artifact 进入 Studio 精修。
+  Chat Feature 生成的 Job/Artifact 进入 Studio 精修。
 ```
 
 ## Studio 计费
 
-Studio 和 General Chat 可调用相同底层模型，但使用不同 featureKey：
+Studio 和 General Chat 可调用同一 Studio Job kind 或模型能力，但产品入口和计费策略可不同。用户看到的
+`music.generate`、`music.extend` 等是 capability/Job display name；真正进入 GA 的是 Entry 受信签发的 global
+`FeatureKey`，它不是可读 slug、模型名或浏览器可写参数：
 
 ```text
-general.music.generate
-studio.music.generate
-studio.music.extend
-studio.music.export
-studio.video.generate
-studio.video.upscale
+Chat Feature -> FEATURE_KEY_GENERAL_ASSIST FeatureKey -> GA lead -> Studio CreateJob(music.generate)
+Music App    -> FEATURE_KEY_MUSIC_CREATE FeatureKey  -> GA music_maker -> Studio CreateJob(music.generate)
+Studio form  -> direct Studio CreateJob(music.generate)
 ```
+
+当 GA Feature 创建 Job 时，GA 以稳定 `effect_id` 调用 Studio 并取得 JobRef；然后只发安全 `StudioJobLinked(JobRef)`。
+Session 的聊天卡片以该 JobRef 读取 Studio snapshot/event，Studio 仍拥有 provider 与 Job 状态机，即使 parent Run 已 terminal。
+专业 Studio 表单不创建 GA Run，而是使用同一个 Studio Job view/status contract。两条入口共享同一个 Studio Job 与 Storage Artifact lifecycle，
+不共享或复制 Agent 配置、checkpoint、provider state。
 
 支持：
 
@@ -74,15 +84,15 @@ Studio 专业功能更精细扣费。
 ## Studio 的共用技术底座
 
 ```text
-kokoro-web      Studio UI、参数表单、预览、任务状态、artifact 展示。
-kokoro-session  实时任务流、历史回放、状态同步。
-kokoro-agent    编排专业 Agent、工具、模型和 provider。
-kokoro-platform site/user/model/credit/payment。
-Mongo           job result、artifact metadata、创作上下文、大 JSON 状态。
-Object Storage  音频、视频、图片、导出文件。
+kokoro-web      Studio UI、参数表单、预览、任务状态、Artifact 展示。
+kokoro-session  Agent Feature 的消息/产品事件投影与 SSE；不拥有 Studio Job。
+kokoro-agent    Workflow 内的自然语言 Agent、Skill/Tool 调用与 Studio public command；不拥有 provider/Job。
+Studio           Project、Job、provider submission/callback 与专业控制面。
+kokoro-storage   Upload、Asset、Artifact、scan、retention 与 ObjectStore port。
+Billing/Credit   Agent ModelInvocation 和 Studio Job 各自的幂等结算事实。
 ```
 
-存储边界见 [../technical/06-data-storage.md](../technical/06-data-storage.md)。
+存储边界见 [29 Storage/ObjectStore](../technical/29-capability-storage-runtime-architecture.md)。
 
 ## 首批 Studio
 
@@ -99,7 +109,7 @@ P2  Code Studio     见 04-video-image-code。
 ```text
 Studio 可以独立站点使用。
 Studio 可以从 General Chat 进入。
-Studio 产物能进入统一 artifact library。
-Studio 任务能进入 job 状态机。
-Studio 扣费通过 credit reserve/commit/refund。
+自然语言 Feature 与专业表单共享一套 Studio Job/Storage Artifact lifecycle。
+Studio 产物能进入统一 Artifact library，且 GA sandbox/S3Workspace 不冒充用户产物。
+Studio Job 与 Agent reasoning 分别按其幂等 identity 结算，不双扣。
 ```

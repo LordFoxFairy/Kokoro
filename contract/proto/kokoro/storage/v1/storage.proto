@@ -1,0 +1,208 @@
+// GENERATED SOURCE — authority: contract/slice-a-contract-manifest.yaml
+syntax = "proto3";
+
+package kokoro.storage.v1;
+
+import "kokoro/common/v1/common.proto";
+
+enum ArtifactState {
+  ARTIFACT_STATE_UNSPECIFIED = 0;
+  ARTIFACT_STATE_DRAFT = 1;
+  ARTIFACT_STATE_FINAL = 2;
+}
+
+enum ScanState {
+  SCAN_STATE_UNSPECIFIED = 0;
+  SCAN_STATE_PENDING = 1;
+  SCAN_STATE_CLEAN = 2;
+  SCAN_STATE_INFECTED = 3;
+  SCAN_STATE_UNKNOWN = 4;
+}
+
+enum UploadPurpose {
+  UPLOAD_PURPOSE_UNSPECIFIED = 0;
+  UPLOAD_PURPOSE_CAPABILITY_PACKAGE = 1;
+  UPLOAD_PURPOSE_ASSET = 2;
+  UPLOAD_PURPOSE_ARTIFACT = 3;
+}
+
+enum UploadState {
+  UPLOAD_STATE_UNSPECIFIED = 0;
+  UPLOAD_STATE_PENDING = 1;
+  UPLOAD_STATE_COMPLETED = 2;
+  UPLOAD_STATE_ABORTED = 3;
+}
+
+enum AssetVisibility {
+  ASSET_VISIBILITY_UNSPECIFIED = 0;
+  ASSET_VISIBILITY_PRIVATE = 1;
+  ASSET_VISIBILITY_SHARED = 2;
+}
+
+message CreateUploadRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string owner_id = 4;
+  string filename = 5;
+  string mime_type = 6;
+  uint64 size_bytes = 7;
+  string content_sha256 = 8;
+  kokoro.storage.v1.UploadPurpose upload_purpose = 10;
+}
+
+message CreateUploadResponse {
+  string upload_id = 1;
+  string upload_url = 3;
+}
+
+message CompleteUploadRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string upload_id = 4;
+  string content_sha256 = 5;
+  uint64 size_bytes = 6;
+}
+
+message CompleteUploadResponse {
+  string upload_id = 1;
+  string asset_id = 2;
+  kokoro.storage.v1.ScanState scan_state = 3;
+  bool replayed = 4;
+}
+
+message AbortUploadRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string upload_id = 4;
+  string reason = 5;
+}
+
+message AbortUploadResponse {
+  string upload_id = 1;
+  kokoro.storage.v1.UploadState state = 2;
+  bool replayed = 3;
+}
+
+message GetUploadStatusRequest {
+  string namespace = 1;
+  string upload_id = 2;
+}
+
+message GetUploadStatusResponse {
+  string upload_id = 1;
+  kokoro.storage.v1.UploadState state = 2;
+  string expected_sha256 = 4;
+  uint64 expected_size_bytes = 5;
+  string mime_type = 6;
+}
+
+message GetAssetRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string asset_id = 4;
+  string content_sha256 = 5;
+}
+
+message GetAssetResponse {
+  string asset_id = 1;
+  string namespace = 2;
+  string content_sha256 = 5;
+  uint64 size_bytes = 6;
+  string mime_type = 7;
+  kokoro.storage.v1.ScanState scan_state = 8;
+  kokoro.storage.v1.AssetVisibility visibility = 9;
+}
+
+message GetPackageReferenceRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string asset_id = 4;
+  string content_sha256 = 5;
+}
+
+message GetPackageReferenceResponse {
+  string asset_id = 1;
+  string download_url = 3;
+  string content_sha256 = 4;
+  uint64 size_bytes = 5;
+  string mime_type = 6;
+  kokoro.storage.v1.ScanState scan_state = 7;
+}
+
+message GetScanStatusRequest {
+  string namespace = 1;
+  string asset_id = 2;
+}
+
+message GetScanStatusResponse {
+  string asset_id = 1;
+  kokoro.storage.v1.ScanState state = 2;
+  string report_id = 3;
+}
+
+message FinalizeArtifactRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string asset_id = 4;
+  string artifact_id = 5;
+  string content_sha256 = 6;
+}
+
+message FinalizeArtifactResponse {
+  string artifact_id = 1;
+  kokoro.storage.v1.ArtifactState state = 2;
+  bool replayed = 3;
+}
+
+message CreateArtifactRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string asset_id = 4;
+  string artifact_id = 5;
+  string content_sha256 = 6;
+}
+
+message CreateArtifactResponse {
+  string artifact_id = 1;
+  string asset_id = 2;
+  string content_sha256 = 3;
+  kokoro.storage.v1.ArtifactState state = 4;
+  bool replayed = 5;
+}
+
+message GetDownloadReferenceRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string namespace = 3;
+  string asset_id = 4;
+  string content_sha256 = 5;
+}
+
+message GetDownloadReferenceResponse {
+  string asset_id = 1;
+  string download_url = 2;
+  string content_sha256 = 3;
+  uint64 size_bytes = 4;
+  string mime_type = 5;
+  kokoro.storage.v1.ScanState scan_state = 6;
+}
+
+service StorageService {
+  rpc CreateUpload(kokoro.storage.v1.CreateUploadRequest) returns (kokoro.storage.v1.CreateUploadResponse);
+  rpc CompleteUpload(kokoro.storage.v1.CompleteUploadRequest) returns (kokoro.storage.v1.CompleteUploadResponse);
+  rpc AbortUpload(kokoro.storage.v1.AbortUploadRequest) returns (kokoro.storage.v1.AbortUploadResponse);
+  rpc GetUploadStatus(kokoro.storage.v1.GetUploadStatusRequest) returns (kokoro.storage.v1.GetUploadStatusResponse);
+  rpc GetAsset(kokoro.storage.v1.GetAssetRequest) returns (kokoro.storage.v1.GetAssetResponse);
+  rpc GetPackageReference(kokoro.storage.v1.GetPackageReferenceRequest) returns (kokoro.storage.v1.GetPackageReferenceResponse);
+  rpc GetScanStatus(kokoro.storage.v1.GetScanStatusRequest) returns (kokoro.storage.v1.GetScanStatusResponse);
+  rpc CreateArtifact(kokoro.storage.v1.CreateArtifactRequest) returns (kokoro.storage.v1.CreateArtifactResponse);
+  rpc FinalizeArtifact(kokoro.storage.v1.FinalizeArtifactRequest) returns (kokoro.storage.v1.FinalizeArtifactResponse);
+  rpc GetDownloadReference(kokoro.storage.v1.GetDownloadReferenceRequest) returns (kokoro.storage.v1.GetDownloadReferenceResponse);
+}

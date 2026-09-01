@@ -1,6 +1,12 @@
 # ADR-008 Agent / Session / Web 标准运行时边界
 
-状态：已采纳。
+> **状态：历史 V1 三仓运行时决策。**其中 Session→Agent 传 `RuntimeConfig`、Agent→Session 传 raw execution
+> events 的模型已被目标架构替代。新设计只读 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)、
+> [38 公共运行契约](../technical/38-ga-public-runtime-contract.md) 与
+> [ADR-016 ProductEvent](ADR-016-orchestration-policy-and-product-event-projection.md)：Session 只持有产品
+> `feature_key` 与投影，GA checkpoint 持有同一 Session 的 `ConversationState`，跨仓输出只能是安全 ProductEvent。
+
+状态：已采纳（V1）。
 
 ## 背景
 

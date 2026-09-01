@@ -1,0 +1,114 @@
+# 阶段 2：Kokoro 全仓与子仓库收口报告
+
+日期：2026-09-01
+范围：Root `Kokoro`、三个阶段 1 运行仓和七个阶段 2 业务仓。
+状态：本地拓扑、边界和契约基线已收口；正在完成各独立仓库的提交、推送与最终门禁记录。
+
+## 1. 最终仓库拓扑
+
+Root 只承载跨仓契约、文档、部署入口、数据库 fixture 和验证工具，不承载任一子仓的业务实现。
+
+```text
+kokoro-app (Web)
+       |
+       v
+kokoro-bff (Chat + business BFF)
+       |
+       +--> kokoro-iam
+       +--> kokoro-system
+       +--> kokoro-model
+       +--> kokoro-billing (Payment + Credit + Ledger)
+       +--> kokoro-capability (Skill + MCP)
+       +--> kokoro-storage (metadata + S3-compatible ObjectStore)
+       +--> kokoro-scheduler (generic Go scheduler)
+       |
+       v
+kokoro-agent (execution worker; PostgreSQL + Redis)
+```
+
+正式仓库及 GitHub 映射：
+
+| 本地目录 | GitHub | Owner |
+|---|---|---|
+| `kokoro` | `LordFoxFairy/kokoro-app` | Web 产品与同源 `/api/*` |
+| `kokoro-bff` | `LordFoxFairy/kokoro-bff` | Chat、业务适配、鉴权、幂等、错误和 SSE 投影 |
+| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Agent 执行、HITL、恢复和事件投影 |
+| `kokoro-iam` | `LordFoxFairy/kokoro-iam` | 身份、Tenant、认证、授权、审计、ExecutionIdentity |
+| `kokoro-system` | `LordFoxFairy/kokoro-system` | Site、Workspace、Runtime Manifest、系统策略 |
+| `kokoro-model` | `LordFoxFairy/kokoro-model` | Model Catalog、Provider、Availability、Policy |
+| `kokoro-billing` | `LordFoxFairy/kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger |
+| `kokoro-capability` | `LordFoxFairy/kokoro-capability` | Skill 与 MCP Connector 控制面 |
+| `kokoro-storage` | `LordFoxFairy/kokoro-storage` | Upload、Asset、Artifact 元数据与对象引用 |
+| `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | Go 调度、lease、retry、misfire、pause/resume |
+
+## 2. 归属裁决
+
+- Chat 是 `kokoro-bff 的 Chat 内部业务边界` 内部业务模块，不存在独立 Chat 仓库。
+- Session 是 Chat/BFF 的 API 概念，不创建独立 `kokoro-session` 服务。
+- Credit 是 Billing 的 bounded context，与 Payment、Subscription、Checkout、Refund、Ledger 同仓但分模块、分表 owner 和事务边界。
+- Scheduler 保持独立 Go 仓库，只调用目标业务的内部 command，使用 Redis 做 occurrence lease，不读取 Billing 或其他业务数据库。
+- Model 是独立业务 owner，不归并到 System；System 只维护产品/站点/Workspace/Runtime Manifest 和系统策略。
+- IAM 是独立身份 owner，不归并到 System；BFF 只消费 IAM 派生的受信服务上下文。
+- 所有正式业务仓采用 PostgreSQL + Redis。Redis 仅用于 cache、queue、stream、lease、限流和协调；对象字节走 Storage 的 S3-compatible ObjectStore。
+- Web 不直连 Agent、IAM 或 Goal 2 业务仓，业务请求统一经过 BFF。
+
+## 3. 已废弃处理
+
+Root 工作区已移除旧目录和 gitlink：
+
+- `kokoro-session`
+- `kokoro-gateway`
+- `kokoro-platform`
+- `kokoro-web`（旧 monorepo）
+- `kokoro-credit`
+- `kokoro-site-kokoro`
+
+历史副本统一位于 Root 外：
+
+```text
+/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/
+```
+
+GitHub 上的 `LordFoxFairy/kokoro-session`、`kokoro-gateway`、`kokoro-platform`、`kokoro-web`
+均保持 archived，不再参与 CI、Compose、contract consumer 或默认启动路径。旧 Root Compose、旧 k8s、旧验证脚本和遗留环境文件也已移出当前 Root；活动 worktree 只保留有实际分支/未提交内容的用户工作副本，已失效的 worktree 元数据已 prune。
+
+## 4. 契约与边界门禁
+
+Root 机器索引：
+
+- `contract/goal2-repository-contract-manifest.json`
+- `contract/slice-a-contract-manifest.yaml`
+- `contract/consumers.yaml`
+- `docs/CODEBASE_MAP.md`
+- `docs/REPOSITORY_STATUS.md`
+
+每个正式仓库自持：`API contract`、技术设计、BFF 集成说明、验收、风险、单元/集成测试、Dockerfile 和 CI。
+跨仓只通过 HTTP/OpenAPI/Protobuf；不复制源码、不共享数据库表、不共享 ORM schema。
+
+镜像发布规则：每个正式仓的 release workflow 只由 `v*.*.*` tag 触发；普通 push/PR 只运行质量检查。Dockerfile 使用生产启动入口，本地开发使用本仓 `dev` 命令。
+
+## 5. 本轮本地验证记录
+
+已通过或已验证：
+
+- `python3 scripts/verify-repository-topology.py`：10 个 active repo、6 个 archived repo 均符合本地拓扑；边界扫描通过。
+- `python3 scripts/goal2/mock_cross_repository_closure.py`：BFF→七个 owner、Billing→Scheduler、Capability→Storage 闭环通过。
+- `python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml`：通过。
+- `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check`：通过。
+- Web `pnpm check`：最终门禁需在本轮全部修改后再次执行；Skills GitHub handoff 单文件 68 tests 已通过。
+- BFF `pnpm check`：通过。
+- IAM `pnpm verify`：通过；当前为 contract-first baseline，未实现端点按 API contract 分批推进。
+- System：lint、typecheck、test、build 通过。
+- Model：`pnpm verify:release` 通过项已记录，最终 release 复核待收口。
+- Billing：`pnpm verify` 通过；真实数据库集成测试按环境条件执行/跳过并单独记录。
+- Capability：`npm run verify` 通过。
+- Storage：`npm run verify` 通过。
+- Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
+
+## 6. 待收口证据
+
+1. 在所有独立仓 review 现有工作树后分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致。
+2. Root 提交 gitlink、contract、文档、归档删除和验证脚本变更，再验证 Root `main` 与 GitHub 一致。
+3. 对全部 Dockerfile 执行本地构建或记录基础镜像网络失败；生产镜像只从 tag workflow 发布。
+4. 查询 GHCR package visibility；当前 GitHub CLI token 对 package read scope 的能力需单独记录，不能把 workflow `packages: write` 等同于包的 public visibility。
+5. 更新本报告的提交 SHA、Docker 结果、完整测试报告和剩余外部环境条件。

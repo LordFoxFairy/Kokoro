@@ -1,5 +1,7 @@
 # kokoro-iam
 
+> 执行级设计以 [IAM 设计卡](../technical/backend-design/01-iam.md) 为准。
+
 状态：目标架构已确认，PostgreSQL owner schema 已落地，子仓重构实施中。
 
 ## 1. 职责
@@ -148,6 +150,31 @@ HTTP
 Web 调用 Authentication 时注入其服务端 env 绑定的 SiteContext；Chat 只能调用
 Authorization；JWKS 是公开密钥材料。Caller
 身份在解码业务 payload 前验证。
+
+### 5.1 GA 运行身份：IAM 给主体事实，GA 自己做隔离
+
+Agent 运行不把 IAM 的用户、组织或项目 ID 直接改名为 `namespace`。一次被受理的产品执行使用 Root generated contract 的
+窄 envelope：
+
+```text
+ExecutionIdentity
+  actor: ActorRef(person | service, opaque_ref)
+  subject: ExecutionSubjectRef(personal | project | service, opaque_ref)
+  identity_assertion_ref: service-only current IAM assertion handle
+```
+
+IAM/Entry/Session 的责任是：认证调用者、确认 actor 可代表本次 subject、并为服务间验证绑定 assertion。Session 将该受信
+envelope 与 `session_id`、`feature_key`、输入和 opaque AssetRef 一起放入 Root `LaunchRunRequest`；它不保存或选择
+`RuntimeNamespace`，也不传独立 `thread_id`。
+
+GA 的唯一 ingress `RuntimeIdentityResolver` 以受控 canonical tenant + subject 和 GA key material 派生内部、不透明的
+`RuntimeNamespace`，只用于 GA checkpoint、RunLedger、workbench 与 thread gate。IAM 不调用 GA、不维护该值；GA 不维护
+membership/role，不把 actor/subject 解释成 Agent、graph、Skill 或权限配置。Capability、Storage、Studio 在具体 public operation
+时通过 attestation 和自己当前的 owner facts 重新判断，而不是复用一份 Session grant snapshot。
+
+这一层不是额外 Principal 表或新的 IAM 领域实体；它是跨服务 command 的受信身份上下文。完整 Root 字段和恢复语义以
+[GA 公共运行契约](../technical/38-ga-public-runtime-contract.md) 与
+[ADR-022](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md) 为准。
 
 ## 6. Web SiteContext
 

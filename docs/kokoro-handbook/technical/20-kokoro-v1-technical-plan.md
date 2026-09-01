@@ -4,6 +4,17 @@
 日期：2026-07-10
 范围：kokoro-web / kokoro-session / kokoro-agent；platform V1 零新增。
 
+> **2026-08-22 边界更新 / 状态修正：本文是 V1 已交付事实的历史记录，不是当前 GA 演进的 Agent 事实源。**
+> 它继续约束 namespace、HITL、终态、交付等已验证行为；但其中涉及会话能力快照、
+> `RuntimeConfig`、preset 与 Agent 入口的 D1/D2/D3/D6 均已由
+> [ADR-015](../decisions/ADR-015-agent-state-and-feature-context.md)、
+> [33 Skill runtime](33-ga-first-skill-runtime-architecture.md) 和
+> [34 GA Runtime](34-ga-agent-runtime-architecture.md) 取代。
+>
+> 尤其，本文历史段落中出现的 `session.agent`、会话 `CapabilitySnapshot`、
+> Session-built `RuntimeConfig` 都**不得用于新实现**：`DeepAgentState`
+> 是 DeepAgent Feature 的唯一 Agent 会话执行状态；swarm 使用 official `SwarmState.active_agent` 记录 peer handoff；Session 只保留产品 Feature 上下文，不持有 Agent、图或能力配置。
+
 ## 0. 本文与 19 的关系
 
 `19` 是打磨过程的全记录，含多轮已被推翻的设计（registry 四层、binding store、principal 表、独立 selection 服务、stage 状态机、内容寻址 workspace）。**本文只保留经代码核实或已落地验证的最终结论**；冲突时以本文为准。
@@ -19,7 +30,7 @@
 | 层 | V1 形态 | 状态 |
 |---|---|---|
 | 身份 | `namespace = JWT sub`（opaque 主体 id），session 持久化 + 全链路反查；缺 secret 启动即拒 | **已落地三绿** |
-| 能力 | skills/MCP：hub+会话快照+skill 单工具+MCP 三工具+注册表(McpServerDoc) | 已落地(块A/B/C+HUB-1..4+AGENT-MCP);管理权威=technical/22 |
+| 能力 | skills/MCP：会话快照+skill 单工具+MCP 三工具+注册表(McpServerDoc) | V1 行为不变量已落地；当前 target：GA 直接读取默认 Skill，动态项经 `find_skills/load_skill` 使用 GA catalog 与 CA path；CA/Storage 只作来源辅助；technical/22 仅作历史取证。 |
 | 执行 | 单 `general` agent + deepagents task 子代理 + 现有 HITL 回路 | **已跑通（e2e 门禁）** |
 | 交付 | `deliver` 单工具：读字节 → sha256 → `deliveries/<ns>/<hash>` → delivery.created → session 读模型+下载端点+web 成果卡 | 已落地(E2E-31) |
 | 编排（业务 agent） | **preset 配置包**（见 D6）；swarm 中途 handoff 已落地 | session 首条锁已落;agent 侧目录化 preset **已落地(AGENT-PRESET，agent f4e7b6b/web bf3973b)**;swarm handoff **已落地(SWARM-QUOTA，agent 7cfa48e)** |
@@ -119,7 +130,12 @@ deliver(path, title, note?)                     # agent 可见的唯一交付工
 | 终态后 retry / 新消息 | 是 | 是 |
 | active run 中改设置 | 否 | 否；下一 run 生效，立即生效=显式 cancel 再开 |
 
-### D6 业务 agent = preset（编排定案，取代旧 C 层设计）
+### D6 业务 agent：历史 V1 方案（已由 ADR-015 / 34 取代）
+
+> **不要按本节实施。**它记录了当时把 `session.agent` 当作场景锁的 V1 做法；这会与
+> 当前 Feature 的 native outer state（DeepAgent 时 `DeepAgentState`，swarm 时 official `SwarmState.active_agent`）形成两份 Agent 状态。当前设计以 `feature_key -> Feature`
+> 完成首次 bootstrap，以 checkpoint 的 `active_agent` 完成后续续聊与 swarm handoff；详见
+> [34 GA Runtime](34-ga-agent-runtime-architecture.md) §1–§4。
 
 旧设计（19 的 C 层 / AgentProfile / StageSpec）错在**把业务编排当成缺失的运行时层去发明**：阶段枚举是拍脑袋的瀑布流，还要新建 deepagents 没有的状态机引擎。定案推翻它：
 
@@ -178,7 +194,7 @@ V1 无存量兼容负担，是改名的唯一零成本窗口；块2 动契约时
 4. **模型可见工具名 = 普通英语动词/生态惯例名**（`skill` / `deliver`），禁 DevOps 黑话。
 5. **缩写只用行业通用**（id / mcp / url），不自造。
 
-已循规范的正面样板（核实过，别动）：`KokoroAgentState → DeepAgentState → AgentState`（框架官方继承链，deepagents 推荐扩展方式）、`thread_id`（langgraph 同名）、`run`（OpenAI Assistants 同概念）、checkpoint/store/middleware（框架词）。
+当前 V1 的命名证据（不作为目标目录名）：`KokoroAgentState → DeepAgentState → AgentState`、`thread_id`、`run`、checkpoint/store/middleware。目标按 Feature 使用原生 `DeepAgentState` 或官方 `SwarmState`；见 ADR-015/ADR-020。
 
 定案改名（块2 执行，旧名全仓清零不留别名）：
 

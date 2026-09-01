@@ -1,0 +1,34 @@
+# Feature-first GA target 的 deployment adapter 示例；当前 V1 不读取此文件。
+# 它只提供 GA workbench 的持久化接线，绝不表达 Feature、Agent、Skill、member、mode、graph 或 Session 配置。
+#
+# 选择 local_durable 或 s3_workspace 之一：
+# - local_durable：单 worker / 持久卷；root 只挂给 GA worker 与其 sandbox runner。
+# - s3_workspace：MinIO-first 的 S3-compatible durable backend；可替换 AWS S3、Ceph RGW、R2。
+#
+# 所有 root/object key 都由 GA 以 RuntimeNamespace:session_id 派生：
+#   {workspace_prefix}/{runtime_namespace}/{session_id}/...
+# Browser、Session、Capability、Storage 均不传入或读取该路径。
+
+workbench:
+  type: s3_workspace # local_durable | s3_workspace
+
+  # 以下字段只在 type=s3_workspace 时存在。
+  # endpoint/bucket/region/path-style 是 adapter 接线，不是业务或 Agent 配置。
+  s3:
+    endpoint: http://minio:9100
+    bucket: kokoro-ga-workbench
+    workspace_prefix: ga/workbench
+    region: us-east-1
+    force_path_style: true
+    credential_handle: ga-workbench-s3
+
+  # 仅 type=local_durable 时使用；该路径必须来自 GA-only persistent volume，不能是临时容器目录。
+  # local:
+  #   root: /var/lib/kokoro-agent/workbench
+
+# credential_handle 由 Compose/Kubernetes Secret / workload identity 解析；不在本文件记录 access key、secret 或 MinIO root credential。
+# 此 credential 只允许 workspace_prefix 内的 create/read/write/list/delete，不具备 Storage Artifact bucket/prefix 权限。
+#
+# Workflow 只声明：
+#   workbench_persistence: ephemeral_ok | durable_required
+# 它不会选择此 endpoint、bucket 或 credential。worker warm/readiness 在 durable_required Feature 领取 Run 前验证 backend。

@@ -16,6 +16,8 @@
 
 ```text
 Product / Application registry
+Global FeatureDefinition (FeatureKey、I/O、用户可见 delivery/error/updating state、baseline permission、cost policy；即 ProductOutcomeContract)
+Tenant/App AppFeatureExposure (FeatureKey、route、slug、UI visibility)
 Navigation / menu
 Localization bundles and namespaces
 Theme / skin metadata and token manifests
@@ -23,7 +25,7 @@ Feature flags
 Product capability exposure
 Notification templates
 Asset metadata and public references
-Configuration version / release pointer
+Product UI configuration / Feature exposure（不指向 GA Workflow）
 Admin resource manifests
 ```
 
@@ -38,13 +40,13 @@ Credit Account、Hold、Ledger、Usage 的事实 -> kokoro-credit
 Model Provider、Model Revision、Routing 的事实 -> kokoro-model
 Skill、MCP、Capability Runtime 的事实 -> kokoro-hub
 Conversation、Run、SSE、HITL 的事实 -> kokoro-session
-Agent 执行和 checkpoint -> kokoro-agent
+Agent 执行、GA Feature/Agent Catalog、DeepAgents checkpoint、Feature evaluation 与运行证据 -> kokoro-agent 的 CI/evaluation 边界
 React 组件和 Web 页面 -> kokoro-web-user / kokoro-web-admin
 环境变量、Secret、容器和基础设施 -> deploy/ops
 ```
 
 `kokoro-system` 可以保存其它领域的 assignment/reference，例如某产品启用哪个 offering 或 capability，
-但不复制其价格、账本、执行版本或授权事实；引用必须由被引用的 owner 在使用时重新校验。
+但不复制其价格、账本、执行配置或授权事实；引用必须由被引用的 owner 在使用时重新校验。
 
 ## Site / Tenant 边界
 
@@ -81,7 +83,7 @@ kokoro-system/
 │   │   ├── capability-assignment/
 │   │   ├── asset/
 │   │   ├── notification/
-│   │   └── release/
+│   │   └── feature-exposure/
 │   ├── interfaces/{http,rpc,admin}/
 │   ├── infrastructure/
 │   ├── generated/
@@ -101,7 +103,7 @@ kokoro-system/
 GET /system/runtime-manifest?product_id=PRODUCT_ID&locale=LOCALE
 ```
 
-返回带版本的 `SystemRuntimeManifest`：
+返回 `SystemRuntimeManifest`：
 
 ```text
 product / app / surface
@@ -111,8 +113,16 @@ theme / skin manifest
 enabled product entries
 feature flags
 safe domain references
-configVersion / releaseId / digest
 ```
+
+System product/UI manifest 不传给 GA RunRequest，不引用 Workflow/Agent，也不作为 Session Workflow/
+graph 选择。System 与 GA 只用 `feature_key` 做 CI/发布 join：System 先保存 disabled FeatureDefinition，GA Builder
+发布同 key 的 candidate 并完成 all-worker warm，随后 System 才启用产品 admission。GA catalog 更新不由 System runtime manifest
+反向解析。这里的 `feature_key` 是全局唯一、不可变的 FeatureKey；tenant/App/route/display slug 只在 System admission
+映射到它，不能成为 GA catalog 的复合 key 或运行时 selector。详细门禁见
+[42 GA 核心架构](../technical/42-ga-core-architecture.md) 与
+[ADR-021](../decisions/ADR-021-feature-key-global-catalog-identity.md) 与
+[41 Feature 结果契约](../technical/41-feature-outcome-contracts-and-quality-gates.md)。
 
 浏览器不直接选择 `tenant_id`。Web BFF 从受信 Host 解析得到 TenantBinding，并通过受信内部请求上下文传入；System 重新向 IAM 校验 Host 与 `tenant_id` 的绑定。
 

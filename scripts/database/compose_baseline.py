@@ -51,8 +51,11 @@ def _source_segments(
     segments = manifest["segments"]
     assert isinstance(segments, list)
     expected_names = {f"{segment}.sql" for segment in segments}
+    # Every SQL file in this directory is part of the active PostgreSQL
+    # baseline. Owner-specific migrations live in their child repository.
     actual_names = {
-        entry.name for entry in schema_dir.iterdir() if entry.name.endswith(".sql")
+        entry.name for entry in schema_dir.iterdir()
+        if entry.name.endswith(".sql")
     } if schema_dir.is_dir() else set()
     missing = sorted(expected_names - actual_names)
     extra = sorted(actual_names - expected_names)

@@ -7,6 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).parents[2]
 MANIFEST = json.loads((ROOT / "contract/slice-a-contract-manifest.yaml").read_text())
 LEGACY = json.loads((ROOT / "contract/tests/fixtures/legacy-wire-v1.json").read_text())
+WEB_PROMOTION_PLAN = (
+    ROOT / "docs/superpowers/plans/2026-08-14-slice-a-web-e2e-promotion-plan.md"
+).read_text()
 
 RAW_RENAMES = {
     "tool.invoked": {"args": "args_json"},
@@ -124,23 +127,27 @@ def test_mature_control_and_run_scope_invariants_are_preserved() -> None:
         ]
     launch = next(item for item in MANIFEST["protobuf"]["messages"] if item["name"] == "LaunchRunRequest")
     apply_control = next(item for item in MANIFEST["protobuf"]["messages"] if item["name"] == "ApplyControlRequest")
-    assert launch["fields"] == LEGACY["control"]["authorityLaunchRunFields"]
+    assert launch["fields"] == [
+        {"number": 1, "name": "request_id", "type": "string", "label": "required"},
+        {"number": 2, "name": "run_id", "type": "string", "label": "required"},
+        {"number": 3, "name": "session_id", "type": "string", "label": "required"},
+        {"number": 4, "name": "feature_key", "type": "string", "label": "required"},
+        {"number": 5, "name": "execution_identity", "type": ".kokoro.common.v1.ExecutionIdentity", "label": "required"},
+        {"number": 6, "name": "message_id", "type": "string", "label": "required"},
+        {"number": 7, "name": "content", "type": "string", "label": "required"},
+        {"number": 8, "name": "requested_model_label", "type": "string", "label": "optional"},
+        {"number": 9, "name": "trace_json", "type": "bytes", "label": "required"},
+    ]
     assert apply_control["fields"] == LEGACY["control"]["authorityApplyControlFields"]
     names = {field["name"] for field in launch["fields"]}
-    assert {"namespace", "session_id", "thread_id", "site_id", "organization_id"} <= names
+    assert {"run_id", "session_id", "feature_key", "execution_identity", "message_id", "content"} <= names
+    assert not ({"namespace", "thread_id", "site_id", "organization_id", "requested_agent_preset_key", "requested_capability_selectors"} & names)
     agent_messages = [item for item in MANIFEST["protobuf"]["messages"] if item["package"] == "kokoro.agent.v1"]
     assert all(
         item["name"] == "LaunchRunRequest"
         or not ({"site_id", "organization_id", "principal_id", "role_id", "permission_id"} & {field["name"] for field in item["fields"]})
         for item in agent_messages
     )
-    legacy_messages = {item["kind"]: item for item in LEGACY["control"]["legacyMessages"]}
-    assert {"run.request", "run.resume", "run.cancel", "run.steer"} == set(legacy_messages)
-    assert {"thread_id", "input", "runtime", "context"} <= {
-        item["name"] for item in legacy_messages["run.request"]["fields"]
-    }
-    assert {"decisions"} <= {item["name"] for item in legacy_messages["run.resume"]["fields"]}
-    assert {"message_id", "content"} <= {item["name"] for item in legacy_messages["run.steer"]["fields"]}
 
 
 def test_magic_link_idempotency_and_stream_cursor_semantics_are_frozen() -> None:
@@ -149,10 +156,68 @@ def test_magic_link_idempotency_and_stream_cursor_semantics_are_frozen() -> None
     refresh = rules["authCommandIdentity"]["refreshSession"]
     assert "sealed in the Web envelope" in refresh["commandId"]
     assert "missing/different command id triggers family revoke" in refresh["rotation"]
+    assert (
+        "The Slice A envelope contains exactly seven fields: `principalId`, `siteId`, "
+        "`organizationId`, `authSessionId`, `accessToken`, `refreshToken`, and "
+        "`refreshCommandId`."
+    ) in WEB_PROMOTION_PLAN
+    assert (
+        "The unpredictable `refreshCommandId` is sealed beside the current `refreshToken` "
+        "and MUST NOT be derived predictably."
+    ) in WEB_PROMOTION_PLAN
+    assert (
+        "A lost `RefreshSession` response retries the same token and command ID; after a "
+        "delivered success, Web seals a fresh random command ID beside the successor token."
+    ) in WEB_PROMOTION_PLAN
+    assert (
+        "Presenting the old token without its command ID or with a different command ID "
+        "triggers refresh-family revocation."
+    ) in WEB_PROMOTION_PLAN
     assert "never resets seq" in rules["agentEventSequence"]
     stream = next(item for item in MANIFEST["http"]["operations"] if item["operationId"] == "streamConversationEvents")
     assert next(item for item in stream["parameters"] if item["name"] == "after_seq")["schema"] == {
         "type": "integer", "minimum": 0, "maximum": 9007199254740991
+    }
+
+
+def test_chat_stream_establishment_is_an_explicit_owner_ready_handshake() -> None:
+    messages = {
+        item["name"]: item
+        for item in MANIFEST["protobuf"]["messages"]
+        if item["package"] == "kokoro.chat.v1"
+    }
+    assert messages["StreamConversationEventsReady"]["fields"] == [
+        {"number": 1, "name": "accepted_after_seq", "type": "uint64", "label": "required"},
+        {"number": 2, "name": "watermark", "type": "uint64", "label": "required"},
+    ]
+    assert messages["StreamConversationEventsResponse"]["fields"] == [
+        {
+            "number": 1,
+            "name": "event",
+            "type": ".kokoro.chat.v1.BrowserSessionEvent",
+            "label": "required",
+            "oneof": "payload",
+        },
+        {
+            "number": 2,
+            "name": "ready",
+            "type": ".kokoro.chat.v1.StreamConversationEventsReady",
+            "label": "required",
+            "oneof": "payload",
+        },
+    ]
+    assert MANIFEST["rules"]["streamEstablishment"] == {
+        "validationOrder": [
+            "authenticate workload and caller access JWT",
+            "authorize chat.conversation.read and derive ActorContext from IAM",
+            "validate conversation ownership and Site/Organization scope",
+            "validate after_seq against current watermark and retained cursor boundary",
+        ],
+        "failure": "Any typed failure, including SNAPSHOT_REQUIRED, terminates before the first response message; no ready or event is yielded.",
+        "success": "Immediately yield exactly one ready as the first response, including for an idle stream where accepted_after_seq equals watermark; accepted_after_seq exactly echoes the validated request cursor and watermark is the current owner watermark observed during validation.",
+        "continuation": "After ready, yield only event messages whose seq values are strictly increasing from accepted_after_seq; never yield a second ready.",
+        "web": "Web consumes and validates ready before committing browser HTTP 200, never forwards ready as an SSE frame, and then pulls events with backpressure.",
+        "wireCompatibility": "Field 1 remains BrowserSessionEvent and moves into payload oneof; its encoded bytes remain unchanged. Field 2 is additive ready. Old readers ignore ready, while new readers accept old event bytes as the event arm.",
     }
 
 

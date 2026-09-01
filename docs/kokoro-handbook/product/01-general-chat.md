@@ -1,5 +1,10 @@
 # General Chat 产品手册
 
+状态：当前 Feature-first General Chat 定义，2026-08-22。`FEATURE_KEY_GENERAL_ASSIST` 是用户进入的产品 Feature；GA 内部
+Workflow 决定 single/lead/swarm/flow，Session 不存 Agent、member、Skill/MCP、图或模型配方。详见
+[General Chat 链路](../business-flows/general-chat.md)；产品结果、质量/成本 baseline 与上线门见
+[41 Feature 结果契约](../technical/41-feature-outcome-contracts-and-quality-gates.md)。
+
 ## 定位
 
 General Chat 是 Kokoro 的通用入口。用户用自然语言表达任务，系统判断是否需要调用工具、Agent、模型、Studio 能力或生成产物。
@@ -48,14 +53,16 @@ code.generate    一句话生成脚本、页面或工具。
 
 ## 与 Agent 的关系
 
-General Chat 默认使用通用 Agent。Agent 架构见 [../technical/03-agent-architecture.md](../technical/03-agent-architecture.md)。
+General Chat 是 Chat App 的 `FEATURE_KEY_GENERAL_ASSIST` Feature：它由 General Assistant 为 entry，需要时以 GA 已发布的 Agent
+组合 Music、Image、Video、Code 专员。产品结果契约要求安全 assistant final，并按任务允许 Job/Artifact card；内部成员、图和
+work_profile 仍只属于 GA。统一入口、App/Feature 与组合关系见 [37 Kokoro 统一入口、App 与 Agent 产品架构](../technical/37-product-experience-agent-studio-architecture.md)；GA 内部编译与恢复见 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)。
 
 通用 Agent 可以：
 
 ```text
 调用专业 Agent、skill、MCP、模型。
-创建 job、查询 artifact。
-请求 credit quote/hold。
+通过 Studio public `CreateJob/QueryJob` 创建 job、查询进度和 artifact。
+消费报价、hold、终态和退款结果；不拥有或直调 Credit。
 ```
 
 通用 Agent 不可以：

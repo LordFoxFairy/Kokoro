@@ -1,9 +1,25 @@
-# 后端子仓库与 DDD 架构规范
+# 后端子仓库与 DDD 架构规范（历史全局拆仓方案）
 
-状态：目标架构已对齐，实施中。
+状态：**历史全局拆仓方案**，2026-08-22。本文曾把 Conversation/Message 拆为独立 `kokoro-chat`，并把 Capability 设计为 version/snapshot owner；这与当前 Feature-first GA 目标冲突。
 
-本文件是后端子仓库划分、目录结构和依赖规则的正式入口。当前运行时事实仍以对应子仓
-README 和已通过的门禁为准；迁移完成后再删除旧入口。
+当前目标只以 `kokoro-session` 作为产品 Session admission/message/projection/control/SSE/lifecycle owner；GA 作为 AgentState/checkpoint/RunLedger owner；Capability 只管理 user/session Skill path、visibility、CRUD。新设计请先读 [36 GA 整体 Agent 技术方案](36-ga-final-agent-technical-plan.md)、[38 公共运行契约](38-ga-public-runtime-contract.md) 与 [05 Capability 设计卡](backend-design/05-capability.md)。
+
+
+> 版本说明：本文保留原始 Payment/Credit 拆分阶段的架构原则；Billing 的最新 owner、事务和迁移边界以
+> [`27-final-backend-architecture.md`](27-final-backend-architecture.md) 与
+> [`31-billing-subrepository-architecture.md`](31-billing-subrepository-architecture.md) 为准。
+
+> 业务边界与 DDD 分级仍有效；其中 PostgreSQL SQL-first 存储方案已由 [ADR-013](../decisions/ADR-013-mysql-mongo-final-storage.md) 取代。V1 结构化业务数据以 MySQL 为准，MongoDB 负责运行时文档与向量。
+
+历史状态：该阶段的拆仓图不再作为目标实现依据。
+
+本文保留后端子仓库划分、目录结构和依赖规则的历史推导；当前实现与目标 owner 以 36/38/设计卡为准。
+
+DDD 采用等级、轻量 DDD 与标准战术 DDD 的区别，以 [25：后端架构与 DDD 采用等级](25-backend-architecture-and-ddd-levels.md)
+为准。本文件描述的是共享边界和目标子仓库，不要求所有子仓库复制完整的
+`entities/value-objects/services/repositories/events` 目录模板。
+
+当前 Agent、Session、Capability 的目录与 owner 以 36/38/设计卡为准；本文件及 25/26/27 不再互相构成最终准则。
 
 ## 1. 统一规则
 
@@ -65,14 +81,13 @@ domain/<module>/
 
 | 子仓库 | 数据前缀 | 业务职责 | DDD 深度 |
 |---|---|---|---|
-| `kokoro-iam` | `site_*`、`iam_*` | Site、身份、组织、认证、角色、权限、安全审计 | 完整 DDD |
-| `kokoro-chat` | `chat_*` | Conversation、Message、Run 投影、HITL、浏览器事件 | 完整 DDD |
+| `kokoro-iam` | `site_*`、`iam_*` | Site、身份、组织、认证、角色、权限、安全审计 | L2 核心领域 |
+| `kokoro-chat` | `chat_*` | Conversation、Message、Run 投影、HITL、浏览器事件 | L1 起步，按复杂度升级 |
 | `kokoro-agent` | `agent_*` | Run、Manifest、Lease、Control、Usage、恢复 | 保留既有运行时架构 |
-| `kokoro-capability` | `capability_*` | Skill、MCP、安装、授权、运行快照 | 完整 DDD |
-| `kokoro-model` | `model_*` | Provider、Model Revision、Routing、Health | 轻量 DDD |
-| `kokoro-storage` | `storage_*` | Blob、Upload、Asset、Artifact、Scan | 完整 DDD |
-| `kokoro-entitlement` | `entitlement_*` | Offer、卡密、权益、订阅期限、积分、用量结算 | 完整 DDD |
-| `kokoro-payment` | `payment_*` | 支付账户、Checkout、Settlement、Subscription、Reversal | 完整 DDD |
+| `kokoro-capability` | `capability_*` | Skill、MCP、安装、授权、运行快照 | L1 起步，授权规则局部 L2 |
+| `kokoro-model` | `model_*` | Provider、Model Revision、Routing、Health | L0/L1 |
+| `kokoro-storage` | `storage_*` | Blob、Upload、Asset、Artifact、Scan | L1 |
+| `kokoro-payment` | `payment_*` | 商品、Checkout、Order、Subscription、Provider Event、Refund | L2 核心领域 |
 
 ## 4. 子仓库模块
 
@@ -136,21 +151,13 @@ Blob / Upload / Asset / Artifact / Scan
 
 Local 与 S3 是同一个 ObjectStore port 的 Infrastructure 实现，不是两个业务模块。
 
-### Entitlement
-
-```text
-Catalog / Redemption / Entitlement / Subscription / Credit / UsageSettlement
-```
-
-它拥有套餐、卡密、权益和积分真相，不使用含糊的 `kokoro-commerce` 名称。
-
 ### Payment
 
 ```text
 ProviderAccount / Customer / Checkout / Settlement / Subscription / Reversal
 ```
 
-Payment 只维护支付事实；权益是否生效由 Entitlement 决定。
+Payment 维护商品、订单、订阅和支付事实；购买后的积分授予通过 Credit；当前不建立独立 Entitlement 子仓库。
 
 ## 5. 数据与通信
 

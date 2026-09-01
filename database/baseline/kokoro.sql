@@ -2864,7 +2864,10 @@ BEFORE UPDATE OF command_id, command_kind, request_digest ON capability_command_
 FOR EACH ROW EXECUTE FUNCTION capability_reject_receipt_claim_update();
 
 -- source: database/schema/60-model.sql
--- sha256: bafda2bad1a2b334a1b30cd1ef408d4b19b518157e29099f1ad8ea382dd9e1b5
+-- sha256: bd57fcf92fd24e3cb7124bfca4be560c3ca12559c3533689118a6f5f084e7ad6
+-- Canonical PostgreSQL model baseline for the Root Slice-A fixture.
+-- Runtime owner implementation and migrations live in kokoro-model.
+
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE model_provider (

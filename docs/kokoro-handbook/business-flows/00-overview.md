@@ -7,14 +7,14 @@
 ```text
 site-resolution               host -> SiteContext，所有请求的第一步。
 user-register-login           注册登录，落 User/ExternalIdentity/personal workspace。
-general-chat                  通用对话扣费链路（quote/hold/model/provider/capture）。
+general-chat                  Feature-first 通用对话；GA 按 provider-accepted ModelInvocation 结算。
 agent-session-web-general-chat-runtime  三仓内部通用聊天运行链路。
 agent-handoff                 General Agent 编排专业 Agent / 工具，subagent usage 归并。
 session-lifecycle             conversation 创建/活跃/存档/删除与 siteId 绑定。
-credit-reserve-commit-refund  扣费闭环底座，被所有计费链路复用。
+credit-reserve-commit-refund  历史 V1 Credit hold/capture 流程；目标 Billing 见 technical/31。
 payment-to-credit             支付成功 -> grant 权益和积分。
-model-resolution              按 SiteModelPolicy 解析可用 model binding 与 fallback。
-music-studio-generate         长耗时 job 的生成、轮询、结算、产物。
+model-resolution              历史 V1 ModelBinding resolver；目标由 GA Workflow model policy 选择 adapter。
+music-studio-generate         Music App 的 Feature-first Agent 与 Studio Job 双入口、结算、产物。
 artifact-job-result           产物生命周期：创建/编辑/发布/查询/删除/导出。
 ```
 

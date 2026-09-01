@@ -1,7 +1,16 @@
-# kokoro-hub 能力中台
+# kokoro-hub 能力中台（历史 legacy）
 
-状态：正式册（HUB-1/2/3 已落地，HUB-4 部分；边界规则长期有效）
-边界与内部通信定案见 [technical/22-capability-hub](../technical/22-capability-hub.md)。
+> 状态：历史 Hub 实现记录，不是当前 owner 规则。当前分界以
+> [Agent 设计卡](../technical/backend-design/09-agent.md)、
+> [Agent 专项 §6](kokoro-agent.md#6-数据-owner唯一-writer-与当前原型边界) 和
+> [Capability × Storage §9](../technical/29-capability-storage-runtime-architecture.md#9-artifact-与-agentsession-协作) 为准。
+>
+> 本文记录的“Hub 写、Agent 直读同库”和启动期 seed 行为已经进入删除迁移面：GA 原生
+> DeepAgents Skill 默认由 GA 直接绑定；其余由 GA `find_skills/load_skill` 发现自身 catalog 与 CA user/session
+> path；CA/Storage 只提供来源辅助，加载后成为 GA runtime state。
+
+迁移期名称曾为 `kokoro-hub`，目标能力按上面的两条来源路径拆分。下文仅保留历史链路和
+迁移取证，不能据此新增 Hub 写面或 Agent 对 Hub Mongo/S3 的直读。
 
 ## 职责
 
@@ -17,10 +26,10 @@ skill / MCP 的**管理写面**：注册、上传（GitHub 导入 preview→conf
 
 ## 读写分离边界
 
-**hub 写、agent 读，读写分离同库**：hub 是唯一写入方（Mongo + S3）；agent 装配热路径**直读同库**，不经 hub RPC。每 run 跨服务调 hub 是可用性耦合，明确禁止。双层守门（hub 入库校验 + agent 装配防御校验）不算重复，是信任边界各自校验。
+**历史实现**为“hub 写、agent 读，读写分离同库”：hub 写 Mongo + S3，Agent 装配热路径直读同库。这条规则不再用于新实现；它既混淆 GA 原生配置与 Client/租户 Skill，也让 worker 依赖 legacy 物理存储。目标是 GA default binding + `find_skills/load_skill`/CA path 两条稳定来源路径，均不在 worker 中 seed/upsert。
 
 ## 与 session / agent 的关系
 
 - **session**：池查询经 hub（`GET /hub/skills/pool`），是 session `pool.ts` 与 agent 旧双实现的收敛终点，单实现消除漂移。
-- **agent**：直读 hub 写入的 Mongo skill/MCP 注册数据与 S3 包体，装配 resolve_cards/物化/MCP 懒连接；不写 hub，不面向浏览器。
+- **agent（历史）**：曾直读 hub 写入的 Mongo skill/MCP 注册数据与 S3 包体。目标实现改为：GA 默认配置直接绑定；其余 Skill 由 `find_skills/load_skill` 发现 GA catalog 与 CA path；注入、物化、MCP 懒连接仍由 GA runtime 负责。
 </content>

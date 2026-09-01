@@ -1,6 +1,12 @@
 # ADR-010 BYO 扩展点与统一配置树
 
-## 状态
+> **状态：V1 deployment configuration 基线。**本页只说明旧 worker 的 backend/config-file 实现，既不声明
+> Workflow/Agent，也不定义 Session runtime 选择。当前配置分层以
+> [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 为准：Compose/Kubernetes/env/secret
+> 仅接入 Mongo、Redis、model、sandbox、S3Workspace、CA/Storage client 和 observability；GA catalog 才保存静态
+> Agent/Feature 编排；Session 不保存 Agent、Skill、MCP 或 RuntimeConfig。
+
+## 历史状态
 
 Accepted（2026-07-05；custom backend + agent 配置树 + examples 族已落地并验证）
 

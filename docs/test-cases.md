@@ -1,23 +1,27 @@
 # Kokoro 测试用例总表
 
-四层验证体系，从快到慢、从免费到走钱。任何改动按影响面选层跑；发版前 L1–L3 必须全绿，涉及模型行为再加 L4。
+> **状态：历史验证矩阵。** 旧的 Session/Mongo/Platform 验证入口已从 Root 移到
+> `../Kokoro-archive-2026-09-01/root-legacy/`；本文件下方的 L2–L5 只用于考古，不作为当前命令。
 
-一键入口：
+当前 Root 门禁和阶段 2 跨仓 fixture：
 
 ```bash
-# L1（三仓套件，各仓内跑）
-cd kokoro-agent   && uv run pytest -q && uv run pyright && uv run ruff check .
-cd kokoro-session && npm test && npx tsc --noEmit
-cd kokoro-web     && npm test && npx tsc --noEmit
-
-# L2+L3（确定性跨栈，需 redis:6379 + mongo:27017）
-python3 scripts/verify-all.py
-
-# L4（真模型，需 kokoro-agent/.env 真凭据，走钱）
-python3 scripts/verify-all.py --real
+uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check
+python3 scripts/goal2/mock_cross_repository_closure.py
+python3 scripts/verify-backend-design.py
+python3 scripts/verify-repository-topology.py
+uv run pytest scripts/tests/test_repository_topology.py scripts/tests/test_slice_a_backend_runner.py -q
+KOKORO_ENV_FILE="$PWD/deploy/.env.phase1.example" docker compose --env-file deploy/.env.phase1.example -f deploy/docker-compose.phase1.yml config
 ```
 
+当前三仓质量门禁和容器入口见 [`../README.md`](../README.md) 与 [`../deploy/README.md`](../deploy/README.md)。
+阶段 1 只使用 PostgreSQL + Redis；正式业务仓库由各自仓库维护并经 Root contract 接入。
+
 ---
+
+## 历史验证矩阵（已归档）
+
+以下内容保留为历史证据索引，不是当前 Root 的验证入口。
 
 ## L1 单元 / 契约套件（秒级，无外部依赖*）
 

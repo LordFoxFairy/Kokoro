@@ -45,13 +45,14 @@ RUNTIME_SOURCE_FILES = (
     "contract/generate.py",
 )
 EXPECTED_CONSUMER_POLICY = {
-    "kokoro-site": ("typescript", "src/generated/proto", False),
+    "kokoro-system": ("typescript", "src/generated/proto", False),
     "kokoro-iam": ("typescript", "src/generated/proto", False),
     "kokoro-model": ("typescript", "src/generated/proto", False),
     "kokoro-capability": ("typescript", "src/generated/proto", False),
-    "kokoro-chat": ("typescript", "src/generated/proto", False),
+    "kokoro-storage": ("typescript", "src/generated/proto", False),
+    "kokoro-bff": ("typescript", "src/generated/proto", False),
     "kokoro-agent": ("python", "src/kokoro_agent/generated", False),
-    "kokoro-web": ("typescript", "apps/user/src/generated/proto", True),
+    "kokoro": ("typescript", "src/generated/proto", True),
     "root-e2e": ("python", "scripts/e2e/generated", False),
 }
 

@@ -1,5 +1,10 @@
 # Agent 架构
 
+> 状态：历史结构推导（保留决策背景，不作为当前 source tree 或新代码模板）。当前 Agent
+> 边界、真实目录和迁移门禁以 [09-agent 设计卡](backend-design/09-agent.md) 与
+> [kokoro-agent 技术方案](../modules/kokoro-agent.md) 为准；本文中的 `run/`、`assets/` 等
+> 早期目录图不得用于新增实现。
+
 Agent 模块详案见：[kokoro-agent 技术方案](../modules/kokoro-agent.md)。
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。

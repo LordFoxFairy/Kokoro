@@ -1,28 +1,35 @@
-# 22. 能力中台 kokoro-hub 与内部通信定案
+# 22. 能力中台 kokoro-hub 与内部通信定案（迁移期历史入口）
 
-状态：正式册（HUB-1/2/3/4 代码已提交；HUB 链经 HUB-CONSIST 收口（hub 9710400/session dfd1280/agent 2e30fe0/gate 560d70c，e2e 全绿）；跨仓运行证据已补齐（ROUND4-EVIDENCE 证据①AGENT-MCP E2E-33 铁证 d4cf07e、证据②WEB-3 浏览器实走）；仅 HUB-4 灰度未做）
+> 状态：历史 Hub 方案。当前 owner 以 [09-agent](backend-design/09-agent.md)、
+> [kokoro-agent 专项 §6](../modules/kokoro-agent.md#6-数据-owner唯一-writer-与当前原型边界) 和
+> [29 Capability × Storage](29-capability-storage-runtime-architecture.md#9-artifact-与-agentsession-协作)
+> 为准。GA 直接绑定默认 Skill，并经 `find_skills/load_skill` 使用自身 catalog 与 CA user/session path；
+> `kokoro-capability`/Storage 只提供 path、管理与 bytes 辅助。新代码不得增加 Hub 写面、Agent
+> 对 Hub Mongo/S3 直读或 worker 启动期 seed/upsert。
+
+状态：历史记录（HUB-1/2/3/4 的提交与 E2E 证据保留作迁移取证；不再定义长期 owner）
 收编自：`docs/superpowers/specs/2026-07-11-capability-hub-and-polish.md` §1-§3（该文已转历史入口；§4 web 打磨不属本册）
 上级：[20-kokoro-v1-technical-plan](20-kokoro-v1-technical-plan.md)、[21-platform-mainchain-closure](21-platform-mainchain-closure.md)
 
 ## 0. 一句话
 
-> skill/MCP 的**管理写面**归 platform 域模块 **kokoro-hub**（注册/上传/审核/版本/启停/配额/运营位）；agent 只留装配热路径直读。内部通信**不换 tRPC**（证据定案），以 contracts 共享包 + 修四个实锤洞达成同等收益。
+> **历史规则**：skill/MCP 的管理写面曾归 platform 域模块 **kokoro-hub**，Agent 留装配热路径直读。此规则仅保留迁移背景；现行规则按顶部的 GA-first default/find/path 模型执行。
 
-## 1. kokoro-hub 边界（长期规则）
+## 1. kokoro-hub 边界（历史规则）
 
 **落位**：platform workspace 内模块（与 user/credit 平级），复用 platform-kit（envelope/健康检查/启动器/admin manifest）与部署编排/CI；后期若独立拆走，模块边界已备。
 
-**归 hub（TS，管理写面）**：
+**历史上归 hub（TS，管理写面）**：
 
 - skills 上传/GitHub 导入（preview→confirm）、审核状态机、版本历史（Mongo revisions 附表，S3 zip 永存=回滚零成本）。
 - per-user/官方启停 API、namespace 配额、运营位（排序/置顶/分类）。
 - **MCP server 注册表**（per-namespace，凭据只存 secret-ref 不落明文）。
 - 池查询 API：session `pool.ts` 与 agent `hub.list_pool` 双语言双实现的收敛终点，单实现消除漂移。
 
-**留 agent（Python，装配热路径）**：
+**历史上留 agent（Python，装配热路径）**：
 
 - resolve_cards/read_body 双路/物化/graph state 账本/GC 自愈/MCP 三恒定工具与懒连接。
-- agent 直读 Mongo+S3（hub 写、agent 读，读写分离同库）；**每 run 跨服务 RPC 是可用性耦合，禁止**。
+- agent 曾直读 Mongo+S3（hub 写、agent 读，读写分离同库）。迁移后 GA 直接绑定默认 Skill，以 `find_skills/load_skill` 发现 GA catalog 与 CA path；不再保留 Hub 直读。
 
 **契约单源**：storage.yaml 生成 pydantic+zod 双镜像；generate.py 第三输出位 `kokoro-hub/src/contract`；校验常量（名称正则/大小/配额）入 spec 数据化，双语言同源。
 

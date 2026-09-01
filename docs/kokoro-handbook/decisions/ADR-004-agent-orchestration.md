@@ -1,6 +1,10 @@
 # ADR-004 三层运行时与 Agent 编排边界
 
-状态：已采纳。
+状态：**历史 V1 运行时决策**。它记录当时三层分工与 `RuntimeConfig` 传递；当前 GA-first、Feature-first 目标设计以
+[36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)、
+[ADR-015 AgentState](ADR-015-agent-state-and-feature-context.md) 与
+[38 GA 公共运行契约](../technical/38-ga-public-runtime-contract.md) 为准。下文的 `RuntimeConfig`、raw AgentEvent 和独立
+`threadId` wire 描述不构成新实现的目标 schema。
 
 ## 背景
 

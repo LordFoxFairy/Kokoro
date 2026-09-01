@@ -45,8 +45,8 @@ Provider Console   LiteLLM、Stripe 等第三方后台链接或嵌入。
 /admin/sites      sites / domains / brand / seo / 上线 checklist     —— kokoro-site
 /admin/users      users / teams / memberships / service-accounts     —— kokoro-user
 /admin/model      provider accounts / model bindings / labels / health —— kokoro-model
-/admin/credit     accounts / ledger / usage / pricing-rules          —— kokoro-credit
-/admin/payment    plans / orders / subscriptions / payment events / refunds —— kokoro-payment
+/admin/billing    plans / usage-pricing / credit-operations / payment-operations /
+                  provider-events / refunds / grants / reconcile       —— kokoro-billing
 ```
 
 Platform Console 跨站聚合页：
@@ -70,7 +70,7 @@ Overview / Users / Billing / Credits / Content / Models / Settings
 site.admin.manage / workspace.member.manage
 model.provider.manage
 credit.read / credit.write / credit.adjust
-payment.order.read（write / refund 规划中）
+payment.order.read / payment.refund / payment.reconcile / payment.provider-event.retry
 ```
 
 第一阶段用户角色：`owner / admin / member`。后续接入 permission key 体系，由 `kokoro-user` 的 Role/Permission 承载。

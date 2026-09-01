@@ -1,16 +1,33 @@
 # Kokoro 能力中台、namespace、登录、沙箱与产物技术方案
 
-状态：正式详细附录，当前主线的完整细节版
-日期：2026-07-07
+状态：2026-07 历史详细附录；保留字段、时序、WP 与验收推导，不再定义当前 Agent/Skill owner。
+日期：2026-07-07（2026-08-22 owner 覆盖更新）
 范围：kokoro-web / kokoro-session / kokoro-agent；platform 暂不直接改，后续需要时只新增能力子仓库或服务边界。
 
-> 人类评审请先读 `19-current-runtime-capability-review-plan.md`。本文是详细附录，用于查字段、时序、WP 和验收细节，不再作为第一阅读入口。
+> **禁止把下文当成新的 Agent/Session/Skill 方案。**本文只保留 2026-07 的字段和时序取证；它不是当前能力中台主线，
+> 不应在这里继续添加 target 设计。当前 owner 必须先读 [09-agent](backend-design/09-agent.md)、
+> [kokoro-agent 专项 §6](../modules/kokoro-agent.md#6-数据-owner唯一-writer-与当前源码状态) 和
+> [29 Capability × Storage §9](29-capability-storage-runtime-architecture.md#9-artifact-与-agentsession-协作)。
+> 本文出现“Hub 写、Agent 直读 Mongo/S3”或 worker 启动 `seed/upsert` 时，均为未上线本地原型的
+> 历史证据：GA 直接绑定默认 Skill，并以 `find_skills` 发现自身 catalog 与 CA user/session path；
+> CA/Storage 只提供来源辅助，命中、校验、加载与注入均属于 GA runtime。
+> 本文中的 `RunCapabilityBinding`、按 run 的 active index、`skill_list/skill_read` 以及由上游一次性
+> 传全量 Skill 的段落同属历史推导；目标实现使用 [36](36-ga-final-agent-technical-plan.md) 定义的
+> GA Session workbench `.kokoro/skills.lock`、`find_skills → load_skill(ref)` 与 RunRequest discovery scope。
 
-## 0. 读这份方案先记住三句话
+当前 Storage/Capability 基线：Capability 使用 MySQL 保存元数据与策略，Storage 使用 MySQL 保存
+生命周期事实、S3-compatible ObjectStore 保存 bytes；Mongo 仅由 Session/Agent owner 管理。本文
+不得据此新增 Mongo collection 或 Artifact writer。
 
-1. platform/user 负责分配全局唯一 `principalId`；人、team、未来 workspace 都是 principal。
-2. session 把 `principalId` 冻结为 `session.namespace`；GA / kokoro-agent 只认不透明 `namespace`。
-3. skill / mcp 共享一个 capability hub 注册骨架；DeepAgents graph 内部运行节点不是 capability，不做包、不做启用态、不进 registry。
+## 0. 历史推导的阅读边界
+
+下文出现的 `principalId -> session.namespace`、`RunCapabilityBinding`、active index、`skill_list/skill_read`、
+`RuntimeConfig`、全量 selection 或 ContextAssembler 都是历史推导，不成为 target contract。当前 target 只保留：
+
+1. GA 只把 `namespace` 当 opaque execution isolation；不从它推导 user/team/workspace 语义。
+2. Session 不提供 Agent/Skill/MCP runtime snapshot；它写入可信 `feature_key` 并投影产品对话。
+3. GA default Skill 直接来自 catalog；动态 Skill 用 `find_skills/load_skill` 经 CA/Storage public contract 按需加载，
+   详细边界以 [33](33-ga-first-skill-runtime-architecture.md) 与 [ADR-022](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md) 为准。
 
 这份方案要闭合的是一条真实产品链路：
 
@@ -28,7 +45,7 @@
 
 第一阶段只做个人 principal。团队空间以后由 platform/user 选择另一个 principalId 并校验 membership；GA 不需要知道 namespace 代表个人还是团队。
 
-### 0.1 本文档位置
+### 0.1 历史文档位置
 
 本文档是当前能力中台 / namespace / 登录 / 沙箱 / 产物主线的详细附录，位置是：
 
@@ -36,13 +53,14 @@
 docs/kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md
 ```
 
-当前人类评审入口是：
+当前人类评审入口**不是**：
 
 ```text
 docs/kokoro-handbook/technical/19-current-runtime-capability-review-plan.md
 ```
 
-`docs/superpowers/specs/2026-07-07-capability-namespace-auth-technical-plan.md` 只保留为历史草案入口和跳转指针，避免两份正文漂移。
+`docs/superpowers/specs/2026-07-07-capability-namespace-auth-technical-plan.md` 同样只保留为历史草案入口和跳转指针；
+当前评审入口是 `00-system-overview`、36、38、33、29 与 ADR-022，避免历史正文再次漂移成 target。
 
 关系如下：
 

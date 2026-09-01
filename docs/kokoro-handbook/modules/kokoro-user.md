@@ -1,5 +1,7 @@
 # kokoro-user 技术方案
 
+> 迁移期来源模块，目标并入 `kokoro-iam`。执行设计见 [IAM 设计卡](../technical/backend-design/01-iam.md)。
+
 ## 定位
 
 kokoro-user 是站点内身份、团队/workspace、成员、权限、服务账号和审计的权威模块。

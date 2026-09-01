@@ -19,7 +19,7 @@ EXPECTED_AGENT_KINDS = [
     "subagent.thinking.delta","subagent.text.delta","subagent.text.completed","subagent.tool.invoked",
     "subagent.tool.returned","delivery.created","run.control.receipt","run.completed","run.failed",
 ]
-EXPECTED_NORMALIZED_MANIFEST_SHA256 = "87c33b3c5b41a8f30f0f48bdf8c84aacda4f09d4b73e89020b221a9f0cf2cc89"
+EXPECTED_NORMALIZED_MANIFEST_SHA256 = "1c2fa58348abb2928fece8c18be657cfd4f9f5320c421199d3d945390036b818"
 EXPECTED_ACCESS_JWT = {
     "header": {"alg": "RS256", "typ": "JWT", "kid": "nonempty active JWKS key id"},
     "claims": {
@@ -31,6 +31,19 @@ EXPECTED_ACCESS_JWT = {
     "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Site/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims.",
 }
 EXPECTED_STREAM_AUTHORIZATION_EXPIRY = "Chat closes StreamConversationEvents no later than access JWT exp + 30-second clock skew and emits zero frames after that deadline. Web refreshes the sealed IAM session and reconnects from the last committed seq; membership revocation exposure is therefore bounded by the 900-second JWT TTL plus skew."
+EXPECTED_STREAM_ESTABLISHMENT = {
+    "validationOrder": [
+        "authenticate workload and caller access JWT",
+        "authorize chat.conversation.read and derive ActorContext from IAM",
+        "validate conversation ownership and Site/Organization scope",
+        "validate after_seq against current watermark and retained cursor boundary",
+    ],
+    "failure": "Any typed failure, including SNAPSHOT_REQUIRED, terminates before the first response message; no ready or event is yielded.",
+    "success": "Immediately yield exactly one ready as the first response, including for an idle stream where accepted_after_seq equals watermark; accepted_after_seq exactly echoes the validated request cursor and watermark is the current owner watermark observed during validation.",
+    "continuation": "After ready, yield only event messages whose seq values are strictly increasing from accepted_after_seq; never yield a second ready.",
+    "web": "Web consumes and validates ready before committing browser HTTP 200, never forwards ready as an SSE frame, and then pulls events with backpressure.",
+    "wireCompatibility": "Field 1 remains BrowserSessionEvent and moves into payload oneof; its encoded bytes remain unchanged. Field 2 is additive ready. Old readers ignore ready, while new readers accept old event bytes as the event arm.",
+}
 EXPECTED_PROJECTION_NACK = {
     "requestFields": ["rejected_seq", "rejection_code"],
     "responseFields": ["stored_rejected_seq", "stored_rejection_code"],
@@ -173,9 +186,9 @@ def validate(manifest: dict[str, Any]) -> None:
     proto = manifest.get("protobuf")
     require(isinstance(proto, dict), "protobuf must be object")
     files = proto.get("files", []); enums = proto.get("enums", []); messages = proto.get("messages", []); services = proto.get("services", [])
-    require(len(files) == 9, "expected 9 proto files")
-    require(len(services) == 8, "expected 8 services")
-    require(sum(len(service.get("methods", [])) for service in services) == 19, "expected 19 methods")
+    require(len(files) == 10, "expected 10 proto files")
+    require(len(services) == 15, "expected 15 services")
+    require(sum(len(service.get("methods", [])) for service in services) == 54, "expected 54 methods")
 
     declarations: dict[tuple[str,str,str], dict[str,Any]] = {}
     package_symbols: dict[str,list[str]] = defaultdict(list)
@@ -251,7 +264,7 @@ def validate(manifest: dict[str, Any]) -> None:
     for service in services:
         for method in service.get("methods",[]):
             require(set(method) <= {"name","input","output","caller","serverStreaming"}, f"unknown method key for {service['name']}.{method.get('name')}")
-            require(method.get("caller") in {"web","chat","agent"}, f"invalid caller for {service['name']}.{method.get('name')}")
+            require(method.get("caller") in {"web","chat","agent","storage"}, f"invalid caller for {service['name']}.{method.get('name')}")
             require(method.get("input") in known_types and method.get("output") in known_types, f"unknown method type for {service['name']}.{method.get('name')}")
             require(isinstance(method.get("serverStreaming",False),bool), f"invalid streaming flag for {service['name']}.{method.get('name')}")
             expected_stream = service["name"] == "ChatQueryService" and method.get("name") == "StreamConversationEvents"
@@ -263,19 +276,19 @@ def validate(manifest: dict[str, Any]) -> None:
         callers={method["caller"] for method in service.get("methods",[])}
         require(len(callers)==1, f"mixed callers for {service['name']}")
         expected_caller_map[next(iter(callers))].append(service["name"])
-    require(set(caller_map)=={"web","chat","agent","public"}, "unexpected caller-map keys")
-    for caller in ("web","chat","agent"):
+    require(set(caller_map)=={"web","chat","agent","storage","public"}, "unexpected caller-map keys")
+    for caller in ("web","chat","agent","storage"):
         require(not duplicates(caller_map.get(caller,[])), f"duplicate caller-map service for {caller}")
         require(set(caller_map.get(caller,[]))==set(expected_caller_map[caller]), f"caller map drift for {caller}")
     require(caller_map.get("public")==["GET /.well-known/jwks.json"], "public caller map drift")
 
     closures=manifest.get("consumerFileClosure",{})
-    require(set(closures)=={"kokoro-site","kokoro-iam","kokoro-model","kokoro-capability","kokoro-chat","kokoro-agent","kokoro-web","root-e2e"}, "unexpected consumer set")
+    require(set(closures)=={"kokoro-system","kokoro-iam","kokoro-model","kokoro-capability","kokoro-bff","kokoro-agent","kokoro","root-e2e","kokoro-storage"}, "unexpected consumer set")
     owner_packages={
-        "kokoro-site":"kokoro.site.v1", "kokoro-iam":"kokoro.iam.v1", "kokoro-model":"kokoro.model.v1",
-        "kokoro-capability":"kokoro.capability.v1", "kokoro-chat":"kokoro.chat.v1", "kokoro-agent":"kokoro.agent.v1",
+        "kokoro-system":"kokoro.site.v1", "kokoro-iam":"kokoro.iam.v1", "kokoro-model":"kokoro.model.v1",
+        "kokoro-capability":"kokoro.capability.v1", "kokoro-bff":"kokoro.chat.v1", "kokoro-agent":"kokoro.agent.v1", "kokoro-storage":"kokoro.storage.v1",
     }
-    consumer_caller={"kokoro-chat":"chat","kokoro-agent":"agent","kokoro-web":"web","root-e2e":"web"}
+    consumer_caller={"kokoro-bff":"chat","kokoro-agent":"agent","kokoro-storage":"storage","kokoro":"web","root-e2e":"web"}
     common_path="kokoro/common/v1/common.proto"
     for consumer,closure in closures.items():
         require(not duplicates(closure), f"duplicate file in {consumer} closure")
@@ -284,6 +297,8 @@ def validate(manifest: dict[str, Any]) -> None:
         owner_package=owner_packages.get(consumer)
         if owner_package:
             seeds.update(file["path"] for file in files if file["package"]==owner_package)
+        if consumer == "kokoro-capability":
+            seeds.add("kokoro/storage/v1/storage.proto")
         caller=consumer_caller.get(consumer)
         if caller:
             for service_name in caller_map[caller]:
@@ -301,7 +316,7 @@ def validate(manifest: dict[str, Any]) -> None:
                 expected.add(imported); pending.append(imported)
         require(set(closure)==expected, f"consumer closure drift for {consumer}")
     forbidden=("kokoro/agent/","kokoro/model/","kokoro/capability/")
-    for consumer in ("kokoro-web",):
+    for consumer in ("kokoro",):
         require(not any(path.startswith(forbidden) for path in closures[consumer]), f"private owner proto in {consumer}")
 
     events=manifest.get("agentEvents",{}).get("variants",[])
@@ -357,6 +372,22 @@ def validate(manifest: dict[str, Any]) -> None:
     run_view=next(message for message in messages if message["package"]=="kokoro.chat.v1" and message["name"]=="RunView")
     require(run_view["fields"][0]=={"number":1,"name":"launch_id","type":"string","label":"required"}, "RunView launch identity drift")
     require(run_view["fields"][1]=={"number":2,"name":"agent_run_id","type":"string","label":"optional"}, "RunView pre-admission identity drift")
+    stream_ready=next(message for message in messages if message["package"]=="kokoro.chat.v1" and message["name"]=="StreamConversationEventsReady")
+    require(
+        stream_ready["fields"] == [
+            {"number":1,"name":"accepted_after_seq","type":"uint64","label":"required"},
+            {"number":2,"name":"watermark","type":"uint64","label":"required"},
+        ],
+        "stream ready wire drift",
+    )
+    stream_response=next(message for message in messages if message["package"]=="kokoro.chat.v1" and message["name"]=="StreamConversationEventsResponse")
+    require(
+        stream_response["fields"] == [
+            {"number":1,"name":"event","type":".kokoro.chat.v1.BrowserSessionEvent","label":"required","oneof":"payload"},
+            {"number":2,"name":"ready","type":".kokoro.chat.v1.StreamConversationEventsReady","label":"required","oneof":"payload"},
+        ],
+        "stream response wire drift",
+    )
     agent_messages=[message for message in messages if message["package"]=="kokoro.agent.v1"]
     for message in agent_messages:
         tenant={field["name"] for field in message["fields"]}&{"site_id","organization_id"}
@@ -403,6 +434,7 @@ def validate(manifest: dict[str, Any]) -> None:
     require("HMAC-SHA256" in rules.get("magicLinkNonceDerivation",""), "magic-link nonce derivation missing")
     require(rules.get("accessJwt")==EXPECTED_ACCESS_JWT, "access JWT contract drift")
     require(rules.get("streamAuthorizationExpiry")==EXPECTED_STREAM_AUTHORIZATION_EXPIRY, "stream authorization deadline drift")
+    require(rules.get("streamEstablishment")==EXPECTED_STREAM_ESTABLISHMENT, "stream establishment contract drift")
     require(rules.get("sessionCookiePolicy",{}).get("maxAgeSeconds")==2592000, "session cookie cap drift")
     require(rules.get("paginationDefaults",{}).get("listConversationsLimit")==50, "list conversation default drift")
     require("Array.from(content).slice(0, 80)" in rules.get("firstConversationTitle",{}).get("algorithm",""), "first conversation title rule missing")

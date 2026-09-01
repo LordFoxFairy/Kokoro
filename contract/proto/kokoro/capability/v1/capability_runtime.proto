@@ -5,36 +5,545 @@ package kokoro.capability.v1;
 
 import "kokoro/common/v1/common.proto";
 
-enum CapabilityKind {
-  CAPABILITY_KIND_UNSPECIFIED = 0;
-  CAPABILITY_KIND_SKILL = 1;
-  CAPABILITY_KIND_MCP = 2;
+enum SkillScopeKind {
+  SKILL_SCOPE_KIND_UNSPECIFIED = 0;
+  SKILL_SCOPE_KIND_PERSONAL = 1;
+  SKILL_SCOPE_KIND_PROJECT = 2;
+  SKILL_SCOPE_KIND_ORGANIZATION = 3;
+  SKILL_SCOPE_KIND_SESSION = 4;
 }
 
-message CapabilitySnapshotItem {
-  kokoro.capability.v1.CapabilityKind kind = 1;
-  string qualified_name = 2;
-  uint64 revision = 3;
-  string content_digest = 4;
+enum SkillStatus {
+  SKILL_STATUS_UNSPECIFIED = 0;
+  SKILL_STATUS_DRAFT = 1;
+  SKILL_STATUS_ACTIVE = 2;
+  SKILL_STATUS_WITHDRAWN = 3;
+  SKILL_STATUS_QUARANTINED = 4;
+  SKILL_STATUS_DISABLED = 5;
 }
 
-message ResolveRuntimeSnapshotRequest {
+enum McpConnectorType {
+  MCP_CONNECTOR_TYPE_UNSPECIFIED = 0;
+  MCP_CONNECTOR_TYPE_BUILTIN = 1;
+  MCP_CONNECTOR_TYPE_BYOK = 2;
+  MCP_CONNECTOR_TYPE_MCP = 3;
+}
+
+enum McpConnectorStatus {
+  MCP_CONNECTOR_STATUS_UNSPECIFIED = 0;
+  MCP_CONNECTOR_STATUS_PENDING = 1;
+  MCP_CONNECTOR_STATUS_ACTIVE = 2;
+  MCP_CONNECTOR_STATUS_ERROR = 3;
+  MCP_CONNECTOR_STATUS_REVOKED = 4;
+}
+
+enum McpTransport {
+  MCP_TRANSPORT_UNSPECIFIED = 0;
+  MCP_TRANSPORT_STDIO = 1;
+  MCP_TRANSPORT_STREAMABLE_HTTP = 2;
+  MCP_TRANSPORT_SSE_COMPAT = 3;
+}
+
+enum McpServerStatus {
+  MCP_SERVER_STATUS_UNSPECIFIED = 0;
+  MCP_SERVER_STATUS_REGISTERED = 1;
+  MCP_SERVER_STATUS_DISABLED = 2;
+}
+
+enum McpPrimitiveKind {
+  MCP_PRIMITIVE_KIND_UNSPECIFIED = 0;
+  MCP_PRIMITIVE_KIND_TOOL = 1;
+  MCP_PRIMITIVE_KIND_RESOURCE = 2;
+  MCP_PRIMITIVE_KIND_PROMPT = 3;
+}
+
+message RunExecutionAttestation {
+  string issuer = 1;
+  string audience = 2;
+  string operation = 3;
+  string run_id = 4;
+  string session_id = 5;
+  string feature_key = 6;
+  string sealed_identity_assertion_ref = 7;
+  string request_binding_sha256 = 8;
+  int64 issued_at_unix_seconds = 9;
+  int64 expires_at_unix_seconds = 10;
+  string nonce = 11;
+  bytes signature = 12;
+}
+
+message OwnerScope {
+  string kind = 1;
+  string id = 2;
+}
+
+message SkillMetadata {
+  string display_name = 1;
+  string summary = 2;
+  repeated string tags = 3;
+  bytes metadata_json = 4;
+}
+
+message SkillSummary {
+  string source_selector = 1;
+  kokoro.capability.v1.SkillScopeKind scope_kind = 2;
+  string display_name = 3;
+  string summary = 4;
+  repeated string tags = 5;
+  uint64 revision = 6;
+  string content_digest = 7;
+  kokoro.capability.v1.SkillStatus status = 8;
+}
+
+message SkillSource {
+  string source_ref = 1;
+  string source_selector = 2;
+  kokoro.capability.v1.SkillScopeKind scope_kind = 3;
+  uint64 revision = 4;
+  string package_asset_ref = 5;
+  string content_digest = 6;
+  string manifest_identity = 7;
+}
+
+message CreateSkillDraftRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string organization_id = 3;
-  string agent_namespace = 4;
-  repeated string requested_selectors = 5;
+  kokoro.capability.v1.OwnerScope owner_scope = 3;
+  kokoro.capability.v1.SkillMetadata metadata = 4;
 }
 
-message ResolveRuntimeSnapshotResponse {
-  string snapshot_id = 1;
-  string organization_id = 2;
-  string scope_key = 3;
-  string digest = 4;
-  repeated kokoro.capability.v1.CapabilitySnapshotItem items = 5;
-  bool replayed = 6;
+message CreateSkillDraftResponse {
+  string skill_id = 1;
+  uint64 revision = 2;
+  kokoro.capability.v1.SkillStatus status = 3;
+  bool replayed = 4;
 }
 
-service CapabilityRuntimeService {
-  rpc ResolveRuntimeSnapshot(kokoro.capability.v1.ResolveRuntimeSnapshotRequest) returns (kokoro.capability.v1.ResolveRuntimeSnapshotResponse);
+message ValidateSkillDraftRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string skill_id = 3;
+  string package_asset_ref = 4;
+  string content_digest = 5;
+}
+
+message ValidateSkillDraftResponse {
+  string skill_id = 1;
+  bool valid = 2;
+  string content_digest = 3;
+  string manifest_identity = 4;
+  bool replayed = 5;
+}
+
+message PublishSkillRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string skill_id = 3;
+  kokoro.capability.v1.SkillScopeKind visibility = 4;
+}
+
+message PublishSkillResponse {
+  string source_ref = 1;
+  uint64 revision = 2;
+  kokoro.capability.v1.SkillStatus status = 3;
+  string event_id = 4;
+  bool replayed = 5;
+}
+
+message WithdrawSkillRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string source_ref = 3;
+  string reason = 4;
+}
+
+message WithdrawSkillResponse {
+  string source_ref = 1;
+  kokoro.capability.v1.SkillStatus status = 2;
+  string event_id = 3;
+  bool replayed = 4;
+}
+
+message DiscoverVisibleSkillsRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string query = 3;
+  repeated string tags = 4;
+  kokoro.capability.v1.SkillScopeKind scope_kind = 5;
+  kokoro.common.v1.PageRequest page = 6;
+}
+
+message DiscoverVisibleSkillsResponse {
+  repeated kokoro.capability.v1.SkillSummary skills = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+message ResolveVisibleSkillRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string source_selector = 3;
+}
+
+message ResolveVisibleSkillResponse {
+  kokoro.capability.v1.SkillSource source = 1;
+}
+
+message GetApprovedSkillPackageReferenceRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string source_ref = 3;
+}
+
+message GetApprovedSkillPackageReferenceResponse {
+  string asset_ref = 1;
+  string content_digest = 2;
+  string manifest_identity = 3;
+  string read_reference = 4;
+}
+
+message CreateSkillVersionRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  kokoro.capability.v1.OwnerScope owner_scope = 3;
+  string base_skill_id = 4;
+  kokoro.capability.v1.SkillMetadata metadata = 5;
+}
+
+message CreateSkillVersionResponse {
+  string skill_id = 1;
+  uint64 revision = 2;
+  kokoro.capability.v1.SkillStatus status = 3;
+  bool replayed = 4;
+}
+
+message SetSkillStatusRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string skill_id = 3;
+  kokoro.capability.v1.SkillStatus status = 4;
+}
+
+message SetSkillStatusResponse {
+  string skill_id = 1;
+  uint64 revision = 2;
+  kokoro.capability.v1.SkillStatus status = 3;
+  bool replayed = 4;
+}
+
+message McpConnector {
+  string connector_id = 1;
+  kokoro.capability.v1.McpConnectorType connector_type = 2;
+  string provider_key = 3;
+  kokoro.capability.v1.OwnerScope owner_scope = 4;
+  kokoro.capability.v1.McpConnectorStatus status = 5;
+  repeated string approved_scopes = 6;
+  string external_account_ref = 7;
+}
+
+message CreateMcpConnectorRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  kokoro.capability.v1.OwnerScope owner_scope = 3;
+  kokoro.capability.v1.McpConnectorType connector_type = 4;
+  string provider_key = 5;
+  repeated string requested_scopes = 6;
+}
+
+message CreateMcpConnectorResponse {
+  string connector_id = 1;
+  kokoro.capability.v1.McpConnectorStatus status = 2;
+  string authorization_id = 3;
+  bool replayed = 4;
+}
+
+message BeginMcpConnectorAuthorizationRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string connector_id = 3;
+}
+
+message BeginMcpConnectorAuthorizationResponse {
+  string authorization_id = 1;
+  string provider_display = 2;
+  repeated string consent_scopes = 3;
+  int64 expires_at_unix_seconds = 4;
+  string authorization_url = 5;
+}
+
+message CompleteMcpConnectorAuthorizationRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string connector_id = 3;
+  string authorization_id = 4;
+  string authorization_handle_ref = 5;
+}
+
+message CompleteMcpConnectorAuthorizationResponse {
+  string connector_id = 1;
+  kokoro.capability.v1.McpConnectorStatus status = 2;
+  repeated string approved_scopes = 3;
+  string external_account_ref = 4;
+  bool replayed = 5;
+}
+
+message ListMcpConnectorsRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  kokoro.capability.v1.OwnerScope owner_scope = 3;
+  kokoro.capability.v1.McpConnectorStatus status_filter = 4;
+  kokoro.common.v1.PageRequest page = 5;
+}
+
+message ListMcpConnectorsResponse {
+  repeated kokoro.capability.v1.McpConnector mcp_connectors = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+message GetMcpConnectorRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connector_id = 3;
+}
+
+message GetMcpConnectorResponse {
+  kokoro.capability.v1.McpConnector mcp_connector = 1;
+}
+
+message RevokeMcpConnectorRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string connector_id = 3;
+  string reason = 4;
+}
+
+message RevokeMcpConnectorResponse {
+  string connector_id = 1;
+  kokoro.capability.v1.McpConnectorStatus status = 2;
+  string event_id = 3;
+  bool replayed = 4;
+}
+
+message McpServer {
+  string server_id = 1;
+  string provider_key = 2;
+  string server_identity = 3;
+  kokoro.capability.v1.McpTransport transport = 4;
+  string declaration_digest = 5;
+  kokoro.capability.v1.McpServerStatus status = 6;
+}
+
+message RegisterMcpServerRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string provider_key = 3;
+  string server_identity = 4;
+  kokoro.capability.v1.McpTransport transport = 5;
+  string declaration_digest = 6;
+}
+
+message RegisterMcpServerResponse {
+  string server_id = 1;
+  kokoro.capability.v1.McpServerStatus status = 2;
+  bool replayed = 3;
+}
+
+message GetMcpServerRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string server_id = 3;
+}
+
+message GetMcpServerResponse {
+  kokoro.capability.v1.McpServer server = 1;
+}
+
+message ListMcpServersRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  optional string provider_key = 3;
+  kokoro.common.v1.PageRequest page = 4;
+}
+
+message ListMcpServersResponse {
+  repeated kokoro.capability.v1.McpServer servers = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+message CreateMcpConnectionRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string connector_id = 3;
+  string server_id = 4;
+  repeated string allowed_selectors = 5;
+}
+
+message CreateMcpConnectionResponse {
+  string connection_id = 1;
+  string policy_digest = 2;
+  string status = 3;
+  bool replayed = 4;
+}
+
+message McpConnection {
+  string connection_id = 1;
+  string connector_id = 2;
+  string server_id = 3;
+  repeated string allowed_selectors = 4;
+  string policy_digest = 5;
+  string status = 6;
+}
+
+message GetMcpConnectionRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connection_id = 3;
+}
+
+message GetMcpConnectionResponse {
+  kokoro.capability.v1.McpConnection connection = 1;
+}
+
+message ListMcpConnectionsRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connector_id = 3;
+  kokoro.common.v1.PageRequest page = 4;
+}
+
+message ListMcpConnectionsResponse {
+  repeated kokoro.capability.v1.McpConnection connections = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+message RevokeMcpConnectionRequest {
+  string request_id = 1;
+  kokoro.common.v1.CommandIdentity command = 2;
+  string connection_id = 3;
+  string reason = 4;
+}
+
+message RevokeMcpConnectionResponse {
+  string connection_id = 1;
+  string status = 2;
+  string event_id = 3;
+  bool replayed = 4;
+}
+
+message McpCapabilitySummary {
+  string selector = 1;
+  kokoro.capability.v1.McpPrimitiveKind kind = 2;
+  string display_name = 3;
+  string input_schema_digest = 4;
+  string output_schema_digest = 5;
+  repeated string required_scopes = 6;
+}
+
+message ListMcpServerDeclarationsRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connector_id = 3;
+  kokoro.common.v1.PageRequest page = 4;
+}
+
+message ListMcpServerDeclarationsResponse {
+  repeated kokoro.capability.v1.McpServer servers = 1;
+  repeated kokoro.capability.v1.McpCapabilitySummary capabilities = 2;
+  kokoro.common.v1.PageResult page = 3;
+}
+
+message ListMcpConnectorCapabilitiesRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connector_id = 3;
+}
+
+message ListMcpConnectorCapabilitiesResponse {
+  string connector_id = 1;
+  repeated kokoro.capability.v1.McpCapabilitySummary capabilities = 2;
+  int64 expires_at_unix_seconds = 3;
+}
+
+message AuthorizeMcpToolRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  string connector_id = 3;
+  string tool_selector = 4;
+  bytes typed_arguments_json = 5;
+  string approval_ref = 6;
+  string idempotency_key = 7;
+}
+
+message AuthorizeMcpToolResponse {
+  string invocation_grant = 1;
+  string connector_id = 2;
+  string tool_ref = 3;
+  string typed_arguments_digest = 4;
+  int64 expires_at_unix_seconds = 5;
+  string audit_ref = 6;
+}
+
+service SkillCatalogService {
+  rpc CreateSkillDraft(kokoro.capability.v1.CreateSkillDraftRequest) returns (kokoro.capability.v1.CreateSkillDraftResponse);
+  rpc CreateSkillVersion(kokoro.capability.v1.CreateSkillVersionRequest) returns (kokoro.capability.v1.CreateSkillVersionResponse);
+  rpc ValidateSkillDraft(kokoro.capability.v1.ValidateSkillDraftRequest) returns (kokoro.capability.v1.ValidateSkillDraftResponse);
+  rpc PublishSkill(kokoro.capability.v1.PublishSkillRequest) returns (kokoro.capability.v1.PublishSkillResponse);
+  rpc WithdrawSkill(kokoro.capability.v1.WithdrawSkillRequest) returns (kokoro.capability.v1.WithdrawSkillResponse);
+  rpc SetSkillStatus(kokoro.capability.v1.SetSkillStatusRequest) returns (kokoro.capability.v1.SetSkillStatusResponse);
+}
+
+service SkillSourceService {
+  rpc DiscoverVisibleSkills(kokoro.capability.v1.DiscoverVisibleSkillsRequest) returns (kokoro.capability.v1.DiscoverVisibleSkillsResponse);
+  rpc ResolveVisibleSkill(kokoro.capability.v1.ResolveVisibleSkillRequest) returns (kokoro.capability.v1.ResolveVisibleSkillResponse);
+  rpc GetApprovedSkillPackageReference(kokoro.capability.v1.GetApprovedSkillPackageReferenceRequest) returns (kokoro.capability.v1.GetApprovedSkillPackageReferenceResponse);
+}
+
+service McpConnectorService {
+  rpc CreateMcpConnector(kokoro.capability.v1.CreateMcpConnectorRequest) returns (kokoro.capability.v1.CreateMcpConnectorResponse);
+  rpc BeginMcpConnectorAuthorization(kokoro.capability.v1.BeginMcpConnectorAuthorizationRequest) returns (kokoro.capability.v1.BeginMcpConnectorAuthorizationResponse);
+  rpc CompleteMcpConnectorAuthorization(kokoro.capability.v1.CompleteMcpConnectorAuthorizationRequest) returns (kokoro.capability.v1.CompleteMcpConnectorAuthorizationResponse);
+  rpc ListMcpConnectors(kokoro.capability.v1.ListMcpConnectorsRequest) returns (kokoro.capability.v1.ListMcpConnectorsResponse);
+  rpc GetMcpConnector(kokoro.capability.v1.GetMcpConnectorRequest) returns (kokoro.capability.v1.GetMcpConnectorResponse);
+  rpc RevokeMcpConnector(kokoro.capability.v1.RevokeMcpConnectorRequest) returns (kokoro.capability.v1.RevokeMcpConnectorResponse);
+}
+
+service McpServerService {
+  rpc RegisterMcpServer(kokoro.capability.v1.RegisterMcpServerRequest) returns (kokoro.capability.v1.RegisterMcpServerResponse);
+  rpc GetMcpServer(kokoro.capability.v1.GetMcpServerRequest) returns (kokoro.capability.v1.GetMcpServerResponse);
+  rpc ListMcpServers(kokoro.capability.v1.ListMcpServersRequest) returns (kokoro.capability.v1.ListMcpServersResponse);
+}
+
+service McpConnectionService {
+  rpc CreateMcpConnection(kokoro.capability.v1.CreateMcpConnectionRequest) returns (kokoro.capability.v1.CreateMcpConnectionResponse);
+  rpc ListMcpServerDeclarations(kokoro.capability.v1.ListMcpServerDeclarationsRequest) returns (kokoro.capability.v1.ListMcpServerDeclarationsResponse);
+  rpc GetMcpConnection(kokoro.capability.v1.GetMcpConnectionRequest) returns (kokoro.capability.v1.GetMcpConnectionResponse);
+  rpc ListMcpConnections(kokoro.capability.v1.ListMcpConnectionsRequest) returns (kokoro.capability.v1.ListMcpConnectionsResponse);
+  rpc RevokeMcpConnection(kokoro.capability.v1.RevokeMcpConnectionRequest) returns (kokoro.capability.v1.RevokeMcpConnectionResponse);
+}
+
+service McpAuthorizationService {
+  rpc ListMcpConnectorCapabilities(kokoro.capability.v1.ListMcpConnectorCapabilitiesRequest) returns (kokoro.capability.v1.ListMcpConnectorCapabilitiesResponse);
+  rpc AuthorizeMcpTool(kokoro.capability.v1.AuthorizeMcpToolRequest) returns (kokoro.capability.v1.AuthorizeMcpToolResponse);
+}
+
+message McpConnectorProvider {
+  string provider_key = 1;
+  string display_name = 2;
+  repeated kokoro.capability.v1.McpConnectorType connector_types = 3;
+  repeated string default_scopes = 4;
+  bool authorization_required = 5;
+}
+
+message ListMcpConnectorProvidersRequest {
+  string request_id = 1;
+  kokoro.capability.v1.RunExecutionAttestation attestation = 2;
+  kokoro.common.v1.PageRequest page = 3;
+}
+
+message ListMcpConnectorProvidersResponse {
+  repeated kokoro.capability.v1.McpConnectorProvider providers = 1;
+  kokoro.common.v1.PageResult page = 2;
+}
+
+service McpConnectorProviderService {
+  rpc ListMcpConnectorProviders(kokoro.capability.v1.ListMcpConnectorProvidersRequest) returns (kokoro.capability.v1.ListMcpConnectorProvidersResponse);
 }

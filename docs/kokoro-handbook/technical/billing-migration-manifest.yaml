@@ -1,0 +1,86 @@
+version: 1
+owner: kokoro-billing
+source_of_truth: kokoro-billing/contract/openapi/billing-v1.yaml
+cutover_policy:
+  mysql_authority: true
+  redis_authority: false
+  legacy_credit_audit: kokoro-billing/scripts/audit-legacy-credit.ts
+  legacy_importer: kokoro-billing/scripts/import-legacy-credit.ts
+  legacy_payment_audit: kokoro-billing/scripts/audit-legacy-payment.ts
+  legacy_payment_importer: kokoro-billing/scripts/import-legacy-payment.ts
+  dual_read_before_cutover: true
+  old_writers_stop_requires:
+    - consumer_contract_parity
+    - shadow_read_zero_drift
+    - rollback_exercise
+    - operator_signoff
+consumers:
+  - id: kokoro-web-user.billing-plans
+    path: kokoro-web-user/src/app/api/billing/plans/route.ts
+    old_endpoint: KOKORO_PAYMENT_BASE_URL/plans
+    target_endpoint: KOKORO_BILLING_BASE_URL/billing/plans
+    mode: target-first-with-legacy-fallback
+    status: migrated-read-path
+    evidence:
+      - target_contract: kokoro-billing/contract/openapi/billing-v1.yaml#/paths/~1billing~1plans
+      - target_auth: IAM RS256/JWKS Bearer + x-kokoro-tenant-id (JWT tenant_id must match)
+    rollback: unset KOKORO_BILLING_BASE_URL and retain KOKORO_PAYMENT_BASE_URL
+  - id: kokoro-web-user.billing-checkout
+    path: kokoro-web-user/src/app/api/billing/checkout/route.ts
+    old_endpoint: KOKORO_PAYMENT_BASE_URL/orders/checkout
+    target_endpoint: KOKORO_BILLING_BASE_URL/billing/checkout
+    mode: target-first-with-legacy-fallback
+    status: migrated-read-write-path-provider-ready
+    gate: configure one supported hosted checkout provider, exercise the signed callback and retain rollback evidence before removing legacy fallback
+    rollback: keep payment checkout route active until target fulfillment evidence is complete
+  - id: kokoro-web-user.billing-mock-pay
+    path: kokoro-web-user/src/app/api/billing/mock-pay/route.ts
+    old_endpoint: KOKORO_PAYMENT_BASE_URL/payments/webhooks/mock
+    target_endpoint: KOKORO_BILLING_BASE_URL/billing/webhooks/mock
+    mode: target-first-with-legacy-fallback
+    status: target-inbox-and-local-processor
+    gap: local mock uses Billing inbox → payment_settlement → fulfillment; real provider callbacks use the same inbox → outbox → billing-worker path
+    rollback: retain payment mock webhook in local-only mode
+  - id: kokoro-model.usage
+    path: kokoro-model/src/config/env.ts
+    old_endpoint: KOKORO_CREDIT_BASE_URL
+    target_endpoint: KOKORO_BILLING_BASE_URL/internal/billing/entitlement
+    mode: no-billing-writer
+    status: not-a-usage-consumer
+    gap: model owns routing/catalog only; Session owns the usage hold/capture lifecycle, so this env reference must not be treated as a writer
+    rollback: retain legacy model env variables until all deployment templates stop advertising them
+  - id: kokoro-session.billing
+    path: kokoro-session/src/billing/client.ts
+    old_endpoint: KOKORO_CREDIT_BASE_URL/credit/usage/*
+    target_endpoint: KOKORO_BILLING_BASE_URL/internal/billing/entitlement/*
+    mode: target-write-opt-in-with-legacy-read-fallback
+    status: adapter-implemented-not-enabled
+    evidence:
+      - client_contract_tests: kokoro-session/tests/billing-target.test.ts
+      - target_paths: ensure, quote, hold, settle, release, summary, ledger, by-model
+      - target_auth_headers: x-kokoro-tenant-id + x-kokoro-service + service secret + Idempotency-Key
+    gate: publish usage-price revisions through `/admin/billing/usage-pricing`, run target-vs-legacy shadow reconciliation and rollback exercise before enabling enforce
+    rollback: retain KOKORO_CREDIT_BASE_URL and current billing mode
+  - id: kokoro-web.apps-user
+    path: kokoro-web/apps/user/src/app/api/billing
+    old_endpoint: KOKORO_PAYMENT_BASE_URL
+    target_endpoint: KOKORO_BILLING_BASE_URL
+    mode: target-first-with-legacy-fallback
+    status: migrated-read-write-path
+    gate: configure one supported hosted checkout provider and exercise the signed callback before removing legacy fallback
+    evidence:
+      - target_contract: kokoro-billing/contract/openapi/billing-v1.yaml
+      - target_routes: plans, checkout, mock-pay
+      - target_auth: IAM RS256/JWKS Bearer from sealed session envelope + x-kokoro-tenant-id
+    rollback: retain legacy payment configuration
+old_writers:
+  - kokoro-payment
+  - kokoro-credit
+stop_condition: no current consumer writes payment or credit facts outside kokoro-billing
+runtime:
+  kubernetes_manifest: deploy/k8s/base/billing.yaml
+  migration_job: billing-migrate
+  api_service: kokoro-billing:4245
+  payment_worker: kokoro-billing-worker
+  credit_sweeper: kokoro-billing-sweeper
+  production_auth: jwks

@@ -1,6 +1,14 @@
 # 21. Platform × 主链闭环（现状事实）
 
-状态：正式册（P1-P5 已全部落地，本文描述当前有效事实与边界规则）
+> **状态：历史 V1 平台接线事实。**其中“Session 是 run 生命周期唯一 owner”“Agent 零计费概念”以及旧
+> provider/model 接线只描述当时已落地链路，不约束 Feature-first GA 目标。当前所有权以
+> [36 GA 整体 Agent 技术方案](36-ga-final-agent-technical-plan.md)、
+> [37 App/Feature/Studio 架构](37-product-experience-agent-studio-architecture.md)、
+> [38 公共运行契约](38-ga-public-runtime-contract.md) 与 [31 Billing 子仓架构](31-billing-subrepository-architecture.md)
+> 为准：GA 拥有 RunLedger/ModelInvocation/effect 事实，Billing 按 provider-accepted invocation 结算，Studio Job
+> 保持独立 quote/hold/capture/release。
+
+历史状态：正式册（P1-P5 已全部落地，本文描述当时有效事实与边界规则）
 收编自：`docs/superpowers/specs/2026-07-11-platform-mainchain-closure.md`（该文已转历史入口）
 上级：[20-kokoro-v1-technical-plan](20-kokoro-v1-technical-plan.md)、[18-capability-namespace-auth-sandbox-artifacts](18-capability-namespace-auth-sandbox-artifacts.md)
 

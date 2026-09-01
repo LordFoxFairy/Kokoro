@@ -1,5 +1,9 @@
 # Video / Image / Code Studio 产品手册
 
+状态：当前 Feature-first Studio 产品定义，2026-08-22。下文的 `featureKey` 若作为展示或业务能力名称出现，均由
+Entry 映射为 global opaque FeatureKey；Browser 不提交 Agent、图或 provider 配方。所有用户可见输出都走 Storage
+Artifact lifecycle，GA sandbox/S3Workspace 只服务执行期 workbench。
+
 ## 定位
 
 Video、Image、Code 是继 Music 之后的专业 Studio。三者共用 [02-studio-products](02-studio-products.md) 定义的 Project/Job/Artifact/Version 结构，差异在创作对象、参数面、模型 transport 和计费 featureKey。
@@ -45,6 +49,9 @@ Code Studio 以执行为中心：
 底部   任务指令输入。
 ```
 
+> Image、Video、Code App 的 Feature、Assistant、Studio Job 与 General Chat 组合见
+> [37 Kokoro 统一入口、App 与 Agent 产品架构](../technical/37-product-experience-agent-studio-architecture.md)。
+
 ## 两种入口
 
 General Chat 入口：
@@ -60,9 +67,9 @@ General Chat 入口：
 独立站点入口：
 
 ```text
-image.example.com -> SiteContext(site_image) -> Image Studio 首页
-video.example.com -> SiteContext(site_video) -> Video Studio 首页
-code.example.com  -> SiteContext(site_code)  -> Code Studio 首页
+image.example.com -> Kokoro Entry preselects Image App -> Image Studio 首页
+video.example.com -> Kokoro Entry preselects Video App -> Video Studio 首页
+code.example.com  -> Kokoro Entry preselects Code App  -> Code Studio 首页
 ```
 
 ## 核心对象
@@ -119,7 +126,7 @@ Video   featureKey video，transportKind direct 或 litellm（视 provider）。
 Code    featureKey code，主要由 agent 执行，模型走文本 provider。
 ```
 
-Image/Video provider 若有原生 SDK 走 direct adapter；若 LiteLLM 已覆盖则走 litellm。Code 偏 agent 执行，编排见 [../technical/03-agent-architecture.md](../technical/03-agent-architecture.md)。
+Image/Video provider 若有原生 SDK 走 direct adapter；若 LiteLLM 已覆盖则走 litellm。Code 偏 Agent 执行；各 App 的 Feature、单 Agent/多 Agent 与 Studio 边界见 [37 Kokoro 统一入口、App 与 Agent 产品架构](../technical/37-product-experience-agent-studio-architecture.md)，GA 编译实现见 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)。
 
 ## 风险
 

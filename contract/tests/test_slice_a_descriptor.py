@@ -135,3 +135,23 @@ def test_ack_projection_additive_nack_fields_preserve_frozen_wire(tmp_path: Path
     method = next(method for method in service.method if method.name == "AckProjection")
     assert method.input_type == ".kokoro.agent.v1.AckProjectionRequest"
     assert method.output_type == ".kokoro.agent.v1.AckProjectionResponse"
+
+
+def test_chat_stream_response_is_event_or_ready_with_frozen_wire_numbers(tmp_path: Path) -> None:
+    descriptor = _descriptor(tmp_path)
+    chat = next(file for file in descriptor.file if file.name == "kokoro/chat/v1/chat.proto")
+    messages = {message.name: message for message in chat.message_type}
+    ready = messages["StreamConversationEventsReady"]
+    assert [(field.number, field.name, field.type) for field in ready.field] == [
+        (1, "accepted_after_seq", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+        (2, "watermark", descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+    ]
+    response = messages["StreamConversationEventsResponse"]
+    assert [oneof.name for oneof in response.oneof_decl] == ["payload"]
+    assert [
+        (field.number, field.name, field.type_name, response.oneof_decl[field.oneof_index].name)
+        for field in response.field
+    ] == [
+        (1, "event", ".kokoro.chat.v1.BrowserSessionEvent", "payload"),
+        (2, "ready", ".kokoro.chat.v1.StreamConversationEventsReady", "payload"),
+    ]

@@ -1,123 +1,118 @@
 # Music Studio Generate 链路
 
-## 目标
+状态：当前 Feature-first Music 产品链路，2026-08-22。产品/编排总图见
+[37 App、Feature 与 Studio 架构](../technical/37-product-experience-agent-studio-architecture.md)；GA 执行、状态和
+S3Workspace 边界见 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)；Root command
+与安全事件边界见 [38 公共运行契约](../technical/38-ga-public-runtime-contract.md)。
 
-跑一次长耗时音乐生成 job：排队 -> 预估冻结积分 -> 解析模型 -> 调 provider（Suno）-> 异步轮询/webhook -> 成功落产物并按实际用量结算；失败则释放冻结。全程 site scoped、幂等、不超扣。
-
-## 参与模块
+## 产品语义：一个 Music App，两种正确入口
 
 ```text
-kokoro-session / agent         发起 job，编排 quote/hold/resolve/capture/release。
-kokoro-credit                  quote / hold / capture / release，写 ledger 和 usage。
-kokoro-model                   resolve 站点授权的生成模型。
-provider (Suno)                实际生成，异步回调。
-kokoro-artifact                落 Job / JobStep / Artifact / Asset。
+Music App
+  A. 自然语言创作 Feature
+     -> FEATURE_KEY_MUSIC_CREATE FeatureKey
+     -> GA Feature(FEATURE_KEY_MUSIC_CREATE -> music)
+     -> Studio CreateJob / QueryJob
+
+  B. 专业参数控制
+     -> Studio direct CreateJob / QueryJob
+     -> 同一 Studio Job / Artifact lifecycle
 ```
 
-## 前置条件
+入口 A 是“帮我做一首轻快广告歌”一类需要理解、建议、歌词/风格协作和持续对话的 Agent Feature。入口 B 是专业用户
+已给出完整参数时的确定控制动作；它不绕经 GA，也不创建一个只为提交表单的 Session Agent 选择。二者共享 Music App、
+Studio Job 与 Storage Artifact，却不共享两套 provider、计费或产物事实。
+
+`music_maker` 是 GA 内置 `Agent`，不是 Session 字段、浏览器 selector 或独立服务。一个 AI Music 站点仅需：
 
 ```text
-SiteContext 已解析（siteId, appKey, surface=music.studio）。
-User + workspace 已存在；CreditAccount 已 ensure。
-EntitlementGrant 允许 music.studio.generate；PricingRule 覆盖该 capabilityKey。
-SiteModelPolicy 授权了生成模型。
+System:  Music App + enabled AppFeatureExposure(FEATURE_KEY_MUSIC_CREATE)
+GA:      Feature(FEATURE_KEY_MUSIC_CREATE -> music)
+Studio:  supported CreateJob/QueryJob command + Music Job lifecycle
+Storage: Asset/Artifact lifecycle
 ```
 
-## 主流程
+无需新建 Music worker、Music Session service、Music graph service 或“音乐编排层”。
+
+## A. Agent Feature 主链
 
 ```text
-1. 建 Job
-   Job(siteId, appKey, surface, capabilityKey=music.studio.generate, workspaceId, userId,
-       status=queued, idempotencyKey, requestId)。
-
-2. Quote
-   POST /credit/quote 入: siteId, workspaceId, capabilityKey, modelLabel/plan, quantity
-   检查 entitlement，匹配 PricingRule，返回 estimateMicros。无副作用。
-
-3. Hold
-   POST /credit/hold 入: siteId, accountId, amountMicros, idempotencyKey, expiresAt
-   按 bucket 优先级冻结，避免长任务成功后余额不足。UsageRecord status=held。
-
-4. Resolve 模型
-   POST /models/resolve(siteId, appKey, surface, capabilityKey) -> modelBindingId。
-
-5. 执行
-   Job status=running，写 JobStep(provider=suno, modelBindingId, startedAt)。
-   调 provider (Suno) 提交生成请求。
-
-6. 异步轮询/webhook
-   provider 异步回调或轮询拿结果；JobStep finishedAt。
-
-7. 成功落产物
-   Job status=succeeded。
-   建 Artifact(siteId, workspaceId, artifactType=audio, sourceJobId, visibility=private)
-   + Asset(storageKey, mimeType, sizeBytes, checksum)。
-
-8. Capture
-   POST /credit/capture 入: siteId, holdId, actualAmountMicros, idempotencyKey
-   按实际用量扣 bucket，写 CreditLedgerEntry（负数）+ UsageRecord status=settled，hold=captured。
+1. Browser 进入 music.example.com 或 App launcher，选择“创作歌曲”这一产品 Feature。
+2. Entry/Session 校验 host、tenant、AppFeatureExposure、权限与计费资格，取得可信 global FeatureKey；
+   创建或读取 Session(feature_key)，并落用户消息与 run admission。
+3. Session 投递最小 LaunchRunRequest(run_id, session_id, ExecutionIdentity, feature_key, input, opaque AssetRef...)；GA 在 ingress 派生内部 RuntimeNamespace。
+4. GA normalizer 使用 session_id 作为 DeepAgents thread；RunLedger durable claim 后，从本地 FeatureCatalog 取得
+   FEATURE_KEY_MUSIC_CREATE 的 `music` Agent。
+5. 同一 Session 首次 bootstrap DeepAgents native state；后续消息以同一 native checkpoint 继续。没有
+   active_agent、Agent name、RuntimeConfig、Skill/MCP snapshot 或图配置写入 Session。
+6. music_maker 使用 GA default Skill；需要用户/Session Skill 时才经 find_skills/load_skill 按需加载到
+   GA workbench。Capability 负责 logical path/CRUD，Storage 负责已扫描内容；普通编辑不改写已加载 mount。
+7. 需要生成时，GA 以该 CreateJob effect 的稳定 id 和 operation-bound RunExecutionAttestation 调用 Studio CreateJob；
+   Studio 选择 provider、维护 Job/Project/状态机，并返回 opaque JobRef。
+8. GA 写 initial `StudioJobLinked(JobRef)` ProductEvent；Session 随后以 JobRef 读 Studio snapshot 并消费/replay安全 StudioJobEvent 更新 Job/Artifact card。Run 已 terminal、GA/Browser 断线时也不重开 Run；Job event 绝不写 assistant 文本。
+9. Studio 通过 Storage 的公开 Artifact lifecycle 完成用户可见音频/歌词/封面；GA sandbox 文件与 S3Workspace
+   不作为交付 Artifact，也不泄漏 bucket/object key。
 ```
 
-## 异常流程
-
 ```text
-余额不足          step 3 hold 失败 -> 402，提示充值。
-模型不可用         step 4 resolve 503 -> release hold，job failed。
-provider 失败/超时   生成失败或回调超时 -> Job status=failed，
-                  POST /credit/release(siteId, holdId, idempotencyKey)，UsageRecord status=failed。
-用户取消          Job status=canceled -> release hold。
-hold 超时         hold 到 expiresAt 自动过期释放。
-重复提交          同 idempotencyKey 重放，hold/capture 幂等返回，不重复扣。
+Music Feature
+  feature_key: FEATURE_KEY_MUSIC_CREATE  # 文档符号；实际值为 System 分配的 opaque key
+  entry/members: music_maker
+  agents: [music]
+  entry_agent: music
 ```
 
-## 数据变化
+它是单 Agent 的最快垂类组装。歌词研究、素材准备等隔离工作优先使用 DeepAgents `task`；只有多个平等专员需要
+直接接管同一用户对话，才由另一份已发布且兼容的 Swarm Feature（或新的 FeatureKey/new Session）表达。任何既有 Run
+不会临时改成 Swarm、把 Music Agent 写入 Session，或拼接新图。
+
+## B. Studio direct control 主链
 
 ```text
-Job               status queued -> running -> succeeded / failed / canceled。
-JobStep           新增（provider, modelBindingId, startedAt, finishedAt）。
-Artifact          成功时新增（artifactType=audio, sourceJobId）。
-Asset             成功时新增（storageKey, checksum）。
-CreditHold        active -> captured（成功）/ released / expired（失败）。
-CreditLedgerEntry capture 写负数。
-CreditBucket      capture 减 remainingMicros。
-UsageRecord       quoted -> held -> settled / failed。
+专业表单 -> Studio CreateJob(validated parameters, feature policy)
+          -> provider submission / callback / polling
+          -> Job terminal
+          -> Storage CreateUpload -> CompleteUpload -> CreateArtifact -> FinalizeArtifact
+          -> Studio UI 的 Job/Artifact read model
 ```
 
-## 幂等和一致性
+Studio 直接控制不要求一条 GA Run。用户需要“为什么这样写、替我改歌词、基于上一版继续创作”时，可以从 Studio 打开
+`FEATURE_KEY_MUSIC_CREATE` Agent Feature 的新 Session；该新 thread 从 Music Feature entry bootstrap，不挪用旧 Session 的
+DeepAgents native state、workbench 或动态 Skill。
+
+## 与 General Chat 的组合
 
 ```text
-jobId             长任务关联键；subagent/工具 usage 归并到主 jobId。
-idempotencyKey    hold / capture / release 幂等，唯一约束兜底，重放不重复扣。
-holdId            冻结与结算/释放关联。
-事务              capture 在 DB 事务内完成 bucket 扣减 + ledger 写入。
-最终一致          provider callback -> job status -> artifact -> web 刷新。
-强一致            credit hold -> job execution -> capture/release。
+General Chat Feature(FEATURE_KEY_GENERAL_ASSIST)
+  -> General Assistant 在 Chat Feature 中使用 DeepAgents native subagent / 创建 Studio Job
+  -> Studio Job / Artifact card 回到 General Chat Session
+
+Music Studio Feature(FEATURE_KEY_MUSIC_CREATE)
+  -> 新 Music Session + music_maker single Feature
 ```
 
-## 用户可见结果
+General Chat 可以组合音乐能力，但不把原 Chat thread 改成 Music Agent，也不把 Music Studio 的专业权限、模型策略或
+Project 状态混入原对话。用户打开 Music App 才开始另一个 Feature Session。
+
+## 计费、恢复与失败
+
+| 事实 | owner | 语义 |
+|---|---|---|
+| Agent reasoning | GA -> Billing usage fact | 每个 provider-accepted `ModelInvocation` 按 `invocation_id` 计一次；token 仅成本/预算诊断。 |
+| Music generation Job | Studio/Credit | Job 自己的 quote -> hold -> capture/release；provider callback/retry 不归 GA 伪造。Feature 静态选择 `detached` 或 `request_cancel`：后者只是 GA 向 Studio 的一次幂等取消请求。 |
+| 音频/歌词/封面 | Storage | 仅完成 canonical Asset/Artifact lifecycle 后才可展示/交付。 |
+| sandbox/workbench persistence | GA | `S3Workspace` 是 MinIO-first 的 `WorkbenchPersistence` S3 adapter；`durable_required` mount 必须 commit 后才成功，且永不等同 Artifact owner。V1 `S3Archiver` archive failure 只是不影响本地写/Artifact 的旁路诊断。 |
+
+Feature `cost_policy` 明确 reasoning 与 Job 是否 `included`、`separate` 或 `zero-rated`，用 invocation/job 的独立幂等
+identity 防止双扣。GA 的 ledger/checkpoint 可在 Browser、Session relay 或 Capability client 离线时恢复 default-only
+run；dynamic Skill/Asset/Studio source 在每次 operation boundary 由 owner 重新校验。
+
+## 验收
 
 ```text
-进行中    job 排队/生成中状态可见。
-成功      音乐产物可播放/下载，余额按实际用量减少，usage 可见。
-失败      额度自动恢复，无扣费，可重试。
-余额不足   402，引导充值/升级。
-```
-
-## 验收标准
-
-```text
-同 idempotencyKey 重试 N 次，余额只变一次。
-job 失败/取消/超时后 hold 完全释放，不留悬挂冻结。
-capture 后 ledger 与 bucket 余额账平。
-music job 无法写入 video workspace。
-artifact 保留 siteId，可追溯到 sourceJobId。
-```
-
-## 相关
-
-```text
-扣费闭底  ./credit-reserve-commit-refund.md
-模型解析  ./model-resolution.md
-产物生命周期  ./artifact-job-result.md
-模块     ../modules/kokoro-credit.md
+Music App 只通过 App/Feature admission 选择对应的 `FEATURE_KEY_MUSIC_CREATE`；Browser payload 不含 Agent、member、graph、Skill/MCP 或 provider 配方。
+FEATURE_KEY_MUSIC_CREATE 首次/恢复均使用同一 `music` Agent 与同一 Session 的 DeepAgents native checkpoint。
+专业参数表单直达 Studio Job；自然语言入口通过 GA CreateJob；两条链只有一套 Studio Job/Storage Artifact lifecycle。
+ProductEvent/SSE 与 Studio Job snapshot/event 只含安全 Job/Artifact/assistant/terminal 信息，不含 raw thinking、tool 参数、provider secret、sandbox/object path；Job event 在 Run terminal 后只能更新 card。
+GA reasoning invocation 与 Studio Job 结算均可重放且不双扣；`detached`/`request_cancel` 行为可恢复且不复活 Run；`ephemeral_ok` core 不因没有 S3Workspace 阻塞，`durable_required` Feature 由 workbench readiness/`workbench_unavailable` 收束，且 V1 S3Archiver archive failure 不影响 Artifact finalization。
 ```

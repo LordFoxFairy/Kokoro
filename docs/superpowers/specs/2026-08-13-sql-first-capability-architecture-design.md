@@ -2,11 +2,15 @@
 artifact: architecture-spec
 version: "0.11"
 created: 2026-08-13
-status: proposed-for-user-review
+status: superseded-reference
 scope: kokoro-sql-first-capability-repositories
 ---
 
 # Kokoro SQL-first 能力子仓架构方案
+
+> **已被当前方案 supersede（2026-08-27）。** 本文仅保留作历史架构输入，不是当前
+> Capability/Storage 的实现 authority。当前 owner、schema、Root v1 contract 与对象存储边界
+> 以各子仓最新设计卡为准；新实现不得沿用本文的 PostgreSQL、旧部署耦合命名或旧写面假设。
 
 ## 0. 方案摘要
 
@@ -315,7 +319,7 @@ canonical data model §0.2 为准。
 | 表组 | 核心表 |
 |---|---|
 | Agent | `agent_run`, `agent_execution_manifest`, `agent_run_lease`, `agent_control_inbox`, `agent_event_outbox`, `agent_projection_ack`, `agent_tool_effect`, `agent_run_usage`, `agent_run_usage_line`, `agent_sandbox_binding`, `agent_memory`, `agent_dispatch_dlq`；固定版本 LangGraph checkpointer DDL 进入 Root baseline |
-| Capability | `capability_skill`, `capability_skill_revision`, `capability_package`, `capability_installation`, `capability_grant`, `capability_mcp_server`, `capability_mcp_revision`, `capability_mcp_connection`, `capability_secret_handle`, `capability_runtime_snapshot`, `capability_runtime_snapshot_item` |
+| Capability | `skill`, `skill_revision`, `package`, `installation`, `grant`, `mcp_server`, `mcp_revision`, `mcp_connection`, `secret_handle`, `runtime_snapshot`, `runtime_snapshot_item` |
 | Model | `model_provider`, `model_definition`, `model_revision`, `model_routing_policy`, provider health state/observation；只拥有目录/解析，不拥有调用 usage |
 | Storage | `storage_blob`, `storage_upload_session`, `storage_asset`, `storage_scan`, `storage_artifact`, `storage_artifact_revision`, `storage_share` |
 

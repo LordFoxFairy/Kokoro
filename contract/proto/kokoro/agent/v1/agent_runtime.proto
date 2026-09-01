@@ -27,18 +27,14 @@ enum ControlKind {
 
 message LaunchRunRequest {
   string request_id = 1;
-  string launch_id = 2;
-  string launch_request_digest = 3;
-  string message_id = 4;
-  string content = 5;
-  string namespace = 6;
-  string session_id = 7;
-  string thread_id = 8;
-  string site_id = 9;
-  string organization_id = 10;
-  string requested_agent_preset_key = 11;
-  string requested_model_label = 12;
-  repeated string requested_capability_selectors = 13;
+  string run_id = 2;
+  string session_id = 3;
+  string feature_key = 4;
+  kokoro.common.v1.ExecutionIdentity execution_identity = 5;
+  string message_id = 6;
+  string content = 7;
+  optional string requested_model_label = 8;
+  bytes trace_json = 9;
 }
 
 message LaunchRunResponse {

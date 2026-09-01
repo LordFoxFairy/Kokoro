@@ -387,7 +387,7 @@ Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录�
 - 实现计划：放 `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`。这是执行用计划，不是长期权威。
 - 短期派工、交接、worker handoff：放 `docs/handoffs/YYYY-MM-DD-<topic>.md`。派工单过期后不要继续当架构事实。
 - 审计、测试、验收、阶段性结果：放 `docs/reports/`。
-- 子仓实现细节、调试说明、局部测试说明：放对应子仓的 `kokoro-*/docs/README.md` 和 `kokoro-*/docs/<repo>/...`。不要把跨仓总方案放进 `kokoro-web/docs/`。
+- 子仓实现细节、调试说明、局部测试说明：放对应子仓的 `kokoro-*/docs/README.md` 和 `kokoro-*/docs/<repo>/...`。不要把跨仓总方案放进 `kokoro/docs/`。
 - 贴近代码的局部架构地图：放相邻 `INDEX.md`。
 - 外部参考、截图、探索笔记、一次性对比、临时脚本：只放 `tmp/` 或 `kokoro-*/tmp/`，不得进入正式文档或正式代码。
 
@@ -403,4 +403,4 @@ Kokoro 主仓 `docs/` 历史材料较多，agent 不应递归读取整棵目录�
 - 当前主线白名单由 `docs/CURRENT.md` 维护；新增或切换主线时同步更新。
 - 给并行 worker 派活时必须注入 `docs/CODEBASE_MAP.md` 和任务相关 spec/plan/handoff。
 - 文档冲突时，优先级为：当前用户指令 > 本文件 > `docs/kokoro-handbook/` > `docs/CURRENT.md` / `docs/README.md` / `docs/CODEBASE_MAP.md` > 当前 spec/plan/handoff > 历史产品/原型/研究材料。
-- GA / kokoro-agent 只消费不透明 `namespace` 作为运行时隔离键。不得在 GA 侧把 `namespace` 改写为 `user:<ownerId>`，也不得把 `ownerId` / `userId` / `workspaceId` 作为第二身份轴传入 GA；这些身份语义由上游 web/session/platform 解析后映射到 namespace。
+- Root caller 不向 GA / kokoro-agent 提交 `namespace`。上游 IAM/Session 只提交类型化 `ExecutionIdentity(actor, subject, identity_assertion_ref)`；GA ingress 自己派生不透明 `RuntimeNamespace` 作为运行时隔离键。`ownerId` / `userId` / `workspaceId` 只可作为该 typed identity 的受信主体语义，不能成为 Agent/graph selector、checkpoint 字段或第二身份轴；GA 运行时之后只使用内部 RuntimeNamespace 与 sealed identity assertion reference。

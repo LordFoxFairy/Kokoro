@@ -239,8 +239,16 @@ message StreamConversationEventsRequest {
   uint64 after_seq = 3;
 }
 
+message StreamConversationEventsReady {
+  uint64 accepted_after_seq = 1;
+  uint64 watermark = 2;
+}
+
 message StreamConversationEventsResponse {
-  kokoro.chat.v1.BrowserSessionEvent event = 1;
+  oneof payload {
+    kokoro.chat.v1.BrowserSessionEvent event = 1;
+    kokoro.chat.v1.StreamConversationEventsReady ready = 2;
+  }
 }
 
 service ChatCommandService {

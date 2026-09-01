@@ -1,27 +1,70 @@
 # 当前活跃文档白名单
 
-状态：2026-08-14
-用途：降低 agent 阅读负担。做当前 runtime / capability / deliver 主线时，默认只读这里列出的文档。
+状态：2026-09-01
+用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
+“当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
+
+## 阶段 2 仓库治理入口
+
+先读 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 和 [`CODEBASE_MAP.md`](CODEBASE_MAP.md)。当前正式拓扑为
+`kokoro-app`（本地 `kokoro`）→ `kokoro-bff`（Chat/业务 BFF）→ `kokoro-agent`，以及
+`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
+`kokoro-storage`、`kokoro-scheduler` 七个独立业务仓。Root 只维护跨仓契约、文档、部署入口和验证工具。
+
+`kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web` monorepo、独立 `kokoro-credit`
+和旧 Site 占位目录均已退出当前拓扑；历史文件只作迁移考古。Credit 归 `kokoro-billing`，Chat 归
+`kokoro-bff 的 Chat 内部业务边界`，不再创建独立仓。所有正式业务仓采用 PostgreSQL + Redis；对象字节使用
+Storage 的 S3-compatible ObjectStore。
 
 ## 必读
 
 1. [Codebase Map](CODEBASE_MAP.md)
 2. [docs 总入口](README.md)
 3. [Kokoro 总手册](kokoro-handbook/README.md)
-4. [**Kokoro V1 最终技术方案（定稿事实源）**](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
+4. [**GA 核心架构总览：一个闭环底座，多个内置 Agent 产品**](kokoro-handbook/technical/42-ga-core-architecture.md)
+5. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
+6. [**Kokoro 统一入口、App 与 Agent 产品架构**](kokoro-handbook/technical/37-product-experience-agent-studio-architecture.md)
+7. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
+8. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
+9. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
 
 ## 当前目标架构评审主线
 
-以下文档描述尚未实现、正在书面复审的 clean-rewrite 目标。它们优先于旧过程稿，但在批准并迁入 handbook
-前不得写成当前代码事实：
+以下文档描述当前首发架构，优先于旧过程稿。实现尚未覆盖的部分必须在代码与交接中明确标注，
+不能把方案文字误称为已上线行为。
 
-当前已经迁入 handbook 的后端目标架构：
+### 架构评审只读两份
 
-1. [后端子仓库与 DDD 架构规范](kokoro-handbook/technical/24-backend-subrepository-ddd-architecture.md)
-2. [ADR-012：后端子仓库与 DDD 分层规范](kokoro-handbook/decisions/ADR-012-backend-subrepository-ddd-layers.md)
-3. [kokoro-iam 目标模块](kokoro-handbook/modules/kokoro-iam.md)
+1. [**GA 核心架构总览**](kokoro-handbook/technical/42-ga-core-architecture.md)
+2. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
+3. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
+4. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
+
+评审“整个 Agent 怎么设计”时到此为止；没有第三份 Session plan、binding 或 graph-version 设计需要拼读。下面的文档都是
+**实施某个边界时的专项证据**，只能细化这两份方案，不能覆盖或再造一套整体架构。
+
+### 按专题细化
+
+| 主题 | 文档 |
+|---|---|
+| native runtime、首次启动与恢复 | [34 GA Runtime](kokoro-handbook/technical/34-ga-agent-runtime-architecture.md) |
+| official Swarm / handoff | [35 GA × Swarm](kokoro-handbook/technical/35-ga-langgraph-swarm-architecture.md)、[ADR-020](kokoro-handbook/decisions/ADR-020-native-framework-compatibility-and-swarm-adapter.md) |
+| bounded fan-out / map-reduce | [40 GA 工作画像](kokoro-handbook/technical/40-ga-work-profiles-and-bounded-fanout.md) |
+| 质量、评测、上线 | [39 Evaluation](kokoro-handbook/technical/39-ga-evaluation-and-evidence-architecture.md)、[41 Outcome Contract](kokoro-handbook/technical/41-feature-outcome-contracts-and-quality-gates.md) |
+| Harness / 产品能力装配 业界校准 | [44 GA Harness 与产品能力装配调研](kokoro-handbook/technical/44-ga-harness-and-workflow-research.md) |
+| Feature warm、Factory 与未来可视化 Builder | [GA 核心架构](kokoro-handbook/technical/42-ga-core-architecture.md)、[GA 落地切片](kokoro-handbook/technical/43-ga-clean-build-slices.md) |
+| native Agent state、fork、delete、memory | [ADR-018](kokoro-handbook/decisions/ADR-018-ga-thread-context-compaction-and-memory.md)、[Session 生命周期](kokoro-handbook/business-flows/session-lifecycle.md) |
+| FeatureKey 与 tenant/App exposure | [ADR-021](kokoro-handbook/decisions/ADR-021-feature-key-global-catalog-identity.md)、[31 Tenant/System/Web](kokoro-handbook/technical/31-kokoro-tenant-system-architecture-v2.md) |
+| 运行事件、reply owner、JobRef card | [ADR-016](kokoro-handbook/decisions/ADR-016-orchestration-policy-and-product-event-projection.md)、[Session/GA/Web 链路](kokoro-handbook/business-flows/agent-session-web-general-chat-runtime.md) |
+| 当前本地原型目录/边界 | [Agent 设计卡](kokoro-handbook/technical/backend-design/09-agent.md)、[Agent 模块](kokoro-handbook/modules/kokoro-agent.md)、[Session 模块](kokoro-handbook/modules/kokoro-session.md) |
+| clean-build 实现切片 | [45 GA 原型就绪审计](kokoro-handbook/technical/45-ga-prototype-readiness-audit.md)、[43 GA clean-build 切片](kokoro-handbook/technical/43-ga-clean-build-slices.md)、[38 GA 公共运行契约](kokoro-handbook/technical/38-ga-public-runtime-contract.md) |
+| Storage 与 Capability 当前原型参考 | [29 Storage target × Capability](kokoro-handbook/technical/29-capability-storage-runtime-architecture.md)、[Capability 设计卡](kokoro-handbook/technical/backend-design/05-capability.md) |
+| Feature context 基础裁决 | [ADR-015](kokoro-handbook/decisions/ADR-015-agent-state-and-feature-context.md) |
 
 以下仍为过程方案：
+
+0. [kokoro-system、Tenant 隔离与 kokoro-web-user 技术方案](superpowers/specs/2026-08-22-kokoro-system-and-web-user-architecture.md)
+0.1 [kokoro-system 与 kokoro-iam 改造实施计划 v2](superpowers/plans/2026-08-22-kokoro-system-iam-refactor-plan-v2.md)
 
 1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
 2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)
@@ -32,7 +75,6 @@
 7. [Platform Modular Core 与 Internal RPC](superpowers/specs/2026-07-25-platform-modular-core-internal-rpc-design.md)
 8. [Execution Budget Allocation Protocol](superpowers/specs/2026-07-25-execution-budget-allocation-protocol-design.md)
 9. [Asset、Artifact、Blob Ownership、Promotion 与 GC](superpowers/specs/2026-07-25-asset-artifact-ownership-promotion-gc-design.md)
-10. [Projection Rebuild、Event Retention 与 Migration](superpowers/specs/2026-07-25-projection-rebuild-event-retention-migration-design.md)
 11. [Session HTTP/SSE Production Transport](superpowers/specs/2026-07-25-session-http-sse-production-transport-design.md)
 12. [Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-client-access-plane-developer-client-design.md)
 13. [Capability Control、Runtime、Connection 与 Effect](superpowers/specs/2026-07-25-capability-control-runtime-connection-effect-architecture-design.md)
@@ -71,23 +113,38 @@
 
 1. [Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
 
-## 当前技术主线
+## Goal 2 当前基线（2026-09-01）
 
-1. [V1 最终技术方案（定稿）](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)
-2. [Platform × 主链闭环（正式册,P1-P5 已落地事实）](kokoro-handbook/technical/21-platform-mainchain-closure.md)
-3. [跨仓闭环与遗留对齐总设计（待评审纲领,Wave 0-6）](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)
-4. [能力中台正式册](kokoro-handbook/technical/22-capability-hub.md)（历史入口:specs/2026-07-11-capability-hub-and-polish.md）
-5. [WP-0 落地与审核交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md)
-6. 扩展附录（查细节才读，冲突以 20 为准）：[19 评审版全记录](kokoro-handbook/technical/19-current-runtime-capability-review-plan.md)、[18 详细附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
-7. 历史派工单（已过期，不作架构事实）：[2026-07-07 runtime buildout](handoffs/2026-07-07-runtime-buildout-next-handoff.md)、[2026-07-07 capability buildout](handoffs/2026-07-07-capability-buildout-handoff.md)
+七个正式子仓库 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
+`kokoro-capability`、`kokoro-storage`、`kokoro-scheduler` 已完成本地阶段 2 拓扑与契约基线对齐，当前进入
+提交、推送与最终验证收口。新实现统一
+采用 PostgreSQL + Redis：PostgreSQL 保存业务事实，Redis 仅作 cache/coordination/lease，
+Storage 的对象字节走 S3-compatible ObjectStore。Credit 已并入 Billing；Connector 是
+Capability 内 MCP 子域概念；Chat 保留在 BFF 内部模块；Platform/Gateway 不新增业务。
 
-## 稳定架构入口
+本阶段的三仓运行入口为 `kokoro-app`、`kokoro-bff`、`kokoro-agent`；Goal 2 七个业务仓通过契约接入。
+明确排除旧 `kokoro-web`、`kokoro-platform`、`kokoro-gateway`、`kokoro-session`、独立
+`kokoro-credit` 和旧 Site 仓库。Session/Gateway 的历史 MongoDB/MySQL 迁移仅作归档材料，不是当前运行时。
+验收入口见 [ADR-028](kokoro-handbook/decisions/ADR-028-postgresql-redis-runtime-baseline.md)
+、[Goal 2 技术基线](kokoro-handbook/technical/53-postgresql-redis-seven-repository-baseline.md)、
+[Goal 2 七仓契约注册表](../contract/goal2-repository-contract-manifest.json) 和
+[Goal 2 闭环报告](reports/2026-09-01-goal-2-closure.md) 和 [阶段 2 仓库收口报告](reports/2026-09-01-stage2-repository-closure.md)。
 
-- [仓库地图](kokoro-handbook/technical/01-repository-map.md)
-- [Agent / Session / Web V1 运行时](kokoro-handbook/technical/11-agent-session-web-v1-runtime.md)
-- [V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)
-- [能力中台、namespace、登录、沙箱与产物正式技术方案](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)
-- [Skill Hub 与 MCP Hub 产品手册](kokoro-handbook/product/06-skill-hub-and-mcp-hub.md)
+## 本地原型与历史材料（仅参考，不进入首发）
+
+- [本地原型技术方案](kokoro-handbook/technical/20-kokoro-v1-technical-plan.md)：当前物理行为参考，不是首发 GA 架构。
+- [早期全局拆仓与 DDD 图](kokoro-handbook/technical/24-backend-subrepository-ddd-architecture.md)、
+  [DDD 分级](kokoro-handbook/technical/25-backend-architecture-and-ddd-levels.md)、
+  [仓库拓扑](kokoro-handbook/technical/26-backend-repository-and-directory-topology.md)、
+  [旧“最终”后端图](kokoro-handbook/technical/27-final-backend-architecture.md) 与
+  [ADR-012](kokoro-handbook/decisions/ADR-012-backend-subrepository-ddd-layers.md)：历史拆仓材料；其中 `kokoro-chat` 独立 owner 与 Capability snapshot 不作目标依据。
+- [Platform × 主链闭环](kokoro-handbook/technical/21-platform-mainchain-closure.md)：历史 Platform 接线事实；计费/Run owner 服从 36/37/38。
+- [Agent / Session / Web 本地原型运行时](kokoro-handbook/technical/11-agent-session-web-v1-runtime.md)、
+  [V2 技术方案](kokoro-handbook/technical/15-v2-technical-plan.md)、
+  [Capability/namespace/sandbox 旧附录](kokoro-handbook/technical/18-capability-namespace-auth-sandbox-artifacts.md)、
+  [Skill Hub 旧产品手册](kokoro-handbook/product/06-skill-hub-and-mcp-hub.md)：均只作原型考古。
+- [跨仓闭环与遗留对齐总设计](superpowers/specs/2026-07-11-cross-repo-closure-and-legacy-alignment-design.md)、
+  [WP-0 交接](handoffs/2026-07-09-wp0-landing-and-next-review-handoff.md) 与旧派工单：过程记录，不作架构事实。
 
 ## 默认不读
 

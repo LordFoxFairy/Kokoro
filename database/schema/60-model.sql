@@ -1,3 +1,6 @@
+-- Canonical PostgreSQL model baseline for the Root Slice-A fixture.
+-- Runtime owner implementation and migrations live in kokoro-model.
+
 SET search_path TO kokoro, pg_catalog;
 
 CREATE TABLE model_provider (

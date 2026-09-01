@@ -8,6 +8,20 @@ import yaml
 ROOT = Path(__file__).parents[2]
 
 
+def test_consumer_registry_rejects_duplicate_names() -> None:
+    def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, value in pairs:
+            assert key not in result, f"duplicate consumer registry key: {key}"
+            result[key] = value
+        return result
+
+    json.loads(
+        (ROOT / "contract/consumers.yaml").read_text(),
+        object_pairs_hook=reject_duplicate_keys,
+    )
+
+
 def test_contract_toolchain_is_exactly_pinned() -> None:
     package = json.loads((ROOT / "package.json").read_text())
     assert package["packageManager"] == "pnpm@11.2.2"
@@ -24,6 +38,15 @@ def test_contract_toolchain_is_exactly_pinned() -> None:
         "protobuf==6.33.6",
         "PyYAML==6.0.3",
     ]
+    assert yaml.safe_load((ROOT / "contract/buf.yaml").read_text()) == {
+        "version": "v2",
+            "modules": [{"path": "proto", "excludes": ["proto/kokoro/credit"]}],
+        "lint": {"use": ["STANDARD"]},
+        "breaking": {
+            "use": ["FILE"],
+            "except": ["FIELD_SAME_ONEOF"],
+        },
+    }
 
 
 def test_contract_toolchain_commands_are_local_and_fail_closed() -> None:

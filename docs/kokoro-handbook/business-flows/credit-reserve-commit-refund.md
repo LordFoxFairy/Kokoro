@@ -1,5 +1,13 @@
 # Credit Reserve-Commit-Refund 链路
 
+> **状态：历史 V1 Credit runtime 记录。**本文的 `kokoro-agent / kokoro-session -> quote/hold/capture/release`
+> 链路不定义 Feature-first GA 的模型调用结算。当前设计以
+> [31 Billing 子仓库架构](../technical/31-billing-subrepository-architecture.md)、
+> [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) §8.2 和
+> [37 App/Feature/Studio 架构](../technical/37-product-experience-agent-studio-architecture.md) §8 为准：GA
+> 仅在 provider accepted 后将一个 `ModelInvocation(invocation_id)` usage fact 写入 Billing outbox；Studio Job
+> 保持独立的 quote -> hold -> capture/release。一个 run、token 或可读 feature 名都不是 Agent reasoning 的计费单位。
+
 ## 目标
 
 把一次能力使用的费用，从"预估"安全地走到"落账"或"释放"，全程幂等、不超扣、不漏扣、可审计。这是所有计费链路的底层闭环。

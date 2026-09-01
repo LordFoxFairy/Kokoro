@@ -1,6 +1,13 @@
 # ADR-006 Agent Sandbox Runtime
 
-## 状态
+> **状态：历史 V1 sandbox 实现记录。**本文保留当时 backend 策略、共享目录和 raw event 的实现事实；它不是当前
+> GA 产品/运行时边界的设计源。当前目标以 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md)
+> §7、[29 Storage/ObjectStore](../technical/29-capability-storage-runtime-architecture.md) §9 与
+> [ADR-018 Thread Context](ADR-018-ga-thread-context-compaction-and-memory.md) 为准：sandbox workspace 归 GA，
+> `S3Workspace` 只是可选的 GA S3-compatible 持久化 adapter，Asset/Artifact 归 Storage，Session/Web 不读取
+> sandbox 文件或 raw execution event。
+
+## 历史状态
 
 Proposed for V1 implementation
 

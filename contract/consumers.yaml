@@ -1,7 +1,7 @@
 {
   "version": 1,
   "consumers": {
-    "kokoro-site": {
+    "kokoro-system": {
       "language": "typescript",
       "output": "src/generated/proto",
       "includeOpenApi": false,
@@ -35,10 +35,20 @@
       "includeOpenApi": false,
       "protoFiles": [
         "kokoro/common/v1/common.proto",
-        "kokoro/capability/v1/capability_runtime.proto"
+        "kokoro/capability/v1/capability_runtime.proto",
+        "kokoro/storage/v1/storage.proto"
       ]
     },
-    "kokoro-chat": {
+    "kokoro-storage": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "includeOpenApi": false,
+      "protoFiles": [
+        "kokoro/common/v1/common.proto",
+        "kokoro/storage/v1/storage.proto"
+      ]
+    },
+    "kokoro-bff": {
       "language": "typescript",
       "output": "src/generated/proto",
       "includeOpenApi": false,
@@ -62,9 +72,9 @@
         "kokoro/model/v1/model_catalog.proto"
       ]
     },
-    "kokoro-web": {
+    "kokoro": {
       "language": "typescript",
-      "output": "apps/user/src/generated/proto",
+      "output": "src/generated/proto",
       "includeOpenApi": true,
       "protoFiles": [
         "kokoro/common/v1/common.proto",

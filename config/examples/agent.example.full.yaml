@@ -1,43 +1,46 @@
 # kokoro-agent 统一配置树（KOKORO_AGENT_CONFIG 指向本文件）。
 # 全部键可省（省=内置默认）；env 同名键覆盖此处；凭据 env-only（写这里会 fail-loud）。
 model:
-  local_fake: false            # true=离线确定性假模型（开发/e2e）
   openai_base_url: https://open.bigmodel.cn/api/paas/v4
   openai_reasoning: true
+  disable_streaming: false
 stream:
-  redis_url: redis://127.0.0.1:6379/0    # 传输唯一真后端 = redis
-mongo:                                    # checkpoint / ledger / 长期记忆 store 共用（唯一真后端）
-  url: mongodb://127.0.0.1:27017
-  db: kokoro
+  redis_url: redis://127.0.0.1:6379/0
+storage:
+  database_url: postgresql://127.0.0.1/postgres
+  database_schema: kokoro_agent
 ledger:
   lease_ttl_s: 30
 sandbox:
   local_shell:
-    root: /data/workspace      # 与 session KOKORO_WORKSPACE_ROOT 同根（或共享卷挂载点）
+    root: /data/workspace
+    inherit_env: false
     timeout: 120
-  docker:                      # namespace profile backend: docker 时生效
+    max_output_bytes: 100000
+  docker:
     image: python:3.12-slim
     ttl: 1800
-  e2b:                         # backend: e2b 时生效；KOKORO_E2B_API_KEY 走 env
+  e2b:
     timeout: 1800
-  custom:                      # backend: custom 时生效（ADR-010 BYO）
+  custom:
     factory: my_pkg.sandbox:make_backend
     config: ./custom-backend.yaml
-workspace_config: ./workspace.yaml   # 文件面形态（与 session 共读；省=local 默认档）
+workspace_config: ./workspace.yaml
+mcp:
+  config: ./mcp.yaml
+  egress_mode: strict
 web_tools:
   fetch_allow_private: false
-  search:                      # KOKORO_WEB_SEARCH_API_KEY 走 env
+  search:
     provider: searxng
     url: http://127.0.0.1:8080
-assets:
-  skills_dir: /data/skills        # 每 skill 一目录（<name>/SKILL.md），配置按名引用
-  personas_dir: /data/personas    # 人格资产（<name>.md）：入口/子代理按名解析，yaml 可不写 system_prompt
-  # config: ./assets.yaml         # 资产源 yaml（local/s3，见 assets.example.*.yaml）；配了它上面两行失效
 subagents:
-  builtin: [researcher]
+  builtin: [web-researcher]
 limits:
+  lease_heartbeat_s: 30
   recursion_limit: 100
-  run_token_budget: 0          # 0=关闭
+  drain_timeout_s: 60
+  run_token_budget: 0
 retention:
-  events_ttl_s: 0              # 0=关闭（保留期是产品决策）
+  events_ttl_s: 0
   run_ttl_s: 0

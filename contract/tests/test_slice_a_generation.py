@@ -77,12 +77,12 @@ def test_projection_nack_runtime_proto_reaches_only_real_consumers() -> None:
     events = "kokoro/agent/v1/agent_events.proto"
     closures = MANIFEST["consumerFileClosure"]
     assert {name for name, files in closures.items() if runtime in files} == {
-        "kokoro-agent", "kokoro-chat", "root-e2e",
+        "kokoro-agent", "kokoro-bff", "root-e2e",
     }
     assert {name for name, files in closures.items() if events in files} == {
-        "kokoro-agent", "kokoro-chat", "root-e2e",
+        "kokoro-agent", "kokoro-bff", "root-e2e",
     }
-    assert closures["kokoro-site"] == [
+    assert closures["kokoro-system"] == [
         "kokoro/common/v1/common.proto",
         "kokoro/site/v1/site.proto",
     ]
@@ -115,6 +115,44 @@ def test_root_e2e_generation_declares_full_iam_lifecycle_closure(
     generated = repo / "scripts/e2e/generated/kokoro/iam/v1/authorization_pb2_grpc.py"
     assert generated.is_file()
     assert "class IamAuthorizationServiceStub" in generated.read_text()
+
+
+def test_chat_ready_handshake_reaches_each_exact_consumer_closure(
+    committed_source: tuple[Path, str], tmp_path: Path
+) -> None:
+    chat_proto = "kokoro/chat/v1/chat.proto"
+    closures = MANIFEST["consumerFileClosure"]
+    assert {name for name, files in closures.items() if chat_proto in files} == {
+        "kokoro-bff", "kokoro", "root-e2e",
+    }
+    source, commit = committed_source
+    outputs: dict[str, str] = {}
+    for consumer in ("kokoro-bff", "kokoro", "root-e2e"):
+        repo = tmp_path / consumer
+        repo.mkdir()
+        generate_consumer(
+            source_root=source,
+            source_commit=commit,
+            consumer=consumer,
+            repo=repo,
+            check=False,
+        )
+        relative = (
+            "scripts/e2e/generated/kokoro/chat/v1/chat_pb2.py"
+            if consumer == "root-e2e"
+            else (
+                "src/generated/proto/kokoro/chat/v1/chat_pb.ts"
+                if consumer == "kokoro"
+                else "src/generated/proto/kokoro/chat/v1/chat_pb.ts"
+            )
+        )
+        outputs[consumer] = (repo / relative).read_text()
+    assert "StreamConversationEventsReady" in outputs["root-e2e"]
+    for consumer in ("kokoro-bff", "kokoro"):
+        generated = outputs[consumer]
+        assert "export type StreamConversationEventsReady" in generated
+        assert 'case: "event"' in generated
+        assert 'case: "ready"' in generated
 
 
 def test_python_generation_is_deterministic_provenanced_and_checkable(
@@ -191,8 +229,8 @@ def test_typescript_web_generation_contains_only_public_closure(
 ) -> None:
     source, commit = committed_source
     repo = tmp_path / "web"; repo.mkdir()
-    generate_consumer(source_root=source, source_commit=commit, consumer="kokoro-web", repo=repo, check=False)
-    output = repo / "apps/user/src/generated/proto"
+    generate_consumer(source_root=source, source_commit=commit, consumer="kokoro", repo=repo, check=False)
+    output = repo / "src/generated/proto"
     assert (output / "http/slice-a-web-v1.yaml").is_file()
     assert list(output.rglob("*_pb.ts"))
     assert not any(part in {"agent", "model", "capability"} for path in output.rglob("*") for part in path.parts)
@@ -276,13 +314,13 @@ def test_generation_rejects_dirty_toolchain_and_runtime_registry_drift(
         generate_consumer(source_root=source, source_commit=commit, consumer="root-e2e", repo=repo, check=False)
     _git(source, "checkout", "--", "pyproject.toml")
     registry = json.loads((source / "contract/consumers.yaml").read_text())
-    registry["consumers"]["kokoro-web"]["protoFiles"].append("kokoro/agent/v1/agent_runtime.proto")
+    registry["consumers"]["kokoro"]["protoFiles"].append("kokoro/agent/v1/agent_runtime.proto")
     (source / "contract/consumers.yaml").write_text(json.dumps(registry, indent=2) + "\n")
     _git(source, "add", "contract/consumers.yaml")
     _git(source, "commit", "-qm", "drift registry")
     drift_commit = _git(source, "rev-parse", "HEAD")
     with pytest.raises(GenerationError, match="consumer closure differs from machine authority"):
-        generate_consumer(source_root=source, source_commit=drift_commit, consumer="kokoro-web", repo=repo, check=False)
+        generate_consumer(source_root=source, source_commit=drift_commit, consumer="kokoro", repo=repo, check=False)
 
 
 def test_generation_requires_source_root_to_be_git_top_level(

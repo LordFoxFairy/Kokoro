@@ -2,11 +2,16 @@
 artifact: data-architecture-spec
 version: "0.11"
 created: 2026-08-13
-status: proposed-for-user-review
+status: superseded-reference
 scope: kokoro-postgresql-canonical-model
 ---
 
 # Kokoro PostgreSQL Canonical Data Model
+
+> **已被当前方案 supersede（2026-08-27）。** 本文仅保留作历史决策输入，不是当前
+> Capability/Storage 的 schema 或 API authority。当前实现使用 Capability/Storage 各自拥有的
+> MySQL schema、Root v1 protobuf 和 S3-compatible ObjectStore；MCP 资源名以
+> `McpServer` / `McpConnection` 为准。本文中的 PostgreSQL、旧部署前缀和旧 MCP 表名不得复制到新实现。
 
 ## 0. 文档定位
 
@@ -243,7 +248,7 @@ key+digest。Slice A 不为它增加 RPC 或 SQL 表，它也不是 Site、Chat 
 | `capability_package` | `package_id`, `storage_blob_id`, `content_hash`, `size_bytes`, `format`, `validation_digest`, `created_at` | FK storage blob；content hash UNIQUE；validated immutable metadata |
 | `capability_installation` | `installation_id`, `organization_id`, `project_id?`, `skill_id`, `skill_revision_id`, `status`, `generation` | organization 必填、project 可选；同 scope live partial UNIQUE；revision 必须属于 skill；Project 后续启用不改变 org-scope 安装 |
 | `capability_grant` | `grant_id`, `organization_id`, `project_id?`, `skill_revision_id?`, `mcp_revision_id?`, `permission_set`, `status`, `expires_at?` | exactly one target CHECK；organization 必填、project 可选；FK revisions |
-| `capability_mcp_server` | `mcp_server_id`, `scope_kind(official|organization|project)`, `organization_id?`, `project_id?`, `normalized_name`, `status`, `current_revision_id?`, `generation` | scoped partial UNIQUE；current revision composite FK 保证属于本 server；解析 project→org→official |
+| `mcp_server` | `mcp_server_id`, `scope_kind(official|organization|project)`, `organization_id?`, `project_id?`, `normalized_name`, `status`, `current_revision_id?`, `generation` | scoped partial UNIQUE；current revision composite FK 保证属于本 server；解析 project→org→official |
 | `capability_mcp_revision` | `mcp_revision_id`, `mcp_server_id`, `revision`, `transport`, `url`, `allowed_tools`, `config_hash`, `actor_scope`, `actor_site_id?`, `created_by_principal_id`, `published_at?` | revision claims；与 server scope/actor 同一 deferred trigger；published immutable |
 | `capability_mcp_connection` | `connection_id`, `organization_id`, `project_id?`, `mcp_server_id`, `mcp_revision_id`, `secret_handle_id?`, `status`, `generation`, `last_verified_at?` | org scope 或 optional project scope 与 secret 一致；同 scope 一个 live server；revision 属于 server |
 | `capability_secret_handle` | `secret_handle_id`, `organization_id`, `project_id?`, `name`, `ciphertext`, `key_id`, `generation`, `revoked_at?` | FK org/optional project；scoped name UNIQUE；connection 与 secret 必须同 scope；明文不出边界 |
@@ -302,7 +307,7 @@ Skill package 通过 `capability_skill_revision.package_id → capability_packag
 | `entitlement_acquisition` | `acquisition_id`, `site_id`, `organization_id`, `offer_revision_id`, `source_kind(redemption|payment|admin_grant)`, `source_ref`, `fact_digest`, `occurred_at` | `UNIQUE(acquisition_id,site_id,organization_id)`；composite FK org/offer与site；source identity UNIQUE |
 | `entitlement_fulfillment` | `fulfillment_id`, `acquisition_id`, `site_id`, `organization_id`, `command_digest`, `state`, `committed_at?`, `reconciliation_reason?` | `UNIQUE(fulfillment_id,site_id,organization_id)`；composite FK acquisition/site/org；acquisition UNIQUE |
 | `entitlement_fulfillment_reversal` | `fulfillment_reversal_id`, `original_fulfillment_id`, `site_id`, `organization_id`, `source_kind(payment_reversal|admin_reversal)`, `source_ref`, `fact_digest`, `state`, `occurred_at` | `UNIQUE(fulfillment_reversal_id,site_id,organization_id)`；composite FK original fulfillment；source identity UNIQUE |
-| `entitlement_entitlement_grant` | `entitlement_grant_id`, `fulfillment_id`, `site_id`, `organization_id`, `key`, `scope`, `starts_at`, `ends_at?`, `revoked_by_reversal_id?` | composite FK fulfillment/site/org 与 reversal/site/org；grant payload immutable，仅允许 revocation pointer 从 NULL 单向写入一次；不自引用 |
+| `entitlement_grant` | `entitlement_grant_id`, `fulfillment_id`, `site_id`, `organization_id`, `key`, `scope`, `starts_at`, `ends_at?`, `revoked_by_reversal_id?` | composite FK fulfillment/site/org 与 reversal/site/org；grant payload immutable，仅允许 revocation pointer 从 NULL 单向写入一次；不自引用 |
 | `entitlement_subscription_term` | `subscription_term_id`, `fulfillment_id`, `site_id`, `organization_id`, `product_id`, `starts_at`, `ends_at`, `renewal_source_ref?`, `revoked_by_reversal_id?` | composite FK fulfillment/reversal与site/org；product 必须同 site；valid interval |
 | `entitlement_usage_price_revision` | `usage_price_revision_id`, `site_id`, `revision`, `effective_from`, `effective_to?`, `published_at` | `UNIQUE(usage_price_revision_id,site_id)`、`UNIQUE(site_id,revision)`；`effective_to IS NULL OR effective_to > effective_from`；site-level immutable rate-card header |
 | `entitlement_usage_price_rate` | `usage_price_rate_id`, `usage_price_revision_id`, `feature_key`, `model_revision_id`, `input_micros_per_million`, `output_micros_per_million`, `cached_micros_per_million` | `UNIQUE(price_revision,feature_key,model_revision)`；非负；一次 run 可有多 feature/model line |
@@ -446,7 +451,7 @@ Readers 是业务 reader，不含 Root fixture/audit。
 | `capability_skill_revision` | Capability Skill | PublishSkillRevision | Agent/Web/Admin | skill+revision UNIQUE；published immutable |
 | `capability_installation` | Capability Install | Install/Restore/RemoveSkill | Web/Agent resolve | partial project+skill live UNIQUE；generation |
 | `capability_grant` | Capability Grant | Grant/RevokeCapability | Agent resolve/Web | target CHECK；project lock；append/revoke |
-| `capability_mcp_server` | Capability MCP | Create/Publish/DeleteMcp | Web/Agent resolve | official/org/project scoped name claims；local-over-official |
+| `mcp_server` | MCP registry | Create/Publish/DeleteMcp | Web/Agent resolve | official/org/project scoped name claims；local-over-official |
 | `capability_mcp_revision` | Capability MCP | PublishMcpRevision | Agent/Admin | server+revision UNIQUE；published immutable |
 | `capability_mcp_connection` | Capability MCP | Connect/Verify/Disconnect | Agent resolve/Web | partial project+server live UNIQUE；same-scope secret composite FK |
 | `capability_secret_handle` | Capability Secret | Put/Rotate/RevokeSecret | MCP runtime only | org/project scoped handle/name claim；ciphertext retention |
@@ -484,7 +489,7 @@ Readers 是业务 reader，不含 Root fixture/audit。
 | `entitlement_acquisition` | Entitlement Acquisition | Redeem/AcceptPayment/AdminGrant | Fulfillment/Admin | source kind+ref UNIQUE；append-only |
 | `entitlement_fulfillment` | Entitlement Fulfillment | FulfillAcquisition | Web/Admin | acquisition UNIQUE；receipt/fence；terminal |
 | `entitlement_fulfillment_reversal` | Entitlement Fulfillment | ReverseFulfillment | Web/Admin/Payment reconcile | source kind+ref UNIQUE；original fulfillment FK；append-only |
-| `entitlement_entitlement_grant` | Entitlement Grant Store | Fulfill/ReverseFulfillment | IAM/Web/authorization | immutable payload + one-way terminal reversal pointer |
+| `entitlement_grant` | Entitlement Grant Store | Fulfill/ReverseFulfillment | IAM/Web/authorization | immutable payload + one-way terminal reversal pointer |
 | `entitlement_subscription_term` | Entitlement Fulfillment | Fulfill/Reverse/RenewTerm | Web/authorization | period CHECK；explicit reversal FK |
 | `entitlement_usage_price_revision` | Entitlement Pricing | PublishUsagePriceRevision | Agent admission/Admin | site+revision UNIQUE；immutable rate-card header |
 | `entitlement_usage_price_rate` | Entitlement Pricing | PublishUsagePriceRevision | Agent admission/settlement | revision+feature+model UNIQUE；nonnegative rates |

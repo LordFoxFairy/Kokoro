@@ -1,0 +1,335 @@
+{
+  "version": 1,
+  "sourceOfTruth": "docs/kokoro-handbook/technical/backend-design/",
+  "designScoring": {
+    "boundary": 20,
+    "dataOwner": 15,
+    "complexityChoice": 15,
+    "directoryReadability": 15,
+    "dependencyEnforceability": 15,
+    "publicContract": 10,
+    "testMapping": 10,
+    "total": 100
+  },
+  "repositories": [
+    {
+      "name": "root",
+      "kind": "governance",
+      "complexity": "non-domain",
+      "designScore": 100,
+      "designCard": "00-root.md",
+      "owns": [
+        "contract",
+        "database-baseline",
+        "deploy-composition",
+        "cross-repo-verification",
+        "architecture-docs"
+      ],
+      "doesNotOwn": [
+        "business-application-services",
+        "domain-entities",
+        "business-repositories"
+      ],
+      "currentEvidence": [
+        "contract",
+        "database",
+        "deploy",
+        "scripts",
+        "docs"
+      ]
+    },
+    {
+      "name": "kokoro-iam",
+      "kind": "business",
+      "complexity": "L2",
+      "designScore": 100,
+      "implementationStatus": "not_present",
+      "designCard": "01-iam.md",
+      "owns": [
+        "site",
+        "identity",
+        "organization",
+        "authentication",
+        "authorization",
+        "audit"
+      ],
+      "doesNotOwn": [
+        "credit",
+        "payment",
+        "model-routing",
+        "agent-run",
+        "chat-message"
+      ],
+      "currentEvidence": [
+        "docs/kokoro-handbook/technical/backend-design/01-iam.md",
+        "contract/iam-provider-lock.yaml",
+        "contract/consumers.yaml"
+      ]
+    },
+    {
+      "name": "kokoro-model",
+      "kind": "business",
+      "complexity": "L0-L1",
+      "designScore": 100,
+      "designCard": "02-model.md",
+      "owns": [
+        "provider-catalog",
+        "model-definition",
+        "model-binding",
+        "routing-policy",
+        "model-visibility"
+      ],
+      "doesNotOwn": [
+        "provider-gateway",
+        "credit",
+        "payment",
+        "agent-execution"
+      ],
+      "currentEvidence": [
+        "database/schema/60-model.mysql.sql",
+        "contract/consumers.yaml",
+        "kokoro-platform/kokoro-model"
+      ]
+    },
+    {
+      "name": "kokoro-credit",
+      "kind": "business",
+      "complexity": "L2",
+      "designScore": 100,
+      "designCard": "03-credit.md",
+      "owns": [
+        "credit-account",
+        "credit-quote",
+        "credit-hold",
+        "credit-capture",
+        "credit-release",
+        "ledger",
+        "usage"
+      ],
+      "doesNotOwn": [
+        "payment-order",
+        "provider-checkout",
+        "model-routing",
+        "agent-state"
+      ],
+      "currentEvidence": [
+        "kokoro-credit/src",
+        "kokoro-credit/database/schema.sql",
+        "kokoro-credit/database/migrations",
+        "kokoro-credit/test",
+        "contract/proto/kokoro/credit",
+        "docs/kokoro-handbook/business-flows/credit-reserve-commit-refund.md"
+      ],
+      "lifecycle": "migration-history",
+      "supersededBy": "kokoro-billing"
+    },
+    {
+      "name": "kokoro-payment",
+      "kind": "business",
+      "complexity": "L2",
+      "designScore": 100,
+      "designCard": "04-payment.md",
+      "owns": [
+        "catalog",
+        "checkout",
+        "order",
+        "provider-event",
+        "subscription",
+        "refund",
+        "benefit-grant"
+      ],
+      "doesNotOwn": [
+        "credit-ledger",
+        "provider-gateway-implementation",
+        "authorization-policy"
+      ],
+      "currentEvidence": [
+        "kokoro-payment",
+        "docs/kokoro-handbook/business-flows/payment-to-credit.md"
+      ],
+      "lifecycle": "migration-history",
+      "supersededBy": "kokoro-billing"
+    },
+    {
+      "name": "kokoro-billing",
+      "kind": "business",
+      "complexity": "L2",
+      "designScore": 100,
+      "designCard": "05-billing.md",
+      "owns": [
+        "payment-facts",
+        "checkout",
+        "subscription",
+        "provider-events",
+        "refunds",
+        "catalog",
+        "entitlement",
+        "credit-account",
+        "credit-grant",
+        "credit-hold",
+        "credit-ledger",
+        "usage-metering",
+        "billing-outbox"
+      ],
+      "doesNotOwn": [
+        "tenant-lifecycle",
+        "identity",
+        "authorization-policy",
+        "model-routing",
+        "agent-execution",
+        "chat-message"
+      ],
+      "currentEvidence": [
+        "kokoro-billing/src",
+        "kokoro-billing/database/migrations",
+        "kokoro-billing/contract/openapi/billing-v1.yaml",
+        "kokoro-billing/test",
+        "docs/kokoro-handbook/technical/31-billing-subrepository-architecture.md",
+        "docs/kokoro-handbook/technical/billing-closure-evidence.md"
+      ],
+      "lifecycle": "active"
+    },
+    {
+      "name": "kokoro-capability",
+      "kind": "business",
+      "complexity": "L1",
+      "designScore": 100,
+      "designCard": "05-capability.md",
+      "owns": [
+        "skill-logical-path",
+        "skill-discovery-metadata",
+        "skill-visibility",
+        "skill-crud",
+        "mcp-installation-metadata",
+        "authorization"
+      ],
+      "doesNotOwn": [
+        "agent-execution",
+        "skill-runtime-snapshot",
+        "skill-release-versioning",
+        "skill-workbench",
+        "secret-provider",
+        "object-store-implementation"
+      ],
+      "currentEvidence": [
+        "kokoro-capability/src/main.ts",
+        "kokoro-capability/src/infrastructure/capability/capability-client.ts",
+        "kokoro-capability/src/infrastructure/storage/storage-client.ts",
+        "kokoro-capability/Dockerfile",
+        "kokoro-capability/scripts/apply-schema.ts",
+        "kokoro-capability/docker-compose.local.yml",
+        "kokoro-capability/contract/",
+        "kokoro-capability/database/schema.sql",
+        "kokoro-capability/docs/API_CONTRACT.md",
+        "kokoro-capability/docs/SCHEMA_OWNER_INVENTORY.md",
+        "kokoro-capability/test/architecture/",
+        "kokoro-capability/test/contract/",
+        "kokoro-capability/test/smoke/",
+        "docs/kokoro-handbook/technical/33-ga-first-skill-runtime-architecture.md"
+      ]
+    },
+    {
+      "name": "kokoro-storage",
+      "kind": "business",
+      "complexity": "L1",
+      "designScore": 100,
+      "designCard": "06-storage.md",
+      "owns": [
+        "blob",
+        "upload",
+        "asset",
+        "artifact",
+        "scan"
+      ],
+      "doesNotOwn": [
+        "workspace-runtime",
+        "chat-message",
+        "agent-checkpoint",
+        "capability-package-policy"
+      ],
+      "currentEvidence": [
+        "kokoro-storage/src/main.ts",
+        "kokoro-storage/src/infrastructure/storage-client.ts",
+        "kokoro-storage/Dockerfile",
+        "kokoro-storage/scripts/apply-schema.ts",
+        "kokoro-storage/docker-compose.local.yml",
+        "kokoro-storage/src/adapters/object-store/aws-sdk.ts",
+        "kokoro-storage/INDEX.md",
+        "kokoro-storage/contract/",
+        "kokoro-storage/database/schema.sql",
+        "kokoro-storage/docs/API_CONTRACT.md",
+        "kokoro-storage/docs/SCHEMA_OWNER_INVENTORY.md",
+        "kokoro-storage/test/architecture/",
+        "kokoro-storage/test/contract/",
+        "kokoro-storage/test/smoke/",
+        "kokoro-agent/src/kokoro_agent/sandbox",
+        "kokoro-session/src/workspace"
+      ]
+    },
+    {
+      "name": "kokoro-session",
+      "kind": "runtime",
+      "complexity": "pipeline",
+      "designScore": 100,
+      "designCard": "08-session.md",
+      "owns": [
+        "ingress",
+        "relay",
+        "projection",
+        "persistence",
+        "transport",
+        "recovery"
+      ],
+      "doesNotOwn": [
+        "agent-execution",
+        "chat-master-data",
+        "credit",
+        "payment",
+        "iam-master-data"
+      ],
+      "currentEvidence": [
+        "kokoro-session/src/relay",
+        "kokoro-session/src/store",
+        "kokoro-session/src/transport",
+        "kokoro-session/src/http"
+      ]
+    },
+    {
+      "name": "kokoro-agent",
+      "kind": "runtime",
+      "complexity": "pipeline",
+      "designScore": 100,
+      "designCard": "09-agent.md",
+      "owns": [
+        "worker",
+        "run",
+        "execution",
+        "tools",
+        "skills-runtime",
+        "mcp-client",
+        "subagents",
+        "sandbox",
+        "checkpoint",
+        "memory",
+        "raw-events"
+      ],
+      "doesNotOwn": [
+        "browser-session",
+        "chat-master-data",
+        "credit",
+        "payment",
+        "user-master-data"
+      ],
+      "currentEvidence": [
+        "kokoro-agent/src/kokoro_agent/worker",
+        "kokoro-agent/src/kokoro_agent/execution",
+        "kokoro-agent/src/kokoro_agent/tools",
+        "kokoro-agent/src/kokoro_agent/storage"
+      ]
+    }
+  ],
+  "forbiddenTargetRepositories": [
+    "kokoro-entitlement",
+    "kokoro-platform"
+  ]
+}

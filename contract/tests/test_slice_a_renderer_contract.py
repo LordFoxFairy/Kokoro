@@ -14,9 +14,9 @@ MANIFEST = load_manifest(ROOT / "contract/slice-a-contract-manifest.yaml")
 def test_renderer_input_has_exact_slice_a_inventory() -> None:
     validate(MANIFEST)
     assert MANIFEST["authority"] == "machine"
-    assert len(MANIFEST["protobuf"]["files"]) == 9
-    assert len(MANIFEST["protobuf"]["services"]) == 8
-    assert sum(len(service["methods"]) for service in MANIFEST["protobuf"]["services"]) == 19
+    assert len(MANIFEST["protobuf"]["files"]) == 10
+    assert len(MANIFEST["protobuf"]["services"]) == 15
+    assert sum(len(service["methods"]) for service in MANIFEST["protobuf"]["services"]) == 54
     stream = next(
         method
         for service in MANIFEST["protobuf"]["services"]

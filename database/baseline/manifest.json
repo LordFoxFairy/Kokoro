@@ -1,5 +1,5 @@
 {
-  "baselineSha256": "8677fe75c6b116495e67651a25481fc5c8dc98bd993968457fed9fb6f3f56e62",
+  "baselineSha256": "a2f156c69676312d346a8c984fff15117bf63b6cef26c08239d72f7203f930ee",
   "schema": "kokoro",
   "segments": [
     {
@@ -40,7 +40,7 @@
     {
       "name": "60-model",
       "path": "database/schema/60-model.sql",
-      "sha256": "bafda2bad1a2b334a1b30cd1ef408d4b19b518157e29099f1ad8ea382dd9e1b5"
+      "sha256": "bd57fcf92fd24e3cb7124bfca4be560c3ca12559c3533689118a6f5f084e7ad6"
     },
     {
       "name": "99-cross-capability-relations",

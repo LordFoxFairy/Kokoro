@@ -45,7 +45,7 @@ class SliceAManifestAuthorityTest(unittest.TestCase):
 
     def test_web_private_owner_file_fails(self) -> None:
         candidate=copy.deepcopy(self.manifest)
-        candidate['consumerFileClosure']['kokoro-web'].append('kokoro/agent/v1/agent_runtime.proto')
+        candidate['consumerFileClosure']['kokoro'].append('kokoro/agent/v1/agent_runtime.proto')
         with self.assertRaisesRegex(ManifestError,'consumer closure drift|private owner proto'):
             validate(candidate)
 
@@ -91,7 +91,7 @@ class SliceAManifestAuthorityTest(unittest.TestCase):
 
     def test_transitive_consumer_closure_fails(self) -> None:
         candidate=copy.deepcopy(self.manifest)
-        candidate['consumerFileClosure']['kokoro-chat'].remove('kokoro/agent/v1/agent_events.proto')
+        candidate['consumerFileClosure']['kokoro-bff'].remove('kokoro/agent/v1/agent_events.proto')
         with self.assertRaisesRegex(ManifestError,'consumer closure drift'):
             validate(candidate)
 
@@ -215,6 +215,22 @@ class SliceAManifestAuthorityTest(unittest.TestCase):
         candidate=copy.deepcopy(self.manifest)
         candidate['rules']['streamAuthorizationExpiry'] += ' The stream may remain open indefinitely.'
         with self.assertRaisesRegex(ManifestError,'stream authorization deadline drift'):
+            validate(candidate)
+
+    def test_stream_ready_wire_shape_drift_fails(self) -> None:
+        candidate=copy.deepcopy(self.manifest)
+        response=next(
+            message for message in candidate['protobuf']['messages']
+            if message['name']=='StreamConversationEventsResponse'
+        )
+        response['fields'][0].pop('oneof')
+        with self.assertRaisesRegex(ManifestError,'stream response wire drift'):
+            validate(candidate)
+
+    def test_stream_establishment_semantics_drift_fails(self) -> None:
+        candidate=copy.deepcopy(self.manifest)
+        candidate['rules']['streamEstablishment']['success']='wait for the first event'
+        with self.assertRaisesRegex(ManifestError,'stream establishment contract drift'):
             validate(candidate)
 
     def test_snapshot_materialization_value_drift_fails(self) -> None:

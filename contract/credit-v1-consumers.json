@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "status": "active",
+  "owner": "kokoro-billing",
+  "consumers": {
+    "kokoro-billing": {
+      "language": "typescript",
+      "output": "src/generated/proto",
+      "protoFiles": [
+        "kokoro/credit/v1/credit.proto"
+      ]
+    }
+  }
+}

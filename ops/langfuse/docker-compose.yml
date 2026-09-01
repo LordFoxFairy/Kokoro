@@ -1,12 +1,12 @@
-# Kokoro 观测栈：langfuse（单独 stack）。
+# ARCHIVED HISTORICAL FIXTURE — Kokoro 观测栈：langfuse（单独 stack；不属于当前 Phase 1 产品部署入口）。
 #
-# 架构（方案 A）：langfuse 复用 Kokoro 基建层的 redis + minio，自留其硬依赖的 postgres + clickhouse。
+# 这是可选的历史观测 fixture：它复用外部 shared network 上的 redis + minio，自留其硬依赖的 postgres + clickhouse。
 #   - redis：接基建 redis，用逻辑库 db 1 与产品(db 0)隔离，无口令。
 #   - 对象存储：接基建 minio（服务名 minio，S3 端口 9100），用专用 bucket（默认 langfuse）。
 #   - postgres / clickhouse：langfuse 专属引擎（mysql/mongo 无法顶替），随本 stack，走内网，不暴露到产品网。
 #
-# 前置：先起基建层（创建命名网络 ${KOKORO_NETWORK:-kokoro-net} 与 redis/minio）：
-#   KOKORO_ENV_FILE=deploy/.env docker compose --env-file deploy/.env -p kokoro -f docker-compose.infra.yml up -d
+# 前置：当前 Phase 1 Compose 不提供 minio/shared observability network；如需使用本 fixture，先由观测环境
+# 单独提供命名网络 ${KOKORO_NETWORK:-kokoro-net}、redis 和 minio，再执行下方建桶命令。
 # 并在基建 minio 建好 bucket（一次性）：
 #   docker run --rm --network ${KOKORO_NETWORK:-kokoro-net} --entrypoint sh minio/mc -c \
 #     "mc alias set k http://minio:9100 <MINIO_USER> <MINIO_PASSWORD> && mc mb -p k/${LANGFUSE_S3_BUCKET:-langfuse}"

@@ -1,7 +1,13 @@
 # Kokoro 能力债务审计
 
-状态：2026-07-22
-方法：以代码/实测为准校正台账自报；结构、可观测、真模型落点、共享层均本轮亲验。
+状态：2026-07-22 历史审计；不定义当前 Skill/Storage owner。
+方法：以当时代码/实测为准校正台账自报；结构、可观测、真模型落点、共享层均为当轮亲验。
+
+> 2026-08-22 覆盖：文中“hub 写、agent 直读同库”仅是当时实现事实。当前设计将 GA 原生
+> DeepAgents Skill 的 CRUD/direct reader 留在 GA，将 Client/租户 Skill 的管理面迁至
+> Capability/Storage public contract；详见 `docs/kokoro-handbook/technical/backend-design/09-agent.md`、
+> `docs/kokoro-handbook/modules/kokoro-agent.md` §6 与
+> `docs/kokoro-handbook/technical/29-capability-storage-runtime-architecture.md` §9。
 
 ---
 
@@ -50,8 +56,8 @@
   验去重与补偿）。这是全系统最扎实的部分。
 - **认证**：magic-link + BFF 密封 cookie（浏览器不持 bearer）+ RS256/JWKS + kid 轮换 + nonce 防 CSRF
   + 邮箱/IP 双维限频；生产 fail-closed。
-- **能力中台 hub**：skill 上传/审核/版本/启停、MCP 注册 + secret broker（值只进不出）、读写分离同库
-  （agent 直读不跨 hub RPC）；S3 包体持久化亲验。
+- **能力中台 hub（历史事实）**：当时 skill 上传/审核/版本/启停、MCP 注册 + secret broker（值只进不出）、读写分离同库
+  （agent 直读不跨 hub RPC）；这条 Hub 直读链已被上述 2026-08-22 迁移边界取代。
 - **计费闭环（mock）**：credit micros/hold-settle、整数扣费（ceil 向上取整）、payment mock 收银台、
   幂等 grant（order:<id> 不双发）、quota 月窗。真栈 e2e 全绿。
 - **沙箱**：docker backend 对真 docker 往返验证（bind mount/exec/双向文件/复用/回收）。

@@ -1,5 +1,18 @@
 # 部署
 
+> **阶段 1 当前裁决（2026-09-01）**：只部署 `kokoro` Web、`kokoro-bff` 和 `kokoro-agent` 三仓
+> 闭环；Chat 属于 BFF 模块，不使用 Gateway 或独立 Session/Chat 仓库。运行时存储只采用
+> PostgreSQL + Redis。本文下方的旧服务清单和 MySQL/Mongo Compose 仅保留为历史物理记录，
+> 不得作为新部署模板；当前基线以 [storage-baseline-v1](../../../contract/spec/storage-baseline-v1.md)
+> 与 `kokoro/docs/deployment.md` 为准。
+
+> **状态：历史 V1 deployment 记录。**本文的三仓 runtime 引用、Session/Agent 共读 workspace、旧 service
+> base URL 与资产 source 只保留现有物理基线。当前 target 的部署边界以
+> [operations Docker/Kubernetes](../operations/docker-and-k8s.md) 与
+> [36 GA 整体 Agent 技术方案](36-ga-final-agent-technical-plan.md) §9 为准：Compose/Kubernetes 只接入
+> endpoint/secret/volume/sandbox/S3Workspace/readiness，GA catalog 才拥有 Feature/Agent，
+> Session 不读取 GA workspace 或从部署配置获得 Agent/Skill/graph。
+
 本文定义全系统的服务清单、基础设施、本地 Compose、Kubernetes 多副本形态、环境变量和多 Pod 红线。运行时三仓内部架构见 [03-agent-architecture](03-agent-architecture.md)、[04-session-architecture](04-session-architecture.md)、[05-web-architecture](05-web-architecture.md)；平台子仓约定见 [02-platform-architecture](02-platform-architecture.md)。
 
 ## 部署目标
@@ -33,13 +46,15 @@ kokoro-litellm  外部/独立 LiteLLM proxy（不改源码）。
 ## 基础设施
 
 ```text
-MySQL          平台核心管理和账务（单 database: kokoro）。
-Mongo          session、agent state、job、artifact 的长期真源。
+MySQL          平台核心管理和账务；各 owner 的结构化元数据与生命周期事实。
+Mongo          Session/Agent 运行态文档（checkpoint、memory、消息/事件 projection）。
 Redis          run queue、raw event stream、live fanout、短租约、限流（传输非长期库）。
-对象存储        文件产物。
+S3-compatible  Storage 的 Blob/Asset/Artifact bytes；默认部署为 Docker MinIO。
 ```
 
-存储边界细则见 [06-data-storage](06-data-storage.md)。Redis 只承载传输与短期锁，恢复以 Mongo 和 MySQL 为准。Workspace 文件面的三档部署（单节点本地默认 / 共享卷 / e2b+对象存储）见 [ADR-009](../decisions/ADR-009-workspace-storage.md) 与 [operations/docker-and-k8s](../operations/docker-and-k8s.md)。
+存储边界细则见 [06-data-storage](06-data-storage.md)。Redis 只承载传输与短期锁，恢复以各 owner 的 Mongo/MySQL 真相为准。
+`kokoro-storage` 的 bytes 不进入 Mongo，而是通过统一 S3-compatible adapter 访问 MinIO、AWS S3 或 Ceph RGW。
+Workspace 文件面的三档部署（单节点本地默认 / 共享卷 / e2b+对象存储）见 [ADR-009](../decisions/ADR-009-workspace-storage.md) 与 [operations/docker-and-k8s](../operations/docker-and-k8s.md)。
 
 ## Docker Compose（本地）
 

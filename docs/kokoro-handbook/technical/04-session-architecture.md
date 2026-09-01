@@ -1,5 +1,14 @@
 # Session 架构
 
+> **状态：V1 物理会话记录，不是当前 GA target。**本页保留当前 `sessions/messages/runs/SSE` 的实现事实；其中
+> `RunRequest.runtime`、Session 构造 `RuntimeConfig`、CapabilitySnapshot 或 Session 选择 Agent 的段落均不得作为
+> 新实现输入。目标 Session 只拥有产品对话投影、admission、可信 `feature_key` 和安全 ProductEvent 投影；同一 thread 的
+> Agent 会话执行态由 GA checkpoint 中的 DeepAgents 原生 state 或 official `SwarmState` 持有。先读
+> [36 GA 总体方案](36-ga-final-agent-technical-plan.md)、[38 公共运行契约](38-ga-public-runtime-contract.md)、
+> [ADR-015](../decisions/ADR-015-agent-state-and-feature-context.md)、
+> [ADR-018](../decisions/ADR-018-ga-thread-context-compaction-and-memory.md) 和
+> [kokoro-session 目标模块](../modules/kokoro-session.md)。
+
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](11-agent-session-web-v1-runtime.md)。
 三仓通用聊天链路见：
@@ -7,48 +16,39 @@
 
 ## 定位
 
-`kokoro-session` 是三仓里的会话事实源。它拥有聊天窗口、消息、run、
-浏览器事件、snapshot、SSE 和 replay 语义。
+`kokoro-session` 的下列内容是 V1 物理实现，不代表当前目标 owner。目标架构中，GA 新增独立的
+`chat_messages/chat_events`，作为用户聊天历史与实时 replay 的 canonical 来源；Session 只拥有 ProductSession、
+鉴权、Chat API facade、snapshot 和 AG-UI/SSE 投影。
 
 它不执行 agent，不渲染 UI，不读取 agent checkpoint。
 
-## V1 能力范围
+## 目标能力范围
 
 ```text
-sessions / messages / runs / session_events。
-同 session 单 active run。
-构建 RunRequest 并投递给 agent。
-接收 agent raw events 并归一化为 browser-facing session events。
-Mongo 长期持久化。
-Redis run queue、raw event stream、live fanout、locks。
-SSE live + replay。
-HITL control 透传。
+ProductSession / active run admission。
+通过 Root generated contract 发送 Launch/Control/Fork/Cleanup。
+从 GA chat_messages 读取历史，从 GA chat_events 读取 replay/live。
+AG-UI/SSE 鉴权、cursor 与产品投影。
+Studio Job/Artifact 的 JobRef-keyed 卡片投影。
 ```
 
-V1 不支持 session SQLite runtime，不开放同 session 多 active run。
+不支持 session SQLite runtime；同一 Session 只允许一个 active Run。
 
 ## 核心对象
 
 ```text
-ChatSession
-  siteId / sessionId / ownerUserId / title / activeRunId / status
+ProductSession
+  session_id / tenant_ref / subject / feature_key / active_run_id / lifecycle
 
-ChatMessage
-  siteId / sessionId / messageId / runId / role / content / parts / status
+SessionRunView (GA Run 的产品投影)
+  session_id / run_id / state / projected_seq / terminal
 
-AgentRun
-  siteId / sessionId / runId / threadId
-  inputMessageId / assistantMessageId / status
-
-SessionEvent
-  siteId / sessionId / runId / eventId / sseId / event / payload / createdAt
-
-RunRequest
-  runId / threadId / input / runtime / context / trace
+ChatHistoryView / ChatEventView
+  由 GA chat_messages/chat_events 查询结果映射而来；不是 Session canonical store
 ```
 
-Session 的聊天展示主数据是 `messages`，不是每次从 events 重放。
-`session_events` 用于 replay/live/audit/debug。
+Session 的聊天展示来自 GA `chat_messages`；实时/replay 来自 GA `chat_events`。
+Session 自己只保留产品投影和 cursor，不再维护第二份 canonical 消息/事件表。
 
 ## API
 
@@ -80,48 +80,39 @@ eventWatermark
 
 `eventWatermark` 是服务端内部 replay 水位，不是 Web 业务 cursor。
 
-## RunRequest 构建
+## Launch 请求
 
-Session 从以下来源构建 RuntimeConfig 和 RuntimeContext：
+Session 只构建 Root `LaunchRunRequest` 的产品输入与可信身份：
 
 ```text
-SiteContext
-消息窗口和 summary
-用户输入 content/contentRef/attachments
-model policy
-skills enablement
-MCP server/tool grants
-built-in tools
-subagents
-backend/sandbox policy
-permissions and interrupt_on
-trace context
+feature_key + session_id
+ExecutionIdentity (tenant_ref + actor + subject + assertion)
+用户输入 content + Storage AssetRef[]
+可选 requested_model_label / billing_ref / trace_ref
 ```
 
-`threadId = sessionId`，但只在 Agent/LangGraph 边界使用 `threadId` 命名。
+GA 自己把 `session_id` 映射为 LangGraph `thread_id`；Session 不传 thread/namespace selector。
 
 ## 存储
 
-Mongo:
+Session DB（仅产品元数据与投影）:
 
 ```text
 sessions
-messages
-runs
-session_events
-run_requests
-runtime_configs
-outbox
+session_run_views
+session_message_views (可选缓存，不是 canonical)
+session_event_cursors
 ```
+
+上表仅保留历史代码考古。目标实现不把 `messages/session_events` 作为 canonical 聊天事实，也不读取或修改
+LangChain/DeepAgents checkpoint 表；GA 自己的 `chat_messages/chat_events` 归 `kokoro-agent` 的 GA 存储边界。
 
 Redis:
 
 ```text
-run request queue
-raw run events
-live bus
-control stream
-lease keys
+live publish / replay hint
+control forwarding
+projection lease keys
 ```
 
 MySQL:

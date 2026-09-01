@@ -1,5 +1,12 @@
 # Skill Hub 与 MCP Hub 产品手册
 
+> **状态：历史 V1 Capability Hub 产品视图。**本文的统一 registry、Skill 版本、grant 与 MCP 启用态模型不定义
+> 当前 GA runtime。目标以 [33 GA-first SkillRuntime](../technical/33-ga-first-skill-runtime-architecture.md)、
+> [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 与
+> [ADR-022 动态 Capability 重验](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md)
+> 为准：GA 默认 Skill 自己闭环，CA 仅拥有用户/session Skill logical path、visibility 与 CRUD，动态 Skill 只经
+> `find_skills/load_skill` 进入 GA workbench；不引入 Session Skill binding、全量 grant 或 Skill 版本产品平台。
+
 > 2026-07-07 修订：产品上可以继续呈现 Skill Hub / MCP Hub 两个分区，但服务边界不拆
 > 两套 registry。能力控制面采用一个 capability hub，内部按 kind 区分 skill / mcp /
 > subagent，共享 namespace 归属、启用态、版本、审核、配额和 grant 骨架。

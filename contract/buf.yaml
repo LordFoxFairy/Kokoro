@@ -1,9 +1,15 @@
 version: v2
 modules:
   - path: proto
+    excludes:
+      - proto/kokoro/credit
 lint:
   use:
     - STANDARD
 breaking:
   use:
     - FILE
+  except:
+    # Moving the frozen field-1 event into the additive readiness oneof is wire-safe
+    # and is covered byte-for-byte by test_chat_stream_ready_compatibility.py.
+    - FIELD_SAME_ONEOF

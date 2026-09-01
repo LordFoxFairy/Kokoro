@@ -1,5 +1,10 @@
 # kokoro-payment 技术方案
 
+> 迁移状态：历史 runtime。新支付、结算和逆向履约能力进入 `kokoro-billing` 的 Payment Context；
+> 详见 [`technical/31-billing-subrepository-architecture.md`](../technical/31-billing-subrepository-architecture.md)。
+
+> 执行级设计以 [Payment 设计卡](../technical/backend-design/04-payment.md) 为准。
+
 ## 定位
 
 kokoro-payment 是 plan、order、subscription、payment event、refund 的权威模块。

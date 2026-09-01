@@ -1,69 +1,109 @@
-# Kokoro 单机全栈部署（docker-compose）
+# Kokoro 阶段 1 部署
 
-一台主机上用 `docker compose` 起全栈：infra（mysql/mongo/redis/minio/litellm）+ 平台七服务 + session/agent/web。
-架构=基建与业务两个独立 compose 项目，经命名网络 `kokoro-net` 相连：
-- 基建：`docker-compose.infra.yml`（唯一一套 mysql/redis/mongo/minio/litellm）。
-- 业务：`docker-compose.app.yml`（migrate + 7 平台服务 + session/agent/web，一律 env URL 连基建）。
-- **一键编排：`deploy/provision.sh`**（infra→build→migrate→服务→幂等 seed，全流程）。变量模板：`deploy/.env.example`。
+阶段 1 的部署闭环只有三个子仓库：
 
-> 目标形态之一（单机）。k8s 形态见 `kokoro-platform/deploy/k8s/`。
-
-## 前置
-- Docker + Docker Compose v2
-- 域名（web 对外）+ 反代/TLS（compose 只暴露端口，TLS 由前置 nginx/caddy 承载）
-
-## 步骤
-
-### 1. 配置
-```bash
-cp deploy/.env.example deploy/.env.prod   # provision.sh 默认读 deploy/.env.prod（.env.* 已 gitignore）
-```
-把 `deploy/.env.prod` 里所有 `CHANGE_ME` 换成真值：
-
-- **内部服务凭据**（6 个 `KOKORO_INTERNAL_SECRET_*`）+ **web 信封密钥** + **mock webhook secret**：各生成独立强随机
-  ```bash
-  openssl rand -hex 32
-  ```
-- **RS256 签发私钥**（`KOKORO_USER_JWT_PRIVATE_KEY`）：
-  ```bash
-  openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out user_jwt.pem
-  # 填入 .env 时单行化（PEM 换行转 \n），或改用支持多行的 env 注入方式
-  ```
-- **MySQL 密码**：`MYSQL_ROOT_PASSWORD` 与所有 `DATABASE_URL_*` 里的密码保持一致
-- **KOKORO_SITE_ID**：与下方 seed 的站点一致（`site-<key>`）
-- **KOKORO_WEB_ORIGIN**：真实对外域名
-
-### 2. 起栈（一键）
-```bash
-bash deploy/provision.sh deploy/.env.prod
-```
-脚本按序：① 起基建 + 等 mysql healthy + 幂等建 S3 桶；② `docker compose ... build` 全镜像 + `run --rm migrate`（各平台 DB `prisma migrate deploy`）；③ 起 7 平台服务 + session/agent/web + 等 healthz；④ 幂等 seed（model 内置目录 / 运营数据 / 站点 active / 计价 / 积分包+mock 网关）。首次构建较慢（多镜像）。
-
-> 手动分步（等价）：`docker compose --env-file deploy/.env.prod -p kokoro-infra -f docker-compose.infra.yml up -d` → `docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml build && ... run --rm migrate && ... up -d`。
-
-### 3. 站点绑定（首次一次性；seed 已建站点，此步确认 host→site 解析）
-- provision.sh 的 seed 已建站点（key 与 `KOKORO_SITE_ID` 对应）。多域名/自定义站点在 admin 后台补域名绑定。
-- **首个 admin operator**：初期 `KOKORO_ADMIN_AUTH_MODE=dev`（固定 operator，无真鉴权），仅用于首次进后台；**生产务必切 `oidc`/`proxy`**（见 .env 注释）。
-
-### 4. 验证
-```bash
-docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml ps   # 各服务 running
-curl -fsS http://<host>:4211/healthz                # user 健康(平台服务同法:4201/4221/4231/4241/4251/4290)
-curl -fsS http://<host>:3900/metrics | head         # session 指标(session 亦有 /healthz)
-# 浏览器开 http://<host>:3000 → 落地页 → 登录（magic-link 现走 log 档,链接看 user 服务日志）
-docker compose --env-file deploy/.env.prod -p kokoro -f docker-compose.app.yml logs kokoro-user | grep magic
+```text
+kokoro Web → kokoro-bff/modules/chat → kokoro-agent worker
+                                      ├─ PostgreSQL：持久化真源
+                                      └─ Redis：stream / queue / lease / wakeup / cache
 ```
 
-## 上线硬化清单（部署跑通后）
-- [ ] `KOKORO_ADMIN_AUTH_MODE` dev → oidc/proxy（真后台鉴权）
-- [ ] SMTP 接入 → `KOKORO_AUTH_MAGIC_DELIVERY=log` 改 `smtp`（登录邮件真发；任务 #57）
-- [ ] 真模型：`KOKORO_LOCAL_FAKE_MODEL=1`→`0` + litellm 配 provider 凭据（GLM 等，归 kokoro-model）
-- [ ] 真支付网关（有商户后；当前 mock 闭环）
-- [ ] 前置 TLS 反代 + 仅暴露 web:3000 / admin:4290 到可信网络
-- [ ] DB/Redis/Mongo 备份策略；卷（kokoro-mysql/mongo/redis/workspace）持久化确认
+Web 不连接数据库，BFF 不直连 Agent 的数据库或 Redis。Chat 不再拆成独立 Session/Chat 服务，Gateway
+也不在部署路径中。
 
-## 说明
-- **存储**：workspace/deliveries/hub 包体默认用共享本地卷（`deploy/storage.yaml`，单机口径）。横向扩展/多 pod/多机切 S3：设 `KOKORO_STORAGE_FILE=./deploy/storage.s3.yaml` + `KOKORO_WORKSPACE_S3_ACCESS_KEY/SECRET_KEY`（取 minio root 账密）；桶 `kokoro` 由 `provision.sh` 幂等创建。S3 路径已对真 minio 往返验证（package put/get+幂等、workspace archive 键布局）。
-- **计费**：生产 `KOKORO_BILLING_MODE=enforce`（余额不足拒 run）。
-- **MCP egress**：生产 `KOKORO_MCP_EGRESS_MODE=strict`（拒私网/环回，防 SSRF）。
-- **端口**：web 3000 / session 3900 / litellm 4000 / 平台 4201-4251 / admin 4290。生产只把 web、必要时 admin 暴露到公网，其余留内网。
+## 组件选择
+
+阶段 1 只启动两个 stateful 基础设施：
+
+- **PostgreSQL 17**：Agent checkpoint、RunLedger、Chat execution facts，以及后续各业务 owner 自己的 SQL schema。
+- **Redis 7**：worker stream、队列、租约、心跳、wakeup、短缓存和限流；Redis 丢失后从 PostgreSQL 恢复，不能作为长期真源。
+
+不启动 MySQL、MongoDB、独立 Session 或 Gateway。MinIO、LiteLLM 也不属于阶段 1 必需依赖；对象存储和模型 provider
+以后按业务能力以独立 endpoint/secret 接入。
+
+阶段 2 的正式业务仓库不由 Root Compose 拼装。它们各自维护 PostgreSQL/Redis adapter、迁移、Docker 和 CI，
+由 BFF 按 Root contract 接入：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
+`kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。Root 的 Phase 1 Compose 只启动 Web、BFF、Agent
+和本地 PostgreSQL/Redis，不复制这些业务仓的实现或数据库 schema。
+
+## 一键起栈
+
+前置：Docker Compose v2、`curl`。Root 不 vendoring 任何独立子仓源码；从全新 Root checkout
+开始时，先用下面的 additive bootstrap 准备同目录的正式仓库：
+
+```bash
+bash deploy/clone-active-repositories.sh
+```
+
+它只会 clone 缺失的正式仓库，并校验现有目录的 Git root 与 `origin`；不会 reset、删除或覆盖本地改动。
+`kokoro-agent` 使用 Root 已声明的 gitlink 初始化，其他正式仓库保持独立 Git 仓库。
+
+```bash
+cp deploy/.env.phase1.example deploy/.env.phase1.local
+# 编辑 deploy/.env.phase1.local，至少替换 CHANGE_ME_postgres_password 和 CHANGE_ME_bff_shared_secret
+bash deploy/provision-phase1.sh deploy/.env.phase1.local
+```
+
+启动内容：
+
+- `postgres`：本地 5432，卷 `kokoro-phase1-postgres`
+- `redis`：本地 6379，卷 `kokoro-phase1-redis`
+- `kokoro-bff`：4300，`KOKORO_BFF_MODE=mock`
+- `kokoro-agent`：Redis worker，无 HTTP 端口
+- `kokoro-app`：3000，阶段 1 preview auth
+
+本地访问：
+
+```text
+http://dev.kokoro.localhost:3000/
+http://127.0.0.1:4300/healthz
+```
+
+停止：
+
+```bash
+docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
+  -f deploy/docker-compose.phase1.yml down
+```
+
+## 生产配置
+
+生产复制同一模板为 `deploy/.env.phase1.prod`，不改变量结构，只填生产值。生产可以把
+`KOKORO_AGENT_DATABASE_URL` 和 `KOKORO_REDIS_URL` 指向托管 PostgreSQL/Redis；这时可从
+`deploy/docker-compose.phase1.yml` 移除对应本地 stateful service，但应用契约不变。
+
+`KOKORO_DOMAIN` 是当前站点域名，例如 `kokoro.miaokit.cloud`。它只由服务端读取，用于标准
+`Forwarded` 和跨服务上下文；浏览器不携带自定义 `X-Domain` 作为信任依据。
+
+生产 Web、BFF、Agent 分别使用各自仓库的生产 Dockerfile：
+
+```bash
+docker build -t ghcr.io/LordFoxFairy/kokoro-app:TAG ./kokoro
+docker build -t ghcr.io/LordFoxFairy/kokoro-bff:TAG ./kokoro-bff
+docker build -t ghcr.io/LordFoxFairy/kokoro-agent:TAG ./kokoro-agent
+```
+
+正式发布由各子仓自己的 GitHub tag workflow 触发；普通 push 不发布镜像。Cloudflare 直连 Web 时只
+替换 Web deployment target，BFF/Agent 仍按内部 service endpoint 和同一份 v1 contract 对接。
+
+## 契约与门禁
+
+每个子仓独立闭环，不通过共享源码、共享数据库或跨仓 import：
+
+```bash
+(cd kokoro-agent && uv run ruff check . && uv run pyright && uv run pytest)
+(cd kokoro-bff && pnpm check)
+(cd kokoro && pnpm check)
+```
+
+根仓只维护 `contract/` 的版本化 API/AIP 索引、[storage-baseline-v1](../contract/spec/storage-baseline-v1.md)
+和验收文档。跨仓联调交换 contract fixture、兼容性结果和发布元数据。
+
+## 已移出 Root 的历史入口
+
+旧的双 Compose 编排、旧 k8s manifests、旧全栈 provisioning、旧 workspace 配置，以及依赖
+MySQL/Mongo/Session/Platform 的验证脚本已移到 Root 外：
+`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/`。它们只供迁移考古和回滚取证，不是开发、CI 或生产入口。
+
+后续接入阶段 2 业务仓时，必须由各自仓库完成 PostgreSQL adapter、Redis adapter、迁移、测试和 Docker/CI 闭环，
+再接入新的业务 BFF contract；不要把旧组件重新接回阶段 1。

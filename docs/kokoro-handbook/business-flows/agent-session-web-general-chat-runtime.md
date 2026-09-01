@@ -1,307 +1,69 @@
 # Agent / Session / Web 通用聊天运行链路
 
-本文只描述 `kokoro-web`、`kokoro-session`、`kokoro-agent`
-三仓内部运行链路。账务、支付、模型目录、站点解析、公开 Hub 和后台运营
-只作为外部前置条件，不在本文展开。
+状态：当前三仓目标链路，2026-08-22。详细 owner 见
+[36 GA 总体方案](../technical/36-ga-final-agent-technical-plan.md)，Root/legacy contract 切换见
+[38 GA 公共运行契约](../technical/38-ga-public-runtime-contract.md)，HITL 见
+[12 Agent HITL](../technical/12-agent-hitl-tool-interception.md)。
 
-## 目标
-
-用户在 Web 中发送一条消息后，系统创建一个可恢复、可审计、可取消的
-agent run，并把最终回复沉淀为 session messages。
-
-## 参与模块
+## 职责
 
 ```text
-kokoro-web
-  输入消息、加载 snapshot、消费 EventSource、渲染 thread/activity、
-  提交 HITL control 和 ask_user_question 回答。
+Web
+  选择 App/Feature、提交输入/附件/可选模型标签、渲染 Session snapshot/SSE/HITL。
 
-kokoro-session
-  拥有 session/messages/runs/events，构建 RunRequest，
-  投递 run request，归一化 raw events，SSE replay/live。
+Session
+  验证产品入口与权限；保存 feature_key、消息/run 投影和 SSE；投递最小受信 command。
 
-kokoro-agent
-  claim run，使用 DeepAgents/LangChain/LangGraph 执行模型、tools、
-  Skills、MCP、subagents、backend/sandbox，输出 raw events。
+GA
+  一次性 normalizer、ledger claim、FeatureCatalog、DeepAgents、官方 Swarm、
+  checkpoint/HITL/effect、Skill runtime 与 private execution evidence。
 ```
 
-## 前置条件
-
-```text
-SiteContext 已由上游解析并传入 session 请求。
-用户有访问 session 的权限。
-本次 run 的 model、skills、MCP、tools、subagents、backend、permissions 已可解析。
-kokoro-session 连接 Mongo + Redis。
-kokoro-agent 连接 Redis + agent checkpoint/memory backend。
-同 session 没有 active run，或本请求命中 idempotencyKey。
-```
+Web 和 Session 都不构建 `RuntimeConfig`，不选择 Agent、Tool、Skill、MCP、member、graph、provider 或 sandbox。
 
 ## 主流程
 
-1. 用户在 `kokoro-web` composer 输入消息并提交。
-2. Web 生成 `idempotencyKey`。
-3. Web 调用 `POST /sessions/:sessionId/messages`。
-4. Session 先按 `idempotencyKey` 查重试命中。
-5. 未命中时，Session 校验 SiteContext、用户权限和 active run。
-6. Session 在 Mongo 中写入 user `ChatMessage`。
-7. Session 创建 assistant placeholder `ChatMessage`。
-8. Session 创建 `AgentRun`，设置 `ChatSession.activeRunId = runId`。
-9. Session 解析本次 `RuntimeConfig`：model、tools、skills、MCP、subagents、backend、permissions、interrupt_on。
-10. Session 构建 `RuntimeContext`：site/user/workspace/project/session、消息窗口、summary、refs。
-11. Session 构建 `RunRequest`。
-12. Session 持久化 `run_requests` 和 `runtime_configs`。
-13. Session 写 Redis `kokoro:runs:requests`。
-14. Web 收到 `runId`、`inputMessageId`、`assistantMessageId`。
-15. Web 调用 `GET /sessions/:sessionId` 拉取权威 snapshot。
-16. Web 打开 `GET /sessions/:sessionId/events` EventSource。
-17. Agent worker 从 Redis 消费 `run.request`。
-18. Agent 使用 `runId` lease 防重复执行。
-19. Agent 使用 `threadId` 作为 LangGraph `configurable.thread_id`。
-20. Agent 根据 `RuntimeConfig` 调用 `create_deep_agent(...)`。
-21. Agent 加载 tools、skills、MCP tool wrappers、subagents、backend、permissions、interrupt_on。
-22. Agent 开始 LangGraph streaming loop。
-23. Agent 把模型 delta、thinking、tool、todo、subagent、HITL、terminal 转成 raw events。
-24. Agent 写 Redis `kokoro:run:{runId}:events`。
-25. Session relay 串行读取该 run raw events。
-26. Session strict parse raw event；非法事件记录诊断并跳过。
-27. Session normalize 成 browser-facing `SessionEvent`。
-28. Session DB-first 写 Mongo `session_events`，同步更新 messages/runs projection。
-29. Terminal event 同 commit 更新 run terminal，清 `activeRunId`。
-30. Mongo commit 成功后，Session publish 到 Redis `kokoro:session:{sessionId}:live`。
-31. SSE endpoint 把事件推给 Web。
-32. Web strict parse transport event。
-33. Web 按 `eventId` 去重，按 SSE 到达顺序应用 reducer。
-34. `message.delta` 更新 assistant 临时显示。
-35. `message.completed` 用最终内容覆盖 delta。
-36. `run.completed(status=completed|cancelled|timeout)` 或 `run.failed`
-    到达时，Web 收束 streaming 状态。
+1. Web 在 App 内选择 Feature，提交消息、opaque AssetRef 与可选模型标签。
+2. Session/BFF 校验 tenant、App、Feature、权限与产品计费资格；Session 创建或复用固定 `feature_key` 与 immutable tenant + subject；每次 Launch 重新受理 actor 对该 tenant + subject 的代表关系，并原子检查 active Run。
+3. 若没有 active Run 或前一 Run 已 terminal，Session 落消息、分配新 `run_id`，向 GA 投递 Root `LaunchRunRequest`；其中没有 preset/capability selector 业务语义。
+4. 若已有 `running` Run，普通文本返回 `run_active`，不落 Session 消息、不投递 Root command；只有当前 native interrupt 的 matching HITL/cancel 才投递 `ApplyControlRequest(same run_id)`。
+5. GA ingress 一次性规范化 Launch 为 canonical `RunRequest` 并 durable claim；control 只由该 claim 在当前 native interrupt boundary 幂等应用。
+6. GA 以 `feature_key` 取得内置 Feature；单 Agent 直接由 DeepAgents 执行，需要 peer 接手时由官方
+   Swarm 初始化 `active_agent`，后续 Run 从原生 checkpoint 恢复当前 peer。
+7. `AgentFactory` 将 Feature 声明转换为 DeepAgents 参数并 invoke/resume；后台隔离工作使用 DeepAgents
+   native subagent。GA 不创建 WorkflowCompiler、CompiledGraph、RuntimeContext 或自有 graph/state。
+8. GA 先将安全 ProductEvent 写入 `chat_events`，再发布 Redis live；Session 查询/replay 这些事实并投影 reply owner 的消息、活动、HITL、初始 Job/Artifact card 与 terminal，再 SSE 给 Web。GA CreateJob effect 只写 `StudioJobLinked(JobRef)`；Session 以 JobRef 读取 Studio snapshot 并消费/replay StudioJobEvent 刷新同一张 card。GA 不订阅 Job 状态。
+9. HITL decision/reject/cancel 经 Session 授权后作为同一 `run_id` 的 control 送回 GA，按同一 Feature 与原生
+   checkpoint 恢复或终态；Browser 断线不影响 GA recovery。
 
-## HITL 流程
-
-1. Agent 运行时命中 `interrupt_on`。
-2. LangGraph 产生 interrupt，包含 `action_requests` 和 `review_configs`。
-3. Agent 映射为 raw `tool.awaiting_approval`，保留：
+## 一致性与恢复
 
 ```text
-tool name
-arguments
-description
-allowed_decisions
+message idempotency       Session admission
+run claim / lease         GA ledger
+checkpoint concurrency    GA runtime_namespace:thread_id gate
+external effect replay    GA effect identity
+product event replay      GA chat_events durable facts + Session query/replay projection
+model billing             provider-accepted invocation_id + subject-bound Billing usage receipt
 ```
 
-1. Session DB-first 写 `SessionEvent` 并 SSE 推给 Web。
-2. Web 展示 approve/reject/edit/cancel。
-3. 用户提交后，Web 调用 `POST /sessions/:sessionId/runs/:runId/control`。
-4. Session 校验 run 归属、权限和状态。
-5. Session 写 Redis `kokoro:run:{runId}:control`。
-6. Agent 读取 control，构造：
+Session 有 `running` run 时后续普通输入返回 `run_active`，不创建第二个 Launch、并发 graph 或 checkpoint writer；awaiting interrupt 的 matching HITL/cancel 保留同一 `run_id`。
+只有 terminal 后的下一条普通用户消息才创建新的 `run_id`；它仍读取同一个 `thread_id=session_id` checkpoint。worker
+restart/reclaim 从 ledger 中同一 canonical RunRequest 恢复；Session relay/browser 离线时不阻塞执行。
 
-```python
-Command(resume={"decisions": [...]})
-```
+## 动态能力与产物
 
-1. Agent 用同一个 `threadId` 恢复 LangGraph 执行。
+- default Skill 由 GA direct catalog 提供；user/session Skill 仅经 `find_skills/load_skill` -> Capability path -> Storage
+  content 进入 GA workbench。
+- Studio Job、Asset、Artifact 均经 public contract；GA S3Workspace 是可选 sandbox adapter，不替代 Artifact。
+- provider 接受的模型调用按 `invocation_id` 计费；GA usage receipt 带 `ExecutionIdentity.subject` 的最小 `billing_subject` 与可选 `billing_ref`，Billing 自己定位 payer；RuntimeNamespace 不参与扣费。token 不作为产品计费单位。
 
-`respond` 只用于 `ask_user_question`。普通危险工具拒绝必须是 `reject`。
-
-## ask_user_question 流程
-
-1. 模型调用 `ask_user_question`。
-2. Agent 触发 HITL-style interrupt。
-3. Web 渲染为问题卡片，而不是审批卡片。
-4. 用户填写答案或选择选项。
-5. Web 通过 control 提交 `respond`。
-6. Agent 把用户回答作为 ask_user_question 工具结果继续执行。
-
-## Subagent 流程
-
-配置型或默认子代理：
+## 验收
 
 ```text
-RuntimeConfig.subagents
-  -> create_deep_agent(subagents=...)
-  -> DeepAgents task tool
-```
-
-临时 delegate：
-
-```text
-模型提出 name/description/system_prompt/task
-  -> permissions.subagent_create
-  -> ask/allow/deny
-  -> 仅授予 RuntimeConfig 子集能力
-  -> 执行并返回 summary
-```
-
-临时子代理不能默认继承全部工具，不能默认再创建子代理。
-
-## 刷新和断线恢复
-
-页面刷新：
-
-```text
-Web -> GET /sessions/:sessionId
-Web 用 snapshot 重建 thread/activity。
-如果 activeRun 存在，Web -> GET /sessions/:sessionId/events。
-```
-
-EventSource 瞬断：
-
-```text
-浏览器使用标准 Last-Event-ID 自动重连。
-Session 用 Last-Event-ID 作为内部 replay anchor。
-Web domain 不保存 lastResumeId。
-```
-
-Last-Event-ID 缺失、过期或未知：
-
-```text
-Session 可从 snapshot eventWatermark 之后开始 replay。
-Web 用 eventId 去重。
-必要时用户刷新页面，snapshot 是最终权威。
-```
-
-Mongo replay 到 Redis live tail：
-
-```text
-1. Session 捕获 Redis live stream tail id。
-2. 从 Mongo replay 水位之后的事件。
-3. 从 captured tail id 之后 tail live bus。
-4. 重叠事件由 eventId 去重。
-```
-
-不允许通过轮询 Mongo 追 token。
-
-## 异常流程
-
-```text
-同 session 已有 active run
-  若不是同 idempotencyKey 重试，POST /messages 返回 session_run_active。
-
-idempotencyKey 重试
-  返回首次创建的 messageId/runId，不重复写消息。
-
-Redis run request 投递失败
-  run 标记 enqueue_failed，清 activeRunId，Web 显示可重试。
-
-Agent worker 崩溃
-  run lease 过期后可重新 claim。
-  eventId 保证重复 raw/session event 幂等收敛。
-
-Session relay 崩溃
-  已 DB commit 的事件可 replay。
-  未 DB commit 的事件不能已经发给 Web；因此必须 DB-first。
-
-Malformed raw event
-  Session 记录诊断并跳过该 event。
-  后续 terminal event 仍应落地。
-
-HITL 超时
-  Agent 产出 run.completed(status=timeout) 或 run.failed。
-  Session 清 activeRunId。
-
-用户取消
-  Web -> session control cancel。
-  Agent 中止，输出 run.completed(status=cancelled) 或 run.failed。
-```
-
-## 数据变化
-
-### Mongo: `kokoro_session`
-
-```text
-sessions
-  activeRunId: null -> runId -> null
-
-messages
-  新增 user message
-  新增 assistant placeholder
-  delta 期间可节流更新 assistant draft
-  completed 时写最终 assistant content
-
-runs
-  新增 run
-  running / awaiting_approval / completed / failed / cancelled / timeout
-
-run_requests
-  持久化本次 RunRequest
-
-runtime_configs
-  持久化本次已解析 RuntimeConfig
-
-session_events
-  写 browser-facing events，用于 replay/live/audit
-
-outbox
-  可选；DB commit 后可靠 publish live
-```
-
-### Redis
-
-```text
-kokoro:runs:requests
-kokoro:run:{runId}:events
-kokoro:session:{sessionId}:live
-kokoro:run:{runId}:control
-lease keys
-```
-
-### Web 本地
-
-```text
-可保存 draft、activeSessionId、UI collapsed state。
-不保存权威 run terminal status。
-不保存业务 cursor 或 lastResumeId；seq 只作为 session 事件里的 render order 随事件折叠。
-```
-
-## 幂等和一致性
-
-```text
-POST message
-  idempotencyKey + sessionId + userId
-
-Run claim
-  runId lease
-
-同 session 串行
-  Mongo activeRunId 条件写 + Redis session lease
-
-Session event
-  eventId 唯一索引去重
-
-Replay anchor
-  SSE id / Last-Event-ID 是传输层内部值
-
-排序
-  V1 依赖单 active run + session relay 串行
-  Replay 用 Mongo append order
-  Web 渲染用 SSE 单连接发送顺序
-```
-
-## 用户可见结果
-
-```text
-消息发送后出现用户消息和 assistant 占位。
-流式回复稳定显示。
-Thinking/tool/todo/subagent 活动在 activity UI 展示。
-需要审批时出现明确 approve/reject/edit/cancel 控件。
-ask_user_question 时出现问题输入卡片。
-刷新后不丢消息，不重复显示同一个 event。
-失败时 assistant turn 进入失败态，可重试。
-```
-
-## 验收标准
-
-```text
-同 session 并发提交两条消息，只允许一个 active run。
-刷新 active run 页面后，snapshot 正确，EventSource 可继续。
-断开 live bus 后，历史仍能从 Mongo snapshot/replay 恢复。
-eventId 重复投递不重复渲染、不重复落库。
-Web 不读取 cursor/order 字段；seq 只作同一 run 内 UI 交错。
-Agent 不写 session Mongo。
-Session 不读 agent checkpoint。
-run.completed.status 在 Web 可见。
-tool.awaiting_approval 包含 description 和 allowed_decisions。
-Production session 不存在 SQLite runtime。
-Production agent 不默认 local_shell。
+Browser payload 与 Session record 不携带 Agent/runtime recipe。
+GA default-only run 在 CA/Storage 未请求或暂不可用时仍可启动。
+terminal 后续聊才创建新 run_id；active `running` 文本返回 `run_active`，matching HITL/cancel 才控制原 run_id，二者都没有第二份 active_agent 或 graph state；只有 Swarm 使用 active_agent。
+Session 投影可刷新和 SSE replay；GA checkpoint 可独立恢复，且 ProductEvent 不含 WorkItem/task 控制、raw thinking/tool/subagent/sandbox payload。
+Chat/Music/Image/Video/Code/Creative 共用同一三仓运行链路。
 ```

@@ -13,7 +13,7 @@
     "60-model",
     "99-cross-capability-relations"
   ],
-  "ownerTableCount": 50,
+  "ownerTableCount": 51,
   "checkpointerTableCount": 4,
   "tables": {
     "site": [
@@ -75,6 +75,7 @@
       "model_provider",
       "model_definition",
       "model_revision",
+      "model_label",
       "model_routing_policy",
       "model_provider_health_state"
     ],

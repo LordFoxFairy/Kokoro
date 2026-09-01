@@ -99,8 +99,8 @@ owner/wrong-mode paths.
   candidate command and waits for readiness. This is the required recovery path, not an in-process adapter swap.
 
 `openai_slice_a.py` is a test-only OpenAI Chat Completions server. For the first request containing user text
-`slice-a-hitl`, its streaming response contains exactly one `request_human` tool call with stable ID
-`call_slice_a_approval`, JSON arguments `{"kind":"approval","prompt":"Approve Slice A?"}`,
+`slice-a-hitl`, its streaming response contains exactly one `ask_user_question` tool call with stable ID
+`call_slice_a_approval`, JSON arguments `{"question":"Approve Slice A?","choices":["Approve","Reject"]}`,
 `finish_reason="tool_calls"` and usage `{prompt_tokens:11, completion_tokens:7, total_tokens:18}`. When the
 request history contains that tool result, it streams `Slice A approved.` with usage
 `{prompt_tokens:19, completion_tokens:4, total_tokens:23}`. Any other model/prompt returns 400. The fixture test
@@ -329,7 +329,7 @@ git -C /tmp/kokoro-web-slice-a commit -m "chore(web): consume Slice A IAM and Ch
 
 Keep the current httpOnly AES-GCM envelope and Origin/CSRF fences. Replace `AuthConfig` legacy `userBaseUrl/sessionBaseUrl/siteId/hubBaseUrl/paymentBaseUrl` with exact IAM/Chat endpoints, workload credential and the validated server-only Host → SiteContext binding. `site.ts` normalizes the request Host and resolves it locally from that immutable allowlist before `RequestMagicLink`; there is no external resolution adapter or browser-controlled fallback.
 
-Map IAM `RequestMagicLink/ConsumeMagicLink/RefreshSession/Logout/GetSession` into the existing routes and envelope. The Slice A envelope contains exactly `principalId`, `siteId`, `organizationId`, `authSessionId`, `accessToken`, and `refreshToken`. It contains no Project, Conversation or Agent namespace; those are Chat-owned results created only when the user starts a conversation. Remove old User/Team namespace semantics.
+Map IAM `RequestMagicLink/ConsumeMagicLink/RefreshSession/Logout/GetSession` into the existing routes and envelope. The Slice A envelope contains exactly seven fields: `principalId`, `siteId`, `organizationId`, `authSessionId`, `accessToken`, `refreshToken`, and `refreshCommandId`. The unpredictable `refreshCommandId` is sealed beside the current `refreshToken` and MUST NOT be derived predictably. A lost `RefreshSession` response retries the same token and command ID; after a delivered success, Web seals a fresh random command ID beside the successor token. Presenting the old token without its command ID or with a different command ID triggers refresh-family revocation. The envelope contains no Project, Conversation or Agent namespace; those are Chat-owned results created only when the user starts a conversation. Remove old User/Team namespace semantics.
 
 Team, Hub, Billing and Shared routes are explicit Slice A feature-off responses and their modules/config paths must not read legacy endpoints. Their UI entry points render unavailable state; they are not silently proxied to dormant Platform services.
 

@@ -1,6 +1,12 @@
 # 会话删除（V2-M1 实施规格：软删除）
 
-- 状态：实施规格（2026-07-06 裁定修订：**软删除**——session 打状态位即完成；
+> **状态：历史 V1 删除规格。**本页的“Session 软删后 agent 侧一概不动”只记录旧实现，不能作为目标新代码的依据。
+> 当前 delete 顺序以 [ADR-018](../decisions/ADR-018-ga-thread-context-compaction-and-memory.md) 与
+> [38 公共运行契约](38-ga-public-runtime-contract.md) 为准：Session 停止输入并终止 active run，随后 durable 投递最小
+> `CleanupThread`；GA 只清 checkpoint/workbench/lock/private evidence，`ThreadCleaned` 后 Session 才 tombstone
+> 产品投影；Storage Artifact 与 Billing settlement 各自保留自己的生命周期。
+
+- 历史状态：实施规格（2026-07-06 裁定修订：**软删除**——session 打状态位即完成；
   **agent 侧一概不动**（checkpoint/工作区/ledger 原样保留，磁盘不是稀缺项）；
   冷数据归档不做）
 - 取代 technical/15 §2A 的硬删级联 saga（该方案作为"若未来需要物理清除"的

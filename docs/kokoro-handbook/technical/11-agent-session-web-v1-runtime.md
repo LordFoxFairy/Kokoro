@@ -1,5 +1,14 @@
 # Agent / Session / Web V1 标准运行时方案
 
+> 状态：V1 三仓交互基线。它定义 Web → Session → Agent 的职责和 transport 语义；Agent
+> 当前内部目录、S3Workspace、Capability/Storage 源码边界以
+> [09-agent](backend-design/09-agent.md)、[kokoro-agent 技术方案](../modules/kokoro-agent.md)
+> 与 [29 Storage 架构](29-capability-storage-runtime-architecture.md) 为准；完整业务链、Session
+> checkpoint 连续性、动态 Skill 与 fork/cleanup 的目标决策以
+> [36 GA 整体 Agent 最终技术方案](36-ga-final-agent-technical-plan.md) 为准。本文后半部的
+> `RuntimeConfig.skills` 全量 mount、namespace profile、`assets/`、旧技能物化等实现注记仅作 V1
+> 演进记录，不能直接生成新代码。
+
 本文只约束 `kokoro-agent`、`kokoro-session`、`kokoro-web`
 三个子仓的 V1 通用聊天运行时。平台、账务、支付、模型目录、
 官方后台和公开 Hub 只作为上游能力来源，不在本文展开实现。
@@ -598,9 +607,12 @@ Session 的聊天展示主数据是 `messages`，不是每次从 events 重放�
 ```text
 checkpoints
 memories
+chat_messages
+chat_events
 ```
 
-Agent checkpoint/memory 不被 Session 读取，也不作为 Web 展示真源。
+Agent checkpoint/memory 不被 Session 读取，也不作为 Web 展示真源。`chat_messages/chat_events` 是 GA 自己的
+用户聊天数据，使用独立的 GA ID，不镜像 LangChain native state。
 
 ### Redis
 

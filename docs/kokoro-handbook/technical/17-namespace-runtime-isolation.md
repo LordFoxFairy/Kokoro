@@ -1,9 +1,16 @@
 # Namespace 运行时隔离
 
-状态：2026-07-07 修订
-范围：kokoro-web / kokoro-session / kokoro-agent / capability hub
+状态：**历史实现说明**，2026-07-07 修订；不作为 Feature-first GA target 输入。
+范围：旧 kokoro-web / kokoro-session / kokoro-agent / capability hub namespace 链路
 
-## 结论
+> **目标架构更正（2026-08-23）**：外部 Browser、Session、IAM caller 不再向 GA 传递 `namespace`。
+> 上游只提交服务端构造的 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`，GA ingress 使用
+> `RuntimeIdentityResolver` 派生内部、不透明 `RuntimeNamespace`。目标 request、recovery、cleanup 与 owner recheck
+> 以 [GA 公共运行契约](38-ga-public-runtime-contract.md) 和
+> [ADR-022](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md) 为准；本文件以下内容仅解释 V1
+> `session.namespace/context.namespace` 的旧实现记录。
+
+## V1 基线结论（不是目标 contract）
 
 GA 侧只认 `namespace`。
 

@@ -1,6 +1,13 @@
-# ADR-012：后端子仓库与 DDD 分层规范
+# ADR-012：后端子仓库与 DDD 分层规范（历史全局拆仓决策）
 
-- 状态：已接受
+状态：**历史全局拆仓决策**，2026-08-22。本文的通用目录/依赖原则可作考古；其中 `kokoro-chat` 独立会话 owner 与旧存储拆分不覆盖当前 Feature-first GA target。
+
+当前 Agent/Session/Capability owner 以 [ADR-015](ADR-015-agent-state-and-feature-context.md)、[36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 和 [38 公共运行契约](../technical/38-ga-public-runtime-contract.md) 为准。
+
+
+> 本 ADR 的仓库边界、模块化和 DDD 分级继续有效；其中 PostgreSQL baseline 与 SQL-first 存储决策已由 [ADR-013](ADR-013-mysql-mongo-final-storage.md) 取代。
+
+- 历史状态：已接受于旧全局拆仓阶段；当前 Agent/Session/Capability owner 以 ADR-015 与 36/38 为准。
 - 日期：2026-08-14
 - 适用范围：Kokoro 业务后端子仓库
 

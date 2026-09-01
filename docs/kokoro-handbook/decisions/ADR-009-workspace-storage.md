@@ -1,6 +1,15 @@
 # ADR-009 Workspace 文件面的多 Pod 存储与访问
 
-## 状态
+> **状态：历史 V1 workspace transport 记录。**本文的 Session `WorkspaceReader`、Session files endpoint、
+> shared-volume/S3 archive 双侧读取属于迁移前物理实现，不定义当前产品 Artifact 或 GA workbench 关系。
+> 当前边界以 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) §7、
+> [29 Storage/ObjectStore](../technical/29-capability-storage-runtime-architecture.md) 与
+> [ADR-018 Thread Context](ADR-018-ga-thread-context-compaction-and-memory.md) 为准：GA sandbox 自己拥有
+> workbench，`S3Workspace` 为 MinIO-first、可替换 AWS S3/Ceph/R2 的可选 GA deployment adapter；用户交付
+> 必经 Storage Asset/Artifact lifecycle。Compose/Kubernetes 只提供连接、secret、volume 和 readiness 配置，不参与
+> Agent 组装，也不让 Session 直读 GA workspace。
+
+## 历史状态
 
 Accepted（2026-07-05；technical/06、08 与 operations/docker-and-k8s 已同步引用）
 

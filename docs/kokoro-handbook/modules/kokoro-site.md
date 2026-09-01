@@ -1,5 +1,7 @@
 # kokoro-site 技术方案
 
+> 迁移期来源模块，目标并入 `kokoro-iam`。执行设计见 [IAM 设计卡](../technical/backend-design/01-iam.md)。
+
 ## 定位
 
 kokoro-site 是站点事实和 SiteContext 解析的唯一权威。它的存在是为了避免 web、user、credit、payment、model 各自解析域名和站点策略。

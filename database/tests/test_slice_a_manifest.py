@@ -81,6 +81,7 @@ EXPECTED_TABLES = {
         "model_provider",
         "model_definition",
         "model_revision",
+        "model_label",
         "model_routing_policy",
         "model_provider_health_state",
     ],
@@ -101,14 +102,14 @@ def test_slice_a_manifest_is_exact() -> None:
         "slice": "slice-a",
         "schema": "kokoro",
         "segments": EXPECTED_SEGMENTS,
-        "ownerTableCount": 50,
+        "ownerTableCount": 51,
         "checkpointerTableCount": 4,
         "tables": EXPECTED_TABLES,
     }
     owner_count = sum(
         len(names) for owner, names in EXPECTED_TABLES.items() if owner != "langgraph"
     )
-    assert owner_count == 50
+    assert owner_count == 51
     assert len(EXPECTED_TABLES["langgraph"]) == 4
     encoded = json.dumps(manifest)
     assert "chat_share" not in encoded

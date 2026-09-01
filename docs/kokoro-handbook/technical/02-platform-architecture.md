@@ -44,7 +44,8 @@ payment_*  kokoro-payment
 
 每个子仓配置独立 `DATABASE_URL_<NAME>`，可以指向同一个库，也可以在未来部署层拆成不同库。拆库只是部署拓扑变化，不改变领域边界。
 
-存储边界（MySQL 账务、Mongo 产物、Redis 传输）见 [06-data-storage](06-data-storage.md)。
+存储边界（各 owner 的 MySQL 结构化事实、Session/Agent 的 Mongo 运行态、Storage 的
+S3-compatible bytes、Redis 运行时传输）见 [06-data-storage](06-data-storage.md)。
 
 ## 稳定服务名和端口
 

@@ -1,0 +1,87 @@
+# Kokoro Phase 1: Web + BFF + Agent, backed only by PostgreSQL + Redis.
+# This file is the active three-repository deployment closure. The older full-stack
+# compose remains migration history and is not part of the Phase 1 runtime path.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kokoro}
+      POSTGRES_USER: ${POSTGRES_USER:-kokoro}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    ports: ["127.0.0.1:${KOKORO_POSTGRES_PORT:-5432}:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    volumes: ["kokoro-phase1-postgres:/var/lib/postgresql/data"]
+    networks: [default]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:${KOKORO_REDIS_PORT:-6379}:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes: ["kokoro-phase1-redis:/data"]
+    networks: [default]
+    restart: unless-stopped
+
+  kokoro-bff:
+    build: { context: ../kokoro-bff }
+    env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
+    environment:
+      KOKORO_BFF_HOST: 0.0.0.0
+      KOKORO_BFF_PORT: 4300
+      KOKORO_BFF_MODE: ${KOKORO_BFF_MODE:-mock}
+      KOKORO_DOMAIN: ${KOKORO_DOMAIN:-dev.kokoro.localhost}
+    ports: ["4300:4300"]
+    networks: [default]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4300/healthz').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  kokoro-agent:
+    build: { context: ../kokoro-agent }
+    env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
+    environment:
+      KOKORO_REDIS_URL: ${KOKORO_REDIS_URL:-redis://redis:6379/10}
+      KOKORO_AGENT_DATABASE_URL: ${KOKORO_AGENT_DATABASE_URL:-postgresql://kokoro:CHANGE_ME_postgres_password@postgres:5432/kokoro}
+      KOKORO_AGENT_DATABASE_SCHEMA: ${KOKORO_AGENT_DATABASE_SCHEMA:-kokoro_agent}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [default]
+    restart: unless-stopped
+
+  kokoro-app:
+    build: { context: ../kokoro, dockerfile: Dockerfile }
+    env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SESSION_PREVIEW: ${NEXT_PUBLIC_SESSION_PREVIEW:-1}
+      KOKORO_DOMAIN: ${KOKORO_DOMAIN:-dev.kokoro.localhost}
+      KOKORO_BFF_BASE_URL: http://kokoro-bff:4300
+      KOKORO_INTERNAL_SECRET_WEB_BFF: ${KOKORO_INTERNAL_SECRET_WEB_BFF:-}
+    depends_on:
+      kokoro-bff: { condition: service_healthy }
+    ports: ["${KOKORO_WEB_HOST_PORT:-3000}:3000"]
+    networks: [default]
+    restart: unless-stopped
+
+volumes:
+  kokoro-phase1-postgres:
+  kokoro-phase1-redis:
+
+networks:
+  default:
+    name: ${KOKORO_NETWORK:-kokoro-net}

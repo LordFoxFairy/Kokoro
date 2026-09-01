@@ -1,87 +1,66 @@
 # General Chat 链路
 
-## 目标
+状态：当前 Feature-first 产品链路，2026-08-22。整体架构见
+[36 GA 总体方案](../technical/36-ga-final-agent-technical-plan.md)、
+[37 统一入口与产品架构](../technical/37-product-experience-agent-studio-architecture.md) 与
+[38 公共运行契约](../technical/38-ga-public-runtime-contract.md)。
 
-用户在通用对话里发一条消息，系统稳定地完成一次 agent run：选模型/技能/工具、执行、流式产出、落库、可刷新恢复，并按实际用量扣费。
+## 产品语义
 
-## 参与模块
-
-```text
-kokoro-web      发消息、消费 SSE、reducer 折叠 thread。
-kokoro-session  建 conversation/active run、组装 manifest、归一化事件、持久化、发 SSE。
-kokoro-agent    按 manifest 执行 LangChain/LangGraph，产出原始执行事件。
-kokoro-model    解析可用 model binding。
-kokoro-credit   quote / hold / capture / release。
-```
-
-## 前置条件
-
-```text
-SiteContext 已解析（siteId/userId/workspaceId）。
-能力可用（entitlement 允许 general.chat）。
-余额充足。
-```
+General Chat 是 Chat App 的 `FEATURE_KEY_GENERAL_ASSIST` Feature。用户选择“聊天”这个产品功能，不选择 `general`、`music`、
+`creative` 等 Agent 名；当前 `FEATURE_KEY_GENERAL_ASSIST` 是只包含 `general` Agent 的静态 Feature；需要隔离工作时使用 DeepAgents native subagent。
 
 ## 主流程
 
 ```text
-1. web POST 用户消息到 session；session 建/取 Conversation，落 user Message，创建唯一 active run。
-2. session 组装 AgentRunInput（site/user/workspace/session/run 身份、context、
-   model runtime、permission mode、backend policy、skills、MCP servers/tools、
-   内置工具、trace context），
-   写 run.request 到 Redis（kokoro:runs:requests）。
-3. agent 取请求，credit.quote -> credit.hold（idempotencyKey）。
-4. agent model.resolve（按 SiteModelPolicy），调用 LiteLLM 或 direct provider。
-5. agent 产出原始执行事件（message/tool/todo/subagent/thinking/run.*）到 kokoro:run:{run_id}:events。
-6. session strict parse + normalize + 去重，写 Mongo（messages/runs/session_events），
-   经 kokoro:session:{id}:live 经 SSE 推给 web。
-7. run 结束按实际用量 credit.capture，写 ledger + usage；run.completed 终态。
-8. web reducer 折叠为 assistant 消息和活动流。
+1. Browser/Entry 选择 Chat App 的 FEATURE_KEY_GENERAL_ASSIST Feature，提交消息、附件和可选模型标签。
+2. Session 校验 App/Feature/权限/计费资格；创建或读取 Session(feature_key=FEATURE_KEY_GENERAL_ASSIST)。
+3. Session 落用户消息、assistant placeholder、run admission，并投递最小 Root command。
+4. GA ingress 规范化为 canonical RunRequest；ledger claim 后取得 worker-local Feature 与 checkpoint。
+5. GA 从 FeatureCatalog 取得 `general` Agent，由 DeepAgents native runtime 继续；其后台工作只使用 DeepAgents native subagent，不写自有 `active_agent`。
+6. General Assistant 按 Agent/Feature 的固定工具与 Skill/MCP grant 调用能力或 Studio command；`FEATURE_KEY_GENERAL_ASSIST` 不发生 Swarm handoff。
+7. GA 将安全 ProductEvent 写入 `chat_events` 并发布 Redis live；Session 查询/replay 后投影消息、活动、HITL、Job/Artifact card 与 terminal，再 SSE 给 Browser。
+8. provider 接受的每次 ModelInvocation 以 invocation_id 结算；Studio Job 与 Artifact 各自走 owner 的生命周期。
 ```
 
-## 异常流程
+## Chat 内组合专业能力
 
 ```text
-余额不足        hold 失败 -> 402，提示充值。
-模型未授权      resolve 空 -> 403。
-provider 失败    credit.release 释放冻结，run.failed。
-超时            hold 过期自动释放，run.completed(status=timeout)。
-断线/刷新       web 重新 GET /sessions/:id snapshot，再 attach active run 续收。
+用户：为新品发布准备文案、海报和配乐
+  -> General Assistant 使用 DeepAgents native subagent 完成文案、视觉和音乐辅助工作
+  -> 已获允许的 Image / Music task 通过 Studio public command 创建 Job
+  -> Job / Artifact 状态经 GA event -> Session card 返回
+  -> General Assistant 汇总结果
 ```
 
-## 数据变化
+这些 target 是 private task，不是 Session Agent 或 Swarm peer；它们不生成 `active_agent`，也不直接写 SSE。仍然只有
+`FEATURE_KEY_GENERAL_ASSIST` 的同一 GA native conversation state；用户打开完整 Music Studio 时才创建 `FEATURE_KEY_MUSIC_CREATE` Feature 的新 Session/thread。
+
+## 恢复、HITL 与 fork
+
+- 前一 Run terminal 后的普通后续消息继续同一 checkpoint；active Run 的普通文本返回 `run_active`，不入队、不写 checkpoint。只有 matching HITL/cancel 作为同一 `run_id` 的 control，Session 不重新选 Agent 或重建图。
+- HITL control 由 Session 验证和投递；GA 使用同一 Run 的 ExecutionIdentity 与同一 checkpoint 恢复。
+- fork 创建固定同一 `feature_key=FEATURE_KEY_GENERAL_ASSIST` 与 immutable tenant + subject 的 target Session。GA 的 `ForkConversation` 只从
+  source terminal Run 提取可展示 user/final-assistant text 为一次性 private `ConversationSeed`；首个 target Run 写入 fresh state。它不复制
+  `active_agent`、native messages、workbench、动态 Skill、执行记录或 graph/checkpoint，首次 Launch 重新受理 actor/assertion。
+- Browser 断线后从 Session snapshot/SSE 恢复；GA ledger/checkpoint 的恢复不依赖 Browser 在线。
+
+## 计费与失败
+
+| 情况 | 结果 |
+|---|---|
+| provider 接受模型请求 | 以 `invocation_id` 计一次；reconciliation/recovery/outbox replay 不双扣。 |
+| dynamic Skill/Asset 不可用 | default-only Chat 继续；该工具返回可解释失败。 |
+| Studio Job 失败 | Job 自己终态；GA 返回 Job/Artifact 状态，不冒充完成。 |
+| Feature/Agent 装配失败 | 模型调用前 terminal；不产生外部 effect。 |
+| V1 optional `S3Archiver` archive 失败 | sandbox 本地写结果保留；不等同 Artifact 失败，也不是 target durable-workbench recovery。 |
+
+## 验收
 
 ```text
-Conversation / Message      Mongo。
-AgentRun / session_events   Mongo（eventId 去重，segment_id 分段）。
-CreditHold / LedgerEntry / UsageRecord   MySQL（见 credit-reserve-commit-refund）。
+Chat UI 不提交 Agent、Skill、MCP、graph 或 provider 配方。
+Session DB 没有 Agent/runtime snapshot；GA `ConversationState` 是唯一 Agent conversation state。
+FEATURE_KEY_GENERAL_ASSIST 只使用静态 Agent 声明与 native subagent；外部能力不超过 Agent/Feature/RunScope 交集。
+断线、HITL、worker restart、effect replay 与 billing invocation 都可幂等恢复。
+完整 Music Studio 走新 Feature Session，不污染原 Chat thread。
 ```
-
-## 幂等和一致性
-
-```text
-requestId        全链路追踪。
-idempotencyKey   hold/capture/release。
-eventId          会话事件去重锚点，不承担排序。
-排序真源         session 写 Mongo 的追加顺序 + SSE 单连接发送顺序。
-单 active run     同 conversation 同时只允许一个 active run。
-```
-
-## 用户可见结果
-
-```text
-流式 assistant 回复、工具/子代理活动流（默认折叠）、artifact card。
-失败转产品语言错误并允许重试。
-余额按实际用量减少，usage 可见。
-```
-
-## 验收标准
-
-```text
-30 秒内可开始第一轮有效任务。
-刷新/断线后能恢复并继续 active run。
-扣费按实际用量、幂等、可审计。
-浏览器不直接消费 agent 原始事件。
-```
-
-相关：[credit-reserve-commit-refund](credit-reserve-commit-refund.md)、[model-resolution](model-resolution.md)、[agent-handoff](agent-handoff.md)、[../technical/03-agent-architecture.md](../technical/03-agent-architecture.md)、[../technical/04-session-architecture.md](../technical/04-session-architecture.md)。

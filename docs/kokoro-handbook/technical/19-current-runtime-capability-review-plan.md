@@ -9,17 +9,19 @@
 日期：2026-07-08  
 范围：kokoro-web / kokoro-session / kokoro-agent；platform 仅需交付 V1 前置的 `principal` 表 + 签发（§3.5 第 2 条），其余平台能力（capability hub、secret store 完整实现）V1 用最小 reader/adapter，不在本轮派实现。
 
-## 0. 读法与事实源
+## 0. 历史阅读边界
 
-本文是当前主线的 **human review source of truth**。
+本文**不是**当前主线的 human review source of truth；标题中的“当前”仅保留历史日期语义。它描述的
+`principalId -> namespace`、registry 四层、selection、`RunCapabilityBinding`、`skill_list/skill_read`、stage 骨架与
+ContextAssembler 都不进入当前 target。当前评审以 00、36、38、33、29、ADR-015~022 为准。
 
 | 文档 | 角色 | 使用方式 |
 |---|---|---|
-| 本文 | 人类评审 + 派工依赖图 | 看主线、边界、TODO、验收 |
-| `18-capability-namespace-auth-sandbox-artifacts.md` | 详细附录 | 查字段、时序、完整风险说明 |
-| `docs/handoffs/2026-07-07-runtime-buildout-next-handoff.md` | worker 派工单 | 按本文依赖图拆执行任务 |
+| 本文 | 方案演进记录 | 只查历史背景、已识别风险与旧字段。 |
+| `18-capability-namespace-auth-sandbox-artifacts.md` | 同期详细附录 | 只查历史时序，不新增 target 设计。 |
+| `docs/handoffs/2026-07-07-runtime-buildout-next-handoff.md` | 历史派工单 | 不再按其拆分新工作。 |
 
-如果三份文档出现冲突，执行顺序和架构边界以本文为准；handoff 必须同步修正。
+三份历史文档发生冲突时，不再用它们裁定 target；以 `00-system-overview` 的权威层级与 36 的总体方案为准。
 
 评审时只需要先确认四件事：
 
@@ -157,7 +159,7 @@ sequenceDiagram
 |---|---|---|
 | A. Identity | ownerId / principalId / namespace | platform `principal` + WP-0 |
 | B. Capability | skill / MCP 的 catalog / selection / binding / use（稳定 adapter 工具） | WP-1 |
-| C. Business Agent Orchestration | 业务 agent 岗位定义：`AgentProfile` + 统一编排骨架 | 本轮只定边界，不建实现 |
+| C. Legacy `AgentProfile` composition（已否决） | 业务 agent 岗位定义：`AgentProfile` + 统一编排骨架 | 本轮只定边界，不建实现 |
 | D. Runtime Execution | DeepAgents graph / middleware / checkpointer / store / sandbox | WP-1 / WP-2 |
 | E. Artifact | workspace file / archive / final artifact | WP-4 |
 

@@ -1,5 +1,10 @@
 # Agent HIL 与工具拦截标准方案
 
+> 状态：HITL 行为语义专项。当前 Agent 的装配入口、guardrail 顺序、生成契约和运行时目录
+> 以 [09-agent](backend-design/09-agent.md) 与
+> [kokoro-agent 技术方案](../modules/kokoro-agent.md) 为准；本文件不重新定义它们的 owner、
+> Storage 或 Capability 边界。
+
 本文约束 `kokoro-agent`、`kokoro-session`、`kokoro-web` 在 V1 中的
 Human-in-the-loop、工具执行前后拦截、`ask_user_question`、候选结果确认和 Web 暂停点。
 
@@ -247,8 +252,9 @@ HIL:
 
 `tools/permissions.py` 负责把运行时权限策略转换为 `interrupt_on`。
 
-V1 不再使用粗粒度 `auto/default` 作为长期契约。目标是由 Session 传入已解析
-`RuntimeConfig.permissions`，Agent 只消费结果。
+V1 的这段 `RuntimeConfig.permissions` 是历史实现注记，不是当前 GA 目标。当前目标中，GA catalog 的
+`ToolPolicy/HITL policy` 直接确定工具拦截基线，`Agent ∩ Feature ∩ current owner-authorized constraint` 取交集；
+Session 只校验并透传用户对已暂停 decision 的操作，既不解析也不下发 Agent permissions。
 
 决策集合必须按工具类型收紧：
 
@@ -434,7 +440,8 @@ result:
   给 agent 和简单 Web 展示的短文本。
 
 artifact_ref:
-  大结果、候选列表、文件、结构化结果放 Mongo/artifact，不塞进 SSE 大包。
+  大结果、候选列表、文件、结构化结果通过 Storage Asset/Artifact reference 管理，不塞进 SSE 大包；
+  Session/Agent 的事件与 checkpoint 仍由各自 Mongo owner 持久化。
 
 summary:
   小型 JSON 摘要，可给 Web 展示预览。

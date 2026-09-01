@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package kokoro.credit.v1;
+
+import "google/protobuf/timestamp.proto";
+
+message CreditHold {
+  string hold_id = 1;
+  string account_id = 2;
+  string amount_micros = 3;
+  string status = 4;
+  string idempotency_key = 5;
+  google.protobuf.Timestamp expires_at = 6;
+}
+
+message CreateHoldRequest {
+  string command_id = 1;
+  string request_id = 2;
+  string account_id = 3;
+  string feature_key = 4;
+  string reason = 5;
+  string amount_micros = 6;
+  string idempotency_key = 7;
+  google.protobuf.Timestamp expires_at = 8;
+}
+
+message CreateHoldResponse {
+  CreditHold hold = 1;
+}
+
+message CaptureHoldRequest {
+  string command_id = 1;
+  string request_id = 2;
+  string hold_id = 3;
+  string actual_amount_micros = 4;
+  string reason = 5;
+  string idempotency_key = 6;
+}
+
+message CaptureHoldResponse {
+  CreditHold hold = 1;
+  string balance_after_micros = 2;
+}
+
+message ReleaseHoldRequest {
+  string command_id = 1;
+  string request_id = 2;
+  string hold_id = 3;
+  string reason = 4;
+  string idempotency_key = 5;
+}
+
+message ReleaseHoldResponse {
+  CreditHold hold = 1;
+  string available_after_micros = 2;
+}
+
+service CreditCommandService {
+  rpc CreateHold(CreateHoldRequest) returns (CreateHoldResponse);
+  rpc CaptureHold(CaptureHoldRequest) returns (CaptureHoldResponse);
+  rpc ReleaseHold(ReleaseHoldRequest) returns (ReleaseHoldResponse);
+}
