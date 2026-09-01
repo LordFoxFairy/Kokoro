@@ -10,12 +10,33 @@ uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-con
 python3 scripts/goal2/mock_cross_repository_closure.py
 python3 scripts/verify-backend-design.py
 python3 scripts/verify-repository-topology.py
-uv run pytest scripts/tests/test_repository_topology.py scripts/tests/test_slice_a_backend_runner.py -q
+uv run pytest scripts/tests/test_repository_topology.py -q
 KOKORO_ENV_FILE="$PWD/deploy/.env.phase1.example" docker compose --env-file deploy/.env.phase1.example -f deploy/docker-compose.phase1.yml config
 ```
 
 当前三仓质量门禁和容器入口见 [`../README.md`](../README.md) 与 [`../deploy/README.md`](../deploy/README.md)。
 阶段 1 只使用 PostgreSQL + Redis；正式业务仓库由各自仓库维护并经 Root contract 接入。
+
+## 当前正式仓库门禁
+
+每个仓库的 CI、Dockerfile、API contract、迁移和测试由各自仓库维护；Root 不复制实现。
+当前本地收口命令如下，命令须在对应仓库目录执行：
+
+| 仓库 | 当前门禁 |
+|---|---|
+| `kokoro` | `pnpm check` |
+| `kokoro-bff` | `pnpm check` |
+| `kokoro-agent` | `uv run ruff check src tests && uv run pyright && uv run pytest -q` |
+| `kokoro-iam` | `pnpm verify` |
+| `kokoro-system` | `pnpm lint && pnpm typecheck && pnpm test && pnpm build` |
+| `kokoro-model` | `pnpm verify:release` |
+| `kokoro-billing` | `pnpm verify` |
+| `kokoro-capability` | `npm run verify && npm run lint && npm run build` |
+| `kokoro-storage` | `npm run verify && npm run lint && npm run build` |
+| `kokoro-scheduler` | `gofmt -d . && go test ./... && go test -race ./... && go vet ./... && go build ./cmd/scheduler` |
+
+普通 push/PR 只执行质量门禁；仅 `v*.*.*` tag 进入 GHCR 生产镜像发布。历史 Session、Gateway、旧 Web
+和 Platform 测试矩阵保留在本文后半部分，仅供迁移考古。
 
 ---
 

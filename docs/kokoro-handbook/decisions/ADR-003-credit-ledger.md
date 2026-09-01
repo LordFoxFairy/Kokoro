@@ -12,7 +12,7 @@
 payment 负责"卖什么"：plan / offer / order / subscription / payment event / refund。
 credit 负责"到账什么权益、怎么消耗"：account / bucket / hold / ledger / usage / pricing / entitlement。
 payment 成功事件 -> 调用 credit.grant，由 credit 创建 EntitlementGrant 和 CreditBucket。
-CreditLedgerEntry 是唯一余额权威。默认积分和权益按 site scoped，不跨站共享。
+CreditLedgerEntry 是唯一余额权威，由 `kokoro-billing` 内部的 Credit bounded context 持有。默认积分和权益按 site scoped，不跨站共享。
 ```
 
 ## 理由
@@ -47,4 +47,4 @@ payment 直接写 credit        耦合，难扩展权益类型，退款混乱。
 
 落地扣费闭环 quote->hold->capture/release->refund（见 [credit-reserve-commit-refund](../business-flows/credit-reserve-commit-refund.md)）；payment->credit 走 grant（见 [payment-to-credit](../business-flows/payment-to-credit.md)）。
 
-相关：[kokoro-credit 模块](../modules/kokoro-credit.md)、[kokoro-payment 模块](../modules/kokoro-payment.md)。
+相关：[kokoro-billing 模块](../modules/kokoro-billing.md)。旧 `kokoro-credit` / `kokoro-payment` 仓库仅作为迁移历史保留。

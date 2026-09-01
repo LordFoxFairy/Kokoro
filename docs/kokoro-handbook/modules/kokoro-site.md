@@ -1,5 +1,7 @@
 # kokoro-site 技术方案
 
+> **历史归档（2026-09-01）**：`kokoro-site` 不再是独立子仓库。当前站点事实归 `kokoro-system`，Web/BFF 通过系统接口取得 SiteContext；本文仅保留迁移期设计，不作为当前实现依据。
+
 > 迁移期来源模块，目标并入 `kokoro-iam`。执行设计见 [IAM 设计卡](../technical/backend-design/01-iam.md)。
 
 ## 定位

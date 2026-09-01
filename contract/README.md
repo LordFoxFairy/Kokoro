@@ -25,7 +25,7 @@ python3 scripts/goal2/mock_cross_repository_closure.py
 七仓注册表。
 
 阶段 1 当前运行基线见 [storage-baseline-v1.md](spec/storage-baseline-v1.md)：新代码只使用
-PostgreSQL + Redis，Chat 由 `kokoro-bff/modules/chat` 承接，Web/BFF/Agent 三仓闭环优先于
+PostgreSQL + Redis，Chat 由 `kokoro-bff` 的 Chat 业务边界承接，Web/BFF/Agent 三仓闭环优先于
 历史 Session/Gateway 和 MySQL/Mongo 迁移材料。下文中出现的旧 owner 名称仅作为历史生成来源，
 不代表阶段 1 要重新创建或接入这些子仓库。
 
@@ -66,7 +66,7 @@ Root contract/proto + manifest
   -> owner adapter + contract/projection tests
 ```
 
-聊天边界也遵循同一规则：Root Chat DTO 定义跨仓字段；阶段 1 由 `kokoro-bff/modules/chat` 承接
+聊天边界也遵循同一规则：Root Chat DTO 定义跨仓字段；阶段 1 由 `kokoro-bff` 的 Chat 业务边界承接
 Chat 业务与 HTTP 投影，`kokoro-agent` 只负责 Run 执行、事件产出、HITL 与恢复；不再创建独立
 `kokoro-session` 或独立 `kokoro-chat` owner。LangChain checkpoint/message ID 不进入浏览器 Chat contract。实现细节分别记录在
 `kokoro/docs/integration/chat-bff-contract-v1.md`、`kokoro-bff/docs/api/` 与 `kokoro-agent/docs/agent/api-contract.md`。

@@ -1,6 +1,6 @@
 # ADR-007 kokoro-platform 纳入受控子模块
 
-状态：已采纳（2026-06-28）。
+状态：已废止（2026-09-01）。当前阶段不保留 `kokoro-platform`，正式边界以阶段 2 仓库拓扑和 [ADR-028](ADR-028-postgresql-redis-runtime-baseline.md) 为准。
 
 ## 背景
 

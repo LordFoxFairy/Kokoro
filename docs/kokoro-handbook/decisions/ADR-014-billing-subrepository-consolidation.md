@@ -15,7 +15,7 @@
 CreditGrant、CreditHold、CreditJournal。两者通过 PaymentSettlement/PaymentReversal + outbox contract
 协作，绝不通过一个万能 repository 或跨表直写合并。
 
-所有业务事实使用 MySQL/InnoDB；Redis 只承担协调、短期快路径和 lease。外部 provider 不进入数据库
+所有业务事实使用 PostgreSQL；Redis 只承担协调、短期快路径和 lease。外部 provider 不进入数据库
 事务，使用 inbox/outbox 和幂等 worker 收敛。
 
 ## Alternatives

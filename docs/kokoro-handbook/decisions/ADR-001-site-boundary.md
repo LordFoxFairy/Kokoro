@@ -11,7 +11,7 @@ Kokoro 要支持多个独立 AI 产品站点（zeze.work、music.example.com、v
 ```text
 所有业务数据默认带 siteId，或能通过上级对象追溯 siteId。
 siteId 是所有查询和写入的第一过滤条件。
-入口层（web/gateway）通过 kokoro-site 把 host 解析为 SiteContext，
+入口层（Web/BFF）通过 `kokoro-system` 的站点接口把 host 解析为 SiteContext，
 业务子仓只消费 siteId，不自己从 host 推断站点。
 ```
 
@@ -24,7 +24,7 @@ siteId 是所有查询和写入的第一过滤条件。
 ```text
 缺失 siteId 的业务写请求必须拒绝。
 后台查询默认按 siteId 过滤，只有 platform super admin 可跨站且必须审计。
-web/gateway 不能绕过 SiteContext。
+Web/BFF 不能绕过 SiteContext。
 ```
 
 ## 替代方案（已否决）

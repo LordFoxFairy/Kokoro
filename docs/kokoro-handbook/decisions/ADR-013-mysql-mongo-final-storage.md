@@ -1,6 +1,6 @@
 # ADR-013 V1 使用 MySQL + Mongo，不引入 PostgreSQL
 
-状态：已采纳，2026-08-22
+状态：已废弃（2026-09-01）
 
 > **已废弃（2026-09-01）**：本文是旧 MySQL + Mongo 迁移阶段的历史决策，不是当前运行时规范。正式业务子仓库统一采用 PostgreSQL + Redis，当前决策见 [ADR-028](ADR-028-postgresql-redis-runtime-baseline.md)。请勿依据本文新增数据库、服务、环境变量或部署入口。
 

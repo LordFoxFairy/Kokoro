@@ -1,5 +1,7 @@
 # kokoro-web 技术方案
 
+> **历史归档（2026-09-01）**：当前正式前端仓库名称为 `kokoro`（GitHub：`kokoro-app`），会话与业务接口由 `kokoro-bff` 承接。本文保留旧三仓运行时设计，不作为当前仓库拓扑或接口实现依据。
+
 三仓 V1 运行时总方案见：
 [Agent / Session / Web V1 标准运行时方案](../technical/11-agent-session-web-v1-runtime.md)。
 HIL、`ask_user_question` 和暂停点 UI 方案见：

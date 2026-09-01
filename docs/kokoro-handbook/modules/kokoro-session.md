@@ -1,6 +1,9 @@
-# kokoro-session 模块边界
+# kokoro-session 模块边界（历史归档）
 
-状态：当前目标架构与实现边界，2026-08-30。
+状态：**历史迁移材料**，2026-09-01。`kokoro-session` 已从当前拓扑移除；Session 是
+`kokoro-bff` 内 Chat 业务边界的资源概念，不是独立仓库或当前运行服务。本页只保留旧原型考古，
+不作为当前实现、CI、Docker 或部署依据。当前 Chat 契约见
+[`kokoro/docs/integration/chat-bff-contract-v1.md`](../../../kokoro/docs/integration/chat-bff-contract-v1.md)。
 
 本页是根仓对 `kokoro-session` 的模块级说明；实现细节放在子仓
 [`kokoro-session/docs/session/technical-plan.md`](../../../kokoro-session/docs/session/technical-plan.md)，

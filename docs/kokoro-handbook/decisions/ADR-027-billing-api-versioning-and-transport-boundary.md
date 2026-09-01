@@ -57,7 +57,7 @@ application/domain 能力；只有字段或语义确实破坏兼容时才新增 
 - 异步执行使用资源状态、`operationId`/`executionId`、cursor 和 webhook，不用 HTTP 请求阻塞等待 provider；
 - 所有 mutation 使用 `Idempotency-Key`；首发 HTTP JSON 使用 `snake_case`，成功响应为 `{data, meta.request_id}`，错误响应为 `{error.code, error.message, error.request_id, error.retryable, error.details}`；不额外引入 Manus 的 `ok` 字段，HTTP status 与 `data/error` 结构已表达结果；限流返回 `429` 和 `Retry-After`；
 - webhook 按版本固定 payload schema，先验签入 inbox，再异步处理；事件保存其产生时的 schema version，不因以后 API 升级而重写历史事件；
-- MySQL 事实、状态机、ledger、outbox 和 Redis key 不按 HTTP 版本复制。
+- PostgreSQL 事实、状态机、ledger、outbox 和 Redis key 不按 HTTP 版本复制。
 
 ## Consequences
 

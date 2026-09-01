@@ -204,6 +204,15 @@ def _prepend_generated_header(path: Path, source_commit: str, manifest_sha: str)
     path.write_bytes(header + path.read_bytes())
 
 
+def _normalize_generated_text(path: Path) -> None:
+    """Keep protoc output deterministic across generators and platforms."""
+    if path.suffix not in {".py", ".ts"}:
+        return
+    text = path.read_text(encoding="utf-8")
+    normalized = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+    path.write_text(normalized, encoding="utf-8")
+
+
 def _ensure_python_packages(output: Path) -> None:
     directories = {path.parent for path in output.rglob("*.py")}
     for directory in sorted(directories):
@@ -359,6 +368,7 @@ def generate_consumer(
         for path in generated.rglob("*"):
             if path.is_file():
                 _prepend_generated_header(path, commit, manifest_sha)
+                _normalize_generated_text(path)
         if entry["includeOpenApi"]:
             http = generated / "http/slice-a-web-v1.yaml"
             http.parent.mkdir(parents=True, exist_ok=True)

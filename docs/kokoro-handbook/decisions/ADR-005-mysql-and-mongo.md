@@ -1,6 +1,6 @@
 # ADR-005 MySQL + Mongo 数据边界，不引入 PostgreSQL
 
-状态：已采纳。
+状态：已废弃（2026-09-01）。
 
 > **已废弃（2026-09-01）**：本文仅保留历史存储讨论。当前正式子仓库统一采用 PostgreSQL + Redis，当前决策见 [ADR-028](ADR-028-postgresql-redis-runtime-baseline.md)。
 

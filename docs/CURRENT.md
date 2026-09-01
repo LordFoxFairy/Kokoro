@@ -56,7 +56,7 @@ Storage 的 S3-compatible ObjectStore。
 | native Agent state、fork、delete、memory | [ADR-018](kokoro-handbook/decisions/ADR-018-ga-thread-context-compaction-and-memory.md)、[Session 生命周期](kokoro-handbook/business-flows/session-lifecycle.md) |
 | FeatureKey 与 tenant/App exposure | [ADR-021](kokoro-handbook/decisions/ADR-021-feature-key-global-catalog-identity.md)、[31 Tenant/System/Web](kokoro-handbook/technical/31-kokoro-tenant-system-architecture-v2.md) |
 | 运行事件、reply owner、JobRef card | [ADR-016](kokoro-handbook/decisions/ADR-016-orchestration-policy-and-product-event-projection.md)、[Session/GA/Web 链路](kokoro-handbook/business-flows/agent-session-web-general-chat-runtime.md) |
-| 当前本地原型目录/边界 | [Agent 设计卡](kokoro-handbook/technical/backend-design/09-agent.md)、[Agent 模块](kokoro-handbook/modules/kokoro-agent.md)、[Session 模块](kokoro-handbook/modules/kokoro-session.md) |
+| 当前本地原型目录/边界 | [Agent 设计卡](kokoro-handbook/technical/backend-design/09-agent.md)、[Agent 模块](kokoro-handbook/modules/kokoro-agent.md)、[BFF Chat 契约](../kokoro/docs/integration/chat-bff-contract-v1.md) |
 | clean-build 实现切片 | [45 GA 原型就绪审计](kokoro-handbook/technical/45-ga-prototype-readiness-audit.md)、[43 GA clean-build 切片](kokoro-handbook/technical/43-ga-clean-build-slices.md)、[38 GA 公共运行契约](kokoro-handbook/technical/38-ga-public-runtime-contract.md) |
 | Storage 与 Capability 当前原型参考 | [29 Storage target × Capability](kokoro-handbook/technical/29-capability-storage-runtime-architecture.md)、[Capability 设计卡](kokoro-handbook/technical/backend-design/05-capability.md) |
 | Feature context 基础裁决 | [ADR-015](kokoro-handbook/decisions/ADR-015-agent-state-and-feature-context.md) |

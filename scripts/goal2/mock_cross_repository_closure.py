@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = ROOT / "contract/goal2-repository-contract-manifest.json"
 
 REPOSITORIES = {
-    "kokoro-iam": ROOT.parent / "kokoro-iam",
+    "kokoro-iam": ROOT / "kokoro-iam",
     "kokoro-system": ROOT / "kokoro-system",
     "kokoro-model": ROOT / "kokoro-model",
     "kokoro-billing": ROOT / "kokoro-billing",
