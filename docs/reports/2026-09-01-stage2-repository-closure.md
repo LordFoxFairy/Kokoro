@@ -50,7 +50,7 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 | `kokoro-agent` | `4091fb2` |
 | `kokoro-iam` | `b662fce` |
 | `kokoro-system` | `2c4635f` |
-| `kokoro-model` | `0f3dbf6` |
+| `kokoro-model` | `aa8c395` |
 | `kokoro-billing` | `f2a947a` |
 | `kokoro-capability` | `204805c` |
 | `kokoro-storage` | `13c39c3` |
@@ -125,7 +125,7 @@ Root 机器索引：
 
 ## 6. 证据备注与下一阶段
 
-1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程。
+1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程，以及 Model consumer 对齐 Root v1 Proto 生成物。
 2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；Root generator baseline 为 `afd367d`，closure evidence commit 为 `69c1b0d`。
 3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 移出：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；完整文件保存在 Root 外 `Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` 与 `phase1-root-database/`。
 4. 当前 E2E 证据改由 Root 的 Stage 2 BFF mock runner 产生；它只启动子仓生产编译产物并通过 HTTP 验证，不共享业务数据库或复制源码。
