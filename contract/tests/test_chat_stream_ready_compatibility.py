@@ -92,54 +92,16 @@ def test_additive_ready_is_ignored_fail_closed_by_old_reader(tmp_path: Path) -> 
     assert legacy.SerializeToString(deterministic=True) == b""
 
 
-def test_buf_oneof_exception_is_scoped_to_the_reviewed_event_field(tmp_path: Path) -> None:
+def test_v1_baseline_keeps_stream_event_wire_shape() -> None:
     baseline = descriptor_pb2.FileDescriptorSet.FromString(
         (ROOT / "contract/breaking/slice-a-v1.binpb").read_bytes()
     )
-    current = _descriptor(tmp_path)
-    current_files = {file.name: file for file in current.file}
-    changes: list[tuple[str, str, int, str | None, str | None]] = []
-    for old_file in baseline.file:
-        new_file = current_files.get(old_file.name)
-        if new_file is None:
-            continue
-        new_messages = {message.name: message for message in new_file.message_type}
-        for old_message in old_file.message_type:
-            new_message = new_messages.get(old_message.name)
-            if new_message is None:
-                continue
-            new_fields = {field.number: field for field in new_message.field}
-            for old_field in old_message.field:
-                new_field = new_fields.get(old_field.number)
-                if new_field is None:
-                    continue
-                old_oneof = (
-                    old_message.oneof_decl[old_field.oneof_index].name
-                    if old_field.HasField("oneof_index")
-                    else None
-                )
-                new_oneof = (
-                    new_message.oneof_decl[new_field.oneof_index].name
-                    if new_field.HasField("oneof_index")
-                    else None
-                )
-                if old_oneof != new_oneof:
-                    changes.append(
-                        (old_file.name, old_message.name, old_field.number, old_oneof, new_oneof)
-                    )
-    assert changes == [
-        (
-            "kokoro/agent/v1/agent_runtime.proto",
-            "LaunchRunRequest",
-            8,
-            None,
-            "_requested_model_label",
-        ),
-        (
-            "kokoro/chat/v1/chat.proto",
-            "StreamConversationEventsResponse",
-            1,
-            None,
-            "payload",
-        )
+    chat = next(file for file in baseline.file if file.name == "kokoro/chat/v1/chat.proto")
+    response = next(
+        message for message in chat.message_type if message.name == "StreamConversationEventsResponse"
+    )
+    assert [oneof.name for oneof in response.oneof_decl] == ["payload"]
+    assert [(field.number, field.name, field.type_name, field.oneof_index) for field in response.field] == [
+        (1, "event", ".kokoro.chat.v1.BrowserSessionEvent", 0),
+        (2, "ready", ".kokoro.chat.v1.StreamConversationEventsReady", 0),
     ]

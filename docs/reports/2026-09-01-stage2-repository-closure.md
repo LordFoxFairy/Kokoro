@@ -132,3 +132,4 @@ Root 机器索引：
 5. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
 6. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
 7. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。
+8. 阶段 2 收口后重新冻结了 Root 的当前 v1 breaking image：旧的 `contract/breaking/slice-a-v1.binpb`（commit `1a993fac`，对应已废弃的旧拓扑）已移到 Root 外的 `Kokoro-archive-2026-09-01/root-legacy/contract-baselines/`；活动 Root 的同名 baseline 现在与最终 Stage 2 v1 descriptor 一致，后续普通演进继续由 Buf breaking 门禁约束。

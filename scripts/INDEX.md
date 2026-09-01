@@ -28,7 +28,7 @@ Add rendering behavior only when the machine manifest first defines it and a mut
 
 ## Current gotchas
 
-Protobuf source must already be Buf-canonical; `--check` intentionally fails on formatting drift. The first breaking image is immutable and is never regenerated in place.
+Protobuf source must already be Buf-canonical; `--check` intentionally fails on formatting drift. The active Stage 2 v1 breaking image is frozen after the finalized repository topology. Any future intentional contract reset must archive the previous image outside Root and record the reset in the closure report; ordinary additive changes must pass against the committed image.
 
 ## Current Stage 2 HTTP closure
 
