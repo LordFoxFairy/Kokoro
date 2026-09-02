@@ -1,9 +1,9 @@
 # Kokoro 阶段 1 部署
 
-阶段 1 的部署闭环只有三个子仓库：
+阶段 1 的部署闭环只有三个子仓库；Agent 执行面是可选 profile：
 
 ```text
-kokoro Web → kokoro-bff/modules/chat → kokoro-agent worker
+kokoro Web → kokoro-bff/modules/chat → kokoro-agent HTTP ingress → worker
                                       ├─ PostgreSQL：持久化真源
                                       └─ Redis：stream / queue / lease / wakeup / cache
 ```
@@ -18,7 +18,7 @@ Web 不连接数据库，BFF 不直连 Agent 的数据库或 Redis。Chat 不再
 - **PostgreSQL 17**：Agent checkpoint、RunLedger、Chat execution facts，以及后续各业务 owner 自己的 SQL schema。
 - **Redis 7**：worker stream、队列、租约、心跳、wakeup、短缓存和限流；Redis 丢失后从 PostgreSQL 恢复，不能作为长期真源。
 
-不启动 MySQL、MongoDB、独立 Session 或 Gateway。MinIO、LiteLLM 也不属于阶段 1 必需依赖；对象存储和模型 provider
+不启动 MySQL、MongoDB、独立 Session 或 Gateway。MinIO、LiteLLM、Agent 也不属于 Web+BFF 最小启动的必需依赖；对象存储和模型 provider
 以后按业务能力以独立 endpoint/secret 接入。
 
 阶段 2 的正式业务仓库不由 Root Compose 拼装。它们各自维护 PostgreSQL/Redis adapter、迁移、Docker 和 CI，
@@ -44,13 +44,29 @@ cp deploy/.env.phase1.example deploy/.env.phase1.local
 bash deploy/provision-phase1.sh deploy/.env.phase1.local
 ```
 
-启动内容：
+默认启动内容（fast profile）：
 
 - `postgres`：本地 5432，卷 `kokoro-phase1-postgres`
 - `redis`：本地 6379，卷 `kokoro-phase1-redis`
 - `kokoro-bff`：4300，`KOKORO_BFF_MODE=mock`
-- `kokoro-agent`：Redis worker，无 HTTP 端口
 - `kokoro-app`：3000，阶段 1 preview auth
+
+完整执行 profile（显式开启）额外启动：
+
+- `kokoro-agent-http`：4401，BFF 唯一 Agent 业务入口
+- `kokoro-agent`：Redis worker，执行实际 Agent loop
+
+```bash
+# Web+BFF 最小启动，不启动 Agent
+docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
+  -f deploy/docker-compose.phase1.yml up --build
+
+# Web+BFF + Agent 完整执行
+# 同时把 KOKORO_BFF_MODE=live、KOKORO_AGENT_ENABLED=1、
+# KOKORO_AGENT_BASE_URL=http://kokoro-agent-http:4401 写入 env 文件。
+docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
+  -f deploy/docker-compose.phase1.yml --profile agent up --build
+```
 
 本地访问：
 
@@ -71,6 +87,19 @@ docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
 生产复制同一模板为 `deploy/.env.phase1.prod`，不改变量结构，只填生产值。生产可以把
 `KOKORO_AGENT_DATABASE_URL` 和 `KOKORO_REDIS_URL` 指向托管 PostgreSQL/Redis；这时可从
 `deploy/docker-compose.phase1.yml` 移除对应本地 stateful service，但应用契约不变。
+
+生产按需选择两个维度：
+
+1. **Agent**：不需要执行任务时保持 `KOKORO_AGENT_ENABLED=0`，只部署 Web+BFF；需要执行时
+   同时部署 `kokoro-agent-http` 与 `kokoro-agent`，并设置 `KOKORO_AGENT_ENABLED=1` 和
+   `KOKORO_AGENT_BASE_URL`。
+2. **LiteLLM**：它是外部 OpenAI-compatible gateway，不属于 `kokoro-model` 或
+   `kokoro-agent` 必需进程。只有选择 Model 的 `litellm` transport 时，才在 Agent 环境设置
+   `KOKORO_LITELLM_ENABLED=1`、`KOKORO_LITELLM_BASE_URL` 和 `KOKORO_LITELLM_API_KEY`；
+   直接使用 OpenAI-compatible 或 Anthropic 时保持关闭。
+
+`kokoro-model` 始终可以独立启动并提供目录/解析；它不会探活、调用或拉起 LiteLLM。Model
+目录中 `transport=litellm` 只是路由元数据，是否可执行由部署的 Agent/provider profile 决定。
 
 `KOKORO_DOMAIN` 是当前站点域名，例如 `kokoro.miaokit.cloud`。它只由服务端读取，用于标准
 `Forwarded` 和跨服务上下文；浏览器不携带自定义 `X-Domain` 作为信任依据。

@@ -43,7 +43,7 @@ Slice A 的**单一机器真源**是 [`contract/slice-a-contract-manifest.yaml`]
 前置：`postgres`、`redis`、`uv`（Python）、`pnpm`（TS）。**用隔离的 Redis db（如 db10），别碰生产 db0。**
 
 ```bash
-# 1. agent worker（PostgreSQL durable facts + Redis transport）
+# 1. 可选：agent worker（PostgreSQL durable facts + Redis transport）
 cd kokoro-agent
 KOKORO_REDIS_URL=redis://127.0.0.1:6379/10 \
   KOKORO_AGENT_DATABASE_URL=postgresql://kokoro:CHANGE_ME@127.0.0.1:5432/kokoro \
@@ -58,14 +58,17 @@ cd kokoro
 pnpm dev
 ```
 
-三仓容器方式：`cp deploy/.env.phase1.example deploy/.env.phase1.local`，填入 PostgreSQL 密码后执行
-`bash deploy/provision-phase1.sh deploy/.env.phase1.local`。生产部署只使用生产镜像；Cloudflare 直连 Web 或
+三仓容器方式默认只启动 Web+BFF；需要完整执行时再按 [`deploy/README.md`](deploy/README.md) 开启 Agent
+profile，同时启动 HTTP ingress 和 worker。`cp deploy/.env.phase1.example deploy/.env.phase1.local`，填入
+PostgreSQL 密码后执行 `bash deploy/provision-phase1.sh deploy/.env.phase1.local`。生产部署只使用生产镜像；Cloudflare 直连 Web 或
 Docker 部署均通过 `KOKORO_DOMAIN` 和 BFF runtime env 配置，不把数据库连接放进浏览器。
 
 Root 当前只保留这条 Phase 1 Compose/provision 入口；阶段 2 七个正式业务仓由各自仓库发布，BFF 通过 Root
 contract 接入，不从 Root Compose 拼接业务实现。
 
-接真实模型：去掉 `KOKORO_LOCAL_FAKE_MODEL`，按 `kokoro-agent` 的 `.env`（`KOKORO_MODEL` + provider 凭据）配置。
+模型服务 `kokoro-model` 独立提供目录与解析，不执行 provider 调用；LiteLLM 是可选的外部
+OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `KOKORO_LITELLM_ENABLED=1`、
+`KOKORO_LITELLM_BASE_URL`、`KOKORO_LITELLM_API_KEY` 时才使用对应 route。
 
 ## 门禁（提交前跑）
 

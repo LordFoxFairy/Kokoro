@@ -41,6 +41,8 @@ services:
       KOKORO_BFF_PORT: 4300
       KOKORO_BFF_MODE: ${KOKORO_BFF_MODE:-mock}
       KOKORO_DOMAIN: ${KOKORO_DOMAIN:-dev.kokoro.localhost}
+      KOKORO_AGENT_ENABLED: ${KOKORO_AGENT_ENABLED:-0}
+      KOKORO_AGENT_BASE_URL: ${KOKORO_AGENT_BASE_URL:-}
     ports: ["4300:4300"]
     networks: [default]
     restart: unless-stopped
@@ -51,17 +53,43 @@ services:
       retries: 20
 
   kokoro-agent:
+    profiles: ["agent"]
     build: { context: ../kokoro-agent }
     env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
     environment:
       KOKORO_REDIS_URL: ${KOKORO_REDIS_URL:-redis://redis:6379/10}
       KOKORO_AGENT_DATABASE_URL: ${KOKORO_AGENT_DATABASE_URL:-postgresql://kokoro:CHANGE_ME_postgres_password@postgres:5432/kokoro}
       KOKORO_AGENT_DATABASE_SCHEMA: ${KOKORO_AGENT_DATABASE_SCHEMA:-kokoro_agent}
+      KOKORO_AGENT_HTTP_HOST: 0.0.0.0
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
     networks: [default]
     restart: unless-stopped
+
+  # HTTP ingress and worker are separate processes. This profile is opt-in so
+  # the default local stack remains Web+BFF only.
+  kokoro-agent-http:
+    profiles: ["agent"]
+    build: { context: ../kokoro-agent }
+    command: ["uv", "run", "--no-sync", "kokoro-agent-http"]
+    env_file: ["${KOKORO_ENV_FILE:-./.env.phase1.local}"]
+    environment:
+      KOKORO_REDIS_URL: ${KOKORO_REDIS_URL:-redis://redis:6379/10}
+      KOKORO_AGENT_DATABASE_URL: ${KOKORO_AGENT_DATABASE_URL:-postgresql://kokoro:CHANGE_ME_postgres_password@postgres:5432/kokoro}
+      KOKORO_AGENT_DATABASE_SCHEMA: ${KOKORO_AGENT_DATABASE_SCHEMA:-kokoro_agent}
+      KOKORO_AGENT_HTTP_HOST: 0.0.0.0
+      KOKORO_AGENT_HTTP_PORT: 4401
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [default]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4401/healthz', timeout=2)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   kokoro-app:
     build: { context: ../kokoro, dockerfile: Dockerfile }

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Kokoro Phase 1 deployment: only PostgreSQL + Redis + Web/BFF/Agent.
+# Kokoro Phase 1 deployment: PostgreSQL + Redis + Web/BFF by default;
+# Agent HTTP + worker are enabled explicitly with COMPOSE_PROFILES=agent.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -8,6 +9,12 @@ ENV_FILE="${1:-deploy/.env.phase1.prod}"
 [[ -f "$ENV_FILE" ]] || { echo "环境文件不存在：$ENV_FILE（cp deploy/.env.phase1.example $ENV_FILE 后填值）" >&2; exit 1; }
 ENV_FILE="$(cd "$(dirname "$ENV_FILE")" && pwd)/$(basename "$ENV_FILE")"
 export KOKORO_ENV_FILE="$ENV_FILE"
+
+# Keep the default fast. A production/local env explicitly opting into Agent
+# automatically enables both the HTTP ingress and worker Compose services.
+if grep -Eq '^KOKORO_AGENT_ENABLED=(1|true|yes|on)\s*$' "$ENV_FILE"; then
+  export COMPOSE_PROFILES="${COMPOSE_PROFILES:-agent}"
+fi
 
 COMPOSE=(docker compose --env-file "$ENV_FILE" -p "${KOKORO_PHASE1_PROJECT:-kokoro-phase1}" -f deploy/docker-compose.phase1.yml)
 "${COMPOSE[@]}" up -d --build

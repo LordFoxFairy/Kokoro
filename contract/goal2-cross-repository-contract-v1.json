@@ -25,6 +25,55 @@
     "protobuf_field_naming": "protobuf canonical field names",
     "web_projection": "BFF unwraps or projects owner transport without leaking owner-only fields"
   },
+  "runtime_profiles": {
+    "local_fast": {
+      "purpose": "快速启动 Web+BFF 业务壳，不启动 Agent 执行进程或 LiteLLM",
+      "required_services": ["kokoro-app", "kokoro-bff", "postgres", "redis"],
+      "environment": {
+        "KOKORO_BFF_MODE": "mock",
+        "KOKORO_AGENT_ENABLED": "0",
+        "KOKORO_LITELLM_ENABLED": "0"
+      }
+    },
+    "local_full": {
+      "purpose": "本地完整 Agent 执行链路",
+      "required_services": ["kokoro-app", "kokoro-bff", "kokoro-agent-http", "kokoro-agent", "postgres", "redis"],
+      "environment": {
+        "KOKORO_BFF_MODE": "live",
+        "KOKORO_AGENT_ENABLED": "1",
+        "KOKORO_AGENT_BASE_URL": "http://kokoro-agent-http:4401",
+        "KOKORO_LITELLM_ENABLED": "0 or 1"
+      },
+      "rule": "Agent HTTP ingress and worker are separate processes; LiteLLM is enabled only when an external gateway is selected."
+    },
+    "production": {
+      "purpose": "线上按能力选择独立服务，不把可选组件隐式变成必需依赖",
+      "required_services": ["kokoro-app", "kokoro-bff", "postgres", "redis"],
+      "optional_services": ["kokoro-agent-http", "kokoro-agent"],
+      "rule": "Model is independently deployable and never probes or starts LiteLLM; LiteLLM is an external optional OpenAI-compatible gateway."
+    }
+  },
+  "optional_components": {
+    "model": {
+      "required": false,
+      "role": "independent catalog and route resolver",
+      "requires_litellm": false,
+      "rule": "transport=litellm is route metadata; Model does not execute provider calls."
+    },
+    "litellm": {
+      "required": false,
+      "owner": "deployment/provider gateway",
+      "enabled_by": "KOKORO_LITELLM_ENABLED",
+      "required_when": "Agent uses a Model route whose provider is litellm",
+      "process_boundary": "external OpenAI-compatible endpoint; no LiteLLM dependency in kokoro-model"
+    },
+    "agent": {
+      "required": false,
+      "enabled_by": "KOKORO_AGENT_ENABLED",
+      "minimum_processes": ["kokoro-agent-http", "kokoro-agent-worker"],
+      "disabled_behavior": "BFF readiness remains independent; Agent/Chat execution routes return agent_not_configured"
+    }
+  },
   "trusted_context": {
     "web_to_bff": [
       "x-kokoro-service: web-bff",
