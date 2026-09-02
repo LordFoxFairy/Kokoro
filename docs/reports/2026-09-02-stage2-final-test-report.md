@@ -34,32 +34,32 @@
 
 | 仓库 | 用例与命令 | 实际结果 |
 |---|---|---|
-| kokoro | pnpm check | PASS：114 test files，1133 tests；Next production build 17/17 pages |
-| kokoro-bff | pnpm check；pnpm test:integration | PASS：28 unit/contract；1 integration；覆盖 live adapter、scheduler durable fact/replay、Content-Length |
-| kokoro-agent | uv run --frozen pytest -q；ruff check；pyright | PASS：501 passed，6 skipped，61 deselected；ruff/pyright 0 errors |
+| kokoro | pnpm check | PASS：112 test files，1120 tests；Next production build 17/17 pages |
+| kokoro-bff | pnpm check；pnpm test:integration | PASS：51 tests；覆盖 live adapter、scheduler durable fact/replay、Content-Length |
+| kokoro-agent | uv run --frozen pytest -q；ruff check；pyright | PASS：520 passed，6 skipped，61 deselected；ruff/pyright 0 errors |
 | kokoro-iam | pnpm verify | PASS：contract 1、unit 11；typecheck/lint/build |
 | kokoro-system | pnpm verify | PASS：contract 1、service tests 38、SDK tests 11；typecheck/lint/build |
 | kokoro-system | TEST_DATABASE_URL=... TEST_REDIS_URL=... pnpm test:integration | PASS：listener、SDK、tenant isolation、precedence、cache identity、HTTP errors |
 | kokoro-model | pnpm check；pnpm verify:release | PASS：127 model tests；production HTTP、Prisma/contract provenance、architecture |
-| kokoro-billing | pnpm verify | PASS：66 passed，52 skipped integration；SQL naming 37 migrations；OpenAPI parity 48 routes |
-| kokoro-capability | npm run verify | PASS：123 tests，30 test files；contract/typecheck/build |
-| kokoro-storage | npm run verify | PASS：83 passed，1 skipped；23 passed test files |
+| kokoro-billing | pnpm verify | PASS：45 passed，52 skipped integration；SQL naming 37 migrations；OpenAPI parity 17 routes |
+| kokoro-capability | npm run verify | PASS：125 tests，31 test files；contract/typecheck/build |
+| kokoro-storage | npm run verify | PASS：86 passed，1 skipped；24 passed test files |
 | kokoro-scheduler | go test ./...；go test -race ./...；go vet ./... | PASS：unit、race、vet |
 
 子仓最终提交：
 
 | 仓库 | HEAD |
 |---|---|
-| kokoro-app | 00a2139 |
-| kokoro-bff | b3c3994 |
-| kokoro-agent | a8284b3 |
-| kokoro-iam | 02743c1 |
-| kokoro-system | 34131f6 |
-| kokoro-model | 794648a |
-| kokoro-billing | aca1412 |
-| kokoro-capability | b5dc19e |
-| kokoro-storage | 5d5669e |
-| kokoro-scheduler | 90d9776 |
+| kokoro-app | e1d9eeb |
+| kokoro-bff | e4a2e4d |
+| kokoro-agent | 90fd3e1 |
+| kokoro-iam | 8f532a2 |
+| kokoro-system | 705fe41 |
+| kokoro-model | d8ae5a7 |
+| kokoro-billing | f659000 |
+| kokoro-capability | 212f51f |
+| kokoro-storage | 4d73dd9 |
+| kokoro-scheduler | 2f7a3e8 |
 
 ## 4. BFF mock 与 live 业务用例
 
