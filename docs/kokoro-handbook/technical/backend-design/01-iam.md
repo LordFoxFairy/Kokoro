@@ -3,7 +3,7 @@
 状态：目标实现基线，2026-08-27
 
 本文是 IAM v1 的执行级技术方案。它约束 IAM 子仓库的代码、SQL、RPC/HTTP 适配器和测试；与旧的
-`Organization`、`kokoro-site`、`kokoro-user` 原型描述冲突时，以本文的 `Team` 语言和本文契约为准。
+`Organization`、`kokoro-site`、`kokoro-user` 原型描述冲突时，以当前 Root contract 的 `Organization` 语言和本文契约为准。
 
 ## 1. 定位与边界
 
@@ -13,7 +13,7 @@
 
 - Site/tenant 目录与生命周期
 - User、service principal、external identity 和 contact
-- Team、TeamMember、TeamRole、Permission、TeamInvitation
+- Organization、Membership、Role、Permission、Invitation
 - 登录、magic link、refresh session、撤销和重放防护
 - Authorization decision、ExecutionIdentity 和安全审计
 - IAM command 的幂等执行
@@ -31,9 +31,9 @@
 |---|---|
 | `tenant_id` | IAM 及所有租户业务表使用的隔离键；入口从可信 SiteContext 得到 |
 | `site_id` | Site 资源的内部标识；不是浏览器可自由选择的授权依据 |
-| `team_id` | 可协作成员、角色和权限的组织单元 |
+| `organization_id` | Site 内承载成员、角色和权限的组织单元 |
 | `principal_id` | user、service 或 operator 的统一主体标识 |
-| `subject` | 被代表的个人、team/project 或 service subject |
+| `subject` | 被代表的个人、organization/project 或 service subject |
 | `ExecutionIdentity` | IAM 签发给下游的 `{tenant_ref, actor, subject, identity_assertion_ref}` |
 
 ## 2. 技术架构
@@ -47,7 +47,7 @@ HTTP / gRPC / Admin adapter
        /                 \\
 PostgreSQL repository  Redis runtime
 事实、审计、会话、       限流、nonce、重放、撤销传播、
-Team、权限、幂等收据     session hot state、分布式协调
+  Organization、权限、幂等收据 session hot state、分布式协调
 ```
 
 ### 2.1 依赖规则
@@ -68,7 +68,7 @@ src/
 ├── modules/
 │   ├── site/                 # site context、tenant lifecycle
 │   ├── identity/             # principal、identity、contact
-│   ├── team/                 # team、member、role、permission、invitation
+│   ├── organization/         # organization、membership、role、permission、invitation
 │   ├── authentication/       # magic link、credential、session、token
 │   ├── authorization/        # policy evaluation、decision、assertion
 │   └── audit/                # security event append/read
@@ -94,7 +94,7 @@ src/
 IAM schema 使用 PostgreSQL，所有表遵循全局 PostgreSQL 规范和以下 IAM 约束：
 
 1. 每张表使用应用生成的 UUID 主键；主键只承担行定位。
-2. 所有租户表必须有 `tenant_id uuid not null`，所有查询和更新必须带 tenant 条件。
+2. 所有租户事实必须带 `site_id`/`tenant_id` 隔离条件；`tenant_id` 是 opaque text，内部实体 ID 默认使用 UUID。
 3. 软删除统一使用 `deleted_at timestamptz null`；业务默认只读取 `deleted_at is null`，删除采用状态/时间双写。
 4. 所有可变聚合有 `version bigint not null default 1`，更新使用 `where ... and version=$n` 乐观并发校验。
 5. 审计字段统一为 `created_at`、`updated_at`、`created_by`、`updated_by`；系统任务使用固定 system actor。
@@ -107,25 +107,24 @@ IAM schema 使用 PostgreSQL，所有表遵循全局 PostgreSQL 规范和以下 
 ### 4.1 v1 表集合
 
 ```text
-iam_site
+site_site
 iam_principal
 iam_identity
 iam_contact
-iam_auth_session
-iam_magic_link
-iam_team
-iam_team_member
-iam_team_role
+iam_organization
+iam_membership
+iam_role
 iam_permission
-iam_team_role_permission
-iam_team_invitation
+iam_role_permission
+iam_membership_role
+iam_magic_link
+iam_auth_session
 iam_command_receipt
 iam_security_event
-iam_lock_bucket
 ```
 
-关联 ID 不使用 FK；关联表也不使用复合唯一约束。`iam_team_role_permission`、member role 关联等重复
-写入由命令幂等键、锁桶和事务处理，必要时保留重复候选并由应用拒绝，不靠唯一索引兜底。
+同一 IAM owner 内的关系使用 PostgreSQL FK；跨仓引用只保存 opaque ID，不建立跨仓 FK。关联表的
+重复写入由 PostgreSQL 唯一约束、命令幂等键和事务状态机共同保护。
 
 ### 4.2 锁模型
 
@@ -134,11 +133,11 @@ iam_lock_bucket
 ```sql
 SELECT namespace, bucket_no
 FROM iam_lock_bucket
-WHERE namespace = ? AND bucket_no = ?
+WHERE namespace = $1 AND bucket_no = $2
 FOR UPDATE;
 ```
 
-锁顺序固定为 `tenant -> team -> member/role/invitation -> command`，同一 use case 不反向取锁。
+锁顺序固定为 `site -> organization -> membership/role/invitation -> command`，同一 use case 不反向取锁。
 PostgreSQL 适配器统一封装 `withTransaction()`、`lockBucket()` 和 `assertVersion()`；业务模块不得自行拼接
 `FOR UPDATE`。
 
@@ -151,7 +150,7 @@ Key 必须带 `iam:v1:{tenant_id}:` 前缀，并通过集中 key builder 生成�
 | 登录/发码限流 | counter + TTL | SecurityEvent/认证结果 | fail closed |
 | magic link nonce | hash + TTL | MagicLink 状态 | fail closed |
 | token/session 撤销 | revocation marker + TTL | PostgreSQL session 状态 | fail closed |
-| authorization 热缓存 | versioned decision | PostgreSQL Team/Role/Permission | 不命中回源；Redis 故障 503 |
+| authorization 热缓存 | versioned decision | PostgreSQL Organization/Role/Permission | 不命中回源；Redis 故障 503 |
 | command claim | Lua 原子 claim | CommandReceipt | fail closed |
 | 多实例协调 | short lease | 对应 PostgreSQL 事务 | lease 失败重试/503 |
 
@@ -196,14 +195,14 @@ POST /v1/auth/magic-links/consume
 POST /v1/auth/sessions/refresh
 POST /v1/auth/sessions/revoke
 GET  /v1/me
-GET  /v1/teams
-POST /v1/teams
-PATCH /v1/teams/{team_id}
-POST /v1/teams/{team_id}/members
-PATCH /v1/teams/{team_id}/members/{member_id}
-DELETE /v1/teams/{team_id}/members/{member_id}
-GET  /v1/teams/{team_id}/roles
-POST /v1/teams/{team_id}/invitations
+GET  /v1/organizations
+POST /v1/organizations
+PATCH /v1/organizations/{organization_id}
+POST /v1/organizations/{organization_id}/members
+PATCH /v1/organizations/{organization_id}/members/{membership_id}
+DELETE /v1/organizations/{organization_id}/members/{membership_id}
+GET  /v1/organizations/{organization_id}/roles
+POST /v1/organizations/{organization_id}/invitations
 POST /v1/authorize
 ```
 
@@ -247,14 +246,14 @@ issued -> expired
 发码：解析 SiteContext -> Redis 限流 -> PostgreSQL 锁桶 -> 创建 magic link -> 写 SecurityEvent。
 消费：Redis consume-once nonce -> PostgreSQL 锁定 link -> 校验 expiry/status -> 创建 session -> 发布撤销/刷新状态。
 
-### 7.2 Team member
+### 7.2 Organization membership
 
 ```text
 invited -> accepted -> active -> suspended -> removed(soft-deleted)
              \\-> expired
 ```
 
-成员变更必须校验 actor 对 team 的管理权限、目标 principal tenant 一致性和 role 状态；撤销成员后清理
+成员变更必须校验 actor 对 organization 的管理权限、目标 principal site 一致性和 role 状态；撤销成员后清理
 Redis authorization cache 并发布 revocation event。历史审计不可删除。
 
 ### 7.3 幂等与并发
@@ -265,8 +264,8 @@ new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
                          \\-> same command/different digest: idempotency_conflict
 ```
 
-`command_id` 不做唯一索引。CommandReceipt 查询必须使用 `tenant_id + command_id + command_kind` 的
-普通索引和事务锁；不能使用 Prisma `findUnique({ where: { commandId } })` 之类假设数据库唯一的 API。
+`command_id` 通过 PostgreSQL `(site_id, command_id, command_kind)` 唯一索引保护。CommandReceipt 查询必须
+使用该索引和事务锁；不能使用假设 command_id 全局唯一的 API。
 
 ## 100 分证据
 
@@ -277,7 +276,7 @@ new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
 ### 8.1 代码门禁
 
 - Domain architecture test：不依赖 Prisma/HTTP/Redis client。
-- SQL lint：不存在 `FOREIGN KEY`、`REFERENCES`、`UNIQUE`、`CREATE UNIQUE INDEX`；主键除外。
+- SQL lint：所有 FK、CHECK、UNIQUE 和 partial unique index 必须对应同一 owner 的不变量；禁止跨仓 FK。
 - tenant-scope test：每个 repository 的 read/write/delete 都带 tenant 条件。
 - soft-delete test：默认读不返回 deleted 行，重复删除不物理删除。
 - lock test：PostgreSQL 使用显式 `SELECT ... FOR UPDATE`，锁顺序一致，version conflict 可重试。
@@ -287,7 +286,7 @@ new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
 
 - protobuf/OpenAPI 源、生成物、consumer manifest 一致。
 - error code、request id、tenant binding、idempotency header 和 `ExecutionIdentity` 有 wire test。
-- Team member revoke 后新的 read/write/control admission 全部拒绝；SSE 重连必须重新授权。
+- Organization membership revoke 后新的 read/write/control admission 全部拒绝；SSE 重连必须重新授权。
 - accepted delete retry 不依赖原 actor 当前权限；显式 cancel 与 GA recovery 保持边界分离。
 - Session 的 HTTP/SSE ingress 通过 IAM public authorization decision 对当前 actor 做 `read`、`write`、`control`、`delete` 四类 Session action 校验。
 - Session control admission 的 actor/authorization decision 进入 Session `ControlAudit`；ControlAudit/control_audit_ref 关联既有 Run，不产生第二个 namespace 或 payer。
@@ -301,7 +300,7 @@ IAM v1 只有同时满足以下条件才标记完成：
 2. PostgreSQL fresh migration 与本文表集合、约束、索引和状态机规则一致。
 3. Redis 是真实依赖，readyz、Lua 原子操作和 fail-closed 测试通过。
 4. API/RPC 契约已生成，Web agent 可只依赖公开 DTO、错误码和状态码。
-5. Team/Identity/Auth/AuthZ/Audit 的 unit、integration、contract、architecture test 全部通过。
-6. 旧 Organization writer、旧 Site/User writer 和旧 contract 生成物已删除或有明确兼容截止；v1 首发不保留双写。
+5. Organization/Identity/Auth/AuthZ/Audit 的 unit、integration、contract、architecture test 全部通过。
+6. 旧 Organization、Site、User writer 和旧 contract 生成物已删除；v1 首发不保留双写。
 
 在这些证据齐全前，设计评分只能表示文档完整度，不能表示代码或运行时闭环。
