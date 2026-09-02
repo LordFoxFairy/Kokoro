@@ -217,8 +217,11 @@ CreateDraft → createGenerationRequest() → POST /api/v1/projects/{ref}/genera
 202 receipt  → GenerationControllerState → GET snapshot / SSE replay
 ```
 
-预览 adapter 可以返回 fixture，但必须保持相同 envelope 和字段命名。真实接线时新增
-同源 fetch adapter，不改组件使用的 domain 对象，不让组件直接读取 provider response。
+`src/lib/mori-api-client.ts` 是真实接线的同源 fetch adapter：它显式接收 `project_ref`，
+将其编码到项目路径，写入 `Idempotency-Key`，并把非 2xx 或 `{error, meta}` 统一转换成
+可按 `code`、`retryable`、`request_id` 映射的请求错误。预览 adapter 可以返回 fixture，
+但必须保持相同 envelope 和字段命名；切换到真实 adapter 不改组件使用的 domain 对象，
+也不让组件直接读取 provider response。
 
 ## 6. 必须覆盖的契约测试
 
