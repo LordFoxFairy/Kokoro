@@ -142,9 +142,9 @@ Storage 的 S3-compatible ObjectStore。
   和 Host 不作为租户身份来源；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
   通过 IAM 完成身份/权限 admission，再将受信 tenant_id 与 Host 交给 System；Site/Host binding 由 System 自己校验。
 
-当前闭环校正项：IAM 已删除 Host lookup 与 Site binding；System 已改为本仓 Site/Host resolution。BFF live 适配器和真实
-E2E 仍需按新 Root contract 改为“BFF IAM admission → System Site/Host validation”，在 BFF 未修改前不将旧 live evidence
-视为当前闭环证据。
+当前闭环校正项已完成：IAM 不承担 Host lookup 与 Site binding；BFF live System projection 使用服务端
+`KOKORO_TENANT_ID` + `KOKORO_DOMAIN`，System 在自己的 Site/Host 数据中完成校验。真实 E2E 需使用这两个配置验证，不能再配置
+废弃的 IAM Host lookup。
 
 ### Goal 2 已收口能力
 

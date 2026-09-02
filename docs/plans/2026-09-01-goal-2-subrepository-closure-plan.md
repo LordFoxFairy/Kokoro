@@ -44,7 +44,8 @@
 ### 3.1 契约先于 SQL
 
 2026-09-02 owner correction：`tenant_id` 是唯一跨仓隔离键；Site/Host binding 归 `kokoro-system`，IAM 不保存
-`iam_site` 或 Host binding。BFF 的旧 IAM Host resolver 适配仍是待协调项，必须在真实 E2E 前更新；本轮不修改 BFF 业务仓。
+`iam_site` 或 Host binding。BFF 已移除 IAM Host resolver，改为使用服务端 `KOKORO_TENANT_ID` + `KOKORO_DOMAIN` 调用 System，
+由 System 校验自己的 Site/Host binding。
 
 Root 已冻结跨仓 JSON 契约：
 
