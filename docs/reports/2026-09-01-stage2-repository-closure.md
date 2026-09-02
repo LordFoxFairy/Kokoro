@@ -127,7 +127,7 @@ Root 机器索引：
 
 1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程，以及 Model consumer 对齐 Root v1 Proto 生成物。
 2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；当前 Root 为
-   `cd366e07`，Root generator baseline 仍为 `afd367d`，避免非契约文档提交造成生成物漂移。
+   `707fa8b2`，Root generator baseline 仍为 `afd367d`，避免非契约文档提交造成生成物漂移。
 3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 和本机归档目录清除：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；需要考古时从 GitHub archived 历史提交读取。
 4. 当前 E2E 证据改由 Root 的 Stage 2 BFF mock runner 产生；它只启动子仓生产编译产物并通过 HTTP 验证，不共享业务数据库或复制源码。
 5. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。

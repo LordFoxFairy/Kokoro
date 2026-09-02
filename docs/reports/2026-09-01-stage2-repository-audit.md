@@ -22,7 +22,7 @@
 | `kokoro-storage` | `LordFoxFairy/kokoro-storage` | `cebeb7a9465e9e87d09b2a2956f97d49db1c5e87` | clean | active / main |
 | `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | `5bd04209493c0b70134562bedb500a3833a1dd2f` | clean | active / main |
 
-Root 本地 HEAD 为 `cd366e07`，remote 为
+Root 本地 HEAD 为 `707fa8b2`，remote 为
 `https://github.com/LordFoxFairy/Kokoro.git`，当前 `origin/main` 一致，工作区 clean。
 
 ## Archived repositories
