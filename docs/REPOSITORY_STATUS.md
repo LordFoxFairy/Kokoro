@@ -67,9 +67,9 @@ Root machine-readable authority：
   的 runtime wire 由 Root cross-repository contract 单独登记。
 - contract/slice-a-contract-manifest.yaml：Root 生成 consumer 的 provenance 基线。
 
-HTTP v1 成功 envelope：
+HTTP v1 成功 envelope（列表响应示例）：
 
-    {"data": {}, "meta": {"request_id": "REQUEST_ID", "next_cursor": "CURSOR_OR_NULL"}}
+    {"data": {"items": [], "next_cursor": "CURSOR_OR_NULL"}, "meta": {"request_id": "REQUEST_ID"}}
 
 HTTP v1 错误 envelope：
 

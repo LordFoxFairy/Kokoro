@@ -25,16 +25,18 @@ Manus API 文档是 Kokoro v1 的重点参考。我们参考的是它已经验�
 长任务入口不等待 Agent 完成，而是立即返回稳定的请求和资源标识：
 
 ```http
-POST /v1/chat/messages
+POST /v1/sessions/{session_id}/messages
 Idempotency-Key: IDEMPOTENCY_KEY
 ```
 
 ```json
 {
   "data": {
-    "request_id": "REQ_ID",
-    "run_id": "RUN_ID",
-    "status": "queued"
+      "request_id": "REQ_ID",
+      "run_id": "RUN_ID",
+      "user_message_id": "USER_MESSAGE_ID",
+      "assistant_message_id": "ASSISTANT_MESSAGE_ID",
+      "status": "queued"
   },
   "meta": {
     "request_id": "REQ_ID"
@@ -62,7 +64,8 @@ Manus v2 的公开接口使用顶层 `ok`、`request_id` 和资源标识；Kokor
 DTO；外层 `meta` 只承载请求追踪信息：
 
 ```http
-GET /v1/runs/RUN_ID/events?cursor=CURSOR
+GET /v1/sessions/{session_id}/events
+Last-Event-ID: CURSOR
 ```
 
 ```json
@@ -86,7 +89,7 @@ GET /v1/runs/RUN_ID/events?cursor=CURSOR
 不使用隐式 boolean 改写执行状态：
 
 ```http
-POST /v1/runs/RUN_ID/confirmations/CONFIRMATION_ID
+POST /v1/sessions/{session_id}/runs/{run_id}/control
 Idempotency-Key: IDEMPOTENCY_KEY
 ```
 

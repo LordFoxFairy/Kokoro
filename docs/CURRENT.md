@@ -1,6 +1,6 @@
 # 当前活跃文档白名单
 
-状态：2026-09-01
+状态：2026-09-02
 用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
 “当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
 
@@ -35,14 +35,14 @@ Storage 的 S3-compatible ObjectStore。
 以下文档描述当前首发架构，优先于旧过程稿。实现尚未覆盖的部分必须在代码与交接中明确标注，
 不能把方案文字误称为已上线行为。
 
-### 架构评审只读两份
+### 架构评审核心四份
 
 1. [**GA 核心架构总览**](kokoro-handbook/technical/42-ga-core-architecture.md)
 2. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
 3. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
 4. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 
-评审“整个 Agent 怎么设计”时到此为止；没有第三份 Session plan、binding 或 graph-version 设计需要拼读。下面的文档都是
+评审“整个 Agent 怎么设计”时以以上四份为止；没有额外的独立 Session plan、binding 或 graph-version 设计需要拼读。下面的文档都是
 **实施某个边界时的专项证据**，只能细化这两份方案，不能覆盖或再造一套整体架构。
 
 ### 按专题细化
@@ -146,7 +146,7 @@ Storage 的 S3-compatible ObjectStore。
 1. Root machine-readable 契约：
    contract/goal2-cross-repository-contract-v1.json 是跨仓 wire authority，
    contract/goal2-repository-contract-manifest.json 是仓库注册表。HTTP 成功统一为
-   {data, meta:{request_id, next_cursor?}}，错误统一为
+   {data, meta:{request_id}}；列表/事件游标放在资源 payload 的 data.next_cursor。错误统一为
    {error:{code,message}, meta:{request_id}}，外部 HTTP 字段使用 snake_case。
 2. BFF live 适配：
    System runtime manifest、Model catalog、Billing catalog/checkout、

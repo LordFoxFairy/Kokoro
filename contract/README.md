@@ -42,8 +42,8 @@ current Phase 1 closure, the browser-facing source of truth is the BFF OpenAPI/c
 active repositories; the root manifest remains an index and validation input, not a reason to create a new owner repository.
 It renders:
 
-- manifest 管理的 Protobuf files under `proto/` for Site, IAM, Chat, Agent, Model and Capability;
-- separate owner contract slices for Storage and Credit are kept under the same `proto/` tree and have their own manifests/gates;
+- Root `contract/proto/` 管理 Site、IAM、Chat、Agent、Model、Capability 和 Storage 的 Protobuf files；
+- 历史 Credit slice 位于 `contract/legacy/credit/proto/`，由自己的 manifest/gates 管理，不属于当前 Goal 2 wire tree；
 - the browser-only Web BFF contract at `openapi/slice-a-web-v1.yaml`;
 - consumer-scoped TypeScript or Python artifacts declared by `consumers.yaml`.
 

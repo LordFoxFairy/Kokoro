@@ -1,6 +1,6 @@
 # Kokoro codebase map
 
-状态：2026-09-01 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
+状态：2026-09-02 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
 
 ## Root：`Kokoro`
 
