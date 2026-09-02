@@ -56,3 +56,8 @@ kokoro_workspace/
 /kokoro-capability/
 /kokoro-storage/
 /kokoro-scheduler/
+
+# Independent product/package checkouts are kept beside the active Kokoro
+# service topology and are not vendored into Root.
+/kokoro-mori/
+/kokoro-web-shared/
