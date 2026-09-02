@@ -160,7 +160,14 @@ def check_source(errors, allow_missing=False):
             errors.append(f"{name}: contains a type-checking escape hatch")
         if "os.environ" in text and name != "worker/main.py":
             errors.append(f"{name}: reads os.environ outside worker/main.py")
-        if any(module.startswith("kokoro_agent.worker") and module != "kokoro_agent.worker.services" for module in modules) and not name.startswith("worker/"):
+        allowed_worker_dependencies = {
+            "kokoro_agent.worker.dependencies",
+        }
+        if any(
+            module.startswith("kokoro_agent.worker")
+            and module not in allowed_worker_dependencies
+            for module in modules
+        ) and not name.startswith("worker/"):
             errors.append(f"{name}: core code imports worker transport")
     if framework_users != ["agent_factory.py"]:
         errors.append("DeepAgents import boundary drifted; expected only agent_factory.py, found " + str(framework_users))
