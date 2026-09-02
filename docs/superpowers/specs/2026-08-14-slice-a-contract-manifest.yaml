@@ -6344,6 +6344,12 @@
           },
           {
             "number": 2,
+            "name": "tenant_id",
+            "type": "string",
+            "label": "required"
+          },
+          {
+            "number": 3,
             "name": "request_id",
             "type": "string",
             "label": "required"

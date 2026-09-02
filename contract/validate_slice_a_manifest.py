@@ -19,7 +19,7 @@ EXPECTED_AGENT_KINDS = [
     "subagent.thinking.delta","subagent.text.delta","subagent.text.completed","subagent.tool.invoked",
     "subagent.tool.returned","delivery.created","run.control.receipt","run.completed","run.failed",
 ]
-EXPECTED_NORMALIZED_MANIFEST_SHA256 = "79c4e3c6a410681bba3dd02bc4709d1c673700ca40480393d1ec4fe34160495b"
+EXPECTED_NORMALIZED_MANIFEST_SHA256 = "f1a09aec15cd912122fbd12e45e6a0449fab8a53ba5efa0f0bfe73d42d470694"
 EXPECTED_ACCESS_JWT = {
     "header": {"alg": "RS256", "typ": "JWT", "kid": "nonempty active JWKS key id"},
     "claims": {
