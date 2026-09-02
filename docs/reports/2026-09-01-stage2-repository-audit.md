@@ -22,7 +22,7 @@
 | `kokoro-storage` | `LordFoxFairy/kokoro-storage` | `cebeb7a9465e9e87d09b2a2956f97d49db1c5e87` | clean | active / main |
 | `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | `5bd04209493c0b70134562bedb500a3833a1dd2f` | clean | active / main |
 
-Root 本地 HEAD 为 `7c07268d95291f0ec1dcb7ed0372dffb0db67b59`，remote 为
+Root 本地 HEAD 为 `cd366e07`，remote 为
 `https://github.com/LordFoxFairy/Kokoro.git`，当前 `origin/main` 一致，工作区 clean。
 
 ## Archived repositories
@@ -92,5 +92,5 @@ submodule 识别，以及本报告；另外 `kokoro-scheduler` 补充了 `.env.e
 - Stage 2 owner health：14/14 health/readiness/root checks 与 9/9 local processes 通过，证据文件为
   `docs/reports/2026-09-01-stage2-owner-health.json`；脚本已在 finally 中删除临时 PostgreSQL/Redis
   容器和本地对象目录。
-- Root GitHub Contract run `33571850888`（commit `7c07268d`）通过；Capability、Storage、Scheduler
+- Root GitHub Contract run `33574107724`（commit `cd366e07`）通过；Capability、Storage、Scheduler
   最新独立 CI 也在各自 `main` 提交上通过。Redocly 的 4 个既有 warning 不改变退出码，未修改契约文件。
