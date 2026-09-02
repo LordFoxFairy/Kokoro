@@ -29,6 +29,7 @@ Storage 的 S3-compatible ObjectStore。
 9. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 10. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
 11. [**Kokoro v1 与 Manus API 对齐基线**](MANUS_API_ALIGNMENT.md)
+12. [**Kokoro 后端工程规范：模块、契约、DTO、Repository 与 SQL**](kokoro-handbook/technical/54-backend-engineering-standards.md)
 
 ## 当前目标架构评审主线
 
