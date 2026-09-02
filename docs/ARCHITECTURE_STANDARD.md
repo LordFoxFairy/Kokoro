@@ -168,7 +168,7 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 ### 4.4 SQL 文件和执行规则
 
 - canonical schema 按 extension、类型、表、索引、注释的顺序组织；每张表写明 owner 和关键不变量；
-- clean-slate `db:apply-schema` 在事务中执行当前 schema；schema 不通过 `IF NOT EXISTS` 静默掩盖旧表；
+- clean-slate `db:apply-schema` 在事务中执行当前 schema；`CREATE TABLE IF NOT EXISTS` 可以使用，便于本地重复安装；生产结构校验和清理由独立检查或运维流程负责；
 - 所有 INSERT、UPDATE、DELETE 和 SELECT 使用参数占位符；禁止拼接用户输入、动态表名和排序字段；
 - 动态排序使用白名单映射，分页和批处理使用稳定唯一排序；
 - 每个索引都要对应真实查询或并发访问路径；索引顺序优先考虑 tenant、过滤列和排序列；
