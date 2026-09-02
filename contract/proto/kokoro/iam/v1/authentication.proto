@@ -9,7 +9,7 @@ import "kokoro/common/v1/common.proto";
 message RequestMagicLinkRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string site_id = 3;
+  string tenant_id = 3;
   string email = 4;
   string redirect_uri = 5;
   string nonce_digest = 6;
@@ -25,7 +25,7 @@ message RequestMagicLinkResponse {
 message ConsumeMagicLinkRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string site_id = 3;
+  string tenant_id = 3;
   string token = 4;
   string nonce_digest = 5;
 }

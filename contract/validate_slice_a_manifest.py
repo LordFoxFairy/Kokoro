@@ -19,16 +19,16 @@ EXPECTED_AGENT_KINDS = [
     "subagent.thinking.delta","subagent.text.delta","subagent.text.completed","subagent.tool.invoked",
     "subagent.tool.returned","delivery.created","run.control.receipt","run.completed","run.failed",
 ]
-EXPECTED_NORMALIZED_MANIFEST_SHA256 = "1c2fa58348abb2928fece8c18be657cfd4f9f5320c421199d3d945390036b818"
+EXPECTED_NORMALIZED_MANIFEST_SHA256 = "79c4e3c6a410681bba3dd02bc4709d1c673700ca40480393d1ec4fe34160495b"
 EXPECTED_ACCESS_JWT = {
     "header": {"alg": "RS256", "typ": "JWT", "kid": "nonempty active JWKS key id"},
     "claims": {
         "iss": "kokoro-iam", "aud": "kokoro-user-backend", "sub": "canonical principal UUID",
-        "site_id": "canonical Site UUID", "organization_id": "canonical Organization UUID",
+        "tenant_id": "canonical Tenant ID", "organization_id": "canonical Organization UUID",
         "auth_session_id": "canonical IAM auth-session UUID", "iat": "NumericDate", "exp": "NumericDate",
     },
     "nbf": "absent", "maxTtlSeconds": 900, "clockSkewSeconds": 30,
-    "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Site/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims.",
+    "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Tenant/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims.",
 }
 EXPECTED_STREAM_AUTHORIZATION_EXPIRY = "Chat closes StreamConversationEvents no later than access JWT exp + 30-second clock skew and emits zero frames after that deadline. Web refreshes the sealed IAM session and reconnects from the last committed seq; membership revocation exposure is therefore bounded by the 900-second JWT TTL plus skew."
 EXPECTED_STREAM_ESTABLISHMENT = {

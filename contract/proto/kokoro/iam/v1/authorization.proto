@@ -7,7 +7,7 @@ import "kokoro/common/v1/common.proto";
 
 message AuthorizeRequest {
   string request_id = 1;
-  string site_id = 2;
+  string tenant_id = 2;
   string organization_id = 3;
   string permission_key = 4;
 }

@@ -8,10 +8,11 @@
 
 ```text
 tenant_id
-  唯一的身份、权限和业务数据隔离键。
+  唯一的身份、权限和业务数据隔离键；对外跨仓契约使用这个标识。
 
-site / site_key
-  产品、品牌、域名和展示语义；当前一个 site 就是一个 tenant，不再建立第二套隔离 ID。
+site / site_id
+  产品、品牌、域名和展示语义；由 System 内部管理。每个 tenant 必须绑定一个有效 site，
+  但 site_id 不作为对外授权选择，也不建立第二套业务隔离轴。
 
 namespace
   GA 的 opaque 执行隔离键。它只在 GA 首次 target bootstrap（普通 Launch claim 或 fork `ForkConversation` prepare） 时由可信
@@ -22,9 +23,9 @@ namespace
 当前关系：
 
 ```text
-Host / domain → tenant_id
-tenant_id      → System product/config scope
-tenant_id      → IAM / Payment / Credit / Session data scope
+Host / domain → tenant-site binding → tenant_id
+tenant_id      → System site/product/config scope
+tenant_id      → IAM / Billing / Model / Capability / Storage / Scheduler data scope
 ```
 
 如果未来出现一个 Tenant 下多个独立产品入口，再新增明确的 `site_key`/`product_id`，不改变 `tenant_id` 的安全含义。
@@ -52,7 +53,7 @@ IAM 拥有：
 
 ```text
 Tenant identity
-Tenant/domain binding
+    Tenant-Site/domain binding
 User / Contact / Principal
 Organization / Membership
 Authentication / AuthSession
@@ -67,6 +68,7 @@ Security audit
 ```
 
 登录态、Organization、Workspace、Membership、权限和业务数据都必须绑定 `tenant_id`。
+只有 `kokoro-system` 的 Site 资源与 `kokoro-iam` 的 Tenant-Site binding 保存 `site_id` 内部引用。
 
 浏览器不能提交 `tenant_id` 作为权威选择；Web BFF 从 Host、部署绑定和密封 Session 建立可信上下文。
 

@@ -34,16 +34,16 @@
         "iss": "kokoro-iam",
         "aud": "kokoro-user-backend",
         "sub": "canonical principal UUID",
-        "site_id": "canonical Site UUID",
         "organization_id": "canonical Organization UUID",
         "auth_session_id": "canonical IAM auth-session UUID",
         "iat": "NumericDate",
-        "exp": "NumericDate"
+        "exp": "NumericDate",
+        "tenant_id": "canonical Tenant ID"
       },
       "nbf": "absent",
       "maxTtlSeconds": 900,
       "clockSkewSeconds": 30,
-      "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Site/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims."
+      "validation": "Chat and IAM reject any non-RS256 alg, missing/unknown kid, invalid signature, wrong typ/iss/aud, expired or future-issued token, overlong TTL or malformed UUID claim. IAM additionally proves the auth session is active and bound to the same principal/Tenant/Organization; Chat derives ActorContext only from a successful IAM Authorize response, never from unverified claims."
     },
     "streamAuthorizationExpiry": "Chat closes StreamConversationEvents no later than access JWT exp + 30-second clock skew and emits zero frames after that deadline. Web refreshes the sealed IAM session and reconnects from the last committed seq; membership revocation exposure is therefore bounded by the 900-second JWT TTL plus skew.",
     "streamEstablishment": {
@@ -132,17 +132,17 @@
       }
     },
     "controlDecisionValidation": "Chat validates the discriminated payload, canonicalizes payload_json bytes and Agent validates the same schema again before resume",
-    "magicLinkRedirect": "Browser sends no redirect URI. BFF constructs HTTPS canonical active Site host + fixed /api/auth/callback; IAM revalidates active Site domain and exact callback path",
-    "magicLinkNonceDerivation": "BFF derives state_key=HKDF-SHA256(contents of KOKORO_WEB_SESSION_KEY_FILE (mounted web.session-key), info=UTF8(kokoro.magic-state.v1)), then nonce=base64url(HMAC-SHA256(state_key, UUID_BYTES(site_id) || UUID_BYTES(command_id))); retry with the same Idempotency-Key derives the same 32-byte nonce even if the first response is lost",
+    "magicLinkRedirect": "Browser sends no redirect URI. BFF constructs HTTPS canonical active tenant host + fixed /api/auth/callback; IAM revalidates active tenant binding and exact callback path",
+    "magicLinkNonceDerivation": "BFF derives state_key=HKDF-SHA256(contents of KOKORO_WEB_SESSION_KEY_FILE (mounted web.session-key), info=UTF8(kokoro.magic-state.v1)), then nonce=base64url(HMAC-SHA256(state_key, UUID_BYTES(tenant_id) || UUID_BYTES(command_id))); retry with the same Idempotency-Key derives the same 32-byte nonce even if the first response is lost",
     "magicLinkNonceBinding": "BFF hashes kokoro_auth_nonce and sends nonce_digest on both RequestMagicLink and ConsumeMagicLink; IAM stores and constant-time compares it before single consume",
     "authCommandIdentity": {
       "consumeMagicLink": {
-        "commandId": "UUIDv5(site_id, UTF8(consume-magic-link\n) || ASCII_HEX(SHA256(token)))",
-        "requestDigest": "SHA256(canonical_json({site_id, token_digest, nonce_digest}))"
+        "commandId": "UUIDv5(tenant_id, UTF8(consume-magic-link\n) || ASCII_HEX(SHA256(token)))",
+        "requestDigest": "SHA256(canonical_json({tenant_id, token_digest, nonce_digest}))"
       },
       "refreshSession": {
         "commandId": "unpredictable UUID refresh_command_id sealed in the Web envelope and reused until a response is delivered",
-        "requestDigest": "SHA256(canonical_json({site_id, auth_session_id, old_refresh_token_digest}))",
+        "requestDigest": "SHA256(canonical_json({tenant_id, auth_session_id, old_refresh_token_digest}))",
         "rotation": "after a delivered success, Web seals a fresh random refresh_command_id with the successor token; old token with missing/different command id triggers family revoke"
       },
       "logout": {
@@ -189,7 +189,7 @@
       "semantics": "When the browser omits limit, the Web BFF sends PageRequest.limit=50; explicit values remain bounded to 1..100."
     },
     "capabilitySliceASelectors": "requested_selectors must be empty; any nonempty selector is deterministic AGENT_ADMISSION_REJECTED, never silently discarded into the empty snapshot",
-    "browserIdempotency": "For pre-auth RequestMagicLink, BFF derives UUIDv5 command_id from resolved site_id + operation_id + bounded opaque Idempotency-Key. For authenticated Conversation mutations it derives UUIDv5 from organization_id + operation_id + key. In both cases BFF computes canonical request_digest and rejects browser digest.",
+    "browserIdempotency": "For pre-auth RequestMagicLink, BFF derives UUIDv5 command_id from resolved tenant_id + operation_id + bounded opaque Idempotency-Key. For authenticated Conversation mutations it derives UUIDv5 from organization_id + operation_id + key. In both cases BFF computes canonical request_digest and rejects browser digest.",
     "projectionNack": {
       "requestFields": [
         "rejected_seq",
@@ -2075,7 +2075,7 @@
           },
           {
             "number": 2,
-            "name": "site_id",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -5906,7 +5906,7 @@
           },
           {
             "number": 3,
-            "name": "site_id",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -5978,7 +5978,7 @@
           },
           {
             "number": 3,
-            "name": "site_id",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6212,7 +6212,7 @@
           },
           {
             "number": 2,
-            "name": "site_id",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },

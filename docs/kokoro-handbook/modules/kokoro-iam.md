@@ -18,15 +18,15 @@ Audit
 
 它不拥有 Conversation、Agent Run、Model Catalog、Capability、Entitlement 或 Payment。
 
-Site 是产品站点/Realm；Organization 是 Site 内的租户/安全空间；Project 是后续可选业务
-分组。这三个概念不同。每个 Web 套皮/套壳部署通过服务端 env 选择 Site，IAM 不负责选择，
-只验证并固化 Site 安全上下文，因此不建立独立 Site 子仓库或运行服务。
+Tenant 是 IAM 的身份、权限和数据隔离边界；Site 是 System 管理的产品/品牌/域名对象。
+每个 Tenant 绑定一个 Site。IAM 只保存和验证 Tenant-Site/Host binding 的内部引用，
+不拥有 Site 配置，也不把 `site_id` 固化到 Principal、Organization、AuthSession 或 JWT。
 
 ## 2. Slice A 表所有权
 
 | 模块 | 表 |
 |---|---|
-| Site | `site_site`、`site_domain` |
+| Tenant binding | `iam_tenant`、`iam_tenant_site_binding` |
 | Identity | `iam_principal`、`iam_user`、`iam_identity`、`iam_contact` |
 | Organization | `iam_organization`、`iam_membership` |
 | Authorization | `iam_role`、`iam_permission`、`iam_role_permission`、`iam_membership_role` |
@@ -125,7 +125,7 @@ claim CommandReceipt
 和 SecurityEvent。旧 token 携新 command 重放时撤销 family；相同 command/digest 丢响应重试
 返回同一 session 和可重导 refresh token。
 
-`Authorize` 校验 JWT、active AuthSession、Site/Organization/Principal binding、Membership、Role
+`Authorize` 校验 JWT、active AuthSession、Tenant/Organization/Principal binding、Membership、Role
 和 active Permission。禁用 Membership 或 Permission 后不得继续授权。
 
 ## 5. 公开接口
@@ -147,7 +147,7 @@ HTTP
   GET /.well-known/jwks.json
 ```
 
-Web 调用 Authentication 时注入其服务端 env 绑定的 SiteContext；Chat 只能调用
+Web 调用 Authentication 时注入其服务端解析出的 TenantContext；Chat 只能调用
 Authorization；JWKS 是公开密钥材料。Caller
 身份在解码业务 payload 前验证。
 
@@ -186,12 +186,11 @@ Web Shell B: KOKORO_SITE_ID=site-b + B 品牌配置
 Web Shell C: KOKORO_SITE_ID=site-c + C 品牌配置
 ```
 
-`KOKORO_SITE_ID` 是 Web/BFF 服务端运行时配置，不依赖浏览器 request body。Site ID 不是
-秘密，可以进入页面 SiteContext，但 IAM 必须以受信 Web 调用和数据库中的 active Site 记录
-重新验证，不能让浏览器切换为其他 Site。
+部署入口由 Host 解析出 `tenant_id`，不依赖浏览器 request body。`site_id` 不是秘密，
+但仅作为 System/IAM 内部绑定引用；浏览器不能切换 Tenant 或 Site。
 
-`site_site` 保存 FK 根、状态和必要元数据；Web 的皮肤、文案和静态品牌配置可以由各套壳部署
-管理。动态域名目录和一套 Web runtime 服务多个 Site 不属于首发。
+`kokoro-system` 保存 Site 配置和站点策略；IAM 只保存 `iam_tenant_site_binding` 的
+`tenant_id`、内部 `site_id`、Host 和 binding revision，不建立跨仓外键。
 
 ## 7. 迁移原则
 
