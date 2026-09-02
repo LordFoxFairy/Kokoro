@@ -25,7 +25,7 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 | 仓库 | 当前职责 | 分层/入口 | 审计结论 |
 |---|---|---|---|
 | `kokoro-app` | Web UI、同源 `/api/*` adapter | `src/app`、`src/lib`、`packages/*` | 边界正确；`packages/*` 是 Web 仓内复用包，不是后端共享仓，不应承载业务事实。 |
-| `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner adapter、SSE | `src/main.ts`、`src/adapters`、`src/business-store.ts` | 业务入口正确；BFF store 必须保持唯一业务事实 owner，mock 只能是显式模式。后续应继续把 upstream client 与 route handler 分离。 |
+| `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner adapter、SSE | `src/main.ts`、`src/application`、`src/modules`、`src/adapters`、`src/infrastructure` | 业务入口正确；Project/ScheduledTask 已通过 application service 注入 repository port，PostgreSQL adapter 与 mock fixture 分离。`src/main.ts` 仍需继续拆成窄路由 handler，但不再承载 SQL、DB 初始化或 repository 实现。 |
 | `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`contract` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
 | `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、`tenant-binding.ts`、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
 | `kokoro-system` | Site、Workspace、Runtime Manifest、系统策略 | `src/modules/runtime-manifest`、`interfaces/http` | 边界正确；tenant binding 依赖 IAM，不能把 IAM 事实复制为 System 自有写模型。 |
@@ -39,7 +39,7 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 
 ### 仓库和依赖
 
-- Root + 9 个独立子仓各自是独立 Git root。
+- Root + 10 个独立子仓各自是独立 Git root。
 - 当前本地和 GitHub 远端每个仓库只保留 `main` 分支。
 - 子仓之间不通过 sibling 源码、数据库表、ORM schema 或相对路径导入耦合。
 - Root 的 gitlink 只固定 Agent 的 `main` commit；其余仓库由部署/契约引用，不被 vendored。
@@ -129,9 +129,11 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 
 ### P1：BFF 入口文件过大，已影响可读性和扩展性
 
-`kokoro-bff/src/main.ts` 当前约 2,255 行，同时承载路由分发、鉴权、响应 envelope、Chat、项目、
+`kokoro-bff/src/main.ts` 当前约 1,866 行，同时承载路由分发、鉴权、响应 envelope、Chat、项目、
 技能、MCP、Billing、Storage、Scheduler 和 owner projection。职责虽然在业务上属于 BFF，但
-实现层已经形成单文件 God module。后续应按 vertical slice 拆为：
+实现层仍偏向单文件 route host。当前已经先把 v1 projection、Mori/scheduled 输入 DTO、
+Project/ScheduledTask application service、repository port 和 PostgreSQL adapter 分离；下一步
+应继续按 vertical slice 拆为：
 
 ```text
 src/http/router.ts
