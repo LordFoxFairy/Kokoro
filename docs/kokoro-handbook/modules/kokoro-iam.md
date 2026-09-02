@@ -18,15 +18,14 @@ Audit
 
 它不拥有 Conversation、Agent Run、Model Catalog、Capability、Entitlement 或 Payment。
 
-Tenant 是 IAM 的身份、权限和数据隔离边界；Site 是 System 管理的产品/品牌/域名对象。
-每个 Tenant 绑定一个 Site。IAM 只保存和验证 Tenant-Site/Host binding 的内部引用，
-不拥有 Site 配置，也不把 `site_id` 固化到 Principal、Organization、AuthSession 或 JWT。
+Tenant 是 IAM 的身份、权限和数据隔离边界；Site/Host 是 System 管理的产品、品牌和域名对象。
+IAM 只保存 Tenant 与身份授权事实，不保存 Site/Host binding，不把 `site_id` 固化到 Principal、Organization、AuthSession 或 JWT。
 
 ## 2. Slice A 表所有权
 
 | 模块 | 表 |
 |---|---|
-| Tenant binding | `iam_tenant`、`iam_tenant_site_binding` |
+| Tenant | `iam_tenant` |
 | Identity | `iam_principal`、`iam_user`、`iam_identity`、`iam_contact` |
 | Organization | `iam_organization`、`iam_membership` |
 | Authorization | `iam_role`、`iam_permission`、`iam_role_permission`、`iam_membership_role` |
@@ -176,21 +175,20 @@ membership/role，不把 actor/subject 解释成 Agent、graph、Skill 或权限
 [GA 公共运行契约](../technical/38-ga-public-runtime-contract.md) 与
 [ADR-022](../decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md) 为准。
 
-## 6. Web SiteContext
+## 6. Web 与 System 上下文
 
 同一份 Web 代码和镜像可以多次部署：
 
 ```text
-Web Shell A: KOKORO_SITE_ID=site-a + A 品牌配置
-Web Shell B: KOKORO_SITE_ID=site-b + B 品牌配置
-Web Shell C: KOKORO_SITE_ID=site-c + C 品牌配置
+Web Shell A: Host=TENANT_HOST_A + System Site 配置
+Web Shell B: Host=TENANT_HOST_B + System Site 配置
+Web Shell C: Host=TENANT_HOST_C + System Site 配置
 ```
 
-部署入口由 Host 解析出 `tenant_id`，不依赖浏览器 request body。`site_id` 不是秘密，
-但仅作为 System/IAM 内部绑定引用；浏览器不能切换 Tenant 或 Site。
+部署入口不从浏览器 request body 选择 `tenant_id`。BFF 完成 IAM admission 后传递受信 `tenant_id` 与 Host；
+System 校验自己的 Site/Host binding。`site_id` 只属于 System 内部资源，浏览器不能切换 Tenant 或 Site。
 
-`kokoro-system` 保存 Site 配置和站点策略；IAM 只保存 `iam_tenant_site_binding` 的
-`tenant_id`、内部 `site_id`、Host 和 binding revision，不建立跨仓外键。
+`kokoro-system` 保存 Site、Host binding 配置和站点策略；IAM 只保存 `iam_tenant` 与 IAM 自有身份授权事实，不建立跨仓外键。
 
 ## 7. 迁移原则
 

@@ -95,7 +95,7 @@ database 和 Redis logical database，避免 E2E 因跨仓 schema 污染而产�
 
 当前已验证：
 
-1. BFF → IAM tenant binding → System runtime manifest；
+1. BFF → IAM admission → System Site/Host binding → runtime manifest；
 2. BFF → Model catalog；
 3. BFF → Capability skills；
 4. BFF → Storage library；

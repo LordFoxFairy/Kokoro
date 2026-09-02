@@ -50,15 +50,14 @@ React 组件和 Web 页面 -> kokoro-web-user / kokoro-web-admin
 
 ## Site / Tenant 边界
 
-`tenant_id` 是 IAM 的唯一身份、授权和数据隔离键；当前不建立独立的 `site_id` 隔离轴。
-域名、品牌和产品入口通过 Tenant/domain 与 product 配置表达，system 不创建第二套 Tenant 事实。
+`tenant_id` 是 IAM 产生并供所有业务仓使用的唯一身份、授权和数据隔离键。System 在自己的数据库中管理 `site_id`、Site、Host/Domain binding 和产品配置；System 不创建第二套 Tenant 事实。
 
 ```text
 kokoro-iam
-  负责 tenant/domain identity、用户、组织、登录、成员关系、权限和 TenantBinding。
+  负责 Tenant、用户、组织、登录、成员关系、权限和 ExecutionIdentity。
 
 kokoro-system
-  负责按 tenant/product 编排菜单、i18n、主题、产品入口和通用配置。
+  负责 Site/Host binding，以及按 tenant/product 编排菜单、i18n、主题、产品入口和通用配置。
 ```
 
 Tenant 是 IAM 的身份与授权隔离边界；同一邮箱在不同 Tenant 下是不同身份上下文：
@@ -67,7 +66,7 @@ Tenant 是 IAM 的身份与授权隔离边界；同一邮箱在不同 Tenant 下
 (tenant-a, email@example.com) != (tenant-b, email@example.com)
 ```
 
-IAM 的唯一性约束和认证会话必须带 `tenant_id`；system 的配置读取使用 `tenant_id`/`product_id` 或明确的 global scope。TenantBinding 的最终 owner 是 IAM，system 只消费已校验的 binding。
+IAM 的唯一性约束和认证会话必须带 `tenant_id`；System 的 Site、Host、配置读取使用 `tenant_id`/`site_id` 或明确的 global scope。跨仓只传受信 `tenant_id`，不复制 IAM 或 System 的另一方事实。
 
 ## 目录
 
@@ -124,7 +123,7 @@ graph 选择。System 与 GA 只用 `feature_key` 做 CI/发布 join：System �
 [ADR-021](../decisions/ADR-021-feature-key-global-catalog-identity.md) 与
 [41 Feature 结果契约](../technical/41-feature-outcome-contracts-and-quality-gates.md)。
 
-浏览器不直接选择 `tenant_id`。Web BFF 从受信 Host 解析得到 TenantBinding，并通过受信内部请求上下文传入；System 重新向 IAM 校验 Host 与 `tenant_id` 的绑定。
+浏览器不直接选择 `tenant_id`。Web BFF 取得 Host 并完成 IAM admission 后，通过受信内部请求上下文传入 `tenant_id`；System 用自己的 Site Host 记录校验 Host 与 `tenant_id` 的绑定。
 
 ## 仓库拆分规则
 

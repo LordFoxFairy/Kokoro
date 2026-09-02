@@ -139,8 +139,8 @@ Storage 的 S3-compatible ObjectStore。
 - 正式业务仓统一 PostgreSQL + Redis；PostgreSQL 保存事实，Redis 只做 cache、stream、
   queue、lease、限流和协调；对象字节由 Storage 的 S3-compatible ObjectStore 管理。
 - Web 不直连 Agent、IAM 或任何业务数据库。浏览器提供的 X-Domain、X-Forwarded-*
-  和 Host 不作为租户/站点信任输入；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
-  并通过 IAM tenant binding 获取受信 tenant context。
+  和 Host 不作为租户身份来源；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
+  通过 IAM 完成身份/权限 admission，再将受信 tenant_id 与 Host 交给 System；Site/Host binding 由 System 自己校验。
 
 ### Goal 2 已收口能力
 

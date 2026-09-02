@@ -39,8 +39,8 @@ kokoro-agent 指向 3cbbf27；其余 9 个目录是同目录独立 checkout，�
 - 正式业务仓统一 PostgreSQL + Redis。PostgreSQL 保存业务事实；Redis 仅作 cache、stream、
   queue、lease、限流和协调；对象字节归 Storage 的 S3-compatible ObjectStore。
 - Web 不直连任何 owner、Agent、PostgreSQL 或 Redis；浏览器 X-Domain、X-Forwarded-* 和
-  Host 不作为租户/站点信任输入。BFF 从 KOKORO_DOMAIN 生成标准 Forwarded，并向 IAM 请求
-  tenant binding，再向 owner 发送受信服务上下文。
+  Host 不作为租户身份来源。BFF 从 KOKORO_DOMAIN 生成标准 Forwarded，向 IAM 完成身份/权限 admission，
+  再向 System 发送受信 tenant_id + Host；Site/Host binding 由 System 自己校验，再向 owner 发送受信服务上下文。
 
 ## 运行链路
 

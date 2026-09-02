@@ -3,6 +3,7 @@
 状态：当前有效方案，2026-08-22。
 
 > 本文 supersede `30-kokoro-system-and-iam-tenant-architecture.md` 中将 `site_id` 与 `tenant_id` 并列为隔离键的表述。
+> 关于 Site/Host 的最终 owner 进一步以 [Tenant、Site 与跨仓请求上下文规范](55-tenant-site-ownership-and-context.md) 为准。
 
 ## 1. 统一命名决定
 
@@ -23,7 +24,7 @@ namespace
 当前关系：
 
 ```text
-Host / domain → tenant-site binding → tenant_id
+Host / domain → System Site Host binding → tenant_id
 tenant_id      → System site/product/config scope
 tenant_id      → IAM / Billing / Model / Capability / Storage / Scheduler data scope
 ```
@@ -33,16 +34,16 @@ tenant_id      → IAM / Billing / Model / Capability / Storage / Scheduler data
 ## 2. 仓库拓扑
 
 ```text
-kokoro-system/       独立通用业务能力与产品配置服务
-kokoro-iam/          独立身份、Tenant、认证、组织、权限服务
-kokoro-payment/      支付事实
-kokoro-credit/       Credit 事实
-kokoro-model/        模型事实和路由
-kokoro-hub/          Skill/MCP/Capability 事实
-kokoro-session/      会话、Run、SSE、HITL
-kokoro-agent/        Agent 执行
-kokoro-web-user/     User Web 独立前端子仓库
-kokoro-web-admin/    Admin Web 独立前端子仓库
+kokoro-system/       Site/Host、Workspace、产品配置与 Runtime Manifest
+kokoro-iam/          Tenant、身份、认证、组织、权限与审计
+kokoro-model/        Model Catalog、Provider、Availability 与公开模型契约
+kokoro-billing/      Payment、Subscription、Checkout、Refund、Credit 与 Ledger
+kokoro-capability/   Skills、MCP/Connector、Catalog、安装、启停与权限
+kokoro-storage/      Files、Upload、Artifact、Object、Download 与生命周期
+kokoro-scheduler/    Go 通用 ScheduleJob、Lease、Retry、Misfire 与执行回执
+kokoro-agent/        Agent 执行与运行事实
+kokoro-bff/          Chat 与业务统一入口
+kokoro-web/          User/Admin Web
 ```
 
 `kokoro-system` 不挂载其它仓库；每个仓库独立 Git、lockfile、测试、构建和部署。
@@ -53,7 +54,6 @@ IAM 拥有：
 
 ```text
 Tenant identity
-    Tenant-Site/domain binding
 User / Contact / Principal
 Organization / Membership
 Authentication / AuthSession
@@ -68,13 +68,13 @@ Security audit
 ```
 
 登录态、Organization、Workspace、Membership、权限和业务数据都必须绑定 `tenant_id`。
-只有 `kokoro-system` 的 Site 资源与 `kokoro-iam` 的 Tenant-Site binding 保存 `site_id` 内部引用。
+只有 `kokoro-system` 的 Site、Site Host 与 Workspace 保存 `site_id` 内部引用；IAM 不保存 Site binding。
 
 浏览器不能提交 `tenant_id` 作为权威选择；Web BFF 从 Host、部署绑定和密封 Session 建立可信上下文。
 
 ## 4. kokoro-system
 
-`kokoro-system` 是通用业务能力和产品配置控制面，负责：
+`kokoro-system` 是 Site/Host、Workspace 和产品配置控制面，负责：
 
 ```text
 Product / application registry
@@ -89,7 +89,7 @@ Asset metadata references
 Runtime manifest
 ```
 
-按 `tenant_id`、`product_id`、`app_key`、`surface` 或 `global` 作用域配置。
+按 `tenant_id`、`site_id`（本仓 Site 关系）、`product_id`、`app_key`、`surface` 或 `global` 作用域配置。
 
 它只保存跨领域选择，不复制领域事实：
 
@@ -158,8 +158,8 @@ TenantRequestContext {
 
 ```text
 Browser
-  → Web BFF 根据 Host 解析 tenant_id
-  → IAM 校验 Tenant/User/Organization/Permission
+  → Web BFF 取得 Host 并完成 IAM Tenant/User/Organization/Permission admission
+  → System 用自己的 Site Host binding 校验 tenant_id + host
   → System 读取 tenant-scoped manifest
   → Payment/Credit/Model/Hub/Session 使用 tenant context
   → Session/IAM 以 trusted ExecutionIdentity 受理 Launch
@@ -190,13 +190,14 @@ manifest digest
 ## 7. 新业务与拆仓
 
 ```text
-菜单/i18n/theme/feature/product config → kokoro-system module
+Site/Host、菜单/i18n/theme/feature/product config → kokoro-system module
 用户/组织/权限 → kokoro-iam module
-订单/订阅/退款 → kokoro-payment module
-额度/账本/usage → kokoro-credit module
+订单/订阅/退款/额度/账本/usage → kokoro-billing module
 模型/provider/routing → kokoro-model module
-Skill/MCP/capability → kokoro-hub module
-会话/SSE/HITL → kokoro-session module
+Skill/MCP/Connector/capability → kokoro-capability module
+Files/Upload/Artifact/Object → kokoro-storage module
+ScheduleJob/Lease/Retry/Misfire → kokoro-scheduler module
+Chat/SSE 与业务统一入口 → kokoro-bff module
 Agent execution → kokoro-agent module
 ```
 

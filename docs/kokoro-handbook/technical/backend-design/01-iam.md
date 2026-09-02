@@ -11,7 +11,7 @@
 
 负责：
 
-- Site/tenant 目录与生命周期
+- Tenant 生命周期与租户作用域
 - User、service principal、external identity 和 contact
 - Organization、Membership、Role、Permission、Invitation
 - 登录、magic link、refresh session、撤销和重放防护
@@ -29,9 +29,9 @@
 
 | v1 术语 | 说明 |
 |---|---|
-| `tenant_id` | IAM 及所有租户业务表使用的隔离键；入口从可信 SiteContext 得到 |
-| `site_id` | Site 资源的内部标识；不是浏览器可自由选择的授权依据 |
-| `organization_id` | Site 内承载成员、角色和权限的组织单元 |
+| `tenant_id` | IAM 及所有租户业务表使用的唯一隔离键；入口从受信服务上下文得到 |
+| `site_id` | System 内部 Site 资源标识；IAM 不拥有或解析它 |
+| `organization_id` | Tenant 内承载成员、角色和权限的组织单元 |
 | `principal_id` | user、service 或 operator 的统一主体标识 |
 | `subject` | 被代表的个人、organization/project 或 service subject |
 | `ExecutionIdentity` | IAM 签发给下游的 `{tenant_ref, actor, subject, identity_assertion_ref}` |
@@ -66,7 +66,7 @@ PostgreSQL repository  Redis runtime
 ```text
 src/
 ├── modules/
-│   ├── site/                 # site context、tenant lifecycle
+│   ├── tenant/               # tenant lifecycle
 │   ├── identity/             # principal、identity、contact
 │   ├── organization/         # organization、membership、role、permission、invitation
 │   ├── authentication/       # magic link、credential、session、token
@@ -94,7 +94,7 @@ src/
 IAM schema 使用 PostgreSQL，所有表遵循全局 PostgreSQL 规范和以下 IAM 约束：
 
 1. 每张表使用应用生成的 UUID 主键；主键只承担行定位。
-2. 所有租户事实必须带 `site_id`/`tenant_id` 隔离条件；`tenant_id` 是 opaque text，内部实体 ID 默认使用 UUID。
+2. 所有租户事实必须带 `tenant_id` 隔离条件；`tenant_id` 是 opaque text，内部实体 ID 默认使用 UUID。
 3. 软删除统一使用 `deleted_at timestamptz null`；业务默认只读取 `deleted_at is null`，删除采用状态/时间双写。
 4. 所有可变聚合有 `version bigint not null default 1`，更新使用 `where ... and version=$n` 乐观并发校验。
 5. 审计字段统一为 `created_at`、`updated_at`、`created_by`、`updated_by`；系统任务使用固定 system actor。
@@ -107,7 +107,6 @@ IAM schema 使用 PostgreSQL，所有表遵循全局 PostgreSQL 规范和以下 
 ### 4.1 v1 表集合
 
 ```text
-site_site
 iam_principal
 iam_identity
 iam_contact
@@ -137,7 +136,7 @@ WHERE namespace = $1 AND bucket_no = $2
 FOR UPDATE;
 ```
 
-锁顺序固定为 `site -> organization -> membership/role/invitation -> command`，同一 use case 不反向取锁。
+锁顺序固定为 `tenant -> organization -> membership/role/invitation -> command`，同一 use case 不反向取锁。
 PostgreSQL 适配器统一封装 `withTransaction()`、`lockBucket()` 和 `assertVersion()`；业务模块不得自行拼接
 `FOR UPDATE`。
 
@@ -243,7 +242,7 @@ requested -> issued -> consumed
 issued -> expired
 ```
 
-发码：解析 SiteContext -> Redis 限流 -> PostgreSQL 锁桶 -> 创建 magic link -> 写 SecurityEvent。
+发码：解析受信 tenant context -> Redis 限流 -> PostgreSQL 锁桶 -> 创建 magic link -> 写 SecurityEvent。
 消费：Redis consume-once nonce -> PostgreSQL 锁定 link -> 校验 expiry/status -> 创建 session -> 发布撤销/刷新状态。
 
 ### 7.2 Organization membership
@@ -253,7 +252,7 @@ invited -> accepted -> active -> suspended -> removed(soft-deleted)
              \\-> expired
 ```
 
-成员变更必须校验 actor 对 organization 的管理权限、目标 principal site 一致性和 role 状态；撤销成员后清理
+成员变更必须校验 actor 对 organization 的管理权限、目标 principal tenant 一致性和 role 状态；撤销成员后清理
 Redis authorization cache 并发布 revocation event。历史审计不可删除。
 
 ### 7.3 幂等与并发
@@ -264,7 +263,7 @@ new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
                          \\-> same command/different digest: idempotency_conflict
 ```
 
-`command_id` 通过 PostgreSQL `(site_id, command_id, command_kind)` 唯一索引保护。CommandReceipt 查询必须
+`command_id` 通过 PostgreSQL `(tenant_id, command_id, command_kind)` 唯一索引保护。CommandReceipt 查询必须
 使用该索引和事务锁；不能使用假设 command_id 全局唯一的 API。
 
 ## 100 分证据
@@ -285,7 +284,7 @@ new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
 ### 8.2 契约门禁
 
 - protobuf/OpenAPI 源、生成物、consumer manifest 一致。
-- error code、request id、tenant binding、idempotency header 和 `ExecutionIdentity` 有 wire test。
+- error code、request id、tenant context、idempotency header 和 `ExecutionIdentity` 有 wire test。
 - Organization membership revoke 后新的 read/write/control admission 全部拒绝；SSE 重连必须重新授权。
 - accepted delete retry 不依赖原 actor 当前权限；显式 cancel 与 GA recovery 保持边界分离。
 - Session 的 HTTP/SSE ingress 通过 IAM public authorization decision 对当前 actor 做 `read`、`write`、`control`、`delete` 四类 Session action 校验。

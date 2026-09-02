@@ -88,7 +88,7 @@ BFF live evidence：docs/reports/2026-09-01-stage2-owner-health.json
 
 | 用例 ID | 链路 | 预期 | 结果 |
 |---|---|---|---|
-| LIVE-001 | BFF → IAM tenant binding → System runtime manifest | 200，product_id=kokoro | PASS |
+| LIVE-001 | BFF → IAM admission → System Site/Host binding → runtime manifest | 200，product_id=kokoro | PASS |
 | LIVE-002 | BFF → Model catalog | 200，data.models | PASS |
 | LIVE-003 | BFF → Capability skills catalog | 200，data.skills | PASS |
 | LIVE-004 | BFF → Storage library projection | 200，data.items | PASS |
