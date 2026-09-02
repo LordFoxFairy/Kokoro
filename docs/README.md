@@ -36,6 +36,9 @@ Billing 内部，Chat 在 BFF 的 Chat 业务模块边界内，Scheduler 是独�
 2. [Codebase Map](CODEBASE_MAP.md)
    给 code agent / worker 的仓库地图。包含根仓、子仓、文档归属、验证命令和并行派工约束。
 
+3. [正式子仓统一工程规范 v1](ARCHITECTURE_STANDARD.md)
+   统一 API 契约、DTO、domain/application/infrastructure/interfaces 分层、Repository/Service 边界、租户隔离和 PostgreSQL 设计门禁。
+
 3. [GA identity 与动态 owner 重验](kokoro-handbook/decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md)
    当前最容易写错的规则：外部传受信 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`；GA 在 ingress 只从 tenant + subject 派生内部
    `RuntimeNamespace`：仅首次 target bootstrap（普通 Launch claim 或 fork `ForkConversation` prepare） 派生并固化 ThreadLocator，后续新 Launch 以 current identity 验证后复用，Cleanup 以已接受 delete 的 durable tenant-subject lifecycle envelope 验证 locator/fence；已 claim run 的恢复只比较 ledger/locator，完全不等待新 identity。浏览器、Session 和 caller 不提交 namespace/thread，也不以 `userId` / `ownerId` / `workspaceId` 选择图或 checkpoint。
