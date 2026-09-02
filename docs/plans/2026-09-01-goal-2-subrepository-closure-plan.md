@@ -31,8 +31,8 @@
 | kokoro | Next.js Web、同源 API、页面状态和 SSE | 只消费 BFF v1；本地生产构建通过 |
 | kokoro-bff | Chat、业务聚合、鉴权、幂等、owner projection | live 接入六类 owner + BFF facts + Scheduler |
 | kokoro-agent | Run、执行、HITL、恢复、事件、HTTP ingress | BFF 只走 HTTP ingress，不直连 Agent 存储 |
-| kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | Tenant/Identity/AuthZ contract through RPC |
-| kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | runtime manifest 由 System 自有 Site/Host binding 校验后接入 |
+| kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | Tenant/Identity/AuthZ contract through RPC；不提供 Host lookup |
+| kokoro-system | Site、Site Host、Workspace、Runtime Manifest、系统策略 | runtime manifest 由 System 自有 Site/Host binding 校验后接入 |
 | kokoro-model | Catalog、Provider、Availability、Policy | BFF model catalog projection 接入 |
 | kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | BFF catalog/checkout projection 接入 |
 | kokoro-capability | Skill、MCP Connector 控制面 | BFF read projection 接入；未接写操作 fail-closed |
@@ -42,6 +42,9 @@
 ## 3. 已执行的阶段 2 收口
 
 ### 3.1 契约先于 SQL
+
+2026-09-02 owner correction：`tenant_id` 是唯一跨仓隔离键；Site/Host binding 归 `kokoro-system`，IAM 不保存
+`iam_site` 或 Host binding。BFF 的旧 IAM Host resolver 适配仍是待协调项，必须在真实 E2E 前更新；本轮不修改 BFF 业务仓。
 
 Root 已冻结跨仓 JSON 契约：
 

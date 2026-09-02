@@ -127,13 +127,19 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 - System 业务路由已删除未配置 service token 时的匿名 fixture 模式；缺少 BFF service credential
   现在明确返回 `503 service_auth_not_configured`，health/readiness 仍为公开探针。
 
-### P1：BFF 入口文件过大，已影响可读性和扩展性
+### 已收敛：BFF 入口与 Agent 应用服务边界
 
-`kokoro-bff/src/main.ts` 当前约 242 行，负责组合根、通用鉴权/幂等管线和最终 owner fallback；资源路由已拆到 `src/http/routes/*`，不再同时承载 Chat、项目、
-技能、MCP、Billing、Storage、Scheduler 和 owner projection。职责虽然在业务上属于 BFF，但
-实现层仍偏向单文件 route host。当前已经先把 v1 projection、Mori/scheduled 输入 DTO、
-Project/ScheduledTask application service、repository port 和 PostgreSQL adapter 分离；下一步
-应继续按 vertical slice 拆为：
+`kokoro-bff/src/main.ts` 当前约 242 行，只负责组合根、通用鉴权/幂等管线和依赖装配；Chat、项目、
+技能、MCP、Billing、Storage、Scheduler 和 owner projection 的资源路由已拆到
+`src/http/routes/*`。`kokoro-bff` 的 application service、repository port、PostgreSQL adapter
+和 mock fixture 也已分离，不再由入口文件承载业务实现。
+
+`kokoro-agent` 的 Chat 请求/分页/视图 DTO 已独立到
+`src/kokoro_agent/services/chat_dto.py`，`chat_service.py` 只保留 namespace 派生、repository
+调用和结果编排。后续新增用例继续遵守“DTO / service / repository port / infrastructure adapter”
+四层边界；发现单文件同时拥有多个事实 owner 时，直接拆分或重写，不新增兼容别名。
+
+后续扩展按 vertical slice 增加模块即可：
 
 ```text
 src/http/router.ts

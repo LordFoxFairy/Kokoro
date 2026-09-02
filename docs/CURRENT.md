@@ -118,7 +118,7 @@ Storage 的 S3-compatible ObjectStore。
 
 ## Goal 2 当前基线（2026-09-02）
 
-阶段 2 已完成一次可重复的真实本地闭环验收：10 个 active child repository 均有独立 GitHub
+阶段 2 曾完成一次可重复的真实本地闭环验收；2026-09-02 全局 owner 修正后，该 evidence 需要重新跑一次：10 个 active child repository 均有独立 GitHub
 仓库，所有子仓 main 与 origin/main 对齐；Root 负责跨仓 v1 契约、拓扑/设计门禁、
 部署入口、审计和 E2E 编排，不承载子仓业务实现。当前链路为：
 
@@ -141,6 +141,10 @@ Storage 的 S3-compatible ObjectStore。
 - Web 不直连 Agent、IAM 或任何业务数据库。浏览器提供的 X-Domain、X-Forwarded-*
   和 Host 不作为租户身份来源；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
   通过 IAM 完成身份/权限 admission，再将受信 tenant_id 与 Host 交给 System；Site/Host binding 由 System 自己校验。
+
+当前闭环校正项：IAM 已删除 Host lookup 与 Site binding；System 已改为本仓 Site/Host resolution。BFF live 适配器和真实
+E2E 仍需按新 Root contract 改为“BFF IAM admission → System Site/Host validation”，在 BFF 未修改前不将旧 live evidence
+视为当前闭环证据。
 
 ### Goal 2 已收口能力
 
