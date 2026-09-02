@@ -2,7 +2,7 @@
 
 日期：2026-09-01
 范围：Root `Kokoro`、三个阶段 1 运行仓和七个阶段 2 业务仓。
-状态：本地拓扑、边界、契约、提交和 GitHub main 已收口；Docker/真实基础设施 smoke 仍作为部署前独立证据记录。
+状态：本地拓扑、边界、契约、提交和 GitHub main 已收口；阶段 2 owner 健康链路已验证。真实业务联调仍按 BFF live adapter 与 Agent HTTP ingress 两个缺口继续推进。
 
 ## 1. 最终仓库拓扑
 
@@ -45,16 +45,16 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 
 | 仓库 | main SHA |
 |---|---|
-| `kokoro` | `4080377` |
+| `kokoro` | `018ad87` |
 | `kokoro-bff` | `876dfba` |
 | `kokoro-agent` | `4091fb2` |
 | `kokoro-iam` | `b662fce` |
 | `kokoro-system` | `2c4635f` |
 | `kokoro-model` | `aa8c395` |
 | `kokoro-billing` | `f2a947a` |
-| `kokoro-capability` | `204805c` |
-| `kokoro-storage` | `13c39c3` |
-| `kokoro-scheduler` | `3ad5a54` |
+| `kokoro-capability` | `dd2d071` |
+| `kokoro-storage` | `cebeb7a` |
+| `kokoro-scheduler` | `5bd0420` |
 
 ## 2. 归属裁决
 
@@ -66,6 +66,14 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 - IAM 是独立身份 owner，不归并到 System；BFF 只消费 IAM 派生的受信服务上下文。
 - 所有正式业务仓采用 PostgreSQL + Redis。Redis 仅用于 cache、queue、stream、lease、限流和协调；对象字节走 Storage 的 S3-compatible ObjectStore。
 - Web 不直连 Agent、IAM 或 Goal 2 业务仓，业务请求统一经过 BFF。
+
+当前 live 适配裁决：BFF 先保留 Web-facing v1 的稳定响应模型；各 owner 的内部 HTTP/Connect/command
+协议由 BFF adapter 显式映射，不用通用路径拼接冒充已经完成的业务接线。没有对应 owner ingress 的路由
+（例如 Agent session/event、Capability Connect、Scheduler command）继续以 mock/health 证据标记为待接线。
+
+当前 live 适配裁决：BFF 先保留 Web-facing v1 的稳定响应模型；各 owner 的内部 HTTP/Connect/command
+协议由 BFF adapter 显式映射，不用通用路径拼接冒充已经完成的业务接线。没有对应 owner ingress 的路由
+（例如 Agent session/event、Capability Connect、Scheduler command）继续以 mock/health 证据标记为待接线。
 
 ## 3. 已废弃处理
 
@@ -121,15 +129,31 @@ Root 机器索引：
 - Storage：`npm run verify` 通过。
 - Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
 - Root contract consumers：9 个消费者生成与 `--check` 均通过，生成物 provenance 指向 Root `afd367d`。
+- Stage 2 owner health：14/14 health/readiness/root checks、9/9 local processes 通过，证据为
+  `docs/reports/2026-09-01-stage2-owner-health.json`。
 - GitHub main CI：10 个正式仓库最新 main 提交均为 success；Web、System、Billing 以及各业务仓的生产构建步骤均已在 GitHub runner 通过。
 
 ## 6. 证据备注与下一阶段
 
 1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程，以及 Model consumer 对齐 Root v1 Proto 生成物。
-2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；Root generator baseline 为 `afd367d`，closure evidence commit 为 `69c1b0d`。
+2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；当前 Root 为
+   `7c07268d`，Root generator baseline 仍为 `afd367d`，避免非契约文档提交造成生成物漂移。
 3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 移出：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；完整文件保存在 Root 外 `Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` 与 `phase1-root-database/`。
 4. 当前 E2E 证据改由 Root 的 Stage 2 BFF mock runner 产生；它只启动子仓生产编译产物并通过 HTTP 验证，不共享业务数据库或复制源码。
 5. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
 6. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
 7. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。
 8. 阶段 2 收口后重新冻结了 Root 的当前 v1 breaking image：旧的 `contract/breaking/slice-a-v1.binpb`（commit `1a993fac`，对应已废弃的旧拓扑）已移到 Root 外的 `Kokoro-archive-2026-09-01/root-legacy/contract-baselines/`；活动 Root 的同名 baseline 现在与最终 Stage 2 v1 descriptor 一致，后续普通演进继续由 Buf breaking 门禁约束。修复后的 Root `Contract` workflow 已在提交 `ade5f0bc` 的 GitHub run `33567800858` 通过。
+
+## 7. 尚未宣称完成的真实闭环
+
+1. BFF 的 live adapter 需要把 Web-facing `/v1` 资源显式映射到 System、Model、Billing、Capability、Storage
+   的 owner ingress，并统一 envelope、错误、request ID、幂等回执和超时策略；当前 generic proxy 只验证了
+   上游转发和失败归一，不作为业务联调完成证据。
+2. Agent 当前以 PostgreSQL + Redis worker 运行，尚未提供供 BFF 使用的 HTTP session/run/events ingress；需要
+   先在 `kokoro-agent` 内完成自己的 v1 ingress 与测试，再由 BFF 接入，保持仓库边界不跨越。
+3. Scheduler 的 v1 是内部 command/配置协议，不是公开资源 CRUD；BFF 对 scheduled-tasks 的 live 接入需通过
+   目标业务 command，不直接读取 Scheduler 或 Billing 数据库。
+4. 下一次闭环必须启动独立 checkout 的生产构建进程和 disposable PostgreSQL/Redis/ObjectStore，逐条执行
+   Web → BFF → owner → Agent/Scheduler 的真实网络用例，并同时保存请求、响应、状态转换、幂等重放、故障恢复
+   和测试报告。完成这些证据后再更新本报告状态。
