@@ -102,6 +102,9 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 - Agent evidence 查询需要校验 Run 的 identity/scope，并将诊断原始事件与用户可见投影分开。
 - Agent admission、dispatch claim 和 steer command 需要可恢复的 durable inbox/outbox，避免
   “先 claim/ACK，后持久化”造成崩溃丢失。
+- BFF mutation 现在会在副作用前登记 pending receipt；相同 key 的并发请求返回
+  `409 idempotency_in_progress`，成功后按原状态/响应重放，5xx 会释放 claim。PostgreSQL
+  pending claim 具备 60 秒过期回收；仍需在真实 PostgreSQL 多副本环境补充故障注入验证。
 - Agent HTTP ingress 已改为缺少内部 secret 时 fail-closed；健康检查仍保持可用，其他请求返回
   `service_auth_not_configured`，但跨仓 admission/outbox 仍需继续补齐。
 - Scheduler occurrence claim 已改为 dispatch 后保留至 lease TTL，修复多副本在成功 dispatch 后

@@ -105,6 +105,9 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 - `meta.request_id` 必须存在；分页字段统一放在资源 payload 的 `data.next_cursor`，禁止新增
   `meta.next_cursor` 或第二种兼容 envelope。Web 解包后的扁平 DTO 同样使用 `next_cursor`。
 - `Idempotency-Key` 只用于会产生事实变化的命令；查询接口使用 cursor，不把随机 offset 暴露为稳定协议。
+- mutation 在触发副作用前先取得 pending claim；同一命令并发到达时返回稳定的
+  `idempotency_in_progress`，不重复创建 Manus-style task/run。完成后重放原 receipt，传输/上游
+  `5xx` 释放 claim 允许重试。
 - tenant、subject、actor、权限来自已验证的服务上下文；浏览器提交的同名字段不能覆盖可信上下文。
 - owner 错误要保留稳定 `code`、`retryable` 和可选 `details`；BFF 只做一次错误映射。
 - 每个异步资源必须定义状态机、终态、重试语义、取消语义和 replay 语义后再开放路由。
