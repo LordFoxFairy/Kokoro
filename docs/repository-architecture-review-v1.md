@@ -97,8 +97,8 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 
 - BFF 的 Session list 目前依赖进程内索引，重启或多副本后会丢失；应改成持久化索引或 Agent
   的 identity-scoped query，并实现 opaque cursor。
-- BFF 的 Project tasks 在事实表未接通时固定返回空数组；应返回明确的
-  `tasks_projection_not_configured`，或先确定任务事实 owner 再开放该接口。
+- BFF 的 Project tasks 已归入 BFF 自有 `bff_project_task` 事实表；后续只需补齐创建/更新命令和统一
+  cursor 分页，不得退回从 Agent 读取或用空数组伪装成功。
 - Agent evidence 查询需要校验 Run 的 identity/scope，并将诊断原始事件与用户可见投影分开。
 - Agent admission、dispatch claim 和 steer command 需要可恢复的 durable inbox/outbox，避免
   “先 claim/ACK，后持久化”造成崩溃丢失。
