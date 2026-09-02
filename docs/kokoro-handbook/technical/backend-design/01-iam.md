@@ -45,20 +45,20 @@ HTTP / gRPC / Admin adapter
             |
   domain policies + public ports
        /                 \\
-MySQL repository       Redis runtime
+PostgreSQL repository  Redis runtime
 事实、审计、会话、       限流、nonce、重放、撤销传播、
 Team、权限、幂等收据     session hot state、分布式协调
 ```
 
 ### 2.1 依赖规则
 
-- MySQL 8.0+ 是持久化事实源；所有 IAM 业务写入必须经过 application use case 和事务。
-- Redis 7+ 是 IAM 运行时硬依赖。`readyz = mysql healthy AND redis healthy`。
+- PostgreSQL 是持久化事实源；所有 IAM 业务写入必须经过 application use case 和事务。
+- Redis 7+ 是 IAM 运行时硬依赖。`readyz = postgres healthy AND redis healthy`。
 - Redis 不允许以内存实现替代，也不允许 Redis 故障时关闭限流、nonce 或撤销检查。
 - 新的认证、刷新、撤销、授权、管理和幂等命令在任一依赖不可用时返回 `503 dependency_unavailable`。
 - access token 的本地验签属于消费者运行时优化；不能被解释成 IAM 在 Redis 故障时继续签发或刷新。
-- MongoDB 不属于 IAM v1 依赖。身份、授权、session 和审计需要事务、行锁和可追溯 SQL 事实，放 MySQL。
-- Domain 只依赖值对象、端口和策略；不得 import Prisma、mysql2、Redis client、HTTP 或 protobuf。
+- MySQL、MongoDB 不属于 IAM v1 依赖。身份、授权、session 和审计需要事务、行锁和可追溯 PostgreSQL 事实。
+- Domain 只依赖值对象、端口和策略；不得 import pg、Redis client、HTTP 或 protobuf。
 - interfaces 只做协议转换和认证上下文提取；事务、授权和状态转换放 application。
 
 ## 3. 目录拓扑
@@ -75,7 +75,7 @@ src/
 ├── application/              # cross-module use-case orchestration only
 ├── contracts/                # public DTO/port schemas, no transport client
 ├── infrastructure/
-│   ├── mysql/                # pool、transaction、repositories、row locks
+│   ├── postgres/             # pool、transaction、repositories、row locks
 │   └── redis/                # Lua/Functions、rate limit、nonce、revocation
 ├── interfaces/
 │   ├── http/
@@ -89,20 +89,20 @@ src/
 禁止：全局 `utils`/`common` 业务垃圾桶、跨模块直接访问 repository、接口层直接写 SQL、业务模块
 直接读取 Redis key、用 `site_id` 或 `user_id` 充当 `tenant_id`。
 
-## 4. MySQL SQL 规范
+## 4. PostgreSQL SQL 规范
 
-IAM schema 使用 MySQL/InnoDB，所有表遵循以下物理规则：
+IAM schema 使用 PostgreSQL，所有表遵循全局 PostgreSQL 规范和以下 IAM 约束：
 
-1. 每张表使用应用生成的 `char(26)` ULID 或等价固定长度 ID 主键；主键只承担行定位。
-2. 所有租户表必须有 `tenant_id char(26) not null`，所有查询和更新必须带 tenant 条件。
-3. 软删除统一使用 `deleted_at datetime(6) null`；业务默认只读取 `deleted_at is null`，删除采用状态/时间双写。
-4. 所有可变聚合有 `version bigint unsigned not null default 1`，更新使用 `where id=? and tenant_id=? and version=?` 乐观并发校验。
+1. 每张表使用应用生成的 UUID 主键；主键只承担行定位。
+2. 所有租户表必须有 `tenant_id uuid not null`，所有查询和更新必须带 tenant 条件。
+3. 软删除统一使用 `deleted_at timestamptz null`；业务默认只读取 `deleted_at is null`，删除采用状态/时间双写。
+4. 所有可变聚合有 `version bigint not null default 1`，更新使用 `where ... and version=$n` 乐观并发校验。
 5. 审计字段统一为 `created_at`、`updated_at`、`created_by`、`updated_by`；系统任务使用固定 system actor。
-6. **不创建外键。** 引用只保存 ID，由 application 层做存在性、tenant 一致性和删除前检查；删除顺序由 use case 控制。
-7. **不创建业务唯一索引。** 不使用 `UNIQUE`、partial unique 或把业务去重交给数据库。
-8. 主键索引、普通查询索引和锁扫描索引允许存在；普通索引只服务查询/锁定位，不表达业务唯一性。
-9. 需要“同一 tenant + key 只能有一个有效记录”时，事务内锁定确定的 `iam_lock_bucket` 行，再查询有效记录、写入或更新；冲突返回领域错误。
-10. 所有时间使用 UTC `datetime(6)`；金额/计数使用整数；JSON 只放非查询扩展字段，不放授权主字段。
+6. 同一 owner 内可证明的引用关系使用 PostgreSQL 外键；跨仓引用只保存 opaque ID，不建立跨仓外键。
+7. 可证明的业务唯一性使用 `UNIQUE` 或 partial unique index；禁止用“先查询再插入”代替数据库约束。
+8. 主键索引、普通查询索引和锁扫描索引允许存在；每个索引必须对应真实查询或不变量。
+9. 所有 SQL 使用 `$1, $2, ...` 参数占位符，禁止字符串拼接；事务内锁顺序和 affected rows 检查必须写入 application contract。
+10. 所有时间使用 `timestamptz`；金额/计数使用整数；JSONB 只放有 schema 版本的非查询扩展字段。
 
 ### 4.1 v1 表集合
 
@@ -139,7 +139,7 @@ FOR UPDATE;
 ```
 
 锁顺序固定为 `tenant -> team -> member/role/invitation -> command`，同一 use case 不反向取锁。
-MySQL 适配器统一封装 `withTransaction()`、`lockBucket()` 和 `assertVersion()`；业务模块不得自行拼接
+PostgreSQL 适配器统一封装 `withTransaction()`、`lockBucket()` 和 `assertVersion()`；业务模块不得自行拼接
 `FOR UPDATE`。
 
 ## 5. Redis 运行时契约
@@ -150,13 +150,13 @@ Key 必须带 `iam:v1:{tenant_id}:` 前缀，并通过集中 key builder 生成�
 |---|---|---|---|
 | 登录/发码限流 | counter + TTL | SecurityEvent/认证结果 | fail closed |
 | magic link nonce | hash + TTL | MagicLink 状态 | fail closed |
-| token/session 撤销 | revocation marker + TTL | MySQL session 状态 | fail closed |
-| authorization 热缓存 | versioned decision | MySQL Team/Role/Permission | 不命中回源；Redis 故障 503 |
+| token/session 撤销 | revocation marker + TTL | PostgreSQL session 状态 | fail closed |
+| authorization 热缓存 | versioned decision | PostgreSQL Team/Role/Permission | 不命中回源；Redis 故障 503 |
 | command claim | Lua 原子 claim | CommandReceipt | fail closed |
-| 多实例协调 | short lease | 对应 MySQL 事务 | lease 失败重试/503 |
+| 多实例协调 | short lease | 对应 PostgreSQL 事务 | lease 失败重试/503 |
 
 Lua/Function 必须保持原子：`claim-if-absent`、`consume-once`、`rate-limit`、`revoke-and-publish`。
-Redis TTL 只用于运行时垃圾回收，不改变 MySQL 的过期、撤销和审计事实。
+Redis TTL 只用于运行时垃圾回收，不改变 PostgreSQL 的过期、撤销和审计事实。
 
 ## 6. API v1 契约
 
@@ -244,8 +244,8 @@ requested -> issued -> consumed
 issued -> expired
 ```
 
-发码：解析 SiteContext -> Redis 限流 -> MySQL 锁桶 -> 创建 magic link -> 写 SecurityEvent。
-消费：Redis consume-once nonce -> MySQL 锁定 link -> 校验 expiry/status -> 创建 session -> 发布撤销/刷新状态。
+发码：解析 SiteContext -> Redis 限流 -> PostgreSQL 锁桶 -> 创建 magic link -> 写 SecurityEvent。
+消费：Redis consume-once nonce -> PostgreSQL 锁定 link -> 校验 expiry/status -> 创建 session -> 发布撤销/刷新状态。
 
 ### 7.2 Team member
 
@@ -260,7 +260,7 @@ Redis authorization cache 并发布 revocation event。历史审计不可删除�
 ### 7.3 幂等与并发
 
 ```text
-new command -> Redis claim -> MySQL receipt lock -> execute transaction
+new command -> Redis claim -> PostgreSQL receipt lock -> execute transaction
                          \\-> existing completed result
                          \\-> same command/different digest: idempotency_conflict
 ```
@@ -280,7 +280,7 @@ new command -> Redis claim -> MySQL receipt lock -> execute transaction
 - SQL lint：不存在 `FOREIGN KEY`、`REFERENCES`、`UNIQUE`、`CREATE UNIQUE INDEX`；主键除外。
 - tenant-scope test：每个 repository 的 read/write/delete 都带 tenant 条件。
 - soft-delete test：默认读不返回 deleted 行，重复删除不物理删除。
-- lock test：MySQL 使用显式 `SELECT ... FOR UPDATE`，锁顺序一致，version conflict 可重试。
+- lock test：PostgreSQL 使用显式 `SELECT ... FOR UPDATE`，锁顺序一致，version conflict 可重试。
 - Redis test：Lua claim/consume/rate-limit/revoke 原子性，故障时无内存降级且返回 503。
 
 ### 8.2 契约门禁
@@ -298,7 +298,7 @@ new command -> Redis claim -> MySQL receipt lock -> execute transaction
 IAM v1 只有同时满足以下条件才标记完成：
 
 1. `kokoro-iam` 子仓库实际存在并能 clean build；当前根仓不存在该实现，因此本设计文档不代表实现完成。
-2. MySQL fresh migration 与本文表集合、无 FK/无业务唯一索引规则一致。
+2. PostgreSQL fresh migration 与本文表集合、约束、索引和状态机规则一致。
 3. Redis 是真实依赖，readyz、Lua 原子操作和 fail-closed 测试通过。
 4. API/RPC 契约已生成，Web agent 可只依赖公开 DTO、错误码和状态码。
 5. Team/Identity/Auth/AuthZ/Audit 的 unit、integration、contract、architecture test 全部通过。
