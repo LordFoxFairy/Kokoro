@@ -230,39 +230,40 @@ def run_flow(base: str) -> list[dict[str, Any]]:
     checkout_status, _, checkout = request(base, "POST", "/v1/billing/checkout", body={"plan_id": "plan_starter"}, headers={"idempotency-key": "stage2-checkout"})
     assert_case(cases, "BFF-030", checkout_status, 200, data(checkout)["checkout_url"].startswith("/billing/mock-checkout/"), "billing checkout projection")
 
-    sessions_status, _, sessions = request(base, "GET", "/v1/sessions?scope=ns_test&project_ref=project_kokoro")
+    sessions_status, _, sessions = request(base, "GET", "/v1/sessions?scope=direct&project_ref=project_kokoro")
     assert_case(cases, "BFF-031", sessions_status, 200, data(sessions)["sessions"][0]["session_id"] == "session_kokoro", "Chat session list")
-    detail_status, _, detail = request(base, "GET", "/v1/sessions/session_kokoro?scope=ns_test&project_ref=project_kokoro")
+    detail_status, _, detail = request(base, "GET", "/v1/sessions/session_kokoro?scope=direct&project_ref=project_kokoro")
     assert_case(cases, "BFF-032", detail_status, 200, data(detail)["session"]["owner_id"] == "ns_test", "Chat session detail")
     message_body = {"content": "Close the Stage 2 loop."}
     message_headers = {"idempotency-key": "stage2-message"}
-    message_status, _, message = request(base, "POST", "/v1/sessions/session_kokoro/messages?scope=ns_test&project_ref=project_kokoro", body=message_body, headers=message_headers)
-    message_replay_status, _, message_replay = request(base, "POST", "/v1/sessions/session_kokoro/messages?scope=ns_test&project_ref=project_kokoro", body=message_body, headers=message_headers)
-    assert_case(cases, "BFF-033", message_status, 200, data(message)["run_id"] == "run_1", "Chat message submit")
-    assert_case(cases, "BFF-034", message_replay_status, 200, message == message_replay, "Chat message idempotency replay")
+    message_status, _, message = request(base, "POST", "/v1/sessions/session_kokoro/messages?scope=direct&project_ref=project_kokoro", body=message_body, headers=message_headers)
+    message_replay_status, _, message_replay = request(base, "POST", "/v1/sessions/session_kokoro/messages?scope=direct&project_ref=project_kokoro", body=message_body, headers=message_headers)
+    assert_case(cases, "BFF-033", message_status, 202, data(message)["run_id"] == "run_1", "Chat message submit")
+    assert_case(cases, "BFF-034", message_replay_status, 202, message == message_replay, "Chat message idempotency replay")
+    time.sleep(0.05)
     # SSE is intentionally opaque to the JSON helper; read it as a stream so the
     # test exercises the same content type and event framing the Web adapter uses.
-    sse_request = Request(f"{base}/v1/sessions/session_kokoro/events?scope=ns_test&project_ref=project_kokoro", headers={"x-kokoro-service": "web-bff", "x-kokoro-internal-secret": "stage2-e2e-secret", "x-kokoro-namespace": "ns_test", "x-kokoro-principal-id": "user_test"})
+    sse_request = Request(f"{base}/v1/sessions/session_kokoro/events?scope=direct&project_ref=project_kokoro", headers={"x-kokoro-service": "web-bff", "x-kokoro-internal-secret": "stage2-e2e-secret", "x-kokoro-namespace": "ns_test", "x-kokoro-principal-id": "user_test"})
     with urlopen(sse_request, timeout=5) as sse_response:
         events_status = sse_response.status
         events_content_type = sse_response.headers.get("content-type", "")
         sse_text = sse_response.read().decode("utf-8")
     assert_case(cases, "BFF-035", events_status, 200, "text/event-stream" in events_content_type, "Chat SSE content type")
     assert_case(cases, "BFF-036", 200, 200, "message.user" in sse_text and "message.completed" in sse_text, "Chat SSE event stream")
-    share_status, _, share = request(base, "POST", "/v1/sessions/session_kokoro/share?scope=ns_test&project_ref=project_kokoro", headers={"idempotency-key": "stage2-share"})
+    share_status, _, share = request(base, "POST", "/v1/sessions/session_kokoro/share?scope=direct&project_ref=project_kokoro", headers={"idempotency-key": "stage2-share"})
     share_id = data(share)["share_id"]
     assert_case(cases, "BFF-037", share_status, 200, share_id.startswith("shr_"), "Chat share creation")
-    shared_status, _, shared = request(base, "GET", f"/v1/shared/{share_id}?scope=ns_test&project_ref=project_kokoro")
+    shared_status, _, shared = request(base, "GET", f"/v1/shared/{share_id}?project_ref=project_kokoro")
     assert_case(cases, "BFF-038", shared_status, 200, data(shared)["session"]["session_id"] == "session_kokoro", "shared session read")
-    title_status, _, title = request(base, "PATCH", "/v1/sessions/session_kokoro/title?scope=ns_test&project_ref=project_kokoro", body={"title": "Stage 2 closed"}, headers={"idempotency-key": "stage2-title"})
+    title_status, _, title = request(base, "PATCH", "/v1/sessions/session_kokoro/title?scope=direct&project_ref=project_kokoro", body={"title": "Stage 2 closed"}, headers={"idempotency-key": "stage2-title"})
     assert_case(cases, "BFF-039", title_status, 200, data(title)["ok"] is True, "Chat title update")
-    control_status, _, control = request(base, "POST", "/v1/sessions/session_kokoro/runs/run_1/control?scope=ns_test&project_ref=project_kokoro", body={"action": "cancel"}, headers={"idempotency-key": "stage2-control-cancel"})
-    assert_case(cases, "BFF-040", control_status, 200, data(control)["ok"] is True, "Chat run control")
-    revoke_status, _, revoked = request(base, "DELETE", "/v1/sessions/session_kokoro/share?scope=ns_test&project_ref=project_kokoro", headers={"idempotency-key": "stage2-share-revoke"})
+    control_status, _, control = request(base, "POST", "/v1/sessions/session_kokoro/runs/run_1/control?scope=direct&project_ref=project_kokoro", body={"kind": "run.cancel"}, headers={"idempotency-key": "stage2-control-cancel"})
+    assert_case(cases, "BFF-040", control_status, 202, data(control)["run_id"] == "run_1" and data(control)["status"] == "succeeded", "Chat run control")
+    revoke_status, _, revoked = request(base, "DELETE", "/v1/sessions/session_kokoro/share?scope=direct&project_ref=project_kokoro", headers={"idempotency-key": "stage2-share-revoke"})
     assert_case(cases, "BFF-041", revoke_status, 200, data(revoked)["share_id"] == share_id, "Chat share revocation")
-    delete_status, _, deleted = request(base, "DELETE", "/v1/sessions/session_kokoro?scope=ns_test&project_ref=project_kokoro", headers={"idempotency-key": "stage2-session-delete"})
+    delete_status, _, deleted = request(base, "DELETE", "/v1/sessions/session_kokoro?scope=direct&project_ref=project_kokoro", headers={"idempotency-key": "stage2-session-delete"})
     assert_case(cases, "BFF-042", delete_status, 200, data(deleted)["status"] == "deleted", "Chat session deletion")
-    after_delete_status, _, after_delete = request(base, "GET", "/v1/sessions/session_kokoro?scope=ns_test&project_ref=project_kokoro")
+    after_delete_status, _, after_delete = request(base, "GET", "/v1/sessions/session_kokoro?scope=direct&project_ref=project_kokoro")
     assert_case(cases, "BFF-043", after_delete_status, 404, error_code(after_delete) == "session_not_found", "deleted Chat session is no longer readable")
 
     return cases
