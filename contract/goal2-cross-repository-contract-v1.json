@@ -135,7 +135,7 @@
     "web_to_bff": [
       "x-kokoro-service: web-bff",
       "x-kokoro-internal-secret: WEB_BFF_SHARED_SECRET",
-      "x-kokoro-namespace: SEALED_NAMESPACE",
+      "x-kokoro-tenant-id: SEALED_TENANT_ID",
       "x-kokoro-principal-id: SEALED_PRINCIPAL_ID",
       "x-kokoro-request-id: REQUEST_ID"
     ],
@@ -149,7 +149,7 @@
       "x-kokoro-request-id: REQUEST_ID"
     ],
     "rules": [
-      "The browser never selects tenant, site, namespace, actor, or host authority.",
+      "The browser never selects tenant_id, site, actor, or host authority.",
       "X-Domain and X-Forwarded-* supplied by a browser are dropped.",
       "Tenant and permissions are IAM-derived before a tenant-scoped owner call.",
       "Every mutation carries Idempotency-Key or protobuf CommandIdentity and the owner persists a receipt."

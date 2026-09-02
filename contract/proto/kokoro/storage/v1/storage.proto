@@ -42,7 +42,7 @@ enum AssetVisibility {
 message CreateUploadRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string owner_id = 4;
   string filename = 5;
   string mime_type = 6;
@@ -59,7 +59,7 @@ message CreateUploadResponse {
 message CompleteUploadRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string upload_id = 4;
   string content_sha256 = 5;
   uint64 size_bytes = 6;
@@ -75,7 +75,7 @@ message CompleteUploadResponse {
 message AbortUploadRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string upload_id = 4;
   string reason = 5;
 }
@@ -87,7 +87,7 @@ message AbortUploadResponse {
 }
 
 message GetUploadStatusRequest {
-  string namespace = 1;
+  string tenant_id = 1;
   string upload_id = 2;
 }
 
@@ -102,14 +102,14 @@ message GetUploadStatusResponse {
 message GetAssetRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string asset_id = 4;
   string content_sha256 = 5;
 }
 
 message GetAssetResponse {
   string asset_id = 1;
-  string namespace = 2;
+  string tenant_id = 2;
   string content_sha256 = 5;
   uint64 size_bytes = 6;
   string mime_type = 7;
@@ -120,7 +120,7 @@ message GetAssetResponse {
 message GetPackageReferenceRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string asset_id = 4;
   string content_sha256 = 5;
 }
@@ -135,7 +135,7 @@ message GetPackageReferenceResponse {
 }
 
 message GetScanStatusRequest {
-  string namespace = 1;
+  string tenant_id = 1;
   string asset_id = 2;
 }
 
@@ -148,7 +148,7 @@ message GetScanStatusResponse {
 message FinalizeArtifactRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string asset_id = 4;
   string artifact_id = 5;
   string content_sha256 = 6;
@@ -163,7 +163,7 @@ message FinalizeArtifactResponse {
 message CreateArtifactRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string asset_id = 4;
   string artifact_id = 5;
   string content_sha256 = 6;
@@ -180,7 +180,7 @@ message CreateArtifactResponse {
 message GetDownloadReferenceRequest {
   string request_id = 1;
   kokoro.common.v1.CommandIdentity command = 2;
-  string namespace = 3;
+  string tenant_id = 3;
   string asset_id = 4;
   string content_sha256 = 5;
 }

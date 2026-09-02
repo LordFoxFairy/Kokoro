@@ -6416,7 +6416,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6494,7 +6494,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6566,7 +6566,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6614,7 +6614,7 @@
         "fields": [
           {
             "number": 1,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6680,7 +6680,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6710,7 +6710,7 @@
           },
           {
             "number": 2,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6764,7 +6764,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6830,7 +6830,7 @@
         "fields": [
           {
             "number": 1,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6884,7 +6884,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -6950,7 +6950,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
@@ -7028,7 +7028,7 @@
           },
           {
             "number": 3,
-            "name": "namespace",
+            "name": "tenant_id",
             "type": "string",
             "label": "required"
           },
