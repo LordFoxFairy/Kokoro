@@ -17,6 +17,12 @@ if grep -Eq '^KOKORO_AGENT_ENABLED=(1|true|yes|on)\s*$' "$ENV_FILE"; then
 fi
 
 COMPOSE=(docker compose --env-file "$ENV_FILE" -p "${KOKORO_PHASE1_PROJECT:-kokoro-phase1}" -f deploy/docker-compose.phase1.yml)
+# Start stateful dependencies first so the optional live BFF store can be
+# migrated before application containers receive business traffic.
+"${COMPOSE[@]}" up -d --build postgres redis
+if grep -Eq '^KOKORO_BFF_MODE=live\s*$' "$ENV_FILE"; then
+  "${COMPOSE[@]}" run --rm kokoro-bff node dist/migrate.js
+fi
 "${COMPOSE[@]}" up -d --build
 
 wait_http() {

@@ -64,6 +64,7 @@ docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
 # Web+BFF + Agent 完整执行
 # 同时把 KOKORO_BFF_MODE=live、KOKORO_AGENT_ENABLED=1、
 # KOKORO_AGENT_BASE_URL=http://kokoro-agent-http:4401 写入 env 文件。
+# provision-phase1.sh 会在 live 模式启动应用前自动执行 BFF schema migration。
 docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
   -f deploy/docker-compose.phase1.yml --profile agent up --build
 ```

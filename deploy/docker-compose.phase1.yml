@@ -43,6 +43,11 @@ services:
       KOKORO_DOMAIN: ${KOKORO_DOMAIN:-dev.kokoro.localhost}
       KOKORO_AGENT_ENABLED: ${KOKORO_AGENT_ENABLED:-0}
       KOKORO_AGENT_BASE_URL: ${KOKORO_AGENT_BASE_URL:-}
+      KOKORO_BFF_POSTGRES_URL: ${KOKORO_BFF_POSTGRES_URL:-postgresql://kokoro:CHANGE_ME_postgres_password@postgres:5432/kokoro}
+      KOKORO_BFF_REDIS_URL: ${KOKORO_BFF_REDIS_URL:-redis://redis:6379/11}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
     ports: ["4300:4300"]
     networks: [default]
     restart: unless-stopped
