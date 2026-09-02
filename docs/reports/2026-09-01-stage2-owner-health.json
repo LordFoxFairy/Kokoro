@@ -33,14 +33,14 @@
       "name": "billing_health",
       "url": "http://127.0.0.1:4245/healthz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ok\"},\"meta\":{\"request_id\":\"e1c118d6-aa3d-48be-9580-fbb469446095\"}}",
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ok\"},\"meta\":{\"request_id\":\"4a00f51c-3c26-4044-8622-db1b5e632afa\"}}",
       "ok": true
     },
     {
       "name": "billing_ready",
       "url": "http://127.0.0.1:4245/readyz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ready\",\"dependencies\":{\"postgres\":\"ok\",\"redis\":\"ok\"}},\"meta\":{\"request_id\":\"072d4cf4-1b93-4cb2-8315-fe804227a233\"}}",
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ready\",\"dependencies\":{\"postgres\":\"ok\",\"redis\":\"ok\"}},\"meta\":{\"request_id\":\"4354ca65-6d0f-450f-91c6-4e56f42da300\"}}",
       "ok": true
     },
     {
@@ -75,14 +75,14 @@
       "name": "model_health",
       "url": "http://127.0.0.1:4221/healthz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ok\"},\"requestId\":\"req-a\"}",
+      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ok\"},\"requestId\":\"req-u\"}",
       "ok": true
     },
     {
       "name": "model_ready",
       "url": "http://127.0.0.1:4221/readyz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ready\",\"dependencies\":{\"postgresql\":\"ok\",\"redis\":\"ok\"}},\"requestId\":\"req-c\"}",
+      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ready\",\"dependencies\":{\"postgresql\":\"ok\",\"redis\":\"ok\"}},\"requestId\":\"req-w\"}",
       "ok": true
     },
     {
@@ -90,6 +90,20 @@
       "url": "http://127.0.0.1:4300/readyz",
       "status": 200,
       "body": "{\"status\":\"ok\",\"service\":\"kokoro-bff\",\"mode\":\"live\"}",
+      "ok": true
+    },
+    {
+      "name": "agent_http_health",
+      "url": "http://127.0.0.1:4401/healthz",
+      "status": 200,
+      "body": "{\"status\": \"ok\", \"service\": \"kokoro-agent\"}",
+      "ok": true
+    },
+    {
+      "name": "agent_http_ready",
+      "url": "http://127.0.0.1:4401/readyz",
+      "status": 200,
+      "body": "{\"status\": \"ready\", \"service\": \"kokoro-agent\"}",
       "ok": true
     },
     {
@@ -138,6 +152,11 @@
     },
     {
       "name": "agent",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "agent-http",
       "running": true,
       "exit_code": null
     },

@@ -153,9 +153,10 @@ def start_processes(log_dir: Path) -> list[tuple[str, subprocess.Popen[str]]]:
         ("billing", ROOT / "kokoro-billing", ["pnpm", "dev"], {"BILLING_HOST": "127.0.0.1", "BILLING_PORT": "4245", "BILLING_AUTH_MODE": "header-fixture", "INTERNAL_SERVICE_SECRET": INTERNAL_SECRET, "BILLING_OPERATOR_PROXY_SECRET": INTERNAL_SECRET, "BILLING_REDEEM_SECRET": "stage2_owner_health_redeem_secret_32", "BILLING_ENABLED_PROVIDERS": "mock", "PROVIDER_WEBHOOK_SECRETS_JSON": '{"mock":"stage2_owner_health"}'}),
         ("storage", ROOT / "kokoro-storage", ["npm", "run", "dev"], {"KOKORO_STORAGE_PORT": "8085", "KOKORO_OBJECT_STORE_DRIVER": "local", "KOKORO_OBJECT_STORE_ROOT_DIR": str(log_dir / "objects")}),
         ("capability", ROOT / "kokoro-capability", ["npm", "run", "dev"], {"KOKORO_CAPABILITY_PORT": "8086", "KOKORO_STORAGE_URL": "http://127.0.0.1:8085"}),
-        ("bff-live", ROOT / "kokoro-bff", ["pnpm", "start"], {"KOKORO_BFF_HOST": "127.0.0.1", "KOKORO_BFF_PORT": "4300", "KOKORO_BFF_MODE": "live", "KOKORO_DOMAIN": "dev.kokoro.localhost", "KOKORO_BFF_SHARED_SECRET": INTERNAL_SECRET, "KOKORO_INTERNAL_SECRET_BFF": INTERNAL_SECRET, "KOKORO_PROJECTS_BASE_URL": "http://127.0.0.1:4240", "KOKORO_HUB_BASE_URL": "http://127.0.0.1:8086", "KOKORO_SKILLS_BASE_URL": "http://127.0.0.1:8086", "KOKORO_SCHEDULED_BASE_URL": "http://127.0.0.1:4240", "KOKORO_AGENT_BASE_URL": "http://127.0.0.1:4240", "KOKORO_LIBRARY_BASE_URL": "http://127.0.0.1:4240", "KOKORO_BILLING_BASE_URL": "http://127.0.0.1:4245"}),
+        ("bff-live", ROOT / "kokoro-bff", ["pnpm", "start"], {"KOKORO_BFF_HOST": "127.0.0.1", "KOKORO_BFF_PORT": "4300", "KOKORO_BFF_MODE": "live", "KOKORO_DOMAIN": "dev.kokoro.localhost", "KOKORO_BFF_SHARED_SECRET": INTERNAL_SECRET, "KOKORO_INTERNAL_SECRET_BFF": INTERNAL_SECRET, "KOKORO_PROJECTS_BASE_URL": "http://127.0.0.1:4240", "KOKORO_HUB_BASE_URL": "http://127.0.0.1:8086", "KOKORO_SKILLS_BASE_URL": "http://127.0.0.1:8086", "KOKORO_SCHEDULED_BASE_URL": "http://127.0.0.1:4240", "KOKORO_AGENT_BASE_URL": "http://127.0.0.1:4401", "KOKORO_LIBRARY_BASE_URL": "http://127.0.0.1:4240", "KOKORO_BILLING_BASE_URL": "http://127.0.0.1:4245"}),
         ("web", ROOT / "kokoro", ["pnpm", "dev"], {"PORT": "3000", "KOKORO_DOMAIN": "dev.kokoro.localhost", "KOKORO_BFF_BASE_URL": "http://127.0.0.1:4300", "KOKORO_INTERNAL_SECRET_WEB_BFF": INTERNAL_SECRET, "NEXT_PUBLIC_SESSION_PREVIEW": "1", "NEXT_TELEMETRY_DISABLED": "1"}),
         ("agent", ROOT / "kokoro-agent", ["uv", "run", "kokoro-agent-worker"], {"KOKORO_AGENT_DATABASE_URL": DATABASE_URL, "KOKORO_AGENT_DATABASE_SCHEMA": "kokoro_agent_stage2", "KOKORO_DISABLE_STREAMING": "1"}),
+        ("agent-http", ROOT / "kokoro-agent", ["uv", "run", "kokoro-agent-http"], {"KOKORO_AGENT_DATABASE_URL": DATABASE_URL, "KOKORO_AGENT_DATABASE_SCHEMA": "kokoro_agent_stage2", "KOKORO_AGENT_HTTP_HOST": "127.0.0.1", "KOKORO_AGENT_HTTP_PORT": "4401", "KOKORO_INTERNAL_SECRET_AGENT": INTERNAL_SECRET, "KOKORO_DISABLE_STREAMING": "1"}),
         ("scheduler", ROOT / "kokoro-scheduler", ["go", "run", "./cmd/scheduler"], {"SCHEDULER_JOBS_JSON": "[]", "SCHEDULER_REDIS_URL": REDIS_URL}),
     ]
     processes: list[tuple[str, subprocess.Popen[str]]]=[]
@@ -226,7 +227,15 @@ def restore_web_next_env(original: bytes | None) -> None:
 
 
 def http_get(url: str) -> tuple[int, str]:
-    request = urllib.request.Request(url, headers={"x-kokoro-tenant-id": "tenant_stage2", "x-kokoro-actor-id": "actor_stage2"})
+    request = urllib.request.Request(
+        url,
+        headers={
+            "x-kokoro-tenant-id": "tenant_stage2",
+            "x-kokoro-actor-id": "actor_stage2",
+            "x-kokoro-service": "kokoro-bff",
+            "x-kokoro-internal-secret": INTERNAL_SECRET,
+        },
+    )
     try:
         with urllib.request.urlopen(request, timeout=3) as response:
             return response.status, response.read(400).decode("utf-8", errors="replace")
@@ -264,6 +273,8 @@ def main(argv: list[str] | None = None) -> int:
             "model_health": "http://127.0.0.1:4221/healthz",
             "model_ready": "http://127.0.0.1:4221/readyz",
             "bff_live_ready": "http://127.0.0.1:4300/readyz",
+            "agent_http_health": "http://127.0.0.1:4401/healthz",
+            "agent_http_ready": "http://127.0.0.1:4401/readyz",
             "web_root": "http://127.0.0.1:3000/",
         }
         for name, url in endpoints.items():

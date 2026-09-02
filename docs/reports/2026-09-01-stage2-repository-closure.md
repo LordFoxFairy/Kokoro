@@ -2,7 +2,7 @@
 
 日期：2026-09-01
 范围：Root `Kokoro`、三个阶段 1 运行仓和七个阶段 2 业务仓。
-状态：本地拓扑、边界、契约、提交和 GitHub main 已收口；阶段 2 owner 健康链路已验证。真实业务联调仍按 BFF live adapter 与 Agent HTTP ingress 两个缺口继续推进。
+状态：本地拓扑、边界、契约、提交和 GitHub main 已收口；阶段 2 owner 健康链路已验证；Agent HTTP business ingress 已在独立子仓库完成。真实业务联调仍按 BFF live adapter、Scheduler command 和 Web E2E 继续推进。
 
 ## 1. 最终仓库拓扑
 
@@ -32,7 +32,7 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 |---|---|---|
 | `kokoro` | `LordFoxFairy/kokoro-app` | Web 产品与同源 `/api/*` |
 | `kokoro-bff` | `LordFoxFairy/kokoro-bff` | Chat、业务适配、鉴权、幂等、错误和 SSE 投影 |
-| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Agent 执行、HITL、恢复和事件投影 |
+| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Agent HTTP ingress、执行、HITL、恢复和事件投影 |
 | `kokoro-iam` | `LordFoxFairy/kokoro-iam` | 身份、Tenant、认证、授权、审计、ExecutionIdentity |
 | `kokoro-system` | `LordFoxFairy/kokoro-system` | Site、Workspace、Runtime Manifest、系统策略 |
 | `kokoro-model` | `LordFoxFairy/kokoro-model` | Model Catalog、Provider、Availability、Policy |
@@ -47,7 +47,7 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 |---|---|
 | `kokoro` | `018ad87` |
 | `kokoro-bff` | `876dfba` |
-| `kokoro-agent` | `4091fb2` |
+| `kokoro-agent` | `220cb34` |
 | `kokoro-iam` | `b662fce` |
 | `kokoro-system` | `2c4635f` |
 | `kokoro-model` | `aa8c395` |
@@ -119,7 +119,7 @@ Root 机器索引：
 - Storage：`npm run verify` 通过。
 - Scheduler：gofmt、`go test ./...`、`go test -race ./...`、`go vet ./...`、生产 build、`go mod verify` 通过。
 - Root contract consumers：9 个消费者生成与 `--check` 均通过，生成物 provenance 指向 Root `afd367d`。
-- Stage 2 owner health：14/14 health/readiness/root checks、9/9 local processes 通过，证据为
+- Stage 2 owner health：16/16 health/readiness/root checks、10/10 local processes 通过，已包含 Agent HTTP ingress，证据为
   `docs/reports/2026-09-01-stage2-owner-health.json`。
 - GitHub main CI：10 个正式仓库最新 main 提交均为 success；Web、System、Billing 以及各业务仓的生产构建步骤均已在 GitHub runner 通过。
 
@@ -137,11 +137,10 @@ Root 机器索引：
 
 ## 7. 尚未宣称完成的真实闭环
 
-1. BFF 的 live adapter 需要把 Web-facing `/v1` 资源显式映射到 System、Model、Billing、Capability、Storage
+1. BFF 的 live adapter 需要把 Web-facing `/v1` 资源显式映射到 System、Model、Billing、Capability、Storage、Agent
    的 owner ingress，并统一 envelope、错误、request ID、幂等回执和超时策略；当前 generic proxy 只验证了
    上游转发和失败归一，不作为业务联调完成证据。
-2. Agent 当前以 PostgreSQL + Redis worker 运行，尚未提供供 BFF 使用的 HTTP session/run/events ingress；需要
-   先在 `kokoro-agent` 内完成自己的 v1 ingress 与测试，再由 BFF 接入，保持仓库边界不跨越。
+2. Agent 已提供供 BFF 使用的 v1 HTTP ingress；当前 BFF 尚未接入，且 BFF Chat 的 session metadata/store 仍需明确持久化 owner；Agent 内部事实表不作为 BFF API。
 3. Scheduler 的 v1 是内部 command/配置协议，不是公开资源 CRUD；BFF 对 scheduled-tasks 的 live 接入需通过
    目标业务 command，不直接读取 Scheduler 或 Billing 数据库。
 4. 下一次闭环必须启动独立 checkout 的生产构建进程和 disposable PostgreSQL/Redis/ObjectStore，逐条执行

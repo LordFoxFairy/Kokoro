@@ -31,7 +31,7 @@ Goal 2 owners:
 |---|---|---|---|---|
 | `kokoro` | `LordFoxFairy/kokoro-app` | Next.js Web、同源 `/api/*`、页面状态与 SSE reducer | active | 只消费 BFF v1，补真实联调与性能证据 |
 | `kokoro-bff` | `LordFoxFairy/kokoro-bff` | Chat、业务适配、鉴权、幂等、错误、SSE | active / mock 已闭环 | 用显式 adapter 替换 generic live path，保持 Web envelope 稳定 |
-| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Run 执行、HITL、恢复、事件事实与 worker | active / worker health 已闭环 | 在本仓完成 HTTP session/run/events ingress，再给 BFF 接入 |
+| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Run 执行、HITL、恢复、事件事实与 worker | active / HTTP ingress 已闭环 | 由 BFF 显式接入 Agent business port |
 | `kokoro-iam` | `LordFoxFairy/kokoro-iam` | Principal、Tenant、Auth、Authorization、Audit、ExecutionIdentity | contract-first baseline | 在本仓按 API contract 分批补业务端点 |
 | `kokoro-system` | `LordFoxFairy/kokoro-system` | Site、Workspace、Runtime Manifest、Policy、Release | HTTP health + control surface | 将 BFF projects/site/workspace 映射到稳定 owner ingress |
 | `kokoro-model` | `LordFoxFairy/kokoro-model` | Catalog、Provider、Availability、Policy、Resolve | HTTP resolve + PG/Redis health | 暴露/固化 BFF 所需的 read adapter contract |
@@ -47,7 +47,7 @@ Goal 2 owners:
 - `kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web` 已在 GitHub archived；旧独立 Credit/Site 无正式远程仓，不在当前本地工作区。
 - 本机旧仓源码、旧全栈 Compose、旧 k8s、旧 MySQL/Mongo 运行时和历史归档目录已清除；GitHub archived 仓库保留提交历史。
 - Root contract manifest、9 个 consumer 生成物、Buf/Redocly/pytest、拓扑门禁、architecture 门禁和 Goal 2 mock closure 已通过。
-- BFF mock HTTP E2E 43/43 通过；owner health 14/14、9/9 进程通过；临时 PostgreSQL/Redis/ObjectStore 在 finally 清理。
+- BFF mock HTTP E2E 43/43 通过；owner health 16/16、10/10 进程通过（包含 Agent HTTP ingress）；临时 PostgreSQL/Redis/ObjectStore 在 finally 清理。
 - Docker 只保留当前 Model 本地开发栈的 PostgreSQL 16 + Redis 7 容器；阶段 1 生产入口仍由 Root Compose，阶段 2 owner 部署由各自仓库负责。
 - 镜像发布规则已统一：普通 push/PR 只做质量门禁，`v*.*.*` tag 才触发 GHCR 生产镜像；Dockerfile 只使用生产启动命令，本地开发直接运行 `dev`。
 
@@ -65,7 +65,7 @@ Goal 2 owners:
 当前以下内容仍需真实网络证据：
 
 1. **BFF live adapter**：`/v1/projects`、`/v1/skills`、`/v1/mcp/*`、`/v1/billing/*`、`/v1/library`、`/v1/scheduled-tasks` 和 `/v1/sessions/*` 必须分别映射到真实 owner ingress；每条映射都要有成功、错误、超时、request ID、幂等和权限测试。
-2. **Agent ingress**：Agent 目前是 worker 进程，BFF 没有可调用的真实 session/run/events HTTP ingress。Agent 先在自己的仓库完成接口、持久化、SSE/replay、control 和 crash-recovery 测试，BFF 再接入。
+2. **Agent ingress**：`kokoro-agent` 已在自身仓库提供版本化 HTTP ingress、durable admission、control、evidence 和安全 Chat history/replay，并通过本仓测试。BFF 尚未完成 live adapter 接入；接入仍必须只经 Agent business port，不读 Redis/PG。
 3. **Capability/Storage RPC bridge**：Capability/Storage 当前核心入口是 Connect/RPC；BFF 需要在自己的 adapter 中使用 typed client 或经 owner 提供的 HTTP projection，不复制 proto 实现、不直连数据库。
 4. **Scheduler command**：Scheduler 不拥有公开 scheduled-task CRUD；业务定义和回执归业务 owner，Scheduler 只持有通用调度与 lease。BFF 不直接访问 Scheduler/Billing 数据库。
 5. **真实 Web 联调**：需要从 Web 页面出发，经过同源 API、BFF、owner、Agent/Scheduler，验证状态转换、SSE、刷新/重连、幂等重放和故障恢复，并保存逐用例报告。
