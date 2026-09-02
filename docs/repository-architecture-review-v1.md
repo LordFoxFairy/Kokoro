@@ -26,7 +26,7 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 |---|---|---|---|
 | `kokoro-app` | Web UI、同源 `/api/*` adapter | `src/app`、`src/lib`、`packages/*` | 边界正确；`packages/*` 是 Web 仓内复用包，不是后端共享仓，不应承载业务事实。 |
 | `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner adapter、SSE | `src/main.ts`、`src/adapters`、`src/business-store.ts` | 业务入口正确；BFF store 必须保持唯一业务事实 owner，mock 只能是显式模式。后续应继续把 upstream client 与 route handler 分离。 |
-| `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`persistence`、`contract` | 能力完整但复杂度最高；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
+| `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`contract` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
 | `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、`tenant-binding.ts`、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
 | `kokoro-system` | Site、Workspace、Runtime Manifest、系统策略 | `src/modules/runtime-manifest`、`interfaces/http` | 边界正确；tenant binding 依赖 IAM，不能把 IAM 事实复制为 System 自有写模型。 |
 | `kokoro-model` | Model Catalog、Provider、Availability、Policy、resolve | `src/domain`、`application`、`interfaces/http|rpc` | 目录与解析清晰；LiteLLM 只是可选 transport，Model 不探活、不启动、不拥有 LiteLLM。 |
