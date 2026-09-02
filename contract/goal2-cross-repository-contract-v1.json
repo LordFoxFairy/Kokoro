@@ -8,8 +8,7 @@
     "http_success": {
       "data": "resource-specific payload",
       "meta": {
-        "request_id": "REQUEST_ID",
-        "next_cursor": "CURSOR_OR_NULL"
+        "request_id": "REQUEST_ID"
       }
     },
     "http_error": {
@@ -211,10 +210,18 @@
       "http": [
         "POST /v1/runs",
         "POST /v1/runs/{run_id}/control",
+        "GET /v1/sessions",
         "GET /v1/sessions/{session_id}/messages",
         "GET /v1/sessions/{session_id}/events"
       ],
-      "implementation": "agent_http_ingress-and-bff-chat-adapter-present"
+      "session_list": {
+        "owner": "kokoro-agent",
+        "scope": "trusted_execution_identity",
+        "query": ["project_ref", "limit", "cursor"],
+        "cursor": "opaque_compound_updated_at_session_id",
+        "response": "data.sessions + data.next_cursor"
+      },
+      "implementation": "agent_http_ingress-and-bff-chat-adapter-present-including-durable-session-list"
     },
     "kokoro-scheduler": {
       "role": "generic schedule trigger/lease/retry/misfire/dispatch",

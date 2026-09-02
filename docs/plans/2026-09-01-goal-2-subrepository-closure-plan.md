@@ -45,7 +45,7 @@
 
 Root 已冻结跨仓 JSON 契约：
 
-- HTTP 成功：data + meta.request_id + 可选 meta.next_cursor；
+- HTTP 成功：data + meta.request_id；可分页资源在 data.next_cursor 返回不透明游标；
 - HTTP 错误：error.code + error.message + meta.request_id；
 - 外部 HTTP 使用 snake_case；owner 内部字段只在 BFF transport adapter 中映射一次；
 - mutation 使用 Idempotency-Key；服务调用使用 service credential、X-Request-Id、x-kokoro-request-id

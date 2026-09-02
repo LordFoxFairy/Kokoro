@@ -43,7 +43,9 @@ Idempotency-Key: IDEMPOTENCY_KEY
 
 ### 1.2 状态、消息和事件可回放
 
-查询接口返回带游标的稳定快照；事件流断线后从游标继续，不依赖进程内状态：
+查询接口返回带游标的稳定快照；事件流断线后从游标继续，不依赖进程内状态。Kokoro 的
+外部 resource payload 将 `next_cursor` 放在 `data` 内，Web 同源适配器解包后仍保持扁平
+DTO；外层 `meta` 只承载请求追踪信息：
 
 ```http
 GET /v1/runs/RUN_ID/events?cursor=CURSOR
@@ -55,8 +57,7 @@ GET /v1/runs/RUN_ID/events?cursor=CURSOR
     "items": []
   },
   "meta": {
-    "request_id": "REQ_ID",
-    "next_cursor": "CURSOR"
+    "request_id": "REQ_ID"
   }
 }
 ```
@@ -101,7 +102,8 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 
 - 外部 HTTP 使用 `snake_case`；TypeScript 内部可以使用 `camelCase`。
 - 成功响应固定为 `{ data, meta }`，错误响应固定为 `{ error, meta }`。
-- `meta.request_id` 必须存在；分页字段统一放在 `meta.next_cursor`，禁止新增第二种兼容 envelope。
+- `meta.request_id` 必须存在；分页字段统一放在资源 payload 的 `data.next_cursor`，禁止新增
+  `meta.next_cursor` 或第二种兼容 envelope。Web 解包后的扁平 DTO 同样使用 `next_cursor`。
 - `Idempotency-Key` 只用于会产生事实变化的命令；查询接口使用 cursor，不把随机 offset 暴露为稳定协议。
 - tenant、subject、actor、权限来自已验证的服务上下文；浏览器提交的同名字段不能覆盖可信上下文。
 - owner 错误要保留稳定 `code`、`retryable` 和可选 `details`；BFF 只做一次错误映射。
