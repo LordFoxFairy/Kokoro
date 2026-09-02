@@ -18,7 +18,7 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 | kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 5edf746 |
 | kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | f659000 |
 | kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | 6aad0bc |
-| kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | bb45c1d |
+| kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | a2d05a0 |
 | kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 2f7a3e8 |
 
 Root + 10 个 active child checkout 均为独立 Git root，当前分支均为 main；本轮只记录本地

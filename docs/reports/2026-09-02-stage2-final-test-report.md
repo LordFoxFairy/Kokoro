@@ -43,7 +43,7 @@
 | kokoro-model | pnpm check；pnpm verify:release | PASS：127 model tests；production HTTP、Prisma/contract provenance、architecture |
 | kokoro-billing | pnpm verify | PASS：45 passed，52 skipped integration；SQL naming 37 migrations；OpenAPI parity 17 routes |
 | kokoro-capability | npm run verify | PASS：127 tests，32 test files；contract/typecheck/build |
-| kokoro-storage | npm run verify | PASS：86 passed，1 skipped；24 passed test files |
+| kokoro-storage | npm run verify | PASS：87 passed，1 skipped；24 passed test files；PostgreSQL schema smoke PASS |
 | kokoro-scheduler | go test ./...；go test -race ./...；go vet ./... | PASS：unit、race、vet |
 
 子仓最终提交：
@@ -58,7 +58,7 @@
 | kokoro-model | 5edf746 |
 | kokoro-billing | f659000 |
 | kokoro-capability | 6aad0bc |
-| kokoro-storage | bb45c1d |
+| kokoro-storage | a2d05a0 |
 | kokoro-scheduler | 2f7a3e8 |
 
 ## 4. BFF mock 与 live 业务用例
