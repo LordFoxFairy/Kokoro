@@ -37,11 +37,11 @@
 | kokoro | pnpm check | PASS：112 test files，1120 tests；Next production build 17/17 pages |
 | kokoro-bff | pnpm check；pnpm test:integration | PASS：51 tests；覆盖 live adapter、scheduler durable fact/replay、Content-Length |
 | kokoro-agent | uv run --frozen pytest -q；ruff check；pyright | PASS：520 passed，6 skipped，61 deselected；ruff/pyright 0 errors |
-| kokoro-iam | pnpm verify | PASS：contract 1、unit 11；typecheck/lint/build |
+| kokoro-iam | pnpm verify | PASS：9 test files、18 tests；typecheck/lint/build |
 | kokoro-system | pnpm verify | PASS：contract 1、service tests 38、SDK tests 11；typecheck/lint/build |
 | kokoro-system | TEST_DATABASE_URL=... TEST_REDIS_URL=... pnpm test:integration | PASS：listener、SDK、tenant isolation、precedence、cache identity、HTTP errors |
-| kokoro-model | pnpm check；pnpm verify:release | PASS：127 model tests；production HTTP、Prisma/contract provenance、architecture |
-| kokoro-billing | pnpm verify | PASS：45 passed，52 skipped integration；SQL naming 37 migrations；OpenAPI parity 17 routes |
+| kokoro-model | pnpm check；pnpm verify:release | PASS：129 model tests；production HTTP、Prisma/contract provenance、architecture |
+| kokoro-billing | pnpm verify | PASS：45 passed，52 skipped integration；SQL naming 38 migrations；OpenAPI parity 17 routes |
 | kokoro-capability | npm run verify | PASS：127 tests，32 test files；contract/typecheck/build |
 | kokoro-storage | npm run verify | PASS：87 passed，1 skipped；24 passed test files；PostgreSQL schema smoke PASS |
 | kokoro-scheduler | go test ./...；go test -race ./...；go vet ./... | PASS：unit、race、vet |
