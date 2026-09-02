@@ -152,7 +152,7 @@ def inspect_local(repo: Repository) -> dict[str, object]:
     code, remote_heads, stderr = git_value(directory, "ls-remote", "--heads", "origin")
     if code == 0:
         branches = [
-            line.removeprefix("refs/heads/")
+            line.split("\t", 1)[1].removeprefix("refs/heads/")
             for line in remote_heads.splitlines()
             if line and "\trefs/heads/" in line
         ]
