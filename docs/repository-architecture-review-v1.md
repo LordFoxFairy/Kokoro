@@ -117,6 +117,8 @@ Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设
   tenant 兼容协议；后续仍需把请求级模型解析为 approved revision/alias 的 contract fixture。
 - Billing 已删除 provider webhook 中旧 `site_id` payload hint；应用层内部变量仍有 `siteId` 历史命名，
   后续应在不改变数据库迁移语义的前提下逐步收敛为 tenant vocabulary。
+- System 业务路由已删除未配置 service token 时的匿名 fixture 模式；缺少 BFF service credential
+  现在明确返回 `503 service_auth_not_configured`，health/readiness 仍为公开探针。
 
 ### P1：BFF 入口文件过大，已影响可读性和扩展性
 
