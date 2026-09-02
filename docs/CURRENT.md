@@ -129,6 +129,7 @@ Capability 内 MCP 子域概念；Chat 保留在 BFF 内部模块；Platform/Gat
 、[Goal 2 技术基线](kokoro-handbook/technical/53-postgresql-redis-seven-repository-baseline.md)、
 [Goal 2 七仓契约注册表](../contract/goal2-repository-contract-manifest.json) 和
 [Goal 2 闭环报告](reports/2026-09-01-goal-2-closure.md) 和 [阶段 2 仓库收口报告](reports/2026-09-01-stage2-repository-closure.md)。
+[全仓库与跨仓闭环计划](plans/2026-09-01-goal-2-subrepository-closure-plan.md)记录每个正式仓库的责任、当前缺口和验收顺序。
 
 ## 本地原型与历史材料（仅参考，不进入首发）
 
