@@ -95,8 +95,8 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 
 ### P1：BFF 与 Agent 的几个返回成功路径仍然不够诚实
 
-- BFF 的 Session list 目前依赖进程内索引，重启或多副本后会丢失；应改成持久化索引或 Agent
-  的 identity-scoped query，并实现 opaque cursor。
+- BFF Session list 已改为调用 Agent 的持久化 identity-scoped query，并透传 opaque cursor；后续
+  仍需补齐 Agent session metadata 与执行事实的恢复/删除生命周期，不得在 BFF 恢复进程内索引。
 - BFF 的 Project tasks 已归入 BFF 自有 `bff_project_task` 事实表；后续只需补齐创建/更新命令和统一
   cursor 分页，不得退回从 Agent 读取或用空数组伪装成功。
 - Agent evidence 查询需要校验 Run 的 identity/scope，并将诊断原始事件与用户可见投影分开。
