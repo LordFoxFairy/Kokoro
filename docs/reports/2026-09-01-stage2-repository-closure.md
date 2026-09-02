@@ -82,14 +82,8 @@ Root 工作区已移除旧目录和 gitlink：
 - `kokoro-credit`
 - `kokoro-site-kokoro`
 
-历史副本统一位于 Root 外：
-
-```text
-/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/
-```
-
 GitHub 上的 `LordFoxFairy/kokoro-session`、`kokoro-gateway`、`kokoro-platform`、`kokoro-web`
-均保持 archived，不再参与 CI、Compose、contract consumer 或默认启动路径。旧 Root Compose、旧 k8s、旧验证脚本和遗留环境文件也已移出当前 Root；活动 worktree 只保留有实际分支/未提交内容的用户工作副本，已失效的 worktree 元数据已 prune。
+均保持 archived，不再参与 CI、Compose、contract consumer 或默认启动路径。旧 Root Compose、旧 k8s、旧验证脚本和遗留环境文件也已从当前 Root 与本机归档目录清除；活动 worktree 只保留当前正式仓库，已失效的 worktree 元数据已 prune。
 
 ## 4. 契约与边界门禁
 
@@ -134,12 +128,12 @@ Root 机器索引：
 1. 已完成：10 个独立仓分别 commit，并验证 `git ls-remote origin refs/heads/main` 与本地提交一致；最新 CI 修复包含 Web 错误面板断言作用域、IAM/System pnpm build allowlist、Billing PostgreSQL migration 安装流程，以及 Model consumer 对齐 Root v1 Proto 生成物。
 2. 已完成：Root 提交拓扑、contract、文档、Agent gitlink、9 个生成消费者和本报告；当前 Root 为
    `7c07268d`，Root generator baseline 仍为 `afd367d`，避免非契约文档提交造成生成物漂移。
-3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 移出：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；完整文件保存在 Root 外 `Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` 与 `phase1-root-database/`。
+3. 旧 Native Slice A runner 及 Root 的集成 SQL/PG18 fixture 已从活动 Root 和本机归档目录清除：它们绑定已废弃的 Session/旧 Site 表/IAM gRPC/独立 Chat 进程模型，不能作为当前阶段 2 证据；需要考古时从 GitHub archived 历史提交读取。
 4. 当前 E2E 证据改由 Root 的 Stage 2 BFF mock runner 产生；它只启动子仓生产编译产物并通过 HTTP 验证，不共享业务数据库或复制源码。
 5. Dockerfile 本地 build 已启动；Docker Hub metadata 请求在当前本机网络挂起，已停止残留 build 进程，本次仅记录为环境阻塞，不记为镜像构建通过。生产镜像仍只从 v*.*.* tag workflow 发布。
 6. GHCR package visibility 未修改；GitHub CLI 当前没有 `read:packages`，因此只记录 workflow `packages: write`，不把它等同于 package public。
 7. 已完成本轮收口：Root 生成 consumer/report 已提交、构建产物已清理、Root gate 已复跑，所有正式子仓工作树 clean；当前 GitHub 上 10 个正式仓均保留 `main`，4 个历史远程仓保持 archived。
-8. 阶段 2 收口后重新冻结了 Root 的当前 v1 breaking image：旧的 `contract/breaking/slice-a-v1.binpb`（commit `1a993fac`，对应已废弃的旧拓扑）已移到 Root 外的 `Kokoro-archive-2026-09-01/root-legacy/contract-baselines/`；活动 Root 的同名 baseline 现在与最终 Stage 2 v1 descriptor 一致，后续普通演进继续由 Buf breaking 门禁约束。修复后的 Root `Contract` workflow 已在提交 `ade5f0bc` 的 GitHub run `33567800858` 通过。
+8. 阶段 2 收口后重新冻结了 Root 的当前 v1 breaking image：旧 baseline（commit `1a993fac`，对应已废弃的旧拓扑）已从活动 Root 移除并仅保留在 Git 历史；活动 Root 的同名 baseline 现在与最终 Stage 2 v1 descriptor 一致，后续普通演进继续由 Buf breaking 门禁约束。修复后的 Root `Contract` workflow 已在提交 `ade5f0bc` 的 GitHub run `33567800858` 通过。
 
 ## 7. 尚未宣称完成的真实闭环
 

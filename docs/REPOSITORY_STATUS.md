@@ -40,7 +40,7 @@ kokoro-app (Web) -> kokoro-bff (Chat/业务 BFF) -> kokoro-agent (worker)
                                   \\-> Goal 2 业务仓 HTTP/RPC contracts
 ```
 
-本地三仓启动文件是 [`deploy/docker-compose.phase1.yml`](../deploy/docker-compose.phase1.yml)，生产镜像入口是各仓自己的 Dockerfile。Root 外的 `Kokoro-archive-2026-09-01/root-legacy/` 保存历史迁移夹具；Root 内不再保留旧 Compose、k8s 或全栈 provisioning 入口。
+本地三仓启动文件是 [`deploy/docker-compose.phase1.yml`](../deploy/docker-compose.phase1.yml)，生产镜像入口是各仓自己的 Dockerfile。旧 Compose、k8s 和全栈 provisioning 入口已从活动工作区清除；GitHub archived 仓库保留提交历史。
 
 ## 已废弃并归档
 
@@ -55,7 +55,7 @@ kokoro-app (Web) -> kokoro-bff (Chat/业务 BFF) -> kokoro-agent (worker)
 | `kokoro-credit` | 无正式远程仓库 | 移出 Root 工作区；Credit 已并入 Billing |
 | `kokoro-site-kokoro` | 无正式远程仓库 | 删除空/占位目录 |
 
-归档 GitHub 仓库不删除提交历史；归档副本统一放在 Root 之外的 `Kokoro-archive-2026-09-01/`，只供考古和回滚，不加入当前工作区、Compose、CI 或 contract consumer。
+归档 GitHub 仓库不删除提交历史；本机不保留旧仓源码副本，避免误启动、误导入或污染当前工作区。历史文档只在 Root 中以“历史/迁移材料”标注，不加入当前 Compose、CI 或 contract consumer。
 
 ## 仓库自洽门禁
 

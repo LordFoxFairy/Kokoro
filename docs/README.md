@@ -14,7 +14,7 @@ PostgreSQL（持久化真源）与 Redis（队列、事件流、租约和短期�
 作为本轮新代码和部署配置的依据。
 
 Root 当前部署只使用 `deploy/docker-compose.phase1.yml` 和 `deploy/provision-phase1.sh`；旧双 Compose、k8s、
-全栈 provisioning 和旧拓扑验证入口已移到 Root 外的 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/`。
+全栈 provisioning 和旧拓扑验证入口已从活动工作区清除，GitHub 历史仓库仅以 archived 状态保留。
 
 ## 阶段 2 当前收口
 

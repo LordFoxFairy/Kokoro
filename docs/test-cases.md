@@ -1,7 +1,7 @@
 # Kokoro 测试用例总表
 
-> **状态：历史验证矩阵。** 旧的 Session/Mongo/Platform 验证入口已从 Root 移到
-> `../Kokoro-archive-2026-09-01/root-legacy/`；本文件下方的 L2–L5 只用于考古，不作为当前命令。
+> **状态：历史验证矩阵。** 旧的 Session/Mongo/Platform 验证入口已从当前工作区移除并仅保留在 Git 历史；
+> 本文件下方的 L2–L5 只用于考古，不作为当前命令。
 
 当前 Root 门禁和阶段 2 跨仓 fixture：
 

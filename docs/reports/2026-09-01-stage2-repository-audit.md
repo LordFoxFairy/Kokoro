@@ -41,8 +41,8 @@ Root 本地 HEAD 为 `7c07268d95291f0ec1dcb7ed0372dffb0db67b59`，remote 为
 - Root 工作区不再包含 `kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web`、
   `kokoro-credit` 或 `kokoro-site-kokoro`；旧 GitHub 仓库 `kokoro-session`、`kokoro-gateway`、
   `kokoro-platform`、`kokoro-web` 已 archived。
-- 旧 Root database、Native Slice A、旧部署/验证入口保留在 Root 外的
-  `Kokoro-archive-2026-09-01/`；归档副本已移除 node_modules、dist、`.next` 和测试缓存，只保留考古所需源文件与提交历史。
+- 旧 Root database、Native Slice A、旧部署/验证入口已从本机工作区和本机归档目录清除；GitHub archived 仓库
+  保留提交历史，Root 内的历史文档仅作为迁移索引。
 - 本机 Docker 只保留当前 Model 的 PostgreSQL 16 + Redis 7 容器和对应服务；已移除旧 MySQL/Mongo/PG18/Redis
   容器、卷、网络、旧 Gateway/Chat 镜像及已完成的迁移容器。
 - 10 个 active 仓库均为独立 Git root，`origin/main` 与本地 HEAD 一致；Root 只把 `kokoro-agent` 作为

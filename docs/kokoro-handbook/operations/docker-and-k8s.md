@@ -2,8 +2,7 @@
 
 状态：**历史 deployment plane 参考**，2026-08-22。当前 Root 只提供
 [`deploy/docker-compose.phase1.yml`](../../../deploy/docker-compose.phase1.yml) 的 Web/BFF/Agent + PostgreSQL/Redis
-入口；旧 k8s manifests 和全栈 Compose 已移到 Root 外的
-`Kokoro-archive-2026-09-01/root-legacy/`。本文保留服务发现、endpoint、secret、volume、sandbox
+入口；旧 k8s manifests 和全栈 Compose 已从当前工作区移除并仅保留在 Git 历史。本文保留服务发现、endpoint、secret、volume、sandbox
 adapter、资源与 readiness/drain；它不定义产品 Feature、GA Agent、Skill、graph 或 Session 状态。GA 的目标编排以
 [36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 和
 [37 App、Feature 与 Studio 架构](../technical/37-product-experience-agent-studio-architecture.md) 为准。

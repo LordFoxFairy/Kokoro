@@ -39,15 +39,16 @@ Protobuf source must already be Buf-canonical; `--check` intentionally fails on 
 
 ## Archived historical fixtures
 
-The retired Root deployment and verification entrypoints were removed from this directory and moved to
-`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/`. This includes the old split Compose files, k8s tree, legacy
-provisioning and storage templates, plus `closure-up.py`, `e2e-v21-gate.py`, `chaos-verify.py`,
+The retired Root deployment and verification entrypoints were removed from this directory and from the local
+workspace. GitHub history remains available in the archived repositories; the old split Compose files, k8s tree,
+legacy provisioning and storage templates, plus `closure-up.py`, `e2e-v21-gate.py`, `chaos-verify.py`,
 `trace-verify.py`, `real-model-verify.py`, `verify-all.py`, `generate-model-openrouter-init.py` and their
-`procutil.py` helper. They depend on the retired MySQL/Mongo/Session/Platform topology and must not be used
-as current contract, Phase 1, or cross-repository validation.
+`procutil.py` helper depend on the retired MySQL/Mongo/Session/Platform topology and must not be used as current
+contract, Phase 1, or cross-repository validation.
 
-The former native Slice A runner and its PostgreSQL/Redis/LiteLLM/Session-era process supervisor were removed from the active Root because they targeted the retired integrated topology. The complete source and tests are preserved outside the checkout at
-`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/phase1-native-slice-a/` for historical review only. They must not be used as Stage 2 acceptance evidence.
+The former native Slice A runner and its PostgreSQL/Redis/LiteLLM/Session-era process supervisor were removed from
+the active Root because they targeted the retired integrated topology. Their source remains in Git history only and
+must not be used as Stage 2 acceptance evidence.
 
 `ops/langfuse/docker-compose.yml` and `ops/langfuse/.env.local.example` remain archived historical fixtures
 for an optional external observability stack; they are not Root deployment dependencies and do not restore the

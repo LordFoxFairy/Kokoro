@@ -99,11 +99,11 @@ docker build -t ghcr.io/LordFoxFairy/kokoro-agent:TAG ./kokoro-agent
 根仓只维护 `contract/` 的版本化 API/AIP 索引、[storage-baseline-v1](../contract/spec/storage-baseline-v1.md)
 和验收文档。跨仓联调交换 contract fixture、兼容性结果和发布元数据。
 
-## 已移出 Root 的历史入口
+## 已移除的历史入口
 
 旧的双 Compose 编排、旧 k8s manifests、旧全栈 provisioning、旧 workspace 配置，以及依赖
-MySQL/Mongo/Session/Platform 的验证脚本已移到 Root 外：
-`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro-archive-2026-09-01/root-legacy/`。它们只供迁移考古和回滚取证，不是开发、CI 或生产入口。
+MySQL/Mongo/Session/Platform 的验证脚本已从本机活动工作区和本机归档目录清除；GitHub 历史仓库
+仍以 archived 状态保留提交历史。它们不是开发、CI 或生产入口。
 
 后续接入阶段 2 业务仓时，必须由各自仓库完成 PostgreSQL adapter、Redis adapter、迁移、测试和 Docker/CI 闭环，
 再接入新的业务 BFF contract；不要把旧组件重新接回阶段 1。
