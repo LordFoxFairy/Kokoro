@@ -1,6 +1,6 @@
 version: v2
 modules:
-  - path: contract/proto
+  - path: contract/legacy/credit/proto
 lint:
   use:
     - STANDARD

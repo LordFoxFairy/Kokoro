@@ -33,14 +33,14 @@
       "name": "billing_health",
       "url": "http://127.0.0.1:4245/healthz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ok\"},\"meta\":{\"request_id\":\"4a00f51c-3c26-4044-8622-db1b5e632afa\"}}",
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ok\"},\"meta\":{\"request_id\":\"509c7bc9-bdeb-42a2-b5b6-a63aeea17bc4\"}}",
       "ok": true
     },
     {
       "name": "billing_ready",
       "url": "http://127.0.0.1:4245/readyz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ready\",\"dependencies\":{\"postgres\":\"ok\",\"redis\":\"ok\"}},\"meta\":{\"request_id\":\"4354ca65-6d0f-450f-91c6-4e56f42da300\"}}",
+      "body": "{\"data\":{\"module\":\"kokoro-billing\",\"status\":\"ready\",\"dependencies\":{\"postgres\":\"ok\",\"redis\":\"ok\"}},\"meta\":{\"request_id\":\"8aa5fe5b-cee2-490c-8d67-d990e615395c\"}}",
       "ok": true
     },
     {
@@ -75,14 +75,14 @@
       "name": "model_health",
       "url": "http://127.0.0.1:4221/healthz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ok\"},\"requestId\":\"req-u\"}",
+      "body": "{\"data\":{\"module\":\"model\",\"status\":\"ok\"},\"requestId\":\"req-2\"}",
       "ok": true
     },
     {
       "name": "model_ready",
       "url": "http://127.0.0.1:4221/readyz",
       "status": 200,
-      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ready\",\"dependencies\":{\"postgresql\":\"ok\",\"redis\":\"ok\"}},\"requestId\":\"req-w\"}",
+      "body": "{\"data\":{\"module\":\"kokoro-model\",\"status\":\"ready\",\"dependencies\":{\"postgresql\":\"ok\",\"redis\":\"ok\"}},\"requestId\":\"req-4\"}",
       "ok": true
     },
     {
@@ -107,6 +107,20 @@
       "ok": true
     },
     {
+      "name": "scheduler_health",
+      "url": "http://127.0.0.1:4252/healthz",
+      "status": 200,
+      "body": "{\"service\":\"kokoro-scheduler\",\"status\":\"ok\"}",
+      "ok": true
+    },
+    {
+      "name": "scheduler_ready",
+      "url": "http://127.0.0.1:4252/readyz",
+      "status": 200,
+      "body": "{\"service\":\"kokoro-scheduler\",\"status\":\"ok\"}",
+      "ok": true
+    },
+    {
       "name": "web_root",
       "url": "http://127.0.0.1:3000/",
       "status": 200,
@@ -122,6 +136,11 @@
     },
     {
       "name": "system",
+      "running": true,
+      "exit_code": null
+    },
+    {
+      "name": "model",
       "running": true,
       "exit_code": null
     },
@@ -166,5 +185,84 @@
       "exit_code": null
     }
   ],
-  "status": "PASS"
+  "status": "PASS",
+  "live_business": [
+    {
+      "id": "LIVE-001",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "System manifest is reached via BFF and IAM-derived tenant context"
+    },
+    {
+      "id": "LIVE-002",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF owner adapter returned models from /v1/models"
+    },
+    {
+      "id": "LIVE-003",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF owner adapter returned skills from /v1/skills/catalog"
+    },
+    {
+      "id": "LIVE-004",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF owner adapter returned items from /v1/library"
+    },
+    {
+      "id": "LIVE-005",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF owner adapter returned plans from /v1/billing/plans"
+    },
+    {
+      "id": "LIVE-006",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF owner adapter returned projects from /v1/projects"
+    },
+    {
+      "id": "LIVE-007",
+      "status": 202,
+      "expected_status": 202,
+      "passed": true,
+      "detail": "BFF Chat adapter admitted a Run through Agent HTTP ingress"
+    },
+    {
+      "id": "LIVE-008",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF persisted ScheduledTask and registered Scheduler ScheduleJob"
+    },
+    {
+      "id": "LIVE-009",
+      "status": 202,
+      "expected_status": 202,
+      "passed": true,
+      "detail": "Scheduler command was accepted by BFF and launched Agent"
+    },
+    {
+      "id": "LIVE-010",
+      "status": 202,
+      "expected_status": 202,
+      "passed": true,
+      "detail": "Scheduler occurrence replay returned the durable BFF receipt without a duplicate Agent run"
+    },
+    {
+      "id": "LIVE-011",
+      "status": 200,
+      "expected_status": 200,
+      "passed": true,
+      "detail": "BFF removed the business fact after Scheduler unregister succeeded"
+    }
+  ]
 }

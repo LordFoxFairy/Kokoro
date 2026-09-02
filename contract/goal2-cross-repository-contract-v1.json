@@ -1,0 +1,245 @@
+{
+  "artifact": "goal2-cross-repository-contract-v1",
+  "version": 1,
+  "status": "reviewed",
+  "authority": "root-cross-repository-wire-contract",
+  "scope": "Web -> BFF -> IAM/System/Model/Billing/Capability/Storage/Agent/Scheduler",
+  "transport": {
+    "http_success": {
+      "data": "resource-specific payload",
+      "meta": {
+        "request_id": "REQUEST_ID",
+        "next_cursor": "CURSOR_OR_NULL"
+      }
+    },
+    "http_error": {
+      "error": {
+        "code": "STABLE_ERROR_CODE",
+        "message": "LOG_SAFE_MESSAGE"
+      },
+      "meta": {
+        "request_id": "REQUEST_ID"
+      }
+    },
+    "http_field_naming": "snake_case",
+    "protobuf_field_naming": "protobuf canonical field names",
+    "web_projection": "BFF unwraps or projects owner transport without leaking owner-only fields"
+  },
+  "trusted_context": {
+    "web_to_bff": [
+      "x-kokoro-service: web-bff",
+      "x-kokoro-internal-secret: WEB_BFF_SHARED_SECRET",
+      "x-kokoro-namespace: SEALED_NAMESPACE",
+      "x-kokoro-principal-id: SEALED_PRINCIPAL_ID",
+      "x-kokoro-request-id: REQUEST_ID"
+    ],
+    "bff_to_owner": [
+      "x-kokoro-service: kokoro-bff (compatibility/Agent transport)",
+      "x-kokoro-service: web-bff (registered Model/Billing owner HTTP adapters)",
+      "x-kokoro-internal-secret: BFF_OWNER_SECRET",
+      "Authorization: Bearer BFF_OWNER_SECRET",
+      "X-Request-Id: REQUEST_ID",
+      "Forwarded: host=KOKORO_DOMAIN",
+      "x-kokoro-request-id: REQUEST_ID"
+    ],
+    "rules": [
+      "The browser never selects tenant, site, namespace, actor, or host authority.",
+      "X-Domain and X-Forwarded-* supplied by a browser are dropped.",
+      "Tenant and permissions are IAM-derived before a tenant-scoped owner call.",
+      "Every mutation carries Idempotency-Key or protobuf CommandIdentity and the owner persists a receipt."
+    ]
+  },
+  "owner_contracts": {
+    "kokoro-iam": {
+      "role": "tenant/user/auth/authz/execution identity fact owner",
+      "wire": [
+        "contract/proto/kokoro/iam/v1/authentication.proto",
+        "contract/proto/kokoro/iam/v1/authorization.proto"
+      ],
+      "required_internal_http": {
+        "method": "GET",
+        "path": "/internal/iam/tenant-binding",
+        "query": { "host": "HOST" },
+        "response": {
+          "data": {
+            "host": "HOST",
+            "tenant_id": "TENANT_ID",
+            "status": "active",
+            "binding_revision": "REVISION"
+          },
+          "meta": { "request_id": "REQUEST_ID" }
+        }
+      },
+      "implementation": "iam-handler-present-system-client-aligned"
+    },
+    "kokoro-system": {
+      "role": "site/workspace/runtime-manifest/policy fact owner",
+      "wire": ["contract/proto/kokoro/site/v1/site.proto"],
+      "http": [
+        "GET /system/runtime-manifest",
+        "GET|POST /system/sites",
+        "GET|POST /system/workspaces",
+        "GET|PUT /system/sites/{site_id}/policy",
+        "GET|POST /system/config",
+        "POST /system/releases/{release_id}/{validate|publish|retire}"
+      ],
+      "context": ["x-kokoro-tenant-id", "x-kokoro-actor-id", "x-kokoro-iam-permissions", "Forwarded"],
+      "service_auth": {
+        "service": "web-bff",
+        "credential": "KOKORO_SYSTEM_BFF_SERVICE_TOKEN",
+        "headers": ["x-kokoro-service", "x-kokoro-internal-secret", "Authorization"]
+      },
+      "bff_http": {
+        "method": "GET",
+        "path": "/v1/system/runtime-manifest",
+        "query": ["product_id", "locale", "surface_id"],
+        "request_context": ["x-kokoro-service: web-bff", "x-kokoro-internal-secret", "x-kokoro-tenant-id (IAM-derived)"],
+        "success_data": ["tenant_id", "product_id", "locale", "navigation", "locale_namespaces", "theme", "feature_flags", "references", "config_version", "release_id", "digest"],
+        "flow": ["BFF resolves KOKORO_DOMAIN through IAM tenant-binding", "BFF calls System /system/runtime-manifest", "BFF projects the owner camelCase response once into the v1 snake_case envelope"]
+      },
+      "implementation": "system-owner-contract-and-iam-binding-client-and-bff-projection-present"
+    },
+    "kokoro-model": {
+      "role": "model catalog/provider/availability/policy fact owner",
+      "wire": ["contract/proto/kokoro/model/v1/model_catalog.proto"],
+      "bff_http": {
+        "method": "GET",
+        "path": "/bff/model-catalog",
+        "query": ["feature_key", "limit", "cursor"],
+        "context": ["x-kokoro-service: web-bff", "x-kokoro-tenant-id", "x-kokoro-request-id"]
+      },
+      "implementation": "model-owner-contract-and-bff-projection-present"
+    },
+    "kokoro-billing": {
+      "role": "payment/subscription/checkout/refund/credit/ledger fact owner",
+      "wire": ["contract/openapi/v1/openapi.yaml"],
+      "bff_http": [
+        "GET /v1/commerce/catalog",
+        "GET /v1/billing/me/credit-account",
+        "GET /v1/billing/me/credit-ledger",
+        "POST /v1/billing/checkout"
+      ],
+      "scheduler_command": "POST /v1/internal/commands/expire-credit-holds",
+      "bff_service_auth": {
+        "service": "web-bff",
+        "credential": "BILLING_OPERATOR_PROXY_SECRET",
+        "public_projection": ["GET /v1/commerce/catalog", "POST /v1/billing/checkout"]
+      },
+      "implementation": "billing-owner-contract-and-bff-projection-present"
+    },
+    "kokoro-capability": {
+      "role": "skill and MCP connector control-plane fact owner",
+      "wire": ["contract/proto/kokoro/capability/v1/capability_runtime.proto"],
+      "services": [
+        "SkillCatalogService",
+        "SkillSourceService",
+        "McpConnectorService",
+        "McpServerService",
+        "McpConnectionService",
+        "McpAuthorizationService"
+      ],
+      "bff_http": [
+        "GET /bff/skills",
+        "GET /bff/skills/pool",
+        "GET /bff/skills/catalog",
+        "GET /bff/mcp/servers"
+      ],
+      "implementation": "connect-rpc-owner-contract-and-explicit-bff-projection-present"
+    },
+    "kokoro-storage": {
+      "role": "upload/asset/artifact/object-reference fact owner",
+      "wire": ["contract/proto/kokoro/storage/v1/storage.proto"],
+      "service": "StorageService",
+      "bff_http": ["GET /internal/bff/library"],
+      "implementation": "connect-rpc-owner-contract-and-explicit-bff-projection-present"
+    },
+    "kokoro-agent": {
+      "role": "execution/run/HITL/replay fact owner",
+      "wire": [
+        "contract/proto/kokoro/agent/v1/agent_events.proto",
+        "contract/proto/kokoro/agent/v1/agent_runtime.proto"
+      ],
+      "http": [
+        "POST /v1/runs",
+        "POST /v1/runs/{run_id}/control",
+        "GET /v1/sessions/{session_id}/messages",
+        "GET /v1/sessions/{session_id}/events"
+      ],
+      "implementation": "agent_http_ingress-and-bff-chat-adapter-present"
+    },
+    "kokoro-scheduler": {
+      "role": "generic schedule trigger/lease/retry/misfire/dispatch",
+      "wire": "docs/API_CONTRACT.md and docs/bff-integration.md",
+      "configuration": "SCHEDULER_JOBS_JSON",
+      "bff_http": [
+        "POST /internal/scheduler/v1/jobs/{name}",
+        "PUT /internal/scheduler/v1/jobs/{name}",
+        "DELETE /internal/scheduler/v1/jobs/{name}",
+        "POST /internal/scheduler/v1/jobs/{name}/pause|resume"
+      ],
+      "rules": [
+        "Scheduler never owns user ScheduledTask definitions.",
+        "Scheduler never reads Billing, BFF, or another owner database.",
+        "Every dispatched command includes request_id, idempotency_key, job_name, and occurrence_id.",
+        "The target business owner persists command receipt and owns business state."
+      ],
+      "dispatch_http": {
+        "method": "POST",
+        "path": "/internal/bff/scheduled-tasks/dispatch",
+        "service": "scheduler",
+        "required_headers": {
+          "Authorization": "Bearer KOKORO_SCHEDULER_SERVICE_TOKEN",
+          "X-Kokoro-Scheduler-Job": "kokoro.scheduled.<task_id>",
+          "X-Kokoro-Scheduler-Occurrence": "YYYYMMDDTHHMMSSZ",
+          "X-Request-Id": "DELIVERY_REQUEST_ID",
+          "Idempotency-Key": "schedule:<job_name>:<occurrence>"
+        },
+        "required_body": ["tenant_id", "task_id", "owner_id", "prompt", "auto_approve", "timezone"],
+        "state_gate": ["task.enabled == true", "task.status == active", "task.expires_at absent or future"],
+        "replay": "same occurrence and idempotency key returns the durable BFF receipt without a second Agent run"
+      },
+      "implementation": "generic-go-dispatcher-and-bff-registration-dispatch-adapter-present"
+    }
+  },
+  "bff_surface_ownership": {
+    "/v1/projects": {
+      "fact_owner": "kokoro-bff",
+      "reason": "Project has instruction/tasks/resources semantics not equivalent to System Workspace",
+      "live_status": "bff-postgres-redis-fact-store-present"
+    },
+    "/v1/scheduled-tasks": {
+      "fact_owner": "kokoro-bff",
+      "execution_owner": "kokoro-scheduler",
+      "live_status": "bff-fact-store-synchronizes-scheduler-and-dispatches-agent-run"
+    },
+    "/v1/sessions": {
+      "fact_owner": "kokoro-bff-public-projection",
+      "execution_owner": "kokoro-agent",
+      "live_status": "agent-http-adapter-present"
+    },
+    "/v1/skills|/v1/mcp/*": {
+      "fact_owner": "kokoro-capability",
+      "live_status": "explicit-capability-projection-present; unsupported-mutations-fail-closed"
+    },
+    "/v1/library|/v1/assets|/v1/artifacts": {
+      "fact_owner": "kokoro-storage",
+      "live_status": "explicit-storage-internal-library-projection-present; mutations-remain-explicit"
+    },
+    "/v1/billing/*": {
+      "fact_owner": "kokoro-billing",
+      "live_status": "http-adapter-present-for-catalog-and-checkout"
+    }
+  },
+  "forbidden_legacy_paths": [
+    "kokoro-session",
+    "kokoro-gateway",
+    "kokoro-platform",
+    "kokoro-web",
+    "kokoro-credit",
+    "KOKORO_PROJECTS_BASE_URL",
+    "KOKORO_HUB_BASE_URL",
+    "KOKORO_SKILLS_BASE_URL",
+    "KOKORO_SCHEDULED_BASE_URL",
+    "KOKORO_LIBRARY_BASE_URL"
+  ]
+}

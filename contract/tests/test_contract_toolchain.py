@@ -40,7 +40,7 @@ def test_contract_toolchain_is_exactly_pinned() -> None:
     ]
     assert yaml.safe_load((ROOT / "contract/buf.yaml").read_text()) == {
         "version": "v2",
-            "modules": [{"path": "proto", "excludes": ["proto/kokoro/credit"]}],
+        "modules": [{"path": "proto"}],
         "lint": {"use": ["STANDARD"]},
         "breaking": {
             "use": ["FILE"],

@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_credit_contract_has_explicit_root_owned_consumer_closure() -> None:
-    manifest = json.loads((ROOT / "credit-v1-consumers.json").read_text(encoding="utf-8"))
+    manifest = json.loads((ROOT / "consumers.json").read_text(encoding="utf-8"))
     assert manifest["owner"] == "kokoro-billing"
     assert manifest["consumers"]["kokoro-billing"]["protoFiles"] == [
         "kokoro/credit/v1/credit.proto"

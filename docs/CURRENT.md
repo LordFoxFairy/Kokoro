@@ -113,23 +113,77 @@ Storage 的 S3-compatible ObjectStore。
 
 1. [Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
 
-## Goal 2 当前基线（2026-09-01）
+## Goal 2 当前基线（2026-09-02）
 
-七个正式子仓库 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
-`kokoro-capability`、`kokoro-storage`、`kokoro-scheduler` 已完成本地阶段 2 拓扑与契约基线对齐，当前进入
-提交、推送与最终验证收口。新实现统一
-采用 PostgreSQL + Redis：PostgreSQL 保存业务事实，Redis 仅作 cache/coordination/lease，
-Storage 的对象字节走 S3-compatible ObjectStore。Credit 已并入 Billing；Connector 是
-Capability 内 MCP 子域概念；Chat 保留在 BFF 内部模块；Platform/Gateway 不新增业务。
+阶段 2 已完成一次可重复的真实本地闭环验收：10 个 active child repository 均有独立 GitHub
+仓库，所有子仓 main 与 origin/main 对齐；Root 负责跨仓 v1 契约、拓扑/设计门禁、
+部署入口、审计和 E2E 编排，不承载子仓业务实现。当前链路为：
 
-本阶段的三仓运行入口为 `kokoro-app`、`kokoro-bff`、`kokoro-agent`；Goal 2 七个业务仓通过契约接入。
-明确排除旧 `kokoro-web`、`kokoro-platform`、`kokoro-gateway`、`kokoro-session`、独立
-`kokoro-credit` 和旧 Site 仓库。Session/Gateway 的历史 MongoDB/MySQL 迁移仅作归档材料，不是当前运行时。
-验收入口见 [ADR-028](kokoro-handbook/decisions/ADR-028-postgresql-redis-runtime-baseline.md)
-、[Goal 2 技术基线](kokoro-handbook/technical/53-postgresql-redis-seven-repository-baseline.md)、
-[Goal 2 七仓契约注册表](../contract/goal2-repository-contract-manifest.json) 和
-[Goal 2 闭环报告](reports/2026-09-01-goal-2-closure.md) 和 [阶段 2 仓库收口报告](reports/2026-09-01-stage2-repository-closure.md)。
-[全仓库与跨仓闭环计划](plans/2026-09-01-goal-2-subrepository-closure-plan.md)记录每个正式仓库的责任、当前缺口和验收顺序。
+    kokoro-app (Web)
+      → same-origin /api/*
+      → kokoro-bff (Chat + business BFF)
+      → IAM/System/Model/Billing/Capability/Storage
+      → kokoro-agent HTTP ingress
+      → kokoro-scheduler internal command / occurrence replay
+
+边界裁决：
+
+- Chat 是 kokoro-bff 内部业务模块；Session 是 BFF 的 v1 API 概念，不存在独立
+  kokoro-chat/kokoro-session 运行仓。
+- Project 与 ScheduledTask 的用户业务事实归 BFF；Scheduler 只拥有通用 ScheduleJob、
+  lease、retry、misfire、pause/resume 和 dispatch，不读 BFF/Billing 数据库。
+- Credit 归 kokoro-billing；Model、IAM、System 均保持独立业务 owner。
+- 正式业务仓统一 PostgreSQL + Redis；PostgreSQL 保存事实，Redis 只做 cache、stream、
+  queue、lease、限流和协调；对象字节由 Storage 的 S3-compatible ObjectStore 管理。
+- Web 不直连 Agent、IAM 或任何业务数据库。浏览器提供的 X-Domain、X-Forwarded-*
+  和 Host 不作为租户/站点信任输入；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
+  并通过 IAM tenant binding 获取受信 tenant context。
+
+### Goal 2 已收口能力
+
+1. Root machine-readable 契约：
+   contract/goal2-cross-repository-contract-v1.json 是跨仓 wire authority，
+   contract/goal2-repository-contract-manifest.json 是仓库注册表。HTTP 成功统一为
+   {data, meta:{request_id, next_cursor?}}，错误统一为
+   {error:{code,message}, meta:{request_id}}，外部 HTTP 字段使用 snake_case。
+2. BFF live 适配：
+   System runtime manifest、Model catalog、Billing catalog/checkout、
+   Capability skill/MCP read projections、Storage library projection、Agent Chat
+   launch/control/replay/detail 均有显式 adapter；Project/ScheduledTask 使用 BFF
+   PostgreSQL/Redis business store，并将 ScheduleJob 注册、dispatch、幂等 receipt
+   和 replay 接通。没有 owner ingress 的写操作显式 fail-closed，不回退成伪造成功。
+3. Agent ingress：
+   Agent 自仓维护 Run admission、Agent-owned PostgreSQL ledger、Redis stream、
+   HTTP run/control/evidence/history/replay，BFF 不读 Agent 的数据库或 Redis。BFF
+   mutation body 明确发送 Content-Length，避免 stdlib ingress 把 JSON 读取成空对象。
+4. 调度事实边界：
+   BFF 是 ScheduledTask 业务事实 owner，Scheduler 是执行 owner，目标业务/Agent
+   保存 command receipt；同一 job_name + occurrence 使用同一 Idempotency-Key，
+   replay 返回原始 receipt，不启动第二个 Agent run。
+5. 子仓自洽：
+   Web、BFF、Agent、IAM、System、Model、Billing、Capability、Storage、Scheduler
+   各自维护源码、测试、API contract、Dockerfile、CI、runbook 和迁移；Root 不复制
+   sibling source，不跨仓共享数据库表/ORM schema。
+
+### 阶段 2 证据入口
+
+- [跨仓 v1 契约](../contract/goal2-cross-repository-contract-v1.json)
+- [仓库契约注册表](../contract/goal2-repository-contract-manifest.json)
+- [仓库状态索引](REPOSITORY_STATUS.md)
+- [CODEBASE_MAP](CODEBASE_MAP.md)
+- [阶段 2 最终测试报告](reports/2026-09-02-stage2-final-test-report.md)
+- [Owner health + live business JSON](reports/2026-09-01-stage2-owner-health.json)
+- [阶段 2 仓库审计](reports/2026-09-01-stage2-repository-audit.md)
+- [阶段 2 收口报告](reports/2026-09-01-stage2-repository-closure.md)
+
+废弃仓库 kokoro-session、kokoro-gateway、kokoro-platform、旧 kokoro-web
+均已移出本地工作区并在 GitHub archived；独立 kokoro-credit 与旧 Site 占位目录
+没有正式远程仓，也不出现在当前 manifest、Compose、CI 或运行路径中。历史材料只用于
+迁移考古，不是当前实现入口。
+
+镜像发布约束保持不变：普通 push/PR 只运行质量检查；只有 v*.*.* tag 触发生产
+GHCR workflow。Dockerfile 使用生产启动命令，本地开发直接使用各仓 dev 命令；
+本轮未修改 GHCR package visibility。
 
 ## 本地原型与历史材料（仅参考，不进入首发）
 

@@ -105,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
         flows = {
             "bff_to_owner": ["iam", "system", "model", "billing", "capability", "storage"],
             "capability_to_storage": ["opaque artifact_ref", "Storage API", "no database sharing"],
-            "billing_to_scheduler": ["business task definition", "generic trigger", "receipt owned by Billing"],
+            "bff_to_scheduler": ["BFF-owned business task definition", "generic trigger", "BFF state gate and Agent receipt"],
             "scheduler_boundary": ["Go", "Redis coordination", "no Billing/Credit database access"],
         }
         evidence["flows"] = flows

@@ -1,96 +1,120 @@
 # 阶段 2 全仓审计
 
-日期：2026-09-01
-范围：Root `Kokoro`、10 个 active repository、6 个 archived repository。
-状态：本地拓扑、Goal 2 mock closure、Root contract 与 architecture gate 已验证；Root GitHub Contract CI 已通过。
+日期：2026-09-02
+范围：Root Kokoro、10 个 active child repository、4 个 archived GitHub repository。
+执行方式：只读审计本地 Git root、origin/main、GitHub repository metadata、active boundary 和废弃路径；
+不会归档、删除、推送或修改 package visibility。
 
-## Active repositories
+## 1. Active repository 状态
 
-以下记录来自本地 `HEAD`、`origin` 和 `origin/main`；10 个仓库的 `origin/main` 与本地
-`HEAD` 一致，所有工作树 clean。
+| 本地目录 | GitHub | HEAD | 状态 |
+|---|---|---|---|
+| Root | LordFoxFairy/Kokoro | final audit output | active |
+| kokoro | LordFoxFairy/kokoro-app | 00a2139 | clean，main 对齐 |
+| kokoro-bff | LordFoxFairy/kokoro-bff | b3c3994 | clean，main 对齐 |
+| kokoro-agent | LordFoxFairy/kokoro-agent | a8284b3 | clean，main 对齐 |
+| kokoro-iam | LordFoxFairy/kokoro-iam | 02743c1 | clean，main 对齐 |
+| kokoro-system | LordFoxFairy/kokoro-system | 34131f6 | clean，main 对齐 |
+| kokoro-model | LordFoxFairy/kokoro-model | 794648a | clean，main 对齐 |
+| kokoro-billing | LordFoxFairy/kokoro-billing | aca1412 | clean，main 对齐 |
+| kokoro-capability | LordFoxFairy/kokoro-capability | b5dc19e | clean，main 对齐 |
+| kokoro-storage | LordFoxFairy/kokoro-storage | 5d5669e | clean，main 对齐 |
+| kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 90d9776 | clean，main 对齐 |
 
-| 本地路径 | GitHub remote | 当前 HEAD | 本地状态 | GitHub 状态 |
-|---|---|---|---|---|
-| `kokoro` | `LordFoxFairy/kokoro-app` | `018ad870f5af23e0bdced9c28a1f0c2e9f25e1ae` | clean | active / main |
-| `kokoro-bff` | `LordFoxFairy/kokoro-bff` | `876dfba1c012cbfe41efe1b120468d797cf026b9` | clean | active / main |
-| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | `4091fb2f41d9076696eddb2dc4623e30ebaab131` | clean | active / main |
-| `kokoro-iam` | `LordFoxFairy/kokoro-iam` | `b662fce3b95e5d3d778f7c940ac94466fd44c5e3` | clean | active / main |
-| `kokoro-system` | `LordFoxFairy/kokoro-system` | `2c4635f74666a06482973b40bbd534874673308a` | clean | active / main |
-| `kokoro-model` | `LordFoxFairy/kokoro-model` | `aa8c395b9537af4138eaa8008e5b95299d6a0384` | dirty: 2 generated files | active / main |
-| `kokoro-billing` | `LordFoxFairy/kokoro-billing` | `f2a947a7a7b78af6fea5e4de56ccab24cf0b8875` | clean | active / main |
-| `kokoro-capability` | `LordFoxFairy/kokoro-capability` | `dd2d0718911b211812dbcf61f7c838c95f7f1f0d` | clean | active / main |
-| `kokoro-storage` | `LordFoxFairy/kokoro-storage` | `cebeb7a9465e9e87d09b2a2956f97d49db1c5e87` | clean | active / main |
-| `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | `5bd04209493c0b70134562bedb500a3833a1dd2f` | clean | active / main |
+Root 只维护跨仓契约、文档、部署入口、审计和测试编排；kokoro-agent 是唯一 Root gitlink，
+其余 active child 是同目录独立 Git checkout。最终状态使用：
 
-Root remote 为 `https://github.com/LordFoxFairy/Kokoro.git`；本报告提交时本地 `main` 与
-`origin/main` 一致，工作区 clean。最新 SHA 以该仓库 `git rev-parse HEAD` 为准。
+    python3 scripts/audit-repository-state.py --github
 
-## Archived repositories
+复核，输出必须是 PASS、Root 与 10 个 active child checkout clean、local HEAD == origin/main。
 
-| 本地/历史名称 | GitHub 状态 |
+## 2. GitHub 与废弃仓库
+
+已确认 active GitHub repositories：
+
+- LordFoxFairy/Kokoro
+- LordFoxFairy/kokoro-app
+- LordFoxFairy/kokoro-bff
+- LordFoxFairy/kokoro-agent
+- LordFoxFairy/kokoro-iam
+- LordFoxFairy/kokoro-system
+- LordFoxFairy/kokoro-model
+- LordFoxFairy/kokoro-billing
+- LordFoxFairy/kokoro-capability
+- LordFoxFairy/kokoro-storage
+- LordFoxFairy/kokoro-scheduler
+
+已确认 archived：
+
+- LordFoxFairy/kokoro-session
+- LordFoxFairy/kokoro-gateway
+- LordFoxFairy/kokoro-platform
+- LordFoxFairy/kokoro-web
+
+kokoro-credit 和 kokoro-site-kokoro 没有正式 GitHub remote；它们已从本地 active topology、
+Compose、CI 和 manifest 移除。历史提交和 Root handbook 中的迁移材料不属于运行时依赖。
+
+## 3. 结构与边界审计
+
+- active topology 只有 Web、BFF、Agent 和七个业务 owner。
+- 不存在旧 session/gateway/platform/web/credit/site 的 active checkout 或默认启动入口。
+- Root manifest 注册 7 个 Goal 2 owner；Root cross contract 注册 IAM、System、Model、Billing、
+  Capability、Storage、Agent、Scheduler。
+- Project/ ScheduledTask 业务事实归 BFF；Scheduler 只持有 ScheduleJob 和 occurrence lease。
+- Credit 归 Billing；Chat/Session 归 BFF 内部模块/API 概念；IAM 与 System、Model 保持独立。
+- 没有跨仓 source import、共享 ORM/schema、BFF 直读 Agent 数据库或浏览器直连 owner。
+- 默认数据基线是 PostgreSQL + Redis；对象字节经 Storage ObjectStore。
+- BFF 出站使用服务凭据、X-Request-Id、x-kokoro-request-id 和标准 Forwarded；
+  浏览器 X-Domain 不作为信任上下文。
+
+## 4. 机器门禁与测试证据
+
+已通过：
+
+- scripts/verify-repository-topology.py
+- scripts/verify-backend-design.py
+- pnpm exec buf lint contract
+- uv run --frozen pytest contract/tests scripts/contract/tests -q：82 passed
+- scripts/goal2/mock_cross_repository_closure.py
+- 10 个 active child 仓的本仓 unit/integration/contract/build gates
+- BFF mock E2E：43/43
+- owner-health + live business E2E：18/18 endpoint、11/11 process、11/11 business cases
+- git diff --check
+
+真实 live E2E 证据：
+
+    docs/reports/2026-09-01-stage2-owner-health.json
+
+测试明细：
+
+    docs/reports/2026-09-02-stage2-final-test-report.md
+
+## 5. CI 与发布审计
+
+最新已观测成功 CI：
+
+| 仓库 | Run |
 |---|---|
-| `kokoro-session` | `LordFoxFairy/kokoro-session` archived；不在 Root |
-| `kokoro-gateway` | `LordFoxFairy/kokoro-gateway` archived；不在 Root |
-| `kokoro-platform` | `LordFoxFairy/kokoro-platform` archived；不在 Root |
-| `kokoro-web` | `LordFoxFairy/kokoro-web` archived；不在 Root |
-| `kokoro-credit` | 无正式 remote；历史副本在 Root 外；Credit 归 Billing |
-| `kokoro-site-kokoro` | 无正式 remote；历史/占位目录不在 Root |
+| Root Contract | 33578709364 |
+| kokoro-app | 33589696494 |
+| kokoro-bff | 33591015699 |
+| kokoro-agent | 33589593922 |
+| kokoro-iam | 33582528538 |
+| kokoro-system | 33589051942 |
+| kokoro-model | 33590093329 |
+| kokoro-billing | 33588668697 |
+| kokoro-capability | 33588430522 |
+| kokoro-storage | 33588402389 |
+| kokoro-scheduler | 33586539316 |
 
-## 本轮清理结果
+每个 active child 都有独立 CI 和 release-image workflow。普通 push/PR 只做质量检查；
+只有 v*.*.* tag 发布生产 GHCR 镜像。Dockerfile 使用生产启动入口，本地开发使用本仓 dev
+命令。GHCR package visibility 本轮没有修改；本机 GitHub CLI 没有 read:packages scope，
+所以审计不将 packages:write 推断为 Public。
 
-- Root 工作区不再包含 `kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web`、
-  `kokoro-credit` 或 `kokoro-site-kokoro`；旧 GitHub 仓库 `kokoro-session`、`kokoro-gateway`、
-  `kokoro-platform`、`kokoro-web` 已 archived。
-- 旧 Root database、Native Slice A、旧部署/验证入口已从本机工作区和本机归档目录清除；GitHub archived 仓库
-  保留提交历史，Root 内的历史文档仅作为迁移索引。
-- 本机 Docker 只保留当前 Model 的 PostgreSQL 16 + Redis 7 容器和对应服务；已移除旧 MySQL/Mongo/PG18/Redis
-  容器、卷、网络、旧 Gateway/Chat 镜像及已完成的迁移容器。
-- 10 个 active 仓库均为独立 Git root，`origin/main` 与本地 HEAD 一致；Root 只把 `kokoro-agent` 作为
-  gitlink，其余子仓库保持同目录独立 checkout，避免跨仓源码和数据库耦合。
+## 6. 结论
 
-## Machine gates and test thresholds
-
-- Root architecture: `python3 scripts/verify-backend-design.py` 必须返回 0。
-- Root topology: 本地完整 checkout 使用 `python3 scripts/verify-repository-topology.py`，必须检查当前十个
-  direct Git repository paths、origin remote、active boundary、6 个 archived paths、Phase 1 storage
-  boundary 和 Goal 2 manifest，并返回 0。Root CI 使用 `--allow-missing-active-checkouts`，因为七个 owner
-  仓库当前是私有 GitHub 仓库，各自 CI 负责自身源码门禁。
-- Goal 2 closure: 本地完整 checkout 使用 `python3 scripts/goal2/mock_cross_repository_closure.py`，必须检查七个
-  owner 的 API/技术/BFF/验收/风险文档、Root wire 文件、request ID、幂等和 cursor 标记；Root CI 使用
-  `--manifest-only` 检查七仓注册表与 Root wire 文件，避免通过未授权的私有仓克隆掩盖或阻塞契约门禁。
-- Root contract: manifest parity、renderer `--check`、Buf format/lint/breaking、Redocly lint，
-  以及 `uv run --frozen pytest contract/tests scripts/contract/tests -q` 必须通过。
-- Hygiene: `git diff --check` 必须通过。各 active repository 的实现、测试、构建和 Docker/CI
-  仍由各自仓库门禁负责，不由 Root 复制源码代替。
-
-## Known real-closure gaps
-
-1. 当前 Root gate 是 topology、文档/契约和 mock boundary gate；尚未把 Web→BFF→Agent→七个
-   owner 的真实网络编排作为一次生产式联调验收。
-2. 生产 PostgreSQL、Redis、S3-compatible ObjectStore、JWKS、provider 和 webhook 配置由部署
-   环境注入；本地 fixture 不证明生产依赖或生产凭据可用。
-3. IAM shutdown contract test 仍需显式 listener lifecycle 环境；Docker/真实基础设施 smoke
-   仍是部署前独立证据，不把环境阻塞记为通过。
-4. 新增的 owner health smoke 已验证一次性 PostgreSQL + Redis 下 Web、BFF live、Agent、Scheduler、
-   IAM、System、Model、Billing、Capability、Storage 的进程/健康链路；它不等同于业务 API 全量 live
-   联调。BFF 的 live path adapter 与 Agent HTTP ingress 仍按各自 v1 contract 分批接线。
-
-## Verification record
-
-本报告对应的 Root 变更包含 Contract CI 的私有仓 manifest-only 运行模式、拓扑门禁的未初始化
-submodule 识别，以及本报告；另外 `kokoro-scheduler` 补充了 `.env.example`。未记录任何 secret。
-
-本轮验证结果：
-
-- architecture、完整 checkout topology、CI manifest-only topology、完整 checkout mock closure、CI
-  manifest-only closure 均返回 0；
-- Root contract pytest `83 passed`；稳定契约源提交 `afd367db387e11172150e64b8c5278918c47cd24` 的
-  9 个 consumer `--check` 通过；
-- Web `pnpm check`：113 个测试文件、1127 个测试、生产构建通过；
-- Stage 2 BFF mock E2E：43/43 HTTP 用例通过，证据文件为
-  `docs/reports/2026-09-01-stage2-bff-mock-e2e.json`；
-- Stage 2 owner health：14/14 health/readiness/root checks 与 9/9 local processes 通过，证据文件为
-  `docs/reports/2026-09-01-stage2-owner-health.json`；脚本已在 finally 中删除临时 PostgreSQL/Redis
-  容器和本地对象目录。
-- Root GitHub Contract run `33574107724`（commit `cd366e07`）通过；Capability、Storage、Scheduler
-  最新独立 CI 也在各自 `main` 提交上通过。Redocly 的 4 个既有 warning 不改变退出码，未修改契约文件。
+仓库拓扑、归属、Root contract、子仓自洽门禁、BFF live 接线、Agent HTTP ingress、
+Scheduler registration/dispatch/replay 和废弃路径已经完成本轮阶段 2 收口。Root 最后提交后，
+必须再次运行只读 audit，确认 Root 本身和所有 active child 均 clean；此审计不替代真实生产
+凭据、Cloudflare/DNS、JWKS、provider 或 GHCR visibility 的部署授权验证。

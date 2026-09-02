@@ -1,78 +1,113 @@
 # Kokoro repository status
 
-状态：2026-09-01 · 阶段 2 全仓治理基线
+状态：2026-09-02 · 阶段 2 全仓治理与真实本地闭环基线
 
-这份文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存跨仓契约、文档、部署编排与验证工具；业务实现必须留在对应独立仓库。子仓之间只通过 Root 发布的 HTTP/OpenAPI/Protobuf 契约交互，不通过相对路径导入源代码、数据库或内部模块。
+本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存跨仓契约、
+文档、部署编排与验证工具；业务实现必须留在对应独立仓库。子仓之间只通过 Root 发布的
+HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导入源代码、数据库或 ORM。
 
-## 正式仓库
+## 正式仓库与 GitHub 映射
 
-| 本地目录 | GitHub 仓库 | 角色 | 状态 |
+| 本地目录 | GitHub 仓库 | 事实/业务边界 | 当前 HEAD |
 |---|---|---|---|
-| `kokoro` | `LordFoxFairy/kokoro-app` | Web 产品，Next.js；浏览器只访问同源 `/api/*` | active |
-| `kokoro-bff` | `LordFoxFairy/kokoro-bff` | Web-facing BFF；Chat 是其内部模块，承接业务适配 | active |
-| `kokoro-agent` | `LordFoxFairy/kokoro-agent` | Agent worker；执行、HITL、恢复、事件投影 | active |
-| `kokoro-iam` | `LordFoxFairy/kokoro-iam` | 身份、租户、认证、授权、审计、ExecutionIdentity | active · contract-first baseline |
-| `kokoro-system` | `LordFoxFairy/kokoro-system` | Site、Workspace、Runtime Manifest、系统配置与策略 | active |
-| `kokoro-model` | `LordFoxFairy/kokoro-model` | Model Catalog、Provider、Availability、Model Policy | active |
-| `kokoro-billing` | `LordFoxFairy/kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger | active |
-| `kokoro-capability` | `LordFoxFairy/kokoro-capability` | Skill 与 MCP Connector 控制面 | active |
-| `kokoro-storage` | `LordFoxFairy/kokoro-storage` | File、Upload、Asset、Artifact 元数据与 ObjectStore 引用 | active |
-| `kokoro-scheduler` | `LordFoxFairy/kokoro-scheduler` | 通用 Go 调度、lease、retry、misfire、pause/resume | active |
+| kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | 00a2139 |
+| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/ScheduledTask、适配/幂等 | b3c3994 |
+| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | a8284b3 |
+| kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 02743c1 |
+| kokoro-system | LordFoxFairy/kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | 34131f6 |
+| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 794648a |
+| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | aca1412 |
+| kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | b5dc19e |
+| kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | 5d5669e |
+| kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 90d9776 |
 
-`kokoro-iam` 当前以 contract-first baseline 独立维护：健康/就绪端点、环境契约、Protobuf snapshot、构建、测试与发布入口已经在本仓收口；身份业务端点按 `docs/API_CONTRACT.md` 继续分批实现，不把未实现端点伪装成已完成能力。
+10 个 active child checkout 均为独立 Git root，main 与 origin/main 已对齐。Root 的 gitlink
+kokoro-agent 指向 a8284b3；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
+最终提交后用 scripts/audit-repository-state.py --github --json 复核 clean 状态。
 
-## 明确归属
+## 归属裁决
 
-- Chat 不再是独立仓库；它位于 `kokoro-bff` 的 Chat 业务模块边界，负责 Web-facing session/message/SSE 的业务适配。Agent 仍负责执行事实，BFF 不直接读取 Agent 数据库。
-- Session 不再是独立仓库；旧 ProductSession/SSE 原型归入 BFF/Web 的迁移材料，新的对外会话 API 由 BFF v1 契约承接。
-- Credit 属于 `kokoro-billing`，与 Payment、Subscription、Checkout、Refund、Ledger 在同一个 Billing 仓库内，但保持独立 bounded context、repository、表 owner 和事务边界。
-- `kokoro-scheduler` 保持独立 Go 仓库；它只触发目标业务的内部 command，不读取 Billing 或其他业务数据库。
-- `kokoro-system` 是系统控制面，不是所有业务仓库的父仓，也不持有 IAM 凭据、授权事实或 Model Provider 密钥。
-- Storage 的对象字节由 S3-compatible ObjectStore 保存，PostgreSQL 保存生命周期与引用元数据，Redis 只做 cache/coordination/lease。
-- 所有正式业务仓统一采用 PostgreSQL + Redis；禁止新增 MySQL/Mongo 运行时。
+- Chat 是 kokoro-bff 的内部业务模块；Session 是 BFF v1 API 概念，不存在独立
+  kokoro-chat 或 kokoro-session 运行仓。
+- Project 的 instruction、resource、task 语义归 BFF；不要将它们伪装成 System Workspace。
+- ScheduledTask 定义与业务状态归 BFF；Scheduler 只拥有通用 ScheduleJob、occurrence lease、
+  retry/misfire/pause/resume 和 dispatch，不读 Billing、BFF 或其他业务数据库。
+- Credit 属于 kokoro-billing，与 Payment、Subscription、Checkout、Refund、Ledger 同仓，
+  但保留独立 bounded context、repository、表 owner 与事务边界。
+- IAM、System、Model 保持独立；System 不持有 IAM 授权事实、Model provider secret 或 Billing ledger。
+- 正式业务仓统一 PostgreSQL + Redis。PostgreSQL 保存业务事实；Redis 仅作 cache、stream、
+  queue、lease、限流和协调；对象字节归 Storage 的 S3-compatible ObjectStore。
+- Web 不直连任何 owner、Agent、PostgreSQL 或 Redis；浏览器 X-Domain、X-Forwarded-* 和
+  Host 不作为租户/站点信任输入。BFF 从 KOKORO_DOMAIN 生成标准 Forwarded，并向 IAM 请求
+  tenant binding，再向 owner 发送受信服务上下文。
 
-## 阶段运行入口
+## 运行链路
 
-当前可运行的三仓 Phase 1 入口是：
+    kokoro-app Web
+      -> same-origin /api/*
+      -> kokoro-bff /v1/*
+      -> IAM/System/Model/Billing/Capability/Storage owner contracts
+      -> kokoro-agent HTTP ingress
+      -> kokoro-scheduler internal command and occurrence replay
 
-```text
-kokoro-app (Web) -> kokoro-bff (Chat/业务 BFF) -> kokoro-agent (worker)
-                                  \\-> Goal 2 业务仓 HTTP/RPC contracts
-```
+BFF live 已接入 System runtime manifest、Model catalog、Billing catalog/checkout、
+Capability skill/MCP read projection、Storage library projection、Agent Chat
+launch/control/replay/detail。BFF 自有 PostgreSQL/Redis business store 保存 Project/
+ScheduledTask，并同步 Scheduler 注册、dispatch 和 durable receipt。未提供 owner ingress
+的写操作显式返回稳定的未接线错误，不回退成 mock 成功。
 
-本地三仓启动文件是 [`deploy/docker-compose.phase1.yml`](../deploy/docker-compose.phase1.yml)，生产镜像入口是各仓自己的 Dockerfile。旧 Compose、k8s 和全栈 provisioning 入口已从活动工作区清除；GitHub archived 仓库保留提交历史。
+## 契约规则
+
+Root machine-readable authority：
+
+- contract/goal2-cross-repository-contract-v1.json：跨仓 wire、可信上下文、owner、错误和
+  Scheduler dispatch authority。
+- contract/goal2-repository-contract-manifest.json：7 个领域 owner 注册表和契约索引；Agent
+  的 runtime wire 由 Root cross-repository contract 单独登记。
+- contract/slice-a-contract-manifest.yaml：Root 生成 consumer 的 provenance 基线。
+
+HTTP v1 成功 envelope：
+
+    {"data": {}, "meta": {"request_id": "REQUEST_ID", "next_cursor": "CURSOR_OR_NULL"}}
+
+HTTP v1 错误 envelope：
+
+    {"error": {"code": "STABLE_ERROR_CODE", "message": "LOG_SAFE_MESSAGE"}, "meta": {"request_id": "REQUEST_ID"}}
+
+外部 HTTP 字段使用 snake_case；owner 内部类型可以使用 camelCase，但 BFF 只做一次明确
+transport projection。每个 mutation 必须携带 Idempotency-Key；BFF/owner 保存 durable receipt。
+服务间使用 service credential、X-Request-Id、x-kokoro-request-id 与 Forwarded；浏览器身份字段
+不会覆盖 IAM-derived context。
+
+## 子仓自洽门禁
+
+每个 active repository 必须在自身 checkout 内完成：
+
+1. README、API contract、integration/runbook/acceptance/risk 文档；
+2. 本仓 unit、integration、contract、architecture/smoke 测试；
+3. push/PR 只执行质量门禁；
+4. 只有 v*.*.* tag 触发 GHCR 生产镜像发布，普通 push 不发布镜像；
+5. Dockerfile 使用生产启动入口；本地开发直接使用本仓 dev/test 命令；
+6. 不读取 sibling source，不共享 sibling database/table/schema，不信任浏览器自定义域名 header。
 
 ## 已废弃并归档
 
-以下目录和仓库不再加入新功能，也不再作为依赖：
-
-| 本地目录 | GitHub 仓库 | 处理 |
+| 名称 | GitHub 状态 | 当前处理 |
 |---|---|---|
-| `kokoro-session` | `LordFoxFairy/kokoro-session` | archive；移出 Root 工作区 |
-| `kokoro-gateway` | `LordFoxFairy/kokoro-gateway` | archive；移出 Root 工作区 |
-| `kokoro-platform` | `LordFoxFairy/kokoro-platform` | archive；移出 Root 工作区 |
-| `kokoro-web` | `LordFoxFairy/kokoro-web` | archive；旧 pnpm monorepo，由 `kokoro-app` 替代 |
-| `kokoro-credit` | 无正式远程仓库 | 移出 Root 工作区；Credit 已并入 Billing |
-| `kokoro-site-kokoro` | 无正式远程仓库 | 删除空/占位目录 |
+| kokoro-session | LordFoxFairy/kokoro-session archived | 不在 Root、Compose、CI、manifest |
+| kokoro-gateway | LordFoxFairy/kokoro-gateway archived | 不在 Root、Compose、CI、manifest |
+| kokoro-platform | LordFoxFairy/kokoro-platform archived | 不在 Root、Compose、CI、manifest |
+| kokoro-web | LordFoxFairy/kokoro-web archived | 旧 monorepo，不再作为 Web 入口 |
+| kokoro-credit | 无正式远程仓 | Credit 已并入 Billing |
+| kokoro-site-kokoro | 无正式远程仓 | 旧 Site 占位目录已移除 |
 
-归档 GitHub 仓库不删除提交历史；本机不保留旧仓源码副本，避免误启动、误导入或污染当前工作区。历史文档只在 Root 中以“历史/迁移材料”标注，不加入当前 Compose、CI 或 contract consumer。
+归档远程仓保留历史提交；本机不保留旧仓源码、旧部署、旧全栈 Compose、旧 MySQL/Mongo
+运行时或旧 infrastructure 容器。历史 handbook/report 只作迁移考古，并明确标记为历史材料。
 
-## 仓库自洽门禁
+## 证据
 
-每个正式仓库必须在自身目录完成：
-
-1. `README`、API contract、runbook、acceptance/risk 文档；
-2. 本仓单元测试、集成测试和 smoke 测试；
-3. `CI` 在 push/PR 上只做质量检查；
-4. `v*.*.*` tag 才触发 GHCR 生产镜像发布，普通 push 不发布镜像；
-5. Docker 使用生产启动入口，开发使用本地 `dev`/测试命令，不用 Docker 代替开发启动；
-6. 本仓只读取受信服务上下文，不接受浏览器伪造的域名/tenant header 作为身份依据。
-
-## Root 不允许出现的依赖形态
-
-- `kokoro-*` 子仓库之间的源代码复制、跨目录 import、共享数据库表或共享 ORM schema；
-- 新的 `kokoro-chat`、`kokoro-session`、`kokoro-gateway`、`kokoro-platform`、`kokoro-credit` 业务实现；
-- MySQL、MongoDB、旧 `site_id` writer 或浏览器直接访问业务服务；
-- 将历史文档、旧 Compose、旧 generated consumer 名称误标成当前运行入口。
-
-历史文档可以保留在 Root 的 handbook/reports 中，但必须标注 `历史/迁移材料`，并且不能出现在当前入口、CI、默认 Compose 或 active repository manifest 中。
+- 阶段 2 最终测试报告：docs/reports/2026-09-02-stage2-final-test-report.md
+- live owner health：docs/reports/2026-09-01-stage2-owner-health.json
+- 仓库审计：docs/reports/2026-09-01-stage2-repository-audit.md
+- 跨仓 mock closure：scripts/goal2/mock_cross_repository_closure.py
+- 本地/GitHub 审计：scripts/audit-repository-state.py

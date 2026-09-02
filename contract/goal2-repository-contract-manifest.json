@@ -3,6 +3,13 @@
   "version": 1,
   "status": "reviewed",
   "authority": "root-index-plus-owner-contract",
+  "root_contract": {
+    "path": "contract/goal2-cross-repository-contract-v1.json",
+    "artifact": "goal2-cross-repository-contract-v1",
+    "version": 1,
+    "authority": "root-cross-repository-wire-contract",
+    "purpose": "Defines the reviewed cross-repository wire contract, trusted service context, owner surfaces, BFF surface ownership, and forbidden legacy paths. Root publishes and validates this contract; active repositories implement their local API and configuration projections without becoming alternate Root wire authorities."
+  },
   "rules": {
     "database": "PostgreSQL is the durable fact store; Redis is cache/coordination/lease only",
     "objectStore": "Storage object bytes use the S3-compatible ObjectStore adapter",
@@ -10,7 +17,7 @@
     "idempotency": "Every state-changing command has Idempotency-Key or CommandIdentity and durable receipt semantics",
     "pagination": "Every list surface uses an opaque cursor, or explicitly documents that v1 has no list surface",
     "tenant": "Tenant and actor identity come from IAM-derived trusted service context, never from an unverified browser field",
-    "contractSync": "Root protobuf/OpenAPI is the cross-repository wire authority; owner API_CONTRACT documents local HTTP/config projections"
+    "contractSync": "Root goal2-cross-repository-contract-v1.json is the machine-readable cross-repository wire authority; owner API_CONTRACT documents local HTTP/config projections"
   },
   "repositories": {
     "kokoro-iam": {
@@ -55,7 +62,7 @@
       "acceptance": "docs/ACCEPTANCE.md",
       "risk_register": "docs/RISKS.md",
       "owner_wire": ["contract/openapi/v1/openapi.yaml"],
-      "root_wire": []
+      "root_wire": ["contract/goal2-cross-repository-contract-v1.json"]
     },
     "kokoro-capability": {
       "path": "kokoro-capability",
@@ -88,7 +95,7 @@
       "acceptance": "docs/acceptance.md",
       "risk_register": "docs/risk-register.md",
       "owner_wire": [],
-      "root_wire": [],
+      "root_wire": ["contract/goal2-cross-repository-contract-v1.json"],
       "contract_mode": "configuration_and_internal_command",
       "implementation_language": "go"
     }

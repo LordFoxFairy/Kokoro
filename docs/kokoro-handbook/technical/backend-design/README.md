@@ -1,24 +1,22 @@
 # 后端逐仓库设计卡
 
-这些文件是当前 Feature-first 总体架构的执行级拆分。每张设计卡只回答一个仓库的真实边界，不是通用模板；Agent/Session 的
+这些文件是当前 Feature-first 总体架构的执行级拆分。每张设计卡只回答一个仓库的真实边界，不是通用模板；Agent/Chat 的
 产品会话与 GA owner 以 [36 GA 整体方案](../36-ga-final-agent-technical-plan.md) 和
 [38 公共运行契约](../38-ga-public-runtime-contract.md) 为准。
 
 ## 当前目标仓库
 
+当前 active manifest 覆盖 Root、Web、BFF、IAM、System、Model、Billing、Capability、Storage、
+Scheduler 和 Agent：
+
 ```text
-00-root.md
-01-iam.md
-02-model.md
-03-credit.md (migration history)
-04-payment.md (migration history)
-05-billing.md
-05-capability.md
-06-storage.md
-08-session.md
-09-agent.md
-10-design-audit.md
+00-root.md  14-web.md  11-bff.md  01-iam.md  12-system.md
+02-model.md  05-billing.md  05-capability.md  06-storage.md
+13-scheduler.md  09-agent.md
 ```
+
+`03-credit.md`、`04-payment.md`、`08-session.md` 和 `07-chat.md` 仅是历史迁移/设计资料，
+不在当前 active repository manifest 中。Credit 已并入 Billing，Chat 属于 BFF 内部模块。
 
 机器可校验清单：`backend-design-manifest.json`。`07-chat.md` 是历史独立分仓提案，保留考古，不进入目标仓库清单。
 

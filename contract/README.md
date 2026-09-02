@@ -83,12 +83,10 @@ does not change the browser OpenAPI/SSE document. Compatibility checks use the c
 descriptor and verify that field-1 event bytes remain readable while older readers discard the
 field-2 ready arm.
 
-## Credit contract slice
-
 ## 历史 Credit slice
 
-`contract/spec/credit-v1.md` 与 `contract/credit-v1-consumers.json` 是历史 Credit slice 的
-兼容材料，不能再解释成独立 `kokoro-credit` owner 或 MySQL runtime。当前 Credit 的生产
-owner 是 `kokoro-billing`，以其 `contract/openapi/v1/openapi.yaml` 与
+`contract/legacy/credit/` 下的 Credit v1 Proto、消费者 manifest、buf 配置和测试是历史
+兼容材料，不能再解释成独立 `kokoro-credit` owner 或 MySQL runtime。当前 Credit 的生产 owner
+是 `kokoro-billing`，以其 `contract/openapi/v1/openapi.yaml` 与
 `docs/API_CONTRACT.md` 为实现契约；Billing 内部负责 Credit account、Hold、Commit、
 Refund、Ledger 的一致性。
