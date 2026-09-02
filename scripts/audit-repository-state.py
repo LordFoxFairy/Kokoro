@@ -3,8 +3,9 @@
 
 This is a Root governance check.  It deliberately inspects repositories by
 their own Git roots and never imports sibling source or opens a business
-database.  ``--github`` adds read-only ``gh repo view`` checks; it does not
-archive, delete, rename, push, or change package visibility.
+database.  It also verifies that every checkout and its origin expose only
+the ``main`` branch.  ``--github`` adds read-only ``gh repo view`` checks; it
+does not archive, delete, rename, push, or change package visibility.
 """
 
 from __future__ import annotations
@@ -76,6 +77,10 @@ def inspect_local(repo: Repository) -> dict[str, object]:
         "head": None,
         "origin": None,
         "clean": False,
+        "current_branch": None,
+        "local_branches": [],
+        "remote_branches": [],
+        "only_main_branch": False,
         "main_matches_head": None,
         "errors": [],
     }
@@ -98,6 +103,25 @@ def inspect_local(repo: Repository) -> dict[str, object]:
         result["head"] = head
     else:
         errors.append(f"head_unavailable:{stderr or head}")
+
+    code, current_branch, stderr = git_value(directory, "branch", "--show-current")
+    if code == 0:
+        result["current_branch"] = current_branch
+        if current_branch != "main":
+            errors.append(f"not_on_main:{current_branch or 'detached'}")
+    else:
+        errors.append(f"current_branch_unavailable:{stderr or current_branch}")
+
+    code, local_branches, stderr = git_value(
+        directory, "for-each-ref", "--format=%(refname:short)", "refs/heads/"
+    )
+    if code == 0:
+        branches = [branch for branch in local_branches.splitlines() if branch]
+        result["local_branches"] = branches
+        if branches != ["main"]:
+            errors.append(f"unexpected_local_branches:{','.join(branches)}")
+    else:
+        errors.append(f"local_branches_unavailable:{stderr or local_branches}")
 
     code, origin, stderr = git_value(directory, "remote", "get-url", "origin")
     if code == 0:
@@ -124,6 +148,24 @@ def inspect_local(repo: Repository) -> dict[str, object]:
     else:
         result["main_matches_head"] = None
         errors.append(f"origin_main_unavailable:{stderr or remote_head}")
+
+    code, remote_heads, stderr = git_value(directory, "ls-remote", "--heads", "origin")
+    if code == 0:
+        branches = [
+            line.removeprefix("refs/heads/")
+            for line in remote_heads.splitlines()
+            if line and "\trefs/heads/" in line
+        ]
+        result["remote_branches"] = branches
+        result["only_main_branch"] = (
+            result["current_branch"] == "main"
+            and result["local_branches"] == ["main"]
+            and branches == ["main"]
+        )
+        if branches != ["main"]:
+            errors.append(f"unexpected_remote_branches:{','.join(branches)}")
+    else:
+        errors.append(f"origin_branches_unavailable:{stderr or remote_heads}")
     return result
 
 

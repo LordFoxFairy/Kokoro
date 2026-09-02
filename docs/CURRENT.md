@@ -21,12 +21,13 @@ Storage 的 S3-compatible ObjectStore。
 1. [Codebase Map](CODEBASE_MAP.md)
 2. [docs 总入口](README.md)
 3. [Kokoro 总手册](kokoro-handbook/README.md)
-4. [**GA 核心架构总览：一个闭环底座，多个内置 Agent 产品**](kokoro-handbook/technical/42-ga-core-architecture.md)
-5. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
-6. [**Kokoro 统一入口、App 与 Agent 产品架构**](kokoro-handbook/technical/37-product-experience-agent-studio-architecture.md)
-7. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
-8. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
-9. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
+4. [**子仓库架构与工程规范审计 v1**](repository-architecture-review-v1.md)
+5. [**GA 核心架构总览：一个闭环底座，多个内置 Agent 产品**](kokoro-handbook/technical/42-ga-core-architecture.md)
+6. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
+7. [**Kokoro 统一入口、App 与 Agent 产品架构**](kokoro-handbook/technical/37-product-experience-agent-studio-architecture.md)
+8. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
+9. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
+10. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
 
 ## 当前目标架构评审主线
 

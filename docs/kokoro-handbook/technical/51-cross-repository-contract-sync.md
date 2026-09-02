@@ -29,17 +29,17 @@ into Root contract first; an owner-only HTTP/config change stays in that owner.
 Root contract/proto + manifest + Goal 2 owner registry
         │ 生成
         ├── kokoro-agent consumer
-        ├── kokoro-session consumer（仅既有 Slice A 兼容闭环）
+        ├── kokoro-bff consumer
         ├── kokoro-capability consumer
         ├── kokoro-storage consumer
-        └── kokoro-web/root-e2e consumer
+        └── kokoro-app/root-e2e consumer
 ```
 
 | 位置 | 唯一职责 | 不负责 |
 |---|---|---|
 | Root `contract/` | Proto/OpenAPI、字段编号、oneof、错误/幂等/兼容规则、consumer closure | 任何 owner 的数据库实现 |
 | `kokoro-agent` | DeepAgents/LangGraph/Swarm 执行、Feature/Agent 组装、RunLedger、checkpoint、`chat_messages/chat_events` | Session 产品投影、Capability/Storage 私库 |
-| `kokoro-session` | ProductSession、IAM admission、历史查询、事件 replay、AG-UI/SSE | Agent 执行、checkpoint、GA 聊天事实写入 |
+| `kokoro-bff` | Chat、Project/ScheduledTask 业务事实、鉴权、幂等、owner adapter、SSE projection | Agent 数据库、业务 owner 数据库、Agent 执行事实 |
 | `kokoro-capability` | Skill CRUD/find/resolve、MCP 子域 Connector metadata 与授权 | GA default Skill 执行、package bytes、MCP transport |
 | `kokoro-storage` | Upload、Asset、Scan、Artifact 与 S3-compatible ObjectStore 生命周期；元数据使用 PostgreSQL | Agent workbench、Skill policy、Session history |
 
@@ -60,21 +60,18 @@ Root contract/proto + manifest + Goal 2 owner registry
 
 ## 3. 各子仓需要维护的文档
 
-### GA
+### Agent
 
 - `kokoro-agent/docs/agent/api-contract.md`：GA 对 Launch、Control、ProductEvent、聊天事实的消费视图。
 - `kokoro-agent/docs/agent/technical-plan.md`：`Feature -> Agent(s) -> AgentFactory -> DeepAgents -> RunLedger` 的实现链路。
-- 不能在 GA 文档中新增 `deps`、Session 配置、Agent 选择器或自定义 State；使用 DeepAgents/LangGraph 原生 state。
+- 不能在 Agent 文档中新增 `deps`、Session 配置、Agent 选择器或自定义 State；使用 DeepAgents/LangGraph 原生 state。
 
-### Session
+### BFF Chat
 
-- `kokoro-session/docs/session/api-contract.md`：Session 对 Root 命令和安全 ProductEvent 的消费视图。
-- `kokoro-session/docs/session/technical-plan.md`：ProductSession、授权、查询/replay、AG-UI/SSE 的实现链路。
-- Session 不把 LangChain `Message.id/thread_id/checkpoint_id` 映射成产品消息，也不写 GA canonical chat facts。
-- 当前 Session Redis relay 使用严格 internal adapter；它与 Root/GA 语义对齐，但 launch
-  envelope 的 `input={message_id,content}` 与 Root protobuf 顶层 `message_id/content` 需在
-  transport mapping 转换。生成 consumer、ChatQuery transport 和 `kokoro-session` consumer
-  命名需要在 Root manifest 与本仓同一批次接通。
+- `kokoro-bff/docs/api/`：Web-facing Chat、Project、ScheduledTask、SSE 和 owner adapter 的消费视图。
+- BFF 负责产品 Session 资源概念、消息入口、鉴权、幂等和事件 projection，不拥有 Agent
+  执行事实，也不读取 Agent 数据库。
+- BFF 的跨仓请求必须从 Root contract 生成/校验，不能重新创建 Session 独立 owner。
 
 ### Capability
 
