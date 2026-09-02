@@ -19,7 +19,7 @@ Root 不应加入 Web、BFF、Agent 或 Goal 2 业务实现源码。
 | 仓库 | 本地目录 | 唯一职责 | 入口 |
 |---|---|---|---|
 | Web | `kokoro/` → `LordFoxFairy/kokoro-app` | UI、同源 `/api/*` route adapter | `kokoro/src/app/` |
-| BFF | `kokoro-bff/` | Chat 与业务 BFF、鉴权/幂等/错误归一 | `kokoro-bff/src/main.ts` |
+| BFF | `kokoro-bff/` | Chat 与业务 BFF、鉴权/幂等/错误归一 | `kokoro-bff/src/main.ts`（组合根）、`kokoro-bff/src/http/routes/` |
 | Agent | `kokoro-agent/` | Worker 执行、HITL、恢复、产品事件投影 | `kokoro-agent/src/kokoro_agent/worker/` |
 
 Web → BFF → 业务仓是唯一业务调用方向。浏览器不直连 BFF、Agent 或业务仓。

@@ -10,8 +10,8 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 
 | 本地目录 | GitHub 仓库 | 事实/业务边界 | 当前 HEAD |
 |---|---|---|---|
-| kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | 1ed9406 |
-| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 9e1c338 |
+| kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | 62c91fc |
+| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 0902e4a |
 | kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 3cbbf27 |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 02743c1 |
 | kokoro-system | LordFoxFairy/kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | f8179df |
