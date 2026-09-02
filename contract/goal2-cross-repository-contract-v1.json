@@ -4,6 +4,64 @@
   "status": "reviewed",
   "authority": "root-cross-repository-wire-contract",
   "scope": "Web -> BFF -> IAM/System/Model/Billing/Capability/Storage/Agent/Scheduler",
+  "manus_api_alignment": {
+    "reference": [
+      "https://open.manus.ai/docs/v2/introduction",
+      "https://open.manus.ai/docs/v2/task-lifecycle",
+      "https://open.manus.ai/docs/v2/task.create",
+      "https://open.manus.ai/docs/v2/task.list",
+      "https://open.manus.ai/docs/v2/task.listMessages"
+    ],
+    "adopted_semantics": [
+      "async_resource_creation",
+      "stable_resource_identity",
+      "explicit_running_waiting_stopped_error_lifecycle",
+      "cursor_based_message_and_event_replay",
+      "explicit_confirmation_and_stop_commands",
+      "webhook_is_notification_not_fact_source"
+    ],
+    "public_v1_mapping": {
+      "task_create": {
+        "method": "POST",
+        "path": "/v1/sessions/{session_id}/messages",
+        "accepted_status": 202,
+        "resource_id": "run_id",
+        "receipt_fields": ["run_id", "user_message_id", "assistant_message_id"]
+      },
+      "task_detail": {
+        "method": "GET",
+        "path": "/v1/sessions/{session_id}",
+        "resource_id": "session_id"
+      },
+      "task_list": {
+        "method": "GET",
+        "path": "/v1/sessions",
+        "cursor_field": "data.next_cursor"
+      },
+      "task_messages": {
+        "method": "GET",
+        "path": "/v1/sessions/{session_id}/messages",
+        "cursor_field": "data.next_cursor"
+      },
+      "task_events": {
+        "method": "GET",
+        "path": "/v1/sessions/{session_id}/events",
+        "resume_header": "Last-Event-ID"
+      },
+      "task_control": {
+        "method": "POST",
+        "path": "/v1/sessions/{session_id}/runs/{run_id}/control",
+        "commands": ["run.resume", "run.cancel", "run.steer"],
+        "accepted_status": 202
+      }
+    },
+    "deliberate_differences": [
+      "Kokoro retains the v1 {data,meta} and {error,meta} envelope.",
+      "Kokoro keeps session and run as separate resources; it does not rename them to Manus task_id.",
+      "Kokoro capability, model, storage, billing and scheduler remain explicit owner boundaries.",
+      "A direct Manus wire facade, if needed, must be a separately versioned adapter rather than an implicit alias."
+    ]
+  },
   "transport": {
     "http_success": {
       "data": "resource-specific payload",

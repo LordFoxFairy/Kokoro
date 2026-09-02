@@ -5,6 +5,11 @@
 Manus API 文档是 Kokoro v1 的重点参考。我们参考的是它已经验证过的资源生命周期和异步交互语义，
 不是照搬所有路径、字段或内部实现。所有最终契约仍以 Root `contract/` 与各 owner 仓库的 v1 文档为准。
 
+本页负责解释设计取舍；可供 CI、生成器和联调工具读取的冻结映射位于
+[`contract/goal2-cross-repository-contract-v1.json`](../contract/goal2-cross-repository-contract-v1.json)
+的 `manus_api_alignment`。两者必须同步：新增或调整异步资源、状态、cursor 或 control 语义时，
+先更新 Root machine-readable contract，再更新本页和对应 owner API docs。
+
 参考文档：
 
 - [Manus API Introduction](https://open.manus.ai/docs/v2/introduction)

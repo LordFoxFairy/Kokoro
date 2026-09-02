@@ -62,3 +62,21 @@ def test_goal2_cross_repository_contract_is_root_machine_readable() -> None:
     assert "Idempotency-Key" in scheduler["dispatch_http"]["required_headers"]
     billing = contract["owner_contracts"]["kokoro-billing"]
     assert billing["bff_service_auth"]["credential"] == "BILLING_OPERATOR_PROXY_SECRET"
+
+
+def test_goal2_cross_repository_contract_freezes_manus_aligned_async_surface() -> None:
+    contract = json.loads(
+        (ROOT / "contract/goal2-cross-repository-contract-v1.json").read_text(encoding="utf-8")
+    )
+    alignment = contract["manus_api_alignment"]
+    assert alignment["reference"][0] == "https://open.manus.ai/docs/v2/introduction"
+    assert "async_resource_creation" in alignment["adopted_semantics"]
+    assert alignment["public_v1_mapping"]["task_create"] == {
+        "method": "POST",
+        "path": "/v1/sessions/{session_id}/messages",
+        "accepted_status": 202,
+        "resource_id": "run_id",
+        "receipt_fields": ["run_id", "user_message_id", "assistant_message_id"],
+    }
+    assert alignment["public_v1_mapping"]["task_events"]["resume_header"] == "Last-Event-ID"
+    assert "Kokoro retains the v1 {data,meta} and {error,meta} envelope." in alignment["deliberate_differences"]

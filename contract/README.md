@@ -5,6 +5,12 @@
 owner、文档、Root wire 文件、数据库基线和同步规则的机器可验证索引；七个 owner 的具体
 请求/响应、状态机和错误投影仍以各仓 `API_CONTRACT`/API docs 为准。
 
+Manus v2 API 文档是当前 v1 异步资源 API 的重点参考。机器可读的对齐基线在
+[`goal2-cross-repository-contract-v1.json`](goal2-cross-repository-contract-v1.json) 的
+`manus_api_alignment` 节：冻结 task create/detail/list/messages/events/control 的资源映射、
+202 admission、状态机、cursor replay 和显式 control 语义；Kokoro 的 envelope 与 owner 边界
+仍以本仓 v1 契约为准，不通过隐式兼容别名复制 Manus 路径。
+
 正式业务 owner 只有：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
 `kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。Credit 已经是
 `kokoro-billing` 的内部模块；MCP Connector 是 `kokoro-capability` 的 MCP 子域，不创建
