@@ -53,12 +53,12 @@
 | kokoro-app | e1d9eeb |
 | kokoro-bff | e4a2e4d |
 | kokoro-agent | 90fd3e1 |
-| kokoro-iam | 8f532a2 |
-| kokoro-system | 705fe41 |
-| kokoro-model | d8ae5a7 |
+| kokoro-iam | 531816e |
+| kokoro-system | bb095f8 |
+| kokoro-model | 5edf746 |
 | kokoro-billing | f659000 |
 | kokoro-capability | 6aad0bc |
-| kokoro-storage | 4d73dd9 |
+| kokoro-storage | bb45c1d |
 | kokoro-scheduler | 2f7a3e8 |
 
 ## 4. BFF mock 与 live 业务用例
