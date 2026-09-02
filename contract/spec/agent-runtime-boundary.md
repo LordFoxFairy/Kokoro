@@ -12,7 +12,7 @@ Root contract/proto + manifest
 ```
 
 - Root：定义 Launch、Control、Fork、Cleanup、ProductEvent 和 Chat DTO 的跨仓语义。
-- kokoro-agent：实现 GA ingress、RunLedger、native graph、`chat_messages/chat_events` 和安全事件转换。
+- kokoro-agent：实现 GA ingress、RunRepository、native graph、`chat_messages/chat_events` 和安全事件转换；其 control command ledger 只属于 Agent 运行可靠性内部事实。
 - kokoro-bff：实现 Web-facing Chat、会话/消息/事件查询、AG-UI/SSE 投影和业务适配。
 - kokoro-app：只消费 BFF 的产品 DTO，不读取 Agent 或业务仓 private facts。
 
@@ -40,7 +40,7 @@ ApplyControlRequest
   decisions[] / optional message_id + content
 
 当前 Redis control envelope 仍带 `session_id`，因为 worker 的本地控制流按
-`run_id -> session_id` 做隔离；接入 Root generated transport 时由 GA RunLedger 补齐这层
+`run_id -> session_id` 做隔离；接入 Root generated transport 时由 GA RunRepository 补齐这层
 opaque 映射，Root caller 不需要传 `session_id`。
 ```
 
@@ -58,6 +58,14 @@ ProductEvent
   -> BFF query/replay -> AG-UI/SSE
 
 GA chat_messages -> 用户可见历史 canonical source
+
+Run control
+  -> Agent `run_control_commands`（HTTP admission/idempotency + worker delivery state）
+  -> Redis per-run control stream
+  -> `run.control.receipt`（execution progress event）
+
+上述 control 记录不写入 `chat_messages`，也不由 BFF 直接读 Agent 数据库；BFF 只消费 Agent ingress
+返回的 HTTP receipt 和允许对外的产品事件投影。
 ```
 
 不定义 `conversation_messages`、`run_events` 或独立 `event_outbox`。LangChain `Message.id/thread_id/checkpoint_id/tool_call_id` 只属于 native checkpoint，
