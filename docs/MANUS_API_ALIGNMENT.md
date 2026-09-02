@@ -7,8 +7,11 @@ Manus API 文档是 Kokoro v1 的重点参考。我们参考的是它已经验�
 
 参考文档：
 
+- [Manus API Introduction](https://open.manus.ai/docs/v2/introduction)
 - [Manus Task Lifecycle](https://open.manus.ai/docs/v2/task-lifecycle)
 - [Manus task.create](https://open.manus.ai/docs/v2/task.create)
+- [Manus task.list](https://open.manus.ai/docs/v2/task.list)
+- [Manus task.listMessages](https://open.manus.ai/docs/v2/task.listMessages)
 
 ## 1. 直接采用的设计语义
 
@@ -41,6 +44,12 @@ Idempotency-Key: IDEMPOTENCY_KEY
 - `request_id` 用于本次请求追踪，`run_id`/`task_id` 用于资源生命周期。
 - 业务执行状态不能通过 HTTP 连接是否保持打开来表达。
 
+Manus v2 的公开接口使用顶层 `ok`、`request_id` 和资源标识；Kokoro v1 保留自己的
+`{data, meta}` 外部 envelope，以便把 Web、BFF 和 owner 的响应边界固定下来。两者在
+异步创建、稳定资源标识、后续读取和幂等重放上对齐；字段外形不是隐式兼容关系。若未来
+需要直接接入 Manus v2 客户端，应新增明确的 `manus_compat` facade，不得把第二套 envelope
+混入当前 v1 OpenAPI。
+
 ### 1.2 状态、消息和事件可回放
 
 查询接口返回带游标的稳定快照；事件流断线后从游标继续，不依赖进程内状态。Kokoro 的
@@ -63,6 +72,8 @@ GET /v1/runs/RUN_ID/events?cursor=CURSOR
 ```
 
 事件的排序、去重和 replay 由 Agent owner 负责；BFF 只做身份校验和 transport projection。
+列表与消息读取必须显式声明 `has_more`/`next_cursor` 或等价的 v1 cursor 语义，并且 cursor
+必须绑定 resource、tenant 和过滤条件；不能把一次性 offset 当作长期协议。
 
 ### 1.3 用户确认是显式命令
 

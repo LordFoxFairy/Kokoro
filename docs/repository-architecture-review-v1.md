@@ -129,7 +129,7 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
 
 ### P1：BFF 入口文件过大，已影响可读性和扩展性
 
-`kokoro-bff/src/main.ts` 当前约 2,168 行，同时承载路由分发、鉴权、响应 envelope、Chat、项目、
+`kokoro-bff/src/main.ts` 当前约 2,255 行，同时承载路由分发、鉴权、响应 envelope、Chat、项目、
 技能、MCP、Billing、Storage、Scheduler 和 owner projection。职责虽然在业务上属于 BFF，但
 实现层已经形成单文件 God module。后续应按 vertical slice 拆为：
 
