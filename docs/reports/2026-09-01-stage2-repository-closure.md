@@ -71,10 +71,6 @@ kokoro-agent (execution worker; PostgreSQL + Redis)
 协议由 BFF adapter 显式映射，不用通用路径拼接冒充已经完成的业务接线。没有对应 owner ingress 的路由
 （例如 Agent session/event、Capability Connect、Scheduler command）继续以 mock/health 证据标记为待接线。
 
-当前 live 适配裁决：BFF 先保留 Web-facing v1 的稳定响应模型；各 owner 的内部 HTTP/Connect/command
-协议由 BFF adapter 显式映射，不用通用路径拼接冒充已经完成的业务接线。没有对应 owner ingress 的路由
-（例如 Agent session/event、Capability Connect、Scheduler command）继续以 mock/health 证据标记为待接线。
-
 ## 3. 已废弃处理
 
 Root 工作区已移除旧目录和 gitlink：
