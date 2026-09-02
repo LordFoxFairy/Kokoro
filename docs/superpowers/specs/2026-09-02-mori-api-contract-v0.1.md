@@ -7,7 +7,7 @@
 ## 1. 契约定位
 
 这是 Mori 面向浏览器的业务契约，不是 Suno、Tad 或其他音乐供应商的 API 镜像。浏览器
-只访问同源 `/api/v1/*`；BFF 负责身份、权限、幂等、owner 调用和 provider adapter。公开
+只访问同源 `/api/v1/mori/*`；BFF 负责身份、权限、幂等、owner 调用和 provider adapter。公开
 字段不暴露 provider 名称、provider task id、供应商状态或供应商内部 URL。
 
 ```text
@@ -85,9 +85,9 @@ Version 是不可变音频快照；项目的 `current_version_ref` 是可变指�
 ### 4.1 Project
 
 ```http
-POST /api/v1/projects
-GET  /api/v1/projects?cursor=CURSOR&limit=20
-GET  /api/v1/projects/{project_ref}
+POST /api/v1/mori/projects
+GET  /api/v1/mori/projects?cursor=CURSOR&limit=20
+GET  /api/v1/mori/projects/{project_ref}
 ```
 
 创建请求：
@@ -112,7 +112,7 @@ GET  /api/v1/projects/{project_ref}
 ### 4.2 Song Plan
 
 ```http
-POST /api/v1/projects/{project_ref}/song_plans
+POST /api/v1/mori/projects/{project_ref}/song_plans
 ```
 
 ```json
@@ -130,10 +130,10 @@ POST /api/v1/projects/{project_ref}/song_plans
 ### 4.3 Generation
 
 ```http
-POST /api/v1/projects/{project_ref}/generations       → 202
-GET  /api/v1/generations/{generation_ref}
-GET  /api/v1/generations/{generation_ref}/events      → text/event-stream
-POST /api/v1/generations/{generation_ref}/cancel      → 202
+POST /api/v1/mori/projects/{project_ref}/generations       → 202
+GET  /api/v1/mori/generations/{generation_ref}
+GET  /api/v1/mori/generations/{generation_ref}/events      → text/event-stream
+POST /api/v1/mori/generations/{generation_ref}/cancel      → 202
 ```
 
 生成请求：
@@ -167,7 +167,7 @@ POST /api/v1/generations/{generation_ref}/cancel      → 202
 ### 4.4 Generation events
 
 ```http
-GET /api/v1/generations/{generation_ref}/events
+GET /api/v1/mori/generations/{generation_ref}/events
 Accept: text/event-stream
 Last-Event-ID: GENERATION_REF:12
 ```
@@ -186,9 +186,9 @@ data: {"data":{"generation_ref":"GENERATION_REF","status":"generating","progress
 ### 4.5 Candidates and Versions
 
 ```http
-GET  /api/v1/projects/{project_ref}/candidates?cursor=CURSOR
-POST /api/v1/candidates/{candidate_ref}/promote       → 201
-POST /api/v1/versions/{version_ref}/remix             → 202
+GET  /api/v1/mori/projects/{project_ref}/candidates?cursor=CURSOR
+POST /api/v1/mori/candidates/{candidate_ref}/promote       → 201
+POST /api/v1/mori/versions/{version_ref}/remix             → 202
 ```
 
 Candidate 公开字段包含 `candidate_ref`、`generation_ref`、`title`、`duration_seconds`、
@@ -198,9 +198,9 @@ Version 的 `{version_ref, project_ref, source_candidate_ref, status}`。
 ### 4.6 Library and Export
 
 ```http
-GET  /api/v1/library?kind=all&cursor=CURSOR&limit=20
-POST /api/v1/versions/{version_ref}/exports                  → 202
-GET  /api/v1/exports/{export_ref}
+GET  /api/v1/mori/library?kind=all&cursor=CURSOR&limit=20
+POST /api/v1/mori/versions/{version_ref}/exports                  → 202
+GET  /api/v1/mori/exports/{export_ref}
 ```
 
 Library 是跨 Project 的只读 projection；筛选参数属于 Library 查询，不提升为全局导航。
@@ -212,7 +212,7 @@ Export 是异步资源，下载地址只由 BFF 在权限校验后返回短时 p
 `src/lib/mori-api.ts` 只承载浏览器可见的请求与 receipt 类型：
 
 ```text
-CreateDraft → createGenerationRequest() → POST /api/v1/projects/{ref}/generations
+CreateDraft → createGenerationRequest() → POST /api/v1/mori/projects/{ref}/generations
                                              + Idempotency-Key
 202 receipt  → GenerationControllerState → GET snapshot / SSE replay
 ```
