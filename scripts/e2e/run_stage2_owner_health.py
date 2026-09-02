@@ -23,6 +23,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+WEB_NEXT_ENV = ROOT / "kokoro/next-env.d.ts"
 POSTGRES_NAME = "kokoro-stage2-owner-health-postgres"
 REDIS_NAME = "kokoro-stage2-owner-health-redis"
 POSTGRES_PORT = 55417
@@ -197,6 +198,33 @@ def stop_infra() -> None:
         run(["docker", "rm", "-f", name], check=False)
 
 
+def snapshot_web_next_env() -> bytes | None:
+    """Capture the tracked Next type shim before starting the dev server."""
+    try:
+        return WEB_NEXT_ENV.read_bytes()
+    except OSError:
+        return None
+
+
+def restore_web_next_env(original: bytes | None) -> None:
+    """Undo only the deterministic Next dev rewrite caused by this smoke run.
+
+    Do not overwrite an unrelated user edit: restoration is limited to the
+    exact `.next/types` -> `.next/dev/types` mutation emitted by Next.js.
+    """
+    if original is None:
+        return
+    generated = original.replace(
+        b'import "./.next/types/routes.d.ts";',
+        b'import "./.next/dev/types/routes.d.ts";',
+    )
+    try:
+        if WEB_NEXT_ENV.read_bytes() == generated and generated != original:
+            WEB_NEXT_ENV.write_bytes(original)
+    except OSError:
+        pass
+
+
 def http_get(url: str) -> tuple[int, str]:
     request = urllib.request.Request(url, headers={"x-kokoro-tenant-id": "tenant_stage2", "x-kokoro-actor-id": "actor_stage2"})
     try:
@@ -214,6 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     evidence: dict[str, Any] = {"mode": "disposable-owner-health", "checks": [], "processes": [], "status": "FAIL"}
     processes: list[tuple[str, subprocess.Popen[str]]] = []
     log_dir = Path("/tmp/kokoro-stage2-owner-health")
+    original_web_next_env = snapshot_web_next_env()
     try:
         start_infra()
         apply_schemas()
@@ -255,6 +284,7 @@ def main(argv: list[str] | None = None) -> int:
         stop_processes(processes)
         if not args.keep_infra:
             stop_infra()
+        restore_web_next_env(original_web_next_env)
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(evidence, ensure_ascii=False, indent=2))
