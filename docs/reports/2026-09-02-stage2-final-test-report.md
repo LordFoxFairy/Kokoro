@@ -42,7 +42,7 @@
 | kokoro-system | TEST_DATABASE_URL=... TEST_REDIS_URL=... pnpm test:integration | PASS：listener、SDK、tenant isolation、precedence、cache identity、HTTP errors |
 | kokoro-model | pnpm check；pnpm verify:release | PASS：127 model tests；production HTTP、Prisma/contract provenance、architecture |
 | kokoro-billing | pnpm verify | PASS：45 passed，52 skipped integration；SQL naming 37 migrations；OpenAPI parity 17 routes |
-| kokoro-capability | npm run verify | PASS：125 tests，31 test files；contract/typecheck/build |
+| kokoro-capability | npm run verify | PASS：127 tests，32 test files；contract/typecheck/build |
 | kokoro-storage | npm run verify | PASS：86 passed，1 skipped；24 passed test files |
 | kokoro-scheduler | go test ./...；go test -race ./...；go vet ./... | PASS：unit、race、vet |
 
@@ -57,7 +57,7 @@
 | kokoro-system | 705fe41 |
 | kokoro-model | d8ae5a7 |
 | kokoro-billing | f659000 |
-| kokoro-capability | 212f51f |
+| kokoro-capability | 6aad0bc |
 | kokoro-storage | 4d73dd9 |
 | kokoro-scheduler | 2f7a3e8 |
 
