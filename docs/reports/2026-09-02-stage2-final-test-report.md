@@ -56,7 +56,7 @@
 | kokoro-iam | 531816e |
 | kokoro-system | 8de91f3 |
 | kokoro-model | 5edf746 |
-| kokoro-billing | f659000 |
+| kokoro-billing | fd80ec4 |
 | kokoro-capability | 6aad0bc |
 | kokoro-storage | a2d05a0 |
 | kokoro-scheduler | 2f7a3e8 |
@@ -115,6 +115,13 @@ BFF live evidence：docs/reports/2026-09-01-stage2-owner-health.json
    两者统一引用 Root cross contract 文件，具体 owner fragment 仍由 JSON 的 owner_contracts 提供。
 6. Web 全量测试在并行高负载下曾出现一次 Radix/jsdom 3 秒 handoff timeout；单独顺序运行
    kokoro pnpm check 为 114/114 files、1133/1133 tests PASS，当前没有复现。
+7. System 将 Site Host 从 `system_site.hostnames_json` 收敛为独立的
+   `system_site_host(tenant_id, site_id, hostname)` 表，并以复合外键和 active hostname
+   唯一索引锁定租户归属；System PostgreSQL schema smoke PASS。
+8. Storage 为 `blob → asset → artifact/scan/upload` 补齐携带 `tenant_id` 的 PostgreSQL
+   复合外键，migration ledger 扩展到 `008_tenant_lineage`；Storage PostgreSQL schema smoke PASS。
+9. Billing 补齐 Credit、Payment、Subscription、Checkout、Refund、redeem 跨聚合复合外键，
+   migration ledger 扩展到 `0038-complete-tenant-lineage`；Billing PostgreSQL migration smoke PASS。
 
 ## 6. CI、镜像与部署
 
