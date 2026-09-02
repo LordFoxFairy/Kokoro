@@ -25,7 +25,7 @@
 |---|---|---|---|
 | ROOT-001 | 10 个 active child checkout、GitHub remote、废弃目录边界 | python3 scripts/verify-repository-topology.py | PASS |
 | ROOT-002 | Root backend design manifest 与文档/源码边界 | python3 scripts/verify-backend-design.py | PASS |
-| ROOT-003 | Buf contract lint 与 Root/consumer contract tests | pnpm exec buf lint contract；uv run --frozen pytest contract/tests scripts/contract/tests -q | PASS，82 passed |
+| ROOT-003 | Buf contract lint 与 Root/consumer contract tests | pnpm exec buf lint contract；uv run --frozen pytest contract/tests scripts/contract/tests -q | PASS，83 passed |
 | ROOT-004 | Goal 2 七仓文档、Root wire、request_id、幂等、cursor | python3 scripts/goal2/mock_cross_repository_closure.py | PASS |
 | ROOT-005 | 两个 machine-readable contract JSON | python3 -m json.tool ... | PASS |
 | ROOT-006 | Root 文档和脚本 diff hygiene | git diff --check | PASS |
@@ -54,7 +54,7 @@
 | kokoro-bff | e4a2e4d |
 | kokoro-agent | 90fd3e1 |
 | kokoro-iam | 531816e |
-| kokoro-system | bb095f8 |
+| kokoro-system | 8de91f3 |
 | kokoro-model | 5edf746 |
 | kokoro-billing | f659000 |
 | kokoro-capability | 6aad0bc |
@@ -141,7 +141,7 @@ GHCR package visibility 本轮没有修改；当前本机 GitHub CLI 未授予 r
 
 ## 7. 最终判定
 
-阶段 2 的当前验收目标已达到：
+阶段 2 的本地验收目标已达到；远端 push/PR 状态不在本轮执行范围内：
 
 - active 仓库边界清晰；
 - API v1 contract 与 owner contract 有 Root machine-readable authority；
@@ -149,5 +149,5 @@ GHCR package visibility 本轮没有修改；当前本机 GitHub CLI 未授予 r
 - BFF live adapter、BFF business facts、Agent ingress、Scheduler register/dispatch/replay 已真实运行；
 - 单元、集成、契约、架构、构建和真实网络 E2E 均有证据；
 - 废弃仓库不再出现在本地启动路径、manifest、Compose 或 CI；
-- Root 最终提交并重新 audit 后，Root 与所有 active child worktree 必须保持 clean 且
-  local HEAD == origin/main。
+- Root 与所有 active child worktree 在本轮验证结束时保持 clean；各子仓本地 HEAD 以本报告为准，
+  不把 origin/main 同步状态当作本地代码验收结果。
