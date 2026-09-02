@@ -1,8 +1,12 @@
-# Kokoro 子仓库架构与工程规范审计 v1
+# Kokoro 子仓库架构与工程规范审计 v1（历史报告）
 
-状态：2026-09-02 · Root 审计与第一轮代码收敛后的当前基线
+状态：历史审计资料，2026-09-02 复核后不再作为当前规范基线
 
-本文是当前实现的审计结论，不替代各子仓库自己的 README、API contract、runbook 和测试。
+本文是历史实现的审计结论，不替代当前的
+`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/AGENTS.md`、
+`docs/ARCHITECTURE_STANDARD.md`、`docs/kokoro-handbook/technical/54-backend-engineering-standards.md`
+和 `docs/kokoro-handbook/technical/55-language-and-type-safety-standards.md`。
+文中关于 migration、外键、目录路径或“已收敛”的描述若与上述当前规范冲突，以当前规范为准。
 目标是回答三个问题：每个仓库是否只有一个清晰职责、依赖方向是否正确、工程门禁是否足以支撑
 独立发布。历史 handbook、旧 MySQL/Mongo 方案和已归档仓库不属于当前运行架构。
 
@@ -17,7 +21,7 @@ Browser
   -> kokoro-scheduler internal dispatch / replay
 ```
 
-边界原则：Web 不直连业务仓；BFF 不读任何 sibling 数据库；每个 owner 自己拥有 schema、迁移、
+边界原则：Web 不直连业务仓；BFF 不读任何 sibling 数据库；每个 owner 自己拥有 canonical schema、
 API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排、拓扑审计和跨仓验收。
 
 ## 2. 逐仓库架构判断
@@ -25,14 +29,14 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 | 仓库 | 当前职责 | 分层/入口 | 审计结论 |
 |---|---|---|---|
 | `kokoro-app` | Web UI、同源 `/api/*` adapter | `src/app`、`src/lib`、`packages/*` | 边界正确；`packages/*` 是 Web 仓内复用包，不是后端共享仓，不应承载业务事实。 |
-| `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner adapter、SSE | `src/main.ts`、`src/http/routes`、`src/application`、`src/modules`、`src/adapters`、`src/infrastructure` | 业务入口正确；Project/ScheduledTask 已通过 application service 注入 repository port，PostgreSQL adapter 与 mock fixture 分离；`src/main.ts` 已收敛为组合根和通用请求管线，资源路由位于 `src/http/routes/*`。 |
+| `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner client、AG-UI/SSE | `src/main.ts`、`src/http/routes`、`src/application`、`src/contracts`、`src/infrastructure`、`src/interfaces/http/agui` | 业务入口正确；Project/ScheduledTask 通过 application service 注入 repository port，PostgreSQL 实现、mock fixture、owner client 与 AG-UI transport projection 分离；不再使用泛化的 `src/modules` 或 `src/adapters`。 |
 | `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`contract` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
 | `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、IAM RPC、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
 | `kokoro-system` | Site、Site Host、Workspace、Runtime Manifest、系统策略 | `src/modules/runtime-manifest`、`interfaces/http` | 边界正确；Site/Host binding 由 System 自己拥有，tenant_id 是唯一跨仓隔离键，不调用 IAM Host 接口。 |
 | `kokoro-model` | Model Catalog、Provider、Availability、Policy、resolve | `src/domain`、`application`、`interfaces/http|rpc` | 目录与解析清晰；LiteLLM 只是可选 transport，Model 不探活、不启动、不拥有 LiteLLM。 |
 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering | `src/modules/*`、`src/domain`、PostgreSQL/Redis | 合并 Credit 合理；账务必须保持单写入事实和状态机，旧兼容表只能只读或退出。 |
-| `kokoro-capability` | Skill、MCP Connector 控制面、安装、授权、receipt | `src/application`、`src/modules`、`src/adapters` | 领域边界合理；Capability 不拥有 Agent 执行态，不复制 Storage 字节，不绕过 IAM。 |
-| `kokoro-storage` | Upload、Asset、Artifact、scan、ObjectStore 引用 | `src/application`、`src/modules`、`src/adapters` | 以 PostgreSQL 保存元数据、S3-compatible store 保存字节的设计正确；扫描失败应保持 fail-closed。 |
+| `kokoro-capability` | Skill、MCP Connector 控制面、安装、授权、receipt | `src/domain`、`src/application`、`src/infrastructure`、`src/interfaces`、`src/bootstrap` | 领域边界合理；Capability 不拥有 Agent 执行态，不复制 Storage 字节，不绕过 IAM。 |
+| `kokoro-storage` | Upload、Asset、Artifact、scan、ObjectStore 引用 | `src/domain`、`src/application`、`src/infrastructure`、`src/interfaces`、`src/bootstrap` | 以 PostgreSQL 保存元数据、S3-compatible store 保存字节的设计正确；扫描失败应保持 fail-closed。 |
 | `kokoro-scheduler` | 通用 ScheduleJob、trigger、lease、retry、misfire、dispatch | `cmd/scheduler`、`internal` | 独立 Go 仓合理；不读业务库、不理解 Billing/Project 规则。`SCHEDULER_JOBS_JSON` 只能作为本地/阶段性配置，不能替代生产注册事实。 |
 
 ## 3. 已确认的工程规范

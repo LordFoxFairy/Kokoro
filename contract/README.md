@@ -5,6 +5,11 @@
 owner、文档、Root wire 文件、数据库基线和同步规则的机器可验证索引；七个 owner 的具体
 请求/响应、状态机和错误投影仍以各仓 `API_CONTRACT`/API docs 为准。
 
+浏览器 Chat 的 AG-UI v1 对齐基线见
+[`agui-v1.json`](agui-v1.json)。BFF 和 Web 都直接使用 `@ag-ui/core@0.0.59` 的事件枚举/运行时
+schema；BFF 负责从 Agent Chat facts 投影为 AG-UI SSE，Web 在同源入口校验后再投影到 UI reducer。
+Agent 不引入浏览器 SDK，避免把 transport 职责倒灌进执行仓。
+
 Manus v2 API 文档是当前 v1 异步资源 API 的重点参考。机器可读的对齐基线在
 [`goal2-cross-repository-contract-v1.json`](goal2-cross-repository-contract-v1.json) 的
 `manus_api_alignment` 节：冻结 task create/detail/list/messages/events/control 的资源映射、
