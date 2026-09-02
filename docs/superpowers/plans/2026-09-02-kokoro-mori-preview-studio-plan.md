@@ -8,12 +8,25 @@
 
 **Tech Stack:** Next.js 16, React 19, TypeScript 5, Tailwind 4, CSS Modules, shadcn/Radix primitives, Vitest, Testing Library, Node.js 22, pnpm 11.2.2.
 
+## Refinement Delta: Navigation Shell Revision
+
+The first preview implementation used a Create-oriented three-column frame for every route.
+The active refinement supersedes that geometry with `MoriAppShell`: one continuous surface,
+an application-level Rail, and a fixed bottom Global Player. The Queue/Inspector is mounted
+only as a contextual Create drawer; Library and Projects do not reserve a right column. The
+route map now includes `/` as Home/Discover and `/create` as the dedicated Create surface.
+Studio is rendered inside the same global shell through `MoriStudioShell`, while its version
+rail remains a Studio-local editing tool.
+
 ## Global Constraints
 
 - Mori is a sibling product repository named `kokoro-mori`; the brand name is `Mori`, not `kokoro-music`.
 - Default theme is light with warm off-white surfaces and low-contrast lavender/peach/mint gradients.
 - The primary mental model is `Project-first`; candidates and versions are not chat messages.
+- `/` is Home/Discover and `/create` is the dedicated Create surface.
 - Create defaults to Smart mode; Custom controls are progressively disclosed.
+- Rail expand/collapse state belongs to `MoriAppShell` and is shared by every surface.
+- Global Player is a fixed bottom layer; Queue/Inspector is contextual and not a permanent grid column.
 - Studio only opens with an existing project and version reference.
 - Browser requests use same-origin `/api/*`; external fields are `snake_case`; responses use `{data, meta}` or `{error, meta}`; writes include `Idempotency-Key`; async events use SSE and `Last-Event-ID`.
 - No Suno/Tad private API, credential, token, provider task id, or provider-specific branch appears in the browser product.
