@@ -109,6 +109,8 @@ projection。历史兼容字段必须设置退出时间，不能继续增加双 
   `service_auth_not_configured`，但跨仓 admission/outbox 仍需继续补齐。
 - Scheduler occurrence claim 已改为 dispatch 后保留至 lease TTL，修复多副本在成功 dispatch 后
   重复执行同一 occurrence 的路径；业务任务注册与恢复协议仍属于 P0。
+- Scheduler internal HTTP 现在只接受标准 `Authorization: Bearer` 与 `X-Request-Id`，旧的
+  `X-Kokoro-*` 凭据和 request-id 别名已删除，避免继续扩大兼容面。
 
 ### P1：IAM、System、Model 的接口实现需要与声明完全对齐
 
