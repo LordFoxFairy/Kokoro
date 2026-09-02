@@ -162,6 +162,8 @@ contract   = Root wire compatibility
 
 ## 5. Manus API 对齐原则
 
+完整的对齐基线见 [`MANUS_API_ALIGNMENT.md`](./MANUS_API_ALIGNMENT.md)。
+
 Manus v2 的核心不是某几个路径名称，而是成熟的异步资源模型：创建任务立即返回稳定的
 `request_id`/`task_id`，通过状态、消息回放、后续消息、确认动作和 webhook 承接完整生命周期。
 Kokoro 应当尽量保持这些用户可感知的语义：
