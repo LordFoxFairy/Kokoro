@@ -12,18 +12,18 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 |---|---|---|---|
 | kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | 00a2139 |
 | kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/ScheduledTask、适配/幂等 | 9550ebc |
-| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 48c11e2 |
+| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 37b027c |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 02743c1 |
 | kokoro-system | LordFoxFairy/kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | 6143525 |
-| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 2bacaa3 |
-| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | aca1412 |
+| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | cb1fb74 |
+| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | 83a422d |
 | kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | b5dc19e |
 | kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | 5d5669e |
-| kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 90d9776 |
+| kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 0fb97a9 |
 
-Root + 9 个 active child checkout 均为独立 Git root，当前分支均为 main，且本地与 GitHub
+Root + 10 个 active child checkout 均为独立 Git root，当前分支均为 main，且本地与 GitHub
 origin/main 已对齐；每个 GitHub 仓库的远端分支也只保留 main。Root 的 gitlink
-kokoro-agent 指向 48c11e2；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
+kokoro-agent 指向 37b027c；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
 最终提交后用 scripts/audit-repository-state.py --github --json 复核 clean、main 和分支状态。
 
 ## 归属裁决

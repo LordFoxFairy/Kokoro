@@ -83,8 +83,9 @@ IAM/Model/Capability/Storage 的 Proto 与 Root contract 较完整；System、Bi
 
 ### P1：HTTP envelope 和错误码需要单一版本冻结
 
-System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{error, meta}`，其中
-`meta.request_id` 使用 snake_case。Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做
+System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{error, meta}`，Billing 的
+`/v1/*` surface 也由 transport hook 统一输出 `meta.request_id`，其中字段使用 snake_case。
+Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做
 一次 transport projection，owner 内部模型不泄露到外部 API。
 
 ### P1：Billing 旧兼容表需要明确退出策略
@@ -100,6 +101,10 @@ System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{erro
 - Agent evidence 查询需要校验 Run 的 identity/scope，并将诊断原始事件与用户可见投影分开。
 - Agent admission、dispatch claim 和 steer command 需要可恢复的 durable inbox/outbox，避免
   “先 claim/ACK，后持久化”造成崩溃丢失。
+- Agent HTTP ingress 已改为缺少内部 secret 时 fail-closed；健康检查仍保持可用，其他请求返回
+  `service_auth_not_configured`，但跨仓 admission/outbox 仍需继续补齐。
+- Scheduler occurrence claim 已改为 dispatch 后保留至 lease TTL，修复多副本在成功 dispatch 后
+  重复执行同一 occurrence 的路径；业务任务注册与恢复协议仍属于 P0。
 
 ### P1：IAM、System、Model 的接口实现需要与声明完全对齐
 
@@ -108,8 +113,10 @@ System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{erro
 - IAM Proto 与当前 HTTP handler 仍需形成“声明/实现”矩阵，避免未实现 RPC 被误判为可用。
 - Billing 的兼容路径仍需完成 envelope 统一；BFF 的 owner projections 还要逐项做 wire contract
   校验。
-- Model `/resolve` 本轮已改为内部认证并从可信上下文读取 tenant；后续仍需把请求级模型解析为
-  approved revision/alias 的 contract fixture。
+- Model `/resolve` 本轮已改为内部认证并从可信上下文读取 tenant，同时删除本地 fixture 的 body
+  tenant 兼容协议；后续仍需把请求级模型解析为 approved revision/alias 的 contract fixture。
+- Billing 已删除 provider webhook 中旧 `site_id` payload hint；应用层内部变量仍有 `siteId` 历史命名，
+  后续应在不改变数据库迁移语义的前提下逐步收敛为 tenant vocabulary。
 
 ### P1：BFF 入口文件过大，已影响可读性和扩展性
 
