@@ -52,11 +52,11 @@ GET /v1/runs/RUN_ID/events?cursor=CURSOR
 ```json
 {
   "data": {
-    "items": [],
-    "next_cursor": "CURSOR"
+    "items": []
   },
   "meta": {
-    "request_id": "REQ_ID"
+    "request_id": "REQ_ID",
+    "next_cursor": "CURSOR"
   }
 }
 ```
@@ -101,7 +101,7 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 
 - 外部 HTTP 使用 `snake_case`；TypeScript 内部可以使用 `camelCase`。
 - 成功响应固定为 `{ data, meta }`，错误响应固定为 `{ error, meta }`。
-- `meta.request_id` 必须存在；分页字段统一为 `data.next_cursor` 或资源约定的同一层级，禁止新增第二种兼容 envelope。
+- `meta.request_id` 必须存在；分页字段统一放在 `meta.next_cursor`，禁止新增第二种兼容 envelope。
 - `Idempotency-Key` 只用于会产生事实变化的命令；查询接口使用 cursor，不把随机 offset 暴露为稳定协议。
 - tenant、subject、actor、权限来自已验证的服务上下文；浏览器提交的同名字段不能覆盖可信上下文。
 - owner 错误要保留稳定 `code`、`retryable` 和可选 `details`；BFF 只做一次错误映射。
@@ -123,4 +123,3 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 - 不把内存 Map、空数组或一次性 SSE 当成生产事实/回放协议。
 - 不为了兼容旧代码继续增加双字段、双 envelope 或未标记的隐式别名。
 - 不把 LiteLLM 变成 Model 的必需依赖；它仍是可选 transport。
-

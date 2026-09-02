@@ -1,6 +1,6 @@
 # Kokoro 子仓库架构与工程规范审计 v1
 
-状态：2026-09-02 · Root 只读审计后形成的当前基线
+状态：2026-09-02 · Root 审计与第一轮代码收敛后的当前基线
 
 本文是当前实现的审计结论，不替代各子仓库自己的 README、API contract、runbook 和测试。
 目标是回答三个问题：每个仓库是否只有一个清晰职责、依赖方向是否正确、工程门禁是否足以支撑
@@ -83,7 +83,8 @@ IAM/Model/Capability/Storage 的 Proto 与 Root contract 较完整；System、Bi
 
 ### P1：HTTP envelope 和错误码需要单一版本冻结
 
-历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做
+System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{error, meta}`，其中
+`meta.request_id` 使用 snake_case。Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做
 一次 transport projection，owner 内部模型不泄露到外部 API。
 
 ### P1：Billing 旧兼容表需要明确退出策略
@@ -104,10 +105,11 @@ IAM/Model/Capability/Storage 的 Proto 与 Root contract 较完整；System、Bi
 
 - IAM Proto 声明的认证/授权能力多于当前 HTTP handler；必须区分“目标 contract”和“当前可用
   surface”，不能让 manifest 把未实现 RPC 误判为可用。
-- System/Billing 的部分 HTTP response 仍存在缺少 `meta.request_id` 或使用顶层 `requestId`
-  的兼容形态，需统一到 Root v1 envelope。
-- Model 的 `/resolve` 应当只接受已认证的内部请求，tenant 必须来自可信上下文，而不是请求体
-  自选；请求级模型应先由 Model owner 解析成批准的 revision/alias。
+- IAM Proto 与当前 HTTP handler 仍需形成“声明/实现”矩阵，避免未实现 RPC 被误判为可用。
+- Billing 的兼容路径仍需完成 envelope 统一；BFF 的 owner projections 还要逐项做 wire contract
+  校验。
+- Model `/resolve` 本轮已改为内部认证并从可信上下文读取 tenant；后续仍需把请求级模型解析为
+  approved revision/alias 的 contract fixture。
 
 ### P1：BFF 入口文件过大，已影响可读性和扩展性
 
