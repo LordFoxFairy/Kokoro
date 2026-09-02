@@ -162,21 +162,7 @@
         "contract/proto/kokoro/iam/v1/authentication.proto",
         "contract/proto/kokoro/iam/v1/authorization.proto"
       ],
-      "required_internal_http": {
-        "method": "GET",
-        "path": "/internal/iam/tenant-binding",
-        "query": { "host": "HOST" },
-        "response": {
-          "data": {
-            "host": "HOST",
-            "tenant_id": "TENANT_ID",
-            "status": "active",
-            "binding_revision": "REVISION"
-          },
-          "meta": { "request_id": "REQUEST_ID" }
-        }
-      },
-      "implementation": "iam-handler-present-system-client-aligned"
+      "implementation": "iam-tenant-identity-and-authorization-contract-present"
     },
     "kokoro-system": {
       "role": "site/workspace/runtime-manifest/policy fact owner",
@@ -201,9 +187,14 @@
         "query": ["product_id", "locale", "surface_id"],
         "request_context": ["x-kokoro-service: web-bff", "x-kokoro-internal-secret", "x-kokoro-tenant-id (IAM-derived)"],
         "success_data": ["tenant_id", "product_id", "locale", "navigation", "locale_namespaces", "theme", "feature_flags", "references", "config_version", "release_id", "digest"],
-        "flow": ["BFF resolves KOKORO_DOMAIN through IAM tenant-binding", "BFF calls System /system/runtime-manifest", "BFF projects the owner camelCase response once into the v1 snake_case envelope"]
+        "flow": ["BFF completes IAM admission and passes trusted tenant_id plus Forwarded host to System", "System validates its own Site/Host binding and serves /system/runtime-manifest", "BFF projects the owner camelCase response once into the v1 snake_case envelope"]
       },
-      "implementation": "system-owner-contract-and-iam-binding-client-and-bff-projection-present"
+      "host_resolution": {
+        "owner": "kokoro-system",
+        "input": "Forwarded host + trusted tenant_id",
+        "rule": "System validates the Host against its own Site/Host records before reading tenant-scoped data"
+      },
+      "implementation": "system-owner-contract-and-system-site-host-resolution-present"
     },
     "kokoro-model": {
       "role": "model catalog/provider/availability/policy fact owner",

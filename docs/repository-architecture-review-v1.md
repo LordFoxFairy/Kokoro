@@ -27,7 +27,7 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 | `kokoro-app` | Web UI、同源 `/api/*` adapter | `src/app`、`src/lib`、`packages/*` | 边界正确；`packages/*` 是 Web 仓内复用包，不是后端共享仓，不应承载业务事实。 |
 | `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner adapter、SSE | `src/main.ts`、`src/http/routes`、`src/application`、`src/modules`、`src/adapters`、`src/infrastructure` | 业务入口正确；Project/ScheduledTask 已通过 application service 注入 repository port，PostgreSQL adapter 与 mock fixture 分离；`src/main.ts` 已收敛为组合根和通用请求管线，资源路由位于 `src/http/routes/*`。 |
 | `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`contract` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
-| `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、`tenant-binding.ts`、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
+| `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、IAM RPC、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
 | `kokoro-system` | Site、Site Host、Workspace、Runtime Manifest、系统策略 | `src/modules/runtime-manifest`、`interfaces/http` | 边界正确；Site/Host binding 由 System 自己拥有，tenant_id 是唯一跨仓隔离键，不调用 IAM Host 接口。 |
 | `kokoro-model` | Model Catalog、Provider、Availability、Policy、resolve | `src/domain`、`application`、`interfaces/http|rpc` | 目录与解析清晰；LiteLLM 只是可选 transport，Model 不探活、不启动、不拥有 LiteLLM。 |
 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering | `src/modules/*`、`src/domain`、PostgreSQL/Redis | 合并 Credit 合理；账务必须保持单写入事实和状态机，旧兼容表只能只读或退出。 |

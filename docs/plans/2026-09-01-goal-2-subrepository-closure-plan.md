@@ -31,8 +31,8 @@
 | kokoro | Next.js Web、同源 API、页面状态和 SSE | 只消费 BFF v1；本地生产构建通过 |
 | kokoro-bff | Chat、业务聚合、鉴权、幂等、owner projection | live 接入六类 owner + BFF facts + Scheduler |
 | kokoro-agent | Run、执行、HITL、恢复、事件、HTTP ingress | BFF 只走 HTTP ingress，不直连 Agent 存储 |
-| kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | tenant-binding v1 HTTP 入口和契约通过 |
-| kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | runtime manifest 由 BFF 经 IAM binding 接入 |
+| kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | Tenant/Identity/AuthZ contract through RPC |
+| kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | runtime manifest 由 System 自有 Site/Host binding 校验后接入 |
 | kokoro-model | Catalog、Provider、Availability、Policy | BFF model catalog projection 接入 |
 | kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | BFF catalog/checkout projection 接入 |
 | kokoro-capability | Skill、MCP Connector 控制面 | BFF read projection 接入；未接写操作 fail-closed |
@@ -65,7 +65,7 @@ Root authority：
 - Scheduler 只持有通用 ScheduleJob、lease、retry、misfire、pause/resume 与执行触发，不读任何业务表。
 - BFF 将 ScheduledTask 转成 Scheduler job；Scheduler 回调 BFF internal dispatch；BFF 再以保存的身份
   调用 Agent admission；相同 occurrence replay 原始 receipt，不创建第二个 Run。
-- System runtime manifest 通过 IAM tenant-binding 再请求 System；Model、Billing、Capability、Storage、
+- BFF 完成 IAM admission 后将 trusted tenant_id + Host 交给 System，由 System 校验自有 Site/Host binding；Model、Billing、Capability、Storage、
   Agent 均由显式 BFF adapter 投影。
 - 不存在 owner ingress 的写操作返回明确的 503/稳定错误，不静默落入 mock 或 generic pass-through。
 - BFF→Agent mutation body 发送 Content-Length，保证 stdlib Agent ingress 正确读取 JSON。
