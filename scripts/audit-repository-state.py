@@ -58,8 +58,21 @@ RETIRED_LOCAL_NAMES = (
 )
 
 
+COMMAND_TIMEOUT_S = 15
+
+
 def run(command: list[str], *, cwd: Path = ROOT) -> tuple[int, str, str]:
-    result = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+    try:
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=COMMAND_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        return 124, "", f"command timed out after {COMMAND_TIMEOUT_S}s: {' '.join(command)}"
     return result.returncode, result.stdout.strip(), result.stderr.strip()
 
 

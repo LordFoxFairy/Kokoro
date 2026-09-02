@@ -37,7 +37,7 @@ REQUIRED_AGENT_PACKAGE_SECTIONS = (
 )
 EXPECTED_SOURCE_PATHS = (
     "agents", "features", "agent_factory.py", "swarm.py", "execution", "worker",
-    "tools", "skills", "clients", "sandbox", "storage", "mcp", "model", "prompts",
+    "tools", "skills", "clients", "sandbox", "persistence", "mcp", "model", "prompts",
 )
 FORBIDDEN_SOURCE_PATHS = (
     "ga", "factory", "framework", "compiler", "runtime", "ports", "deepagents.py",
