@@ -11,7 +11,7 @@ Domain/Application contract
         ↓
 Infrastructure repository implementation
         ↓
-MySQL driver / query builder
+PostgreSQL driver / query builder
 ```
 
 规则：
@@ -27,7 +27,7 @@ MySQL driver / query builder
 - 一个 Application command 默认对应一个本地事务。
 - 事务边界由用例决定，不由 Repository 随意开启嵌套事务。
 - 一个事务只覆盖同一 owner 的本地数据库写入和必要的领域不变量。
-- 外部 RPC、支付 provider、文件存储和消息发送不放在数据库事务内部等待完成。
+- 外部 RPC、支付 provider、文件存储和消息发送不放在 PostgreSQL 事务内部等待完成。
 - 跨子仓库操作不伪装成本地事务；先定义命令幂等、状态机和补偿语义，再决定是否需要异步协调。
 - 读取后写入时使用约束、条件 UPDATE 或 version 检查保护竞态，不依赖应用内单线程假设。
 
@@ -67,26 +67,26 @@ WHERE account_id = $2
 
 幂等优先采用：
 
-- 数据库唯一 `command_id` / `provider_event_id`
+- PostgreSQL 唯一 `command_id` / `provider_event_id`
 - request digest 防止同一 id 重放不同 payload
 - 状态机终态检查
 - 条件更新
 
-Redis 可以参与幂等，但只能作为快速路径：使用 `SET NX EX` 做短期抢占、重复请求合并、重试风暴抑制或分布式锁。禁止用进程内 Map、单机锁或 Redis 短期 key 作为唯一业务幂等真源；最终幂等必须由 MySQL 唯一键/持久化 command receipt、Mongo 唯一索引或持久化状态机证明。
+Redis 可以参与幂等，但只能作为快速路径：使用 `SET NX EX` 做短期抢占、重复请求合并、重试风暴抑制或分布式锁。禁止用进程内 Map、单机锁或 Redis 短期 key 作为唯一业务幂等真源；最终幂等必须由 PostgreSQL 唯一键、持久化 command receipt 或持久化状态机证明。
 
 推荐双层流程：
 
 ```text
 请求进入
   -> Redis SET NX EX（快速发现 in-flight / 抑制并发，可失败后继续走持久化路径）
-  -> owner 数据库事务插入 command_id/provider_event_id 唯一记录
+  -> owner PostgreSQL 事务插入 command_id/provider_event_id 唯一记录
   -> 同一事务完成业务状态变更并保存结果
   -> Redis 可缓存结果或 in-flight 状态，不作为最终事实
 ```
 
-Redis key 过期、淘汰、故障切换或重复执行时，数据库唯一约束和状态机必须仍能安全返回同一结果。支付 webhook、credit hold/capture/release、权益发放、上传完成和跨仓 command 不得只依赖 Redis。
+Redis key 过期、淘汰、故障切换或重复执行时，PostgreSQL 唯一约束和状态机必须仍能安全返回同一结果。支付 webhook、credit hold/capture/release、权益发放、上传完成和跨仓 command 不得只依赖 Redis。
 
-这里的“Redis 故障后走数据库”只适用于 Redis 是幂等快速路径的同步用例，不适用于 Redis 本身就是运行链路依赖的服务。若 Session/Agent 的队列、live bus 或 lease 依赖 Redis，Redis 故障时不得假装继续执行：应暂停新执行、返回明确的 dependency unavailable，或把命令写入持久化 inbox/outbox 后等待恢复。
+这里的“Redis 故障后走 PostgreSQL”只适用于 Redis 是幂等快速路径的同步用例，不适用于 Redis 本身就是运行链路依赖的服务。若执行队列、live bus 或 lease 依赖 Redis，Redis 故障时不得假装继续执行：应暂停新执行、返回明确的 dependency unavailable，或把命令写入持久化 inbox/outbox 后等待恢复。
 
 任何服务都必须在设计卡中声明 Redis 依赖级别：
 
