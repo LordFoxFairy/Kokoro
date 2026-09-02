@@ -12,7 +12,7 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 |---|---|---|---|
 | kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | aa59e35 |
 | kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 406dfc4 |
-| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 5ba5d40 |
+| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | a82e4ef |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 02743c1 |
 | kokoro-system | LordFoxFairy/kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | f8179df |
 | kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 14790df |
@@ -23,7 +23,7 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 
 Root + 10 个 active child checkout 均为独立 Git root，当前分支均为 main，且本地与 GitHub
 origin/main 已对齐；每个 GitHub 仓库的远端分支也只保留 main。Root 的 gitlink
-kokoro-agent 指向 5ba5d40；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
+kokoro-agent 指向 a82e4ef；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
 最终提交后用 scripts/audit-repository-state.py --github --json 复核 clean、main 和分支状态。
 
 ## 归属裁决

@@ -109,6 +109,43 @@ Webhook 重复投递、乱序和延迟不能改变业务事实；接收方按事
 Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于 BFF 的内部业务模块；Agent
 负责 run、message、event、confirmation 的执行事实。
 
+## 2.1 与 Manus v2 的接口形态对照
+
+Kokoro v1 的公共业务面按下面的方式对齐 Manus 的成熟资源生命周期。这里的“对齐”意味着
+调用者可以用同样的异步思维编排流程，而不是把 Manus 的点号 operation 名称直接复制到每个
+owner：
+
+| Manus v2 | Kokoro v1 | 说明 |
+|---|---|---|
+| `POST /v2/task.create` | `POST /v1/sessions/{session_id}/messages` | 创建一次异步 Agent run，立即返回 `202` 与稳定 receipt；BFF 负责 project/model/skill/artifact 组合。 |
+| `GET /v2/task.detail` | `GET /v1/sessions/{session_id}` | 返回可恢复的 session 快照，而不是依赖浏览器内存。 |
+| `GET /v2/task.list` | `GET /v1/sessions` | 使用身份范围内的不透明 cursor；cursor 绑定 tenant、project 和排序条件。 |
+| `GET /v2/task.listMessages` | `GET /v1/sessions/{session_id}/messages` / `events` | 消息读取与事件流分开；断线后用 `Last-Event-ID`/cursor replay。 |
+| `POST /v2/task.sendMessage` | `POST /v1/sessions/{session_id}/messages` | 新消息是新的幂等命令，不复用旧 run 的随机状态。 |
+| `POST /v2/task.confirmAction` | `POST /v1/sessions/{session_id}/runs/{run_id}/control` | confirmation 通过显式 `run.resume` + decisions 处理，命令有 durable receipt。 |
+| `POST /v2/task.stop` | `run.cancel` control | 取消是可审计的独立命令，不能通过关闭 HTTP 连接表示。 |
+| Projects / Skills / Files / Agents | BFF 的 project、Capability、Storage、Agent projection | 资源仍由对应 owner 持有，BFF 只做身份校验和一次 transport projection。 |
+
+Manus `task.create` 的 `message.content` 支持文本、文件等内容部件，且支持 connectors、启用/强制
+skills、task references 和 structured output。Kokoro v1 对外先固定自己的 `content`、artifact
+reference、approved model revision、capability selector 与 project reference；需要新增内容类型
+时，必须在 Root contract 中增加 discriminated union 和 owner 生命周期，不把任意 JSON 直接透传
+给 Agent。这样既保持与 Manus 相同的扩展方向，也避免 BFF 形成无类型的万能代理。
+
+### 2.2 调用方必须遵循的闭环
+
+```text
+create message (202)
+  -> read session / messages / events
+  -> running: continue polling or replay from cursor
+  -> waiting: inspect typed interaction and submit explicit control
+  -> stopped: read final assistant message and artifacts
+  -> error: use stable error code and retryability
+```
+
+每个阶段都必须可在刷新、超时、重启和重复请求后恢复。Webhook（如果后续启用）只作为状态
+通知，不替代 `GET` 快照或消息回放；这与 Manus 的 Task Lifecycle 规则一致。
+
 ## 3. v1 统一 wire 规则
 
 - 外部 HTTP 使用 `snake_case`；TypeScript 内部可以使用 `camelCase`。
@@ -139,3 +176,20 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 - 不把内存 Map、空数组或一次性 SSE 当成生产事实/回放协议。
 - 不为了兼容旧代码继续增加双字段、双 envelope 或未标记的隐式别名。
 - 不把 LiteLLM 变成 Model 的必需依赖；它仍是可选 transport。
+
+## 6. API 评审门槛
+
+以后新增或修改 v1 API，先在 Root contract 和 owner API docs 中回答以下问题，再写 handler：
+
+1. 资源事实 owner 是谁，BFF 是否只是 projection？
+2. 创建是否异步，返回的 `request_id`、资源 ID 和状态是否稳定？
+3. 列表/消息/事件如何分页、排序、断点回放和去重？
+4. mutation 的 `Idempotency-Key` 如何绑定请求体、tenant、资源和状态机？
+5. waiting、cancel、retry、error、terminal 各状态的允许动作是什么？
+6. artifact、skill、connector、model 等引用是否是已批准的 typed reference，而不是客户端直接
+   指定 provider 或内部地址？
+7. 成功/错误 envelope、snake_case、`meta.request_id`、错误码和 `retryable` 是否与 v1 一致？
+8. Web、BFF、owner、重启恢复和重复投递是否都有 contract fixture？
+
+未通过上述门槛的接口不进入公开 v1 surface。这样可以保持“体验和生命周期接近 Manus”，同时
+让 Kokoro 的多仓 owner 边界、权限和数据事实保持清晰。

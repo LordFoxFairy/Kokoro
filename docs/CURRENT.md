@@ -28,6 +28,7 @@ Storage 的 S3-compatible ObjectStore。
 8. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
 9. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 10. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
+11. [**Kokoro v1 与 Manus API 对齐基线**](MANUS_API_ALIGNMENT.md)
 
 ## 当前目标架构评审主线
 
