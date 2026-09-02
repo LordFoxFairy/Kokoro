@@ -1,6 +1,6 @@
 # Billing 事务矩阵 v1
 
-> 状态：V1 实现基线。已实现命令必须与 `billing-api-contract-v1.md`、`billing-sql-standard.md` 一起验证；未纳入
+> 状态：V1 实现基线。已实现命令必须与 `kokoro-billing/docs/API_CONTRACT.md`、`billing-sql-standard.md` 一起验证；未纳入
 > V1 的扩展命令明确标注为 planned，不伪装成已实现能力。
 >
 > 本文将 PRD-03（Entitlement/Credit）与 PRD-04（Checkout/Payment）中的事务边界落到 MySQL 8.4。一个 `kokoro-billing` 子仓库内仍保持 Payment 与 Entitlement 两个 bounded context；跨上下文只通过稳定事实、应用端口和 outbox 协作。

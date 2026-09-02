@@ -15,8 +15,8 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 | kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 37b027c |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 02743c1 |
 | kokoro-system | LordFoxFairy/kokoro-system | Site、Workspace、Runtime Manifest、系统策略 | f8179df |
-| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 40e11f8 |
-| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | 83a422d |
+| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | aa62eee |
+| kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | b53627a |
 | kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | b5dc19e |
 | kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | 5d5669e |
 | kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 0fb97a9 |

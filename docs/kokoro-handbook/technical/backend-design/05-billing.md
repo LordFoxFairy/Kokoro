@@ -103,15 +103,15 @@ Billing 的 payer/account selector。用户价格只读 `meter_kind=model_invoca
 - 基础设施：PostgreSQL + Redis 的真实集成测试、readyz、leader lease、outbox lease 和 Docker 构建均有证据。
 - 迁移治理：当前尚未上线，旧 `kokoro-credit` / `kokoro-payment` 只是工作区中的历史代码；未来决定上线时，才按
   `billing-legacy-cutover-runbook.md` 执行旧 writer 停写和消费者切换。
-- **GA target 落地门：**`billing-v1.yaml`、当前 29 个 migration 与 route parity 是 token/generic-usage V1 证据，不能替代
+- **GA target 落地门：**当前 canonical v1 OpenAPI、29 个 migration 与 route parity 是 token/generic-usage V1 证据，不能替代
   `AuthorizeModelInvocation / ModelInvocationAccepted / ReleaseModelInvocationHold` 的 target OpenAPI、schema migration、
   per-invocation idempotency/reconciliation integration tests；这些完成前，Feature-first GA 不得调用 V1 `usage/events` / `usage/settle`。
 
 ## 当前落地证据与迁移门禁
 
 - 代码：`kokoro-billing/src/`、`kokoro-billing/database/migrations/`、`kokoro-billing/test/`。
-- 契约：`kokoro-billing/contract/openapi/billing-v1.yaml`。
-- 文档：`31-billing-subrepository-architecture.md`、`billing-api-contract-v1.md`、
+- 契约：`kokoro-billing/contract/openapi/v1/openapi.yaml`。
+- 文档：`31-billing-subrepository-architecture.md`、`kokoro-billing/docs/API_CONTRACT.md`、
   `billing-mysql-schema-v1.md`、`billing-closure-evidence.md`。
 - 当前验证基线（V1）：`pnpm verify` 46 passed；真实 PostgreSQL/Redis 集成 50 passed；29 migrations fresh run；
   Docker build、production dependency audit 和 `git diff --check` 通过。

@@ -675,7 +675,7 @@ interface -> application -> domain + ports -> adapters
 - `application`、`domain`、`ports`、`repository`、`database` 不建立 `v1` 子目录，不复制两套业务逻辑。
 - 同一资源的 v2 若只是字段适配，可新增 `interfaces/http/v2`，复用同一个 application use case；若业务语义也变化，先建立新的领域能力和 ADR，再决定是否拆分。
 - 数据库 schema 使用正常 migration/versioning，不使用 `database/v1`、`database/v2` 表副本；历史事实必须由表结构和 immutable snapshot 表达。
-- OpenAPI 文件按 `contract/openapi/v1/openapi.yaml` 组织；`billing-v1.yaml` 可作为迁移期间文件名，但目标目录结构以版本目录为准。
+- OpenAPI 文件唯一按 `contract/openapi/v1/openapi.yaml` 组织，不保留平行的迁移期间文件名。
 - 首发只创建 `v1`；不创建空的 `v2` 目录、不注册未使用的 v2 route、不做 v1/v2 双写。
 
 ## 12. MySQL 与 Redis

@@ -85,10 +85,11 @@ IAM/Model/Capability/Storage 的 Proto 与 Root contract 较完整；System、Bi
 
 System、Model 的本轮正式 HTTP surface 已统一到 `{data, meta}` / `{error, meta}`，Billing 的
 `/v1/*` surface 也由 transport hook 统一输出 `meta.request_id`，其中字段使用 snake_case。
-Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做
-一次 transport projection，owner 内部模型不泄露到外部 API。
+Billing 当前 `/v1/*` surface 已删除旧无版本 route alias，统一由 transport hook 输出 `meta.request_id`；BFF 仍需继续收敛其他 owner
+projection。历史兼容字段必须设置退出时间，不能继续增加双 envelope、双分页字段或顶层兼容字段。BFF 只做一次 transport projection，owner
+内部模型不泄露到外部 API。
 
-### P1：Billing 旧兼容表需要明确退出策略
+### P1：Billing 旧数据模型需要明确退出策略
 
 新模型成为唯一 writer；旧表如果保留，只能作为有期限的只读迁移/审计层，并记录删除条件。
 
@@ -111,10 +112,11 @@ Billing、BFF 其他兼容路径仍需继续收敛。历史兼容字段必须设
 - IAM Proto 声明的认证/授权能力多于当前 HTTP handler；必须区分“目标 contract”和“当前可用
   surface”，不能让 manifest 把未实现 RPC 误判为可用。
 - IAM Proto 与当前 HTTP handler 仍需形成“声明/实现”矩阵，避免未实现 RPC 被误判为可用。
-- Billing 的兼容路径仍需完成 envelope 统一；BFF 的 owner projections 还要逐项做 wire contract
-  校验。
+- Billing 的旧无版本 HTTP、重复 OpenAPI 文件和 admin manifest 已删除；剩余数据库迁移历史只允许作为数据审阅材料，不能重新成为 writer。
+  BFF 的 owner projections 还要逐项做 wire contract 校验。
 - Model `/resolve` 本轮已改为内部认证并从可信上下文读取 tenant，同时删除本地 fixture 的 body
-  tenant 兼容协议；后续仍需把请求级模型解析为 approved revision/alias 的 contract fixture。
+  tenant 兼容协议；开发态 route-access 也已取消隐式匿名直通，仅显式测试 fixture 可绕过，后续仍需
+  把请求级模型解析为 approved revision/alias 的 contract fixture。
 - Billing 已删除 provider webhook 中旧 `site_id` payload hint；应用层内部变量仍有 `siteId` 历史命名，
   后续应在不改变数据库迁移语义的前提下逐步收敛为 tenant vocabulary。
 - System 业务路由已删除未配置 service token 时的匿名 fixture 模式；缺少 BFF service credential

@@ -2,7 +2,7 @@
 
 > 历史讨论稿。当前 clean-build 需求、状态机与验收基线以 [50-billing-commerce-rearchitecture.md](50-billing-commerce-rearchitecture.md) 为准。
 
-状态：**目标需求与验收基线**，2026-08-24。本文补充 31、46、47 与 `billing-api-contract-v1.md`；它不是“已实现”声明。
+状态：**目标需求与验收基线**，2026-08-24。本文补充 31、46、47 与 `kokoro-billing/docs/API_CONTRACT.md`；它不是“已实现”声明。
 
 ## 1. 产品问题与边界
 
@@ -203,7 +203,7 @@ hold 和未结算 usage 的归属策略。
 
 ### 9.3 当前 V1 契约与目标契约的边界
 
-当前 `billing-v1.yaml` 的 `subjectId`、`quantityMicros` 和 generic usage routes 是历史 V1 compatibility surface，
+历史 token/generic-usage 方案中的 `subjectId`、`quantityMicros` 和 generic usage routes 是过渡性 compatibility surface，
 不能直接给 Feature-first GA 使用。目标 contract 必须在一个完整变更中冻结以下字段：
 
 ```text

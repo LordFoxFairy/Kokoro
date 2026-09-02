@@ -29,7 +29,7 @@ outbox 协作。MySQL 保存余额、支付和最终幂等状态，Redis 只承�
 
 旧订单、支付事件、订阅和退款必须按
 `../technical/billing-legacy-cutover-runbook.md` 完成 site/provider/period 映射、dry-run audit 和 receipt
-校验后导入；切流前必须通过 `billing-migration-manifest.yaml` 的 old-writer gate。新代码和新文档不得继续引用旧
+校验后导入；切流前必须通过 `kokoro-billing/contract/openapi/v1/openapi.yaml` 的 old-writer gate。新代码和新文档不得继续引用旧
 writer 作为生产入口。
 
 ## 权威文档

@@ -73,7 +73,7 @@ Capability runtime snapshot 或 Agent/Skill 版本/Session binding 机制。
 
 Billing 当前唯一业务与技术权威是 [Billing 商业系统重构版最终架构](technical/50-billing-commerce-rearchitecture.md)；
 正式业务仓统一遵守 PostgreSQL + Redis，旧 MySQL/Mongo SQL 与迁移资料只保留为历史审阅记录。
-新 API 必须按当前 Root contract 重新生成，不沿用旧 `billing-v1.yaml`。
+新 API 必须按当前 Root contract 和 owner 的 canonical v1 contract 重新生成，不创建第二份 Billing OpenAPI。
 
 ## 当前阶段 1 链路
 

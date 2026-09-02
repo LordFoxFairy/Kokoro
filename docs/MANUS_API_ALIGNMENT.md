@@ -109,7 +109,7 @@ Session 是 Chat/Agent API 的资源概念，不是独立子仓库。Chat 属于
 
 ## 4. 当前实现收敛顺序
 
-1. 先修复 System/Billing/Model 的 v1 envelope、可信 tenant context 和错误码一致性。
+1. 保持 System/Billing/Model 的 v1 envelope、可信 tenant context 和错误码一致性，并由各仓 parity test 锁定。
 2. 将 BFF 的 upstream 调用收敛为带超时、响应上限和稳定错误映射的窄 client。
 3. 把 Agent admission、dispatch claim、steer command 收敛为可恢复的 durable inbox/outbox。
 4. 为 Scheduler 明确 occurrence 注册、lease、retry 和业务 command receipt 协议。

@@ -117,7 +117,7 @@ kokoro-billing/
 │   ├── migrations/0001-*.sql
 │   └── README.md
 ├── contract/
-│   └── openapi/billing-v1.yaml
+│   └── openapi/v1/openapi.yaml
 └── docs/
 ```
 
