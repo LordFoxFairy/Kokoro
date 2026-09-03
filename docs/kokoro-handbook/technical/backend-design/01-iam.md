@@ -3,7 +3,7 @@
 状态：目标实现基线，2026-08-27
 
 本文是 IAM v1 的执行级技术方案。它约束 IAM 子仓库的代码、SQL、RPC/HTTP 适配器和测试；与旧的
-`Organization`、`kokoro-site`、`kokoro-user` 原型描述冲突时，以当前 Root contract 的 `Organization` 语言和本文契约为准。
+`Organization`、`kokoro-site`、`kokoro-user` 原型描述冲突时，以当前 owner contract 的 `Organization` 语言和本文契约为准。
 
 ## 1. 定位与边界
 

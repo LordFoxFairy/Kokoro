@@ -30,7 +30,7 @@ lease；业务执行 receipt 由目标业务仓写入自己的 PostgreSQL。未�
 3. BFF 仅通过公开 API/RPC 接入；Agent 仅执行；IAM 输出可信 ExecutionIdentity；
    Billing 内含 Credit；Capability 内含 Skill + MCP/Connector；Storage 拥有对象元数据；
    Scheduler 不包含业务逻辑。
-4. wire contract 仍由根仓 `contract/` 权威文件定义，各子仓 API_CONTRACT/docs 说明
+4. wire contract 仍由事实 owner 仓库的本地 contract 权威文件定义，各子仓 API_CONTRACT/docs 说明
    本仓实现细节。
 
 ## 验收

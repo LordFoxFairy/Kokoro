@@ -2,12 +2,11 @@
 
 ## 主仓 Kokoro
 
-定位：产品、架构、跨仓契约、handbook、ADR、原型和治理入口。
+定位：产品、架构、handbook、ADR、原型和治理入口；不保存跨仓 API contract 或 generated wire。
 
 Owns:
 
 - `docs/kokoro-handbook`
-- `contract/events.yaml` 及生成脚本
 - 跨仓架构报告、ADR、业务链路
 - 子仓版本治理和 CODEBASE_MAP
 

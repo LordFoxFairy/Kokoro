@@ -200,13 +200,13 @@ src/kokoro_agent/
 
 依赖方向固定为 `worker -> features -> agent_factory -> DeepAgents/official Swarm`，而
 `execution -> storage + narrow public clients`，`skills/sandbox -> public clients`。
-`clients/` 只消费 Root/owner generated contracts；不导入外部 repository 的数据库模型。
+`clients/` 只消费 owner-generated clients；不导入外部 repository 的数据库模型。
 Architecture test 必须检查唯一入口、禁止业务层、public client 边界、Redis fail-closed、
 S3-compatible 配置和 generated contract provenance。
 
 ## 公开契约
 
-Root `kokoro/agent/v1` contract 是跨仓 wire authority。GA 对外暴露 `LaunchRun`、control、
+`kokoro-agent` 本仓 v1 contract 是跨仓 wire authority。GA 对外暴露 `LaunchRun`、control、
 evidence/projection acknowledgement 等明确动作；私有 native event、checkpoint、prompt、
 secret 和 workbench path 不进入公共契约。Capability、Storage、Model、IAM 只通过各自 v1
 generated client facade 消费；契约新增只追加 field/RPC/enum，不复用 field number。

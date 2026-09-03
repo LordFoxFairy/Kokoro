@@ -115,7 +115,7 @@ Raw AgentEvent and native checkpoint payload are never returned by the Chat cont
 ## 子仓库落点
 
 ```text
-Root contract/
+owner contract/
   定义 Chat Message、Chat Event、history/query、stream/replay 的跨仓契约
 
 kokoro-agent/

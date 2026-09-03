@@ -3,12 +3,9 @@
 状态：2026-09-02 · Root 设计基线
 
 Manus API 文档是 Kokoro v1 的重点参考。我们参考的是它已经验证过的资源生命周期和异步交互语义，
-不是照搬所有路径、字段或内部实现。所有最终契约仍以 Root `contract/` 与各 owner 仓库的 v1 文档为准。
+不是照搬所有路径、字段或内部实现。所有最终契约以对应事实 owner 仓库的 v1 文档为准，Root 不保存第二份 wire source。
 
-本页负责解释设计取舍；可供 CI、生成器和联调工具读取的冻结映射位于
-[`contract/goal2-cross-repository-contract-v1.json`](../contract/goal2-cross-repository-contract-v1.json)
-的 `manus_api_alignment`。两者必须同步：新增或调整异步资源、状态、cursor 或 control 语义时，
-先更新 Root machine-readable contract，再更新本页和对应 owner API docs。
+本页负责解释设计取舍；新增或调整异步资源、状态、cursor 或 control 语义时，先更新事实 owner 仓库的本地 machine-readable/API contract，再更新本页和对应消费者文档。Root 只保留设计原则，不参与生成。
 
 参考文档：
 
@@ -137,7 +134,7 @@ owner：
 Manus `task.create` 的 `message.content` 支持文本、文件等内容部件，且支持 connectors、启用/强制
 skills、task references 和 structured output。Kokoro v1 对外先固定自己的 `content`、artifact
 reference、approved model revision、capability selector 与 project reference；需要新增内容类型
-时，必须在 Root contract 中增加 discriminated union 和 owner 生命周期，不把任意 JSON 直接透传
+时，必须在事实 owner 仓库的本地 contract 中增加 discriminated union 和 owner 生命周期，不把任意 JSON 直接透传
 给 Agent。这样既保持与 Manus 相同的扩展方向，也避免 BFF 形成无类型的万能代理。
 
 ### 2.2 调用方必须遵循的闭环
@@ -174,7 +171,7 @@ create message (202)
 2. 将 BFF 的 upstream 调用收敛为带超时、响应上限和稳定错误映射的窄 client。
 3. 把 Agent admission、dispatch claim、steer command 收敛为可恢复的 durable inbox/outbox。
 4. 为 Scheduler 明确 occurrence 注册、lease、retry 和业务 command receipt 协议。
-5. 将 Root contract 扩展为所有跨仓 wire surface 的 machine-readable authority。
+5. 在各事实 owner 仓库补齐本仓 wire surface 的 machine-readable contract，Root 不创建第二份镜像。
 6. 最后按 vertical slice 拆分 BFF，保持 `main.ts` 只做装配，不制造新的共享业务包。
 
 ## 5. 不采用的做法
@@ -187,7 +184,7 @@ create message (202)
 
 ## 6. API 评审门槛
 
-以后新增或修改 v1 API，先在 Root contract 和 owner API docs 中回答以下问题，再写 handler：
+以后新增或修改 v1 API，先在事实 owner 仓库的本地 contract 和 API docs 中回答以下问题，再写 handler：
 
 1. 资源事实 owner 是谁，BFF 是否只是 projection？
 2. 创建是否异步，返回的 `request_id`、资源 ID 和状态是否稳定？

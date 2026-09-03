@@ -2,8 +2,7 @@
 
 状态：2026-09-02 · 阶段 2 全仓治理与真实本地闭环基线
 
-本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存跨仓契约、
-文档、部署编排与验证工具；业务实现必须留在对应独立仓库。子仓之间只通过 Root 发布的
+本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存仓库拓扑、架构文档、部署编排与验证工具；API contract、Schema、生成代码和业务实现必须留在对应独立仓库。子仓之间只通过各 owner 仓库发布的
 HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导入源代码、数据库或 ORM。
 
 ## 正式仓库与 GitHub 映射
@@ -58,28 +57,21 @@ launch/control/replay/detail/session-list。BFF 自有 PostgreSQL/Redis business
 ScheduledTask，并同步 Scheduler 注册、dispatch 和 durable receipt。未提供 owner ingress
 的写操作显式返回稳定的未接线错误，不回退成 mock 成功。
 
-## 契约规则
+## 契约归属
 
-Root machine-readable authority：
+Root 不保存跨仓 machine-readable contract、Proto、OpenAPI、JSON Schema 或生成器。每个 active repository
+在自己的 `docs/api/`、`docs/agent/`、`contract/` 或等价目录维护本仓边界，具体目录由该仓 README 声明。
 
-- contract/goal2-cross-repository-contract-v1.json：跨仓 wire、可信上下文、owner、错误和
-  Scheduler dispatch authority。
-- contract/goal2-repository-contract-manifest.json：7 个领域 owner 注册表和契约索引；Agent
-  的 runtime wire 由 Root cross-repository contract 单独登记。
-- contract/slice-a-contract-manifest.yaml：Root 生成 consumer 的 provenance 基线。
+- Web 的 AG-UI 解析和同源 API 契约由 `kokoro` 自己维护；
+- BFF 的公开 HTTP、SSE、Chat 和 AG-UI projection 契约由 `kokoro-bff` 自己维护；
+- Agent 的 ingress、Redis command/event protocol 和执行事实契约由 `kokoro-agent` 自己维护；
+- 七个业务 owner 各自维护 API、canonical SQL schema、client facade、contract tests、Docker 和 CI。
 
-HTTP v1 成功 envelope（列表响应示例）：
+Root 只做 topology、architecture 和 loopback E2E 编排，不生成、复制或发布 sibling contract。历史报告中的 Root
+contract、manifest 和 generator 路径均为迁移记录，不是当前实现入口。
 
-    {"data": {"items": [], "next_cursor": "CURSOR_OR_NULL"}, "meta": {"request_id": "REQUEST_ID"}}
-
-HTTP v1 错误 envelope：
-
-    {"error": {"code": "STABLE_ERROR_CODE", "message": "LOG_SAFE_MESSAGE"}, "meta": {"request_id": "REQUEST_ID"}}
-
-外部 HTTP 字段使用 snake_case；owner 内部类型可以使用 camelCase，但 BFF 只做一次明确
-transport projection。每个 mutation 必须携带 Idempotency-Key；BFF/owner 保存 durable receipt。
-服务间使用 service credential、X-Request-Id、x-kokoro-request-id 与 Forwarded；浏览器身份字段
-不会覆盖 IAM-derived context。
+HTTP v1 的本仓约定仍保持：成功使用 `{data, meta:{request_id}}`，错误使用
+`{error:{code,message}, meta:{request_id}}`；具体字段、状态机和授权语义以事实 owner 仓库的 v1 文档为准。
 
 ## 子仓自洽门禁
 
@@ -111,6 +103,6 @@ transport projection。每个 mutation 必须携带 Idempotency-Key；BFF/owner 
 - 阶段 2 最终测试报告：docs/reports/2026-09-02-stage2-final-test-report.md
 - live owner health：docs/reports/2026-09-01-stage2-owner-health.json
 - 仓库审计：docs/reports/2026-09-01-stage2-repository-audit.md
-- 跨仓 mock closure：scripts/goal2/mock_cross_repository_closure.py
+- Root topology/E2E：`scripts/verify-repository-topology.py` 与 `scripts/e2e/`
 - 本地/GitHub 审计：scripts/audit-repository-state.py
 - 子仓库架构与规范审计：docs/repository-architecture-review-v1.md

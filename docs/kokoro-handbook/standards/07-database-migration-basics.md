@@ -2,12 +2,12 @@
 
 状态：正式规范，2026-08-21
 
-适用范围：Root `database/`、baseline、migration 脚本和各正式子仓库 PostgreSQL 持久化实现。
+适用范围：各正式子仓库 PostgreSQL 持久化实现。Kokoro V1 使用 fresh schema 基线，不在 Root 保存业务迁移目录。
 
 ## 1. 唯一事实源
 
-- Root `database/` 与 owner 子仓库的 PostgreSQL migration 是当前物理 DDL authority；每个业务表只允许一个 owner。
-- `database/baseline/manifest.json` 记录基线文件、顺序和 hash。
+- owner 子仓库的唯一 canonical schema 是当前物理 DDL authority；每个业务表只允许一个 owner。
+- Root 只通过 topology/architecture checks 检查 owner 归属，不复制 schema 或 migration manifest。
 - 每张表必须登记 owner、runtime writer、读面、删除策略和敏感字段。
 - 迁移文件不能通过 ORM 自动同步隐式生成；DDL 变更必须可审查、可重放。
 

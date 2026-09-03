@@ -67,8 +67,8 @@ src/
 ## 公开入口与契约
 
 - 服务间公开入口：`kokoro.model.v1.ModelCatalogService/ResolveModel`。
-- 契约源：`contract/proto/kokoro/model/v1/model_catalog.proto`。
-- 生成消费方：`kokoro-model` 与 `kokoro-agent`；生成物必须来自 Root `contract/`，不得手改。
+- 契约源：`kokoro-model/contract` 中的 Model v1 contract。
+- 生成消费方：由实际消费者在自身仓库维护 typed client；生成物必须来自事实 owner 仓库的本地 contract，不得手改。
 - 管理入口可以由 Admin Gateway 调用 Model 的 HTTP/admin surface，但管理路由不是跨仓领域
   契约，也不能被 Agent 当作 runtime API。
 - HTTP/RPC 字段、错误码、生命周期和验证命令以 `kokoro-model/docs/API_CONTRACT.md` 为执行级契约。
@@ -102,8 +102,8 @@ adapters -> application ports（不得反向污染 domain）
 
 - `database/schema/60-model.mysql.sql`
 - `database/slices/slice-a.json`（Model 表清单与 slice 归属）
-- `contract/proto/kokoro/model/v1/model_catalog.proto`
-- `contract/consumers.yaml`（Model 与 Agent 的生成消费关系）
+- `kokoro-model/contract` 中的 Model v1 contract
+- `各 owner 仓库的本地 client 配置`（Model 与 Agent 的生成消费关系）
 - `kokoro-platform/kokoro-model`
 
 V1 完成门禁必须同时具备：
@@ -118,10 +118,9 @@ V1 完成门禁必须同时具备：
 
 ## 迁移顺序
 
-1. 以 Root MySQL migration/baseline 和 `database/slices/slice-a.json` 固化 Model
-   owner、唯一性、索引和无外键关系规则。
-2. 以 `model_catalog.proto` 固化 Resolve 请求/响应，生成 TypeScript/Python consumer，
+1. 以 `kokoro-model/database/schema.sql` 固化 Model owner、唯一性、索引和无外键关系规则。
+2. 以 `kokoro-model/contract` 固化 Resolve 请求/响应，在 owner/consumer 仓库各自生成或维护 typed client，
    先接入只读解析路径。
-3. 由 MySQL migration 创建最终表，并通过 Repository transaction 写入 Provider/Definition/Revision/Policy。
+3. 由当前 schema 安装最终表，并通过 Repository transaction 写入 Provider/Definition/Revision/Policy。
 4. 所有删除走软删除或状态退役；Revision 保持不可变，Redis 在写入成功后失效。
 5. 运行 architecture、database、contract、integration 和公开入口 smoke 验证，确认唯一 runtime writer。

@@ -4,7 +4,7 @@
 
 详细 Agent 方案以 [42 GA 核心架构](42-ga-core-architecture.md) 和
 [36 GA 技术方案](36-ga-final-agent-technical-plan.md) 为准；Root API/AIP 以
-[38 公共运行契约](38-ga-public-runtime-contract.md) 和根仓 `contract/` 为准。
+[38 公共运行契约](38-ga-public-runtime-contract.md) 与各事实 owner 仓库的本地 v1 contract 为准。
 
 ## 一句话
 

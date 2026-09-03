@@ -2,13 +2,13 @@
 
 状态：正式规范，2026-08-21
 
-适用范围：Root `database/schema/`、PostgreSQL baseline、各后端子仓库的持久化适配器和 SQL 查询。
+适用范围：各后端子仓库的 canonical PostgreSQL schema、持久化适配器和 SQL 查询。Root 只登记拓扑与验证规则，不保存业务 DDL。
 
 本规范参考 PostgreSQL 的关系约束能力、Alibaba P3C 的数据库工程规则，以及 Kokoro 当前的 owner-scoped baseline。参考其他公司的规则时只吸收原则，不直接复制 MySQL、Java 或分库分表场景下不适用的限制。
 
 ## 1. 数据所有权
 
-- Root `database/schema/` 是物理 PostgreSQL DDL 的唯一权威来源。
+- 每个 owner 仓库自己的 canonical PostgreSQL schema 是该业务 DDL 的唯一权威来源。
 - 每张业务表只有一个 owner 和 runtime writer。
 - 子仓库可以定义 Repository 和查询适配器，但不修改其他 owner 的表。
 - 跨领域读取通过 RPC、公开查询契约或明确的 projection，不通过跨 owner SQL。

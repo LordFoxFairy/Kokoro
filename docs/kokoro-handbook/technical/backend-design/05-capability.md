@@ -113,7 +113,7 @@ Capability metadata
 |---|---|
 | owns / doesNotOwn | 本卡第 1 节；`kokoro-capability/docs/OWNER_AND_MIGRATION.md` |
 | 唯一入口与目录边界 | `kokoro-capability/src/main.ts`；`kokoro-capability/test/architecture/architecture.test.ts` |
-| Root v1 contract | `contract/proto/kokoro/capability/v1/capability_runtime.proto`；生成镜像 provenance check |
+| owner v1 contract | `kokoro-capability/contract` 中的 capability v1 contract；本仓库 provenance check |
 | MySQL / Redis；不使用 MongoDB | `kokoro-capability/database/schema.sql`；`kokoro-capability/docs/SCHEMA_OWNER_INVENTORY.md`；Capability 无 Mongo client/package/config；Redis 非 PONG 时 fail closed |
 | Skill / Connector / MCP client | `kokoro-capability/src/infrastructure/capability/capability-client.ts` 与 `capability-facades.ts`；各资源 client 独立可部署 |
 | Storage 协作 | `src/infrastructure/storage/storage-client.ts` 只消费 Storage public contract，不读取 Storage schema、bucket 或 object key |
@@ -122,6 +122,5 @@ Capability metadata
 | Skill package 完整性 | portable `SKILL.md` manifest gate、Storage clean gate、digest match 与 package installation tests |
 | 迁移与旧写面 | `kokoro-capability/docs/MIGRATION_PLAN.md`；旧 snapshot RPC 只保留兼容 descriptor，不挂载生产 service |
 
-复核命令：`cd kokoro-capability && pnpm verify`；根契约执行
-`python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml` 与
-`uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check`。
+复核命令：`cd kokoro-capability && pnpm verify`，其中 contract check、生成物检查和 API 测试均在
+Capability 自己的仓库内完成；Root 不再提供第二份 Capability wire contract。

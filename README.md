@@ -24,19 +24,20 @@ kokoro-agent ──business/transport contract──▶ kokoro-bff ──same-or
 
 阶段 2 的正式业务拓扑见 [`docs/REPOSITORY_STATUS.md`](docs/REPOSITORY_STATUS.md)：Chat 位于 `kokoro-bff 的 Chat 内部业务边界`，Credit 位于 `kokoro-billing`；不再维护独立 Session、Gateway、Platform、Credit 或旧 Web monorepo。基础设施统一为 PostgreSQL + Redis，Storage 对象字节使用 S3-compatible ObjectStore。
 
-架构按仓库形态收敛：每个正式仓库独立测试、构建、Docker 与 CI；Root 只维护契约、文档、部署和跨仓验证，不复制任何子仓源码。
+架构按仓库形态收敛：每个正式仓库独立测试、构建、Docker、CI 和本仓 API contract；Root 只维护架构决策、仓库地图、部署编排和验证入口，不复制任何子仓源码或 API 定义。
 
-## 跨仓契约（单源生成）
+## 契约归属
 
-Slice A 的**单一机器真源**是 [`contract/slice-a-contract-manifest.yaml`](contract/slice-a-contract-manifest.yaml)。Root 从它确定性生成九份 Protobuf、Web BFF OpenAPI，并按 [`contract/consumers.yaml`](contract/consumers.yaml) 为每个子仓生成最小 Connect/gRPC closure。
+Root 不保存跨仓 API、Proto、OpenAPI、JSON Schema 或生成器。每个运行仓库只维护自己拥有的边界：
 
-- `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check` —— 校验 Proto/OpenAPI 与机器真源逐字节一致。
-- `pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb` —— Protobuf lint/breaking 门禁。
-- `pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` —— 浏览器 HTTP/SSE contract 门禁。
-- `uv run python contract/generate.py --source-root ROOT --source-commit SHA --consumer NAME --repo PATH --check` —— 从指定 clean Root commit 校验一个 consumer；无隐式当前目录或浮动 source。
-- `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` —— 启动真实 BFF 子仓进程，以 mock 数据闭环验证当前 Web-facing Business API v1。
+- `kokoro`：Web 同源 API 与 AG-UI 客户端解析契约；
+- `kokoro-bff`：公开 BFF v1、Chat、SSE 与 AG-UI 投影契约；
+- `kokoro-agent`：Agent ingress、Redis command/event protocol 与执行事实契约；
+- `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
+  `kokoro-storage`、`kokoro-scheduler`：分别维护各自 owner 的 API、Schema、测试和发布配置。
 
-旧 `contract/spec/*.yaml` 已在事件/control payload parity 证明后硬删除，不再形成第二权威。
+Root 的验证脚本只检查仓库拓扑、文档索引和 loopback E2E，不定义或生成子仓协议。跨仓变更在相关 owner 仓库内完成，
+再由消费者通过本仓 typed client 或 HTTP contract 对接。
 
 ## 本地起栈（开发）
 
@@ -63,8 +64,7 @@ profile，同时启动 HTTP ingress 和 worker。`cp deploy/.env.phase1.example 
 PostgreSQL 密码后执行 `bash deploy/provision-phase1.sh deploy/.env.phase1.local`。生产部署只使用生产镜像；Cloudflare 直连 Web 或
 Docker 部署均通过 `KOKORO_DOMAIN` 和 BFF runtime env 配置，不把数据库连接放进浏览器。
 
-Root 当前只保留这条 Phase 1 Compose/provision 入口；阶段 2 七个正式业务仓由各自仓库发布，BFF 通过 Root
-contract 接入，不从 Root Compose 拼接业务实现。
+Root 当前只保留这条 Phase 1 Compose/provision 入口；阶段 2 七个正式业务仓由各自仓库发布，BFF 通过各 owner 仓库的本地 v1 contract 接入，不从 Root Compose 拼接业务实现。
 
 模型服务 `kokoro-model` 独立提供目录与解析，不执行 provider 调用；LiteLLM 是可选的外部
 OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `KOKORO_LITELLM_ENABLED=1`、
@@ -77,7 +77,7 @@ OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `
 | agent | `cd kokoro-agent && uv run pytest && uv run pyright && uv run ruff check src tests` |
 | bff | `cd kokoro-bff && pnpm check` |
 | web | `cd kokoro && pnpm check` |
-| 契约 | `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check && pnpm exec buf lint contract && pnpm exec buf breaking contract --against contract/breaking/slice-a-v1.binpb && pnpm exec redocly lint contract/openapi/slice-a-web-v1.yaml` |
+| 契约 | 在对应 owner 仓库运行本仓 `contract:check`、类型检查和 contract tests |
 | Chat mock smoke | `KOKORO_WEB_URL=http://127.0.0.1:3000 KOKORO_DOMAIN=dev.kokoro.localhost pnpm --dir kokoro smoke:first-site` |
 | Stage 2 BFF HTTP E2E | `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` |
 | Stage 2 owner health | `uv run --frozen python scripts/e2e/run_stage2_owner_health.py` |

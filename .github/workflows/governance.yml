@@ -1,0 +1,29 @@
+name: Root Governance
+
+# The Root repository owns architecture, repository topology and local
+# orchestration only. API contracts and generated wire types live in the
+# repository that owns the corresponding runtime boundary.
+on:
+  push:
+  pull_request:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --group dev
+      - name: backend architecture gate
+        run: python3 scripts/verify-backend-design.py --manifest-only
+      - name: repository topology gate
+        run: python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts
+      - name: root formatting gate
+        run: git diff --check

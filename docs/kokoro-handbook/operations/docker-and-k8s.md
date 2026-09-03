@@ -202,7 +202,7 @@ DATABASE_URL_<OWNER>
 pnpm contract:format
 pnpm contract:lint
 pnpm contract:check
-python3 scripts/goal2/mock_cross_repository_closure.py
+python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts
 python3 scripts/verify-backend-design.py
 python3 scripts/verify-repository-topology.py
 KOKORO_ENV_FILE="$PWD/deploy/.env.phase1.example" docker compose --env-file deploy/.env.phase1.example -f deploy/docker-compose.phase1.yml config

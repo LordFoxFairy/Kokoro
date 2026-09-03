@@ -5,7 +5,7 @@
 本页只定义 **Session/Client 如何请求 GA**。GA 的内部实现以
 [42 GA 核心架构](42-ga-core-architecture.md) 和
 [36 GA 整体 Agent 技术方案](36-ga-final-agent-technical-plan.md) 为准。
-Root `contract/` 的 Proto、manifest 和生成物是唯一 wire authority；本页不复制字段编号，也不
+事实 owner 仓库的本地 contract 的 Proto、manifest 和生成物是唯一 wire authority；本页不复制 owner 字段定义，也不
 在子仓创建第二份 DTO。
 
 ## 1. 唯一入口
@@ -132,13 +132,13 @@ GA 不读取或改造 LangChain checkpoint 表。`chat_events` 是用户可见�
 ## 6. 契约同步
 
 ```text
-Root contract/proto + manifest
+owner repository contract/docs
   -> 生成 GA / Session / Web consumer
   -> 各仓 adapter 与测试
   -> 本页 API/AIP 摘录
 ```
 
-修改字段必须先修改 Root contract 并重新生成消费者；GA、Session、Web 只实现各自 adapter，
+修改字段必须先修改事实 owner contract，并由消费者在自己的仓库更新 client；GA、BFF、Web 只实现各自 adapter，
 不手写平行字段或本地 wire schema。
 
 ## 7. 验收清单

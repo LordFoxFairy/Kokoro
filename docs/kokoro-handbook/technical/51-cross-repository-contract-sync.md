@@ -1,32 +1,29 @@
 # 51. 跨子仓 API/AIP 契约与技术方案同步
 
-状态：当前首发架构规则（2026-09-01）。Goal 2 七仓机器索引见
-[`contract/goal2-repository-contract-manifest.json`](../../../contract/goal2-repository-contract-manifest.json)。
+状态：当前首发架构规则（2026-09-02）。每个 owner 仓库在本仓维护自己的 v1 API contract；Root 只维护仓库归属、架构规则和验证入口。
 
-这份规则解决一个容易混淆的问题：**跨仓 wire 契约只定义一次，owner surface 按边界分别维护**。
+这份规则解决一个容易混淆的问题：**每个 wire/API contract 由事实 owner 在本仓定义，消费者按明确版本接入**。
 Goal 2 的七个正式 owner 都必须有本仓 API contract、技术方案、BFF 接入、验收和风险文档；
 这些文档是本仓实现契约，不得反向制造第二套跨仓 wire schema，也不得复制其他仓的实现。
 
 ## Goal 2 owner matrix
 
-| Owner | Cross-repository authority | Owner contract surface |
+| Owner | Owner authority | Owner contract surface |
 |---|---|---|
-| `kokoro-iam` | Root IAM authentication/authorization Proto + owner IAM Proto | users, tenants, auth, authz, roles, permissions, OAuth, Passkey, audit |
-| `kokoro-system` | Root Site shared types where consumed | Site, Workspace, Manifest, config and site policy HTTP/RPC fixture |
-| `kokoro-model` | Root Model Catalog Proto | catalog/provider/availability/capability and tenant policy |
+| `kokoro-iam` | IAM 本仓 API/Proto | users, tenants, auth, authz, roles, permissions, OAuth, Passkey, audit |
+| `kokoro-system` | System 本仓 API/Proto | Site, Workspace, Manifest, config and site policy HTTP/RPC fixture |
+| `kokoro-model` | Model 本仓 API/Proto | catalog/provider/availability/capability and tenant policy |
 | `kokoro-billing` | Owner OpenAPI v1 | payment/subscription/checkout/refund/Credit/Ledger |
-| `kokoro-capability` | Root Capability + Storage Proto | Skills and MCP Connector control plane; Agent owns live MCP execution |
-| `kokoro-storage` | Root Storage Proto | files/uploads/assets/artifacts and S3-compatible object references |
+| `kokoro-capability` | Capability 本仓 API/Proto | Skills and MCP Connector control plane; Agent owns live MCP execution |
+| `kokoro-storage` | Storage 本仓 API/Proto | files/uploads/assets/artifacts and S3-compatible object references |
 | `kokoro-scheduler` | Owner configuration/internal-command contract | generic schedule/lease/retry/misfire; no business DB or Billing logic |
 
-The root registry intentionally records System, Billing and Scheduler owner surfaces without
-inventing a parallel Proto for them. A later cross-repository wire change must promote its fields
-into Root contract first; an owner-only HTTP/config change stays in that owner.
+Root 不登记或生成 owner wire。跨仓字段变化先在事实 owner 仓库的本地 contract 中完成，再由消费者更新自己的 client facade 和 contract tests；owner-only HTTP/config 变化只在该 owner 内收敛。
 
 ## 1. 唯一权威与各仓职责
 
 ```text
-Root contract/proto + manifest + Goal 2 owner registry
+Owner repository contract/docs
         │ 生成
         ├── kokoro-agent consumer
         ├── kokoro-bff consumer
@@ -37,7 +34,7 @@ Root contract/proto + manifest + Goal 2 owner registry
 
 | 位置 | 唯一职责 | 不负责 |
 |---|---|---|
-| Root `contract/` | Proto/OpenAPI、字段编号、oneof、错误/幂等/兼容规则、consumer closure | 任何 owner 的数据库实现 |
+| Owner repository contract/docs | Proto/OpenAPI、字段、错误/幂等/兼容规则、consumer-facing surface | 其他 owner 的数据库实现 |
 | `kokoro-agent` | DeepAgents/LangGraph/Swarm 执行、Feature/Agent 组装、RunLedger、checkpoint、`chat_messages/chat_events` | Session 产品投影、Capability/Storage 私库 |
 | `kokoro-bff` | Chat、Project/ScheduledTask 业务事实、鉴权、幂等、owner adapter、SSE projection | Agent 数据库、业务 owner 数据库、Agent 执行事实 |
 | `kokoro-capability` | Skill CRUD/find/resolve、MCP 子域 Connector metadata 与授权 | GA default Skill 执行、package bytes、MCP transport |
@@ -46,17 +43,15 @@ Root contract/proto + manifest + Goal 2 owner registry
 ## 2. 同一交付批次的更新顺序
 
 ```text
-1. 修改 Root contract/proto 与 manifest
-2. 运行 format / lint / breaking / manifest gate
-3. 重新生成各 consumer，并写入 provenance
-4. 更新 owner adapter、测试和运行时实现
-5. 更新对应子仓 docs/*/api-contract.md
-6. 更新对应子仓 technical-plan.md / TECHNICAL_DESIGN.md
-7. 运行各仓 verify，再运行 Root render/e2e gate
+1. 在事实 owner 仓库修改本仓 contract/docs
+2. 运行该仓 format / lint / breaking / contract gate
+3. 在消费者仓更新 typed client、adapter、测试和运行时实现
+4. 更新消费者本仓 API/AIP 摘录和 technical-plan
+5. 运行 owner 与消费者各自 verify，再运行 Root topology/E2E gate
 ```
 
-若只改变 owner 内部实现（例如 GA 的 RunLedger 表、Storage 的 S3 adapter），不改 Root contract；只需更新该仓技术方案和测试。
-若改变跨仓字段或事件，必须从 Root 开始，不能直接手改子仓 `src/contract/`。
+若只改变 owner 内部实现（例如 GA 的 RunLedger 表、Storage 的 S3 adapter），不改公共 contract；只需更新该仓技术方案和测试。
+若改变跨仓字段或事件，必须从事实 owner 仓库开始；不能在消费者仓伪造第二份 owner contract。
 
 ## 3. 各子仓需要维护的文档
 
@@ -71,7 +66,7 @@ Root contract/proto + manifest + Goal 2 owner registry
 - `kokoro-bff/docs/api/`：Web-facing Chat、Project、ScheduledTask、SSE 和 owner adapter 的消费视图。
 - BFF 负责产品 Session 资源概念、消息入口、鉴权、幂等和事件 projection，不拥有 Agent
   执行事实，也不读取 Agent 数据库。
-- BFF 的跨仓请求必须从 Root contract 生成/校验，不能重新创建 Session 独立 owner。
+- BFF 的跨仓请求必须依据 owner contract 生成/校验，不能重新创建 Session 独立 owner。
 
 ### Capability
 
@@ -93,10 +88,10 @@ Root contract/proto + manifest + Goal 2 owner registry
 禁止在子仓复制 Root Proto/OpenAPI 或手写跨仓 DTO
 禁止把 LangChain checkpoint 表当作产品聊天表
 禁止把 Capability 的 Skill metadata 当作 GA native state
-禁止把 Storage bucket/object key 暴露到 Root contract
+禁止把 Storage bucket/object key 暴露到消费者 contract
 禁止用 Session 配置、Agent 版本、release/binding 对象替代 feature_key
 禁止为了“同步”建立第二套事件表或第二套 Agent runtime
 ```
 
-最终判断标准很简单：**Root 只回答“跨服务怎么说”，owner 技术方案只回答“本仓怎么做”**。两者通过生成物 provenance、contract
+最终判断标准很简单：**事实 owner 回答“本仓边界怎么说”，消费者回答“如何接入”，Root 只回答“归属和如何验证”**。三者通过版本化文档、client facade、contract
 测试和 verify gate 对齐，而不是通过复制代码或复制文档来对齐。

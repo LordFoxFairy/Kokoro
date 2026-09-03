@@ -9,7 +9,7 @@
 先读 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 和 [`CODEBASE_MAP.md`](CODEBASE_MAP.md)。当前正式拓扑为
 `kokoro-app`（本地 `kokoro`）→ `kokoro-bff`（Chat/业务 BFF）→ `kokoro-agent`，以及
 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
-`kokoro-storage`、`kokoro-scheduler` 七个独立业务仓。Root 只维护跨仓契约、文档、部署入口和验证工具。
+`kokoro-storage`、`kokoro-scheduler` 七个独立业务仓。Root 只维护架构文档、部署入口和拓扑/验证工具；各仓自持本仓 API contract。
 
 `kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web` monorepo、独立 `kokoro-credit`
 和旧 Site 占位目录均已退出当前拓扑；历史文件只作迁移考古。Credit 归 `kokoro-billing`，Chat 归
@@ -25,7 +25,7 @@ Storage 的 S3-compatible ObjectStore。
 5. [**GA 核心架构总览：一个闭环底座，多个内置 Agent 产品**](kokoro-handbook/technical/42-ga-core-architecture.md)
 6. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
 7. [**Kokoro 统一入口、App 与 Agent 产品架构**](kokoro-handbook/technical/37-product-experience-agent-studio-architecture.md)
-8. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
+8. [**阶段 1 存储基线：PostgreSQL + Redis**](../kokoro-agent/docs/agent/api-contract.md)
 9. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 10. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
 11. [**Kokoro v1 与 Manus API 对齐基线**](MANUS_API_ALIGNMENT.md)
@@ -41,7 +41,7 @@ Storage 的 S3-compatible ObjectStore。
 
 1. [**GA 核心架构总览**](kokoro-handbook/technical/42-ga-core-architecture.md)
 2. [**Kokoro GA 整体 Agent 最终技术方案**](kokoro-handbook/technical/36-ga-final-agent-technical-plan.md)
-3. [**阶段 1 存储基线：PostgreSQL + Redis**](../contract/spec/storage-baseline-v1.md)
+3. [**阶段 1 存储基线：PostgreSQL + Redis**](../kokoro-agent/docs/agent/api-contract.md)
 4. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 
 评审“整个 Agent 怎么设计”时以以上四份为止；没有额外的独立 Session plan、binding 或 graph-version 设计需要拼读。下面的文档都是
@@ -120,7 +120,7 @@ Storage 的 S3-compatible ObjectStore。
 ## Goal 2 当前基线（2026-09-02）
 
 阶段 2 曾完成一次可重复的真实本地闭环验收；2026-09-02 全局 owner 修正后，该 evidence 需要重新跑一次：10 个 active child repository 均有独立 GitHub
-仓库，所有子仓 main 与 origin/main 对齐；Root 负责跨仓 v1 契约、拓扑/设计门禁、
+仓库，所有子仓 main 与 origin/main 对齐；各 owner 仓负责本仓 v1 契约；Root 只负责拓扑/设计门禁、
 部署入口、审计和 E2E 编排，不承载子仓业务实现。当前链路为：
 
     kokoro-app (Web)
@@ -149,11 +149,9 @@ Storage 的 S3-compatible ObjectStore。
 
 ### Goal 2 已收口能力
 
-1. Root machine-readable 契约：
-   contract/goal2-cross-repository-contract-v1.json 是跨仓 wire authority，
-   contract/goal2-repository-contract-manifest.json 是仓库注册表。HTTP 成功统一为
-   {data, meta:{request_id}}；列表/事件游标放在资源 payload 的 data.next_cursor。错误统一为
-   {error:{code,message}, meta:{request_id}}，外部 HTTP 字段使用 snake_case。
+1. 本仓契约：
+   各 owner 仓库分别维护自己的 v1 API/Schema/事件文档；HTTP 成功统一为
+   {data, meta:{request_id}}，错误统一为 {error:{code,message}, meta:{request_id}}。具体字段由事实 owner 仓库定义，Root 不生成镜像。
 2. BFF live 适配：
    System runtime manifest、Model catalog、Billing catalog/checkout、
    Capability skill/MCP read projections、Storage library projection、Agent Chat
@@ -170,15 +168,13 @@ Storage 的 S3-compatible ObjectStore。
    replay 返回原始 receipt，不启动第二个 Agent run。
 5. 子仓自洽：
    Web、BFF、Agent、IAM、System、Model、Billing、Capability、Storage、Scheduler
-   各自维护源码、测试、API contract、Dockerfile、CI、runbook 和迁移；Root 不复制
+   各自维护源码、测试、API contract、Dockerfile、CI、runbook 和唯一 canonical schema；Root 不复制
    sibling source，不跨仓共享数据库表/ORM schema。
 
 ### 阶段 2 证据入口
 
-- [跨仓 v1 契约](../contract/goal2-cross-repository-contract-v1.json)
-- [仓库契约注册表](../contract/goal2-repository-contract-manifest.json)
 - [仓库状态索引](REPOSITORY_STATUS.md)
-- [CODEBASE_MAP](CODEBASE_MAP.md)
+- [仓库地图](CODEBASE_MAP.md)
 - [阶段 2 最终测试报告](reports/2026-09-02-stage2-final-test-report.md)
 - [Owner health + live business JSON](reports/2026-09-01-stage2-owner-health.json)
 - [阶段 2 仓库审计](reports/2026-09-01-stage2-repository-audit.md)

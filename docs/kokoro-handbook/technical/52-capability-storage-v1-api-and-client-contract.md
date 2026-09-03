@@ -3,7 +3,7 @@
 状态：**首发前正式契约基线，尚未对外上线**（2026-08-29）。
 
 这份文档把 `kokoro-capability` 与 `kokoro-storage` 的边界、API 版本、Client 封装和跨仓调用闭环固定下来。
-Root contract 定义 wire，子仓技术方案定义实现，本文定义两者如何协作。
+owner contract 定义 wire，子仓技术方案定义实现，本文定义两者如何协作。
 
 ## 1. 不变的架构结论
 
@@ -42,14 +42,14 @@ Capability 与 Storage 均为独立 bounded context，可独立部署。拆分�
 ```text
 外部 BFF/API：/v1/skills、/v1/connectors、/v1/mcp、/v1/files
 内部 Connect RPC：kokoro.capability.v1.*、kokoro.storage.v1.*
-Root source：contract/proto/kokoro/{capability,storage}/v1/*.proto
+Source：`kokoro-capability` 与 `kokoro-storage` 各自仓库的本地 v1 contract
 ```
 
 - 领域对象、Application service、repository port、MySQL 表和 Redis key 不复制版本。
 - additive 字段使用新的 field number；不复用编号，不改变既有字段语义，不把未知 enum 当成成功。
 - 只有 wire、DTO、错误语义、授权语义或不兼容的状态机变化才创建 `v2`。
 - 不设计 `v1.1`、`v1.0.1`、v1/v2 双写或内部版本化数据库表。
-- Root protobuf 是唯一 wire 权威；子仓不得维护平行 OpenAPI、私有 JSON DTO 或手写 generated message。
+- Capability 与 Storage 各自仓库的本地 v1 contract 是对应 wire 权威；消费者只保留自己的 typed client，不复制对方的 Schema、Proto 或 generated message。
 - Connect response 使用明确 response message 和 Root common error；Manus 的资源化、异步、opaque ID、分页、request ID 原则可借鉴，不复制 `{ok,data,error}` JSON envelope 到内部 protobuf。
 
 ## 3. Capability v1 API surface
@@ -204,7 +204,7 @@ typed consumer input
 ### 不照搬项
 
 - Manus 当前公开 endpoint 是 `/v2/<resource.action>`，但 Kokoro 尚未上线，首发统一为 `/v1`；不会因为参考 Manus 的当前 v2 路径而提前引入 v2。
-- Manus 的 `{ok, request_id, data, error}` 是其外部 JSON envelope；Kokoro 内部使用 Root protobuf 明确 response/error message，外部 BFF 若采用 envelope 也必须由 BFF 自己定义并保持与 RPC 解耦。
+- Manus 的 `{ok, request_id, data, error}` 是其外部 JSON envelope；Kokoro 内部使用 owner contract 明确 response/error message，外部 BFF 若采用 envelope 也必须由 BFF 自己定义并保持与 RPC 解耦。
 - Manus 的 Task、Project、Agent、File、Webhook 是其平台 owner；Kokoro 只吸收资源化和生命周期原则，不把这些资源搬进 Capability 或 Storage。
 - Manus connector 的 UUID 是其平台实例 ID；Kokoro 的 `connector_id`、`server_id`、`connection_id` 和 `asset_id` 都是本域 opaque reference，不能互相复用。
 
@@ -238,14 +238,12 @@ Root proto/manifest
 ```text
 cd kokoro-capability && pnpm verify
 cd kokoro-storage && pnpm verify
-python3 contract/validate_slice_a_manifest.py contract/slice-a-contract-manifest.yaml
-uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --check
 python3 scripts/verify-backend-design.py
 ```
 
 ## 10. 明确不属于 v1
 
-以下能力等上线后有真实兼容需求再新增 Root contract，不提前污染 v1：
+以下能力等上线后有真实兼容需求再新增 owner contract，不提前污染 v1：
 
 ```text
 Capability：provider-specific SDK API、raw token、MCP invoke transport、团队成员目录 owner
@@ -253,4 +251,4 @@ Storage：multipart orchestration、provider lifecycle/versioning、批量 refer
 跨仓：v1/v2 双写、数据库版本复制、私有 REST 旁路、把 Session/Agent 改造成 Capability/Storage 子域
 ```
 
-这不是遗留 TODO，而是当前首发边界；新增任何一项必须先更新 Root contract、owner inventory、client facade 和验证门。
+这不是遗留 TODO，而是当前首发边界；新增任何一项必须先更新 owner contract、owner inventory、client facade 和验证门。

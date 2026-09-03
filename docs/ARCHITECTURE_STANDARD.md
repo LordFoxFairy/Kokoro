@@ -26,17 +26,20 @@ src/
   bootstrap/                 # 组合根：配置、repo、service、transport 装配
   config/                    # 环境变量解析与启动配置
   domain/<bounded-context>/
-    model/                   # 聚合根、实体、值对象、领域不变量
-    enum/                    # 领域枚举和状态
-    repository/              # Repository interface/port
-    service/                 # 必要的 domain service
+    models/                  # 聚合根、实体、值对象、领域不变量
+    enums/                   # 领域枚举和状态
+    errors/                  # 领域错误
+    repositories/            # Repository interface/port
+    services/                # 必要的 domain service
   application/<bounded-context>/
+    commands/                # use-case command
+    queries/                 # use-case query
     dto/                     # use-case 输入/输出 DTO，不暴露数据库 row
-    service/                 # application use case，保持薄
-    mapper/                  # domain/application/transport 映射
+    mappers/                 # domain/application/transport 映射
+    ports/                   # 外部能力接口
   infrastructure/
-    repository/<bounded-context>/ # PostgreSQL/Redis repository 实现
-    client/<dependency>/          # IAM、Storage、MCP、provider client
+    repositories/<bounded-context>/ # PostgreSQL/Redis repository 实现
+    clients/<dependency>/           # IAM、Storage、MCP、provider client
   interfaces/http/            # HTTP 协议映射、鉴权入口、统一 envelope
   interfaces/rpc/             # RPC 协议映射和 generated message 转换
 ```
@@ -59,12 +62,12 @@ src/
 
 ```text
 src/
-  domain/skill/{model,enum,repository,service}/
-  domain/mcp/{model,enum,repository,service}/
-  application/skill/{dto,service,mapper}/
-  application/mcp/{dto,service,mapper}/
-  infrastructure/repository/{skill,mcp,command}/
-  infrastructure/client/{iam,storage,secret,mcp-provider}/
+  domain/skill/{models,enums,errors,repositories,services}/
+  domain/mcp/{models,enums,errors,repositories,services}/
+  application/skill/{commands,queries,dto,mappers,ports}/
+  application/mcp/{commands,queries,dto,mappers,ports}/
+  infrastructure/repositories/{skill,mcp,command}/
+  infrastructure/clients/{iam,storage,secret,mcp-provider}/
   interfaces/http/
   interfaces/rpc/
   bootstrap/
@@ -109,10 +112,10 @@ domain/application service，不属于 transport 或 repository SQL 拼装函数
 tenant-owned 资源通常包含：
 
 ```sql
-id          UUID        PRIMARY KEY,
-tenant_id   TEXT        NOT NULL,
-created_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-updated_at  TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+ id          UUID           PRIMARY KEY,
+ tenant_id   TEXT           NOT NULL,
+ created_at  TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ updated_at  TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
 ```
 
 项目可以统一使用 UUID、ULID 或 opaque text，但一个仓库内应保持一致；不要同时混用自增整数、UUID
@@ -200,4 +203,4 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 
 ## 7. 重构顺序
 
-先改本规范和本仓目录树，再改 API contract/docs，再改 model/dto/service/repo，再改 SQL，最后补 fixture、测试和启动验证。当前没有迁移/兼容要求时，直接删除旧路径并保留一套 canonical schema；不通过别名、双读写或历史目录维持旧实现。
+先改本规范和目标仓自己的目录树，再改该仓 API contract/docs，再改 model/dto/service/repo，再改 SQL，最后补 fixture、测试和启动验证。Root 不保存跨仓 API source。当前没有迁移/兼容要求时，直接删除旧路径并保留一套 canonical schema；不通过别名、双读写或历史目录维持旧实现。

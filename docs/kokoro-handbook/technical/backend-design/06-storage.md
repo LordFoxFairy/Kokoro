@@ -50,7 +50,7 @@ MinIO    local endpoint, usually forcePathStyle=true
 Ceph RGW endpoint supplied by deployment
 ```
 
-LocalObjectStore 仅显式 no-infra/unit profile。业务层不导入 provider SDK、不生成 bucket/key。v1 已公开 presigned upload/download 与单对象 PUT；multipart 需后续 Root contract 增量发布。
+LocalObjectStore 仅显式 no-infra/unit profile。业务层不导入 provider SDK、不生成 bucket/key。v1 已公开 presigned upload/download 与单对象 PUT；multipart 需后续 owner contract 增量发布。
 
 ## 状态机
 
@@ -66,7 +66,7 @@ Artifact: draft -> final
 
 ## 证据
 
-- Root：`contract/proto/kokoro/storage/v1/storage.proto`
+- Owner：`kokoro-storage/contract` 中的 Storage v1 contract
 - Schema：`kokoro-storage/database/schema.sql`
 - API：`kokoro-storage/docs/API_CONTRACT.md`
 - Owner inventory：`kokoro-storage/docs/SCHEMA_OWNER_INVENTORY.md`

@@ -64,7 +64,7 @@ src/
 ├── adapters/                        LiteLLM/provider adapter
 ├── interfaces/{http,rpc,admin}/
 ├── infrastructure/postgresql/
-├── generated/                       Root contract 生成物
+├── generated/                       owner contract 生成物
 ├── config/
 └── main.ts
 ```
@@ -78,16 +78,16 @@ src/
 
 ```text
 kokoro.model.v1.ModelCatalogService/ResolveModel
-source: contract/proto/kokoro/model/v1/model_catalog.proto
-consumers: kokoro-model, kokoro-agent
+source: kokoro-model/contract 中的 Model v1 contract
+consumers: 各自仓库维护 typed client
 ```
 
 `ResolveModel` 必须只返回一个已发布且可用的结果、`routing_policy_generation` 和 digest；不
 返回 secret，不启动 Agent，不判断余额，不执行最终扣费。管理 HTTP 面可由 Admin Gateway
 调用，但管理路由不是 Agent 的 runtime contract。
 
-Model 对 IAM 只消费 受信 tenant context/authorization 输入，不 import IAM 实现代码，也不直接查
-询 IAM 表。跨仓生成类型只能来自 Root `contract/`，禁止手工维护副本。
+Model 对 IAM 只消费受信 tenant context/authorization 输入，不 import IAM 实现代码，也不直接查
+询 IAM 表。跨仓类型由事实 owner contract 定义，消费者只维护自己的 typed client，禁止复制 Root wire。
 
 ## 解析规则
 

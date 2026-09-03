@@ -8,7 +8,7 @@
 
 | 对象 | 设计卡 | 设计状态 | 当前实现证据 | 当前差距 |
 |---|---|---:|---|---|
-| Root | [00-root](00-root.md) | 100/100 | `contract/`、`database/`、`deploy/`、`scripts/`、`docs/` 已存在 | 还需吸收 legacy platform registry/composition |
+| Root | [00-root](00-root.md) | 100/100 | `deploy/`、`scripts/`、`docs/` 负责治理与验证 | 不保存业务 contract、database 或跨仓 generated mirror |
 | IAM | [01-iam](01-iam.md) | 100/100 | `database/schema/20-iam.sql`、IAM contract consumer | site/user 旧入口尚未完全合并 |
 | Model | [02-model](02-model.md) | 100/100 | `database/schema/60-model.mysql.sql`、旧 model 模块、model contract | 旧模块仍有跨服务配置依赖 |
 | Credit（迁移历史） | [03-credit](03-credit.md) | 100/100 | 旧 `kokoro-credit` 的边界与迁移来源 | 业务 owner 已由 `kokoro-billing` 接管；旧 writer 仍按迁移计划收口 |
@@ -17,7 +17,7 @@
 | Capability | [05-capability](05-capability.md) | 100/100 | `kokoro-capability` v1 schema、public clients、MCP/Connector/Skill contract、Docker/Compose、architecture/contract/smoke evidence | v1 子仓库实现已闭环；后续仅由 GA/Agent owner 完成 dynamic source consumer 与旧 Hub 读面迁移 |
 | Storage | [06-storage](06-storage.md) | 100/100 | `kokoro-storage` S3-compatible owner/schema、MinIO smoke、reconciliation | 继续按 Storage public contract 被 Capability/GA 消费，不暴露 bucket/object key |
 | Session | [08-session](08-session.md) | 100/100 | `src/{relay,store,transport,http}`、大量恢复/SSE 测试 | 收敛为唯一产品 Session admission/message/projection/control owner，删除旧 Chat 双写/consumer |
-| Chat 独立分仓（历史） | [07-chat](07-chat.md) | 不进入目标清单 | SQL-first `chat_*` 方案与 V1 generated consumer | 不新增 `kokoro-chat` runtime；迁移期仅作为 Root contract/database 考古 |
+| Chat 独立分仓（历史） | [07-chat](07-chat.md) | 不进入目标清单 | SQL-first `chat_*` 方案与 V1 generated consumer | 不新增 `kokoro-chat` runtime；迁移期仅作为 历史 contract/database 考古 |
 
 | Agent | [09-agent](09-agent.md) | 100/100 | `worker/agents/execution/state.py/{tools,skills,mcp,subagents,sandbox}/storage/streams` 与 [专项技术方案](../../modules/kokoro-agent.md) | 保持执行管道结构；P1 迁移 legacy Hub/PackageStore 读写到 Capability/Storage public contract，并补全真实 Redis/Mongo/MinIO integration 证据 |
 

@@ -6,7 +6,7 @@
 [`kokoro/docs/integration/chat-bff-contract-v1.md`](../../../kokoro/docs/integration/chat-bff-contract-v1.md)。
 
 本页是根仓对 `kokoro-session` 的模块级说明；实现细节保留在 Root 外的归档副本，
-跨仓 wire 契约只认根仓 [`contract/`](../../../contract/README.md)，不再从当前工作区链接已归档子仓路径。
+历史方案曾把跨仓 wire 契约集中在 Root `contract/`，该目录已经删除；本页不再作为当前契约或实现依据。
 
 ## 定位
 
@@ -88,17 +88,17 @@ raw thinking、tool args/results、subagent text、sandbox path、object key、p
 
 ## API/AIP 契约同步
 
-Root `contract/proto` + manifest 是唯一 wire authority。子仓只消费生成物：
+历史方案中的 Root `contract/proto` + manifest 曾被视为 wire authority；该方案已经废弃。当前由事实 owner
+仓库维护 v1 contract，消费者维护自己的 typed client：
 
 ```text
-Root contract
-  -> contract generator
-  -> kokoro-session/src/contract/ strict adapter（generated consumer 接入后替换）
-  -> Session adapter / projection tests
+Owner-local v1 contract
+  -> consumer-owned typed client
+  -> BFF Chat adapter / projection tests
 ```
 
 Session 可以维护契约摘录和实现说明，但不得复制 Proto/OpenAPI、修改字段编号或手写平行 DTO。
-契约变更先在根仓完成并通过 Root contract gate，再重新生成本仓 consumer；详见子仓
+契约变更先在事实 owner 仓库完成并通过本仓 contract gate，再更新消费者 typed client；详见子仓
 [`docs/session/api-contract.md`](../../../kokoro-session/docs/session/api-contract.md)。
 
 ## 与其他 owner 的调用
@@ -133,7 +133,7 @@ Session -> LaunchRunRequest -> GA ingress
 -> CanonicalRunRequest  # only no-active/terminal admission
 ```
 
-Session 只发送 Root generated contract 的输入、附件引用、`feature_key` 与
+Session 只发送 BFF/Agent owner contract 定义的输入、附件引用、`feature_key` 与
 `ExecutionIdentity`。Browser events：仅安全产品语义；Session relay 串行消费安全 ProductEvent。
 
 ### ProductEvent
@@ -201,7 +201,7 @@ Session projection；Browser 不接收 raw thinking、tool args/results、sandbo
 ## 10. 验收矩阵（设计 100 分）
 
 ```text
-Root generated contract provenance       pass
+Owner-local contract provenance           pass
 ExecutionIdentity / subject boundary    pass
 single active Run + terminal gate        pass
 chat_messages/chat_events replay         pass
@@ -219,6 +219,6 @@ npm run typecheck
 npm run lint
 ```
 
-Root contract 变更必须先通过 Root gate，再生成 Session consumer 并运行 projection tests；不得在子仓直接编辑 generated
-contract。Session 的技术方案和 [API/AIP 契约摘录](../../../kokoro-session/docs/session/api-contract.md) 只解释消费方式，
+Owner contract 变更必须先通过 owner gate，再更新消费者 typed client 并运行 projection tests；不得在消费者仓库直接编辑 generated
+contract。Session 的技术方案和 BFF Chat contract 只解释消费方式，
 不成为第二份跨仓 schema。

@@ -22,7 +22,7 @@ Browser
 ```
 
 边界原则：Web 不直连业务仓；BFF 不读任何 sibling 数据库；每个 owner 自己拥有 canonical schema、
-API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排、拓扑审计和跨仓验收。
+API、测试、Dockerfile、CI 和本地 v1 contract；Root 只拥有部署编排、拓扑审计和跨仓验收，不保存第二份 wire contract。
 
 ## 2. 逐仓库架构判断
 
@@ -30,8 +30,8 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 |---|---|---|---|
 | `kokoro-app` | Web UI、同源 `/api/*` adapter | `src/app`、`src/lib`、`packages/*` | 边界正确；`packages/*` 是 Web 仓内复用包，不是后端共享仓，不应承载业务事实。 |
 | `kokoro-bff` | Chat、项目/任务业务、鉴权、幂等、owner client、AG-UI/SSE | `src/main.ts`、`src/http/routes`、`src/application`、`src/contracts`、`src/infrastructure`、`src/interfaces/http/agui` | 业务入口正确；Project/ScheduledTask 通过 application service 注入 repository port，PostgreSQL 实现、mock fixture、owner client 与 AG-UI transport projection 分离；不再使用泛化的 `src/modules` 或 `src/adapters`。 |
-| `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`contract` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
-| `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、IAM RPC、Root/本仓 Proto | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
+| `kokoro-agent` | Run 执行、HITL、恢复、事件投影、HTTP ingress、worker | `src/kokoro_agent/worker`、`execution`、`repositories`、`infrastructure`、`protocol` | 能力完整但复杂度最高；repository 只负责 Agent 运行事实，infrastructure 只负责 PG/框架适配；必须坚持 Feature/Agent/Runtime/Worker 分层，禁止将编排规则重新塞回 BFF。 |
+| `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit、ExecutionIdentity | `src/main.ts`、IAM RPC、本仓 contract | 单一职责清晰；IAM 只输出身份与授权事实，不拥有 Site manifest、Model provider 或 Billing 状态。 |
 | `kokoro-system` | Site、Site Host、Workspace、Runtime Manifest、系统策略 | `src/modules/runtime-manifest`、`interfaces/http` | 边界正确；Site/Host binding 由 System 自己拥有，tenant_id 是唯一跨仓隔离键，不调用 IAM Host 接口。 |
 | `kokoro-model` | Model Catalog、Provider、Availability、Policy、resolve | `src/domain`、`application`、`interfaces/http|rpc` | 目录与解析清晰；LiteLLM 只是可选 transport，Model 不探活、不启动、不拥有 LiteLLM。 |
 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering | `src/modules/*`、`src/domain`、PostgreSQL/Redis | 合并 Credit 合理；账务必须保持单写入事实和状态机，旧兼容表只能只读或退出。 |
@@ -64,7 +64,7 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 - `vMAJOR.MINOR.PATCH` tag 才构建并发布 GHCR 生产镜像。
 - Docker 使用生产启动入口，本地开发使用各仓库 dev/test 命令。
 - TypeScript 使用严格类型、运行时 schema 校验和独立构建；Python 使用 Ruff、Pyright、pytest；Go 使用 `go test` 与 race 检查。
-- 生成代码包含 provenance；修改 Root contract 后由各仓库重新生成并在自身仓库验证。
+- 生成代码包含 provenance；修改 owner contract 后只在拥有该 contract 的仓库生成并验证，消费者更新自己的 typed client。
 
 ## 4. 当前不合理或需要继续收敛的地方
 
@@ -79,11 +79,11 @@ API、测试、Dockerfile 和 CI；Root 只拥有跨仓 contract、部署编排�
 BFF 拥有用户任务事实，Scheduler 拥有执行事实。需要补齐注册、更新、暂停、删除、重启恢复、
 注册失败补偿和 reconciliation；线上不能把 `SCHEDULER_JOBS_JSON` 当作唯一任务来源。
 
-### P1：Root machine-readable contract 仍需覆盖所有跨仓 HTTP
+### P1：owner contract 仍需覆盖所有公开跨仓 HTTP
 
-IAM/Model/Capability/Storage 的 Proto 与 Root contract 较完整；System、Billing、Scheduler 的
-跨仓 HTTP/command 仍有一部分依赖各仓 Markdown。最终应把请求、响应、错误、鉴权和幂等字段提升
-到 Root 可校验格式。
+各仓已不再依赖 Root 的第二份 wire source。当前需要继续把 System、Billing、Scheduler 的请求、响应、
+错误、鉴权和幂等字段收敛到各自仓库的 machine-readable v1 contract，并让 BFF typed client 以这些
+owner contract 为输入验证，而不是再建立 Root 镜像。
 
 ### P1：HTTP envelope 和错误码需要单一版本冻结
 
@@ -226,5 +226,5 @@ Storage = 文件/对象生命周期
 Scheduler = 通用调度执行
 ```
 
-当前最重要的不是继续增加仓库，而是冻结上述边界，并把 BFF、Scheduler、Root contract、Billing
+当前最重要的不是继续增加仓库，而是冻结上述边界，并把 BFF、Scheduler、owner contract、Billing
 兼容层这四处收敛到生产级事实源。

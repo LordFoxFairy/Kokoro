@@ -3,7 +3,7 @@
 > **阶段 1 当前裁决（2026-09-01）**：只部署 `kokoro` Web、`kokoro-bff` 和 `kokoro-agent` 三仓
 > 闭环；Chat 属于 BFF 模块，不使用 Gateway 或独立 Session/Chat 仓库。运行时存储只采用
 > PostgreSQL + Redis。本文下方的旧服务清单和 MySQL/Mongo Compose 仅保留为历史物理记录，
-> 不得作为新部署模板；当前基线以 [storage-baseline-v1](../../../contract/spec/storage-baseline-v1.md)
+> 不得作为新部署模板；当前基线以 [storage-baseline-v1](../53-postgresql-redis-seven-repository-baseline.md)
 > 与 `kokoro/docs/deployment.md` 为准。
 
 > **状态：历史 V1 deployment 记录。**本文的三仓 runtime 引用、Session/Agent 共读 workspace、旧 service

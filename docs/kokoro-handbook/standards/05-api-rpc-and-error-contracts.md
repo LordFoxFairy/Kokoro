@@ -4,9 +4,9 @@
 
 ## 1. 契约优先
 
-- 跨仓协议由 Root `contract/` 维护，生成客户端/服务端代码。
+- 每个事实 owner 仓库维护自己的 API/RPC contract、生成代码和 contract tests；Root 不保存跨仓 wire source。
 - 业务模块内部可以使用本地类型，但跨边界必须经过明确 schema。
-- 生成代码不得手工修改；修改源 `.proto`、OpenAPI 或 schema 后重新生成并验证 provenance。
+- 生成代码不得手工修改；修改本仓 `.proto`、OpenAPI 或 schema 后在本仓重新生成并验证 provenance。
 - 契约命名使用业务语言，不使用数据库表名或内部 ORM 类型作为公共协议。
 
 首发版本规则：Kokoro 尚未对外上线时，公共 HTTP/API surface 与内部 RPC 统一使用 `v1`；版本只存在于 API、DTO、protobuf package 和 generated client 层。领域对象、application service、repository、数据库表和 Redis key 不复制版本。只有不兼容的 wire、DTO、错误或授权语义变化才创建 `v2`。Capability × Storage 的具体边界见 [v1 API 与 Client 契约](../technical/52-capability-storage-v1-api-and-client-contract.md)。

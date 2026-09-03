@@ -84,4 +84,4 @@ KOKORO_ENV_FILE=.env.phase1.example docker compose \
   -f deploy/docker-compose.phase1.yml config --quiet
 ```
 
-Root machine-readable 对应项见 [`contract/goal2-cross-repository-contract-v1.json`](../contract/goal2-cross-repository-contract-v1.json)。
+机器可读契约由对应事实 owner 仓库维护，Root 只保留归属和验证规则。

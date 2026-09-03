@@ -30,7 +30,7 @@ DeepAgents 拥有 Agent loop、native state、subagent、interrupt、backend 和
 
 ## 2. 输入、输出与公开契约
 
-最小 canonical `CanonicalRunRequest` 由 Session 负责把业务命令投递为 Root generated `LaunchRunRequest` 及 control 请求；输出是 GA durable facts、公开
+最小 canonical `CanonicalRunRequest` 由 Session 负责把业务命令投递为 Agent-owned `LaunchRunRequest` 及 control 请求；输出是 GA durable facts、公开
 `ProductEvent` 投影和明确的运行状态。调用方不提交 Agent/Skill/MCP/graph 配方，也不读取
 Agent 的 native checkpoint、Redis key、数据库表或 S3 object key。
 
@@ -46,7 +46,7 @@ provider submit 或 ProductEvent。重复请求只返回 receipt；terminal 后�
 
 ```text
 src/kokoro_agent/
-├── contract/        Root generated contract facade
+├── contract/        owner-generated client contract facade
 ├── worker/          Redis ingress、claim、recovery、readiness
 ├── agents/          DeepAgents Agent 定义
 ├── features/        Feature 组装声明
@@ -123,7 +123,7 @@ Agent 循环仍可运行。
 外部请求只携带：
 
 ```text
-feature_key + session_id + input + ExecutionIdentity (+ opaque trace/asset references when the Root contract declares them)
+feature_key + session_id + input + ExecutionIdentity (+ opaque trace/asset references when the owner contract declares them)
 ```
 
 请求不携带 Agent、member、prompt、Tool、Skill、MCP、sandbox、namespace、LangGraph thread 或

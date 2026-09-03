@@ -237,7 +237,7 @@ MCP server 掉线不应伪造工具成功，也不能通过旧 cache 继续产�
 
 ## 6. v1 公开 API 规划
 
-以下是当前 v1 Root protobuf contract 的 API shape；实现通过 generated contract 与独立 client facade
+以下是当前 v1 owner repository protobuf contract 的 API shape；实现通过 generated contract 与独立 client facade
 消费，不能再造私有 REST/JSON 旁路。Capability 尚未对外发布，因此后续 additive 字段仍可在 v1
 内完成；只有出现不可兼容的语义或安全边界变化时才新建 v2。
 
@@ -342,7 +342,7 @@ transport/invoke 仍由 MCP runtime owner 完成。Skill package 的 `SKILL.md`�
 GA durable workbench lock，以及跨服务 invalidation wire contract 的独立评审。Provider catalog、
 Connector revoke、Git/source import、Storage clean gate、MCP declaration adapter 和 MySQL outbox
 已经落地。前一组事项分别属于外部 provider/GA/IAM 或跨仓评审边界，不得通过 Capability 私有状态
-冒充完成；继续追加时必须先更新 Root contract、generated mirror、schema owner inventory、
+冒充完成；继续追加时必须先更新 owner contract、generated mirror、schema owner inventory、
 authorization tests、secret redaction tests 与 runtime fail-closed tests，再实现 adapter。
 
 明确不进入当前 v1 的只有 provider-specific SDK API、裸 token/URL、Agent graph/成员配置和 Storage 私有表/Redis key。

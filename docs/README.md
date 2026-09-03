@@ -8,7 +8,7 @@
 BFF 负责 Chat 与业务编排，Agent 负责 Run 执行、HITL 和 worker。Chat 不再作为独立仓库，
 不使用 `kokoro-gateway`，也不新增独立 `kokoro-session`。
 
-存储基线见 [storage-baseline-v1](../contract/spec/storage-baseline-v1.md)：阶段 1 只使用
+存储基线见 [PostgreSQL + Redis 技术基线](kokoro-handbook/technical/53-postgresql-redis-seven-repository-baseline.md) 及各 owner 仓库的本地数据库文档：阶段 1 只使用
 PostgreSQL（持久化真源）与 Redis（队列、事件流、租约和短期协调），不再新增 MySQL/MongoDB
 运行时依赖。历史文档中的旧 owner、Session/Gateway 及 MySQL/Mongo 组合只用于迁移考古，不能
 作为本轮新代码和部署配置的依据。
@@ -20,9 +20,9 @@ Root 当前部署只使用 `deploy/docker-compose.phase1.yml` 和 `deploy/provis
 
 阶段 2 的正式仓库是 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
 `kokoro-capability`、`kokoro-storage` 和 `kokoro-scheduler`。每个仓库独立拥有实现、测试、Dockerfile、
-CI、发布文档和本仓 API contract；Root 只提供跨仓 contract、拓扑索引、部署入口与验证脚本。Credit 在
+CI、发布文档和本仓 API contract；Root 只提供拓扑索引、部署入口与验证脚本，不保存跨仓 contract。Credit 在
 Billing 内部，Chat 在 BFF 的 Chat 业务模块边界内，Scheduler 是独立 Go 仓库，不读取其他业务数据库。
-本地阶段 2 收口以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)、[Goal 2 manifest](../contract/goal2-repository-contract-manifest.json)
+本地阶段 2 收口以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md)、[仓库状态索引](REPOSITORY_STATUS.md)
 和[阶段 2 仓库收口报告](reports/2026-09-01-stage2-repository-closure.md)为准。
 
 ## 先看这三个
@@ -70,7 +70,7 @@ Session Agent selection 等资料均为历史迁移材料；不得据此新增�
 | 改 agent/session/web 链路 | `kokoro-handbook/technical/36-ga-final-agent-technical-plan.md` + `business-flows/agent-session-web-general-chat-runtime.md` |
 | 改 GA identity/auth/运行时隔离 | `kokoro-handbook/technical/38-ga-public-runtime-contract.md` + `kokoro-handbook/decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md` |
 | 改 capability / skill / MCP | `kokoro-handbook/technical/33-ga-first-skill-runtime-architecture.md` + `technical/backend-design/05-capability.md` |
-| 改阶段 2 业务域 | `REPOSITORY_STATUS.md`、`contract/goal2-repository-contract-manifest.json` 及对应 `kokoro-*` 仓库的 `docs/README.md` |
+| 改阶段 2 业务域 | `REPOSITORY_STATUS.md`、`REPOSITORY_STATUS.md` 及对应 `kokoro-*` 仓库的本地 API 文档 |
 | 查验收报告 | `reports/` |
 | 查产品原型和设计历史 | `product/`、`prototypes/`、`research/`，但先看 handbook 判断是否仍有效 |
 | 给 worker 派活 | `CODEBASE_MAP.md` + 对应 spec/plan/handoff |
@@ -138,7 +138,7 @@ Session Agent selection 等资料均为历史迁移材料；不得据此新增�
 3. siteId 是平台业务隔离边界；`RuntimeNamespace` 是 GA/runtime 的唯一**内部**隔离键。两者不能互相替代。
 4. 上游只提交服务端构造的 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`；GA ingress 自己只在首次 target bootstrap（普通 Launch claim 或 fork `ForkConversation` prepare） 从 tenant + subject 派生 RuntimeNamespace 并固化 locator，后续新 Launch 以 current identity 验证后复用，Cleanup 以已接受 delete 的 durable tenant-subject lifecycle envelope 验证 locator/fence，已 claim run 只从 ledger/locator 恢复。不得把 caller namespace、ownerId/userId/workspaceId 作为 Agent、graph 或 checkpoint 的第二身份轴传入 GA。
 5. 阶段 1 不新增 kokoro-contracts；只使用 PostgreSQL + Redis，不能继续新增 MySQL/MongoDB，
-   也不能把 Redis 当长期真源。跨仓契约以 `contract/` 与三仓各自的 v1 摘录为准。
+   也不能把 Redis 当长期真源。跨仓契约以事实 owner 仓库的本地 v1 文档为准，Root 只维护归属和验证规则。
 6. 外部参考项目路径、分支名、逐字文案和代码只能放 tmp 中间产物，不进入正式文档或正式代码。
 
 ## Agent 负载规则

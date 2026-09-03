@@ -74,4 +74,4 @@ TenantRequestContext {
 5. Scheduler 是 Go 通用基础设施，不连接 Billing/Credit 或其他业务数据库。
 6. 任何新增类似 Skills/MCP 的能力先进入 Capability module；只有独立数据 owner、发布节奏、故障域和 API 契约
    同时成立时才评估新仓库。
-7. Root `contract/` 是跨仓 wire authority；每个子仓 API docs 是本仓实现和测试 authority。
+7. 事实 owner 仓库的本地 contract 是跨仓 wire authority；每个子仓 API docs 是本仓实现和测试 authority。

@@ -1,12 +1,8 @@
 [project]
-name = "kokoro-root-contract-tooling"
+name = "kokoro-root-governance"
 version = "0.0.0"
 requires-python = ">=3.11,<3.14"
-dependencies = [
-  "grpcio-tools==1.76.0",
-  "protobuf==6.33.6",
-  "PyYAML==6.0.3",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
@@ -14,4 +10,4 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["contract/tests", "scripts/contract/tests"]
+testpaths = ["scripts/tests"]

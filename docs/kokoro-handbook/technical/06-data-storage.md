@@ -3,7 +3,7 @@
 > **阶段 1 当前裁决（2026-09-01）**：Web/BFF/Agent 三仓只使用 PostgreSQL + Redis。
 > PostgreSQL 是唯一持久化真源，Redis 负责队列、事件流、租约、唤醒和短期缓存；不新增
 > MySQL 或 MongoDB。本文下方的 MySQL/Mongo 分层是历史方案，不作为阶段 1 新代码、Compose
-> 或部署配置依据。当前边界以 [storage-baseline-v1](../../../contract/spec/storage-baseline-v1.md) 为准。
+> 或部署配置依据。当前边界以 [storage-baseline-v1](../53-postgresql-redis-seven-repository-baseline.md) 为准。
 
 ## 总原则
 

@@ -17,8 +17,8 @@ GA               -> RunLedger / AgentState checkpoint / workbench / HITL executi
 ```
 
 因此，不新增 `kokoro-chat` runtime、Chat-to-Session 双写、Conversation/Run 的第二 writer，或一套与 Session 并行的
-projection/control/outbox。当前 Root `kokoro-chat` Proto consumer 仅是 V1 generated closure；目标公共契约将它
-收敛为 Session/GA 的唯一公开 consumer closure，再删除旧 reader/writer。
+projection/control/outbox。当前 Chat 业务属于 BFF；BFF 只消费 Agent/owner 的本地 v1 contract 和 AG-UI 公共事件，
+不创建独立 `kokoro-chat` 仓库，也不在 Root 维护 Chat Proto mirror。
 
 旧 SQL 表、Proto 和实施计划只用于历史取证：它们既不定义 Session Agent 选择、CapabilitySnapshot，也不覆盖
 FeatureKey、DeepAgents 原生 state、single-active-Run 或 safe ProductEvent 的目标决策。

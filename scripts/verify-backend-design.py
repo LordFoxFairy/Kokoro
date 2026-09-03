@@ -174,15 +174,15 @@ def check_source(errors, allow_missing=False):
     if any("create_deep_agent" in defined(path) for path in files):
         errors.append("GA defines a create_deep_agent shadow constructor")
     for path in files:
-        if not rel(path).startswith("contract/"):
+        if not rel(path).startswith("protocol/"):
             continue
         offenders = {module for module in imports(path)
-                     if module.startswith("kokoro_agent") and not module.startswith("kokoro_agent.contract")}
+                     if module.startswith("kokoro_agent") and not module.startswith("kokoro_agent.protocol")}
         if offenders:
-            errors.append(f"{rel(path)}: contract imports inward modules {sorted(offenders)}")
+            errors.append(f"{rel(path)}: protocol imports inward modules {sorted(offenders)}")
 
 def check_public_shapes(errors):
-    control = AGENT_SRC / "contract/control.py"
+    control = AGENT_SRC / "protocol/control.py"
     if control.is_file():
         tree = ast.parse(control.read_text(encoding="utf-8"))
         for node in ast.walk(tree):

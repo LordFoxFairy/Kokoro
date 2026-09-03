@@ -131,7 +131,7 @@ Agent 或权限。
 
 ## 9. 实施顺序与验收
 
-1. Root contract 生成 feature_key 和 ExecutionIdentity，GA 只消费生成物。
+1. owner contract 生成 feature_key 和 ExecutionIdentity，GA 只消费生成物。
 2. 在 agents/ 定义 general、music 等完整 Agent。
 3. 在 features/ 定义 chat、music 以及真实需要的组合 Feature。
 4. 让 AgentFactory 的单 Agent 路径直接调用 create_deep_agent。

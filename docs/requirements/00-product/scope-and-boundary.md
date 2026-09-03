@@ -27,7 +27,7 @@ refs:
 - **kokoro-web**(Next.js):聊天壳 + agent 活动流渲染。组件面:对话线程(assistant-turn / message-bubble / markdown-message)、工具调用行(running/done/error)、子代理行、todo 计划条、过程块(思考/工具/子代理披露)、composer、多会话 session-rail。
 - **kokoro-session**(TS):SSE/replay 归属者。归一化 13 kind → AGUI 信封、去重、Last-Event-ID 续订、memory/redis 双后端 fan-out。
 - **kokoro-agent**(Python):deepagents worker。产 13 kind 原始执行事件、seq 单调、segment 分段、内置工具(`now` / `fetch_url`,带撞名守卫 + SSRF 防护)、子代理(built-in/config-custom/runtime-custom)。
-- **跨仓契约**:`contract/events.yaml` 单源 + `verify.py` 门禁(6 镜像)。四仓 CI 全绿。
+- **跨仓契约**：各事实 owner 的本地 v1 contract + 本仓验证门禁；Root 不保存第二份 wire mirror。
 
 能力清单见 [01-capabilities/](../01-capabilities/);验收见 [02-flows/](../02-flows/)。
 

@@ -152,7 +152,7 @@ Authorization；JWKS 是公开密钥材料。Caller
 
 ### 5.1 GA 运行身份：IAM 给主体事实，GA 自己做隔离
 
-Agent 运行不把 IAM 的用户、组织或项目 ID 直接改名为 `namespace`。一次被受理的产品执行使用 Root generated contract 的
+Agent 运行不把 IAM 的用户、组织或项目 ID 直接改名为 `namespace`。一次被受理的产品执行使用 owner-generated contract 的
 窄 envelope：
 
 ```text

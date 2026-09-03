@@ -5,7 +5,7 @@
 > [`../billing-transaction-matrix.md`](../billing-transaction-matrix.md) 为准。
 > `kokoro-credit` 进入迁移态，目标 owner 是 `kokoro-billing` 的 Entitlement/Credit Context。
 
-状态：目标设计与独立仓库执行基线，2026-08-22
+状态：历史设计与独立仓库迁移材料，2026-08-22。当前 Credit 已归属 `kokoro-billing`，不创建或恢复独立 `kokoro-credit`。
 
 本卡是 [`27-final-backend-architecture.md`](../27-final-backend-architecture.md) 对 Credit 的执行级展开。当前唯一 runtime writer 是独立仓库 `kokoro-credit`；`kokoro-platform/kokoro-credit` 已删除，仅保留迁移历史。
 

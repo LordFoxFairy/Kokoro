@@ -19,7 +19,7 @@
 ```text
 Capability v1 public surfaces
   ├─ owns capability metadata / authorization / installation / source reads
-  └─ consumes Root Storage contract
+  └─ consumes `kokoro-storage` 本仓库 contract
          │
          ▼
 Storage
@@ -305,7 +305,7 @@ Redis 不可用时：
 权威：
 
 ```text
-contract/proto/kokoro/storage/v1/storage.proto
+kokoro-storage/contract 中的 storage v1 contract
 kokoro-storage/docs/API_CONTRACT.md
 ```
 
@@ -322,7 +322,7 @@ CreateArtifact / FinalizeArtifact
 权威：
 
 ```text
-contract/proto/kokoro/capability/v1/capability_runtime.proto
+kokoro-capability/contract 中的 capability v1 contract
 kokoro-capability/docs/API_CONTRACT.md
 ```
 
@@ -344,7 +344,7 @@ Root proto 是唯一 source of truth；子仓 generated mirror 通过 provenance
 
 ## 9. Legacy snapshot compatibility boundary
 
-`CapabilityRuntimeService.ResolveRuntimeSnapshot` 仅在 Root contract 中作为迁移期 descriptor 保留至
+`CapabilityRuntimeService.ResolveRuntimeSnapshot` 仅在 owner contract 中作为迁移期 descriptor 保留至
 2026-10-15。Capability v1 不挂载该 service，不创建 `runtime_snapshot` 表，不保留 snapshot module、writer 或
 client facade。Agent/GA 完成动态 Skill source cutover 后，Root consumer registry 与 descriptor 一并删除。
 在此之前也不得把 legacy RPC 重新注册到 Capability server。
@@ -378,7 +378,7 @@ INTERNAL
 
 | 维度 | 证据 |
 |---|---|
-| Root contract lint | `pnpm exec buf lint contract` |
+| owner contract lint | `在对应 owner 仓库运行 `pnpm contract:check`` |
 | generated/provenance | capability/storage `pnpm contract:check` |
 | ObjectStore | MinIO S3 smoke；AWS/Ceph 只替换 endpoint/profile |
 | MySQL/Redis/MinIO | infrastructure smoke；MongoDB 不属于 Capability/Storage v1 |

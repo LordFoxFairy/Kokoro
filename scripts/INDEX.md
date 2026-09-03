@@ -2,33 +2,22 @@
 
 ## Responsibilities
 
-`scripts/contract/` contains the Root-owned, deterministic Slice A contract renderer. It converts the reviewed machine manifest into Protobuf and browser OpenAPI sources without network access or business logic.
+Root scripts only verify repository topology, architecture markers and loopback HTTP composition. They do not own,
+generate or copy a sibling repository's API contract, SQL schema or generated wire types.
 
 ## Public entry points
 
-- `uv run python scripts/contract/render_slice_a.py --manifest contract/slice-a-contract-manifest.yaml --write` renders the declared source tree atomically.
-- The same command with `--check` renders into temporary storage and byte-compares without editing.
-- `python3 scripts/goal2/mock_cross_repository_closure.py` checks the seven Phase 2 owner documents and the Root wire registry without importing child code or sharing databases.
-- `python3 scripts/verify-backend-design.py` verifies the backend-design manifest, documented Agent source topology, target architecture markers, legacy-document routing, and local relative links.
-- `python3 scripts/verify-repository-topology.py` verifies the ten active local repository remotes, archived-directory removal, Phase 1 storage boundary, and Goal 2 seven-repository manifest.
+- `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
+- `python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts` verifies active/archived repository topology and Phase 1 composition.
+- `python3 scripts/verify-seven-repository-standard.py` audits the seven owner repositories when their local checkouts are present.
 
-## Callers and dependencies
-
-Root contract gates and release preparation call the renderer. It depends only on the committed manifest validator and the locked Python environment. Buf and Redocly validate outputs after rendering; child repositories do not import this package.
-
-`verify-backend-design.py` is a documentation gate: it reads only the root handbook and local source-tree paths. It has no network, database, or child-runtime dependency.
+Each active child repository runs its own `contract:check`, lint, typecheck, test, build and schema gates. Root never substitutes
+those local checks with a generated cross-repository mirror.
 
 ## Runtime and security
 
-The renderer reads local reviewed authority, writes only the declared `contract/proto` and `contract/openapi` outputs, follows no symlinks and performs no network calls. Consumer generation is separately owned by `contract/generate.py` and requires an exact clean Root commit.
-
-## Extension rules and forbidden dependencies
-
-Add rendering behavior only when the machine manifest first defines it and a mutation or artifact-parity test fails. Do not add database access, service calls, child-worktree reads, implicit schema inference or hand-maintained protocol defaults.
-
-## Current gotchas
-
-Protobuf source must already be Buf-canonical; `--check` intentionally fails on formatting drift. The active Stage 2 v1 breaking image is frozen after the finalized repository topology. Any future intentional contract reset must archive the previous image outside Root and record the reset in the closure report; ordinary additive changes must pass against the committed image.
+The E2E runners start each independent checkout through its own documented entrypoint. They communicate over loopback HTTP
+and disposable infrastructure; they do not import child source, share a database or derive a contract from another repository.
 
 ## Current Stage 2 HTTP closure
 

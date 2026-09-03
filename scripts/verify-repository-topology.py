@@ -180,18 +180,6 @@ def main(argv: list[str] | None = None) -> int:
         if "kokoro-session" in phase1 or "kokoro-gateway" in phase1:
             errors.append("Phase 1 compose still references archived runtime")
 
-    manifest_path = ROOT / "contract/goal2-repository-contract-manifest.json"
-    try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        errors.append(f"cannot read Goal 2 manifest: {exc}")
-    else:
-        if set(manifest.get("repositories", {})) != {
-            "kokoro-iam", "kokoro-system", "kokoro-model", "kokoro-billing",
-            "kokoro-capability", "kokoro-storage", "kokoro-scheduler",
-        }:
-            errors.append("Goal 2 manifest does not contain exactly seven owners")
-
     if errors:
         evidence["status"] = "FAIL"
         evidence["errors"] = errors

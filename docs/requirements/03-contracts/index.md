@@ -14,9 +14,9 @@ refs:
 
 ## 单源与门禁
 
-- **契约单源**:`contract/events.yaml`(13 kind × 三视角 + 命名映射 + transport 常量 + status)。
-- **门禁**:`contract/verify.py` 结构化校验 6 镜像 + 2 stream-port 一致,漂移即非零退出(`test:normalize-13-kinds`)。
-- **CI**:根仓 `.github/workflows/contract.yml` checkout 三 sibling 仓跑 verify(四仓 CI 全绿)。
+- **契约单源**:各 owner 仓库的本地 API/protocol contract（按 owner 分别维护）。
+- **门禁**:各 owner 仓库的 contract tests、architecture tests 和 CI 负责本仓漂移检查。
+- **CI**:各 active repository 的本仓 CI 分别运行 contract/type/build/quality gates；Root 只运行 topology/governance。
 
 ## 映射表
 
@@ -43,5 +43,5 @@ refs:
 
 ## 维护规则
 
-- 改契约 → 改 `contract/events.yaml` + 对应 protocol 文档,本表只跟着更新链接,**不**复制契约内容。
+- 改契约 → 改事实 owner 仓库的本地 contract + 对应 protocol 文档,本表只跟着更新链接,**不**复制契约内容。
 - 新流程 → 在本表加一行(需求 / 契约 / spec / slug 四列齐)。

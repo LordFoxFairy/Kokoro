@@ -5,6 +5,10 @@
 目标：在不重新引入废弃仓库、不跨仓复制实现、不共享业务数据库的前提下，完成 API-first 的
 跨仓契约、owner 接线、真实本地 E2E、各仓单元/集成/契约门禁和可审计测试报告。
 
+> 设计决策更新：本计划早期曾把 Root `contract/` 作为集中契约层；该方案已废弃。当前每个 owner
+> 仓库维护自己的 v1 contract，Root 只做拓扑、架构和组合验证。下文出现的 Root contract、manifest
+> 或生成器步骤均按此决策解释，不得重新创建 Root `contract/`。
+
 ## 1. 固定架构裁决
 
     kokoro-app (Web)
@@ -14,7 +18,7 @@
       -> kokoro-agent HTTP ingress
       -> kokoro-scheduler internal dispatch
 
-- Root 只保留跨仓 API 契约、Protobuf/OpenAPI 生成、拓扑索引、文档、部署入口和验证工具。
+- Root 只保留拓扑索引、文档、部署入口和验证工具；不保存跨仓 API 契约、Protobuf/OpenAPI 源或生成器。
 - 每个正式仓库独立维护源码、测试、Dockerfile、CI、API contract、迁移和 runbook。
 - Web 不直连任何 owner、Agent、PostgreSQL 或 Redis；浏览器不提交 X-Domain 作为信任依据。
 - Chat 是 BFF 的内部业务模块；Session 是 BFF v1 API 概念，不创建独立 Session/Chat 服务。

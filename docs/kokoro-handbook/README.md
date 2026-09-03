@@ -44,7 +44,7 @@
 | 能力与对象 | `kokoro-capability` / `kokoro-storage` | Skill/MCP 控制面与 Asset/ObjectStore 元数据分开；对象字节不进入 Web/BFF |
 | 调度 | `kokoro-scheduler` | 独立 Go 调度 owner；通用任务、lease、retry，不承载 Billing 业务规则 |
 
-`kokoro-gateway`、`kokoro-session`、`kokoro-platform`、旧 `kokoro-web` 与 `kokoro-credit` 均为历史/归档名称。它们可以被检索用于考古，但不得作为当前仓库、环境变量、部署服务或依赖入口。当前跨仓 wire 以 [`../../contract/goal2-repository-contract-manifest.json`](../../contract/goal2-repository-contract-manifest.json) 与各仓 `/v1` 契约为准。
+`kokoro-gateway`、`kokoro-session`、`kokoro-platform`、旧 `kokoro-web` 与 `kokoro-credit` 均为历史/归档名称。它们可以被检索用于考古，但不得作为当前仓库、环境变量、部署服务或依赖入口。当前 API 以各 owner 仓库自己的 v1 contract 与 `/v1` 文档为准；Root 只维护归属、架构原则和验证入口，不保存 wire source 或生成物。
 
 ## 当前 Feature-first / GA 目标架构（2026-08-22）
 
@@ -61,6 +61,7 @@
 - [GA 原型就绪审计](technical/45-ga-prototype-readiness-audit.md)
 - [跨子仓 API/AIP 契约与技术方案同步](technical/51-cross-repository-contract-sync.md)
 - [Capability × Storage v1 API 与 Client 契约](technical/52-capability-storage-v1-api-and-client-contract.md)
+- [语言、时间与类型安全工程规范](technical/55-language-and-type-safety-standards.md)
 - [GA Runtime](technical/34-ga-agent-runtime-architecture.md)、[GA-first SkillRuntime](technical/33-ga-first-skill-runtime-architecture.md)、[GA × official Swarm](technical/35-ga-langgraph-swarm-architecture.md)
 - [产品 Session 生命周期](business-flows/session-lifecycle.md) 与 [Session/GA/Web 运行链路](business-flows/agent-session-web-general-chat-runtime.md)
 - [后端目标仓库设计卡](technical/backend-design/README.md)
@@ -68,12 +69,11 @@
 核心 owner 固定为：`kokoro-bff 的 Chat 内部业务边界` 拥有 Web-facing session/message/SSE/control 适配；上游 IAM 只向 GA
 提交服务端构造的 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`，GA ingress 从 tenant + subject 派生内部 `RuntimeNamespace`；GA 使用
 DeepAgents/LangGraph 原生 state、官方 `SwarmState`、checkpoint、RunLedger、workbench、HITL execution 与 `chat_events`；Capability 只拥有
-user/session Skill path、visibility、CRUD；Storage 拥有 bytes/scan/Asset/Artifact。当前不使用独立 `kokoro-chat` runtime、
-Capability runtime snapshot 或 Agent/Skill 版本/Session binding 机制。
+user/session Skill path、visibility、CRUD；Storage 拥有 bytes/scan/Asset/Artifact。当前不使用独立 `kokoro-chat` runtime、Capability runtime snapshot 或 Agent/Skill 版本/Session binding 机制。
 
 Billing 当前唯一业务与技术权威是 [Billing 商业系统重构版最终架构](technical/50-billing-commerce-rearchitecture.md)；
 正式业务仓统一遵守 PostgreSQL + Redis，旧 MySQL/Mongo SQL 与迁移资料只保留为历史审阅记录。
-新 API 必须按当前 Root contract 和 owner 的 canonical v1 contract 重新生成，不创建第二份 Billing OpenAPI。
+新 API 必须在事实 owner 仓库的 canonical v1 contract 中定义，不创建跨仓 Root 镜像或第二份 Billing OpenAPI。
 
 ## 当前阶段 1 链路
 
@@ -86,7 +86,7 @@ kokoro Web -> kokoro-bff 的 Chat 内部业务边界 -> kokoro-agent
 kokoro          只做 Web UI 与同源 /api/* route adapter。
 kokoro-bff      负责 Chat/业务编排、鉴权、幂等、错误归一、SSE 与 owner adapter。
 kokoro-agent    负责 Run 执行、HITL、恢复与 worker；PostgreSQL 保存 durable facts，Redis 只作 transport/lease/cache。
-Goal 2 owners   各自维护 PostgreSQL schema、Redis adapter、API、迁移、测试、Docker 与 CI。
+Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter、API、测试、Docker 与 CI；V1 不保留 migration runtime。
 ```
 
 ## 强制约束

@@ -22,7 +22,7 @@ Web 不连接数据库，BFF 不直连 Agent 的数据库或 Redis。Chat 不再
 以后按业务能力以独立 endpoint/secret 接入。
 
 阶段 2 的正式业务仓库不由 Root Compose 拼装。它们各自维护 PostgreSQL/Redis adapter、迁移、Docker 和 CI，
-由 BFF 按 Root contract 接入：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
+由 BFF 按各 owner 仓库的本地 v1 contract 接入：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
 `kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。Root 的 Phase 1 Compose 只启动 Web、BFF、Agent
 和本地 PostgreSQL/Redis，不复制这些业务仓的实现或数据库 schema。
 
@@ -126,7 +126,7 @@ docker build -t ghcr.io/LordFoxFairy/kokoro-agent:TAG ./kokoro-agent
 (cd kokoro && pnpm check)
 ```
 
-根仓只维护 `contract/` 的版本化 API/AIP 索引、[storage-baseline-v1](../contract/spec/storage-baseline-v1.md)
+根仓只维护版本化架构/API 归属索引；Storage 基线以 `kokoro-storage` 本仓文档为准
 和验收文档。跨仓联调交换 contract fixture、兼容性结果和发布元数据。
 
 ## 已移除的历史入口
