@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Run a disposable PostgreSQL + Redis health closure for the active owners.
+"""Run the active owners against Kokoro's shared local PostgreSQL and Redis.
 
 This is intentionally an orchestration check, not a second service runtime. Each
 owner is started from its own checkout and keeps its own config/database adapter;
-the Root only supplies disposable infrastructure and records the observed health
-responses.
+the Root reuses one dependency pair, isolates owner data by database/logical DB,
+and records the observed health responses.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -24,19 +25,37 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB_NEXT_ENV = ROOT / "kokoro/next-env.d.ts"
-POSTGRES_NAME = "kokoro-stage2-owner-health-postgres"
-REDIS_NAME = "kokoro-stage2-owner-health-redis"
-POSTGRES_PORT = 55417
-REDIS_PORT = 55418
-POSTGRES_HOST = f"127.0.0.1:{POSTGRES_PORT}"
-OWNER_NAMES = ("bff", "system", "model", "billing", "capability", "storage", "agent")
+POSTGRES_ADMIN_URL = os.environ.get(
+    "KOKORO_SHARED_POSTGRES_ADMIN_URL",
+    "postgresql://kokoro:kokoro@127.0.0.1:55433/postgres",
+)
+REDIS_BASE_URL = os.environ.get("KOKORO_SHARED_REDIS_URL", "redis://127.0.0.1:56380")
+OWNER_NAMES = ("iam", "system", "model", "billing", "capability", "storage", "bff", "agent")
+REDIS_DATABASES = {
+    "iam": 1,
+    "system": 2,
+    "model": 3,
+    "billing": 4,
+    "capability": 5,
+    "storage": 6,
+    "scheduler": 7,
+    "bff": 8,
+    "agent": 9,
+}
+
+
+def replace_url_path(url: str, path: str) -> str:
+    parsed = urllib.parse.urlsplit(url)
+    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, path, parsed.query, parsed.fragment))
+
+
 DATABASE_URLS = {
-    name: f"postgresql://kokoro:stage2_local@{POSTGRES_HOST}/kokoro_stage2_{name}"
+    name: replace_url_path(POSTGRES_ADMIN_URL, f"/kokoro_stage2_{name}")
     for name in OWNER_NAMES
 }
 REDIS_URLS = {
-    name: f"redis://127.0.0.1:{REDIS_PORT}/{index}"
-    for index, name in enumerate((*OWNER_NAMES, "scheduler"))
+    name: replace_url_path(REDIS_BASE_URL, f"/{database}")
+    for name, database in REDIS_DATABASES.items()
 }
 DATABASE_URL = DATABASE_URLS["bff"]
 REDIS_URL = REDIS_URLS["bff"]
@@ -70,83 +89,51 @@ def wait_until(predicate: Any, timeout: float, label: str) -> None:
     raise CheckError(f"timed out waiting for {label}: {last_error}")
 
 
-def start_infra() -> None:
-    for name in (POSTGRES_NAME, REDIS_NAME):
-        run(["docker", "rm", "-f", name], check=False)
-    run(
-        [
-            "docker",
-            "run",
-            "-d",
-            "--name",
-            POSTGRES_NAME,
-            "-e",
-            "POSTGRES_DB=kokoro_stage2",
-            "-e",
-            "POSTGRES_USER=kokoro",
-            "-e",
-            "POSTGRES_PASSWORD=stage2_local",
-            "-p",
-            f"127.0.0.1:{POSTGRES_PORT}:5432",
-            "postgres:16-alpine",
-        ]
-    )
-    run(
-        [
-            "docker",
-            "run",
-            "-d",
-            "--name",
-            REDIS_NAME,
-            "-p",
-            f"127.0.0.1:{REDIS_PORT}:6379",
-            "redis:7-alpine",
-        ]
+def prepare_shared_infra() -> None:
+    wait_until(
+        lambda: run(["psql", POSTGRES_ADMIN_URL, "-At", "-c", "SELECT 1"], check=False).returncode == 0,
+        30,
+        "shared PostgreSQL",
     )
     wait_until(
-        lambda: run(
-            ["docker", "exec", POSTGRES_NAME, "pg_isready", "-U", "kokoro", "-d", "kokoro_stage2"],
-            check=False,
-        ).returncode
-        == 0,
+        lambda: run(["redis-cli", "-u", REDIS_BASE_URL, "PING"], check=False).returncode == 0,
         30,
-        "PostgreSQL",
-    )
-    wait_until(
-        lambda: run(["docker", "exec", REDIS_NAME, "redis-cli", "ping"], check=False).returncode == 0,
-        30,
-        "Redis",
+        "shared Redis",
     )
     for name in OWNER_NAMES:
-        result = run(
+        run(
             [
-                "docker",
-                "exec",
-                POSTGRES_NAME,
                 "psql",
-                "-U",
-                "kokoro",
-                "-d",
-                "kokoro_stage2",
+                POSTGRES_ADMIN_URL,
+                "-v",
+                "ON_ERROR_STOP=1",
+                "-c",
+                f'DROP DATABASE IF EXISTS "kokoro_stage2_{name}" WITH (FORCE)',
+            ],
+        )
+        run(
+            [
+                "psql",
+                POSTGRES_ADMIN_URL,
                 "-v",
                 "ON_ERROR_STOP=1",
                 "-c",
                 f'CREATE DATABASE "kokoro_stage2_{name}"',
             ],
-            check=False,
         )
-        if result.returncode and "already exists" not in (result.stderr or ""):
-            raise CheckError(f"create database {name}: {(result.stderr or result.stdout).strip()[-1200:]}")
+    for redis_url in REDIS_URLS.values():
+        run(["redis-cli", "-u", redis_url, "FLUSHDB"])
 
 
 def apply_schemas() -> None:
     commands = [
-        (ROOT / "kokoro-bff", ["pnpm", "db:migrate"], {"KOKORO_BFF_POSTGRES_URL": DATABASE_URLS["bff"]}),
-        (ROOT / "kokoro-system", ["pnpm", "db:apply"], {"DATABASE_URL": DATABASE_URLS["system"], "REDIS_URL": REDIS_URLS["system"]}),
-        (ROOT / "kokoro-model", ["pnpm", "db:migrate"], {"DATABASE_URL_MODEL": DATABASE_URLS["model"]}),
-        (ROOT / "kokoro-billing", ["pnpm", "db:migrate"], {"DATABASE_URL": DATABASE_URLS["billing"], "REDIS_URL": REDIS_URLS["billing"]}),
-        (ROOT / "kokoro-capability", ["npm", "run", "db:apply-schema"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["capability"], "KOKORO_REDIS_URL": REDIS_URLS["capability"]}),
-        (ROOT / "kokoro-storage", ["npm", "run", "db:apply-schema"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["storage"], "KOKORO_REDIS_URL": REDIS_URLS["storage"]}),
+        (ROOT / "kokoro-iam", ["pnpm", "db:apply-schema"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["iam"]}),
+        (ROOT / "kokoro-bff", ["pnpm", "db:setup"], {"KOKORO_BFF_POSTGRES_URL": DATABASE_URLS["bff"]}),
+        (ROOT / "kokoro-system", ["pnpm", "db:apply-schema"], {"DATABASE_URL": DATABASE_URLS["system"], "REDIS_URL": REDIS_URLS["system"]}),
+        (ROOT / "kokoro-model", ["pnpm", "db:apply-schema"], {"DATABASE_URL_MODEL": DATABASE_URLS["model"]}),
+        (ROOT / "kokoro-billing", ["pnpm", "db:apply-schema"], {"DATABASE_URL": DATABASE_URLS["billing"], "REDIS_URL": REDIS_URLS["billing"]}),
+        (ROOT / "kokoro-capability", ["pnpm", "db:apply-schema"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["capability"], "KOKORO_REDIS_URL": REDIS_URLS["capability"]}),
+        (ROOT / "kokoro-storage", ["pnpm", "db:apply-schema"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["storage"], "KOKORO_REDIS_URL": REDIS_URLS["storage"]}),
     ]
     env = {
         **os.environ,
@@ -186,6 +173,8 @@ def start_processes(log_dir: Path) -> list[tuple[str, subprocess.Popen[str]]]:
     log_dir.mkdir(parents=True, exist_ok=True)
     specs: list[tuple[str, Path, list[str], dict[str, str]]] = [
         ("iam", ROOT / "kokoro-iam", ["pnpm", "dev"], {
+            "KOKORO_POSTGRES_URL": DATABASE_URLS["iam"],
+            "KOKORO_REDIS_URL": REDIS_URLS["iam"],
             "KOKORO_IAM_HOST": "127.0.0.1",
             "KOKORO_IAM_PORT": "4211",
             "KOKORO_IAM_SERVICE_TOKEN": INTERNAL_SECRET,
@@ -199,8 +188,8 @@ def start_processes(log_dir: Path) -> list[tuple[str, subprocess.Popen[str]]]:
         ("system", ROOT / "kokoro-system", ["pnpm", "dev"], {"DATABASE_URL": DATABASE_URLS["system"], "REDIS_URL": REDIS_URLS["system"], "KOKORO_SYSTEM_HOST": "127.0.0.1", "KOKORO_SYSTEM_PORT": "4240", "KOKORO_SYSTEM_BFF_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_SYSTEM_REDIS_NAMESPACE": "kokoro:stage2:system"}),
         ("model", ROOT / "kokoro-model", ["pnpm", "dev"], {"DATABASE_URL_MODEL": DATABASE_URLS["model"], "KOKORO_MODEL_HTTP_PORT": "4221", "KOKORO_REDIS_URL": REDIS_URLS["model"]}),
         ("billing", ROOT / "kokoro-billing", ["pnpm", "dev"], {"DATABASE_URL": DATABASE_URLS["billing"], "REDIS_URL": REDIS_URLS["billing"], "BILLING_HOST": "127.0.0.1", "BILLING_PORT": "4245", "BILLING_AUTH_MODE": "header-fixture", "INTERNAL_SERVICE_SECRET": INTERNAL_SECRET, "BILLING_OPERATOR_PROXY_SECRET": INTERNAL_SECRET, "BILLING_REDEEM_SECRET": "stage2_owner_health_redeem_secret_32", "BILLING_ENABLED_PROVIDERS": "mock", "PROVIDER_WEBHOOK_SECRETS_JSON": '{"mock":"stage2_owner_health"}'}),
-        ("storage", ROOT / "kokoro-storage", ["npm", "run", "dev"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["storage"], "KOKORO_REDIS_URL": REDIS_URLS["storage"], "KOKORO_STORAGE_PORT": "8085", "KOKORO_STORAGE_BFF_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_OBJECT_STORE_DRIVER": "local", "KOKORO_OBJECT_STORE_ROOT_DIR": str(log_dir / "objects")}),
-        ("capability", ROOT / "kokoro-capability", ["npm", "run", "dev"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["capability"], "KOKORO_REDIS_URL": REDIS_URLS["capability"], "KOKORO_CAPABILITY_PORT": "8086", "KOKORO_CAPABILITY_BFF_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_STORAGE_URL": "http://127.0.0.1:8085"}),
+        ("storage", ROOT / "kokoro-storage", ["pnpm", "dev"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["storage"], "KOKORO_REDIS_URL": REDIS_URLS["storage"], "KOKORO_STORAGE_PORT": "8085", "KOKORO_STORAGE_BFF_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_OBJECT_STORE_DRIVER": "local", "KOKORO_OBJECT_STORE_ROOT_DIR": str(log_dir / "objects")}),
+        ("capability", ROOT / "kokoro-capability", ["pnpm", "dev"], {"KOKORO_POSTGRES_URL": DATABASE_URLS["capability"], "KOKORO_REDIS_URL": REDIS_URLS["capability"], "KOKORO_CAPABILITY_PORT": "8086", "KOKORO_CAPABILITY_BFF_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_STORAGE_URL": "http://127.0.0.1:8085"}),
         ("bff-live", ROOT / "kokoro-bff", ["pnpm", "start"], {"KOKORO_BFF_HOST": "127.0.0.1", "KOKORO_BFF_PORT": "4300", "KOKORO_BFF_MODE": "live", "KOKORO_DOMAIN": "dev.kokoro.localhost", "KOKORO_BFF_SHARED_SECRET": INTERNAL_SECRET, "KOKORO_INTERNAL_SECRET_BFF": INTERNAL_SECRET, "KOKORO_BFF_POSTGRES_URL": DATABASE_URLS["bff"], "KOKORO_BFF_REDIS_URL": REDIS_URLS["bff"], "KOKORO_IAM_BASE_URL": "http://127.0.0.1:4211", "KOKORO_IAM_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_SYSTEM_BASE_URL": "http://127.0.0.1:4240", "KOKORO_MODEL_BASE_URL": "http://127.0.0.1:4221", "KOKORO_CAPABILITY_BASE_URL": "http://127.0.0.1:8086", "KOKORO_STORAGE_BASE_URL": "http://127.0.0.1:8085", "KOKORO_SCHEDULER_BASE_URL": "http://127.0.0.1:4252", "KOKORO_SCHEDULER_SERVICE_TOKEN": INTERNAL_SECRET, "KOKORO_SCHEDULER_TARGET_URL": "http://127.0.0.1:4300/internal/bff/scheduled-tasks/dispatch", "KOKORO_AGENT_ENABLED": "1", "KOKORO_AGENT_BASE_URL": "http://127.0.0.1:4401", "KOKORO_BILLING_BASE_URL": "http://127.0.0.1:4245"}),
         ("web", ROOT / "kokoro", ["pnpm", "dev"], {"PORT": "3000", "KOKORO_DOMAIN": "dev.kokoro.localhost", "KOKORO_BFF_BASE_URL": "http://127.0.0.1:4300", "KOKORO_INTERNAL_SECRET_WEB_BFF": INTERNAL_SECRET, "NEXT_PUBLIC_SESSION_PREVIEW": "1", "NEXT_TELEMETRY_DISABLED": "1"}),
         ("agent", ROOT / "kokoro-agent", ["uv", "run", "kokoro-agent-worker"], {"KOKORO_AGENT_DATABASE_URL": DATABASE_URLS["agent"], "KOKORO_REDIS_URL": REDIS_URLS["agent"], "KOKORO_AGENT_DATABASE_SCHEMA": "kokoro_agent_stage2", "KOKORO_DISABLE_STREAMING": "1"}),
@@ -245,11 +234,6 @@ def stop_processes(processes: list[tuple[str, subprocess.Popen[str]]]) -> None:
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
-
-
-def stop_infra() -> None:
-    for name in (POSTGRES_NAME, REDIS_NAME):
-        run(["docker", "rm", "-f", name], check=False)
 
 
 def snapshot_web_next_env() -> bytes | None:
@@ -440,14 +424,13 @@ def run_live_business_flow() -> list[dict[str, Any]]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", type=Path, default=ROOT / "docs/reports/2026-09-01-stage2-owner-health.json")
-    parser.add_argument("--keep-infra", action="store_true", help="leave disposable PostgreSQL/Redis containers running")
     args = parser.parse_args(argv)
-    evidence: dict[str, Any] = {"mode": "disposable-owner-health", "checks": [], "processes": [], "status": "FAIL"}
+    evidence: dict[str, Any] = {"mode": "shared-infra-source-processes", "checks": [], "processes": [], "status": "FAIL"}
     processes: list[tuple[str, subprocess.Popen[str]]] = []
     log_dir = Path("/tmp/kokoro-stage2-owner-health")
     original_web_next_env = snapshot_web_next_env()
     try:
-        start_infra()
+        prepare_shared_infra()
         apply_schemas()
         processes = start_processes(log_dir)
         for name, process in processes:
@@ -491,8 +474,6 @@ def main(argv: list[str] | None = None) -> int:
         evidence["error"] = str(error)
     finally:
         stop_processes(processes)
-        if not args.keep_infra:
-            stop_infra()
         restore_web_next_env(original_web_next_env)
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

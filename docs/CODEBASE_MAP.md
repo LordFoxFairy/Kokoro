@@ -6,7 +6,7 @@
 
 Root 不是业务运行时。它只保存：
 
-- Root 不保留业务数据库 schema；PostgreSQL/Redis migrations 由各正式业务仓和 `kokoro-agent` 各自拥有；旧集成 SQL fixture 已移到 Root 外历史归档；
+- Root 不保留业务数据库 schema；各正式业务仓和 `kokoro-agent` 各自拥有唯一 canonical schema，V1 不保留历史 migration 链；旧集成 SQL fixture 已移到 Root 外历史归档；
 - [`deploy/`](../deploy/)：Phase 1 三仓本地/生产入口和历史迁移夹具；
 - [`docs/`](./)：跨仓架构、API 索引、ADR、验收与报告；
 - [`scripts/`](../scripts/)：当前 BFF HTTP E2E/smoke、拓扑和治理工具；不生成子仓 API。

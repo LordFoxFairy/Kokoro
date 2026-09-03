@@ -48,14 +48,13 @@ src/
 
 - `infrastructure` 是合法的实现层；`adapter` 是实现角色而不是必须的顶层目录。一个仓库不同时建立
   `adapters/` 和 `infrastructure/` 两套同义实现层，也不把任何一个当成万能收纳目录。
-- `modules/` 只有在它明确表示 bounded context/feature module 时才可以存在；不能用来逃避
-  `model`、`application`、`repository` 和 `service` 的职责拆分。
+- 七个正式业务子仓不保留顶层 `src/modules/`；bounded context 直接组织在 Domain/Application 各层内部，
+  不能用 module 包装逃避 models、application、repositories 和 services 的职责拆分。
 - `common/`、`utils/` 不作为无边界业务收纳目录；确实跨域复用的纯技术原语应有明确 owner 和 API。
 - 不把整个业务压在一个 `service.ts`、`models.ts` 或 `application.ts` 中；一个文件只承担一个明确的 use case、aggregate、repository 或 transport concern。
 - `domain` 不依赖 `application`、`infrastructure` 和 transport；`application` 只协调 domain；具体 PostgreSQL、Redis、HTTP provider 实现在 `infrastructure`，只由 `bootstrap` 注入。
 - `interfaces` 只做协议转换，不持有领域规则；DTO 不等于 ORM 类型，model 不等于 DTO。
-- Mock/Fixture 默认放在 `test/fixtures/` 或 `test/doubles/`；只有明确支持 local runtime 的内存实现才可以进入
-  `infrastructure`, 且不能被 production bootstrap 默认装配。
+- Mock、Fixture、Fake、InMemory 实现只放在 `test/fixtures/` 或 `test/doubles/`；正式 `src/` 不承载测试替身。
 - 空的 README-only 目录、没有 owner 的旧目录、旧 compatibility alias 和搬空后的目录必须删除。
 
 推荐的 Capability 终态示例：
@@ -91,12 +90,12 @@ domain/application service，不属于 transport 或 repository SQL 拼装函数
 
 - `tenant_id` 是跨仓 opaque isolation context；每个业务查询、更新、删除和事务都必须显式带 tenant predicate。
 - `site_id` 只属于 System；System 通过 `tenant_id + host` 解析 Site，其他仓库不复制 Site 表，也不把 Site 作为 IAM 事实。
-- 资源主键使用 opaque `id`；主键不因为租户隔离再制造 `(tenant_id, id)` 的冗余唯一约束。
+- 单仓内统一选择 opaque `id` 或 `<resource>_id`；主键不因为租户隔离再制造 `(tenant_id, id)` 的冗余唯一约束。
 - 跨聚合、跨模块、跨仓引用由 service 在同一业务事务或明确的 saga/补偿流程中校验；跨仓由公开 API/RPC 校验。
 
 ## 4. PostgreSQL 约束红线
 
-- 所有 active 子仓库的 schema、migration、Prisma 生成 SQL 和测试数据库中均禁止 `FOREIGN KEY`、`REFERENCES` 和任何外键约束。
+- 所有 active 子仓库的 canonical schema、Prisma 生成 SQL 和测试数据库中均禁止 `FOREIGN KEY`、`REFERENCES` 和任何外键约束；V1 不存在历史 migration SQL。
 - 关系完整性由 application transaction、tenant predicate、资源存在性检查、状态机和 outbox/补偿机制维护。
 - `PRIMARY KEY` 保留为资源身份约束。
 - `UNIQUE` 只保留以下三类：
@@ -131,7 +130,7 @@ tenant 列。
 - `revision`、`content_sha256`、`idempotency_key`：只在版本、内容寻址或幂等确实存在时使用；
 - append-only event/ledger 表保留 `occurred_at`，通常不添加无意义的 `updated_at`。
 
-统一约定：时间使用 `TIMESTAMPTZ` 并按 UTC 解释；金额使用最小货币单位整数加 `currency`，不使用
+统一约定：时间使用 `TIMESTAMPTZ(3)` 并按 UTC 解释；金额使用最小货币单位整数加 `currency_code`，不使用
 浮点数；核心查询字段使用明确列，不把 `metadata_json` 当作关系字段；可空性、默认值和状态转换都在
 schema 与 application 中分别表达清楚。
 
@@ -171,7 +170,7 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 ### 4.4 SQL 文件和执行规则
 
 - canonical schema 按 extension、类型、表、索引、注释的顺序组织；每张表写明 owner 和关键不变量；
-- clean-slate `db:apply-schema` 在事务中执行当前 schema；`CREATE TABLE IF NOT EXISTS` 可以使用，便于本地重复安装；生产结构校验和清理由独立检查或运维流程负责；
+- clean-slate `db:apply-schema` 只在空数据库、事务与 advisory lock 中执行当前 schema，发现既有业务表立即失败；`CREATE TABLE IF NOT EXISTS` 可以保留，供手动或直接 SQL 使用，但不把 apply 命令变成 drift 修复器；
 - 所有 INSERT、UPDATE、DELETE 和 SELECT 使用参数占位符；禁止拼接用户输入、动态表名和排序字段；
 - 动态排序使用白名单映射，分页和批处理使用稳定唯一排序；
 - 每个索引都要对应真实查询或并发访问路径；索引顺序优先考虑 tenant、过滤列和排序列；
@@ -200,6 +199,27 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 - 幂等重放、并发冲突、失败重试、恢复和 outbox；
 - schema 禁止外键、禁止冗余 tenant-primary UNIQUE；
 - 本仓真实启动、PostgreSQL/Redis smoke 和 BFF v1 mock 联调。
+
+本地集成环境只维护一个共享 PostgreSQL 实例和一个共享 Redis 实例，二者可以是本机进程或各一个容器；
+禁止按仓重复启动。各仓按独立 database/schema 与固定 Redis logical DB 隔离：IAM=1、System=2、Model=3、
+Billing=4、Capability=5、Storage=6、Scheduler=7。业务服务只从源码直接启动；Docker 化业务服务只用于
+production candidate 构建与 smoke，不作为本地开发入口。
+
+### 6.1 交付、可观测性与供应链门禁
+
+- CI 和 tag release 使用同一组 lint、typecheck、test、build、canonical schema 与真实基础设施门禁；
+  release 不得只构建镜像而跳过数据库和 runtime smoke；
+- 生产镜像必须使用非 root 用户、声明 HEALTHCHECK，并在发布前完成候选镜像启动与 health/ready 验证；
+- Go 只使用官方仍支持的版本并在 `go.mod` 固定补丁版本；当前 Scheduler 基线为 `go 1.26.8`，
+  构建镜像同时固定 tag 与 digest；
+- 源码、依赖、配置、secret 与镜像执行阻断式扫描；只生成报告但允许高危结果继续发布不算门禁；
+- GitHub Actions 的第三方 action 固定到完整 commit SHA，并通过旁注记录语义版本；发布镜像生成 SBOM、
+  max provenance，并对最终不可变 digest 进行 keyless signature 或平台 attestation；
+- 外部 client 明确 connect/read/overall timeout；重试只用于可重试错误，采用 capped exponential backoff
+  和 jitter，写操作必须先具备幂等身份；
+- 结构化日志至少包含 `service`、`operation`、`request_id`、`trace_id`、`result`、`duration_ms`，禁止
+  记录 token、连接串、密码和敏感载荷；
+- 每仓维护 `docs/SLO.md` 与 runbook，目标和当前观测结果分开记录，定义错误预算、burn-rate 告警和处置链接。
 
 ## 7. 重构顺序
 
