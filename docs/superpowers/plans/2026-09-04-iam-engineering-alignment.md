@@ -175,6 +175,18 @@ docs/ACCEPTANCE.md
 结果窗口要考虑 JWT 秒级 expiry，不让 Date 毫秒差释放实际已经过期的结果。事务恢复留 S2b 独立提交。
 精确文件清单、最终 Schema 和测试证据在交接时复核，不由派工宣称实现已通过。
 
+### S2b 恢复验证准备（未派工）
+
+主控在 S1 主工作树基线独立复现两个问题：ROLLBACK 抛错掩盖原业务异常；COMMIT 连接错误后连接仍以普通
+release 返回池。先用纯生命周期 test double 证明异常流，再在独立 PG18.4 数据库执行真实 RequestMagicLink，
+由测试 wrapper 在实际 COMMIT 成功后抛出 ECONNRESET。调用方收到错误，但 receipt 已提交；使用原命令身份
+重试获得原 receipt，link/outbox/audit 各仅一行。未调用外部 provider，完成后只删除自己创建的数据库。
+这验证了“提交完成但响应丢失”的应用恢复模型，不冒充真实网络丢包实验。
+
+后续实现需保持该原子性与命令身份：未知提交销毁不确定连接，使用新连接恢复；自动重试只用于明确已受 receipt
+保护的命令，不能让任意 transaction callback 自动重做可能已提交的副作用。ROLLBACK 故障保留原 cause，
+失败恢复次数有界；结果仍不确定时返回明确错误，不伪装成功。S2b 的源码范围和持久测试在 S2a 交付后放行。
+
 ## 8. 主控并行预验（不修改 IAM 实现）
 
 ### SQL 查询计划
