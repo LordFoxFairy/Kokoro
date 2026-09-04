@@ -488,6 +488,42 @@ contract/README.md           # 有机器 contract 时：owner/version/generation
 11. 架构重构使用 `codex/` 分支和小粒度 commit；不把移动目录、功能修改、格式化和生成物更新混成不可审查提交。
 12. 不在已有 PostgreSQL/Redis 时重复启动容器；不以 Docker 应用容器替代源码 lint/test/dev 验证。
 
+### 11.1 多 Agent 主控与派工协议
+
+本节是所有后续重构任务的默认控制面。用户已经确认的目标、目录、时间、SQL、协议和本地依赖规则视为已
+锁定；收到“继续”“恢复”或等价指令时，直接从当前 goal、工作树和缺口队列继续，不重新询问已经确定的
+事项。
+
+1. 主 Agent 先把任务拆成互不重叠的 surface（仓库、bounded context、contract、UI/CSS、验证或文档），
+   再决定自己立即处理的关键路径；两个及以上独立 surface 默认并行派工。
+2. 一个仓库同一时刻只能有一个写入 Agent。只读审查 Agent 可以并行，但不得在审查期间暗中改文件；要写入
+   时必须先声明新的窄切片并确认没有重叠。
+3. 每个 worker 启动消息必须是中文，并明确：owner、绝对工作目录、允许写入的文件集合、明确排除的路径、
+   依赖方向、删除项、契约/Schema 影响、验证命令、commit 要求和报告格式。必须注入
+   `docs/CODEBASE_MAP.md`；缺失时先生成地图再派工。
+4. worker 可以继续拆分子任务，但只在主 Agent 明确允许时进行；子任务必须登记名称、owner、写入集合和依赖，
+   不能产生未命名或重复写入的隐形 worker。跨仓 contract 先由事实 owner 完成，消费者 worker 等 owner commit
+   后再启动。
+5. worker 只提交自己的窄切片，不替其他 Agent 暂存、回滚、格式化或清理文件。生成物、缓存、coverage、`.next`
+   和本地临时数据库不得进入 commit。完成消息统一使用：
+
+   ```text
+   状态：已提交 / 部分完成 / 被阻塞
+   commit：<sha 或未提交原因>
+   修改文件：<绝对路径列表>
+   验证：<命令 -> 实际结果>
+   未完成与风险：<明确列出，不用“应该可以”>
+   后续 owner：<仓库/Agent/主控>
+   ```
+
+6. worker 的退出码、口头“完成”、历史报告或设计评分都不是证据。主 Agent 收到 commit 后先审查 diff 和 owner
+   边界，再在主工作树重新运行对应 lint、typecheck、test、build、contract、Schema、integration 和 smoke；
+   只有这些输出与当前 commit 绑定后，才能移动缺口队列。
+7. 并行切片之间共享 PostgreSQL/Redis 时只由主控编排生命周期：先探测并复用已有实例，按固定 database/logical
+   DB 隔离；不得让多个 worker 各自启动同名容器、清空非自己创建的资源或把 Docker 应用容器当作源码验证。
+8. 主 Agent 每一波结束时维护简短的派工表（worker、仓库、写入集合、commit、验证、剩余风险），再决定下一波；
+   未完成的失败项保留在队列中，不通过放宽门禁、增加 alias、双读写或空测试来“清零”。
+
 ## 12. 默认验证命令
 
 Root 在十仓验证阶段另外执行：
