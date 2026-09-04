@@ -195,7 +195,19 @@ export function renderExample(example) {
   if (example === undefined) {
     return '';
   }
-  return `\n\n**Example（示例）**\n\n\`\`\`json\n${JSON.stringify(example, null, 2)}\n\`\`\`\n`;
+  const serialized = JSON.stringify(example, null, 2) ?? 'null';
+  let longestBacktickRun = 0;
+  let currentBacktickRun = 0;
+  for (const character of serialized) {
+    if (character === '`') {
+      currentBacktickRun += 1;
+      longestBacktickRun = Math.max(longestBacktickRun, currentBacktickRun);
+    } else {
+      currentBacktickRun = 0;
+    }
+  }
+  const fence = '`'.repeat(Math.max(3, longestBacktickRun + 1));
+  return `\n\n**Example（示例）**\n\n${fence}json\n${serialized}\n${fence}\n`;
 }
 
 export function firstExample(contract, mediaType) {

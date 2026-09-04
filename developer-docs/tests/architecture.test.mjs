@@ -106,11 +106,11 @@ test('scans generated reference output with the publication policy', () => {
   );
   writeFileSync(
     join(root, 'docs/reference/v1/generated/chat.md'),
-    `bad ${['java', 'script:alert(1)'].join('')}`,
+    '<script>alert(1)</script>',
   );
 
   assert.throws(
     () => assertGeneratedReferencePublication(root),
-    /publication|URL scheme/i,
+    /publication|HTML/i,
   );
 });

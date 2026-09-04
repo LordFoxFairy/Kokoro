@@ -150,7 +150,9 @@ export function writeManagedReferenceFiles(files, outputDirectory, options = {})
       if (typeof content !== 'string') {
         throw new Error(`generated file content must be text: ${relativePath}`);
       }
-      assertPublicationSafe(content, `generated reference ${relativePath}`);
+      assertPublicationSafe(content, `generated reference ${relativePath}`, {
+        allowGeneratedMarkup: true,
+      });
       const destination = join(temporaryDirectory, relativePath);
       mkdirSync(dirname(destination), { recursive: true });
       writeFileSync(destination, content);

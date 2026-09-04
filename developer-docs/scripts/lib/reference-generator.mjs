@@ -681,7 +681,9 @@ export function generateReferenceFiles(contract, catalogEntry) {
   );
 
   for (const [path, content] of files) {
-    assertPublicationSafe(content, `generated reference ${path}`);
+    assertPublicationSafe(content, `generated reference ${path}`, {
+      allowGeneratedMarkup: true,
+    });
   }
   return files;
 }

@@ -16,6 +16,7 @@ import {
   writeReferenceFiles,
 } from '../scripts/lib/reference-generator.mjs';
 import { assertPublicationSafe } from '../scripts/lib/publication-policy.mjs';
+import { renderExample } from '../scripts/lib/schema-renderer.mjs';
 
 function fixtureContract(visibility = 'public') {
   return {
@@ -285,6 +286,24 @@ test('rejects publication-unsafe extensions and URL schemes', () => {
     () => generateReferenceFiles(unsafeUrl, catalogEntry),
     /publication|URL scheme/i,
   );
+});
+
+test('rejects raw HTML in canonical descriptions while allowing generator markup', () => {
+  const unsafe = fixtureContract();
+  unsafe.paths['/v1/sessions/{id}/messages'].post.description =
+    '<script>alert(1)</script>';
+  assert.throws(
+    () => generateReferenceFiles(unsafe, catalogEntry),
+    /raw HTML|comments/i,
+  );
+
+  assert.doesNotThrow(() => generateReferenceFiles(fixtureContract(), catalogEntry));
+});
+
+test('keeps example content inside a dynamically sized code fence', () => {
+  const rendered = renderExample({ content: '```' });
+  assert.match(rendered, /````json\n/u);
+  assert.match(rendered, /\n````\n$/u);
 });
 
 test('distinguishes URL schemes from object-like data fields', () => {

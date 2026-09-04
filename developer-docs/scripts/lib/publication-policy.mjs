@@ -26,14 +26,18 @@ const DANGEROUS_SCHEME_PATTERN =
   /(?:^|[\s"'(=])(?:javascript|vbscript|file):(?=[a-z0-9_/$.'(])/iu;
 const DANGEROUS_DATA_URL_PATTERN =
   /(?:^|[\s"'(=])data:[^,\s"'`]*,/iu;
+const RAW_HTML_PATTERN = /<\/?[a-z][^>]*>/iu;
+const HTML_COMMENT_PATTERN = /<!--[\s\S]*?-->/u;
 const INTERNAL_OWNER_PATH =
   /(?:^|[/(\\])(?:\.\.?[/\\])*(kokoro-(?:agent|billing|capability|iam|model|scheduler|storage|system))(?:[/\\]|$)/iu;
+const GENERATED_MARKUP_PATTERN =
+  /<!-- Generated file\. Do not edit\. -->|<span class="api-method api-method--(?:delete|get|head|options|patch|post|put|trace)">|<\/span>/gu;
 
 function addViolation(violations, path, message) {
   violations.push(`${path}: ${message}`);
 }
 
-function inspectString(value, path, violations) {
+function inspectString(value, path, violations, options) {
   for (const pattern of SECRET_PATTERNS) {
     if (pattern.test(value)) {
       addViolation(violations, path, 'credential-shaped literal is not publishable');
@@ -42,6 +46,12 @@ function inspectString(value, path, violations) {
   }
   if (DANGEROUS_SCHEME_PATTERN.test(value) || DANGEROUS_DATA_URL_PATTERN.test(value)) {
     addViolation(violations, path, 'dangerous URL scheme is not publishable');
+  }
+  const markupCandidate = options.allowGeneratedMarkup
+    ? value.replace(GENERATED_MARKUP_PATTERN, '')
+    : value;
+  if (RAW_HTML_PATTERN.test(markupCandidate) || HTML_COMMENT_PATTERN.test(markupCandidate)) {
+    addViolation(violations, path, 'raw HTML or comments are not publishable');
   }
   const internalPath = INTERNAL_OWNER_PATH.exec(value);
   if (internalPath !== null) {
@@ -60,9 +70,9 @@ function inspectString(value, path, violations) {
   }
 }
 
-function inspectValue(value, path, violations, seen) {
+function inspectValue(value, path, violations, seen, options) {
   if (typeof value === 'string') {
-    inspectString(value, path, violations);
+    inspectString(value, path, violations, options);
     return;
   }
   if (value === null || typeof value !== 'object') {
@@ -73,7 +83,9 @@ function inspectValue(value, path, violations, seen) {
   }
   seen.add(value);
   if (Array.isArray(value)) {
-    value.forEach((item, index) => inspectValue(item, `${path}[${index}]`, violations, seen));
+    value.forEach((item, index) =>
+      inspectValue(item, `${path}[${index}]`, violations, seen, options),
+    );
     return;
   }
   for (const [key, child] of Object.entries(value)) {
@@ -84,7 +96,7 @@ function inspectValue(value, path, violations, seen) {
     ) {
       addViolation(violations, childPath, `unknown Kokoro extension ${key}`);
     }
-    inspectValue(child, childPath, violations, seen);
+    inspectValue(child, childPath, violations, seen, options);
   }
 }
 
@@ -96,9 +108,13 @@ export class PublicationPolicyError extends ReferenceGenerationError {
   }
 }
 
-export function assertPublicationSafe(value, label = 'publication input') {
+export function assertPublicationSafe(
+  value,
+  label = 'publication input',
+  options = {},
+) {
   const violations = [];
-  inspectValue(value, label, violations, new Set());
+  inspectValue(value, label, violations, new Set(), options);
   if (violations.length > 0) {
     throw new PublicationPolicyError(label, violations);
   }

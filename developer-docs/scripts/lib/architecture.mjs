@@ -291,6 +291,7 @@ export function assertGeneratedReferencePublication(portalRoot) {
     assertPublicationSafe(
       readFileSync(path, 'utf8'),
       `generated reference ${relative(root, path).split(sep).join('/')}`,
+      { allowGeneratedMarkup: true },
     );
   }
   return { filesScanned: files.length };

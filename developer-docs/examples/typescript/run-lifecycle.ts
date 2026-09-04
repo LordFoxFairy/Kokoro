@@ -249,12 +249,14 @@ class IncrementalSseParser {
 function readChunk(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   controller: AbortController,
+  onIdleTimeout: () => void,
 ): Promise<ReadableStreamReadResult<Uint8Array>> {
   return new Promise((resolve, reject) => {
     let settled = false;
     const idleTimer = setTimeout(() => {
       if (settled) return;
       settled = true;
+      onIdleTimeout();
       controller.abort();
       reject(new Error(`event stream idle timeout after ${STREAM_IDLE_TIMEOUT_MS}ms`));
     }, STREAM_IDLE_TIMEOUT_MS);
@@ -279,13 +281,25 @@ function isApprovalFrame(frame: SseFrame): boolean {
   return frame.data.type === 'CUSTOM' && frame.data.name === APPROVAL_EVENT_NAME;
 }
 
+function approvalToolId(frame: SseFrame): string {
+  if (!isApprovalFrame(frame)) {
+    throw new Error('Expected an approval frame');
+  }
+  const value = requireRecord(frame.data.value, 'SSE approval value');
+  return requireString(value, 'tool_id', 'SSE approval value');
+}
+
 function isTerminalFrame(frame: SseFrame): boolean {
   return typeof frame.data.type === 'string' && TERMINAL_EVENT_TYPES.has(frame.data.type);
 }
 
 async function consumeEventStream(lastEventId?: string): Promise<StreamObservation> {
   const controller = new AbortController();
-  const totalTimer = setTimeout(() => controller.abort(), STREAM_TOTAL_TIMEOUT_MS);
+  let timeoutKind: 'idle' | 'total' | undefined;
+  const totalTimer = setTimeout(() => {
+    timeoutKind = 'total';
+    controller.abort();
+  }, STREAM_TOTAL_TIMEOUT_MS);
   const headers: Record<string, string> = {
     ...serviceHeaders(),
     accept: 'text/event-stream',
@@ -315,7 +329,9 @@ async function consumeEventStream(lastEventId?: string): Promise<StreamObservati
     reader = response.body.getReader();
     const parser = new IncrementalSseParser();
     while (true) {
-      const chunk = await readChunk(reader, controller);
+      const chunk = await readChunk(reader, controller, () => {
+        timeoutKind = 'idle';
+      });
       if (chunk.done) {
         for (const frame of parser.finish()) {
           if (isApprovalFrame(frame) || isTerminalFrame(frame)) {
@@ -332,7 +348,10 @@ async function consumeEventStream(lastEventId?: string): Promise<StreamObservati
       }
     }
   } catch (error) {
-    if (controller.signal.aborted) {
+    if (timeoutKind === 'idle') {
+      throw new Error(`Kokoro event stream idle timeout after ${STREAM_IDLE_TIMEOUT_MS}ms`);
+    }
+    if (timeoutKind === 'total' || controller.signal.aborted) {
       throw new Error(`Kokoro event stream exceeded ${STREAM_TOTAL_TIMEOUT_MS}ms`);
     }
     throw error;
@@ -366,12 +385,13 @@ const approval = await consumeEventStream();
 if (!isApprovalFrame(approval.frame)) {
   throw new Error('Expected a waiting approval frame before resume');
 }
+const toolId = approvalToolId(approval.frame);
 
 await postJson(
   `/v1/sessions/${encodeURIComponent(sessionId)}/runs/${encodeURIComponent(runId)}/control`,
   'example-typescript-resume-001',
   {
-    decisions: [{ tool_id: 'tool_example', type: 'approve' }],
+    decisions: [{ tool_id: toolId, type: 'approve' }],
     kind: 'run.resume',
   },
 );
