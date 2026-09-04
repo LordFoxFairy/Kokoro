@@ -19,6 +19,7 @@ from .ten_repository_standard import (
     has_exact_relative_file,
     missing_contract_readme_fields,
     read_text,
+    sql_without_comments,
     source_files,
 )
 
@@ -121,6 +122,7 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
 
         for path in sql_files:
             text = read_text(path)
+            executable_sql = sql_without_comments(text)
             if re.search(r"\bFOREIGN\s+KEY\b|\bREFERENCES\b", text, re.IGNORECASE):
                 add(
                     failures,
@@ -129,8 +131,30 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                     f"{path.relative_to(repository)} contains FOREIGN KEY or REFERENCES",
                 )
             if re.search(
+                r"\bTIMESTAMPTZ\b(?!\s*\(\s*3\s*\))",
+                executable_sql,
+                re.IGNORECASE,
+            ):
+                add(
+                    failures,
+                    repository_name,
+                    "utc-time",
+                    f"{path.relative_to(repository)} must use TIMESTAMPTZ(3) for database instants",
+                )
+            if re.search(
+                r"\bCURRENT_TIMESTAMP\b(?!\s*\(\s*3\s*\))",
+                executable_sql,
+                re.IGNORECASE,
+            ):
+                add(
+                    failures,
+                    repository_name,
+                    "utc-time",
+                    f"{path.relative_to(repository)} must use CURRENT_TIMESTAMP(3) for timestamp defaults",
+                )
+            if re.search(
                 r"\bTIMESTAMP(?:\s*\([^)]*\))?\b(?!\s+WITH\s+TIME\s+ZONE)",
-                text,
+                executable_sql,
                 re.IGNORECASE,
             ):
                 add(
@@ -139,7 +163,7 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                     "utc-time",
                     f"{path.relative_to(repository)} contains a timestamp without time zone",
                 )
-            if re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", text, re.IGNORECASE):
+            if re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", executable_sql, re.IGNORECASE):
                 add(
                     failures,
                     repository_name,

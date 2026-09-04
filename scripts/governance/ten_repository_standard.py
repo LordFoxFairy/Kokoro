@@ -171,6 +171,18 @@ def read_text(path: Path) -> str:
         return ""
 
 
+def sql_without_comments(text: str) -> str:
+    """Remove SQL comments before applying lexical schema rules.
+
+    The governance checks are intentionally lexical, but explanatory comments
+    must not turn a valid schema into a false failure.  This helper is not a
+    SQL parser; it only removes the comment forms used by the canonical
+    schemas, while preserving line breaks for useful diagnostics.
+    """
+    without_block = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    return "\n".join(line.split("--", 1)[0] for line in without_block.splitlines())
+
+
 def has_exact_relative_file(repository: Path, relative: str) -> bool:
     current = repository
     for part in Path(relative).parts:

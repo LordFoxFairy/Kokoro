@@ -154,6 +154,21 @@ def test_question_mark_sql_detection_ignores_ui_ternaries() -> None:
     )
 
 
+def test_sql_comment_stripping_preserves_executable_schema_rules() -> None:
+    verifier = load_verifier()
+
+    sql = """
+    -- TIMESTAMPTZ and CURRENT_TIMESTAMP in this explanation are not SQL.
+    CREATE TABLE sample (
+      created_at TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+    ); /* TIMESTAMPTZ without precision is also only documentation here. */
+    """
+
+    assert "TIMESTAMPTZ(3)" in verifier.sql_without_comments(sql)
+    assert "TIMESTAMPTZ and CURRENT_TIMESTAMP" not in verifier.sql_without_comments(sql)
+    assert "without precision" not in verifier.sql_without_comments(sql)
+
+
 def test_exact_document_check_does_not_accept_wrong_case(tmp_path: Path) -> None:
     verifier = load_verifier()
     docs = tmp_path / "docs"
