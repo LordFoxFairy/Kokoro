@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 
@@ -9,6 +15,7 @@ import {
   generateReferenceFiles,
   writeReferenceFiles,
 } from '../scripts/lib/reference-generator.mjs';
+import { assertPublicationSafe } from '../scripts/lib/publication-policy.mjs';
 
 function fixtureContract(visibility = 'public') {
   return {
@@ -258,6 +265,14 @@ test('rejects publication-unsafe extensions and URL schemes', () => {
   );
 });
 
+test('distinguishes URL schemes from object-like data fields', () => {
+  assert.doesNotThrow(() => assertPublicationSafe('{"data":{"ok":true}}'));
+  assert.throws(
+    () => assertPublicationSafe('data:text/html,<script>alert(1)</script>'),
+    /dangerous URL scheme/,
+  );
+});
+
 test('keeps reference replacement inside managed or temporary directories', () => {
   const files = generateReferenceFiles(fixtureContract(), catalogEntry);
   const unmanaged = mkdtempSync(join(tmpdir(), 'kokoro-unmanaged-'));
@@ -287,6 +302,26 @@ test('keeps reference replacement inside managed or temporary directories', () =
     );
   } finally {
     rmSync(escapeDirectory, { force: true, recursive: true });
+  }
+});
+
+test('rejects a temporary output path hidden behind an escaping symlink', () => {
+  const temporaryRoot = mkdtempSync(join(tmpdir(), 'kokoro-output-root-'));
+  const outside = mkdtempSync(join(homedir(), '.kokoro-output-outside-'));
+  const link = join(temporaryRoot, 'link');
+  try {
+    symlinkSync(outside, link, 'dir');
+    assert.throws(
+      () =>
+        writeReferenceFiles(
+          generateReferenceFiles(fixtureContract(), catalogEntry),
+          join(link, 'generated'),
+        ),
+      /must be inside/,
+    );
+  } finally {
+    rmSync(temporaryRoot, { force: true, recursive: true });
+    rmSync(outside, { force: true, recursive: true });
   }
 });
 

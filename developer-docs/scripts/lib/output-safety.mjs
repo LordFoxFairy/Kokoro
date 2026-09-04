@@ -5,12 +5,21 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   renameSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  join,
+  relative,
+  resolve,
+  sep,
+} from 'node:path';
 
 import { assertPublicationSafe } from './publication-policy.mjs';
 
@@ -22,9 +31,41 @@ function isWithin(parent, child) {
     (!relativePath.startsWith(`..${sep}`) && relativePath !== '..' && !isAbsolute(relativePath));
 }
 
+function existingAncestor(path) {
+  let current = resolve(path);
+  while (!existsSync(current)) {
+    const parent = dirname(current);
+    if (parent === current) return current;
+    current = parent;
+  }
+  return current;
+}
+
+function realPathWithMissingSegments(path) {
+  const target = resolve(path);
+  const ancestor = existingAncestor(target);
+  const suffix = relative(ancestor, target);
+  return resolve(realpathSync(ancestor), suffix);
+}
+
+function isRealPathWithin(parent, child) {
+  return isWithin(realpathSync(parent), realPathWithMissingSegments(child));
+}
+
+function readDirectoryEntry(directory, name) {
+  try {
+    return lstatSync(join(directory, name));
+  } catch {
+    return undefined;
+  }
+}
+
 function readManagedMarker(directory) {
   const manifestPath = join(directory, 'manifest.json');
-  if (!existsSync(manifestPath)) return false;
+  const manifestStat = readDirectoryEntry(directory, 'manifest.json');
+  if (manifestStat === undefined || !manifestStat.isFile() || manifestStat.isSymbolicLink()) {
+    return false;
+  }
   try {
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     return manifest?.generatedBy === GENERATED_MARKER;
@@ -37,24 +78,38 @@ function assertOutputPath(outputDirectory, options) {
   const target = resolve(outputDirectory);
   const temporaryRoot = resolve(tmpdir());
   const home = resolve(homedir());
-  if (target === '/' || target === home || target === temporaryRoot) {
+  const targetRealPath = realPathWithMissingSegments(target);
+  if (
+    target === '/' ||
+    target === home ||
+    target === temporaryRoot ||
+    targetRealPath === '/' ||
+    targetRealPath === realpathSync(home) ||
+    targetRealPath === realpathSync(temporaryRoot)
+  ) {
     throw new Error(`reference output path is too broad: ${target}`);
   }
 
   let canonicalTarget;
   if (options.portalRoot !== undefined) {
     canonicalTarget = resolve(options.portalRoot, 'docs/reference/v1/generated');
-    if (target !== canonicalTarget && !isWithin(temporaryRoot, target)) {
+    const portalRoot = resolve(options.portalRoot);
+    const isCanonical = target === canonicalTarget;
+    const isTemporary = isRealPathWithin(temporaryRoot, target);
+    if (
+      (!isCanonical && !isTemporary) ||
+      (isCanonical && !isRealPathWithin(portalRoot, target))
+    ) {
       throw new Error(
         `reference output must be the managed generated directory or a temporary directory: ${target}`,
       );
     }
-  } else if (!isWithin(temporaryRoot, target)) {
+  } else if (!isRealPathWithin(temporaryRoot, target)) {
     throw new Error(`reference test output must be inside ${temporaryRoot}: ${target}`);
   }
 
-  if (existsSync(target)) {
-    const stat = lstatSync(target);
+  const stat = readDirectoryEntry(dirname(target), basename(target));
+  if (stat !== undefined) {
     if (!stat.isDirectory() || stat.isSymbolicLink()) {
       throw new Error(`reference output must be a real directory: ${target}`);
     }

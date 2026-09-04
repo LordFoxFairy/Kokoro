@@ -23,9 +23,9 @@ const SECRET_PATTERNS = Object.freeze([
 ]);
 
 const DANGEROUS_SCHEME_PATTERN =
-  /(?:^|[\s"'(=])(?:javascript|vbscript|file):/iu;
+  /(?:^|[\s"'(=])(?:javascript|vbscript|file):(?=[a-z0-9_/$.'(])/iu;
 const DANGEROUS_DATA_URL_PATTERN =
-  /(?:^|[\s"'(=])data:(?:text\/html|image\/svg\+xml|application\/javascript)/iu;
+  /(?:^|[\s"'(=])data:[^,\s"'`]*,/iu;
 const INTERNAL_OWNER_PATH =
   /(?:^|[/(\\])(?:\.\.?[/\\])*(kokoro-(?:agent|billing|capability|iam|model|scheduler|storage|system))(?:[/\\]|$)/iu;
 
