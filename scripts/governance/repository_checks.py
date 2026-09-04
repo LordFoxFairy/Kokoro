@@ -244,6 +244,7 @@ def check_scheduler(failures: list[Failure]) -> None:
 def check_docs(failures: list[Failure]) -> None:
     required = (
         ROOT / "AGENTS.md",
+        ROOT / "docs" / "INDEX.md",
         ROOT / "docs" / "ARCHITECTURE_STANDARD.md",
         ROOT / "docs" / "CURRENT.md",
         ROOT / "docs" / "CODEBASE_MAP.md",

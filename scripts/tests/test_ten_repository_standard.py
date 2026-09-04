@@ -93,6 +93,10 @@ def test_documentation_matrix_matches_the_governance_manual() -> None:
     assert verifier.REQUIRED_REPOSITORY_DIRECTORIES == ("docs/ADR",)
 
 
+def test_root_governance_has_a_dedicated_document_index() -> None:
+    assert (ROOT / "docs" / "INDEX.md").is_file()
+
+
 def test_typescript_strictness_includes_unknown_catch_variables() -> None:
     verifier = load_verifier()
 
