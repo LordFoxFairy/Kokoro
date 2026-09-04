@@ -5,7 +5,8 @@ from __future__ import annotations
 import re
 
 from .ten_repository_standard import (
-    REQUIRED_AGENT_LAYERS,
+    REQUIRED_AGENT_SOURCE_PATHS,
+    RETIRED_AGENT_TOP_LEVEL_DIRECTORIES,
     ROOT,
     Failure,
     add,
@@ -141,14 +142,28 @@ def check_agent(failures: list[Failure]) -> None:
     repository_name = "kokoro-agent"
     repository = ROOT / repository_name
     package_root = repository / "src" / "kokoro_agent"
-    for layer in REQUIRED_AGENT_LAYERS:
-        if not (package_root / layer).is_dir():
+    for source_path in REQUIRED_AGENT_SOURCE_PATHS:
+        if not (package_root / source_path).is_dir():
             add(
                 failures,
                 repository_name,
-                "layered-topology",
-                f"src/kokoro_agent/{layer}/ is missing",
+                "module-topology",
+                f"src/kokoro_agent/{source_path}/ is missing",
             )
+    retired = [
+        name
+        for name in RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
+        if (package_root / name).is_dir()
+    ]
+    if retired:
+        add(
+            failures,
+            repository_name,
+            "module-topology",
+            "retired top-level source directories exist: "
+            + ", ".join(f"src/kokoro_agent/{name}/" for name in retired)
+            + "; move code into an owning Python capability package",
+        )
 
     pyproject = read_text(repository / "pyproject.toml")
     if not re.search(
@@ -179,12 +194,13 @@ def check_agent(failures: list[Failure]) -> None:
         )
 
     forbidden_domain_import = re.compile(
-        r"(?:from|import)\s+kokoro_agent\.(?:application|infrastructure|interfaces)\b"
+        r"(?:from|import)\s+(?:psycopg|redis|httpx|fastapi|langchain|langgraph|deepagents)\b"
     )
     for path in source_files(repository):
         if path.suffix != ".py":
             continue
         relative = path.relative_to(repository).as_posix()
+        source_parts = path.relative_to(package_root).parts
         text = read_text(path)
         line_count = len(text.splitlines())
         if not relative.startswith("src/kokoro_agent/generated/") and line_count > 800:
@@ -205,14 +221,30 @@ def check_agent(failures: list[Failure]) -> None:
                 "python-strictness",
                 f"{relative} has a file-wide type suppression",
             )
-        if relative.startswith(
-            "src/kokoro_agent/domain/"
-        ) and forbidden_domain_import.search(text):
+        if "domain" in source_parts and forbidden_domain_import.search(text):
             add(
                 failures,
                 repository_name,
                 "dependency-direction",
-                f"{relative} imports outside Domain",
+                f"{relative} imports a database, network or Agent framework implementation from business rules",
+            )
+        if (
+            ("os.environ" in text or "load_dotenv(" in text)
+            and relative
+            not in {
+                "src/kokoro_agent/settings.py",
+                "src/kokoro_agent/worker.py",
+                "src/kokoro_agent/cli.py",
+            }
+            and not relative.startswith(
+                ("src/kokoro_agent/entrypoints/", "src/kokoro_agent/runtime/")
+            )
+        ):
+            add(
+                failures,
+                repository_name,
+                "configuration-boundary",
+                f"{relative} reads environment variables outside config/runtime composition",
             )
         if re.search(
             r"\b(?:NoSkillsClient|InMemory\w*Repository|Fake\w*|Fixture\w*)\b", text

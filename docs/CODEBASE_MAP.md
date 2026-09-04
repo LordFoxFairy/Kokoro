@@ -2,6 +2,11 @@
 
 状态：2026-09-03 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
 
+> 2026-09-04 目标裁决：按 [ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md)，
+> `kokoro-model` 将 clean-slate 合入 `kokoro-system` 的 `model-catalog` 模块，`kokoro-capability` 将重命名为
+> `kokoro-platform`，首批一级域为 `skills` 与 `mcp`。下表在物理 cutover 完成前仍记录当前 checkout，不能被
+> 误读为最终目标。
+
 ## Root：`Kokoro`
 
 Root 不是业务运行时。它只保存：
@@ -43,7 +48,9 @@ Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 保�
 
 ## 已归档仓
 
-`kokoro-session`、`kokoro-gateway`、`kokoro-platform`、`kokoro-web`（旧 monorepo）、`kokoro-credit` 和旧 Site 占位目录均已退出当前拓扑。Chat 属于 BFF 内部模块；Credit 属于 Billing；不再创建这些独立业务仓。
+`kokoro-session`、`kokoro-gateway`、旧 `kokoro-platform`、`kokoro-web`（旧 monorepo）、`kokoro-credit` 和旧 Site
+占位目录均已退出当前拓扑。ADR-029 重新采用 `kokoro-platform` 作为 Capability 的目标新名称，但不恢复历史
+platform 实现。Chat 属于 BFF 内部模块；Credit 属于 Billing。
 
 历史资料仍可在 handbook/reports 中查阅，但必须以“历史/迁移材料”理解，不能作为当前实现入口。
 

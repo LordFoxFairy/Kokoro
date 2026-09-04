@@ -4,25 +4,48 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
-REQUIRED_TS_LAYERS = (
-    "domain",
+REQUIRED_NODE_ENGINE = ">=24 <25"
+REQUIRED_PNPM_VERSION = "11.25.0"
+REQUIRED_TS_SOURCE_PATHS = ("modules", "config")
+RETIRED_TS_TOP_LEVEL_DIRECTORIES = (
+    "adapters",
     "application",
+    "clients",
+    "common",
+    "contracts",
+    "controllers",
+    "database",
+    "domain",
+    "dtos",
+    "http",
     "infrastructure",
     "interfaces",
-    "config",
-    "bootstrap",
+    "middlewares",
+    "models",
+    "ports",
+    "postgres",
+    "prisma",
+    "redis",
+    "repositories",
+    "services",
+    "types",
+    "utils",
 )
-REQUIRED_AGENT_LAYERS = (
-    "domain",
+REQUIRED_AGENT_SOURCE_PATHS = ("execution",)
+RETIRED_AGENT_TOP_LEVEL_DIRECTORIES = (
     "application",
+    "domain",
     "infrastructure",
     "interfaces",
+    "modules",
+    "ports",
+    "repositories",
 )
 REQUIRED_SCHEDULER_LAYERS = (
     "domain",
@@ -63,9 +86,11 @@ REQUIRED_TS_COMPILER_OPTIONS = (
     "exactOptionalPropertyTypes",
     "noImplicitOverride",
     "noImplicitReturns",
-    "noUnusedLocals",
-    "noUnusedParameters",
+    "noFallthroughCasesInSwitch",
     "useUnknownInCatchVariables",
+    "forceConsistentCasingInFileNames",
+    "isolatedModules",
+    "noEmitOnError",
 )
 
 
@@ -74,28 +99,34 @@ class RepositoryProfile:
     kind: str
     requires_schema: bool
     redis_database: int | None
-    required_layers: tuple[str, ...] = ()
+    required_source_paths: tuple[str, ...] = ()
 
 
 REPOSITORY_PROFILES = {
     "kokoro": RepositoryProfile("web", False, None),
-    "kokoro-bff": RepositoryProfile("typescript-service", True, 8, REQUIRED_TS_LAYERS),
-    "kokoro-agent": RepositoryProfile("python-service", True, 9, REQUIRED_AGENT_LAYERS),
-    "kokoro-iam": RepositoryProfile("typescript-service", True, 1, REQUIRED_TS_LAYERS),
+    "kokoro-bff": RepositoryProfile(
+        "typescript-service", True, 8, REQUIRED_TS_SOURCE_PATHS
+    ),
+    "kokoro-agent": RepositoryProfile(
+        "python-service", True, 9, REQUIRED_AGENT_SOURCE_PATHS
+    ),
+    "kokoro-iam": RepositoryProfile(
+        "typescript-service", True, 1, REQUIRED_TS_SOURCE_PATHS
+    ),
     "kokoro-system": RepositoryProfile(
-        "typescript-service", True, 2, REQUIRED_TS_LAYERS
+        "typescript-service", True, 2, REQUIRED_TS_SOURCE_PATHS
     ),
     "kokoro-model": RepositoryProfile(
-        "typescript-service", True, 3, REQUIRED_TS_LAYERS
+        "typescript-service", True, 3, REQUIRED_TS_SOURCE_PATHS
     ),
     "kokoro-billing": RepositoryProfile(
-        "typescript-service", True, 4, REQUIRED_TS_LAYERS
+        "typescript-service", True, 4, REQUIRED_TS_SOURCE_PATHS
     ),
     "kokoro-capability": RepositoryProfile(
-        "typescript-service", True, 5, REQUIRED_TS_LAYERS
+        "typescript-service", True, 5, REQUIRED_TS_SOURCE_PATHS
     ),
     "kokoro-storage": RepositoryProfile(
-        "typescript-service", True, 6, REQUIRED_TS_LAYERS
+        "typescript-service", True, 6, REQUIRED_TS_SOURCE_PATHS
     ),
     "kokoro-scheduler": RepositoryProfile(
         "go-service", True, 7, REQUIRED_SCHEDULER_LAYERS
@@ -127,6 +158,7 @@ def required_quality_scripts(repository_name: str) -> tuple[str, ...]:
         return ("lint", "typecheck", "test", "build", "test:e2e")
     if profile.kind == "typescript-service":
         return (
+            "format:check",
             "lint",
             "typecheck",
             "test",
@@ -227,28 +259,41 @@ def package_scripts(repository: Path) -> dict[str, object]:
     return scripts if isinstance(scripts, dict) else {}
 
 
-def effective_ts_compiler_options(
-    path: Path, visited: set[Path] | None = None
-) -> dict[str, object]:
-    visited = visited or set()
-    resolved = path.resolve()
-    if resolved in visited or not path.is_file():
-        return {}
-    visited.add(resolved)
+class TypeScriptConfigError(ValueError):
+    """The installed compiler could not produce an authoritative configuration."""
+
+
+def effective_ts_compiler_options(path: Path) -> dict[str, object]:
+    """Delegate JSONC, extends and defaults to the repository's own compiler.
+
+    Never download tools during audit or silently reinterpret invalid JSONC.
+    The caller reports an explicit unresolved-toolchain diagnostic on failure.
+    """
+    compiler = path.parent / "node_modules" / "typescript" / "bin" / "tsc"
+    if not path.is_file() or not compiler.is_file():
+        raise TypeScriptConfigError("tsconfig.json or installed TypeScript is missing")
     try:
-        config = json.loads(read_text(path))
-    except json.JSONDecodeError:
-        return {}
-    options: dict[str, object] = {}
-    parent = config.get("extends")
-    if isinstance(parent, str) and parent.startswith("."):
-        parent_path = path.parent / parent
-        if parent_path.suffix != ".json":
-            parent_path = parent_path.with_suffix(".json")
-        options.update(effective_ts_compiler_options(parent_path, visited))
-    own = config.get("compilerOptions")
-    if isinstance(own, dict):
-        options.update(own)
+        result = subprocess.run(
+            ["node", str(compiler), "--showConfig", "-p", str(path)],
+            cwd=path.parent,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise TypeScriptConfigError("tsc --showConfig could not run") from error
+    if result.returncode != 0:
+        raise TypeScriptConfigError(
+            "tsc --showConfig failed; run it in the repository for diagnostics"
+        )
+    try:
+        config = json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise TypeScriptConfigError("tsc --showConfig did not return JSON") from error
+    options = config.get("compilerOptions") if isinstance(config, dict) else None
+    if not isinstance(options, dict):
+        raise TypeScriptConfigError("resolved compilerOptions are missing")
     return options
 
 

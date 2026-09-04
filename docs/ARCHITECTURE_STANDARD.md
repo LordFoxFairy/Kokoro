@@ -1,303 +1,154 @@
-# Kokoro 正式子仓统一工程规范 v1
+# Kokoro 总体架构规范 v1
 
-状态：十仓生产级重构基线，2026-09-04。
+状态：正式目标，2026-09-04。
 
-本文是当前所有 active 子仓库的实现规范（Web、BFF、Agent，以及 IAM、System、Model、Billing、Capability、Storage、Scheduler）。子仓库的 `API_CONTRACT`、本仓技术设计和测试可以细化本文，不能重新定义目录分层、租户隔离和数据库约束规则。
+本文只定义系统级边界。语言目录、代码风格与 SQL 细节由以下唯一专项手册负责：
 
-## 1. 设计依据与统一取舍
+- [PostgreSQL 与 SQL 工程规范](kokoro-handbook/standards/03-sql-and-postgresql.md)
+- [TypeScript 后端成熟工程规范](kokoro-handbook/standards/08-typescript-backend-engineering.md)
+- [Python 后端成熟工程规范](kokoro-handbook/standards/09-python-backend-engineering.md)
 
-本规范不是把某一套目录名当成“大厂标准”。Microsoft 的 DDD 微服务参考架构明确区分
-Domain、Application、Infrastructure 和 Web，并建议 Repository interface 与实现分离；同时也明确说明，
-简单 CRUD 服务不必强行套完整 DDD。NestJS 把 feature module 作为大型应用的组织方式，Go 官方生态则常见
-`cmd`、`internal` 和按 package 聚合的布局。因此本项目统一的是**依赖方向、边界和文件职责**，不是机械禁止
-`adapter`、`infrastructure` 或 `module` 这些词。
+## 1. 架构原则
 
-依据：
-
-- [Microsoft: DDD-oriented microservice](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/ddd-oriented-microservice)
-- [Microsoft: infrastructure persistence and Repository](https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design)
-- [NestJS: Modules and feature modules](https://docs.nestjs.com/modules)
-- [Go project layout: cmd/internal](https://github.com/golang-standards/project-layout)
-
-因此，TypeScript 子仓库采用以下默认布局；必要时可以按 bounded context 做局部 feature module，但必须遵守同样的依赖规则：
+Kokoro 采用“少量独立服务 + 服务内业务模块”的结构。Bounded context 是代码和数据边界，不等于每个名词都要
+创建一个仓库或微服务。拆服务必须由独立 owner、SLO、扩缩容、故障域、安全域或发布节奏证明，不能靠目录美观。
 
 ```text
-src/
-  bootstrap/                 # 组合根：配置、repo、service、transport 装配
-  config/                    # 环境变量解析与启动配置
-  domain/<bounded-context>/
-    models/                  # 聚合根、实体、值对象、领域不变量
-    enums/                   # 领域枚举和状态
-    errors/                  # 领域错误
-    repositories/            # Repository interface/port
-    services/                # 必要的 domain service
-  application/<bounded-context>/
-    commands/                # use-case command
-    queries/                 # use-case query
-    dto/                     # use-case 输入/输出 DTO，不暴露数据库 row
-    mappers/                 # domain/application/transport 映射
-    ports/                   # 外部能力接口
-  infrastructure/
-    repositories/<bounded-context>/ # PostgreSQL/Redis repository 实现
-    clients/<dependency>/           # IAM、Storage、MCP、provider client
-  interfaces/http/            # HTTP 协议映射、鉴权入口、统一 envelope
-  interfaces/rpc/             # RPC 协议映射和 generated message 转换
+Browser -> Web -> BFF -> internal owner services / Agent / Scheduler
 ```
 
-规则：
+- 一个业务事实只有一个 owner 和一个 writer。
+- 跨仓只通过版本化 API/RPC/Event；不共享数据库、ORM schema、SQL、业务 DTO 或源码 import。
+- 服务内按业务模块聚合；具体物理目录遵循语言手册。
+- HTTP/RPC/worker 只处理协议，业务 Service/use case 负责授权、事务和编排，Repository/client 负责 I/O。
+- 简单模块不制造 DDD 空层，复杂状态机才建立显式 Domain Model。
 
-- `infrastructure` 是合法的实现层；`adapter` 是实现角色而不是必须的顶层目录。一个仓库不同时建立
-  `adapters/` 和 `infrastructure/` 两套同义实现层，也不把任何一个当成万能收纳目录。
-- 正式业务服务仓不保留顶层 `src/modules/`；bounded context 直接组织在 Domain/Application 各层内部，
-  不能用 module 包装逃避 models、application、repositories 和 services 的职责拆分。
-- `common/`、`utils/` 不作为无边界业务收纳目录；确实跨域复用的纯技术原语应有明确 owner 和 API。
-- 不把整个业务压在一个 `service.ts`、`models.ts` 或 `application.ts` 中；一个文件只承担一个明确的 use case、aggregate、repository 或 transport concern。
-- `domain` 不依赖 `application`、`infrastructure` 和 transport；`application` 只协调 domain；具体 PostgreSQL、Redis、HTTP provider 实现在 `infrastructure`，只由 `bootstrap` 注入。
-- `interfaces` 只做协议转换，不持有领域规则；DTO 不等于 ORM 类型，model 不等于 DTO。
-- Mock、Fixture、Fake、InMemory 实现只放在 `test/fixtures/` 或 `test/doubles/`；正式 `src/` 不承载测试替身。
-- 空的 README-only 目录、没有 owner 的旧目录、旧 compatibility alias 和搬空后的目录必须删除。
+## 2. 目标运行仓与 owner
 
-同类目录使用复数：`models/`、`enums/`、`errors/`、`repositories/`、`services/`、`commands/`、
-`queries/`、`mappers/`、`ports/`、`clients/`；`dto/`、`api/`、`http/`、`rpc/`、`sql/` 保持协议/缩写
-惯例。普通源码超过 400 行进入拆分评审、超过 800 行默认阻断；React 模块超过 300/500 行、CSS module
-超过 300/500 行分别进入评审/阻断。拆分必须围绕业务职责，不按行号机械切割。
-
-推荐的 Capability 终态示例：
-
-```text
-src/
-  domain/skill/{models,enums,errors,repositories,services}/
-  domain/mcp/{models,enums,errors,repositories,services}/
-  application/skill/{commands,queries,dto,mappers,ports}/
-  application/mcp/{commands,queries,dto,mappers,ports}/
-  infrastructure/repositories/{skill,mcp,command}/
-  infrastructure/clients/{iam,storage,secret,mcp-provider}/
-  interfaces/http/
-  interfaces/rpc/
-  bootstrap/
-```
-
-## 2. DDD 依赖方向
-
-```text
-interfaces                  -> application service -> domain model/repository contracts
-bootstrap                   -> concrete repository/client + application service + interfaces
-infrastructure.repository  -> domain repository contracts + database driver
-infrastructure.client      -> external wire/SDK only
-domain                      -> no database, Redis, HTTP, RPC, framework import
-```
-
-Repository interface 放在 domain，具体 Repository 放在 infrastructure；`client` 是跨仓或 provider 的外部边界。
-跨仓资源只保存 opaque ID 和必要的快照，不读取对方数据库。业务状态、权限判断、幂等和状态迁移属于
-domain/application service，不属于 transport 或 repository SQL 拼装函数。
-
-## 3. 租户与资源标识
-
-- `tenant_id` 是跨仓 opaque isolation context；每个业务查询、更新、删除和事务都必须显式带 tenant predicate。
-- `site_id` 只属于 System；System 通过 `tenant_id + host` 解析 Site，其他仓库不复制 Site 表，也不把 Site 作为 IAM 事实。
-- 单仓内统一选择 opaque `id` 或 `<resource>_id`；主键不因为租户隔离再制造 `(tenant_id, id)` 的冗余唯一约束。
-- 跨聚合、跨模块、跨仓引用由 service 在同一业务事务或明确的 saga/补偿流程中校验；跨仓由公开 API/RPC 校验。
-
-## 4. PostgreSQL 约束红线
-
-- 所有 active 子仓库的 canonical schema、Prisma 生成 SQL 和测试数据库中均禁止 `FOREIGN KEY`、`REFERENCES` 和任何外键约束；V1 不存在历史 migration SQL。
-- 关系完整性由 application transaction、tenant predicate、资源存在性检查、状态机和 outbox/补偿机制维护。
-- `PRIMARY KEY` 保留为资源身份约束。
-- `UNIQUE` 只保留以下三类：
-  1. 真实业务自然键，例如 tenant 内的 `site_key`、provider 外部号、版本号；
-  2. 幂等键，例如 `(tenant_id, command_name, idempotency_key)`；
-  3. 明确的一对一或序列约束，例如一个 settlement 只能对应一个 reversal。
-- 禁止为外键服务而添加 `(tenant_id, primary_id)`、`(tenant_id, child_id)` 等冗余 UNIQUE；禁止以复合 UNIQUE 伪装跨聚合关系。
-- 每个 UNIQUE 必须在本仓 `SCHEMA_OWNER_INVENTORY` 或技术设计中写出业务语义；没有业务语义的 UNIQUE 直接删除。
-
-### 4.1 Schema 基线字段
-
-“公共字段”是按表的生命周期和 owner 选择的基线，不是所有表无条件复制一套字段。普通可变的
-tenant-owned 资源通常包含：
-
-```sql
- id          UUID           PRIMARY KEY,
- tenant_id   TEXT           NOT NULL,
- created_at  TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
- updated_at  TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
-```
-
-项目可以统一使用 UUID、ULID 或 opaque text，但一个仓库内应保持一致；不要同时混用自增整数、UUID
-和随机业务字符串。`tenant_id` 只出现在 tenant-owned 表中；global catalog 表不添加没有语义的
-tenant 列。
-
-按实际不变量选择以下字段：
-
-- `status`：存在生命周期状态机时使用，并配合 `CHECK`；不要用多个互相矛盾的 boolean 代替状态机；
-- `created_by`、`updated_by`：需要审计主体时使用 opaque identity reference；
-- `version`：需要乐观并发控制时使用非负整数；
-- `deleted_at`、`deleted_by`：只有软删除是业务语义时使用；删除语义不明确时保留明确状态或物理删除；
-- `revision`、`content_sha256`、`idempotency_key`：只在版本、内容寻址或幂等确实存在时使用；
-- append-only event/ledger 表保留 `occurred_at`，通常不添加无意义的 `updated_at`。
-
-统一约定：时间使用 `TIMESTAMPTZ(3)` 并按 UTC 解释；金额使用最小货币单位整数加 `currency_code`，不使用
-浮点数；核心查询字段使用明确列，不把 `metadata_json` 当作关系字段；可空性、默认值和状态转换都在
-schema 与 application 中分别表达清楚。
-
-### 4.2 JOIN 与跨表关系
-
-- 同一数据库、同一业务 owner、同一 bounded context 内允许 JOIN；JOIN 由 Infrastructure 的
-  Repository 或 Query Service 执行，Application 决定业务用例和权限语义。
-- 跨仓库、跨数据库和跨 owner 不做 JOIN，使用 API/RPC、快照或明确的异步投影。
-- tenant-owned 表参与 JOIN 时，JOIN 条件和过滤条件都带 tenant 范围，避免只按资源 ID 连接。
-- 读取详情或列表时优先使用一次合理 JOIN，避免 N+1；写入关系时先由 Application 校验业务
-  关系，再由 Repository 在同一事务中执行参数化 SQL。
-- `INNER JOIN` 表示关联记录必须存在；可选关系使用 `LEFT JOIN`，其过滤条件放在 `ON` 时保持
-  左连接语义；存在性判断优先使用 `EXISTS`，不为了判断存在而拉取整行。
-- 查询显式列名，避免 `SELECT *`；稳定分页使用 `(created_at, id)` 等唯一排序键的 keyset cursor，
-  不把 offset 当作长期 API 协议。
-- 写路径涉及竞争时使用固定锁顺序和 `SELECT ... FOR UPDATE`；Repository 负责 SQL 锁，Domain
-  负责状态转换，二者不互相越界。
-
-### 4.3 无外键项目的关系维护
-
-外键是否使用不是所有公司的统一答案：同一数据库内强一致关系通常可以使用外键；跨服务数据库本来
-就无法使用跨库外键。Kokoro V1 选择不使用外键，因此每个关系写入必须具备以下闭环：
-
-```text
-tenant-scoped existence check
-→ permission/owner check
-→ state check
-→ fixed-order row lock when concurrent
-→ write relation and fact in one transaction
-→ UNIQUE/CHECK protection for local invariants
-→ failure rollback and, for async flows, reconciliation evidence
-```
-
-Application 负责“是否允许建立关系”，Repository 负责“如何查询和写入关系”，SQL 负责参数绑定、锁和
-本地约束。JOIN 可以用于一次读取关系，不能替代权限判断，也不能把跨仓业务事实拼成一个数据库查询。
-
-### 4.4 SQL 文件和执行规则
-
-- canonical schema 按 extension、类型、表、索引、注释的顺序组织；每张表写明 owner 和关键不变量；
-- clean-slate `db:apply-schema` 只在空数据库、事务与 advisory lock 中执行当前 schema，发现既有业务表立即失败；`CREATE TABLE IF NOT EXISTS` 可以保留，供手动或直接 SQL 使用，但不把 apply 命令变成 drift 修复器；
-- 所有 INSERT、UPDATE、DELETE 和 SELECT 使用参数占位符；禁止拼接用户输入、动态表名和排序字段；
-- 动态排序使用白名单映射，分页和批处理使用稳定唯一排序；
-- 每个索引都要对应真实查询或并发访问路径；索引顺序优先考虑 tenant、过滤列和排序列；
-- 不把业务状态转换写进难以测试的触发器；复杂规则放在 Domain/Application，schema 保留 NOT NULL、
-  CHECK、PRIMARY KEY 和有业务语义的 UNIQUE。
-
-## 5. V1 clean-build policy（目标门禁）
-
-当前产品按 V1 clean-build 收敛，尚未上线的数据不作为兼容约束。因此最终形态不建立历史迁移链，也不保留旧代码兼容层：
-
-- 每个仓库只有一份 canonical schema（Prisma 仓库的 `schema.prisma` 同时必须生成无外键 SQL）；
-- 不创建 `database/migrations/`，不创建 `*_schema_migrations` ledger，不扫描历史 migration；
-- 本地和 CI 使用 fresh database，重复验证先销毁再重建；
-- 删除旧表名、旧字段、旧 endpoint、旧 header、旧 token、旧 DTO 和旧业务目录，不做双读、双写、alias 或 fallback；
-- `dist/`、generated client、generated protobuf 只由当前源码重新生成，旧生成物不作为兼容入口；
-- 新契约直接采用 V1 最终形态，破坏旧本地调用方不需要兼容窗口。
-
-因此目标态的 `db:apply-schema` 含义是“在空数据库安装当前 V1 schema”，不是升级任意历史数据库。收敛期间如某仓仍有 migration/FK/旧兼容实现，必须在该仓的状态文档中列为未完成项，并在进入发布门禁前删除；检查应该失败并提示重建，而不是吞掉错误继续运行。
-
-## 6. API 与测试门禁
-
-协议可见性固定为 `public`、`browser-private`、`internal-owner`、`event-protocol`。只有 BFF 的
-`public` Product API 进入对外 Developer API 门户；Web 同源 adapter 是 browser-private；七个 owner、Agent、
-Scheduler 的服务协议默认 internal-owner。每条 OpenAPI operation 声明 owner、visibility、stability、
-idempotency 和 permission 扩展，generated code 必须记录 contract version、source commit 与 digest。
-
-每个仓库的 `API_CONTRACT/docs` 必须说明 request/response、错误码、`request_id`、`Idempotency-Key`、分页 cursor、事件、权限和 tenant 边界。测试至少覆盖：
-
-- 正向、字段校验、资源状态机；
-- tenant 越权和错误身份；
-- 幂等重放、并发冲突、失败重试、恢复和 outbox；
-- schema 禁止外键、禁止冗余 tenant-primary UNIQUE；
-- 本仓真实启动、PostgreSQL/Redis smoke 和 BFF v1 mock 联调。
-
-本地集成环境只维护一个共享 PostgreSQL 实例和一个共享 Redis 实例，二者可以是本机进程或各一个容器；
-脚本先探测并复用，禁止按仓重复启动。各仓按独立 database/schema 与固定 Redis logical DB 隔离：IAM=1、
-System=2、Model=3、Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 保留；Web
-不拥有数据库或 Redis。业务服务只从源码直接启动；Docker 化业务服务只用于 production candidate 构建与
-smoke，不作为本地开发入口。
-
-### 6.1 Web、BFF、Agent 与 AG-UI 边界
-
-```text
-Browser -> Web same-origin adapter -> BFF public Product API
-                                      -> internal owner APIs
-                                      -> Agent run/control/event API
-                                      -> Scheduler generic dispatch API
-```
-
-- BFF 拥有 Conversation、Message、Share、Project、ScheduledTask 和 durable public AG-UI projection；
-- Agent 只拥有 Run、Checkpoint、Lease、Tool Journal、执行事件、HITL 与 Evidence；
-- Web 与 BFF 之间的 Agent 网络事件只使用 AG-UI，删除 legacy SessionEvent、双读和 fallback；
-- Web 的 `AgUiChatTransport` 将 AG-UI 投影为 Vercel AI SDK `UIMessage`，但不建立第二套网络流或 cursor；
-- BFF 的 AG-UI cursor、replay 和断线恢复以 PostgreSQL durable projection 为事实，Redis 只作传输协调；
-- HITL 使用结构化 interrupt/resume，并携带同 thread、全部未决 interrupt 与幂等 identity。
-
-### 6.2 文档、交付、可观测性与供应链门禁
-
-- 每仓维护 `README.md`、`INDEX.md`、`docs/INDEX.md`、`docs/CURRENT.md`、
-  `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、
-  `docs/RELIABILITY.md`、`docs/ACCEPTANCE.md`、`docs/SLO.md`、`docs/RUNBOOK.md` 和有效 ADR；
-- 有机器契约的仓库维护 `contract/README.md`，记录 owner、visibility、version、generation、breaking policy
-  和 provenance；Root 门户从固定 artifact 生成公开 Reference，不复制可编辑 contract；
-- Web 执行 Playwright、axe、视觉回归、响应式和 bundle budget；CSS 使用语义 token，focus-visible 与
-  reduced-motion 是阻断门禁；
-
-- CI 和 tag release 使用同一组 lint、typecheck、test、build、canonical schema 与真实基础设施门禁；
-  release 不得只构建镜像而跳过数据库和 runtime smoke；
-- 生产镜像必须使用非 root 用户、声明 HEALTHCHECK，并在发布前完成候选镜像启动与 health/ready 验证；
-- Go 只使用官方仍支持的版本并在 `go.mod` 固定补丁版本；当前 Scheduler 基线为 `go 1.26.8`，
-  构建镜像同时固定 tag 与 digest；
-- 源码、依赖、配置、secret 与镜像执行阻断式扫描；只生成报告但允许高危结果继续发布不算门禁；
-- GitHub Actions 的第三方 action 固定到完整 commit SHA，并通过旁注记录语义版本；发布镜像生成 SBOM、
-  max provenance，并对最终不可变 digest 进行 keyless signature 或平台 attestation；
-- 外部 client 明确 connect/read/overall timeout；重试只用于可重试错误，采用 capped exponential backoff
-  和 jitter，写操作必须先具备幂等身份；
-- 结构化日志至少包含 `service`、`operation`、`request_id`、`trace_id`、`result`、`duration_ms`，禁止
-  记录 token、连接串、密码和敏感载荷；
-- 每仓维护 `docs/SLO.md` 与 runbook，目标和当前观测结果分开记录，定义错误预算、burn-rate 告警和处置链接。
-
-### 6.3 依赖与技术选型治理
-
-依赖必须活跃、主流、可维护且适配本仓，但不能盲目追浮动 `latest`。评审必须覆盖官方维护状态、最近
-12–18 个月的 release/commit/security 响应、稳定 major、生态采用、Go/Node/Python 兼容、许可证、直接与
-传递依赖树、供应链风险、可替换边界、真实负载 benchmark，以及 timeout、取消、重试、崩溃恢复和一致性等
-故障语义；star、下载量或发布时间都不能单独决定选型。
-
-引入新依赖或重大替换前，必须记录 owner、用途、候选对比、选定精确版本、版本发布日期与验证日期、兼容性和
-许可证结论、替换/退出策略。manifest 与 lockfile 一起固定并提交；Renovate/Dependabot 只提出 PR，升级通过
-本仓真实质量、契约、Schema、集成、smoke 与供应链门禁后才可合并。核心依赖连续 12–18 个月无有效维护、存在
-未处理安全/兼容问题、正式弃用或关键故障语义不再满足要求时，触发 ADR/replacement review；低频发布的成熟库
-可凭维护与安全响应证据继续固定。文档中的“最新”仅指截至明确验证日期的最新稳定兼容版本，beta、RC、nightly
-或未发布 commit 不作为稳定版。
-
-## 7. 十仓 owner 与重构顺序
-
-| 仓库 | 事实或职责 owner |
-| --- | --- |
-| `kokoro` | UI、浏览器状态、HttpOnly cookie、同源 adapter |
-| `kokoro-bff` | Conversation、Message、Share、Project、ScheduledTask、公开 API、AG-UI projection |
-| `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence |
+| 仓库 | Owner |
+|---|---|
+| `kokoro` | Web UI、浏览器状态、同源 adapter |
+| `kokoro-bff` | Conversation、Message、Project、Share、ScheduledTask、Public API、AG-UI projection |
+| `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行、Approval/HITL、Evidence |
 | `kokoro-iam` | Tenant、Identity、AuthN/AuthZ、Role、Permission、Audit |
-| `kokoro-system` | Site、Host、Workspace、Runtime Manifest、System Policy |
-| `kokoro-model` | Model Catalog、Provider Metadata、Availability、Routing Policy |
-| `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering |
-| `kokoro-capability` | Skill、MCP control plane、Installation、Authorization、Provider Metadata |
-| `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan 与对象生命周期元数据 |
-| `kokoro-scheduler` | 通用 Schedule、Occurrence、Receipt、Outbox、Lease、Retry、Dispatch |
+| `kokoro-system` | 系统控制面：Site、Host、Workspace、Runtime、Policy、模型目录与路由配置 |
+| `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering、Reconciliation |
+| `kokoro-platform` | Agent Capability Control Plane：Skills 与 MCP；后续平台模块须单独 ADR |
+| `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan、ObjectStore metadata |
+| `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Outbox、Dispatch |
 
-### 7.1 Kokoro Scheduler 选型边界
+### 2.1 已裁决的收敛
 
-这是 Kokoro 的具体取舍，不是通用 Go 项目的唯一答案。Scheduler 删除对
-`github.com/robfig/cron/v3` 的直接依赖与源码调用，选用可替换的
-`github.com/go-co-op/gocron/v2` timer/wakeup adapter；目标精确基线为 `v2.22.0`（2026-07-09 发布，
-2026-09-04 验证，MIT，要求 Go 1.22，与本项目 Go 1.26.8 兼容）。该基线仍传递依赖 robfig/cron，必须进入
-SBOM 与扫描，但业务代码不得直接调用或保留第二套 adapter。详细依赖登记、升级与退出门禁以根
-[`AGENTS.md`](../AGENTS.md) 为准。
+```text
+kokoro-model       -> kokoro-system 内的 model-catalog 业务模块
+kokoro-capability  -> kokoro-platform
+kokoro-platform    -> skills 与 mcp 两个一级业务域
+```
 
-Scheduler 自有 PostgreSQL 是 `Schedule`、`Occurrence`、`Receipt`、`Outbox` 的唯一权威事实源，启动和恢复
-从该状态重建待唤醒集合；Redis 只做 lease、通知和缓存等协调/加速。gocron 的内存 jobs 及其 locker/elector
-不能替代持久化、幂等约束、misfire/recovery、transactional outbox 或 receipt。BFF 继续拥有用户业务
-`ScheduledTask`，目标 owner 继续拥有业务执行 receipt；Scheduler 不跨库读取或复制这些事实。timer 实现必须
-位于窄 Port 后，并以 UTC、misfire、重复触发、暂停/恢复、崩溃重启和 graceful shutdown 行为测试保障可替换性。
+`kokoro-model` 合并是部署和仓库合并，不是把模型目录/路由策略混入通用 config。`model-catalog` 保持自己的业务词汇、
+`model_*` 表、contract namespace、权限和测试，以便未来在独立团队/SLO/容量证据出现时重新拆出。
 
-先改本规范和目标仓自己的目录树，再改该仓 API contract/docs，再改 model/dto/service/repo，再改 SQL，最后补 fixture、测试和启动验证。Root 不保存跨仓 API source。当前没有迁移/兼容要求时，直接删除旧路径并保留一套 canonical schema；不通过别名、双读写或历史目录维持旧实现。
+`kokoro-platform` 是明确的 Agent Capability Control Plane，不是共享代码垃圾桶。新增中间平台能力必须有事实 owner、
+契约、生命周期、权限、观测和 ADR，并证明不属于 System/IAM/Billing/Storage/Scheduler/Agent 的既有边界。
+历史归档的 platform 代码不直接恢复；目标仓由当前 Capability 以 clean-slate 方式收敛。
+
+### 2.2 目标模块地图
+
+```text
+kokoro-system/src/modules/
+  sites/
+  workspaces/
+  runtimes/
+  policies/
+  model-catalog/
+    catalog/
+    providers/
+    revisions/
+    routing/
+    availability/
+
+kokoro-platform/src/modules/
+  skills/
+    catalog/
+    revisions/
+    packages/
+    installations/
+  mcp/
+    providers/
+    connectors/
+    servers/
+    connections/
+    authorizations/
+```
+
+上图是候选业务能力地图，具体子目录须经各仓技术方案确认，不机械全建。这些能力不要求建立 `postgres/`、`redis/`、`domain/application/infrastructure` 模板。具体文件按对应语言
+手册和模块实际复杂度设计。
+
+`kokoro-system` 不建设任意 key/value 配置垃圾桶。新配置默认放回其事实 owner：Site 配置在 `sites`，模型路由在
+`model-catalog`，运行参数在 `runtimes`。只有具备独立身份、生命周期、权限、契约和查询模型时才增加一级模块，
+不是每出现一种配置都新增一个 `<name>-config` 目录。
+
+## 3. 数据边界
+
+- 每个数据 owner 维护唯一 `database/schema.sql`。
+- Kokoro V1 clean-slate 不保留 migration 链、外键或兼容 schema；完整规则只见 SQL 手册。
+- 同一 owner/数据库/业务边界允许 JOIN；跨 owner 禁止 JOIN。
+- PostgreSQL 是 durable truth；Redis 只用于缓存、lease、通知和 stream。
+- 所有 tenant-owned 查询和写入显式携带 tenant predicate。
+- 跨服务引用使用 opaque ID；关系存在性、权限、状态、删除和 reconciliation 由 owner API 与应用事务维护。
+
+Model 合入 System 后使用同一 System 数据库，但 `system_*` 和 `model_*` 表仍分别属于各自模块；模块间只通过公开
+Service API，不允许任意交叉查询。旧 Model 数据库与 Redis DB 3 在 cutover 后删除，不做长期双写。
+
+Platform 从 Capability cutover 时继承该数据 owner，并重新固定服务名、数据库、Redis namespace、service identity、
+contract owner 和消费者配置；旧 Capability 名称不保留兼容 alias。
+
+## 4. API 与协议
+
+- BFF 是唯一 public Product API owner；Web 使用 browser-private 同源 adapter。
+- 内部服务 contract 由各 owner 仓维护；Root 只做 catalog 和治理。
+- API 技术设计确定唯一 schema-first/code-first 方向；OpenAPI/Proto/JSON Schema artifact 与 runtime validator 不双向手改。
+- 所有 API 明确 owner、visibility、version、permission、idempotency、错误码和分页语义。
+- AG-UI 是 Web/BFF 的唯一 Agent 网络事件协议；Vercel AI SDK 只作 Web 内 UI adapter。
+- 跨仓变更顺序：owner contract -> lint/breaking/generate -> 实现 -> 消费者 -> integration/smoke。
+
+## 5. 运行与故障边界
+
+- BFF 不读取内部 owner 数据库；Agent 不复制 Platform/Storage 业务事实。
+- System 内 `model-catalog` 的 provider availability 故障不得使 Site/Workspace 的基础读取不可用；模块应有独立 timeout、
+  cache namespace、权限和 readiness 细分。
+- Platform 的 Skills 与 MCP 可以使用同一仓和镜像，但可配置独立 runtime profile、workload identity、readiness 和扩缩容。
+- Scheduler 重启后从 PostgreSQL 恢复权威 schedule/occurrence；Redis 丢失不能丢任务事实。
+- 外部调用设置 timeout、取消、幂等和稳定错误归一；事务内不执行不可控网络请求。
+
+## 6. Clean-slate cutover 原则
+
+Model/System 与 Capability/Platform 的拓扑变更分别作为独立目标执行：
+
+1. 先冻结 owner、目标 contract、schema 与消费者清单；
+2. 在目标仓建立模块和 architecture tests；
+3. 搬移业务事实与测试，统一唯一数据库访问技术；
+4. 更新 BFF/Agent/Storage/Scheduler 的 typed client 与配置；
+5. 使用 fresh PostgreSQL/Redis 验证，不迁移历史开发数据；
+6. 删除旧仓 runtime、旧 service identity、旧 env、旧 contract 副本和旧部署；
+7. 执行全量 contract/integration/smoke 后再更新仓库拓扑权威文档。
+
+禁止 proxy compatibility service、双读双写、旧 header/env alias 或两个 owner 同时运行。
+
+## 7. 架构完成证据
+
+每个仓必须维护 README、INDEX、CURRENT、TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、SECURITY、RELIABILITY、
+ACCEPTANCE、SLO、RUNBOOK 与有效 ADR。完成报告至少包含：
+
+```text
+当前 commit
+owner 与目标模块
+删除的旧边界
+contract/schema 变化
+lint/typecheck/test/build 结果
+fresh schema 与真实集成结果
+health/ready/smoke 结果
+未完成风险与后续 owner
+```
+
+目录看起来整齐、Agent 自评分或历史报告都不构成架构完成证据。

@@ -10,6 +10,8 @@
 子仓 README 说明当前实现，子仓 docs 说明局部实现细节；本手册负责把全局总设计统一起来。
 子仓 docs 只能补实现细节，不能替代本手册。
 
+- [ADR-029：System Models 与 Platform 边界收敛](decisions/ADR-029-system-model-and-platform-boundaries.md)
+
 ## 实现状态
 
 诚实区分本地原型与首发架构，避免把未上线的写成已上线：
@@ -19,12 +21,17 @@
   kokoro（Web）/ kokoro-bff（Chat 与业务 BFF）/ kokoro-agent（Run worker、HITL、恢复）。
   持久化基线为 PostgreSQL + Redis。
 
-阶段 2 正式业务仓：
+当前阶段 2 物理业务仓（目标 cutover 尚未完成）：
   kokoro-iam / kokoro-system / kokoro-model / kokoro-billing /
   kokoro-capability / kokoro-storage / kokoro-scheduler。
 
+已接受的目标拓扑：
+  kokoro-model 合入 kokoro-system；kokoro-capability clean-slate 重命名为
+  kokoro-platform，并以 skills / mcp 为首批一级业务域。
+
 历史本地原型（未上线，已移出 Root）：
-  kokoro-web / kokoro-session / kokoro-platform / kokoro-gateway / kokoro-credit 及其旧部署、验证入口。
+  kokoro-web / kokoro-session / 旧 kokoro-platform / kokoro-gateway / kokoro-credit 及其旧部署、验证入口。
+  旧 platform 代码不会恢复；目标 platform 从当前 capability owner clean-slate 收敛。
 
 首发架构（clean build）：
   现有原型没有生产 Session、Run、checkpoint、Artifact 或账务事实需要保留。GA、Session、Capability、Storage 与 Billing
@@ -39,12 +46,14 @@
 | Chat / 业务编排 | `LordFoxFairy/kokoro-bff` | BFF 的 Chat 业务模块边界是 Chat 唯一业务入口；Session 是资源概念，不是独立仓库 |
 | 执行 | `LordFoxFairy/kokoro-agent` | Worker、HITL、恢复和执行事件；由 BFF 通过内部契约承接 |
 | 身份与权限 | `kokoro-iam` | Tenant、User、Auth、AuthZ、Role、Permission、Audit |
-| 系统与模型 | `kokoro-system` / `kokoro-model` | Site/Workspace/Runtime 配置与 Model Catalog/Provider 分开归属 |
+| 系统与模型 | 目标 `kokoro-system` | Site/Workspace/Runtime/Policy 与 `model-catalog` 模块；当前 Model 物理仓待合并 |
 | 商业计费 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger 同仓；不再单列 `kokoro-credit` |
-| 能力与对象 | `kokoro-capability` / `kokoro-storage` | Skill/MCP 控制面与 Asset/ObjectStore 元数据分开；对象字节不进入 Web/BFF |
+| 平台能力与对象 | 目标 `kokoro-platform` / `kokoro-storage` | Platform 首批为 Skills/MCP；对象事实仍由 Storage 独立拥有 |
 | 调度 | `kokoro-scheduler` | 独立 Go 调度 owner；通用任务、lease、retry，不承载 Billing 业务规则 |
 
-`kokoro-gateway`、`kokoro-session`、`kokoro-platform`、旧 `kokoro-web` 与 `kokoro-credit` 均为历史/归档名称。它们可以被检索用于考古，但不得作为当前仓库、环境变量、部署服务或依赖入口。当前 API 以各 owner 仓库自己的 v1 contract 与 `/v1` 文档为准；Root 只维护归属、架构原则和验证入口，不保存 wire source 或生成物。
+`kokoro-gateway`、`kokoro-session`、旧 `kokoro-platform`、旧 `kokoro-web` 与 `kokoro-credit` 均为历史/归档实现，
+只用于考古。ADR-029 已重新采用 `kokoro-platform` 这个目标仓名，但不得复用历史实现或形成兼容入口。当前 API 以
+各 owner 仓库自己的 v1 contract 与 `/v1` 文档为准；Root 只维护归属、架构原则和验证入口，不保存 wire source 或生成物。
 
 ## 当前 Feature-first / GA 目标架构（2026-08-22）
 
@@ -61,6 +70,9 @@
 - [GA 原型就绪审计](technical/45-ga-prototype-readiness-audit.md)
 - [跨子仓 API/AIP 契约与技术方案同步](technical/51-cross-repository-contract-sync.md)
 - [Capability × Storage v1 API 与 Client 契约](technical/52-capability-storage-v1-api-and-client-contract.md)
+- [PostgreSQL 与 SQL 工程规范](standards/03-sql-and-postgresql.md)
+- [TypeScript 后端成熟工程规范](standards/08-typescript-backend-engineering.md)
+- [Python 后端成熟工程规范](standards/09-python-backend-engineering.md)
 - [语言、时间与类型安全工程规范](technical/55-language-and-type-safety-standards.md)
 - [GA Runtime](technical/34-ga-agent-runtime-architecture.md)、[GA-first SkillRuntime](technical/33-ga-first-skill-runtime-architecture.md)、[GA × official Swarm](technical/35-ga-langgraph-swarm-architecture.md)
 - [产品 Session 生命周期](business-flows/session-lifecycle.md) 与 [Session/GA/Web 运行链路](business-flows/agent-session-web-general-chat-runtime.md)
@@ -68,7 +80,7 @@
 
 核心 owner 固定为：`kokoro-bff 的 Chat 内部业务边界` 拥有 Web-facing session/message/SSE/control 适配；上游 IAM 只向 GA
 提交服务端构造的 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`，GA ingress 从 tenant + subject 派生内部 `RuntimeNamespace`；GA 使用
-DeepAgents/LangGraph 原生 state、官方 `SwarmState`、checkpoint、RunLedger、workbench、HITL execution 与 `chat_events`；Capability 只拥有
+DeepAgents/LangGraph 原生 state、官方 `SwarmState`、checkpoint、RunLedger、workbench、HITL execution 与 `chat_events`；当前物理 Capability、目标 Platform 只拥有
 user/session Skill path、visibility、CRUD；Storage 拥有 bytes/scan/Asset/Artifact。当前不使用独立 `kokoro-chat` runtime、Capability runtime snapshot 或 Agent/Skill 版本/Session binding 机制。
 
 Billing 当前唯一业务与技术权威是 [Billing 商业系统重构版最终架构](technical/50-billing-commerce-rearchitecture.md)；
@@ -98,7 +110,7 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 4. tenant_id 是身份、权限和业务数据隔离键；site/site_key 只承载产品、品牌和域名语义；`RuntimeNamespace` 是 GA/runtime 唯一的内部隔离键。
 5. 同邮箱跨 Tenant 默认不同用户。
 6. 不新增 kokoro-contracts。
-7. 当前本地原型不使用 ports 目录；首发 DDD 子仓允许明确的 Application ports，以 24 为准。
+7. TypeScript/Python 不创建 `ports/` 目录；依赖接口按 08/09 语言手册放在消费方附近。
 8. 阶段 1 与阶段 2 正式仓的持久化基线为 PostgreSQL + Redis；Root 不新增 MySQL/Mongo 运行时。
 9. Storage 对象字节使用 S3-compatible ObjectStore，PostgreSQL 保存元数据与生命周期事实。
 10. Redis 只做 live stream、短期队列、广播、限流辅助和幂等快速路径，不作业务幂等最终真源。
@@ -152,7 +164,7 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 - [19-current-runtime-capability-review-plan](technical/19-current-runtime-capability-review-plan.md)（已被 20 取代，保留为扩展附录）
 - [20-kokoro-v1-technical-plan](technical/20-kokoro-v1-technical-plan.md)（**本地原型物理参考 / 不进入首发**）
 - [21-platform-mainchain-closure](technical/21-platform-mainchain-closure.md)（**历史 Platform 接线记录**；当前 owner 见阶段 2 归属速查与 36/37/38）
-- [22-capability-hub](technical/22-capability-hub.md)（**历史 Hub 边界记录**；当前 Skill/MCP owner 为 `kokoro-capability`，跨仓入口为 BFF v1）
+- [22-capability-hub](technical/22-capability-hub.md)（**历史 Hub 边界记录**；物理 owner 暂为 `kokoro-capability`，目标 owner 为 `kokoro-platform`，跨仓入口为 BFF v1）
 - [23-platform-ops-console](technical/23-platform-ops-console.md)（运营台现状：三维 RBAC / maker-checker / DB 审计 / manifest 代理 / internal-secret 现状）
 - [24-backend-subrepository-ddd-architecture](technical/24-backend-subrepository-ddd-architecture.md)（历史全局拆仓材料）
 - [25-backend-architecture-and-ddd-levels](technical/25-backend-architecture-and-ddd-levels.md)（历史 DDD 分级材料）
@@ -180,13 +192,13 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 
 - [kokoro-agent](modules/kokoro-agent.md)（独立执行子仓）
 - [kokoro-iam](modules/kokoro-iam.md)（独立身份与权限子仓）
-- [kokoro-model](modules/kokoro-model.md)（独立模型目录子仓）
+- [kokoro-model](modules/kokoro-model.md)（当前物理模型目录子仓；目标合入 `kokoro-system/model-catalog`）
 - [kokoro-system](modules/kokoro-system.md)（独立系统配置子仓）
 - [后端逐仓库设计卡](technical/backend-design/README.md)（BFF、Billing、Capability、Storage、Scheduler 的当前职责、契约和验收证据）
 
 历史模块记录（只用于考古）：
 
-- [kokoro-platform](modules/kokoro-platform.md)、[kokoro-hub](modules/kokoro-hub.md)
+- [旧 kokoro-platform 实现](modules/kokoro-platform.md)、[kokoro-hub](modules/kokoro-hub.md)（只用于考古，不代表 ADR-029 的目标实现）
 - [kokoro-site](modules/kokoro-site.md)、[kokoro-user](modules/kokoro-user.md)
 - [kokoro-credit](modules/kokoro-credit.md)、[kokoro-payment](modules/kokoro-payment.md)、[kokoro-litellm](modules/kokoro-litellm.md)
 - [kokoro-session](modules/kokoro-session.md)、[kokoro-web](modules/kokoro-web.md)
@@ -245,6 +257,9 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 ### 工程规范 standards/
 
 - [后端工程规范入口](standards/README.md)
+- [PostgreSQL 与 SQL 工程规范](standards/03-sql-and-postgresql.md)
+- [TypeScript 后端成熟工程规范](standards/08-typescript-backend-engineering.md)
+- [Python 后端成熟工程规范](standards/09-python-backend-engineering.md)
 
 ## 旧文档处理
 

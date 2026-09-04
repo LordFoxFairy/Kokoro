@@ -1,8 +1,15 @@
 # 当前活跃文档白名单
 
-状态：2026-09-02
+状态：2026-09-04
 用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
 “当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
+
+## 当前工程规范入口
+
+目录、命名、语言、SQL 与 Agent 执行规则先读 [AGENTS](../AGENTS.md) 及其引用的三份手册。
+下方业务目标文档只说明能力语义，不覆盖新工程基线。旧版 54/55 已撤销为导航页；当前物理实现尚待逐仓对齐。
+
+本轮规范验证与逐仓待办见 [工程手册验证记录](reports/2026-09-04-engineering-handbook-verification.md)。
 
 ## 阶段 2 仓库治理入口
 
@@ -11,7 +18,12 @@
 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
 `kokoro-storage`、`kokoro-scheduler` 七个独立业务仓。Root 只维护架构文档、部署入口和拓扑/验证工具；各仓自持本仓 API contract。
 
-`kokoro-session`、`kokoro-gateway`、`kokoro-platform`、旧 `kokoro-web` monorepo、独立 `kokoro-credit`
+2026-09-04 已接受的目标拓扑见
+[ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md)：`kokoro-model` 合入
+`kokoro-system/model-catalog`，`kokoro-capability` clean-slate 重命名为 `kokoro-platform`，首批一级域为
+Skills/MCP。上段仍是当前物理 checkout，在专项目标完成前不得冒充目标态，也不得建立兼容双轨。
+
+`kokoro-session`、`kokoro-gateway`、旧 `kokoro-platform` 实现、旧 `kokoro-web` monorepo、独立 `kokoro-credit`
 和旧 Site 占位目录均已退出当前拓扑；历史文件只作迁移考古。Credit 归 `kokoro-billing`，Chat 归
 `kokoro-bff 的 Chat 内部业务边界`，不再创建独立仓。所有正式业务仓采用 PostgreSQL + Redis；对象字节使用
 Storage 的 S3-compatible ObjectStore。
@@ -29,8 +41,10 @@ Storage 的 S3-compatible ObjectStore。
 9. [**Web/BFF/Agent 三仓边界与 Chat v1**](../kokoro/docs/integration/chat-bff-contract-v1.md)
 10. [**阶段 1 闭环验收证据**](reports/2026-09-01-phase1-closure.md)
 11. [**Kokoro v1 与 Manus API 对齐基线**](MANUS_API_ALIGNMENT.md)
-12. [**Kokoro 后端工程规范：模块、契约、DTO、Repository 与 SQL**](kokoro-handbook/technical/54-backend-engineering-standards.md)
-13. [**Kokoro 正式子仓统一工程规范 v1**](ARCHITECTURE_STANDARD.md)
+12. [**PostgreSQL 与 SQL 工程规范**](kokoro-handbook/standards/03-sql-and-postgresql.md)
+13. [**TypeScript 后端成熟工程规范**](kokoro-handbook/standards/08-typescript-backend-engineering.md)
+14. [**Python 后端成熟工程规范**](kokoro-handbook/standards/09-python-backend-engineering.md)
+15. [**Kokoro 总体架构规范 v1**](ARCHITECTURE_STANDARD.md)
 
 ## 当前目标架构评审主线
 

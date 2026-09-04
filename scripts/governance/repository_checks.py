@@ -19,8 +19,8 @@ from .ten_repository_standard import (
     has_exact_relative_file,
     missing_contract_readme_fields,
     read_text,
-    sql_without_comments,
     source_files,
+    sql_without_comments,
 )
 
 
@@ -163,7 +163,9 @@ def check_common(repository_name: str, failures: list[Failure]) -> None:
                     "utc-time",
                     f"{path.relative_to(repository)} contains a timestamp without time zone",
                 )
-            if re.search(r"\b[a-z0-9_]+_at_unix_seconds\b", executable_sql, re.IGNORECASE):
+            if re.search(
+                r"\b[a-z0-9_]+_at_unix_seconds\b", executable_sql, re.IGNORECASE
+            ):
                 add(
                     failures,
                     repository_name,
@@ -272,7 +274,32 @@ def check_docs(failures: list[Failure]) -> None:
         ROOT / "docs" / "ARCHITECTURE_STANDARD.md",
         ROOT / "docs" / "CURRENT.md",
         ROOT / "docs" / "CODEBASE_MAP.md",
+        ROOT / "docs" / "kokoro-handbook" / "standards" / "03-sql-and-postgresql.md",
+        ROOT
+        / "docs"
+        / "kokoro-handbook"
+        / "standards"
+        / "08-typescript-backend-engineering.md",
+        ROOT
+        / "docs"
+        / "kokoro-handbook"
+        / "standards"
+        / "09-python-backend-engineering.md",
     )
     for path in required:
         if not path.is_file():
             add(failures, "root", "governance", f"{path.relative_to(ROOT)} is missing")
+
+    agents = read_text(ROOT / "AGENTS.md")
+    for manual in (
+        "03-sql-and-postgresql.md",
+        "08-typescript-backend-engineering.md",
+        "09-python-backend-engineering.md",
+    ):
+        if manual not in agents:
+            add(
+                failures,
+                "root",
+                "governance",
+                f"AGENTS.md does not reference {manual}",
+            )

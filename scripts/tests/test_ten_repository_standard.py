@@ -6,8 +6,11 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
-from scripts.governance import contract_checks, ten_repository_standard
-
+from scripts.governance import (
+    contract_checks,
+    ten_repository_standard,
+    typescript_checks,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "verify-ten-repository-standard.py"
@@ -48,6 +51,32 @@ def test_repository_profiles_encode_runtime_and_persistence_boundaries() -> None
     assert verifier.REPOSITORY_PROFILES["kokoro-agent"].requires_schema is True
     assert verifier.REPOSITORY_PROFILES["kokoro-scheduler"].kind == "go-service"
     assert verifier.REPOSITORY_PROFILES["kokoro-scheduler"].requires_schema is True
+
+
+def test_language_profiles_use_native_module_first_topology() -> None:
+    verifier = load_verifier()
+
+    assert verifier.REQUIRED_NODE_ENGINE == ">=24 <25"
+    assert verifier.REQUIRED_PNPM_VERSION == "11.25.0"
+    assert verifier.REQUIRED_TS_SOURCE_PATHS == ("modules", "config")
+    assert verifier.REQUIRED_AGENT_SOURCE_PATHS == ("execution",)
+    assert verifier.REPOSITORY_PROFILES["kokoro-bff"].required_source_paths == (
+        "modules",
+        "config",
+    )
+    assert verifier.REPOSITORY_PROFILES["kokoro-agent"].required_source_paths == (
+        "execution",
+    )
+    assert "application" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "infrastructure" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "ports" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "services" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "repositories" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "postgres" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "redis" in verifier.RETIRED_TS_TOP_LEVEL_DIRECTORIES
+    assert "application" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
+    assert "infrastructure" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
+    assert "ports" in verifier.RETIRED_AGENT_TOP_LEVEL_DIRECTORIES
 
 
 def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_services() -> (
@@ -97,6 +126,18 @@ def test_root_governance_has_a_dedicated_document_index() -> None:
     assert (ROOT / "docs" / "INDEX.md").is_file()
 
 
+def test_root_governance_has_language_and_sql_manuals() -> None:
+    standards = ROOT / "docs" / "kokoro-handbook" / "standards"
+
+    assert (standards / "03-sql-and-postgresql.md").is_file()
+    assert (standards / "08-typescript-backend-engineering.md").is_file()
+    assert (standards / "09-python-backend-engineering.md").is_file()
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert "03-sql-and-postgresql.md" in agents
+    assert "08-typescript-backend-engineering.md" in agents
+    assert "09-python-backend-engineering.md" in agents
+
+
 def test_typescript_strictness_includes_unknown_catch_variables() -> None:
     verifier = load_verifier()
 
@@ -106,9 +147,11 @@ def test_typescript_strictness_includes_unknown_catch_variables() -> None:
         "exactOptionalPropertyTypes",
         "noImplicitOverride",
         "noImplicitReturns",
-        "noUnusedLocals",
-        "noUnusedParameters",
+        "noFallthroughCasesInSwitch",
         "useUnknownInCatchVariables",
+        "forceConsistentCasingInFileNames",
+        "isolatedModules",
+        "noEmitOnError",
     )
 
 
@@ -123,6 +166,7 @@ def test_required_quality_scripts_are_profile_specific() -> None:
         "test:e2e",
     )
     assert verifier.required_quality_scripts("kokoro-bff") == (
+        "format:check",
         "lint",
         "typecheck",
         "test",
@@ -131,6 +175,20 @@ def test_required_quality_scripts_are_profile_specific() -> None:
         "contract:check",
     )
     assert verifier.required_quality_scripts("kokoro-agent") == ()
+
+
+def test_route_literal_detection_ignores_regex_and_payload_strings() -> None:
+    source = """
+    app.post("/v1/sites", handler);
+    const parserPattern = "/iu.exec(disposition)";
+    const payload = { value: "/not-a-route" };
+    const route = { method: "GET", url: "/v1/sites/:siteId" };
+    """
+
+    assert typescript_checks.route_literals(source) == (
+        "/v1/sites",
+        "/v1/sites/:siteId",
+    )
 
 
 def test_missing_optional_file_is_reported_as_empty_instead_of_crashing(
@@ -246,3 +304,76 @@ def test_cli_runs_from_the_root_and_emits_valid_json() -> None:
 
     assert result.returncode in {0, 1}, result.stderr
     assert json.loads(result.stdout)["repository_count"] == 10
+
+
+def test_documentation_gate_and_single_manual_routes_are_explicit() -> None:
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert not agents.startswith("@CLAUDE.md")
+    assert "### 8.1 子仓实现前的文档门" in agents
+    for required in (
+        "docs/TECHNICAL_DESIGN.md",
+        "docs/API_CONTRACT.md",
+        "docs/DATA_MODEL.md",
+    ):
+        assert required in agents
+    assert "文档门未通过时" in agents
+
+
+def test_quality_gate_rejects_placebo_scripts() -> None:
+    for command in ("", "true", "echo ok", "printf tsc && exit 0", "echo eslint; true"):
+        assert typescript_checks.script_is_noop(command)
+    for command in ("eslint . --max-warnings=0", "pnpm lint:source", "tsc --noEmit"):
+        assert not typescript_checks.script_is_noop(command)
+
+
+def test_dependency_preflight_checks_exact_packages_and_dynamic_imports() -> None:
+    source = """
+    import type { Pool } from "pg";
+    const driver = await import("redis");
+    const schema = require("@prisma/client");
+    import { name } from "./redistribution.policy.js";
+    import type { Record } from "./database-record.js";
+    """
+    assert typescript_checks.forbidden_business_dependencies(source) == (
+        "pg",
+        "redis",
+        "@prisma/client",
+    )
+
+
+def test_tsconfig_resolution_delegates_jsonc_to_installed_compiler(
+    tmp_path, monkeypatch
+) -> None:
+    config = tmp_path / "tsconfig.json"
+    config.write_text(
+        '{ /* valid JSONC */ "extends": ["@scope/base", "./strict.json"], }'
+    )
+    compiler = tmp_path / "node_modules/typescript/bin/tsc"
+    compiler.parent.mkdir(parents=True)
+    compiler.touch()
+    seen = []
+
+    def show_config(command, **kwargs):
+        seen.append((command, kwargs))
+        return SimpleNamespace(
+            returncode=0,
+            stdout='{"compilerOptions":{"strict":true,"module":"nodenext"}}',
+        )
+
+    monkeypatch.setattr(ten_repository_standard.subprocess, "run", show_config)
+    assert ten_repository_standard.effective_ts_compiler_options(config) == {
+        "strict": True,
+        "module": "nodenext",
+    }
+    assert seen[0][0][-3:] == ["--showConfig", "-p", str(config)]
+
+
+def test_tsconfig_missing_compiler_is_reported_not_silently_parsed(tmp_path) -> None:
+    import pytest
+
+    config = tmp_path / "tsconfig.json"
+    config.write_text('{"compilerOptions":{"strict":true}}')
+    with pytest.raises(
+        ten_repository_standard.TypeScriptConfigError, match="installed TypeScript"
+    ):
+        ten_repository_standard.effective_ts_compiler_options(config)

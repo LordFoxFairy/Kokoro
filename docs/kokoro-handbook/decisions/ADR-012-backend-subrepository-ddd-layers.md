@@ -4,6 +4,11 @@
 
 当前 Agent/Session/Capability owner 以 [ADR-015](ADR-015-agent-state-and-feature-context.md)、[36 GA 整体 Agent 技术方案](../technical/36-ga-final-agent-technical-plan.md) 和 [38 公共运行契约](../technical/38-ga-public-runtime-contract.md) 为准。
 
+TypeScript/Python 的强制顶层 `domain/application/infrastructure/interfaces` 决策已经退出当前基线；物理目录现以
+[TypeScript 后端成熟工程规范](../standards/08-typescript-backend-engineering.md) 和
+[Python 后端成熟工程规范](../standards/09-python-backend-engineering.md) 为准。本文第 2 条仅作为历史决策记录，
+不再指导新代码生成。
+
 
 > 本 ADR 的仓库边界、模块化和 DDD 分级继续有效；其中 PostgreSQL baseline 与 SQL-first 存储决策已由 [ADR-013](ADR-013-mysql-mongo-final-storage.md) 取代。
 

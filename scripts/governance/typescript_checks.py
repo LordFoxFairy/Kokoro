@@ -3,13 +3,19 @@
 from __future__ import annotations
 
 import re
+import shlex
+from pathlib import Path
 
 from .contract_checks import check_openapi_contract
 from .ten_repository_standard import (
     REPOSITORY_PROFILES,
+    REQUIRED_NODE_ENGINE,
+    REQUIRED_PNPM_VERSION,
     REQUIRED_TS_COMPILER_OPTIONS,
+    RETIRED_TS_TOP_LEVEL_DIRECTORIES,
     ROOT,
     Failure,
+    TypeScriptConfigError,
     add,
     effective_ts_compiler_options,
     is_granularity_exempt,
@@ -18,30 +24,111 @@ from .ten_repository_standard import (
     read_text,
     required_quality_scripts,
     source_files,
-    tracked_or_worktree_files,
 )
+
+ROUTE_CALL = re.compile(
+    r"\b(?:app|server|router|fastify|instance)\s*\.\s*"
+    r"(?:get|post|put|patch|delete|options|head)\s*\(\s*"
+    r"(?P<quote>[\"'`])(?P<route>/[^\"'`]*)\1",
+    re.IGNORECASE,
+)
+ROUTE_CONFIG = re.compile(
+    r"\b(?:url|path)\s*:\s*(?P<quote>[\"'`])(?P<route>/[^\"'`]*)\1",
+    re.IGNORECASE,
+)
+
+
+def route_literals(text: str) -> tuple[str, ...]:
+    """Return explicit HTTP route declarations, not arbitrary slash-prefixed strings."""
+
+    return tuple(
+        match.group("route")
+        for pattern in (ROUTE_CALL, ROUTE_CONFIG)
+        for match in pattern.finditer(text)
+    )
+
+
+def script_is_noop(command: str) -> bool:
+    """Catch known placebo gates; executing CI remains the authoritative proof."""
+    segments = re.split(r"&&|\|\||[;\n]", command)
+    try:
+        words = [shlex.split(segment) for segment in segments if segment.strip()]
+    except ValueError:
+        return False
+    return not words or all(
+        not part or part[0] in {"echo", "printf", "true", ":", "exit"} for part in words
+    )
+
+
+def forbidden_business_dependencies(text: str) -> tuple[str, ...]:
+    """Lexical preflight only; child ESLint must enforce the complete AST graph."""
+    specifiers = re.findall(
+        r"(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)[\"']([^\"']+)[\"']",
+        text,
+    )
+    packages = {
+        "pg",
+        "postgres",
+        "redis",
+        "ioredis",
+        "fastify",
+        "stripe",
+        "drizzle-orm",
+        "@prisma/client",
+    }
+    return tuple(
+        specifier
+        for specifier in specifiers
+        if any(
+            specifier == name or specifier.startswith(name + "/") for name in packages
+        )
+        or specifier.startswith(("@connectrpc/", "@aws-sdk/"))
+    )
 
 
 def check_typescript(repository_name: str, failures: list[Failure]) -> None:
     repository = ROOT / repository_name
     profile = REPOSITORY_PROFILES[repository_name]
-    for layer in profile.required_layers:
-        if not (repository / "src" / layer).is_dir():
+    for source_path in profile.required_source_paths:
+        if not (repository / "src" / source_path).is_dir():
             add(
                 failures,
                 repository_name,
-                "layered-topology",
-                f"src/{layer}/ is missing",
+                "module-topology",
+                f"src/{source_path}/ is missing",
+            )
+    if profile.kind == "typescript-service":
+        retired = [
+            name
+            for name in RETIRED_TS_TOP_LEVEL_DIRECTORIES
+            if (repository / "src" / name).is_dir()
+        ]
+        if retired:
+            add(
+                failures,
+                repository_name,
+                "module-topology",
+                "retired top-level source directories exist: "
+                + ", ".join(f"src/{name}/" for name in retired)
+                + "; move owned code under src/modules/<capability>/",
             )
 
     package = package_manifest(repository)
     scripts = package_scripts(repository)
-    if package.get("packageManager") != "pnpm@11.25.0":
+    if package.get("packageManager") != f"pnpm@{REQUIRED_PNPM_VERSION}":
         add(
             failures,
             repository_name,
             "toolchain",
-            "packageManager must pin pnpm@11.25.0",
+            f"packageManager must pin pnpm@{REQUIRED_PNPM_VERSION}",
+        )
+    engines = package.get("engines")
+    if not isinstance(engines, dict) or engines.get("node") != REQUIRED_NODE_ENGINE:
+        add(
+            failures,
+            repository_name,
+            "toolchain",
+            f"engines.node must be {REQUIRED_NODE_ENGINE!r}",
         )
     if not (repository / "pnpm-lock.yaml").is_file():
         add(failures, repository_name, "toolchain", "pnpm-lock.yaml is missing")
@@ -53,26 +140,41 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
             "package-lock.json must not coexist with pnpm",
         )
     docker_text = read_text(repository / "Dockerfile")
-    docker_install_count = len(
-        re.findall(r"\bpnpm(?:@[^\s]+)?\s+install\b", docker_text)
-    )
     if (
-        docker_install_count
-        and docker_text.count("--ignore-scripts") < docker_install_count
+        re.search(r"\bpnpm(?:@[^\s]+)?\s+install\b", docker_text)
+        and "--frozen-lockfile" not in docker_text
     ):
         add(
             failures,
             repository_name,
             "container-supply-chain",
-            "every Docker pnpm install must use --ignore-scripts; required generators run explicitly",
+            "Docker pnpm install must use a frozen lockfile",
+        )
+    # Explicit policy is a preflight; pnpm itself validates full YAML and approved builds during installation.
+    workspace = read_text(repository / "pnpm-workspace.yaml")
+    if not re.search(r"(?m)^strictDepBuilds:\s*true\s*(?:#.*)?$", workspace):
+        add(
+            failures,
+            repository_name,
+            "dependency-build-policy",
+            "pnpm-workspace.yaml must explicitly enable strictDepBuilds",
+        )
+    if not re.search(r"(?m)^allowBuilds:", workspace) or re.search(
+        r"(?m)^dangerouslyAllowAllBuilds:\s*true", workspace
+    ):
+        add(
+            failures,
+            repository_name,
+            "dependency-build-policy",
+            "declare reviewed allowBuilds; do not allow all dependency builds",
         )
     for script in required_quality_scripts(repository_name):
-        if script not in scripts:
+        if script not in scripts or script_is_noop(str(scripts[script])):
             add(
                 failures,
                 repository_name,
                 "quality-gates",
-                f"package.json script {script!r} is missing",
+                f"package.json script {script!r} is missing or a no-op",
             )
     lint_command = str(scripts.get("lint", ""))
     if lint_command in {
@@ -100,26 +202,66 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 f"package.json script {script_name!r} still invokes migration tooling",
             )
 
-    compiler_options = effective_ts_compiler_options(repository / "tsconfig.json")
-    for option in REQUIRED_TS_COMPILER_OPTIONS:
-        if compiler_options.get(option) is not True:
+    try:
+        compiler_options = effective_ts_compiler_options(repository / "tsconfig.json")
+    except TypeScriptConfigError as error:
+        add(failures, repository_name, "typescript-configuration", str(error))
+        compiler_options = None
+    if compiler_options is not None:
+        for option in REQUIRED_TS_COMPILER_OPTIONS:
+            if compiler_options.get(option) is not True:
+                add(
+                    failures,
+                    repository_name,
+                    "typescript-strictness",
+                    f"effective tsconfig option {option!r} must be true",
+                )
+        if compiler_options.get("skipLibCheck") is True:
             add(
                 failures,
                 repository_name,
                 "typescript-strictness",
-                f"effective tsconfig option {option!r} must be true",
+                "skipLibCheck must not hide dependency type errors",
             )
+        if profile.kind == "typescript-service":
+            expected_options = {
+                "module": "nodenext",
+                "moduleResolution": "nodenext",
+                "moduleDetection": "force",
+                "target": "es2024",
+                "verbatimModuleSyntax": True,
+            }
+            for option, expected in expected_options.items():
+                if compiler_options.get(option) != expected:
+                    add(
+                        failures,
+                        repository_name,
+                        "typescript-modules",
+                        f"effective {option} must be {expected!r}",
+                    )
+            if compiler_options.get("lib") != ["es2024"]:
+                add(
+                    failures,
+                    repository_name,
+                    "typescript-modules",
+                    "backend lib must be ES2024 without browser DOM globals",
+                )
+    if profile.kind == "typescript-service" and package.get("type") != "module":
+        add(
+            failures,
+            repository_name,
+            "typescript-modules",
+            "package.json type must be module",
+        )
 
     sql_literal = re.compile(
         r"(?:`|\"|')\s*(?:SELECT\b|INSERT\s+INTO\b|UPDATE\s+[a-z0-9_]+\s+SET\b|DELETE\s+FROM\b|WITH\s+[a-z0-9_]+\s+AS\b)",
         re.IGNORECASE,
     )
-    forbidden_domain_import = re.compile(
-        r"from\s+[\"'][^\"']*(?:infrastructure|interfaces|application|node:|pg|redis|prisma|fastify)[^\"']*[\"']",
-        re.IGNORECASE,
-    )
+    http_sources: list[Path] = []
     for path in source_files(repository):
         relative_path = path.relative_to(repository).as_posix()
+        relative_parts = path.relative_to(repository / "src").parts
         line_count = len(read_text(path).splitlines())
         if path.suffix.lower() == ".css" and line_count > 500:
             add(
@@ -138,32 +280,90 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
         if path.suffix not in {".ts", ".tsx"}:
             continue
         text = read_text(path)
-        if relative_path.startswith("src/domain/") and forbidden_domain_import.search(
+        if path.name in {
+            "base-repository.ts",
+            "base-service.ts",
+            "command-executor.ts",
+        } or path.name.endswith("-command-executor.ts"):
+            add(
+                failures,
+                repository_name,
+                "speculative-abstraction",
+                f"{relative_path} uses a banned generic abstraction name",
+            )
+        if re.search(
+            r"\b(?:abstract\s+)?class\s+(?:BaseRepository|BaseService)\b", text
+        ):
+            add(
+                failures,
+                repository_name,
+                "speculative-abstraction",
+                f"{relative_path} defines a generic BaseRepository/BaseService hierarchy",
+            )
+        is_domain_rule = "domain" in relative_parts
+        is_transport = path.name.endswith(
+            (".routes.ts", ".rpc.ts", ".connect.ts", ".controller.ts")
+        ) or any(
+            part in {"http", "rpc", "worker", "events"} for part in relative_parts[:-1]
+        )
+        is_http_transport = (
+            path.name.endswith((".routes.ts", ".controller.ts"))
+            or "http" in relative_parts[:-1]
+        )
+        is_business_service = path.name.endswith((".service.ts", ".policy.ts")) or any(
+            part in {"use-cases", "services", "commands"}
+            for part in relative_parts[:-1]
+        )
+        if (is_domain_rule or is_business_service) and forbidden_business_dependencies(
             text
         ):
             add(
                 failures,
                 repository_name,
                 "dependency-direction",
-                f"{relative_path} imports outside Domain",
+                f"{relative_path} imports a framework, database, cache or provider implementation from business rules",
             )
-        if relative_path.startswith(
-            ("src/application/", "src/interfaces/")
+        if (
+            is_transport or is_domain_rule or is_business_service
         ) and sql_literal.search(text):
             add(
                 failures,
                 repository_name,
                 "sql-boundary",
-                f"{relative_path} contains persistence SQL",
+                f"{relative_path} contains persistence SQL outside a repository/query",
             )
-        if relative_path.startswith("src/application/") and re.search(
+        if (is_domain_rule or is_business_service) and re.search(
             r"from\s+[\"'][^\"']*generated/", text
         ):
             add(
                 failures,
                 repository_name,
                 "wire-boundary",
-                f"{relative_path} imports generated wire types",
+                f"{relative_path} imports generated wire types into business code",
+            )
+        if (
+            profile.kind == "typescript-service"
+            and "process.env" in text
+            and not relative_path.startswith("src/config/")
+        ):
+            add(
+                failures,
+                repository_name,
+                "configuration-boundary",
+                f"{relative_path} reads process.env outside src/config/",
+            )
+        if (
+            profile.kind == "typescript-service"
+            and "modules" in relative_parts
+            and any(
+                part in {"postgres", "redis", "prisma"} for part in relative_parts[:-1]
+            )
+        ):
+            add(
+                failures,
+                repository_name,
+                "technology-directory",
+                f"{relative_path} is grouped by a database/cache brand inside a business module; use repository/query/cache/event responsibilities",
             )
         if (
             not relative_path.startswith("src/generated/")
@@ -178,9 +378,9 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 f"{relative_path} exceeds 800 lines",
             )
 
-        if relative_path.startswith("src/interfaces/http/"):
-            for match in re.finditer(r"[\"'](/[^\"']*)[\"']", text):
-                route = match.group(1)
+        if profile.kind == "typescript-service" and is_http_transport:
+            http_sources.append(path)
+            for route in route_literals(text):
                 connect_rpc_route = re.fullmatch(
                     r"/[a-z][a-z0-9_.]*\.v[0-9]+\.[A-Za-z][A-Za-z0-9_]*/[A-Za-z][A-Za-z0-9_]*",
                     route,
@@ -192,6 +392,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                         "/",
                         "/v1",
                         "/healthz",
+                        "/livez",
                         "/readyz",
                         "/metrics",
                         "/docs",
@@ -207,7 +408,6 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                         f"{relative_path} exposes non-versioned route literal {route!r}",
                     )
 
-    http_sources = tracked_or_worktree_files(repository, "src/interfaces/http")
     if any(path.suffix == ".ts" for path in http_sources):
         openapi_root = repository / "contract" / "openapi"
         openapi_files = (
@@ -224,7 +424,7 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 failures,
                 repository_name,
                 "contract-owner",
-                "HTTP surface exists but contract/openapi has no canonical specification",
+                "HTTP surface exists but contract/openapi has no published or generated specification",
             )
         else:
             for specification in openapi_files:
@@ -248,6 +448,11 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 "toolchain",
                 f"{workflow.relative_to(repository)} still invokes npm",
             )
+        workflow_text = "\n".join(
+            line
+            for line in workflow_text.splitlines()
+            if not line.lstrip().startswith("#")
+        )
         if profile.requires_schema and "db:apply-schema" not in workflow_text:
             add(
                 failures,

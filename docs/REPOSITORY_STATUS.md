@@ -2,6 +2,11 @@
 
 状态：2026-09-02 · 阶段 2 全仓治理与真实本地闭环基线
 
+> 本表记录当前物理 checkout。目标拓扑已由
+> [ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md) 裁决：Model 合入 System 的
+> `model-catalog` 模块，Capability clean-slate 重命名为 Platform。只有物理仓、contract、数据 owner、消费者和
+> 验证全部 cutover 后才删除下表旧行。
+
 本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存仓库拓扑、架构文档、部署编排与验证工具；API contract、Schema、生成代码和业务实现必须留在对应独立仓库。子仓之间只通过各 owner 仓库发布的
 HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导入源代码、数据库或 ORM。
 

@@ -8,7 +8,6 @@ from pathlib import Path
 
 from .ten_repository_standard import ROOT, Failure, add, read_text
 
-
 REQUIRED_OPENAPI_OPERATION_EXTENSIONS = (
     "x-kokoro-owner",
     "x-kokoro-visibility",
