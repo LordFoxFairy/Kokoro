@@ -98,7 +98,7 @@ REPOSITORY_PROFILES = {
         "typescript-service", True, 6, REQUIRED_TS_LAYERS
     ),
     "kokoro-scheduler": RepositoryProfile(
-        "go-service", False, 7, REQUIRED_SCHEDULER_LAYERS
+        "go-service", True, 7, REQUIRED_SCHEDULER_LAYERS
     ),
 }
 REPOSITORIES = tuple(REPOSITORY_PROFILES)

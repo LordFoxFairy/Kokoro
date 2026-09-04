@@ -47,7 +47,7 @@ def test_repository_profiles_encode_runtime_and_persistence_boundaries() -> None
     assert verifier.REPOSITORY_PROFILES["kokoro-agent"].kind == "python-service"
     assert verifier.REPOSITORY_PROFILES["kokoro-agent"].requires_schema is True
     assert verifier.REPOSITORY_PROFILES["kokoro-scheduler"].kind == "go-service"
-    assert verifier.REPOSITORY_PROFILES["kokoro-scheduler"].requires_schema is False
+    assert verifier.REPOSITORY_PROFILES["kokoro-scheduler"].requires_schema is True
 
 
 def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_services() -> (
