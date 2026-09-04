@@ -61,7 +61,7 @@ try {
     );
   }
   const outputDirectory = join(portalRoot, 'docs/reference/v1/generated');
-  writeReferenceFiles(files, outputDirectory);
+  writeReferenceFiles(files, outputDirectory, { portalRoot });
   const manifest = JSON.parse(
     readFileSync(join(outputDirectory, 'manifest.json'), 'utf8'),
   );

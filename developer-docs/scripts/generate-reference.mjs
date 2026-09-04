@@ -24,7 +24,7 @@ const { contract } = loadPinnedPublicContract(entry, {
   checkoutOverride: process.env.KOKORO_BFF_CHECKOUT,
 });
 const files = generateReferenceFiles(contract, entry);
-writeReferenceFiles(files, outputDirectory);
+writeReferenceFiles(files, outputDirectory, { portalRoot });
 process.stdout.write(
   `generated ${files.size} reference files for ${entry.id} at ${outputDirectory}\n`,
 );

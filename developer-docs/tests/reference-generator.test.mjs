@@ -40,6 +40,13 @@ function fixtureContract(visibility = 'public') {
           responses: {
             202: {
               description: 'Accepted',
+              headers: {
+                'X-Request-Id': {
+                  description: 'Request correlation identifier.',
+                  schema: { type: 'string', minLength: 1 },
+                  example: 'req_example',
+                },
+              },
               content: {
                 'application/json': {
                   schema: { $ref: '#/components/schemas/MessageReceiptResponse' },
@@ -72,7 +79,12 @@ function fixtureContract(visibility = 'public') {
           required: ['content'],
           additionalProperties: false,
           properties: {
-            content: { type: 'string', minLength: 1 },
+            content: {
+              type: 'string',
+              minLength: 1,
+              maxLength: 200,
+              example: 'Review the contract.',
+            },
           },
         },
         MessageReceiptResponse: {
@@ -146,9 +158,145 @@ test('generates deterministic operation, schema, and manifest files', () => {
   ]);
 });
 
+test('renders the complete public metadata and field-level constraints', () => {
+  const contract = fixtureContract();
+  contract.components.schemas.MessageReceiptResponse.properties = {
+    data: {
+      type: 'object',
+      required: ['items'],
+      properties: {
+        items: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: { type: 'string', minLength: 1 },
+            },
+          },
+        },
+      },
+    },
+  };
+  const files = generateReferenceFiles(contract, catalogEntry);
+  const chatPage = files.get('chat.md');
+  const schemasPage = files.get('schemas.md');
+  const manifest = JSON.parse(files.get('manifest.json'));
+
+  assert.match(chatPage, /Owner.*`kokoro-bff`/);
+  assert.match(chatPage, /Visibility.*`public`/);
+  assert.match(chatPage, /Stability.*`beta`/);
+  assert.match(chatPage, /Idempotency.*`required`/);
+  assert.match(chatPage, /Max length.*200/);
+  assert.match(chatPage, /Example.*`req_example`/s);
+  assert.match(chatPage, /X-Request-Id/);
+  assert.match(schemasPage, /`data\.items`/);
+  assert.match(schemasPage, /`data\.items\[\]\.id`/);
+  assert.equal(manifest.owner, 'kokoro-bff');
+  assert.equal(manifest.visibility, 'public');
+  assert.deepEqual(manifest.operations[0], {
+    idempotency: 'required',
+    method: 'POST',
+    operationId: 'createMessage',
+    owner: 'kokoro-bff',
+    path: '/v1/sessions/{id}/messages',
+    permission: 'chat.message.create',
+    stability: 'beta',
+    tag: 'Chat',
+    visibility: 'public',
+  });
+});
+
+test('rejects unsupported metadata and mismatched idempotency parameters', () => {
+  const unsupported = fixtureContract();
+  unsupported.paths['/v1/sessions/{id}/messages'].post['x-kokoro-stability'] =
+    'not-a-state';
+  assert.throws(
+    () => assertPublicContract(unsupported, catalogEntry),
+    /unsupported x-kokoro-stability/,
+  );
+
+  const mismatch = fixtureContract();
+  mismatch.paths['/v1/sessions/{id}/messages'].post.parameters = [];
+  assert.throws(
+    () => assertPublicContract(mismatch, catalogEntry),
+    /must reference Idempotency-Key/,
+  );
+});
+
+test('rejects publication-unsafe canonical examples', () => {
+  const unsafe = fixtureContract();
+  unsafe.paths['/v1/sessions/{id}/messages'].post.requestBody.content[
+    'application/json'
+  ].example = {
+    content: ['sk', 'live', '1234567890abcdefghijkl'].join('_'),
+  };
+
+  assert.throws(
+    () => generateReferenceFiles(unsafe, catalogEntry),
+    /publication|secret/i,
+  );
+});
+
+test('rejects publication-unsafe extensions and URL schemes', () => {
+  const unsafeHeader = fixtureContract();
+  unsafeHeader.paths['/v1/sessions/{id}/messages'].post['x-kokoro-private'] =
+    'hidden';
+  assert.throws(
+    () => assertPublicContract(unsafeHeader, catalogEntry),
+    /publication|unknown Kokoro extension/i,
+  );
+
+  const unsafeUrl = fixtureContract();
+  unsafeUrl.paths['/v1/sessions/{id}/messages'].post.description = [
+    'java',
+    'script:alert(1)',
+  ].join('');
+  assert.throws(
+    () => generateReferenceFiles(unsafeUrl, catalogEntry),
+    /publication|URL scheme/i,
+  );
+});
+
+test('keeps reference replacement inside managed or temporary directories', () => {
+  const files = generateReferenceFiles(fixtureContract(), catalogEntry);
+  const unmanaged = mkdtempSync(join(tmpdir(), 'kokoro-unmanaged-'));
+  try {
+    writeFileSync(join(unmanaged, 'unrelated.txt'), 'do not remove');
+    assert.throws(
+      () => writeReferenceFiles(files, unmanaged),
+      /unmanaged temporary directory/,
+    );
+  } finally {
+    rmSync(unmanaged, { force: true, recursive: true });
+  }
+
+  assert.throws(
+    () => writeReferenceFiles(files, process.cwd()),
+    /must be inside/,
+  );
+  const escapeDirectory = mkdtempSync(join(tmpdir(), 'kokoro-escape-'));
+  try {
+    assert.throws(
+      () =>
+        writeReferenceFiles(
+          new Map([['../escape.md', 'x']]),
+          escapeDirectory,
+        ),
+      /escapes output directory/,
+    );
+  } finally {
+    rmSync(escapeDirectory, { force: true, recursive: true });
+  }
+});
+
 test('replaces stale generated output atomically', () => {
   const directory = mkdtempSync(join(tmpdir(), 'kokoro-reference-'));
   try {
+    writeFileSync(
+      join(directory, 'manifest.json'),
+      JSON.stringify({ generatedBy: 'kokoro-developer-docs/reference-v1' }),
+    );
     writeFileSync(join(directory, 'stale.md'), 'stale');
 
     writeReferenceFiles(

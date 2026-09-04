@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 import {
+  assertGeneratedReferencePublication,
   assertPortalArchitecture,
   auditPortalArchitecture,
 } from '../scripts/lib/architecture.mjs';
@@ -93,5 +94,23 @@ test('rejects publication links that escape into an internal owner checkout', ()
   assert.throws(
     () => assertPortalArchitecture(root),
     /no-internal-owner-paths/,
+  );
+});
+
+test('scans generated reference output with the publication policy', () => {
+  const root = portalFixture();
+  mkdirSync(join(root, 'docs/reference/v1/generated'), { recursive: true });
+  writeFileSync(
+    join(root, 'docs/reference/v1/generated/manifest.json'),
+    JSON.stringify({ generatedBy: 'kokoro-developer-docs/reference-v1' }),
+  );
+  writeFileSync(
+    join(root, 'docs/reference/v1/generated/chat.md'),
+    `bad ${['java', 'script:alert(1)'].join('')}`,
+  );
+
+  assert.throws(
+    () => assertGeneratedReferencePublication(root),
+    /publication|URL scheme/i,
   );
 });

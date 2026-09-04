@@ -1,6 +1,9 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { extname, join, relative, resolve, sep } from 'node:path';
 
+import { assertPublicationSafe } from './publication-policy.mjs';
+import { GENERATED_MARKER } from './output-safety.mjs';
+
 const PUBLICATION_ROOTS = Object.freeze([
   'docs',
   'examples',
@@ -247,4 +250,48 @@ export function assertPortalArchitecture(portalRoot) {
     throw new PortalArchitectureError(result.violations);
   }
   return result;
+}
+
+function generatedReferenceFiles(directory) {
+  if (!existsSync(directory)) return [];
+  const files = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const path = join(directory, entry.name);
+    if (entry.isSymbolicLink()) {
+      throw new Error(`generated reference must not contain symlinks: ${path}`);
+    }
+    if (entry.isDirectory()) {
+      files.push(...generatedReferenceFiles(path));
+    } else if (entry.isFile()) {
+      files.push(path);
+    }
+  }
+  return files;
+}
+
+export function assertGeneratedReferencePublication(portalRoot) {
+  const root = resolve(portalRoot);
+  const directory = join(root, 'docs/reference/v1/generated');
+  const files = generatedReferenceFiles(directory);
+  if (files.length === 0) return { filesScanned: 0 };
+  const manifestPath = join(directory, 'manifest.json');
+  if (!existsSync(manifestPath)) {
+    throw new Error('generated reference is missing manifest.json');
+  }
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  } catch {
+    throw new Error('generated reference manifest is not valid JSON');
+  }
+  if (manifest?.generatedBy !== GENERATED_MARKER) {
+    throw new Error('generated reference manifest has an unknown generator marker');
+  }
+  for (const path of files) {
+    assertPublicationSafe(
+      readFileSync(path, 'utf8'),
+      `generated reference ${relative(root, path).split(sep).join('/')}`,
+    );
+  }
+  return { filesScanned: files.length };
 }

@@ -2,7 +2,10 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { assertPortalArchitecture } from './lib/architecture.mjs';
+import {
+  assertGeneratedReferencePublication,
+  assertPortalArchitecture,
+} from './lib/architecture.mjs';
 import { loadCatalog } from './lib/catalog.mjs';
 import { loadPinnedPublicContract } from './lib/contract.mjs';
 
@@ -39,6 +42,7 @@ function trackedGeneratedFiles(portalRoot) {
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const portalRoot = resolve(scriptDirectory, '..');
 const sourceAudit = assertPortalArchitecture(portalRoot);
+const generatedAudit = assertGeneratedReferencePublication(portalRoot);
 const catalog = loadCatalog(join(portalRoot, 'catalog/contracts.yaml'));
 let operations = 0;
 
@@ -58,5 +62,5 @@ if (trackedGenerated.length > 0) {
 }
 
 process.stdout.write(
-  `architecture ok: publication_files=${sourceAudit.filesScanned} public_contracts=${catalog.contracts.length} operations=${operations} tracked_generated_files=0\n`,
+  `architecture ok: publication_files=${sourceAudit.filesScanned} generated_files=${generatedAudit.filesScanned} public_contracts=${catalog.contracts.length} operations=${operations} tracked_generated_files=0\n`,
 );

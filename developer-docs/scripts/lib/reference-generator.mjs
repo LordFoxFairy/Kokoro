@@ -1,11 +1,25 @@
+import { assertPublicationSafe } from './publication-policy.mjs';
+import { ReferenceGenerationError } from './reference-errors.mjs';
 import {
-  mkdirSync,
-  mkdtempSync,
-  renameSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
-import { dirname, join } from 'node:path';
+  escapeTable,
+  firstExample,
+  formatTableExample,
+  isRecord,
+  normalizeDescription,
+  renderExample,
+  renderSchemaTable,
+  requireRecord,
+  resolveReference,
+  schemaConstraints,
+  schemaDefault,
+  schemaExample,
+  schemaType,
+  slugify,
+} from './schema-renderer.mjs';
+import {
+  GENERATED_MARKER,
+  writeManagedReferenceFiles,
+} from './output-safety.mjs';
 
 const HTTP_METHODS = new Set([
   'delete',
@@ -17,17 +31,12 @@ const HTTP_METHODS = new Set([
   'put',
   'trace',
 ]);
-
-function isRecord(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function requireRecord(value, label) {
-  if (!isRecord(value)) {
-    throw new ReferenceGenerationError(`${label} must be an object`);
-  }
-  return value;
-}
+const STABILITY_VALUES = new Set(['stable', 'beta', 'experimental']);
+const IDEMPOTENCY_VALUES = new Set(['none', 'required']);
+const PERMISSION_PATTERN =
+  /^(?:anonymous|[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*)$/u;
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
+const NO_KEY_MUTATION = new Set(['previewGithubSkill']);
 
 function requireString(record, key, label) {
   const value = record[key];
@@ -37,209 +46,37 @@ function requireString(record, key, label) {
   return value;
 }
 
-function slugify(value) {
-  const slug = value
-    .normalize('NFKD')
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-  return slug || 'reference';
+function expectedIdempotency(method, operationId) {
+  return SAFE_METHODS.has(method) || NO_KEY_MUTATION.has(operationId)
+    ? 'none'
+    : 'required';
 }
 
-function escapeTable(value) {
-  return String(value).replaceAll('|', '\\|').replaceAll('\n', ' ');
+function parameterIdentity(parameter) {
+  return `${String(parameter.in).toLowerCase()}:${String(parameter.name).toLowerCase()}`;
 }
 
-function normalizeDescription(value, fallback = '—') {
-  if (typeof value !== 'string' || value.trim() === '') {
-    return fallback;
-  }
-  return value.trim().replace(/\s+/g, ' ');
-}
-
-function referenceName(reference) {
-  return reference.split('/').at(-1) ?? reference;
-}
-
-function resolveReference(contract, value, label) {
-  if (!isRecord(value) || typeof value.$ref !== 'string') {
-    return value;
-  }
-  if (!value.$ref.startsWith('#/')) {
-    throw new ReferenceGenerationError(
-      `${label} uses unsupported external reference ${value.$ref}`,
-    );
-  }
-  let current = contract;
-  for (const rawPart of value.$ref.slice(2).split('/')) {
-    const part = rawPart.replaceAll('~1', '/').replaceAll('~0', '~');
-    if (!isRecord(current) || !(part in current)) {
-      throw new ReferenceGenerationError(
-        `${label} has unresolved reference ${value.$ref}`,
-      );
-    }
-    current = current[part];
-  }
-  return current;
-}
-
-function schemaType(schema) {
-  if (!isRecord(schema)) {
-    return 'unknown';
-  }
-  if (typeof schema.$ref === 'string') {
-    const name = referenceName(schema.$ref);
-    return `[${name}](./schemas#${slugify(name)})`;
-  }
-  if (Array.isArray(schema.oneOf)) {
-    return schema.oneOf.map((item) => schemaType(item)).join(' or ');
-  }
-  if (Array.isArray(schema.anyOf)) {
-    return schema.anyOf.map((item) => schemaType(item)).join(' or ');
-  }
-  if (schema.type === 'array') {
-    return `array of ${schemaType(schema.items)}`;
-  }
-  const rawType = Array.isArray(schema.type)
-    ? schema.type.join(' or ')
-    : typeof schema.type === 'string'
-      ? schema.type
-      : 'object';
-  return typeof schema.format === 'string'
-    ? `${rawType} (${schema.format})`
-    : rawType;
-}
-
-function schemaConstraints(schema) {
-  if (!isRecord(schema)) {
-    return '—';
-  }
-  const constraints = [];
-  if ('const' in schema) {
-    constraints.push(`const ${JSON.stringify(schema.const)}`);
-  }
-  if (Array.isArray(schema.enum)) {
-    constraints.push(`enum: ${schema.enum.map(String).join(', ')}`);
-  }
-  for (const [key, label] of [
-    ['minimum', 'min'],
-    ['maximum', 'max'],
-    ['minLength', 'min length'],
-    ['maxLength', 'max length'],
-    ['minItems', 'min items'],
-    ['maxItems', 'max items'],
-  ]) {
-    if (typeof schema[key] === 'number') {
-      constraints.push(`${label}: ${schema[key]}`);
-    }
-  }
-  if (schema.additionalProperties === false) {
-    constraints.push('closed object');
-  }
-  return constraints.length === 0 ? '—' : constraints.join('; ');
-}
-
-function renderExample(example) {
-  if (example === undefined) {
-    return '';
-  }
-  const serialized =
-    typeof example === 'string' ? example : JSON.stringify(example, null, 2);
-  return `\n\n**Example**\n\n\`\`\`json\n${serialized}\n\`\`\`\n`;
-}
-
-function firstExample(mediaType) {
-  if (!isRecord(mediaType)) {
-    return undefined;
-  }
-  if ('example' in mediaType) {
-    return mediaType.example;
-  }
-  if (isRecord(mediaType.examples)) {
-    for (const candidate of Object.values(mediaType.examples)) {
-      if (isRecord(candidate) && 'value' in candidate) {
-        return candidate.value;
-      }
-    }
-  }
-  return undefined;
-}
-
-function renderParameters(contract, parameters) {
-  if (parameters.length === 0) {
-    return '';
-  }
-  const rows = parameters.map((parameter, index) => {
+function resolvedParameters(contract, parameters, label) {
+  const result = [];
+  const seen = new Set();
+  parameters.forEach((parameter, index) => {
     const resolved = requireRecord(
-      resolveReference(contract, parameter, `parameter[${index}]`),
-      `parameter[${index}]`,
+      resolveReference(contract, parameter, `${label}[${index}]`),
+      `${label}[${index}]`,
     );
-    return `| \`${escapeTable(requireString(resolved, 'name', `parameter[${index}]`))}\` | ${escapeTable(requireString(resolved, 'in', `parameter[${index}]`))} | ${resolved.required === true ? 'yes' : 'no'} | ${escapeTable(schemaType(resolved.schema))} | ${escapeTable(normalizeDescription(resolved.description))} |`;
-  });
-  return [
-    '### Parameters',
-    '',
-    '| Name | Location | Required | Type | Description |',
-    '| --- | --- | --- | --- | --- |',
-    ...rows,
-    '',
-  ].join('\n');
-}
-
-function renderRequestBody(requestBody) {
-  if (!isRecord(requestBody)) {
-    return '';
-  }
-  const content = requireRecord(requestBody.content, 'requestBody.content');
-  const lines = ['### Request body', ''];
-  for (const [mediaName, mediaValue] of Object.entries(content)) {
-    const media = requireRecord(mediaValue, `requestBody.content.${mediaName}`);
-    lines.push(
-      `- Content type: \`${mediaName}\``,
-      `- Required: ${requestBody.required === true ? 'yes' : 'no'}`,
-      `- Schema: ${schemaType(media.schema)}`,
-    );
-    const example = renderExample(firstExample(media));
-    if (example !== '') {
-      lines.push(example.trimEnd());
+    const name = requireString(resolved, 'name', `${label}[${index}]`);
+    const location = requireString(resolved, 'in', `${label}[${index}]`);
+    const key = `${location.toLowerCase()}:${name.toLowerCase()}`;
+    if (seen.has(key)) {
+      const existingIndex = result.findIndex(
+        (candidate) => parameterIdentity(candidate) === key,
+      );
+      if (existingIndex >= 0) result.splice(existingIndex, 1);
     }
-  }
-  lines.push('');
-  return lines.join('\n');
-}
-
-function renderResponses(contract, responses) {
-  if (!isRecord(responses)) {
-    return '';
-  }
-  const rows = Object.entries(responses)
-    .sort(([left], [right]) => left.localeCompare(right, 'en'))
-    .map(([status, response]) => {
-      const resolved = requireRecord(
-        resolveReference(contract, response, `response ${status}`),
-        `response ${status}`,
-      );
-      const content = isRecord(resolved.content) ? resolved.content : {};
-      const representations = Object.entries(content).map(
-        ([mediaName, mediaValue]) => {
-          const media = requireRecord(
-            mediaValue,
-            `response ${status}.${mediaName}`,
-          );
-          return `\`${mediaName}\` · ${schemaType(media.schema)}`;
-        },
-      );
-      return `| \`${escapeTable(status)}\` | ${escapeTable(normalizeDescription(resolved.description))} | ${escapeTable(representations.join(', ') || 'No body')} |`;
-    });
-  return [
-    '### Responses',
-    '',
-    '| Status | Description | Representation |',
-    '| --- | --- | --- |',
-    ...rows,
-    '',
-  ].join('\n');
+    seen.add(key);
+    result.push(resolved);
+  });
+  return result;
 }
 
 function collectOperations(contract) {
@@ -251,9 +88,8 @@ function collectOperations(contract) {
       ? pathItem.parameters
       : [];
     for (const [method, operationValue] of Object.entries(pathItem)) {
-      if (!HTTP_METHODS.has(method.toLowerCase())) {
-        continue;
-      }
+      const normalizedMethod = method.toLowerCase();
+      if (!HTTP_METHODS.has(normalizedMethod)) continue;
       const operation = requireRecord(
         operationValue,
         `${method.toUpperCase()} ${path}`,
@@ -264,7 +100,11 @@ function collectOperations(contract) {
       operations.push({
         method: method.toUpperCase(),
         operation,
-        parameters: [...pathParameters, ...operationParameters],
+        parameters: resolvedParameters(
+          contract,
+          [...pathParameters, ...operationParameters],
+          `${method.toUpperCase()} ${path} parameters`,
+        ),
         path,
       });
     }
@@ -272,15 +112,40 @@ function collectOperations(contract) {
   return operations;
 }
 
-export class ReferenceGenerationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ReferenceGenerationError';
+function assertSecurityReferences(contract, operation, operationId) {
+  const security = 'security' in operation ? operation.security : contract.security;
+  if (security === undefined) return;
+  if (!Array.isArray(security)) {
+    throw new ReferenceGenerationError(`${operationId} security must be an array`);
   }
+  const schemes = isRecord(contract.components?.securitySchemes)
+    ? contract.components.securitySchemes
+    : {};
+  security.forEach((requirement, index) => {
+    if (!isRecord(requirement)) {
+      throw new ReferenceGenerationError(
+        `${operationId} security[${index}] must be an object`,
+      );
+    }
+    for (const name of Object.keys(requirement)) {
+      if (!(name in schemes)) {
+        throw new ReferenceGenerationError(
+          `${operationId} references unknown security scheme ${name}`,
+        );
+      }
+    }
+  });
 }
 
 export function assertPublicContract(contractValue, catalogEntry) {
   const contract = requireRecord(contractValue, 'OpenAPI document');
+  assertPublicationSafe(contract, 'canonical public contract');
+  if (catalogEntry.owner !== 'kokoro-bff') {
+    throw new ReferenceGenerationError('catalog owner must be kokoro-bff');
+  }
+  if (catalogEntry.visibility !== 'public') {
+    throw new ReferenceGenerationError('catalog visibility must be public');
+  }
   const info = requireRecord(contract.info, 'info');
   const version = requireString(info, 'version', 'info');
   if (version !== catalogEntry.version) {
@@ -288,7 +153,10 @@ export function assertPublicContract(contractValue, catalogEntry) {
       `OpenAPI version ${version} does not match catalog ${catalogEntry.version}`,
     );
   }
-  if (typeof contract.openapi !== 'string' || !contract.openapi.startsWith('3.1.')) {
+  if (
+    typeof contract.openapi !== 'string' ||
+    !contract.openapi.startsWith('3.1.')
+  ) {
     throw new ReferenceGenerationError('canonical contract must use OpenAPI 3.1');
   }
   if (isRecord(contract.webhooks) && Object.keys(contract.webhooks).length > 0) {
@@ -302,39 +170,247 @@ export function assertPublicContract(contractValue, catalogEntry) {
     throw new ReferenceGenerationError('canonical contract has no operations');
   }
   const operationIds = new Set();
-  for (const { method, operation, path } of operations) {
+  for (const { method, operation, parameters, path } of operations) {
     const label = `${method} ${path}`;
     const operationId = requireString(operation, 'operationId', label);
     if (operationIds.has(operationId)) {
-      throw new ReferenceGenerationError(
-        `duplicate operationId ${operationId}`,
-      );
+      throw new ReferenceGenerationError(`duplicate operationId ${operationId}`);
     }
     operationIds.add(operationId);
     if (operation['x-kokoro-owner'] !== 'kokoro-bff') {
-      throw new ReferenceGenerationError(
-        `${operationId} must be owned by kokoro-bff`,
-      );
+      throw new ReferenceGenerationError(`${operationId} must be owned by kokoro-bff`);
     }
     if (operation['x-kokoro-visibility'] !== 'public') {
+      throw new ReferenceGenerationError(`${operationId} must have public visibility`);
+    }
+    const stability = requireString(operation, 'x-kokoro-stability', label);
+    if (!STABILITY_VALUES.has(stability)) {
       throw new ReferenceGenerationError(
-        `${operationId} must have public visibility`,
+        `${operationId} has unsupported x-kokoro-stability ${stability}`,
       );
     }
-    for (const field of [
-      'x-kokoro-stability',
-      'x-kokoro-idempotency',
-      'x-kokoro-permission',
-    ]) {
-      requireString(operation, field, label);
+    const idempotency = requireString(operation, 'x-kokoro-idempotency', label);
+    if (!IDEMPOTENCY_VALUES.has(idempotency)) {
+      throw new ReferenceGenerationError(
+        `${operationId} has unsupported x-kokoro-idempotency ${idempotency}`,
+      );
+    }
+    const permission = requireString(operation, 'x-kokoro-permission', label);
+    if (!PERMISSION_PATTERN.test(permission)) {
+      throw new ReferenceGenerationError(
+        `${operationId} has invalid x-kokoro-permission ${permission}`,
+      );
+    }
+    const expected = expectedIdempotency(method, operationId);
+    if (idempotency !== expected) {
+      throw new ReferenceGenerationError(
+        `${operationId} x-kokoro-idempotency must be ${expected}`,
+      );
+    }
+    const idempotencyParameter = parameters.find(
+      (parameter) =>
+        String(parameter.in).toLowerCase() === 'header' &&
+        String(parameter.name).toLowerCase() === 'idempotency-key',
+    );
+    if (idempotency === 'required' && idempotencyParameter === undefined) {
+      throw new ReferenceGenerationError(
+        `${operationId} must reference Idempotency-Key when idempotency is required`,
+      );
+    }
+    if (idempotency === 'required' && idempotencyParameter.required !== true) {
+      throw new ReferenceGenerationError(
+        `${operationId} Idempotency-Key must be required`,
+      );
+    }
+    if (idempotency === 'none' && idempotencyParameter !== undefined) {
+      throw new ReferenceGenerationError(
+        `${operationId} must not declare Idempotency-Key when idempotency is none`,
+      );
     }
     if (!Array.isArray(operation.tags) || operation.tags.length !== 1) {
       throw new ReferenceGenerationError(
         `${operationId} must declare exactly one public tag`,
       );
     }
+    assertSecurityReferences(contract, operation, operationId);
+    if (
+      !isRecord(operation.responses) ||
+      Object.keys(operation.responses).length === 0
+    ) {
+      throw new ReferenceGenerationError(`${operationId} must declare responses`);
+    }
   }
   return operations;
+}
+
+function parameterExample(contract, parameter) {
+  if ('example' in parameter) return parameter.example;
+  return schemaExample(contract, parameter.schema);
+}
+
+function renderParameters(contract, parameters) {
+  if (parameters.length === 0) return '';
+  const rows = parameters.map((parameter) => {
+    const example = parameterExample(contract, parameter);
+    return `| \`${escapeTable(parameter.name)}\` | \`${escapeTable(parameter.in)}\` | ${parameter.required === true ? 'yes' : 'no'} | ${escapeTable(schemaType(contract, parameter.schema))} | ${escapeTable(schemaConstraints(contract, parameter.schema))} | ${escapeTable(formatTableExample(schemaDefault(contract, parameter.schema)))} | ${escapeTable(formatTableExample(example))} | ${escapeTable(normalizeDescription(parameter.description))} |`;
+  });
+  return [
+    '### Parameters（参数）',
+    '',
+    '| Name（名称） | Location（位置） | Required（必填） | Type（类型） | Constraints（约束） | Default（默认） | Example（示例） | Description（说明） |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- |',
+    ...rows,
+    '',
+  ].join('\n');
+}
+
+function securitySchemeDescription(contract, name) {
+  const schemes = isRecord(contract.components?.securitySchemes)
+    ? contract.components.securitySchemes
+    : {};
+  const scheme = isRecord(schemes[name]) ? schemes[name] : {};
+  if (scheme.type === 'apiKey') {
+    return `\`${name}\` · header \`${scheme.name ?? name}\``;
+  }
+  return `\`${name}\` · ${String(scheme.type ?? 'security scheme')}`;
+}
+
+function renderSecurity(contract, operation) {
+  const hasSecurity = 'security' in operation || 'security' in contract;
+  const security = 'security' in operation ? operation.security : contract.security;
+  if (!hasSecurity) {
+    return [
+      '### Authentication（认证）',
+      '',
+      'This document does not declare a security requirement for this operation.',
+      '',
+    ].join('\n');
+  }
+  if (!Array.isArray(security) || security.length === 0) {
+    return [
+      '### Authentication（认证）',
+      '',
+      'This operation declares `security: []`; it is an anonymous health/readiness probe in the canonical contract.',
+      '',
+    ].join('\n');
+  }
+  const alternatives = security.map((requirement) =>
+    Object.keys(requirement)
+      .map((name) => securitySchemeDescription(contract, name))
+      .join(' + '),
+  );
+  return [
+    '### Authentication（认证）',
+    '',
+    `Required security context（所需安全上下文）: ${alternatives.map((value) => `(${value})`).join(' or ')}`,
+    '',
+    '具体 header 名称、是否必填和字段约束以本页的 canonical contract 元数据为准；门户不发布凭据值。',
+    '',
+  ].join('\n');
+}
+
+function renderRequestBody(contract, requestBody) {
+  if (!isRecord(requestBody)) return '';
+  const content = requireRecord(requestBody.content, 'requestBody.content');
+  const lines = ['### Request body（请求体）', ''];
+  for (const [mediaName, mediaValue] of Object.entries(content)) {
+    const media = requireRecord(mediaValue, `requestBody.content.${mediaName}`);
+    lines.push(
+      `- Content type（媒体类型）: \`${mediaName}\``,
+      `- Required（必填）: ${requestBody.required === true ? 'yes' : 'no'}`,
+      `- Schema（Schema）: ${schemaType(contract, media.schema)}`,
+      '',
+    );
+    const table = renderSchemaTable(contract, media.schema);
+    if (table !== '') lines.push(table);
+    const example = renderExample(firstExample(media));
+    if (example !== '') lines.push(example.trimEnd(), '');
+  }
+  return lines.join('\n');
+}
+
+function renderResponseHeaders(contract, headers) {
+  if (!isRecord(headers) || Object.keys(headers).length === 0) return '';
+  const rows = Object.entries(headers).map(([name, headerValue]) => {
+    const header = requireRecord(
+      resolveReference(contract, headerValue, `header ${name}`),
+      `header ${name}`,
+    );
+    const example = 'example' in header
+      ? header.example
+      : schemaExample(contract, header.schema);
+    return `| \`${escapeTable(name)}\` | ${header.required === true ? 'yes' : 'no'} | ${escapeTable(schemaType(contract, header.schema))} | ${escapeTable(schemaConstraints(contract, header.schema))} | ${escapeTable(formatTableExample(example))} | ${escapeTable(normalizeDescription(header.description))} |`;
+  });
+  return [
+    '##### Headers（响应头）',
+    '',
+    '| Name（名称） | Required（必填） | Type（类型） | Constraints（约束） | Example（示例） | Description（说明） |',
+    '| --- | --- | --- | --- | --- | --- |',
+    ...rows,
+    '',
+  ].join('\n');
+}
+
+function renderResponseDetails(contract, status, response) {
+  const resolved = requireRecord(
+    resolveReference(contract, response, `response ${status}`),
+    `response ${status}`,
+  );
+  const lines = [
+    `#### Response \`${status}\`（响应）`,
+    '',
+    normalizeDescription(resolved.description),
+    '',
+  ];
+  const headers = renderResponseHeaders(contract, resolved.headers);
+  if (headers !== '') lines.push(headers);
+  const content = isRecord(resolved.content) ? resolved.content : {};
+  for (const [mediaName, mediaValue] of Object.entries(content)) {
+    const media = requireRecord(mediaValue, `response ${status}.${mediaName}`);
+    lines.push(
+      `##### Body \`${mediaName}\`（响应体）`,
+      '',
+      `Schema（Schema）: ${schemaType(contract, media.schema)}`,
+      '',
+    );
+    const table = renderSchemaTable(contract, media.schema, 'Fields（字段）', 6);
+    if (table !== '') lines.push(table);
+    const example = renderExample(firstExample(media));
+    if (example !== '') lines.push(example.trimEnd(), '');
+  }
+  if (Object.keys(content).length === 0 && !isRecord(resolved.headers)) {
+    lines.push('No response body or response headers are declared.', '');
+  }
+  return lines.join('\n');
+}
+
+function renderResponses(contract, responses) {
+  const entries = Object.entries(responses).sort(([left], [right]) =>
+    left.localeCompare(right, 'en', { numeric: true }),
+  );
+  const rows = entries.map(([status, response]) => {
+    const resolved = requireRecord(
+      resolveReference(contract, response, `response ${status}`),
+      `response ${status}`,
+    );
+    const content = isRecord(resolved.content) ? resolved.content : {};
+    const representations = Object.entries(content).map(([mediaName, mediaValue]) => {
+      const media = requireRecord(mediaValue, `response ${status}.${mediaName}`);
+      return `\`${mediaName}\` · ${schemaType(contract, media.schema)}`;
+    });
+    return `| \`${escapeTable(status)}\` | ${escapeTable(normalizeDescription(resolved.description))} | ${escapeTable(representations.join(', ') || 'No body')} |`;
+  });
+  return [
+    '### Responses（响应）',
+    '',
+    '| Status（状态） | Description（说明） | Representation（表示） |',
+    '| --- | --- | --- |',
+    ...rows,
+    '',
+    ...entries.map(([status, response]) =>
+      renderResponseDetails(contract, status, response),
+    ),
+  ].join('\n');
 }
 
 function renderOperation(contract, collectedOperation) {
@@ -344,10 +420,15 @@ function renderOperation(contract, collectedOperation) {
   const anchor = slugify(operationId);
   const description = normalizeDescription(operation.description, '');
   const metadata = [
-    `| Operation ID | \`${operationId}\` |`,
-    `| Stability | \`${operation['x-kokoro-stability']}\` |`,
-    `| Idempotency | \`${operation['x-kokoro-idempotency']}\` |`,
-    `| Permission | \`${operation['x-kokoro-permission']}\` |`,
+    `| Operation ID（操作 ID） | \`${operationId}\` |`,
+    `| Owner（所有者） | \`${operation['x-kokoro-owner']}\` |`,
+    `| Visibility（可见性） | \`${operation['x-kokoro-visibility']}\` |`,
+    `| Stability（稳定性） | \`${operation['x-kokoro-stability']}\` |`,
+    `| Idempotency（幂等性） | \`${operation['x-kokoro-idempotency']}\` |`,
+    `| Permission（权限） | \`${operation['x-kokoro-permission']}\` |`,
+    ...(operation.deprecated === true
+      ? ['| Deprecated（已弃用） | `true` |']
+      : []),
   ];
   return [
     `## ${summary} {#${anchor}}`,
@@ -355,12 +436,13 @@ function renderOperation(contract, collectedOperation) {
     `<span class="api-method api-method--${method.toLowerCase()}">${method}</span> \`${path}\``,
     '',
     ...(description === '' ? [] : [description, '']),
-    '| Contract metadata | Value |',
+    '| Contract metadata（契约元数据） | Value（值） |',
     '| --- | --- |',
     ...metadata,
     '',
+    renderSecurity(contract, operation),
     renderParameters(contract, parameters),
-    renderRequestBody(operation.requestBody),
+    renderRequestBody(contract, operation.requestBody),
     renderResponses(contract, operation.responses),
   ]
     .filter((part) => part !== '')
@@ -374,81 +456,106 @@ function renderTagPage(contract, tag, operations, entry) {
     '<!-- Generated file. Do not edit. -->',
     '---',
     `title: ${JSON.stringify(title)}`,
-    'outline: [2, 3]',
+    'outline: [2, 3, 4, 5]',
     'editLink: false',
     '---',
     '',
     `# ${title}`,
     '',
-    '> Generated from the pinned canonical OpenAPI. Change the owner contract, then regenerate this page.',
+    '> 本页由固定版本的 BFF public contract 自动生成。Generated from the pinned canonical OpenAPI. 需要变更字段时先修改 owner contract，再重新生成。',
     '',
     ...(description === '' ? [] : [description, '']),
-    `Contract \`${entry.version}\` · source \`${entry.source.commit}\` · SHA-256 \`${entry.digest.value}\``,
+    `契约版本（Version）\`${entry.version}\` · owner \`${entry.owner}\` · visibility \`${entry.visibility}\` · source commit \`${entry.source.commit}\` · SHA-256 \`${entry.digest.value}\``,
     '',
     operations.map((operation) => renderOperation(contract, operation)).join('\n\n'),
     '',
   ].join('\n');
 }
 
-function renderSchemasPage(contract, entry) {
+function reachableSchemaNames(contract, operations) {
+  const names = new Set();
+  const visitedReferences = new Set();
+
+  function visit(value) {
+    if (!isRecord(value) && !Array.isArray(value)) return;
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (typeof value.$ref === 'string') {
+      if (value.$ref.startsWith('#/components/schemas/')) {
+        const name = value.$ref.split('/').at(-1);
+        if (name !== undefined) names.add(name);
+      }
+      if (value.$ref.startsWith('#/') && !visitedReferences.has(value.$ref)) {
+        visitedReferences.add(value.$ref);
+        visit(resolveReference(contract, value, 'reachable reference'));
+      }
+      return;
+    }
+    Object.values(value).forEach(visit);
+  }
+
+  operations.forEach(({ operation, parameters }) => {
+    visit(operation);
+    visit(parameters);
+  });
+  let previousSize = -1;
+  while (previousSize !== names.size) {
+    previousSize = names.size;
+    for (const name of names) {
+      const schema = contract.components?.schemas?.[name];
+      if (schema !== undefined) visit(schema);
+    }
+  }
+  return names;
+}
+
+function renderSchemasPage(contract, entry, schemaNames) {
   const components = isRecord(contract.components) ? contract.components : {};
   const schemas = isRecord(components.schemas) ? components.schemas : {};
   const sections = Object.entries(schemas)
+    .filter(([name]) => schemaNames.has(name))
     .sort(([left], [right]) => left.localeCompare(right, 'en'))
     .map(([name, schemaValue]) => {
       const schema = requireRecord(schemaValue, `schema ${name}`);
+      const description = normalizeDescription(schema.description, '');
       const lines = [
         `## ${name} {#${slugify(name)}}`,
         '',
-        normalizeDescription(schema.description, `Type: ${schemaType(schema)}`),
+        ...(description === '' ? [] : [description, '']),
+        `Type（类型）: ${schemaType(contract, schema)}`,
+        '',
+        `Constraints（约束）: ${schemaConstraints(contract, schema)}`,
         '',
       ];
-      if (Array.isArray(schema.oneOf)) {
-        lines.push(
-          `One of: ${schema.oneOf.map((item) => schemaType(item)).join(', ')}.`,
-          '',
-        );
-      }
-      if (isRecord(schema.properties)) {
-        const required = new Set(
-          Array.isArray(schema.required) ? schema.required : [],
-        );
-        lines.push(
-          '| Property | Required | Type | Constraints | Description |',
-          '| --- | --- | --- | --- | --- |',
-        );
-        for (const [propertyName, propertyValue] of Object.entries(
-          schema.properties,
-        )) {
-          const property = requireRecord(
-            propertyValue,
-            `schema ${name}.${propertyName}`,
-          );
+      for (const composition of ['allOf', 'oneOf', 'anyOf']) {
+        if (Array.isArray(schema[composition])) {
           lines.push(
-            `| \`${escapeTable(propertyName)}\` | ${required.has(propertyName) ? 'yes' : 'no'} | ${escapeTable(schemaType(property))} | ${escapeTable(schemaConstraints(property))} | ${escapeTable(normalizeDescription(property.description))} |`,
+            `${composition}（组合）: ${schema[composition].map((item) => schemaType(contract, item)).join(', ')}.`,
+            '',
           );
         }
-        lines.push('');
       }
+      const table = renderSchemaTable(contract, schema);
+      if (table !== '') lines.push(table);
       const example = renderExample(schema.example);
-      if (example !== '') {
-        lines.push(example.trimEnd(), '');
-      }
+      if (example !== '') lines.push(example.trimEnd(), '');
       return lines.join('\n');
     });
   return [
     '<!-- Generated file. Do not edit. -->',
     '---',
-    'title: Schemas',
-    'outline: [2, 3]',
+    'title: Schemas（数据结构）',
+    'outline: [2, 3, 4, 5]',
     'editLink: false',
     '---',
     '',
-    '# Schemas',
+    '# Schemas（数据结构）',
     '',
-    '> Generated from the pinned canonical OpenAPI. These models are public wire shapes, not domain models or database rows.',
+    '> 这些是 public wire shape（公开线协议形状），不是 Domain Model、数据库行或内部 DTO。字段、必填性、组合和约束均从 owner contract 生成。',
     '',
-    `Contract \`${entry.version}\` · source \`${entry.source.commit}\` · SHA-256 \`${entry.digest.value}\``,
+    `契约版本（Version）\`${entry.version}\` · owner \`${entry.owner}\` · visibility \`${entry.visibility}\` · source commit \`${entry.source.commit}\` · SHA-256 \`${entry.digest.value}\``,
     '',
     ...sections,
     '',
@@ -473,8 +580,24 @@ function tagDefinitions(contract, operations) {
   );
 }
 
+function operationManifestEntry(collectedOperation) {
+  const { method, operation, path } = collectedOperation;
+  return {
+    idempotency: operation['x-kokoro-idempotency'],
+    method,
+    operationId: operation.operationId,
+    owner: operation['x-kokoro-owner'],
+    path,
+    permission: operation['x-kokoro-permission'],
+    stability: operation['x-kokoro-stability'],
+    tag: operation.tags[0],
+    visibility: operation['x-kokoro-visibility'],
+  };
+}
+
 export function generateReferenceFiles(contract, catalogEntry) {
   const operations = assertPublicContract(contract, catalogEntry);
+  const schemaNames = reachableSchemaNames(contract, operations);
   const tags = tagDefinitions(contract, operations);
   const files = new Map();
   const manifestItems = [];
@@ -494,10 +617,11 @@ export function generateReferenceFiles(contract, catalogEntry) {
       text: tagName,
       link: `/reference/v1/generated/${tagSlug}`,
     });
-    for (const { method, operation, path } of tagOperations) {
+    for (const collectedOperation of tagOperations) {
+      const { method, operation, path } = collectedOperation;
       const operationId = requireString(operation, 'operationId', path);
       indexRows.push(
-        `| <span class="api-method api-method--${method.toLowerCase()}">${method}</span> | [${escapeTable(normalizeDescription(operation.summary, operationId))}](/reference/v1/generated/${tagSlug}#${slugify(operationId)}) | \`${escapeTable(path)}\` |`,
+      `| <span class="api-method api-method--${method.toLowerCase()}">${method}</span> | [${escapeTable(normalizeDescription(operation.summary, operationId))}](/reference/v1/generated/${tagSlug}#${slugify(operationId)}) | \`${escapeTable(path)}\` | \`${operation['x-kokoro-owner']}\` | \`${operation['x-kokoro-visibility']}\` | \`${operation['x-kokoro-stability']}\` | \`${operation['x-kokoro-idempotency']}\` |`,
       );
     }
   }
@@ -506,16 +630,16 @@ export function generateReferenceFiles(contract, catalogEntry) {
     text: 'Schemas',
     link: '/reference/v1/generated/schemas',
   });
-  files.set('schemas.md', renderSchemasPage(contract, catalogEntry));
+  files.set('schemas.md', renderSchemasPage(contract, catalogEntry, schemaNames));
   files.set(
     'index-fragment.md',
     [
       '<!-- Generated file. Do not edit. -->',
       '',
-      `Version \`${catalogEntry.version}\` · ${operations.length} operations · source \`${catalogEntry.source.commit}\``,
+      `契约版本（Version）\`${catalogEntry.version}\` · owner \`${catalogEntry.owner}\` · visibility \`${catalogEntry.visibility}\` · ${operations.length} operations · source \`${catalogEntry.source.commit}\``,
       '',
-      '| Method | Operation | Path |',
-      '| --- | --- | --- |',
+      '| Method | Operation | Path | Owner | Visibility | Stability | Idempotency |',
+      '| --- | --- | --- | --- | --- | --- | --- |',
       ...indexRows,
       '',
     ].join('\n'),
@@ -526,33 +650,30 @@ export function generateReferenceFiles(contract, catalogEntry) {
       {
         contract: catalogEntry.id,
         digest: catalogEntry.digest.value,
+        generatedBy: GENERATED_MARKER,
         items: manifestItems,
         operationCount: operations.length,
+        operations: operations.map(operationManifestEntry),
+        owner: catalogEntry.owner,
+        schemaCount: schemaNames.size,
+        schemaNames: [...schemaNames].sort((left, right) => left.localeCompare(right, 'en')),
         sourceCommit: catalogEntry.source.commit,
         version: catalogEntry.version,
+        visibility: catalogEntry.visibility,
       },
       null,
       2,
     )}\n`,
   );
+
+  for (const [path, content] of files) {
+    assertPublicationSafe(content, `generated reference ${path}`);
+  }
   return files;
 }
 
-export function writeReferenceFiles(files, outputDirectory) {
-  mkdirSync(dirname(outputDirectory), { recursive: true });
-  const temporaryDirectory = mkdtempSync(
-    join(dirname(outputDirectory), '.reference-generate-'),
-  );
-  try {
-    for (const [relativePath, content] of files) {
-      const destination = join(temporaryDirectory, relativePath);
-      mkdirSync(dirname(destination), { recursive: true });
-      writeFileSync(destination, content);
-    }
-    rmSync(outputDirectory, { force: true, recursive: true });
-    renameSync(temporaryDirectory, outputDirectory);
-  } catch (error) {
-    rmSync(temporaryDirectory, { force: true, recursive: true });
-    throw error;
-  }
+export function writeReferenceFiles(files, outputDirectory, options = {}) {
+  return writeManagedReferenceFiles(files, outputDirectory, options);
 }
+
+export { ReferenceGenerationError };

@@ -61,3 +61,20 @@ test('resolves extensionless and directory-style routes', () => {
 
   assert.equal(result.linksChecked, 3);
 });
+
+test('rejects executable and local-file URL schemes', () => {
+  const root = builtSiteFixture();
+  writeFileSync(
+    join(root, 'index.html'),
+    '<a href="javascript:alert(1)">run</a><img src="file:///tmp/secret">',
+  );
+
+  assert.throws(
+    () => assertBuiltSiteLinks(root),
+    (error) => {
+      assert.match(error.message, /blocked URL scheme/);
+      assert.match(error.message, /javascript:|file:/);
+      return true;
+    },
+  );
+});

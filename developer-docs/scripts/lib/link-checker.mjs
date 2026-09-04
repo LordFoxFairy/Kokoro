@@ -3,10 +3,14 @@ import { extname, join, relative, sep } from 'node:path';
 
 const SITE_ORIGIN = 'https://developer.kokoro.invalid';
 const SKIPPED_PROTOCOLS = new Set([
-  'data:',
-  'javascript:',
   'mailto:',
   'tel:',
+]);
+const BLOCKED_PROTOCOLS = new Set([
+  'data:',
+  'file:',
+  'javascript:',
+  'vbscript:',
 ]);
 
 function webPath(root, path) {
@@ -126,6 +130,14 @@ export function checkBuiltSiteLinks(distRoot) {
           source,
           target: rawTarget,
           message: 'invalid internal URL',
+        });
+        continue;
+      }
+      if (BLOCKED_PROTOCOLS.has(url.protocol)) {
+        violations.push({
+          source,
+          target: rawTarget,
+          message: `blocked URL scheme ${url.protocol}`,
         });
         continue;
       }

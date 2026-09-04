@@ -8,10 +8,10 @@ contracts:
       repository: https://github.com/LordFoxFairy/kokoro-bff.git
       checkout: ../kokoro-bff
       path: contract/openapi/v1/openapi.yaml
-      commit: 8ec270284ef52fbe04934e2a9b5f65970df4129a
+      commit: 0c3c2c45fa5ac660c1d2cfae69f6e1ca06bd220c
     digest:
       algorithm: sha256
-      value: 11b9e0e35fd4b880547d73d15621ec3e12b945219b47ec9506ded8684b71ec16
+      value: e66426d1ac29f0d0621abc483f15bf19d60932bd03bd06f089104c040426ffc2
     generation:
       command: corepack pnpm reference:generate
     publication:
