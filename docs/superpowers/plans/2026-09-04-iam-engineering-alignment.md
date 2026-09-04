@@ -229,3 +229,20 @@ Bohr（`01a06e7c-90de-7d22-8d98-c058f55353a6`）完成只读审查后已关闭�
 [官方版本表](https://www.postgresql.org/support/versioning/) 在本次核验时列最新稳定系列为 18、补丁为 18.6。
 PG18 的 catalog 与 PG16 不同，不能把本机输出无条件固化后宣称跨版本通过。正式支持 major、生成基线与 CI
 必须一致或有明确版本适配验证；不为追补丁擅自重启/升级正在被其他任务使用的共享实例。
+
+### 机器契约 owner 闭包审查
+
+Meitner（`01a06e9c-6159-7832-9294-fec62ff67e9e`）只读审查 b6c6581 后已关闭。IAM 六个 RPC 的精确闭包为
+12 个请求/响应、common 的 CommandIdentity/PrincipalContext、google Timestamp；RPC typed error 另含
+ErrorDetail/ErrorCode。现有方法、可达消息身份、字段类型/presence/编号须保留，不为目录清理改 namespace 或重编编号。
+
+common.proto 中 DecisionKind/ControlStatus/IdentityRef/ExecutionIdentity/ControlDecision，以及
+Conversation/Interaction/Agent 错误值 30/31/32/40 不属于 IAM 当前 RPC 用例，进入 API 切片的遗留定义清理候选。
+PageRequest/PageResult 也不在 IAM 闭包，但 Capability 的固定 dependency snapshot 和客户端有实际消费；
+Storage/Web 也有 common 冻结分发证据。它们不是 IAM 当前六 RPC 的消费者证明，也不等于可顺手删除其他仓快照。
+Capability common snapshot 缺 upstream commit，IAM 本地 provenance 也不等于已发布 artifact；发布/消费者范围需
+在机器契约切片明确记录，不能凭“当前 src 没引用”宣称全局没人用。
+
+保留可达 ErrorDetail 的现有字段；未输出的 5/8/9/11 错误值与 current_generation 不混入死类型清理。
+后续 Buf breaking 必须明确审计基线与发布基线，逐项解释有意 clean-slate 删除，不用改规则集或 namespace 隐藏变化。
+本节是审查记录，不向 S2a 授予 Proto/generated 或其他仓写入权。
