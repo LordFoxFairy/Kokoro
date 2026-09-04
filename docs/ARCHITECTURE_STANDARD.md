@@ -1,6 +1,6 @@
 # Kokoro 正式子仓统一工程规范 v1
 
-状态：十仓生产级重构基线，2026-09-03。
+状态：十仓生产级重构基线，2026-09-04。
 
 本文是当前所有 active 子仓库的实现规范（Web、BFF、Agent，以及 IAM、System、Model、Billing、Capability、Storage、Scheduler）。子仓库的 `API_CONTRACT`、本仓技术设计和测试可以细化本文，不能重新定义目录分层、租户隔离和数据库约束规则。
 
@@ -256,10 +256,24 @@ Browser -> Web same-origin adapter -> BFF public Product API
   记录 token、连接串、密码和敏感载荷；
 - 每仓维护 `docs/SLO.md` 与 runbook，目标和当前观测结果分开记录，定义错误预算、burn-rate 告警和处置链接。
 
+### 6.3 依赖与技术选型治理
+
+依赖必须活跃、主流、可维护且适配本仓，但不能盲目追浮动 `latest`。评审必须覆盖官方维护状态、最近
+12–18 个月的 release/commit/security 响应、稳定 major、生态采用、Go/Node/Python 兼容、许可证、直接与
+传递依赖树、供应链风险、可替换边界、真实负载 benchmark，以及 timeout、取消、重试、崩溃恢复和一致性等
+故障语义；star、下载量或发布时间都不能单独决定选型。
+
+引入新依赖或重大替换前，必须记录 owner、用途、候选对比、选定精确版本、版本发布日期与验证日期、兼容性和
+许可证结论、替换/退出策略。manifest 与 lockfile 一起固定并提交；Renovate/Dependabot 只提出 PR，升级通过
+本仓真实质量、契约、Schema、集成、smoke 与供应链门禁后才可合并。核心依赖连续 12–18 个月无有效维护、存在
+未处理安全/兼容问题、正式弃用或关键故障语义不再满足要求时，触发 ADR/replacement review；低频发布的成熟库
+可凭维护与安全响应证据继续固定。文档中的“最新”仅指截至明确验证日期的最新稳定兼容版本，beta、RC、nightly
+或未发布 commit 不作为稳定版。
+
 ## 7. 十仓 owner 与重构顺序
 
 | 仓库 | 事实或职责 owner |
-|---|---|
+| --- | --- |
 | `kokoro` | UI、浏览器状态、HttpOnly cookie、同源 adapter |
 | `kokoro-bff` | Conversation、Message、Share、Project、ScheduledTask、公开 API、AG-UI projection |
 | `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence |
@@ -269,6 +283,21 @@ Browser -> Web same-origin adapter -> BFF public Product API
 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering |
 | `kokoro-capability` | Skill、MCP control plane、Installation、Authorization、Provider Metadata |
 | `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan 与对象生命周期元数据 |
-| `kokoro-scheduler` | 通用 Schedule、Occurrence、Lease、Retry、Dispatch |
+| `kokoro-scheduler` | 通用 Schedule、Occurrence、Receipt、Outbox、Lease、Retry、Dispatch |
+
+### 7.1 Kokoro Scheduler 选型边界
+
+这是 Kokoro 的具体取舍，不是通用 Go 项目的唯一答案。Scheduler 删除对
+`github.com/robfig/cron/v3` 的直接依赖与源码调用，选用可替换的
+`github.com/go-co-op/gocron/v2` timer/wakeup adapter；目标精确基线为 `v2.22.0`（2026-07-09 发布，
+2026-09-04 验证，MIT，要求 Go 1.22，与本项目 Go 1.26.8 兼容）。该基线仍传递依赖 robfig/cron，必须进入
+SBOM 与扫描，但业务代码不得直接调用或保留第二套 adapter。详细依赖登记、升级与退出门禁以根
+[`AGENTS.md`](../AGENTS.md) 为准。
+
+Scheduler 自有 PostgreSQL 是 `Schedule`、`Occurrence`、`Receipt`、`Outbox` 的唯一权威事实源，启动和恢复
+从该状态重建待唤醒集合；Redis 只做 lease、通知和缓存等协调/加速。gocron 的内存 jobs 及其 locker/elector
+不能替代持久化、幂等约束、misfire/recovery、transactional outbox 或 receipt。BFF 继续拥有用户业务
+`ScheduledTask`，目标 owner 继续拥有业务执行 receipt；Scheduler 不跨库读取或复制这些事实。timer 实现必须
+位于窄 Port 后，并以 UTC、misfire、重复触发、暂停/恢复、崩溃重启和 graceful shutdown 行为测试保障可替换性。
 
 先改本规范和目标仓自己的目录树，再改该仓 API contract/docs，再改 model/dto/service/repo，再改 SQL，最后补 fixture、测试和启动验证。Root 不保存跨仓 API source。当前没有迁移/兼容要求时，直接删除旧路径并保留一套 canonical schema；不通过别名、双读写或历史目录维持旧实现。

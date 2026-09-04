@@ -191,7 +191,7 @@ Enum       = 有限状态和可审查协议值，不使用散落字符串
 预算用于尽早触发拆分，不鼓励为了行数切出无语义碎片：
 
 | 对象 | 评审线 | 默认阻断线 |
-|---|---:|---:|
+| --- | ---: | ---: |
 | 普通源码文件 | 400 行 | 800 行 |
 | React component/module | 300 行 | 500 行 |
 | CSS module | 300 行 | 500 行 |
@@ -225,7 +225,7 @@ Enum       = 有限状态和可审查协议值，不使用散落字符串
 每条协议只属于以下一种可见性：
 
 | 可见性 | Owner 与用途 | 发布规则 |
-|---|---|---|
+| --- | --- | --- |
 | `public` | `kokoro-bff` 对开发者开放的 Product API | 进入 Developer API 门户、版本与弃用策略 |
 | `browser-private` | `kokoro` 同源 adapter | 仅 Web 使用，不承诺第三方兼容性 |
 | `internal-owner` | IAM/System/Model/Billing/Capability/Storage/Agent/Scheduler | 固定版本 artifact，仅受信服务调用 |
@@ -389,7 +389,7 @@ occurred_at     Event/Ledger 的事实时间
 ## 8. 十仓 owner 与运行边界
 
 | 子仓 | 只拥有的事实或职责 |
-|---|---|
+| --- | --- |
 | `kokoro` | UI、浏览器交互状态、HttpOnly session cookie、同源 adapter；不拥有服务端业务事实 |
 | `kokoro-bff` | Conversation、Message、Share、Project、ScheduledTask、公开 Product API、durable AG-UI projection |
 | `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence；不拥有 Conversation/Project/ScheduledTask |
@@ -399,7 +399,7 @@ occurred_at     Event/Ledger 的事实时间
 | `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering、Reconcile |
 | `kokoro-capability` | Skill、MCP Control Plane、Installation、Authorization、Provider Metadata、Receipt |
 | `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan、对象生命周期元数据；对象字节在 ObjectStore |
-| `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Dispatch；不拥有 Billing/Agent 业务事实 |
+| `kokoro-scheduler` | Schedule、Occurrence、Receipt、Outbox、Lease、Retry、Dispatch；不拥有 Billing/Agent 业务事实 |
 
 跨仓只通过事实 owner 仓库发布的 contract、API/RPC 和受信 service context；不共享数据库、ORM schema、SQL 文件、业务 DTO 或相对路径 import。
 
@@ -417,6 +417,28 @@ internal/ports/
 internal/adapters/
 internal/transport/
 ```
+
+### Kokoro Scheduler 技术选型边界
+
+以下是 Kokoro 项目取舍，不是所有 Go 调度系统的唯一标准：
+
+- `kokoro-scheduler` 是本选型的 owner；`github.com/go-co-op/gocron/v2` 只作为可替换的 timer/wakeup
+  adapter，必须隐藏在 `ScheduleEngine` 等窄 Port 后。候选对比结论是：`github.com/robfig/cron/v3` 的直接
+  使用已不满足本项目维护活跃度与生命周期治理要求，gocron/v2 具有活跃的稳定 major 和适合 adapter 的
+  生命周期/context 接口，因此选择后者。现有 robfig/cron 的直接依赖、源码 import 和并行 adapter 必须删除；
+  当前基线仍传递依赖该模块，只能将其作为纳入 SBOM 与扫描的传递依赖，业务代码不得直接调用。
+- 目标固定基线为 `github.com/go-co-op/gocron/v2 v2.22.0`：稳定版发布日期为 2026-07-09，选型验证日期为
+  2026-09-04，模块最低 Go 版本为 1.22、许可证为 MIT，与本项目 Go 1.26.8 基线兼容。实现仓必须在
+  `go.mod`/`go.sum` 固定并复验精确版本，不提交 `latest`；后续升级服从下节依赖治理门禁。
+- PostgreSQL 是 Scheduler 自有 `Schedule`、`Occurrence`、`Receipt` 和 `Outbox` 的唯一权威事实源；进程启动
+  或恢复必须从 PostgreSQL 重建待唤醒集合。Redis 只用于 lease、通知、缓存等协调与加速，丢失或清空 Redis
+  不得造成权威事实丢失。Scheduler 仍不拥有 BFF 的 `ScheduledTask` 或目标服务的业务 receipt，也不读取其他
+  owner 的数据库。
+- gocron 的进程内 jobs 以及可选 locker/elector 只提供唤醒或并发提示，不能替代持久化、幂等唯一约束、
+  misfire 扫描、recovery、transactional outbox 或投递 receipt。重启、重复唤醒、进程崩溃和 Redis 故障下的
+  正确性必须由 Scheduler application、PostgreSQL 事务和可重放状态机证明。
+- 替换/退出路径固定为保持 Port 与 contract 不变，使用相同的 UTC、misfire、重复触发、暂停/恢复和 graceful
+  shutdown 行为测试替换 adapter；不得把 gocron 类型泄漏进 Domain、持久化模型或 HTTP/RPC contract。
 
 ## 9. 测试、可靠性和安全门禁
 
@@ -436,6 +458,31 @@ test/{unit,integration,contract,architecture,smoke,fixtures,doubles}/
 - GitHub Actions 第三方 action 固定到完整 commit SHA，并在注释中保留可读版本；禁止仅引用可移动 major tag。
 - 生产容器使用非 root 用户并声明 HEALTHCHECK；release 在推送前构建、扫描并启动候选镜像验证 health/ready。
 - 每个服务维护 `docs/SLO.md` 和故障 runbook，定义关键 SLI/SLO、告警阈值、错误预算与处置链接；目标不能冒充实测结果。
+
+### 9.1 依赖与技术选型治理
+
+依赖必须活跃、主流、可维护，但不能盲目追 `latest`。以下是所有语言与正式仓库的通用标准；具体库的选定
+属于对应项目或 bounded context 的明确取舍：
+
+1. 依赖必须处于活跃维护状态、具有稳定主版本和可持续维护路径，并在目标生态有足够采用、文档和故障经验；
+   “主流”不等于 star 数最多，“活跃”也不等于发布时间最新。不得仅凭 star、下载量、单次 benchmark 或发布日期
+   决策，也不得为了追新盲目升级。
+2. 选型至少核验：官方维护与弃用状态；最近 12–18 个月的 release、有效 commit、issue/安全响应；稳定 major
+   与升级政策；目标 Go/Node/Python 和框架兼容性；许可证；直接与传递依赖树、来源和供应链风险；可替换边界；
+   在本仓真实负载下的基准；timeout、重试、取消、崩溃恢复、数据一致性等故障语义。
+3. 新依赖或重大替换进入实现前，必须在 PR、有效 ADR 或依赖登记中记录 owner、用途、候选对比与淘汰理由、
+   选定精确版本、该版本发布日期、验证日期、兼容性/许可证结论，以及替换或退出策略。小版本安全升级至少记录
+   影响范围、release notes、lockfile diff 和验证证据。
+4. manifest 与 lockfile 固定精确版本并一起提交；容器和 GitHub Actions 另按 digest/SHA 固定。禁止在可重复构建
+   路径中使用 `latest`、浮动分支、未固定 URL 或自动漂移版本。文档中的“最新”只表示**截至所写验证日期的最新
+   稳定兼容版本**；beta、RC、nightly 或未发布 commit 不得冒充稳定版，确需预发布版本时必须单独 ADR、到期日
+   和回退方案。
+5. Renovate/Dependabot 只负责提出可审查 PR，不直接改变技术基线或绕过 review。升级必须检查直接/传递依赖变化，
+   并通过本仓真实 lint、typecheck/vet、test、build、contract、Schema、integration、smoke 和供应链扫描中所有
+   相关门禁后才能合并。
+6. 核心依赖若连续 12–18 个月没有有效 release/commit，出现未处理的安全或运行时兼容问题、正式弃用、维护权
+   不明或关键故障语义不再满足要求，必须触发 ADR/replacement review。成熟稳定而低频发布不自动判死刑，但必须
+   用维护声明、安全响应和兼容性证据决定继续固定、接管、隔离或替换，不能因升级成本而默认永久保留。
 
 Web 额外门禁：
 
