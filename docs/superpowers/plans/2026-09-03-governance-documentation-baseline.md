@@ -129,11 +129,11 @@ git commit -m "feat(governance): orchestrate ten-repository verification"
 
 **步骤：**
 
-- [ ] 在当前十仓 commit 上运行静态验证器；
-- [ ] JSON 记录每仓 branch、HEAD、dirty 状态、缺失规则和 owner；
-- [ ] Markdown 按 P0/P1/P2 汇总，P0 固定为 Agent 三项正确性问题与暴露时的 Mori 匿名可信代理问题；
-- [ ] 记录 `kokoro-bff/docs/api/v1/agui-chat.md` 为既有协作者改动，不纳入 Root 修改；
-- [ ] 将报告加入 `docs/CURRENT.md` 当前实施入口。
+- [x] 在当前十仓 commit 上运行静态验证器；
+- [x] JSON 记录每仓 branch、HEAD、dirty 状态、缺失规则和 owner；
+- [x] Markdown 按 P0/P1/P2 汇总，P0 固定为 Agent 三项正确性问题与暴露时的 Mori 匿名可信代理问题；
+- [x] 记录 `kokoro-bff/docs/api/v1/agui-chat.md` 为既有协作者改动，不纳入 Root 修改；
+- [x] 将报告加入 `docs/CURRENT.md` 当前实施入口。
 
 **验证：**
 

@@ -1,0 +1,1848 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-09-04T01:58:40Z",
+  "scope": {
+    "root": "Kokoro",
+    "formal_repositories": [
+      "kokoro",
+      "kokoro-bff",
+      "kokoro-agent",
+      "kokoro-iam",
+      "kokoro-system",
+      "kokoro-model",
+      "kokoro-billing",
+      "kokoro-capability",
+      "kokoro-storage",
+      "kokoro-scheduler"
+    ]
+  },
+  "git": [
+    {
+      "repository": "Root",
+      "branch": "codex/production-closure-governance",
+      "head": "50ce4262310bc3164b7ea3e1c05b472a2fddbb42",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro",
+      "branch": "main",
+      "head": "d3e2e02859ed1084aed48d531c945df7963c17a0",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-bff",
+      "branch": "main",
+      "head": "12ba514ffe1895c3decc7568c9917bcdbf98030c",
+      "clean": false,
+      "dirty_paths": [
+        "ocs/api/v1/agui-chat.md"
+      ]
+    },
+    {
+      "repository": "kokoro-agent",
+      "branch": "main",
+      "head": "d77a23ffdb80d3ee75ffb6b7fddd6e19867ddc30",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-iam",
+      "branch": "main",
+      "head": "1d5f635210fcc29ec2a13074c0ab324ea4db53bd",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-system",
+      "branch": "main",
+      "head": "795b333a52ac9da8af87b7cf1ff7b7b3d3072163",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-model",
+      "branch": "main",
+      "head": "7e3ecd5d9a2d96e9a67076062fd9e4a64886d1c2",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-billing",
+      "branch": "main",
+      "head": "9218c3875f083191cff8879879b79cf8694c5d08",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-capability",
+      "branch": "main",
+      "head": "080a000de04fb43f9cddea03baa723bcd2656a56",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-storage",
+      "branch": "main",
+      "head": "2520bd27fb793a06f55328cf6ae1899e67af1e20",
+      "clean": true,
+      "dirty_paths": []
+    },
+    {
+      "repository": "kokoro-scheduler",
+      "branch": "main",
+      "head": "b2336c5e3e93dfed9752e622bfdda2746e946f39",
+      "clean": true,
+      "dirty_paths": []
+    }
+  ],
+  "structural_audit": {
+    "status": "FAIL",
+    "repository_count": 10,
+    "violation_count": 337,
+    "violations": [
+      {
+        "repository": "kokoro",
+        "rule": "accessibility",
+        "detail": "src/ui/billing/billing-panel.module.css removes outline without a focus-visible replacement"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "agui-ui-adapter",
+        "detail": "package.json must pin '@ai-sdk/react' for the AG-UI -> UIMessage adapter"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "agui-ui-adapter",
+        "detail": "package.json must pin 'ai' for the AG-UI -> UIMessage adapter"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "agui-ui-adapter",
+        "detail": "src must provide the in-repository AgUiChatTransport"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "container",
+        "detail": "runtime image must declare HEALTHCHECK"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'node:22-bookworm-slim' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'node:22-bookworm-slim' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'node:22-bookworm-slim' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/app/globals.css contains 3 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/components/blocks/app-frame/app-command-menu.module.css contains 1 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/components/blocks/app-frame/app-frame.module.css contains 47 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/components/blocks/workspace-header/workspace-header-popovers.module.css contains 1 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/components/blocks/workspace-rail/workspace-rail.module.css contains 14 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/features/app/kokoro-plugins-surface.module.css contains 6 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/features/app/kokoro-scheduled-surface.module.css contains 1 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/features/app/kokoro-welcome.module.css contains 5 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/billing/billing-panel.module.css contains 2 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/canvas/canvas-panel.module.css contains 3 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/composer/composer.module.css contains 11 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/marketing/landing-page.module.css contains 2 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/mcp/connector-catalog-dialog.module.css contains 8 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/mcp/mcp-panel.module.css contains 6 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/notifications/notification-panel.module.css contains 1 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/settings/settings-modal.module.css contains 12 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/settings/settings-sections.module.css contains 23 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/skills/github-import-dialog.module.css contains 2 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/skills/skill-detail-dialog.module.css contains 3 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/skills/skill-upload-dialog.module.css contains 2 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "css-specificity",
+        "detail": "src/ui/skills/skills-panel.module.css contains 15 !important declarations without an exemption registry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/ACCEPTANCE.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/API_CONTRACT.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/RUNBOOK.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/SLO.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "documentation",
+        "detail": "docs/TECHNICAL_DESIGN.md is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/components/blocks/app-frame/app-frame.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/components/blocks/app-frame/app-frame.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/components/blocks/workspace-rail/workspace-rail.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/components/blocks/workspace-rail/workspace-rail.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/components/ui/sidebar.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/engine/machine.ts exceeds 800 lines"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-library-surface.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-project-workspace.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-project-workspace.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-scheduled-surface.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-scheduled-surface.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-welcome.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/features/app/kokoro-welcome.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/billing/billing-panel.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/billing/billing-panel.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/composer/composer.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/composer/composer.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/marketing/landing-page.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/mcp/connector-catalog-dialog.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/mcp/mcp-panel.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/mcp/mcp-panel.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/settings/settings-modal.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/settings/settings-modal.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/settings/settings-sections.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/settings/settings-sections.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/skills/skills-panel.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/skills/skills-panel.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/team/team-panel.tsx exceeds the 500-line React hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "file-granularity",
+        "detail": "src/ui/thread/thread.module.css exceeds the 500-line CSS hard limit"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "quality-gates",
+        "detail": "package.json script 'test:e2e' is missing"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "real-integration",
+        "detail": ".github/workflows/ci.yml has no explicit real-infrastructure test gate"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "real-integration",
+        "detail": ".github/workflows/release-image.yml has no explicit real-infrastructure test gate"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "security-gate",
+        "detail": ".github/workflows/ci.yml has no dependency/source/secret scan"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "single-agent-protocol",
+        "detail": "src still references legacy SessionEvent instead of the sole AG-UI network protocol"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "source-local-runtime",
+        "detail": "docker-compose.example.yml must not use an application build as the local development entry"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:23 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:26 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:31 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no SBOM"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no image vulnerability scan"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml must build and scan a local candidate before push"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:29 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:32 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:37 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:63 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:66 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:69 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:77 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:87 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:99 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "toolchain",
+        "detail": "packageManager must pin pnpm@11.25.0"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'exactOptionalPropertyTypes' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noImplicitOverride' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noImplicitReturns' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noUncheckedIndexedAccess' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noUnusedLocals' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noUnusedParameters' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'strict' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro",
+        "rule": "web-bff-boundary",
+        "detail": "Web source references a downstream owner directly instead of the BFF"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "agent-contract",
+        "detail": "AGENTS.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "canonical-schema",
+        "detail": "database/schema.sql is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "container",
+        "detail": "runtime image must declare HEALTHCHECK"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'python:3.11-slim' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "contract-owner",
+        "detail": "Agent run/control/event boundary has no machine contract under contract/"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/ACCEPTANCE.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/API_CONTRACT.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/RUNBOOK.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/SLO.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "documentation",
+        "detail": "docs/TECHNICAL_DESIGN.md is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "file-granularity",
+        "detail": "src/kokoro_agent/infrastructure/postgres_run_repository.py exceeds 800 lines"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "file-granularity",
+        "detail": "src/kokoro_agent/worker/supervisor.py exceeds 800 lines"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "layered-topology",
+        "detail": "src/kokoro_agent/application/ is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "layered-topology",
+        "detail": "src/kokoro_agent/domain/ is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "layered-topology",
+        "detail": "src/kokoro_agent/interfaces/ is missing"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "production-doubles",
+        "detail": "src/kokoro_agent/clients/__init__.py contains a production test double"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "production-doubles",
+        "detail": "src/kokoro_agent/clients/skills.py contains a production test double"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "production-doubles",
+        "detail": "src/kokoro_agent/worker/dependencies.py contains a production test double"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/agent_factory.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/hitl/input.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/checkpoints.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/memory_store.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/postgres.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/postgres_chat_repository.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/postgres_run_repository.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/infrastructure/schema.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/mcp/local_registry.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/mcp/tools.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "python-strictness",
+        "detail": "src/kokoro_agent/swarm.py has a file-wide type suppression"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "security-gate",
+        "detail": ".github/workflows/ci.yml has no dependency/source/secret scan"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "shared-local-infrastructure",
+        "detail": ".env.example must use shared Redis logical DB 9"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:11 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:12 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:55 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:56 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no SBOM"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no build provenance"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no digest signature or attestation"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no image vulnerability scan"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml must build and scan a local candidate before push"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:105 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:113 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:48 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:49 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:91 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:94 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-agent",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:97 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "agent-contract",
+        "detail": "AGENTS.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "canonical-schema",
+        "detail": ".github/workflows/ci.yml does not install the canonical schema"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "canonical-schema",
+        "detail": ".github/workflows/release-image.yml does not install the canonical schema"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "container",
+        "detail": "runtime image must declare HEALTHCHECK"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'node:22-alpine' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "container-reproducibility",
+        "detail": "Dockerfile FROM source 'node:22-alpine' must be pinned by sha256 digest"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "container-supply-chain",
+        "detail": "every Docker pnpm install must use --ignore-scripts; required generators run explicitly"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "contract-owner",
+        "detail": "HTTP surface exists but contract/openapi has no canonical specification"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/ACCEPTANCE.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/API_CONTRACT.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/RUNBOOK.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/SLO.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "documentation",
+        "detail": "docs/TECHNICAL_DESIGN.md is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "durable-agui-projection",
+        "detail": "database/schema.sql must define the durable AG-UI projection and public cursor"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "layered-topology",
+        "detail": "src/bootstrap/ is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "layered-topology",
+        "detail": "src/config/ is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "layered-topology",
+        "detail": "src/domain/ is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "production-doubles",
+        "detail": "src/http/routes/mock.ts contains MockBffStore in production source"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "production-doubles",
+        "detail": "src/infrastructure/mock/bff-store.ts contains MockBffStore in production source"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "production-doubles",
+        "detail": "src/main.ts contains MockBffStore in production source"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "public-contract",
+        "detail": "public Product API must be canonical at contract/openapi/v1/openapi.yaml"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "quality-gates",
+        "detail": "package.json script 'contract:check' is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "quality-gates",
+        "detail": "package.json script 'db:apply-schema' is missing"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "real-integration",
+        "detail": ".github/workflows/ci.yml has no explicit real-infrastructure test gate"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "real-integration",
+        "detail": ".github/workflows/release-image.yml has no explicit real-infrastructure test gate"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "security-gate",
+        "detail": ".github/workflows/ci.yml has no dependency/source/secret scan"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "shared-local-infrastructure",
+        "detail": ".env.example must use shared Redis logical DB 8"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:14 index must start with uq_"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:25 index must start with ix_"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:42 CHECK must have a ck_ constraint name"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:45 index must start with ix_"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:55 CHECK must have a ck_ constraint name"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:62 CHECK must have a ck_ constraint name"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "sql-naming",
+        "detail": "database/schema.sql:66 index must start with ix_"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:15 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:16 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/ci.yml:19 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no SBOM"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no build provenance"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no digest signature or attestation"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml has no image vulnerability scan"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml must build and scan a local candidate before push"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:13 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:14 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:17 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:31 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:32 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:37 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "supply-chain",
+        "detail": ".github/workflows/release-image.yml:44 action must be pinned to a full commit SHA"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "toolchain",
+        "detail": "packageManager must pin pnpm@11.25.0"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'exactOptionalPropertyTypes' must be true"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noImplicitReturns' must be true"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noUnusedLocals' must be true"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'noUnusedParameters' must be true"
+      },
+      {
+        "repository": "kokoro-bff",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml GET /v1/billing/me/credit-account lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml GET /v1/billing/me/credit-ledger lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml GET /v1/billing/me/subscriptions lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml GET /v1/commerce/catalog lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/admin/billing/refunds lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/billing/checkout lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/billing/execution-events lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/commands/expire-credit-holds lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/entitlement/admissions lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/entitlement/admissions/{admissionId}/capture lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/entitlement/admissions/{admissionId}/release lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/payment/refunds/accept lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/internal/payment/settlements/accept lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /v1/webhooks/payment/{provider} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-billing",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/capability-http.openapi.json GET /v1/mcp/servers lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/capability-http.openapi.json GET /v1/skills lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/capability-http.openapi.json GET /v1/skills/catalog lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/capability-http.openapi.json GET /v1/skills/pool lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-capability",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/iam.v1.openapi.json GET /.well-known/jwks.json lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-iam",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml DELETE /v1/model-bindings/{model_binding_id} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml DELETE /v1/provider-accounts/{provider_account_id} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/admin/models/bindings lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/admin/models/labels lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/admin/models/manifest lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/admin/models/provider-accounts lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/admin/models/tenant-policies lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/bff/model-catalog lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/model-bindings lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/model-bindings/resolve lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml GET /v1/model-labels lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/bindings/{id}/disable lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/bindings/{id}/enable lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/provider-accounts/{id}/disable lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/provider-accounts/{id}/enable lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/provider-accounts/{id}/health lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/admin/models/tenant-policies lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/model-bindings/ensure lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/model-bindings/{model_binding_id}/restore lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/model-labels/ensure lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/provider-accounts/ensure lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/provider-accounts/{provider_account_id}/restore lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/model.v1.yaml POST /v1/resolve lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-model",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/ACCEPTANCE.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/RUNBOOK.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "documentation",
+        "detail": "docs/TECHNICAL_DESIGN.md is missing"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml DELETE /internal/scheduler/v1/jobs/{name} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /internal/scheduler/v1/jobs/{name} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /internal/scheduler/v1/jobs/{name}/pause lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml POST /internal/scheduler/v1/jobs/{name}/resume lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-scheduler",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/v1/openapi.yaml PUT /internal/scheduler/v1/jobs/{name} lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-storage",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "contract-provenance",
+        "detail": "contract/README.md is required for machine contract owner/version/generation/breaking/provenance"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/ACCEPTANCE.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/ADR/ is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/API_CONTRACT.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/CURRENT.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/DATA_MODEL.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/INDEX.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/RELIABILITY.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/RUNBOOK.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/SECURITY.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "documentation",
+        "detail": "docs/TECHNICAL_DESIGN.md is missing"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json GET /v1/system/config lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json GET /v1/system/runtime-manifest lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json GET /v1/system/sites lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json GET /v1/system/sites/{site_id}/policy lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json GET /v1/system/workspaces lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json POST /v1/system/config lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json POST /v1/system/releases lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json POST /v1/system/sites lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json POST /v1/system/workspaces lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "openapi-governance",
+        "detail": "contract/openapi/system.openapi.json PUT /v1/system/sites/{site_id}/policy lacks x-kokoro-owner, x-kokoro-visibility, x-kokoro-stability, x-kokoro-idempotency, x-kokoro-permission"
+      },
+      {
+        "repository": "kokoro-system",
+        "rule": "typescript-strictness",
+        "detail": "effective tsconfig option 'useUnknownInCatchVariables' must be true"
+      }
+    ]
+  },
+  "priority_findings": [
+    {
+      "id": "P0-AGENT-001",
+      "priority": "P0",
+      "title": "Redis 请求流可裁剪，但 PostgreSQL pending dispatch 没有独立 dispatcher 扫描恢复",
+      "impact": "HTTP ingress 在落 pending dispatch 后直接 XADD；若消息在 worker 消费前被 maxlen 裁剪，数据库 intent 不会自动重新投递，Run 可永久停在 pending。",
+      "evidence": [
+        "kokoro-agent/src/kokoro_agent/http/ingress.py:185-207",
+        "kokoro-agent/src/kokoro_agent/streams/redis.py:139-145",
+        "kokoro-agent/src/kokoro_agent/worker/supervisor.py:223-232"
+      ],
+      "exit_criteria": "admission transaction 写 Run + outbox；独立 dispatcher 持续扫描未发布行；trim、进程崩溃和重复发布测试均收敛到一个 Run。"
+    },
+    {
+      "id": "P0-AGENT-002",
+      "priority": "P0",
+      "title": "Run launch 和 evidence/control 尚未把受信 tenant context 收敛为所有持久化操作的显式谓词",
+      "impact": "POST /v1/runs 仍从 body 构造 execution_identity；evidence 只按 run_id 查询，Run schema/repository 主要依赖 run_id、session_id、namespace，缺少统一 tenant_id SQL predicate。",
+      "evidence": [
+        "kokoro-agent/src/kokoro_agent/http/server.py:146-205",
+        "kokoro-agent/src/kokoro_agent/http/ingress.py:104-118",
+        "kokoro-agent/src/kokoro_agent/http/ingress.py:260-283",
+        "kokoro-agent/src/kokoro_agent/infrastructure/schema.py:32-103"
+      ],
+      "exit_criteria": "tenant/actor/subject 仅来自受信 middleware/context；Run/control/evidence/checkpoint/chat/memory 全部带 tenant_id 或等价强类型 scope，并有跨租户负向测试。"
+    },
+    {
+      "id": "P0-AGENT-003",
+      "priority": "P0",
+      "title": "Worker lease 和 tool effect 缺少贯穿写路径的 generation fencing",
+      "impact": "旧 worker 只在下一次 heartbeat 才取消；多数写操作不校验 generation/lease token。tool journal 的 INSERT 返回 winner，但 middleware 忽略返回值，竞争 loser 仍可执行副作用。",
+      "evidence": [
+        "kokoro-agent/src/kokoro_agent/worker/supervisor.py:289-310",
+        "kokoro-agent/src/kokoro_agent/infrastructure/postgres_run_repository.py:662-721",
+        "kokoro-agent/src/kokoro_agent/infrastructure/postgres_run_repository.py:908-937",
+        "kokoro-agent/src/kokoro_agent/tools/middleware.py:252-271"
+      ],
+      "exit_criteria": "claim 返回 generation + lease_token；所有状态/event/tool 写入验证 fencing；只有 tool journal insertion winner 调用 handler；双 worker 故障注入证明副作用至多一次。"
+    }
+  ],
+  "conditional_release_blockers": [
+    {
+      "id": "P0-MORI-EXPOSURE-001",
+      "scope": "非正式十仓；仅在服务可访问时阻断发布",
+      "title": "Mori 同源代理使用默认 shared secret/namespace/principal 并向匿名请求注入可信 BFF 身份",
+      "evidence": [
+        "kokoro-mori/src/app/api/v1/mori/[...path]/route.ts:23-33"
+      ],
+      "required_action": "保持未部署，或在任何暴露前删除默认 secret 和伪造身份，接入真实 HttpOnly session/IAM admission。"
+    }
+  ],
+  "notes": [
+    "kokoro-bff/docs/api/v1/agui-chat.md 是开始本轮前已存在的协作者未提交改动；本轮 Root 工作不覆盖它。",
+    "静态审计失败是后续工作队列，不代表本轮验证器失败；只有十仓全部收敛后才应返回 PASS。",
+    "历史报告的 PASS/100 分不作为本基线之后的完成证据。"
+  ]
+}

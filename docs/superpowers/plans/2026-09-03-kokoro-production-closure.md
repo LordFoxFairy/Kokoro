@@ -54,7 +54,7 @@ Browser
 - [x] 将 `AGENTS.md` 从七仓规则升级为十仓长期中文控制手册；
 - [ ] 增加代码粒度、React/CSS、文档、公开 API、AG-UI/Vercel 与本地基础设施规则；
 - [ ] 将七仓静态/全量验证器升级为十仓验证器（静态审计器已完成，全量编排待 Wave 0 Task 3）；
-- [ ] 建立十仓文档矩阵和 contract provenance 门禁；
+- [x] 建立十仓文档矩阵和 contract provenance 门禁；
 - [ ] 更新 `docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、`scripts/INDEX.md`。
 
 ### Wave 1：文档与契约事实源

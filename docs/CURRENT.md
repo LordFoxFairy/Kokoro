@@ -117,7 +117,8 @@ Storage 的 S3-compatible ObjectStore。
 
 1. [Kokoro 十仓生产级工程闭环总实施计划](superpowers/plans/2026-09-03-kokoro-production-closure.md)
 2. [Wave 0：十仓治理与文档基线实施计划](superpowers/plans/2026-09-03-governance-documentation-baseline.md)
-3. [历史 Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
+3. [十仓生产级重构缺口基线](reports/2026-09-03-ten-repository-gap-baseline.md)
+4. [历史 Wave 0 Repository、Toolchain、Contract 与 Documentation Foundation Implementation Plan](superpowers/plans/2026-07-26-wave-0-repository-contract-foundation-implementation-plan.md)
 
 ## Goal 2 当前基线（2026-09-02）
 
