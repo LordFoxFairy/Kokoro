@@ -12,6 +12,10 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 - `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the seven owner repositories. It emits stable
   text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
   every repository converges.
+- `bash scripts/verify-ten-repository-full.sh` is the final local orchestrator. It reuses one PostgreSQL and one Redis,
+  creates disposable per-owner databases and Redis logical-db fixtures, then invokes each child repository's own contract,
+  lint, type, test, build, schema, integration and release gates. It never copies child source or contract and never starts a
+  second dependency when the configured endpoint is already healthy.
 - `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
   These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.
 
@@ -22,6 +26,11 @@ those local checks with a generated cross-repository mirror.
 
 The E2E runners start each independent checkout through its own documented entrypoint. They communicate over loopback HTTP
 and disposable infrastructure; they do not import child source, share a database or derive a contract from another repository.
+
+The full verifier accepts `KOKORO_FULL_SKIP_STATIC=1`, `KOKORO_FULL_SKIP_IMAGES=1`,
+`KOKORO_FULL_SKIP_EXTERNAL_SMOKE=1` and `KOKORO_FULL_SKIP_E2E=1` for development iteration only. A skipped phase is not
+release evidence. `KOKORO_FULL_KEEP_DATABASES=1` is available for diagnosis; otherwise only databases created by the current
+invocation are removed on exit.
 
 ## Current Stage 2 HTTP closure
 

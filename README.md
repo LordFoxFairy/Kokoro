@@ -41,13 +41,15 @@ Root 的验证脚本只检查仓库拓扑、文档索引和 loopback E2E，不�
 
 ## 本地起栈（开发）
 
-前置：`postgres`、`redis`、`uv`（Python）、`pnpm`（TS）。**用隔离的 Redis db（如 db10），别碰生产 db0。**
+前置：`postgres`、`redis`、`uv`（Python）、`pnpm`（TS）。本地只复用一个 PostgreSQL 和一个 Redis；
+各服务使用固定的 Redis logical DB（Agent=9、BFF=8、IAM=1、System=2、Model=3、Billing=4、
+Capability=5、Storage=6、Scheduler=7），db0 保留。验证脚本会探测并复用已有依赖，不会重复启动容器。
 
 ```bash
 # 1. 可选：agent worker（PostgreSQL durable facts + Redis transport）
 cd kokoro-agent
-KOKORO_REDIS_URL=redis://127.0.0.1:6379/10 \
-  KOKORO_AGENT_DATABASE_URL=postgresql://kokoro:CHANGE_ME@127.0.0.1:5432/kokoro \
+KOKORO_REDIS_URL=redis://127.0.0.1:56380/9 \
+  KOKORO_AGENT_DATABASE_URL=postgresql://kokoro:CHANGE_ME@127.0.0.1:55433/kokoro_agent \
   uv run kokoro-agent-worker
 
 # 2. BFF Chat（:4300，阶段 1 mock）
@@ -81,6 +83,22 @@ OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `
 | Chat mock smoke | `KOKORO_WEB_URL=http://127.0.0.1:3000 KOKORO_DOMAIN=dev.kokoro.localhost pnpm --dir kokoro smoke:first-site` |
 | Stage 2 BFF HTTP E2E | `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` |
 | Stage 2 owner health | `uv run --frozen python scripts/e2e/run_stage2_owner_health.py` |
+| 十仓完整本地门禁 | `bash scripts/verify-ten-repository-full.sh` |
+
+完整门禁默认执行十仓的源码质量、真实 PostgreSQL/Redis、浏览器、外部存储、候选镜像和 Root loopback
+验证。迭代单个切片时可以显式跳过耗时阶段，但跳过项会打印在日志中，不能作为发布证据：
+
+```bash
+KOKORO_FULL_SKIP_STATIC=1 \
+KOKORO_FULL_SKIP_IMAGES=1 \
+KOKORO_FULL_SKIP_EXTERNAL_SMOKE=1 \
+KOKORO_FULL_SKIP_E2E=1 \
+  bash scripts/verify-ten-repository-full.sh
+```
+
+脚本只删除自己创建的 `kokoro_gate_*` 临时数据库；已有 PostgreSQL/Redis 容器不会被停止或删除。
+对自定义 Redis endpoint 默认拒绝 `FLUSHDB`，只有明确设置
+`KOKORO_FULL_ALLOW_SHARED_REDIS_FLUSH=1` 才会执行可破坏性的隔离操作。
 
 CI：正式仓库各自维护 `.github/workflows`；普通 push/PR 只做质量检查，`v*.*.*` tag 才触发 GHCR 生产镜像发布。
 
