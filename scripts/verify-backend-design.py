@@ -36,11 +36,13 @@ REQUIRED_AGENT_PACKAGE_SECTIONS = (
     "## 8. 实施顺序", "## 9. 验收标准",
 )
 EXPECTED_SOURCE_PATHS = (
+    "domain", "application", "infrastructure", "interfaces",
     "agents", "features", "agent_factory.py", "swarm.py", "execution", "worker",
-    "tools", "skills", "clients", "sandbox", "repositories", "infrastructure", "mcp", "model", "prompts",
+    "tools", "skills", "clients", "sandbox", "mcp", "model", "prompts",
 )
 FORBIDDEN_SOURCE_PATHS = (
-    "ga", "factory", "framework", "compiler", "runtime", "ports", "deepagents.py",
+    "ga", "factory", "framework", "compiler", "runtime", "ports", "repositories",
+    "deepagents.py",
     "graph.py", "flow.py", "state.py", "agent.py",
 )
 FORBIDDEN_SHADOW_NAMES = {
@@ -75,6 +77,14 @@ def imports(path):
         elif isinstance(node, ast.ImportFrom) and node.module:
             out.add(node.module)
     return out
+
+def imported_names(path, module):
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module == module:
+            names.update(alias.name for alias in node.names)
+    return names
 
 def defined(path):
     tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -158,8 +168,8 @@ def check_source(errors, allow_missing=False):
         text = path.read_text(encoding="utf-8")
         if "type: ignore" in text or "TYPE_CHECKING" in text:
             errors.append(f"{name}: contains a type-checking escape hatch")
-        if "os.environ" in text and name != "worker/main.py":
-            errors.append(f"{name}: reads os.environ outside worker/main.py")
+        if "os.environ" in text and name not in {"worker/main.py", "application/schema.py"}:
+            errors.append(f"{name}: reads os.environ outside the approved process entrypoints")
         allowed_worker_dependencies = {
             "kokoro_agent.worker.dependencies",
         }
@@ -180,6 +190,39 @@ def check_source(errors, allow_missing=False):
                      if module.startswith("kokoro_agent") and not module.startswith("kokoro_agent.protocol")}
         if offenders:
             errors.append(f"{rel(path)}: protocol imports inward modules {sorted(offenders)}")
+
+def check_schema_entrypoint(errors, allow_missing=False):
+    if not AGENT_SRC.exists():
+        if allow_missing:
+            return
+        errors.append("kokoro-agent source tree is missing")
+        return
+    candidates = (
+        ("kokoro_agent.application.schema", AGENT_SRC / "application" / "schema.py"),
+        ("kokoro_agent.infrastructure.schema", AGENT_SRC / "infrastructure" / "schema.py"),
+    )
+    boundary = next(
+        ((module, path) for module, path in candidates
+         if path.is_file() and "apply_database_schema" in defined(path)),
+        None,
+    )
+    if boundary is None:
+        errors.append("missing stable schema apply entrypoint in application/schema.py or infrastructure/schema.py")
+        return
+    module, _ = boundary
+    cli = AGENT_SRC / "cli.py"
+    worker = AGENT_SRC / "worker" / "main.py"
+    for path in (cli, worker):
+        names = imported_names(path, module)
+        for symbol in ("apply_database_schema", "db_apply_schema_main"):
+            if symbol not in names:
+                errors.append(f"{rel(path)}: must import {symbol} from {module}")
+    cli_worker_imports = {name for name in imports(cli) if name.startswith("kokoro_agent.worker")}
+    if cli_worker_imports:
+        errors.append(f"cli.py: core code imports worker transport: {sorted(cli_worker_imports)}")
+    for path in (cli, worker):
+        if "apply_database_schema" in defined(path):
+            errors.append(f"{rel(path)}: defines schema apply entrypoint instead of delegating to {module}")
 
 def check_public_shapes(errors):
     control = AGENT_SRC / "protocol/control.py"
@@ -217,6 +260,7 @@ def main(argv: list[str] | None = None):
     errors = []
     check_manifest(errors)
     check_source(errors, allow_missing=args.manifest_only)
+    check_schema_entrypoint(errors, allow_missing=args.manifest_only)
     check_public_shapes(errors)
     markers(errors, AGENT_CARD, REQUIRED_AGENT_CARD_SECTIONS)
     architecture_doc = AGENT_PACKAGE / "docs/agent/architecture.md"
