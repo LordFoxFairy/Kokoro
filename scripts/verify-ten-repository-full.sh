@@ -19,6 +19,7 @@ S3_ACCESS_KEY_ID="${KOKORO_VERIFY_S3_ACCESS_KEY_ID:-kokoro-test}"
 S3_SECRET_ACCESS_KEY="${KOKORO_VERIFY_S3_SECRET_ACCESS_KEY:-kokoro-test-secret}"
 SCANNER_HOST="${KOKORO_VERIFY_SCANNER_HOST:-127.0.0.1}"
 SCANNER_PORT="${KOKORO_VERIFY_SCANNER_PORT:-43310}"
+STORAGE_DOCKER_NETWORK="${KOKORO_VERIFY_STORAGE_DOCKER_NETWORK:-storage-deps_default}"
 TRIVY_IMAGE="${KOKORO_VERIFY_TRIVY_IMAGE:-aquasec/trivy@sha256:bcc376de8d77cfe086a917230e818dc9f8528e3c852f7b1aff648949b6258d1c}"
 TRIVY_CACHE_VOLUME="${KOKORO_VERIFY_TRIVY_CACHE_VOLUME:-kokoro-ten-repository-trivy-cache}"
 POSTGRES_IMAGE="${KOKORO_VERIFY_POSTGRES_IMAGE:-postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685}"
@@ -40,7 +41,6 @@ readonly DATABASES=(
   kokoro_gate_storage
 )
 
-declare -A DATABASE_URLS=()
 declare -a CREATED_DATABASES=()
 declare -a CREATED_CONTAINERS=()
 
@@ -58,6 +58,25 @@ die() {
   printf 'ERROR: %s\n' "$*" >&2
   exit 1
 }
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  cat <<'USAGE'
+Usage: scripts/verify-ten-repository-full.sh
+
+Runs the ten-repository local quality gate with one shared PostgreSQL and one
+shared Redis. Existing endpoints are reused; only the default missing fixture
+is started. Temporary kokoro_gate_* databases are removed on exit.
+
+Development-only switches (a skipped phase is not release evidence):
+  KOKORO_FULL_SKIP_STATIC=1
+  KOKORO_FULL_SKIP_IMAGES=1
+  KOKORO_FULL_SKIP_EXTERNAL_SMOKE=1
+  KOKORO_FULL_SKIP_E2E=1
+  KOKORO_FULL_KEEP_DATABASES=1
+USAGE
+  exit 0
+fi
+[[ "$#" -eq 0 ]] || die "unknown argument: $1 (use --help)"
 
 require_command() {
   command -v "$1" >/dev/null 2>&1 || die "required command is missing: $1"
@@ -178,7 +197,6 @@ reset_database() {
     -c "DROP DATABASE IF EXISTS \"${database}\" WITH (FORCE)" \
     -c "CREATE DATABASE \"${database}\"" >/dev/null
   CREATED_DATABASES+=("$database")
-  DATABASE_URLS["$database"]="$(database_url "$database")"
 }
 
 flush_verification_redis() {
@@ -217,6 +235,7 @@ if [[ "$SKIP_STATIC" == "1" ]]; then
 else
   python3 "$ROOT/scripts/verify-ten-repository-standard.py"
   python3 "$ROOT/scripts/verify-repository-topology.py"
+  python3 "$ROOT/scripts/verify-backend-design.py" --manifest-only
 fi
 
 ensure_postgres
@@ -227,16 +246,19 @@ for database in "${DATABASES[@]}"; do
   reset_database "$database"
 done
 
-BFF_DATABASE_URL="${DATABASE_URLS[kokoro_gate_bff]}"
-AGENT_DATABASE_URL="${DATABASE_URLS[kokoro_gate_agent]}"
-IAM_DATABASE_URL="${DATABASE_URLS[kokoro_gate_iam]}"
-SYSTEM_DATABASE_URL="${DATABASE_URLS[kokoro_gate_system]}"
-MODEL_DATABASE_URL="${DATABASE_URLS[kokoro_gate_model]}"
-BILLING_DATABASE_URL="${DATABASE_URLS[kokoro_gate_billing]}"
-CAPABILITY_DATABASE_URL="${DATABASE_URLS[kokoro_gate_capability]}"
-STORAGE_DATABASE_URL="${DATABASE_URLS[kokoro_gate_storage]}"
+BFF_DATABASE_URL="$(database_url kokoro_gate_bff)"
+AGENT_DATABASE_URL="$(database_url kokoro_gate_agent)"
+IAM_DATABASE_URL="$(database_url kokoro_gate_iam)"
+SYSTEM_DATABASE_URL="$(database_url kokoro_gate_system)"
+MODEL_DATABASE_URL="$(database_url kokoro_gate_model)"
+BILLING_DATABASE_URL="$(database_url kokoro_gate_billing)"
+CAPABILITY_DATABASE_URL="$(database_url kokoro_gate_capability)"
+STORAGE_DATABASE_URL="$(database_url kokoro_gate_storage)"
 BFF_REDIS_URL="$(redis_url_for_db 8)"
 AGENT_REDIS_URL="$(redis_url_for_db 9)"
+STORAGE_DOCKER_DATABASE_URL="${STORAGE_DATABASE_URL/127.0.0.1/host.docker.internal}"
+STORAGE_DOCKER_REDIS_URL="$(redis_url_for_db 6)"
+STORAGE_DOCKER_REDIS_URL="${STORAGE_DOCKER_REDIS_URL/127.0.0.1/host.docker.internal}"
 
 log "Web quality, contract, architecture and browser gates"
 (
@@ -405,7 +427,7 @@ database_invariants kokoro_gate_capability "$CAPABILITY_DATABASE_URL"
 database_invariants kokoro_gate_storage "$STORAGE_DATABASE_URL"
 
 build_and_scan_images() {
-  local image repository index
+  local image repository index healthcheck
   local -a images=(
     kokoro-web:local-gate
     kokoro-bff:local-gate
@@ -439,6 +461,9 @@ build_and_scan_images() {
   done
   for image in "${images[@]}"; do
     log "scan candidate image ${image}"
+    healthcheck="$(docker inspect --format '{{json .Config.Healthcheck.Test}}' "$image")"
+    [[ "$healthcheck" != "null" && "$healthcheck" != "[]" ]] || \
+      die "candidate image ${image} does not declare a HEALTHCHECK"
     docker run --rm \
       --volume /var/run/docker.sock:/var/run/docker.sock \
       --volume "${TRIVY_CACHE_VOLUME}:/root/.cache" \
@@ -447,11 +472,33 @@ build_and_scan_images() {
   done
 }
 
+run_storage_docker_smoke() {
+  [[ "$SKIP_EXTERNAL" != "1" ]] || return 0
+  [[ "$SKIP_IMAGES" != "1" ]] || {
+    log "SKIP Storage Docker smoke because candidate images were skipped"
+    return 0
+  }
+  log "Storage candidate container smoke"
+  (
+    cd "$ROOT/kokoro-storage"
+    KOKORO_DOCKER_SMOKE_NETWORK="$STORAGE_DOCKER_NETWORK" \
+      KOKORO_DOCKER_SMOKE_POSTGRES_URL="$STORAGE_DOCKER_DATABASE_URL" \
+      KOKORO_DOCKER_SMOKE_REDIS_URL="$STORAGE_DOCKER_REDIS_URL" \
+      KOKORO_DOCKER_SMOKE_HOST_POSTGRES_URL="$STORAGE_DATABASE_URL" \
+      KOKORO_DOCKER_SMOKE_HOST_REDIS_URL="$(redis_url_for_db 6)" \
+      KOKORO_DOCKER_SMOKE_HOST_S3_ENDPOINT="$S3_ENDPOINT" \
+      KOKORO_DOCKER_SMOKE_S3_ACCESS_KEY_ID="$S3_ACCESS_KEY_ID" \
+      KOKORO_DOCKER_SMOKE_S3_SECRET_ACCESS_KEY="$S3_SECRET_ACCESS_KEY" \
+      ./scripts/docker-smoke.sh kokoro-storage:local-gate
+  )
+}
+
 if [[ "$SKIP_IMAGES" == "1" ]]; then
   log "SKIP candidate image build/scan requested by KOKORO_FULL_SKIP_IMAGES=1"
 else
   build_and_scan_images
 fi
+run_storage_docker_smoke
 
 if [[ "$SKIP_E2E" != "1" ]]; then
   log "Root loopback BFF E2E"
