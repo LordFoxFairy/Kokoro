@@ -11,6 +11,10 @@
 
 本轮规范验证与逐仓待办见 [工程手册验证记录](reports/2026-09-04-engineering-handbook-verification.md)。
 
+当前逐仓推进从 IAM 开始，由 Root 主控派发专属负责人；工作状态与阶段授权以
+[IAM 工程规范对齐任务板](superpowers/plans/2026-09-04-iam-engineering-alignment.md) 为准。
+当前先审计与对齐文档，尚未放行业务代码重构，也未开始其他子仓。
+
 ## 阶段 2 仓库治理入口
 
 先读 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 和 [`CODEBASE_MAP.md`](CODEBASE_MAP.md)。当前正式拓扑为
