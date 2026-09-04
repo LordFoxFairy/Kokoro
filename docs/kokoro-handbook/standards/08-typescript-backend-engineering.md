@@ -1175,12 +1175,17 @@ BFF public HTTP：contract/openapi 是可编辑事实源 -> 生成/校验 route 
 
 ### 11.3 ConnectRPC
 
-仓库只能选择一种明确拓扑：
+仓库必须在技术方案中选择一种明确拓扑：
 
 ```text
-单进程：Fastify + @connectrpc/connect-fastify，共用端口和生命周期
-双入口：entrypoints/http.ts + entrypoints/rpc.ts，共用 runtime 和业务 Service
+单进程默认：Fastify + @connectrpc/connect-fastify，共用端口和生命周期
+单进程双 listener：两个 Fastify 实例区分 HTTP/RPC 监听，共享唯一 runtime 和业务 Service
+独立进程：entrypoints/http.ts + entrypoints/rpc.ts，复用 runtime 构造逻辑与业务代码，各进程拥有自己的资源
 ```
+
+双 listener 只在已有调用地址、运维/网络隔离或明确协议需求下采用，并记录理由；使用 Fastify 不要求合并端口。
+一个实例只调用一次 `listen()`；双实例不重复创建 Pool、Redis、JWT 或 worker，由共同生命周期协调部分启动失败、
+draining 和关闭顺序。独立进程不共享内存中的连接池，也不因目录对称性额外拆进程。
 
 Generated Proto 类型只在 `*.rpc.ts` 和 mapper 中出现，不传入 Service/Domain。deadline、cancellation、
 metadata、service identity 与错误码必须向下传播。
