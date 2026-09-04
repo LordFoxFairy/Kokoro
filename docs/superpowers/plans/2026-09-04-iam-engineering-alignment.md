@@ -127,3 +127,33 @@ docs/ACCEPTANCE.md
 真实数据库验证复用 `/tmp/kokoro-iam-goal/verify-database.mjs`：该主控临时驱动仅允许两个指定 IAM 工作目录，
 每次新建独立数据库、安装 Schema、运行集成后清理自己创建的库。它不属于持久测试资产；本仓持久测试仍须自带
 明确的隔离要求，不能依赖主控临时路径才运行。S1 交付 SHA 与新测试结果待实际执行后记录。
+
+## 7. IAM-S2 后续任务卡（已准备，未派工）
+
+前置：S1 实现通过规范与质量审查，并在主工作树复验。负责人仍为 Ohm，不另起并发 writer。
+本片修复四个认证命令的安全重放，不捎带全部数据主键改名、Fastify 切换或整个目录搬迁。
+
+- 已有证据：主控在源码基线运行服务层 test-double 探针，观察到同 identity/digest 换 email 仍重放、
+  换 consume token/nonce 仍释放原凭据、原 access expiry 后仍释放 receipt。该探针不是数据库集成证据。
+- 源码范围：四命令及其 receipt 读取/完成/解析、认证配置/密钥装配和必要错误映射；采用 ADR-030 的
+  服务端 HMAC 绑定与版本化 AEAD。具体新增文件先按技术方案放置表列明，不引入通用 CommandBus。
+- 数据范围：仅 `iam_command_receipt` 的绑定、密文快照与两个期限；移除明文结果和未实现的 failed 分支。
+  契约输入/字段号保持，所有 schema/test/docs 与实现同一自洽提交；只支持新空库，不改现存数据库。
+- 明确区分结果重放期限与去重保留期限，结果过期不可执行原命令第二次。认证凭据按结果 session/父身份校验；
+  refresh 检查 successor，logout 重放允许目标已 revoked。
+- 绑定编码覆盖操作、权威 tenant、调用方 digest、有效业务输入，不含 request/trace ID；同身份不同 payload
+  在读取敏感结果前冲突。旋转后按 receipt 记录的 key ID 校验旧绑定，而非用当前 key 算出不同摘要后误报冲突。
+- 密钥经启动配置读取，明确 active key 与仅解密/校验旧结果的保留 key；用途隔离、长度校验、无日志泄漏，
+  AAD 防止跨 tenant/command/operation/版本替换。完整性错误、缺 key、结果过期采用稳定但不同的错误类别。
+
+验收必须持久化到仓内测试：
+
+1. 四命令相同 identity 的并发只产生一份事实；同 identity 换 payload/secret/会话时冲突。
+2. replay 返回相同 token 字节和原 expiry，不重新签发；原输入 rotated 的 refresh 可合法重放，已 revoked 的
+   logout 可重放；结果 session 撤销、父停用、到期时不释放认证快照。
+3. SQL 行、异常与日志没有明文凭据；密文篡改、跨行搬移、未知版本拒绝；新旧 key 轮换与保留窗口可测。
+4. 结果到期但 tombstone 未到期时拒绝重执行；过期检查不依赖清理任务先运行。
+5. rollback/commit 故障恢复另以 S2b 聚焦提交：保留原 cause、损坏连接销毁、有限整事务重试、未知提交按原
+   identity 恢复，不把不可判定结果映射成功；不把临时探针作为最终验收资产。
+
+本任务卡为顺序准备，不授予 S1 期间扩大写入的权限。最终文件清单与执行证据在实际派工/交接时补齐。
