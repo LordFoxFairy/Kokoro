@@ -214,6 +214,28 @@ test('renders the complete public metadata and field-level constraints', () => {
   });
 });
 
+test('resolves component request, response, and example references', () => {
+  const contract = fixtureContract();
+  const operation = contract.paths['/v1/sessions/{id}/messages'].post;
+  const requestBody = operation.requestBody;
+  const response = operation.responses[202];
+  contract.components.requestBodies = { MessageBody: requestBody };
+  contract.components.responses = { Accepted: response };
+  contract.components.examples = {
+    AcceptedBody: { value: { data: { ok: true } } },
+  };
+  operation.requestBody = { $ref: '#/components/requestBodies/MessageBody' };
+  operation.responses = { 202: { $ref: '#/components/responses/Accepted' } };
+  contract.components.responses.Accepted.content['application/json'].examples = {
+    accepted: { $ref: '#/components/examples/AcceptedBody' },
+  };
+
+  const files = generateReferenceFiles(contract, catalogEntry);
+  const page = files.get('chat.md');
+  assert.match(page, /\{\n\x20{2}"data": \{\n\x20{4}"ok": true/u);
+  assert.match(page, /Response `202`/);
+});
+
 test('rejects unsupported metadata and mismatched idempotency parameters', () => {
   const unsupported = fixtureContract();
   unsupported.paths['/v1/sessions/{id}/messages'].post['x-kokoro-stability'] =

@@ -227,10 +227,17 @@ export function assertPublicContract(contractValue, catalogEntry) {
         `${operationId} must not declare Idempotency-Key when idempotency is none`,
       );
     }
-    if (!Array.isArray(operation.tags) || operation.tags.length !== 1) {
+    if (
+      !Array.isArray(operation.tags) ||
+      operation.tags.length !== 1 ||
+      typeof operation.tags[0] !== 'string'
+    ) {
       throw new ReferenceGenerationError(
         `${operationId} must declare exactly one public tag`,
       );
+    }
+    if ('deprecated' in operation && typeof operation.deprecated !== 'boolean') {
+      throw new ReferenceGenerationError(`${operationId}.deprecated must be boolean`);
     }
     assertSecurityReferences(contract, operation, operationId);
     if (
@@ -311,19 +318,26 @@ function renderSecurity(contract, operation) {
 
 function renderRequestBody(contract, requestBody) {
   if (!isRecord(requestBody)) return '';
-  const content = requireRecord(requestBody.content, 'requestBody.content');
+  const resolvedRequestBody = requireRecord(
+    resolveReference(contract, requestBody, 'requestBody'),
+    'requestBody',
+  );
+  const content = requireRecord(
+    resolvedRequestBody.content,
+    'requestBody.content',
+  );
   const lines = ['### Request body（请求体）', ''];
   for (const [mediaName, mediaValue] of Object.entries(content)) {
     const media = requireRecord(mediaValue, `requestBody.content.${mediaName}`);
     lines.push(
       `- Content type（媒体类型）: \`${mediaName}\``,
-      `- Required（必填）: ${requestBody.required === true ? 'yes' : 'no'}`,
+      `- Required（必填）: ${resolvedRequestBody.required === true ? 'yes' : 'no'}`,
       `- Schema（Schema）: ${schemaType(contract, media.schema)}`,
       '',
     );
     const table = renderSchemaTable(contract, media.schema);
     if (table !== '') lines.push(table);
-    const example = renderExample(firstExample(media));
+    const example = renderExample(firstExample(contract, media));
     if (example !== '') lines.push(example.trimEnd(), '');
   }
   return lines.join('\n');
@@ -375,7 +389,7 @@ function renderResponseDetails(contract, status, response) {
     );
     const table = renderSchemaTable(contract, media.schema, 'Fields（字段）', 6);
     if (table !== '') lines.push(table);
-    const example = renderExample(firstExample(media));
+    const example = renderExample(firstExample(contract, media));
     if (example !== '') lines.push(example.trimEnd(), '');
   }
   if (Object.keys(content).length === 0 && !isRecord(resolved.headers)) {

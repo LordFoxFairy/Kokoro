@@ -75,6 +75,12 @@ export function schemaType(contract, schema) {
     return 'unknown';
   }
   if (typeof schema.$ref === 'string') {
+    if (!schema.$ref.startsWith('#/')) {
+      throw new ReferenceGenerationError(
+        `schema uses unsupported external reference ${schema.$ref}`,
+      );
+    }
+    resolveReference(contract, schema, 'schema');
     const name = referenceName(schema.$ref);
     return `[${name}](./schemas#${slugify(name)})`;
   }
@@ -113,6 +119,7 @@ export function schemaConstraints(contract, schema) {
     constraints.push(`Enum: ${resolved.enum.map((item) => JSON.stringify(item)).join(', ')}`);
   }
   for (const [key, label] of [
+    ['multipleOf', 'Multiple of'],
     ['minimum', 'Minimum'],
     ['maximum', 'Maximum'],
     ['exclusiveMinimum', 'Exclusive minimum'],
@@ -131,6 +138,15 @@ export function schemaConstraints(contract, schema) {
   if (typeof resolved.pattern === 'string') {
     constraints.push(`Pattern: ${resolved.pattern}`);
   }
+  if (resolved.uniqueItems === true) {
+    constraints.push('Unique items');
+  }
+  for (const [key, label] of [
+    ['readOnly', 'Read-only'],
+    ['writeOnly', 'Write-only'],
+  ]) {
+    if (resolved[key] === true) constraints.push(label);
+  }
   if (resolved.additionalProperties === false) {
     constraints.push('Closed object');
   } else if (resolved.additionalProperties === true) {
@@ -144,6 +160,9 @@ export function schemaExample(contract, schema) {
     return undefined;
   }
   if ('example' in schema) return schema.example;
+  if (Array.isArray(schema.examples) && schema.examples.length > 0) {
+    return schema.examples[0];
+  }
   if ('default' in schema) return schema.default;
   if ('const' in schema) return schema.const;
   const resolved = dereference(contract, schema, 'schema');
@@ -179,17 +198,23 @@ export function renderExample(example) {
   return `\n\n**Example（示例）**\n\n\`\`\`json\n${JSON.stringify(example, null, 2)}\n\`\`\`\n`;
 }
 
-export function firstExample(mediaType) {
+export function firstExample(contract, mediaType) {
   if (!isRecord(mediaType)) {
     return undefined;
+  }
+  if (typeof mediaType.$ref === 'string') {
+    return firstExample(contract, resolveReference(contract, mediaType, 'media type'));
   }
   if ('example' in mediaType) {
     return mediaType.example;
   }
   if (isRecord(mediaType.examples)) {
     for (const candidate of Object.values(mediaType.examples)) {
-      if (isRecord(candidate) && 'value' in candidate) {
-        return candidate.value;
+      const resolved = isRecord(candidate) && typeof candidate.$ref === 'string'
+        ? resolveReference(contract, candidate, 'media example')
+        : candidate;
+      if (isRecord(resolved) && 'value' in resolved) {
+        return resolved.value;
       }
     }
   }
