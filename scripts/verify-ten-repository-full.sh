@@ -193,10 +193,12 @@ assert_database_reset_is_explicit() {
 reset_database() {
   local database="$1"
   # Database names are constants from this file, never user input.
+  # Register before the first destructive operation so cleanup also covers a
+  # partially completed DROP/CREATE sequence.
+  CREATED_DATABASES+=("$database")
   psql "$PG_ADMIN_URL" -v ON_ERROR_STOP=1 \
     -c "DROP DATABASE IF EXISTS \"${database}\" WITH (FORCE)" \
     -c "CREATE DATABASE \"${database}\"" >/dev/null
-  CREATED_DATABASES+=("$database")
 }
 
 flush_verification_redis() {
