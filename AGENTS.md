@@ -2,14 +2,18 @@
 
 # Kokoro Agent 工程规范手册
 
-本文件是 Kokoro Root 与七个正式业务子仓的长期工程控制手册，使用中文维护。它不是建议清单，而是
-Agent 执行代码、Schema、API、测试和文档任务时的默认工作契约。规则已经明确时直接执行，不重复向用户
-询问已经决定的目录、时间、SQL、外键、迁移和兼容层规则。
+本文件是 Kokoro Root 与十个正式运行仓的长期中文工程控制手册。前半部分是可复用于 TypeScript、Python、
+Go 后端与 Web 的通用工程基线；标明“Kokoro”的条款是本项目明确取舍。它不是建议清单，而是 Agent 执行
+代码、Schema、API、测试、交互和文档任务时的默认工作契约。规则已经明确时直接执行，不重复询问已经决定的
+目录、时间、SQL、外键、迁移、兼容层、协议和本地基础设施规则。
 
 ## 0. 适用范围与权威顺序
 
-适用仓库：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
-`kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。Root 只拥有架构文档、部署编排、质量门禁和仓库拓扑，不拥有跨仓 API contract，也不拥有七仓的业务表、Entity、Repository 或业务 Service。每个 active repository 自己维护本仓 contract、Schema、generated code 和 CI。
+适用仓库：`kokoro`、`kokoro-bff`、`kokoro-agent`、`kokoro-iam`、`kokoro-system`、
+`kokoro-model`、`kokoro-billing`、`kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。
+Root 只拥有架构文档、开发者门户编排、部署编排、质量门禁和仓库拓扑，不拥有跨仓 API contract，也不拥有
+十仓的业务表、Entity、Repository 或业务 Service。每个 active repository 自己维护本仓 contract、Schema、
+generated code、测试和 CI。
 
 规则冲突时按以下顺序处理：
 
@@ -35,6 +39,8 @@ Agent 执行代码、Schema、API、测试和文档任务时的默认工作契�
 6. 不为了形式上的 DDD 创建空层；简单 CRUD 可以少建目录，但不能越过依赖边界。
 7. 规则必须同时落在代码、测试、架构检查和 CI，不只写在 Markdown 中。
 8. 时间瞬时点统一按 UTC 存储和传输；日期、本地时间和周期任务时区必须显式建模。
+9. 公开契约和持久化不变量优先于目录美观；目录调整必须伴随真实依赖倒置、行为测试和旧路径删除。
+10. “完成”“生产级”“满分”必须绑定当前 commit、执行命令和 evidence；历史报告与 Agent 自报不作证据。
 
 ## 2. TypeScript 标准目录与命名
 
@@ -77,6 +83,10 @@ src/
 文件：单数职责名，例如 user.ts、user-repository.ts、create-user.ts
 ```
 
+`models/`、`enums/`、`errors/`、`repositories/`、`services/`、`commands/`、`queries/`、`mappers/`、
+`ports/`、`clients/` 使用复数，因为目录容纳同类职责集合；`dto/`、`api/`、`http/`、`rpc/`、`sql/` 是
+约定缩写或协议名，保持单数写法。不要为了“统一加 s”制造 `dtos/`、`https/` 一类非惯用目录。
+
 禁止：
 
 - 同时保留 `src/modules`、`src/adapters` 与新的四层作为重复实现层；
@@ -84,6 +94,10 @@ src/
 - HTTP handler 直接执行 SQL；
 - Infrastructure 类型泄漏到 Domain/Application；
 - ORM Entity 同时充当 Request DTO、Domain Model 和 Response。
+
+Web 可以按 feature 组织组件、hooks、state 和 view model，但服务端数据读取、鉴权、同源 adapter 与浏览器组件
+必须分开；BFF 仍按 Domain/Application/Infrastructure/Interfaces 依赖方向组织，不能因为叫 BFF 就把所有逻辑
+堆进 route handler。
 
 ## 3. 依赖方向与各层职责
 
@@ -121,7 +135,7 @@ domain -> 不依赖 HTTP、Fastify、pg、ORM、Redis、RPC、provider SDK
 
 ### TypeScript
 
-六个正式 TypeScript 子仓统一使用 `pnpm@11.25.0` 与单一 `pnpm-lock.yaml`；不并存 npm/yarn lockfile，CI、
+八个正式 TypeScript 子仓统一使用 `pnpm@11.25.0` 与单一 `pnpm-lock.yaml`；不并存 npm/yarn lockfile，CI、
 release 和本地验证使用同一 package manager 与 frozen lockfile。
 
 所有新代码目标：
@@ -134,7 +148,8 @@ release 和本地验证使用同一 package manager 与 frozen lockfile。
   "noImplicitOverride": true,
   "noImplicitReturns": true,
   "noUnusedLocals": true,
-  "noUnusedParameters": true
+  "noUnusedParameters": true,
+  "useUnknownInCatchVariables": true
 }
 ```
 
@@ -144,8 +159,10 @@ release 和本地验证使用同一 package manager 与 frozen lockfile。
 any              -> 仅限局部第三方边界，并写出原因
 ```
 
-禁止使用 `as T`、非空断言 `!`、宽泛 `any` 掩盖校验、空值和类型设计问题。DTO、Command、Domain
-Model、DB Row、Response 各自定义；不要因为减少 mapper 就合并类型。
+禁止使用 `as T`、双重断言、非空断言 `!`、宽泛 `any` 掩盖校验、空值和类型设计问题。允许的例外仅限
+`as const`、经过运行时校验后的局部第三方 interop，以及 TypeScript 暂时无法表达但已有测试覆盖的不变量；
+例外必须收敛在边界函数并写明原因。DTO、Command、Domain Model、DB Row、Generated Wire Type、Response
+各自定义；不要因为减少 mapper 就合并类型。
 
 ### Python
 
@@ -155,16 +172,37 @@ Pydantic   = 外部输入、配置和第三方 payload 的运行时校验
 dataclass  = 内部数据对象和值对象
 class      = 需要行为、不变量和状态迁移的 Entity/Aggregate
 Protocol   = Repository、Clock、Client 等窄 Port
+Enum       = 有限状态和可审查协议值，不使用散落字符串
 ```
 
 新代码使用完整标注，目标为 Pyright strict 或 `mypy --strict`。边界模型默认 strict、extra forbid；
-`Any`、`cast`、`type: ignore` 只能局部使用并注明原因。领域时间使用带时区 `datetime`。
+`Any`、`cast`、`type: ignore` 只能局部使用并注明原因；禁止 file-wide Pyright/Mypy suppression。
+数据库 row 使用独立 `TypedDict` 或 typed record 后再由 mapper 转换，不把裸 `dict[str, Any]` 贯穿业务层。
+领域时间使用带时区 `datetime`，测试注入 Clock。
 
 ### Go
 
 `go vet`、`go test`、必要时 `-race` 为基础门禁。公共函数显式返回 error；外部请求携带可取消的
 `context.Context`；领域时间使用 `time.Time`，进入领域层统一 `.UTC()`。Go 只使用官方仍支持的版本并在
 `go.mod` 固定补丁版本；当前 Scheduler 基线为 `go 1.26.8`，构建镜像同时固定 tag 与 digest。
+
+### 代码粒度与复杂度预算
+
+预算用于尽早触发拆分，不鼓励为了行数切出无语义碎片：
+
+| 对象 | 评审线 | 默认阻断线 |
+|---|---:|---:|
+| 普通源码文件 | 400 行 | 800 行 |
+| React component/module | 300 行 | 500 行 |
+| CSS module | 300 行 | 500 行 |
+| 函数/方法 | 60 行 | 100 行 |
+| 圈复杂度 | 10 | 15 |
+| 嵌套深度 | 4 层 | 5 层 |
+
+- 超过评审线必须说明继续聚合的业务理由；超过阻断线必须拆分或在仓库 architecture test 中登记 owner、理由、
+  到期时间和替代方案。
+- Generated、固定协议枚举、i18n message catalog 和纯静态数据表可以豁免，但必须可重生成且禁止混入手写业务逻辑。
+- 拆分按 use case、aggregate、state machine、adapter、mapper、view state 或 CSS responsibility 进行；禁止只按行号切文件。
 
 ## 5. API 规范
 
@@ -179,8 +217,25 @@ Protocol   = Repository、Clock、Client 等窄 Port
 9. 异步任务明确 `202`、资源状态、终态、取消、重试、replay 和失败恢复。
 10. tenant、subject、actor、request id、service identity 来自受信服务上下文，不从 body 推导。
 11. 修改竞争使用 `version`、ETag/If-Match 或等价并发条件。
+12. 每个 HTTP client 必须设置 connect/read/overall timeout、取消传播、响应大小上限和稳定错误归一；重试前先判断
+    方法与 command 是否具备幂等身份。
 
-### 5.1 Contract、Protocol 与 Generated 的边界
+### 5.1 API 可见性与事实源
+
+每条协议只属于以下一种可见性：
+
+| 可见性 | Owner 与用途 | 发布规则 |
+|---|---|---|
+| `public` | `kokoro-bff` 对开发者开放的 Product API | 进入 Developer API 门户、版本与弃用策略 |
+| `browser-private` | `kokoro` 同源 adapter | 仅 Web 使用，不承诺第三方兼容性 |
+| `internal-owner` | IAM/System/Model/Billing/Capability/Storage/Agent/Scheduler | 固定版本 artifact，仅受信服务调用 |
+| `event-protocol` | owner 发布的异步消息 | 显式 producer、consumer、ordering、delivery 与 replay 语义 |
+
+OpenAPI operation 应声明 `x-kokoro-owner`、`x-kokoro-visibility`、`x-kokoro-stability`、
+`x-kokoro-idempotency`、`x-kokoro-permission`。人类文档解释策略，OpenAPI/Proto/JSON Schema 才是字段级
+机器事实源；运行时 validator、generated types 和示例必须由事实源校验。
+
+### 5.2 Contract、Protocol 与 Generated 的边界
 
 `contract/`、`protocol/` 和 `generated/` 不是三套可以互相复制的 DTO 目录。它们的职责必须固定：
 
@@ -230,6 +285,19 @@ src/kokoro_agent/
 或 `application/<context>/ports/`，transport-neutral record 放在同一 context；具体实现只放
 `infrastructure/<technology>/repositories/`。只有在 Agent 已经形成稳定的跨 context execution
 repository package 时，才保留顶层 `repositories/`，并且不得与另一套同名 Port/实现并行存在。
+
+### 5.3 AG-UI 与 Vercel AI SDK
+
+- Web 与 BFF 的 Agent 网络事件只使用 AG-UI；删除 legacy `SessionEvent`、第二套 SSE envelope、双读和 runtime fallback。
+- BFF 将 Agent 执行事件投影成 durable public AG-UI ledger，拥有单调 cursor、replay、断线恢复、保留与 GC 语义；
+  Redis stream 不是公开事件事实源。
+- Web 在仓内实现窄 `AgUiChatTransport`，把 AG-UI 映射成 Vercel AI SDK `UIMessage`/parts；Vercel AI SDK 是
+  React 状态与渲染适配层，不建立第二套网络协议或第二个 resumable stream 事实源。
+- 标准事件优先使用 Run、Text、Tool、Reasoning、Activity、Subagent 和 Interrupt/Resume；`CUSTOM` 只表达确无
+  标准事件的领域 artifact/delivery，不用来逃避标准语义。
+- HITL 使用结构化 interrupt/resume；resume 必须携带同 thread、全部未决 interrupt、幂等 identity 和校验结果。
+- 客户端必须显式建模 `idle`、`submitting`、`queued`、`streaming`、`awaiting_approval`、`resuming`、
+  `cancelling`、`reconnecting`、`completed`、`failed`，并以 receipt/event reconciliation 收敛 optimistic state。
 
 ## 6. 时间规范
 
@@ -301,7 +369,11 @@ occurred_at     Event/Ledger 的事实时间
 4. 删除旧表、旧字段、旧索引、旧 DTO、旧 endpoint、旧 header、旧 token、fallback、双读双写和 compatibility alias。
 5. 生产 `src/` 不放 InMemory、Fake、Fixture 或 test-only provider；测试替身放 `test/fixtures/`、`test/doubles/`。
 6. `CREATE TABLE IF NOT EXISTS` 可以使用，便于本地重复安装；它不负责修复 Schema drift，fresh database 和 drift check 仍然必需。
-7. 本地七仓共享一个 PostgreSQL 实例和一个 Redis 实例；依赖可以是本机进程或各一个容器，但禁止每仓重复启动。各仓使用独立 PostgreSQL database/schema 与固定 Redis logical DB：IAM=1、System=2、Model=3、Billing=4、Capability=5、Storage=6、Scheduler=7。应用开发进程只从源码以 `pnpm dev`/`go run` 启动，应用容器只用于发布候选镜像 smoke。
+7. 本地十仓共享一个 PostgreSQL 实例和一个 Redis 实例；执行脚本先探测并复用已有实例，只有缺失时才各启动
+   一个依赖，且只清理自己创建的资源。各持久化 owner 使用独立 PostgreSQL database/schema；固定 Redis
+   logical DB 为 IAM=1、System=2、Model=3、Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、
+   Agent=9，DB 0 保留。Web 不拥有数据库或 Redis。应用开发进程只从源码以 `pnpm dev`、`uv run`、`go run`
+   启动，应用容器只用于发布候选镜像 smoke。
 
 ### SQL 执行与 JOIN
 
@@ -314,10 +386,13 @@ occurred_at     Event/Ledger 的事实时间
 - 关系写入按以下顺序执行：tenant existence -> owner/permission -> state -> fixed-order lock -> 同一事务写关系和事实 -> commit。
 - Repository 负责 SQL、锁和 Row mapper；Application 负责用例、权限入口和业务语义。
 
-## 8. 七个子仓的 owner 边界
+## 8. 十仓 owner 与运行边界
 
-| 子仓 | 只拥有的事实 |
+| 子仓 | 只拥有的事实或职责 |
 |---|---|
+| `kokoro` | UI、浏览器交互状态、HttpOnly session cookie、同源 adapter；不拥有服务端业务事实 |
+| `kokoro-bff` | Conversation、Message、Share、Project、ScheduledTask、公开 Product API、durable AG-UI projection |
+| `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence；不拥有 Conversation/Project/ScheduledTask |
 | `kokoro-iam` | Tenant、Identity、Authentication、Authorization、Role、Permission、Audit、Receipt |
 | `kokoro-system` | Site、Host、Workspace、Runtime Manifest、System Policy、配置发布 |
 | `kokoro-model` | Model Catalog、Provider Metadata、Availability、Routing Policy、Resolve |
@@ -327,6 +402,10 @@ occurred_at     Event/Ledger 的事实时间
 | `kokoro-scheduler` | Schedule、Occurrence、Lease、Retry、Dispatch；不拥有 Billing/Agent 业务事实 |
 
 跨仓只通过事实 owner 仓库发布的 contract、API/RPC 和受信 service context；不共享数据库、ORM schema、SQL 文件、业务 DTO 或相对路径 import。
+
+固定调用方向为：Browser -> Web same-origin adapter -> BFF -> owner API/Agent/Scheduler。Web 不直连 IAM 或
+其他 owner；BFF 不读取 Agent 或其他 owner 数据库；Agent 通过 Capability/Storage 的真实 client 获取授权能力和
+保存 artifact，不复制两仓模型。Scheduler 只负责通用 schedule/occurrence/lease/retry/dispatch。
 
 Scheduler 的目标 Go 目录：
 
@@ -358,7 +437,43 @@ test/{unit,integration,contract,architecture,smoke,fixtures,doubles}/
 - 生产容器使用非 root 用户并声明 HEALTHCHECK；release 在推送前构建、扫描并启动候选镜像验证 health/ready。
 - 每个服务维护 `docs/SLO.md` 和故障 runbook，定义关键 SLI/SLO、告警阈值、错误预算与处置链接；目标不能冒充实测结果。
 
-## 10. Agent 执行协议
+Web 额外门禁：
+
+- 样式使用语义 design token；组件 CSS 不散落品牌色/状态色硬编码，`!important` 只允许登记的第三方覆盖；
+- 去掉 `outline` 必须提供等价且清晰的 `:focus-visible`；动画遵守 `prefers-reduced-motion`；
+- 所有交互覆盖 loading、empty、error、disabled、optimistic、reconnecting、partial 和 success 状态；
+- Playwright 覆盖桌面/移动关键路径，axe 阻断严重可访问性问题，视觉回归保护核心页面，并设置 bundle budget；
+- 同源 adapter 具备 CSRF、防缓存泄漏、CSP/安全响应头、超时、取消、body/response size limit，禁止匿名注入可信身份。
+
+## 10. 文档与 Developer API 门禁
+
+每个正式仓库至少维护：
+
+```text
+README.md                    # 五分钟启动、验证、owner 概览
+INDEX.md                     # 仓库代码与边界地图
+docs/INDEX.md                # 文档阅读顺序
+docs/CURRENT.md              # 当前实现、缺口与证据，不写愿景冒充事实
+docs/TECHNICAL_DESIGN.md     # 当前架构、依赖、状态机、事务、失败恢复
+docs/API_CONTRACT.md         # 人类可读协议策略，链接机器事实源
+docs/DATA_MODEL.md           # 表 owner、不变量、关系维护、索引与 retention
+docs/SECURITY.md             # trust boundary、authn/authz、tenant、secret、abuse controls
+docs/RELIABILITY.md          # timeout、retry、idempotency、outbox、recovery、degradation
+docs/ACCEPTANCE.md           # 可执行验收矩阵
+docs/SLO.md                  # SLI/SLO、错误预算和告警
+docs/RUNBOOK.md              # 诊断、处置、回滚和恢复
+docs/ADR/                    # 仍有效的架构决策
+contract/README.md           # 有机器 contract 时：owner/version/generation/breaking/provenance
+```
+
+- `README.md` 不是完整设计，`INDEX.md` 不是进度报告，`CURRENT.md` 不是历史日志，`API_CONTRACT.md` 不复制
+  OpenAPI 字段，`contract/README.md` 不定义业务模型。
+- Root 的 Developer API 门户只发布 BFF `public` contract 与开发者指南。它通过 catalog 固定 owner artifact 的
+  version、commit 和 digest 后生成 reference，不复制一份可手改的跨仓 contract。
+- 文档 CI 执行 Markdown/style/link/build、OpenAPI lint/breaking、generated drift、示例编译/运行和 visibility
+  检查；公开文档禁止泄漏 internal endpoint、service credential、数据库结构和未脱敏 payload。
+
+## 11. Agent 执行协议
 
 1. 开始前读取本文件、`docs/CURRENT.md`、`docs/CODEBASE_MAP.md`、目标仓 README、API contract 和相关状态文档。
 2. 先检查 Git 状态、分支、工作区和协作者未提交变更；不覆盖、回滚或重写其他 Agent 的工作。
@@ -369,20 +484,23 @@ test/{unit,integration,contract,architecture,smoke,fixtures,doubles}/
 7. 不新增万能 Service、万能 Repository、无 owner 的 common/utils、兼容 alias 或“临时”双轨实现。
 8. Agent 报告不等于完成；主工作区必须重新执行真实 lint、typecheck、test、build、schema 和 smoke 验证。
 9. 完成报告必须列出修改文件、命令、结果、失败项、已知风险和后续 owner；未通过项明确标记为未完成。
+10. 两个以上独立仓库默认并行，但每仓同一时刻只有一个写入 Agent；跨仓 contract 先由 owner 提交，再更新消费者。
+11. 架构重构使用 `codex/` 分支和小粒度 commit；不把移动目录、功能修改、格式化和生成物更新混成不可审查提交。
+12. 不在已有 PostgreSQL/Redis 时重复启动容器；不以 Docker 应用容器替代源码 lint/test/dev 验证。
 
-## 11. 默认验证命令
+## 12. 默认验证命令
 
-Root 在七仓验证阶段另外执行：
+Root 在十仓验证阶段另外执行：
 
 ```bash
-python3 scripts/verify-seven-repository-standard.py
-./scripts/verify-seven-repository-full.sh  # 本地 Docker PostgreSQL/Redis/MinIO 可用时的最终全量门禁
+python3 scripts/verify-ten-repository-standard.py
+./scripts/verify-ten-repository-full.sh
 ```
 
 该命令只检查跨仓结构性不变量；它不能替代各子仓的真实 lint、typecheck、test、build、Schema 和
 smoke 验证。
 
-TypeScript 子仓：
+TypeScript 服务仓：
 
 ```bash
 pnpm lint
@@ -390,6 +508,24 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm db:apply-schema
+```
+
+Web 不机械执行 `db:apply-schema`，必须执行：
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm test:e2e
+```
+
+Python Agent：
+
+```bash
+uv sync --frozen
+uv run pyright
+uv run pytest
 ```
 
 Go Scheduler：

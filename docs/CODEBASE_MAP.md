@@ -1,6 +1,6 @@
 # Kokoro codebase map
 
-状态：2026-09-02 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
+状态：2026-09-03 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
 
 ## Root：`Kokoro`
 
@@ -8,7 +8,7 @@ Root 不是业务运行时。它只保存：
 
 - Root 不保留业务数据库 schema；各正式业务仓和 `kokoro-agent` 各自拥有唯一 canonical schema，V1 不保留历史 migration 链；旧集成 SQL fixture 已移到 Root 外历史归档；
 - [`deploy/`](../deploy/)：Phase 1 三仓本地/生产入口和历史迁移夹具；
-- [`docs/`](./)：跨仓架构、API 索引、ADR、验收与报告；
+- [`docs/`](./)：跨仓架构、Developer API 门户索引、ADR、验收与报告；
 - [`scripts/`](../scripts/)：当前 BFF HTTP E2E/smoke、拓扑和治理工具；不生成子仓 API。
 
 Root 不应加入 Web、BFF、Agent 或 Goal 2 业务实现源码。
@@ -18,10 +18,11 @@ Root 不应加入 Web、BFF、Agent 或 Goal 2 业务实现源码。
 | 仓库 | 本地目录 | 唯一职责 | 入口 |
 |---|---|---|---|
 | Web | `kokoro/` → `LordFoxFairy/kokoro-app` | UI、同源 `/api/*` route adapter | `kokoro/src/app/` |
-| BFF | `kokoro-bff/` | Chat 与业务 BFF、鉴权/幂等/错误归一 | `kokoro-bff/src/main.ts`（组合根）、`kokoro-bff/src/http/routes/` |
-| Agent | `kokoro-agent/` | Worker 执行、HITL、恢复、产品事件投影 | `kokoro-agent/src/kokoro_agent/worker/` |
+| BFF | `kokoro-bff/` | Conversation/Message/Share/Project/ScheduledTask、公开 Product API、durable AG-UI projection | `kokoro-bff/src/main.ts`（组合根） |
+| Agent | `kokoro-agent/` | Run/Checkpoint/Lease/Tool Journal、执行事件、HITL、Evidence | `kokoro-agent/src/kokoro_agent/` |
 
-Web → BFF → 业务仓是唯一业务调用方向。浏览器不直连 BFF、Agent 或业务仓。
+Web → BFF → 业务仓/Agent/Scheduler 是唯一业务调用方向。浏览器只访问 Web 同源 adapter，不直连 BFF、
+Agent 或业务仓。AG-UI 是 Web/BFF 唯一 Agent 网络事件协议；Vercel AI SDK 只作 Web 内部 UI adapter。
 
 ## Goal 2 正式业务仓
 
@@ -36,6 +37,9 @@ Web → BFF → 业务仓是唯一业务调用方向。浏览器不直连 BFF、
 | `kokoro-scheduler` | Generic ScheduleJob/trigger/lease/retry/misfire | Optional Redis occurrence lease; no business DB | Go |
 
 Goal 2 的仓库清单和归属以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为准。每个业务仓库必须在本仓内完成自己的 API、Schema、实现、测试和 Docker/CI；Root 只维护拓扑、架构规则和验证入口，不发布跨仓契约。
+
+本地基础设施固定复用一个 PostgreSQL 和一个 Redis。Redis logical DB：IAM=1、System=2、Model=3、
+Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 保留；Web 无 Redis/数据库。
 
 ## 已归档仓
 

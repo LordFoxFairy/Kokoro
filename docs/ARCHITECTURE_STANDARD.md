@@ -1,6 +1,6 @@
 # Kokoro 正式子仓统一工程规范 v1
 
-状态：Goal 2 重构基线，2026-09-02。
+状态：十仓生产级重构基线，2026-09-03。
 
 本文是当前所有 active 子仓库的实现规范（Web、BFF、Agent，以及 IAM、System、Model、Billing、Capability、Storage、Scheduler）。子仓库的 `API_CONTRACT`、本仓技术设计和测试可以细化本文，不能重新定义目录分层、租户隔离和数据库约束规则。
 
@@ -48,7 +48,7 @@ src/
 
 - `infrastructure` 是合法的实现层；`adapter` 是实现角色而不是必须的顶层目录。一个仓库不同时建立
   `adapters/` 和 `infrastructure/` 两套同义实现层，也不把任何一个当成万能收纳目录。
-- 七个正式业务子仓不保留顶层 `src/modules/`；bounded context 直接组织在 Domain/Application 各层内部，
+- 正式业务服务仓不保留顶层 `src/modules/`；bounded context 直接组织在 Domain/Application 各层内部，
   不能用 module 包装逃避 models、application、repositories 和 services 的职责拆分。
 - `common/`、`utils/` 不作为无边界业务收纳目录；确实跨域复用的纯技术原语应有明确 owner 和 API。
 - 不把整个业务压在一个 `service.ts`、`models.ts` 或 `application.ts` 中；一个文件只承担一个明确的 use case、aggregate、repository 或 transport concern。
@@ -56,6 +56,11 @@ src/
 - `interfaces` 只做协议转换，不持有领域规则；DTO 不等于 ORM 类型，model 不等于 DTO。
 - Mock、Fixture、Fake、InMemory 实现只放在 `test/fixtures/` 或 `test/doubles/`；正式 `src/` 不承载测试替身。
 - 空的 README-only 目录、没有 owner 的旧目录、旧 compatibility alias 和搬空后的目录必须删除。
+
+同类目录使用复数：`models/`、`enums/`、`errors/`、`repositories/`、`services/`、`commands/`、
+`queries/`、`mappers/`、`ports/`、`clients/`；`dto/`、`api/`、`http/`、`rpc/`、`sql/` 保持协议/缩写
+惯例。普通源码超过 400 行进入拆分评审、超过 800 行默认阻断；React 模块超过 300/500 行、CSS module
+超过 300/500 行分别进入评审/阻断。拆分必须围绕业务职责，不按行号机械切割。
 
 推荐的 Capability 终态示例：
 
@@ -192,6 +197,11 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 
 ## 6. API 与测试门禁
 
+协议可见性固定为 `public`、`browser-private`、`internal-owner`、`event-protocol`。只有 BFF 的
+`public` Product API 进入对外 Developer API 门户；Web 同源 adapter 是 browser-private；七个 owner、Agent、
+Scheduler 的服务协议默认 internal-owner。每条 OpenAPI operation 声明 owner、visibility、stability、
+idempotency 和 permission 扩展，generated code 必须记录 contract version、source commit 与 digest。
+
 每个仓库的 `API_CONTRACT/docs` 必须说明 request/response、错误码、`request_id`、`Idempotency-Key`、分页 cursor、事件、权限和 tenant 边界。测试至少覆盖：
 
 - 正向、字段校验、资源状态机；
@@ -201,11 +211,36 @@ Application 负责“是否允许建立关系”，Repository 负责“如何查
 - 本仓真实启动、PostgreSQL/Redis smoke 和 BFF v1 mock 联调。
 
 本地集成环境只维护一个共享 PostgreSQL 实例和一个共享 Redis 实例，二者可以是本机进程或各一个容器；
-禁止按仓重复启动。各仓按独立 database/schema 与固定 Redis logical DB 隔离：IAM=1、System=2、Model=3、
-Billing=4、Capability=5、Storage=6、Scheduler=7。业务服务只从源码直接启动；Docker 化业务服务只用于
-production candidate 构建与 smoke，不作为本地开发入口。
+脚本先探测并复用，禁止按仓重复启动。各仓按独立 database/schema 与固定 Redis logical DB 隔离：IAM=1、
+System=2、Model=3、Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 保留；Web
+不拥有数据库或 Redis。业务服务只从源码直接启动；Docker 化业务服务只用于 production candidate 构建与
+smoke，不作为本地开发入口。
 
-### 6.1 交付、可观测性与供应链门禁
+### 6.1 Web、BFF、Agent 与 AG-UI 边界
+
+```text
+Browser -> Web same-origin adapter -> BFF public Product API
+                                      -> internal owner APIs
+                                      -> Agent run/control/event API
+                                      -> Scheduler generic dispatch API
+```
+
+- BFF 拥有 Conversation、Message、Share、Project、ScheduledTask 和 durable public AG-UI projection；
+- Agent 只拥有 Run、Checkpoint、Lease、Tool Journal、执行事件、HITL 与 Evidence；
+- Web 与 BFF 之间的 Agent 网络事件只使用 AG-UI，删除 legacy SessionEvent、双读和 fallback；
+- Web 的 `AgUiChatTransport` 将 AG-UI 投影为 Vercel AI SDK `UIMessage`，但不建立第二套网络流或 cursor；
+- BFF 的 AG-UI cursor、replay 和断线恢复以 PostgreSQL durable projection 为事实，Redis 只作传输协调；
+- HITL 使用结构化 interrupt/resume，并携带同 thread、全部未决 interrupt 与幂等 identity。
+
+### 6.2 文档、交付、可观测性与供应链门禁
+
+- 每仓维护 `README.md`、`INDEX.md`、`docs/INDEX.md`、`docs/CURRENT.md`、
+  `docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、
+  `docs/RELIABILITY.md`、`docs/ACCEPTANCE.md`、`docs/SLO.md`、`docs/RUNBOOK.md` 和有效 ADR；
+- 有机器契约的仓库维护 `contract/README.md`，记录 owner、visibility、version、generation、breaking policy
+  和 provenance；Root 门户从固定 artifact 生成公开 Reference，不复制可编辑 contract；
+- Web 执行 Playwright、axe、视觉回归、响应式和 bundle budget；CSS 使用语义 token，focus-visible 与
+  reduced-motion 是阻断门禁；
 
 - CI 和 tag release 使用同一组 lint、typecheck、test、build、canonical schema 与真实基础设施门禁；
   release 不得只构建镜像而跳过数据库和 runtime smoke；
@@ -221,6 +256,19 @@ production candidate 构建与 smoke，不作为本地开发入口。
   记录 token、连接串、密码和敏感载荷；
 - 每仓维护 `docs/SLO.md` 与 runbook，目标和当前观测结果分开记录，定义错误预算、burn-rate 告警和处置链接。
 
-## 7. 重构顺序
+## 7. 十仓 owner 与重构顺序
+
+| 仓库 | 事实或职责 owner |
+|---|---|
+| `kokoro` | UI、浏览器状态、HttpOnly cookie、同源 adapter |
+| `kokoro-bff` | Conversation、Message、Share、Project、ScheduledTask、公开 API、AG-UI projection |
+| `kokoro-agent` | Run、Checkpoint、Lease、Tool Journal、执行事件、HITL、Evidence |
+| `kokoro-iam` | Tenant、Identity、AuthN/AuthZ、Role、Permission、Audit |
+| `kokoro-system` | Site、Host、Workspace、Runtime Manifest、System Policy |
+| `kokoro-model` | Model Catalog、Provider Metadata、Availability、Routing Policy |
+| `kokoro-billing` | Payment、Subscription、Checkout、Refund、Credit、Ledger、Metering |
+| `kokoro-capability` | Skill、MCP control plane、Installation、Authorization、Provider Metadata |
+| `kokoro-storage` | Blob、Upload、Asset、Artifact、Scan 与对象生命周期元数据 |
+| `kokoro-scheduler` | 通用 Schedule、Occurrence、Lease、Retry、Dispatch |
 
 先改本规范和目标仓自己的目录树，再改该仓 API contract/docs，再改 model/dto/service/repo，再改 SQL，最后补 fixture、测试和启动验证。Root 不保存跨仓 API source。当前没有迁移/兼容要求时，直接删除旧路径并保留一套 canonical schema；不通过别名、双读写或历史目录维持旧实现。
