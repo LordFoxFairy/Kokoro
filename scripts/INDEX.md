@@ -9,7 +9,11 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 
 - `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
 - `python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts` verifies active/archived repository topology and Phase 1 composition.
-- `python3 scripts/verify-seven-repository-standard.py` audits the seven owner repositories when their local checkouts are present.
+- `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the seven owner repositories. It emits stable
+  text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
+  every repository converges.
+- `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
+  These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.
 
 Each active child repository runs its own `contract:check`, lint, typecheck, test, build and schema gates. Root never substitutes
 those local checks with a generated cross-repository mirror.

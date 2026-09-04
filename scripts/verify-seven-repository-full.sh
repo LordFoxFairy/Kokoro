@@ -74,7 +74,7 @@ STORAGE_DATABASE_URL="$(database_url kokoro_gate_storage)"
 STORAGE_DOCKER_DATABASE_URL="${STORAGE_DATABASE_URL/127.0.0.1/host.docker.internal}"
 STORAGE_DOCKER_REDIS_URL="${REDIS_BASE_URL/127.0.0.1/host.docker.internal}/6"
 
-python3 "$ROOT/scripts/verify-seven-repository-standard.py"
+python3 "$ROOT/scripts/verify-ten-repository-standard.py"
 python3 "$ROOT/scripts/verify-repository-topology.py"
 
 (

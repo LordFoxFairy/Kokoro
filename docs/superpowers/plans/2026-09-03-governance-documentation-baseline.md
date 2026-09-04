@@ -58,14 +58,14 @@ git commit -m "docs(governance): define ten-repository engineering standard"
 
 **步骤：**
 
-- [ ] 先写测试，断言正式仓集合恰好十个、Redis 映射为 1..9、必需文档矩阵完整；
-- [ ] 运行测试并确认旧实现因缺少 Web/BFF/Agent 而失败；
-- [ ] 将 TypeScript 仓分类为 Web、BFF、六个 owner，分别执行适合其职责的目录和 schema 规则；
-- [ ] 为 Python Agent 增加 canonical schema、Pyright strict、生产 double、分层 import、文件粒度和机器契约检查；
-- [ ] 为 Web 增加直连 owner、legacy SessionEvent/fallback、超大 React/CSS、focus 与质量脚本检查；
-- [ ] 为 BFF 增加公开 OpenAPI、真实 store、显式 owner adapter、canonical schema 和 package manager 检查；
-- [ ] 为全部十仓增加标准文档矩阵和 `contract/README.md` 条件性检查；
-- [ ] 输出稳定的 repository/rule/detail 诊断，便于并行 Agent 按 owner 修复。
+- [x] 先写测试，断言正式仓集合恰好十个、Redis 映射为 1..9、必需文档矩阵完整；
+- [x] 运行测试并确认旧实现因缺少 Web/BFF/Agent 而失败；
+- [x] 将 TypeScript 仓分类为 Web、BFF、六个 owner，分别执行适合其职责的目录和 schema 规则；
+- [x] 为 Python Agent 增加 canonical schema、Pyright strict、生产 double、分层 import、文件粒度和机器契约检查；
+- [x] 为 Web 增加直连 owner、legacy SessionEvent/fallback、超大 React/CSS、focus 与质量脚本检查；
+- [x] 为 BFF 增加公开 OpenAPI、真实 store、显式 owner adapter、canonical schema 和 package manager 检查；
+- [x] 为全部十仓增加标准文档矩阵和 `contract/README.md` 条件性检查；
+- [x] 输出稳定的 repository/rule/detail 诊断，便于并行 Agent 按 owner 修复。
 
 **验证：**
 
