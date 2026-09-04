@@ -122,11 +122,22 @@ async function handleEventStream(request, response, url, method, requests) {
   await readBody(request);
   requests.push('streamSessionEvents');
   const previousCursor = request.headers['last-event-id'];
+  if (
+    previousCursor !== undefined &&
+    previousCursor !== 'agui_00000000000000000000000000000001'
+  ) {
+    throw new Error('fixture received an unexpected Last-Event-ID');
+  }
+  response.writeHead(200, {
+    'cache-control': 'no-cache',
+    'content-type': 'text/event-stream',
+    'x-kokoro-request-id': 'req_stream_example',
+  });
   const frame =
     previousCursor === undefined
       ? {
           data: {
-            name: 'kokoro.interaction.required',
+            name: 'kokoro.interaction.awaiting_approval',
             type: 'CUSTOM',
             value: { tool_id: 'tool_example' },
           },
@@ -141,13 +152,27 @@ async function handleEventStream(request, response, url, method, requests) {
           },
           id: 'agui_00000000000000000000000000000002',
         };
-  const body = `id: ${frame.id}\ndata: ${JSON.stringify(frame.data)}\n\n`;
-  response.writeHead(200, {
-    'cache-control': 'no-cache',
-    'content-type': 'text/event-stream',
-    'x-kokoro-request-id': 'req_stream_example',
-  });
-  response.end(body);
+  const body = `: fixture keep-alive\n\nid: ${frame.id}\r\ndata: ${JSON.stringify(frame.data)}\r\n\r\n`;
+  const split = Math.max(1, Math.floor(body.length / 2));
+  response.write(body.slice(0, split));
+  await new Promise((resolve) => setTimeout(resolve, 5));
+  response.write(body.slice(split));
+  if (previousCursor === undefined) {
+    await new Promise((resolve) => {
+      let settled = false;
+      const close = () => {
+        if (settled) return;
+        settled = true;
+        response.off('close', close);
+        request.off('aborted', close);
+        resolve();
+      };
+      response.once('close', close);
+      request.once('aborted', close);
+    });
+  } else {
+    response.end();
+  }
   return true;
 }
 
@@ -224,13 +249,15 @@ async function handleFixtureRequest(request, response, requests) {
       meta: { request_id: 'req_missing_example' },
     });
   } catch (error) {
-    sendJson(response, 400, {
-      error: {
-        code: 'fixture_request_invalid',
-        message: error instanceof Error ? error.message : String(error),
-      },
-      meta: { request_id: 'req_invalid_example' },
-    });
+    if (!response.headersSent && !response.destroyed) {
+      sendJson(response, 400, {
+        error: {
+          code: 'fixture_request_invalid',
+          message: error instanceof Error ? error.message : String(error),
+        },
+        meta: { request_id: 'req_invalid_example' },
+      });
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { dirname, join, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
@@ -35,4 +36,16 @@ test('runs every published example against the credential-free HTTP fixture', as
     ],
   );
   assert.ok(results.every((result) => result.exitCode === 0));
+});
+
+test('lifecycle example consumes a live stream incrementally before resuming', () => {
+  const source = readFileSync(
+    join(portalRoot, 'examples/typescript/run-lifecycle.ts'),
+    'utf8',
+  );
+
+  assert.match(source, /getReader\(\)/u);
+  assert.match(source, /AbortController/u);
+  assert.match(source, /kokoro\.interaction\.awaiting_approval/u);
+  assert.match(source, /Last-Event-ID/u);
 });
