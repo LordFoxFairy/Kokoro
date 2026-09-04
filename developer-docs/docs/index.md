@@ -12,12 +12,28 @@ hero:
     - theme: alt
       text: Browse API v1
       link: /reference/v1/
-
-features:
-  - title: Submit, then stream
-    details: Start work with an idempotent command and follow progress through resumable server-sent events.
-  - title: Recover by cursor
-    details: Persist opaque cursors exactly as received and resume strictly after the last confirmed AG-UI frame.
-  - title: Trace every request
-    details: Carry the response request ID into logs and support conversations so failures stay diagnosable.
 ---
+
+<section class="protocol-strip" aria-label="Kokoro run protocol">
+  <article class="protocol-step">
+    <span>01 / ADMIT</span>
+    <h2>Submit once</h2>
+    <p>Use a stable idempotency key and receive an asynchronous run receipt.</p>
+  </article>
+  <article class="protocol-step">
+    <span>02 / FOLLOW</span>
+    <h2>Read AG-UI</h2>
+    <p>Consume committed event frames and retain the latest opaque cursor.</p>
+  </article>
+  <article class="protocol-step">
+    <span>03 / RESUME</span>
+    <h2>Continue exactly</h2>
+    <p>Reconnect strictly after the last confirmed frame without inventing offsets.</p>
+  </article>
+</section>
+
+## One contract, one reference
+
+The public reference is rebuilt from the pinned `kokoro-bff` OpenAPI on every portal build. Guides explain workflows; the owner contract remains the only field-level source of truth.
+
+[Understand the API boundary →](/introduction)

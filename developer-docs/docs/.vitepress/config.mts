@@ -60,7 +60,63 @@ export default defineConfig({
           ...referenceItems,
         ],
       },
-      { text: 'Changelog', link: '/changelog' },
+      {
+        text: 'Core concepts',
+        items: [
+          { text: 'Projects', link: '/concepts/projects' },
+          {
+            text: 'Conversations and messages',
+            link: '/concepts/conversations-messages',
+          },
+          { text: 'Asynchronous runs', link: '/concepts/asynchronous-runs' },
+          { text: 'Lifecycle and status', link: '/concepts/lifecycle' },
+          { text: 'AG-UI stream and replay', link: '/concepts/ag-ui' },
+          { text: 'Files and artifacts', link: '/concepts/files-artifacts' },
+          { text: 'Scheduled tasks', link: '/concepts/scheduled-tasks' },
+        ],
+      },
+      {
+        text: 'Guides',
+        items: [
+          { text: 'Create a run', link: '/guides/create-run' },
+          { text: 'Follow up', link: '/guides/follow-up' },
+          { text: 'Cancel a run', link: '/guides/cancel-run' },
+          { text: 'Resume a run', link: '/guides/resume-run' },
+          {
+            text: 'Replay after disconnect',
+            link: '/guides/replay-after-disconnect',
+          },
+          {
+            text: 'Idempotent commands',
+            link: '/guides/idempotent-commands',
+          },
+          { text: 'Cursor pagination', link: '/guides/cursor-pagination' },
+          { text: 'Upload lifecycle', link: '/guides/upload-lifecycle' },
+          { text: 'Webhooks', link: '/guides/webhooks' },
+        ],
+      },
+      {
+        text: 'Platform behavior',
+        items: [
+          { text: 'Responses and errors', link: '/platform/responses-errors' },
+          { text: 'Request IDs', link: '/platform/request-ids' },
+          { text: 'Idempotency', link: '/platform/idempotency' },
+          {
+            text: 'Rate limits and retries',
+            link: '/platform/rate-limits-retries',
+          },
+          { text: 'UTC and RFC 3339', link: '/platform/time' },
+          { text: 'Versioning', link: '/platform/versioning' },
+          { text: 'Security', link: '/platform/security' },
+        ],
+      },
+      {
+        text: 'Release information',
+        items: [
+          { text: 'Changelog', link: '/changelog' },
+          { text: 'Contract provenance', link: '/provenance' },
+        ],
+      },
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/LordFoxFairy/Kokoro' },
@@ -69,5 +125,6 @@ export default defineConfig({
       message: 'Canonical contract owned by kokoro-bff.',
       copyright: 'Kokoro Developer API',
     },
+    outline: { label: 'On this page', level: [2, 3] },
   },
 });

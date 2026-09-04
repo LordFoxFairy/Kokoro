@@ -18,7 +18,8 @@
     "provenance:check": "node scripts/verify-provenance.mjs",
     "reference:generate": "node scripts/generate-reference.mjs",
     "reference:check": "node scripts/check-reference.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm reference:check && pnpm build",
+    "examples:check": "node scripts/check-examples.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm reference:check && pnpm examples:check && pnpm build",
     "ci": "pnpm check"
   },
   "dependencies": {
@@ -28,6 +29,8 @@
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "@types/node": "22.20.1",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "eslint": "10.9.1",
     "globals": "17.12.0",
     "markdownlint-cli2": "0.23.2",

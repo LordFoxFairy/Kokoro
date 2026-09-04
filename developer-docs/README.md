@@ -14,6 +14,7 @@ This directory owns the static portal composition, guides, navigation, generated
 corepack pnpm install --frozen-lockfile
 corepack pnpm provenance:check
 corepack pnpm reference:generate
+corepack pnpm examples:check
 corepack pnpm dev
 ```
 
