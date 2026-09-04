@@ -157,3 +157,46 @@ docs/ACCEPTANCE.md
    identity 恢复，不把不可判定结果映射成功；不把临时探针作为最终验收资产。
 
 本任务卡为顺序准备，不授予 S1 期间扩大写入的权限。最终文件清单与执行证据在实际派工/交接时补齐。
+
+## 8. 主控并行预验（不修改 IAM 实现）
+
+### SQL 查询计划
+
+在本机已有 PG18.4 的独立临时库，使用 canonical schema，构造 20,000 条 delivered、20 条 pending、
+20 条 lease 到期 processing outbox，ANALYZE 后执行当前真实 claimNext CTE + UPDATE 的
+`EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`；`enable_seqscan=on`，没有强制 planner 选索引。
+实际走两个部分索引的 BitmapOr，候选 40 行，最终按 PK 更新 1 行。执行后只删除本次临时库。
+这支持保留 pending/recovery 索引，不证明任意负载下都最优，也不作为生产吞吐/SLO 结论。
+
+### 框架与 RPC 验证链
+
+在仓外临时 fixture 验证以下**精确组合**，没有改 IAM manifest/lockfile 或正式路由：
+
+- Node 24.20.0、pnpm 11.25.0、TypeScript 6.0.3、Node types 24.13.3。
+- Fastify 5.12.1、Zod 4.5.4、fastify-type-provider-zod 7.0.0、@fastify/swagger 9.8.1、openapi-types 12.1.3。
+- Connect/connect-node/connect-fastify 2.1.2、Protobuf 2.14.1、Protovalidate 1.2.0。
+- 安装启用严格 peer 检查和 24 小时 release-age 门禁，临时 fixture 不执行依赖安装脚本；供应链检查 68 项通过。
+- TS strict + exactOptionalPropertyTypes/noUncheckedIndexedAccess、完整依赖类型检查通过。
+- 实际启动两个本地临时 Fastify listener，验证 HTTP health、从 Zod 生成 OpenAPI、真实 Connect unary 调用、
+  现有 Proto nonce 注解由 Protovalidate 在 handler 前拒绝无效输入、成功/错误 request ID；完成后关闭两个 listener。
+- 验证 interceptor 顺序为 context → validation，两次请求只有一次调用业务 stub；这是框架可行性测试，
+  不是 IAM 鉴权、数据库或完整 RPC 契约验收，也不是 BFF 接入证据。
+
+核验日期为 2026-09-04；正式升级切片仍须重新检查版本/peer/lockfile 与全部行为。当天新发布的 Fastify 5.12.3
+尚不满足 24 小时 release-age，因此本预验选择兼容且已过观察期的 5.12.1，而不关闭供应链门禁追 latest。
+[官方 Connect validate](https://github.com/connectrpc/validate-es) 仍标注 unstable，npm 当前 0.2.0；
+暂不作为核心稳定依赖候选。该预验直接使用稳定 Protovalidate 1.2.0 和窄 Connect interceptor，
+只适配 IAM 现有 unary/错误边界，不自行实现字段验证规则。最终采用在工具链切片登记，不由此预验隐式升级。
+
+### Catalog 校验只读审查
+
+Bohr（`01a06e7c-90de-7d22-8d98-c058f55353a6`）完成只读审查后已关闭，未改代码或数据库。主控采纳方向：
+从独立空参考库安装同 commit canonical SQL，生成只读 catalog manifest；目标库只读比较，禁止反向接受目标库
+作为预期。CI 重生成并检查 SQL digest/提取格式；安装在提交前比较，运行时不创建参考数据库。
+比较必须覆盖双向对象集合、列类型/默认值/空值、约束、索引定义/谓词及有效性；忽略 OID/统计/物理位置，
+通过真实变异测试证明能发现 drift，不只用“原样库等于自己”证明正确。
+
+环境差异待数据/工具链切片显式收敛：当前 IAM CI/候选镜像 smoke 使用 PG16，本机实测 PG18.4；
+[官方版本表](https://www.postgresql.org/support/versioning/) 在本次核验时列最新稳定系列为 18、补丁为 18.6。
+PG18 的 catalog 与 PG16 不同，不能把本机输出无条件固化后宣称跨版本通过。正式支持 major、生成基线与 CI
+必须一致或有明确版本适配验证；不为追补丁擅自重启/升级正在被其他任务使用的共享实例。
