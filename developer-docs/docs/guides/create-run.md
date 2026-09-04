@@ -1,13 +1,15 @@
-# Create a run
+# 创建 run
 
-Submit a message to an existing session context. The path session ID and returned run ID are opaque.
+向已有 session context 提交一条 message。path 中的 session ID 和 receipt 中的 run ID 都是 opaque 值。
 
 <<< ../../examples/curl/create-run.sh{bash}
 
-## Handle the receipt
+## 处理 receipt
 
-Expect `202 Accepted` with `data.run_id`, `data.user_message_id`, `data.assistant_message_id`, and `meta.request_id`. Save all four before opening the event stream.
+对当前 public contract，成功响应是 `202 Accepted`，并在 `data` 中提供 `run_id`、`user_message_id`、`assistant_message_id`，在 `meta` 中提供 `request_id`。在打开事件流前保存这些值。
 
-Use one idempotency key for this logical submission. A timeout does not justify a new key: retry the identical request with the original key so the server can replay the first receipt instead of starting duplicate work.
+为这一条逻辑提交创建一个幂等 key。响应超时不代表请求没有被接纳：用原 key、相同 method/path/query/body 和相同 header 语义重试，以便服务端 replay 原 receipt，而不是启动重复工作。
 
-Continue with [replay after disconnect](./replay-after-disconnect).
+## 下一步
+
+接着阅读[断线后 replay](./replay-after-disconnect)。如果 public projection 显示等待交互，再按[恢复 run](./resume-run)提交完整 decision set。

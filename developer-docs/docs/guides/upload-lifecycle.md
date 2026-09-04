@@ -1,18 +1,18 @@
-# Upload project resources
+# 上传项目资源
 
-The current v1 operation accepts multipart files and requires an idempotency key.
+当前 v1 operation 接收 multipart `files`，并要求 idempotency key：
 
 <<< ../../examples/curl/upload-resource.sh{bash}
 
-## Current observable behavior
+## 当前可观察行为
 
-The success response is the generic `{ "data": { "ok": true }, "meta": { "request_id": "..." } }` envelope. It confirms BFF acceptance only.
+成功响应是 generic `{ "data": { "ok": true }, "meta": { "request_id": "..." } }` envelope。它只确认 BFF 接纳了请求。
 
-Version 1.0.0 does **not** publish a resource ID, upload session, scan state, processing status, or resource-specific polling endpoint. Therefore:
+版本 `1.0.0` 当前**没有发布** resource ID、upload session、scan state、processing status 或 resource-specific polling endpoint。因此：
 
-- retain the source file and request ID until your product workflow confirms the intended outcome;
-- do not claim that a virus scan or asynchronous promotion completed from `ok: true`;
-- do not poll an internal Storage endpoint or infer an object key;
-- use the public Library projection only for items it actually returns.
+- 在产品流程确认结果前保留源文件和 request ID；
+- 不从 `ok: true` 推断病毒扫描、异步处理或 promotion 已完成；
+- 不轮询内部 Storage endpoint，也不从 URL 或 path 猜 object key；
+- 只使用 public Library projection 实际返回的 item。
 
-A complete resource lifecycle will require an additive or versioned BFF contract change before this guide can describe polling or promotion.
+若未来要描述完整 resource lifecycle，必须先由 BFF owner 增加 additive 或 versioned public contract，再同时更新生成 reference、示例和本页。

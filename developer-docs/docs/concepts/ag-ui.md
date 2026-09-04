@@ -1,24 +1,26 @@
-# AG-UI stream and replay
+# AG-UI stream 与 replay
 
-Kokoro uses AG-UI over server-sent events for Agent progress. The public stream is a BFF projection: internal Agent facts and provider payloads are not public cursor or event contracts.
+Kokoro public Agent progress 使用 AG-UI over Server-Sent Events。公开 stream 是 `kokoro-bff` 的 durable projection；内部 Agent fact、provider payload、Redis stream 或数据库行都不是 public event/cursor 的字段事实源。
 
-## Frame shape
+## Frame 形状
 
-Each event has an SSE `id` and one JSON `data` value. The `id` is an opaque `agui_*` cursor assigned to that individual public frame. A single source fact may expand into multiple public frames, each with its own cursor.
+每个应用 frame 有 SSE `id` 和一个 JSON `data`。当前 public cursor 由正则 `^agui_[0-9a-f]{32}$`约束，是分配给单个 frame 的 opaque 值；一个内部事实可能投影成多个 public frame，每个 frame 都有自己的 cursor。
 
-Common AG-UI event families include run start/finish/error, text message start/content/end, tool call start/arguments/end/result, activity, subagent, and explicitly named custom product events. Clients should validate the `type` before reducing a frame into UI state.
+AG-UI 的 `type` 应在 reducer 前校验。标准家族可包括 run、text message、tool call、activity、reasoning、subagent 和 `CUSTOM`；具体可观察事件以 owner contract 与实际 projection 为准。等待审批的产品 custom event 名称是 `kokoro.interaction.awaiting_approval`，不是客户端自造的别名。
 
-## Replay rule
+## Replay 顺序
 
-1. Read a complete frame.
-2. Persist its exact `id` in the session's scope.
-3. Apply the frame idempotently to client state.
-4. After disconnect, reconnect with `Last-Event-ID: <saved id>`.
+1. 读取并完整解析一个 frame。
+2. 在同一 namespace、session 和应用状态范围内保存原始 SSE `id`。
+3. 以稳定的 run、message、tool 和 delivery ID 幂等更新 UI。
+4. 断线后向同一个 session 发送 `Last-Event-ID: <saved-id>`。
 
-The server resumes strictly after that frame. Never parse, increment, synthesize, or reuse the cursor for another session or namespace. Invalid, unknown, or foreign-scope cursors return `invalid_event_cursor`.
+服务端从该 frame **之后**继续发送。不要解析、递增、合成 cursor，也不要把另一个 session 或 namespace 的值拿来试探。无效、未知或跨范围的值会进入 contract 声明的错误路径。
 
-## Delivery semantics
+## Delivery 语义
 
-Reconnects can replay data around a client-side failure boundary. Reducers should identify messages, runs, and tool calls by their stable IDs and tolerate a repeated frame. A keep-alive comment carries no application event and should not advance the saved cursor.
+客户端故障边界附近可能收到 replay frame；reducer 应能承受重复投影。SSE keep-alive comment 不属于应用事件，不推进 cursor。当前 beta contract 没有发布 cursor 过期、retention 或 GC 的可观察规则；不要把内部保留策略写成客户端保证。
 
-The current beta ledger has no published cursor-expiry behavior because retention and GC are not yet part of v1's observable contract.
+## 浏览器边界
+
+浏览器 UI 可以消费同源 adapter 投影的 AG-UI 状态，但 service credential 和受信 header 仍留在服务端。Vercel AI SDK 或其他 UI 库是渲染适配层，不应建立第二套网络 envelope。

@@ -13,6 +13,22 @@ function isReferenceItem(value: unknown): value is ReferenceItem {
   return typeof value.link === 'string' && typeof value.text === 'string';
 }
 
+const REFERENCE_LABELS: Readonly<Record<string, string>> = {
+  Agents: 'Agent 连接',
+  Billing: '计费',
+  Chat: '对话',
+  Health: '健康检查',
+  Library: '资源库',
+  MCP: 'MCP',
+  Models: '模型',
+  'Mori Music': 'Mori 音乐',
+  Projects: '项目',
+  Scheduled: '定时任务',
+  Schemas: '数据结构',
+  Skills: '技能',
+  System: '系统',
+};
+
 function loadReferenceItems(): ReferenceItem[] {
   const manifestUrl = new URL(
     '../reference/v1/generated/manifest.json',
@@ -26,94 +42,85 @@ function loadReferenceItems(): ReferenceItem[] {
   if (!Array.isArray(parsed.items) || !parsed.items.every(isReferenceItem)) {
     throw new Error('Generated reference manifest contains invalid items');
   }
-  return parsed.items;
+  return parsed.items.map((item) => ({
+    ...item,
+    text: REFERENCE_LABELS[item.text] ?? item.text,
+  }));
 }
 
 const referenceItems = loadReferenceItems();
 
 export default defineConfig({
-  lang: 'en-US',
-  title: 'Kokoro Developer',
-  description: 'Build with the Kokoro Product API.',
+  lang: 'zh-CN',
+  title: 'Kokoro Developer API',
+  description: 'Kokoro public Product API 的中文 contract-first 开发者门户。',
   cleanUrls: true,
   lastUpdated: false,
   themeConfig: {
     nav: [
-      { text: 'Docs', link: '/introduction' },
-      { text: 'API reference', link: '/reference/v1/' },
-      { text: 'Changelog', link: '/changelog' },
+      { text: '文档', link: '/introduction' },
+      { text: 'API 参考', link: '/reference/v1/' },
+      { text: '变更记录', link: '/changelog' },
     ],
     search: { provider: 'local' },
     sidebar: [
       {
-        text: 'Start',
+        text: '开始使用',
         items: [
-          { text: 'Introduction', link: '/introduction' },
-          { text: 'Quickstart', link: '/quickstart' },
-          { text: 'Authentication', link: '/authentication' },
+          { text: '介绍', link: '/introduction' },
+          { text: '快速开始', link: '/quickstart' },
+          { text: '认证与服务上下文', link: '/authentication' },
         ],
       },
       {
-        text: 'API reference',
+        text: 'API 参考',
         items: [
           { text: 'Kokoro API v1', link: '/reference/v1/' },
           ...referenceItems,
         ],
       },
       {
-        text: 'Core concepts',
+        text: '核心概念',
         items: [
-          { text: 'Projects', link: '/concepts/projects' },
-          {
-            text: 'Conversations and messages',
-            link: '/concepts/conversations-messages',
-          },
-          { text: 'Asynchronous runs', link: '/concepts/asynchronous-runs' },
-          { text: 'Lifecycle and status', link: '/concepts/lifecycle' },
-          { text: 'AG-UI stream and replay', link: '/concepts/ag-ui' },
-          { text: 'Files and artifacts', link: '/concepts/files-artifacts' },
-          { text: 'Scheduled tasks', link: '/concepts/scheduled-tasks' },
+          { text: '项目', link: '/concepts/projects' },
+          { text: '对话与消息', link: '/concepts/conversations-messages' },
+          { text: '异步 Agent run', link: '/concepts/asynchronous-runs' },
+          { text: '生命周期与状态', link: '/concepts/lifecycle' },
+          { text: 'AG-UI 流与 replay', link: '/concepts/ag-ui' },
+          { text: '文件与 artifact', link: '/concepts/files-artifacts' },
+          { text: '定时任务', link: '/concepts/scheduled-tasks' },
         ],
       },
       {
-        text: 'Guides',
+        text: '工作流指南',
         items: [
-          { text: 'Create a run', link: '/guides/create-run' },
-          { text: 'Follow up', link: '/guides/follow-up' },
-          { text: 'Cancel a run', link: '/guides/cancel-run' },
-          { text: 'Resume a run', link: '/guides/resume-run' },
-          {
-            text: 'Replay after disconnect',
-            link: '/guides/replay-after-disconnect',
-          },
-          {
-            text: 'Idempotent commands',
-            link: '/guides/idempotent-commands',
-          },
-          { text: 'Cursor pagination', link: '/guides/cursor-pagination' },
-          { text: 'Upload lifecycle', link: '/guides/upload-lifecycle' },
-          { text: 'Webhooks', link: '/guides/webhooks' },
+          { text: '创建 run', link: '/guides/create-run' },
+          { text: '继续对话', link: '/guides/follow-up' },
+          { text: '取消 run', link: '/guides/cancel-run' },
+          { text: '恢复 run', link: '/guides/resume-run' },
+          { text: '断线后 replay', link: '/guides/replay-after-disconnect' },
+          { text: '幂等 command', link: '/guides/idempotent-commands' },
+          { text: 'Cursor 分页', link: '/guides/cursor-pagination' },
+          { text: '上传生命周期', link: '/guides/upload-lifecycle' },
+          { text: 'Webhooks 当前边界', link: '/guides/webhooks' },
         ],
       },
       {
-        text: 'Platform behavior',
+        text: '平台行为',
         items: [
-          { text: 'Responses and errors', link: '/platform/responses-errors' },
-          { text: 'Request IDs', link: '/platform/request-ids' },
-          { text: 'Idempotency', link: '/platform/idempotency' },
-          {
-            text: 'Rate limits and retries',
-            link: '/platform/rate-limits-retries',
-          },
-          { text: 'UTC and RFC 3339', link: '/platform/time' },
-          { text: 'Versioning', link: '/platform/versioning' },
-          { text: 'Security', link: '/platform/security' },
+          { text: '响应与错误', link: '/platform/responses-errors' },
+          { text: 'Request ID', link: '/platform/request-ids' },
+          { text: '幂等性', link: '/platform/idempotency' },
+          { text: '速率与重试', link: '/platform/rate-limits-retries' },
+          { text: 'UTC 与 RFC 3339', link: '/platform/time' },
+          { text: '版本与弃用', link: '/platform/versioning' },
+          { text: '安全边界', link: '/platform/security' },
         ],
       },
       {
-        text: 'Release information',
+        text: '发布信息',
         items: [
-          { text: 'Changelog', link: '/changelog' },
+          { text: '变更记录', link: '/changelog' },
           { text: 'Contract provenance', link: '/provenance' },
         ],
       },
@@ -122,9 +129,9 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/LordFoxFairy/Kokoro' },
     ],
     footer: {
-      message: 'Canonical contract owned by kokoro-bff.',
+      message: 'Public contract 的事实 owner 是 kokoro-bff。',
       copyright: 'Kokoro Developer API',
     },
-    outline: { label: 'On this page', level: [2, 3] },
+    outline: { label: '本页目录', level: [2, 3] },
   },
 });

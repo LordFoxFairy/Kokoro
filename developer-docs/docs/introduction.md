@@ -1,27 +1,27 @@
-# Introduction
+# 介绍
 
-Kokoro API v1 is the public Product API contract owned by `kokoro-bff`. It exposes projects, chat sessions, asynchronous Agent runs, scheduled tasks, library projections, and supporting product resources through one versioned HTTP surface.
+Kokoro API v1 是由 `kokoro-bff` 拥有的 public Product API contract。它在一个版本化的 HTTP surface 中提供项目、session、异步 Agent run、定时任务、资源投影和其他产品能力。
 
-The portal composes guides and generated reference material. It does not own or copy the API schema. Every reference page is generated from the pinned canonical OpenAPI artifact in the BFF repository.
+门户由两部分组成：中文手写指南和从固定 artifact 生成的 reference。门户不拥有或复制 API schema；字段名、类型、必填性、约束、响应头和 operation metadata 的唯一字段事实源是 `catalog/contracts.yaml` 所 pin 的 BFF public contract。
 
-## Current contract status
+## 当前 contract 状态
 
-Version `1.0.0` is marked **beta**. An operation appearing in the contract describes its public wire shape; it does not by itself prove that every live adapter, persistence path, or service-level objective is complete.
+当前 artifact 版本为 `1.0.0`，路径前缀为 `/v1`，operation 的 stability 标记为 **beta**。operation 出现在 contract 中只说明公开 wire shape，不自动证明每个 live adapter、持久化路径、上游依赖或 SLO 已经完成。
 
-## Request model
+## 异步请求模型
 
-Kokoro uses an asynchronous command model for Agent work:
+Agent 工作遵循以下可观察流程：
 
-1. Submit a message with an `Idempotency-Key`.
-2. Receive `202 Accepted` with stable run and message identifiers.
-3. Follow the AG-UI server-sent event stream.
-4. Persist each opaque SSE `id` and reuse it as `Last-Event-ID` after a disconnect.
-5. Treat `RUN_FINISHED` or `RUN_ERROR` as the stream terminal signal.
+1. 使用 `Idempotency-Key` 提交 session message 或其他标记为 `required` 的 mutation。
+2. 接收 `202 Accepted` 或 operation reference 中声明的成功状态和稳定标识符。
+3. 通过 session 的 `text/event-stream` endpoint 跟随 AG-UI 进度。
+4. 完整接收每个 SSE frame 后保存原始 `id`，断线时原样放入 `Last-Event-ID`。
+5. 将 `RUN_FINISHED` 或 `RUN_ERROR` 作为 AG-UI run 的终态信号；传输断开本身不是业务结果。
 
-JSON responses use a stable success or error envelope and always carry a request ID. Time instants are RFC 3339 UTC strings unless the generated reference identifies a documented compatibility exception.
+JSON 成功和错误通常使用 `data`/`meta` 或 `error`/`meta` envelope。`/readyz` 在依赖未就绪时的 `503` 是 contract 明确的 `HealthResponse` 例外；请以生成 reference 的 response schema 为准。
 
-## Ownership boundary
+## Owner 边界
 
-This portal publishes only operations whose canonical metadata says `x-kokoro-owner: kokoro-bff` and `x-kokoro-visibility: public`. Internal owner APIs, storage schemas, provider payloads, and generated internal DTOs are not publication inputs.
+门户只发布 canonical metadata 同时满足 `x-kokoro-owner: kokoro-bff` 和 `x-kokoro-visibility: public` 的 operation。internal-owner API、数据库 schema、provider payload 和 generated internal DTO 不属于 public reference 的输入。
 
-Continue with the [quickstart](./quickstart) or inspect the [v1 reference](./reference/v1/).
+先读[快速开始](/quickstart)，再看[认证](/authentication)、[AG-UI 概念](/concepts/ag-ui)和[API v1 reference](/reference/v1/)。

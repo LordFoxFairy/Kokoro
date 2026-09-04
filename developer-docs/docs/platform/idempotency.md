@@ -1,14 +1,14 @@
-# Idempotency
+# 幂等性
 
-The generated reference marks each operation as `required` or `none` through canonical metadata. Mutations marked `required` need `Idempotency-Key`; reads and the explicit GitHub preview operation do not.
+每个 operation 页都会从 canonical metadata 展示 `x-kokoro-idempotency`：`required` 的 mutation 需要 `Idempotency-Key`；`none` 的安全 read 和明确标记为 preview 的 operation 不需要。这个清单由 BFF artifact 生成，不由手写页面维护。
 
-## Key lifecycle
+## Key 生命周期
 
-1. Create a key before the first attempt.
-2. Persist the key with the exact request semantics.
-3. Reuse both after timeout, disconnect, or a retryable response.
-4. Retire the key when the result is known; never recycle it for unrelated work.
+1. 在第一次尝试前为一条逻辑 mutation 创建 key。
+2. 将 key 与完整请求语义一起持久保存到本地 command 状态。
+3. timeout、disconnect 或可重试 response 后，使用相同 key 和不变请求重试。
+4. 结果确定后回收该 key；不要把它复用于无关 command。
 
-`idempotency_conflict` means the key was reused for different semantics. `idempotency_in_progress` means another attempt still owns the pending claim; back off with jitter and retry the identical command.
+`idempotency_conflict` 表示同一个作用域的 key 被用于不同语义；`idempotency_in_progress` 表示另一次尝试仍在处理。前者应修正 command 绑定，后者可用有界 backoff 重试原请求。
 
-Idempotency prevents duplicate admission. It does not make downstream UI reduction, file handling, or webhook processing automatically idempotent; those consumers still need stable resource and event identities.
+幂等 admission 不会自动让 UI reducer、文件处理或未来 webhook consumer 幂等；这些消费者仍需依靠稳定的资源和事件 ID。当前 fingerprint 的实际覆盖范围属于实现细节，调用方应保持 method、URL、query、选定 header 和 body 全部稳定。

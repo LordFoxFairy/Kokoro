@@ -1,39 +1,45 @@
-# Kokoro Developer API portal
+# Kokoro Developer API 门户
 
-This directory owns the static portal composition, guides, navigation, generated reference pipeline, version catalog, examples, and quality gates. The canonical public API schema remains in `kokoro-bff/contract/openapi/v1/openapi.yaml`; this directory never stores an editable copy.
+`developer-docs/` 是 Kokoro Developer API 的中文静态门户。它负责阅读入口、工作流说明、导航、示例、版本目录、生成和校验；`kokoro-bff` 负责发布 public API 的机器契约。门户不保存一份可编辑的 OpenAPI 副本，也不拥有跨仓 DTO、数据库结构或内部 provider payload。
 
-## Prerequisites
+## 事实源与阅读顺序
+
+字段名、类型、必填性、约束、响应头和 operation 元数据的唯一字段事实源是目录中固定的 `kokoro-bff` public contract artifact。先读[介绍](/introduction)，再按[快速开始](/quickstart)和[认证与服务上下文](/authentication)完成第一次调用；随后按需阅读[核心概念](/concepts/projects)、[工作流指南](/guides/create-run)和[API v1 参考](/reference/v1/)。
+
+生成参考页时，脚本从 `catalog/contracts.yaml` 的 commit 与 SHA-256 绑定位置读取 owner artifact。手写页面只解释调用流程、当前边界和客户端策略，不复制字段表；若手写说明与生成参考冲突，以 owner contract 和生成页为准。
+
+## 前置条件
 
 - Node.js `22.22.x`
-- Corepack with `pnpm@11.25.0`
-- A `kokoro-bff` checkout at `../kokoro-bff`, or `KOKORO_BFF_CHECKOUT` pointing to it
+- Corepack，以及 `pnpm@11.25.0`
+- `../kokoro-bff` 的本地 checkout，或通过 `KOKORO_BFF_CHECKOUT` 指向该 checkout
 
-## Commands
+本地 BFF checkout 只用于读取已固定的 artifact；它不是门户的第二个可编辑事实源。示例使用 loopback fixture 和明显虚假的环境值，不需要真实凭据。
 
-| Command | Purpose |
+## 命令
+
+| 命令 | 用途 |
 | --- | --- |
-| `corepack pnpm install --frozen-lockfile` | Install the exact dependency graph. |
-| `corepack pnpm dev` | Generate reference input and start the local portal. |
-| `corepack pnpm build` | Generate reference input and produce the static site. |
-| `corepack pnpm lint` | Check JavaScript, TypeScript, and Markdown style. |
-| `corepack pnpm typecheck` | Type-check portal configuration and examples. |
-| `corepack pnpm test` | Run verifier, generator, example, architecture, and link unit tests. |
-| `corepack pnpm provenance:check` | Verify the canonical Git blob, worktree file, version, and digest. |
-| `corepack pnpm reference:generate` | Materialize ignored reference pages from the pinned BFF OpenAPI. |
-| `corepack pnpm reference:check` | Prove reference generation is deterministic. |
-| `corepack pnpm examples:check` | Validate and run every manifest example against local fixtures. |
-| `corepack pnpm architecture:check` | Enforce publication boundaries and the public contract allowlist. |
-| `corepack pnpm links:check` | Check built internal routes, fragments, and assets. |
-| `corepack pnpm preview` | Preview an already-built static site. |
+| `corepack pnpm install --frozen-lockfile` | 按锁文件安装精确依赖图。 |
+| `corepack pnpm dev` | 生成参考输入并启动本地门户。 |
+| `corepack pnpm build` | 生成参考输入并构建静态站点。 |
+| `corepack pnpm lint` | 检查 JavaScript、TypeScript 和 Markdown 风格。 |
+| `corepack pnpm typecheck` | 检查门户配置和 TypeScript 示例。 |
+| `corepack pnpm test` | 运行 provenance、生成器、示例、架构和链接单元测试。 |
+| `corepack pnpm provenance:check` | 校验 origin、canonical blob、工作树字节、版本和摘要。 |
+| `corepack pnpm reference:generate` | 从固定 BFF OpenAPI 生成被忽略的参考页。 |
+| `corepack pnpm reference:check` | 证明两次隔离生成的字节完全一致。 |
+| `corepack pnpm examples:check` | 用本地 fixture 校验并运行所有公开示例。 |
+| `corepack pnpm architecture:check` | 执行公开发布边界和来源白名单。 |
+| `corepack pnpm links:check` | 检查构建后的内部路由、锚点和静态资源。 |
+| `corepack pnpm preview` | 预览已经构建的静态站点。 |
 
-The complete CI-equivalent gate is:
+完整的本地 CI 等价门禁是：
 
 ```bash
 corepack pnpm run ci
 ```
 
-The CI entrypoint performs lint, type checking, unit tests, provenance and
-determinism checks, executable examples, architecture policy, a production
-build, and built-site link validation in that order.
+它按顺序执行 lint、类型检查、单元测试、provenance、确定性参考生成、可执行示例、架构策略、生产构建和构建站点链接检查。`docs/reference/v1/generated/` 是构建输入并由 `.gitignore` 排除；不要手动编辑或提交其中的文件。
 
-See [`INDEX.md`](./INDEX.md) for ownership and extension rules.
+更多 owner、目录和扩展规则见[`INDEX.md`](./INDEX.md)。

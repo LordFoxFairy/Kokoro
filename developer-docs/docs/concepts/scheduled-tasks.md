@@ -1,13 +1,13 @@
-# Scheduled tasks
+# 定时任务
 
-A scheduled task is a BFF product resource that describes recurring work. The public model includes a title, prompt, daily or weekly frequency, local time, IANA timezone string, next run instant, optional expiry, approval behavior, enabled flag, and status.
+Scheduled task 是描述重复工作的 BFF 产品资源。public model 当前包含 title、prompt、daily/weekly frequency、local time、IANA timezone、next run instant、可选 expiry、approval behavior、enabled flag 和 status。
 
-## Time model
+## 时间模型
 
-`time` and `timezone` preserve the intended local schedule. `next_run_at` is the concrete RFC 3339 UTC instant clients should display and monitor. Do not replace an IANA timezone with a fixed UTC offset; daylight-saving transitions require the named location.
+`time` 与 `timezone` 保存用户想要的本地调度意图；`next_run_at` 是客户端可以展示和监控的 RFC 3339 UTC occurrence。不要把 IANA timezone 替换为固定 UTC offset，因为夏令时会改变实际 occurrence。
 
 ## Commands
 
-Create, update, delete, and retry operations require an `Idempotency-Key`. A project-scoped create operation takes the project identity from the URL path. The caller must not attempt to override it in the body.
+创建、更新、删除和 retry operation 的 canonical metadata 标为 `Idempotency-Key` `required`。project-scoped create 从 URL path 取得 project identity，body 不应尝试覆盖它。
 
-The public BFF resource is distinct from internal scheduler leases, occurrences, and dispatch commands. Those internal protocols are not part of this portal.
+public BFF scheduled resource 与内部 Scheduler 的 lease、occurrence、retry、dispatch protocol 是不同边界。门户不发布后者的数据库结构或内部 message。
