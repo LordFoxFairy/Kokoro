@@ -10,18 +10,30 @@ This directory owns the static portal composition, guides, navigation, generated
 
 ## Commands
 
-```bash
-corepack pnpm install --frozen-lockfile
-corepack pnpm provenance:check
-corepack pnpm reference:generate
-corepack pnpm examples:check
-corepack pnpm dev
-```
+| Command | Purpose |
+| --- | --- |
+| `corepack pnpm install --frozen-lockfile` | Install the exact dependency graph. |
+| `corepack pnpm dev` | Generate reference input and start the local portal. |
+| `corepack pnpm build` | Generate reference input and produce the static site. |
+| `corepack pnpm lint` | Check JavaScript, TypeScript, and Markdown style. |
+| `corepack pnpm typecheck` | Type-check portal configuration and examples. |
+| `corepack pnpm test` | Run verifier, generator, example, architecture, and link unit tests. |
+| `corepack pnpm provenance:check` | Verify the canonical Git blob, worktree file, version, and digest. |
+| `corepack pnpm reference:generate` | Materialize ignored reference pages from the pinned BFF OpenAPI. |
+| `corepack pnpm reference:check` | Prove reference generation is deterministic. |
+| `corepack pnpm examples:check` | Validate and run every manifest example against local fixtures. |
+| `corepack pnpm architecture:check` | Enforce publication boundaries and the public contract allowlist. |
+| `corepack pnpm links:check` | Check built internal routes, fragments, and assets. |
+| `corepack pnpm preview` | Preview an already-built static site. |
 
 The complete CI-equivalent gate is:
 
 ```bash
-corepack pnpm ci
+corepack pnpm run ci
 ```
+
+The CI entrypoint performs lint, type checking, unit tests, provenance and
+determinism checks, executable examples, architecture policy, a production
+build, and built-site link validation in that order.
 
 See [`INDEX.md`](./INDEX.md) for ownership and extension rules.

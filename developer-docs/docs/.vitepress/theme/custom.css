@@ -26,8 +26,7 @@
   --vp-c-brand-3: #df7458;
   --vp-c-brand-soft: var(--kokoro-accent-soft);
   --vp-code-block-bg: var(--kokoro-code);
-  --vp-font-family-base: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  --vp-font-family-base: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --vp-font-family-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -51,15 +50,14 @@ html {
 }
 
 body {
-  background-image:
-    linear-gradient(90deg, rgb(92 80 62 / 3%) 1px, transparent 1px),
+  background-image: linear-gradient(90deg, rgb(92 80 62 / 3%) 1px, transparent 1px),
     linear-gradient(rgb(92 80 62 / 3%) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 .VPNavBar {
   border-bottom: 1px solid color-mix(in srgb, var(--kokoro-line) 78%, transparent);
-  background: color-mix(in srgb, var(--kokoro-paper) 88%, transparent) !important;
+  background: color-mix(in srgb, var(--kokoro-paper) 88%, transparent);
   backdrop-filter: blur(14px);
 }
 
@@ -87,8 +85,7 @@ body {
   text-align: left;
 }
 
-.VPHomeHero .name,
-.VPHomeHero .text {
+.VPHomeHero .name, .VPHomeHero .text {
   max-width: 760px;
   letter-spacing: -0.045em;
 }
@@ -112,10 +109,8 @@ body {
 
 .VPButton {
   min-height: 44px;
-  border-radius: var(--kokoro-radius-sm) !important;
-  transition:
-    transform var(--kokoro-duration) var(--kokoro-ease),
-    box-shadow var(--kokoro-duration) var(--kokoro-ease) !important;
+  border-radius: var(--kokoro-radius-sm);
+  transition: transform var(--kokoro-duration) var(--kokoro-ease), box-shadow var(--kokoro-duration) var(--kokoro-ease);
 }
 
 .VPButton:hover {
@@ -125,8 +120,7 @@ body {
 
 .VPButton:focus-visible,
 .VPLink:focus-visible,
-a:focus-visible,
-button:focus-visible {
+a:focus-visible, button:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--kokoro-accent) 70%, white);
   outline-offset: 3px;
 }
@@ -295,6 +289,7 @@ button:focus-visible {
     scroll-behavior: auto;
   }
 
+  /* Override VitePress component motion when the operating system opts out. */
   *,
   *::before,
   *::after {

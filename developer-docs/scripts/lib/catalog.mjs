@@ -34,6 +34,76 @@ function requiredString(record, key, label) {
   return value;
 }
 
+function parseSource(entry, label) {
+  const sourceLabel = `${label}.source`;
+  const source = assertRecord(entry.source, sourceLabel);
+  assertKeys(source, ['repository', 'checkout', 'path', 'commit'], sourceLabel);
+  const repository = requiredString(source, 'repository', sourceLabel);
+  const checkout = requiredString(source, 'checkout', sourceLabel);
+  const sourcePath = requiredString(source, 'path', sourceLabel);
+  const commit = requiredString(source, 'commit', sourceLabel);
+  if (repository !== PUBLIC_CONTRACT.repository) {
+    throw new CatalogError(
+      `${sourceLabel} repository must be ${PUBLIC_CONTRACT.repository}`,
+    );
+  }
+  if (sourcePath !== PUBLIC_CONTRACT.sourcePath) {
+    throw new CatalogError(
+      `${sourceLabel} path must be ${PUBLIC_CONTRACT.sourcePath}`,
+    );
+  }
+  if (!/^[0-9a-f]{40}$/.test(commit)) {
+    throw new CatalogError(`${sourceLabel}.commit must be a full Git SHA`);
+  }
+  return { repository, checkout, path: sourcePath, commit };
+}
+
+function parseDigest(entry, label) {
+  const digestLabel = `${label}.digest`;
+  const digest = assertRecord(entry.digest, digestLabel);
+  assertKeys(digest, ['algorithm', 'value'], digestLabel);
+  const algorithm = requiredString(digest, 'algorithm', digestLabel);
+  const value = requiredString(digest, 'value', digestLabel);
+  if (algorithm !== 'sha256') {
+    throw new CatalogError(`${digestLabel}.algorithm must be sha256`);
+  }
+  if (!/^[0-9a-f]{64}$/.test(value)) {
+    throw new CatalogError(
+      `${digestLabel}.value must be a lowercase SHA-256 digest`,
+    );
+  }
+  return { algorithm, value };
+}
+
+function parseGeneration(entry, label) {
+  const generationLabel = `${label}.generation`;
+  const generation = assertRecord(entry.generation, generationLabel);
+  assertKeys(generation, ['command'], generationLabel);
+  return { command: requiredString(generation, 'command', generationLabel) };
+}
+
+function parsePublication(entry, label) {
+  const publicationLabel = `${label}.publication`;
+  const publication = assertRecord(entry.publication, publicationLabel);
+  assertKeys(
+    publication,
+    ['classification', 'include_in_portal'],
+    publicationLabel,
+  );
+  const classification = requiredString(
+    publication,
+    'classification',
+    publicationLabel,
+  );
+  if (classification !== 'public') {
+    throw new CatalogError(`${publicationLabel}.classification must be public`);
+  }
+  if (publication.include_in_portal !== true) {
+    throw new CatalogError(`${publicationLabel}.include_in_portal must be true`);
+  }
+  return { classification, include_in_portal: true };
+}
+
 function parseEntry(value, index) {
   const label = `contracts[${index}]`;
   const entry = assertRecord(value, label);
@@ -69,85 +139,15 @@ function parseEntry(value, index) {
     throw new CatalogError(`${label}.version must be a semantic version`);
   }
 
-  const source = assertRecord(entry.source, `${label}.source`);
-  assertKeys(
-    source,
-    ['repository', 'checkout', 'path', 'commit'],
-    `${label}.source`,
-  );
-  const repository = requiredString(source, 'repository', `${label}.source`);
-  const checkout = requiredString(source, 'checkout', `${label}.source`);
-  const sourcePath = requiredString(source, 'path', `${label}.source`);
-  const commit = requiredString(source, 'commit', `${label}.source`);
-  if (repository !== PUBLIC_CONTRACT.repository) {
-    throw new CatalogError(
-      `${label}.source repository must be ${PUBLIC_CONTRACT.repository}`,
-    );
-  }
-  if (sourcePath !== PUBLIC_CONTRACT.sourcePath) {
-    throw new CatalogError(
-      `${label}.source path must be ${PUBLIC_CONTRACT.sourcePath}`,
-    );
-  }
-  if (!/^[0-9a-f]{40}$/.test(commit)) {
-    throw new CatalogError(`${label}.source.commit must be a full Git SHA`);
-  }
-
-  const digest = assertRecord(entry.digest, `${label}.digest`);
-  assertKeys(digest, ['algorithm', 'value'], `${label}.digest`);
-  const algorithm = requiredString(digest, 'algorithm', `${label}.digest`);
-  const digestValue = requiredString(digest, 'value', `${label}.digest`);
-  if (algorithm !== 'sha256') {
-    throw new CatalogError(`${label}.digest.algorithm must be sha256`);
-  }
-  if (!/^[0-9a-f]{64}$/.test(digestValue)) {
-    throw new CatalogError(
-      `${label}.digest.value must be a lowercase SHA-256 digest`,
-    );
-  }
-
-  const generation = assertRecord(entry.generation, `${label}.generation`);
-  assertKeys(generation, ['command'], `${label}.generation`);
-  const command = requiredString(
-    generation,
-    'command',
-    `${label}.generation`,
-  );
-
-  const publication = assertRecord(
-    entry.publication,
-    `${label}.publication`,
-  );
-  assertKeys(
-    publication,
-    ['classification', 'include_in_portal'],
-    `${label}.publication`,
-  );
-  const classification = requiredString(
-    publication,
-    'classification',
-    `${label}.publication`,
-  );
-  if (classification !== 'public') {
-    throw new CatalogError(
-      `${label}.publication.classification must be public`,
-    );
-  }
-  if (publication.include_in_portal !== true) {
-    throw new CatalogError(
-      `${label}.publication.include_in_portal must be true`,
-    );
-  }
-
   return {
     id,
     owner,
     visibility,
     version,
-    source: { repository, checkout, path: sourcePath, commit },
-    digest: { algorithm, value: digestValue },
-    generation: { command },
-    publication: { classification, include_in_portal: true },
+    source: parseSource(entry, label),
+    digest: parseDigest(entry, label),
+    generation: parseGeneration(entry, label),
+    publication: parsePublication(entry, label),
   };
 }
 

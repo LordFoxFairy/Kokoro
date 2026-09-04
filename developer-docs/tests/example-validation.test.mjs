@@ -95,7 +95,7 @@ test('rejects an example that references a non-public operation', () => {
 
 test('rejects an example file outside the portal examples directory', () => {
   const escaped = manifest();
-  escaped.examples[0].file = '../kokoro-agent/private.py';
+  escaped.examples[0].file = ['..', 'kokoro-agent', 'private.py'].join('/');
 
   assert.throws(
     () =>

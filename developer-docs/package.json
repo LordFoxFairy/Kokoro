@@ -19,7 +19,9 @@
     "reference:generate": "node scripts/generate-reference.mjs",
     "reference:check": "node scripts/check-reference.mjs",
     "examples:check": "node scripts/check-examples.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm reference:check && pnpm examples:check && pnpm build",
+    "architecture:check": "node scripts/check-architecture.mjs",
+    "links:check": "node scripts/check-links.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm reference:check && pnpm examples:check && pnpm architecture:check && pnpm build && pnpm links:check",
     "ci": "pnpm check"
   },
   "dependencies": {

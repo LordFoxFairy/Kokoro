@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const FIXTURE_TOKEN = 'example-only-token';
+const EXAMPLE_TIMEOUT_MS = 60_000;
 
 function readBody(request) {
   return new Promise((resolve, reject) => {
@@ -63,164 +64,181 @@ function sessionSummary(sessionId, title) {
   };
 }
 
+async function handleCreateMessage(request, response, url, method, requests) {
+  const match = url.pathname.match(/^\/v1\/sessions\/([^/]+)\/messages$/);
+  if (method !== 'POST' || match === null) return false;
+
+  const payload = parseJson(await readBody(request), 'createMessage');
+  if (payload.content !== 'Review the public API contract.') {
+    throw new Error('fixture received an unexpected message body');
+  }
+  if (!request.headers['idempotency-key']) {
+    throw new Error('createMessage requires Idempotency-Key');
+  }
+  requests.push('createMessage');
+  sendJson(response, 202, {
+    data: {
+      assistant_message_id: 'msg_assistant_example',
+      run_id: 'run_example',
+      user_message_id: 'msg_user_example',
+    },
+    meta: { request_id: 'req_create_example' },
+  });
+  return true;
+}
+
+async function handleControlRun(request, response, url, method, requests) {
+  const match = url.pathname.match(
+    /^\/v1\/sessions\/([^/]+)\/runs\/([^/]+)\/control$/,
+  );
+  if (method !== 'POST' || match === null) return false;
+
+  const payload = parseJson(await readBody(request), 'controlRun');
+  if (payload.kind !== 'run.cancel' && payload.kind !== 'run.resume') {
+    throw new Error('fixture received an unsupported control kind');
+  }
+  const idempotencyKey = request.headers['idempotency-key'];
+  if (typeof idempotencyKey !== 'string' || idempotencyKey === '') {
+    throw new Error('controlRun requires Idempotency-Key');
+  }
+  requests.push('controlRun');
+  sendJson(response, 202, {
+    data: {
+      command_id: idempotencyKey,
+      replayed: false,
+      request_digest: 'sha256:fixture',
+      run_id: decodeURIComponent(match[2] ?? ''),
+      status: 'pending',
+    },
+    meta: { request_id: 'req_control_example' },
+  });
+  return true;
+}
+
+async function handleEventStream(request, response, url, method, requests) {
+  const match = url.pathname.match(/^\/v1\/sessions\/([^/]+)\/events$/);
+  if (method !== 'GET' || match === null) return false;
+
+  await readBody(request);
+  requests.push('streamSessionEvents');
+  const previousCursor = request.headers['last-event-id'];
+  const frame =
+    previousCursor === undefined
+      ? {
+          data: {
+            name: 'kokoro.interaction.required',
+            type: 'CUSTOM',
+            value: { tool_id: 'tool_example' },
+          },
+          id: 'agui_00000000000000000000000000000001',
+        }
+      : {
+          data: {
+            runId: 'run_example',
+            threadId: decodeURIComponent(match[1] ?? ''),
+            timestamp: 1_788_523_200_000,
+            type: 'RUN_FINISHED',
+          },
+          id: 'agui_00000000000000000000000000000002',
+        };
+  const body = `id: ${frame.id}\ndata: ${JSON.stringify(frame.data)}\n\n`;
+  response.writeHead(200, {
+    'cache-control': 'no-cache',
+    'content-type': 'text/event-stream',
+    'x-kokoro-request-id': 'req_stream_example',
+  });
+  response.end(body);
+  return true;
+}
+
+async function handleUpload(request, response, url, method, requests) {
+  const match = url.pathname.match(/^\/v1\/projects\/([^/]+)\/resources$/);
+  if (method !== 'POST' || match === null) return false;
+
+  const body = await readBody(request);
+  const contentType = request.headers['content-type'];
+  if (
+    typeof contentType !== 'string' ||
+    !contentType.startsWith('multipart/form-data;') ||
+    !body.includes(Buffer.from('fixture resource'))
+  ) {
+    throw new Error('fixture expected one multipart resource');
+  }
+  if (!request.headers['idempotency-key']) {
+    throw new Error('uploadProjectResources requires Idempotency-Key');
+  }
+  requests.push('uploadProjectResources');
+  sendJson(response, 200, {
+    data: { ok: true },
+    meta: { request_id: 'req_upload_example' },
+  });
+  return true;
+}
+
+async function handleSessionList(request, response, url, method, requests) {
+  if (method !== 'GET' || url.pathname !== '/v1/sessions') return false;
+
+  await readBody(request);
+  requests.push('listSessions');
+  const cursor = url.searchParams.get('cursor');
+  if (cursor === null) {
+    sendJson(response, 200, {
+      data: {
+        next_cursor: 'cur_example_page_2',
+        sessions: [sessionSummary('session_example_1', 'First session')],
+      },
+      meta: { request_id: 'req_sessions_page_1' },
+    });
+  } else if (cursor === 'cur_example_page_2') {
+    sendJson(response, 200, {
+      data: {
+        next_cursor: null,
+        sessions: [sessionSummary('session_example_2', 'Second session')],
+      },
+      meta: { request_id: 'req_sessions_page_2' },
+    });
+  } else {
+    throw new Error('fixture received an unknown cursor');
+  }
+  return true;
+}
+
+async function handleFixtureRequest(request, response, requests) {
+  try {
+    assertServiceContext(request);
+    const url = new URL(request.url ?? '/', 'http://127.0.0.1');
+    const method = request.method ?? 'GET';
+    const handlers = [
+      handleCreateMessage,
+      handleControlRun,
+      handleEventStream,
+      handleUpload,
+      handleSessionList,
+    ];
+    for (const handler of handlers) {
+      if (await handler(request, response, url, method, requests)) return;
+    }
+    await readBody(request);
+    sendJson(response, 404, {
+      error: { code: 'fixture_route_not_found', message: 'Fixture route missing' },
+      meta: { request_id: 'req_missing_example' },
+    });
+  } catch (error) {
+    sendJson(response, 400, {
+      error: {
+        code: 'fixture_request_invalid',
+        message: error instanceof Error ? error.message : String(error),
+      },
+      meta: { request_id: 'req_invalid_example' },
+    });
+  }
+}
+
 function startFixtureServer() {
   const requests = [];
-  const server = createServer(async (request, response) => {
-    try {
-      assertServiceContext(request);
-      const url = new URL(request.url ?? '/', 'http://127.0.0.1');
-      const method = request.method ?? 'GET';
-      const messageMatch = url.pathname.match(
-        /^\/v1\/sessions\/([^/]+)\/messages$/,
-      );
-      const controlMatch = url.pathname.match(
-        /^\/v1\/sessions\/([^/]+)\/runs\/([^/]+)\/control$/,
-      );
-      const eventMatch = url.pathname.match(
-        /^\/v1\/sessions\/([^/]+)\/events$/,
-      );
-      const uploadMatch = url.pathname.match(
-        /^\/v1\/projects\/([^/]+)\/resources$/,
-      );
-
-      if (method === 'POST' && messageMatch !== null) {
-        const payload = parseJson(await readBody(request), 'createMessage');
-        if (payload.content !== 'Review the public API contract.') {
-          throw new Error('fixture received an unexpected message body');
-        }
-        if (!request.headers['idempotency-key']) {
-          throw new Error('createMessage requires Idempotency-Key');
-        }
-        requests.push('createMessage');
-        sendJson(response, 202, {
-          data: {
-            assistant_message_id: 'msg_assistant_example',
-            run_id: 'run_example',
-            user_message_id: 'msg_user_example',
-          },
-          meta: { request_id: 'req_create_example' },
-        });
-        return;
-      }
-
-      if (method === 'POST' && controlMatch !== null) {
-        const payload = parseJson(await readBody(request), 'controlRun');
-        if (payload.kind !== 'run.cancel' && payload.kind !== 'run.resume') {
-          throw new Error('fixture received an unsupported control kind');
-        }
-        const idempotencyKey = request.headers['idempotency-key'];
-        if (typeof idempotencyKey !== 'string' || idempotencyKey === '') {
-          throw new Error('controlRun requires Idempotency-Key');
-        }
-        requests.push('controlRun');
-        sendJson(response, 202, {
-          data: {
-            command_id: idempotencyKey,
-            replayed: false,
-            request_digest: 'sha256:fixture',
-            run_id: decodeURIComponent(controlMatch[2] ?? ''),
-            status: 'pending',
-          },
-          meta: { request_id: 'req_control_example' },
-        });
-        return;
-      }
-
-      if (method === 'GET' && eventMatch !== null) {
-        await readBody(request);
-        requests.push('streamSessionEvents');
-        const previousCursor = request.headers['last-event-id'];
-        const frame =
-          previousCursor === undefined
-            ? {
-                data: {
-                  name: 'kokoro.interaction.required',
-                  type: 'CUSTOM',
-                  value: { tool_id: 'tool_example' },
-                },
-                id: 'agui_00000000000000000000000000000001',
-              }
-            : {
-                data: {
-                  runId: 'run_example',
-                  threadId: decodeURIComponent(eventMatch[1] ?? ''),
-                  timestamp: 1_788_523_200_000,
-                  type: 'RUN_FINISHED',
-                },
-                id: 'agui_00000000000000000000000000000002',
-              };
-        const body = `id: ${frame.id}\ndata: ${JSON.stringify(frame.data)}\n\n`;
-        response.writeHead(200, {
-          'cache-control': 'no-cache',
-          'content-type': 'text/event-stream',
-          'x-kokoro-request-id': 'req_stream_example',
-        });
-        response.end(body);
-        return;
-      }
-
-      if (method === 'POST' && uploadMatch !== null) {
-        const body = await readBody(request);
-        const contentType = request.headers['content-type'];
-        if (
-          typeof contentType !== 'string' ||
-          !contentType.startsWith('multipart/form-data;') ||
-          !body.includes(Buffer.from('fixture resource'))
-        ) {
-          throw new Error('fixture expected one multipart resource');
-        }
-        if (!request.headers['idempotency-key']) {
-          throw new Error('uploadProjectResources requires Idempotency-Key');
-        }
-        requests.push('uploadProjectResources');
-        sendJson(response, 200, {
-          data: { ok: true },
-          meta: { request_id: 'req_upload_example' },
-        });
-        return;
-      }
-
-      if (method === 'GET' && url.pathname === '/v1/sessions') {
-        await readBody(request);
-        requests.push('listSessions');
-        const cursor = url.searchParams.get('cursor');
-        if (cursor === null) {
-          sendJson(response, 200, {
-            data: {
-              next_cursor: 'cur_example_page_2',
-              sessions: [sessionSummary('session_example_1', 'First session')],
-            },
-            meta: { request_id: 'req_sessions_page_1' },
-          });
-        } else if (cursor === 'cur_example_page_2') {
-          sendJson(response, 200, {
-            data: {
-              next_cursor: null,
-              sessions: [sessionSummary('session_example_2', 'Second session')],
-            },
-            meta: { request_id: 'req_sessions_page_2' },
-          });
-        } else {
-          throw new Error('fixture received an unknown cursor');
-        }
-        return;
-      }
-
-      await readBody(request);
-      sendJson(response, 404, {
-        error: { code: 'fixture_route_not_found', message: 'Fixture route missing' },
-        meta: { request_id: 'req_missing_example' },
-      });
-    } catch (error) {
-      sendJson(response, 400, {
-        error: {
-          code: 'fixture_request_invalid',
-          message: error instanceof Error ? error.message : String(error),
-        },
-        meta: { request_id: 'req_invalid_example' },
-      });
-    }
-  });
+  const server = createServer((request, response) =>
+    handleFixtureRequest(request, response, requests),
+  );
 
   return new Promise((resolve, reject) => {
     server.once('error', reject);
@@ -271,8 +289,12 @@ function runCommand(command, argumentsValue, options) {
     let stderr = '';
     const timeout = setTimeout(() => {
       child.kill('SIGKILL');
-      reject(new Error(`${command} exceeded the 15 second example timeout`));
-    }, 15_000);
+      reject(
+        new Error(
+          `${command} exceeded the ${EXAMPLE_TIMEOUT_MS / 1000} second example timeout`,
+        ),
+      );
+    }, EXAMPLE_TIMEOUT_MS);
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
     child.stdout.on('data', (chunk) => {
