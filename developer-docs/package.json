@@ -9,14 +9,16 @@
     "pnpm": "11.25.0"
   },
   "scripts": {
-    "dev": "vitepress dev docs",
-    "build": "vitepress build docs",
+    "dev": "pnpm reference:generate && vitepress dev docs",
+    "build": "pnpm reference:generate && vitepress build docs",
     "preview": "vitepress preview docs",
     "lint": "eslint . && markdownlint-cli2",
     "typecheck": "tsc --noEmit",
     "test": "node --test --test-reporter=spec tests/*.test.mjs",
     "provenance:check": "node scripts/verify-provenance.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm build",
+    "reference:generate": "node scripts/generate-reference.mjs",
+    "reference:check": "node scripts/check-reference.mjs",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm provenance:check && pnpm reference:check && pnpm build",
     "ci": "pnpm check"
   },
   "dependencies": {

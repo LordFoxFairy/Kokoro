@@ -13,6 +13,7 @@ This directory owns the static portal composition, guides, navigation, generated
 ```bash
 corepack pnpm install --frozen-lockfile
 corepack pnpm provenance:check
+corepack pnpm reference:generate
 corepack pnpm dev
 ```
 
