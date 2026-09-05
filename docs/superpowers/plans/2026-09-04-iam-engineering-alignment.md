@@ -1270,3 +1270,7 @@ Authentication 只是首次登录事务编排 owner；Tenant、Identity、Organi
 Tenant 管理错误基线、IAM 生成 tenant ID、keyset cursor 绑定、独立 `iam_tenant_command_receipt` 候选列集、管理 audit 明确列以及 RUNBOOK 的
 issuer/JWKS/caller credential/rotation/retention 运行要求。该提交仍只是设计文档，不代表 Schema 已改变；最终列、保留窗口、Proto 字段号和真实
 并发/重放测试仍需独立审查 PASS 后才能进入实现。
+
+主控在 IAM `3e3fd99 docs(iam): reconcile tenant design facts` 修正三面文档中的旧问题清单：CreateTenant 的 ID 生成已成为裁决而非待选项，
+receipt 的 command kind/status/result 一致性、管理 audit 明确列和认证/管理事件的 NULL 边界已同步；剩余门槛收敛为配置 schema、Proto 字段号、
+保留窗口和真实并发/未知提交恢复测试。IAM Schema、Proto、generated 与生产源码仍未改变。
