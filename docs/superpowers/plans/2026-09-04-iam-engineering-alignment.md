@@ -978,3 +978,10 @@ Arendt（01a07130-214a-73f2-908d-281b41a11fba，派发指定gpt-6-astra）只读
 只读审查Arendt（01a07130-214a-73f2-908d-281b41a11fba，原派发指定gpt-6-astra）；不写文件/运行DB或服务。审查通过后才单一writer实施，主控不并发写IAM。
 实现要求先让旧runtime/installer未固定UTC及参数覆盖成为有效RED，再实现并green；使用Node24.20/pnpm11.25已装依赖，真实PG复用5432，随机测试库需要测试身份CREATEDB，不提权生产角色。真实验证包含配置单测、AST反例、多PID/补建/复用、实际runtime、实际installer空库/非空/回滚及query/statement budget；清理只认自身创建记录，不碰传入基准库或共享Redis。
 最终lint/typecheck/contract/build、标准Markdown/link、全PG-only/真实入口由作者先验、独立审查后主控主目录集成重跑；Redis仍明确待验，不包装为全IAM完成。
+
+### R2-3 设计门通过、实现放行
+
+Arendt绑定c9d1d35..4975b89确认三面设计通过，无P1/P2；现已回收。主控停止IAM写入，worktree从110c7fa快进4975b89且干净。
+唯一实现负责人续派Carver（01a0711d-0de8-7241-9c59-3305fb2c4863，原指定gpt-5.6-sol），仅允许上表生产/测试/文档文件集；每次新文件都按已审职责落点，不扩围。源码候选完成停写后，主控规格复核、独立代码审查、主目录集成/实跑。
+主控以当前built runtime和生成的临时测试密钥实测三个不同PG PID，首条读取均为America/New_York，证明问题位于真实runtime而非手写示例对象；日志 `/tmp/kokoro-iam-goal/r2-3-review/runtime-red.log`。探针关闭自身Pool并清理临时密钥，无业务/Schema改动，未连接Redis或启动listener/worker。
+本轮原Redis56380只读PING仍TimeoutError，记录redis-probe.json；没有重启/新建/flush。此项不阻止UTC配置与PG验证继续推进。
