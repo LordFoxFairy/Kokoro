@@ -1031,3 +1031,6 @@ IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代
 | 非目标 | 其他JOIN/claim代表性计划、完整catalog drift、orphan/retention、API/运行/依赖升级或其他仓 |
 
 目前仅放行设计审查；源码需本节追加明确通过记录及writer/基线才实施。官方PG18索引语义已于2026-09-05核验，选定两索引还以本仓实际SQL和隔离合成计划为依据，不宣称全行业模板或线上SLO。
+
+设计提交 `f878c3edef8874404cc4bf871d044eec9d7f2fc5`；Arendt（01a07130-214a-73f2-908d-281b41a11fba，原指定gpt-6-astra）续派固定f5f21a9..f878c3e只读设计审查，主控不并发改IAM。仅审新三面/实际两查询/Schema，不重做全仓历史调查。
+主控补充5类查询证据：10万基础行加多条同key历史与active、跨tenant同邮箱、miss；旧Schema均约1429/1440blocks，临时拟定索引后3–5blocks，完整结果排序比较一致。两索引实测大小5087232/4087808字节，不代表写吞吐benchmark；query-plan-expanded-evidence.json保留全部计划，库已自有清理。本轮RESP PING56380仍TimeoutError，无重启/新实例/flush；其他SQL设计仍可继续。
