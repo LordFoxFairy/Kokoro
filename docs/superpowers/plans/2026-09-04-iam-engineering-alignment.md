@@ -1081,3 +1081,18 @@ R2-4 已从独立候选 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1` 按文件范�
 - `schema.test.ts` 与真实 catalog integration 检查索引定义、数量和既有 partial unique indexes；新增身份历史查询计划 fixture 在随机隔离 PostgreSQL 数据库中 seed 100,000 条历史数据，比较查询结果并验证受控 `EXPLAIN (ANALYZE, BUFFERS)` 预算。
 - 主控正确使用 PostgreSQL-only 驱动执行 `pnpm db:apply-schema` 与 32 个测试文件：516 passed、0 failed；随后 `pnpm lint`、`pnpm typecheck`、`pnpm build`、`pnpm contract:check` 均退出 0；Markdown Prettier、258 个本地文档链接和 `git diff --check` 通过。
 - 本片没有重置或重启共享 Redis，也没有把 Redis/完整进程、provider、BFF consumer、catalog drift、orphan、retention 或管理 writer 的缺失包装成已完成；这些仍属于后续任务。IAM 当前 HEAD 为 `229024b`，工作树干净。
+
+### IAM-R3-1 受信租户上下文与 Protobuf 请求校验任务卡
+
+独立审查在 IAM `229024b` 发现两个需要先修的契约阻断：RPC 将 `tenant_id` 放在请求体并直接信任，且 Proto 已声明的 Protovalidate 规则没有接入运行时。该片只修当前已有六个 RPC 的边界，不新增管理 API，不改数据库 Schema，不重命名业务模块。
+
+| 项 | 约束 |
+| --- | --- |
+| Owner/writer | `kokoro-iam`；一名实现 Agent 独占 worktree，主控规格审查、独立只读审查、主目录集成 |
+| 契约 | 从 RequestMagicLink、ConsumeMagicLink、Authorize 删除 body `tenant_id`；统一从受信 RPC metadata `x-kokoro-tenant-id` 读取并写入 Connect context；GetSession/Refresh/Logout 保留 token/session 自身的权威租户校验，不新增伪造字段 |
+| 校验 | 接入 `@bufbuild/protovalidate` 运行时 validator interceptor；错误统一为 InvalidArgument，不在错误消息中输出 token、email 或请求原值；保留业务 allow-list/policy 校验 |
+| 允许文件 | `contract/proto/**`、`src/generated/proto/**`（只由生成命令更新）、`src/modules/auth/rpc/**`、`src/app.ts`、`package.json`、`pnpm-lock.yaml`、直接相关 `test/contract/**`/`test/unit/**`、`docs/API_CONTRACT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`、`docs/ACCEPTANCE.md`、`contract/README.md` |
+| 禁止范围 | `database/schema.sql`、其他模块/子仓、共享服务、Redis reset、ORM/框架替换、通用 CommandBus、`domain/application/infrastructure` 空层 |
+| 验收 | Proto/生成物/provenance 一致；body tenant 被删除且 header 缺失/跨租户尝试拒绝；nonce/redirect 声明式规则真实拦截；`pnpm contract:check`、lint、typecheck、build、相关单测及 PG-only 真实集成通过 |
+
+该片不能把“服务 token + 任意 caller header”包装成最终端到端身份认证：metadata 只在受信 BFF/service boundary 内有效，后续需要由跨仓调用方统一注入并由部署网络/服务身份保护。IAM 不从未认证用户 body 读取租户事实。
