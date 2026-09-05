@@ -650,8 +650,8 @@ Root preflight 由现有 common/delivery/typescript 检查限定 IAM 运行，�
 
 | 任务    | 范围与交付                                                                                        | 状态                     |
 | ------- | ------------------------------------------------------------------------------------------------- | ------------------------ |
-| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | Boyle 进行中             |
-| IAM-R1  | 在原候选上完成 auth 内部分组、准确命名、真实职责边界；独立审查后集成日常主目录                    | 等待 R1D 文档门          |
+| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | ac04ecf，主控文档门通过  |
+| IAM-R1  | 在原候选上完成 auth 内部分组、准确命名、真实职责边界；独立审查后集成日常主目录                    | Boyle 源码实施中         |
 | IAM-R2A | 只读复核 SQL 精简/索引/UTC/无外键方案，提交带源码证据的实施清单                                   | Nietzsche 只读审查完成   |
 | IAM-R2  | 先完善 DATA_MODEL，再逐片对齐 canonical SQL、查询映射、UTC、完整性/保留与 catalog；不操作既有数据 | 等待 R1 主目录落地及 R2A |
 | IAM-R3  | API/框架/依赖治理：先定契约和预算，再验证输入、请求关联、取消、共享生命周期等既有缺口             | 等待目录与相关 SQL 边界  |
@@ -709,3 +709,22 @@ R2-4 有界关系检测与引用安全保留拆片；必要的 Schema/契约设�
 
 恢复时只读环境探测：空闲磁盘约 61.5 GB；PG5432 TCP 可达（不等于 SQL 验收）；Redis56380 原实例 PING 2s 超时。
 未重启 Docker、未创建第二个实例、未修改业务库；完整 Redis/smoke 门保留待验。
+
+### IAM-R1D 主控文档门与 R1 源码放行
+
+Boyle 交付 `ac04ecfe8b0511c1f19860871531cb3043fc2059`，精确 12 份既有 Markdown；主控复核 HEAD/干净状态，
+对 `3f7f0c5` 的 src/test/database/contract/generated/scripts/依赖/lockfile/CI/Docker diff 为空。
+主控重新运行 12 文档 Prettier check、diff check、去代码块后的 293 本地链接存在性（21 Root 布局映射），均通过；
+TECHNICAL_DESIGN 的 46 文件目标树与 Root 采纳树逐字一致。作者另计 294 链接/12 锚点和 12 职责断言，不混为主控结果。
+已人工核对 GetSession/会话 SQL/邮箱/TTL/父锁/事务恢复的真实 owner，API/SQL 当前与目标区分正确。三面设计通过本目录片的门，
+不宣称 SQL/框架目标已实现；日常主目录仍 c5c7a0c。
+
+现续派 Boyle 执行 IAM-R1，起始 ac04ecf。允许手写 src 按采纳映射移动、必要命名/import 整理；原架构 checker/fixture
+加入 receipt/crypto 新角色及业务反向入口、Service→Route/client、Repository→Service 的解析后依赖负例；同步直接受影响测试与
+上片既有文档当前链接/状态。删除旧候选路径，不留 alias，保留原四命令事务/凭据/父锁/投递业务行为。
+不改机器源、DDL、依赖/lockfile/CI/配置策略/端口，不新造库或通用抽象。无需新的源码目录方案。
+
+实施顺序：新角色/目标分组断言应先对旧候选失败，再落目录与依赖；完成目标结构后验证 lint/typecheck/contract/build 和
+架构/业务回归。可用既有主控驱动 `verify-database.mjs --pg-only` 在指定 worktree创建随机隔离库、空库安装并验证后清理；
+复用唯一 PG，无 Redis/Docker 起停或全量清理。以当前 commit 报告 Redis 两项显式排除、其他实际计数、AST SQL 保留结果与文档验证。
+Boyle 提交后停止写入；主控规格审查、独立质量审查后串行集成日常主目录并重新验证，未通过前不进入 SQL 源码切片。
