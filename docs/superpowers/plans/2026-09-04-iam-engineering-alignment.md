@@ -404,6 +404,37 @@ process.env 的属性/下标/解构读取；注释和普通字符串示例不误
 这独立证明启动失败清理缺少完成期限；不据此宣称已定位真实 Redis 内部故障。S4 须保留原启动错误、对清理设置
 有引用的期限、超时执行 force close 并非零退出；测试包含这个无活动 handle 的子进程场景，不能只测单元 Promise。
 
+2026-09-05 主控补充 S4 可行性预验（独立于正在实施的 S3b）：在原仓外 framework-spike 恢复其 frozen lockfile
+依赖，沿用上表精确组合、严格 peer 和 1440 分钟 release-age；临时 spike 不执行安装脚本。63 项下载/5 项缓存
+复用，出现三次 registry ECONNRESET 后工具成功重试。没有改变 IAM 的 manifest/lockfile、源码或全局工具版本；
+该次临时依赖恢复不把 S3b 扩大成依赖升级。
+
+`pnpm exec tsc && node dist/probe.js && node dist/lifecycle-probe.js` 退出 0，原 HTTP/Proto 验证链复跑通过；新增：
+
+1. 用自有占用端口使第二个 Fastify listen 得到 EADDRINUSE，等两次 listen 的结果 settle 后统一清理；两个 adapter
+   均停止、worker 未启动、资源 owner 关闭一次。实际生产还须覆盖启动期限和在途 listen 的停止竞争。
+2. 两个实际 loopback listener 共用一个资源对象；draining 后 readiness 返回 503，再关闭入口。分别验证在途 unary
+   RPC 正常完成且未触发取消、总体取消信号触发后 RPC 中止；两条路径均在 adapter 排空后才关闭资源一次。
+   资源计数是测试替身，不是 PG/Redis 验收。
+3. 无活动 handle 的 Node 子进程对照：unref 清理期限使程序在记录原错误/force close 前退出 0；有引用期限时实际
+   执行 force-close 标记、保留 STARTUP_PRIMARY 并退出 1。这是候选策略验证，不意味着 IAM 已经修复启动路径。
+
+已核对安装包 connect-fastify 2.1.2 源码：设置 shutdownTimeoutMs 会在 preClose 启动独立定时器；原生插件也接受
+shutdownSignal。S4 应优先由共享 runtime 拥有一个有引用的总体关闭期限及取消信号，避免每个 adapter 重开完整预算
+或遗留插件定时器；该方案已由上述实际 RPC 验证。优雅关闭仍须允许预算内完成，只有到期/强制阶段取消在途请求。
+
+同日 registry 只读复核：pnpm 11.25.0、Fastify 5.12.3、Zod 4.5.4、Connect 2.1.2、Protobuf 2.14.1、
+Protovalidate 1.2.0、pg 8.23.0、redis 6.2.1、typescript-eslint 8.69.0；TypeScript latest 为 7.0.2，而
+typescript-eslint 的 peer 仍要求 TypeScript <6.1。Node 官方当前 LTS 为 24.20.0，@types/node latest 26.4.1
+不等于 Node24 的类型选择，24.13.3 定点元数据可读。Fastify 5.12.3 发布时间为 2026-09-04T08:21:57.526Z，
+进入 S4 时重新判定观察窗口；没有因此现在升级。TypeScript 全量/6.0.3 定点 registry 请求曾失败（URLError），实际 frozen
+6.0.3 安装与严格编译成功；元数据、实际兼容、供应链审查与正式仓验收分别记账。
+
+参考：[Node release policy](https://nodejs.org/en/about/previous-releases)、
+[Connect Fastify plugin](https://connectrpc.com/docs/node/server-plugins/#fastify)、
+[TypeScript 当前下载](https://www.typescriptlang.org/download/)。最终切片仍核验具体 release notes、安全与锁文件，
+不把本预验当所有依赖已完成升级或质量认证。
+
 ## 9. IAM-S3a 投递闭环任务卡（已审查集成）
 
 Owner 为 IAM 的 Magic Link 投递子能力，唯一 writer 仍为 Ohm，原独占 worktree。只修复既有投递行为，
