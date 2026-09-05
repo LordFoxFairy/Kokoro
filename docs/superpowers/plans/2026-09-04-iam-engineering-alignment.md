@@ -898,3 +898,20 @@ SQL UTC/查询计划、完整drift、关系检测/引用安全保留，及R3 API
 两个父资源、login/refresh的锁竞争方向都应覆盖：删除先持锁→等待提交后认证拒绝；认证先持锁→删除等待，随后旧token读取拒绝。利用事务屏障与真实锁证据，不靠sleep推测；测试写方同时设deleted_at/updated_at，回滚不留下误删标记。
 执行既有Node24.20.0/pnpm11.25/已装依赖，RED→实现→lint/typecheck/contract/build与verify-database.mjs --pg-only；随机隔离库、复用PG5432，Redis2项明确排除。无DB/Redis/Docker起停/flush或已有数据清理。
 作者自洽commit后停写，主控规格复核、独立质量审查、主目录集成重跑；后续仍是完整IAM目标，不将该片冒充全部完成。
+
+### R2-2 设计审查修正
+
+Parfit绑定5cb9e91提出P2：首次Consume在组织删除后零候选由原PrincipalService返回FailedPrecondition，原文笼统要求Unauthenticated与“不改Service”矛盾。
+主控核对principal.service和原no-valid-organization断言后采纳修正，提交 `012ebba969686f48f0b5a46553daef7fe51b4fb1`（三文档、无源码/DDL变化）。
+明确：principal删除首次Consume仍Unauthenticated；组织删除仅剔除该候选，剩余有效组织照常选择，零候选/歧义保留FailedPrecondition。
+目标session的双父删除才拒绝GetSession/Authorize/新Refresh/凭据重放；无关组织删除不连带失效。新增测试包括混合有效/已删组织，不以统一错误码改写原用例。
+格式、245本地链接/锚点及diff通过；原worktree已快进012ebba，待同一审查员复核后才派实现者。
+模型记录：本审查原派发指定gpt-5.6-sol，Parfit续派报告平台实际切换为GPT-6；主控工具没有回传实际型号，按“指定值/审查员报告”区分，不声称已独立核实实际模型。
+
+### R2-2 设计门通过、源码放行
+
+Parfit复核5cb9e91..012ebba：P2闭合、无新增findings；三面设计已一致，未运行DB。主控已核对实际Service与错误映射，现按本节文件集放行源码，基线012ebba。
+为按用户新选模策略推进，旧负责人Boyle已交付停写，新负责人指定gpt-5.6-sol处理这一本界明确但含并发/重放的实现；主控不同时写IAM。
+要求先记录旧Schema的RED，再在目标Schema已安装但两Repository仍旧逻辑时运行行为RED，证明测试能检出缺失删除条件，而非只因缺列失败；随后实现过滤与映射并全量验证。
+独立catalog审查驱动已在旧源码基线上RED；最终只接受两个新增nullable列与两个CHECK状态集合变化，其他结构保持。
+代码候选提交后停止写入，主控先规格复核，再续派独立审查员，最后主目录集成/复验。此放行不包含其他SQL/框架/运行治理。
