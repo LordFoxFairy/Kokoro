@@ -1143,3 +1143,22 @@ Peirce 在停止写入前留下的变更由主控接管为唯一 writer，收敛
 主控验证已通过：`git diff --check`、`pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build`；真实 PostgreSQL 隔离驱动 fresh install 后 33 个测试文件、530 项通过、0 失败，Redis 依赖测试显式排除不计通过；catalog subject/oracle 相等，20 条关系审计在空租户窗口均为 0。只创建并清理本次随机数据库，未启动/重启/flush PostgreSQL、Redis 或 Docker。
 
 当前状态：主控已交付 commit，等待绑定 `c10de28` 的独立只读代码审查；在审查结论和 Root 复验提交前，R2-5 不标记为最终验收。R2-5 仍不包含 IAM 管理 writer/API、retention、自动 orphan 修复、完整 Redis/进程/provider smoke 或 BFF/Web 消费者验收。
+
+### IAM-CAP-03：模块拓扑裁决（先文档，不立即搬目录）
+
+用户指出 `src/modules` 当前只有 `auth`，这项质疑成立：如果把当前物理目录当作完整 IAM 的最终架构，它是不合格的；当前 `auth` 只是已实现的 authentication-first 首发切片。为避免用空目录制造“完成假象”，主控将目标模块固定为以下单数业务能力名，只有出现真实 writer/API/查询用例时才创建和落地：
+
+```text
+modules/
+  tenant/          # Tenant 生命周期与范围
+  identity/        # Principal、User、Contact
+  organization/    # Organization、Membership
+  authentication/  # Magic Link、Session、凭据、receipt、delivery
+  authorization/   # Role、Permission、授权关系与 Authorize
+  audit/           # Security Event 追加、查询、保留
+```
+
+规则：顶层目录表达 bounded context/owner，统一使用单数能力名；模块内部资源集合才使用 `sessions/`、`memberships/` 等复数。
+不创建 `postgres/`、`redis/`、`prisma/`、`services/`、`repositories/` 这种技术层或空模板目录；RPC/HTTP 是 transport，只有跨模块时才单独放 `rpc/`/`http/`。现有 `auth/principals`、`auth/sessions` 等目录是历史首发切片的内部组织，不是后续新模块模板。
+
+本裁决已写入 IAM `0334665 docs(iam): clarify module ownership topology`。下一步必须先为首个管理能力补齐 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL` 三面文档和权限/事务/删除策略，再以单一 writer 实施真实模块迁移；禁止继续向 `auth` 塞入 Tenant、Organization、Role 管理代码，也禁止先创建空模块。R2-5 审查与 IAM 文档门闭环后，下一片优先选择一个真实 owner（不跨多个能力混写）进入实现。
