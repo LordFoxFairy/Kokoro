@@ -1,6 +1,6 @@
 # IAM 工程规范对齐：主控任务板
 
-状态：2026-09-05 UTC，S1 已验收；S2a/S2b/S3a 已独立审查并集成，326 项主工作树隔离复验通过；S3b 正在只读放置设计。Redis/启动及最终完整门禁仍待补验，完整 goal 继续。
+状态：2026-09-05 UTC，S1 已验收；S2a/S2b/S3a 已独立审查并集成，326 项主工作树隔离复验通过；S3b 目录职责切片已放行。Redis/启动及最终完整门禁仍待补验，完整 goal 继续。
 
 本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
 
@@ -27,7 +27,7 @@
 | ------ | ------------------------------------------------------------- | --------------------------- | -------------- | -------------------------- |
 | IAM-01 | 审计，修正规范入口，形成相互一致的技术/API/数据候选方案       | 读取当前代码与手册          | Ohm            | 文档提交 `2401523`，已验收 |
 | IAM-02 | 独立审查候选方案，主控确认目录、边界、数据/API 影响与验收矩阵 | IAM-01 交接                 | 主控组织审查   | ADR/S1 设计已通过          |
-| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S3a 已集成；S3b 只读设计   |
+| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S3a 已集成；S3b 已放行     |
 | IAM-04 | 真实依赖、契约、架构与运行验证；评审提交和剩余风险            | 对应实现切片完成            | 主控及独立审查 | S3a 隔离复验，最终未完成   |
 
 后两项是阶段占位，不构成预先写入授权。具体任务、文件集、行为断言和提交粒度由 IAM-01 的实际证据确定。
@@ -487,3 +487,82 @@ SQL UPDATE 后回滚/提交后抛错是受控故障注入，不写成真实网�
 
 Ohm 仅获准准备 S3b 的只读完整放置表：纳入 S2a/S2b/S3a 后新增的职责、事务共享、类型和测试/入口路径，
 不先搬文件。主控采纳后另以本任务板明确物理 cutover 写入范围。
+
+## 10. IAM-S3b 目录与职责切片（已放行）
+
+主控采纳 Ohm 在 c5c7a0c 的 53 个手写源码/4 个 generated 盘点与放置方案，以下为正式写入卡。
+Owner、唯一 writer、独占 worktree 不变；起点 `c5c7a0c3b4638988b9dc9d7eb55629d913607f1d`，两工作树干净。
+本片是 IAM 内部单次自洽 cutover，不是同时改所有子仓。先同步本仓技术/API/数据的职责与路径说明，再改实现；
+不扩大业务、Schema、机器契约、进程或版本选型。
+
+### 采用的目录与职责
+
+| 现有职责组                | 采纳的目标位置与动作                                                                                                                                                                                                                    |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| main 与 bootstrap 五文件  | `server.ts` 唯一启动入口；`app.ts` 用例/worker/HTTP+RPC 装配且不 listen；`runtime/create-runtime.ts`、`shutdown.ts` 管进程资源。仍是 Node HTTP/Connect-node，Fastify 留 S4                                                              |
+| config                    | `config/env.ts` 唯一生产环境读取，保留现有配置名、算法与失败语义；本片不增加 Zod 或改变环境加载                                                                                                                                         |
+| HTTP                      | 装配归 app；`health.routes.ts`、`modules/auth/sessions/jwks.routes.ts` 拥有真实处理；`http.protocol.ts` 保存现有响应协议。删除确无消费者的 HttpRequestError                                                                             |
+| logging/context/readiness | `runtime/request-logger.ts`、`request-context.ts`、`readiness.ts`；通用 trace 与进程日志不依赖认证 RPC。RPC request ID/拦截器仍在 auth，不能把 Connect 带入纯日志类型                                                                   |
+| RPC                       | `modules/auth/authentication.rpc.ts`、`authorization.rpc.ts`、`rpc-error.mapper.ts`、`workload-auth.interceptor.ts`、`request-context.ts`；app 完成 Connect 注册，handler 注入实际用例而非总 Service facade                             |
+| 大认证 Service            | `magic-links/magic-link.service.ts` 拥有签发/消费，`principals/principal.service.ts` 拥有登录建档/组织选择，`sessions/session.service.ts` 拥有 refresh/logout/getSession；删除原总 Service                                              |
+| 共享会话签发/重放         | `sessions/session-credentials.ts` 拥有 issue/replay，不在 consume/refresh 复制 TTL、凭据签发、结果解析及当前有效性校验；session model/结果放 `auth-session.ts`                                                                          |
+| receipt                   | auth 根 `command-receipt.ts`、`.service.ts`、`.protection.ts`、`.repository.ts`；原 parser 按 `command-receipt.parser.ts` 共置。分别拥有中性类型、绑定/窗口/重放规则、现有 keyring/HMAC/AEAD、SQL、快照解析；不建 receipt 业务模块      |
+| 认证事务                  | `auth.transaction.ts` 保留单连接生命周期和现有 receipt retry/recovery，并装配同一个受作用域保护的 executor；普通 callback 不重试。共享回调能力确需跨 Service/装配时用中性的 `auth.ts`，不让 Service 导入具体事务/Repository 类型        |
+| 具体数据访问              | principal、magic-link、session、delivery 各在对应子能力的 `.repository.ts`；receipt/security-event 在 auth 根。真实 SQL 与私有 Row/map 随 owner 拆分；enqueue 归 delivery，不留旧总 Repository 或全能转发壳                             |
+| 中性规则                  | principal 登录候选放 `principals/principal.ts`；link 状态/输入放 `magic-links/magic-link.ts`；nonce/redirect/policy 合置 `magic-link.policy.ts`；audit 放 `security-event.ts`；授权输入/结果放 `authorization.ts`、规则放 `.service.ts` |
+| 错误与安全                | 稳定认证/授权错误合置 `auth.error.ts`，保留 code/cause/RPC 映射；JWT 归 `sessions/session-token.ts`；delivery/加密 claim/有限 provider 错误归 `magic-links/delivery.ts`，AES/SecretBox 合入 `delivery.secret.ts`，删转发别名            |
+| 投递与无状态依赖          | `magic-links/delivery.processor.ts`、`.client.ts`、`.worker.ts` 保留 S3a 行为；composition root 注入 now/newId/newToken，删除三个单方法 time 类，不增加 Clock/UUID wrapper 层                                                           |
+| generated                 | 4 份生成文件原位原字节，Proto/OpenAPI/provenance 不因手写目录调整而变化                                                                                                                                                                 |
+
+选择 auth 内三个子能力而不是拆三套 authentication/authorization/audit 一级模块：当前认证事务共同维护这些事实，
+尚无独立管理产品。receipt 前缀共置而不是再建 receipts 子目录，沿用已有技术方案且不放大内部机制的业务地位。
+session-credentials 合置而不是拆 issuer/replay，当前两者共享凭据释放的不变量；auth.transaction 而非 runtime
+事务框架，是因为其未知提交恢复具有认证 receipt 语义。中性 auth.ts 只描述必要的分组事务能力，不重新汇总所有 DTO、
+模型、SQL 或每个方法实现，也不建 Port 目录；除此之外消费方仍就近声明实际使用的窄结构。
+
+### 必须保留的行为与依赖
+
+- 四命令的 receipt/outbox/audit/业务事实在同一连接事务中，Repository 自身不另开 BEGIN/COMMIT；provider 不进事务。
+- PrincipalService 仍区分 missing/invalid/existing、候选去重/唯一候选/唯一 personal，不把组织选择移进 SQL LIMIT 1。
+- 父状态、同 tenant JOIN、固定父锁、session 锁以及未知提交重放次序按已验证实现保留；共享父锁能力由 principal
+  Repository 拥有，session 注入调用，不复制一套查询或改变锁序。跨子能力共享中性数据，避免 principals 回引 session Service。
+- receipt UUID 规范化、HMAC/AAD/双期限、原 token 字节、refresh successor 重验、logout 单 session 语义保持；不合并成
+  通用 CommandBus，不改变加密格式或稳定错误。新共同 credentials 只有一个签发与认证结果释放实现。
+- 保留 S2b 的 pg client 事件所有权、release 恰一次、损坏连接销毁、scope 结束后 executor 失效、普通事务不重试与
+  最多三次 receipt 回收；具体 auth.transaction 可以依赖 Repository 来装配，Service 不反向导入它获取实现类型。
+- Service/中性模型不依赖 pg/Redis/完整配置/generated；RPC 和 HTTP 不写 SQL。基础设施 Row 不通过工具类型或
+  `Parameters<typeof ConcreteRepository>` 泄漏到用例；无消费者的 barrel/层/接口直接删除。
+- 当前粒度预算用于判断真实拆分原因，不按行号拆文件；遇到未经表覆盖的新职责先简述 owner/位置/验证，新增一级
+  owner、机器契约或不可逆数据决定仍交主控，不自授 S4/S5。
+
+### 写入集与排除
+
+- 允许本仓手写 src 依上述表移动/拆分/删除；test 根平铺套件按 unit/contract/architecture 分类，原五个 integration
+  保留分类及所有安全/事务/投递断言；doubles 按共享内存状态的分组事实调整，fixtures 保留测试语义。没有独立 smoke
+  内容就不建空目录，模拟 runtime/provider 仍不称真实启动或真实供应方集成。
+- 替换旧 `test/architecture.test.ts`：正式门禁用 TypeScript AST 与实际 tsconfig/module resolver，检查静态/类型 import、
+  export-from、import-type expression、字面量 dynamic import、require/import-equals；非字面量生产动态依赖明确报错。
+  以解析后的文件识别角色和边界，纳入 type-only 循环并输出链路；generated 不豁免手写 importer。
+- architecture 虚拟源码 fixture 覆盖 alias、.js→.ts、re-export、type-only cycle、动态入口、未解析依赖、Service driver、
+  route SQL、跨模块内部引用及 environment 访问绕过；注释/普通字符串不误报。process.env 属性、下标、解构及简单别名
+  纳入验证，但不宣称实现任意 JS 全程序污点分析；SQL 参数化/tenant/故障正确性由行为与真实 PG 另证。
+- package.json 仅更新 dev/start 的唯一 server 路径，Dockerfile 仅更新 CMD 与必要的路径接线；沿用现有构建布局，
+  目标暂为 `dist/src/server.js`，不借搬迁升级依赖/构建输出。scripts/config/CI 若确有硬编码路径才修改，并验证引用；
+  现有生成脚本与 workflow 不要求为形式改动。保留所有验证/安全步骤，不降低门禁以适配重构。
+- 同步本仓 AGENTS/README/INDEX/docs/INDEX/CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ACCEPTANCE
+  与实际受影响的 RELIABILITY/RUNBOOK/SECURITY/SLO 活跃链接；删除九文档/IAM-01 等失效阶段约束。历史证据只标旧
+  commit，不批量改旧行号；机器 contract 与 database/schema.sql 完全不变。
+- 禁止改 Root、其他仓、依赖/lockfile、Proto/OpenAPI/generated、DDL、Redis/provider 产品、Fastify/运行时新行为。
+  删除 application/domain/infrastructure/interfaces/bootstrap 与旧 main/config 路径，不留 re-export 或兼容总门面。
+
+### 验证与提交门
+
+先观察新目录/依赖负例失败，再实现单次自洽 cutover；保留原测试行为，修改构造/路径而非删掉难测断言。
+执行 lint/typecheck/contract/build、单元与新 architecture 正反例、主控隔离库驱动 PG-only；Redis 文件保持原位置，
+临时排除仍明确不计通过。新增/合并测试导致计数变化必须说明，0 skip 的 PG-only 不替代 Redis/完整启动门。
+contract 与 Schema 的 diff 必须为空；新路径由源码和 built-JS 引用共同核对。真实 built 进程、发布镜像依赖恢复后补验。
+
+复用现有 PostgreSQL/Redis、不重启/新建/flush；主控最新只读探测磁盘约 64 GiB 可用，但 Redis/Docker 仍超时，
+不把空间恢复当成共享服务已恢复。验证驱动保留 1 GiB preflight；本片不安装依赖或下载镜像。
+小粒度以这次自洽的“职责与物理目录 cutover”为一个可审查提交，不提交中间双轨；交付后停写，主控审查与独立质量
+审查、主仓复验后再另行授权 S4/S5。Root 只记录治理证据，不拥有 IAM 业务实现。
