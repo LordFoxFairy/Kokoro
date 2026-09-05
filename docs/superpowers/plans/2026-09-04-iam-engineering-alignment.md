@@ -1274,3 +1274,19 @@ issuer/JWKS/caller credential/rotation/retention 运行要求。该提交仍只�
 主控在 IAM `3e3fd99 docs(iam): reconcile tenant design facts` 修正三面文档中的旧问题清单：CreateTenant 的 ID 生成已成为裁决而非待选项，
 receipt 的 command kind/status/result 一致性、管理 audit 明确列和认证/管理事件的 NULL 边界已同步；剩余门槛收敛为配置 schema、Proto 字段号、
 保留窗口和真实并发/未知提交恢复测试。IAM Schema、Proto、generated 与生产源码仍未改变。
+
+### IAM-R2-7 current design review and implementation gate
+
+当前 IAM design baseline 为 `b564c2b`（其前置设计切片 `98e2256`、`0a53937`）；Dirac/Mencius（`gpt-6-astra`，只读）复核记录：JWS/cursor rotation、canonical request 每 operation 的 11-key 矩阵、limit 归一化、cursor payload/kid/HMAC、UUID 总尝试次数均已 PASS。审查将“Proto/Schema/relation 尚未落地”列为 NEEDS_DESIGN；该结论准确表示实现尚未开始，不再继续用文档重复替代实现。
+
+下一切片进入 Tenant 实现，但仍保持单一 IAM writer：
+
+| 任务 | Owner | 写入范围 | 先决条件 | 交付门 |
+| --- | --- | --- | --- | --- |
+| IAM-R2-7-I1 | `kokoro-iam` Tenant 实现 Agent | `tenant.proto`、generated/provenance、`database/schema.sql` 的 tenant receipt + security-event 管理列/约束、relation allow-list、对应 contract/schema tests | 以 IAM `b564c2b` 三面设计为唯一输入；不得新造响应或改现有认证契约 | Proto lint/generate/contract、fresh schema、catalog、relation audit、独立审查 |
+| IAM-R2-7-I2 | 同一 Tenant 实现 Agent | `src/modules/tenant/`、management interceptor/context、RPC registration、Repository/Service、canonical/cursor parser、事务/receipt/audit | I1 机器契约与 schema 先提交且主控审查通过 | typecheck/lint/build、真实 PG 并发/回放/未知提交/权限测试、独立审查 |
+| IAM-R2-7-I3 | 主控集成 | docs/CURRENT、ACCEPTANCE、技术方案证据；主目录验证与 commit 集成 | I1/I2 交付后 | full gates + isolated PG/Redis integration + final review |
+
+I1/I2 由同一个 writer 在独立工作树按小切片提交；主控不与其并发写 IAM。任何新增一级目录、跨模块 import 或契约字段必须先回到
+`TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 的放置/一致性表；不得创建 `services/`、`repositories/`、`postgres/`、
+`redis/`、`prisma/` 空技术目录，不得把 Tenant 代码塞进 `authentication`。I1 未交付前不实施 I2，I2 未通过真实验证前不宣称 IAM 完成。
