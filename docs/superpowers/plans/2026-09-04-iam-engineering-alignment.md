@@ -985,3 +985,6 @@ Arendt绑定c9d1d35..4975b89确认三面设计通过，无P1/P2；现已回收�
 唯一实现负责人续派Carver（01a0711d-0de8-7241-9c59-3305fb2c4863，原指定gpt-5.6-sol），仅允许上表生产/测试/文档文件集；每次新文件都按已审职责落点，不扩围。源码候选完成停写后，主控规格复核、独立代码审查、主目录集成/实跑。
 主控以当前built runtime和生成的临时测试密钥实测三个不同PG PID，首条读取均为America/New_York，证明问题位于真实runtime而非手写示例对象；日志 `/tmp/kokoro-iam-goal/r2-3-review/runtime-red.log`。探针关闭自身Pool并清理临时密钥，无业务/Schema改动，未连接Redis或启动listener/worker。
 本轮原Redis56380只读PING仍TimeoutError，记录redis-probe.json；没有重启/新建/flush。此项不阻止UTC配置与PG验证继续推进。
+
+主控另对实际installer做只观察的connect hook，未替换配置/查询结果：首个应用SQL前TimeZone仍New_York，随后正常安装15表，自有新库已清理；installer-red.log证明第二入口同样待修。
+实际同一PG连通性探针确认IPv6的query-host形式和Unix query-host形式可连接；已装驱动保留IPv6 authority的方括号，authority形态此轮连接失败。实现者已收到事实：原串交pg规则不变，不在UTC片自研补偿或升级依赖；API的IPv6支持须列明已验query-host形式，语法合法不等于驱动直连已验，authority缺口留运行/依赖治理。日志transport-forms-probe.json；只读SQL/自有连接，无全局配置变更。
