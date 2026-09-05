@@ -1061,3 +1061,14 @@ Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P
 | IAM-CAP-02：SQL 与业务生命周期覆盖 | 原生只读审查 Agent/`gpt-5.6-sol`，启动后补名 | 同一固定 IAM 基线；只读 Schema、DATA_MODEL、Repository 与清理路径；先读 Root AGENTS、CODEBASE_MAP、SQL/TS 手册及 IAM 入口 | 列出表族、真实写入与查询、删除/retention/orphan 缺口及绝对路径行号；不写文件、不连接数据库、不启动服务、不提交；由主控核实结论 |
 
 Root 基线 `38ee5f97d8b162e3c8c5b036e4d60f481205a5b5`，现有任务外变更为 `kokoro-agent` 与 `.tmp/`，保持不动。R2-4 候选交付为独立工作树 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1`，当前未集成、未完成主控审查；旧 Carver handle 已不可用，不据旧状态重复派写。此轮目录和功能评估不依赖该索引候选。
+
+### IAM-CAP 文档闭环
+
+主控在固定 IAM 基线完成三面总体设计补强，交付 `kokoro-iam` commit `c0b70a1`：
+
+- `docs/TECHNICAL_DESIGN.md` 第 0 节新增完整能力矩阵、目标模块边界、当前 `modules/auth` 与未来逻辑模块的迁移条件、依赖/事务/设计门；
+- `docs/API_CONTRACT.md` 第 0 节新增 6 RPC + 3 HTTP 事实、管理面缺口、未来契约分组、可信 tenant/actor、幂等/分页/生成事实源规则；
+- `docs/DATA_MODEL.md` 第 0 节新增 15 表 owner/生产写入/读取/生命周期矩阵、无外键完整性闭环、删除/retention 和 Schema 验收门；
+- `database/schema.sql` 注释修正为区分事实 owner 与当前 production writer，DDL 语义未改变。
+
+Socrates（`gpt-5.6-sol`，只读）复核上述四项 P2 文档问题后 PASS：当前/管理 writer、owner/writer、JWKS surface、`auth`→未来 `authentication` 迁移边界均已澄清，无 P1/P2。主控验证：Prettier 三份文档通过、258 条文档链接无错误、`pnpm exec vitest run test/contract/schema.test.ts` 为 1 文件/3 测试通过。该 commit 是文档设计门闭环，不宣称管理 API、R2-4 索引、retention、orphan、运行 smoke 或全 IAM 功能已完成；下一步先审查并裁决完整目标的首个业务实现切片，再改 Proto/源码/Schema。
