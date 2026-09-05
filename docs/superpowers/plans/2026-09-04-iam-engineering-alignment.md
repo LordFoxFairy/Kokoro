@@ -776,3 +776,53 @@ SQL id/deleted_at/无用结构、UTC、catalog、关系检测/retention 与 API 
 3. 先同步 IAM DATA_MODEL/TECHNICAL_DESIGN/API_CONTRACT 的具体切片，主控审查机器源影响后实施。tenant TEXT 与其他引用名称/Proto字段不变；保留 membership/family generation 和真实唯一不变量。
 4. R2-1 只在新隔离数据库安装目标 SQL，不运行 ALTER/迁移或删除现有业务表。测试 seed/Row 逐处按本表与引用语义改，不以全局替换资源名完成；catalog/UTC/删除过滤未完成项不伪报通过。
 5. 继续同一 active goal，无需再问用户是否喜欢内部命名，不新建其他子仓目标，不把已完成 R1 当整个 goal complete。
+
+## 15. IAM-R2-1：主键与确定无用结构清理
+
+上一轮分类：**progress**，目录真实落地、主目录复验并提交，不是等待。当前重新核实主目录 1d78be6 干净，
+Root 33a683db 保留任务外 kokoro-agent/.tmp。主控已将原 worktree e938b91 快进到 1d78be6（源码不变），开始 SQL 切片。
+本节是当前任务入口；第 13 节 R2A 与 ADR-030 是设计依据，不递归重读全量历史。
+
+### 设计门：本片边界
+
+| 项        | 主控决定                                                                                                                         |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Owner     | IAM/auth；唯一写入负责人续派 Boyle，原 worktree/codex/iam-engineering-alignment；主控审查与主目录集成                            |
+| 基线      | 主/候选均 1d78be6；R1 已验源码 e938b91；已有16表、无FK、唯一schema、六RPC三HTTP                                                  |
+| 目标职责  | 数据库本表身份一致、删除确无用结构；不改变公开资源身份、用例行为或目录                                                           |
+| 位置比较  | 扩展唯一 database/schema.sql 与各现有业务.repository.ts；不建迁移/兼容视图/数据库品牌目录或第二可编辑DDL                         |
+| 粒度      | 按一次自洽schema+查询/Row+fixture切片；不能先只改DDL让全部查询断裂，也不夹带删除状态/GC/框架升级                                 |
+| 依赖/事务 | 保留同client装配、父锁及锁序、scope/receipt/未知提交/claim-fencing语义；Service/handler不写SQL                                   |
+| API       | 机器Proto/OpenAPI/generated/provenance零变更；对外tenant/资源字段、JWT、deliveryRef及AAD所用ID值不变                             |
+| 验证      | 更新静态schema断言、新真实PG catalog/数据断言、现有登录/授权/并发/重放/投递回归、lint/typecheck/contract/build；只使用随机隔离库 |
+
+### 确定改动清单
+
+1. 删除无生产读写的 iam_identity 及其专用唯一索引/CHECK。
+2. 其余15表本表PK统一 id：iam_tenant.id 仍 TEXT；其余为UUID。其他表的 tenant_id/principal_id/organization_id 等引用列保持语义原名；不全局字符串替换。
+3. 删除 iam_principal.generation、iam_organization.generation、iam_contact.email、iam_security_event.payload；同步唯一写入与局部类型/测试。保留 email_normalized、审计事件其余事实和用户profile。
+4. 删除无对应生产访问的 ix_iam_magic_link_lookup、ix_iam_auth_session_family、ix_iam_security_event_scope。保留剩余真实UNIQUE/CHECK、两worker claim索引（将本表PK尾列变为id）、PK自动索引；本片不新增查询索引。
+5. 保留 membership.generation 与 family_generation、原status/deleted语义/时间/NULL/默认值；global permission仍无tenant；不引入deleted_at/retention字段，不改nonce/token/receipt加密协议。
+6. 查询按表角色逐处改INSERT、SELECT、JOIN、WHERE、锁排序、GROUP BY、RETURNING；Row使用正确本表列/明确语义投影并映射原业务ID。SQL投影的语义AS不是保留旧数据库列的兼容层；禁止造兼容view/列/双读。
+
+### 文件集、阶段门与提交
+
+**R2-1D先文档**：允许既有 docs/DATA_MODEL.md、docs/TECHNICAL_DESIGN.md、docs/API_CONTRACT.md、docs/CURRENT.md；
+按已定清单补一个聚焦切片说明与表→查询/Row联动，不把整份文档改成进度报告，不重刷历史段。CURRENT仍残留一句
+“主目录仍未集成”，应删去并保留单一真实R1主目录事实；这是主控上一文档收口遗漏，不是目录源码未落地。
+先format/link/diff、四文件聚焦commit，主控审查后才续派源码。主控可直接技术裁决，不再询问用户内部SQL命名。
+
+**R2-1源码续派后**：允许 database/schema.sql；src/modules/auth 下六个既有.repository.ts 与 audit/security-event.ts；
+以及直接联动的 test/{contract,unit,integration,fixtures,doubles} 和上述四文档/ACCEPTANCE/INDEX 的当前事实。
+新建 test/integration/schema.integration.test.ts 用于本片真实catalog/最小业务事实断言（不是生成manifest或完整运行drift），
+需要共享fixture时只放test/fixtures；不新建生产源码文件/目录。存量architecture/业务断言不删弱，精确46手写树仍成立。
+禁改auth.transaction、service/policy/crypto/client/worker实现、机器契约/generated、package/lockfile/CI/Docker/配置和其他仓。
+如测试暴露超出字段映射的已有缺陷，报告主控分片，不借修复之名扩大范围或吞错。
+
+真实PG验收必须覆盖：精确15表与各id的PK/类型；被删表/列/索引反断言；保留引用列、membership/family代际与关键唯一性；
+新邮箱建档、授权投影、nonce消费、四命令重放/未知提交、父锁、claim/fencing及审计写入。SQL/Row变化不再要求旧SQL字符串全相同，
+须解释语义diff，保留参数绑定/tenant谓词/同连接与顺序。完整catalog manifest、每连接UTC、deleted_at、查询计划、orphan/retention仍待后续。
+
+使用既有主控 verify-database.mjs --pg-only 驱动与同Node/pnpm/已装依赖；驱动只创建/清理随机库并复用PG5432。
+Redis原实例不重启/另起/flush，2项显式排除；不删除已有数据，不把空库schema替换包装成生产migration。
+交付聚焦commit后停写，主控规格审查、独立质量审查、主目录集成复验；当前三面设计提交不等于自动获准源码。
