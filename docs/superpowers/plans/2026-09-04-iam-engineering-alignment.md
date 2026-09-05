@@ -1120,9 +1120,11 @@ R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅�
 | 事实源 | `database/schema.sql` 继续是唯一可编辑 Schema；不添加第二份 catalog manifest，不创建 migration/runner，不改外键规则 |
 | 目标一 | fresh 临时库安装 canonical schema 后，以 `pg_catalog` 对比表、列、类型、NULL/default、PK/UNIQUE/CHECK、索引定义/谓词/键顺序；目标库只读，不自动修复 |
 | 目标二 | 对固定关系白名单做有界 orphan/tenant-consistency audit：只读、参数化、事务隔离、statement/lock/idle timeout、结果上限、稳定退出码；禁止 `count(*)` 扫全库、DELETE、自动修复或把孤儿当作可静默忽略 |
-| 目标三 | 修复 `SessionRepository` 父锁路径的缺失父行语义：tenant/principal/organization/membership 任一不存在或已失效时，refresh/logout 不得因 session 行仍在而继续；先以真实 PG 并发/删除场景形成 RED，再实现 |
+| 目标三 | 修复 `SessionRepository` 父锁路径的缺失父行语义：refresh/认证结果校验不能因 session 行仍在而继续；Logout 按 R2-2 保留删除父资源下历史 session 的执行/重放窗口，必要时显式区分两种查询模式；先以真实 PG 场景形成 RED，再实现 |
 | 禁止范围 | 不新增管理 API、retention job、跨仓 writer、ORM/框架、外键、业务目录；不借 catalog 工具替代业务层状态机/删除策略 |
 | 设计文件 | 预计 `scripts/schema-catalog.ts`、`scripts/verify-schema-catalog.ts`、`scripts/audit-relations.ts` 与相应 integration/contract tests；最终位置须通过第 8 节放置表，若只需测试诊断不得建生产 query service |
 | 完成门 | 先三面设计与关系矩阵审查，再 RED→实现→独立审查→主目录 PG-only/lint/typecheck/test/build/contract/链接/格式；Redis、完整 provider、BFF consumer 仍单独计数 |
 
-设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
+设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；refresh/重放与 Logout 的不同父资源语义如何保持；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
+
+IAM 三面设计已落到 commit `5f102d4`（`DATA_MODEL` §0.5、`TECHNICAL_DESIGN` R2-5、`API_CONTRACT` R2-5、`CURRENT`）。主控已按实际 Schema/Repository 做本地规格复核并补充 role→organization、security_event→principal 关系；此前两次只读 Agent 未在规定窗口返回可用审查结论，故不记录为独立审查通过，也不派发实现 writer。下一步先以短范围独立审查重新核对该 commit，再决定是否进入 RED/实现。
