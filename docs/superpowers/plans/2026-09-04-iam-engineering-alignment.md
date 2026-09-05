@@ -1223,6 +1223,8 @@ Redis、完整 listener/provider smoke、BFF/Web 消费者及 Tenant 管理 API 
 随后在不重启共享 PostgreSQL、且不保留测试进程的前提下复用本机 PostgreSQL，并临时启动一个 Redis 6379 进程完成真实依赖集成：
 `pnpm test:integration` 为 9 个文件、205 passed、0 skipped，覆盖 health、RPC 与 Magic Link delivery；测试数据库和 Redis 进程均已清理。
 证据已绑定 IAM `80359ef docs(iam): record postgres redis integration`。该结果不替代 provider sandbox、BFF/Web 消费者或生产部署验收。
+该集成波同时真实执行 `runtime.start()`/shutdown，验证 HTTP `/healthz`、Connect RPC、delivery worker 和共享基础设施清理；
+IAM 文档以 `80dc422 docs(iam): record runtime startup smoke` 记录。外部 provider sandbox、BFF/Web 消费者和 Tenant 管理 API 仍未验收。
 IAM 文档验收随后以 `7847574 docs(iam): record tenant actor design review` 记录该设计复审证据；当前仍未放行 Tenant Proto、Schema 或生产代码。
 随后 IAM `df4f708 docs(iam): detail tenant management transport proposal` 补充了尚未放行的 transport 候选：per-caller service authentication
 加 Bearer operator assertion JWS；`aud`、`azp/service_identity`、operation、scope、request digest、`jti` 和 TTL 在 effect point 重新验证。
