@@ -1251,3 +1251,17 @@ Identity/Organization/Audit 的表级 writer、首次登录事务编排和迁移
 Authentication 只是首次登录事务编排 owner；Tenant、Identity、Organization、Authorization 管理和 Audit 不能通过追加 Authentication
 方法、空 Proto service 或通用 command endpoint 伪造完成。该 commit 只改契约文档并通过 `git diff --check`；Tenant 三面仍待最终独立审查，
 在 issuer/JWKS/bootstrap、幂等/并发/审计字段和 caller matrix 未完全收敛前不进入生产实现。
+
+### IAM-R2-7 Tenant 首片设计裁决（待独立审查，不实施）
+
+主控继续在 IAM 文档中收敛 Tenant 三面设计，提交 `262e3f0 docs(iam): settle tenant management design`：
+
+- 首片只包含 `CreateTenant`、`GetTenant`、`ListTenants`、`DisableTenant`、`EnableTenant`，internal-owner Connect RPC；不新增 public HTTP，
+  不涉及 Site/Host、组织、管理员账号、terminate/purge 或通用配置；IAM 生成 tenant ID，List 按主键 `id` keyset 分页，不预建额外索引；
+- 管理调用采用 per-caller workload credential + 外部 issuer EdDSA JWS operator assertion；检查 issuer/audience/azp、scope、operation、request digest、
+  jti、TTL、operator/policy epoch；缺 issuer/JWKS/caller 配置时管理面拒绝，不降级共享 secret；JWKS 轮换保留旧 key 至 assertion TTL 结束；
+- 状态命令使用独立 `iam_tenant_command_receipt` 事实，不复用认证 token receipt；在同一 transaction 内完成 receipt、条件状态更新、最小 audit append 和 complete；
+  目标状态新 command 返回 no-op，反向状态返回 `FAILED_PRECONDITION`，旧 command 不覆盖新状态；
+- 管理审计必须关联 actor、service identity、assertion reference、operation、tenant、before/after state、command ID 和 request ID，禁止写入 JWS、secret、request body；
+- 三面文档仍未放行实现：最终 receipt/audit 列、保留窗口、错误码、Proto 字段号、issuer/JWKS 配置 schema 和真实并发/重放测试必须再经独立审查；
+  在审查 PASS 前不创建 `modules/tenant/`、不修改 Schema、不生成管理 Proto。
