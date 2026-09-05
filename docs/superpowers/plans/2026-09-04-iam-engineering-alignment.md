@@ -1045,3 +1045,5 @@ Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P
 
 独立catalog驱动已在两个5ba1c0a原字节Schema自有新库上RED：只缺两条设计索引，其他表/列/约束及31原索引一致；两个库已清理。驱动 `/tmp/kokoro-iam-goal/r2-4-review/compare-catalog.mjs` 后续接不可变候选SHA，只接受这两条完整非唯一索引差异，不等于完整生产drift工具。
 主控另做只读R3依赖盘点，未安装/修改manifest：现TypeScript5.9.3、@types/node22.20.1、Connect2.0.0、redis5.12.1；2026-09-05registry discovery返回TypeScript最新7.0.2，但typed ESLint8.69.0 peer仅支持<6.1.0，故最大版本号不能直接取代“最新稳定兼容”。Fastify/Connect/Zod等候选metadata、peer与已装精确版本位于 `/tmp/kokoro-iam-goal/r3-review/`；一次@types/node registry请求URLError明确保留。该盘点只是后续矩阵输入，R3仍须核验兼容范围内版本、发布日期/缓冲、安全与实际安装/测试；不在R2-4升级依赖。
+
+本轮续接点：R2-3已收口，R2-4设计门通过并进入实施，属于progress。Carver原handle仍在运行，几次原生wait仅观察超时，不是退出或失败；不得据此重启/换writer。主控只读工作树快照仍为5ba1c0a，两个既有Schema测试已修改、两个新计划测试/fixture已创建，Schema尚未改动，正处于测试/RED准备；这是变化中工作树，不是交付或可集成SHA。下轮复用同一handle等待冻结交付，再按本节审查与主目录复验；不进入其他子仓。
