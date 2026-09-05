@@ -1221,3 +1221,6 @@ reference 只进入 IAM 审计/下游授权事实，不伪装成 Agent `Executio
 fresh PostgreSQL 隔离库 integration 为 8 文件通过/1 个环境跳过（203 passed、2 skipped）；`db:apply-schema` 与 catalog drift 为 `ok: true`。
 Redis、完整 listener/provider smoke、BFF/Web 消费者及 Tenant 管理 API 仍明确未验收，不得以本次文档门复验代替。
 IAM 文档验收随后以 `7847574 docs(iam): record tenant actor design review` 记录该设计复审证据；当前仍未放行 Tenant Proto、Schema 或生产代码。
+随后 IAM `df4f708 docs(iam): detail tenant management transport proposal` 补充了尚未放行的 transport 候选：per-caller service authentication
+加 Bearer operator assertion JWS；`aud`、`azp/service_identity`、operation、scope、request digest、`jti` 和 TTL 在 effect point 重新验证。
+该候选仍需绑定 issuer/JWKS、bootstrap、撤销/轮换和 caller matrix 的正式审查，不能作为已实现管理接口。
