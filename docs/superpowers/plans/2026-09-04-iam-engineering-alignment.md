@@ -1246,3 +1246,8 @@ Identity/Organization/Audit 的表级 writer、首次登录事务编排和迁移
 `pnpm test:integration` 为 9 文件、205 passed、0 skipped、0 failed，覆盖 health、Connect RPC、Magic Link delivery 及 `runtime.start()`/shutdown；数据库和 Redis 均已清理。
 将外部依赖 URL 注入并行 `pnpm test` 会让多个 integration 文件共享同一临时库并发生 fixture 竞争，因此不作为真实依赖验收命令；生产代码由串行 integration 门禁覆盖，未借此修改生产逻辑或 Vitest 全局配置。
 该 commit 仅改 IAM 四份事实文档，`git diff --check` 通过；独立审查提出的 P2 规划缺口已落到文档规则，Tenant Proto、Schema writer 和生产 API 仍未开始。
+
+随后 IAM `97ff10c docs(iam): align api owner readiness` 在 `API_CONTRACT §0.2.1` 增加能力 → 当前 API owner → 进入 Proto 门槛映射，明确
+Authentication 只是首次登录事务编排 owner；Tenant、Identity、Organization、Authorization 管理和 Audit 不能通过追加 Authentication
+方法、空 Proto service 或通用 command endpoint 伪造完成。该 commit 只改契约文档并通过 `git diff --check`；Tenant 三面仍待最终独立审查，
+在 issuer/JWKS/bootstrap、幂等/并发/审计字段和 caller matrix 未完全收敛前不进入生产实现。
