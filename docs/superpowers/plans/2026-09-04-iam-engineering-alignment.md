@@ -1108,3 +1108,21 @@ R3-1 已按任务卡完成并集成到 IAM 日常主目录：实现 commit `9598
 - 当前 IAM 文档已同步 trusted context 语义，`docs/integration/bff-iam.md` 不再描述 body `tenant_id`；本片未修改 `database/schema.sql`、其他子仓、Docker/CI、管理 API。
 
 本片仍不宣称 IAM 总体完成：完整 catalog drift、关系/孤儿审计、retention、管理 writer/API、逐 workload tenant grant、BFF/Web 消费者接线、完整 Redis/进程/provider smoke 仍待后续独立任务。下一片优先建立 SQL catalog/关系完整性验证设计，并修复审查中发现的 session parent-lock 缺失父行语义；保持一个 IAM writer、先任务卡与设计门、再实现和独立审查。
+
+### IAM-R2-5 SQL catalog 与关系完整性任务卡（设计阶段）
+
+R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅完成任务卡与只读盘点，未修改 IAM 源码、Schema 或契约；不把现有 `schema.integration` 的局部断言包装为全库 drift 验收。
+
+| 项 | 约束 |
+| --- | --- |
+| Owner/writer | `kokoro-iam`；Root 主控先收敛设计，SQL 只读审查 Agent 提供关系矩阵，设计通过后再派一名实现 writer |
+| 基线 | IAM 主目录已集成 `95980b0` + `73c11c0`；Root 当前 commit 由本任务板记录，保留 `kokoro-agent` 与 `.tmp/` 外部变更 |
+| 事实源 | `database/schema.sql` 继续是唯一可编辑 Schema；不添加第二份 catalog manifest，不创建 migration/runner，不改外键规则 |
+| 目标一 | fresh 临时库安装 canonical schema 后，以 `pg_catalog` 对比表、列、类型、NULL/default、PK/UNIQUE/CHECK、索引定义/谓词/键顺序；目标库只读，不自动修复 |
+| 目标二 | 对固定关系白名单做有界 orphan/tenant-consistency audit：只读、参数化、事务隔离、statement/lock/idle timeout、结果上限、稳定退出码；禁止 `count(*)` 扫全库、DELETE、自动修复或把孤儿当作可静默忽略 |
+| 目标三 | 修复 `SessionRepository` 父锁路径的缺失父行语义：tenant/principal/organization/membership 任一不存在或已失效时，refresh/logout 不得因 session 行仍在而继续；先以真实 PG 并发/删除场景形成 RED，再实现 |
+| 禁止范围 | 不新增管理 API、retention job、跨仓 writer、ORM/框架、外键、业务目录；不借 catalog 工具替代业务层状态机/删除策略 |
+| 设计文件 | 预计 `scripts/schema-catalog.ts`、`scripts/verify-schema-catalog.ts`、`scripts/audit-relations.ts` 与相应 integration/contract tests；最终位置须通过第 8 节放置表，若只需测试诊断不得建生产 query service |
+| 完成门 | 先三面设计与关系矩阵审查，再 RED→实现→独立审查→主目录 PG-only/lint/typecheck/test/build/contract/链接/格式；Redis、完整 provider、BFF consumer 仍单独计数 |
+
+设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
