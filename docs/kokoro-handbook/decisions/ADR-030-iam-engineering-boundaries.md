@@ -87,8 +87,9 @@
   提前 GC。此前技术方案中“不自动丢弃加密材料”需收敛为“有效重试期保留，终态按既有约束清凭据并保留元数据”。
 - `delivered` 只表示 provider 已接受并返回契约 receipt，不保证邮件送达收件箱；`failed` 表示 IAM 停止尝试，
   不证明外部 provider 从未接受。provider 已接受后的 SQL 故障不重标成 `provider_unknown`，不覆盖已提交终态。
-- 换 key 前先停止所有旧 key 签发者；在旧 key 仍可用时排空 pending/processing，包含 lease 恢复及过期终止，
-  确认没有旧 key 活跃密文及在途旧进程后停止 worker，再切换 key 并恢复签发。仅等待 link TTL 不等于排空。
+- 换 key 前在维护窗口阻断所有实例的新签发入口，并确认在途签发已经结束；旧实例内的 worker 继续用旧 key
+  排空 pending/processing，包含 lease 恢复及过期终止。确认没有旧 key 活跃密文与在途投递后停止全部旧实例，
+  再以新 key 启动并恢复入口。仅等待 link TTL 不等于排空；本片不新增管理 API、热重载或第二种 worker 进程。
   不承诺不停签发的混合 key 滚动发布；确有该要求时再提出独立 delivery key ID/keyring 设计与原子 enqueue 变更。
 - provider 调用始终使用同一持久化 delivery ID。真实 PG 加本地幂等 provider fixture 验证 IAM 的重试/fencing
   行为；真实供应方的接受去重、响应丢失、并发和保留窗口仍需供应方 sandbox 证据，两者分别记录。

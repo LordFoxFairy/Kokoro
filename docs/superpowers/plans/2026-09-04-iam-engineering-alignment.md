@@ -1,6 +1,6 @@
 # IAM 工程规范对齐：主控任务板
 
-状态：2026-09-04，S1 已验收；S2a 已修正复审并集成，233 项主仓复验通过、Redis/启动门禁待环境恢复；S2b 放行。完整 goal 仍在进行。
+状态：2026-09-05 UTC，S1 已验收；S2a 已集成、Redis/启动门禁待环境恢复；S2b 交付 280 项隔离复验通过，独立审查 P1 待修正，尚未集成。完整 goal 仍在进行。
 
 本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
 
@@ -27,7 +27,7 @@
 | ------ | ------------------------------------------------------------- | --------------------------- | -------------- | -------------------------- |
 | IAM-01 | 审计，修正规范入口，形成相互一致的技术/API/数据候选方案       | 读取当前代码与手册          | Ohm            | 文档提交 `2401523`，已验收 |
 | IAM-02 | 独立审查候选方案，主控确认目录、边界、数据/API 影响与验收矩阵 | IAM-01 交接                 | 主控组织审查   | ADR/S1 设计已通过          |
-| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S2a 已集成；S2b 放行       |
+| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S2a 已集成；S2b P1 修正中  |
 | IAM-04 | 真实依赖、契约、架构与运行验证；评审提交和剩余风险            | 对应实现切片完成            | 主控及独立审查 | S2a 部分复验，最终未完成   |
 
 后两项是阶段占位，不构成预先写入授权。具体任务、文件集、行为断言和提交粒度由 IAM-01 的实际证据确定。
@@ -238,6 +238,30 @@ spike 源码/manifest/lockfile、业务与数据库数据，不清全局缓存�
 随后本次临时文件的 1 MiB write/flush/fsync 通过，free 为 3,830,960,128 bytes；既有 PG 上独立 session 的临时表
 写入/读取/ROLLBACK 通过。Redis RESP PING 与 Docker 只读查询仍超时，未重启。主控已恢复原 S2b 任务，负责人确认
 事务 unit 首组 14 项通过，继续真实 PG 故障断言；这不是 S2b 已验收。再次 ENOSPC 时停止并报告，不扩大清理范围。
+
+### S2b 交付与主控复验（P1 修正中，未集成）
+
+Ohm 已提交 `55000e6a1292da351b189c991cfa4ccf7a8dfe91`，17 文件；工作树干净，停止写入，无 push。
+主控核对改动范围、四命令调用点、事务生命周期、只读 receipt 恢复路径及真实并发故障模型；没有 Schema、Proto、
+依赖、CI 或整个目录搬迁。独立质量审查 Anscombe（`01a06f52-3e10-7e30-adf1-85806e5a3a89`）发现下述 P1，
+其余本片范围没有新增可行动问题。
+
+主控在该 worktree/commit 执行 lint、typecheck、contract:check、build、隔离空库安装和 `--pg-only`，均退出 0；
+24 文件、280 测试通过、0 skip，独立测试库已删除。新事务 integration 21 项包含四命令 COMMIT 后丢确认、
+提交前中断、未知提交实际回滚、真实 PG 40001/40P01、结果期限/父失效/绑定或 envelope 损坏；未用伪造 SQLSTATE
+冒充并发验证。七份变更文档 Prettier 与 git diff --check 通过。2 项 Redis 仍明确排除；本节尚未宣称独立审查通过、
+主工作树集成或完整验收。
+
+**P1：checked-out client 的 error 事件无人接管。** pg-pool 在借出连接时移除 idle error listener；事务 helper
+没有添加 client listener。真实 pg 的 `_handleErrorEvent` 除拒绝 query Promise 还 emit error，导致进程直接退出，
+现有 pool.on(error) 与 Promise 故障 fixture 都覆盖不到。主控读已安装驱动源码，并用 55000e6 built helper + 真实 pg
+的无网络子进程独立复现：无 listener 时 exit 1 / Unhandled error / 未 release；加 listener 的对照 exit 0 / 一次
+release(true) / 原错误保留。这是受控驱动事件测试，不是网络断包实验；不访问共享数据。
+
+已交回 Ohm 在原 worktree 聚焦修正 helper、必要 tests/doubles 与事务事实文档；接管借出连接完整 error 生命周期，
+保留原因并销毁坏连接，区分 BEGIN/业务/未知 COMMIT，避免 listener 泄漏和释放交接窗口。不能只添加永久吞错
+listener。补事件级子进程 RED/GREEN、原 receipt 只读恢复与真实 PG 回归，再由 Anscombe 复审。主工作树仍为
+4481d39，S3 未派工；不因现有 280 项通过而越过这条缺陷。
 
 ## 8. 主控并行预验（不修改 IAM 实现）
 
