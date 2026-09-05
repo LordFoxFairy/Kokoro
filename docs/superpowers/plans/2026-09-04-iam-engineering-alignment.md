@@ -1050,3 +1050,14 @@ Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P
 
 下一轮为progress续接：主控复核日常IAM仍干净5ba1c0a；Carver原handle持续运行，工作树已在Schema与四测试文件进入本片范围，尚无冻结提交，不提前审查变化中代码。主控用实际built IamRuntime（src与70485c6一致）、真实临时HTTP服务器和明确的readiness/close测试替身独立复现R3三项问题：readiness未完成时shutdown先成功，随后start仍重新打开两listener并启动worker；startup失败的cleanup在closer不settle时没有期限；shutdown的unref期限使独立Node进程在closer仍pending时exit0，forceClose/settlement回调均未执行。
 证据 `/tmp/kokoro-iam-goal/r3-review/runtime-failure-evidence.json`、runtime-failure-probes.log；临时服务器关闭，未连接PG/Redis或改生产源码。它是实际lifecycle的本地故障探针，不冒充完整真实依赖启动smoke；R3实施须用相同场景转为GREEN并保留并发/关闭错误语义，不能只满足框架目录或当前三个runtime单测。
+
+## 20. IAM 整体能力覆盖复核（优先于继续局部实施）
+
+用户指出 IAM 仅有 auth 一级模块，要求重新评估完整职责、技术方案及 SQL 覆盖。本轮先只读盘点，不以既有六个 RPC 的实现范围代替 IAM 全部设计范围；不新建空模块、不改契约或 Schema、不继续运维排障。既有局部验证证据保留，但不证明完整 IAM 已验收。
+
+| 任务 | 负责人/模型 | 基线与范围 | 验收与提交责任 |
+| --- | --- | --- | --- |
+| IAM-CAP-01：整体能力、目录与技术方案覆盖 | Root 主控/当前模型 | 日常 IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`，`codex/production-closure-docs`，干净 `5ba1c0a6fb3c55f4e6f859f088f9725842139bff`；读取 owner、设计、API 和业务实现 | 给出已有/缺失/待裁决矩阵与证据；主控只更新本任务记录，不改业务源码 |
+| IAM-CAP-02：SQL 与业务生命周期覆盖 | 原生只读审查 Agent/`gpt-5.6-sol`，启动后补名 | 同一固定 IAM 基线；只读 Schema、DATA_MODEL、Repository 与清理路径；先读 Root AGENTS、CODEBASE_MAP、SQL/TS 手册及 IAM 入口 | 列出表族、真实写入与查询、删除/retention/orphan 缺口及绝对路径行号；不写文件、不连接数据库、不启动服务、不提交；由主控核实结论 |
+
+Root 基线 `38ee5f97d8b162e3c8c5b036e4d60f481205a5b5`，现有任务外变更为 `kokoro-agent` 与 `.tmp/`，保持不动。R2-4 候选交付为独立工作树 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1`，当前未集成、未完成主控审查；旧 Carver handle 已不可用，不据旧状态重复派写。此轮目录和功能评估不依赖该索引候选。
