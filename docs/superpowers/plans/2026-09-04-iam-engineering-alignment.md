@@ -844,3 +844,30 @@ Boyle 交付 `1a081ab88368004b650a6e60d5445206fea5da18`（基线38c7358），25�
 驱动先对旧schema RED；候选首次比较发现审查脚本未归一PG18的PK自动NOT NULL名称和已删列约束，补齐精确归一后通过；不是候选缺陷，不放宽业务约束。
 随机数据库均已清理；日志 `/tmp/kokoro-iam-goal/r2-review/`，不代替生产drift实现或主目录复验。
 现进入独立质量审查：Parfit（01a07105-de9a-7d22-abf9-818e5d3d20b2），使用用户授权的gpt-5.6-sol，只读不可变38c7358..1a081ab，不操作DB、服务或文件；重点复核SQL/Row/业务和测试回归。主控并行准备主目录验证。
+
+## 16. R2-1 已集成复验与下一片入口
+
+本轮分类：**progress**。用户新增选模与旧实现清理偏好已固化到 Root AGENTS（570cacec）；不改变主窗口模型。
+Boyle 在途任务未中断，交付1a081ab后已回收；独立审查使用Parfit/gpt-5.6-sol，无P0/P1/P2 findings并已回收。
+当前没有其他子仓实施或并行写入者；Root任务外kokoro-agent/.tmp保持不动。
+
+- IAM 主目录已从1d78be6快进到源码 `1a081ab88368004b650a6e60d5445206fea5da18`，后续文档提交0d11f48、`8a4372c0fa3dd711807bd9eabc95f9ed516bd335`；最终干净。
+- 原worktree仍1a081ab且干净；下一次续派前先同步主目录两文档提交。R1目录46手写文件/4生成物不变；本片只改六Repository及审计类型，不新增生产抽象层。
+- 删除无用途identity表及自有结构、四闲置列和三查询索引；15表本表PK统一id，引用列/业务ID值不变。真实唯一不变量、状态、同client、tenant/父锁序、幂等/claim/fencing均保留。
+- 主控候选和主目录各自重跑lint/typecheck/contract/build、随机空库安装及PG-only357项；主目录最终28文件/357通过/0失败/0skip，2Redis明确排除。
+- 主控真实catalog差异核验通过；built provider五类3xx拒绝且sink0；Root预检仍9项，具体日志及范围见IAM ACCEPTANCE，未放宽门禁或改原Redis/Docker。
+- 主控接管文档收口时补充README（原25文件片未授权作者改README）的16表旧说明；最终七份Markdown241本地链接/锚点通过。CURRENT精简一度漏固定兼容边界原文导致1个文档门失败，已恢复原文不改测试，聚焦36及全PG-only357重新通过；失败证据保留。
+- 所有生产/DDL/机器源/测试/依赖字节仍绑定已审查1a081ab；完整证据由 [IAM ACCEPTANCE](../../../kokoro-iam/docs/ACCEPTANCE.md#r2-1-主目录集成与主控复验) 自持。
+
+### 下一步：R2-2 删除语义（先文档，不沿用R2-1写入授权）
+
+1. 主控保持架构决策；以当前8a4372c/源码1a081ab为基线，先收敛DATA_MODEL/TECHNICAL_DESIGN/API_CONTRACT的删除边界与验证清单，明确本片文件集。
+2. 仅principal/organization承接已采纳deleted_at语义：默认NULL，TIMESTAMPTZ(3)，与disabled/suspended分离；不为所有表机械加列，不新增删除/恢复管理API或自动硬删。
+3. 活跃身份路径同时检查父status与deleted_at：principal锁内校验、登录候选、session/permission投影；保留contact历史阻止失效身份重建、同tenant和父锁顺序。
+4. refresh digest的历史定位保留，不能用活跃父/行过滤破坏合法Refresh重放或Logout；credential replay仍检查结果session和父资源，Logout成功receipt不套凭据释放条件。
+5. 先用真实PG失败用例证明active但deleted_at非NULL也拒绝登录/GetSession/Authorize/新Refresh与凭据重放；原disabled/suspended及合法Refresh/Logout重放仍通过。父删除UPDATE与关系写入使用相同行锁协议，验证并发等待后重验，不仅静态扫列名。
+6. 本片不夹带UTC/索引/完整catalog/GC/框架。Schema、两身份Repository、直接相关测试与三面文档自洽交付，最终仍由主控审查/独立质量/主目录复验。
+7. 按用户新选模策略，复杂实现或独立审查优先gpt-5.6-sol；新负责人必须接收明确commit/任务卡，原writer停写后再派，单仓始终单writer。小任务可luna，疑难升级astra；不因模型切换丢失安全/验证门。
+
+SQL UTC/查询计划、完整drift、关系检测/引用安全保留，及R3 API/运行治理仍后续推进；Redis2项、完整进程/镜像/真实provider/消费者未验。
+本片验收不是整个goal完成，继续同一active目标；无需再次询问用户是否允许删除已确认无用结构或内部技术命名。
