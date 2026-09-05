@@ -917,3 +917,11 @@ Parfit复核5cb9e91..012ebba：P2闭合、无新增findings；三面设计已一
 代码候选提交后停止写入，主控先规格复核，再续派独立审查员，最后主目录集成/复验。此放行不包含其他SQL/框架/运行治理。
 
 本片实现负责人：Carver（01a0711d-0de8-7241-9c59-3305fb2c4863），派发指定gpt-5.6-sol；唯一worktree写入者，012ebba起始，接收上列明确文件集和两阶段RED/最终验收责任。主控停写IAM，保留审查、Root治理与隔离验证。
+
+### 主控并行证据（不扩大 R2-2 文件集）
+
+本轮只读重探测：原Redis56380的PING 2s超时，原Docker容器状态命令3s超时；没有重启/重复实例/flush，仍保留两个Redis待验。
+为后续R2-3做现有pg驱动真实连接验证：当前runtime的search_path配置下TimeZone实际为America/New_York；显式UTC options时为UTC；
+连接URL内若带options=TimeZone=Asia/Tokyo，会覆盖Client对象options，实际Tokyo且search_path也失去runtime显式值。
+故后续“每连接UTC”不能只加一个可能被连接URL覆盖的对象属性；需定义受控连接参数与URL保留/拒绝规则，并验证连接重建与Pool/installer两入口。
+日志在 `/tmp/kokoro-iam-goal/r2-2-review/shared-dependencies-probe.json`、utc-policy-probe.jsonl；只改连接自身session参数并读取设置，没有改角色/数据库配置或业务数据。
