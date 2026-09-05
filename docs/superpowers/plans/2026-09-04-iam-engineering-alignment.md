@@ -1220,6 +1220,9 @@ reference 只进入 IAM 审计/下游授权事实，不伪装成 Agent `Executio
 `pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build` 通过；普通测试 25 文件通过/9 个环境跳过（327 passed、205 skipped）；
 fresh PostgreSQL 隔离库 integration 为 8 文件通过/1 个环境跳过（203 passed、2 skipped）；`db:apply-schema` 与 catalog drift 为 `ok: true`。
 Redis、完整 listener/provider smoke、BFF/Web 消费者及 Tenant 管理 API 仍明确未验收，不得以本次文档门复验代替。
+随后在不重启共享 PostgreSQL、且不保留测试进程的前提下复用本机 PostgreSQL，并临时启动一个 Redis 6379 进程完成真实依赖集成：
+`pnpm test:integration` 为 9 个文件、205 passed、0 skipped，覆盖 health、RPC 与 Magic Link delivery；测试数据库和 Redis 进程均已清理。
+证据已绑定 IAM `80359ef docs(iam): record postgres redis integration`。该结果不替代 provider sandbox、BFF/Web 消费者或生产部署验收。
 IAM 文档验收随后以 `7847574 docs(iam): record tenant actor design review` 记录该设计复审证据；当前仍未放行 Tenant Proto、Schema 或生产代码。
 随后 IAM `df4f708 docs(iam): detail tenant management transport proposal` 补充了尚未放行的 transport 候选：per-caller service authentication
 加 Bearer operator assertion JWS；`aud`、`azp/service_identity`、operation、scope、request digest、`jti` 和 TTL 在 effect point 重新验证。
