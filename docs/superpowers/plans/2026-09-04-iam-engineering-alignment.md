@@ -1142,7 +1142,13 @@ Peirce 在停止写入前留下的变更由主控接管为唯一 writer，收敛
 
 主控验证已通过：`git diff --check`、`pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build`；真实 PostgreSQL 隔离驱动 fresh install 后 33 个测试文件、530 项通过、0 失败，Redis 依赖测试显式排除不计通过；catalog subject/oracle 相等，22 条关系审计在空租户窗口均为 0。只创建并清理本次随机数据库，未启动/重启/flush PostgreSQL、Redis 或 Docker。
 
-当前状态：主控已交付 `c10de28`，首轮独立只读审查发现 P1/P2：大小写归一化可能掩盖差异、oracle 可外部指定、关系漏检、时间/limit/Schema 边界不足、catalog INCLUDE/NOT VALID 漏检及 double 语义漂移；主控已在 `67b04aa fix(iam): tighten relation audit boundaries` 与 `1b04025 docs(iam): align relation audit output` 修复并重跑门禁，等待修复后独立复审。复审和 Root 复验提交前，R2-5 不标记为最终验收。R2-5 仍不包含 IAM 管理 writer/API、retention、自动 orphan 修复、完整 Redis/进程/provider smoke 或 BFF/Web 消费者验收。
+当前状态：主控已交付 `c10de28`，首轮独立只读审查发现 P1/P2：大小写归一化可能掩盖差异、oracle 可外部指定、关系漏检、时间/limit/Schema 边界不足、catalog INCLUDE/NOT VALID 漏检及 double 语义漂移；主控已在 `67b04aa fix(iam): tighten relation audit boundaries` 与 `1b04025 docs(iam): align relation audit output` 修复并重跑门禁，修复后独立复审已通过。R2-5 仍不包含 IAM 管理 writer/API、retention、自动 orphan 修复、完整 Redis/进程/provider smoke 或 BFF/Web 消费者验收。
+
+### IAM-R2-5 修复后独立复审与放行
+
+Hilbert（`gpt-5.6-luna`，只读）绑定 IAM HEAD `1b04025` 复核首轮全部问题，结论：**PASS，P1/P2/P3 均为 0**。复核确认 catalog 不再降低大小写、oracle 强制从当前 canonical schema 临时安装、22 条关系覆盖完整关系矩阵、最大时间窗/limit/显式 `kokoro` schema、INCLUDE 列和 `NOT VALID` 状态均已收敛，测试 double 与 active/historical 策略一致，文档不再声称不存在的主键摘要或独立 integration 文件。
+
+主控在修复后重新执行 `git diff --check`、`pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build` 和隔离 PostgreSQL 驱动：33 个测试文件、530 项通过、0 失败；Redis 依赖测试显式排除，不计为通过；fresh schema catalog 对比 `ok: true`，22 条关系审计均为 0。R2-5 代码切片与文档门现已具备独立审查和主控验证证据；当前仍未宣称 IAM 全部能力完成。
 
 ### IAM-CAP-03：模块拓扑裁决（先文档，不立即搬目录）
 
