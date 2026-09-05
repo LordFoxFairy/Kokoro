@@ -1128,3 +1128,5 @@ R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅�
 设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；refresh/重放与 Logout 的不同父资源语义如何保持；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
 
 IAM 三面设计先落到 `5f102d4`，随后以 `7fe83e7` 补全关系边界，再以 `ee4d012` 明确 active/historical 父资源策略。Rawls（`gpt-5.6-luna`）提出的 P1 已修订并由 Copernicus（`gpt-5.6-luna`）独立复审 PASS：catalog 对比边界、固定关系白名单、资源限制、refresh fail-closed、Logout 历史撤销/重放和四类父行缺失测试均已明确。现允许进入 R2-5 RED/实现；仍保持单一 IAM writer，主控不并发修改 IAM。
+
+R2-5 实现负责人已派发 Peirce（`01a0726a-0522-7eb0-a4c7-6b4850a5d402`，指定 `gpt-5.6-sol`），唯一写入范围为 IAM baseline `ee4d012` 的 catalog/relation scripts、Session parent policy 相关源码与 doubles/integration tests、package scripts 和当前验收文档。主控不抢写 IAM；作者需先形成父缺失 RED，再提交单一业务切片，交付后停写，主控规格复核、独立审查和主目录复验。
