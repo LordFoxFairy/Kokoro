@@ -1034,3 +1034,9 @@ IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代
 
 设计提交 `f878c3edef8874404cc4bf871d044eec9d7f2fc5`；Arendt（01a07130-214a-73f2-908d-281b41a11fba，原指定gpt-6-astra）续派固定f5f21a9..f878c3e只读设计审查，主控不并发改IAM。仅审新三面/实际两查询/Schema，不重做全仓历史调查。
 主控补充5类查询证据：10万基础行加多条同key历史与active、跨tenant同邮箱、miss；旧Schema均约1429/1440blocks，临时拟定索引后3–5blocks，完整结果排序比较一致。两索引实测大小5087232/4087808字节，不代表写吞吐benchmark；query-plan-expanded-evidence.json保留全部计划，库已自有清理。本轮RESP PING56380仍TimeoutError，无重启/新实例/flush；其他SQL设计仍可继续。
+
+### R2-4 设计通过与实施放行
+
+Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P3为造数后显式ANALYZE。主控在 `5ba1c0a6fb3c55f4e6f859f088f9725842139bff` 将统计刷新及顶层Shared Hit+Read计数写清，格式/257链接通过；没有代码或Schema变化。Arendt已回收，主控停写IAM。
+原worktree从a1ae65d快进到干净5ba1c0a；续派Carver（01a0711d-0de8-7241-9c59-3305fb2c4863，原指定gpt-5.6-sol）为唯一writer。允许的12文件：database/schema.sql；现test/contract/schema.test.ts、test/integration/schema.integration.test.ts；新test/integration/identity-query-plans.integration.test.ts、test/fixtures/identity-query-plan-fixture.ts；README/INDEX/CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ACCEPTANCE七文档。不修改任何src、其他测试fixture、脚本、依赖、CI或别仓。
+要求先旧Schema实际RED再加索引，类型化测试不抄另一套业务SQL/DDL，保持默认规划器和原唯一不变量；真实PG隔离资源按卡清理。完整候选验证后自洽提交并停写；主控不把作者自报当最终证据，继续规格审查、独立质量与主目录重跑。
