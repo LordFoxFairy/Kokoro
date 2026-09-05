@@ -20,10 +20,12 @@ S2b 事务恢复 `55000e6` 与 PG client 事件修正 `3579ec7` 已完成独立�
 分别复验 326 项隔离测试及 built provider client 的五种重定向拒绝。本地 provider 模拟不是实际邮件供应方验证。
 
 **2026-09-05 当前用户决定：恢复 IAM 单仓目标，开始实施；技术方案由主控评估，不再要求用户选择内部目录名。**
-采用[IAM 目录方案](superpowers/specs/2026-09-05-iam-directory-architecture-design.md)，先对齐三面文档并落实目录，
-再串行推进 SQL、API/运行治理；当前任务与写入边界见任务板第 12 节。
-恢复时日常主目录仍为 `c5c7a0c` 旧四层，原独立候选 `3f7f0c5` 尚未合入；须按采纳分组与 lifecycle 命名修正、
-审查，再由主控集成和复验。候选提交不等于主目录落地，历史测试不替代本轮证据，不扩展其他仓。
+IAM 目录方案已由 [IAM 技术方案](../kokoro-iam/docs/TECHNICAL_DESIGN.md) 承接并落地日常主目录：源码 `e938b91`，
+当前 HEAD `1d78be6`（仅文档集成收口）。旧四层已删除，现为 auth 内业务分组与 runtime 生命周期；候选与主目录不再混淆。
+Boyle 实施，Locke 独立质量审查无新增 findings；主控主目录复验 lint/typecheck/contract/build、27 文件/351 PG-only 测试
+通过，并验证 built provider 五类重定向拒绝。2 项 Redis 明确排除，完整启动/镜像/provider 等未验；不作为整体完成。
+Root IAM-only 预检余 9 项工具链/格式/TS 配置问题；SQL 目标仍未实施。下一步先细化 SQL 切片设计，再依次对齐字段/查询、
+删除状态、UTC/catalog/关系与保留，随后 API/运行治理；当前状态和写入边界见任务板第 12–14 节。仅推进 IAM。
 
 ## 阶段 2 仓库治理入口
 

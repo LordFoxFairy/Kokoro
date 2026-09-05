@@ -4,8 +4,8 @@
 主控采纳[目录方案](../specs/2026-09-05-iam-directory-architecture-design.md)，负责内部技术取舍；先目录落地，
 再 SQL、API/运行治理，最后单仓完整验收。当前写入与派工以第 12 节为准，旧暂停记录保留历史含义。
 
-恢复基线：日常主目录 `c5c7a0c`，独立候选 `3f7f0c5`；均干净。旧候选不直接整份合入，
-先完成批准分组与 lifecycle 命名，并经过审查及主目录复验。只在主目录真实改变后才报告“已落地”。
+R1 已落地：日常主目录源码 `e938b91`，当前 HEAD `1d78be6`（文档状态收口）；工作树干净。Boyle 实现与 Locke 两段
+独立质量审查完成，主控集成并在主目录复验。下一步为 R2 SQL 细化/实施；当前无写入中的 Agent，历史任务卡不自动变更范围。
 
 本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
 
@@ -15,7 +15,7 @@
 先完成技术方案、API 契约和 SQL/数据设计对齐，再按业务切片实现、验证、提交。IAM 验收闭环前不铺开其他子仓。
 
 - 主控：本 Root 会话，负责整体边界、任务拆分、独立审查、主仓复验、提交和放行。
-- IAM 负责人：Ohm，原生子 Agent ID `01a06e48-9d74-7531-b697-2946ab0890e3`。
+- 首轮 IAM 负责人（历史；当前见第 12–14 节）：Ohm，原生子 Agent ID `01a06e48-9d74-7531-b697-2946ab0890e3`。
 - SQL/事务只读审查：Ramanujan，`01a06e5c-20f4-7652-9b0e-7402959a14fd`。
 - API/认证语义只读审查：Franklin，`01a06e5c-2153-7f71-aca8-41673f15dc80`。
 - 首次派工基线：Root `1deeb5204a26b0d4dab0413fdc25f369ce62e54a`；IAM `23a0b65e0e361d474d9afed491379df45a36f574`；当前切片以对应任务卡为准。
@@ -648,14 +648,14 @@ Root preflight 由现有 common/delivery/typescript 检查限定 IAM 运行，�
 
 ### 顺序与完成条件
 
-| 任务    | 范围与交付                                                                                        | 状态                     |
-| ------- | ------------------------------------------------------------------------------------------------- | ------------------------ |
-| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | ac04ecf，主控文档门通过  |
-| IAM-R1  | 在原候选上完成 auth 内部分组、准确命名、真实职责边界；独立审查后集成日常主目录                    | Boyle 源码实施中         |
-| IAM-R2A | 只读复核 SQL 精简/索引/UTC/无外键方案，提交带源码证据的实施清单                                   | Nietzsche 只读审查完成   |
-| IAM-R2  | 先完善 DATA_MODEL，再逐片对齐 canonical SQL、查询映射、UTC、完整性/保留与 catalog；不操作既有数据 | 等待 R1 主目录落地及 R2A |
-| IAM-R3  | API/框架/依赖治理：先定契约和预算，再验证输入、请求关联、取消、共享生命周期等既有缺口             | 等待目录与相关 SQL 边界  |
-| IAM-R4  | 主目录完整验证、目录/SQL/API 整体审查、文档事实收口、小粒度提交；缺少的外部证据明确记录           | 等待以上切片             |
+| 任务    | 范围与交付                                                                                        | 状态                         |
+| ------- | ------------------------------------------------------------------------------------------------- | ---------------------------- |
+| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | ac04ecf，主控文档门通过      |
+| IAM-R1  | 在原候选上完成 auth 内部分组、准确命名、真实职责边界；独立审查后集成日常主目录                    | e938b91 已审查集成复验       |
+| IAM-R2A | 只读复核 SQL 精简/索引/UTC/无外键方案，提交带源码证据的实施清单                                   | Nietzsche 只读审查完成       |
+| IAM-R2  | 先完善 DATA_MODEL，再逐片对齐 canonical SQL、查询映射、UTC、完整性/保留与 catalog；不操作既有数据 | 下一阶段：细化 SQL 文档/切片 |
+| IAM-R3  | API/框架/依赖治理：先定契约和预算，再验证输入、请求关联、取消、共享生命周期等既有缺口             | 等待目录与相关 SQL 边界      |
+| IAM-R4  | 主目录完整验证、目录/SQL/API 整体审查、文档事实收口、小粒度提交；缺少的外部证据明确记录           | 等待以上切片                 |
 
 ### IAM-R1D / IAM-R1 写入负责人任务卡
 
@@ -729,7 +729,6 @@ TECHNICAL_DESIGN 的 46 文件目标树与 Root 采纳树逐字一致。作者�
 复用唯一 PG，无 Redis/Docker 起停或全量清理。以当前 commit 报告 Redis 两项显式排除、其他实际计数、AST SQL 保留结果与文档验证。
 Boyle 提交后停止写入；主控规格审查、独立质量审查后串行集成日常主目录并重新验证，未通过前不进入 SQL 源码切片。
 
-
 ### R1 独立质量审查卡：分两段绑定不可变提交
 
 主控已对既有 S3b 源码与 R1D 完成规格核对；因旧 S3b 独立质量审查曾被用户中断，本轮补齐这段审查，
@@ -739,3 +738,41 @@ Boyle 提交后停止写入；主控规格审查、独立质量审查后串行�
 已登记的既有 API/runtime/SQL 缺口不作为目录回归重新混片，但新回归/删弱断言必须报告；代码质量判断独立进行。
 R1 新提交出来后续派同一审查员核对 ac04ecf..新提交及完整新树/角色门禁，第一段结果不代表最终候选已通过。
 报告须绑定精确 SHA、原路径与行号、问题优先级、是否新引入、最小修复和测试要求；无问题也明确审查范围与剩余风险。
+
+## 14. R1 已落地：独立审查、主目录复验与续接
+
+### 实际交付与验收边界
+
+- Boyle：R1D `ac04ecfe8b0511c1f19860871531cb3043fc2059`、R1 `e938b913fb7ef7b7b405446ca47150ade2dc48f2`；已停写并回收。
+- Locke：两段只读审查 c5c7a0c..ac04ecf..e938b91，无新增 findings；独立确认 46 文件映射/符号/引用、33 非架构测试除 import 外正文相同及文档链接。已回收，不把其只读审查说成复跑测试。
+- 主控规格复核：新树与职责符合已采纳方案；ac04ecf..e938b91 的 46 份源码除 import 外 AST 正文多重集合一致；c5c7a0c..e938b91 的 36 种 SQL 字面量无增删。机器源/DDL/generated/lockfile/CI/scripts 零 diff。
+- 旧主目录在 clean 状态下从 c5c7a0c 快进到 e938b91；随后主控在日常主目录完成以下复验。旧四层实际删除，auth 根仅 auth.ts/auth.error.ts/auth.transaction.ts，7 组内部目录含 deliveries，runtime/lifecycle 与 trace-context 已就位。
+- 主目录当前 `1d78be6`（`docs(iam): record verified main-directory integration`），仅 9 份 Markdown 的当前状态和证据收口；AGENTS 不再复制阶段进度，统一指向 CURRENT/任务板。源码字节与已验 e938b91 一致。
+
+| 主控实际验证                                                                             | 结果                                                                                                           |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 候选 e938b91 的 lint/typecheck/contract/build、29 architecture、AST 保留、built provider | 全部对应命令 exit 0；candidate 不替代以下主目录复验                                                            |
+| 主目录 pnpm lint / pnpm typecheck / pnpm contract:check / pnpm build                     | 各 exit 0，日志独立保存                                                                                        |
+| 主目录隔离库驱动 db:apply-schema + PG-only test                                          | 27 文件、351 passed、0 failed、0 skipped；Redis 2 项收集前明确排除；仅清理自身随机库                           |
+| 主目录 built provider                                                                    | 301/302/303/307/308 均按非重试错误拒绝，redirect sink 0 请求；本地 HTTP 模拟非供应方集成                       |
+| 主目录 Root IAM-only 预检                                                                | exit 1、余 9 项；原两个目录项已消失；未修改检查器放宽门禁                                                      |
+| 文档收口 1d78be6                                                                         | 9 Markdown 格式通过，284 本地链接/锚点零错误；依赖/部署 33 个用例通过，生产/测试/DDL/契约等零 diff，工作树干净 |
+
+主控日志在 `/tmp/kokoro-iam-goal/r1-main-review-e938b91/`；作者 RED/GREEN/PG-only 在 `/tmp/kokoro-iam-r1-ac04ecf/`。
+作者 RED 为 11 失败/18 通过，GREEN 为 29 通过；351 相对旧 340 增加 11 架构案例，不代表新增 11 个业务用例。
+完整证据由 [IAM ACCEPTANCE](../../../kokoro-iam/docs/ACCEPTANCE.md#r1-主目录集成与主控复验) 自持，Root 不复制业务实现。
+
+### 明确未完成项
+
+R1 是目录与职责切片验收，不是整个 IAM 完成。Redis2项、完整进程/镜像启动、真实邮件供应方与 BFF/Web 消费者未验。
+Root 预检九项分别为 engines、strictDepBuilds、format:check、三个 TS 严格开关、skipLibCheck、target、lib，留 R3。
+SQL id/deleted_at/无用结构、UTC、catalog、关系检测/retention 与 API 输入/关联/取消/生命周期等仍按第 13 节及历史预审待办推进。
+未升级依赖、未重复启动共享服务、未重启 Docker、未清理任何已有业务数据库；任务外 kokoro-agent/.tmp 保留。
+
+### 下一步精确续接点
+
+1. 主控保留眼前关键路径：将 R2A 清单收敛为 R2-1 的写入卡和三面文档，先做本表 id 与确定无用表/列/闲置索引，不把删除状态/retention/框架升级混成一次大改。
+2. 唯一 IAM owner 继续使用原 worktree；重新续派前确认双方干净，将 worktree 从 e938b91 快进到主目录 1d78be6，逐片明确 writer/审查/SQL 查询与 Row/测试影响。
+3. 先同步 IAM DATA_MODEL/TECHNICAL_DESIGN/API_CONTRACT 的具体切片，主控审查机器源影响后实施。tenant TEXT 与其他引用名称/Proto字段不变；保留 membership/family generation 和真实唯一不变量。
+4. R2-1 只在新隔离数据库安装目标 SQL，不运行 ALTER/迁移或删除现有业务表。测试 seed/Row 逐处按本表与引用语义改，不以全局替换资源名完成；catalog/UTC/删除过滤未完成项不伪报通过。
+5. 继续同一 active goal，无需再问用户是否喜欢内部命名，不新建其他子仓目标，不把已完成 R1 当整个 goal complete。
