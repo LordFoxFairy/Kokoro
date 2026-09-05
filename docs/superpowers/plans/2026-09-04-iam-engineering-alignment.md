@@ -1047,3 +1047,6 @@ Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P
 主控另做只读R3依赖盘点，未安装/修改manifest：现TypeScript5.9.3、@types/node22.20.1、Connect2.0.0、redis5.12.1；2026-09-05registry discovery返回TypeScript最新7.0.2，但typed ESLint8.69.0 peer仅支持<6.1.0，故最大版本号不能直接取代“最新稳定兼容”。Fastify/Connect/Zod等候选metadata、peer与已装精确版本位于 `/tmp/kokoro-iam-goal/r3-review/`；一次@types/node registry请求URLError明确保留。该盘点只是后续矩阵输入，R3仍须核验兼容范围内版本、发布日期/缓冲、安全与实际安装/测试；不在R2-4升级依赖。
 
 本轮续接点：R2-3已收口，R2-4设计门通过并进入实施，属于progress。Carver原handle仍在运行，几次原生wait仅观察超时，不是退出或失败；不得据此重启/换writer。主控只读工作树快照仍为5ba1c0a，两个既有Schema测试已修改、两个新计划测试/fixture已创建，Schema尚未改动，正处于测试/RED准备；这是变化中工作树，不是交付或可集成SHA。下轮复用同一handle等待冻结交付，再按本节审查与主目录复验；不进入其他子仓。
+
+下一轮为progress续接：主控复核日常IAM仍干净5ba1c0a；Carver原handle持续运行，工作树已在Schema与四测试文件进入本片范围，尚无冻结提交，不提前审查变化中代码。主控用实际built IamRuntime（src与70485c6一致）、真实临时HTTP服务器和明确的readiness/close测试替身独立复现R3三项问题：readiness未完成时shutdown先成功，随后start仍重新打开两listener并启动worker；startup失败的cleanup在closer不settle时没有期限；shutdown的unref期限使独立Node进程在closer仍pending时exit0，forceClose/settlement回调均未执行。
+证据 `/tmp/kokoro-iam-goal/r3-review/runtime-failure-evidence.json`、runtime-failure-probes.log；临时服务器关闭，未连接PG/Redis或改生产源码。它是实际lifecycle的本地故障探针，不冒充完整真实依赖启动smoke；R3实施须用相同场景转为GREEN并保留并发/关闭错误语义，不能只满足框架目录或当前三个runtime单测。
