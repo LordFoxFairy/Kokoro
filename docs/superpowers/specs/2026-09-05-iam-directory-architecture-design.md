@@ -1,6 +1,6 @@
 # IAM 目录架构方案：先对齐结构，再实施
 
-状态：**供用户整体确认的草案；不是实现授权。** 本轮只写文档，不改 IAM 代码、不合并 worktree、不运行应用测试。
+状态：**2026-09-05 用户授权开始实施，主控采纳本方案并负责技术取舍。** 先同步 IAM 三面设计，再完成目录切片、审查与主目录集成；具体写入范围见任务板第 12 节。本稿是过程记录，长期方案由 IAM 的 TECHNICAL_DESIGN 承接。
 
 ## 1. 先说明你实际看到的是什么
 
@@ -10,7 +10,7 @@
 | 主目录 commit       | `c5c7a0c3b4638988b9dc9d7eb55629d913607f1d`，工作树干净，仍是旧四层                      |
 | 独立 worktree       | `/Users/nako/.config/superpowers/worktrees/kokoro-iam/engineering-alignment`            |
 | 未合入候选 commit   | `3f7f0c59eaf292de5e249313e7180417fc879f37`，工作树干净，已改为 module-first             |
-| 当前执行边界        | 原实现与审查 Agent 已停止；旧任务板中的继续实施授权由本次用户要求收回，等待目录方案确认 |
+| 当前执行边界        | 下列 SHA 是恢复实施时的基线；用户已重新授权，按任务板第 12 节分片推进，不直接合入旧候选 |
 
 之前的交付问题是：改动留在独立 worktree，但汇报没有清楚区分“候选提交”和“你打开的目录已经改变”。
 这份方案同时审视旧目录和候选目录，不把已经写出的候选当作必须接受的答案。
@@ -44,7 +44,7 @@
 | ---------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
 | 全仓 controllers/services/repositories                     | 角色熟悉、入门直观                             | 仍按技术角色拆散同一业务；只是把旧四层换一套名字                                             | 不选                   |
 | principals/authentication/authorization/audit 各成一级模块 | 产品边界独立时，团队归属清楚                   | 当前身份建档、会话、审计共处认证事务；没有独立身份管理或审计查询产品，容易制造跨模块内部访问 | 以后确有独立能力再评审 |
-| 一个 auth 模块，内部按现有子能力与共同机制分组             | 登录、会话、授权容易定位；同一认证事务保持内聚 | 必须约束内部公共机制，不让 auth 成为整个 IAM 的万能目录                                      | **本草案推荐**         |
+| 一个 auth 模块，内部按现有子能力与共同机制分组             | 登录、会话、授权容易定位；同一认证事务保持内聚 | 必须约束内部公共机制，不让 auth 成为整个 IAM 的万能目录                                      | **主控采纳**           |
 
 `auth` 是目前已实现的认证与授权能力，不代表未来 IAM 所有业务只能塞在这里。
 仅仅数据库中存在 tenant、role、permission 表，不等于今天就需要创建它们的管理模块和空 Service。
@@ -63,12 +63,12 @@
 | `rpc/`                    | 两组 RPC handler 及共同上下文、workload 校验、错误映射 | 五个既有传输文件共享接入生命周期；不是每个业务机械套一个 rpc 目录          |
 
 这里的 `rpc/` 和 `idempotency/` 是有实际内容的内部职责组，不是恢复全仓技术分层。
-它们不拥有独立进程、数据库或对其他模块的公开 API。若你希望内部只按业务分组，也可以把这两组文件留在 auth 根，
-代价是恢复较长的根目录；本草案建议用这两个明确分组降低查找成本。
+它们不拥有独立进程、数据库或对其他模块的公开 API。主控选择明确分组以降低查找成本，
+不再要求用户判断内部目录名；未来能力变化才重新评审边界。
 
 ## 4. 推荐目标：完整手写源码目录
 
-以下路径均相对 IAM 仓库根；这是**目标草案**，不是当前主目录。所有文件都对应既有职责，不包含未来功能占位。
+以下路径均相对 IAM 仓库根；这是**采纳目标**，不是已经落地的主目录。所有文件都对应既有职责，不包含未来功能占位。
 
 ```text
 src/
@@ -82,7 +82,7 @@ src/
 
   runtime/
     create-runtime.ts                 # 共享连接、日志、密钥组件等资源的装配
-    shutdown.ts                       # 现有启动/关闭协调，不承载认证用例
+    lifecycle.ts                      # 现有启动/关闭协调；不以 shutdown 命名包含 start 的职责
     readiness.ts                      # 进程就绪与依赖状态
     request-logger.ts                  # 结构化日志能力与实现
     trace-context.ts                   # traceparent 解析，不是第二套 RPC request ID
@@ -223,7 +223,7 @@ PostgreSQL、无外键、canonical schema 等已确认规则继续引用 [SQL �
 `dist/` 与 `node_modules/` 是构建/安装产物，不是人工组织的业务架构。
 
 `test/` 保留 unit/integration/contract/architecture/fixtures/doubles 的现有分类；有真实启动用例后才出现 smoke。
-本轮不执行这些测试，不以测试报告代替对目录的确认。后续搬迁造成的路径引用随搬迁同步，具体验证放到实施阶段。
+搬迁造成的路径引用随搬迁同步，验证安排在结构落实之后；不以测试数量代替目录与职责审查。
 
 ## 8. 完整旧路径处置表
 
@@ -237,7 +237,7 @@ PostgreSQL、无外键、canonical schema 等已确认规则继续引用 [SQL �
 | `bootstrap/process-lifecycle.ts`                                                        | 合入 `server.ts`，保留信号与生命周期协调                                                                   |
 | `bootstrap/container.ts`                                                                | `app.ts` + `runtime/create-runtime.ts`                                                                     |
 | `bootstrap/authentication.ts`                                                           | `app.ts`，不保留重复认证装配壳                                                                             |
-| `bootstrap/runtime.ts`                                                                  | `runtime/shutdown.ts`                                                                                      |
+| `bootstrap/runtime.ts`                                                                  | `runtime/lifecycle.ts`                                                                                     |
 | `config/iam-config.ts`                                                                  | `config/env.ts`                                                                                            |
 | `application/authentication/dto/authentication-dto.ts`                                  | `modules/auth/magic-links/magic-link.ts` + `sessions/auth-session.ts`                                      |
 | `application/authentication/errors.ts`                                                  | 事务恢复相关内容合入 `modules/auth/auth.transaction.ts`                                                    |
@@ -301,19 +301,21 @@ PostgreSQL、无外键、canonical schema 等已确认规则继续引用 [SQL �
 6. 共同签发/重放文件使用 `session-credentials.service.ts`；runtime 的 trace 解析使用 `trace-context.ts`。
 7. 其他文件沿用已拆清的实际职责，不为了这份树重新设计加密、事务或引入新框架。
 
-这几项都是草案选择，尚未修改候选代码。现有源码中的请求 ID、deadline、校验及其他已登记问题仍存在；
+以上选择现已采纳，候选代码仍须按任务板实施；另将启动/关闭协调文件统一为 runtime/lifecycle.ts。
+现有源码中的请求 ID、deadline、校验及其他已登记问题仍存在；
 在文档里给文件写上职责，不等于这些行为已实现或已修复。
 
 ## 10. 整体对齐与后续边界
 
-请整体确认三个问题，而不是逐个文件反复决定：
+主控负责以下三项技术决定，用户无需逐个判断内部文件：
 
 1. **业务组织**：一个 auth 模块，内部区分主体、链接、会话、授权，不按表创建一批一级模块。
 2. **阅读粒度**：投递再分一组；RPC、幂等、安全事件各有明确内部位置，避免候选根目录继续堆文件。
 3. **命名习惯**：业务词 + role suffix；不增加数据库品牌目录、Port、总 Repository 或抽象执行器。
 
-确认之后，先同步 IAM 的 TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL 与 INDEX，再进行目录及必要依赖调整；
+执行顺序为先同步 IAM 的 TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL 与 INDEX，再进行目录及必要依赖调整；
 技术/API/SQL 三份文档继续由 IAM 自持，本 Root 草案不成为第二份长期实现手册。
 
 后续实施汇报必须分别列明：候选位置、是否已进入日常主目录、实际当前目录树。只有主目录真的改变，才说“目录已落地”。
-本轮不推进新业务、SQL 变更、依赖升级、其他仓库或下一轮自动派工；等待本方案的用户反馈。
+目录切片不夹带新业务、SQL 变更或依赖升级；SQL/API 后续切片由同一 IAM 目标串行推进，逐片补齐设计、审查和验证。
+不启动其他仓库重构，不操作已有业务数据，不重复启动 PostgreSQL/Redis。
