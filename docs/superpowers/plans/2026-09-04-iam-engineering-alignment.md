@@ -1168,3 +1168,5 @@ modules/
 不创建 `postgres/`、`redis/`、`prisma/`、`services/`、`repositories/` 这种技术层或空模板目录；RPC/HTTP 是 transport，只有跨模块时才单独放 `rpc/`/`http/`。现有 `auth/principals`、`auth/sessions` 等目录是历史首发切片的内部组织，不是后续新模块模板。
 
 本裁决已写入 IAM `0334665 docs(iam): clarify module ownership topology`。下一步必须先为首个管理能力补齐 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL` 三面文档和权限/事务/删除策略，再以单一 writer 实施真实模块迁移；禁止继续向 `auth` 塞入 Tenant、Organization、Role 管理代码，也禁止先创建空模块。R2-5 审查与 IAM 文档门闭环后，下一片优先选择一个真实 owner（不跨多个能力混写）进入实现。
+
+IAM `562cf67 docs(iam): map current authentication ownership` 已补充当前文件到目标 owner 的迁移表：magic-links/sessions/idempotency 与认证事务归 `authentication`；首次登录 identity graph 在 identity/organization 管理 writer 收敛前暂不硬拆；Authorize 读模型归 authorization；安全事件追加暂留认证内部；RPC 最终归跨模块 transport。该决定避免只为增加目录数量而制造伪边界。下一片先做一个真实管理 owner 的三面设计，未完成文档门前不搬目录、不新增 Proto/Schema。
