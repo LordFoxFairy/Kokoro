@@ -871,3 +871,30 @@ Boyle 在途任务未中断，交付1a081ab后已回收；独立审查使用Parf
 
 SQL UTC/查询计划、完整drift、关系检测/引用安全保留，及R3 API/运行治理仍后续推进；Redis2项、完整进程/镜像/真实provider/消费者未验。
 本片验收不是整个goal完成，继续同一active目标；无需再次询问用户是否允许删除已确认无用结构或内部技术命名。
+
+## 17. R2-2 身份删除切片任务卡
+
+上一轮为progress：主目录R2-1已交付复验。本轮重新确认Root6d6c92ee、IAM8a4372c、原worktree1a081ab；双方干净，Root仅任务外kokoro-agent/.tmp。
+主控先完成眼前架构/文档关键路径，提交IAM `5cb9e91df08899d6ef9693239d2f89cc16f262a0`：4份已有设计文档新增聚焦边界，生产/Schema/测试/机器契约零diff。
+文档格式、245本地链接/锚点与diff通过；只通过本地文档验证，尚未实施删除标记。Root CURRENT改为导航本仓CURRENT/ACCEPTANCE，删除过期复制的commit/测试计数。
+
+| 项        | 本片决定                                                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner     | IAM/auth；主控本轮先写三面设计后停写，独立设计审查由Parfit/gpt-5.6-sol承担；实现负责人在审查后命名派发                                                          |
+| 代码基线  | 1a081ab；主目录当前设计5cb9e91；原worktree续派前快进到同基线；codex/iam-engineering-alignment                                                                   |
+| 目标      | principal/org各加nullable TIMESTAMPTZ(3) deleted_at，默认NULL；两个原CHECK移除deleted状态，分别保留active/disabled与active/suspended                            |
+| 位置/粒度 | 现有principal/session repository承接有效身份过滤，对比另造deletion Service后选择不新建生产代码/层；46文件树保留                                                 |
+| 契约      | 机器源/生成物/六RPC三HTTP不变；失效身份Unauthenticated；Request不增加账号存在性反馈；历史refresh定位及Logout语义保留                                            |
+| 并发      | 锁历史父行并在锁内重验，登录/有效session投影加双父删除条件；双向并发证明等待、提交后重验及回滚，不假装交付管理删除writer                                        |
+| 测试位置  | 新test/integration/identity-deletion.integration.test.ts；复用原transaction fixture，允许窄typed helper；旧lifecycle已超500行，只改直接受影响输入不再堆整套场景 |
+| 禁区      | 不改Service/transaction/crypto/client/worker实现、非两身份Repository、目录/依赖/lock/CI/config/机器源；不加UTC/索引/GC/其他仓改动                               |
+
+设计依据：IAM DATA_MODEL§1.2、TECHNICAL_DESIGN§8.2、API_CONTRACT§7.2及ADR-030。当前5cb9e91仅设计审查，不自动授权源码。
+审查绑定8a4372c..5cb9e91，确认删除条件覆盖登录/权限/GetSession/Refresh/replay、历史定位不被过滤、无新API/错误、两个父资源SQL与测试一致；只读，不运行DB/服务或改文件。
+设计通过后允许：database/schema.sql、src/modules/auth/principals/principal.repository.ts、sessions/session.repository.ts；test/contract/schema.test.ts、test/integration/schema.integration.test.ts、authentication-lifecycle.integration.test.ts、新identity-deletion.integration.test.ts、test/fixtures/authentication-transaction-fixture.ts；确有直接QueryRow匹配影响的既有unit/fixture可局部调整并列明。
+文档仅更新三面/CURRENT/ACCEPTANCE/INDEX/README中本片事实；不得重写历史证据，不移除CURRENT已有nonce兼容边界固定文字。
+
+验收至少包括：精确两列/类型/NULL/default、两个状态CHECK的新集合与旧deleted拒绝；active但deleted_at非空时登录、GetSession/Authorize、新Refresh、Consume/Refresh普通重放与未知提交恢复均拒绝且无新增事实；删除父资源下Logout新命令/原回执保持原窗口行为；原未删身份/disabled/suspended/successor重放全保留。
+两个父资源、login/refresh的锁竞争方向都应覆盖：删除先持锁→等待提交后认证拒绝；认证先持锁→删除等待，随后旧token读取拒绝。利用事务屏障与真实锁证据，不靠sleep推测；测试写方同时设deleted_at/updated_at，回滚不留下误删标记。
+执行既有Node24.20.0/pnpm11.25/已装依赖，RED→实现→lint/typecheck/contract/build与verify-database.mjs --pg-only；随机隔离库、复用PG5432，Redis2项明确排除。无DB/Redis/Docker起停/flush或已有数据清理。
+作者自洽commit后停写，主控规格复核、独立质量审查、主目录集成重跑；后续仍是完整IAM目标，不将该片冒充全部完成。

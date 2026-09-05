@@ -11,21 +11,11 @@
 
 本轮规范验证与逐仓待办见 [工程手册验证记录](reports/2026-09-04-engineering-handbook-verification.md)。
 
-当前逐仓推进从 IAM 开始，由 Root 主控派发专属负责人；工作状态与阶段授权以
-[IAM 工程规范对齐任务板](superpowers/plans/2026-09-04-iam-engineering-alignment.md) 为准。
-IAM 技术/API/数据设计提交为 `2401523`；S1 `b6c6581` 已验收。S2a 安全重放 `8a19608` 与 UUID 修正 `4481d39`
-已独立审查并集成，主控在主工作树复验 233 项通过；2 项 Redis 集成和 built-JS 启动仍待共享依赖恢复，未作完整验收。
-S2b 事务恢复 `55000e6` 与 PG client 事件修正 `3579ec7` 已完成独立复审并集成；主控在 worktree 与 IAM 主工作树
-分别复验 293 项隔离测试通过。S3a 投递闭环 `c5c7a0c` 已经 McClintock 独立审查并集成，主控在两工作树
-分别复验 326 项隔离测试及 built provider client 的五种重定向拒绝。本地 provider 模拟不是实际邮件供应方验证。
-
-**2026-09-05 当前用户决定：恢复 IAM 单仓目标，开始实施；技术方案由主控评估，不再要求用户选择内部目录名。**
-IAM 目录方案已由 [IAM 技术方案](../kokoro-iam/docs/TECHNICAL_DESIGN.md) 承接并落地日常主目录：源码 `e938b91`，
-当前 HEAD `1d78be6`（仅文档集成收口）。旧四层已删除，现为 auth 内业务分组与 runtime 生命周期；候选与主目录不再混淆。
-Boyle 实施，Locke 独立质量审查无新增 findings；主控主目录复验 lint/typecheck/contract/build、27 文件/351 PG-only 测试
-通过，并验证 built provider 五类重定向拒绝。2 项 Redis 明确排除，完整启动/镜像/provider 等未验；不作为整体完成。
-Root IAM-only 预检余 9 项工具链/格式/TS 配置问题；SQL 目标仍未实施。下一步先细化 SQL 切片设计，再依次对齐字段/查询、
-删除状态、UTC/catalog/关系与保留，随后 API/运行治理；当前状态和写入边界见任务板第 12–14 节。仅推进 IAM。
+当前逐仓推进仅处理 IAM，由 Root 主控裁决方案并派发单一负责人，IAM 验收前不启动其他子仓重构。
+R1 目录与 R2-1 SQL 主键/指定精简已落地日常主目录；后续删除、UTC/查询/保留、API/运行治理继续按切片推进。
+当前代码、已验范围与剩余缺口只看 [IAM CURRENT](../kokoro-iam/docs/CURRENT.md) 和 [IAM ACCEPTANCE](../kokoro-iam/docs/ACCEPTANCE.md)，
+本导航不再复制各阶段commit/测试数量；派工、模型、写入授权及最新续接点以 [IAM任务板](superpowers/plans/2026-09-04-iam-engineering-alignment.md) 为准。
+技术方案由主控评估，不重复要求用户选择内部目录或已确定规则；完整环境/消费者证据缺失时仍明确保留。
 
 ## 阶段 2 仓库治理入口
 
@@ -79,26 +69,26 @@ Storage 的 S3-compatible ObjectStore。
 
 ### 按专题细化
 
-| 主题 | 文档 |
-|---|---|
-| native runtime、首次启动与恢复 | [34 GA Runtime](kokoro-handbook/technical/34-ga-agent-runtime-architecture.md) |
-| official Swarm / handoff | [35 GA × Swarm](kokoro-handbook/technical/35-ga-langgraph-swarm-architecture.md)、[ADR-020](kokoro-handbook/decisions/ADR-020-native-framework-compatibility-and-swarm-adapter.md) |
-| bounded fan-out / map-reduce | [40 GA 工作画像](kokoro-handbook/technical/40-ga-work-profiles-and-bounded-fanout.md) |
-| 质量、评测、上线 | [39 Evaluation](kokoro-handbook/technical/39-ga-evaluation-and-evidence-architecture.md)、[41 Outcome Contract](kokoro-handbook/technical/41-feature-outcome-contracts-and-quality-gates.md) |
-| Harness / 产品能力装配 业界校准 | [44 GA Harness 与产品能力装配调研](kokoro-handbook/technical/44-ga-harness-and-workflow-research.md) |
-| Feature warm、Factory 与未来可视化 Builder | [GA 核心架构](kokoro-handbook/technical/42-ga-core-architecture.md)、[GA 落地切片](kokoro-handbook/technical/43-ga-clean-build-slices.md) |
-| native Agent state、fork、delete、memory | [ADR-018](kokoro-handbook/decisions/ADR-018-ga-thread-context-compaction-and-memory.md)、[Session 生命周期](kokoro-handbook/business-flows/session-lifecycle.md) |
-| FeatureKey 与 tenant/App exposure | [ADR-021](kokoro-handbook/decisions/ADR-021-feature-key-global-catalog-identity.md)、[31 Tenant/System/Web](kokoro-handbook/technical/31-kokoro-tenant-system-architecture-v2.md) |
-| 运行事件、reply owner、JobRef card | [ADR-016](kokoro-handbook/decisions/ADR-016-orchestration-policy-and-product-event-projection.md)、[Session/GA/Web 链路](kokoro-handbook/business-flows/agent-session-web-general-chat-runtime.md) |
-| 当前本地原型目录/边界 | [Agent 设计卡](kokoro-handbook/technical/backend-design/09-agent.md)、[Agent 模块](kokoro-handbook/modules/kokoro-agent.md)、[BFF Chat 契约](../kokoro/docs/integration/chat-bff-contract-v1.md) |
-| clean-build 实现切片 | [45 GA 原型就绪审计](kokoro-handbook/technical/45-ga-prototype-readiness-audit.md)、[43 GA clean-build 切片](kokoro-handbook/technical/43-ga-clean-build-slices.md)、[38 GA 公共运行契约](kokoro-handbook/technical/38-ga-public-runtime-contract.md) |
-| Storage 与 Capability 当前原型参考 | [29 Storage target × Capability](kokoro-handbook/technical/29-capability-storage-runtime-architecture.md)、[Capability 设计卡](kokoro-handbook/technical/backend-design/05-capability.md) |
-| Feature context 基础裁决 | [ADR-015](kokoro-handbook/decisions/ADR-015-agent-state-and-feature-context.md) |
+| 主题                                       | 文档                                                                                                                                                                                                                                                  |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| native runtime、首次启动与恢复             | [34 GA Runtime](kokoro-handbook/technical/34-ga-agent-runtime-architecture.md)                                                                                                                                                                        |
+| official Swarm / handoff                   | [35 GA × Swarm](kokoro-handbook/technical/35-ga-langgraph-swarm-architecture.md)、[ADR-020](kokoro-handbook/decisions/ADR-020-native-framework-compatibility-and-swarm-adapter.md)                                                                    |
+| bounded fan-out / map-reduce               | [40 GA 工作画像](kokoro-handbook/technical/40-ga-work-profiles-and-bounded-fanout.md)                                                                                                                                                                 |
+| 质量、评测、上线                           | [39 Evaluation](kokoro-handbook/technical/39-ga-evaluation-and-evidence-architecture.md)、[41 Outcome Contract](kokoro-handbook/technical/41-feature-outcome-contracts-and-quality-gates.md)                                                          |
+| Harness / 产品能力装配 业界校准            | [44 GA Harness 与产品能力装配调研](kokoro-handbook/technical/44-ga-harness-and-workflow-research.md)                                                                                                                                                  |
+| Feature warm、Factory 与未来可视化 Builder | [GA 核心架构](kokoro-handbook/technical/42-ga-core-architecture.md)、[GA 落地切片](kokoro-handbook/technical/43-ga-clean-build-slices.md)                                                                                                             |
+| native Agent state、fork、delete、memory   | [ADR-018](kokoro-handbook/decisions/ADR-018-ga-thread-context-compaction-and-memory.md)、[Session 生命周期](kokoro-handbook/business-flows/session-lifecycle.md)                                                                                      |
+| FeatureKey 与 tenant/App exposure          | [ADR-021](kokoro-handbook/decisions/ADR-021-feature-key-global-catalog-identity.md)、[31 Tenant/System/Web](kokoro-handbook/technical/31-kokoro-tenant-system-architecture-v2.md)                                                                     |
+| 运行事件、reply owner、JobRef card         | [ADR-016](kokoro-handbook/decisions/ADR-016-orchestration-policy-and-product-event-projection.md)、[Session/GA/Web 链路](kokoro-handbook/business-flows/agent-session-web-general-chat-runtime.md)                                                    |
+| 当前本地原型目录/边界                      | [Agent 设计卡](kokoro-handbook/technical/backend-design/09-agent.md)、[Agent 模块](kokoro-handbook/modules/kokoro-agent.md)、[BFF Chat 契约](../kokoro/docs/integration/chat-bff-contract-v1.md)                                                      |
+| clean-build 实现切片                       | [45 GA 原型就绪审计](kokoro-handbook/technical/45-ga-prototype-readiness-audit.md)、[43 GA clean-build 切片](kokoro-handbook/technical/43-ga-clean-build-slices.md)、[38 GA 公共运行契约](kokoro-handbook/technical/38-ga-public-runtime-contract.md) |
+| Storage 与 Capability 当前原型参考         | [29 Storage target × Capability](kokoro-handbook/technical/29-capability-storage-runtime-architecture.md)、[Capability 设计卡](kokoro-handbook/technical/backend-design/05-capability.md)                                                             |
+| Feature context 基础裁决                   | [ADR-015](kokoro-handbook/decisions/ADR-015-agent-state-and-feature-context.md)                                                                                                                                                                       |
 
 以下仍为过程方案：
 
 0. [kokoro-system、Tenant 隔离与 kokoro-web-user 技术方案](superpowers/specs/2026-08-22-kokoro-system-and-web-user-architecture.md)
-0.1 [kokoro-system 与 kokoro-iam 改造实施计划 v2](superpowers/plans/2026-08-22-kokoro-system-iam-refactor-plan-v2.md)
+   0.1 [kokoro-system 与 kokoro-iam 改造实施计划 v2](superpowers/plans/2026-08-22-kokoro-system-iam-refactor-plan-v2.md)
 
 1. [整体业务、Platform、Web、Session 与 Agent 产品目标架构 v1.5](superpowers/specs/2026-07-25-platform-web-session-target-architecture-design.md)
 2. [Production Delivery Program](superpowers/plans/2026-07-25-kokoro-production-delivery-program.md)
@@ -109,39 +99,39 @@ Storage 的 S3-compatible ObjectStore。
 7. [Platform Modular Core 与 Internal RPC](superpowers/specs/2026-07-25-platform-modular-core-internal-rpc-design.md)
 8. [Execution Budget Allocation Protocol](superpowers/specs/2026-07-25-execution-budget-allocation-protocol-design.md)
 9. [Asset、Artifact、Blob Ownership、Promotion 与 GC](superpowers/specs/2026-07-25-asset-artifact-ownership-promotion-gc-design.md)
-11. [Session HTTP/SSE Production Transport](superpowers/specs/2026-07-25-session-http-sse-production-transport-design.md)
-12. [Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-client-access-plane-developer-client-design.md)
-13. [Capability Control、Runtime、Connection 与 Effect](superpowers/specs/2026-07-25-capability-control-runtime-connection-effect-architecture-design.md)
-14. [PRD-00 Launch Profile 与 Journey Contract](superpowers/specs/2026-07-25-prd-00-launch-profile-and-journey-contract.md)
-15. [PRD-01 Site Identity 与 Account Security](superpowers/specs/2026-07-25-prd-01-site-identity-and-account-security.md)
-16. [PRD-02 Workspace、Membership 与 Project](superpowers/specs/2026-07-25-prd-02-workspace-membership-and-project.md)
-17. [PRD-03 Account、Plan、Redeem 与 Credit](superpowers/specs/2026-07-25-prd-03-account-plan-redeem-and-credit.md)
-18. [PRD-04 Checkout、Subscription 与 Billing](superpowers/specs/2026-07-25-prd-04-checkout-subscription-and-billing.md)
-19. [PRD-05 Chat Conversation、Run 与 Interaction](superpowers/specs/2026-07-25-prd-05-chat-conversation-run-and-interaction.md)
-20. [PRD-06 Asset Intake 与 Attachment Safety](superpowers/specs/2026-07-25-prd-06-asset-intake-and-attachment-safety.md)
-21. [PRD-07 Studio Common、Job 与 Cost UX](superpowers/specs/2026-07-25-prd-07-studio-common-job-and-cost-ux.md)
-22. [PRD-08I Image Studio](superpowers/specs/2026-07-25-prd-08i-image-studio.md)
-23. [PRD-08M Music Studio](superpowers/specs/2026-07-25-prd-08m-music-studio.md)
-24. [PRD-08V Video Studio](superpowers/specs/2026-07-25-prd-08v-video-studio.md)
-25. [PRD-09 Library、Artifact、Export 与 Share](superpowers/specs/2026-07-25-prd-09-library-artifact-export-and-share.md)
-26. [PRD-10 Admin Operating Console](superpowers/specs/2026-07-25-prd-10-admin-operating-console.md)
-27. [PRD-11 Support、Recovery 与 Appeals](superpowers/specs/2026-07-25-prd-11-support-recovery-and-appeals.md)
-28. [PRD-12 Site Lifecycle 与 Fleet](superpowers/specs/2026-07-25-prd-12-site-lifecycle-and-fleet.md)
-29. [PRD-13 Growth、SEO、Experiment 与 Attribution](superpowers/specs/2026-07-25-prd-13-growth-seo-experiment-and-attribution.md)
-30. [PRD-14 Localization 与 Accessibility](superpowers/specs/2026-07-25-prd-14-localization-and-accessibility.md)
-31. [PRD-15 Notification、Preferences 与 Data Rights](superpowers/specs/2026-07-25-prd-15-notification-preferences-and-data-rights.md)
-32. [PRD-16 Trust、Content Safety 与 Media Rights](superpowers/specs/2026-07-25-prd-16-trust-content-safety-and-media-rights.md)
-33. [PRD-17 Model Option、Control 与 Provider Operations](superpowers/specs/2026-07-25-prd-17-model-option-control-and-provider-operations.md)
-34. [PRD-18 Capability Catalog、Connection、Consent 与 Runtime UX](superpowers/specs/2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md)
-35. [PRD-A1 AgentRevision、Selection 与 Handoff](superpowers/specs/2026-07-25-prd-a1-agent-revision-and-handoff-product.md)
-36. [PRD-A2 ExecutionTarget、Device、Permission 与 Interaction](superpowers/specs/2026-07-25-prd-a2-target-device-permission-and-interaction.md)
-37. [PRD-A3 Developer Workspace、Context 与 Multi-device](superpowers/specs/2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md)
-38. [PRD-A4 Routine、Connector 与 TaskView](superpowers/specs/2026-07-25-prd-a4-routine-connector-and-taskview.md)
-39. [PRD-A5 Agent Team、Wide Research 与 Application Runtime](superpowers/specs/2026-07-25-prd-a5-agent-team-research-and-application-runtime.md)
-40. [PRD-A6 Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-prd-a6-client-access-plane-cli-desktop-and-ide.md)
-41. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
-42. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
-43. [全局设计完成度与实现授权审计](reports/2026-07-25-kokoro-design-completion-audit.md)
+10. [Session HTTP/SSE Production Transport](superpowers/specs/2026-07-25-session-http-sse-production-transport-design.md)
+11. [Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-client-access-plane-developer-client-design.md)
+12. [Capability Control、Runtime、Connection 与 Effect](superpowers/specs/2026-07-25-capability-control-runtime-connection-effect-architecture-design.md)
+13. [PRD-00 Launch Profile 与 Journey Contract](superpowers/specs/2026-07-25-prd-00-launch-profile-and-journey-contract.md)
+14. [PRD-01 Site Identity 与 Account Security](superpowers/specs/2026-07-25-prd-01-site-identity-and-account-security.md)
+15. [PRD-02 Workspace、Membership 与 Project](superpowers/specs/2026-07-25-prd-02-workspace-membership-and-project.md)
+16. [PRD-03 Account、Plan、Redeem 与 Credit](superpowers/specs/2026-07-25-prd-03-account-plan-redeem-and-credit.md)
+17. [PRD-04 Checkout、Subscription 与 Billing](superpowers/specs/2026-07-25-prd-04-checkout-subscription-and-billing.md)
+18. [PRD-05 Chat Conversation、Run 与 Interaction](superpowers/specs/2026-07-25-prd-05-chat-conversation-run-and-interaction.md)
+19. [PRD-06 Asset Intake 与 Attachment Safety](superpowers/specs/2026-07-25-prd-06-asset-intake-and-attachment-safety.md)
+20. [PRD-07 Studio Common、Job 与 Cost UX](superpowers/specs/2026-07-25-prd-07-studio-common-job-and-cost-ux.md)
+21. [PRD-08I Image Studio](superpowers/specs/2026-07-25-prd-08i-image-studio.md)
+22. [PRD-08M Music Studio](superpowers/specs/2026-07-25-prd-08m-music-studio.md)
+23. [PRD-08V Video Studio](superpowers/specs/2026-07-25-prd-08v-video-studio.md)
+24. [PRD-09 Library、Artifact、Export 与 Share](superpowers/specs/2026-07-25-prd-09-library-artifact-export-and-share.md)
+25. [PRD-10 Admin Operating Console](superpowers/specs/2026-07-25-prd-10-admin-operating-console.md)
+26. [PRD-11 Support、Recovery 与 Appeals](superpowers/specs/2026-07-25-prd-11-support-recovery-and-appeals.md)
+27. [PRD-12 Site Lifecycle 与 Fleet](superpowers/specs/2026-07-25-prd-12-site-lifecycle-and-fleet.md)
+28. [PRD-13 Growth、SEO、Experiment 与 Attribution](superpowers/specs/2026-07-25-prd-13-growth-seo-experiment-and-attribution.md)
+29. [PRD-14 Localization 与 Accessibility](superpowers/specs/2026-07-25-prd-14-localization-and-accessibility.md)
+30. [PRD-15 Notification、Preferences 与 Data Rights](superpowers/specs/2026-07-25-prd-15-notification-preferences-and-data-rights.md)
+31. [PRD-16 Trust、Content Safety 与 Media Rights](superpowers/specs/2026-07-25-prd-16-trust-content-safety-and-media-rights.md)
+32. [PRD-17 Model Option、Control 与 Provider Operations](superpowers/specs/2026-07-25-prd-17-model-option-control-and-provider-operations.md)
+33. [PRD-18 Capability Catalog、Connection、Consent 与 Runtime UX](superpowers/specs/2026-07-25-prd-18-capability-catalog-connection-consent-runtime-ux.md)
+34. [PRD-A1 AgentRevision、Selection 与 Handoff](superpowers/specs/2026-07-25-prd-a1-agent-revision-and-handoff-product.md)
+35. [PRD-A2 ExecutionTarget、Device、Permission 与 Interaction](superpowers/specs/2026-07-25-prd-a2-target-device-permission-and-interaction.md)
+36. [PRD-A3 Developer Workspace、Context 与 Multi-device](superpowers/specs/2026-07-25-prd-a3-developer-workspace-context-and-multidevice.md)
+37. [PRD-A4 Routine、Connector 与 TaskView](superpowers/specs/2026-07-25-prd-a4-routine-connector-and-taskview.md)
+38. [PRD-A5 Agent Team、Wide Research 与 Application Runtime](superpowers/specs/2026-07-25-prd-a5-agent-team-research-and-application-runtime.md)
+39. [PRD-A6 Client Access Plane：CLI、Desktop 与 IDE](superpowers/specs/2026-07-25-prd-a6-client-access-plane-cli-desktop-and-ide.md)
+40. [全项目模块、能力与闭环覆盖审计](reports/2026-07-25-kokoro-module-capability-coverage-audit.md)
+41. [Redeem-first Production Launch Checklist](reports/2026-07-25-kokoro-production-launch-readiness-checklist.md)
+42. [全局设计完成度与实现授权审计](reports/2026-07-25-kokoro-design-completion-audit.md)
 
 ## 当前实施计划
 
@@ -218,7 +208,7 @@ Storage 的 S3-compatible ObjectStore。
 没有正式远程仓，也不出现在当前 manifest、Compose、CI 或运行路径中。历史材料只用于
 迁移考古，不是当前实现入口。
 
-镜像发布约束保持不变：普通 push/PR 只运行质量检查；只有 v*.*.* tag 触发生产
+镜像发布约束保持不变：普通 push/PR 只运行质量检查；只有 v*._._ tag 触发生产
 GHCR workflow。Dockerfile 使用生产启动命令，本地开发直接使用各仓 dev 命令；
 本轮未修改 GHCR package visibility。
 
