@@ -994,3 +994,10 @@ Arendt绑定c9d1d35..4975b89确认三面设计通过，无P1/P2；现已回收�
 Carver交付 `a1ae65d1937ab65b05e399981f5322d4dfc877c8`，已停写；18文件严格限于4生产、7测试、7文档，Schema/业务SQL/机器源/generated/依赖/CI没有变化。主控已读生产与测试diff，规格复核未发现阻断项；候选仍未合入日常主目录4975b89。
 独立代码审查由Kant（01a07171-47f3-7291-a450-40a9fb373111，派发指定gpt-5.6-sol）承担，固定4975b89..a1ae65d，只读源码/设计与本地驱动，不连接数据库、不写文件。主控并行重跑候选lint/typecheck/contract/build、标准格式/link及完整PG-only，作者自报495通过不替代主控结果。
 主控已独立运行候选built runtime与实际installer探针：三个不同PID首条读取均UTC；实际installer首个SQL前UTC、随后真实安装15表；只清理探针自己创建的数据库与测试密钥。日志 `/tmp/kokoro-iam-goal/r2-3-review/candidate-entry-green-a1ae65d.log`。这一通过不代替完整进程/Redis/TLS/消费者验收。
+
+候选主控复验已完成：31文件495通过、Redis两项明确排除；lint/typecheck/contract/build、7份Markdown与4新增TS标准Prettier、257链接均通过，日志candidate-gates-a1ae65d.log。main-scope-check.json证明18文件授权集准确且Schema字节未变。Carver已回收；IAM继续等独立审查后才集成。Root IAM-only预检对主目录4975b89仍为原9项失败，未降低规则。
+
+### 下一数据片的实测输入（不授权 R2-3 扩围）
+
+主控从当前principal.repository的AST提取两条原SQL，在同一PG的随机自有库安装canonical Schema，建立每表10万行合成contact/membership及一致父资源，9万行为单一tenant，其余分散到10个tenant，含20% revoked/removed历史。历史邮箱查找和按principal取membership均Seq Scan、过滤99999行，分别1440/1429 shared hit blocks；只在该自有库加两个完整非唯一B-tree访问索引后均Index Scan、4 hit blocks，仍返回同一历史行。
+原Schema/Repository未修改，自有库已删除；日志及完整JSON计划位于 `/tmp/kokoro-iam-goal/r2-4-review/query-plan-probe.log`、query-plan-evidence.json。该证据是单机合成访问路径对比，不是线上负载、容量或延迟SLO证明。下一片先更新三面设计再审查放行，评估完整历史读取索引；不得通过收窄status谓词、删除历史或扩大UNIQUE语义来换计划。其他JOIN/claim查询仍需单独代表性证据。
