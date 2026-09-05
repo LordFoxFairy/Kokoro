@@ -1011,3 +1011,23 @@ Kant固定4975b89..a1ae65d审查PASS，无P1/P2；P3指出当前UTC回归在默�
 
 上一轮为progress：70485c6已完成源码/测试修改和主目录真实验证。Kant对a1ae65d..70485c6复核PASS，P3闭合且无新增问题，现已回收。主控在日常IAM重跑lint/typecheck/contract/build、11文件标准格式、257链接、PG-only31文件495项及实际built runtime/installer均通过，日志main-gates-70485c6.log；Redis2项排除。移除UTC参数的独立临时快照RED为两个真实入口失败/10未选skip，无TypeError，临时库与快照已清理。Root预检仍9项失败，留R3。
 IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代码负责、连接UTC由应用配置负责、非UTC数据库默认仅为隔离测试前置条件；已移除R2-3待集成状态。文档收口修正一个因标题变化失效的README锚点后，7份标准Prettier、257链接及3文件52项聚焦门通过，main-doc-closure.log。生产/DDL/测试保持70485c6；日常IAM干净。完整目标继续推进SQL/API/运行等欠项，不用本片通过替代全IAM验收。
+
+## 19. R2-4 身份历史读取访问索引任务卡
+
+主控以IAM f5f21a9收口基线完成三面设计：DATA_MODEL §5.1、TECHNICAL_DESIGN §8.4、API_CONTRACT §7.4；CURRENT明确待设计审查。此时仅四文档变化，生产/Schema/测试仍70485c6对应字节；257链接/标准格式/diff通过。旧读取所需历史不变，禁止用收窄查询或扩大UNIQUE取代访问优化。
+
+| 项 | 本片边界 |
+| --- | --- |
+| Owner/writer | IAM/auth/principals；主控先收敛设计后停写，独立设计审查通过才续派单一writer |
+| 目标 | 两条现存全历史点查从代表性全表扫描转为有界访问，业务/API/事务行为不变 |
+| Schema | 只增ix_iam_contact_email(tenant_id,email_normalized)、ix_iam_membership_principal(tenant_id,principal_id)，完整非唯一B-tree，无predicate/INCLUDE，31→33索引 |
+| 保留 | 两个partial UNIQUE与其他所有表/列/约束/索引，47手写目录，Repository原SQL/Service/锁/生成物/依赖 |
+| 测试 | 新test/integration/identity-query-plans.integration.test.ts、test/fixtures/identity-query-plan-fixture.ts；原contract/schema与integration/schema只补相关索引断言 |
+| 粒度 | 计划用例不堆入catalog测试；fixture专管原SQL定位/合成数据/窄计划读取/隔离库，不建生产query框架或JWT/Redis依赖 |
+| 数据/验证 | 每表10万行含历史与tenant倾斜；实际原SQL、默认规划器EXPLAIN ANALYZE BUFFERS，点查块预算≤256，允许Index/Bitmap形态；保留合法历史重复/拒绝非法活跃重复，报告索引大小 |
+| 清理 | 测试只CREATE并登记/清理自身随机库，基准库/role/实例不变；不启停PG/Redis，不加入迁移或生产ALTER runner |
+| 文档范围 | 七份当前文档仅更新本片事实，不重写历史计数，不提前宣称全部SQL/API验收 |
+| 完成门 | 行为/计划RED→Schema→完整PG-only/lint/typecheck/contract/build/格式链接→主控规格→独立质量→主目录集成重跑 |
+| 非目标 | 其他JOIN/claim代表性计划、完整catalog drift、orphan/retention、API/运行/依赖升级或其他仓 |
+
+目前仅放行设计审查；源码需本节追加明确通过记录及writer/基线才实施。官方PG18索引语义已于2026-09-05核验，选定两索引还以本仓实际SQL和隔离合成计划为依据，不宣称全行业模板或线上SLO。
