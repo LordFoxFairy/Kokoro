@@ -925,3 +925,15 @@ Parfit复核5cb9e91..012ebba：P2闭合、无新增findings；三面设计已一
 连接URL内若带options=TimeZone=Asia/Tokyo，会覆盖Client对象options，实际Tokyo且search_path也失去runtime显式值。
 故后续“每连接UTC”不能只加一个可能被连接URL覆盖的对象属性；需定义受控连接参数与URL保留/拒绝规则，并验证连接重建与Pool/installer两入口。
 日志在 `/tmp/kokoro-iam-goal/r2-2-review/shared-dependencies-probe.json`、utc-policy-probe.jsonl；只改连接自身session参数并读取设置，没有改角色/数据库配置或业务数据。
+
+### R2-2 主控规格复核与返修
+
+Carver交付候选 `33603ffd0c763d5b3e4bb31dd9f0610a319f276c`，主控尚未集成。生产变更限于唯一Schema及两个Repository，46手写文件与机器契约不变。
+主控以012ebba和33603ff的不可变DDL分别安装随机空库，实际PG18.4 catalog对比通过：15表、127列、145约束、31索引；仅两列和两个CHECK集合变化，其余结构一致。两个自建库已清理，日志catalog-green-33603ff.log。
+规格复核发现新增测试的真实锁等待观察存在竞态，部分失败路径未保证释放屏障/收束认证Promise；另有未到COMMIT即拒绝的测试被描述为恢复验证。
+已续派同一writer修正有界屏障与清理，补删除回滚、拒绝不新增事实、无关组织不影响既有session、未知提交确实进入恢复的断言，并删除新增测试中的分支强转/空凭据fallback。
+候选保持未放行，修正后才进入独立代码审查及主目录复验；作者报告的381通过不是该门已通过的依据。
+
+后续UTC连接设计的官方依据已核验：[pg Client options](https://node-postgres.com/apis/client)、[PostgreSQL连接默认项](https://www.postgresql.org/docs/18/runtime-config-client.html)。
+TimeZone是连接的时间解释/显示设置，不因列为TIMESTAMPTZ就自动固定为UTC；当前驱动的URL覆盖行为另由上述本机连接探针证明。
+这项仅形成后续设计证据，不在R2-2修改连接配置或启动共享依赖。
