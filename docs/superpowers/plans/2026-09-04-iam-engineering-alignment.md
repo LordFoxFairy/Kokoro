@@ -1130,3 +1130,16 @@ R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅�
 IAM 三面设计先落到 `5f102d4`，随后以 `7fe83e7` 补全关系边界，再以 `ee4d012` 明确 active/historical 父资源策略。Rawls（`gpt-5.6-luna`）提出的 P1 已修订并由 Copernicus（`gpt-5.6-luna`）独立复审 PASS：catalog 对比边界、固定关系白名单、资源限制、refresh fail-closed、Logout 历史撤销/重放和四类父行缺失测试均已明确。现允许进入 R2-5 RED/实现；仍保持单一 IAM writer，主控不并发修改 IAM。
 
 R2-5 实现负责人已派发 Peirce（`01a0726a-0522-7eb0-a4c7-6b4850a5d402`，指定 `gpt-5.6-sol`），唯一写入范围为 IAM baseline `ee4d012` 的 catalog/relation scripts、Session parent policy 相关源码与 doubles/integration tests、package scripts 和当前验收文档。主控不抢写 IAM；作者需先形成父缺失 RED，再提交单一业务切片，交付后停写，主控规格复核、独立审查和主目录复验。
+
+### IAM-R2-5 实现交付与主控复验
+
+Peirce 在停止写入前留下的变更由主控接管为唯一 writer，收敛为 IAM commit `c10de28 feat(iam): add sql integrity verification`；未覆盖或回滚用户/其他 Agent 的工作树变更。
+
+- `scripts/schema-catalog.ts` 从 PostgreSQL `pg_catalog` 读取固定 `kokoro` schema 的表、列、PK/UNIQUE/CHECK/FK 和索引语义；`scripts/verify-schema-catalog.ts` 在同一 PostgreSQL 实例创建随机 oracle database，安装唯一 `database/schema.sql`，只读比较并在 drift 时非零退出，不自动修复。
+- `scripts/audit-relations.ts` 只执行登记的 20 条关系查询，要求 tenant、UTC 时间窗和上限，使用 READ ONLY/statement/lock/idle timeout；SQL 全部参数化，关系异常只报告，不 DELETE。验证脚本导入不触发数据库连接或进程退出。
+- Session Repository 增加明确 `active`/`historical` 父资源策略：refresh 缺失 tenant/principal/organization/membership 任一父行时 fail-closed；Logout 继续允许历史 session 撤销与 receipt replay。integration 覆盖四类物理父行缺失且检查 session 行无 refresh 副作用。
+- 文档门已同步：CURRENT、TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、ACCEPTANCE；新增脚本 unit 覆盖 allow-list、稳定 diff、固定参数和有界关系 SQL。
+
+主控验证已通过：`git diff --check`、`pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build`；真实 PostgreSQL 隔离驱动 fresh install 后 33 个测试文件、530 项通过、0 失败，Redis 依赖测试显式排除不计通过；catalog subject/oracle 相等，20 条关系审计在空租户窗口均为 0。只创建并清理本次随机数据库，未启动/重启/flush PostgreSQL、Redis 或 Docker。
+
+当前状态：主控已交付 commit，等待绑定 `c10de28` 的独立只读代码审查；在审查结论和 Root 复验提交前，R2-5 不标记为最终验收。R2-5 仍不包含 IAM 管理 writer/API、retention、自动 orphan 修复、完整 Redis/进程/provider smoke 或 BFF/Web 消费者验收。
