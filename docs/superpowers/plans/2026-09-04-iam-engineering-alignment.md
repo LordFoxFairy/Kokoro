@@ -1191,7 +1191,7 @@ R2-6 已由主控在 IAM commit `729ccf5 refactor(iam): converge authentication 
 ### IAM-R2-7：Tenant 生命周期管理三面设计（仅设计，未实施）
 
 R2-6 后不能继续把 Tenant 管理代码放进 Authentication，也不能只创建一个空 `modules/tenant` 目录。SQL/API 只读盘点确认：
-`iam_tenant` 是 15 张表的范围父事实，当前只有 active 准入读取，没有创建、查询、分页、停用或恢复 writer/API。因此下一片先收敛真实 Tenant 管理能力。
+`iam_tenant` 是当前 16 张表的范围父事实，当前只有 active 准入读取，没有创建、查询、分页、停用或恢复 writer/API。因此下一片先收敛真实 Tenant 管理能力。
 
 | 项 | 当前裁决 |
 | --- | --- |
@@ -1290,3 +1290,16 @@ receipt 的 command kind/status/result 一致性、管理 audit 明确列和认�
 I1/I2 由同一个 writer 在独立工作树按小切片提交；主控不与其并发写 IAM。任何新增一级目录、跨模块 import 或契约字段必须先回到
 `TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 的放置/一致性表；不得创建 `services/`、`repositories/`、`postgres/`、
 `redis/`、`prisma/` 空技术目录，不得把 Tenant 代码塞进 `authentication`。I1 未交付前不实施 I2，I2 未通过真实验证前不宣称 IAM 完成。
+
+### IAM-R2-7-I1 已验收，进入 I2
+
+I1 已在 IAM 分支按小切片交付，最终代码提交为 `f3b5b7d`，文档/测试证据收口为 `c1c1186`、`1e984bb`。交付内容是 Tenant
+Proto/generated/provenance、`iam_tenant_command_receipt` 与管理 security-event Schema 约束、23 条固定关系审计和真实 Schema
+语义测试；没有创建空 `modules/tenant/`，也没有宣称 Tenant runtime 已实现。主控验证 `pnpm contract:check`、`pnpm typecheck`、
+`pnpm lint`、`pnpm build`、`pnpm test -- --runInBand` 全部通过；普通测试为 25 文件通过、329 passed、9 文件/207 skipped；
+隔离 PostgreSQL 的 Schema 测试 8/8、连接/安装测试 12/12、catalog 输出 `ok:true`。Lorentz（`gpt-5.6-luna`）独立只读复审
+最终 PASS，P1/P2/P3 均为 0。历史 R2-5 的 22 条关系和 15 表数字已在 IAM 验收文档中明确标注为历史基线。
+
+现在仅放行 I2：由同一 IAM writer 创建真实 `src/modules/tenant/`，实现管理 caller/assertion、Repository/Service、RPC 注册、
+canonical request/cursor parser、receipt/audit 事务和真实 PG 并发/回放/未知提交恢复；禁止顺手创建 `identity`、`organization`、
+`audit` 空目录或继续扩张 I2 范围。
