@@ -1169,4 +1169,19 @@ modules/
 
 本裁决已写入 IAM `0334665 docs(iam): clarify module ownership topology`。下一步必须先为首个管理能力补齐 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL` 三面文档和权限/事务/删除策略，再以单一 writer 实施真实模块迁移；禁止继续向 `auth` 塞入 Tenant、Organization、Role 管理代码，也禁止先创建空模块。R2-5 审查与 IAM 文档门闭环后，下一片优先选择一个真实 owner（不跨多个能力混写）进入实现。
 
-IAM `562cf67 docs(iam): map current authentication ownership` 已补充当前文件到目标 owner 的迁移表：magic-links/sessions/idempotency 与认证事务归 `authentication`；首次登录 identity graph 在 identity/organization 管理 writer 收敛前暂不硬拆；Authorize 读模型归 authorization；安全事件追加暂留认证内部；RPC 最终归跨模块 transport。该决定避免只为增加目录数量而制造伪边界。下一片先做一个真实管理 owner 的三面设计，未完成文档门前不搬目录、不新增 Proto/Schema。
+IAM `562cf67 docs(iam): map current authentication ownership` 已补充当前文件到目标 owner 的迁移表：magic-links/sessions/idempotency 与认证事务归 `authentication`；首次登录 identity graph 在 identity/organization 管理 writer 收敛前暂不硬拆；Authorize 读模型归 authorization；安全事件追加暂留认证内部；RPC 最终归跨模块 transport。该决定避免只为增加目录数量而制造伪边界。下一片先完成 R2-6 物理收敛，随后再为真实管理 owner 做三面设计；未完成相应门禁前不新增 Proto/Schema。
+
+### IAM-R2-6：认证首发切片的物理模块收敛
+
+R2-5 已收口后，先实施一个不改变业务/API/SQL 的真实目录切片，消除当前 `modules/auth` 的模糊命名并抽出已经具备独立职责的授权读取与跨模块 transport：
+
+```text
+src/modules/authentication/   # 当前认证首发组合：links、sessions、identity onboarding、receipt、audit append
+src/modules/authorization/    # Authorize 读取服务；后续 role/grant writer 的唯一 owner
+src/rpc/                      # authentication/authorization RPC、metadata、错误映射
+src/http/                     # JWKS 等 HTTP transport；health 保持已有运维入口
+```
+
+允许范围：将 `src/modules/auth/**` 按上述目标移动、更新直接 import、更新 `INDEX.md` 和三面文档中的当前路径；允许同步测试路径引用和架构断言。禁止修改 `database/schema.sql`、Proto/generated、错误码/字段/端口、SQL 字面量、依赖、运行时语义或其他子仓。禁止创建空 `tenant`、`identity`、`organization`、`audit` 目录；这些模块等真实管理 writer/API 进入后再落地。
+
+完成门：旧 `src/modules/auth` 路径删除且无 alias/re-export；`src/modules/authorization` 有真实生产 service；`src/rpc` 同时承载至少两个业务 RPC；所有 import/架构检查通过；`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm test`、`pnpm build`，以及现有 PostgreSQL 隔离回归全部通过。该切片只改变职责可见性，不宣称 IAM 管理能力完成。
