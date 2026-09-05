@@ -597,3 +597,41 @@ contract 与 Schema 的 diff 必须为空；新路径由源码和 built-JS 引�
 不把空间恢复当成共享服务已恢复。验证驱动保留 1 GiB preflight；本片不安装依赖或下载镜像。
 小粒度以这次自洽的“职责与物理目录 cutover”为一个可审查提交，不提交中间双轨；交付后停写，主控审查与独立质量
 审查、主仓复验后再另行授权 S4/S5。Root 只记录治理证据，不拥有 IAM 业务实现。
+
+## 11. S4 API 与治理预审（尚未放行实现）
+
+Euclid（`01a0707a-0ac8-7f60-a76c-c959f8c3d5fc`）在主 IAM 精确 `c5c7a0c` 做只读 API 审查，
+主控随后独立重跑其 loopback 探针：21 个真实 HTTP/RPC 请求、34 个断言通过，退出 0。断言用于确认现有缺陷，
+不是修复验收；用例使用 Service/readiness stub，不代表真实身份、PG、Redis 或端到端启动。审查 Agent 已回收。
+
+| 范围       | 已复现事实                                                                                                                                | 后续实施要求                                                                                                  |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Proto 校验 | nonce/command UUID/digest 的非法组合进入 Service stub；现有链未执行 Protovalidate                                                         | 按实际 input descriptor 执行单例 validator；业务邮箱规范化、redirect allowlist、tenant/状态校验仍各归原 owner |
+| request ID | 成功 RPC 无关联 header；workload 早错生成两个 UUID；空 body、有 header 时 detail 为空；超长/Unicode/空白可导致分叉或无 detail 的 Internal | 一个请求 Context；先建立安全候选，解码后定稿；handler/error/log/成功 metadata 使用同一结果，不反射非法原文    |
+| 协议早错   | JSON/timeout 解析错误及截断 binary 发生在 interceptor 之前，无 IAM 关联日志                                                               | 在实际适配边界覆盖结束日志/header；按下述协议决定区分原生错误与业务 detail，不重复解析正文                    |
+| deadline   | 客户端声明 5ms，100ms Service stub 仍执行完成并返回 200                                                                                   | 服务端执行预算与下游取消实际接线；仅配置客户端 deadline 或 Promise.race 不证明事务已停止                      |
+| 治理       | IAM-only Root preflight 11 项失败                                                                                                         | S3b 收敛两个目录项；另九项工具链/类型/格式门在 S4 处理，不改 Root 检查来迁就旧实现                            |
+
+原始探针及主控复验仅在 `/tmp/iam-s4-review.YO4sOO/`，不作为仓内长期测试依赖。S4 实现必须将成功、
+非法输入、早错、大小/压缩、deadline/断开、序列化失败的断言落入本仓真实 socket 测试。
+
+### 实施前必须明确的窄决策
+
+- 保留六方法、字段编号和三 HTTP 的产品范围。request ID 的 ASCII/长度、重复 header、body/header 优先级；
+  tenant/permission/opaque token 的新增长度上限，须写进 owner 契约后再实现。tenant 不改为 UUID，不规范化大小写。
+- `request_digest` 当前上限是 UTF-16 code units；Protovalidate `max_len` 是 Unicode 码点，二者不等价。
+  直接执行邮箱注解也可能改变 trim/lowercase 后的既有接受集合；须明确规则位置，避免框架升级偷偷改变业务行为。
+- Connect-Fastify **2.1.2** 的原生解析/编码早错不进入 interceptor，也不抛给 Fastify error handler；该版本没有
+  官网新示例中的 `requestGate`。审查现有承诺后决定原生协议错误的 detail 边界，不用 onSend 重写帧或第二次 body parse。
+- `Canceled/DeadlineExceeded/ResourceExhausted` 不应被通用 mapper 误写成 Internal 或业务 RATE_LIMITED；
+  原生协议码与业务错误枚举分别建模。断开的 socket 与原始 HTTP parser 错误不承诺客户端收到响应 metadata。
+- `maxTimeoutMs` 只约束客户端传入上限，不提供无 header 时的默认执行预算；Fastify HTTP handlerTimeout 的 503
+  不直接套在 Connect RPC。RPC 的大小/压缩由 Connect raw-stream reader 负责，HTTP Zod 不解析第二遍 RPC。
+- 候选预算：RPC read 64KiB/write 1MiB、执行 10s；HTTP health/JWKS 2s、ready 15s；header 16KiB、接收 10s、
+  inactivity 20s、keep-alive 5s。这些是待真实负载和取消验证的起始取舍，不是实测 SLO 或已经采用的 API 上限。
+- Node、pnpm、TypeScript/ESLint、Fastify/Connect/Zod 的精确版本在 S4 开始时重核稳定兼容与 release-age；
+  已有临时框架安装、类型与共享 shutdown 预验见第 8 节，不把 registry latest 或临时 probe 当作本仓升级已通过。
+
+Root preflight 由现有 common/delivery/typescript 检查限定 IAM 运行，失败即退出 1；未扫描或修改其他子仓。
+除两个目录项外，剩余为 engines、strictDepBuilds、format:check、三项 TS 检查开关、skipLibCheck、ES2024 target/lib。
+未命中 SQL 文本规则不代表 SQL 设计、catalog drift、retention 或真实并发已完成 S5 验收。
