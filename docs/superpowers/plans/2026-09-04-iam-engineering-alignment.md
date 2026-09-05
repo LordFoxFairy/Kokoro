@@ -13,7 +13,7 @@
 - IAM 负责人：Ohm，原生子 Agent ID `01a06e48-9d74-7531-b697-2946ab0890e3`。
 - SQL/事务只读审查：Ramanujan，`01a06e5c-20f4-7652-9b0e-7402959a14fd`。
 - API/认证语义只读审查：Franklin，`01a06e5c-2153-7f71-aca8-41673f15dc80`。
-- 当前派工基线：Root `1deeb5204a26b0d4dab0413fdc25f369ce62e54a`；IAM `23a0b65e0e361d474d9afed491379df45a36f574`。
+- 首次派工基线：Root `1deeb5204a26b0d4dab0413fdc25f369ce62e54a`；IAM `23a0b65e0e361d474d9afed491379df45a36f574`；当前切片以对应任务卡为准。
 - IAM 工作目录：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`；分支 `codex/production-closure-docs`。
 - 派工时 IAM 工作树干净。Root 已有 `kokoro-agent` 与 `.tmp/` 的任务外变更，不覆盖、不暂存。
 
@@ -364,7 +364,7 @@ S3a 一并明确关闭所有 3xx 跟随，保留稳定非重试 provider 错误�
 “仅去掉 Authorization 就安全”的断言。临时 listener 已关闭。已异步询问实际供应商或测试环境入口，不索取聊天明文
 凭据；当前通用 HTTP 协议/占位地址不证明已经接入任何真实邮件服务。
 
-S3 拆为两个提交边界，尚未派工：
+S3 拆为两个提交边界；S3a 已在第 9 节放行，S3b 待其验收：
 
 - **S3a：投递故障闭环。** 继续使用现有路径，唯一 writer 修改 delivery 中性模型、Repository、Processor、
   SecretBox 窄输入输出、装配与相关测试/文档；不混入全仓 rename、Schema、Proto 或依赖替换。先同步技术/API/数据
@@ -409,6 +409,22 @@ process.env 的属性/下标/解构读取；注释和普通字符串示例不误
 Owner 为 IAM 的 Magic Link 投递子能力，唯一 writer 仍为 Ohm，原独占 worktree。只修复既有投递行为，
 不搬整个目录、不换框架/工具链、不新增邮件产品或管理 API。起始 SHA 为已复审并集成的
 `3579ec7ddfd09a94d126f106daeec759440a2acf`，原 worktree 干净，分支 `codex/iam-engineering-alignment`。
+
+### 资源压力、保留与恢复
+
+S3a 曾因 Root 写入失败暂停。负责人保留了 4 份文档/3 份测试（14 RED、18 通过），生产代码尚未修改，
+没有遗留测试进程；主控核对 Root 文件与 HEAD 一致、未损坏。随后原 Root 文件补丁及自有 64 KiB write/fsync
+复验通过，恢复小型源码工作；低于 1 GiB 时新建 PG 库/批量写入验证仍暂停，不把 unit 当成完整验收。
+
+主控只清理本任务的可重建资源：早期手册临时 fixture 的 node_modules 保留 Prettier 3.9.6 原路径（零依赖），
+保留 source/manifest/lockfile；独立 Node 下载目录仅移除闲置 include 构建头文件，bin/lib/许可证等保持。
+Prettier 与 Node/crypto 启动验证通过，没有改项目依赖、业务/数据库数据或全局缓存。清理旧依赖时实测可用量由
+297,754,624 变为 336,076,800 bytes，未拿 du 的共享块大小冒充实际释放量。
+
+删除头文件前，外部空间已回升至 4,500,647,936 bytes；头文件清理仅额外释放约 64 MB，不将整个回升归因于本任务。
+最新复测为 4,656,467,968 bytes；已有 PG session 的自有临时表写入/读取/ROLLBACK 通过，已恢复原 S3a 的 PG-only。
+独立验证驱动新增建库前检查：不足 1 GiB 直接失败且不创建数据库；恢复后真实 Schema/PG 检查仍全部必做。
+Redis PING 与 Docker 只读查询继续超时；重启/清理确认尚无答复，无新实例。空间继续逐批检查，不开启新依赖或镜像下载。
 
 ### 写入集与设计门
 
