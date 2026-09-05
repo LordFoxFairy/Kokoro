@@ -937,3 +937,22 @@ Carver交付候选 `33603ffd0c763d5b3e4bb31dd9f0610a319f276c`，主控尚未集�
 后续UTC连接设计的官方依据已核验：[pg Client options](https://node-postgres.com/apis/client)、[PostgreSQL连接默认项](https://www.postgresql.org/docs/18/runtime-config-client.html)。
 TimeZone是连接的时间解释/显示设置，不因列为TIMESTAMPTZ就自动固定为UTC；当前驱动的URL覆盖行为另由上述本机连接探针证明。
 这项仅形成后续设计证据，不在R2-2修改连接配置或启动共享依赖。
+
+### R2-2 独立审查通过与主目录集成
+
+Carver先以06b5884补强测试；主控独立PG重跑384通过，但标准Prettier发现3份文档不合格。原作者format自报只指CRLF/尾空白检查，已在67e8683按标准CLI修正，并恢复初候选381与补强384的正确历史日志绑定。
+Parfit对固定06b5884独立审查提出P2：auth先启动，writer连接获取失败却在try/finally外，会遗漏barrier释放并悬挂pool清理。110c7fa最小修复测试控制流，Parfit绑定该commit复核闭合，无新增findings。
+主控完成规格审查后于本轮将日常IAM从012ebba快进到 `110c7faf77c7dbffb4c49aa67b2b5bda67260baa`；Carver和Parfit均已回收，主控接管文档收口，保持同仓单写。生产/DDL来自33603ff，契约、目录、依赖和其他仓未变。
+主目录fresh PG-only：29文件/384通过，0失败/0skip，Redis两项排除；lint/typecheck/contract/build各exit0；7份标准Prettier与244本地链接通过。固定DDL实库catalog对比仅两列/两CHECK差异，15表127列145约束31索引。Root IAM-only预检仍9项失败，未降低门禁。
+主控核查早期14个RED时发现部分是fixture TypeError，故另取06b5884临时副本、目标Schema和两个旧Repository重新证明：22个删除行为断言失败/96通过，无缺列、fixture异常或超时。首次pnpm驱动触发依赖检查不是RED，改直接Node执行既有Vitest后取得有效结果。正式工作树未为实验改动。
+证据及失败边界归IAM ACCEPTANCE的R2-2主目录复验节，日志 `/tmp/kokoro-iam-goal/r2-2-review/`；只创建/删除自己的随机数据库，没有启停共享依赖/flush/修改已有业务数据。本片完成不代表完整IAM目标结束。
+
+IAM收口提交 `c9d1d35e8f36a832a9db0a261b5a884038f321c4` 仅更新七份当前文档，已删除过期1a081ab/Boyle及R2-2待集成状态；生产/DDL/测试保持110c7fa字节。标准Prettier七份、246本地链接、三文件36项聚焦门通过，日常主目录干净；Root任务外kokoro-agent/.tmp保持原状。下一轮为progress续接UTC三面设计，不提前派源码，也不因Redis未恢复标记整个goal受阻。
+
+### 下一片 UTC 只读设计输入（尚未放行实现）
+
+Arendt（01a07130-214a-73f2-908d-281b41a11fba，派发指定gpt-6-astra）只读核查IAM主目录012ebba及已给探针，未读取writer变化或写DB，现已回收。
+调查推荐在现有config下设窄database.ts配置函数，runtime Pool和空库installer Client两个真实消费者共用，避免导入整个runtime及复制URL解析器；不新建postgres层或连接框架。
+每个物理连接以startup options固定UTC/search_path，不用异步connect事件或一次pool.query代表全池；URL原串保留交pg解析，对冲突options/超时及未知键明确策略，保留TLS/编码凭据/IPv6等支持，错误脱敏，不改角色或全局DB配置。
+主控下一步须核对本地pg8.23.0/connection-string2.14.0的实际可接受键及环境优先级，收敛三面设计/文件放置门后再放行；调查中的完整白名单、PGOPTIONS策略与installer超时仍是候选建议，不能直接当已批准实现。
+验证目标包括首条SQL前UTC、并发新连接/归还再借/销毁补建、真实installer和非法配置失败；主动SET/RESET污染与外部连接池模式须单列保证边界。其他索引/GC/框架改动不混入此片。
