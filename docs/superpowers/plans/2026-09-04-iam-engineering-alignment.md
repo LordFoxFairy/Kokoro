@@ -1072,3 +1072,12 @@ Root 基线 `38ee5f97d8b162e3c8c5b036e4d60f481205a5b5`，现有任务外变更�
 - `database/schema.sql` 注释修正为区分事实 owner 与当前 production writer，DDL 语义未改变。
 
 Socrates（`gpt-5.6-sol`，只读）复核上述四项 P2 文档问题后 PASS：当前/管理 writer、owner/writer、JWKS surface、`auth`→未来 `authentication` 迁移边界均已澄清，无 P1/P2。主控验证：Prettier 三份文档通过、258 条文档链接无错误、`pnpm exec vitest run test/contract/schema.test.ts` 为 1 文件/3 测试通过。该 commit 是文档设计门闭环，不宣称管理 API、R2-4 索引、retention、orphan、运行 smoke 或全 IAM 功能已完成；下一步先审查并裁决完整目标的首个业务实现切片，再改 Proto/源码/Schema。
+
+### IAM-R2-4 主目录集成与主控复验
+
+R2-4 已从独立候选 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1` 按文件范围审查后，以 IAM commit `229024b test(iam): verify identity history query indexes` 集成到日常主目录；未整批 cherry-pick 候选，主控逐项保留现有测试风格并核对 Schema、测试 fixture 与文档事实。
+
+- Schema 只新增两条完整非唯一 B-tree 历史读取索引：`ix_iam_contact_email (tenant_id, email_normalized)` 与 `ix_iam_membership_principal (tenant_id, principal_id)`；不改变 API、Proto/generated、生产业务 SQL、唯一不变量或外键策略。
+- `schema.test.ts` 与真实 catalog integration 检查索引定义、数量和既有 partial unique indexes；新增身份历史查询计划 fixture 在随机隔离 PostgreSQL 数据库中 seed 100,000 条历史数据，比较查询结果并验证受控 `EXPLAIN (ANALYZE, BUFFERS)` 预算。
+- 主控正确使用 PostgreSQL-only 驱动执行 `pnpm db:apply-schema` 与 32 个测试文件：516 passed、0 failed；随后 `pnpm lint`、`pnpm typecheck`、`pnpm build`、`pnpm contract:check` 均退出 0；Markdown Prettier、258 个本地文档链接和 `git diff --check` 通过。
+- 本片没有重置或重启共享 Redis，也没有把 Redis/完整进程、provider、BFF consumer、catalog drift、orphan、retention 或管理 writer 的缺失包装成已完成；这些仍属于后续任务。IAM 当前 HEAD 为 `229024b`，工作树干净。
