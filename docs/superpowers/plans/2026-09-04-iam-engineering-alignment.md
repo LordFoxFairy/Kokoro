@@ -988,3 +988,9 @@ Arendt绑定c9d1d35..4975b89确认三面设计通过，无P1/P2；现已回收�
 
 主控另对实际installer做只观察的connect hook，未替换配置/查询结果：首个应用SQL前TimeZone仍New_York，随后正常安装15表，自有新库已清理；installer-red.log证明第二入口同样待修。
 实际同一PG连通性探针确认IPv6的query-host形式和Unix query-host形式可连接；已装驱动保留IPv6 authority的方括号，authority形态此轮连接失败。实现者已收到事实：原串交pg规则不变，不在UTC片自研补偿或升级依赖；API的IPv6支持须列明已验query-host形式，语法合法不等于驱动直连已验，authority缺口留运行/依赖治理。日志transport-forms-probe.json；只读SQL/自有连接，无全局配置变更。
+
+### R2-3 候选审查与独立复验
+
+Carver交付 `a1ae65d1937ab65b05e399981f5322d4dfc877c8`，已停写；18文件严格限于4生产、7测试、7文档，Schema/业务SQL/机器源/generated/依赖/CI没有变化。主控已读生产与测试diff，规格复核未发现阻断项；候选仍未合入日常主目录4975b89。
+独立代码审查由Kant（01a07171-47f3-7291-a450-40a9fb373111，派发指定gpt-5.6-sol）承担，固定4975b89..a1ae65d，只读源码/设计与本地驱动，不连接数据库、不写文件。主控并行重跑候选lint/typecheck/contract/build、标准格式/link及完整PG-only，作者自报495通过不替代主控结果。
+主控已独立运行候选built runtime与实际installer探针：三个不同PID首条读取均UTC；实际installer首个SQL前UTC、随后真实安装15表；只清理探针自己创建的数据库与测试密钥。日志 `/tmp/kokoro-iam-goal/r2-3-review/candidate-entry-green-a1ae65d.log`。这一通过不代替完整进程/Redis/TLS/消费者验收。
