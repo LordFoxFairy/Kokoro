@@ -343,6 +343,12 @@ S3a 的后续最小验证范围已明确：真实 AES key/cipher/tag/AAD 故障�
 markDelivered 未提交与已提交但确认丢失分别验证，不伪装 provider 错误或覆盖终态；旧 key 排空与新 key 签发。
 本地 provider fixture 只证明 IAM 侧语义，实际供应方 sandbox 仍单独列证据缺口。
 
+主控在主工作树 4481d39 的 built provider client 与两个自建临时 HTTP listener 上另复现默认 fetch 跟随 307：
+不同 origin 的目标收到 POST token body，尽管 Authorization 未转发，client 仍接受目标 receipt 并返回成功。
+S3a 一并明确关闭所有 3xx 跟随，保留稳定非重试 provider 错误，覆盖 301/302/303/307/308 及目标零请求；不做
+“仅去掉 Authorization 就安全”的断言。临时 listener 已关闭。已异步询问实际供应商或测试环境入口，不索取聊天明文
+凭据；当前通用 HTTP 协议/占位地址不证明已经接入任何真实邮件服务。
+
 S3 拆为两个提交边界，尚未派工：
 
 - **S3a：投递故障闭环。** 继续使用现有路径，唯一 writer 修改 delivery 中性模型、Repository、Processor、
@@ -370,6 +376,11 @@ process.env 的属性/下标/解构读取；注释和普通字符串示例不误
 
 该探针只处理相对路径模型，正式门禁须使用 tsconfig/module resolution 处理别名并检查循环依赖，保留可执行的
 违规 fixture；不拿 import AST 冒充 SQL 参数化、租户隔离或运行时行为证明。没有向 IAM 仓提交临时探针。
+
+主控随后用独立 resolver 探针补齐可行性证据：读取实际 tsconfig，使用 TypeScript module resolver 得到真实文件，
+6 项 fixture 覆盖 alias 指向 Repository、公有 index、未解析 import、Node builtin、type-only cycle 和无环图。
+主工作树 4481d39 的 52 文件/167 import 均成功解析，无本仓循环；两项探针尚未组合为正式角色门禁，仍不等于目标
+目录通过。临时 fixture 文件夹已清理，IAM 源码未改。
 
 ### 启动失败清理预验
 

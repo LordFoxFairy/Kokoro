@@ -93,6 +93,9 @@
   不承诺不停签发的混合 key 滚动发布；确有该要求时再提出独立 delivery key ID/keyring 设计与原子 enqueue 变更。
 - provider 调用始终使用同一持久化 delivery ID。真实 PG 加本地幂等 provider fixture 验证 IAM 的重试/fencing
   行为；真实供应方的接受去重、响应丢失、并发和保留窗口仍需供应方 sandbox 证据，两者分别记录。
+- provider URL 是唯一发送目的地，不跟随 HTTP 3xx；否则 307/308 可把 token 请求体再次发送到不同 origin，
+  即使 fetch 删除跨 origin 的 Authorization 也仍会转发 body。按明确的非重试 provider 响应处理重定向，
+  不允许通过重定向隐式改变凭据接收方。真实供应方需提供最终发送 URL。
 
 该决定来自对现有 claim/processor/SQL 约束的复核，属于 IAM 的最小闭环取舍，不是通用加密系统标准。
 S3 实现前须同步本仓技术/API/数据及 RUNBOOK 的相应表述，并以失败断言证明上述边界。
