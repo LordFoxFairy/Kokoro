@@ -1,6 +1,12 @@
-# kokoro-iam v1 技术方案与契约
+# kokoro-iam v1 技术方案与契约（历史候选）
 
-状态：目标实现基线，2026-08-27
+状态：历史候选，已被 `kokoro-iam/docs/TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`DATA_MODEL.md` 和
+[ADR-030](../../decisions/ADR-030-iam-engineering-boundaries.md) 取代；保留用于考古，不作为当前实现模板。
+
+> 当前执行入口：先读 Root `AGENTS.md`，再读 `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam/docs/` 下的三面文档。
+> 本文中的 `application/`、`domain/`、`infrastructure/`、`interfaces/`、`contracts/`、`ports/` 目录树、Redis 事实语义和旧 HTTP CRUD
+> 仅是历史候选，不得据此创建目录、复制 DTO 或修改当前 IAM。当前 V1 明确采用 module-first、PostgreSQL + `pg`、唯一 `database/schema.sql`，
+> 不建立 Prisma/pg 双轨，也不把 Redis 当作授权事实源。
 
 本文是 IAM v1 的执行级技术方案。它约束 IAM 子仓库的代码、SQL、RPC/HTTP 适配器和测试；与旧的
 `Organization`、`kokoro-site`、`kokoro-user` 原型描述冲突时，以当前 owner contract 的 `Organization` 语言和本文契约为准。
