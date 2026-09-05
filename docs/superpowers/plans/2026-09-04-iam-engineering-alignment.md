@@ -1006,3 +1006,8 @@ Carver交付 `a1ae65d1937ab65b05e399981f5322d4dfc877c8`，已停写；18文件�
 
 Kant固定4975b89..a1ae65d审查PASS，无P1/P2；P3指出当前UTC回归在默认已UTC的CI上可能失去辨识度。Carver已停写回收，主控接管日常IAM，先从干净4975b89快进a1ae65d，再仅补强两测试文件，不改生产/DDL/依赖。
 补强限定test/fixtures/database-connection-fixture.ts及test/integration/database-connection.integration.test.ts：只对成功CREATE并登记的随机自有fixture数据库设置非UTC default，先用无共享配置的Client实际断言该默认，再让runtime多PID与真实installer证明显式UTC覆盖。不ALTER传入数据库、共享role或实例设置；临时库仍由原登记集统一清理。原三面文档中的不改全局配置规则保留，这是隔离测试前置条件，不是部署配置变更。主控先真实验证并提交该小补强，再交同一独立审查员只读复核；整个R2-3尚待主目录最终复验与文档收口。
+
+### R2-3 收口
+
+上一轮为progress：70485c6已完成源码/测试修改和主目录真实验证。Kant对a1ae65d..70485c6复核PASS，P3闭合且无新增问题，现已回收。主控在日常IAM重跑lint/typecheck/contract/build、11文件标准格式、257链接、PG-only31文件495项及实际built runtime/installer均通过，日志main-gates-70485c6.log；Redis2项排除。移除UTC参数的独立临时快照RED为两个真实入口失败/10未选skip，无TypeError，临时库与快照已清理。Root预检仍9项失败，留R3。
+IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代码负责、连接UTC由应用配置负责、非UTC数据库默认仅为隔离测试前置条件；已移除R2-3待集成状态。文档收口修正一个因标题变化失效的README锚点后，7份标准Prettier、257链接及3文件52项聚焦门通过，main-doc-closure.log。生产/DDL/测试保持70485c6；日常IAM干净。完整目标继续推进SQL/API/运行等欠项，不用本片通过替代全IAM验收。
