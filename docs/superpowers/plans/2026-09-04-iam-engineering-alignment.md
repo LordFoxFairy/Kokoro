@@ -1,6 +1,6 @@
 # IAM 工程规范对齐：主控任务板
 
-状态：2026-09-05 UTC，S1 已验收；S2a 已集成、Redis/启动门禁待环境恢复；S2b 交付 280 项隔离复验通过，独立审查 P1 待修正，尚未集成。完整 goal 仍在进行。
+状态：2026-09-05 UTC，S1 已验收；S2a/S2b 已复审集成，293 项主工作树隔离复验通过；S3a 放行。Redis/启动及最终完整门禁仍待补验，完整 goal 继续。
 
 本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
 
@@ -27,7 +27,7 @@
 | ------ | ------------------------------------------------------------- | --------------------------- | -------------- | -------------------------- |
 | IAM-01 | 审计，修正规范入口，形成相互一致的技术/API/数据候选方案       | 读取当前代码与手册          | Ohm            | 文档提交 `2401523`，已验收 |
 | IAM-02 | 独立审查候选方案，主控确认目录、边界、数据/API 影响与验收矩阵 | IAM-01 交接                 | 主控组织审查   | ADR/S1 设计已通过          |
-| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S2a 已集成；S2b P1 修正中  |
+| IAM-03 | 按获准业务切片重构，不一次性搬空仓库                          | IAM-02 通过；逐片补齐任务卡 | IAM 负责人     | S2b 已集成；S3a 放行       |
 | IAM-04 | 真实依赖、契约、架构与运行验证；评审提交和剩余风险            | 对应实现切片完成            | 主控及独立审查 | S2a 部分复验，最终未完成   |
 
 后两项是阶段占位，不构成预先写入授权。具体任务、文件集、行为断言和提交粒度由 IAM-01 的实际证据确定。
@@ -239,7 +239,7 @@ spike 源码/manifest/lockfile、业务与数据库数据，不清全局缓存�
 写入/读取/ROLLBACK 通过。Redis RESP PING 与 Docker 只读查询仍超时，未重启。主控已恢复原 S2b 任务，负责人确认
 事务 unit 首组 14 项通过，继续真实 PG 故障断言；这不是 S2b 已验收。再次 ENOSPC 时停止并报告，不扩大清理范围。
 
-### S2b 交付与主控复验（P1 修正中，未集成）
+### S2b 交付、P1 修正与集成（完整环境门禁仍待验）
 
 Ohm 已提交 `55000e6a1292da351b189c991cfa4ccf7a8dfe91`，17 文件；工作树干净，停止写入，无 push。
 主控核对改动范围、四命令调用点、事务生命周期、只读 receipt 恢复路径及真实并发故障模型；没有 Schema、Proto、
@@ -262,6 +262,21 @@ release(true) / 原错误保留。这是受控驱动事件测试，不是网络�
 保留原因并销毁坏连接，区分 BEGIN/业务/未知 COMMIT，避免 listener 泄漏和释放交接窗口。不能只添加永久吞错
 listener。补事件级子进程 RED/GREEN、原 receipt 只读恢复与真实 PG 回归，再由 Anscombe 复审。主工作树仍为
 4481d39，S3 未派工；不因现有 280 项通过而越过这条缺陷。
+
+修正提交为 `3579ec7ddfd09a94d126f106daeec759440a2acf`，8 文件，交接时干净；事件级 RED 7 失败/30 通过，
+修正后对应单测 37 项通过。Anscombe 复审核实同步 acquire、首因、destroy、release 交接和监听清理，独立执行
+8 项事件子进程与 3 项监听保留/清理检查后确认原 P1 关闭，无新增可行动问题，已关闭审查 Agent。
+关于 release 失败后 end 同步报错的替身窗口，实际已安装 pg/Node stream 三条窄路径均异步报错、保留原 release
+cause，没有生产可达证据，不据同步替身扩大实现；后续驱动升级须保留这些生命周期回归。
+
+主控分别在修正 worktree 与 fast-forward 后的 IAM 主工作树执行 lint/typecheck/contract/build/空库安装/PG-only，
+两处均 24 文件、293 项通过、0 skip，测试库各自清理，工作树干净，无 push。新测试区分真实提交后的驱动事件
+注入与仅终止自有测试 backend，后者验证真实 PG 断连，未触及他人连接。2 项 Redis 仍排除，built-JS smoke 与最终
+完整门禁仍必做。主控据此放行独立 S3a，保留环境欠项，不把上述部分复验当成整仓验收。
+
+本次环境复测：Redis56380 PING、Docker 只读查询继续超时；free 降为 867,233,792 bytes。已询问用户释放空间或
+指定可清理缓存，尚无答复；不重复实例、不重启 Docker、不清业务数据。S3a 不下载新依赖或构建镜像，ENOSPC 时
+保留工作并报告。S4 的依赖/镜像步骤需要先解决空间与基础设施状态。
 
 ## 8. 主控并行预验（不修改 IAM 实现）
 
@@ -388,3 +403,43 @@ process.env 的属性/下标/解构读取；注释和普通字符串示例不误
 共享 Redis）。观察到 startup catch 等待无界 Promise.allSettled，forceClose 与上层错误日志均未执行，子进程退出 0。
 这独立证明启动失败清理缺少完成期限；不据此宣称已定位真实 Redis 内部故障。S4 须保留原启动错误、对清理设置
 有引用的期限、超时执行 force close 并非零退出；测试包含这个无活动 handle 的子进程场景，不能只测单元 Promise。
+
+## 9. IAM-S3a 投递闭环任务卡（已放行）
+
+Owner 为 IAM 的 Magic Link 投递子能力，唯一 writer 仍为 Ohm，原独占 worktree。只修复既有投递行为，
+不搬整个目录、不换框架/工具链、不新增邮件产品或管理 API。起始 SHA 为已复审并集成的
+`3579ec7ddfd09a94d126f106daeec759440a2acf`，原 worktree 干净，分支 `codex/iam-engineering-alignment`。
+
+### 写入集与设计门
+
+- 当前 delivery model/Repository 中性声明；delivery Processor、必要认证错误/窄依赖 shape；具体 delivery
+  Repository、provider client、SecretBox/AES 实现、worker 中与本片错误分类有关的部分，以及 container 的依赖装配。
+- 认证 Repository 仅在 enqueue 与加密 claim 类型对齐确有需要时修改；不再调整 S2b transaction helper、四命令
+  receipt、登录选择或 session 状态。其他生产文件需要先报告原因，不顺带扩大切片。
+- 复用已有 delivery Processor/Repository/provider/worker/AES 六个单测文件与 delivery integration；新的真实
+  数据库恢复断言可以聚合为一个 `test/integration/magic-link-delivery-recovery.integration.test.ts`，去重 HTTP
+  fixture 只放现有 `test/fixtures/`。先比较扩展旧文件和新增聚焦套件，不把所有故障堆进 authentication lifecycle。
+- 只同步实际变化的 INDEX、TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、CURRENT、ACCEPTANCE、
+  RELIABILITY、RUNBOOK；不重复历史长报告。先把三面文档的 key、terminal、provider 接受语义与 ADR-030 §5.1 对齐。
+- 排除 Schema、Proto/OpenAPI/generated、依赖/lockfile/CI、Root 和其他子仓。保持现有 outbox 列与 CHECK、
+  两个 claim 索引、六 RPC/三个 HTTP 路径、单进程/双端口。若发现必须改变机器源的原因，先交主控裁决。
+
+### 行为与验收
+
+1. claim 原子提交后返回中性加密数据，Processor 在解密前判断取消、到期和次数；不把 pg Row/连接/驱动类型
+   透传到用例。解密依赖按最小结构化能力注入，不增 Secret Port 目录、通用 CryptoService 或第二套密钥配置。
+2. 错 key/坏 ciphertext/tag/AAD 的稳定类别为 delivery_decryption_failed，provider 零调用；现有预算内有限重试，
+   到期/耗尽终止并按原 SQL 清凭据、留元数据；不签发替代 token、不记录秘密、不删除 outbox 行。
+3. provider、解密、SQL completion 分开捕获。SQL 写入失败记录受限关联信息并向 worker 边界传播，不能再发出
+   provider retry/failed 写入；分别测试写入未提交与已提交后确认丢失，既有 terminal 不被覆盖。
+4. 301/302/303/307/308 均不跟随、目标收到零请求，稳定归为非重试 provider 错误；保持原 timeout、取消、
+   16 KiB 响应上限、严格 receipt 解析。provider 正确响应只代表 accepted，不承诺邮件送达收件箱。
+5. 真实 PG 多 client 证明原子 claim、旧 claim token 的三类状态写入均失效、取消后的 lease 恢复；同一 delivery ID
+   与 payload 重试不变。自有本地 HTTP fixture 持久于测试服务生命周期的 dedupe ledger 模拟“接受后响应丢失”，
+   返回同逻辑 receipt；与真实供应方 sandbox 证据明确分开，不把 fixture 称实际邮件集成。
+6. 单 key 维护流程验证旧 key 排空/过期终止/新 key 新投递，保留 terminal 的业务证据与 SQL 密文空值约束。
+   维护窗口阻断签发入口，旧 worker 继续排空后停止旧实例；不为这个测试新增热轮换、暂停 endpoint 或另起一套应用。
+7. 先 RED 再 GREEN；执行 lint/typecheck/contract/build/空库 PG-only 与聚焦故障测试，记录 exact SHA 和范围。
+   Redis 完整门禁仍欠；不重复启动、flush 或清理共享实例。磁盘不足时保留修改并报告，不扩大缓存/数据删除。
+
+完成后小粒度 commit、停止写入，主控规格审查、独立质量审查、主仓复验后才进入 S3b 目录切片。
