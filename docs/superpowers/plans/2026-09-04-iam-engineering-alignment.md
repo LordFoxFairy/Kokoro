@@ -1265,3 +1265,8 @@ Authentication 只是首次登录事务编排 owner；Tenant、Identity、Organi
 - 管理审计必须关联 actor、service identity、assertion reference、operation、tenant、before/after state、command ID 和 request ID，禁止写入 JWS、secret、request body；
 - 三面文档仍未放行实现：最终 receipt/audit 列、保留窗口、错误码、Proto 字段号、issuer/JWKS 配置 schema 和真实并发/重放测试必须再经独立审查；
   在审查 PASS 前不创建 `modules/tenant/`、不修改 Schema、不生成管理 Proto。
+
+主控随后在 IAM `380d78b docs(iam): specify tenant contract details` 继续补足三面细节：EdDSA JWS 的 `kid` 与 `canonical_json_v1` request digest、
+Tenant 管理错误基线、IAM 生成 tenant ID、keyset cursor 绑定、独立 `iam_tenant_command_receipt` 候选列集、管理 audit 明确列以及 RUNBOOK 的
+issuer/JWKS/caller credential/rotation/retention 运行要求。该提交仍只是设计文档，不代表 Schema 已改变；最终列、保留窗口、Proto 字段号和真实
+并发/重放测试仍需独立审查 PASS 后才能进入实现。
