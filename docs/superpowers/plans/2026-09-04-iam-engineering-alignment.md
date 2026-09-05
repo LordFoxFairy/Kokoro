@@ -1206,6 +1206,16 @@ R2-6 后不能继续把 Tenant 管理代码放进 Authentication，也不能只�
 随后再由单一 IAM writer 实现模块、RPC、Repository/Service、真实 PG 并发回归和完整门禁。未解决的管理身份不是运维阻塞，
 而是 API 安全契约的前置设计，不能用现有共享 workload token 冒充完成。
 
+Meitner（`gpt-6-astra`，只读架构审查）已复核管理身份候选：推荐 **per-caller service identity + operator assertion**；
+现有共享 workload secret 只证明凭据持有，淘汰为管理授权依据；mTLS/OIDC/JWT 只能作为 service identity 或 assertion 的传输/签名实现，
+不能替代 operator 权限。结论 `NEEDS_DESIGN`：仍需收敛 assertion issuer/JWKS、audience、bootstrap、撤销/轮换、operator/scope 字段及
+管理命令的幂等、审计和未知提交语义。该结论已同步 IAM 三面文档，未生成 Proto、未修改 Schema、未开始 Tenant 源码。
+
+首轮文档复审指出 audience/caller 绑定、管理 interceptor 边界和 `ExecutionIdentity` 映射未明确；主控已在 IAM `bb75b23`
+补齐：`audience`、`service_identity`/`azp` 必须与认证 caller 精确绑定，operation/scope/request digest/jti/TTL 共同限制转发与重放；
+现有六个 RPC 保持旧 workload interceptor，Tenant 管理面必须使用独立 caller matrix/management interceptor；管理 assertion 的 opaque
+reference 只进入 IAM 审计/下游授权事实，不伪装成 Agent `ExecutionIdentity`。Schrodinger（`gpt-5.6-luna`）独立复审该修复 PASS，P1/P2/P3 均为 0。
+
 主控已在 IAM `552d2a1` 的文档工作树完成当前门禁复验，并以 `77b46c6 docs(iam): record current verification evidence` 收口：
 `pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build` 通过；普通测试 25 文件通过/9 个环境跳过（327 passed、205 skipped）；
 fresh PostgreSQL 隔离库 integration 为 8 文件通过/1 个环境跳过（203 passed、2 skipped）；`db:apply-schema` 与 catalog drift 为 `ok: true`。
