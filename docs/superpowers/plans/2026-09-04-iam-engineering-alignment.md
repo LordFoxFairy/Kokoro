@@ -319,6 +319,24 @@ S3a 的后续最小验证范围已明确：真实 AES key/cipher/tag/AAD 故障�
 markDelivered 未提交与已提交但确认丢失分别验证，不伪装 provider 错误或覆盖终态；旧 key 排空与新 key 签发。
 本地 provider fixture 只证明 IAM 侧语义，实际供应方 sandbox 仍单独列证据缺口。
 
+S3 拆为两个提交边界，尚未派工：
+
+- **S3a：投递故障闭环。** 继续使用现有路径，唯一 writer 修改 delivery 中性模型、Repository、Processor、
+  SecretBox 窄输入输出、装配与相关测试/文档；不混入全仓 rename、Schema、Proto 或依赖替换。先同步技术/API/数据
+  的终态与 key 语义，再补 RED；业务+enqueue 同事务、SKIP LOCKED、claim token fencing 和 provider 的原 delivery ID
+  保持不变。SQL 状态写入故障原样交给 worker 错误边界；不得尝试把这次故障再次改写成 provider retry/failed。
+- **S3b：业务聚合与物理目录收敛。** 在 S3a 验收后，按现有目标树把 auth 放到一个 modules/auth，内分
+  principals/magic-links/sessions。Auth Service 按用例及依赖拆分；具体 Repository 按查询/写入事实拆分，
+  auth.transaction 在同一个 client 上装配窄能力，禁止保留旧全功能 Repository 作为转发门面。receipt 绑定/加解密、
+  session 签发和结果重放的共同规则各自只有一个 owner，不能在两个 Service 中复制。消费方定义最小结构化依赖，
+  共享语义类型放中性业务文件，不从具体 Repository/Service 实现反向取类型。
+
+S3b 文件集合由负责人先给出最终 old→new 放置表，主控审查后再写；优先同一切片清除旧业务/传输/启动路径，
+使用 server/app/runtime/config 的实际职责而不是保留入口 alias。入口路径影响 package scripts、Docker、CI smoke
+时同片更新，依赖版本不混改；Fastify/运行时行为升级仍为 S4。测试按真实类别搬迁并换成 AST 依赖门禁与反例，
+README/INDEX/AGENTS 删除已过期的 IAM-01 文档阶段限定。目标树缺少的新共同能力先说明职责与两个可行位置，
+不为满足目录模板创建空层，也不把职责拆分降格成批量重命名。
+
 ### 目录依赖门禁预验
 
 主控在仓外临时脚本用 TypeScript AST 跑过 17 个正反 fixture，覆盖静态 import、type import、re-export、
@@ -328,3 +346,10 @@ process.env 的属性/下标/解构读取；注释和普通字符串示例不误
 
 该探针只处理相对路径模型，正式门禁须使用 tsconfig/module resolution 处理别名并检查循环依赖，保留可执行的
 违规 fixture；不拿 import AST 冒充 SQL 参数化、租户隔离或运行时行为证明。没有向 IAM 仓提交临时探针。
+
+### 启动失败清理预验
+
+主控用 4481d39 的实际 built runtime 创建独立子进程，注入 readiness 拒绝和永不完成的 closeRedis（不连接或改动
+共享 Redis）。观察到 startup catch 等待无界 Promise.allSettled，forceClose 与上层错误日志均未执行，子进程退出 0。
+这独立证明启动失败清理缺少完成期限；不据此宣称已定位真实 Redis 内部故障。S4 须保留原启动错误、对清理设置
+有引用的期限、超时执行 force close 并非零退出；测试包含这个无活动 handle 的子进程场景，不能只测单元 Promise。
