@@ -1185,3 +1185,5 @@ src/http/                     # JWKS 等 HTTP transport；health 保持已有运
 允许范围：将 `src/modules/auth/**` 按上述目标移动、更新直接 import、更新 `INDEX.md` 和三面文档中的当前路径；允许同步测试路径引用和架构断言。禁止修改 `database/schema.sql`、Proto/generated、错误码/字段/端口、SQL 字面量、依赖、运行时语义或其他子仓。禁止创建空 `tenant`、`identity`、`organization`、`audit` 目录；这些模块等真实管理 writer/API 进入后再落地。
 
 完成门：旧 `src/modules/auth` 路径删除且无 alias/re-export；`src/modules/authorization` 有真实生产 service；`src/rpc` 同时承载至少两个业务 RPC；所有 import/架构检查通过；`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm test`、`pnpm build`，以及现有 PostgreSQL 隔离回归全部通过。该切片只改变职责可见性，不宣称 IAM 管理能力完成。
+
+R2-6 已由主控在 IAM commit `729ccf5 refactor(iam): converge authentication module boundaries` 实施：旧 `src/modules/auth` 删除；认证首发代码进入 `modules/authentication`；Authorize 进入 `modules/authorization` 并改用本地窄类型/本地错误；RPC 进入 `src/rpc`；JWKS 进入 `src/http`。主控验证 `pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build`、完整本地 `pnpm test`（25 文件通过、9 个按环境跳过；327 passed、205 skipped）及隔离 PostgreSQL（33 文件、530 passed、0 failed；Redis 两项显式排除）均通过，文档 267 链接无错误。Bacon（`gpt-5.6-sol`）对 `729ccf5` 独立只读审查 PASS，P1/P2/P3 均为 0；IAM 文档验收随后以 `f0595e7 docs(iam): close module convergence acceptance` 收口。R2-6 已验收，但不宣称 IAM 管理能力完成。
