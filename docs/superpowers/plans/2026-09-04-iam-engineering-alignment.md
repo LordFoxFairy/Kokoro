@@ -1187,3 +1187,21 @@ src/http/                     # JWKS 等 HTTP transport；health 保持已有运
 完成门：旧 `src/modules/auth` 路径删除且无 alias/re-export；`src/modules/authorization` 有真实生产 service；`src/rpc` 同时承载至少两个业务 RPC；所有 import/架构检查通过；`pnpm lint`、`pnpm typecheck`、`pnpm contract:check`、`pnpm test`、`pnpm build`，以及现有 PostgreSQL 隔离回归全部通过。该切片只改变职责可见性，不宣称 IAM 管理能力完成。
 
 R2-6 已由主控在 IAM commit `729ccf5 refactor(iam): converge authentication module boundaries` 实施：旧 `src/modules/auth` 删除；认证首发代码进入 `modules/authentication`；Authorize 进入 `modules/authorization` 并改用本地窄类型/本地错误；RPC 进入 `src/rpc`；JWKS 进入 `src/http`。主控验证 `pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build`、完整本地 `pnpm test`（25 文件通过、9 个按环境跳过；327 passed、205 skipped）及隔离 PostgreSQL（33 文件、530 passed、0 failed；Redis 两项显式排除）均通过，文档 267 链接无错误。Bacon（`gpt-5.6-sol`）对 `729ccf5` 独立只读审查 PASS，P1/P2/P3 均为 0；IAM 文档验收随后以 `f0595e7 docs(iam): close module convergence acceptance` 收口。R2-6 已验收，但不宣称 IAM 管理能力完成。
+
+### IAM-R2-7：Tenant 生命周期管理三面设计（仅设计，未实施）
+
+R2-6 后不能继续把 Tenant 管理代码放进 Authentication，也不能只创建一个空 `modules/tenant` 目录。SQL/API 只读盘点确认：
+`iam_tenant` 是 15 张表的范围父事实，当前只有 active 准入读取，没有创建、查询、分页、停用或恢复 writer/API。因此下一片先收敛真实 Tenant 管理能力。
+
+| 项 | 当前裁决 |
+| --- | --- |
+| owner | `kokoro-iam/modules/tenant`；唯一 writer；Site/Host 仍归 System |
+| 候选操作 | CreateTenant、GetTenant、ListTenants、DisableTenant、EnableTenant |
+| 明确排除 | terminate、purge、级联删除、Identity/Organization/Role 管理、public HTTP、通用 ExecuteCommand |
+| SQL | 继续使用现有 `iam_tenant(id TEXT, status active/disabled, created_at, updated_at)`；不先加 version/deleted_at/metadata/索引；无 FK |
+| 必须先定 | trusted control-plane actor/service identity、权限与 tenant grant、ID 分配、幂等/replay、并发条件、审计 actor、keyset cursor |
+| 文档门 | IAM `TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 已记录候选边界，但仍是设计中，不得生成 Proto 或改 Schema |
+
+完成条件：三面文档经独立只读审查 PASS；明确管理身份和 bootstrap 入口；机器 Proto/生成链、SQL、错误、分页、幂等和审计语义一致；
+随后再由单一 IAM writer 实现模块、RPC、Repository/Service、真实 PG 并发回归和完整门禁。未解决的管理身份不是运维阻塞，
+而是 API 安全契约的前置设计，不能用现有共享 workload token 冒充完成。
