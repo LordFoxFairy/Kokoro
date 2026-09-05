@@ -1127,4 +1127,4 @@ R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅�
 
 设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；refresh/重放与 Logout 的不同父资源语义如何保持；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
 
-IAM 三面设计先落到 `5f102d4`，随后以 `7fe83e7` 补全 `DATA_MODEL` 的 tenant、role scope、command receipt、security event 等关系边界（`TECHNICAL_DESIGN`/`API_CONTRACT`/`CURRENT` 仍与之对应）。Rawls（`gpt-5.6-luna`）对设计摘要独立审查提出 P1：必须把 refresh 与 Logout 明确建模为不同 Repository 父资源策略，并补充各父行缺失、refresh 不旋转、Logout 仍可历史撤销/重放的断言。该意见被采纳，当前 IAM 文档工作树进入设计修订，尚未派发实现 writer；修订后重新审查再进入 RED/实现。
+IAM 三面设计先落到 `5f102d4`，随后以 `7fe83e7` 补全关系边界，再以 `ee4d012` 明确 active/historical 父资源策略。Rawls（`gpt-5.6-luna`）提出的 P1 已修订并由 Copernicus（`gpt-5.6-luna`）独立复审 PASS：catalog 对比边界、固定关系白名单、资源限制、refresh fail-closed、Logout 历史撤销/重放和四类父行缺失测试均已明确。现允许进入 R2-5 RED/实现；仍保持单一 IAM writer，主控不并发修改 IAM。
