@@ -72,6 +72,30 @@
   审计/身份的不可逆清理要求显式批准的保留策略与 cutoff，禁止把工程默认值说成法定保存期限。
 - key 故障与密文损坏有界分类处置，不无限 provider retry，也不清掉失败证据后假装成功。
 
+### 5.1 Magic Link 投递的密钥与终态证据
+
+投递 token 与命令 receipt 是不同生命周期。第 4 节的 keyring/key ID 要求针对 receipt，不隐式要求把
+当前单 key 投递升级成通用密钥平台。S3 保留投递现有配置与 outbox 结构，采用**停签发、旧 key 排空、再换 key**：
+
+- 缺失或长度不符的 key 在启动、claim 前失败；已加载的错误 32-byte key、密文/tag/AAD 损坏统一归为
+  `delivery_decryption_failed`，当前格式没有 key ID，不能凭错误文本区分“旧 key 缺失”和“密文损坏”。
+- Repository 返回有类型的加密 claim，不在已提交 claim 的映射中解密。Processor 先判断取消、expiry 与次数，
+  再解密、调用 provider；解密、provider、状态持久化分别处理错误。解密故障只在现有次数/有效期内有限重试，
+  不向 provider 发送、不重新签发 token、不记录密码材料；过期或次数用尽转入终态。
+- 保留现有 terminal CHECK：`delivered/failed` 清除 token ciphertext/IV/tag，保留 delivery 身份、次数、
+  时间、受限错误码和已有 provider ref。删除短期凭据与删除失败证据是两件事；本片不删除 outbox 行，也不
+  提前 GC。此前技术方案中“不自动丢弃加密材料”需收敛为“有效重试期保留，终态按既有约束清凭据并保留元数据”。
+- `delivered` 只表示 provider 已接受并返回契约 receipt，不保证邮件送达收件箱；`failed` 表示 IAM 停止尝试，
+  不证明外部 provider 从未接受。provider 已接受后的 SQL 故障不重标成 `provider_unknown`，不覆盖已提交终态。
+- 换 key 前先停止所有旧 key 签发者；在旧 key 仍可用时排空 pending/processing，包含 lease 恢复及过期终止，
+  确认没有旧 key 活跃密文及在途旧进程后停止 worker，再切换 key 并恢复签发。仅等待 link TTL 不等于排空。
+  不承诺不停签发的混合 key 滚动发布；确有该要求时再提出独立 delivery key ID/keyring 设计与原子 enqueue 变更。
+- provider 调用始终使用同一持久化 delivery ID。真实 PG 加本地幂等 provider fixture 验证 IAM 的重试/fencing
+  行为；真实供应方的接受去重、响应丢失、并发和保留窗口仍需供应方 sandbox 证据，两者分别记录。
+
+该决定来自对现有 claim/processor/SQL 约束的复核，属于 IAM 的最小闭环取舍，不是通用加密系统标准。
+S3 实现前须同步本仓技术/API/数据及 RUNBOOK 的相应表述，并以失败断言证明上述边界。
+
 ## 6. 放行方式
 
 三面文档先按本决策对齐，主控审查设计后逐片放行。每片写入前明确对机器 contract/schema 的影响；没有这类

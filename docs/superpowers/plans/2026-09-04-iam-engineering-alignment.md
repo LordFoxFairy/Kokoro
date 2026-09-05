@@ -228,6 +228,17 @@ release 返回池。先用纯生命周期 test double 证明异常流，再在�
 - 复用主控独立库驱动。Redis 故障期间 `--pg-only` 明示排除 2 项依赖测试，只证明本片 SQL/非 Redis 行为；依赖恢复后
   必须补全 `--all`。主控继续独立评审与主仓验证，不以负责人 self-review 或命令退出 0 替代。
 
+### S2b 空间故障与恢复
+
+负责人首次运行事务 RED 为 8 失败/6 通过，随后新源码文件及测试临时目录遇到 ENOSPC，按要求停止，未提交。
+主控核对保留的 TECHNICAL_DESIGN 与 unit 修改，没有回滚。检查时 APFS 已重新有部分空间；主控只删除本次自己
+生成的 52,813,331-byte Node 下载归档和约 61 MiB framework-spike/node_modules，保留已核验 Node 24 runtime、
+spike 源码/manifest/lockfile、业务与数据库数据，不清全局缓存、Docker 数据或 Root 的既有 `.tmp/`。
+
+随后本次临时文件的 1 MiB write/flush/fsync 通过，free 为 3,830,960,128 bytes；既有 PG 上独立 session 的临时表
+写入/读取/ROLLBACK 通过。Redis RESP PING 与 Docker 只读查询仍超时，未重启。主控已恢复原 S2b 任务，负责人确认
+事务 unit 首组 14 项通过，继续真实 PG 故障断言；这不是 S2b 已验收。再次 ENOSPC 时停止并报告，不扩大清理范围。
+
 ## 8. 主控并行预验（不修改 IAM 实现）
 
 ### SQL 查询计划
@@ -287,3 +298,33 @@ Capability common snapshot 缺 upstream commit，IAM 本地 provenance 也不等
 保留可达 ErrorDetail 的现有字段；未输出的 5/8/9/11 错误值与 current_generation 不混入死类型清理。
 后续 Buf breaking 必须明确审计基线与发布基线，逐项解释有意 clean-slate 删除，不用改规则集或 namespace 隐藏变化。
 本节是审查记录，不向 S2a 授予 Proto/generated 或其他仓写入权。
+
+### S3 投递预审与范围收敛
+
+Avicenna（`01a06ec0-a475-7120-ac0f-d9c1f1b5f4da`）在 4481d39 只读审查后已关闭；没有修改源码或共享数据。
+主控核对两处缺陷：已提交 claim 在 Repository 映射中解密，故障发生在 Processor 的次数/expiry 判断之前，导致
+poison row 反复 lease 恢复；provider 调用和 markDelivered 共用 catch，SQL 故障会误标 provider_unknown。
+
+主控另在主工作树 4481d39 的 built JS、独立 PG 空库及真实 AES 上复现：过期投递在 maxAttempts=1 时连续三次
+claim 仍为 processing、provider 零调用；provider stub 已接受后注入未提交 markDelivered 故障，实际落库 failed /
+provider_unknown 并清凭据。只删除本次临时库；这是真实 PG 与受控故障模型，不是实际供应方或网络断包实验。
+
+主控采纳 [ADR-030 §5.1](../../kokoro-handbook/decisions/ADR-030-iam-engineering-boundaries.md#51-magic-link-投递的密钥与终态证据)：
+加密 claim 返回业务中性模型、Processor 先检查预算/期限再解密、分离三种错误边界；保留 terminal 清凭据及元数据，
+单 key 用停签发排空轮换，不声称支持混合 key 热轮换。淘汰在 Repository 返回解密结果/错误 union 的方案（预算仍晚于
+解密且职责混杂），也不把 provider 或解密重试策略放进长数据库事务。先同步本仓三面文档，S2b 验收前不实施 S3。
+
+S3a 的后续最小验证范围已明确：真实 AES key/cipher/tag/AAD 故障且 provider 零调用、有界终止、expiry/cap 先于解密；
+多 client claim/fencing/取消/lease；provider 接受后响应丢失的同 delivery ID/payload/reply 去重 fixture；
+markDelivered 未提交与已提交但确认丢失分别验证，不伪装 provider 错误或覆盖终态；旧 key 排空与新 key 签发。
+本地 provider fixture 只证明 IAM 侧语义，实际供应方 sandbox 仍单独列证据缺口。
+
+### 目录依赖门禁预验
+
+主控在仓外临时脚本用 TypeScript AST 跑过 17 个正反 fixture，覆盖静态 import、type import、re-export、
+dynamic import/require、业务 Service 引入驱动/具体 Repository、route 直连数据库、跨模块内部路径，以及
+process.env 的属性/下标/解构读取；注释和普通字符串示例不误报。当前 52 个手写源码文件共 167 条 import 边，
+环境变量读取只命中 config/iam-config.ts。此结果不是目标模块架构通过；旧架构测试仍需在目录切片替换。
+
+该探针只处理相对路径模型，正式门禁须使用 tsconfig/module resolution 处理别名并检查循环依赖，保留可执行的
+违规 fixture；不拿 import AST 冒充 SQL 参数化、租户隔离或运行时行为证明。没有向 IAM 仓提交临时探针。
