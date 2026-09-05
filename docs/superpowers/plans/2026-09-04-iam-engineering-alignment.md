@@ -650,9 +650,9 @@ Root preflight 由现有 common/delivery/typescript 检查限定 IAM 运行，�
 
 | 任务    | 范围与交付                                                                                        | 状态                     |
 | ------- | ------------------------------------------------------------------------------------------------- | ------------------------ |
-| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | 待派工                   |
+| IAM-R1D | IAM 三面文档与 INDEX 承接采纳树；纠正失效路径、源码职责和状态说明；机器契约/DDL 零变更            | Boyle 进行中             |
 | IAM-R1  | 在原候选上完成 auth 内部分组、准确命名、真实职责边界；独立审查后集成日常主目录                    | 等待 R1D 文档门          |
-| IAM-R2A | 只读复核 SQL 精简/索引/UTC/无外键方案，提交带源码证据的实施清单                                   | 可与 R1D 并行            |
+| IAM-R2A | 只读复核 SQL 精简/索引/UTC/无外键方案，提交带源码证据的实施清单                                   | Nietzsche 只读审查完成   |
 | IAM-R2  | 先完善 DATA_MODEL，再逐片对齐 canonical SQL、查询映射、UTC、完整性/保留与 catalog；不操作既有数据 | 等待 R1 主目录落地及 R2A |
 | IAM-R3  | API/框架/依赖治理：先定契约和预算，再验证输入、请求关联、取消、共享生命周期等既有缺口             | 等待目录与相关 SQL 边界  |
 | IAM-R4  | 主目录完整验证、目录/SQL/API 整体审查、文档事实收口、小粒度提交；缺少的外部证据明确记录           | 等待以上切片             |
@@ -685,3 +685,27 @@ Root preflight 由现有 common/delivery/typescript 检查限定 IAM 运行，�
 复用唯一现有 PG/Redis；先只读探测，不重启 Docker、不另起实例、不 flush。随机隔离库仅在验证阶段创建，
 并只清理本次资源；共享 Redis 若仍不可用，保留明确缺口，不用 mock 冒充通过。真实邮件 provider sandbox
 尚未提供，不把本地 provider ledger 当供应方验收。Root 原有 kokoro-agent 与 .tmp/ 修改保持不动。
+
+## 13. IAM-R2A 审查结果与主控收敛
+
+Nietzsche 在主目录精确 `c5c7a0c3b4638988b9dc9d7eb55629d913607f1d` 完成只读审查，无文件/DB/服务写入，已回收。
+以下为后续 SQL 设计输入，不是已实现或验证通过；行号只绑定该旧布局 commit。
+
+| 结论                                   | 精确证据与实施边界                                                                                                                                                                                                                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 本表 PK 统一 id，外部身份不变          | 15 张保留表同步 INSERT/SELECT/UPDATE/RETURNING/排序/GROUP BY/Row/fixture；iam_tenant.id 仍 TEXT。Proto 资源字段、JWT session 身份、delivery ID/AAD 的值不变，不用字符串全局替换引用列。                                                                                                     |
+| 确定无用项可精简                       | iam_identity 无生产读写；principal/org generation 仅默认值；contact email 与 normalized 同写一个值；security-event payload 唯一构造恒为 {}。membership generation 被 Authorize 消费，family generation 参与 successor/唯一性，均保留。                                                      |
+| 删除状态不是仅增加列                   | 认证 Repository 的 lockPrincipal:435–440、登录投影:457–473、session 投影:395–417 均需 principal/org deleted_at IS NULL；保留 disabled/suspended 与同 tenant。refresh digest 定位保留历史 rotated/revoked 行，避免破坏重放/Logout。                                                          |
+| 闲置索引与缺失查询索引分开             | ix_iam_magic_link_lookup / ix_iam_auth_session_family / ix_iam_security_event_scope 当前无对应查询；contact:290 历史检索缺非 partial tenant/email 索引；membership:298/450 历史检索及锁缺合适 tenant/principal 路径。新增前用代表性数据和默认 planner 证明收益，不通过关 seqscan 证明性能。 |
+| 强制 UTC 与 catalog 尚缺               | Pool 只设 search_path，安装 Client 也未强制 TimeZone；不是 TIMESTAMPTZ 存错了 instant。每连接配置及重建连接验证；canonical schema 衍生 catalog 预期，完整比较表/列/类型/NULL/default/约束/索引，不再维护第二份可编辑 DDL。                                                                  |
+| 清密文前先设计 receipt 形态            | 当前 committed CHECK 强制 envelope 非空；直接清 NULL 会违约。结果清除、去重 tombstone、双窗口和过期拒绝需一致，不以 GC 是否跑过决定业务合法性。                                                                                                                                             |
+| 清 session 不能只看 refresh expiry+24h | Logout 可在过期 session 上生成新 24h receipt；当前 receipt 无精确 session 关联列。主控不把“粗略跳过有活跃 receipt 的 tenant”直接当最终并发保证，须先确定可检索关联和与新命令一致的锁内重验。                                                                                                |
+| 撤销历史不默认 GC                      | 删除最后一个 revoked contact 会让登录分流把邮箱视为新身份；身份/审计不可逆删除不属工程自动默认。outbox/link/receipt 清理必须保护存续引用、终态和 replay 窗口。                                                                                                                              |
+| orphan 最小只读边界                    | 现 DATA_MODEL 三条无界 count 只是草案；后续采用受限 tenant/主键分页、固定扫描边界、时间预算和每批快照，区分合法 NULL/全局权限/历史撤销，不自动修复或删除。                                                                                                                                  |
+
+主控已接受以上风险与精简方向。后续按 R2-1 数据字段与查询映射、R2-2 删除状态及父锁、R2-3 UTC/查询计划、
+R2-4 有界关系检测与引用安全保留拆片；必要的 Schema/契约设计先写入 IAM 自持文档，再授予具体实现文件集。
+当前仍先完成 R1，不让 SQL 审查反过来拖延已经确定的目录落地。
+
+恢复时只读环境探测：空闲磁盘约 61.5 GB；PG5432 TCP 可达（不等于 SQL 验收）；Redis56380 原实例 PING 2s 超时。
+未重启 Docker、未创建第二个实例、未修改业务库；完整 Redis/smoke 门保留待验。
