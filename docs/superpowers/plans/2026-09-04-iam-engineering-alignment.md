@@ -1205,3 +1205,8 @@ R2-6 后不能继续把 Tenant 管理代码放进 Authentication，也不能只�
 完成条件：三面文档经独立只读审查 PASS；明确管理身份和 bootstrap 入口；机器 Proto/生成链、SQL、错误、分页、幂等和审计语义一致；
 随后再由单一 IAM writer 实现模块、RPC、Repository/Service、真实 PG 并发回归和完整门禁。未解决的管理身份不是运维阻塞，
 而是 API 安全契约的前置设计，不能用现有共享 workload token 冒充完成。
+
+主控已在 IAM `552d2a1` 的文档工作树完成当前门禁复验，并以 `77b46c6 docs(iam): record current verification evidence` 收口：
+`pnpm typecheck`、`pnpm lint`、`pnpm contract:check`、`pnpm build` 通过；普通测试 25 文件通过/9 个环境跳过（327 passed、205 skipped）；
+fresh PostgreSQL 隔离库 integration 为 8 文件通过/1 个环境跳过（203 passed、2 skipped）；`db:apply-schema` 与 catalog drift 为 `ok: true`。
+Redis、完整 listener/provider smoke、BFF/Web 消费者及 Tenant 管理 API 仍明确未验收，不得以本次文档门复验代替。
