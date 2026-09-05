@@ -1096,3 +1096,15 @@ R2-4 已从独立候选 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1` 按文件范�
 | 验收 | Proto/生成物/provenance 一致；body tenant 被删除且 header 缺失/跨租户尝试拒绝；nonce/redirect 声明式规则真实拦截；`pnpm contract:check`、lint、typecheck、build、相关单测及 PG-only 真实集成通过 |
 
 该片不能把“服务 token + 任意 caller header”包装成最终端到端身份认证：metadata 只在受信 BFF/service boundary 内有效，后续需要由跨仓调用方统一注入并由部署网络/服务身份保护。IAM 不从未认证用户 body 读取租户事实。
+
+### IAM-R3-1 主目录集成与主控复验
+
+R3-1 已按任务卡完成并集成到 IAM 日常主目录：实现 commit `95980b0`，文档证据收口 commit `73c11c0`。主控接收前核对了候选文件范围、Proto reserved 字段、生成 provenance、interceptor 链、敏感错误信息和 BFF↔IAM 说明；独立审查 Agent 在规定窗口内未返回可用结论，主控对固定 diff 进行了等价只读复核，未发现 P1/P2。
+
+- `RequestMagicLink`、`ConsumeMagicLink`、`Authorize` 删除 body `tenant_id` 并保留原字段号为 `reserved`；三者要求 `x-kokoro-tenant-id`，只通过 Connect context value 进入 handler。`RefreshSession`、`Logout`、`GetSession` 继续由 token/session 权威事实推导 tenant。
+- `@bufbuild/protovalidate@1.2.0` 已接入六个 unary RPC 的 interceptor；协议规则与业务层 allow-list、nonce、session、权限规则保持分工，不把声明式规则当作完整业务授权。
+- 主目录执行通过：`pnpm contract:generate`、`pnpm contract:check`、`pnpm lint`、`pnpm typecheck`、`pnpm test`（24 文件通过、9 个环境跳过；322 通过、201 跳过）、`pnpm build`、`git diff --check`。
+- 主目录复用现有 PostgreSQL，在随机临时数据库安装当前 Schema 后运行 PG-only：32 个测试文件、521 项通过；catalog 约束为 23 个 CHECK、107 个 NOT NULL、15 个 PRIMARY KEY、0 个 FOREIGN KEY；临时数据库已删除。共享 Redis 未重启、未 flush，Redis 依赖测试仍明确待验。
+- 当前 IAM 文档已同步 trusted context 语义，`docs/integration/bff-iam.md` 不再描述 body `tenant_id`；本片未修改 `database/schema.sql`、其他子仓、Docker/CI、管理 API。
+
+本片仍不宣称 IAM 总体完成：完整 catalog drift、关系/孤儿审计、retention、管理 writer/API、逐 workload tenant grant、BFF/Web 消费者接线、完整 Redis/进程/provider smoke 仍待后续独立任务。下一片优先建立 SQL catalog/关系完整性验证设计，并修复审查中发现的 session parent-lock 缺失父行语义；保持一个 IAM writer、先任务卡与设计门、再实现和独立审查。
