@@ -1001,3 +1001,8 @@ Carver交付 `a1ae65d1937ab65b05e399981f5322d4dfc877c8`，已停写；18文件�
 
 主控从当前principal.repository的AST提取两条原SQL，在同一PG的随机自有库安装canonical Schema，建立每表10万行合成contact/membership及一致父资源，9万行为单一tenant，其余分散到10个tenant，含20% revoked/removed历史。历史邮箱查找和按principal取membership均Seq Scan、过滤99999行，分别1440/1429 shared hit blocks；只在该自有库加两个完整非唯一B-tree访问索引后均Index Scan、4 hit blocks，仍返回同一历史行。
 原Schema/Repository未修改，自有库已删除；日志及完整JSON计划位于 `/tmp/kokoro-iam-goal/r2-4-review/query-plan-probe.log`、query-plan-evidence.json。该证据是单机合成访问路径对比，不是线上负载、容量或延迟SLO证明。下一片先更新三面设计再审查放行，评估完整历史读取索引；不得通过收窄status谓词、删除历史或扩大UNIQUE语义来换计划。其他JOIN/claim查询仍需单独代表性证据。
+
+### R2-3 独立审查放行与非 UTC 测试补强
+
+Kant固定4975b89..a1ae65d审查PASS，无P1/P2；P3指出当前UTC回归在默认已UTC的CI上可能失去辨识度。Carver已停写回收，主控接管日常IAM，先从干净4975b89快进a1ae65d，再仅补强两测试文件，不改生产/DDL/依赖。
+补强限定test/fixtures/database-connection-fixture.ts及test/integration/database-connection.integration.test.ts：只对成功CREATE并登记的随机自有fixture数据库设置非UTC default，先用无共享配置的Client实际断言该默认，再让runtime多PID与真实installer证明显式UTC覆盖。不ALTER传入数据库、共享role或实例设置；临时库仍由原登记集统一清理。原三面文档中的不改全局配置规则保留，这是隔离测试前置条件，不是部署配置变更。主控先真实验证并提交该小补强，再交同一独立审查员只读复核；整个R2-3尚待主目录最终复验与文档收口。
