@@ -1127,4 +1127,4 @@ R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅�
 
 设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；refresh/重放与 Logout 的不同父资源语义如何保持；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
 
-IAM 三面设计已落到 commit `5f102d4`（`DATA_MODEL` §0.5、`TECHNICAL_DESIGN` R2-5、`API_CONTRACT` R2-5、`CURRENT`）。主控已按实际 Schema/Repository 做本地规格复核并补充 role→organization、security_event→principal 关系；此前两次只读 Agent 未在规定窗口返回可用审查结论，故不记录为独立审查通过，也不派发实现 writer。下一步先以短范围独立审查重新核对该 commit，再决定是否进入 RED/实现。
+IAM 三面设计先落到 `5f102d4`，随后以 `7fe83e7` 补全 `DATA_MODEL` 的 tenant、role scope、command receipt、security event 等关系边界（`TECHNICAL_DESIGN`/`API_CONTRACT`/`CURRENT` 仍与之对应）。主控已按实际 Schema/Repository 做本地规格复核；此前只读 Agent 未在规定窗口返回可用审查结论，故不记录为独立审查通过，也不派发实现 writer。下一步先以短范围独立审查重新核对 `7fe83e7`，再决定是否进入 RED/实现。
