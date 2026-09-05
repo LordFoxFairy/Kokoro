@@ -956,3 +956,25 @@ Arendt（01a07130-214a-73f2-908d-281b41a11fba，派发指定gpt-6-astra）只读
 每个物理连接以startup options固定UTC/search_path，不用异步connect事件或一次pool.query代表全池；URL原串保留交pg解析，对冲突options/超时及未知键明确策略，保留TLS/编码凭据/IPv6等支持，错误脱敏，不改角色或全局DB配置。
 主控下一步须核对本地pg8.23.0/connection-string2.14.0的实际可接受键及环境优先级，收敛三面设计/文件放置门后再放行；调查中的完整白名单、PGOPTIONS策略与installer超时仍是候选建议，不能直接当已批准实现。
 验证目标包括首条SQL前UTC、并发新连接/归还再借/销毁补建、真实installer和非法配置失败；主动SET/RESET污染与外部连接池模式须单列保证边界。其他索引/GC/框架改动不混入此片。
+
+## 18. R2-3 每连接 UTC 与共用配置任务卡
+
+上一轮为progress：R2-2已集成复验，IAM c9d1d35。当前Root c00b2905后续仅任务板；IAM源码/DDL/测试仍110c7fa。主控已读实际pg8.23.0/connection-string2.14.0、runtime/installer/config及架构门，完成眼前设计关键路径，提交 `4975b89527bce128dbb689e835f9a8b469124d25`（四文档，无代码变更）。标准Prettier七份、246本地链接、三文件36项聚焦门通过。
+
+| 项 | 本片边界 |
+| --- | --- |
+| Owner/writer | IAM；主控完成当前设计后停写IAM，Arendt续派只读设计审查；通过后续派单一实现负责人 |
+| 基线 | 日常IAM 4975b89；worktree仍110c7fa，续派writer前先快进同一文档基线并确认干净 |
+| 三面 | TECHNICAL_DESIGN §8.3、API_CONTRACT §7.3、DATA_MODEL §7.1；当前为待审查设计，不冒充UTC已上线 |
+| 放置 | 新src/config/database.ts供runtime Pool及installer Client共用；提取env数据库读取，不让installer导入全runtime，不建技术品牌目录/Pool框架 |
+| 协议 | startup固定UTC/search_path；显式有限connect/operation预算；受控URI/键白名单、options/timeout冲突失败，原URL交pg解析，既有TLS语义不改 |
+| 生产文件 | 新database.ts，现env.ts、runtime/create-runtime.ts、scripts/apply-schema.ts；其余生产/DDL/contract/generated/依赖/CI不动 |
+| 测试文件 | 新unit/database-config.test.ts、integration/database-connection.integration.test.ts；必要时新fixtures/database-connection-fixture.ts；现config.test与architecture dependency-graph/dependencies/architecture-fixtures |
+| 文档 | 七份当前文档按当前事实更新；保护已验基线/历史日志及CURRENT中的nonce边界，不编造现有format:check或drift命令 |
+| 删除项 | 两入口分散的连接参数构造、installer直接读process.env；原Schema/查询/业务时间与认证/授权行为保留 |
+| 明确非目标 | 不改全局角色/数据库设置，不升级Node/库/框架，不改TLS验证模式，不改业务SQL/时间序列化，不加入索引/GC/其他仓 |
+
+设计审查使用固定c9d1d35..4975b89；特别检查URL parser实际覆盖与编码/重复键、PGOPTIONS/PGCONNECT_TIMEOUT优先级、错误脱敏、TLS保留、startup时序、installer权限与清理、共享函数与测试/架构证明范围。
+只读审查Arendt（01a07130-214a-73f2-908d-281b41a11fba，原派发指定gpt-6-astra）；不写文件/运行DB或服务。审查通过后才单一writer实施，主控不并发写IAM。
+实现要求先让旧runtime/installer未固定UTC及参数覆盖成为有效RED，再实现并green；使用Node24.20/pnpm11.25已装依赖，真实PG复用5432，随机测试库需要测试身份CREATEDB，不提权生产角色。真实验证包含配置单测、AST反例、多PID/补建/复用、实际runtime、实际installer空库/非空/回滚及query/statement budget；清理只认自身创建记录，不碰传入基准库或共享Redis。
+最终lint/typecheck/contract/build、标准Markdown/link、全PG-only/真实入口由作者先验、独立审查后主控主目录集成重跑；Redis仍明确待验，不包装为全IAM完成。
