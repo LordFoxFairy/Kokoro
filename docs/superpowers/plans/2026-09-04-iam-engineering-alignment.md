@@ -1229,3 +1229,20 @@ IAM 文档验收随后以 `7847574 docs(iam): record tenant actor design review`
 随后 IAM `df4f708 docs(iam): detail tenant management transport proposal` 补充了尚未放行的 transport 候选：per-caller service authentication
 加 Bearer operator assertion JWS；`aud`、`azp/service_identity`、operation、scope、request digest、`jti` 和 TTL 在 effect point 重新验证。
 该候选仍需绑定 issuer/JWKS、bootstrap、撤销/轮换和 caller matrix 的正式审查，不能作为已实现管理接口。
+
+### IAM-R2-7 模块 owner 与真实依赖复验补强
+
+独立只读架构复审确认：当前只有 `modules/authentication` 与 `modules/authorization` 是合理的“已实现首发切片”，但此前的规划还没有把
+Identity/Organization/Audit 的表级 writer、首次登录事务编排和迁移完成条件写成硬规则。主控在 IAM `8e72e0c docs(iam): clarify module owners and verification`
+补齐并提交：
+
+- `TECHNICAL_DESIGN §0.1.1` 增加表族 → 当前 writer → 目标唯一 writer → 迁移完成条件映射；明确 Authentication 是首次登录的事务编排 owner，
+  不是 Identity/Organization/Audit 的长期事实 writer；
+- `DATA_MODEL §0.1` 同步表级 SQL writer 及 Audit 过渡边界；Audit 当前认证事务内 append 可暂留以保证原子性，但查询、保留、legal hold、匿名化必须由未来 Audit owner 负责；
+- `CURRENT.md`、`ACCEPTANCE.md` 明确不创建空 tenant/identity/organization/audit 目录，并固定实施顺序：管理 caller/assertion 与 Audit append → Tenant → Identity → Organization/Membership → 建档迁移 → Authorization 管理 → Audit 查询/保留 → Authentication 运行治理；
+- 完整目标中的 terminate/purge 与 Tenant 首片 active/disabled 生命周期分开，不把未决能力伪装成 V1 交付。
+
+当前主目录验证：无基础设施 URL 的 `pnpm test` 为 25 文件、327 passed、205 skipped、0 failed；复用一个临时 PostgreSQL 数据库并临时启动一个 Redis 后，串行文件模式
+`pnpm test:integration` 为 9 文件、205 passed、0 skipped、0 failed，覆盖 health、Connect RPC、Magic Link delivery 及 `runtime.start()`/shutdown；数据库和 Redis 均已清理。
+将外部依赖 URL 注入并行 `pnpm test` 会让多个 integration 文件共享同一临时库并发生 fixture 竞争，因此不作为真实依赖验收命令；生产代码由串行 integration 门禁覆盖，未借此修改生产逻辑或 Vitest 全局配置。
+该 commit 仅改 IAM 四份事实文档，`git diff --check` 通过；独立审查提出的 P2 规划缺口已落到文档规则，Tenant Proto、Schema writer 和生产 API 仍未开始。
