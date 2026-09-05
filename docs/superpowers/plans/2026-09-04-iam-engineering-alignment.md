@@ -1040,3 +1040,8 @@ IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代
 Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P3为造数后显式ANALYZE。主控在 `5ba1c0a6fb3c55f4e6f859f088f9725842139bff` 将统计刷新及顶层Shared Hit+Read计数写清，格式/257链接通过；没有代码或Schema变化。Arendt已回收，主控停写IAM。
 原worktree从a1ae65d快进到干净5ba1c0a；续派Carver（01a0711d-0de8-7241-9c59-3305fb2c4863，原指定gpt-5.6-sol）为唯一writer。允许的12文件：database/schema.sql；现test/contract/schema.test.ts、test/integration/schema.integration.test.ts；新test/integration/identity-query-plans.integration.test.ts、test/fixtures/identity-query-plan-fixture.ts；README/INDEX/CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ACCEPTANCE七文档。不修改任何src、其他测试fixture、脚本、依赖、CI或别仓。
 要求先旧Schema实际RED再加索引，类型化测试不抄另一套业务SQL/DDL，保持默认规划器和原唯一不变量；真实PG隔离资源按卡清理。完整候选验证后自洽提交并停写；主控不把作者自报当最终证据，继续规格审查、独立质量与主目录重跑。
+
+### 主控并行验证与后续输入
+
+独立catalog驱动已在两个5ba1c0a原字节Schema自有新库上RED：只缺两条设计索引，其他表/列/约束及31原索引一致；两个库已清理。驱动 `/tmp/kokoro-iam-goal/r2-4-review/compare-catalog.mjs` 后续接不可变候选SHA，只接受这两条完整非唯一索引差异，不等于完整生产drift工具。
+主控另做只读R3依赖盘点，未安装/修改manifest：现TypeScript5.9.3、@types/node22.20.1、Connect2.0.0、redis5.12.1；2026-09-05registry discovery返回TypeScript最新7.0.2，但typed ESLint8.69.0 peer仅支持<6.1.0，故最大版本号不能直接取代“最新稳定兼容”。Fastify/Connect/Zod等候选metadata、peer与已装精确版本位于 `/tmp/kokoro-iam-goal/r3-review/`；一次@types/node registry请求URLError明确保留。该盘点只是后续矩阵输入，R3仍须核验兼容范围内版本、发布日期/缓冲、安全与实际安装/测试；不在R2-4升级依赖。
