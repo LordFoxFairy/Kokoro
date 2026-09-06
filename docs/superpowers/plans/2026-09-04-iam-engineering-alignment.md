@@ -1471,3 +1471,8 @@ commit 绑定，不冒充本次工作树的新运行证据。
 `stopAccepting()`，`IamRuntime` 在关闭 listener 前停止新的 outbox claim，正常 shutdown 等待当前 delivery operation，只有总期限超出才
 `forceStop()`；单测覆盖正常 drain 不取消 active delivery、force-stop 传播取消和关闭顺序。该切片关闭了“代码没有 stop-claim 边界”的缺口，
 但真实 SIGTERM、provider/数据库故障注入、Docker image smoke、运行中 PostgreSQL SQL cancel 和跨仓 consumer 仍未形成当前 commit 的运行证据。
+
+随后在 IAM `e51ca7c` 文档收口后，主控使用本机唯一 PostgreSQL 18.4 实例创建隔离临时数据库，并启动一个临时 Redis 8.8.0 实例/独立 logical DB；执行
+`pnpm db:apply-schema` 与 `pnpm test:integration`，10 个 integration 文件、210 个测试全部通过，退出时删除临时数据库并关闭临时 Redis。
+这证明当前 IAM commit 的真实 PG/Redis composition、HTTP/RPC listener、delivery worker 和关闭路径可运行；不替代 Docker image smoke、真实
+SIGTERM/故障注入、运行中 SQL cancel、真实 provider 或跨仓 consumer 证据。
