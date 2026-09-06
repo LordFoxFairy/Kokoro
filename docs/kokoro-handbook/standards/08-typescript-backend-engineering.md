@@ -974,7 +974,74 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
   `@ts-expect-error`。
 - 不因“一 class 一文件”而拆散只服务于一个实现的私有类型，也不把多个独立业务对象堆进 `models.ts`。
 
-### 8.4 ESLint typed lint 基线
+### 8.4 一个手写 TypeScript 文件只承载一个主要变化原因
+
+“按模块聚合”不等于“把模块里所有东西塞进一个文件”。一个模块可以高内聚，但同一个手写文件仍然必须有一个
+清晰的主要职责和变化原因。以下组合默认视为设计问题：
+
+```text
+同一文件同时包含：
+  wire schema / DTO 类型
+  业务常量或协议版本
+  domain model class
+  Error class / 错误码
+  crypto、序列化、解析 helper
+  Service 用例编排
+```
+
+允许同文件共存的前提是它们都是同一个实现的私有细节，例如一个小型纯函数可以和只被它调用的私有类型、私有常量
+放在一起。只要其中任一部分拥有独立的消费者、测试生命周期、发布协议或变化原因，就必须拆成有语义的文件，而不是
+按 `models.ts`、`constants.ts`、`utils.ts` 建无主人的垃圾桶。
+
+#### 8.4.1 类型、schema、class、service 的放置规则
+
+| 内容 | 默认位置 | 规则 |
+| --- | --- | --- |
+| HTTP/配置/第三方输入 schema | `<subject>.schema.ts` | Zod schema 是运行时边界；类型用 `z.infer` 推导，不再另外维护同字段 DTO class |
+| Proto 输入校验 | `contract/` + transport interceptor | 使用 Proto/Protovalidate 的唯一事实源；不得为同一 RPC 再复制一套 Zod schema |
+| 稳定内部数据形状 | `<subject>.ts` 或 `<subject>.types.ts` | 用 `type`/`interface`；只有多个角色稳定共享时才导出 |
+| 具有不变量/状态迁移的对象 | `<subject>.ts` 或模块内 `domain/<subject>.ts` | 使用 class 或带命名的纯函数；class 必须保护状态，不是字段容器 |
+| 业务用例与事务编排 | `<subject>.service.ts` 或 `use-cases/<verb>-<subject>.ts` | 不放 schema、数据库 Row、协议 message 或底层解析实现 |
+| 错误类型与错误码 | `<subject>.error.ts` | 错误语义有独立消费者时集中管理；不要在 Service 文件尾部顺手定义错误体系 |
+| 持久化 | `<subject>.repository.ts` | SQL、Row 类型和 Row mapper 只服务本模块持久化；不放 HTTP/RPC 常量 |
+| 协议适配 | transport 下的 handler/interceptor/mapper | 负责 wire ↔ 内部输入/错误映射，不承载业务规则 |
+
+#### 8.4.2 常量、有限值与正则表达式
+
+不要把“出现了 `const`”误判为必须新建文件，也不要把所有值都集中到全局常量目录：
+
+1. 只被一个函数使用的默认值、正则或解析标记，可以保持文件私有，并紧邻其消费者。
+2. 被多个文件使用且属于同一业务 owner 的值，放入 `<subject>.constants.ts`；文件名必须带 owner，禁止无主人的
+   `constants.ts`、`common.ts`、`utils.ts`。
+3. 协议版本、字段名、错误码和状态集合必须有明确事实源。外部协议优先从 Proto/OpenAPI/Zod schema 推导；不要再
+   手写一份相同的字符串表。
+4. 简单有限值优先使用 `z.enum`、`as const` 加 string literal union 或就近常量。默认不使用 TypeScript `enum`；
+   只有需要真正的 runtime enum object、反向映射，或代码生成器明确要求时才使用。
+5. 相同的底层谓词不得复制到多个文件。像 `typeof value === "number" && Number.isSafeInteger(value)` 这类
+   结构只有在跨用例复用且拥有稳定语义时才提取为 `isNonNegativeSafeInteger` 等命名函数；提取后必须保留 owner，
+   不创建无意义的 `number-utils.ts`。
+
+#### 8.4.3 class model 的使用边界
+
+业务 model class 至少要满足下列一项：
+
+- 构造时校验并保持不变量；
+- 通过方法执行合法状态迁移；
+- 隐藏敏感状态或规范化表示；
+- 拥有明确生命周期，且方法需要共享受保护状态。
+
+只有字段、getter 和 `constructor` 的 class 不是领域模型；只有把 `type` 改成 `class` 也不会提高质量。DTO、数据库 Row、
+配置对象和 Zod 推导输入默认使用结构化类型。Service 可以是纯函数、factory 或 class，依据依赖和生命周期选择，
+不因为“大厂”三个字机械增加 class。
+
+#### 8.4.4 具体反例与重构信号
+
+当一个文件同时出现“导出多个业务类型 + 一组协议常量 + Error class + 多个 parser + 一个公开 Service 函数”时，
+它已经跨越多个变化原因，即使未超过行数阈值也必须重构。重构顺序是：先识别 owner 和调用图，再拆类型/常量/错误/纯解析
+与业务编排；最后由 transport 或 composition root 装配。不能通过把同一批内容机械搬到 `domain/`、`application/`、
+`infrastructure/` 来制造分层。
+
+### 8.5 ESLint typed lint 基线
 
 typescript-eslint 使用 type-aware 配置（当前推荐 `projectService`），至少阻断：
 

@@ -39,7 +39,9 @@
 2. 先确认 owner、契约、状态机、事务、失败恢复和依赖方向，再创建目录和文件。
 3. 代码按业务能力聚合；框架、数据库、缓存和 provider 类型不得穿透业务规则。
 4. 简单业务保持简单；复杂业务才使用 Domain Model、CQRS、Repository abstraction 或状态机。
-5. 一个文件有一个清晰变化原因；一个目录有一组持续存在的职责，禁止空层和模板式脚手架。
+5. 一个文件有一个清晰变化原因；一个目录有一组持续存在的职责，禁止空层和模板式脚手架。手写 TypeScript 不得把
+   schema/type、常量、model class、错误体系、解析 helper 和 Service 编排混成一个文件；具体例外与拆分规则以
+   [TypeScript 手册 §8.4](docs/kokoro-handbook/standards/08-typescript-backend-engineering.md#84-一个手写-typescript-文件只承载一个主要变化原因) 为准。
 6. Wire schema、内部业务对象、数据库 Row 和生成类型只有在语义/生命周期不同时才分开；不为凑层数复制类型。
 7. 时间瞬时点统一使用 UTC；本地日历时间和周期任务的 IANA timezone 显式建模。
 8. 规则必须落在代码、测试、架构检查和 CI；Markdown 自述不是完成证据。
