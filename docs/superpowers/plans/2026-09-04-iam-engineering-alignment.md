@@ -1536,8 +1536,9 @@ R4 只读审查已完成：Ohm 覆盖 62 个手写 TS/7,105 行，确认最高�
 Tenant assertion 与 cursor 的 canonical codec 重复；Chandrasekhar 确认规范修订后的 SDK 条件、Module/Wire error 角色、根级共享准入、
 Zod/原生 transport adapter 和具体 parser 约束一致，仅补齐了两处条件性措辞。审查员未修改文件、未提交、未启动服务。
 
-R4 文档门：主控已将审查结论写入 `kokoro-iam/docs/TECHNICAL_DESIGN.md`。下一写入切片只允许：Tenant 管理认证边界 + 唯一 canonical
-codec；文件集和测试断言见下一任务卡。代码行为、Proto、SQL 和 SDK 尚未因 R4 文档审查而改变。
+R4 文档门：主控已将审查结论写入 `kokoro-iam/docs/TECHNICAL_DESIGN.md`。首个写入切片已完成 Tenant 管理认证边界 + 唯一
+canonical codec，交付 commit 为 IAM `5019601`；随后角色文件切片继续在同一 writer 上串行推进。代码行为、Proto、SQL 和 SDK
+没有因这些职责拆分改变。
 
 #### IAM-R4-IMPLEMENT-01：Tenant 管理认证边界
 
@@ -1551,3 +1552,15 @@ codec；文件集和测试断言见下一任务卡。代码行为、Proto、SQL 
 | 验收 | unit tenant auth、canonical digest/cursor 回归、contract transport、architecture import boundary、lint、typecheck、build；之后主控在当前 IAM 工作树复验 |
 
 该切片完成后再派发 RPC interceptor；不得与同仓另一个写入 Agent 并行。
+
+#### IAM-R4-IMPLEMENT-02：Tenant Service 与 Cursor 角色边界
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/modules/tenant`；同一主控 writer；不与其他 IAM 源码 Agent 并行 |
+| 允许文件 | `tenant.service.ts`、`tenant.cursor.ts`、`tenant.repository.ts` 及其同 owner 的 `types/constants/policy/validation/schema/fingerprint/repository.mapper/repository.executor` 文件、受影响的 architecture fixture/import、IAM CURRENT/INDEX/TECHNICAL_DESIGN |
+| 目标 | Service 只保留 Tenant 生命周期用例/授权/事务编排；Cursor facade 只保留 encode/decode；Repository 只保留 PostgreSQL SQL/事务编排；模块级类型、常量、Zod schema、校验、Row mapper 和 fingerprint 各有明确 owner |
+| 保留 | Proto/SQL/API 字段、错误语义、分页 cursor wire 格式、签名/HMAC、事务/幂等行为；函数体内局部变量不机械拆分 |
+| 删除 | 旧 `tenant.ts` 实现 helper 和 Service/Cursor 顶部/尾部的跨职责模块声明；不保留 alias/re-export 兼容旧路径（公开 cursor facade 的受控 type export 除外） |
+| 验收 | `pnpm typecheck`、`pnpm lint`、Tenant unit/contract、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`；真实 integration 另绑定实际依赖输出 |
+| 状态 | 实现进行中；提交后主控检查 diff、重跑全部门禁并更新交付 SHA |

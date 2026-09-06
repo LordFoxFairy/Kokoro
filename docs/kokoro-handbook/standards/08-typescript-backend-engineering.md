@@ -1026,7 +1026,25 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 
 一个文件可以同时包含同一职责的配套声明，例如 `tenant.error.ts` 中的 `ModuleErrorCode`、code union 和 `TenantError` class，
 也可以在 `tenant.repository.ts` 中放只被该 Repository 使用的 Row 与 mapper。判断标准是“一个主要公开概念”，不是
-“一个文件只能出现一种 TypeScript 语法”。
+“一个文件只能出现一种 TypeScript 语法”。但下面的**角色文件硬边界**优先于这个一般例外；不能用“私有细节”把 Service
+文件重新变成常量、类型、解析器和业务编排的混合文件。
+
+#### 8.4.1.2 角色文件硬边界
+
+这些规则是为了让代码审查和新人定位成本稳定，不是为了机械追求“一符号一文件”：
+
+| 文件角色 | 文件主体允许内容 | 必须移出的内容 |
+| --- | --- | --- |
+| `<subject>.service.ts` | 一个 Service class、factory 或 use-case 函数，以及其直接编排方法 | 模块级业务常量、Service options/type、独立 policy、输入 validation、schema、Row、wire message、crypto/codec 实现 |
+| `<subject>.cursor.ts` / `<subject>.codec.ts` | 一个协议编解码公开面（例如 encode/decode） | wire 常量、payload type、运行时 schema、独立 fingerprint、validation helper |
+| `<subject>.repository.ts` | 一个持久化 owner 的 Repository、SQL 和只服务该 Repository 的 Row mapper | HTTP/RPC 常量、Service policy、业务错误映射、与该 Repository 无关的通用执行器 |
+| `<subject>.handler.ts` / `<subject>.routes.ts` | wire 输入校验后的映射、Service 调用和 wire 输出/错误映射 | 业务状态机、SQL、协议外的业务 policy |
+| `<subject>.error.ts` | 一个模块错误体系：code union、Error class、构造 helper | Service 编排、协议 status 映射、数据库 Row |
+
+“一个 TS 文件什么都有”具体指**模块级声明跨越多个变化原因**。函数内部为表达步骤而产生的局部 `const`、参数解构和
+正常 TypeScript 窄化不属于这个问题；禁止的是把可独立复用/测试/发布的模块级常量、类型和逻辑继续堆在角色文件里。
+例如 Service 的分页上限应进入带 owner 的 `tenant.constants.ts`，Service options 进入 `tenant.service.types.ts`，校验进入
+`tenant.validation.ts`，而不是继续写在 `tenant.service.ts` 顶部或文件末尾。
 
 #### 8.4.1.1 Zod、class model 与 `unknown` 的强制边界
 
@@ -1393,6 +1411,12 @@ SDK 的职责是把生成 client 变成可消费的版本化包，补充认证 m
 5. SDK 错误不能依赖服务端 Error class。服务端业务错误经过 wire error code、request ID、safe details 后，由 SDK 构造自己的 `ApiError`。
 6. 只有至少三个 SDK 已经重复相同的 transport 机制时，才抽取独立 `sdk-core` package；不能提前创建万能 SDK 基础层。
 7. SDK package 必须有 semver、contract digest、generated provenance、breaking check 和最小 consumer contract test；没有稳定消费者时只维护 contract，不创建空 SDK 目录。
+
+`generated` 是**生成物属性**，不是业务层名称，也不是必须从源码树删除的目录名。生成物的物理位置按消费方式决定：
+如果运行时 transport 直接 import、构建必须把它编译进服务，可以使用 `src/generated/<protocol>/`；如果它作为独立契约包或
+SDK artifact 发布，使用仓库根 `contract/generated/<language>/`。两者只能选一个 canonical output，不能同时维护同一份 Proto 的
+`src/generated` 和 `contract/generated` 副本。无论位置如何，目录内只能有生成器输出、provenance 和 drift 检查，不放手写业务逻辑；
+手写 Proto/OpenAPI 仍在 `contract/`，生成命令和 `provenance` 记录唯一来源。
 
 内部 RPC 和公开 HTTP 可以分别发布 SDK；不能因为都叫 client 就把不同 visibility、认证方式和错误契约混成一套。
 
