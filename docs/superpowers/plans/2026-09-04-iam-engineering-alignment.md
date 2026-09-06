@@ -1306,7 +1306,7 @@ canonical request/cursor parser、receipt/audit 事务和真实 PG 并发/回放
 
 ### IAM-R2-7 I2/I3 当前验收记录（2026-09-06）
 
-I2/I3 已完成并由主控复核到 IAM commit `7fd771d`（代码/测试切片：`eb27add`、`b794481`、`1c0fa90`、`c532e7e`）。当前目录保持
+I2/I3 已完成并由主控复核到 IAM commit `5389978`（代码/测试切片：`eb27add`、`b794481`、`1c0fa90`、`c532e7e`）。当前目录保持
 业务模块聚合：`src/modules/authentication`、`src/modules/authorization`、`src/modules/tenant`；RPC、HTTP、配置和 runtime
 各自承担传输与装配职责，没有新增 `services/`、`repositories/`、`postgres/`、`redis/`、`prisma/` 等空技术目录，也没有
 引入 `domain/application/infrastructure/ports` 模板层。
