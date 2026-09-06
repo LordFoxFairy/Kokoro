@@ -1382,3 +1382,13 @@ candidate 的 Redis URL 明确指向 logical DB 1，避免文档、`.env.example
 `PATH=/opt/homebrew/opt/node@24/bin:$PATH pnpm verify`，contract provenance/generated、lint、typecheck、31 个测试文件
 （378 passed、210 skipped）和 build 全部通过。该切片未宣称 Docker image smoke、RPC deadline/cancellation、真实 provider sandbox
 或跨仓消费者闭环；这些继续作为 IAM 后续运行门，不阻塞当前业务目录和契约主线。
+
+### IAM readiness probe closure slice (2026-09-06)
+
+在技术方案先写明 single-flight、成功短 TTL、失败不缓存的语义后，IAM `7f79b49` 实现并验证 readiness probe：新增
+`KOKORO_IAM_READINESS_CACHE_TTL_MS`（默认 1000ms），并发 `/readyz` 探测共享同一组 PostgreSQL/Redis 操作，避免健康检查流量
+制造无限并发连接；该 TTL 不改变业务请求的依赖错误语义。IAM `f6ff496` 将当前事实和验收证据收口。
+
+当前 Node 24 验证：`pnpm verify` 的 contract generated/provenance、lint、typecheck、31 个测试文件（380 passed、210 skipped）和
+build 通过；复用本机 PostgreSQL 18、启动一个临时 Redis logical DB 1、fresh schema 后执行 `pnpm test:integration`，10 个文件、210 passed、
+0 failed，临时资源已清理。Docker image smoke、RPC deadline/cancellation、真实 provider sandbox 与跨仓消费者仍未验收。
