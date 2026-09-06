@@ -1370,3 +1370,15 @@ IAM `6d17ff6 docs(iam): align current architecture facts` 修正了 README/INDEX
 主控在 transport 迁移后的代码审计中发现 Tenant 管理配置已解析 `audience`，但验证逻辑仍使用硬编码 audience；这会使部署配置与实际信任边界分叉。IAM `c902fb9 fix(tenant): honor configured management audience` 已将 audience 显式注入 `TenantManagementAuthOptions`，删除硬编码常量，并新增自定义 audience 单测/transport 类型接线。`f10a8a8` 同步当前事实；`pnpm verify` 通过（contract generated 5、378 passed/210 skipped、build）。
 
 该修复不启用尚未注入 SecretResolver/JWKS 的 Tenant 生产管理面；外部 operator issuer/JWKS 运行接线、deadline/cancellation、worker drain 仍按文档作为独立后续门，不能用配置修复冒充完整管理面。
+
+### IAM naming/runtime consistency follow-up (2026-09-06)
+
+主控在 IAM `22eb5ee` 完成认证、session、事务和 command receipt 的完整命名收敛后，继续处理运行基线不一致问题。IAM `bcd0ebb`
+统一 Node 24：`package.json#engines`、`@types/node`、GitHub Actions、Docker build/runtime 镜像 digest；同时将 CI 与 release
+candidate 的 Redis URL 明确指向 logical DB 1，避免文档、`.env.example`、本地集成和 CI 使用不同 Redis 数据空间。
+随后 IAM `8a05ccd` 将当前事实与验证基线绑定。
+
+验证：在本地 Node `v24.20.0`、pnpm `11.25.0` 下执行
+`PATH=/opt/homebrew/opt/node@24/bin:$PATH pnpm verify`，contract provenance/generated、lint、typecheck、31 个测试文件
+（378 passed、210 skipped）和 build 全部通过。该切片未宣称 Docker image smoke、RPC deadline/cancellation、真实 provider sandbox
+或跨仓消费者闭环；这些继续作为 IAM 后续运行门，不阻塞当前业务目录和契约主线。
