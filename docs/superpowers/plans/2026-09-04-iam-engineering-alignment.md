@@ -1531,3 +1531,23 @@ IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`（`codex
 
 会话标识：Mencius `01a0778a-e6af-7271-8a09-e1dd6104d3bf` 因模型容量不足未交付，已回收；任务以同一只读范围续派 Ohm
 `01a07796-0a1d-7f82-a465-73776ad81f01`（gpt-5.6-luna）；Chandrasekhar `01a0778a-e766-75c1-bbea-e73e80c88ffa` 负责规范复核。
+
+R4 只读审查已完成：Ohm 覆盖 62 个手写 TS/7,105 行，确认最高优先级为 Tenant 管理认证混合职责、RPC context/validation/logging 混合、
+Tenant assertion 与 cursor 的 canonical codec 重复；Chandrasekhar 确认规范修订后的 SDK 条件、Module/Wire error 角色、根级共享准入、
+Zod/原生 transport adapter 和具体 parser 约束一致，仅补齐了两处条件性措辞。审查员未修改文件、未提交、未启动服务。
+
+R4 文档门：主控已将审查结论写入 `kokoro-iam/docs/TECHNICAL_DESIGN.md`。下一写入切片只允许：Tenant 管理认证边界 + 唯一 canonical
+codec；文件集和测试断言见下一任务卡。代码行为、Proto、SQL 和 SDK 尚未因 R4 文档审查而改变。
+
+#### IAM-R4-IMPLEMENT-01：Tenant 管理认证边界
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/modules/tenant`；主控单一 writer；transport 仍只依赖 facade |
+| 允许文件 | `src/modules/tenant/tenant-management-authentication.ts`、同目录新增职责文件、同目录唯一 canonical codec、对应 unit/contract tests、architecture fixture/import 断言、必要的 package/lockfile |
+| 目标 | 拆出 types/constants/error/request/assertion/credential 等真实变化原因；将 JCS/base64url codec 统一为 tenant 内唯一实现；保留现有 facade exports 和调用方路径 |
+| Zod/class | JWS header/claims 或配置等动态输入使用有 owner 的 Zod schema；Proto RPC 不增加第二份 Zod schema；不强行把 DTO、claims 或 Row 改成 class |
+| 禁止 | 不改 SQL、Proto 字段、RPC/HTTP 语义、端口、Redis key、跨仓；不建 `domain/application/infrastructure/ports/postgres/redis/prisma/utils` 空层；不让 `parse` 变成 `as` 逃生口 |
+| 验收 | unit tenant auth、canonical digest/cursor 回归、contract transport、architecture import boundary、lint、typecheck、build；之后主控在当前 IAM 工作树复验 |
+
+该切片完成后再派发 RPC interceptor；不得与同仓另一个写入 Agent 并行。

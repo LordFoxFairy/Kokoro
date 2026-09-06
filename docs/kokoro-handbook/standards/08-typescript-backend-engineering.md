@@ -1448,7 +1448,7 @@ interface RenameSiteDependencies {
 
 错误按四个边界管理：
 
-`ModuleErrorCode` 表示模块内部业务标识，`WireErrorCode` 表示 owner contract 的公开机器码；此处是角色称谓，不要求新建这两个名字的
+`ModuleErrorCode` 表示模块内部业务标识，`WireErrorCode` 表示 owner contract 的契约机器码；此处是角色称谓，不要求新建这两个名字的
 枚举、公共目录或重复错误表。内部更细粒度错误由 transport 映射到 wire code；wire 枚举单一事实源为 Proto/OpenAPI，SDK 只消费该契约。
 
 | 层级 | 位置 | 责任 |
