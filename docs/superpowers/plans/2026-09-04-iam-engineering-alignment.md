@@ -1400,3 +1400,16 @@ build 通过；复用本机 PostgreSQL 18、启动一个临时 Redis logical DB 
 主控删除了未提交的试验性 query wrapper，IAM `59795da` 将事实修正为：下一片必须先选择并验证 query budget/连接取消 adapter，再实施
 RPC signal → 模块执行预算 → PostgreSQL transaction 的传播；COMMIT 未知提交恢复语义保持不变。当前没有把该实验误报为取消闭环，
 也没有修改生产代码或引入第二套数据库驱动。
+
+### IAM module-first architecture audit（2026-09-06）
+
+主控重新扫描 IAM 当前实际源码树，并派发独立只读目录审查。审查绑定 IAM `59795da`，结论为目录无 P0/P1，当前
+`modules/authentication`、`modules/authorization`、`modules/tenant`、`transport/http`、`transport/rpc`、`runtime`、`config`、
+`generated` 的职责和依赖方向成立；不创建 `domain/application/infrastructure/ports/postgres/redis/prisma`、空的
+`identity/organization/audit` 或横向 `services/repositories/controllers` 目录。`generated` 继续作为 Proto 生成物边界，
+不允许业务模块依赖。唯一低优先级问题是 `config/env.ts` 直接依赖 Magic Link 业务 policy。
+
+主控在 IAM `56b7a76 refactor(config): remove business dependency from env parsing` 中移除该反向依赖，将环境层的 HTTPS origin
+校验保留为配置边界逻辑；Magic Link 业务 policy 仍拥有认证语义校验。IAM `pnpm verify` 已重新通过：contract lint/OpenAPI/
+generated/provenance、lint、typecheck、31 个测试文件（380 passed、210 skipped）和 build。该切片没有改变 API、SQL、生成物或
+认证行为；Docker、RPC cancellation、真实 provider、跨仓消费者和完整 IAM 管理 writer 仍按未完成门禁处理。
