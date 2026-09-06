@@ -1558,7 +1558,7 @@ canonical codec，交付 commit 为 IAM `5019601`；随后角色文件切片继�
 | 项 | 决策 |
 | --- | --- |
 | Owner | `kokoro-iam/modules/tenant`；同一主控 writer；不与其他 IAM 源码 Agent 并行 |
-| 允许文件 | `tenant.service.ts`、`tenant.cursor.ts`、`tenant.repository.ts` 及其同 owner 的 `types/constants/policy/validation/schema/fingerprint/repository.mapper/repository.executor` 文件、受影响的 architecture fixture/import、IAM CURRENT/INDEX/TECHNICAL_DESIGN |
+| 允许文件 | `tenant.service.ts`、`tenant.cursor.ts`、`tenant.repository.ts` 及其同 owner 的 `types/constants/policy/validation/schema/fingerprint/repository.mapper/repository.query` 文件、受影响的 architecture fixture/import、IAM CURRENT/INDEX/TECHNICAL_DESIGN |
 | 目标 | Service 只保留 Tenant 生命周期用例/授权/事务编排；Cursor facade 只保留 encode/decode；Repository 只保留 PostgreSQL SQL/事务编排；模块级类型、常量、Zod schema、校验、Row mapper 和 fingerprint 各有明确 owner |
 | 保留 | Proto/SQL/API 字段、错误语义、分页 cursor wire 格式、签名/HMAC、事务/幂等行为；函数体内局部变量不机械拆分 |
 | 删除 | 旧 `tenant.ts` 实现 helper 和 Service/Cursor 顶部/尾部的跨职责模块声明；不保留 alias/re-export 兼容旧路径（公开 cursor facade 的受控 type export 除外） |
@@ -1571,3 +1571,16 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 真实 PostgreSQL/Redis integration 尚需绑定 `bdd55bd` 重跑，不把历史 210 项 integration 结果冒充本 commit 证据。下一优先级仍是
 `request-context.interceptor.ts` 的 transport 责任拆分，然后处理 `config/tenant-management.ts`、authentication transaction 和 receipt parser；
 每片继续单一 writer、独立 commit、主控复验。
+
+
+#### IAM-R4-IMPLEMENT-03：RPC interceptor 责任边界
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/src/transport/rpc`；与业务 module 同一主控 writer，禁止并行写入 |
+| 允许文件 | 删除 `interceptors/request-context.interceptor.ts`；新增 `rpc.constants.ts`、`request-id.ts`、`tenant-context.interceptor.ts`、`protovalidate.interceptor.ts`、`request-logging.interceptor.ts`；同步 server/handler/workload/tenant-management import、architecture fixture、契约测试和 CURRENT/TECHNICAL_DESIGN |
+| 目标 | 一个 interceptor 文件只拥有一个横切责任；RPC server 只编排顺序；业务 handler 不解析 header；Proto/Protovalidate 仍是唯一 wire validation |
+| 保留 | request ID 优先级、tenant header/context、Protovalidate 错误映射、日志字段、interceptor 顺序和对外错误码 |
+| 删除 | 旧混合文件、旧 import 路径和兼容 re-export；不新增 application/domain/infrastructure 层，不改 Proto/SQL/API 字段 |
+| 验收 | `pnpm typecheck`、`pnpm lint`、RPC contract tests、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check` |
+| 状态 | 已完成并提交：IAM commit `0646489`；主控复验后，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过 |
