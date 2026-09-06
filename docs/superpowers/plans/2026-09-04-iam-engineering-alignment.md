@@ -1303,3 +1303,21 @@ Proto/generated/provenance、`iam_tenant_command_receipt` 与管理 security-eve
 现在仅放行 I2：由同一 IAM writer 创建真实 `src/modules/tenant/`，实现管理 caller/assertion、Repository/Service、RPC 注册、
 canonical request/cursor parser、receipt/audit 事务和真实 PG 并发/回放/未知提交恢复；禁止顺手创建 `identity`、`organization`、
 `audit` 空目录或继续扩张 I2 范围。
+
+### IAM-R2-7 I2/I3 当前验收记录（2026-09-06）
+
+I2/I3 已完成并由主控复核到 IAM commit `7fd771d`（代码/测试切片：`eb27add`、`b794481`、`1c0fa90`、`c532e7e`）。当前目录保持
+业务模块聚合：`src/modules/authentication`、`src/modules/authorization`、`src/modules/tenant`；RPC、HTTP、配置和 runtime
+各自承担传输与装配职责，没有新增 `services/`、`repositories/`、`postgres/`、`redis/`、`prisma/` 等空技术目录，也没有
+引入 `domain/application/infrastructure/ports` 模板层。
+
+已验证：
+
+- Tenant caller/assertion 鉴权、权限/租户 scope、旧 workload token 隔离和 request ID 传播的真实 Connect transport contract test；
+- PostgreSQL receipt claim/complete 的数据库时间窗口、相同 command 并发单次 effect、digest 冲突、disable/enable 并发和 audit event：隔离 fresh DB 3/3 通过；
+- `pnpm test:integration`：10 个文件、210 项通过（同一隔离 PostgreSQL + Redis）；`pnpm verify:schema-catalog`：`ok:true`、无差异；
+- `pnpm contract:check`、`pnpm typecheck`、`pnpm lint`、`pnpm build`、全量测试：29 个文件、370 passed、210 skipped；
+- 独立只读审查确认 SQL/Prisma 边界、目录职责和契约生成物无 P1/P2，文档当前事实已与 HEAD 对齐。
+
+仍明确未宣称的范围：生产 server 尚未注入 SecretResolver/JWKS resolver，Tenant 管理面在材料不完整时 fail-closed，不能据此宣称
+生产管理面已启用；RPC deadline、取消/消息预算、跨仓 BFF 消费者联调以及 Identity/Organization/Role 管理 writer 仍由后续专门切片负责。
