@@ -168,7 +168,7 @@ ADR 修订 SQL 事实源规则，再整仓切换并删除旧写路径。同一�
 
 ```text
 contract/                       # 本仓拥有的 OpenAPI/Proto/JSON Schema；有才创建
-  generated/typescript/         # 只读生成物；由 contract 源和生成器产生
+  generated/typescript/         # 可选：契约生成物的推荐位置；有生成链才创建
 database/
   schema.sql                    # 唯一可编辑数据库 schema
 src/
@@ -223,7 +223,7 @@ src/
   runtime/                     # 各入口共用的进程级资源
   modules/
   config/
-  contract/generated/typescript/
+contract/generated/typescript/ # 可选生成物，与 src 同属仓库根，不放在 src/contract/
 ```
 
 `runtime/` 只持有进程级依赖和生命周期；业务代码仍属于模块。单进程服务不提前套用这棵树。
@@ -261,7 +261,7 @@ src/plugins/
 `integrations/` 也是按外部 owner 命名，例如 `integrations/iam/iam.client.ts`，而不是
 `integrations/http/clients/` 这种技术套娃。它只在真实跨模块复用时存在；否则 client 仍属于具体业务模块。
 
-共享目录的准入条件：
+根级跨模块共享目录的准入条件（不把该门槛套到模块内的 constants/model 等角色文件）：
 
 1. 至少有两个独立变化的消费者，而不是同一模块的两个文件；
 2. 没有更准确的业务 owner，或它明确属于进程/协议横切面；
@@ -1020,13 +1020,44 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 | 稳定内部数据形状 | `<subject>.types.ts` | 用 `type`/`interface`；只有多个角色稳定共享时才导出 |
 | 具有不变量/状态迁移的对象 | `<subject>.model.ts` 或模块内 `domain/<subject>.ts` | 使用 class 或带命名的纯函数；class 必须保护状态，不是字段容器 |
 | 业务用例与事务编排 | `<subject>.service.ts` 或 `use-cases/<verb>-<subject>.ts` | 不放 schema、数据库 Row、协议 message 或底层解析实现 |
-| 错误类型与错误码 | `<subject>.error.ts` | 错误语义有独立消费者时集中管理；不要在 Service 文件尾部顺手定义错误体系 |
+| 错误类型与错误码 | `<subject>.error.ts` | 模块只拥有 `ModuleErrorCode` 和业务语义；不要在 Service 文件尾部顺手定义错误体系 |
 | 持久化 | `<subject>.repository.ts` | SQL、Row 类型和 Row mapper 只服务本模块持久化；不放 HTTP/RPC 常量 |
 | 协议适配 | transport 下的 handler/interceptor/mapper | 负责 wire ↔ 内部输入/错误映射，不承载业务规则 |
 
-一个文件可以同时包含同一职责的配套声明，例如 `tenant.error.ts` 中的 error code、code union 和 `TenantError` class，
+一个文件可以同时包含同一职责的配套声明，例如 `tenant.error.ts` 中的 `ModuleErrorCode`、code union 和 `TenantError` class，
 也可以在 `tenant.repository.ts` 中放只被该 Repository 使用的 Row 与 mapper。判断标准是“一个主要公开概念”，不是
 “一个文件只能出现一种 TypeScript 语法”。
+
+#### 8.4.1.1 Zod、class model 与 `unknown` 的强制边界
+
+外部数据视为未校验输入；手动处理时从 `unknown` 开始，经本仓唯一事实源的运行时校验后才进入业务代码。HTTP、环境变量、第三方响应和
+持久化 JSON 优先使用 Zod schema；Proto/RPC 使用 Proto/Protovalidate，不为了“看起来统一”再复制一套 Zod schema。
+schema 推导类型只证明形状经过校验，不证明身份、权限或数据真实性；业务层不再重新用 `typeof` 猜字段形状。
+
+```text
+外部输入 -> Zod / Proto 边界解析 -> 已校验的结构化输入 -> Service / 有不变量的 class model
+```
+
+执行规则：
+
+1. 不在 Service、Repository、handler 中散落 `typeof value === ...`、`Array.isArray(...)` 和重复正则来代替边界 schema。
+   判别联合、可选 callback、catch error 等明确的语言级窄化是正常 TypeScript；底层 codec/库适配所需的命名 type guard
+   可以保留，但须有明确输入语义和边界测试。验收审查职责，不以全文禁用 `typeof` 为门禁。
+2. 代表业务输入的 `unknown` 必须经过命名的 Zod schema、Proto parser 或语义明确的 `parse<Subject>()` 才能流入业务层；不使用无依据的
+   `as SomeType`、非空断言或“先读字段再猜类型”。该命名是 `parseTenantId()` 这类具体解析器的占位写法，不是任意泛型类型转换；
+   解析器必须实际调用唯一 schema/codec、定义错误语义并有边界测试；仅断言类型的 helper 不合格。
+3. 需要跨多个用例的基础谓词必须变成带 owner 的命名 schema/解析器，例如 `nonNegativeSafeIntegerSchema` 或
+   `parseTenantId`，不创建无主人的 `is-utils.ts`。校验逻辑只能有一个事实源。
+4. 具有不变量、规范化表示、敏感状态或合法状态迁移的对象，优先使用 `class` model，通过受控构造/工厂和方法保护状态。
+   只有字段容器的 DTO、配置、数据库 Row 不为追求“企业感”强行改成 class。
+5. class model、Zod schema、数据库 Row 和 wire message 分别表达不同边界；只有语义和生命周期确实相同才复用，不通过复制字段
+   或互相 `as` 强行兼容。
+6. schema 不替代签名验证、授权、并发检查或数据库事务。解析重构必须保留数值精度、大小限制、缺失/null 区别、错误码、
+   严格/宽松对象策略和敏感字段脱敏；`coerce`、默认值与 strip-unknown 均是契约决策，不靠库的默认行为悄悄改变输入。
+
+2026-09-06 语义核验：[Zod schema API](https://zod.dev/api)、[TypeScript narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)、
+[TypeScript classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)。官方文档解释工具语义；本节文件边界和 class 优先策略属于
+Kokoro 的工程选择，不代表唯一行业目录标准。新增依赖时再核验并锁定兼容版本，不把此次文档核验当作依赖已经安装。
 
 #### 8.4.2 常量、有限值与正则表达式
 
@@ -1332,7 +1363,8 @@ export type CreateSiteBody = z.infer<typeof createSiteBodySchema>;
 
 ### 11.5 SDK、生成 Client 与跨仓模型
 
-拥有稳定消费者的 API/RPC owner 才发布 SDK；SDK 不是服务端 `src/` 的第二套业务实现。推荐边界：
+拥有稳定消费者的 API/RPC owner 才发布 SDK；SDK 不是服务端 `src/` 的第二套业务实现。进入 SDK 实现前确认 consumer inventory、
+contract digest、最小消费者测试用例与版本发布策略；实现后通过 consumer contract test 才发布，避免把尚无 SDK 的测试当作开工前提。推荐边界：
 
 ```text
 contract/
@@ -1360,7 +1392,7 @@ SDK 的职责是把生成 client 变成可消费的版本化包，补充认证 m
 4. 消费方若需要自己的业务语义，可以在 `integrations/<owner>/` 建一个很薄的 adapter/mapper；它只做业务映射，不重写网络、认证、重试和 wire 解码。
 5. SDK 错误不能依赖服务端 Error class。服务端业务错误经过 wire error code、request ID、safe details 后，由 SDK 构造自己的 `ApiError`。
 6. 只有至少三个 SDK 已经重复相同的 transport 机制时，才抽取独立 `sdk-core` package；不能提前创建万能 SDK 基础层。
-7. SDK package 必须有 semver、contract digest、generated provenance、breaking check 和最小 consumer contract test。
+7. SDK package 必须有 semver、contract digest、generated provenance、breaking check 和最小 consumer contract test；没有稳定消费者时只维护 contract，不创建空 SDK 目录。
 
 内部 RPC 和公开 HTTP 可以分别发布 SDK；不能因为都叫 client 就把不同 visibility、认证方式和错误契约混成一套。
 
@@ -1415,6 +1447,9 @@ interface RenameSiteDependencies {
 ### 12.4 错误与 I/O 预算
 
 错误按四个边界管理：
+
+`ModuleErrorCode` 表示模块内部业务标识，`WireErrorCode` 表示 owner contract 的公开机器码；此处是角色称谓，不要求新建这两个名字的
+枚举、公共目录或重复错误表。内部更细粒度错误由 transport 映射到 wire code；wire 枚举单一事实源为 Proto/OpenAPI，SDK 只消费该契约。
 
 | 层级 | 位置 | 责任 |
 | --- | --- | --- |

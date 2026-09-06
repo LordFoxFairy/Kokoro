@@ -1,11 +1,11 @@
 # IAM 工程规范对齐：主控任务板
 
-状态：2026-09-05 UTC，**用户明确要求“设置目标，开始动手”，IAM 单仓目标已恢复 active。**
-主控采纳[目录方案](../specs/2026-09-05-iam-directory-architecture-design.md)，负责内部技术取舍；先目录落地，
-再 SQL、API/运行治理，最后单仓完整验收。当前写入与派工以第 12 节为准，旧暂停记录保留历史含义。
+状态：2026-09-06 UTC，用户已确认本轮继续执行。当前优先级和写入范围以文末“本轮主目标”与 IAM-R4 任务卡为准；
+此前 R1/R2/R3 记录保留为历史交付证据，不代表当前重新派工。
 
-R1 已落地：日常主目录源码 `e938b91`，当前 HEAD `1d78be6`（文档状态收口）；工作树干净。Boyle 实现与 Locke 两段
-独立质量审查完成，主控集成并在主目录复验。下一步为 R2 SQL 细化/实施；当前无写入中的 Agent，历史任务卡不自动变更范围。
+本轮起始提交：Root `317e9959`；IAM `60e0fe3`（代码行为验证仍按 CURRENT 中的原始源码基线）。Root 已有
+`kokoro-agent` 和 `.tmp/` 任务外变更，保持不动；本轮由主控单一写入文档，审查员只读。先完成新要求下的职责与设计审计，
+再放行实现切片，避免继续往现有大文件追加职责。
 
 本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
 
@@ -1496,3 +1496,38 @@ SDK 只有在有稳定消费者时由 owner 发布，生成物目标为 `contrac
 IAM `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`INDEX.md`、`docs/INDEX.md` 和 README 已同步记录上述文件职责、错误 owner、SDK 边界、
 当前/目标生成路径及未完成证据。下一实施顺序固定为：先全仓 TypeScript 文件职责审计，再按业务切片拆分高混合文件；随后评估 shared error base、
 generated 边界迁移和 IAM SDK，均不得先建空目录或重复 wire model。文档提交不代表代码重构、SDK 发布或跨仓 consumer 已完成。
+
+### 本轮主目标（2026-09-06）
+
+用户确认继续推进并授权主控自主拆解。当前主目标升级为：**先把规范和 IAM 做到可长期维护，再以证据闭环，不停留在目录讨论**。
+
+执行顺序固定为：
+
+1. 以 Root TypeScript 手册、API/RPC 手册和 SQL 手册为唯一通用基线；落实 Zod/Proto 边界校验、class model 不变量、明确
+   `unknown` 解析和禁止业务层散落 `typeof` 猜测。
+2. 先完成 IAM 全仓 TypeScript 文件职责审计和技术方案/API 契约/SQL 三面一致性复核，再拆高混合文件；每个切片删除被替代
+   的旧路径，不建立兼容层或空目录。
+3. 依次验证 API 外部可用性、Redis 并发/幂等、PostgreSQL 事务与恢复、错误契约、生成物和 consumer 边界；本地复用一个
+   PostgreSQL 与一个 Redis，真实验证命令绑定当前 commit。
+4. 只有存在稳定消费者时才实现 IAM SDK；SDK 复用 owner 生成物，不复制 DTO、错误 class、cursor 或数据库模型。
+5. IAM 通过主控审查、独立审查和完整验证后，按同一机制推进其他子仓库；每个业务切片独立 commit，主控重新验证后才标记已验收。
+
+本目标的质量判定不是“目录看起来像大厂”，而是：文件职责单一、依赖方向可解释、运行时输入有唯一校验事实源、业务状态有明确 model
+或纯策略、协议和 SQL 一致、失败恢复有真实证据、当前 commit 可复现。任何尚未运行的门禁均明确标为待验，不用文档承诺代替结果。
+
+#### IAM-R4 本轮任务卡
+
+共用基线：Root `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro`（`codex/production-closure-governance`，`317e9959`），
+IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`（`codex/production-closure-docs`，`60e0fe3`）。
+本轮未提交文档由主控持有；审查员以该工作树快照审查并标明尚未绑定最终提交。都不启动依赖、不更改测试数据。
+
+| ID | 优先级/目标 | 执行角色/模式/模型 | 范围与完成条件 | 依赖/交付/验收 |
+| --- | --- | --- | --- | --- |
+| IAM-R4-PLAN | P1：收敛目标、Zod/class 边界与验收标准 | 主控，唯一 writer，当前模型 | Root TS 手册与本任务板；IAM TECHNICAL_DESIGN/API_CONTRACT；只改文档，不重写行为 | 对照实际代码及官方语义；文档 diff/link 检查后由主控提交 |
+| IAM-R4-AUDIT | P1：全仓手写 TS 职责审计 | Ohm，只读，gpt-5.6-luna（原 sol 容量不足） | IAM `src/**`（排除生成物）；按真实职责列出最优先切片，区别正确窄化与散落输入解析，不机械统计 typeof | 与 PLAN 并行；交付文件/行号/建议边界/保留行为；主控复核，不提交 |
+| IAM-R4-REVIEW | P1：规范及新规则一致性审查 | Chandrasekhar，只读，gpt-5.6-luna | 当前 Root TS 手册增量及 IAM 技术方案增量；检查 Zod/class/Proto/shared/SDK 规则是否互相冲突或过度强制 | 与 AUDIT 并行；交付明确问题和修正建议；主控整合后提交 |
+
+审计结束后才为实现补充精确写入文件集和测试断言；本表不授予业务源码、SQL、机器契约、lockfile 或其他子仓写入权。
+
+会话标识：Mencius `01a0778a-e6af-7271-8a09-e1dd6104d3bf` 因模型容量不足未交付，已回收；任务以同一只读范围续派 Ohm
+`01a07796-0a1d-7f82-a465-73776ad81f01`（gpt-5.6-luna）；Chandrasekhar `01a0778a-e766-75c1-bbea-e73e80c88ffa` 负责规范复核。
