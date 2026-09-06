@@ -1338,3 +1338,5 @@ I2/I3 已完成并由主控复核到 IAM commit `5d7c17f`（代码/测试切片�
 IAM transport/runtime 继续按单一 writer 收敛：`9ab88f9` 增加 `starting → ready → draining → stopped` 生命周期状态机，`8416934` 校正文档路径与当前模块 RPC/公共 transport 事实，`b58181f` 消除 Tenant operation→permission 双事实源、将 `mapAuthenticationError` 改为 `mapRpcError`，并把 shutdown 文档改为当前真实顺序，不虚构尚未存在的 worker drain 接口。
 
 主控复验：IAM `pnpm contract:check`、`pnpm typecheck`、`pnpm lint`、`pnpm build`、`pnpm test -- --runInBand` 通过（377 passed，210 skipped）；使用隔离 PostgreSQL `kokoro_iam_runtime_20260906` 与独立 Redis `56381` 执行 `pnpm test:integration`，10 个文件、210 tests 通过。独立只读审查仍保留后续门禁：worker stop-claim/drain 生命周期、request deadline/telemetry、Docker/镜像 smoke、外部安全材料注入与跨仓消费者验收；不以当前通过结果宣称完整 IAM 生产闭环。
+
+随后在 IAM `39d37d9` / `dca0650` 补充了 built-JS 进程 smoke：最新 `dist/src/server.js` 连接隔离 PostgreSQL 与 Redis，验证 `/healthz`、`/readyz` 和 SIGTERM 退出码 0；该证据不替代 Docker 镜像 smoke。Docker Desktop 当前仍因 `192.168.65.7:2376 no route to host` 无法取得 daemon 响应。
