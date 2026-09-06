@@ -1634,4 +1634,16 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 允许文件 | IAM `README.md`、`INDEX.md`、`docs/CURRENT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、必要的文档索引/fixture；不改业务代码、Proto、SQL、生成物。 |
 | 明确规则 | 文档不宣称完整 IAM、生产安全材料、PG/Redis integration、Docker/provider/consumer smoke 已完成；不把目标树写成当前树；不恢复旧路径或复制机器契约。 |
 | 验收 | `rg` 旧 active path 检查、Markdown 链接存在性检查、`git diff --check`；文档变更不替代代码/集成验证。 |
-| 状态 | 待实施；完成后再进入 authentication transaction 代码审计。 |
+| 状态 | 已完成并提交：IAM `0aae736`；Markdown 链接 0 个错误、active path 检查通过、`git diff --check` 通过。文档变更不替代代码/集成验证。 |
+
+#### IAM-ARCH-01：重置 IAM 总体 TypeScript 架构基线
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | Root 主控；`kokoro-iam` 单一写入 Agent；本阶段只更新设计与任务卡，不改业务代码 |
+| 背景 | 当前局部切片已通过静态门禁，但运行框架（Node HTTP/Connect Node）、生成物位置（`src/generated`）、事实 owner 迁移、文件粒度和工具链基线尚未一次收敛；不能把过渡态称为顶级完成态。 |
+| 设计结论 | module-first；Fastify + Connect Fastify 作为目标 transport；`pg` + 唯一 `database/schema.sql`；`contract/proto`/`openapi` 为编辑源，生成物最终统一到 `contract/generated/typescript`；Zod 负责动态输入边界，Proto/Protovalidate 负责 RPC，class 只用于真实不变量/状态；模块错误、wire 错误、SDK 错误分层。 |
+| 目标树 | 见 IAM `docs/TECHNICAL_DESIGN.md` §0.2.2；不预建空的 identity/organization/audit 目录，不创建 `domain/application/infrastructure/ports/postgres/redis/prisma` 模板层。 |
+| 依赖顺序 | `ARCH-02` transport 框架 → `ARCH-03` generated cutover → `ARCH-04` 大文件职责复核 → 业务 owner 迁移 → SDK/跨仓 consumer → 真实依赖与发布 smoke。 |
+| 验收 | 每个切片先通过技术方案/API/SQL 三面设计门；提交后在主仓重跑 format/lint/typecheck/unit/architecture/build/contract，涉及数据库或运行时再跑隔离 PG/Redis 与 smoke。 |
+| 状态 | 设计已写入 IAM `TECHNICAL_DESIGN.md`，待按顺序派发实现切片；当前 IAM 仍不是完整 IAM 产品或最终运行基线。 |
