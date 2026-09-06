@@ -1476,3 +1476,7 @@ commit 绑定，不冒充本次工作树的新运行证据。
 `pnpm db:apply-schema` 与 `pnpm test:integration`，10 个 integration 文件、210 个测试全部通过，退出时删除临时数据库并关闭临时 Redis。
 这证明当前 IAM commit 的真实 PG/Redis composition、HTTP/RPC listener、delivery worker 和关闭路径可运行；不替代 Docker image smoke、真实
 SIGTERM/故障注入、运行中 SQL cancel、真实 provider 或跨仓 consumer 证据。
+
+另外修正了 IAM CI/Release 的验证编排：`package.json` 新增 `test:unit`，`pnpm verify` 的 `check` 使用该无外部依赖入口；CI/Release 再单独
+串行运行 `pnpm test:integration`。这样 job 级 PG/Redis URL 不会让普通 `pnpm test` 并行启动 integration fixture 后又被重复运行，验证证据的
+数据库/Redis 隔离语义与 RUNBOOK 保持一致。
