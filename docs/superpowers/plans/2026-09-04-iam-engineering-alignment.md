@@ -1623,3 +1623,15 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 删除项 | `TenantManagementDocument`/`RawCallerCredential` 的手写未知 shape、重复 `requiredString`/对象数组猜测和对应无主 cast；不保留双轨 parser。 |
 | 验收 | `pnpm typecheck`、配置 unit/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
 | 状态 | 已完成并提交：IAM commit `903afef`；配置 unit、architecture 50、unit 394、typecheck、lint、build、contract:check 均通过；Zod 只负责动态 document shape，业务 policy 与 secret materialization 仍由 config owner 负责。真实 PG/Redis integration 仍待绑定该 commit。 |
+
+#### IAM-DOCS-01：校正 IAM 活跃文档与源码事实
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam` 的 README、INDEX、docs/CURRENT、TECHNICAL_DESIGN、API_CONTRACT；主控单一 writer |
+| 背景 | 代码切片已删除 `request-context.interceptor.ts`、收敛 Tenant 文件并新增配置 schema，但若干活跃文档仍引用旧路径、旧 commit、旧文件数量和旧验收数字；这会让后续 Agent 按过时目录继续设计。 |
+| 目标 | 只校正当前事实入口和 active links：当前源码树、80 个手写 TS、最新已验证 commit、RPC interceptor/request mapper、配置 Zod owner、未完成能力和真实验证边界；历史 ACCEPTANCE 记录保留但明确历史性质。 |
+| 允许文件 | IAM `README.md`、`INDEX.md`、`docs/CURRENT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、必要的文档索引/fixture；不改业务代码、Proto、SQL、生成物。 |
+| 明确规则 | 文档不宣称完整 IAM、生产安全材料、PG/Redis integration、Docker/provider/consumer smoke 已完成；不把目标树写成当前树；不恢复旧路径或复制机器契约。 |
+| 验收 | `rg` 旧 active path 检查、Markdown 链接存在性检查、`git diff --check`；文档变更不替代代码/集成验证。 |
+| 状态 | 待实施；完成后再进入 authentication transaction 代码审计。 |
