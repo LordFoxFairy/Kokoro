@@ -1342,3 +1342,5 @@ IAM transport/runtime 继续按单一 writer 收敛：`9ab88f9` 增加 `starting
 随后在 IAM `39d37d9` / `dca0650` 补充了 built-JS 进程 smoke：最新 `dist/src/server.js` 连接隔离 PostgreSQL 与 Redis，验证 `/healthz`、`/readyz` 和 SIGTERM 退出码 0；该证据不替代 Docker 镜像 smoke。Docker Desktop 当前仍因 `192.168.65.7:2376 no route to host` 无法取得 daemon 响应。
 
 IAM `b162905` 同步刷新 `docs/CURRENT.md`，将当前 transport/runtime、真实 Redis/PG、built-JS smoke 与 Docker 未验边界写成当前事实，清除“Redis/进程 smoke 仍待验”和“draining 尚未实现”等过期表述。
+
+用户要求重新彻底裁决 HTTP/RPC 与业务目录，IAM `b231ebe` 完成文档设计门：最终目标为 `modules/` 只放业务、`transport/http` 与 `transport/rpc` 只放协议、RPC handler 统一使用 `*.handler.ts`，generated 仅由 transport 使用；当前 `modules/*/rpc.ts` 明确标记为过渡实现，尚未移动源码。`git diff --check`、文档本地链接检查和 deployment contract test 通过。未通过新的文档门前，不实施目录迁移。
