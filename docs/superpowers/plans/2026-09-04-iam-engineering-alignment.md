@@ -1321,3 +1321,14 @@ I2/I3 已完成并由主控复核到 IAM commit `5d7c17f`（代码/测试切片�
 
 仍明确未宣称的范围：生产 server 尚未注入 SecretResolver/JWKS resolver，Tenant 管理面在材料不完整时 fail-closed，不能据此宣称
 生产管理面已启用；RPC deadline、取消/消息预算、跨仓 BFF 消费者联调以及 Identity/Organization/Role 管理 writer 仍由后续专门切片负责。
+
+### IAM transport/runtime architecture design gate（2026-09-06）
+
+用户要求在继续代码重构前先解决目录和运行治理设计。主控已将方案收敛到 IAM `TECHNICAL_DESIGN.md` §0.4.1–§0.4.3，代码基线仍保持不移动：
+
+- 业务 RPC adapter 最终跟随 `modules/authentication`、`modules/authorization`、`modules/tenant`；公共 RPC interceptor、错误映射和 server 装配归 `transport/rpc`；不创建 `rpc/services`、`domain/application/infrastructure` 或空技术层；
+- 内部错误码使用字符串联合类型 + `as const` 映射，Proto `ErrorCode` 仍是 wire contract 唯一事实源；
+- 运行状态、PostgreSQL Pool 预算、Redis namespace/reconnect/offline-queue 语义、readiness/draining、Docker/真实依赖验证矩阵已写入技术方案；
+- 当前 `src/rpc` 是过渡目录，必须先完成独立设计审查和唯一迁移映射，再按单一 transport slice 移动；不在目录重构中扩展 Identity/Organization/Audit 功能。
+
+当前设计提交：IAM `ee1d12f`（含技术方案 `8ca40a1`）；Docker Desktop 可用性已探测，但现有 Root Compose 缺少 IAM 服务且本地 compose 启动依赖时需补齐环境文件/凭据，不能把一次未完成的 Docker 启动冒充运行验收。下一片先补 IAM 本地依赖/启动治理设计与真实运行测试，再实施 transport 迁移。
