@@ -1597,3 +1597,16 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 删除项 | `tenant.service.types.ts`、`tenant.repository.types/mapper/query.ts`、无独立消费者的 cursor 辅助文件及旧 `tenant.types.ts` 路径；删除引用和过时架构断言。 |
 | 验收 | 先保存行为测试基线；`pnpm test:unit`、Tenant contract/architecture、typecheck、lint、build、contract:check、`git diff --check`；再绑定当前 commit 的 PG/Redis integration。 |
 | 状态 | 已完成并提交：IAM commit `ed5450b`；78 个手写 TS，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。真实 PG/Redis integration 仍待绑定该 commit；不把“文件更少”单独视为质量证据。 |
+
+#### IAM-R4-IMPLEMENT-05：收敛 Tenant RPC 的 generated 类型边界
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/src/transport/rpc/interceptors/`；主控单一 writer |
+| 背景 | Tenant management interceptor 当前把泛型 `request.message` 强制转换为 `Record<string, unknown>`，并用数字 1/2 猜 generated `TenantStatus`；这违反“wire 类型只在 transport 解析、使用 generated enum”的边界。 |
+| 目标 | 使用 generated request message 的 `$typeName` 进行命名类型守卫；使用 generated `TenantStatus` 映射；将独立的 wire-to-canonical 映射放入语义明确的 `tenant-management-request.ts`，interceptor 只做认证编排；不在业务模块复制 Proto DTO。 |
+| 允许文件 | 该 interceptor、同一 transport 边界的 `tenant-management-request.ts` typed mapper、直接的 Tenant transport contract/architecture/unit 测试、CURRENT/TECHNICAL_DESIGN；不改 Proto 字段、SQL、业务错误码、认证签名或 handler 行为。 |
+| 明确规则 | 保留 Proto/Protovalidate 为唯一 wire validation；不为同一 RPC 引入 Zod；不把 generated 类型下沉到 Service/Repository；未知 operation/type 继续 fail-closed。 |
+| 删除项 | `Record<string, unknown>` 的无主 cast、硬编码 enum 数字和重复 status 猜测逻辑（无兼容 alias）。 |
+| 验收 | `pnpm typecheck`、Tenant contract/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
+| 状态 | 已完成并提交：IAM commit `d5ae46c`（文档后续同步于 `d898fc8`）；typed mapper 已从 interceptor 分离，消除无主 `Record<string, unknown>` cast 和硬编码 enum 数字；architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。 |
