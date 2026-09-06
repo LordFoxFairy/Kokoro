@@ -1466,3 +1466,8 @@ PostgreSQL cancel adapter、响应大小预算、真实传输断开/超时证据
 或兼容 alias。`generated` 保留为只读自动生成产物边界，不是业务模块，也不是手写 DTO/model 目录。IAM 变更后的 contract、typecheck、lint、
 unit/contract test 与 build 已通过；集成测试本轮因当前环境未提供可用 PG/Redis 测试开关而全部跳过，历史隔离 PG/Redis 通过证据仍按历史
 commit 绑定，不冒充本次工作树的新运行证据。
+
+随后 IAM `bafbbae feat(iam): stop new delivery claims during drain` 完成运行治理第一小片：`RuntimeWorker` 增加
+`stopAccepting()`，`IamRuntime` 在关闭 listener 前停止新的 outbox claim，正常 shutdown 等待当前 delivery operation，只有总期限超出才
+`forceStop()`；单测覆盖正常 drain 不取消 active delivery、force-stop 传播取消和关闭顺序。该切片关闭了“代码没有 stop-claim 边界”的缺口，
+但真实 SIGTERM、provider/数据库故障注入、Docker image smoke、运行中 PostgreSQL SQL cancel 和跨仓 consumer 仍未形成当前 commit 的运行证据。
