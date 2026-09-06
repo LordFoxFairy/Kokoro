@@ -1360,3 +1360,7 @@ IAM `b162905` 同步刷新 `docs/CURRENT.md`，将当前 transport/runtime、真
 主控继续按“不被 Docker 运维阻塞主线”的原则完成真实依赖验证：复用现有本机 PostgreSQL 18，只启动一个临时 Redis 8.8 实例（端口 56381，测试结束已关闭），创建随机 fresh database，执行 `pnpm db:apply-schema`，再运行 `KOKORO_POSTGRES_URL=... KOKORO_REDIS_URL=redis://127.0.0.1:56381/1 pnpm test:integration`。结果为 10 个 integration files、210 passed、0 failed；数据库和 Redis 均已清理。第一次使用被 Docker proxy 占用且不可用的 56380 端口导致 Redis 连接重置，未作为通过证据，后续改用空闲端口后通过。
 
 IAM 当前文档事实由 `9378a67 docs(current): record real dependency integration` 收口。Docker daemon 仍没有可用响应，因此 Docker image smoke 保留为单独未验项；这不阻塞当前源码目录、契约、Schema、TypeScript 门禁和本地真实 PostgreSQL/Redis integration 主线。
+
+### IAM current-fact documentation cleanup (2026-09-06)
+
+IAM `6d17ff6 docs(iam): align current architecture facts` 修正了 README/INDEX/TECHNICAL_DESIGN/ACCEPTANCE 的过期数字、旧 transport 事实、旧路径链接和架构测试标题；历史切片保留但明确标注为历史，不再与当前树混读。当前 `pnpm verify` 重新通过：contract provenance/generated 5、lint、typecheck、31 test files（377 passed/210 skipped）、build。
