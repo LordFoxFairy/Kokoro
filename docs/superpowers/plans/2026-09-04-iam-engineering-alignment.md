@@ -1610,3 +1610,16 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 删除项 | `Record<string, unknown>` 的无主 cast、硬编码 enum 数字和重复 status 猜测逻辑（无兼容 alias）。 |
 | 验收 | `pnpm typecheck`、Tenant contract/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
 | 状态 | 已完成并提交：IAM commit `d5ae46c`（文档后续同步于 `d898fc8`）；typed mapper 已从 interceptor 分离，消除无主 `Record<string, unknown>` cast 和硬编码 enum 数字；architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。 |
+
+#### IAM-R4-IMPLEMENT-06：收敛 Tenant management 配置的 Zod 输入边界
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/src/config/tenant-management.ts`；主控单一 writer |
+| 背景 | 当前配置文件同时承担 JSON 形状检查、未知字段拒绝、业务范围校验、secret materialization、rotation window 和 digest；大量 `typeof`/`Array.isArray`/无主 `as` 使边界难以维护。 |
+| 目标 | 新增一个有明确 owner 的 `tenant-management.schema.ts`，用 Zod 解析 JSON document 的结构、必填字段、嵌套 strict object 和基础类型；`tenant-management.ts` 只保留 secret/key materialization、跨字段 policy、rotation 和输出组装。 |
+| 允许文件 | `src/config/tenant-management.ts`、`src/config/tenant-management.schema.ts`、配置 unit/architecture 测试、CURRENT/TECHNICAL_DESIGN；不改配置字段名、secret reference 语义、错误前缀、Proto、SQL 或运行时 env loader。 |
+| 明确规则 | Zod 只负责动态输入 shape；approved policy、HTTPS 规则、caller 唯一性、scope 完整性、secret bytes 和 rotation window 仍由命名业务校验负责；不创建 `config/utils.ts` 或全局 schema registry。 |
+| 删除项 | `TenantManagementDocument`/`RawCallerCredential` 的手写未知 shape、重复 `requiredString`/对象数组猜测和对应无主 cast；不保留双轨 parser。 |
+| 验收 | `pnpm typecheck`、配置 unit/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
+| 状态 | 已完成并提交：IAM commit `903afef`；配置 unit、architecture 50、unit 394、typecheck、lint、build、contract:check 均通过；Zod 只负责动态 document shape，业务 policy 与 secret materialization 仍由 config owner 负责。真实 PG/Redis integration 仍待绑定该 commit。 |
