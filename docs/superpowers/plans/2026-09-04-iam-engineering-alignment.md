@@ -1392,3 +1392,11 @@ candidate 的 Redis URL 明确指向 logical DB 1，避免文档、`.env.example
 当前 Node 24 验证：`pnpm verify` 的 contract generated/provenance、lint、typecheck、31 个测试文件（380 passed、210 skipped）和
 build 通过；复用本机 PostgreSQL 18、启动一个临时 Redis logical DB 1、fresh schema 后执行 `pnpm test:integration`，10 个文件、210 passed、
 0 failed，临时资源已清理。Docker image smoke、RPC deadline/cancellation、真实 provider sandbox 与跨仓消费者仍未验收。
+
+### IAM RPC cancellation feasibility check (2026-09-06)
+
+主控先按文档设计门验证现有依赖语义，没有把 Connect 的 `HandlerContext.signal` 直接写成已完成的 PostgreSQL 取消。对当前锁定的
+`pg` 8.16 执行真实 `SELECT pg_sleep(1)` 并在 50ms 后 abort `QueryConfig.signal`，查询仍约 1s 后成功返回；该驱动版本不消费该字段。
+主控删除了未提交的试验性 query wrapper，IAM `59795da` 将事实修正为：下一片必须先选择并验证 query budget/连接取消 adapter，再实施
+RPC signal → 模块执行预算 → PostgreSQL transaction 的传播；COMMIT 未知提交恢复语义保持不变。当前没有把该实验误报为取消闭环，
+也没有修改生产代码或引入第二套数据库驱动。
