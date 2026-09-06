@@ -41,6 +41,21 @@
 - 消费方通过 owner 的固定版本 artifact/生成 client 集成；generated 类型在 client/handler 终止，不穿透内部模型。
 - command/query 是读写语义，不要求为每个接口创建 Command class、Query class 或 CQRS bus。
 
+### 4.1 错误 owner 与 SDK
+
+机器错误码属于 API contract owner 的事实源；服务端模块可以拥有更细的内部错误码，但必须在 transport 边界映射为稳定
+wire code。服务端错误 class 不跨包共享，SDK 根据 wire code 构造自己的公开 `ApiError`。
+
+```text
+module error -> HTTP/RPC mapper -> wire ErrorCode -> generated client -> SDK ApiError
+```
+
+消费者不得从服务端源码复制 `Tenant`、`Session`、`Permission` DTO、client 或错误 class。owner 发布版本化 generated artifact
+或 SDK；消费者只在自己的业务 adapter 中把 wire model 映射为本地业务对象。
+
+SDK 必须绑定 contract version/digest，支持 request ID、deadline/AbortSignal、认证 metadata、幂等身份和经过证明的安全重试。
+重试规则不能由 SDK 猜测；非幂等操作必须由 API contract 明确允许后才能自动重试。
+
 ## 5. 变更与验收
 
 首发 clean-slate 按当前目标契约替换旧实现。对外稳定发布后的 breaking change 必须重新评审版本、弃用和消费者切换，

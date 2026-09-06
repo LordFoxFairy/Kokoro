@@ -1480,3 +1480,19 @@ SIGTERM/故障注入、运行中 SQL cancel、真实 provider 或跨仓 consumer
 另外修正了 IAM CI/Release 的验证编排：`package.json` 新增 `test:unit`，`pnpm verify` 的 `check` 使用该无外部依赖入口；CI/Release 再单独
 串行运行 `pnpm test:integration`。这样 job 级 PG/Redis URL 不会让普通 `pnpm test` 并行启动 integration fixture 后又被重复运行，验证证据的
 数据库/Redis 隔离语义与 RUNBOOK 保持一致。
+
+### IAM TypeScript 文件、错误与 SDK 设计门（2026-09-06）
+
+本轮只收敛规范和文档，不提前批量搬动业务代码。Root 专项手册更新为：TypeScript 按模块聚合，允许有证据的
+`shared/common/utils/constants/models`，但不创建无 owner 的垃圾桶；`runtime` 只承载进程级资源和生命周期；手写文件按主要公开概念和变化原因
+划分，`types/model/schema/constants/error/policy/mapper/service/repository/handler/interceptor` 只在职责真实存在时使用，
+不机械执行“一类一文件”或固定四层。
+
+错误边界冻结为：模块业务错误 → transport HTTP/RPC 映射 → Proto/OpenAPI wire error → SDK `ApiError`。跨模块基础错误可以进入
+`src/shared/errors/`，但业务错误不集中到全局 `errors.ts`；消费者不复制服务端 DTO、client、错误 class、cursor 或数据库模型。
+SDK 只有在有稳定消费者时由 owner 发布，生成物目标为 `contract/generated/typescript/`；当前 IAM 的 `src/generated/proto/` 保持事实状态，
+迁移前不同时维护两套输出。
+
+IAM `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`INDEX.md`、`docs/INDEX.md` 和 README 已同步记录上述文件职责、错误 owner、SDK 边界、
+当前/目标生成路径及未完成证据。下一实施顺序固定为：先全仓 TypeScript 文件职责审计，再按业务切片拆分高混合文件；随后评估 shared error base、
+generated 边界迁移和 IAM SDK，均不得先建空目录或重复 wire model。文档提交不代表代码重构、SDK 发布或跨仓 consumer 已完成。

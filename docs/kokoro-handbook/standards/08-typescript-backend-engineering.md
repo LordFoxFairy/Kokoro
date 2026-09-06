@@ -168,6 +168,7 @@ ADR 修订 SQL 事实源规则，再整仓切换并删除旧写路径。同一�
 
 ```text
 contract/                       # 本仓拥有的 OpenAPI/Proto/JSON Schema；有才创建
+  generated/typescript/         # 只读生成物；由 contract 源和生成器产生
 database/
   schema.sql                    # 唯一可编辑数据库 schema
 src/
@@ -175,9 +176,13 @@ src/
     <business-module>/
   config/
     env.ts                      # 唯一 process.env 读取和校验点
-  generated/                   # 有生成物时创建，只读
+  shared/                      # 可选；通过共享目录准入条件后才创建
+  utils/                       # 可选；只放有明确主题的纯技术函数
+  constants/                   # 可选；只放真正应用级共享常量
   app.ts                        # 构建 Fastify/Connect 应用、装配依赖；不 listen
   server.ts                     # 唯一进程入口、signal、listen、graceful shutdown
+sdk/                            # 可选；只有本仓拥有并发布消费者 SDK 时创建
+  typescript/
 test/
   unit/
   integration/
@@ -218,7 +223,7 @@ src/
   runtime/                     # 各入口共用的进程级资源
   modules/
   config/
-  generated/
+  contract/generated/typescript/
 ```
 
 `runtime/` 只持有进程级依赖和生命周期；业务代码仍属于模块。单进程服务不提前套用这棵树。
@@ -1012,12 +1017,16 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 | --- | --- | --- |
 | HTTP/配置/第三方输入 schema | `<subject>.schema.ts` | Zod schema 是运行时边界；类型用 `z.infer` 推导，不再另外维护同字段 DTO class |
 | Proto 输入校验 | `contract/` + transport interceptor | 使用 Proto/Protovalidate 的唯一事实源；不得为同一 RPC 再复制一套 Zod schema |
-| 稳定内部数据形状 | `<subject>.ts` 或 `<subject>.types.ts` | 用 `type`/`interface`；只有多个角色稳定共享时才导出 |
-| 具有不变量/状态迁移的对象 | `<subject>.ts` 或模块内 `domain/<subject>.ts` | 使用 class 或带命名的纯函数；class 必须保护状态，不是字段容器 |
+| 稳定内部数据形状 | `<subject>.types.ts` | 用 `type`/`interface`；只有多个角色稳定共享时才导出 |
+| 具有不变量/状态迁移的对象 | `<subject>.model.ts` 或模块内 `domain/<subject>.ts` | 使用 class 或带命名的纯函数；class 必须保护状态，不是字段容器 |
 | 业务用例与事务编排 | `<subject>.service.ts` 或 `use-cases/<verb>-<subject>.ts` | 不放 schema、数据库 Row、协议 message 或底层解析实现 |
 | 错误类型与错误码 | `<subject>.error.ts` | 错误语义有独立消费者时集中管理；不要在 Service 文件尾部顺手定义错误体系 |
 | 持久化 | `<subject>.repository.ts` | SQL、Row 类型和 Row mapper 只服务本模块持久化；不放 HTTP/RPC 常量 |
 | 协议适配 | transport 下的 handler/interceptor/mapper | 负责 wire ↔ 内部输入/错误映射，不承载业务规则 |
+
+一个文件可以同时包含同一职责的配套声明，例如 `tenant.error.ts` 中的 error code、code union 和 `TenantError` class，
+也可以在 `tenant.repository.ts` 中放只被该 Repository 使用的 Row 与 mapper。判断标准是“一个主要公开概念”，不是
+“一个文件只能出现一种 TypeScript 语法”。
 
 #### 8.4.2 常量、有限值与正则表达式
 
@@ -1066,6 +1075,7 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 | `src/transport/` | HTTP/RPC request context、interceptor、wire error mapping、协议注册 | Domain policy、数据库查询、业务状态迁移 |
 | `contract/` | Proto/OpenAPI/JSON Schema 及只读生成物 | 业务 Service、数据库 Row、内部 DTO 副本 |
 | `src/modules/<owner>/` | 业务类型、错误、Service、Repository、模块内常量和策略 | 其他模块的事实副本 |
+| `src/shared/errors/` | 多模块共同使用的基础错误结构 | Tenant/Session/Payment 具体错误码和业务判断 |
 
 只有一个对象同时满足“被多个业务模块稳定使用、没有更明确的业务 owner、生命周期属于进程或协议”时，才适合进入
 runtime/transport 这类全局边界。两个模块恰好都使用，并不自动证明它应该进入 `shared/`；但经过共享目录准入条件审查后，
@@ -1113,6 +1123,9 @@ Lint 处理语义风险，Prettier 处理排版；不在两者中配置相互冲
 常用 role suffix：
 
 ```text
+.model.ts
+.types.ts
+.constants.ts
 .routes.ts
 .rpc.ts
 .schema.ts
@@ -1130,6 +1143,8 @@ Lint 处理语义风险，Prettier 处理排版；不在两者中配置相互冲
 .plugin.ts
 .policy.ts
 .error.ts
+.handler.ts
+.interceptor.ts
 ```
 
 命名语法固定为：
@@ -1152,6 +1167,9 @@ replay-receipt.ts
 幂等 receipt 通常是所属业务模块的内部机制，不默认创建名为 `command-receipts/` 的顶级业务模块。只有 Receipt
 本身拥有独立生命周期、公开契约和团队 owner 时，它才可能成为模块。避免把多个机制名词串成文件名；应回到
 业务动作与职责，例如 `run-replay.service.ts`、`event-replay.query.ts` 或所属 Repository 内的幂等方法。
+
+`<subject>.ts` 只保留给“模块唯一且足够清晰的中性业务对象”。当类型、model class、schema 或错误已经各自拥有独立
+变化原因时，使用 `.types.ts`、`.model.ts`、`.schema.ts`、`.error.ts`，不要继续使用一个没有角色的长文件。
 
 ### 9.2 `index.ts`
 
@@ -1312,6 +1330,40 @@ export type CreateSiteBody = z.infer<typeof createSiteBodySchema>;
 只有整个仓采用 NestJS + class-validator 且 class metadata 真有价值时使用 class DTO。不要同时混 Nest controller、
 裸 Fastify routes 和自研 decorator/DI。
 
+### 11.5 SDK、生成 Client 与跨仓模型
+
+拥有稳定消费者的 API/RPC owner 才发布 SDK；SDK 不是服务端 `src/` 的第二套业务实现。推荐边界：
+
+```text
+contract/
+  proto/                         # 可编辑 wire source
+  openapi/                       # 可编辑 HTTP source（若有）
+  generated/typescript/          # 只读生成的 wire types/client
+
+sdk/typescript/
+  src/
+    client.ts                    # 面向消费者的薄 client facade
+    client-options.ts            # endpoint、auth、timeout、retry policy
+    interceptors.ts              # request id、deadline、metadata、trace
+    api-error.ts                 # SDK 自己的稳定错误
+    index.ts                     # 受控 public exports
+```
+
+SDK 的职责是把生成 client 变成可消费的版本化包，补充认证 metadata、deadline/AbortSignal、request ID、经过证明的安全重试、
+错误归一和分页辅助；SDK 不复制服务端 Domain Model、Repository、数据库 Row 或业务状态机。
+
+规则：
+
+1. contract source 只有 owner 仓维护；generated 文件只由生成命令写入，不能手改。
+2. 服务端 module 不 import 自己的 SDK；transport 使用 generated 类型，SDK 使用相同版本的 generated artifact。
+3. 消费方从 owner SDK 获取 wire types/client，不重新定义同名 `Client`、DTO、错误码或分页 cursor。
+4. 消费方若需要自己的业务语义，可以在 `integrations/<owner>/` 建一个很薄的 adapter/mapper；它只做业务映射，不重写网络、认证、重试和 wire 解码。
+5. SDK 错误不能依赖服务端 Error class。服务端业务错误经过 wire error code、request ID、safe details 后，由 SDK 构造自己的 `ApiError`。
+6. 只有至少三个 SDK 已经重复相同的 transport 机制时，才抽取独立 `sdk-core` package；不能提前创建万能 SDK 基础层。
+7. SDK package 必须有 semver、contract digest、generated provenance、breaking check 和最小 consumer contract test。
+
+内部 RPC 和公开 HTTP 可以分别发布 SDK；不能因为都叫 client 就把不同 visibility、认证方式和错误契约混成一套。
+
 ## 12. 事务、缓存、错误与可靠性
 
 ### 12.1 事务边界如何注入
@@ -1361,6 +1413,19 @@ interface RenameSiteDependencies {
 - Redis 失败是 fail-closed 还是可降级，由能力声明；权限、配额、幂等不因“缓存失败”自动放行。
 
 ### 12.4 错误与 I/O 预算
+
+错误按四个边界管理：
+
+| 层级 | 位置 | 责任 |
+| --- | --- | --- |
+| 全局基础错误 | `src/shared/errors/`（可选） | `ApplicationError`、依赖不可用、配置错误、预算错误等无业务 owner 的基础结构 |
+| 模块业务错误 | `src/modules/<owner>/<subject>.error.ts` | 本模块 code、业务语义、retryable 分类和安全 message |
+| 协议错误映射 | `src/transport/http/`、`src/transport/rpc/` | module error → HTTP/Connect code、wire details、request ID |
+| SDK 错误 | `sdk/typescript/src/api-error.ts` | wire error → 消费方稳定异常；不 import 服务端 Error class |
+
+不要创建一个收集所有业务错误的全局 `errors.ts`。一个模块的 error code、code union 和 Error class 可以放在同一个
+`<subject>.error.ts`，因为它们属于同一错误事实；但 HTTP/RPC 状态映射必须停留在 transport。错误 message 不是稳定 API，
+客户端只按 machine code 分支；details 不得泄漏 SQL、stack、secret、token 或原始请求。
 
 根级 `setErrorHandler`、`setNotFoundHandler` 统一格式；只对白名单错误公开固定 code/message，不按任意异常的
 `statusCode` 或 `message` 原样输出。各仓为真实使用的情况配置：400 输入、401 未认证、403 未授权、404 不存在、
