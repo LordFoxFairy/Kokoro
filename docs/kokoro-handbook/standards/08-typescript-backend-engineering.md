@@ -237,7 +237,8 @@ src/plugins/
 
 ### 4.4 跨模块共享对象放在哪里
 
-不创建全局 `common/` 或 `utils/` 并不意味着复制代码。按“谁拥有语义”放置：
+`common/`、`shared/`、`utils/`、`constants/`、`models/` 都不是行业禁用目录，也不是自动应该创建的目录。正确规则是
+“有证据才建立，并且限定职责”，而不是把名字本身当作规范。按“谁拥有语义、谁负责生命周期、谁稳定消费”放置：
 
 | 对象                                        | 默认位置                                            |
 | ------------------------------------------- | --------------------------------------------------- |
@@ -247,9 +248,21 @@ src/plugins/
 | Fastify hook/decorator/request context      | `src/plugins/`                                      |
 | 多模块共享的业务规则                        | 先确认真实 owner；归入 owner 模块，不放 `shared/`   |
 | 无业务语义且有多仓消费者的稳定工具          | 证明独立 API 和版本需求后再做 package               |
+| 多模块共享且无业务 owner 的进程/协议类型    | `src/shared/`，仅限稳定、无副作用、依赖方向简单      |
+| 多模块共享的纯技术函数                      | `src/utils/`，必须有明确主题和测试；禁止业务规则      |
+| 同一横切 owner 共享的常量                   | `src/constants/` 或更精确的 `<subject>.constants.ts` |
+| 独立的持久化/读取模型集合                   | `src/models/`，只有确有统一模型生命周期时才使用       |
 
 `integrations/` 也是按外部 owner 命名，例如 `integrations/iam/iam.client.ts`，而不是
 `integrations/http/clients/` 这种技术套娃。它只在真实跨模块复用时存在；否则 client 仍属于具体业务模块。
+
+共享目录的准入条件：
+
+1. 至少有两个独立变化的消费者，而不是同一模块的两个文件；
+2. 没有更准确的业务 owner，或它明确属于进程/协议横切面；
+3. 导出面、依赖方向和生命周期可以独立说明，并有自己的测试；
+4. 不因为“暂时不知道放哪”或为了缩短相对路径而创建；
+5. 共享目录内部仍按主题分组，不能把多个业务对象堆成 `common.ts`、`utils.ts` 或 `models.ts`。
 
 ## 5. 模块目录：先小而清晰，再按业务增长
 
@@ -1040,6 +1053,34 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 它已经跨越多个变化原因，即使未超过行数阈值也必须重构。重构顺序是：先识别 owner 和调用图，再拆类型/常量/错误/纯解析
 与业务编排；最后由 transport 或 composition root 装配。不能通过把同一批内容机械搬到 `domain/`、`application/`、
 `infrastructure/` 来制造分层。
+
+#### 8.4.5 全局能力与业务模块的边界
+
+“有些东西应该全局”是正确判断，但全局只表示**进程级或协议级横切能力**，不表示建立一个所有代码都能放进去的
+`shared/` 垃圾桶。默认边界如下：
+
+| 范围 | 可以放置 | 不可以放置 |
+| --- | --- | --- |
+| `src/config/` | 环境变量读取、配置 schema、配置归一化、secret reference | Tenant/Session/Payment 业务规则 |
+| `src/runtime/` | Pool/Redis/logger/tracer 创建与关闭、生命周期、执行预算、进程级 readiness | 业务状态、业务权限、业务 SQL |
+| `src/transport/` | HTTP/RPC request context、interceptor、wire error mapping、协议注册 | Domain policy、数据库查询、业务状态迁移 |
+| `contract/` | Proto/OpenAPI/JSON Schema 及只读生成物 | 业务 Service、数据库 Row、内部 DTO 副本 |
+| `src/modules/<owner>/` | 业务类型、错误、Service、Repository、模块内常量和策略 | 其他模块的事实副本 |
+
+只有一个对象同时满足“被多个业务模块稳定使用、没有更明确的业务 owner、生命周期属于进程或协议”时，才适合进入
+runtime/transport 这类全局边界。两个模块恰好都使用，并不自动证明它应该进入 `shared/`；但经过共享目录准入条件审查后，
+`shared/`、`utils/` 或 `constants/` 完全可以成为合理落点。
+
+全局规则的常见正确归属：
+
+- `ExecutionBudget`、trace context、runtime phase 属于 runtime/transport，而不是某个业务模块的 `common.ts`。
+- RPC error code 到 Connect status 的映射属于 transport；业务错误类型仍由业务模块拥有。
+- Tenant、Session、Permission 的类型和常量默认属于对应模块，即使多个 handler 会读取，也不自动升级成全局业务模型；
+  如果未来形成跨模块稳定的权限协议，则可按 contract/shared 的准入条件独立提取。
+- UUID、时间、随机数、ID 生成应通过 runtime/composition root 注入；不建立隐式全局 singleton。
+
+仓库重构必须先对所有手写 TypeScript 做一次“职责、消费者、变化原因、依赖方向”盘点，再决定哪些对象全局化。禁止只因
+文件很长就迁移到 `shared/`，也禁止只因两个文件都使用一个字符串就创建全局常量。
 
 ### 8.5 ESLint typed lint 基线
 
