@@ -1563,4 +1563,11 @@ canonical codec，交付 commit 为 IAM `5019601`；随后角色文件切片继�
 | 保留 | Proto/SQL/API 字段、错误语义、分页 cursor wire 格式、签名/HMAC、事务/幂等行为；函数体内局部变量不机械拆分 |
 | 删除 | 旧 `tenant.ts` 实现 helper 和 Service/Cursor 顶部/尾部的跨职责模块声明；不保留 alias/re-export 兼容旧路径（公开 cursor facade 的受控 type export 除外） |
 | 验收 | `pnpm typecheck`、`pnpm lint`、Tenant unit/contract、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`；真实 integration 另绑定实际依赖输出 |
-| 状态 | 实现进行中；提交后主控检查 diff、重跑全部门禁并更新交付 SHA |
+| 状态 | 已交付 `bdd55bd`；静态/单元/契约门禁通过，真实 integration 需绑定本 commit 补验 |
+
+IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删除、`TenantRepositoryPort` -> `TenantRepository` 命名收敛、
+`PostgresTenantRepository` composition root、role-file dependency fixture 和 generated 未改动事实；当前 commit 实际通过
+`pnpm test:unit`（32 files/393 passed）、`pnpm typecheck`、`pnpm lint`、`pnpm build`、`pnpm contract:check` 与 architecture 49 tests。
+真实 PostgreSQL/Redis integration 尚需绑定 `bdd55bd` 重跑，不把历史 210 项 integration 结果冒充本 commit 证据。下一优先级仍是
+`request-context.interceptor.ts` 的 transport 责任拆分，然后处理 `config/tenant-management.ts`、authentication transaction 和 receipt parser；
+每片继续单一 writer、独立 commit、主控复验。
