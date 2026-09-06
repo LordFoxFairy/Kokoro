@@ -1329,7 +1329,7 @@ I2/I3 已完成并由主控复核到 IAM commit `5d7c17f`（代码/测试切片�
 - 业务 RPC adapter 最终跟随 `modules/authentication`、`modules/authorization`、`modules/tenant`；公共 RPC interceptor、错误映射和 server 装配归 `transport/rpc`；不创建 `rpc/services`、`domain/application/infrastructure` 或空技术层；
 - 内部错误码使用字符串联合类型 + `as const` 映射，Proto `ErrorCode` 仍是 wire contract 唯一事实源；
 - 运行状态、PostgreSQL Pool 预算、Redis namespace/reconnect/offline-queue 语义、readiness/draining、Docker/真实依赖验证矩阵已写入技术方案；
-- 当前 `src/rpc` 是过渡目录，必须先完成独立设计审查和唯一迁移映射，再按单一 transport slice 移动；不在目录重构中扩展 Identity/Organization/Audit 功能。
+- 历史 `src/rpc` 已删除；当前 RPC adapter 位于 `src/modules/<business>/rpc.ts`，公共传输位于 `src/transport/rpc/`。不在目录重构中扩展 Identity/Organization/Audit 功能。
 
 当前设计提交：IAM `ec23332`（含技术方案 `7fb860a`、`8ca40a1`）；transport 迁移与错误映射实现提交为 `06bba13`、`77dc232`、`97f8ced`。Docker Desktop 可用性已探测，但现有 Root Compose 缺少 IAM 服务且本地 compose 启动依赖时需补齐环境文件/凭据，不能把一次未完成的 Docker 启动冒充运行验收。下一片补 IAM 本地依赖/启动治理设计与真实运行测试。
 
