@@ -1332,3 +1332,9 @@ I2/I3 已完成并由主控复核到 IAM commit `5d7c17f`（代码/测试切片�
 - 当前 `src/rpc` 是过渡目录，必须先完成独立设计审查和唯一迁移映射，再按单一 transport slice 移动；不在目录重构中扩展 Identity/Organization/Audit 功能。
 
 当前设计提交：IAM `ec23332`（含技术方案 `7fb860a`、`8ca40a1`）；transport 迁移与错误映射实现提交为 `06bba13`、`77dc232`、`97f8ced`。Docker Desktop 可用性已探测，但现有 Root Compose 缺少 IAM 服务且本地 compose 启动依赖时需补齐环境文件/凭据，不能把一次未完成的 Docker 启动冒充运行验收。下一片补 IAM 本地依赖/启动治理设计与真实运行测试。
+
+### IAM transport/runtime review follow-up（2026-09-06）
+
+IAM transport/runtime 继续按单一 writer 收敛：`9ab88f9` 增加 `starting → ready → draining → stopped` 生命周期状态机，`8416934` 校正文档路径与当前模块 RPC/公共 transport 事实，`b58181f` 消除 Tenant operation→permission 双事实源、将 `mapAuthenticationError` 改为 `mapRpcError`，并把 shutdown 文档改为当前真实顺序，不虚构尚未存在的 worker drain 接口。
+
+主控复验：IAM `pnpm contract:check`、`pnpm typecheck`、`pnpm lint`、`pnpm build`、`pnpm test -- --runInBand` 通过（377 passed，210 skipped）；使用隔离 PostgreSQL `kokoro_iam_runtime_20260906` 与独立 Redis `56381` 执行 `pnpm test:integration`，10 个文件、210 tests 通过。独立只读审查仍保留后续门禁：worker stop-claim/drain 生命周期、request deadline/telemetry、Docker/镜像 smoke、外部安全材料注入与跨仓消费者验收；不以当前通过结果宣称完整 IAM 生产闭环。
