@@ -1438,3 +1438,17 @@ import 数为 0，`pnpm contract:check` 通过；目录不再因视觉扁平化�
 
 实现放行前必须完成 `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`RELIABILITY.md` 三面一致性检查；第一切片只允许做应用预算和
 阶段检查，第二切片才评估 PostgreSQL cancel adapter。任何新目录必须先证明独立变化原因；默认不新增顶层技术目录。
+
+### IAM 外部可用性/运行治理只读复核（2026-09-06）
+
+独立运行治理审查绑定 IAM `3fbb1d6`，只读检查当前源码、Dockerfile、CI、README/运行文档和已知消费者线索；未把历史 Markdown 或
+工作流定义当作本轮运行证据。结论：已证实 P0 为 0；生产放行仍有四类 P1：
+
+1. BFF/Web 当前没有与 IAM Connect RPC 对齐的实际 consumer，Web 仍存在直接拼接 IAM HTTP `/auth/*` 路径；这是跨仓契约闭环，按照本目标“不扩展其他子仓”暂不改 BFF/Web，记录为后续跨仓门禁；
+2. IAM server 尚未注入真实 `SecretResolver`、approved policy revision 和 operator JWKS resolver，Tenant 管理面保持 fail-closed；
+3. delivery worker 尚无 stop-claim → drain → close 的显式生命周期接口；
+4. RPC deadline/cancellation 与 Docker/真实 SIGTERM smoke 尚未形成当前 commit 的运行证据。
+
+本轮另外实测 `docker version` 仍无法连接本机 daemon，因此不把 Docker workflow 静态定义冒充镜像通过；本地 PostgreSQL/Redis 真实验证沿用
+已有隔离证据，不重复启动实例。IAM 内部下一步按 `IAM-R3-2` 先实现应用预算/阶段检查，再单独验证 PostgreSQL cancel adapter；不更换 `pg`，
+不创建 `infrastructure/cancellation` 或其他技术空层。
