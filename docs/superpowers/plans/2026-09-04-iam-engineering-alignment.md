@@ -1354,3 +1354,9 @@ IAM `b162905` 同步刷新 `docs/CURRENT.md`，将当前 transport/runtime、真
 - `TECHNICAL_DESIGN.md` §0.4.1、`API_CONTRACT.md` §0.0、`CURRENT.md` 与 `INDEX.md` 已同步当前树、owner、命名、迁移映射和未完成运行边界；不预建 `domain/application/infrastructure/ports/postgres/redis/prisma` 空目录。
 - IAM `4d67c13` 当前证据：`pnpm typecheck`、`pnpm lint`、`pnpm test`（31 files，377 passed，210 skipped）、`pnpm build`、`pnpm contract:check`、架构依赖测试（48 passed）和 `git diff --check` 通过；本地 Markdown 相对链接 0 errors。
 - IAM Docker daemon 当前仍无可用响应；Docker image smoke、deadline/cancellation、真实 provider sandbox、跨仓 BFF/Web 消费者仍保留为独立运行门，不以源码迁移测试代替。主线下一步是按 IAM 当前目录/文档事实继续验证运行治理与真实依赖，不恢复旧 `rpc.ts` 结构，也不扩展其他子仓。
+
+### IAM real dependency verification after transport migration (2026-09-06)
+
+主控继续按“不被 Docker 运维阻塞主线”的原则完成真实依赖验证：复用现有本机 PostgreSQL 18，只启动一个临时 Redis 8.8 实例（端口 56381，测试结束已关闭），创建随机 fresh database，执行 `pnpm db:apply-schema`，再运行 `KOKORO_POSTGRES_URL=... KOKORO_REDIS_URL=redis://127.0.0.1:56381/1 pnpm test:integration`。结果为 10 个 integration files、210 passed、0 failed；数据库和 Redis 均已清理。第一次使用被 Docker proxy 占用且不可用的 56380 端口导致 Redis 连接重置，未作为通过证据，后续改用空闲端口后通过。
+
+IAM 当前文档事实由 `9378a67 docs(current): record real dependency integration` 收口。Docker daemon 仍没有可用响应，因此 Docker image smoke 保留为单独未验项；这不阻塞当前源码目录、契约、Schema、TypeScript 门禁和本地真实 PostgreSQL/Redis integration 主线。
