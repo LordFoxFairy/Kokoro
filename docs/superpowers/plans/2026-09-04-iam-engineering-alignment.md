@@ -1645,5 +1645,6 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 设计结论 | module-first；Fastify + Connect Fastify 作为目标 transport；`pg` + 唯一 `database/schema.sql`；`contract/proto`/`openapi` 为编辑源，生成物最终统一到 `contract/generated/typescript`；Zod 负责动态输入边界，Proto/Protovalidate 负责 RPC，class 只用于真实不变量/状态；模块错误、wire 错误、SDK 错误分层。 |
 | 目标树 | 见 IAM `docs/TECHNICAL_DESIGN.md` §0.2.2；不预建空的 identity/organization/audit 目录，不创建 `domain/application/infrastructure/ports/postgres/redis/prisma` 模板层。 |
 | 依赖顺序 | `ARCH-02` transport 框架 → `ARCH-03` generated cutover → `ARCH-04` 大文件职责复核 → 业务 owner 迁移 → SDK/跨仓 consumer → 真实依赖与发布 smoke。 |
+| 版本核验 | 2026-09-06 本地 registry probe：TypeScript `6.0.3` 是当前与 `typescript-eslint@8.69.0`（peer `<6.1.0`）兼容的基线；TypeScript `7.0.2` 虽是 registry 最新候选但暂不采用。Fastify `5.12.3`、`@connectrpc/connect-fastify` `2.1.2`、Prettier `3.9.6`、Vitest `5.0.0`、`pg` `8.23.0` 仅作为升级候选，必须在兼容矩阵、lockfile 和完整门禁通过后落地。 |
 | 验收 | 每个切片先通过技术方案/API/SQL 三面设计门；提交后在主仓重跑 format/lint/typecheck/unit/architecture/build/contract，涉及数据库或运行时再跑隔离 PG/Redis 与 smoke。 |
 | 状态 | 设计已写入 IAM `TECHNICAL_DESIGN.md`，待按顺序派发实现切片；当前 IAM 仍不是完整 IAM 产品或最终运行基线。 |
