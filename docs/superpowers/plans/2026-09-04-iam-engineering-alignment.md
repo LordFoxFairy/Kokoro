@@ -1364,3 +1364,9 @@ IAM 当前文档事实由 `9378a67 docs(current): record real dependency integra
 ### IAM current-fact documentation cleanup (2026-09-06)
 
 IAM `6d17ff6 docs(iam): align current architecture facts` 修正了 README/INDEX/TECHNICAL_DESIGN/ACCEPTANCE 的过期数字、旧 transport 事实、旧路径链接和架构测试标题；历史切片保留但明确标注为历史，不再与当前树混读。当前 `pnpm verify` 重新通过：contract provenance/generated 5、lint、typecheck、31 test files（377 passed/210 skipped）、build。
+
+### IAM tenant management configuration correction (2026-09-06)
+
+主控在 transport 迁移后的代码审计中发现 Tenant 管理配置已解析 `audience`，但验证逻辑仍使用硬编码 audience；这会使部署配置与实际信任边界分叉。IAM `c902fb9 fix(tenant): honor configured management audience` 已将 audience 显式注入 `TenantManagementAuthOptions`，删除硬编码常量，并新增自定义 audience 单测/transport 类型接线。`f10a8a8` 同步当前事实；`pnpm verify` 通过（contract generated 5、378 passed/210 skipped、build）。
+
+该修复不启用尚未注入 SecretResolver/JWKS 的 Tenant 生产管理面；外部 operator issuer/JWKS 运行接线、deadline/cancellation、worker drain 仍按文档作为独立后续门，不能用配置修复冒充完整管理面。
