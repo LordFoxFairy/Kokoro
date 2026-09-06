@@ -1344,3 +1344,13 @@ IAM transport/runtime 继续按单一 writer 收敛：`9ab88f9` 增加 `starting
 IAM `b162905` 同步刷新 `docs/CURRENT.md`，将当前 transport/runtime、真实 Redis/PG、built-JS smoke 与 Docker 未验边界写成当前事实，清除“Redis/进程 smoke 仍待验”和“draining 尚未实现”等过期表述。
 
 用户要求重新彻底裁决 HTTP/RPC 与业务目录，IAM `b231ebe` 完成文档设计门：最终目标为 `modules/` 只放业务、`transport/http` 与 `transport/rpc` 只放协议、RPC handler 统一使用 `*.handler.ts`，generated 仅由 transport 使用；当前 `modules/*/rpc.ts` 明确标记为过渡实现，尚未移动源码。`git diff --check`、文档本地链接检查和 deployment contract test 通过。未通过新的文档门前，不实施目录迁移。
+
+### IAM transport migration completion (2026-09-06)
+
+上一节记录的“`modules/*/rpc.ts` 尚未移动”已由后续唯一 writer 切片完成；当前事实以 IAM `4d67c13` 为准，不能继续引用旧路径。
+
+- IAM `ba2e0dd refactor(transport): separate protocol handlers from modules` 将认证、授权、Tenant handler 收敛到 `src/transport/rpc/handlers/*.handler.ts`；HTTP server、request context、response envelope、health/JWKS routes 收敛到 `src/transport/http/`；旧 `src/modules/*/rpc.ts`、`src/http*` 路径和含糊的 `map-error.ts` 已删除，不保留 alias/re-export/双轨实现。
+- `map-error.ts` 改为 `map-rpc-error.ts`；`http-context.ts` 与 `http-response.ts` 分开，避免一个文件同时承担 request context 和 response envelope。业务 module 不直接 import generated/Connect/Node HTTP；generated 只在 transport 使用。
+- `TECHNICAL_DESIGN.md` §0.4.1、`API_CONTRACT.md` §0.0、`CURRENT.md` 与 `INDEX.md` 已同步当前树、owner、命名、迁移映射和未完成运行边界；不预建 `domain/application/infrastructure/ports/postgres/redis/prisma` 空目录。
+- IAM `4d67c13` 当前证据：`pnpm typecheck`、`pnpm lint`、`pnpm test`（31 files，377 passed，210 skipped）、`pnpm build`、`pnpm contract:check`、架构依赖测试（48 passed）和 `git diff --check` 通过；本地 Markdown 相对链接 0 errors。
+- IAM Docker daemon 当前仍无可用响应；Docker image smoke、deadline/cancellation、真实 provider sandbox、跨仓 BFF/Web 消费者仍保留为独立运行门，不以源码迁移测试代替。主线下一步是按 IAM 当前目录/文档事实继续验证运行治理与真实依赖，不恢复旧 `rpc.ts` 结构，也不扩展其他子仓。
