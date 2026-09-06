@@ -1413,3 +1413,8 @@ RPC signal → 模块执行预算 → PostgreSQL transaction 的传播；COMMIT 
 校验保留为配置边界逻辑；Magic Link 业务 policy 仍拥有认证语义校验。IAM `pnpm verify` 已重新通过：contract lint/OpenAPI/
 generated/provenance、lint、typecheck、31 个测试文件（380 passed、210 skipped）和 build。该切片没有改变 API、SQL、生成物或
 认证行为；Docker、RPC cancellation、真实 provider、跨仓消费者和完整 IAM 管理 writer 仍按未完成门禁处理。
+
+随后主控重新解释 `generated/proto` 与 `scripts` 的边界并记录在 IAM `3fbb1d6 docs(iam): explain generated and script boundaries`：
+`src/generated/proto/kokoro/{common,iam}/v1` 是 Proto package/import namespace 的生成路径，不是业务模块；`scripts/` 是仓库级
+Schema 安装、契约生成/校验和只读诊断入口，不是生产 runtime，也不承载 Service/Repository/RPC/worker。实查 `src` 对 `scripts` 的
+import 数为 0，`pnpm contract:check` 通过；目录不再因视觉扁平化而调整。
