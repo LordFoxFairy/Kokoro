@@ -1584,3 +1584,16 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 | 删除 | 旧混合文件、旧 import 路径和兼容 re-export；不新增 application/domain/infrastructure 层，不改 Proto/SQL/API 字段 |
 | 验收 | `pnpm typecheck`、`pnpm lint`、RPC contract tests、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check` |
 | 状态 | 已完成并提交：IAM commit `0646489`；主控复验后，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过 |
+
+#### IAM-R4-IMPLEMENT-04：收敛过度碎片化的 Tenant 文件树
+
+| 项 | 决策 |
+| --- | --- |
+| Owner | `kokoro-iam/src/modules/tenant`；主控单一 writer，禁止与其他 IAM 源码 Agent 并行写入 |
+| 背景 | R4-IMPLEMENT-01/02 为消除混合职责临时拆出多个 `*.types/constants/schema/mapper/query` 文件；审查确认其中一部分没有独立消费者，当前 87 个手写 TS 反而增加阅读跳转。 |
+| 目标 | 按业务 owner 收敛为 `tenant.ts`、`tenant.constants.ts`、`tenant.validation.ts`、`tenant.policy.ts`、`tenant.error.ts`、`tenant.service.ts`、`tenant.repository.ts`、`tenant.cursor.ts`、`management/`、`encoding/`；同一职责的私有 type/const/schema/helper 回到 owner 文件。 |
+| 允许文件 | Tenant 源码、直接相关 architecture fixture/unit/contract 测试、IAM `CURRENT/INDEX/TECHNICAL_DESIGN`；不改 Proto 字段、SQL、错误码、事务/幂等语义、生成物或跨仓。 |
+| 明确规则 | 不恢复旧大杂烩；`service` 不放 wire/SQL，`repository` 可放本 owner Row/mapper，`cursor` 可放本 codec 的 Zod schema/私有算法；不创建 `postgres/`、`redis/`、`Port`、alias 或兼容 re-export。 |
+| 删除项 | `tenant.service.types.ts`、`tenant.repository.types/mapper/query.ts`、无独立消费者的 cursor 辅助文件及旧 `tenant.types.ts` 路径；删除引用和过时架构断言。 |
+| 验收 | 先保存行为测试基线；`pnpm test:unit`、Tenant contract/architecture、typecheck、lint、build、contract:check、`git diff --check`；再绑定当前 commit 的 PG/Redis integration。 |
+| 状态 | 设计已采纳，待实施；不把“文件更少”单独视为质量证据，必须同时通过依赖边界与行为回归。 |

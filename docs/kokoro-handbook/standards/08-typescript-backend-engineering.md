@@ -1031,20 +1031,27 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 
 #### 8.4.1.2 角色文件硬边界
 
-这些规则是为了让代码审查和新人定位成本稳定，不是为了机械追求“一符号一文件”：
+这些规则是为了让代码审查和新人定位成本稳定，不是为了机械追求“一符号一文件”。`*.types.ts`、`*.constants.ts`、
+`*.schema.ts` 不是必须创建的模板文件：如果声明只服务一个实现、没有独立消费者和生命周期，就留在该实现文件中，
+不要为了视觉上的“分层”制造 6 行文件。
 
 | 文件角色 | 文件主体允许内容 | 必须移出的内容 |
 | --- | --- | --- |
-| `<subject>.service.ts` | 一个 Service class、factory 或 use-case 函数，以及其直接编排方法 | 模块级业务常量、Service options/type、独立 policy、输入 validation、schema、Row、wire message、crypto/codec 实现 |
-| `<subject>.cursor.ts` / `<subject>.codec.ts` | 一个协议编解码公开面（例如 encode/decode） | wire 常量、payload type、运行时 schema、独立 fingerprint、validation helper |
-| `<subject>.repository.ts` | 一个持久化 owner 的 Repository、SQL 和只服务该 Repository 的 Row mapper | HTTP/RPC 常量、Service policy、业务错误映射、与该 Repository 无关的通用执行器 |
+| `<subject>.service.ts` | 一个 Service class、factory 或 use-case 函数，以及其直接编排方法；仅被该 Service 使用的 options/type 可以就近定义 | 独立业务常量、被多个角色共享的 type、独立 policy、输入 validation、schema、wire message、crypto/codec 实现 |
+| `<subject>.cursor.ts` / `<subject>.codec.ts` | 一个协议编解码 owner 的公开面及其私有算法步骤；同一 codec 的小型 schema/helper 可以共存 | 被其他能力消费的 wire 常量、payload type、schema、fingerprint 或 validation；多个独立 codec 不能混在一起 |
+| `<subject>.repository.ts` | 一个持久化 owner 的 Repository、SQL、只服务该 Repository 的 Row type/mapper 和查询辅助 | HTTP/RPC 常量、Service policy、业务错误映射、与该 Repository 无关的通用执行器 |
 | `<subject>.handler.ts` / `<subject>.routes.ts` | wire 输入校验后的映射、Service 调用和 wire 输出/错误映射 | 业务状态机、SQL、协议外的业务 policy |
 | `<subject>.error.ts` | 一个模块错误体系：code union、Error class、构造 helper | Service 编排、协议 status 映射、数据库 Row |
 
 “一个 TS 文件什么都有”具体指**模块级声明跨越多个变化原因**。函数内部为表达步骤而产生的局部 `const`、参数解构和
 正常 TypeScript 窄化不属于这个问题；禁止的是把可独立复用/测试/发布的模块级常量、类型和逻辑继续堆在角色文件里。
-例如 Service 的分页上限应进入带 owner 的 `tenant.constants.ts`，Service options 进入 `tenant.service.types.ts`，校验进入
-`tenant.validation.ts`，而不是继续写在 `tenant.service.ts` 顶部或文件末尾。
+反过来，也不要把同一变化原因拆成大量无主人的小文件：Service options 只被该 Service 使用时可以留在
+`tenant.service.ts`，cursor 的私有校验可以留在 `tenant.cursor.ts`，Repository 的 Row mapper 可以留在
+`tenant.repository.ts`。只有被多个角色共享、拥有独立测试/发布边界或明显独立变化节奏时，才提取为
+`tenant.constants.ts`、`tenant.types.ts`、`tenant.cursor.schema.ts` 等文件。
+
+默认粒度检查：一个新建的手写角色文件若只有一个私有声明、约二十行以内且没有独立消费者，应优先合并回其 owner；
+这不是硬性的行数门禁，公开 contract、错误体系、生成入口和安全边界可以是小文件。审查时同时检查“是否过度混合”和“是否过度碎片化”。
 
 #### 8.4.1.1 Zod、class model 与 `unknown` 的强制边界
 
