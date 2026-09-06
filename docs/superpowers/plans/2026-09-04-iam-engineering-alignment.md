@@ -1452,3 +1452,17 @@ import 数为 0，`pnpm contract:check` 通过；目录不再因视觉扁平化�
 本轮另外实测 `docker version` 仍无法连接本机 daemon，因此不把 Docker workflow 静态定义冒充镜像通过；本地 PostgreSQL/Redis 真实验证沿用
 已有隔离证据，不重复启动实例。IAM 内部下一步按 `IAM-R3-2` 先实现应用预算/阶段检查，再单独验证 PostgreSQL cancel adapter；不更换 `pg`，
 不创建 `infrastructure/cancellation` 或其他技术空层。
+
+### IAM-R3-2 当前实现与 Proto namespace 收口（2026-09-06）
+
+主控在 IAM 当前单一 writer 工作树完成了 R3-2 第一切片：RPC handler 从 Connect `HandlerContext` 提取 signal/deadline，转换为中性
+`ExecutionBudget`，向 Authentication、Authorization、Tenant Service/Repository 和事务阶段传递；新增 `CANCELED` 与
+`DEADLINE_EXCEEDED` 机器错误码，并保留 COMMIT 后未知提交恢复语义。该切片不宣称 `pg` 正在执行的 SQL 已可由 `AbortSignal` 中止；真实
+PostgreSQL cancel adapter、响应大小预算、真实传输断开/超时证据仍是后续门禁。
+
+同时按 clean-slate 约束收口 Proto 目录：当前唯一可编辑路径为
+`kokoro-iam/contract/proto/iam/v1/`，唯一生成边界为 `kokoro-iam/src/generated/proto/iam/v1/`（另有第三方
+`src/generated/proto/buf/validate/`）；Proto package 与目录均为 `iam.v1`/`iam/v1`，不再保留 `kokoro` 产品 namespace、旧路径
+或兼容 alias。`generated` 保留为只读自动生成产物边界，不是业务模块，也不是手写 DTO/model 目录。IAM 变更后的 contract、typecheck、lint、
+unit/contract test 与 build 已通过；集成测试本轮因当前环境未提供可用 PG/Redis 测试开关而全部跳过，历史隔离 PG/Redis 通过证据仍按历史
+commit 绑定，不冒充本次工作树的新运行证据。
