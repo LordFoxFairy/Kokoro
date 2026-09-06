@@ -1340,3 +1340,5 @@ IAM transport/runtime 继续按单一 writer 收敛：`9ab88f9` 增加 `starting
 主控复验：IAM `pnpm contract:check`、`pnpm typecheck`、`pnpm lint`、`pnpm build`、`pnpm test -- --runInBand` 通过（377 passed，210 skipped）；使用隔离 PostgreSQL `kokoro_iam_runtime_20260906` 与独立 Redis `56381` 执行 `pnpm test:integration`，10 个文件、210 tests 通过。独立只读审查仍保留后续门禁：worker stop-claim/drain 生命周期、request deadline/telemetry、Docker/镜像 smoke、外部安全材料注入与跨仓消费者验收；不以当前通过结果宣称完整 IAM 生产闭环。
 
 随后在 IAM `39d37d9` / `dca0650` 补充了 built-JS 进程 smoke：最新 `dist/src/server.js` 连接隔离 PostgreSQL 与 Redis，验证 `/healthz`、`/readyz` 和 SIGTERM 退出码 0；该证据不替代 Docker 镜像 smoke。Docker Desktop 当前仍因 `192.168.65.7:2376 no route to host` 无法取得 daemon 响应。
+
+IAM `b162905` 同步刷新 `docs/CURRENT.md`，将当前 transport/runtime、真实 Redis/PG、built-JS smoke 与 Docker 未验边界写成当前事实，清除“Redis/进程 smoke 仍待验”和“draining 尚未实现”等过期表述。
