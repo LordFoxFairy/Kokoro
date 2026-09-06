@@ -31,6 +31,10 @@ Agent 或业务仓。AG-UI 是 Web/BFF 唯一 Agent 网络事件协议；Vercel 
 
 ## Goal 2 正式业务仓
 
+本文件中的“子仓”是独立 Git 仓库，不是 Root 的普通源码目录。当前工作区把它们物理放在 `Kokoro/` 下面便于统一
+导航，但每个目录都有自己的 `.git`、分支和提交边界；Root 不通过 `git add` 收纳子仓源码。跨仓变更先在事实 owner
+子仓提交，再由 Root 记录拓扑或验收证据。
+
 | 仓库 | Owner | 存储边界 | 语言 |
 |---|---|---|---|
 | `kokoro-iam` | Tenant/User/Auth/AuthZ/Role/Permission/Audit/ExecutionIdentity | PostgreSQL + Redis cache/coordination | TypeScript（contract-first） |

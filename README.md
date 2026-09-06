@@ -26,6 +26,24 @@ kokoro-agent ──business/transport contract──▶ kokoro-bff ──same-or
 
 架构按仓库形态收敛：每个正式仓库独立测试、构建、Docker、CI 和本仓 API contract；Root 只维护架构决策、仓库地图、部署编排和验证入口，不复制任何子仓源码或 API 定义。
 
+### Root 与子仓的目录关系
+
+当前目录名为 `Kokoro` 的仓库是**工作区/治理 Root**，不是把所有服务源码合并在一起的单一 monorepo。目录下面的
+`kokoro/`、`kokoro-iam/`、`kokoro-bff/` 等目录各自拥有独立的 `.git`、分支、提交、依赖、构建和发布边界：
+
+```text
+Kokoro/                         # Root：拓扑、规范、任务板、编排
+  kokoro/                       # 独立 Web 仓
+  kokoro-iam/                   # 独立 IAM 仓；当前 canonical 工作目录
+  kokoro-bff/                   # 独立 BFF 仓
+  kokoro-agent/                 # 当前由 Root 以 git submodule 记录
+  ...
+```
+
+因此，`Kokoro/kokoro-iam` 在文件系统上位于 Root 下面，但 Root 不直接跟踪它的源码；修改 IAM 时必须进入
+`Kokoro/kokoro-iam` 自己的 Git 仓提交，Root 只记录跨仓拓扑和验收事实。Agent 临时 worktree 以及工作区外的同名 clone
+不属于当前 canonical 工作目录，不能与当前 IAM 分支混用。
+
 ## 契约归属
 
 Root 不保存跨仓 API、Proto、OpenAPI、JSON Schema 或生成器。每个运行仓库只维护自己拥有的边界：
