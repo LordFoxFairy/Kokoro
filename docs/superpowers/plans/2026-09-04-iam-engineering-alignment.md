@@ -1418,3 +1418,23 @@ generated/provenance、lint、typecheck、31 个测试文件（380 passed、210 
 `src/generated/proto/kokoro/{common,iam}/v1` 是 Proto package/import namespace 的生成路径，不是业务模块；`scripts/` 是仓库级
 Schema 安装、契约生成/校验和只读诊断入口，不是生产 runtime，也不承载 Service/Repository/RPC/worker。实查 `src` 对 `scripts` 的
 import 数为 0，`pnpm contract:check` 通过；目录不再因视觉扁平化而调整。
+
+### IAM-R3-2 RPC execution budget 设计门（先设计，不立即改业务）
+
+当前下一条主线不是继续改目录，而是把 RPC 生命周期边界落到业务调用。独立审查已确认：Connect `HandlerContext.signal` 和
+`timeoutMs()` 可以作为唯一 transport 输入，但 `pg` 8.16 的 `QueryConfig.signal` 不能证明正在执行的 PostgreSQL 查询会被取消。
+因此先实施应用执行预算与阶段检查，再单独验证 PostgreSQL cancel adapter；不更换 `pg`，不把 AbortSignal 误写成事务已回滚。
+
+| 项 | 设计裁决 |
+| --- | --- |
+| Owner | IAM `transport/rpc` 提取请求预算；各业务 module 接收中性预算；Authentication transaction 保持 COMMIT/unknown-commit owner |
+| 传输输入 | 只读取 `HandlerContext.signal`、`timeoutMs()`；业务模块不得接收 Connect `HandlerContext` |
+| 业务类型 | 使用中性 `ExecutionBudget`（signal、deadline、remaining、阶段检查），不创建 CommandBus、全局 timeout wrapper 或 `infrastructure/cancellation` |
+| 阶段语义 | 进入 handler、获取连接、BEGIN、每个明显 SQL/provider 阶段、COMMIT 前检查；COMMIT 开始后仍进入未知提交恢复 |
+| PostgreSQL | 继续使用显式连接/语句/lock/idle-in-transaction budget；在 cancel adapter 未经真实 PG 证明前，不宣称 query 已被 AbortSignal 中止 |
+| 错误 | 先与现有 wire ErrorCode 对齐；不新增无法由机器契约表达的错误，不把客户端取消解释成事实未提交 |
+| 响应预算 | recovery、rollback、release 和错误映射必须受总预算/关闭预算约束；超时不重复执行业务 callback |
+| 验证 | unit 的 signal/deadline 边界；真实 PG 的 statement/lock timeout、连接销毁、receipt recovery；真实 Connect transport 的断开/超时；Tenant command 与 Authentication receipt 分开验证 |
+
+实现放行前必须完成 `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`RELIABILITY.md` 三面一致性检查；第一切片只允许做应用预算和
+阶段检查，第二切片才评估 PostgreSQL cancel adapter。任何新目录必须先证明独立变化原因；默认不新增顶层技术目录。
