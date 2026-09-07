@@ -1,5 +1,53 @@
 # IAM 工程规范对齐：主控任务板
 
+## 当前任务：IAM-R6 契约与仓内文档收拢（2026-09-07）
+
+用户批准先完成 IAM 文档和 API 契约治理，再进入业务源码重构。本切片以 IAM 当前机器契约和源码为事实，参考
+OpenAPI、Protocol Buffers、Buf、ConnectRPC、Google AIP 以及成熟 IAM/权限项目的公开一手资料；外部项目只提供证据，
+不按品牌复制目录或把 REST 规则机械套到内部 RPC。
+
+### 设计放置表
+
+| 项       | 结论                                                                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | IAM 拥有本仓技术方案、API 语义、数据模型、ADR 和机器契约说明；Root 只拥有通用规范和跨仓任务记录                                                                          |
+| 当前事实 | IAM `cdede2b`；11 个 Proto RPC、3 个 OpenAPI HTTP operation；默认 runtime 只注册 6 个认证/授权 RPC，Tenant 5 RPC 条件启用；Zod 已安装，Nest/Fastify 未安装               |
+| 目标职责 | 活跃文档只说明当前事实、唯一目标和明确 release blocker；历史 R*/S* 交付记录只留在 `ACCEPTANCE.md`/Git，不污染 API/数据手册                                               |
+| 目录方案 | 继续使用 IAM `docs/TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`DATA_MODEL.md`、`CURRENT.md` 和 `docs/ADR/`；不创建第二个 contract 中心                                     |
+| 粒度     | `API_CONTRACT` 解释机器契约语义但不复制字段；`TECHNICAL_DESIGN` 记录容器/模块/依赖/失败恢复；`DATA_MODEL` 解释 16 表 owner、事务、查询和生命周期                         |
+| 依赖     | Proto/Protovalidate 是 RPC wire schema；OpenAPI 是 HTTP machine schema；Zod 只验证非 Proto 动态输入；业务 Service/Repository 不依赖 generated wire message               |
+| 数据/API | 本轮不改 Proto、OpenAPI、generated、DDL、源码或依赖；记录 request ID 双重来源、common.proto owner 污染、Tenant production wiring 和 release breaking baseline 等真实缺口 |
+| 删除项   | 从活跃手册删除历史任务编号、旧提交过程、过期路径、错误依赖描述和脆弱的父仓相对链接；不删除历史验收证据                                                                   |
+| 验证     | 当前机器契约计数、仓内链接、Prettier、`pnpm contract:check`、`git diff --check`、文档事实扫描、独立只读复审                                                              |
+
+### 任务卡
+
+| ID      | 角色/模型                                 | 范围                                                   | 完成条件                                                                    | 状态   |
+| ------- | ----------------------------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------- | ------ |
+| R6-STD  | Averroes / gpt-6-astra / 只读             | 成熟 API 规范及公开项目；IAM API 文档                  | 给出可追溯来源、适用边界、推荐结构和不采纳项；不写文件                      | 已完成 |
+| R6-API  | Locke / gpt-5.6-sol / 只读                | IAM Proto/OpenAPI、transport、API_CONTRACT             | 核对 operation、metadata、错误、幂等、分页、生成物和全部事实矛盾；不写文件  | 已完成 |
+| R6-ARCH | Heisenberg / gpt-5.6-sol / 只读           | IAM TECHNICAL_DESIGN、DATA_MODEL、源码与 schema        | 核对当前/目标、目录、事务、无外键完整性、链接和历史污染；不写文件           | 已完成 |
+| R6-DOC  | Root 主控 / 唯一 writer                   | IAM 活跃文档、contract README、必要 ADR；Root 本任务卡 | 合并证据，文档自包含且三面一致，不冒充实现/运行验收                         | 已提交 |
+| R6-V    | Root 主控 + Kuhn / gpt-5.6-sol / 只读终审 | 最终文档 diff 和当前 IAM commit                        | 所有文档检查与 contract check 通过；按 Root/IAM 分仓提交，记录 SHA 和未决项 | 已验收 |
+
+本任务不授权修改业务源码、测试、`database/schema.sql`、Proto/OpenAPI、generated、manifest/lockfile 或其他子仓。
+若审查发现机器契约需要 clean-slate 改动，只写成下一切片的准确变更集和验收门，不在文档提交中偷改 wire 行为。
+
+### R6 交付
+
+- IAM commit：`dd51061b11772d3a12c67d39b62cafa0191e22df`（`docs(iam): 收拢 API 数据与架构基线`）。
+- 交付范围：IAM 自有 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL`、`CURRENT`、ADR-002、contract/database README、
+  文档索引与安全/可靠性/运行说明；源码、测试、Schema、Proto/OpenAPI、generated、依赖和 lockfile 均未修改。
+- post-commit 验证：`pnpm contract:check` 通过（Buf lint、OpenAPI、5 generated、provenance）；Prettier 3.8.3 精确
+  17 个 Markdown 文件通过；181 条本地链接 0 断链；`git diff --check` 通过；机器事实为 16 表、11 RPC、3 HTTP、5 generated。
+- 独立终审：Kuhn 首轮 0 P1、5 P2；主控修正 Proto reserved、总 AuthenticationService facade、Secret/JWKS 混合 Client、
+  伪 cache 目录和验收记录后，定点复审为 0 P1/P2。
+- 未运行：lint、typecheck、unit/integration、build、fresh schema、runtime/image smoke；本切片无机器代码/DDL变化，不借历史数字补齐。
+- 下一实现输入：request ID 单源、`common.proto` owner、Buf/breaking、CommandIdentity 约束、稳定错误分类、Tenant receipt 快照、
+  完整 no-FK 审计/catalog gate，然后再做 Nest/class/tooling 与正式 Tenant 安全接线。
+
+---
+
 ## 当前补充：R5-Native NestJS 原生规范校正（2026-09-07）
 
 用户要求把 TypeScript 手册校正为可以独立用于普通 NestJS 后端的真实工程基线，不再用 Kokoro 私有目录约定冒充行业规则。
