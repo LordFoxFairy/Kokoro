@@ -14,8 +14,9 @@
 
 - 路径显式 `/v1`，集合用名词；真实动作使用有业务含义的操作，不设计任意表 CRUD 或万能 command-executor。
 - 字段使用 `snake_case`；缺失、null、空数组、空字符串语义分别定义。PATCH 只允许字段白名单，并区分不修改与清空。
-- 成功 JSON：`{ "data": ..., "meta": { "request_id": "..." } }`。
-- 错误 JSON：`{ "error": { "code": "...", "message": "...", "details": ... }, "meta": { "request_id": "..." } }`，details 可省略。
+- 成功 JSON：`{ "data": ... }`；分页、快照等与表示本身相关的 metadata 才放入可选 `meta`，不机械复制传输层字段。
+- 错误 JSON：`{ "error": { "code": "...", "message": "...", "retryable": false, "details": ... } }`；`details` 可省略，`retryable` 的语义由契约固定。
+- 每个 HTTP 响应统一返回 `x-request-id`。request ID 是传输层关联信息，不写入资源表示或 JSON envelope，避免破坏缓存、强 ETag 和内容摘要；调用方报障时记录该响应 header。
 - SSE/AG-UI、文件下载、HEAD 和 204 无正文按对应协议处理，不强加 JSON envelope。
 - 根据实际语义选择 200/201/202/204；202 明确状态查询、终态、取消与失败结果。201 按契约提供资源标识/Location。
 - 列表声明 limit 上下界、不透明 cursor、稳定排序和下一页位置；cursor 校验查询条件和授权范围，不视为权限凭据。
