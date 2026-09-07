@@ -11,7 +11,7 @@ Schema 静态检查，禁止把未验证工作树称为完成。
 | 项       | 结论                                                                                                                                                             |
 | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Owner    | `kokoro-iam` 是 Tenant、Identity、Authentication、Authorization、Role、Permission、Audit 的唯一事实 owner；主控是 IAM 唯一写入 Agent                             |
-| 当前事实 | IAM 基线 `dd51061b11772d3a12c67d39b62cafa0191e22df`；文档门已通过；11 RPC、3 HTTP、16 表、5 个只读生成文件；工作树干净                                           |
+| 当前事实 | IAM 当前交付 `5d766deb0c3baf349e48ee9bdd399734edc47b47`；文档门已通过；11 RPC、3 HTTP、16 表、5 个只读生成文件；R7-A 已验收                                         |
 | 目标职责 | 先关闭机器契约和数据正确性，再落地 NestJS/class 运行容器、正式 Tenant 安全接线和模块 owner；最后一次完成完整测试与真实依赖 smoke                                 |
 | 目录方案 | 继续 module-first 和 Nest 原生 module/provider；不新建强制四层、Port/Impl、BaseRepository、数据库品牌业务目录或第二个 contract/generated 源                      |
 | 粒度     | 按可审查业务事实切片提交；同一切片同时更新唯一机器契约、实现、生成物和必要文档；完整测试文件可在 R7-T 集中补齐                                                   |
@@ -24,8 +24,8 @@ Schema 静态检查，禁止把未验证工作树称为完成。
 
 | ID   | 优先级 / 目标                                                                                  | 执行角色与写入范围                                     | 依赖、验收与状态                                                                                       |
 | ---- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| R7-A | P0：request ID 单源、Proto owner、Buf/breaking、CommandIdentity、稳定 RPC 错误                 | 主控唯一 writer；Peirce/gpt-6-astra 只读审查           | 先执行；更新 Proto/生成物/transport/必要文档，静态 contract/type/build 后提交；**进行中**              |
-| R7-B | P0：Tenant receipt 不可变结果快照、完整 no-FK 关系审计、schema-catalog 默认门                  | 主控唯一 writer；Erdos/gpt-5.6-sol 只读审查            | 依赖 R7-A 机器语义；更新 canonical schema/Repository/Service/scripts/CI/文档；不创建 migration；待开始 |
+| R7-A | P0：request ID 单源、Proto owner、Buf/breaking、CommandIdentity、稳定 RPC 错误                 | 主控唯一 writer；Lovelace、James、Popper 独立只读审查  | `6bc4f05` + `5d766de` 已提交；`pnpm verify` 33 文件/405 项通过，三轮终审无 P1/P2；**已验收**           |
+| R7-B | P0：Tenant receipt 不可变结果快照、完整 no-FK 关系审计、schema-catalog 默认门                  | 主控唯一 writer；Erdos/gpt-5.6-sol 只读审查            | 依赖 R7-A 机器语义；更新 canonical schema/Repository/Service/scripts/CI/文档；不创建 migration；进行中 |
 | R7-C | P1：NestJS Module/class provider、Fastify HTTP、Connect-node RPC 生命周期与旧 composition 删除 | 主控唯一 writer；Godel/gpt-5.6-sol 只读审查            | 依赖 R7-A/B 基线稳定；先核验最新稳定兼容版本，保留一个进程/一份资源；待开始                            |
 | R7-D | P1：Tenant Secret/JWKS/CallerPolicy 正式接线，11 RPC 默认可用                                  | 主控唯一 writer；届时另派规范审查与代码质量审查        | 依赖 R7-C composition；真实安全来源 fail-closed，完成 HTTP/RPC 使用说明；待开始                        |
 | R7-E | P1：Identity/Organization/Audit owner 与高混合文件职责收敛                                     | 主控唯一 writer；按切片派只读审查                      | 依赖 R7-C；只创建真实增长目录，保持认证事务原子性与锁序；待开始                                        |
@@ -33,6 +33,13 @@ Schema 静态检查，禁止把未验证工作树称为完成。
 
 R7 不授权并行写 IAM：三个子 Agent 只交付审查结果，主控不等待其结果才开始事实盘点，但在对应切片提交前必须吸收结论并完成两阶段复审。
 Root 的 `kokoro-agent` 与 `.tmp/` 是任务外工作树，保持不动；任务板提交与 IAM 业务提交继续按仓分开。
+
+### R7-A 交付证据
+
+- IAM `6bc4f05894b52c2c74669f1e1e8e0f111ba410c2`：request ID 单源、Proto owner/语义、CommandIdentity、错误分类和生成治理。
+- IAM `5d766deb0c3baf349e48ee9bdd399734edc47b47`：Buf breaking 绑定前述不可变 commit；从 Git tree/blob 重算 provenance 与 path/length/content 快照摘要，CI 验证 job 获取完整历史。
+- `pnpm verify` 通过：contract format/lint/breaking/OpenAPI/generated/provenance、lint、typecheck、33 个 unit 文件/405 项、build；聚焦 3 文件/17 项通过。
+- 独立终审关闭全部 P2/P3 后 PASS；本波未启动 PostgreSQL/Redis，真实依赖总验收仍按 R7-T 集中执行。
 
 ---
 
