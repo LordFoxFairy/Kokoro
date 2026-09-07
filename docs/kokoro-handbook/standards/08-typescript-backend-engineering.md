@@ -11,6 +11,7 @@
 | 真实 NestJS 项目最基础的目录是什么？              | [§2 官方原生基线](#2-nestjs-官方原生基线)                           |
 | `modules/`、`common/`、`shared/` 是否必须？       | [§4 仓库组织](#4-仓库级组织)                                        |
 | Controller、Service、Repository、DTO 分别做什么？ | [§6 class 与职责](#6-class-与职责)                                  |
+| 公开方法的入参与出参怎样设计？                    | [§6.7 入参与出参](#67-公开方法的入参与出参)                         |
 | Prisma 项目是否必须再包 Repository？              | [§7 持久化](#7-prismaorm-与-repository)                             |
 | 一个 `.ts` 文件为什么不该什么都放？               | [§8.4 文件职责](#84-一个手写-typescript-文件只承载一个主要变化原因) |
 | 文件、目录、单复数和 import 如何命名？            | [§9 命名](#9-文件与目录命名)                                        |
@@ -108,6 +109,7 @@ Service 搬进全局 `shared/` 或把所有 provider 标成 `@Global()`。
 | ------------------------------------------ | ------------------------------------------------------------------ |
 | 新建普通 Nest 后端                         | `main.ts` + `app.module.ts` + feature modules                      |
 | 一个简单 CRUD feature                      | Module + Controller + Service + DTO；接入已选 ORM                  |
+| NestJS 12 新建 schema-first HTTP API        | Zod + `StandardSchemaValidationPipe` + `@nestjs/swagger`           |
 | Service 只有简单 Prisma CRUD               | 可直接注入 `PrismaService`；不机械创建 Repository                  |
 | 查询复杂、数据源可能变化或事务边界需要隔离 | 增加具名 Repository provider                                       |
 | API、业务对象、持久化对象确实不同          | 增加 Mapper；只有一个形状时不复制类型                              |
@@ -209,16 +211,69 @@ src/
 生产默认不同时创建 `common/` 与 `shared/`。若两者边界无法用一句话区分，保留一个；
 业务 provider 的共享优先使用 Nest Module exports。
 
+`common/` 也不得作为扁平收容区：数据库 client、Redis client、readiness、日志、request context、时钟、ID 生成和业务 token
+若同时直接平铺在其中，说明目录已经失去单一 owner。此时应按真实主题建立明确模块/目录，或把只被一个 feature 使用的能力移回该
+feature；不能仅把 `common` 改名为 `core`、`foundation` 或 `infrastructure`。
+
 ### 4.4 `contract/`、`generated/`、`scripts/`、`sdk/`
 
 - `contract/`：仅在仓库拥有 OpenAPI、Proto、JSON Schema 等机器契约时创建；不存 ORM 模型或业务源码。
 - `generated/`：合法且常见，表示工具可重复生成、禁止手改的代码。位置服从生成器、构建和包边界；截至 2026-09-07，
-  NestJS v12 当前 Prisma recipe 示例输出到 `src/generated/prisma`，它是示例路径而非框架强制目录。不要同时保留两个 generated 输出。
+  NestJS v12 当前 Prisma recipe 示例输出到 `src/generated/prisma`，它是示例路径而非框架强制目录。每项生成产物必须有明确的
+  事实源、生成配置、owner 和消费入口；允许 Prisma Client、RPC types、SDK 等不同用途的多个产物，禁止同一用途存在来源不明、
+  版本不一致或被消费者混用的重复副本。
 - `scripts/`：只存构建、生成、验证、数据库安装和运维脚本；运行中的 `src/` 不反向依赖 scripts。
 - `sdk/`：有真实消费者、发布和版本治理时才创建；服务端不反向 import 自己的 SDK。
 
 数据库/缓存目录按**代码职责**命名，不按产品名机械创建。`common/database/prisma.service.ts` 是连接生命周期组件；
 `users/users.repository.ts` 是 Users 数据访问。不要在每个业务模块下固定生成 `postgres/`、`redis/`。
+
+### 4.5 推荐的 NestJS 生产目录基线
+
+下面是本文对普通中大型 NestJS 服务的**默认推荐**，不是另造一套 Kokoro 专用架构：
+
+```text
+src/
+  main.ts                         # 唯一进程入口
+  app.module.ts                   # composition root
+
+  config/                         # 环境 schema 与 typed config
+  database/                       # ORM client 的进程生命周期
+  health/                         # liveness/readiness
+  http/                           # 全进程 filter/interceptor 等 HTTP 横切能力；确有需要才创建
+
+  modules/                        # feature 较多时使用的可选容器
+    users/
+      users.module.ts
+      users.controller.ts
+      users.service.ts
+      users.repository.ts         # 出现独立数据访问边界时才创建
+      user.model.ts               # 出现业务行为/不变量时才创建
+      user.error.ts
+      schemas/                    # schema-first 路径
+        create-user.schema.ts
+        update-user.schema.ts
+        user-response.schema.ts
+
+  generated/
+    prisma/                       # Prisma 配置指定的只读生成输出
+
+test/
+  unit/
+  integration/
+  contract/
+  architecture/
+  smoke/
+```
+
+选择规则：
+
+1. feature 数量少时可把 `users/` 直接放在 `src/`；feature 与技术目录较多时再增加 `modules/`。
+2. `config/database/health/http` 是按运行职责命名的技术目录，不是全局 `infrastructure` 四层模板。
+3. feature 内优先保持 Nest 原生的 Module、Controller、Service；只有出现真实复杂度才增加 Repository、Model、Mapper、Policy、Client。
+4. schema-first 项目使用 `schemas/`；class-validator 项目使用 `dto/`。同一个 wire shape 不同时维护 Zod schema 和重复 DTO class。
+5. feature 变大后优先按 `sessions/`、`credentials/`、`members/` 等子能力拆分；不按 `services/`、`repositories/` 机械纵向分层。
+6. 目录树是结果，不是目标。没有文件、没有 owner、没有近期增长的目录不预建。
 
 ## 5. 业务模块与子目录
 
@@ -240,6 +295,22 @@ src/users/
 `UsersService` 可直接注入 `PrismaService`。这与 Nest 官方 Prisma recipe 一致，不因为 Java 常见 Repository
 就强制多包一层。Controller 做协议处理，Service 做用例和数据调用；当 Service 开始堆复杂查询、跨数据源、事务细节或难以隔离测试时，
 再抽 Repository。
+
+上例是 Nest CLI 的 class DTO 形态。NestJS 12 的 Zod schema-first 等价结构为：
+
+```text
+src/users/
+  users.module.ts
+  users.controller.ts
+  users.service.ts
+  schemas/
+    create-user.schema.ts
+    update-user.schema.ts
+    user-response.schema.ts
+```
+
+Controller 把 schema 传给 Nest route decorator，进程注册 `StandardSchemaValidationPipe`；`@nestjs/swagger` 使用同一 Standard Schema
+生成 OpenAPI。类型由 schema 推导，不再复制一套 class-validator DTO。
 
 ### 5.2 生产扩展：按真实职责增加文件
 
@@ -384,6 +455,46 @@ Mapper 不是 Nest 官方必备组件。仅当 API DTO、业务对象和持久�
 - Mapper 不查数据库、不做授权、不改变业务状态；
 - 同形对象不要经过 `DTO -> Command -> Model -> Row -> Response` 五次机械复制。
 
+### 6.7 公开方法的入参与出参
+
+Controller/RPC 的入参和出参服从 wire contract，使用生成 request/response、DTO class 或运行时 schema 推导类型。Service、Repository、
+Client 的内部 API 不直接复用 wire DTO，也不把 Prisma input、driver row 或第三方 SDK response 暴露给调用方。
+
+以下情况使用具名 `Readonly` 参数对象，而不是不断增加位置参数：
+
+- 有两个以上同类型 primitive，调用处难以判断顺序；
+- 参数包含分页、筛选、scope、expected state、幂等身份或多个可选项；
+- 方法预计会增加参数，或同一组参数需要跨调用传递；
+- 参数本身表达 command/query/options 等稳定业务概念。
+
+简单且无歧义的 `findById(id: UserId)`、`remove(sessionId: SessionId)` 可以保留单参数；不为每个 primitive 机械包装对象。
+内部对象按语义命名为 `<Operation>Command`、`<Operation>Query`、`<Operation>Input` 或 `<Operation>Options`，只有网络传输对象使用
+`Dto`。输入对象负责表达数据，不把业务执行逻辑塞入参数 class。
+
+输出包含 items、cursor、是否命中、变更结果或其他元数据时，返回具名 `<Operation>Result`/`<Subject>Page`，不要用裸数组、tuple、
+模糊 boolean 或 `Record<string, unknown>` 隐藏语义。Repository 的“多取一条判断下一页”必须通过 `hasNextPage` 等字段显式表达，
+不能只返回 `T[]` 让 Service 猜测内部查询策略。
+
+```ts
+type FindTenantPageQuery = Readonly<{
+  afterId: string | null;
+  limit: number;
+  tenantScope: readonly string[] | "*";
+}>;
+
+type FindTenantPageResult = Readonly<{
+  items: readonly Tenant[];
+  hasNextPage: boolean;
+}>;
+```
+
+分页需要区分边界语义：API/RPC 与 Application Query 使用 `limit + cursor`，其中 cursor 是 opaque wire value；Application 负责校验
+limit 并把 cursor 解码为内部 keyset。Repository 只接收 `afterId + limit` 等已解析查询条件，返回 `items + hasNextPage`；它不解析
+签名 cursor，也不生成对外 `nextCursor`。Application 再根据查询结果编码 `nextCursor`。这样协议 codec 与 Prisma 查询不会互相穿透。
+
+具名 input/result type 与其唯一方法契约具有同一变化原因时可以共置；有多个消费者、需要作为 feature 公开 API 导出或文件已出现
+第二个主要角色时，再提取到 `<operation>.types.ts` 或语义明确的 contract 文件。不要建立全局 `inputs/`、`outputs/` 垃圾桶。
+
 ## 7. Prisma、ORM 与 Repository
 
 ### 7.1 先区分概念
@@ -466,6 +577,18 @@ HTTP body/query/params、环境变量、消息、第三方响应和持久化 JSO
 
 “一个文件一个职责”不等于“一个文件只能出现一种语法”。判断依据是 owner、变化原因、依赖和测试方式。
 
+这是一条 **Production 工程约定**，不是 TypeScript language specification，也不是 NestJS 强制目录。TypeScript 官方定义语言、
+类型系统和模块语义；NestJS 官方定义 Module/Controller/Provider 等框架角色；Repository、Model、Schema、Error、Client、Generator
+是否独立，必须由当前项目的变化原因决定。团队采用本约定后，再通过 lint/architecture test 变成仓库合并标准。
+
+因此，“Service、Repository、Model、Schema、Error、Client、Generator 分离”的准确含义是：**独立演进的职责不得长期混在同一
+角色文件里**，而不是看到七个名词就机械创建七个文件或七个目录。
+
+这些角色也不是每个 feature 都必须配齐的“七件套”：简单 CRUD 通常只有 Module、Controller、Service、DTO/schema 和
+Prisma 调用；没有行为不变量就不建 Model class，没有独立持久化边界就不建 Repository，没有外部系统就不建 Client，
+没有可替换的 ID/token/key 生成策略就不建 Generator。这里的 Generator 指 `IdGenerator`、`TokenGenerator` 之类可注入能力，
+与 `generated/` 下的 Prisma/Proto 生成代码不是同一概念。
+
 #### 8.4.1 角色文件默认形态
 
 Service、Repository、Controller、Client 默认是：
@@ -501,20 +624,46 @@ imports
 - class 的 private methods 与方法内部局部常量；
 - Repository 方法中的短 SQL 与直接映射。
 
+#### 8.4.3 角色是否拆文件的判定表
+
+| 组合 | 默认 | 原因 |
+| --- | --- | --- |
+| Service class + private method + 只服务该 class 的局部常量/type | 共置 | 同一实现、同一测试与变化原因 |
+| Zod schema + `z.infer` type | 共置 | schema 是唯一运行时事实源，type 由其推导 |
+| `as const` 状态集合 + 推导 union | 共置 | 同一有限集合，避免两份事实 |
+| Error class + 该错误专属 code union | 共置 | 同一错误契约；错误很多且独立时再建 `errors/` |
+| Service + Repository 查询/Prisma persistence | 默认拆 | 用例/事务与数据访问通常有不同依赖、测试和演进节奏；简单单表 CRUD 可直接 Prisma |
+| Service + HTTP/RPC DTO/schema | 拆 | wire contract 变化不应迫使业务编排文件变化 |
+| Service + 有行为的 Model class | 拆 | Model 维护不变量/状态转换，Service 编排用例 |
+| Service + 外部网络 Client | 拆 | Client 独立负责认证、timeout、重试、响应解析和错误归一 |
+| Service + 随机 ID/token/key Generator | 通常拆 | 可替换、可注入、可独立测试；仅一次局部调用时可直接使用标准库 |
+| Repository + 只服务该查询的短映射 helper | 共置 | 没有独立公共语义，拆出只会增加跳转 |
+| 业务常量 + Service | 局部值共置；公开不变量拆 | `const RETRY_LIMIT = 3` 若只服务一个算法可留本文件；状态集合/wire version/多消费者规则独立维护 |
+
+拆分触发条件满足任一即可：
+
+1. 该对象有独立消费者或需要被 feature public API 导出；
+2. 修改它的原因与当前主 class 不同；
+3. 它拥有独立 I/O、生命周期、认证、错误或测试边界；
+4. 它是运行时事实源（Zod/schema、业务状态集合、配置）且会被多个角色消费；
+5. 文件已经让读者无法在 30 秒内回答“谁拥有它、它做什么、它依赖什么”。
+
+不拆分条件：只有一个消费者、没有独立语义、只服务一个算法、拆出后只剩转发层。成熟工程追求低变化耦合，不追求文件数量。
+
 不要把每个数字、每个 type、每个 helper 都拆成文件。拆分目标是减少变化耦合，不是追求文件数量。
 
-#### 8.4.3 明确需要拆分的组合
+#### 8.4.4 明确需要拆分的组合
 
 - Service class + API DTO/schema + 业务错误体系；
 - Repository SQL + HTTP 状态映射 + 权限判断；
 - cursor codec + 密钥配置 + tenant 授权 + 列表用例；
 - Controller + Service + Model class；
 - 一个文件同时导出多个互不依赖的 public class；
-- 其他模块为了一个 type 被迫 import 整个业务实现文件。
+- 其他模块为了一个 type 被迫依赖整个业务实现文件；`import type` 虽不产生运行时加载，仍可能暴露不合理的源码依赖和公开契约耦合。
 
 即使文件只有 80 行，只要存在多个独立变化原因也应拆；即使超过 400 行，生成代码或一个完整状态表也不能只按行数机械切碎。
 
-#### 8.4.4 文件审查问题
+#### 8.4.5 文件审查问题
 
 1. 能否用一句业务语言说明该文件的 owner 和角色？
 2. 修改 API shape、业务规则、数据库和密码算法时，是否会同时改这个文件？
@@ -524,8 +673,10 @@ imports
 
 ### 8.5 typed lint
 
-使用 typescript-eslint type-aware 配置，至少检查 unsafe assignment/call/member access、floating promise、Promise 误用、
-未穷尽状态、受限 import、循环/跨 feature deep import 和无理由 disable。Prettier 只负责格式，不替代语义 lint。
+**[TS]** 使用 typescript-eslint type-aware 配置，并明确启用 unsafe assignment/call/member access、floating promise、Promise 误用等
+具体规则；需要 `switch` 穷尽性时显式启用 `switch-exhaustiveness-check` 并固定选项。**[Production]** 受限 import、循环依赖、
+跨 feature deep import 和无理由 disable 由独立 ESLint 规则或 architecture test 验证。每项门禁应有执行命令和正反例，不能把
+“启用 type-aware preset”当作已覆盖全部架构规则的证据。Prettier 只负责格式，不替代语义 lint。
 
 ## 9. 文件与目录命名
 
@@ -578,13 +729,16 @@ tenant-management-authentication-service.ts
 scheduled-task-command-executor.ts
 ```
 
-改为 feature 内的清晰角色，例如 `receipts.repository.ts`、`tenant-auth.service.ts`、
-`scheduled-tasks.service.ts`；如果仍无法命名，通常说明 feature 边界没有设计清楚。
+改为让目录承担上下文、文件承担角色，例如 `authentication/commands/command.repository.ts`、
+`tenants/management/tenant-authenticator.ts`、`scheduled-tasks/scheduled-task.service.ts`；如果仍无法命名，通常说明 feature
+边界没有设计清楚。不要把 `Service` 当成所有可注入 class 的统一后缀：client、repository、generator、resolver、authenticator、
+worker 和 application state 应使用自己的真实角色名。
 
 ### 9.4 import 与 `index.ts`
 
 - 同一 feature 内优先短相对 import；跨 feature 通过公开 module/package API。
-- Node ESM/NodeNext 使用运行时能解析的扩展名；纯类型使用 `import type`。
+- Node ESM/NodeNext 使用运行时能解析的扩展名；仅编译期使用的声明采用 `import type`。作为 Nest DI token、DTO 运行时校验或
+  其他装饰器元数据输入的 class 必须保留值导入，或改用显式 runtime token/schema。
 - path alias 必须被 dev、test、build、start、lint 全链路理解；不要只让 IDE 能解析。
 - `index.ts` 只在确有公开 API 时创建，显式导出；不在每个目录机械 `export *`。
 - 不通过当前目录自己的 barrel import 自己，避免循环依赖。
@@ -631,8 +785,10 @@ scheduled-task-command-executor.ts
 
 ### 11.3 generated 与 SDK
 
-generated code 的规则：单一输出、生成器和版本可追溯、CI 检查 drift、禁止手改。生成物必须由其 owning package 的
-typecheck/build 或等价生成验证覆盖；若作为独立 artifact 发布，由独立 pipeline 验证，消费方验证版本、digest 和兼容性。
+generated code 的规则：每项产物的事实源、生成器、版本、owner 和消费入口可追溯，CI 检查 drift，禁止手改。允许同一事实源
+生成不同用途、语言或发布目标的产物并分别验证；禁止同一用途存在来源不明、版本不一致或消费者混用的重复生成副本。生成物必须
+由其 owning package 的 typecheck/build 或等价生成验证覆盖；若作为独立 artifact 发布，由独立 pipeline 验证，消费方验证版本、
+digest 和兼容性。
 
 SDK 只在有真实消费者与发布流程时建立。SDK 使用 generated wire types，不复制服务端 Domain Model、ORM schema 或内部 DTO；
 对外 Client class 统一 endpoint、认证、deadline、AbortSignal、请求 ID、错误与经过证明的重试语义。
@@ -697,7 +853,7 @@ pnpm build
 3. 跨 feature deep import、循环依赖和无 owner 的公共目录；
 4. `any`/不安全调用、floating promise、未处理的异步错误；
 5. 手写业务文件同时承担 Service、DTO/schema、Error、Repository 和 codec；
-6. 生成物被手改、两个可编辑契约来源或两个 generated 输出；
+6. 生成物被手改、两个可编辑契约来源，或存在同一用途但失去版本/owner/消费治理的重复生成副本；
 7. 生产 `src/` 中出现 Fake、Fixture、InMemory；
 8. 空测试/lint 脚本、只 typecheck 不 build、以历史结果冒充当前 commit 证据。
 
@@ -728,7 +884,8 @@ pnpm build
 2. 先确定 feature owner、API/data contract 与目标目录，不先全仓搬文件；
 3. 以一个可运行的业务切片调整 Controller → Service → 数据/外部依赖；
 4. 只在复杂度证据出现时增加 Repository、Mapper、Model、use-case 或 CQRS；
-5. 同一切片删除旧路径、重复定义、alias 和 fallback，不保留双轨；
+5. 清理已失去用途的重复实现；仍承担有效契约的旧入口按迁移方案明确退役顺序和期限；已批准的 clean-slate 项目范围则在同一
+   切片删除被替代路径、alias 和 fallback，不建立兼容双轨；
 6. 更新 import/architecture tests、文档和生成配置；
 7. 执行 format、lint、typecheck、unit、integration、contract、build、e2e/smoke；
 8. 每个 commit 表达一个可审查业务目的，不夹带无关依赖升级或全仓格式化。
@@ -742,13 +899,19 @@ pnpm build
 - [NestJS CLI](https://docs.nestjs.com/cli/usages#nest-generate)：starter、resource/module/controller/service 等真实 generator 能力。
 - [NestJS CRUD generator](https://docs.nestjs.com/recipes/crud-generator)：Module、Controller、Service、DTO、Entity 与测试的生成边界。
 - [NestJS Validation](https://docs.nestjs.com/techniques/validation)：ValidationPipe 与 StandardSchemaValidationPipe 两条官方路径。
+- [NestJS OpenAPI](https://docs.nestjs.com/openapi/introduction)：NestJS 12 从 route decorator 读取 Standard Schema，并支持通过
+  `zod-openapi` 转换 Zod schema，避免维护重复 Swagger DTO。
 - [NestJS Prisma recipe](https://docs.nestjs.com/recipes/prisma)：PrismaService、generated client 与 Service 直接数据访问示例。
 - [NestJS CQRS](https://docs.nestjs.com/recipes/cqrs)：Command/Query/Handler 是可选机制，不是所有模块的基础层。
 - [TypeScript strict](https://www.typescriptlang.org/tsconfig/strict.html) 与
   [typescript-eslint typed linting](https://typescript-eslint.io/getting-started/typed-linting/)：严格类型与类型感知 lint。
-- [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)：语言构造、导出、工具函数和可读性参考。
 
-### 17.2 真实公开代码库
+### 17.2 企业公开工程约定
+
+- **[Production 参考]** [Google TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html)：用于比较语言构造、导出、
+  工具函数和可读性取舍，不作为 TypeScript 语言限制或 NestJS 框架要求。
+
+### 17.3 真实公开代码库
 
 以下链接固定到 2026-09-07 核验的 commit，只证明目录和代码组织事实，不代表某家公司为所有项目发布的强制标准：
 

@@ -234,7 +234,7 @@ Agent 新建文件/目录、调整模块边界或开展重构前，必须先检�
 | -------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | 技术方案 | `docs/TECHNICAL_DESIGN.md`                      | owner、模块、进程、依赖、状态机、事务、失败恢复和目标目录已确定                                |
 | API 契约 | `docs/API_CONTRACT.md` + `contract/` 机器事实源 | owner、visibility、version、请求/响应、错误、幂等、分页、事件和 breaking 策略已对齐            |
-| SQL/数据 | `docs/DATA_MODEL.md` + `database/schema.sql`    | 表 owner、字段、软/物理删除、无外键完整性、查询、索引、事务、retention 和 fresh install 已对齐 |
+| SQL/数据 | `docs/DATA_MODEL.md` + 本仓唯一 canonical schema | 表 owner、字段、软/物理删除、无外键完整性、查询、索引、事务、retention 和 fresh install 已对齐；SQL-first 使用 `database/schema.sql`，ORM-first 使用技术方案批准的唯一 schema |
 
 无数据库的仓库在 DATA_MODEL 中明确“无持久化 owner”及理由，不为通过门禁创建空 schema；无对应传输边界时也不创建空 contract。
 三者必须相互一致：API 的资源、状态和幂等不得与技术方案/Schema 矛盾，Schema 不得出现没有 owner 用例的表或索引。
