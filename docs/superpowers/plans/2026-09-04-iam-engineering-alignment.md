@@ -1,5 +1,29 @@
 # IAM 工程规范对齐：主控任务板
 
+## 当前补充：R5-Guide TS 手册阅读与实践来源（2026-09-07）
+
+用户已确认把职责与目录示例更新成方便查看的手册，并要求说明截图是否来自真实实践。
+本切片不修改IAM设计或实现，不新增框架/ORM选择，不恢复其他子仓重构授权。
+
+| 项             | 结论                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| 基线           | Root `4aa56fec`，`codex/production-closure-governance`；IAM `cdede2b`保持不动              |
+| Owner / writer | Root 主控，唯一 writer；独立审查员只读                                                     |
+| 文件集         | 仅TS专项手册与本任务板；AGENTS已有手册引用，不复制语言规则                                 |
+| 位置与粒度     | 扩展现有手册导航、§1.1/2.1/5.1/5.2/6.6/6.7及文件规则；不新增第二份“Java式TS规范”或脚手架仓 |
+| 数据/API/删除  | 只澄清DTO/Schema单源、Mapper职责、目录展开和来源；不改机器契约/Schema/源码，不移动业务目录 |
+| 审查           | 定点检查来源与合成示例区分、DTO命名与单源规则、Mapper/Service边界；不重审整套IAM运行治理   |
+| 验证           | 两份文档Prettier、链接/锚点/围栏、diff和文件集检查；不把文档检查当业务验收                 |
+| 状态 / 提交    | 定点审查与主控文档验证通过；主控提交纯文档切片                                             |
+
+审查：Archimedes（gpt-5.6-sol），原生ID `01a07a64-e5c1-7730-a128-161f75ac7e93`，只读复核本轮增量，未发现阻断项。
+主控验证：两份修改文档Prettier 3.8.3 `--check`、`git diff --check`通过；`python3 /tmp/kokoro-r5-verify-docs.py`
+检查手册及相关入口共16份文档、404个本地链接/锚点，0断链且围栏闭合；源码/子仓未修改，任务外变更未触碰。
+来源由主控浏览官方资料并用GitHub API核验本轮3个固定commit的目录清单，不声称运行了这些外部项目。
+本轮未执行业务lint/typecheck/test/build/schema/smoke：没有业务代码、机器契约或数据变更。交付SHA由本补充对应Git提交绑定。
+
+---
+
 ## 当前任务：IAM-R5 文档与架构收敛（2026-09-07）
 
 当前用户要求：完整整理 class 优先的成熟 TypeScript 规范，更新对应手册与 IAM 方案；补齐 commands/shared 的适用场景、共置/拆分判据，避免目录名黑名单。**本轮只写文档，先对齐再实现**；
@@ -51,7 +75,7 @@ R5-Final：Bacon（独立规范复核，gpt-5.6-sol），原生 ID `01a07a1e-8f8
 - Node v24.13.0下，IAM `pnpm contract:check`：buf lint/OpenAPI/5个generated/provenance通过。
 - IAM源码、测试、SQL、机器契约、脚本和依赖相对 `dea52d7` 未改变；没有安装依赖/启动服务/操作数据库。
 - 未重跑完整lint/typecheck/test/build/schema/smoke。本轮仅文档可交付；Nest接线、目录/角色实现、caller与receipt等仍由后续获准切片负责。
-- IAM提交：`cdede2b558531755991e9f48ab5c2304b1077fb6`；Root提交以包含本段的Git提交为准。主控负责后续单仓切片设计门，不恢复历史全仓重写授权。
+- IAM提交：`cdede2b558531755991e9f48ab5c2304b1077fb6`；Root提交：`4aa56fec8fa2f12dd86568b7b5fe41f49552232b`。主控负责后续单仓切片设计门，不恢复历史全仓重写授权。
 
 ---
 

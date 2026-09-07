@@ -6,6 +6,23 @@
 Java 的职责划分与依赖注入经验值得借鉴，但不照搬其包层级、接口实现双份、getter/setter 和继承体系。
 “必须/禁止”表示 Kokoro 合并要求；工具语义、企业公开经验、项目约定分别说明，不宣称行业唯一或“100 分认证”。
 
+## 阅读导航
+
+第一次阅读建议按“职责 → 来源 → 目录 → DTO/Mapper → 文件粒度”的顺序，不必从头阅读全部运行治理条款。
+
+| 想弄清的问题                                                     | 直接查看                                                                              |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Controller、Service、Repository、DTO、Model、Mapper 分别做什么？ | [§1.1 职责速查](#11-名词和职责)                                                       |
+| 示例来自真实项目，还是团队自己的设计？                           | [§2.1 来源与取舍对照](#21-真实实践与本项目取舍对照)                                   |
+| 一个仓库的基本目录是什么？                                       | [§4.1 仓库骨架](#41-默认形态)                                                         |
+| 普通业务模块如何放文件？                                         | [§5.1 小模块与 HTTP 职责示例](#51-小模块)                                             |
+| 文件越来越多时如何展开子目录？                                   | [§5.2 模块成长](#52-成长模块)                                                         |
+| shared/common/commands 可以用吗？                                | [§4.2 公共能力](#42-公共能力怎么放)、[§5.4 Commands](#54-commandsqueries-与-handlers) |
+| DTO、Zod、class 会不会重复定义字段？                             | [§6.6 DTO 与 Schema](#66-dto-与-schema)                                               |
+| Mapper 放哪、用 class 还是函数？                                 | [§6.7 Mapper](#67-mapper)                                                             |
+| 一个 TS 文件什么时候拆、什么时候共置？                           | [§8.4.6 职责判断](#846-判断一个文件承载过多能力的方法)                                |
+| 文件名、复数目录、相对 import 怎么统一？                         | [§9 命名规则](#9-文件与目录命名)                                                      |
+
 ## 1. 核心决策
 
 ```text
@@ -28,16 +45,21 @@ Java 的职责划分与依赖注入经验值得借鉴，但不照搬其包层级
 
 ### 1.1 名词和职责
 
-| 名称                     | 实际含义                                                                         |
-| ------------------------ | -------------------------------------------------------------------------------- |
-| Module                   | 业务能力及其公开边界；Nest Module 负责声明 imports/providers/controllers/exports |
-| Controller / RPC handler | 协议适配；不执行 SQL 或决定业务事务                                              |
-| Service                  | 一组内聚用例、授权决策、事务和副作用编排                                         |
-| Repository               | 数据访问组件；不是 Git 仓库、ORM 或每张表必备的模板                              |
-| Model                    | 内部业务对象；不是默认等于 ORM entity 或 API DTO                                 |
-| Schema / DTO             | 输入输出契约；schema 同时提供运行时验证，类型不自动验证 JSON                     |
-| Client                   | 外部 owner/provider 的协议访问封装                                               |
-| Contract / SDK           | owner 发布的跨进程协议及消费者工具；不是共享业务源码                             |
+| 名称                     | 查什么 / 负责什么                                             | 默认表达                                            | 不负责什么                              |
+| ------------------------ | ------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------- |
+| Module                   | 组件装配、imports/providers/controllers/exports、模块公开边界 | Nest Module class                                   | 业务规则、SQL、重复的手工容器           |
+| Controller / RPC handler | 协议参数、经过验证的输入、用例调用和响应                      | Nest Controller / 本仓 RPC adapter class            | 数据库访问、业务事务、核心状态转换      |
+| Service                  | 内聚用例、业务授权、事务和副作用编排                          | 构造注入的 class                                    | 自研协议 parser、wire DTO、Row 定义     |
+| Repository               | 具名查询、持久化、租户范围、数据库错误归一                    | 封装 ORM/driver 的 class                            | HTTP 状态、用户权限决策、外部网络       |
+| DTO                      | API 请求/响应的数据契约                                       | Schema 推导类型；确需 runtime metadata 时派生 class | 数据库操作、业务状态机；不是 ORM Entity |
+| Schema                   | 对不可信数据做运行时结构校验                                  | Zod / 已选机器协议 schema                           | 签名验证、授权和并发完整性              |
+| Model                    | 业务状态、不变量和合法转换                                    | 有行为时 class；纯数据 type/interface               | I/O、框架装配、HTTP 协议                |
+| Mapper                   | 协议对象、内部对象、持久化对象之间的显式转换                  | 纯函数；需注入转换依赖时 class                      | I/O、权限判断、业务状态变化             |
+| Client                   | 外部 owner/provider 的协议调用、预算及失败归一                | 依赖成熟 SDK 的 class                               | 对方数据库访问、本仓业务编排            |
+| Contract / SDK           | owner 发布的跨进程协议及消费者工具                            | 版本化 artifact / client 包                         | 跨仓共享业务源码或 ORM schema           |
+
+Repository 是职责，不是 ORM 的另一个名字；使用 Prisma 等工具也需要明确数据访问边界。
+DTO 是传输契约，Model 是业务对象，Mapper 是转换职责：三者不是必须每次齐全的流水线，也不是 Java 专属。
 
 ## 2. 实践依据与取舍
 
@@ -51,6 +73,22 @@ Java 的职责划分与依赖注入经验值得借鉴，但不照搬其包层级
 
 Nest 官方提供机制；Google TS 指南提供类型/导出/工具函数经验；公开项目提供组织方式参考。它们没有规定同一棵目录树。
 class 默认、命名后缀、目录准入和下述职责文件边界是 Kokoro 团队决定，不能反向说成 Nest 的全部强制要求。
+
+### 2.1 真实实践与本项目取舍对照
+
+**本文目录树是有依据的项目建议，不是某家公司仓库的原样复制。** 下列项目按 2026-09-07 读取到的 commit 固定链接，
+只证明对应源码的组织事实，不证明其全部实现适合 Kokoro，更不是性能、安全或版本兼容性认证。
+
+| 真实来源                                                                                                                      | 实际可见结构 / 机制                                          | 借鉴什么                               | 不照搬什么                                                |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------- | --------------------------------------------------------- |
+| [Nest 官方 starter](https://github.com/nestjs/typescript-starter/tree/c8fb6bc4b01792ce7016a9b0c6bd7f3dbd5f0416/src)           | main、app.module、app.controller、app.service                | 框架入口与组件装配                     | 入门例子没有复杂业务边界，不能当完整服务模板              |
+| [Nest Feature modules](https://docs.nestjs.com/modules#feature-modules)、[Providers](https://docs.nestjs.com/providers)       | 业务模块聚合 controller/service/dto；依赖注入与显式 exports  | 模块内聚、class provider、构造注入     | 官方没有规定每个模块必须有 Repository/Mapper/Model 全家桶 |
+| [Novu subscribers](https://github.com/novuhq/novu/tree/49e4b308eeba9a5ab86605ee2eac8fd882110e0a/apps/api/src/app/subscribers) | dtos、usecases、utils、query-objects，以及 controller/module | 真实业务模块内可按契约、用例和工具展开 | 不逐字复制其文件名、测试目录、数据库和用例数量            |
+| [Vendure core](https://github.com/vendurehq/vendure/tree/523b57304c5850b86069de30a97b723a3f4da284/packages/core/src)          | api、service、entity、common、config、connection             | 成熟工程也可采用不同的职责组织         | 不是全部 Nest 项目都必须使用 modules 或同一套文件树       |
+
+下列明确是 Kokoro 的决定：后端默认 Nest/class；业务优先；集合目录自然复数；common/shared 的依赖区分；
+具名 constants/error/mapper 文件按职责展开；现有 SQL-first 与 clean-slate 约束。行业没有统一的目录名称认证。
+规范维护时继续分开记录“框架事实、开源实践、项目取舍”，不要把一张合成目录图标成“大厂官方标准”。
 
 ## 3. 技术选型与版本
 
@@ -176,6 +214,37 @@ modules/sites/
 不是每个模块都必须有这些文件。Controller 默认调用 Service；无业务规则的纯投影可直接注入具名 Query 组件，
 但不能借此在入口写 SQL/授权/事务，也不为凑层级建立全原样转发的 Service。
 
+#### 5.1.1 HTTP 模块的职责文件示例
+
+当一个模块已有多个请求/响应契约时，展开 DTO 集合能让查阅更直接。下面用 Site 表达职责，并非 IAM 当前代码树，
+也不授权增加 Site 业务；框架不要求一次性生成图中的所有文件。
+
+```text
+modules/sites/
+  sites.module.ts                 # 装配与公开 provider
+  site.controller.ts              # HTTP 协议入口
+  site.service.ts                 # 内聚业务用例
+  site.repository.ts              # 本仓数据访问
+  site.mapper.ts                  # 确有输入/响应表示差异时
+
+  site.model.ts                   # 确有业务状态和行为时
+  site.constants.ts               # 本模块固定值、限制
+  site.error.ts                   # 本模块业务异常
+
+  dtos/
+    create-site.dto.ts            # 创建请求的单一契约
+    update-site.dto.ts            # 更新请求；不机械 Partial<Create>
+    site-response.dto.ts          # 显式公开字段，不透传 Row
+```
+
+这里 `.dto.ts` 命名的是 **API 契约职责**，不要求一定是手写 class。Kokoro 的 code-first JSON DTO 可以在该文件
+定义一份 Zod schema 并导出推导类型；一般配置、cursor、provider 等非 API 数据继续用 `.schema.ts`，具体规则见 §6.6。
+由小模块的 `site.schema.ts` 展开为 `dtos/` 时移动原有定义及引用，不保留两套可编辑的相同 shape。
+采用 Proto/OpenAPI schema-first 的服务仍以机器契约为唯一事实源，不为套这张图重新手写 DTO。
+
+查请求看 Controller/DTO；查业务看 Service/Model；查数据看 Repository；查表示转换看 Mapper；
+查固定值和异常看 Constants/Error。这个定位习惯比“文件必须分成多少层”更重要。
+
 ### 5.2 成长模块
 
 先按子业务，再按角色组织；当同类文件已经形成稳定集合时，可展开 `services/`、`repositories/`、`models/`、
@@ -200,6 +269,19 @@ modules/authentication/
 
 这是组织原则，不是 IAM 的完整目标树；IAM 自己的技术方案决定实际对象。单文件子目录没有近期明确职责集合时不创建，
 但也不为了“最少文件”把 schema、错误、业务类、SQL 合在一起。
+
+#### 5.2.1 从平铺到子能力的展开条件
+
+| 当前信号                                       | 优先调整                                                                | 避免的做法                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
+| 一个小业务，有少量职责文件                     | 模块根保留具名角色文件                                                  | 每种角色只有一个文件也先套一层目录                |
+| 请求/响应契约已经形成集合                      | 展开 dtos；每个文件表达一个契约或紧密关联契约族                         | 全仓共用一个 dto.ts，或 schema/DTO 双写           |
+| 用户资料、凭据、邀请等流程分别演进             | 在同一业务 owner 下按 profiles/credentials/invitations 等真实子能力聚合 | 一个全能 Service，或直接拆成多个微服务            |
+| 同一子能力中已有多组 Service/Repository/Mapper | 按持续职责集合展开 services/repositories/mappers 等目录                 | 几十个角色文件永远平铺，或固定“第N个文件必须搬家” |
+| 多模块需要同一业务能力                         | 从该 owner 导出公开 Service/Query                                       | 把整个业务模型复制到 shared                       |
+
+子能力名称按实际业务确定，上表不是必建清单。Service 的多个内聚方法可以共存；只有独立变化原因出现时才拆，
+不是每个 CRUD 方法都配一个目录、一个 Command、一个 Handler。移动时一并更新导出、调用、测试与文档，旧路径退出。
 
 ### 5.3 模块公开面
 
@@ -287,6 +369,50 @@ SQL/必要 raw query 属于 Repository/Query；独立 Row 结构和复杂映射�
 有依赖、状态或 I/O 生命周期的业务适配优先 class。用成熟 SDK/client 而不是重复造 HTTP/JWT/Redis 驱动。
 包装只增加本仓真正需要的认证、错误、预算或业务适配，不为每个 SDK 方法创建同名转发 wrapper。
 外部 SDK 类型停在 Client 边界；业务只接收所需语义，不拿 `Record<string, unknown>` 当通用返回结果。
+
+### 6.6 DTO 与 Schema
+
+DTO 描述传输数据，Schema 描述并验证其结构，二者可以共享一个定义；它们不是必须分别手抄的一对对象。
+
+| 情形                                | 唯一可编辑事实源与文件角色                           | 使用方式                                                              |
+| ----------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------- |
+| 小型 code-first JSON 边界           | 少量紧密相关定义可在 `<subject>.schema.ts`           | 导出 schema 和推导 DTO 类型                                           |
+| 已形成集合的 code-first HTTP DTO    | `dtos/<operation>.dto.ts`，文件中定义对应 Zod schema | `CreateSiteDto` 等类型从该 schema 推导；不再建同字段的 schema 文件    |
+| Nest 集成确需 DTO class metadata    | 同一 schema 派生的 DTO class，与该契约共置           | 使用经过验证的 bridge；不再手写另一套字段装饰器和约束                 |
+| Proto / OpenAPI schema-first        | 本仓 contract 的机器定义                             | 使用生成类型/验证器；适配层仅处理真实语义差异，不维护第二份输入 shape |
+| 内部 Service 参数、配置或持久化 Row | 各自的 types/config/row/model 职责                   | 不因为是对象就全部命名 DTO                                            |
+
+- schema 与其推导 type 同文件是同一事实，不是“一个 TS 什么都有”；此文件不包含 Service、SQL、密码算法或业务权限判断。
+- `z.infer` / `z.output` 表达解析后的类型，`z.input` 表达解析前类型；有 transform/coerce/default 时不能把两者混为一谈。
+  输入经过实际 parse 后再调用业务；标注 `CreateSiteDto` 或 `as CreateSiteDto` 本身不会验证 JSON。
+- 新增与更新的字段语义分别设计：省略表示不修改，null 是否清空由契约明确；只读字段、租户和身份字段不靠 `Partial` 自动放开。
+- 响应只暴露允许的字段；DTO 类型声明和 Zod 校验都不自动完成响应脱敏。显式 Mapper/序列化与响应契约测试共同验证。
+- Mapper 在边界把 wire 名称转换为内部参数；同语义、同表示的数据不机械复制 DTO/Command/Domain/Row 多层结构。
+- Nest 的 class DTO＋ValidationPipe 是框架支持的路线；本项目已选 Zod，接入与 OpenAPI/metadata 行为需要明确验证，
+  不把 ValidationPipe 当作自动运行 Zod，也不在同一输入上再维护 class-validator 的同字段约束。
+
+机制依据：[Nest Validation](https://docs.nestjs.com/techniques/validation)、[Zod 类型推导](https://zod.dev/basics#inferring-types)。
+DTO 文件的目录与后缀是团队约定，选定后在模块内一致执行，不为外观来回改名。
+
+### 6.7 Mapper
+
+Mapper 负责明确的表示转换，不负责业务决策，也不是每两层之间都必须创建的中转站。
+
+| 真实差异                                        | Mapper 负责                             | 归属                      |
+| ----------------------------------------------- | --------------------------------------- | ------------------------- |
+| 请求 `site_key` 与内部 `siteKey`                | 显式字段映射，使用已经解析的输入        | 模块协议边界              |
+| 内部 Date 与响应 UTC 字符串；内部对象含敏感字段 | 明确时间表示、字段白名单、null/省略语义 | 模块响应映射              |
+| 数据库可空字段、存储表示与业务 Model 不同       | 持久化转换、调用合法重建入口            | Repository 所属持久化职责 |
+| 字段、类型、语义本来相同                        | 不增加无意义复制                        | 直接使用语义合适的数据    |
+
+简单模块可使用具名 `<subject>.mapper.ts`；真实出现请求/响应和持久化两种不同演进方向时，再拆
+`<subject>-response.mapper.ts`、`<subject>-persistence.mapper.ts` 等明确角色，或在已有边界目录中放置。
+不要让一个全局 Mapper 同时依赖全部业务 Model、ORM、HTTP 和其他 owner 的 SDK。
+
+- 无依赖的确定性映射优先具名纯函数；需要注入转换策略或配置时可用 class。纯映射不包装静态工具类。
+- Mapper 不读取环境、查库、发请求、判断权限、修改状态或隐式创建新业务对象；这些仍属于各自组件。
+- JSON、DTO 与 Row 不是 class Model 实例，不能依靠类型断言“转成”Model；有行为的对象走明确构造/恢复入口。
+- 字段白名单、时间精度、bigint/decimal、缺失/null、未知枚举等按实际差异测试；禁止一个通用 object spread 冒充边界设计。
 
 ## 7. class 风格示例：看职责，不复制脚手架
 
@@ -393,7 +519,7 @@ service 文件不再顺手定义 `Site`、`SiteNotFoundError`、正则、分页�
 | Service/Repository/Client | `<subject>.service.ts` / `.repository.ts` / `.client.ts` | 一个主要 class 及其职责内方法                                      |
 | 业务 Model                | `<subject>.model.ts`                                     | 受控构造、真实行为与状态；无 I/O                                   |
 | 内部结构/组件选项         | `<subject>.types.ts` / `.options.ts`                     | 有实际消费者才存在；优先构造注入减少 options 大包                  |
-| JSON schema               | `<subject>.schema.ts`                                    | schema 与 `z.infer` 类型允许同文件，是同一事实                     |
+| JSON schema / API DTO     | 非 API 使用 `.schema.ts`；HTTP DTO 集合见 §6.6           | schema 与推导类型允许同文件；不在 schema/DTO 文件中双写相同 shape  |
 | 模块常量                  | `<subject>.constants.ts`                                 | 版本、限制、业务固定值，不混入 Service                             |
 | 状态集合                  | `<subject>.status.ts` 或相应 constants/schema            | 选一处事实源；不再复制 enum/union/schema 三份                      |
 | 错误                      | `<subject>.error.ts`                                     | 异常类及错误语义；错误码表独立增长/被多角色使用时 `.error-code.ts` |
@@ -505,6 +631,7 @@ Lint 处理语义风险，Prettier 处理排版；不在两者中配置相互冲
 常用 role suffix：
 
 ```text
+.dto.ts
 .model.ts
 .types.ts
 .constants.ts
