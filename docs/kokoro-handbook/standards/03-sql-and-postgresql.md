@@ -1,9 +1,9 @@
 # PostgreSQL 与 SQL 工程规范
 
-状态：正式规范，2026-09-04。
+状态：正式规范，2026-09-07 修订。
 
 适用范围：Kokoro 所有 PostgreSQL schema、SQL、数据库访问代码、事务、索引与数据库测试。本文同时说明
-PostgreSQL 的通用成熟实践和 Kokoro V1 的项目取舍；两者不得混写成“所有大厂都这样”。
+PostgreSQL 的通用语义、规模化系统的成熟实践和 Kokoro V1 的强制 profile；不把具体 profile 扩大为所有数据库场景的唯一答案。
 
 阅读路径：1–5 节确认项目规则与字段；6–13 节查类型、查询、事务和生命周期；15–16 节用于验收与新表评审。
 
@@ -24,7 +24,9 @@ PostgreSQL
 
 1. 每个数据 owner 仓库只维护 `database/schema.sql`；不并存 Prisma schema、第二份 DDL 或可编辑生成副本。
 2. V1 clean-slate 不保留 `database/migrations/`、migration runner、migration ledger 或历史升级路径。
-3. 正式 SQL 禁止 `FOREIGN KEY` 和 `REFERENCES`。这是 Kokoro 当前取舍，不是 PostgreSQL 的通用最佳实践。
+3. 正式 SQL 禁止 `FOREIGN KEY` 和 `REFERENCES`。无外键并非 Kokoro 独有：Alibaba 开发手册将禁用外键/级联列为强制项，
+   Vitess 也明确不鼓励分片 keyspace 使用外键约束；Kokoro 采用这一常见的大规模分布式治理路线作为硬规则。
+   PostgreSQL/Spanner 等数据库仍支持并在部分场景推荐 enforced foreign key，因此本文不把它描述成所有公司的统一规则。
 4. `CREATE TABLE IF NOT EXISTS` 可以使用；它容忍已存在的同名表，不修复 schema drift；`db:apply-schema` 仍检查空库，发现非空目标就停止，绝不自动删库。
 5. 所有值使用参数绑定；表名、列名、排序方向等不能参数化的结构只能来自代码白名单。
 6. 同一 PostgreSQL 实例可以承载多个服务，但每个服务使用独立 database/schema 和独立凭据；服务只访问自己的数据。
@@ -236,7 +238,8 @@ Outbox 记录待投递事件，不复制上述 receipt 模板。按实际投递�
 
 ## 7. 无外键条件下的关系完整性
 
-PostgreSQL 通用实践通常会在同库强关系上使用外键；Kokoro V1 明确不使用，因此必须用更完整的应用闭环补偿。
+同库强关系使用数据库外键与由应用层维护关系，都是业界存在的成熟路线。高并发、分库分表和跨 owner 场景经常选择后者；
+Kokoro V1 明确采用无外键 profile，因此必须用更完整的应用闭环补偿，而不是只删除约束。
 
 每个关系写入固定执行：
 
@@ -485,12 +488,16 @@ CI 阻断：
 - [GitLab: Constraint naming conventions](https://docs.gitlab.com/development/database/constraint_naming_convention/)
 - [Alibaba P3C: 建表规约](https://github.com/alibaba/p3c/blob/master/p3c-gitbook/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93/%E5%BB%BA%E8%A1%A8%E8%A7%84%E7%BA%A6.md)
 - [Alibaba P3C: 索引规约](https://github.com/alibaba/p3c/blob/master/p3c-gitbook/MySQL%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%B4%A2%E5%BC%95%E8%A7%84%E7%BA%A6.md)
+- [Vitess: Are foreign keys supported?](https://vitess.io/docs/faq/getting-started/compatibility/are-foreign-keys-supported-in-vitess/)
+- [Google Cloud Spanner: Foreign keys](https://cloud.google.com/spanner/docs/foreign-keys/overview)
 - [node-postgres: Queries](https://node-postgres.com/features/queries)
 - [node-postgres: Transactions](https://node-postgres.com/features/transactions)
 - [psycopg 3: Transactions management](https://www.psycopg.org/psycopg3/docs/basic/transactions.html)
 
 参考方法是“吸收经过规模验证的评审和故障经验”，不是整本照搬：PostgreSQL 官方文档决定数据库语义；GitLab 公开规范用于索引成本、
-query plan 和 database review 经验；Alibaba P3C 只作为国内大规模团队在命名、常见字段和业务唯一键方面的参考。P3C 是 MySQL 规范，
-其 unsigned type、行数阈值和执行计划术语不照搬到 PostgreSQL；GitLab 使用的外键和 migration 策略也不覆盖 Kokoro 决策。
+query plan 和 database review 经验；Alibaba P3C 与 Vitess 证明无外键是大规模系统的成熟治理路线，而不是 Kokoro 自创。
+P3C 是 MySQL 规范，其 unsigned type、行数阈值和执行计划术语不照搬到 PostgreSQL；Spanner/GitLab 对外键的不同选择也说明
+是否 enforced 必须服从系统形态，不能以“大厂”二字代替架构分析。
 
-“V1 无外键、无历史 migration、单一 schema.sql”是 Kokoro 的硬规则；其他条款必须能追溯到 PostgreSQL 语义、真实查询/故障或当前项目决策。
+“V1 无外键、无历史 migration、单一 schema.sql”是 Kokoro 的硬规则。其中无外键与公开的大规模分布式实践一致；
+其余条款必须能追溯到 PostgreSQL 语义、真实查询/故障或当前项目决策。

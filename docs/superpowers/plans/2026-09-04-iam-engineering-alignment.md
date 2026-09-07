@@ -1,5 +1,28 @@
 # IAM 工程规范对齐：主控任务板
 
+## 当前补充：R5-Native NestJS 原生规范校正（2026-09-07）
+
+用户要求把 TypeScript 手册校正为可以独立用于普通 NestJS 后端的真实工程基线，不再用 Kokoro 私有目录约定冒充行业规则。
+本切片只改 Root TypeScript/SQL 手册和本任务板；IAM 源码、契约、Schema、依赖和工作树保持不动。
+
+| 项             | 结论                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------- |
+| 基线           | Root `93f5fd7e`，`codex/production-closure-governance`；IAM `cdede2b` 保持不动                  |
+| Owner / writer | Root 主控唯一 writer；独立审查员只读                                                            |
+| 当前问题       | 旧手册仍混写 Nest 原生事实、生产建议和项目决定；“无外键”又被误写得像 Kokoro 自创                |
+| 目标职责       | 明确 `[Nest]`、`[TS]`、`[Production]`、`[Project]`；以官方 starter/resource 结构为起点          |
+| 目录方案       | 默认 `src/<feature>`；`src/modules/<feature>` 是可选容器；Repository/Mapper/DDD/CQRS 全部按需   |
+| 数据/API       | 澄清 Prisma 可由 Service 直接使用；无外键是常见规模化路线及本项目硬规则，但不是所有场景统一答案 |
+| 删除项         | 删除“所有 TS 服务必须采用 Kokoro 目录树”的暗示及重复的项目私有运行细节                          |
+| 验证           | Prettier、Markdown 链接/锚点/围栏、`git diff --check`、文件集和 IAM 零变更；独立只读规范审查    |
+| 状态           | 独立审查提出的 4 项 P2、3 项 P3 和定点复审 P2 均已修正；最终复审无 P1/P2，主控验证通过          |
+
+审查：Poincare（gpt-5.6-sol），原生 ID `01a07a71-8ecf-71e1-afc9-3c9f5a2cacb0`。首轮只读审查发现
+4 项 P2、3 项 P3；主控逐项修正官方 starter、Provider、角色来源、Nest major、Schema/Class DTO、generated 与 wire contract 表述。
+第二轮发现 Mapper 默认表达仍冲突，主控修正后最终定点复审通过，无 P1/P2。无外键新增表述也通过事实核验。
+
+---
+
 ## 当前补充：R5-Guide TS 手册阅读与实践来源（2026-09-07）
 
 用户已确认把职责与目录示例更新成方便查看的手册，并要求说明截图是否来自真实实践。
