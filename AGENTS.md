@@ -22,7 +22,8 @@
 - [TypeScript 后端成熟工程规范](docs/kokoro-handbook/standards/08-typescript-backend-engineering.md)
 - [Python 后端成熟工程规范](docs/kokoro-handbook/standards/09-python-backend-engineering.md)
 
-任务涉及 TypeScript、Python 或 SQL 时，必须先读取对应手册。子仓 `AGENTS.md` 只能补充本仓 owner、入口、契约、
+任务涉及 TypeScript、Python 或 SQL 时，必须先读取对应手册。TypeScript 设计先核对手册第 1、4–6、8.4 节的当前决定；
+历史示例与已替代 ADR 不作为并行实现依据，子仓技术方案必须明确当前态与目标态。子仓 `AGENTS.md` 只能补充本仓 owner、入口、契约、
 验证命令和例外 ADR，不得复制或覆盖上述手册。旧文档中的强制四层、`ports/`、`postgres/`/`redis/` 业务目录、
 机械 DTO/Command/Domain/Row 五层和旧 SQL 规则均不再作为实现依据。
 

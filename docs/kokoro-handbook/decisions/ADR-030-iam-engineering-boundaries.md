@@ -6,6 +6,14 @@
 - 输入：IAM-01 候选文档、源码 `23a0b65e0e361d474d9afed491379df45a36f574`、SQL/API 独立审查。
 - 执行记录：[IAM 任务板](../../superpowers/plans/2026-09-04-iam-engineering-alignment.md)。
 
+## 2026-09-07 有效性说明
+
+第1节的旧 `modules/auth`、双Fastify实例/手工runtime目标已由
+[IAM ADR-001](../../../kokoro-iam/docs/ADR/ADR-001-nestjs-class-components.md)替代；该目标尚未实施。
+第2节 `TEXT` 仍为当前物理类型；新Tenant业务值域按IAM技术/API/数据的R5决定收敛为小写UUIDv4，
+不得将opaque物理标识解释为继续允许任意非UUID新值。认证metadata等实现仍待收敛，不新增映射表/兼容层/迁移。
+其余登录、父锁、receipt加密/未知提交/投递与保留要求继续有效。历史章节只保留决策背景，不作为第二套当前目录模板。
+
 ## 1. 目录与运行拓扑
 
 采用 [TS 手册](../standards/08-typescript-backend-engineering.md) 的模块优先规则。当前认证、登录建档、session、

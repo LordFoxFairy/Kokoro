@@ -1,6 +1,6 @@
 # 当前活跃文档白名单
 
-状态：2026-09-04
+状态：2026-09-07
 用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
 “当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
 
@@ -12,7 +12,8 @@
 本轮规范验证与逐仓待办见 [工程手册验证记录](reports/2026-09-04-engineering-handbook-verification.md)。
 
 当前逐仓推进仅处理 IAM，由 Root 主控裁决方案并派发单一负责人，IAM 验收前不启动其他子仓重构。
-R1 目录与 R2-1 SQL 主键/指定精简已落地日常主目录；后续删除、UTC/查询/保留、API/运行治理继续按切片推进。
+当前为 R5 规范与 IAM 设计收敛：TS 手册已改为成熟框架/class 优先目标，IAM 先更新技术/API/数据与 ADR；
+本轮不修改业务源码、机器契约或 Schema，不把文档交付当作框架切换或生产验收。
 当前代码、已验范围与剩余缺口只看 [IAM CURRENT](../kokoro-iam/docs/CURRENT.md) 和 [IAM ACCEPTANCE](../kokoro-iam/docs/ACCEPTANCE.md)，
 本导航不再复制各阶段commit/测试数量；派工、模型、写入授权及最新续接点以 [IAM任务板](superpowers/plans/2026-09-04-iam-engineering-alignment.md) 为准。
 技术方案由主控评估，不重复要求用户选择内部目录或已确定规则；完整环境/消费者证据缺失时仍明确保留。
@@ -162,7 +163,7 @@ Storage 的 S3-compatible ObjectStore。
 - Credit 归 kokoro-billing；Model、IAM、System 均保持独立业务 owner。
 - 正式业务仓统一 PostgreSQL + Redis；PostgreSQL 保存事实，Redis 只做 cache、stream、
   queue、lease、限流和协调；对象字节由 Storage 的 S3-compatible ObjectStore 管理。
-- Web 不直连 Agent、IAM 或任何业务数据库。浏览器提供的 X-Domain、X-Forwarded-*
+- Web 不直连 Agent、IAM 或任何业务数据库。浏览器提供的 X-Domain、X-Forwarded-\*
   和 Host 不作为租户身份来源；BFF 通过 KOKORO_DOMAIN 生成标准 Forwarded，
   通过 IAM 完成身份/权限 admission，再将受信 tenant_id 与 Host 交给 System；Site/Host binding 由 System 自己校验。
 
@@ -208,7 +209,7 @@ Storage 的 S3-compatible ObjectStore。
 没有正式远程仓，也不出现在当前 manifest、Compose、CI 或运行路径中。历史材料只用于
 迁移考古，不是当前实现入口。
 
-镜像发布约束保持不变：普通 push/PR 只运行质量检查；只有 v*._._ tag 触发生产
+镜像发布约束保持不变：普通 push/PR 只运行质量检查；只有 v\*._._ tag 触发生产
 GHCR workflow。Dockerfile 使用生产启动命令，本地开发直接使用各仓 dev 命令；
 本轮未修改 GHCR package visibility。
 

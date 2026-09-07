@@ -1,188 +1,123 @@
 # TypeScript 后端成熟工程规范
 
-状态：正式规范，2026-09-04。
+状态：正式团队规范，2026-09-07 修订。框架目标不等于现有子仓已经切换；各仓的实际依赖、代码和验收以本仓 CURRENT 为准。
 
-适用范围：Kokoro 的 TypeScript HTTP/RPC 服务、BFF、worker 与模块化后端。本文给出可直接落地的
-TypeScript/Node.js 规范，不把 Java 包结构、教科书 DDD 或某个开源仓库的目录逐字复制过来。
-
-本文中的“必须/禁止”属于默认合并门禁；例外必须在目标仓技术设计或 ADR 中说明收益、风险、owner 和退出条件。
-
-阅读路径：先读 1–6 节确认取舍与目录；7 节看示例；8–10 节查类型/命名/配置；11–16 节用于 API、运行和重构评审。
+适用：Kokoro 的 TypeScript 后端服务、BFF 和 worker。本文是唯一 TS 规范；AGENTS 只引用，不复制。
+Java 的职责划分与依赖注入经验值得借鉴，但不照搬其包层级、接口实现双份、getter/setter 和继承体系。
+“必须/禁止”表示 Kokoro 合并要求；工具语义、企业公开经验、项目约定分别说明，不宣称行业唯一或“100 分认证”。
 
 ## 1. 核心决策
 
-Kokoro TypeScript 后端采用：
-
 ```text
-业务模块优先（package by feature）
-+ 模块内部使用熟悉的 Route/Service/Repository/Schema 角色
-+ Fastify/ConnectRPC 的原生生命周期
-+ Zod 边界校验
-+ PostgreSQL + pg 的 SQL-first 持久化
-+ TypeScript strict 与结构化类型
-+ 复杂业务才引入 DDD/CQRS，不预建空层
+按业务能力组织模块
++ NestJS 管理应用模块、依赖注入与生命周期
++ HTTP 使用官方 FastifyAdapter
++ Controller / Service / Repository / Client 优先 class
++ Zod 管理 JSON 边界；Proto 管理 RPC 边界
++ PostgreSQL 为持久事实源；每仓仅一份 canonical schema
++ 严格类型、显式依赖、可验证事务与清晰文件角色
 ```
 
-明确不采用：
+- 手写 Service、Repository、Client 的默认实现是 class；同一角色不再随作者偏好混用 factory object、散落函数和 class。
+- model 有状态、不变量或行为时优先 class；纯数据仍使用 type/interface/schema inference。
+- 工具函数、schema、常量不是业务组件，不为了统一外观包装静态工具类。
+- Nest `useFactory` 仍可用于配置、第三方实例和异步初始化；这不代表业务 Service 又可以任意写成工厂对象。
+- DDD 用于分析 owner、业务词汇、状态和不变量；不要求出现 `domain/application/infrastructure` 目录。
+- Nest 是后端默认目标，不要求 Web UI、SDK、纯工具包或无 HTTP 的小型 worker 套应用框架。
+- 现有非 Nest 仓库先完成技术/API/数据设计门，按独立切片切换；本次手册更新不授权同时重写全部子仓。
+
+### 1.1 名词和职责
+
+| 名称                     | 实际含义                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| Module                   | 业务能力及其公开边界；Nest Module 负责声明 imports/providers/controllers/exports |
+| Controller / RPC handler | 协议适配；不执行 SQL 或决定业务事务                                              |
+| Service                  | 一组内聚用例、授权决策、事务和副作用编排                                         |
+| Repository               | 数据访问组件；不是 Git 仓库、ORM 或每张表必备的模板                              |
+| Model                    | 内部业务对象；不是默认等于 ORM entity 或 API DTO                                 |
+| Schema / DTO             | 输入输出契约；schema 同时提供运行时验证，类型不自动验证 JSON                     |
+| Client                   | 外部 owner/provider 的协议访问封装                                               |
+| Contract / SDK           | owner 发布的跨进程协议及消费者工具；不是共享业务源码                             |
+
+## 2. 实践依据与取舍
+
+采用的不是“class 越多越成熟”，而是稳定分工、模块封装、显式依赖和经过验证的故障处理。
+
+| 方案                                        | 收益                                                                   | 本项目取舍                                              |
+| ------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| NestJS + 业务模块 + class 组件              | 原生 DI、模块导出面、Guard/Pipe/Filter/Interceptor、测试装配与生命周期 | 默认目标；减少自研基础装配                              |
+| 裸 Fastify + plugin + 手工 composition root | 轻量、显式，适合有既定约定的团队                                       | 合理方案，但不再作为本次 IAM 的目标；已有服务按切片调整 |
+| 强制全仓 DDD 四层 + Interface/Impl          | 在部分复杂领域有价值                                                   | 不作为通用树；容易引入空层、类型复制和导航成本          |
+
+Nest 官方提供机制；Google TS 指南提供类型/导出/工具函数经验；公开项目提供组织方式参考。它们没有规定同一棵目录树。
+class 默认、命名后缀、目录准入和下述职责文件边界是 Kokoro 团队决定，不能反向说成 Nest 的全部强制要求。
+
+## 3. 技术选型与版本
+
+| 能力                     | 默认方向                                     | 实施要求                                                                  |
+| ------------------------ | -------------------------------------------- | ------------------------------------------------------------------------- |
+| Node / pnpm / TypeScript | 受支持 LTS、最新稳定兼容版本、ESM + NodeNext | 精确版本记录在本仓 manifest/lock/工具链文件，不把手册日期当安装证据       |
+| 应用框架                 | NestJS + 官方 Fastify adapter                | 框架主要依赖匹配版本；不用 Express 专用插件冒充 Fastify 兼容              |
+| RPC                      | 现有 ConnectRPC + Protobuf-ES                | 保持已确定协议；Connect 不是 Nest 原生 gRPC，见 §11.3                     |
+| JSON 校验                | Zod                                          | HTTP、配置、provider 响应、持久化 JSON 使用具名 schema；见 §8.4           |
+| SQL                      | PostgreSQL；当前仓按已批准 `pg` + SQL-first  | Repository class 封装访问；ORM 是另一个选型，不是 Repository 的替代概念   |
+| JWT/JWS/JWK              | 优先成熟 `jose` 等标准实现                   | 固定算法、issuer/audience/key policy；业务 claims、恢复和轮换仍由本仓负责 |
+| Redis                    | node-redis                                   | 只在真实缓存/协调用例中使用，不为“有 Redis”制造业务依赖                   |
+| 测试/静态检查            | Vitest、ESLint typed lint、Prettier          | 真实执行，见 §13–14                                                       |
+
+### 3.1 版本治理
+
+1. 每次进入子仓重构或升级，核验 registry、官方 release/security/peer support，记录日期、精确版本和命令。
+2. `packageManager` 固定 pnpm 精确版本，直接依赖按统一精确版本策略，提交唯一 `pnpm-lock.yaml`；CI frozen install。
+3. Node 本地/CI/镜像同 major，`@types/node` 匹配实际 runtime。最新发布不等于已经兼容，不使用浮动 `latest`。
+4. manifest 范围、lock 实际解析、正在运行的二进制分别记录；通过安装不等于 lint/build/启动兼容。
+5. 核心替换写 ADR：候选、维护状态、许可证/供应链、故障语义、性能验证、退出路径。升级与无关业务变化分开。
+6. 依赖构建显式 allowlist、严格未知构建检查；对 pnpm 对应版本核验 `allowBuilds`/`strictDepBuilds` 的支持。
+   不全局放行安装脚本；结合发布观察窗口，紧急安全修复保留具名例外。
+
+### 3.2 公共命令
+
+`dev`、`start`、`format:check`、`lint`、`typecheck`、`test`、`build`、`contract:check` 是统一入口；有数据库才有
+`db:apply-schema`。实现命令由仓库记录，禁止复制没有对应脚本的示例并声称通过。
+
+- dev 从源码运行，生产 start 运行已构建 JS；装饰器 metadata、NodeNext、开发执行器和生产编译链必须一致。
+- Nest constructor DI 依赖运行时 token/metadata。不要假定现有 tsx/esbuild 开发方式会自动产生与 tsc 相同的装饰器 metadata。
+- 核验 `experimentalDecorators`/`emitDecoratorMetadata` 与选定 Nest/TS 组合；也可显式 token，但不靠类型断言解决启动失败。
+- 构建同时验证 generated import、package exports、资源复制及真实输出路径；不能仅 typecheck 后运行源码 smoke。
+
+### 3.3 PostgreSQL、ORM 与 Repository
+
+PostgreSQL 是数据库，`pg` 是驱动，Prisma 是 ORM，Repository 是代码职责。Service 用 class 不要求更换驱动，使用 ORM 也仍需业务边界。
+
+当前 SQL 手册固定 `database/schema.sql`。本轮 IAM 保留 `pg`，不是把 Prisma 判为不成熟；未经单独设计不增加第二个 schema/连接池。
+以后选 Prisma、Drizzle、Kysely 时必须明确：唯一 schema 的方向、无外键模式的真实限制、参数化/锁/事务、Row 映射、批量查询、
+JSON/decimal/bigint、取消、驱动错误、生成与 clean-slate 空库安装。若改变 canonical schema，先一起修订 SQL 手册和本仓 ADR。
+ORM 原生 raw query 可以是同一事务中的必要能力；禁止的是另起独立 Pool 导致一个业务事务被拆成两条提交链。
+
+## 4. 仓库级组织
+
+### 4.1 默认形态
+
+以下是有多个业务模块的 Nest 后端**示意**，不是批量创建目录的脚手架：
 
 ```text
-全仓 domain/application/infrastructure/interfaces 四层目录
-每个用例机械拆一个文件
-每个模块建立 postgres/、redis/、prisma/ 技术目录
-默认 ports/、adapters/、value-objects/、commands/、queries/
-通用 BaseRepository、BaseService、command-executor、service locator
-Prisma 与 pg 双轨访问同一业务数据
-```
+contract/                         # 本仓机器契约
+  proto/
+  openapi/
+  generated/typescript/           # 有生成链时的推荐唯一输出
 
-真正要稳定的是业务边界、依赖方向、事务、契约和测试，而不是让每个目录长得像架构文章。
-
-这是一条 **Kokoro paved road**，不是宣称所有团队只能使用同一棵目录树。对 Kokoro 当前多个业务能力并存的
-服务，module-first 比全仓横向分层更容易定位变更；若未来某个仓只承载一个复杂 bounded context，确有证据时
-可以通过项目级 ADR 采用其他物理组织，但必须同时修订本手册和根级门禁。子仓不得用局部 ADR 单方面绕过基线；依赖、契约、
-事务和测试边界仍必须等价成立。
-
-### 1.1 本手册中的词到底指什么
-
-| 词          | 本手册的含义                                                | 不表示                                           |
-| ----------- | ----------------------------------------------------------- | ------------------------------------------------ |
-| module      | 一组高内聚业务能力的代码包                                  | NestJS `@Module()`、微服务或 DDD bounded context |
-| schema      | Zod 请求/响应/外部输入校验                                  | PostgreSQL schema                                |
-| service     | 业务用例、授权、事务与副作用编排                            | 全能类、DI token 或空转发层                      |
-| repository  | 当前模块的 PostgreSQL 数据访问组件                          | Git 仓库、ORM、抽象基类或必选 interface          |
-| plugin      | 一个真正参与 Fastify 注册/封装/生命周期的对象               | 所有业务文件的包装层                             |
-| runtime     | Pool、Redis client、logger、tracer 等进程级资源的创建与关闭 | 业务逻辑层                                       |
-| integration | 被多模块共用的外部 owner/provider 协议适配                  | 全局 `common` 或本仓业务真源                     |
-| contract    | OpenAPI/Proto/JSON Schema 等机器可校验的 wire 事实源        | DTO 大杂烩、数据库模型或跨仓拷贝中心             |
-
-某个名词没有对应的真实职责时，就不建该文件或目录。
-
-## 2. 为什么这才是 TS-native
-
-成熟 TypeScript 工程通常同时具备以下特点：
-
-1. **按业务能力聚合**：查看或修改 Site、Payment、Skill 时，主要文件在同一个模块内。
-2. **使用框架原生机制**：Fastify route/plugin encapsulation、Connect handler、Node 生命周期，不自研 Java 式容器。
-3. **数据对象轻量**：Zod schema 推导 wire 类型，普通 `type`/`interface` 表达数据，class 只承载真实行为和状态。
-4. **依赖使用结构化类型**：消费方只声明实际用到的方法，不为每个实现创建 `IPort`/抽象基类。
-5. **按复杂度展开**：小模块允许数个清晰文件；大模块按子业务继续切分，而不是按数据库品牌堆目录。
-
-Fastify 官方把 plugin/encapsulation 作为模块化机制；TypeScript 官方和 Google 风格规范关注类型安全、导出面、
-命名与可读性，都没有要求固定 DDD 文件树。大型开源 TS 后端也只能证明“高内聚模块”这一共同原则，不能证明
-某一棵 `postgres/store/port` 文件树是行业标准。
-
-## 3. Kokoro TypeScript 技术基线
-
-| 能力               | Kokoro 默认                           | 落地规则                                                          |
-| ------------------ | ------------------------------------- | ----------------------------------------------------------------- |
-| Runtime            | Node.js 24 LTS                        | 本地、CI、镜像保持同一 major；镜像固定安全 patch 与 digest        |
-| Package manager    | pnpm 11.25.0                          | `packageManager` 固定精确版本，只保留 `pnpm-lock.yaml`            |
-| Language           | TypeScript 6.0.3                      | 当前完整 lint/build 兼容基线；ESM、NodeNext、strict               |
-| HTTP               | Fastify                               | 每个业务模块注册自己的 route/plugin；schema 同时约束输入和输出    |
-| RPC                | ConnectRPC + Protobuf-ES              | Proto 是 owner 的 wire contract；generated code 只在 RPC 边界使用 |
-| Validation         | Zod + `fastify-type-provider-zod`     | HTTP、配置和第三方 payload 在边界解析；一个仓不混多套 validator   |
-| Database           | PostgreSQL                            | 每仓唯一 `database/schema.sql`                                    |
-| DB access          | `pg`（node-postgres）                 | Pool 生命周期集中管理，值使用 `$n` 参数绑定，Row 显式映射         |
-| Cache/coordination | `redis`（node-redis）                 | 只承担缓存、lease、通知、stream；不成为业务真源                   |
-| Test               | Vitest                                | 单元、集成、契约、架构、smoke 分层                                |
-| Lint               | ESLint + typescript-eslint typed lint | `lint` 与 `typecheck` 各自真实执行，不互相冒充                    |
-| Format             | Prettier                              | 只负责确定性格式；不与 ESLint 重复维护排版规则                    |
-
-### 3.1 版本与依赖治理
-
-- 开始每个子仓重构前，先核验 Node LTS、pnpm、TypeScript、框架和直接依赖的**最新稳定兼容版本**；预发布版不
-  冒充稳定版。
-- `package.json#packageManager` 固定精确 pnpm 版本，直接依赖采用仓库统一的精确版本策略，`pnpm-lock.yaml`
-  必须提交；CI 使用 frozen lockfile。
-- `@types/node` 跟随实际 Node runtime major，而不是无条件安装 registry 上更高 major；编译器、类型包、框架和
-  provider 必须作为一个兼容矩阵验证。
-- “使用最新”表示在变更时重新查询 registry、官方 release notes、安全公告和兼容矩阵，不在手册里永久写死一个
-  会过期的 `latest`。
-- major 升级、架构迁移和业务重构分开提交。升级先看 breaking changes 与传递依赖 diff，再跑完整门禁；不能只因
-  版本号更新就宣称更先进。
-- 生产依赖必须有明确 owner 和真实用途。新增 DI container、ORM、CQRS bus、mapper generator 或缓存 wrapper
-  前，先证明现有框架原生能力不足。
-
-以上版本是 2026-09-04 核验的兼容基线，不表示永久最新版。以正式 peer support、安装解析和真实 lint/build 验证为准；
-本仓依赖升级记录保存精确矩阵及输出，不把过期的候选失败结论永久写成禁用规则。TypeScript 升级必须同时确认 typed lint 支持。
-
-pnpm 依赖构建使用显式审查策略：`strictDepBuilds: true`，在 `allowBuilds` 中逐项允许必要构建，禁止
-`dangerouslyAllowAllBuilds`。不以全局 `--ignore-scripts` 取代审查，也不允许未审查的 install script 自动执行。
-
-最新稳定兼容版本还须满足本仓安全公告与发布缓冲策略（minimumReleaseAge）；新发布但尚未过观察窗口的版本不自动进入基线。
-紧急安全修复需要具名审查和例外记录，不用全局关闭供应链检查。
-
-### 3.2 `package.json` 公共入口
-
-各仓命令名统一，具体参数可以按仓调整：
-
-```json
-{
-  "private": true,
-  "type": "module",
-  "packageManager": "pnpm@11.25.0",
-  "engines": { "node": ">=24 <25" },
-  "scripts": {
-    "dev": "node --watch --env-file-if-exists=.env --env-file-if-exists=.env.local --import=tsx src/server.ts",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "test:integration": "vitest run --config vitest.integration.config.ts",
-    "contract:check": "tsx scripts/check-contract.ts",
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node --enable-source-maps dist/server.js",
-    "db:apply-schema": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import=tsx scripts/apply-schema.ts"
-  }
-}
-```
-
-`lint`、`typecheck`、`test`、`build` 必须执行不同的真实工作，禁止彼此 alias 来凑门禁。`dev` 可以使用 TS
-runtime；生产 `start` 只运行已经构建的 JS，不以 `tsx` 代替构建产物。
-
-### 3.3 PostgreSQL、`pg`、Prisma、Repository 不是一回事
-
-```text
-PostgreSQL   数据库产品
-pg           Node.js PostgreSQL driver
-Prisma       ORM / typed database toolkit
-Repository   代码中的数据访问职责或业务持久化抽象
-```
-
-Kokoro 当前大多数 TypeScript owner 已采用 PostgreSQL + `pg` + `database/schema.sql`，因此本文把它锁为统一
-paved road。Prisma、Drizzle 和 Kysely 都是可用工具，但它们不自动代表更好的架构：
-
-| 方案             | 与 Kokoro V1 的关系                                                         |
-| ---------------- | --------------------------------------------------------------------------- |
-| `pg`             | 直接执行 canonical SQL，不增加第二份 schema；当前选定                       |
-| Kysely           | 查询构建与类型层候选；只有实际查询复杂度证明收益时再引入                    |
-| Prisma / Drizzle | 通常希望自己的 schema 成为事实源，与当前唯一 `database/schema.sql` 规则冲突 |
-
-因此，当前子仓不得自行加入 Prisma/Drizzle 或并存第二份 schema。未来若改变数据访问基线，必须先用项目级
-ADR 修订 SQL 事实源规则，再整仓切换并删除旧写路径。同一业务事务永远不混用独立 ORM client 和独立
-`pg.Pool`。
-
-## 4. 仓库级目录
-
-### 4.1 单进程 HTTP/RPC 服务
-
-```text
-contract/                       # 本仓拥有的 OpenAPI/Proto/JSON Schema；有才创建
-  generated/typescript/         # 可选：契约生成物的推荐位置；有生成链才创建
-database/
-  schema.sql                    # 唯一可编辑数据库 schema
+database/schema.sql              # 当前 SQL-first owner 才有
 src/
-  modules/                      # 业务代码主入口
-    <business-module>/
-  config/
-    env.ts                      # 唯一 process.env 读取和校验点
-  shared/                      # 可选；通过共享目录准入条件后才创建
-  utils/                       # 可选；只放有明确主题的纯技术函数
-  constants/                   # 可选；只放真正应用级共享常量
-  app.ts                        # 构建 Fastify/Connect 应用、装配依赖；不 listen
-  server.ts                     # 唯一进程入口、signal、listen、graceful shutdown
-sdk/                            # 可选；只有本仓拥有并发布消费者 SDK 时创建
-  typescript/
+  main.ts                         # 启动 Nest、监听、信号；不写业务
+  app.module.ts                   # 组合根
+  config/                         # 环境装载、schema、typed 配置
+  modules/
+    <business>/                   # 业务能力
+  common/                         # 已有跨模块用途的框架/进程公共组件
+  shared/                         # 按需：无框架依赖的稳定公共结构
+  utils/                          # 按需：具名纯技术函数
+scripts/                          # 生成/验证/空库安装工具，不处理业务请求
+sdk/typescript/                   # 有发布消费者时才创建
 test/
   unit/
   integration/
@@ -193,743 +128,208 @@ test/
   doubles/
 ```
 
-没有真实内容的目录不创建。数据库连接池和 Redis client 在 `app.ts` 的 composition root 创建；当装配代码确实
-增长时，才提取 `src/bootstrap.ts` 或 `src/bootstrap/`。不要仅为放一个 `pool.ts` 预建 `database/`、
-`infrastructure/`、`postgres/`、`redis/` 四层包装。
+`common/shared/utils` 都是可选的，角色不同才并存。现有 `server.ts` 也是合理入口名；切换 Nest 时若采用 `main.ts`，
+必须一起更改 package/CI/镜像/测试并删除旧入口，不能只是为了命名加转发文件。
 
-### 4.2 运行时资源与多进程入口
+### 4.2 公共能力怎么放
 
-单进程服务先在 `app.ts` 组装 Pool、Redis client、日志和外部 client。当这些进程级资源已经有独立创建、健康检查、
-关闭顺序或共享测试时，可以提取：
+| 对象                                        | 推荐归属                                                                             | 依赖边界                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| Database/Cache/Logging 的连接与生命周期     | `common/database`、`common/cache`、`common/logging`，有模块+资源类等实际内容才建目录 | 不放业务 SQL、key 或权限规则                       |
+| HTTP 全局错误 filter、请求上下文、公共 Pipe | `common/http/` 或更准确主题                                                          | 可以依赖框架；不反向引入所有业务 Service           |
+| 多模块纯基础类型/错误结构                   | `shared/<subject>` 或具名文件                                                        | 不依赖 Nest/数据库，不包含 Tenant/Session 事实副本 |
+| 纯编码、时间格式等工具                      | `utils/<subject>.ts`                                                                 | 无 I/O、无隐藏状态，先用标准库或成熟库             |
+| 真正全局常量                                | `constants/<subject>.constants.ts`                                                   | 有明确 owner；不收集所有模块业务值                 |
+| 业务模型集合                                | 所属模块的 `models/`                                                                 | 全局 `models/` 只在确有共同生命周期时评审采用      |
+| 外部 owner SDK 的业务适配                   | 单模块内 client；多模块共用时 `integrations/<owner>/`                                | 不复制 wire DTO、网络重试或对方数据库模型          |
 
-```text
-src/runtime/
-  create-runtime.ts
-  close-runtime.ts
-  database.ts                  # Pool 配置/事务 helper，不放业务 SQL
-  cache.ts                     # Redis 连接与生命周期，不定义业务 key
-```
+全局目录名不是禁词。进入公共层要说明公共职责、实际消费者、稳定语义、维护 owner 和单向依赖，并提供与职责相称的验证。
+已有多个独立消费者是复用证据，不是“凑够两处调用才允许”的门槛：进程级日志、错误出口、请求上下文等从第一处装配起就有公共职责。
+相反，Tenant 的权限规则即使有十个调用方，仍由 Tenant owner 维护，不因此搬进 shared。
 
-`runtime/` 是进程资源边界，不是新的业务层。只有一个无独立生命周期的 `pool.ts` 时仍留在 `app.ts`，不为对称性提前拆目录。
+`common` 与 `shared` 的上述区分是本项目约定，不是 Nest 保留目录名；若两个目录承担同一职责，只保留一个。
+模块内部也可用 `shared/` 承接多个子能力真正共有的结构，但优先使用能说明主题的名字，且不因“以后可能复用”提前上移。
+shared 不是绕开模块边界的通道：在本项目约定下不 import 业务模块内部文件、不注册业务单例、不读取环境、不执行数据库或网络 I/O。
+业务组件的复用通过所属 Nest Module 的显式 exports/imports 完成；不靠 `@Global()` 或万能 SharedModule 让所有依赖隐式可见。
+`runtime/` 也并非错误名称，但不是必需层；Nest 服务默认用具名模块/资源 provider 管理生命周期，避免再建一套平行 runtime 容器。
 
-只有同仓确实构建多个独立进程时使用：
+### 4.3 多进程与插件
 
-```text
-src/
-  entrypoints/
-    http.ts
-    rpc.ts
-    worker.ts
-  runtime/                     # 各入口共用的进程级资源
-  modules/
-  config/
-contract/generated/typescript/ # 可选生成物，与 src 同属仓库根，不放在 src/contract/
-```
+只有真实独立部署/扩缩容需求才新增 worker/HTTP/RPC 进程入口。两个 listener 不等于两个进程或两套 Pool。
+Fastify plugin 仅用于真实框架适配；业务 Service 不包一层 plugin。Nest 模块元数据是有效职责，不因文件短就删除。
 
-`runtime/` 只持有进程级依赖和生命周期；业务代码仍属于模块。单进程服务不提前套用这棵树。
+## 5. 业务模块和子目录
 
-### 4.3 `plugins/` 的使用条件
-
-`plugins/` 只保存真正的 Fastify plugin，例如 request context、authn hook、rate limit 或 tracing 集成：
+### 5.1 小模块
 
 ```text
-src/plugins/
-  request-context.plugin.ts
-  authentication.plugin.ts
+modules/sites/
+  sites.module.ts
+  site.controller.ts              # 有 HTTP 时
+  site.service.ts
+  site.repository.ts              # 有本仓持久化时
+  site.schema.ts                  # JSON 边界及其推导类型
+  site.types.ts                   # 语义不同的内部数据，确有需要才建
+  site.error.ts                   # 有独立业务错误时
 ```
 
-普通业务 Service、Repository、Redis key、SQL 和 provider client 不因 Fastify 存在就放进 `plugins/`。
+不是每个模块都必须有这些文件。Controller 默认调用 Service；无业务规则的纯投影可直接注入具名 Query 组件，
+但不能借此在入口写 SQL/授权/事务，也不为凑层级建立全原样转发的 Service。
 
-### 4.4 跨模块共享对象放在哪里
+### 5.2 成长模块
 
-`common/`、`shared/`、`utils/`、`constants/`、`models/` 都不是行业禁用目录，也不是自动应该创建的目录。正确规则是
-“有证据才建立，并且限定职责”，而不是把名字本身当作规范。按“谁拥有语义、谁负责生命周期、谁稳定消费”放置：
-
-| 对象                                        | 默认位置                                            |
-| ------------------------------------------- | --------------------------------------------------- |
-| 只被一个业务模块使用的 client/cache/helper  | 与该模块共置                                        |
-| 多个模块共用的外部 owner/provider client    | `src/integrations/<owner>/`，仅放协议适配与错误归一 |
-| Pool、Redis 连接、logger、tracer 等进程资源 | `app.ts` or `src/runtime/`                          |
-| Fastify hook/decorator/request context      | `src/plugins/`                                      |
-| 多模块共享的业务规则                        | 先确认真实 owner；归入 owner 模块，不放 `shared/`   |
-| 无业务语义且有多仓消费者的稳定工具          | 证明独立 API 和版本需求后再做 package               |
-| 多模块共享且无业务 owner 的进程/协议类型    | `src/shared/`，仅限稳定、无副作用、依赖方向简单      |
-| 多模块共享的纯技术函数                      | `src/utils/`，必须有明确主题和测试；禁止业务规则      |
-| 同一横切 owner 共享的常量                   | `src/constants/` 或更精确的 `<subject>.constants.ts` |
-| 独立的持久化/读取模型集合                   | `src/models/`，只有确有统一模型生命周期时才使用       |
-
-`integrations/` 也是按外部 owner 命名，例如 `integrations/iam/iam.client.ts`，而不是
-`integrations/http/clients/` 这种技术套娃。它只在真实跨模块复用时存在；否则 client 仍属于具体业务模块。
-
-根级跨模块共享目录的准入条件（不把该门槛套到模块内的 constants/model 等角色文件）：
-
-1. 至少有两个独立变化的消费者，而不是同一模块的两个文件；
-2. 没有更准确的业务 owner，或它明确属于进程/协议横切面；
-3. 导出面、依赖方向和生命周期可以独立说明，并有自己的测试；
-4. 不因为“暂时不知道放哪”或为了缩短相对路径而创建；
-5. 共享目录内部仍按主题分组，不能把多个业务对象堆成 `common.ts`、`utils.ts` 或 `models.ts`。
-
-## 5. 模块目录：先小而清晰，再按业务增长
-
-模块不是一张表、一个 ORM Entity 或一个 endpoint 的目录镜像。它应该包含一组共同业务词汇、用例、权限和变更原因，可以拥有多张表和
-多个对象。只有两部分已经拥有独立生命周期、权限、契约或稳定调用边界时才拆模块；若它们频繁互相 deep-import、共同事务且总是一起变更，
-应先合并或重画边界，而不是再加一层 interface。
-
-### 5.1 简单 CRUD：默认形态
-
-System 的 Site 这类模块使用熟悉、可搜索的 role suffix，不拆成四个十几行“用例文件”，也不创建单文件
-`postgres/`、`redis/`、`rpc/` 目录：
+先按子业务，再按角色组织；当同类文件已经形成稳定集合时，可展开 `services/`、`repositories/`、`models/`、
+`schemas/`、`errors/` 等复数目录。模块根不无限平铺几十个不同职责文件。
 
 ```text
-src/modules/sites/
-  [site.ts]                    # 被多个角色共用的稳定内部业务类型
-  [site.schema.ts]             # 有 HTTP/外部输入时的 Zod schema
-  [site.repository.ts]         # 本模块拥有 PostgreSQL 事实时
-  [site.service.ts]            # 有授权/事务/状态/编排时
-  [site.routes.ts]             # 提供 HTTP 时；本身就是 Fastify plugin
-  [site.rpc.ts]                # 提供 RPC 时
-  [index.ts]                   # 有跨模块消费者时的公开面
+modules/authentication/
+  authentication.module.ts
+  authentication.rpc.ts
+  sessions/
+    session.service.ts
+    session.repository.ts
+    session.model.ts
+    session.types.ts
+    session.error.ts
+  magic-links/
+    magic-link.service.ts
+    magic-link.repository.ts
+    magic-link.schema.ts
+    deliveries/                    # 真实投递生命周期/worker 子能力
 ```
 
-方括号表示按需，不是文件名。模块只创建真正需要的角色：
+这是组织原则，不是 IAM 的完整目标树；IAM 自己的技术方案决定实际对象。单文件子目录没有近期明确职责集合时不创建，
+但也不为了“最少文件”把 schema、错误、业务类、SQL 合在一起。
 
-| 场景                               | 默认调用方向                                       |
-| ---------------------------------- | -------------------------------------------------- |
-| 纯读取且无业务规则                 | Route/RPC -> 注入的明确 Query/Repository           |
-| 有授权、状态变化、事务、幂等或编排 | Route/RPC -> Service/use case -> Repository/Client |
-| 只调用外部 owner/provider          | Route/RPC -> Service/use case -> Client            |
-| 没有本仓持久化事实                 | 不创建 Repository                                  |
-| Service 只原样转发                 | 删除空壳，合并至现有职责或使用明确 Query           |
+### 5.3 模块公开面
 
-规则：
+- Nest `imports/exports` 控制 provider 可见性，TS 显式导出控制源码 API；两者不是同一检查，需要同时约束。
+- 跨模块调用公开 Service/查询能力；不 deep-import 对方 Repository、Row、私有 schema。
+- 多模块同库事务通过批准的事务装配组件连接公开的事务能力，不让每个 Service 自己开连接。
+- 高频双向调用/循环注入先重画边界，不默认靠 `forwardRef`、service locator 或事件总线遮掩循环。
+- 一个模块不是一张表；不存在接口/生命周期的机制不升格为一级模块。
 
-- `site.service.ts` 可以包含一组高度内聚的 CRUD 方法；`service` 不是禁词。
-- `site.repository.ts` 直接使用注入的 `Pool`/transaction client；因为数据库已统一，不再命名
-  `pg-site-repository.ts` 或放进 `postgres/`。
-- 一个 transport 文件时保留在模块根；只有出现真实的共同变更与阅读路径时才展开子目录，不按文件数自动触发。
-- 被两个以上角色共享的稳定内部业务类型放在 `site.ts`；不把 Service 实现文件变成共享类型中心，也不为它创建全局 `types/`。
-- `site.routes.ts` 已符合 Fastify plugin contract 时，禁止再包一层只调用 `register()` 的 `site.module.ts`。
-- 只有一个模块需要组合多组 routes/hooks/dependencies 时，才增加语义明确的 `sites.plugin.ts`。
-- 某个操作拥有独立授权、事务、幂等、外部依赖、失败恢复或测试生命周期时，才拆为 `use-cases/authorize-site.ts` 一类动词-对象文件。
+### 5.4 `commands/`、`queries/` 与 `handlers/`
 
-### 5.2 中型模块：先按业务子能力展开
+这些目录允许使用；是否采用取决于用例组织和分发机制，不是名字看起来“高级”或“复杂”。
 
-文件多到模块根难以扫描时，先把共同变更的业务子能力放在一起，不先切回 `routes/services/repositories` 横向分层：
+| 场景                                   | 建议组织                                                                        | 不额外引入什么                                     |
+| -------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 普通 CRUD，一组内聚操作由 Service 完成 | 具名 Service 方法；内部输入按需放 `.types.ts`，JSON 输入以 schema 推导          | 不为每个方法复制 DTO、Command、Handler 三层        |
+| 多个稳定写用例需要分别命名、审查或组合 | 模块内 `commands/` 保存具名命令输入；执行由明确的 Service 或用例组件负责        | 目录存在不代表必须安装 CQRS 包                     |
+| 已有真实 CommandBus/QueryBus 分发需求  | 使用官方 `@nestjs/cqrs`；Command/Query 与 Handler 分文件，Handler 作为 DI class | 不自研另一套 command bus，不同时保留重复的执行入口 |
+| 消息队列或跨进程命令                   | wire schema 归 owner contract；consumer/processor 校验后调用应用用例            | 不把内存 Command class 直接当网络协议或持久化格式  |
+| 构建、生成、运维 CLI 命令              | 仓库 `scripts/` 或有独立入口的 CLI 包                                           | 不混入业务 `commands/`                             |
+
+采用 CQRS 时，可在已有业务模块中按下列方式组织；这是局部示例，不是每个模块的必选模板：
 
 ```text
-src/modules/projects/
-  project.ts
-  project.schema.ts
-  project.service.ts
-  project.repository.ts
-  project.routes.ts
-  memberships/
-    membership.ts
-    membership.schema.ts
-    membership.service.ts
-    membership.repository.ts
-    membership.routes.ts
-  [projects.plugin.ts]
-  [index.ts]
+commands/
+  create-site.command.ts           # 操作意图与只读输入，不执行 SQL
+  create-site.handler.ts           # 对应该用例的编排 class
+  disable-site.command.ts
+  disable-site.handler.ts
 ```
 
-`memberships/` 拥有自己的词汇、权限和变更路径，所以它比一组横向目录更好定位。只有大量同类对象确实共享生命周期时，才在某个子能力内建
-`events/`、`policies/`、`mappers/` 等集合目录。即使有三个文件也可以平铺；数字只是复核信号，共同变化、owner、阅读路径和 import graph 才是拆分依据。
+Command/Handler 配对共置有利于按用例阅读；同类 Handler 已形成集合时也可使用独立 `handlers/`，模块内选定一种即可。
+此处保留 `.command.ts` / `.handler.ts` 是为了区分相邻文件角色，不是机械消除路径中的一切重复词。
+正式 CQRS 的 Query 同样使用 `.query.ts` 与 `.handler.ts`；模块技术方案区分 Query 消息和直接执行 SQL 的查询组件。
 
-### 5.3 大模块：先按子业务切分
+- 普通命令输入可用 readonly 结构类型；依赖 Nest bus 的运行时类型身份时用 class，即使它只携带字段也有实际职责。
+  这属于 §8.2 的明确例外，不是为了装字段而使用 class。命令类与 Handler 分文件，不能把执行方法塞进输入对象。
+- 同一用例只能有一处编排权威：Handler 可以直接编排 Repository/Model，也可以调用已有 Service；后一种情况下
+  Handler 只负责分发适配，不再复制校验、事务与业务规则。不要为了凑层数同时创建空转发 Service 和 Handler。
+- HTTP/RPC 调用与内部调度都需经过同一业务授权和事务边界；不能因为换成 bus 就跳过受信上下文或幂等校验。
+- CQRS 不要求独立数据库或 Event Sourcing；Nest 的内存 bus 本身不提供持久队列、崩溃恢复或 exactly-once 保证。
+  涉及异步可靠交付时另行设计 receipt/outbox/消费重试，不从目录名推断已经具备这些能力。
 
-复杂的 Scheduled Tasks 不应把几十个文件都平铺，也不应先按 PostgreSQL/Redis 分组。先按业务语义拆：
+机制依据见 [Nest CQRS](https://docs.nestjs.com/recipes/cqrs)；采用范围和目录粒度由本仓设计决定。
 
-```text
-src/modules/scheduled-tasks/
-  definitions/
-    schedule.schema.ts
-    schedule.service.ts
-    schedule.repository.ts
-  occurrences/
-    occurrence.service.ts
-    occurrence.repository.ts
-  dispatch/
-    dispatch.service.ts
-    dispatch.publisher.ts
-  history/
-    history.query.ts
-  scheduled-tasks.routes.ts
-  scheduled-tasks.plugin.ts     # 需要模块级组合时创建
-  index.ts
-```
+## 6. class 与职责
 
-业务阅读路径是“定义 -> occurrence -> dispatch -> history”，而不是“先去 postgres，再猜是哪段业务”。缓存实现写成
-`schedule.cache.ts`，消息发布写成 `dispatch.publisher.ts`，lease 写成 `dispatch.lease.ts`；目录按职责命名，
-不按 Redis 品牌命名。
+### 6.1 应用组件
 
-### 5.4 富领域模块
+| 角色                     | class 负责                                  | 不负责                                        |
+| ------------------------ | ------------------------------------------- | --------------------------------------------- |
+| Controller / RPC handler | 协议映射、已校验输入、Service 调用与响应    | SQL、业务状态机、外部 provider 编排           |
+| Service                  | 内聚用例、授权决策、事务边界、结果语义      | 手写 JWT/JSON parser、环境读取、wire/Row 定义 |
+| Repository               | 具名查询/写入、driver 错误归一、持久化映射  | HTTP 状态、用户权限决策、外部网络             |
+| Client                   | provider/owner SDK 调用、预算、协议失败归一 | 本仓业务状态机、跨 owner 数据访问             |
+| Model                    | 不变量、受保护状态、合法转换                | 网络/数据库访问、框架装饰器                   |
+| Worker / Processor       | 消费、claim/ACK、停止接活与调度业务用例     | 偷藏第二份核心业务规则                        |
 
-支付、账本、授权策略等确有复杂不变量时，可以在所属模块内部增加 `domain/` 和 `use-cases/`：
+手写 Service/Repository/Client 用 class；worker 等有依赖和生命周期的组件同样优先 class。
+单个组件只有一个实现时，直接注册/注入具体类；不默认生成 `IRepository`、`RepositoryImpl`、`BaseRepository<T>`。
 
-```text
-src/modules/payments/
-  domain/
-    payment.ts
-    payment.policy.ts
-    payment.error.ts
-  use-cases/
-    authorize-payment.ts
-    capture-payment.ts
-    refund-payment.ts
-  payment.repository.ts
-  ledger.repository.ts
-  payment.routes.ts
-  payment.schema.ts
-  [payments.plugin.ts]
-```
+### 6.2 构造注入与生命周期
 
-这不是全仓模板。领域对象必须拥有不变量、状态迁移或策略；只有字段和 getter 的 class 不叫领域建模。
-`commands/`、`queries/` 只在该模块正式采用 CQRS 且读写模型明显分离时出现。
-
-| 形式           | 使用条件                                                                                                            |
-| -------------- | ------------------------------------------------------------------------------------------------------------------- |
-| 模块 Service   | 少量高内聚操作共享依赖、授权或事务策略                                                                              |
-| Use case       | 某一业务操作有独立授权、事务、幂等、外部依赖、失败恢复或变更节奏                                                    |
-| Domain         | 不依赖 Fastify/pg/Redis/SDK 的不变量、状态迁移和纯业务策略已经值得独立测试/复用                                     |
-| Domain service | 纯领域运算无法自然归属单个业务对象；使用 `pricing.policy.ts`、`credit-decision.ts` 等业务名，不创建 `DomainService` |
-
-Service 开始包含大量互不相关的公开方法，也是拆 Use case/子能力的信号，不需要等到已经出现巨型状态机。
-
-### 5.5 模块命名的单复数
-
-不机械给所有目录加 `s`。模块名使用产品统一语言中的正式业务名，不从 HTTP 路径或表名反推。Kokoro 的本地约定是：
-
-```text
-资源集合：sites/、projects/、payments/、scheduled-tasks/
-能力或不可数概念：auth/、billing/、search/、model-catalog/、mcp/
-职责集合（只在确有多个同类文件时）：policies/、mappers/、clients/、events/
-协议/技术术语：http/、rpc/、sql/、api/（不写 https/、rpcs/、sqls/）
-```
-
-同一仓同一概念只选一种形式。不能同时出现 `site/` 与 `sites/`、`model/` 与 `models/` 两套目录来表达同一边界。
-默认不创建全局或模块级 `enums/`；有限值优先使用 Zod enum、string literal union 或就近常量。只有多个独立 runtime enum 具有同一 owner 时才建集合目录。
-
-## 6. 各角色的明确职责
-
-### 6.1 Route / RPC handler
-
-负责：
-
-- 读取 path/query/header/body；
-- Zod/Proto 校验；
-- 从受信 middleware/context 读取 tenant、actor、request ID；
-- 调用 Service/use case；
-- 映射状态码、响应 envelope 和稳定错误码。
-
-禁止：SQL、Redis 命令、业务权限决策、状态机修改、跨 provider 编排。
-
-### 6.2 Schema
-
-- HTTP request/response 使用 Zod 或本仓唯一 validator。
-- Wire 使用 `snake_case`；进入 Service 时映射为内部 `camelCase`。
-- schema 是运行时验证，不等同于 Domain Model 或数据库 Row。
-- 若 OpenAPI 是机器事实源，schema 生成/一致性测试必须防止二者漂移；不得维护两份互不校验的字段定义。
+- 依赖用构造函数 `private readonly` 注入，业务方法不 `new` Repository、Client 或 Pool。
+- Service 的 Nest `@Injectable()` 等 DI 元数据属于允许的框架装配；禁止的是 HTTP request、Connect generated、ORM/driver 类型穿透业务参数。
+- type/interface 在运行时消失；抽象能力需要 token 时显式注册。只为确有多个实现/隔离需求的能力定义窄接口或抽象类。
+- 单例不保存当前请求 tenant/actor/token。可信上下文显式传参，或使用有严格生命周期/传播测试的上下文机制。
+- 事务绑定 Repository 由事务组件在 callback 内创建并释放，不把 PoolClient 写回单例字段；构造函数一般不启动 I/O。
+- 只依赖声明的公开方法，少用继承；测试通过 Nest overrideProvider 或明确结构替身，不复制生产实现。
 
 ### 6.3 Service
 
-Service 是一组高度内聚的业务用例与事务编排，可以是 class、factory 或纯函数。默认职责：
-
-- 业务授权和状态校验；
-- 事务边界；
-- Repository、cache、client、publisher 的调用顺序；
-- 幂等、并发冲突和结果组装；
-- 业务错误。
-
-一个 Service 至少要拥有上述一项稳定责任。若全部方法只是原样转发参数和结果，不要为了三层外观创建空壳
-`FooService`：可以合并进现有内聚 Service，或让简单只读 route 通过注入的窄 `*.query.ts`/Repository 能力读取。
-这个例外不允许在 route 中写 SQL、事务、授权决策或多步编排；一旦出现这些职责就应收敛到 Service/use case。
-
-禁止建立全仓 `services/` 或 `AppService`。`site.service.ts` 在 `modules/sites/` 内很清楚；根目录的
-`src/services/service.ts` 才是问题。
+Service 默认一个 class，方法可以覆盖一组内聚 CRUD 或生命周期动作，不是每个操作都创建一个 UseCase 文件。
+有独立复杂流程时再拆另一个 Service；共享的步骤若只是当前算法私有部分，可作为 private method。
+不因长度尚未超标就混入 codec/schema/Error；也不把散落函数原封不动包入一个全能 class。
 
 ### 6.4 Repository
 
-Repository 在本手册中就是**模块的数据访问组件**，不是 Git repository，也不必是 DDD Repository。
+Repository class 封装选定 ORM/driver，方法表达实际数据能力。显式 tenant、字段选择、排序和返回空值语义。
+SQL/必要 raw query 属于 Repository/Query；独立 Row 结构和复杂映射放具名 Row/mapper 文件，ORM 能推导时不再手抄 Row。
+同一表只保留一个 writer；跨表聚合查询合理，但不能因此永久吞并其他业务能力的全部写入。
 
-默认规则：
+### 6.5 Client、Cache、Publisher
 
-- `site.repository.ts` 是当前唯一 `pg` 实现，负责参数化 SQL、tenant predicate、Row mapping、锁和 affected rows。
-- 不默认再创建 `ISiteRepository`、`SiteRepositoryPort`、`PgSiteRepository` 三份同构代码。
-- Service 若需要单元替身，在消费处声明最小结构化接口，具体 Repository 无需 `implements`。
-- Aggregate 持久化、跨表锁、稳定共享语义出现后，才把 Repository 接口单独提取。
-- 复杂只读 projection 使用 `*.query.ts` / `queries/`，不强迫伪装成 Repository。
-- `store` 只用于 KV、session、blob、checkpoint 等真正 store 语义，不与 Repository 随意互换。
+有依赖、状态或 I/O 生命周期的业务适配优先 class。用成熟 SDK/client 而不是重复造 HTTP/JWT/Redis 驱动。
+包装只增加本仓真正需要的认证、错误、预算或业务适配，不为每个 SDK 方法创建同名转发 wrapper。
+外部 SDK 类型停在 Client 边界；业务只接收所需语义，不拿 `Record<string, unknown>` 当通用返回结果。
 
-禁止：`BaseRepository<T>`、任意表名 CRUD、`findAll(filters: any)`、返回 driver Row/transaction client 给 Route。
+## 7. class 风格示例：看职责，不复制脚手架
 
-### 6.5 Client / Cache / Publisher
+以下两个代码块分别属于不同文件，仅展示 DI，不构成完整鉴权/API 实现。
 
-- 外部 HTTP/RPC/provider 调用使用 `*.client.ts`。
-- 缓存使用 `*.cache.ts`，Redis 只是实现细节。
-- 事件或消息使用 `*.publisher.ts` / `*.consumer.ts`。
-- lease 使用 `*.lease.ts`。
-- 所有外部 I/O 明确 timeout、取消、重试条件、响应大小、错误归一和观测字段。
-
-只有真实存在多个同类文件时，才展开 `clients/`、`caches/`、`events/`。不建立 `redis/` 业务目录。
-
-### 6.6 默认依赖方向
-
-```text
-routes/rpc ----------> schema + service/use-case
-service/use-case ----> 消费方定义的最小 dependency shape
-repository ----------> pg
-client --------------> 外部 SDK/HTTP/RPC generated types
-cache/lease/event ---> Redis 或消息客户端
-
-app -----------------> route + service + concrete repository/client/runtime
-server --------------> config + app
-```
-
-箭头表示“左侧可以 import/调用右侧”，不是请求流程图。`app.ts`/`server.ts` 只负责装配和生命周期，不被业务模块 import。
-
-- Route 不被 Service/Repository 反向 import。
-- Service 不 import Fastify、Connect generated message、`pg`、Redis client 或 provider SDK。
-- 两个以上角色共享的稳定业务类型依赖模块内中性业务文件，例如 `site.ts`；Repository 不从 Service 实现文件取共享模型。
-- 有跨模块消费者时，对方模块必须通过 `index.ts` 声明唯一公开面；没有 `index.ts` 的模块视为私有，只允许 composition root 导入其装配入口。
-- 跨模块不导入对方的 Repository、Row、Schema 和其他内部实现；不为打破一次类型 import 就创建全局 `types/`。
-
-## 7. 简单模块示例：从输入到数据库
-
-本节演示内部 HTTP 的 code-first 路径、真实授权入口和单语句写入。公开 BFF 使用第 11.2 节的 design-first 生成方向。
-分页、更新、删除、幂等 receipt 等不属于本节示例，具体用例按本仓契约增加；示例不是整套服务脚手架。
-
-### 7.1 共享的稳定内部类型
+`modules/sites/site.service.ts`：
 
 ```ts
-// src/modules/sites/site.ts
-export type SiteActor = Readonly<{
-  tenantId: string;
-  actorId: string;
-}>;
+import { Injectable } from "@nestjs/common";
+import { SiteRepository } from "./site.repository.js";
+import { SiteNotFoundError } from "./site.error.js";
+import type { Site } from "./site.types.js";
 
-export type Site = Readonly<{
-  id: string;
-  tenantId: string;
-  siteKey: string;
-  displayName: string;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}>;
-
-export type NewSite = Readonly<{
-  id: string;
-  tenantId: string;
-  siteKey: string;
-  displayName: string;
-  now: Date;
-}>;
-```
-
-`Site`/`NewSite` 同时被 Service 和 Repository 使用，因此放在中性的 `site.ts`。这不是又建一个 `models/` 层，也不放 wire DTO 或 Row。
-
-### 7.2 Service 消费最小依赖
-
-```ts
-// src/modules/sites/site.service.ts
-import type { NewSite, Site, SiteActor } from "./site.js";
-
-export type CreateSiteInput = Readonly<{
-  actor: SiteActor;
-  siteKey: string;
-  displayName: string;
-}>;
-
-export interface SiteServiceDependencies {
-  repository: {
-    insert(input: NewSite): Promise<Site>;
-    findById(tenantId: string, siteId: string): Promise<Site | null>;
-  };
-  canCreate(actor: SiteActor): Promise<boolean>;
-  newId(): string;
-  now(): Date;
-}
-
-export class SiteForbiddenError extends Error {
-  constructor() {
-    super("site creation is not permitted");
-    this.name = "SiteForbiddenError";
-  }
-}
-
-export class SiteNotFoundError extends Error {
-  constructor(siteId: string) {
-    super(`site ${siteId} was not found`);
-    this.name = "SiteNotFoundError";
-  }
-}
-
+@Injectable()
 export class SiteService {
-  readonly #dependencies: SiteServiceDependencies;
+  constructor(private readonly siteRepository: SiteRepository) {}
 
-  constructor(dependencies: SiteServiceDependencies) {
-    this.#dependencies = dependencies;
-  }
-
-  async create(input: CreateSiteInput): Promise<Site> {
-    if (!(await this.#dependencies.canCreate(input.actor))) {
-      throw new SiteForbiddenError();
-    }
-    return this.#dependencies.repository.insert({
-      tenantId: input.actor.tenantId,
-      siteKey: input.siteKey,
-      displayName: input.displayName,
-      id: this.#dependencies.newId(),
-      now: this.#dependencies.now(),
-    });
-  }
-
-  async get(tenantId: string, siteId: string): Promise<Site> {
-    const site = await this.#dependencies.repository.findById(tenantId, siteId);
-    if (site === null) throw new SiteNotFoundError(siteId);
+  async getActive(tenantId: string, siteId: string): Promise<Site> {
+    const site = await this.siteRepository.findActive(tenantId, siteId);
+    if (!site) throw new SiteNotFoundError();
     return site;
   }
 }
 ```
 
-最小依赖 shape 就近放在消费它的 Service 中；具体类只需结构匹配。这是 TypeScript structural typing，不需要
-额外创建 `ports/`、`ISiteRepository` 和同构接口文件。依赖方法增长或被多个用例稳定复用后，再提取具名接口。
-
-### 7.3 当前唯一 `pg` Repository
+`modules/sites/sites.module.ts`：
 
 ```ts
-// src/modules/sites/site.repository.ts
-import type { QueryResult, QueryResultRow } from "pg";
+import { Module } from "@nestjs/common";
+import { DatabaseModule } from "../../common/database/database.module.js";
+import { SiteService } from "./site.service.js";
+import { SiteRepository } from "./site.repository.js";
 
-import type { NewSite, Site } from "./site.js";
-
-interface Queryable {
-  query<Row extends QueryResultRow>(
-    text: string,
-    values: unknown[],
-  ): Promise<QueryResult<Row>>;
-}
-
-interface SiteRow extends QueryResultRow {
-  id: string;
-  tenant_id: string;
-  site_key: string;
-  display_name: string;
-  created_at: Date;
-  updated_at: Date;
-  deleted_at: Date | null;
-}
-
-function toSite(row: SiteRow): Site {
-  return {
-    id: row.id,
-    tenantId: row.tenant_id,
-    siteKey: row.site_key,
-    displayName: row.display_name,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    deletedAt: row.deleted_at,
-  };
-}
-
-export class SiteRepository {
-  readonly #db: Queryable;
-
-  constructor(db: Queryable) {
-    this.#db = db;
-  }
-
-  async findById(tenantId: string, siteId: string): Promise<Site | null> {
-    const result = await this.#db.query<SiteRow>(
-      `SELECT id, tenant_id, site_key, display_name,
-              created_at, updated_at, deleted_at
-         FROM system_site
-        WHERE tenant_id = $1
-          AND id = $2
-          AND deleted_at IS NULL`,
-      [tenantId, siteId],
-    );
-
-    const row = result.rows[0];
-    return row === undefined ? null : toSite(row);
-  }
-
-  async insert(input: NewSite): Promise<Site> {
-    const result = await this.#db.query<SiteRow>(
-      `INSERT INTO system_site (
-         id, tenant_id, site_key, display_name, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $5)
-       RETURNING id, tenant_id, site_key, display_name,
-                 created_at, updated_at, deleted_at`,
-      [input.id, input.tenantId, input.siteKey, input.displayName, input.now],
-    );
-
-    const row = result.rows[0];
-    if (row === undefined) throw new Error("site insert returned no row");
-    return toSite(row);
-  }
-}
+@Module({
+  imports: [DatabaseModule],
+  providers: [SiteService, SiteRepository],
+  exports: [SiteService],
+})
+export class SitesModule {}
 ```
 
-SQL 就在 `site.repository.ts`；不需要 `postgres/site-store.ts`。如果该文件因复杂查询增长，再按业务拆成
-`site.repository.ts` 与 `site-search.query.ts`，而不是按数据库品牌增加层级。
-
-`query<SiteRow>()` 是静态声明，不是运行时 Row 校验。Schema drift 测试需验证列、NULL 和 driver 映射；
-JSONB、外部写入数据、枚举、NUMERIC/BIGINT 等高风险字段在 mapper/parser 校验。PG bigint/numeric 默认通常返回字符串，
-不要通过 `as number` 改写事实；Wire 显式选择十进制字符串或安全整数。时间转 RFC 3339，原生 `bigint` 不直接 JSON 序列化。
-
-### 7.4 Zod Schema
-
-```ts
-// src/modules/sites/site.schema.ts
-import { z } from "zod";
-
-export const createSiteBodySchema = z.strictObject({
-  site_key: z.string().min(1).max(80),
-  display_name: z.string().min(1).max(200),
-});
-
-export const createSiteResponseSchema = z.object({
-  data: z.object({
-    site_id: z.uuid(),
-    site_key: z.string(),
-    display_name: z.string(),
-  }),
-  meta: z.object({ request_id: z.string().min(1) }),
-});
-
-export const errorResponseSchema = z.object({
-  error: z.object({ code: z.string(), message: z.string() }),
-  meta: z.object({ request_id: z.string() }),
-});
-```
-
-### 7.5 Fastify Route
-
-```ts
-// src/modules/sites/site.routes.ts
-import type { FastifyPluginCallback, FastifyRequest } from "fastify";
-import type { ZodTypeProvider } from "fastify-type-provider-zod";
-
-import {
-  createSiteBodySchema,
-  createSiteResponseSchema,
-  errorResponseSchema,
-} from "./site.schema.js";
-import type { SiteService } from "./site.service.js";
-import type { SiteActor } from "./site.js";
-
-export interface SiteRoutesOptions {
-  siteService: SiteService;
-  getActor(request: FastifyRequest): SiteActor;
-}
-
-export const siteRoutes: FastifyPluginCallback<SiteRoutesOptions> = (
-  app,
-  options,
-  done,
-) => {
-  const server = app.withTypeProvider<ZodTypeProvider>();
-
-  server.post(
-    "/v1/sites",
-    {
-      schema: {
-        body: createSiteBodySchema,
-        response: {
-          201: createSiteResponseSchema,
-          default: errorResponseSchema,
-        },
-      },
-    },
-    async (request, reply) => {
-      const site = await options.siteService.create({
-        actor: options.getActor(request),
-        siteKey: request.body.site_key,
-        displayName: request.body.display_name,
-      });
-
-      return reply.code(201).send({
-        data: {
-          site_id: site.id,
-          site_key: site.siteKey,
-          display_name: site.displayName,
-        },
-        meta: { request_id: request.id },
-      });
-    },
-  );
-  done();
-};
-```
-
-### 7.6 Composition root
-
-```ts
-// src/app.ts
-import { randomUUID } from "node:crypto";
-
-import Fastify, { errorCodes } from "fastify";
-import type { FastifyInstance, FastifyRequest } from "fastify";
-import {
-  hasZodFastifySchemaValidationErrors,
-  serializerCompiler,
-  validatorCompiler,
-} from "fastify-type-provider-zod";
-import { Pool } from "pg";
-
-import type { AppConfig } from "./config/env.js";
-import { SiteRepository } from "./modules/sites/site.repository.js";
-import { siteRoutes } from "./modules/sites/site.routes.js";
-import {
-  SiteForbiddenError,
-  SiteNotFoundError,
-  SiteService,
-} from "./modules/sites/site.service.js";
-import type { SiteActor } from "./modules/sites/site.js";
-
-export interface SiteSecurity {
-  authenticate(request: FastifyRequest): Promise<SiteActor | null>;
-  canCreate(actor: SiteActor): Promise<boolean>;
-}
-
-function configureErrorHandlers(app: FastifyInstance): void {
-  app.setErrorHandler((error, request, reply) => {
-    let failure = {
-      status: 500,
-      code: "INTERNAL_ERROR",
-      message: "Internal error",
-    };
-    if (error instanceof SiteForbiddenError) {
-      failure = {
-        status: 403,
-        code: "FORBIDDEN",
-        message: "Permission denied",
-      };
-    } else if (error instanceof SiteNotFoundError) {
-      failure = {
-        status: 404,
-        code: "SITE_NOT_FOUND",
-        message: "Site not found",
-      };
-    } else if (
-      hasZodFastifySchemaValidationErrors(error) ||
-      error instanceof errorCodes.FST_ERR_CTP_INVALID_JSON_BODY ||
-      error instanceof errorCodes.FST_ERR_CTP_EMPTY_JSON_BODY
-    ) {
-      failure = {
-        status: 400,
-        code: "INVALID_REQUEST",
-        message: "Invalid request",
-      };
-    } else if (error instanceof errorCodes.FST_ERR_CTP_BODY_TOO_LARGE) {
-      failure = {
-        status: 413,
-        code: "BODY_TOO_LARGE",
-        message: "Body too large",
-      };
-    } else if (error instanceof errorCodes.FST_ERR_CTP_INVALID_MEDIA_TYPE) {
-      failure = {
-        status: 415,
-        code: "UNSUPPORTED_MEDIA_TYPE",
-        message: "Unsupported media type",
-      };
-    }
-    if (failure.status === 500) {
-      request.log.error({
-        event: "request_failed",
-        error_type: error instanceof Error ? error.name : "non_error_throw",
-      });
-    }
-    return reply.code(failure.status).send({
-      error: { code: failure.code, message: failure.message },
-      meta: { request_id: request.id },
-    });
-  });
-  app.setNotFoundHandler((request, reply) => {
-    return reply.code(404).send({
-      error: { code: "NOT_FOUND", message: "Resource not found" },
-      meta: { request_id: request.id },
-    });
-  });
-}
-
-export function buildApp(config: AppConfig, security: SiteSecurity) {
-  const app = Fastify({
-    logger: true,
-    bodyLimit: 64 * 1024,
-    requestTimeout: 10_000,
-    handlerTimeout: 15_000,
-    connectionTimeout: 20_000,
-    keepAliveTimeout: 5_000,
-    trustProxy: false,
-    requestIdHeader: false,
-    genReqId: () => randomUUID(),
-  });
-  const pool = new Pool({
-    connectionString: config.databaseUrl,
-    max: config.databasePoolMax,
-    connectionTimeoutMillis: 2_000,
-    idleTimeoutMillis: 30_000,
-    statement_timeout: 5_000,
-    query_timeout: 6_000,
-    lock_timeout: 1_000,
-    idle_in_transaction_session_timeout: 5_000,
-    application_name: "kokoro-site-example",
-    options: "-c timezone=UTC",
-  });
-  pool.on("error", (error) => {
-    app.log.error({ event: "database_pool_error", error_type: error.name });
-  });
-  const siteRepository = new SiteRepository(pool);
-  const siteService = new SiteService({
-    repository: siteRepository,
-    canCreate: (actor) => security.canCreate(actor),
-    newId: randomUUID,
-    now: () => new Date(),
-  });
-
-  app.setValidatorCompiler(validatorCompiler);
-  app.setSerializerCompiler(serializerCompiler);
-  configureErrorHandlers(app);
-  app.register((scope, _options, done) => {
-    const actors = new WeakMap<FastifyRequest, SiteActor>();
-    scope.addHook("onRequest", async (request, reply) => {
-      const actor = await security.authenticate(request);
-      if (actor === null) {
-        return reply.code(401).send({
-          error: {
-            code: "UNAUTHENTICATED",
-            message: "Authentication required",
-          },
-          meta: { request_id: request.id },
-        });
-      }
-      actors.set(request, actor);
-    });
-    scope.register(siteRoutes, {
-      siteService,
-      getActor(request: FastifyRequest) {
-        const actor = actors.get(request);
-        if (actor === undefined)
-          throw new Error("authentication context missing");
-        return actor;
-      },
-    });
-    done();
-  });
-  app.addHook("onClose", async () => pool.end());
-  return app;
-}
-```
-
-认证 hook 与 routes 处于父子 Fastify scope，不靠兄弟 plugin 自动共享 hook。示例用局部 WeakMap 保存受信上下文；
-成熟仓库已有 typed request decorator 时复用既有机制，不再建第二套。`security.authenticate` 必须真实验证凭证和 tenant 绑定；
-`canCreate` 由 owner 的权限策略实现，测试替身只在 `test/doubles/`。
-
-示例时间预算仅用于说明配置位置，不是全业务统一数值。生产 TLS、完整错误映射、取消、连接预算、health/drain 和脱敏诊断按第 11–13 节落实。
-`app.ts` 不 listen；`server.ts` 读取配置、装配真实 security、监听和处理退出。单条 INSERT 本身原子，多步写入使用第 12.1 节事务能力。
+`DatabaseModule` 在实际仓中提供并导出数据库 provider，Repository 构造注入它；其他模块只导入 SitesModule 的公开 Service。
+service 文件不再顺手定义 `Site`、`SiteNotFoundError`、正则、分页值、schema、Row。纯模型与异常也不因为 Nest DI 就加 `@Injectable()`。
 
 ## 8. 类型设计
 
@@ -964,189 +364,115 @@ export function buildApp(config: AppConfig, security: SiteSecurity) {
 
 ### 8.2 构造选择
 
-| 构造                 | 默认用途                                         |
-| -------------------- | ------------------------------------------------ |
-| `type`               | union、schema inference、只读数据、函数签名      |
-| `interface`          | 对象能力、依赖 shape、框架 declaration merging   |
-| `class`              | 需封装依赖、状态、不变量或生命周期的对象         |
-| discriminated union  | 每种状态携带不同 payload 的有限状态机            |
-| string literal union | 简单有限值集合                                   |
-| `enum`               | generated protocol 或确需 runtime enum object 时 |
+| 构造             | 使用原则                                                                |
+| ---------------- | ----------------------------------------------------------------------- |
+| class            | 默认 Service/Repository/Client；有不变量或行为的 Model；业务异常        |
+| type             | schema inference、只读数据、判别联合、字面量与函数签名                  |
+| interface        | 对象能力、框架扩展、确有必要的依赖契约                                  |
+| as const + union | 简单有限值集合，常量及其类型来自一处                                    |
+| enum             | 可以使用有明确 runtime 需求的字符串 enum；generated enum 保留生成器输出 |
 
-规则：
+普通数据默认不写空 class/getter/setter；确需运行时类型身份或框架 metadata 的 Command/Query/DTO class 属于明确例外，
+见 §5.4 与 §8.4.1.1。业务组件不再以“TS 原生”为理由放弃 class 与依赖管理。
+`Readonly<T>` 是浅只读的编译期约束，不等于运行时深冻结。外部数据用 unknown 接收并验证，unknown 不是 any 的同义词。
 
-- 外部值从 `unknown` 开始，经 Zod/协议 parser 后进入业务代码。
-- 禁止宽泛 `any`、双重断言和非空断言掩盖边界问题。
-- 使用 `satisfies` 验证结构；`as const` 可用于字面量收窄。
-- `IUserRepository`、`IPaymentService` 这类 `I` 前缀不使用。
-- ID 极易混淆时可使用轻量 branded type；不为每个 string 创建 Value Object class。
-- Wire DTO、Service input、Domain Model、DB Row 在语义或生命周期不同时分开；完全同语义的内部只读类型不复制五份。
-- Service 可以是函数、factory object 或 class。只有封装依赖/状态/生命周期能提高可读性，或框架 DI 真有要求时才使用 class；class 不是“更企业级”的标志。
+### 8.3 导出与复杂度
 
-### 8.3 导出面与类型复杂度
-
-- 默认使用 named export；不使用 default export，让符号拥有稳定可搜索名称。
-- 只导出真实消费者需要的符号；内部 helper、Row 和 mapper 保持文件私有。
-- 优先直接、可读的类型；避免跨文件叠加深层 conditional/mapped type。少量重复通常比难以调试的类型体操便宜。
-- `@ts-ignore`、`@ts-nocheck` 禁止；确需证明编译期失败的测试可局部使用带错误码/原因的
-  `@ts-expect-error`。
-- 不因“一 class 一文件”而拆散只服务于一个实现的私有类型，也不把多个独立业务对象堆进 `models.ts`。
+默认具名导出、纯类型用 `import type`；DI 用作运行时 token 的 class 正常导入，不能误改成 type-only。
+只导出真实消费者需要的符号。禁止宽泛 any、双重断言、非空断言和 `@ts-ignore` 隐藏边界缺陷。
+编译错误负例可用具名说明的 `@ts-expect-error`；`satisfies`/schema inference 优先于强制转换，不堆叠难读类型体操。
 
 ### 8.4 一个手写 TypeScript 文件只承载一个主要变化原因
 
-“按模块聚合”不等于“把模块里所有东西塞进一个文件”。一个模块可以高内聚，但同一个手写文件仍然必须有一个
-清晰的主要职责和变化原因。以下组合默认视为设计问题：
-
-```text
-同一文件同时包含：
-  wire schema / DTO 类型
-  业务常量或协议版本
-  domain model class
-  Error class / 错误码
-  crypto、序列化、解析 helper
-  Service 用例编排
-```
-
-允许同文件共存的前提是它们都是同一个实现的私有细节，例如一个小型纯函数可以和只被它调用的私有类型、私有常量
-放在一起。只要其中任一部分拥有独立的消费者、测试生命周期、发布协议或变化原因，就必须拆成有语义的文件，而不是
-按 `models.ts`、`constants.ts`、`utils.ts` 建无主人的垃圾桶。
+这是职责规则，不是“一文件只能出现一种 TS 语法”。**class 优先与职责分离同时成立**，不是把常量、schema、错误和 SQL 搬进 class 就算完成。
 
 #### 8.4.1 类型、schema、class、service 的放置规则
 
-| 内容 | 默认位置 | 规则 |
-| --- | --- | --- |
-| HTTP/配置/第三方输入 schema | `<subject>.schema.ts` | Zod schema 是运行时边界；类型用 `z.infer` 推导，不再另外维护同字段 DTO class |
-| Proto 输入校验 | `contract/` + transport interceptor | 使用 Proto/Protovalidate 的唯一事实源；不得为同一 RPC 再复制一套 Zod schema |
-| 稳定内部数据形状 | `<subject>.types.ts` | 用 `type`/`interface`；只有多个角色稳定共享时才导出 |
-| 具有不变量/状态迁移的对象 | `<subject>.model.ts` 或模块内 `domain/<subject>.ts` | 使用 class 或带命名的纯函数；class 必须保护状态，不是字段容器 |
-| 业务用例与事务编排 | `<subject>.service.ts` 或 `use-cases/<verb>-<subject>.ts` | 不放 schema、数据库 Row、协议 message 或底层解析实现 |
-| 错误类型与错误码 | `<subject>.error.ts` | 模块只拥有 `ModuleErrorCode` 和业务语义；不要在 Service 文件尾部顺手定义错误体系 |
-| 持久化 | `<subject>.repository.ts` | SQL、Row 类型和 Row mapper 只服务本模块持久化；不放 HTTP/RPC 常量 |
-| 协议适配 | transport 下的 handler/interceptor/mapper | 负责 wire ↔ 内部输入/错误映射，不承载业务规则 |
+| 内容                      | 默认文件                                                 | 边界                                                               |
+| ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------ |
+| Service/Repository/Client | `<subject>.service.ts` / `.repository.ts` / `.client.ts` | 一个主要 class 及其职责内方法                                      |
+| 业务 Model                | `<subject>.model.ts`                                     | 受控构造、真实行为与状态；无 I/O                                   |
+| 内部结构/组件选项         | `<subject>.types.ts` / `.options.ts`                     | 有实际消费者才存在；优先构造注入减少 options 大包                  |
+| JSON schema               | `<subject>.schema.ts`                                    | schema 与 `z.infer` 类型允许同文件，是同一事实                     |
+| 模块常量                  | `<subject>.constants.ts`                                 | 版本、限制、业务固定值，不混入 Service                             |
+| 状态集合                  | `<subject>.status.ts` 或相应 constants/schema            | 选一处事实源；不再复制 enum/union/schema 三份                      |
+| 错误                      | `<subject>.error.ts`                                     | 异常类及错误语义；错误码表独立增长/被多角色使用时 `.error-code.ts` |
+| 持久化形状/映射           | `<subject>.row.ts` / `.mapper.ts`                        | 真实类型差异或复杂映射才建，不手抄 ORM 推导类型                    |
+| 协议 codec                | `<subject>.codec.ts`                                     | 编解码算法；schema/公开配置/业务指纹按各自职责拆出                 |
+| 纯技术工具                | 具名主题文件                                             | 纯函数及紧密相关的私有算法细节                                     |
 
-一个文件可以同时包含同一职责的配套声明，例如 `tenant.error.ts` 中的 `ModuleErrorCode`、code union 和 `TenantError` class，
-也可以在 `tenant.repository.ts` 中放只被该 Repository 使用的 Row 与 mapper。判断标准是“一个主要公开概念”，不是
-“一个文件只能出现一种 TypeScript 语法”。但下面的**角色文件硬边界**优先于这个一般例外；不能用“私有细节”把 Service
-文件重新变成常量、类型、解析器和业务编排的混合文件。
+#### 8.4.1.1 校验与 Model
+
+HTTP、环境变量、第三方响应、持久化 JSON 使用具名 Zod schema；Proto/RPC 使用 Proto + Protovalidate。
+一个输入只能有一个可编辑 shape 事实源，不再用一套 class-validator 与另一套 Zod 同时定义同字段约束。
+
+```text
+不可信输入 -> 协议/schema 校验 -> 具名内部输入 -> Service -> 有行为的 Model / Repository / Client
+```
+
+- `z.infer` 不再手写同形 DTO；确需 Nest DTO metadata 时选择 schema-derived bridge，并验证运行时和 OpenAPI，避免重复装饰器字段。
+- UUID、UTC 时间、数值范围等复用已有 schema API；只有更严格业务子集才加具名 refinement，不散落复制正则。
+- Zod 只证明结构，不证明签名、身份、权限、引用存在或并发正确性。
+- 解析重构保留缺失/null、精度、严格/宽松对象、coerce、默认值、字节上限、错误码和脱敏语义。
+- union narrowing、`instanceof Error`、库适配的具名 type guard 是正常 TS；禁止的是在业务代码反复猜外部对象形状，不做全文 `typeof` 禁令。
+- schema 负责合法输入，Model 方法保护合法状态转换；普通 JSON 不是 class 实例，不能用 `as Model` 伪造方法和不变量。
 
 #### 8.4.1.2 角色文件硬边界
 
-这些规则是为了让代码审查和新人定位成本稳定，不是为了机械追求“一符号一文件”。`*.types.ts`、`*.constants.ts`、
-`*.schema.ts` 不是必须创建的模板文件：如果声明只服务一个实现、没有独立消费者和生命周期，就留在该实现文件中，
-不要为了视觉上的“分层”制造 6 行文件。
+Service/Repository/Client 默认是 **imports + 一个主要 class**。独立顶层 options/type、业务常量、enum、schema、Error class、
+codec 不顺手放入其中；按上表有明确 owner 的职责文件承接。构造注入已能表达依赖时不再额外声明一份 dependencies 对象。
 
-| 文件角色 | 文件主体允许内容 | 必须移出的内容 |
-| --- | --- | --- |
-| `<subject>.service.ts` | 一个 Service class、factory 或 use-case 函数，以及其直接编排方法；仅被该 Service 使用的 options/type 可以就近定义 | 独立业务常量、被多个角色共享的 type、独立 policy、输入 validation、schema、wire message、crypto/codec 实现 |
-| `<subject>.cursor.ts` / `<subject>.codec.ts` | 一个协议编解码 owner 的公开面及其私有算法步骤；同一 codec 的小型 schema/helper 可以共存 | 被其他能力消费的 wire 常量、payload type、schema、fingerprint 或 validation；多个独立 codec 不能混在一起 |
-| `<subject>.repository.ts` | 一个持久化 owner 的 Repository、SQL、只服务该 Repository 的 Row type/mapper 和查询辅助 | HTTP/RPC 常量、Service policy、业务错误映射、与该 Repository 无关的通用执行器 |
-| `<subject>.handler.ts` / `<subject>.routes.ts` | wire 输入校验后的映射、Service 调用和 wire 输出/错误映射 | 业务状态机、SQL、协议外的业务 policy |
-| `<subject>.error.ts` | 一个模块错误体系：code union、Error class、构造 helper | Service 编排、协议 status 映射、数据库 Row |
+允许的紧密共置：schema + 推导类型；同一错误概念的少量 code/type + Error；常量集合 + 其 union；纯工具函数 + 算法私有细节；
+方法内部局部 const。SQL 文本可以留在 Repository 方法内；大段可读 SQL 本身不是业务职责混杂。
 
-“一个 TS 文件什么都有”具体指**模块级声明跨越多个变化原因**。函数内部为表达步骤而产生的局部 `const`、参数解构和
-正常 TypeScript 窄化不属于这个问题；禁止的是把可独立复用/测试/发布的模块级常量、类型和逻辑继续堆在角色文件里。
-反过来，也不要把同一变化原因拆成大量无主人的小文件：Service options 只被该 Service 使用时可以留在
-`tenant.service.ts`，cursor 的私有校验可以留在 `tenant.cursor.ts`，Repository 的 Row mapper 可以留在
-`tenant.repository.ts`。只有被多个角色共享、拥有独立测试/发布边界或明显独立变化节奏时，才提取为
-`tenant.constants.ts`、`tenant.types.ts`、`tenant.cursor.schema.ts` 等文件。
+这些例外不授权 Service 携带独立 schema/错误体系，也不授权 cursor 把管理授权范围计算、key 配置、payload schema 和签名算法堆成一体。
+遇到多个独立职责，即使只有 80 行也拆；一个清晰 schema/异常/模块声明只有 10 行仍可独立，不再用“少于 20 行必须合并”抵消职责规则。
 
-默认粒度检查：一个新建的手写角色文件若只有一个私有声明、约二十行以内且没有独立消费者，应优先合并回其 owner；
-这不是硬性的行数门禁，公开 contract、错误体系、生成入口和安全边界可以是小文件。审查时同时检查“是否过度混合”和“是否过度碎片化”。
+#### 8.4.2 常量、有限值与默认值
 
-#### 8.4.1.1 Zod、class model 与 `unknown` 的强制边界
+- 模块协议版本、业务限制、公共默认值放具名 constants/schema/config；运行配置由 typed config 注入，不改成源码魔法数字。
+- 一个方法里的计数、布尔分支或算法局部常量保留方法内；不是每个数字都需要全局常量。
+- 共享先找 owner，不因为出现两次就全局化。状态/code 的 union 从同一个常量/schema 推导，generated enum 不人工复制。
+- 禁止把所有常量、类型、错误归入全局单文件；集合目录中的文件也必须有主题名。
 
-外部数据视为未校验输入；手动处理时从 `unknown` 开始，经本仓唯一事实源的运行时校验后才进入业务代码。HTTP、环境变量、第三方响应和
-持久化 JSON 优先使用 Zod schema；Proto/RPC 使用 Proto/Protovalidate，不为了“看起来统一”再复制一套 Zod schema。
-schema 推导类型只证明形状经过校验，不证明身份、权限或数据真实性；业务层不再重新用 `typeof` 猜字段形状。
+#### 8.4.3 Model 的职责
 
-```text
-外部输入 -> Zod / Proto 边界解析 -> 已校验的结构化输入 -> Service / 有不变量的 class model
-```
+当构造有效性、状态转换、规范化表示或敏感状态需要集中保护时，使用 class Model；私有状态由有业务含义的方法修改。
+DTO/Row/配置通常是数据，类型推导或结构类型即可。Repository 恢复 Model 必须走明确重建规则，不误触发“创建新业务对象”的副作用。
+Model 不依赖 Nest decorator、ORM 或网络；业务规则也不藏进 DTO transform。
 
-执行规则：
+#### 8.4.4 审查反例
 
-1. 不在 Service、Repository、handler 中散落 `typeof value === ...`、`Array.isArray(...)` 和重复正则来代替边界 schema。
-   判别联合、可选 callback、catch error 等明确的语言级窄化是正常 TypeScript；底层 codec/库适配所需的命名 type guard
-   可以保留，但须有明确输入语义和边界测试。验收审查职责，不以全文禁用 `typeof` 为门禁。
-2. 代表业务输入的 `unknown` 必须经过命名的 Zod schema、Proto parser 或语义明确的 `parse<Subject>()` 才能流入业务层；不使用无依据的
-   `as SomeType`、非空断言或“先读字段再猜类型”。该命名是 `parseTenantId()` 这类具体解析器的占位写法，不是任意泛型类型转换；
-   解析器必须实际调用唯一 schema/codec、定义错误语义并有边界测试；仅断言类型的 helper 不合格。
-3. 需要跨多个用例的基础谓词必须变成带 owner 的命名 schema/解析器，例如 `nonNegativeSafeIntegerSchema` 或
-   `parseTenantId`，不创建无主人的 `is-utils.ts`。校验逻辑只能有一个事实源。
-4. 具有不变量、规范化表示、敏感状态或合法状态迁移的对象，优先使用 `class` model，通过受控构造/工厂和方法保护状态。
-   只有字段容器的 DTO、配置、数据库 Row 不为追求“企业感”强行改成 class。
-5. class model、Zod schema、数据库 Row 和 wire message 分别表达不同边界；只有语义和生命周期确实相同才复用，不通过复制字段
-   或互相 `as` 强行兼容。
-6. schema 不替代签名验证、授权、并发检查或数据库事务。解析重构必须保留数值精度、大小限制、缺失/null 区别、错误码、
-   严格/宽松对象策略和敏感字段脱敏；`coerce`、默认值与 strip-unknown 均是契约决策，不靠库的默认行为悄悄改变输入。
+- `tenant.service.ts` 同时定义正则、分页值、输入 schema、上下文类型、Error 和业务类：职责混合。
+- 为每个局部常量建一文件、为每个 CRUD 方法建 UseCase、每层复制同字段 DTO：机械碎片化。
+- 把上述所有内容放进 `TenantManager` 的 static 方法：只是换外观，职责问题仍在。
+- 因为当前测试锁死文件清单就坚持旧目录：应把门禁改为依赖/导出/职责正反例，不用测试保卫历史偶然结构。
 
-2026-09-06 语义核验：[Zod schema API](https://zod.dev/api)、[TypeScript narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)、
-[TypeScript classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)。官方文档解释工具语义；本节文件边界和 class 优先策略属于
-Kokoro 的工程选择，不代表唯一行业目录标准。新增依赖时再核验并锁定兼容版本，不把此次文档核验当作依赖已经安装。
+#### 8.4.5 公共对象
 
-#### 8.4.2 常量、有限值与正则表达式
+公共框架能力进入 common，无框架共享结构进入 shared，纯工具进入 utils；见 §4.2。
+Tenant/Session/Permission 即使被多个模块调用，仍是业务 owner 的模型，不复制到全局 models。
 
-不要把“出现了 `const`”误判为必须新建文件，也不要把所有值都集中到全局常量目录：
+#### 8.4.6 判断“一个文件承载过多能力”的方法
 
-1. 只被一个函数使用的默认值、正则或解析标记，可以保持文件私有，并紧邻其消费者。
-2. 被多个文件使用且属于同一业务 owner 的值，放入 `<subject>.constants.ts`；文件名必须带 owner，禁止无主人的
-   `constants.ts`、`common.ts`、`utils.ts`。
-3. 协议版本、字段名、错误码和状态集合必须有明确事实源。外部协议优先从 Proto/OpenAPI/Zod schema 推导；不要再
-   手写一份相同的字符串表。
-4. 简单有限值优先使用 `z.enum`、`as const` 加 string literal union 或就近常量。默认不使用 TypeScript `enum`；
-   只有需要真正的 runtime enum object、反向映射，或代码生成器明确要求时才使用。
-5. 相同的底层谓词不得复制到多个文件。像 `typeof value === "number" && Number.isSafeInteger(value)` 这类
-   结构只有在跨用例复用且拥有稳定语义时才提取为 `isNonNegativeSafeInteger` 等命名函数；提取后必须保留 owner，
-   不创建无意义的 `number-utils.ts`。
+先列职责再数行数；`const`、`type`、`class` 是语法，不是单独的架构层。下面的判断必须能在具体调用和依赖中得到验证：
 
-#### 8.4.3 class model 的使用边界
+| 判断问题                     | 可以共置                                             | 应拆分的信号                                          |
+| ---------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
+| 修改原因是否一致？           | 同一 schema 及其推导类型随输入契约一起变             | 分页协议、签名密钥策略与租户状态规则分别演进          |
+| 是否同一职责的完整算法？     | codec 的编码函数及私有字节处理 helper                | Service 顺带实现通用 JSON canonicalization 或密码算法 |
+| 是否同一组用例？             | SiteService 的创建、更新、停用及私有业务步骤         | 同一 class 同时管理登录、租户、计费和邮件投递         |
+| 消费者是否需要整份公开能力？ | 某个错误类及该错误专属的小型 code/type               | 其他模块为用一个类型而 import 整个业务 Service 文件   |
+| 依赖和测试装配是否一致？     | Repository 的 SQL 与该查询结果的直接映射             | 测试纯规则却必须配置 HTTP、密钥、数据库和队列         |
+| 文件的真实角色是什么？       | Nest Module 的注册、imports 与 exports；测试场景装配 | 在 app.module/main 等装配文件内实现业务规则           |
 
-业务 model class 至少要满足下列一项：
+审查顺序：先明确 owner/主要角色，再列独立变化原因，最后选择拆文件、建子能力目录或保留私有方法。
+若一个文件已同时承担 Service、schema、错误体系、codec、SQL 访问，直接判定需要拆分，行数短也不例外。
+若只有同一 schema + `z.infer`，或方法内几个局部常量，不按语法种类强拆。生成代码遵循生成器；测试可共置场景所需的局部样本。
+角色文件仍遵守 §8.4.1.2 的团队默认，以上不是放宽为“只要作者觉得相关就全塞进去”。
 
-- 构造时校验并保持不变量；
-- 通过方法执行合法状态迁移；
-- 隐藏敏感状态或规范化表示；
-- 拥有明确生命周期，且方法需要共享受保护状态。
-
-只有字段、getter 和 `constructor` 的 class 不是领域模型；只有把 `type` 改成 `class` 也不会提高质量。DTO、数据库 Row、
-配置对象和 Zod 推导输入默认使用结构化类型。Service 可以是纯函数、factory 或 class，依据依赖和生命周期选择，
-不因为“大厂”三个字机械增加 class。
-
-#### 8.4.4 具体反例与重构信号
-
-当一个文件同时出现“导出多个业务类型 + 一组协议常量 + Error class + 多个 parser + 一个公开 Service 函数”时，
-它已经跨越多个变化原因，即使未超过行数阈值也必须重构。重构顺序是：先识别 owner 和调用图，再拆类型/常量/错误/纯解析
-与业务编排；最后由 transport 或 composition root 装配。不能通过把同一批内容机械搬到 `domain/`、`application/`、
-`infrastructure/` 来制造分层。
-
-#### 8.4.5 全局能力与业务模块的边界
-
-“有些东西应该全局”是正确判断，但全局只表示**进程级或协议级横切能力**，不表示建立一个所有代码都能放进去的
-`shared/` 垃圾桶。默认边界如下：
-
-| 范围 | 可以放置 | 不可以放置 |
-| --- | --- | --- |
-| `src/config/` | 环境变量读取、配置 schema、配置归一化、secret reference | Tenant/Session/Payment 业务规则 |
-| `src/runtime/` | Pool/Redis/logger/tracer 创建与关闭、生命周期、执行预算、进程级 readiness | 业务状态、业务权限、业务 SQL |
-| `src/transport/` | HTTP/RPC request context、interceptor、wire error mapping、协议注册 | Domain policy、数据库查询、业务状态迁移 |
-| `contract/` | Proto/OpenAPI/JSON Schema 及只读生成物 | 业务 Service、数据库 Row、内部 DTO 副本 |
-| `src/modules/<owner>/` | 业务类型、错误、Service、Repository、模块内常量和策略 | 其他模块的事实副本 |
-| `src/shared/errors/` | 多模块共同使用的基础错误结构 | Tenant/Session/Payment 具体错误码和业务判断 |
-
-只有一个对象同时满足“被多个业务模块稳定使用、没有更明确的业务 owner、生命周期属于进程或协议”时，才适合进入
-runtime/transport 这类全局边界。两个模块恰好都使用，并不自动证明它应该进入 `shared/`；但经过共享目录准入条件审查后，
-`shared/`、`utils/` 或 `constants/` 完全可以成为合理落点。
-
-全局规则的常见正确归属：
-
-- `ExecutionBudget`、trace context、runtime phase 属于 runtime/transport，而不是某个业务模块的 `common.ts`。
-- RPC error code 到 Connect status 的映射属于 transport；业务错误类型仍由业务模块拥有。
-- Tenant、Session、Permission 的类型和常量默认属于对应模块，即使多个 handler 会读取，也不自动升级成全局业务模型；
-  如果未来形成跨模块稳定的权限协议，则可按 contract/shared 的准入条件独立提取。
-- UUID、时间、随机数、ID 生成应通过 runtime/composition root 注入；不建立隐式全局 singleton。
-
-仓库重构必须先对所有手写 TypeScript 做一次“职责、消费者、变化原因、依赖方向”盘点，再决定哪些对象全局化。禁止只因
-文件很长就迁移到 `shared/`，也禁止只因两个文件都使用一个字符串就创建全局常量。
+拆分验收要检查公开 import 和调用链：无循环、无重复类型/规则、旧路径已删除、职责内测试可独立执行。
+AST/Lint 可检查 import 和角色组合；“是否同一变化原因”仍需人工审查，不靠文件名、导出数量或行数单独打分。
 
 ### 8.5 ESLint typed lint 基线
 
@@ -1208,7 +534,8 @@ Lint 处理语义风险，Prettier 处理排版；不在两者中配置相互冲
 - 连字符连接业务词：`scheduled-task`；点号分隔文件角色：`scheduled-task.repository.ts`。
 - `use-cases/` 已经表达角色，文件直接使用动词-对象：`authorize-payment.ts`，不写 `authorize-payment.use-case.ts`。
 - `domain/` 内的核心对象使用 `payment.ts`；其他角色仍显式使用 `payment.policy.ts`、`payment.error.ts`。
-- `*.query.ts` 表示优化的只读数据访问/投影；正式 CQRS 的 Query 放在 `queries/` 并使用业务操作名，两者不混用。
+- 非 CQRS 模块的 `*.query.ts` 表示优化的只读数据访问/投影；正式 CQRS 的 Query 消息/Handler 按 §5.4 命名。
+  同模块出现两种查询角色时，在技术方案和位置上明确区分，不让同一文件兼任消息与数据库访问组件。
 - RPC adapter 统一使用 `*.rpc.ts`；ConnectRPC 是当前库，不把库名写成持久文件角色。
 
 路径已经表达上下文，不再造：
@@ -1242,19 +569,9 @@ replay-receipt.ts
 
 ### 9.4 代码粒度预算
 
-阈值用于触发设计复核，不用于按行数机械切文件：
-
-| 对象             |  复核信号 |               默认阻断线 |
-| ---------------- | --------: | -----------------------: |
-| 普通手写源码文件 | 约 400 行 |                   800 行 |
-| 函数/方法        |  约 60 行 |                   100 行 |
-| 圈复杂度         |        10 |                       15 |
-| 嵌套深度         |      4 层 |                     5 层 |
-| 模块根手写文件   |  约 12 个 | 先按子业务与共同变更复核 |
-
-超过复核信号时先检查是否混入多个变化原因；超过阻断线必须拆分，或在 architecture exception 中登记 owner、
-理由、替代方案和到期日。Generated code、静态协议表和可再生数据可以豁免，但不得混入手写业务逻辑。
-表中数字只触发复核，不自动触发建目录或拆文件；最终依据始终是共同变更、owner、阅读路径和 import graph。
+行数是复核信号，不是公司级通用定律：普通手写文件约400行、方法约60行、模块根约12个文件时主动检查职责与阅读成本。
+安全边界即使短也可独立；一个清晰SQL/状态表不因长就机械拆分。合并门阻断的是混合职责、循环依赖、复杂且不可测试的分支，
+不是“第401行出现”。确需保留复杂实现时记录owner、理由、测试与后续收敛条件；生成物单独对待。
 
 ## 10. 环境变量与配置
 
@@ -1284,154 +601,92 @@ production:  只读真实 process environment / secret manager，不加载仓库
 Node LTS 可用 `--env-file` / `--env-file-if-exists` 显式加载多个文件；已有 shell 环境优先级必须有测试。不要同时
 叠加 Node env loader、dotenv、框架 loader 三套机制。
 
-第 3.2 节的 `dev` 与 `db:apply-schema` 命令已明确按 `.env` -> `.env.local` 加载。测试仓要在 Vitest 配置或 Node
-启动命令中只选一处实现 `.env.test` -> `.env.test.local`，并用一个配置优先级测试锁定行为；不依赖开发者 IDE
-“刚好注入了”某些值。
+本仓 dev/test/installer 必须显式实现上述装载顺序，并用优先级测试锁定；不依赖 IDE 恰好注入环境。
 
 ### 10.2 唯一读取点
 
-除 `src/config/env.ts` 外，生产源码禁止读取 `process.env`：
+环境读取集中在 `config/` 的一个明确入口；schema 位于 `environment.schema.ts`，装载函数只处理来源/映射，
+Nest 配置 provider 对外提供已验证的具名只读配置。Service 不直接读 process.env，也不散落 `config.get<string>('任意键')`。
 
-```ts
-import { z } from "zod";
+Nest ConfigModule、Node `--env-file`、dotenv 只选一个负责文件装载，测试验证 §10.1 的优先级。
+选择 Nest envFilePath 时按框架“较前文件优先”语义实现本项目 local 覆盖规则，不照搬 Node 多文件参数次序。
+生产显式禁用仓库 env 文件；配置缺失/非法在启动时失败且脱敏。测试不读取开发 `.env.local`。
+密钥来自 secret 引用和 resolver，不硬编码、不打印；时间、重试、分页、连接池预算说明单位和上限。
 
-const environmentSchema = z.object({
-  APP_ENV: z.enum(["development", "test", "production"]),
-  PORT: z.coerce.number().int().min(1).max(65_535),
-  DATABASE_URL: z.url({ protocol: /^(postgres|postgresql)$/ }),
-  DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(100),
-  REDIS_URL: z.url({ protocol: /^rediss?$/ }).optional(),
-});
+## 11. API、HTTP/RPC、错误与 SDK
 
-export type AppConfig = Readonly<{
-  environment: "development" | "test" | "production";
-  port: number;
-  databaseUrl: string;
-  databasePoolMax: number;
-  redisUrl?: string;
-}>;
+### 11.1 契约与 HTTP
 
-export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
-  const env = environmentSchema.parse(source);
-  return Object.freeze({
-    environment: env.APP_ENV,
-    port: env.PORT,
-    databaseUrl: env.DATABASE_URL,
-    databasePoolMax: env.DATABASE_POOL_MAX,
-    ...(env.REDIS_URL === undefined ? {} : { redisUrl: env.REDIS_URL }),
-  });
-}
-```
+契约归本服务 owner。public HTTP 以批准的 OpenAPI 为事实源；internal HTTP 可以 schema-first 或 code-first，但只维护一份字段定义。
+JSON 使用 snake_case，内部用 camelCase；显式映射响应，避免 Row/ORM model 直接作为公开 API。
 
-启动时一次校验并 fail fast；业务模块只接收需要的 typed config，不接收整个环境对象。Secret 无真实默认值、
-不写日志、不进入错误响应。
+Nest 正常请求链是 Middleware → Guard → Interceptor 入站 → Pipe → Controller/用例 → Interceptor 出站；
+未捕获异常交给匹配的 Filter，不把 Filter 当成每次成功请求都会执行的处理步骤。
+Guard 先于 Pipe，不能假定已经拿到 Pipe 解析的 body；业务授权和事务内有效性重验仍在 Service/用例。
+配置 Nest ValidationPipe 并不会自动执行 Zod，需明确 Zod Pipe 集成。
+OpenAPI 生成器不保证自动识别 Zod：选定集成后以实际生成/响应测试证明；schema 解析也不自动等于输出序列化/脱敏。
 
-## 11. API、RPC 与框架边界
+成功/错误 envelope、版本、分页、幂等、权限和事件遵守 [API 专项](05-api-rpc-and-error-contracts.md)。
+health、JWKS、文件、SSE、HEAD、204 等使用各自协议，不统一套 JSON envelope。
 
-### 11.1 Fastify
+### 11.2 错误 owner
 
-- `app.ts` 创建可供 `fastify.inject()` 测试的应用；`server.ts` 才监听端口。
-- route 模块使用 Fastify plugin encapsulation；依赖通过 plugin options 或窄 typed decorator 注入。
-- 不把万能 container 挂到 Fastify instance。
-- request 和 response 都有 runtime schema；认证 hook 与业务授权分开。
-- request cancellation、body limit、response serialization 和 error handler 显式配置。
-- 使用 Zod 时配置唯一 Fastify type provider/validator/serializer；禁止 route 内手动 `parse()` 一次、框架 schema
-  再维护一次。
+| 对象                              | owner                                                       |
+| --------------------------------- | ----------------------------------------------------------- |
+| Tenant/Session 等业务 Error class | 所属模块 errors 或具名 `.error.ts`                          |
+| 可共享的基础错误形状              | shared/errors，仅确有跨模块用途                             |
+| HTTP 错误到 status/envelope       | common/http 的 Filter/mapper                                |
+| Connect 错误到 code/details       | RPC 集成边界的 interceptor/mapper                           |
+| SDK ApiError                      | SDK 自己的错误类，从 wire code 构造，不 import 服务端 class |
 
-### 11.2 Contract 事实源
+错误码集合是数据，mapper 是转换逻辑，Error class 是异常行为，三者不是用 enum 相互替代。
+固定业务码、可公开信息和可重试语义；未知错误记录脱敏 cause，统一服务端失败，不把 SQL/stack/secret 原样传给消费者。
 
-每个仓只能选择一种字段级事实源方向：
+### 11.3 Connect 与 Nest
 
-```text
-BFF public HTTP：contract/openapi 是可编辑事实源 -> 生成/校验 route types 与文档
-内部 RPC：contract/proto 是可编辑事实源 -> 生成 Connect types
-仅内部 Fastify HTTP（若存在）：Zod route schema 是可编辑事实源 -> 生成 OpenAPI artifact
-```
+Connect 的官方 Fastify 插件可注册 RPC，但它不是 Nest 的原生 gRPC transporter。
+直接注册的 Connect route **不自动经过 Nest Guard/Pipe/Filter/Interceptor**，即使业务 Service 是 Nest provider。
 
-不得同时手改 OpenAPI、Zod 和 TypeScript DTO 三份同字段定义。生成链必须在实现前通过小型验证：请求/响应、required/optional、nullable、enum、错误状态均可表达。
-字段重复手写加一致性测试仍是双源，不作为落地终态；若生成工具覆盖不足，先在 API 技术设计选择可用方向，再写业务。
+继续使用 Connect 的仓库必须明确：
 
-每个 operationId 稳定唯一；成功与错误状态显式定义，生成输出固定路径、记录来源并通过 drift/breaking 检查。
-内部 code-first OpenAPI 必须只读，生成插件在 routes 前注册，`app.ready()` 后导出。SSE/AG-UI、文件下载与 204 无正文
-响应使用各自协议，不机械套 JSON envelope。
+1. 一个 Nest 容器管理 Service/Repository/资源；Connect handler 从已装配实例调用，不再手工 new 第二份 Service。
+2. RPC 自己的 Connect interceptor 负责服务身份、上下文、Protovalidate、错误、deadline/取消及日志；公共安全业务服务可复用。
+3. Nest HTTP 与 Connect RPC 的同等安全策略分别测试，不能用 HTTP Guard 单测冒充 RPC 已认证。
+4. listener/HTTP2/health/端口、启动失败清理、worker drain 和 pool 关闭要有真实进程证据。
+5. 接入官方插件还是继续使用官方 connect-node listener，由本仓 ADR 决定；不为套装饰器手写一套 Nest transporter。
 
-### 11.3 ConnectRPC
+`*.rpc.ts` 是本项目 Connect 适配角色，不伪装成能自动触发 Nest gRPC 装饰器的 Controller。
 
-仓库必须在技术方案中选择一种明确拓扑：
+### 11.4 Generated
+
+`generated` 表示可再生文件，不是业务层。默认推荐仓库根 `contract/generated/typescript/`，现有 `src/generated/` 在切片完成前仍是当前事实。
+只保留一个 output；移动要同步生成配置、provenance、import、tsconfig rootDir/include、package exports、build/start/SDK 和 drift gate。
+不手改生成文件或把独立生成依赖当作无用目录删除。Proto package/import 的命名需求与输出位置分开评审。
+
+### 11.5 SDK
+
+owner 有稳定消费者时发布版本化 SDK；当前无发布链的仓库不能仅凭 generated 目录就声称 SDK 完成。
 
 ```text
-单进程默认：Fastify + @connectrpc/connect-fastify，共用端口和生命周期
-单进程双 listener：两个 Fastify 实例区分 HTTP/RPC 监听，共享唯一 runtime 和业务 Service
-独立进程：entrypoints/http.ts + entrypoints/rpc.ts，复用 runtime 构造逻辑与业务代码，各进程拥有自己的资源
+contract/proto + contract/openapi -> 唯一 generated artifact
+                                       -> 服务端协议适配
+                                       -> sdk/typescript -> 消费方业务适配
 ```
 
-双 listener 只在已有调用地址、运维/网络隔离或明确协议需求下采用，并记录理由；使用 Fastify 不要求合并端口。
-一个实例只调用一次 `listen()`；双实例不重复创建 Pool、Redis、JWT 或 worker，由共同生命周期协调部分启动失败、
-draining 和关闭顺序。独立进程不共享内存中的连接池，也不因目录对称性额外拆进程。
+SDK未发布前消费者可使用固定版本的owner-generated artifact，不需要等待空壳SDK。
+SDK 的公开 Client 优先 class，提供 endpoint/auth/deadline/AbortSignal/request ID、经过证明的重试和错误归一。
+直接复用生成的 wire types，不复制服务器 Model/Row/DTO；SDK 错误独立于服务端 class。
+内部调用官方 generated factory 是合理实现细节，不要求修改生成代码变成 class。
 
-Generated Proto 类型只在 `*.rpc.ts` 和 mapper 中出现，不传入 Service/Domain。deadline、cancellation、
-metadata、service identity 与错误码必须向下传播。
-
-### 11.4 DTO
-
-使用 Zod 时 DTO 通常由 schema 推导，不创建空 class：
-
-```ts
-export const createSiteBodySchema = z.strictObject({
-  site_key: z.string().min(1).max(80),
-});
-export type CreateSiteBody = z.infer<typeof createSiteBodySchema>;
-```
-
-只有整个仓采用 NestJS + class-validator 且 class metadata 真有价值时使用 class DTO。不要同时混 Nest controller、
-裸 Fastify routes 和自研 decorator/DI。
-
-### 11.5 SDK、生成 Client 与跨仓模型
-
-拥有稳定消费者的 API/RPC owner 才发布 SDK；SDK 不是服务端 `src/` 的第二套业务实现。进入 SDK 实现前确认 consumer inventory、
-contract digest、最小消费者测试用例与版本发布策略；实现后通过 consumer contract test 才发布，避免把尚无 SDK 的测试当作开工前提。推荐边界：
-
-```text
-contract/
-  proto/                         # 可编辑 wire source
-  openapi/                       # 可编辑 HTTP source（若有）
-  generated/typescript/          # 只读生成的 wire types/client
-
-sdk/typescript/
-  src/
-    client.ts                    # 面向消费者的薄 client facade
-    client-options.ts            # endpoint、auth、timeout、retry policy
-    interceptors.ts              # request id、deadline、metadata、trace
-    api-error.ts                 # SDK 自己的稳定错误
-    index.ts                     # 受控 public exports
-```
-
-SDK 的职责是把生成 client 变成可消费的版本化包，补充认证 metadata、deadline/AbortSignal、request ID、经过证明的安全重试、
-错误归一和分页辅助；SDK 不复制服务端 Domain Model、Repository、数据库 Row 或业务状态机。
-
-规则：
-
-1. contract source 只有 owner 仓维护；generated 文件只由生成命令写入，不能手改。
-2. 服务端 module 不 import 自己的 SDK；transport 使用 generated 类型，SDK 使用相同版本的 generated artifact。
-3. 消费方从 owner SDK 获取 wire types/client，不重新定义同名 `Client`、DTO、错误码或分页 cursor。
-4. 消费方若需要自己的业务语义，可以在 `integrations/<owner>/` 建一个很薄的 adapter/mapper；它只做业务映射，不重写网络、认证、重试和 wire 解码。
-5. SDK 错误不能依赖服务端 Error class。服务端业务错误经过 wire error code、request ID、safe details 后，由 SDK 构造自己的 `ApiError`。
-6. 只有至少三个 SDK 已经重复相同的 transport 机制时，才抽取独立 `sdk-core` package；不能提前创建万能 SDK 基础层。
-7. SDK package 必须有 semver、contract digest、generated provenance、breaking check 和最小 consumer contract test；没有稳定消费者时只维护 contract，不创建空 SDK 目录。
-
-`generated` 是**生成物属性**，不是业务层名称，也不是必须从源码树删除的目录名。生成物的物理位置按消费方式决定：
-如果运行时 transport 直接 import、构建必须把它编译进服务，可以使用 `src/generated/<protocol>/`；如果它作为独立契约包或
-SDK artifact 发布，使用仓库根 `contract/generated/<language>/`。两者只能选一个 canonical output，不能同时维护同一份 Proto 的
-`src/generated` 和 `contract/generated` 副本。无论位置如何，目录内只能有生成器输出、provenance 和 drift 检查，不放手写业务逻辑；
-手写 Proto/OpenAPI 仍在 `contract/`，生成命令和 `provenance` 记录唯一来源。
-
-内部 RPC 和公开 HTTP 可以分别发布 SDK；不能因为都叫 client 就把不同 visibility、认证方式和错误契约混成一套。
+包必须有受控 exports、semver、contract digest/provenance、构建安装后的 consumer contract test；
+请求失败不能自动生成新的幂等键，同一逻辑重试保留原身份，遵守结果未知和重放窗口。
+服务端不反向 import 自己的 SDK；消费者不复制一份认证/序列化/重试实现。无消费者时不创建空 SDK 工程。
 
 ## 12. 事务、缓存、错误与可靠性
 
 ### 12.1 事务边界如何注入
 
-多步写入由 Service/use case 决定事务边界，但不接触 `pg.PoolClient`。在消费处定义模块专用 callback shape：
+多步写入由 Service/use case 决定事务边界，但不接触 `pg.PoolClient`。在具名事务类型文件定义模块专用 callback shape，由事务 Service class 提供：
 
 ```ts
 interface RenameSiteDependencies {
@@ -1482,18 +737,18 @@ interface RenameSiteDependencies {
 `ModuleErrorCode` 表示模块内部业务标识，`WireErrorCode` 表示 owner contract 的契约机器码；此处是角色称谓，不要求新建这两个名字的
 枚举、公共目录或重复错误表。内部更细粒度错误由 transport 映射到 wire code；wire 枚举单一事实源为 Proto/OpenAPI，SDK 只消费该契约。
 
-| 层级 | 位置 | 责任 |
-| --- | --- | --- |
-| 全局基础错误 | `src/shared/errors/`（可选） | `ApplicationError`、依赖不可用、配置错误、预算错误等无业务 owner 的基础结构 |
-| 模块业务错误 | `src/modules/<owner>/<subject>.error.ts` | 本模块 code、业务语义、retryable 分类和安全 message |
-| 协议错误映射 | `src/transport/http/`、`src/transport/rpc/` | module error → HTTP/Connect code、wire details、request ID |
-| SDK 错误 | `sdk/typescript/src/api-error.ts` | wire error → 消费方稳定异常；不 import 服务端 Error class |
+| 层级         | 位置                                                        | 责任                                                                        |
+| ------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 全局基础错误 | `src/shared/errors/`（可选）                                | `ApplicationError`、依赖不可用、配置错误、预算错误等无业务 owner 的基础结构 |
+| 模块业务错误 | `src/modules/<owner>/<subject>.error.ts`                    | 本模块 code、业务语义、retryable 分类和安全 message                         |
+| 协议错误映射 | Nest HTTP Filter / RPC handler或interceptor，位置见本仓方案 | module error → HTTP/Connect code、wire details、request ID                  |
+| SDK 错误     | `sdk/typescript/src/api-error.ts`                           | wire error → 消费方稳定异常；不 import 服务端 Error class                   |
 
 不要创建一个收集所有业务错误的全局 `errors.ts`。一个模块的 error code、code union 和 Error class 可以放在同一个
-`<subject>.error.ts`，因为它们属于同一错误事实；但 HTTP/RPC 状态映射必须停留在 transport。错误 message 不是稳定 API，
+`<subject>.error.ts`，因为它们属于同一错误事实；但 HTTP/RPC 状态映射必须停留在协议适配角色。错误 message 不是稳定 API，
 客户端只按 machine code 分支；details 不得泄漏 SQL、stack、secret、token 或原始请求。
 
-根级 `setErrorHandler`、`setNotFoundHandler` 统一格式；只对白名单错误公开固定 code/message，不按任意异常的
+Nest HTTP 的 Filter/默认路由边界统一格式，Connect 使用自己的错误 interceptor；只对白名单错误公开固定 code/message，不按任意异常的
 `statusCode` 或 `message` 原样输出。各仓为真实使用的情况配置：400 输入、401 未认证、403 未授权、404 不存在、
 409 业务冲突、412 条件写失败、413 过大、415 介质、429 限流、500 内部错误、503 依赖不可用、504 上游超时。
 PG 按 SQLSTATE + 已知约束名映射，不解析自然语言报错；未知异常只在边界记录一次脱敏 cause。
@@ -1504,18 +759,24 @@ HTTP body、请求接收、handler 执行、连接空闲、代理与下游 I/O �
 
 ### 12.5 可观测性、健康与退出
 
-- Fastify/Pino 日志包含 service、operation、request_id、trace_id、result、duration_ms；禁止 secret、连接串及完整敏感 payload。
+- 框架集成的结构化日志包含 service、operation、request_id、trace_id、result、duration_ms；禁止 secret、连接串及完整敏感 payload。
 - 优先框架/pg/HTTP 自动 instrumentation；仅为有业务意义的用例加 span，不为每个转发方法制造重复瀑布。高基数 ID 不作 metric label。
 - `/livez` 不依赖外部服务；`/readyz` 检查启动完成、schema 匹配、draining 与关键依赖，探测有短超时和频率上限。
-- 退出只触发一次：设为 draining、readiness 503 -> 停止 worker 接新任务 -> `app.close()` -> 关闭/排空长连接与在途工作 ->
-  `onClose` 逆序释放 client/Pool。信号处理设置总体截止时间，超时记录未完成项并非零退出。
+- 启动入口明确唯一信号 owner。采用 Nest 信号处理时显式 `app.enableShutdownHooks()`；不再并行注册另一套业务 SIGTERM 关闭链。
+  测试/程序主动退出使用一次 `app.close()`；它会触发 hooks 和框架连接关闭，不是在这些步骤之前另做的一项操作，hook 内不递归调用它。
+- 生命周期协调明确阶段：`onModuleDestroy` 设置 draining/readiness 503、拒绝新业务及停止 worker 接活；
+  `beforeApplicationShutdown` 有界排空自建 Connect listener、worker 和其他框架外任务；Nest 随后关闭 HTTP adapter 的连接；
+  `onApplicationShutdown` 在上述使用者结束后释放 Redis/Pool 等依赖并结束观测输出。资源 provider 不抢先在 destroy 阶段关闭连接池。
+  单仓技术方案可细化协调组件，但不靠模块 import 顺序推测关闭依赖；各步骤幂等，异常清理/超时仍走同一关闭路径。
+- 关闭有总期限；长连接/未结束 I/O 需显式取消或强制终止策略，超时记录未完成项并非零退出。
+  验证真实 SIGTERM、主动 close、部分启动失败和连接泄漏；Nest 不自动排空自建 listener，`app.close()` 本身也不保证 Node 进程退出。
 - SSE/AG-UI 关闭前保留可恢复 cursor；lease/task 清理不能依赖进程一定有机会运行 finally，重启仍从持久事实恢复。
 
 ## 13. 测试策略
 
 | 层次         | 验证内容                                    | 默认方式                                       |
 | ------------ | ------------------------------------------- | ---------------------------------------------- |
-| unit         | Service、policy、状态机分支                 | Vitest + 局部 object/function double           |
+| unit         | Service、policy、状态机分支                 | Vitest + Nest testing/局部结构替身             |
 | integration  | `pg` SQL、事务、锁、Redis、provider adapter | 真实共享 PostgreSQL/Redis，测试数据隔离        |
 | contract     | OpenAPI/Proto、producer/consumer、breaking  | schema lint、generated drift、handler contract |
 | architecture | import、模块公开面、env/ORM/SQL 泄漏        | ESLint boundary rule + 专用测试                |
@@ -1526,7 +787,7 @@ HTTP body、请求接收、handler 执行、连接空闲、代理与下游 I/O �
 - Fake/Fixture/InMemory 只在 `test/fixtures/`、`test/doubles/`。
 - 简单 CRUD 的价值主要来自真实 PostgreSQL integration test，不为了 mock 而再造四层接口。
 - tenant 越权、唯一冲突、乐观锁、重复命令、事务回滚和 Redis 故障必须覆盖。
-- Fastify route 先用 `inject()`，真正 socket/TLS/代理行为由 smoke/e2e 覆盖。
+- Nest 测试模块验证 DI；HTTP 可通过 Fastify `inject()`；Connect、真实 socket/TLS/代理由 contract/smoke 覆盖。
 - 每个测试 run/worker 使用独立数据库或 schema、Redis key prefix；只清理自身资源，禁止共享实例 `FLUSHALL`。
 - schema 从空库安装；并发锁测试使用多个独立 client，不全部包在同一个 rollback transaction 中。
 - 按本仓能力补测 auth scope、伪造 tenant、错误脱敏、超时/断连、pool 饱和、回滚/未知提交、Redis 重连和 Streams reclaim。
@@ -1549,21 +810,21 @@ pnpm db:apply-schema        # 数据 owner
 
 CI 阻断：
 
-1. 顶层 `domain/application/infrastructure/interfaces/ports/adapters` 或
-   `controllers/services/repositories/models/dtos/utils` 重新成为横向重复实现树；
+1. 未经设计的平行实现层、循环依赖、无 owner 的公共目录；不按 `common/utils/models` 目录名一刀切；
 2. route/connect handler 直接执行 SQL 或 Redis 命令；
-3. Service/domain import Fastify、Connect generated message 或全局 `process.env`；
+3. Service/Model import HTTP/Connect generated/driver 类型或读取 `process.env`；Service 的 Nest DI decorator 是明确允许项；
 4. 模块 A deep-import 模块 B 的内部文件；
 5. `src/` 中出现 Fake/Fixture/InMemory；
 6. `any`、双重断言、非空断言掩盖输入和空值设计；
 7. 同仓出现 Prisma + `pg` 双写、两个 canonical schema 或兼容 fallback；
 8. 每个业务模块机械生成 `postgres/`、`redis/`、`ports/` 或空目录；
-9. 新增 `command-executor`、`BaseRepository`、万能 Service 或无 owner 的 `common/utils/types`；
-10. 违反 SQL、API、tenant、时间和可靠性专项手册。
+9. 无明确分发职责的万能 `command-executor`、无实际抽象需求的 `BaseRepository`、万能 Service 或无 owner 的公共层；
+10. 违反 SQL、API、tenant、时间和可靠性专项手册；
 11. public OpenAPI、Proto、Zod/DTO 出现两个以上可编辑字段事实源。
-12. 新建无用途 wrapper/plugin/module 文件，或仅为了“看起来分层”转发一次调用。
+12. 新建无用途 wrapper，或只转发调用制造层数；Nest module 的依赖元数据有实际职责，不按文件短误判。
+13. 手写业务组件偏离 class 默认，或把独立 schema/常量/模型/错误/解析器混入角色类文件。
 
-门禁检查依赖事实，不要求每个模块必须包含某个目录；空目录和 README-only 层同样不合格。
+门禁检查依赖事实，不要求每个模块必须包含某个目录，也不只按 `commands/shared` 等名称拦截；空目录和 README-only 层同样不合格。
 根级静态审计是预检，不替代执行证据；AST import 检查、typed ESLint、真实 contract/integration/smoke 由子仓 CI 落实。
 必须用违规样本测试门禁（如 Service import pg、空 lint 命令、跨模块内部 import），而不只搜索配置中出现了关键字。
 
@@ -1623,7 +884,7 @@ Agent 新建文件/目录或调整边界前输出简短放置表；既定方案�
 - [Backstage catalog backend](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend/src)
 - [Vendure core](https://github.com/vendure-ecommerce/vendure/tree/master/packages/core/src)
 
-这些来源支持框架、类型和 feature cohesion 原则；Kokoro 的具体目录与 PostgreSQL + `pg` 选择由本文明确，
+这些来源支持各自框架、类型和 feature cohesion 原则；Kokoro 的 Nest/class 默认与当前 SQL-first 选择由本文明确，
 不声称任何单一开源项目就是“大厂唯一模板”。
 
 补充运行时依据：
@@ -1633,3 +894,22 @@ Agent 新建文件/目录或调整边界前输出简短放置表；既定方案�
 - [Redis 官方 Node client 指南](https://redis.io/docs/latest/develop/clients/nodejs/)
 - [Redis client 生产注意事项](https://redis.io/docs/latest/develop/clients/nodejs/produsage/)
 - [pnpm dependency build policy](https://pnpm.io/settings/build)
+
+### 17.1 本轮核验（2026-09-06 至 2026-09-07）
+
+| 来源                                                                                                                                                      | 核验用途                           | 不据此推导                           |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------ |
+| [Nest Providers](https://docs.nestjs.com/providers)、[Modules](https://docs.nestjs.com/modules)                                                           | class provider、构造注入、模块封装 | 全部数据必须 class、目录必须照抄样例 |
+| [Nest Fastify](https://docs.nestjs.com/techniques/performance)、[Lifecycle](https://docs.nestjs.com/fundamentals/lifecycle-events)                        | 官方 adapter 与资源 hooks          | 换框架自动解决关闭/性能              |
+| [Nest Validation](https://docs.nestjs.com/techniques/validation)                                                                                          | Pipe、运行时验证边界               | ValidationPipe 自动支持 Zod          |
+| [Connect server plugins](https://connectrpc.com/docs/node/server-plugins/)                                                                                | 官方 Node/Fastify 接入             | Connect 自动执行 Nest Guard          |
+| [Google TS](https://google.github.io/styleguide/tsguide.html)                                                                                             | 导出、类型与避免静态工具容器       | Google 要求所有组件 class            |
+| [Zod](https://zod.dev/basics)、[jose](https://github.com/panva/jose)                                                                                      | shape 推导、标准密码协议复用       | schema 替代权限，库替代业务密钥策略  |
+| [Novu API](https://github.com/novuhq/novu/tree/next/apps/api/src/app)、[Vendure core](https://github.com/vendurehq/vendure/tree/master/packages/core/src) | 真实公开 TS 工程的组织对照         | 其目录/内部 API 是所有企业标准       |
+
+本次是语义与架构资料核验，不是依赖升级。浮动分支链接仅作阅读入口，不作为可复现的版本兼容证据；核心依赖实施时再固定版本/commit。
+
+2026-09-07 补核：[Nest CQRS](https://docs.nestjs.com/recipes/cqrs) 支持可选 Command/Query/Handler 机制，
+[Modules](https://docs.nestjs.com/modules) 说明 provider 的 imports/exports 复用边界，
+[Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle) 核对 Guard/Pipe/Interceptor/Filter 的执行关系。
+这些机制不规定必须创建 `commands/` 或 `shared/`，也不支持以目录名作为合并门唯一证据。

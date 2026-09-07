@@ -1,13 +1,61 @@
 # IAM 工程规范对齐：主控任务板
 
-状态：2026-09-06 UTC，用户已确认本轮继续执行。当前优先级和写入范围以文末“本轮主目标”与 IAM-R4 任务卡为准；
-此前 R1/R2/R3 记录保留为历史交付证据，不代表当前重新派工。
+## 当前任务：IAM-R5 文档与架构收敛（2026-09-07）
 
-本轮起始提交：Root `317e9959`；IAM `60e0fe3`（代码行为验证仍按 CURRENT 中的原始源码基线）。Root 已有
-`kokoro-agent` 和 `.tmp/` 任务外变更，保持不动；本轮由主控单一写入文档，审查员只读。先完成新要求下的职责与设计审计，
-再放行实现切片，避免继续往现有大文件追加职责。
+当前用户要求：完整整理 class 优先的成熟 TypeScript 规范，更新对应手册与 IAM 方案；补齐 commands/shared 的适用场景、共置/拆分判据，避免目录名黑名单。**本轮只写文档，先对齐再实现**；
+下方 R1–R4 是历史过程，不继续沿用其中目录拆合与写入授权。
 
-本轮重点按 SQL 设计、API 契约、目录架构与职责划分检查，不以目录搬迁或文档完成替代行为验收。
+- 基线：Root `787f5edf`；IAM `dea52d7`，分支 `codex/production-closure-docs`。
+- 唯一 IAM 主目录：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`。不写同级另一个 checkout。
+- Root 的 `kokoro-agent` 与 `.tmp/` 为任务外变更，保持不动；IAM 起始工作树干净。
+- 主控是两仓本轮文档唯一 writer；所有子 Agent 只读，不执行 Git 写入或启动服务。
+
+### 设计放置表
+
+| 项       | 结论                                                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | Root 拥有通用 TS 规范；IAM 拥有本服务方案、API 与数据说明；主控写入                                                       |
+| 当前事实 | 起始手册有函数/factory/class 任意选的规则和混合示例；IAM 是 Node HTTP + Connect-node + pg，尚未安装 Nest/Fastify/jose     |
+| 目标职责 | 一份无冲突 TS 手册；一份明确当前态、Nest 目标态、能力边界、替换清单和验收缺口的 IAM 方案                                  |
+| 目录方案 | 采用现有手册 + TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL；淘汰新增平行规范中心、直接搬源码两种方式；框架重大替换写本仓 ADR |
+| 粒度     | 角色规则统一在 TS 手册；IAM 只细化实际对象与职责，不复制整本通用规则                                                      |
+| 依赖     | Nest 应用组件优先 class/构造注入；业务模型不依赖协议/ORM；Connect 的拦截链不假设自动经过 Nest Guard/Pipe/Filter           |
+| 数据/API | 保留当前机器 Proto 与 canonical SQL，本轮只记录差异及后续修复验收；不引入第二套 schema 或 SDK 类型                        |
+| 删除项   | 文档中互相矛盾的目标树、错误“已完成”表述与混合示例；本轮不删实现                                                          |
+| 验证     | diff --check、Markdown 格式/链接、源码与文档事实核对、独立文档审查；不将文档检查冒充运行验收                              |
+
+### 任务卡
+
+| ID     | 目标/完成条件                                                           | 角色/模型                             | 范围与依赖                                                                                                                                                                                                           | 状态                     |
+| ------ | ----------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| R5-D   | 整理 TS 手册、AGENTS 路由、IAM 技术/API/数据与入口；当前/目标一致       | 主控/当前模型，唯一 writer            | Root AGENTS、TS 手册、CURRENT、当前任务板及被替代范围的ADR-030状态说明；IAM AGENTS/README/INDEX、docs TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/INDEX/ACCEPTANCE/ADR；排除所有源码/机器契约/DDL/依赖/其他子仓 | 文档已验收               |
+| R5-TS  | 只读检查旧手册冲突；修改后复核 class、模块、Zod、错误、SDK 规则是否自洽 | Franklin（TS规范审查）/gpt-5.6-sol    | Root TS 手册、相关规范与来源；不得写入；交付问题+来源，不另造总体方案                                                                                                                                                | 首轮已交付；复审会话失效 |
+| R5-IAM | 核对 API/SQL 主要设计差异及 Nest/Connect 方案必须保留的行为             | Locke（IAM契约/数据审查）/gpt-5.6-sol | IAM dea52d7 的技术/API/数据文档与相关代码，只读；交付已证实缺口与候选误报                                                                                                                                            | 首轮已交付；复审会话失效 |
+| R5-V   | 主控检查 diff/链接/格式与独立评审，按仓提交纯文档切片                   | 主控                                  | 依赖 R5-D/TS/IAM；最终记录 SHA 与实际命令；完整实现文档门仍需具体切片机器证据                                                                                                                                        | 文档已验收               |
+
+原生Agent：Franklin `01a079fe-f226-7d33-a128-f6f0ff9d40ce`；Locke `01a079fe-f2ed-7223-a457-7ddba0532f87`。
+两者只读完成首轮发现；续接复审时均返回 `not_found`，没有第二轮通过结论。主控未盲目采纳问题严重度，Redis强制readiness暂作为现状保留，是否降为可选另行评估。
+
+R5-Final：Bacon（独立规范复核，gpt-5.6-sol），原生 ID `01a07a1e-8f80-7993-af07-12921e0a5e59`。只读检查当前 TS 手册及 IAM 技术方案/ADR 的一致性；范围含 commands/shared、文件职责、Nest/Connect 语义；不重复审计全部业务，不写文件、操作 Git 或启动服务。主控并行执行链接、格式与契约检查。状态：两项文档问题已修正并定点复审通过；其余指定重点未发现阻断矛盾。
+
+子任务公共上下文：`docs/CODEBASE_MAP.md`、Root/IAM AGENTS 与三份唯一手册。写入与提交均由主控串行完成；
+本轮不安装依赖、不启动 PG/Redis、不运行可能写现有业务库的命令，不把旧测试数字重新标为当前通过。
+
+---
+
+### R5 文档交付证据与后续
+
+- 主控修复了独立复核发现的HTTP链顺序、Nest信号/关闭阶段两项问题；Bacon复审确认两项已修复。
+- Root/IAM `git diff --check` 通过；已安装Prettier 3.8.3对5+11份本轮文档 `--check` 通过。
+- `python3 /tmp/kokoro-r5-verify-docs.py`：16文档、393个本地链接/锚点、0断链，围栏闭合；临时审计工具不冒充常设CI。
+- Node v24.13.0下，IAM `pnpm contract:check`：buf lint/OpenAPI/5个generated/provenance通过。
+- IAM源码、测试、SQL、机器契约、脚本和依赖相对 `dea52d7` 未改变；没有安装依赖/启动服务/操作数据库。
+- 未重跑完整lint/typecheck/test/build/schema/smoke。本轮仅文档可交付；Nest接线、目录/角色实现、caller与receipt等仍由后续获准切片负责。
+- IAM提交：`cdede2b558531755991e9f48ab5c2304b1077fb6`；Root提交以包含本段的Git提交为准。主控负责后续单仓切片设计门，不恢复历史全仓重写授权。
+
+---
+
+## 历史过程记录（不构成本轮派工）
 
 ## 1. 目标与职责
 
@@ -961,18 +1009,18 @@ Arendt（01a07130-214a-73f2-908d-281b41a11fba，派发指定gpt-6-astra）只读
 
 上一轮为progress：R2-2已集成复验，IAM c9d1d35。当前Root c00b2905后续仅任务板；IAM源码/DDL/测试仍110c7fa。主控已读实际pg8.23.0/connection-string2.14.0、runtime/installer/config及架构门，完成眼前设计关键路径，提交 `4975b89527bce128dbb689e835f9a8b469124d25`（四文档，无代码变更）。标准Prettier七份、246本地链接、三文件36项聚焦门通过。
 
-| 项 | 本片边界 |
-| --- | --- |
-| Owner/writer | IAM；主控完成当前设计后停写IAM，Arendt续派只读设计审查；通过后续派单一实现负责人 |
-| 基线 | 日常IAM 4975b89；worktree仍110c7fa，续派writer前先快进同一文档基线并确认干净 |
-| 三面 | TECHNICAL_DESIGN §8.3、API_CONTRACT §7.3、DATA_MODEL §7.1；当前为待审查设计，不冒充UTC已上线 |
-| 放置 | 新src/config/database.ts供runtime Pool及installer Client共用；提取env数据库读取，不让installer导入全runtime，不建技术品牌目录/Pool框架 |
-| 协议 | startup固定UTC/search_path；显式有限connect/operation预算；受控URI/键白名单、options/timeout冲突失败，原URL交pg解析，既有TLS语义不改 |
-| 生产文件 | 新database.ts，现env.ts、runtime/create-runtime.ts、scripts/apply-schema.ts；其余生产/DDL/contract/generated/依赖/CI不动 |
-| 测试文件 | 新unit/database-config.test.ts、integration/database-connection.integration.test.ts；必要时新fixtures/database-connection-fixture.ts；现config.test与architecture dependency-graph/dependencies/architecture-fixtures |
-| 文档 | 七份当前文档按当前事实更新；保护已验基线/历史日志及CURRENT中的nonce边界，不编造现有format:check或drift命令 |
-| 删除项 | 两入口分散的连接参数构造、installer直接读process.env；原Schema/查询/业务时间与认证/授权行为保留 |
-| 明确非目标 | 不改全局角色/数据库设置，不升级Node/库/框架，不改TLS验证模式，不改业务SQL/时间序列化，不加入索引/GC/其他仓 |
+| 项           | 本片边界                                                                                                                                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/writer | IAM；主控完成当前设计后停写IAM，Arendt续派只读设计审查；通过后续派单一实现负责人                                                                                                                                      |
+| 基线         | 日常IAM 4975b89；worktree仍110c7fa，续派writer前先快进同一文档基线并确认干净                                                                                                                                          |
+| 三面         | TECHNICAL_DESIGN §8.3、API_CONTRACT §7.3、DATA_MODEL §7.1；当前为待审查设计，不冒充UTC已上线                                                                                                                          |
+| 放置         | 新src/config/database.ts供runtime Pool及installer Client共用；提取env数据库读取，不让installer导入全runtime，不建技术品牌目录/Pool框架                                                                                |
+| 协议         | startup固定UTC/search_path；显式有限connect/operation预算；受控URI/键白名单、options/timeout冲突失败，原URL交pg解析，既有TLS语义不改                                                                                  |
+| 生产文件     | 新database.ts，现env.ts、runtime/create-runtime.ts、scripts/apply-schema.ts；其余生产/DDL/contract/generated/依赖/CI不动                                                                                              |
+| 测试文件     | 新unit/database-config.test.ts、integration/database-connection.integration.test.ts；必要时新fixtures/database-connection-fixture.ts；现config.test与architecture dependency-graph/dependencies/architecture-fixtures |
+| 文档         | 七份当前文档按当前事实更新；保护已验基线/历史日志及CURRENT中的nonce边界，不编造现有format:check或drift命令                                                                                                            |
+| 删除项       | 两入口分散的连接参数构造、installer直接读process.env；原Schema/查询/业务时间与认证/授权行为保留                                                                                                                       |
+| 明确非目标   | 不改全局角色/数据库设置，不升级Node/库/框架，不改TLS验证模式，不改业务SQL/时间序列化，不加入索引/GC/其他仓                                                                                                            |
 
 设计审查使用固定c9d1d35..4975b89；特别检查URL parser实际覆盖与编码/重复键、PGOPTIONS/PGCONNECT_TIMEOUT优先级、错误脱敏、TLS保留、startup时序、installer权限与清理、共享函数与测试/架构证明范围。
 只读审查Arendt（01a07130-214a-73f2-908d-281b41a11fba，原派发指定gpt-6-astra）；不写文件/运行DB或服务。审查通过后才单一writer实施，主控不并发写IAM。
@@ -1016,19 +1064,19 @@ IAM `f5f21a9` 仅收口七份当前文档，明确业务时间规则由业务代
 
 主控以IAM f5f21a9收口基线完成三面设计：DATA_MODEL §5.1、TECHNICAL_DESIGN §8.4、API_CONTRACT §7.4；CURRENT明确待设计审查。此时仅四文档变化，生产/Schema/测试仍70485c6对应字节；257链接/标准格式/diff通过。旧读取所需历史不变，禁止用收窄查询或扩大UNIQUE取代访问优化。
 
-| 项 | 本片边界 |
-| --- | --- |
-| Owner/writer | IAM/auth/principals；主控先收敛设计后停写，独立设计审查通过才续派单一writer |
-| 目标 | 两条现存全历史点查从代表性全表扫描转为有界访问，业务/API/事务行为不变 |
-| Schema | 只增ix_iam_contact_email(tenant_id,email_normalized)、ix_iam_membership_principal(tenant_id,principal_id)，完整非唯一B-tree，无predicate/INCLUDE，31→33索引 |
-| 保留 | 两个partial UNIQUE与其他所有表/列/约束/索引，47手写目录，Repository原SQL/Service/锁/生成物/依赖 |
-| 测试 | 新test/integration/identity-query-plans.integration.test.ts、test/fixtures/identity-query-plan-fixture.ts；原contract/schema与integration/schema只补相关索引断言 |
-| 粒度 | 计划用例不堆入catalog测试；fixture专管原SQL定位/合成数据/窄计划读取/隔离库，不建生产query框架或JWT/Redis依赖 |
-| 数据/验证 | 每表10万行含历史与tenant倾斜；实际原SQL、默认规划器EXPLAIN ANALYZE BUFFERS，点查块预算≤256，允许Index/Bitmap形态；保留合法历史重复/拒绝非法活跃重复，报告索引大小 |
-| 清理 | 测试只CREATE并登记/清理自身随机库，基准库/role/实例不变；不启停PG/Redis，不加入迁移或生产ALTER runner |
-| 文档范围 | 七份当前文档仅更新本片事实，不重写历史计数，不提前宣称全部SQL/API验收 |
-| 完成门 | 行为/计划RED→Schema→完整PG-only/lint/typecheck/contract/build/格式链接→主控规格→独立质量→主目录集成重跑 |
-| 非目标 | 其他JOIN/claim代表性计划、完整catalog drift、orphan/retention、API/运行/依赖升级或其他仓 |
+| 项           | 本片边界                                                                                                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/writer | IAM/auth/principals；主控先收敛设计后停写，独立设计审查通过才续派单一writer                                                                                       |
+| 目标         | 两条现存全历史点查从代表性全表扫描转为有界访问，业务/API/事务行为不变                                                                                             |
+| Schema       | 只增ix_iam_contact_email(tenant_id,email_normalized)、ix_iam_membership_principal(tenant_id,principal_id)，完整非唯一B-tree，无predicate/INCLUDE，31→33索引       |
+| 保留         | 两个partial UNIQUE与其他所有表/列/约束/索引，47手写目录，Repository原SQL/Service/锁/生成物/依赖                                                                   |
+| 测试         | 新test/integration/identity-query-plans.integration.test.ts、test/fixtures/identity-query-plan-fixture.ts；原contract/schema与integration/schema只补相关索引断言  |
+| 粒度         | 计划用例不堆入catalog测试；fixture专管原SQL定位/合成数据/窄计划读取/隔离库，不建生产query框架或JWT/Redis依赖                                                      |
+| 数据/验证    | 每表10万行含历史与tenant倾斜；实际原SQL、默认规划器EXPLAIN ANALYZE BUFFERS，点查块预算≤256，允许Index/Bitmap形态；保留合法历史重复/拒绝非法活跃重复，报告索引大小 |
+| 清理         | 测试只CREATE并登记/清理自身随机库，基准库/role/实例不变；不启停PG/Redis，不加入迁移或生产ALTER runner                                                             |
+| 文档范围     | 七份当前文档仅更新本片事实，不重写历史计数，不提前宣称全部SQL/API验收                                                                                             |
+| 完成门       | 行为/计划RED→Schema→完整PG-only/lint/typecheck/contract/build/格式链接→主控规格→独立质量→主目录集成重跑                                                           |
+| 非目标       | 其他JOIN/claim代表性计划、完整catalog drift、orphan/retention、API/运行/依赖升级或其他仓                                                                          |
 
 目前仅放行设计审查；源码需本节追加明确通过记录及writer/基线才实施。官方PG18索引语义已于2026-09-05核验，选定两索引还以本仓实际SQL和隔离合成计划为依据，不宣称全行业模板或线上SLO。
 
@@ -1055,10 +1103,10 @@ Arendt固定f878c3e确认PASS，无P1/P2；补充证据仍支持预算，唯一P
 
 用户指出 IAM 仅有 auth 一级模块，要求重新评估完整职责、技术方案及 SQL 覆盖。本轮先只读盘点，不以既有六个 RPC 的实现范围代替 IAM 全部设计范围；不新建空模块、不改契约或 Schema、不继续运维排障。既有局部验证证据保留，但不证明完整 IAM 已验收。
 
-| 任务 | 负责人/模型 | 基线与范围 | 验收与提交责任 |
-| --- | --- | --- | --- |
-| IAM-CAP-01：整体能力、目录与技术方案覆盖 | Root 主控/当前模型 | 日常 IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`，`codex/production-closure-docs`，干净 `5ba1c0a6fb3c55f4e6f859f088f9725842139bff`；读取 owner、设计、API 和业务实现 | 给出已有/缺失/待裁决矩阵与证据；主控只更新本任务记录，不改业务源码 |
-| IAM-CAP-02：SQL 与业务生命周期覆盖 | 原生只读审查 Agent/`gpt-5.6-sol`，启动后补名 | 同一固定 IAM 基线；只读 Schema、DATA_MODEL、Repository 与清理路径；先读 Root AGENTS、CODEBASE_MAP、SQL/TS 手册及 IAM 入口 | 列出表族、真实写入与查询、删除/retention/orphan 缺口及绝对路径行号；不写文件、不连接数据库、不启动服务、不提交；由主控核实结论 |
+| 任务                                     | 负责人/模型                                  | 基线与范围                                                                                                                                                                                       | 验收与提交责任                                                                                                                 |
+| ---------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| IAM-CAP-01：整体能力、目录与技术方案覆盖 | Root 主控/当前模型                           | 日常 IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`，`codex/production-closure-docs`，干净 `5ba1c0a6fb3c55f4e6f859f088f9725842139bff`；读取 owner、设计、API 和业务实现 | 给出已有/缺失/待裁决矩阵与证据；主控只更新本任务记录，不改业务源码                                                             |
+| IAM-CAP-02：SQL 与业务生命周期覆盖       | 原生只读审查 Agent/`gpt-5.6-sol`，启动后补名 | 同一固定 IAM 基线；只读 Schema、DATA_MODEL、Repository 与清理路径；先读 Root AGENTS、CODEBASE_MAP、SQL/TS 手册及 IAM 入口                                                                        | 列出表族、真实写入与查询、删除/retention/orphan 缺口及绝对路径行号；不写文件、不连接数据库、不启动服务、不提交；由主控核实结论 |
 
 Root 基线 `38ee5f97d8b162e3c8c5b036e4d60f481205a5b5`，现有任务外变更为 `kokoro-agent` 与 `.tmp/`，保持不动。R2-4 候选交付为独立工作树 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1`，当前未集成、未完成主控审查；旧 Carver handle 已不可用，不据旧状态重复派写。此轮目录和功能评估不依赖该索引候选。
 
@@ -1086,14 +1134,14 @@ R2-4 已从独立候选 `ab6e26b958901c33e4cb10f2518d0b3258c13cf1` 按文件范�
 
 独立审查在 IAM `229024b` 发现两个需要先修的契约阻断：RPC 将 `tenant_id` 放在请求体并直接信任，且 Proto 已声明的 Protovalidate 规则没有接入运行时。该片只修当前已有六个 RPC 的边界，不新增管理 API，不改数据库 Schema，不重命名业务模块。
 
-| 项 | 约束 |
-| --- | --- |
-| Owner/writer | `kokoro-iam`；一名实现 Agent 独占 worktree，主控规格审查、独立只读审查、主目录集成 |
-| 契约 | 从 RequestMagicLink、ConsumeMagicLink、Authorize 删除 body `tenant_id`；统一从受信 RPC metadata `x-kokoro-tenant-id` 读取并写入 Connect context；GetSession/Refresh/Logout 保留 token/session 自身的权威租户校验，不新增伪造字段 |
-| 校验 | 接入 `@bufbuild/protovalidate` 运行时 validator interceptor；错误统一为 InvalidArgument，不在错误消息中输出 token、email 或请求原值；保留业务 allow-list/policy 校验 |
-| 允许文件 | `contract/proto/**`、`src/generated/proto/**`（只由生成命令更新）、`src/modules/auth/rpc/**`、`src/app.ts`、`package.json`、`pnpm-lock.yaml`、直接相关 `test/contract/**`/`test/unit/**`、`docs/API_CONTRACT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`、`docs/ACCEPTANCE.md`、`contract/README.md` |
-| 禁止范围 | `database/schema.sql`、其他模块/子仓、共享服务、Redis reset、ORM/框架替换、通用 CommandBus、`domain/application/infrastructure` 空层 |
-| 验收 | Proto/生成物/provenance 一致；body tenant 被删除且 header 缺失/跨租户尝试拒绝；nonce/redirect 声明式规则真实拦截；`pnpm contract:check`、lint、typecheck、build、相关单测及 PG-only 真实集成通过 |
+| 项           | 约束                                                                                                                                                                                                                                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/writer | `kokoro-iam`；一名实现 Agent 独占 worktree，主控规格审查、独立只读审查、主目录集成                                                                                                                                                                                                                          |
+| 契约         | 从 RequestMagicLink、ConsumeMagicLink、Authorize 删除 body `tenant_id`；统一从受信 RPC metadata `x-kokoro-tenant-id` 读取并写入 Connect context；GetSession/Refresh/Logout 保留 token/session 自身的权威租户校验，不新增伪造字段                                                                            |
+| 校验         | 接入 `@bufbuild/protovalidate` 运行时 validator interceptor；错误统一为 InvalidArgument，不在错误消息中输出 token、email 或请求原值；保留业务 allow-list/policy 校验                                                                                                                                        |
+| 允许文件     | `contract/proto/**`、`src/generated/proto/**`（只由生成命令更新）、`src/modules/auth/rpc/**`、`src/app.ts`、`package.json`、`pnpm-lock.yaml`、直接相关 `test/contract/**`/`test/unit/**`、`docs/API_CONTRACT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/CURRENT.md`、`docs/ACCEPTANCE.md`、`contract/README.md` |
+| 禁止范围     | `database/schema.sql`、其他模块/子仓、共享服务、Redis reset、ORM/框架替换、通用 CommandBus、`domain/application/infrastructure` 空层                                                                                                                                                                        |
+| 验收         | Proto/生成物/provenance 一致；body tenant 被删除且 header 缺失/跨租户尝试拒绝；nonce/redirect 声明式规则真实拦截；`pnpm contract:check`、lint、typecheck、build、相关单测及 PG-only 真实集成通过                                                                                                            |
 
 该片不能把“服务 token + 任意 caller header”包装成最终端到端身份认证：metadata 只在受信 BFF/service boundary 内有效，后续需要由跨仓调用方统一注入并由部署网络/服务身份保护。IAM 不从未认证用户 body 读取租户事实。
 
@@ -1113,17 +1161,17 @@ R3-1 已按任务卡完成并集成到 IAM 日常主目录：实现 commit `9598
 
 R3-1 集成复验后，下一片回到 IAM 的 SQL 完整性主线。当前仅完成任务卡与只读盘点，未修改 IAM 源码、Schema 或契约；不把现有 `schema.integration` 的局部断言包装为全库 drift 验收。
 
-| 项 | 约束 |
-| --- | --- |
-| Owner/writer | `kokoro-iam`；Root 主控先收敛设计，SQL 只读审查 Agent 提供关系矩阵，设计通过后再派一名实现 writer |
-| 基线 | IAM 主目录已集成 `95980b0` + `73c11c0`；Root 当前 commit 由本任务板记录，保留 `kokoro-agent` 与 `.tmp/` 外部变更 |
-| 事实源 | `database/schema.sql` 继续是唯一可编辑 Schema；不添加第二份 catalog manifest，不创建 migration/runner，不改外键规则 |
-| 目标一 | fresh 临时库安装 canonical schema 后，以 `pg_catalog` 对比表、列、类型、NULL/default、PK/UNIQUE/CHECK、索引定义/谓词/键顺序；目标库只读，不自动修复 |
-| 目标二 | 对固定关系白名单做有界 orphan/tenant-consistency audit：只读、参数化、事务隔离、statement/lock/idle timeout、结果上限、稳定退出码；禁止 `count(*)` 扫全库、DELETE、自动修复或把孤儿当作可静默忽略 |
-| 目标三 | 修复 `SessionRepository` 父锁路径的缺失父行语义：refresh/认证结果校验不能因 session 行仍在而继续；Logout 按 R2-2 保留删除父资源下历史 session 的执行/重放窗口，必要时显式区分两种查询模式；先以真实 PG 场景形成 RED，再实现 |
-| 禁止范围 | 不新增管理 API、retention job、跨仓 writer、ORM/框架、外键、业务目录；不借 catalog 工具替代业务层状态机/删除策略 |
-| 设计文件 | 预计 `scripts/schema-catalog.ts`、`scripts/verify-schema-catalog.ts`、`scripts/audit-relations.ts` 与相应 integration/contract tests；最终位置须通过第 8 节放置表，若只需测试诊断不得建生产 query service |
-| 完成门 | 先三面设计与关系矩阵审查，再 RED→实现→独立审查→主目录 PG-only/lint/typecheck/test/build/contract/链接/格式；Redis、完整 provider、BFF consumer 仍单独计数 |
+| 项           | 约束                                                                                                                                                                                                                        |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/writer | `kokoro-iam`；Root 主控先收敛设计，SQL 只读审查 Agent 提供关系矩阵，设计通过后再派一名实现 writer                                                                                                                           |
+| 基线         | IAM 主目录已集成 `95980b0` + `73c11c0`；Root 当前 commit 由本任务板记录，保留 `kokoro-agent` 与 `.tmp/` 外部变更                                                                                                            |
+| 事实源       | `database/schema.sql` 继续是唯一可编辑 Schema；不添加第二份 catalog manifest，不创建 migration/runner，不改外键规则                                                                                                         |
+| 目标一       | fresh 临时库安装 canonical schema 后，以 `pg_catalog` 对比表、列、类型、NULL/default、PK/UNIQUE/CHECK、索引定义/谓词/键顺序；目标库只读，不自动修复                                                                         |
+| 目标二       | 对固定关系白名单做有界 orphan/tenant-consistency audit：只读、参数化、事务隔离、statement/lock/idle timeout、结果上限、稳定退出码；禁止 `count(*)` 扫全库、DELETE、自动修复或把孤儿当作可静默忽略                           |
+| 目标三       | 修复 `SessionRepository` 父锁路径的缺失父行语义：refresh/认证结果校验不能因 session 行仍在而继续；Logout 按 R2-2 保留删除父资源下历史 session 的执行/重放窗口，必要时显式区分两种查询模式；先以真实 PG 场景形成 RED，再实现 |
+| 禁止范围     | 不新增管理 API、retention job、跨仓 writer、ORM/框架、外键、业务目录；不借 catalog 工具替代业务层状态机/删除策略                                                                                                            |
+| 设计文件     | 预计 `scripts/schema-catalog.ts`、`scripts/verify-schema-catalog.ts`、`scripts/audit-relations.ts` 与相应 integration/contract tests；最终位置须通过第 8 节放置表，若只需测试诊断不得建生产 query service                   |
+| 完成门       | 先三面设计与关系矩阵审查，再 RED→实现→独立审查→主目录 PG-only/lint/typecheck/test/build/contract/链接/格式；Redis、完整 provider、BFF consumer 仍单独计数                                                                   |
 
 设计审查必须回答：关系白名单是否覆盖当前 15 表实际业务 JOIN/写入；catalog 对比是否归一 PG 自动对象而不放宽差异；无外键下哪些关系只能检测、哪些由事务保证；父锁缺失行如何映射为统一业务错误且不泄漏资源存在性；refresh/重放与 Logout 的不同父资源语义如何保持；历史/软删除/retention 不变量如何分开。未回答前不派发源码实现。
 
@@ -1193,14 +1241,14 @@ R2-6 已由主控在 IAM commit `729ccf5 refactor(iam): converge authentication 
 R2-6 后不能继续把 Tenant 管理代码放进 Authentication，也不能只创建一个空 `modules/tenant` 目录。SQL/API 只读盘点确认：
 `iam_tenant` 是当前 16 张表的范围父事实，当前只有 active 准入读取，没有创建、查询、分页、停用或恢复 writer/API。因此下一片先收敛真实 Tenant 管理能力。
 
-| 项 | 当前裁决 |
-| --- | --- |
-| owner | `kokoro-iam/modules/tenant`；唯一 writer；Site/Host 仍归 System |
-| 候选操作 | CreateTenant、GetTenant、ListTenants、DisableTenant、EnableTenant |
-| 明确排除 | terminate、purge、级联删除、Identity/Organization/Role 管理、public HTTP、通用 ExecuteCommand |
-| SQL | 继续使用现有 `iam_tenant(id TEXT, status active/disabled, created_at, updated_at)`；不先加 version/deleted_at/metadata/索引；无 FK |
-| 必须先定 | trusted control-plane actor/service identity、权限与 tenant grant、ID 分配、幂等/replay、并发条件、审计 actor、keyset cursor |
-| 文档门 | IAM `TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 已记录候选边界，但仍是设计中，不得生成 Proto 或改 Schema |
+| 项       | 当前裁决                                                                                                                           |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| owner    | `kokoro-iam/modules/tenant`；唯一 writer；Site/Host 仍归 System                                                                    |
+| 候选操作 | CreateTenant、GetTenant、ListTenants、DisableTenant、EnableTenant                                                                  |
+| 明确排除 | terminate、purge、级联删除、Identity/Organization/Role 管理、public HTTP、通用 ExecuteCommand                                      |
+| SQL      | 继续使用现有 `iam_tenant(id TEXT, status active/disabled, created_at, updated_at)`；不先加 version/deleted_at/metadata/索引；无 FK |
+| 必须先定 | trusted control-plane actor/service identity、权限与 tenant grant、ID 分配、幂等/replay、并发条件、审计 actor、keyset cursor       |
+| 文档门   | IAM `TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 已记录候选边界，但仍是设计中，不得生成 Proto 或改 Schema       |
 
 完成条件：三面文档经独立只读审查 PASS；明确管理身份和 bootstrap 入口；机器 Proto/生成链、SQL、错误、分页、幂等和审计语义一致；
 随后再由单一 IAM writer 实现模块、RPC、Repository/Service、真实 PG 并发回归和完整门禁。未解决的管理身份不是运维阻塞，
@@ -1281,11 +1329,11 @@ receipt 的 command kind/status/result 一致性、管理 audit 明确列和认�
 
 下一切片进入 Tenant 实现，但仍保持单一 IAM writer：
 
-| 任务 | Owner | 写入范围 | 先决条件 | 交付门 |
-| --- | --- | --- | --- | --- |
+| 任务        | Owner                          | 写入范围                                                                                                                                                    | 先决条件                                                          | 交付门                                                                        |
+| ----------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | IAM-R2-7-I1 | `kokoro-iam` Tenant 实现 Agent | `tenant.proto`、generated/provenance、`database/schema.sql` 的 tenant receipt + security-event 管理列/约束、relation allow-list、对应 contract/schema tests | 以 IAM `b564c2b` 三面设计为唯一输入；不得新造响应或改现有认证契约 | Proto lint/generate/contract、fresh schema、catalog、relation audit、独立审查 |
-| IAM-R2-7-I2 | 同一 Tenant 实现 Agent | `src/modules/tenant/`、management interceptor/context、RPC registration、Repository/Service、canonical/cursor parser、事务/receipt/audit | I1 机器契约与 schema 先提交且主控审查通过 | typecheck/lint/build、真实 PG 并发/回放/未知提交/权限测试、独立审查 |
-| IAM-R2-7-I3 | 主控集成 | docs/CURRENT、ACCEPTANCE、技术方案证据；主目录验证与 commit 集成 | I1/I2 交付后 | full gates + isolated PG/Redis integration + final review |
+| IAM-R2-7-I2 | 同一 Tenant 实现 Agent         | `src/modules/tenant/`、management interceptor/context、RPC registration、Repository/Service、canonical/cursor parser、事务/receipt/audit                    | I1 机器契约与 schema 先提交且主控审查通过                         | typecheck/lint/build、真实 PG 并发/回放/未知提交/权限测试、独立审查           |
+| IAM-R2-7-I3 | 主控集成                       | docs/CURRENT、ACCEPTANCE、技术方案证据；主目录验证与 commit 集成                                                                                            | I1/I2 交付后                                                      | full gates + isolated PG/Redis integration + final review                     |
 
 I1/I2 由同一个 writer 在独立工作树按小切片提交；主控不与其并发写 IAM。任何新增一级目录、跨模块 import 或契约字段必须先回到
 `TECHNICAL_DESIGN §0.5`、`API_CONTRACT §0.5`、`DATA_MODEL §0.6` 的放置/一致性表；不得创建 `services/`、`repositories/`、`postgres/`、
@@ -1425,16 +1473,16 @@ import 数为 0，`pnpm contract:check` 通过；目录不再因视觉扁平化�
 `timeoutMs()` 可以作为唯一 transport 输入，但 `pg` 8.16 的 `QueryConfig.signal` 不能证明正在执行的 PostgreSQL 查询会被取消。
 因此先实施应用执行预算与阶段检查，再单独验证 PostgreSQL cancel adapter；不更换 `pg`，不把 AbortSignal 误写成事务已回滚。
 
-| 项 | 设计裁决 |
-| --- | --- |
-| Owner | IAM `transport/rpc` 提取请求预算；各业务 module 接收中性预算；Authentication transaction 保持 COMMIT/unknown-commit owner |
-| 传输输入 | 只读取 `HandlerContext.signal`、`timeoutMs()`；业务模块不得接收 Connect `HandlerContext` |
-| 业务类型 | 使用中性 `ExecutionBudget`（signal、deadline、remaining、阶段检查），不创建 CommandBus、全局 timeout wrapper 或 `infrastructure/cancellation` |
-| 阶段语义 | 进入 handler、获取连接、BEGIN、每个明显 SQL/provider 阶段、COMMIT 前检查；COMMIT 开始后仍进入未知提交恢复 |
-| PostgreSQL | 继续使用显式连接/语句/lock/idle-in-transaction budget；在 cancel adapter 未经真实 PG 证明前，不宣称 query 已被 AbortSignal 中止 |
-| 错误 | 先与现有 wire ErrorCode 对齐；不新增无法由机器契约表达的错误，不把客户端取消解释成事实未提交 |
-| 响应预算 | recovery、rollback、release 和错误映射必须受总预算/关闭预算约束；超时不重复执行业务 callback |
-| 验证 | unit 的 signal/deadline 边界；真实 PG 的 statement/lock timeout、连接销毁、receipt recovery；真实 Connect transport 的断开/超时；Tenant command 与 Authentication receipt 分开验证 |
+| 项         | 设计裁决                                                                                                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner      | IAM `transport/rpc` 提取请求预算；各业务 module 接收中性预算；Authentication transaction 保持 COMMIT/unknown-commit owner                                                          |
+| 传输输入   | 只读取 `HandlerContext.signal`、`timeoutMs()`；业务模块不得接收 Connect `HandlerContext`                                                                                           |
+| 业务类型   | 使用中性 `ExecutionBudget`（signal、deadline、remaining、阶段检查），不创建 CommandBus、全局 timeout wrapper 或 `infrastructure/cancellation`                                      |
+| 阶段语义   | 进入 handler、获取连接、BEGIN、每个明显 SQL/provider 阶段、COMMIT 前检查；COMMIT 开始后仍进入未知提交恢复                                                                          |
+| PostgreSQL | 继续使用显式连接/语句/lock/idle-in-transaction budget；在 cancel adapter 未经真实 PG 证明前，不宣称 query 已被 AbortSignal 中止                                                    |
+| 错误       | 先与现有 wire ErrorCode 对齐；不新增无法由机器契约表达的错误，不把客户端取消解释成事实未提交                                                                                       |
+| 响应预算   | recovery、rollback、release 和错误映射必须受总预算/关闭预算约束；超时不重复执行业务 callback                                                                                       |
+| 验证       | unit 的 signal/deadline 边界；真实 PG 的 statement/lock timeout、连接销毁、receipt recovery；真实 Connect transport 的断开/超时；Tenant command 与 Authentication receipt 分开验证 |
 
 实现放行前必须完成 `TECHNICAL_DESIGN.md`、`API_CONTRACT.md`、`RELIABILITY.md` 三面一致性检查；第一切片只允许做应用预算和
 阶段检查，第二切片才评估 PostgreSQL cancel adapter。任何新目录必须先证明独立变化原因；默认不新增顶层技术目录。
@@ -1521,11 +1569,11 @@ generated 边界迁移和 IAM SDK，均不得先建空目录或重复 wire model
 IAM `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-iam`（`codex/production-closure-docs`，`60e0fe3`）。
 本轮未提交文档由主控持有；审查员以该工作树快照审查并标明尚未绑定最终提交。都不启动依赖、不更改测试数据。
 
-| ID | 优先级/目标 | 执行角色/模式/模型 | 范围与完成条件 | 依赖/交付/验收 |
-| --- | --- | --- | --- | --- |
-| IAM-R4-PLAN | P1：收敛目标、Zod/class 边界与验收标准 | 主控，唯一 writer，当前模型 | Root TS 手册与本任务板；IAM TECHNICAL_DESIGN/API_CONTRACT；只改文档，不重写行为 | 对照实际代码及官方语义；文档 diff/link 检查后由主控提交 |
-| IAM-R4-AUDIT | P1：全仓手写 TS 职责审计 | Ohm，只读，gpt-5.6-luna（原 sol 容量不足） | IAM `src/**`（排除生成物）；按真实职责列出最优先切片，区别正确窄化与散落输入解析，不机械统计 typeof | 与 PLAN 并行；交付文件/行号/建议边界/保留行为；主控复核，不提交 |
-| IAM-R4-REVIEW | P1：规范及新规则一致性审查 | Chandrasekhar，只读，gpt-5.6-luna | 当前 Root TS 手册增量及 IAM 技术方案增量；检查 Zod/class/Proto/shared/SDK 规则是否互相冲突或过度强制 | 与 AUDIT 并行；交付明确问题和修正建议；主控整合后提交 |
+| ID            | 优先级/目标                            | 执行角色/模式/模型                         | 范围与完成条件                                                                                       | 依赖/交付/验收                                                  |
+| ------------- | -------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| IAM-R4-PLAN   | P1：收敛目标、Zod/class 边界与验收标准 | 主控，唯一 writer，当前模型                | Root TS 手册与本任务板；IAM TECHNICAL_DESIGN/API_CONTRACT；只改文档，不重写行为                      | 对照实际代码及官方语义；文档 diff/link 检查后由主控提交         |
+| IAM-R4-AUDIT  | P1：全仓手写 TS 职责审计               | Ohm，只读，gpt-5.6-luna（原 sol 容量不足） | IAM `src/**`（排除生成物）；按真实职责列出最优先切片，区别正确窄化与散落输入解析，不机械统计 typeof  | 与 PLAN 并行；交付文件/行号/建议边界/保留行为；主控复核，不提交 |
+| IAM-R4-REVIEW | P1：规范及新规则一致性审查             | Chandrasekhar，只读，gpt-5.6-luna          | 当前 Root TS 手册增量及 IAM 技术方案增量；检查 Zod/class/Proto/shared/SDK 规则是否互相冲突或过度强制 | 与 AUDIT 并行；交付明确问题和修正建议；主控整合后提交           |
 
 审计结束后才为实现补充精确写入文件集和测试断言；本表不授予业务源码、SQL、机器契约、lockfile 或其他子仓写入权。
 
@@ -1542,28 +1590,28 @@ canonical codec，交付 commit 为 IAM `5019601`；随后角色文件切片继�
 
 #### IAM-R4-IMPLEMENT-01：Tenant 管理认证边界
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/modules/tenant`；主控单一 writer；transport 仍只依赖 facade |
-| 允许文件 | `src/modules/tenant/tenant-management-authentication.ts`、同目录新增职责文件、同目录唯一 canonical codec、对应 unit/contract tests、architecture fixture/import 断言、必要的 package/lockfile |
-| 目标 | 拆出 types/constants/error/request/assertion/credential 等真实变化原因；将 JCS/base64url codec 统一为 tenant 内唯一实现；保留现有 facade exports 和调用方路径 |
-| Zod/class | JWS header/claims 或配置等动态输入使用有 owner 的 Zod schema；Proto RPC 不增加第二份 Zod schema；不强行把 DTO、claims 或 Row 改成 class |
-| 禁止 | 不改 SQL、Proto 字段、RPC/HTTP 语义、端口、Redis key、跨仓；不建 `domain/application/infrastructure/ports/postgres/redis/prisma/utils` 空层；不让 `parse` 变成 `as` 逃生口 |
-| 验收 | unit tenant auth、canonical digest/cursor 回归、contract transport、architecture import boundary、lint、typecheck、build；之后主控在当前 IAM 工作树复验 |
+| 项        | 决策                                                                                                                                                                                          |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner     | `kokoro-iam/modules/tenant`；主控单一 writer；transport 仍只依赖 facade                                                                                                                       |
+| 允许文件  | `src/modules/tenant/tenant-management-authentication.ts`、同目录新增职责文件、同目录唯一 canonical codec、对应 unit/contract tests、architecture fixture/import 断言、必要的 package/lockfile |
+| 目标      | 拆出 types/constants/error/request/assertion/credential 等真实变化原因；将 JCS/base64url codec 统一为 tenant 内唯一实现；保留现有 facade exports 和调用方路径                                 |
+| Zod/class | JWS header/claims 或配置等动态输入使用有 owner 的 Zod schema；Proto RPC 不增加第二份 Zod schema；不强行把 DTO、claims 或 Row 改成 class                                                       |
+| 禁止      | 不改 SQL、Proto 字段、RPC/HTTP 语义、端口、Redis key、跨仓；不建 `domain/application/infrastructure/ports/postgres/redis/prisma/utils` 空层；不让 `parse` 变成 `as` 逃生口                    |
+| 验收      | unit tenant auth、canonical digest/cursor 回归、contract transport、architecture import boundary、lint、typecheck、build；之后主控在当前 IAM 工作树复验                                       |
 
 该切片完成后再派发 RPC interceptor；不得与同仓另一个写入 Agent 并行。
 
 #### IAM-R4-IMPLEMENT-02：Tenant Service 与 Cursor 角色边界
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/modules/tenant`；同一主控 writer；不与其他 IAM 源码 Agent 并行 |
+| 项       | 决策                                                                                                                                                                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam/modules/tenant`；同一主控 writer；不与其他 IAM 源码 Agent 并行                                                                                                                                                                               |
 | 允许文件 | `tenant.service.ts`、`tenant.cursor.ts`、`tenant.repository.ts` 及其同 owner 的 `types/constants/policy/validation/schema/fingerprint/repository.mapper/repository.query` 文件、受影响的 architecture fixture/import、IAM CURRENT/INDEX/TECHNICAL_DESIGN |
-| 目标 | Service 只保留 Tenant 生命周期用例/授权/事务编排；Cursor facade 只保留 encode/decode；Repository 只保留 PostgreSQL SQL/事务编排；模块级类型、常量、Zod schema、校验、Row mapper 和 fingerprint 各有明确 owner |
-| 保留 | Proto/SQL/API 字段、错误语义、分页 cursor wire 格式、签名/HMAC、事务/幂等行为；函数体内局部变量不机械拆分 |
-| 删除 | 旧 `tenant.ts` 实现 helper 和 Service/Cursor 顶部/尾部的跨职责模块声明；不保留 alias/re-export 兼容旧路径（公开 cursor facade 的受控 type export 除外） |
-| 验收 | `pnpm typecheck`、`pnpm lint`、Tenant unit/contract、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`；真实 integration 另绑定实际依赖输出 |
-| 状态 | 已交付 `bdd55bd`；静态/单元/契约门禁通过，真实 integration 需绑定本 commit 补验 |
+| 目标     | Service 只保留 Tenant 生命周期用例/授权/事务编排；Cursor facade 只保留 encode/decode；Repository 只保留 PostgreSQL SQL/事务编排；模块级类型、常量、Zod schema、校验、Row mapper 和 fingerprint 各有明确 owner                                            |
+| 保留     | Proto/SQL/API 字段、错误语义、分页 cursor wire 格式、签名/HMAC、事务/幂等行为；函数体内局部变量不机械拆分                                                                                                                                                |
+| 删除     | 旧 `tenant.ts` 实现 helper 和 Service/Cursor 顶部/尾部的跨职责模块声明；不保留 alias/re-export 兼容旧路径（公开 cursor facade 的受控 type export 除外）                                                                                                  |
+| 验收     | `pnpm typecheck`、`pnpm lint`、Tenant unit/contract、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`；真实 integration 另绑定实际依赖输出                                                                                            |
+| 状态     | 已交付 `bdd55bd`；静态/单元/契约门禁通过，真实 integration 需绑定本 commit 补验                                                                                                                                                                          |
 
 IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删除、`TenantRepositoryPort` -> `TenantRepository` 命名收敛、
 `PostgresTenantRepository` composition root、role-file dependency fixture 和 generated 未改动事实；当前 commit 实际通过
@@ -1572,79 +1620,78 @@ IAM-R4-IMPLEMENT-02 交付：IAM commit `bdd55bd`。主控复核了旧路径删�
 `request-context.interceptor.ts` 的 transport 责任拆分，然后处理 `config/tenant-management.ts`、authentication transaction 和 receipt parser；
 每片继续单一 writer、独立 commit、主控复验。
 
-
 #### IAM-R4-IMPLEMENT-03：RPC interceptor 责任边界
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/src/transport/rpc`；与业务 module 同一主控 writer，禁止并行写入 |
+| 项       | 决策                                                                                                                                                                                                                                                                                                              |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam/src/transport/rpc`；与业务 module 同一主控 writer，禁止并行写入                                                                                                                                                                                                                                       |
 | 允许文件 | 删除 `interceptors/request-context.interceptor.ts`；新增 `rpc.constants.ts`、`request-id.ts`、`tenant-context.interceptor.ts`、`protovalidate.interceptor.ts`、`request-logging.interceptor.ts`；同步 server/handler/workload/tenant-management import、architecture fixture、契约测试和 CURRENT/TECHNICAL_DESIGN |
-| 目标 | 一个 interceptor 文件只拥有一个横切责任；RPC server 只编排顺序；业务 handler 不解析 header；Proto/Protovalidate 仍是唯一 wire validation |
-| 保留 | request ID 优先级、tenant header/context、Protovalidate 错误映射、日志字段、interceptor 顺序和对外错误码 |
-| 删除 | 旧混合文件、旧 import 路径和兼容 re-export；不新增 application/domain/infrastructure 层，不改 Proto/SQL/API 字段 |
-| 验收 | `pnpm typecheck`、`pnpm lint`、RPC contract tests、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check` |
-| 状态 | 已完成并提交：IAM commit `0646489`；主控复验后，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过 |
+| 目标     | 一个 interceptor 文件只拥有一个横切责任；RPC server 只编排顺序；业务 handler 不解析 header；Proto/Protovalidate 仍是唯一 wire validation                                                                                                                                                                          |
+| 保留     | request ID 优先级、tenant header/context、Protovalidate 错误映射、日志字段、interceptor 顺序和对外错误码                                                                                                                                                                                                          |
+| 删除     | 旧混合文件、旧 import 路径和兼容 re-export；不新增 application/domain/infrastructure 层，不改 Proto/SQL/API 字段                                                                                                                                                                                                  |
+| 验收     | `pnpm typecheck`、`pnpm lint`、RPC contract tests、architecture、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`                                                                                                                                                                                            |
+| 状态     | 已完成并提交：IAM commit `0646489`；主控复验后，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过                                                                                                                                                                                          |
 
 #### IAM-R4-IMPLEMENT-04：收敛过度碎片化的 Tenant 文件树
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/src/modules/tenant`；主控单一 writer，禁止与其他 IAM 源码 Agent 并行写入 |
-| 背景 | R4-IMPLEMENT-01/02 为消除混合职责临时拆出多个 `*.types/constants/schema/mapper/query` 文件；审查确认其中一部分没有独立消费者，过渡树的 87 个手写 TS 反而增加阅读跳转。 |
-| 目标 | 按业务 owner 收敛为 `tenant.ts`、`tenant.constants.ts`、`tenant.validation.ts`、`tenant.policy.ts`、`tenant.error.ts`、`tenant.service.ts`、`tenant.repository.ts`、`tenant.cursor.ts`、`management/`、`encoding/`；同一职责的私有 type/const/schema/helper 回到 owner 文件。 |
-| 允许文件 | Tenant 源码、直接相关 architecture fixture/unit/contract 测试、IAM `CURRENT/INDEX/TECHNICAL_DESIGN`；不改 Proto 字段、SQL、错误码、事务/幂等语义、生成物或跨仓。 |
-| 明确规则 | 不恢复旧大杂烩；`service` 不放 wire/SQL，`repository` 可放本 owner Row/mapper，`cursor` 可放本 codec 的 Zod schema/私有算法；不创建 `postgres/`、`redis/`、`Port`、alias 或兼容 re-export。 |
-| 删除项 | `tenant.service.types.ts`、`tenant.repository.types/mapper/query.ts`、无独立消费者的 cursor 辅助文件及旧 `tenant.types.ts` 路径；删除引用和过时架构断言。 |
-| 验收 | 先保存行为测试基线；`pnpm test:unit`、Tenant contract/architecture、typecheck、lint、build、contract:check、`git diff --check`；再绑定当前 commit 的 PG/Redis integration。 |
-| 状态 | 已完成并提交：IAM commit `ed5450b`；78 个手写 TS，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。真实 PG/Redis integration 仍待绑定该 commit；不把“文件更少”单独视为质量证据。 |
+| 项       | 决策                                                                                                                                                                                                                                                                          |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam/src/modules/tenant`；主控单一 writer，禁止与其他 IAM 源码 Agent 并行写入                                                                                                                                                                                          |
+| 背景     | R4-IMPLEMENT-01/02 为消除混合职责临时拆出多个 `*.types/constants/schema/mapper/query` 文件；审查确认其中一部分没有独立消费者，过渡树的 87 个手写 TS 反而增加阅读跳转。                                                                                                        |
+| 目标     | 按业务 owner 收敛为 `tenant.ts`、`tenant.constants.ts`、`tenant.validation.ts`、`tenant.policy.ts`、`tenant.error.ts`、`tenant.service.ts`、`tenant.repository.ts`、`tenant.cursor.ts`、`management/`、`encoding/`；同一职责的私有 type/const/schema/helper 回到 owner 文件。 |
+| 允许文件 | Tenant 源码、直接相关 architecture fixture/unit/contract 测试、IAM `CURRENT/INDEX/TECHNICAL_DESIGN`；不改 Proto 字段、SQL、错误码、事务/幂等语义、生成物或跨仓。                                                                                                              |
+| 明确规则 | 不恢复旧大杂烩；`service` 不放 wire/SQL，`repository` 可放本 owner Row/mapper，`cursor` 可放本 codec 的 Zod schema/私有算法；不创建 `postgres/`、`redis/`、`Port`、alias 或兼容 re-export。                                                                                   |
+| 删除项   | `tenant.service.types.ts`、`tenant.repository.types/mapper/query.ts`、无独立消费者的 cursor 辅助文件及旧 `tenant.types.ts` 路径；删除引用和过时架构断言。                                                                                                                     |
+| 验收     | 先保存行为测试基线；`pnpm test:unit`、Tenant contract/architecture、typecheck、lint、build、contract:check、`git diff --check`；再绑定当前 commit 的 PG/Redis integration。                                                                                                   |
+| 状态     | 已完成并提交：IAM commit `ed5450b`；78 个手写 TS，architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。真实 PG/Redis integration 仍待绑定该 commit；不把“文件更少”单独视为质量证据。                                                                     |
 
 #### IAM-R4-IMPLEMENT-05：收敛 Tenant RPC 的 generated 类型边界
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/src/transport/rpc/interceptors/`；主控单一 writer |
-| 背景 | Tenant management interceptor 当前把泛型 `request.message` 强制转换为 `Record<string, unknown>`，并用数字 1/2 猜 generated `TenantStatus`；这违反“wire 类型只在 transport 解析、使用 generated enum”的边界。 |
-| 目标 | 使用 generated request message 的 `$typeName` 进行命名类型守卫；使用 generated `TenantStatus` 映射；将独立的 wire-to-canonical 映射放入语义明确的 `tenant-management-request.ts`，interceptor 只做认证编排；不在业务模块复制 Proto DTO。 |
-| 允许文件 | 该 interceptor、同一 transport 边界的 `tenant-management-request.ts` typed mapper、直接的 Tenant transport contract/architecture/unit 测试、CURRENT/TECHNICAL_DESIGN；不改 Proto 字段、SQL、业务错误码、认证签名或 handler 行为。 |
-| 明确规则 | 保留 Proto/Protovalidate 为唯一 wire validation；不为同一 RPC 引入 Zod；不把 generated 类型下沉到 Service/Repository；未知 operation/type 继续 fail-closed。 |
-| 删除项 | `Record<string, unknown>` 的无主 cast、硬编码 enum 数字和重复 status 猜测逻辑（无兼容 alias）。 |
-| 验收 | `pnpm typecheck`、Tenant contract/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
-| 状态 | 已完成并提交：IAM commit `d5ae46c`（文档后续同步于 `d898fc8`）；typed mapper 已从 interceptor 分离，消除无主 `Record<string, unknown>` cast 和硬编码 enum 数字；architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。 |
+| 项       | 决策                                                                                                                                                                                                                                       |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | `kokoro-iam/src/transport/rpc/interceptors/`；主控单一 writer                                                                                                                                                                              |
+| 背景     | Tenant management interceptor 当前把泛型 `request.message` 强制转换为 `Record<string, unknown>`，并用数字 1/2 猜 generated `TenantStatus`；这违反“wire 类型只在 transport 解析、使用 generated enum”的边界。                               |
+| 目标     | 使用 generated request message 的 `$typeName` 进行命名类型守卫；使用 generated `TenantStatus` 映射；将独立的 wire-to-canonical 映射放入语义明确的 `tenant-management-request.ts`，interceptor 只做认证编排；不在业务模块复制 Proto DTO。   |
+| 允许文件 | 该 interceptor、同一 transport 边界的 `tenant-management-request.ts` typed mapper、直接的 Tenant transport contract/architecture/unit 测试、CURRENT/TECHNICAL_DESIGN；不改 Proto 字段、SQL、业务错误码、认证签名或 handler 行为。          |
+| 明确规则 | 保留 Proto/Protovalidate 为唯一 wire validation；不为同一 RPC 引入 Zod；不把 generated 类型下沉到 Service/Repository；未知 operation/type 继续 fail-closed。                                                                               |
+| 删除项   | `Record<string, unknown>` 的无主 cast、硬编码 enum 数字和重复 status 猜测逻辑（无兼容 alias）。                                                                                                                                            |
+| 验收     | `pnpm typecheck`、Tenant contract/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。                                                                                                   |
+| 状态     | 已完成并提交：IAM commit `d5ae46c`（文档后续同步于 `d898fc8`）；typed mapper 已从 interceptor 分离，消除无主 `Record<string, unknown>` cast 和硬编码 enum 数字；architecture 49、unit 393、typecheck、lint、build、contract:check 均通过。 |
 
 #### IAM-R4-IMPLEMENT-06：收敛 Tenant management 配置的 Zod 输入边界
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam/src/config/tenant-management.ts`；主控单一 writer |
-| 背景 | 当前配置文件同时承担 JSON 形状检查、未知字段拒绝、业务范围校验、secret materialization、rotation window 和 digest；大量 `typeof`/`Array.isArray`/无主 `as` 使边界难以维护。 |
-| 目标 | 新增一个有明确 owner 的 `tenant-management.schema.ts`，用 Zod 解析 JSON document 的结构、必填字段、嵌套 strict object 和基础类型；`tenant-management.ts` 只保留 secret/key materialization、跨字段 policy、rotation 和输出组装。 |
-| 允许文件 | `src/config/tenant-management.ts`、`src/config/tenant-management.schema.ts`、配置 unit/architecture 测试、CURRENT/TECHNICAL_DESIGN；不改配置字段名、secret reference 语义、错误前缀、Proto、SQL 或运行时 env loader。 |
-| 明确规则 | Zod 只负责动态输入 shape；approved policy、HTTPS 规则、caller 唯一性、scope 完整性、secret bytes 和 rotation window 仍由命名业务校验负责；不创建 `config/utils.ts` 或全局 schema registry。 |
-| 删除项 | `TenantManagementDocument`/`RawCallerCredential` 的手写未知 shape、重复 `requiredString`/对象数组猜测和对应无主 cast；不保留双轨 parser。 |
-| 验收 | `pnpm typecheck`、配置 unit/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。 |
-| 状态 | 已完成并提交：IAM commit `903afef`；配置 unit、architecture 50、unit 394、typecheck、lint、build、contract:check 均通过；Zod 只负责动态 document shape，业务 policy 与 secret materialization 仍由 config owner 负责。真实 PG/Redis integration 仍待绑定该 commit。 |
+| 项       | 决策                                                                                                                                                                                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam/src/config/tenant-management.ts`；主控单一 writer                                                                                                                                                                                                       |
+| 背景     | 当前配置文件同时承担 JSON 形状检查、未知字段拒绝、业务范围校验、secret materialization、rotation window 和 digest；大量 `typeof`/`Array.isArray`/无主 `as` 使边界难以维护。                                                                                         |
+| 目标     | 新增一个有明确 owner 的 `tenant-management.schema.ts`，用 Zod 解析 JSON document 的结构、必填字段、嵌套 strict object 和基础类型；`tenant-management.ts` 只保留 secret/key materialization、跨字段 policy、rotation 和输出组装。                                    |
+| 允许文件 | `src/config/tenant-management.ts`、`src/config/tenant-management.schema.ts`、配置 unit/architecture 测试、CURRENT/TECHNICAL_DESIGN；不改配置字段名、secret reference 语义、错误前缀、Proto、SQL 或运行时 env loader。                                               |
+| 明确规则 | Zod 只负责动态输入 shape；approved policy、HTTPS 规则、caller 唯一性、scope 完整性、secret bytes 和 rotation window 仍由命名业务校验负责；不创建 `config/utils.ts` 或全局 schema registry。                                                                         |
+| 删除项   | `TenantManagementDocument`/`RawCallerCredential` 的手写未知 shape、重复 `requiredString`/对象数组猜测和对应无主 cast；不保留双轨 parser。                                                                                                                           |
+| 验收     | `pnpm typecheck`、配置 unit/architecture、`pnpm lint`、`pnpm test:unit`、`pnpm build`、`pnpm contract:check`、`git diff --check`。                                                                                                                                  |
+| 状态     | 已完成并提交：IAM commit `903afef`；配置 unit、architecture 50、unit 394、typecheck、lint、build、contract:check 均通过；Zod 只负责动态 document shape，业务 policy 与 secret materialization 仍由 config owner 负责。真实 PG/Redis integration 仍待绑定该 commit。 |
 
 #### IAM-DOCS-01：校正 IAM 活跃文档与源码事实
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | `kokoro-iam` 的 README、INDEX、docs/CURRENT、TECHNICAL_DESIGN、API_CONTRACT；主控单一 writer |
-| 背景 | 代码切片已删除 `request-context.interceptor.ts`、收敛 Tenant 文件并新增配置 schema，但若干活跃文档仍引用旧路径、旧 commit、旧文件数量和旧验收数字；这会让后续 Agent 按过时目录继续设计。 |
-| 目标 | 只校正当前事实入口和 active links：当前源码树、80 个手写 TS、最新已验证 commit、RPC interceptor/request mapper、配置 Zod owner、未完成能力和真实验证边界；历史 ACCEPTANCE 记录保留但明确历史性质。 |
-| 允许文件 | IAM `README.md`、`INDEX.md`、`docs/CURRENT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、必要的文档索引/fixture；不改业务代码、Proto、SQL、生成物。 |
-| 明确规则 | 文档不宣称完整 IAM、生产安全材料、PG/Redis integration、Docker/provider/consumer smoke 已完成；不把目标树写成当前树；不恢复旧路径或复制机器契约。 |
-| 验收 | `rg` 旧 active path 检查、Markdown 链接存在性检查、`git diff --check`；文档变更不替代代码/集成验证。 |
-| 状态 | 已完成并提交：IAM `0aae736`；Markdown 链接 0 个错误、active path 检查通过、`git diff --check` 通过。文档变更不替代代码/集成验证。 |
+| 项       | 决策                                                                                                                                                                                               |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam` 的 README、INDEX、docs/CURRENT、TECHNICAL_DESIGN、API_CONTRACT；主控单一 writer                                                                                                       |
+| 背景     | 代码切片已删除 `request-context.interceptor.ts`、收敛 Tenant 文件并新增配置 schema，但若干活跃文档仍引用旧路径、旧 commit、旧文件数量和旧验收数字；这会让后续 Agent 按过时目录继续设计。           |
+| 目标     | 只校正当前事实入口和 active links：当前源码树、80 个手写 TS、最新已验证 commit、RPC interceptor/request mapper、配置 Zod owner、未完成能力和真实验证边界；历史 ACCEPTANCE 记录保留但明确历史性质。 |
+| 允许文件 | IAM `README.md`、`INDEX.md`、`docs/CURRENT.md`、`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、必要的文档索引/fixture；不改业务代码、Proto、SQL、生成物。                                     |
+| 明确规则 | 文档不宣称完整 IAM、生产安全材料、PG/Redis integration、Docker/provider/consumer smoke 已完成；不把目标树写成当前树；不恢复旧路径或复制机器契约。                                                  |
+| 验收     | `rg` 旧 active path 检查、Markdown 链接存在性检查、`git diff --check`；文档变更不替代代码/集成验证。                                                                                               |
+| 状态     | 已完成并提交：IAM `0aae736`；Markdown 链接 0 个错误、active path 检查通过、`git diff --check` 通过。文档变更不替代代码/集成验证。                                                                  |
 
 #### IAM-ARCH-01：重置 IAM 总体 TypeScript 架构基线
 
-| 项 | 决策 |
-| --- | --- |
-| Owner | Root 主控；`kokoro-iam` 单一写入 Agent；本阶段只更新设计与任务卡，不改业务代码 |
-| 背景 | 当前局部切片已通过静态门禁，但运行框架（Node HTTP/Connect Node）、生成物位置（`src/generated`）、事实 owner 迁移、文件粒度和工具链基线尚未一次收敛；不能把过渡态称为顶级完成态。 |
-| 设计结论 | module-first；Fastify + Connect Fastify 作为目标 transport；`pg` + 唯一 `database/schema.sql`；`contract/proto`/`openapi` 为编辑源，生成物最终统一到 `contract/generated/typescript`；Zod 负责动态输入边界，Proto/Protovalidate 负责 RPC，class 只用于真实不变量/状态；模块错误、wire 错误、SDK 错误分层。 |
-| 目标树 | 见 IAM `docs/TECHNICAL_DESIGN.md` §0.2.2；不预建空的 identity/organization/audit 目录，不创建 `domain/application/infrastructure/ports/postgres/redis/prisma` 模板层。 |
-| 依赖顺序 | `ARCH-02` transport 框架 → `ARCH-03` generated cutover → `ARCH-04` 大文件职责复核 → 业务 owner 迁移 → SDK/跨仓 consumer → 真实依赖与发布 smoke。 |
+| 项       | 决策                                                                                                                                                                                                                                                                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | Root 主控；`kokoro-iam` 单一写入 Agent；本阶段只更新设计与任务卡，不改业务代码                                                                                                                                                                                                                                                                   |
+| 背景     | 当前局部切片已通过静态门禁，但运行框架（Node HTTP/Connect Node）、生成物位置（`src/generated`）、事实 owner 迁移、文件粒度和工具链基线尚未一次收敛；不能把过渡态称为顶级完成态。                                                                                                                                                                 |
+| 设计结论 | module-first；Fastify + Connect Fastify 作为目标 transport；`pg` + 唯一 `database/schema.sql`；`contract/proto`/`openapi` 为编辑源，生成物最终统一到 `contract/generated/typescript`；Zod 负责动态输入边界，Proto/Protovalidate 负责 RPC，class 只用于真实不变量/状态；模块错误、wire 错误、SDK 错误分层。                                       |
+| 目标树   | 见 IAM `docs/TECHNICAL_DESIGN.md` §0.2.2；不预建空的 identity/organization/audit 目录，不创建 `domain/application/infrastructure/ports/postgres/redis/prisma` 模板层。                                                                                                                                                                           |
+| 依赖顺序 | `ARCH-02` transport 框架 → `ARCH-03` generated cutover → `ARCH-04` 大文件职责复核 → 业务 owner 迁移 → SDK/跨仓 consumer → 真实依赖与发布 smoke。                                                                                                                                                                                                 |
 | 版本核验 | 2026-09-06 本地 registry probe：TypeScript `6.0.3` 是当前与 `typescript-eslint@8.69.0`（peer `<6.1.0`）兼容的基线；TypeScript `7.0.2` 虽是 registry 最新候选但暂不采用。Fastify `5.12.3`、`@connectrpc/connect-fastify` `2.1.2`、Prettier `3.9.6`、Vitest `5.0.0`、`pg` `8.23.0` 仅作为升级候选，必须在兼容矩阵、lockfile 和完整门禁通过后落地。 |
-| 验收 | 每个切片先通过技术方案/API/SQL 三面设计门；提交后在主仓重跑 format/lint/typecheck/unit/architecture/build/contract，涉及数据库或运行时再跑隔离 PG/Redis 与 smoke。 |
-| 状态 | 设计已写入 IAM `TECHNICAL_DESIGN.md`，待按顺序派发实现切片；当前 IAM 仍不是完整 IAM 产品或最终运行基线。 |
+| 验收     | 每个切片先通过技术方案/API/SQL 三面设计门；提交后在主仓重跑 format/lint/typecheck/unit/architecture/build/contract，涉及数据库或运行时再跑隔离 PG/Redis 与 smoke。                                                                                                                                                                               |
+| 状态     | 设计已写入 IAM `TECHNICAL_DESIGN.md`，待按顺序派发实现切片；当前 IAM 仍不是完整 IAM 产品或最终运行基线。                                                                                                                                                                                                                                         |
