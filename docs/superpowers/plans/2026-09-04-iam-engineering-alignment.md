@@ -1,5 +1,41 @@
 # IAM 工程规范对齐：主控任务板
 
+## 当前任务：IAM-R7 clean-slate 实施闭环（2026-09-07）
+
+用户已明确恢复目标并批准进入实现：IAM 尚未上线，不处理旧数据、旧目录、旧协议或兼容层；被替代实现直接删除。为加速，
+完整 unit/integration/contract/smoke 测试集中到实现波次末尾，但每个业务切片仍执行与其风险匹配的生成、格式、类型、构建、
+Schema 静态检查，禁止把未验证工作树称为完成。
+
+### 实施设计放置表
+
+| 项       | 结论                                                                                                                                                             |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner    | `kokoro-iam` 是 Tenant、Identity、Authentication、Authorization、Role、Permission、Audit 的唯一事实 owner；主控是 IAM 唯一写入 Agent                             |
+| 当前事实 | IAM 基线 `dd51061b11772d3a12c67d39b62cafa0191e22df`；文档门已通过；11 RPC、3 HTTP、16 表、5 个只读生成文件；工作树干净                                           |
+| 目标职责 | 先关闭机器契约和数据正确性，再落地 NestJS/class 运行容器、正式 Tenant 安全接线和模块 owner；最后一次完成完整测试与真实依赖 smoke                                 |
+| 目录方案 | 继续 module-first 和 Nest 原生 module/provider；不新建强制四层、Port/Impl、BaseRepository、数据库品牌业务目录或第二个 contract/generated 源                      |
+| 粒度     | 按可审查业务事实切片提交；同一切片同时更新唯一机器契约、实现、生成物和必要文档；完整测试文件可在 R7-T 集中补齐                                                   |
+| 依赖     | Proto/Protovalidate 管 RPC wire；OpenAPI 管 HTTP wire；Zod 管非 Proto 动态输入；Service/Repository 不依赖 generated；PostgreSQL 是权威事实，Redis 非正确性 owner |
+| 数据/API | 无 migration、双写、兼容 alias；`database/schema.sql` 只面向空库；request ID、错误、幂等、receipt、无外键关系和 Tenant 安全来源必须各有唯一事实源                |
+| 删除项   | 删除 `common.proto` 非 IAM owner 类型、旧 request-ID 双源、旧手工 composition 路径、重复 parser/mapper/facade、过时生成物和旧引用                                |
+| 验证     | 切片静态门 → 独立规范审查 → 代码质量审查 → R7-T 完整 format/lint/typecheck/unit/integration/contract/build/schema/HTTP+RPC+shutdown smoke                        |
+
+### R7 任务卡与依赖顺序
+
+| ID   | 优先级 / 目标                                                                                  | 执行角色与写入范围                                     | 依赖、验收与状态                                                                                       |
+| ---- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| R7-A | P0：request ID 单源、Proto owner、Buf/breaking、CommandIdentity、稳定 RPC 错误                 | 主控唯一 writer；Peirce/gpt-6-astra 只读审查           | 先执行；更新 Proto/生成物/transport/必要文档，静态 contract/type/build 后提交；**进行中**              |
+| R7-B | P0：Tenant receipt 不可变结果快照、完整 no-FK 关系审计、schema-catalog 默认门                  | 主控唯一 writer；Erdos/gpt-5.6-sol 只读审查            | 依赖 R7-A 机器语义；更新 canonical schema/Repository/Service/scripts/CI/文档；不创建 migration；待开始 |
+| R7-C | P1：NestJS Module/class provider、Fastify HTTP、Connect-node RPC 生命周期与旧 composition 删除 | 主控唯一 writer；Godel/gpt-5.6-sol 只读审查            | 依赖 R7-A/B 基线稳定；先核验最新稳定兼容版本，保留一个进程/一份资源；待开始                            |
+| R7-D | P1：Tenant Secret/JWKS/CallerPolicy 正式接线，11 RPC 默认可用                                  | 主控唯一 writer；届时另派规范审查与代码质量审查        | 依赖 R7-C composition；真实安全来源 fail-closed，完成 HTTP/RPC 使用说明；待开始                        |
+| R7-E | P1：Identity/Organization/Audit owner 与高混合文件职责收敛                                     | 主控唯一 writer；按切片派只读审查                      | 依赖 R7-C；只创建真实增长目录，保持认证事务原子性与锁序；待开始                                        |
+| R7-T | P0：补齐/校正全部测试并绑定当前 commit 的 PostgreSQL、Redis、provider、consumer 与关闭证据     | 主控唯一 writer；独立 spec reviewer + quality reviewer | 最后执行；不得用历史 commit 或跳过项冒充本轮结果；待开始                                               |
+
+R7 不授权并行写 IAM：三个子 Agent 只交付审查结果，主控不等待其结果才开始事实盘点，但在对应切片提交前必须吸收结论并完成两阶段复审。
+Root 的 `kokoro-agent` 与 `.tmp/` 是任务外工作树，保持不动；任务板提交与 IAM 业务提交继续按仓分开。
+
+---
+
 ## 当前任务：IAM-R6 契约与仓内文档收拢（2026-09-07）
 
 用户批准先完成 IAM 文档和 API 契约治理，再进入业务源码重构。本切片以 IAM 当前机器契约和源码为事实，参考
