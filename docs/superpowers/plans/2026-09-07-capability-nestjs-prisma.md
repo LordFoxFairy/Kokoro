@@ -295,3 +295,30 @@ Goal 继续保持 active。P2 先完成设计门，再依次实施 P2a 模块/�
 | P2c-I | 接通真实 install/pool/catalog，删除 `installed:true` 与孤立 helper；本地 business/outbox/success receipt 原子提交 | P2b 验收后续派同仓唯一 writer | Skills transaction/projection/Storage client、旧 installation/package helper 删除、tests/docs；不做 P4 crash recovery/public event 或 P5 consumer alias | 覆盖 clean/digest、rollback/replay/event、catalog/pool、cursor scope/filter；完整本仓门禁、双审、Root提交 |
 
 P2a 当前放行基线为 `83350ec2a4d89992ba89d17231af13e749ee4f0a`；沿用 `codex/production-closure-docs` shared checkout 和同一隔离资源纪律。Root/其他 Agent 在 writer 进行中不写该子仓；writer 不执行 Git add/commit/branch/reset，不扩大到 P2b/P2c。
+
+### P2a 最终交接与验收（2026-09-08）
+
+- 任务/owner：P2a-I / kokoro-capability / capability_owner_p1b（gpt-5.6-sol）唯一 writer；Root 独占 Git index、提交与集成复验。设计提交 `83350ec2a4d89992ba89d17231af13e749ee4f0a`，实现提交 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34`（`refactor(capability): establish native Skills module`）。
+- 结果：`SkillsModule` 原生承接 catalog/source、Skills RPC/HTTP projection、Prisma repository 与 Serializable transaction；旧 Skills service/repository、全局 Skill model/port 和重复 RPC/HTTP handler 已删除。根级非 global `RuntimeModule` 与 `AppModule`/`SkillsModule` 显式共享同一 dynamic module，Prisma/Redis/owner adapter 单次构造；Skills 只注入 package/attestation 窄 token，MCP legacy aggregate 留 P3。
+- 数据与状态：`skill` 增加内部稳定 `series_id`、`created_at`、`updated_at` 与 `(tenant_id, series_id, revision)` 唯一约束；版本创建固定 series owner/display name，draft/validated package/publish/withdraw/enable/disable 在最终 transaction 内重读，withdrawn/quarantined 不复活。真实 PostgreSQL 并发创建得到 revision 2/3；固定 latch 分别验证 publish-first 拒绝后续换包、validate-first 发布新包的两种合法串行结果。
+- 继承缺陷同片修复：HTTP catalog 的 limit/cursor 现在传入业务 `page`，真实 HTTP 连续两页无重复，identity/filter 变化拒绝旧 cursor；disabled 异常行缺 asset 或 digest 时不可重新激活，状态/updated_at 不变且不发 Storage 调用。
+- 首轮审查：contract_review 指出 `src/config/runtime.module.ts` 越层和 Skills 反向依赖 `OWNER_ADAPTERS`；database_review 指出 flaky concurrency 断言、重新激活包完整性回归及继承的 HTTP pagination 缺陷。均由同一 writer 以 RED→GREEN 修复。最终 contract_review `FINAL SPEC PASS`、database_review `FINAL QUALITY PASS`，绑定 tracked diff `057f7fc927644a8167454798a9f9ff173109cb2efdcb9aafda6b7b6500a5c89a` 与同一 untracked 集合。
+
+Root 使用 Node 24.13.0、pnpm 11.25.0、专属数据库 `kokoro_capability_p2a_20260908_root_r2` 和 Redis DB 6，在最终提交 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34` 重跑：
+
+| 命令 | 实际结果 |
+|---|---|
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；未修改 lockfile；新库安装成功 |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成前后差异稳定，真实数据库 No difference detected |
+| `pnpm contract:check` | exit 0；digest 保持 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 49 files / 208 tests passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 11 files / 71 tests passed，0 failed、0 skipped |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 12 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
+| `git diff --check` / clean worktree | 通过 |
+
+提交前/后日志：`/tmp/kokoro-p2a-root-final-precommit-20260908.log`、`/tmp/kokoro-p2a-postcommit-af9ac7b.log`。日志为本机证据，不纳入仓库。
+
+Root 当前全局门禁：standard exit 1（208 violations，其中 Capability 20；包括 checker 尚未识别 Prisma canonical/generated 与 feature 内 transport、以及 strict build/tsconfig/剩余旧目录等真实或治理缺口）；topology exit 0；Root tests 为 82 passed / 2 failed，仍是手册示例数量与“参考依据”标题断言。日志 `/tmp/kokoro-p2a-root-{standard,topology,tests}-final-20260908.log`，未通过放宽门禁或改其他 owner 清零。
+
+Docker daemon 既有 `/info` HTTP 500，镜像 build/smoke 未验；production smoke 的 IAM/Storage/provider 为本地协议 stub。P2a 已验收，Goal 仍 active；现在仅放行 P2b-I，以 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34` 为基线，P2c/P3/P4/P5 继续串行等待。
