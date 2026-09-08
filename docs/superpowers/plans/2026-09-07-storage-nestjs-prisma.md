@@ -596,3 +596,6 @@ ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-journal.ts仅�
 
 
 ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-inventory.ts承接同一实际SDK/adapter的只读版本分页、current或确切version HEAD及有界字节digest观察；不创建client、不删除对象、不修改hold、不授予registry所有权。客户端生命周期仍由provider fixture唯一管理，传递相同signal和预算；同时校验KeyMarker/VersionIdMarker完整游标及进展，page上限/不完整结果/delete marker显式失败或留证。只有与请求Key完全一致的版本观察能用于登记判定，Prefix命中的相邻key不推导所有权；不复制current-only cleanup策略，不增加src/依赖/contract。此普通文件拆分将只读观察与资源写入生命周期分离，沿已批准fixtures位置及既有unit验证，无新增模块/ADR。
+
+
+ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf518c845568cf0fbd02e55c93cfbde838c1c516f073e9f0bc3b441697b033，2026-09-08T13:06:09Z。writer停写，无Git操作；Root已阅读全部新helper并核对批准职责/三设计一致性，开始主树真实门禁。storage_data_review负责独立只读质量审查（沿用gpt-5.6-sol），范围仅此manifest及相关既有adapter/runtime/ADR与test，不改文件/Git/测试数据/共享服务；重点current-only/未知hold与receipt、durable journal、方法级drain、DB亲建/未知证据和测试真实性。引用Root CODEBASE_MAP与TypeScript/SQL手册及当前三设计，交付绑定manifest和基线的P0/P1/P2或无可行动项；Root自行复验、裁决和提交，A1b继续未授权。
