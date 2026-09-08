@@ -539,3 +539,10 @@ Root明确A定点扩展：src/integrations/object-store/aws-sdk.ts的ensureReady
 ADR凭据澄清：当前显式KOKORO_OBJECT_STORE AK/SK客户端无sessionToken字段；临时凭据仅指aws profile官方默认链保留AWS_SESSION_TOKEN，不宣称custom显式AK/SK也支持。A不扩生产凭据schema，fixture和真实运行必须同来源，禁止混用导致资格通过而runtime丢token。
 
 ST-H0调查已返回，尚未采用：当前Library请求是URL解析、响应mapper/envelope而非完整运行时schema，确实缺机器OpenAPI。官方Swagger11.4.6 peers仅Nest11，不可直接称兼容本仓Nest12；Zod3兼容生成器zod-to-openapi7.3.4已非活跃支持线，不能只因能生成就批准新核心依赖。后继应比较批准升级Zod及受维护生成器/等待兼容稳定Nest companion的范围和退出，不能无审查引入遗留桥；不混本V2A/B，Proto保持。只读报告官方来源归后继设计输入，当前不安装/试验/改HTTP。
+
+
+ST-V2-D第二版879ab7d8已由Root独立format/Prisma validate/contract/diff及全部非文档hash验证通过，日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v2-design.vgmr7oov`，未连DB。随后storage_data_review质量审查发现1项P1，未放行提交：原同key v1/v2后用旧v1 ETag条件删除非current v1成功的矩阵，与[AWS conditional deletes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-deletes.html)明确只评估current version的语义冲突，Root已独立核对官方Note并接受，不以API参数同时存在推断组合一定成功。
+
+**最新矩阵裁决（取代此前同key删旧v1的要求）**：按生产final key不复用输入域，key A只有一个current v1；错ETag+VersionId实际412并保留，正确current ETag+VersionId实际删除且无delete marker；独立control key B/version字节前后不变。不得移除生产IfMatch或借current新ETag删除已退休旧identity；外部同key写入导致current ETag不同返回412时保留retirement。不要泛称全部non-current情况恒为412，同ETag需按实际条件判断。此为纠正Root早期测试假设，不是降低provider门。
+
+正常roundtrip旧签名URL再次PUT会产生多个staging版本，fixture成功cleanup须停止写入后逐次以provider真实current identity核对registry，再携该确切VersionId+ETag条件DELETE；出现未登记current保留key/DB，不能按VersionId字符串/客户端回执次序猜current，也不能先删非current旧版本期待其ETag仍匹配。HEAD用于选择已登记当前identity，不替代条件DELETE、不移除IfMatch。writer仅修同10文档并重交，质量审查员保持只读待新manifest，源码继续未授权。
