@@ -411,3 +411,10 @@ ST-V-T审查结论与Root核验：版本组合可采纳；正式落仓先有over
 Root候选typed-lint虚拟正反例：ESLint.lintText对项目内虚拟src/main.ts解析，安全unknown窄化正例0诊断；不安全JSON.parse值/浮动Promise/void回调Promise/遗漏union分支的负例实际命中unsafe-assignment、unsafe-call、unsafe-member-access、no-floating-promises、no-misused-promises、switch-exhaustiveness-check六规则。证据候选目录typed-rule-fixtures.log，未写业务源码。正式配置必须保留这些真实规则回归，不靠字符串检查配置冒充效果；全preset多出的require-await及根配置projectService范围分别处理。
 
 ST-I2-B回归诊断仍未验收：writer首次全套316/317出现旧dedup P2034；第二次共享库失败转移到新canonical用例，旧dedup孤立4/4。Root要求保留原同业务双client竞争断言、不得提高生产重试或关闭默认并行。全库retirement扫描及新增canonical高写入套件改用各自官方bootstrap自有随机空库，writer报告317通过仅为待交接旁证，仍须固定manifest、独立审查及Root新库验证。不能把SSI相关性当作生产性能结论。
+
+### ST-I2-B 稳定交付审查卡
+
+- 扩围仅Storage AGENTS.md、SCHEMA_OWNER_INVENTORY.md、SCHEMA_BOOTSTRAP.md中Schema-only旧状态/已接收SHA/本片待验收事实同步；不改规范或其他运行流程。最后必要provider修复含确切删除拒绝wildcard/空白ETag且保留合法opaque引号值，以及HEAD缺实际ContentLength/ContentType fail-closed，不补0/octet-stream。
+- 基线347e6dd+52物理路径（34M/18A），稳定时间2026-09-08T10:45:48.465005Z，manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-i2-b-logs/handoff-manifest.json` SHA256 `01890e0097eceeba9a38f884aa472e72037c6a4c193998f151df06e783a20642`。Root逐一核验52当前/原始hash、dirty集合、HEAD和空index一致；writer已停写。
+- storage_contract_review(gpt-5.6-sol)先只读符合性审查：已定I2三文档/ADR、8组验收、原十RPC与错误/幂等/tenant、CLI生命周期、scope/删除项，不跑安装/测试/生成/Git/基础设施；放行后storage_data_review(gpt-5.6-sol)质量审查完整snapshot CAS/真实P2002有限重新观察/retirement并发与精确删除安全。两者绑定此manifest，任何必要修复重新固定。Root保留主树独立新库验证与唯一提交，不修改writer文件。
+- writer三轮322/322+compiled2、schema/contract/generator/lint/typecheck/build与真实local CLI为旁证，Root尚未验收；52定向format过、全仓13历史format失败留ST-V。Schema/generated/Proto/package/CI/Docker无差异，所有writer自建库已删除。handoff-evidence.md保留早期失败及最终命令，不冒充S3/ClamAV/镜像实测。
