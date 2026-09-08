@@ -215,3 +215,12 @@ I1a的候选schema只处于未提交的实施工作树，不作为第二份已�
 
 storage_data_review已交付部分RED/GREEN后停止写入，Root调用interrupt确认previous status=completed。已有修改保留不提交：Prisma候选/初步apply、PrismaService、fingerprint helper与CreateUpload回归；其他operations临时fingerprint尚不合约，旧SQL仍在，明确非可交付。
 因本片涉及跨六表事务/并发与无FK保护重构，Root将唯一实现writer交接给原生storage_implementation（gpt-6-astra），不同时保留两个writer。原data reviewer回归只读角色，后续在稳定产物上审查。新writer沿本卡I1a/b/c的数据收敛范围，不顺带做Nest I1d；Root继续主控与独立验证。
+
+### ST-V 生产依赖闭包预验证（Root隔离实验，未改Storage）
+
+- 候选package/lock快照（lock SHA256 `018bef3b3834645b26815015d2af3579951a90864485933713f40444531c8779`）在 `/tmp/kokoro-storage-dependency-audit.yKoP9L`：`pnpm audit --json` 8项（1critical/3high/4moderate）。旧Vitest2.1.9/Vite是开发UI/API条件风险；Prisma7.10.0 CLI传递deepmerge-ts7.1.5/mysql2 3.15.3也被标入prod peer链，不宣称服务端已暴露。
+- 实际 `pnpm install --prod --ignore-scripts --frozen-lockfile` 仍经@prisma/client可解析prisma CLI与TypeScript，原Docker“只有生产依赖即无CLI”假设不成立。首轮因漏复制workspace而触发Connect2.2.0 release-age gate；复制真实workspace后重跑通过，未修改全局policy。当前精确minimumReleaseAgeExclude仍需到ST-V按发布时间复审移除，不扩白名单。
+- 精确peer override '-'实验未移除这两个optional peer；不推荐未经验证的override解法。
+- 官方 `--prod --no-optional --ignore-scripts --frozen-lockfile` 在新目录 `/tmp/kokoro-storage-prod-minimal-probe.r6Er9d` 成功：断言CLI/TypeScript不可从client解析，Prisma runtime/adapter、S3 SDK、Nest core/Fastify、Connect plugin import全部通过；`pnpm audit --prod --no-optional --json`为138项依赖、0漏洞。仅证明该快照最小依赖闭包，不是最终镜像/编译后查询/S3实际功能通过。
+- 后续Docker优先验证这一标准CLI选项而非自写pnpm hook/修改生成物；实际构建+PG/S3/ClamAV全链路须覆盖可选native包移除的功能影响。完整dev audit整改仍待Vitest/工具链升级与Prisma CLI传递依赖评估，不以prod结果掩盖dev高危。
+- 2026-09-08 registry额外候选：Vitest5.0.0、Vite8.2.2、Prettier3.9.6、deepmerge-ts8.0.2、mysql2 3.24.4；仅版本元数据，未安装验收。官方依据： https://pnpm.io/cli/install 、 https://github.com/vitest-dev/vitest/security/advisories/GHSA-5xrq-8626-4rwp 。
