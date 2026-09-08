@@ -694,3 +694,8 @@ S0-D提交 `7735511c66d7ac1f92fef57796d4869f4ed3b8dc`，7M逐原始/staged/commi
 | 禁止/交付 | 全src/其余test/production-runtime/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他owner不动，不安装/DB/服务/provider/Git。先七文档format/Prisma validate(port1)/contract+全部保护hash/diff，固定精确manifest停写，Root收敛文档门后再放行A1b1-I |
 
 B部署/production-runtime具体同owner执行文件/普通stopAndDrain回调由B独立任务卡确定；不要提前做B或H0。外部S3环境仍无用户回复，Docker未获重启许可；源码/本地门继续，外部资格不计通过。
+
+
+A1b1-D补充实现边界已批准并写入三设计：既有provider.close增加preserveObjects选项，停服/drain未知时零hold/对象副作用、即使空registry也非零且preserveDatabase；仍释放自有句柄，第一次close模式固定，重复close不得改回默认删除。默认A1a行为不变，无新文件/协议。
+
+固定D质量复查卡：storage_data_review只读a07b4d4基线+7M manifest 1db06c8e2dd4de38a61526c532b6745d20e2b05a400bde604374b36f09c9d77b，复核同owner生命周期、metadata具体证明能力与事务外观察、原URL/ZIP职责、保留失败和固定矩阵；只读三设计/ADR及必要源码，无写/测试/生成/安装/DB/服务/Git。Root已实跑七文档format/validate(port1)/contract/diff、251范围外hash保护，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-design.l2fcb828；该证据只支持文档门。writer停写，Root收独立结论后按路径提交再派I；其他owner不动。
