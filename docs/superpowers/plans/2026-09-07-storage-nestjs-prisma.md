@@ -461,3 +461,7 @@ Root ClamAV核验（2026-09-08，metadata-only）：[官方发布](https://blog.
 - 待完整fixed manifest停写，仍符合性→质量→Root新库/生产闭包独立验收后提交。只格式治理既有compose，不顺手替换S3/ClamAV镜像；ST-V2 provider风险已由Root另行调查，本片不扩进程/配置资格协议。
 
 ST-V1-I定点规则裁决：writer报告旧基线新库322通过、typed门10测试8RED/2pass后接线初步GREEN、压缩registry重取成功与10候选均>24h，未压缩大metadata超时原日志保留；这些仍待固定交付。Root批准仅四处可选规则行级例外：LocalObjectStore两个签名URL async方法require-await（验证错误保持Promise rejection而非同步throw），ConcurrencyGate/RequestLifecycle两处reject(signal.reason)的prefer-promise-reject-errors（标准AbortSignal允许任意reason且保留身份）。具体理由注释和时机/身份回归必需，unused-disable仍报告，所有强制typed规则不豁免。安装仍提示传递Smithy handler4.12.0：先查父路径/range；只有父声明已接受4.12.1时可定向刷新同已批准patch的lock，不升级AWS/其他包、不全图dedupe，固定旧patch父依赖则另报Root，不擅自加override。
+
+ST-V1-I补充：三父client-s3@3.1124.0、nested-clients@3.997.44、credential-provider-http@3.972.72均声明handler ^4.11.3；writer用官方定向update仅收敛handler4.12.1、无新override/父升级，最终须交父range与lock证据。Root另批准既有readiness测试两处、request-lifecycle测试两处、clamav测试一处abort回调的prefer-promise-reject-errors行级例外，同样保持原reason identity；总计9处例外单独列清单，不扩测试全域或强制规则，unused-disable与行为回归保持。
+
+ST-V1-I格式扩围：Prettier3.9.6全仓RED除原13债和本片编辑外，另需三个旧源码打印变化；Root仅批准src/assets/object-retirements.store.ts、src/common/commands/receipt-codec.ts、src/integrations/object-store/aws-sdk.ts的官方formatter纯格式输出，语义/常量/import不变，manifest标format-only，Root最终逐diff核对。不据此授权无关格式或generated改动。
