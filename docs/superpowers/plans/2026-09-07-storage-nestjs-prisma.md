@@ -224,3 +224,5 @@ storage_data_review已交付部分RED/GREEN后停止写入，Root调用interrupt
 - 官方 `--prod --no-optional --ignore-scripts --frozen-lockfile` 在新目录 `/tmp/kokoro-storage-prod-minimal-probe.r6Er9d` 成功：断言CLI/TypeScript不可从client解析，Prisma runtime/adapter、S3 SDK、Nest core/Fastify、Connect plugin import全部通过；`pnpm audit --prod --no-optional --json`为138项依赖、0漏洞。仅证明该快照最小依赖闭包，不是最终镜像/编译后查询/S3实际功能通过。
 - 后续Docker优先验证这一标准CLI选项而非自写pnpm hook/修改生成物；实际构建+PG/S3/ClamAV全链路须覆盖可选native包移除的功能影响。完整dev audit整改仍待Vitest/工具链升级与Prisma CLI传递依赖评估，不以prod结果掩盖dev高危。
 - 2026-09-08 registry额外候选：Vitest5.0.0、Vite8.2.2、Prettier3.9.6、deepmerge-ts8.0.2、mysql2 3.24.4；仅版本元数据，未安装验收。官方依据： https://pnpm.io/cli/install 、 https://github.com/vitest-dev/vitest/security/advisories/GHSA-5xrq-8626-4rwp 。
+
+ST-V闭包补充：同一prod/no-optional目录使用外部构建阶段Prisma7.10.0生成器与TS6.0.2编译器生成/编译ESM，运行阶段仅node加载dist（无tsx/CLI），在Root新建随机库真实create/count断言通过；日志generate.log、compile-node.log、apply-compiled.log、compiled-query.log。首次独立编译未显式lib而带入DOM造成URLPattern声明冲突；按后端规范显式lib ES2024后通过，未用skipLibCheck。两个实验数据库均由Root清理。该证据仍不是最终服务镜像或外部S3/ClamAV链路。
