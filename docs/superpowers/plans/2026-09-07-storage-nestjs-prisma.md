@@ -495,3 +495,11 @@ ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 st
 | 验证 | 各片RED/GREEN与全默认测试/typed/构建/契约schema保护；模拟命令可验证隔离失败恢复，但不冒充真实S3/ClamAV/OCI/部署证据；Docker API当前无响应为后继真实执行限制 |
 
 准备负责人 storage_implementation（gpt-6-astra）仅只读盘点最小两片文件集和复用入口，不写/安装/服务/DB/Git；Root保留当前V1验收关键路径。V1提交后才补三设计文档/ADR并通过第8.1门，再按单writer放行实现。
+
+
+### ST-V1-I 已验收
+
+- Storage提交 `030d2c1fb1d3d09117757e5592eee5a1a65e067e`，50物理路径（45M/5A）按manifest逐原始/当前/staged/committed hash核验，提交后clean。符合性与质量审查均无P0/P1/P2，主树验证见上；不把worker报告单独视为完成。
+- Root真正全冷隔离安装单次264.0秒成功：全新HOME/XDG/store、原1440/strict/allowBuilds、388包及官方三个postinstall完成，下载慢/重试原输出完整保留；冷快照typecheck/build通过。与worker首次180秒超时+续跑事实分别记录。独立生产另一空store单次88.2秒成功，`--prod --no-optional --ignore-scripts --frozen-lockfile`实际139依赖/0告警，plain Node加载Nest owner与ReconcileObjectsService并真实Prisma retirement count0，CLI/TS/tsx/Vitest不可解析。日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v1-closure.d3deawub`。
+- Root生产probe首次把reconcile-objects.service写成reconciliation.service，真实报ERR_MODULE_NOT_FOUND（prod-query.log）且自有DB已清理；只纠正临时probe导入路径后另建新库再次官方apply/query通过（prod-query-corrected.log），未改源码、断言或依赖闭包。该失败属于Root harness接线错误，不计生产缺陷。所有本次自有DB已删除，最终50hash不变。
+- 全部已验功能：Prisma数据owner、实际Nest运行与取消/drain、canonical复用/repair CAS/退休GC、兼容工具链typed门。未闭环：V2实际S3条件版本/ObjectLock、ClamAV、OCI/RC/CI、内部HTTP机器契约、容量/SLO及Root全仓checker一致性。总目标保持active，不宣称完整生产验收。
