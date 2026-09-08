@@ -194,3 +194,12 @@ ST-I1/I2/I3文件集在前置验证后依业务实际拆分，禁止将此待办
 ### ST-E / P1：真实依赖验收准备（并行只读）
 
 storage_contract_review（gpt-5.6-sol）读取现有ObjectStore/ClamAV/production smoke与运行手册，绑定93f7dd0提出隔离资源/命令、危险清理点和缺失断言。只读Storage源码与公开本机进程/端口信息；不编辑、不启动服务、不接触secret、不做Git写入。Root据报告准备资源/后续门禁，不重复worker实现。
+
+### ST-E 交付与Root治理基线（2026-09-08）
+
+- storage_contract_review固定72ab5dd只读审查完成；没有启动/清理依赖或修改源码。发现旧docker-smoke固定container名并无条件rm -f，RUNBOOK固定project down --volumes，production smoke直接SQL读object key绕过presigned PUT；后续切片必须删除这些测试旁路并隔离资源。
+- ST-V资源策略：任务唯一RUN_ID、随机空DB、唯一bucket/对象前缀、唯一Compose project/container标签/host端口；仅清理创建记录内且owner标签匹配的资源。Redis6379/6仅PING；不重复启动PG/Redis。
+- ST-V生产链路必须经真实API：CreateUpload→返回URL PUT→CompleteUpload→GetPackageReference→返回URL GET并验证bytes；测试不读取业务SQL/object key，不把direct provider/DB旁路称端到端。
+- 后续授权文件为Dockerfile、docker-compose.integration.yml、scripts/docker-smoke.sh、.github/workflows/ci.yml及release相关workflow、对应smoke tests/docs；当前尚未派发，与核心writer串行。
+- Docker CLI与Desktop/backend进程存在，但daemon API两次有界version和unix socket /_ping均未回应；39190/43310等旧MinIO/ClamAV端口关闭。目前没有真实外部依赖或镜像通过证据。已异步询问用户是否允许重启可能影响既有容器的Docker；未确认前保持原服务状态，源码推进不等待此项。
+- Root治理基线（并行工作树快照，不是本任务最终commit）：standard exit1共197项，其中Storage14项；topology exit0；scripts/tests为72通过/2失败，失败属于旧手册提取与“参考依据”标题断言。日志沿用/tmp/kokoro-storage-goal-baseline.rejrKJ/root-*；不修改其他任务负责的Root治理文件。
