@@ -213,3 +213,11 @@ Root最新工作树静态基线：standard exit1/197 violations；topology exit0
 现在只授权P1b-I任务卡文件集；沿用现有干净codex分支/shared-checkout单writer模式，不另起重复实现worktree，Root独占index/commit。capability_owner负责失败测试、实现、文件清单与验证交付，后续规范/质量审查通过后Root重跑并提交。
 
 P1b-D 设计提交：`7c9367e20de0bb1de8fc8b7b25c94a8b1b7c7ccd`；P1b-I 已续派 capability_owner，当前状态进行中。
+
+
+### P1b 实现负责人交接
+
+原 capability_owner 报告上下文耗尽，仅完成盘点，尚无文件写入；已结束并停写。Root确认子仓7c9367e工作树仍干净后，替换为新原生代理 capability_owner_p1b / gpt-5.6-sol / 独立精简上下文（fork none）。继承同一P1b-I任务卡与写入范围/验证/Root独占Git规则；旧负责人不再写入，不并行两个实现。此前接单不记实现进度或验收成果。
+
+
+P1b-I 首个RED（capability_owner_p1b 实跑，主控尚未验收）：`PATH=/Users/nako/.nvm/versions/node/v24.13.0/bin:$PATH pnpm vitest run test/integration/nest-ingress.test.ts` exit1，1 failed suite，目标AppModule未创建导致import失败。现进入最小GREEN实现，旧行为基线仍为7c9367e之前主控162/162。Nest/Connect依赖已安装；供应链release-age精确例外须由实现负责人说明并经Root审查，尚未算通过。
