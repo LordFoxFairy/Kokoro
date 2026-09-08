@@ -210,3 +210,8 @@ storage_contract_review（gpt-5.6-sol）读取现有ObjectStore/ClamAV/productio
 I1a的候选schema只处于未提交的实施工作树，不作为第二份已交付canonical；I1c完成时删除旧SQL/schema/Row mapper、所有运行时数据查询用Prisma后再提交。每行为先RED/GREEN，不要求一次性写数千行；每阶段日志保留，不为提交颗粒度制造兼容层或双canonical。
 当前唯一旧Node/Connect入口允许在数据切片继续运行，状态明确为“Prisma已切换，Nest待I1d”；本片不假装Nest完成。数据组件分属目标uploads/assets/artifacts，共享claim/fence在common/commands，PrismaService只管理连接与typed事务，不成为全能业务Repository。
 曾因看到其他pnpm进程误判同仓writer冲突；Root以lsof确认PID67492/67733 cwd是kokoro-capability，与Storage无写入冲突，未中断他仓。Storage安装命令固定Homebrew Node24.20.0与已知corepack pnpm脚本，避免shell继承Node22造成误判。
+
+### ST-I1b/c writer交接与选模调整
+
+storage_data_review已交付部分RED/GREEN后停止写入，Root调用interrupt确认previous status=completed。已有修改保留不提交：Prisma候选/初步apply、PrismaService、fingerprint helper与CreateUpload回归；其他operations临时fingerprint尚不合约，旧SQL仍在，明确非可交付。
+因本片涉及跨六表事务/并发与无FK保护重构，Root将唯一实现writer交接给原生storage_implementation（gpt-6-astra），不同时保留两个writer。原data reviewer回归只读角色，后续在稳定产物上审查。新writer沿本卡I1a/b/c的数据收敛范围，不顺带做Nest I1d；Root继续主控与独立验证。
