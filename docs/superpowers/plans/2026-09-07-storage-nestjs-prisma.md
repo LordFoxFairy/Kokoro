@@ -302,3 +302,9 @@ ST-V/依赖例外再验证：Root从33093fed复制package/lock/workspace到 `/tm
 - 后续正式设计应使repair CAS同事务写入旧对象key/version/etag/tenant/owner与retiredAt；CLI仅对retiredAt已过>=1h、再次确认未引用的确切identity执行删除，成功/确定已不存在才移除退役记录，权限/超时/未知结果保留。S3有VersionId时删该版本，不能只传Key造成delete marker却未回收版本；新表/索引/native数据/空库catalog门会从6表相应更新，不假装无schema变更。未知final orphan（包括未持久化退役证据的crash candidate）仍仅报告；不为自动扫净一切而推断ownership或creation age=retirement age。
 - 不增加历史migration或碰现有用户数据库；canonical schema/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/新ADR必须在I2代码写入前同步并通过文档门。Proto不需要变化；consumer不接触retirement事实。
 - 验收保留8组：healthy不promote且同digest不同MIME各Asset正确；跨tenant/owner隔离；missing/mismatch完整CAS；不确定provider错误零promote/零业务完成（允许claim创建/释放，不能误要求receipt绝对零变化）；两个repair竞争只一胜且败者重新检查赢家；absent竞争同理；stale fence/DB回滚不改变canonical或完成receipt；GET只对healthy签URL，刚退休老对象即使LastModified很旧也不得立即删，过retirement grace才按确切版本删除且失败重试。具体可执行测试分组由I2卡在Nest新目录上细化。
+
+### I1d必要打包接线范围调整（优先于原Dockerfile排除项，仅此文件）
+
+writer发现deployment architecture把旧Docker CMD与package入口相互验证。Root不采用删除/放宽这一有效一致性断言来让源码绿：将 **Dockerfile** 的最低必要运行接线加入当前唯一writer范围（必要时仅对应.dockerignore构建上下文），仍不改CI/compose/docker-smoke运行脚本或启动Docker服务。同步Node24基础镜像、Prisma canonical/generate构建输入、dist/main.js入口，以及已由隔离实验验证的prod --no-optional依赖闭包；保留非root、HEALTHCHECK、external infra、无CLI/dev源码运行时安全断言。旧Node bootstrap的文本断言改为新Nest实际等价行为，但image/package入口一致性继续检查。
+
+Root从Docker Hub官方registry获取node:24.20.0-bookworm-slim OCI index：sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e，含linux/amd64与arm64；记录 `/tmp/kokoro-storage-node24-index.json`。docker manifest --verbose最初CDN config读取EOF，随后直接官方auth/registry只读index成功；这只是tag/digest/平台证据，不是镜像build/运行通过。Docker daemon仍无响应，完整image/外部依赖验收仍ST-V明确待验。
