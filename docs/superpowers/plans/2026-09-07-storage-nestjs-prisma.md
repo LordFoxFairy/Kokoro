@@ -733,3 +733,13 @@ Root 的 B-R CI/release 固定基线事实（f47801f，静态只读，未运行�
 - `test/architecture/deployment.test.ts` 仅文本检查 Dockerfile/旧 shell 包含内容，不能证明资源所有权、close/drain 或同 RC identity；B 需行为 command-double 与真实 RC 分开，不放宽现 Nest/prisma/non-root/HEALTHCHECK/无生产工具断言。
 
 以上是后继待设计事实，不是 A1b1 扩权；Root 已通知 B-R 只读 reviewer 纳入残留消费者范围。
+
+
+B-R 只读交付（storage_contract_review，f47801f 固定 HEAD，无写/测试/服务）与 Root 预裁决：
+
+- 推荐 production-runtime Vitest 所在 Node 进程唯一拥有 container/registry/DB；新增现 fixtures 的具体 `smoke-container.ts` 与 unit，不把 shell 与 Vitest 分割删除权。另一可行位置为独立 scripts TS orchestrator，但会扩大入口/重复测试职责，暂不选。现 shell 可删或缩到仅委派唯一 package 命令；不持资源或做第二套 curl/cleanup。
+- container 只由实际明确返回 ID 且 run label 匹配建立所有权；动态端口、实际 inspect、亲建记录、每个 child 命令有界。创建结果未知不能按随机名/label 搜索认领；停止未知只保留。旧 infra 探测可由实际 Nest readiness + provider readonly preflight 承接后删除；旧 scanner clean/EICAR/unreachable 的有效断言应进入同 owner fixture 闭环，再删原 key-only 消费者。
+- Root 发现初版“docker stop成功+exited/dead”不证明 drain，未采纳为放行条件。2026-09-08 核验 [Docker stop 官方](https://docs.docker.com/reference/cli/docker/container/stop/)：宽限期结束会 SIGKILL；[Docker kill 官方](https://docs.docker.com/reference/cli/docker/container/kill/)支持仅发明确 SIGTERM。B 候选为 `kill --signal=SIGTERM` 加独立有界等待，超时保留而不以强杀当正常关闭。
+- 本机已锁 Nest12.0.1 官方 d.ts/源码确认 `enableShutdownHooks([], {useProcessExit:true})` 支持全部 hook resolve 后 exit0、任何 hook 失败 exit1；当前默认 hooks 后重新发原 signal 与未经 hook 的 SIGTERM 都可能143，单看143不够。候选是沿 Nest 原生选项修改已有 main，而不是新 shutdown 日志/文件/IPC/管理API；[Nest 官方生命周期](https://docs.nestjs.com/fundamentals/lifecycle-events)与本地精确版本实现共同说明语义。该选项有退出码/第三方 signal handler 行为影响，B文档须写清并通过真实 compiled SIGTERM 尚未settle不退出、settle后0、失败1证据，不用源码grep证明。
+- 即使用该选项，exit0仍必须结合亲建 ID+label、同预期镜像/CMD、已ready、发信号前running、命令成功、最终 exited/noOOM/noError/无restart、signal后实际退出，才确认正常停止。Root不采用客户端signalIssuedAt与daemon FinishedAt直接跨时钟比较；B设计须依靠有序实际观察和同daemon事实，不新增时钟同步假设。`--init`退出码转发待真实RC验证。
+- B准确文件集、主入口、scanner承接、官方版本重核以及是否将原生shutdown选项作为前置小片，由 A1b1 接收后文档门决定。上述均未授权 A1b1 writer 修改 src/部署/其余smoke，不表示 B 已实施。
