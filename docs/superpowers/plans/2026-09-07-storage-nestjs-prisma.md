@@ -667,3 +667,30 @@ S0-D提交 `7735511c66d7ac1f92fef57796d4869f4ed3b8dc`，7M逐原始/staged/commi
 | 验证/交付 | 先RED旧实现，GREEN SDK请求真实命令+Local及真实新库Prisma事务/receipt/覆盖/版本缺失/取消/共享预算回归；完整format/typed/typecheck/build/defaultparallel424+新增、compiled2、官方亲建空库apply/catalog/drift、validate/contract→generate→contract及保护hash；复用PG/Redis，只清亲建资源。固定manifest+RED/GREEN/全部日志停写，无Git写入，Root独立审查复验后精确提交 |
 
 不把S0称为完整staging历史GC，无版本bucket业务可继续但staging保留；A1b/B/H0与真实provider仍待后继。
+
+
+### S0-I已验收 / A1b1与B运行生命周期分界
+
+- Storage提交 `a07b4d47266ae35b6cc35749974d83d51a417aa4`，15M逐基线/当前/staged/committed SHA256与路径核验、提交后clean。Root符合性与storage_data_review独立质量无P0/P1/P2。
+- Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-s0-i.ynr1vq42` 实跑format/lint/typecheck/build、audit443依赖0、官方亲建新库apply、默认并行65文件463/463无skip、compiled2/2、validate/contract→Prisma generate→contract/diff与全部15hash及243范围外tracked不变；亲建库已DROP。S0不会按key删除production staging；无版本bucket仍可提交但staging保留，未建设历史GC。
+- 后继只读核对发现原A1b三smoke同片存在运行生命周期耦合：capability可持有plainNode child句柄、s3可直接持有fixture；production-runtime仅有B容器URL，没有本进程创建/停止句柄。ADR要求停止实际服务/在途后才cleanup，不能靠新增任意docker-stop或跨进程journal恢复蒙混。因此拆A1b1（两消费者+共享基础）与B/production-runtime（同一owner进程持容器/provider registry/DB，普通stopAndDrain回调）；停服未知保留对象/DB并非零。禁止新建文件IPC协议或从prefix/日志恢复认领。该调整是同owner顺序，不扩服务/Schema/公开API。
+
+| 放置项 | A1b1 Root固定决定 |
+|---|---|
+| Owner/当前事实 | Storage test；a07b4d4 clean，Nest/Prisma/S0生产能力已验463+compiled2。A1a登记helper只支持预先写入意图，旧capability仍TestingModule/手写ZIP，s3仍建桶/无版本cleanup；production旧SQL+SDK PUT保持已知B后继 |
+| 目标职责 | 两个真实外部smoke消费者+共享原样URL链，真实Nest/plainNode及Prisma已提交metadata proof，无第二业务实现 |
+| 目录比较 | 采用现test/fixtures与unit/integration；淘汰src/common与新e2e工程，测试资源/进程不是新业务owner。复用既有compiled-entry.mjs close协议，不新进程协议或框架 |
+| 粒度/新文件 | storage-roundtrip.ts仅RPC/原样URL bytes；smoke-storage-metadata.ts仅同自有Prisma库短只读事务关联证明；smoke-runtime.ts仅本run亲建Node child启动/停止/退出；research-package.zip由Python标准库zipfile生成固定顺序/1980时间/权限/ZIP_STORED有效样本，不手写ZIP、不加依赖。对应unit/storage-roundtrip.test.ts、unit/smoke-runtime.test.ts、integration/smoke-storage-metadata.test.ts各有明确消费者 |
+| 依赖/证明 | metadata不得用于PUT旁路：PUT始终返回URL，staging key只供写前登记。成功Complete canonical proof需tenant/owner(受信subject)/upload/create-command/asset、Complete receipt复合identity+state/fence/digest/semantic fingerprint/现codec、clean scan/purpose/blob/digest/size关联；provider持具体证明能力后再实际HEAD/GET同key/version/ETag/bytes核对登记，不接受裸字符串/事后beginWrite授权。无业务写查询复制，无Schema变更 |
+| 资源 | 资格120秒/RPC420秒outer signal，Complete300秒不变；SDK小对象64KiB/10秒，cleanup60秒；先停本runNode/所有写入，后fixture conditional cleanup，客户端全关且无失败再亲建者DROP。close失败继续其他资源释放；缺配置显式非零，不skip计绿。production容器与DB生命周期在B同一owner编排闭环 |
+| fixture能力 | 增加仅亲设ON可releaseLegalHold并读回OFF/inflight、已提交canonical登记、仅有durable确切意图的资格小对象SDK写入用于外部违规final覆盖负例，不放宽production put/promote守卫、不另建SDKclient。S0可能已删除staging：RPC前beginDelete，后完整列表+指定版本HEAD确认；还存在则保留登记，不抹unknown状态 |
+| 删除/验证 | 删除两smoke旧建桶/default/skip/SQL CRUD/TestingModule/手写ZIP/key-only吞错cleanup；production-runtime及其AWS.delete旧消费者留B同步移除，未称全部smoke完成。RED→GREEN原URL原headers/bytes/取消/错误URL真失败、真实Prisma错scope/receipt/rollback/identity、亲建child生命周期与fixturehold，完整463+新增/compiled2/静态/schema生成保护；外部资源实际执行另列 |
+
+| 项 | ST-V2-A1b1-D任务卡（只放行文档） |
+|---|---|
+| Agent/基线 | storage_implementation(gpt-6-astra)唯一Storage writer，Root三设计/审核/Git；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，a07b4d47266ae35b6cc35749974d83d51a417aa4，clean |
+| 写入 | 原S0七文档TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR0004/CURRENT/RUNBOOK/ACCEPTANCE；同步A1b1/B顺序、准确fixture职责与ZIP替代、已接收S0。更新旧“复用手写ZIP/三smoke同A1b”描述，不保留当前方案冲突。无新增文档 |
+| 预计代码文件集 | 后继M：test/smoke/capability-package.e2e.test.ts、s3.integration.test.ts，test/fixtures/smoke-provider.ts，test/unit/smoke-provider.test.ts；A：上述4fixtures（含zip）+3unit/integration。需要额外普通文件先报告；此时均未授权写入 |
+| 禁止/交付 | 全src/其余test/production-runtime/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他owner不动，不安装/DB/服务/provider/Git。先七文档format/Prisma validate(port1)/contract+全部保护hash/diff，固定精确manifest停写，Root收敛文档门后再放行A1b1-I |
+
+B部署/production-runtime具体同owner执行文件/普通stopAndDrain回调由B独立任务卡确定；不要提前做B或H0。外部S3环境仍无用户回复，Docker未获重启许可；源码/本地门继续，外部资格不计通过。
