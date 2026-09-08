@@ -257,3 +257,41 @@ Root 在最终提交 `8606f876e8cce0c7affa346049f62910218793b0`、Node 24.13.0/p
 Root 最新全局门禁如实记录：`python3 scripts/verify-ten-repository-standard.py` exit 1（202 rule violations）；`python3 scripts/verify-repository-topology.py` exit 0；`python3 -m pytest scripts/tests` 为 82 passed / 2 failed，失败均为当前工程手册提取/引用格式断言。对应日志 `/tmp/kokoro-p1b-root-{standard,topology,tests}-final-20260908.log`。Capability 仍有 checker 对 ORM canonical、Prisma generated、strict dependency build、目标模块目录与 TypeScript 选项的真实缺口；P2/P3 会收敛业务目录，其余由相应治理切片处理，本片不放宽门禁。
 
 Docker daemon `/info` 仍返回 HTTP 500，未执行镜像 build/smoke；外部 IAM/Storage/provider 仍是协议 stub，完整 owner sandbox 联调留后续。Goal 保持 active，下一切片为 P2 Skills；P3 MCP、P4 恢复、P5 Platform cutover 均未完成。
+
+## P2 Skills 设计门与任务卡（2026-09-08）
+
+Goal 继续保持 active。P2 先完成设计门，再依次实施 P2a 模块/状态/版本系列、P2b 安装机器契约/数据身份、P2c 事务/投影/旧实现删除；P2a 验收前不并行写 P2b/P2c。
+
+### P2 放置表
+
+| 项 | 已批准结论 |
+|---|---|
+| Owner | `kokoro-capability` 当前为唯一 writer；业务模块 `skills`。目标 P5 才把服务拓扑名切为 `kokoro-platform`，本片不复制 owner。 |
+| 当前事实 | 基线 `8606f876e8cce0c7affa346049f62910218793b0`；Skills 仍分散在 `src/application/skill`、全局 models/ports、Prisma capability repository、聚合 RPC/HTTP，generic installation/authorization 尚未接入，catalog 仍有 `installed:true` 占位。 |
+| 目标职责 | `SkillsModule` 先承接既有 catalog/source，再由 additive `SkillInstallationService` 提供 tenant/attested owner scope 下的安装、升级、启停、移除和查询；HTTP 保持 read-only projection。 |
+| 目录方案 | 采用批准的 `src/modules/skills/{catalog,source,installation}` 按真实子能力聚合；淘汰继续扩展全局四层，因为会让 Skills/MCP 共享聚合类型和组合对象。暂不拆独立服务，避免提前做 P5 拓扑切换。 |
+| 粒度 | 三个可审查业务切片：P2a 只迁现有 surface 并修状态/series；P2b 同片落 owner proto/generated/schema/repository；P2c 才接 projection、原子事务并删除孤立 helper。 |
+| 依赖 | `SkillsModule` 可依赖 Prisma、Storage/IAM owner client 和共享 ingress/telemetry；禁止读取别仓数据库、把 Prisma/generated 类型穿透 wire、反向依赖 MCP、保留第二套安装实现或兼容 alias。AppModule 只 import feature；P3 才拆 MCP 聚合。 |
+| 数据/API | `skill_id` 仍是版本 ID，新增内部 `series_id`；安装唯一身份为 tenant + target owner scope + skill series。Install 输入只含 source_ref/target scope，asset/digest 服务端派生并复验。P2b 先更新唯一 proto，P5 才切 BFF/Agent consumers。 |
+| 删除项 | P2a 移除迁走后的旧 Skills service/repository/RPC/HTTP/global type/port；P2b 真实安装替换后删除 generic installation/authorization table/enum；P2c 删除孤立 installation/package/source-import helper 与只覆盖旧路径的 tests，不保留 fallback。 |
+| 验证 | 每片先 RED，再执行 format/lint/typecheck/Prisma generate+validate/schema、contract、unit/integration/build/smoke、architecture 与 diff；schema/state/concurrency 使用隔离真实 PostgreSQL，复用现有 Redis。Root 最后执行当前三项全局门禁并如实保留既有失败。 |
+
+### P2-D 设计通过报告
+
+- 子仓设计提交：`83350ec2a4d89992ba89d17231af13e749ee4f0a`（`docs(capability): define Skills implementation slices`），基线 `8606f876e8cce0c7affa346049f62910218793b0`。
+- 通过文件：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/AGENTS.md`、`docs/ADR/ADR-001-nestjs-prisma.md`、`docs/API_CONTRACT.md`、`docs/CURRENT.md`、`docs/DATA_MODEL.md`、`docs/TECHNICAL_DESIGN.md`。
+- 独立契约审查：contract_review / gpt-5.6-sol，P2-R2 `SPEC PASS`；安装输入信任边界、method-specific operation、统一 mutation response field/presence/enum、内部事件名、cursor 与 P2/P5 边界均一致。
+- 独立数据审查：database_review / gpt-6-astra，P2-R2 `DATA PASS`；series/state/时间/no-op/降级、升级与 command drift、事务边界、removed tombstone/retention 均无剩余重要阻断。
+- Root 在 docs-only 最终差异执行 `pnpm contract:check`、`pnpm prisma:validate`、`pnpm schema:check`、`pnpm test`、`git diff --check`，全部 exit 0；46 files：43 passed/3 skipped，192 tests：178 passed/14 skipped。跳过项是未提供真实集成环境的既有测试，因此该次只证明设计未破坏当前静态/组件基线，不替代实现验收。契约 digest 仍为 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca`，日志 `/tmp/kokoro-p2-design-gate-r2-20260908.log`。
+- 设计门已通过但 P2 实现尚不存在；CURRENT 明确保留旧路径、generic table 和 projection 占位现状。P4 的 public event/publisher/recovery/GC 与 P5 consumers/cutover 仍是后续 owner。
+
+### P2 实施任务卡
+
+| ID | 目标/完成条件 | Owner/角色/模型/权限 | 文件集与排除 | 依赖、验证与交付 |
+|---|---|---|---|---|
+| P2a-I | 建立原生 `SkillsModule`，迁移既有 catalog/source/RPC/HTTP projection/repository；增加 `series_id`、版本族和状态转换不变量；wire 行为不变 | capability_owner_p1b / gpt-5.6-sol / 子仓唯一 writer；Root 独占 Git | 可写 `src/modules/skills/**`、AppModule/必要共享 ingress 注册、迁出后的旧 Skills 路径、Prisma schema/generated/installer/drift、对应 test/docs/package script；不得改 proto/OpenAPI、installation schema/行为、MCP业务、其他仓 | 先写终态不可复活、非draft不可换包、同series owner/name、真实PG并发版本与状态竞争 RED；完成后停写交 Root/双审，Root 重跑完整本仓门禁并精确路径提交 |
+| P2a-R | 对冻结 P2a 快照执行规范与数据/质量审查 | contract_review + database_review / 只读 | 只读 P2a diff/source/test/docs；不改文件、Git、共享资源 | SPEC/DATA 均 PASS 后 Root 才接收；任何 blocking/important 回同一 writer 整改 |
+| P2b-I | 新增 `SkillInstallationService` 唯一 proto/generated/provenance/surface 与 `skill_installation` schema/repository；替换并删除 generic table/enum | P2a 验收后续派同仓唯一 writer | contract/proto+generated、Prisma schema/installer/drift、`src/modules/skills/installation/**`、对应 tests/docs；不改消费者仓/HTTP mutation/P4 publisher | 机器契约先 RED；覆盖 response presence/enum、operation互换拒绝、tenant/owner、unique/upgrade/reinstall/no-op/降级、fresh schema/drift与真实PG并发；独立双审+Root提交 |
+| P2c-I | 接通真实 install/pool/catalog，删除 `installed:true` 与孤立 helper；本地 business/outbox/success receipt 原子提交 | P2b 验收后续派同仓唯一 writer | Skills transaction/projection/Storage client、旧 installation/package helper 删除、tests/docs；不做 P4 crash recovery/public event 或 P5 consumer alias | 覆盖 clean/digest、rollback/replay/event、catalog/pool、cursor scope/filter；完整本仓门禁、双审、Root提交 |
+
+P2a 当前放行基线为 `83350ec2a4d89992ba89d17231af13e749ee4f0a`；沿用 `codex/production-closure-docs` shared checkout 和同一隔离资源纪律。Root/其他 Agent 在 writer 进行中不写该子仓；writer 不执行 Git add/commit/branch/reset，不扩大到 P2b/P2c。
