@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b 已验收；P2c 已放行，P3–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c 已验收；P3 设计门已放行，P3 实现及 P4–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -39,8 +39,8 @@
 | P0-D / P0 | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项 | Root / 当前模型 / 写入（派实现前） | 子仓上述现有文档、ADR 新文件；Root 本任务板 | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交 |
 | P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
-| P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b 已验收；P2c 已放行 |
-| P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 待派工 |
+| P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
+| P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 设计门审计已放行；实现待设计通过 |
 | P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 后续授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 待派工 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
@@ -358,7 +358,32 @@ P2c 现在以 `119dbe36d2b44080d6be825ca84c98471e63467e` 为唯一实现基线�
 
 完成条件：
 
-1. catalog/pool 的 installed projection 从 attested target scopes 下的真实 `skill_installation` 查询导出，删除 `installed:true` 占位；cursor、tenant、owner scope 与现有只读 HTTP/Connect contract 保持。
+1. catalog/pool 的 installed projection 从可信 BFF subject 对应唯一 user target 下的真实 `skill_installation` 查询导出，删除 `installed:true` 占位；cursor、tenant、owner scope 与现有只读 HTTP/Connect contract 保持。
 2. 三个安装 mutation 的本地业务变化、outbox 和 completed success receipt 使用同一 PostgreSQL transaction；same-command replay 返回首次结果，digest/operation drift 保持冲突。failed/processing 的跨崩溃恢复、lease/reaper、publisher 和 retention 仍留 P4，不以本片原子 success path 冒充完整恢复。
 3. 删除已被真实 owner flow 替代且没有生产入口的孤立 installation/package/source-import helper、测试与 import；不保留 fallback、alias 或双轨实现。Storage package clean/digest 边界继续保留。
 4. 先写 projection/rollback/receipt crash-window RED，再最小实现；真实 PostgreSQL 覆盖业务/outbox/receipt 同事务回滚、并发 replay、catalog/pool target scope 与 cursor 隔离。完成后冻结工作树，独立规范/数据质量双审、Root fresh schema 与完整本仓门禁通过后方可提交。
+
+### P2c 最终交接与验收（2026-09-08）
+
+- 任务/owner：P2c-I / kokoro-capability / capability_owner_p1b（gpt-5.6-sol）唯一 writer；Root 独占 Git index、提交与集成复验。实现基线 `119dbe36d2b44080d6be825ca84c98471e63467e`；最终提交 `e63b56518b51dbf1ad1c172f709b19231b4bfaa3`（`feat(capability): complete Skills installation projection`）。
+- 结果：`/v1/skills` 保持 active source 行为；catalog 按可信 BFF subject 对应的 exact-version user-target installation 派生 installed/enabled，pool 使用 Prisma relation predicate 在 keyset/`limit + 1` 前过滤。Prisma 的 relation include 两次读取被显式包含在 RepeatableRead snapshot，避免并发 disable/remove 导致资格与返回 flags 不一致；optional subject 的既有 tenant fallback 保持。
+- 事务与重放：三个 installation mutation 在事务外完成当前 IAM/Storage 校验与 receipt claim，claim winner 在一个 Serializable transaction 中重读 receipt/source/installation，并原子提交业务、0/1 outbox、wire codec result 与 completed receipt。business/outbox/codec/completion 四个故障点均回滚本地事实；processing/corrupt completed fail closed，同 command 与 failed reclaim 并发只产生一个 durable transition/event。通用 receipt action 已成功后的 codec/completion 故障保持 processing，阻止原业务被自动重做。
+- 删除：孤立 `src/application/installation/service/*`、ZIP/package/source-import 与旧 Storage 多用途 adapter 已删除；真实使用的 bounded `ConnectStoragePackageClient` 迁入 `src/modules/skills`，继续校验 clean、asset/digest、deadline 与受控 read URL。Prisma 只增加 `relationMode=prisma` 逻辑 relation，fresh schema 物理外键数为 0。
+- 独立审查：contract_review 最终 `SPEC PASS`，无 blocking/important/minor；database_review 首轮发现通用 receipt 重执窗口、projection 非一致快照及内存替身先分页后三项问题，同一 writer 以 RED→GREEN 修复，复审 `QUALITY PASS`，无新增阻断。
+
+Root 在最终提交 `e63b56518b51dbf1ad1c172f709b19231b4bfaa3`、Node 24.13.0、pnpm 11.25.0、独立 fresh PostgreSQL 数据库 `kokoro_capability_p2c_post_e63b565_20260908` 与 Redis DB 10 重跑：
+
+| 命令 | 实际结果 |
+|---|---|
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；lockfile 无漂移；全新库安装成功 |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树 clean；真实数据库无 drift、物理外键数 0 |
+| `pnpm contract:check` / `buf breaking` 相对 `119dbe3` | exit 0；digest 保持 `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b`，无 wire breaking |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 53 files / 275 tests passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 13 files / 87 tests passed，0 failed、0 skipped |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
+| `git diff --check` / clean worktree | 通过 |
+
+提交后完整日志：`/tmp/kokoro-p2c-root-postcommit-e63b565-20260908.log`。Root 最新全局门禁：standard exit 1（212 violations，其中 Capability 20）；topology exit 0；Root tests 为 82 passed / 2 failed，仍是工程手册示例数量与“参考依据”标题断言。日志 `/tmp/kokoro-p2c-root-global-20260908-{standard,topology,tests}.log`。未通过修改其他 owner、当前 SQL 手册脏文件或放宽门禁清零。
+
+Docker 镜像及真实 IAM/Storage owner sandbox 联调仍未验；P4 processing lease/fencing/reaper、publisher/retention 仍是真实缺口。Goal 保持 active。现在只放行 P3-D：以 `e63b56518b51dbf1ad1c172f709b19231b4bfaa3` 为唯一基线，先审计 MCP 当前 owner/API/schema/state/transaction/删除面并收敛 TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL 与本任务板；P3 实现、P4、P5 尚未授权写入。
