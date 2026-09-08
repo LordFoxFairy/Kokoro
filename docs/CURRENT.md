@@ -9,11 +9,11 @@
 用户明确要求完整 System，不以 Nest + Site CRUD 截止。唯一任务表在
 [System IMPLEMENTATION_PLAN](../kokoro-system/docs/IMPLEMENTATION_PLAN.md)，设计决定为
 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)。
-**完整业务源码与跨仓 HTTP 已验收**，不是 Nest + Site CRUD 切片。五模块 Sites、Workspaces、Products、Runtime Manifests、Model Catalog，83业务operation+2probes；旧四层/RPC/Proto/generated/SDK退出。
+**完整业务源码、跨仓 HTTP 与 NestJS 工程边界已验收**，不是 Nest + Site CRUD 切片。五模块 Sites、Workspaces、Products、Runtime Manifests、Model Catalog，83业务operation+2probes；旧四层/RPC/Proto/generated/SDK退出。
 
 | Owner / 当前交付 commit | Root 实际验证（2026-09-08） |
 | --- | --- |
-| System `280d5d0567c94de33e32f0e85f163fbcf75ede20`（业务提交 `d7257aa`） | committed clean HEAD `pnpm verify`：format/lint/typecheck/clean build/contract 全通过；13 files / 86 pass / 0 skip；fresh PostgreSQL 23断言 / 22表 |
+| System `f487f635294c98cb8a44e638ed1ee0afa6d28feb`（R6源码 `dcfa846`，业务 `d7257aa`） | `dcfa846` clean HEAD `pnpm verify`：format/type-aware lint/typecheck/clean build/contract 全通过；16 files / 97 pass / 0 skip；fresh PostgreSQL 23断言 / 22表 |
 | BFF `26eec0112c83ea98aa045896d385c89ad88b45d2`（consumer `1e03b87`） | Node22 `pnpm lint && pnpm typecheck && pnpm build && pnpm test`：152 pass / 0 fail / 0 skip |
 | Agent `e24b4aab05ee6df811c21089effbe1f91d7c2f2c` | `uv lock --check`、`uv run ruff check .`、`uv run pyright`通过（0error/0warning）；`uv run pytest -q`：611pass / 6既有skip / 77集成等标记deselected / 66第三方warnings |
 
@@ -27,10 +27,12 @@ python3 scripts/e2e/run_system_owner_smoke.py \
 ```
 
 结果 PASS：真实 System/BFF `pnpm dev`，HTTP建资源/发布配置/绑定覆盖，BFF manifest/catalog/default与跨tenant隔离，BFF调用Agent-only resolve被403拒绝，Agent真实HTTP默认/显式解析与model factory映射、跨tenant拒绝。全部自建PG数据库、Redis前缀、进程组清理后才PASS；不包含provider推理、完整Agent worker执行或镜像实跑。
-日志 `/tmp/kokoro-system-final-head-verify.log`、`/tmp/kokoro-system-final-head-live.log`。System与Agent clean；BFF仍有任务外 `docs/api/v1/agui-chat.md` / `test/lifecycle.test.ts` dirty，本轮未改未提交，smoke输出显式记录dirty。
+R6 committed HEAD smoke仍为PASS，日志 `/tmp/r6-root-verify-committed.log`、`/tmp/r6-root-smoke-committed.log`。System与Agent clean；BFF仍有任务外 `docs/api/v1/agui-chat.md` / `test/lifecycle.test.ts` dirty，本轮未改未提交，smoke输出显式记录dirty。
+
+R6把规范从“文档约定”落成可执行门禁：ESLint使用`recommendedTypeChecked`+`projectService`并启用Promise/unsafe/exhaustive规则；Repository不再依赖HTTP错误或分页类型；SystemError保持中性，HTTP状态在transport穷尽映射；四个feature使用显式public入口与最小Nest exports；Controller禁止直连database/cache，HealthService承接readiness；禁止跨feature deep import、循环、forwardRef/ModuleRef及手工实例化Service/Repository。OpenAPI字节、canonical SQL、package/lock、83+2路由契约均未改变。
 
 Root `python3 scripts/verify-repository-topology.py` 与 `python3 scripts/verify-backend-design.py --manifest-only`通过；活动运行仓9个，旧Model退出active/clone/consumer配置，但checkout/remote/历史保留、不归档、不删旧数据。Capability→Platform另属其他任务。
-Root focused governance/topology/smoke **81pass**；全 `python3 -m pytest scripts/tests -q` **82pass / 2既有手册测试失败**（例子数18/11与旧标题断言，已在原基线复现）。`python3 scripts/verify-ten-repository-standard.py --format json`当前System **0违规**，其他8仓合计200条未收敛，不记作九仓全绿。未触及Root SQL手册、Agent gitlink或其他任务变更。
+Root focused governance/topology/smoke **81pass**；先前全 `python3 -m pytest scripts/tests -q` **82pass / 2既有手册测试失败**（例子数18/11与旧标题断言，已在原基线复现）。本轮 `python3 scripts/verify-ten-repository-standard.py --format json` 当前System **0违规**，其他8仓合计208条未收敛，不记作九仓全绿。未触及Root SQL手册、Agent gitlink或其他任务变更。
 
 System `pnpm audit --prod --audit-level=high` 与 `pnpm audit --audit-level=high`均无已知漏洞。**待验**：Docker Desktop engine API500/无版本socket超时阻断RC镜像实跑；未重启用户Docker。CI扫描/SBOM/attestation是已接线而未执行证据，生产容量/SLO/灾备/secret轮换及provider推理仍由部署环境另验。后续owner：System与Root完成RC，非业务实现缺模块。
 旧 Root full/owner-health runner 已暂停（退出2、无基础设施操作），危险共享清理实现已删除；隔离全九仓编排重建由Root后续承担，不混入本轮System完成声明。
