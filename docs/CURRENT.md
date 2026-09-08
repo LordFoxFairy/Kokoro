@@ -1,8 +1,39 @@
 # 当前活跃文档白名单
 
-状态：2026-09-07
+状态：2026-09-08
 用途：降低 agent 阅读负担。做**目标 GA/Feature-first 架构**的 runtime、capability、deliver 主线时，只读
 “当前目标架构评审主线”；本地原型文档只用来核对现有代码行为，不能反向生成首发代码。
+
+## 当前 System 完整交付主线
+
+用户明确要求完整 System，不以 Nest + Site CRUD 截止。唯一任务表在
+[System IMPLEMENTATION_PLAN](../kokoro-system/docs/IMPLEMENTATION_PLAN.md)，设计决定为
+[ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)。
+**完整业务源码与跨仓 HTTP 已验收**，不是 Nest + Site CRUD 切片。五模块 Sites、Workspaces、Products、Runtime Manifests、Model Catalog，83业务operation+2probes；旧四层/RPC/Proto/generated/SDK退出。
+
+| Owner / 当前交付 commit | Root 实际验证（2026-09-08） |
+| --- | --- |
+| System `280d5d0567c94de33e32f0e85f163fbcf75ede20`（业务提交 `d7257aa`） | committed clean HEAD `pnpm verify`：format/lint/typecheck/clean build/contract 全通过；13 files / 86 pass / 0 skip；fresh PostgreSQL 23断言 / 22表 |
+| BFF `26eec0112c83ea98aa045896d385c89ad88b45d2`（consumer `1e03b87`） | Node22 `pnpm lint && pnpm typecheck && pnpm build && pnpm test`：152 pass / 0 fail / 0 skip |
+| Agent `e24b4aab05ee6df811c21089effbe1f91d7c2f2c` | `uv lock --check`、`uv run ruff check .`、`uv run pyright`通过（0error/0warning）；`uv run pytest -q`：611pass / 6既有skip / 77集成等标记deselected / 66第三方warnings |
+
+Root 在上述 System committed HEAD 实跑：
+
+```bash
+python3 scripts/e2e/run_system_owner_smoke.py \
+  --postgres postgresql://nako@localhost/postgres --redis redis://localhost:6379/2 \
+  --node24-bin /Users/nako/.nvm/versions/node/v24.13.0/bin \
+  --node22-bin /Users/nako/.nvm/versions/node/v22.22.2/bin
+```
+
+结果 PASS：真实 System/BFF `pnpm dev`，HTTP建资源/发布配置/绑定覆盖，BFF manifest/catalog/default与跨tenant隔离，BFF调用Agent-only resolve被403拒绝，Agent真实HTTP默认/显式解析与model factory映射、跨tenant拒绝。全部自建PG数据库、Redis前缀、进程组清理后才PASS；不包含provider推理、完整Agent worker执行或镜像实跑。
+日志 `/tmp/kokoro-system-final-head-verify.log`、`/tmp/kokoro-system-final-head-live.log`。System与Agent clean；BFF仍有任务外 `docs/api/v1/agui-chat.md` / `test/lifecycle.test.ts` dirty，本轮未改未提交，smoke输出显式记录dirty。
+
+Root `python3 scripts/verify-repository-topology.py` 与 `python3 scripts/verify-backend-design.py --manifest-only`通过；活动运行仓9个，旧Model退出active/clone/consumer配置，但checkout/remote/历史保留、不归档、不删旧数据。Capability→Platform另属其他任务。
+Root focused governance/topology/smoke **81pass**；全 `python3 -m pytest scripts/tests -q` **82pass / 2既有手册测试失败**（例子数18/11与旧标题断言，已在原基线复现）。`python3 scripts/verify-ten-repository-standard.py --format json`当前System **0违规**，其他8仓合计200条未收敛，不记作九仓全绿。未触及Root SQL手册、Agent gitlink或其他任务变更。
+
+System `pnpm audit --prod --audit-level=high` 与 `pnpm audit --audit-level=high`均无已知漏洞。**待验**：Docker Desktop engine API500/无版本socket超时阻断RC镜像实跑；未重启用户Docker。CI扫描/SBOM/attestation是已接线而未执行证据，生产容量/SLO/灾备/secret轮换及provider推理仍由部署环境另验。后续owner：System与Root完成RC，非业务实现缺模块。
+旧 Root full/owner-health runner 已暂停（退出2、无基础设施操作），危险共享清理实现已删除；隔离全九仓编排重建由Root后续承担，不混入本轮System完成声明。
 
 ## 当前工程规范入口
 
@@ -24,13 +55,13 @@
 
 先读 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 和 [`CODEBASE_MAP.md`](CODEBASE_MAP.md)。当前正式拓扑为
 `kokoro-app`（本地 `kokoro`）→ `kokoro-bff`（Chat/业务 BFF）→ `kokoro-agent`，以及
-`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
-`kokoro-storage`、`kokoro-scheduler` 七个独立业务仓。Root 只维护架构文档、部署入口和拓扑/验证工具；各仓自持本仓 API contract。
+`kokoro-iam`、`kokoro-system`（含 model-catalog）、`kokoro-billing`、`kokoro-capability`、
+`kokoro-storage`、`kokoro-scheduler` 六个独立业务仓。Root 只维护架构文档、部署入口和拓扑/验证工具；各仓自持本仓 API contract。
 
 2026-09-04 已接受的目标拓扑见
 [ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md)：`kokoro-model` 合入
 `kokoro-system/model-catalog`，`kokoro-capability` clean-slate 重命名为 `kokoro-platform`，首批一级域为
-Skills/MCP。上段仍是当前物理 checkout，在专项目标完成前不得冒充目标态，也不得建立兼容双轨。
+Skills/MCP。System 完整源码与消费者 HTTP 已验证；旧 Model checkout/remote 保留但不列为活动服务。Capability→Platform 仍是另一个 cutover，未在本轮实施。
 
 `kokoro-session`、`kokoro-gateway`、旧 `kokoro-platform` 实现、旧 `kokoro-web` monorepo、独立 `kokoro-credit`
 和旧 Site 占位目录均已退出当前拓扑；历史文件只作迁移考古。Credit 归 `kokoro-billing`，Chat 归

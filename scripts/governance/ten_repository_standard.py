@@ -113,9 +113,6 @@ REPOSITORY_PROFILES = {
     "kokoro-system": RepositoryProfile(
         "typescript-service", True, 2, REQUIRED_TS_SOURCE_PATHS
     ),
-    "kokoro-model": RepositoryProfile(
-        "typescript-service", True, 3, REQUIRED_TS_SOURCE_PATHS
-    ),
     "kokoro-billing": RepositoryProfile(
         "typescript-service", True, 4, REQUIRED_TS_SOURCE_PATHS
     ),

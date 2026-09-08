@@ -59,6 +59,45 @@ def script_is_noop(command: str) -> bool:
     )
 
 
+def workflow_gate_commands(workflow: str, scripts: dict[str, str]) -> str:
+    """Expand invoked pnpm gates, not unused scripts; lexical preflight, not CI proof."""
+    commands: list[str] = []
+    visited: set[str] = set()
+
+    def visit(text: str) -> None:
+        for line in text.splitlines():
+            line = re.sub(r"^\s*-?\s*run:\s*", "", line).strip()
+            if not line or line.startswith("#"):
+                continue
+            for segment in re.split(r"&&|;", line):
+                try:
+                    words = shlex.split(segment, comments=True)
+                except ValueError:
+                    continue
+                if not words or words[0] in {"echo", "printf", "true", ":"}:
+                    continue
+                if words[0] != "pnpm":
+                    if words[0] in {"vitest", "tsx", "node", "playwright"}:
+                        commands.append(shlex.join(words))
+                    continue
+                rest = words[1:]
+                if rest and rest[0] == "run":
+                    rest = rest[1:]
+                if not rest:
+                    continue
+                name = rest[0]
+                body = scripts.get(name)
+                if body is None:
+                    commands.append(shlex.join(words))
+                elif name not in visited and not script_is_noop(body):
+                    visited.add(name)
+                    commands.append(shlex.join(words))
+                    visit(body)
+
+    visit(workflow)
+    return "\n".join(commands)
+
+
 def forbidden_business_dependencies(text: str) -> tuple[str, ...]:
     """Lexical preflight only; child ESLint must enforce the complete AST graph."""
     specifiers = re.findall(
@@ -317,13 +356,33 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
             path.name.endswith((".routes.ts", ".controller.ts"))
             or "http" in relative_parts[:-1]
         )
+        # Approved process-level DB/cache providers are technical services, not
+        # business rules. This narrow root location does not exempt similarly
+        # named directories inside modules, domain rules, or HTTP controllers.
+        is_process_service = (
+            len(relative_parts) == 2
+            and relative_parts[0] in {"database", "cache"}
+            and path.name.endswith(".service.ts")
+        )
         is_business_service = path.name.endswith((".service.ts", ".policy.ts")) or any(
             part in {"use-cases", "services", "commands"}
             for part in relative_parts[:-1]
         )
-        if (is_domain_rule or is_business_service) and forbidden_business_dependencies(
-            text
-        ):
+        technical_driver = (
+            ("pg" if relative_parts[0] == "database" else "redis")
+            if is_process_service and not is_domain_rule
+            else None
+        )
+        forbidden_dependencies = tuple(
+            specifier
+            for specifier in forbidden_business_dependencies(text)
+            if technical_driver is None
+            or not (
+                specifier == technical_driver
+                or specifier.startswith(technical_driver + "/")
+            )
+        )
+        if (is_domain_rule or is_business_service) and forbidden_dependencies:
             add(
                 failures,
                 repository_name,
@@ -331,7 +390,9 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
                 f"{relative_path} imports a framework, database, cache or provider implementation from business rules",
             )
         if (
-            is_transport or is_domain_rule or is_business_service
+            is_transport
+            or is_domain_rule
+            or (is_business_service and technical_driver != "pg")
         ) and sql_literal.search(text):
             add(
                 failures,
@@ -351,13 +412,14 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
         if (
             profile.kind == "typescript-service"
             and "process.env" in text
-            and not relative_path.startswith("src/config/")
+            and relative_path != "src/main.ts"
+            and not relative_path.startswith(("src/config/", "src/bootstrap/"))
         ):
             add(
                 failures,
                 repository_name,
                 "configuration-boundary",
-                f"{relative_path} reads process.env outside src/config/",
+                f"{relative_path} reads process.env outside config/bootstrap",
             )
         if (
             profile.kind == "typescript-service"
@@ -460,7 +522,10 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
             for line in workflow_text.splitlines()
             if not line.lstrip().startswith("#")
         )
-        if profile.requires_schema and "db:apply-schema" not in workflow_text:
+        gate_commands = workflow_gate_commands(workflow_text, scripts)
+        if profile.requires_schema and not re.search(
+            r"\b(?:db:apply-schema|test:schema:fresh)\b", gate_commands
+        ):
             add(
                 failures,
                 repository_name,
@@ -470,9 +535,9 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
         integration_pattern = (
             r"test:e2e|playwright"
             if profile.kind == "web"
-            else r"test:integration|runtime-real|smoke:infra"
+            else r"test:integration|runtime-real|smoke:infra|^vitest run(?: --no-file-parallelism)?$"
         )
-        if not re.search(integration_pattern, workflow_text):
+        if not re.search(integration_pattern, gate_commands, re.MULTILINE):
             add(
                 failures,
                 repository_name,

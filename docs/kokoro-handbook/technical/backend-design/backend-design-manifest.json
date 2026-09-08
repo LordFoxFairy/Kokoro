@@ -134,21 +134,23 @@
       "designScore": 100,
       "designCard": "12-system.md",
       "owns": [
-        "site",
-        "workspace",
-        "runtime-manifest",
-        "config-release",
-        "site-policy"
+        "sites",
+        "workspaces",
+        "products",
+        "runtime-manifests",
+        "model-catalog",
+        "model-routing"
       ],
       "doesNotOwn": [
         "identity",
         "project",
         "chat-message",
         "billing",
-        "model-routing",
         "capability",
         "storage",
-        "agent-run"
+        "agent-run",
+        "provider-inference",
+        "provider-plaintext-secrets"
       ],
       "currentEvidence": [
         "kokoro-system/src",
@@ -156,33 +158,6 @@
         "kokoro-system/INDEX.md",
         "kokoro-system/docs/API_CONTRACT.md",
         "kokoro-system/Dockerfile"
-      ],
-      "lifecycle": "active"
-    },
-    {
-      "name": "kokoro-model",
-      "kind": "business",
-      "complexity": "L0-L1",
-      "designScore": 100,
-      "designCard": "02-model.md",
-      "owns": [
-        "provider-catalog",
-        "model-definition",
-        "model-binding",
-        "routing-policy",
-        "model-visibility"
-      ],
-      "doesNotOwn": [
-        "provider-gateway",
-        "credit",
-        "payment",
-        "agent-execution"
-      ],
-      "currentEvidence": [
-        "kokoro-model/src",
-        "kokoro-model/database",
-        "kokoro-model/docs/API_CONTRACT.md",
-        "kokoro-model/Dockerfile"
       ],
       "lifecycle": "active"
     },

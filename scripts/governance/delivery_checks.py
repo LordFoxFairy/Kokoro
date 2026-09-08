@@ -112,8 +112,8 @@ def check_delivery(repository_name: str, failures: list[Failure]) -> None:
         release_text = read_text(release)
         required_release_markers = {
             "image vulnerability scan": r"trivy|grype",
-            "SBOM": r"\bsbom\s*:",
-            "build provenance": r"\bprovenance\s*:",
+            "SBOM": r"\bsbom(?:-path)?\s*:",
+            "build provenance": r"\bprovenance\s*:|uses:\s*actions/attest-build-provenance@",
             "digest signature or attestation": r"cosign\s+sign|attest-build-provenance|attestation",
         }
         for description, pattern in required_release_markers.items():

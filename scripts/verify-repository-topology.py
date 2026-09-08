@@ -25,7 +25,6 @@ ACTIVE = {
     "kokoro-agent": "https://github.com/LordFoxFairy/kokoro-agent.git",
     "kokoro-iam": "https://github.com/LordFoxFairy/kokoro-iam.git",
     "kokoro-system": "https://github.com/LordFoxFairy/kokoro-system.git",
-    "kokoro-model": "https://github.com/LordFoxFairy/kokoro-model.git",
     "kokoro-billing": "https://github.com/LordFoxFairy/kokoro-billing.git",
     "kokoro-capability": "https://github.com/LordFoxFairy/kokoro-capability.git",
     "kokoro-storage": "https://github.com/LordFoxFairy/kokoro-storage.git",
@@ -118,10 +117,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if EXPECTED_ACTIVE_PATHS != {
         "kokoro", "kokoro-bff", "kokoro-agent", "kokoro-iam", "kokoro-system",
-        "kokoro-model", "kokoro-billing", "kokoro-capability", "kokoro-storage",
+        "kokoro-billing", "kokoro-capability", "kokoro-storage",
         "kokoro-scheduler",
     }:
-        errors.append("active repository path index does not contain exactly the current ten repositories")
+        errors.append("active repository path index does not contain exactly the current nine repositories")
 
     for name, expected_remote in ACTIVE.items():
         path = ROOT / name

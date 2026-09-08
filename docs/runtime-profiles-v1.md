@@ -1,87 +1,59 @@
 # Kokoro Runtime Profiles v1
 
-本文件是 Root 对“最小启动、Model 独立、LiteLLM 可选、Agent 可选”的运行约定。子仓库只维护
-自己的进程与实现，Root 只维护 profile、契约和部署组合，不复制子仓库代码。
+2026-09-08：System 合入分支采用 ADR-031 的单一 HTTP 模型目录/解析边界。
+Root 只编排启动与验收；完整 System 状态见其 CURRENT/IMPLEMENTATION_PLAN，本文件不是运行通过证据。
 
 ## 组件边界
 
-| 组件 | 是否默认启动 | 职责 | 不负责 |
-|---|---:|---|---|
-| `kokoro-model` | 按业务链路 | 模型目录、revision、policy、route resolve | 不生成模型、不探活/拉起 LiteLLM |
-| LiteLLM | 否 | 外部 OpenAI-compatible provider gateway | 不拥有 Kokoro model catalog、Credit 或 Agent 状态 |
-| `kokoro-agent-http` | 否 | BFF 调用的 durable run admission/control/replay ingress | 不执行 worker loop |
-| `kokoro-agent` | 否 | Redis ingress 后的实际 Agent loop、恢复和事件事实 | 不提供 Web-facing API |
+| 组件 | 启用条件 | 职责 |
+|---|---|---|
+| kokoro-system | 站点配置/模型目录或 Agent 执行需要时 | Sites、Workspaces、Products、Runtime Manifest、Model Catalog；不推理 |
+| LiteLLM | 标准 Agent worker 执行时 | 外部网关；不拥有 System catalog、Billing ledger 或 Agent Run |
+| kokoro-agent-http | BFF 提交/控制/读取执行时 | durable ingress，不执行 worker loop |
+| kokoro-agent | 执行 profile | worker、恢复、运行事实；模型先经 System resolve |
 
-Agent 的完整执行 profile 必须同时包含 HTTP ingress 和 worker；只启动其中一个都不是完整闭环。
-Agent 关闭时，BFF 仍可启动和就绪，Chat/调度执行路由返回 `agent_not_configured`，不会静默切换
-到 mock 或让 Web 长时间等待。
+旧 kokoro-model 不再作为独立运行依赖；checkout/remote 保留为历史源，不归档或删除。
+System 的 model-catalog 不持有 provider 明文凭据，不拉起或探活 LiteLLM。
 
-## Profile
+## local-fast：不执行模型
 
-### local-fast
+从各仓源码启动 Web/BFF；BFF 使用 live 模式及其独立 PostgreSQL 数据库、Redis 连接，
+`KOKORO_AGENT_ENABLED=0`。本地只复用一套 PostgreSQL/Redis，不启动第二套容器。
+需要站点或模型目录页面时另外源码启动 System；未配置 owner 不冒充 mock 成功。
 
-适合前端开发和布局验收：
+## local-full：执行链路
 
-```dotenv
-KOKORO_BFF_MODE=mock
-KOKORO_AGENT_ENABLED=0
-KOKORO_LITELLM_ENABLED=0
-```
-
-启动 Web、BFF、PostgreSQL、Redis；不启动 Agent、Model、LiteLLM。Model 需要验收时独立用
-`pnpm dev` 启动，不改变 Web+BFF 的最小启动时间。
-
-### local-full
-
-适合真实 Agent admission/worker 联调：
+1. 按 System README 从 fresh owner 数据库启动 `pnpm dev`，配置三种独立服务凭据。
+2. BFF 设置 `KOKORO_SYSTEM_BASE_URL`、`KOKORO_INTERNAL_SECRET_BFF`；后者对应 System 的 BFF token。
+3. Agent worker 设置以下配置，凭据仅放在被忽略的本地环境文件或 secret manager：
 
 ```dotenv
-KOKORO_BFF_MODE=live
-KOKORO_AGENT_ENABLED=1
-KOKORO_AGENT_BASE_URL=http://kokoro-agent-http:4401
-KOKORO_LITELLM_ENABLED=0
-```
-
-然后执行：
-
-```bash
-docker compose --env-file deploy/.env.phase1.local \
-  -f deploy/docker-compose.phase1.yml --profile agent up --build
-```
-
-如果 Model resolve 返回 `transport=litellm`，再给 Agent 注入：
-
-```dotenv
+KOKORO_SYSTEM_BASE_URL=http://HOST:4240
+KOKORO_INTERNAL_SECRET_AGENT=TOKEN
 KOKORO_LITELLM_ENABLED=1
 KOKORO_LITELLM_BASE_URL=https://HOST/v1
 KOKORO_LITELLM_API_KEY=TOKEN
 ```
 
-LiteLLM 仍由外部部署提供，不加入 `kokoro-model` 或 `kokoro-agent` 镜像。
+Agent token 对应 System 的 `KOKORO_SYSTEM_AGENT_SERVICE_TOKEN`，不复用 BFF/admin token。
+System 返回的 opaque label/路由不包含 endpoint/key；缺少路由或凭据时失败关闭，没有本地默认模型选择。
+完整执行同时启动 Agent HTTP ingress 和 worker；BFF 设置 `KOKORO_AGENT_ENABLED=1` 及 Agent ingress URL。
+每个 owner 只访问自己的数据库；Redis System=2、BFF=8、Agent=9；原 Model DB3 保持空置。
 
-### production
+## 生产与候选验证
 
-线上使用独立生产镜像或 Cloudflare 直连 Web，配置策略保持一致：
+System、BFF、Agent 使用各仓生产镜像；LiteLLM 由外部部署提供，不加入其镜像。
+Root Phase1 compose 不新增 System/Model 容器，也不代表完整业务链已验收；容器只用于候选 smoke，开发仍从源码运行。
+浏览器只访问 Web 同源 adapter，经 BFF 到 owner；不直连 System、LiteLLM 或数据库。
 
-- 不需要 Agent 执行时，`KOKORO_AGENT_ENABLED=0`，只部署 Web+BFF 与必需的 PostgreSQL/Redis。
-- 需要执行时，部署 `kokoro-agent-http` 和 `kokoro-agent`，并将 BFF 的
-  `KOKORO_AGENT_BASE_URL` 指向 HTTP ingress。
-- Model 作为独立 owner 部署；LiteLLM 只有在实际选择 `litellm` route 时才部署和配置。
-- Web 只通过 BFF 同源 API 访问，浏览器不接触 Model、LiteLLM、Agent 数据库或 Redis。
-
-每个环境的域名仍由 `KOKORO_DOMAIN` 注入：本地默认 `dev.kokoro.localhost`，线上替换为实际
-`HOST`。域名只用于服务端站点绑定、`Forwarded` 和租户上下文，不依赖浏览器自带的 `X-Domain`。
-
-## 验证
+跨仓 System smoke（需各仓依赖已按 frozen lock 安装）：
 
 ```bash
-KOKORO_ENV_FILE=.env.phase1.example docker compose \
-  --env-file deploy/.env.phase1.example \
-  -f deploy/docker-compose.phase1.yml config --quiet
-
-KOKORO_ENV_FILE=.env.phase1.example docker compose \
-  --env-file deploy/.env.phase1.example --profile agent \
-  -f deploy/docker-compose.phase1.yml config --quiet
+python3 scripts/e2e/run_system_owner_smoke.py \
+  --postgres postgresql://HOST/postgres --redis redis://HOST:6379/2 \
+  --node24-bin /ABSOLUTE/NODE24/bin --node22-bin /ABSOLUTE/NODE22/bin
 ```
 
-机器可读契约由对应事实 owner 仓库维护，Root 只保留归属和验证规则。
+脚本创建随机独立数据库，仅清理本次登记资源与 System 专属缓存前缀；不 FLUSHDB、不重启共享服务。
+验证 BFF manifest/catalog 和 Agent 实际 HTTP resolve/模型映射，不执行 provider 推理，不能称作真实推理验收。
+历史全仓/owner-health runner 的危险实现已移除，原入口非零退出且不访问基础设施；Root 后续重建全仓隔离编排，不用它取代本轮 System 验收。

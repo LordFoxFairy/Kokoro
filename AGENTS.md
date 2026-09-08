@@ -349,8 +349,15 @@ Root：
 
 ```bash
 python3 scripts/verify-ten-repository-standard.py
-./scripts/verify-ten-repository-full.sh
+python3 scripts/verify-repository-topology.py
+python3 -m pytest scripts/tests
 ```
+
+旧 `scripts/verify-ten-repository-full.sh` 与 `scripts/e2e/run_stage2_owner_health.py` 已暂停：原实现的
+共享状态清理未隔离，当前入口只诊断并退出 2，不访问基础设施，不列入默认可执行门禁。
+全仓隔离编排由 Root 后续重建；期间逐仓执行 owner 自有完整门禁。System 跨仓 HTTP 验收使用
+`scripts/e2e/run_system_owner_smoke.py`（独立临时数据库/缓存前缀、分别指定 Node 24/22），
+该 smoke 不替代全仓浏览器、外部存储、真实推理或镜像验收；静态门的实际失败仍需如实记录。
 
 TypeScript：
 

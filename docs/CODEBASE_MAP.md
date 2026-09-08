@@ -1,11 +1,11 @@
 # Kokoro codebase map
 
-状态：2026-09-03 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
+状态：2026-09-08 · 以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为仓库拓扑权威
 
-> 2026-09-04 目标裁决：按 [ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md)，
-> `kokoro-model` 将 clean-slate 合入 `kokoro-system` 的 `model-catalog` 模块，`kokoro-capability` 将重命名为
-> `kokoro-platform`，首批一级域为 `skills` 与 `mcp`。下表在物理 cutover 完成前仍记录当前 checkout，不能被
-> 误读为最终目标。
+> System 合入分支采用 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)：
+> 五个业务模块统一 Nest HTTP；旧 Model 不再列为活动服务，checkout/remote 保留作历史源。
+> 完整 runtime/live 验收仍看 System CURRENT/IMPLEMENTATION_PLAN；`kokoro-capability` → `kokoro-platform`
+> 是另一个尚未实施的重命名切换，本表不提前更名。
 
 ## Root：`Kokoro`
 
@@ -38,8 +38,7 @@ Agent 或业务仓。AG-UI 是 Web/BFF 唯一 Agent 网络事件协议；Vercel 
 | 仓库 | Owner | 存储边界 | 语言 |
 |---|---|---|---|
 | `kokoro-iam` | Tenant/User/Auth/AuthZ/Role/Permission/Audit/ExecutionIdentity | PostgreSQL + Redis cache/coordination | TypeScript（contract-first） |
-| `kokoro-system` | Site/Workspace/Runtime Manifest/System Config/Policy | PostgreSQL + Redis cache | TypeScript |
-| `kokoro-model` | Model Catalog/Provider/Availability/Policy | PostgreSQL + Redis cache/invalidation | TypeScript |
+| `kokoro-system` | Sites/Workspaces/Products/Runtime Manifest/Model Catalog | PostgreSQL + Redis cache | TypeScript |
 | `kokoro-billing` | Payment/Subscription/Checkout/Refund/Credit/Ledger | PostgreSQL + Redis idempotency/lease/cache | TypeScript |
 | `kokoro-capability` | Skill + MCP Connector control plane | PostgreSQL + Redis admission/cache | TypeScript |
 | `kokoro-storage` | Upload/Asset/Artifact metadata + ObjectStore refs | PostgreSQL + Redis + S3-compatible ObjectStore | TypeScript |
@@ -47,8 +46,8 @@ Agent 或业务仓。AG-UI 是 Web/BFF 唯一 Agent 网络事件协议；Vercel 
 
 Goal 2 的仓库清单和归属以 [`REPOSITORY_STATUS.md`](REPOSITORY_STATUS.md) 为准。每个业务仓库必须在本仓内完成自己的 API、Schema、实现、测试和 Docker/CI；Root 只维护拓扑、架构规则和验证入口，不发布跨仓契约。
 
-本地基础设施固定复用一个 PostgreSQL 和一个 Redis。Redis logical DB：IAM=1、System=2、Model=3、
-Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 保留；Web 无 Redis/数据库。
+本地基础设施固定复用一个 PostgreSQL 和一个 Redis。Redis logical DB：IAM=1、System=2、
+Billing=4、Capability=5、Storage=6、Scheduler=7、BFF=8、Agent=9，DB 0 与退出后的 DB 3 保留空置；Web 无 Redis/数据库。
 
 ## 已归档仓
 

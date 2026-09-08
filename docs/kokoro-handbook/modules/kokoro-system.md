@@ -1,5 +1,9 @@
 # kokoro-system：通用业务能力与产品配置控制面
 
+> 历史说明（2026-09-08）：以下全部正文（包括“定位”“实现状态”“不拥有”等）均为历史快照，不是当前实现或启动入口。当前边界采用
+> [ADR-031](../decisions/ADR-031-system-http-nestjs-convergence.md)，Model 能力归 System 的 model-catalog；
+> 当前技术/API/数据/验收以 `kokoro-system/docs/` 为事实源，旧 Model checkout/remote 保留但不活动部署。
+
 > **命名约束：** 当前系统使用 `tenant_id` 作为唯一身份/数据隔离键；`site` 仅表示产品/品牌/域名语义，不再建立并行的 `site_id` 隔离轴。详细方案以 [Tenant、System 与 User Web 架构 v2](../technical/31-kokoro-tenant-system-architecture-v2.md) 为准。
 
 状态：研发基线已落地，2026-08-22；业务 module 按增量实现。

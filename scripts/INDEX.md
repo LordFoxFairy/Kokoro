@@ -9,13 +9,12 @@ generate or copy a sibling repository's API contract, SQL schema or generated wi
 
 - `python3 scripts/verify-backend-design.py --manifest-only` verifies Root architecture documentation and Agent boundary markers.
 - `python3 scripts/verify-repository-topology.py --allow-missing-active-checkouts` verifies active/archived repository topology and Phase 1 composition.
-- `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the seven owner repositories. It emits stable
+- `python3 scripts/verify-ten-repository-standard.py` audits Web, BFF, Agent and the six owner repositories. It emits stable
   text by default and machine-readable diagnostics with `--format json`; a non-zero result remains the explicit work queue until
   every repository converges.
-- `bash scripts/verify-ten-repository-full.sh` is the final local orchestrator. It reuses one PostgreSQL and one Redis,
-  creates disposable per-owner databases and Redis logical-db fixtures, then invokes each child repository's own contract,
-  lint, type, test, build, schema, integration and release gates. It never copies child source or contract and never starts a
-  second dependency when the configured endpoint is already healthy.
+- `python3 scripts/e2e/run_system_owner_smoke.py --help` is the isolated System/BFF/Agent HTTP acceptance entry.
+  It uses separately pinned Node 24/22 source runners, creates random per-owner PostgreSQL databases, uses a System-only
+  Redis prefix, and removes only resources registered by this invocation. It does not perform provider inference.
 - `scripts/governance/` owns the profile matrix and focused contract, delivery, repository, TypeScript, Web/BFF/Agent checks.
   These modules inspect structure and declarations only; the full verifier must still execute every repository's real commands.
 
@@ -27,17 +26,18 @@ those local checks with a generated cross-repository mirror.
 The E2E runners start each independent checkout through its own documented entrypoint. They communicate over loopback HTTP
 and disposable infrastructure; they do not import child source, share a database or derive a contract from another repository.
 
-The full verifier accepts `KOKORO_FULL_SKIP_STATIC=1`, `KOKORO_FULL_SKIP_IMAGES=1`,
-`KOKORO_FULL_SKIP_EXTERNAL_SMOKE=1` and `KOKORO_FULL_SKIP_E2E=1` for development iteration only. A skipped phase is not
-release evidence. `KOKORO_FULL_KEEP_DATABASES=1` is available for diagnosis; otherwise only databases created by the current
-invocation are removed on exit.
+The old `verify-ten-repository-full.sh` and `e2e/run_stage2_owner_health.py` entries are paused: their unsafe shared-state
+implementations were removed, leaving only an explicit `VERIFICATION_ENTRY_PAUSED` diagnostic and exit 2. They never
+access infrastructure, and old skip/cleanup options no longer apply. Root owns rebuilding an isolated all-repository
+orchestrator; execute each child repository's documented gates in the meantime. The System smoke is not an all-repository gate.
 
 ## Current Stage 2 HTTP closure
 
 - `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` builds the independent `kokoro-bff` child repository, starts its real HTTP process in deterministic mock mode, and exercises the current Web-facing Business API v1 across auth, projects, GitHub skills, MCP, scheduler, Agent setup, billing, Chat/SSE, sharing and deletion.
 - The Stage 2 E2E runner is intentionally transport-only: Root does not import BFF source, copy its store, or share its database. It proves the current cross-repository boundary over loopback HTTP; child repositories remain responsible for their own unit, integration, type, build and CI gates.
-- `uv run --frozen python scripts/e2e/run_stage2_owner_health.py` uses disposable PostgreSQL + Redis, starts Web, BFF live, Agent, Scheduler and the six HTTP owners, verifies health/readiness, then cleans up temporary processes, containers and object files while saving `docs/reports/2026-09-01-stage2-owner-health.json`.
-- The owner health runner is orchestration only: it starts each independent checkout with that repository's own command and adapter configuration. Root does not copy service source or share business tables; Model is checked through its existing HTTP endpoint.
+- The new System owner smoke tests published configuration selection and tenant isolation through System and BFF,
+  then calls System from the Agent's actual HTTP client and model factory mapping. Runtime acceptance remains pending
+  until the System production entry is switched and this command succeeds; unit test success is not live evidence.
 
 ## Archived historical fixtures
 

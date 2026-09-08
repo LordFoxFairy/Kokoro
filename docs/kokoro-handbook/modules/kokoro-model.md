@@ -1,6 +1,10 @@
 # kokoro-model 技术方案
 
-> 执行级设计以 [Model 设计卡](../technical/backend-design/02-model.md) 为准。
+> 历史说明（2026-09-08）：以下全部正文（包括“定位”“实现状态”“不拥有”等）均为历史快照，不是当前实现或启动入口。当前边界采用
+> [ADR-031](../decisions/ADR-031-system-http-nestjs-convergence.md)，Model 能力归 System 的 model-catalog；
+> 当前技术/API/数据/验收以 `kokoro-system/docs/` 为事实源，旧 Model checkout/remote 保留但不活动部署。
+
+> 历史配套设计卡：[旧 Model 设计卡](../technical/backend-design/02-model.md)，同样不作为当前执行依据。
 
 ## 定位
 

@@ -1,35 +1,32 @@
 # Kokoro repository status
 
-状态：2026-09-02 · 阶段 2 全仓治理与真实本地闭环基线
+状态：2026-09-08 · System 完整源码/消费者 HTTP 已验；镜像 RC 环境待验
 
-> 本表记录当前物理 checkout。目标拓扑已由
-> [ADR-029](kokoro-handbook/decisions/ADR-029-system-model-and-platform-boundaries.md) 裁决：Model 合入 System 的
-> `model-catalog` 模块，Capability clean-slate 重命名为 Platform。只有物理仓、contract、数据 owner、消费者和
-> 验证全部 cutover 后才删除下表旧行。
+> 按 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)，Model 业务归 System。
+> 本表是活动运行仓清单，不是所有磁盘目录清单。旧 Model checkout/remote 保留作历史源，不归 archived。
+> 各仓行内旧 SHA 只作先前基线，最新可运行/已验事实见各仓 CURRENT；System/BFF/Agent 本轮具体 SHA 与边界见 Root CURRENT。
 
 本文件是 Root 对本地目录、GitHub 仓库和代码归属的唯一索引。Root 只保存仓库拓扑、架构文档、部署编排与验证工具；API contract、Schema、生成代码和业务实现必须留在对应独立仓库。子仓之间只通过各 owner 仓库发布的
 HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导入源代码、数据库或 ORM。
 
 ## 正式仓库与 GitHub 映射
 
-| 本地目录 | GitHub 仓库 | 事实/业务边界 | 当前 HEAD |
+| 本地目录 | GitHub 仓库 | 事实/业务边界 | 历史基线（当前见本仓 CURRENT） |
 |---|---|---|---|
 | kokoro | LordFoxFairy/kokoro-app | Web 产品、同源 /api/*、页面状态/SSE | e1d9eeb |
-| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 3f5251b |
-| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | 1501493 |
+| kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 26eec011 |
+| kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | e24b4aa |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 531816e |
-| kokoro-system | LordFoxFairy/kokoro-system | Site、Site Host、Workspace、Runtime Manifest、系统策略 | 4144922 |
-| kokoro-model | LordFoxFairy/kokoro-model | Model Catalog、Provider、Availability、Policy | 5edf746 |
+| kokoro-system | LordFoxFairy/kokoro-system | Sites/Hosts/Policy、Workspaces、Products、Runtime Manifest、Model Catalog | 280d5d0（业务d7257aa） |
 | kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | fd80ec4 |
 | kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | 1de0bf5 |
 | kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | a2d05a0 |
 | kokoro-scheduler | LordFoxFairy/kokoro-scheduler | 通用 Go 调度、lease、retry、misfire、dispatch | 2f7a3e8 |
 
-Root + 10 个 active child checkout 均为独立 Git root，当前分支均为 main；本轮只记录本地
-验收后的 HEAD，不把未执行的 push 或远端同步误记为已完成。每个 GitHub 仓库的远端分支治理
-使用独立审计脚本复核。Root 的 gitlink
-kokoro-agent 指向 1501493；其余 9 个目录是同目录独立 checkout，不是 Root 的业务子目录。
-提交前后用 scripts/audit-repository-state.py --github --json 复核 clean、main 和分支状态。
+Root + 9 个 active child checkout 各为独立 Git root。仅 Agent 是 Root gitlink；其余活动仓为
+同目录独立 checkout。当前任务使用各自 `codex/` 分支，不能沿用历史“全是 main/clean”的声明。
+`kokoro-model/` 是保留的非活动历史 checkout；本次不删除目录、不归档 GitHub、不改 remote。
+用 scripts/audit-repository-state.py 显式读取当前 SHA/分支/dirty，旧报告不等价于本次验收。
 
 ## 归属裁决
 
@@ -40,7 +37,7 @@ kokoro-agent 指向 1501493；其余 9 个目录是同目录独立 checkout，�
   retry/misfire/pause/resume 和 dispatch，不读 Billing、BFF 或其他业务数据库。
 - Credit 属于 kokoro-billing，与 Payment、Subscription、Checkout、Refund、Ledger 同仓，
   但保留独立 bounded context、repository、表 owner 与事务边界。
-- IAM、System、Model 保持独立；System 不持有 IAM 授权事实、Model provider secret 或 Billing ledger。
+- IAM 与 System 保持独立；System 拥有模型目录与路由，但不持有 IAM 授权事实、provider 明文 secret 或 Billing ledger。
 - 正式业务仓统一 PostgreSQL + Redis。PostgreSQL 保存业务事实；Redis 仅作 cache、stream、
   queue、lease、限流和协调；对象字节归 Storage 的 S3-compatible ObjectStore。
 - Web 不直连任何 owner、Agent、PostgreSQL 或 Redis；浏览器 X-Domain、X-Forwarded-* 和
@@ -52,11 +49,11 @@ kokoro-agent 指向 1501493；其余 9 个目录是同目录独立 checkout，�
     kokoro-app Web
       -> same-origin /api/*
       -> kokoro-bff /v1/*
-      -> IAM/System/Model/Billing/Capability/Storage owner contracts
+      -> IAM/System/Billing/Capability/Storage owner contracts
       -> kokoro-agent HTTP ingress
       -> kokoro-scheduler internal command and occurrence replay
 
-BFF live 已接入 System runtime manifest、Model catalog、Billing catalog/checkout、
+BFF live 已接入 System runtime manifest 与 model-catalog、Billing catalog/checkout、
 Capability skill/MCP read projection、Storage library projection、Agent Chat
 launch/control/replay/detail/session-list。BFF 自有 PostgreSQL/Redis business store 保存 Project/
 ScheduledTask，并同步 Scheduler 注册、dispatch 和 durable receipt。未提供 owner ingress
@@ -70,13 +67,13 @@ Root 不保存跨仓 machine-readable contract、Proto、OpenAPI、JSON Schema �
 - Web 的 AG-UI 解析和同源 API 契约由 `kokoro` 自己维护；
 - BFF 的公开 HTTP、SSE、Chat 和 AG-UI projection 契约由 `kokoro-bff` 自己维护；
 - Agent 的 ingress、Redis command/event protocol 和执行事实契约由 `kokoro-agent` 自己维护；
-- 七个业务 owner 各自维护 API、canonical SQL schema、client facade、contract tests、Docker 和 CI。
+- 六个业务 owner 各自维护 API、canonical SQL schema、client facade、contract tests、Docker 和 CI。
 
 Root 只做 topology、architecture 和 loopback E2E 编排，不生成、复制或发布 sibling contract。历史报告中的 Root
 contract、manifest 和 generator 路径均为迁移记录，不是当前实现入口。
 
-HTTP v1 的本仓约定仍保持：成功使用 `{data, meta:{request_id}}`，错误使用
-`{error:{code,message}, meta:{request_id}}`；具体字段、状态机和授权语义以事实 owner 仓库的 v1 文档为准。
+HTTP envelope 以各 owner 的已发布契约为准，不由 Root 复制一套字段。System 成功为 `{data}`，
+错误为 `{error:{code,message,retryable}}`，request ID 在 `x-request-id`；BFF 对外投影仍遵循其自身契约。
 
 ## 子仓自洽门禁
 

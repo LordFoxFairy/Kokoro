@@ -25,7 +25,7 @@ def load_verifier() -> SimpleNamespace:
     return SimpleNamespace(**exports)
 
 
-def test_verifier_targets_exactly_the_ten_active_repositories() -> None:
+def test_verifier_targets_nine_active_repositories_after_system_model_cutover() -> None:
     verifier = load_verifier()
 
     assert verifier.REPOSITORIES == (
@@ -34,7 +34,6 @@ def test_verifier_targets_exactly_the_ten_active_repositories() -> None:
         "kokoro-agent",
         "kokoro-iam",
         "kokoro-system",
-        "kokoro-model",
         "kokoro-billing",
         "kokoro-capability",
         "kokoro-storage",
@@ -88,7 +87,6 @@ def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_service
     assert verifier.LOCAL_REDIS_DATABASES == {
         "kokoro-iam": 1,
         "kokoro-system": 2,
-        "kokoro-model": 3,
         "kokoro-billing": 4,
         "kokoro-capability": 5,
         "kokoro-storage": 6,
@@ -97,6 +95,7 @@ def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_service
         "kokoro-agent": 9,
     }
     assert 0 not in verifier.LOCAL_REDIS_DATABASES.values()
+    assert 3 not in verifier.LOCAL_REDIS_DATABASES.values()
     assert "kokoro" not in verifier.LOCAL_REDIS_DATABASES
     assert verifier.extract_redis_databases("REDIS_URL=redis://cache.local:6379/8") == {
         8
@@ -358,7 +357,7 @@ def test_cli_runs_from_the_root_and_emits_valid_json() -> None:
     )
 
     assert result.returncode in {0, 1}, result.stderr
-    assert json.loads(result.stdout)["repository_count"] == 10
+    assert json.loads(result.stdout)["repository_count"] == 9
 
 
 def test_documentation_gate_and_single_manual_routes_are_explicit() -> None:
@@ -432,3 +431,146 @@ def test_tsconfig_missing_compiler_is_reported_not_silently_parsed(tmp_path) -> 
         ten_repository_standard.TypeScriptConfigError, match="installed TypeScript"
     ):
         ten_repository_standard.effective_ts_compiler_options(config)
+
+
+@pytest.mark.parametrize(
+    ("relative", "allowed"),
+    [
+        ("database/database.service.ts", True),
+        ("cache/cache.service.ts", True),
+        ("modules/sites/sites.service.ts", False),
+        ("modules/sites/database/database.service.ts", False),
+        ("modules/sites/cache/cache.service.ts", False),
+        ("modules/sites/domain/site.policy.ts", False),
+        ("database/query.controller.ts", False),
+    ],
+)
+def test_process_services_are_not_misclassified_as_business_rules(
+    relative, allowed, tmp_path, monkeypatch
+) -> None:
+    repository = tmp_path / "kokoro-system"
+    path = repository / "src" / relative
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        'import { createClient } from "redis";\n'
+        if relative == "cache/cache.service.ts"
+        else 'import { Pool } from "pg";\nconst ready = "SELECT 1 AS healthy";\n'
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-system", failures)
+    boundary = [
+        failure
+        for failure in failures
+        if failure.rule in {"dependency-direction", "sql-boundary"}
+    ]
+    assert (not boundary) is allowed
+
+
+@pytest.mark.parametrize(
+    ("relative", "source"),
+    [
+        ("cache/cache.service.ts", 'import { Pool } from "pg";'),
+        ("cache/cache.service.ts", 'const sql = "SELECT id FROM system_site";'),
+        ("database/database.service.ts", 'import Stripe from "stripe";'),
+    ],
+)
+def test_technical_service_exception_is_limited_to_its_driver(
+    relative, source, tmp_path, monkeypatch
+) -> None:
+    repository = tmp_path / "kokoro-system"
+    path = repository / "src" / relative
+    path.parent.mkdir(parents=True)
+    path.write_text(source)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-system", failures)
+    assert any(
+        failure.rule in {"dependency-direction", "sql-boundary"} for failure in failures
+    )
+
+
+@pytest.mark.parametrize(
+    ("relative", "allowed"),
+    [
+        ("main.ts", True),
+        ("bootstrap/start.ts", True),
+        ("config/environment.ts", True),
+        ("modules/sites/main.ts", False),
+        ("modules/sites/bootstrap/start.ts", False),
+        ("http/request.ts", False),
+    ],
+)
+def test_environment_reads_stay_at_process_configuration_boundary(
+    relative, allowed, tmp_path, monkeypatch
+):
+    path = tmp_path / "kokoro-system" / "src" / relative
+    path.parent.mkdir(parents=True)
+    path.write_text("const environment = process.env;")
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+    typescript_checks.check_typescript("kokoro-system", failures)
+    assert (not any(f.rule == "configuration-boundary" for f in failures)) is allowed
+
+
+def test_workflow_gate_expansion_follows_only_invoked_package_scripts():
+    scripts = {
+        "verify": "pnpm check && pnpm test && pnpm test:schema:fresh",
+        "check": "pnpm lint",
+        "lint": "eslint src",
+        "test": "vitest run --no-file-parallelism",
+        "test:schema:fresh": "tsx scripts/verify-system-fresh-schema.ts",
+        "unused": "pnpm test:integration",
+    }
+    result = typescript_checks.workflow_gate_commands("- run: pnpm verify", scripts)
+    assert "pnpm test:schema:fresh" in result
+    assert "vitest run --no-file-parallelism" in result
+    assert "test:integration" not in result
+    assert "test:schema:fresh" not in typescript_checks.workflow_gate_commands(
+        "- run: pnpm lint", scripts
+    )
+
+
+def test_workflow_gate_expansion_ignores_comments_echo_and_cycles():
+    scripts = {"a": "pnpm b", "b": "pnpm a", "test:integration": "echo skipped"}
+    result = typescript_checks.workflow_gate_commands(
+        '# pnpm test:integration\n- run: echo "pnpm test:integration"\n- run: pnpm a',
+        scripts,
+    )
+    assert "test:integration" not in result
+    assert len(result) < 200
+
+
+def test_release_gate_recognizes_digest_bound_attestations(tmp_path, monkeypatch):
+    from scripts.governance import delivery_checks
+
+    workflow = tmp_path / "kokoro-system/.github/workflows/release-image.yml"
+    workflow.parent.mkdir(parents=True)
+    workflow.write_text("""steps:
+  - uses: aquasecurity/trivy-action@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  - uses: actions/attest-build-provenance@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    with:
+      subject-digest: sha256:fixture
+  - uses: actions/attest@cccccccccccccccccccccccccccccccccccccccc
+    with:
+      sbom-path: system-sbom.json
+      subject-digest: sha256:fixture
+""")
+    monkeypatch.setattr(delivery_checks, "ROOT", tmp_path)
+    failures = []
+    delivery_checks.check_delivery("kokoro-system", failures)
+    assert not [f for f in failures if f.rule == "supply-chain"]
+    workflow.write_text("steps: []\n")
+    failures = []
+    delivery_checks.check_delivery("kokoro-system", failures)
+    assert any("SBOM" in f.detail for f in failures)
+    assert any("build provenance" in f.detail for f in failures)

@@ -19,7 +19,7 @@ kokoro-agent ──business/transport contract──▶ kokoro-bff ──same-or
 ```
 
 - **[kokoro-agent](kokoro-agent/)** — DeepAgents/LangChain worker，产出安全执行事实（text/tool/todo/subagent/thinking/run.*），写 PostgreSQL；Redis 只承担 worker stream、lease、recovery 和 wakeup。
-- **[kokoro-bff](kokoro-bff/)** — Web-facing Chat 与业务 BFF，负责会话/消息/SSE/control/share、鉴权、幂等、错误归一和上游 adapter；阶段 1 默认 mock。
+- **[kokoro-bff](kokoro-bff/)** — Web-facing Chat 与业务 BFF，负责会话/消息/SSE/control/share、鉴权、幂等、错误归一和上游 adapter；运行模式为 live。
 - **[kokoro](kokoro/)** — 独立 Web 子仓库，浏览器只访问同源 `/api/*`，Chat 统一转到 BFF。
 
 阶段 2 的正式业务拓扑见 [`docs/REPOSITORY_STATUS.md`](docs/REPOSITORY_STATUS.md)：Chat 位于 `kokoro-bff 的 Chat 内部业务边界`，Credit 位于 `kokoro-billing`；不再维护独立 Session、Gateway、Platform、Credit 或旧 Web monorepo。基础设施统一为 PostgreSQL + Redis，Storage 对象字节使用 S3-compatible ObjectStore。
@@ -51,7 +51,7 @@ Root 不保存跨仓 API、Proto、OpenAPI、JSON Schema 或生成器。每个�
 - `kokoro`：Web 同源 API 与 AG-UI 客户端解析契约；
 - `kokoro-bff`：公开 BFF v1、Chat、SSE 与 AG-UI 投影契约；
 - `kokoro-agent`：Agent ingress、Redis command/event protocol 与执行事实契约；
-- `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
+- `kokoro-iam`、`kokoro-system`（含 model-catalog）、`kokoro-billing`、`kokoro-capability`、
   `kokoro-storage`、`kokoro-scheduler`：分别维护各自 owner 的 API、Schema、测试和发布配置。
 
 Root 的验证脚本只检查仓库拓扑、文档索引和 loopback E2E，不定义或生成子仓协议。跨仓变更在相关 owner 仓库内完成，
@@ -60,23 +60,23 @@ Root 的验证脚本只检查仓库拓扑、文档索引和 loopback E2E，不�
 ## 本地起栈（开发）
 
 前置：`postgres`、`redis`、`uv`（Python）、`pnpm`（TS）。本地只复用一个 PostgreSQL 和一个 Redis；
-各服务使用固定的 Redis logical DB（Agent=9、BFF=8、IAM=1、System=2、Model=3、Billing=4、
-Capability=5、Storage=6、Scheduler=7），db0 保留。验证脚本会探测并复用已有依赖，不会重复启动容器。
+各服务使用固定的 Redis logical DB（Agent=9、BFF=8、IAM=1、System=2、Billing=4、
+Capability=5、Storage=6、Scheduler=7），DB0/已退出 Model 的 DB3 保留空置。验证脚本会探测并复用已有依赖，不会重复启动容器。
+
+各仓环境变量先按本仓 README 配置；System 与 BFF 分别使用 Node 24 和 Node 22，不复用业务数据库。
 
 ```bash
-# 1. 可选：agent worker（PostgreSQL durable facts + Redis transport）
-cd kokoro-agent
-KOKORO_REDIS_URL=redis://127.0.0.1:56380/9 \
-  KOKORO_AGENT_DATABASE_URL=postgresql://kokoro:CHANGE_ME@127.0.0.1:55433/kokoro_agent \
-  uv run kokoro-agent-worker
+# System 控制面（站点/产品配置及模型目录）；另开终端
+cd kokoro-system && pnpm dev
 
-# 2. BFF Chat（:4300，阶段 1 mock）
-cd kokoro-bff
-KOKORO_BFF_MODE=mock KOKORO_BFF_HOST=127.0.0.1 pnpm dev
+# BFF（已配置自身数据库、Redis、服务凭据与 System URL）；另开终端
+cd kokoro-bff && pnpm dev
 
-# 3. Web（:3000）
-cd kokoro
-pnpm dev
+# 可选 Agent worker；先配置下述 System/LiteLLM 及 Agent 自有 PG/Redis
+cd kokoro-agent && uv run kokoro-agent-worker
+
+# Web；另开终端
+cd kokoro && pnpm dev
 ```
 
 三仓容器方式默认只启动 Web+BFF；需要完整执行时再按 [`deploy/README.md`](deploy/README.md) 开启 Agent
@@ -84,11 +84,14 @@ profile，同时启动 HTTP ingress 和 worker。`cp deploy/.env.phase1.example 
 PostgreSQL 密码后执行 `bash deploy/provision-phase1.sh deploy/.env.phase1.local`。生产部署只使用生产镜像；Cloudflare 直连 Web 或
 Docker 部署均通过 `KOKORO_DOMAIN` 和 BFF runtime env 配置，不把数据库连接放进浏览器。
 
-Root 当前只保留这条 Phase 1 Compose/provision 入口；阶段 2 七个正式业务仓由各自仓库发布，BFF 通过各 owner 仓库的本地 v1 contract 接入，不从 Root Compose 拼接业务实现。
+Root 当前只保留这条 Phase 1 Compose/provision 入口；阶段 2 六个正式业务仓由各自仓库发布，BFF 通过各 owner 仓库的本地 v1 contract 接入，不从 Root Compose 拼接业务实现。
 
-模型服务 `kokoro-model` 独立提供目录与解析，不执行 provider 调用；LiteLLM 是可选的外部
-OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `KOKORO_LITELLM_ENABLED=1`、
-`KOKORO_LITELLM_BASE_URL`、`KOKORO_LITELLM_API_KEY` 时才使用对应 route。
+模型目录与路由统一归 `kokoro-system/modules/model-catalog`，只提供元数据，不执行推理。
+Agent worker 通过 System HTTP resolve 选择模型；启动执行链需配置 `KOKORO_SYSTEM_BASE_URL`、
+`KOKORO_INTERNAL_SECRET_AGENT` 和 LiteLLM 的 enabled/base-url/api-key。没有本地默认模型 fallback。
+LiteLLM 仍是外部网关，不打包进 System 或 Agent 镜像；Web+BFF 不执行任务时可不启动它。
+旧 `kokoro-model` checkout/remote 保留作为历史源，不再从 active clone/运行/镜像清单启动。
+System 合入的完整 runtime 验收状态见 [System CURRENT](kokoro-system/docs/CURRENT.md)，不以本入口替代证据。
 
 ## 门禁（提交前跑）
 
@@ -100,23 +103,12 @@ OpenAI-compatible gateway。Agent 默认不启用 LiteLLM，只有同时设置 `
 | 契约 | 在对应 owner 仓库运行本仓 `contract:check`、类型检查和 contract tests |
 | Chat mock smoke | `KOKORO_WEB_URL=http://127.0.0.1:3000 KOKORO_DOMAIN=dev.kokoro.localhost pnpm --dir kokoro smoke:first-site` |
 | Stage 2 BFF HTTP E2E | `uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json` |
-| Stage 2 owner health | `uv run --frozen python scripts/e2e/run_stage2_owner_health.py` |
-| 十仓完整本地门禁 | `bash scripts/verify-ten-repository-full.sh` |
+| System 跨仓隔离 smoke | `python3 scripts/e2e/run_system_owner_smoke.py --help`（配置共享端点及各 Node 路径后执行） |
 
-完整门禁默认执行十仓的源码质量、真实 PostgreSQL/Redis、浏览器、外部存储、候选镜像和 Root loopback
-验证。迭代单个切片时可以显式跳过耗时阶段，但跳过项会打印在日志中，不能作为发布证据：
-
-```bash
-KOKORO_FULL_SKIP_STATIC=1 \
-KOKORO_FULL_SKIP_IMAGES=1 \
-KOKORO_FULL_SKIP_EXTERNAL_SMOKE=1 \
-KOKORO_FULL_SKIP_E2E=1 \
-  bash scripts/verify-ten-repository-full.sh
-```
-
-脚本只删除自己创建的 `kokoro_gate_*` 临时数据库；已有 PostgreSQL/Redis 容器不会被停止或删除。
-对自定义 Redis endpoint 默认拒绝 `FLUSHDB`，只有明确设置
-`KOKORO_FULL_ALLOW_SHARED_REDIS_FLUSH=1` 才会执行可破坏性的隔离操作。
+旧 owner-health/full runner 已暂停：危险的共享状态清理实现已移出工作区，原命令只输出
+`VERIFICATION_ENTRY_PAUSED` 并退出 2，不访问基础设施。旧跳过/清理参数已失效。
+Root 后续负责重建隔离的九仓完整编排；当前逐仓执行各 owner 自有门禁。System 跨仓验收使用上面的独立 smoke，
+不把它计作全仓浏览器、外部存储、真实推理或候选镜像的发布证据。
 
 CI：正式仓库各自维护 `.github/workflows`；普通 push/PR 只做质量检查，`v*.*.*` tag 才触发 GHCR 生产镜像发布。
 
@@ -136,7 +128,7 @@ agent 执行可经 [Langfuse](https://langfuse.com) 追踪(LLM/工具/子代理)
 | [`docs/requirements/`](docs/requirements/) | 产品需求手册（愿景 → 能力 → 流程 → 契约映射，可验收） |
 | [`docs/superpowers/specs/`](docs/superpowers/specs/) | 有日期的工程设计 spec；稳定后要沉淀回 handbook |
 | [`docs/handoffs/`](docs/handoffs/) | 短期派工交接稿，不是长期权威 |
-| [`docs/protocol/`](docs/protocol/) | 跨仓协议契约 |
+| 各 owner 仓 `contract/` | 版本化协议事实源；Root 不另建协议中心 |
 | [`docs/decisions/`](docs/decisions/) | ADR 决策记录 |
 
 > 注：`docs/product/` 是**原型时代**的产品设计（canvas 创作矩阵，仅静态原型），与当前真实系统有别——以 [`docs/requirements/00-product/scope-and-boundary.md`](docs/requirements/00-product/scope-and-boundary.md) 的「已建 / 已设计 / 已规划」三态分界为准。

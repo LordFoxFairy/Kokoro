@@ -22,7 +22,7 @@
   持久化基线为 PostgreSQL + Redis。
 
 当前阶段 2 物理业务仓（目标 cutover 尚未完成）：
-  kokoro-iam / kokoro-system / kokoro-model / kokoro-billing /
+  kokoro-iam / kokoro-system（含 model-catalog） / kokoro-billing /
   kokoro-capability / kokoro-storage / kokoro-scheduler。
 
 已接受的目标拓扑：
@@ -192,7 +192,7 @@ Goal 2 owners   各自维护唯一 canonical PostgreSQL schema、Redis adapter�
 
 - [kokoro-agent](modules/kokoro-agent.md)（独立执行子仓）
 - [kokoro-iam](modules/kokoro-iam.md)（独立身份与权限子仓）
-- [kokoro-model](modules/kokoro-model.md)（当前物理模型目录子仓；目标合入 `kokoro-system/model-catalog`）
+- [kokoro-model](modules/kokoro-model.md)（保留的旧 Model 历史入口；活动 owner 已收敛为 System，完整切换验收见 System CURRENT）
 - [kokoro-system](modules/kokoro-system.md)（独立系统配置子仓）
 - [后端逐仓库设计卡](technical/backend-design/README.md)（BFF、Billing、Capability、Storage、Scheduler 的当前职责、契约和验收证据）
 

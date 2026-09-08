@@ -22,7 +22,7 @@ Web 不连接数据库，BFF 不直连 Agent 的数据库或 Redis。Chat 不再
 以后按业务能力以独立 endpoint/secret 接入。
 
 阶段 2 的正式业务仓库不由 Root Compose 拼装。它们各自维护 PostgreSQL/Redis adapter、迁移、Docker 和 CI，
-由 BFF 按各 owner 仓库的本地 v1 contract 接入：`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
+由 BFF 按各 owner 仓库的本地 v1 contract 接入：`kokoro-iam`、`kokoro-system`（含 model-catalog）、`kokoro-billing`、
 `kokoro-capability`、`kokoro-storage`、`kokoro-scheduler`。Root 的 Phase 1 Compose 只启动 Web、BFF、Agent
 和本地 PostgreSQL/Redis，不复制这些业务仓的实现或数据库 schema。
 
@@ -94,13 +94,13 @@ docker compose --env-file deploy/.env.phase1.local -p kokoro-phase1 \
 1. **Agent**：不需要执行任务时保持 `KOKORO_AGENT_ENABLED=0`，只部署 Web+BFF；需要执行时
    同时部署 `kokoro-agent-http` 与 `kokoro-agent`，并设置 `KOKORO_AGENT_ENABLED=1` 和
    `KOKORO_AGENT_BASE_URL`。
-2. **LiteLLM**：它是外部 OpenAI-compatible gateway，不属于 `kokoro-model` 或
-   `kokoro-agent` 必需进程。只有选择 Model 的 `litellm` transport 时，才在 Agent 环境设置
-   `KOKORO_LITELLM_ENABLED=1`、`KOKORO_LITELLM_BASE_URL` 和 `KOKORO_LITELLM_API_KEY`；
-   直接使用 OpenAI-compatible 或 Anthropic 时保持关闭。
+2. **System 模型路由 / LiteLLM**：System 是模型目录与路由 owner；标准 Agent worker 必须配置
+   `KOKORO_SYSTEM_BASE_URL`、`KOKORO_INTERNAL_SECRET_AGENT`，以及 `KOKORO_LITELLM_ENABLED=1`、
+   `KOKORO_LITELLM_BASE_URL`、`KOKORO_LITELLM_API_KEY`。System 当前只返回 `litellm` 路由元数据，
+   不调用推理、不探活或拉起网关；provider endpoint/secret 由 Agent 部署注入。
 
-`kokoro-model` 始终可以独立启动并提供目录/解析；它不会探活、调用或拉起 LiteLLM。Model
-目录中 `transport=litellm` 只是路由元数据，是否可执行由部署的 Agent/provider profile 决定。
+旧 Model 独立进程已从本次合入分支的活动启动/镜像/clone 清单移除；原 checkout 和 remote 留作历史源。
+System 完整源码与消费者 HTTP 已验，证据见 Root CURRENT 和 System IMPLEMENTATION_PLAN；本页 Phase 1 Compose 未在本轮重验，镜像 RC 因本机 Docker 引擎故障待验，不当作生产部署证据。
 
 `KOKORO_DOMAIN` 是当前站点域名，例如 `kokoro.miaokit.cloud`。它只由服务端读取，用于标准
 `Forwarded` 和跨服务上下文；浏览器不携带自定义 `X-Domain` 作为信任依据。

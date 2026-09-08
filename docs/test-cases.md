@@ -1,46 +1,9 @@
 # Kokoro 测试用例总表
 
-> **状态：历史验证矩阵。** 旧的 Session/Mongo/Platform 验证入口已从当前工作区移除并仅保留在 Git 历史；
-> 本文件下方的 L2–L5 只用于考古，不作为当前命令。
-
-当前 Root 门禁和阶段 2 跨仓 fixture：
-
-```bash
-在对应 owner 仓库运行本仓 contract check
-python3 scripts/verify-backend-design.py
-python3 scripts/verify-repository-topology.py
-uv run pytest scripts/tests/test_repository_topology.py -q
-uv run --frozen python scripts/e2e/run_stage2_bff_mock.py --evidence /tmp/kokoro-stage2-bff-mock-e2e.json
-KOKORO_ENV_FILE="$PWD/deploy/.env.phase1.example" docker compose --env-file deploy/.env.phase1.example -f deploy/docker-compose.phase1.yml config
-```
-
-当前三仓质量门禁和容器入口见 [`../README.md`](../README.md) 与 [`../deploy/README.md`](../deploy/README.md)。当前 BFF mock E2E 由
-`scripts/e2e/run_stage2_bff_mock.py` 直接启动 `kokoro-bff` 的生产编译入口，覆盖 43 个可审计 HTTP 用例；旧 Native
-Slice A 进程栈已移至 Root 外的历史归档，不再作为当前验收入口。
-阶段 1 只使用 PostgreSQL + Redis；正式业务仓库由各自仓库维护并经 owner contract 接入。
-
-## 当前正式仓库门禁
-
-每个仓库的 CI、Dockerfile、API contract、迁移和测试由各自仓库维护；Root 不复制实现。
-当前本地收口命令如下，命令须在对应仓库目录执行：
-
-| 仓库 | 当前门禁 |
-|---|---|
-| `kokoro` | `pnpm check` |
-| `kokoro-bff` | `pnpm check` |
-| `kokoro-agent` | `uv run ruff check src tests && uv run pyright && uv run pytest -q` |
-| `kokoro-iam` | `pnpm verify` |
-| `kokoro-system` | `pnpm lint && pnpm typecheck && pnpm test && pnpm build` |
-| `kokoro-model` | `pnpm verify:release` |
-| `kokoro-billing` | `pnpm verify` |
-| `kokoro-capability` | `npm run verify && npm run lint && npm run build` |
-| `kokoro-storage` | `npm run verify && npm run lint && npm run build` |
-| `kokoro-scheduler` | `gofmt -d . && go test ./... && go test -race ./... && go vet ./... && go build ./cmd/scheduler` |
-
-普通 push/PR 只执行质量门禁；仅 `v*.*.*` tag 进入 GHCR 生产镜像发布。历史 Session、Gateway、旧 Web
-和 Platform 测试矩阵保留在本文后半部分，仅供迁移考古。
-
----
+> **整页历史快照。** 本页所有命令、数量、仓名和 L1–L5 仅用于考古，不作为当前可执行门禁。
+> 当前拓扑见 [CODEBASE_MAP](CODEBASE_MAP.md)，执行入口见 [Root scripts](../scripts/INDEX.md) 与各 owner README/ACCEPTANCE。
+> System 当前唯一任务/验收入口在 `kokoro-system/docs/IMPLEMENTATION_PLAN.md`；旧独立 Model 已退出 active 清单。
+> 旧全仓/owner-health runner 已暂停，System 隔离 HTTP smoke 不等于全仓发布验收。
 
 ## 历史验证矩阵（已归档）
 

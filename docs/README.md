@@ -2,11 +2,11 @@
 
 主仓 `docs/` 是产品、架构、业务链路、跨仓规范和历史材料的总入口。当前文件数较多，阅读时先按下面的层级判断，不要从目录树随机翻。
 
-## 当前十仓基线
+## System 合入后的九仓清单
 
-当前正式范围是十个独立运行仓：`kokoro` Web、`kokoro-bff`、`kokoro-agent`，以及
-`kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、`kokoro-capability`、
-`kokoro-storage`、`kokoro-scheduler`。前三个组成产品主链，后七个各自拥有一个业务边界；
+当前正式范围是九个独立运行仓：`kokoro` Web、`kokoro-bff`、`kokoro-agent`，以及
+`kokoro-iam`、`kokoro-system`（含 model-catalog）、`kokoro-billing`、`kokoro-capability`、
+`kokoro-storage`、`kokoro-scheduler`。前三个组成产品主链，后六个各自拥有一个业务边界；
 实现阶段可以分波次推进，但不能把阶段性闭环误写成最终拓扑。Chat 属于 BFF 内部模块，
 不再作为独立仓库；不使用 `kokoro-gateway`，也不新增独立 `kokoro-session`。
 
@@ -18,9 +18,9 @@ PostgreSQL（持久化真源）与 Redis（队列、事件流、租约和短期�
 Root 当前部署只使用 `deploy/docker-compose.phase1.yml` 和 `deploy/provision-phase1.sh`；旧双 Compose、k8s、
 全栈 provisioning 和旧拓扑验证入口已从活动工作区清除，GitHub 历史仓库仅以 archived 状态保留。
 
-## 七个业务 owner
+## 六个业务 owner
 
-阶段 2 的正式仓库是 `kokoro-iam`、`kokoro-system`、`kokoro-model`、`kokoro-billing`、
+阶段 2 的正式仓库是 `kokoro-iam`、`kokoro-system`（含 model-catalog）、`kokoro-billing`、
 `kokoro-capability`、`kokoro-storage` 和 `kokoro-scheduler`。每个仓库独立拥有实现、测试、Dockerfile、
 CI、发布文档和本仓 API contract；Root 只提供拓扑索引、部署入口与验证脚本，不保存跨仓 contract。Credit 在
 Billing 内部，Chat 在 BFF 的 Chat 业务模块边界内，Scheduler 是独立 Go 仓库，不读取其他业务数据库。
@@ -39,7 +39,7 @@ Billing 内部，Chat 在 BFF 的 Chat 业务模块边界内，Scheduler 是独�
    给 code agent / worker 的仓库地图。包含根仓、子仓、文档归属、验证命令和并行派工约束。
 
 4. [正式子仓统一工程规范 v1](ARCHITECTURE_STANDARD.md)
-   统一 API 契约、DTO、domain/application/infrastructure/interfaces 分层、Repository/Service 边界、租户隔离和 PostgreSQL 设计门禁。
+   统一 owner、API 契约、语言原生模块、Repository/Service 边界、租户隔离和 PostgreSQL 设计门禁；语言细节以三份专项手册为准。
 
 5. [GA identity 与动态 owner 重验](kokoro-handbook/decisions/ADR-022-run-execution-attestation-and-dynamic-capability-resolution.md)
    当前最容易写错的规则：外部传受信 `ExecutionIdentity(tenant_ref, actor, subject, identity_assertion_ref)`；GA 在 ingress 只从 tenant + subject 派生内部
@@ -76,7 +76,7 @@ Session Agent selection 等资料均为历史迁移材料；不得据此新增�
 | 查验收报告 | `reports/` |
 | 查产品原型和设计历史 | `product/`、`prototypes/`、`research/`，但先看 handbook 判断是否仍有效 |
 | 给 worker 派活 | `CODEBASE_MAP.md` + 对应 spec/plan/handoff |
-| 执行十仓完整门禁 | `scripts/verify-ten-repository-full.sh`（跳过项不计入发布证据） |
+| 执行门禁 | 各 owner 自有 README/ACCEPTANCE；System 跨仓使用 `scripts/e2e/run_system_owner_smoke.py`，旧全仓 runner 已暂停 |
 
 ## 目录分层
 

@@ -11,7 +11,6 @@ declare -a REPOSITORIES=(
   "kokoro-bff|kokoro-bff"
   "kokoro-iam|kokoro-iam"
   "kokoro-system|kokoro-system"
-  "kokoro-model|kokoro-model"
   "kokoro-billing|kokoro-billing"
   "kokoro-capability|kokoro-capability"
   "kokoro-storage|kokoro-storage"
