@@ -587,3 +587,6 @@ ST-H0继续只读调查：为避免新增已非活跃支持的Zod3生成桥，st
 | 交付 | writer不stage/commit，固定路径hash+RED/GREEN/全门证据停写交Root；A1b（真实URL与三smoke）不抢写，成功后单独续派，外部provider缺配置不因源码通过计绿 |
 
 H0维护中候选只读输入：zod4.4.3 + zod-to-openapi9.1.0，生成器peer Zod4/MIT，需另卡完整官方版本/冷却/传递审计与18个旧zod导入面的行为迁移实验；未采用、未安装、不混A1。旧单参record、nativeEnum、coerce.bigint、recursive JsonValue、defaults/refine与datetime等均需保留行为回归，不能用升级顺手改变receipt/config边界。
+
+
+ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-journal.ts仅承接本run独占0700目录/0600文件、非敏感allow-list记录的顺序落盘和close；不提供旧journal恢复/认领、自动删日志或通用resource框架。provider.ts仍SDK/registry/hold/cleanup，schema.ts仍生产schema派生配置；测试留已批准smoke-provider.test.ts。关联外部副作用必须等待日志写入/必要FileHandle.sync完成，串行写失败后不得继续后续写入；独占创建、不覆盖既有路径，不序列化env/config/SDK原对象/credential/签名URL。明确进程崩溃与整机掉电边界，不宣称日志与外部S3有跨系统原子事务；失败留证非零且释放自有句柄。
