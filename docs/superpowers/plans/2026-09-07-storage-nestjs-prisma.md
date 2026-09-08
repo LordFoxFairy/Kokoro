@@ -292,3 +292,13 @@ storage_data_review（gpt-5.6-sol）绑定Storage commit33093fed，仅使用git 
 2026-09-08数据接收后Docker只读探测：既有socket /_ping再次3秒超时。此前重启授权问题仍未收到回复，继续保持Docker与容器原状态；不影响Nest源码实施，真实MinIO/ClamAV与镜像尚无验收证据。
 
 ST-V/依赖例外再验证：Root从33093fed复制package/lock/workspace到 `/tmp/kokoro-storage-release-age.h7vYVA`，仅在隔离副本移除Connect精确minimumReleaseAgeExclude。全新 `pnpm install --prod --no-optional --ignore-scripts --frozen-lockfile` 12.2秒通过，470 lock entries通过供应链策略，生产Nest/Prisma/Connect imports通过，prod/no-optional audit 0漏洞。未改Storage；通知I1d writer在授权workspace范围删除已无必要例外并真实验证。registry少量ECONNRESET由pnpm有限重试后成功，无policy降级。另33093fed实际connect/connect-node为2.1.2、fastify plugin2.2.0；I1d必须区分实际/目标，不冒称全2.2，按ADR统一时需精确pin与peer/完整回归。
+
+### ST-I2 Root设计裁决草案（等I1d接收后先收敛三文档门，不是当前writer授权）
+
+- Owner不变：Storage assets/blob生命周期；普通feature provider+Prisma事务，不新增服务、Scheduler/outbox或通用Repository。选择healthy复用、只有确定missing/mismatch才repair；timeout/auth/403/429/5xx/DNS/cancel都是availability，不能用catch-all转missing。检查在事务外，完整旧key/version/etag/blob/digest/size/tenant/owner snapshot CAS在事务内；CAS败者必须重新读取并实际检查赢家，不能直接信任；重试有有限次数和总请求预算。
+- canonical Content-Type固定application/octet-stream，Asset MIME仅用于响应Content-Type。对provider实际返回的version严格核对，删除缺VersionId时用请求version回填的假确认；key/etag/size与可用sha一并核对。AWS官方HEAD可能只给通用HTTP错误，403也可能来自不可见的不存在对象，不能猜missing；typed adapter分类须保持这种不确定性。来源 https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html （2026-09-08核验）。
+- candidate private key增加claimId（UUID）确保不同command相同fence也不会共用key；此前uploadId+fence不足以证明execution独占。败选/未知提交candidate不即时delete，以免DB查询到未引用后另一个在途提交引用而误删；无法证明退役年龄的final orphan只报告，不伪称已完成自动GC。
+- 只读评审最初建议“无schema+lastModified>=1h即可回收旧canonical”被Root否决：LastModified是creation age，不是retirement age，一个月前对象刚repair后即可被旧CLI立刻删。删除前重查引用不能补退休时间。对于已知retired canonical，Root选择新增Storage-owned Prisma退役记录（A）；相较完全不增schema并永久保留全部final orphan（B），A多一表但能证明退休grace与崩溃重试，属于现owner对象生命周期元数据而非新业务模块。
+- 后续正式设计应使repair CAS同事务写入旧对象key/version/etag/tenant/owner与retiredAt；CLI仅对retiredAt已过>=1h、再次确认未引用的确切identity执行删除，成功/确定已不存在才移除退役记录，权限/超时/未知结果保留。S3有VersionId时删该版本，不能只传Key造成delete marker却未回收版本；新表/索引/native数据/空库catalog门会从6表相应更新，不假装无schema变更。未知final orphan（包括未持久化退役证据的crash candidate）仍仅报告；不为自动扫净一切而推断ownership或creation age=retirement age。
+- 不增加历史migration或碰现有用户数据库；canonical schema/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/新ADR必须在I2代码写入前同步并通过文档门。Proto不需要变化；consumer不接触retirement事实。
+- 验收保留8组：healthy不promote且同digest不同MIME各Asset正确；跨tenant/owner隔离；missing/mismatch完整CAS；不确定provider错误零promote/零业务完成（允许claim创建/释放，不能误要求receipt绝对零变化）；两个repair竞争只一胜且败者重新检查赢家；absent竞争同理；stale fence/DB回滚不改变canonical或完成receipt；GET只对healthy签URL，刚退休老对象即使LastModified很旧也不得立即删，过retirement grace才按确切版本删除且失败重试。具体可执行测试分组由I2卡在Nest新目录上细化。
