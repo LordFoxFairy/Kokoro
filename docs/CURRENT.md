@@ -11,7 +11,9 @@
 
 本轮规范验证与逐仓待办见 [工程手册验证记录](reports/2026-09-04-engineering-handbook-verification.md)。
 
-当前逐仓推进仅处理 IAM，由 Root 主控裁决方案并派发单一负责人，IAM 验收前不启动其他子仓重构。
+2026-09-07 用户已批准 Capability 的 NestJS + Prisma 收敛，见 [Capability 任务板](superpowers/plans/2026-09-07-capability-nestjs-prisma.md)。IAM 等仓由各自负责人继续推进；本任务不接管其修改，跨仓 contract 按 owner 顺序交接。
+
+以下为 IAM 原有阶段导航，最新状态仍以 IAM 自仓 CURRENT/ACCEPTANCE 与任务板为准，不再作为其他子仓的全局阻断条件。
 当前为 R5 规范与 IAM 设计收敛：TS 手册已改为成熟框架/class 优先目标，IAM 先更新技术/API/数据与 ADR；
 本轮不修改业务源码、机器契约或 Schema，不把文档交付当作框架切换或生产验收。
 当前代码、已验范围与剩余缺口只看 [IAM CURRENT](../kokoro-iam/docs/CURRENT.md) 和 [IAM ACCEPTANCE](../kokoro-iam/docs/ACCEPTANCE.md)，
