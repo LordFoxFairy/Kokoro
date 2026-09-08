@@ -2,6 +2,9 @@
 
 状态：已接受，待 clean-slate 实施（2026-09-04）。
 
+2026-09-07 补充：System/Model 的目标传输协议以 [ADR-031](ADR-031-system-http-nestjs-convergence.md) 为准；
+下文保留 kokoro.model.v1 的 Proto 要求由统一 HTTP/OpenAPI 替代，业务与数据模块边界继续有效。物理 cutover 尚未完成。
+
 ## 背景
 
 当前拓扑把 Model Catalog/Provider/Routing 单独放在 `kokoro-model`，把 Skills/MCP 控制面放在
