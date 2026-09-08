@@ -97,7 +97,7 @@ Root 全局门禁：`python3 scripts/verify-ten-repository-standard.py`、`./scr
 - 现有 Storage dirty diff 的作者和完整交付状态待核对。
 - Root CURRENT 的“仅 IAM”与用户最新多仓推进方向不同；本计划只记录 Storage，不代其他主控更新共享总状态。
 - 旧子仓设计与 Root Nest/ORM-first 手册不一致；完成文档门之前不开始批量目录/业务改写。
-- 当前没有本轮通过证据；历史测试数量不作为本轮验收。
+- 当前证据见下方本轮交付记录；历史测试数量不作为本轮验收。
 
 ## 2026-09-07 本轮交付证据（设计/接收阶段）
 
@@ -148,3 +148,15 @@ ST-I1/I2/I3文件集在前置验证后依业务实际拆分，禁止将此待办
 - Root在此提交+原dirty工作树重跑lint/typecheck/build/contract:check、生成drift、任务空库apply与真实PG/Redis全集：全部exit0，30文件/119 tests通过。此证据绑定dirty hash，不冒称干净commit单独具备dirty行为。
 - 原tracked业务diff SHA-256复核仍为`248277674c5c40a2239fbc014b11bcf53222130d57024532d23b06726b1ed6b9`，原5新增文件未变；Storage仍42项原dirty内容。
 - 9份文档本地Markdown链接检查与git diff --check通过。
+
+## ST-S1 隔离实验交付与主控复验
+
+- 状态：隔离可行性已验收；正式Schema切片未实施。执行人storage_data_review（gpt-5.6-sol），主控独立复验，实验产物已停止写入。
+- 基线：Storage文档commit `d715de89458a6fb15328d3cb6ac297e3acfab23a`；原业务dirty hash保持不变。唯一实验目录 `/tmp/kokoro-storage-prisma-probe.8flQ8t`，没有修改仓库package/lockfile或运行时Schema。
+- Prisma/client/adapter-pg 7.10.0；主控在自己创建的随机PG空库运行validate/generate/db push，各exit 0；8项runtime断言与6项catalog断言通过，日志 `/tmp/kokoro-storage-baseline.gXiFa9/prisma-main-*`。
+- 证明范围：6表、0FK、7原生枚举、owner/digest唯一性、Artifact复合PK、fingerprint CHAR(64) NOT NULL、typed查询和checked复合connect。无生产事务/性能/失败恢复证明。
+- 风险实证：unchecked scalar create产生跨tenant orphan；正式切片增加事务存在性/owner检查、写入边界architecture test及真实PG负向测试，不能只禁止UncheckedCreateInput类型名。
+- 实验新增tenant/asset关系索引仍是候选，正式采用须以查询/EXPLAIN为据。早期安装失败与未限定schema的查询失败保留为实验失败证据；主控最终复验固定工具路径并使用schema-qualified catalog查询，不混算成功。
+- 清理：主控自己的随机库已drop，worker两个实验库名称查无残留；未动共享role/Redis或启动新服务。
+- 后续owner：Root完成原37+5文件交接确认，再向Storage唯一writer派发正式Schema/测试切片；临时实验代码不直接视为已审查生产实现。
+- 证据提交：Storage `ec10e111a2dab74e9e0c9754dccbdcbd261d3288`，仅CURRENT与DATA_MODEL两份文档。storage_contract_review对稳定日志/文档独立复审无阻断；主控diff检查、三份文档链接检查通过，原tracked hash和5个新增文件hash逐项未变。
