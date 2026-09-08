@@ -465,3 +465,11 @@ ST-V1-I定点规则裁决：writer报告旧基线新库322通过、typed门10测
 ST-V1-I补充：三父client-s3@3.1124.0、nested-clients@3.997.44、credential-provider-http@3.972.72均声明handler ^4.11.3；writer用官方定向update仅收敛handler4.12.1、无新override/父升级，最终须交父range与lock证据。Root另批准既有readiness测试两处、request-lifecycle测试两处、clamav测试一处abort回调的prefer-promise-reject-errors行级例外，同样保持原reason identity；总计9处例外单独列清单，不扩测试全域或强制规则，unused-disable与行为回归保持。
 
 ST-V1-I格式扩围：Prettier3.9.6全仓RED除原13债和本片编辑外，另需三个旧源码打印变化；Root仅批准src/assets/object-retirements.store.ts、src/common/commands/receipt-codec.ts、src/integrations/object-store/aws-sdk.ts的官方formatter纯格式输出，语义/常量/import不变，manifest标format-only，Root最终逐diff核对。不据此授权无关格式或generated改动。
+
+ST-V1-I另特批docs/ACCEPTANCE_AND_RISKS.md仅新版Prettier格式、无状态措辞修改，与上3源码组成4个额外format-only路径。冷安装首次180s外层超时，Root允许最多600s有界续跑与只清理自有进程组；禁止换源/放宽年龄/allowBuilds，首轮输出未保存需如实记证据不足，续跑不能称单次纯冷成功。
+
+### ST-V1-I 稳定审查卡
+
+- 2026-09-08T11:32:57.744982Z固定，基线cd66be5+50物理路径（45M/5A、14标format-only）；manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-v1-logs/handoff-manifest.json` SHA256 `dca94012307798227861fbd203e4c586737b96f3530a65d7ca25b302af4221cd`。Root逐hash/原始hash/dirty/空index/HEAD核验相符，writer停写。
+- storage_contract_review(gpt-5.6-sol)先只读符合性：ADR0003/精确版本/两个scope/1440严格无豁免/六typed规则真实正反例与9特批例外/Vitest5语义/原API数据不变/format-only范围。放行后storage_data_review(gpt-5.6-sol)质量审查生产和测试类型修正是否改变Promise/abort/竞态、配置loader真实回归、cold/frozen/audit证据及门禁有效性。两者不写/安装/测试/Git/基础设施，绑定manifest；Root同时保留主树独立验证。
+- writer两新库347+compiled2、完整format/lint/typecheck/build/schema/contract/生成隔离和完整443 audit0为旁证；独立生产全新store24.3s、139audit0、编译真实查询通过，完整隔离cold起点180s超时后同store68s续跑成功，明确非单次全冷成功。尚未Root接收或提交。50路径不含Schema/generated/Proto/CI/Docker功能，全部自建库与安装子进程已清理；ST-V2仍独立未验。
