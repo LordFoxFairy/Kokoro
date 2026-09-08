@@ -403,3 +403,5 @@ ST-I2-D稳定审查卡：基线2b510751+25物理路径manifest `/Users/nako/Webs
 - 依据：[Vitest迁移说明](https://vitest.dev/guide/migration/)、[typed lint](https://typescript-eslint.io/getting-started/typed-linting/)、[deepmerge发布说明](https://github.com/RebeccaStevens/deepmerge-ts/releases)、[deepmerge公告](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)、[mysql2公告一](https://github.com/advisories/GHSA-3f6p-5ww8-9rcr)、[mysql2公告二](https://github.com/advisories/GHSA-rgwj-5xj2-c3m3)；精确版本与发布年龄以当日npm metadata和实际pnpm11.25行为验证，不套用浮动latest。
 
 ST-I2-B CLI生命周期裁决：允许薄composition root直接装配同一owner service/store及现有Prisma/ObjectStore，不为ApplicationContext创建空协调provider。所有资源创建/connect由try/finally覆盖，部分启动失败逆序释放已创建资源，单个关闭失败不得阻断其他资源；不启动listener/Redis/scanner、不复制业务规则/SQL/DI框架。需CLI参数与失败生命周期测试、技术设计同步；无消费者的reconciliation.module删除，不留双轨启动路径。Storage唯一writer继续负责，Root仅本计划和Git操作。
+
+ST-V-T只读候选审查卡：storage_contract_review(gpt-5.6-sol)审查Root固定347e6dd临时工具链候选及registry证据，不审查正在写入的I2、不改任何文件/lock/配置、不执行安装/共享服务/Git。范围为Node/TS/eslint/Vitest兼容、24h年龄策略、两条精确Prisma overrides的语义风险/正式ADR与退出条件；依据CODEBASE_MAP、TS手册8.5及本节日志。交付明确阻断项与可采纳条件，不把候选0audit或257测试推广为活动I2验收。Root继续准备typed-lint门禁与I2最终集成，原writer仍唯一Storage写入人。本审查不替代后继正式实现的符合性与质量审查。
