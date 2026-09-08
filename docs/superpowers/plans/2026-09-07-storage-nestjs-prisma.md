@@ -619,3 +619,29 @@ ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf
 | 排除/交付 | 本R无任何写入/生成/安装/DB/服务/外部provider/Git；交付精确M/A/D文件集、现有复用入口、准备的RED/保留行为、A1a可能需补的public hold释放/confirm接口及未决。Root同一计划明确放置表/范围后才续派写入；不混B部署/CI、H0契约或其他owner |
 
 资料入口继续Root CODEBASE_MAP、TypeScript/SQL专项手册、Storage三设计与ADR0004；既有设计决定不重新向用户询问。真实外部环境仍待配置，不把本地double当provider验收。
+
+
+### ST-V2-S0-D：A1b前置staging精确清理设计门
+
+只读盘点确认并由Root复核：当前UploadsService Complete359与Abort425使用key-only DELETE，AWS adapter不带VersionId；Enabled bucket会生成staging marker，与已批准fixture未知marker保留规则冲突。该结果为源码及S3协议分析，未做真实provider复现。不能让fixture按prefix认领marker来掩盖生产行为，A1b先等待此前置闭环。
+
+| 放置项 | Root裁决 |
+|---|---|
+| Owner/当前事实 | kokoro-storage uploads唯一业务writer；839c9a9基线clean，已验收Nest/Prisma/424+compiled2。生产Complete/Abort两处key-only清理，deleteExact当前仅final，其他owner不动 |
+| 目标职责 | 已确认业务事务后的best-effort staging精确清理，保持已提交receipt/业务返回与原取消语义，不产生无VersionId marker；不建设完整staging历史GC |
+| 目录比较/粒度 | 采用现uploads.service.ts编排+现object-store adapter/validation能力；淘汰新staging-cleanup模块/进程，因为无新业务身份、事实owner或状态机。预计仅现文件局部改动，不新增目录/通用helper框架 |
+| 依赖 | 复用ObjectReference/deleteExact；内部删除key输入域只扩为合法uploads或final，不接受任意目录。promote/download final守卫不动，retirement store的tenant/final、snapshot和所有current引用复查不动 |
+| 数据/API | 无Prisma schema/SQL/Proto/generated/公开API变化。Complete使用已扫描source，不另HEAD借用后来版本ETag；Abort在已提交abort后有界HEAD并以此次观察identity条件删。原signal贯穿；清理missing/auth/412/timeout保留对象，不回滚或改写receipt；重放不重复清理 |
+| 版本决定 | 新staging清理只有观察到非空且非字符串null VersionId才执行，必须VersionId+原ETag/IfMatch。缺版本时保留，非版本bucket仍可Complete/Abort但不宣称完成此清理；不添加bucket状态推断/假版本。既有final retirement nullable-version删除协议不顺带改变 |
+| 有界性 | 复用现请求生命周期，staging清理设置最多10秒操作signal，Abort HEAD+DELETE共享预算，不调整Complete300秒；及时取消SDK且finally清timer。未合作底层仍由真实在途/原deadline-drain承担，不用丢弃promise伪称工作已结束 |
+| 删除项 | 替换生产Complete/Abort key-only调用；当前三smoke仍使用AwsSdk.delete，A1b负责同步移除其旧调用再清理无用途生产方法，不抢改未授权消费者。Local的测试损坏模拟delete保留明确测试职责 |
+| 验证 | 新回归RED旧key-only/拒绝staging exact；SDK精确VersionId+IfMatch、未知版本零DELETE、覆盖竞态保留新对象、原signal/失败cause、退休staging拒绝、真实Prisma完成/abort/receipt重放/取消；主树完整format/lint/typecheck/test/build/apply/validate/compiled/双生成保护 |
+
+| 项 | S0-D文档任务卡（当前仅放行文档） |
+|---|---|
+| Agent/基线 | storage_implementation(gpt-6-astra)唯一writer；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean；Root审查/提交 |
+| 允许 | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、ADR/0004-isolated-provider-qualification.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md；只此设计及已接收A1a状态。不新建ADR/文档 |
+| 后继预计实现范围 | src/uploads/uploads.service.ts；integrations/object-store/{object-store.types.ts,validation.ts,aws-sdk.ts,local.ts}；test/unit/object-store.test.ts；test/integration/{prisma-command-lifecycle.test.ts,object-retirement.test.ts}，共8原文件。尚未授权写源码/测试 |
+| 排除/交付 | 不写其余文件、Schema/Proto/generated/package/lock/CI/Docker/其他owner；不安装/DB/服务/provider/Git。文档format/diff、Prisma validate、contract保护检查，给三设计绝对路径/未决/当前SHA和精确manifest，停写后Root审查再放行S0-I |
+
+A1b-R其余只读交付已保留：未来storage-roundtrip、smoke-storage-metadata、smoke-runtime及对应unit/真实Prisma integration、Python标准库生成固定有效research-package.zip；成功canonical proof核对完整scope/receipt semantic fingerprint/clean关系并实际HEAD/GET，不用于上传旁路；public亲设hold释放与严格登记的资格负例写入后继才授权。Root未放行这些文件写入，B/H0仍另片。
