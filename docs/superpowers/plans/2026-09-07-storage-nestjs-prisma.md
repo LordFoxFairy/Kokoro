@@ -522,3 +522,8 @@ ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 st
 | 交付 | Root唯一Git index/commit负责人；writer交精确路径/hash与文档门证据。当前S3/ClamAV/ObjectLock/OCI/SLO未验，HTTP机器契约单独后继处理，不在A/B偷偷扩契约 |
 
 只读盘点还确认docker-smoke容器与RPC客户端默认token不同、生产URL默认files.example.test；旧测试SQL取key+SDK PUT恰会绕过URL可达性。A须删旁路，B须同一token与真实可达public endpoint；现有capability-package旧PUT重放不改变final字节断言应保留。组件scanner直接SDK PUT属于fixture不是生产旁路，SELECT1属于探针不是业务SQL CRUD；避免机械误删有效职责。
+
+
+ST-V2-D设计细化裁决：Root于2026-09-08重新核对[AWS DeleteObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html)、[PutObjectLegalHold](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html)与[ObjectLock管理](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html)。fixture bucket预检查需versioning/ObjectLock已启用且无DefaultRetention；不得自动设置bucket不可逆属性。针对本run确切version读回状态、设置legal hold与清理，未知设置结果不冒称确认成功。只登记的确切key写入意图可用于有界恢复该key未知响应生成版本；未知Complete final candidate仍只报告，不从tenant prefix推导删除授权。
+
+批准未来A最小范围补充（尚未代码放行）：test/fixtures/smoke-provider.schema.ts单独配置解析；test/fixtures/smoke-provider.ts仅对象版本/自设hold生命周期；storage-roundtrip.ts仅RPC返回URL链。现有test/fixtures/isolated-prisma.ts增加显式preserveDatabase选项及对应unit：默认close仍删自己成功创建的库；外部cleanup失败保留库/retirement证据但关闭连接，不认领任意既有数据库，重复close与部分init失败须验证。保留资源必须非零并打印非敏感DB/key/version和后续owner，不称全清。三设计仍只按既有10文档范围执行。
