@@ -203,3 +203,10 @@ storage_contract_review（gpt-5.6-sol）读取现有ObjectStore/ClamAV/productio
 - 后续授权文件为Dockerfile、docker-compose.integration.yml、scripts/docker-smoke.sh、.github/workflows/ci.yml及release相关workflow、对应smoke tests/docs；当前尚未派发，与核心writer串行。
 - Docker CLI与Desktop/backend进程存在，但daemon API两次有界version和unix socket /_ping均未回应；39190/43310等旧MinIO/ClamAV端口关闭。目前没有真实外部依赖或镜像通过证据。已异步询问用户是否允许重启可能影响既有容器的Docker；未确认前保持原服务状态，源码推进不等待此项。
 - Root治理基线（并行工作树快照，不是本任务最终commit）：standard exit1共197项，其中Storage14项；topology exit0；scripts/tests为72通过/2失败，失败属于旧手册提取与“参考依据”标题断言。日志沿用/tmp/kokoro-storage-goal-baseline.rejrKJ/root-*；不修改其他任务负责的Root治理文件。
+
+### ST-I1 依赖切分裁决（2026-09-08，优先于原卡原子框架+数据合并范围）
+
+实现负责人提出核心卡同时迁移六表事务、十RPC/目录与Nest过宽。Root接受收窄：同一writer依次I1a（Prisma/apply/catalog）→I1b（claim/fingerprint/Upload）→I1c（Asset/Artifact/library）→I1d（Nest/feature入口）。当前授权先连续完成I1a/b/c，再交付一个无SQL双轨的可运行数据切片；I1d另续派。
+I1a的候选schema只处于未提交的实施工作树，不作为第二份已交付canonical；I1c完成时删除旧SQL/schema/Row mapper、所有运行时数据查询用Prisma后再提交。每行为先RED/GREEN，不要求一次性写数千行；每阶段日志保留，不为提交颗粒度制造兼容层或双canonical。
+当前唯一旧Node/Connect入口允许在数据切片继续运行，状态明确为“Prisma已切换，Nest待I1d”；本片不假装Nest完成。数据组件分属目标uploads/assets/artifacts，共享claim/fence在common/commands，PrismaService只管理连接与typed事务，不成为全能业务Repository。
+曾因看到其他pnpm进程误判同仓writer冲突；Root以lsof确认PID67492/67733 cwd是kokoro-capability，与Storage无写入冲突，未中断他仓。Storage安装命令固定Homebrew Node24.20.0与已知corepack pnpm脚本，避免shell继承Node22造成误判。
