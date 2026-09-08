@@ -391,3 +391,15 @@ ST-I2-D稳定审查卡：基线2b510751+25物理路径manifest `/Users/nako/Webs
 - 将完整已接收commit归档至 `/tmp/kokoro-storage-typed-lint-probe.nj8QcB`，只在临时副本增加type-aware ESLint候选配置，复用已安装依赖，不修改Storage源码/config。广泛recommendedTypeChecked preset得到40文件158诊断，其中125是require-await（多为async测试double），另有unsafe assignment/return/call/member、enum比较、unbound method等。此数量是该候选配置的诊断，不等于158个行为漏洞；ST-V须保留手册明确的unsafe/floating/misused门禁，不通过放宽它们清零。
 - pnpm exec在临时目录输出了自动frozen安装检查（Already up to date）前缀，首次JSON解析因此失败；保留原始输出并从实际ESLint JSON提取 `typed-lint-clean.json`。后续探针直接用Node执行已安装CLI，避免wrapper副作用；未安装新依赖版本或改业务文件。
 - 同一快照用当前TS5.9工具加 `--skipLibCheck false` exit2：Connect2.2声明缺全局HeadersInit、Vite5/rollup exactOptionalPropertyTypes与Worker环境类型冲突。日志typecheck-full-libs.log。该额外实验不是现有typecheck失败；Node24 types/新测试工具链/官方类型兼容要在ST-V实测，不手改node_modules或生成物来遮盖。Root TS手册要求typed lint与Node major对齐，不把未批准的额外flag冒充既有强制门禁。
+
+### ST-V 独立工具链候选实测（2026-09-08，尚未应用 Storage）
+
+- Root 将已提交347e6dd完整归档到 `/tmp/kokoro-storage-toolchain-candidate.G3G8WB`，独立安装依赖，不使用活动I2工作树或共享node_modules；registry证据在 `/tmp/kokoro-storage-toolchain-metadata.F3dZiu`。本节是后继选型输入，不代表活动源码的门禁已修复。
+- 兼容候选：TypeScript6.0.3、@types/node24.13.3、typescript-eslint8.69.0、Vitest5.0.0（Vite8.2.2）、Prettier3.9.6；Nest12/Prisma7.10/Connect2.2保持。TS7超出eslint当前peer <6.1，Prisma latest为8.0 RC不取；eslint8.70及mysql2 3.24.4在核验时未满足24h发布冷却。启用minimumReleaseAgeStrict且无exclude；初次pnpm add自动写入临时豁免已回退、恢复基线lock后重新解析，不把豁免带入方案。
+- TS6首次build实际RED TS5011；给build配置显式rootDir=src后保持dist/main.js输出且GREEN。直接依赖@smithy/node-http-handler4.12.0安装时提示内存泄漏弃用，候选更新已过冷却的4.12.1。
+- 初始完整审计3条：Prisma CLI传递deepmerge-ts7.1.5递归图栈耗尽，以及mysql2 3.15.3认证降级/解压DoS。仅临时候选添加精确parent scoped overrides：`@prisma/config@7.10.0>deepmerge-ts:8.0.2`、`prisma@7.10.0>mysql2:3.24.3`。最终完整audit 0；不可盲目复制到正式仓，须ST-V ADR记录deepmerge8的Map合并等breaking行为、本项目普通配置对象覆盖证据与Prisma正式修复后删除override的退出路径。
+- 精确候选frozen/validate/generate/typecheck/build/lint/contract通过；新自建空PG精确七表/七enum/零FK与drift通过，52文件257测试、实际编译后NestFactory2测试通过。隔离prod/no-optional安装audit0，编译入口import、retirement delegate真实查询count0及CLI/TS/tsx/Vitest不可解析通过；自建数据库已drop。证据为候选目录scoped-*.log和scoped-override-audit.json，仍非真实S3/ClamAV或镜像验收。
+- 额外全声明实验：当前候选加入官方ES2024,DOM,DOM.Iterable并skipLibCheck=false后，只剩测试ZIP函数过宽Uint8Array<ArrayBufferLike>返回类型。该临时函数本来分配普通ArrayBuffer，精确标注Uint8Array<ArrayBuffer>后完整声明typecheck与lint通过（无cast、无node_modules补丁）。这是可行候选而非既定门禁；若采用DOM声明需评估服务端browser globals的lint约束，不能冒称原手册强制这些flag。
+- 依据：[Vitest迁移说明](https://vitest.dev/guide/migration/)、[typed lint](https://typescript-eslint.io/getting-started/typed-linting/)、[deepmerge发布说明](https://github.com/RebeccaStevens/deepmerge-ts/releases)、[deepmerge公告](https://github.com/advisories/GHSA-ggr8-5vv4-36mx)、[mysql2公告一](https://github.com/advisories/GHSA-3f6p-5ww8-9rcr)、[mysql2公告二](https://github.com/advisories/GHSA-rgwj-5xj2-c3m3)；精确版本与发布年龄以当日npm metadata和实际pnpm11.25行为验证，不套用浮动latest。
+
+ST-I2-B CLI生命周期裁决：允许薄composition root直接装配同一owner service/store及现有Prisma/ObjectStore，不为ApplicationContext创建空协调provider。所有资源创建/connect由try/finally覆盖，部分启动失败逆序释放已创建资源，单个关闭失败不得阻断其他资源；不启动listener/Redis/scanner、不复制业务规则/SQL/DI框架。需CLI参数与失败生命周期测试、技术设计同步；无消费者的reconciliation.module删除，不留双轨启动路径。Storage唯一writer继续负责，Root仅本计划和Git操作。
