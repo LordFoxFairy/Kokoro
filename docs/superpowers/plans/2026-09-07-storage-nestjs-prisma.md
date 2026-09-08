@@ -253,3 +253,13 @@ I1c必要生成接线授权：原scripts/normalize-generated.ts遍历整个src/g
 | 交付 | 先RED后GREEN，每个职责迁移同时清除旧import路径；稳定manifest/hash后停写，符合性→质量→Root主仓验证→scoped commit。不得一口气扩I2或ST-V，遇无法保持运行的小切片向Root裁决 |
 
 2026-09-08 Root重新核验框架官方API：Nest FastifyAdapter示例、Lifecycle hooks与Connect官方fastify插件；已安装@connectrpc/connect-fastify2.2.0类型确有routes/contextValues/shutdownTimeoutMs，继承ConnectRouterOptions。来源 https://docs.nestjs.com/techniques/performance 、 https://docs.nestjs.com/fundamentals/lifecycle-events 、 https://connectrpc.com/docs/node/server-plugins/ 。核验是API语义与本地类型证据，不替代后续实际Nest集成测试；没有采用文档中的性能宣传作为本仓实测。
+
+### ST-I1R 复验与ST-I1Q质量修复（2026-09-08）
+
+- 上传发放gate补修交付85文件，原83项74不变、9授权变更、2新增测试；符合性复审storage_contract_review通过。Root随机空库重跑prisma validate/apply、lint/typecheck/test/build/contract，全通过：40文件189测试0skip，日志 `/tmp/kokoro-storage-main-i1r.c3be9M`，自建库已删除。尚未提交数据片。
+- 质量审查storage_data_review发现2P1：Artifact不同command竞争同复合主键时P2002未按已定replay/conflict恢复；claimed receipt损坏state/response或非正fence未在持久化读回检查。另ADR当前数据状态过期P2。Root代码核实后要求修复，不以189绿测试代替缺失并发/损坏负例。
+- ST-I1Q修复卡：沿用storage_implementation(gpt-6-astra)唯一writer，基线72ab5dd+85hash；允许common/commands、database/transaction-errors、artifacts.store及相应tests、四Storage设计文档和ADR/0001的当前证据修正。优先保持checked关系create，在真实双client RED确认实际P2002 target后仅对artifact复合identity增加有限整事务重试并重读同值/异值；不采用全P2002重试，不以catch后继续已abort事务，非必要不换unchecked createMany。
+- receipt在使用已存行前验证state/response/fence不变量；同时审查assert/complete/release的CAS，防止活跃claim行被破坏后被静默覆盖。JSONB SQL NULL与JSON null边界须由实际Prisma/PG行为证明，不写类型断言掩盖；无schema/custom CHECK扩展。
+- 验证：两个client确定性同Artifact identity竞争、同值仅一次insert/另一次replay且两receipt闭环，异值稳定conflict无孤儿receipt完成；claimed+response与fence<=0损坏活跃/过期行fail-closed且无覆盖，正常claim/release/replay不回退。RED/GREEN、全套与lint/typecheck/build、独立复审后Root再跑主仓。Nest/I2/STV仍排除。文档ADR更新当前数据工作树证据而非自称已验收commit。
+
+ST-I1d并行只读准备：storage_contract_review(gpt-5.6-sol)绑定72ab5dd+当前旧transport/config未变路径，预审Nest单listener的auth/error/detail/取消/退出接线与测试迁移风险，产出最多5条具体约束供后继writer；不修改当前数据切片、不跑共享服务、不创建第二writer。Root继续数据审查关键路径。
