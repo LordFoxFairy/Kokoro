@@ -722,3 +722,14 @@ A1b1-D补充实现边界已批准并写入三设计：既有provider.close增加
 
 
 A1b1-I 写入期间独立只读预研 ST-V2-B-R：storage_contract_review 负责 B 的同 owner 容器/production-runtime 生命周期接线建议，Root 保留 A1b1 审查与 B 整体裁决。基线 Storage f47801f726cc402b3bea099d237f73afeeb61586（变化工作树，仅读 HEAD 固定对象，不读取 A1b1 未交付新代码）；范围 scripts/docker-smoke.sh、test/smoke/production-runtime.e2e.test.ts、Dockerfile、compose/相关现有架构测试及已提交 ADR0004/三设计/fixture API。只读、不写/测试/生成/安装/Git/DB/Docker/网络服务操作。交付最小文件集、至少两种可行位置比较、生命周期状态/资源所有权/失败保留及现有 package 入口如何接入，识别尚需 A1b1 稳定 API 的依赖；不建立新 IPC/资源框架、不发明公开 API/业务表，不编造镜像证据。Root 并行只读核对现 CI/release 事实；B 文档/实现必须 A1b1 接收后另过门授权，预研不是开始 B 写入。
+
+
+Root 的 B-R CI/release 固定基线事实（f47801f，静态只读，未运行旧命令）：
+
+- `.github/workflows/{ci,release-image}.yml` 仍 Node22，与已验 Node24.20.0/engine 不符；verify 在官方 apply 与测试 env 注入前，后面才重复 integration；缺完整 format/compiled/frozen 生成保护/audit 默认门。工作流 PG16/Redis7 浮动 tag 与旧固定端口/库尚待 B 决定及重核版本，不能据本地 PG18 的成功宣称 CI 已跑。
+- 两工作流仍自动启动固定 compose project 的 MinIO/ClamAV，自动执行默认凭据的旧 smoke，finally 固定 `down --volumes`；必须删除旧自动 provider 路径，普通 PR 的离线+自有 PG 门与显式已配置 provider 资格分层，release 缺资格不得发布。job 亲建 services 与本地共享服务的所有权不同，不把本地脚本的任意数据库当 job 自有。
+- 除 production-runtime 外，`test/smoke/scanner.integration.test.ts` 仍 key-only delete/allSettled 吞错/固定前缀；`infrastructure.integration.test.ts` 仍 CreateBucket/Already 吞错、固定库与未关闭 S3 client。这两处也是 B 后继必须承接/删除的实际旧消费者；暂不删 AWS 方法导致其他调用悬空。scanner clean/EICAR/error 是有效职责，不以旧目录为理由丢失。
+- 当前 release 已有 RC OCI 先 build/scan、加载 smoke、同 tar copy--all、SBOM/provenance/sign 的正向结构，B 应保留并补同 digest/平台与资格证据关联，不退化成验 A 发布 B 或 tag 漂移；当前实现无实测证据。所有新/升级 Action/镜像/OCI copier 版本、维护/供应链、官方语义须 B 文档门重新核验，不以已有注释版本冒充事实。
+- `test/architecture/deployment.test.ts` 仅文本检查 Dockerfile/旧 shell 包含内容，不能证明资源所有权、close/drain 或同 RC identity；B 需行为 command-double 与真实 RC 分开，不放宽现 Nest/prisma/non-root/HEALTHCHECK/无生产工具断言。
+
+以上是后继待设计事实，不是 A1b1 扩权；Root 已通知 B-R 只读 reviewer 纳入残留消费者范围。
