@@ -567,3 +567,23 @@ ST-V2-D第二版879ab7d8已由Root独立format/Prisma validate/contract/diff及�
 
 
 ST-H0继续只读调查：为避免新增已非活跃支持的Zod3生成桥，storage_contract_review比较“统一升级当前Zod4稳定版 + 受维护的zod-to-openapi稳定版”与先前方案；仅官方精确版本/peer/维护/许可证/发布时间、静态现有zod导入和API用法/潜在语义变化/最小文件范围，不安装、生成、测试或改任何文件/配置。与A0单writer独立，不构成升级授权；Root后继设计需实际回归/契约不变和依赖审核，未证明兼容前不声称可直接升级。
+
+
+### ST-V2-A0 已验收 / ST-V2-A1a 放行
+
+- A0提交 `9b609671dfe31a6d899e4c3d9613e40ecf4a6240`，b89f71d6 manifest的12M逐原始/staged/committed hash核验，提交后clean。Root符合性及storage_data_review独立质量审查无P0/P1/P2；Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a0.2sjrkpnc` 实跑format/lint/typecheck/build/audit443依赖0、自有随机新库官方apply、默认并行63文件360/360无skip、compiled2、validate/contract→generate→contract/diff及所有范围外tracked字节不变。自有DB已删除；source仅HEAD-only，无外部provider声明。
+
+| 项 | ST-V2-A1a任务卡 |
+|---|---|
+| 任务/优先级 | P1；先实现外部资格所需的显式配置、确切对象/hold资源登记和自有数据库失败保留；下一片A1b才接真实URL与外部smoke消费者 |
+| Owner/Agent | Storage test/fixtures，storage_implementation(gpt-6-astra)唯一writer；Root方案/Git/集成，后继独立spec/质量审查 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，9b609671dfe31a6d899e4c3d9613e40ecf4a6240，clean |
+| 放置 | 沿已批准ADR0004：既有test/fixtures而非src/common/新测试框架；schema只解析/派生，provider fixture只资源生命周期，isolatedPrisma仍唯一亲建DB句柄，不新增业务repository |
+| 允许代码 | 新test/fixtures/smoke-provider.schema.ts、smoke-provider.ts、test/unit/smoke-provider.test.ts、test/unit/isolated-prisma.test.ts；改既有test/fixtures/isolated-prisma.ts仅preserveDatabase/close可靠性。需要持久journal独立schema或过大文件等真实拆分先向Root给职责/文件名，不自行扩大 |
+| 允许文档 | 既有ADR0004及D原十文档只状态/本片接线与证据；不改A/B已批准语义，不添新文档。新的helper已有真实unit消费者，外部smoke接线A1b明确待办，不冒称A1已完成 |
+| 排除 | 全src、其余test/smoke/roundtrip/compiled-entry、scripts/CI/compose/Docker、Prisma/Proto/generated、package/lock/其他owner；不安装新依赖，不实际访问任何外部S3/ClamAV/云资源或Docker |
+| 数据/API约束 | bucket只读preflight及current-only矩阵/registry/hold四态/预算/失败preserveDB均以ADR最终current-only修正为准。scope prefix不是删除授权；ON未知不解除，未知current/marker/冲突保留且非零；SDK/client和默认AWS凭据链同源，custom显式AK/SK混session token拒绝 |
+| 验证 | RED→GREEN真实SDK命令spy/有界网络double可证明请求形状与resource逻辑，不称providerintegration；缺参零I/O、桶无配置写、404/auth fail、按registry current原子VersionId+IfMatch、同key多版本顺序/未知停止、hold未知、分页重复/预算、0700/0600无secretjournal、单close失败继续释放、DB仅亲建者DROP与preserve/repeatedclose/init未知。完整format/typed/typecheck/build/defaultparallel360+新增/compiled2/官方自有新库apply/双生成保护；测试资源隔离 |
+| 交付 | writer不stage/commit，固定路径hash+RED/GREEN/全门证据停写交Root；A1b（真实URL与三smoke）不抢写，成功后单独续派，外部provider缺配置不因源码通过计绿 |
+
+H0维护中候选只读输入：zod4.4.3 + zod-to-openapi9.1.0，生成器peer Zod4/MIT，需另卡完整官方版本/冷却/传递审计与18个旧zod导入面的行为迁移实验；未采用、未安装、不混A1。旧单参record、nativeEnum、coerce.bigint、recursive JsonValue、defaults/refine与datetime等均需保留行为回归，不能用升级顺手改变receipt/config边界。
