@@ -446,3 +446,5 @@ ST-I2-B回归诊断仍未验收：writer首次全套316/317出现旧dedup P2034�
 | 验证/交付 | 先RED/策略反例，完整format/lint/typecheck、322基线+新增默认并行独立PG、compiled2、build/validate/七表apply/drift、contract→Prisma generate→contract隔离、完整audit及prod/no-optional冻结闭包/真实查询。预留版本和生成物检查，不取消失败门。固定manifest停写→符合性→质量→Root主树复跑/小片提交，Git仍Root独占 |
 
 ST-V后继仍须独立卡：唯一资源拥有权的部署/CI/compose/生产API smoke、真实S3/ClamAV/ObjectLock/镜像和信号验收；Docker socket目前只读仍超时，未获得重启答复，不擅自重启。工具链完成不代表整个Storage目标完成。
+
+ST-V2-P只读依赖调查卡：storage_data_review(gpt-5.6-sol)调查真实S3测试provider的可维护选择，不改任何仓/配置/lock、不安装/启动服务、不访问用户数据。基线Storage b5ad3e0的S3 adapter/现compose；Root在2026-09-08核对[MinIO官方仓](https://github.com/minio/minio)已归档且社区只发源码，历史二进制不维护；[最后安全发布](https://github.com/minio/minio/releases)要求源码构建，故不能直接把minio/minio:latest当当前维护中的稳定fixture。限比较保留固定MinIO源码仅隔离测试、一个维护中的开源S3实现、用户提供AWS sandbox三路，重点VersionId/HEAD/conditional Delete If-Match与ObjectLock证据、维护许可/精确版本/镜像可用性；只给下一片ADR输入，不擅自替换provider或要求用户现在给凭据。Root并行核对ClamAV官方维护版本/OCI metadata及隔离部署边界，writer继续V1设计门。交付官方来源、实际支持与未验项分开，既有MinIO profile/API不在本研究改动。
