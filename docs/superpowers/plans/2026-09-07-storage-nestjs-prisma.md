@@ -699,3 +699,23 @@ B部署/production-runtime具体同owner执行文件/普通stopAndDrain回调由
 A1b1-D补充实现边界已批准并写入三设计：既有provider.close增加preserveObjects选项，停服/drain未知时零hold/对象副作用、即使空registry也非零且preserveDatabase；仍释放自有句柄，第一次close模式固定，重复close不得改回默认删除。默认A1a行为不变，无新文件/协议。
 
 固定D质量复查卡：storage_data_review只读a07b4d4基线+7M manifest 1db06c8e2dd4de38a61526c532b6745d20e2b05a400bde604374b36f09c9d77b，复核同owner生命周期、metadata具体证明能力与事务外观察、原URL/ZIP职责、保留失败和固定矩阵；只读三设计/ADR及必要源码，无写/测试/生成/安装/DB/服务/Git。Root已实跑七文档format/validate(port1)/contract/diff、251范围外hash保护，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-design.l2fcb828；该证据只支持文档门。writer停写，Root收独立结论后按路径提交再派I；其他owner不动。
+
+
+### ST-V2-A1b1-D 已验收 / A1b1-I 实施放行
+
+- 文档提交 `f47801f726cc402b3bea099d237f73afeeb61586`；7M 基线/工作树/staged/committed hash 与精确路径均核验，提交后 Storage clean。Root 符合性及 storage_data_review 固定 manifest 独立质量无 P0/P1/P2。
+- Root 文档门日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-design.l2fcb828`：七文档 format、Prisma validate（port1，不连DB）、contract、diff、251 范围外 hash 通过。该结果不是 A1b1 实现或外部 provider 验收。
+
+| 项 | ST-V2-A1b1-I 任务卡 |
+|---|---|
+| 目标/owner | P1，Storage 两个真实外部 smoke 消费者接入 Nest/plainNode + Prisma 证明 + 原样签名 URL；不复制业务写入或手工 ZIP/协议 |
+| Agent/基线 | storage_implementation（gpt-6-astra）唯一 Storage writer；Root 符合性/集成验证/Git，后继 storage_data_review 只读质量。工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，f47801f726cc402b3bea099d237f73afeeb61586，clean |
+| 允许修改 | test/smoke/capability-package.e2e.test.ts、test/smoke/s3.integration.test.ts、test/fixtures/smoke-provider.ts、test/unit/smoke-provider.test.ts（4现有文件）；上述七设计文档仅必要当前状态/实际证据 |
+| 允许新增 | test/fixtures/storage-roundtrip.ts、smoke-storage-metadata.ts、smoke-runtime.ts、research-package.zip；test/unit/storage-roundtrip.test.ts、test/unit/smoke-runtime.test.ts；test/integration/smoke-storage-metadata.test.ts（7文件） |
+| 依赖/固定职责 | 完整沿已验三设计/ADR0004与上一放置表，不再发明 owner/框架/协议。roundtrip 只 RPC+原 URL/headers/bytes 和显式阶段回调；metadata 绑定亲建库 Prisma/固定 tenant+trusted subject，原 codec/schema/fingerprint 短只读事务证明；provider 持具体证明能力再事务外 HEAD/GET 登记。ZIP 用 Python 标准库固定字节，runtime 复用 compiled-entry 的 closed+exit |
+| 状态/副作用 | 每次 PUT 前确切 durable 意图，Complete 前 beginDelete；S0 删除后双观察确认缺失才 confirmDeleted。成功 canonical 全关系/receipt/identity/bytes 证明，未知候选只报告；亲设 hold 才释放读回，资格 SDK 写入口只用原 client、确切本次意图、小对象、覆盖前全部版本归属，不用于上传旁路。stop/drain 未知 preserveObjects 零对象写、非零并保库，首 close 模式固定；正常 closed+exit 后 current-only cleanup |
+| 验证 | 先 RED 再 GREEN：原 URL/headers/全字节/取消/错误 URL，真实 Prisma 错 scope/receipt/rollback/关联身份，亲建 child 启停/失败/drain 与 fixture close/hold/资格写入。完整 format/lint/typecheck/build/default parallel463+新增、compiled2、官方亲建空库 apply/catalog/drift、validate/contract→generate→contract 与范围外 hash；验证 ZIP CRC/内容/元数据/SHA/重生成一致。外部配置缺失显式非零并在资源初始化前失败，不 skip 计绿 |
+| 排除 | 全 src、其余 test（含 production-runtime/compiled-entry/isolated-prisma）、Schema/Proto/generated、package/lock、scripts/CI/compose/Docker、其他 owner；额外普通文件或越界需要先报告归属/理由。无新依赖，无外部 S3/ClamAV/云/Docker 操作，无共享服务重启/清库/flush |
+| 资源/交付 | 复用现 PG/Redis；仅亲建随机库、只按自己 CREATE 成功句柄清理，失败保留。资格120秒/RPC420秒、生产Complete300秒不改、SDK10秒/小对象64KiB、cleanup独立60秒。固定精确 manifest、RED/GREEN/完整日志、文件清单后停写；worker 不碰 Git，Root 独立审查复验后逐路径提交 |
+
+状态：A1b1-I 进行中；B/production-runtime 生命周期、H0 HTTP 机器契约和真实外部资格仍待后继，不用两消费者接线冒充全链发布完成。
