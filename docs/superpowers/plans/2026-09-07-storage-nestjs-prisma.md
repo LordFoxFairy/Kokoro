@@ -284,3 +284,11 @@ ST-I1d启动补充：配置/DI factory只构造typed配置与lazy资源，不在
 ### ST-I1d 正式派发
 
 沿上方后继卡现在放行：storage_implementation（gpt-6-astra）唯一Storage writer，起点33093fed与clean工作树；Root仍唯一Git index/commit负责人。行为基线更新为220测试，主仓数据证据与两轮复审已完成。先同步Storage CURRENT/设计状态引用该接收SHA，再按feature/transport有序切換真实Nest单listener与生命周期，保持数据已验收行为。准备只读预审与Roothook/timer实测约束一并作为本卡依据；不进入I2/CI/Docker供应链扩展。
+
+### ST-I2 准备（并行只读，不授权业务修改）
+
+storage_data_review（gpt-5.6-sol）绑定Storage commit33093fed，仅使用git show读取完整固定代码与设计，评估canonical健康复用/仅missing-mismatch repair CAS的最小API/事务和可靠性测试切片。不得读取活动Nest重构当固定证据、不写文件、不运行/清理服务DB、不操作Git index。输出owner不变的最小能力边界、明确failure分类/旧identityCAS/丢失竞争者候选恢复、最多8项可执行验收条件，供Root裁决后续I2卡。Root同时准备ST-V工具链/部署，不与当前Nest writer并写。
+
+2026-09-08数据接收后Docker只读探测：既有socket /_ping再次3秒超时。此前重启授权问题仍未收到回复，继续保持Docker与容器原状态；不影响Nest源码实施，真实MinIO/ClamAV与镜像尚无验收证据。
+
+ST-V/依赖例外再验证：Root从33093fed复制package/lock/workspace到 `/tmp/kokoro-storage-release-age.h7vYVA`，仅在隔离副本移除Connect精确minimumReleaseAgeExclude。全新 `pnpm install --prod --no-optional --ignore-scripts --frozen-lockfile` 12.2秒通过，470 lock entries通过供应链策略，生产Nest/Prisma/Connect imports通过，prod/no-optional audit 0漏洞。未改Storage；通知I1d writer在授权workspace范围删除已无必要例外并真实验证。registry少量ECONNRESET由pnpm有限重试后成功，无policy降级。另33093fed实际connect/connect-node为2.1.2、fastify plugin2.2.0；I1d必须区分实际/目标，不冒称全2.2，按ADR统一时需精确pin与peer/完整回归。
