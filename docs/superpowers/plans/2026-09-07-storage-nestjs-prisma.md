@@ -405,3 +405,9 @@ ST-I2-D稳定审查卡：基线2b510751+25物理路径manifest `/Users/nako/Webs
 ST-I2-B CLI生命周期裁决：允许薄composition root直接装配同一owner service/store及现有Prisma/ObjectStore，不为ApplicationContext创建空协调provider。所有资源创建/connect由try/finally覆盖，部分启动失败逆序释放已创建资源，单个关闭失败不得阻断其他资源；不启动listener/Redis/scanner、不复制业务规则/SQL/DI框架。需CLI参数与失败生命周期测试、技术设计同步；无消费者的reconciliation.module删除，不留双轨启动路径。Storage唯一writer继续负责，Root仅本计划和Git操作。
 
 ST-V-T只读候选审查卡：storage_contract_review(gpt-5.6-sol)审查Root固定347e6dd临时工具链候选及registry证据，不审查正在写入的I2、不改任何文件/lock/配置、不执行安装/共享服务/Git。范围为Node/TS/eslint/Vitest兼容、24h年龄策略、两条精确Prisma overrides的语义风险/正式ADR与退出条件；依据CODEBASE_MAP、TS手册8.5及本节日志。交付明确阻断项与可采纳条件，不把候选0audit或257测试推广为活动I2验收。Root继续准备typed-lint门禁与I2最终集成，原writer仍唯一Storage写入人。本审查不替代后继正式实现的符合性与质量审查。
+
+ST-V-T审查结论与Root核验：版本组合可采纳；正式落仓先有override ADR，不能原样接受候选。准确依赖名为eslint10.9.1及typescript-eslint8.69.0。审查员要求仓内显式1440；Root核对[官方pnpm11发布说明](https://github.com/pnpm/pnpm.io/blob/main/blog/releases/11.0.md)确认固定pnpm11本身默认1440，所以历史结果不是未知用户配置的唯一解释，仍采用显式配置作为可审计/防升级漂移门。Root独立HOME、XDG_CONFIG、空store及固定11.25 CLI实测：1440+strict/no-exclude下年轻mysql2 3.24.4解析失败，成熟3.24.3解析及空store frozen安装通过，证据 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-release-age-isolated.ylp7tfto`。未修改Storage。
+
+Root候选typed-lint虚拟正反例：ESLint.lintText对项目内虚拟src/main.ts解析，安全unknown窄化正例0诊断；不安全JSON.parse值/浮动Promise/void回调Promise/遗漏union分支的负例实际命中unsafe-assignment、unsafe-call、unsafe-member-access、no-floating-promises、no-misused-promises、switch-exhaustiveness-check六规则。证据候选目录typed-rule-fixtures.log，未写业务源码。正式配置必须保留这些真实规则回归，不靠字符串检查配置冒充效果；全preset多出的require-await及根配置projectService范围分别处理。
+
+ST-I2-B回归诊断仍未验收：writer首次全套316/317出现旧dedup P2034；第二次共享库失败转移到新canonical用例，旧dedup孤立4/4。Root要求保留原同业务双client竞争断言、不得提高生产重试或关闭默认并行。全库retirement扫描及新增canonical高写入套件改用各自官方bootstrap自有随机空库，writer报告317通过仅为待交接旁证，仍须固定manifest、独立审查及Root新库验证。不能把SSI相关性当作生产性能结论。
