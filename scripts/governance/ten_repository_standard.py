@@ -11,7 +11,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_NODE_ENGINE = ">=24 <25"
-REQUIRED_PNPM_VERSION = "11.25.0"
 REQUIRED_TS_SOURCE_PATHS = ("modules", "config")
 RETIRED_TS_TOP_LEVEL_DIRECTORIES = (
     "adapters",
@@ -20,10 +19,8 @@ RETIRED_TS_TOP_LEVEL_DIRECTORIES = (
     "common",
     "contracts",
     "controllers",
-    "database",
     "domain",
     "dtos",
-    "http",
     "infrastructure",
     "interfaces",
     "middlewares",

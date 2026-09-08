@@ -10,7 +10,6 @@ from .contract_checks import check_openapi_contract
 from .ten_repository_standard import (
     REPOSITORY_PROFILES,
     REQUIRED_NODE_ENGINE,
-    REQUIRED_PNPM_VERSION,
     REQUIRED_TS_COMPILER_OPTIONS,
     RETIRED_TS_TOP_LEVEL_DIRECTORIES,
     ROOT,
@@ -115,12 +114,20 @@ def check_typescript(repository_name: str, failures: list[Failure]) -> None:
 
     package = package_manifest(repository)
     scripts = package_scripts(repository)
-    if package.get("packageManager") != f"pnpm@{REQUIRED_PNPM_VERSION}":
+    # TS handbook §2.4: pin each repository's verified stable version, not an
+    # obsolete global patch. A Corepack integrity suffix may accompany the pin.
+    package_manager = package.get("packageManager")
+    if not isinstance(package_manager, str) or not re.fullmatch(
+        r"pnpm@(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+        r"(?:\+sha(?:224\.[a-fA-F0-9]{56}|256\.[a-fA-F0-9]{64}|"
+        r"384\.[a-fA-F0-9]{96}|512\.[a-fA-F0-9]{128}))?",
+        package_manager,
+    ):
         add(
             failures,
             repository_name,
             "toolchain",
-            f"packageManager must pin pnpm@{REQUIRED_PNPM_VERSION}",
+            "packageManager must pin an exact stable pnpm version (pnpm@x.y.z)",
         )
     engines = package.get("engines")
     if not isinstance(engines, dict) or engines.get("node") != REQUIRED_NODE_ENGINE:

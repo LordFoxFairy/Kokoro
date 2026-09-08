@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from scripts.governance import (
     contract_checks,
     ten_repository_standard,
@@ -57,7 +59,6 @@ def test_language_profiles_use_native_module_first_topology() -> None:
     verifier = load_verifier()
 
     assert verifier.REQUIRED_NODE_ENGINE == ">=24 <25"
-    assert verifier.REQUIRED_PNPM_VERSION == "11.25.0"
     assert verifier.REQUIRED_TS_SOURCE_PATHS == ("modules", "config")
     assert verifier.REQUIRED_AGENT_SOURCE_PATHS == ("execution",)
     assert verifier.REPOSITORY_PROFILES["kokoro-bff"].required_source_paths == (
@@ -100,6 +101,60 @@ def test_shared_redis_database_mapping_reserves_zero_and_covers_stateful_service
     assert verifier.extract_redis_databases("REDIS_URL=redis://cache.local:6379/8") == {
         8
     }
+
+
+@pytest.mark.parametrize("directory", ["database", "http"])
+def test_nest_process_directories_are_not_retired(
+    directory, tmp_path, monkeypatch
+) -> None:
+    repository = tmp_path / "kokoro-system"
+    (repository / "src" / directory).mkdir(parents=True)
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+
+    typescript_checks.check_typescript("kokoro-system", failures)
+
+    assert not any("retired top-level" in failure.detail for failure in failures)
+
+
+@pytest.mark.parametrize(
+    ("package_manager", "valid"),
+    [
+        ("pnpm@11.25.0", True),
+        ("pnpm@12.3.4", True),
+        ("pnpm@12.3.4+sha512." + "a" * 128, True),
+        ("pnpm@latest", False),
+        ("pnpm@^12.3.4", False),
+        ("pnpm@12", False),
+        ("pnpm@12.03.4", False),
+        ("pnpm@12.3.4-beta.1", False),
+        ("npm@12.3.4", False),
+        (None, False),
+    ],
+)
+def test_package_manager_requires_an_exact_stable_pnpm_pin(
+    package_manager, valid, tmp_path, monkeypatch
+) -> None:
+    repository = tmp_path / "kokoro-system"
+    repository.mkdir()
+    (repository / "package.json").write_text(
+        json.dumps({"packageManager": package_manager}), encoding="utf-8"
+    )
+    monkeypatch.setattr(typescript_checks, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        typescript_checks, "effective_ts_compiler_options", lambda _: {}
+    )
+    failures = []
+
+    typescript_checks.check_typescript("kokoro-system", failures)
+
+    pin_failures = [
+        failure for failure in failures if "packageManager" in failure.detail
+    ]
+    assert (not pin_failures) is valid
 
 
 def test_documentation_matrix_matches_the_governance_manual() -> None:
