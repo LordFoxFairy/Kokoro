@@ -263,3 +263,9 @@ I1c必要生成接线授权：原scripts/normalize-generated.ts遍历整个src/g
 - 验证：两个client确定性同Artifact identity竞争、同值仅一次insert/另一次replay且两receipt闭环，异值稳定conflict无孤儿receipt完成；claimed+response与fence<=0损坏活跃/过期行fail-closed且无覆盖，正常claim/release/replay不回退。RED/GREEN、全套与lint/typecheck/build、独立复审后Root再跑主仓。Nest/I2/STV仍排除。文档ADR更新当前数据工作树证据而非自称已验收commit。
 
 ST-I1d并行只读准备：storage_contract_review(gpt-5.6-sol)绑定72ab5dd+当前旧transport/config未变路径，预审Nest单listener的auth/error/detail/取消/退出接线与测试迁移风险，产出最多5条具体约束供后继writer；不修改当前数据切片、不跑共享服务、不创建第二writer。Root继续数据审查关键路径。
+
+ST-I1d生命周期预审裁决：本地Nest12真实close顺序为OnModuleDestroy→BeforeApplicationShutdown→Fastify close/dispose→OnApplicationShutdown，Prisma/Redis不可在OnModuleDestroy断连抢在drain前。资源释放使用OnApplicationShutdown；BeforeApplicationShutdown标记draining并启动唯一可清理timer；Connect使用官方shutdownSignal而非插件shutdownTimeoutMs，enableShutdownHooks作为唯一signal owner。Root无listener/无外部依赖的真实Nest/Fastify小探针确认事件顺序；插件shutdownTimeoutMs=30000在app.close已resolve后仍留timer导致子进程4秒未退出（Root仅杀自己探针）；换shutdownSignal后子进程0.264秒正常exit0。该证据只证明框架hook/timer语义，不是Storage运行时验收。30秒drain依赖全链路协作取消，不承诺忽略AbortSignal的任意代码也有应用内绝对硬退出；最后硬上限由编排器保障。
+
+ST-I1Q证据纠偏：完整ArtifactsStore双PrismaService/同identity predicate-read barrier在PostgreSQL18.4实际竞争产生P2034，已有有限事务重试正确实现同值replay/异值conflict；没有本路径P2002可重复反例。Root与质量审查员共同把原Artifact P1降为P2测试缺口，并保留两条真实并发回归，不增加生产重试分类。无prior read的单独checked create确可产生P2002但不是该用例路径，只保留观察日志，不冒称复现漏洞。确认P1只剩receipt损坏读取/接管/执行/完成/释放边界，现writer报告修复后216测试，待稳定复审。
+
+ST-I1Q主仓最终验证未放行：89文件hash/精确dirty路径集合全部匹配，质量复审通过后，Root在独立空库默认并行全suite得到216pass/2fail（artifact两例事务attempts期望>=2实际1）；日志 `/tmp/kokoro-storage-main-i1q.VFvarG`。prisma validate/apply、lint/typecheck通过，test失败后build/contract/compiled/format因set-e未执行；自建库已drop，没有提交。次数断言先于业务error输出，现不能判定P2002/其他适配器错误；Root重新授权原writer只在实际完整路径加诊断并复现，不删断言凑绿，按真实error形态裁决。先前单跑P2034结论不覆盖该全并行失败。
