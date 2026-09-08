@@ -38,7 +38,7 @@
 | P0-A / P0 | 盘点协议、安全/状态机与消费者依赖，提出必须保留的行为与切换风险 | contract-review / gpt-5.6-sol / 只读 | 子仓 contract/src/test/docs，BFF/Agent 消费入口只读 | 可与 Root 设计并行 | 已交付只读报告 |
 | P0-D / P0 | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项 | Root / 当前模型 / 写入（派实现前） | 子仓上述现有文档、ADR 新文件；Root 本任务板 | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交 |
 | P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
-| P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | P1a 已验收（d32631f），P1b 待派工 |
+| P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | P1a 已验收（d32631f），P1b-I 进行中（7c9367e设计基线） |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | 待派工 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 待派工 |
 | P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 后续授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 待派工 |
@@ -183,3 +183,33 @@ Root 在最终提交相同工作树、Node 24.13.0 下执行（全部 exit 0）�
 5. 下一阶段需完成真实 IAM/Storage 等 owner sandbox 联调；本轮 smoke 的协议 stub 只证明本仓装配行为。
 
 状态：P1a 已验收；总体计划未完成。后续 owner：Root（边界/派工/主仓门禁/最终验收），capability-owner（按下一任务卡续接 P1b）。
+
+## Goal 续接与 P1b 任务卡（2026-09-08）
+
+用户要求先设置 Goal 再推进，Goal 已创建且 active，目标覆盖既有 P1b–P5 顺序，不把一次切片完成当作总目标完成。
+本轮新基线：Root `4c958c969fa41f52e514744f6362a9aae95f9856`（大量其他任务未提交变更）；Capability `d32631fa04b36a57f00c464bd78fcdde3ec10f1f`，分支 `codex/production-closure-docs`，子仓干净。Root 只写本任务板，不接管 System 正在更新的 Root 文档/治理工具。
+最新 AGENTS 第10节替代历史默认门禁：执行 standard、topology、`python3 -m pytest scripts/tests`；旧 full.sh/owner-health 已暂停（只诊断退出2），不再列为待恢复执行命令。全仓隔离编排由 Root 独立任务重建。
+
+| ID | 目标/完成条件 | Owner/角色/模型/权限 | 文件集/资源 | 依赖与交付 |
+|---|---|---|---|---|
+| P1b-D | 刷新当前态、细化 Nest 装配与关闭顺序，三设计一致 | Root / 设计 / 当前模型 / 写入 | 子仓 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR；Root仅本任务板 | 已批准大方向；设计刷新后才授权实现，Root提交 |
+| P1b-R0 | 固定 d32631f 核对 HTTP/Connect 既有行为及新方案必验矩阵 | contract_review / gpt-5.6-sol / 只读 | 子仓src/test/contract/docs；不改文件、不启动服务、不写数据库 | 与Root设计并行；报告准确路径与行为，不实现 |
+| P1b-I | Nest唯一入口/DI/生命周期，原生HTTP Controller、Guard/Filter及官方Connect同listener；旧入口删除 | capability_owner / gpt-5.6-sol / 唯一writer（P1b-D通过后授权） | 子仓src/main.ts/app.module.ts/config/database/health/http/rpc；旧bootstrap与interfaces必要删除/引用；package/lock/tsconfig/vitest/build/CI/Docker/scripts/test/必要docs；不改canonical schema/wire契约/其他仓/Root | 先失败测试、再实现；Git由Root独占；只用既有worker专属PG库与Redis5，不重建实例 |
+| P1b-R1 | 先规范审查后独立质量审查，阻断整改 | contract_review / database_review / 只读 | 实现停写快照或交付commit，禁止重置数据/服务 | Root先复核范围，再重跑本仓门禁与最新Root门禁；验收后精确路径提交 |
+
+允许保留一个注入完依赖后的 CapabilityServices 中间factory，P2/P3按业务拆除；不允许把旧createRuntime包进单provider冒充Nest原生。不得以Nest Guard默认保护middleware RPC。生成物只通过唯一脚本更新。子仓schema与wire不变，任何新增owner/契约决定先报告Root。
+
+
+### P1b-D 通过与 P1b-I 放行
+
+2026-09-08，contract_review对三设计当前差异复核通过，无blocking。Root复核ADR今日版本/生命周期证据。
+通过文件：
+- `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/TECHNICAL_DESIGN.md`
+- `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/API_CONTRACT.md`
+- `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability/docs/DATA_MODEL.md`
+未决项仍为P2安装契约/P4publisher恢复/P5拓扑切换，均不阻挡P1b。
+Root在d32631f实现基线上重新执行：pnpm test=162 passed/0 failed/0 skipped；contract:check、prisma:validate、真实schema:check exit0，日志 `/tmp/kokoro-p1b-child-baseline.log`。
+Root最新工作树静态基线：standard exit1/197 violations；topology exit0；pytest scripts/tests=72 passed/2 failed（handbook测试仍期待18示例及固定标题“参考依据”，当前实际11示例/新标题）。日志 `/tmp/kokoro-p1b-root-{standard,topology,tests}-baseline.log`。这些Root文件由其他任务修改，不在本片抢写或降低断言。
+现在只授权P1b-I任务卡文件集；沿用现有干净codex分支/shared-checkout单writer模式，不另起重复实现worktree，Root独占index/commit。capability_owner负责失败测试、实现、文件清单与验证交付，后续规范/质量审查通过后Root重跑并提交。
+
+P1b-D 设计提交：`7c9367e20de0bb1de8fc8b7b25c94a8b1b7c7ccd`；P1b-I 已续派 capability_owner，当前状态进行中。
