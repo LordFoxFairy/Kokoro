@@ -356,3 +356,11 @@ Root从Docker Hub官方registry获取node:24.20.0-bookworm-slim OCI index：sha2
 | 交付 | 先给精确模型/索引与三文档一致性结论；完成授权Schema准备后稳定manifest/hash并停写，Root审查/主仓验证/小切片提交。业务I2实施需随后明确放行，不自行越过此门 |
 
 I2验收须额外明确：回收查询有界分页，retirement grace最少1h；只有当前canonical明确退出才可写已知retirement；退役key不会被后续repair重新采用，防止“查询未引用→另一个在途提交引用”的删除竞态。删除条件版本与provider实际返回值一致，不给缺VersionId回填请求值；无版本对象保持执行唯一key且按明确identity删除。不通过更改现有user数据库或部署服务验证候选Schema。
+
+ST-I2-D设计摘要已由Root核对：retirement UUID身份、tenant/owner/blob、旧key/version/etag、retiredAt；逻辑(tenantId,blobId)关系、unique(tenantId,objectKey)、稳定(retiredAt,retirementId)分页及关系索引，未来事务显式验证owner。唯一约束仅防队列内重复退休，不能重置retiredAt；出队后仍由永不重用key协议保证安全。候选分页默认100/max1000、单轮10000有界。Root发现旧uploadId是upload:sha256共71字符，直接在现最大约483字符finalKey再追加claim UUID可能超过varchar512；要求候选key去掉冗余uploadId/fence段，保留tenant/ownerDigest/claimId/sha且证明长度，claim/fence仍由DB guard承担，不靠扩text掩盖。
+
+### ST-V Root只读快照预检（绑定2b510751，非活动I2源码）
+
+- 将完整已接收commit归档至 `/tmp/kokoro-storage-typed-lint-probe.nj8QcB`，只在临时副本增加type-aware ESLint候选配置，复用已安装依赖，不修改Storage源码/config。广泛recommendedTypeChecked preset得到40文件158诊断，其中125是require-await（多为async测试double），另有unsafe assignment/return/call/member、enum比较、unbound method等。此数量是该候选配置的诊断，不等于158个行为漏洞；ST-V须保留手册明确的unsafe/floating/misused门禁，不通过放宽它们清零。
+- pnpm exec在临时目录输出了自动frozen安装检查（Already up to date）前缀，首次JSON解析因此失败；保留原始输出并从实际ESLint JSON提取 `typed-lint-clean.json`。后续探针直接用Node执行已安装CLI，避免wrapper副作用；未安装新依赖版本或改业务文件。
+- 同一快照用当前TS5.9工具加 `--skipLibCheck false` exit2：Connect2.2声明缺全局HeadersInit、Vite5/rollup exactOptionalPropertyTypes与Worker环境类型冲突。日志typecheck-full-libs.log。该额外实验不是现有typecheck失败；Node24 types/新测试工具链/官方类型兼容要在ST-V实测，不手改node_modules或生成物来遮盖。Root TS手册要求typed lint与Node major对齐，不把未批准的额外flag冒充既有强制门禁。
