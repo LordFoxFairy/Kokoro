@@ -593,3 +593,6 @@ ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-journal.ts仅�
 
 
 外部资源进度：Root已异步询问用户后继真实S3使用的独立测试环境名称（预置versioning/ObjectLock、无默认保留期；凭据只经环境变量、不进聊天）。目前无答复；不暂停A1a源码/本地门禁，不擅自建云资源或重启Docker，也不把外部资格计为通过。
+
+
+ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-inventory.ts承接同一实际SDK/adapter的只读版本分页、current或确切version HEAD及有界字节digest观察；不创建client、不删除对象、不修改hold、不授予registry所有权。客户端生命周期仍由provider fixture唯一管理，传递相同signal和预算；同时校验KeyMarker/VersionIdMarker完整游标及进展，page上限/不完整结果/delete marker显式失败或留证。只有与请求Key完全一致的版本观察能用于登记判定，Prefix命中的相邻key不推导所有权；不复制current-only cleanup策略，不增加src/依赖/contract。此普通文件拆分将只读观察与资源写入生命周期分离，沿已批准fixtures位置及既有unit验证，无新增模块/ADR。
