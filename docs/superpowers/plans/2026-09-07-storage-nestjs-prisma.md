@@ -308,3 +308,11 @@ ST-V/依赖例外再验证：Root从33093fed复制package/lock/workspace到 `/tm
 writer发现deployment architecture把旧Docker CMD与package入口相互验证。Root不采用删除/放宽这一有效一致性断言来让源码绿：将 **Dockerfile** 的最低必要运行接线加入当前唯一writer范围（必要时仅对应.dockerignore构建上下文），仍不改CI/compose/docker-smoke运行脚本或启动Docker服务。同步Node24基础镜像、Prisma canonical/generate构建输入、dist/main.js入口，以及已由隔离实验验证的prod --no-optional依赖闭包；保留非root、HEALTHCHECK、external infra、无CLI/dev源码运行时安全断言。旧Node bootstrap的文本断言改为新Nest实际等价行为，但image/package入口一致性继续检查。
 
 Root从Docker Hub官方registry获取node:24.20.0-bookworm-slim OCI index：sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e，含linux/amd64与arm64；记录 `/tmp/kokoro-storage-node24-index.json`。docker manifest --verbose最初CDN config读取EOF，随后直接官方auth/registry只读index成功；这只是tag/digest/平台证据，不是镜像build/运行通过。Docker daemon仍无响应，完整image/外部依赖验收仍ST-V明确待验。
+
+### ST-I1d 稳定交付与审查卡（2026-09-08）
+
+- writer于08:53 UTC停止写入，基线33093fed，交付188物理路径（M71/A93/D24）。Root独立核验164文件SHA256、24删除、完整dirty集合和空index一致；manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-i1d-logs/handoff-manifest.json`，SHA256 `715e5034d256afa3f50d23d6c5a1c55aa650a3a2701480b67d581124d9765909`。尚未验收或提交。
+- writer报告真实随机PG默认并行50文件242测试、编译后NestFactory2测试通过；源码/真实PG与Redis、HTTP/TCP对象及scanner doubles明确区分。主仓仍需独立重跑。根HTTP parser与Connect JSON parser实际启动冲突已保留RED/GREEN；readiness响应预算与实际后台工作drain分离，取消不提前释放资源。
+- ST-I1d-S（P1符合性）：storage_contract_review(gpt-5.6-sol)只读上述固定manifest，按I1d卡/三文档/手册核对Nest真实owner、十RPC/HTTP契约与错误/取消/生命周期、旧路径删除与授权范围。允许读代码与日志、不写文件、不启动服务或数据库、不操作Git；输出具体文件行号/P级/证据/待验项。Root主控集成提交。
+- ST-I1d-Q（P1质量）：符合性通过后续派storage_data_review(gpt-5.6-sol)，同一固定manifest，聚焦竞态、资源清理、失败恢复、tenant/fence/事务已验收行为与测试真实性。相同只读限制，独立审查不是复述writer结论。
+- Root并行工作面：固定manifest范围审计、独立随机空库apply与全套/compiled/schema/contract/frozen验证；仅清理自身数据库与临时产物。已知13个未改文件format失败、完整dev工具链audit和真实S3/ClamAV/image/CI留ST-V，不混充本片全门禁成功。发现本片阻断问题只续派原writer明确文件范围，更新manifest后复审。
