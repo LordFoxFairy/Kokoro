@@ -564,3 +564,6 @@ ST-V2-D第二版879ab7d8已由Root独立format/Prisma validate/contract/diff及�
 | 交付 | 不stage/commit；固定精确文件hash+实际RED/GREEN/全门日志后停写，Root独立质量审查/主树验证/按路径提交；A1不抢先实施 |
 
 放置理由沿ADR0004：这是现object-store adapter readiness职责的局部修复与现unit回归，不建立新模块/抽象；missing bucket从“尝试自建”变为启动/就绪失败，部署预置职责明确。
+
+
+ST-H0继续只读调查：为避免新增已非活跃支持的Zod3生成桥，storage_contract_review比较“统一升级当前Zod4稳定版 + 受维护的zod-to-openapi稳定版”与先前方案；仅官方精确版本/peer/维护/许可证/发布时间、静态现有zod导入和API用法/潜在语义变化/最小文件范围，不安装、生成、测试或改任何文件/配置。与A0单writer独立，不构成升级授权；Root后继设计需实际回归/契约不变和依赖审核，未证明兼容前不声称可直接升级。
