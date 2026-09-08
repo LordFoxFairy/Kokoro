@@ -746,3 +746,6 @@ B-R 只读交付（storage_contract_review，f47801f 固定 HEAD，无写/测试
 
 
 A1b1-I 普通文件范围补充（实施中先报告后批准）：Complete期待的完整身份需durable摘要，现journal allowlist无对应字段。Root拒绝以phase不同把`sha256`从对象bytes摘要复用为command摘要（一个字段两种含义）；批准仅多修改现有 `test/fixtures/smoke-provider-journal.ts`，新增可选具名 `expectationDigest` allowlist字段，继续在已获权 `test/unit/smoke-provider.test.ts` 验证允许字段/secret不落盘/持久顺序和失败阻断。该文件仍只负责append-only证据，不新增restore/adopt/删除API；不新建文件或通用schema。provider保存不可变完整tenant/trusted owner/create/complete/upload/内容期待，以确定性无歧义固定字段序列的摘要在Complete前durable登记；`sha256`仍只指对象bytes，key/version/etag不占位。hash只是待完成期待的关联证据，不是删除授权；成功仍需具体Prisma proof与真实对象观察，未知保库。必要三设计/ADR说明沿现7文档范围同步，实际M上限由4代码fixture文件增为5；其余边界不变。
+
+
+A1b1-I 预算收敛裁决：批准同一已授权 `SmokeProvider.close` 增加可选 `signal`（首次close捕获后固定），与原私有最多60秒signal组合；普通无参行为不变。capability停止确认后从同一60秒cleanup预算依次cover resolveCompletions/版本recovery/close，禁止每阶段刷新60秒叠加为120秒。预算耗尽/预先取消即使空registry仍非零保库，零新增对象/hold写；仍尝试释放自有SDK/journal/Prisma等独立句柄，不以传入已abort的signal为由跳过release调用。新增signal仅能收紧原预算，不改变preserveObjects首次模式或给后续close重启删除机会。对应取消/边界单测在原已授权文件，必要设计说明仍现7文档，不新增路径。
