@@ -473,3 +473,25 @@ ST-V1-I另特批docs/ACCEPTANCE_AND_RISKS.md仅新版Prettier格式、无状态�
 - 2026-09-08T11:32:57.744982Z固定，基线cd66be5+50物理路径（45M/5A、14标format-only）；manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-v1-logs/handoff-manifest.json` SHA256 `dca94012307798227861fbd203e4c586737b96f3530a65d7ca25b302af4221cd`。Root逐hash/原始hash/dirty/空index/HEAD核验相符，writer停写。
 - storage_contract_review(gpt-5.6-sol)先只读符合性：ADR0003/精确版本/两个scope/1440严格无豁免/六typed规则真实正反例与9特批例外/Vitest5语义/原API数据不变/format-only范围。放行后storage_data_review(gpt-5.6-sol)质量审查生产和测试类型修正是否改变Promise/abort/竞态、配置loader真实回归、cold/frozen/audit证据及门禁有效性。两者不写/安装/测试/Git/基础设施，绑定manifest；Root同时保留主树独立验证。
 - writer两新库347+compiled2、完整format/lint/typecheck/build/schema/contract/生成隔离和完整443 audit0为旁证；独立生产全新store24.3s、139audit0、编译真实查询通过，完整隔离cold起点180s超时后同store68s续跑成功，明确非单次全冷成功。尚未Root接收或提交。50路径不含Schema/generated/Proto/CI/Docker功能，全部自建库与安装子进程已清理；ST-V2仍独立未验。
+
+
+ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 storage_contract_review 与质量 storage_data_review 均绑定 dca94012 manifest、无可行动 P0/P1/P2，未自行安装/测试/写入。Root `/tmp/kokoro-storage-main-v1-tooling.cPd5W1` 在原主树默认并行两独立随机主库各 63 文件/347 pass/0 skip，compiled 2、format/lint/typecheck/build/frozen/完整 audit 443依赖0告警、三个自有空库 schema apply/validate/contract→generate→contract/生成无变更、独立CLI两次0、50文件hash/diff检查通过，所有自有库清理。Root另逐字验证14个format-only文件等于 Prettier3.9.6 对原基线的输出。另开独立 HOME/XDG/空store 的完整安装和生产安装闭包，日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v1-closure.d3deawub`，仍执行中；不把主树缓存frozen替代cold结果。
+
+本轮 Root 治理实跑 `/tmp/kokoro-storage-root-governance.BgzFGJ`：standard exit1/208条（Storage24），topology exit0，scripts/tests 82 pass/2 fail（既有手册示例数/参考依据标题断言）。Storage记录包含旧SQL canonical、src/modules拓扑、generated Prisma被误判wire/config、旧strictDepBuilds/精确engine和编译策略等与当前手册/批准ADR不一致项，以及HTTP契约待查项，不能直接按旧checker恢复SQL/旧层或手改generated；原始失败保留，未宣称全仓门绿，Root通用checker修订不在本Storage写入范围。只读Docker `_ping` 3秒仍超时，未重启。
+
+### ST-V2-D 下一片设计准备（只读，尚未放行写入）
+
+| 项 | 决定/范围 |
+|---|---|
+| Owner | Storage test/deployment；不新增服务、业务writer、定时器或跨仓owner |
+| 当前事实 | V1稳定50路径尚待提交；旧production-runtime测试绕过返回签名URL并直接SQL清理，docker-smoke按固定名称先删容器，CI/compose默认共享资源且依赖陈旧，均未实际运行 |
+| 目标职责 | 分两小片：A真实RPC返回URL上传/下载与外部S3资格；B唯一run资源隔离、CI/RC和扫描。代码通过与真实provider/镜像通过分开记录 |
+| 目录比较 | 采用现有 test/smoke、test/fixtures 与 scripts，各自测试/资源编排职责；不放src业务Service或新顶层e2e工程，避免生产附带测试和第二实现 |
+| 粒度 | 优先改现有测试；多个smoke共享的有界资源生命周期可在既有fixtures添普通文件，不搭通用框架；新具体文件集等只读盘点后确定 |
+| 依赖 | 测试消费现有owner generated client、Prisma和AWS官方SDK；应用仍Nest构建入口，禁止SQL CRUD绕过、修改I2事务语义或新开PG/Redis实例 |
+| 数据/API | Proto/schema不变；每run数据库、tenant、bucket/object版本和容器ID须显式owned；共享实例只复用，清理仅成功创建的资源，AlreadyExists不得据此认领 |
+| Provider决定 | 不默认换Ceph或启动已归档MinIO；显式外部配置资格测试缺参非零失败，不skip报绿。VersionId+IfMatch错误412/保留对象、正确仅删指定版本、ObjectLock失败保留retirement必须实测；不支持则资格失败，不加不安全HEAD-delete fallback |
+| 删除项 | 按片删除SQL取objectKey/手写清理、绕过签名URL、固定container预清理、固定compose down和旧默认凭据资源；不预先批量改配置 |
+| 验证 | 各片RED/GREEN与全默认测试/typed/构建/契约schema保护；模拟命令可验证隔离失败恢复，但不冒充真实S3/ClamAV/OCI/部署证据；Docker API当前无响应为后继真实执行限制 |
+
+准备负责人 storage_implementation（gpt-6-astra）仅只读盘点最小两片文件集和复用入口，不写/安装/服务/DB/Git；Root保留当前V1验收关键路径。V1提交后才补三设计文档/ADR并通过第8.1门，再按单writer放行实现。
