@@ -527,3 +527,6 @@ ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 st
 ST-V2-D设计细化裁决：Root于2026-09-08重新核对[AWS DeleteObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html)、[PutObjectLegalHold](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html)与[ObjectLock管理](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html)。fixture bucket预检查需versioning/ObjectLock已启用且无DefaultRetention；不得自动设置bucket不可逆属性。针对本run确切version读回状态、设置legal hold与清理，未知设置结果不冒称确认成功。只登记的确切key写入意图可用于有界恢复该key未知响应生成版本；未知Complete final candidate仍只报告，不从tenant prefix推导删除授权。
 
 批准未来A最小范围补充（尚未代码放行）：test/fixtures/smoke-provider.schema.ts单独配置解析；test/fixtures/smoke-provider.ts仅对象版本/自设hold生命周期；storage-roundtrip.ts仅RPC返回URL链。现有test/fixtures/isolated-prisma.ts增加显式preserveDatabase选项及对应unit：默认close仍删自己成功创建的库；外部cleanup失败保留库/retirement证据但关闭连接，不认领任意既有数据库，重复close与部分init失败须验证。保留资源必须非零并打印非敏感DB/key/version和后续owner，不称全清。三设计仍只按既有10文档范围执行。
+
+
+ST-H0只读后继调查卡：storage_contract_review(gpt-5.6-sol)在Storage030d2c1源码基线调查Library HTTP机器契约缺口；只读src/transport、src/library、现有runtime schema和contract生成入口、手册与API_CONTRACT。目标列出现有唯一请求/响应/错误事实源、可行的两种单向生成方式（官方Nest/OpenAPI或成熟schema生成器）及最小影响/是否新核心依赖；若给版本/兼容结论先核对官方来源。本任务不改任何文件、安装、测试、服务、DB或Git，不扩V2A/B契约，不伪称当前无机器契约为已满足。允许只读研究与V2文档writer并行，Root保留总体裁决与提交；交付建议/证据/未决，由Root后续单卡才放行。
