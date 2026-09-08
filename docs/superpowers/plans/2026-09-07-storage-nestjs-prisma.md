@@ -648,3 +648,22 @@ A1b-R其余只读交付已保留：未来storage-roundtrip、smoke-storage-metad
 
 
 S0-D固定质量复查任务：storage_data_review只读839c9a9基线+7M manifest 3dcae37ca32c30baf11509004175c9d1cd607e37f127622c6a6c5d88d6575917；核对三设计/ADR与上述Root裁决、当前源码边界，不写/安装/生成/测试/DB/服务/Git。Root已独立七文档format/Prisma validate/contract/diff及251范围外hash通过，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-s0-design.sy5ybfug；该结果不证明S0已实现。质量结论绑定manifest，Root收结论后按路径提交再派S0-I。
+
+
+### S0-D已验收 / ST-V2-S0-I实施放行
+
+S0-D提交 `7735511c66d7ac1f92fef57796d4869f4ed3b8dc`，7M逐原始/staged/committed hash和路径核验、提交后clean；Root三设计符合性及storage_data_review独立设计质量无P0/P1/P2。Root七文档format/Prisma validate/contract/diff及251范围外hash不变通过，未连DB；实施/真实provider尚未计绿。
+
+| 项 | ST-V2-S0-I任务卡 |
+|---|---|
+| 任务/owner | P1；uploads在事务提交后按确认的staging版本条件清理，解除A1b正常marker前置；不改其他owner |
+| Agent/基线 | storage_implementation(gpt-6-astra)唯一Storage writer，Root审查/主树复验/Git，后继storage_data_review只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，7735511c66d7ac1f92fef57796d4869f4ed3b8dc，clean |
+| 允许代码 | 仅8现有文件：src/uploads/uploads.service.ts；src/integrations/object-store/object-store.types.ts、validation.ts、aws-sdk.ts、local.ts；test/unit/object-store.test.ts；test/integration/prisma-command-lifecycle.test.ts、object-retirement.test.ts |
+| 文档 | S0-D七文档仅当前实施/实际证据及必要解释。新普通文件或其他测试确实需改先报告；不机械修改所有文件，不新模块/表/框架 |
+| 固定行为 | 完整沿S0-D三设计/ADR。合法uploads|final exact域；staging adapter也拒绝缺/空/字符串null版本，不只依赖调用者自律；source原ETag+VersionId，final可选version协议保留。Complete scan source，无新HEAD；Abort提交后HEAD+DELETE共享10秒原signal组合预算，finally清timer；真实pending/原deadline-drain不丢 |
+| 事务/重放 | 网络不进入数据库事务；提交前失败零清理；事务成功后的missing/auth/412/cleanup timeout不改变receipt和正常返回，原request取消仍传播。同command receipt重放和新command观察到已完成/aborted的replayed结果均不再次清理 |
+| 保护/删除 | promoter/download final guard、retirement tenant/final+全snapshot+current引用、Schema/Proto/generated/依赖/lease/业务事务不动。删除两处生产key-only调用；旧smoke调用及AwsSdk剩余方法A1b再闭环，Local损坏模拟delete保留 |
+| 禁止 | A1b fixtures/三smoke/zip/runtime接线、scripts/CI/Docker/compose/package/lock、新依赖、其余src、其他owner；不访问外部S3/ClamAV/云/Docker，不重启共享PG/Redis |
+| 验证/交付 | 先RED旧实现，GREEN SDK请求真实命令+Local及真实新库Prisma事务/receipt/覆盖/版本缺失/取消/共享预算回归；完整format/typed/typecheck/build/defaultparallel424+新增、compiled2、官方亲建空库apply/catalog/drift、validate/contract→generate→contract及保护hash；复用PG/Redis，只清亲建资源。固定manifest+RED/GREEN/全部日志停写，无Git写入，Root独立审查复验后精确提交 |
+
+不把S0称为完整staging历史GC，无版本bucket业务可继续但staging保留；A1b/B/H0与真实provider仍待后继。
