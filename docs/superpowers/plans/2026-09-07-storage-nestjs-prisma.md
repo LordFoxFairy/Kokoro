@@ -503,3 +503,22 @@ ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 st
 - Root真正全冷隔离安装单次264.0秒成功：全新HOME/XDG/store、原1440/strict/allowBuilds、388包及官方三个postinstall完成，下载慢/重试原输出完整保留；冷快照typecheck/build通过。与worker首次180秒超时+续跑事实分别记录。独立生产另一空store单次88.2秒成功，`--prod --no-optional --ignore-scripts --frozen-lockfile`实际139依赖/0告警，plain Node加载Nest owner与ReconcileObjectsService并真实Prisma retirement count0，CLI/TS/tsx/Vitest不可解析。日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v1-closure.d3deawub`。
 - Root生产probe首次把reconcile-objects.service写成reconciliation.service，真实报ERR_MODULE_NOT_FOUND（prod-query.log）且自有DB已清理；只纠正临时probe导入路径后另建新库再次官方apply/query通过（prod-query-corrected.log），未改源码、断言或依赖闭包。该失败属于Root harness接线错误，不计生产缺陷。所有本次自有DB已删除，最终50hash不变。
 - 全部已验功能：Prisma数据owner、实际Nest运行与取消/drain、canonical复用/repair CAS/退休GC、兼容工具链typed门。未闭环：V2实际S3条件版本/ObjectLock、ClamAV、OCI/RC/CI、内部HTTP机器契约、容量/SLO及Root全仓checker一致性。总目标保持active，不宣称完整生产验收。
+
+
+### ST-V2-D 文档门任务卡（放行文档，未放行业务/测试改写）
+
+| 项 | 决定 |
+|---|---|
+| 任务/优先级 | P1；确定两个最小可审查切片：A返回签名URL真实链及版本/锁定资格，B部署资源拥有权、剩余smoke与CI/RC；三设计一致后Root放行 |
+| Owner/Agent | kokoro-storage；storage_implementation(gpt-6-astra)唯一writer，Root架构/审查/提交；两个reviewer后继只读 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，030d2c1fb1d3d09117757e5592eee5a1a65e067e，clean |
+| 允许路径 | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md、INDEX.md、ADR/README.md；新增docs/ADR/0004-isolated-provider-qualification.md；AGENTS.md只修已验收状态入口，不复制规则 |
+| 排除 | src/test/scripts/contract/prisma/generated/package/lock/CI/Docker/compose全部不得改；其他仓不在范围；Root计划只由Root编辑 |
+| 固定决定 | 承接上表；不更换默认provider、不默认启动MinIO或重型Ceph；ClamAV候选digest仅设计采用而未实跑。外部资格测试显式配置独立fixture bucket和可撤销自有version legal hold，缺失配置或不支持412条件删除即失败；不自动创建bucket或开启用户bucket versioning/ObjectLock、不设置compliance retention、不绕过用户锁、不修改I2失败保留语义 |
+| 所有权 | bucket本身外部提供、只读检查所需能力，不认领/删除bucket；写入前每run高熵唯一tenant/key prefix，登记自己创建的确切key/version；只解除本测试亲自设置的legal hold。创建/清理失败明确非零并保留资源清单，单项失败继续其他资源释放。自建DB由创建者删除，不以名称前缀认领既有DB；PG/Redis本地复用 |
+| A目标文件集 | 修改test/smoke/production-runtime.e2e.test.ts、capability-package.e2e.test.ts、s3.integration.test.ts；必要共享fixture smoke-provider.ts（配置/资源生命周期）与storage-roundtrip.ts（真实RPC URL链）和对应unit；若职责需要再拆普通文件先报告，不在一文件混schema/type/常量/fixture编排；依赖/Schema/Proto不变 |
+| B边界 | 后继单卡精确授权docker-smoke/compose/CI/release、scanner/infra smoke、deployment/quality架构门及命令double测试。一个token双端传递、可达签名endpoint、容器ID创建登记、随机端口和有界逆序cleanup；同OCI产物scan+smoke之后发布。GitHub job自身PG/Redis不等同本地共享实例，不先重启当前Docker |
+| 文档门验证 | 文档format/diff、Prisma validate、contract check及原始Schema/generated/Proto无变化；给三份绝对路径、commit、未决执行项和对应命令。无DB/服务/镜像/云操作；先固定manifest停写，Root审查提交后才A实施 |
+| 交付 | Root唯一Git index/commit负责人；writer交精确路径/hash与文档门证据。当前S3/ClamAV/ObjectLock/OCI/SLO未验，HTTP机器契约单独后继处理，不在A/B偷偷扩契约 |
+
+只读盘点还确认docker-smoke容器与RPC客户端默认token不同、生产URL默认files.example.test；旧测试SQL取key+SDK PUT恰会绕过URL可达性。A须删旁路，B须同一token与真实可达public endpoint；现有capability-package旧PUT重放不改变final字节断言应保留。组件scanner直接SDK PUT属于fixture不是生产旁路，SELECT1属于探针不是业务SQL CRUD；避免机械误删有效职责。
