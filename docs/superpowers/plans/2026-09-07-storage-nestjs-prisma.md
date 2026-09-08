@@ -530,3 +530,12 @@ ST-V2-D设计细化裁决：Root于2026-09-08重新核对[AWS DeleteObject](http
 
 
 ST-H0只读后继调查卡：storage_contract_review(gpt-5.6-sol)在Storage030d2c1源码基线调查Library HTTP机器契约缺口；只读src/transport、src/library、现有runtime schema和contract生成入口、手册与API_CONTRACT。目标列出现有唯一请求/响应/错误事实源、可行的两种单向生成方式（官方Nest/OpenAPI或成熟schema生成器）及最小影响/是否新核心依赖；若给版本/兼容结论先核对官方来源。本任务不改任何文件、安装、测试、服务、DB或Git，不扩V2A/B契约，不伪称当前无机器契约为已满足。允许只读研究与V2文档writer并行，Root保留总体裁决与提交；交付建议/证据/未决，由Root后续单卡才放行。
+
+
+ST-V2-D 首次固定10文档manifest ffff95def91882fdfae2809208cfa1ccac39ba37957a3a92f3741f3d718538d4（030d2c1基线）已收到；Root符合性审查发现运行时readiness自动建桶与方案只读边界矛盾，故未提交/未放行A。当前aws-sdk.ts ensureReady会HeadBucket 404后CreateBucket并吞AlreadyOwnedByYou/AlreadyExists，不能仅凭fixture凭据预期无建桶权限保证无副作用。
+
+Root明确A定点扩展：src/integrations/object-store/aws-sdk.ts的ensureReady只保留HeadBucket，删除自动CreateBucket与Already*成功分支；环境owner预置桶，missing/auth/timeout保持readiness失败及原signal/cause/Nest生命周期，不新增配置开关/兼容fallback，不改对象promote/上传/事务/CAS/retirement。test/unit/object-store.test.ts新增SDK调用RED/GREEN，证明404/NoSuchBucket/403/timeout/abort零建桶、成功仅HEAD、init失败仍destroy。先由writer在原10文档范围记录行为改变/删除项/测试范围并重交manifest，此时仍禁止源码改动。
+
+ADR凭据澄清：当前显式KOKORO_OBJECT_STORE AK/SK客户端无sessionToken字段；临时凭据仅指aws profile官方默认链保留AWS_SESSION_TOKEN，不宣称custom显式AK/SK也支持。A不扩生产凭据schema，fixture和真实运行必须同来源，禁止混用导致资格通过而runtime丢token。
+
+ST-H0调查已返回，尚未采用：当前Library请求是URL解析、响应mapper/envelope而非完整运行时schema，确实缺机器OpenAPI。官方Swagger11.4.6 peers仅Nest11，不可直接称兼容本仓Nest12；Zod3兼容生成器zod-to-openapi7.3.4已非活跃支持线，不能只因能生成就批准新核心依赖。后继应比较批准升级Zod及受维护生成器/等待兼容稳定Nest companion的范围和退出，不能无审查引入遗留桥；不混本V2A/B，Proto保持。只读报告官方来源归后继设计输入，当前不安装/试验/改HTTP。
