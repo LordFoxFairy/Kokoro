@@ -316,3 +316,43 @@ Root从Docker Hub官方registry获取node:24.20.0-bookworm-slim OCI index：sha2
 - ST-I1d-S（P1符合性）：storage_contract_review(gpt-5.6-sol)只读上述固定manifest，按I1d卡/三文档/手册核对Nest真实owner、十RPC/HTTP契约与错误/取消/生命周期、旧路径删除与授权范围。允许读代码与日志、不写文件、不启动服务或数据库、不操作Git；输出具体文件行号/P级/证据/待验项。Root主控集成提交。
 - ST-I1d-Q（P1质量）：符合性通过后续派storage_data_review(gpt-5.6-sol)，同一固定manifest，聚焦竞态、资源清理、失败恢复、tenant/fence/事务已验收行为与测试真实性。相同只读限制，独立审查不是复述writer结论。
 - Root并行工作面：固定manifest范围审计、独立随机空库apply与全套/compiled/schema/contract/frozen验证；仅清理自身数据库与临时产物。已知13个未改文件format失败、完整dev工具链audit和真实S3/ClamAV/image/CI留ST-V，不混充本片全门禁成功。发现本片阻断问题只续派原writer明确文件范围，更新manifest后复审。
+
+### ST-I1d-R 符合性补修卡
+
+- Root在 `/tmp/kokoro-storage-main-nest-verify.7pwGV5` 独立随机空库复跑frozen/apply/prisma validate/lint/typecheck/default-parallel test/build/compiled/contract→generate→contract通过：50文件242测试、compiled2测试；13历史format失败。数据库已drop，复跑后188 manifest全hash不变，schema/contract/generated与基线一致。仍未放行，因为审查发现有效缺口。
+- 符合性审查绑定715e5034：P1旧docker-smoke仍检查已删除dist/bootstrap/main.js；P1缺失/空白caller request-id时hook新UUID与RPC空metadata/detail不一致；P2contract README旧facade路径。Root额外确认library controller也生成第二UUID，导致日志与HTTP header/meta不同，归入同一correlation修复。
+- 唯一writer仍storage_implementation(gpt-6-astra)，基线33093fed+188稳定manifest，Root仅Git负责人。允许修改configure-transport、storage-rpc.service、LibraryController以及同transport职责的普通correlation context文件，必要http-context接线；相关unit/contract/真实listener/compiled/architecture tests；API_CONTRACT/CURRENT/ACCEPTANCE所需证据。特批scripts/docker-smoke.sh仅修编译入口literal及contract/README.md仅修真实facade链接，不改Proto/provenance/generated/Schema；不执行仍有共享清理风险的docker-smoke，不扩大到ST-V。
+- 行为：每个请求仅有一份transport correlation，响应header/RPCmetadata/ErrorDetail/HTTPmeta/结构化日志一致；caller原header缺失/空白仍按原认证契约拒绝，禁止把生成ID回填身份凭证来绕过校验。优先测试缺失/空白两条真实listener RED与现有有效ID保留；复用官方Connect contextValues与Fastify请求上下文，不新造第二身份系统。
+- 先RED/GREEN修两P1及P2，再真实PG全套、compiled、lint/typecheck/build/contract与精确新增manifest。停写→原符合性审查员复审→质量审查→Root重新独立验证后提交。本片以外的固定容器名/无条件rm、完整工具链/外部依赖继续待ST-V。
+
+### ST-I1d-Q 最小HTTP边界补修
+
+- I1d-R稳定manifest变为192物理路径，SHA256 `ef609c0ca24528c984f2b7321c3e37980783ce8e28ad4f21544cdde15ebea1c9`，Root核验原188仅14授权文件变化，符合性复审已放行。Root `/tmp/kokoro-storage-main-nest-final.q5PFKB` 新随机空库248测试+compiled2测试、lint/typecheck/build/validate/apply/contract/frozen通过，隔离最终prod/no-optional安装audit138依赖0漏洞、无CLI/TS/tsx/Vitest和编译入口import/真实Prisma查询通过；库已drop，manifest复验不变；format仍13失败。
+- 质量审查storage_data_review发现P1：library非GET的畸形JSON在Nest parser先返回默认400，绕过API已定405/Allow/envelope；现compiled测试400断言是缺口不是契约授权。P2：结构化日志将全部4xx记success。Root接受两项并维持未放行。
+- 唯一writer storage_implementation(gpt-6-astra)，固定192manifest为起点；只允许configure-transport/LibraryController/必要同transport职责普通HTTP方法门、相关真实listener/compiled/日志测试和API/CURRENT证据。将精确library路由非GET在body parsing前返回同correlation的405+Allow:GET+Storage envelope，不关闭Nest根JSON parser、不改变RPC parser子scope、不放宽认证、不建自制路由器。测试含畸形body、正常body/query与其他路由不受影响，原真正根parser生效断言须保留。4xx及5xx日志明确failure，至少401/405覆盖。
+- 先RED/GREEN后完整真实新空库/compiled/lint/typecheck/build/contract；固定manifest停写→原质量审查员复审（涉及contract变化再由符合性复核）→Root重跑并提交。禁止扩大I2/STV或运行docker-smoke；Root仍Git负责人。
+
+### ST-I1d 已接收：2b5107517a680adc41ef5eb6faae6d20898aed3c
+
+- 最终193物理路径manifest `9d130435347d6853cba588377df606c81771f469dc19f19393a774635258660d`，相对192仅7授权文件；独立质量与增量符合性均放行。Root `/tmp/kokoro-storage-main-nest-accepted.QbdvoI` 再建随机空库，frozen/validate/apply/lint/typecheck/build/contract通过，默认并行52文件256测试、实际编译后NestFactory2测试通过，无skip。数据库已drop。
+- Root以set-e与--no-renames执行精确暂存、193路径/逐blob hash/空index基线审核、cached diff check再提交；commit后再次核验193路径和全部已提交blob等于验收manifest，工作树clean。Git显示191条变更是两个rename折叠，不是缺文件。完整commit diff --check通过。
+- Prisma数据与Nest feature/runtime已正式切换，旧Node入口与全局五目录退出。当前代码SHA为2b510751，标题refactor(storage): run owner features on NestJS。之前两轮Root旁证和prod闭包验证见上文；不冒称真实S3/ClamAV/image已验收。
+- 尚未闭环：I2 canonical健康复用/repair/退役安全；ST-V 13历史format、完整dev依赖审计/工具链、隔离部署脚本/CI与真实provider/image/SLO。目标继续active。
+
+### ST-I2-D 设计与Schema准备卡（不授权业务重写）
+
+| 项 | 边界 |
+|---|---|
+| 任务 | P1，对象健康复用、确定repair与有证据的退役回收，先通过三文档/Schema门 |
+| Owner/执行 | Storage assets/blob生命周期；storage_implementation(gpt-6-astra)唯一writer，Root架构/提交，原审查员只读 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；2b5107517a680adc41ef5eb6faae6d20898aed3c，clean |
+| 设计依据 | 本计划ST-I2 Root设计裁决草案与本轮公开放置表；Root TS/SQL手册及Storage三设计文档。选择既有assets业务owner、integrations只封装provider；不增一级模块/服务 |
+| 允许文件 | TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE、必要INDEX/ADR README、一个新ADR解释canonical复用/退役方案；prisma/schema.prisma、官方generated/prisma；apply-schema与schema-bootstrap/catalog/architecture的最低必要7表接线。普通其他文件需求先报告，不扩写 |
+| 排除 | 业务Service/store/SDK/CLI回收行为重写（门通过后另卡）；Proto/provenance/generated proto；其他仓/Root；CI/Docker/compose/共享服务 |
+| Schema | 六表→新增一个已知canonical退休metadata表（不建通用job/outbox/多态垃圾桶）；明确tenant/owner/blob逻辑归属、旧key/version/etag、UTC retiredAt、唯一身份和按退休时间+稳定cursor的有界查询索引，无FK。API仍十RPC不变。不能靠object LastModified充退休时间；只定义本owner真实用例所需字段/索引 |
+| 事务/失败 | healthy原canonical复用；确定missing/mismatch才完整snapshot CAS，旧identity退役记录同事务写入。provider不确定错误失败不改业务完成事实；CAS败者重读并实际检查赢家；candidate key加claimId保证执行独占；删除精确版本，失败保留记录；未知final orphan只report，不立即删除 |
+| 文档门 | 三文档明确当前2b510751/目标I2、状态机/事务/无FK完整性/retention/查询/API错误与幂等；新ADR比较退役表A与全部未知对象永久保留B并记录Root选择A；不把Schema准备称业务已完成 |
+| 验证 | 先验证6→7表catalog门能捕捉差异，再官方prisma validate/generate、独立随机空库apply+catalog无FK+drift、现有256与compiled2/contract/build。只调整准确表清单，不改为宽泛>=6；不手写DDL/历史migration/重置共享库 |
+| 交付 | 先给精确模型/索引与三文档一致性结论；完成授权Schema准备后稳定manifest/hash并停写，Root审查/主仓验证/小切片提交。业务I2实施需随后明确放行，不自行越过此门 |
+
+I2验收须额外明确：回收查询有界分页，retirement grace最少1h；只有当前canonical明确退出才可写已知retirement；退役key不会被后续repair重新采用，防止“查询未引用→另一个在途提交引用”的删除竞态。删除条件版本与provider实际返回值一致，不给缺VersionId回填请求值；无版本对象保持执行唯一key且按明确identity删除。不通过更改现有user数据库或部署服务验证候选Schema。
