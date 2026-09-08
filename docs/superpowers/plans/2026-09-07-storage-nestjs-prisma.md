@@ -88,7 +88,7 @@ pnpm smoke:scanner
 pnpm smoke:production-runtime
 ```
 
-Root 全局门禁：`python3 scripts/verify-ten-repository-standard.py`、`./scripts/verify-ten-repository-full.sh`。先审查脚本副作用及并行资源；全局失败须区分 Storage 与其他正在推进的 owner，不放宽门禁。
+Root 当前默认门禁：`python3 scripts/verify-ten-repository-standard.py`、`python3 scripts/verify-repository-topology.py`、`python3 -m pytest scripts/tests`。旧full/owner-health runner已暂停，退出2且不接触基础设施；不执行或把它计入可执行门禁。全局失败区分Storage与其他owner，不放宽门禁。
 
 `contract:check` 会生成文件；须在明确生成物归属/基线后执行，禁止借生成覆盖已有工作。构建/测试只能证明当时工作树；最终证据需绑定提交与主控复验。
 
@@ -160,3 +160,37 @@ ST-I1/I2/I3文件集在前置验证后依业务实际拆分，禁止将此待办
 - 清理：主控自己的随机库已drop，worker两个实验库名称查无残留；未动共享role/Redis或启动新服务。
 - 后续owner：Root完成原37+5文件交接确认，再向Storage唯一writer派发正式Schema/测试切片；临时实验代码不直接视为已审查生产实现。
 - 证据提交：Storage `ec10e111a2dab74e9e0c9754dccbdcbd261d3288`，仅CURRENT与DATA_MODEL两份文档。storage_contract_review对稳定日志/文档独立复审无阻断；主控diff检查、三份文档链接检查通过，原tracked hash和5个新增文件hash逐项未变。
+
+## 2026-09-08 目标启动与正式写入卡（优先于上方历史待交接状态）
+
+用户在上一轮明确列出的交接/迁移下一步之后要求“设置目标，推进”。本任务据此接收现有Storage相关工作，不再重复询问常规接收权限。其他owner与Root共享治理修改不属本任务。
+
+- 当前goal：完成Storage NestJS+Prisma正式迁移、可靠性与真实验收；不以隔离实验结束。
+- 接收commit：Storage `93f7dd009ae65c5a2d300d2da555af16e3777cd5`，42文件原样保存。已知缺陷仍保留在CURRENT/计划中，接收不等于发布验收。
+- 本轮复跑：lint/typecheck/build/contract:check、generated drift、独立空库SQL apply、PG/Redis test全集全部exit0，30文件119测试无跳过。日志 `/tmp/kokoro-storage-goal-baseline.rejrKJ`；接收前业务hash与上一轮相同。测试随机库已清理。
+- 单一writer使用现有Storage独立checkout与codex分支，避免移动已接收成果；Root只写Root任务表、串行操作Git并审查，不与writer并写Storage。
+- 设计门：TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL及ADR在ec10e11完成独立复审；Schema候选已由官方validate/generate/db push+catalog在空库复验。允许原子替换正式schema/运行时；目标行为的RED/GREEN是实现验收门，不构成等待实现后才允许实现的循环条件。
+- 三份路径：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。
+- 未决项：正式并发/失败恢复、Nest单listener/DI/取消退出、真实ObjectStore/ClamAV、工程/供应链门禁。由以下顺序推进，无新增owner或wire breaking。
+
+### ST-I1 / P0：核心运行时与唯一数据栈原子切换
+
+| 项 | 授权与验收 |
+|---|---|
+| Owner | kokoro-storage；storage_data_review续任实现负责人，gpt-5.6-sol；Root负责集成，storage_contract_review后续只读审查 |
+| 基线 | Storage独立checkout，codex/production-closure-docs，93f7dd0；本卡登记后新增的文档门提交一并作为基线 |
+| 目标 | 已有十RPC+library完整运行在Nest官方FastifyAdapter/Connect插件和Prisma唯一数据栈；不是旧服务外包Nest外壳 |
+| 放置 | 直接沿用TECHNICAL_DESIGN §2放置表与目标目录；feature service拥有用例，数据库provider只管理连接。淘汰全局四层/全能Repository/自制ORM，必要复杂事务组件在实际owner内 |
+| 允许写入 | package.json、pnpm-lock.yaml、pnpm-workspace.yaml、tsconfig*.json、eslint.config.js、vitest.config.*、.gitignore；prisma/schema.prisma、prisma.config.ts；src/main.ts、app.module.ts、config、database、uploads、assets、artifacts、integrations、common、transport、clients、generated/prisma；删除已替代src/bootstrap、application、domain、infrastructure、interfaces与database/schema.sql并同步所有引用；test现有各主题套件和对应新回归；scripts/apply-schema.ts、reconcile-objects.ts及专用schema检查；README、INDEX、AGENTS、docs中受影响的Storage入口/设计/验收/runbook |
+| 排除 | Root全部文件、其他owner、contract/proto与provenance、generated/proto手工编辑、.github/CI、Docker/compose与docker-smoke脚本（后续门禁切片）；不新增public API，不改Proto字段 |
+| 数据 | 全六表一次转换避免可编辑schema双轨；Prisma7.10.0配套client/adapter。tenant/owner、claim/fence、幂等/rollback保留；fingerprint与receipt envelope随schema原子落地，CreateUpload仅存稳定ID并每次重签/终态拒绝 |
+| 安全 | Connect插件自有认证/错误/取消边界，HTTP共用可信身份验证；错误detail/metadata一致；业务校验拒绝unchecked跨tenant引用；不得以类型断言/测试double模拟ORM完整性 |
+| 生命周期 | Nest负责实例与启动/关闭，只有一个listener与signal owner；bootstrap无自动apply；依赖超时/取消有界，无业务SQL或provider原文泄漏 |
+| 验证 | 先RED：fingerprint变payload、busy/detail、稳定receipt、Prisma单schema/旧路径退出、DI/单listener。GREEN：lint/typecheck/test/build/contract、真实PG并发/回滚、空库apply且非空拒绝、catalog无FK/native enum、生成drift；不删旧行为断言以凑绿色 |
+| 资源 | 复用PG5432/Redis6379，必须自身随机库；不得启动共享服务/改role/reset他人库/flush Redis。可写任务/tmp日志；测试配置显式schema/search_path |
+| 交付 | 不操作Git index/commit/branch；交付稳定文件清单和RED/GREEN日志后停止写入，Root按符合性→质量→主仓验证提交 |
+| 状态 | 已派发；核心通过后再派ST-I2对象完整性/恢复与ST-V工程/真实smoke，不提前声称目标完成 |
+
+### ST-E / P1：真实依赖验收准备（并行只读）
+
+storage_contract_review（gpt-5.6-sol）读取现有ObjectStore/ClamAV/production smoke与运行手册，绑定93f7dd0提出隔离资源/命令、危险清理点和缺失断言。只读Storage源码与公开本机进程/端口信息；不编辑、不启动服务、不接触secret、不做Git写入。Root据报告准备资源/后续门禁，不重复worker实现。
