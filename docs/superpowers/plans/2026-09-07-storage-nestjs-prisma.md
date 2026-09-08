@@ -269,3 +269,18 @@ ST-I1d生命周期预审裁决：本地Nest12真实close顺序为OnModuleDestroy
 ST-I1Q证据纠偏：完整ArtifactsStore双PrismaService/同identity predicate-read barrier在PostgreSQL18.4实际竞争产生P2034，已有有限事务重试正确实现同值replay/异值conflict；没有本路径P2002可重复反例。Root与质量审查员共同把原Artifact P1降为P2测试缺口，并保留两条真实并发回归，不增加生产重试分类。无prior read的单独checked create确可产生P2002但不是该用例路径，只保留观察日志，不冒称复现漏洞。确认P1只剩receipt损坏读取/接管/执行/完成/释放边界，现writer报告修复后216测试，待稳定复审。
 
 ST-I1Q主仓最终验证未放行：89文件hash/精确dirty路径集合全部匹配，质量复审通过后，Root在独立空库默认并行全suite得到216pass/2fail（artifact两例事务attempts期望>=2实际1）；日志 `/tmp/kokoro-storage-main-i1q.VFvarG`。prisma validate/apply、lint/typecheck通过，test失败后build/contract/compiled/format因set-e未执行；自建库已drop，没有提交。次数断言先于业务error输出，现不能判定P2002/其他适配器错误；Root重新授权原writer只在实际完整路径加诊断并复现，不删断言凑绿，按真实error形态裁决。先前单跑P2034结论不覆盖该全并行失败。
+
+ST-I1d启动补充：配置/DI factory只构造typed配置与lazy资源，不在NestFactory.create阶段并发建立外部连接（该阶段失败可能拿不到app供close）；外部就绪操作在生命周期hook，bootstrap拿到app后对init/listen失败执行同一关闭路径。每个资源provider必须处理自身部分初始化失败，测试覆盖连接中失败/成功资源随后释放；不默认Nest会回滚任意异步factory的副作用。保持官方Module/Provider生命周期，不引入自制DI/第二runtime。
+
+### ST-I1a/b/c 已接收：33093fed09d28e9fc2de9292d47e7ec2cbb30e26
+
+- Root默认并行全suite复跑两个独立随机空库，**每轮42文件220测试通过、0skip**；prisma validate/apply、lint/typecheck/build/contract、编译后plain Node ESM真实PG claim/receipt/replay通过。日志 `/tmp/kokoro-storage-main-data-final.UPcBUU`；两库均已drop。格式仍51历史文件失败，不称全门禁或生产完成。
+- 主仓并行失败最终在完整ArtifactsStore路径复现P2002，质量复审根据新证据恢复并关闭P1：只匹配实际PrismaKnown P2002、StorageArtifact/table/index/23505/adapter形态走原有5次/10秒整事务重试。实现方另3轮独立空库默认并行220/220，Root2轮独立通过；未移除并发结果/attempt/receipt断言。
+- 符合性storage_contract_review、质量storage_data_review最终均无本数据片剩余P0/P1；上传发放gate、损坏receipt读取/CAS、Artifact实际并发恢复完成。Nest/I2/STV仍未交付。
+- Git按manifest显式路径暂存并提交；89物理路径被Git识别为88条变更（pg测试fixture rename）。暂存后集合检查未关闭rename检测造成断言失败，外层命令未及时停止而继续提交；Root立即以--no-renames独立复核commit精确89路径、所有commit blob hash与已验证交付一致、工作树clean，确认没有漏项/越界项。后续提交脚本统一set-e且使用--no-renames，避免此类检查误报被继续执行。
+- 后置完整commit diff --check发现Prisma官方只读生成物的尾随空格/EOF空行；先前unstaged diff未覆盖新生成文件，不能声称全commit whitespace通过。排除官方Prisma生成目录后的手写diff check通过；原始失败日志commit-diff-check.log保留。不手改生成物或放宽手写源码门禁，ST-V按生成artifact独立治理。
+- 当前代码commit：`33093fed09d28e9fc2de9292d47e7ec2cbb30e26`，标题refactor(storage): move metadata lifecycle to Prisma。数据当前唯一canonical/Client已切换，旧SQL CRUD/Row mapper退出生产；原Node入口明确等候I1d。
+
+### ST-I1d 正式派发
+
+沿上方后继卡现在放行：storage_implementation（gpt-6-astra）唯一Storage writer，起点33093fed与clean工作树；Root仍唯一Git index/commit负责人。行为基线更新为220测试，主仓数据证据与两轮复审已完成。先同步Storage CURRENT/设计状态引用该接收SHA，再按feature/transport有序切換真实Nest单listener与生命周期，保持数据已验收行为。准备只读预审与Roothook/timer实测约束一并作为本卡依据；不进入I2/CI/Docker供应链扩展。
