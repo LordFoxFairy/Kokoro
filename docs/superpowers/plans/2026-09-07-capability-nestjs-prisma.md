@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：进行中。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
+状态：P0、P1a 已验收；P1b–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -38,7 +38,7 @@
 | P0-A / P0 | 盘点协议、安全/状态机与消费者依赖，提出必须保留的行为与切换风险 | contract-review / gpt-5.6-sol / 只读 | 子仓 contract/src/test/docs，BFF/Agent 消费入口只读 | 可与 Root 设计并行 | 已交付只读报告 |
 | P0-D / P0 | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项 | Root / 当前模型 / 写入（派实现前） | 子仓上述现有文档、ADR 新文件；Root 本任务板 | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交 |
 | P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
-| P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 待派工 |
+| P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | P1a 已验收（d32631f），P1b 待派工 |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | 待派工 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 待派工 |
 | P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 后续授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 待派工 |
@@ -61,16 +61,16 @@ P1b 在 P1a 验收后另授权：Nest 原生 composition/lifecycle、health/proj
 P1a 的 red/green 必须覆盖 typed Prisma 读写、tenant 隔离、同库 mutation/outbox 回滚、connection policy 并发、receipt replay/digest/operation、复合分页、fresh-install/refuse/drift；缺失的恢复用例明确列 P4。
 
 ### P1：底座与持久化切片
-- [ ] P1a：先新增并运行失败测试：Prisma 唯一 schema、无业务 pg SQL、tenant/并发/分页/事务基线。
-- [ ] P1a 值域 gate：逐项验证 owner_kind、skill/connector/server/connection/authorization/installation/receipt/outbox status、connector type、transport、capability kind、effect 的生成 PostgreSQL enum，非法值在数据库写入时被拒绝；旧 CHECK 语义不丢失。
+- [x] P1a：先新增并运行失败测试：Prisma 唯一 schema、无业务 pg SQL、tenant/并发/分页/事务基线。
+- [x] P1a 值域 gate：逐项验证 owner_kind、skill/connector/server/connection/authorization/installation/receipt/outbox status、connector type、transport、capability kind、effect 的生成 PostgreSQL enum，非法值在数据库写入时被拒绝；旧 CHECK 语义不丢失。
 - [ ] P1b：先新增并运行 Nest 生命周期、HTTP/Connect raw-body/auth/route 失败测试。
-- [ ] 建立生成 Client 与 ORM schema；无外键生成结果实测，不保留两份可编辑 schema。
+- [x] 建立生成 Client 与 ORM schema；无外键生成结果实测，不保留两份可编辑 schema。
 - [ ] P1b：Nest 管理进程与资源；Connect 保持官方协议 adapter，不另开平行服务，不自动假设 Nest Guard 覆盖 Connect 请求。
-- [ ] 用 Prisma 接替现有持久化，保持契约、安全检查和有效业务行为；P2/P3 仍待收敛部分如实列明，不把中间切片当最终架构。
-- [ ] 空库安装必须先检测非空并拒绝破坏；独占安装锁；drift 检查列/类型/默认值/约束/索引。
-- [ ] 承接测试并删除仅固定旧目录的断言，新增实际依赖方向断言；不得靠删安全测试让门禁通过。
-- [ ] 负责人交付文件清单和 red/green 证据；独立规范审查通过后进行代码质量审查。
-- [ ] Root 重跑验证、按明确路径暂存并提交；更新同一任务板。
+- [x] 用 Prisma 接替现有持久化，保持契约、安全检查和有效业务行为；P2/P3 仍待收敛部分如实列明，不把中间切片当最终架构。
+- [x] 空库安装必须先检测非空并拒绝破坏；独占安装锁；drift 检查列/类型/默认值/约束/索引。
+- [x] 承接测试并删除仅固定旧目录的断言，新增实际依赖方向断言；不得靠删安全测试让门禁通过。
+- [x] 负责人交付文件清单和 red/green 证据；独立规范审查通过后进行代码质量审查。
+- [x] Root 重跑验证、按明确路径暂存并提交；更新同一任务板。
 
 ## 验证命令与资源规则
 
@@ -81,7 +81,7 @@ Root：`python3 scripts/verify-ten-repository-standard.py`；完整跨仓验证�
 
 ## 证据与交接
 
-尚未有本轮实现或验收结论。每波记录实际命令、exit code、pass/fail/skip、提交 SHA、审查人与剩余 owner；Root 现有脏文件不纳入提交。
+P0 与 P1a 已完成本轮验收，实际命令、提交、审查与剩余 owner 见下方记录。Root 既有脏文件未纳入提交。
 
 ### P0-A 只读审查交接
 
@@ -103,3 +103,83 @@ Root：`python3 scripts/verify-ten-repository-standard.py`；完整跨仓验证�
 当前契约/schema 检查 exit 0，Node24 下 architecture 22 passed；Prisma schema 尚待 P1a 创建验证，本报告只放行该实现设计，不表示 ORM/框架切换已验收。
 未决项：P2 安装 API、P4 实际事件消费者/publisher 与保留策略、P5 跨仓路由/身份更新，均由对应后续切片处理，不阻挡 P1a。
 资源：Root 新建专用 `kokoro_capability_p1a_20260907_worker` 与 `kokoro_capability_p1a_20260907_root` 数据库，复用 PostgreSQL5432/Redis6379；worker仅使用worker库，不清空Redis。
+
+### 当前派工（P1a）
+
+capability-owner / gpt-5.6-sol，基线 c86d3cef2222f94a49dbb1a3e9f12c652b936f0d；只授权上方 P1a 文件集，共享 index/commit 由 Root 管理，交付后独立审查与主控重跑。
+contract-review / gpt-5.6-sol 同时只读准备 P1b 装配/HTTP/Connect 测试清单；读取 c86d3ce 固定源码，不写文件，不在变化工作树运行最终验收。
+
+### Root 集成复验矩阵
+
+| 关注点 | 所需证据 | 阶段 |
+|---|---|---|
+| 单一 schema/数据库访问 | SQL canonical 删除，业务 src 无 pg Pool/raw CRUD；Prisma生成可重复 | P1a |
+| 旧值域承接 | PostgreSQL enum/类型/constraints catalog；非法值拒绝 | P1a |
+| tenant 写保护 | 同 ID 跨tenant写拒绝，不仅测试跨tenant读取 | P1a |
+| 业务事务 | mutation后outbox失败一起回滚，同一 Prisma transaction client | P1a |
+| connection 竞争 | 同identity同policy重放/不同policy冲突，真实并发写入 | P1a |
+| receipt 基线 | digest/operation漂移拒绝、重放codec、failed重试；不冒称crash原子 | P1a |
+| 安装边界 | 独立新空库成功、非空拒绝、并发安装仅一次、故意加列/索引/constraint/enum drift拒绝 | P1a |
+| 无丢失协议行为 | 既有 HTTP/Connect/attestation/pagination/status 回归 | P1a / P1b |
+| 生产装配 | 构建生成物路径正确、真实DB/Redis启动及依赖失败不监听 | P1a / P1b |
+| 原生Nest入口 | 同listener、Connect原始stream未被parser吞掉、两套auth分离、controller无SQL | P1b |
+
+完整 Root full.sh 本轮尚不执行：该脚本编排所有正在由其他负责人修改的仓和发布资源，不是当前单仓稳定验收面；Root standard 已记录215项基线失败，最终再次只读核验。
+
+### P1b 准备性只读审查（待 P1a 验收后授权）
+
+contract-review 固定基线 c86d3ce：Nest Express单listener，bodyParser:false，在parser消费原stream前装官方Connect middleware；精确服务路径分派，不吞掉health/BFF路由。
+P1b 必须由Nest DI管理Prisma/Redis/各owner clients/readiness/HTTP controller/guard/filter；main不得手工new整图。仅允许注入依赖后构建现有CapabilityServices的单点中间factory，P2/P3按业务拆除。
+必验：真实HTTP protobuf与JSON Connect调用、BFF/RPC两套鉴权各自失败/成功、unknown v1=404/nonGET=405/no-store/request-id、缺失tenant、动态attestation、启用surface依赖、启动失败不监听、关闭幂等/drain/deadline。
+P1b按已接受方案修改入口/构建/容器/相关测试和文档；不顺带改wire或业务状态机，不引入第二server。
+
+### P1a 变化中工作树预审（非验收）
+
+Root 与 contract-review 已反馈并要求回归：ownerScopes/query/cursor 的 OR 条件必须 AND 组合；tenant检查与写入须原子；事务内唯一冲突不得继续使用已abort事务；receipt仅归一明确冲突、影响行数必须校验、JSON不得as never；空库安装要覆盖非表对象并明确public-only/目标schema；enum/约束/catalog drift完整检查。
+Root批准为保留旧concat(name,' ',summary)搜索语义增加同owner内部派生searchText列（每次Skill写入同步派生），不改wire、不得raw SQL或先分页后内存过滤；实现负责人更新ADR/DATA_MODEL及跨字段搜索组合过滤测试。
+要求恢复所有旧receipt digest/operation/processing/failed/codec断言，补tags包含全部、最新approved scope、授权NULL expiry fail-closed、同identity connection并发、安装并发/失败回滚。此记录不表示整改完成，最终看固定交付快照及主控实跑。
+
+### P1a 数据专项预审任务卡与结果
+
+角色 database-review / gpt-6-astra / high / 只读，基线c86d3ce之后的变化中工作树；范围scripts安装/drift、Prisma config/schema、transaction/receipt/connection。不得运行数据写入或修改文件，Root审查与实际验证后才放行。
+发现并派capability-owner整改：P1启动仅$connect未真实DB probe；P2空库检查漏function/procedure；P2运行/安装/drift的URL schema范围不一致；P2Prisma diff忽略额外view/trigger，需要catalog对象白名单。
+Root批准生命周期内固定SELECT1作为唯一health raw例外，普通业务仍禁raw；要求启动不可达DB不监听回归、ADR与架构限定一致。
+Root供应链核验：`docker buildx imagetools inspect node:24.13.0-bookworm-slim` exit0，multiarch index digest `sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f`；交实现负责人固定两FROM，不能从旧pin退为tag。
+
+### P1a 最终交接与验收（2026-09-08）
+
+- 任务/owner：P1a / kokoro-capability / capability-owner（gpt-5.6-sol）实现；Root 独占 Git index、集成与复验。实现负责人已交付并停止写入。
+- 基线：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-capability`，`codex/production-closure-docs`，`c86d3cef2222f94a49dbb1a3e9f12c652b936f0d`。
+- 实现提交：`10d97612d4d8a74697dae0be1a2f3a186a4b1f68`；生成规范化提交/最终验收 SHA：`d32631fa04b36a57f00c464bd78fcdde3ec10f1f`。共享 checkout 由 Root 提交，无 cherry-pick SHA。
+- 文件集：子仓唯一 `prisma/schema.prisma`、Prisma 配置/生成物、database client/transaction、现有 capability repository 实现、bootstrap 数据连接、安装/drift/build/CI、相关测试与设计/当前文档。完整精确清单以这两个 commit 的 `git show --name-only` 为准；未改 wire contract、其他 owner 仓或 Root 既有脏文件。
+- 结果：删除旧 SQL canonical 与手写 pg CRUD；typed Prisma 承接 tenant、组合过滤/分页、数据库值域、本地 mutation/outbox 原子性及 receipt 现有语义。仍保留的聚合 data-access port 与旧 ingress 是 P1b/P2/P3 明确待替代项，不是最终 Nest 架构。
+- 独立规范审查：contract-review / gpt-5.6-sol，整改后通过。独立数据/代码质量审查：database-review / gpt-6-astra，整改后通过、无未闭环 P1/P2。审查绑定提交前交付工作树，Root 复核并提交为 10d9761；后续 d32631f 仅生成流水线/ADR及其自动输出，Root 单独审查并全量复验。
+- 生成修正：暂存检查发现上游 Prisma 输出尾随空白；后续固定生成命令执行仓内固定版本 Prettier，未手改生成物或关闭 whitespace gate。17 个生成文件重复执行前后 SHA-256 清单完全一致，`git diff c86d3ce --check` 通过。
+
+Root 在最终提交相同工作树、Node 24.13.0 下执行（全部 exit 0）：
+
+| 命令 | 实际结果 |
+|---|---|
+| `pnpm prisma:generate` + 生成文件 SHA-256 对比 | 重复生成一致；build 复用同一生成入口 |
+| `pnpm format:check` | P1a 明确文件范围通过，不冒称全仓格式化完成 |
+| `pnpm lint` / `pnpm typecheck` | 通过 |
+| `pnpm prisma:validate` / `pnpm schema:check` | Prisma 有效、真实 PostgreSQL schema 无 drift |
+| `pnpm contract:check` | 通过，wire digest 仍为 `8650a846cef411f503398996d8a4340acd791b5bb8fb65b1071b74fc7e2aceca` |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 42 files / 162 passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 9 files / 56 passed；包含组件测试，不把 56 项全部称为真实外部集成 |
+| `pnpm build` | 通过 |
+| `pnpm smoke:production` | 编译后入口 + 真实 PostgreSQL/Redis 通过；Storage/IAM/Secret/MCP provider 为本地协议 stub |
+| `git diff c86d3ce --check` | 包含实现与规范化的整体差异通过 |
+
+真实数据库专项共 12 项（repository 9、installer 3）；另外已完成首次隔离空库 `pnpm db:apply-schema`、非空拒绝/并发安装/DDL 回滚、坏 DB 启动拒绝、额外 view/CHECK/materialized view drift 注入拒绝及清理后复验。只操作本任务专属数据库和随机测试数据库，未重启或清空共享 PostgreSQL/Redis。
+最新主控完整日志：`/tmp/kokoro-p1a-codegen-final-20260908.log`；前次完整/专项证据：`/tmp/kokoro-p1a-root-final-20260907.log`、`/tmp/kokoro-p1a-root-verification-20260907.log`。日志为本机临时验收证据，不作为仓库正式工件。
+
+### 未完成、风险与后续 owner
+
+1. P1b：capability-owner 续接 Nest 原生 DI/生命周期/HTTP/Connect 单 listener；Root 先刷新工作树与任务卡，再授权写入。P2 Skills、P3 MCP、P4 receipt/outbox 崩溃恢复和 retention、P5 Platform cutover 仍待实施。
+2. 当前 receipt 完成写与业务提交未合并为一个事务，外部副作用的崩溃恢复没有闭环；留 P4，未以本轮 Prisma 替换冒称解决。
+3. Root standard 最新实跑 exit 1：214 violations，其中 Capability 16；记录 `/tmp/kokoro-p1a-root-standard-20260907.json`。Root 后续独立切片修正 checker 对 ORM canonical 与只读生成物的识别（repository_checks 仍强制 SQL schema，typescript_checks 扫描 Prisma generated），同时继续保留真实目录/工具链缺口的失败门禁；不以放宽规则清零。
+4. Docker daemon `/info` HTTP 500，镜像 build/smoke 未运行；官方 Node 镜像 digest 已实查并固定。完整跨仓 `./scripts/verify-ten-repository-full.sh` 未运行：其他 owner 正在修改，缺少稳定联合验收面及可用 Docker。Root 负责后续协调，不干扰其他任务进程。
+5. 下一阶段需完成真实 IAM/Storage 等 owner sandbox 联调；本轮 smoke 的协议 stub 只证明本仓装配行为。
+
+状态：P1a 已验收；总体计划未完成。后续 owner：Root（边界/派工/主仓门禁/最终验收），capability-owner（按下一任务卡续接 P1b）。
