@@ -9,11 +9,11 @@
 用户明确要求完整 System，不以 Nest + Site CRUD 截止。唯一任务表在
 [System IMPLEMENTATION_PLAN](../kokoro-system/docs/IMPLEMENTATION_PLAN.md)，设计决定为
 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)。
-**完整业务源码、跨仓 HTTP 与 NestJS 工程边界已验收**，不是 Nest + Site CRUD 切片。五模块 Sites、Workspaces、Products、Runtime Manifests、Model Catalog，83业务operation+2probes；旧四层/RPC/Proto/generated/SDK退出。
+**完整业务源码、跨仓 HTTP、NestJS 工程边界与tag镜像发布已验收**，不是 Nest + Site CRUD 切片。五模块 Sites、Workspaces、Products、Runtime Manifests、Model Catalog，83业务operation+2probes；旧四层/RPC/Proto/generated/SDK退出。
 
 | Owner / 当前交付 commit | Root 实际验证（2026-09-08） |
 | --- | --- |
-| System `f487f635294c98cb8a44e638ed1ee0afa6d28feb`（R6源码 `dcfa846`，业务 `d7257aa`） | `dcfa846` clean HEAD `pnpm verify`：format/type-aware lint/typecheck/clean build/contract 全通过；16 files / 97 pass / 0 skip；fresh PostgreSQL 23断言 / 22表 |
+| System `f3b5a186da37cb879c1d91defd9e264a2006fa5e`（镜像tag `v0.1.2`→`7252d50`） | 本地 `pnpm verify`：99pass/0skip、fresh23/22；GitHub release/CI runs `34222465469`/`34222465488` success |
 | BFF `26eec0112c83ea98aa045896d385c89ad88b45d2`（consumer `1e03b87`） | Node22 `pnpm lint && pnpm typecheck && pnpm build && pnpm test`：152 pass / 0 fail / 0 skip |
 | Agent `e24b4aab05ee6df811c21089effbe1f91d7c2f2c` | `uv lock --check`、`uv run ruff check .`、`uv run pyright`通过（0error/0warning）；`uv run pytest -q`：611pass / 6既有skip / 77集成等标记deselected / 66第三方warnings |
 
@@ -34,7 +34,7 @@ R6把规范从“文档约定”落成可执行门禁：ESLint使用`recommended
 Root `python3 scripts/verify-repository-topology.py` 与 `python3 scripts/verify-backend-design.py --manifest-only`通过；活动运行仓9个，旧Model退出active/clone/consumer配置，但checkout/remote/历史保留、不归档、不删旧数据。Capability→Platform另属其他任务。
 Root focused governance/topology/smoke **81pass**；先前全 `python3 -m pytest scripts/tests -q` **82pass / 2既有手册测试失败**（例子数18/11与旧标题断言，已在原基线复现）。本轮 `python3 scripts/verify-ten-repository-standard.py --format json` 当前System **0违规**，其他8仓合计208条未收敛，不记作九仓全绿。未触及Root SQL手册、Agent gitlink或其他任务变更。
 
-System `pnpm audit --prod --audit-level=high` 与 `pnpm audit --audit-level=high`均无已知漏洞。**待验**：Docker Desktop engine API500/无版本socket超时阻断RC镜像实跑；未重启用户Docker。CI扫描/SBOM/attestation是已接线而未执行证据，生产容量/SLO/灾备/secret轮换及provider推理仍由部署环境另验。后续owner：System与Root完成RC，非业务实现缺模块。
+System `v0.1.2` 已由tag触发GitHub Actions完成镜像build、真实image smoke、HIGH/CRITICAL Trivy、CycloneDX SBOM及GHCR推广；`0.1.2`/`0.1`/`latest`统一digest `sha256:8fe6e701451f461b02b84c6520d76f49ad872c8f11d6ae3a8c5b80532797eb37`。user-owned private repository不支持GitHub attestation，相关步骤按可见性明确skip，不冒称已签。生产容量/SLO/灾备/secret轮换及provider推理仍由部署环境另验。
 旧 Root full/owner-health runner 已暂停（退出2、无基础设施操作），危险共享清理实现已删除；隔离全九仓编排重建由Root后续承担，不混入本轮System完成声明。
 
 ## 当前工程规范入口

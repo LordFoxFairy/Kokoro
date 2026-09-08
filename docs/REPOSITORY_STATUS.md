@@ -1,6 +1,6 @@
 # Kokoro repository status
 
-状态：2026-09-08 · System 完整源码、消费者 HTTP 与 NestJS 工程边界已验；镜像 RC 环境待验
+状态：2026-09-08 · System 完整源码、消费者 HTTP、NestJS 工程边界与v0.1.2镜像已验
 
 > 按 [ADR-031](kokoro-handbook/decisions/ADR-031-system-http-nestjs-convergence.md)，Model 业务归 System。
 > 本表是活动运行仓清单，不是所有磁盘目录清单。旧 Model checkout/remote 保留作历史源，不归 archived。
@@ -17,7 +17,7 @@ HTTP/OpenAPI/Protobuf/internal command 契约交互，不通过相对路径导�
 | kokoro-bff | LordFoxFairy/kokoro-bff | Chat、业务 BFF、Project/Task/ScheduledTask、适配/幂等 | 26eec011 |
 | kokoro-agent | LordFoxFairy/kokoro-agent | Run、执行、HITL、恢复、事件投影、HTTP ingress | e24b4aa |
 | kokoro-iam | LordFoxFairy/kokoro-iam | 身份、Tenant、认证、授权、审计、ExecutionIdentity | 531816e |
-| kokoro-system | LordFoxFairy/kokoro-system | Sites/Hosts/Policy、Workspaces、Products、Runtime Manifest、Model Catalog | f487f63（R6源码dcfa846；业务d7257aa） |
+| kokoro-system | LordFoxFairy/kokoro-system | Sites/Hosts/Policy、Workspaces、Products、Runtime Manifest、Model Catalog | f3b5a18（v0.1.2→7252d50） |
 | kokoro-billing | LordFoxFairy/kokoro-billing | Payment、Subscription、Checkout、Refund、Credit、Ledger | fd80ec4 |
 | kokoro-capability | LordFoxFairy/kokoro-capability | Skill、MCP Connector 控制面 | 1de0bf5 |
 | kokoro-storage | LordFoxFairy/kokoro-storage | Upload、Asset、Artifact 元数据与 ObjectStore 引用 | a2d05a0 |
