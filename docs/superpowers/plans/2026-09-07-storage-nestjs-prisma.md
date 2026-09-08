@@ -359,6 +359,33 @@ I2验收须额外明确：回收查询有界分页，retirement grace最少1h；
 
 ST-I2-D设计摘要已由Root核对：retirement UUID身份、tenant/owner/blob、旧key/version/etag、retiredAt；逻辑(tenantId,blobId)关系、unique(tenantId,objectKey)、稳定(retiredAt,retirementId)分页及关系索引，未来事务显式验证owner。唯一约束仅防队列内重复退休，不能重置retiredAt；出队后仍由永不重用key协议保证安全。候选分页默认100/max1000、单轮10000有界。Root发现旧uploadId是upload:sha256共71字符，直接在现最大约483字符finalKey再追加claim UUID可能超过varchar512；要求候选key去掉冗余uploadId/fence段，保留tenant/ownerDigest/claimId/sha且证明长度，claim/fence仍由DB guard承担，不靠扩text掩盖。
 
+ST-I2-D必要文档同步扩围：允许README.md、docs/SCHEMA_BOOTSTRAP.md、docs/SCHEMA_OWNER_INVENTORY.md仅更新六→七精确表清单、已接收Nest SHA与本片Schema-only说明，不修改运行步骤/CLI或提前声称healthy/repair/GC完成。writer已报告六表schema对新名单RED、加表后旧apply六表catalog再次RED，再改精确七表集合；实际交付与Root验证仍待完成。
+
+ST-I2-D稳定审查卡：基线2b510751+25物理路径manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-i2-d-logs/handoff-manifest.json`，SHA256 `a532ab2c6ae3b31048b38bf18a01defa34a229d3a2ff1173b6b38085567c6845`；Root核验25hash/dirty集合一致，writer已停写。storage_data_review(gpt-5.6-sol)只读Schema/索引/无FK完整性/未来CAS+retirement事务与删除安全，storage_contract_review(gpt-5.6-sol)只读三文档/新ADR的current-target/API/错误/幂等/退役宽限一致性，允许并行；两者不运行测试或共享服务、不写文件/Git。Root保留主树真实随机库schema/catalog/drift/全套与compiled验证，唯一提交owner。writer报告257+compiled2、七表零FK通过仅为旁证；generated官方空白与13历史format如实待ST-V，不手改生成物。后继业务卡必须等本门真正放行。
+
+### ST-I2-D 已接收：347e6dd55afbedc207d3f46f8f44c5d9384ac2f4
+
+- 数据设计与契约设计两名只读审查员均放行，无阻断模型/索引未决；Root `/tmp/kokoro-storage-main-i2-design.jCYebZ` 在新随机空库执行validate/apply精确七表七enum/0FK/drift、lint/typecheck/build/contract→generate→contract通过；默认并行52文件257测试、compiled2测试、编译新delegate真实count=0通过。自建库已drop，业务writer确未启动。
+- Root重新核验25hash/dirty与官方再生成一致，按25路径显式暂存、手写cached diff check、全部staged blob hash后提交；commit后逐路径/逐blob验证相符、工作树clean。提交347e6dd5为feat(storage): define canonical object retirement metadata。
+- raw staged diff check exit2，41处全部为官方generated/prisma空白；日志staged-raw-diff-check.log，手写排除生成物的diff通过。13历史format仍失败。不手改生成物、不把失败隐藏为完整格式通过。
+- 三文档门对应Storage绝对路径已在交付/本轮用户报告列出，技术/API/数据当前方案一致，正式放行以下业务卡；Schema准备本身不证明healthy复用或回收安全已实现。
+
+### ST-I2-B 业务实现卡
+
+| 项 | 边界与验收 |
+|---|---|
+| 任务/优先级 | P1：完成canonical健康复用/有限repair CAS/已知退休安全回收，删除旧无条件轮换与LastModified删除 |
+| Owner/基线 | Storage assets/blob；storage_implementation(gpt-6-astra)唯一writer，Root审查/提交；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，347e6dd55afbedc207d3f46f8f44c5d9384ac2f4 clean |
+| 放置 | assets拥有canonical判定与retirement用例/store；uploads保留CompleteUpload编排与一个完整事务边界，必要数据helper只在数据组件协作。integrations/object-store仅provider协议/typed failure；CLI只编排现有owner能力，不创造第二套业务或SQL层 |
+| 允许 | src/assets、src/uploads相应Service/store/types/module与必要同职责普通文件；integrations/object-store的typed接口/AWS/local/失败分类；scripts/reconcile-objects.ts及相应CLI用例、相关unit/integration/contract/architecture/smoke fixture/tests；Storage设计/CURRENT/ACCEPTANCE/README/INDEX/RUNBOOK/ADR当前证据。CLI若需官方Nest application context只能限定已有owner、不得启动HTTP listener或无关scanner依赖 |
+| 排除 | Prisma canonical新字段或新表（非必要不再改schema/generated）；Proto/provenance/generated proto；框架/工具链依赖升级、CI/Docker/compose、Root/其他owner；共享基础设施启停和既有数据清理 |
+| 对象协议 | 原扫描固定source etag/version/hash/size/cancel保障保留；healthy同owner/digest canonical只复用不promote，Asset MIME独立；确定missing/mismatch才有限repair；缺实际VersionId等不确定结果是availability，绝不请求值回填或catch-all missing；GET只检查不repair |
+| 原子性 | 完整旧snapshot含nullversion CAS，影响行1，同Prisma事务写retirement+Upload/Asset/Scan/receipt，任何失败全回滚；复用/首次创建也验证tenant/owner/expected snapshot。CAS/absent竞争败者重新读取且实际检查赢家，最多3轮受Complete300秒预算；数据库网络/未知提交不盲目重试 |
+| 重试细节 | 若真实首次Blob竞争出现P2002，先双client完整路径RED确认实际Prisma错误shape，只对明确canonical identity冲突做外层重新观察，不全P2002重试、不在已abort事务中继续；已有claim/fence、数据10秒有限重试保持 |
+| 回收 | 只持久化已退出canonical的完整旧identity，不upsert/update刷新retiredAt，拒绝owner/blob/snapshot不一致、空version/etag、新旧key相等。claimId key428字符且执行唯一、永不重新使用。已知退休按固定cutoff/grace>=1h、100/1000/10000二键分页，删除前重查完整scope/current引用，确切version/identity删除成功或确定不存在才删记录；失败与unknown保留。未知final/crash/loser candidate只报告，不即时删，不留旧LastModified apply旁路 |
+| 验证 | 8组既定验收：healthy+不同MIME共Blob；owner隔离；missing/mismatch CAS；不确定provider零promote/零业务完成；双repair/absent竞态检查赢家；stale fence/rollback无污染；GET仅healthy签URL；retiredAt非creation age、确切version回收失败恢复/引用保护/未知report-only。加key最长/claim唯一与有界分页。真实PG只自建随机库；provider doubles明确标注，真实S3/ClamAV另ST-V |
+| 交付 | 按职责TDD，小步收敛，不在中间提交unsafe旧CLI仍可删除新退休对象的半片；必要拆片先向Root裁决。lint/typecheck/full257基线+新增/build/compiled/schema/contract、scope/hash后停写，符合性→质量→Root真实验证再提交；所有Git仍Root负责 |
+
 ### ST-V Root只读快照预检（绑定2b510751，非活动I2源码）
 
 - 将完整已接收commit归档至 `/tmp/kokoro-storage-typed-lint-probe.nj8QcB`，只在临时副本增加type-aware ESLint候选配置，复用已安装依赖，不修改Storage源码/config。广泛recommendedTypeChecked preset得到40文件158诊断，其中125是require-await（多为async测试double），另有unsafe assignment/return/call/member、enum比较、unbound method等。此数量是该候选配置的诊断，不等于158个行为漏洞；ST-V须保留手册明确的unsafe/floating/misused门禁，不通过放宽它们清零。
