@@ -719,3 +719,6 @@ A1b1-D补充实现边界已批准并写入三设计：既有provider.close增加
 | 资源/交付 | 复用现 PG/Redis；仅亲建随机库、只按自己 CREATE 成功句柄清理，失败保留。资格120秒/RPC420秒、生产Complete300秒不改、SDK10秒/小对象64KiB、cleanup独立60秒。固定精确 manifest、RED/GREEN/完整日志、文件清单后停写；worker 不碰 Git，Root 独立审查复验后逐路径提交 |
 
 状态：A1b1-I 进行中；B/production-runtime 生命周期、H0 HTTP 机器契约和真实外部资格仍待后继，不用两消费者接线冒充全链发布完成。
+
+
+A1b1-I 写入期间独立只读预研 ST-V2-B-R：storage_contract_review 负责 B 的同 owner 容器/production-runtime 生命周期接线建议，Root 保留 A1b1 审查与 B 整体裁决。基线 Storage f47801f726cc402b3bea099d237f73afeeb61586（变化工作树，仅读 HEAD 固定对象，不读取 A1b1 未交付新代码）；范围 scripts/docker-smoke.sh、test/smoke/production-runtime.e2e.test.ts、Dockerfile、compose/相关现有架构测试及已提交 ADR0004/三设计/fixture API。只读、不写/测试/生成/安装/Git/DB/Docker/网络服务操作。交付最小文件集、至少两种可行位置比较、生命周期状态/资源所有权/失败保留及现有 package 入口如何接入，识别尚需 A1b1 稳定 API 的依赖；不建立新 IPC/资源框架、不发明公开 API/业务表，不编造镜像证据。Root 并行只读核对现 CI/release 事实；B 文档/实现必须 A1b1 接收后另过门授权，预研不是开始 B 写入。
