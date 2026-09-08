@@ -226,3 +226,30 @@ storage_data_review已交付部分RED/GREEN后停止写入，Root调用interrupt
 - 2026-09-08 registry额外候选：Vitest5.0.0、Vite8.2.2、Prettier3.9.6、deepmerge-ts8.0.2、mysql2 3.24.4；仅版本元数据，未安装验收。官方依据： https://pnpm.io/cli/install 、 https://github.com/vitest-dev/vitest/security/advisories/GHSA-5xrq-8626-4rwp 。
 
 ST-V闭包补充：同一prod/no-optional目录使用外部构建阶段Prisma7.10.0生成器与TS6.0.2编译器生成/编译ESM，运行阶段仅node加载dist（无tsx/CLI），在Root新建随机库真实create/count断言通过；日志generate.log、compile-node.log、apply-compiled.log、compiled-query.log。首次独立编译未显式lib而带入DOM造成URLPattern声明冲突；按后端规范显式lib ES2024后通过，未用skipLibCheck。两个实验数据库均由Root清理。该证据仍不是最终服务镜像或外部S3/ClamAV链路。
+
+I1c必要生成接线授权：原scripts/normalize-generated.ts遍历整个src/generated，会在contract生成后修改Prisma官方生成物尾部。Root授权仅收窄遍历根至src/generated/proto并加owner隔离断言；不手改两类生成物。验收contract:check→prisma:generate→contract:check顺序无交叉漂移。此文件加入当前writer允许集。
+
+### ST-I1a/b/c 主仓验证与复审修复卡（2026-09-08）
+
+- 稳定83文件交付hash与主仓一致；Root在自身随机空库独立执行 prisma:validate、db:apply-schema、lint、typecheck、test、build、contract:check、prisma:generate与contract交叉生成隔离、编译后Prisma真实查询、diff --check，均通过；38文件147测试、0skip。日志 `/tmp/kokoro-storage-main-data-verify.WsAoQB`，任务DB已清理。format:check仍52历史文件失败，留ST-V，不称全门禁通过。
+- 符合性审查 storage_contract_review 确认数据owner/唯一schema/七fingerprint/receipt/fence/事务/授权过滤；发现CreateUpload replay初读pending后异步签名与终态转换窗口。Root与审查员共同裁决：签名事务外执行，其后Prisma短事务按tenant/owner/upload/state=pending条件写作为发放线性化gate；受影响行0时不外发URL，返回FailedPrecondition。同一row写序排序terminal与发放，不引入网络I/O事务、签名租约或schema字段。
+- “终态不再发PUT”指上述线性化点，不承诺数据库终态与网络bytes送达全局原子；此前已发出的有效URL不撤销。签后但从未外发的URL不构成发放。既有ETag/version固定扫描与promote保持不变。
+- 修复卡ST-I1R：唯一writer storage_implementation（gpt-6-astra），基线72ab5dd+83文件交付hash；允许现有UploadsStore、Application/ports/test double、相应integration/unit测试与四份Storage设计状态文档。新增同职责普通测试文件允许；不改schema/Proto、他仓、Docker/CI。先RED/GREEN覆盖sign barrier两种终态/发放顺序、七operation固定摘要及逐字段变化，修正文档过期“待补”。完成后停止写入并更新交付清单/hash；Root复审→质量审查→重跑主仓验收→串行提交。
+- apply取消疑点经固定Prisma7.10源码审查：db push采用CLI进程内WASM/JS executor，child close后释放lock有依据，非当前阻断；SIGTERM/partial DB负例记录为后续补充。DatabaseModule尚未消费、DI需I1d通过；不称Nest已验收。
+
+### ST-I1d 后继卡（待数据切片验收提交后派发）
+
+| 项 | 边界与完成条件 |
+|---|---|
+| Owner | kokoro-storage；沿用storage_implementation单一writer，Root集成/提交；数据片验收SHA为起点 |
+| 目标 | Nest真实拥有feature provider/配置/生命周期，FastifyAdapter与Connect plugin单listener；删除旧全局application/domain/infrastructure/interfaces/bootstrap，不用转发外壳 |
+| 放置依据 | TECHNICAL_DESIGN §2目标目录与§3、6；uploads负责上传三命令与status，assets负责可见性/scan/引用，artifacts负责发布/library；复杂事务保留各feature内具名store，不创BaseRepository/每表Module |
+| 允许 | 原I1卡src与test、package/lock/workspace、tsconfig、受影响scripts（reconcile/import）和Storage文档；新普通文件须有单一变化原因。共享Proto/provenance固定不变；Docker/CI由后续ST-V单独切片 |
+| 类型/依赖 | typed业务错误替代message.includes分类；生成Proto只在transport/client边界；生成Prisma限制数据组件。HTTP/Connect共用身份验证，不假设插件走Nest Guard。官方ConfigModule与显式typed config注入；Prisma连接由factory/provider消费配置，解决原始URL参数DI |
+| 行为 | 10RPC与library路径不变；同一listener auth/error/detail/request-id、一致busy CONFLICT+Aborted+retryable，取消/DeadlineExceeded保持协议code；七命令fingerprint/receipt/CAS已验收行为不回退 |
+| I/O | facade CallOptions、Connect HandlerContext.signal贯穿S3/scanner、限时/取消；query10/30秒、普通command30/60秒、Complete300秒、lease600秒；1MiB RPC与8KiB HTTP URL，provider调用不进入Prisma事务 |
+| 生命周期 | Nest init/start失败清理、ready四依赖、draining拒新请求、唯一signal owner、30秒有界drain和幂等close；禁止bootstrap自动apply；不重复启动共享PG/Redis |
+| 验证 | 原行为全回归+Nest TestingModule/真实Fastify listener+编译后plain Node DI/配置/启动失败/单listener/关闭；错误detail与metadata/unauthorized/cancel/deadline/oversize回归；Prisma真实PG保持147+新增且0skip。外部S3/ClamAV暂缺则明确测试double范围，不冒称真实集成 |
+| 交付 | 先RED后GREEN，每个职责迁移同时清除旧import路径；稳定manifest/hash后停写，符合性→质量→Root主仓验证→scoped commit。不得一口气扩I2或ST-V，遇无法保持运行的小切片向Root裁决 |
+
+2026-09-08 Root重新核验框架官方API：Nest FastifyAdapter示例、Lifecycle hooks与Connect官方fastify插件；已安装@connectrpc/connect-fastify2.2.0类型确有routes/contextValues/shutdownTimeoutMs，继承ConnectRouterOptions。来源 https://docs.nestjs.com/techniques/performance 、 https://docs.nestjs.com/fundamentals/lifecycle-events 、 https://connectrpc.com/docs/node/server-plugins/ 。核验是API语义与本地类型证据，不替代后续实际Nest集成测试；没有采用文档中的性能宣传作为本仓实测。
