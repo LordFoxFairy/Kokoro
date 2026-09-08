@@ -645,3 +645,6 @@ ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf
 | 排除/交付 | 不写其余文件、Schema/Proto/generated/package/lock/CI/Docker/其他owner；不安装/DB/服务/provider/Git。文档format/diff、Prisma validate、contract保护检查，给三设计绝对路径/未决/当前SHA和精确manifest，停写后Root审查再放行S0-I |
 
 A1b-R其余只读交付已保留：未来storage-roundtrip、smoke-storage-metadata、smoke-runtime及对应unit/真实Prisma integration、Python标准库生成固定有效research-package.zip；成功canonical proof核对完整scope/receipt semantic fingerprint/clean关系并实际HEAD/GET，不用于上传旁路；public亲设hold释放与严格登记的资格负例写入后继才授权。Root未放行这些文件写入，B/H0仍另片。
+
+
+S0-D固定质量复查任务：storage_data_review只读839c9a9基线+7M manifest 3dcae37ca32c30baf11509004175c9d1cd607e37f127622c6a6c5d88d6575917；核对三设计/ADR与上述Root裁决、当前源码边界，不写/安装/生成/测试/DB/服务/Git。Root已独立七文档format/Prisma validate/contract/diff及251范围外hash通过，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-s0-design.sy5ybfug；该结果不证明S0已实现。质量结论绑定manifest，Root收结论后按路径提交再派S0-I。
