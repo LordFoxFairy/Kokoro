@@ -546,3 +546,21 @@ ST-V2-D第二版879ab7d8已由Root独立format/Prisma validate/contract/diff及�
 **最新矩阵裁决（取代此前同key删旧v1的要求）**：按生产final key不复用输入域，key A只有一个current v1；错ETag+VersionId实际412并保留，正确current ETag+VersionId实际删除且无delete marker；独立control key B/version字节前后不变。不得移除生产IfMatch或借current新ETag删除已退休旧identity；外部同key写入导致current ETag不同返回412时保留retirement。不要泛称全部non-current情况恒为412，同ETag需按实际条件判断。此为纠正Root早期测试假设，不是降低provider门。
 
 正常roundtrip旧签名URL再次PUT会产生多个staging版本，fixture成功cleanup须停止写入后逐次以provider真实current identity核对registry，再携该确切VersionId+ETag条件DELETE；出现未登记current保留key/DB，不能按VersionId字符串/客户端回执次序猜current，也不能先删非current旧版本期待其ETag仍匹配。HEAD用于选择已登记当前identity，不替代条件DELETE、不移除IfMatch。writer仅修同10文档并重交，质量审查员保持只读待新manifest，源码继续未授权。
+
+
+### ST-V2-D 已验收 / ST-V2-A0 放行
+
+- D提交 `341a9889a0d957d728d6efa9bf4474859211d22c`；最终9d8b5123 manifest、10物理路径逐原始/staged/committed hash验证、提交后clean。Root符合性审查与storage_data_review质量复查通过，原current-only矩阵P1关闭；Root最终 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v2-design.km1g0v60` 文档format/Prisma validate/contract/diff与所有非文档tracked hash不变通过，无DB连接。D通过仅批准设计，非外部provider或实现通过。
+
+| 项 | ST-V2-A0任务卡 |
+|---|---|
+| 任务/优先级 | P1；ObjectStore readiness只读化，移除自动建桶副作用，先独立闭环再A1 |
+| Owner/Agent | Storage integrations/object-store；storage_implementation(gpt-6-astra)唯一writer，Root符合性/Git/集成，storage_data_review后继独立质量审查 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，341a9889a0d957d728d6efa9bf4474859211d22c，clean |
+| 写入 | src/integrations/object-store/aws-sdk.ts仅ensureReady与移除不用import；test/unit/object-store.test.ts仅相关回归。原D十文档允许仅更新A0当前状态/设计Approved/实际证据及必要行为说明，不改A1/B方案、不增新文档；不为了凑文件修改 |
+| 禁止 | A1 fixtures/其余测试/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他src/其他owner；不连接任何用户S3或建桶/启动Docker |
+| 行为 | ensureReady成功仅HEAD；404/NoSuchBucket/403/timeout/abort失败且零CreateBucket，保留原signal/cause和Nest启动失败destroy；不改变其他对象方法/事务/I2，不新增create开关或fallback |
+| 验证 | 先新回归在341a988 RED证明缺陷；GREEN后format/lint/typecheck/build、默认并行347+新增且显式新随机PG、compiled2、Prisma validate/官方仅自有空库apply/contract→generate→contract及protected hash。共享PG/Redis复用，无S3/ClamAV/镜像证明；Root主树重跑后验收 |
+| 交付 | 不stage/commit；固定精确文件hash+实际RED/GREEN/全门日志后停写，Root独立质量审查/主树验证/按路径提交；A1不抢先实施 |
+
+放置理由沿ADR0004：这是现object-store adapter readiness职责的局部修复与现unit回归，不建立新模块/抽象；missing bucket从“尝试自建”变为启动/就绪失败，部署预置职责明确。
