@@ -418,3 +418,31 @@ ST-I2-B回归诊断仍未验收：writer首次全套316/317出现旧dedup P2034�
 - 基线347e6dd+52物理路径（34M/18A），稳定时间2026-09-08T10:45:48.465005Z，manifest `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-i2-b-logs/handoff-manifest.json` SHA256 `01890e0097eceeba9a38f884aa472e72037c6a4c193998f151df06e783a20642`。Root逐一核验52当前/原始hash、dirty集合、HEAD和空index一致；writer已停写。
 - storage_contract_review(gpt-5.6-sol)先只读符合性审查：已定I2三文档/ADR、8组验收、原十RPC与错误/幂等/tenant、CLI生命周期、scope/删除项，不跑安装/测试/生成/Git/基础设施；放行后storage_data_review(gpt-5.6-sol)质量审查完整snapshot CAS/真实P2002有限重新观察/retirement并发与精确删除安全。两者绑定此manifest，任何必要修复重新固定。Root保留主树独立新库验证与唯一提交，不修改writer文件。
 - writer三轮322/322+compiled2、schema/contract/generator/lint/typecheck/build与真实local CLI为旁证，Root尚未验收；52定向format过、全仓13历史format失败留ST-V。Schema/generated/Proto/package/CI/Docker无差异，所有writer自建库已删除。handoff-evidence.md保留早期失败及最终命令，不冒充S3/ClamAV/镜像实测。
+
+### ST-I2-B 已接收：b5ad3e0440a819a074c48d68d97af9afe0d48527
+
+- 符合性和质量两名只读审查员顺序放行，均无可证P0/P1/P2。Root `/tmp/kokoro-storage-main-i2-lifecycle.YqAsd8` 两个独立新主库默认并行各58文件322测试，compiled2、lint/typecheck/build/validate、精确七表七enum零FK/apply/drift、contract→generate→contract通过，官方产物无变化。
+- Root首次误将全库CLI验证放在已含state suite metadata的测试库，CLI正确报告另外3个missing对象并exit2，harness失败保留cli-local.log；随后只在独立新CLI库运行，两次apply均0，真实local旧创建时间不越过retiredAt宽限、过龄确切删除/current与unknown保留。修正的是Root资源编排，不修改源码/断言。
+- 隔离prod/no-optional冻结安装、无CLI/TS/tsx/Vitest、编译Nest与reconciliation owner import、真实Prisma retirement count0通过。`pnpm audit --prod`仍将未安装的optional Prisma CLI链列入并报3条既知告警；按实际安装闭包`--prod --no-optional`为138依赖0告警。两个输出都保留，不把后者当完整供应链已清零。所有Root创建的主库/CLI库/prod查询库均已drop。
+- 52文件定向format与diff check通过，全仓13历史format失败仍列明。Root提交前核验52dirty、基线/空index/逐hash，显式暂存52路径、staged blob/diff再提交；提交后全部52blob与manifest一致且Storage树clean。b5ad3e0标题feat(storage): reuse canonical objects and retire replaced identities safely。
+
+### ST-V1 工具链与质量门卡（先设计门）
+
+| 项 | 范围与条件 |
+|---|---|
+| 任务 | P1：固定兼容工具链、type-aware lint实际门禁、格式与完整依赖审计；不扩到部署重写 |
+| Owner/执行 | Storage工程门禁；storage_implementation(gpt-6-astra)继续唯一writer，Root架构/审核/提交；原两审查员只读 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；b5ad3e0440a819a074c48d68d97af9afe0d48527，clean |
+| 当前事实 | Nest/Prisma运行与I2通过；TS5/@types-node22/Vitest2及非type-aware ESLint尚在；完整audit3既知Prisma CLI链告警，13历史format失败。Root候选基于旧347e6dd，不能照搬测试结果 |
+| 目录比较 | A扩展现有package/workspace/tsconfig/eslint/vitest、test/architecture和现有测试，ADR解释核心选型；B新建tooling顶层/第二测试工具或万能helper无持续业务职责，淘汰。只新增有真实验证责任的普通测试文件及一份ADR，不建新业务模块/owner |
+| 设计门文件 | 先更新TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL明确当前b5ad3e0与目标工具链、API/数据不变；一个新ADR记录候选比较、维护/许可/供应链、精确版本/官方依据/时间、失败语义与退出路径；必要CURRENT/ACCEPTANCE/INDEX引用。先报告三文档绝对路径、当前SHA、未决项和验证计划，Root核对后才改配置/代码 |
+| 候选 | Node24.20/pnpm11.25保持；TS6.0.3、@types/node24.13.3、typescript-eslint8.69.0、ESLint10.9.1、Vitest5/Vite8.2.2、Prettier3.9.6、handler4.12.1；Nest12/Prisma7.10/Connect2.2不升级。其他直接依赖固定当前lock已核验精确版本，不浮动latest、不额外major升级 |
+| override门 | 仅@prisma/config@7.10.0>deepmerge-ts8.0.2及prisma@7.10.0>mysql2 3.24.3；ADR显式承认前者跨major：实际Prisma config普通对象配置，Map/Set/数组差异评估，本仓不把MySQL/Studio作为生产数据路径。真实config validate/generate/db push/read-only diff及配置解析回归，供审查；Prisma上游修复/批准升级立即移除两条scope并重验lock/audit，禁止泛全图override |
+| 冷却 | 仓内显式minimumReleaseAge:1440 + strict:true，不设exclude；独立配置/空store正反例，frozen实际安装。Root探针是选型证据，落仓还要验证当前配置 |
+| typed lint | 使用projectService/type-aware，显式unsafe-assignment/call/member、floating/misused及所需exhaustiveness固定选项；unsafe-return/argument随采用preset保持。六规则真实lintText正负例及现有import边界回归。解析JSON到unknown后窄化、保持Promise/abort语义，不靠any cast、通用disable或改变测试行为清零；可选require-await与async双桩的适用范围在ADR说明，任何例外具体且不触碰上述强制规则 |
+| 类型/build | TS6显式build rootDir=src保dist/main.js；Node类型major与runtime对齐。全声明skipLibCheck=false+DOM只是Root可行实验，非强制扩大本片；不手改node_modules/generated。根prisma/vitest配置的projectService覆盖可在既有tsconfig纳入，build仍只src |
+| 允许实施集 | 门通过后package.json/pnpm-lock/pnpm-workspace、eslint/tsconfig/vitest/prettier相关配置、当前13format文件（compose仅格式无运行语义）、为typed lint所需的既有src/test/scripts定点类型修正与架构门正反例、相应文档/ADR；contract/provenance仅格式且JSON语义字段/digest不变，contract/Proto内容不变 |
+| 排除 | 业务状态机/API/SQL/schema/generated变化，CI/Docker/compose功能/依赖服务编排重写，其他owner/Root、用户数据、共享服务启停、真实SLO宣称。必要越界先报Root |
+| 验证/交付 | 先RED/策略反例，完整format/lint/typecheck、322基线+新增默认并行独立PG、compiled2、build/validate/七表apply/drift、contract→Prisma generate→contract隔离、完整audit及prod/no-optional冻结闭包/真实查询。预留版本和生成物检查，不取消失败门。固定manifest停写→符合性→质量→Root主树复跑/小片提交，Git仍Root独占 |
+
+ST-V后继仍须独立卡：唯一资源拥有权的部署/CI/compose/生产API smoke、真实S3/ClamAV/ObjectLock/镜像和信号验收；Docker socket目前只读仍超时，未获得重启答复，不擅自重启。工具链完成不代表整个Storage目标完成。
