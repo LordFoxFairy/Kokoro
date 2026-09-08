@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b 已验收；P2–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b 已验收；P2c 已放行，P3–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -39,7 +39,7 @@
 | P0-D / P0 | TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL、子仓 AGENTS/ADR/CURRENT 对齐，记录版本证据与未决项 | Root / 当前模型 / 写入（派实现前） | 子仓上述现有文档、ADR 新文件；Root 本任务板 | 参考 P0-A；不改源码/机器契约/schema | 已审查并提交 |
 | P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
-| P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | 待派工 |
+| P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b 已验收；P2c 已放行 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 待派工 |
 | P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 后续授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 待派工 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
@@ -322,3 +322,43 @@ Root 使用 Node 24.13.0、pnpm 11.25.0、专属数据库 `kokoro_capability_p2a
 Root 当前全局门禁：standard exit 1（208 violations，其中 Capability 20；包括 checker 尚未识别 Prisma canonical/generated 与 feature 内 transport、以及 strict build/tsconfig/剩余旧目录等真实或治理缺口）；topology exit 0；Root tests 为 82 passed / 2 failed，仍是手册示例数量与“参考依据”标题断言。日志 `/tmp/kokoro-p2a-root-{standard,topology,tests}-final-20260908.log`，未通过放宽门禁或改其他 owner 清零。
 
 Docker daemon 既有 `/info` HTTP 500，镜像 build/smoke 未验；production smoke 的 IAM/Storage/provider 为本地协议 stub。P2a 已验收，Goal 仍 active；现在仅放行 P2b-I，以 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34` 为基线，P2c/P3/P4/P5 继续串行等待。
+
+### P2b 最终交接与验收（2026-09-08）
+
+- 任务/owner：P2b-I / kokoro-capability / capability_owner_p1b（gpt-5.6-sol）唯一实现 writer；Root 独占 Git index、提交与集成复验。实现基线 `af9ac7bf611f2bbf1c49bf157a5acb7f55a02f34`；最终提交 `119dbe36d2b44080d6be825ca84c98471e63467e`（`feat(capability): add Skill installation owner service`）。
+- 结果：唯一 owner proto 新增 `SkillInstallationService` 五个 RPC 与统一 mutation response；`skill-installation` 作为独立 runtime surface 接入 Nest/Connect 同一 listener。Prisma canonical schema 新增真实 `skill_installation`，删除 generic `installation`、`capability_authorization` 及专属 enum/generated model；feature-owned repository 与 Serializable transaction 承接 tenant、target+series 唯一身份、初装/升级/重装/启停/移除/tombstone/no-op/降级状态机。
+- 信任边界：Install 仅接收 source ref 与 target scope，服务从当前 tenant-scoped active source 派生 package identity，Storage 二次验证 clean/digest 后在事务内重读。三个 mutation 使用服务端重算的稳定业务 command digest；五方法 proof request binding 覆盖完整当次业务字段和 optional presence。receipt 命中前重验当前 proof/IAM/operation/binding/scope/resource/source 状态，返回缓存结果前再核对资源身份，字段替换、跨方法重放、撤权后 receipt 泄露均被回归拒绝。
+- 并发与错误：Skill version 的 P2002 仅对 `uq_skill_series_revision` 做最多五次全事务重试；installation 同样只重试目标+series 唯一竞争，其他 P2002 立即抛出。typed application errors 固定映射鉴权、授权、不可见资源、前置条件与依赖失败；downgrade 为 `FAILED_PRECONDITION`。Buf 的统一 response 例外由仓内 policy checker 收窄到三个批准 mutation。
+- 独立规范审查：contract_review / gpt-5.6-sol。R1/R2 分别发现 receipt 绕过当次授权、请求未真实绑定、source current-state 漏检与 auth code 错误；同一 writer 按 RED→GREEN 修复。R3 `SPEC PASS`，绑定提交前 tracked code diff `0dbfe2df73bcc9b0b124fe91d0dada70d568b51cb99e9a8de00b0e26d45da651`，无 blocking/important/minor。
+- 独立数据/质量审查：database_review / gpt-6-astra。R1/R2 发现可恢复 P2002、降级错误码及跨 target/installation receipt 参数替换；R3 `QUALITY PASS`，同样绑定 `0dbfe2df…`，无 blocking/important。保留一个已记录 minor：非法 owner scope kind 在部分 legacy boundary 仍可能落 `INTERNAL`，后续 typed boundary 收口，不在本片扩大修改面。
+
+Root 使用 Node 24.13.0、pnpm 11.25.0、专属 fresh PostgreSQL 数据库 `kokoro_capability_p2b_f2_20260908_root_post119dbe3` 与 Redis DB 8，在最终提交 `119dbe36d2b44080d6be825ca84c98471e63467e` 重跑：
+
+| 命令 | 实际结果 |
+|---|---|
+| `pnpm install --frozen-lockfile`、fresh `pnpm db:apply-schema` | exit 0；lockfile 无漂移；全新库安装成功 |
+| `pnpm format:check` / `pnpm lint` / `pnpm typecheck` | 全部 exit 0 |
+| `pnpm prisma:validate` / `pnpm prisma:generate` / `pnpm schema:check` | 全部 exit 0；生成后工作树保持 clean；真实数据库无 drift |
+| `pnpm contract:check` | exit 0；新 digest `6e0bbfc7974692b20f13ef9aac8440c50a6b1be2466e90a020b0e2cb5197fd8b` |
+| `buf breaking` 相对 `af9ac7b` | exit 0；新增 proto 为 additive |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 55 files / 266 tests passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 12 files / 77 tests passed，0 failed、0 skipped |
+| `pnpm build` / `pnpm smoke` / `pnpm smoke:production` | exit 0；smoke 2 files / 13 tests；真实 PostgreSQL/Redis + 本地 owner 协议 stub |
+| `git diff --check` / clean worktree | 通过 |
+
+提交前日志：`/tmp/kokoro-p2b-f2-root-precommit-20260908.log`；提交后绑定最终 SHA 的日志：`/tmp/kokoro-p2b-postcommit-119dbe3-20260908.log`。日志为本机证据，不纳入仓库。
+
+Root 最新全局门禁如实记录：`python3 scripts/verify-ten-repository-standard.py` exit 1（212 violations，其中 Capability 20）；`python3 scripts/verify-repository-topology.py` exit 0；`python3 -m pytest scripts/tests` 为 82 passed / 2 failed，仍是手册示例数量与“参考依据”标题断言。对应日志 `/tmp/kokoro-p2b-root-{standard,topology,tests}-final-20260908.log`。未通过修改其他 owner、当前 SQL 手册脏文件或放宽门禁清零。
+
+P2b 的 installation + outbox 已在本地业务事务内原子提交，但 success receipt 仍由 outer wrapper 在事务外完成；崩溃窗口、stale processing receipt 与恢复保持真实缺口。Docker 镜像及真实 IAM/Storage owner sandbox 联调未验。Goal 保持 active。
+
+### P2c-I 放行（2026-09-08）
+
+P2c 现在以 `119dbe36d2b44080d6be825ca84c98471e63467e` 为唯一实现基线，续派同一 capability_owner_p1b 作为子仓唯一 writer；Root 继续独占 Git。允许修改 Skills transaction/projection、Storage client、receipt repository/transaction contract、旧 `src/application/installation` 与 package/source-import helper、对应 tests/docs/必要 schema/generated；禁止改 P3 MCP 业务、P4 publisher/reaper/retention、P5 消费者仓/服务名/alias、其他仓和 Root 文件。
+
+完成条件：
+
+1. catalog/pool 的 installed projection 从 attested target scopes 下的真实 `skill_installation` 查询导出，删除 `installed:true` 占位；cursor、tenant、owner scope 与现有只读 HTTP/Connect contract 保持。
+2. 三个安装 mutation 的本地业务变化、outbox 和 completed success receipt 使用同一 PostgreSQL transaction；same-command replay 返回首次结果，digest/operation drift 保持冲突。failed/processing 的跨崩溃恢复、lease/reaper、publisher 和 retention 仍留 P4，不以本片原子 success path 冒充完整恢复。
+3. 删除已被真实 owner flow 替代且没有生产入口的孤立 installation/package/source-import helper、测试与 import；不保留 fallback、alias 或双轨实现。Storage package clean/digest 边界继续保留。
+4. 先写 projection/rollback/receipt crash-window RED，再最小实现；真实 PostgreSQL 覆盖业务/outbox/receipt 同事务回滚、并发 replay、catalog/pool target scope 与 cursor 隔离。完成后冻结工作树，独立规范/数据质量双审、Root fresh schema 与完整本仓门禁通过后方可提交。
