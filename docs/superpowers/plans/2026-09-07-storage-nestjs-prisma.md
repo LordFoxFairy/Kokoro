@@ -599,3 +599,23 @@ ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-inventory.ts承
 
 
 ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf518c845568cf0fbd02e55c93cfbde838c1c516f073e9f0bc3b441697b033，2026-09-08T13:06:09Z。writer停写，无Git操作；Root已阅读全部新helper并核对批准职责/三设计一致性，开始主树真实门禁。storage_data_review负责独立只读质量审查（沿用gpt-5.6-sol），范围仅此manifest及相关既有adapter/runtime/ADR与test，不改文件/Git/测试数据/共享服务；重点current-only/未知hold与receipt、durable journal、方法级drain、DB亲建/未知证据和测试真实性。引用Root CODEBASE_MAP与TypeScript/SQL手册及当前三设计，交付绑定manifest和基线的P0/P1/P2或无可行动项；Root自行复验、裁决和提交，A1b继续未授权。
+
+
+### ST-V2-A1a 已验收 / A1b 接线盘点
+
+- Storage提交 `839c9a9f7fa575435ab6934aceb6f1adf22e550d`，17物理路径（11M/6A）逐原始/staged/committed hash与精确路径核验，提交后clean。Root符合性与storage_data_review独立质量均无可行动P0/P1/P2。
+- Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1a.frl8gt8y` 真实新库默认并行65文件424/424无skip、compiled2/2，format/lint/typecheck/build、audit443依赖0、官方apply/validate/contract→Prisma generate→contract、17hash及范围外241tracked字节不变。Root另真实调用isolatedPrisma创建两库：preserve+重复close库仍存在，默认并发close库已删除；Root只凭本次成功创建receipt删除自己的保留验收库，所有本次亲建库已清。没有外部S3/ClamAV/Docker操作。
+- 已关闭Root预审发现：空页变化cursor与缺失IsTruncated、非合作SDK超时、未知CREATE/DROP非敏感诊断、方法跨journal await时close提前清理。修复前失败与worker修复前422输出保留，不冒充最终424证据。
+
+| 项 | ST-V2-A1b-R 接线只读盘点任务卡 |
+|---|---|
+| 目标/优先级 | P1；落实ADR0004已批准真实URL链与三个smoke消费者，先核对A1a基础helper到实际Nest/Prisma消费者的最小文件范围 |
+| Owner/Agent | Storage test，storage_implementation(gpt-6-astra)只读；Root最终范围/共享计划/提交 |
+| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean |
+| 只读范围 | 三smoke（production-runtime/capability-package/s3）、已接收smoke-provider相关fixtures、compiled-entry、storage-client、Prisma schema/receipt/完成事务/真实Nest启动入口、对应test及三设计；其他owner禁止 |
+| 确定方案 | 精确返回PUT URL→Complete→GetPackageReference→精确GET验证bytes，旧PUT重用不变final；production-runtime不再SQL取key+SDK PUT。capability-package真实Nest/plain Node，不用TestingModule替换provider。先停止app/在途再对象cleanup，成功后才释放自有DB；容器DB由B拥有不能越权DROP。单资格120秒/RPC420秒，传播同一signal，保留生产Complete300秒 |
+| metadata proof | A1b成功Complete只能以同一自有DB中tenant/owner/upload/asset/command已提交关联确认canonical，再真实HEAD/version/ETag/bytes核对登记；不凭prefix/调用者字符串或事后beginWrite授予权限。未知Complete candidate report-only；metadata只读用实际Prisma、不新增SQL CRUD/第二repository |
+| 待核定普通文件 | storage-roundtrip.ts只RPC/返回URL流程；必要typed metadata proof在现fixtures普通文件而非src/common，避免provider.ts继续混持久化查询；对应unit和真实自有Prisma integration。若原手写skillZip需替换，用成熟工具生成确定性有效fixture、无新手写ZIP协议/依赖，先给文件名与验证 |
+| 排除/交付 | 本R无任何写入/生成/安装/DB/服务/外部provider/Git；交付精确M/A/D文件集、现有复用入口、准备的RED/保留行为、A1a可能需补的public hold释放/confirm接口及未决。Root同一计划明确放置表/范围后才续派写入；不混B部署/CI、H0契约或其他owner |
+
+资料入口继续Root CODEBASE_MAP、TypeScript/SQL专项手册、Storage三设计与ADR0004；既有设计决定不重新向用户询问。真实外部环境仍待配置，不把本地double当provider验收。
