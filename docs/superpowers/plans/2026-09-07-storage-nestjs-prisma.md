@@ -749,3 +749,18 @@ A1b1-I 普通文件范围补充（实施中先报告后批准）：Complete期�
 
 
 A1b1-I 预算收敛裁决：批准同一已授权 `SmokeProvider.close` 增加可选 `signal`（首次close捕获后固定），与原私有最多60秒signal组合；普通无参行为不变。capability停止确认后从同一60秒cleanup预算依次cover resolveCompletions/版本recovery/close，禁止每阶段刷新60秒叠加为120秒。预算耗尽/预先取消即使空registry仍非零保库，零新增对象/hold写；仍尝试释放自有SDK/journal/Prisma等独立句柄，不以传入已abort的signal为由跳过release调用。新增signal仅能收紧原预算，不改变preserveObjects首次模式或给后续close重启删除机会。对应取消/边界单测在原已授权文件，必要设计说明仍现7文档，不新增路径。
+
+
+### A1b1-I 第一轮固定交付：主树验证通过，但符合性三项返工
+
+固定manifest `2fdbc95e8024a2a989b7c11b851344d35eedde3a0d1b03a36c387e92785a6b12`（f47801f基线，19路径12M/7A，2026-09-08T14:43:14.702239Z）尚未验收/提交。Root主树日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-i.7uzngshu` 已实跑fullformat/lint/typecheck/build/audit443依赖0、亲建新库官方apply/catalog/drift、68文件506/506无skip、compiled2/2、另一个真实SmokeRuntime→compiled Nest→自有PG/Redis启动/ready/closed+exit/幂等停止探针（S3/ClamAV仅本地HTTP/TCP doubles）、validate/contract→generate→contract/diff。跨turn旧exec handle已丢，Root确认无同检查进程、逐日志完成至diff、19hash固定、246范围外与基线一致，且日志中的亲建库已不存在；无重启测试或清理未知库。
+
+Root符合性另用忽略目录的临时回归捕获3个真实RED（root-regression-red.log，3失败；79为-name过滤未执行，不是外部资格skip）：
+
+1. **首close保留模式未真正冻结**：options引用在首次await后仍被循环读取；caller把同对象preserveObjects从true改false，会实际DELETE已登记对象，尽管最终非零。要求调用首刻snapshot bool/signal，原对象后续突变也不得改变模式；回归断言零DELETE。
+2. **资格重复写缺少current确认**：writeQualification只核对完整versions身份与hold，列表缺IsLatest/没有唯一current仍会发PUT；应在重复key真实核对唯一current及无Version HEAD与列表一致（可复用ownedCurrent），再允许覆盖；补缺/多current、HEAD漂移零PUT及合法重复写。
+3. **已过期HTTP晚成功继续业务**：10秒requestSignal已abort而fetch迟到成功，当前只检查420秒outer signal，仍可afterPut/Complete并最终报绿。consume前后检查同requestSignal，不以丢pending的Promise.race制造完成；补晚PUT/读body超时不再Complete/不得成功，并保留错误URL不泄漏。
+
+首次Root临时探针从Root目录pnpm --dir触发Root pnpm12与子仓11冲突，只是invocation错误；已保留root-regression-invocation-error.log，改用Storage cwd和已锁11.25绝对CLI后得到上述实际RED；未改版本/manifest/规则。临时探针在Storage .tmp，仅Root验证工件，不纳入提交。
+
+返工卡：storage_implementation仍唯一Storage writer，基线/分支与19原范围不变，重点provider/roundtrip及其unit，必要现7文档。保留首manifest与日志历史，先迁入回归验证RED，再修复GREEN，完整主树门后新manifest停写；独立质量评审暂不派（符合性未通过）。Root不改业务文件。顺便修正文档“精确4M/7A当前未授权”当前态与真实12M/7A矛盾；残留AWS.delete消费者准确列production-runtime和scanner，不声称只剩一个。资格缺失证明沿已验A1a confirmDeleted的指定Version HEAD确定404+完整版本列表协议；本片复用该双证据而非复制一套GET缺失逻辑，Root明确接受这一语义收敛，不能少任一证据。
