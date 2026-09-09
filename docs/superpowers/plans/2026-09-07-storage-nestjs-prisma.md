@@ -798,3 +798,6 @@ Root真实Prisma错误形态采证 `canonical-real-meta.log`：同tenant/owner/d
 | 文档 | 仅docs/CURRENT.md、TECHNICAL_DESIGN.md、DATA_MODEL.md、API_CONTRACT.md、ACCEPTANCE.md必要现状/精确分类解释，反映A1b1提交与本P1待集成。无新ADR/文档/计划中心，不机械改所有文档 |
 | 排除/资源 | A1b1 fixtures/其余源码/其余测试/Schema/Proto/generated/依赖/CI/Docker/其他owner不动。仅复用PG/Redis、亲建随机库与可确认资源；无外部provider/服务重启/共享清理/新增依赖；无Git操作 |
 | 交付 | 固定精确manifest、实际RED/GREEN与完整日志后停写，Root独立审查和真实主树门后按路径提交；A1b1与本片合并验收不抹掉此前514/1失败证据。B/H0/真实外部资格仍后继 |
+
+
+ST-CANONICAL-RACE-I writer交接：storage_implementation（gpt-6-astra）因工具明确报模型capacity而errored，已不运行；Root检查HEAD仍82002f94，实际留下两个未提交测试改动（canonical-create-conflict unit / blob-owner-deduplication integration），不是clean交接，必须保留审查与接续TDD，现src未改。改派storage_race_implementation（gpt-5.6-sol）为唯一Storage writer，同上任务卡4代码+必要5文档范围和固定决策不变；Root仍唯一Git/任务表writer并并行准备主树验收，data_review后续固定质量。新writer先检查已有两测试和.tmp/st-canonical-race-i-logs，记录已有状态，确认实际RED后补完，不覆盖不明变更、不把模型容量故障当业务阻塞。无跨owner扩权。
