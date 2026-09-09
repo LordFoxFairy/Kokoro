@@ -777,3 +777,24 @@ Root额外缺参探针实际S3 smoke按预期1失败/0skip、解析前置错误�
 固定质量任务卡：storage_data_review只读上述19路径manifest及必要已提交源码/三设计，复核完整provider授权、短Prisma证明、runtime停止与两消费者失败cleanup；基线与新hash固定，不写/测试/安装/生成/DB/Git/服务。Root符合性已过，3条原反例已真实GREEN；须独立审查，不把已知baseline P2002或外部缺环境误作本片新增，也不因默认门失败漏查其他问题。Root负责所有实际复验/后继缺口修复。
 
 并行只读调查卡 ST-CANONICAL-RACE-R：storage_contract_review读取 f47801f 固定 src/assets/canonical-create-conflict.ts、src/database/transaction-errors.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts 和上述真实失败日志；只给具体根因、最小精确分类/验证文件建议和保留外层网络重观察条件，不写/测试/安装/DB/Git/服务。Root保留实际Prisma错误shape采证/门验证，两个review独立，不给writer扩权。待固定质量和分类事实收敛后Root决定独立修复切片，不先大范围改事务。
+
+
+### A1b1提交待集成验证 / ST-CANONICAL-RACE-I局部修复放行
+
+A1b1固定19路径已提交 `82002f94e1c08da317a82e39dea9f03c9f9f4479`，逐baseline/worktree/staged/committed hash和路径核验、提交后clean；Root符合性与data_review独立质量无新增P0/P1/P2。状态仍**已提交、待集成验证**：全套514/515既存canonical竞争错误未闭合，不称整仓已验收。Root补跑compiled2/2、实际SmokeRuntime+Nest/自有PG/Redis探针、validate/contract→generate→contract与独立ZIP重生成通过；两显式smoke缺配置各实际exit1/无skip，Root解析误判已修并保留前后日志。日志沿ujxruirz，两个Root親建库均已DROP。
+
+Root真实Prisma错误形态采证 `canonical-real-meta.log`：同tenant/owner/digest不同blobId实际P2002→StorageBlob→DriverAdapterError→23505→UniqueConstraintViolation→constraint.index=uq_storage_blob_tenant_owner_digest/table=storage_blob，现matcher=false；PK例相同层级storage_blob_pkey则true。readonly reviewer起初建议删除PK，Root以生产UploadsService的deterministic resourceId("blob",tenant,owner,sha)与既有真实生命周期競争反证，reviewer已修订：两个真实路径均须保留，不能为新测试回退旧生产路径。
+
+本片归属既有Assets canonical竞争分类和Uploads提交后的失败分派；沿已批准I2事务外重读/网络重观察，不改owner/Schema/API/状态机/事务预算，不新文件，故按局部修复门执行。
+
+| 项 | ST-CANONICAL-RACE-I任务卡 |
+|---|---|
+| 目标/优先级 | P1；精确识别两种已证canonical absent-create竞争，让失败事务回到外层reobserve，并拒绝无关PK/其他unique误归类 |
+| Agent/基线 | storage_implementation（gpt-6-astra）唯一Storage writer，Root符合性/主树验证/Git，后继data_review只读质量。/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，82002f94e1c08da317a82e39dea9f03c9f9f4479，clean |
+| 允许代码 | src/assets/canonical-create-conflict.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts（4现有文件）。同unit可覆盖classifier及store异常分派这一相同变化原因；必要新增/额外测试先报告 |
+| 固定实现 | 分类器保留完整实际Prisma P2002/model/adapter/SQLSTATE/kind/table条件，精确返回identity/primary-key/undefined判别（不造错误层）。identity index仅uq_storage_blob_tenant_owner_digest；PK仅storage_blob_pkey。Uploads事务外catch保留expectedCanonical===null门；identity可转CanonicalChanged；PK还需input.blobId等于现resourceId("blob",tenant,owner,sha)才转，否则原error身份抛出。不添加DB查询/别名fallback，不以整个表23505或宽泛字符串匹配 |
+| 保留边界 | PrismaService transaction/transaction-errors完全不改，不扩大内部重试/次数/时间；网络reobserve仍由既有UploadsService外层执行。expected非null的两variant、其他索引/错误shape均原样失败。无关PK上下文须负例；生产same deterministic ID与store different ID same identity两路都保留 |
+| 验证 | 先新精确真实meta unit/store分派RED→GREEN；不同blobId同identity真实两连接竞争用有界barrier而非串行/偶绿，保留不同owner隔离；重跑原canonical-lifecycle真实PG相同deterministic ID/provider reobserve竞态，不删除/弱化。完整68文件515+新增默认并行、compiled2、actualRuntimeRoot探针、fullformat/typed/typecheck/build/apply/catalog/drift/validate/双生成保护/audit。可先fixture直接Prisma create捕获真实meta，但不冒充完整竞争验证 |
+| 文档 | 仅docs/CURRENT.md、TECHNICAL_DESIGN.md、DATA_MODEL.md、API_CONTRACT.md、ACCEPTANCE.md必要现状/精确分类解释，反映A1b1提交与本P1待集成。无新ADR/文档/计划中心，不机械改所有文档 |
+| 排除/资源 | A1b1 fixtures/其余源码/其余测试/Schema/Proto/generated/依赖/CI/Docker/其他owner不动。仅复用PG/Redis、亲建随机库与可确认资源；无外部provider/服务重启/共享清理/新增依赖；无Git操作 |
+| 交付 | 固定精确manifest、实际RED/GREEN与完整日志后停写，Root独立审查和真实主树门后按路径提交；A1b1与本片合并验收不抹掉此前514/1失败证据。B/H0/真实外部资格仍后继 |
