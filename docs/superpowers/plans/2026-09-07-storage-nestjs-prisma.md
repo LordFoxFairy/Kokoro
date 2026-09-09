@@ -882,3 +882,12 @@ Root符合性收尾要求一次窄修：新SIGTERM compiled场景finally先await
 B0-I cleanup-order返工固定：新manifest7b38f76b3bb8d516635b579b290c21a887ebe4021e5cbff150e7b689376b5d1b，同d2b8d66基线12M，仅compiled-runtime相对首manifest改变；首版与logs保留history-a471eb6d。Root逐读直接嵌套finally，completion/child等待失败也进入后续句柄close，providers内部HTTP/TCP同样保证尝试；正常/失败断言未放宽、原实例getter/单次事件语义保持，符合性通过。Root正重跑新全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.nkptumwc。writer已停写。
 
 固定质量卡：storage_contract_review只读新12M manifest及必要已提交依赖，绑定d2b8d66+7b38f76b，不写/测试/生成/Git/DB/服务。复核排空事实不早置真、单次尝试、原close确认、真实SIGTERM/三种失败和请求响应取消区别、清理失败不跳过后续资源、文档证据不越界为所有hook或B/外部资格。Root规格已通过，独立质量不能用writer数字替代Root实际门；给P0/P1/P2绝对路径行号或通过。
+
+
+### ST-V2-B0-I 已验收
+
+Storage提交 `94733167be158424a42fbb264f7ee3511dfe0d1b`（fix(storage): prove request drain before shutdown acknowledgement），12精确路径baseline/worktree/staged/committed哈希一致，提交后clean。Root符合性通过；storage_contract_review对固定manifest7b38f76b独立质量无P0/P1/P2。Root最终主树日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.nkptumwc：fullformat/lint/typecheck/build、audit443依赖0漏洞、亲建新库官方apply/catalog/drift、默认并行68文件524/524无skip、compiled6/6、实际SmokeRuntime→compiled Nest→真实自有PG/Redis（provider本地网络doubles）、validate/contract→generate→contract/diff通过，12文件固定且253范围外tracked不变。Root亲建库storage_root_b0_i_295542ed78e042e28d41dcdf已DROP，owned-db.json记录create/drop。
+
+验收含原close协议检查、真实SIGTERM pending/ready503/settle/唯一事件、三错误形态、主动close1/no closed/SmokeRuntime拒绝及默认Nest退出选项负对照；最后控制流修复保证新fixture清理等待失败仍尝试后续release。事件只证明RequestLifecycle跟踪的实际work已settle，不表示业务成功或全部provider优雅释放；这条边界在三设计与验收文档持续有效。首manifest、正常绿门但finally薄弱点、P1设计否决与原始RED保留。writer/reviewer均完成停写，其他owner/共享状态未改。
+
+下一实际切片为B同owner container+production-runtime接线三设计门；沿已记录B-R/B1-R与B0事件，不再研究已确定的退出语义。必须一次收敛container生命周期、最小配置、主场景、旧脚本/SQL+SDK旁路删除、相关架构门/CI调用更新的精确范围，保留scanner有效断言并另锁其承接顺序。S3外部资格/真实ClamAV/OCI/SLO与H0仍待验，当前目标保持active，不用B0本地通过宣称全Storage生产验收。
