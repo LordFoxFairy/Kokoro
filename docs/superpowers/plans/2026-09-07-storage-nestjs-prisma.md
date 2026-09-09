@@ -838,3 +838,20 @@ B0-D第一轮P1不通过：reviewer进一步检查Nest12的before/onAppShutdown 
 Root与readonly复研裁决：不靠把失败注入换成top-stage来放宽可靠关闭。采用RequestLifecycle自己拥有的isRequestDrainComplete事实，仅实际work settle且active0后设定；原OnApplicationShutdown沿现structured logger一次request_drain success，原compiled-entry仅事实true才发closed。不新signal/adapter包装/关闭框架/IPC类型。此事实只证明被追踪work，不是所有providerhook或资源优雅释放。B须联合本次container唯一事件+ID/digest/ready/pre-signal running/真实exit/noOOM/noRestart，其他状态不能替代事件；缺/重复/畸形日志保留，尾部日志交真实RC验，不新增flush协议降级绿灯。现A1b只有app.close返回的确认存在上述未覆盖缺口，归B0一起修复，旧通过数字不证明错误注入。
 
 修订B0-D固定manifest8821ce3df8e8445b42f101af435d0aa44793f4f277dd3e27813ce9cc8cd7833b，27aa544基线同7M，Root仍唯一文档writer且停写；readonly storage_contract_review复审本次完整语义/一致性，Root重跑文档门。未来I精确代码集改为5现有文件：src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts；必要文档仍7。其他源码/Schema/API/依赖/部署/其他owner不扩。源码仍未授权或修改；三设计过门再提交并派I。
+
+
+### ST-V2-B0-D 已验收 / B0-I 放行
+
+设计提交 `d2b8d660630b16808c8de93e14dc3d0a83f46cd7`，7M baseline/worktree/staged/committed哈希和路径一致，Storage clean。修订manifest8821ce3质量复查无P0/P1/P2；Root文档门日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-design.zxr2exu3：7doc format、port1 validate、contract、diff、258范围外hash通过，未连DB。第一稿P1和真实语义反例保留，不称已实施。
+
+| 项 | ST-V2-B0-I任务卡 |
+|---|---|
+| 目标/owner | P1 Storage请求实际排空正向证据，原生Nest信号exit语义及A1b原closed缺口；不自写框架 |
+| Agent/基线 | storage_race_implementation（gpt-5.6-sol）续任唯一Storage实现writer，Root规格/主树/Git，storage_contract_review后续只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，d2b8d660630b16808c8de93e14dc3d0a83f46cd7，clean |
+| 允许代码 | src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts（5现文件，无新文件目录）。其余普通文件先报告 |
+| 固定语义 | 全沿已验TECH B0节；main原生useProcessExit。RequestLifecycle实际settle+active0才isRequestDrainComplete；原onShutdown一次write尝试现structuredLog request_drain success，单调duration/固定随机trace，未完成无success。compiled-entry原close仅真实getter成立才closed，失败非零/无closed/释放IPC。无新生产开关/IPCtype/adapter或signal框架 |
+| 行为基线/验收 | 先新unit/真实compiled RED，再GREEN；保持原compiled2。锁住响应取消不等于worksettle、空drain/重入/logger失败；真实pending→signal→ready503→未退出→释放→事件一次+exit0；drainhook拒绝exit0无事件，原close非零无closed且真实SmokeRuntime.stop失败；top-stage拒绝exit1无事件；其他provider原释放后拒绝可事件+exit0但不冒称所有hook成功 |
+| 文档 | 仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE/RUNBOOK/ADR0004必要目标转当前/精确证据；不机械改无变化字段，保留P1历史和框架/Storage/外部资格区分 |
+| 排除 | 其他src/test、Schema/generated/Proto/依赖/lock/CI/Docker/其他owner不动；B容器driver/消费日志/清理、scanner/H0/真实provider/OCI仍后继。无新SQL CRUD、无日志flush/文件协议、无新资源框架 |
+| 资源/验证 | 仅复用现PG/Redis；自己随机CREATE成功库，finally仅DROP亲建句柄；provider本地HTTP/TCP doubles/亲建child，有界等待失败回收不当成功。完整format/lint/typecheck/build/default521+新增/compiled2+新增/实际SmokeRuntime/官方apply/catalog/drift/validate/contract→generate→contract/audit/范围外hash。无外部provider/Docker/共享清理/重启/安装 |
+| 交付 | writer无Git，固定manifest+实际RED/GREEN/完整日志+精确文件清单后停写；Root独立重验和审查后精确路径提交；目标保持全Storage，B0不替代B/H0/外部验收 |
