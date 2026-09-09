@@ -815,3 +815,10 @@ Storage提交 `27aa544d89bac8f8d0318cab7e22dad1c789da20`（fix(storage): classif
 此前A1b1提交82002f94的514/1失败由本片精确修复，A1b1+本片合并集成验收通过；保留此前失败与三条Root反例的历史，不以重跑偶绿掩盖。两个smoke原URL/Prisma证明/Nest生命周期接线已接收，不代表真实外部provider或OCI发布已验。writer和reviewer均停写，Root保持本轮所有Git操作串行。其他owner及SQL手册/Capability任务表未提交变更完全不动。
 
 下一阶段仍沿已有B-R预研：先收敛B同owner容器启停与scanner剩余消费者的三设计门，再写实现；必要时先分出最小Nest原生SIGTERM退出码验证片。Root已复核当前锁定Nest12.0.1的useProcessExit语义与RequestLifecycle实际work追踪；任何新fixture/入口/测试控制面须先比较现文件扩展与专用fixture位置，不能直接把调试协议放进production。后续依然保留H0 HTTP机器契约、外部S3/ClamAV/ObjectLock资格、OCI镜像/发布与SLO待验，目标保持active。
+
+
+### ST-V2-B0-R：正式SIGTERM退出证明的前置调查
+
+上一goal turn属于progress：27aa544已提交并521+compiled2主树验收；当前Storage HEAD仍27aa544d89bac8f8d0318cab7e22dad1c789da20且clean。进入B实际容器生命周期前必须先证明Nest正常关闭对应exit0，而非当前重发SIGTERM与未drain均可能相同signal退出。整体方向沿B-R，Root负责三设计收敛，暂不授权业务代码。
+
+只读任务卡：storage_contract_review负责最小compiled SIGTERM测试设计，基线27aa544固定HEAD，范围src/main.ts、RequestLifecycle、compiled-entry.mjs/compiled-runtime.test.ts、锁定Nest12.0.1生命周期源码。比较扩展现compiled fixture与独立专用fixture/子进程两位置，推荐如何证明实际tracked work尚未settle时不exit，settle后0，真实hook失败1；禁止新生产IPC/管理API/自写shutdown框架，不改变已验close/closed协议，尽量不加测试消息类型或生产测试开关。测试侧可持明确本次child句柄和本地provider双，不触共享资源。只读，不写/测试/生成/服务/安装/Git；交付最小文件集与可重复同步方案。Root并行收敛B0放置/三设计文档，待方案与独立审查后再派唯一writer。
