@@ -806,3 +806,12 @@ ST-CANONICAL-RACE-I writer交接：storage_implementation（gpt-6-astra）因工
 ST-CANONICAL-RACE-I固定交付进入审查：writer storage_race_implementation已停写，82002f94基线9M manifest 12da7e511a36ca002b32ed05105eb226d4b707f0664d1a5923a8f6d6854b4eb2（2026-09-09T15:28:36Z），4代码测试+5必要文档，256范围外tracked不变。Root逐读两生产分派、完整unit/store回归、有界双连接真实barrier及5文档，符合任务卡，无新增owner/Schema/API/内部retry；符合性通过。writer报告521+compiled2及全门，Root不直接当最终证据，已在独立亲建库重跑全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-canonical-race.svq35m4a（进行中）。
 
 固定质量审查卡：storage_contract_review只读9M manifest及必要HEAD生产/测试上下文；基线82002f94与上述SHA固定，Root规格审查已通过。角色独立代码质量，复核精确P2002 identity/PK双分派、expected-null与deterministic输入边界、原error身份、两真实连接barrier与外层reobserve不回退；只读不写/测试/生成/安装/Git/DB/服务。交付带绝对路径行号的P0/P1/P2或明确无新增问题，现有B/H0/外部资格待验不冒充本片新增。Root并行实际验收，独占Storage写入暂停直至审查完成。
+
+
+### ST-CANONICAL-RACE-I 已验收；A1b1集成门闭合
+
+Storage提交 `27aa544d89bac8f8d0318cab7e22dad1c789da20`（fix(storage): classify canonical identity races precisely），9精确路径baseline/worktree/staged/committed哈希一致，提交后clean。Root符合性通过；storage_contract_review独立固定质量无新增P0/P1/P2，审查绑定82002f94基线+manifest12da7e51。Root亲建新库独立全门日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-canonical-race.svq35m4a`：format/lint/typecheck/build、audit443依赖0漏洞、官方apply/七表catalog/drift、默认并行68文件521/521无skip、compiled2/2、实际SmokeRuntime→compiled Nest→真实自有PG/Redis（provider为本地网络doubles）、validate/contract→generate→contract/diff全部通过；9文件固定，256范围外tracked不变。Root亲建 `storage_root_canonical_race_2c736edb239d473e8e690195` 已DROP，receipt见owned-db.json。
+
+此前A1b1提交82002f94的514/1失败由本片精确修复，A1b1+本片合并集成验收通过；保留此前失败与三条Root反例的历史，不以重跑偶绿掩盖。两个smoke原URL/Prisma证明/Nest生命周期接线已接收，不代表真实外部provider或OCI发布已验。writer和reviewer均停写，Root保持本轮所有Git操作串行。其他owner及SQL手册/Capability任务表未提交变更完全不动。
+
+下一阶段仍沿已有B-R预研：先收敛B同owner容器启停与scanner剩余消费者的三设计门，再写实现；必要时先分出最小Nest原生SIGTERM退出码验证片。Root已复核当前锁定Nest12.0.1的useProcessExit语义与RequestLifecycle实际work追踪；任何新fixture/入口/测试控制面须先比较现文件扩展与专用fixture位置，不能直接把调试协议放进production。后续依然保留H0 HTTP机器契约、外部S3/ClamAV/ObjectLock资格、OCI镜像/发布与SLO待验，目标保持active。
