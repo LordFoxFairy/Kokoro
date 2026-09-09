@@ -891,3 +891,17 @@ Storage提交 `94733167be158424a42fbb264f7ee3511dfe0d1b`（fix(storage): prove r
 验收含原close协议检查、真实SIGTERM pending/ready503/settle/唯一事件、三错误形态、主动close1/no closed/SmokeRuntime拒绝及默认Nest退出选项负对照；最后控制流修复保证新fixture清理等待失败仍尝试后续release。事件只证明RequestLifecycle跟踪的实际work已settle，不表示业务成功或全部provider优雅释放；这条边界在三设计与验收文档持续有效。首manifest、正常绿门但finally薄弱点、P1设计否决与原始RED保留。writer/reviewer均完成停写，其他owner/共享状态未改。
 
 下一实际切片为B同owner container+production-runtime接线三设计门；沿已记录B-R/B1-R与B0事件，不再研究已确定的退出语义。必须一次收敛container生命周期、最小配置、主场景、旧脚本/SQL+SDK旁路删除、相关架构门/CI调用更新的精确范围，保留scanner有效断言并另锁其承接顺序。S3外部资格/真实ClamAV/OCI/SLO与H0仍待验，当前目标保持active，不用B0本地通过宣称全Storage生产验收。
+
+### ST-V2-B-D / B-CUT-R（2026-09-09）
+
+基线Storage 94733167be158424a42fbb264f7ee3511dfe0d1b，codex/production-closure-docs，clean；Root同前共享checkout且其他owner改动保留。本轮Root唯一设计writer，先收敛同owner容器与production-runtime实际消费者、配置和旧入口退出顺序，不重复B0研究。采用writing-plans流程复用本任务表。
+
+只读B-CUT-R任务：storage_contract_review复核固定HEAD的scanner/infra/docker-smoke/CI/release/package/deployment architecture，建议可验收的最小切片边界，确保新container有真实production-runtime消费者、旧固定名称/SDK旁路入口删除且CI不以缺外部资格冒绿，同时保留ClamAV clean/EICAR/error责任和OCI同archive构建→扫描→加载→验收→发布。只能读，不测试/写/Git/服务/安装；不升级依赖或定义新owner，不重做B0。给精确路径和需要Root裁决的最少事项。Root并行制定container身份/配置/停止/释放的三设计门，未授权B实现。
+
+### ST-V2-B-D 已提交；实施前范围自检
+
+Storage设计提交 `17c2161dafac606878351dfa2d243be511f67fac`（docs(storage): define owned container qualification cutover），7现有文档，未改生产或测试实现。最终manifest1025336ae819aaec863d86b0260eba8d6172b331802a1ee5728d6d05cb1b21a7；初稿d8e4c081保留。独立review提出唯一P1：旧阶段仍标当前待Root验收，与94733167基线冲突；Root修正七文档状态并保留历史RED/失败证据，复审无P0/P1/P2。Root最终文档门日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b-design.624401p5：7doc format、Prisma validate（port1无DB连接）、contract、diff、258范围外hash通过。逐baseline/worktree/staged/committed hash一致，提交后Storage clean。该结果仅设计门，不是B实现/镜像/provider通过。
+
+用户随后明确提醒“自己确认在干什么，避免每次跑偏”。Root接受该执行约束：**B-I尚未派发**，不把已写的大范围部署设计自动当用户优先级；先对照NestJS+Prisma与Storage业务可靠性重新检验必要范围，再决定实现任务卡。不得仅因完整验收目标把scanner/CI/供应链全部绑定成前台长链；依赖真实外部环境的资格明确后置，源代码当前缺口优先。不撤销已验证B0事实，不为文档已提交而强推后继范围。
+
+本次即时源码核对：src/main.ts确实NestFactory单入口，src/database/prisma.service.ts继承generated PrismaClient；排除generated后src检索未发现手写SQL CRUD或new Pool/Client业务路径，Storage工作树clean，其他owner未改。此为范围/入口检查，不代替行为测试；最新行为全门仍绑定94733167的524/compiled6。下一步应列出与Storage用户用例直接相关的剩余缺口、必要删除项与验收条件；先判断B整片是否过大并给最小可交付范围，再派单一writer，不继续增加测试资源框架。目标active；外部S3/ClamAV/OCI/SLO、H0均未声称完成。
