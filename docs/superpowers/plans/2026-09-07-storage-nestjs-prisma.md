@@ -877,3 +877,8 @@ B1配置整体预裁决进一步缩小非必要变化：父fixture只需Prisma�
 B0-I首固定manifest a471eb6de959079908dbda6ee730c65d22a5f1740615303bede3c204f1277ca1（d2b8d66基线12M）已由Root主树实跑：日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.xzl3up6n，format/lint/typecheck/build/audit443零、fresh apply/catalog/drift、默认68文件524/524、compiled6/6、actualSmokeRuntime、validate/contract双生成/diff与253范围外hash全通过；Root親建库storage_root_b0_i_6b56de83307d42ebb7d22406已DROP。主树检查进程已exit0，允许接续writer，不边编辑边验收。
 
 Root符合性收尾要求一次窄修：新SIGTERM compiled场景finally先await completionResult有界settle，若该等待超时抛错会跳过亲建child终止和DB/provider释放；同类child等待失败也不应跳过后续句柄close。仅原compiled-runtime测试文件用直接嵌套finally等局部控制流保证每项本次句柄release都被尝试，保留失败、不吞绿，不造通用cleanup框架。当前正常分支524/6绿不覆盖这一控制流失败，先修再新manifest/完整重验和独立质量；旧manifest/log保留。其他生产代码与已验D语义不扩。
+
+
+B0-I cleanup-order返工固定：新manifest7b38f76b3bb8d516635b579b290c21a887ebe4021e5cbff150e7b689376b5d1b，同d2b8d66基线12M，仅compiled-runtime相对首manifest改变；首版与logs保留history-a471eb6d。Root逐读直接嵌套finally，completion/child等待失败也进入后续句柄close，providers内部HTTP/TCP同样保证尝试；正常/失败断言未放宽、原实例getter/单次事件语义保持，符合性通过。Root正重跑新全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.nkptumwc。writer已停写。
+
+固定质量卡：storage_contract_review只读新12M manifest及必要已提交依赖，绑定d2b8d66+7b38f76b，不写/测试/生成/Git/DB/服务。复核排空事实不早置真、单次尝试、原close确认、真实SIGTERM/三种失败和请求响应取消区别、清理失败不跳过后续资源、文档证据不越界为所有hook或B/外部资格。Root规格已通过，独立质量不能用writer数字替代Root实际门；给P0/P1/P2绝对路径行号或通过。
