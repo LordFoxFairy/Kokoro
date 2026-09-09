@@ -764,3 +764,16 @@ Root符合性另用忽略目录的临时回归捕获3个真实RED（root-regress
 首次Root临时探针从Root目录pnpm --dir触发Root pnpm12与子仓11冲突，只是invocation错误；已保留root-regression-invocation-error.log，改用Storage cwd和已锁11.25绝对CLI后得到上述实际RED；未改版本/manifest/规则。临时探针在Storage .tmp，仅Root验证工件，不纳入提交。
 
 返工卡：storage_implementation仍唯一Storage writer，基线/分支与19原范围不变，重点provider/roundtrip及其unit，必要现7文档。保留首manifest与日志历史，先迁入回归验证RED，再修复GREEN，完整主树门后新manifest停写；独立质量评审暂不派（符合性未通过）。Root不改业务文件。顺便修正文档“精确4M/7A当前未授权”当前态与真实12M/7A矛盾；残留AWS.delete消费者准确列production-runtime和scanner，不声称只剩一个。资格缺失证明沿已验A1a confirmDeleted的指定Version HEAD确定404+完整版本列表协议；本片复用该双证据而非复制一套GET缺失逻辑，Root明确接受这一语义收敛，不能少任一证据。
+
+
+### A1b1-I R 固定符合性通过；主树门发现既存并发分类缺口
+
+新manifest `8e3b0fe2dd2981360a046a9075693b2786d6c598699338a5ef4122f8eb935f75`，f47801f基线19路径，2026-09-09T14:53:31.333537Z，writer停写。Root逐读三项修复，重跑原临时反例3/3 GREEN（name过滤的79项未执行），符合性问题关闭；额外唯一current/HEAD漂移与late body已迁入正式unit。ZIP207bytes/CRC/entry/权限/固定SHA与独立Python精确重生成通过。
+
+Root新主树验证日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-i.ujxruirz`：format/lint/typecheck/build/audit443依赖0、亲建库apply/catalog/drift通过，但默认全套 **514通过/1失败**；`blob-owner-deduplication.test.ts`并发等内容用例实际在canonical-write.ts:90收到Prisma P2002，约束`uq_storage_blob_tenant_owner_digest`，不是允许的`storage_blob_pkey`形态。现canonical-create-conflict.ts只认后者，故直接冒泡，未转外层re-observation。相关src/旧测试与f47801f逐hash未变；这是本轮门实测暴露的既存缺口，不归因于fixture、不靠重跑偶绿/增重试预算/弱化断言消除。Root finally已DROP仅本次亲建库；后续compiled/生成门因测试失败尚未执行，新片未称整仓已验收。
+
+Root额外缺参探针实际S3 smoke按预期1失败/0skip、解析前置错误，但临时脚本误把pnpm输出“resolution step is skipped”当Vitest skip；这是Root日志解析错误，待只按Tests汇总判断修正，原日志保留，不改仓库测试。真实provider未访问。
+
+固定质量任务卡：storage_data_review只读上述19路径manifest及必要已提交源码/三设计，复核完整provider授权、短Prisma证明、runtime停止与两消费者失败cleanup；基线与新hash固定，不写/测试/安装/生成/DB/Git/服务。Root符合性已过，3条原反例已真实GREEN；须独立审查，不把已知baseline P2002或外部缺环境误作本片新增，也不因默认门失败漏查其他问题。Root负责所有实际复验/后继缺口修复。
+
+并行只读调查卡 ST-CANONICAL-RACE-R：storage_contract_review读取 f47801f 固定 src/assets/canonical-create-conflict.ts、src/database/transaction-errors.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts 和上述真实失败日志；只给具体根因、最小精确分类/验证文件建议和保留外层网络重观察条件，不写/测试/安装/DB/Git/服务。Root保留实际Prisma错误shape采证/门验证，两个review独立，不给writer扩权。待固定质量和分类事实收敛后Root决定独立修复切片，不先大范围改事务。
