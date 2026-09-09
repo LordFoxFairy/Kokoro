@@ -801,3 +801,8 @@ Root真实Prisma错误形态采证 `canonical-real-meta.log`：同tenant/owner/d
 
 
 ST-CANONICAL-RACE-I writer交接：storage_implementation（gpt-6-astra）因工具明确报模型capacity而errored，已不运行；Root检查HEAD仍82002f94，实际留下两个未提交测试改动（canonical-create-conflict unit / blob-owner-deduplication integration），不是clean交接，必须保留审查与接续TDD，现src未改。改派storage_race_implementation（gpt-5.6-sol）为唯一Storage writer，同上任务卡4代码+必要5文档范围和固定决策不变；Root仍唯一Git/任务表writer并并行准备主树验收，data_review后续固定质量。新writer先检查已有两测试和.tmp/st-canonical-race-i-logs，记录已有状态，确认实际RED后补完，不覆盖不明变更、不把模型容量故障当业务阻塞。无跨owner扩权。
+
+
+ST-CANONICAL-RACE-I固定交付进入审查：writer storage_race_implementation已停写，82002f94基线9M manifest 12da7e511a36ca002b32ed05105eb226d4b707f0664d1a5923a8f6d6854b4eb2（2026-09-09T15:28:36Z），4代码测试+5必要文档，256范围外tracked不变。Root逐读两生产分派、完整unit/store回归、有界双连接真实barrier及5文档，符合任务卡，无新增owner/Schema/API/内部retry；符合性通过。writer报告521+compiled2及全门，Root不直接当最终证据，已在独立亲建库重跑全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-canonical-race.svq35m4a（进行中）。
+
+固定质量审查卡：storage_contract_review只读9M manifest及必要HEAD生产/测试上下文；基线82002f94与上述SHA固定，Root规格审查已通过。角色独立代码质量，复核精确P2002 identity/PK双分派、expected-null与deterministic输入边界、原error身份、两真实连接barrier与外层reobserve不回退；只读不写/测试/生成/安装/Git/DB/服务。交付带绝对路径行号的P0/P1/P2或明确无新增问题，现有B/H0/外部资格待验不冒充本片新增。Root并行实际验收，独占Storage写入暂停直至审查完成。
