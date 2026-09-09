@@ -831,3 +831,10 @@ Owner为Storage现main/Nest唯一signal owner；当前27aa544 clean基线，Root
 三设计绝对入口：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md、/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md、/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md。其余CURRENT/ACCEPTANCE/RUNBOOK/ADR0004同步目标态。固定7M manifest5a60f4d92c83f6de7e08c075117acf8d8b4f103bb2cf75a8b9d458e1dd2b3bcd，基线27aa544；Root执行7文档format、Prisma validate（port1不连DB）、contract与范围外hash。无Schema/机器契约改动，暂无设计未决；SIGTERM实现与RC/provider实测待后继，不计文档门完成。
 
 固定设计质量卡：storage_contract_review只读上述7M manifest与必要现源码，核对三设计一致、最小文件/测试同步、当前态与目标态、信号退出副作用和B权限边界，报告P0/P1/P2。Root是本次设计唯一writer且现已停写；reviewer不写/测试/生成/Git/服务。通过后Root按精确路径提交D，再授权implementation唯一writer进入I，仍须TDD/主树/独立审查。
+
+
+B0-D第一轮P1不通过：reviewer进一步检查Nest12的before/onAppShutdown hook dispatcher发现allSettled仅日志，不向顶层抛出。Root原B-R及B0仅检查外层try/catch的“hook失败exit1”推论撤销；不是用户环境阻塞，属于本设计缺口。Root实际亲建3个本地Nest/Fastify进程，正常0/provider-before拒绝0/top-adapter-beforeClose拒绝1，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-nest-shutdown-semantics.badlvajo。未用DB/provider，没有Storage composition成功主张。首manifest5a60f4保存rejected-first-manifest；7doc被替换为修订方案，首文档门通过仅语法一致，不作为设计通过。
+
+Root与readonly复研裁决：不靠把失败注入换成top-stage来放宽可靠关闭。采用RequestLifecycle自己拥有的isRequestDrainComplete事实，仅实际work settle且active0后设定；原OnApplicationShutdown沿现structured logger一次request_drain success，原compiled-entry仅事实true才发closed。不新signal/adapter包装/关闭框架/IPC类型。此事实只证明被追踪work，不是所有providerhook或资源优雅释放。B须联合本次container唯一事件+ID/digest/ready/pre-signal running/真实exit/noOOM/noRestart，其他状态不能替代事件；缺/重复/畸形日志保留，尾部日志交真实RC验，不新增flush协议降级绿灯。现A1b只有app.close返回的确认存在上述未覆盖缺口，归B0一起修复，旧通过数字不证明错误注入。
+
+修订B0-D固定manifest8821ce3df8e8445b42f101af435d0aa44793f4f277dd3e27813ce9cc8cd7833b，27aa544基线同7M，Root仍唯一文档writer且停写；readonly storage_contract_review复审本次完整语义/一致性，Root重跑文档门。未来I精确代码集改为5现有文件：src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts；必要文档仍7。其他源码/Schema/API/依赖/部署/其他owner不扩。源码仍未授权或修改；三设计过门再提交并派I。
