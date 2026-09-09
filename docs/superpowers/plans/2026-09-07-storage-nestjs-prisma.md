@@ -855,3 +855,6 @@ Root与readonly复研裁决：不靠把失败注入换成top-stage来放宽可�
 | 排除 | 其他src/test、Schema/generated/Proto/依赖/lock/CI/Docker/其他owner不动；B容器driver/消费日志/清理、scanner/H0/真实provider/OCI仍后继。无新SQL CRUD、无日志flush/文件协议、无新资源框架 |
 | 资源/验证 | 仅复用现PG/Redis；自己随机CREATE成功库，finally仅DROP亲建句柄；provider本地HTTP/TCP doubles/亲建child，有界等待失败回收不当成功。完整format/lint/typecheck/build/default521+新增/compiled2+新增/实际SmokeRuntime/官方apply/catalog/drift/validate/contract→generate→contract/audit/范围外hash。无外部provider/Docker/共享清理/重启/安装 |
 | 交付 | writer无Git，固定manifest+实际RED/GREEN/完整日志+精确文件清单后停写；Root独立重验和审查后精确路径提交；目标保持全Storage，B0不替代B/H0/外部验收 |
+
+
+B0-I写入期间的独立只读B1-R续研：storage_contract_review仅查看固定HEAD d2b8d660630b16808c8de93e14dc3d0a83f46cd7的现smoke配置/provider/runtime/isolated-prisma及旧production-runtime/docker脚本/CI，不读或评审B0未交付工作树。目的锁定容器与父测试进程的配置/凭据同源、DB/Redis/scanner内部可达与原签名URL外部可达的最小接线方案：现config可复用哪些，哪些必须显式输入；默认AWS chain在host/container差异、拒绝自动挂载/寻找凭据、argv不泄secret、DB亲建名称与容器连同库如何证明；不可把URLrewrite当传输成功。结合已验B0目标request_drain日志要求建议具体container fixture输入/输出，不发明公开API/通用配置框架。仅建议最小文件集与未决取舍，Root负责B整体决定。只读、不写/测试/安装/DB/Docker/网络服务/Git；无B实现授权。Root同时准备B0主树回归。
