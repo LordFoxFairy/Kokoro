@@ -822,3 +822,12 @@ Storage提交 `27aa544d89bac8f8d0318cab7e22dad1c789da20`（fix(storage): classif
 上一goal turn属于progress：27aa544已提交并521+compiled2主树验收；当前Storage HEAD仍27aa544d89bac8f8d0318cab7e22dad1c789da20且clean。进入B实际容器生命周期前必须先证明Nest正常关闭对应exit0，而非当前重发SIGTERM与未drain均可能相同signal退出。整体方向沿B-R，Root负责三设计收敛，暂不授权业务代码。
 
 只读任务卡：storage_contract_review负责最小compiled SIGTERM测试设计，基线27aa544固定HEAD，范围src/main.ts、RequestLifecycle、compiled-entry.mjs/compiled-runtime.test.ts、锁定Nest12.0.1生命周期源码。比较扩展现compiled fixture与独立专用fixture/子进程两位置，推荐如何证明实际tracked work尚未settle时不exit，settle后0，真实hook失败1；禁止新生产IPC/管理API/自写shutdown框架，不改变已验close/closed协议，尽量不加测试消息类型或生产测试开关。测试侧可持明确本次child句柄和本地provider双，不触共享资源。只读，不写/测试/生成/服务/安装/Git；交付最小文件集与可重复同步方案。Root并行收敛B0放置/三设计文档，待方案与独立审查后再派唯一writer。
+
+
+### ST-V2-B0-D 固定设计门与放置决定
+
+Owner为Storage现main/Nest唯一signal owner；当前27aa544 clean基线，Root仅改7既有设计文档。采用现compiled-entry.mjs/compiled-runtime.test.ts，而非新小Nest app（不证明Storage入口）或独立fixture/--eval（重复bootstrap）；后续生产只main一行原生选项、RequestLifecycle不改，无新目录/模块。测试专有env仅在fixture解释并注入真实实例rejecting hook，不进入生产schema，不新增IPC类型，保留原close/closed协议；本地provider精确暂停+ready503同步+未退出窗口+release+exit0，failure started后signal→1。依赖沿既有fixture→dist入口，src禁止引用test；Schema/事务/tenant/contract/generated无变化，无旧新双轨。方案已在本会话输出放置表，Root按既有B方向裁决，不属于新owner/不可逆决定。
+
+三设计绝对入口：/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md、/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md、/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md。其余CURRENT/ACCEPTANCE/RUNBOOK/ADR0004同步目标态。固定7M manifest5a60f4d92c83f6de7e08c075117acf8d8b4f103bb2cf75a8b9d458e1dd2b3bcd，基线27aa544；Root执行7文档format、Prisma validate（port1不连DB）、contract与范围外hash。无Schema/机器契约改动，暂无设计未决；SIGTERM实现与RC/provider实测待后继，不计文档门完成。
+
+固定设计质量卡：storage_contract_review只读上述7M manifest与必要现源码，核对三设计一致、最小文件/测试同步、当前态与目标态、信号退出副作用和B权限边界，报告P0/P1/P2。Root是本次设计唯一writer且现已停写；reviewer不写/测试/生成/Git/服务。通过后Root按精确路径提交D，再授权implementation唯一writer进入I，仍须TDD/主树/独立审查。
