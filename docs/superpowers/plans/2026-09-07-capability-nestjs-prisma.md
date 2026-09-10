@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b 已验收；现仅放行 P4-D 设计门，P4 实现与 P5 待后续分片。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b 已验收；P4-D 只读审计已完成，现放行同一 child writer 收敛 P4 设计文档，P4 实现与 P5 仍待后续分片。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -494,3 +494,52 @@ Root 在最终提交 `0f7dc1a95c84760612e4a96023f42149fe84cd0c`、Node 24.13.0�
 P3b 已验收，现仅授权 P4-D：相对 child 提交 `0f7dc1a95c84760612e4a96023f42149fe84cd0c` 盘点 Skills/MCP 的 command receipt、outbox、provider cleanup 与关闭生命周期，收敛 processing lease/fencing/reaper、有限重试/jitter、dead-letter、retention、外部副作用恢复和可观测语义。P4-D 只允许审计并更新现有 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL`、`RELIABILITY`、`RUNBOOK`、`SECURITY`、`CURRENT` 及本任务板；不改 proto/schema/generated/src/test，不写 P5 消费者仓，不启动 P4 实现。三设计面、状态机、事务/失败恢复和验收矩阵通过独立复审后，Root 才拆 P4 实现任务卡。Goal 保持 active。
 
 Root 在 P3b 验收记录提交 `fe63c14e` 后同步实跑全局三门：`verify-repository-topology.py` exit 0；`verify-ten-repository-standard.py` exit 1，共 220 项拓扑违规，其中 Capability 20 项（P3a 后为 23 项；P3b 已消除 legacy/file-granularity 对应项，剩余含 checker 尚未承认的 ORM-first canonical/generated 边界、模块/依赖方向与 TypeScript 配置项）；`python3 -m pytest scripts/tests` 为 82 passed / 2 failed，仍是手册样本实际 11 与旧断言 18 不一致、TypeScript 手册新标题没有旧固定“参考依据”字样。日志为 `/tmp/kokoro-p3b-root-standard-20260910.log`、`/tmp/kokoro-p3b-root-topology-20260910.log`、`/tmp/kokoro-p3b-root-script-tests-20260910.log`。本片没有修改或放宽 Root checker/test，也未暂存 SQL 手册、`kokoro-agent` 或 `.tmp/` 的其他任务变更。
+
+### P4-D 只读审计与设计裁决（2026-09-10）
+
+三名 Agent 已在同一冻结 child 基线 `0f7dc1a95c84760612e4a96023f42149fe84cd0c` 完成只读审计；审前、审后 child 工作树均 clean，未修改文件、Git、数据库或服务：
+
+| 任务 | Agent / 角色 | 审计面 | 结论 |
+| --- | --- | --- | --- |
+| P4-D-IMPL-AUDIT | capability_owner_p1b / 当前实现与删除面 | receipt/outbox/provider cleanup/worker lifecycle | 六个 Skills catalog mutation 尚未把 business/outbox/codec/completed receipt 合入同一事务；先补原子性，才能允许 stale processing takeover |
+| P4-D-CONTRACT | contract_review / contract、identity、replay | wire/error/event/Manus typed ID/owner | 现有 Skills 与 17 个 MCP RPC wire 保持不变；恢复机制不得泄漏到业务请求；无真实 consumer/broker 前不发布伪 event-protocol |
+| P4-D-DATA | database_review / PostgreSQL、Prisma、并发 | schema/lease/fence/retirement/retention | 推荐 Prisma typed query + conditional update/CAS；cleanup completion 不能用 outbox published 代替，需 MCP feature-owned durable retirement 状态 |
+
+Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、DB-native 的 NestJS worker + canonical Prisma schema + typed CAS**。不建设手写 SQL 队列，不把恢复状态交给 Scheduler，不增加独立进程或第二持久化事实源；若未来吞吐证明确需 `SKIP LOCKED`，必须另立 ADR、限定为 claim 短事务并补 raw 白名单/真实 PostgreSQL 并发证明，不能借现有 DB clock 例外扩大 raw SQL。
+
+#### P4-D 放置表
+
+| 项 | 结论 |
+| --- | --- |
+| Owner | 当前仓为 `kokoro-capability`，目标业务 owner 为 `kokoro-platform`；Skills command receipt、MCP authorization recovery/credential retirement、owner outbox 均由本仓唯一写入。Agent 继续拥有 run/session/live invoke，IAM 拥有身份与授权判断，Storage/SecretStore 拥有各自资源生命周期，Scheduler 不拥有本仓恢复事实。 |
+| 当前事实 | `command_receipt` 只有 processing/completed/failed、digest/result/createdAt；installation 与 MCP 本地 success 已同事务，六个 Skills catalog mutation 仍为业务提交后另行 complete。`outbox_event` 只有 pending/published；unit dispatcher 未装配生产 publisher。Begin/Complete 有稳定 authorization identity 与部分 quarantine，但无跨崩溃 recovery stage。cleanup-requested outbox 只证明 durable intent，不证明 provider cleanup 完成。 |
+| 目标职责 | command receipt 提供 lease owner/epoch/fencing、同身份精确 replay、local reclaim 与 external reconciliation；MCP retirement 以 credential identity 阻止新绑定并记录 cleanup 实际完成；owner outbox 在真实 destination 确定后提供 fenced at-least-once delivery、backoff/DLQ；worker 受 Nest lifecycle、readiness、bounded drain 管理。 |
+| 目录方案 | 采用现有业务模块内聚：receipt/outbox 留在 application + infrastructure repository，Skills 原子事务留在 `modules/skills`，authorization recovery/retirement 留在 `modules/mcp/authorization`，生命周期由现有 Runtime registry 装配。淘汰独立通用 job 模块（会成为垃圾桶）和 Scheduler 托管方案（形成跨 owner 双事实）；cleanup 也不与公开 outbox delivery 混为同一状态机。 |
+| 粒度 | 先更新既有 TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/RELIABILITY/RUNBOOK/SECURITY/CURRENT，不新建顶层目录。实现按 P4a receipt 原子性/fencing、P4b provider recovery、P4c cleanup retirement、P4d event delivery、P4e retention/supervision 切片；每片才依据实际职责决定少量新文件。 |
+| 依赖 | 业务事务只 import Prisma transaction-facing repository/token，不 import transport/provider 实现；外部 I/O 永不进入数据库事务。worker 只经 typed repository/port 操作，Redis 仅可作通知/节流，不能决定 claim/fence/recovery 正确性。 |
+| 数据/API | 保持现有 Skills 与 17 个 MCP RPC wire；`command_id` 只作命令幂等 identity。Skill `series_id`/`skill_id`/`installation_id`，MCP `connector_id`/`server_id`/`connection_id`/`authorization_id`/`grant_id`，以及 event/recovery/retirement identity 均独立 typed，禁止互换或用 provider key、URL、selector、tool name 代替。receipt/outbox/retirement 都使用 tenant-scoped CAS、DB clock、stable identity 与 fenced ACK。 |
+| 删除项 | Skills 六 mutation 原子化后删除 generic action-then-complete production 路径；生产 worker接通后删除 unit-only dispatcher；未赋予语义的 `result_ref` 在 schema 片删除；修正文档中失真的 `PrismaCapabilityTransaction`、全局事务外 completion、Storage upload-abort 描述。不建立 alias、fallback 或双轨 worker。 |
+| 验证 | 真实 PostgreSQL RED/GREEN 覆盖双 owner claim、lease takeover、ABA/旧 fence 拒绝、business/outbox/codec/receipt 原子回滚、commit reply lost、provider 四崩溃点、cleanup/new-binding race、publish ACK lost、DLQ redrive、retention/replay/GC race；再跑 format/lint/typecheck/contract/Prisma validate+generate+schema/fresh install/full test/build/smoke、独立 SPEC/QUALITY 双审和 Root post-commit 复验。 |
+
+#### 已固定的状态与协议
+
+1. Receipt 不是任意 executable command log，不保存 attestation/token/完整请求。纯本地命令在 lease 过期后只允许携带新合法授权的同 command caller 通过 CAS 接管；外部副作用只由 operation-specific durable recovery stage 按原 `authorization_id`/provider operation identity reconcile。provider 结果仍未知时保持 `external_unknown`/`command_outcome_unknown` fail closed，不转成普通 failed，不执行盲补偿。
+2. 初始 claim 可在业务事务外；本地 business、0/1 outbox、encoded success 与 fenced completed receipt 必须在同一事务。active processing 映射稳定 `ABORTED/command_in_progress`；持续未知映射 `UNAVAILABLE/command_outcome_unknown`；digest/operation 漂移保持 `ALREADY_EXISTS`；terminal typed error 精确重放。所有 complete/fail/heartbeat/reaper/redrive/ACK 均比较 tenant、identity、owner 与 monotonic epoch。
+3. P4a 先覆盖六个 Skills catalog mutation，再给所有 receipt 增加 Prisma 字段与 CAS：lease owner/epoch/expiry、attempt、failure kind/code、terminal/recovery/retention 时间与必要的版本化 recovery kind/ref/phase。扫描分别使用 stale-processing、due-retry、retention 索引；PostgreSQL 时钟为唯一期限事实。
+4. MCP cleanup 新增 feature-owned credential retirement/cleanup 状态，以 `(tenant, provider, credential_identity_digest)` 唯一化；引用 typed connector/authorization/handle ref，保存 pending/processing/completed/dead、lease/fence/attempt/due/sanitized failure。所有 Complete/handle-binding writer 在同事务检查 retirement fence；provider revoke 在事务外执行，fenced ACK 才表示 cleanup 完成。跨 tenant/provider 的相同字符串不互相阻断。
+5. `outbox_event` 的 immutable envelope/payload 与 mutable delivery metadata 分离；同 event ID 冲突时核对 tenant/type/aggregate/payload/time/version，漂移 fail closed。只有真实 broker、destination 与 consumer/version/dedupe contract 确定后才装配生产 publisher；cleanup intent、安全 audit、可公开 business event 先分类，绝不无差别外发。投递为 at-least-once，原 event ID 重投；只承诺同 `(tenant_id, aggregate_type, aggregate_id)` 提交顺序，跨 aggregate 无序。
+6. 终态 receipt 与 published audit/result 至少从完成/发布时保留 30 天；P4 默认在 replay window 后将 receipt 压缩为不可重新执行的轻量 expired tombstone，不静默释放 command identity。processing、external_unknown、pending cleanup、dead-letter 及仍被 receipt/audit 引用的记录不做普通 GC；removed installation 与 revoked connector/connection identity tombstone 不删除。
+7. Nest worker 不在 constructor 启动隐形循环；启动时经现有 Runtime registry 完成依赖 readiness 后运行，关闭顺序为 stop-acquire → bounded drain in-flight → 停 heartbeat/标记可识别 unknown → 关闭 provider/Redis/Prisma。worker 正确性只依赖 PostgreSQL；并发、batch、attempt、backoff+jitter、deadline 和 drain 全部有界。
+
+#### P4 实现切片与授权状态
+
+| 任务 | 依赖/owner | 允许范围 | 验收重点 | 当前状态 |
+| --- | --- | --- | --- | --- |
+| P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已放行，待实现 |
+| P4a-I | P4-D-DOC 验收后续派 | receipt schema/repository、Skills transaction/RPC、MCP transaction fence、对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；双 owner/takeover/旧 epoch/commit unknown/fresh schema；无网络进事务 | 未授权 |
+| P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 未授权 |
+| P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
+| P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、partition order、poison isolation、redrive identity | 设计阻塞；不造 fake publisher |
+| P4e-I | P4a–P4d 最终状态确定后 | receipt/outbox/retirement GC、worker supervisor/metrics、tests/docs | 30日下限、expired tombstone、引用顺序、keyset/batch、readiness/fatal health、进程重启 | 未授权 |
+
+P4-D-DOC 继续以 child `0f7dc1a95c84760612e4a96023f42149fe84cd0c` 为基线。任务卡已固定 owner、文件集、依赖与验收，现续派同一 capability_owner_p1b 只写上述七份 child 文档；contract_review 与 database_review 对同一冻结 diff 分别作 SPEC/QUALITY 复审。P4-D-DOC 验收前不创建 Prisma model、worker、port、RPC、test 或 generated 文件。
