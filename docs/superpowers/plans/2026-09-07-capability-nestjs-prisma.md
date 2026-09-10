@@ -642,3 +642,13 @@ P4a 实施卡冻结 diff `b2823c735d19d1fe19fc3900407eb718c7af4783a9226b4ed9454c
 5. 聚焦 RED/GREEN 后重新执行原 P4a-13 全门与真实 PostgreSQL integration；重新冻结 HEAD/tracked/untracked/full 三hash，由同两名 reviewer 对同一候选复审，双 PASS 前 Root 不暂存 child 文件。
 
 第三轮冻结候选（tracked `25a2774d76be3233660011eb90005d4c1ac26f1c9249505a023d0bd9c3da6aa2`、untracked manifest `b8481d5644de2cbb09a7df43704af67e63dc2e9adb20cff4133530ae4eced9b6`、full `5e611e26f3c03e5ffd177d22dc259e21146be8c3e5c20a559658890d5aa66a65`）已取得 contract_review `SPEC PASS` 与 database_review `QUALITY PASS`，两者均为 0/0/0；但 Root precommit 仍是最终放行门。Root 在 Node 24.20.0、fresh PostgreSQL `kokoro_capability_p4a_root_pre_20260910_134804_86686` 与 Redis DB 15 的真实全量中复现同一并发 installation 新 receipt 的 0 winner：一方在 receipt completion 遭 P2034、另一方 active claim 返回 in-progress，结果 1/516 failed；日志 `/tmp/kokoro-p4a-root-precommit-resume2-20260910_134804_86686.log`。这与 writer 曾披露的一次同类失败相同，不能按偶发忽略。P4a 因此仍未验收、未暂存；原 writer 先按 systematic debugging 只调查并给出根因与最小 RED，Root 确认后再授权单一 GREEN 修复和重新双审。
+
+系统化调查已把根因定位为 PostgreSQL Serializable SSI 在并行小表上选择 status-leading receipt 索引后产生跨 identity 冲突，而 Skills 两条本地事务只有固定、同相位的 5 次/75ms 重试，多个执行者会锁步耗尽；串行聚焦 20/20 通过，16 并行进程仅 6/16 通过，32 个不同 tenant 单 caller/无 outbox 仍有 25/32 在恰好第 5 次失败，排除 duplicate claim、outbox 与 commit-readback为必要条件。临时单变量实验在保持同一 lease、每次重读 DB clock/fence的前提下加入有界随机退避并追加 5 次后，32 个独立 tenant 和 16 组同 command 均无双败，durable completed/outbox仍唯一。证据在 `/tmp/kokoro-p4a-debug-focused-loop.log` 与 `/tmp/kokoro-p4a-receipt-diag-*.json`。
+
+#### P4a Root gate retry 修复卡（2026-09-10）
+
+1. 先加 RED：Skills catalog 与 installation transaction 都固定前 5 次抛 P2034、第 6 次成功，断言仍是同一 receipt lease、每 attempt 重新读取 DB clock并执行 fence，且第 6 次前不落 failed；真实 PostgreSQL barrier 同时启动至少 12 个不同 tenant 的本地 fenced command，断言全部在有界预算内完成、每个 receipt completed且每个 command仅有预期0/1 outbox。保留现有同 command 双 caller断言，不改为容忍双败。
+2. GREEN 只收敛 Prisma 本地可安全重放 transaction 的重试策略：receipt claim、Skills catalog、Skill installation、MCP transaction统一为 10 次上限、指数退避、full jitter与单次 delay cap；最大等待总预算必须显式受限且不超过现有 MCP 10 秒总 deadline。每次重试仍重开 Prisma transaction、重读 DB clock/current facts/fence；不在事务内 sleep，不更换 command/lease/resource identity，不把 P2034 当 commit-unknown。
+3. 共享 retry 算法若独立成文件，只能放 `src/database/prisma-transaction-retry.ts`，因为它唯一负责 Prisma transaction conflict 的 attempt/delay policy；淘汰各 repository/feature 内重复的固定 sleep/attempt常量，不并入 `prisma-errors.ts` 混合错误分类与等待策略，也不新建通用 utils/retry 模块。测试用注入点只服务确定性 clock/jitter断言，不进入 Nest/wire。
+4. 不改 receipt schema/index、proto/OpenAPI、业务 ID、external provider recovery 或 P4b；本片不以 `ANALYZE`、index hint、放宽成功断言、加全局互斥或增大数据库 transaction timeout遮盖 SSI。更新 CURRENT/RELIABILITY/TECHNICAL_DESIGN/RUNBOOK 的实际 retry budget与Root复现事实。
+5. 聚焦 stress 至少连续三轮通过后重新跑 fresh PG/isolated Redis 的 P4a-13 全门；若仍出现一次同类 P2034 0-winner即保持失败并返回调查。重新冻结三hash、双审、Root全门，全部通过前不暂存。
