@@ -492,3 +492,5 @@ Root 在最终提交 `0f7dc1a95c84760612e4a96023f42149fe84cd0c`、Node 24.13.0�
 ### P4-D 设计门授权（2026-09-10）
 
 P3b 已验收，现仅授权 P4-D：相对 child 提交 `0f7dc1a95c84760612e4a96023f42149fe84cd0c` 盘点 Skills/MCP 的 command receipt、outbox、provider cleanup 与关闭生命周期，收敛 processing lease/fencing/reaper、有限重试/jitter、dead-letter、retention、外部副作用恢复和可观测语义。P4-D 只允许审计并更新现有 `TECHNICAL_DESIGN`、`API_CONTRACT`、`DATA_MODEL`、`RELIABILITY`、`RUNBOOK`、`SECURITY`、`CURRENT` 及本任务板；不改 proto/schema/generated/src/test，不写 P5 消费者仓，不启动 P4 实现。三设计面、状态机、事务/失败恢复和验收矩阵通过独立复审后，Root 才拆 P4 实现任务卡。Goal 保持 active。
+
+Root 在 P3b 验收记录提交 `fe63c14e` 后同步实跑全局三门：`verify-repository-topology.py` exit 0；`verify-ten-repository-standard.py` exit 1，共 220 项拓扑违规，其中 Capability 20 项（P3a 后为 23 项；P3b 已消除 legacy/file-granularity 对应项，剩余含 checker 尚未承认的 ORM-first canonical/generated 边界、模块/依赖方向与 TypeScript 配置项）；`python3 -m pytest scripts/tests` 为 82 passed / 2 failed，仍是手册样本实际 11 与旧断言 18 不一致、TypeScript 手册新标题没有旧固定“参考依据”字样。日志为 `/tmp/kokoro-p3b-root-standard-20260910.log`、`/tmp/kokoro-p3b-root-topology-20260910.log`、`/tmp/kokoro-p3b-root-script-tests-20260910.log`。本片没有修改或放宽 Root checker/test，也未暂存 SQL 手册、`kokoro-agent` 或 `.tmp/` 的其他任务变更。
