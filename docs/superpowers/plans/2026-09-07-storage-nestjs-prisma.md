@@ -32,16 +32,16 @@
 
 以下文件集均以 Storage 绝对根目录为基准；只读范围并非写入授权。主控持有总体架构决定，不由审查员分别发明契约。
 
-| ID / 优先级 | 目标 / 完成条件 | Agent / 模型 / 权限 | 文件集 | 依赖与验证 | 状态 / 交付 |
-|---|---|---|---|---|---|
-| ST-A / P0 | 接收数据与并发修改；列出 Prisma 替换必须保留的行为和阻断项 | `storage_data_review` / gpt-5.6-sol / 只读；Root 审查 | `database/`、`src/application/storage/`、`src/infrastructure/repositories/`、`test/integration/`、数据设计 | 绑定 `6cd6e77` 加当前 dirty tree；不启动服务、不改数据、不提交 | 首审与最终文档复审完成 |
-| ST-C / P0 | 审查 RPC/安全 dirty diff 与 Nest 接入边界；列出契约不变量 | `storage_contract_review` / gpt-5.6-sol / 只读；Root 审查 | `contract/`、`src/interfaces/`、`src/config/`、`src/infrastructure/clients/`、`test/contract/`、API 设计 | 与 ST-A 并行；只读，无共享服务与 Git 操作 | 首审与最终文档复审完成 |
-| ST-B / P0 | 记录工作区归属证据、可执行测试基线与已存在失败 | Root / 当前模型 / 运行验证；不改业务 | 现有 package scripts、工作区状态、任务证据 | 复用依赖；真实集成仅用独立数据库/任务前缀；不把 skip 当 pass | 现状基线完成；交接待用户确认 |
-| ST-D1 / P0 | 技术/API/数据设计及 ADR 对齐；明确版本、目标目录、事务替换、删除和验收 | Root / 当前模型 / 文档 writer；ST-A、ST-C 复审 | `AGENTS.md`、`INDEX.md`、`docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT,INDEX}.md`、`docs/ADR/`；Root 本计划 | ST-A/ST-C/ST-B；未通过前不改业务与 schema | 文档复审通过；实施门仍未通过 |
-| ST-I1 / P1 | Nest/Prisma 底座与首个可运行业务切片 | Storage 单一实现负责人 / 待按复杂度指派 / 未授权写入 | 设计门通过后列精确路径；不概括授权全仓 | ST-D1 + 工作区交接；RED/GREEN、DI、schema、contract、主仓复验 | 待派工 |
-| ST-I2 / P1 | 上传完整性、扫描、去重、事务与幂等切片 | 同一负责人 / 未授权写入 | ST-D1 后确定精确路径 | ST-I1；真实并发/回滚/重放测试 | 待派工 |
-| ST-I3 / P1 | Asset/Artifact/reference/library/reconciliation 收敛并删除旧实现 | 同一负责人 / 未授权写入 | ST-D1 后确定精确路径 | ST-I2；消费者 contract + ObjectStore/ClamAV smoke | 待派工 |
-| ST-V / P0 | 独立审查、Root 集成验证与逐片提交 | Root + 只读审查员 | 当前切片文件集 | 绑定 commit，未完成/未运行项原样保留 | 待前置 |
+| ID / 优先级 | 目标 / 完成条件                                                        | Agent / 模型 / 权限                                       | 文件集                                                                                                                | 依赖与验证                                                     | 状态 / 交付                  |
+| ----------- | ---------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------- |
+| ST-A / P0   | 接收数据与并发修改；列出 Prisma 替换必须保留的行为和阻断项             | `storage_data_review` / gpt-5.6-sol / 只读；Root 审查     | `database/`、`src/application/storage/`、`src/infrastructure/repositories/`、`test/integration/`、数据设计            | 绑定 `6cd6e77` 加当前 dirty tree；不启动服务、不改数据、不提交 | 首审与最终文档复审完成       |
+| ST-C / P0   | 审查 RPC/安全 dirty diff 与 Nest 接入边界；列出契约不变量              | `storage_contract_review` / gpt-5.6-sol / 只读；Root 审查 | `contract/`、`src/interfaces/`、`src/config/`、`src/infrastructure/clients/`、`test/contract/`、API 设计              | 与 ST-A 并行；只读，无共享服务与 Git 操作                      | 首审与最终文档复审完成       |
+| ST-B / P0   | 记录工作区归属证据、可执行测试基线与已存在失败                         | Root / 当前模型 / 运行验证；不改业务                      | 现有 package scripts、工作区状态、任务证据                                                                            | 复用依赖；真实集成仅用独立数据库/任务前缀；不把 skip 当 pass   | 现状基线完成；交接待用户确认 |
+| ST-D1 / P0  | 技术/API/数据设计及 ADR 对齐；明确版本、目标目录、事务替换、删除和验收 | Root / 当前模型 / 文档 writer；ST-A、ST-C 复审            | `AGENTS.md`、`INDEX.md`、`docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,CURRENT,INDEX}.md`、`docs/ADR/`；Root 本计划 | ST-A/ST-C/ST-B；未通过前不改业务与 schema                      | 文档复审通过；实施门仍未通过 |
+| ST-I1 / P1  | Nest/Prisma 底座与首个可运行业务切片                                   | Storage 单一实现负责人 / 待按复杂度指派 / 未授权写入      | 设计门通过后列精确路径；不概括授权全仓                                                                                | ST-D1 + 工作区交接；RED/GREEN、DI、schema、contract、主仓复验  | 待派工                       |
+| ST-I2 / P1  | 上传完整性、扫描、去重、事务与幂等切片                                 | 同一负责人 / 未授权写入                                   | ST-D1 后确定精确路径                                                                                                  | ST-I1；真实并发/回滚/重放测试                                  | 待派工                       |
+| ST-I3 / P1  | Asset/Artifact/reference/library/reconciliation 收敛并删除旧实现       | 同一负责人 / 未授权写入                                   | ST-D1 后确定精确路径                                                                                                  | ST-I2；消费者 contract + ObjectStore/ClamAV smoke              | 待派工                       |
+| ST-V / P0   | 独立审查、Root 集成验证与逐片提交                                      | Root + 只读审查员                                         | 当前切片文件集                                                                                                        | 绑定 commit，未完成/未运行项原样保留                           | 待前置                       |
 
 ## Chunk 1: 接收与设计门
 
@@ -139,7 +139,6 @@ ST-I1/I2/I3文件集在前置验证后依业务实际拆分，禁止将此待办
 仅允许在自行创建的 `/tmp/kokoro-storage-prisma-probe.*` 目录写实验schema/config/generated/log；允许复用PG5432创建自己命名的随机空库并最终清理。禁止写Storage/Root任何文件、package/lockfile/index，禁止启动/重启共享服务、修改共享role或他人数据。
 具体任务：精确Prisma/client/adapter-pg7.10.0；按DATA_MODEL六表/枚举/tenant关系验证schema validate/generate/db push/catalog无FK/原生enum/unique；仅验证可行性，不声称业务移植。schema候选保留临时artifact交Root，最终canonical落地仍需后续明确写入授权。
 
-
 ## 文档切片交付
 
 - Storage commit：`d715de89458a6fb15328d3cb6ac297e3acfab23a`，`docs(storage): define NestJS and Prisma cutover gates`。
@@ -175,21 +174,21 @@ ST-I1/I2/I3文件集在前置验证后依业务实际拆分，禁止将此待办
 
 ### ST-I1 / P0：核心运行时与唯一数据栈原子切换
 
-| 项 | 授权与验收 |
-|---|---|
-| Owner | kokoro-storage；storage_data_review续任实现负责人，gpt-5.6-sol；Root负责集成，storage_contract_review后续只读审查 |
-| 基线 | Storage独立checkout，codex/production-closure-docs，93f7dd0；本卡登记后新增的文档门提交一并作为基线 |
-| 目标 | 已有十RPC+library完整运行在Nest官方FastifyAdapter/Connect插件和Prisma唯一数据栈；不是旧服务外包Nest外壳 |
-| 放置 | 直接沿用TECHNICAL_DESIGN §2放置表与目标目录；feature service拥有用例，数据库provider只管理连接。淘汰全局四层/全能Repository/自制ORM，必要复杂事务组件在实际owner内 |
+| 项       | 授权与验收                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner    | kokoro-storage；storage_data_review续任实现负责人，gpt-5.6-sol；Root负责集成，storage_contract_review后续只读审查                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 基线     | Storage独立checkout，codex/production-closure-docs，93f7dd0；本卡登记后新增的文档门提交一并作为基线                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 目标     | 已有十RPC+library完整运行在Nest官方FastifyAdapter/Connect插件和Prisma唯一数据栈；不是旧服务外包Nest外壳                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 放置     | 直接沿用TECHNICAL_DESIGN §2放置表与目标目录；feature service拥有用例，数据库provider只管理连接。淘汰全局四层/全能Repository/自制ORM，必要复杂事务组件在实际owner内                                                                                                                                                                                                                                                                                                                                                                                                             |
 | 允许写入 | package.json、pnpm-lock.yaml、pnpm-workspace.yaml、tsconfig*.json、eslint.config.js、vitest.config.*、.gitignore；prisma/schema.prisma、prisma.config.ts；src/main.ts、app.module.ts、config、database、uploads、assets、artifacts、integrations、common、transport、clients、generated/prisma；删除已替代src/bootstrap、application、domain、infrastructure、interfaces与database/schema.sql并同步所有引用；test现有各主题套件和对应新回归；scripts/apply-schema.ts、reconcile-objects.ts及专用schema检查；README、INDEX、AGENTS、docs中受影响的Storage入口/设计/验收/runbook |
-| 排除 | Root全部文件、其他owner、contract/proto与provenance、generated/proto手工编辑、.github/CI、Docker/compose与docker-smoke脚本（后续门禁切片）；不新增public API，不改Proto字段 |
-| 数据 | 全六表一次转换避免可编辑schema双轨；Prisma7.10.0配套client/adapter。tenant/owner、claim/fence、幂等/rollback保留；fingerprint与receipt envelope随schema原子落地，CreateUpload仅存稳定ID并每次重签/终态拒绝 |
-| 安全 | Connect插件自有认证/错误/取消边界，HTTP共用可信身份验证；错误detail/metadata一致；业务校验拒绝unchecked跨tenant引用；不得以类型断言/测试double模拟ORM完整性 |
-| 生命周期 | Nest负责实例与启动/关闭，只有一个listener与signal owner；bootstrap无自动apply；依赖超时/取消有界，无业务SQL或provider原文泄漏 |
-| 验证 | 先RED：fingerprint变payload、busy/detail、稳定receipt、Prisma单schema/旧路径退出、DI/单listener。GREEN：lint/typecheck/test/build/contract、真实PG并发/回滚、空库apply且非空拒绝、catalog无FK/native enum、生成drift；不删旧行为断言以凑绿色 |
-| 资源 | 复用PG5432/Redis6379，必须自身随机库；不得启动共享服务/改role/reset他人库/flush Redis。可写任务/tmp日志；测试配置显式schema/search_path |
-| 交付 | 不操作Git index/commit/branch；交付稳定文件清单和RED/GREEN日志后停止写入，Root按符合性→质量→主仓验证提交 |
-| 状态 | 已派发；核心通过后再派ST-I2对象完整性/恢复与ST-V工程/真实smoke，不提前声称目标完成 |
+| 排除     | Root全部文件、其他owner、contract/proto与provenance、generated/proto手工编辑、.github/CI、Docker/compose与docker-smoke脚本（后续门禁切片）；不新增public API，不改Proto字段                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 数据     | 全六表一次转换避免可编辑schema双轨；Prisma7.10.0配套client/adapter。tenant/owner、claim/fence、幂等/rollback保留；fingerprint与receipt envelope随schema原子落地，CreateUpload仅存稳定ID并每次重签/终态拒绝                                                                                                                                                                                                                                                                                                                                                                     |
+| 安全     | Connect插件自有认证/错误/取消边界，HTTP共用可信身份验证；错误detail/metadata一致；业务校验拒绝unchecked跨tenant引用；不得以类型断言/测试double模拟ORM完整性                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| 生命周期 | Nest负责实例与启动/关闭，只有一个listener与signal owner；bootstrap无自动apply；依赖超时/取消有界，无业务SQL或provider原文泄漏                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 验证     | 先RED：fingerprint变payload、busy/detail、稳定receipt、Prisma单schema/旧路径退出、DI/单listener。GREEN：lint/typecheck/test/build/contract、真实PG并发/回滚、空库apply且非空拒绝、catalog无FK/native enum、生成drift；不删旧行为断言以凑绿色                                                                                                                                                                                                                                                                                                                                   |
+| 资源     | 复用PG5432/Redis6379，必须自身随机库；不得启动共享服务/改role/reset他人库/flush Redis。可写任务/tmp日志；测试配置显式schema/search_path                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 交付     | 不操作Git index/commit/branch；交付稳定文件清单和RED/GREEN日志后停止写入，Root按符合性→质量→主仓验证提交                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 状态     | 已派发；核心通过后再派ST-I2对象完整性/恢复与ST-V工程/真实smoke，不提前声称目标完成                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### ST-E / P1：真实依赖验收准备（并行只读）
 
@@ -239,18 +238,18 @@ I1c必要生成接线授权：原scripts/normalize-generated.ts遍历整个src/g
 
 ### ST-I1d 后继卡（待数据切片验收提交后派发）
 
-| 项 | 边界与完成条件 |
-|---|---|
-| Owner | kokoro-storage；沿用storage_implementation单一writer，Root集成/提交；数据片验收SHA为起点 |
-| 目标 | Nest真实拥有feature provider/配置/生命周期，FastifyAdapter与Connect plugin单listener；删除旧全局application/domain/infrastructure/interfaces/bootstrap，不用转发外壳 |
-| 放置依据 | TECHNICAL_DESIGN §2目标目录与§3、6；uploads负责上传三命令与status，assets负责可见性/scan/引用，artifacts负责发布/library；复杂事务保留各feature内具名store，不创BaseRepository/每表Module |
-| 允许 | 原I1卡src与test、package/lock/workspace、tsconfig、受影响scripts（reconcile/import）和Storage文档；新普通文件须有单一变化原因。共享Proto/provenance固定不变；Docker/CI由后续ST-V单独切片 |
-| 类型/依赖 | typed业务错误替代message.includes分类；生成Proto只在transport/client边界；生成Prisma限制数据组件。HTTP/Connect共用身份验证，不假设插件走Nest Guard。官方ConfigModule与显式typed config注入；Prisma连接由factory/provider消费配置，解决原始URL参数DI |
-| 行为 | 10RPC与library路径不变；同一listener auth/error/detail/request-id、一致busy CONFLICT+Aborted+retryable，取消/DeadlineExceeded保持协议code；七命令fingerprint/receipt/CAS已验收行为不回退 |
-| I/O | facade CallOptions、Connect HandlerContext.signal贯穿S3/scanner、限时/取消；query10/30秒、普通command30/60秒、Complete300秒、lease600秒；1MiB RPC与8KiB HTTP URL，provider调用不进入Prisma事务 |
-| 生命周期 | Nest init/start失败清理、ready四依赖、draining拒新请求、唯一signal owner、30秒有界drain和幂等close；禁止bootstrap自动apply；不重复启动共享PG/Redis |
-| 验证 | 原行为全回归+Nest TestingModule/真实Fastify listener+编译后plain Node DI/配置/启动失败/单listener/关闭；错误detail与metadata/unauthorized/cancel/deadline/oversize回归；Prisma真实PG保持147+新增且0skip。外部S3/ClamAV暂缺则明确测试double范围，不冒称真实集成 |
-| 交付 | 先RED后GREEN，每个职责迁移同时清除旧import路径；稳定manifest/hash后停写，符合性→质量→Root主仓验证→scoped commit。不得一口气扩I2或ST-V，遇无法保持运行的小切片向Root裁决 |
+| 项        | 边界与完成条件                                                                                                                                                                                                                                                 |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner     | kokoro-storage；沿用storage_implementation单一writer，Root集成/提交；数据片验收SHA为起点                                                                                                                                                                       |
+| 目标      | Nest真实拥有feature provider/配置/生命周期，FastifyAdapter与Connect plugin单listener；删除旧全局application/domain/infrastructure/interfaces/bootstrap，不用转发外壳                                                                                           |
+| 放置依据  | TECHNICAL_DESIGN §2目标目录与§3、6；uploads负责上传三命令与status，assets负责可见性/scan/引用，artifacts负责发布/library；复杂事务保留各feature内具名store，不创BaseRepository/每表Module                                                                      |
+| 允许      | 原I1卡src与test、package/lock/workspace、tsconfig、受影响scripts（reconcile/import）和Storage文档；新普通文件须有单一变化原因。共享Proto/provenance固定不变；Docker/CI由后续ST-V单独切片                                                                       |
+| 类型/依赖 | typed业务错误替代message.includes分类；生成Proto只在transport/client边界；生成Prisma限制数据组件。HTTP/Connect共用身份验证，不假设插件走Nest Guard。官方ConfigModule与显式typed config注入；Prisma连接由factory/provider消费配置，解决原始URL参数DI            |
+| 行为      | 10RPC与library路径不变；同一listener auth/error/detail/request-id、一致busy CONFLICT+Aborted+retryable，取消/DeadlineExceeded保持协议code；七命令fingerprint/receipt/CAS已验收行为不回退                                                                       |
+| I/O       | facade CallOptions、Connect HandlerContext.signal贯穿S3/scanner、限时/取消；query10/30秒、普通command30/60秒、Complete300秒、lease600秒；1MiB RPC与8KiB HTTP URL，provider调用不进入Prisma事务                                                                 |
+| 生命周期  | Nest init/start失败清理、ready四依赖、draining拒新请求、唯一signal owner、30秒有界drain和幂等close；禁止bootstrap自动apply；不重复启动共享PG/Redis                                                                                                             |
+| 验证      | 原行为全回归+Nest TestingModule/真实Fastify listener+编译后plain Node DI/配置/启动失败/单listener/关闭；错误detail与metadata/unauthorized/cancel/deadline/oversize回归；Prisma真实PG保持147+新增且0skip。外部S3/ClamAV暂缺则明确测试double范围，不冒称真实集成 |
+| 交付      | 先RED后GREEN，每个职责迁移同时清除旧import路径；稳定manifest/hash后停写，符合性→质量→Root主仓验证→scoped commit。不得一口气扩I2或ST-V，遇无法保持运行的小切片向Root裁决                                                                                        |
 
 2026-09-08 Root重新核验框架官方API：Nest FastifyAdapter示例、Lifecycle hooks与Connect官方fastify插件；已安装@connectrpc/connect-fastify2.2.0类型确有routes/contextValues/shutdownTimeoutMs，继承ConnectRouterOptions。来源 https://docs.nestjs.com/techniques/performance 、 https://docs.nestjs.com/fundamentals/lifecycle-events 、 https://connectrpc.com/docs/node/server-plugins/ 。核验是API语义与本地类型证据，不替代后续实际Nest集成测试；没有采用文档中的性能宣传作为本仓实测。
 
@@ -341,19 +340,19 @@ Root从Docker Hub官方registry获取node:24.20.0-bookworm-slim OCI index：sha2
 
 ### ST-I2-D 设计与Schema准备卡（不授权业务重写）
 
-| 项 | 边界 |
-|---|---|
-| 任务 | P1，对象健康复用、确定repair与有证据的退役回收，先通过三文档/Schema门 |
-| Owner/执行 | Storage assets/blob生命周期；storage_implementation(gpt-6-astra)唯一writer，Root架构/提交，原审查员只读 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；2b5107517a680adc41ef5eb6faae6d20898aed3c，clean |
-| 设计依据 | 本计划ST-I2 Root设计裁决草案与本轮公开放置表；Root TS/SQL手册及Storage三设计文档。选择既有assets业务owner、integrations只封装provider；不增一级模块/服务 |
-| 允许文件 | TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE、必要INDEX/ADR README、一个新ADR解释canonical复用/退役方案；prisma/schema.prisma、官方generated/prisma；apply-schema与schema-bootstrap/catalog/architecture的最低必要7表接线。普通其他文件需求先报告，不扩写 |
-| 排除 | 业务Service/store/SDK/CLI回收行为重写（门通过后另卡）；Proto/provenance/generated proto；其他仓/Root；CI/Docker/compose/共享服务 |
-| Schema | 六表→新增一个已知canonical退休metadata表（不建通用job/outbox/多态垃圾桶）；明确tenant/owner/blob逻辑归属、旧key/version/etag、UTC retiredAt、唯一身份和按退休时间+稳定cursor的有界查询索引，无FK。API仍十RPC不变。不能靠object LastModified充退休时间；只定义本owner真实用例所需字段/索引 |
-| 事务/失败 | healthy原canonical复用；确定missing/mismatch才完整snapshot CAS，旧identity退役记录同事务写入。provider不确定错误失败不改业务完成事实；CAS败者重读并实际检查赢家；candidate key加claimId保证执行独占；删除精确版本，失败保留记录；未知final orphan只report，不立即删除 |
-| 文档门 | 三文档明确当前2b510751/目标I2、状态机/事务/无FK完整性/retention/查询/API错误与幂等；新ADR比较退役表A与全部未知对象永久保留B并记录Root选择A；不把Schema准备称业务已完成 |
-| 验证 | 先验证6→7表catalog门能捕捉差异，再官方prisma validate/generate、独立随机空库apply+catalog无FK+drift、现有256与compiled2/contract/build。只调整准确表清单，不改为宽泛>=6；不手写DDL/历史migration/重置共享库 |
-| 交付 | 先给精确模型/索引与三文档一致性结论；完成授权Schema准备后稳定manifest/hash并停写，Root审查/主仓验证/小切片提交。业务I2实施需随后明确放行，不自行越过此门 |
+| 项         | 边界                                                                                                                                                                                                                                                                                      |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务       | P1，对象健康复用、确定repair与有证据的退役回收，先通过三文档/Schema门                                                                                                                                                                                                                     |
+| Owner/执行 | Storage assets/blob生命周期；storage_implementation(gpt-6-astra)唯一writer，Root架构/提交，原审查员只读                                                                                                                                                                                   |
+| 基线       | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；2b5107517a680adc41ef5eb6faae6d20898aed3c，clean                                                                                                                                     |
+| 设计依据   | 本计划ST-I2 Root设计裁决草案与本轮公开放置表；Root TS/SQL手册及Storage三设计文档。选择既有assets业务owner、integrations只封装provider；不增一级模块/服务                                                                                                                                  |
+| 允许文件   | TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE、必要INDEX/ADR README、一个新ADR解释canonical复用/退役方案；prisma/schema.prisma、官方generated/prisma；apply-schema与schema-bootstrap/catalog/architecture的最低必要7表接线。普通其他文件需求先报告，不扩写                  |
+| 排除       | 业务Service/store/SDK/CLI回收行为重写（门通过后另卡）；Proto/provenance/generated proto；其他仓/Root；CI/Docker/compose/共享服务                                                                                                                                                          |
+| Schema     | 六表→新增一个已知canonical退休metadata表（不建通用job/outbox/多态垃圾桶）；明确tenant/owner/blob逻辑归属、旧key/version/etag、UTC retiredAt、唯一身份和按退休时间+稳定cursor的有界查询索引，无FK。API仍十RPC不变。不能靠object LastModified充退休时间；只定义本owner真实用例所需字段/索引 |
+| 事务/失败  | healthy原canonical复用；确定missing/mismatch才完整snapshot CAS，旧identity退役记录同事务写入。provider不确定错误失败不改业务完成事实；CAS败者重读并实际检查赢家；candidate key加claimId保证执行独占；删除精确版本，失败保留记录；未知final orphan只report，不立即删除                     |
+| 文档门     | 三文档明确当前2b510751/目标I2、状态机/事务/无FK完整性/retention/查询/API错误与幂等；新ADR比较退役表A与全部未知对象永久保留B并记录Root选择A；不把Schema准备称业务已完成                                                                                                                    |
+| 验证       | 先验证6→7表catalog门能捕捉差异，再官方prisma validate/generate、独立随机空库apply+catalog无FK+drift、现有256与compiled2/contract/build。只调整准确表清单，不改为宽泛>=6；不手写DDL/历史migration/重置共享库                                                                               |
+| 交付       | 先给精确模型/索引与三文档一致性结论；完成授权Schema准备后稳定manifest/hash并停写，Root审查/主仓验证/小切片提交。业务I2实施需随后明确放行，不自行越过此门                                                                                                                                  |
 
 I2验收须额外明确：回收查询有界分页，retirement grace最少1h；只有当前canonical明确退出才可写已知retirement；退役key不会被后续repair重新采用，防止“查询未引用→另一个在途提交引用”的删除竞态。删除条件版本与provider实际返回值一致，不给缺VersionId回填请求值；无版本对象保持执行唯一key且按明确identity删除。不通过更改现有user数据库或部署服务验证候选Schema。
 
@@ -372,19 +371,19 @@ ST-I2-D稳定审查卡：基线2b510751+25物理路径manifest `/Users/nako/Webs
 
 ### ST-I2-B 业务实现卡
 
-| 项 | 边界与验收 |
-|---|---|
-| 任务/优先级 | P1：完成canonical健康复用/有限repair CAS/已知退休安全回收，删除旧无条件轮换与LastModified删除 |
-| Owner/基线 | Storage assets/blob；storage_implementation(gpt-6-astra)唯一writer，Root审查/提交；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，347e6dd55afbedc207d3f46f8f44c5d9384ac2f4 clean |
-| 放置 | assets拥有canonical判定与retirement用例/store；uploads保留CompleteUpload编排与一个完整事务边界，必要数据helper只在数据组件协作。integrations/object-store仅provider协议/typed failure；CLI只编排现有owner能力，不创造第二套业务或SQL层 |
-| 允许 | src/assets、src/uploads相应Service/store/types/module与必要同职责普通文件；integrations/object-store的typed接口/AWS/local/失败分类；scripts/reconcile-objects.ts及相应CLI用例、相关unit/integration/contract/architecture/smoke fixture/tests；Storage设计/CURRENT/ACCEPTANCE/README/INDEX/RUNBOOK/ADR当前证据。CLI若需官方Nest application context只能限定已有owner、不得启动HTTP listener或无关scanner依赖 |
-| 排除 | Prisma canonical新字段或新表（非必要不再改schema/generated）；Proto/provenance/generated proto；框架/工具链依赖升级、CI/Docker/compose、Root/其他owner；共享基础设施启停和既有数据清理 |
-| 对象协议 | 原扫描固定source etag/version/hash/size/cancel保障保留；healthy同owner/digest canonical只复用不promote，Asset MIME独立；确定missing/mismatch才有限repair；缺实际VersionId等不确定结果是availability，绝不请求值回填或catch-all missing；GET只检查不repair |
-| 原子性 | 完整旧snapshot含nullversion CAS，影响行1，同Prisma事务写retirement+Upload/Asset/Scan/receipt，任何失败全回滚；复用/首次创建也验证tenant/owner/expected snapshot。CAS/absent竞争败者重新读取且实际检查赢家，最多3轮受Complete300秒预算；数据库网络/未知提交不盲目重试 |
-| 重试细节 | 若真实首次Blob竞争出现P2002，先双client完整路径RED确认实际Prisma错误shape，只对明确canonical identity冲突做外层重新观察，不全P2002重试、不在已abort事务中继续；已有claim/fence、数据10秒有限重试保持 |
-| 回收 | 只持久化已退出canonical的完整旧identity，不upsert/update刷新retiredAt，拒绝owner/blob/snapshot不一致、空version/etag、新旧key相等。claimId key428字符且执行唯一、永不重新使用。已知退休按固定cutoff/grace>=1h、100/1000/10000二键分页，删除前重查完整scope/current引用，确切version/identity删除成功或确定不存在才删记录；失败与unknown保留。未知final/crash/loser candidate只报告，不即时删，不留旧LastModified apply旁路 |
-| 验证 | 8组既定验收：healthy+不同MIME共Blob；owner隔离；missing/mismatch CAS；不确定provider零promote/零业务完成；双repair/absent竞态检查赢家；stale fence/rollback无污染；GET仅healthy签URL；retiredAt非creation age、确切version回收失败恢复/引用保护/未知report-only。加key最长/claim唯一与有界分页。真实PG只自建随机库；provider doubles明确标注，真实S3/ClamAV另ST-V |
-| 交付 | 按职责TDD，小步收敛，不在中间提交unsafe旧CLI仍可删除新退休对象的半片；必要拆片先向Root裁决。lint/typecheck/full257基线+新增/build/compiled/schema/contract、scope/hash后停写，符合性→质量→Root真实验证再提交；所有Git仍Root负责 |
+| 项          | 边界与验收                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务/优先级 | P1：完成canonical健康复用/有限repair CAS/已知退休安全回收，删除旧无条件轮换与LastModified删除                                                                                                                                                                                                                                                                                                                              |
+| Owner/基线  | Storage assets/blob；storage_implementation(gpt-6-astra)唯一writer，Root审查/提交；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，347e6dd55afbedc207d3f46f8f44c5d9384ac2f4 clean                                                                                                                                                                                    |
+| 放置        | assets拥有canonical判定与retirement用例/store；uploads保留CompleteUpload编排与一个完整事务边界，必要数据helper只在数据组件协作。integrations/object-store仅provider协议/typed failure；CLI只编排现有owner能力，不创造第二套业务或SQL层                                                                                                                                                                                     |
+| 允许        | src/assets、src/uploads相应Service/store/types/module与必要同职责普通文件；integrations/object-store的typed接口/AWS/local/失败分类；scripts/reconcile-objects.ts及相应CLI用例、相关unit/integration/contract/architecture/smoke fixture/tests；Storage设计/CURRENT/ACCEPTANCE/README/INDEX/RUNBOOK/ADR当前证据。CLI若需官方Nest application context只能限定已有owner、不得启动HTTP listener或无关scanner依赖               |
+| 排除        | Prisma canonical新字段或新表（非必要不再改schema/generated）；Proto/provenance/generated proto；框架/工具链依赖升级、CI/Docker/compose、Root/其他owner；共享基础设施启停和既有数据清理                                                                                                                                                                                                                                     |
+| 对象协议    | 原扫描固定source etag/version/hash/size/cancel保障保留；healthy同owner/digest canonical只复用不promote，Asset MIME独立；确定missing/mismatch才有限repair；缺实际VersionId等不确定结果是availability，绝不请求值回填或catch-all missing；GET只检查不repair                                                                                                                                                                  |
+| 原子性      | 完整旧snapshot含nullversion CAS，影响行1，同Prisma事务写retirement+Upload/Asset/Scan/receipt，任何失败全回滚；复用/首次创建也验证tenant/owner/expected snapshot。CAS/absent竞争败者重新读取且实际检查赢家，最多3轮受Complete300秒预算；数据库网络/未知提交不盲目重试                                                                                                                                                       |
+| 重试细节    | 若真实首次Blob竞争出现P2002，先双client完整路径RED确认实际Prisma错误shape，只对明确canonical identity冲突做外层重新观察，不全P2002重试、不在已abort事务中继续；已有claim/fence、数据10秒有限重试保持                                                                                                                                                                                                                       |
+| 回收        | 只持久化已退出canonical的完整旧identity，不upsert/update刷新retiredAt，拒绝owner/blob/snapshot不一致、空version/etag、新旧key相等。claimId key428字符且执行唯一、永不重新使用。已知退休按固定cutoff/grace>=1h、100/1000/10000二键分页，删除前重查完整scope/current引用，确切version/identity删除成功或确定不存在才删记录；失败与unknown保留。未知final/crash/loser candidate只报告，不即时删，不留旧LastModified apply旁路 |
+| 验证        | 8组既定验收：healthy+不同MIME共Blob；owner隔离；missing/mismatch CAS；不确定provider零promote/零业务完成；双repair/absent竞态检查赢家；stale fence/rollback无污染；GET仅healthy签URL；retiredAt非creation age、确切version回收失败恢复/引用保护/未知report-only。加key最长/claim唯一与有界分页。真实PG只自建随机库；provider doubles明确标注，真实S3/ClamAV另ST-V                                                          |
+| 交付        | 按职责TDD，小步收敛，不在中间提交unsafe旧CLI仍可删除新退休对象的半片；必要拆片先向Root裁决。lint/typecheck/full257基线+新增/build/compiled/schema/contract、scope/hash后停写，符合性→质量→Root真实验证再提交；所有Git仍Root负责                                                                                                                                                                                            |
 
 ### ST-V Root只读快照预检（绑定2b510751，非活动I2源码）
 
@@ -428,22 +427,22 @@ ST-I2-B回归诊断仍未验收：writer首次全套316/317出现旧dedup P2034�
 
 ### ST-V1 工具链与质量门卡（先设计门）
 
-| 项 | 范围与条件 |
-|---|---|
-| 任务 | P1：固定兼容工具链、type-aware lint实际门禁、格式与完整依赖审计；不扩到部署重写 |
-| Owner/执行 | Storage工程门禁；storage_implementation(gpt-6-astra)继续唯一writer，Root架构/审核/提交；原两审查员只读 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；b5ad3e0440a819a074c48d68d97af9afe0d48527，clean |
-| 当前事实 | Nest/Prisma运行与I2通过；TS5/@types-node22/Vitest2及非type-aware ESLint尚在；完整audit3既知Prisma CLI链告警，13历史format失败。Root候选基于旧347e6dd，不能照搬测试结果 |
-| 目录比较 | A扩展现有package/workspace/tsconfig/eslint/vitest、test/architecture和现有测试，ADR解释核心选型；B新建tooling顶层/第二测试工具或万能helper无持续业务职责，淘汰。只新增有真实验证责任的普通测试文件及一份ADR，不建新业务模块/owner |
-| 设计门文件 | 先更新TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL明确当前b5ad3e0与目标工具链、API/数据不变；一个新ADR记录候选比较、维护/许可/供应链、精确版本/官方依据/时间、失败语义与退出路径；必要CURRENT/ACCEPTANCE/INDEX引用。先报告三文档绝对路径、当前SHA、未决项和验证计划，Root核对后才改配置/代码 |
-| 候选 | Node24.20/pnpm11.25保持；TS6.0.3、@types/node24.13.3、typescript-eslint8.69.0、ESLint10.9.1、Vitest5/Vite8.2.2、Prettier3.9.6、handler4.12.1；Nest12/Prisma7.10/Connect2.2不升级。其他直接依赖固定当前lock已核验精确版本，不浮动latest、不额外major升级 |
-| override门 | 仅@prisma/config@7.10.0>deepmerge-ts8.0.2及prisma@7.10.0>mysql2 3.24.3；ADR显式承认前者跨major：实际Prisma config普通对象配置，Map/Set/数组差异评估，本仓不把MySQL/Studio作为生产数据路径。真实config validate/generate/db push/read-only diff及配置解析回归，供审查；Prisma上游修复/批准升级立即移除两条scope并重验lock/audit，禁止泛全图override |
-| 冷却 | 仓内显式minimumReleaseAge:1440 + strict:true，不设exclude；独立配置/空store正反例，frozen实际安装。Root探针是选型证据，落仓还要验证当前配置 |
+| 项         | 范围与条件                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 任务       | P1：固定兼容工具链、type-aware lint实际门禁、格式与完整依赖审计；不扩到部署重写                                                                                                                                                                                                                                                                                                      |
+| Owner/执行 | Storage工程门禁；storage_implementation(gpt-6-astra)继续唯一writer，Root架构/审核/提交；原两审查员只读                                                                                                                                                                                                                                                                               |
+| 基线       | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage；codex/production-closure-docs；b5ad3e0440a819a074c48d68d97af9afe0d48527，clean                                                                                                                                                                                                                                |
+| 当前事实   | Nest/Prisma运行与I2通过；TS5/@types-node22/Vitest2及非type-aware ESLint尚在；完整audit3既知Prisma CLI链告警，13历史format失败。Root候选基于旧347e6dd，不能照搬测试结果                                                                                                                                                                                                               |
+| 目录比较   | A扩展现有package/workspace/tsconfig/eslint/vitest、test/architecture和现有测试，ADR解释核心选型；B新建tooling顶层/第二测试工具或万能helper无持续业务职责，淘汰。只新增有真实验证责任的普通测试文件及一份ADR，不建新业务模块/owner                                                                                                                                                    |
+| 设计门文件 | 先更新TECHNICAL_DESIGN、API_CONTRACT、DATA_MODEL明确当前b5ad3e0与目标工具链、API/数据不变；一个新ADR记录候选比较、维护/许可/供应链、精确版本/官方依据/时间、失败语义与退出路径；必要CURRENT/ACCEPTANCE/INDEX引用。先报告三文档绝对路径、当前SHA、未决项和验证计划，Root核对后才改配置/代码                                                                                           |
+| 候选       | Node24.20/pnpm11.25保持；TS6.0.3、@types/node24.13.3、typescript-eslint8.69.0、ESLint10.9.1、Vitest5/Vite8.2.2、Prettier3.9.6、handler4.12.1；Nest12/Prisma7.10/Connect2.2不升级。其他直接依赖固定当前lock已核验精确版本，不浮动latest、不额外major升级                                                                                                                              |
+| override门 | 仅@prisma/config@7.10.0>deepmerge-ts8.0.2及prisma@7.10.0>mysql2 3.24.3；ADR显式承认前者跨major：实际Prisma config普通对象配置，Map/Set/数组差异评估，本仓不把MySQL/Studio作为生产数据路径。真实config validate/generate/db push/read-only diff及配置解析回归，供审查；Prisma上游修复/批准升级立即移除两条scope并重验lock/audit，禁止泛全图override                                   |
+| 冷却       | 仓内显式minimumReleaseAge:1440 + strict:true，不设exclude；独立配置/空store正反例，frozen实际安装。Root探针是选型证据，落仓还要验证当前配置                                                                                                                                                                                                                                          |
 | typed lint | 使用projectService/type-aware，显式unsafe-assignment/call/member、floating/misused及所需exhaustiveness固定选项；unsafe-return/argument随采用preset保持。六规则真实lintText正负例及现有import边界回归。解析JSON到unknown后窄化、保持Promise/abort语义，不靠any cast、通用disable或改变测试行为清零；可选require-await与async双桩的适用范围在ADR说明，任何例外具体且不触碰上述强制规则 |
-| 类型/build | TS6显式build rootDir=src保dist/main.js；Node类型major与runtime对齐。全声明skipLibCheck=false+DOM只是Root可行实验，非强制扩大本片；不手改node_modules/generated。根prisma/vitest配置的projectService覆盖可在既有tsconfig纳入，build仍只src |
-| 允许实施集 | 门通过后package.json/pnpm-lock/pnpm-workspace、eslint/tsconfig/vitest/prettier相关配置、当前13format文件（compose仅格式无运行语义）、为typed lint所需的既有src/test/scripts定点类型修正与架构门正反例、相应文档/ADR；contract/provenance仅格式且JSON语义字段/digest不变，contract/Proto内容不变 |
-| 排除 | 业务状态机/API/SQL/schema/generated变化，CI/Docker/compose功能/依赖服务编排重写，其他owner/Root、用户数据、共享服务启停、真实SLO宣称。必要越界先报Root |
-| 验证/交付 | 先RED/策略反例，完整format/lint/typecheck、322基线+新增默认并行独立PG、compiled2、build/validate/七表apply/drift、contract→Prisma generate→contract隔离、完整audit及prod/no-optional冻结闭包/真实查询。预留版本和生成物检查，不取消失败门。固定manifest停写→符合性→质量→Root主树复跑/小片提交，Git仍Root独占 |
+| 类型/build | TS6显式build rootDir=src保dist/main.js；Node类型major与runtime对齐。全声明skipLibCheck=false+DOM只是Root可行实验，非强制扩大本片；不手改node_modules/generated。根prisma/vitest配置的projectService覆盖可在既有tsconfig纳入，build仍只src                                                                                                                                            |
+| 允许实施集 | 门通过后package.json/pnpm-lock/pnpm-workspace、eslint/tsconfig/vitest/prettier相关配置、当前13format文件（compose仅格式无运行语义）、为typed lint所需的既有src/test/scripts定点类型修正与架构门正反例、相应文档/ADR；contract/provenance仅格式且JSON语义字段/digest不变，contract/Proto内容不变                                                                                      |
+| 排除       | 业务状态机/API/SQL/schema/generated变化，CI/Docker/compose功能/依赖服务编排重写，其他owner/Root、用户数据、共享服务启停、真实SLO宣称。必要越界先报Root                                                                                                                                                                                                                               |
+| 验证/交付  | 先RED/策略反例，完整format/lint/typecheck、322基线+新增默认并行独立PG、compiled2、build/validate/七表apply/drift、contract→Prisma generate→contract隔离、完整audit及prod/no-optional冻结闭包/真实查询。预留版本和生成物检查，不取消失败门。固定manifest停写→符合性→质量→Root主树复跑/小片提交，Git仍Root独占                                                                         |
 
 ST-V后继仍须独立卡：唯一资源拥有权的部署/CI/compose/生产API smoke、真实S3/ClamAV/ObjectLock/镜像和信号验收；Docker socket目前只读仍超时，未获得重启答复，不擅自重启。工具链完成不代表整个Storage目标完成。
 
@@ -474,28 +473,26 @@ ST-V1-I另特批docs/ACCEPTANCE_AND_RISKS.md仅新版Prettier格式、无状态�
 - storage_contract_review(gpt-5.6-sol)先只读符合性：ADR0003/精确版本/两个scope/1440严格无豁免/六typed规则真实正反例与9特批例外/Vitest5语义/原API数据不变/format-only范围。放行后storage_data_review(gpt-5.6-sol)质量审查生产和测试类型修正是否改变Promise/abort/竞态、配置loader真实回归、cold/frozen/audit证据及门禁有效性。两者不写/安装/测试/Git/基础设施，绑定manifest；Root同时保留主树独立验证。
 - writer两新库347+compiled2、完整format/lint/typecheck/build/schema/contract/生成隔离和完整443 audit0为旁证；独立生产全新store24.3s、139audit0、编译真实查询通过，完整隔离cold起点180s超时后同store68s续跑成功，明确非单次全冷成功。尚未Root接收或提交。50路径不含Schema/generated/Proto/CI/Docker功能，全部自建库与安装子进程已清理；ST-V2仍独立未验。
 
-
 ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 storage_contract_review 与质量 storage_data_review 均绑定 dca94012 manifest、无可行动 P0/P1/P2，未自行安装/测试/写入。Root `/tmp/kokoro-storage-main-v1-tooling.cPd5W1` 在原主树默认并行两独立随机主库各 63 文件/347 pass/0 skip，compiled 2、format/lint/typecheck/build/frozen/完整 audit 443依赖0告警、三个自有空库 schema apply/validate/contract→generate→contract/生成无变更、独立CLI两次0、50文件hash/diff检查通过，所有自有库清理。Root另逐字验证14个format-only文件等于 Prettier3.9.6 对原基线的输出。另开独立 HOME/XDG/空store 的完整安装和生产安装闭包，日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v1-closure.d3deawub`，仍执行中；不把主树缓存frozen替代cold结果。
 
 本轮 Root 治理实跑 `/tmp/kokoro-storage-root-governance.BgzFGJ`：standard exit1/208条（Storage24），topology exit0，scripts/tests 82 pass/2 fail（既有手册示例数/参考依据标题断言）。Storage记录包含旧SQL canonical、src/modules拓扑、generated Prisma被误判wire/config、旧strictDepBuilds/精确engine和编译策略等与当前手册/批准ADR不一致项，以及HTTP契约待查项，不能直接按旧checker恢复SQL/旧层或手改generated；原始失败保留，未宣称全仓门绿，Root通用checker修订不在本Storage写入范围。只读Docker `_ping` 3秒仍超时，未重启。
 
 ### ST-V2-D 下一片设计准备（只读，尚未放行写入）
 
-| 项 | 决定/范围 |
-|---|---|
-| Owner | Storage test/deployment；不新增服务、业务writer、定时器或跨仓owner |
-| 当前事实 | V1稳定50路径尚待提交；旧production-runtime测试绕过返回签名URL并直接SQL清理，docker-smoke按固定名称先删容器，CI/compose默认共享资源且依赖陈旧，均未实际运行 |
-| 目标职责 | 分两小片：A真实RPC返回URL上传/下载与外部S3资格；B唯一run资源隔离、CI/RC和扫描。代码通过与真实provider/镜像通过分开记录 |
-| 目录比较 | 采用现有 test/smoke、test/fixtures 与 scripts，各自测试/资源编排职责；不放src业务Service或新顶层e2e工程，避免生产附带测试和第二实现 |
-| 粒度 | 优先改现有测试；多个smoke共享的有界资源生命周期可在既有fixtures添普通文件，不搭通用框架；新具体文件集等只读盘点后确定 |
-| 依赖 | 测试消费现有owner generated client、Prisma和AWS官方SDK；应用仍Nest构建入口，禁止SQL CRUD绕过、修改I2事务语义或新开PG/Redis实例 |
-| 数据/API | Proto/schema不变；每run数据库、tenant、bucket/object版本和容器ID须显式owned；共享实例只复用，清理仅成功创建的资源，AlreadyExists不得据此认领 |
+| 项           | 决定/范围                                                                                                                                                                                                                |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner        | Storage test/deployment；不新增服务、业务writer、定时器或跨仓owner                                                                                                                                                       |
+| 当前事实     | V1稳定50路径尚待提交；旧production-runtime测试绕过返回签名URL并直接SQL清理，docker-smoke按固定名称先删容器，CI/compose默认共享资源且依赖陈旧，均未实际运行                                                               |
+| 目标职责     | 分两小片：A真实RPC返回URL上传/下载与外部S3资格；B唯一run资源隔离、CI/RC和扫描。代码通过与真实provider/镜像通过分开记录                                                                                                   |
+| 目录比较     | 采用现有 test/smoke、test/fixtures 与 scripts，各自测试/资源编排职责；不放src业务Service或新顶层e2e工程，避免生产附带测试和第二实现                                                                                      |
+| 粒度         | 优先改现有测试；多个smoke共享的有界资源生命周期可在既有fixtures添普通文件，不搭通用框架；新具体文件集等只读盘点后确定                                                                                                    |
+| 依赖         | 测试消费现有owner generated client、Prisma和AWS官方SDK；应用仍Nest构建入口，禁止SQL CRUD绕过、修改I2事务语义或新开PG/Redis实例                                                                                           |
+| 数据/API     | Proto/schema不变；每run数据库、tenant、bucket/object版本和容器ID须显式owned；共享实例只复用，清理仅成功创建的资源，AlreadyExists不得据此认领                                                                             |
 | Provider决定 | 不默认换Ceph或启动已归档MinIO；显式外部配置资格测试缺参非零失败，不skip报绿。VersionId+IfMatch错误412/保留对象、正确仅删指定版本、ObjectLock失败保留retirement必须实测；不支持则资格失败，不加不安全HEAD-delete fallback |
-| 删除项 | 按片删除SQL取objectKey/手写清理、绕过签名URL、固定container预清理、固定compose down和旧默认凭据资源；不预先批量改配置 |
-| 验证 | 各片RED/GREEN与全默认测试/typed/构建/契约schema保护；模拟命令可验证隔离失败恢复，但不冒充真实S3/ClamAV/OCI/部署证据；Docker API当前无响应为后继真实执行限制 |
+| 删除项       | 按片删除SQL取objectKey/手写清理、绕过签名URL、固定container预清理、固定compose down和旧默认凭据资源；不预先批量改配置                                                                                                    |
+| 验证         | 各片RED/GREEN与全默认测试/typed/构建/契约schema保护；模拟命令可验证隔离失败恢复，但不冒充真实S3/ClamAV/OCI/部署证据；Docker API当前无响应为后继真实执行限制                                                              |
 
 准备负责人 storage_implementation（gpt-6-astra）仅只读盘点最小两片文件集和复用入口，不写/安装/服务/DB/Git；Root保留当前V1验收关键路径。V1提交后才补三设计文档/ADR并通过第8.1门，再按单writer放行实现。
-
 
 ### ST-V1-I 已验收
 
@@ -504,33 +501,29 @@ ST-V1-I 独立审查与 Root 复验（待冷闭包收尾提交）：符合性 st
 - Root生产probe首次把reconcile-objects.service写成reconciliation.service，真实报ERR_MODULE_NOT_FOUND（prod-query.log）且自有DB已清理；只纠正临时probe导入路径后另建新库再次官方apply/query通过（prod-query-corrected.log），未改源码、断言或依赖闭包。该失败属于Root harness接线错误，不计生产缺陷。所有本次自有DB已删除，最终50hash不变。
 - 全部已验功能：Prisma数据owner、实际Nest运行与取消/drain、canonical复用/repair CAS/退休GC、兼容工具链typed门。未闭环：V2实际S3条件版本/ObjectLock、ClamAV、OCI/RC/CI、内部HTTP机器契约、容量/SLO及Root全仓checker一致性。总目标保持active，不宣称完整生产验收。
 
-
 ### ST-V2-D 文档门任务卡（放行文档，未放行业务/测试改写）
 
-| 项 | 决定 |
-|---|---|
-| 任务/优先级 | P1；确定两个最小可审查切片：A返回签名URL真实链及版本/锁定资格，B部署资源拥有权、剩余smoke与CI/RC；三设计一致后Root放行 |
-| Owner/Agent | kokoro-storage；storage_implementation(gpt-6-astra)唯一writer，Root架构/审查/提交；两个reviewer后继只读 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，030d2c1fb1d3d09117757e5592eee5a1a65e067e，clean |
-| 允许路径 | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md、INDEX.md、ADR/README.md；新增docs/ADR/0004-isolated-provider-qualification.md；AGENTS.md只修已验收状态入口，不复制规则 |
-| 排除 | src/test/scripts/contract/prisma/generated/package/lock/CI/Docker/compose全部不得改；其他仓不在范围；Root计划只由Root编辑 |
-| 固定决定 | 承接上表；不更换默认provider、不默认启动MinIO或重型Ceph；ClamAV候选digest仅设计采用而未实跑。外部资格测试显式配置独立fixture bucket和可撤销自有version legal hold，缺失配置或不支持412条件删除即失败；不自动创建bucket或开启用户bucket versioning/ObjectLock、不设置compliance retention、不绕过用户锁、不修改I2失败保留语义 |
-| 所有权 | bucket本身外部提供、只读检查所需能力，不认领/删除bucket；写入前每run高熵唯一tenant/key prefix，登记自己创建的确切key/version；只解除本测试亲自设置的legal hold。创建/清理失败明确非零并保留资源清单，单项失败继续其他资源释放。自建DB由创建者删除，不以名称前缀认领既有DB；PG/Redis本地复用 |
-| A目标文件集 | 修改test/smoke/production-runtime.e2e.test.ts、capability-package.e2e.test.ts、s3.integration.test.ts；必要共享fixture smoke-provider.ts（配置/资源生命周期）与storage-roundtrip.ts（真实RPC URL链）和对应unit；若职责需要再拆普通文件先报告，不在一文件混schema/type/常量/fixture编排；依赖/Schema/Proto不变 |
-| B边界 | 后继单卡精确授权docker-smoke/compose/CI/release、scanner/infra smoke、deployment/quality架构门及命令double测试。一个token双端传递、可达签名endpoint、容器ID创建登记、随机端口和有界逆序cleanup；同OCI产物scan+smoke之后发布。GitHub job自身PG/Redis不等同本地共享实例，不先重启当前Docker |
-| 文档门验证 | 文档format/diff、Prisma validate、contract check及原始Schema/generated/Proto无变化；给三份绝对路径、commit、未决执行项和对应命令。无DB/服务/镜像/云操作；先固定manifest停写，Root审查提交后才A实施 |
-| 交付 | Root唯一Git index/commit负责人；writer交精确路径/hash与文档门证据。当前S3/ClamAV/ObjectLock/OCI/SLO未验，HTTP机器契约单独后继处理，不在A/B偷偷扩契约 |
+| 项          | 决定                                                                                                                                                                                                                                                                                                                         |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务/优先级 | P1；确定两个最小可审查切片：A返回签名URL真实链及版本/锁定资格，B部署资源拥有权、剩余smoke与CI/RC；三设计一致后Root放行                                                                                                                                                                                                       |
+| Owner/Agent | kokoro-storage；storage_implementation(gpt-6-astra)唯一writer，Root架构/审查/提交；两个reviewer后继只读                                                                                                                                                                                                                      |
+| 基线        | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，030d2c1fb1d3d09117757e5592eee5a1a65e067e，clean                                                                                                                                                                        |
+| 允许路径    | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md、INDEX.md、ADR/README.md；新增docs/ADR/0004-isolated-provider-qualification.md；AGENTS.md只修已验收状态入口，不复制规则                                                                                                      |
+| 排除        | src/test/scripts/contract/prisma/generated/package/lock/CI/Docker/compose全部不得改；其他仓不在范围；Root计划只由Root编辑                                                                                                                                                                                                    |
+| 固定决定    | 承接上表；不更换默认provider、不默认启动MinIO或重型Ceph；ClamAV候选digest仅设计采用而未实跑。外部资格测试显式配置独立fixture bucket和可撤销自有version legal hold，缺失配置或不支持412条件删除即失败；不自动创建bucket或开启用户bucket versioning/ObjectLock、不设置compliance retention、不绕过用户锁、不修改I2失败保留语义 |
+| 所有权      | bucket本身外部提供、只读检查所需能力，不认领/删除bucket；写入前每run高熵唯一tenant/key prefix，登记自己创建的确切key/version；只解除本测试亲自设置的legal hold。创建/清理失败明确非零并保留资源清单，单项失败继续其他资源释放。自建DB由创建者删除，不以名称前缀认领既有DB；PG/Redis本地复用                                  |
+| A目标文件集 | 修改test/smoke/production-runtime.e2e.test.ts、capability-package.e2e.test.ts、s3.integration.test.ts；必要共享fixture smoke-provider.ts（配置/资源生命周期）与storage-roundtrip.ts（真实RPC URL链）和对应unit；若职责需要再拆普通文件先报告，不在一文件混schema/type/常量/fixture编排；依赖/Schema/Proto不变                |
+| B边界       | 后继单卡精确授权docker-smoke/compose/CI/release、scanner/infra smoke、deployment/quality架构门及命令double测试。一个token双端传递、可达签名endpoint、容器ID创建登记、随机端口和有界逆序cleanup；同OCI产物scan+smoke之后发布。GitHub job自身PG/Redis不等同本地共享实例，不先重启当前Docker                                    |
+| 文档门验证  | 文档format/diff、Prisma validate、contract check及原始Schema/generated/Proto无变化；给三份绝对路径、commit、未决执行项和对应命令。无DB/服务/镜像/云操作；先固定manifest停写，Root审查提交后才A实施                                                                                                                           |
+| 交付        | Root唯一Git index/commit负责人；writer交精确路径/hash与文档门证据。当前S3/ClamAV/ObjectLock/OCI/SLO未验，HTTP机器契约单独后继处理，不在A/B偷偷扩契约                                                                                                                                                                         |
 
 只读盘点还确认docker-smoke容器与RPC客户端默认token不同、生产URL默认files.example.test；旧测试SQL取key+SDK PUT恰会绕过URL可达性。A须删旁路，B须同一token与真实可达public endpoint；现有capability-package旧PUT重放不改变final字节断言应保留。组件scanner直接SDK PUT属于fixture不是生产旁路，SELECT1属于探针不是业务SQL CRUD；避免机械误删有效职责。
-
 
 ST-V2-D设计细化裁决：Root于2026-09-08重新核对[AWS DeleteObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html)、[PutObjectLegalHold](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html)与[ObjectLock管理](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html)。fixture bucket预检查需versioning/ObjectLock已启用且无DefaultRetention；不得自动设置bucket不可逆属性。针对本run确切version读回状态、设置legal hold与清理，未知设置结果不冒称确认成功。只登记的确切key写入意图可用于有界恢复该key未知响应生成版本；未知Complete final candidate仍只报告，不从tenant prefix推导删除授权。
 
 批准未来A最小范围补充（尚未代码放行）：test/fixtures/smoke-provider.schema.ts单独配置解析；test/fixtures/smoke-provider.ts仅对象版本/自设hold生命周期；storage-roundtrip.ts仅RPC返回URL链。现有test/fixtures/isolated-prisma.ts增加显式preserveDatabase选项及对应unit：默认close仍删自己成功创建的库；外部cleanup失败保留库/retirement证据但关闭连接，不认领任意既有数据库，重复close与部分init失败须验证。保留资源必须非零并打印非敏感DB/key/version和后续owner，不称全清。三设计仍只按既有10文档范围执行。
 
-
 ST-H0只读后继调查卡：storage_contract_review(gpt-5.6-sol)在Storage030d2c1源码基线调查Library HTTP机器契约缺口；只读src/transport、src/library、现有runtime schema和contract生成入口、手册与API_CONTRACT。目标列出现有唯一请求/响应/错误事实源、可行的两种单向生成方式（官方Nest/OpenAPI或成熟schema生成器）及最小影响/是否新核心依赖；若给版本/兼容结论先核对官方来源。本任务不改任何文件、安装、测试、服务、DB或Git，不扩V2A/B契约，不伪称当前无机器契约为已满足。允许只读研究与V2文档writer并行，Root保留总体裁决与提交；交付建议/证据/未决，由Root后续单卡才放行。
-
 
 ST-V2-D 首次固定10文档manifest ffff95def91882fdfae2809208cfa1ccac39ba37957a3a92f3741f3d718538d4（030d2c1基线）已收到；Root符合性审查发现运行时readiness自动建桶与方案只读边界矛盾，故未提交/未放行A。当前aws-sdk.ts ensureReady会HeadBucket 404后CreateBucket并吞AlreadyOwnedByYou/AlreadyExists，不能仅凭fixture凭据预期无建桶权限保证无副作用。
 
@@ -540,66 +533,57 @@ ADR凭据澄清：当前显式KOKORO_OBJECT_STORE AK/SK客户端无sessionToken�
 
 ST-H0调查已返回，尚未采用：当前Library请求是URL解析、响应mapper/envelope而非完整运行时schema，确实缺机器OpenAPI。官方Swagger11.4.6 peers仅Nest11，不可直接称兼容本仓Nest12；Zod3兼容生成器zod-to-openapi7.3.4已非活跃支持线，不能只因能生成就批准新核心依赖。后继应比较批准升级Zod及受维护生成器/等待兼容稳定Nest companion的范围和退出，不能无审查引入遗留桥；不混本V2A/B，Proto保持。只读报告官方来源归后继设计输入，当前不安装/试验/改HTTP。
 
-
 ST-V2-D第二版879ab7d8已由Root独立format/Prisma validate/contract/diff及全部非文档hash验证通过，日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v2-design.vgmr7oov`，未连DB。随后storage_data_review质量审查发现1项P1，未放行提交：原同key v1/v2后用旧v1 ETag条件删除非current v1成功的矩阵，与[AWS conditional deletes](https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-deletes.html)明确只评估current version的语义冲突，Root已独立核对官方Note并接受，不以API参数同时存在推断组合一定成功。
 
 **最新矩阵裁决（取代此前同key删旧v1的要求）**：按生产final key不复用输入域，key A只有一个current v1；错ETag+VersionId实际412并保留，正确current ETag+VersionId实际删除且无delete marker；独立control key B/version字节前后不变。不得移除生产IfMatch或借current新ETag删除已退休旧identity；外部同key写入导致current ETag不同返回412时保留retirement。不要泛称全部non-current情况恒为412，同ETag需按实际条件判断。此为纠正Root早期测试假设，不是降低provider门。
 
 正常roundtrip旧签名URL再次PUT会产生多个staging版本，fixture成功cleanup须停止写入后逐次以provider真实current identity核对registry，再携该确切VersionId+ETag条件DELETE；出现未登记current保留key/DB，不能按VersionId字符串/客户端回执次序猜current，也不能先删非current旧版本期待其ETag仍匹配。HEAD用于选择已登记当前identity，不替代条件DELETE、不移除IfMatch。writer仅修同10文档并重交，质量审查员保持只读待新manifest，源码继续未授权。
 
-
 ### ST-V2-D 已验收 / ST-V2-A0 放行
 
 - D提交 `341a9889a0d957d728d6efa9bf4474859211d22c`；最终9d8b5123 manifest、10物理路径逐原始/staged/committed hash验证、提交后clean。Root符合性审查与storage_data_review质量复查通过，原current-only矩阵P1关闭；Root最终 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-v2-design.km1g0v60` 文档format/Prisma validate/contract/diff与所有非文档tracked hash不变通过，无DB连接。D通过仅批准设计，非外部provider或实现通过。
 
-| 项 | ST-V2-A0任务卡 |
-|---|---|
-| 任务/优先级 | P1；ObjectStore readiness只读化，移除自动建桶副作用，先独立闭环再A1 |
-| Owner/Agent | Storage integrations/object-store；storage_implementation(gpt-6-astra)唯一writer，Root符合性/Git/集成，storage_data_review后继独立质量审查 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，341a9889a0d957d728d6efa9bf4474859211d22c，clean |
-| 写入 | src/integrations/object-store/aws-sdk.ts仅ensureReady与移除不用import；test/unit/object-store.test.ts仅相关回归。原D十文档允许仅更新A0当前状态/设计Approved/实际证据及必要行为说明，不改A1/B方案、不增新文档；不为了凑文件修改 |
-| 禁止 | A1 fixtures/其余测试/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他src/其他owner；不连接任何用户S3或建桶/启动Docker |
-| 行为 | ensureReady成功仅HEAD；404/NoSuchBucket/403/timeout/abort失败且零CreateBucket，保留原signal/cause和Nest启动失败destroy；不改变其他对象方法/事务/I2，不新增create开关或fallback |
-| 验证 | 先新回归在341a988 RED证明缺陷；GREEN后format/lint/typecheck/build、默认并行347+新增且显式新随机PG、compiled2、Prisma validate/官方仅自有空库apply/contract→generate→contract及protected hash。共享PG/Redis复用，无S3/ClamAV/镜像证明；Root主树重跑后验收 |
-| 交付 | 不stage/commit；固定精确文件hash+实际RED/GREEN/全门日志后停写，Root独立质量审查/主树验证/按路径提交；A1不抢先实施 |
+| 项          | ST-V2-A0任务卡                                                                                                                                                                                                                                           |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务/优先级 | P1；ObjectStore readiness只读化，移除自动建桶副作用，先独立闭环再A1                                                                                                                                                                                      |
+| Owner/Agent | Storage integrations/object-store；storage_implementation(gpt-6-astra)唯一writer，Root符合性/Git/集成，storage_data_review后继独立质量审查                                                                                                               |
+| 基线        | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，341a9889a0d957d728d6efa9bf4474859211d22c，clean                                                                                                    |
+| 写入        | src/integrations/object-store/aws-sdk.ts仅ensureReady与移除不用import；test/unit/object-store.test.ts仅相关回归。原D十文档允许仅更新A0当前状态/设计Approved/实际证据及必要行为说明，不改A1/B方案、不增新文档；不为了凑文件修改                           |
+| 禁止        | A1 fixtures/其余测试/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他src/其他owner；不连接任何用户S3或建桶/启动Docker                                                                                                                  |
+| 行为        | ensureReady成功仅HEAD；404/NoSuchBucket/403/timeout/abort失败且零CreateBucket，保留原signal/cause和Nest启动失败destroy；不改变其他对象方法/事务/I2，不新增create开关或fallback                                                                           |
+| 验证        | 先新回归在341a988 RED证明缺陷；GREEN后format/lint/typecheck/build、默认并行347+新增且显式新随机PG、compiled2、Prisma validate/官方仅自有空库apply/contract→generate→contract及protected hash。共享PG/Redis复用，无S3/ClamAV/镜像证明；Root主树重跑后验收 |
+| 交付        | 不stage/commit；固定精确文件hash+实际RED/GREEN/全门日志后停写，Root独立质量审查/主树验证/按路径提交；A1不抢先实施                                                                                                                                        |
 
 放置理由沿ADR0004：这是现object-store adapter readiness职责的局部修复与现unit回归，不建立新模块/抽象；missing bucket从“尝试自建”变为启动/就绪失败，部署预置职责明确。
 
-
 ST-H0继续只读调查：为避免新增已非活跃支持的Zod3生成桥，storage_contract_review比较“统一升级当前Zod4稳定版 + 受维护的zod-to-openapi稳定版”与先前方案；仅官方精确版本/peer/维护/许可证/发布时间、静态现有zod导入和API用法/潜在语义变化/最小文件范围，不安装、生成、测试或改任何文件/配置。与A0单writer独立，不构成升级授权；Root后继设计需实际回归/契约不变和依赖审核，未证明兼容前不声称可直接升级。
-
 
 ### ST-V2-A0 已验收 / ST-V2-A1a 放行
 
 - A0提交 `9b609671dfe31a6d899e4c3d9613e40ecf4a6240`，b89f71d6 manifest的12M逐原始/staged/committed hash核验，提交后clean。Root符合性及storage_data_review独立质量审查无P0/P1/P2；Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a0.2sjrkpnc` 实跑format/lint/typecheck/build/audit443依赖0、自有随机新库官方apply、默认并行63文件360/360无skip、compiled2、validate/contract→generate→contract/diff及所有范围外tracked字节不变。自有DB已删除；source仅HEAD-only，无外部provider声明。
 
-| 项 | ST-V2-A1a任务卡 |
-|---|---|
-| 任务/优先级 | P1；先实现外部资格所需的显式配置、确切对象/hold资源登记和自有数据库失败保留；下一片A1b才接真实URL与外部smoke消费者 |
-| Owner/Agent | Storage test/fixtures，storage_implementation(gpt-6-astra)唯一writer；Root方案/Git/集成，后继独立spec/质量审查 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，9b609671dfe31a6d899e4c3d9613e40ecf4a6240，clean |
-| 放置 | 沿已批准ADR0004：既有test/fixtures而非src/common/新测试框架；schema只解析/派生，provider fixture只资源生命周期，isolatedPrisma仍唯一亲建DB句柄，不新增业务repository |
-| 允许代码 | 新test/fixtures/smoke-provider.schema.ts、smoke-provider.ts、test/unit/smoke-provider.test.ts、test/unit/isolated-prisma.test.ts；改既有test/fixtures/isolated-prisma.ts仅preserveDatabase/close可靠性。需要持久journal独立schema或过大文件等真实拆分先向Root给职责/文件名，不自行扩大 |
-| 允许文档 | 既有ADR0004及D原十文档只状态/本片接线与证据；不改A/B已批准语义，不添新文档。新的helper已有真实unit消费者，外部smoke接线A1b明确待办，不冒称A1已完成 |
-| 排除 | 全src、其余test/smoke/roundtrip/compiled-entry、scripts/CI/compose/Docker、Prisma/Proto/generated、package/lock/其他owner；不安装新依赖，不实际访问任何外部S3/ClamAV/云资源或Docker |
-| 数据/API约束 | bucket只读preflight及current-only矩阵/registry/hold四态/预算/失败preserveDB均以ADR最终current-only修正为准。scope prefix不是删除授权；ON未知不解除，未知current/marker/冲突保留且非零；SDK/client和默认AWS凭据链同源，custom显式AK/SK混session token拒绝 |
-| 验证 | RED→GREEN真实SDK命令spy/有界网络double可证明请求形状与resource逻辑，不称providerintegration；缺参零I/O、桶无配置写、404/auth fail、按registry current原子VersionId+IfMatch、同key多版本顺序/未知停止、hold未知、分页重复/预算、0700/0600无secretjournal、单close失败继续释放、DB仅亲建者DROP与preserve/repeatedclose/init未知。完整format/typed/typecheck/build/defaultparallel360+新增/compiled2/官方自有新库apply/双生成保护；测试资源隔离 |
-| 交付 | writer不stage/commit，固定路径hash+RED/GREEN/全门证据停写交Root；A1b（真实URL与三smoke）不抢写，成功后单独续派，外部provider缺配置不因源码通过计绿 |
+| 项           | ST-V2-A1a任务卡                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务/优先级  | P1；先实现外部资格所需的显式配置、确切对象/hold资源登记和自有数据库失败保留；下一片A1b才接真实URL与外部smoke消费者                                                                                                                                                                                                                                                                                                                           |
+| Owner/Agent  | Storage test/fixtures，storage_implementation(gpt-6-astra)唯一writer；Root方案/Git/集成，后继独立spec/质量审查                                                                                                                                                                                                                                                                                                                               |
+| 基线         | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，9b609671dfe31a6d899e4c3d9613e40ecf4a6240，clean                                                                                                                                                                                                                                                                                        |
+| 放置         | 沿已批准ADR0004：既有test/fixtures而非src/common/新测试框架；schema只解析/派生，provider fixture只资源生命周期，isolatedPrisma仍唯一亲建DB句柄，不新增业务repository                                                                                                                                                                                                                                                                         |
+| 允许代码     | 新test/fixtures/smoke-provider.schema.ts、smoke-provider.ts、test/unit/smoke-provider.test.ts、test/unit/isolated-prisma.test.ts；改既有test/fixtures/isolated-prisma.ts仅preserveDatabase/close可靠性。需要持久journal独立schema或过大文件等真实拆分先向Root给职责/文件名，不自行扩大                                                                                                                                                       |
+| 允许文档     | 既有ADR0004及D原十文档只状态/本片接线与证据；不改A/B已批准语义，不添新文档。新的helper已有真实unit消费者，外部smoke接线A1b明确待办，不冒称A1已完成                                                                                                                                                                                                                                                                                           |
+| 排除         | 全src、其余test/smoke/roundtrip/compiled-entry、scripts/CI/compose/Docker、Prisma/Proto/generated、package/lock/其他owner；不安装新依赖，不实际访问任何外部S3/ClamAV/云资源或Docker                                                                                                                                                                                                                                                          |
+| 数据/API约束 | bucket只读preflight及current-only矩阵/registry/hold四态/预算/失败preserveDB均以ADR最终current-only修正为准。scope prefix不是删除授权；ON未知不解除，未知current/marker/冲突保留且非零；SDK/client和默认AWS凭据链同源，custom显式AK/SK混session token拒绝                                                                                                                                                                                     |
+| 验证         | RED→GREEN真实SDK命令spy/有界网络double可证明请求形状与resource逻辑，不称providerintegration；缺参零I/O、桶无配置写、404/auth fail、按registry current原子VersionId+IfMatch、同key多版本顺序/未知停止、hold未知、分页重复/预算、0700/0600无secretjournal、单close失败继续释放、DB仅亲建者DROP与preserve/repeatedclose/init未知。完整format/typed/typecheck/build/defaultparallel360+新增/compiled2/官方自有新库apply/双生成保护；测试资源隔离 |
+| 交付         | writer不stage/commit，固定路径hash+RED/GREEN/全门证据停写交Root；A1b（真实URL与三smoke）不抢写，成功后单独续派，外部provider缺配置不因源码通过计绿                                                                                                                                                                                                                                                                                           |
 
 H0维护中候选只读输入：zod4.4.3 + zod-to-openapi9.1.0，生成器peer Zod4/MIT，需另卡完整官方版本/冷却/传递审计与18个旧zod导入面的行为迁移实验；未采用、未安装、不混A1。旧单参record、nativeEnum、coerce.bigint、recursive JsonValue、defaults/refine与datetime等均需保留行为回归，不能用升级顺手改变receipt/config边界。
 
-
 ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-journal.ts仅承接本run独占0700目录/0600文件、非敏感allow-list记录的顺序落盘和close；不提供旧journal恢复/认领、自动删日志或通用resource框架。provider.ts仍SDK/registry/hold/cleanup，schema.ts仍生产schema派生配置；测试留已批准smoke-provider.test.ts。关联外部副作用必须等待日志写入/必要FileHandle.sync完成，串行写失败后不得继续后续写入；独占创建、不覆盖既有路径，不序列化env/config/SDK原对象/credential/签名URL。明确进程崩溃与整机掉电边界，不宣称日志与外部S3有跨系统原子事务；失败留证非零且释放自有句柄。
-
 
 外部资源进度：Root已异步询问用户后继真实S3使用的独立测试环境名称（预置versioning/ObjectLock、无默认保留期；凭据只经环境变量、不进聊天）。目前无答复；不暂停A1a源码/本地门禁，不擅自建云资源或重启Docker，也不把外部资格计为通过。
 
-
 ST-V2-A1a普通文件扩展批准：test/fixtures/smoke-provider-inventory.ts承接同一实际SDK/adapter的只读版本分页、current或确切version HEAD及有界字节digest观察；不创建client、不删除对象、不修改hold、不授予registry所有权。客户端生命周期仍由provider fixture唯一管理，传递相同signal和预算；同时校验KeyMarker/VersionIdMarker完整游标及进展，page上限/不完整结果/delete marker显式失败或留证。只有与请求Key完全一致的版本观察能用于登记判定，Prefix命中的相邻key不推导所有权；不复制current-only cleanup策略，不增加src/依赖/contract。此普通文件拆分将只读观察与资源写入生命周期分离，沿已批准fixtures位置及既有unit验证，无新增模块/ADR。
 
-
 ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf518c845568cf0fbd02e55c93cfbde838c1c516f073e9f0bc3b441697b033，2026-09-08T13:06:09Z。writer停写，无Git操作；Root已阅读全部新helper并核对批准职责/三设计一致性，开始主树真实门禁。storage_data_review负责独立只读质量审查（沿用gpt-5.6-sol），范围仅此manifest及相关既有adapter/runtime/ADR与test，不改文件/Git/测试数据/共享服务；重点current-only/未知hold与receipt、durable journal、方法级drain、DB亲建/未知证据和测试真实性。引用Root CODEBASE_MAP与TypeScript/SQL手册及当前三设计，交付绑定manifest和基线的P0/P1/P2或无可行动项；Root自行复验、裁决和提交，A1b继续未授权。
-
 
 ### ST-V2-A1a 已验收 / A1b 接线盘点
 
@@ -607,67 +591,63 @@ ST-V2-A1a已固定待审：9b609671基线，17路径（11M/6A），manifest cbaf
 - Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1a.frl8gt8y` 真实新库默认并行65文件424/424无skip、compiled2/2，format/lint/typecheck/build、audit443依赖0、官方apply/validate/contract→Prisma generate→contract、17hash及范围外241tracked字节不变。Root另真实调用isolatedPrisma创建两库：preserve+重复close库仍存在，默认并发close库已删除；Root只凭本次成功创建receipt删除自己的保留验收库，所有本次亲建库已清。没有外部S3/ClamAV/Docker操作。
 - 已关闭Root预审发现：空页变化cursor与缺失IsTruncated、非合作SDK超时、未知CREATE/DROP非敏感诊断、方法跨journal await时close提前清理。修复前失败与worker修复前422输出保留，不冒充最终424证据。
 
-| 项 | ST-V2-A1b-R 接线只读盘点任务卡 |
-|---|---|
-| 目标/优先级 | P1；落实ADR0004已批准真实URL链与三个smoke消费者，先核对A1a基础helper到实际Nest/Prisma消费者的最小文件范围 |
-| Owner/Agent | Storage test，storage_implementation(gpt-6-astra)只读；Root最终范围/共享计划/提交 |
-| 基线 | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean |
-| 只读范围 | 三smoke（production-runtime/capability-package/s3）、已接收smoke-provider相关fixtures、compiled-entry、storage-client、Prisma schema/receipt/完成事务/真实Nest启动入口、对应test及三设计；其他owner禁止 |
-| 确定方案 | 精确返回PUT URL→Complete→GetPackageReference→精确GET验证bytes，旧PUT重用不变final；production-runtime不再SQL取key+SDK PUT。capability-package真实Nest/plain Node，不用TestingModule替换provider。先停止app/在途再对象cleanup，成功后才释放自有DB；容器DB由B拥有不能越权DROP。单资格120秒/RPC420秒，传播同一signal，保留生产Complete300秒 |
-| metadata proof | A1b成功Complete只能以同一自有DB中tenant/owner/upload/asset/command已提交关联确认canonical，再真实HEAD/version/ETag/bytes核对登记；不凭prefix/调用者字符串或事后beginWrite授予权限。未知Complete candidate report-only；metadata只读用实际Prisma、不新增SQL CRUD/第二repository |
-| 待核定普通文件 | storage-roundtrip.ts只RPC/返回URL流程；必要typed metadata proof在现fixtures普通文件而非src/common，避免provider.ts继续混持久化查询；对应unit和真实自有Prisma integration。若原手写skillZip需替换，用成熟工具生成确定性有效fixture、无新手写ZIP协议/依赖，先给文件名与验证 |
-| 排除/交付 | 本R无任何写入/生成/安装/DB/服务/外部provider/Git；交付精确M/A/D文件集、现有复用入口、准备的RED/保留行为、A1a可能需补的public hold释放/confirm接口及未决。Root同一计划明确放置表/范围后才续派写入；不混B部署/CI、H0契约或其他owner |
+| 项             | ST-V2-A1b-R 接线只读盘点任务卡                                                                                                                                                                                                                                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 目标/优先级    | P1；落实ADR0004已批准真实URL链与三个smoke消费者，先核对A1a基础helper到实际Nest/Prisma消费者的最小文件范围                                                                                                                                                                                                                                |
+| Owner/Agent    | Storage test，storage_implementation(gpt-6-astra)只读；Root最终范围/共享计划/提交                                                                                                                                                                                                                                                        |
+| 基线           | /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean                                                                                                                                                                                    |
+| 只读范围       | 三smoke（production-runtime/capability-package/s3）、已接收smoke-provider相关fixtures、compiled-entry、storage-client、Prisma schema/receipt/完成事务/真实Nest启动入口、对应test及三设计；其他owner禁止                                                                                                                                  |
+| 确定方案       | 精确返回PUT URL→Complete→GetPackageReference→精确GET验证bytes，旧PUT重用不变final；production-runtime不再SQL取key+SDK PUT。capability-package真实Nest/plain Node，不用TestingModule替换provider。先停止app/在途再对象cleanup，成功后才释放自有DB；容器DB由B拥有不能越权DROP。单资格120秒/RPC420秒，传播同一signal，保留生产Complete300秒 |
+| metadata proof | A1b成功Complete只能以同一自有DB中tenant/owner/upload/asset/command已提交关联确认canonical，再真实HEAD/version/ETag/bytes核对登记；不凭prefix/调用者字符串或事后beginWrite授予权限。未知Complete candidate report-only；metadata只读用实际Prisma、不新增SQL CRUD/第二repository                                                           |
+| 待核定普通文件 | storage-roundtrip.ts只RPC/返回URL流程；必要typed metadata proof在现fixtures普通文件而非src/common，避免provider.ts继续混持久化查询；对应unit和真实自有Prisma integration。若原手写skillZip需替换，用成熟工具生成确定性有效fixture、无新手写ZIP协议/依赖，先给文件名与验证                                                                |
+| 排除/交付      | 本R无任何写入/生成/安装/DB/服务/外部provider/Git；交付精确M/A/D文件集、现有复用入口、准备的RED/保留行为、A1a可能需补的public hold释放/confirm接口及未决。Root同一计划明确放置表/范围后才续派写入；不混B部署/CI、H0契约或其他owner                                                                                                        |
 
 资料入口继续Root CODEBASE_MAP、TypeScript/SQL专项手册、Storage三设计与ADR0004；既有设计决定不重新向用户询问。真实外部环境仍待配置，不把本地double当provider验收。
-
 
 ### ST-V2-S0-D：A1b前置staging精确清理设计门
 
 只读盘点确认并由Root复核：当前UploadsService Complete359与Abort425使用key-only DELETE，AWS adapter不带VersionId；Enabled bucket会生成staging marker，与已批准fixture未知marker保留规则冲突。该结果为源码及S3协议分析，未做真实provider复现。不能让fixture按prefix认领marker来掩盖生产行为，A1b先等待此前置闭环。
 
-| 放置项 | Root裁决 |
-|---|---|
-| Owner/当前事实 | kokoro-storage uploads唯一业务writer；839c9a9基线clean，已验收Nest/Prisma/424+compiled2。生产Complete/Abort两处key-only清理，deleteExact当前仅final，其他owner不动 |
-| 目标职责 | 已确认业务事务后的best-effort staging精确清理，保持已提交receipt/业务返回与原取消语义，不产生无VersionId marker；不建设完整staging历史GC |
-| 目录比较/粒度 | 采用现uploads.service.ts编排+现object-store adapter/validation能力；淘汰新staging-cleanup模块/进程，因为无新业务身份、事实owner或状态机。预计仅现文件局部改动，不新增目录/通用helper框架 |
-| 依赖 | 复用ObjectReference/deleteExact；内部删除key输入域只扩为合法uploads或final，不接受任意目录。promote/download final守卫不动，retirement store的tenant/final、snapshot和所有current引用复查不动 |
-| 数据/API | 无Prisma schema/SQL/Proto/generated/公开API变化。Complete使用已扫描source，不另HEAD借用后来版本ETag；Abort在已提交abort后有界HEAD并以此次观察identity条件删。原signal贯穿；清理missing/auth/412/timeout保留对象，不回滚或改写receipt；重放不重复清理 |
-| 版本决定 | 新staging清理只有观察到非空且非字符串null VersionId才执行，必须VersionId+原ETag/IfMatch。缺版本时保留，非版本bucket仍可Complete/Abort但不宣称完成此清理；不添加bucket状态推断/假版本。既有final retirement nullable-version删除协议不顺带改变 |
-| 有界性 | 复用现请求生命周期，staging清理设置最多10秒操作signal，Abort HEAD+DELETE共享预算，不调整Complete300秒；及时取消SDK且finally清timer。未合作底层仍由真实在途/原deadline-drain承担，不用丢弃promise伪称工作已结束 |
-| 删除项 | 替换生产Complete/Abort key-only调用；当前三smoke仍使用AwsSdk.delete，A1b负责同步移除其旧调用再清理无用途生产方法，不抢改未授权消费者。Local的测试损坏模拟delete保留明确测试职责 |
-| 验证 | 新回归RED旧key-only/拒绝staging exact；SDK精确VersionId+IfMatch、未知版本零DELETE、覆盖竞态保留新对象、原signal/失败cause、退休staging拒绝、真实Prisma完成/abort/receipt重放/取消；主树完整format/lint/typecheck/test/build/apply/validate/compiled/双生成保护 |
+| 放置项         | Root裁决                                                                                                                                                                                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/当前事实 | kokoro-storage uploads唯一业务writer；839c9a9基线clean，已验收Nest/Prisma/424+compiled2。生产Complete/Abort两处key-only清理，deleteExact当前仅final，其他owner不动                                                                                             |
+| 目标职责       | 已确认业务事务后的best-effort staging精确清理，保持已提交receipt/业务返回与原取消语义，不产生无VersionId marker；不建设完整staging历史GC                                                                                                                       |
+| 目录比较/粒度  | 采用现uploads.service.ts编排+现object-store adapter/validation能力；淘汰新staging-cleanup模块/进程，因为无新业务身份、事实owner或状态机。预计仅现文件局部改动，不新增目录/通用helper框架                                                                       |
+| 依赖           | 复用ObjectReference/deleteExact；内部删除key输入域只扩为合法uploads或final，不接受任意目录。promote/download final守卫不动，retirement store的tenant/final、snapshot和所有current引用复查不动                                                                  |
+| 数据/API       | 无Prisma schema/SQL/Proto/generated/公开API变化。Complete使用已扫描source，不另HEAD借用后来版本ETag；Abort在已提交abort后有界HEAD并以此次观察identity条件删。原signal贯穿；清理missing/auth/412/timeout保留对象，不回滚或改写receipt；重放不重复清理           |
+| 版本决定       | 新staging清理只有观察到非空且非字符串null VersionId才执行，必须VersionId+原ETag/IfMatch。缺版本时保留，非版本bucket仍可Complete/Abort但不宣称完成此清理；不添加bucket状态推断/假版本。既有final retirement nullable-version删除协议不顺带改变                  |
+| 有界性         | 复用现请求生命周期，staging清理设置最多10秒操作signal，Abort HEAD+DELETE共享预算，不调整Complete300秒；及时取消SDK且finally清timer。未合作底层仍由真实在途/原deadline-drain承担，不用丢弃promise伪称工作已结束                                                 |
+| 删除项         | 替换生产Complete/Abort key-only调用；当前三smoke仍使用AwsSdk.delete，A1b负责同步移除其旧调用再清理无用途生产方法，不抢改未授权消费者。Local的测试损坏模拟delete保留明确测试职责                                                                                |
+| 验证           | 新回归RED旧key-only/拒绝staging exact；SDK精确VersionId+IfMatch、未知版本零DELETE、覆盖竞态保留新对象、原signal/失败cause、退休staging拒绝、真实Prisma完成/abort/receipt重放/取消；主树完整format/lint/typecheck/test/build/apply/validate/compiled/双生成保护 |
 
-| 项 | S0-D文档任务卡（当前仅放行文档） |
-|---|---|
-| Agent/基线 | storage_implementation(gpt-6-astra)唯一writer；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean；Root审查/提交 |
-| 允许 | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、ADR/0004-isolated-provider-qualification.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md；只此设计及已接收A1a状态。不新建ADR/文档 |
+| 项               | S0-D文档任务卡（当前仅放行文档）                                                                                                                                                                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Agent/基线       | storage_implementation(gpt-6-astra)唯一writer；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，839c9a9f7fa575435ab6934aceb6f1adf22e550d，clean；Root审查/提交                                                |
+| 允许             | docs/TECHNICAL_DESIGN.md、API_CONTRACT.md、DATA_MODEL.md、ADR/0004-isolated-provider-qualification.md、CURRENT.md、RUNBOOK.md、ACCEPTANCE.md；只此设计及已接收A1a状态。不新建ADR/文档                                                                              |
 | 后继预计实现范围 | src/uploads/uploads.service.ts；integrations/object-store/{object-store.types.ts,validation.ts,aws-sdk.ts,local.ts}；test/unit/object-store.test.ts；test/integration/{prisma-command-lifecycle.test.ts,object-retirement.test.ts}，共8原文件。尚未授权写源码/测试 |
-| 排除/交付 | 不写其余文件、Schema/Proto/generated/package/lock/CI/Docker/其他owner；不安装/DB/服务/provider/Git。文档format/diff、Prisma validate、contract保护检查，给三设计绝对路径/未决/当前SHA和精确manifest，停写后Root审查再放行S0-I |
+| 排除/交付        | 不写其余文件、Schema/Proto/generated/package/lock/CI/Docker/其他owner；不安装/DB/服务/provider/Git。文档format/diff、Prisma validate、contract保护检查，给三设计绝对路径/未决/当前SHA和精确manifest，停写后Root审查再放行S0-I                                      |
 
 A1b-R其余只读交付已保留：未来storage-roundtrip、smoke-storage-metadata、smoke-runtime及对应unit/真实Prisma integration、Python标准库生成固定有效research-package.zip；成功canonical proof核对完整scope/receipt semantic fingerprint/clean关系并实际HEAD/GET，不用于上传旁路；public亲设hold释放与严格登记的资格负例写入后继才授权。Root未放行这些文件写入，B/H0仍另片。
 
-
 S0-D固定质量复查任务：storage_data_review只读839c9a9基线+7M manifest 3dcae37ca32c30baf11509004175c9d1cd607e37f127622c6a6c5d88d6575917；核对三设计/ADR与上述Root裁决、当前源码边界，不写/安装/生成/测试/DB/服务/Git。Root已独立七文档format/Prisma validate/contract/diff及251范围外hash通过，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-s0-design.sy5ybfug；该结果不证明S0已实现。质量结论绑定manifest，Root收结论后按路径提交再派S0-I。
-
 
 ### S0-D已验收 / ST-V2-S0-I实施放行
 
 S0-D提交 `7735511c66d7ac1f92fef57796d4869f4ed3b8dc`，7M逐原始/staged/committed hash和路径核验、提交后clean；Root三设计符合性及storage_data_review独立设计质量无P0/P1/P2。Root七文档format/Prisma validate/contract/diff及251范围外hash不变通过，未连DB；实施/真实provider尚未计绿。
 
-| 项 | ST-V2-S0-I任务卡 |
-|---|---|
-| 任务/owner | P1；uploads在事务提交后按确认的staging版本条件清理，解除A1b正常marker前置；不改其他owner |
-| Agent/基线 | storage_implementation(gpt-6-astra)唯一Storage writer，Root审查/主树复验/Git，后继storage_data_review只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，7735511c66d7ac1f92fef57796d4869f4ed3b8dc，clean |
-| 允许代码 | 仅8现有文件：src/uploads/uploads.service.ts；src/integrations/object-store/object-store.types.ts、validation.ts、aws-sdk.ts、local.ts；test/unit/object-store.test.ts；test/integration/prisma-command-lifecycle.test.ts、object-retirement.test.ts |
-| 文档 | S0-D七文档仅当前实施/实际证据及必要解释。新普通文件或其他测试确实需改先报告；不机械修改所有文件，不新模块/表/框架 |
-| 固定行为 | 完整沿S0-D三设计/ADR。合法uploads|final exact域；staging adapter也拒绝缺/空/字符串null版本，不只依赖调用者自律；source原ETag+VersionId，final可选version协议保留。Complete scan source，无新HEAD；Abort提交后HEAD+DELETE共享10秒原signal组合预算，finally清timer；真实pending/原deadline-drain不丢 |
-| 事务/重放 | 网络不进入数据库事务；提交前失败零清理；事务成功后的missing/auth/412/cleanup timeout不改变receipt和正常返回，原request取消仍传播。同command receipt重放和新command观察到已完成/aborted的replayed结果均不再次清理 |
-| 保护/删除 | promoter/download final guard、retirement tenant/final+全snapshot+current引用、Schema/Proto/generated/依赖/lease/业务事务不动。删除两处生产key-only调用；旧smoke调用及AwsSdk剩余方法A1b再闭环，Local损坏模拟delete保留 |
-| 禁止 | A1b fixtures/三smoke/zip/runtime接线、scripts/CI/Docker/compose/package/lock、新依赖、其余src、其他owner；不访问外部S3/ClamAV/云/Docker，不重启共享PG/Redis |
-| 验证/交付 | 先RED旧实现，GREEN SDK请求真实命令+Local及真实新库Prisma事务/receipt/覆盖/版本缺失/取消/共享预算回归；完整format/typed/typecheck/build/defaultparallel424+新增、compiled2、官方亲建空库apply/catalog/drift、validate/contract→generate→contract及保护hash；复用PG/Redis，只清亲建资源。固定manifest+RED/GREEN/全部日志停写，无Git写入，Root独立审查复验后精确提交 |
+| 项         | ST-V2-S0-I任务卡                                                                                                                                                                                                                                                                                                                                                  |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务/owner | P1；uploads在事务提交后按确认的staging版本条件清理，解除A1b正常marker前置；不改其他owner                                                                                                                                                                                                                                                                          |
+| Agent/基线 | storage_implementation(gpt-6-astra)唯一Storage writer，Root审查/主树复验/Git，后继storage_data_review只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，7735511c66d7ac1f92fef57796d4869f4ed3b8dc，clean                                                                                              |
+| 允许代码   | 仅8现有文件：src/uploads/uploads.service.ts；src/integrations/object-store/object-store.types.ts、validation.ts、aws-sdk.ts、local.ts；test/unit/object-store.test.ts；test/integration/prisma-command-lifecycle.test.ts、object-retirement.test.ts                                                                                                               |
+| 文档       | S0-D七文档仅当前实施/实际证据及必要解释。新普通文件或其他测试确实需改先报告；不机械修改所有文件，不新模块/表/框架                                                                                                                                                                                                                                                 |
+| 固定行为   | 完整沿S0-D三设计/ADR。合法uploads                                                                                                                                                                                                                                                                                                                                 | final exact域；staging adapter也拒绝缺/空/字符串null版本，不只依赖调用者自律；source原ETag+VersionId，final可选version协议保留。Complete scan source，无新HEAD；Abort提交后HEAD+DELETE共享10秒原signal组合预算，finally清timer；真实pending/原deadline-drain不丢 |
+| 事务/重放  | 网络不进入数据库事务；提交前失败零清理；事务成功后的missing/auth/412/cleanup timeout不改变receipt和正常返回，原request取消仍传播。同command receipt重放和新command观察到已完成/aborted的replayed结果均不再次清理                                                                                                                                                  |
+| 保护/删除  | promoter/download final guard、retirement tenant/final+全snapshot+current引用、Schema/Proto/generated/依赖/lease/业务事务不动。删除两处生产key-only调用；旧smoke调用及AwsSdk剩余方法A1b再闭环，Local损坏模拟delete保留                                                                                                                                            |
+| 禁止       | A1b fixtures/三smoke/zip/runtime接线、scripts/CI/Docker/compose/package/lock、新依赖、其余src、其他owner；不访问外部S3/ClamAV/云/Docker，不重启共享PG/Redis                                                                                                                                                                                                       |
+| 验证/交付  | 先RED旧实现，GREEN SDK请求真实命令+Local及真实新库Prisma事务/receipt/覆盖/版本缺失/取消/共享预算回归；完整format/typed/typecheck/build/defaultparallel424+新增、compiled2、官方亲建空库apply/catalog/drift、validate/contract→generate→contract及保护hash；复用PG/Redis，只清亲建资源。固定manifest+RED/GREEN/全部日志停写，无Git写入，Root独立审查复验后精确提交 |
 
 不把S0称为完整staging历史GC，无版本bucket业务可继续但staging保留；A1b/B/H0与真实provider仍待后继。
-
 
 ### S0-I已验收 / A1b1与B运行生命周期分界
 
@@ -675,54 +655,50 @@ S0-D提交 `7735511c66d7ac1f92fef57796d4869f4ed3b8dc`，7M逐原始/staged/commi
 - Root `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-s0-i.ynr1vq42` 实跑format/lint/typecheck/build、audit443依赖0、官方亲建新库apply、默认并行65文件463/463无skip、compiled2/2、validate/contract→Prisma generate→contract/diff与全部15hash及243范围外tracked不变；亲建库已DROP。S0不会按key删除production staging；无版本bucket仍可提交但staging保留，未建设历史GC。
 - 后继只读核对发现原A1b三smoke同片存在运行生命周期耦合：capability可持有plainNode child句柄、s3可直接持有fixture；production-runtime仅有B容器URL，没有本进程创建/停止句柄。ADR要求停止实际服务/在途后才cleanup，不能靠新增任意docker-stop或跨进程journal恢复蒙混。因此拆A1b1（两消费者+共享基础）与B/production-runtime（同一owner进程持容器/provider registry/DB，普通stopAndDrain回调）；停服未知保留对象/DB并非零。禁止新建文件IPC协议或从prefix/日志恢复认领。该调整是同owner顺序，不扩服务/Schema/公开API。
 
-| 放置项 | A1b1 Root固定决定 |
-|---|---|
-| Owner/当前事实 | Storage test；a07b4d4 clean，Nest/Prisma/S0生产能力已验463+compiled2。A1a登记helper只支持预先写入意图，旧capability仍TestingModule/手写ZIP，s3仍建桶/无版本cleanup；production旧SQL+SDK PUT保持已知B后继 |
-| 目标职责 | 两个真实外部smoke消费者+共享原样URL链，真实Nest/plainNode及Prisma已提交metadata proof，无第二业务实现 |
-| 目录比较 | 采用现test/fixtures与unit/integration；淘汰src/common与新e2e工程，测试资源/进程不是新业务owner。复用既有compiled-entry.mjs close协议，不新进程协议或框架 |
-| 粒度/新文件 | storage-roundtrip.ts仅RPC/原样URL bytes；smoke-storage-metadata.ts仅同自有Prisma库短只读事务关联证明；smoke-runtime.ts仅本run亲建Node child启动/停止/退出；research-package.zip由Python标准库zipfile生成固定顺序/1980时间/权限/ZIP_STORED有效样本，不手写ZIP、不加依赖。对应unit/storage-roundtrip.test.ts、unit/smoke-runtime.test.ts、integration/smoke-storage-metadata.test.ts各有明确消费者 |
-| 依赖/证明 | metadata不得用于PUT旁路：PUT始终返回URL，staging key只供写前登记。成功Complete canonical proof需tenant/owner(受信subject)/upload/create-command/asset、Complete receipt复合identity+state/fence/digest/semantic fingerprint/现codec、clean scan/purpose/blob/digest/size关联；provider持具体证明能力后再实际HEAD/GET同key/version/ETag/bytes核对登记，不接受裸字符串/事后beginWrite授权。无业务写查询复制，无Schema变更 |
-| 资源 | 资格120秒/RPC420秒outer signal，Complete300秒不变；SDK小对象64KiB/10秒，cleanup60秒；先停本runNode/所有写入，后fixture conditional cleanup，客户端全关且无失败再亲建者DROP。close失败继续其他资源释放；缺配置显式非零，不skip计绿。production容器与DB生命周期在B同一owner编排闭环 |
-| fixture能力 | 增加仅亲设ON可releaseLegalHold并读回OFF/inflight、已提交canonical登记、仅有durable确切意图的资格小对象SDK写入用于外部违规final覆盖负例，不放宽production put/promote守卫、不另建SDKclient。S0可能已删除staging：RPC前beginDelete，后完整列表+指定版本HEAD确认；还存在则保留登记，不抹unknown状态 |
-| 删除/验证 | 删除两smoke旧建桶/default/skip/SQL CRUD/TestingModule/手写ZIP/key-only吞错cleanup；production-runtime及其AWS.delete旧消费者留B同步移除，未称全部smoke完成。RED→GREEN原URL原headers/bytes/取消/错误URL真失败、真实Prisma错scope/receipt/rollback/identity、亲建child生命周期与fixturehold，完整463+新增/compiled2/静态/schema生成保护；外部资源实际执行另列 |
+| 放置项         | A1b1 Root固定决定                                                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/当前事实 | Storage test；a07b4d4 clean，Nest/Prisma/S0生产能力已验463+compiled2。A1a登记helper只支持预先写入意图，旧capability仍TestingModule/手写ZIP，s3仍建桶/无版本cleanup；production旧SQL+SDK PUT保持已知B后继                                                                                                                                                                                                                |
+| 目标职责       | 两个真实外部smoke消费者+共享原样URL链，真实Nest/plainNode及Prisma已提交metadata proof，无第二业务实现                                                                                                                                                                                                                                                                                                                   |
+| 目录比较       | 采用现test/fixtures与unit/integration；淘汰src/common与新e2e工程，测试资源/进程不是新业务owner。复用既有compiled-entry.mjs close协议，不新进程协议或框架                                                                                                                                                                                                                                                                |
+| 粒度/新文件    | storage-roundtrip.ts仅RPC/原样URL bytes；smoke-storage-metadata.ts仅同自有Prisma库短只读事务关联证明；smoke-runtime.ts仅本run亲建Node child启动/停止/退出；research-package.zip由Python标准库zipfile生成固定顺序/1980时间/权限/ZIP_STORED有效样本，不手写ZIP、不加依赖。对应unit/storage-roundtrip.test.ts、unit/smoke-runtime.test.ts、integration/smoke-storage-metadata.test.ts各有明确消费者                        |
+| 依赖/证明      | metadata不得用于PUT旁路：PUT始终返回URL，staging key只供写前登记。成功Complete canonical proof需tenant/owner(受信subject)/upload/create-command/asset、Complete receipt复合identity+state/fence/digest/semantic fingerprint/现codec、clean scan/purpose/blob/digest/size关联；provider持具体证明能力后再实际HEAD/GET同key/version/ETag/bytes核对登记，不接受裸字符串/事后beginWrite授权。无业务写查询复制，无Schema变更 |
+| 资源           | 资格120秒/RPC420秒outer signal，Complete300秒不变；SDK小对象64KiB/10秒，cleanup60秒；先停本runNode/所有写入，后fixture conditional cleanup，客户端全关且无失败再亲建者DROP。close失败继续其他资源释放；缺配置显式非零，不skip计绿。production容器与DB生命周期在B同一owner编排闭环                                                                                                                                       |
+| fixture能力    | 增加仅亲设ON可releaseLegalHold并读回OFF/inflight、已提交canonical登记、仅有durable确切意图的资格小对象SDK写入用于外部违规final覆盖负例，不放宽production put/promote守卫、不另建SDKclient。S0可能已删除staging：RPC前beginDelete，后完整列表+指定版本HEAD确认；还存在则保留登记，不抹unknown状态                                                                                                                        |
+| 删除/验证      | 删除两smoke旧建桶/default/skip/SQL CRUD/TestingModule/手写ZIP/key-only吞错cleanup；production-runtime及其AWS.delete旧消费者留B同步移除，未称全部smoke完成。RED→GREEN原URL原headers/bytes/取消/错误URL真失败、真实Prisma错scope/receipt/rollback/identity、亲建child生命周期与fixturehold，完整463+新增/compiled2/静态/schema生成保护；外部资源实际执行另列                                                              |
 
-| 项 | ST-V2-A1b1-D任务卡（只放行文档） |
-|---|---|
-| Agent/基线 | storage_implementation(gpt-6-astra)唯一Storage writer，Root三设计/审核/Git；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，a07b4d47266ae35b6cc35749974d83d51a417aa4，clean |
-| 写入 | 原S0七文档TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR0004/CURRENT/RUNBOOK/ACCEPTANCE；同步A1b1/B顺序、准确fixture职责与ZIP替代、已接收S0。更新旧“复用手写ZIP/三smoke同A1b”描述，不保留当前方案冲突。无新增文档 |
-| 预计代码文件集 | 后继M：test/smoke/capability-package.e2e.test.ts、s3.integration.test.ts，test/fixtures/smoke-provider.ts，test/unit/smoke-provider.test.ts；A：上述4fixtures（含zip）+3unit/integration。需要额外普通文件先报告；此时均未授权写入 |
-| 禁止/交付 | 全src/其余test/production-runtime/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他owner不动，不安装/DB/服务/provider/Git。先七文档format/Prisma validate(port1)/contract+全部保护hash/diff，固定精确manifest停写，Root收敛文档门后再放行A1b1-I |
+| 项             | ST-V2-A1b1-D任务卡（只放行文档）                                                                                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent/基线     | storage_implementation(gpt-6-astra)唯一Storage writer，Root三设计/审核/Git；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，a07b4d47266ae35b6cc35749974d83d51a417aa4，clean                                |
+| 写入           | 原S0七文档TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR0004/CURRENT/RUNBOOK/ACCEPTANCE；同步A1b1/B顺序、准确fixture职责与ZIP替代、已接收S0。更新旧“复用手写ZIP/三smoke同A1b”描述，不保留当前方案冲突。无新增文档                                                  |
+| 预计代码文件集 | 后继M：test/smoke/capability-package.e2e.test.ts、s3.integration.test.ts，test/fixtures/smoke-provider.ts，test/unit/smoke-provider.test.ts；A：上述4fixtures（含zip）+3unit/integration。需要额外普通文件先报告；此时均未授权写入                               |
+| 禁止/交付      | 全src/其余test/production-runtime/scripts/CI/compose/Docker/Schema/Proto/generated/package/lock/其他owner不动，不安装/DB/服务/provider/Git。先七文档format/Prisma validate(port1)/contract+全部保护hash/diff，固定精确manifest停写，Root收敛文档门后再放行A1b1-I |
 
 B部署/production-runtime具体同owner执行文件/普通stopAndDrain回调由B独立任务卡确定；不要提前做B或H0。外部S3环境仍无用户回复，Docker未获重启许可；源码/本地门继续，外部资格不计通过。
-
 
 A1b1-D补充实现边界已批准并写入三设计：既有provider.close增加preserveObjects选项，停服/drain未知时零hold/对象副作用、即使空registry也非零且preserveDatabase；仍释放自有句柄，第一次close模式固定，重复close不得改回默认删除。默认A1a行为不变，无新文件/协议。
 
 固定D质量复查卡：storage_data_review只读a07b4d4基线+7M manifest 1db06c8e2dd4de38a61526c532b6745d20e2b05a400bde604374b36f09c9d77b，复核同owner生命周期、metadata具体证明能力与事务外观察、原URL/ZIP职责、保留失败和固定矩阵；只读三设计/ADR及必要源码，无写/测试/生成/安装/DB/服务/Git。Root已实跑七文档format/validate(port1)/contract/diff、251范围外hash保护，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-design.l2fcb828；该证据只支持文档门。writer停写，Root收独立结论后按路径提交再派I；其他owner不动。
-
 
 ### ST-V2-A1b1-D 已验收 / A1b1-I 实施放行
 
 - 文档提交 `f47801f726cc402b3bea099d237f73afeeb61586`；7M 基线/工作树/staged/committed hash 与精确路径均核验，提交后 Storage clean。Root 符合性及 storage_data_review 固定 manifest 独立质量无 P0/P1/P2。
 - Root 文档门日志 `/var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-a1b1-design.l2fcb828`：七文档 format、Prisma validate（port1，不连DB）、contract、diff、251 范围外 hash 通过。该结果不是 A1b1 实现或外部 provider 验收。
 
-| 项 | ST-V2-A1b1-I 任务卡 |
-|---|---|
-| 目标/owner | P1，Storage 两个真实外部 smoke 消费者接入 Nest/plainNode + Prisma 证明 + 原样签名 URL；不复制业务写入或手工 ZIP/协议 |
-| Agent/基线 | storage_implementation（gpt-6-astra）唯一 Storage writer；Root 符合性/集成验证/Git，后继 storage_data_review 只读质量。工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，f47801f726cc402b3bea099d237f73afeeb61586，clean |
-| 允许修改 | test/smoke/capability-package.e2e.test.ts、test/smoke/s3.integration.test.ts、test/fixtures/smoke-provider.ts、test/unit/smoke-provider.test.ts（4现有文件）；上述七设计文档仅必要当前状态/实际证据 |
-| 允许新增 | test/fixtures/storage-roundtrip.ts、smoke-storage-metadata.ts、smoke-runtime.ts、research-package.zip；test/unit/storage-roundtrip.test.ts、test/unit/smoke-runtime.test.ts；test/integration/smoke-storage-metadata.test.ts（7文件） |
-| 依赖/固定职责 | 完整沿已验三设计/ADR0004与上一放置表，不再发明 owner/框架/协议。roundtrip 只 RPC+原 URL/headers/bytes 和显式阶段回调；metadata 绑定亲建库 Prisma/固定 tenant+trusted subject，原 codec/schema/fingerprint 短只读事务证明；provider 持具体证明能力再事务外 HEAD/GET 登记。ZIP 用 Python 标准库固定字节，runtime 复用 compiled-entry 的 closed+exit |
-| 状态/副作用 | 每次 PUT 前确切 durable 意图，Complete 前 beginDelete；S0 删除后双观察确认缺失才 confirmDeleted。成功 canonical 全关系/receipt/identity/bytes 证明，未知候选只报告；亲设 hold 才释放读回，资格 SDK 写入口只用原 client、确切本次意图、小对象、覆盖前全部版本归属，不用于上传旁路。stop/drain 未知 preserveObjects 零对象写、非零并保库，首 close 模式固定；正常 closed+exit 后 current-only cleanup |
-| 验证 | 先 RED 再 GREEN：原 URL/headers/全字节/取消/错误 URL，真实 Prisma 错 scope/receipt/rollback/关联身份，亲建 child 启停/失败/drain 与 fixture close/hold/资格写入。完整 format/lint/typecheck/build/default parallel463+新增、compiled2、官方亲建空库 apply/catalog/drift、validate/contract→generate→contract 与范围外 hash；验证 ZIP CRC/内容/元数据/SHA/重生成一致。外部配置缺失显式非零并在资源初始化前失败，不 skip 计绿 |
-| 排除 | 全 src、其余 test（含 production-runtime/compiled-entry/isolated-prisma）、Schema/Proto/generated、package/lock、scripts/CI/compose/Docker、其他 owner；额外普通文件或越界需要先报告归属/理由。无新依赖，无外部 S3/ClamAV/云/Docker 操作，无共享服务重启/清库/flush |
-| 资源/交付 | 复用现 PG/Redis；仅亲建随机库、只按自己 CREATE 成功句柄清理，失败保留。资格120秒/RPC420秒、生产Complete300秒不改、SDK10秒/小对象64KiB、cleanup独立60秒。固定精确 manifest、RED/GREEN/完整日志、文件清单后停写；worker 不碰 Git，Root 独立审查复验后逐路径提交 |
+| 项            | ST-V2-A1b1-I 任务卡                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 目标/owner    | P1，Storage 两个真实外部 smoke 消费者接入 Nest/plainNode + Prisma 证明 + 原样签名 URL；不复制业务写入或手工 ZIP/协议                                                                                                                                                                                                                                                                                                        |
+| Agent/基线    | storage_implementation（gpt-6-astra）唯一 Storage writer；Root 符合性/集成验证/Git，后继 storage_data_review 只读质量。工作目录 /Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，f47801f726cc402b3bea099d237f73afeeb61586，clean                                                                                                                                       |
+| 允许修改      | test/smoke/capability-package.e2e.test.ts、test/smoke/s3.integration.test.ts、test/fixtures/smoke-provider.ts、test/unit/smoke-provider.test.ts（4现有文件）；上述七设计文档仅必要当前状态/实际证据                                                                                                                                                                                                                         |
+| 允许新增      | test/fixtures/storage-roundtrip.ts、smoke-storage-metadata.ts、smoke-runtime.ts、research-package.zip；test/unit/storage-roundtrip.test.ts、test/unit/smoke-runtime.test.ts；test/integration/smoke-storage-metadata.test.ts（7文件）                                                                                                                                                                                       |
+| 依赖/固定职责 | 完整沿已验三设计/ADR0004与上一放置表，不再发明 owner/框架/协议。roundtrip 只 RPC+原 URL/headers/bytes 和显式阶段回调；metadata 绑定亲建库 Prisma/固定 tenant+trusted subject，原 codec/schema/fingerprint 短只读事务证明；provider 持具体证明能力再事务外 HEAD/GET 登记。ZIP 用 Python 标准库固定字节，runtime 复用 compiled-entry 的 closed+exit                                                                           |
+| 状态/副作用   | 每次 PUT 前确切 durable 意图，Complete 前 beginDelete；S0 删除后双观察确认缺失才 confirmDeleted。成功 canonical 全关系/receipt/identity/bytes 证明，未知候选只报告；亲设 hold 才释放读回，资格 SDK 写入口只用原 client、确切本次意图、小对象、覆盖前全部版本归属，不用于上传旁路。stop/drain 未知 preserveObjects 零对象写、非零并保库，首 close 模式固定；正常 closed+exit 后 current-only cleanup                         |
+| 验证          | 先 RED 再 GREEN：原 URL/headers/全字节/取消/错误 URL，真实 Prisma 错 scope/receipt/rollback/关联身份，亲建 child 启停/失败/drain 与 fixture close/hold/资格写入。完整 format/lint/typecheck/build/default parallel463+新增、compiled2、官方亲建空库 apply/catalog/drift、validate/contract→generate→contract 与范围外 hash；验证 ZIP CRC/内容/元数据/SHA/重生成一致。外部配置缺失显式非零并在资源初始化前失败，不 skip 计绿 |
+| 排除          | 全 src、其余 test（含 production-runtime/compiled-entry/isolated-prisma）、Schema/Proto/generated、package/lock、scripts/CI/compose/Docker、其他 owner；额外普通文件或越界需要先报告归属/理由。无新依赖，无外部 S3/ClamAV/云/Docker 操作，无共享服务重启/清库/flush                                                                                                                                                         |
+| 资源/交付     | 复用现 PG/Redis；仅亲建随机库、只按自己 CREATE 成功句柄清理，失败保留。资格120秒/RPC420秒、生产Complete300秒不改、SDK10秒/小对象64KiB、cleanup独立60秒。固定精确 manifest、RED/GREEN/完整日志、文件清单后停写；worker 不碰 Git，Root 独立审查复验后逐路径提交                                                                                                                                                               |
 
 状态：A1b1-I 进行中；B/production-runtime 生命周期、H0 HTTP 机器契约和真实外部资格仍待后继，不用两消费者接线冒充全链发布完成。
 
-
 A1b1-I 写入期间独立只读预研 ST-V2-B-R：storage_contract_review 负责 B 的同 owner 容器/production-runtime 生命周期接线建议，Root 保留 A1b1 审查与 B 整体裁决。基线 Storage f47801f726cc402b3bea099d237f73afeeb61586（变化工作树，仅读 HEAD 固定对象，不读取 A1b1 未交付新代码）；范围 scripts/docker-smoke.sh、test/smoke/production-runtime.e2e.test.ts、Dockerfile、compose/相关现有架构测试及已提交 ADR0004/三设计/fixture API。只读、不写/测试/生成/安装/Git/DB/Docker/网络服务操作。交付最小文件集、至少两种可行位置比较、生命周期状态/资源所有权/失败保留及现有 package 入口如何接入，识别尚需 A1b1 稳定 API 的依赖；不建立新 IPC/资源框架、不发明公开 API/业务表，不编造镜像证据。Root 并行只读核对现 CI/release 事实；B 文档/实现必须 A1b1 接收后另过门授权，预研不是开始 B 写入。
-
 
 Root 的 B-R CI/release 固定基线事实（f47801f，静态只读，未运行旧命令）：
 
@@ -734,7 +710,6 @@ Root 的 B-R CI/release 固定基线事实（f47801f，静态只读，未运行�
 
 以上是后继待设计事实，不是 A1b1 扩权；Root 已通知 B-R 只读 reviewer 纳入残留消费者范围。
 
-
 B-R 只读交付（storage_contract_review，f47801f 固定 HEAD，无写/测试/服务）与 Root 预裁决：
 
 - 推荐 production-runtime Vitest 所在 Node 进程唯一拥有 container/registry/DB；新增现 fixtures 的具体 `smoke-container.ts` 与 unit，不把 shell 与 Vitest 分割删除权。另一可行位置为独立 scripts TS orchestrator，但会扩大入口/重复测试职责，暂不选。现 shell 可删或缩到仅委派唯一 package 命令；不持资源或做第二套 curl/cleanup。
@@ -744,12 +719,9 @@ B-R 只读交付（storage_contract_review，f47801f 固定 HEAD，无写/测试
 - 即使用该选项，exit0仍必须结合亲建 ID+label、同预期镜像/CMD、已ready、发信号前running、命令成功、最终 exited/noOOM/noError/无restart、signal后实际退出，才确认正常停止。Root不采用客户端signalIssuedAt与daemon FinishedAt直接跨时钟比较；B设计须依靠有序实际观察和同daemon事实，不新增时钟同步假设。`--init`退出码转发待真实RC验证。
 - B准确文件集、主入口、scanner承接、官方版本重核以及是否将原生shutdown选项作为前置小片，由 A1b1 接收后文档门决定。上述均未授权 A1b1 writer 修改 src/部署/其余smoke，不表示 B 已实施。
 
-
 A1b1-I 普通文件范围补充（实施中先报告后批准）：Complete期待的完整身份需durable摘要，现journal allowlist无对应字段。Root拒绝以phase不同把`sha256`从对象bytes摘要复用为command摘要（一个字段两种含义）；批准仅多修改现有 `test/fixtures/smoke-provider-journal.ts`，新增可选具名 `expectationDigest` allowlist字段，继续在已获权 `test/unit/smoke-provider.test.ts` 验证允许字段/secret不落盘/持久顺序和失败阻断。该文件仍只负责append-only证据，不新增restore/adopt/删除API；不新建文件或通用schema。provider保存不可变完整tenant/trusted owner/create/complete/upload/内容期待，以确定性无歧义固定字段序列的摘要在Complete前durable登记；`sha256`仍只指对象bytes，key/version/etag不占位。hash只是待完成期待的关联证据，不是删除授权；成功仍需具体Prisma proof与真实对象观察，未知保库。必要三设计/ADR说明沿现7文档范围同步，实际M上限由4代码fixture文件增为5；其余边界不变。
 
-
 A1b1-I 预算收敛裁决：批准同一已授权 `SmokeProvider.close` 增加可选 `signal`（首次close捕获后固定），与原私有最多60秒signal组合；普通无参行为不变。capability停止确认后从同一60秒cleanup预算依次cover resolveCompletions/版本recovery/close，禁止每阶段刷新60秒叠加为120秒。预算耗尽/预先取消即使空registry仍非零保库，零新增对象/hold写；仍尝试释放自有SDK/journal/Prisma等独立句柄，不以传入已abort的signal为由跳过release调用。新增signal仅能收紧原预算，不改变preserveObjects首次模式或给后续close重启删除机会。对应取消/边界单测在原已授权文件，必要设计说明仍现7文档，不新增路径。
-
 
 ### A1b1-I 第一轮固定交付：主树验证通过，但符合性三项返工
 
@@ -765,7 +737,6 @@ Root符合性另用忽略目录的临时回归捕获3个真实RED（root-regress
 
 返工卡：storage_implementation仍唯一Storage writer，基线/分支与19原范围不变，重点provider/roundtrip及其unit，必要现7文档。保留首manifest与日志历史，先迁入回归验证RED，再修复GREEN，完整主树门后新manifest停写；独立质量评审暂不派（符合性未通过）。Root不改业务文件。顺便修正文档“精确4M/7A当前未授权”当前态与真实12M/7A矛盾；残留AWS.delete消费者准确列production-runtime和scanner，不声称只剩一个。资格缺失证明沿已验A1a confirmDeleted的指定Version HEAD确定404+完整版本列表协议；本片复用该双证据而非复制一套GET缺失逻辑，Root明确接受这一语义收敛，不能少任一证据。
 
-
 ### A1b1-I R 固定符合性通过；主树门发现既存并发分类缺口
 
 新manifest `8e3b0fe2dd2981360a046a9075693b2786d6c598699338a5ef4122f8eb935f75`，f47801f基线19路径，2026-09-09T14:53:31.333537Z，writer停写。Root逐读三项修复，重跑原临时反例3/3 GREEN（name过滤的79项未执行），符合性问题关闭；额外唯一current/HEAD漂移与late body已迁入正式unit。ZIP207bytes/CRC/entry/权限/固定SHA与独立Python精确重生成通过。
@@ -778,7 +749,6 @@ Root额外缺参探针实际S3 smoke按预期1失败/0skip、解析前置错误�
 
 并行只读调查卡 ST-CANONICAL-RACE-R：storage_contract_review读取 f47801f 固定 src/assets/canonical-create-conflict.ts、src/database/transaction-errors.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts 和上述真实失败日志；只给具体根因、最小精确分类/验证文件建议和保留外层网络重观察条件，不写/测试/安装/DB/Git/服务。Root保留实际Prisma错误shape采证/门验证，两个review独立，不给writer扩权。待固定质量和分类事实收敛后Root决定独立修复切片，不先大范围改事务。
 
-
 ### A1b1提交待集成验证 / ST-CANONICAL-RACE-I局部修复放行
 
 A1b1固定19路径已提交 `82002f94e1c08da317a82e39dea9f03c9f9f4479`，逐baseline/worktree/staged/committed hash和路径核验、提交后clean；Root符合性与data_review独立质量无新增P0/P1/P2。状态仍**已提交、待集成验证**：全套514/515既存canonical竞争错误未闭合，不称整仓已验收。Root补跑compiled2/2、实际SmokeRuntime+Nest/自有PG/Redis探针、validate/contract→generate→contract与独立ZIP重生成通过；两显式smoke缺配置各实际exit1/无skip，Root解析误判已修并保留前后日志。日志沿ujxruirz，两个Root親建库均已DROP。
@@ -787,26 +757,23 @@ Root真实Prisma错误形态采证 `canonical-real-meta.log`：同tenant/owner/d
 
 本片归属既有Assets canonical竞争分类和Uploads提交后的失败分派；沿已批准I2事务外重读/网络重观察，不改owner/Schema/API/状态机/事务预算，不新文件，故按局部修复门执行。
 
-| 项 | ST-CANONICAL-RACE-I任务卡 |
-|---|---|
-| 目标/优先级 | P1；精确识别两种已证canonical absent-create竞争，让失败事务回到外层reobserve，并拒绝无关PK/其他unique误归类 |
-| Agent/基线 | storage_implementation（gpt-6-astra）唯一Storage writer，Root符合性/主树验证/Git，后继data_review只读质量。/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，82002f94e1c08da317a82e39dea9f03c9f9f4479，clean |
-| 允许代码 | src/assets/canonical-create-conflict.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts（4现有文件）。同unit可覆盖classifier及store异常分派这一相同变化原因；必要新增/额外测试先报告 |
-| 固定实现 | 分类器保留完整实际Prisma P2002/model/adapter/SQLSTATE/kind/table条件，精确返回identity/primary-key/undefined判别（不造错误层）。identity index仅uq_storage_blob_tenant_owner_digest；PK仅storage_blob_pkey。Uploads事务外catch保留expectedCanonical===null门；identity可转CanonicalChanged；PK还需input.blobId等于现resourceId("blob",tenant,owner,sha)才转，否则原error身份抛出。不添加DB查询/别名fallback，不以整个表23505或宽泛字符串匹配 |
-| 保留边界 | PrismaService transaction/transaction-errors完全不改，不扩大内部重试/次数/时间；网络reobserve仍由既有UploadsService外层执行。expected非null的两variant、其他索引/错误shape均原样失败。无关PK上下文须负例；生产same deterministic ID与store different ID same identity两路都保留 |
-| 验证 | 先新精确真实meta unit/store分派RED→GREEN；不同blobId同identity真实两连接竞争用有界barrier而非串行/偶绿，保留不同owner隔离；重跑原canonical-lifecycle真实PG相同deterministic ID/provider reobserve竞态，不删除/弱化。完整68文件515+新增默认并行、compiled2、actualRuntimeRoot探针、fullformat/typed/typecheck/build/apply/catalog/drift/validate/双生成保护/audit。可先fixture直接Prisma create捕获真实meta，但不冒充完整竞争验证 |
-| 文档 | 仅docs/CURRENT.md、TECHNICAL_DESIGN.md、DATA_MODEL.md、API_CONTRACT.md、ACCEPTANCE.md必要现状/精确分类解释，反映A1b1提交与本P1待集成。无新ADR/文档/计划中心，不机械改所有文档 |
-| 排除/资源 | A1b1 fixtures/其余源码/其余测试/Schema/Proto/generated/依赖/CI/Docker/其他owner不动。仅复用PG/Redis、亲建随机库与可确认资源；无外部provider/服务重启/共享清理/新增依赖；无Git操作 |
-| 交付 | 固定精确manifest、实际RED/GREEN与完整日志后停写，Root独立审查和真实主树门后按路径提交；A1b1与本片合并验收不抹掉此前514/1失败证据。B/H0/真实外部资格仍后继 |
-
+| 项          | ST-CANONICAL-RACE-I任务卡                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 目标/优先级 | P1；精确识别两种已证canonical absent-create竞争，让失败事务回到外层reobserve，并拒绝无关PK/其他unique误归类                                                                                                                                                                                                                                                                                                                                  |
+| Agent/基线  | storage_implementation（gpt-6-astra）唯一Storage writer，Root符合性/主树验证/Git，后继data_review只读质量。/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，82002f94e1c08da317a82e39dea9f03c9f9f4479，clean                                                                                                                                                                             |
+| 允许代码    | src/assets/canonical-create-conflict.ts、src/uploads/uploads.store.ts、test/unit/canonical-create-conflict.test.ts、test/integration/blob-owner-deduplication.test.ts（4现有文件）。同unit可覆盖classifier及store异常分派这一相同变化原因；必要新增/额外测试先报告                                                                                                                                                                           |
+| 固定实现    | 分类器保留完整实际Prisma P2002/model/adapter/SQLSTATE/kind/table条件，精确返回identity/primary-key/undefined判别（不造错误层）。identity index仅uq_storage_blob_tenant_owner_digest；PK仅storage_blob_pkey。Uploads事务外catch保留expectedCanonical===null门；identity可转CanonicalChanged；PK还需input.blobId等于现resourceId("blob",tenant,owner,sha)才转，否则原error身份抛出。不添加DB查询/别名fallback，不以整个表23505或宽泛字符串匹配 |
+| 保留边界    | PrismaService transaction/transaction-errors完全不改，不扩大内部重试/次数/时间；网络reobserve仍由既有UploadsService外层执行。expected非null的两variant、其他索引/错误shape均原样失败。无关PK上下文须负例；生产same deterministic ID与store different ID same identity两路都保留                                                                                                                                                              |
+| 验证        | 先新精确真实meta unit/store分派RED→GREEN；不同blobId同identity真实两连接竞争用有界barrier而非串行/偶绿，保留不同owner隔离；重跑原canonical-lifecycle真实PG相同deterministic ID/provider reobserve竞态，不删除/弱化。完整68文件515+新增默认并行、compiled2、actualRuntimeRoot探针、fullformat/typed/typecheck/build/apply/catalog/drift/validate/双生成保护/audit。可先fixture直接Prisma create捕获真实meta，但不冒充完整竞争验证             |
+| 文档        | 仅docs/CURRENT.md、TECHNICAL_DESIGN.md、DATA_MODEL.md、API_CONTRACT.md、ACCEPTANCE.md必要现状/精确分类解释，反映A1b1提交与本P1待集成。无新ADR/文档/计划中心，不机械改所有文档                                                                                                                                                                                                                                                                |
+| 排除/资源   | A1b1 fixtures/其余源码/其余测试/Schema/Proto/generated/依赖/CI/Docker/其他owner不动。仅复用PG/Redis、亲建随机库与可确认资源；无外部provider/服务重启/共享清理/新增依赖；无Git操作                                                                                                                                                                                                                                                            |
+| 交付        | 固定精确manifest、实际RED/GREEN与完整日志后停写，Root独立审查和真实主树门后按路径提交；A1b1与本片合并验收不抹掉此前514/1失败证据。B/H0/真实外部资格仍后继                                                                                                                                                                                                                                                                                    |
 
 ST-CANONICAL-RACE-I writer交接：storage_implementation（gpt-6-astra）因工具明确报模型capacity而errored，已不运行；Root检查HEAD仍82002f94，实际留下两个未提交测试改动（canonical-create-conflict unit / blob-owner-deduplication integration），不是clean交接，必须保留审查与接续TDD，现src未改。改派storage_race_implementation（gpt-5.6-sol）为唯一Storage writer，同上任务卡4代码+必要5文档范围和固定决策不变；Root仍唯一Git/任务表writer并并行准备主树验收，data_review后续固定质量。新writer先检查已有两测试和.tmp/st-canonical-race-i-logs，记录已有状态，确认实际RED后补完，不覆盖不明变更、不把模型容量故障当业务阻塞。无跨owner扩权。
-
 
 ST-CANONICAL-RACE-I固定交付进入审查：writer storage_race_implementation已停写，82002f94基线9M manifest 12da7e511a36ca002b32ed05105eb226d4b707f0664d1a5923a8f6d6854b4eb2（2026-09-09T15:28:36Z），4代码测试+5必要文档，256范围外tracked不变。Root逐读两生产分派、完整unit/store回归、有界双连接真实barrier及5文档，符合任务卡，无新增owner/Schema/API/内部retry；符合性通过。writer报告521+compiled2及全门，Root不直接当最终证据，已在独立亲建库重跑全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-canonical-race.svq35m4a（进行中）。
 
 固定质量审查卡：storage_contract_review只读9M manifest及必要HEAD生产/测试上下文；基线82002f94与上述SHA固定，Root规格审查已通过。角色独立代码质量，复核精确P2002 identity/PK双分派、expected-null与deterministic输入边界、原error身份、两真实连接barrier与外层reobserve不回退；只读不写/测试/生成/安装/Git/DB/服务。交付带绝对路径行号的P0/P1/P2或明确无新增问题，现有B/H0/外部资格待验不冒充本片新增。Root并行实际验收，独占Storage写入暂停直至审查完成。
-
 
 ### ST-CANONICAL-RACE-I 已验收；A1b1集成门闭合
 
@@ -816,13 +783,11 @@ Storage提交 `27aa544d89bac8f8d0318cab7e22dad1c789da20`（fix(storage): classif
 
 下一阶段仍沿已有B-R预研：先收敛B同owner容器启停与scanner剩余消费者的三设计门，再写实现；必要时先分出最小Nest原生SIGTERM退出码验证片。Root已复核当前锁定Nest12.0.1的useProcessExit语义与RequestLifecycle实际work追踪；任何新fixture/入口/测试控制面须先比较现文件扩展与专用fixture位置，不能直接把调试协议放进production。后续依然保留H0 HTTP机器契约、外部S3/ClamAV/ObjectLock资格、OCI镜像/发布与SLO待验，目标保持active。
 
-
 ### ST-V2-B0-R：正式SIGTERM退出证明的前置调查
 
 上一goal turn属于progress：27aa544已提交并521+compiled2主树验收；当前Storage HEAD仍27aa544d89bac8f8d0318cab7e22dad1c789da20且clean。进入B实际容器生命周期前必须先证明Nest正常关闭对应exit0，而非当前重发SIGTERM与未drain均可能相同signal退出。整体方向沿B-R，Root负责三设计收敛，暂不授权业务代码。
 
 只读任务卡：storage_contract_review负责最小compiled SIGTERM测试设计，基线27aa544固定HEAD，范围src/main.ts、RequestLifecycle、compiled-entry.mjs/compiled-runtime.test.ts、锁定Nest12.0.1生命周期源码。比较扩展现compiled fixture与独立专用fixture/子进程两位置，推荐如何证明实际tracked work尚未settle时不exit，settle后0，真实hook失败1；禁止新生产IPC/管理API/自写shutdown框架，不改变已验close/closed协议，尽量不加测试消息类型或生产测试开关。测试侧可持明确本次child句柄和本地provider双，不触共享资源。只读，不写/测试/生成/服务/安装/Git；交付最小文件集与可重复同步方案。Root并行收敛B0放置/三设计文档，待方案与独立审查后再派唯一writer。
-
 
 ### ST-V2-B0-D 固定设计门与放置决定
 
@@ -832,33 +797,29 @@ Owner为Storage现main/Nest唯一signal owner；当前27aa544 clean基线，Root
 
 固定设计质量卡：storage_contract_review只读上述7M manifest与必要现源码，核对三设计一致、最小文件/测试同步、当前态与目标态、信号退出副作用和B权限边界，报告P0/P1/P2。Root是本次设计唯一writer且现已停写；reviewer不写/测试/生成/Git/服务。通过后Root按精确路径提交D，再授权implementation唯一writer进入I，仍须TDD/主树/独立审查。
 
-
 B0-D第一轮P1不通过：reviewer进一步检查Nest12的before/onAppShutdown hook dispatcher发现allSettled仅日志，不向顶层抛出。Root原B-R及B0仅检查外层try/catch的“hook失败exit1”推论撤销；不是用户环境阻塞，属于本设计缺口。Root实际亲建3个本地Nest/Fastify进程，正常0/provider-before拒绝0/top-adapter-beforeClose拒绝1，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-nest-shutdown-semantics.badlvajo。未用DB/provider，没有Storage composition成功主张。首manifest5a60f4保存rejected-first-manifest；7doc被替换为修订方案，首文档门通过仅语法一致，不作为设计通过。
 
 Root与readonly复研裁决：不靠把失败注入换成top-stage来放宽可靠关闭。采用RequestLifecycle自己拥有的isRequestDrainComplete事实，仅实际work settle且active0后设定；原OnApplicationShutdown沿现structured logger一次request_drain success，原compiled-entry仅事实true才发closed。不新signal/adapter包装/关闭框架/IPC类型。此事实只证明被追踪work，不是所有providerhook或资源优雅释放。B须联合本次container唯一事件+ID/digest/ready/pre-signal running/真实exit/noOOM/noRestart，其他状态不能替代事件；缺/重复/畸形日志保留，尾部日志交真实RC验，不新增flush协议降级绿灯。现A1b只有app.close返回的确认存在上述未覆盖缺口，归B0一起修复，旧通过数字不证明错误注入。
 
 修订B0-D固定manifest8821ce3df8e8445b42f101af435d0aa44793f4f277dd3e27813ce9cc8cd7833b，27aa544基线同7M，Root仍唯一文档writer且停写；readonly storage_contract_review复审本次完整语义/一致性，Root重跑文档门。未来I精确代码集改为5现有文件：src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts；必要文档仍7。其他源码/Schema/API/依赖/部署/其他owner不扩。源码仍未授权或修改；三设计过门再提交并派I。
 
-
 ### ST-V2-B0-D 已验收 / B0-I 放行
 
 设计提交 `d2b8d660630b16808c8de93e14dc3d0a83f46cd7`，7M baseline/worktree/staged/committed哈希和路径一致，Storage clean。修订manifest8821ce3质量复查无P0/P1/P2；Root文档门日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-design.zxr2exu3：7doc format、port1 validate、contract、diff、258范围外hash通过，未连DB。第一稿P1和真实语义反例保留，不称已实施。
 
-| 项 | ST-V2-B0-I任务卡 |
-|---|---|
-| 目标/owner | P1 Storage请求实际排空正向证据，原生Nest信号exit语义及A1b原closed缺口；不自写框架 |
-| Agent/基线 | storage_race_implementation（gpt-5.6-sol）续任唯一Storage实现writer，Root规格/主树/Git，storage_contract_review后续只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，d2b8d660630b16808c8de93e14dc3d0a83f46cd7，clean |
-| 允许代码 | src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts（5现文件，无新文件目录）。其余普通文件先报告 |
-| 固定语义 | 全沿已验TECH B0节；main原生useProcessExit。RequestLifecycle实际settle+active0才isRequestDrainComplete；原onShutdown一次write尝试现structuredLog request_drain success，单调duration/固定随机trace，未完成无success。compiled-entry原close仅真实getter成立才closed，失败非零/无closed/释放IPC。无新生产开关/IPCtype/adapter或signal框架 |
-| 行为基线/验收 | 先新unit/真实compiled RED，再GREEN；保持原compiled2。锁住响应取消不等于worksettle、空drain/重入/logger失败；真实pending→signal→ready503→未退出→释放→事件一次+exit0；drainhook拒绝exit0无事件，原close非零无closed且真实SmokeRuntime.stop失败；top-stage拒绝exit1无事件；其他provider原释放后拒绝可事件+exit0但不冒称所有hook成功 |
-| 文档 | 仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE/RUNBOOK/ADR0004必要目标转当前/精确证据；不机械改无变化字段，保留P1历史和框架/Storage/外部资格区分 |
-| 排除 | 其他src/test、Schema/generated/Proto/依赖/lock/CI/Docker/其他owner不动；B容器driver/消费日志/清理、scanner/H0/真实provider/OCI仍后继。无新SQL CRUD、无日志flush/文件协议、无新资源框架 |
-| 资源/验证 | 仅复用现PG/Redis；自己随机CREATE成功库，finally仅DROP亲建句柄；provider本地HTTP/TCP doubles/亲建child，有界等待失败回收不当成功。完整format/lint/typecheck/build/default521+新增/compiled2+新增/实际SmokeRuntime/官方apply/catalog/drift/validate/contract→generate→contract/audit/范围外hash。无外部provider/Docker/共享清理/重启/安装 |
-| 交付 | writer无Git，固定manifest+实际RED/GREEN/完整日志+精确文件清单后停写；Root独立重验和审查后精确路径提交；目标保持全Storage，B0不替代B/H0/外部验收 |
-
+| 项            | ST-V2-B0-I任务卡                                                                                                                                                                                                                                                                                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 目标/owner    | P1 Storage请求实际排空正向证据，原生Nest信号exit语义及A1b原closed缺口；不自写框架                                                                                                                                                                                                                                                       |
+| Agent/基线    | storage_race_implementation（gpt-5.6-sol）续任唯一Storage实现writer，Root规格/主树/Git，storage_contract_review后续只读质量；/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage，codex/production-closure-docs，d2b8d660630b16808c8de93e14dc3d0a83f46cd7，clean                                                      |
+| 允许代码      | src/main.ts、src/transport/request-lifecycle.service.ts、test/fixtures/compiled-entry.mjs、test/smoke/compiled-runtime.test.ts、test/unit/request-lifecycle.test.ts（5现文件，无新文件目录）。其余普通文件先报告                                                                                                                        |
+| 固定语义      | 全沿已验TECH B0节；main原生useProcessExit。RequestLifecycle实际settle+active0才isRequestDrainComplete；原onShutdown一次write尝试现structuredLog request_drain success，单调duration/固定随机trace，未完成无success。compiled-entry原close仅真实getter成立才closed，失败非零/无closed/释放IPC。无新生产开关/IPCtype/adapter或signal框架  |
+| 行为基线/验收 | 先新unit/真实compiled RED，再GREEN；保持原compiled2。锁住响应取消不等于worksettle、空drain/重入/logger失败；真实pending→signal→ready503→未退出→释放→事件一次+exit0；drainhook拒绝exit0无事件，原close非零无closed且真实SmokeRuntime.stop失败；top-stage拒绝exit1无事件；其他provider原释放后拒绝可事件+exit0但不冒称所有hook成功        |
+| 文档          | 仅TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/CURRENT/ACCEPTANCE/RUNBOOK/ADR0004必要目标转当前/精确证据；不机械改无变化字段，保留P1历史和框架/Storage/外部资格区分                                                                                                                                                                         |
+| 排除          | 其他src/test、Schema/generated/Proto/依赖/lock/CI/Docker/其他owner不动；B容器driver/消费日志/清理、scanner/H0/真实provider/OCI仍后继。无新SQL CRUD、无日志flush/文件协议、无新资源框架                                                                                                                                                  |
+| 资源/验证     | 仅复用现PG/Redis；自己随机CREATE成功库，finally仅DROP亲建句柄；provider本地HTTP/TCP doubles/亲建child，有界等待失败回收不当成功。完整format/lint/typecheck/build/default521+新增/compiled2+新增/实际SmokeRuntime/官方apply/catalog/drift/validate/contract→generate→contract/audit/范围外hash。无外部provider/Docker/共享清理/重启/安装 |
+| 交付          | writer无Git，固定manifest+实际RED/GREEN/完整日志+精确文件清单后停写；Root独立重验和审查后精确路径提交；目标保持全Storage，B0不替代B/H0/外部验收                                                                                                                                                                                         |
 
 B0-I写入期间的独立只读B1-R续研：storage_contract_review仅查看固定HEAD d2b8d660630b16808c8de93e14dc3d0a83f46cd7的现smoke配置/provider/runtime/isolated-prisma及旧production-runtime/docker脚本/CI，不读或评审B0未交付工作树。目的锁定容器与父测试进程的配置/凭据同源、DB/Redis/scanner内部可达与原签名URL外部可达的最小接线方案：现config可复用哪些，哪些必须显式输入；默认AWS chain在host/container差异、拒绝自动挂载/寻找凭据、argv不泄secret、DB亲建名称与容器连同库如何证明；不可把URLrewrite当传输成功。结合已验B0目标request_drain日志要求建议具体container fixture输入/输出，不发明公开API/通用配置框架。仅建议最小文件集与未决取舍，Root负责B整体决定。只读、不写/测试/安装/DB/Docker/网络服务/Git；无B实现授权。Root同时准备B0主树回归。
-
 
 B1-R只读交付（d2b8d66固定HEAD）已接收为后继输入，非B实施放行：采用现fixtures中新smoke-container而非扩大只管Node child的SmokeRuntime；production-runtime同进程持isolatedPrisma/provider/container。Root不采用reviewer输入草案中把provider/DB句柄传进SmokeContainer或把stopAndDrain回调作为其输入的混合职责：container只owner自己的Docker生命周期，composition把其stop方法交给既有provider清理顺序。随机端口由Docker实际分配并inspect读取，不先在host猜一个空闲端口。
 
@@ -866,23 +827,19 @@ B1-R只读交付（d2b8d66固定HEAD）已接收为后继输入，非B实施放�
 
 未决设计点保留给Root B门：现loadSmokeProviderConfig的父SDKendpoint与container internal endpoint并非自动互相可达，reviewer建议的两侧配置还需保证同bucket/provider（仅照搬internal地址给父SDK不成立）；优先评估一个双方可达的明确S3 endpoint，public签名URL始终原样fetch，不做rewrite。Redis/scanner映射与可信同源输入、CI外部资格缺配置的fail-closed层、旧scanner有效断言承接与脚本/compose删除须一起锁定，不先运行旧固定清理路径。无新部署/proxy/镜像版本或云创建授权；B0 writer范围不变。
 
-
 B0-I进行中状态（本goal续turn已核验writer仍running，不把观察等待当终止）：工作树仅其授权main/RequestLifecycle/unit及后续compiled文件，Root未抢写。writer报告unit真实RED5失败/2通过→7GREEN，compiled初RED3失败/3通过是三注入尚未接入；正常provider暂停/ready503/未退出同步已实跑成立。Root要求另做默认Nest退出选项负对照：在writer自己main一行短暂回基线、由tsc重build并跑正常signal回归应失败，再恢复目标/fullGREEN；诚实记为负对照，不倒写TDD，不手改dist，防止用仅fixture失败代替原生选项证明。尚未固定交付，不进行最终主树门。
 
 B1配置整体预裁决进一步缩小非必要变化：父fixture只需Prisma与S3 metadata/registry，不需要新建第二Redis/scanner客户端；Redis/scanner地址沿同一已解析runtime配置给container，由真实ready/Complete证明。S3优先要求同一明确endpoint对父SDK与container均可达，publicEndpoint原样返回并fetch；不增host/internal/public三套可漂移endpoint映射。AWS默认global endpoint亦可，两侧显式可携带同源环境凭据，不自动搬profile。唯有亲建DB从父sourceUrl派生到container需要显式authority重定向，保留随机dbname/凭据/query，实际owner receipt+父metadata证明作为同库业务证据。
 
 新Docker driver未来只接运行配置（image不可变ID、显式network、派生DB URL、现runtimeenv allowlist），只返回亲建container身份/baseURL及stop状态；provider/DB不进入driver，production-runtime场景唯一组合owner负责逆序停止、registry、连接与DROP。使用--env NAME以及显式child env，过滤NODE_OPTIONS/NODE_PATH/测试开关等非运行配置，日志不dumpenv。未来容器run应直接用解析过的imageID，hostport让Docker分配后inspect，不以tag或预抢端口造身份。该预裁决仍不是B三文档放行；待B0验收后完整设计/契约/数据门收敛，旧docker-smoke/CI固定清理不运行。
 
-
 B0-I首固定manifest a471eb6de959079908dbda6ee730c65d22a5f1740615303bede3c204f1277ca1（d2b8d66基线12M）已由Root主树实跑：日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.xzl3up6n，format/lint/typecheck/build/audit443零、fresh apply/catalog/drift、默认68文件524/524、compiled6/6、actualSmokeRuntime、validate/contract双生成/diff与253范围外hash全通过；Root親建库storage_root_b0_i_6b56de83307d42ebb7d22406已DROP。主树检查进程已exit0，允许接续writer，不边编辑边验收。
 
 Root符合性收尾要求一次窄修：新SIGTERM compiled场景finally先await completionResult有界settle，若该等待超时抛错会跳过亲建child终止和DB/provider释放；同类child等待失败也不应跳过后续句柄close。仅原compiled-runtime测试文件用直接嵌套finally等局部控制流保证每项本次句柄release都被尝试，保留失败、不吞绿，不造通用cleanup框架。当前正常分支524/6绿不覆盖这一控制流失败，先修再新manifest/完整重验和独立质量；旧manifest/log保留。其他生产代码与已验D语义不扩。
 
-
 B0-I cleanup-order返工固定：新manifest7b38f76b3bb8d516635b579b290c21a887ebe4021e5cbff150e7b689376b5d1b，同d2b8d66基线12M，仅compiled-runtime相对首manifest改变；首版与logs保留history-a471eb6d。Root逐读直接嵌套finally，completion/child等待失败也进入后续句柄close，providers内部HTTP/TCP同样保证尝试；正常/失败断言未放宽、原实例getter/单次事件语义保持，符合性通过。Root正重跑新全门，日志 /var/folders/gn/wbk8wfbd047_wvwkwtyn331r0000gn/T/kokoro-storage-root-b0-implementation.nkptumwc。writer已停写。
 
 固定质量卡：storage_contract_review只读新12M manifest及必要已提交依赖，绑定d2b8d66+7b38f76b，不写/测试/生成/Git/DB/服务。复核排空事实不早置真、单次尝试、原close确认、真实SIGTERM/三种失败和请求响应取消区别、清理失败不跳过后续资源、文档证据不越界为所有hook或B/外部资格。Root规格已通过，独立质量不能用writer数字替代Root实际门；给P0/P1/P2绝对路径行号或通过。
-
 
 ### ST-V2-B0-I 已验收
 
@@ -910,9 +867,9 @@ Storage设计提交 `17c2161dafac606878351dfa2d243be511f67fac`（docs(storage): 
 
 用户要求参考其他AI产品形态，完善租户/租户内业务隔离及产物类型，并遵循TS后端规范；不推进容器/CI/发布工程。基线Storage17c2161dafac606878351dfa2d243be511f67fac，clean。本轮只研究，不授权Schema/Proto/业务代码修改。
 
-| 角色 | 任务与范围 | 交付/验证 |
-|---|---|---|
-| Root | 核验AI产品官方附件/项目/产物形态；读取TS/SQL手册与Storage当前schema/contract；裁决最小功能模型与阶段范围 | 区分公开产品事实、现有代码事实与拟议设计，不将竞品公开功能推测为其内部架构；无运维扩张 |
+| 角色                            | 任务与范围                                                                                                                                                                        | 交付/验证                                                                                                                                                                              |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root                            | 核验AI产品官方附件/项目/产物形态；读取TS/SQL手册与Storage当前schema/contract；裁决最小功能模型与阶段范围                                                                          | 区分公开产品事实、现有代码事实与拟议设计，不将竞品公开功能推测为其内部架构；无运维扩张                                                                                                 |
 | storage_contract_review（只读） | 固定Storage HEAD的tenant/owner/subject/shared、上传purpose/产物状态、查询/下载权限和实际BFF/Agent/Platform调用契约；只读必要IAM契约确认是否已有可复用资源scope机制，不改任何owner | 精确路径/行号说明已具备和欠缺：同租户跨项目/会话、actor与资源owner、跨服务去重/幂等、产物用途与MIME区别；给2-3个最小设计取舍，无新框架/完整ACL/运维提案。禁止写/Git/测试/安装/启动资源 |
 
 复用Root AGENTS、docs/CODEBASE_MAP.md、TS/SQL手册与Storage三设计；主控并行官方来源研究，reviewer只读代码，最后由Root汇总建议，不在未对齐owner/API/Schema前实施。
@@ -961,9 +918,9 @@ Root最终实际命令全部退出0：11文件`pnpm exec prettier --check`、`DA
 
 用户授权继续推进并先参考Manus API docs优化。Root本轮只读官方v2 docs/OpenAPI与现owner代码，按现六项SD检查真实遗漏，不因参考竞品推翻scope或扩张为任务/网站/事件平台。Storage基线b3a5633aba9112248c6d7f472c5a665557c0aaaa，codex/production-closure-docs，clean；Root基线72027c1e，其他SQL手册/Agent gitlink/.tmp变更保留。Root为唯一文档writer与Git owner，不改源码/测试/机器contract/Prisma/依赖/其他owner。本任务在同一计划维护，不创建第二设计中心。
 
-| 任务/角色 | 范围与依赖 | 验收/交付 |
-|---|---|---|
-| ST-MANUS-R / Root | 官方Files、task输入/输出、结果附件、生命周期文档与OpenAPI对照；必要时窄补既有TECH/API/DATA/ACCEPTANCE/CURRENT五文档，不新增模块/接口实现/文件 | 每项区分官方事实、Kokoro取舍与不采纳理由，来源/日期/digest；文档format、现机器只读校验、范围hash，Root精确路径提交 |
+| 任务/角色                                          | 范围与依赖                                                                                                                                                   | 验收/交付                                                                                                                                                                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ST-MANUS-R / Root                                  | 官方Files、task输入/输出、结果附件、生命周期文档与OpenAPI对照；必要时窄补既有TECH/API/DATA/ACCEPTANCE/CURRENT五文档，不新增模块/接口实现/文件                | 每项区分官方事实、Kokoro取舍与不采纳理由，来源/日期/digest；文档format、现机器只读校验、范围hash，Root精确路径提交                                                                                 |
 | ST-MANUS-LOCAL-R / storage_contract_review（只读） | 固定b3a5633现Upload状态/确认恢复/短期reference/Agent产物契约；读CODEBASE_MAP、TS手册§1/4–6/8.4和Storage三设计/Proto/Prisma；不读凭据、不写/测试/Git变更/资源 | 查是否有上传成功却拿不到稳定Asset引用、URL到期不透明、输出/输入身份混同、错误重试缺口；最多3个有代码依据且不扩大owner的设计优化。Root并行研究Manus官方，不重复调查竞品；最终文档审查另绑定manifest |
 
 Root放置结论：本轮是既有文件/产物契约说明的局部补强，职责与owner不变，沿用三设计SD及验收表；相较新竞品对齐spec/新模块，扩现文档避免第二真源。不改变§8.1目标机器门未通过事实；研究结束确定必要差异后再推进该门，不自动开始业务重写。
@@ -981,3 +938,57 @@ Storage提交`a5c52fa9f64aa84959c2a3f0604e285be7b916d4`，`docs(storage): refine
 Root实际门全部退出0：`pnpm exec prettier --check docs/TECHNICAL_DESIGN.md docs/API_CONTRACT.md docs/DATA_MODEL.md docs/ACCEPTANCE.md docs/CURRENT.md`；端口1fixture DATABASE_URL下`pnpm prisma:validate`（无DB连接）；`pnpm contract:lint`；`pnpm exec tsx scripts/check-contract.ts`；`git diff --check`；本地文档链接目标检查与所有tracked SHA256。命令/来源OpenAPI快照/manifest/commit证据在`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-manus-r-logs/`。0失败；未跑业务lint/typecheck/test/build/PG apply/生成器/外部provider，因为本片没有非文档修改；不以旧524/6代替新行为证据。
 
 三设计路径仍为`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。仅F1 completed.asset_id纯查询与Reference descriptor加入目标机器契约待办，F2逐产物receipt边界补实；不再启动新一轮泛竞品研究。下一必要阶段是Storage target机器契约/唯一canonical与BFF消费前置盘点，同一设计门内收敛，门未通过不写业务实现；Agent/Platform后继scope、外部资格和整体目标保持未闭合。B容器/发布工程仍停放。Root未修改SQL手册/Agent或其他owner。
+
+### ST-F1-M（2026-09-10，自主闭环授权：机器设计门与实施准备）
+
+用户“你自己就能闭环吧”授权主控自主串行推进已确定的Storage功能，不重复请示内部技术取舍。当前Storage a5c52fa9f64aa84959c2a3f0604e285be7b916d4，codex/production-closure-docs，clean。Root先按writing-plans完善本任务卡和§8.1机器设计门；本阶段唯一Storage writer为Root，其他owner只读。旧goal工具显示blocked，工具不支持手动resume；不重建goal、不凭此状态停止当前可推进工作，也不标整体完成。
+
+| 任务/角色                                        | 基线与文件范围                                                                                                                                     | 前置/完成条件                                                                                                                                                                                     |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ST-F1-CONSUMER-R / storage_contract_review，只读 | 固定Storage a5c52fa；读取BFF/Agent/Capability或Platform/IAM的AGENTS、CURRENT与Storage消费入口/版本，记录各HEAD/dirty，不写任何owner/Git index/服务 | 给真实调用方、现service标识、可用credential配置名（不读secret值）、协议版本/引入方式、BFF资源授权真源及最小切换顺序；区分活代码和测试/历史。明确F1仅BFF是否会断开既有有效consumer，Root做最终裁决 |
+| ST-F1-M / Root                                   | 现三设计、canonical Prisma、Storage-owned Proto/HTTP schema与生成配置的精确改动集在检查后列出；不改其他owner                                       | 已定scope/ID/receipt/Reference/presence语义落实机器定义，官方生成/validate/lint、schema设计与consumer前置复核。过门前不重写业务；不把当前代码据旧生成物编译误作目标一致                           |
+
+Root并行核验HTTP运行时schema→OpenAPI成熟工具链与canonical关系/索引，无新ACL/总线/目录体系/数据库实例，不推进Docker/CI。签名/状态/scan/CAS/retirement原保障保留。实现任务须在机器门通过后另明确唯一writer/范围/RED-GREEN和Root全门，不把整个F1无限授权给多个writer。
+
+ST-F1-M放置细化：现`prisma/schema.prisma`为唯一canonical；RPC从`contract/proto/kokoro/storage/v1/storage.proto`切为`v2/storage.proto`（common/v1固定依赖不另复制）；HTTP机器源`src/transport/storage-http.schema.ts`、`storage-http.contract.ts`承载两列表运行时schema/路由metadata，生成脚本`scripts/generate-http-contract.ts`只调用Zod官方转换并装配OpenAPI，不实现router/校验框架；只读产物`contract/openapi.json`。选择同现transport承接HTTP边界，淘汰新http-contracts顶级模块及假Controller生成器。后继真实Nest Controller消费这些schema/path，不另复制字段。现Zod3.25.76自带官方zod/v4入口支持JSON Schema 2020-12，采用OpenAPI3.1，不增依赖；首probe误用新文档openapi-3.0 target后发现本固定版本不支持，已改为实测支持的draft-2020-12，不能以无错误退出掩盖stderr。Swagger12.0.1精确registry/源代码已核验但本片不安装，只为两读面不增加生成依赖或空应用启动；未来如采用Swagger必须消费同runtime schema且明确替换此生成入口。
+
+Root API手册当前明确request ID仅HTTP header，本次新HTTP契约采用data或error envelope、x-request-id、retryable，不保留旧meta.request_id。size_bytes采用十进制string。scope_id固定191字符内ASCII opaque（与tenant式字母数字._:-规则一致），callerServiceId64；它们保持复合receipt索引字节上界，不把任意Unicode长path编码进scope。个人scope仍须等于受信subject，subject来自IAM稳定ID，非用户名；其他标识沿既有191限制。无新增表，scope替代owner/shared；Scan仍经Asset解析scope，Blob/Asset/Artifact/Upload/Retirement的关系显式包含scope，receipt增加caller/subject。详细机器差异待独立审查。
+
+ST-F1-SQL-R任务：独立只读审查Root当前canonical对SD-01–06的实现（scope关系、nullable Upload.asset、Scan不重复scope、receipt完整键、生成ID域、索引长度/用途、F2/F3字段未提前加入、0FK），不得写/测试/启动共享资源。Root并行HTTP运行时schema与官方生成/校验；不以canonical校验表示业务代码已改。
+
+#### ST-F1-M 机器门验收与实施放行
+
+消费者实查：BFF26eec011仅旧Library代理，subject header名字不一致，Project查找不含按动作成员授权；Capability4c363e24 Skills确有package调用意图但缺transport凭据/身份且snapshot未固定owner摘要，其活跃工作树不修改；Agent e24b4aa无实际Storage adapter。固定交接序列为Storage机器artifact→各consumer owner接线/验证→breaking启用；不发明global scope，也不把当前接线坏当没有业务consumer。Storage隔离实现可独立推进，端到端/启用门保持未闭合。
+
+固定改动：16文件见Storage `.tmp/st-f1-m-logs/manifest.json` SHA256 `7f1ec2bf628a45ae1eca2982b37bccc3f1bc1b183f8836242ef778ad2a9bfde8`；另删除旧v1 Proto。包括既有三设计/CURRENT/AGENTS/contract README、canonical/provenance、package脚本/check-contract、三个HTTP源/生成脚本/只读OpenAPI及`test/contract/storage-http-schema.test.ts`。新测试属于现contract测试集，只验证机器shape/官方Nest Pipe，不声称资源授权。无依赖安装或lockfile变更、无正式generated切换、254个范围外tracked hash不变。
+
+独立ST-F1-SQL-R（storage_scope_schema_review）核对canonical SHA8588d590c4bd964456d62064a62fd60d22d518ac766462e3c2d0aade4f59e12f，无P0/P1/P2；ST-F1-M-R（storage_contract_review）固定全manifest核对三设计/Proto v2/HTTP/Prisma/consumer门，无P0/P1/P2，可放行隔离业务实现，非release。
+
+Root主树实际结构门退出0，日志`.tmp/st-f1-m-logs/verify-machine.log`：定向14文件Prettier；Prisma validate（端口1fixture，不连DB）；Proto lint与忽略目录官方ES generate；tsx check-contract（目标digest8896f43f41f9e3ef1ae3eb29ec73afe21720c20e9724d0e725255a5d07a106a2）；HTTP确定性check；新源/测试/目标Prisma及Proto生成类型strict tsc；定向typed eslint；两测试文件16/16；官方OpenAPI3.1 JSON schema校验；manifest和254范围外hash；git diff --check。正式全仓业务typecheck/test/build/schema-apply/smoke留运行时cutover，不以旧generated运行结果过目标门。
+
+Root真实PG结构验证 `.tmp/st-f1-m-logs/schema-probe.log`：复用127.0.0.1:5432 PG18.4，只创建随机自有空库storage_f1_design_69fae29240b3d84f，官方validate/db push/generate、7表8enum0FK、最大不易压缩多字节receipt索引、重复拒绝/跨scope/caller/subject独立、同scope摘要唯一/跨scope摘要独立、官方drift无差异，最后DROP自有库确认。生成仅在忽略目录，唯一canonical字节不改。此为结构验证，不代表应用关系/并发/权限测试。
+
+保留真实失败：HTTP limit初始coerce接受boolean/单元素array/指数/空白，先RED 4失败11通过，限制为标量十进制字符串后GREEN16通过；官方Zod pipe输入泛型TS不匹配已修为number<string>。首次PG探针缺显式search_path导致42P01（catalog已正确），当次自有库已DROP，补public路径后新库全过；机器脚本初次固定PATH选到无jsonschema的系统Python，固定现有Python3.13后全过。没有安装依赖、放宽门或隐藏失败。
+
+三设计绝对路径：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。当前commit在下列提交回执登记；Root§8.1 Storage目标机器门通过，放行下一隔离业务片。其他owner消费、正式运行时及F2/F3/F4未完成，B运维不启动。
+
+ST-F1-M Storage提交`db0d61448e59177a27f529fd89525cfa3c90452c`，16文件manifest staged/committed逐hash一致，旧v1 source删除；这是未切换正式generated/运行时的机器检查点，不可部署。
+
+### ST-F1-I（2026-09-10，Storage scoped-file运行时切片）
+
+§8.1机器门已验收于db0d61448e59177a27f529fd89525cfa3c90452c。Root使用原生单writer实施+独立审查流程。隔离目录选用现已忽略`.tmp/`，不为worktree新建顶层布局；Root已验证check-ignore并创建`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/storage-f1-runtime`，分支`codex/storage-scoped-files`，起始db0d614，clean。仅复用现node_modules的symlink，不安装/升级依赖，不修改主树业务文件。Root串行Git/commit/集成，worker仅交付文件；未验收前保留隔离分支，不部署。
+
+| 项            | 结论                                                                                                                                                                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/执行    | Storage唯一writer `storage_scoped_implementation`，gpt-5.6-sol（复杂多文件实现）；Root负责审查/集成/主树重验，其他owner只读                                                                                                                              |
+| 目标/完成条件 | F1精确tenant+scope贯穿全部十RPC、上传确认、Asset/Artifact/Scan/receipt/Blob/retirement；独立逐服务认证；completed.asset_id；TransferReference；两个Nest原生HTTP列表；不实现F2/F3/F4                                                                      |
+| 允许写集      | 隔离Storage `src/`、`test/`；`src/generated`仅官方生成；`scripts/apply-schema.ts`及生成drift必要脚本；现README/INDEX/docs内接线说明、`.env.example`；既定Proto/HTTP/Prisma不得自行改语义，确需改先报Root                                                 |
+| 禁止          | 主Storage树/Root任务表/其他owner、依赖与lockfile、Docker/CI/新进程、私建ACL/框架/SQL CRUD、旧新双轨/alias/fallback；不削弱原bytes/scan/CAS/fence/repair/drain/cancel保障                                                                                 |
+| 放置          | scope身份/认证扩现common/auth与config；资源用例/Store扩现uploads/assets/artifacts；lists分别属assets/artifacts，机器schema沿现transport；Reference属现object-store provider结果/适配边界。先列新增/删除具体路径，不建立平行File模块或泛型Repository      |
+| 依赖/行为     | SD-01–06及target Prisma/Proto/HTTP已固定；主体来源不等于权限；同command跨scope/caller/subject独立；Blob同scope摘要唯一；Asset/初次Scan由Upload派生；网络在短事务外；cursor先范围过滤后limit                                                              |
+| 验证          | 先记录旧unit基线，再为新隔离/凭据/ID/状态/Reference/list反例RED→GREEN；完整format/lint/typecheck/test/build/schema/generation与真实PG并发/compiled smoke，全部使用自建随机库和隔离资源。默认test无PG产生skip须如实列出，不代替真实PG。Root最终在主树重验 |
+| 交付          | worker停写后给manifest、实际命令/结果、RED证据/失败修正、剩余风险；Root复核并提交/集成。Capability/BFF未接线时不启用breaking运行版本；F1自身实现验收不等于整体产品闭环                                                                                   |
+
+Root并行做只读验收矩阵/consumer交接检查，不重复实现worker文件。遇到任务过大或关键契约歧义，worker先回报已验证最小切片与具体缺口，Root缩小续派，不用不受控全局替换冒充完成。
+
+ST-F1-I隔离基线unit 23文件251/251通过（旧运行时行为），日志Storage `.tmp/st-f1-m-logs/runtime-unit-baseline.log`。pnpm启动自动校验报告Already up to date，未请求安装/升级，worker后继优先直接Node CLI；package/lockfile保持。原生worker已启动并公开角色/新文件放置，Root已审查通过，提示避免scope schema与授权编排混文件、Native Nest Pipe异常必须映射统一HTTP error、signingDate/expiresAt同一秒精度上下文及原Library安全/分页反例完整承接。当前状态进行中，不以启动worker算完成。
