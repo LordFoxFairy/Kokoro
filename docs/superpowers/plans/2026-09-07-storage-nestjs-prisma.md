@@ -956,3 +956,28 @@ Storage提交`b3a5633aba9112248c6d7f472c5a665557c0aaaa`，标题`docs(storage): 
 Root最终实际命令全部退出0：11文件`pnpm exec prettier --check`、`DATABASE_URL=postgresql://fixture@127.0.0.1:1/fixture?schema=public pnpm prisma:validate`（无DB连接）、`pnpm contract:lint`、`pnpm exec tsx scripts/check-contract.ts`（只读）、`git diff --check`；链接文件目标存在、254范围外tracked逐SHA256通过。合同digest仍为47f68286c5655cca6eddd81c981f1ce6a0525b2780356071515582811752d48a。精确命令原输出/manifest/commit证据：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-function-d-logs/`。未运行业务lint/typecheck/test/build/数据库apply/provider/Docker/生成器：本片仅文档且所有非文档字节不变，不把历史524/compiled6计为scope行为证明。未修改其他owner或SQL手册。
 
 三设计绝对路径：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。Storage侧六项概念决策及功能反例已一致；未决仍为target canonical/Proto/HTTP机器契约同步与生成兼容性（Storage）、独立credential/所有consumer切换清单（Root协调）、BFF按操作资源授权与消费链（BFF），F2 Agent冻结上下文、F4 Platform scope各归对应owner。**Root§8.1机器设计门尚未通过，不派业务重写**；本轮用户仅授权自主评估设计。B运维方案停放，外部资格与整体目标未声称完成。后续只因实际反例/业务事实/owner契约修订决策，不反复因目录喜好重规划。
+
+### ST-MANUS-R（2026-09-10，官方API对照与窄设计补强）
+
+用户授权继续推进并先参考Manus API docs优化。Root本轮只读官方v2 docs/OpenAPI与现owner代码，按现六项SD检查真实遗漏，不因参考竞品推翻scope或扩张为任务/网站/事件平台。Storage基线b3a5633aba9112248c6d7f472c5a665557c0aaaa，codex/production-closure-docs，clean；Root基线72027c1e，其他SQL手册/Agent gitlink/.tmp变更保留。Root为唯一文档writer与Git owner，不改源码/测试/机器contract/Prisma/依赖/其他owner。本任务在同一计划维护，不创建第二设计中心。
+
+| 任务/角色 | 范围与依赖 | 验收/交付 |
+|---|---|---|
+| ST-MANUS-R / Root | 官方Files、task输入/输出、结果附件、生命周期文档与OpenAPI对照；必要时窄补既有TECH/API/DATA/ACCEPTANCE/CURRENT五文档，不新增模块/接口实现/文件 | 每项区分官方事实、Kokoro取舍与不采纳理由，来源/日期/digest；文档format、现机器只读校验、范围hash，Root精确路径提交 |
+| ST-MANUS-LOCAL-R / storage_contract_review（只读） | 固定b3a5633现Upload状态/确认恢复/短期reference/Agent产物契约；读CODEBASE_MAP、TS手册§1/4–6/8.4和Storage三设计/Proto/Prisma；不读凭据、不写/测试/Git变更/资源 | 查是否有上传成功却拿不到稳定Asset引用、URL到期不透明、输出/输入身份混同、错误重试缺口；最多3个有代码依据且不扩大owner的设计优化。Root并行研究Manus官方，不重复调查竞品；最终文档审查另绑定manifest |
+
+Root放置结论：本轮是既有文件/产物契约说明的局部补强，职责与owner不变，沿用三设计SD及验收表；相较新竞品对齐spec/新模块，扩现文档避免第二真源。不改变§8.1目标机器门未通过事实；研究结束确定必要差异后再推进该门，不自动开始业务重写。
+
+ST-MANUS-R Root裁决：只吸收两项F1可用性改进（GetUploadStatus.completed.asset_id；单一TransferReference含url/method/required_headers/expires_at），F2保持逐产物稳定receipt与结果集合由BFF/Agent编排。未照搬URL/Base64导入、自动48小时删除、配额/扩展名限制、slides转换、网站发布或webhook。独立调查最初将丢失Complete身份描述为没有恢复路径；Root读uploads.service.ts:217–246确认新command也能走completed分支恢复，已纠正为“缺纯查询直接关联”，不是数据丢失漏洞，不新增恢复框架。
+
+Manus核验来源（2026-09-10）：https://open.manus.ai/docs/v2/file.upload 、https://open.manus.ai/docs/v2/file.detail 、https://open.manus.ai/docs/v2/file.delete 、https://open.manus.ai/docs/v2/task.create 、https://open.manus.ai/docs/v2/task.listMessages 、https://open.manus.ai/docs/v2/webhooks-overview 、https://open.manus.ai/docs/v2/website 、https://open.manus.ai/docs/v2/openapi_v2.json 。OpenAPI info.version=2.0.0、SHA256=53e65cb5e02628820b207ec9d7aa0acb43f4b85d784865bed242cd3ac1c9e265，只读本地忽略快照，不进入contract。HTML页面/API schema均已核验；.md路径读取失败后用正式HTML/OpenAPI，不把skill概述当机器事实。
+
+ST-MANUS-D-R固定审查卡：Storage同基线b3a5633，5现文档TECH/API/DATA/ACCEPTANCE/CURRENT，manifest `.tmp/st-manus-r-logs/manifest.json` SHA256 `1d3eec1a4e73a68fec573eea9df78d75eed3a65990aa2a90a58ae82f7a3ffda8`，260范围外tracked不变。storage_contract_review只读复核窄补是否一致、纯查询恢复与当前Complete事实、签名期限与资源保留期/credential早失效区别、临时Reference不入receipt、跨owner结果编排不扩Storage；禁止写/测试/生成/服务。Root并行主树静态验证，三设计机器门不因通过current文件校验而提前放行。
+
+#### ST-MANUS-R / ST-MANUS-D-R 已验收（文档）
+
+Storage提交`a5c52fa9f64aa84959c2a3f0604e285be7b916d4`，`docs(storage): refine file contracts from Manus API review`，5现文档、manifest1d3eec1a4e73a68fec573eea9df78d75eed3a65990aa2a90a58ae82f7a3ffda8。Root核对baseline/worktree/staged/committed一致、260范围外tracked不变、提交后Storage clean。storage_contract_review固定manifest独立审查无P0/P1/P2，确认原Complete终态分支恢复事实，不把API可用性建议报成数据丢失漏洞。
+
+Root实际门全部退出0：`pnpm exec prettier --check docs/TECHNICAL_DESIGN.md docs/API_CONTRACT.md docs/DATA_MODEL.md docs/ACCEPTANCE.md docs/CURRENT.md`；端口1fixture DATABASE_URL下`pnpm prisma:validate`（无DB连接）；`pnpm contract:lint`；`pnpm exec tsx scripts/check-contract.ts`；`git diff --check`；本地文档链接目标检查与所有tracked SHA256。命令/来源OpenAPI快照/manifest/commit证据在`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-manus-r-logs/`。0失败；未跑业务lint/typecheck/test/build/PG apply/生成器/外部provider，因为本片没有非文档修改；不以旧524/6代替新行为证据。
+
+三设计路径仍为`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。仅F1 completed.asset_id纯查询与Reference descriptor加入目标机器契约待办，F2逐产物receipt边界补实；不再启动新一轮泛竞品研究。下一必要阶段是Storage target机器契约/唯一canonical与BFF消费前置盘点，同一设计门内收敛，门未通过不写业务实现；Agent/Platform后继scope、外部资格和整体目标保持未闭合。B容器/发布工程仍停放。Root未修改SQL手册/Agent或其他owner。
