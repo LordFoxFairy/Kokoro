@@ -14,6 +14,9 @@ Manus API 文档是 Kokoro v1 的重点参考。我们参考的是它已经验�
 - [Manus task.create](https://open.manus.ai/docs/v2/task.create)
 - [Manus task.list](https://open.manus.ai/docs/v2/task.list)
 - [Manus task.listMessages](https://open.manus.ai/docs/v2/task.listMessages)
+- [Manus skill.list](https://open.manus.ai/docs/v2/skill.list)
+- [Manus connector.list](https://open.manus.ai/docs/v2/connector.list)
+- [Manus Connectors](https://open.manus.ai/docs/v2/connectors)
 
 ## 1. 直接采用的设计语义
 
@@ -137,7 +140,29 @@ reference、approved model revision、capability selector 与 project reference�
 时，必须在事实 owner 仓库的本地 contract 中增加 discriminated union 和 owner 生命周期，不把任意 JSON 直接透传
 给 Agent。这样既保持与 Manus 相同的扩展方向，也避免 BFF 形成无类型的万能代理。
 
-### 2.2 调用方必须遵循的闭环
+### 2.2 Skill 与 Connector 标识对齐
+
+Manus v2 的 `skill.list` 返回 opaque skill `id`，任务通过 `enable_skills`/`force_skills` 引用该 ID；
+`connector.list` 返回当前用户已安装 connector 的 opaque `id`，任务通过 `message.connectors` 引用它。
+Name、description、owner/type/category 是展示或分类字段，不替代 ID。Kokoro 采用“先发现、再传 typed ID”原则，
+但不假设与 Manus ID 格式或资源模型兼容：
+
+| Kokoro 事实             | 稳定标识                                        | 任务/运行期用途                                              |
+| ----------------------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| Skill family            | `series_id`                                     | owner 内部版本族，不直接作为可执行版本                       |
+| Skill immutable revision | `skill_id`                                      | owner 内部 exact revision                                    |
+| Skill task reference    | `source_selector` / `source_ref=skill:<skill_id>` | 已安装/启用 pool 返回，task 引用并由 owner 解析 exact package |
+| Skill installation      | `installation_id`                               | 管理 target 上的安装/升级/启停/移除，不作为 task Skill ID    |
+| MCP provider catalog    | `provider_key`                                  | 配置/展示键，不是用户授权实例                                |
+| MCP connector           | `connector_id`                                  | task 引用的 owner-scoped 已授权实例                           |
+| MCP server / policy     | `server_id` / `connection_id`                   | catalog identity 与 connector-to-server selector policy      |
+| MCP tool decision       | `invocation_grant`                              | 短期 run/session-bound decision，不是长期 resource ID         |
+
+BFF/Agent 不得用 display name、installation management ID、provider key、server URL、tool selector 或当前
+版本号冒充 task 引用；typed reference 必须携带 resource kind，tenant/owner 从受信上下文取得。P5 consumer
+cutover 要验证禁用/移除 Skill、撤销 connector/connection、版本升级与同名资源不会让已保存引用静默指向另一个事实。
+
+### 2.3 调用方必须遵循的闭环
 
 ```text
 create message (202)
