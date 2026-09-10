@@ -13,6 +13,8 @@
 | Controller、Service、Repository、DTO 分别做什么？ | [§6 class 与职责](#6-class-与职责)                                  |
 | 公开方法的入参与出参怎样设计？                    | [§6.7 入参与出参](#67-公开方法的入参与出参)                         |
 | Prisma 项目是否必须再包 Repository？              | [§7 持久化](#7-prismaorm-与-repository)                             |
+| Prisma业务事务如何统一？ | [§12.1 框架事务API](#121-事务) |
+| Redis能否作为最终幂等依据？ | [§12.2 持久幂等](#122-并发与幂等) |
 | 一个 `.ts` 文件为什么不该什么都放？               | [§8.4 文件职责](#84-一个手写-typescript-文件只承载一个主要变化原因) |
 | 文件、目录、单复数和 import 如何命名？            | [§9 命名](#9-文件与目录命名)                                        |
 | 哪些是通用实践，哪些是项目自己的决定？            | [§1 证据等级](#1-文档定位证据等级与规范语气)                        |
@@ -803,10 +805,50 @@ SDK 只在有真实消费者与发布流程时建立。SDK 使用 generated wire
 - 只在完整操作可安全重放时重试 serialization/deadlock；加入上限、退避和 jitter；
 - 提交结果未知时按幂等身份查询，不盲目再次执行写入。
 
+#### Kokoro 已选择 Prisma 的子仓：使用框架事务 API
+
+这是跨仓工程约定，不要求尚未选择 Prisma 的服务更换 ORM。当前 Billing 固定的 Prisma 7.10.0 使用
+`await prisma.$transaction(async (tx) => { … }, options)` 承载有分支、读后写或跨多个业务事实的事务；
+由 Prisma 管理开始、提交和回滚，不在业务 Service/Repository 中手写 `BEGIN`、`COMMIT`、`ROLLBACK`，
+也不另建 `pg.Pool` 管理同一用例。单语句原子操作无需额外包装；相互独立的批量操作可使用该版本支持的事务数组 API。
+API 名称、隔离级别、超时和错误码以子仓锁定版本为准；升级主版本时重新核验，不把 `$transaction` 名称视为永久跨版本协议。
+
+- Service/use case 确定哪些事实必须一起成功。事务内所有关联读写使用回调的同一个 `tx`，不得意外调用根 client 提前提交。
+  公共业务接口不暴露 `Prisma.TransactionClient`；单 feature 内简单用例直接使用回调即可，不强制引入通用事务框架。
+- 跨 feature 确需共享事务上下文时，在本仓建立薄的、受测的事务 provider；只负责传递 client、受信 scope 与生命周期，
+  不重新实现数据库事务引擎，不为每个 Repository 增加提交权。嵌套参与同一事务不等于 Prisma 自动提供嵌套事务或 savepoint。
+- Prisma 回调正常完成会尝试提交；业务失败必须抛出错误使整组回滚，禁止把失败转换成普通返回值后提交部分成功。
+  若嵌套组合允许捕获内部错误，必须证明 rollback-only 仍使最外层回滚；所有写入必须 await，最终成功只在事务 promise 完成后返回。
+- 事务只覆盖本 owner 数据库。Stripe/其他支付、HTTP/RPC、消息发送等外部副作用放在事务外，使用持久操作身份、outbox、
+  状态查询及恢复；Prisma 事务不替代外部幂等或跨系统补偿。
+- 普通查询/写入使用生成的 typed Client。SQL-first 只决定结构事实源，不意味着业务事务手写 SQL；必要 raw query 按
+  SQL 手册和子仓 ADR 的具名例外执行，需参与同一 `tx`，禁止将旧 SQL 整体搬进万能 raw wrapper。
+
+验收至少包含真实数据库下的中途失败全回滚、跨能力同提交、并发重复请求、提交后响应丢失与重放、超时及适用的嵌套失败；
+单元 mock 或仅检查存在 `$transaction` 字样不证明事务正确。版本核验（2026-09-10）：
+[Prisma 7 事务文档](https://www.prisma.io/docs/orm/v7/prisma-client/queries/transactions)及 Billing 7.10.0 生成 Client 的回调签名；
+此处未据滚动文档升级依赖或宣称生产已切换。
+
 ### 12.2 并发与幂等
 
 幂等不是“用了 Redis”。权威业务写入通常由数据库唯一性、版本条件、事务和持久 receipt 共同保证；Redis 可做限流、缓存、通知、
 短期协调，但其丢失不能破坏权威事实。具体机制根据操作语义设计并做并发 integration test。
+
+对于发放、扣减、退款、创建不可重复资源等非天然幂等操作，固定以下边界：
+
+- 数据库以受信 tenant + 操作/协议命名空间 + 幂等键建立唯一性；另有业务事件/命令身份时也约束该身份，防止换 key 重复生效。
+  同身份同规范化参数重放已提交结果，不同 digest 返回稳定冲突；每个用例明确结果、身份及去重事实的保留窗口。
+- 对可在一个本地事务内完成的命令，claim、业务效果、成功 receipt/result 及必要 outbox 同事务提交，失败一起回滚。
+  长时外部操作使用独立持久状态机和 fenced finalize；不能把数据库“受理成功”解释为渠道扣款/退款已经完成。
+- Redis `SET NX`/lease 可减少竞争，缓存可加速已提交结果的重放；缓存键与数据库作用域一致，命中仍校验身份/digest及访问权限，
+  只缓存已提交事实。锁过期、key 丢失或 Redis 不可用后，数据库仍保证业务效果不重复；Redis TTL 不决定账务去重事实的寿命。
+  若 Redis 被选为必需的流控依赖，可明确暂停新请求，但不得因此跳过数据库幂等校验或将未执行请求返回成功。
+- Redis 与 PostgreSQL 之间没有由上述机制自动建立的原子提交。数据库已提交、Redis 更新失败或响应丢失时，
+  重试先解析原持久结果；提交结果未知不创建新身份再次执行。外部副作用另用稳定 provider key、结果查询与接收方去重。
+
+测试应强制让两个请求在 Redis lease 失效后同时到达数据库，并覆盖 Redis key 丢失、数据库回滚、提交后缓存失败和重放窗口；
+不得仅测“第二次请求命中 Redis”就宣称幂等完整。Redis 锁的失效、异步复制与有效期边界见
+[Redis 官方分布式锁说明](https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/)；数据库作为最终幂等依据是 Kokoro 的工程取舍。
 
 ### 12.3 I/O 与生命周期
 

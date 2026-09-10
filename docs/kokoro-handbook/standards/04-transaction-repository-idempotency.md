@@ -1,11 +1,12 @@
 # 事务与幂等设计补充
 
-状态：当前补充，2026-09-04。SQL 与语言实现细节不在此复制。
+状态：当前补充，2026-09-10。SQL 与语言实现细节不在此复制。
 
 ## 唯一实现依据
 
 - [SQL 手册](03-sql-and-postgresql.md)：事务、关系完整性、锁、约束和 outbox。
-- [TypeScript 手册](08-typescript-backend-engineering.md)：模块 Repository 与事务 callback 注入。
+- [TypeScript 手册 §12.1](08-typescript-backend-engineering.md#121-事务)：Prisma 框架事务 API、同一 client 与组合边界；
+  [§12.2](08-typescript-backend-engineering.md#122-并发与幂等)：持久幂等依据与 Redis 辅助角色。其他已选择 Prisma 的子仓复用此约定，不复制 Billing 的业务模型或事务实现。
 - [Python 手册](09-python-backend-engineering.md)：psycopg、Protocol 与 async 生命周期。
 
 Repository 表示数据访问职责，不要求单独接口、Domain/Application/Infrastructure 目录或每表一个 Repository。
