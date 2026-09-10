@@ -630,3 +630,13 @@ P4a 实施卡冻结 diff `b2823c735d19d1fe19fc3900407eb718c7af4783a9226b4ed9454c
 4. Skills catalog 与 installation 对本地事务明确区分 callback失败和 COMMIT response unknown：known rollback才fenced mark retryable；callback已结束但commit返回不可判定时inspect durable receipt，completed返回首次结果，确认未提交才标retryable，inspection不可读或仍不可判定抛 `UNAVAILABLE`。不得把该本地readback扩展成P4b provider reconcile。
 5. 真实 PostgreSQL RED 补齐：六 mutation 每个都覆盖business、codec、receipt-completion rollback；publish/withdraw另覆盖outbox failure，其余四个断言0 outbox；逐例独立读取受影响字段、outbox与receipt，不只看行数。row-lock A/B commit/rollback fixture加入同事务business/outbox并在结束后读取durable counts；catalog与installation各有commit-response-lost fixture。修正fault case的operation/实际mutation一致。
 6. 修复后先跑聚焦 JSON-null/external active-vs-stale/digest substitution+current replay/commit-unknown/六mutation PG矩阵，再跑原P4a-13全门；冻结新三hash后由同两名 reviewer 对同一对象重审，Root不得以首轮466 tests通过替代反例闭环。
+
+#### P4a 第二轮实现审查修复卡（2026-09-10）
+
+首审整改候选冻结为 child HEAD `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5`、tracked diff `25cff55d6f3f9206dfe3d67126261ca7beea8e1777ca2623e7a480ce19b0fcc8`、untracked manifest `1ef716d8e1056ca27b9ca21621f0c087825eaaa57f7e812a68d2c828c9133160`、Root 可复现 full candidate `6c4853ad1ed406c420352b9e793b14dd24c44a83b27371e9c6861f11bcbdd98a`。contract_review 为 SPEC FAIL（Blocking 1 / Important 1），database_review 为 QUALITY FAIL（Important 3）；冻结对象未验收、未提交。原 writer 继续只做以下最小 RED→GREEN，不扩大范围：
+
+1. Root client 的 `inspect()` 必须在一个 RepeatableRead（或更强）Prisma snapshot 内读取 receipt 与 `result_json IS SQL NULL` 判定；已处于 transaction client 时复用现有 transaction，不嵌套事务。增加固定时序回归，证明 processing/SQL NULL 与并发 completed transition不能拼接成 corrupt/INTERNAL。
+2. Skill installation 的 commit-response-unknown readback 只有在 `markRetryableFailure()` CAS 返回 `true`、已证明旧事务未提交时才抛原错误；返回 `false` 代表 lease/状态已变化，必须再次证明 completed 或以 `CommandReceiptOutcomeUnknownError` fail closed。反转当前固化 `mark=false` 仍返回原 ownership error 的测试，并保留 catalog 同语义。
+3. Receipt row-lock 真实 PostgreSQL fixture 的 A 事务同时写入真实业务表、outbox 与 receipt；commit/rollback 两个结局分别读取业务字段/count、outbox count、receipt status/epoch，不能只用 callback 或 outbox 代替完整 durable 证据。
+4. 同片修正文档当前态自相矛盾：`TECHNICAL_DESIGN` 前部不能仍称六个 Skills catalog mutation 为业务提交后另行 completion；`API_CONTRACT` 对 proto3 `bytes metadata_json` 只描述实际 wire value，不宣称不存在的 scalar presence。不得借此更改 proto/wire 或 canonical digest字段。
+5. 聚焦 RED/GREEN 后重新执行原 P4a-13 全门与真实 PostgreSQL integration；重新冻结 HEAD/tracked/untracked/full 三hash，由同两名 reviewer 对同一候选复审，双 PASS 前 Root 不暂存 child 文件。
