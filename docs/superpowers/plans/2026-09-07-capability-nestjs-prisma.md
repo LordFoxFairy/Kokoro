@@ -459,4 +459,6 @@ Root 在最终提交 `4c363e24e1ba0e42a8db2a2a46016c65304282c8`、Node 24.13.0�
 
 提交后完整日志为 `/tmp/kokoro-p3a-root-postcommit-4c363e2-20260910.log`，真实 smoke 补充日志为 `/tmp/kokoro-p3a-root-real-smoke-20260910.log`；日志是本机证据，不纳入仓库。Docker 镜像与真实外部 owner sandbox 联调未验，不冒充生产级全链路通过。P4 的 processing lease/fencing/reaper、provider cleanup 重投、publisher/dead-letter/retention 和 P5 cutover 继续待后续分片。
 
+Root 全局三门同步实跑：`verify-repository-topology.py` exit 0；`verify-ten-repository-standard.py` exit 1，当前全拓扑 222 项违规，其中 Capability 23 项，包含 checker 尚未承认已批准 ORM-first canonical/generated 边界、P3b 尚存 remainder/RPC/facade 粒度及 TypeScript 配置的真实后续项；`python3 -m pytest scripts/tests` 为 82 passed / 2 failed，失败仍是当前手册示例数 11 与旧断言 18、以及旧固定标题“参考依据”与新手册不一致。日志为 `/tmp/kokoro-p3a-root-standard-20260910.log`、`/tmp/kokoro-p3a-root-topology-20260910.log`、`/tmp/kokoro-p3a-root-script-tests-20260910.log`。本片不修改或放宽 Root 治理门禁，也不暂存 SQL 手册、`kokoro-agent` 或 `.tmp/` 的其他任务变更。
+
 P3a 已验收，现仅放行 P3b-I：续派 capability_owner_p1b 为子仓唯一 writer，严格使用上表已批准文件集、RED 矩阵和删除面；Root 继续独占 Git，冻结后仍需 SPEC/QUALITY 双审与 Root fresh full gates 才能提交。P4/P5 尚未授权写入。
