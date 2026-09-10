@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a receipt 原子性/fencing 实施卡已通过双审并由同一 child writer 推进，P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a 已形成失败基线提交，因真实 post-commit 并发门复现 0 winner，现进入跨副本 Prisma admission 设计验证，尚未验收；P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -536,7 +536,7 @@ Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、D
 | 任务 | 依赖/owner | 允许范围 | 验收重点 | 当前状态 |
 | --- | --- | --- | --- | --- |
 | P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` |
-| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | 已放行，进行中；plan `7f0ced0e` |
+| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | child `4c28d46a` 为失败基线；post-commit 0 winner，P4a-ADMISSION-D 进行中 |
 | P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 未授权 |
 | P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
 | P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity | 设计阻塞；不造 fake publisher |
@@ -660,3 +660,23 @@ retry 修复后的最终冻结对象为 child HEAD `720acb999f6759a4fd2dca579c7a
 该提交尚未验收。第一次 post-commit 脚本遗漏 `REQUIRE_REAL_INTEGRATION=1`，虽然命令退出 0，但明确出现 10 个 receipt integration 与 1 个 production-entry skip，日志 `/tmp/kokoro-p4a-postcommit-20260910_142321_95877.log` 只作无效门禁记录。Root 随即在 fresh PostgreSQL `kokoro_capability_p4a_postcommit_real_20260910_142432_97449`、Redis DB 13 和 `REQUIRE_REAL_INTEGRATION=1` 下重跑；首轮 `pnpm test` 于 `allows one business executor for a concurrent failed receipt claim` 复现 0 winner：一方在 outbox upsert 遭 P2034，另一方返回 `CommandReceiptInProgressError`，结果 1/520 failed，日志 `/tmp/kokoro-p4a-postcommit-real-20260910_142432_97449.log`。因此 P4a-I 状态回到待修复，P4b 保持未授权；已提交 SHA 只是失败基线，不能作为验收提交。
 
 原 capability_owner_p1b 先只做 systematic debugging，不改文件：以 `4c28d46adb5ef4c72258aceb135f487e3f81022e` 为基线，串行/并行重复该 failed-receipt case，区分 receipt claim、business/outbox transaction、fenced retryable mark 与第二 caller active-lease 观察的时序；核对各层是否统一使用共享 10-attempt full-jitter policy，以及 commit-response unknown 是否被误分类为已知 rollback。输出可复现次数、attempt/epoch/status/durable business/outbox/receipt 证据、根因与一个最小 RED。Root 确认后才授权 GREEN；禁止放宽 winner 断言、盲增 attempt/delay、改 schema/index/proto、扩到 provider recovery/P4b 或操作 Git。
+
+调查已确认 24/48 个不同 tenant 的 new/failed command 在 fresh PostgreSQL 18 下均可因 relation/page SIREAD pivot 冲突耗尽 10 次；失败 attempt 全部回滚，receipt 最终不存在或回到 fenced retryable failed，business/outbox 均为 0。现有四条生产路径确实统一使用 10-attempt full-jitter helper，P2034 的 COMMIT 失败被 PostgreSQL 明确回滚，未发现 commit-response unknown 误分类。进程内 cap 4 只缓解单实例；跨进程无上界。singleton Serializable gate 的 typed 原型反而形成 retry herd：24/48 对多 client 的 new/failed 用例持续出现 3–19 个 zero-winner、20 个 active connection 和最高 19 个 row-lock waiter；Prisma timeout/外层 AbortSignal 也不能终止底层锁等待。证据为 `/tmp/kokoro-p4a-postcommit-failed-*.log`、`/tmp/kokoro-p4a-failed-receipt-diag-*.jsonl`、`/tmp/kokoro-p4a-gate-E2-*.json` 与 `/tmp/kokoro-p4a-gate-timeout.json`。
+
+#### P4a-ADMISSION-D 跨副本 Prisma admission 设计验证卡（2026-09-10）
+
+| 项 | 结论 |
+| --- | --- |
+| Owner | `kokoro-capability` 当前唯一 writer、目标 `kokoro-platform`；admission 只是本 owner 的数据库运行协调事实，不拥有 command、Skill、MCP、IAM 或 Scheduler 业务事实。 |
+| 当前事实 | receipt acquisition、Skills catalog、installation、MCP 各自直接打开 Serializable transaction；有限 retry 保证原子回滚但不保证有界负载下存在 winner。Prisma pool 每进程最多 10，Redis 不参与正确性；child `4c28d46a` 为失败基线。 |
+| 目标职责 | 在打开业务 Serializable snapshot 前，以 PostgreSQL DB clock 和 Prisma typed CAS 获得跨副本固定容量资格；资格 token 与业务 receipt fence 独立，确保到期/崩溃/同 owner ABA、排队取消、deadline 与 shutdown 均有稳定语义。 |
+| 目录方案 | 采用现有 `src/database` 的窄 admission service/model、`RuntimeModule` 唯一 provider，并由 feature transaction 注入；不放进 Skills/MCP 任一业务模块。淘汰 A 进程内 semaphore（跨副本无效）、C 全面 ReadCommitted+CAS（需重证全部读集）、D index/ANALYZE/增 retry（概率优化）与 E Serializable singleton gate（稳定制造 P2034 herd）。 |
+| 粒度 | 先做 `/tmp` 隔离 spike，再由原 writer 只更新现有 ADR-001、TECHNICAL_DESIGN、DATA_MODEL、RELIABILITY、RUNBOOK、CURRENT；同一冻结文档经 SPEC/QUALITY 双审后，Root 才新增 schema/src/test。不得直接从调查跳到实现。 |
+| 依赖 | 只依赖 Prisma client、现有固定 PostgreSQL clock、Nest lifecycle 与现有 typed error mapper。禁止 Redis lock、advisory/raw lock SQL、Scheduler、provider SDK、通用 job/queue、跨仓数据库或网络 I/O 持有资格。 |
+| 数据/API | 候选是固定有界的内部 admission slot：`slot_id`、永久 `lease_epoch`、成对可空 `lease_owner/lease_expires_at`；acquire/release 为短 ReadCommitted Prisma CAS，旧 epoch 不能释放新 holder。每个业务 attempt 在同一 transaction client 内先 fenced guard/renew并持有该 slot 行锁，外部调用前已释放。`command_id`、event/recovery/retirement ID、Skill `series_id/skill_id/installation_id` 与 MCP `connector_id/server_id/connection_id/authorization_id/grant_id` 均不复用为 slot identity；Proto/OpenAPI 不变。 |
+| 删除项 | 不保留 per-feature retry/admission 双轨、进程内正确性 semaphore、singleton Serializable gate、raw SQL lock 或 provider 调用期间的 holder。统一 retry helper继续处理准入后剩余的安全 P2034。 |
+| 验证 | fresh PG18、至少两组独立 Prisma client/Nest composition，new/failed×24/48不同 tenant、same-command、Skills/installation/MCP、holder pause/rollback/connection death、expired takeover/旧 epoch release、acquire/commit/release ACK unknown、取消/deadline/shutdown/pool saturation；记录实际业务 overlap、P2034、waiter、durable receipt/business/outbox。最终才跑 P4a-13、双审与 Root post-commit。 |
+
+两名只读 reviewer 一致拒绝 A/C/D/E 并有条件推荐上述 B，但当前仍有两个设计阻断：其一，expired takeover 不能只看时间，业务 transaction 必须用同一 client fenced guard 并持 slot row lock到 COMMIT/ROLLBACK，否则暂停的旧 holder 会与新 holder并行；其二，多 slot 小表自身可能改变 SSI 冲突形态，cap 4 的旧原型不是证明。spike 必须先比较 cap 1 与 cap 4：cap 1 作为 correctness-first 默认候选，只有 cap 4 在 cold/warm 表、多 client连续压力都无 0 winner且 deadline/连接上界成立才可采用。固定 slot 集合不得由各副本自行扩容；本片可固定容量而不新增公开配置，未来扩容必须走受控设计/Schema变更。
+
+spike 通过条件：资格在 RC transaction 外排队，wait/sleep 不持 transaction 或连接；acquire COMMIT unknown先按 token readback，未证明取得不得执行业务；一次完整 retry operation持同一 token，每个 attempt 重新用 DB clock核对/续租；总 wall-clock deadline覆盖排队、attempt与退避，slot lease严格长于该硬上限；成功 transaction内释放资格，known rollback/final failure用 fenced RC release，业务 commit unknown仍只按 receipt/current facts裁决，release结果不是业务提交证据。Nest shutdown先 stop-acquire、再 bounded drain，异常退出靠DB clock expiry。若 typed Prisma 无法证明底层等待可取消，acquire只用非阻塞条件CAS+事务外轮询，不能等待锁；业务 guard的数据库 transaction hard timeout与lease关系必须在文档中给出可验证不等式。P4b继续未授权。
