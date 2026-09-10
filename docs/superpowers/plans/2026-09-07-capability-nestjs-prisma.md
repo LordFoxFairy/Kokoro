@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a receipt 原子性/fencing 实施卡正在最终复审，双审通过后才放行，P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a receipt 原子性/fencing 实施卡已通过双审并由同一 child writer 推进，P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -536,7 +536,7 @@ Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、D
 | 任务 | 依赖/owner | 允许范围 | 验收重点 | 当前状态 |
 | --- | --- | --- | --- | --- |
 | P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` |
-| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | 计划修订复审中；尚未派写入 |
+| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | 已放行，进行中；plan `7f0ced0e` |
 | P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 未授权 |
 | P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
 | P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity | 设计阻塞；不造 fake publisher |
@@ -617,3 +617,5 @@ interface TransactionalCommandReceiptPort {
 - [ ] **P4a-14 冻结审查。**writer 停写并给 HEAD、tracked/untracked hash、绝对文件清单与每卡 checkpoint；contract_review 与 database_review 对同一最终 hash 分别 SPEC/QUALITY，任何 blocking/important 回原 writer新增最小 RED修复并重新冻结；双 PASS 后 Root 才按绝对精确路径暂存、提交，并在 child commit 上重跑完整 post-commit 门禁。
 
 P4a-I 基线为 child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5`，负责人仍为 capability_owner_p1b；允许范围只限上述 receipt/Skills/MCP transaction/config/generated/schema/test/必要文档文件。禁止改 proto/OpenAPI/outbox delivery/retirement/provider recovery worker/P5/其他仓，禁止新增 raw queue SQL，禁止 writer 操作 Git index/commit/branch。发现必须越界时先报告 Root 调整任务卡。
+
+P4a 实施卡冻结 diff `b2823c735d19d1fe19fc3900407eb718c7af4783a9226b4ed9454c2d36401f10` 已由 contract_review `PLAN SPEC PASS`、database_review `PLAN QUALITY PASS` 独立复核，Blocking/Important/Minor 均为 0；Root 将该计划提交为 `7f0ced0e` 后续派 capability_owner_p1b。该记录只表示实施授权，不表示 P4a 代码已验收。
