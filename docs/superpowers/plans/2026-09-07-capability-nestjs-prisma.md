@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a 已形成失败基线提交，因真实 post-commit 并发门复现 0 winner，现进入跨副本 Prisma admission 设计验证，尚未验收；P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 已验收；P4a 失败基线提交后的跨副本 Prisma admission 设计已在 child `394dce695083b7ea76ced7004679a5c383a47981` 验收，当前仅授权 schema installer 原子初始化隔离 spike，P4a 实现仍未授权、P4b–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -536,7 +536,7 @@ Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、D
 | 任务 | 依赖/owner | 允许范围 | 验收重点 | 当前状态 |
 | --- | --- | --- | --- | --- |
 | P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` |
-| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | child `4c28d46a` 为失败基线；post-commit 0 winner，P4a-ADMISSION-D 进行中 |
+| P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；对应 generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；无网络进事务 | child `4c28d46a` 为失败基线；P4a-ADMISSION-D 已由 child `394dce69` 验收；installer atomicity spike 进行中，implementation 未授权 |
 | P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 未授权 |
 | P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
 | P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity | 设计阻塞；不造 fake publisher |
@@ -696,3 +696,19 @@ P4a-ADMISSION-D 现授权同一 capability_owner_p1b 仅更新 child 既有 `doc
 5. 启动配置把command receipt lease下界收紧为30秒，保留当前30秒默认及既有上界；非法低值RED并同步env/runbook，不能只依赖默认值满足`slot lease 12s < receipt lease`。DATA_MODEL顶部改为`4c28d46a`已提交但P4a未验收。旧Redis“request admission”统一改称availability/readiness gate，明确不拥有transaction capacity/lease/fence/recovery。
 
 修复后重新冻结六文档三hash并由相同两名 reviewer双审；仍不得改schema/src/test/package/env或Git。P4b保持未授权。
+
+#### P4a-ADMISSION-D 最终验收与 installer atomicity spike（2026-09-10）
+
+六文档最终冻结 tracked/full hash 均为 `d67f52354611baf1ecb5d7c08608b7929923a3f139879731249c0148e7397c60`，无 untracked；contract_review 的最终 `SPEC PASS` 与 database_review 的最终 `QUALITY PASS` 均为 Blocking/Important/Minor 0。Root 在同一冻结对象上复跑 `pnpm format:check`、`pnpm lint`、`pnpm typecheck` 与范围 diff 检查通过，随后提交 child `394dce695083b7ea76ced7004679a5c383a47981`（`docs(capability): design transaction admission`）；提交后同三项静态门、范围 diff 与 clean-worktree 检查再次通过。该提交只验收 admission 设计，不代表 `4c28d46a` 的 P4a 实现已恢复验收，也不授权 P4b。
+
+实施前新发现一个 installer 原子性阻断：现有 `scripts/apply-schema.ts` 由 node-postgres `PoolClient` 开启事务并执行 Prisma migrate diff 生成的 DDL，而 PrismaPg 的公开 API 不能把 typed Prisma client 绑定到该外部 `PoolClient` 事务；固定 `TransactionAdmissionSlot` 又必须由 installer 用 typed Prisma 初始化，并与 fresh schema 安装保持单事务原子性。不得改成手写 `INSERT`、runtime create-if-missing、两阶段 DDL+seed、adapter 私有连接或未经验证的分号切分。
+
+当前只授权 capability_owner_p1b 做 `/tmp` 隔离 spike，不修改 workspace、Git、共享数据库或共享 Redis：
+
+1. 基于 child `394dce695083b7ea76ced7004679a5c383a47981` 的临时副本生成带 `TransactionAdmissionSlot` 的 Prisma client 与 canonical DDL，在 fresh PostgreSQL 上验证 Prisma 7.10 + adapter-pg 的 interactive `ReadCommitted` transaction 能否执行完整 generated DDL 并在同一事务内调用 typed `transactionAdmissionSlot.create`。
+2. 若 `$executeRawUnsafe(generatedDdl)` 不接受多 statement，必须找出对受限 Prisma migrate-diff 输出可靠、可验证且不以 naive `split(";")` 猜 SQL 边界的执行方式；不得引入第二份手写 schema 或使用 adapter 私有 `PoolClient`。
+3. 同一 Prisma transaction 内验证 installer advisory lock、nonempty/schema safety check、generated DDL、typed fixed-row create 与 post-create invariant check的可组合性；installer client 不继承 runtime 的 2 秒 query/transaction timeout。
+4. 用 fault injection 证明 DDL 中点、typed create 前后、最终 invariant check 与 commit 前失败都回滚 schema/slot；验证并发 installer 单一成功、进程终止后的可恢复状态，以及 COMMIT acknowledgement unknown 的可判定/重跑语义。若 PostgreSQL DDL 事务在强制进程终止下只留下全有或全无，也必须以 catalog/typed readback记录，而非口头假设。
+5. schema checker 还必须拒绝 fixed slot 缺失、多行、`slot_id` 非约定常量、owner/expiry 单边 NULL、held row 的 epoch 非正数等损坏；spike只报告事实、命令、数据库名与 `/tmp` 产物，不提前写 production code。
+
+spike 结论先回 Root。只有证实一条基于公开 Prisma API 的原子安装路径后，Root 才补充六文档的 installer 细节并再次冻结双审，然后拆 P4a-ADMISSION-I 的逐 RED 实施卡。若原子路径不成立，则先回到设计门比较可恢复 installer 协议，不以兼容层或 runtime 自愈绕过。Skills 与 MCP 的 identity 继续锁定：Skill 家族 `series_id`、不可变 revision `skill_id`、task selector `skill:<skill_id>`、安装生命周期 `installation_id`；MCP task reference `connector_id`，并分别保持 `server_id`、`connection_id`、`authorization_id`、`grant_id`。provider key、URL、selector、tool name 不得冒充资源 ID；`command_id` 只作幂等身份，event/recovery/retirement/delivery 各有独立 ID。Manus 对齐事实源仍是 `docs/MANUS_API_ALIGNMENT.md` 及已核对的 `skill.list`、`connector.list`、`task.create`、Connectors API 文档。
