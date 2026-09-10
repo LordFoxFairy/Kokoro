@@ -992,3 +992,54 @@ ST-F1-M Storage提交`db0d61448e59177a27f529fd89525cfa3c90452c`，16文件manife
 Root并行做只读验收矩阵/consumer交接检查，不重复实现worker文件。遇到任务过大或关键契约歧义，worker先回报已验证最小切片与具体缺口，Root缩小续派，不用不受控全局替换冒充完成。
 
 ST-F1-I隔离基线unit 23文件251/251通过（旧运行时行为），日志Storage `.tmp/st-f1-m-logs/runtime-unit-baseline.log`。pnpm启动自动校验报告Already up to date，未请求安装/升级，worker后继优先直接Node CLI；package/lockfile保持。原生worker已启动并公开角色/新文件放置，Root已审查通过，提示避免scope schema与授权编排混文件、Native Nest Pipe异常必须映射统一HTTP error、signingDate/expiresAt同一秒精度上下文及原Library安全/分页反例完整承接。当前状态进行中，不以启动worker算完成。
+
+#### ST-F1-I 核心部分交付，未验收（2026-09-10）
+
+storage_scoped_implementation已停写，未提交，未建数据库/共享资源、无活跃CLI。worktree仍db0d614加变化树；Root核验交接manifest122文件（12删除）SHA256 `f1d913ec021c0da1eea96602013e7b2b8249924d6f01546c57d1f612b5c62e05`逐文件一致，位置`kokoro-storage/.tmp/storage-f1-runtime/.tmp/st-f1-i-handoff/`。
+
+实际worker最终报告：生产build typecheck0；unit26文件275/275；contract7文件32/32；实际Nest HTTP8/8。全TypeScript仍111错误/16测试fixture文件；默认test52文件通过/6失败/11跳过，387通过/24失败/136跳过。真实PG/compiled/全lint/format未过；正式Prisma生成物有2处trailing whitespace，留官方生成后统一规范化入口，不手改生成物。以上是部分交付证据，不把生产编译或unit当整片闭环；Root仅独立重跑过早期auth7/7，其余最终回归待接收后重跑。
+
+Root早期发现并关闭actor外部header偏离SD-02（现actor从subject派生且拒绝额外header）、认证prototype属性与重复secret边界；Reference从denylist改精确PUT仅content-type/GET空header。独立storage_contract_review发现P1：completed状态会返回错误的同scope Asset；Root复核并扩及Complete恢复分支。现requireCompletedAsset先检查确定性expected ID等于持久关联、再查询scope，两个分支复用。独立定点复核已关闭P1，绑定uploads.service SHA ae5188c2eaf06a95744d610c4f88859a2c3f63de3bdeb957f0725f0092625166与当时测试SHA78164971eb282b435354ac8e40dd69e20a4be66a9969f11c1e6edfd399435a79；后续移动测试路径不复述为最终manifest审查。
+
+Root承认本次F1派工切片过大，已收窄接续而非继续扩surface。保留核心全部成果，下一任务只做现16个fixture/测试编译迁移、真实scope/并发验收和已有实现质量修正，不增加F2/F3/F4或运维能力。未来的新scope回归初次GREEN要如实记录，用针对性负对照验证敏感性，不伪称事前TDD；目前test double负对照只证明该测试敏感，不证明真实Prisma权限。
+
+### ST-F1-V1 集中测试迁移/真实PG验收续片
+
+| 项           | 决定                                                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Owner/负责人 | Storage单writer `storage_scoped_verification`，gpt-6-astra（复杂收尾能力升级）；前writer已停写。Root只读集成审查，storage_scope_schema_review独立代码质量审查                   |
+| 基线         | 同一隔离worktree、codex/storage-scoped-files、db0d614+已核验f1d913ec部分manifest；不得覆盖/回滚已接收成果，不改主Storage/其他owner                                              |
+| 明确范围     | 最新typecheck.log所列16测试/fixture文件及旧architecture断言；现scoped行为测试与真实PG补充；测试发现的现F1生产bug须先报Root后局部修复。无需新API/Schema/模块/依赖/进程           |
+| 完成条件     | 全typecheck0；默认unit/contract/architecture/真实PG tests无未解释失败/skip，保留旧安全/可靠性语义；真实亲建PG scope/ID/同scope错关联/并发测试；再完整build/compiled及生成drift  |
+| 质量/文档    | 现生产format/lint规范化在只读review结束后进行；正式生成物只经官方生成+统一规范化脚本。机器语义不自行更改。最后同一writer同步现CURRENT/三设计/接线说明中的当前与未启用consumer门 |
+| 资源/Git     | 复用现PG/Redis实例，只创建可证明自有随机DB并清理，不清共享Redis。Root串行Git，worker交付停止写入manifest与真实命令/剩余风险，禁止提交/部署                                      |
+
+Root并行核对已交接manifest与生产质量，不重复写测试、不把worker报告冒充主树全门。Capability/BFF消费仍独立待验；目标机器检查点和本隔离分支均未发布breaking版本。
+
+ST-F1-I-QUALITY-R固定生产manifest审查发现3个P2，Root批准ST-F1-V1仅修这些既定语义：Reference replay固定receipt.assetId后重验并重签（download/package都覆盖）；签名GET默认ResponseContentDisposition=attachment且requiredHeaders保持空；filename输入/PG/HTTP统一255 Unicode码点并保留机器maxLength。不是新增功能或放宽验证。另compiled反例发现畸形非GET body被Fastify提前400，而既有契约要求405；Root批准仅两条机器定义list路径onRequest方法门，保留统一错误、Allow/no-store/requestID，不创建路由框架。文档仅同步既有当前实现与consumer尚未接线事实，暂停的运维入口不再推荐。
+
+ST-F1-V1阶段报告（尚未Root验收）：全tsc 111→0，默认无PG fixture 411/411，三个P2定点6 RED→56 GREEN；真实自有PG integration 23文件185/185、无skip，含新增13项scope/协作来源/完整幂等namespace/四种completed关联/Reference固定身份/最大索引/keyset/Unicode真实Nest列表。compiled方法优先级窄修与最终全门/资源清理仍在收尾。Root未在变化树上运行最终测试，不把这些worker报告标成主树通过。
+
+#### ST-F1-V1 交接与复审
+
+writer已停写，交接manifest `.tmp/storage-f1-runtime/.tmp/st-f1-v1/manifest.json` SHA256 `43efec8861ed937252ea08aa20adb06d591f0d5950974b014adfe58f46a755a2`，168路径/13删除（含1个前writer新建后撤销、从未跟踪的测试路径，实际Git变化167路径）。Root逐hash与实际变化集核对一致，暂存区空，无依赖/lockfile/canonical/CI/Docker变更。writer全PG测试70文件576/576、integration185/185、contract44/44、architecture48/48、compiled6/6，零skip；自有库DROP回查0。独立storage_scope_schema_review固定全manifest复审关闭3P2，方法优先窄修、实际Prisma反例与原scope/关联保护通过，无新P0/P1/P2；它只读日志，不冒充实跑。
+
+Root开始独立全门：首轮schema、format、lint、tsc、Prisma/Buf均exit0，在generated-drift处失败。定位为Root验证器在apply-schema（其末尾会Prisma generate）之后才采集before，误把未normalize中间态作基线；官方generate+normalize后的文件逐hash仍完全匹配writer manifest，无源码缺陷或生成器修改。Root修验证器采样顺序，保留首失败日志及自有DB已DROP证据，再新建自己的随机库重跑。证据统一Root `.tmp/storage-f1-root/`，不覆盖worker记录。
+
+Root跨仓只读门已跑：topology PASS；standard 220规则失败；Root Python tests82通过/2失败（手册例子数量18对11、旧“参考依据”标题断言）。这些是当前跨仓/治理未闭项，不通过修改正在变化的SQL手册/其他owner或放宽测试清零；Storage主仓重验后的最终结果另记，不能将本功能片通过描述成全仓全绿。
+
+Root第二独立轮完整576/576、compiled6/6及schema drift通过，末尾diff-check再次遇到schema-bootstrap测试调用apply-schema产生原始Prisma行尾空白；据writer已固定的标准生成流程，在全测试后执行统一normalize并比较完整generated SHA，不手改生成物。第三轮独立完整门全部exit0：schema/catalog/drift、format/lint/typecheck、Prisma/Buf官方生成+normalize前后hash、contract/HTTP、build、576/576无skip、compiled6/6、最终生成hash/diff，亲建随机库已DROP确认。第一/二轮日志保留，第三轮路径Root `.tmp/storage-f1-root/preintegration-3/`。
+
+Root确认所有167实际变更都属于固定168路径manifest（1个从未tracked的已删除临时测试仅作为交接记录），暂存后逐字节匹配并检查diff。Storage切片提交`8a906b762a875dbf85d12b5248d906ad42e21560`，`feat(storage): implement scoped files with verified replay and list boundaries`。主Storage树从clean db0d614 fast-forward至同SHA，未更改其他owner；原始/集成SHA相同。Root现用主Storage树新建独立空库重跑相同全门，尚未以隔离树报告冒充主树结果。
+
+主树首轮全部exit0，但Root复核实际计数发现140文件1152测试、compiled12，而非预期70/576与6：Vitest同时发现了主仓`.tmp/`内的独立worktree，重复跑了同一套测试。该轮不作为最终去重验收。Root确认worktree clean、已集成且无活跃writer，将自有worktree经`git worktree move`完整移至Root忽略目录`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/.tmp/storage-f1-runtime-reviewed`，保留全部worker原始日志/manifest（内容与原基线路径记录不改）。未改测试过滤、未删除测试/清理其他数据。再次主仓全门日志`.tmp/storage-f1-root/main-final/`；先前重复执行日志保留main/。后续worktree避免嵌套于被测试owner文件树。
+
+#### ST-F1 已验收（Storage owner功能片，不等于产品/发布闭环）
+
+最终代码commit `8a906b762a875dbf85d12b5248d906ad42e21560`，主仓分支codex/production-closure-docs。Root主仓最终独立门 `.tmp/storage-f1-root/main-final/` 全部exit0：schema空库apply/catalog7表8enum0FK/官方drift、format、typed lint、完整typecheck、Prisma validate、Buf lint/官方生成、Prisma官方生成+统一normalize的完整hash无漂移、owner provenance/HTTP contract、build、70文件576/576（0skip）、compiled6/6、最终generated hash、diff与clean status。实际Node CLI完整参数与输出逐门存log，非引用worker报告。亲建库storage_f1_root_659b1b0fe2a24f66a4d7c36f3966fe8b已DROP确认不存在；没有部署/外部provider资格或共享资源清理。
+
+Storage文档收尾commit `05d54f4f23ecae1dd5e77350c7c69c5d69dee92f`，仅7个现有文档/AGENTS同步当前实现与验收，不改已验代码/测试/canonical/generated。Root完整format:check、diff check均0；最终Storage clean。根计划由Root单独提交，不暂存SQL手册、Agent gitlink、.tmp或其他owner变化。原worktree保留在Root `.tmp/storage-f1-runtime-reviewed`（clean实现SHA），所有writer证据在其`.tmp/st-f1-v1/`；不创建第二任务中心。
+
+三设计当前绝对路径：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。Runtime、机器contract、canonical已对齐；独立审查关闭3P2，无新P0/P1/P2。已验收范围为F1精确scope、协作者来源、独立credential、完整幂等身份、completed Asset关联、TransferReference和两列表及既有一致性保障。
+
+仍未闭合：BFF真实成员/动作授权与v2消费；Capability/Platform实际scope与身份/固定artifact消费；Agent F2交付及产物类型增强；F3删除/到期、F4复制；外部S3/ClamAV/OCI/性能/SLO。Root当前topology通过，standard最终仍220失败（含尚未收敛的旧规范判定和其他owner问题），Root tests82通过/2失败；失败日志保留，不宣称全仓绿或顶级后端保证。后继owner明确，Storage先完成自身片再交接，不抢写其他正在推进的模块；旧goal仍为blocked历史记录，不将本F1片标作整体goal complete。
