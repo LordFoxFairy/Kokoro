@@ -934,3 +934,25 @@ Root核验官方产品说明：ChatGPT Projects将文件与项目成员边界关
 下一功能方向建议：先同租户项目scope的上传→确认→按授权查询/下载，并验证同用户跨项目拒绝、同项目授权协作者、未授权服务伪造scope拒绝；再闭合Agent产物交付。涉及owner机器契约和消费者变更，先在Storage TECH/API/DATA对齐后按owner先发布、消费者后接线串行推进；本研究不授权改其他正在推进的仓。删除/保留/跨scope显式复用随后按真实用例切片，不一次堆全部功能。
 
 TS按当前手册§1/4–6/8.4：Nest feature Module/Controller/Service、Prisma唯一schema和generated Client；数据访问简单则直接Prisma，复杂事务才具名Store；schema/type/编排职责分开但不机械七件套；RPC/HTTP各一份机器事实源，生成客户端不手改；外部snake_case/内部camelCase、严格类型与运行时授权校验、短事务不包网络。用隔离/委托/状态/幂等反例证明功能，不拿文件数或测试数替代质量。本轮仅研究和任务记录，未执行新行为测试、未改Storage源码/Schema/Proto，未宣称新功能闭环。
+
+### ST-FUNCTION-D（2026-09-10，设计闭环；无实现授权）
+
+用户授权主控自主评估，明确“先技术方案闭环，不直接开始”。本轮Root为Storage唯一文档writer/Git owner，基线17c2161dafac606878351dfa2d243be511f67fac，clean；禁止src/test/prisma/contract/generated/package/lock/CI/Docker变更，其他owner只读。目标是把六项功能决策、场景反例、当前/目标及实施前置统一进现三设计，不追加另一套宽泛建设计划。B容器/发布方案停放，不进入功能前台。
+
+独立只读ST-FUNCTION-AUTH-R：storage_contract_review核对IAM当前machine/user token能力、BFF Project/Conversation事实owner、Agent execution identity与Storage workload verifier；围绕“业务scope字段不是授权证据”提出最小可落地信任边界。禁止发明已存在的资源grant、跨库查询或Storage反调BFF形成调用环；比较受信业务owner代言（明确服务身份/准入边界）与IAM未来资源委托接线，区分能在Storage定下的设计与必须跨仓确认的前置，不为了写闭环隐藏未知。只读，无测试/写入/Git/资源，交付一页具体结论。Root并行锁定场景、类型、生命周期、去重/幂等与文档放置；最终审查另绑定固定文档manifest。
+
+ST-FUNCTION-AUTH-R已返回：当前RPC共享secret未绑定serviceId，IAM现action scope非project grant；采用独立service凭据与业务owner代言，不自建JWT/ACL、不反调BFF。BFF校验资源关系，Storage只执行精确scope；F1仅启用BFF，Agent/Platform在契约接线后开放。trusted BFF失陷不在此模型防御内，旧URL有效窗口明确保留。
+
+ST-FUNCTION-D固定写入集：Storage现有11文档 `AGENTS.md`、`INDEX.md`、`docs/INDEX.md`、`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、`docs/ACCEPTANCE.md`、`docs/CURRENT.md`、`docs/BFF_INTEGRATION.md`、`docs/ADR/0004-isolated-provider-qualification.md`。Root唯一writer，其他所有tracked hash与baseline17c2161保持；历史逐片证据在本任务表/Git，不在CURRENT继续累加。六项SD决策见TECH唯一正文，Security修正旧“无RPC鉴权/URL入receipt”描述，BFF接入纠正实际三键cursor与未接线现状，ADR4只标B停放不废弃provider保护。
+
+ST-FUNCTION-D-R固定评审卡：storage_contract_review只读上述manifest与必要已提交事实，不写/提交/测试/生成/启动资源；检查三设计、六项取舍、F1含全部十RPC与scope/credential/receipt一致性、功能反例、当前/目标及其他owner依赖。Root并行执行文档format、现Prisma validate/Proto lint/digest、diff与范围外hash；不跑业务/DB/provider/生成器。通过仅表示文档设计一致，target canonical/机器contract未改，Root§8.1机器设计门不通过，不自动派实现。提交由Root串行按精确路径管理，审查绑定最终文件hash。
+
+#### ST-FUNCTION-D 文档设计已验收（不放行业务实现）
+
+Storage提交`b3a5633aba9112248c6d7f472c5a665557c0aaaa`，标题`docs(storage): define scoped file and artifact boundaries`，基线17c2161，11现文档；最终manifest `a24a9b119e29864f3db528fb1ffb0a352d4a48c21ad8cb2ac0e210460f9d0538`，baseline/worktree/staged/committed逐hash一致，254范围外tracked不变，Storage提交后clean。Root为唯一writer/Git owner；独立storage_contract_review只读审查。
+
+初稿manifest d0e38aaa存在1个P1：新receipt域已加入scope/caller/subject，但Upload/默认Artifact确定性ID种子未明确相应更新，有不同成员同commandId导致全局PK碰撞风险。已在TECH SD-06/DATA§3固定完整command namespace，Blob按tenant+scope+sha，Asset/初次Scan从scope唯一Upload派生并与确认者无关；验收F1-09/10加入反例。最终固定复核P1关闭，无剩余P0/P1/P2；不以初稿评审掩盖修订。
+
+Root最终实际命令全部退出0：11文件`pnpm exec prettier --check`、`DATABASE_URL=postgresql://fixture@127.0.0.1:1/fixture?schema=public pnpm prisma:validate`（无DB连接）、`pnpm contract:lint`、`pnpm exec tsx scripts/check-contract.ts`（只读）、`git diff --check`；链接文件目标存在、254范围外tracked逐SHA256通过。合同digest仍为47f68286c5655cca6eddd81c981f1ce6a0525b2780356071515582811752d48a。精确命令原输出/manifest/commit证据：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/.tmp/st-function-d-logs/`。未运行业务lint/typecheck/test/build/数据库apply/provider/Docker/生成器：本片仅文档且所有非文档字节不变，不把历史524/compiled6计为scope行为证明。未修改其他owner或SQL手册。
+
+三设计绝对路径：`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/TECHNICAL_DESIGN.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/API_CONTRACT.md`、`/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-storage/docs/DATA_MODEL.md`。Storage侧六项概念决策及功能反例已一致；未决仍为target canonical/Proto/HTTP机器契约同步与生成兼容性（Storage）、独立credential/所有consumer切换清单（Root协调）、BFF按操作资源授权与消费链（BFF），F2 Agent冻结上下文、F4 Platform scope各归对应owner。**Root§8.1机器设计门尚未通过，不派业务重写**；本轮用户仅授权自主评估设计。B运维方案停放，外部资格与整体目标未声称完成。后续只因实际反例/业务事实/owner契约修订决策，不反复因目录喜好重规划。
