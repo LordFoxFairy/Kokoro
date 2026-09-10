@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c 已验收；P3 设计门已放行，P3 实现及 P4–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a 已验收；P3b 已放行，P4–P5 待推进。用户已批准总体方案并授权推进（2026-09-07）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -40,7 +40,7 @@
 | P0-R / P0 | 独立检查三份文档与计划的一致性、可执行性 | contract-review / gpt-5.6-sol / 只读 | P0-D 文档与当前 contract/schema | P0-D 完成后 | 已通过（三项整改复审） |
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
-| P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 后续授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | 设计门审计已放行；实现待设计通过 |
+| P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a 已验收；P3b 已放行 |
 | P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 后续授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 待派工 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
@@ -424,8 +424,8 @@ P3-D 使用三个并行只读角色审计同一 clean baseline：capability_owne
 | ID    | 目标/完成条件                                                                                                                                  | Owner/角色/模型/权限                                             | 文件集与排除                                                                                                                                                                                                                                     | 依赖、RED与交付                                                                                                                          |
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | P3-D  | 三审计+Root收敛TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR/CURRENT/SECURITY/RESOURCE_NAMING、Root Manus对齐页和本任务板，独立复审通过                                           | Root写文档；contract_review+database_review只读                  | 仅上述现有文档；不改proto/schema/src/generated                                                                                                                                                                                                   | 已验收；child commit `aa56cbf4623cead8810489bc2fdaabff04867ec3`，SPEC/DATA/EXECUTABLE均PASS，现放行P3a                                                        |
-| P3a-I | 原生McpModule的provider/connector/consent；connector mutation additive proof、binding/digest/typed errors；current auth schema/事务/撤销闭环   | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{provider,connector,authorization,legacy}`、全部MCP shared model/repository/token/transaction clock、对应legacy删除、`src/http/projection.controller.ts`窄reader接线、main/Runtime/App/RPC/readiness registry与Skills窄client provider/token必要接线、`owner-adapters.provider.ts`/wide token删除、connector proto/generated/provenance、Prisma MCP字段/generated/installer/drift、facades/tests/docs/config/format清单；不得改P3b业务语义、P4/P5/其他仓 | 先4 mutation+3 read exact binding fixture、owner越权/digest、no-consent稳定identity/P2002全事务重试/零外调、固定DB clock allowlist、policy parser/readiness/surface DI、HTTP projection回归、Skills/MCP client单实例+登记完成后readiness+partial-startup/逆序close、自然expiry/P2034跨expiry、complete-vs-revoke、并发complete相容收敛与漂移不cleanup current、handle不可换、provider成功后四故障/commit未知/同account并发、historical pointer、单handler真实PG RED；冻结后spec再quality双审、Root完整门禁  |
-| P3b-I | 迁server/connection/declaration/tool authorization并物理归位HTTP；admin proof/network预算/trusted scope/current replay/audit；删除全部legacy aggregate | P3a验收后续派同一唯一writer                                      | `src/modules/mcp/{server,connection,authorization}`、已改窄reader的MCP HTTP controller物理迁移、剩余RPC/adapter/repository、server/connection proto/generated、connection revoke schema、facades/tests/docs/config/format清单与`legacy/mcp-remainder`删除；不得改Agent invoke/public event publisher/P5消费者        | 先3 mutation+7 read exact binding fixture、admin/SSRF DNS-rebinding/transport、3s/10s/100页/32连接/2k项/4并发与取消、policy碰撞/缺rule/digest漂移、跨run/session idempotency、current replay从audit outbox取原始snapshot+expiry/outbox-receipt rollback RED；双审+Root fresh schema/full gates后提交 |
+| P3a-I | 原生McpModule的provider/connector/consent；connector mutation additive proof、binding/digest/typed errors；current auth schema/事务/撤销闭环   | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{provider,connector,authorization,legacy}`、全部MCP shared model/repository/token/transaction clock、对应legacy删除、`src/http/projection.controller.ts`窄reader接线、main/Runtime/App/RPC/readiness registry与Skills窄client provider/token必要接线、`owner-adapters.provider.ts`/wide token删除、connector proto/generated/provenance、Prisma MCP字段/generated/installer/drift、facades/tests/docs/config/format清单；不得改P3b业务语义、P4/P5/其他仓 | 已验收；child commit `4c363e24e1ba0e42a8db2a2a46016c65304282c8`；SPEC/QUALITY PASS；Root fresh schema/full real gates PASS |
+| P3b-I | 迁server/connection/declaration/tool authorization并物理归位HTTP；admin proof/network预算/trusted scope/current replay/audit；删除全部legacy aggregate | capability_owner_p1b / gpt-5.6-sol / 子仓唯一writer；Root独占Git | `src/modules/mcp/{server,connection,authorization}`、已改窄reader的MCP HTTP controller物理迁移、剩余RPC/adapter/repository、server/connection proto/generated、connection revoke schema、facades/tests/docs/config/format清单与`legacy/mcp-remainder`删除；不得改Agent invoke/public event publisher/P5消费者        | 已放行；先3 mutation+7 read exact binding fixture、admin/SSRF DNS-rebinding/transport、3s/10s/100页/32连接/2k项/4并发与取消、policy碰撞/缺rule/digest漂移、跨run/session idempotency、current replay从audit outbox取原始snapshot+expiry/outbox-receipt rollback RED；双审+Root fresh schema/full gates后提交 |
 | P3-R  | 每片先规范审查、再数据/代码质量审查，所有blocking/important回原writerRED→GREEN                                                                 | contract_review + database_review / 只读                         | 冻结diff/commit与tests；不改文件/Git/服务/共享数据                                                                                                                                                                                               | 两审PASS且Root复验后才验收；P3b后确认legacy删除与单一DI实例                                                                              |
 
 ### P3-D 验收证据（2026-09-09）
@@ -433,3 +433,30 @@ P3-D 使用三个并行只读角色审计同一 clean baseline：capability_owne
 设计冻结基线为child HEAD `e63b56518b51dbf1ad1c172f709b19231b4bfaa3`、七文档diff `0784865dbb50963d2455d290e48652ed2237cca89edfbc882d030f1a9f105e80`及Root HEAD `baba9cea59023a9afaf4a8213f456ff27db132fe`、Manus对齐页+任务板diff `c280350c99978d9d8ce229955c384d2ecf3b9c05d41da56187793175197647be`。`contract_review`、`database_review`、`capability_owner_p1b`分别给出SPEC PASS、DATA PASS、EXECUTABLE PASS，均为0 blocking/important/minor并在审前审后复核hash未漂移。Child按精确七路径提交`aa56cbf4623cead8810489bc2fdaabff04867ec3`；没有改proto/schema/src/generated。
 
 Root在Node 24.20.0、pnpm 11.25.0实跑`format:check`、lint、typecheck、contract check、Prisma validate、build均exit 0；普通`pnpm test`为47 files passed/6 skipped、244 tests passed/31 skipped，skip是未设置真实integration环境，不冒充P3实现或真实PostgreSQL故障注入。日志为`/tmp/kokoro-p3d-r3-doc-gates-20260909.log`与`/tmp/kokoro-p3d-r3-static-gates-20260909.log`。P3a现为唯一授权实现片；P3b继续等待P3a验收，P4 lease/fencing/reaper、provider cleanup重投、publisher/dead-letter/retention和P5 consumers/service/schema namespace cutover继续串行等待。
+
+### P3a 最终交接与验收（2026-09-10）
+
+- 任务/owner：P3a / `kokoro-capability` / capability_owner_p1b（gpt-5.6-sol）唯一实现 writer；Root 独占 Git index、提交与集成复验。设计基线 `aa56cbf4623cead8810489bc2fdaabff04867ec3`，最终实现提交 `4c363e24e1ba0e42a8db2a2a46016c65304282c8`（`feat(capability): migrate MCP connector control plane`）。
+- 结果：原生 `McpModule` 承接 provider/connector/consent 七个 RPC 方法、Prisma repository 与 Serializable transaction；删除 wide `CapabilityServices/Context`、`OWNER_ADAPTERS/createRuntimeAdapters`、旧 connector/provider service 及 state forwarding store。未迁移的十方法只保留一个 feature-owned `legacy/mcp-remainder`，不冒充 P3b 完成。
+- 标识：Skill 继续区分 `series_id`、不可变 `skill_id` revision、task `source_ref` 与安装生命周期 `installation_id`；MCP 继续区分 provider/connector/server/connection/grant。No-consent connector 使用五字段 canonical `{tenantId,ownerKind,ownerId,providerKey,connectorType}` 派生 `mcp-nc:<digest>`，authorization 再从 connector identity 派生 `mcp-nca:<digest>`；不用 provider key、URL、selector 或 installation ID 替代 task resource ID。
+- 安全/一致性：四个 mutation 的 proof/operation/binding/digest 为 additive wire；Begin/Complete receipt replay 重验当前 owner/connector/authorization 与 cached-result binding；provider 成功后的本地故障通过 transaction 内 quarantine 处理，cleanup 仅在证明同 tenant/provider 无 active current 共享 stored handle 后写入，外部 revoke 在 commit 后执行。该查询最终使用固定 100 行 keyset 批次、bounded `IN` 与 Map/Set 线性关联，异常 fail closed。
+- 独立审查：contract_review 最终 `SPEC PASS`，database_review 最终 `QUALITY PASS`，均无 blocking/important/minor；审查绑定 HEAD `aa56cbf...`、tracked diff `8541e9ae842c0973404f1a4733a6c8dfba1d5fc58a3a702ec057218eb9878845`、untracked aggregate `7f3dad10711d715c5ede9a84ea667bb3265dd7e177e03ac1f71c50eacffcb851`，审前审后未漂移。
+
+Root 在最终提交 `4c363e24e1ba0e42a8db2a2a46016c65304282c8`、Node 24.13.0、pnpm 11.25.0、PostgreSQL 18.4 的独立 fresh database 和既有 Redis 的空 DB 14 上重跑：
+
+| 命令 | 实际结果 |
+|---|---|
+| `pnpm install --frozen-lockfile`、`pnpm db:apply-schema` | exit 0；仅创建/删除本任务 fresh database |
+| `pnpm format:check`、`pnpm lint`、`pnpm typecheck` | 全部 exit 0 |
+| `pnpm prisma:validate`、`pnpm prisma:generate`、`pnpm schema:check` | 全部 exit 0；public 物理外键 0 |
+| `pnpm contract:check` + 相对 `aa56cbf...` 的 `buf breaking` | exit 0；contract digest `642e1c29248fadc8407dd4098b19db1ce03c41d9b97577261fa793c7c1ce5f16` |
+| `pnpm build` | exit 0 |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test` | 57 files / 352 tests passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm test:integration` | 14 files / 106 tests passed，0 failed、0 skipped |
+| `REQUIRE_REAL_INTEGRATION=1 pnpm smoke` | 2 files / 14 tests passed，0 failed、0 skipped |
+| `pnpm smoke:production` | pass；真实 PostgreSQL/Redis + 本地 Storage/IAM/Secret/MCP provider 协议 stub |
+| `git diff --check` / clean child worktree | 通过 |
+
+提交后完整日志为 `/tmp/kokoro-p3a-root-postcommit-4c363e2-20260910.log`，真实 smoke 补充日志为 `/tmp/kokoro-p3a-root-real-smoke-20260910.log`；日志是本机证据，不纳入仓库。Docker 镜像与真实外部 owner sandbox 联调未验，不冒充生产级全链路通过。P4 的 processing lease/fencing/reaper、provider cleanup 重投、publisher/dead-letter/retention 和 P5 cutover 继续待后续分片。
+
+P3a 已验收，现仅放行 P3b-I：续派 capability_owner_p1b 为子仓唯一 writer，严格使用上表已批准文件集、RED 矩阵和删除面；Root 继续独占 Git，冻结后仍需 SPEC/QUALITY 双审与 Root fresh full gates 才能提交。P4/P5 尚未授权写入。
