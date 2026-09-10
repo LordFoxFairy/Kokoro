@@ -905,3 +905,32 @@ Storage设计提交 `17c2161dafac606878351dfa2d243be511f67fac`（docs(storage): 
 用户随后明确提醒“自己确认在干什么，避免每次跑偏”。Root接受该执行约束：**B-I尚未派发**，不把已写的大范围部署设计自动当用户优先级；先对照NestJS+Prisma与Storage业务可靠性重新检验必要范围，再决定实现任务卡。不得仅因完整验收目标把scanner/CI/供应链全部绑定成前台长链；依赖真实外部环境的资格明确后置，源代码当前缺口优先。不撤销已验证B0事实，不为文档已提交而强推后继范围。
 
 本次即时源码核对：src/main.ts确实NestFactory单入口，src/database/prisma.service.ts继承generated PrismaClient；排除generated后src检索未发现手写SQL CRUD或new Pool/Client业务路径，Storage工作树clean，其他owner未改。此为范围/入口检查，不代替行为测试；最新行为全门仍绑定94733167的524/compiled6。下一步应列出与Storage用户用例直接相关的剩余缺口、必要删除项与验收条件；先判断B整片是否过大并给最小可交付范围，再派单一writer，不继续增加测试资源框架。目标active；外部S3/ClamAV/OCI/SLO、H0均未声称完成。
+
+### ST-FUNCTION-SCOPE-R（2026-09-10，只读功能设计核对）
+
+用户要求参考其他AI产品形态，完善租户/租户内业务隔离及产物类型，并遵循TS后端规范；不推进容器/CI/发布工程。基线Storage17c2161dafac606878351dfa2d243be511f67fac，clean。本轮只研究，不授权Schema/Proto/业务代码修改。
+
+| 角色 | 任务与范围 | 交付/验证 |
+|---|---|---|
+| Root | 核验AI产品官方附件/项目/产物形态；读取TS/SQL手册与Storage当前schema/contract；裁决最小功能模型与阶段范围 | 区分公开产品事实、现有代码事实与拟议设计，不将竞品公开功能推测为其内部架构；无运维扩张 |
+| storage_contract_review（只读） | 固定Storage HEAD的tenant/owner/subject/shared、上传purpose/产物状态、查询/下载权限和实际BFF/Agent/Platform调用契约；只读必要IAM契约确认是否已有可复用资源scope机制，不改任何owner | 精确路径/行号说明已具备和欠缺：同租户跨项目/会话、actor与资源owner、跨服务去重/幂等、产物用途与MIME区别；给2-3个最小设计取舍，无新框架/完整ACL/运维提案。禁止写/Git/测试/安装/启动资源 |
+
+复用Root AGENTS、docs/CODEBASE_MAP.md、TS/SQL手册与Storage三设计；主控并行官方来源研究，reviewer只读代码，最后由Root汇总建议，不在未对齐owner/API/Schema前实施。
+
+#### ST-FUNCTION-SCOPE-R 研究结论（建议，未实施）
+
+Root核验官方产品说明：ChatGPT Projects将文件与项目成员边界关联；Library文件可独立于聊天保留并复用；Claude组织产物共享还受项目访问限制，且产品存在共享产物连带原对话附件的行为；Gemini Files有临时48小时生命周期；OpenAI Files将purpose单独建模。这些只证明产品可观察语义，不推测其私有Schema，也不照搬它们的额度/期限/连带分享规则。
+
+2026-09-10来源：https://help.openai.com/en/articles/10169521-projects-in-chatgpt 、https://help.openai.com/en/articles/20001052-library-for-chatgpt 、https://support.claude.com/en/articles/9547008-publish-and-share-artifacts 、https://ai.google.dev/gemini-api/docs/files 、https://developers.openai.com/api/reference/resources/files 。签名URL有效窗口语义核验：https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html 。
+
+代码事实（Root与storage_contract_review交叉核对）：Storage17c2161 clean，owner直接来自受信subject，私有路径按tenant/owner限制；同tenant shared读取分支存在，但生产Complete固定private且无shared写接口，不能把未实现功能误报为调用者可触发的越权漏洞。当前没有业务scope；purpose仅capability_package/asset/artifact，MIME不是用途或来源。BFF26eec01当前项目resources POST返回503；Agent e24b4aa当前DeliveryRequest有run/namespace/identity/title/path/note/MIME，但查到的DeliveryClient是Protocol而非Storage实现。IAM834fdc9的action scope与审计resource字段不是现成项目/会话授权票据。Agent工作树另有他人改动，只读观察不作为其固定提交验收，不改其他owner。
+
+方案比较：纯tenant+user文件柜最小但不提供Storage业务域隔离；完整ACL/目录继承/策略引擎超出Storage；推荐在既有逻辑资源上增加最小opaque业务scope，由业务owner依据IAM身份/权限派生并经受信调用边界传递，Storage验证其与资源和操作匹配。scope定位字段本身不代表权限，仍需对齐实际委托契约，不能宣称IAM已有实现。首批只收实际用例需要的个人/项目及确有独立授权的会话；run记录来源，不默认成为权限域。owner_service是业务归属命名空间，不等于调用service，也不自动授予访问。
+
+继续保留Upload/Blob/Asset/Artifact，不另造平行File体系。actor、资源归属、来源run分开；租户+scope贯穿Get/List/download/修改/引用，cursor/幂等命名空间与去重决策一起明确。首期不扩跨scope去重，跨业务复用须源读取与目标写入同时获准并建立独立逻辑资产；不得用hash/key/同tenant/shared暗开权限。业务关联归BFF/Agent，Storage不复制Project/Conversation/Run表；删除远端关联不自动等于删除物理Blob。
+
+类型分用途、内容格式、生成来源；确实影响校验/查询/展示的有限artifact kind可属于现Artifact，报告/图片/代码不各建模块或表。可执行HTML/SVG等内容交Web安全预览，Storage不执行；来源附件不因共享结果而自动公开。临时与持久文件、逻辑删除与物理回收、重试与不可变最终内容要显式约定；签名URL撤权存在有效期窗口，不假设会员移除可立即吊销已发URL。无RAG/OCR/编辑器/模型调度/运维平台扩张。
+
+下一功能方向建议：先同租户项目scope的上传→确认→按授权查询/下载，并验证同用户跨项目拒绝、同项目授权协作者、未授权服务伪造scope拒绝；再闭合Agent产物交付。涉及owner机器契约和消费者变更，先在Storage TECH/API/DATA对齐后按owner先发布、消费者后接线串行推进；本研究不授权改其他正在推进的仓。删除/保留/跨scope显式复用随后按真实用例切片，不一次堆全部功能。
+
+TS按当前手册§1/4–6/8.4：Nest feature Module/Controller/Service、Prisma唯一schema和generated Client；数据访问简单则直接Prisma，复杂事务才具名Store；schema/type/编排职责分开但不机械七件套；RPC/HTTP各一份机器事实源，生成客户端不手改；外部snake_case/内部camelCase、严格类型与运行时授权校验、短事务不包网络。用隔离/委托/状态/幂等反例证明功能，不拿文件数或测试数替代质量。本轮仅研究和任务记录，未执行新行为测试、未改Storage源码/Schema/Proto，未宣称新功能闭环。
