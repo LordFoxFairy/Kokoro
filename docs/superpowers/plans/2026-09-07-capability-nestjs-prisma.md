@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；当前进入 P4b MCP authorization operation-specific recovery 设计与实施准备，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审并授权唯一writer，当前进入 P4b-I RED→GREEN 实施，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | 仅 P4-D 设计门已放行；实现未授权 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b 实施计划双审通过并授权，实现待验收 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -537,7 +537,7 @@ Root 结合已批准的 NestJS + Prisma 路线裁决采用 **Platform 内置、D
 | --- | --- | --- | --- | --- |
 | P4-D-DOC | capability_owner_p1b / child 唯一 writer；Root 独占 Git | 仅既有 `docs/{TECHNICAL_DESIGN,API_CONTRACT,DATA_MODEL,RELIABILITY,RUNBOOK,SECURITY,CURRENT}.md`；不得改 proto/schema/generated/src/test | 三设计面一致，清除旧事实，完整状态机/事务/失败恢复/typed ID/retention/worker 验收矩阵；冻结 diff 双审、Root 文档门 | 已验收；child `720acb999f6759a4fd2dca579c7aebdaaeb2d1c5` |
 | P4a-I | capability_owner_p1b / child 唯一 writer；Root 独占 Git | receipt schema/repository/config/typed errors；共享 Prisma DB clock；Skills catalog/installation transaction+RPC；MCP transaction fence；singleton admission、atomic installer、generated/check/tests/docs | 六个 Skills mutation 原子 success；local-only takeover、双 owner/同 owner ABA/旧 epoch/commit unknown/fresh schema；cross-replica 0 zero-winner；无网络持slot | 已验收；最终 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` |
-| P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 未授权 |
+| P4b-I | P4a 验收后续派 | MCP authorization operation-specific recovery stage、provider port/repository、tests/docs | Begin/Complete 稳定 identity、provider call 前后崩溃、unknown outcome、late result/expiry/revoke race | 实施设计已起草，双审前未授权 |
 | P4c-I | P4b 验收后续派 | MCP feature-owned credential retirement/cleanup worker、Runtime lifecycle、tests/docs | new-binding retirement fence、shared handle/tenant/provider隔离、重复 revoke、DLQ、drain | 未授权 |
 | P4d-I | P4-D consumer/broker contract 与真实 destination 确定后 | outbox delivery metadata/repository、真实 publisher、event contract、worker/tests/docs | 双 worker、ACK lost、consumer dedupe、最终 contract 的 partition key，以及已裁决的 strict-predecessor 或 gap-tolerant fixture、redrive identity | 设计阻塞；不造 fake publisher |
 | P4e1-I | P4a 验收后 | receipt result compaction、expired tombstone、worker supervisor/metrics、tests/docs | 每条冻结窗口（配置>=30日）的 T-ε/T/T+ε、不可重执行、keyset/batch、readiness/fatal health、进程重启 | 未授权 |
@@ -905,3 +905,84 @@ Root 在同一冻结对象上以 Node 24.20.0/pnpm 11.25.0 完成 frozen install
 提交后 Root 在另一 fresh PostgreSQL `kokoro_capability_i12_post_1789112536_31670` 与 Redis DB14 上重复完整静态、生成、contract/Buf、build、unit381、contract21、architecture47、full655、integration191、smoke15、production smoke、schema、三次独立 stress 与 admission9/9，全部 exit 0；数据库删除前连接0、Redis DB14为0，child 工作树 clean，日志 `/tmp/kokoro-admission-i12-root-postcommit.log`。package/lock/schema/generated/Proto/OpenAPI均无变化。
 
 P4a 至此验收完成。Skills identity 继续固定 `series_id`、不可变 `skill_id`、`source_ref=skill:<skill_id>` 与安装生命周期 `installation_id`；MCP identity 继续固定 `connector_id/server_id/connection_id/authorization_id/invocation_grant`，其中 grant 值为 `mcp-grant:<uuid-v4>`，不存在 `grant_id` 或 alias；provider key、URL、selector、tool name 均不是资源 identity，`command_id` 仍只作幂等身份。Root 全局门为 standard exit1/220、topology exit0、pytest 82 passed/2 failed；两项失败仍是未交接 SQL/TypeScript 工程手册的示例数量与固定标题断言，日志 `/tmp/kokoro-i12-root-{standard,topology,tests}-20260911.log`，本卡未修改或放宽。Docker 与真实外部 owner/provider sandbox仍未执行；下一片先收敛 P4b 的 operation-specific provider recovery 任务卡与双审，再授权唯一 writer。
+
+### P4b MCP Authorization Recovery 实施设计（已双审并授权）
+
+P4a 验收提交 `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` 是本片唯一 child 基线。三路只读审计确认当前 machine wire 和 Prisma schema 已预留足够字段，但生产实现仍有四个缺口：provider port 没有 authoritative inspection；receipt claim 与 Begin pending/Complete handle binding 分两次提交；`providerMayHaveStarted` 只是进程内布尔值；receipt mapper/CAS 尚不能取得、等待和终结 `external_unknown` recovery。P4b 先在本任务板闭环设计，不把审计报告当实现证据。
+
+#### P4b 放置表
+
+| 项 | 结论 |
+| --- | --- |
+| Owner | 当前 `kokoro-capability`、目标 `kokoro-platform/modules/mcp/authorization`；MCP authorization 与其 command recovery 由本仓唯一写入。Provider owner只返回 authoritative operation outcome；IAM/SecretStore不转移所有权，Scheduler/Agent不保存本仓 recovery fact。 |
+| 当前事实 | 17个MCP RPC和Begin/Complete wire已稳定；`command_receipt`已有status/lease/epoch/due/failure/recovery三元组，`mcp_connector_authorization`已有requested scopes、stored handle、account与状态。当前claim不写recovery，Begin authorization ID在后续事务生成，Complete handle另事务绑定，provider只有begin/complete/revoke且HTTP错误不能证明未执行。 |
+| 目标职责 | 同一精确RPC重试在重新完成attestation/IAM/tenant/resource/digest检查后，以caller-driven方式取得recovery lease；原子提交initial receipt claim与Begin pending或Complete verified-handle binding及recovery pointer；持久化provider call intended/response observed；用原authorization identity authoritative inspect并只重试本地finalization。进程重启由新Nest app/Prisma client对同一DB和provider事实重放同command证明，不新增后台scan loop。 |
+| 目录方案 | 采用既有`src/modules/mcp/authorization/`新增两个单一职责文件：`mcp-authorization-recovery-state.ts`是多消费方共享的纯typed phase/pointer/codec事实源，`mcp-authorization-recovery.ts`只负责caller-driven orchestration。继续使用唯一`PrismaCommandReceiptRepository`执行receipt CAS，并从`mcp-rpc.runtime.ts`移出旧外部命令编排。相比`src/application/recovery`通用框架，此方案不把MCP provider语义污染公共层；相比新worker/job模块，不提前建设P4e1 supervisor。现有769行authorization service只保留本地业务规则，新增恢复逻辑不得继续堆入该文件。 |
+| 粒度 | `mcp-rpc.runtime.ts`只负责Connect请求边界/精确重放入口，`mcp-transaction.ts`只负责admitted Prisma transaction，纯state/codec文件只负责持久状态解析与不变式，orchestration文件只负责phase/provider outcome编排，HTTP adapter只负责bounded provider协议。新增测试使用独立P4b文件，不继续膨胀现有2245/1154/1641行测试。 |
+| 依赖 | transport → authorization recovery orchestration → typed provider port + MCP transaction port → Prisma receipt/MCP repositories。Repository/transaction只可依赖纯recovery state/codec，不得import orchestration service；provider outcome由`mcp.ports.ts`维护，不反向依赖编排。禁止provider/IAM/SecretStore HTTP进入Prisma transaction、P2034 callback或持有transaction-admission slot；禁止Prisma/Connect类型进入纯state codec。 |
+| 数据/API | 优先复用当前canonical Prisma schema与两条stale/due索引；`recovery_kind=mcp_connector_authorization`，`recovery_ref=<authorization_id>`，phase使用严格`v1.begin.*`/`v1.complete.*` codec。公开Proto/OpenAPI/17方法/field号/digest零变化。Provider operation identity固定为原`authorization_id`及既有snapshot；Complete只用数据库已绑定且本次重新经SecretStore验证的exact handle。 |
+| 删除项 | 验收时删除独立claim→bind崩溃窗、`providerMayHaveStarted`内存裁决、可能发送后mark retryable、generic external reclaim、optional `transact/bind/finalize/reject` production fallback与重复provider identity生成路径；不删除P4c所需cleanup intent，不把best-effort revoke写成durable完成。 |
+| 验证 | unit/contract/architecture + fresh真实PostgreSQL双pool/CAS/回滚/旧epoch + parent持久provider fixture和新app/process重启 + cancellation/blackhole/drain；再跑P4a完整静态、schema、integration、smoke、production smoke、三轮admission stress，SPEC/QUALITY双审和Root pre/post-commit。 |
+
+#### P4b 内部 provider 与 recovery 合同
+
+1. `McpConnectorAuthorizationPort` 增加operation-specific、无副作用的 `inspectBegin` 与 `inspectComplete`（或等价的严格discriminated API）。输入只含 `provider_key`、`connector_id`、原 `authorization_id`、精确requested-scope snapshot；Complete另含数据库stored exact handle。两方法结果只允许 `not_sent | pending | succeeded(normalized result) | rejected | unknown`。`not_sent`必须是provider authoritative no-effect证据，最终一致性的暂时404不是证据；transport/schema/unreadable/unsupported一律归`unknown`并保持fail closed。
+2. `succeeded` 对Begin返回完整且规范化的provider display、consent scopes、authorization URL；对Complete返回approved scopes与external account。`rejected`只生成现有净化terminal typed结果；`pending/unknown`返回Connect `UNAVAILABLE`。调用者不能提交phase、provider result或替换identity。Provider owner不支持该inspect合同的部署只能保持`UNAVAILABLE/external_unknown`，不得以本地fixture冒充生产可恢复。
+3. provider begin/complete是以同一authorization ID与相同snapshot执行的at-least-once operation，不宣称exactly-once。只有authoritative `not_sent`才可用同一identity安全重发一次；每个RPC attempt最多一次inspect和一次经no-effect证明的provider调用，继续pending/unknown时写等待due，不在进程内无界轮询。
+4. Skills identity保持`series_id`、不可变`skill_id`、`source_ref=skill:<skill_id>`与安装生命周期`installation_id`。MCP保持`connector_id/server_id/connection_id/authorization_id/invocation_grant`，grant值为`mcp-grant:<uuid-v4>`；`command_id`只作幂等identity。不存在`grant_id`/alias，provider key、display、URL、selector、tool name均不替代resource ID。该设计只采用Manus `skill.list`/`connector.list`→opaque typed reference原则，不复制其wire。
+
+#### P4b 持久状态与事务边界
+
+```text
+missing
+  -- one admitted Serializable transaction:
+     claim receipt + create/reuse Begin pending OR bind verified Complete handle
+     + recovery pointer/phase + slot release --> processing/prepared
+
+processing/prepared
+  -- fenced short transaction --> processing/provider_call_intended
+  -- provider I/O, no DB transaction/slot held
+  -- fenced short transaction --> processing/provider_response_observed
+  -- final admitted Serializable transaction --> completed | terminal failed
+  -- may-have-sent/unknown --> external_unknown/waiting
+
+expired processing or due external_unknown/waiting
+or lease-expired external_unknown/held
+  -- exact caller retry + fresh auth + CAS old epoch to N+1 --> external_unknown/held
+  -- authoritative inspect --> succeeded/rejected/not_sent/pending/unknown
+  -- local finalize/terminal | same-ID safe invoke | waiting with persisted due
+```
+
+- 不持久化standalone `claimed`：initial claim、本地pending/handle事实和完整recovery三元组在同一transaction提交；该transaction失败则三者全无，commit ACK unknown只做fresh readback。Begin授权ID在transaction retry外生成候选，但transaction内若复用现有合法pending则recovery ref必须使用该authoritative ID；任何首次提交最终只有一个ID。
+- 唯一持久`recovery_kind`精确冻结为`mcp_connector_authorization`；版本进入phase而不另造kind alias。Phase固定为`v1.begin.pending_committed`/`v1.complete.handle_bound`、`*.provider_call_intended`、`*.provider_response_observed`、`*.local_finalizing`；非法operation/phase/ref组合在repository边界fail closed。response-observed只证明进程见过响应，不是可跨重启信任的result；重启仍inspect。
+- recovery acquisition使用DB clock。入口同时包含expired `processing`、due `external_unknown/waiting`，以及`lease_expires_at <= DB now`的stale `external_unknown/held`；三者都比较tenant+command+digest+operation+status+完整pointer+旧owner/epoch/expiry/due，CAS epoch `+1`并增加独立attempt。旧holder在inspection/provider/finalize的任意迟到结果都不能写入。`external_unknown` held/waiting映射显式区分；等待只清owner/expiry、写DB-clock due并保留epoch/pointer。
+- 每个RPC只做一次reconcile acquisition、最多一次inspection，并且只有authoritative `not_sent`才再做一次同identity provider invoke；不在一次请求内循环。每次成功acquisition先把`reconcileAttempt`+1，起点为1；延迟精确为`delay = reconcileAttempt >= 7 ? 60_000 : min(60_000, 1_000 * 2^(reconcileAttempt - 1))`，先以整数分支饱和再计算，jitter在`[delay/2, delay]`。attempt只在超过32-bit signed上限时拒绝新acquisition；长期unknown在此前始终保持60秒cap，不计算可溢出指数。due使用DB clock，jitter注入点只用于确定性测试，不进入Nest/wire或环境配置。
+- 每个phase/等待/终态写都比较当前owner+epoch+完整pointer。最终transaction重验connector/pending-or-active pointer、authorization、requested scopes、stored handle、expiry/revoke/account；business、0/1 outbox、codec、receipt terminal和slot release同事务。`completed`与terminal `failed`均必须原子清空recovery kind/ref/phase、owner/expiry/due，terminal mapper明确验证这一不变式；随后的fresh replay只返回持久terminal result/error，不再inspect/invoke provider。旧epoch晚到的response不能写business/outbox/receipt或调用revoke。
+- P2034只重试完整本地transaction并重读DB clock/current facts/fence；provider调用不在retry callback。P2025必须fresh readback分类。先复用现有stale/due索引，不改schema/generated/installer；真实query plan证明不足时停止并由Root另授权schema片。
+- 本片明确使用**同一精确RPC的caller-driven reconcile**，没有constructor隐形循环、scan worker或新进程。authorization recovery orchestration是provider inspection/invoke的唯一owner：它通过`HttpDrainService`的新增thunk-based settlement tracking API在启动原始provider Promise之前登记，并仅在该原始Promise真实settlement后释放；`awaitMcpRequest`因caller cancel/deadline提前返回不得提前释放这个跟踪。`createRuntimeClose`依旧先begin draining，再等`HttpDrainService.waitForIdle()`，因此必须等跟踪集合中的provider原始Promise结束后才关闭Nest/Prisma/Redis；全局shutdown deadline超时才走现有force-close。该装配只允许修改`src/app.module.ts`、`src/runtime.module.ts`、`src/http/http-drain.service.ts`和`src/modules/mcp/mcp.module.ts`，不通过持有transaction-admission slot或RPC interceptor lease来偷换跟踪。P4e1才建设通用receipt supervisor/scan/metrics。没有client重试时unknown durable fact保留，不盲目重发。
+- Begin/Complete入口拆分fresh与recovery admission：两者都必须先通过fresh attestation/IAM、tenant、owner visibility、exact operation/request binding和digest；只有fresh path在initial atomic transaction要求pending/active生命周期前置条件。已revoke/expired/pointer变化的recovery仍必须获准读取原recovery fact并做authoritative inspect，随后在fenced finalization中fail closed/quarantine；不得因旧pre-receipt current-state校验过早退出而永久阻塞对账。
+
+#### P4b RED → GREEN 执行卡
+
+每卡先冻结并运行因目标行为缺失而失败的RED，再写最小GREEN；writer不操作Git。测试不得只用重建in-memory mock冒充跨崩溃恢复。
+
+- [ ] **P4b-1 Typed provider/recovery contract。**新增独立unit/contract/architecture RED，固定Begin/Complete inspection union、authorization ID/snapshot、strict normalization、unavailable/unsupported→unknown、no-effect与eventual-not-found区别；固定Proto digest、17 RPC、field号、operation/binding和`invocation_grant`零变化，源码/machine contract无`grant_id|grantId`。GREEN只改MCP port、HTTP adapter并新增纯`mcp-authorization-recovery-state.ts`；repository只可import该纯事实源，不得import orchestration，不得改public proto。
+- [ ] **P4b-2 Atomic prepare。**unit与真实PG RED覆盖receipt claim提交后、本地pending/handle前切断，预期旧实现留下无target receipt；GREEN把initial claim、Begin pending创建/复用或Complete verified handle binding、recovery pointer和slot release合入一个admitted Serializable transaction。SecretStore/IAM/catalog均在transaction前完成，transaction内重验current事实；commit ACK unknown用fresh receipt+authorization readback，不重新生成ID。
+- [ ] **P4b-3 Recovery CAS/state。**真实PG RED覆盖stale processing、due unknown与lease-expired `external_unknown/held` acquisition；固定A取得held后进程死亡、lease到期后B/C双pool单winner、旧A迟到不能写且最终可completed或waiting。同时覆盖waiting/held空值矩阵、same-owner ABA、epoch overflow、A持行锁跨expiry的commit/rollback两结局、unknown→held→waiting两轮所有旧epoch拒绝；带recovery pointer进入completed/terminal failed必须原子清空recovery全部字段，fresh replay只读terminal result/error且provider inspect/invoke为0。equal-jitter用确定随机源固定attempt 1、首次达60秒cap、长期cap与32-bit计数上限四类测试。GREEN只扩唯一receipt coordinator/repository、纯recovery state/codec与MCP transaction port；无第二lease/recovery表，无raw claim SQL。
+- [ ] **P4b-4 Begin recovery。**持久provider fixture + 新Nest app/Prisma client重启RED覆盖prepared后/intended前、intended后/call前、provider success后/observed前、observed后/final前、final ACK lost。GREEN用原authorization ID inspect；succeeded只完成本地receipt，rejected terminal，authoritative not_sent才同ID重发，pending/unknown等待；不得创建第二authorization或相信phase即结果。
+- [ ] **P4b-5 Complete recovery。**同样四崩溃点与重启RED，另覆盖stored handle不可换、scope/account/provider result drift、并发Complete compatible replay、expiry/revoke/active pointer两种顺序、late success quarantine与active-current cleanup guard。GREEN只重用原authorization ID和stored verified handle；provider success后只重试本地finalize，cleanup intent保留给P4c，不能把best-effort revoke当完成。
+- [ ] **P4b-6 Boundary/stress。**RED覆盖provider timeout、caller cancel、response blackhole、durable inspect不可读、late Promise、final commit unknown、provider I/O期间`pg_stat_activity`无idle transaction/slot无holder、双实例并发reconcile及三轮压力。额外固定RPC已因cancel/deadline返回但provider原始Promise仍挂起时，close不能提前drained；原始Promise迟到成功/失败都必须被消费，不产生unhandled rejection，shutdown deadline force路径有界。GREEN保证每RPC至多一次inspect+一次authoritative-not-sent后的invoke，有限backoff/due，并由orchestration用thunk-based API把每个原始provider Promise登记到`HttpDrainService`；不依赖会随cancel提前释放的RPC execution lease。
+- [ ] **P4b-7 删除面、当前文档与全门。**删除旧memory boolean、separate claim/bind和generic external retryable路径；更新README/INDEX/CURRENT/TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/RELIABILITY/RUNBOOK/SECURITY，仅把实际caller-driven recovery写为current并保留P4c–P5缺口。运行format/lint/typecheck、Prisma validate/generate、contract+Buf、schema/fresh install、build、unit/contract/architecture、fresh真实PG/Redis full/integration/smoke/production smoke、P4b restart/stress及三轮既有admission stress；Docker与真实provider sandbox若未运行如实列明。
+- [ ] **P4b-8 冻结双审与Root验收。**writer给HEAD、tracked/untracked/full hashes、绝对文件清单、每卡RED/GREEN和资源残留并停写；contract_review/database_review在同一hash上分别SPEC/QUALITY，任何blocking/important回原writer补最小RED。双PASS后Root精确路径提交，并在child commit上用另一fresh DB/Redis完整重跑。
+
+#### P4b 文件权限与禁止扩面
+
+唯一writer继续为 capability_owner_p1b。允许修改 `src/application/command-receipt*.ts`、唯一Prisma receipt repository、`src/modules/mcp/{mcp.ports,mcp-transaction,mcp-rpc.runtime,mcp-rpc.service,mcp.module}.ts`、`src/modules/mcp/authorization/`、`src/infrastructure/clients/mcp/http-authorization.ts`、为原始provider Promise跟踪所必需的`src/app.module.ts`、`src/runtime.module.ts`、`src/http/http-drain.service.ts`、必要test doubles/fixtures，以及对应独立unit/integration/contract/architecture测试和既有当前文档。authorization目录只允许新增`mcp-authorization-recovery-state.ts`与`mcp-authorization-recovery.ts`两个实现文件，在test既有目录可新增独立P4b测试/持久provider fixture。
+
+禁止修改 `prisma/schema.prisma`、generated、package/lock、public Proto/OpenAPI、Skills业务、outbox delivery、credential retirement表/worker、P4e1 supervisor、P5消费者和其他仓；若真实query plan或类型边界证明必须越界，先停写报告Root。P4b完成只代表本方fixture证明协议与恢复；真实provider owner对inspection/idempotency的sandbox证据仍单独列为上线门，不用本地fixture冒充。
+
+#### P4b 实施计划双审与授权（2026-09-11）
+
+Root 先冻结 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` clean 基线与 Root HEAD `08c4a0cf778742225ec3c47dfa8052fd4f201d7f`。首轮 QUALITY 以失效held接管、原始provider Promise drain、state/codec与编排职责、terminal recovery清理、equal-jitter精确计算为 3 Important/2 Minor 未放行；Root 全部回写本计划后重新冻结为 diff `7a7ea34b6d429c190e9326ef55aeaae8c69b8f142d5f27683c70c6464f442b80`、文件 `b7ad1bdb459dd6fdf0c105910677ff0054464472aea802bddccab4d9f572c40b`。contract_review `P4b PLAN R2 SPEC PASS` 与 database_review `P4b PLAN R2 QUALITY PASS` 均为 Blocking/Important/Minor 0，审前审后hash与child clean一致。
+
+双审只放行上述 P4b-1 至 P4b-8、两个单一职责新文件及明列装配/测试/文档路径，不表示代码已验收。唯一writer为 capability_owner_p1b，从 P4b-1 RED 开始逐卡推进；writer不操作Git，P4c–P5、schema/generated/package/lock/public wire/Skills和其他owner仍未授权。
