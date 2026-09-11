@@ -1166,3 +1166,13 @@ Root 精确提交 IAM 7 个文档为 `bf160be173ef473bebe8e4a93b74ec52c230f180`�
 | 验证 | 文档先做跨IAM `bf160be`、Agent当前Run/lease/HTTP contract一致性SPEC/QUALITY双审。实现后执行`uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、unit/contract/architecture、真实PostgreSQL lease race、HTTP JWKS acceptance、contract/provenance、wheel/sdist；覆盖连接/查询排队跨expiry、canonical request漂移、并发run不串identity、每次调用新nonce、pause/terminal/takeover/same-owner ABA、sign前后lease race、canonical JWS bytes、跨语言整数、alg/typ/kid/aud/iss/TTL+5秒skew边界、rotation overlap与混合多副本、malformed key、敏感日志和真实Agent→IAM sandbox。 |
 
 `AGENT-EXECUTION-PROOF-D / P0`文档writer只可修改Agent的`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、`docs/CURRENT.md`、`docs/ADR/README.md`并新建一个execution-proof ADR。禁止修改Agent source、database schema、Redis protocol、OpenAPI/provenance、package/lock/test，禁止修改IAM/Capability/Platform/BFF或Root其他文件。writer必须先核对`bf160be`而不复制其全文，明确当前态/目标态、JWKS route认证与多副本rotation、proof canonicalization/current-lease race及后续机器artifact路径；交付冻结hash后由独立SPEC/QUALITY审查，双审前不放行实现。
+
+#### AGENT-EXECUTION-PROOF-D 验收（2026-09-11）
+
+Agent 文档候选首轮双审得到 `0 Blocking / 2 Important / 0 Minor`：真实 Platform client 接线缺少 Platform owner artifact 前置门，proof integer profile 未限制 Python/JavaScript 可无损范围，且正常轮换没有显式切换 HTTP active descriptor。原 writer 在相同 7 文件范围内修正后，Root 重新冻结并运行 Prettier、`git diff --check` 与 `uv run kokoro-agent-contract-check`；SPEC 与 QUALITY 对同一 R2 对象及最终状态文本复核均为 Blocking/Important/Minor `0/0/0`。
+
+R2 固定 `lease_generation=1..9007199254740991`、`iat/exp=0..9007199254740991` 的 strict JSON integer 边界，拒绝 bool、float、`2^53` 及以上值且不做 coercion；固定 worker private key 与 HTTP public ring/descriptor 的进程隔离和五阶段多副本轮换；固定每次调用前使用 PostgreSQL statement 时刻核对 current lease，承认签后在途 race、60 秒 claim TTL 与 IAM 5 秒 verifier skew。Skills/MCP 的 typed opaque reference 继续由 Platform owner 管理，只进入其 canonical request binding，不成为 proof claim；Manus v2 仍只作为 list-first/reference-by-ID 设计参考。
+
+Root 精确提交 Agent 7 个文档为 `9cc24b2384b0aa66ca239ddefaa9009c0a60fac3`（`docs(agent): define execution proof owner contract`）。提交后 Agent 工作树 clean，Prettier、`git diff --check` 与 `uv run kokoro-agent-contract-check` 均 exit 0。该提交只验收设计门；proof schema/provenance、signer/key/JWKS、真实 PostgreSQL race、IAM verifier/OpenAPI/generated SDK、Platform compact-proof wire/consumer和三仓 sandbox均未实现。
+
+下一条串行链固定为：Agent machine artifact/signer/JWKS/run-scoped supplier独立验收 → IAM ADR/API/安全设计按 Agent artifact同步 safe-integer/profile与六段交付门，再实现NestJS + Prisma verifier/OpenAPI/generated SDK → Platform以NestJS + Prisma发布最终compact-proof wire/request-binding/generated helper → Agent真实Skills/MCP client逐call接线 → Platform删除旧手写wire并闭环receipt → Root sandbox。P4b-4继续阻塞，禁止临时wire、fallback或三仓并行发明同一契约。
