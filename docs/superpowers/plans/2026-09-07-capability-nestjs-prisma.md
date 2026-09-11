@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 已验收，P4b-4 待任务卡双审，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，P4b-3 recovery CAS/state 功能提交 `f9dc3a3` 已完成但架构粒度整改待验收，P4b-4 暂不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` 已验收；P4b-4待任务卡双审 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3 `f9dc3a3` 功能提交完成、架构粒度整改待验收；P4b-4暂不放行 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -1089,3 +1089,9 @@ R3冻结为child HEAD `4e26112848d11afd5d02d2b9d12553da35bf2016`、tracked `b18e
 R3 的 SPEC 与 QUALITY 双审均为Blocking/Important/Minor `0/0/0`，审前审后HEAD、tracked/untracked manifest及三份重点文件SHA一致。Root使用Node 24.20.0、pnpm 11.25.0、本机PostgreSQL 18.4与Redis 8.8.0，在fresh数据库`kokoro_p4b3_r3_root_pre_20260911_093218`和空DB15完成pre-commit：format/lint/typecheck、contract digest `6eb170d12bd046aa70b2a1b8aa775c6303e46ffc997cb4193f77fc230072d3b5`、Prisma validate/generate、schema、unit449、contract22、architecture51、integration237、full774、build、smoke15、production smoke、public FK=0与diff check均exit0。Root精确暂存8个获准文件，提交child `f9dc3a3d6e5f382cd1d609b4e604b2429991e67e`（`feat(capability): add MCP recovery CAS`）。
 
 提交后Root改用fresh数据库`kokoro_p4b3_r3_root_post_20260911_093648`与空DB14重复同一完整矩阵，仍为integration237/237、full774/774、smoke15/15且全部静态/contract/Prisma/schema/build/production smoke门通过；两个Root数据库均在0连接后删除并确认不存在，Redis最终0 key，日志为`/tmp/kokoro-p4b3-r3-root-{precommit-20260911_093218,postcommit-20260911_093648}.log`。首次pre-commit启动脚本因shell变量转义错误只运行到Prisma generate，Root立即中止并精确删除其创建的字面名数据库，源码冻结hash保持不变，该次不计验收。P4b-3只验收caller-driven recovery CAS/state，不包含provider recovery orchestration、Docker或真实IAM/provider/SecretStore sandbox；IAM版本化attestation contract、generated consumer与真实sandbox仍阻塞P4b整体验收和P5 cutover。
+
+#### P4b-3 架构状态校正与粒度整改门（2026-09-11）
+
+Root 在记录上述功能验收后补跑仓库级 `python3 scripts/verify-ten-repository-standard.py`，实际为 exit 1 / 223 项；其中 Capability 的真实新增阻断包含 `prisma-command-receipt.repository.ts` 1626 行与 `mcp-transaction.ts` 905 行均超过 800 行。该结果推翻“P4b-3 已完成架构验收”的表述，但不推翻 `f9dc3a3` 已通过的行为、事务、并发和契约证据。基线日志为 `/tmp/kokoro-p4b3-remediation-baseline-20260911.log`。Root topology 仍通过；Root pytest 为 82 passed / 2 failed，两项既有失败分别是工程手册示例数断言与 TypeScript 手册旧固定标题断言。
+
+P4b-3 当前状态因此校正为“功能提交完成、架构粒度整改待验收”。整改仅拆分 recovery persistence/CAS 与 recovery transaction delegation，保持 `f9dc3a3` 行为、Prisma schema/generated、17个RPC、provider/IAM/SecretStore/Nest装配、公开契约和全部 Skills/MCP typed identity 不变；`P4b-4` 在整改经双审、Root 完整 pre/post 矩阵及仓库标准门差异复核前不放行。IAM 对齐仍按本节既有跨仓门串行推进：IAM owner 先发布版本化机器契约，Capability 后续只消费固定版本 generated client，不在本整改内手写或复制 IAM wire。
