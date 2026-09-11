@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，P4b-3 recovery CAS/state R2 任务卡已双审放行并进入 RED→GREEN，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，P4b-3 recovery CAS/state 首轮候选进入审查整改，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3已放行实施 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3候选待整改复审 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -1060,3 +1060,10 @@ writer从clean child `4e26112848d11afd5d02d2b9d12553da35bf2016`新增unit RED 33
 冻结为HEAD `4e26112848d11afd5d02d2b9d12553da35bf2016`、tracked `f8d99feedeefc8c0a19bee7607ac194892009493a0dd3e798c41884bf51a08`、untracked names `3ee685a51c8e44e988a95d677cb49ae54fad960ec3bcd82e43bbc2b530990022`、untracked manifest `dfdc870b71bafc1c762585282cfabe8287c82997eea38c90174be5b2fb679eff`；新integration SHA `06fd3b4dff575179615486c60c4a28a74cd5934a9f4c9e3dfc57f7df6786528f`、新unit SHA `dfda796b9c3627bb00bc07aeadb8d5d7a4c2f63f9b5fddeada1ff797d3963594`。writer验证：unit 36 files/449、architecture 9/51、integration 21/227、full 73/764、smoke 2/15均0失败/0 skip；format/lint/typecheck/contract digest/Prisma/schema/build/production smoke/diff check全exit 0。fresh数据库删除并确认不存在，Redis DB11为0 key。
 
 审查必须裁决一个显式风险：当前`markRecoveryWaiting()`按`attempt_count-1`推导reconcile attempt，标准recovery acquisition先把初始1增至2，首次等待正确为attempt1；但该API也接受仍为`processing/held`且`attempt_count=1`的fresh provider-unknown路径，此时推导0并fail closed。P4b-3任务卡的phase/waiting写允许processing，而P4b总体状态机要求fresh provider may-have-sent能进入unknown waiting；不得靠P4b-4隐式先acquire未过期processing lease。SPEC/QUALITY需判断本片是否应增加显式fresh-unknown transition/明确attempt1语义，或缩窄现API并把独立fresh transition写入P4b-4卡。双审前候选不提交。
+
+首轮候选SPEC为Blocking/Important/Minor `0/1/0`，QUALITY为`0/2/0`，未放行。原writer只修以下两项并重新冻结：
+
+1. `markRecoveryWaiting`按持久状态选择backoff attempt：合法fresh `processing + attempt_count=1`使用backoff attempt1，但返回`reconcileAttempt=0`；已acquired的`external_unknown/held`继续使用`attempt_count-1`。两者都不增加attempt/epoch，清owner/expiry、保留exact pointer并以DB clock写due；`external_unknown/held`的reconcile attempt 0仍fail closed。新增真实PG RED覆盖fresh processing intended→waiting、500/1000ms两端、attempt仍1，并保留held attempt2→reconcile attempt1回归；不得先acquire未过期processing或改计数规避。
+2. 新增真实PostgreSQL P2034 rollback/retry证据：acquisition的首个transaction callback完成CAS后制造精确P2034使其整体回滚，第二attempt成功；断言相同recovery owner、至少两次DB clock/current-row读取、最终epoch与attempt各只`+1`。另对`runRecoveryWrite`选择`markRecoveryWaiting`制造同类P2034，断言失败attempt的due/phase/terminal写全部回滚，成功due来自第二attempt DB clock且attempt不变。不得手造错误跳过实际transaction callback，也不得加入provider编排。
+
+整改优先只改唯一Prisma receipt repository与新`mcp-recovery-cas-postgres.integration.test.ts`；若现有typed retry委托无法注入真实P2034，可在已授权`mcp-transaction.ts`内做不改变公开API的最小修正，但必须先报告。其他7文件保持冻结，IAM/provider/RPC/schema/generated/package/wire仍禁止。修复后以fresh PG重跑聚焦与完整门禁，重新冻结并对同一对象双审。
