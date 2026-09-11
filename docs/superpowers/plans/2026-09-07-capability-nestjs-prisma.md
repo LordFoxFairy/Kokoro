@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，P4b-3 recovery CAS/state 功能提交 `f9dc3a3` 已完成但架构粒度整改待验收，P4b-4 暂不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。下一个串行 P0 是 `IAM-ATTESTATION-CONTRACT`；P4b-4 在 IAM owner 契约设计门通过前不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3 `f9dc3a3` 功能提交完成、架构粒度整改待验收；P4b-4暂不放行 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` + `9f237f9` 已验收；`IAM-ATTESTATION-CONTRACT` 为下一个 P0；P4b-4暂不放行 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -1113,3 +1113,13 @@ P4b-3 当前状态因此校正为“功能提交完成、架构粒度整改待�
 任务 `P4b-3-G / P0`：基线为上述 Root/child commit；writer 只可修改原 `prisma-command-receipt.repository.ts`、原 `mcp-transaction.ts`、新增四个放置表文件、`test/architecture/mcp-p4b.test.ts`、`test/unit/mcp-recovery-cas.test.ts`、`test/integration/mcp-recovery-cas-postgres.integration.test.ts` 及确因 constructor/import 编译所需的既有 MCP transaction 测试。上述触及/新增 production 文件必须全部不超过800行。禁止修改 schema/generated/package/lock/contract/RPC/service/runtime/module/provider/IAM/SecretStore/其他仓与子仓文档；既存 `connector-authorization.service.ts` 粒度违规不在本片。若需要越界，先停写报告。交付状态依次为进行中、待审查、待集成验证、已验收；P4b-4 保持阻塞。
 
 IAM 后续独立切片 `IAM-ATTESTATION-CONTRACT / P0` 串行位于 P4b-3-G 之后、P4b 整体验收之前：IAM owner 先裁决 Agent 签发 evidence 与 IAM 当前授权/委托验证边界，发布 `internal-owner` 版本化 machine contract、生成 artifact 和真实 sandbox；Capability 再以独立消费者切片替换手写 `HttpAttestationVerifier` wire。该切片不得复用 `authorization/check` 充当万能 permission bag，不共享 Prisma schema/DTO，也不得改变上述 Skills/MCP resource identity。Manus v2 `skill.list` 与 `connector.list` 的当前官方文档再次确认“先 list 获取 opaque ID，再由 task.create 引用”的原则；Kokoro 只借鉴该生命周期，不复制 Manus wire 或混淆安装/展示/provider字段与资源 ID。
+
+#### P4b-3-G 验收（2026-09-11）
+
+P4b-3-G 候选严格限定为授权的9个文件，SPEC 与 QUALITY 对同一冻结对象均为 Blocking/Important/Minor `0/0/0`。四个新职责文件为299/532/426/169行，原 receipt repository 与 MCP transaction 缩减为557/740行；未改schema/generated/contract/RPC/module/runtime/provider/IAM/SecretStore，Skills/MCP typed opaque identity 不变。Root精确暂存9个路径并提交child `9f237f95b90c5699f8bc54eb202fb0639c5d47fa`（`refactor(capability): split MCP recovery persistence`）。
+
+Pre-commit 在Node 24.20.0、pnpm 11.25.0、fresh PostgreSQL与Redis DB15上通过format/lint/typecheck/contract/Prisma/schema、unit449、contract22、architecture52、integration237、full775、build、smoke15与production smoke；验收harness最后把含Prisma `?schema=public` 的URL直接传给`psql`，因`invalid URI query parameter: schema`以exit2结束，未计为完整harness PASS。Root随后独立确认该临时数据库已删除、Redis DB15为0 key、generated无漂移。
+
+Post-commit 首次运行因PostgreSQL URL未显式携带本机角色，在`schema:check`得到Prisma P1010并由trap清理，不计通过；修正为显式`nako@localhost`后，Root使用fresh数据库`kokoro_p4b3_g_root_post2_20260911_102810_54253`与空Redis DB14重跑完整矩阵：format/lint/typecheck/contract digest `6eb170d12bd046aa70b2a1b8aa775c6303e46ffc997cb4193f77fc230072d3b5`/Prisma validate+generate/schema、unit `449/449`、contract `22/22`、architecture `52/52`、integration `237/237`、full `775/775`、build、smoke `15/15`、production smoke、public FK=0与generated/contract diff均通过，log为`/tmp/kokoro-p4b3-g-root-postcommit2-20260911_102810.log`。trap后数据库不存在、Redis DB14为0 key。
+
+Root standard从223项降为221项，精确消除本片引入的两个粒度违规；Capability只剩既存`connector-authorization.service.ts` 850行粒度项。Root topology为PASS；Root pytest为`82 passed / 2 failed`，两项仍是已记录的手册示例数量与TypeScript手册标题断言失配，不在本片文件集内。据此 P4b-3-G 进入“已验收”，下一个串行任务为 `IAM-ATTESTATION-CONTRACT / P0`，P4b-4 仍不放行。
