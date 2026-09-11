@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审并授权唯一writer，当前进入 P4b-I RED→GREEN 实施，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 已验收，当前进入 P4b-2 atomic prepare RED→GREEN，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b 实施计划双审通过并授权，实现待验收 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 已验收为 `b507451`，P4b-2 待实施 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -966,7 +966,7 @@ or lease-expired external_unknown/held
 
 每卡先冻结并运行因目标行为缺失而失败的RED，再写最小GREEN；writer不操作Git。测试不得只用重建in-memory mock冒充跨崩溃恢复。
 
-- [ ] **P4b-1 Typed provider/recovery contract。**新增独立unit/contract/architecture RED，固定Begin/Complete inspection union、authorization ID/snapshot、strict normalization、unavailable/unsupported→unknown、no-effect与eventual-not-found区别；固定Proto digest、17 RPC、field号、operation/binding和`invocation_grant`零变化，源码/machine contract无`grant_id|grantId`。GREEN只改MCP port、HTTP adapter并新增纯`mcp-authorization-recovery-state.ts`；repository只可import该纯事实源，不得import orchestration，不得改public proto。
+- [x] **P4b-1 Typed provider/recovery contract。**新增独立unit/contract/architecture RED，固定Begin/Complete inspection union、authorization ID/snapshot、strict normalization、unavailable/unsupported→unknown、no-effect与eventual-not-found区别；固定Proto digest、17 RPC、field号、operation/binding和`invocation_grant`零变化，源码/machine contract无`grant_id|grantId`。GREEN只改MCP port、HTTP adapter并新增纯`mcp-authorization-recovery-state.ts`；repository只可import该纯事实源，不得import orchestration，不得改public proto。
 - [ ] **P4b-2 Atomic prepare。**unit与真实PG RED覆盖receipt claim提交后、本地pending/handle前切断，预期旧实现留下无target receipt；GREEN把initial claim、Begin pending创建/复用或Complete verified handle binding、recovery pointer和slot release合入一个admitted Serializable transaction。SecretStore/IAM/catalog均在transaction前完成，transaction内重验current事实；commit ACK unknown用fresh receipt+authorization readback，不重新生成ID。
 - [ ] **P4b-3 Recovery CAS/state。**真实PG RED覆盖stale processing、due unknown与lease-expired `external_unknown/held` acquisition；固定A取得held后进程死亡、lease到期后B/C双pool单winner、旧A迟到不能写且最终可completed或waiting。同时覆盖waiting/held空值矩阵、same-owner ABA、epoch overflow、A持行锁跨expiry的commit/rollback两结局、unknown→held→waiting两轮所有旧epoch拒绝；带recovery pointer进入completed/terminal failed必须原子清空recovery全部字段，fresh replay只读terminal result/error且provider inspect/invoke为0。equal-jitter用确定随机源固定attempt 1、首次达60秒cap、长期cap与32-bit计数上限四类测试。GREEN只扩唯一receipt coordinator/repository、纯recovery state/codec与MCP transaction port；无第二lease/recovery表，无raw claim SQL。
 - [ ] **P4b-4 Begin recovery。**持久provider fixture + 新Nest app/Prisma client重启RED覆盖prepared后/intended前、intended后/call前、provider success后/observed前、observed后/final前、final ACK lost。GREEN用原authorization ID inspect；succeeded只完成本地receipt，rejected terminal，authoritative not_sent才同ID重发，pending/unknown等待；不得创建第二authorization或相信phase即结果。
@@ -986,3 +986,11 @@ or lease-expired external_unknown/held
 Root 先冻结 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` clean 基线与 Root HEAD `08c4a0cf778742225ec3c47dfa8052fd4f201d7f`。首轮 QUALITY 以失效held接管、原始provider Promise drain、state/codec与编排职责、terminal recovery清理、equal-jitter精确计算为 3 Important/2 Minor 未放行；Root 全部回写本计划后重新冻结为 diff `7a7ea34b6d429c190e9326ef55aeaae8c69b8f142d5f27683c70c6464f442b80`、文件 `b7ad1bdb459dd6fdf0c105910677ff0054464472aea802bddccab4d9f572c40b`。contract_review `P4b PLAN R2 SPEC PASS` 与 database_review `P4b PLAN R2 QUALITY PASS` 均为 Blocking/Important/Minor 0，审前审后hash与child clean一致。
 
 双审只放行上述 P4b-1 至 P4b-8、两个单一职责新文件及明列装配/测试/文档路径，不表示代码已验收。唯一writer为 capability_owner_p1b，从 P4b-1 RED 开始逐卡推进；writer不操作Git，P4c–P5、schema/generated/package/lock/public wire/Skills和其他owner仍未授权。
+
+#### P4b-1 验收（2026-09-11）
+
+capability_owner_p1b 从 child `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` 以 RED 证明纯recovery state与required inspection port缺失，再实现独立必需`McpConnectorAuthorizationRecoveryPort`、同时实现execution/recovery两port的bounded HTTP adapter与纯phase/pointer codec。Root裁决两port是任务板“或等价严格API”的接口隔离实现；inspect不得optional，P4b-2/4生产装配必须显式需要两port。provider authoritative `not_sent`与`pending/succeeded/rejected/unknown`被严格解析，404/unsupported/malformed/unreadable/transport/timeout/abort均fail closed为unknown；Proto/OpenAPI、17 MCP RPC、digest与typed identity零变化。
+
+首轮候选冻结tracked `8214bc2050b79e38f6b69b8e373d4f3d31a8212e0ab6e71dd1c959954308bbd0`、untracked manifest `f6137e7213b08b246d2fd9aea106c84cc7e4d8a2a0bb09d9ca4feb5c8cfe8897`。contract_review `SPEC PASS 0/0/0`，database_review独立发现`keyof` union遗漏Begin/Complete两个初始阶段，因此`QUALITY FAIL 0/1/0`未放行。原writer先用八阶段实际类型赋值得到两个TS2322 RED，再按Begin/Complete分别提取value union、使用类型谓词且删除phase强转，补全八阶段round-trip。R1冻结为tracked `8214bc2050b79e38f6b69b8e373d4f3d31a8212e0ab6e71dd1c959954308bbd0`、manifest `ab7030e0748af9635d19bb4025ef4f660d221bb3a9d8b5efd39f103a8c2761ba`，contract_review `R1 SPEC PASS`与database_review `R1 QUALITY PASS`均为 Blocking/Important/Minor 0。两审对full hash的分隔符公式不同，Root只以两者一致复核的HEAD、tracked、manifest与逐文件SHA作冻结事实，不冒称full值一致。
+
+Root 在提交前与提交后分别重跑 Node 24.13.0/pnpm 11.25.0 的format、lint、typecheck、unit 34 files/408、contract 5/22、architecture 9/49、build/Prisma generate与diff/clean检查，全部 exit 0，日志`/tmp/kokoro-p4b1-r1-root-{precommit,postcommit}-20260911.log`。Root精确提交6个文件为child `b50745186ce10cf6fba0b190c0563e1366ff11de`（`feat(capability): define mcp recovery contract`），child clean。本卡未访问PostgreSQL/Redis/服务，未运行Docker或真实provider sandbox；只验收P4b-1内部合同checkpoint，恢复编排和真实PG事务从P4b-2续推。
