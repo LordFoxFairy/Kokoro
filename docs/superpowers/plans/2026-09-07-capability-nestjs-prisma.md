@@ -772,6 +772,22 @@ I-5验收后的编译依赖复核表明：若直接把root-only `claim()`改成t
 
 实施允许范围仅限上述明确文件面及其同目录既有测试/fixture、generated Prisma和实现后必要文档；禁止package/lock/proto/OpenAPI/BFF/Agent/IAM/Storage/Scheduler/P4b–P5。若实现确需任务卡未列出的production文件，writer先停写报告，由Root更新本任务板；不得自行扩面或操作Git。此计划先冻结并由contract_review作`PLAN SPEC`、database_review作`PLAN QUALITY`，双PASS后才续派writer开始ADMISSION-I-1。
 
+I-6至I-9 R2冻结审查发现 `mcp.ports.ts -> mcp-rpc.runtime.ts -> mcp.ports.ts` 的源码循环，且 Prisma transaction adapter 因复用 runtime helper 而反向依赖 Connect transport。R3 在不改 wire 的前提下按以下放置门执行：
+
+| 项 | R3 结论 |
+| --- | --- |
+| Owner | `kokoro-capability/modules/mcp`；它是 MCP 请求本地执行边界，不是 Connect 或 Prisma 的业务事实。 |
+| 当前事实 | boundary type/绝对单调 deadline/await helper 与 HandlerContext 构造、Connect error 混在 `mcp-rpc.runtime.ts`；ports 与 transaction 反向 import runtime。 |
+| 目标职责 | 纯内部 contract 只持有 `signal + callerDeadlineMonotonicMs`，以 application typed cancellation/deadline error 做同步最终裁决并吸收晚到 Promise；RPC runtime 只从 HandlerContext 构造 boundary。 |
+| 目录方案 | 采用新建单文件 `src/modules/mcp/mcp-request-boundary.ts`，因为 type+typed assertion+await helper 有同一变化原因且同时被 RPC/runtime/transaction/ports 复用；淘汰塞入 `mcp.ports.ts`（混入有状态 helper）和留在 `mcp-rpc.runtime.ts`（保留反向 transport 依赖）。 |
+| 粒度 | 新文件承载一个可复用的纯 request-boundary contract；不新建目录、alias或第二套算法。 |
+| 依赖 | boundary 文件只允许依赖 application typed admission errors；`mcp.ports.ts`/transaction/RPC runtime 单向依赖它。禁止 boundary import `@connectrpc/connect`、Prisma、`mcp.ports.ts`或 `mcp-rpc.runtime.ts`。 |
+| 数据/API | 无 schema、Proto、OpenAPI、identity、receipt 或 provider 语义变化；RPC 由既有 `runRpc` 统一映射 typed error。 |
+| 删除项 | 从 `mcp-rpc.runtime.ts` 删除纯 type/assert/await 实现，删除 ports/transaction 对 runtime 的 import；不保留 re-export/compat alias。 |
+| 验证 | 先加 architecture RED 拒绝 ports/transaction import `mcp-rpc.runtime` 或 `@connectrpc/connect`，再重跑 MCP boundary/cancel/deadline unit、typecheck/lint/architecture/contract/build 及同一 fresh PostgreSQL 完整门。 |
+
+R3 唯一新增 production 路径授权为 `src/modules/mcp/mcp-request-boundary.ts`；可修改本 wave 既有 MCP production/test/architecture 文件以删除循环并迁移 import，其余边界不变。
+
 首个实施计划冻结于Root HEAD `cf1e9b67d264ba419995de7302a78ab0e01722bb`、diff `e8a81bb6bbb0e136abaaa040d38dab1eef149cde4d33eaf382e1a78abcb105f2`。contract_review 为 `PLAN SPEC PASS` 0/0/0；database_review 为 `PLAN QUALITY FAIL`（Blocking 0 / Important 1 / Minor 1）：I-1把fixed-row/drift integration RED放在只改schema/generated的GREEN之前，无法逐卡转绿；I-4又把纯application port/error与有状态queue/deadline/drain实现混在一起。Root已将I-1缩成model/generated-DDL shape并把fixed-row/drift全移到I-2，同时固定`src/application/transaction-admission.ts`为无状态port、`src/application/transaction-admission.error.ts`为typed错误、`src/database/prisma-transaction-admission.ts`为唯一有状态coordinator，queue/deadline/late promise/drain RED/GREEN全部归I-5。修复后冻结新diff并由两名reviewer重新全审；首轮PASS不跨冻结沿用。
 
 修复后的实施计划冻结于同一Root HEAD、diff `786766bc1b429956a78b73e371001f011e265f1d42bc01684ac8c86fe26b723b`；contract_review 最终 `PLAN SPEC PASS`、database_review 最终 `PLAN QUALITY PASS`，两者均为 Blocking/Important/Minor 0 且审前后hash一致。由此授权 capability_owner_p1b 从 child `122a3a5bf09792c7ef11a52de05188f444678d6e` 严格按ADMISSION-I-1至I-12逐卡实施；任何越界文件、门禁失败或设计新歧义先回Root，不得自行扩面。
