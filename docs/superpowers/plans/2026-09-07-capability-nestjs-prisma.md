@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，当前修订 P4b-3 recovery CAS/state R1 任务卡并重新双审，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract 与 P4b-2 atomic prepare 已验收，P4b-3 recovery CAS/state R2 任务卡已双审放行并进入 RED→GREEN，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3 R1任务卡待复审 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112` 已验收；P4b-3已放行实施 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -1050,3 +1050,5 @@ P4b-3 的强制RED矩阵：stale processing、due waiting与expired held三种ac
 P4b-3 R0授权卡审查结果为SPEC `0/3/1`、QUALITY `0/2/1`，未放行。R1已吸收全部问题：冻结四个typed方法族与结果union、P2025 fresh readback矩阵、合法phase图、所有held写的DB-clock未过期CAS、三类acquisition统一落库shape、attempt只在成功acquisition增加，以及equal-jitter整数闭区间与端点RED。R1仍不授权实现，需对同一Root commit重新双审。
 
 P4b-3 R1授权卡的SPEC与QUALITY均为 `0/1/0`，共同发现同owner幂等readback未证明lease在fresh DB clock下仍有效，因此仍未放行。R2补充完整acquisition postcondition：目标epoch、expected attempt增量、held NULL矩阵、exact pointer和`DB now < expiry`缺一不可；过期为typed ownership-lost，attempt漂移为corrupt，并加入等于/早于expiry及attempt drift的最小RED。SPEC另确认IAM仍需对齐但不进入P4b-3，Root已把actor/subject代表关系重验和三方审计owner加入P4b总体生产门。R2仍需在同一Root commit上重新双审。
+
+P4b-3 R2任务板冻结为Root `aec22bee44657446bac542839d28c10f77df8b9d`、文件SHA `9a11d71b56505231777b9d8bb9320ea7b707e2b763dad4ea5f6e3558b071ec19`，child保持clean `4e26112848d11afd5d02d2b9d12553da35bf2016`。SPEC R2与QUALITY R2均为Blocking/Important/Minor `0/0/0`，确认方法/result union、三类CAS、fresh readback、lease validity、phase图、attempt/jitter、terminal清理与IAM分界均可实施。仅据此放行P4b-3任务卡所列文件与RED→GREEN；不授权P4b-4/5、provider I/O、Nest装配、IAM或其他仓。
