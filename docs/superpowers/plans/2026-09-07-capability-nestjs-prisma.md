@@ -931,6 +931,15 @@ P4a 验收提交 `b21f9c7a22dc5de095eb79cb9e6afea0983fe12c` 是本片唯一 chil
 3. provider begin/complete是以同一authorization ID与相同snapshot执行的at-least-once operation，不宣称exactly-once。只有authoritative `not_sent`才可用同一identity安全重发一次；每个RPC attempt最多一次inspect和一次经no-effect证明的provider调用，继续pending/unknown时写等待due，不在进程内无界轮询。
 4. Skills identity保持`series_id`、不可变`skill_id`、`source_ref=skill:<skill_id>`与安装生命周期`installation_id`。MCP保持`connector_id/server_id/connection_id/authorization_id/invocation_grant`，grant值为`mcp-grant:<uuid-v4>`；`command_id`只作幂等identity。不存在`grant_id`/alias，provider key、display、URL、selector、tool name均不替代resource ID。该设计只采用Manus `skill.list`/`connector.list`→opaque typed reference原则，不复制其wire。
 
+#### P4b IAM 跨仓对齐门
+
+2026-09-11 固定当前事实：`kokoro-iam` clean HEAD `834fdc9ef93c817a61255e417c8b0f7f2e920b43`的`contract/`与`src/`没有`RunExecutionAttestation`、`expected_operation/request_binding`或`owner_scopes`的machine contract；已验收`POST /internal/v1/authorization/check`只回答当前token在`tenant/read | audit/read`的同tenant decision，不接受tenant/subject/actor自报，也不能替代Capability当前`HttpAttestationVerifier`所假定的operation-bound run/session/request-binding验证。因此Capability的本地IAM fixture只是保留行为证据，不冒称跨仓已对齐。
+
+- IAM仍是tenant、principal、authentication/authorization与current permission fact的唯一owner；Agent只能拥有Run/Checkpoint/Execution evidence及attestation的签发语义。Root需要在两owner间独立裁决“Agent签发、IAM发布验证contract”或等价的唯一方案，不允许Capability自己成为第二个identity/permission owner。
+- 对齐合同必须版本化并固定：issuer/audience信任，签名/key rotation，`tenant_ref/subject/run_id/session_id/owner_scopes`，exact operation与request-binding SHA-256，issued/expiry/nonce/replay，caller workload identity，以及400/401/403/409/503与`allowed=false`的区分。外部JSON采用snake_case；Capability必须使用owner发布的固定版本generated client/artifact，不继续手写一份漂移wire。
+- P4b-2 atomic prepare与P4b-3 receipt CAS是Capability内部事务/并发事实，可在不改IAM wire时继续。P4b-4/5可先用现有fixture完成本地RED/GREEN，但在上述owner contract、consumer contract test与真实IAM sandbox证据完成前，不得标记生产对齐、P4b整体验收或P5 cutover ready。
+- 本任务不修改IAM文件/schema，不把`authorization/check`扩成任意permission袋，不共享Prisma schema/DTO；IAM owner另行实现并提交机器契约后，Root再以独立消费者切片替换Capability HTTP fixture约定。
+
 #### P4b 持久状态与事务边界
 
 ```text
