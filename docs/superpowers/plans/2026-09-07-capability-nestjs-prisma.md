@@ -1,6 +1,6 @@
 # Capability → Platform：NestJS + Prisma 实施任务板
 
-状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。下一个串行 P0 是 `IAM-ATTESTATION-CONTRACT`；P4b-4 在 IAM owner 契约设计门通过前不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
+状态：P0、P1a、P1b、P2a、P2b、P2c、P3-D、P3a、P3b、P4-D 以及 P4a-ADMISSION-I-1 至 I-12 已验收；P4b MCP authorization operation-specific recovery 实施计划已经 SPEC/QUALITY 双审，P4b-1 typed provider/recovery contract、P4b-2 atomic prepare 与 P4b-3 recovery CAS/state 及其粒度整改均已验收（`f9dc3a3` + `9f237f9`）。`IAM-ATTESTATION-D` 文档设计门已由 IAM owner 提交 `bf160be` 并通过双审；下一个串行 P0 是 Agent proof/JWKS owner contract，之后才是 IAM verifier/OpenAPI/generated SDK 与 Platform consumer。P4b-4 在该 owner-first 链闭环前不放行，P4c–P4e 与 P5 待依赖顺序续派。用户已批准总体方案并授权推进（2026-09-07），并再次强调 Skills/MCP typed identity、Manus 设计与 NestJS + Prisma 唯一技术路线（2026-09-10）。本任务板是本轮唯一推进记录。
 
 **Goal:** 将当前 Capability 的有效 Skills/MCP 控制面收敛为 NestJS + Prisma 原生实现，补齐失败恢复，最后独立闭环 Platform 拓扑切换。
 **Architecture:** Root 裁决边界；子仓单一 writer；Skills/MCP 是两个一级业务域。沿用 owner 发布的契约，不复制 IAM、Storage 或 Agent 事实，不恢复历史 Platform。
@@ -41,7 +41,7 @@
 | P1 / P0 | 原生 Nest/Prisma 底座及现有持久化行为切换，单一生产路径、生成 Client、fresh schema 与真实启动验证 | capability-owner / gpt-5.6-sol / 写入，需 Root 放行 | 子仓 src、prisma、prisma.config.ts、package/lock/tsconfig、构建配置、scripts、test、必要 docs；不改机器 wire contract/其他仓 | P0-R 通过；实现和只读审查分离 | 已验收：P1a `d32631f`，P1b `8606f87` |
 | P2 / P0 | Skills 发布/版本/来源/安装业务模块闭环；承接安全与分页断言 | capability-owner / gpt-5.6-sol / 后续授权 | Skills 源码/测试/必要契约文档；共享文件由任务卡另定 | P1；owner 契约先于消费者 | P2a/P2b/P2c 已验收 |
 | P3 / P0 | MCP connector/server/connection/authorization 模块闭环 | capability-owner / gpt-5.6-sol / 分片授权 | MCP 源码/测试/必要契约文档 | P2；不实现 Agent runtime | P3-D、P3a、P3b 已验收 |
-| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` + `9f237f9` 已验收；`IAM-ATTESTATION-CONTRACT` 为下一个 P0；P4b-4暂不放行 |
+| P4 / P0 | receipt/outbox 崩溃恢复、有限重试、retention 和可观测性 | capability-owner / gpt-5.6-sol / 分片授权 | 本仓实际用例涉及文件，实施前细化 | P2/P3 | P4a 已验收；P4b-1 `b507451`、P4b-2 `4e26112`、P4b-3 `f9dc3a3` + `9f237f9` 已验收；IAM 文档门 `bf160be` 已验收；等待 Agent proof/JWKS → IAM verifier/SDK → Platform consumer，P4b-4 暂不放行 |
 | P5 / P1 | Platform 服务/仓名、schema namespace、身份、部署、owner contract 发布和消费者一次 cutover | Root 协调各仓负责人 / 后续授权 | 独立切换任务卡，未授予其他仓写权 | P1–P4；跨仓串行交接 | 待派工 |
 
 ## 实施检查清单
@@ -1141,3 +1141,11 @@ Root standard从223项降为221项，精确消除本片引入的两个粒度违�
 | 验证 | 文档门先由SPEC/QUALITY核对TECHNICAL_DESIGN/API_CONTRACT/DATA_MODEL/ADR一致。实现后要求真实Agent signer → IAM verifier → Platform RPC → PostgreSQL receipt sandbox，覆盖caller/proof两层认证、跨tenant、operation/binding篡改、direct user、actor≠subject/project/service deny、撤权后replay、同proof同请求重试、key rotation/unknown kid/alg/TTL/skew、审计失败回滚、已完成receipt撤权后仍拒绝与无敏感日志。 |
 
 `IAM-ATTESTATION-D / P0`文档writer只可修改IAM的`docs/TECHNICAL_DESIGN.md`、`docs/API_CONTRACT.md`、`docs/DATA_MODEL.md`、`docs/SECURITY.md`、`docs/CURRENT.md`、`docs/ADR/README.md`并新建`docs/ADR/ADR-005-execution-authorization-contract.md`。禁止修改IAM source/schema/generated/OpenAPI/SDK/package/lock/test，禁止修改Agent/Capability/BFF或Root其他文件。交付必须列出三份核心文档绝对路径、未决项、契约/schema验证命令和当前commit；SPEC/QUALITY双审前不放行Agent signer、IAM source或Platform consumer。Skills/MCP继续使用`series_id/skill_id/installation_id`与`connector_id/server_id/connection_id/authorization_id/invocation_grant`；Manus v2官方`skill.list`/`connector.list`只确认list返回opaque ID后供`task.create`引用，不发生wire或IAM owner关系。
+
+#### IAM-ATTESTATION-D 验收（2026-09-11）
+
+IAM 文档候选首轮审查发现 operation 只做字符串绑定、会使普通成员的合法 proof 放宽 `mcp.admin.register_server`，disabled Tenant 的 Guard 早拒绝与事务内 decision audit 冲突，以及 known-key JWKS 缓存没有撤销上界；首轮候选因此未提交。R2 由 IAM 单一 writer 在原 7 文件范围内修正并冻结为完整 dirty diff `77334dd07ca1d73cf0d566aa799c57ae9ac58453ee48965ab248f7767eb68aaf`，SPEC 与 QUALITY 对同一对象均为 Blocking/Important/Minor `0/0/0`。
+
+R2 固定封闭 catalog：5 个 Skill installation 与除 global register 外的 16 个 tenant MCP operation 逐项映射 IAM 当前 `platform:execute`；reserved `mcp.admin.register_server` 在 global permission owner contract 出现前返回 `GLOBAL_OPERATION_UNSUPPORTED`，generic `read`、六个 Skill catalog mutation与未知 operation返回`OPERATION_UNSUPPORTED`，权限撤销返回`PERMISSION_NOT_CURRENT`。`organization:<tenant>` 只是 Platform 二次资源范围，不替代 operation permission。Execution verifier 使用 endpoint-specific deny-only passage：bad proof + disabled 先返回401且不写 authenticated decision，valid proof + disabled 在短 Prisma Serializable transaction 审计提交后返回409，审计或commit unknown返回503。JWKS只从部署固定issuer映射获取，拒绝header URL改源，固定30秒freshness、2秒/64KiB/no-redirect/single-flight与无stale fallback。
+
+Root 精确提交 IAM 7 个文档为 `bf160be173ef473bebe8e4a93b74ec52c230f180`（`docs(iam): define execution authorization contract`）。提交前后 Prettier、`git diff --check`、`pnpm contract:check` 与 `pnpm prisma:validate` 均 exit 0；IAM 工作树干净。该提交只验收设计门，`platform:execute` code fact、Agent signer/JWKS、IAM endpoint/OpenAPI/generated SDK、Platform consumer与真实三仓 sandbox 尚未实现；严格顺序为 Agent owner → IAM owner → Platform owner，P4b-4 继续阻塞。
