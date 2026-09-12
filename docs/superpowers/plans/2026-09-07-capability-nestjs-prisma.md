@@ -1293,3 +1293,9 @@ Fix R3 只授权原 writer 修改 `tests/contract/test_execution_proof_runtime.p
 Fix R3 冻结为同一 Agent HEAD、10 files / 92036 bytes、dirty SHA `b6f36ec97485c7ba36431578cead7837e15e8f3f8736b9a0f8e80820254720e7`；SPEC与QUALITY均为Blocking/Important/Minor `0/0/0`。Root在同一冻结对象完成pre-commit：lock/sync、targeted format、全Ruff、Pyright、focused 80、Python3.11 isolated focused 80、contract 184、checker、full default 748 passed/6 skipped/77 deselected、wheel/sdist与diff check均通过；日志 `/tmp/kokoro-agent-a2a-root-pre-20260912_143148.log`，临时build目录已清理。代码与测试正式放行，仍不等于A2b/A2c或跨仓链完成。
 
 提交前只授权原 writer 将 `docs/CURRENT.md`、`docs/SECURITY.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md` 中A2a的`candidate/待复审`状态改为“已通过SPEC/QUALITY与Root pre-commit验证、等待精确提交”或提交事实；不得改变技术语义、依赖裁决、未实现列表或其余7文件。状态文本变更后重新冻结，由同一双审确认只改变状态且无过度声明，Root再对最终对象执行diff/checker和精确提交。
+
+#### AGENT-EXECUTION-PROOF-A2a 验收（2026-09-12）
+
+最终状态文本与实现冻结为 Agent `cd2e698c3c8b55a0136746977dbbca0c38cf308d` 上10 files / 92105 bytes、dirty SHA `5dd9a188055e84c543106eea18a27ff53c61326040f718e62aed5fae51e88a17`；SPEC与QUALITY最终均为Blocking/Important/Minor `0/0/0`。Root精确提交为 `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9`（`feat(agent): add execution proof signer`），Agent工作树clean。
+
+Root对最终冻结对象及提交后分别执行文档Prettier、lock/sync、targeted Ruff format、全Ruff、Pyright、focused 80、contract 184、contract checker、full default 748 passed/6 skipped/77 deselected、wheel/sdist与diff check，全部通过；另在提交前后的独立门中以CPython 3.11 isolated focused各80通过。最终pre日志为`/tmp/kokoro-agent-a2a-root-final-pre-20260912_144124.log`，post日志为`/tmp/kokoro-agent-a2a-root-post-20260912_144413.log`；临时build目录均已清理。完整repo Ruff format仍为授权外既有79文件，本片未格式化它们。A2a只验收runtime exact profile、Ed25519 signer及直接依赖，无production caller；private key loader、public ring/JWKS、statement-time lease supplier、IAM verifier、Platform consumer与真实传输仍未实现。
