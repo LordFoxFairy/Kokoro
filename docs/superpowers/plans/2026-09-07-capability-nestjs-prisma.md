@@ -1176,3 +1176,20 @@ R2 固定 `lease_generation=1..9007199254740991`、`iat/exp=0..9007199254740991`
 Root 精确提交 Agent 7 个文档为 `9cc24b2384b0aa66ca239ddefaa9009c0a60fac3`（`docs(agent): define execution proof owner contract`）。提交后 Agent 工作树 clean，Prettier、`git diff --check` 与 `uv run kokoro-agent-contract-check` 均 exit 0。该提交只验收设计门；proof schema/provenance、signer/key/JWKS、真实 PostgreSQL race、IAM verifier/OpenAPI/generated SDK、Platform compact-proof wire/consumer和三仓 sandbox均未实现。
 
 下一条串行链固定为：Agent machine artifact/signer/JWKS/run-scoped supplier独立验收 → IAM ADR/API/安全设计按 Agent artifact同步 safe-integer/profile与六段交付门，再实现NestJS + Prisma verifier/OpenAPI/generated SDK → Platform以NestJS + Prisma发布最终compact-proof wire/request-binding/generated helper → Agent真实Skills/MCP client逐call接线 → Platform删除旧手写wire并闭环receipt → Root sandbox。P4b-4继续阻塞，禁止临时wire、fallback或三仓并行发明同一契约。
+
+#### AGENT-EXECUTION-PROOF-A1 machine artifact / contract RED 任务卡（2026-09-12）
+
+| 项 | 结论 |
+| --- | --- |
+| 任务 | `AGENT-EXECUTION-PROOF-A1 / P0`；发布 Agent owner-authored decoded proof schema 与跨语言 conformance vectors，先证明 contract RED，再闭环 artifact/checker/provenance GREEN。本片不实现 signer/JWKS/lease reader/Platform client。 |
+| 归属 | owner=`kokoro-agent`；单一 writer=`agent_execution_artifact_writer`；Root 独占 Git/index/commit；完成候选由独立 SPEC 与 QUALITY 审查。 |
+| 基线 | `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@9cc24b2384b0aa66ca239ddefaa9009c0a60fac3`，writer 启动前 clean。Root 为 `5662423325a070a1b07d01f1fde381b88555fd81`，Root 既有 SQL 手册、agent gitlink与`.tmp/` dirty不属于本片。 |
+| Owner/当前事实 | 当前只有`contract/openapi/v1/openapi.json`与自报`source_files`的aggregate provenance；不存在`contract/execution-proof/v1/*`。现有Pydantic parser会丢duplicate member；JSON Schema `integer`单独不能拒绝`1.0`；stdlib `json.dumps`不是通用RFC 8785。 |
+| 目录方案 | 采用`contract/execution-proof/v1/schema.json + vectors.json`：同一版本下两个持续存在的owner artifacts，分别承载字段事实与conformance evidence。淘汰把schema写进测试/Pydantic、把vectors写成测试常量、复制到IAM，或把claims塞入OpenAPI。现有`contract/`正是机器事实目录，不能新建顶层auth/attestation。 |
+| 粒度/依赖 | `schema.json`唯一描述decoded `{protected_header,claims}`；`vectors.json`不重新定义字段约束，只给exact raw/canonical/base64url/signing-input/signature/JWK/thumbprint及负向stage。checker可直接依赖当前稳定`jsonschema>=4.26.0`与精确RFC8785实现`rfc8785>=0.1.4`并更新lock；记录截至2026-09-12的版本、许可证、维护风险、候选比较与退出路径。PyJWT/cryptography直接依赖、数学验签和production canonicalizer留给A2。 |
+| 数据/API | 不改`database/schema.sql`、Redis、Run/protocol、OpenAPI route。schema Draft 2020-12，version=`1.0.0`，root及nested object均strict；精确header/14 claims、typed actor/subject、safe-integer/token扩展、TTL/pair/canonical/base64url/16KiB metadata与stable `$id`。Skills/MCP opaque IDs不进入claims。 |
+| Provenance | checker硬编码完整有序owner inventory，拒绝缺失/重复/乱序/额外source；provenance升级为逐artifact schema/vector digest加aggregate digest，保留OpenAPI/protocol现有事实。IAM后续固定`repository+commit+version+schema path/hash+vectors path/hash`消费，不使用会随无关协议变化的aggregate作为proof digest。 |
+| RED/GREEN | 先新增contract test并在schema/vector不存在、inventory/digest未升级时取得预期失败，记录命令/失败点；再添加artifacts、strict raw parser/meta-schema/JCS/base64url/vector及provenance gate直至通过。expected signature由独立oracle固定，测试不得调用未来production signer生成expected；A1至少检查段重组、canonical bytes、长度与tamper fixture，A2再以直接cryptography验证数学签名。 |
+| 验证 | `uv lock --check`、`uv sync --frozen`、Ruff format/check、Pyright、`uv run pytest -q tests/contract/test_execution_proof_artifact.py`、完整contract tests、`uv run kokoro-agent-contract-check`、unit/full非integration、`uv build --wheel --sdist`、`git diff --check`。mutant必须覆盖删/改artifact后重算aggregate、inventory乱序/重复/越界、duplicate member、float/bool/unsafe integer、非canonical bytes、padding、version/digest漂移。 |
+| 文件范围 | 只可新增`contract/execution-proof/v1/schema.json`、`vectors.json`、`tests/contract/test_execution_proof_artifact.py`，修改`contract/provenance.json`、`contract/README.md`、`src/kokoro_agent/contract_check.py`、`pyproject.toml`、`uv.lock`、`docs/CURRENT.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`。禁止其他文件、Git mutation、source signer/key/JWKS/lease/Platform/IAM/Capability变更。越界先停写报告。 |
+| 交付 | writer交付文件清单、RED与GREEN真实输出、依赖核验、逐文件hash、完整dirty diff hash、未验项；Root冻结后双审、主仓复验并精确提交。A1通过不等于execution proof可签发或IAM已对齐。 |
