@@ -1289,3 +1289,7 @@ Fix R2 仍由原 writer 单一写入，只授权修改 `src/kokoro_agent/executi
 Fix R2 冻结为同一 Agent HEAD、10 files / 90023 bytes、dirty SHA `b84e108fdb71a2ee4ba00981d36e6c8f59ae1afdbac8cddf2e495055cdadc6a2`；异常cause/context、真实16384/16385门及普通source文件的relative import均闭环，focused 78、contract 182、full default 746 passed/6 skipped/77 deselected和全部静态/build门通过。SPEC与QUALITY均为`0/1/0`：resolver对`__init__.py`错误保留`__init__`路径段，使package re-export仍可绕过production signer caller门。
 
 Fix R3 只授权原 writer 修改 `tests/contract/test_execution_proof_runtime.py`，其他9个文件逐字节冻结。相对import package一律由实际源文件父目录计算，不把`__init__`当module segment；先用真实`execution/__init__.py`、`worker/__init__.py`及nested `__init__.py`覆盖`.`有无alias、`..execution`、多层direct signer module和`__init__` re-export→consumer二步绕过RED，再修GREEN并保持普通source、JWT alias和无关同名方法门。不得扩大范围；冻结后同一SPEC/QUALITY再次复审。
+
+Fix R3 冻结为同一 Agent HEAD、10 files / 92036 bytes、dirty SHA `b6f36ec97485c7ba36431578cead7837e15e8f3f8736b9a0f8e80820254720e7`；SPEC与QUALITY均为Blocking/Important/Minor `0/0/0`。Root在同一冻结对象完成pre-commit：lock/sync、targeted format、全Ruff、Pyright、focused 80、Python3.11 isolated focused 80、contract 184、checker、full default 748 passed/6 skipped/77 deselected、wheel/sdist与diff check均通过；日志 `/tmp/kokoro-agent-a2a-root-pre-20260912_143148.log`，临时build目录已清理。代码与测试正式放行，仍不等于A2b/A2c或跨仓链完成。
+
+提交前只授权原 writer 将 `docs/CURRENT.md`、`docs/SECURITY.md`、`docs/ADR/ADR-004-agent-execution-proof-and-jwks.md` 中A2a的`candidate/待复审`状态改为“已通过SPEC/QUALITY与Root pre-commit验证、等待精确提交”或提交事实；不得改变技术语义、依赖裁决、未实现列表或其余7文件。状态文本变更后重新冻结，由同一双审确认只改变状态且无过度声明，Root再对最终对象执行diff/checker和精确提交。
