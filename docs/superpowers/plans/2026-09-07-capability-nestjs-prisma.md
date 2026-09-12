@@ -1299,3 +1299,239 @@ Fix R3 冻结为同一 Agent HEAD、10 files / 92036 bytes、dirty SHA `b6f36ec9
 最终状态文本与实现冻结为 Agent `cd2e698c3c8b55a0136746977dbbca0c38cf308d` 上10 files / 92105 bytes、dirty SHA `5dd9a188055e84c543106eea18a27ff53c61326040f718e62aed5fae51e88a17`；SPEC与QUALITY最终均为Blocking/Important/Minor `0/0/0`。Root精确提交为 `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9`（`feat(agent): add execution proof signer`），Agent工作树clean。
 
 Root对最终冻结对象及提交后分别执行文档Prettier、lock/sync、targeted Ruff format、全Ruff、Pyright、focused 80、contract 184、contract checker、full default 748 passed/6 skipped/77 deselected、wheel/sdist与diff check，全部通过；另在提交前后的独立门中以CPython 3.11 isolated focused各80通过。最终pre日志为`/tmp/kokoro-agent-a2a-root-final-pre-20260912_144124.log`，post日志为`/tmp/kokoro-agent-a2a-root-post-20260912_144413.log`；临时build目录均已清理。完整repo Ruff format仍为授权外既有79文件，本片未格式化它们。A2a只验收runtime exact profile、Ed25519 signer及直接依赖，无production caller；private key loader、public ring/JWKS、statement-time lease supplier、IAM verifier、Platform consumer与真实传输仍未实现。
+
+#### AGENT-EXECUTION-PROOF-A2b 放置表与实现授权候选（2026-09-12）
+
+本卡是 A2 已验收总设计下的第二个串行切片。它先冻结 owner artifact、进程隔离、文件系统边界和 HTTP `1.1.0`，再进入 RED/GREEN；不因 IAM 已有 ADR 就让 IAM 与 Agent 同时发明 JWKS wire。IAM **必须对齐**，但其设计同步、NestJS verifier、Prisma current-fact transaction、OpenAPI/generated SDK 仍在 A2b/A2c 后串行执行。
+
+| 项         | A2b 精确结论                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 任务       | `AGENT-EXECUTION-PROOF-A2b / P0`；在 A2a signer 上实现独立 private-key loader、严格 public key ring/JWKS publication、HTTP-only composition root与 additive Agent HTTP `1.1.0`。不实现 lease supplier、Platform call-site、IAM verifier或跨仓 sandbox。                                                                                                                                                                                                                                                                                              |
+| Owner      | `kokoro-agent/execution` 唯一拥有 private signing material、active signer descriptor与 signer construction；`kokoro-agent/interfaces/http` 只拥有 public ring snapshot、JWKS projection与 HTTP process composition。IAM 只消费固定 owner artifact，不拥有 Agent key/schema；Platform 只传 opaque proof。单一 writer 续用 `agent_execution_artifact_writer`，Root 独占 Git/index/commit。                                                                                                                                                             |
+| 基线       | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9` clean。A1 profile schema/vector direct SHA 继续是 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f` / `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`，A2b 不修改二者。当前 HTTP script 指向 `worker.main:http_main`、读取完整 `AppConfig`，handler 只有 GET/POST 并在 exact route 判定前读 POST/PUT/PATCH body，OpenAPI version 为 `1.0.0`且无 JWKS。 |
+| 当前 route | 保留 `GET /healthz`、`GET /readyz`、`POST /v1/runs`、`POST /v1/runs/{run_id}/control`、`GET /v1/runs/{run_id}/events`、`GET /v1/sessions`、`GET /v1/sessions/{session_id}/messages`、`GET /v1/sessions/{session_id}/events` 的认证、identity headers、idempotency、envelope、状态、PG/Redis行为；只新增 `GET/HEAD /v1/execution-proof/jwks`。                                                                                                                                                                                                        |
+| 目标职责   | worker-only loader从受信 file mount构造进程生命周期 immutable `ExecutionProofSigner`；HTTP-only reader从受信 public ring预计算 immutable canonical JWKS bytes并形成 available/unavailable state；HTTP root只加载HTTP业务配置与public ring，ring异常时仍监听并保持health 200。                                                                                                                                                                                                                                                                        |
+| 目录方案   | 采用 `execution/execution_proof_keys.py` 放 worker config/private reader，因为它构造 signer且不属于 wire；采用 `interfaces/http/execution_proof_jwks.py` 放 HTTP config/public ring/JWKS state；采用 `interfaces/http/main.py` 放 `AgentHttpConfig`、env/YAML单次解析、safe summary和server生命周期。否决把三种配置塞进全局 `AppConfig`、在 `worker/main.py` 保留HTTP入口、把key/JWKS塞入`protocol/`或把所有逻辑继续堆进`server.py`。                                                                                                                |
+| 粒度       | 三个新生产文件分别只有 private signer material、public JWKS material、HTTP composition一种变化原因；`server.py`只做HTTP dispatch/representation；contract checker只验证owner machine facts。`interfaces/http`已有多项持续职责，新增同目录 `INDEX.md` 说明边界；不新建顶层auth/keys/ports。                                                                                                                                                                                                                                                           |
+| 依赖       | 复用 A2a 已直接固定的 `cryptography==50.0.1`、`PyJWT==2.14.0`与 `rfc8785==0.1.4`；A2b 不新增依赖、不改 `uv.lock`。key loader只能构造 `ExecutionProofSigner/ExecutionProofSignerConfig`，production 中 `issue_execution_proof` 调用仍为0；`jwt.encode`仍只在 signer 文件出现一次，不得 package re-export signer。HTTP source/root不得 import worker、`AppConfig`、private-key config/loader、signer或provider/model/sandbox/MCP配置；worker不得 import HTTP root/server。                                                                             |
+| 数据/API   | 不改 `database/schema.sql`、PostgreSQL query/transaction、Redis protocol或任何 owner数据。OpenAPI `info.version=1.1.0`；provenance增加 direct `http_contract={version,path,sha256}`，保留 A1 两个direct digest并重算aggregate。后续IAM固定 `repository + 最终A2b commit + 1.1.0 + contract/openapi/v1/openapi.json + direct SHA`，不以 aggregate替代。                                                                                                                                                                                               |
+| 删除项     | 删除 `worker.main:http_main`、worker对HTTP server的import、`worker.main.__all__`中的旧符号和 `kokoro-agent-http = "kokoro_agent.worker.main:http_main"`；新script唯一指向 `kokoro_agent.interfaces.http.main:main`。删除HTTP加载完整 `AppConfig`及全字段/secret前后缀日志路径，不保留alias、fallback或双入口。                                                                                                                                                                                                                                       |
+| 文档事实   | 更新 Agent `AGENTS.md` 为 worker root、HTTP root与schema operator各自单点解析；修正 CURRENT/ADR/API/SECURITY/RUNBOOK/ACCEPTANCE/README/agent integration docs：A2a已提交、A2b验收后key/JWKS组件已落地，但 worker signer gate、A2c supplier、IAM、Platform和真实transport仍未实现。匿名例外变为`/healthz`与exact JWKS；launch identity只来自可信headers，不再写成body字段。                                                                                                                                                                           |
+| 验证       | 严格 TDD；focused key/ring/config/raw-socket/contract/architecture先取得预期RED再最小GREEN。运行lock/sync、targeted Ruff format、全Ruff check、Pyright、focused unit+contract、完整contract、checker、full default、现有真实PG/Redis acceptance、wheel/sdist与diff。冻结后SPEC再QUALITY；两审`0/0/0`后Root才pre-commit全验、精确提交、post-commit复验。                                                                                                                                                                                              |
+
+##### A2b 配置与进程边界
+
+- 固定 env 名，不再留给实现者自行命名：
+  - `KOKORO_AGENT_EXECUTION_PROOF_ISSUER`
+  - `KOKORO_AGENT_EXECUTION_PROOF_PRIVATE_KEY_FILE`
+  - `KOKORO_AGENT_EXECUTION_PROOF_WORKER_ACTIVE_KID`
+  - `KOKORO_AGENT_EXECUTION_PROOF_WORKER_ACTIVE_JWK_THUMBPRINT_SHA256`
+  - `KOKORO_AGENT_EXECUTION_PROOF_PUBLIC_JWKS_FILE`
+  - `KOKORO_AGENT_EXECUTION_PROOF_HTTP_ACTIVE_KID`
+  - `KOKORO_AGENT_EXECUTION_PROOF_HTTP_ACTIVE_JWK_THUMBPRINT_SHA256`
+- `WorkerExecutionProofConfig` 与 `HttpExecutionProofConfig` 是互不继承、互非superset的 strict immutable对象；worker与HTTP descriptor使用不同env名，允许正常rotation中间态不同。private bytes永不进env/YAML，private path与两组descriptor也全部env-only。
+- 两个loader在任何file syscall前都要求调用值分别为exact `WorkerExecutionProofConfig` / `HttpExecutionProofConfig`，从exact built-in字段重建并重验快照，之后不再读取调用方对象；拒绝subclass、duck object、`model_copy(update=...)`与 `object.__setattr__` 形成的非法状态。worker issuer必须是exact built-in nonempty `str`、无lone surrogate且可通过JCS string编码；path必须通过下述canonical规则；kid必须是无lone surrogate的exact nonempty `str`；thumbprint必须是canonical unpadded base64url、decode恰32 bytes且re-encode相等。所有issuer/path/kid/thumbprint字段 `repr=False`，禁止通用 `model_dump()` 日志，正常repr也不能泄露。
+- A2b只实现/测试 `WorkerExecutionProofConfig` 与 loader，不在 `worker.main` 解析、加载或构造它；避免没有真实Platform消费者的dead signer。真正worker pre-side-effect gate留给 generated Platform client + A2c supplier composition切片，文档不得提前声称worker已受key gate保护。
+- `AgentHttpConfig`只拥有 host/port、Redis URL、Agent database URL/schema、lease TTL、internal bearer与 `HttpExecutionProofConfig | None`；host默认`127.0.0.1`、port默认`4401`且范围`1..65535`。HTTP业务字段继续保留 `env > KOKORO_AGENT_CONFIG YAML > default`；proof public字段只读env。
+- HTTP proof字段缺失、非法或ring load失败只生成脱敏 immutable unavailable state，HTTP仍启动；public config解析在退出`except`后创建无cause/context的stable unavailable state。HTTP业务字段非法则启动失败。配置日志使用明确safe allowlist，只记录非敏感模式/数值/`*_configured`/`ring_available`，禁止URL、token、file path、kid/thumbprint、secret前后缀、Pydantic input或原始异常。
+- `/healthz`在bearer、ring、identity、body、PG/Redis前保持200。`/readyz`保持bearer保护；认证成功后若ring unavailable，在PG/Redis factory前返回现有 `503 agent_unavailable`。ring状态只阻断ready和JWKS，不额外阻断现有业务route。JWKS自身unavailable使用专用 `execution_proof_jwks_unavailable`。
+
+##### A2b private key loader
+
+- private path必须是exact built-in、nonempty、absolute path；拒绝NUL、`//`、`.`、`..`与空组件，不调用 `Path.resolve()`。当前切片只保护最终组件，parent directory由secret-mount deployment trust boundary承担；SECURITY/RUNBOOK必须如实记录，不能冒称采用public-ring parent walk。
+- 平台必须原生提供 `os.O_RDONLY`、`O_CLOEXEC`、`O_NOFOLLOW`、`O_NONBLOCK`；缺任一flag即fail closed，禁止 `getattr(...,0)`降级。最终文件以 `O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK` 打开，避免FIFO在`fstat`前无界阻塞；只接受effective UID持有、regular file、exact mode `0400`或`0600`、`1..16384` bytes。
+- 同一fd读取 `16384+1` bytes；读取前验证 owner/type/mode/size，读取后要求 `(st_dev,st_ino,st_uid,st_mode,st_size,st_mtime_ns,st_ctime_ns)` 与读取前exact相同。增长、截断、chmod/chown、同inode等长覆盖或metadata变化均fail closed；final fd在成功和任何异常分支都由`finally`关闭。
+- block外允许字节只限HT/LF/CR/SP（`09/0A/0D/20`）；strip后必须有且仅有一组exact `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----`，marker各恰一次，禁止第二block、junk、legacy `EC PRIVATE KEY`、`ENCRYPTED PRIVATE KEY`及其他label。随后才调用 `serialization.load_pem_private_key(..., password=None)`。
+- 结果必须是Ed25519 private key，拒绝RSA/EC/X25519/Ed448/encrypted key。派生exact public JWK；RFC7638 thumbprint只对JCS `{"crv":"Ed25519","kty":"OKP","x":"..."}` 做SHA-256后canonical unpadded base64url。先canonical decode configured thumbprint，再用 `hmac.compare_digest(configured_digest_bytes,derived_digest_bytes)` 做真实核对，并用固定challenge sign/verify；active kid只做exact type/JCS可表达性验证并作为signer header identifier，因为PKCS#8不携带kid，禁止宣称本地验证了kid与私钥的独立关联。合法但不同kid可构造；kid与HTTP ring组合一致性只由五阶段fleet gate证明。成功只返回immutable lifetime signer，不暴露raw key/path。
+- 所有失败收敛到稳定脱敏异常，异常自身及递归cause/context、`str/repr`与捕获日志均不得包含path、PEM/key bytes、kid/thumbprint、signature/challenge、底层crypto或OS错误。FIFO用独立subprocess证明 `<1s` 返回；去掉`O_NONBLOCK` mutation必须由父进程timeout、terminate并清理子进程。open/close tracker证明成功和全部失败分支无fd增长；`/proc/self/fd`只作可选补强，核心tracker不得因平台skip。
+
+##### A2b public ring 与 snapshot
+
+- public path同样必须是exact built-in absolute canonical component path，拒绝NUL、`//`、`.`、`..`与空组件且不resolve。要求原生 `O_RDONLY/O_CLOEXEC/O_NOFOLLOW/O_NONBLOCK/O_DIRECTORY` 和 `dir_fd`/`follow_symlinks=False`能力，否则fail closed。
+- 从 `/` 的dirfd开始逐级以 `O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_DIRECTORY` 打开并保留parent fd；每级目录 owner只允许root/euid且 `mode & 0o022 == 0`。最终parent dirfd下以 `O_RDONLY|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK` 打开；final只接受root/euid owner、regular file、mode恰为`0400/0440/0444/0600/0640/0644`、`1..65536` bytes。root/intermediate/parent/final全部fd在成功和任何异常分支都由`finally`关闭。
+- 同fd读取`65536+1` bytes，前后对完整 `(st_dev,st_ino,st_uid,st_mode,st_size,st_mtime_ns,st_ctime_ns)` exact比较，并在仍持有parent dirfd时对pathname `stat(...,follow_symlinks=False)`复核dev/inode。in-place/partial mutation拒绝；atomic rename只承诺完整old、完整new或unavailable，从不发布混合/部分集合，也不宣称检测最终检查后的rename。public FIFO也必须在独立subprocess中 `<1s` fail closed；删除`O_NONBLOCK` mutation由父进程timeout、terminate并清理。open/close tracker覆盖每级成功与失败，证明无fd增长。
+- strict UTF-8且拒绝BOM、duplicate JSON member；root exact `{keys}`且keys非空。每个JWK exact `{kty,crv,use,alg,kid,x}`，literal必须为`OKP/Ed25519/sig/EdDSA`，kid为exact nonempty string，x为canonical unpadded base64url并decode恰32 bytes。拒绝missing/extra以及`d/x5c/x5u/jku/jwk/crit`等任意额外成员，duplicate kid无论key是否相同都拒绝。
+- 在排序或JCS前递归拒绝所有key/value string中的lone surrogate；不做Unicode normalization。keys按 `kid.encode("utf-8")` 排序；active kid必须唯一命中且RFC7638 thumbprint与HTTP descriptor constant-time相等。预计算immutable JCS response bytes，合法input和canonical output都不得超过65536 bytes。
+- A1 KAT的public JWK必须得到thumbprint `kPrK_qmxVWaYVA9wwBF6Iuo3vVzz7TxHCTwXBygrS4k`。任一错误state不得携带partial keys/body、raw JSON/path/descriptor或底层异常。
+
+##### A2b JWKS HTTP exact wire
+
+- exact path `/v1/execution-proof/jwks` 必须在body读取、bearer、identity和任何PG/Redis factory前识别；随后method优先于input：任何非GET/HEAD token（含POST/PUT/PATCH/DELETE/OPTIONS/TRACE与自定义`BREW`）无论query/header/body都固定405 `execution_proof_jwks_method_not_allowed`、`Allow: GET, HEAD`且不读body。只允许严格route-aware `__getattr__` 或等价机制处理未知`do_*`；非JWKS方法语义不扩成新API。
+- GET/HEAD若raw target含任何query marker（包括裸`?`）、任一 `Transfer-Encoding` 或 `Expect` header，或任一tenant/actor/subject/kind/assertion header **存在**（即使空值），固定400 `execution_proof_jwks_invalid_request`且不读body。`Content-Length`只有“不存在”或去除合法OWS后唯一exact十进制`0`可接受；negative、带正号、前导零、`0,0`、空值、非数字与重复字段全部400。Authorization与固定request-id不改变anonymous语义；raw-socket RED必须证明不发送 `100 Continue`。
+- 输入通过后：unavailable state固定503 `execution_proof_jwks_unavailable`；available固定200并返回预计算JCS bytes、`application/jwk-set+json`。错误继续使用既有 `{error:{code,message},meta:{request_id}}` JSON envelope与 `application/json; charset=utf-8`。
+- GET/HEAD的200/400/503，以及已支持方法的404与exact path的405都发送`Cache-Control: no-store`、精确GET representation `Content-Length`，不发送ETag、304、Location/redirect。HEAD永远零body，但固定request-id时status、Content-Type、Cache-Control、Content-Length与对应GET representation完全相同；`If-None-Match`仍返回完整200。
+- raw socket RED必须证明405在声明超大body却不发送body时立即响应；合法JWKS的bearer/identity/PG/Redis调用计数均为0；ring unavailable时ready在dependency factory前503而health 200；近似path与既有GET/POST unknown path保留JSON `404 route_not_found`。
+
+##### A2b machine contract、治理与IAM pin门
+
+- OpenAPI增加exact GET与HEAD operation：`security: []`、`x-kokoro-owner=kokoro-agent`、`visibility=internal-owner`、`stability=stable`、`idempotency=read-only`、`permission=none`；200 media为`application/jwk-set+json`，400/405/503 JSON media与稳定错误code，405声明`Allow`，所有representation声明no-store和length语义。
+- `contract/provenance.json`新增exact `http_contract.version=1.1.0/path=contract/openapi/v1/openapi.json/sha256=<direct digest>`；source inventory次序不变但重算aggregate。`contract_check.py`必须拒绝删除GET/HEAD、给匿名operation加bearer、修改permission/media/error code/Allow/no-store/version/path/direct SHA、只重算aggregate而遗漏direct SHA，或direct SHA更新但info.version不是1.1.0。
+- A2a AST门修改为仅允许 `execution/execution_proof_keys.py` import `ExecutionProofSigner/ExecutionProofSignerConfig`并构造；production `issue_execution_proof` 调用仍须为0，worker/http import signer、keys调用issue、package re-export与新增`jwt.encode`均由mutation test拒绝。
+- IAM 在A2b/A2c后先更新既有七份设计与验收文档，再实现 NestJS module + Prisma current-fact transaction +成熟JOSE/JWKS client。它保留A1 profile pin与新增A2b HTTP pin两条独立记录，不能复制editable schema/vector、不能复用Better Auth `Jwks`表、不能新建nonce/decision表、不能扩宽 `/internal/v1/authorization/check`。这也是本卡对“iam需不需要对齐”的明确裁决。
+
+##### A2b 精确文件权限
+
+允许新建：
+
+- `src/kokoro_agent/execution/execution_proof_keys.py`
+- `src/kokoro_agent/interfaces/http/execution_proof_jwks.py`
+- `src/kokoro_agent/interfaces/http/main.py`
+- `src/kokoro_agent/interfaces/http/INDEX.md`
+- `tests/unit/execution/test_execution_proof_keys.py`
+- `tests/unit/http/test_execution_proof_jwks.py`
+- `tests/unit/http/test_http_main.py`
+- `tests/unit/http/test_execution_proof_jwks_server.py`
+- `tests/contract/test_execution_proof_jwks_http.py`
+- `tests/unit/config/test_config_summary.py`
+
+允许修改：
+
+- `AGENTS.md`
+- `.env.example`
+- `README.md`
+- `INDEX.md`
+- `pyproject.toml`
+- `src/kokoro_agent/config.py`
+- `src/kokoro_agent/config_file.py`
+- `src/kokoro_agent/contract_check.py`
+- `src/kokoro_agent/execution/INDEX.md`
+- `src/kokoro_agent/interfaces/http/server.py`
+- `src/kokoro_agent/worker/main.py`
+- `src/kokoro_agent/worker/INDEX.md`
+- `contract/README.md`
+- `contract/openapi/v1/openapi.json`
+- `contract/provenance.json`
+- `docs/TECHNICAL_DESIGN.md`
+- `docs/API_CONTRACT.md`
+- `docs/SECURITY.md`
+- `docs/CURRENT.md`
+- `docs/ACCEPTANCE.md`
+- `docs/RUNBOOK.md`
+- `docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`
+- `docs/agent/api-contract.md`
+- `docs/agent/bff-integration.md`
+- `tests/unit/http/test_server.py`
+- `tests/contract/test_machine_contract.py`
+- `tests/contract/test_architecture.py`
+- `tests/contract/test_execution_proof_runtime.py`
+- `tests/acceptance/test_http_ingress.py`
+
+`uv.lock`、A1 schema/vector/checker、数据库schema/adapter、Redis/protocol、run/lease、worker dependencies、AgentFactory、Skills/MCP/client、IAM/Platform/Capability/BFF与其他路径必须byte-identical。若 implementation 证明需要授权外文件，writer先停写并报告Root，不自行扩大范围；writer不得操作Git/index。
+
+##### A2b 强制 RED 与验证矩阵
+
+1. Private key：安全文件正向；exact-config snapshot及mutated/subclass/duck拒绝；empty/str-subclass/lone-surrogate以及`model_copy`/`object.__setattr__`篡改issuer均在`os.open`前失败；relative/dot/dotdot/double-slash/NUL path；symlink/FIFO/directory/wrong owner/mode；empty/16384/16385；读取中增长/截断/chmod/等长覆盖；双block/junk/非法whitespace/legacy/encrypted/RSA/EC/X25519/Ed448；worker thumbprint mismatch拒绝且合法不同kid可构造；KAT/challenge；issuer/path/kid/thumbprint四个各自独立sentinel分别在config/state `repr`、日志与递归cause/context中均脱敏；安全flag缺失与fd lifecycle fail closed。private FIFO subprocess `<1s`，删除nonblock mutation必须timeout并清理。
+2. Public ring：安全父链正向；exact-config snapshot及mutated/subclass/duck拒绝；父级symlink/wrong-owner/group-world-write；final symlink/FIFO/directory/wrong-owner/mode；empty/65536/65537；strict UTF-8/BOM/duplicate/root exact/nonempty；JWK exact/forbidden members/x canonical 32-byte/duplicate kid/lone surrogate；UTF-8 kid排序、Unicode不normalize、active descriptor/KAT；同inode mutation与rename snapshot语义；canonical output bound；无partial state与fd leak。public FIFO subprocess `<1s`，删除nonblock mutation必须timeout并清理。
+3. HTTP config/root：env/YAML/default优先级、host/port、public proof env-only、缺失/非法proof降级、非法business config fail startup、config/state `repr`与safe log allowlist不泄密、无private/worker fields、entrypoint source/import/wheel smoke、legacy entry彻底消失。
+4. Raw socket/handler：GET/HEAD 200及exact bytes/headers；query、identity、Transfer-Encoding、Expect及Content-Length exact negative矩阵全部400且不读body/不发100；全部非GET/HEAD含`BREW` 405且不读body；503/ready-before-deps/health；no-store/no ETag/no redirect/If-None-Match；route-not-found回归；旧业务route unit与真实acceptance全量回归。
+5. Contract/architecture：HTTP version/path/GET/HEAD/anonymous/permission/media/error/Allow/cache/provenance direct digest mutation均fail closed；env读取只在worker/http/schema roots；HTTP/worker/private/signer依赖方向；keys是唯一 signer construction例外且0 production issue调用；package/script/wheel inventory。
+
+实施验证至少运行：
+
+```bash
+uv lock --check
+uv sync --frozen
+uv run ruff format --check <A2b Python files>
+uv run ruff check .
+uv run pyright
+uv run pytest -q tests/unit/execution/test_execution_proof_keys.py tests/unit/http/test_execution_proof_jwks.py tests/unit/http/test_http_main.py tests/unit/http/test_execution_proof_jwks_server.py tests/unit/config/test_config_summary.py tests/contract/test_execution_proof_jwks_http.py tests/contract/test_machine_contract.py tests/contract/test_architecture.py tests/contract/test_execution_proof_runtime.py
+uv run pytest -q tests/contract
+uv run kokoro-agent-contract-check
+uv run pytest -q
+KOKORO_AGENT_DATABASE_URL=TARGET KOKORO_REDIS_URL=TARGET uv run pytest -q -o addopts='' -m acceptance tests/acceptance/test_http_ingress.py
+python3 - <<'PY'
+from pathlib import Path
+import os
+import shutil
+import stat
+import subprocess
+import tempfile
+
+workspace = Path.cwd().resolve(strict=True)
+base = Path(os.environ.get("TMPDIR") or tempfile.gettempdir()).resolve(strict=True)
+if base == workspace or workspace in base.parents:
+    raise SystemExit("temporary base must be outside the workspace")
+prefix = "kokoro-agent-a2b-"
+root_text = tempfile.mkdtemp(prefix=prefix, dir=base)
+root = Path(root_text)
+created = os.lstat(root)
+created_identity = (created.st_dev, created.st_ino, created.st_uid, created.st_mode)
+
+def cleanup() -> None:
+    if type(root_text) is not str or not root_text:
+        raise RuntimeError("unsafe A2b cleanup target")
+    target = Path(root_text)
+    if (
+        target == Path("/")
+        or target == workspace
+        or target in workspace.parents
+        or workspace in target.parents
+        or target.parent != base
+        or not target.name.startswith(prefix)
+    ):
+        raise RuntimeError("unsafe A2b cleanup target")
+    try:
+        current = os.lstat(target)
+    except FileNotFoundError:
+        return
+    if (
+        stat.S_ISLNK(current.st_mode)
+        or not stat.S_ISDIR(current.st_mode)
+        or (current.st_dev, current.st_ino, current.st_uid, current.st_mode)
+        != created_identity
+        or shutil.rmtree.avoids_symlink_attacks is not True
+    ):
+        raise RuntimeError("A2b temporary root identity changed")
+    shutil.rmtree(target)
+    if os.path.lexists(target):
+        raise RuntimeError("A2b temporary root cleanup failed")
+
+try:
+    if (
+        root.parent != base
+        or not root.name.startswith(prefix)
+        or not stat.S_ISDIR(created.st_mode)
+        or created.st_uid != os.geteuid()
+    ):
+        raise RuntimeError("A2b temporary root is unsafe")
+    dist = root / "dist"
+    venv = root / "venv"
+    dist.mkdir()
+    subprocess.run(["uv", "build", "--wheel", "--sdist", "--out-dir", str(dist)], check=True)
+    subprocess.run(["uv", "venv", "--python", "3.11", str(venv)], check=True)
+    wheels = list(dist.glob("*.whl"))
+    assert len(wheels) == 1
+    python = venv / "bin" / "python"
+    subprocess.run(["uv", "pip", "install", "--python", str(python), str(wheels[0])], check=True)
+    smoke = '''
+from importlib import metadata
+from kokoro_agent.worker import main as worker_main
+
+entries = [entry for entry in metadata.entry_points(group="console_scripts") if entry.name == "kokoro-agent-http"]
+assert len(entries) == 1
+assert entries[0].value == "kokoro_agent.interfaces.http.main:main"
+assert callable(entries[0].load())
+assert not hasattr(worker_main, "http_main")
+'''
+    subprocess.run([str(python), "-c", smoke], check=True)
+finally:
+    cleanup()
+PY
+git diff --check
+```
+
+public parent-walk正向fixture不得位于通常为`01777`的`/tmp`。先只读验证 `/` 到选定既有HOME/仓库父目录的owner/mode，只对测试新建子目录chmod `0700`；严禁chmod `/`、HOME、workspace或任一预存祖先。测试记录预存祖先的dev/inode/uid/mode并在清理后证明完全不变；父链不安全时选择另一安全父链或窄syscall harness，不通过改祖先权限修环境。wrong-owner用纯snapshot validator或注入euid测试，不要求root/chown；不得以平台差异skip关键边界。writer交付RED/GREEN命令与实际失败/通过、文件清单、逐文件SHA、tracked/untracked manifests、完整dirty hash、完整门结果和未验风险。此任务卡在同一Root冻结对象经SPEC与QUALITY均`0/0/0`前不授权implementation。
+
+A2b R0任务卡冻结为Root `e6b61d8d8044e3690f3e29e0458f647411d3ea56`、plan SHA `afa6fd3c332b6d96662f08267bd69ac81547980a90483e54c2f2ea588728839e`，未放行：SPEC为`0/2/2`，QUALITY为`0/5/1`。R1已吸收全部finding：private/public FIFO都用subprocess+父进程timeout证伪`O_NONBLOCK`，所有fd路径有tracker；增加隔离wheel安装与entrypoint load；loader在syscall前重建exact config/descriptor snapshot并锁repr/异常/日志脱敏；worker只核对真实派生thumbprint而不伪称从PKCS#8验证kid；HTTP framing固定Content-Length exact零值、Transfer-Encoding/Expect拒绝且不发100；fixture不修改HOME/workspace祖先权限；同时修正A2b放置表。R1仍未授权实现，须对新的同一冻结对象重新进行SPEC与QUALITY双审。
+
+A2b R1任务卡冻结为同一Root HEAD、plan SHA `3f50b279cd14cbfae4b84c2bdbd5465aeced99ad11ebc968edaa0829e5649c0a`，SPEC与QUALITY均为`0/1/0`，仍未放行。R2补齐两项：隔离wheel命令现在显式创建workspace外临时根、安装cleanup trap、赋值dist/venv、执行installed entrypoint load并实际清理；worker issuer现在与path/kid/thumbprint一起在任何file syscall前完成exact/JCS/lone-surrogate snapshot验证并对repr/error/log脱敏，RED覆盖构造后mutation与`os.open=0`。R2须对同一新冻结对象重新双审。
+
+A2b R2任务卡冻结为同一Root HEAD、plan SHA `055ff4351e93acc21f640c0ca40797715078bcd873b10538ba7f9e765a5074f4`；SPEC为`0/0/0`，QUALITY为`0/0/2`，仍未放行。R3把wheel临时目录的trap前移到创建后第一时间，使用解析后的真实路径检查workspace边界，cleanup不再吞错且显式断言目录消失；同时把issuer/path/kid/thumbprint脱敏RED更正为四个各自独立sentinel。R3须对同一新冻结对象完成最终双审。
+
+A2b R3任务卡冻结为同一Root HEAD、plan SHA `066e47d1019713f7412180040c663ab43e0f72ca36cd9b72c92bb31e8c1a6252`；SPEC为`0/0/0`，QUALITY为`1/0/0`，仍未放行。原shell cleanup在`mktemp`失败且未启用errexit时可能把空路径解析为workspace。R4改为单一Python `try/finally`编排：先解析并验证临时基目录不在workspace，再创建独立临时根；删除前重复拒绝空值、`/`、workspace、workspace祖先及workspace内路径；构建、隔离安装、entrypoint smoke后非静默删除并断言不存在。实现测试还须覆盖不存在TMPDIR、canonicalization失败、正常清理及四种危险cleanup目标，且证明workspace hash不变。R4须对同一新冻结对象最终双审。
+
+A2b R4任务卡冻结为同一Root HEAD、plan SHA `afc989ea497b807fe324a8feab37864d6d3f68043e7a31c93e0f3f06d58b30f2`；SPEC为`0/0/0`，QUALITY为`1/0/0`，仍未放行。删除前 `Path.resolve()` 会跟随被替换的临时根symlink并可能删除无关目录。R5保存创建时的lexical absolute path、trusted base/prefix与`lstat dev/inode/uid/mode`；cleanup不resolve，严格重验同一父目录/name/identity、拒绝symlink/non-directory，并要求`shutil.rmtree.avoids_symlink_attacks is True`后才删除。验证harness还要用disposable victim证明顶层symlink替换会fail且victim保留。R5须再次对同一冻结对象双审。
+
+#### AGENT-EXECUTION-PROOF-A2b 计划验收与实现授权（2026-09-12）
+
+A2b R5冻结为Root `e6b61d8d8044e3690f3e29e0458f647411d3ea56`、plan SHA `911392fa9e0b3ff756f76cbbd26993fd535b584d4c76bacb60b11a7da9804eed`、Agent clean `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9`；SPEC与QUALITY对同一对象最终均为Blocking/Important/Minor `0/0/0`。两审确认进程配置隔离、private/public文件边界、FIFO与fd生命周期、exact descriptor、PEM/Ed25519/RFC7638、anchored public snapshot、JWK/JCS、JWKS raw HTTP、OpenAPI `1.1.0` direct pin、A2a signer construction唯一例外、旧route回归、隔离wheel smoke以及IAM NestJS+Prisma串行对齐均可实施。据此只放行本卡精确文件集与TDD RED→GREEN；A2c、worker signer装配、IAM/Platform/Capability及真实outbound传输继续阻塞。
