@@ -1205,3 +1205,54 @@ Fix R2 仍由 `agent_execution_artifact_writer` 单一写入，只授权修改 `
 Fix R2 冻结对象 `0ad70e0ea42e24f919aedd34ec2b6986c95e75ebf0df20b62209d3a533503a36` 仍未放行：SPEC 为 `0 Blocking / 3 Important / 0 Minor`，QUALITY 为 `0 Blocking / 2 Important / 0 Minor`。Root 接受四个待闭环事实：Python 普通 equality 会把 JSON `true/1` 与 `integer/float` 当作相等，导致 schema metadata 与 named-negative metadata 类型漂移在重算全部 digest 后通过；tamper 顶层 `name` 和未知字段未被锁定；31 项安全 negative policy 被压入最长 1008 字符的分隔符 DSL，使 798 行形式上低于门槛但不可审查且重复 name 可静默覆盖。
 
 Fix R3 继续由原 writer 单一写入。只授权修改 `src/kokoro_agent/execution_proof_contract.py`、`tests/contract/test_execution_proof_artifact.py`，新增 focused `src/kokoro_agent/execution_proof_negative_specs.py`，并追加既有 ignored SDD 报告；仅当测试证明现有 artifact 本身错误时，先停写报告 Root，不得自行修改 schema/vector/provenance。实现必须先取得 RED，再加入递归 JSON type-exact comparator（每层先比较 exact Python JSON type，再比较 object/list/value）并覆盖所有 load-bearing exact comparison；tamper 对象固定完整字段集与 `name=signature_one_bit_tamper`；negative policy 使用可审查的 typed immutable ordered records，显式拒绝重复 name且不得保留 separator DSL或超长压行。测试至少覆盖三项 schema `bool/int/float` 漂移、两项 negative metadata 类型漂移、tamper name删除/重命名/未知字段、inventory顺序/唯一性/不可变性与 source max-line-length门，同时保持全部既有 digest-recomputed mutants。禁止修改 contract artifact/provenance、docs、package/lock、contract checker入口、OpenAPI、数据库/Redis、signer/key/JWKS/lease/runtime、IAM/Platform/Capability与 Git/index；R3 必须重新冻结并由同一 SPEC/QUALITY 审查清零。
+
+#### AGENT-EXECUTION-PROOF-A1 验收（2026-09-12）
+
+Fix R3 冻结对象 `c67194882d47588397079e1eab3e757c4d0234cd4e1b3366981e6974cf9daf1f` 为 163035 bytes/15 files；SPEC 与 QUALITY 对同一对象均为 Blocking/Important/Minor `0/0/0`。两审独立复算 digest 并证明 schema 与 named-negative 的 JSON `bool/int/float` 类型漂移、tamper name/unknown field、重复 negative name、同stage替换、unsafe raw/pair/JTI metadata 漂移全部 fail closed；31 项 policy 已移入 typed immutable ordered focused module，无压缩 DSL，validator/spec/test 分别为 800/341/798 行且最大行长 89/87/88。
+
+Root 精确提交 Agent 15 文件为 `cd2e698c3c8b55a0136746977dbbca0c38cf308d`（`feat(agent): publish execution proof artifact`）。提交前后 `uv lock --check`、`uv sync --frozen`、三文件 Ruff format、全 Ruff check、Pyright、contract checker、artifact 57、contract 176、full default 668 passed/6 skipped/77 deselected、wheel/sdist build与`git diff --check`均通过，Agent 工作树 clean；完整 repo Ruff format仍有授权外既有79文件失败。本片只发布schema/vectors/provenance与checker，未实现签名、key/JWKS、lease supplier、IAM verifier或Platform consumer。
+
+#### AGENT-EXECUTION-PROOF-A2 runtime signer / key / JWKS / supplier 设计与任务卡（2026-09-12）
+
+| 项 | 结论 |
+| --- | --- |
+| 任务 | `AGENT-EXECUTION-PROOF-A2 / P0`；在已提交 A1 owner artifact 上分三片实现 runtime profile+Ed25519 signer、进程隔离的private/public key与JWKS、数据库statement-time current lease+run-scoped supplier。真实Platform Skills/MCP call-site继续阻塞，不在A2伪造operation/binding。 |
+| 归属 | owner=`kokoro-agent`；同仓同一时刻只允许一个writer，Root独占Git/index/commit；每片RED/GREEN、冻结、SPEC/QUALITY、Root复验和独立commit后才授权下一片。 |
+| 基线 | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@cd2e698c3c8b55a0136746977dbbca0c38cf308d` clean。A1 schema SHA `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`，vectors SHA `a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`。现有 `kokoro-agent-http`仍指向`worker.main:http_main`并加载完整`AppConfig`；现有`is_lease_current`在等待数据库连接前取应用clock，不能作为proof fresh gate。 |
+| 目标职责 | A2只让Agent能够按A1 exact profile安全签发短期proof、从独立HTTP进程发布public JWKS，并在每次调用前用数据库执行时刻证明同run/owner/generation仍current。Agent拥有签发与Run/lease事实，不拥有IAM permission或Platform resource/binding policy。 |
+| 目录方案 | 采用现有`execution/`放纯profile/signer/private-key/supplier，现有`infrastructure/`放专用PostgreSQL lease reader，现有`interfaces/http/`放public-ring/JWKS与HTTP composition root；更新各既有INDEX。否决顶层`auth/attestation/keys/ports`、把JWT塞入`protocol/`、让HTTP加载worker私钥配置、把全部逻辑塞进`server.py`或复用A1 checker作runtime。 |
+| 粒度 | A2a=`execution_proof_profile.py + execution_proof_signer.py + unit/contract tests + direct deps`；A2b=`execution_proof_keys.py + execution_proof_jwks.py + interfaces/http/main.py + process config/server/OpenAPI/provenance/tests`；A2c=`CurrentLeaseObservation + ExecutionProofLeaseReadPort + postgres_execution_proof_lease.py + execution_proof_supplier.py + unit/real-PG race tests + worker composition`。三个切片分别提交，不把全部密码学/文件I/O/HTTP/SQL/worker装配混成一片。 |
+| 依赖 | runtime profile只依赖stdlib/Pydantic/RFC8785与已提交A1事实的contract tests；signer使用PyJWT顶层公开`jwt.encode(..., json_encoder=...)`和cryptography Ed25519，不导入`jwt.api_*`私有API。A2开写时重新核验最新稳定兼容版本、许可证和Python3.11，`pyproject.toml`声明PyJWT/cryptography直接依赖并由lock固定。PostgreSQL adapter只实现domain窄port；supplier只依赖RunRequest/LeaseFence、clock/nonce/signer/lease port；HTTP不得导入private-key provider或完整AppConfig。 |
+| 数据/API | 不改`database/schema.sql`、不建proof/key/nonce表、不加Redis protocol。JWKS唯一新route为`GET|HEAD /v1/execution-proof/jwks`，机器OpenAPI/provenance由A2b owner更新。正常200发布按kid排序的canonical public JWKS，缺失/非法ring时JWKS与ready为503、health仍200；route在bearer/identity/body/Redis/PostgreSQL前分派。 |
+| 失败边界 | signer与key/profile异常fail closed且错误/日志不含key path/bytes、proof/signature、JTI或完整binding。worker private config必须在metrics/Redis/PostgreSQL/client/consumer之前校验；HTTP对象图只含public ring。supplier immutable绑定canonical RunRequest+LeaseFence，每次调用重新执行lease read、生成新JTI并即时签发，不缓存proof或mutable current run；签后在途race仍由TTL与Platform/IAM重验边界承担。 |
+| 删除项 | A2b删除`worker.main:http_main`与HTTP加载完整AppConfig路径，script改到独立HTTP root；配置日志由全字段+SecretStr前后缀改为显式安全allowlist。A2c不删除旧通用lease API，只新增proof专用statement-time port；最终Platform接线片再删除一次性build proof、名称选择、deployment fallback与Capability旧expanded attestation。 |
+| 验证 | 每片执行lock/sync、targeted format、全Ruff check、Pyright、unit/contract/architecture/full default、checker、build/diff；A2b做socket级JWKS GET/HEAD与HTTP对象图测试；A2c用隔离真实PostgreSQL构造连接/表锁等待跨expiry，证明释放后不签发。A2最终只称本仓 signer/key/JWKS/supplier验收，未有Platform owner artifact与transmitted-proof测试前不得称Skills/MCP已接线。 |
+
+##### A2a：runtime exact profile 与 Ed25519 signer
+
+- 新建`src/kokoro_agent/execution/execution_proof_profile.py`和`execution_proof_signer.py`，更新`execution/INDEX.md`；新增focused unit test并扩A1 contract测试验证runtime输出与owner vector exact compact bytes一致。
+- Profile固定exact header/14 claims、opaque ref非空但无额外pattern/max、safe integer token范围、operation/binding/JTI、`exp>iat`且TTL最多60秒、JCS UTF-8、canonical unpadded base64url与16KiB总长度。Skills/MCP typed IDs不进入claim。
+- Signer使用注入的immutable Ed25519 key/kid与PyJWT公共API；签发前独立预计算header/payload JCS，签发后必须检查恰好3个非空segment、前两段解码与预计算bytes完全相等、每段canonical、signature恰64 bytes、总长上限，并用派生public key自验。算法/header/key不接受调用方输入。
+- 固定RFC8032 Ed25519 KAT、A1 positive exact proof、one-bit header/payload/signature tamper、wrong key/curve/alg、Unicode不规范化、bool/float/unsafe integer、63/65-byte signature、敏感错误文本。禁止A2a读环境、文件、数据库、网络或修改HTTP/worker。
+
+##### A2b：key material、process config 与 JWKS
+
+- Private reader使用同fd `os.open(O_RDONLY|O_CLOEXEC|O_NOFOLLOW)`/`fstat`，仅接受euid owner、regular、精确0400或0600、非空且最多16384 bytes、读取前后inode/size/mtime/ctime不变、exact single unencrypted PKCS#8 PEM且块外只允许约定ASCII空白、Ed25519类型、derived JWK/thumbprint与active descriptor constant-time一致，并做固定challenge sign/verify自检；成功后只构造进程生命周期immutable signer。
+- Public ring使用同样no-follow/same-fd/regular/有界读取，最多65536 bytes、strict UTF-8、duplicate-member拒绝、root exact `{keys}`且非空。每个JWK exact `{kty,crv,use,alg,kid,x}`=`OKP/Ed25519/sig/EdDSA/nonempty/canonical 32-byte x`，拒绝`d/x5*|jku|jwk|crit`及任意extra、duplicate kid；active descriptor必须命中kid+RFC7638 thumbprint。按kid排序并预计算immutable canonical response。
+- `WorkerExecutionProofConfig`与`HttpExecutionProofConfig`互不继承且非superset；HTTP root只装配public config，worker不加载public ring。正常rotation固定 `{old}/worker-old -> all HTTP {old,new}/old -> all worker-new -> all HTTP descriptor-new -> last-old-sign+70s后all HTTP {new}`；越阶fail readiness，紧急轮换先停受影响signer。
+- JWKS已知path只有GET/HEAD；query/body/chunked或tenant/identity/assertion输入400，其他method 405+`Allow`，`If-None-Match`不产生304。200/400/404/405/503均`no-store`且无ETag/redirect；HEAD与GET status/header/Content-Length一致但零body。合法JWKS不触发auth/identity/PG/Redis，非法ring不发布部分keys且ready在连接依赖前503，health保持200。
+
+##### A2c：statement-time lease 与 run-scoped supplier
+
+- 新增窄`CurrentLeaseObservation(database_now, lease_expires_at)`与`ExecutionProofLeaseReadPort`，不扩宽broad lifecycle port；SQL在取得连接后用一条statement和materialized单行`clock_timestamp()`同时核对run、owner、generation、generation安全范围、`lease_expires_at > database_now`与nonterminal，返回timezone-aware observation。连接/statement/row/cancel/timeout失败均不签。
+- 真实PG race必须持有目标行/表锁让SELECT排队跨过expiry，观察wait后释放；结果必须not-current，不用sleep猜测代替数据库clock证据。另覆盖run/owner/generation错配、paused/terminal/expired、same-owner ABA与unsafe generation。
+- Supplier绑定immutable RunRequest+LeaseFence；每次`issue(operation,binding)`都先fresh read，再用注入app clock核对与DB now误差最多5秒，生成fresh 16-byte CSPRNG JTI，令`iat=floor(app now)`、`exp=min(iat+60,floor(lease expiry))`，有效期不足1秒拒绝。每次调用都重新read/nonce/sign，signer失败不触发外部send，并发run不得串tenant/actor/subject/run/session/fence。
+- A2c只提供supplier/fake-client proof，不修改Skills/MCP真实wire。真实call-site必须等待Platform final Proto、21项operation manifest、逐RPC request-binding profile/vector与generated Python helper。
+
+##### IAM 与 Platform 后续硬门
+
+IAM 必须对齐，不扩宽现有`/internal/v1/authorization/check`。A2完成后先用Agent `cd2e698...`的最终schema/vector commit+path+digest建立不可变consumer pin并更新七份IAM设计，再以NestJS模块、Prisma current-fact transaction、成熟JOSE/JWKS client实现`POST /internal/v1/execution-authorizations/verify`与generated SDK；不手写ORM/SQL事务、不复制editable Agent schema/vector、不复用Better Auth Jwks表、不建nonce/decision表。IAM V1 exact profile必须拒绝extra/`nbf`、duplicate、non-JCS、noncanonical base64/JTI、bool/float/unsafe integer及非exact public JWK；保持bad proof+disabled为401无authenticated audit、valid proof+disabled审计提交后409、审计或commit unknown为503。
+
+Platform必须先裁决当前三个SkillSource Agent read RPC：推荐Agent退出source-read链，改为list/get installation获得typed `installation_id + skill_id + package_asset_ref + digest`；若保留source RPC，则Platform先发布精确operation/binding，再由IAM owner扩封闭catalog，禁止继续用IAM明确unsupported的generic `read`。Platform最终以NestJS+Prisma发布opaque `execution_proof` Proto、FQ RPC→operation manifest、逐RPC binding schema/vector及TS/Python generated helper；typed `series_id/skill_id/installation_id`与`connector_id/server_id/connection_id/authorization_id/invocation_grant`只能list-first/reference-by-ID，display/provider/URL/tool name不能替代ID。`mcp.admin.register_server`继续是global reserved。P4b-4在owner artifact、IAM SDK、Platform contract、Agent逐call接线与真实三仓sandbox前继续阻塞。
+
+A2计划本身先冻结并由独立SPEC/QUALITY只读审查；双审`0/0/0`前不授权A2a写入。即使计划通过，也只先授权A2a文件集，A2b/A2c仍需按前一卡commit与证据重新续派。
