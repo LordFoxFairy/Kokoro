@@ -1560,3 +1560,121 @@ R9 只额外授权原 writer 修改 Agent `docs/agent/technical-plan.md` 与已�
 拒绝旧句并锁定新边界。其他 38 个候选文件逐字节冻结；禁止修改实现、OpenAPI/provenance、
 A1 artifact、lock/schema、A2c、IAM、Platform、Capability 或 Git/index。R9 重新冻结后必须由同一 SPEC/QUALITY
 对象双审清零，Root 再重跑 final pre-commit 必要门并精确提交；A2c、IAM 和 Platform 继续串行阻塞。
+
+#### AGENT-EXECUTION-PROOF-A2b 最终验收（2026-09-12）
+
+A2b R9 最终冻结为 Agent `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9`、30 tracked / 10 untracked /
+0 staged、295054 bytes、dirty SHA `4d77488e0f428acbd370d034ca26d1dfc25a52da6d2b1a855581df0e5f861e2a`；
+SPEC 与 QUALITY 对同一对象均为 Blocking/Important/Minor `0/0/0`。Root 精确提交 40 个授权文件为
+`960a16b20cb9f5d1d901b661cfda31c8c57bb3c5`（`feat(agent): publish execution proof keys and JWKS`），
+提交后 Agent 工作树 clean。Agent HTTP OpenAPI direct SHA 为
+`20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f`，provenance SHA 为
+`58120711daa3b65a158ddd1421e3d75fa57881a5fd9c896afe55f6978936112b`。
+
+Root 对最终冻结对象及提交后都执行 `uv lock --check`、`uv sync --frozen`、targeted Ruff format、全仓 Ruff
+check、Pyright、Prettier、focused `321 passed`、contract `225 passed`、contract checker、full default
+`1032 passed / 6 skipped / 77 deselected`、复用既有 PostgreSQL 18 与 Redis 的隔离 acceptance
+`18 passed`、workspace 外 wheel/sdist 与 CPython 3.11 安装 smoke、SIGINT/SIGTERM 退出和端口释放，全部通过；
+日志为 `/tmp/kokoro-agent-a2b-root-final-pre-20260912.log` 与
+`/tmp/kokoro-agent-a2b-root-post-20260912.log`。临时 database、Redis keys、临时目录与本轮生成物均已清理。
+A2b 只验收 key/JWKS/独立 HTTP root；production signer caller 仍为 0，A2c supplier、worker 注入、IAM verifier、
+Platform owner contract 与真实 outbound proof 仍未实现。
+
+#### AGENT-EXECUTION-PROOF-A2c statement-time lease 与 run-scoped supplier 设计门（2026-09-12）
+
+| 项 | A2c R3 精确候选 |
+| --- | --- |
+| 任务 | `AGENT-EXECUTION-PROOF-A2c / P0`；按已验收 A2 总设计，以 TDD 实现 proof 专用 statement-time current-lease reader 与 immutable run-scoped supplier。只形成 Agent owner 内部组件，不装入 worker、不发网络请求、不发明 Platform operation/binding。 |
+| Owner | owner=`kokoro-agent` 的 Run/Lease 与 execution-proof 签发边界；`execution/`拥有 supplier policy，`infrastructure/`拥有 PostgreSQL 实现。单一 writer=`agent_execution_artifact_writer`，Root 独占 Git/index/commit；候选冻结后分别由独立 SPEC 与 QUALITY 审查同一对象。IAM 只消费 A1/A2b owner contract，不拥有 Agent lease 或签发。 |
+| 基线 | Agent `/Users/nako/WebstormProjects/github/thefoxfairy/Kokoro/kokoro-agent`，`codex/production-closure-agent-p0@960a16b20cb9f5d1d901b661cfda31c8c57bb3c5` clean。A1 schema/vector direct SHA 分别为 `264f2a86230ccdc20c46ff8664407c2a6f382c664970539274cca569f178ab5f`、`a65b9b4a1c6da8c25bf012ec0aa9c04de037f5e166c1cd7cbee7df340dc17c41`；A2b HTTP `1.1.0` OpenAPI direct SHA 为 `20e679c5e46ec3fee0b1e002b2b37bdbcae21b1bee5616bd8013bd62d4d7e71f`。现有 `PostgresRunLeases.is_lease_current` 与 `PostgresRunRepositoryContext.is_lease_current` 都在等待连接前取得应用 clock，不能作为 proof fresh gate；现有 production `issue_execution_proof` caller 为 0。 |
+| 目标职责 | `CurrentLeaseObservation(database_now, lease_expires_at)`只表达一次数据库 statement 的 current 事实；`ExecutionProofLeaseReadPort.observe_current_lease(*, run_id: str, fence: LeaseFence) -> CurrentLeaseObservation | None`只为 proof 读取 current lease；`ExecutionProofSupplier`只接收一个 exact `LeasedRun` 并原子重建其 request/fence immutable snapshot，每次 `issue(operation, request_binding_sha256)`都重新读、重新计时、重新生成 nonce/JTI并签发。A2c证明 pair snapshot而非其数据库来源；后续 worker composition 才证明该 `LeasedRun` 来自 canonical claim/reclaim。supplier不得接受请求级 tenant/actor/subject/run/session/generation 覆盖。 |
+| 当前事实 | `RunRequest`位于 `protocol/control.py`，已含 typed `ExecutionIdentity`、run/session；`LeaseFence`与`LeasedRun`位于 `domain/run/models.py`，generation 当前只约束 `>=1`；V1 profile 已在 `execution_proof_profile.py`定义 `MAX_SAFE_INTEGER`及 operation/binding/JTI/time exact规则；A2a signer在 `execution_proof_signer.py`；canonical Run/lease事实只在 Agent PostgreSQL `kokoro_agent_run` 表。A2c不改变这些 owner 或公开 wire。 |
+| 目录方案 | 采用方案A：在新 `execution/execution_proof_supplier.py`放 proof 专用 immutable observation、窄 Protocol、supplier/factory与脱敏错误；在新 `infrastructure/postgres_execution_proof_lease.py`放唯一 PostgreSQL adapter，并更新两个既有 INDEX。port 只有 proof policy 一个消费者，放在使用侧可避免污染 broad `execution/protocols.py`，而 SQL/psycopg/schema 留在 infrastructure。否决方案B：扩宽 `domain/run/repositories.py` 或复用 `is_lease_current`，因为会把签发 freshness 混入通用 lifecycle port并保留 pre-statement app clock race；也否决新建 `ports/`、`auth/`、`database/` 子目录或把 SQL 塞进 supplier。 |
+| 粒度 | 两个 production 文件各有一个变化原因；测试分为 supplier unit、真实 PostgreSQL reader integration及既有 contract/architecture gate。`CurrentLeaseObservation`与窄 Protocol 暂与 supplier 同文件；不新建单文件目录，不修改 `execution/__init__.py`，除非 writer 先证明真实 import 需要并停写请求 Root 扩权。 |
+| 依赖 | supplier只可依赖 stdlib、typed `LeasedRun`/`RunRequest`/`LeaseFence`、V1 profile、A2a signer与窄 lease port；PostgreSQL adapter只可依赖 stdlib asyncio、psycopg public conninfo/async connection边界、既有 `qualified`/SQL helper/schema table constant及窄 port。它使用direct non-pooled connection而不复用会隐藏close ownership的`connect_pg` context manager。禁止 execution 反向导入 infrastructure，禁止 private key/JWKS/HTTP/Redis/Platform/IAM/BFF/Capability 依赖。生产 signer 调用唯一新增例外只能是 `execution_proof_supplier.py`；keys 仍只构造 signer，其他 production caller 保持 0。 |
+| 数据/API | 不改 `database/schema.sql`、migration、Redis protocol、A1 schema/vector、A2b OpenAPI/provenance、HTTP route、package/lock或任何跨仓 contract；不建 proof/key/nonce/cache/decision 表。reader只读 Agent canonical run表，不提交业务事务、不更新 lease。A2c不产生公开 API/generated client；IAM 后续仍单独 pin A1 profile和A2b HTTP direct contract。`docs/API_CONTRACT.md`与`docs/DATA_MODEL.md`只把A2b/A2c current fact对齐，不新增wire/schema。 |
+| 删除项 | 本片不删除旧通用 lease API，因为仍有其他 lifecycle caller；contract gate只禁止把它用于 proof。不得删除 A2b signer-construction例外。未来 Platform generated-client 接线片才删除一次性 proof build、legacy expanded attestation与任何 constructed-but-unused supplier；本片若出现 production composition或网络 send 即为越界。 |
+| 验证 | 严格 RED→GREEN；focused unit、真实PG integration、contract/architecture、全默认测试、Ruff、Pyright、contract checker、workspace外source-copy build与diff。真实PG只复用既有实例，在唯一临时 database或schema内安装 canonical schema；禁止启动第二套PG/Redis、reset共享数据库或清理他人资源。Root验收必须记录当前commit、RED/GREEN、逐文件hash、冻结hash、测试计数、临时资源名及精确cleanup证据。 |
+
+##### A2c statement-time reader exact contract
+
+- 新增 exact frozen `PostgresExecutionProofLeaseConfig(database_url, schema_name, total_deadline_seconds=2.0)`；deadline只接受 `type(value) in {int, float}`、拒绝bool且转为finite float后满足`0 < value <= 2.0`。database URL必须是exact nonempty `str`、无NUL并由psycopg public `conninfo_to_dict`在任何connect前解析成功；schema必须是exact ASCII identifier `^[A-Za-z_][A-Za-z0-9_]{0,62}$`。config、run与fence在连接前重建exact snapshot，任一失败的connect调用计数为0。
+- `total_deadline_seconds`形成一次monotonic absolute **逻辑数据库工作deadline**，connection acquisition、单statement、row fetch/decode的每个await都只取得同一deadline的remaining budget；预算耗尽后绝不继续签发或启动新工作。cleanup另有独立monotonic `0.25s` budget，只限制cleanup自身还能等待的工作量；两者都不是Python/OS hard real-time wall-clock承诺，事件循环停顿不改变已过期后禁止签发的安全判定。
+- adapter直接拥有一个non-pooled psycopg connection；一旦取得connection，timeout或cancel先通过当前locked psycopg 3.3.5 public `AsyncConnection.close()` exact一次执行local hard discard，再cancel/await子operation；connect尚未完成时cancel/await acquisition。cleanup task由`shield`保护，single/double external cancellation均先在allowance内收完自己的task/connection，再传播捕获的原 `CancelledError`对象；timeout映射为稳定proof-unavailable。若current locked driver不能在该allowance完成，真实/控制门必须失败而不是后台遗留task/backend或放宽上界。
+- fake/control分别卡住connect、cursor enter/exit、execute、fetch和close/discard，覆盖正常、工作deadline、single/double external cancel、close exact一次、原CancelledError identity、过期后无新工作/无签发、task归零；受控fake在远低于budget时释放，不以scheduler wall time判production正确性。测试外层另用不进入production config的显式`TEST_SCHEDULER_TOLERANCE` watchdog只防死锁。真实PG记录方法elapsed目标但以更宽独立watchdog防挂，并在独立有界cleanup poll中按reader exact PID证明eventual disappearance，不把PID消失塞入2.25秒硬断言。内部timeout/connection/SQL/row/decode错误统一在handler外抛出无cause/context的稳定 unavailable error，不含URL/schema/run/owner/SQL/底层exception。外部取消不转换为unavailable；所有新config/adapter/supplier repr、格式化traceback与日志投影也不得泄露这些值。
+- 每次观察只取得一个 connection、cursor并执行一条 parameterized SQL statement；不得先执行`SET`、clock query、schema query、transaction control或第二次读。SQL 使用 `WITH db_clock AS MATERIALIZED (SELECT clock_timestamp() AS database_now)`，并让同一 `database_now` 同时参与 predicate 与 result。它原子核对 exact `run_id`、exact nonempty owner、exact generation、数据库 row 与输入 generation 都在 `1..9007199254740991`、`lease_expires_at IS NOT NULL`、`lease_expires_at > database_now`、`terminal = FALSE`；命中只返回 `database_now`和`lease_expires_at`，未命中返回 `None`。禁止把 app clock/epoch 参数传入 SQL，禁止读取或信任数据库中的 request identity来覆盖已绑定 pair snapshot。
+- adapter 在任何连接前验证 `run_id` exact nonempty str、`LeaseFence` exact类型及其owner/generation snapshot；拒绝Pydantic subclass、duck object、构造后 mutation、bool/float/unsafe generation。返回row必须是exact shape且两个值均为exact timezone-aware `datetime`，转换到UTC后仍满足expiry > database_now；naive、extra/missing、wrong type或timezone转换异常一律fail closed，不返回partial observation。
+- 真实 PostgreSQL race 由独立 blocker connection 对随机唯一schema的 qualified `kokoro_agent_run` 执行 `LOCK TABLE ... IN ACCESS EXCLUSIVE MODE`，reader用普通 SELECT 真正排队。每个case在测试DSN设置唯一`application_name`；第三个observer connection按exact datname/usename/application_name/query中唯一schema锁定一个reader PID并观察`wait_event_type='Lock'`，再由数据库clock证明expiry已跨过后才释放。生产reader释放后必须`None`，supplier不调用signer；禁止用row lock、sleep-only、mock clock或precomputed assertion冒充statement-time证据。
+- 第二个真实PG case把表锁保持跨过工作deadline，证明逻辑deadline到期后fail closed、没有proof/sign/send且reader task最终归零；另覆盖current正向、unknown run、owner/generation错配、paused lease、terminal、expired、same-owner ABA、unsafe generation。工作deadline、cleanup budget与测试watchdog分别记录；所有poll/wait有独立有界timeout。finally固定release/rollback blocker → cancel+await own tasks → close blocker/reader/observer → drop自身schema → 按application_name在独立cleanup poll内确认自身PID消失。只断言自身schema创建/删除和自身backend，不比较全局schema快照。
+- 测试需有明确test-time source/control mutant：把predicate退回“等待前捕获app clock并作为参数”后，同一跨expiry race会错误命中，使该mutation run失败；仅检查SQL字符串包含`clock_timestamp()`不算证据。
+
+##### A2c run-scoped supplier exact contract
+
+- supplier/factory唯一业务输入是exact `LeasedRun`；构造时原子重建其中`RunRequest + LeaseFence`的最小immutable snapshot，拒绝pair/request/fence/identity subclass、duck、构造后mutation、空值与generation超出安全整数。proof identity固定来自`leased_run.request.execution_identity`，session/run固定来自同一request，generation/owner固定来自同一pair的fence；`identity_assertion_ref`不得进入proof或错误/log/repr。A2c architecture gate拒绝生产代码拆字段或直接构造supplier且caller保持0；后续接线卡只允许真实claim/reclaim产出的`LeasedRun`进入factory，并以same run/fence但替换identity/session的source mutant锁 provenance。
+- 每次 `issue(operation, request_binding_sha256)` 的唯一顺序是：exact入参检查 → fresh lease read → 读取一次timezone-aware app instant → skew/remaining-life计算 → fresh 16-byte CSPRNG nonce并canonical base64url为JTI → 构造 `ExecutionProofInput` → 调用 signer一次。lease返回`None`、异常、naive/wrong/pre-epoch time、timezone conversion、clock/nonce/signer异常都fail closed，不产生proof；稳定error必须在exception handler外抛出且`__cause__ is __context__ is None`。每次调用即使operation/binding相同也必须重新read、重新nonce、重新sign，禁止 proof cache、observation cache、retry或后台预签。
+- app clock只能在 lease read 成功返回后调用。所有时间先用aware `datetime.astimezone(UTC)`归一化；skew与remaining-life只用 exact `datetime`/`timedelta`比较，epoch floor用`delta.days * 86400 + delta.seconds`计算，禁止`datetime.timestamp()`或任何float参与安全判定。要求`abs(app_utc-database_utc) <= 5 seconds`（恰好正/负5秒接受，超过拒绝）；`iat=exact_epoch_floor(app_utc)`，`exp=min(iat+60, exact_epoch_floor(lease_expiry_utc))`；除V1 `exp>iat`外，还要求 `EPOCH + timedelta(seconds=exp) - max(app_utc, database_utc) >= timedelta(seconds=1)`。边界测试覆盖实际剩余`0.001/0.999/1.000`秒、year-3000 `+1µs` false-accept与`.999999` floor mutant、lease恰好/超过60秒、秒边界、正负5秒skew、pre-epoch、datetime上界和UTC offset等价时间；不得把IAM的5秒验签skew加入`exp-iat`，也不得声称签后撤销墙钟上界只有60秒。
+- nonce provider默认使用`secrets.token_bytes(16)`；注入provider只为确定性测试，必须恰调用一次并返回 exact 16-byte `bytes`，拒绝错误长度、subclass/duck；supplier不缓存provider结果或维护nonce历史。生产唯一性依赖128-bit CSPRNG碰撞概率，不冒充强全局唯一性；测试provider使用确定性不同序列并证明每次issue恰调用一次。并发测试使用多个run-scoped supplier证明tenant/actor/subject/run/session/generation/JTI不串线；同一supplier并发调用也各自fresh read/JTI/sign。所有异常链、格式化traceback、repr及log capture不得包含完整operation/binding/JTI/proof、identity assertion、database URL/schema、owner、SQL或底层异常sentinel。
+- A2c没有 production external client，因此“signer失败不send”由结构边界证明：生产源码不得 import httpx/requests/Platform client或定义send；architecture gate锁定 Skills/MCP client、`AgentFactory`、`WorkerDependencies`、worker composition、HTTP root均无supplier import/reference/constructed instance。只有 future Platform owner 发布 final proto/package、封闭 operation manifest、逐RPC binding schema/vector及 generated Python helper后，才另开接线卡证明每次真实send前紧邻read/sign且signer failure调用计数为0。
+
+##### A2c 精确文件权限与 TDD/验证矩阵
+
+允许新建：
+
+- `src/kokoro_agent/execution/execution_proof_supplier.py`
+- `src/kokoro_agent/infrastructure/postgres_execution_proof_lease.py`
+- `tests/unit/execution/test_execution_proof_supplier.py`
+- `tests/integration/database/test_execution_proof_lease.py`
+
+允许修改：
+
+- `src/kokoro_agent/execution/INDEX.md`
+- `src/kokoro_agent/infrastructure/INDEX.md`
+- `tests/contract/test_execution_proof_runtime.py`
+- `tests/contract/test_architecture.py`
+- `docs/CURRENT.md`
+- `docs/SECURITY.md`
+- `docs/TECHNICAL_DESIGN.md`
+- `docs/ACCEPTANCE.md`
+- `docs/API_CONTRACT.md`
+- `docs/DATA_MODEL.md`
+- `docs/RUNBOOK.md`
+- `docs/RELIABILITY.md`
+- `docs/ADR/ADR-004-agent-execution-proof-and-jwks.md`
+
+其他路径必须 byte-identical，包括 `database/schema.sql`、`pyproject.toml`、`uv.lock`、A1 schema/vector/checker、A2b OpenAPI/provenance/JWKS/key/HTTP/worker、`execution/__init__.py`、旧run/lease/context adapter、Redis/protocol、AgentFactory、WorkerDependencies、Skills/MCP/client以及 IAM/Platform/Capability/BFF。writer发现真实需要越界时先停写并报告Root，不自行扩权；writer不操作Git/index/commit。
+
+四份补充文档必须锁定真实current fact：`API_CONTRACT`把A2b改为已提交且A2c只是standalone owner-internal component、无新wire；`DATA_MODEL`把statement-time reader改为本片落地且无schema/transaction写入；`RUNBOOK`删除“A2c wires private loader”并继续声明worker private loader未装配；`RELIABILITY`记录逻辑数据库工作deadline、独立0.25秒cleanup budget、hard discard/cancellation边界及仍未完成的production transport，并明确这不是Python/OS hard real-time wall guarantee。contract test读取并拒绝旧陈述。
+
+RED必须先覆盖并记录预期失败：窄port/supplier不存在；pre-statement app-clock跨expiry mutant；工作deadline包含connection wait与statement wait、独立0.25秒cleanup budget及非hard-real-time语义；single/double取消；row exact/timezone；run/owner/generation/paused/terminal/expired/ABA；safe integer；exact `LeasedRun` pair snapshot；clock-skew、0.001/0.999/1.000秒与year-3000 exact-time mutant；fresh read/JTI/sign与并发隔离；递归异常链/traceback/log/repr脱敏；production唯一signer caller和无dead composition。architecture/AST门必须复用或抽取能解析absolute+relative import的resolver，并用synthetic source mutants覆盖absolute/relative/package re-export/alias、`getattr`/method alias signer调用、旧`is_lease_current`、HTTP/client import、supplier construction及合法control；门本身必须可证伪。每个RED必须因缺失行为或明确mutant存活而失败，不得以import/fixture typo代替。GREEN后至少运行：
+
+```bash
+uv lock --check
+uv sync --frozen
+uv run ruff format --check \
+  src/kokoro_agent/execution/execution_proof_supplier.py \
+  src/kokoro_agent/infrastructure/postgres_execution_proof_lease.py \
+  tests/unit/execution/test_execution_proof_supplier.py \
+  tests/integration/database/test_execution_proof_lease.py \
+  tests/contract/test_execution_proof_runtime.py \
+  tests/contract/test_architecture.py
+uv run ruff check .
+uv run pyright
+uv run pytest -q tests/unit/execution/test_execution_proof_supplier.py \
+  tests/contract/test_execution_proof_runtime.py tests/contract/test_architecture.py
+KOKORO_AGENT_DATABASE_URL=TARGET uv run pytest -q -o addopts='' -m integration \
+  tests/integration/database/test_execution_proof_lease.py
+uv run pytest -q tests/contract
+uv run kokoro-agent-contract-check
+uv run pytest -q
+uv build --wheel --sdist --out-dir TARGET_DIST TARGET_SOURCE_COPY
+git diff --check
+```
+
+真实PG测试使用随机唯一schema且`finally`精确drop自身schema；如Root以临时database复验，同时记录database创建者、backend PID、schema名和drop结果；只证明自身schema/PID的创建与删除，不比较全局schema。A2c不需要Redis。build source copy的唯一权威inventory是`git ls-files -z`列出的tracked文件，加本片冻结manifest中明确授权且计入dirty hash的4个untracked candidate文件；拒绝staged、ignored、symlink、special file、路径穿越、重复、额外或缺失项，不用broad copytree/rsync排除表。安全Python harness对每个relative path逐项`lstat`，只复制regular file且不使用hardlink，再按relative path/mode/size/SHA256与冻结inventory exact比对；副本必须不存在`.env/.tmp/.idea/.pytest_cache/.ruff_cache/.jbeval`。在mode `0700`的workspace外临时根执行`uv build TARGET_SOURCE_COPY --out-dir TARGET_DIST`，build后重算副本input manifest与主仓冻结hash，finally重验临时根identity后删除，禁止直接从主仓build。writer交付任务格式、RED/GREEN命令与实际结果、逐文件SHA、tracked/untracked/staged manifests、完整dirty bytes/hash、全门日志和未验风险。本A2c任务卡在同一Root冻结对象经SPEC与QUALITY均`0/0/0`且由Root精确提交前不授权implementation；IAM NestJS+Prisma、Platform contract与production接线继续串行阻塞。
+
+A2c R0任务卡冻结为Root `5da46ec4376e503ece43e30e73087d8cd2c6179e`、plan 373867 bytes / SHA `f95fd81046566b54a2f66b6ebfa6547089d295bf7d95241aef16336dd375b8cc`、plan diff SHA `fc6d04a77a642b84d49b93f79616fd2a5c6265386e9197bac1fd8ec57331d4e8`、Agent clean `960a16b20cb9f5d1d901b661cfda31c8c57bb3c5`；SPEC为`0/6/0`，QUALITY为`1/7/0`，未放行。R1吸收全部finding：factory只收exact `LeasedRun`且不冒充其DB provenance；port/config/conninfo/schema API固定；2秒数据库工作budget与0.25秒cleanup allowance分开并锁direct close/cancel；删除无界nonce复用检测；所有time计算改为exact datetime/timedelta/整数epoch；补四份current docs；build改为workspace外source copy；异常链脱敏、reader PID绑定cleanup及relative-import/alias mutation门补齐。R1必须重新冻结，由同一SPEC与QUALITY对同一对象复审到`0/0/0`前仍不授权implementation。
+
+
+A2c R1任务卡冻结为同一Root/Agent基线、plan 375149 bytes / SHA `f7021ef7ef19f86d741f66fbd786a505d5303e0ffe48b7532cd504ea8627f1be`、plan diff SHA `c44afc1344b31de2e7adb5ca104021cbb305817114ba127d4b524a6e9da8050f`；SPEC为`0/1/0`，QUALITY为`0/2/0`，未放行。R2删除asyncio hard real-time误称，把工作deadline、cleanup budget、测试watchdog及PID eventual cleanup分层；source copy改为tracked inventory加精确4个授权untracked candidate，拒绝ignored secret/临时树与special file。R2须再次冻结并完成同一SPEC/QUALITY双审。
+
+A2c R2任务卡冻结为同一Root/Agent基线、plan 376792 bytes / SHA `e9b65ab2a1735f0983085eb786f12beef3cbe7fb75fc3ad58abde5c148fe154d`、plan diff SHA `056fbd2e0804f2c59e249baeebf6b2a33bbc0d2ba8d53a9569fc161eddd69f8e`；SPEC与QUALITY均为`0/0/1`，唯一Minor是表头仍把当前candidate误标为R1。R3只修正表头版本，不改任何implementation contract；须对新的同一冻结对象最终双审清零。
