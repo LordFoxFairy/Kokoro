@@ -1535,3 +1535,28 @@ A2b R4任务卡冻结为同一Root HEAD、plan SHA `afc989ea497b807fe324a8feab37
 #### AGENT-EXECUTION-PROOF-A2b 计划验收与实现授权（2026-09-12）
 
 A2b R5冻结为Root `e6b61d8d8044e3690f3e29e0458f647411d3ea56`、plan SHA `911392fa9e0b3ff756f76cbbd26993fd535b584d4c76bacb60b11a7da9804eed`、Agent clean `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9`；SPEC与QUALITY对同一对象最终均为Blocking/Important/Minor `0/0/0`。两审确认进程配置隔离、private/public文件边界、FIFO与fd生命周期、exact descriptor、PEM/Ed25519/RFC7638、anchored public snapshot、JWK/JCS、JWKS raw HTTP、OpenAPI `1.1.0` direct pin、A2a signer construction唯一例外、旧route回归、隔离wheel smoke以及IAM NestJS+Prisma串行对齐均可实施。据此只放行本卡精确文件集与TDD RED→GREEN；A2c、worker signer装配、IAM/Platform/Capability及真实outbound传输继续阻塞。
+
+#### AGENT-EXECUTION-PROOF-A2b 实现候选与 R9 文档收口授权（2026-09-12）
+
+A2b 实现在 Agent `43d57058da6bd68dd1508e8ca6eb3bd2ef92a6d9` 上形成 39 文件候选；QUALITY R6 对冻结
+`4286258383299f37fb45c48ebca1df29cbffb61a657f2432ddc2d19e066dd0e7` 为 `0/0/0`。Root 对同一对象完成
+focused `319/319`、contract `225/225`、default `1030 passed / 6 skipped / 77 deselected`，并复用既有
+PostgreSQL 18 与 Redis，以独立临时 database 和空 Redis DB 15 运行 acceptance `18/18`；wheel/sdist、
+CPython 3.11 隔离安装、SIGINT/SIGTERM、端口释放、checker、Ruff、Pyright、Prettier 与 diff 均通过，
+临时 database、Redis keys、build、egg-info 与隔离安装目录已精确清理。首次编排因 macOS 系统 Bash
+无 `mapfile` 在静态门前中止；第二次编排的 build 在 workspace 产生可识别的 `build/` 与
+`src/kokoro_agent.egg-info/`，Root 只删除该次自建生成物并证明冻结 hash 恢复；两次都未改变源码、
+schema、lockfile 或共享服务。
+
+后续 SPEC R7/R8 和 QUALITY R8 发现并收敛 request-id additive 语义、safe access-log projection、trusted-header
+identity 与主 API route inventory；当前冻结为 `13672e64c5bcb69acaabb44d79df2db0e1bc39d2e732f899ce72107c894bce3a`
+（Agent HEAD 不变，29 tracked / 10 untracked / 0 staged，293478 bytes），SPEC 为 `0/0/0`、QUALITY 为 `0/1/0`。
+唯一未闭环项是 README 仍链接的当前 GA 方案 `docs/agent/technical-plan.md` 把“非 `/healthz`”全部写成 bearer
+保护，遗漏 exact anonymous `GET|HEAD /v1/execution-proof/jwks`。
+
+R9 只额外授权原 writer 修改 Agent `docs/agent/technical-plan.md` 与已授权
+`tests/contract/test_execution_proof_jwks_http.py`：将匿名例外固定为 exact `GET /healthz` 和 exact
+`GET|HEAD /v1/execution-proof/jwks`，其余 ingress 才要求 bearer；contract gate 必须读取该 GA 文档、
+拒绝旧句并锁定新边界。其他 38 个候选文件逐字节冻结；禁止修改实现、OpenAPI/provenance、
+A1 artifact、lock/schema、A2c、IAM、Platform、Capability 或 Git/index。R9 重新冻结后必须由同一 SPEC/QUALITY
+对象双审清零，Root 再重跑 final pre-commit 必要门并精确提交；A2c、IAM 和 Platform 继续串行阻塞。
